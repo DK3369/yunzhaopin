@@ -377,7 +377,7 @@ class evaluate_model extends model{
 		
 		if($addData['name']){
 			
-			$type	=	'名称';
+			$type	=	'member_com_00021';
 		
 		}else{
 			
@@ -387,7 +387,7 @@ class evaluate_model extends model{
 		
 		if($addData['sort']){
 			
-			$type	=	'排序';
+			$type	=	'member_com_00022';
 		
 		}else{
 			
@@ -397,7 +397,7 @@ class evaluate_model extends model{
 		
 		$nid	=	$this -> update_once('evaluate_group',$addData,$whereData);
 		
-		$this -> adminLog($type."修改成功");
+		$this -> adminLog($type.'admin_user_company_00208');
 	
 	}
 	
@@ -450,7 +450,7 @@ class evaluate_model extends model{
 			
 			$uid=array();
 			foreach($List as $key=>$val){
-				$List[$key]['name']	=	'访客';
+				$List[$key]['name']	=	yun_at('common_02177');
 				
 				if($val['uid'] && in_array($val['uid'],$uid)==false && $val['usertype']){
 					
@@ -518,7 +518,7 @@ class evaluate_model extends model{
 		$message	=	$data['message'];
 		
 		if($message==''){
-			return array('msg'=>'评论内容不能为空！','errcode'=>8);
+			return array('msg'=>yun_at('wap_01261'),'errcode'=>8);
 		}
 		if($data['uid'] &&$data['username']){
 			
@@ -536,9 +536,9 @@ class evaluate_model extends model{
 		);
 		$return['id']=$this->insert_into('evaluate_leave_message',$post);
 		if($return['id']){
-			return array('msg'=>'评论成功！','errcode'=>9);
+			return array('msg'=>yun_at('model_00030'),'errcode'=>9);
 		}else{
-			return array('msg'=>'评论失败！','errcode'=>8);
+			return array('msg'=>yun_at('wap_01262'),'errcode'=>8);
 		}
 	}
 	/**
@@ -552,7 +552,7 @@ class evaluate_model extends model{
               
 			  'errcode' => 8,
                
-			  'msg' 	=> '请选择要删除的数据！',                
+			  'msg' 	=> yun_at('member_com_00084'),                
             );
         
 		}else{
@@ -571,11 +571,11 @@ class evaluate_model extends model{
   			
 			if($delid){
 				
-				$return['msg']		=	'评论';
+				$return['msg']		=	yun_at('wap_00167');
 				
 				$return['errcode']	=	$delid ? '9' :'8';
 				
-				$return['msg']		=	$delid ? $return['msg'].'删除成功！' : $return['msg'].'删除失败！';
+				$return['msg']		=	$delid ? $return['msg'].'admin_user_00187' : $return['msg'].'admin_user_00186';
 			
 			}
 		
@@ -627,7 +627,7 @@ class evaluate_model extends model{
 			
 			foreach($List as $key => $val){
                 $List[$key]['ctime_n'] = date('Y-m-d', $val['ctime']);
-				$List[$key]['name']	=	'访客';
+				$List[$key]['name']	=	yun_at('common_02177');
 				if(in_array($val['uid'],$uid)==false && $val['uid']){
 					
 					$uid[]			=	$val['uid'];
@@ -698,7 +698,7 @@ class evaluate_model extends model{
 			if($data['utype']=='wap'){
 				$url	=	Url("wap",array('c'=>"evaluate","a"=>'gradeshow',"id"=>$result['id']));
 			}
-			return array('msg'=>'提交成功！','errcode'=>9,'url'=>$url); 
+			return array('msg'=>yun_at('wap_00757'),'errcode'=>9,'url'=>$url); 
 		}else{
 			if($data['utype']=='wap'){
 				$url	=	Url("wap",array('c'=>"evaluate"));
@@ -706,7 +706,7 @@ class evaluate_model extends model{
 			if($data['utype']=='pc'){
 				$url	=	Url('evaluate');
 			}
-			return array('msg'=>'没有找到相关测评哦！','errcode'=>10,'url'=>$url);
+			return array('msg'=>yun_at('wap_00192'),'errcode'=>10,'url'=>$url);
 		}
 	}
 	/**
@@ -720,7 +720,7 @@ class evaluate_model extends model{
               
 			  'errcode' => 8,
                
-			  'msg' 	=> '请选择要删除的数据！',                
+			  'msg' 	=> yun_at('member_com_00084'),                
             );
         
 		}else{
@@ -740,11 +740,11 @@ class evaluate_model extends model{
 			
 			if($delid){
 				
-				$return['msg']		=	'测评记录';
+				$return['msg']		=	yun_at('default_00122');
 				
 				$return['errcode']	=	$delid ? '9' :'8';
 				
-				$return['msg']		=	$delid ? $return['msg'].'删除成功！' : $return['msg'].'删除失败！';
+				$return['msg']		=	$delid ? $return['msg'].'admin_user_00187' : $return['msg'].'admin_user_00186';
 			
 			}
 		

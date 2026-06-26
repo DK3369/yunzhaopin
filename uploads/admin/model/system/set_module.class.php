@@ -78,7 +78,7 @@ class set_module_controller extends adminCommon
             $this->navcache();
             $this->web_config();
 
-            $this->admin_json(0, '模块设置保存成功');
+            $this->admin_json(0, 'admin_01386');
         }
     }
 
@@ -136,9 +136,9 @@ class set_module_controller extends adminCommon
         }
 
         if ($return) {
-            $this->admin_json(0, '导航设置成功', empty($_POST['id']) ? array('id' => $return) : array());
+            $this->admin_json(0, 'admin_01387', empty($_POST['id']) ? array('id' => $return) : array());
         } else {
-            $this->admin_json(1, '导航设置失败');
+            $this->admin_json(1, 'admin_01388');
         }
     }
 
@@ -179,7 +179,7 @@ class set_module_controller extends adminCommon
             $return = $seoM->upSeo(array('id' => $_POST['id']), $postData);
             $this->seocache();
 
-            $this->admin_json($return ? 0 : 1, $return ? 'SEO设置成功' : 'SEO设置失败');
+            $this->admin_json($return ? 0 : 1, $return ? yun_auto_t('SEO设置成功') : yun_auto_t('SEO设置失败'));
         }
     }
 

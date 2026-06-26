@@ -30,7 +30,7 @@
                                     @blur="changeRow(scope, 'discount')" />
                             </template>
                             <template v-else>
-                                <span>{{ scope.row.discount / 10 }}折</span>
+                                <span>{yun:}t key='admin_00921'{/yun}</span>
                             </template>
                             <img src="../../../admin/images/bine.png" @click="editRow(scope, 'discount')">
                         </div>
@@ -46,7 +46,7 @@
                 <el-table-column fixed="right" label="操作" width="80">
                     <template slot-scope="scope">
                         <div class="moduleElTaCaoz">
-                            <el-button size="mini" type="danger" @click="deljf(scope.row)">删除</el-button>
+                            <el-button size="mini" type="danger" @click="deljf(scope.row)">{yun:}t key='common.delete'{/yun}</el-button>
                         </div>
                     </template>
                 </el-table-column>
@@ -54,8 +54,8 @@
         </div>
         <div class="modulePaging">
             <div>
-				<el-checkbox v-model="allchecked" @change="allcheckChange">全选</el-checkbox>
-                <el-button size="mini" @click="editDelBatch">删除</el-button>
+				<el-checkbox v-model="allchecked" @change="allcheckChange">{yun:}t key='wap_js_00074'{/yun}</el-checkbox>
+                <el-button size="mini" @click="editDelBatch">{yun:}t key='common.delete'{/yun}</el-button>
             </div>
         </div>
     </div>
@@ -65,7 +65,7 @@
 module.exports = {
     data: function () {
         return {
-            emptytext: '暂无数据',
+            emptytext: "{yun:}t key='wap_js_00113'{/yun}",
             loading: false,
             input3: '',
             select: '',
@@ -86,7 +86,7 @@ module.exports = {
     },
     methods: {
         handleSizeChange(val) {
-            console.log(`每页 ${val} 条`);
+            console.log(`每页 ${val} {yun:}t key='common_02088'{/yun}`);
         },
         handleCurrentChange(val) {
             console.log(`当前页: ${val}`);
@@ -102,7 +102,7 @@ module.exports = {
                     _this.tableData = res.data;
                     _this.loading = false;
                     if (_this.tableData.length === 0){
-                        _this.emptytext = "暂无数据";
+                        _this.emptytext = "{yun:}t key='wap_js_00113'{/yun}";
                     }
                 }
             })
@@ -158,9 +158,9 @@ module.exports = {
             httpPost(url, sendData).then(function (response) {
                 let res = response.data;
                 if (res.error == 0) {
-                    message.success('操作成功');
+                    message.success("{yun:}t key='wap_user_00264'{/yun}");
                 } else {
-                    message.error('操作失败');
+                    message.error("{yun:}t key='wap_js_00141'{/yun}");
                 }
                 _this.tableData[index][isEditFieldName] = false;
                 _this.editData = null
@@ -178,9 +178,9 @@ module.exports = {
             httpPost(url, sendData).then(function (response) {
                 let res = response.data;
                 if (res.error == 0) {
-                    message.success('操作成功');
+                    message.success("{yun:}t key='wap_user_00264'{/yun}");
                 } else {
-                    message.error('操作失败');
+                    message.error("{yun:}t key='wap_js_00141'{/yun}");
                 }
                 _this.list();
             }).catch(function (error) {
@@ -224,7 +224,7 @@ module.exports = {
         editDelBatch: function () {
             let _this = this;
             if (!_this.idsArr.length) {
-                message.error('请选择要删除的数据');
+                message.error("{yun:}t key='admin_user_weipin_00005'{/yun}");
                 return;
             }
 			
@@ -233,9 +233,9 @@ module.exports = {
             let sendData = {
                 del: _this.idsArr
             };
-            _this.$confirm('你确定要删除当前项吗？', '温馨提示', {
-                confirmButtonText: '确定',
-                cancelButtonText: '取消',
+            _this.$confirm("{yun:}t key='admin_00333'{/yun}", "{yun:}t key='wap_user_00205'{/yun}", {
+                confirmButtonText: "{yun:}t key='common.confirm'{/yun}",
+                cancelButtonText: "{yun:}t key='common.cancel'{/yun}",
                 type: 'warning'
             }).then(() => {
                 httpPost(url, sendData).then(function (response) {

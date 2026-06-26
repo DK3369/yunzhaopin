@@ -9,7 +9,7 @@
                                 <ul>
                                     <li class="newmember_titcur"><a href="index.php?c=binding">{yun:}t key='wap_user_00340'{/yun}</a></li>
                                     <li><a href="index.php?c=vs">{yun:}t key='member_com_00070'{/yun}</a></li>
-                                    <li><a href="index.php?c=logout">账号注销</a></li>
+                                    <li><a href="index.php?c=logout">{yun:}t key='member_com_00538'{/yun}</a></li>
                                      
                                          
                                 </ul>
@@ -35,7 +35,7 @@
                                         <div class="Binding_list_name"> {yun:}t key='member_user_00220'{/yun}</div>
                                         <span class="Binding_list_no"><i class="Binding_list_no_icon"></i>{yun:}t key='member_com_00073'{/yun}</span>
                                         <div class="Binding_list_text">
-                                            您有一次修改用户名的机会（仅限一次哦~）
+                                            {yun:}t key='member_com_00539'{/yun}
                                         </div>
                                         <div class="Binding_oper">
                                             <a href="index.php?c=setname" class="Binding_submit">{yun:}t key='member_com_00072'{/yun}</a>
@@ -93,7 +93,7 @@
                                         <span class="Binding_list_no"><i class="Binding_list_no_icon"></i>{yun:}t key='wap_user_00175'{/yun}</span>
                                         <div class="Binding_list_text">{yun:}t key='member_com_00060'{/yun}</div>
                                         <div class="Binding_oper">
-                                            <a href="index.php?c=binding&act=comcert" class="Binding_submit">立即验证</a>
+                                            <a href="index.php?c=binding&act=comcert" class="Binding_submit">{yun:}t key='member_com_00540'{/yun}</a>
                                         </div>
                                         {yun:}/if{/yun} {yun:}/if{/yun}
                                     </div>
@@ -105,15 +105,15 @@
                                     <div class="Binding_list_cont">
                                         <div class="Binding_list_name"> {yun:}t key='member_com_00071'{/yun}</div>
                                         {yun:}if $company.moblie_status==1{/yun}
-                                        <div class="Binding_list_text mt10">当前手机已认证： <b class="Binding_list_b">{yun:}$company.linktel{/yun}</b>
+                                        <div class="Binding_list_text mt10">{yun:}t key='member_com_00541'{/yun} <b class="Binding_list_b">{yun:}$company.linktel{/yun}</b>
                                         </div>
                                         <div class="Binding_oper">
-                                            <a href="javascript:getshow('moblie','{yun:}t key='member_user_00215'{/yun}');" class="Binding_submit_qx">更换手机</a>
+                                            <a href="javascript:getshow('moblie','{yun:}t key='member_user_00215'{/yun}');" class="Binding_submit_qx">{yun:}t key='member_com_00542'{/yun}</a>
                                         </div>
                                         {yun:}else{/yun}
                                         <span class="Binding_list_no"><i class="Binding_list_no_icon"></i>{yun:}t key='wap_user_00175'{/yun}</span>
-                                        <div class="Binding_list_text">当前手机未认证： <b class="Binding_list_b">{yun:}$company.linktel{/yun}</b>
-                                            <br>验证后，可用于直接登录账户，快速找回登录密码，接收账户变动提醒,接受求职者简历投递信息
+                                        <div class="Binding_list_text">{yun:}t key='member_com_00543'{/yun} <b class="Binding_list_b">{yun:}$company.linktel{/yun}</b>
+                                            <br>{yun:}t key='member_com_00544'{/yun}
                                         </div>
                                         <div class="Binding_oper">
                                             <a href="javascript:getshow('moblie','{yun:}t key='member_user_00219'{/yun}');" class="Binding_submit">{yun:}t key='wap_user_00120'{/yun}</a>
@@ -129,20 +129,20 @@
                                     <div class="Binding_list_cont">
 
                                         {yun:}if $company.email_status==1{/yun}
-                                        <div class="Binding_list_text mt10">当前邮箱已认证：<b class="Binding_list_b">{yun:}$company.linkmail{/yun}</b>
+                                        <div class="Binding_list_text mt10">{yun:}t key='member_com_00545'{/yun}<b class="Binding_list_b">{yun:}$company.linkmail{/yun}</b>
                                         </div>
                                         <div class="Binding_oper">
                                             <a href="javascript:void(0)"
                                                onClick="layer_del("{yun:}t key='member_user_00051'{/yun}",'index.php?c=binding&act=del&type=email');"
-                                               class="Binding_submit_qx">取消认证</a>
+                                               class="Binding_submit_qx">{yun:}t key='member_com_00546'{/yun}</a>
                                         </div>
                                         {yun:}else{/yun}
                                         <span class="Binding_list_no"><i class="Binding_list_no_icon"></i>{yun:}t key='wap_user_00175'{/yun}</span>
-                                        <div class="Binding_list_text">当前邮箱未认证：<b class="Binding_list_b">{yun:}$company.linkmail{/yun}</b>
-                                            <br>邮箱验证后，可用于直接登录账户，快速找回登录密码，接收账户变动提醒,接受求职者简历投递信息
+                                        <div class="Binding_list_text">{yun:}t key='member_com_00547'{/yun}<b class="Binding_list_b">{yun:}$company.linkmail{/yun}</b>
+                                            <br>{yun:}t key='member_com_00548'{/yun}
                                         </div>
                                         <div class="Binding_oper">
-                                            <a href="javascript:getshow('email','{yun:}t key='member_user_00231'{/yun}');" class="Binding_submit">立即验证</a>
+                                            <a href="javascript:getshow('email','{yun:}t key='member_user_00231'{/yun}');" class="Binding_submit">{yun:}t key='member_com_00540'{/yun}</a>
                                         </div>
                                         {yun:}/if{/yun}
                                     </div>
@@ -180,7 +180,7 @@
                                         <div class="bingding_yx {yun:}if $member.sinaid!=''{/yun}bingding_yx_cur{yun:}/if{/yun}"><i class="binding_xl_icon"></i></div>
                                     </div>
                                     <div class="Binding_list_cont">
-                                        <div class="Binding_list_name"> 绑定新浪微博</div>
+                                        <div class="Binding_list_name"> {yun:}t key='member_user_00475'{/yun}</div>
                                         {yun:}if $member.sinaid!=""{/yun}
                                         <div class="Binding_list_text">{yun:}t key='wap_user_00127'{/yun}，可使用新浪微博快速登录</div>
                                         <div class="Binding_oper">
@@ -190,10 +190,10 @@
                                         </div>
                                         {yun:}else{/yun}
                                         <span class="Binding_list_no"><i class="Binding_list_no_icon"></i>{yun:}t key='wap_user_00181'{/yun}</span>
-                                        <div class="Binding_list_text">授权绑定后，可使用新浪微博快速登录</div>
+                                        <div class="Binding_list_text">{yun:}t key='member_user_00477'{/yun}</div>
                                         {yun:}if $config.sy_sinalogin!='1'{/yun}
                                         <div class="Binding_oper">
-                                            <a href="javascript:void(0)" onclick="layer.msg('对不起，新浪绑定已关闭！', 2, 8);return false;"
+                                            <a href="javascript:void(0)" onclick="layer.msg("{yun:}t key='member_user_00479'{/yun}", 2, 8);return false;"
                                                class="Binding_submit">{yun:}t key='wap_user_00119'{/yun}</a>
                                         </div>
                                         {yun:}else{/yun}
@@ -219,7 +219,7 @@
                                             </div>
                                         {yun:}else{/yun}
                                         <span class="Binding_list_no"><i class="Binding_list_no_icon"></i>{yun:}t key='wap_user_00181'{/yun}</span>
-                                        <div class="Binding_list_text">授权绑定后，可使用微信扫描登录</div>
+                                        <div class="Binding_list_text">{yun:}t key='member_user_00478'{/yun}</div>
                                         {yun:}if $config.wx_author!='1'{/yun}
                                         <div class="Binding_oper">
                                             <a href="javascript:void(0)" onclick="layer.msg("{yun:}t key='wap_00102'{/yun}", 2, 8); return false;" class="Binding_submit">{yun:}t key='wap_user_00119'{/yun}</a>
@@ -242,7 +242,7 @@
         <div class="Binding_pop_box" style="padding:10px;width:480px;background:#fff">
             <div>
                 <div class="Binding_pop_box_list">
-                    <span class="Binding_pop_box_list_left"><i class="Binding_pop_box_list_left_i">*</i>我的邮箱：</span>
+                    <span class="Binding_pop_box_list_left"><i class="Binding_pop_box_list_left_i">*</i>{yun:}t key='member_com_00438'{/yun}</span>
                     <input type="text" name="email" value="{yun:}$company.linkmail{/yun}" class="Binding_pop_box_list_text Binding_pop_box_list_textw200">
                 </div>
                 <div class="Binding_pop_box_list">
@@ -252,11 +252,11 @@
                     <a href="javascript:void(0);" onclick="checkCode('vcode_img');">{yun:}t key='member_com_00074'{/yun}</a>
                 </div>
                 <div class="Binding_pop_box_list">
-                    <input class=" Binding_pop_bth" type="button" onclick="sendbemail('vcode_img');" value="发送验证邮件" />
+                    <input class=" Binding_pop_bth" type="button" onclick="sendbemail('vcode_img');" value="{yun:}t key='wap_01115'{/yun}" />
                 </div>
                 <div class="Binding_pop_tip">{yun:}t key='member_com_00066'{/yun}</div>
                 <div class="Binding_pop_tip_p">
-                    1. 请检查您的垃圾箱或者广告箱，邮件有可能被误认为垃圾或者广告邮件；<br/> 2.验证邮件24小时内有效，请尽快登录您的邮箱点击验证链接完成验证
+                    {yun:}t key='member_com_00439'{/yun}<br/> {yun:}t key='member_com_00440'{/yun}
                 </div>
             </div>
         </div>
@@ -290,8 +290,8 @@
             <div class="Binding_pop_tip">{yun:}t key='member_com_00061'{/yun}</div>
             <div class="Binding_pop_tip_p">
                 1.短信验证码有效时效为{yun:}$config.moblie_codetime{/yun}{yun:}t key='wap_com_00247'{/yun}，超过{yun:}$config.moblie_codetime{/yun}分钟请点击重新发送；<br>
-                2.如您手机无法收取短信或者收取延迟，请关机重启或者联系运营商处理；<br/>
-                3.如以上措施还无法解决，请确认用户名，手机号以及邮箱联系我司客服
+                {yun:}t key='member_com_00436'{/yun}<br/>
+                {yun:}t key='member_com_00437'{/yun}
             </div>
         </div>
     </div>
@@ -421,7 +421,7 @@
         }
         layer.photos({
             photos: picjson
-            , anim: 5 //0-6的选择，指定弹出图片动画类型，默认随机（请注意，3.0之前的版本用shift参数）
+            , anim: 5 //0-6的选择，指定弹出图片动画类型，默认随机（请注意，3.0之前的版本用shift{yun:}t key='admin_00103'{/yun}）
         });
     }
 </script>

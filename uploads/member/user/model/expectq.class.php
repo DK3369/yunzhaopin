@@ -11,7 +11,7 @@ class expectq_controller extends user
 
         if (!$resume['name'] || !$resume['edu']) {
 
-            $this->ACT_msg('index.php?c=info', "请先完善个人资料！");
+            $this->ACT_msg('index.php?c=info', yun_at('member_user_00604'));
         }
 
         $cacheList  =   $this->MODEL('cache')->GetCache(array('city', 'hy', 'user', 'job'));
@@ -29,7 +29,7 @@ class expectq_controller extends user
         $num        =   $resumeM->getExpectNum(array('uid' => $this->uid));
         if ($num >= $this->config['user_number'] && $this->config['user_number'] != '' && $_GET['e'] == '') {
 
-            $this->ACT_msg("index.php?c=resume", "你的简历数已经超过系统设置的简历数了");
+            $this->ACT_msg("index.php?c=resume", yun_at('member_user_00605'));
         }
 
         $row        =   $resumeM->getExpect(array('id' => intval($_GET['e']), 'uid' => $this->uid));

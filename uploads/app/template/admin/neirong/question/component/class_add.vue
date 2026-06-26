@@ -3,31 +3,31 @@
         <div class="drawerModInfo" style="max-height: calc(100% - 80px); overflow-y: auto; border: none;">
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>类别名称</span>
+                    <span>{yun:}t key='admin_00219'{/yun}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input v-model="ruleForm.name" placeholder="请输入类别名称"></el-input>
+                    <el-input v-model="ruleForm.name" placeholder="{yun:}t key='admin_00217'{/yun}"></el-input>
                 </div>
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>排序</span>
+                    <span>{yun:}t key='member_com_00022'{/yun}</span>
                 </div>
                 <div class="drawerModInpt">
                     <el-input v-model="ruleForm.sort" placeholder=""
                               @input="inputIntNumber($event, 'ruleForm', 'sort')"></el-input>
                 </div>
                 <div class="drawerModTips">
-                    <el-alert title="越小越在前" type="info" show-icon :closable="false">
+                    <el-alert title="{yun:}t key='admin_00218'{/yun}" type="info" show-icon :closable="false">
                     </el-alert>
                 </div>
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>父类别</span>
+                    <span>{yun:}t key='admin_00220'{/yun}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-select v-model="ruleForm.pid" placeholder="请选择" clearable>
+                    <el-select v-model="ruleForm.pid" placeholder="{yun:}t key='wap_user_00100'{/yun}" clearable>
                         <el-option v-for="item in classList" :key="item.id" :label="item.name" :value="item.id">
                         </el-option>
                     </el-select>
@@ -35,7 +35,7 @@
             </div>
             <div class="drawerModLis" style="align-items: initial;">
                 <div class="drawerModTite">
-                    <span>简介内容</span>
+                    <span>{yun:}t key='admin_00778'{/yun}</span>
                 </div>
                 <div class="drawerModInpt">
                     <div id="editor—wrapper" style="border: 1px solid #ccc;">
@@ -46,7 +46,7 @@
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>图片</span>
+                    <span>{yun:}t key='wap_js_00081'{/yun}</span>
                 </div>
                 <div class="drawerModInpt">
                     <el-upload class="avatar-uploader" list-type="picture" action="" :auto-upload="false"
@@ -58,7 +58,7 @@
             </div>
         </div>
         <div class="setBasicButn" style="border-top: 0px solid #E4E7ED;">
-            <el-button type="primary" size="medium" @click="save" :disabled="saveLoading">提交</el-button>
+            <el-button type="primary" size="medium" @click="save" :disabled="saveLoading">{yun:}t key='common.submit'{/yun}</el-button>
         </div>
     </div>
 </template>
@@ -175,11 +175,11 @@ module.exports = {
                 formData = new FormData();
 
             if (typeof ruleForm.name == 'undefined' || ruleForm.name == '') {
-                message.warning('请输入类别名称');
+                message.warning("{yun:}t key='admin_00217'{/yun}");
                 return;
             }
             if (typeof ruleForm.pic_n == 'undefined' || ruleForm.pic_n == '') {
-                message.warning('请上传图片');
+                message.warning("{yun:}t key='wap_01412'{/yun}");
                 return;
             }
 

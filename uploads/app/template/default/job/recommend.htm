@@ -40,9 +40,9 @@ ul{ padding:0; margin:0;}
     <div style="width:100%;margin:0 auto;">
       <div style="width:100%;font-size:14px;height:300px; margin-bottom:10px; background:#fff;border:1px solid #eee">       
        
-       <div style="color:#333; text-indent:20px;  font-size:16px; font-weight:bold; background:#fff; padding-top:30px;">推荐职位给好友</div>
+       <div style="color:#333; text-indent:20px;  font-size:16px; font-weight:bold; background:#fff; padding-top:30px;">{yun:}t key='common_02386'{/yun}</div>
         <ul class="mail">
-          <li style="margin-top:10px;"><span><font color="red">*</font> 朋友的E-mail：</span>
+          <li style="margin-top:10px;"><span><font color="red">*</font> {yun:}t key='resume_00074'{/yun}</span>
             <input type="text" id="femail" value="" name="femail" style="border:1px solid #ddd;width:400px;height:40px; line-height:40px;" />
           </li>
 <!--
@@ -74,25 +74,25 @@ ul{ padding:0; margin:0;}
           <li>{yun:}t key='wap_com_00290'{/yun}：{yun:}$Info.job_salary{/yun} </li>
           {yun:}if $uid{/yun}
           {yun:}if $usertype==1{/yun}
-          <li>电子信箱：<a href="{yun:}url m=job c=comapply id='`$Info.id`'{/yun}"  target="_blank">{yun:}t key='wap_com_00427'{/yun}</a></li>
+          <li>{yun:}t key='common_02389'{/yun}<a href="{yun:}url m=job c=comapply id='`$Info.id`'{/yun}"  target="_blank">{yun:}t key='wap_com_00427'{/yun}</a></li>
           <li>{yun:}t key='wap_user_00265'{/yun}：<a href="{yun:}url m=job c=comapply id='`$Info.id`'{/yun}"  target="_blank">{yun:}t key='wap_com_00427'{/yun}</a> </li> 
             {yun:}else{/yun}
           <li>电子信箱：
               {yun:}if $config.sy_user_change==1{/yun}
-               <a href="javascript:void(0);" onclick="layer.msg('请先申请个人用户才能查看', 2, 8)" style="color:#999">登录网站后查看</a> 
+               <a href="javascript:void(0);" onclick="layer.msg('{yun:}t key='common_02391'{/yun}', 2, 8)" style="color:#999">{yun:}t key='common_02390'{/yun}</a> 
               {yun:}else{/yun} 
-                 <a href="javascript:void(0)" onclick="layer.msg('{yun:}t key='wap_00258'{/yun}', 2,8)" style="color:#999" >登录网站后查看</a> 
+                 <a href="javascript:void(0)" onclick="layer.msg('{yun:}t key='wap_00258'{/yun}', 2,8)" style="color:#999" >{yun:}t key='common_02390'{/yun}</a> 
              {yun:}/if{/yun}
               <li>{yun:}t key='wap_user_00265'{/yun}：
               {yun:}if $config.sy_user_change==1{/yun}
-               <a href="javascript:void(0);" onclick="layer.msg('请先申请个人用户才能查看', 2, 8)" style="color:#999">登录网站后查看</a> 
+               <a href="javascript:void(0);" onclick="layer.msg('{yun:}t key='common_02391'{/yun}', 2, 8)" style="color:#999">{yun:}t key='common_02390'{/yun}</a> 
               {yun:}else{/yun} 
-                 <a href="javascript:void(0)" onclick="layer.msg('{yun:}t key='wap_00258'{/yun}', 2,8)" style="color:#999">登录网站后查看</a> 
+                 <a href="javascript:void(0)" onclick="layer.msg('{yun:}t key='wap_00258'{/yun}', 2,8)" style="color:#999">{yun:}t key='common_02390'{/yun}</a> 
              {yun:}/if{/yun}
           {yun:}/if{/yun}
           {yun:}else{/yun}
-          <li>电子信箱：<a href="javascript:void(0)" onclick="showlogin('1');" style="color:#999" >登录网站后查看</a></li>
-          <li>{yun:}t key='wap_user_00265'{/yun}：<a href="javascript:void(0)" onclick="showlogin('1');" style="color:#999" >登录网站后查看</a> </li>
+          <li>{yun:}t key='common_02389'{/yun}<a href="javascript:void(0)" onclick="showlogin('1');" style="color:#999" >{yun:}t key='common_02390'{/yun}</a></li>
+          <li>{yun:}t key='wap_user_00265'{/yun}：<a href="javascript:void(0)" onclick="showlogin('1');" style="color:#999" >{yun:}t key='common_02390'{/yun}</a> </li>
          {yun:}/if{/yun}
           <li>{yun:}t key='member_user_00198'{/yun}：{yun:}$Info.job_city_one{/yun}{yun:}$Info.job_city_two{/yun}{yun:}$Info.job_city_three{/yun}</li>
            <li style="width:95%">{yun:}if $Info.lang_info!=''{/yun}{yun:}t key='wap_com_00292'{/yun}{yun:}$Info.lang_info{/yun}{yun:}/if{/yun} </li>
@@ -109,7 +109,7 @@ ul{ padding:0; margin:0;}
                 <a href="{yun:}url m=job c=comapply id='`$Info.id`'{/yun}" class="job_r_sq">{yun:}t key='wap_com_00235'{/yun}</a> 
                 <input id="jobid" type="hidden" value="{yun:}$Info.id{/yun}" />
                 {yun:}/if{/yun}
-               <a href="{yun:}url m=company c=show id='`$Info.uid`'{/yun}"  target="_blank"  style="display:inline-block;height:37px; line-height:37px; vertical-align:top; padding-left:30px;color:#0180cf">查看该公司其他职位>> </a></td>
+               <a href="{yun:}url m=company c=show id='`$Info.uid`'{/yun}"  target="_blank"  style="display:inline-block;height:37px; line-height:37px; vertical-align:top; padding-left:30px;color:#0180cf">{yun:}t key='wap_01487'{/yun}>> </a></td>
             </tr>
           </tbody>
         </table> 
@@ -165,7 +165,7 @@ function sendjob(img){
 		layer.closeAll();
 		checkCode(img);
 		if(data==1){ 
-			layer.msg('邮件发送成功！', 2,9,function(){location.reload();});return false;	
+			layer.msg("{yun:}t key='resume_00075'{/yun}", 2,9,function(){location.reload();});return false;	
 		}else if(data==""){ 	
 			layer.msg("未知错误，{yun:}t key='wap_00509'{/yun}！", 2,8);
 		}else{ 

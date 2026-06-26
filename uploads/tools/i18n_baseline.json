@@ -1,0 +1,52 @@
+{
+    "generated": "2026-06-26T22:42:18+08:00",
+    "wap_actionable": 0,
+    "hardcoded_php": {
+        "total": 362,
+        "hardcoded": 167,
+        "missing_pack": 77,
+        "echo": 11
+    },
+    "hardcoded_by_dir": {
+        "app\/model": {
+            "hardcoded": 147,
+            "missing_pack": 68,
+            "echo": 0
+        },
+        "admin\/model": {
+            "hardcoded": 10,
+            "missing_pack": 2,
+            "echo": 1
+        },
+        "member\/com": {
+            "hardcoded": 6,
+            "missing_pack": 5,
+            "echo": 0
+        },
+        "app\/controller": {
+            "hardcoded": 2,
+            "missing_pack": 2,
+            "echo": 0
+        },
+        "member\/user": {
+            "hardcoded": 2,
+            "missing_pack": 0,
+            "echo": 0
+        },
+        "app\/include": {
+            "hardcoded": 0,
+            "missing_pack": 0,
+            "echo": 10
+        }
+    },
+    "template_missing_pack": 870,
+    "lang_pack": {
+        "zh_keys": 9096,
+        "en_keys": 9096,
+        "only_zh": 0,
+        "only_en": 0,
+        "en_same_or_empty": 18,
+        "en_same_zh_need_fix": 6,
+        "en_contains_chinese": 0
+    }
+}

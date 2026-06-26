@@ -68,7 +68,7 @@ class company_interview_controller extends adminCommon
                 $this->render_json($return['errcode'], $return['msg']);
             }
         } else {
-            $this->render_json(1, '请选择要删除的内容！');
+            $this->render_json(1, yun_at('common_01066'));
         }
     }
 
@@ -106,7 +106,7 @@ class company_interview_controller extends adminCommon
     function status_action()
     {
         if (!$_POST['pid'] || !$_POST['status']) {
-            $this->render_json(1, '参数有误');
+            $this->render_json(1, yun_at('common_01716'));
         }
         $yqmbM      =   $this->MODEL('yqmb');
         $statusData =   array(

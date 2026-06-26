@@ -1,7 +1,7 @@
 <template>
     <div v-loading="loading">
         <div style="overflow: hidden; position: relative; display: flex; align-items: center;">
-        <el-select v-model="hyId" multiple :multiple-limit="multiple ? max : 1" placeholder="搜索行业名称"
+        <el-select v-model="hyId" multiple :multiple-limit="multiple ? max : 1" placeholder="{yun:}t key='admin_00061'{/yun}"
                    filterable remote :remote-method="remoteClassList" @change="classChange" @remove-tag="classRemove">
             <el-option v-for="opitem in classOptions" :key="opitem.id" :label="opitem.name"
                        :value="opitem.id" :disabled="opitem.disabled">
@@ -23,9 +23,9 @@
                        :show-close="true" size="60%">
                 <div class="modluDrawerContents">
                     <div class="modluDrawerTi9te">
-                        <div>请选择擅长行业</div>
+                        <div>{yun:}t key='admin_00060'{/yun}</div>
                         <div class="shuytans">
-                            <el-input v-model="searchHy" placeholder="搜索行业名称"
+                            <el-input v-model="searchHy" placeholder="{yun:}t key='admin_00061'{/yun}"
                                       @input="handleSearchHy">
                                 <i slot="prefix" class="el-input__icon el-icon-search"></i>
                             </el-input>
@@ -71,7 +71,7 @@
                     </div>
                     <div slot="footer" class="dialog-footer dialoFoofetee">
                         <div class="footText">
-                            <div class="mingdsc"><span>最多可选择{{ multiple ? max : '1'}}项：</span></div>
+                            <div class="mingdsc"><span>{yun:}t key='admin_00390'{/yun}</span></div>
                             <div class="mingdEltags" style="padding-top: 4px;">
                                 <el-tag v-for="(selectClass, selectIndex) in selectHyClass" :key="selectIndex"
                                         closable size="small" @close="handleCloseHy(selectClass.id)">
@@ -80,7 +80,7 @@
                             </div>
                         </div>
                         <div class="footTextburn">
-                            <el-button type="primary" size="mini" round @click="handleSubmitHy">确 定</el-button>
+                            <el-button type="primary" size="mini" round @click="handleSubmitHy">{yun:}t key='wap_com_00019'{/yun}</el-button>
                         </div>
                     </div>
                 </div>
@@ -93,7 +93,7 @@
         props: {
             multiple: {type: Boolean, default: false}, // 选择方式 false-单选/true-多选
             max: {type: Number, default: 5}, // 多选下有效，最多选择几个
-            selected: {type: Object, default: null} // 已选中数据，数据内容如：{167: "通信技术工程师", 168: "有线传输工程师"}
+            selected: {type: Object, default: null} // 已选中数据，数据内容如：{167: "{yun:}t key='common_01417'{/yun}", 168: "{yun:}t key='admin_00056'{/yun}"}
         },
         data: function () {
             return {
@@ -135,10 +135,10 @@
 
             // 搜索分类 - 下拉框
             remoteClassList(query) {
-                if ($.trim(query) !== '') {
+                if ($.trim(query) !== '") {
                     let that = this;
 
-                    that.searchClass(query); // 本地JS搜索
+                    that.searchClass(query); // 本地JS{yun:}t key='common.search'{/yun}
 
                     let classList = deepClone(that.classList);
 
@@ -151,7 +151,7 @@
                                 newClassList.push({
                                     id: oneItem.id,
                                     name: oneItem.name,
-                                    upname: '',
+                                    upname: "',
                                     childrenIds: oneItem.children && oneItem.children.length > 0 ? oneItem.children.map(row => row.id) : []
                                 })
                                 newClassId.push(oneItem.id); // 用来判断存在一级，二级不显示一级的名称
@@ -201,7 +201,7 @@
 
                                 let childrenIds = classOptions[i].childrenIds,
                                     index = -1;
-                                if (childrenIds && childrenIds.length > 0 && this.hyId.length > 0) { // 清空下级已选选项
+                                if (childrenIds && childrenIds.length > 0 && this.hyId.length > 0) { // {yun:}t key='common_01285'{/yun}
                                     for (var j = 0; j < childrenIds.length; j++) {
                                         index = this.hyId.indexOf(childrenIds[j]);
                                         if (index > -1) { // 检索已选中下级
@@ -271,7 +271,7 @@
                     }
 
                     if (selectHyId.length >= max) {
-                        message.warning('最多选择' + max + '项');
+                        message.warning('最多选择' + max + "{yun:}t key='common_02104'{/yun}");
                         return false;
                     }
                     that.selectHyId.push(id);
@@ -299,13 +299,13 @@
             handleSelectClass(one) {
                 let that = this,
                     classList = that.classList,
-                    twoClassList = classList[one]['children'];
+                    twoClassList = classList[one]['children"];
 
                 if (twoClassList && twoClassList.length > 0 && that.selectHyId.length > 0) { // 一级选中，清空二级已选选项
                     twoClassList.forEach(function (item, index) {
                         twoIndex = that.selectHyId.indexOf(item.id);
                         if (twoIndex > -1) { // 检索已选中二级
-                            that.selectHyId.splice(twoIndex, 1); // 删除二级
+                            that.selectHyId.splice(twoIndex, 1); // {yun:}t key='admin_00065'{/yun}
                             that.selectHyClass.splice(twoIndex, 1);
                         }
                     })
@@ -336,16 +336,16 @@
                 if (classList && classList.length > 0) {
                     classList.forEach(function(oneItem, oneKey) {
                         if (oneItem.name.includes(query)) { // 一级须包含关键字
-                            classList[oneKey].hide = false; // 显示一级分类
+                            classList[oneKey].hide = false; // {yun:}t key='admin_00062'{/yun}
                         } else {
-                            classList[oneKey].hide = true; // 隐藏一级分类
+                            classList[oneKey].hide = true; // {yun:}t key='admin_00063'{/yun}
                         }
                         twoList = oneItem.children;
                         if (twoList && twoList.length > 0) {
                             twoList.forEach(function(twoItem, twoKey) {
                                 if (twoItem.name.includes(query)) { // 二级须包含关键字
                                     classList[oneKey].hide = false; // 存在二级一级也显示
-                                    classList[oneKey]['children'][twoKey].hide = false; // 二级分类标记显示
+                                    classList[oneKey]["children'][twoKey].hide = false; // 二级分类标记显示
                                 } else {
                                     classList[oneKey]['children'][twoKey].hide = true; // 隐藏二级分类
                                 }

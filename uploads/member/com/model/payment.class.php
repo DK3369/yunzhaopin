@@ -9,7 +9,7 @@ class payment_controller extends company{
 		$order	=	$orderM	->	getInfo(array('uid'=>$this->uid,'id'=>(int)$_GET['id']),array('bank'=>1));
 		if(empty($order)){ 
 
-			$this	->	ACT_msg($_SERVER['HTTP_REFERER'],'订单不存在！'); 
+			$this	->	ACT_msg($_SERVER['HTTP_REFERER'],'wap_01291'); 
 		}elseif($order['order_state']!='1'){ 
 
 			header('Location:index.php?c=paylog');

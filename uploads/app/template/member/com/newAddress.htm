@@ -90,7 +90,7 @@
                 <label class="layui-form-label">{yun:}t key='wap_com_00032'{/yun}</label>
                 <div class="layui-input-inline">
                     <select name="provinceid" id="provinceid" lay-filter="citys">
-                        <option value="">请选择省</option>
+                        <option value="">{yun:}t key='member_com_00621'{/yun}</option>
                         {yun:}foreach from=$city_index key=j item=v{/yun}
                         <option value="{yun:}$v{/yun}">{yun:}$city_name[$v]{/yun}</option>
                         {yun:}/foreach{/yun}
@@ -98,7 +98,7 @@
                 </div>
                 <div class="layui-input-inline">
                     <select name="cityid" id="cityid" lay-filter="citys">
-                        <option value="">请选择市</option>
+                        <option value="">{yun:}t key='member_com_00622'{/yun}</option>
                     </select>
                 </div>
                 <div class="layui-input-inline">
@@ -136,7 +136,7 @@
             </div>
             <input type="hidden" name="addressId" id="addressId" value="" />
             <input type="hidden" name="addressLink" id="addressLink" value="" />
-            <div class="aisx_job_fot"><a href="javascript:;" onclick="saveAddress();" class="aisx_job_bth">保存地址</a></div>
+            <div class="aisx_job_fot"><a href="javascript:;" onclick="saveAddress();" class="aisx_job_bth">{yun:}t key='member_com_00623'{/yun}</a></div>
         </form>
     </div>
 </div>
@@ -186,7 +186,7 @@
 
         form.on('select(citys)', function (data) {
 
-            var html = "<option value=''>请选择市</option>";
+            var html = "<option value=''>{yun:}t key='member_com_00622'{/yun}</option>";
 
             if (data.value && ct[data.value] != undefined) {
 
@@ -224,9 +224,9 @@
                 var link_moblie = $(this).attr('data-link_moblie');
                 var link_phone = $(this).attr('data-link_phone');
                 var email = $(this).attr('data-email');
-                var title = '更新工作地址';
+                var title = "{yun:}t key='member_com_00624'{/yun}";
             }else{
-                var title = '新建工作地址';
+                var title = "{yun:}t key='wap_00894'{/yun}";
             }
 
             var address = $(this).attr('data-address');
@@ -428,13 +428,13 @@
 
         if (ct[provinceid]) {
             if (cityid == 0) {
-                layer.msg('请选择所在区域二级城市', 2, 8);
+                layer.msg("{yun:}t key='member_com_00625'{/yun}", 2, 8);
                 return false;
             }
         }
 
         if (link_address == ''){
-            layer.msg('请选择填写详细地址', 2, 8);
+            layer.msg("{yun:}t key='member_com_00626'{/yun}", 2, 8);
             return false;
         }
         var id = $.trim($('#addressId').val());
@@ -462,7 +462,7 @@
                         }
                         option_n = `${defLink.link_man}-${linkstr}${defLink.city}-${defLink.address}`;
 
-                        html   =  `<option id="link_id_-1" value="-1" data-provinceid="${defLink.provinceid}" data-cityid="${defLink.cityid}" data-three_cityid="${defLink.three_cityid}" data-address="${defLink.address}" data-x="${defLink.x}" data-y="${defLink.y}" data-link_man="${defLink.link_man}" data-link_moblie="${defLink.link_moblie}" data-link_phone="${defLink.link_phone}" data-email="${defLink.email}" >${option_n}(默认企业地址）</option>`;
+                        html   =  `<option id="link_id_-1" value="-1" data-provinceid="${defLink.provinceid}" data-cityid="${defLink.cityid}" data-three_cityid="${defLink.three_cityid}" data-address="${defLink.address}" data-x="${defLink.x}" data-y="${defLink.y}" data-link_man="${defLink.link_man}" data-link_moblie="${defLink.link_moblie}" data-link_phone="${defLink.link_phone}" data-email="${defLink.email}" >${option_n}({yun:}t key='member_com_00528'{/yun}）</option>`;
 
                         $.each(data.addressList, function (k, v) {
 

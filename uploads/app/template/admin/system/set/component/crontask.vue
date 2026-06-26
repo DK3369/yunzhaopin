@@ -3,7 +3,7 @@
         <div class="moduleSeachs">
             <div class="moduleSeachleft"></div>
             <div class="moduleSeachButn">
-                <el-button type="primary" icon="el-icon-document-add" size="mini" @click="addcron">添加任务</el-button>
+                <el-button type="primary" icon="el-icon-document-add" size="mini" @click="addcron">{yun:}t key='admin_00898'{/yun}</el-button>
             </div>
         </div>
         <div class="moduleElTable" style="height: calc(100% - 81px);">
@@ -25,16 +25,16 @@
                 </el-table-column>
                 <el-table-column prop="waibu" label="外部调用" width="100">
                     <template slot-scope="scope">
-                        <el-link type="primary" @click="copyurl(scope.row.src)">调用</el-link>
+                        <el-link type="primary" @click="copyurl(scope.row.src)">{yun:}t key='admin_system_00275'{/yun}</el-link>
                     </template>
                 </el-table-column>
                 <el-table-column fixed="right" label="操作" width="200">
                     <template slot-scope="scope">
                         <div class="cz_button">
                             <el-button size="mini"
-                                @click="exec_ctl(scope.row.display, scope.row.id)">执行</el-button>
-                            <el-button size="mini" @click="addcron(scope.row.id)">修改</el-button>
-                            <el-button size="mini" type="danger" @click="delrow(scope.row)">删除</el-button>
+                                @click="exec_ctl(scope.row.display, scope.row.id)">{yun:}t key='admin_system_00274'{/yun}</el-button>
+                            <el-button size="mini" @click="addcron(scope.row.id)">{yun:}t key='wap_js_00073'{/yun}</el-button>
+                            <el-button size="mini" type="danger" @click="delrow(scope.row)">{yun:}t key='common.delete'{/yun}</el-button>
                         </div>
                     </template>
                 </el-table-column>
@@ -49,24 +49,24 @@
             </div>
         </div>
         <div class="modluDrawer">
-            <el-dialog title="信息" :visible.sync="drawer" :with-header="true" :modal-append-to-body="false"
+            <el-dialog title="{yun:}t key='admin_00308'{/yun}" :visible.sync="drawer" :with-header="true" :modal-append-to-body="false"
                 :show-close="true" width="300px">
                 <div style="overflow: hidden; position: relative; padding-bottom: 15px;">
-                    <span>该任务尚未启用！</span>
+                    <span>{yun:}t key='admin_00899'{/yun}</span>
                 </div>
                 
             </el-dialog>
         </div>
         <div class="modluDrawer">
-            <el-dialog title="调用地址" :visible.sync="dy_drawer" :with-header="true" :modal-append-to-body="false"
+            <el-dialog title="{yun:}t key='admin_00903'{/yun}" :visible.sync="dy_drawer" :with-header="true" :modal-append-to-body="false"
                 :show-close="true" width="30%">
-                <span>复制(CTRL+C)以下內容并添加到服务器配置中</span>
+                <span>{yun:}t key='admin_00900'{/yun}</span>
                 <div style="margin:20px 5px; overflow: hidden; position: relative; padding-bottom: 20px;">
                     <el-input v-model="curr_url" size="small">
                     </el-input>
                 </div>
             </el-dialog>
-			<el-drawer title="计划任务" :visible.sync="cron_drawer" :modal-append-to-body="false" :show-close="true" :with-header="true" size="45%">
+			<el-drawer title="{yun:}t key='admin_system_00273'{/yun}" :visible.sync="cron_drawer" :modal-append-to-body="false" :show-close="true" :with-header="true" size="45%">
 				<cronadd :id_v="id" @child-event="getList"></cronadd>
 			</el-drawer>
         </div>
@@ -76,7 +76,7 @@
 module.exports = {
     data: function () {
         return {
-            emptytext: '暂无数据',
+            emptytext: "{yun:}t key='wap_js_00113'{/yun}",
             loading: false,
             currentPage: 1,
             prevPage: 0,
@@ -147,7 +147,7 @@ module.exports = {
                 pageSize: that.perPage
             }
             that.loading = true;
-            that.emptytext = "数据加载中";
+            that.emptytext = "{yun:}t key='admin_user_weipin_00026'{/yun}";
             httpPost('m=system&c=set_cron&a=index', params).then(function (result) {
                 var res = result.data
                 if (res.error == 0) {
@@ -161,7 +161,7 @@ module.exports = {
                     }
                     that.loading = false;
                     if (that.tableData.length === 0){
-                        that.emptytext = "暂无数据";
+                        that.emptytext = "{yun:}t key='wap_js_00113'{/yun}";
                     }
                 }
             }).catch(function (e) {
@@ -178,7 +178,7 @@ module.exports = {
             };
             httpPost('m=system&c=set_cron&a=del', params).then(function (response) {
                 if (response.data.error == 0) {
-                    message.success('操作成功', that.getList());
+                    message.success("{yun:}t key='wap_user_00264'{/yun}", that.getList());
                 } else {
                     message.error(response.data.msg);
                 }

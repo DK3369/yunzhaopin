@@ -7,41 +7,41 @@
 class log_model extends model{
 
     public $opera = array(
-        1 => '职位',
-        2 => '简历',
-        3 => '下载简历', // 下载简历（下载，删除）
-        4 => '邀请面试', // 邀请面试（邀请，删除）
-        5 => '收藏/关注', // 收藏/关注（收藏/关注，删除/取消）
+        1 => 'wap_user_00154',
+        2 => 'wap_com_00428',
+        3 => 'wap_00451', // 下载简历（下载，删除）
+        4 => 'resume_00029', // 邀请面试（邀请，删除）
+        5 => 'wap_user_00193', // 收藏/关注（收藏/关注，删除/取消）
         6 => '申请/报名/委托', // 申请/报名/委托
-        7 => '基本信息',
-        8 => '修改密码',
-        9 => '兼职',
-        10 => '猎头',
+        7 => 'wap_00456',
+        8 => 'member_user_00226',
+        9 => 'wap_user_00220',
+        10 => 'wap_com_00346',
 
-        11 => '修改账号',
-        12 => '账号认证', // 账号认证（解绑）
-        13 => '账号认证', // 账号认证（老版本）
+        11 => 'admin_user_00152',
+        12 => 'member_com_00093', // 账号认证（解绑）
+        13 => 'member_com_00093', // 账号认证（老版本）
         14 => '招聘会/专题',
-        15 => '地图设置',
-        16 => '图片操作', // 图片（横幅，环境，作品）
-        17 => '积分兑换',
-        18 => '系统信息',
-        19 => '问答',
-        20 => '讲师',
+        15 => 'admin_user_00153',
+        16 => 'common_06523', // 图片（横幅，环境，作品）
+        17 => 'common_06524',
+        18 => 'admin_01056',
+        19 => 'wap_user_00223',
+        20 => 'admin_user_00020',
 
-        21 => '课程',
-        22 => '新闻',
-        23 => '举报',
-        24 => '优惠券',
-        25 => '悬赏推荐',
-        26 => '浏览/屏蔽',
-        27 => '子账号增删 ',
-        28 => '搜索器',
-        29 => '项目任务',
-        30 => '购买聊天',
+        21 => 'common_02031',
+        22 => 'admin_tool_00428',
+        23 => 'wap_com_00350',
+        24 => 'wap_com_00356',
+        25 => 'admin_user_00154',
+        26 => 'admin_user_00151',
+        27 => 'common_01597',
+        28 => 'default_00252',
+        29 => 'common_06525',
+        30 => 'common_01845',
 
-        31 => '注销账号申请',
-        32 => '账号登录' // 账号登录（新）
+        31 => 'common_06526',
+        32 => 'default_00062' // 账号登录（新）
     );
 
     /**
@@ -223,12 +223,12 @@ class log_model extends model{
                 $return['id']   =   $this->delete_all('member_log', $whereData, '');
             }
 
-            $return['msg']      =   '会员日志';
+            $return['msg']      =   yun_at('common_01674');
             $return['errcode']  =   $return['id'] ? '9' : '8';
-            $return['msg']      =   $return['id'] ? $return['msg'] . '删除成功！' : $return['msg'] . '删除失败！';
+            $return['msg']      =   $return['id'] ? $return['msg'] . 'admin_user_00187' : $return['msg'] . 'admin_user_00186';
         } else {
 
-            $return['msg']      =   '请选择您要删除的会员日志！';
+            $return['msg']      =   yun_at('common_00740');
             $return['errcode']  =   8;
         }
 
@@ -289,7 +289,7 @@ class log_model extends model{
             if (isset($data['continue']) && $data['continue'] == 1) {
                 include_once('integral.model.php');
                 $integralM  =   new integral_model($this->db, $this->def);
-                $integralM->invtalCheck($addData['uid'], $addData['usertype'], 'integral_login', '会员登录', 22);
+                $integralM->invtalCheck($addData['uid'], $addData['usertype'], 'integral_login', 'wap_00555', 22);
             }
 
             return  $this->insert_into('login_log', $addData);
@@ -366,37 +366,37 @@ class log_model extends model{
 
 	                if ($data['type'] == 'weixin'){
 
-	                    $content    =   'app内微信登录成功';
+	                    $content    =   'common_00959';
 	                }elseif ($data['type'] == 'qq'){
 
-	                    $content    =   'app内QQ登录成功';
+	                    $content    =   'common_00958';
 	                }elseif ($data['type'] == 'qq'){
 
-	                    $content    =   'app内新浪微博登录成功';
+	                    $content    =   'common_00771';
 	                }
 	            }else{
 
-	                $content        =   'app登录成功';
+	                $content        =   'common_06519';
 	            }
 	        }elseif ($data['provider'] == 'weixin'){
 
-	            $content    =   '微信小程序登录成功';
+	            $content    =   'common_01123';
 	        }elseif ($data['provider'] == 'baidu'){
 
-	            $content    =   '百度小程序登录成功';
+	            $content    =   'common_01135';
 	        }elseif ($data['provider'] == 'sinaweibo'){
 
-	            $content    =   '新浪微博登录成功';
+	            $content    =   'common_06520';
 	        }elseif ($data['provider'] == 'toutiao'){
 
-	            $content    =   '抖音小程序登录成功';
+	            $content    =   'common_01127';
 	        }
 	    }elseif ((isset($data['source']) && $data['source'] == 2) || isset($data['wap'])){
 
-	        $content    =   'WAP登录成功';
+	        $content    =   'common_06521';
 	    }else{
 
-	        $content    =   'PC登录成功';
+	        $content    =   'common_06522';
 	    }
 	    return $content;
 	}
@@ -426,17 +426,17 @@ class log_model extends model{
 			
 			$return['id']				=	$this -> delete_all("login_log", array('id' => array('in',$delId)),"");
 			
-			$return['msg']				=	'会员登录日志(ID:'.pylode(',', $delId).')';
+			$return['msg']				=	yun_auto_t('会员登录日志(ID:').pylode(',', $delId).')';
 			$return['errcode']			=	$return['id'] ? '9' :'8';
-			$return['msg']				=	$return['id'] ? $return['msg'].'删除成功！' : $return['msg'].'删除失败！';
+			$return['msg']				=	$return['id'] ? $return['msg'].'admin_user_00187' : $return['msg'].'admin_user_00186';
 		}elseif($where){
 			$return['id']				=	$this -> delete_all("login_log", $where, "");
 			
-			$return['msg']				=	'会员登录日志';
+			$return['msg']				=	yun_at('common_06527');
 			$return['errcode']			=	$return['id'] ? '9' :'8';
-			$return['msg']				=	$return['id'] ? $return['msg'].'删除成功！' : $return['msg'].'删除失败！';
+			$return['msg']				=	$return['id'] ? $return['msg'].'admin_user_00187' : $return['msg'].'admin_user_00186';
 		}else{
-			$return['msg']				=	'请选择您要删除的会员登录日志！';
+			$return['msg']				=	yun_at('common_00596');
 			$return['errcode']			=	8;
 		}
 		return	$return; 
@@ -512,7 +512,7 @@ class log_model extends model{
 
                     $List[$k]['comname']  =  $val['name'];
                 }else if (isset($subUidToUid[$v['uid']]) && $subUidToUid[$v['uid']] == $val['uid']) {// 子账户登陆uid转主账户uid
-                    $List[$k]['comname']  =  $val['name'] . ' 企业(子账号)';
+                    $List[$k]['comname']  =  $val['name'] . 'common_01337';
                 }
             }
             foreach($gqinfo as $val){
@@ -678,13 +678,13 @@ class log_model extends model{
 
             if ($v['type'] == 1){
 
-                $List[$k]['type_n'] =   '普通职位';
+                $List[$k]['type_n'] =   yun_at('common_06528');
             } elseif ($v['type'] == 2){
 
-                $List[$k]['type_n'] =   '兼职';
+                $List[$k]['type_n'] =   yun_at('wap_user_00220');
             } elseif ($v['type'] == 3){
 
-                $List[$k]['type_n'] =   '高级职位';
+                $List[$k]['type_n'] =   yun_at('common_06529');
             }
 
             foreach ($jobList as $jk => $jv) {
@@ -722,9 +722,9 @@ class log_model extends model{
 
         $result             =   $this->delete_all('job_refresh_log', $where, '');
 
-        $return['msg']      =   '职位刷新日志';
+        $return['msg']      =   yun_at('common_06530');
         $return['errcode']  =   $result ? '9' : '8';
-        $return['msg']      =   $result ? $return['msg'] . '删除成功！' : $return['msg'] . '删除失败！';
+        $return['msg']      =   $result ? $return['msg'] . 'admin_user_00187' : $return['msg'] . 'admin_user_00186';
         return $return;
     }
 
@@ -852,9 +852,9 @@ class log_model extends model{
 
         $result             =   $this->delete_all('resume_refresh_log', $where, '');
 
-        $return['msg']      =   '简历刷新日志';
+        $return['msg']      =   yun_at('common_06531');
         $return['errcode']  =   $result ? '9' : '8';
-        $return['msg']      =   $result ? $return['msg'] . '删除成功！' : $return['msg'] . '删除失败！';
+        $return['msg']      =   $result ? $return['msg'] . 'admin_user_00187' : $return['msg'] . 'admin_user_00186';
         return $return;
     }
 }

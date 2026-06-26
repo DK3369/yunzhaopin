@@ -1,6 +1,6 @@
 <template>
     <div>
-        DIY模板
+        {yun:}t key='admin_00939'{/yun}
     </div>
 </template>
     

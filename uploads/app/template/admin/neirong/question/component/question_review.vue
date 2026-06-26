@@ -22,18 +22,18 @@
                 <el-table-column label="状态" width="100">
                     <template slot-scope="scope">
                         <div class="admin_state">
-                            <span v-if="scope.row.status == 1" class="admin_state1">已审核</span>
-                            <span v-else-if="scope.row.status == 2" class="admin_state2">未通过</span>
-                            <span v-else class="admin_state5">未审核</span>
+                            <span v-if="scope.row.status == 1" class="admin_state1">{yun:}t key='wap_user_00165'{/yun}</span>
+                            <span v-else-if="scope.row.status == 2" class="admin_state2">{yun:}t key='wap_user_00167'{/yun}</span>
+                            <span v-else class="admin_state5">{yun:}t key='wap_user_00166'{/yun}</span>
                         </div>
                     </template>
                 </el-table-column>
                 <el-table-column fixed="right" label="操作" width="200" align="center">
                     <template slot-scope="scope">
                         <div class="cz_button">
-                            <el-button size="small " plain @click="openAudit(scope.row)">审核</el-button>
-                            <el-button size="small " plain @click="openEdit(scope.row)">修改</el-button>
-                            <el-button type="danger" size="small " @click="del(scope.$index)">删除</el-button>
+                            <el-button size="small " plain @click="openAudit(scope.row)">{yun:}t key='member_user_00152'{/yun}</el-button>
+                            <el-button size="small " plain @click="openEdit(scope.row)">{yun:}t key='wap_js_00073'{/yun}</el-button>
+                            <el-button type="danger" size="small " @click="del(scope.$index)">{yun:}t key='common.delete'{/yun}</el-button>
                         </div>
                     </template>
                 </el-table-column>
@@ -41,10 +41,10 @@
         </div>
         <div class="modulePaging">
             <div>
-                <el-checkbox v-model="checkedAll" :indeterminate="checkedAllIndeterminate" @change="checkAll">全选
+                <el-checkbox v-model="checkedAll" :indeterminate="checkedAllIndeterminate" @change="checkAll">{yun:}t key='wap_js_00074'{/yun}
                 </el-checkbox>
-                <el-button @click="batch('del')" size="mini">批量删除</el-button>
-                <el-button @click="batch('audit')" size="mini">批量审核</el-button>
+                <el-button @click="batch('del')" size="mini">{yun:}t key='member_com_00055'{/yun}</el-button>
+                <el-button @click="batch('audit')" size="mini">{yun:}t key='admin_user_weipin_00037'{/yun}</el-button>
             </div>
             <div class="modulePagNum">
                 <!--<el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"-->
@@ -55,20 +55,20 @@
         </div>
 
         <div class="modluDrawer">
-            <el-dialog title="评论回复审核" width="500px" :visible.sync="dialogAudit" append-to-body>
+            <el-dialog title="{yun:}t key='admin_00234'{/yun}" width="500px" :visible.sync="dialogAudit" append-to-body>
                 <div class="toolClasDia fenpeizhand">
                     <div class="toolClasList">
                         <div class="toolClasTite">
-                            <span>审核：</span>
+                            <span>{yun:}t key='admin_00229'{/yun}</span>
                         </div>
                         <div class="toolClasCont">
-                            <el-radio v-model="ruleFormAudit.status" label="1">正常</el-radio>
-                            <el-radio v-model="ruleFormAudit.status" label="2">未通过</el-radio>
+                            <el-radio v-model="ruleFormAudit.status" label="1">{yun:}t key='admin_user_00149'{/yun}</el-radio>
+                            <el-radio v-model="ruleFormAudit.status" label="2">{yun:}t key='wap_user_00167'{/yun}</el-radio>
                         </div>
                     </div>
                     <div class="toolClasList">
                         <div class="toolClasTite">
-                            <span>说明：</span>
+                            <span>{yun:}t key='admin_00779'{/yun}</span>
                         </div>
                         <div class="toolClasCont">
                             <el-input
@@ -81,16 +81,16 @@
                     </div>
                 </div>
                 <span slot="footer" class="dialog-footer">
-                    <el-button @click="dialogAudit = false">取 消</el-button>
-                    <el-button type="primary" @click="saveAudit" :disabled="saveLoading">确 定</el-button>
+                    <el-button @click="dialogAudit = false">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
+                    <el-button type="primary" @click="saveAudit" :disabled="saveLoading">{yun:}t key='wap_com_00019'{/yun}</el-button>
                 </span>
             </el-dialog>
 
-            <el-dialog title="修改评论" width="500px" :visible.sync="dialogEdit" append-to-body>
+            <el-dialog title="{yun:}t key='admin_00792'{/yun}" width="500px" :visible.sync="dialogEdit" append-to-body>
                 <div class="toolClasDia fenpeizhand">
                     <div class="toolClasList">
                         <div class="toolClasTite">
-                            <span>评论内容：</span>
+                            <span>{yun:}t key='admin_00235'{/yun}</span>
                         </div>
                         <div class="toolClasCont">
                             <el-input
@@ -104,7 +104,7 @@
 
                 </div>
                 <div slot="footer" class="dialog-footer">
-                    <el-button type="primary" @click="saveEdit" :disabled="saveLoading">确认</el-button>
+                    <el-button type="primary" @click="saveEdit" :disabled="saveLoading">{yun:}t key='wap_js_00094'{/yun}</el-button>
                 </div>
             </el-dialog>
         </div>
@@ -120,9 +120,9 @@
         },
         data: function () {
             return {
-                emptytext: '暂无数据',
+                emptytext: "{yun:}t key='wap_js_00113'{/yun}",
                 loading: false,
-                // 列表
+                // list
                 page: 1,
                 limit: 0,
                 list: [],
@@ -138,11 +138,11 @@
 
                 saveLoading: false,
 
-                // 审核
+                // Audit
                 dialogAudit: false,
                 ruleFormAudit: {},
 
-                // 修改
+                // Update
                 dialogEdit: false,
                 ruleForm: {},
             }
@@ -176,7 +176,7 @@
                     params.status = that.status;
                 }
                 that.loading = true;
-                that.emptytext = "数据加载中";
+                that.emptytext = "{yun:}t key='admin_user_weipin_00026'{/yun}";
                 httpPost('m=neirong&c=question&a=getcomment', params).then(function (response) {
                     let res = response.data,
                         data = res.data;
@@ -184,7 +184,7 @@
                     that.list = data.list;
                     that.loading = false;
                     if (that.list.length === 0){
-                        that.emptytext = "暂无数据";
+                        that.emptytext = "{yun:}t key='wap_js_00113'{/yun}";
                     }
                     // that.total = parseInt(data.total);
                     // that.pageSizes = data.page_sizes;
@@ -216,9 +216,9 @@
             batch(type) {
                 let msg = '';
                 if (type == 'del') {
-                    msg = '请选择要删除的数据';
+                    msg = "{yun:}t key='admin_user_weipin_00005'{/yun}";
                 } else if (type == 'audit') {
-                    msg = '请选择要操作的数据项';
+                    msg = "{yun:}t key='admin_user_weipin_00001'{/yun}";
                 }
                 if (this.multipleSelection.length == 0) {
                     message.error(msg);
@@ -248,12 +248,12 @@
                     params = {},
                     msg = '';
 
-                if (typeof idx == 'undefined') { // 批量删除
+                if (typeof idx == 'undefined") { // {yun:}t key='member_com_00055'{/yun}
                     params.del = this.idArr;
-                    msg = '你确定要删除选中项吗？';
-                } else {// 单个删除
+                    msg = "你确定要删除选中项吗？";
+                } else {// {yun:}t key='common_01711'{/yun}
                     params.id = that.list[idx].id;
-                    msg = '你确定要删除当前项吗？';
+                    msg = "你确定要删除当前项吗？';
                 }
 
                 delConfirm(this, params, function (params) {
@@ -284,7 +284,7 @@
                     params = that.ruleFormAudit;
 
                 if (typeof params.status == 'undefined' || params.status === '') {
-                    message.warning('请选择审核状态');
+                    message.warning("{yun:}t key='admin_user_weipin_00015'{/yun}");
                     return false;
                 }
 

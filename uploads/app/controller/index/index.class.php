@@ -151,7 +151,7 @@ class index_controller extends common{
 
 		if($this->config["sy_web_site"]!="1"){
 
-			$this->ACT_msg($_SERVER['HTTP_REFERER'], $msg = "暂未开启多站点模式！");
+			$this->ACT_msg($_SERVER['HTTP_REFERER'], $msg = 'wap_00506');
 
 		}
 		
@@ -273,7 +273,7 @@ class index_controller extends common{
 
 		}else{
 
-			$this->ACT_msg($this->config['sy_weburl'],"请求页面不存在！");
+			$this->ACT_msg($this->config['sy_weburl'],yun_at('index_00001'));
 		}
 	}
 

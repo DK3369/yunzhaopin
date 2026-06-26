@@ -4,43 +4,43 @@
             <table class="tableVue">
                 <thead>
                     <tr align="left">
-                        <th width="260">名称</th>
-                        <th width="320">状态</th>
-                        <th>说明</th>
+                        <th width="260">{yun:}t key='member_com_00021'{/yun}</th>
+                        <th width="320">{yun:}t key='member_user_00181'{/yun}</th>
+                        <th>{yun:}t key='member_com_00207'{/yun}</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td>
-                            <div class="TableTite">发布简历</div>
+                            <div class="TableTite">{yun:}t key='common.publish_resume'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input type="number" placeholder="请输入内容" v-model="list.integral_add_resume" onKeyUp="this.value=this.value.replace(/[^0-9.]/g,'')">
-                                    <span slot="suffix" class="slotspan">个积分</span>
+                                <el-input type="number" placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="list.integral_add_resume" onKeyUp="this.value=this.value.replace(/[^0-9.]/g,'')">
+                                    <span slot="suffix" class="slotspan">{yun:}t key='admin_00891'{/yun}</span>
                                 </el-input>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>发布简历</span>
+                                <span>{yun:}t key='common.publish_resume'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">上传身份验证</div>
+                            <div class="TableTite">{yun:}t key='wap_user_00106'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input type="number" placeholder="请输入内容" v-model="list.integral_identity" onKeyUp="this.value=this.value.replace(/[^0-9.]/g,'')">
-                                    <span slot="suffix" class="slotspan">个积分</span>
+                                <el-input type="number" placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="list.integral_identity" onKeyUp="this.value=this.value.replace(/[^0-9.]/g,'')">
+                                    <span slot="suffix" class="slotspan">{yun:}t key='admin_00891'{/yun}</span>
                                 </el-input>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>上传身份验证</span>
+                                <span>{yun:}t key='wap_user_00106'{/yun}</span>
                             </div>
                         </td>
                     </tr>
@@ -49,7 +49,7 @@
             </table>
         </div>
         <div class="setBasicButn" style="border: none;">
-            <el-button type="primary" size="medium" @click="save" :disabled="saveLoading">提交</el-button>
+            <el-button type="primary" size="medium" @click="save" :disabled="saveLoading">{yun:}t key='common.submit'{/yun}</el-button>
         </div>
     </div>
 </template>
@@ -80,7 +80,7 @@ module.exports = {
             httpPost(url, ruleForm).then(function (response) {
                 var res = response.data;
                 if (res.error == 0) {
-                    message.success('操作成功');
+                    message.success("{yun:}t key='wap_user_00264'{/yun}");
                     _this.$emit('get-list', true)
                 } else {
                     message.error(res.msg);

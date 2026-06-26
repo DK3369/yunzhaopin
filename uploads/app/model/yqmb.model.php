@@ -120,7 +120,7 @@ class yqmb_model extends model
                     if (empty($whereData) && $mbNum >= $this->config['com_yqmb_num']) {
 
                         $return['error']    =   4;
-                        $return['msg']      =   '最多只能设置'.$this->config['com_yqmb_num'].'个面试模板';
+                        $return['msg']      =   yun_at('common_06678').$this->config['com_yqmb_num'].'member_com_00683';
 
                     } else {
 
@@ -128,25 +128,25 @@ class yqmb_model extends model
 
                         if (empty($setData['linkman'])) {
 
-                            $return['msg']  =   '联系人不能为空！';
+                            $return['msg']  =   yun_at('member_com_00677');
                         } elseif (empty($intertime)) {
 
-                            $return['msg']  =   '面试时间不能为空！';
+                            $return['msg']  =   yun_at('member_com_00681');
                         } elseif ($intertime < time()) {
 
-                            $return['msg']  =   '面试时间不能小于当前时间！';
+                            $return['msg']  =   yun_at('common_00752');
                         } elseif (empty($setData['linktel'])) {
 
-                            $return['msg']  =   '联系方式不能为空！';
+                            $return['msg']  =   yun_at('common_06291');
                         } elseif (!CheckMobile($setData['linktel']) && !CheckTell($setData['linktel'])) {
 
-                            $return['msg']  =   '手机格式错误';
+                            $return['msg']  =   yun_at('common_06679');
                         } elseif (empty($setData['address'])) {
 
-                            $return['msg']  =   '面试地址不能为空！';
+                            $return['msg']  =   yun_at('member_com_00680');
                         } else {
 
-                            $setData['name']=   $setData['name'] ? $setData['name'] : $setData['linkman'] . '邀请面试模板';
+                            $setData['name']=   $setData['name'] ? $setData['name'] : $setData['linkman'] . 'admin_00709';
 
                             $dataV  =   array(
                                 'uid'       =>  $com['uid'],
@@ -165,36 +165,36 @@ class yqmb_model extends model
                             if (!empty($whereData)) {
 
                                 $nid            =   $this->update_once('yqmb', $dataV, $whereData);
-                                $return['msg']  =   '面试模板更新';
+                                $return['msg']  =   yun_at('common_06680');
                                 $id             =   $whereData['id'];
                             } else {
                                 $nid            =   $this->insert_into('yqmb', $dataV);
-                                $return['msg']  =   '面试模板添加';
+                                $return['msg']  =   yun_at('common_06681');
                                 $id             =   $nid;
                             }
 
                             if ($nid) {
                                 $return['error']=   1;
-                                $return['msg']  .=  '成功(ID:' . $id . ')';
+                                $return['msg']  .=  'common_01499' . $id . ')';
                             } else {
                                 $return['error']=   2;
-                                $return['msg']  .=  '失败';
+                                $return['msg']  .=  'admin_tool_00501';
                             }
                         }
                     }
                 } else {
                     $return['error']            =   2;
-                    $return['msg']              =   '数据异常，请重试';
+                    $return['msg']              =   yun_at('common_06682');
                 }
             } else {
                 //缺少参数uid
                 $return['error']    =   2;
-                $return['msg']      =   '数据异常，请重试';
+                $return['msg']      =   yun_at('common_06682');
             }
         } else {
 
             $return['error']    =   2;
-            $return['msg']      =   '数据异常，请重试';
+            $return['msg']      =   yun_at('common_06682');
         }
         $return['errcode']      =   $nid ? '9' : '8';
 
@@ -235,7 +235,7 @@ class yqmb_model extends model
 
         $ids    =   @explode(',', trim($id));
 
-        $return =   array('msg' => '非法操作！', 'errcode' => 8);
+        $return =   array('msg' => yun_at('model_00001'), 'errcode' => 8);
 
         if (!empty($id)) {
 
@@ -271,7 +271,7 @@ class yqmb_model extends model
 
                             if ($upData['statusbody']) {
 
-                                $statusInfo     .= '，原因：' . $upData['statusbody'];
+                                $statusInfo     .= 'wap_00800' . $upData['statusbody'];
                             }
 
                             $msg[$v['uid']][]   =   $statusInfo;
@@ -288,19 +288,19 @@ class yqmb_model extends model
                     $sysmsgM->addInfo(array('uid' => $uids, 'usertype' => 2, 'content' => $msg));
                 }
 
-                $return['msg']      =   '邀请面试模板(ID:' . $idstr . ')审核成功!';
+                $return['msg']      =   yun_auto_t('邀请面试模板(ID:') . $idstr . ')审核成功!';
 
                 $return['errcode']  =   9;
 
             } else {
 
-                $return['msg']      =   '审核模板(ID:' . $idstr . ')设置失败';
+                $return['msg']      =   yun_auto_t('审核模板(ID:') . $idstr . ')设置失败';
                 $return['errcode']  =   8;
             }
 
         } else {
 
-            $return['msg']      =   '请选择需要审核的模板！';
+            $return['msg']      =   yun_at('common_06683');
             $return['errcode']  =   8;
         }
 

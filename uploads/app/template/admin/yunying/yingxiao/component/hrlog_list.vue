@@ -3,14 +3,14 @@
         <div class="moduleElTabSeach">
             <div class="moduleElTabInpt">
                 <div class="moduleInptList">
-                    <el-input size="small" v-model="searchForm.keyword" placeholder="输入你要搜索的企业名称" clearable></el-input>
+                    <el-input size="small" v-model="searchForm.keyword" placeholder="{yun:}t key='admin_yunying_00157'{/yun}" clearable></el-input>
                 </div>
                 <div class="moduleInptList">
-                    <el-button type="primary" icon="el-icon-search" size="mini" @click="search">查询</el-button>
+                    <el-button type="primary" icon="el-icon-search" size="mini" @click="search">{yun:}t key='admin_user_weipin_00049'{/yun}</el-button>
                 </div>
             </div>
             <div class="moduleSeachButn">
-                <el-button type="primary" icon="el-icon-document-add" size="mini" @click="openSet">设置</el-button>
+                <el-button type="primary" icon="el-icon-document-add" size="mini" @click="openSet">{yun:}t key='wap_com_00307'{/yun}</el-button>
             </div>
         </div>
         <div class="moduleElTable" style="height: calc(100% - 109px)">
@@ -26,41 +26,41 @@
                 <el-table-column label="职位" width="180">
                     <template slot-scope="scope">
                         <div class="moduleProps">
-                            <span>发布职位数：{{ scope.row.job }}</span>
-                            <span>职位浏览人数：{{ scope.row.lookjob }}</span>
+                            <span>{yun:}t key='admin_01100'{/yun}</span>
+                            <span>{yun:}t key='admin_yunying_00151'{/yun}</span>
                         </div>
                     </template>
                 </el-table-column>
                 <el-table-column label="简历" width="160">
                     <template slot-scope="scope">
                         <div class="moduleProps">
-                            <span>查看简历数：{{ scope.row.lookresume }}</span>
-                            <span>收到简历数：{{ scope.row.sqjob }}</span>
-                            <span>邀请面试数：{{ scope.row.yq }}</span>
+                            <span>{yun:}t key='admin_yunying_00149'{/yun}</span>
+                            <span>{yun:}t key='admin_01101'{/yun}</span>
+                            <span>{yun:}t key='admin_01102'{/yun}</span>
                         </div>
                     </template>
                 </el-table-column>
                 <el-table-column label="登录" width="130">
                     <template slot-scope="scope">
                         <div class="moduleProps">
-                            <span>登录天数：{{ scope.row.login }}</span>
+                            <span>{yun:}t key='admin_01103'{/yun}</span>
                         </div>
                     </template>
                 </el-table-column>
                 <el-table-column label="深夜工作" min-width="220">
                     <template slot-scope="scope">
                         <div class="moduleProps">
-                            <span>深夜工作天数：{{ scope.row.nightwork }}</span>
-                            <span v-if="scope.row.lastwork">最晚工作时间：{{ scope.row.lastwork_n }}</span>
+                            <span>{yun:}t key='admin_yunying_00150'{/yun}</span>
+                            <span v-if="scope.row.lastwork">{yun:}t key='admin_yunying_00148'{/yun}</span>
                         </div>
                     </template>
                 </el-table-column>
                 <el-table-column fixed="right" label="操作" width="150">
                     <template slot-scope="scope">
                         <div class="moduleElTaCaoz">
-                            <el-button size="mini" @click="updateData(scope.row.id)">更新</el-button>
-                            <el-button size="mini" @click="openEdit(scope.row)">修改</el-button>
-                            <el-button size="mini" @click="openHb(scope.row)">海报</el-button>
+                            <el-button size="mini" @click="updateData(scope.row.id)">{yun:}t key='wap_00225'{/yun}</el-button>
+                            <el-button size="mini" @click="openEdit(scope.row)">{yun:}t key='wap_js_00073'{/yun}</el-button>
+                            <el-button size="mini" @click="openHb(scope.row)">{yun:}t key='member_com_00270'{/yun}</el-button>
                         </div>
                     </template>
                 </el-table-column>
@@ -77,12 +77,12 @@
         </div>
 
         <div class="modluDrawer">
-            <el-drawer title="年度报告数据" :visible.sync="drawerEdit" :direction="direction" :modal-append-to-body="false"
+            <el-drawer title="{yun:}t key='admin_01105'{/yun}" :visible.sync="drawerEdit" :direction="direction" :modal-append-to-body="false"
                 size="500px">
                 <div class="moduleSchools">
                     <div class="drawerModLis">
                         <div class="drawerModTite">
-                            <span>企业名称</span>
+                            <span>{yun:}t key='wap_com_00157'{/yun}</span>
                         </div>
                         <div class="drawerModInpt">
                             <el-input v-model="detail.com_name" :disabled="true" placeholder=""></el-input>
@@ -90,7 +90,7 @@
                     </div>
                     <div class="drawerModLis">
                         <div class="drawerModTite">
-                            <span>发布职位数</span>
+                            <span>{yun:}t key='admin_yunying_00165'{/yun}</span>
                         </div>
                         <div class="drawerModInpt">
                             <el-input v-model="ruleFormEdit.job" @input="inputIntNumber($event, 'ruleFormEdit', 'job')"
@@ -99,7 +99,7 @@
                     </div>
                     <div class="drawerModLis">
                         <div class="drawerModTite">
-                            <span>职位浏览人数</span>
+                            <span>{yun:}t key='admin_yunying_00164'{/yun}</span>
                         </div>
                         <div class="drawerModInpt">
                             <el-input v-model="ruleFormEdit.lookjob"
@@ -108,7 +108,7 @@
                     </div>
                     <div class="drawerModLis">
                         <div class="drawerModTite">
-                            <span>登录天数</span>
+                            <span>{yun:}t key='admin_01104'{/yun}</span>
                         </div>
                         <div class="drawerModInpt">
                             <el-input v-model="ruleFormEdit.login" @input="inputIntNumber($event, 'ruleFormEdit', 'login')"
@@ -117,7 +117,7 @@
                     </div>
                     <div class="drawerModLis">
                         <div class="drawerModTite">
-                            <span>深夜工作天数</span>
+                            <span>{yun:}t key='admin_yunying_00163'{/yun}</span>
                         </div>
                         <div class="drawerModInpt">
                             <el-input v-model="ruleFormEdit.nightwork"
@@ -126,7 +126,7 @@
                     </div>
                     <div class="drawerModLis">
                         <div class="drawerModTite">
-                            <span>邀请面试数</span>
+                            <span>{yun:}t key='member_com_00037'{/yun}</span>
                         </div>
                         <div class="drawerModInpt">
                             <el-input v-model="ruleFormEdit.yq" @input="inputIntNumber($event, 'ruleFormEdit', 'yq')"
@@ -135,7 +135,7 @@
                     </div>
                     <div class="drawerModLis">
                         <div class="drawerModTite">
-                            <span>收到简历数</span>
+                            <span>{yun:}t key='admin_yunying_00166'{/yun}</span>
                         </div>
                         <div class="drawerModInpt">
                             <el-input v-model="ruleFormEdit.sqjob" @input="inputIntNumber($event, 'ruleFormEdit', 'sqjob')"
@@ -144,29 +144,29 @@
                     </div>
                     <div class="drawerModLis">
                         <div class="drawerModTite">
-                            <span>最晚工作时间</span>
+                            <span>{yun:}t key='admin_yunying_00161'{/yun}</span>
                         </div>
                         <div class="drawerModInpt">
-                            <el-date-picker v-model="ruleFormEdit.lastwork" type="datetime" placeholder="选择日期">
+                            <el-date-picker v-model="ruleFormEdit.lastwork" type="datetime" placeholder="{yun:}t key='admin_00346'{/yun}">
                             </el-date-picker>
                         </div>
                     </div>
                     <div class="setBasicButn" style="border: none;">
-                        <el-button type="primary" size="medium" @click="saveEdit">提交</el-button>
+                        <el-button type="primary" size="medium" @click="saveEdit">{yun:}t key='common.submit'{/yun}</el-button>
                     </div>
                 </div>
             </el-drawer>
         </div>
         <div class="modluDrawer">
-            <el-drawer title="设置" :visible.sync="drawerSet" :direction="direction" :modal-append-to-body="false" size="45%">
+            <el-drawer title="{yun:}t key='wap_com_00307'{/yun}" :visible.sync="drawerSet" :direction="direction" :modal-append-to-body="false" size="45%">
                 <div class="moduleSchools">
                     <div class="drawerModTishi">
-                        <p><b>温馨提示：</b><span>开关开启后才能展示, 您也可以自定义添加海报。</span></p>
-                        <p><b>海报参数：</b><span>海报大小（1080 * 1920）；二维码区域：高度380</span></p>
+                        <p><b>{yun:}t key='member_user_00449'{/yun}</b><span>{yun:}t key='admin_yunying_00153'{/yun}</span></p>
+                        <p><b>{yun:}t key='admin_01065'{/yun}</b><span>{yun:}t key='admin_yunying_00152'{/yun}</span></p>
                     </div>
                     <div class="drawerModLis">
                         <div class="drawerModTite">
-                            <span>是否开启</span>
+                            <span>{yun:}t key='admin_system_00332'{/yun}</span>
                         </div>
                         <div class="drawerModInpt">
                             <el-switch v-model="ruleFormSet.sy_yearreport_isopen" active-color="#13ce66"
@@ -176,20 +176,20 @@
                     </div>
                     <div class="drawerModLis">
                         <div class="drawerModTite">
-                            <span>企业二维码形式</span>
+                            <span>{yun:}t key='admin_yunying_00160'{/yun}</span>
                         </div>
                         <div class="drawerModInpt">
-                            <el-radio v-model="ruleFormSet.sy_yearreport_ewmtype" label="wap">默认</el-radio>
-                            <el-radio v-model="ruleFormSet.sy_yearreport_ewmtype" label="weixin">场景码（公众号图文）</el-radio>
+                            <el-radio v-model="ruleFormSet.sy_yearreport_ewmtype" label="wap">{yun:}t key='wap_js_00098'{/yun}</el-radio>
+                            <el-radio v-model="ruleFormSet.sy_yearreport_ewmtype" label="weixin">{yun:}t key='admin_yunying_00158'{/yun}</el-radio>
                         </div>
                         <div class="wenzirushi">
-                            <el-alert title="默认：扫码打开WAP链接 场景码" type="info" show-icon :closable="false"></el-alert>
-                            <el-alert title="公众号图文 ：关注公众号自动回复图文 场景码" type="info" show-icon :closable="false"></el-alert>
+                            <el-alert title="{yun:}t key='admin_yunying_00156'{/yun}" type="info" show-icon :closable="false"></el-alert>
+                            <el-alert title="{yun:}t key='admin_yunying_00154'{/yun}" type="info" show-icon :closable="false"></el-alert>
                         </div>
                     </div>
                     <div class="drawerModLis">
                         <div class="drawerModTite">
-                            <span>海报背景图片</span>
+                            <span>{yun:}t key='admin_yunying_00162'{/yun}</span>
                         </div>
                         <div class="drawerModInpt">
                             <el-upload class="avatar-uploader" list-type="picture" :accept="pic_accept" action="" :auto-upload="false"
@@ -200,12 +200,12 @@
                             </el-upload>
                         </div>
                         <div class="wenzirushi">
-                            <el-alert title="说明：海报的尺寸为1080*1920" type="info" show-icon :closable="false"></el-alert>
+                            <el-alert title="{yun:}t key='admin_yunying_00143'{/yun}" type="info" show-icon :closable="false"></el-alert>
                         </div>
                     </div>
                     <div class="drawerModLis">
                         <div class="drawerModTite">
-                            <span>会员中心提示图片</span>
+                            <span>{yun:}t key='admin_yunying_00159'{/yun}</span>
                         </div>
                         <div class="drawerModInpt">
                             <el-upload class="avatar-uploader" list-type="picture" :accept="pic_accept" action="" :auto-upload="false"
@@ -216,22 +216,22 @@
                             </el-upload>
                         </div>
                         <div class="wenzirushi">
-                            <el-alert title="说明：提示图片的尺寸为900*1100" type="info" show-icon :closable="false"></el-alert>
+                            <el-alert title="{yun:}t key='admin_yunying_00155'{/yun}" type="info" show-icon :closable="false"></el-alert>
                         </div>
                     </div>
                     <div class="setBasicButn" style="border: none;">
-                        <el-button type="primary" size="medium" @click="saveSet" :disabled="saveLoading">提交</el-button>
+                        <el-button type="primary" size="medium" @click="saveSet" :disabled="saveLoading">{yun:}t key='common.submit'{/yun}</el-button>
                     </div>
                 </div>
             </el-drawer>
 
-            <el-dialog title="海报" class="abow_dialog" :visible.sync="dialogHb" :with-header="true" :modal-append-to-body="false"
+            <el-dialog title="{yun:}t key='member_com_00270'{/yun}" class="abow_dialog" :visible.sync="dialogHb" :with-header="true" :modal-append-to-body="false"
                 :show-close="true" width="400px">
                 <div class="center">
                     <img :src="hbUrl" width="360" height="640">
                 </div>
                 <div class="center">
-                    <el-button type="primary" size="mini" @click="downloadHb">下载海报</el-button>
+                    <el-button type="primary" size="mini" @click="downloadHb">{yun:}t key='common_02219'{/yun}</el-button>
                 </div>
             </el-dialog>
         </div>
@@ -244,13 +244,13 @@ module.exports = {
         return {
             pic_accept: localStorage.getItem("pic_accept"),
             loading: false,
-            dataText: '数据加载中',
+            dataText: "{yun:}t key='admin_user_weipin_00026'{/yun}",
             direction: 'rtl',
 
             // 搜索筛选项
             searchForm: {},
 
-            // 列表
+            // list
             page: 1,
             limit: 0,
             list: [],
@@ -261,15 +261,15 @@ module.exports = {
 
             detail: {},
 
-            // 设置
+            // set up
             drawerSet: false,
             ruleFormSet: {},
 
-            // 修改
+            // Update
             drawerEdit: false,
             ruleFormEdit: {},
 
-            // 海报
+            // poster
             dialogHb: false,
             hbUid: '',
             hbUrl: '',
@@ -333,7 +333,7 @@ module.exports = {
                 }
                 that.loading = false;
                 if (that.list.length === 0) {
-                    that.dataText = "暂无数据";
+                    that.dataText = "{yun:}t key='wap_js_00113'{/yun}";
                 }
             })
         },
@@ -483,7 +483,7 @@ module.exports = {
         downloadHb() {
             var a = document.createElement("a");
             a.href = this.hbUrl;
-            a.download = "年度报告";
+            a.download = "{yun:}t key='admin_yunying_00167'{/yun}";
             a.click();
         },
     },

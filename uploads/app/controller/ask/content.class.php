@@ -13,15 +13,15 @@ class content_controller extends ask_controller{
 		$show		=	$M -> getInfo($ID);
 		
 		if(empty($show)){
-		    $this->ACT_msg($this->config['sy_weburl'],"问题不存在或被删除！");
+		    $this->ACT_msg($this->config['sy_weburl'],yun_at('ask_00007'));
 		}else{
 		    // 管理员查看
 		    $look = isset($_GET['look']) && $_GET['look'] == 'admin' && !empty($_SESSION['auid']) ? 'admin' : '';
 		    if ($look != 'admin'){
 		        if ($show['state'] == 0) {
-		            $this->ACT_msg($_SERVER['HTTP_REFERER'], '问题审核中！');
+		            $this->ACT_msg($_SERVER['HTTP_REFERER'], yun_at('model_00075'));
 		        } elseif ($show['state'] == 2) {
-		            $this->ACT_msg($_SERVER['HTTP_REFERER'], '该问题未通过审核！');
+		            $this->ACT_msg($_SERVER['HTTP_REFERER'], yun_at('model_00076'));
 		        }
 		    }
 		}

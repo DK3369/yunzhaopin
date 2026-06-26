@@ -13,10 +13,10 @@
 					<div class="seek_det">  
 						{yun:}if  !$config.sy_askdir || $config.sy_seo_rewrite!='1'{/yun}<input name='m' type='hidden' value='ask'/>{yun:}/if{/yun}
 						<input name='c' type='hidden' value='search'/>
-						<input type="text" name='keyword' id="askkeyword" placeholder="可以在此输入问题关键词搜索，看看有没有和你提过相同的问题" class="txt" autocomplete="off"  onblur="if(this.value==''){this.value='可以在此输入问题关键词搜索，看看有没有和你提过相同的问题'}" onclick="if(this.value=='可以在此输入问题关键词搜索，看看有没有和你提过相同的问题'){this.value=''}" value="可以在此输入问题关键词搜索，看看有没有和你提过相同的问题"/>
+						<input type="text" name='keyword' id="askkeyword" placeholder="{yun:}t key='common_02209'{/yun}" class="txt" autocomplete="off"  onblur="if(this.value==''){this.value='{yun:}t key='common_02209'{/yun}'}" onclick="if(this.value=='可以在此输入问题关键词搜索，看看有没有和你提过相同的问题'){this.value=''}" value="{yun:}t key='common_02209'{/yun}"/>
 						<span class="icon"></span>
 					</div>
-					<div class="seek_sear"><input type="submit" class="btn"  value="搜一下"/></div>
+					<div class="seek_sear"><input type="submit" class="btn"  value="{yun:}t key='common_02200'{/yun}"/></div>
 				</div>
 				</form>
 				<div class="seek_menu">
@@ -45,7 +45,7 @@
 </div>
 <div class="content">
 <div class="ask_index_left">
-<div class="ask_index_left_tit"><span class="ask_index_left_tit_s">{yun:}t key='ask_00017'{/yun}</span><span class="ask_index_left_titr">已有<i class="ask_index_left_titr_n">{yun:}$answer{/yun}</i> {yun:}t key='ask_00014'{/yun}</span></div>
+<div class="ask_index_left_tit"><span class="ask_index_left_tit_s">{yun:}t key='ask_00017'{/yun}</span><span class="ask_index_left_titr">{yun:}t key='common_02204'{/yun}<i class="ask_index_left_titr_n">{yun:}$answer{/yun}</i> {yun:}t key='ask_00014'{/yun}</span></div>
 <div class="ask_index_leftbox">
 <ul class="ask_hotbox">
 {yun:}qlist is_recom=1   name=list ispage=1 t_len=30  limit=5 item=rlist{/yun}
@@ -64,7 +64,7 @@
 <div class="" name="answer" id="answer">
 <div class="ask_index_left_tit">
 <span class="ask_index_left_tit_s ask_index_left_tit_newask" id="last-question">{yun:}t key='wap_00156'{/yun}</span>
-<span class="ask_index_left_titr"><a href="{yun:}url m=ask yesnum=1{/yun}">有回答的问题</a> <i class="ask_tit_c">|</i> <a href="{yun:}url m=ask nonum=1{/yun}">零回答的问题</a></span></div>
+<span class="ask_index_left_titr"><a href="{yun:}url m=ask yesnum=1{/yun}">{yun:}t key='common_02205'{/yun}</a> <i class="ask_tit_c">|</i> <a href="{yun:}url m=ask nonum=1{/yun}">{yun:}t key='common_02206'{/yun}</a></span></div>
 
 <div class="ask_index_leftbox">
 <ul class="ask_hotbox">
@@ -82,7 +82,7 @@
 					
 			
 				{yun:}if $total==0{/yun}
-				<div class="indexnoresult png">您还没有任何问题，抓紧提问吧！</div>
+				<div class="indexnoresult png">{yun:}t key='common_02202'{/yun}</div>
 				{yun:}else{/yun} 
 				<div class="pages">{yun:}$pagenav{/yun}</div> 
 				{yun:}/if{/yun}  
@@ -128,7 +128,7 @@
 
 
 <div class="ask_index_right_box">
-<div class="ask_index_ask_rtit"><span class="ask_index_ask_rtit_s">助人光荣榜</span></div>
+<div class="ask_index_ask_rtit"><span class="ask_index_ask_rtit_s">{yun:}t key='common_02207'{/yun}</span></div>
 <div style="padding-top:10px;">
 {yun:}foreach from=$hotuser item=hulist{/yun}
 				<div class="hot_userdet">
@@ -139,7 +139,7 @@
 							</div>
 							<div class="user_name">
 								<p><a href="{yun:}url m=ask c=friend a=myquestion uid='`$hulist.uid`'{/yun}" target="_blank">{yun:}$hulist.nickname{/yun}</a></p>
-								<span>{yun:}t key='common_02128'{/yun}：<font>{yun:}$hulist.num{/yun}</font> 被赞同总数：<font>{yun:}$hulist.support{/yun}</font></span>
+								<span>{yun:}t key='common_02128'{/yun}：<font>{yun:}$hulist.num{/yun}</font> {yun:}t key='common_02208'{/yun}<font>{yun:}$hulist.support{/yun}</font></span>
                      
 							</div>
 						</div>

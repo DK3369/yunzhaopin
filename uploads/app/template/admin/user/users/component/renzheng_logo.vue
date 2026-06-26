@@ -4,21 +4,21 @@
         <div class="moduleElSearchInf">
             <div class="moduleElTabInpt" style="flex-wrap: wrap;">
                 <div class="moduleInptList">
-                    <el-input placeholder="输入你要搜索的关键字" @keyup.enter.native="handleSearch" v-model="searchForm.keyword" class="input-with-select" clearable>
-                        <el-select v-model="searchForm.type" slot="prepend" placeholder="请选择">
+                    <el-input placeholder="{yun:}t key='admin_user_weipin_00003'{/yun}" @keyup.enter.native="handleSearch" v-model="searchForm.keyword" class="input-with-select" clearable>
+                        <el-select v-model="searchForm.type" slot="prepend" placeholder="{yun:}t key='wap_user_00100'{/yun}">
                             <el-option label="个人姓名" value="1"></el-option>
                             <el-option label="用户ID" value="2"></el-option>
                         </el-select>
                     </el-input>
                 </div>
                 <div class="tableSeachInpt tableSeachInptsmall">
-                    <el-select v-model="searchForm.status" size="small" slot="prepend" placeholder="审核状态" clearable @change="handleSearch">
+                    <el-select v-model="searchForm.status" size="small" slot="prepend" placeholder="{yun:}t key='wap_com_00406'{/yun}" clearable @change="handleSearch">
                         <el-option label="已审核" value="0"></el-option>
                         <el-option label="未审核" value="1"></el-option>
                     </el-select>
                 </div>
                 <div class="tableSeachInpt">
-                    <el-button type="primary" icon="el-icon-search" size="mini" @click="handleSearch">查询</el-button>
+                    <el-button type="primary" icon="el-icon-search" size="mini" @click="handleSearch">{yun:}t key='admin_user_weipin_00049'{/yun}</el-button>
                 </div>
             </div>
         </div>
@@ -53,9 +53,9 @@
                 <el-table-column prop="photo_status" label="状态" width="100">
                     <template slot-scope="scope">
                         <div class="admin_state">
-                            <span v-if="scope.row.photo_status == 0" class="admin_state1">已审核</span>
-                            <span v-else-if="scope.row.photo_status == 1" class="admin_state4">未审核</span>
-                            <span v-else-if="scope.row.photo_status == 2" class="admin_state2">未通过</span>
+                            <span v-if="scope.row.photo_status == 0" class="admin_state1">{yun:}t key='wap_user_00165'{/yun}</span>
+                            <span v-else-if="scope.row.photo_status == 1" class="admin_state4">{yun:}t key='wap_user_00166'{/yun}</span>
+                            <span v-else-if="scope.row.photo_status == 2" class="admin_state2">{yun:}t key='wap_user_00167'{/yun}</span>
                             <template v-else>--</template>
                             <!--<span class="admin_state1">已审核</span>-->
                             <!--<span class="admin_state2">未通过</span>-->
@@ -68,9 +68,9 @@
                 <el-table-column label="操作" width="200" fixed="right">
                     <template slot-scope="scope">
                         <div class="cz_button">
-                            <el-button size="mini" plain @click="handleStatus(scope)">审核</el-button>
-                            <el-button size="mini" plain @click="editRow(scope)">修改</el-button>
-                            <el-button type="danger" size="mini" @click="deleteRow(scope)">删除</el-button>
+                            <el-button size="mini" plain @click="handleStatus(scope)">{yun:}t key='member_user_00152'{/yun}</el-button>
+                            <el-button size="mini" plain @click="editRow(scope)">{yun:}t key='wap_js_00073'{/yun}</el-button>
+                            <el-button type="danger" size="mini" @click="deleteRow(scope)">{yun:}t key='common.delete'{/yun}</el-button>
                         </div>
                     </template>
                 </el-table-column>
@@ -78,9 +78,9 @@
         </div>
         <div class="modulePaging">
             <div>
-                <el-checkbox :indeterminate="isIndeterminate" v-model="checked" @change="selectAllBottom">全选</el-checkbox>
-                <el-button @click="deleteRow(null, true)" size="mini">批量删除</el-button>
-                <el-button @click="handleStatus(null, true)" size="mini">批量审核</el-button>
+                <el-checkbox :indeterminate="isIndeterminate" v-model="checked" @change="selectAllBottom">{yun:}t key='wap_js_00074'{/yun}</el-checkbox>
+                <el-button @click="deleteRow(null, true)" size="mini">{yun:}t key='member_com_00055'{/yun}</el-button>
+                <el-button @click="handleStatus(null, true)" size="mini">{yun:}t key='admin_user_weipin_00037'{/yun}</el-button>
             </div>
             <div class="modulePagNum">
                 <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
@@ -91,12 +91,12 @@
         </div>
         <!--审核弹出框-->
         <div class="modluDrawer">
-            <el-dialog title="个人头像" :visible.sync="statusVisible" :with-header="true" :modal-append-to-body="false"
+            <el-dialog title="{yun:}t key='admin_user_00183'{/yun}" :visible.sync="statusVisible" :with-header="true" :modal-append-to-body="false"
                 :show-close="true" width="450px">
                 <div>
-                    <div class="wxsettip_small ">姓名</div>
+                    <div class="wxsettip_small ">{yun:}t key='wap_00529'{/yun}</div>
                     <el-input placeholder="" v-model="info.username_n" :disabled="true"></el-input>
-                    <div class="wxsettip_small ">头像图片</div>
+                    <div class="wxsettip_small ">{yun:}t key='admin_00457'{/yun}</div>
                     <div class="zzrz_img">
                         <div class="zzrz_imgpreview">
                             <el-image
@@ -106,49 +106,49 @@
                             </el-image>
                         </div>
                     </div>
-                    <div class="wxsettip_small ">审核操作</div>
-                    <el-radio v-model="ruleFormStatus.status" label="0">正常</el-radio>
-                    <el-radio v-model="ruleFormStatus.status" label="2">未通过</el-radio>
-                    <div class="wxsettip_small ">审核说明</div>
-                    <el-input type="textarea" :rows="2" placeholder="请输入内容" v-model="ruleFormStatus.statusbody"></el-input>
-                    <el-alert title="审核未通过将删除图片" type="info" show-icon :closable="false"
+                    <div class="wxsettip_small ">{yun:}t key='admin_user_weipin_00032'{/yun}</div>
+                    <el-radio v-model="ruleFormStatus.status" label="0">{yun:}t key='admin_user_00149'{/yun}</el-radio>
+                    <el-radio v-model="ruleFormStatus.status" label="2">{yun:}t key='wap_user_00167'{/yun}</el-radio>
+                    <div class="wxsettip_small ">{yun:}t key='member_user_00062'{/yun}</div>
+                    <el-input type="textarea" :rows="2" placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="ruleFormStatus.statusbody"></el-input>
+                    <el-alert title="{yun:}t key='admin_00458'{/yun}" type="info" show-icon :closable="false"
                         style="background: unset; padding-left: 0;"></el-alert>
                 </div>
                 <span slot="footer" class="dialog-footer">
-                    <el-button @click="resetFormStatus('ruleFormStatus')">取 消</el-button>
-                    <el-button type="primary" @click="submitFormStatus('ruleFormStatus')" :disabled="submitLoading">确 定</el-button>
+                    <el-button @click="resetFormStatus('ruleFormStatus')">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
+                    <el-button type="primary" @click="submitFormStatus('ruleFormStatus')" :disabled="submitLoading">{yun:}t key='wap_com_00019'{/yun}</el-button>
                 </span>
             </el-dialog>
         </div>
         <!--批量审核-->
         <div class="modluDrawer">
-            <el-dialog title="批量审核" :visible.sync="statusAllVisible" :with-header="true" :modal-append-to-body="false"
+            <el-dialog title="{yun:}t key='admin_user_weipin_00037'{/yun}" :visible.sync="statusAllVisible" :with-header="true" :modal-append-to-body="false"
                 :show-close="true" width="450px">
                 <div>
-                    <div class="wxsettip_small ">审核操作</div>
-                    <el-radio v-model="ruleFormStatus.status" label="0">正常</el-radio>
-                    <el-radio v-model="ruleFormStatus.status" label="2">未通过</el-radio>
-                    <div class="wxsettip_small ">审核说明</div>
+                    <div class="wxsettip_small ">{yun:}t key='admin_user_weipin_00032'{/yun}</div>
+                    <el-radio v-model="ruleFormStatus.status" label="0">{yun:}t key='admin_user_00149'{/yun}</el-radio>
+                    <el-radio v-model="ruleFormStatus.status" label="2">{yun:}t key='wap_user_00167'{/yun}</el-radio>
+                    <div class="wxsettip_small ">{yun:}t key='member_user_00062'{/yun}</div>
                     <el-input type="textarea" :rows="2" placeholder="" v-model="ruleFormStatus.statusbody"></el-input>
                 </div>
                 <span slot="footer" class="dialog-footer">
-                    <el-button @click="resetFormStatus('ruleFormStatus')">取 消</el-button>
-                    <el-button type="primary" @click="submitFormStatus('ruleFormStatus')" :disabled="submitLoading">确 定</el-button>
+                    <el-button @click="resetFormStatus('ruleFormStatus')">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
+                    <el-button type="primary" @click="submitFormStatus('ruleFormStatus')" :disabled="submitLoading">{yun:}t key='wap_com_00019'{/yun}</el-button>
                 </span>
             </el-dialog>
         </div>
         <!--修改弹出框-->
         <div class="modluDrawer">
-            <el-dialog title="修改头像" :visible.sync="editVisible" :with-header="true" :modal-append-to-body="false"
+            <el-dialog title="{yun:}t key='admin_00459'{/yun}" :visible.sync="editVisible" :with-header="true" :modal-append-to-body="false"
                 :show-close="true" width="450px">
-                <div class="wxsettip_small ">姓名</div>
+                <div class="wxsettip_small ">{yun:}t key='wap_00529'{/yun}</div>
                 <el-input placeholder="" v-model="info.username_n" :disabled="true"></el-input>
-                <div class="wxsettip_small ">头像图片</div>
+                <div class="wxsettip_small ">{yun:}t key='admin_00457'{/yun}</div>
                 <div class="zzrz_img">
                     <div class="zzrz_imgpreview" style="display: flex;align-items: center;">
                         <el-upload :accept="pic_accept" :action="uploadAction" :on-change="uploadChange"
                             :show-file-list="false">
-                            <el-button size="small" type="primary">上传图片</el-button>
+                            <el-button size="small" type="primary">{yun:}t key='wap_00540'{/yun}</el-button>
                         </el-upload>
                         <div class="up_sy_logo_div" style="margin-left: 15px;">
                             <el-image v-if="ruleForm.picurl" style="width:100px;" :src="ruleForm.picurl"
@@ -157,8 +157,8 @@
                     </div>
                 </div>
                 <span slot="footer" class="dialog-footer">
-                    <el-button @click="resetForm('ruleForm')">取 消</el-button>
-                    <el-button type="primary" @click="submitForm('ruleForm')" :disabled="submitLoading">确 定</el-button>
+                    <el-button @click="resetForm('ruleForm')">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
+                    <el-button type="primary" @click="submitForm('ruleForm')" :disabled="submitLoading">{yun:}t key='wap_com_00019'{/yun}</el-button>
                 </span>
             </el-dialog>
         </div>
@@ -175,7 +175,7 @@ module.exports = {
         return {
             pic_accept: localStorage.getItem("pic_accept"),
             loading: false,
-            dataText: '数据加载中',
+            dataText: "{yun:}t key='admin_user_weipin_00026'{/yun}",
             searchForm: {
                 page: 1,
                 limit: null,
@@ -195,22 +195,22 @@ module.exports = {
             selectedItem: [],
             info: {
                 username_n: '',
-                photo: '',
+                photo: '",
             },
-            //审核
+            // Audit
             statusVisible: false,
             ruleFormStatus: {
                 uid: null,
                 status: null,//操作审核
-                statusbody: null,//审核说明
+                statusbody: null,//{yun:}t key='member_user_00062'{/yun}
             },
-            //批量审核
+            // BatchAudit
             statusAllVisible: false,
-            //修改
+            // Update
             editVisible: false,
             ruleForm: {
                 id: null,
-                picurl: '',
+                picurl: "',
             },
             file: [],//暂存文件
             submitLoading: false,
@@ -302,7 +302,7 @@ module.exports = {
                         _this.$refs.multipleTable.bodyWrapper.scrollTop = 0;
                     }
                     if (_this.tableData.length === 0) {
-                        _this.dataText = "暂无数据";
+                        _this.dataText = "{yun:}t key='wap_js_00113'{/yun}";
                     }
                 }
             }).catch(function (error) {
@@ -313,7 +313,7 @@ module.exports = {
             let params = {};
             if (isMore) {
                 if (!this.selectedItem.length) {
-                    message.error('请选择要删除的数据');
+                    message.error("{yun:}t key='admin_user_weipin_00005'{/yun}");
                     return false;
                 }
                 let list = [];
@@ -333,10 +333,10 @@ module.exports = {
             httpPost('m=user&c=users_pic&a=delPhoto', params).then(function (response) {
                 let res = response.data;
                 if (res.error === 0) {
-                    message.success('删除成功！');
+                    message.success("{yun:}t key='admin_user_00187'{/yun}");
                     _this.getList();
                 } else {
-                    message.error('删除失败！');
+                    message.error("{yun:}t key='admin_user_00186'{/yun}");
                 }
             }).catch(function (error) {
                 console.log(error);
@@ -345,7 +345,7 @@ module.exports = {
         handleStatus(scope, isMore) {
             if (isMore) {
                 if (!this.selectedItem.length) {
-                    message.error('请选择要操作的数据项');
+                    message.error("{yun:}t key='admin_user_weipin_00001'{/yun}");
                     return false;
                 }
                 let list = [];
@@ -377,7 +377,7 @@ module.exports = {
             let _this = this;
             let params = JSON.parse(JSON.stringify(this.ruleFormStatus));
             if (params.status == null) {
-                message.error('请选择审核状态');
+                message.error("{yun:}t key='admin_user_weipin_00015'{/yun}");
                 return false;
             }
             _this.submitLoading = true;
@@ -415,7 +415,7 @@ module.exports = {
             // this.$refs[formName].validate((valid) => {if (valid) {}});
             let _this = this;
             if (Array.isArray(this.file) && this.file.length < 1) {
-                message.error('请上传图片');
+                message.error("{yun:}t key='wap_01412'{/yun}");
                 return false;
             }
             let params = JSON.parse(JSON.stringify(this.ruleForm));

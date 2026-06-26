@@ -31,17 +31,17 @@ class company_job_controller extends adminCommon
         }
 
         $search_list = array();
-        $search_list['state'] = array('name' => '审核状态', 'value' => array('1' => '已审核', '4' => '未审核', '3' => '未通过', '2' => '已锁定'));
-        $search_list['status'] = array('name' => '招聘状态', 'value' => array('1' => '已下架', '2' => '招聘中'));
-        $search_list['jtype'] = array('name' => '职位类型', 'value' => array('urgent' => '紧急职位', 'xuanshang' => '置顶职位', 'rec' => '推荐职位'));
-        $search_list['exp'] = array('name' => '工作经验', 'value' => $exp);
-        $search_list['edu'] = array('name' => '学历要求', 'value' => $edu);
-        $search_list['source'] = array('name' => '数据来源', 'value' => $source);
+        $search_list['state'] = array('name' => 'wap_com_00406', 'value' => array('1' => 'wap_user_00165', '4' => 'wap_user_00166', '3' => 'wap_user_00167', '2' => 'admin_user_00138'));
+        $search_list['status'] = array('name' => 'member_user_00178', 'value' => array('1' => 'wap_com_00242', '2' => 'wap_com_00243'));
+        $search_list['jtype'] = array('name' => 'wap_00516', 'value' => array('urgent' => 'member_com_00326', 'xuanshang' => 'member_com_00327', 'rec' => 'member_com_00324'));
+        $search_list['exp'] = array('name' => 'wap_user_00240', 'value' => $exp);
+        $search_list['edu'] = array('name' => 'wap_com_00283', 'value' => $edu);
+        $search_list['source'] = array('name' => 'admin_yunying_00139', 'value' => $source);
 //        $search_list['adtime'] = array('name' => '发布时间', 'value' => array('1' => '今天', '3' => '最近三天', '7' => '最近七天', '15' => '最近半月', '30' => '最近一个月', '31' => '当月', '-1' => '昨天', '-7' => '本周'));
-        $search_list['rating'] = array('name' => '会员等级', 'value' => $ratingarr);
-        $search_list['openautho'] = array('name' => '开放权限', 'value' => array('1'=>'默认','2'=>'开放'));
+        $search_list['rating'] = array('name' => 'admin_user_company_00018', 'value' => $ratingarr);
+        $search_list['openautho'] = array('name' => 'admin_00749', 'value' => array('1'=>'wap_js_00098','2'=>'admin_user_company_00304'));
         
-        $search_list['is_depower'] = array('name' => '是否降权', 'value' => array('1'=>'是','2'=>'否'));
+        $search_list['is_depower'] = array('name' => 'admin_user_00068', 'value' => array('1'=>'是','2'=>'否'));
         return array('search_list' => $search_list);
     }
 
@@ -622,10 +622,10 @@ class company_job_controller extends adminCommon
     {
         $JobM = $this->MODEL('job');
         if ($_POST['hy'] == '') {
-            $this->render_json(1, '请选择行业类别！');
+            $this->render_json(1, yun_at('admin_01283'));
         }
         if ($_POST['job1'] == '') {
-            $this->render_json(1, '请选择职位类别！');
+            $this->render_json(1, yun_at('admin_user_company_00023'));
         }
         $data['hy'] = $_POST['hy'];
         $data['job1'] = $_POST['job1'];
@@ -642,7 +642,7 @@ class company_job_controller extends adminCommon
             //  提取职位uid 和职位名称
             foreach ($job as $k => $v) {
                 $uids[] = $v['uid'];
-                $msg[$v['uid']][] = '您的职位<a href="comjobtpl,' . $v['id'] . '">《' . $v['name'] . '》</a>管理员已修改，行业类别为：' . $cache[industry_name][$_POST['hy']] . '，职位类别为：' . $cache[job_name][$_POST['job1']];
+                $msg[$v['uid']][] = '您的职位<a href="comjobtpl,' . $v['id'] . '">《' . $v['name'] . '》</a>管理员已修改，行业类别为：' . $cache[industry_name][$_POST['hy']] . 'admin_user_00065' . $cache[job_name][$_POST['job1']];
                 if ($_POST['job1_son']) {
                     $msg[$v['uid']][] .= '' . $cache[job_name][$_POST['job1_son']];
                 }
@@ -656,7 +656,7 @@ class company_job_controller extends adminCommon
         if ($nid) {
             $this->admin_json(0, '职位类别(ID:' . $_POST['jobid'] . ')修改成功！');
         } else {
-            $this->render_json(1, '修改失败！');
+            $this->render_json(1, yun_at('member_user_00603'));
         }
     }
 
@@ -693,11 +693,11 @@ class company_job_controller extends adminCommon
                 $vData[$k]['r_time'] = time();
                 $vData[$k]['port'] = 5;
                 $vData[$k]['ip'] = fun_ip_get();
-                $vData[$k]['remark'] = '管理员操作：后台职位列表刷新职位';
+                $vData[$k]['remark'] = yun_at('admin_user_00062');
             }
             $logM->addJobSxLogS($vData);
         }
-        $this->admin_json(0, "职位(ID" . $_POST['ids'] . "刷新成功");
+        $this->admin_json(0, "职位(ID" . $_POST['ids'] . 'wap_user_00198');
     }
 
     // 导出字段
@@ -705,31 +705,31 @@ class company_job_controller extends adminCommon
     {
         // rtype 开头 简历字段 type 开头 个人信息字段
         $fieldsList = [
-            'id' => '职位ID',
-            'uid' => '企业UID',
-            'name' => '职位名称',
-            'hy' => '行业',
-            'job1' => '一级类别',
-            'job1_son' => '二级类别',
-            'job_post' => '三级类别',
+            'id' => 'admin_user_company_00370',
+            'uid' => 'admin_user_company_00120',
+            'name' => 'wap_com_00288',
+            'hy' => 'admin_user_company_00373',
+            'job1' => 'admin_user_company_00362',
+            'job1_son' => 'admin_user_company_00364',
+            'job_post' => 'admin_user_company_00363',
             'provinceid' => '省',
             'cityid' => '市',
             'three_cityid' => '县',
-            'minsalary,maxsalary' => '薪水',
-            'zp_num' => '招聘人数',
-            'exp' => '工作经验',
-            'report' => '到岗时间',
-            'sex' => '性别要求',
-            'edu' => '教育程度',
-            'marriage' => '婚姻状况',
-            'sdate' => '开始日期',
-            'lastdate' => '更新时间',
-            'zp_minage,zp_maxage' => '年龄要求',
-            'lang' => '语言要求',
-            'welfare' => '福利待遇',
-            'com_name' => '公司名称',
-            'pr' => '公司性质',
-            'mun' => '企业规模'
+            'minsalary,maxsalary' => 'member_com_00017',
+            'zp_num' => 'wap_com_00333',
+            'exp' => 'wap_user_00240',
+            'report' => 'wap_com_00279',
+            'sex' => 'wap_com_00332',
+            'edu' => 'member_com_00011',
+            'marriage' => 'wap_com_00282',
+            'sdate' => 'admin_00343',
+            'lastdate' => 'wap_00326',
+            'zp_minage,zp_maxage' => 'wap_com_00284',
+            'lang' => 'wap_com_00292',
+            'welfare' => 'wap_com_00173',
+            'com_name' => 'wap_01403',
+            'pr' => 'wap_00324',
+            'mun' => 'wap_com_00163'
         ];
         return $fieldsList;
     }
@@ -803,9 +803,9 @@ class company_job_controller extends adminCommon
                         if ($val['minsalary'] && $val['maxsalary']){
                             $text = '￥' . $val['minsalary'] . '-' . $val['maxsalary'];
                         } else if ($val['minsalary']) {
-                            $text = '￥' . $val['minsalary'] . '以上';
+                            $text = '￥' . $val['minsalary'] . 'common_01942';
                         } else {
-                            $text = '面议';
+                            $text = 'common_02045';
                         }
                     } else if ($tval == 'type') {
                         $text = $cache['comclass_name'][$val['type']];
@@ -817,7 +817,7 @@ class company_job_controller extends adminCommon
                         if ($val['zp_minage'] && $val['zp_maxage']) {
                             $text = $val['zp_minage'] . '-' . $val['zp_maxage'] . '岁';
                         } else if ($val['zp_minage']) {
-                            $text = $val['zp_minage'] . '岁以上';
+                            $text = $val['zp_minage'] . 'wap_com_00296';
                         }
                     } else if ($tval == 'lang') {
                         $text = $val['lang_n'] ? $val['lang_n'] : '';
@@ -839,11 +839,11 @@ class company_job_controller extends adminCommon
             ob_end_clean();
             $data = [
                 'file' => base64_encode($xlsData),
-                'file_name' => '职位信息' . date('YmdHis') . '.xlsx'
+                'file_name' => 'wap_00241' . date('YmdHis') . '.xlsx'
             ];
-            return $this->admin_json(0, "导出职位信息", $data);
+            return $this->admin_json(0, 'admin_01284', $data);
         } else {
-            $this->render_json(1, '暂无符合条件的职位数据');
+            $this->render_json(1, yun_at('admin_user_00064'));
         }
     }
 
@@ -910,7 +910,7 @@ class company_job_controller extends adminCommon
                 if ($_POST['edu']) {
                     $eduKey = $this->obj->select_once('userclass', array('variable' => 'user_edu'), "`id`");
                     $eduReq = $this->obj->select_once('userclass', array('id' => $_POST['edu']), "`sort`,`name`");
-                    if ($eduReq['name'] != "不限") {
+                    if ($eduReq['name'] != 'common_01936') {
                         $eduArr = $this->obj->select_all('userclass', array('keyid' => $eduKey['id'], 'sort' => array('>=', $eduReq['sort'])), "`id`");
                         $eduIds = array();
                         foreach ($eduArr as $v) {
@@ -923,7 +923,7 @@ class company_job_controller extends adminCommon
                 if ($_POST['exp']) {
                     $expKey = $this->obj->select_once('userclass', array('variable' => 'user_word'), "`id`");
                     $expReq = $this->obj->select_once('userclass', array('id' => $_POST['exp']), "`sort`,`name`");
-                    if (isset($expReq) && $expReq['name'] != "不限") {
+                    if (isset($expReq) && $expReq['name'] != 'common_01936') {
                         $expArr = $this->obj->select_all('userclass', array('keyid' => $expKey['id'], 'sort' => array('>=', $expReq['sort'])), "`id`");
                         $expIds = array();
                         foreach ($expArr as $v) {
@@ -1214,7 +1214,7 @@ class company_job_controller extends adminCommon
         $ids = $_POST['ids'];
         $return = $JobM->closeReserve(array('jobids' => $ids, 'utype' => 'admin'));
         if ($return['errcode'] == 9) {
-            $this->MODEL('log')->addAdminLog("关闭职位（ID" . $ids . "）预约刷新");
+            $this->MODEL('log')->addAdminLog("关闭职位（ID" . $ids . 'common_06316');
         }
         if ($return['errcode'] == 9) {
             $this->admin_json(0, $return['msg']);
@@ -1288,7 +1288,7 @@ class company_job_controller extends adminCommon
             'y' => $_POST['y']
         );
         $result = $addressM->saveAddress($linkData, array('utype' => 'admin'));
-        $msg = $result ? '工作地址添加成功' : '工作地址添加失败';
+        $msg = $result ? yun_at('api_wxapp_00007') : yun_at('api_wxapp_00006');
         $link_id = $result;
         $errcode = $result ? 9 : 8;
         if ($result && (int)$_POST['is_link'] == 2) {
@@ -1341,16 +1341,16 @@ class company_job_controller extends adminCommon
     {
         $jobM = $this->MODEL('job');
         if (empty($_POST['id']) || empty($_POST['is_depower'])) {
-            $this->render_json(1, '参数错误');
+            $this->render_json(1, yun_at('wap_com_00228'));
         }
         $where['id'] = intval($_POST['id']);
         $data['is_depower'] = intval($_POST['is_depower']);
         $return = $jobM->upInfo($data, $where);
-        $msg = $data['is_depower'] == 1 ? '降权' : '取消降权';
+        $msg = $data['is_depower'] == 1 ? yun_at('admin_user_company_00374') : yun_at('admin_user_company_00367');
         if ($return) {
             $this->admin_json(0, "职位{$msg}（ID：{$where['id']}）操作成功");
         } else {
-            $this->render_json(1, "职位{$msg}操作失败");
+            $this->render_json(1, yun_auto_t('职位{$msg}操作失败'));
         }
     }
 }

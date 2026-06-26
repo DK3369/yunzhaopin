@@ -56,13 +56,13 @@ class msg_controller extends company{
 
             if ($nid) {
                 $logM       =   $this->MODEL('log');
-                $logContent =   '消息处理：删除求职咨询（ID'.$_GET['id'].'）';
+                $logContent =   'api_wxapp_00001'.$_GET['id'].'）';
                 $logM->addMemberLog($this->uid, 2, $logContent, 18, 3);
 
-                $this->layer_msg('删除成功！', 9, 0, "index.php?c=msg");
+                $this->layer_msg('admin_user_00187', 9, 0, "index.php?c=msg");
             } else {
 
-                $this->layer_msg('删除失败！', 8, 0, "index.php?c=msg");
+                $this->layer_msg('admin_user_00186', 8, 0, "index.php?c=msg");
             }
         }
 	}
@@ -82,15 +82,15 @@ class msg_controller extends company{
             if($id){
 
                 $logM       =   $this->MODEL('log');
-                $logContent =   '消息处理：回复求职咨询';
-                $logDetail  =   '求职咨询回复：'.$_POST['reply'];
+                $logContent =   'api_wxapp_00003';
+                $logDetail  =   'member_com_00698'.$_POST['reply'];
 
                 $logM->addMemberLog($this->uid, 2, $logContent, 18, 2, $logDetail);
 
-                $this->ACT_layer_msg("回复成功！",9,"index.php?c=msg");
+                $this->ACT_layer_msg('member_com_00699',9,"index.php?c=msg");
             }else{
 
-                $this->ACT_layer_msg("添加失败！",8,"index.php?c=msg");
+                $this->ACT_layer_msg('admin_system_00137',8,"index.php?c=msg");
             }
         }
 	}

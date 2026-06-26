@@ -4,15 +4,15 @@
             <table class="tableVue">
                 <thead>
                     <tr align="left">
-                        <th width="180">名称</th>
-                        <th width="560">状态</th>
-                        <th>说明</th>
+                        <th width="180">{yun:}t key='member_com_00021'{/yun}</th>
+                        <th width="560">{yun:}t key='member_user_00181'{/yun}</th>
+                        <th>{yun:}t key='member_com_00207'{/yun}</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td>
-                            <div class="TableTite">招聘海报</div>
+                            <div class="TableTite">{yun:}t key='member_com_00149'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableButn">
@@ -29,17 +29,17 @@
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">海报网站标识</div>
+                            <div class="TableTite">{yun:}t key='admin_01087'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableButn">
-                                <el-radio v-model="ruleForm.sy_haibao_web_type" label="1">文字</el-radio>
+                                <el-radio v-model="ruleForm.sy_haibao_web_type" label="1">{yun:}t key='admin_system_00432'{/yun}</el-radio>
                                 <el-radio v-model="ruleForm.sy_haibao_web_type" label="2">LOGO</el-radio>
-                                <el-radio v-model="ruleForm.sy_haibao_web_type" label="3">留空</el-radio>
+                                <el-radio v-model="ruleForm.sy_haibao_web_type" label="3">{yun:}t key='admin_01088'{/yun}</el-radio>
                             </div>
                             <!-- 选择文字时显示的内容 -->
                             <div v-if="ruleForm.sy_haibao_web_type == 1" class="TableButn" style="margin-top: 12px;">
-                                <el-input v-model="ruleForm.sy_haibao_web_name" placeholder="请输入网站名称"></el-input>
+                                <el-input v-model="ruleForm.sy_haibao_web_name" placeholder="{yun:}t key='admin_01090'{/yun}"></el-input>
                             </div>
                             <!-- 选择logo时显示的内容 -->
                             <div v-if="ruleForm.sy_haibao_web_type == 2" class="TableUpload" style="margin-top: 12px;">
@@ -49,7 +49,7 @@
                                            :auto-upload="false"
                                            :on-change="handleChangeLogo"
                                            :show-file-list="false">
-                                    <el-button slot="trigger" size="small" type="primary">点击上传</el-button>
+                                    <el-button slot="trigger" size="small" type="primary">{yun:}t key='wap_js_00071'{/yun}</el-button>
                                     <img class="el-upload-list__item-thumbnail" width="100" height="100" style="padding-left: 5px;"
                                          v-if="ruleForm.sy_haibao_web_logo_n" :src="ruleForm.sy_haibao_web_logo_n"/>
                                 </el-upload>
@@ -57,7 +57,7 @@
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>选择LOGO请上传透明图，建议图片最大尺寸960px X 130px</span>
+                                <span>{yun:}t key='admin_01089'{/yun}</span>
                             </div>
                         </td>
                     </tr>
@@ -66,7 +66,7 @@
             </table>
         </div>
         <div class="setBasicButn" style="border: none; height: 80px;">
-            <el-button type="primary" size="medium" @click="submit" :disabled="saveLoading">提交</el-button>
+            <el-button type="primary" size="medium" @click="submit" :disabled="saveLoading">{yun:}t key='common.submit'{/yun}</el-button>
         </div>
     </div>
 </template>
@@ -114,7 +114,7 @@ module.exports = {
 
             if (ruleForm.sy_haibao_web_type == '1') {
                 if(ruleForm.sy_haibao_web_name === ''){
-                    message.error('请输入网站名称');
+                    message.error("{yun:}t key='admin_01090'{/yun}");
                     return false;
                 }else if(ruleForm.sy_haibao_web_name.length > 12){
                     message.error('网站名称不能大于12个字符');
@@ -122,7 +122,7 @@ module.exports = {
                 }
             } else if (ruleForm.sy_haibao_web_type == '2') {
                 if (!ruleForm.sy_haibao_web_logo_n) {
-                    message.error('请上传LOGO图片');
+                    message.error("请上传LOGO{yun:}t key='wap_js_00081'{/yun}");
                     return false;
                 }
             }

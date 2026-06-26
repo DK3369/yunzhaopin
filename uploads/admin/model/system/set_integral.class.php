@@ -57,7 +57,7 @@ class set_integral_controller extends adminCommon{
         }
         $this->cache_action();
         $this->web_config();
-        $this->admin_json(0,$this->config['integral_pricename']."配置修改成功！");
+        $this->admin_json(0,$this->config['integral_pricename'].'admin_01384');
 	}
 	function class_action(){
 		$integralM		=	$this->MODEL('integral');
@@ -91,7 +91,7 @@ class set_integral_controller extends adminCommon{
         if($id) {
 			$this->admin_json(0,'积分优惠(ID:'.$ids.')删除成功！');
 		}else{
-            $this->render_json(1,"删除失败！");
+            $this->render_json(1,yun_at('admin_user_00186'));
 		}
 
 	}
@@ -118,25 +118,25 @@ class set_integral_controller extends adminCommon{
 			
 			$integralclass		=	$integralM->getIntClass(array('integral'=>(int)$_POST['integral'] , 'id'=>array('<>',$_POST['id']) ));
 			if($integralclass){
-                $this->render_json('1','操作失败');
+                $this->render_json('1',yun_at('wap_js_00141'));
 			}
 			
 			$nid				=	$integralM->upIntClass(array('id' =>(int)$_POST['id']) , array('integral'=>$_POST['integral']));
 			
-			$this->MODEL('log')->addAdminLog($this->config['integral_pricename']."充值类型(ID:".$_POST['id'].")修改数量！");
+			$this->MODEL('log')->addAdminLog($this->config['integral_pricename'].'admin_system_00046'.$_POST['id'].")修改数量！");
 		}
 		
 		if(isset($_POST['discount'])&& $_POST['discount']>=0){
 			$nid				=	$integralM->upIntClass(array('id' =>(int)$_POST['id']) , array('discount'=>$_POST['discount']));
 			
-			$this->MODEL('log')->addAdminLog($this->config['integral_pricename']."充值类型(ID:".$_POST['id'].")修改折扣！");
+			$this->MODEL('log')->addAdminLog($this->config['integral_pricename'].'admin_system_00046'.$_POST['id'].")修改折扣！");
 		}
 		
 		$this->cache_action();
         if($nid){
-            $this->render_json('0','操作成功');
+            $this->render_json('0',yun_at('wap_user_00264'));
         }else{
-            $this->render_json('1','操作失败');
+            $this->render_json('1',yun_at('wap_js_00141'));
         }
 	}
 
@@ -152,7 +152,7 @@ class set_integral_controller extends adminCommon{
         $configM  =  $this -> MODEL('config');
         $configM -> setConfig($post);
         $this -> web_config();
-        $this->admin_json(0,'个人积分配置修改成功！');
+        $this->admin_json(0,'admin_01385');
     }
 
 
@@ -185,7 +185,7 @@ class set_integral_controller extends adminCommon{
         }
         $configM -> setConfig($_POST);
         $this->web_config();
-        $this->admin_json(0,"企业设置配置修改成功！");
+        $this->admin_json(0,'admin_user_00054');
     }
 
 }

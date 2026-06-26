@@ -4,20 +4,20 @@
         <table class="tableVue">
             <thead>
                 <tr align="left">
-                    <th width="180">推文选择</th>
-                    <th width="320">推文状态</th>
-                    <th>推文内容预览</th>
+                    <th width="180">{yun:}t key='admin_tool_00538'{/yun}</th>
+                    <th width="320">{yun:}t key='admin_tool_00536'{/yun}</th>
+                    <th>{yun:}t key='admin_tool_00535'{/yun}</th>
                 </tr>
             </thead>
             <tbody>
                 <tr align="left" valign="top">
                     <td>
-                        <div class="TableTite">推文类型</div>
+                        <div class="TableTite">{yun:}t key='admin_tool_00537'{/yun}</div>
                     </td>
                     <td>
                         <el-radio-group v-model="temptype" @input="setTemp">
-                            <el-radio label="1">社群推文模板</el-radio>
-                            <el-radio label="0">公众号文章模板</el-radio>
+                            <el-radio label="1">{yun:}t key='admin_tool_00525'{/yun}</el-radio>
+                            <el-radio label="0">{yun:}t key='admin_tool_00524'{/yun}</el-radio>
                         </el-radio-group>
                     </td>
                     <td rowspan="3" vertical-align="top" valign="top">
@@ -27,9 +27,9 @@
                             </div>
                             <div class="tw_jobscbox">
                                 <input id="twjobcopy" data-clipboard-action="copy"
-                                    data-clipboard-target="#twjobtemp_content" type="button" value="一键复制"
+                                    data-clipboard-target="#twjobtemp_content" type="button" value="{yun:}t key='admin_tool_00526'{/yun}"
                                     class="admin_Filter_bth" />
-                                <el-link type="primary" @click="htmlcon = ''">清空内容</el-link>
+                                <el-link type="primary" @click="htmlcon = ''">{yun:}t key='admin_tool_00528'{/yun}</el-link>
 
                             </div>
                         </div>
@@ -40,7 +40,7 @@
                                 v-html="htmlcon"></div>
                             <div class="tw_jobscbox">
                                 <input type="button" class="admin_Filter_bth" id="twjobgzh_copy"
-                                    data-clipboard-action="copy" data-clipboard-target="#twjobgzh_content" value="一键复制" />
+                                    data-clipboard-action="copy" data-clipboard-target="#twjobgzh_content" value="{yun:}t key='admin_tool_00526'{/yun}" />
                             </div>
                         </div>
 
@@ -48,11 +48,11 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">模板类型</div>
+                        <div class="TableTite">{yun:}t key='admin_tool_00541'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableSelect">
-                            <el-select v-model="tempid" size="small" slot="prepend" placeholder="选择模板">
+                            <el-select v-model="tempid" size="small" slot="prepend" placeholder="{yun:}t key='admin_tool_00545'{/yun}">
                                 <el-option v-for="item in templist" :key="item.id" :label="item.title"
                                     :value="item.id"></el-option>
                             </el-select>
@@ -61,12 +61,12 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">指定职位</div>
+                        <div class="TableTite">{yun:}t key='admin_tool_00550'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableSelect">
                             <el-select v-model="job_search" @visible-change="jobChoosed" multiple filterable remote
-                                reserve-keyword placeholder="输入搜索职位" :remote-method="jobSearch"
+                                reserve-keyword placeholder="{yun:}t key='admin_tool_00556'{/yun}" :remote-method="jobSearch"
                                 :loading="job_searchloading">
                                 <el-option v-for="item in job_search_list" :key="item.value" :label="item.name"
                                     :value="item.value">
@@ -88,12 +88,12 @@
                                 </transition-group>
                             </draggable>
                         </div>
-                        <div class="tool_inputips"><i class="el-icon-question"></i> 拖拽标签可排序
-                            <el-button type="text" @click="clearJob">清除职位</el-button>
+                        <div class="tool_inputips"><i class="el-icon-question"></i> {yun:}t key='admin_tool_00534'{/yun}
+                            <el-button type="text" @click="clearJob">{yun:}t key='admin_tool_00552'{/yun}</el-button>
                         </div>
 
                         <div class="tw_jobscbox">
-                            <el-button type="primary" @click="getTW">生成推文</el-button>
+                            <el-button type="primary" @click="getTW">{yun:}t key='admin_tool_00543'{/yun}</el-button>
                         </div>
                     </td>
                 </tr>
@@ -104,31 +104,31 @@
         <div class="moduleSeachs" style="padding-top:10px;">
             <div class="moduleSeachleft" style="display: flex; flex-wrap: wrap; align-items: center;">
                 <div class="tableSeachInpt" style="margin-bottom: 0px;flex-flow: row wrap;;">
-                    <el-input placeholder="职位名、企业名称、备注、职位ID" clearable style="width: 300px;" v-model="keyword" prefix-icon="el-icon-search"></el-input>
+                    <el-input placeholder="{yun:}t key='admin_tool_00555'{/yun}" clearable style="width: 300px;" v-model="keyword" prefix-icon="el-icon-search"></el-input>
                 </div>
                 <div class="tableSeachInpt" style="margin-bottom: 0px;;">
-                    <el-select v-model="auid" size="small" slot="prepend" placeholder="选择管理员" clearable @change="search">
+                    <el-select v-model="auid" size="small" slot="prepend" placeholder="{yun:}t key='admin_tool_00546'{/yun}" clearable @change="search">
                         <el-option v-for="admin in adminList" :key="admin.uid" :label="admin.name ? admin.name : admin.username" :value="admin.uid"></el-option>
                     </el-select>
                 </div>
                 <div class="tableSeachInpt" style="margin-bottom: 0px;">
-                    <el-input placeholder="福利待遇，多个福利 以空格分隔 如搜索 双休 五险" v-model="welfarekeyword" style="width: 400px;" prefix-icon="el-icon-search" clearable></el-input>
+                    <el-input placeholder="{yun:}t key='admin_tool_00553'{/yun}" v-model="welfarekeyword" style="width: 400px;" prefix-icon="el-icon-search" clearable></el-input>
                 </div>
                 <div class="tableSeachInpt" style="margin-bottom: 0px;;">
-                    <el-select v-model="status" size="small" slot="prepend" placeholder="状态" @change="search" clearable>
+                    <el-select v-model="status" size="small" slot="prepend" placeholder="{yun:}t key='member_user_00181'{/yun}" @change="search" clearable>
                         <el-option label="全部" value="3"></el-option>
                         <el-option label="未推送" value="2"></el-option>
                         <el-option label="已推送" value="1"></el-option>
                     </el-select>
                 </div>
                 <div class="tableSeachInpt tableSeachkidusye" style="margin-bottom: 0px; font-size: 14px; color: #666;">
-                    标签：
-                    <span @click="tagsearch('urgent')" :class="urgent == 1 ? 'urgent_search_y' : 'urgent_search_n'" title="加急"></span>
-                    <span @click="tagsearch('wcmoments')" :class="wcmoments == 1 ? 'wcmoments_search_y' : 'wcmoments_search_n'" title="朋友圈"> </span>
-                    <span @click="tagsearch('gzh')" :class="gzh == 1 ? 'gzh_search_y' : 'gzh_search_n'" title="公众号"> </span>
+                    {yun:}t key='admin_tool_00540'{/yun}
+                    <span @click="tagsearch('urgent')" :class="urgent == 1 ? 'urgent_search_y' : 'urgent_search_n'" title="{yun:}t key='admin_user_company_00156'{/yun}"></span>
+                    <span @click="tagsearch('wcmoments')" :class="wcmoments == 1 ? 'wcmoments_search_y' : 'wcmoments_search_n'" title="{yun:}t key='admin_user_company_00152'{/yun}"> </span>
+                    <span @click="tagsearch('gzh')" :class="gzh == 1 ? 'gzh_search_y' : 'gzh_search_n'" title="{yun:}t key='admin_user_company_00148'{/yun}"> </span>
                 </div>
                 <div class="tableSeachInpt" style="margin-bottom: 0px;;">
-                    <el-button type="primary" icon="el-icon-search" size="mini" @click="search">查询</el-button>
+                    <el-button type="primary" icon="el-icon-search" size="mini" @click="search">{yun:}t key='admin_user_weipin_00049'{/yun}</el-button>
                 </div>
             </div>
 
@@ -157,15 +157,15 @@
                     <template slot-scope="scope">
                         <el-link type="primary" :href="scope.row.joburl" target="_blank">{{ scope.row.jobname }}
                         </el-link>
-                        <div v-if="scope.row.jobstatus == '1'">已删除</div>
-                        <div v-else-if="scope.row.jobstatus == '2'">已下架</div>
+                        <div v-if="scope.row.jobstatus == '1'">{yun:}t key='admin_tool_00551'{/yun}</div>
+                        <div v-else-if="scope.row.jobstatus == '2'">{yun:}t key='wap_com_00242'{/yun}</div>
                     </template>
                 </el-table-column>
                 <el-table-column prop="jobsdate_n" label="职位创建时间" width="180"></el-table-column>
                 <el-table-column label="状态">
                     <template slot-scope="scope">
-                        <span v-if="scope.row.status == '1'">已推送</span>
-                        <span v-else>未推送</span>
+                        <span v-if="scope.row.status == '1'">{yun:}t key='admin_tool_00532'{/yun}</span>
+                        <span v-else>{yun:}t key='admin_tool_00539'{/yun}</span>
                     </template>
                 </el-table-column>
                 <el-table-column prop="admin_username" label="创建人" width="170"></el-table-column>
@@ -175,12 +175,12 @@
                     <template slot-scope="scope">
                         <el-button type="success" size="mini"
                             @click="addjob(scope.row.id, scope.row.jobid, scope.row.jobname)"
-                            :disabled="scope.row.jobstatus == '1' || job_ids.indexOf(scope.row.jobid) != -1">生成
+                            :disabled="scope.row.jobstatus == '1' || job_ids.indexOf(scope.row.jobid) != -1">{yun:}t key='wap_00215'{/yun}
                         </el-button>
                         <el-button type="primary" size="mini" @click="taskFinish(scope.row.id)"
-                            :disabled="scope.row.status == '1'">{{ scope.row.status == '1' ? '已推送' : '未推送' }}
+                            :disabled="scope.row.status == '1'">{yun:}t key='admin_01270'{/yun}
                         </el-button>
-                        <el-button type="danger" size="mini" @click="deleteinfo(scope.row.id)">删除</el-button>
+                        <el-button type="danger" size="mini" @click="deleteinfo(scope.row.id)">{yun:}t key='common.delete'{/yun}</el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -189,10 +189,10 @@
 
         <div class="modulePaging">
             <div class="modulecz">
-                <el-checkbox v-model="allchecked" @change="allcheckChange">全选</el-checkbox>
-                <el-button size="mini" @click="deleteAll">批量删除</el-button>
-                <el-button size="mini" @click="multiAdd">批量生成</el-button>
-                <el-button size="mini" @click="multiFinish">批量推送</el-button>
+                <el-checkbox v-model="allchecked" @change="allcheckChange">{yun:}t key='wap_js_00074'{/yun}</el-checkbox>
+                <el-button size="mini" @click="deleteAll">{yun:}t key='member_com_00055'{/yun}</el-button>
+                <el-button size="mini" @click="multiAdd">{yun:}t key='admin_tool_00533'{/yun}</el-button>
+                <el-button size="mini" @click="multiFinish">{yun:}t key='admin_user_company_00376'{/yun}</el-button>
             </div>
             <div class="modulePagNum">
                 <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
@@ -212,7 +212,7 @@ module.exports = {
     data: function () {
         return {
 			pagerCount: 5,
-            emptytext: window.yunAdminT('暂无数据'),
+            emptytext: window.yunAdminT("{yun:}t key='wap_js_00113'{/yun}"),
             temps: [],
             temps2: [],
             adminList: [],
@@ -262,13 +262,13 @@ module.exports = {
         this.getBaseData();
         var clipboard = new ClipboardJS("#twjobcopy");
         clipboard.on('success', function (e) {
-            message.success(window.yunAdminT('复制成功！'));
+            message.success(window.yunAdminT("{yun:}t key='wap_com_00254'{/yun}"));
             e.clearSelection();
         });
 
         var gzh_clipboard = new ClipboardJS("#twjobgzh_copy");
         gzh_clipboard.on('success', function (e) {
-            message.success(window.yunAdminT('复制成功！'));
+            message.success(window.yunAdminT("{yun:}t key='wap_com_00254'{/yun}"));
             e.clearSelection();
         });
 
@@ -291,7 +291,7 @@ module.exports = {
             }
 
             this.list_loading = true;
-            that.emptytext = window.yunAdminT('数据加载中');
+            that.emptytext = window.yunAdminT("{yun:}t key='admin_user_weipin_00026'{/yun}");
             httpPost('m=tool&c=fabutool&a=twTask', params).then((result) => {
                 this.list_loading = false;
                 var res = result.data;
@@ -307,7 +307,7 @@ module.exports = {
 						that.$refs.table.bodyWrapper.scrollTop = 0;
 					}
                     if (that.tableData.length === 0){
-                        that.emptytext = window.yunAdminT('暂无数据');
+                        that.emptytext = window.yunAdminT("{yun:}t key='wap_js_00113'{/yun}");
                     }
                 }
             }).catch(function (e) {
@@ -379,7 +379,7 @@ module.exports = {
                     idarr.push(this.choosedata[i].id);
                 }
             } else {
-                message.error(window.yunAdminT('请选择要删除的数据'));
+                message.error(window.yunAdminT("{yun:}t key='admin_user_weipin_00005'{/yun}"));
                 return;
             }
             var params = {
@@ -414,7 +414,7 @@ module.exports = {
             var params = {
                 id: id
             };
-            delConfirm(_this, params, this.finishPost, window.yunAdminT('确认已推送？'))
+            delConfirm(_this, params, this.finishPost, window.yunAdminT("{yun:}t key='admin_tool_00547'{/yun}"))
         },
         multiFinish: function () {
             var _this = this;
@@ -424,14 +424,14 @@ module.exports = {
                     idarr.push(this.choosedata[i].id);
                 }
             } else {
-                message.error(window.yunAdminT('请选择要操作的数据项'));
+                message.error(window.yunAdminT("{yun:}t key='admin_user_weipin_00001'{/yun}"));
                 return;
             }
             var params = {
                 id: idarr
             };
 
-            delConfirm(_this, params, this.finishPost, window.yunAdminT('确认已推送？'))
+            delConfirm(_this, params, this.finishPost, window.yunAdminT("{yun:}t key='admin_tool_00547'{/yun}"))
         },
         async finishPost(params) {
 
@@ -487,7 +487,7 @@ module.exports = {
                     }
                 }
             } else {
-                message.error(window.yunAdminT('请选择要操作的数据项'));
+                message.error(window.yunAdminT("{yun:}t key='admin_user_weipin_00001'{/yun}"));
                 return;
             }
 
@@ -508,11 +508,11 @@ module.exports = {
             let that = this;
 
             if (this.tempid == '') {
-                message.error(window.yunAdminT('请选择模板'));
+                message.error(window.yunAdminT("{yun:}t key='admin_tool_00548'{/yun}"));
                 return;
             }
             if (this.job_ids.length == 0) {
-                message.error(window.yunAdminT('请添加要生成的职位'));
+                message.error(window.yunAdminT("{yun:}t key='admin_tool_00549'{/yun}"));
                 return;
             }
 

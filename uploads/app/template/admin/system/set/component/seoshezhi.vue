@@ -5,22 +5,22 @@
             </el-alert>
         </div> -->
         <div class="tableDome_tip tableDoAlert">
-            <span>提示：如果您不是程序员或不清楚用法，请不要随意修改SEO标识符！网站的SEO部分是网站重要部分，请不要经常修改！<br />根据百度新算法，网站标题请勿堆积关键字，具体请参考</span>
-            <a href="https://ziyuan.baidu.com/college/documentinfo?id=1576&amp;qq-pf-to=pcqq.c2c" target="_blank" style="color:#00F">教程</a>
+            <span>{yun:}t key='admin_00971'{/yun}<br />{yun:}t key='admin_00972'{/yun}</span>
+            <a href="https://ziyuan.baidu.com/college/documentinfo?id=1576&amp;qq-pf-to=pcqq.c2c" target="_blank" style="color:#00F">{yun:}t key='admin_00973'{/yun}</a>
         </div>
         <div class="drawerModInfo drawerModInfoOne drawerModInguding">
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>SEO模块</span>
+                    <span>{yun:}t key='admin_system_00372'{/yun}</span>
                 </div>
                 <div v-if="call == 'seo'" class="drawerModInpt">
-                    <el-select v-model="ruleForm.seomodel" placeholder="请选择">
+                    <el-select v-model="ruleForm.seomodel" placeholder="{yun:}t key='wap_user_00100'{/yun}">
                         <el-option v-for="(smitem, smindex) in seomodel" :key="smindex" :label="smitem" :value="smindex">
                         </el-option>
                     </el-select>
                 </div>
                 <div v-if="call == 'module'" class="drawerModInpt">
-                    <el-select v-model="ruleForm.seoid" @change="changeSeoid" placeholder="请选择">
+                    <el-select v-model="ruleForm.seoid" @change="changeSeoid" placeholder="{yun:}t key='wap_user_00100'{/yun}">
                         <el-option v-for="seoItem in seo" :key="seoItem.id" :label="seoItem.seoname" :value="seoItem.id">
                         </el-option>
                     </el-select>
@@ -28,26 +28,26 @@
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>页面名称</span>
+                    <span>{yun:}t key='admin_system_00377'{/yun}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input v-model="ruleForm.seoname" placeholder="请输入内容"></el-input>
+                    <el-input v-model="ruleForm.seoname" placeholder="{yun:}t key='wap_user_00076'{/yun}"></el-input>
                 </div>
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>SEO标识符</span>
+                    <span>{yun:}t key='admin_system_00371'{/yun}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input v-model="ruleForm.ident" placeholder="请输入内容"></el-input>
+                    <el-input v-model="ruleForm.ident" placeholder="{yun:}t key='wap_user_00076'{/yun}"></el-input>
                 </div>
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>使用范围</span>
+                    <span>{yun:}t key='admin_user_00126'{/yun}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-select v-model="ruleForm.did" placeholder="请选择">
+                    <el-select v-model="ruleForm.did" placeholder="{yun:}t key='wap_user_00100'{/yun}">
                         <el-option v-for="(ditem, dindex) in Dname" :key="dindex" :label="ditem" :value="dindex">
                         </el-option>
                     </el-select>
@@ -55,22 +55,22 @@
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>伪静态规则</span>
+                    <span>{yun:}t key='admin_system_00373'{/yun}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input v-model="ruleForm.rewrite_url" placeholder="请输入内容"></el-input>
+                    <el-input v-model="ruleForm.rewrite_url" placeholder="{yun:}t key='wap_user_00076'{/yun}"></el-input>
                 </div>
                 <div class="drawerModTips">
-                    <el-alert title="如：/job/{id}.html 多数用于详情页" type="info" show-icon :closable="false">
+                    <el-alert title="{yun:}t key='admin_00976'{/yun}" type="info" show-icon :closable="false">
                     </el-alert>
                 </div>
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>原始路径</span>
+                    <span>{yun:}t key='admin_system_00375'{/yun}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input v-model="ruleForm.php_url" placeholder="请输入内容"></el-input>
+                    <el-input v-model="ruleForm.php_url" placeholder="{yun:}t key='wap_user_00076'{/yun}"></el-input>
                 </div>
                 <div class="drawerModTips">
                     <el-alert title="如：/job/index.php?c=comapply （只需模块链接 无需参数 与上对应）" type="info" show-icon :closable="false">
@@ -79,36 +79,36 @@
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>WAP伪静态规则</span>
+                    <span>{yun:}t key='admin_system_00364'{/yun}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input v-model="ruleForm.rewrite_wap_url" placeholder="请输入内容"></el-input>
+                    <el-input v-model="ruleForm.rewrite_wap_url" placeholder="{yun:}t key='wap_user_00076'{/yun}"></el-input>
                 </div>
                 <div class="drawerModTips">
-                    <el-alert title="如：/job/{id}.html 多数用于详情页" type="info" show-icon :closable="false">
+                    <el-alert title="{yun:}t key='admin_00976'{/yun}" type="info" show-icon :closable="false">
                     </el-alert>
                 </div>
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>WAP原始路径</span>
+                    <span>{yun:}t key='admin_system_00370'{/yun}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input v-model="ruleForm.php_wap_url" placeholder="请输入内容"></el-input>
+                    <el-input v-model="ruleForm.php_wap_url" placeholder="{yun:}t key='wap_user_00076'{/yun}"></el-input>
                 </div>
                 <div class="drawerModTips">
-                    <el-alert title="如：?c=job&a=comapply （只需模块链接 无需具体参数 与上对应）" type="info" show-icon :closable="false">
+                    <el-alert title="{yun:}t key='admin_00977'{/yun}" type="info" show-icon :closable="false">
                     </el-alert>
                 </div>
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>网站标题（title）</span>
+                    <span>{yun:}t key='admin_system_00362'{/yun}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input type="textarea" :rows="2" placeholder="请输入内容" v-model="ruleForm.title" @blur="textareaBlur($event, 'title')">
+                    <el-input type="textarea" :rows="2" placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="ruleForm.title" @blur="textareaBlur($event, 'title')">
                     </el-input>
-                    <el-button type="info" @click="openCenterDialog('title')">选择参数</el-button>
+                    <el-button type="info" @click="openCenterDialog('title')">{yun:}t key='admin_system_00376'{/yun}</el-button>
                 </div>
                 <!-- <div class="drawerModTips drawerMoAlert">
                     <el-alert :title="titleTip" type="info" show-icon :closable="false">
@@ -116,47 +116,47 @@
                 </div> -->
                 <div class="drawerModTips drawerMoAlert">
                     <i class="el-icon-info"></i>
-                    <span>一般不超过80个字符，根据百度新算法，请勿堆积关键字，具体请参考</span>
-                    <a href="https://ziyuan.baidu.com/college/documentinfo?id=1576&amp;qq-pf-to=pcqq.c2c" target="_blank" style="color:#00F">教程</a>
+                    <span>{yun:}t key='admin_00974'{/yun}</span>
+                    <a href="https://ziyuan.baidu.com/college/documentinfo?id=1576&amp;qq-pf-to=pcqq.c2c" target="_blank" style="color:#00F">{yun:}t key='admin_00973'{/yun}</a>
                 </div>
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>网站关键字（keywords）</span>
+                    <span>{yun:}t key='admin_system_00360'{/yun}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input type="textarea" :rows="2" placeholder="请输入内容" v-model="ruleForm.keywords" @blur="textareaBlur($event, 'keywords')">
+                    <el-input type="textarea" :rows="2" placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="ruleForm.keywords" @blur="textareaBlur($event, 'keywords')">
                     </el-input>
-                    <el-button type="info" @click="openCenterDialog('keywords')">选择参数</el-button>
+                    <el-button type="info" @click="openCenterDialog('keywords')">{yun:}t key='admin_system_00376'{/yun}</el-button>
                 </div>
                 <div class="drawerModTips">
-                    <el-alert title="一般不超过100个字符" type="info" show-icon :closable="false">
+                    <el-alert title="{yun:}t key='admin_00978'{/yun}" type="info" show-icon :closable="false">
                     </el-alert>
                 </div>
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>网站描述（description）</span>
+                    <span>{yun:}t key='admin_system_00359'{/yun}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input type="textarea" :rows="2" placeholder="请输入内容" v-model="ruleForm.description" @blur="textareaBlur($event, 'description')">
+                    <el-input type="textarea" :rows="2" placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="ruleForm.description" @blur="textareaBlur($event, 'description')">
                     </el-input>
-                    <el-button type="info" @click="openCenterDialog('description')">选择参数</el-button>
+                    <el-button type="info" @click="openCenterDialog('description')">{yun:}t key='admin_system_00376'{/yun}</el-button>
                 </div>
                 <div class="drawerModTips">
-                    <el-alert title="一般不超过200个字符" type="info" show-icon :closable="false">
+                    <el-alert title="{yun:}t key='admin_00979'{/yun}" type="info" show-icon :closable="false">
                     </el-alert>
                 </div>
             </div>
         </div>
         <div class="setBasicButn" style="border: none;">
-            <el-button type="primary" size="medium" @click="save" :disabled="saveLoading">提交</el-button>
+            <el-button type="primary" size="medium" @click="save" :disabled="saveLoading">{yun:}t key='common.submit'{/yun}</el-button>
         </div>
         <div class="modluDialog">
-            <el-drawer title="可选择参数" :visible.sync="centerDialogVisible" :append-to-body="true" :show-close="true" :with-header="true" size="40%">
+            <el-drawer title="{yun:}t key='admin_system_00374'{/yun}" :visible.sync="centerDialogVisible" :append-to-body="true" :show-close="true" :with-header="true" size="40%">
                 <div style="overflow-y: auto; position: relative; width: 100%; height: calc(100% - 70px); padding: 0 20px;">
                     <div class="tableDome_tip">
-                        <el-alert title="提示：下面的标识符请根据页面对应添加，否则无法正常显示！" type="warning">
+                        <el-alert title="{yun:}t key='admin_system_00358'{/yun}" type="warning">
                         </el-alert>
                     </div>
                     <div v-for="(scitem, scindex) in seoconfigList" :key="scindex" v-if="checkSeoconfig(scitem.seomodel)">
@@ -172,8 +172,8 @@
                     </div>
                 </div>
                 <div class="dialofhooter">
-                    <el-button type="primary" @click="confirmSelection">确 定</el-button>
-                    <el-button @click="centerDialogVisible = false">取 消</el-button>
+                    <el-button type="primary" @click="confirmSelection">{yun:}t key='wap_com_00019'{/yun}</el-button>
+                    <el-button @click="centerDialogVisible = false">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
                 </div>
             </el-drawer>
         </div>
@@ -209,7 +209,7 @@ module.exports = {
     props: ['call', 'config', 'seoid', 'detail'],
     data: function() {
         return {
-            emptytext: '暂无数据',
+            emptytext: "{yun:}t key='wap_js_00113'{/yun}",
             loading: false,
             Dname: {},
             seo: [],
@@ -224,8 +224,7 @@ module.exports = {
             multipleSelection: [],
 
             seomodel: {},
-            headTip: '提示：如果您不是程序员或不清楚用法，请不要随意修改SEO标识符！网站的SEO部分是网站重要部分，请不要经常修改！<br/>根据百度新算法，网站标题请勿堆积关键字，具体请参考<a href="https://ziyuan.baidu.com/college/documentinfo?id=1576&amp;qq-pf-to=pcqq.c2c" target="_blank" style="color:#00F">教程</a>。',
-            titleTip: '一般不超过80个字符，根据百度新算法，请勿堆积关键字，具体请参考<a href="https://ziyuan.baidu.com/college/documentinfo?id=1576&amp;qq-pf-to=pcqq.c2c" target="_blank" style="color:#00F">教程</a>。',
+            headTip: '提示：如果您不是程序员或不清楚用法，请不要随意修改SEO标识符！网站的SEO部分是网站重要部分，请不要经常修改！<br/>{yun:}t key='admin_00972'{/yun}<a href="https://ziyuan.baidu.com/college/documentinfo?id=1576&amp;qq-pf-to=pcqq.c2c" target="_blank" style="color:#00F">{yun:}t key='admin_00973'{/yun}</a>{yun:}t key='admin_00975'{/yun}<a href="https://ziyuan.baidu.com/college/documentinfo?id=1576&amp;qq-pf-to=pcqq.c2c" target="_blank" style="color:#00F">{yun:}t key='admin_00973'{/yun}</a>。',
             saveLoading: false
         }
     },
@@ -242,15 +241,15 @@ module.exports = {
                 call = that.call,
                 url = '',
                 params = {};
-            if (call == 'seo') { // SEO设置
-                url = 'm=system&c=set_seo&a=seoadd';
+            if (call == 'seo") { // SEO{yun:}t key='wap_com_00307'{/yun}
+                url = "m=system&c=set_seo&a=seoadd';
                 params = { id: that.seoid };
-            } else if (call == 'module') { // 模块设置
-                url = 'm=system&c=set_module&a=seoshezhi';
+            } else if (call == 'module") { // {yun:}t key='admin_system_00047'{/yun}
+                url = "m=system&c=set_module&a=seoshezhi';
                 params = { config: that.config };
             }
             that.loading = true;
-            that.emptytext = "数据加载中";
+            that.emptytext = "{yun:}t key='admin_user_weipin_00026'{/yun}";
             httpPost(url, params).then(function(response) {
                 let data = response.data.data;
 
@@ -292,7 +291,7 @@ module.exports = {
                 that.seoconfigList = seoconfigList;
                 that.loading = false;
                 if (that.seoconfigList.length === 0){
-                    that.emptytext = "暂无数据";
+                    that.emptytext = "{yun:}t key='wap_js_00113'{/yun}";
                 }
             })
         },
@@ -373,39 +372,39 @@ module.exports = {
                 url = '';
 
             if (call == 'seo' && !ruleForm.seomodel) {
-                message.warning('请选择SEO模块');
+                message.warning("{yun:}t key='admin_system_00369'{/yun}");
                 return false;
             }
             if (call == 'module' && !ruleForm.seoid) {
-                message.warning('请选择需要修改的SEO模块');
+                message.warning("{yun:}t key='admin_system_00361'{/yun}");
                 return false;
             }
             if (!ruleForm.seoname || ruleForm.seoname == "") {
-                message.warning('请填写SEO名称');
+                message.warning("{yun:}t key='admin_system_00365'{/yun}");
                 return false;
             }
             if (!ruleForm.ident || ruleForm.ident == "") {
-                message.warning('请填写SEO标识');
+                message.warning("{yun:}t key='admin_system_00367'{/yun}");
                 return false;
             }
             if (!ruleForm.title || ruleForm.title == "") {
-                message.warning('请填写SEO标题');
+                message.warning("{yun:}t key='admin_system_00368'{/yun}");
                 return false;
             }
             if (!ruleForm.keywords || ruleForm.keywords == "") {
-                message.warning('请填写SEO关键词');
+                message.warning("{yun:}t key='admin_system_00363'{/yun}");
                 return false;
             }
             if (!ruleForm.description || ruleForm.description == "") {
-                message.warning('请填写SEO描述');
+                message.warning("{yun:}t key='admin_system_00366'{/yun}");
                 return false;
             }
 
-            if (call == 'seo') { // SEO设置
-                url = 'm=system&c=set_seo&a=save';
-            } else if (call == 'module') { // 模块设置
+            if (call == 'seo") { // SEO{yun:}t key='wap_com_00307'{/yun}
+                url = "m=system&c=set_seo&a=save';
+            } else if (call == 'module") { // {yun:}t key='admin_system_00047'{/yun}
                 ruleForm.id = ruleForm.seoid;
-                url = 'm=system&c=set_module&a=seoshezhi';
+                url = "m=system&c=set_module&a=seoshezhi';
             }
             that.saveLoading = true;
             httpPost(url, ruleForm).then(function(response) {
@@ -416,9 +415,9 @@ module.exports = {
                 } else {
                     message.success(res.msg, function() {
                         that.$emit("child-event");
-                        if (call == 'seo') { // SEO设置
+                        if (call == 'seo") { // SEO{yun:}t key='wap_com_00307'{/yun}
                             if (custoapp.curTab == ruleForm.seomodel) { // tab标签相等
-                                custoapp.seotabRefresh(); // 刷新TAB列表
+                                custoapp.seotabRefresh(); // {yun:}t key='wap_user_00334'{/yun}TAB{yun:}t key='wap_00316'{/yun}
                             }
                         }
                     })
@@ -433,7 +432,7 @@ module.exports = {
     watch: {
         config: function(val, oldVal) {
             this.ruleForm = {
-                did: '0'
+                did: "0'
             };
 
             if (this.call == 'module') {

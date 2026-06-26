@@ -36,7 +36,7 @@ class resume_controller extends user{
         	
                 }else{
                   
-    				$rows[$key]['topdate']='未设置';
+    				$rows[$key]['topdate']=yun_at('api_wxapp_00017');
           
     			}
     		}
@@ -123,7 +123,7 @@ class resume_controller extends user{
         
 				$return = $M->buyZdresume($_POST);
         
-				$msg="购买简历置顶";
+				$msg='common_01545';
         
 			}
 			if($return['order']['order_id'] && $return['order']['id']){
@@ -139,7 +139,7 @@ class resume_controller extends user{
 			}
 		}else{
       
-			echo yun_json_encode(array('error'=>1,'msg'=>'参数错误，请重试！'));
+			echo yun_json_encode(array('error'=>1,'msg'=>yun_at('wap_00203')));
       
 		}
     
@@ -161,7 +161,7 @@ class resume_controller extends user{
             $resumeM->upResumeInfo(array('uid' => $this->uid), array('rData' => $data, 'port' => 1));
         }
             
-        $nid?$this->layer_msg('刷新成功！',9,0):$this->layer_msg('刷新失败！',8,0);
+        $nid?$this->layer_msg('wap_01714',9,0):$this->layer_msg('wap_01713',8,0);
     
  	}
 	
@@ -197,7 +197,7 @@ class resume_controller extends user{
         
         $resumeM -> defaults(array('id'=>(int)$_GET['id'],'uid'=>$this->uid));
     
-		$this->layer_msg('操作成功！',9,0,"index.php?c=resume");
+		$this->layer_msg('wap_js_00159',9,0,"index.php?c=resume");
 	}
 }
 ?>

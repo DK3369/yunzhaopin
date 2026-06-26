@@ -44,39 +44,39 @@ class index_controller extends user_controller{
             if ($expect['integrity'] > 0 && $expect['integrity'] < 100){
                 $ur  =  $resumeM->getUserResumeInfo(array('uid' => $this->member['uid'],'eid'=>$expect['id']));
                 if ($ur['expect'] == 0){
-                    $resume['wstitle'] = yun_auto_t('求职意向');
+                    $resume['wstitle'] = yun_at('wap_00460');
                     $resume['wsappurl']= '/pson/pages/usermember/addexpect/index?id='.$expect['id'];
                     $resume['wswapurl']= 'index.php?c=addexpect&eid=' .$expect['id'];
                     $resume['wsts'] = 1;
                 }elseif ($ur['work'] == 0){
-                    $resume['wstitle'] =yun_auto_t('工作经历');
+                    $resume['wstitle'] =yun_at('wap_00457');
                     $resume['wsappurl']= '/pson/pages/usermember/addresume/addresumeson?type=work&eid=' .$expect['id'];
                     $resume['wswapurl']= 'index.php?c=addresumeson&type=work&eid=' .$expect['id'];
                     $resume['wsts'] = 1;
                 }elseif ($ur['edu'] == 0){
-                    $resume['wstitle'] =yun_auto_t('教育经历');
+                    $resume['wstitle'] =yun_at('wap_00459');
                     $resume['wsappurl']= '/pson/pages/usermember/addresume/addresumeson?type=edu&eid=' .$expect['id'];
                     $resume['wswapurl']= 'index.php?c=addresumeson&type=edu&eid=' .$expect['id'];
                     $resume['wsts'] = 1;
                 }elseif ($ur['project'] == 0){
-                    $resume['wstitle'] =yun_auto_t('项目经历');
+                    $resume['wstitle'] =yun_at('wap_00465');
                     $resume['wsappurl']= '/pson/pages/usermember/addresume/addresumeson?type=project&eid=' .$expect['id'];
                     $resume['wswapurl']= 'index.php?c=addresumeson&type=project&eid=' .$expect['id'];
                     $resume['wsts'] = 2;
                 }elseif ($ur['training'] == 0){
-                    $resume['wstitle'] =yun_auto_t('培训经历');
+                    $resume['wstitle'] =yun_at('wap_00455');
                     $resume['wsappurl']= '/pson/pages/usermember/addresume/addresumeson?type=training&eid=' .$expect['id'];
                     $resume['wswapurl']= 'index.php?c=addresumeson&type=training&eid=' .$expect['id'];
                     $resume['wsts'] = 2;
                 }elseif ($ur['skill'] == 0){
-                    $resume['wstitle'] =yun_auto_t('职业技能');
+                    $resume['wstitle'] =yun_at('wap_00461');
                     $resume['wsappurl']= '/pson/pages/usermember/addresume/addresumeson?type=skill&eid=' .$expect['id'];
                     $resume['wswapurl']= 'index.php?c=addresumeson&type=skill&eid=' .$expect['id'];
                     $resume['wsts'] = 2;
                 }
             }
 			if($expect['status']==2 || $expect['status']==3){
-				$resume['wstitle'] =yun_auto_t('隐私设置');
+				$resume['wstitle'] =yun_at('wap_user_00215');
                 $resume['wsappurl']= '/pson/pages/usermember/privacy/index';
                 $resume['wswapurl']= 'index.php?c=privacy';
                 $resume['wsts'] = 3;
@@ -166,11 +166,11 @@ class index_controller extends user_controller{
 					$integral	=	$this->config['integral_signin'];
 				}
 				$signday	=	$member['signday']+1;
-				$msg		=	yun_auto_t('连续签到').$signday.yun_auto_t('天');
+				$msg		=	yun_at('wap_00128').$signday.yun_at('wap_01197');
 			}else{
 				$signday	=	'1';
 				$integral	=	$this->config['integral_signin'];
-				$msg		=	yun_auto_t('第一次签到');
+				$msg		=	yun_at('wap_00125');
 			}
 			$arr	=	array();
 			
@@ -182,15 +182,15 @@ class index_controller extends user_controller{
 				
 				$userinfoM -> upInfo(array('uid'=>$this->member['uid']),array('signday'=>$signday,'signdays'=>array('+','1')));
 				
-				$data['msg']	=	yun_auto_t('签到成功！+').$integral.$this->config['integral_pricename'];
+				$data['msg']	=	yun_at('wap_01296').$integral.$this->config['integral_pricename'];
 				$data['error']	=	1;
 				
 			}else{
-				$data['msg']	=	yun_auto_t('今天已签到');
+				$data['msg']	=	yun_at('wap_01297');
 				$data['error']	=	2;
 			}
 		}else{
-			$data['msg']	=	yun_auto_t('签到失败！');
+			$data['msg']	=	yun_at('wap_01292');
 			$data['error']	=	2;
 		}
 		$this->render_json($data['error'],$data['msg'],$data);

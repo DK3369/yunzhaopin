@@ -27,7 +27,7 @@
 		<div class="zph_show" style="margin-top:0px;">
 		
 			<div class="zph_show_box_tit">
-				<span class="zph_show_box_tit_s"><i class="zph_show_box_tit_line"></i>预订招聘会</span>
+				<span class="zph_show_box_tit_s"><i class="zph_show_box_tit_line"></i>{yun:}t key='common_02456'{/yun}</span>
 			</div> 
 			
 			<div class="zph_show_yd_pic"><img src="{yun:}$Info.is_themb_n{/yun}" width="300" height="220"> </div>
@@ -35,35 +35,35 @@
 			<div class="zph_show_yd_r">
 				<h1 class="zph_show_r_name">{yun:}$Info.title{/yun}</h1>
 				
-				<div class="zph_left_box_icon zph_left_box_zb">主 办 方：</span>{yun:}$Info.organizers{/yun}</div>
+				<div class="zph_left_box_icon zph_left_box_zb">{yun:}t key='common_02457'{/yun}</span>{yun:}$Info.organizers{/yun}</div>
 				<div class="zph_left_box_icon zph_left_box_time">{yun:}t key='wap_00567'{/yun}：</span>{yun:}$Info.starttime{/yun}{yun:}t key='common_02098'{/yun}{yun:}$Info.endtime{/yun}</div>
 				<div class="zph_left_box_icon zph_left_box_add">{yun:}t key='admin_00382'{/yun}：</span>{yun:}$Info.address{/yun}</div>
 				<div class="zph_left_box_icon zph_left_box_xl">{yun:}t key='admin_00284'{/yun}：</span>{yun:}$Info.traffic{/yun}   </div>
 				<div class=" zph_left_box_tel">
-					<span class="zph_left_box_tel_name">联系<br>{yun:}t key='common.phone'{/yun}</span>{yun:}$Info.phone{/yun} 
+					<span class="zph_left_box_tel_name">{yun:}t key='common_02458'{/yun}<br>{yun:}t key='common.phone'{/yun}</span>{yun:}$Info.phone{/yun} 
 					{yun:}if $Info.user{/yun}<span class="zph_left_box_tel_n">( {yun:}$Info.user{/yun} )</span>  {yun:}/if{/yun}
 				</div>
 			</div>
 			{yun:}if $Info.stime < '0' && $Info.etime > '0'{/yun}
 				<div class="job_fairs_In fairs_Status png" >{yun:}t key='default_00342'{/yun}</div>
 			{yun:}elseif $Info.etime < '0'{/yun}	
-				<div class="job_fairs_end fairs_Status png" >已举办</div>
+				<div class="job_fairs_end fairs_Status png" >{yun:}t key='common_02459'{/yun}</div>
 			{yun:}else{/yun}
 				<div class="job_fairs_nostart fairs_Status png" >{yun:}t key='admin_00319'{/yun}</div>
 			{yun:}/if{/yun} 
 		</div> 
 
-		<!--招聘会展位图-->
+		<!--{yun:}t key='wap_01343'{/yun}-->
 
 		{yun:}if $space.pic{/yun} 
 			<div class="zph_show_box">	
-				<div class="zph_show_box_tit"><span class="zph_show_box_tit_s"><i class="zph_show_box_tit_line"></i>招聘会展位图</span></div>
+				<div class="zph_show_box_tit"><span class="zph_show_box_tit_s"><i class="zph_show_box_tit_line"></i>{yun:}t key='wap_01343'{/yun}</span></div>
 				<div class="zph_show_box_zw"> <img src="{yun:}$space.pic_n{/yun}"  class="png" /> </div>
 			</div>
 		{yun:}/if{/yun}
 		
 		<div class="zph_show_box">
-			<div class="zph_show_box_tit"><span class="zph_show_box_tit_s"><i class="zph_show_box_tit_line"></i>招聘会展位在线预订</span></div>
+			<div class="zph_show_box_tit"><span class="zph_show_box_tit_s"><i class="zph_show_box_tit_line"></i>{yun:}t key='wap_01344'{/yun}</span></div>
 			<div class="job_fairs_main  fl" >
 				<div class="fairs_title fl">	
 					<div class="fairs_title_h fl">{yun:}t key='default_00338'{/yun}</div>
@@ -74,7 +74,7 @@
 						</dl>
 						<dl class="fairs_title_items fl">
 							<dt><img src="{yun:}$style{/yun}/images/fairs_have.png"/></dt>
-							<dd>已被预订</dd>
+							<dd>{yun:}t key='common_02460'{/yun}</dd>
 						</dl>
 						<dl class="fairs_title_items fl">
 							<dt><img src="{yun:}$style{/yun}/images/fairs_can.png"/></dt>
@@ -105,7 +105,7 @@
 												{yun:}if $val.comstatus==0{/yun}
 													<dt><img src="{yun:}$style{/yun}/images/fairs_start.png"/></dt><dd class="fairs_disp_items_bkyd">{yun:}t key='wap_user_00174'{/yun}</dd>
 												{yun:}else{/yun}	
-													<dt><img src="{yun:}$style{/yun}/images/fairs_have.png"/></dt><dd class="fairs_disp_items_bkyd">已被预订</dd>
+													<dt><img src="{yun:}$style{/yun}/images/fairs_have.png"/></dt><dd class="fairs_disp_items_bkyd">{yun:}t key='common_02460'{/yun}</dd>
 												{yun:}/if{/yun}
 												<dd>{yun:}$val.name{/yun}</dd>
 												
@@ -147,7 +147,7 @@
 							<input id="zid" value="{yun:}$Info.id{/yun}" type="hidden" />
 							<div class="yd_zph_tck">
 								<div class="yd_zph_tck_h1">{yun:}t key='common_02173'{/yun}！</div>
-								<div class="yd_zph_tck_jobtit">请选择参与招聘会的职位：</div>
+								<div class="yd_zph_tck_jobtit">{yun:}t key='common_02461'{/yun}</div>
 								<div class="layui-input-inline">
 									<input name="checkall" value="checkall"  lay-filter="allChoose"  id="checkall" type="checkbox" lay-skin="primary" title="{yun:}t key='wap_js_00074'{/yun}" class="check_all"/>
 								</div>
@@ -187,7 +187,7 @@
 		{yun:}/if{/yun}
 		{yun:}if $Info.packages{/yun}
 			<div class="zph_show_box">
-				<div class="zph_show_box_tit"><span class="zph_show_box_tit_s"><i class="zph_show_box_tit_line"></i>超值服务套餐</span></div>
+				<div class="zph_show_box_tit"><span class="zph_show_box_tit_s"><i class="zph_show_box_tit_line"></i>{yun:}t key='wap_01338'{/yun}</span></div>
 				<div class="zph_show_box_p img_auto"> {yun:}$Info.packages{/yun} </div>
 			</div>
 		{yun:}/if{/yun}
@@ -205,7 +205,7 @@
 		{yun:}/if{/yun}
 		{yun:}if $Image_info{/yun}
 			<div class="zph_show_box">
-				<div class="zph_show_box_tit"><span class="zph_show_box_tit_s"><i class="zph_show_box_tit_line"></i>展会图片</span></div>
+				<div class="zph_show_box_tit"><span class="zph_show_box_tit_s"><i class="zph_show_box_tit_line"></i>{yun:}t key='common_02462'{/yun}</span></div>
 				<div class="fairs_introduction_cc" >
 					<ul class="fairs_introduction_img" id="rolling_img1">
 						{yun:}foreach item=zph from=$Image_info{/yun}

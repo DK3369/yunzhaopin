@@ -3,7 +3,7 @@
         <div class="drawerModInfo">
             <div v-if="keyid_name" class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>上　　级：</span>
+                    <span>{yun:}t key='admin_system_00084'{/yun}</span>
                 </div>
                 <div class="drawerModInpt">
                     <div class="spandiv">{{ keyid_name }}</div>
@@ -11,15 +11,15 @@
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>城市名称：</span>
+                    <span>{yun:}t key='admin_system_00083'{/yun}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input v-model="ruleForm.name" placeholder="请输入内容"></el-input>
+                    <el-input v-model="ruleForm.name" placeholder="{yun:}t key='wap_user_00076'{/yun}"></el-input>
                 </div>
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>英文名称/拼音：</span>
+                    <span>{yun:}t key='admin_system_00088'{/yun}</span>
                 </div>
                 <div class="drawerModInpt">
                     <el-input v-model="ruleForm.e_name"></el-input>
@@ -27,10 +27,10 @@
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>字　　母：</span>
+                    <span>{yun:}t key='admin_system_00086'{/yun}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-select v-model="ruleForm.letter" placeholder="请选择" filterable>
+                    <el-select v-model="ruleForm.letter" placeholder="{yun:}t key='wap_user_00100'{/yun}" filterable>
                         <el-option v-for="item in letterOptions" :key="item" :label="item" :value="item">
                         </el-option>
                     </el-select>
@@ -38,10 +38,10 @@
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>显　　示：</span>
+                    <span>{yun:}t key='admin_system_00087'{/yun}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-select v-model="ruleForm.display" placeholder="请选择">
+                    <el-select v-model="ruleForm.display" placeholder="{yun:}t key='wap_user_00100'{/yun}">
                         <el-option v-for="item in displayOptions" :key="item.value" :label="item.label" :value="item.value">
                         </el-option>
                     </el-select>
@@ -49,7 +49,7 @@
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>区域编号：</span>
+                    <span>{yun:}t key='admin_system_00085'{/yun}</span>
                 </div>
                 <div class="drawerModInpt">
                     <el-input v-model="ruleForm.code" placeholder=""></el-input>
@@ -57,7 +57,7 @@
             </div>
         </div>
         <div class="setBasicButn" style="border: none;">
-            <el-button type="primary" size="medium" @click="submitForm('ruleForm')" :disabled="submitLoading">保存</el-button>
+            <el-button type="primary" size="medium" @click="submitForm('ruleForm')" :disabled="submitLoading">{yun:}t key='common.save'{/yun}</el-button>
         </div>
     </div>
 </template>
@@ -97,7 +97,7 @@ module.exports = {
             this.ruleForm.keyid = this.keyid;
             let params = JSON.parse(JSON.stringify(this.ruleForm));
             if (params.name == '') {
-                message.error(window.yunAdminT('城市名称不能为空！'));
+                message.error(window.yunAdminT("{yun:}t key='admin_system_00089'{/yun}"));
                 return;
             }
             _this.submitLoading = true;

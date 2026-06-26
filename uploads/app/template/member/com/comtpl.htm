@@ -34,7 +34,7 @@
             action="{yun:}$now_url{/yun}&act=settpl">
             <input type="hidden" value="savetpl" name="savetpl" />
             <div class="com_new_tip">
- <span class="com_new_tip_h">{yun:}t key='member_com_00040'{/yun}</span>公司相册方便求职者了解贵公司的直观呈现，横版拍摄上传效果最佳
+ <span class="com_new_tip_h">{yun:}t key='member_com_00040'{/yun}</span>{yun:}t key='member_com_00553'{/yun}
  </div>
             <table class="com_table">
               <tr>
@@ -59,7 +59,7 @@
                       {yun:}$style.price{/yun}
                       {yun:}$config.integral_priceunit{/yun}{yun:}$config.integral_pricename{/yun}
                       {yun:}else{/yun}
-                      免费
+                      {yun:}t key='member_user_00572'{/yun}
                       {yun:}/if{/yun}
                     </b>
                   </div>
@@ -70,7 +70,7 @@
                   {yun:}if $style.url=='default'{/yun}
                   {yun:}if $statis.comtpl=='0' || $statis.comtpl=='default'{/yun}
 
-                  <span class=" compl_list_b_optsy">使用中</span>
+                  <span class=" compl_list_b_optsy">{yun:}t key='member_user_00573'{/yun}</span>
                   <a href="index.php?c=banner" class="com_bth cblue"> {yun:}t key='member_com_00077'{/yun}</a>
 
                   {yun:}else{/yun}
@@ -83,7 +83,7 @@
                   {yun:}if $statis.comtpl==$style.url{/yun}
 
 
-                  <span class="  ">使用中</span>
+                  <span class="  ">{yun:}t key='member_user_00573'{/yun}</span>
                   <a href="index.php?c=banner" class="com_bth cblue"> {yun:}t key='member_com_00077'{/yun}</a>
                                   {yun:}else{/yun}
                   <a href="javascript:void(0);" onclick="return checktpl('{yun:}$style.id{/yun}');"
@@ -115,7 +115,7 @@
     <script language="javascript">
       $(document).ready(function() {
         $(".com_admin_ask").hover(function() {
-          layer.tips("为自己的公司选择一个合适的展示风格！", this, {
+          layer.tips("{yun:}t key='member_com_00554'{/yun}", this, {
             guide: 1,
             style: ['background-color:#5EA7DC; color:#fff;top:-7px', '#5EA7DC']
           });

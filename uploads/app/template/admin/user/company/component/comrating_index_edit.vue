@@ -3,26 +3,26 @@
     <div v-loading="loading" class="drawerModlue">
         <div class="drawerModInfo drawerModInfoOne">
             <div class="adminBoldTips">
-                <el-alert title="企业会员等级关乎您的收入问题，请谨慎添加和修改并注意整体的合理性。" show-icon type="success"></el-alert>
+                <el-alert title="{yun:}t key='admin_user_company_00179'{/yun}" show-icon type="success"></el-alert>
                 
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>会员模式</span>
+                    <span>{yun:}t key='admin_user_company_00193'{/yun}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-radio v-model="ruleForm.type" label="1">套餐模式</el-radio>
-                    <el-radio v-model="ruleForm.type" label="2">时间模式</el-radio>
+                    <el-radio v-model="ruleForm.type" label="1">{yun:}t key='admin_user_company_00198'{/yun}</el-radio>
+                    <el-radio v-model="ruleForm.type" label="2">{yun:}t key='admin_user_company_00199'{/yun}</el-radio>
                 </div>
                 <div class="drawerModTips">
-                    <el-alert title="套餐模式针对下载简历等数量控制，时间模式在服务有效期内，不限数量，可以限制每日上限"
+                    <el-alert title="{yun:}t key='admin_user_company_00177'{/yun}"
                               type="info" show-icon :closable="false">
                     </el-alert>
                 </div>
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>会员名称</span>
+                    <span>{yun:}t key='admin_user_company_00191'{/yun}</span>
                 </div>
                 <div class="drawerModInpt">
                     <el-input v-model="ruleForm.name" style="margin-right: 8px"></el-input>
@@ -33,11 +33,11 @@
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>服务价格</span>
+                    <span>{yun:}t key='admin_user_company_00021'{/yun}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input v-model="ruleForm.service_price" placeholder="请输入数字">
-                        <span slot="suffix" class="slotspan">元</span>
+                    <el-input v-model="ruleForm.service_price" placeholder="{yun:}t key='admin_user_00342'{/yun}">
+                        <span slot="suffix" class="slotspan">{yun:}t key='common_02056'{/yun}</span>
                     </el-input>
                 </div>
                 <div class="drawerModTips">
@@ -45,11 +45,11 @@
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>服务时间</span>
+                    <span>{yun:}t key='admin_user_company_00022'{/yun}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input v-model="ruleForm.service_time" placeholder="请输入数字">
-                        <span slot="suffix" class="slotspan">天</span>
+                    <el-input v-model="ruleForm.service_time" placeholder="{yun:}t key='admin_user_00342'{/yun}">
+                        <span slot="suffix" class="slotspan">{yun:}t key='common_02067'{/yun}</span>
                     </el-input>
                 </div>
                 <div class="drawerModTips">
@@ -57,73 +57,73 @@
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>等级排序</span>
+                    <span>{yun:}t key='admin_00693'{/yun}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input v-model="ruleForm.sort" placeholder="请输入数字"></el-input>
+                    <el-input v-model="ruleForm.sort" placeholder="{yun:}t key='admin_user_00342'{/yun}"></el-input>
                 </div>
                 <div class="drawerModTips">
-                    <el-alert title="大前小后" type="info" show-icon :closable="false">
+                    <el-alert title="{yun:}t key='admin_user_company_00197'{/yun}" type="info" show-icon :closable="false">
                     </el-alert>
                 </div>
             </div>
 			
 			<div class="drawerModLis">
 			    <div class="drawerModTite">
-			        <span>最长有效天数</span>
+			        <span>{yun:}t key='admin_user_company_00189'{/yun}</span>
 			    </div>
 			    <div class="drawerModInpt">
-			        <el-input v-model="ruleForm.max_time" placeholder="请输入数字">
-			            <span slot="suffix" class="slotspan">天</span>
+			        <el-input v-model="ruleForm.max_time" placeholder="{yun:}t key='admin_user_00342'{/yun}">
+			            <span slot="suffix" class="slotspan">{yun:}t key='common_02067'{/yun}</span>
 			        </el-input>
 			    </div>
 			    <div class="drawerModTips">
-					<el-alert title="最长有效期不能小于服务时间,为0时不限。" type="info" show-icon :closable="false">
+					<el-alert title="{yun:}t key='admin_user_company_00183'{/yun}" type="info" show-icon :closable="false">
                     </el-alert>
-                    <el-alert title="不管企业是否被暂停，超过最长有效期后都作过期处理。" type="info" show-icon :closable="false">
+                    <el-alert title="{yun:}t key='admin_user_company_00181'{/yun}" type="info" show-icon :closable="false">
                     </el-alert>
 			    </div>
 			</div>
 			<div class="drawerModLis">
 			    <div class="drawerModTite">
-			        <span>可暂停次数</span>
+			        <span>{yun:}t key='admin_user_company_00125'{/yun}</span>
 			    </div>
 			    <div class="drawerModInpt">
-			        <el-input v-model="ruleForm.suspend_num" placeholder="请输入数字">
-			            <span slot="suffix" class="slotspan">次</span>
+			        <el-input v-model="ruleForm.suspend_num" placeholder="{yun:}t key='admin_user_00342'{/yun}">
+			            <span slot="suffix" class="slotspan">{yun:}t key='common_02089'{/yun}</span>
 			        </el-input>
 			    </div>
 			    <div class="drawerModTips">
-					<el-alert title="最长有效期内可暂停次数" type="info" show-icon :closable="false">
+					<el-alert title="{yun:}t key='admin_user_company_00185'{/yun}" type="info" show-icon :closable="false">
 					</el-alert>
 				</div>
 			</div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>会员状态</span>
+                    <span>{yun:}t key='admin_00694'{/yun}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-radio v-model="ruleForm.display" label="1">启用</el-radio>
-                    <el-radio v-model="ruleForm.display" label="0">不启用</el-radio>
+                    <el-radio v-model="ruleForm.display" label="1">{yun:}t key='admin_user_company_00205'{/yun}</el-radio>
+                    <el-radio v-model="ruleForm.display" label="0">{yun:}t key='admin_user_company_00203'{/yun}</el-radio>
                 </div>
                 <div class="drawerModTips">
-                    <el-alert title="前台是否可见" type="info" show-icon :closable="false">
+                    <el-alert title="{yun:}t key='admin_user_company_00188'{/yun}" type="info" show-icon :closable="false">
                     </el-alert>
                 </div>
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>会员图标</span>
+                    <span>{yun:}t key='admin_user_company_00192'{/yun}</span>
                 </div>
                 <div class="drawerModInpt" style="display: flex;align-items: center;">
                     <el-upload ref="compic" :action="uploadAction" :on-change="uploadChange" :accept="pic_accept"
                                :show-file-list="false">
-                        <el-button size="small" type="primary">上传图片</el-button>
+                        <el-button size="small" type="primary">{yun:}t key='wap_00540'{/yun}</el-button>
                     </el-upload>
                     <div class="up_sy_logo_div" style="margin-left: 15px; position: relative;">
                         <el-image v-if="ruleForm.com_pic" style="width:40px;height:40px;" :src="ruleForm.com_pic"
                                   :preview-src-list="ruleForm.com_pic ? [ruleForm.com_pic] : []"></el-image>
-                    <span style=" display: block;width:150px;;position: absolute;left:60px;top:50%; margin-top: -10px;"><el-link type="danger" :underline="false" v-if="ruleForm.com_pic" @click="delpic"  icon="el-icon-delete">删除图标</el-link></span>
+                    <span style=" display: block;width:150px;;position: absolute;left:60px;top:50%; margin-top: -10px;"><el-link type="danger" :underline="false" v-if="ruleForm.com_pic" @click="delpic"  icon="el-icon-delete">{yun:}t key='admin_user_company_00194'{/yun}</el-link></span>
                     </div>
                 </div>
                 <div class="drawerModTips">
@@ -131,7 +131,7 @@
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>等级说明</span>
+                    <span>{yun:}t key='admin_00695'{/yun}</span>
                 </div>
                 <div class="drawerModInpt">
                     <el-input v-model="ruleForm.explains" type="textarea"
@@ -142,93 +142,93 @@
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>赠送积分</span>
+                    <span>{yun:}t key='admin_user_company_00202'{/yun}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input v-model="ruleForm.integral_buy" placeholder="请输入数字" onkeyup="this.value=this.value.replace(/[^0-9]/g,'')">
+                    <el-input v-model="ruleForm.integral_buy" placeholder="{yun:}t key='admin_user_00342'{/yun}" onkeyup="this.value=this.value.replace(/[^0-9]/g,'')">
                     </el-input>
                 </div>
                 <div class="drawerModTips">
-                    <el-alert title="企业购买套餐赠送一定积分用于职位置顶、紧急招聘等服务" type="info" show-icon :closable="false">
+                    <el-alert title="{yun:}t key='admin_user_company_00180'{/yun}" type="info" show-icon :closable="false">
                     </el-alert>
                 </div>
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>增值折扣</span>
+                    <span>{yun:}t key='admin_user_company_00196'{/yun}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input v-model="ruleForm.service_discount" placeholder="请输入数字"><span slot="suffix"
+                    <el-input v-model="ruleForm.service_discount" placeholder="{yun:}t key='admin_user_00342'{/yun}"><span slot="suffix"
                                                                                                  class="slotspan">%</span>
                     </el-input>
                 </div>
                 <div class="drawerModTips">
-                    <el-alert title="折扣针对不同等级会员所购买增值包服务享有的优惠！（0、100表示无折扣，88表示八八折）"
+                    <el-alert title="{yun:}t key='admin_user_company_00176'{/yun}"
                               type="info" show-icon :closable="false">
                     </el-alert>
                 </div>
             </div>
             <div class="drawerModLis drawerModInFlex">
                 <div class="drawerModTite">
-                    <span>基础套餐</span>
+                    <span>{yun:}t key='admin_user_company_00195'{/yun}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input v-model="ruleForm.resume" placeholder="请输入数字">
-                        <template slot="prepend">下载简历</template>
-                        <span slot="suffix" class="slotspan">份</span>
+                    <el-input v-model="ruleForm.resume" placeholder="{yun:}t key='admin_user_00342'{/yun}">
+                        <template slot="prepend">{yun:}t key='wap_00451'{/yun}</template>
+                        <span slot="suffix" class="slotspan">{yun:}t key='common_02052'{/yun}</span>
                     </el-input>
-                    <el-input v-model="ruleForm.interview" placeholder="请输入数字" style="margin-left: 10px;">
-                        <template slot="prepend">邀请面试</template>
-                        <span slot="suffix" class="slotspan">份</span>
+                    <el-input v-model="ruleForm.interview" placeholder="{yun:}t key='admin_user_00342'{/yun}" style="margin-left: 10px;">
+                        <template slot="prepend">{yun:}t key='resume_00029'{/yun}</template>
+                        <span slot="suffix" class="slotspan">{yun:}t key='common_02052'{/yun}</span>
                     </el-input>
-                    <el-input v-model="ruleForm.breakjob_num" placeholder="请输入数字">
-                        <template slot="prepend">刷新职位</template>
-                        <span slot="suffix" class="slotspan">次</span>
+                    <el-input v-model="ruleForm.breakjob_num" placeholder="{yun:}t key='admin_user_00342'{/yun}">
+                        <template slot="prepend">{yun:}t key='wap_com_00029'{/yun}</template>
+                        <span slot="suffix" class="slotspan">{yun:}t key='common_02089'{/yun}</span>
                     </el-input>
-                    <el-input v-model="ruleForm.zph_num" placeholder="请输入数字" style="margin-left: 10px;">
-                        <template slot="prepend">招聘会报名</template>
-                        <span slot="suffix" class="slotspan">次</span>
+                    <el-input v-model="ruleForm.zph_num" placeholder="{yun:}t key='admin_user_00342'{/yun}" style="margin-left: 10px;">
+                        <template slot="prepend">{yun:}t key='wap_com_00039'{/yun}</template>
+                        <span slot="suffix" class="slotspan">{yun:}t key='common_02089'{/yun}</span>
                     </el-input>
                     
                 </div>
                 <div class="drawerModTips">
                     <el-alert v-if="ruleForm.type == 2"
-                              title="时间会员 - 基础套餐限制每日操作数量；例如：每日最多下载 X 份简历" type="warning"
+                              title="{yun:}t key='admin_user_company_00178'{/yun}" type="warning"
                               show-icon :closable="false">
                     </el-alert>
                 </div>
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>职位套餐</span>
+                    <span>{yun:}t key='admin_00696'{/yun}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input v-model="ruleForm.job_num" placeholder="请输入数字">
-                        <span slot="suffix" class="slotspan">份</span>
+                    <el-input v-model="ruleForm.job_num" placeholder="{yun:}t key='admin_user_00342'{/yun}">
+                        <span slot="suffix" class="slotspan">{yun:}t key='common_02052'{/yun}</span>
                     </el-input>
                 </div>
                 <div class="drawerModTips">
-                    <el-alert title="可上架职位总数，套餐模式和时间模式同步，不做区分" type="info" show-icon
+                    <el-alert title="{yun:}t key='admin_user_company_00182'{/yun}" type="info" show-icon
                               :closable="false">
                     </el-alert>
                 </div>
             </div>
             <div class="drawerModLis drawerModInFlex">
                 <div class="drawerModTite">
-                    <span>职位推广</span>
+                    <span>{yun:}t key='wap_com_00236'{/yun}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input v-model="ruleForm.top_num" placeholder="请输入数字">
-                        <template slot="prepend">置顶天数</template>
-                        <span slot="suffix" class="slotspan">天</span>
+                    <el-input v-model="ruleForm.top_num" placeholder="{yun:}t key='admin_user_00342'{/yun}">
+                        <template slot="prepend">{yun:}t key='wap_user_00209'{/yun}</template>
+                        <span slot="suffix" class="slotspan">{yun:}t key='common_02067'{/yun}</span>
                     </el-input>
-                    <el-input v-model="ruleForm.urgent_num" placeholder="请输入数字" style="margin-left: 10px;">
-                        <template slot="prepend">紧急天数</template>
-                        <span slot="suffix" class="slotspan">天</span>
+                    <el-input v-model="ruleForm.urgent_num" placeholder="{yun:}t key='admin_user_00342'{/yun}" style="margin-left: 10px;">
+                        <template slot="prepend">{yun:}t key='wap_com_00043'{/yun}</template>
+                        <span slot="suffix" class="slotspan">{yun:}t key='common_02067'{/yun}</span>
                     </el-input>
-                    <el-input v-model="ruleForm.rec_num" placeholder="请输入数字">
-                        <template slot="prepend">推荐天数</template>
-                        <span slot="suffix" class="slotspan">天</span>
+                    <el-input v-model="ruleForm.rec_num" placeholder="{yun:}t key='admin_user_00342'{/yun}">
+                        <template slot="prepend">{yun:}t key='wap_com_00041'{/yun}</template>
+                        <span slot="suffix" class="slotspan">{yun:}t key='common_02067'{/yun}</span>
                     </el-input>
                 </div>
                 <div class="drawerModTips">
@@ -236,31 +236,31 @@
             </div>
             <div class="drawerModLis drawerModInFlex">
                 <div class="drawerModTite">
-                    <span>每日免费</span>
+                    <span>{yun:}t key='admin_user_company_00201'{/yun}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input v-model="ruleForm.freerefresh_num" placeholder="请输入数字">
-                        <template slot="prepend">刷新职位</template>
-                        <span slot="suffix" class="slotspan">次</span>
+                    <el-input v-model="ruleForm.freerefresh_num" placeholder="{yun:}t key='admin_user_00342'{/yun}">
+                        <template slot="prepend">{yun:}t key='wap_com_00029'{/yun}</template>
+                        <span slot="suffix" class="slotspan">{yun:}t key='common_02089'{/yun}</span>
                     </el-input>
-                    <el-input v-model="ruleForm.freelook_num" placeholder="请输入数字" style="margin-left: 10px;">
-                        <template slot="prepend">查看投递</template>
-                        <span slot="suffix" class="slotspan">份</span>
+                    <el-input v-model="ruleForm.freelook_num" placeholder="{yun:}t key='admin_user_00342'{/yun}" style="margin-left: 10px;">
+                        <template slot="prepend">{yun:}t key='admin_user_company_00200'{/yun}</template>
+                        <span slot="suffix" class="slotspan">{yun:}t key='common_02052'{/yun}</span>
                     </el-input>
                     
                 </div>
                 <div class="drawerModTips">
                     <el-alert
-                            title="刷新职位：每天可免费刷新职位数量，企业客户刷新职位操作，优先扣除每日免费刷新套餐。超出后，需花费基础套餐刷新点数。"
+                            title="{yun:}t key='admin_user_company_00175'{/yun}"
                             type="info" show-icon :closable="false"></el-alert>
                     <el-alert
-                            title="查看投递：针对求职者主动投递的简历，企业每天可以免费下载、查看其联系方式的数量。超出后，需花费基础套餐下载简历点数。"
+                            title="{yun:}t key='admin_user_company_00174'{/yun}"
                             type="info" show-icon :closable="false"></el-alert>
                 </div>
             </div>
         </div>
         <div class="setBasicButn" style="border: none;">
-            <el-button type="primary" size="medium" @click="submitForm('ruleForm')" :disabled="submitLoading">提交
+            <el-button type="primary" size="medium" @click="submitForm('ruleForm')" :disabled="submitLoading">{yun:}t key='common.submit'{/yun}
             </el-button>
         </div>
     </div>
@@ -283,63 +283,63 @@ module.exports = {
                 //会员模式
                 type: null,
                 //会员名称
-                name: '',
-                //优惠活动
+                name: '",
+                //{yun:}t key='admin_user_company_00190'{/yun}
                 youhuiBool: false,
                 //优惠价格
-                yh_price: '',
+                yh_price: "",
                 //优惠日期
                 time: null,
-                //服务价格
-                service_price: '',
-                //服务时间
-                service_time: '',
-                //等级排序
-                sort: '',
-                //会员状态
+                //{yun:}t key='admin_user_company_00021'{/yun}
+                service_price: "",
+                //{yun:}t key='admin_user_company_00022'{/yun}
+                service_time: "",
+                //{yun:}t key='admin_00693'{/yun}
+                sort: "",
+                //{yun:}t key='admin_00694'{/yun}
                 display: null,
-                //会员图标
-                com_pic: '',
-                //等级说明
-                explains: '',
-                //赠送
-                integral_buy: '0',
-                //增值折扣
-                service_discount: '',
-                //下载简历
+                //{yun:}t key='admin_user_company_00192'{/yun}
+                com_pic: "",
+                //{yun:}t key='admin_00695'{/yun}
+                explains: "",
+                //{yun:}t key='wap_01823'{/yun}
+                integral_buy: "0",
+                //{yun:}t key='admin_user_company_00196'{/yun}
+                service_discount: "',
+                // Download resume
                 resume: '',
-                //邀请面试
+                // Interview invitation
                 interview: '',
-                //刷新职位
-                breakjob_num: '',
-                //招聘会报名
-                zph_num: '',
+                // refreshJob
+                breakjob_num: '",
+                //{yun:}t key='wap_com_00039'{/yun}
+                zph_num: "',
                 //
-                chat_num: '',
-                //职位套餐
-                job_num: '',
-                //置顶天数
-                top_num: '',
-                //紧急天数
-                urgent_num: '',
-                //推荐天数
-                rec_num: '',
-                //刷新职位
-                freerefresh_num: '',
-                //查看投递
-                freelook_num: '',
+                chat_num: '",
+                //{yun:}t key='admin_00696'{/yun}
+                job_num: "",
+                //{yun:}t key='wap_user_00209'{/yun}
+                top_num: "",
+                //{yun:}t key='wap_com_00043'{/yun}
+                urgent_num: "",
+                //{yun:}t key='wap_com_00041'{/yun}
+                rec_num: "',
+                // refreshJob
+                freerefresh_num: '",
+                //{yun:}t key='admin_user_company_00200'{/yun}
+                freelook_num: "',
                 //主动聊天
                 freeactchat_num: '',
                 //回复聊天
-                freerepchat_num: '',
-				//可暂停次数
+                freerepchat_num: '",
+				//{yun:}t key='admin_user_company_00125'{/yun}
 				suspend_num: 0,
 				//最长有效期天数
 				max_time:0
             },
             file: [],//暂存文件
             haspic:false,
-            uploadAction: baseUrl + 'm=common&c=common_upload'
+            uploadAction: baseUrl + "m=common&c=common_upload'
         }
     },
     created() {
@@ -351,7 +351,7 @@ module.exports = {
         delpic(){
             if(this.haspic){
                 var params = {id:this.id};
-                delConfirm(this, params, this.delpicPost,'确定要删除？');
+                delConfirm(this, params, this.delpicPost,"{yun:}t key='wap_user_00001'{/yun}");
             }else if (this.file.length !== 0) {
                 this.file = [];
                 this.ruleForm.com_pic = '';
@@ -363,12 +363,12 @@ module.exports = {
             httpPost('m=user&c=company_comrating&a=delpic', params).then(function (response) {
                 let res = response.data;
                 if (res.error === 0) {
-                    message.success('删除成功！');
+                    message.success("{yun:}t key='admin_user_00187'{/yun}");
                     _this.ruleForm.com_pic = '';
                     _this.file = [];
                     _this.$refs.compic.clearFiles();
                 } else {
-                    message.error('删除失败！');
+                    message.error("{yun:}t key='admin_user_00186'{/yun}");
                 }
             }).catch(function (error) {
                 console.log(error);
@@ -430,17 +430,17 @@ module.exports = {
             }
             if (params.youhuiBool) {
                 if (parseFloat(params.yh_price) <= 0 || parseFloat(params.yh_price) > parseFloat(params.service_price)) {
-                    message.error('请填写合理的优化价格！');
+                    message.error("{yun:}t key='admin_user_company_00186'{/yun}");
                     return false;
                 }
                 if (!params.time) {
-                    message.error('请选择优惠时间！');
+                    message.error("{yun:}t key='admin_user_company_00187'{/yun}");
                     return false;
                 }
             }
 			
 			if(parseInt(params.max_time)>0 && parseInt(params.service_time) > parseInt(params.max_time)){
-				message.error('最长有效期不能小于服务时间！');
+				message.error("{yun:}t key='admin_user_company_00184'{/yun}");
 				return false;
 			}
 			

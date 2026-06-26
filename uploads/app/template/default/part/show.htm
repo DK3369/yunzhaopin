@@ -34,7 +34,7 @@
                 <div class="yun_part_show_jobxx">
                     {yun:}$job.cityname{/yun}
                     <span class="yun_part_show_jobxx_yl">{yun:}$job.lastupdate|date_format:"%Y-%m-%d"{/yun} {yun:}t key='wap_00225'{/yun}</span>
-                    <span class="yun_part_show_jobxx_yl">{yun:}$job.hits{/yun} 次浏览</span>
+                    <span class="yun_part_show_jobxx_yl">{yun:}$job.hits{/yun} {yun:}t key='common_02191'{/yun}</span>
                 </div>
 
                 <div class="wx_share_fx">
@@ -71,7 +71,7 @@
                         <span class="con_require_con">{yun:}$job.billing_cycle_n{/yun}</span>
                     </div>
                     <div class="yun_part_show_jobinfo_p">
-                        <span class="yun_part_show_jobinfo_p_s">有效期至：</span>
+                        <span class="yun_part_show_jobinfo_p_s">{yun:}t key='wap_01394'{/yun}</span>
                         <span class="con_require_con">{yun:}if $job.edate{/yun}{yun:}$job.edate|date_format:'%Y-%m-%d'{/yun}{yun:}else{/yun}{yun:}t key='wap_js_00135'{/yun}{yun:}/if{/yun}</span>
                     </div>
                     <div class="yun_part_show_jobinfo_p">
@@ -82,14 +82,14 @@
                         <span class="yun_part_show_jobinfo_p_s">{yun:}t key='wap_user_00265'{/yun}：</span>
                         <span class="con_require_con">
                             {yun:}$job.linktel_n{/yun}
-                            <a href="javascript:void(0);" onclick="wxScanShowTel('{yun:}$job.id{/yun}')" class="job_details_touch_tel_bth" style="width:80px">微信扫码查看</a>
+                            <a href="javascript:void(0);" onclick="wxScanShowTel('{yun:}$job.id{/yun}')" class="job_details_touch_tel_bth" style="width:80px">{yun:}t key='common_02372'{/yun}</a>
                         </span>
                     </div>
                     {yun:}else{/yun}
                         <div class="yun_part_show_jobinfo_p">
                             <span class="yun_part_show_jobinfo_p_s">{yun:}t key='wap_user_00265'{/yun}：</span>
                             <span class="con_require_con">
-                                {yun:}if $job.link_tip==1 || $job.link_tip==2 || $job.link_tip==3{/yun}暂未开放联系方式
+                                {yun:}if $job.link_tip==1 || $job.link_tip==2 || $job.link_tip==3{/yun}{yun:}t key='wap_01395'{/yun}
                                 {yun:}else if $job.link_tip==4{/yun}{yun:}t key='wap_00369'{/yun}
                                 {yun:}else if $job.link_tip==5{/yun}{yun:}t key='wap_00370'{/yun}
                                 {yun:}else if $job.link_tip==6{/yun}{yun:}t key='wap_00371'{/yun}
@@ -125,9 +125,9 @@
                         {yun:}else{/yun}
                             {yun:}if $uid{/yun}
                                 {yun:}if $config.sy_user_change==1{/yun}
-                                    <a class="partjob_bmbth" onclick="layer.msg('请先申请个人用户才能申请报名', 2, 8);" href="javascript:;">{yun:}t key='default_00279'{/yun}</a>
+                                    <a class="partjob_bmbth" onclick="layer.msg('{yun:}t key='common_02478'{/yun}', 2, 8);" href="javascript:;">{yun:}t key='default_00279'{/yun}</a>
                                 {yun:}else{/yun}
-                                    <a class="partjob_bmbth" onclick="layer.msg('只有个人用户才能申请报名', 2, 8);" href="javascript:;">{yun:}t key='default_00279'{/yun}</a>
+                                    <a class="partjob_bmbth" onclick="layer.msg('{yun:}t key='wap_01396'{/yun}', 2, 8);" href="javascript:;">{yun:}t key='default_00279'{/yun}</a>
                                 {yun:}/if{/yun}
                             {yun:}else{/yun}
                                 <a class="partjob_bmbth" onclick="showlogin('1');" href="javascript:;">{yun:}t key='default_00279'{/yun}</a>
@@ -144,7 +144,7 @@
                         {yun:}else{/yun}
                         {yun:}if $uid{/yun}
                         {yun:}if $config.sy_user_change==1{/yun}
-                        <a onclick="layer.msg('请先申请个人用户才能收藏', 2, 8);" href="javascript:;"><img src="{yun:}$style{/yun}/images/shou.png" width="15" height="15"> {yun:}t key='wap_00379'{/yun}</a>
+                        <a onclick="layer.msg('{yun:}t key='common_02479'{/yun}', 2, 8);" href="javascript:;"><img src="{yun:}$style{/yun}/images/shou.png" width="15" height="15"> {yun:}t key='wap_00379'{/yun}</a>
                         {yun:}else{/yun}
                         <a onclick="layer.msg('{yun:}t key='wap_00257'{/yun}', 2, 8);" href="javascript:;"><img src="{yun:}$style{/yun}/images/shou.png" width="15" height="15"> {yun:}t key='wap_00379'{/yun}</a>
                         {yun:}/if{/yun}
@@ -200,7 +200,7 @@
 
             </div>
             <div class="yun_part_show_jobbox mt20">
-                <div class="yun_part_show_tit">你可能感兴趣的兼职</div>
+                <div class="yun_part_show_tit">{yun:}t key='common_02474'{/yun}</div>
 
                 <div class="yun_part_show_xq_list">
                     <div class="yun_part_show_xq_list_box">
@@ -222,7 +222,7 @@
                             </li>
                             {yun:}partlistelse{/yun}
                             <li>
-                                <div class="yun_part_tjbox_no">暂无相关推荐！</div>
+                                <div class="yun_part_tjbox_no">{yun:}t key='wap_01475'{/yun}！</div>
                             </li>
                             {yun:}/partlist{/yun}
                         </ul>
@@ -234,7 +234,7 @@
         <div class="job_right fr">
             <div class="yun_partshow_com">
 
-                <div class="yun_part_tjbox_h1"><i class="yun_part_tjbox_h1_n"></i><span class="yun_part_tjbox_h1_s">兼职发布者</span></div>
+                <div class="yun_part_tjbox_h1"><i class="yun_part_tjbox_h1_n"></i><span class="yun_part_tjbox_h1_s">{yun:}t key='common_02476'{/yun}</span></div>
 
                 <div class="clear"></div>
 
@@ -320,7 +320,7 @@
         $('#tel_wxqrcode').html('<img src="index.php?c=telQrcode&id='+id+'" width="120" height="120">');
         $.layer({
             type: 1,
-            title: '微信扫码查看联系方式',
+            title: "{yun:}t key='common_02477'{/yun}",
             closeBtn: [0, true],
             offset: ['100px', ''],
             border: [10, 0.3, '#000', true],

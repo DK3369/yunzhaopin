@@ -160,7 +160,7 @@ class qrorder_model extends model{
 				    if (isset($value['integral'])){
 
 				        $addJF  =   $value['integral'][1];
-                        $this->insert_company_pay($addJF,2,$uid,$usertype,'开通会员赠送积分',1,2,true);
+                        $this->insert_company_pay($addJF,2,$uid,$usertype,'common_01253',1,2,true);
                     }
 				    
 				    $order_info 	=	 unserialize($order['order_info']);
@@ -169,9 +169,9 @@ class qrorder_model extends model{
 
                         $tvalue['integral'] =   array('+', $order['integral']);
                         $this->UpStatisInfo($tvalue, array('uid' => $uid, 'usertype' => $usertype));
-                        $this->insert_company_pay($order['integral'], 2, $uid, $usertype, "充值" . $this->config['integral_pricename'] . '，购买会员', 1, 2, true);
+                        $this->insert_company_pay($order['integral'], 2, $uid, $usertype, 'common_01946' . $this->config['integral_pricename'] . 'common_06176', 1, 2, true);
                         $this->UpStatisInfo(array('integral' => array('-', $order_info['vip_integral'])), array('uid' => $uid, 'usertype' => $usertype));
-                        $this->insert_company_pay($order_info['vip_integral'], 2, $uid, $usertype, "购买会员，扣除" . $this->config['integral_pricename'], 1, 2, false);
+                        $this->insert_company_pay($order_info['vip_integral'], 2, $uid, $usertype, 'common_06177' . $this->config['integral_pricename'], 1, 2, false);
                         $this->checkWarning(4, $uid);
 				    }
 				}
@@ -239,11 +239,11 @@ class qrorder_model extends model{
 				        
 				        $this -> UpStatisInfo($tvalue, array('uid' => $uid, 'usertype' => $usertype));
 				        
-				        $this -> insert_company_pay($order['integral'],2,$uid,$usertype,"充值".$this->config['integral_pricename'].'，购买增值服务',1,2,true);
+				        $this -> insert_company_pay($order['integral'],2,$uid,$usertype,'common_01946'.$this->config['integral_pricename'].'common_06182',1,2,true);
 				        
 				        $this -> UpStatisInfo(array('integral' => array('-', $order_info['pack_integral'])), array('uid' => $uid, 'usertype' => $usertype));
 				        
-				        $this -> insert_company_pay($order_info['pack_integral'],2,$uid,$usertype,"购买增值服务，扣除".$this->config['integral_pricename'],1,2,false);
+				        $this -> insert_company_pay($order_info['pack_integral'],2,$uid,$usertype,'common_06183'.$this->config['integral_pricename'],1,2,false);
 				        
 				        $this -> checkWarning(4, $uid);
 				    }
@@ -271,11 +271,11 @@ class qrorder_model extends model{
 				            
 				            $this -> UpStatisInfo($tvalue, array('uid' => $uid, 'usertype' => $usertype));
 				            
-				            $this -> insert_company_pay($order['integral'],2,$uid,$usertype,"充值".$this->config['integral_pricename'].'，购买职位置顶',1,2,true);
+				            $this -> insert_company_pay($order['integral'],2,$uid,$usertype,'common_01946'.$this->config['integral_pricename'].'common_06188',1,2,true);
 				            
 				            $this -> UpStatisInfo(array('integral' => array('-', $order_info['jobzd_integral'])), array('uid' => $uid, 'usertype' => $usertype));
 				            
-				            $this -> insert_company_pay($order_info['jobzd_integral'],2,$uid,$usertype,"职位置顶，扣除".$this->config['integral_pricename'],1,2,false);
+				            $this -> insert_company_pay($order_info['jobzd_integral'],2,$uid,$usertype,'common_06189'.$this->config['integral_pricename'],1,2,false);
 				            
 				            $this -> checkWarning(4, $uid);
 				        }
@@ -301,11 +301,11 @@ class qrorder_model extends model{
 				            
 				            $this -> UpStatisInfo($tvalue, array('uid' => $uid, 'usertype' => $usertype));
 				            
-				            $this -> insert_company_pay($order['integral'],2,$uid,$usertype,"充值".$this->config['integral_pricename'].'，购买职位紧急招聘',1,2,true);
+				            $this -> insert_company_pay($order['integral'],2,$uid,$usertype,'common_01946'.$this->config['integral_pricename'].'common_06551',1,2,true);
 				            
 				            $this -> UpStatisInfo(array('integral' => array('-', $order_info['joburgent_integral'])), array('uid' => $uid, 'usertype' => $usertype));
 				            
-				            $this -> insert_company_pay($order_info['joburgent_integral'],2,$uid,$usertype,"职位紧急招聘，扣除".$this->config['integral_pricename'],1,2,false);
+				            $this -> insert_company_pay($order_info['joburgent_integral'],2,$uid,$usertype,'common_06195'.$this->config['integral_pricename'],1,2,false);
 				            
 				            $this -> checkWarning(4, $uid);
 				        }
@@ -331,11 +331,11 @@ class qrorder_model extends model{
 					        
 					        $this -> UpStatisInfo($tvalue, array('uid' => $uid, 'usertype' => $usertype));
 					        
-					        $this -> insert_company_pay($order['integral'], 2, $uid, $usertype, "充值".$this->config['integral_pricename'].'，购买职位推荐',1,2,true);
+					        $this -> insert_company_pay($order['integral'], 2, $uid, $usertype, 'common_01946'.$this->config['integral_pricename'].'common_06199',1,2,true);
 					        
 					        $this -> UpStatisInfo(array('integral' => array('-', $order_info['jobrec_integral'])), array('uid' => $uid, 'usertype' => $usertype));
 					        
-					        $this -> insert_company_pay($order_info['jobrec_integral'],2,$uid,$usertype,"职位推荐，扣除".$this->config['integral_pricename'],1,2,false);
+					        $this -> insert_company_pay($order_info['jobrec_integral'],2,$uid,$usertype,'common_06200'.$this->config['integral_pricename'],1,2,false);
 					        
 					        $this -> checkWarning(4, $uid);
 					    }
@@ -364,11 +364,11 @@ class qrorder_model extends model{
 						    
 						    $this -> UpStatisInfo($tvalue, array('uid' => $uid, 'usertype' => 2));
 						    
-						    $this -> insert_company_pay($order['integral'], 2, $uid, 2, "充值".$this->config['integral_pricename'].'，购买职位自动刷新',1,2,true);
+						    $this -> insert_company_pay($order['integral'], 2, $uid, 2, 'common_01946'.$this->config['integral_pricename'].'common_06203',1,2,true);
 						    
 						    $this -> UpStatisInfo(array('integral' => array('-', $order_info['auto_integral'])), array('uid' => $uid, 'usertype' => $usertype));
 						    
-						    $this -> insert_company_pay($order_info['auto_integral'],2,$uid,$usertype,"职位自动刷新，扣除".$this->config['integral_pricename'],1,2,false);
+						    $this -> insert_company_pay($order_info['auto_integral'],2,$uid,$usertype,'common_06204'.$this->config['integral_pricename'],1,2,false);
 						    
 						    $this -> checkWarning(4, $uid);
 						}
@@ -410,11 +410,11 @@ class qrorder_model extends model{
  			                
  			                $this -> UpStatisInfo($tvalue, array('uid' => $uid, 'usertype' => $usertype));
  			                
- 			                $this -> insert_company_pay($order['integral'],2,$uid,$usertype,"充值".$this->config['integral_pricename'].'，购买刷新职位',1,2,true);
+ 			                $this -> insert_company_pay($order['integral'],2,$uid,$usertype,'common_01946'.$this->config['integral_pricename'].'common_06552',1,2,true);
  			                
  			                $this -> UpStatisInfo(array('integral' => array('-', $order_info['sxjob_integral'])), array('uid' => $uid, 'usertype' => $usertype));
  			                
- 			                $this -> insert_company_pay($order_info['sxjob_integral'],2,$uid,$usertype,"刷新职位，扣除".$this->config['integral_pricename'],1,2,false);
+ 			                $this -> insert_company_pay($order_info['sxjob_integral'],2,$uid,$usertype,'common_06553'.$this->config['integral_pricename'],1,2,false);
  			                
  			                $this -> checkWarning(4, $uid);
  			            }
@@ -438,11 +438,11 @@ class qrorder_model extends model{
 						    
 						    $this -> UpStatisInfo($tvalue, array('uid' => $uid, 'usertype' => $usertype));
 						    
-						    $this -> insert_company_pay($order['integral'],2,$uid,$usertype,"充值".$this->config['integral_pricename']."，购买刷新兼职",1,2,true);
+						    $this -> insert_company_pay($order['integral'],2,$uid,$usertype,'common_01946'.$this->config['integral_pricename'].'common_06554',1,2,true);
 						    
 						    $this -> UpStatisInfo(array('integral' => array('-', $order_info['sxpart_integral'])), array('uid' => $uid, 'usertype' => $usertype));
 						    
-						    $this -> insert_company_pay($order_info['sxpart_integral'],2,$uid,$usertype,"刷新兼职，扣除".$this->config['integral_pricename'],1,2,false);
+						    $this -> insert_company_pay($order_info['sxpart_integral'],2,$uid,$usertype,'common_06555'.$this->config['integral_pricename'],1,2,false);
 						    
 						    $this -> checkWarning(4, $uid);
 						}
@@ -485,21 +485,21 @@ class qrorder_model extends model{
     					        
     					        $this -> UpStatisInfo($tvalue, array('uid' => $uid, 'usertype' => $usertype));
     					        
-    					        $this -> insert_company_pay($order['integral'],2,$uid,$usertype,"充值".$this->config['integral_pricename']."，购买下载简历",1,2,true);
+    					        $this -> insert_company_pay($order['integral'],2,$uid,$usertype,'common_01946'.$this->config['integral_pricename'].'common_06556',1,2,true);
     					        
     					        $this -> UpStatisInfo(array('integral' => array('-', $order_info['resume_integral'])), array('uid' => $uid, 'usertype' => $usertype));
     					        
-    					        $this -> insert_company_pay($order_info['resume_integral'],2,$uid,$usertype,"下载简历，扣除".$this->config['integral_pricename'],1,2,false);
+    					        $this -> insert_company_pay($order_info['resume_integral'],2,$uid,$usertype,'common_06219'.$this->config['integral_pricename'],1,2,false);
                                     
     					        $this -> checkWarning(4, $uid);
     					    }
 							if($status){
-                                $this->addMemberLog($order_info['uid'], $usertype, '简历下载：下载简历：'.$expect['name'], 3, 1, '管理员确认订单，同步下载简历');
+                                $this->addMemberLog($order_info['uid'], $usertype, 'common_06557'.$expect['name'], 3, 1, 'common_06558');
 							}
     					    
     					}else{
     					    
-    					    $this->update_once('company_order', array('order_state' => '4', 'order_remark' => '简历（ID:'.$expect['id'].'）您已经下载过，关闭无效交易订单！'), array('id'=>$order['id']));
+    					    $this->update_once('company_order', array('order_state' => '4', 'order_remark' => '简历（ID:'.$expect['id'].'common_00492'), array('id'=>$order['id']));
     					    
     					}
 					
@@ -521,11 +521,11 @@ class qrorder_model extends model{
 					    
 					    $this -> UpStatisInfo($tvalue, array('uid' => $uid, 'usertype' => $usertype));
 					    
-					    $this -> insert_company_pay($order['integral'],2,$uid,$usertype,'充值'.$this->config['integral_pricename'].'，购买上架职位数',1,2,true);
+					    $this -> insert_company_pay($order['integral'],2,$uid,$usertype,'common_01946'.$this->config['integral_pricename'].'common_06559',1,2,true);
 					    
 					    $this -> UpStatisInfo(array('integral' => array('-', $order_info['issue_integral'])), array('uid' => $uid, 'usertype' => $usertype));
 					    
-					    $this -> insert_company_pay($order_info['issue_integral'],2,$uid,$usertype,'购买上架职位数，扣除'.$this->config['integral_pricename'],1,2,false);
+					    $this -> insert_company_pay($order_info['issue_integral'],2,$uid,$usertype,'common_06560'.$this->config['integral_pricename'],1,2,false);
 					    
 					    $this -> checkWarning(4, $uid);
 					}
@@ -547,11 +547,11 @@ class qrorder_model extends model{
 					        
 					        $this -> UpStatisInfo($tvalue, array('uid' => $uid, 'usertype' => $usertype));
 					        
-					        $this -> insert_company_pay($order['integral'],2,$uid,$usertype,"充值".$this->config['integral_pricename']."，购买面试邀请",1,2,true);
+					        $this -> insert_company_pay($order['integral'],2,$uid,$usertype,'common_01946'.$this->config['integral_pricename'].'common_06225',1,2,true);
 					        
 					        $this -> UpStatisInfo(array('integral' => array('-', $order_info['invite_integral'])), array('uid' => $uid, 'usertype' => $usertype));
 					        
-					        $this -> insert_company_pay($order_info['invite_integral'],2,$uid,$usertype,"购买面试邀请，扣除".$this->config['integral_pricename'],1,2,false);
+					        $this -> insert_company_pay($order_info['invite_integral'],2,$uid,$usertype,'common_06561'.$this->config['integral_pricename'],1,2,false);
 					        
 					        $this -> checkWarning(4, $uid);
 					    }
@@ -581,11 +581,11 @@ class qrorder_model extends model{
 				            
 				            $this -> UpStatisInfo($tvalue, array('uid' => $uid, 'usertype' => $usertype));
 				            
-				            $this -> insert_company_pay($order['integral'],2,$uid,$usertype,"充值".$this->config['integral_pricename']."，购买兼职推荐",1,2,true);
+				            $this -> insert_company_pay($order['integral'],2,$uid,$usertype,'common_01946'.$this->config['integral_pricename'].'common_06230',1,2,true);
 				            
 				            $this -> UpStatisInfo(array('integral' => array('-', $order_info['recpart_integral'])), array('uid' => $uid, 'usertype' => $usertype));
 				            
-				            $this -> insert_company_pay($order_info['recpart_integral'],2,$uid,$usertype,"兼职推荐，扣除".$this->config['integral_pricename'],1,2,false);
+				            $this -> insert_company_pay($order_info['recpart_integral'],2,$uid,$usertype,'common_06562'.$this->config['integral_pricename'],1,2,false);
 				            
 				            $this -> checkWarning(4, $uid);
 				        }
@@ -640,11 +640,11 @@ class qrorder_model extends model{
 						        
 						        $this -> UpStatisInfo($tvalue, array('uid' => $uid, 'usertype' => $usertype));
 						        
-						        $this -> insert_company_pay($order['integral'],2,$uid,$usertype,"充值".$this->config['integral_pricename']."，预定招聘会",1,2,true);
+						        $this -> insert_company_pay($order['integral'],2,$uid,$usertype,'common_01946'.$this->config['integral_pricename'].'common_06234',1,2,true);
 						        
 						        $this -> UpStatisInfo(array('integral' => array('-', $order_info['zph_integral'])), array('uid' => $uid, 'usertype' => $usertype));
 						        
-						        $this -> insert_company_pay($order_info['zph_integral'],2,$uid,$usertype,"预定招聘会，扣除".$this->config['integral_pricename'],1,2,false);
+						        $this -> insert_company_pay($order_info['zph_integral'],2,$uid,$usertype,'common_06235'.$this->config['integral_pricename'],1,2,false);
 						        
 						        $this -> checkWarning(4, $uid);
 						        
@@ -694,7 +694,7 @@ class qrorder_model extends model{
                 }
 				
 				if($type=='2'){
-					$this -> insert_company_pay($order['integral'],2,$uid,$usertype,"购买".$this->config['integral_pricename'],1,2,true);
+					$this -> insert_company_pay($order['integral'],2,$uid,$usertype,'member_user_00285'.$this->config['integral_pricename'],1,2,true);
 				}
 				
 			}

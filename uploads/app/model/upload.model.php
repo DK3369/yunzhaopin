@@ -92,7 +92,7 @@ class upload_model extends model{
 
             if (!empty($picmsg['msg'])) {
 
-                $return['msg']  =   '上传失败：' . $picmsg['msg'];
+                $return['msg']  =   yun_at('common_06606') . $picmsg['msg'];
             } else {
                 if ($pictype == 'thumb') {
 
@@ -157,7 +157,7 @@ class upload_model extends model{
             } else {
 
                 $return['error']    =   2;
-                $return['msg']      =   '语音保存出错，请重试';
+                $return['msg']      =   yun_at('common_06607');
             }
         }
         return $return;
@@ -260,7 +260,7 @@ class upload_model extends model{
     function picmsg($status)
     {
 
-        $error  =   array('1' => '文件太大', '2' => '文件类型不符', '3' => '同名文件已经存在', '4' => '移动文件出错,请检查upload目录权限', '6' => '非法文件，无法上传');
+        $error  =   array('1' => 'common_06608', '2' => 'common_06609', '3' => 'common_06610', '4' => '移动文件出错,请检查upload目录权限', '6' => 'common_06611');
 
         if (isset($error[$status])) {
 
@@ -324,7 +324,7 @@ class upload_model extends model{
                         session_start();
                         require_once ('log.model.php');
                         $logM	=	new log_model($this->db, $this->def);
-                        $logM -> addAdminLog('企业（UID：'.$data['uid'].'）logo，' .$result['msg']);
+                        $logM -> addAdminLog('common_06391'.$data['uid'].'）logo，' .$result['msg']);
                         // 提示中带ID，需要过滤
                         $result['msg'] = preg_replace('/\([^\)]+?\)/x', "", str_replace(array("（", "）"), array("(", ")"), $result['msg']));
                     } else {
@@ -374,7 +374,7 @@ class upload_model extends model{
                 if (!$upMedia['media_id']) {
 
                     $result['errcode']  =   8;
-                    $result['msg']      =   '封面素材上传失败！' . $upMedia['errmsg'];
+                    $result['msg']      =   yun_at('common_06612') . $upMedia['errmsg'];
                 } else {
 
                     $post['sy_xcxmedia']        =   $upMedia['media_id'];
@@ -389,7 +389,7 @@ class upload_model extends model{
                 if (!$upMedia['media_id']) {
 
                     $result['errcode']  =   8;
-                    $result['msg']      = '欢迎图素材上传失败！' . $upMedia['errmsg'];
+                    $result['msg']      = yun_at('common_06613') . $upMedia['errmsg'];
                 } else {
 
                     $post['sy_wxcom_picmedia']  =   $upMedia['media_id'];
@@ -526,7 +526,7 @@ class upload_model extends model{
 
         if (!in_array($filetype, $file_type)) {//检查文件类型
 
-            $return['msg']  =   '禁止上传' . $filetype . '类型文件！';
+            $return['msg']  =   yun_at('common_06614') . $filetype . 'common_06615';
         } else {
             if (empty($filename)) {
 
@@ -543,7 +543,7 @@ class upload_model extends model{
                 $return['docurl']   =   '/' . $upload;
             } else {
 
-                $return['msg']      =   '文件上传失败，请检查DATA目录权限！';
+                $return['msg']      =   yun_auto_t('文件上传失败，请检查DATA目录权限！');
             }
         }
         return $return;

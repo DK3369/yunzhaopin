@@ -47,7 +47,7 @@ class weixinmenu_controller extends adminCommon{
         
         $this->web_config();
         
-        $this->render_json(0,'微信配置更新成功！');
+        $this->render_json(0,yun_at('admin_01472'));
     }
 
     /**
@@ -91,7 +91,7 @@ class weixinmenu_controller extends adminCommon{
             $weiXinM->delWxNav($where,array('type'=>'all'));
 
             $error = 0;
-            $msg = '微信菜单(ID:'.pylode(',',$_POST['del']).')删除成功！';
+            $msg = 'admin_tool_00051'.pylode(',',$_POST['del']).')删除成功！';
         }else{
 
             $where['id']    =   (int)$_POST['del'];
@@ -103,10 +103,10 @@ class weixinmenu_controller extends adminCommon{
 
             if($id){
                 $error = 0;
-                $msg = '微信菜单(ID:'.$_POST['del'].')删除成功！';
+                $msg = 'admin_tool_00051'.$_POST['del'].')删除成功！';
             }else{
                 $error = 1;
-                $msg = '删除失败！';
+                $msg = 'admin_user_00186';
             }
         }
 
@@ -198,13 +198,13 @@ class weixinmenu_controller extends adminCommon{
 
                 $weiXinM->upWxNavInfo($upWhere,$data);
 
-                $logM   ->addAdminLog('微信菜单(ID:'.$navid.')修改成功');
+                $logM   ->addAdminLog('admin_tool_00051'.$navid.')修改成功');
 
             }else{
 
                 $navid  =   $weiXinM->addWxNavInfo($data);
 
-                $logM   ->addAdminLog('微信菜单(ID:'.$navid.')添加成功');
+                $logM   ->addAdminLog('admin_tool_00051'.$navid.')添加成功');
             }
 
             $this->render_json(3);
@@ -231,7 +231,7 @@ class weixinmenu_controller extends adminCommon{
 
             $weiXinM->upWxNavInfo($upWhere,$data);
 
-            $logM->addAdminLog('微信菜单(ID:'.$_POST['id'].')排序修改成功');
+            $logM->addAdminLog('admin_tool_00051'.$_POST['id'].')排序修改成功');
         }
 
         if($_POST['name']){
@@ -242,7 +242,7 @@ class weixinmenu_controller extends adminCommon{
 
             $weiXinM->upWxNavInfo($upWhere,$data);
 
-            $logM->addAdminLog('微信菜单(ID:'.$_POST['id'].')名称修改成功');
+            $logM->addAdminLog('admin_tool_00051'.$_POST['id'].')名称修改成功');
         }
 
         $this->render_json(1);
@@ -280,15 +280,15 @@ class weixinmenu_controller extends adminCommon{
             if($Info->errcode=='0' || $Info->errmsg=='ok'){
 
                 $error=0;
-                $msg = '微信菜单创建成功！';
+                $msg = 'admin_01473';
 
             }else{
                 $error=1;
-                $msg = '错误代码:'.$Info->errcode.',错误信息:'.$Info->errmsg;
+                $msg = 'admin_tool_00054'.$Info->errcode.'admin_tool_00052'.$Info->errmsg;
             }
         }else{
             $error=1;
-            $msg = '暂无菜单信息';
+            $msg = 'admin_tool_00053';
         }
 
         $this->render_json($error,$msg);
@@ -362,14 +362,14 @@ class weixinmenu_controller extends adminCommon{
                 $msg = '(ID:'.$delid.')删除成功！';
             }else{
                 $error = 1;
-                $msg = '删除失败！';
+                $msg = 'admin_user_00186';
             }
 
         }else{
 
             $error = 1;
 
-            $msg = '请选择要删除的内容！';
+            $msg = 'common_01066';
         }
         
 
@@ -409,11 +409,11 @@ class weixinmenu_controller extends adminCommon{
         
         //表单检验
         if($_POST['title']==''){
-            $this->render_json(1,'规则名称不能为空！');
+            $this->render_json(1,yun_at('admin_tool_00050'));
         }
 
         if($_POST['keyword']==''){
-            $this->render_json(2,'关键字不能为空！');
+            $this->render_json(2,yun_at('admin_tool_00586'));
         }
 
         foreach ($_FILES['newpic'] as $nk => $nv) {
@@ -445,7 +445,7 @@ class weixinmenu_controller extends adminCommon{
             if($cv['msgtype']=='text'){//文字
 
                 if($cv['content']==''){
-                    $this->render_json(3,'回复内容不能为空！');
+                    $this->render_json(3,yun_at('wap_00641'));
                 }
 
                 $conval['content'] = str_replace(array('&apos;', '&quot;'), array("'", '"'),$cv['content']);
@@ -453,7 +453,7 @@ class weixinmenu_controller extends adminCommon{
             }else if($cv['msgtype']=='image'){
 
                 if($cv['media_id']=='' && $cv['newimage']==''){
-                    $this->render_json(4,'请上传图片！');
+                    $this->render_json(4,yun_at('common_06403'));
                 }
 
                 if($cv['newimage']!=''){
@@ -475,7 +475,7 @@ class weixinmenu_controller extends adminCommon{
 
                     $upMedia=   $wxM->upMedia($pic, $upArr);
                     if (!$upMedia['media_id']) {
-                        $this->render_json(6, '图片素材上传失败！'.$upMedia['errmsg']);
+                        $this->render_json(6, 'admin_tool_00049'.$upMedia['errmsg']);
                     } else {
                         $content['media_id'] = $upMedia['media_id'];
                         $content['image_n'] = $pic;
@@ -486,16 +486,16 @@ class weixinmenu_controller extends adminCommon{
                 
             }else if($cv['msgtype']=='xcx'){
                 if($cv['xcx_title']==''){
-                    $this->render_json(7, '卡片标题不能为空！');
+                    $this->render_json(7, yun_at('admin_tool_00048'));
                 }
                 if($cv['xcx_appid']==''){
-                    $this->render_json(8, '小程序AppID不能为空！');
+                    $this->render_json(8, yun_at('admin_tool_00045'));
                 }
                 if($cv['xcx_pagepath']==''){
-                    $this->render_json(9, '小程序路径不能为空！');
+                    $this->render_json(9, yun_at('admin_tool_00046'));
                 }
                 if($cv['media_id']=='' && $cv['newimage']==''){
-                    $this->render_json(10, '请上传小程序封面图！');
+                    $this->render_json(10, yun_at('admin_tool_00047'));
                 }
 
                 $content['xcx_title'] = str_replace(array('&apos;', '&quot;'), array("'", '"'),$cv['xcx_title']);
@@ -521,7 +521,7 @@ class weixinmenu_controller extends adminCommon{
 
                     $upMedia=   $wxM->upMedia($pic, $upArr);
                     if (!$upMedia['media_id']) {
-                        $this->render_json(12, '图片素材上传失败！'.$upMedia['errmsg']);
+                        $this->render_json(12, 'admin_tool_00049'.$upMedia['errmsg']);
                     } else {
                         $content['media_id'] = $upMedia['media_id'];
                         $content['image_n'] = $pic;
@@ -584,7 +584,7 @@ class weixinmenu_controller extends adminCommon{
             }
         }
 
-        $this->render_json(0,'保存成功');
+        $this->render_json(0,yun_at('wap_user_00104'));
     }
 }
 ?>

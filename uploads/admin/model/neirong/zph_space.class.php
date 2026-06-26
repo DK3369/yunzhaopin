@@ -27,7 +27,7 @@ class zph_space_controller extends adminCommon
         $ZphM =	$this->MODEL('zph');
         $info = $this->post_trim($_POST);
         if (!$info['name']) {
-            $this->render_json(1, '区域名称不能为空');
+            $this->render_json(1, yun_at('admin_01357'));
         }
         if($_FILES){
             // pc端上传
@@ -57,15 +57,15 @@ class zph_space_controller extends adminCommon
         $data['content'] = str_replace("&amp;","&", $info['content']);
         if($info['id']){
             $nid = $ZphM->upZphSpaceInfo(array('id' => $info['id']), $data);
-            $msg = "更新";
+            $msg = 'wap_00225';
         }else{
             $nid = $ZphM->addZphSpaceInfo($data);
-            $msg = "添加";
+            $msg = 'wap_js_00091';
         }
         if ($nid) {
-            $this->admin_json(0, $msg . "成功！");
+            $this->admin_json(0, $msg . 'wap_js_00104');
         } else {
-            $this->render_json(1, $msg . "失败！");
+            $this->render_json(1, $msg . 'wap_js_00103');
         }
     }
 
@@ -140,7 +140,7 @@ class zph_space_controller extends adminCommon
             $sValue['sort'] = $_POST['sort'];
             $sWhere['id'] =	$_POST['id'];
             $ZphM->upZphSpaceInfos($sWhere,$sValue);
-            $this->MODEL('log')->addAdminLog("修改招聘会场地(ID:".$_POST['id'].")的排序");
+            $this->MODEL('log')->addAdminLog("修改招聘会场地(ID:".$_POST['id'].'admin_neirong_00034');
         }
         if(isset($_POST['name'])){//修改招聘会场地名称
             $nValue['name'] = $_POST['name'];
@@ -154,6 +154,6 @@ class zph_space_controller extends adminCommon
             $ZphM->upZphSpaceInfos($pWhere,$pValue);
             $this->MODEL('log')->addAdminLog("修改招聘会场地(ID:".$_POST['id'].")名称");
         }
-        $this->render_json(0, '操作成功');
+        $this->render_json(0, yun_at('wap_user_00264'));
     }
 }

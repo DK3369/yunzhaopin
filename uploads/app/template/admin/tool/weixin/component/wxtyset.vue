@@ -4,16 +4,16 @@
             <table class="tableVue">
                 <thead>
                 <tr align="left">
-                    <th width="180">名称</th>
-                    <th width="400">状态</th>
-                    <th>说明</th>
+                    <th width="180">{yun:}t key='member_com_00021'{/yun}</th>
+                    <th width="400">{yun:}t key='member_user_00181'{/yun}</th>
+                    <th>{yun:}t key='member_com_00207'{/yun}</th>
                 </tr>
                 </thead>
                 <tbody>
 
                 <tr>
                     <td>
-                        <div class="TableTite">微信手机登录</div>
+                        <div class="TableTite">{yun:}t key='admin_tool_00674'{/yun}</div>
                     </td>
                     <td>
                         <div class="moduleHcKg">
@@ -22,13 +22,13 @@
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>必须为已认证的服务号</span>
+                            <span>{yun:}t key='admin_tool_00675'{/yun}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">微信PC扫码登录</div>
+                        <div class="TableTite">{yun:}t key='admin_tool_00671'{/yun}</div>
                     </td>
                     <td>
                         <div class="moduleHcKg">
@@ -37,13 +37,13 @@
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>必须为已认证的服务号</span>
+                            <span>{yun:}t key='admin_tool_00675'{/yun}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">后台微信登录</div>
+                        <div class="TableTite">{yun:}t key='admin_tool_00667'{/yun}</div>
                     </td>
                     <td>
                         <div class="moduleHcKg">
@@ -52,13 +52,13 @@
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>必须为已认证的服务号</span>
+                            <span>{yun:}t key='admin_tool_00675'{/yun}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">会员中心二维码弹窗</div>
+                        <div class="TableTite">{yun:}t key='admin_tool_00664'{/yun}</div>
                     </td>
                     <td>
                         <div class="moduleHcKg">
@@ -67,19 +67,19 @@
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>必须为已认证的服务号</span>
+                            <span>{yun:}t key='admin_tool_00675'{/yun}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">增加欢迎形式</div>
+                        <div class="TableTite">{yun:}t key='admin_tool_00670'{/yun}</div>
                     </td>
                     <td>
                         <div class="moduleHcKg">
                             <el-radio-group v-model="configdata.wx_welcom_type">
-                                <el-radio label="nowxcom">不增加</el-radio>
-                                <el-radio label="wxcompic">图片</el-radio>
+                                <el-radio label="nowxcom">{yun:}t key='admin_tool_00663'{/yun}</el-radio>
+                                <el-radio label="wxcompic">{yun:}t key='wap_js_00081'{/yun}</el-radio>
                             </el-radio-group>
                         </div>
                         <div v-show="configdata.wx_welcom_type == 'wxcompic'">
@@ -90,12 +90,12 @@
                                            list-type="picture">
                                     <div v-if="configdata.sy_wxcom_pic">
                                         <img :src="configdata.sy_wxcom_pic" width="120px" height="120px" class="avatar">
-                                        <div slot="tip" class="el-upload__tip">点击上传图片</div>
+                                        <div slot="tip" class="el-upload__tip">{yun:}t key='admin_tool_00677'{/yun}</div>
                                     </div>
                                     <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                                 </el-upload>
                             </div>
-                            <el-alert title="图片大小900px * 500px" type="info" show-icon></el-alert>
+                            <el-alert title="{yun:}t key='admin_tool_00669'{/yun}" type="info" show-icon></el-alert>
 
                         </div>
                     </td>
@@ -107,7 +107,7 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">关注欢迎语</div>
+                        <div class="TableTite">{yun:}t key='admin_tool_00666'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
@@ -117,13 +117,13 @@
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>在微信公众平台获取</span>
+                            <span>{yun:}t key='admin_tool_00637'{/yun}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">搜索提示</div>
+                        <div class="TableTite">{yun:}t key='admin_tool_00662'{/yun}</div>
                     </td>
                     <td>
                         <el-input type="textarea" :rows="10" :maxlength="255" v-model="configdata.wx_search">
@@ -131,13 +131,13 @@
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>自定义填写，需和微信公众平台一致</span>
+                            <span>{yun:}t key='admin_tool_00638'{/yun}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">搜索无内容引导</div>
+                        <div class="TableTite">{yun:}t key='admin_tool_00676'{/yun}</div>
                     </td>
                     <td>
                         <el-input type="textarea" :rows="10" :maxlength="255" v-model="configdata.wx_search_no">
@@ -151,7 +151,7 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">公众号二维码</div>
+                        <div class="TableTite">{yun:}t key='admin_tool_00665'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableUpload">
@@ -161,7 +161,7 @@
                                        list-type="picture">
                                 <div v-if="configdata.sy_wx_qcode">
                                     <img :src="configdata.sy_wx_qcode" width="110px" height="110px" class="avatar">
-                                    <div slot="tip" class="el-upload__tip">点击上传图片</div>
+                                    <div slot="tip" class="el-upload__tip">{yun:}t key='admin_tool_00677'{/yun}</div>
                                 </div>
                                 <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                             </el-upload>
@@ -175,7 +175,7 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">微信封面</div>
+                        <div class="TableTite">{yun:}t key='admin_tool_00673'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableUpload">
@@ -185,7 +185,7 @@
                                        list-type="picture">
                                 <div v-if="configdata.sy_wx_logo">
                                     <img :src="configdata.sy_wx_logo" width="110px" height="auto" class="avatar">
-                                    <div slot="tip" class="el-upload__tip">点击上传图片</div>
+                                    <div slot="tip" class="el-upload__tip">{yun:}t key='admin_tool_00677'{/yun}</div>
                                 </div>
                                 <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                             </el-upload>
@@ -193,13 +193,13 @@
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>图片大小900px * 500px</span>
+                            <span>{yun:}t key='admin_tool_00669'{/yun}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">微信分享图片</div>
+                        <div class="TableTite">{yun:}t key='admin_tool_00672'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableUpload">
@@ -209,7 +209,7 @@
                                        list-type="picture">
                                 <div v-if="configdata.sy_wx_sharelogo">
                                     <img :src="configdata.sy_wx_sharelogo" class="avatar">
-                                    <div slot="tip" class="el-upload__tip">点击上传图片</div>
+                                    <div slot="tip" class="el-upload__tip">{yun:}t key='admin_tool_00677'{/yun}</div>
                                 </div>
                                 <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                             </el-upload>
@@ -217,7 +217,7 @@
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>图片大小300px * 300px</span>
+                            <span>{yun:}t key='admin_tool_00668'{/yun}</span>
                         </div>
                     </td>
                 </tr>
@@ -226,7 +226,7 @@
             </table>
         </div>
         <div class="setBasicButn" style="border: none; height: 80px;">
-            <el-button type="primary" size="medium" @click="post">提交</el-button>
+            <el-button type="primary" size="medium" @click="post">{yun:}t key='common.submit'{/yun}</el-button>
         </div>
     </div>
 </template>

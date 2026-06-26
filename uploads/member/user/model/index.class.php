@@ -115,7 +115,7 @@ class index_controller extends user{
 				$data['topdatetime']	=	$data['topdate']-time();
 				$data['topdate']		=	date("Y-m-d",$data['topdate']);
 			}else{
-				$data['topdate']		=	'未设置';
+				$data['topdate']		=	yun_at('api_wxapp_00017');
 			}
 			$eDatas['field']	=	'id,name,job_classid,city_classid,hits,jobstatus,integrity,minsalary,maxsalary,doc,tmpid,r_status,topdate,lastupdate,status,state';
 			$data['url']		=	Url('resume',array('c'=>'show','id'=>$data['id']));
@@ -181,8 +181,8 @@ class index_controller extends user{
 	            $list[$k]['com_name']	= mb_substr($v['com_name'], 0, 10 ,"UTF-8");
 				$list[$k]['jobsalary']	= $v['job_salary'];
 				$list[$k]['citytwo']	= $v['job_city_two'];
-				$list[$k]['edu_n']		= $v['job_edu']?$v['job_edu']:'不限';
-				$list[$k]['exp_n']		= $v['job_exp']?$v['job_exp']:'不限';
+				$list[$k]['edu_n']		= $v['job_edu']?$v['job_edu']: WapDbEnum::UNLIMITED;
+				$list[$k]['exp_n']		= $v['job_exp']?$v['job_exp']: WapDbEnum::UNLIMITED;
 	        }
 	    }
 	    $data['list']=$list;

@@ -49,8 +49,8 @@ class info_controller extends company{
 		if (!$this->comInfo['name']) {
 			$this->yunset('isremind', 1);
 			$remindInfo['url']          =   'index.php?c=info';
-            $remindInfo['msg']          =   '完善企业信息有助于帮您快速招聘人才！';
-            $remindInfo['title']        =   '企业基本信息尚未完善！';
+            $remindInfo['msg']          =   yun_at('member_com_00690');
+            $remindInfo['title']        =   yun_at('member_com_00691');
 
             $this->yunset('remindInfo', $remindInfo);
 		}

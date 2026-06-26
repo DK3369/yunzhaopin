@@ -197,7 +197,7 @@ class common{
             $ip     =   fun_ip_get();
 
             if (isMobileUser()) {
-                $content    =   '手机';
+                $content    =   'wap_01557';
                 $port       =   2;
             } else {
                 $content    =   'PC';
@@ -244,7 +244,7 @@ class common{
 
 	//页面不存在跳转
 	function DoException(){
-		$this->ACT_msg("index.php","您请求的页面不存在");
+		$this->ACT_msg("index.php",'api_locoy_00001');
 	}
 	//后台模板
 	function yuntpl($tplarr=array()){
@@ -461,7 +461,7 @@ class common{
         $this->tpl->is_fun();
         if (!$this->uid) {
             $login = Url('login');
-            $this->ACT_msg($login, '请先登录');
+            $this->ACT_msg($login, 'wap_00376');
         }
         $this->yunset("uid", $this->uid);
         $this->yunset("username", $this->username);
@@ -722,7 +722,7 @@ class common{
 		    $userclass_name  =  $usercache['userclass_name'];
 		}
 		
-		$uptime  =  array(1=>'今天',3=>'最近3天',7=>'最近7天',30=>'最近一个月','90'=>'最近三个月');
+		$uptime  =  array(1=>'common_01940',3=>'wap_00432',7=>'wap_00433',30=>'admin_user_00175','90'=>'wap_00431');
 		$data    =  array();
 
 		foreach($_GET as $key=>$v){
@@ -731,13 +731,13 @@ class common{
 				    $data[]=$industry_name[$v];
 				    break;
 				case 'rec':
-				    $data[]='推荐';
+				    $data[]='wap_01465';
 				    break;
 				case 'urgent':
-    				$data[]='紧急';
+    				$data[]='wap_00222';
     				break;
 				case 'pic':
-    				$data[]='照片';
+    				$data[]='common_02010';
     				break;
 				default:
 				if(!in_array($key,array('idcard','work','cert'))){
@@ -1324,12 +1324,12 @@ class common{
 
             if ($data['utype'] == 'wap') {
 
-                $data['msg'] = '账号已被锁，请联系管理员';
+                $data['msg'] = 'common_00824';
                 $data['url'] = Url('wap', array('c' => 'login'));
                 $this->yunset("layer", $data);
             }else{
 
-                $this->ACT_msg(Url('login'), "账号已被锁，请联系管理员");
+                $this->ACT_msg(Url('login'), 'common_00824');
             }
         }
     }
@@ -1389,17 +1389,17 @@ class common{
         }else{
             if($type==1){
                 $salary  =  array(
-                    array('id'=>'0' ,'name'=>'全部', 'min'=>0),
+                    array('id'=>'0' ,'name'=>'wap_js_00075', 'min'=>0),
                     array('id'=>'1' ,'name'=>'2000以上','min'=>2000),
                     array('id'=>'2' ,'name'=>'4000以上','min'=>4000),
                     array('id'=>'3' ,'name'=>'6000以上','min'=>6000),
                     array('id'=>'4' ,'name'=>'8000以上','min'=>8000),
-                    array('id'=>'5' ,'name'=>'10000以上','min'=>10000)
+                    array('id'=>'5' ,'name'=>'common_06590','min'=>10000)
                 );
             }else{
                 $salary  =  array(
                     'id'    =>  array(0,1,2,3,4,5,),
-                    'name'  =>  array('全部','2000以上','4000以上','6000以上','8000以上', '10000以上')
+                    'name'  =>  array('wap_js_00075','2000以上','4000以上','6000以上','8000以上', 'common_06590')
                 );
             }
         }

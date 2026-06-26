@@ -165,22 +165,22 @@ class job_model extends model{
                     $Info['job_number'] =   "";
                 } else {
 
-                    $Info['job_number'] =   $Info['zp_num'] . " 人";
+                    $Info['job_number'] =   $Info['zp_num'] . 'common_02051';
                 }
                 if ($Info['zp_minage'] && $Info['zp_maxage']) {
                     if ($Info['zp_minage'] == $Info['zp_maxage']) {
 
-                        $Info['job_age']=   $Info['zp_minage'] . "周岁以上";
+                        $Info['job_age']=   $Info['zp_minage'] . 'wap_com_00280';
                     } else {
 
-                        $Info['job_age']=   $Info['zp_minage'] . '-' . $Info['zp_maxage'] . "周岁";
+                        $Info['job_age']=   $Info['zp_minage'] . '-' . $Info['zp_maxage'] . 'wap_com_00300';
                     }
                 } elseif ($Info['zp_minage']) {
 
-                    $Info['job_age']    =   $Info['zp_minage'] . "周岁以上";
+                    $Info['job_age']    =   $Info['zp_minage'] . 'wap_com_00280';
                 } elseif ($Info['zp_maxage']) {
 
-                    $Info['job_age']    =   $Info['zp_maxage'] . "周岁以下";
+                    $Info['job_age']    =   $Info['zp_maxage'] . 'wap_com_00281';
                 } else {
 
                     $Info['job_age']    =   "";
@@ -279,7 +279,7 @@ class job_model extends model{
         $id         =   intval($data['id']);
 
         if (empty($id)) {
-            $res['msg'] =   '参数错误';
+            $res['msg'] =   yun_at('wap_com_00228');
             return $res;
         }
 
@@ -302,7 +302,7 @@ class job_model extends model{
         }
 
         if (empty($Info)) {
-            $res['msg'] =   '数据错误';
+            $res['msg'] =   yun_at('member_com_00056');
             return $res;
         }
 
@@ -354,12 +354,12 @@ class job_model extends model{
                     if($startDate > $endDate){
                         // 判断免打扰开始时间大于结束时间，例如：22:00-06:00 非06:00 - 22:00 可访问
                         if(!($startDate > $now && $now > $endDate)){
-                            $res['linkMsg']             =   '企业已开启免打扰模式';
+                            $res['linkMsg']             =   yun_at('common_00973');
                             $res['linkCode']            =      2;
                         }
                     } else {
                         if($startDate < $now && $endDate > $now){
-                            $res['linkMsg']             =   '企业已开启免打扰模式';
+                            $res['linkMsg']             =   yun_at('common_00973');
                             $res['linkCode']            =      2;
                         }
                     }
@@ -397,7 +397,7 @@ class job_model extends model{
             } else {
 
                 //隐私号获取失败时，给用户一个提示
-                $res['linkMsg']             =   '企业未开放联系电话，请等待企业邀您面试！';
+                $res['linkMsg']             =   yun_at('common_00332');
                 $res['linkCode']            =      11;
             }
         }
@@ -423,46 +423,46 @@ class job_model extends model{
 
         if ($data['infostatus'] == 2){      //  企业不公开
 
-            $res['linkMsg']     =   isset($this->config['sy_link_tips']) && !empty($this->config['sy_link_tips']) ? $this->config['sy_link_tips'] : '联系方式未公开';
+            $res['linkMsg']     =   isset($this->config['sy_link_tips']) && !empty($this->config['sy_link_tips']) ? $this->config['sy_link_tips'] : 'admin_user_company_00263';
             $res['linkCode']    =   2;
         }elseif ($data['is_link'] == 3){    //  职位隐藏联系方式
 
-            $res['linkMsg']     =   isset($this->config['sy_link_tips']) && !empty($this->config['sy_link_tips']) ? $this->config['sy_link_tips'] : '联系方式未公开';
+            $res['linkMsg']     =   isset($this->config['sy_link_tips']) && !empty($this->config['sy_link_tips']) ? $this->config['sy_link_tips'] : 'admin_user_company_00263';
             $res['linkCode']    =   3;
         }else if(in_array($data['rating'], explode(',', $this->config['com_link_no'])) && $this->config['com_link_no']!=''){    //  后台设置特定会员类型屏蔽联系方式
 
-            $res['linkMsg']     =   isset($this->config['sy_link_tips']) && !empty($this->config['sy_link_tips']) ? $this->config['sy_link_tips'] : '联系方式未公开';
+            $res['linkMsg']     =   isset($this->config['sy_link_tips']) && !empty($this->config['sy_link_tips']) ? $this->config['sy_link_tips'] : 'admin_user_company_00263';
             $res['linkCode']    =   4;
         }else if ($this->config['com_link_look'] == 1 || in_array($data['provider'], array('app','weixin','baidu','toutiao'))){
 
             if ($this->config['com_login_link'] == 2){  //  网站未公开企业联系方式
 
-                $res['linkMsg']     =   isset($this->config['sy_link_tips']) && !empty($this->config['sy_link_tips']) ? $this->config['sy_link_tips'] : '联系方式未公开';
+                $res['linkMsg']     =   isset($this->config['sy_link_tips']) && !empty($this->config['sy_link_tips']) ? $this->config['sy_link_tips'] : 'admin_user_company_00263';
                 $res['linkCode']    =   5;
             }elseif ($this->config['com_login_link'] == 3){ //  登录查看联系方式
 
                 if ($data['usertype'] != 1){
 
-                    $res['linkMsg'] =   '请登录个人账号';
+                    $res['linkMsg'] =   yun_at('common_01411');
                     $res['linkCode']=   6;
                 }
             }elseif ($this->config['com_login_link'] == 4){ //  拥有简历查看联系方式
                 if ($data['usertype'] != 1){
 
-                    $res['linkMsg'] =   '请登录个人账号';
+                    $res['linkMsg'] =   yun_at('common_01411');
                     $res['linkCode']=   6;
                 }else{
 
                     $resumeNum      =   $this->select_num('resume_expect', array('uid' => $data['uid']));
                     if ($resumeNum == 0){
 
-                        $res['linkMsg'] =   '请先添加简历';
+                        $res['linkMsg'] =   yun_at('common_01541');
                         $res['linkCode']=   7;
                     }else{
                         $defResume      =   $this->select_once('resume_expect', array('uid' => $data['uid'], 'defaults' => 1), '`state`,`status`');
                         if ($defResume['state'] != 1) {
 
-                            $res['linkMsg']     =   '简历未审核，无法查看联系方式';
+                            $res['linkMsg']     =   yun_at('wap_00369');
                             $res['linkCode']    =   7;
                             $res['linkSub']     =   1;
                         }
@@ -472,7 +472,7 @@ class job_model extends model{
 
                 if ($data['usertype'] != 1){
 
-                    $res['linkMsg'] =   '请登录个人账号';
+                    $res['linkMsg'] =   yun_at('common_01411');
                     $res['linkCode']=   6;
                 }else{
                     $sqNum = $this->select_num('userid_job', array('uid' => $uid, 'job_id' => $id,'is_browse'=>array('<>',6),'isdel'=>9));
@@ -481,18 +481,18 @@ class job_model extends model{
                     if ($msNum > 0 || $sqNum > 0) {
                         if ($this->config['sy_comprivacy_open'] == 1 && !in_array($data['rating'], explode(',', $this->config['sy_privacy_rating']))) {
                             $res['privacy']     = 1;
-                            $res['linkMsg']     = '隐私号';
+                            $res['linkMsg']     = yun_at('common_01934');
                             $res['linkCode']    = 10;
                         }
                     }else{
-                        $res['linkMsg']     =   '请先投递简历';
+                        $res['linkMsg']     =   yun_at('common_01540');
                         $res['linkCode']    =   8;
                     }
                 }
             }
         }else{  //  扫码查看
 
-            $res['linkMsg']     =   '微信扫码查看';
+            $res['linkMsg']     =   yun_at('common_02372');
             $res['linkCode']    =   9;
         }
 
@@ -510,10 +510,10 @@ class job_model extends model{
 
             if ($data['utype'] == 'com') {
 
-                $res['msg']     =   '企业暂未显示联系方式，详情请咨询网站客服：' . $this->config['sy_freewebtel'];
+                $res['msg']     =   yun_at('common_00289') . $this->config['sy_freewebtel'];
             } else {
 
-                $res['msg']     =   '企业暂未显示联系方式，请直接投递简历，详情请咨询网站客服：' . $this->config['sy_freewebtel'];
+                $res['msg']     =   yun_at('common_00144') . $this->config['sy_freewebtel'];
             }
             $res['errorcode']   =   2;
             return $res;
@@ -526,7 +526,7 @@ class job_model extends model{
                     $res['data']    =   $data['resData'];
                 } else {
 
-                    $res['msg']     =   '企业暂未开启查看联系方式';
+                    $res['msg']     =   yun_at('common_00780');
                     $res['errorcode']   = 1;
                     return $res;
                 }
@@ -538,7 +538,7 @@ class job_model extends model{
                     $res['data']    =   $data['resData'];
                 } else {
 
-                    $res['msg']     =   '企业暂未开启查看联系方式，请直接投递简历';
+                    $res['msg']     =   yun_at('common_00331');
                     $res['errorcode']   =   1;
                     return $res;
                 }
@@ -547,10 +547,10 @@ class job_model extends model{
 
             if ($data['utype'] == 'com') {
 
-                $res['msg']     =   '企业暂未显示联系方式，详情请咨询网站客服：' . $this->config['sy_freewebtel'];
+                $res['msg']     =   yun_at('common_00289') . $this->config['sy_freewebtel'];
             } else {
 
-                $res['msg']     =   '企业暂未显示联系方式，请直接投递简历，详情请咨询网站客服：' . $this->config['sy_freewebtel'];
+                $res['msg']     =   yun_at('common_00144') . $this->config['sy_freewebtel'];
             }
             $res['errorcode']   =   2;
             return $res;
@@ -558,14 +558,14 @@ class job_model extends model{
 
             if (empty($uid)) {
 
-                $res['msg']         =   '登录个人账号查看联系方式';
+                $res['msg']         =   yun_at('common_06265');
                 $res['errorcode']   =   3;
                 return $res;
             } else {
 
                 if (!empty($data['usertype']) && $data['usertype'] != 1) {
 
-                    $res['msg']         =   '只有个人用户才能查看';
+                    $res['msg']         =   yun_at('wap_00258');
                     $res['errorcode']   =   6;
                     return $res;
                 } else {
@@ -579,7 +579,7 @@ class job_model extends model{
 
             if ($resumenum < 1 || $data['usertype'] != '1') {
 
-                $res['msg']         =   '添加简历后查看联系方式';
+                $res['msg']         =   yun_at('common_00895');
                 $res['errorcode']   =   4;
                 return $res;
             } else {
@@ -594,13 +594,13 @@ class job_model extends model{
                         $res['data']    =   $data['resData'];
                     } else {
 
-                        $res['msg']     =   '简历设置为公开才能查看联系方式';
+                        $res['msg']     =   yun_at('common_00590');
                         $res['errorcode']   = 8;
                         return $res;
                     }
                 } else {
 
-                    $res['msg']         =   '简历通过审核才能查看联系方式';
+                    $res['msg']         =   yun_at('common_00667');
                     $res['errorcode']   =   7;
                     return $res;
                 }
@@ -639,7 +639,7 @@ class job_model extends model{
                 }
             } else {
 
-                $res['msg']         =   '投递简历才能查看联系方式';
+                $res['msg']         =   yun_at('common_02134');
                 $res['errorcode']   =   5;
                 return $res;
             }
@@ -983,7 +983,7 @@ class job_model extends model{
                 if(!empty($v['exp'])){
                     $List[$k]['job_exp']         =	$cache['comclass_name'][$v['exp']];
                 }else{
-                    $List[$k]['job_exp']         =	'不限';
+                    $List[$k]['job_exp']         =	yun_at('common_01936');
                 }
                 if(!empty($v['report'])){
                     $List[$k]['job_report']      =	$cache['comclass_name'][$v['report']];
@@ -994,7 +994,7 @@ class job_model extends model{
                 if(!empty($v['edu'])){
                     $List[$k]['job_edu']         =	$cache['comclass_name'][$v['edu']];
                 }else{
-                    $List[$k]['job_edu']         =	'不限';
+                    $List[$k]['job_edu']         =	yun_at('common_01936');
                 }
                 if(!empty($v['marriage'])){
                     $List[$k]['job_marriage']    =	$cache['comclass_name'][$v['marriage']];
@@ -1002,7 +1002,7 @@ class job_model extends model{
                 if(!empty($v['age'])){
                     $List[$k]['job_age']         =	$cache['comclass_name'][$v['age']];
                 }else{
-                    $List[$k]['job_age']         =	'不限';
+                    $List[$k]['job_age']         =	yun_at('common_01936');
                 }
                 if(!empty($v['pr'])){
                     $List[$k]['job_pr']          =	$cache['comclass_name'][$v['pr']];
@@ -1042,8 +1042,8 @@ class job_model extends model{
                     $beginToday     =   strtotime('today');//今天开始时间戳
                     $beginYesterday =   strtotime('yesterday');//昨天开始时间戳
                     if ($v['lastupdate'] > $beginYesterday && $v['lastupdate'] < $beginToday) {
-                        $List[$k]['lastupdate_date'] = "昨天";
-                        $List[$k]['lastupdate_n'] = "昨天";
+                        $List[$k]['lastupdate_date'] = yun_at('common_02000');
+                        $List[$k]['lastupdate_n'] = yun_at('common_02000');
                     } elseif ($v['lastupdate'] > $beginToday) {
                         $List[$k]['lastupdate_date'] = lastupdateStyle($v['lastupdate']);
                         $List[$k]['lastupdate_n'] = lastupdateStyle($v['lastupdate']);
@@ -1059,32 +1059,32 @@ class job_model extends model{
                 }
                 if (isset($v['state'])){
                     if ($v['state'] == 0){
-                        $List[$k]['state_n']  =  '审核中';
+                        $List[$k]['state_n']  =  yun_at('wap_user_00174');
                     } elseif ($v['state'] == 1){
-                        $List[$k]['state_n']  =  '已审核';
+                        $List[$k]['state_n']  =  yun_at('wap_user_00165');
                     } elseif ($v['state'] == 3){
-                        $List[$k]['state_n']  =  '未通过';
+                        $List[$k]['state_n']  =  yun_at('wap_user_00167');
                     }
                 }
                 //招聘状态
                 if ($v['state'] == 0) {
-                    $status_n = '职位未审核';
+                    $status_n = 'common_06266';
                 } else if ($v['state'] == 2) {
-                    $status_n = '职位已过期';
+                    $status_n = 'common_06267';
                 } else if ($v['state'] == 3) {
-                    $status_n = '职位审核未通过';
+                    $status_n = 'common_06268';
                 } else if ($v['r_status'] == 0) {
-                    $status_n = '企业未审核';
+                    $status_n = 'admin_yunying_00126';
                 } else if ($v['r_status'] == 2) {
-                    $status_n = '企业已锁定';
+                    $status_n = 'common_06269';
                 } else if ($v['r_status'] == 3) {
-                    $status_n = '企业审核未通过';
+                    $status_n = 'common_06270';
                 } else if ($v['r_status'] == 4) {
-                    $status_n = '企业已暂停';
+                    $status_n = 'common_06271';
                 } else if ($v['status'] == 4) {
-                    $status_n = '已下架';
+                    $status_n = 'wap_com_00242';
                 } else {
-                    $status_n = '招聘中';
+                    $status_n = 'wap_com_00243';
                 }
                 $List[$k]['status_n'] = $status_n;
 
@@ -1307,7 +1307,7 @@ class job_model extends model{
                         $List[$k]['reserve_status']     =   $rv['status'];
                         $List[$k]['reserve_interval']   =   $rv['interval'];
                         $List[$k]['reserve_start']      =   date('Y-m-d H:i:s', $rv['start_time']);
-                        $List[$k]['reserve_end']        =   $rv['end_time'] > 0 ? date('Y-m-d', $rv['end_time']) : '不限';
+                        $List[$k]['reserve_end']        =   $rv['end_time'] > 0 ? date('Y-m-d', $rv['end_time']) : WapDbEnum::UNLIMITED;
 
                         $List[$k]['s_time']             =   $rv['s_time'];
                         $List[$k]['e_time']             =   $rv['e_time'];
@@ -1319,7 +1319,7 @@ class job_model extends model{
                         }else if (empty($rv['s_time']) && $rv['e_time']){
                             $List[$k]['sx_time_n']      =   '00:00 - '.$rv['e_time'];
                         }else{
-                            $List[$k]['sx_time_n']      =   '不限';
+                            $List[$k]['sx_time_n']      =   yun_at('common_01936');
                         }
                     }
                 }
@@ -1497,13 +1497,13 @@ class job_model extends model{
             $job    =   $this->select_once('company_job',$isExistWhere, '`id`');
             if ($job){
                 if(empty($id)){
-                    $return['msg']      =   '您已经发布了一个相同的岗位，请勿重复发布。';
+                    $return['msg']      =   yun_at('common_00293');
                     $return['errcode']  =   8;
                     $return['url']  =   '';
                     return  $return;
                 }
                 if ($job['id'] != $id) {
-                    $return['msg']      =   '您已经发布了一个相同的岗位，请勿重复发布。';
+                    $return['msg']      =   yun_at('common_00293');
                     $return['errcode']  =   8;
                     $return['url']  =   '';
                     return  $return;
@@ -1549,7 +1549,7 @@ class job_model extends model{
 
             if ($post['is_link'] > 1 && (int)$post['link_id'] == 0) {
 
-                $return['msg']      =   '请选择工作地址！';
+                $return['msg']      =   yun_at('common_01306');
                 $return['errcode']  =   8;
             }
         }
@@ -1559,7 +1559,7 @@ class job_model extends model{
         }
 
 		if (empty($com['name'])) {
-            $return['msg']      =   '企业基本信息未完善';
+            $return['msg']      =   yun_at('common_06272');
             $return['errcode']  =   8;
             return $return;
         }
@@ -1579,7 +1579,7 @@ class job_model extends model{
         $suid       =   $spid ? $spid : $uid;
         $statis     =   $statisM->vipOver($uid, 2);
         if ($data['utype'] != 'admin' && !$id && $statis['job_num'] == 0) {
-            return array('msg'=>'套餐已用完，立即升级VIP','errcode' => 8);
+            return array('msg'=>yun_at('api_wxapp_00002'),'errcode' => 8);
         }
         if ($statis) {
             $post['rating']     =   $statis['rating'];
@@ -1596,7 +1596,7 @@ class job_model extends model{
             $post['add_ip']   =   $ip;
             $post['ip_address'] =   getIpAddress($ip);
             if ($statis['addjobnum'] == '0'){
-                return array('msg'=>'您的会员已到期','errcode' => 8);
+                return array('msg'=>yun_at('wap_01287'),'errcode' => 8);
             }else{
 
                 // 套餐会员。发布职位数限制的是企业上架的职位数量，不是企业发布的职位数量。发布数量不限，超出的发布后是未上架状态 20220326
@@ -1608,14 +1608,14 @@ class job_model extends model{
                     $post['status']  =  1;
                 }else{
 
-                    $payDetail  =   '发布职位，消耗上架套餐数量：1';
+                    $payDetail  =   'common_00567';
                     $this->addStatisDetail(array('uid' => $uid, 'type' => 1, 'num' => 1, 'detail' => $payDetail, 'uri' => $_SERVER['REQUEST_URI']));
                 }
 
 
                 $nid            =   $this->insert_into('company_job', $post);
                 $return['id']   =   $nid;
-                $msg            =   '职位发布';
+                $msg            =   'common_06273';
                 $type           =   '1';
             }
             if ($nid) {
@@ -1632,7 +1632,7 @@ class job_model extends model{
             $nid            =   $this->update_once('company_job', $post, $where);
 
             $return['id']   =   $id;
-            $msg            =   '职位更新';;
+            $msg            =   'common_06274';;
             $type           =   2;
         }
 
@@ -1694,7 +1694,7 @@ class job_model extends model{
                     $this->update_once('company_job', array('link_id' => $post['link_id'], 'is_link' => $post['is_link'], 'provinceid' => $post['provinceid'], 'cityid' => $post['cityid'], 'three_cityid' => $post['three_cityid'], 'x' => $post['x'], 'y' => $post['y']), array('uid' => $uid));
                 }
 
-                $LogM->addMemberLog($data['uid'], $data['usertype'], $msg.'（ID：'.$return['id'].'，名称：'.$post['name'].'）', 1, $type);//会员日志
+                $LogM->addMemberLog($data['uid'], $data['usertype'], $msg.'（ID：'.$return['id'].'common_06275'.$post['name'].'）', 1, $type);//会员日志
             }
 
             if ($post['state'] == 0) {
@@ -1702,18 +1702,18 @@ class job_model extends model{
                 require_once('admin.model.php');
                 $adminM         =   new admin_model($this->db, $this->def);
 
-                $thing_type = '更新';
+                $thing_type = 'wap_00225';
                 if (!$id) {
-                    $thing_type = '发布';
+                    $thing_type = 'wap_00166';
                 }
                 $thingtitle = strlen($post['name'])>8?mb_substr($post['name'],0,5,'utf-8').'...':$post['name'];
-                $thing = '职位《'.$thingtitle.'》'.$thing_type.'，等待审核';
+                $thing = '职位《'.$thingtitle.'》'.$thing_type.'common_01651';
 
-                $adminM->sendAdminMsg(array('first' => '企业《'.$job_data['com_name'].'》'.$msg . '(ID:' . $return['id'] . ')' . "《" . $post['name'] . "》成功，等待审核。", 'type' => 7,'customer'=>$job_data['com_name'],'thing'=>$thing,'crm_uid'=>$com['crm_uid']));
-                $return['msg']  =   $msg.'成功,等待审核';
+                $adminM->sendAdminMsg(array('first' => '企业《'.$job_data['com_name'].'》'.$msg . '(ID:' . $return['id'] . ')' . "《" . $post['name'] . 'common_01103', 'type' => 7,'customer'=>$job_data['com_name'],'thing'=>$thing,'crm_uid'=>$com['crm_uid']));
+                $return['msg']  =   $msg.'common_01369';
             } else {
 
-                $return['msg']  =   $msg.'成功';
+                $return['msg']  =   $msg.'admin_tool_00502';
             }
 
             $return['errcode']  =   9;
@@ -1753,7 +1753,7 @@ class job_model extends model{
             }
         } else {
 
-            $return['msg']      =   $msg.'失败';
+            $return['msg']      =   $msg.'admin_tool_00501';
             $this->addErrorLog($uid, 4, $return['msg']);
             $return['errcode']  =   8;
             $return['url']      =   $_SERVER['HTTP_REFERER'];
@@ -1815,9 +1815,9 @@ class job_model extends model{
      */
     public function statusJob($id, $upData = array())
     {
-        $text   =   $upData['single'] ? '审核职位' : '职位批量审核';
+        $text   =   $upData['single'] ? yun_at('common_06276') : yun_at('admin_user_company_00350');
         $ids    =   @explode(',', trim($id));
-        $return =   array('msg' => '非法操作！', 'errcode' =>  8);
+        $return =   array('msg' => yun_at('model_00001'), 'errcode' =>  8);
         if (!empty($id)) {
 
             $idstr  =   pylode(',', $ids);
@@ -1856,7 +1856,7 @@ class job_model extends model{
 
                     $msg = $uids = $notUids = array();
 
-                    $state_n=   '已通过';
+                    $state_n=   'member_user_00042';
                     $body   =   '';
 
                     $jobList=   $this->select_all('company_job', array('id' => array('in', $idstr)), '`id`,`uid`,`name`,`r_status`,`is_subscribe`');
@@ -1911,7 +1911,7 @@ class job_model extends model{
                                     $subscribeTpl = array(
                                         "thing1" => array("value" => $v['name']),// 职位名称
                                         "time3" => array("value" => date('Y-m-d H:i')),// 审核时间
-                                        "phrase4" => array("value"  => '审核通过'),// 审核状态
+                                        "phrase4" => array("value"  => 'wap_com_00099'),// 审核状态
                                     );
                                     $sendSubR = $wxM->sendWxSubscribe(array('uid' => $v['uid'],'wxid' => $mv['wxopenid'], 'url' => 'pson/pages/commember/job/index', 'tpl_data' => $subscribeTpl, 'tpl_type' => 4, 'utype' => $mv['usertype']));
                                     if ($sendSubR['errcode'] == 0) {// 订阅消息发送成功，无需发送其他通知
@@ -1950,8 +1950,8 @@ class job_model extends model{
 
                     $msg = $uids = array();
 
-                    $state_n        =   '未通过';
-                    $body           =   !empty($upData['statusbody']) ? '。 原因：'.$upData['statusbody'] : '';
+                    $state_n        =   'wap_user_00167';
+                    $body           =   !empty($upData['statusbody']) ? 'common_06277'.$upData['statusbody'] : '';
 
                     $jobList        =   $this->select_all('company_job', array('id' => array('in', $idstr)), '`id`,`uid`,`name`,`is_subscribe`');
                     $jobs['list']   =   $jobList;
@@ -1997,7 +1997,7 @@ class job_model extends model{
                                     $subscribeTpl = array(
                                         "thing1" => array("value" => $v['name']),// 职位名称
                                         "time3" => array("value" => date('Y-m-d H:i')),// 审核时间
-                                        "phrase4" => array("value"  => '审核未通过'),// 审核状态
+                                        "phrase4" => array("value"  => 'wap_user_00325'),// 审核状态
                                     );
                                     $sendSubR = $wxM->sendWxSubscribe(array('uid' => $v['uid'],'wxid' => $mv['wxopenid'], 'url' => 'pson/pages/commember/job/index', 'tpl_data' => $subscribeTpl, 'tpl_type' => 4, 'utype' => $mv['usertype']));
                                     if ($sendSubR['errcode'] == 0) {// 订阅消息发送成功，无需发送其他通知
@@ -2035,18 +2035,18 @@ class job_model extends model{
                 }
 
                 if (count($notUids) > 0) {
-                    $return['msg']  =   $text.$state_n.'成功'.count($uids).'条，失败'.count($notUids).'条。原因:企业账户未审核';
+                    $return['msg']  =   $text.$state_n.'admin_tool_00502'.count($uids).'common_01791'.count($notUids).'common_00798';
                 } else {
-                    $return['msg']  =   $text.$state_n.'成功(ID:'.$idstr.$body.')';
+                    $return['msg']  =   $text.$state_n.'common_01499'.$idstr.$body.')';
                 }
                 $return['errcode']  =   9;
             }else{
 
-                $return['msg']      =   '审核职位设置失败(ID:'.$idstr.')';
+                $return['msg']      =   yun_auto_t('审核职位设置失败(ID:').$idstr.')';
                 $return['errcode']  =   8;
             }
         }else {
-            $return['msg']          =   '请选择需要审核的职位操作！';
+            $return['msg']          =   yun_at('common_00750');
             $return['errcode']      =   8;
         }
 
@@ -2064,7 +2064,7 @@ class job_model extends model{
 
             $return     =   array(
                 'errcode' => 8,
-                'msg'     => '参数错误！'
+                'msg'     => yun_at('wap_01298')
             );
             return $return;
         }else{
@@ -2084,7 +2084,7 @@ class job_model extends model{
             if ($result) {
 
                 if ($data['state'] == '1') {
-                    $state_n = '已通过';
+                    $state_n = 'member_user_00042';
                     $body    = '';
                     $msg     = '您的职位<a href="comjobtpl,'.$id.'">《'.$job['name'].'》</a>审核通过';
 
@@ -2097,8 +2097,8 @@ class job_model extends model{
                     );
                     $userinfoM -> status(array('uid' => $uid, 'usertype' => 2), array('post' => $post));
                 }else{
-                    $state_n = '未通过';
-                    $body    = '。原因：'.$data['statusbody'];
+                    $state_n = 'wap_user_00167';
+                    $body    = 'common_06278'.$data['statusbody'];
                     $msg     = '您的职位<a href="comjobtpl,'.$id.'">《'.$job['name'].'》</a>审核未通过；原因：'.$data['statusbody'];
                 }
 
@@ -2137,7 +2137,7 @@ class job_model extends model{
                         $subscribeTpl = array(
                             "thing1" => array("value" => $job['name']),// 职位名称
                             "time3" => array("value" => date('Y-m-d H:i')),// 审核时间
-                            "phrase4" => array("value"  => $data['state'] == '1' ? '审核通过' : '审核未通过'),// 审核状态
+                            "phrase4" => array("value"  => $data['state'] == '1' ? yun_at('wap_com_00099') : yun_at('wap_user_00325')),// 审核状态
                         );
                         $sendSubR = $wxM->sendWxSubscribe(array('uid' => $member['uid'],'wxid' => $member['wxopenid'], 'url' => 'pson/pages/commember/job/index', 'tpl_data' => $subscribeTpl, 'tpl_type' => 4, 'utype' => $member['usertype']));
                         if ($sendSubR['errcode'] == 0) {// 订阅消息发送成功，无需发送其他通知
@@ -2168,13 +2168,13 @@ class job_model extends model{
 
                 $return = array(
                     'errcode' => 9,
-                    'msg'     => '职位审核'.$state_n.'设置成功！(ID:'.$id.$body.')'
+                    'msg'     => yun_at('admin_user_company_00326').$state_n.'设置成功！(ID:'.$id.$body.')'
                 );
 
             }else{
                 $return = array(
                     'errcode' => 8,
-                    'msg'     => '职位审核设置失败！(ID:'.$id.')'
+                    'msg'     => yun_at('model_00002').$id.')'
                 );
             }
 
@@ -2306,12 +2306,12 @@ class job_model extends model{
 
             }
 
-            $return['msg']		=	'职位(ID:'.$id.')';
+            $return['msg']		=	yun_at('common_01527').$id.')';
             $return['errcode']	=	$return['id'] ? '9' :'8';
-            $return['msg']		=	$return['id'] ? $return['msg'].'删除成功！' : $return['msg'].'删除失败！';
+            $return['msg']		=	$return['id'] ? $return['msg'].'admin_user_00187' : $return['msg'].'admin_user_00186';
         }else{
 
-            $return['msg']		=	'请选择您要删除的职位！';
+            $return['msg']		=	yun_at('common_00922');
             $return['errcode']	=	8;
         }
 
@@ -2473,10 +2473,10 @@ class job_model extends model{
             $operatime = ceil($Info['totaltime'] / $Info['totalnum']);
             if ($operatime < 3600) {
 
-                $Info['operatime'] = '一小时以内';
+                $Info['operatime'] = yun_at('company_00029');
             } else if ($operatime >= 3600 && $operatime < 86400) {
 
-                $Info['operatime'] = floor($operatime / 3600) . '小时';
+                $Info['operatime'] = floor($operatime / 3600) . 'wap_js_00128';
             } else if ($operatime >= 86400) {
 
                 $Info['operatime'] = floor($operatime / 86400) . '天';
@@ -2544,7 +2544,7 @@ class job_model extends model{
         if(!empty($jobInfo['zp_num'])){
             $jobInfo['job_number']          =   $jobInfo['zp_num']."人";
         }else{
-            $jobInfo['job_number']          =   "若干人";
+            $jobInfo['job_number']          =   yun_at('admin_user_company_00327');
         }
 
 
@@ -2555,21 +2555,21 @@ class job_model extends model{
         }elseif ($jobInfo['sex'] == 153){
             $jobInfo['sex']			    =	1;
         }
-        $jobInfo['job_sex']             =   $cache['com_sex'][$jobInfo['sex']] == '不限' ? '不限性别' : $cache['com_sex'][$jobInfo['sex']];
+        $jobInfo['job_sex']             =   $cache['com_sex'][$jobInfo['sex']] == 'common_01936' ? 'common_06279' : $cache['com_sex'][$jobInfo['sex']];
         $jobInfo['job_edu']             =   $cache['comclass_name'][$jobInfo['edu']];
-        $jobInfo['job_marriage']        =   $cache['comclass_name'][$jobInfo['marriage']]  == '不限' ? '不限婚况' : $cache['comclass_name'][$jobInfo['marriage']];
+        $jobInfo['job_marriage']        =   $cache['comclass_name'][$jobInfo['marriage']]  == 'common_01936' ? 'common_06280' : $cache['comclass_name'][$jobInfo['marriage']];
         if(!empty($jobInfo['zp_minage']) && !empty($jobInfo['zp_maxage'])){
             if($jobInfo['zp_minage']==$jobInfo['zp_maxage']){
-                $jobInfo['job_age'] = $jobInfo['zp_minage']."周岁以上";
+                $jobInfo['job_age'] = $jobInfo['zp_minage'].'wap_com_00280';
             }else{
-                $jobInfo['job_age'] = $jobInfo['zp_minage']."-".$jobInfo['zp_maxage']."周岁";
+                $jobInfo['job_age'] = $jobInfo['zp_minage']."-".$jobInfo['zp_maxage'].'wap_com_00300';
             }
         }elseif(!empty($jobInfo['zp_minage'])){
-            $jobInfo['job_age'] = $jobInfo['zp_minage']."周岁以上";
+            $jobInfo['job_age'] = $jobInfo['zp_minage'].'wap_com_00280';
         }elseif(empty($jobInfo['zp_minage']) && !empty($jobInfo['zp_maxage'])){
-            $jobInfo['job_age'] = $jobInfo['zp_maxage']."周岁以下";
+            $jobInfo['job_age'] = $jobInfo['zp_maxage'].'wap_com_00281';
         }else{
-            $jobInfo['job_age'] = "不限";
+            $jobInfo['job_age'] = yun_at('common_01936');
         }
         $jobInfo['job_pr']              =   $cache['comclass_name'][$jobInfo['pr']];
         $jobInfo['job_mun']             =   $cache['comclass_name'][$jobInfo['mun']];
@@ -2597,9 +2597,9 @@ class job_model extends model{
         if(isset($jobInfo['totalnum']) && $jobInfo['totalnum']!=0 && $jobInfo['totaltime']!=0){
             $operatime                    =   ceil($jobInfo['totaltime']/$jobInfo['totalnum']);
             if($operatime < 3600){
-                $jobInfo['operatime']       =   '1小时以内';
+                $jobInfo['operatime']       =   yun_at('common_01565');
             }else if($operatime >= 3600 && $operatime < 86400){
-                $jobInfo['operatime']       =   floor($operatime/3600).'小时';
+                $jobInfo['operatime']       =   floor($operatime/3600).'wap_js_00128';
             }else if($operatime >= 86400){
                 $jobInfo['operatime']       =   floor($operatime/86400).'天';
             }
@@ -2722,9 +2722,9 @@ class job_model extends model{
 
                         $return['id']           =   $this -> upInfo($jobData, array('id' => array('in', pylode(',', $ids))));
 
-                        $return['msg']		    =	'取消职位置顶(ID:'.pylode(',', $ids).')';
+                        $return['msg']		    =	yun_auto_t('取消职位置顶(ID:').pylode(',', $ids).')';
 
-                        $return['msg']		    =	$return['id'] ? $return['msg'].'成功！' : $return['msg'].'失败！';
+                        $return['msg']		    =	$return['id'] ? $return['msg'].'wap_js_00104' : $return['msg'].'wap_js_00103';
 
                     }else if (intval($data['days']) > 0) {
 
@@ -2759,12 +2759,12 @@ class job_model extends model{
 
                         }
 
-                        $return['msg']		    =	'职位置顶(ID:'.pylode(',', $id).')';
-                        $return['msg']		    =	$return['id'] ? $return['msg'].'设置成功！' : $return['msg'].'设置失败！';
+                        $return['msg']		    =	yun_auto_t('职位置顶(ID:').pylode(',', $id).')';
+                        $return['msg']		    =	$return['id'] ? $return['msg'].'model_00011' : $return['msg'].'wap_01715';
 
                     }else {
 
-                        $return['msg']          =   '置顶天数不能为空，请重试！';
+                        $return['msg']          =   yun_at('common_06281');
 
                     }
 
@@ -2795,7 +2795,7 @@ class job_model extends model{
 
                 }  else {
 
-                    $return['msg']      =  '系统繁忙';
+                    $return['msg']      =  yun_at('common_01831');
 
                 }
 
@@ -2835,9 +2835,9 @@ class job_model extends model{
 
                         $return['id']           =   $this -> upInfo($jobData, array('id' => array('in', pylode(',', $ids))));
 
-                        $return['msg']		    =	'取消职位推荐(ID:'.pylode(',', $ids).')';
+                        $return['msg']		    =	yun_auto_t('取消职位推荐(ID:').pylode(',', $ids).')';
 
-                        $return['msg']		    =	$return['id'] ? $return['msg'].'成功！' : $return['msg'].'失败！';
+                        $return['msg']		    =	$return['id'] ? $return['msg'].'wap_js_00104' : $return['msg'].'wap_js_00103';
 
                     }else if (intval($data['days']) > 0) {
 
@@ -2874,12 +2874,12 @@ class job_model extends model{
 
                         }
 
-                        $return['msg']		    =	'职位推荐(ID:'.pylode(',', $id).')';
-                        $return['msg']		    =	$return['id'] ? $return['msg'].'设置成功！' : $return['msg'].'设置失败！';
+                        $return['msg']		    =	yun_auto_t('职位推荐(ID:').pylode(',', $id).')';
+                        $return['msg']		    =	$return['id'] ? $return['msg'].'model_00011' : $return['msg'].'wap_01715';
 
                     }else {
 
-                        $return['msg']          =   '推荐天数不能为空，请重试！';
+                        $return['msg']          =   yun_at('common_06282');
 
                     }
 
@@ -2910,7 +2910,7 @@ class job_model extends model{
 
                 }  else {
 
-                    $return['msg']      =  '系统繁忙';
+                    $return['msg']      =  yun_at('common_01831');
 
                 }
 
@@ -2948,9 +2948,9 @@ class job_model extends model{
 
                         $return['id']           =   $this -> upInfo($jobData, array('id' => array('in', pylode(',', $ids))));
 
-                        $return['msg']		    =	'取消职位紧急招聘(ID:'.pylode(',', $ids).')';
+                        $return['msg']		    =	yun_auto_t('取消职位紧急招聘(ID:').pylode(',', $ids).')';
 
-                        $return['msg']		    =	$return['id'] ? $return['msg'].'成功！' : $return['msg'].'失败！';
+                        $return['msg']		    =	$return['id'] ? $return['msg'].'wap_js_00104' : $return['msg'].'wap_js_00103';
 
                     }else if (intval($data['days']) > 0) {
 
@@ -2987,12 +2987,12 @@ class job_model extends model{
 
                         }
 
-                        $return['msg']		    =	'职位紧急招聘(ID:'.pylode(',', $id).')';
-                        $return['msg']		    =	$return['id'] ? $return['msg'].'设置成功！' : $return['msg'].'设置失败！';
+                        $return['msg']		    =	yun_auto_t('职位紧急招聘(ID:').pylode(',', $id).')';
+                        $return['msg']		    =	$return['id'] ? $return['msg'].'model_00011' : $return['msg'].'wap_01715';
 
                     }else {
 
-                        $return['msg']          =   '紧急招聘天数不能为空，请重试！';
+                        $return['msg']          =   yun_at('common_06283');
 
                     }
 
@@ -3023,7 +3023,7 @@ class job_model extends model{
 
                 }  else {
 
-                    $return['msg']      =  '系统繁忙';
+                    $return['msg']      =  yun_at('common_01831');
 
                 }
 
@@ -3184,34 +3184,34 @@ class job_model extends model{
 
             if ($v['is_browse'] == 3){
 
-                $List[$k]['zt_n']   =   '等通知';
+                $List[$k]['zt_n']   =   yun_at('common_01931');
             }else if ($v['is_browse'] == 4){
 
-                $List[$k]['zt_n']   =   '不符合';
+                $List[$k]['zt_n']   =   yun_at('wap_com_00294');
             }else if ($v['is_browse'] == 5){
 
-                $List[$k]['zt_n']   =   '未接通';
+                $List[$k]['zt_n']   =   yun_at('member_com_00108');
             }
 
             if($v['datetime'] > strtotime(date('Y-m-d'))){
 
-                $List[$k]['datetime_n']     =   '今天 '.date('H:i',$v['datetime']);
+                $List[$k]['datetime_n']     =   yun_at('common_01940').date('H:i',$v['datetime']);
 
             }else if($v['datetime'] > mktime(0,0,0,1,1,date('Y'))){
 
-                $List[$k]['datetime_n']     =   date('m月d日',$v['datetime']);
+                $List[$k]['datetime_n']     =   date('common_01656',$v['datetime']);
             }else{
 
                 $List[$k]['datetime_n']     =   date('Y-m-d',$v['datetime']);
             }
             if ($v['isdel'] == 1) {
-                $List[$k]['isdel_n']        =   '简历用户删除';
+                $List[$k]['isdel_n']        =   yun_at('common_06284');
             } else if ($v['isdel'] == 2) {
-                $List[$k]['isdel_n']        =   '企业用户删除';
+                $List[$k]['isdel_n']        =   yun_at('common_06285');
             } else if ($v['isdel'] == 3) {
-                $List[$k]['isdel_n']        =   '猎头用户删除';
+                $List[$k]['isdel_n']        =   yun_at('common_01522');
             } else {
-                $List[$k]['isdel_n']        =   '正常';
+                $List[$k]['isdel_n']        =   yun_at('admin_user_00149');
             }
             if ($data['is_link']  ==  'yes' ||  $data['hr'] == 1) {
                 foreach ($downList as $dv) {
@@ -3496,17 +3496,17 @@ class job_model extends model{
                     $this->addMemberLog($data['uid'], $data['usertype'], '职位申请：删除申请记录(ID:' . pylode(',', $ids) . ')', 6, 3);
                 }
                 if ($data['utype'] != 'lietou') {
-                    $return['msg'] = '职位申请记录(ID:' . pylode(',', $id) . ')';
+                    $return['msg'] = yun_auto_t('职位申请记录(ID:') . pylode(',', $id) . ')';
                 }
                 $return['errcode']	=	9;
-                $return['msg']		=	$return['msg'].'删除成功！';
+                $return['msg']		=	$return['msg'].'admin_user_00187';
 
             }else{
                 $return['errcode']	=	'8';
-                $return['msg']		=	$return['msg'].'删除失败！';
+                $return['msg']		=	$return['msg'].'admin_user_00186';
             }
         }else{
-            $return['msg']		=	'请选择您要删除的数据！';
+            $return['msg']		=	yun_at('common_00921');
             $return['errcode']	=	8;
         }
 
@@ -3570,14 +3570,14 @@ class job_model extends model{
 
             $return['id']	=	$this -> update_once('userid_job', array('is_browse' => 2,'endtime' => time()), $where);
 
-            $this->addMemberLog($data['uid'], $data['usertype'], "职位申请：批量阅读申请记录(ID:" . pylode(',', $id) . ")", 6, 2);
+            $this->addMemberLog($data['uid'], $data['usertype'], 'common_00485' . pylode(',', $id) . ")", 6, 2);
 
             $return['layertype']=	1;
 
             $return['errcode']	=	$return['id'] ? 9 : 8;
-            $return['msg']		=	$return['id'] ? '操作成功！' : '操作失败！';
+            $return['msg']		=	$return['id'] ? yun_at('wap_js_00159') : yun_at('model_00003');
         }else{
-            $return['msg']		=	'请选择您要操作的数据！';
+            $return['msg']		=	yun_at('common_00923');
             $return['errcode']	=	8;
         }
 
@@ -3737,7 +3737,7 @@ class job_model extends model{
                 $pushM->pushMsg('jobNewResume', array('fuid' => $uid, 'puser' => $comid, 'tid' => $nid, 'jobname' => $data['job_name']));
 
                 // 记录会员日志
-                $logContent =   '职位申请：申请企业「'.$data['com_name'].'」 → 职位《'.$data['job_name'].'》';
+                $logContent =   'common_06251'.$data['com_name'].'」 → 职位《'.$data['job_name'].'》';
                 $this->addMemberLog($uid, 1, $logContent, 6, 1);
 
                 //微信
@@ -3771,7 +3771,7 @@ class job_model extends model{
                         $emaildata  =   array(
 
                             'email'     =>  $job_link['email'],
-                            'subject'   =>  "您收到一份新的求职简历！——" . $this->config['sy_webname'],
+                            'subject'   =>  'common_00657' . $this->config['sy_webname'],
                             'content'   =>  $contents,
                             'uid'       =>  $comid,
                             'name'      =>  $data['com_name'],
@@ -3834,7 +3834,7 @@ class job_model extends model{
         $res['url']         =   '';
 
         if(empty($data['uid']) || empty($data['usertype'])){
-            $res['msg']         =   '请先登录！';
+            $res['msg']         =   yun_at('common_06042');
             $res['url']         =   'index.php?c=login';
             $res['errorcode']   =   1;
             $res['showlogin']   =   1;
@@ -3842,7 +3842,7 @@ class job_model extends model{
         }
 
         if($data['usertype'] != 1){
-            $res['msg']         =   '您不是个人用户！';
+            $res['msg']         =   yun_at('common_01261');
             $res['errorcode']   =   2;
             return $res;
         }
@@ -3862,7 +3862,7 @@ class job_model extends model{
                 if($row['isdel'] == 9 && $row['is_browse']!='6'){
 
                     $res['errorcode']   =   3;
-                    $res['msg']	        =	'您已经投递过该职位，请不要重复投递！';
+                    $res['msg']	        =	yun_at('common_00432');
                     return $res;
                 }else{
 
@@ -3870,7 +3870,7 @@ class job_model extends model{
                     if ($sq_resume_interval && $sq_resume_interval > 0) {
                         if(strtotime("+{$sq_resume_interval} day", $row['datetime']) >= time()){
                             $res['errorcode']   =   31;
-                            $res['msg']	        =	'您最近申请过该职位，请勿重复投递！';
+                            $res['msg']	        =	yun_at('default_00001');
                             return $res;
                         }
                     }
@@ -3882,7 +3882,7 @@ class job_model extends model{
         if(intval($msNum) > 0){
 
             $res['errorcode']   =   4;
-            $res['msg']	        =	'您已经收到该公司的面试邀请，请不要重复投递！';
+            $res['msg']	        =	yun_at('common_00266');
 
             if($sqtype == 'spview'){    //视频面试预约已被邀请面试的直接预约成功
 
@@ -3913,7 +3913,7 @@ class job_model extends model{
         //判断简历
         if(empty($resume['id'])){
 
-            $res['msg']         =   '您还没有合适的简历，请先添加简历！';
+            $res['msg']         =   yun_at('common_00475');
             $res['url']         =   'member/index.php?c=addresume';
             $res['errorcode']   =   12;
             return $res;
@@ -3926,17 +3926,17 @@ class job_model extends model{
             // 判断简历基本信息必填项是否完善
             $base = array();
             if (empty($resume['uname'])){
-                $base[] = '姓名';
+                $base[] = 'wap_00529';
             }
             if (empty($resume['edu'])){
-                $base[] = '学历';
+                $base[] = 'wap_com_00301';
             }
             if (empty($resume['exp'])){
-                $base[] = '工作经验';
+                $base[] = 'wap_user_00240';
             }
             if (!empty($base)){
                 $res['eid']     =   $resume['id'];
-                $res['msg']	    =	'请完善您的基本信息：'.implode('、', $base);
+                $res['msg']	    =	yun_at('common_01055').implode('、', $base);
                 $res['url']	    =	'member/index.php?c=info';
                 $res['wapurl']  =   'member/index.php?c=info';
                 $res['errorcode']=  101;
@@ -3945,7 +3945,7 @@ class job_model extends model{
             // 判断求职意向必填项是否完善
             if (empty($resume['city_classid'])){
                 $res['eid']     =   $resume['id'];
-                $res['msg']	    =	'请完善您的求职意向：工作城市';
+                $res['msg']	    =	yun_at('common_00675');
                 $res['url']	    =	'member/index.php?c=expect&e='.$resume['id'];
                 $res['wapurl']  =   'member/index.php?c=addexpect&eid='.$resume['id'];
                 $res['errorcode']=  102;
@@ -3994,28 +3994,28 @@ class job_model extends model{
                     }
                 }
                  if (!$checkUserSqintegrity) {
-                    $res['msg']     =   '该简历完整度未达到'.$this->config['user_sqintegrity'].'%,请先完善简历！';
+                    $res['msg']     =   yun_at('common_01148').$this->config['user_sqintegrity'].'common_01086';
                     $res['url']     =   'member/index.php?c=resume';
                     $res['errorcode']=  7;
                     return $res;
                 }
             }elseif($resume['state'] == 0 && $this->config['sy_shresume_applyjob']!='1'){
                 $res['errorcode']   =   11;
-                $res['msg']	    =	'简历正在审核中，请联系管理员';
+                $res['msg']	    =	yun_at('common_06286');
                 $res['url']	    =	'member/index.php?c=resume';
                 return $res;
             }elseif($resume['state'] == 2){
                 $res['errorcode']   =   11;
-                $res['msg']	    =	'简历被举报，请联系管理员';
+                $res['msg']	    =	yun_at('common_00801');
                 $res['url']	    =	'member/index.php?c=resume';
                 return $res;
             }elseif($resume['state'] == 3){
                 $res['errorcode']   =   11;
-                $res['msg']	    =	'简历未通过审核，请联系管理员';
+                $res['msg']	    =	yun_at('common_06287');
                 $res['url']	    =	'member/index.php?c=resume';
                 return $res;
             }elseif($resume['status']=='2'){
-                $res['msg']     =   '请先公开您的简历！';
+                $res['msg']     =   yun_at('default_00002');
                 $res['url']     =   'member/index.php?c=privacy';
                 $res['errorcode']=  10;
                 return $res;
@@ -4023,13 +4023,13 @@ class job_model extends model{
         }
 
         if(empty($info)){
-            $res['msg']	    =	'该职位不存在';
+            $res['msg']	    =	yun_at('default_00006');
             $res['url']	    =	'index.php?c=resume';
             $res['errorcode']=  6;
             return $res;
         }else if ($info['status'] == 1){
 
-            $res['msg']	    =	'该职位已下架';
+            $res['msg']	    =	yun_at('common_01539');
             $res['url']	    =	'index.php?c=resume';
             $res['errorcode']=  6;
             return $res;
@@ -4054,22 +4054,22 @@ class job_model extends model{
                     if(!empty($rexp)){
                         if($rexp['sort']<$sexp['sort']){
                             $value['is_browse'] = 4;//标记为不合适
-                            $remark = "您的工作经验不符合投递要求";
+                            $remark = 'common_00708';
                         }
                     }else{
                         $value['is_browse'] = 4;//标记为不合适
-                        $remark = "您的工作经验不符合投递要求";
+                        $remark = 'common_00708';
                     }
                 }elseif($this->config['sqjob_req']==1){
                     if(!empty($rexp)){
                         if($rexp['sort']<$sexp['sort']){
                             $return['errorcode']  = 13;
-                            $return['msg']      = '您的工作经验不符合投递要求';
+                            $return['msg']      = yun_at('common_00708');
                             return $return;
                         }
                     }else{
                         $return['errorcode']  = 13;
-                        $return['msg']      = '您的工作经验不符合投递要求';
+                        $return['msg']      = yun_at('common_00708');
                         return $return;
                     }
                 }
@@ -4085,22 +4085,22 @@ class job_model extends model{
                     if (!empty($redu)) {
                         if ($redu['sort'] < $sedu['sort']) {
                             $value['is_browse'] = 4;//标记为不合适
-                            $remark .= " 您的学历不符合投递要求";
+                            $remark .= 'common_00883';
                         }
                     } else {
                         $value['is_browse'] = 4;//标记为不合适
-                        $remark .= " 您的学历不符合投递要求";
+                        $remark .= 'common_00883';
                     }
                 }elseif($this->config['sqjob_req']==1) {
                     if (!empty($redu)) {
                         if ($redu['sort'] < $sedu['sort']) {
                             $return['errorcode'] = 13;
-                            $return['msg'] = '您的学历不符合投递要求';
+                            $return['msg'] = yun_at('common_00883');
                             return $return;
                         }
                     } else {
                         $return['errorcode'] = 13;
-                        $return['msg'] = '您的学历不符合投递要求';
+                        $return['msg'] = yun_at('common_00883');
                         return $return;
                     }
                 }
@@ -4112,13 +4112,13 @@ class job_model extends model{
                     if ($resume['sex'] != $sex_reqs && $resume['sex'] != 3 && $sex_reqs != 3) {
 
                         $value['is_browse'] = 4;//标记为不合适
-                        $remark .= " 您的性别不符合投递要求";
+                        $remark .= 'common_00885';
                     }
                 } elseif($this->config['sqjob_req']==1) {
                     if ($resume['sex'] != $sex_reqs && $resume['sex'] != 3 && $sex_reqs != 3) {
 
                         $return['errorcode'] = 13;
-                        $return['msg'] = '您的性别不符合投递要求';
+                        $return['msg'] = yun_at('common_00885');
                         return $return;
                     }
                 }
@@ -4135,13 +4135,13 @@ class job_model extends model{
                     if (($minage_req && $age < $minage_req) || ($maxage_req && $age > $maxage_req)) {
 
                         $value['is_browse'] = 4;//标记为不合适
-                        $remark .= " 您的年龄不符合投递要求";
+                        $remark .= 'common_00884';
                     }
                 } elseif($this->config['sqjob_req']==1) {
                     if (($minage_req && $age < $minage_req) || ($maxage_req && $age > $maxage_req)) {
 
                         $return['errorcode'] = 13;
-                        $return['msg'] = '您的年龄不符合投递要求';
+                        $return['msg'] = yun_at('common_00884');
                         return $return;
                     }
                 }
@@ -4154,7 +4154,7 @@ class job_model extends model{
                 if (intval($sqNum) >= intval($this->config['warning_sendresume'])){
 
                     $return['errorcode'] = 13;
-                    $return['msg'] = !empty($this->config['warning_sendresume_tips']) ? $this->config['warning_sendresume_tips'] : '您今日投递次数过多，请明日再试！';
+                    $return['msg'] = !empty($this->config['warning_sendresume_tips']) ? $this->config['warning_sendresume_tips'] : 'common_00533';
                     return $return;
                 }
             }
@@ -4182,7 +4182,7 @@ class job_model extends model{
                     if (count($jobClassIdArr) > $this->config['warning_sqjob']){
 
                         $return['errorcode'] = 13;
-                        $return['msg'] = !empty($this->config['warning_sqjob_tips']) ? $this->config['warning_sqjob_tips'] : '您今日跨行投递次数过多，请明日再试！';
+                        $return['msg'] = !empty($this->config['warning_sqjob_tips']) ? $this->config['warning_sqjob_tips'] : 'common_00431';
                         return $return;
                     }
                 }
@@ -4205,12 +4205,12 @@ class job_model extends model{
         if(!empty($nid)){
 
             $res['errorcode']   =   9;
-            $res['msg']         =   '投递成功！';
+            $res['msg']         =   yun_at('common_06288');
             $res['nid'] = $nid;
             return $res;
         }else{
 
-            $res['msg']         =   '投递失败！';
+            $res['msg']         =   yun_at('common_06289');
             $this->addErrorLog($uid,3,$res['msg']);
             $res['errorcode']   =   2;
             return $res;
@@ -4223,12 +4223,12 @@ class job_model extends model{
 
         if($data['usertype']!=1){
 
-            $arr['msg']  =   '您不是个人用户！';
+            $arr['msg']  =   yun_at('common_01261');
         }else{
             $user   =   $this -> select_once('resume_expect',array('uid'=>$data['uid'],'height_status'=>2),'`id`');
 
             if(!is_array($user)){
-                $arr['msg'] =   '您没有优质简历！';
+                $arr['msg'] =   yun_at('common_01262');
             }else{
 
                 $jobid  =   (int)$data['job_id'];
@@ -4236,7 +4236,7 @@ class job_model extends model{
 
                 $row    =   $this -> select_once('userid_job',array('uid'=>$data['uid'],'isdel'=>9,'job_id'=>$jobid,'type'=>$type));
                 if(is_array($row)){
-                    $arr['msg'] =   '您已经申请过该职位！';
+                    $arr['msg'] =   yun_at('common_01007');
                 }else{
                     $job        =   $this -> select_once('lt_job',array('id'=>$jobid,'status'=>1),"`job_name`,`com_name`,`id`,`uid`");
                     if($job['id']){
@@ -4253,12 +4253,12 @@ class job_model extends model{
                         );
                         $this->insert_into("userid_job", $udata);
                         $this->update_once('member_statis', array('sq_jobnum' => array('+', 1)), array('uid' => $data['uid']));
-                        $this->addMemberLog($data['uid'], $data['usertype'], '职位申请：申请猎头职位'.$job['job_name'], 6, 1);
+                        $this->addMemberLog($data['uid'], $data['usertype'], 'common_00913'.$job['job_name'], 6, 1);
 
-                        $arr['msg']     	=   '申请成功！';
+                        $arr['msg']     	=   yun_at('common_06290');
                         $arr['errorcode']	=   9;
                     }else{
-                        $arr['msg']			=   '该职位待处理中！';
+                        $arr['msg']			=   yun_at('common_01302');
                     }
                 }
             }
@@ -4276,29 +4276,29 @@ class job_model extends model{
 
         if (empty($yqdata['fuid']) || empty($yqdata['fusername'])) {
 
-            $arr['msg']		=	'请先登录企业账号！';
+            $arr['msg']		=	yun_at('common_01153');
             $arr['login']	=	2;
             return $arr;
         }
 
         if($yqdata['fusertype'] != 2){
             $arr['login']	=	2;
-            $arr['msg']		=	'很抱歉，只有企业账号才能够邀请面试！';
+            $arr['msg']		=	yun_at('common_00430');
             return $arr;
         }
 
         // 判断邀请时间
         $intertime	=	strtotime($yqdata['intertime']);
         if (empty($intertime)) {
-            $arr['msg']		=	'面试时间不能为空！';
+            $arr['msg']		=	yun_at('member_com_00681');
             return $arr;
         }
         if ($intertime < time()) {
-            $arr['msg']		=	'面试时间不能小于当前时间！';
+            $arr['msg']		=	yun_at('common_00752');
             return $arr;
         }
         if (empty($yqdata['linktel'])) {
-            $arr['msg']		=	'联系方式不能为空！';
+            $arr['msg']		=	yun_at('common_06291');
             return $arr;
         }
 
@@ -4307,7 +4307,7 @@ class job_model extends model{
         //     return $arr;
         // }
         if (empty($yqdata['address'])) {
-            $arr['msg']		=	'面试地址不能为空！';
+            $arr['msg']		=	yun_at('member_com_00680');
             return $arr;
         }
 
@@ -4324,7 +4324,7 @@ class job_model extends model{
         $data	=	array(
 
             'uid'		=>	$yqdata['uid'],
-            'title'		=>	'面试邀请',
+            'title'		=>	yun_at('wap_com_00046'),
             'content'	=>	$yqdata['content'],
             'fid'		=>	$uid,
             'datetime'	=>	time(),
@@ -4360,7 +4360,7 @@ class job_model extends model{
         // 判断职位数量
         if ($num < 1 && $lt_num < 1) {
             $arr['status']	=	4;
-            $arr['msg']		=	'职位信息错误，请重新选择！';
+            $arr['msg']		=	yun_at('common_00733');
             return $arr;
         }
 
@@ -4368,14 +4368,14 @@ class job_model extends model{
         $black	=	$this -> select_num('blacklist', array('c_uid' => $p_uid, 'p_uid' => $uid));
 
         if (!empty($black)) {
-            $arr['msg']	 =	'该用户暂不接受面试邀请！';
+            $arr['msg']	 =	yun_at('common_00810');
             return $arr;
         }
 
         // 查看是否邀请过
         $umessage	=	$this -> getYqmsInfo(array('uid' => $p_uid, 'fid' => $uid, 'type' => $jobtype,'isdel'=>9));
         if (! empty($umessage)) {
-            $arr['msg']	=	'已经邀请过该人才，请不要重复邀请！';
+            $arr['msg']	=	yun_at('common_00469');
             return $arr;
         }
 
@@ -4414,7 +4414,7 @@ class job_model extends model{
                 'linktel'       =>  $yqdata['linktel'],
                 'intertime'     =>  $yqdata['intertime'],
                 'did'           =>  $com['did'],
-                'name'          =>  $data['jobname'].'邀请面试模板',
+                'name'          =>  $data['jobname'].'admin_00709',
             );
             $yqmbM -> addInfo($ymdata,$ydata,$ymwhere);
         }
@@ -4445,7 +4445,7 @@ class job_model extends model{
 
                         $vid    =   $this->addYqms($data);
                         if (!$vid) {
-                            $this->addErrorLog($uid, 7, '邀请面试失败！');
+                            $this->addErrorLog($uid, 7, 'common_06292');
                         }
 
                         $arr['status'] = 3;
@@ -4458,10 +4458,10 @@ class job_model extends model{
 
                                     $vid	=	$this->addYqms($data);
                                     if(!$vid){
-                                        $this->addErrorLog($uid,7,'邀请面试失败！');
+                                        $this->addErrorLog($uid,7,'common_06292');
                                     }
                                     // 积分操作记录
-                                    $inteM -> company_invtal($yqdata['fuid'], 2, $this->config['integral_interview'], $auto, $this->config['integral_pricename'].'抵扣，邀请会员面试', true, 2, 'integral', 14);
+                                    $inteM -> company_invtal($yqdata['fuid'], 2, $this->config['integral_interview'], $auto, $this->config['integral_pricename'].'common_06293', true, 2, 'integral', 14);
 
                                     $arr['status'] = 3;
                                 }
@@ -4473,7 +4473,7 @@ class job_model extends model{
 
                         } else {
 
-                            $arr['msg'] = '当前账户套餐余量不足，请联系主账户增配！';
+                            $arr['msg'] = yun_at('common_00338');
                         }
                     }
                 } else {
@@ -4481,12 +4481,12 @@ class job_model extends model{
                     // 收费会员简历没有用完的状态,直接邀请
                     $vid	=	$this->addYqms($data);
                     if(!$vid){
-                        $this->addErrorLog($uid,7,'邀请面试失败！');
+                        $this->addErrorLog($uid,7,'common_06292');
                     }
                     // 计算消费数量
                     $statisM -> upInfo(array('invite_resume' => array('-', 1)), array('uid' => $suid, 'usertype' => 2));
 
-                    $payDetail = '邀请面试，消耗邀请套餐数量：1';
+                    $payDetail = 'common_00601';
                     $this->addStatisDetail(array('uid' => $uid, 'type' => 4, 'num' => 1, 'detail' => $payDetail, 'uri' => $_SERVER['REQUEST_URI']));
 
                     $arr['status'] = 3;
@@ -4496,10 +4496,10 @@ class job_model extends model{
                 $vid	=	$this->addYqms($data);
 
                 if(!$vid){
-                    $this->addErrorLog($uid,7,'邀请面试失败！');
+                    $this->addErrorLog($uid,7,'common_06292');
                 }
 
-                $payDetail = '邀请面试，消耗今日邀请套餐数量：1';
+                $payDetail = 'common_00490';
                 $this->addStatisDetail(array('uid' => $uid, 'type' => 4, 'num' => 1, 'detail' => $payDetail, 'uri' => $_SERVER['REQUEST_URI']));
 
                 $arr['status'] = 3;
@@ -4511,7 +4511,7 @@ class job_model extends model{
             $arr['vid']	=	$vid;
 
             // 记录会员日志
-            $this->addMemberLog($yqdata['fuid'], $yqdata['fusertype'], '面试邀请：邀请人才：' . $resume['name'], 4, 1);
+            $this->addMemberLog($yqdata['fuid'], $yqdata['fusertype'], 'common_01082' . $resume['name'], 4, 1);
 
             // 5.0推送
             include_once('push.model.php');
@@ -4524,7 +4524,7 @@ class job_model extends model{
             $needSend = 1;// 默认需要发送通知
             if (isset($userSubscribe['id']) && $userSubscribe['id']) {// 已订阅面试通知
                 if (empty($yqdata['content'])){
-                    $yqdata['content'] = '无';
+                    $yqdata['content'] = yun_at('common_02082');
                 }
                 $subscribeTpl = array(
                     "thing1" => array("value" => $yqdata['jobname']),// 职位名称
@@ -4737,11 +4737,11 @@ class job_model extends model{
         foreach ($List  as  $k  =>  $v){
 
             if($v['isdel']==1){
-                $List[$k]['isdel_n']  =   '个人用户删除';
+                $List[$k]['isdel_n']  =   yun_at('common_06294');
             }else if($v['isdel']==2){
-                $List[$k]['isdel_n']  =   '企业用户删除';
+                $List[$k]['isdel_n']  =   yun_at('common_06285');
             }else{
-                $List[$k]['isdel_n']  =   '正常';
+                $List[$k]['isdel_n']  =   yun_at('admin_user_00149');
             }
             if(!empty($cmsg)){
                 foreach ($cmsg as $ke=>$va){
@@ -4857,15 +4857,15 @@ class job_model extends model{
 
             }
 
-            $this -> addMemberLog($data['uid'],$data['usertype'],"面试邀请：删除邀请信息",4,3);
+            $this -> addMemberLog($data['uid'],$data['usertype'],'common_06295',4,3);
 
-            $return['msg']		=	'邀请面试记录(ID:'.pylode(',', $id).')';
+            $return['msg']		=	yun_auto_t('邀请面试记录(ID:').pylode(',', $id).')';
 
             $return['errcode']	=	$return['id'] ? '9' :'8';
-            $return['msg']		=	$return['id'] ? $return['msg'].'删除成功！' : $return['msg'].'删除失败！';
+            $return['msg']		=	$return['id'] ? $return['msg'].'admin_user_00187' : $return['msg'].'admin_user_00186';
 
         }else{
-            $return['msg']		=	'请选择您要删除的数据！';
+            $return['msg']		=	yun_at('common_00921');
             $return['errcode']	=	8;
         }
 
@@ -4907,7 +4907,7 @@ class job_model extends model{
 
             if($browse==3){
 
-                $data['typemsg']	=	'同意';
+                $data['typemsg']	=	yun_at('common_01961');
                 $msg_content 		= 	'用户 <a href="usertpl,'.$uid.'">'.sub_string($arr['username']).' </a>同意了您的邀请面试！';
 
                 include_once('sysmsg.model.php');
@@ -4915,7 +4915,7 @@ class job_model extends model{
                 $sysmsgM -> addInfo(array('uid'=>$comuid['fid'],'usertype'=>2,'content'=>$msg_content));
             }elseif($browse==4){
 
-                $data['typemsg']	=	'拒绝';
+                $data['typemsg']	=	yun_at('common_01993');
             }
             if($this->config['sy_msg_yqmshf']=='1' && $company["linktel"] && checkMsgOpen($this -> config)){
 
@@ -4935,10 +4935,10 @@ class job_model extends model{
             }
             if($nid){
 
-                return array('msg'=>'操作成功！','errcode'=>9);
+                return array('msg'=>yun_at('wap_js_00159'),'errcode'=>9);
             }else{
 
-                return array('msg'=>'操作失败！','errcode'=>8);
+                return array('msg'=>yun_at('model_00003'),'errcode'=>8);
             }
         }
     }
@@ -4958,9 +4958,9 @@ class job_model extends model{
         if($nid){
 
             $this->addMemberLog($uid,$usertype,"职位申请：取消职位申请（ID：".$id."）",6,3);
-            return array('msg'=>'取消成功！','errcode'=>9);
+            return array('msg'=>yun_at('wap_01290'),'errcode'=>9);
         }else{
-            return array('msg'=>'取消失败！','errcode'=>9);
+            return array('msg'=>yun_at('model_00004'),'errcode'=>9);
         }
     }
     //  浏览职位，单条查询
@@ -5053,12 +5053,12 @@ class job_model extends model{
                         $List[$k]['cityname']   .=  '-'.$val['job_city_two'];
                     }
                     $List[$k]['salary']     =   $val['job_salary'];
-                    $List[$k]['exp_n']      =   $val['job_exp'] ? '经验不限' : $val['job_exp'];
-                    $List[$k]['edu_n']      =   $val['job_edu'] ? '学历不限' : $val['job_edu'];
+                    $List[$k]['exp_n']      =   $val['job_exp'] ? 'common_06296' : $val['job_exp'];
+                    $List[$k]['edu_n']      =   $val['job_edu'] ? 'common_06297' : $val['job_edu'];
                     if($val['status']=="1"){
-                        $List[$k]['status'] =   "已下架招聘";
+                        $List[$k]['status'] =   yun_at('common_06298');
                     }else{
-                        $List[$k]['status'] =   "正在招聘";
+                        $List[$k]['status'] =   yun_at('member_user_00047');
                     }
                     $List[$k]['com_logo_n'] =   $val['com_logo_n'];
                 }
@@ -5167,14 +5167,14 @@ class job_model extends model{
 
                 $return['id']		=	$this -> update_once('look_job',array('com_status' => 1), $where);
 
-                $this -> addMemberLog($data['uid'],$data['usertype'],"浏览记录：删除已浏览简历记录（ID:".pylode(',', $id)."）",26,3);
-                $return['msg']		=	'浏览的职位记录(ID:'.pylode(',', $id).')';
+                $this -> addMemberLog($data['uid'],$data['usertype'],'common_00439'.pylode(',', $id)."）",26,3);
+                $return['msg']		=	yun_at('common_00893').pylode(',', $id).')';
             }elseif($data['usertype'] == '1'){
 
                 $where['uid']    =  intval($data['uid']);
                 $return['id']		=	$this -> update_once('look_job',array('status' => 1), $where);
                 $this -> addMemberLog($data['uid'],$data['usertype'],"浏览记录：删除职位浏览记录（ID:".pylode(',', $id)."）",26,3);
-                $return['msg']		=	'职位浏览记录(ID:'.pylode(',', $id).')';
+                $return['msg']		=	yun_auto_t('职位浏览记录(ID:').pylode(',', $id).')';
             }else{
                 if($data['norecycle'] == '1'){	//	数据库清理，不插入回收站
 
@@ -5183,14 +5183,14 @@ class job_model extends model{
 
                     $return['id']	=	$this -> delete_all('look_job', $where, '');
                 }
-                $return['msg']		=	'职位浏览记录(ID:'.pylode(',', $id).')';
+                $return['msg']		=	yun_auto_t('职位浏览记录(ID:').pylode(',', $id).')';
             }
 
             $return['errcode']		=	$return['id'] ? '9' :'8';
-            $return['msg']			=	$return['id'] ? $return['msg'].'删除成功！' : $return['msg'].'删除失败！';
+            $return['msg']			=	$return['id'] ? $return['msg'].'admin_user_00187' : $return['msg'].'admin_user_00186';
         }else{
 
-            $return['msg']			=	'请选择您要删除的数据！';
+            $return['msg']			=	yun_at('common_00921');
             $return['errcode']		=	8;
         }
         return	$return;
@@ -5282,7 +5282,7 @@ class job_model extends model{
         //判断是否登录
         if (empty($data['uid']) || empty($data['usertype'])) {
 
-            $res['msg']         =   '请先登录！';
+            $res['msg']         =   yun_at('common_06042');
             $res['url']         =   'index.php?c=login';
             $res['errorcode']   =   8;
             $res['state']       =   0;
@@ -5291,7 +5291,7 @@ class job_model extends model{
 
         //判断是否为个人
         if ($data['usertype'] != 1) {
-            $res['msg']         =   '您不是个人用户！';
+            $res['msg']         =   yun_at('common_01261');
             $res['errorcode']   =   8;
             $res['state']       =   4;
             return $res;
@@ -5320,7 +5320,7 @@ class job_model extends model{
 
         if(!empty($is_set)){
 
-            $res['msg']       =  '您已经收藏过该职位，请不要重复收藏！';
+            $res['msg']       =  yun_at('common_00433');
             $res['errorcode'] =  8;
             $res['state']     =  3;
         }else{
@@ -5342,12 +5342,12 @@ class job_model extends model{
                 $statisM  =  new statis_model($this->db, $this->def);
                 $statisM->upInfo(array('fav_jobnum'    =>  array('+', 1)), array('uid' => $data['uid']));
 
-                $this->addMemberLog($data['uid'],$data['usertype'],"职位收藏：收藏了猎头职位:".$lt_job['job_name'],5,1);//会员日志
-                $res['msg']        =  '收藏成功！';
+                $this->addMemberLog($data['uid'],$data['usertype'],'common_00734'.$lt_job['job_name'],5,1);//会员日志
+                $res['msg']        =  yun_at('model_00048');
                 $res['errorcode']  =  9;
                 $res['state']	   =  1;
             }else{
-                $res['msg']        =  '收藏失败！';
+                $res['msg']        =  yun_at('model_00049');
                 $res['errorcode']  =  8;
                 $res['state']	   =  2;
             }
@@ -5361,7 +5361,7 @@ class job_model extends model{
 
         if(!empty($is_set)){
 
-            $res['msg']       =  '您已经收藏过该职位，请不要重复收藏！';
+            $res['msg']       =  yun_at('common_00433');
             $res['errorcode'] =  8;
             $res['state']     =  3;
         }else{
@@ -5385,12 +5385,12 @@ class job_model extends model{
                 //记录系统日志
                 $this -> addSystem(array('uid' => $job['uid'],'usertype'=>2, 'content' => '用户<a href="resumetpl,'. $expect['id'] . '">' . sub_string($member['username']).' </a>收藏了您的职位：'.$job['name']));
 
-                $res['msg']        =  '收藏成功！';
+                $res['msg']        =  yun_at('model_00048');
                 $res['errorcode']  =  9;
                 $res['state']	   =  1;
             }else{
 
-                $res['msg']        =  '收藏失败！';
+                $res['msg']        =  yun_at('model_00049');
                 $res['errorcode']  =  8;
                 $res['state']	   =  2;
             }
@@ -5460,7 +5460,7 @@ class job_model extends model{
 
                 $jobList					=   $this -> getList($jobWhere, $jobData);
 
-                $StateNameList=array('0'=>'等待审核','1'=>'招聘中','2'=>'已结束','3'=>'未通过');
+                $StateNameList=array('0'=>'member_com_00222','1'=>'wap_com_00243','2'=>'wap_user_00259','3'=>'wap_user_00167');
 
                 require_once ('resume.model.php');
                 $resumeM                     =   new resume_model($this->db, $this->def);
@@ -5471,11 +5471,11 @@ class job_model extends model{
                 foreach ($List  as  $k  =>  $v){
 
                     $List[$k]['datetime_n']             =   formatTime($v['datetime']);
-                    $List[$k]['statename']				=	'已关闭';
+                    $List[$k]['statename']				=	yun_at('admin_yunying_00048');
                     foreach($jobList['list'] as $val){
                         if($v['job_id']==$val['id']){
-                            $List[$k]['job_edu']		=	$val['job_edu'] == '不限' ? '不限学历' : $val['job_edu'];
-                            $List[$k]['job_exp']		=	$val['job_exp'] == '不限' ? '不限经验' : $val['job_exp'];
+                            $List[$k]['job_edu']		=	$val['job_edu'] == 'common_01936' ? 'common_06299' : $val['job_edu'];
+                            $List[$k]['job_exp']		=	$val['job_exp'] == 'common_01936' ? 'common_06300' : $val['job_exp'];
                             $List[$k]['salary']			=	$val['job_salary'];
                             $List[$k]['cityname']		=	$val['job_city_one'];
                             if($val['job_city_two']){
@@ -5483,7 +5483,7 @@ class job_model extends model{
                             }
                             $List[$k]['statename']		=	$StateNameList[$val['state']];
                             if($val['status'] == 1){
-                                $List[$k]['statename']	= 	'已下架';
+                                $List[$k]['statename']	= 	yun_at('wap_com_00242');
                             }
                             $List[$k]['com_logo_n']     =   $val['com_logo_n'];
                             $List[$k]['wapjob_url'] = Url('wap',array('c'=>'job','a'=>'comapply','id'=>$v['job_id']));
@@ -5552,16 +5552,16 @@ class job_model extends model{
             if ($result){
 
                 $this->update_once('member_statis', array('fav_jobnum' => array('-', 1)), array('uid' => intval($data['uid'])));
-                $this->addMemberLog(intval($data['uid']), intval($data['usertype']), '收藏管理：取消收藏职位：'.$data['job_id'], 5, 3);
+                $this->addMemberLog(intval($data['uid']), intval($data['usertype']), 'common_06301'.$data['job_id'], 5, 3);
 
-                $return =   array('errcode' => 9, 'msg' => '取消收藏成功');
+                $return =   array('errcode' => 9, 'msg' => yun_at('wap_01698'));
             }else{
 
-                $return =   array('errcode' => 9, 'msg' => '取消收藏失败');
+                $return =   array('errcode' => 9, 'msg' => yun_at('model_00005'));
             }
         }else{
 
-            $return =   array('errcode' => 9, 'msg' => '参数错误，请重试');
+            $return =   array('errcode' => 9, 'msg' => yun_at('common_01238'));
         }
 
         return $return;
@@ -5627,15 +5627,15 @@ class job_model extends model{
                 }
 
                 $return['errcode']  =   9;
-                $return['msg']      =   '删除成功！';
+                $return['msg']      =   yun_at('admin_user_00187');
             } else {
 
                 $return['errcode']  =   8;
-                $return['msg']      =   '删除失败！';
+                $return['msg']      =   yun_at('admin_user_00186');
             }
         } else {
 
-            $return['msg']          =   '请选择您要删除的数据！';
+            $return['msg']          =   yun_at('common_00921');
             $return['errcode']      =   8;
         }
 
@@ -5685,15 +5685,15 @@ class job_model extends model{
 
             if ($result) {
 
-                $return['msg']      =   '修改成功！';
+                $return['msg']      =   yun_at('member_user_00602');
                 $return['errcode']  =   9;
             } else {
 
-                $return['msg']      =   '修改失败！';
+                $return['msg']      =   yun_at('member_user_00603');
                 $return['errcode']  =   8;
             }
         } else {
-            $return['msg']          =   '参数错误！';
+            $return['msg']          =   yun_at('wap_01298');
             $return['errcode']      =   8;
         }
         return $return;
@@ -5760,7 +5760,7 @@ class job_model extends model{
                         $return['status']   =   2;
                     }else{
 
-                        $return['msg']      =   '当前账户套餐余量不足，请联系主账户增配！';
+                        $return['msg']      =   yun_at('common_00338');
                     }
 
                 }
@@ -5801,7 +5801,7 @@ class job_model extends model{
                         $return['meal']     =   in_array('jobrec', explode(',', $this->config['sy_only_price'])) ? 1 : 0;
                         $return['status']   =   2;
                     }else{
-                        $return['msg']      =   '当前账户套餐余量不足，请联系主账户增配！';
+                        $return['msg']      =   yun_at('common_00338');
                     };
                 }
             } else if ($type == 3) { // 紧急
@@ -5841,7 +5841,7 @@ class job_model extends model{
                         $return['meal']     =   in_array('jobrec', explode(',', $this->config['sy_only_price'])) ? 1: 0;
                         $return['status']   =   2;
                     }else{
-                        $return['msg']      =   '当前账户套餐余量不足，请联系主账户增配！';
+                        $return['msg']      =   yun_at('common_00338');
                     };
                 }
             } else if ($type == 4) { // 兼职推荐
@@ -5882,7 +5882,7 @@ class job_model extends model{
                         $return['status']   =   2;
                     }else{
 
-                        $return['msg']      =   '当前账户套餐余量不足，请联系主账户增配！';
+                        $return['msg']      =   yun_at('common_00338');
                     };
                 }
             }
@@ -5954,7 +5954,7 @@ class job_model extends model{
 
         } else {
 
-            $return = array('errcode' => 8, 'msg' => '参数错误，请重试！');
+            $return = array('errcode' => 8, 'msg' => yun_at('wap_00203'));
 
         }
 
@@ -5969,7 +5969,7 @@ class job_model extends model{
     private function setTopPromote($data = array())
     {
 
-        $return =   array('errcode' => 8, 'msg' => '参数错误，请重试！');
+        $return =   array('errcode' => 8, 'msg' => yun_at('wap_00203'));
 
         if (!empty($data)) {
 
@@ -5987,28 +5987,28 @@ class job_model extends model{
 
                 $return['id']   =   $this->upInfo(array('xsdate' => $xsDate), array('id' => intval($job['id'])));
 
-                $logContent =   '职位更新：设置职位置顶';
-                $logDetail  =   '职位置顶天数 + '.$day;
+                $logContent =   'common_06253';
+                $logDetail  =   'common_06302'.$day;
                 $this->addMemberLog($uid, $usertype, $logContent, 1, 4, $logDetail);
 
                 if ($statis['top_num'] >= $day) {
 
                     $this->update_once('company_statis', array('top_num' => array('-', $day)), array('uid' => $suid));
 
-                    $payDetail = '职位置顶，消耗置顶套餐数量：' . $day;
+                    $payDetail = 'common_00669' . $day;
                     $this->addStatisDetail(array('uid' => $uid, 'type' => 7, 'num' => $day, 'detail' => $payDetail, 'uri' => $_SERVER['REQUEST_URI']));
                 } else if ($statis['top_num'] > 0) {
 
                     $this->update_once('company_statis', array('top_num' => 0), array('uid' => $suid));
-                    $payDetail = '职位置顶，消耗置顶套餐数量：' . $statis['top_num'];
+                    $payDetail = 'common_00669' . $statis['top_num'];
                     $this->addStatisDetail(array('uid' => $uid, 'type' => 7, 'num' => $statis['top_num'], 'detail' => $payDetail, 'uri' => $_SERVER['REQUEST_URI']));
                 }
 
-                $return['msg'] = '职位置顶设置成功！';
+                $return['msg'] = yun_at('common_06303');
                 $return['errcode'] = 9;
             } else {
 
-                $return['msg'] = '您的套餐数据不足当前设置的置顶天数，请重新输入！';
+                $return['msg'] = yun_at('common_00207');
                 $return['errcode'] = 7;
             }
         }
@@ -6024,7 +6024,7 @@ class job_model extends model{
     private function setAutoPromote($data = array())
     {
 
-        $return =   array('errcode' => 8, 'msg' => '参数错误，请重试！');
+        $return =   array('errcode' => 8, 'msg' => yun_at('wap_00203'));
 
         if (!empty($data)) {
 
@@ -6040,15 +6040,15 @@ class job_model extends model{
                     $this->upInfo(array('autotime' => $autotime), array('id' => intval($v['id'])));
                 }
 
-                $logContent =   '职位更新：设置职位自动刷新';
-                $logDetail  =   '自动刷新天数 + '.$day;
+                $logContent =   'common_06254';
+                $logDetail  =   'common_06304'.$day;
                 $this->addMemberLog($uid, $usertype, $logContent, 1, 4, $logDetail);
 
-                $return['msg']      =   '职位自动刷新设置成功！';
+                $return['msg']      =   yun_at('common_06305');
                 $return['errcode']  =   9;
             } else {
 
-                $return['msg']      =   '系统参数错误！';
+                $return['msg']      =   yun_at('common_06306');
                 $return['errcode']  =   7;
             }
         }
@@ -6064,7 +6064,7 @@ class job_model extends model{
     private function setRecPromote($data = array())
     {
 
-        $return =   array('errcode' => 8, 'msg' => '参数错误，请重试！');
+        $return =   array('errcode' => 8, 'msg' => yun_at('wap_00203'));
 
         if (!empty($data)) {
 
@@ -6081,29 +6081,29 @@ class job_model extends model{
                 $recDate    =   $job['rec_time'] > time() ? $job['rec_time'] + $day * 86400 : time() + $day * 86400;
                 $this->upInfo(array('rec_time' => $recDate, 'rec' => 1), array('id' => intval($job['id'])));
 
-                $logContent =   '职位更新：设置职位推荐';
-                $logDetail  =   '职位推荐天数 + '.$day;
+                $logContent =   'common_06255';
+                $logDetail  =   'common_06307'.$day;
                 $this->addMemberLog($uid, $usertype, $logContent, 1, 4, $logDetail);
 
                 if ($statis['rec_num'] >= $day) {
 
                     $this->update_once('company_statis', array('rec_num' => array('-', $day)), array('uid' => $suid));
 
-                    $payDetail = '职位推荐，消耗推荐套餐数量：' . $day;
+                    $payDetail = 'common_00668' . $day;
                     $this->addStatisDetail(array('uid' => $uid, 'type' => 5, 'num' => $day, 'detail' => $payDetail, 'uri' => $_SERVER['REQUEST_URI']));
                 } else if ($statis['rec_num'] > 0) {
 
                     $this->update_once('company_statis', array('rec_num' => 0), array('uid' => $suid));
 
-                    $payDetail = '职位推荐，消耗推荐套餐数量：' . $statis['rec_num'];
+                    $payDetail = 'common_00668' . $statis['rec_num'];
                     $this->addStatisDetail(array('uid' => $uid, 'type' => 5, 'num' => $statis['rec_num'], 'detail' => $payDetail, 'uri' => $_SERVER['REQUEST_URI']));
                 }
 
-                $return['msg'] = '职位推荐设置成功！';
+                $return['msg'] = yun_at('common_06308');
                 $return['errcode'] = 9;
             } else {
 
-                $return['msg'] = '您的套餐数据不足当前设置的推荐天数，请重新输入！';
+                $return['msg'] = yun_at('common_00206');
                 $return['errcode'] = 7;
             }
         }
@@ -6119,7 +6119,7 @@ class job_model extends model{
     private function setUrgentPromote($data = array())
     {
 
-        $return =   array('errcode' => 8, 'msg' => '参数错误，请重试！');
+        $return =   array('errcode' => 8, 'msg' => yun_at('wap_00203'));
 
         if (!empty($data)) {
 
@@ -6136,29 +6136,29 @@ class job_model extends model{
                 $urgentDate =   $job['urgent_time'] > time() ? $job['urgent_time'] + $day * 86400 : time() + $day * 86400;
                 $this->upInfo(array('urgent_time' => $urgentDate, 'urgent' => 1), array('id' => intval($job['id'])));
 
-                $logContent =   '职位更新：设置职位紧急招聘';
-                $logDetail  =   '职位紧急招聘天数 + '.$day;
+                $logContent =   'common_06256';
+                $logDetail  =   'common_06309'.$day;
                 $this->addMemberLog($uid, $usertype, $logContent, 1, 4, $logDetail);
 
                 if ($statis['urgent_num'] >= $day) {
 
                     $this->update_once('company_statis', array('urgent_num' => array('-', $day)), array('uid' => $suid));
 
-                    $payDetail = '紧急招聘，消耗紧急招聘套餐数量：' . $day;
+                    $payDetail = 'common_00540' . $day;
                     $this->addStatisDetail(array('uid' => $uid, 'type' => 6, 'num' => $day, 'detail' => $payDetail, 'uri' => $_SERVER['REQUEST_URI']));
                 } else if ($statis['urgent_num'] > 0) {
 
                     $this->update_once('company_statis', array('urgent_num' => 0), array('uid' => $suid));
 
-                    $payDetail = '紧急招聘，消耗紧急招聘套餐数量：' . $statis['urgent_num'];
+                    $payDetail = 'common_00540' . $statis['urgent_num'];
                     $this->addStatisDetail(array('uid' => $uid, 'type' => 6, 'num' => $statis['urgent_num'], 'detail' => $payDetail, 'uri' => $_SERVER['REQUEST_URI']));
                 }
 
-                $return['msg'] = '职位紧急招聘设置成功！';
+                $return['msg'] = yun_at('common_06310');
                 $return['errcode'] = 9;
             } else {
 
-                $return['msg'] = '您的套餐数据不足当前设置的紧急招聘天数，请重新输入！';
+                $return['msg'] = yun_at('common_00180');
                 $return['errcode'] = 7;
             }
         }
@@ -6174,7 +6174,7 @@ class job_model extends model{
     private function setRecPartPromote($data = array())
     {
 
-        $return =   array('errcode' => 8, 'msg' => '参数错误，请重试！');
+        $return =   array('errcode' => 8, 'msg' => yun_at('wap_00203'));
 
         if (!empty($data)) {
 
@@ -6191,29 +6191,29 @@ class job_model extends model{
                 $recDate    =   $part['rec_time'] > time() ? $part['rec_time'] + $day * 86400 : time() + $day * 86400;
                 $this->update_once('partjob', array('rec_time' => $recDate), array('id' => intval($part['id'])));
 
-                $logContent =   '兼职更新：设置职位推荐';
-                $logDetail  =   '兼职推荐天数 + '.$day;
+                $logContent =   'common_06257';
+                $logDetail  =   'common_06311'.$day;
                 $this->addMemberLog($uid, $usertype, $logContent, 9, 4, $logDetail);
 
                 if ($statis['rec_num'] >= $day) {
 
                     $this->update_once('company_statis', array('rec_num' => array('-', $day)), array('uid' => $suid));
 
-                    $payDetail  =   '兼职推荐，消耗推荐套餐数量：'.$day;
+                    $payDetail  =   'common_00645'.$day;
                     $this->addStatisDetail(array('uid' => $uid, 'type' => 5, 'num' => $day, 'detail' => $payDetail, 'uri' => $_SERVER['REQUEST_URI']));
                 } else if ($statis['rec_num'] > 0) {
 
                     $this->update_once('company_statis', array('rec_num' => 0), array('uid' => $suid));
 
-                    $payDetail  =   '兼职推荐，消耗推荐套餐数量：'.$statis['rec_num'];
+                    $payDetail  =   'common_00645'.$statis['rec_num'];
                     $this->addStatisDetail(array('uid' => $uid, 'type' => 5, 'num' => $statis['rec_num'], 'detail' => $payDetail, 'uri' => $_SERVER['REQUEST_URI']));
                 }
 
-                $return['msg'] = '兼职推荐设置成功！';
+                $return['msg'] = yun_at('common_06312');
                 $return['errcode'] = 9;
             } else {
 
-                $return['msg'] = '您的套餐数据不足当前设置的推荐天数，请重新输入！';
+                $return['msg'] = yun_at('common_00206');
                 $return['errcode'] = 7;
             }
         }
@@ -6273,40 +6273,40 @@ class job_model extends model{
                     $this->update_once('company_job', array('xsdate' => ''), array('id' => $id));
                     if ($job['top_day'] > 0) {
                         $this->update_once('company_statis', array('top_num' => array('+', intval($job['top_day']))), array('uid' => $job['uid']));
-                        $logContent =   '取消职位置顶（ID：'.$id.'）';
-                        $logDetail  =   '返还置顶套餐：'.$job['top_day'].'天';
+                        $logContent =   'common_06258'.$id.'）';
+                        $logDetail  =   'common_06313'.$job['top_day'].'天';
                     }else{
-                        $logContent =   '取消职位置顶（ID：'.$id.'）';
+                        $logContent =   'common_06258'.$id.'）';
                     }
                     $opera  =   1;
                 } else if ($type == 'rec') {
                     $this->update_once('company_job', array('rec_time' => '', 'rec' => 0), array('id' => $id));
                     if ($job['rec_day'] > 0) {
                         $this->update_once('company_statis', array('rec_num' => array('+', intval($job['rec_day']))), array('uid' => $job['uid']));
-                        $logContent =   '取消职位推荐（ID：'.$id.'）';
-                        $logDetail  =   '返还推荐套餐：'.$job['rec_day'].'天';
+                        $logContent =   'common_06259'.$id.'）';
+                        $logDetail  =   'common_06314'.$job['rec_day'].'天';
                     }else{
-                        $logContent =   '取消职位推荐（ID：'.$id.'）';
+                        $logContent =   'common_06259'.$id.'）';
                     }
                     $opera  =   1;
                 } else if ($type == 'urgent') {
                     $this->update_once('company_job', array('urgent_time' => '', 'urgent' => 0), array('id' => $id));
                     if ($job['urgent_day'] > 0) {
                         $this->update_once('company_statis', array('urgent_num' => array('+', intval($job['urgent_day']))), array('uid' => $job['uid']));
-                        $logContent =   '取消职位紧急招聘（ID：'.$id.'）';
-                        $logDetail  =   '返还紧急招聘套餐：'.$job['urgent_day'].'天';
+                        $logContent =   'common_06260'.$id.'）';
+                        $logDetail  =   'common_06315'.$job['urgent_day'].'天';
                     }else{
-                        $logContent =   '取消职位紧急招聘（ID：'.$id.'）';
+                        $logContent =   'common_06260'.$id.'）';
                     }
                     $opera  =   1;
                 } else if ($type == 'recpart') {
                     $this->update_once('partjob', array('rec_time' => ''), array('id' => $id));
                     if ($job['rec_day'] > 0) {
                         $this->update_once('company_statis', array('rec_num' => array('+', intval($job['rec_day']))), array('uid' => $job['uid']));
-                        $logContent =   '取消兼职推荐（ID：'.$id.'）';
-                        $logDetail  =   '返还推荐套餐：'.$job['rec_day'].'天';
+                        $logContent =   'common_06261'.$id.'）';
+                        $logDetail  =   'common_06314'.$job['rec_day'].'天';
                     }else{
-                        $logContent =   '取消兼职推荐（ID：'.$id.'）';
+                        $logContent =   'common_06261'.$id.'）';
                     }
                     $opera  =   9;
                 }
@@ -6314,18 +6314,18 @@ class job_model extends model{
                 if (isset($logContent)){
 
                     $this->addMemberLog($uid, $usertype, $logContent, $opera, 2, $logDetail);
-                    $return =   array('errcode' => 9, 'msg' => '职位推广取消成功');
+                    $return =   array('errcode' => 9, 'msg' => yun_at('model_00006'));
                 }else{
 
-                    $return =   array('errcode' => 8, 'msg' => '职位推广取消失败');
+                    $return =   array('errcode' => 8, 'msg' => yun_at('model_00007'));
                 }
             } else {
 
-                $return = array('errcode' => 8, 'msg' => '参数错误，请重试！');
+                $return = array('errcode' => 8, 'msg' => yun_at('wap_00203'));
             }
         }else{
 
-            $return = array('errcode' => 8, 'msg' => '系统错误，尚未开启职位推广取消功能！');
+            $return = array('errcode' => 8, 'msg' => yun_at('common_00441'));
         }
 
         return $return;
@@ -6349,7 +6349,7 @@ class job_model extends model{
 
         if(is_array($haves)){
 
-            $return['msg']		=	"该用户已在您黑名单中！";
+            $return['msg']		=	yun_at('common_00916');
             $return['url']		=	$_SERVER['HTTP_REFERER'];
             $return['errcode']	=	8;
         }else{
@@ -6359,16 +6359,16 @@ class job_model extends model{
             $this->update_once('userid_msg',array('isdel'=>$data['usertype']),array('uid'=>$data['c_uid'],'fid'=>$data['p_uid']));
             if($nid){
 
-                $logContent =   '屏蔽企业：UID'.$data['p_uid'];
-                $logDetail  =   '屏蔽企业《'.$data['fname'].'》，并且删除邀请信息';
+                $logContent =   'common_01246'.$data['p_uid'];
+                $logDetail  =   'common_01601'.$data['fname'].'common_00964';
                 $this->addMemberLog($data['c_uid'], $data['usertype'], $logContent, 26, 3, $logDetail);
 
-                $return['msg']		=	'操作成功！';
+                $return['msg']		=	yun_at('wap_js_00159');
                 $return['url']		=	'index.php?c=invite';
                 $return['errcode']	=	9;
             }else{
 
-                $return['msg']		=	'操作失败！';
+                $return['msg']		=	yun_at('model_00003');
                 $return['url']		=	'index.php?c=invite';
                 $return['errcode']	=	8;
             }
@@ -6896,7 +6896,7 @@ class job_model extends model{
                         }
                     } else {
 
-                        $logs[$k]['username']           =   '游客';
+                        $logs[$k]['username']           =   yun_at('wap_00434');
                     }
                     if (!empty($companys) && $v['comid']) {
 
@@ -6955,12 +6955,12 @@ class job_model extends model{
                 $return['id']   =   $this->delete_all('job_tellog', $whereData, '');
             }
 
-            $return['msg']      =   '拨号记录';
+            $return['msg']      =   yun_at('admin_user_company_00009');
             $return['errcode']  =   $return['id'] ? '9' : '8';
-            $return['msg']      =   $return['id'] ? $return['msg'] . '删除成功！' : $return['msg'] . '删除失败！';
+            $return['msg']      =   $return['id'] ? $return['msg'] . 'admin_user_00187' : $return['msg'] . 'admin_user_00186';
         } else {
 
-            $return['msg']      =   '请选择您要删除的拨号记录！';
+            $return['msg']      =   yun_at('common_00741');
             $return['errcode']  =   8;
         }
 
@@ -7016,14 +7016,14 @@ class job_model extends model{
                 $return =   array(
 
                     'error' =>  -1,
-                    'msg'   =>  '剩余刷新套餐不足预约'
+                    'msg'   =>  yun_at('common_00982')
                 );
             }else if ($this->config['com_job_reserve'] != 1){
 
                 $return =   array(
 
                     'error' =>  0,
-                    'msg'   =>  '预约刷新功能未开启'
+                    'msg'   =>  yun_at('common_01177')
                 );
             }else {
 
@@ -7037,13 +7037,13 @@ class job_model extends model{
 
                         $return =   array(
                             'error' =>  0,
-                            'msg'   =>  '截止日期不得设置今天'
+                            'msg'   =>  yun_at('wap_com_00212')
                         );
                     } else if ($post['interval'] < $this->config['sy_reserve_refresh_interval'] && $is_reserve == 1){
 
                         $return =   array(
                             'error' =>  0,
-                            'msg'   =>  '预约职位刷新，时间间隔不得低于'.$this->config['sy_reserve_refresh_interval'].'分钟'
+                            'msg'   =>  yun_at('common_00606').$this->config['sy_reserve_refresh_interval'].'wap_com_00247'
                         );
                     }else {
 
@@ -7055,7 +7055,7 @@ class job_model extends model{
 
                                 $return =   array(
                                     'error' =>  0,
-                                    'msg'   =>  '刷新时间段设置不合理：开始时间不能超过结束时间'
+                                    'msg'   =>  yun_at('common_00227')
                                 );
                             }
                         }
@@ -7118,7 +7118,7 @@ class job_model extends model{
                                 $this->update_once('company_job', array('is_reserve' => $is_reserve), array('id' => array('in', implode(',', $newJobIdA)), 'uid' => $uid));
                             }
 
-                            $logContent = '职位更新：设置职位（ID：' . implode(',', $newJobIdA) . '）预约刷新';
+                            $logContent = 'common_06262' . implode(',', $newJobIdA) . 'common_06316';
                             $this->addMemberLog($uid, 2, $logContent, 1, 4);
                         }
 
@@ -7137,7 +7137,7 @@ class job_model extends model{
                                     $LogM->addAdminLog('预约刷新调整，ID：'.implode(',', $upJobIdA));
                                 }else {
 
-                                    $logContent = '职位更新：更新职位（ID：' . implode(',', $upJobIdA) . '）预约刷新设置';
+                                    $logContent = 'common_06263' . implode(',', $upJobIdA) . 'common_01423';
                                     $this->addMemberLog($uid, 2, $logContent, 1, 4);
                                 }
                             }else{
@@ -7148,28 +7148,28 @@ class job_model extends model{
                                     $LogM   =   new log_model($this->db, $this->def);
                                     $LogM->addAdminLog('关闭预约刷新，ID：'.implode(',', $upJobIdA) );
                                 }else {
-                                    $logContent = '职位更新：关闭职位（ID：' . implode(',', $upJobIdA)  . '）预约刷新';
+                                    $logContent = 'common_06264' . implode(',', $upJobIdA)  . 'common_06316';
                                     $this->addMemberLog($uid, 2, $logContent, 1, 4);
                                 }
                             }
                         }
 
                         $return['error']    =   $nid ? 1 : 0;
-                        $return['msg']      =   $nid ? '职位预约刷新设置成功' : '职位预约刷新设置失败';
+                        $return['msg']      =   $nid ? yun_at('common_01047') : yun_at('common_01046');
                     }
 
                 } else {
 
                     $return =   array(
                         'error' =>  0,
-                        'msg'   =>  '职位信息查询失败'
+                        'msg'   =>  yun_at('model_00008')
                     );
                 }
             }
         } else {
             $return =   array(
                 'error' =>  0,
-                'msg'   =>  '参数错误'
+                'msg'   =>  yun_at('wap_com_00228')
             );
         }
 
@@ -7345,10 +7345,10 @@ class job_model extends model{
                                     if ($freeNum > 0){
 
                                         $free_num   =   $freeNum > $this->config['sy_reserve_refresh_price'] ?    $this->config['sy_reserve_refresh_price'] : $freeNum;
-                                        $this->addJobSxLog(array('uid' => $v['uid'], 'usertype' => 2, 'jobid' => $v['job_id'], 'r_time' => $LastTime, 'type' => 1, 'remark' => '计划任务：职位预约刷新'), 1, $free_num);
+                                        $this->addJobSxLog(array('uid' => $v['uid'], 'usertype' => 2, 'jobid' => $v['job_id'], 'r_time' => $LastTime, 'type' => 1, 'remark' => 'common_06317'), 1, $free_num);
                                     }else{
 
-                                        $this->addJobSxLog(array('uid' => $v['uid'], 'usertype' => 2, 'jobid' => $v['job_id'], 'r_time' => $LastTime, 'type' => 1, 'remark' => '计划任务：职位预约刷新'));
+                                        $this->addJobSxLog(array('uid' => $v['uid'], 'usertype' => 2, 'jobid' => $v['job_id'], 'r_time' => $LastTime, 'type' => 1, 'remark' => 'common_06317'));
                                     }
                                 }
                             }else{
@@ -7394,18 +7394,18 @@ class job_model extends model{
                                     if ($freeNum > 0){
 
                                         $free_num   =   $subNum == 0 ? $this->config['sy_reserve_refresh_price'] : 0;
-                                        $this->addJobSxLog(array('uid' => $v['uid'], 'usertype' => 2, 'jobid' => $v['job_id'], 'r_time' => $LastTime, 'type' => 1, 'remark' => '计划任务：职位预约刷新'), 1, $free_num);
+                                        $this->addJobSxLog(array('uid' => $v['uid'], 'usertype' => 2, 'jobid' => $v['job_id'], 'r_time' => $LastTime, 'type' => 1, 'remark' => 'common_06317'), 1, $free_num);
                                     }else{
 
-                                        $this->addJobSxLog(array('uid' => $v['uid'], 'usertype' => 2, 'jobid' => $v['job_id'], 'r_time' => $LastTime, 'type' => 1, 'remark' => '计划任务：职位预约刷新'), 2, 0);
+                                        $this->addJobSxLog(array('uid' => $v['uid'], 'usertype' => 2, 'jobid' => $v['job_id'], 'r_time' => $LastTime, 'type' => 1, 'remark' => 'common_06317'), 2, 0);
                                     }
 
                                     if ($subNum > 0) {
 
-                                        $payDetail  =   $freeNum > 0 ? '刷新操作，消耗刷新套餐数量：'.$subNum.'；免费刷新套餐数量：'.$freeNum : '刷新操作，消耗刷新套餐数量：'.$subNum;
+                                        $payDetail  =   $freeNum > 0 ? 'common_00647'.$subNum.'common_01085'.$freeNum : 'common_00647'.$subNum;
                                     }else if ($freeNum > 0){
 
-                                        $payDetail  =   '刷新操作，消耗免费刷新套餐数量：'.$freeNum;
+                                        $payDetail  =   'common_00528'.$freeNum;
                                     }
                                     $this->addStatisDetail(array('uid' => $v['uid'], 'type' => 2, 'num' => $this->config['sy_reserve_refresh_price'], 'detail' => $payDetail, 'uri' => $_SERVER['REQUEST_URI']));
                                 }
@@ -7434,7 +7434,7 @@ class job_model extends model{
             $this->update_once('company_job', array('is_reserve' => 0), array('id' => array('in', $data['jobids'])));
             $this->update_once('reserve_refresh', array('status' => 2), array('job_id' => array('in', $data['jobids'])));
 
-            return array('errcode' => 9, 'msg' => '预约刷新关闭成功');
+            return array('errcode' => 9, 'msg' => yun_at('model_00009'));
         } else if (isset($data['auto']) && $data['auto'] == 1) {
 
             $where  =   array(
@@ -7456,11 +7456,11 @@ class job_model extends model{
                 $this->update_once('company_job', array('is_reserve' => 0), array('id' => array('in', pylode(',', $jobIdS))));
                 $this->update_once('reserve_refresh', array('status' => 2), array('job_id' => array('in', pylode(',', $jobIdS))));
 
-                return array('errcode' => 9, 'msg' => '预约刷新关闭成功');
+                return array('errcode' => 9, 'msg' => yun_at('model_00009'));
             }
         } else {
 
-            return array('errcode' => 8, 'msg' => '参数错误');
+            return array('errcode' => 8, 'msg' => yun_at('wap_com_00228'));
         }
     }
 
@@ -7538,7 +7538,7 @@ class job_model extends model{
                     $pushM = new push_model($this->db, $this->def);
                     $pushM->pushMsg('jobNewResume', array('fuid' => $uid, 'puser' => $comid, 'tid' => $nid, 'jobname' => $jobInfo['name']));
                     // 记录会员日志
-                    $logContent =   '职位申请：申请企业「'.$jobInfo['com_name'].'」 → 职位《'.$jobInfo['job_name'].'》';
+                    $logContent =   'common_06251'.$jobInfo['com_name'].'」 → 职位《'.$jobInfo['job_name'].'》';
                     $this->addMemberLog($uid, 1, $logContent, 6, 1);
                     //微信
                     include_once('weixin.model.php');
@@ -7551,7 +7551,7 @@ class job_model extends model{
                             $contents       =   $phpyun->fetch(TPL_PATH . 'resume/sendresume.htm', time());
                             $emaildata      =   array(
                                 'email'     =>  $job_link['email'],
-                                'subject'   =>  "您收到一份新的求职简历！——" . $this->config['sy_webname'],
+                                'subject'   =>  'common_00657' . $this->config['sy_webname'],
                                 'content'   =>  $contents,
                                 //发送email记录到数据表email_msg
                                 'uid'       =>  $comid,
@@ -7584,18 +7584,18 @@ class job_model extends model{
                     $statisM->upInfo(array('sq_job' => array('+', 1)), array('uid' => $comid, 'usertype' => 2));
                     $statisM->upInfo(array('sq_jobnum' => array('+', 1)), array('uid' => $uid, 'usertype' => 1));
 
-                    $return =   array('msg'=>'投递成功','errcode' => 9);
+                    $return =   array('msg'=>yun_at('model_00010'),'errcode' => 9);
                 }else{
 
-                    $return =    array('msg'=>'网络错误请重试','errcode' => 8);
+                    $return =    array('msg'=>yun_at('common_01394'),'errcode' => 8);
                 }
             }else{
 
-                $return     =   array('msg'=>'该简历已投递','errcode' => 8);
+                $return     =   array('msg'=>yun_at('common_01538'),'errcode' => 8);
             }
         }else{
 
-            $return         =   array('errcode' => 8, 'msg' => '请选择要投递的简历');
+            $return         =   array('errcode' => 8, 'msg' => yun_at('common_01170'));
         }
 
         return $return;
@@ -7674,9 +7674,9 @@ class job_model extends model{
             $nid = $this->update_once('company_job', $upData, $whereData);
         }
         if($nid){
-            return array('msg'=>'设置成功！','errcode'=>9);
+            return array('msg'=>yun_at('model_00011'),'errcode'=>9);
         }else{
-            return array('msg'=>'设置失败！','errcode'=>8);
+            return array('msg'=>yun_at('wap_01715'),'errcode'=>8);
         }
     }
     /**
@@ -7692,14 +7692,14 @@ class job_model extends model{
         $id =   intval($data['id']);
         if (empty($id)) {
 
-            $resData['msg'] =   '参数错误';
+            $resData['msg'] =   yun_at('wap_com_00228');
             return $resData;
         }
 
         $jobInfo = $this->select_once('company_job', array('id' => $id), 'id,uid,is_link,rating,link_id');
         if (empty($jobInfo)) {
 
-            $resData['msg'] =   '数据错误';
+            $resData['msg'] =   yun_at('member_com_00056');
             return $resData;
         }
         $comInfo            =   $this->select_once('company', array('uid' => $jobInfo['uid']), 'uid, linkman, linktel, linkphone, linkmail, address, rating, infostatus, not_disturb, cityid, x, y');

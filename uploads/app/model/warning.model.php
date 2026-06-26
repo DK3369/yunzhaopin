@@ -78,7 +78,7 @@ class warning_model extends model
             if (!$isWaring) {
                 $time = time() - 3600;
                 $num = $this->select_num('moblie_msg', array('ctime' => array('>', $time)));
-                $msg = "系统一小时内已发送" . $num . "条短信！";
+                $msg = 'common_01139' . $num . 'common_01790';
 
                 if ($num >= $this->config['sy_hour_msgnum']) {
 
@@ -223,63 +223,63 @@ class warning_model extends model
 
         if ($type == 1) { // 发布职位
 
-            $emailcoment    =   '用户：【' . $username . '】发布职位超出规定数目，请检查是否有问题';
+            $emailcoment    =   '用户：【' . $username . 'common_00320';
 
             if ($this->config['warning_addjob_type'] == 1) { // 锁定帐号
 
-                $this->update_once('member', array('status' => 2, 'lock_info' => '发布职位超出规定数目'), array('uid' => $uid));
+                $this->update_once('member', array('status' => 2, 'lock_info' => 'common_00983'), array('uid' => $uid));
 
                 $this->update_once('company', array('r_status' => 2), array('uid' => $uid));
 
                 $this->update_once('company_job', array('r_status' => 2), array('uid' => $uid));
                 $this->update_once('partjob', array('r_status' => 2), array('uid' => $uid));
 
-                $notice->sendEmailType(array('email' => $email, 'uid' => $uid, 'username' => $username, 'lock_info' => '发布职位超出规定数目', 'type' => 'lock'));
+                $notice->sendEmailType(array('email' => $email, 'uid' => $uid, 'username' => $username, 'lock_info' => 'common_00983', 'type' => 'lock'));
                 $cookie->unset_cookie();
 
-                $logContent =   '账户锁定(ID:' . $uid . '。原因：预警-每天发布职位限制)';
+                $logContent =   'common_06648' . $uid . 'common_00518';
             }
         } elseif ($type == 2) { // 下载简历
 
-            $emailcoment    =   '用户：【' . $username . '】下载简历超出规定数目，请检查是否有问题';
+            $emailcoment    =   '用户：【' . $username . 'common_00319';
 
             if ($this->config['warning_downresume_type'] == 1) { // 锁定帐号
 
-                $this->update_once('member', array('status' => 2, 'lock_info' => '下载简历超出规定数目'), array('uid' => $uid));
+                $this->update_once('member', array('status' => 2, 'lock_info' => 'common_00966'), array('uid' => $uid));
 
                 $this->update_once('company', array('r_status' => 2), array('uid' => $uid));
 
                 $this->update_once('company_job', array('r_status' => 2), array('uid' => $uid));
                 $this->update_once('partjob', array('r_status' => 2), array('uid' => $uid));
 
-                $notice->sendEmailType(array('email' => $email, 'uid' => $uid, 'username' => $username, 'lock_info' => '下载简历超出规定数目', 'type' => 'lock'));
+                $notice->sendEmailType(array('email' => $email, 'uid' => $uid, 'username' => $username, 'lock_info' => 'common_00966', 'type' => 'lock'));
                 $cookie->unset_cookie();
 
-                $logContent =   '账户锁定(ID:' . $uid . '。原因：预警-每天下载简历限制)';
+                $logContent =   'common_06648' . $uid . 'common_00515';
             }
         } elseif ($type == 3) { // 简历发布
 
-            $emailcoment    =   '用户：【' . $username . '】简历发布超出规定数目，请检查是否有问题';
+            $emailcoment    =   '用户：【' . $username . 'common_00324';
 
             if ($this->config['warning_addresume_type'] == 1) { // 锁定帐号
 
-                $this->update_once('member', array('status' => 2, 'lock_info' => '简历发布超出规定数目'), array('uid' => $uid));
+                $this->update_once('member', array('status' => 2, 'lock_info' => 'common_01038'), array('uid' => $uid));
                 $this->update_once('resume', array('r_status' => 2), array('uid' => $uid));
 
-                $resumeM->setExpectState(array('state' => 3, 'r_status' => 2, 'statusbody' => '简历发布超出规定数目'), array('uid' => $uid));
+                $resumeM->setExpectState(array('state' => 3, 'r_status' => 2, 'statusbody' => yun_at('common_01038')), array('uid' => $uid));
 
-                $notice->sendEmailType(array('email' => $email, 'uid' => $uid, 'username' => $username, 'lock_info' => '简历发布超出规定数目', 'type' => 'lock'));
+                $notice->sendEmailType(array('email' => $email, 'uid' => $uid, 'username' => $username, 'lock_info' => 'common_01038', 'type' => 'lock'));
                 $cookie->unset_cookie();
 
-                $logContent =   '账户锁定(ID:' . $uid . '。原因：预警-每天发布简历限制)';
+                $logContent =   'common_06648' . $uid . 'common_00517';
             }
         } elseif ($type == 4) { // 充值
 
-            $emailcoment    =   '用户：【' . $username . '】充值超出规定金额，请检查是否有问题';
+            $emailcoment    =   '用户：【' . $username . 'common_00422';
 
             if ($this->config['warning_recharge_type'] == 1) { // 锁定帐号
 
-                $this->update_once('member', array('status' => 2, 'lock_info' => '充值超出规定金额'), array('uid' => $uid));
+                $this->update_once('member', array('status' => 2, 'lock_info' => 'common_01230'), array('uid' => $uid));
 
                 if ($usertype == 1) {
 
@@ -292,10 +292,10 @@ class warning_model extends model
                     $this->update_once('partjob', array('r_status' => 2), array('uid' => $uid));
                 }
 
-                $notice->sendEmailType(array('email' => $email, 'uid' => $uid, 'username' => $username, 'lock_info' => '充值超出规定金额', 'type' => 'lock'));
+                $notice->sendEmailType(array('email' => $email, 'uid' => $uid, 'username' => $username, 'lock_info' => 'common_01230', 'type' => 'lock'));
                 $cookie->unset_cookie();
 
-                $logContent =   '账户锁定(ID:' . $uid . '。原因：预警-每天充值金额限制)';
+                $logContent =   'common_06648' . $uid . 'common_00516';
             }
         } else if ($type == 5 && $this->config['warning_closemsg_type'] == 1) {
 
@@ -305,103 +305,103 @@ class warning_model extends model
 
             if ($way == 1){
 
-                $emailcoment    =   '用户：【'.$username.'】简历投递超出规定分类，请检查是否有问题';
+                $emailcoment    =   '用户：【'.$username.'common_00325';
 
                 if ($this->config['warning_sqjob_type'] == 3){
-                    $this->update_once('member', array('status' => 2, 'lock_info' => '简历投递超出限定'), array('uid' => $uid));
+                    $this->update_once('member', array('status' => 2, 'lock_info' => 'common_01290'), array('uid' => $uid));
                     $this->update_once('resume', array('r_status' => 2), array('uid' => $uid));
 
                     $resumeM->setExpectState(array('state' => 3, 'r_status' => 2), array('uid' => $uid));
 
-                    $notice->sendEmailType(array('email' => $email, 'uid' => $uid, 'username' => $username, 'lock_info' => '简历投递超出限定', 'type' => 'lock'));
+                    $notice->sendEmailType(array('email' => $email, 'uid' => $uid, 'username' => $username, 'lock_info' => 'common_01290', 'type' => 'lock'));
                     $cookie->unset_cookie();
-                    $logContent =   '账户锁定(ID:' . $uid . '。原因：预警-每天简历投递超出限制)';
+                    $logContent =   'common_06648' . $uid . 'common_00421';
                 }
             }else{
 
-                $emailcoment    =   '用户：【'.$username.'】简历投递超出规定数目，请检查是否有问题';
+                $emailcoment    =   '用户：【'.$username.'common_00326';
 
                 if ($this->config['warning_sendresume_type'] == 3){
-                    $this->update_once('member', array('status' => 2, 'lock_info' => '简历投递超出限定'), array('uid' => $uid));
+                    $this->update_once('member', array('status' => 2, 'lock_info' => 'common_01290'), array('uid' => $uid));
                     $this->update_once('resume', array('r_status' => 2), array('uid' => $uid));
 
                     $resumeM->setExpectState(array('state' => 3, 'r_status' => 2), array('uid' => $uid));
 
-                    $notice->sendEmailType(array('email' => $email, 'uid' => $uid, 'username' => $username, 'lock_info' => '简历投递超出限定', 'type' => 'lock'), '');
+                    $notice->sendEmailType(array('email' => $email, 'uid' => $uid, 'username' => $username, 'lock_info' => 'common_01290', 'type' => 'lock'), '');
                     $cookie->unset_cookie();
-                    $logContent =   '账户锁定(ID:' . $uid . '。原因：预警-每天简历投递超出限制)';
+                    $logContent =   'common_06648' . $uid . 'common_00421';
                 }
             }
         } else if ($type == 7){ //  浏览简历
 
-            $emailcoment    =   '用户：【' . $username . '】浏览简历超出规定数目，请检查是否有问题';
+            $emailcoment    =   '用户：【' . $username . 'common_00322';
 
             if ($this->config['warning_lookresume_type'] == 1) { // 锁定帐号
 
-                $this->update_once('member', array('status' => 2, 'lock_info' => '浏览简历超出规定数目'), array('uid' => $uid));
+                $this->update_once('member', array('status' => 2, 'lock_info' => 'common_01034'), array('uid' => $uid));
 
                 $this->update_once('company', array('r_status' => 2), array('uid' => $uid));
 
                 $this->update_once('company_job', array('r_status' => 2), array('uid' => $uid));
                 $this->update_once('partjob', array('r_status' => 2), array('uid' => $uid));
 
-                $notice->sendEmailType(array('email' => $email, 'uid' => $uid, 'username' => $username, 'lock_info' => '浏览简历超出规定数目', 'type' => 'lock'));
+                $notice->sendEmailType(array('email' => $email, 'uid' => $uid, 'username' => $username, 'lock_info' => 'common_01034', 'type' => 'lock'));
                 $cookie->unset_cookie();
 
-                $logContent =   '账户锁定(ID:' . $uid . '。原因：预警-每天浏览简历限制)';
+                $logContent =   'common_06648' . $uid . 'common_00520';
             }
         }  else if ($type == 8){ //  浏览职位
 
-            $emailcoment    =   '用户：【' . $username . '】浏览职位超出规定数目，请检查是否有问题';
+            $emailcoment    =   '用户：【' . $username . 'common_00323';
 
             if ($this->config['warning_lookjob_type'] == 1) { // 锁定帐号
 
-                $this->update_once('member', array('status' => 2, 'lock_info' => '浏览职位超出规定数目'), array('uid' => $uid));
+                $this->update_once('member', array('status' => 2, 'lock_info' => 'common_01035'), array('uid' => $uid));
                 $this->update_once('resume', array('r_status' => 2), array('uid' => $uid));
 
-                $resumeM->setExpectState(array('state' => 3, 'r_status' => 2, 'statusbody' => '浏览职位超出规定数目'), array('uid' => $uid));
+                $resumeM->setExpectState(array('state' => 3, 'r_status' => 2, 'statusbody' => yun_at('common_01035')), array('uid' => $uid));
 
-                $notice->sendEmailType(array('email' => $email, 'uid' => $uid, 'username' => $username, 'lock_info' => '浏览职位超出规定数目', 'type' => 'lock'));
+                $notice->sendEmailType(array('email' => $email, 'uid' => $uid, 'username' => $username, 'lock_info' => 'common_01035', 'type' => 'lock'));
                 $cookie->unset_cookie();
 
-                $logContent =   '账户锁定(ID:' . $uid . '。原因：预警-每天浏览职位限制)';
+                $logContent =   'common_06648' . $uid . 'common_00521';
             }
         } else if ($type == 9){ //  拨号限制
 
-            $emailcoment    =   '用户：【' . $username . '】拨号次数超出规定数目，请检查是否有问题';
+            $emailcoment    =   '用户：【' . $username . 'common_00321';
 
             if ($this->config['warning_teljob_type'] == 1) { // 锁定帐号
 
-                $this->update_once('member', array('status' => 2, 'lock_info' => '拨号次数超出规定数目'), array('uid' => $uid));
+                $this->update_once('member', array('status' => 2, 'lock_info' => 'common_01015'), array('uid' => $uid));
                 $this->update_once('resume', array('r_status' => 2), array('uid' => $uid));
 
-                $resumeM->setExpectState(array('state' => 3, 'r_status' => 2, 'statusbody' => '拨号次数超出规定数目'), array('uid' => $uid));
+                $resumeM->setExpectState(array('state' => 3, 'r_status' => 2, 'statusbody' => yun_at('common_01015')), array('uid' => $uid));
 
-                $notice->sendEmailType(array('email' => $email, 'uid' => $uid, 'username' => $username, 'lock_info' => '拨号次数超出规定数目', 'type' => 'lock'));
+                $notice->sendEmailType(array('email' => $email, 'uid' => $uid, 'username' => $username, 'lock_info' => 'common_01015', 'type' => 'lock'));
                 $cookie->unset_cookie();
 
-                $logContent =   '账户锁定(ID:' . $uid . '。原因：预警-每天拨号次数限制)';
+                $logContent =   'common_06648' . $uid . 'common_00519';
             }
         } else if ($type == 12){ //  注册账号同一IP
 
-            $emailcoment    =   '用户：【' . $username . '】您注册账号过多，请检查是否有问题';
+            $emailcoment    =   '用户：【' . $username . 'common_00461';
 
             if ($this->config['warning_reg_ip_type'] == 1) { // 锁定帐号
 
-                $this->update_once('member', array('status' => 2, 'lock_info' => '同一IP每天注册账号超出规定数目'), array('uid' => $uid));
-                $notice->sendEmailType(array('email' => $email, 'uid' => $uid, 'username' => $username, 'lock_info' => '同一IP每天注册账号超出规定数目', 'type' => 'lock'));
+                $this->update_once('member', array('status' => 2, 'lock_info' => 'common_00530'), array('uid' => $uid));
+                $notice->sendEmailType(array('email' => $email, 'uid' => $uid, 'username' => $username, 'lock_info' => 'common_00530', 'type' => 'lock'));
                 $cookie->unset_cookie();
 
-                $logContent =   '账户锁定(ID:' . $uid . '。原因：预警-同一IP每天注册账号次数限制)';
+                $logContent =   'common_06648' . $uid . 'common_00260';
             }
         }
         // 发送邮件提醒管理员
-        $emailData  =   array('email' => $this->config['sy_webemail'], 'subject' => '预警提醒', 'content' => $emailcoment);
+        $emailData  =   array('email' => $this->config['sy_webemail'], 'subject' => 'common_01868', 'content' => $emailcoment);
         $notice->sendEmail($emailData);
 
         if (!empty($logContent)) {
             // 锁定账号的记录管理员日志
-            $data   =   array('uid' => 0, 'username' => '预警', 'content' => $logContent, 'ctime' => time(), 'ip' => fun_ip_get(), 'did' => $this->config['did']);
+            $data   =   array('uid' => 0, 'username' => 'api_wxapp_00020', 'content' => $logContent, 'ctime' => time(), 'ip' => fun_ip_get(), 'did' => $this->config['did']);
             $this->insert_into('admin_log', $data);
         }
     }

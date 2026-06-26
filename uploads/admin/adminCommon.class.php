@@ -28,7 +28,7 @@ class adminCommon extends common{
             if ($_POST) {
                 if ($_POST['pytoken'] != $_SESSION['pytoken']) {
 
-                    $this->render_json(-1, '来源地址非法');
+                    $this->render_json(-1, 'common_02123');
                 }
                 unset($_POST['pytoken']);
             }
@@ -42,7 +42,7 @@ class adminCommon extends common{
 
     function get_admin_user_shell(){
 
-		$shellMsg = '暂无操作权限';
+		$shellMsg = 'admin_01475';
 
         // cache要判断C ajax不需要判断
         if ($_SESSION['auid'] && $_SESSION['ashell']) {
@@ -54,7 +54,7 @@ class adminCommon extends common{
 
                 $this -> adminlogout();
 
-                $this -> ShellMsg('登录超时，请刷新后重新登录！');exit();
+                $this -> ShellMsg('common_02117');exit();
             }
             $m = isset($_GET['m']) ? $_GET['m'] : 'index';
             $c = isset($_GET['c']) ? $_GET['c'] : 'index';
@@ -146,7 +146,7 @@ class adminCommon extends common{
         } else {
             if ($_GET['m'] != '') {
                 $this -> adminlogout();
-                $this -> ShellMsg('登录超时，请刷新后重新登录！');exit();
+                $this -> ShellMsg('common_02117');exit();
             }elseif($_GET['c'] != 'login'){
                 // 用作安装后第一次生成config文件
                 if(!file_exists(PLUS_PATH."config.php")){
@@ -181,7 +181,7 @@ class adminCommon extends common{
         unset($_SESSION['xsstooken']);
 
     }
-	function ShellMsg($msg = '您暂无操作权限！'){
+	function ShellMsg($msg = 'common_02119'){
 
 	    header('HTTP/1.1 777 Not Authorization');
 		if($_POST){
@@ -223,7 +223,7 @@ class adminCommon extends common{
             $stime = strtotime(date('Y-m-d ',time()).$timeArr[0]) ;
             $etime = strtotime(date('Y-m-d ',time()).$timeArr[1]);
             if($stime>$currtime  || $etime<$currtime){
-                $this->render_json(-1, '不在规定登录时间内，无法登录');
+                $this->render_json(-1, 'common_02116');
             }
         }
         $verify  =  $adminM -> verifyPass($password, $user['password']);
@@ -239,7 +239,7 @@ class adminCommon extends common{
 
 
 
-            $adminLog  =  $logM -> getAdminLog(array('uid' => $_SESSION['auid'],'content' => '登录成功','orderby' => 'ctime'));
+            $adminLog  =  $logM -> getAdminLog(array('uid' => $_SESSION['auid'],'content' => 'wap_01263','orderby' => 'ctime'));
 
             $time      =  time();
 
@@ -258,12 +258,12 @@ class adminCommon extends common{
             $group = $adminM -> getPower(array('id'=>$user['m_id']));
             $path = in_array('216', $group['power']) && !in_array('226', $group['power']) ? '/jobtai' : '/index'; // 前端登录成功后默认跳转的页面
 
-            $this->admin_json(0, '登录成功', compact('path'));
+            $this->admin_json(0, 'wap_01263', compact('path'));
         } else {
 
-			$logM -> addAdminLog("管理员：".$username.' 登录失败，登录密码：'.$password, '', '', '',array('auid'=>$user['uid'],'ausername'=>$username));
+			$logM -> addAdminLog('admin_01476'.$username.'admin_01477'.$password, '', '', '',array('auid'=>$user['uid'],'ausername'=>$username));
 
-			$this->render_json(-1, '用户名或密码不正确');
+			$this->render_json(-1, 'common_02118');
         }
     }
 
@@ -307,7 +307,7 @@ class adminCommon extends common{
                 $stime = strtotime(date('Y-m-d ',time()).$timeArr[0]) ;
                 $etime = strtotime(date('Y-m-d ',time()).$timeArr[1]);
                 if($stime>$currtime  || $etime<$currtime){
-                    $this->render_json(-1, '不在规定登录时间内，无法登录');
+                    $this->render_json(-1, 'common_02116');
                 }
             }
 
@@ -316,7 +316,7 @@ class adminCommon extends common{
             $_SESSION['xsstooken']  =  sha1($config['sy_safekey']);
             $_SESSION['ashell']     =  md5($user['username'] . $user['password'] . $this -> md);
 
-            $adminLog  =  $logM -> getAdminLog(array('uid' => $_SESSION['auid'],'content' => '登录成功','orderby' => 'ctime'));
+            $adminLog  =  $logM -> getAdminLog(array('uid' => $_SESSION['auid'],'content' => 'wap_01263','orderby' => 'ctime'));
 
             $time      =  time();
 
@@ -335,12 +335,12 @@ class adminCommon extends common{
             $group = $adminM -> getPower(array('id'=>$user['m_id']));
             $path = in_array('216', $group['power']) && !in_array('226', $group['power']) ? '/jobtai' : '/index'; // 前端登录成功后默认跳转的页面
 
-            $this->admin_json(0, '登录成功', compact('path'));
+            $this->admin_json(0, 'wap_01263', compact('path'));
         } else {
 
-            $logM -> addAdminLog('管理员微信扫码登录失败');
+            $logM -> addAdminLog('admin_01474');
 
-            $this->render_json(-1, '管理员微信扫码登录失败');
+            $this->render_json(-1, 'admin_01474');
         }
     }
     /**
@@ -391,7 +391,7 @@ class adminCommon extends common{
 
                 unset($_SESSION['pytoken']);
 
-                $this -> ACT_layer_msg('来源地址非法！', 8, 'index.php');
+                $this -> ACT_layer_msg('common_02120', 8, 'index.php');
 
                 exit();
             }
@@ -536,12 +536,12 @@ class adminCommon extends common{
 
         if(!empty($wxBind['wxid'])){
             if(!empty($wxBind['unionid'])){
-                $wxGzhmsg = '公众号已绑定，微信开放平台已绑定';
+                $wxGzhmsg = 'common_02115';
             }else{
-                $wxGzhmsg = '公众号已绑定';
+                $wxGzhmsg = 'common_02121';
             }
         }else{
-            $wxGzhmsg= '公众号未绑定';
+            $wxGzhmsg= 'common_02122';
         }
         $wxBindmsg = $wxGzhmsg;
         return $wxBindmsg;

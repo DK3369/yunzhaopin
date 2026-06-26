@@ -13,8 +13,8 @@
                             v-model="scope.row.name" @blur="alterData(scope)"></el-input>
                         <span v-else>
                             <template>
-                                <template v-if="scope.row.level == 'one'">一级分类：</template>
-                                <template v-else-if="scope.row.level == 'two'">&emsp;二级分类：┗</template>
+                                <template v-if="scope.row.level == 'one'">{yun:}t key='admin_system_00111'{/yun}</template>
+                                <template v-else-if="scope.row.level == 'two'">&emsp;{yun:}t key='admin_00291'{/yun}：┗</template>
                                 <template v-else-if="scope.row.level == 'three'">&emsp;&emsp;┗</template>
                                 {{ scope.row.name }}<img @click="editData(scope)" class="editIcon"
                                 src="../../../admin/images/bine.png" alt="" style="margin-left: 4px;" width="14"
@@ -65,16 +65,16 @@
                 </el-table-column>
                 <el-table-column label="职位描述样本" width="110">
                     <template slot-scope="scope">
-                        <el-link v-if="scope.row.level != 'one'" :underline="false" type="primary" @click="editRow(scope)">设置样本</el-link>
+                        <el-link v-if="scope.row.level != 'one'" :underline="false" type="primary" @click="editRow(scope)">{yun:}t key='admin_system_00119'{/yun}</el-link>
                     </template>
                 </el-table-column>
                 <el-table-column header-align="center" align="right" label="操作" :width="210">
                     <template slot-scope="scope">
                         <div class="cz_button">
-                            <el-button v-if="scope.row.level == 'two'" size="mini" @click="moveRow(1, scope)">移动</el-button>
-                            <el-button v-if="scope.row.level == 'three'" size="mini" @click="moveRow(2, scope)">移动</el-button>
-                            <el-button v-if="scope.row.level == 'two' || scope.row.level == 'three'" size="mini" @click="editRow(scope)">修改</el-button>
-                            <el-button size="mini" @click="deleteRow(scope)" type="danger">删除</el-button>
+                            <el-button v-if="scope.row.level == 'two'" size="mini" @click="moveRow(1, scope)">{yun:}t key='admin_system_00115'{/yun}</el-button>
+                            <el-button v-if="scope.row.level == 'three'" size="mini" @click="moveRow(2, scope)">{yun:}t key='admin_system_00115'{/yun}</el-button>
+                            <el-button v-if="scope.row.level == 'two' || scope.row.level == 'three'" size="mini" @click="editRow(scope)">{yun:}t key='wap_js_00073'{/yun}</el-button>
+                            <el-button size="mini" @click="deleteRow(scope)" type="danger">{yun:}t key='common.delete'{/yun}</el-button>
                         </div>
                     </template>
                 </el-table-column>
@@ -83,8 +83,8 @@
         <div class="modulePaging">
             <div class="">
                 <div class="">
-                    <el-checkbox :indeterminate="isIndeterminate" v-model="checked" @change="selectAllBottom">全选</el-checkbox>
-                    <el-button size="mini" @click="deleteRow(null, true)">批量删除</el-button>
+                    <el-checkbox :indeterminate="isIndeterminate" v-model="checked" @change="selectAllBottom">{yun:}t key='wap_js_00074'{/yun}</el-checkbox>
+                    <el-button size="mini" @click="deleteRow(null, true)">{yun:}t key='member_com_00055'{/yun}</el-button>
                 </div>
             </div>
         </div>
@@ -95,14 +95,14 @@
             </el-drawer>
         </div>
         <div class="modluDrawer">
-            <el-dialog title="移动类别" :visible.sync="moveVisible" :with-header="true" :modal-append-to-body="false" :append-to-body="true"
+            <el-dialog title="{yun:}t key='admin_system_00117'{/yun}" :visible.sync="moveVisible" :with-header="true" :modal-append-to-body="false" :append-to-body="true"
                 :show-close="true" width="30%">
                 <div class="dialog_item">
                     <div class="item_span">
-                        <span>一级分类：</span>
+                        <span>{yun:}t key='admin_system_00111'{/yun}</span>
                     </div>
                     <div class="drawerModInpt">
-                        <el-select v-model="moveForm.nid" placeholder="请选择" style="flex: 1;"
+                        <el-select v-model="moveForm.nid" placeholder="{yun:}t key='wap_user_00100'{/yun}" style="flex: 1;"
                             @change="getClass(moveForm.nid)" clearable>
                             <el-option v-for="item in position" :key="item.id" :label="item.name"
                                 :value="item.id"></el-option>
@@ -112,10 +112,10 @@
                 <template v-if="moveForm.type == 2">
                     <div class="dialog_item">
                         <div class="item_span">
-                            <span>二级分类：</span>
+                            <span>{yun:}t key='admin_system_00112'{/yun}</span>
                         </div>
                         <div class="drawerModInpt">
-                            <el-select v-model="moveForm.keyid" placeholder="请选择" style="flex: 1;" clearable>
+                            <el-select v-model="moveForm.keyid" placeholder="{yun:}t key='wap_user_00100'{/yun}" style="flex: 1;" clearable>
                                 <el-option v-for="item in positionTwo" :key="item.id" :label="item.name"
                                     :value="item.id"></el-option>
                             </el-select>
@@ -123,8 +123,8 @@
                     </div>
                 </template>
                 <span slot="footer" class="dialog-footer">
-                    <el-button @click="moveVisible = false">取 消</el-button>
-                    <el-button type="primary" @click="moveSubmit">确 定</el-button>
+                    <el-button @click="moveVisible = false">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
+                    <el-button type="primary" @click="moveSubmit">{yun:}t key='wap_com_00019'{/yun}</el-button>
                 </span>
             </el-dialog>
         </div>
@@ -154,9 +154,9 @@ module.exports = {
             tid: 0,
             threeid: 0,
             addVisible: false,
-            titleAddEdit: window.yunAdminT('添加类别'),
+            titleAddEdit: window.yunAdminT("{yun:}t key='admin_00222'{/yun}"),
             loading: false,
-            emptytext: window.yunAdminT('暂无数据'),
+            emptytext: window.yunAdminT("{yun:}t key='wap_js_00113'{/yun}"),
         }
     },
     created() {
@@ -187,24 +187,24 @@ module.exports = {
             //清空列表
             let newlist = [];
             _this.loading = true;
-            _this.emptytext = window.yunAdminT('数据加载中');
-            httpPost('m=system&c=category_job_class&a=up', {id: this.id}).then(function (response) {
+            _this.emptytext = window.yunAdminT("{yun:}t key='admin_user_weipin_00026'{/yun}");
+            httpPost('m=system&c=category_job_class&a=up", {id: this.id}).then(function (response) {
                 let res = response.data;
                 _this.position = res.data.position;
-                //一级
-                res.data.onejob.level = 'one';
+                //{yun:}t key='admin_yunying_00145'{/yun}
+                res.data.onejob.level = "one";
                 newlist.push(res.data.onejob);
                 if (Array.isArray(res.data.twojob)) {
                     for (let twoitem of res.data.twojob) {
-                        //二级
-                        twoitem.level = 'two';
+                        //{yun:}t key='admin_yunying_00147'{/yun}
+                        twoitem.level = "two";
                         newlist.push(twoitem);
-                        //三级
+                        //{yun:}t key='admin_yunying_00146'{/yun}
                         let tow_class_id = twoitem.id;
                         let threeList = res.data.threejob[tow_class_id];
                         if (Array.isArray(threeList)) {
                             for (let threeitem of threeList) {
-                                threeitem.level = 'three';
+                                threeitem.level = "three';
                                 newlist.push(threeitem);
                             }
                         }
@@ -216,7 +216,7 @@ module.exports = {
                 _this.tableData = newlist;
                 _this.loading = false;
                 if (_this.tableData.length === 0){
-                    _this.emptytext = window.yunAdminT('暂无数据');
+                    _this.emptytext = window.yunAdminT("{yun:}t key='wap_js_00113'{/yun}");
                 }
             }).catch(function (error) {
                 console.log(error);
@@ -226,7 +226,7 @@ module.exports = {
             let params = {};
             if (isMore) {
                 if (!this.selectedItem.length) {
-                    message.error(window.yunAdminT('请选择要删除的数据'));
+                    message.error(window.yunAdminT("{yun:}t key='admin_user_weipin_00005'{/yun}"));
                     return false;
                 }
                 let list = [];
@@ -249,10 +249,10 @@ module.exports = {
             httpPost('m=system&c=category_job_class&a=del', params).then(function (response) {
                 let res = response.data;
                 if (res.error === 0) {
-                    message.success(window.yunAdminT('删除成功！'));
+                    message.success(window.yunAdminT("{yun:}t key='admin_user_00187'{/yun}"));
                     _this.getList();
                 } else {
-                    message.error(window.yunAdminT('删除失败！'));
+                    message.error(window.yunAdminT("{yun:}t key='admin_user_00186'{/yun}"));
                 }
             }).catch(function (error) {
                 console.log(error);
@@ -293,9 +293,9 @@ module.exports = {
             httpPost('m=system&c=category_job_class&a=ajax', sendData, {hideloading: true}).then(function (response) {
                 let res = response.data;
                 if (res.error === 0) {
-                    message.success(window.yunAdminT('修改成功'));
+                    message.success(window.yunAdminT("{yun:}t key='admin_user_company_00208'{/yun}"));
                 } else {
-                    message.error(window.yunAdminT('修改失败'));
+                    message.error(window.yunAdminT("{yun:}t key='admin_00187'{/yun}"));
                 }
                 _this.oldData = null;
                 _this.getList();
@@ -315,9 +315,9 @@ module.exports = {
                 let res = response.data;
                 if (res.error === 0) {
                     _this.getList();
-                    message.success(window.yunAdminT('修改成功'));
+                    message.success(window.yunAdminT("{yun:}t key='admin_user_company_00208'{/yun}"));
                 } else {
-                    message.error(window.yunAdminT('修改失败'));
+                    message.error(window.yunAdminT("{yun:}t key='admin_00187'{/yun}"));
                 }
             }).catch(function (error) {
                 console.log(error);
@@ -331,7 +331,7 @@ module.exports = {
                 return false;
             }
             this.moveForm.keyid = null;
-            httpPost('m=system&c=category_job_class&a=get_class', {nid: nid}).then(function (response) {
+            httpPost('m=system&c=category_job_class&a=get_class", {nid: nid}).then(function (response) {
                 let res = response.data;
                 if (res.error === 0) {
                     _this.positionTwo = res.data;
@@ -343,7 +343,7 @@ module.exports = {
             });
         },
         /**
-         * 移动
+         * {yun:}t key='admin_system_00115'{/yun}
          * @param type 1 获取一级分类，2 获取二级分类
          * @param scope
          */
@@ -362,18 +362,18 @@ module.exports = {
                 if (params.type == 1) {
                     params.keyid = null;
                 }
-                httpPost('m=system&c=category_job_class&a=move', params).then(function (response) {
+                httpPost("m=system&c=category_job_class&a=move', params).then(function (response) {
                     let res = response.data;
                     if (res.error === 0) {
-                        message.success(window.yunAdminT('职位类别移动成功！'))
+                        message.success(window.yunAdminT("{yun:}t key='admin_system_00122'{/yun}"))
                         _this.getList();
                     } else {
-                        message.error(window.yunAdminT('职位类别移动失败！'))
+                        message.error(window.yunAdminT("{yun:}t key='admin_system_00121'{/yun}"))
                     }
                 }).catch(function (error) {
                     console.log(error);
                 });
-            }, window.yunAdminT('移动分类可能导致现有数据职位类别混淆，确认移动？'));
+            }, window.yunAdminT("{yun:}t key='admin_system_00120'{/yun}"));
         },
         editRow(scope) {
             let item = scope.row;
@@ -387,7 +387,7 @@ module.exports = {
                 this.tid = 0;
                 this.threeid = item.id;
             }
-            this.titleAddEdit = window.yunAdminT('修改类别');
+            this.titleAddEdit = window.yunAdminT("{yun:}t key='admin_00221'{/yun}");
             this.addVisible = true;
         }
     },

@@ -85,7 +85,7 @@ class emailset_controller extends adminCommon{
         $this->get_cache();
         $this->web_config();
         
-        $this->render_json(0,'邮件服务器设置成功！');
+        $this->render_json(0,yun_at('admin_tool_00025'));
     }
     function get_cache(){
         
@@ -105,7 +105,7 @@ class emailset_controller extends adminCommon{
             $emailData['smtpServerId']  =   $_POST["id"];
             $emailData['email']         =   $_POST["ceshi_email"];
             
-            $emailData['subject']       =   $this->config['sy_webname']." - 测试邮件";
+            $emailData['subject']       =   $this->config['sy_webname'].'admin_tool_00028';
             
             $emailData['content']       =   "恭喜你，该邮件帐户可以正常使用<br> ".$this->config['sy_webname']."- Powered by OV6.";
             
@@ -114,11 +114,11 @@ class emailset_controller extends adminCommon{
             if($sendid['status'] != -1){
                 
                 $error = 0;
-                $msg = '测试发送成功！';
+                $msg = 'admin_tool_00027';
             
             }else{
                 $error = 1;
-                $msg = '测试发送失败！' . $sendid['msg'];
+                $msg = 'admin_tool_00026' . $sendid['msg'];
             }
             
             $this->render_json($error,$msg);
@@ -139,7 +139,7 @@ class emailset_controller extends adminCommon{
             
             if($emailConfig['default']=='1' && $num<2){
                 
-                $msg        =   '请至少保留一组可用邮箱！';
+                $msg        =   'admin_tool_00024';
                 
                 $error   =   1;
                 
@@ -163,9 +163,9 @@ class emailset_controller extends adminCommon{
         include(CONFIG_PATH."db.tpl.php");
 
         $data = array(
-            'public'=>array('name'=>'公共设置','configarr'=>array()),
-            'user'=>array('name'=>'个人邮件设置','configarr'=>array()),
-            'com'=>array('name'=>'企业邮件设置','configarr'=>array()),
+            'public'=>array('name'=>'admin_tool_00029','configarr'=>array()),
+            'user'=>array('name'=>'admin_01459','configarr'=>array()),
+            'com'=>array('name'=>'admin_01460','configarr'=>array()),
         );
         
         foreach ($arr_tpl as $k => $v) {
@@ -186,7 +186,7 @@ class emailset_controller extends adminCommon{
         
         $this->web_config();
         
-        $this->render_json(0,'短信配置设置成功！');
+        $this->render_json(0,yun_at('admin_01461'));
     }
     function gettpl_action(){
 
@@ -231,7 +231,7 @@ class emailset_controller extends adminCommon{
         
         }
 
-        $this->render_json(0,'邮件模板配置成功');
+        $this->render_json(0,yun_at('admin_01462'));
     }
     
 }

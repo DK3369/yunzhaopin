@@ -157,7 +157,7 @@ class hrlog_model extends model
         $loginNum = $this->select_num('login_log', $loginW);
         
         // 登录次数（最晚一次登录）
-        $logW = array('uid' => $uid, 'content'=>array('like', '登录成功'));
+        $logW = array('uid' => $uid, 'content'=>array('like', 'wap_01263'));
         $logW['PHPYUNBTWSTART'] = '';
         $logW['ctime'][] = array('>', $start);
         $logW['ctime'][] = array('<', $end);
@@ -384,12 +384,12 @@ class hrlog_model extends model
                 $day = date('Y-m-d',$hrlog['lastwork']);
                 $time = strtotime($day.' 22:00:00');
                 
-                $daystr = date('m月d日',$hrlog['lastwork']);
+                $daystr = date('common_01656',$hrlog['lastwork']);
 
-                $daystr1 = '深夜';
+                $daystr1 = 'admin_yunying_00169';
 
                 if($time>$hrlog['lastwork']){
-                    $daystr1 = ' 凌晨';
+                    $daystr1 = 'common_01950';
                 }
                 
                 $daystr2 = ' '.date('H:i',$hrlog['lastwork']);
@@ -463,7 +463,7 @@ class hrlog_model extends model
             $top = 400;
 
             $textArr[] = array(
-                'text'      =>  '这一年',
+                'text'      =>  'common_01933',
                 'left'      =>  80,
                 'top'       =>  $top,
                 'fontSize'  =>  $fontSize1,
@@ -474,7 +474,7 @@ class hrlog_model extends model
                 $top += 80;
                 //发布职位数
                 $job_txtdata[] = array(
-                    'text'      =>  '您发布了',
+                    'text'      =>  'common_01770',
                     'left'      =>  '',
                     'top'       =>  $top,
                     'fontSize'  =>  $fontSize1,
@@ -490,7 +490,7 @@ class hrlog_model extends model
                     'bold'      =>  $bold2
                 );
                 $job_txtdata[] = array(
-                    'text'      =>  '个岗位',
+                    'text'      =>  'common_01884',
                     'left'      =>  '',
                     'top'       =>  $top,
                     'fontSize'  =>  $fontSize1,
@@ -505,7 +505,7 @@ class hrlog_model extends model
                 $top += 80;
                 //被浏览数
                 $hit_txtdata[] = array(
-                    'text'      =>  '吸引',
+                    'text'      =>  'common_01963',
                     'left'      =>  '',
                     'top'       =>  $top,
                     'fontSize'  =>  $fontSize1,
@@ -521,7 +521,7 @@ class hrlog_model extends model
                     'bold'      =>  $bold2
                 );
                 $hit_txtdata[] = array(
-                    'text'      =>  '位人才浏览',
+                    'text'      =>  'common_01583',
                     'left'      =>  '',
                     'top'       =>  $top,
                     'fontSize'  =>  $fontSize1,
@@ -537,7 +537,7 @@ class hrlog_model extends model
                 $top += 80;
                 //收到简历数
                 $resumenum_txtdata[] = array(
-                    'text'      =>  '收到',
+                    'text'      =>  'wap_user_00261',
                     'left'      =>  '',
                     'top'       =>  $top,
                     'fontSize'  =>  $fontSize1,
@@ -553,7 +553,7 @@ class hrlog_model extends model
                     'bold'      =>  $bold2
                 );
                 $resumenum_txtdata[] = array(
-                    'text'      =>  '份求职简历',
+                    'text'      =>  'common_01581',
                     'left'      =>  '',
                     'top'       =>  $top,
                     'fontSize'  =>  $fontSize1,
@@ -569,7 +569,7 @@ class hrlog_model extends model
                 $top += 80;
                 //邀请人才数
                 $invitenum_txtdata[] = array(
-                    'text'      =>  '邀约',
+                    'text'      =>  'wap_com_00073',
                     'left'      =>  '',
                     'top'       =>  $top,
                     'fontSize'  =>  $fontSize1,
@@ -585,7 +585,7 @@ class hrlog_model extends model
                     'bold'      =>  $bold2
                 );
                 $invitenum_txtdata[] = array(
-                    'text'      =>  '位人才面试',
+                    'text'      =>  'common_01584',
                     'left'      =>  '',
                     'top'       =>  $top,
                     'fontSize'  =>  $fontSize1,
@@ -617,7 +617,7 @@ class hrlog_model extends model
                     'bold'      =>  $bold2
                 );
                 $nightnum_txtdata[] = array(
-                    'text'      =>  '天 深夜还在持续工作',
+                    'text'      =>  'common_00989',
                     'left'      =>  '',
                     'top'       =>  $top,
                     'fontSize'  =>  25,
@@ -632,7 +632,7 @@ class hrlog_model extends model
             if($night_text){
                 $top += 80;
                 $textArr[] = array(
-                    'text'      =>  '最晚一次在',
+                    'text'      =>  'common_01620',
                     'left'      =>  80,
                     'top'       =>  $top,
                     'fontSize'  =>  25,
@@ -655,7 +655,7 @@ class hrlog_model extends model
                 $top += 80;
                 //登陆天数
                 $loginnum_txtdata[] = array(
-                    'text'      =>  '致敬我们一起努力过的',
+                    'text'      =>  'common_01048',
                     'left'      =>  '',
                     'top'       =>  $top,
                     'fontSize'  =>  25,

@@ -1,7 +1,7 @@
 <template>
 	<div class="moduleElHight">
 		<div class="tableDome_tip">
-			<el-alert title="设置通知之前，请先配置好邮件设置,否则将无法收到邮件" type="success" :closable="false">
+			<el-alert title="{yun:}t key='admin_tool_00375'{/yun}" type="success" :closable="false">
 			</el-alert>
 		</div>
 		<div class="moduleTable">
@@ -11,9 +11,9 @@
 					<table class="tableVue">
 						<thead>
 							<tr align="left">
-								<th width="200">名称</th>
-								<th>状态</th>
-								<th width="100">操作</th>
+								<th width="200">{yun:}t key='member_com_00021'{/yun}</th>
+								<th>{yun:}t key='member_user_00181'{/yun}</th>
+								<th width="100">{yun:}t key='member_user_00048'{/yun}</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -30,7 +30,7 @@
 								</td>
 								<td>
 									<div class="TableLink">
-										<el-link type="primary" @click="settpl(item.tpl)">设置模板</el-link>
+										<el-link type="primary" @click="settpl(item.tpl)">{yun:}t key='admin_tool_00470'{/yun}</el-link>
 									</div>
 								</td>
 							</tr>
@@ -40,12 +40,12 @@
 			</div>
 
 			<div class="setBasicButn" style="border: none;">
-				<el-button type="primary" :loading='post_loading' size="medium" @click="postSet">提交</el-button>
+				<el-button type="primary" :loading='post_loading' size="medium" @click="postSet">{yun:}t key='common.submit'{/yun}</el-button>
 			</div>
 		</div>
 		<!-- 弹窗 -->
 		<div class="modluDrawer">
-			<el-drawer title="邮件模板设置" :visible.sync="addshow" :modal-append-to-body="false" :show-close="true"
+			<el-drawer title="{yun:}t key='admin_tool_00374'{/yun}" :visible.sync="addshow" :modal-append-to-body="false" :show-close="true"
 				:with-header="true" size="50%">
 				<addtpl :tpl="tpl" :key="timer" @close-update="addshow = false"></addtpl>
 			</el-drawer>

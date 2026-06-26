@@ -2,18 +2,18 @@
     <div class="moduleElHight">
         <div class="moduleSeachbig" v-if="cansearch">
             <div class="tableSeachInpt">
-                <el-select v-model="type" size="small" slot="prepend" placeholder="操作类型">
+                <el-select v-model="type" size="small" slot="prepend" placeholder="{yun:}t key='wap_com_00030'{/yun}">
                     <el-option label="消费单号" value="1"></el-option>
                     <el-option label="用户名" value="2"></el-option>
                     <el-option label="企业名称/姓名" value="3"></el-option>
                 </el-select>
             </div>
             <div class="tableSeachInpt">
-                <el-input placeholder="请输入内容" size="small" prefix-icon="el-icon-search" v-model="keyword">
+                <el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" size="small" prefix-icon="el-icon-search" v-model="keyword">
                 </el-input>
             </div>
             <div class="tableSeachInpt">
-                <el-button type="primary" icon="el-icon-search" size="mini" @click="search">查询</el-button>
+                <el-button type="primary" icon="el-icon-search" size="mini" @click="search">{yun:}t key='admin_user_weipin_00049'{/yun}</el-button>
             </div>
         </div>
         <div class="moduleElTable"
@@ -45,15 +45,15 @@
                 <el-table-column prop="order_state_n" label="业务员" width="150">
                     <template slot-scope="scope">
                         <span v-if="scope.row.crm_name">{{scope.row.crm_name}}</span>
-                        <span v-else style="color: red;">未绑定</span>
+                        <span v-else style="color: red;">{yun:}t key='wap_user_00181'{/yun}</span>
                     </template>
                 </el-table-column>
                 <el-table-column label="操作" width="200" fixed="right">
                     <template slot-scope="scope">
                         <div class="cz_button">
-                            <el-button size="small " @click="showdtl(scope.row.id)">查看</el-button>
-                            <el-button size="small " @click="ht(scope.row.id)">合同</el-button>
-                            <el-button size="small " type="danger" @click="deleteRow(scope)">删除</el-button>
+                            <el-button size="small " @click="showdtl(scope.row.id)">{yun:}t key='wap_com_00427'{/yun}</el-button>
+                            <el-button size="small " @click="ht(scope.row.id)">{yun:}t key='admin_user_company_00050'{/yun}</el-button>
+                            <el-button size="small " type="danger" @click="deleteRow(scope)">{yun:}t key='common.delete'{/yun}</el-button>
                         </div>
                     </template>
                 </el-table-column>
@@ -61,8 +61,8 @@
         </div>
         <div class="modulePaging">
             <div>
-                <el-checkbox v-model="checkedAll" @change="selectAllBottom">全选</el-checkbox>
-                <el-button @click="deleteRow(null, true)" size="mini">批量删除</el-button>
+                <el-checkbox v-model="checkedAll" @change="selectAllBottom">{yun:}t key='wap_js_00074'{/yun}</el-checkbox>
+                <el-button @click="deleteRow(null, true)" size="mini">{yun:}t key='member_com_00055'{/yun}</el-button>
             </div>
             <div class="modulePagNum">
                 <el-pagination background @size-change="handleSizeChange"
@@ -74,18 +74,18 @@
             </div>
         </div>
         <div class="modluDrawer">
-            <el-drawer title="合同图片" :append-to-body="true" :visible.sync="showhtpic" :destroy-on-close="true" size="85%">
+            <el-drawer title="{yun:}t key='admin_user_company_00030'{/yun}" :append-to-body="true" :visible.sync="showhtpic" :destroy-on-close="true" size="85%">
                 <com_htimg :oid="curr_id" style="margin-left:10px;"></com_htimg>
             </el-drawer>
         </div>
         <div class="modluDrawer" v-if="curr_dtl">
-            <el-drawer title="订单详情" :append-to-body="true" :visible.sync="dtlVisible" :destroy-on-close="true"
+            <el-drawer title="{yun:}t key='admin_user_company_00048'{/yun}" :append-to-body="true" :visible.sync="dtlVisible" :destroy-on-close="true"
                        size="530px">
                 <div>
                     <div class="uploadTable" style="padding:0 20px;">
                         <div class="jiliTanJinli">
                             <div class="jiliTanJinTite">
-                                <span>订单号</span>
+                                <span>{yun:}t key='wap_user_00320'{/yun}</span>
                             </div>
                             <div class="jiliTanJinCont">
                                 <span>{{curr_dtl.order_id}}</span>
@@ -93,7 +93,7 @@
                         </div>
                         <div class="jiliTanJinli">
                             <div class="jiliTanJinTite">
-                                <span>申请交易时间</span>
+                                <span>{yun:}t key='admin_user_company_00042'{/yun}</span>
                             </div>
                             <div class="jiliTanJinCont">
                                 <span>{{curr_dtl.order_time_n}}</span>
@@ -101,7 +101,7 @@
                         </div>
                         <div class="jiliTanJinli">
                             <div class="jiliTanJinTite">
-                                <span>用户名</span>
+                                <span>{yun:}t key='admin_user_00140'{/yun}</span>
                             </div>
                             <div class="jiliTanJinCont">
                                 <span v-if="curr_dtl.type == 3 || curr_dtl.order_type == 'bank'">
@@ -113,18 +113,18 @@
 
                         <div class="jiliTanJinli">
                             <div class="jiliTanJinTite">
-                                <span>{{curr_dtl.order_state == 1 ? '待付' : '付款'}}金额</span>
+                                <span>{yun:}t key='admin_00617'{/yun}</span>
                             </div>
                             <div class="jiliTanJinCont">
-                                <el-input v-if="curr_dtl.order_state == 1 || curr_dtl.order_state == 3" placeholder="请输入金额" size="small" v-model="curr_dtl.order_price" type="number">
-                                    <template slot="append">元</template>
+                                <el-input v-if="curr_dtl.order_state == 1 || curr_dtl.order_state == 3" placeholder="{yun:}t key='admin_00620'{/yun}" size="small" v-model="curr_dtl.order_price" type="number">
+                                    <template slot="append">{yun:}t key='common_02056'{/yun}</template>
                                 </el-input>
                                 <span v-else>{{ lc("admin_currency_yuan", [curr_dtl.order_price]) }}</span>
                             </div>
                         </div>
                         <div class="jiliTanJinli" v-if="curr_dtl.type == 3||curr_dtl.order_type=='bank'">
                             <div class="jiliTanJinTite">
-                                <span>汇款银行</span>
+                                <span>{yun:}t key='admin_user_company_00047'{/yun}</span>
                             </div>
                             <div class="jiliTanJinCont">
                                 <span>{{curr_dtl.bankname}}</span>
@@ -132,7 +132,7 @@
                         </div>
                         <div class="jiliTanJinli" v-if="curr_dtl.type == 3||curr_dtl.order_type=='bank'">
                             <div class="jiliTanJinTite">
-                                <span>汇入账号</span>
+                                <span>{yun:}t key='admin_user_company_00045'{/yun}</span>
                             </div>
                             <div class="jiliTanJinCont">
                                 <span>{{curr_dtl.bankid}}</span>
@@ -140,7 +140,7 @@
                         </div>
                         <div class="jiliTanJinli" v-if="curr_dtl.type == 3||curr_dtl.order_type=='bank'">
                             <div class="jiliTanJinTite">
-                                <span>汇款金额</span>
+                                <span>{yun:}t key='admin_user_company_00046'{/yun}</span>
                             </div>
                             <div class="jiliTanJinCont">
                                 <span>{{curr_dtl.order_price}}</span>
@@ -148,17 +148,17 @@
                         </div>
                         <div class="jiliTanJinli">
                             <div class="jiliTanJinTite">
-                                <span>备注</span>
+                                <span>{yun:}t key='member_user_00242'{/yun}</span>
                             </div>
                             <div class="jiliTanJinCont">
-                                <el-input v-if="curr_dtl.order_state == 1 || curr_dtl.order_state == 3" placeholder="请输入备注" size="small" v-model="curr_dtl.order_remark" type="textarea" rows="3">
+                                <el-input v-if="curr_dtl.order_state == 1 || curr_dtl.order_state == 3" placeholder="{yun:}t key='admin_00621'{/yun}" size="small" v-model="curr_dtl.order_remark" type="textarea" rows="3">
                                 </el-input>
                                 <span v-else>{{curr_dtl.order_remark}}</span>
                             </div>
                         </div>
                         <div class="jiliTanJinli">
                             <div class="jiliTanJinTite">
-                                <span>订单类型</span>
+                                <span>{yun:}t key='wap_user_00318'{/yun}</span>
                             </div>
                             <div class="jiliTanJinCont">
                                 <span>{{curr_dtl.type_n}}</span>
@@ -166,7 +166,7 @@
                         </div>
                         <div class="jiliTanJinli" v-if="curr_dtl.type == 2">
                             <div class="jiliTanJinTite">
-                                <span>所得{{integral_pricename}}</span>
+                                <span>{yun:}t key='admin_00618'{/yun}</span>
                             </div>
                             <div class="jiliTanJinCont">
                                 <span>{{curr_dtl.integral}}</span>
@@ -174,7 +174,7 @@
                         </div>
                         <div class="jiliTanJinli" v-if="htpics.length > 0">
                             <div class="jiliTanJinTite">
-                                <span>合同图片</span>
+                                <span>{yun:}t key='admin_user_company_00030'{/yun}</span>
                             </div>
                             <div class="jiliTanJinCont">
                                 <div style="display: flex;">
@@ -184,13 +184,13 @@
                         </div>
                         <div class="jiliTanJinli" v-if="curr_dtl.type=='3'||curr_dtl.order_type=='bank'">
                             <div class="jiliTanJinTite">
-                                <span>上传汇款单</span>
+                                <span>{yun:}t key='admin_user_company_00043'{/yun}</span>
                             </div>
                             <div class="jiliTanJinCont">
                                 <span v-if="curr_dtl.order_state == 1 || !curr_dtl.order_pic"></span>
                                 <div v-else>
                                     <el-image :src="curr_dtl.order_pic" :preview-src-list="[curr_dtl.order_pic]" style="width: 160px; height: 160px"></el-image>
-                                    <el-alert title="提示：点击图片可以查看大图,如图片仍看不清，请在图片上右击鼠标，选择“在新标签页中打开图片”或“图片另存为”" type="info" :closable="false">
+                                    <el-alert title="{yun:}t key='admin_00622'{/yun}" type="info" :closable="false">
                                     </el-alert>
                                 </div>
                             </div>
@@ -200,8 +200,8 @@
                                 <span></span>
                             </div>
                             <div class="jiliTanJinCont">
-                                <el-button size="small " @click="del(scope.row.id)">修改</el-button>
-                                <el-button size="small " @click="del(scope.row.id)">确认</el-button>
+                                <el-button size="small " @click="del(scope.row.id)">{yun:}t key='wap_js_00073'{/yun}</el-button>
+                                <el-button size="small " @click="del(scope.row.id)">{yun:}t key='wap_js_00094'{/yun}</el-button>
                             </div>
                         </div>
                     </div>
@@ -234,7 +234,7 @@
         data: function () {
             return {
                 loading: false,
-                emptytext: '暂无数据',
+                emptytext: "{yun:}t key='wap_js_00113'{/yun}",
                 type: '1',
                 keyword: '',
                 currentPage: 1,
@@ -250,15 +250,15 @@
 				is_crm:'',
 				order_state:'',
 				order_type:'',
-                integral_pricename: '',
+                integral_pricename: '",
                 islook: false,
                 dtlVisible: false,
                 curr_dtl: null,
                 htpics: [],
                 previewPics: [],
-                checkedAll: false,//全选
+                checkedAll: false,//{yun:}t key='wap_js_00074'{/yun}
                 selectedItem: [],
-                curr_id: '',
+                curr_id: "',
                 showhtpic: false,
 
                 prevPage: 0
@@ -410,7 +410,7 @@
                     params.t = that.sort_col
                 }
                 that.loading = true;
-                that.emptytext = "数据加载中";
+                that.emptytext = "{yun:}t key='admin_user_weipin_00026'{/yun}";
 				var url = '';
 				if(that.from=='persona'){
 					url='m=crm&c=crm_my_customer&a=company_order';
@@ -431,7 +431,7 @@
                             that.$refs.multipleTable.bodyWrapper.scrollTop = 0;
                         }
                         if (that.tableData.length === 0){
-                            that.emptytext = "暂无数据";
+                            that.emptytext = "{yun:}t key='wap_js_00113'{/yun}";
                         }
                     }
                 }).catch(function (e) {
@@ -442,7 +442,7 @@
                 let params = {};
                 if (isMore) {
                     if (!this.selectedItem.length) {
-                        message.error('请选择要删除的数据');
+                        message.error("{yun:}t key='admin_user_weipin_00005'{/yun}");
                         return false;
                     }
                     let list = [];
@@ -460,10 +460,10 @@
                 httpPost('m=user&c=company_order&a=del', params).then(function (response) {
                     let res = response.data;
                     if (res.error === 0) {
-                        message.success('删除成功！');
+                        message.success("{yun:}t key='admin_user_00187'{/yun}");
                         _this.getList();
                     } else {
-                        message.error('删除失败！');
+                        message.error("{yun:}t key='admin_user_00186'{/yun}");
                     }
                 }).catch(function (error) {
                     console.log(error);

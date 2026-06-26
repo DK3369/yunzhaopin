@@ -36,7 +36,7 @@ class company_company_controller extends adminCommon
         }
         $logM  		=  $this->MODEL('log');
 
-        $content	=	'管理员'.$_SESSION['ausername'].'登录企业账户(ID:'.$member['uid'].')';
+        $content	=	'wap_user_00361'.$_SESSION['ausername'].'登录企业账户(ID:'.$member['uid'].')';
 
         $adminLo	=	$logM -> addAdminLog($content);
 

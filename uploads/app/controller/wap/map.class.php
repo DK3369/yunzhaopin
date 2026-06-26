@@ -16,7 +16,7 @@ class map_controller extends common
             $this->yunset(array('mapx'=>0,'mapy'=>0));
         }
         $this->seo('map');
-        $this->yunset('headertitle', yun_auto_t('附近职位'));
+        $this->yunset('headertitle', yun_at('wap_00315'));
         $this->yuntpl(array('wap/map'));
     }
 
@@ -32,7 +32,7 @@ class map_controller extends common
             $this->yunset(array('mapx' => 0, 'mapy' => 0));
         }
         $this->seo('map');
-        $this->yunset('headertitle', yun_auto_t('附近职位'));
+        $this->yunset('headertitle', yun_at('wap_00315'));
         $this->yuntpl(array('wap/maplist'));
     }
 
@@ -280,7 +280,7 @@ class map_controller extends common
     function jobmap_action()
     {
         $this -> get_moblie();
-        $this -> yunset('headertitle', yun_auto_t('企业位置'));
+        $this -> yunset('headertitle', yun_at('wap_com_00156'));
         
         $comid  =   intval($_GET['id']);
         

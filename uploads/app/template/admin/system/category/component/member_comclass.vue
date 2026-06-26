@@ -4,7 +4,7 @@
         <div class="fl_cont_categoryHeader">
             <div></div>
             <div>
-                <el-button type="primary" @click="addVisible = true" icon="el-icon-document-add" size="mini">添加分类</el-button>
+                <el-button type="primary" @click="addVisible = true" icon="el-icon-document-add" size="mini">{yun:}t key='admin_00197'{/yun}</el-button>
             </div>
         </div>
         <div class="fl_cont_table">
@@ -27,24 +27,24 @@
                 <el-table-column label="操作" width="140">
                     <template slot-scope="scope">
                         <div class="moduleElTaCaoz">
-                            <el-button size="mini" @click="openManage(scope)">管理</el-button>
-                            <el-button type="danger" size="mini" @click="deleteRow(scope)">删除</el-button>
+                            <el-button size="mini" @click="openManage(scope)">{yun:}t key='wap_com_00304'{/yun}</el-button>
+                            <el-button type="danger" size="mini" @click="deleteRow(scope)">{yun:}t key='common.delete'{/yun}</el-button>
                         </div>
                     </template>
                 </el-table-column>
             </el-table>
             <div class="pageFenyAlls">
                 <div class="daochuButton">
-                    <el-checkbox :indeterminate="isIndeterminate" v-model="checked" @change="selectAllBottom">全选</el-checkbox>
-                    <el-button size="mini" @click="deleteRow(null, true)">批量删除</el-button>
+                    <el-checkbox :indeterminate="isIndeterminate" v-model="checked" @change="selectAllBottom">{yun:}t key='wap_js_00074'{/yun}</el-checkbox>
+                    <el-button size="mini" @click="deleteRow(null, true)">{yun:}t key='member_com_00055'{/yun}</el-button>
                 </div>
             </div>
         </div>
-        <el-dialog title="企业会员分类" width="580px" :visible.sync="addVisible" :modal-append-to-body="false">
+        <el-dialog title="{yun:}t key='admin_system_00099'{/yun}" width="580px" :visible.sync="addVisible" :modal-append-to-body="false">
             <comclass_add :position="tableData" @child-event-getlist="getList"></comclass_add>
         </el-dialog>
         <div class="modluDrawer">
-            <el-drawer title="管理" :visible.sync="manageVisible" @close="getList" :append-to-body="true"
+            <el-drawer title="{yun:}t key='wap_com_00304'{/yun}" :visible.sync="manageVisible" @close="getList" :append-to-body="true"
                 :modal-append-to-body="false" :show-close="true" :destroy-on-close="true" size="800px">
                 <comclass_manage :id="info.id" @child-event-getlist="getList"></comclass_manage>
             </el-drawer>
@@ -65,7 +65,7 @@ module.exports = {
             info: {},
             manageVisible: false,
             loading: false,
-            emptytext: window.yunAdminT('暂无数据'),
+            emptytext: window.yunAdminT("{yun:}t key='wap_js_00113'{/yun}"),
         };
     },
     mounted() {
@@ -94,13 +94,13 @@ module.exports = {
             this.addVisible = false;
             let _this = this;
             _this.loading = true;
-            _this.emptytext = window.yunAdminT('数据加载中');
+            _this.emptytext = window.yunAdminT("{yun:}t key='admin_user_weipin_00026'{/yun}");
             httpPost('m=system&c=category_comclass&a=index').then(function (response) {
                 let res = response.data;
                 _this.tableData = res.data;
                 _this.loading = false;
                 if (_this.tableData.length === 0){
-                    _this.emptytext = window.yunAdminT('暂无数据');
+                    _this.emptytext = window.yunAdminT("{yun:}t key='wap_js_00113'{/yun}");
                 }
             }).catch(function (error) {
                 console.log(error);
@@ -110,7 +110,7 @@ module.exports = {
             let params = {};
             if (isMore) {
                 if (!this.selectedItem.length) {
-                    message.error(window.yunAdminT('请选择要删除的数据'));
+                    message.error(window.yunAdminT("{yun:}t key='admin_user_weipin_00005'{/yun}"));
                     return false;
                 }
                 let list = [];
@@ -133,10 +133,10 @@ module.exports = {
             httpPost('m=system&c=category_comclass&a=del', params).then(function (response) {
                 let res = response.data;
                 if (res.error === 0) {
-                    message.success(window.yunAdminT('删除成功！'));
+                    message.success(window.yunAdminT("{yun:}t key='admin_user_00187'{/yun}"));
                     _this.getList();
                 } else {
-                    message.error(window.yunAdminT('删除失败！'));
+                    message.error(window.yunAdminT("{yun:}t key='admin_user_00186'{/yun}"));
                 }
             }).catch(function (error) {
                 console.log(error);
@@ -174,9 +174,9 @@ module.exports = {
             httpPost('m=system&c=category_comclass&a=ajax', sendData, {hideloading: true}).then(function (response) {
                 let res = response.data;
                 if (res.error === 0) {
-                    message.success(window.yunAdminT('修改成功'));
+                    message.success(window.yunAdminT("{yun:}t key='admin_user_company_00208'{/yun}"));
                 } else {
-                    message.error(window.yunAdminT('修改失败'));
+                    message.error(window.yunAdminT("{yun:}t key='admin_00187'{/yun}"));
                 }
                 _this.oldData = null;
                 _this.getList();

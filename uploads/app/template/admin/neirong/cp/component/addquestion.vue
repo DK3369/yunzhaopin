@@ -15,39 +15,39 @@
                             <span>{{ lc("admin_question_number", [index + 1]) }}</span>
                         </div>
                         <div class="pinyuFroms">
-                            <el-input type="textarea" :rows="2" placeholder="请输入问题" v-model="item.question">
+                            <el-input type="textarea" :rows="2" placeholder="{yun:}t key='admin_00862'{/yun}" v-model="item.question">
                             </el-input>
                         </div>
                     </div>
                     <div class="pinyuFromfkieu" v-for="(op, k) in item.option" :key="k">
                         <div class="pinyuFromsList">
                             <div class="pinyuName">
-                                <span>选项</span>
+                                <span>{yun:}t key='admin_00858'{/yun}</span>
                             </div>
                             <div class="pinyuFroms">
-                                <el-input placeholder="选项" v-model="item.option[k]">
+                                <el-input placeholder="{yun:}t key='admin_00858'{/yun}" v-model="item.option[k]">
                                 </el-input>
-                                <span class="spanfez">分值</span>
-                                <el-input placeholder="分值" v-model="item.score[k]">
+                                <span class="spanfez">{yun:}t key='admin_00859'{/yun}</span>
+                                <el-input placeholder="{yun:}t key='admin_00859'{/yun}" v-model="item.score[k]">
                                 </el-input>
-                                <el-button type="text" @click="delopt(index, k)">删除</el-button>
+                                <el-button type="text" @click="delopt(index, k)">{yun:}t key='common.delete'{/yun}</el-button>
                             </div>
                         </div>
                     </div>
-                    <el-button type="text" @click="addopt(index)">添加选项</el-button>
+                    <el-button type="text" @click="addopt(index)">{yun:}t key='admin_00860'{/yun}</el-button>
                 </div>
                 <div class="pinyuClose">
-                    <el-button type="text" @click="delrow(index)">删除</el-button>
+                    <el-button type="text" @click="delrow(index)">{yun:}t key='common.delete'{/yun}</el-button>
                 </div>
             </div>
             <div class="drawerModLis" style="align-items: initial;">
                 <div class="drawerModInpt">
-                    <el-button type="primary" icon="el-icon-plus" plain size="medium" @click="addrow">添加测评题目</el-button>
+                    <el-button type="primary" icon="el-icon-plus" plain size="medium" @click="addrow">{yun:}t key='admin_00861'{/yun}</el-button>
                 </div>
             </div>
         </div>
         <div class="setBasicButn" style="border: none;">
-            <el-button type="primary" size="medium" @click="save">确定</el-button>
+            <el-button type="primary" size="medium" @click="save">{yun:}t key='common.confirm'{/yun}</el-button>
         </div>
     </div>
 </template>
@@ -132,7 +132,7 @@ module.exports = {
                 });
             });
             if (err == true) {
-				message.error('问题、选项、分值都不能为空');
+				message.error("{yun:}t key='common_02044'{/yun}、{yun:}t key='admin_00858'{/yun}、分值都不能为空");
                 return false;
             }
 			that.$parent.$parent.askdata = that.list;

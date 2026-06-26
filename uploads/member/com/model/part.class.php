@@ -102,7 +102,7 @@ class part_controller extends company
 
             echo yun_json_encode(array(
                 'error' => 3,
-                'msg' => '参数错误，请重试！'
+                'msg' => yun_at('wap_00203')
             ));
         }
     }

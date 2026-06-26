@@ -50,8 +50,8 @@ class shop_list_controller extends adminCommon{
 
     function index_base_data_action()
     {
-        $search_list[]	=	array("param"=>"change","name"=>'兑换时间',"value"=>array("1"=>"今天","3"=>"最近三天","7"=>"最近七天","15"=>"最近半月","30"=>"最近一个月"));
-        $search_list[]	=	array("param"=>"status","name"=>'审核状态',"value"=>array("-1"=>"未审核","1"=>"已审核","2"=>"未通过"));
+        $search_list[]	=	array("param"=>"change","name"=>'wap_user_00002',"value"=>array("1"=>'common_01940',"3"=>'admin_user_00179',"7"=>'admin_user_00178',"15"=>'admin_user_00180',"30"=>'admin_user_00175'));
+        $search_list[]	=	array("param"=>"status","name"=>'wap_com_00406',"value"=>array("-1"=>'wap_user_00166',"1"=>'wap_user_00165',"2"=>'wap_user_00167'));
         $this->render_json(0, 'ok', compact('search_list'));
     }
 
@@ -76,10 +76,10 @@ class shop_list_controller extends adminCommon{
 						$stock='0';
 					}
 					$orderM		=	$this->MODEL("companyorder");
-					$ordernum	=	$orderM->getCompanyPayNum(array('com_id'=>$change['uid'],'pay_remark'=>'未通过积分兑换'));
+					$ordernum	=	$orderM->getCompanyPayNum(array('com_id'=>$change['uid'],'pay_remark'=>'admin_01428'));
 					if(!$ordernum){
 						$IntegralM		=	$this->MODEL("integral");
-						$IntegralM->company_invtal($change['uid'],$change['usertype'],$change['integral'],true,"未通过积分兑换",true,2,'integral',24);//积分操作记录
+						$IntegralM->company_invtal($change['uid'],$change['usertype'],$change['integral'],true,'admin_01428',true,2,'integral',24);//积分操作记录
 					}
 					
 					$upReData['num']	=	array('-',$change['num']);
@@ -93,7 +93,7 @@ class shop_list_controller extends adminCommon{
 			}
 			
 			/* 消息前缀 */		
-			$tagName  				=	'您兑换的商品';
+			$tagName  				=	'admin_yunying_00012';
 			
 			/* 处理审核信息 */
 			if ($_POST['status'] == 2){
@@ -132,9 +132,9 @@ class shop_list_controller extends adminCommon{
 			$where['id']			=	intval($_POST['id']);
 			$id						=	$redeemM->upChangeInfo($where,$value);	
 
-            $this->render_json($id? 0 : 1, $id? '兑换记录审核设置成功': '设置失败');
+            $this->render_json($id? 0 : 1, $id? yun_at('admin_01429'): yun_at('api_wxapp_00016'));
 		}else{
-            $this->render_json(1, '非法操作');
+            $this->render_json(1, yun_at('member_com_00320'));
 		}
 	}
 
@@ -161,7 +161,7 @@ class shop_list_controller extends adminCommon{
 			if($rowss&&is_array($rowss)){
 				foreach($rowss as $val){
 					if($val['status']==0){
-						$IntegralM->company_invtal($val['uid'],$val['usertype'],$val['integral'],true,"取消兑换",true,2,'integral',24);
+						$IntegralM->company_invtal($val['uid'],$val['usertype'],$val['integral'],true,'wap_user_00003',true,2,'integral',24);
 						$upReData['stock']	=	array('+',$val['num']);
 						$upReData['num']	=	array('-',$val['num']);
 						$upRewhere['id']	=	$val['gid'];
@@ -170,9 +170,9 @@ class shop_list_controller extends adminCommon{
 				}
 			}
 			$del	=	$redeemM->delChange($rowsWhere);
-			$this->render_json($del?0:1, $del?'兑换记录删除成功':'删除失败');
+			$this->render_json($del?0:1, $del?yun_at('admin_01430'):yun_at('wap_user_00146'));
 		}else{
-            $this->render_json(1, '请选择要删除的内容');
+            $this->render_json(1, yun_at('common_01162'));
 		}
 	}
 }

@@ -3,140 +3,140 @@
         <div style="overflow-y: auto;position: relative;height: calc(100% - 80px);">
             <div class="drawerModInfo drawerModInfoOne">
                 <div class="drawerModTites">
-                    <el-divider content-position="left">账号信息</el-divider>
+                    <el-divider content-position="left">{yun:}t key='admin_00027'{/yun}</el-divider>
                 </div>
                 <div class="drawerModLis">
                     <div class="drawerModTite">
-                        <span>登录账号</span>
+                        <span>{yun:}t key='default_00319'{/yun}</span>
                     </div>
                     <div class="drawerModInpt">
-                        <el-input v-model="info.username" placeholder="请输入登录账号"></el-input>
+                        <el-input v-model="info.username" placeholder="{yun:}t key='admin_00010'{/yun}"></el-input>
                     </div>
                 </div>
                 <div class="drawerModLis">
                     <div class="drawerModTite">
-                        <span>账号密码</span>
+                        <span>{yun:}t key='wap_00402'{/yun}</span>
                     </div>
                     <div class="drawerModInpt">
-                        <el-input @mousedown.native="pwdMousedown" @input="pwdchange" @focus="readonlyCtl(false)" @blur="readonlyCtl(true)" type="password" v-model="info.password" placeholder="请输入账号密码" :readonly="pwdreadonly"></el-input>
+                        <el-input @mousedown.native="pwdMousedown" @input="pwdchange" @focus="readonlyCtl(false)" @blur="readonlyCtl(true)" type="password" v-model="info.password" placeholder="{yun:}t key='wap_00400'{/yun}" :readonly="pwdreadonly"></el-input>
                     </div>
                     <div class="drawerModTips">
-                        <el-alert title="如果密码留空则不修改密码" type="info" show-icon :closable="false"></el-alert>
+                        <el-alert title="{yun:}t key='admin_00003'{/yun}" type="info" show-icon :closable="false"></el-alert>
                     </div>
                 </div>
                 <div class="drawerModLis">
                     <div class="drawerModTite">
-                        <span>真实姓名</span>
+                        <span>{yun:}t key='member_user_00230'{/yun}</span>
                     </div>
                     <div class="drawerModInpt">
-                        <el-input v-model="info.name" placeholder="请输入真实姓名"></el-input>
+                        <el-input v-model="info.name" placeholder="{yun:}t key='admin_00011'{/yun}"></el-input>
                     </div>
                 </div>
                 <div class="drawerModLis">
                     <div class="drawerModTite">
-                        <span>所属分组</span>
+                        <span>{yun:}t key='admin_00021'{/yun}</span>
                     </div>
                     <div class="drawerModInpt">
-                        <el-select v-model="info.m_id" placeholder="请选择用户组">
+                        <el-select v-model="info.m_id" placeholder="{yun:}t key='admin_00014'{/yun}">
                             <el-option v-for="item in group" :key="item.id" :label="item.group_name" :value="item.id"></el-option>
                         </el-select>
                     </div>
                 </div>
                 <div class="drawerModLis">
                     <div class="drawerModTite">
-                        <span>登录限制</span>
+                        <span>{yun:}t key='admin_00025'{/yun}</span>
                     </div>
                     <div class="drawerModInpt">
                         <template>
-                            <el-time-select style="width: 120px;"placeholder="起始时间" v-model="info.login_start" :picker-options="{start: '06:00', step: '00:10',end: '22:00'}"></el-time-select>
-                            <el-time-select style="margin-left:10px; width: 120px;" placeholder="结束时间" v-model="info.login_end" :picker-options="{start: '06:00',step: '00:10',end: '22:00', minTime: info.login_start}"></el-time-select>
+                            <el-time-select style="width: 120px;"placeholder="{yun:}t key='admin_00028'{/yun}" v-model="info.login_start" :picker-options="{start: '06:00', step: '00:10',end: '22:00'}"></el-time-select>
+                            <el-time-select style="margin-left:10px; width: 120px;" placeholder="{yun:}t key='wap_user_00096'{/yun}" v-model="info.login_end" :picker-options="{start: '06:00',step: '00:10',end: '22:00', minTime: info.login_start}"></el-time-select>
                         </template>
                     </div>
                     <div class="drawerModTips">
-                        <el-alert title="每天在选择固定时间内才能登录" type="info" show-icon :closable="false"></el-alert>
+                        <el-alert title="{yun:}t key='admin_00002'{/yun}" type="info" show-icon :closable="false"></el-alert>
                     </div>
                 </div>
                 <div class="drawerModLis">
                     <div class="drawerModTite">
-                        <span>登录分站</span>
+                        <span>{yun:}t key='admin_00024'{/yun}</span>
                     </div>
                     <div class="drawerModInpt">
-                        <el-radio v-model="info.isdid" label="1">允许</el-radio>
-                        <el-radio v-model="info.isdid" label="2">禁止</el-radio>
+                        <el-radio v-model="info.isdid" label="1">{yun:}t key='admin_00037'{/yun}</el-radio>
+                        <el-radio v-model="info.isdid" label="2">{yun:}t key='admin_00038'{/yun}</el-radio>
                     </div>
                 </div>
                 <div class="drawerModLis">
                     <div class="drawerModTite">
-                        <span>首页统计</span>
+                        <span>{yun:}t key='admin_00031'{/yun}</span>
                     </div>
                     <div class="drawerModInpt">
-                        <el-radio v-model="info.index_lookstatistc" label="2">开启</el-radio>
-                        <el-radio v-model="info.index_lookstatistc" label="1">关闭</el-radio>
+                        <el-radio v-model="info.index_lookstatistc" label="2">{yun:}t key='member_com_00287'{/yun}</el-radio>
+                        <el-radio v-model="info.index_lookstatistc" label="1">{yun:}t key='common.close'{/yun}</el-radio>
                     </div>
                     <div class="drawerModTips">
-                        <el-alert title="站点后台首页数据统计权限" type="info" show-icon :closable="false"></el-alert>
+                        <el-alert title="{yun:}t key='admin_00004'{/yun}" type="info" show-icon :closable="false"></el-alert>
                     </div>
                 </div>
                 <div class="drawerModLis">
                     <div class="drawerModTite">
-                        <span>业务身份</span>
+                        <span>{yun:}t key='admin_00019'{/yun}</span>
                     </div>
                     <div class="drawerModInpt">
-                        <el-radio v-model="info.is_crm" label="1">开启</el-radio>
-                        <el-radio v-model="info.is_crm" label="0">关闭</el-radio>
+                        <el-radio v-model="info.is_crm" label="1">{yun:}t key='member_com_00287'{/yun}</el-radio>
+                        <el-radio v-model="info.is_crm" label="0">{yun:}t key='common.close'{/yun}</el-radio>
                     </div>
                 </div>
             </div>
             <div class="drawerModInfo drawerModInfoOne" v-show="info.is_crm == 1">
                 <div class="drawerModTites">
-                    <el-divider content-position="left">业务信息</el-divider>
+                    <el-divider content-position="left">{yun:}t key='admin_00018'{/yun}</el-divider>
                 </div>
                 <div class="drawerModLis">
                     <div class="drawerModTite">
-                        <span>微信号</span>
+                        <span>{yun:}t key='admin_00032'{/yun}</span>
                     </div>
                     <div class="drawerModInpt">
-                        <el-input v-model="info.weixin" placeholder="请输入微信号"></el-input>
-                    </div>
-                </div>
-                <div class="drawerModLis">
-                    <div class="drawerModTite">
-                        <span>手机号</span>
-                    </div>
-                    <div class="drawerModInpt">
-                        <el-input v-model="info.mobile" placeholder="请输入手机号"></el-input>
+                        <el-input v-model="info.weixin" placeholder="{yun:}t key='admin_00012'{/yun}"></el-input>
                     </div>
                 </div>
                 <div class="drawerModLis">
                     <div class="drawerModTite">
-                        <span>联系QQ</span>
+                        <span>{yun:}t key='wap_01619'{/yun}</span>
                     </div>
                     <div class="drawerModInpt">
-                        <el-input v-model="info.qq" placeholder="请输入联系QQ"></el-input>
+                        <el-input v-model="info.mobile" placeholder="{yun:}t key='wap_js_00119'{/yun}"></el-input>
                     </div>
                 </div>
                 <div class="drawerModLis">
                     <div class="drawerModTite">
-                        <span>客户数量</span>
+                        <span>{yun:}t key='wap_com_00174'{/yun}</span>
                     </div>
                     <div class="drawerModInpt">
-                        <el-input type="number" v-model="info.num" placeholder="请输入客户数量"></el-input>
+                        <el-input v-model="info.qq" placeholder="{yun:}t key='wap_com_00141'{/yun}"></el-input>
+                    </div>
+                </div>
+                <div class="drawerModLis">
+                    <div class="drawerModTite">
+                        <span>{yun:}t key='admin_00020'{/yun}</span>
+                    </div>
+                    <div class="drawerModInpt">
+                        <el-input type="number" v-model="info.num" placeholder="{yun:}t key='admin_00009'{/yun}"></el-input>
                     </div>
                     <div class="drawerModTips">
-                        <el-alert title="填‘0’或者不填写表示不限" type="info" show-icon :closable="false"></el-alert>
+                        <el-alert title="{yun:}t key='admin_00389'{/yun}" type="info" show-icon :closable="false"></el-alert>
                     </div>
                 </div>
 
                 <div class="drawerModLis">
                     <div class="drawerModTite">
-                        <span>每日目标</span>
+                        <span>{yun:}t key='admin_00023'{/yun}</span>
                     </div>
                     <div class="drawerModInpt">
-                        <el-input type="number" v-model="info.call_num" placeholder="请输入目标数" style="width: 194px;">
-                            <template slot="prepend">通话量</template>
+                        <el-input type="number" v-model="info.call_num" placeholder="{yun:}t key='admin_00013'{/yun}" style="width: 194px;">
+                            <template slot="prepend">{yun:}t key='admin_00036'{/yun}</template>
                         </el-input>
-                        <el-input type="number" v-model="info.tuoxin_num" placeholder="请输入目标数" style="width: 194px; margin-left: 16px;">
-                            <template slot="prepend">拓新量</template>
+                        <el-input type="number" v-model="info.tuoxin_num" placeholder="{yun:}t key='admin_00013'{/yun}" style="width: 194px; margin-left: 16px;">
+                            <template slot="prepend">{yun:}t key='admin_00034'{/yun}</template>
                         </el-input>
                     </div>
                 </div>
@@ -145,40 +145,40 @@
                         <span> </span>
                     </div>
                     <div class="drawerModInpt">
-                        <el-input type="number" v-model="info.follow_num" placeholder="请输入目标数" style="width: 194px;">
-                            <template slot="prepend">跟进量</template>
+                        <el-input type="number" v-model="info.follow_num" placeholder="{yun:}t key='admin_00013'{/yun}" style="width: 194px;">
+                            <template slot="prepend">{yun:}t key='admin_00035'{/yun}</template>
                         </el-input>
-                        <el-input type="number" v-model="info.deal_num" placeholder="请输入目标数" style="width: 194px; margin-left: 16px;">
-                            <template slot="prepend">成交额</template>
+                        <el-input type="number" v-model="info.deal_num" placeholder="{yun:}t key='admin_00013'{/yun}" style="width: 194px; margin-left: 16px;">
+                            <template slot="prepend">{yun:}t key='admin_00033'{/yun}</template>
                         </el-input>
                     </div>
                 </div>
 
                 <div class="drawerModLis">
                     <div class="drawerModTite">
-                        <span>每日目标</span>
+                        <span>{yun:}t key='admin_00023'{/yun}</span>
                     </div>
                     <div class="drawerModInpt">
-                        <el-input type="number" v-model="info.month_deal_num" placeholder="请输入目标数">
-                            <template slot="prepend">成交额</template>
+                        <el-input type="number" v-model="info.month_deal_num" placeholder="{yun:}t key='admin_00013'{/yun}">
+                            <template slot="prepend">{yun:}t key='admin_00033'{/yun}</template>
                         </el-input>
                     </div>
                 </div>
                 <div class="drawerModLis">
                     <div class="drawerModTite">
-                        <span>榜单权限</span>
+                        <span>{yun:}t key='admin_00022'{/yun}</span>
                     </div>
                     <div class="drawerModInpt">
-                        <el-radio v-model="info.jobtai_ranking" label="1">开启</el-radio>
-                        <el-radio v-model="info.jobtai_ranking" label="2">关闭</el-radio>
+                        <el-radio v-model="info.jobtai_ranking" label="1">{yun:}t key='member_com_00287'{/yun}</el-radio>
+                        <el-radio v-model="info.jobtai_ranking" label="2">{yun:}t key='common.close'{/yun}</el-radio>
                     </div>
                     <div class="drawerModTips">
-                        <el-alert title="工作台榜单查看权限" type="info" show-icon :closable="false"></el-alert>
+                        <el-alert title="{yun:}t key='admin_00005'{/yun}" type="info" show-icon :closable="false"></el-alert>
                     </div>
                 </div>
                 <div class="drawerModLis">
                     <div class="drawerModTite">
-                        <span>轮值时间</span>
+                        <span>{yun:}t key='admin_00030'{/yun}</span>
                     </div>
                     <div class="drawerModInpt">
                         <el-checkbox-group v-model="info.crm_duty">
@@ -188,43 +188,43 @@
                 </div>
                 <div class="drawerModLis">
                     <div class="drawerModTite">
-                        <span>轮值区域</span>
+                        <span>{yun:}t key='admin_00029'{/yun}</span>
                     </div>
                     <div class="drawerModInpt">
-                        <el-select v-model="info.crm_city" multiple filterable remote reserve-keyword placeholder="请输入关键词" :filter-method="getCity">
+                        <el-select v-model="info.crm_city" multiple filterable remote reserve-keyword placeholder="{yun:}t key='wap_00510'{/yun}" :filter-method="getCity">
                             <el-option v-for="item in cities" :key="item.id" :label="item.label" :value="item.id"></el-option>
                         </el-select>
                     </div>
                     <div class="drawerModTips">
-                        <el-alert title="业务轮值安排，可以设轮值时间和区域" type="info" show-icon :closable="false"></el-alert>
+                        <el-alert title="{yun:}t key='admin_00001'{/yun}" type="info" show-icon :closable="false"></el-alert>
                     </div>
                 </div>
                 <div class="drawerModLis">
                     <div class="drawerModTite">
-                        <span>职业形象照</span>
+                        <span>{yun:}t key='admin_00017'{/yun}</span>
                     </div>
                     <div class="drawerModInpt">
                         <el-upload class="upload-demo" :accept="pic_accept" action="" :auto-upload="false" :show-file-list="false" :on-change="upPhotoChange">
-                            <el-button slot="trigger" size="small" type="primary">上传形象照</el-button>
-                            <img class="el-upload-list__item-thumbnail" width="36" height="36" v-if="info.photo" :src="info.photo" alt="职业形象照"/>
+                            <el-button slot="trigger" size="small" type="primary">{yun:}t key='admin_00015'{/yun}</el-button>
+                            <img class="el-upload-list__item-thumbnail" width="36" height="36" v-if="info.photo" :src="info.photo" alt="{yun:}t key='admin_00017'{/yun}"/>
                         </el-upload>
                     </div>
                 </div>
                 <div class="drawerModLis">
                     <div class="drawerModTite">
-                        <span>微信二维码</span>
+                        <span>{yun:}t key='admin_00016'{/yun}</span>
                     </div>
                     <div class="drawerModInpt">
                         <el-upload class="upload-demo" :accept="pic_accept" action="" :auto-upload="false" :show-file-list="false" :on-change="upEwmChange">
-                            <el-button slot="trigger" size="small" type="primary">上传二维码</el-button>
-                            <img class="el-upload-list__item-thumbnail" width="36" height="36" v-if="info.ewm" :src="info.ewm" alt="微信二维码"/>
+                            <el-button slot="trigger" size="small" type="primary">{yun:}t key='member_user_00157'{/yun}</el-button>
+                            <img class="el-upload-list__item-thumbnail" width="36" height="36" v-if="info.ewm" :src="info.ewm" alt="{yun:}t key='admin_00016'{/yun}"/>
                         </el-upload>
                     </div>
                 </div>
             </div>
         </div>
         <div class="setBasicButn" style="border: none;">
-            <el-button type="primary" size="medium" :loading="save_load" @click="submitForm">提交</el-button>
+            <el-button type="primary" size="medium" :loading="save_load" @click="submitForm">{yun:}t key='common.submit'{/yun}</el-button>
         </div>
     </div>
 </template>
@@ -268,19 +268,19 @@
             // 防止密码框内容清楚后展示用户密码清单
             pwdchange: function(val){
                 var that = this
-                if (val == '') {
+                if (val == '") {
                     this.pwdreadonly = true
                     setTimeout(function(){ that.pwdreadonly = false, 100})
                 }
             },
-            // 修改密码框readonly属性，防止密码框展示浏览器记录的密码信息
+            // 修改密码框readonly{yun:}t key='wap_js_00085'{/yun}，防止密码框展示浏览器记录的密码信息
             readonlyCtl: function(res){
                 var that = this
                 setTimeout(function(){
                     that.pwdreadonly = res
                 }, 200)
             },
-            // 初始化用户信息
+            // {yun:}t key='admin_00007'{/yun}
             initData() {
                 var that = this
                 if (that.info && that.info.uid) {
@@ -294,7 +294,7 @@
                 } else {
                     this.info = {
                         uid: 0,
-                        username: '',
+                        username: "',
                         password: '',
                         name: '',
                         m_id: '',
@@ -358,15 +358,15 @@
                     return false;
                 }
                 if (!that.info.uid && !that.info.password) {
-                    message.error('请填写密码');
+                    message.error("{yun:}t key='wap_js_00061'{/yun}");
                     return false;
                 }
                 if (!that.info.name) {
-                    message.error('请填写真实姓名');
+                    message.error("{yun:}t key='admin_00008'{/yun}");
                     return false;
                 }
                 if (!that.info.m_id) {
-                    message.error('请选择用户组');
+                    message.error("{yun:}t key='admin_00014'{/yun}");
                     return false;
                 }
                 for (i in that.info) {
@@ -388,7 +388,7 @@
                     formData.append('crmAdd', 1);
                     url = 'm=crm&c=salesman&a=saveCrm';
                 } else {
-                    message.error('source 参数异常');
+                    message.error("source {yun:}t key='upgrade_00015'{/yun}");
                     return false;
                 }
 

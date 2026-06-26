@@ -2,7 +2,7 @@
 
 class mobliemsg_model extends model{
 
-    public $ports  =   array('1' => '网页', '2' => 'WAP','5' => '后台', '7' => 'PC快速投递', '8' => 'WAP快速投递');
+    public $ports  =   array('1' => 'member_user_00094', '2' => 'WAP','5' => 'wap_js_00101', '7' => 'ajax_00010', '8' => 'wap_00121');
     /**
      * 获取配置列表
      * @param $whereData    查询条件
@@ -59,14 +59,14 @@ class mobliemsg_model extends model{
                     $List[$lk]['sname'] =   $names[$lv['uid']];
                 } else {
 
-                    $List[$lk]['fname'] =   $lv['cuid'] ? $names[$lv['cuid']] : '系统';
+                    $List[$lk]['fname'] =   $lv['cuid'] ? $names[$lv['cuid']] : 'common_02020';
 
                     if ($lv['uid'] > 0) {
 
                         $List[$lk]['sname'] =   $names[$lv['uid']];
                     } elseif ($lv['uid'] < 0) {
 
-                        $List[$lk]['sname'] =   '管理员';
+                        $List[$lk]['sname'] =   yun_at('wap_user_00361');
                     } else {
 
                         $List[$lk]['sname'] =   '';
@@ -181,13 +181,13 @@ class mobliemsg_model extends model{
 
                 $this->update_once('moblie_msg', array('state' => '0'), array('id' => array('in', implode(',', $successid))));
             }
-            $msg    =   '本次短信重发成功：'.count($successid).'条';
+            $msg    =   'common_01131'.count($successid).'条';
             if (!empty($nosuccessid) && isset($codeMsg)) {
-                $msg    .=  ',失败：'.count($nosuccessid).'条,错误码：'.$codeMsg;
+                $msg    .=  ',失败：'.count($nosuccessid).'common_01515'.$codeMsg;
             }
         } else {
 
-            $msg    =   '没有需要重发的短信！';
+            $msg    =   'common_01030';
         }
         return $msg;
     }

@@ -29,13 +29,13 @@ class index_controller extends common{
     public function qrcode_action()
     {
         if (! $this->uid) {
-            exit(yun_auto_t('请先登录'));
+            exit(yun_at('wap_00376'));
         }
         
         // 传入上传类型 type , save_action中根据类型选择不同的保存路径
         $type = isset($_GET['type']) ? $_GET['type'] : '';
         if ($type == '') {
-            exit(yun_auto_t('扫码上传图片可选类型type：1企业营业执照上传，2个人身份证上传，3个人头像'));
+            exit(yun_at('upload_00001'));
         }
         
         $token = $this->generateToken($type, $this->uid);

@@ -87,7 +87,7 @@ class domain_group_controller extends adminCommon
                 $this->admin_json(1, $return['msg']);
             }
         } else {
-            $this->render_json(1, '参数错误，请重试！');
+            $this->render_json(1, yun_at('wap_00203'));
         }
     }
 
@@ -144,7 +144,7 @@ class domain_group_controller extends adminCommon
                 unset($_SESSION['ausername']);
                 unset($_SESSION['ashell']);
 
-                $this->admin_json(0, '管理员(ID:' . $_POST['uid'] . ')修改成功,请重新登录！');
+                $this->admin_json(0, '管理员(ID:' . $_POST['uid'] . 'admin_system_00008');
             }
         }
         if ($return['errcode'] == '9'){
@@ -225,7 +225,7 @@ class domain_group_controller extends adminCommon
             }
         } else {
 
-            $this->render_json(1, '参数错误，请重试！');
+            $this->render_json(1, yun_at('wap_00203'));
         }
     }
 
@@ -301,12 +301,12 @@ class domain_group_controller extends adminCommon
     {
 
         if ($_POST['group_name'] == '') {
-            $this->render_json(1, '请填写权限组名称');
+            $this->render_json(1, yun_at('admin_system_00010'));
         }
 
         if (empty($_POST['three_ids'])) {
 
-            $this->render_json(1, '请至少选择一项权限');
+            $this->render_json(1, yun_at('admin_system_00009'));
         } else {
 
             $powerA = array_merge($_POST['one_ids'], $_POST['two_ids'], $_POST['three_ids']);

@@ -9,7 +9,7 @@ class payment_controller extends user{
 		
 		if($this->usertype!='1' || $this->uid==''){
 			
-			$this->ACT_msg("index.php","非法操作！");
+			$this->ACT_msg("index.php",yun_at('model_00001'));
 			
 		}else{
 			$order	=	$comorderM->getInfo(array('uid'=>$this->uid,'id'=>(int)$_GET['id']));

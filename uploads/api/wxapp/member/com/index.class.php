@@ -126,11 +126,11 @@ class index_controller extends com_controller{
 					$integral	=	$this->config['integral_signin'];
 				}
 				$signday	=	$member['signday']+1;
-				$msg		=	yun_auto_t('连续签到').$signday.yun_auto_t('天');
+				$msg		=	yun_at('wap_00128').$signday.yun_at('wap_01197');
 			}else{
 				$signday	=	'1';
 				$integral	=	$this->config['integral_signin'];
-				$msg		=	yun_auto_t('第一次签到');
+				$msg		=	yun_at('wap_00125');
 			}
 			$arr	=	array();
 			$nid	=	$userinfoM -> addMemberreg(array('uid'=>$this->member['uid'],'usertype'=>$this->member['usertype'],'date'=>$date,"ctime"=>time(),'ip'=>fun_ip_get()));
@@ -138,14 +138,14 @@ class index_controller extends com_controller{
 			    $IntegralM		=	$this -> MODEL('integral');
 				$IntegralM->company_invtal($this->member['uid'],$this->member['usertype'],$integral,true,$msg,true,2,'integral',19);		
 				$userinfoM -> upInfo(array('uid'=>$this->member['uid']),array('signday'=>$signday,'signdays'=>array('+','1')));			
-				$data['msg']	=	yun_auto_t('签到成功！+').$integral.$this->config['integral_pricename'];
+				$data['msg']	=	yun_at('wap_01296').$integral.$this->config['integral_pricename'];
 				$data['error']	=	1;				
 			}else{
-				$data['msg']	=	yun_auto_t('签到失败！');
+				$data['msg']	=	yun_at('wap_01292');
 				$data['error']	=	2;
 			}
 		}else{
-			$data['msg']	=	yun_auto_t('签到失败！');
+			$data['msg']	=	yun_at('wap_01292');
 			$data['error']	=	2;
 		}
 		$this->render_json($data['error'],$data['msg'],$data);
@@ -155,7 +155,7 @@ class index_controller extends com_controller{
 	{
 
 	    if ($this->comInfo['r_status'] == '4'){
-            $this->render_json(-1, yun_auto_t('当前账户会员权益已暂停，请联系客服开启服务~'));
+            $this->render_json(-1, yun_at('wap_com_00081'));
         }
 
 	    $jobM    =  $this->MODEL('job');
@@ -174,12 +174,12 @@ class index_controller extends com_controller{
 	        $statis  =  $this -> company_statis($suid);
 
 	        if ($statis['job_num'] == 0) {
-                $return['msg']  =   yun_auto_t('套餐已用完 , 立即升级VIP？');
+                $return['msg']  =   yun_at('wap_01300');
             }else{
 				if($statis['addjobnum']==0){
-		        	$return['msg']=yun_auto_t('套餐已用完 , 立即升级VIP？');
+		        	$return['msg']=yun_at('wap_01300');
 				}elseif($statis['addjobnum']==2){
-				    $return['msg']=yun_auto_t('当前会员套餐可上架职位数已达上限，新发布职位将无法直接上架哦~');
+				    $return['msg']=yun_at('member_com_00225');
 				}
             }
 	        

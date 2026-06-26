@@ -58,18 +58,18 @@ class register_model extends model
 				$return['errcode']	=	4;
 			}elseif($user){
 			
-				$return['msg']		=	'用户名已存在！';
+				$return['msg']		=	yun_at('wap_js_00053');
 				$return['errcode']	=	1;
 			}elseif(CheckRegUser($username)==false && CheckRegEmail($username)==false){
 
-				$return['msg']		=	'用户名不得包含特殊字符！';
+				$return['msg']		=	yun_at('wap_js_00046');
 				$return['errcode']	=	2;
             } elseif (!checkRegnameLegal($username)) {//限制注册用户名
 
-                $return['msg'] = '该用户名已被禁止注册！';
+                $return['msg'] = yun_at('wap_js_00050');
                 $return['errcode'] = 3;
             } else {
-				$return['msg']		=	'填写正确！';
+				$return['msg']		=	yun_at('default_00049');
 				$return['errcode']	=	0;
 			}
 		}elseif($key_name=="email"){//验证注册邮箱
@@ -77,13 +77,13 @@ class register_model extends model
 			$user 		= 	$this->select_num('member',array("email" => $post['email'], "username" => array('=', $post['email'], 'OR')));
 			
 			if(CheckRegEmail($post['email'])==false){
-				$return['msg']		=	'邮箱格式错误！';
+				$return['msg']		=	yun_at('wap_js_00108');
 				$return['errcode']	=	2;
 			}elseif($user){
-				$return['msg']		=	'邮箱已被使用！';
+				$return['msg']		=	yun_at('default_00011');
 				$return['errcode']	=	1;
 			}else{
-				$return['msg']		=	'填写正确！';
+				$return['msg']		=	yun_at('default_00049');
 				$return['errcode']	=	0;
 			}
 		}elseif($key_name == 'realname'){//验证注册真实姓名
@@ -91,7 +91,7 @@ class register_model extends model
 			$realname=$post['realname'];
 
             if (!checkRegnameLegal($realname)) {//限制注册用户名
-                $return['msg'] = '该姓名已被禁止使用！';
+                $return['msg'] = yun_at('common_01051');
                 $return['errcode'] = 3;
             }
 			if($this->config['sy_fkeyword']!=""){//过滤关键词
@@ -99,7 +99,7 @@ class register_model extends model
 				$fkeyword =@explode(",",$this->config['sy_fkeyword']);
 				
 				if(in_array($realname,$fkeyword)){
-					$return['msg']		=	'该真实姓名包含敏感词！';
+					$return['msg']		=	yun_at('common_00917');
 					$return['errcode']	=	3;
 				}
 			}
@@ -113,7 +113,7 @@ class register_model extends model
 				$return['msg']		=	$msg;
 				$return['errcode']	=	4;
 			}else{
-				$return['msg']		=	'填写正确！';
+				$return['msg']		=	yun_at('default_00049');
 				$return['errcode']	=	0;
 			}
 		}
@@ -212,7 +212,7 @@ class register_model extends model
 			if(md5(strtolower($data['code']))!=$_SESSION['authcode'] || empty($_SESSION['authcode'])){
 				unset($_SESSION['authcode']);
 				$return['errcode']	=	3;
-				$return['msg']		=	'验证码错误！';
+				$return['msg']		=	yun_at('model_00047');
 			}
 		}
 		$user 	= 	$this->select_once('member',array("uid" => $data['zyuid']),'username,moblie,status,email,uid,password,salt,usertype');
@@ -220,13 +220,13 @@ class register_model extends model
 		if(!passCheck($data['pw'],$user['salt'],$user['password'])){
 			
 			$return['errcode']	=	2;
-			$return['msg']		=	'密码错误！';
+			$return['msg']		=	yun_at('wap_js_00059');
 		}else{
 			
 			if($data['mobile']!=""){
 				if($user['status'] == 2){
                     $return['errcode']	=	4;
-                    $return['msg']		=	'账号已锁定无法解绑！';
+                    $return['msg']		=	yun_at('common_01072');
                     return $return;
                 }else {
 					if($user['username'] == $data['mobile']){
@@ -249,13 +249,13 @@ class register_model extends model
 
                     if ($newid) {
 
-                        $logContent =   '修改账号：账号手机解绑';
-                        $logDetail  =   '账号手机解绑，用户名和手机号一致，同步修改用户名：《'.$user['username'].'》 → 《'.$new.'》';
+                        $logContent =   'common_00855';
+                        $logDetail  =   'common_00181'.$user['username'].'》 → 《'.$new.'》';
                         $this->addMemberLog($user['uid'], $user['usertype'], $logContent, 11, 1, $logDetail);
                     }
                     if ($nid) {
-                        $logContent =   '账号认证：解除手机绑定';
-                        $logDetail  =   '注册处解除绑定手机：'.$data['mobile'];
+                        $logContent =   'common_06418';
+                        $logDetail  =   'common_01032'.$data['mobile'];
                         $this->addMemberLog($user['uid'], $user['usertype'], $logContent, 12, 2, $logDetail);
                     }
 				}
@@ -263,7 +263,7 @@ class register_model extends model
 			}else if($data['email']!=""){
 				if($user['status'] == 2){
                     $return['errcode']	=	4;
-                    $return['msg']		=	'账号已锁定无法解绑！';
+                    $return['msg']		=	yun_at('common_01072');
                     return $return;
                 }else {
 					if($user['username'] == $data['email']){
@@ -280,19 +280,19 @@ class register_model extends model
 					}
                     if ($newid) {
 
-                        $logContent =   '修改账号：账号邮箱解绑';
-                        $logDetail  =   '账号邮箱解绑，用户名和邮箱一致，同步修改用户名：《'.$user['username'].'》 → 《'.$new.'》';
+                        $logContent =   'common_00856';
+                        $logDetail  =   'common_00196'.$user['username'].'》 → 《'.$new.'》';
                         $this->addMemberLog($user['uid'], $user['usertype'], $logContent, 11, 1, $logDetail);
                     }
                     if ($nid) {
-                        $logContent =   '账号认证：解除邮箱绑定';
-                        $logDetail  =   '注册处解除绑定邮箱：'.$data['email'];
+                        $logContent =   'common_06419';
+                        $logDetail  =   'common_01033'.$data['email'];
                         $this->addMemberLog($user['uid'], $user['usertype'], $logContent, 12, 2, $logDetail);
                     }
 				}
 			}
 			$return['errcode']	=	1;
-			$return['msg']		=	'解绑成功！';
+			$return['msg']		=	yun_at('common_06575');
 		}
 		return $return;
 	}

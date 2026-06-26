@@ -11,7 +11,7 @@ class partadd_controller extends company
 
         if (!$company['name'] || !$company['provinceid'] || (!$company['linktel'] && !$company['linkphone'])) {
 
-            $this->ACT_msg('index.php?c=info', '请先完善基本资料！');
+            $this->ACT_msg('index.php?c=info', yun_at('member_com_00692'));
         }
         $this->yunset('company', $company);
 
@@ -26,14 +26,14 @@ class partadd_controller extends company
             if ($company['email_status'] != '1') {
 
                 $isallow_addjob =   '0';
-                $msg[]          =   '邮箱认证';
+                $msg[]          =   'wap_com_00186';
             }
         }
         if ($this->config['com_enforce_mobilecert'] == '1') {
             if ($company['moblie_status'] != '1') {
 
                 $isallow_addjob =   '0';
-                $msg[]          =   '手机认证';
+                $msg[]          =   'member_com_00071';
             }
         }
 
@@ -45,18 +45,18 @@ class partadd_controller extends company
             if ($company['yyzz_status'] != '1' && (empty($cert) || $cert['status'] == 2)) {
 
                 $isallow_addjob =   '0';
-                $msg[]          =   '企业资质认证';
+                $msg[]          =   'member_com_00187';
             }
         }
 
         if ($isallow_addjob == '0') {
 
-            $this->ACT_msg($url, '请先完成' . implode('、', $msg) . '！');
+            $this->ACT_msg($url, yun_at('member_com_00693') . implode('、', $msg) . '！');
         }
 
         if ($this->config['com_enforce_setposition'] == '1') {
             if (empty($company['x']) || empty($company['y'])) {
-                $this->ACT_msg('index.php?c=map', '请先完成地图设置！');
+                $this->ACT_msg('index.php?c=map', yun_at('member_com_00694'));
             }
         }
 
@@ -80,7 +80,7 @@ class partadd_controller extends company
             }
             if ($isSubscribe == 0) {
                 $this->cookie->SetCookie('gzh', '', (strtotime('today') - 86400));
-                $this->ACT_msg('index.php', '请先关注公众号！');
+                $this->ACT_msg('index.php', yun_at('member_com_00695'));
             }
         }
 
@@ -100,7 +100,7 @@ class partadd_controller extends company
 
             if ($statics['addjobnum'] == 0) {//会员过期
 
-                $this->ACT_msg("index.php?c=right", "你的会员已到期！", 8);
+                $this->ACT_msg("index.php?c=right", yun_at('member_com_00696'), 8);
             }
         }
 

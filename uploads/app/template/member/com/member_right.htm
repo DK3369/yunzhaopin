@@ -48,7 +48,7 @@
                      
                         <div class="com_new_tip">
                                 
-                                                <span class="com_new_tip_h">{yun:}t key='member_com_00040'{/yun}</span>您当前是：{yun:}$statis.rating_name{/yun}
+                                                <span class="com_new_tip_h">{yun:}t key='member_com_00040'{/yun}</span>{yun:}t key='common_02235'{/yun}：{yun:}$statis.rating_name{/yun}
                             服务到期为：
                             {yun:}if $statis.vip_etime > $todayStart{/yun}
                                 {yun:}$statis.vip_stime|date_format:'%Y-%m-%d'{/yun} - {yun:}$statis.vip_etime|date_format:'%Y-%m-%d'{/yun}
@@ -66,7 +66,7 @@
                             {yun:}if $noPermission == 1 || $isPaused == 1{/yun}
                             {yun:}include file="$temstyle/default/public_search/vipTips.htm"{/yun}
                             {yun:}else{/yun}
-                            <div class="vip_box_db">套餐权益对比</div>
+                            <div class="vip_box_db">{yun:}t key='member_com_00610'{/yun}</div>
                             <ul>
                                 {yun:}foreach from=$rows item=v{/yun}
                                 <li class="vip_box_list">
@@ -121,14 +121,14 @@
 
                                         {yun:}if $v.explains{/yun}{yun:}$v.explains{/yun}{yun:}else{/yun}{yun:}$v.name{/yun}{yun:}/if{/yun}
 
-                                        {yun:}if $v.integral_buy>0{/yun}赠送{yun:}$v.integral_buy{/yun}{yun:}$config.integral_pricename{/yun}{yun:}/if{/yun}
+                                        {yun:}if $v.integral_buy>0{/yun}{yun:}t key='wap_01823'{/yun}{yun:}$v.integral_buy{/yun}{yun:}$config.integral_pricename{/yun}{yun:}/if{/yun}
 
 
                                     </div></div>
                                 </li>
                                 {yun:}foreachelse{/yun}
                                 <div class="msg_no">
-                                    <p>亲爱的用户，目前没有套餐会员服务</p>
+                                    <p>{yun:}t key='wap_01007'{/yun}，目前没有套餐会员服务</p>
                                 </div>
                                 {yun:}/foreach{/yun}
                             </ul>

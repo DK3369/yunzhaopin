@@ -2,8 +2,8 @@
     <div class="moduleElHight">
         <div class="moduleSeachbig">
             <div class="tableSeachInpt tableSeachInptsmall">
-                <el-input placeholder="请输入搜索内容" size="small" @keyup.enter.native="doUserQuery" v-model="search.keyword" class="input-with-select" clearable>
-                    <el-select v-model="search.type" slot="prepend" placeholder="用户名">
+                <el-input placeholder="{yun:}t key='admin_00340'{/yun}" size="small" @keyup.enter.native="doUserQuery" v-model="search.keyword" class="input-with-select" clearable>
+                    <el-select v-model="search.type" slot="prepend" placeholder="{yun:}t key='admin_user_00140'{/yun}">
                         <el-option label="用户名" value="1"></el-option>
                         <el-option label="手机号" value="2"></el-option>
                         <el-option label="用户ID" value="3"></el-option>
@@ -12,37 +12,37 @@
                 </el-input>
             </div>
             <div class="tableSeachInpt tableSeachInptsmall">
-                <el-select v-model="search.source" size="small" slot="prepend" placeholder="用户来源" clearable @change="doUserQuery">
+                <el-select v-model="search.source" size="small" slot="prepend" placeholder="{yun:}t key='admin_user_00132'{/yun}" clearable @change="doUserQuery">
                     <el-option v-for="(value,key) in sourceArr" :key="key" :label="value" :value="key"></el-option>
                 </el-select>
             </div>
             <!--收起部分-->
             <div class="tableSeachInpt tableSeachInptsmall" :class="{ 'searchbutnOnff': seachbutn }">
-                <el-select v-model="search.utype" size="small" slot="prepend" placeholder="身份类型" clearable @change="doUserQuery">
+                <el-select v-model="search.utype" size="small" slot="prepend" placeholder="{yun:}t key='admin_user_00136'{/yun}" clearable @change="doUserQuery">
                     <el-option v-for="(item,key) in userType" :key="key" :label="item.label" :value="item.value"></el-option>
                 </el-select>
             </div>
             <div class="tableSeachInpt tableSeachInptsmall" :class="{ 'searchbutnOnff': seachbutn }">
-                <el-select v-model="search.status" size="small" slot="prepend" placeholder="用户状态" clearable @change="doUserQuery">
+                <el-select v-model="search.status" size="small" slot="prepend" placeholder="{yun:}t key='admin_user_00133'{/yun}" clearable @change="doUserQuery">
                     <el-option label="正常" value="1"></el-option>
                     <el-option label="锁定" value="2"></el-option>
                 </el-select>
             </div>
             <div class="tableSeachInpt tableSeachInptsmall" :class="{ 'searchbutnOnff': seachbutn }">
-                <el-select v-model="search.time_type" size="small" slot="prepend" placeholder="筛选日期" clearable @change="handleTimeChange">
+                <el-select v-model="search.time_type" size="small" slot="prepend" placeholder="{yun:}t key='admin_user_00135'{/yun}" clearable @change="handleTimeChange">
                     <el-option label="注册时间" value="adtime"></el-option>
                     <el-option label="登录时间" value="lotime"></el-option>
                 </el-select>
             </div>
             <div class="tableSeachInpt tableSeachInptsmalltwo">
-                <el-date-picker v-model="search.times" type="daterange" align="right" unlink-panels range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" :picker-options="timeOptions" value-format="yyyy-MM-dd" size="small" @change="handleTimeChange"></el-date-picker>
+                <el-date-picker v-model="search.times" type="daterange" align="right" unlink-panels range-separator="至" start-placeholder="{yun:}t key='admin_00343'{/yun}" end-placeholder="{yun:}t key='admin_00344'{/yun}" :picker-options="timeOptions" value-format="yyyy-MM-dd" size="small" @change="handleTimeChange"></el-date-picker>
             </div>
             <div class="tableSeachInpt">
-                <el-button type="primary" icon="el-icon-search" size="mini" @click="doUserQuery">查询</el-button>
+                <el-button type="primary" icon="el-icon-search" size="mini" @click="doUserQuery">{yun:}t key='admin_user_weipin_00049'{/yun}</el-button>
             </div>
             <div class="tableSeachInpt tableSeachzk" :class="{ 'searchbutnKai': seachbutn }">
-                <el-button type="info" class="zhankai" @click="seachbutn = !seachbutn, tableHig = !tableHig" aria-disabled="false" size="mini" plain>展开<i class="el-icon-arrow-down el-icon--right"></i></el-button>
-                <el-button type="info" class="shouqi" @click="seachbutn = !seachbutn, tableHig = !tableHig" aria-disabled="false" size="mini" plain>合并<i class="el-icon-arrow-up el-icon--right"></i></el-button>
+                <el-button type="info" class="zhankai" @click="seachbutn = !seachbutn, tableHig = !tableHig" aria-disabled="false" size="mini" plain>{yun:}t key='admin_user_00145'{/yun}<i class="el-icon-arrow-down el-icon--right"></i></el-button>
+                <el-button type="info" class="shouqi" @click="seachbutn = !seachbutn, tableHig = !tableHig" aria-disabled="false" size="mini" plain>{yun:}t key='admin_user_00144'{/yun}<i class="el-icon-arrow-up el-icon--right"></i></el-button>
             </div>
         </div>
         <div class="admin_datatip">
@@ -71,9 +71,9 @@
                 <el-table-column prop="usersf" label="当前身份" min-width="120">
                     <template slot-scope="props">
                         <div class="user_sf">
-                            <span class="user_sf1" v-if="props.row.usertype == 2">企业用户</span>
-                            <span class="user_sf2" v-if="props.row.usertype == 1">个人用户</span>
-                            <span class="user_sf_no" v-if="props.row.usertype == 5">暂无身份</span>
+                            <span class="user_sf1" v-if="props.row.usertype == 2">{yun:}t key='admin_user_00124'{/yun}</span>
+                            <span class="user_sf2" v-if="props.row.usertype == 1">{yun:}t key='admin_user_00122'{/yun}</span>
+                            <span class="user_sf_no" v-if="props.row.usertype == 5">{yun:}t key='admin_user_00128'{/yun}</span>
                         </div>
                     </template>
                 </el-table-column>
@@ -85,7 +85,7 @@
                                 <span class="gsd"> {{ props.row.moblie_address }}</span>
                             </template>
                             <template v-else>
-                                <el-link type="primary" @click="getmobileaddress(props.row)">查询归属地</el-link>
+                                <el-link type="primary" @click="getmobileaddress(props.row)">{yun:}t key='admin_00433'{/yun}</el-link>
                             </template>
                         </div>
                     </template>
@@ -93,7 +93,7 @@
                 <el-table-column prop="login_date" label="注册/登录" min-width="170" sortable="custom">
                     <template slot-scope="props">
                         <div class=""> <span class="gsd">{{ props.row.reg_date_n }}</span></div>
-                        <div class=""> <span>{{ props.row.login_date > 0 ? props.row.login_date_n : '未登录' }}</span></div>
+                        <div class=""> <span>{{ props.row.login_date > 0 ? props.row.login_date_n : '{yun:}t key='admin_user_00139'{/yun}' }}</span></div>
                     </template>
                 </el-table-column>
                 <el-table-column prop="userly" label="来源" min-width="180">
@@ -109,7 +109,7 @@
                                 <span class="gsd"> {{ props.row.login_address }}</span>
                             </template>
                             <template v-else>
-                                <el-link type="primary" @click="getipaddress(props.row)">查询归属地</el-link>
+                                <el-link type="primary" @click="getipaddress(props.row)">{yun:}t key='admin_00433'{/yun}</el-link>
                             </template>
                         </div>
                     </template>
@@ -117,9 +117,9 @@
                 <el-table-column prop="zt" label="状态" width="60" fixed="right">
                     <template slot-scope="props">
                         <div class="admin_state">
-                            <span v-if="props.row.status == 1">正常</span>
+                            <span v-if="props.row.status == 1">{yun:}t key='admin_user_00149'{/yun}</span>
                             <el-tooltip class="item" effect="dark" :content="props.row.lock_info" placement="right" v-if="props.row.status == 2">
-                                <span class="admin_state3">锁定</span>
+                                <span class="admin_state3">{yun:}t key='admin_user_00150'{/yun}</span>
                             </el-tooltip>
                         </div>
                     </template>
@@ -127,15 +127,15 @@
                 <el-table-column label="操作" width="140" fixed="right">
                     <template slot-scope="scope">
                         <div class="cz_button">
-                            <el-button size="small " plain @click="detailFun(scope.row)">修改</el-button>
+                            <el-button size="small " plain @click="detailFun(scope.row)">{yun:}t key='wap_js_00073'{/yun}</el-button>
                             <el-popover placement="bottom" width="90" trigger="hover">
                                 <div class="moduleMores">
-                                    <el-button type="text" @click="lockUser(scope.row)">锁定会员</el-button>
-                                    <el-button type="text" @click="resetPassword(scope.row)">重置密码</el-button>
-                                    <el-button type="text" @click="shareZhan(scope.row)">分配站点</el-button>
-                                    <el-button type="text" @click="del(scope.row)">删除会员</el-button>
+                                    <el-button type="text" @click="lockUser(scope.row)">{yun:}t key='admin_00435'{/yun}</el-button>
+                                    <el-button type="text" @click="resetPassword(scope.row)">{yun:}t key='admin_user_00137'{/yun}</el-button>
+                                    <el-button type="text" @click="shareZhan(scope.row)">{yun:}t key='admin_user_weipin_00029'{/yun}</el-button>
+                                    <el-button type="text" @click="del(scope.row)">{yun:}t key='admin_00436'{/yun}</el-button>
                                 </div>
-                                <el-button size="small" plain slot="reference" @click="visible = !visible">更多</el-button>
+                                <el-button size="small" plain slot="reference" @click="visible = !visible">{yun:}t key='common.more'{/yun}</el-button>
                             </el-popover>
                         </div>
                     </template>
@@ -144,8 +144,8 @@
         </div>
         <div class="modulePaging">
             <div>
-                <el-checkbox v-model="checkedAll" @change="selectAllBottom">全选</el-checkbox>
-                <el-button @click="batchDel" size="mini">批量删除</el-button>
+                <el-checkbox v-model="checkedAll" @change="selectAllBottom">{yun:}t key='wap_js_00074'{/yun}</el-checkbox>
+                <el-button @click="batchDel" size="mini">{yun:}t key='member_com_00055'{/yun}</el-button>
             </div>
             <div class="modulePagNum">
                 <el-pagination :total="total" @current-change="userPageChange" :page-size="pageSize" :page-sizes="pageSizes" @size-change="handleSizeChange" :current-page.sync="page" layout="total, sizes, prev, pager, next, jumper">
@@ -154,40 +154,40 @@
         </div>
         <!--修改用户弹窗-->
         <div class="modluDrawer">
-            <el-drawer title=" 用户信息" :visible.sync="userdrawer" :append-to-body="true" size="40%">
+            <el-drawer title=" {yun:}t key='admin_00441'{/yun}" :visible.sync="userdrawer" :append-to-body="true" size="40%">
                 <div class="drawerModInfo drawerModInfoOne" style="height: calc(100% - 80px); overflow-y: auto;">
                     <div class="drawerModLis">
                         <div class="drawerModTite">
-                            <span>当前身份</span>
+                            <span>{yun:}t key='admin_user_00127'{/yun}</span>
                         </div>
                         <div class="drawerModInpt">
-                            <el-select v-model="detail.usertype" size="small" slot="prepend" placeholder="身份类型" :disabled="true">
+                            <el-select v-model="detail.usertype" size="small" slot="prepend" placeholder="{yun:}t key='admin_user_00136'{/yun}" :disabled="true">
                                 <el-option v-for="(item,key) in userType" :key="key" :label="item.label" :value="item.value"></el-option>
                             </el-select>
                         </div>
                     </div>
                     <div class="drawerModLis">
                         <div class="drawerModTite">
-                            <span>用户名</span>
+                            <span>{yun:}t key='admin_user_00140'{/yun}</span>
                         </div>
                         <div class="drawerModInpt">
-                            <el-input placeholder="用户名" v-model="detail.username"></el-input>
+                            <el-input placeholder="{yun:}t key='admin_user_00140'{/yun}" v-model="detail.username"></el-input>
                         </div>
                     </div>
                     <div class="drawerModLis">
                         <div class="drawerModTite">
-                            <span>登录密码</span>
+                            <span>{yun:}t key='wap_00702'{/yun}</span>
                         </div>
                         <div class="drawerModInpt">
-                            <el-input type="password" placeholder="登录密码" v-model="edit_password"></el-input>
+                            <el-input type="password" placeholder="{yun:}t key='wap_00702'{/yun}" v-model="edit_password"></el-input>
                         </div>
                     </div>
                     <div class="drawerModLis">
                         <div class="drawerModTite">
-                            <span>手机号码</span>
+                            <span>{yun:}t key='wap_user_00241'{/yun}</span>
                         </div>
                         <div class="drawerModInpt">
-                            <el-input placeholder="输入手机号码" v-model="detail.moblie"></el-input>
+                            <el-input placeholder="{yun:}t key='admin_00442'{/yun}" v-model="detail.moblie"></el-input>
                         </div>
                     </div>
                     <div class="drawerModLis">
@@ -195,81 +195,81 @@
                             <span>E-mail</span>
                         </div>
                         <div class="drawerModInpt">
-                            <el-input placeholder="输入邮箱" v-model="detail.email"></el-input>
+                            <el-input placeholder="{yun:}t key='admin_00443'{/yun}" v-model="detail.email"></el-input>
                         </div>
                     </div>
                     <div class="drawerModLis">
                         <div class="drawerModTite">
-                            <span>注册IP</span>
+                            <span>{yun:}t key='admin_00437'{/yun}</span>
                         </div>
                         <div class="drawerModInpt">
-                            <el-input placeholder="ip地址" v-model="detail.login_ip"></el-input>
+                            <el-input placeholder="{yun:}t key='admin_00444'{/yun}" v-model="detail.login_ip"></el-input>
                         </div>
                     </div>
                     <div class="drawerModLis">
                         <div class="drawerModTite">
-                            <span>使用范围</span>
+                            <span>{yun:}t key='admin_user_00126'{/yun}</span>
                         </div>
                         <div class="drawerModInpt">
-                            <el-select v-model="search.did" size="small" slot="prepend" placeholder="使用范围" filterable>
+                            <el-select v-model="search.did" size="small" slot="prepend" placeholder="{yun:}t key='admin_user_00126'{/yun}" filterable>
                                 <el-option v-for="(value,key) in dnameArr" :key="key" :label="value" :value="key"></el-option>
                             </el-select>
                         </div>
                     </div>
                     <div class="drawerModLis">
                         <div class="drawerModTite">
-                            <span>状态</span>
+                            <span>{yun:}t key='member_user_00181'{/yun}</span>
                         </div>
                         <div class="drawerModInpt">
                             <el-radio-group v-model="detail.status">
-                                <el-radio label="1">正常</el-radio>
-                                <el-radio label="2">锁定</el-radio>
+                                <el-radio label="1">{yun:}t key='admin_user_00149'{/yun}</el-radio>
+                                <el-radio label="2">{yun:}t key='admin_user_00150'{/yun}</el-radio>
                             </el-radio-group>
                         </div>
                     </div>
                 </div>
                 <div class="setBasicButn" style="border: none;">
-                    <el-button @click="userdrawer = false">取 消</el-button>
-                    <el-button type="primary" @click="memberSave" :disabled="saveLoading">修 改</el-button>
+                    <el-button @click="userdrawer = false">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
+                    <el-button type="primary" @click="memberSave" :disabled="saveLoading">{yun:}t key='member_user_00288'{/yun}</el-button>
                 </div>
             </el-drawer>
         </div>
         <!--锁定用户弹窗-->
         <div class="modluDrawer">
-            <el-dialog title="锁定用户" :visible.sync="usersddrawer" :append-to-body="true" width="450px">
+            <el-dialog title="{yun:}t key='admin_00445'{/yun}" :visible.sync="usersddrawer" :append-to-body="true" width="450px">
                 <div>
-                    <div class="wxsettip_small ">用户状态</div>
+                    <div class="wxsettip_small ">{yun:}t key='admin_user_00133'{/yun}</div>
                     <template>
                         <el-radio-group v-model="lockUserArr.status">
-                            <el-radio label="1">正常</el-radio>
-                            <el-radio label="2">锁定</el-radio>
+                            <el-radio label="1">{yun:}t key='admin_user_00149'{/yun}</el-radio>
+                            <el-radio label="2">{yun:}t key='admin_user_00150'{/yun}</el-radio>
                         </el-radio-group>
                     </template>
-                    <div class="wxsettip_small ">锁定说明</div>
-                    <el-input placeholder="请输入内容" type="textarea" :rows="2" v-model="lockUserArr.lock_info"></el-input>
+                    <div class="wxsettip_small ">{yun:}t key='admin_00438'{/yun}</div>
+                    <el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" type="textarea" :rows="2" v-model="lockUserArr.lock_info"></el-input>
                 </div>
                 <span slot="footer" class="dialog-footer">
-                    <el-button @click="usersddrawer = false">取 消</el-button>
-                    <el-button type="primary" @click="lockUserSave" :disabled="saveLoading">确 定</el-button>
+                    <el-button @click="usersddrawer = false">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
+                    <el-button type="primary" @click="lockUserSave" :disabled="saveLoading">{yun:}t key='wap_com_00019'{/yun}</el-button>
                 </span>
             </el-dialog>
         </div>
         <!--分配站点弹窗-->
         <div class="modluDrawer">
-            <el-dialog title="分配站点" :visible.sync="usercitydrawer" :append-to-body="true" width="450px">
-                <div class="wxsettip_small ">当前用户</div>
-                <el-input placeholder="企业用户" v-model="shareZhanArr.username" :disabled="true"></el-input>
+            <el-dialog title="{yun:}t key='admin_user_weipin_00029'{/yun}" :visible.sync="usercitydrawer" :append-to-body="true" width="450px">
+                <div class="wxsettip_small ">{yun:}t key='admin_00439'{/yun}</div>
+                <el-input placeholder="{yun:}t key='admin_user_00124'{/yun}" v-model="shareZhanArr.username" :disabled="true"></el-input>
                 <div>
-                    <div class="wxsettip_small ">分配站点</div>
+                    <div class="wxsettip_small ">{yun:}t key='admin_user_weipin_00029'{/yun}</div>
                     <div class="wxsettip_Sealect">
-                        <el-select v-model="shareZhanArr.did" size="small" slot="prepend" placeholder="使用范围" filterable>
+                        <el-select v-model="shareZhanArr.did" size="small" slot="prepend" placeholder="{yun:}t key='admin_user_00126'{/yun}" filterable>
                             <el-option v-for="(value,key) in dnameArr" :key="key" :label="value" :value="key"></el-option>
                         </el-select>
                     </div>
                 </div>
                 <span slot="footer" class="dialog-footer">
-                    <el-button @click="usercitydrawer = false">取 消</el-button>
-                    <el-button type="primary" @click="shareSave" :disabled="saveLoading">确 定</el-button>
+                    <el-button @click="usercitydrawer = false">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
+                    <el-button type="primary" @click="shareSave" :disabled="saveLoading">{yun:}t key='wap_com_00019'{/yun}</el-button>
                 </span>
             </el-dialog>
         </div>
@@ -280,7 +280,7 @@ module.exports = {
     data: function() {
         return {
             loading: false,
-            dataText: '数据加载中',
+            dataText: "{yun:}t key='admin_user_weipin_00026'{/yun}",
             checkedAll: false,
             visible: true,
             search: {
@@ -294,7 +294,7 @@ module.exports = {
             },
             timeOptions: {
                 shortcuts: [{
-                    text: '昨天',
+                    text: "{yun:}t key='common_02000'{/yun}",
                     onClick(picker) {
                         const end = new Date();
                         const start = new Date();
@@ -303,35 +303,35 @@ module.exports = {
                         picker.$emit('pick', [start, end]);
                     }
                 }, {
-                    text: '今天',
+                    text: "{yun:}t key='common_01940'{/yun}",
                     onClick(picker) {
                         const end = new Date();
                         const start = new Date();
                         picker.$emit('pick', [start, end]);
                     }
                 }, {
-                    text: '本周',
+                    text: "{yun:}t key='admin_user_00146'{/yun}",
                     onClick(picker) {
                         const start = new Date(new Date().setHours(0, 0, 0) - (new Date().getDay() - 1) * 24 * 60 * 60 * 1000);
                         const end = new Date();
                         picker.$emit('pick', [start, end]);
                     }
                 }, {
-                    text: '上周',
+                    text: "{yun:}t key='admin_user_00142'{/yun}",
                     onClick(picker) {
                         const start = new Date(new Date().setHours(0, 0, 0) - (new Date().getDay() + 6) * 24 * 60 * 60 * 1000);
                         const end = new Date(new Date().setHours(0, 0, 0) + (0 - new Date().getDay()) *24 * 60 * 60 *1000);
                         picker.$emit('pick', [start, end]);
                     }
                 }, {
-                    text: '本月',
+                    text: "{yun:}t key='admin_user_00147'{/yun}",
                     onClick(picker) {
                         const end = new Date();
                         const start = new Date(new Date(new Date().getFullYear(), new Date().getMonth(), 1).setHours(0, 0, 0));
                         picker.$emit('pick', [start, end]);
                     }
                 }, {
-                    text: '上月',
+                    text: "{yun:}t key='admin_user_00143'{/yun}",
                     onClick(picker) {
                         const end = new Date(new Date(new Date().getFullYear(), new Date().getMonth(), 0).setHours(23, 59, 59, 59));
                         const start = new Date(new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1).setHours(0, 0, 0));
@@ -348,17 +348,17 @@ module.exports = {
             tableHig: true,
             tableData: [],
             items: [
-                { type: '', label: '正常' },
+                { type: '', label: "{yun:}t key='admin_user_00149'{/yun}" },
             ],
             userType: [{
                 value: 1,
-                label: "个人身份"
+                label: "{yun:}t key='admin_user_00123'{/yun}"
             }, {
                 value: 2,
-                label: "企业身份"
+                label: "{yun:}t key='admin_user_00125'{/yun}"
             }, {
                 value: 5,
-                label: "无身份类型"
+                label: "{yun:}t key='admin_user_00120'{/yun}"
             }],
             sourceArr: [],
             dnameArr: {},
@@ -374,10 +374,10 @@ module.exports = {
             memNum: {},
             lockUserArr: {
                 status: '',
-                lock_info: ''
-            }, // 锁定
+                lock_info: '"
+            }, // {yun:}t key='admin_user_00150'{/yun}
             shareZhanArr: {
-                did: ''
+                did: "'
             },
 
             weburl: '',
@@ -515,7 +515,7 @@ module.exports = {
                         _this.$refs.multipleTable.bodyWrapper.scrollTop = 0;
                     }
                     if (_this.tableData.length === 0) {
-                        _this.dataText = "暂无数据";
+                        _this.dataText = "{yun:}t key='wap_js_00113'{/yun}";
                     }
                 }
             })
@@ -568,18 +568,18 @@ module.exports = {
                 }, 2000);
             });
         },
-        // 重置密码
+        // reset password
         resetPassword: function(params) {
             let username = params.username;
             let _this = this;
             let url = this.uri + 'admin_member&a=reset_pw';
-            let msg = '确定要重置密码吗?';
+            let msg = "{yun:}t key='admin_user_00116'{/yun}";
             delConfirm(_this, params, function(params) {
                 httpPost(url, { uid: params.uid }).then(function(res) {
                     if (res.data.error > 0) {
                         message.error(res.data.msg);
                     } else {
-                        message.success("用户：" + username + " 密码已经重置为123456！", function() {
+                        message.success("{yun:}t key='admin_user_00141'{/yun}" + username + " {yun:}t key='admin_user_00115'{/yun}", function() {
                             _this.getList();
                         });
                     }
@@ -657,7 +657,7 @@ module.exports = {
         batchDel: function() {
             let ids = this.idsArr;
             if (!ids.length) {
-                message.error('请选择要删除的数据');
+                message.error("{yun:}t key='admin_user_weipin_00005'{/yun}");
                 return
             }
             let _this = this,
@@ -680,7 +680,7 @@ module.exports = {
         getipaddress: function(detail) {
             let ip = detail.login_ip;
             if (!ip) {
-                message.error('IP地址为空!');
+                message.error("{yun:}t key='admin_user_00118'{/yun}");
                 return
             }
             let url = this.uri + 'admin_member&a=getIpAddress';
@@ -699,7 +699,7 @@ module.exports = {
         getmobileaddress: function(detail) {
             let moblie = detail.moblie;
             if (!moblie) {
-                message.error('电话不能为空!');
+                message.error("{yun:}t key='wap_com_00412'{/yun}");
                 return
             }
             let url = this.uri + 'admin_member&a=getMobileAddress';

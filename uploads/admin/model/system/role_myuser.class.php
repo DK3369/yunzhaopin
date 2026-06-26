@@ -54,13 +54,13 @@ class role_myuser_controller extends adminCommon{
             $adminM = $this->MODEL('admin');
             $uadmin = $adminM->getAdminUser(array('uid' => $_SESSION['auid']));
             if ($uadmin['wxid'] == '') {
-                $this->render_json(1, '微信已解绑，请勿重复操作');
+                $this->render_json(1, yun_at('admin_system_00024'));
             } else {
                 $rt = $adminM->upInfo(array('wxid' => ''), array('uid' => $_SESSION['auid']));
                 if ($rt['id']) {
-                    $this->admin_json( 0, '微信解绑成功');
+                    $this->admin_json( 0, 'admin_01377');
                 } else {
-                    $this->render_json( 1, '微信解绑失败');
+                    $this->render_json( 1, yun_at('admin_01378'));
                 }
             }
         }
@@ -75,13 +75,13 @@ class role_myuser_controller extends adminCommon{
             $adminM = $this->MODEL('admin');
             $uadmin = $adminM->getAdminUser(array('uid' => $_SESSION['auid']));
             if ($uadmin['qy_userid'] == '') {
-                $this->render_json(1, '企业微信已解绑，请勿重复操作');
+                $this->render_json(1, yun_at('admin_system_00023'));
             } else {
                 $rt = $adminM->upInfo(array('qy_userid' => '', 'is_follower' => 2), array('uid' => $_SESSION['auid']));
                 if ($rt['id']) {
-                    $this->admin_json( 0, '企业微信解绑成功');
+                    $this->admin_json( 0, 'admin_01379');
                 } else {
-                    $this->render_json( 1, '企业微信解绑失败');
+                    $this->render_json( 1, yun_at('admin_01380'));
                 }
             }
         }

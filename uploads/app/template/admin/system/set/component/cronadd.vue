@@ -2,7 +2,7 @@
 	<div class="tableDome" style="position: relative;">
 		<div class="tableDome_tip">
 			<el-alert
-					title="计划任务是一项使系统在规定时间自动执行某些特定任务的功能可通过“计划任务”实现自动刷新职位、简历刷新和生成XML操作。计划任务可以设置计划类型按“天、周、月”等方式去执行！"
+					title="{yun:}t key='admin_system_00254'{/yun}"
 					type="success"
 					:closable="false">
 			</el-alert>
@@ -11,70 +11,70 @@
 			<table class="tableVue">
 				<thead>
 				<tr align="left">
-					<th width="200">名称</th>
-					<th width="500">状态</th>
-					<th>说明</th>
+					<th width="200">{yun:}t key='member_com_00021'{/yun}</th>
+					<th width="500">{yun:}t key='member_user_00181'{/yun}</th>
+					<th>{yun:}t key='member_com_00207'{/yun}</th>
 				</tr>
 				</thead>
 				<tbody>
 				<tr>
 					<td>
-						<div class="TableTite">任务名称</div>
+						<div class="TableTite">{yun:}t key='admin_00892'{/yun}</div>
 					</td>
 					<td>
 						<div class="TableInpt">
-							<el-input placeholder="请输入内容" v-model="info.name">
+							<el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="info.name">
 							</el-input>
 						</div>
 					</td>
 					<td>
 						<div class="TableShuom">
-							<span>如：定期修改职位</span>
+							<span>{yun:}t key='admin_00893'{/yun}</span>
 						</div>
 					</td>
 				</tr>
 				<tr>
 					<td>
-						<div class="TableTite">执行文件</div>
+						<div class="TableTite">{yun:}t key='admin_system_00262'{/yun}</div>
 					</td>
 					<td>
 						<div class="TableInpt">
-							<el-input placeholder="请输入内容" v-model="info.dir">
+							<el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="info.dir">
 							</el-input>
 						</div>
 					</td>
 					<td>
 						<div class="TableShuom">
-							<span>执行文件名 如：index.php,文件存放路径/app/include/cron/</span>
+							<span>{yun:}t key='admin_system_00255'{/yun}</span>
 						</div>
 					</td>
 				</tr>
 				<tr>
 					<td>
-						<div class="TableTite">类型</div>
+						<div class="TableTite">{yun:}t key='admin_system_00689'{/yun}</div>
 					</td>
 					<td>
 						<div class="TableButn">
-							<el-radio v-model="info.type" label="1">每周</el-radio>
-							<el-radio v-model="info.type" label="2">每月</el-radio>
-							<el-radio v-model="info.type" label="3">每天</el-radio>
-							<el-radio v-model="info.type" label="5">每隔N分钟</el-radio>
-							<el-radio v-model="info.type" label="4">每隔N秒</el-radio>
+							<el-radio v-model="info.type" label="1">{yun:}t key='admin_system_00268'{/yun}</el-radio>
+							<el-radio v-model="info.type" label="2">{yun:}t key='admin_system_00270'{/yun}</el-radio>
+							<el-radio v-model="info.type" label="3">{yun:}t key='admin_system_00269'{/yun}</el-radio>
+							<el-radio v-model="info.type" label="5">{yun:}t key='admin_system_00261'{/yun}</el-radio>
+							<el-radio v-model="info.type" label="4">{yun:}t key='admin_00894'{/yun}</el-radio>
 						</div>
 					</td>
 					<td>
 						<div class="TableShuom">
-							<span>类型</span>
+							<span>{yun:}t key='admin_system_00689'{/yun}</span>
 						</div>
 					</td>
 				</tr>
 				<tr v-if="info.type == 1">
 					<td>
-						<div class="TableTite">每周</div>
+						<div class="TableTite">{yun:}t key='admin_system_00268'{/yun}</div>
 					</td>
 					<td>
 						<div class="TableSelect">
-							<el-select v-model="info.week" placeholder="请选择">
+							<el-select v-model="info.week" placeholder="{yun:}t key='wap_user_00100'{/yun}">
 								<el-option v-for="item in weekday" :key="item.value" :label="item.label"
 										   :value="item.value">
 								</el-option>
@@ -83,17 +83,17 @@
 					</td>
 					<td>
 						<div class="TableShuom">
-							<span>每周</span>
+							<span>{yun:}t key='admin_system_00268'{/yun}</span>
 						</div>
 					</td>
 				</tr>
 				<tr v-if="info.type == 2">
 					<td>
-						<div class="TableTite">每月</div>
+						<div class="TableTite">{yun:}t key='admin_system_00270'{/yun}</div>
 					</td>
 					<td>
 						<div class="TableSelect">
-							<el-select v-model="info.month" placeholder="请选择">
+							<el-select v-model="info.month" placeholder="{yun:}t key='wap_user_00100'{/yun}">
 								<el-option v-for="item in monthday" :key="item.value" :label="item.label"
 										   :value="item.value">
 								</el-option>
@@ -102,17 +102,17 @@
 					</td>
 					<td>
 						<div class="TableShuom">
-							<span>每月</span>
+							<span>{yun:}t key='admin_system_00270'{/yun}</span>
 						</div>
 					</td>
 				</tr>
 				<tr v-if="info.type < 4">
 					<td>
-						<div class="TableTite">小时</div>
+						<div class="TableTite">{yun:}t key='wap_js_00128'{/yun}</div>
 					</td>
 					<td>
 						<div class="TableSelect">
-							<el-select v-model="info.hour" placeholder="请选择">
+							<el-select v-model="info.hour" placeholder="{yun:}t key='wap_user_00100'{/yun}">
 								<el-option v-for="item in hour" :key="item.value" :label="item.label"
 										   :value="item.value">
 								</el-option>
@@ -121,51 +121,51 @@
 					</td>
 					<td>
 						<div class="TableShuom">
-							<span>小时</span>
+							<span>{yun:}t key='wap_js_00128'{/yun}</span>
 						</div>
 					</td>
 				</tr>
 				<tr v-if="info.type <= 3 || info.type == 5">
 					<td>
 						<div class="TableTite">
-							<span v-if="info.type <= 3">分钟</span>
-							<span v-else>每隔N分钟执行一次</span>
+							<span v-if="info.type <= 3">{yun:}t key='wap_com_00247'{/yun}</span>
+							<span v-else>{yun:}t key='admin_00895'{/yun}</span>
 						</div>
 					</td>
 					<td>
 						<div class="TableInpt">
-							<el-input placeholder="请输入内容" v-model="info.minute" @input="info.minute=info.minute.replace(/[^0-9]/g,'')">
+							<el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="info.minute" @input="info.minute=info.minute.replace(/[^0-9]/g,'')">
 							</el-input>
 						</div>
 					</td>
 					<td>
 						<div class="TableShuom">
-							<span v-if="info.type <= 3">不填请留空，默认:00</span>
-							<span v-else>必填</span>
+							<span v-if="info.type <= 3">{yun:}t key='admin_00896'{/yun}</span>
+							<span v-else>{yun:}t key='member_user_00011'{/yun}</span>
 						</div>
 					</td>
 				</tr>
 				<tr v-if="info.type == 4">
 					<td>
 						<div class="TableTite">
-							<span>每隔N秒执行一次</span>
+							<span>{yun:}t key='admin_00897'{/yun}</span>
 						</div>
 					</td>
 					<td>
 						<div class="TableInpt">
-							<el-input placeholder="请输入内容" v-model="info.minute">
+							<el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="info.minute">
 							</el-input>
 						</div>
 					</td>
 					<td>
 						<div class="TableShuom">
-							<span>必填</span>
+							<span>{yun:}t key='member_user_00011'{/yun}</span>
 						</div>
 					</td>
 				</tr>
 				<tr>
 					<td>
-						<div class="TableTite">是否启用</div>
+						<div class="TableTite">{yun:}t key='admin_system_00263'{/yun}</div>
 					</td>
 					<td>
 						<div class="setBasicIput">
@@ -175,7 +175,7 @@
 					</td>
 					<td>
 						<div class="TableShuom">
-							<span>是否启用</span>
+							<span>{yun:}t key='admin_system_00263'{/yun}</span>
 						</div>
 					</td>
 				</tr>
@@ -183,7 +183,7 @@
 			</table>
 		</div>
 		<div class="setBasicButn" style="border: none;">
-			<el-button type="primary" size="medium" @click="save" :disabled="saveLoading">提交</el-button>
+			<el-button type="primary" size="medium" @click="save" :disabled="saveLoading">{yun:}t key='common.submit'{/yun}</el-button>
 		</div>
 	</div>
 </template>

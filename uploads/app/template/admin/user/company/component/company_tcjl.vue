@@ -2,11 +2,11 @@
     <div class="moduleElHight">
         <div class="moduleSeachbig" v-if="cansearch">
             <div class="tableSeachInpt">
-                <el-input placeholder="请输入内容" size="small" prefix-icon="el-icon-search" v-model="keyword">
+                <el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" size="small" prefix-icon="el-icon-search" v-model="keyword">
                 </el-input>
             </div>
             <div class="tableSeachInpt">
-                <el-button type="primary" icon="el-icon-search" size="mini" @click="search">查询</el-button>
+                <el-button type="primary" icon="el-icon-search" size="mini" @click="search">{yun:}t key='admin_user_weipin_00049'{/yun}</el-button>
             </div>
         </div>
         <div class="moduleElTable"
@@ -23,7 +23,7 @@
                 <el-table-column label="操作" width="200" fixed="right">
                     <template slot-scope="scope">
                         <div class="cz_button">
-                            <el-button size="small " type="danger" @click="deleteRow(scope)">删除</el-button>
+                            <el-button size="small " type="danger" @click="deleteRow(scope)">{yun:}t key='common.delete'{/yun}</el-button>
                         </div>
                     </template>
                 </el-table-column>
@@ -31,8 +31,8 @@
         </div>
         <div class="modulePaging">
             <div>
-                <el-checkbox v-model="checkedAll" @change="selectAllBottom">全选</el-checkbox>
-                <el-button @click="deleteRow(null, true)" size="mini">批量删除</el-button>
+                <el-checkbox v-model="checkedAll" @change="selectAllBottom">{yun:}t key='wap_js_00074'{/yun}</el-checkbox>
+                <el-button @click="deleteRow(null, true)" size="mini">{yun:}t key='member_com_00055'{/yun}</el-button>
             </div>
             <div class="modulePagNum">
                 <el-pagination background @size-change="handleSizeChange"
@@ -58,7 +58,7 @@
         data: function () {
             return {
                 loading: false,
-                emptytext: '暂无数据',
+                emptytext: "{yun:}t key='wap_js_00113'{/yun}",
                 keyword: '',
                 currentPage: 1,
                 perPage: 0,
@@ -146,7 +146,7 @@
                     params.keyword = that.keyword
                 }
                 that.loading = true;
-                that.emptytext = "数据加载中";
+                that.emptytext = "{yun:}t key='admin_user_weipin_00026'{/yun}";
                 httpPost('m=user&c=company&a=statisDetail', params,{ hideloading: true }).then(function (result) {
                     var res = result.data
                     if (res.error == 0) {
@@ -161,7 +161,7 @@
                             that.$refs.multipleTable.bodyWrapper.scrollTop = 0;
                         }
                         if (that.tableData.length === 0){
-                            that.emptytext = "暂无数据";
+                            that.emptytext = "{yun:}t key='wap_js_00113'{/yun}";
                         }
                     }
                 }).catch(function (e) {
@@ -172,7 +172,7 @@
                 let params = {};
                 if (isMore) {
                     if (!this.selectedItem.length) {
-                        message.error('请选择要删除的数据');
+                        message.error("{yun:}t key='admin_user_weipin_00005'{/yun}");
                         return false;
                     }
                     let list = [];
@@ -190,10 +190,10 @@
                 httpPost('m=user&c=company&a=delStatisDetail', params).then(function (response) {
                     let res = response.data;
                     if (res.error === 0) {
-                        message.success('删除成功！');
+                        message.success("{yun:}t key='admin_user_00187'{/yun}");
                         _this.getList();
                     } else {
-                        message.error('删除失败！');
+                        message.error("{yun:}t key='admin_user_00186'{/yun}");
                     }
                 }).catch(function (error) {
                     console.log(error);

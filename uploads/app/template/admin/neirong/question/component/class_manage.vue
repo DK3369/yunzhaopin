@@ -3,7 +3,7 @@
         <div class="moduleSeachs categorySub">
             <div></div>
             <div class="categoryTopBtn">
-                <el-button class="" type="primary" icon="el-icon-document-add" size="mini" @click="openAdd('')">添加类别</el-button>
+                <el-button class="" type="primary" icon="el-icon-document-add" size="mini" @click="openAdd('')">{yun:}t key='admin_00222'{/yun}</el-button>
             </div>
         </div>
         <div class="moduleElTable moduleElTableCategoreSub">
@@ -20,8 +20,8 @@
                 <el-table-column label="操作" width="200" fixed="right">
                     <template slot-scope="scope">
                         <div class="cz_button">
-                            <el-button size="small " plain @click="openAdd(scope.row)">修改</el-button>
-                            <el-button type="danger" size="mini" @click="del(scope.$index)">删除</el-button>
+                            <el-button size="small " plain @click="openAdd(scope.row)">{yun:}t key='wap_js_00073'{/yun}</el-button>
+                            <el-button type="danger" size="mini" @click="del(scope.$index)">{yun:}t key='common.delete'{/yun}</el-button>
                         </div>
                     </template>
                 </el-table-column>
@@ -29,8 +29,8 @@
         </div>
         <div class="modulePaging">
             <div class="">
-                <el-checkbox v-model="checkedAll" :indeterminate="checkedAllIndeterminate" @change="checkAll">全选</el-checkbox>
-                <el-button @click="batch('del')" size="mini">批量删除</el-button>
+                <el-checkbox v-model="checkedAll" :indeterminate="checkedAllIndeterminate" @change="checkAll">{yun:}t key='wap_js_00074'{/yun}</el-checkbox>
+                <el-button @click="batch('del')" size="mini">{yun:}t key='member_com_00055'{/yun}</el-button>
             </div>
             <div class="modulePagNum">
                 <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
@@ -56,9 +56,9 @@ module.exports = {
     },
     data: function () {
         return {
-            emptytext: '暂无数据',
+            emptytext: "{yun:}t key='wap_js_00113'{/yun}",
             loading: false,
-            // 列表
+            // list
             page: 1,
             limit: 0,
             list: [],
@@ -67,23 +67,23 @@ module.exports = {
 
             // 列表排序
             t: '',
-            order: '',
+            order: '",
 
-            checkedAll: false, // 全选
+            checkedAll: false, // {yun:}t key='wap_js_00074'{/yun}
             checkedAllIndeterminate: false,
             multipleSelection: [], // 多选值存储
             idArr: [],
 
             detail: {},
 
-            // 添加
+            // Add
             drawerAdd: false,
             random: 0,
             prevPage:0
         }
     },
     components: {
-        'add': httpVueLoader('./class_add.vue'),
+        "add': httpVueLoader('./class_add.vue'),
     },
     created() {
         this.getList();
@@ -116,7 +116,7 @@ module.exports = {
                     pid: that.pid,
                 };
                 that.loading = true;
-                that.emptytext = "数据加载中";
+                that.emptytext = "{yun:}t key='admin_user_weipin_00026'{/yun}";
             httpPost('m=neirong&c=question_class', params).then(function (response) {
                 let res = response.data,
                     data = res.data;
@@ -136,7 +136,7 @@ module.exports = {
                 }
                 that.loading = false;
                 if (that.list.length === 0){
-                    that.emptytext = "暂无数据";
+                    that.emptytext = "{yun:}t key='wap_js_00113'{/yun}";
                 }
             })
         },
@@ -159,9 +159,9 @@ module.exports = {
         },
         batch(type) {
             if (this.multipleSelection.length == 0) {
-                let msg = '请选择要操作的数据项'
+                let msg = "{yun:}t key='admin_user_weipin_00001'{/yun}"
                 if (type == 'del') {
-                    msg = '请选择要删除的数据项'
+                    msg = "{yun:}t key='admin_00136'{/yun}"
                 }
                 message.error(msg);
                 return false;
@@ -189,12 +189,12 @@ module.exports = {
                 params = {},
                 msg = '';
 
-            if (typeof idx == 'undefined') { // 批量删除
+            if (typeof idx == 'undefined") { // {yun:}t key='member_com_00055'{/yun}
                 params.del = this.idArr;
-                msg = '你确定要删除选中项吗？';
-            } else {// 单个删除
+                msg = "你确定要删除选中项吗？";
+            } else {// {yun:}t key='common_01711'{/yun}
                 params.id = that.list[idx].id;
-                msg = '你确定要删除当前项吗？';
+                msg = "你确定要删除当前项吗？';
             }
             params.qid = that.id;
 

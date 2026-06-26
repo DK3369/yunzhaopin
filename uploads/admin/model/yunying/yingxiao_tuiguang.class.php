@@ -9,23 +9,23 @@ class yingxiao_tuiguang_controller extends adminCommon
     {
         $emailM = $this->MODEL('email');
 
-        $anniversary = $emailM->getEmsgOnce(array('title' => '网站周年', 'orderby' => 'ctime,desc'), array('field' => '`ctime`'));
+        $anniversary = $emailM->getEmsgOnce(array('title' => yun_at('admin_yunying_00044'), 'orderby' => 'ctime,desc'), array('field' => '`ctime`'));
 
-        $todaydue = $emailM->getEmsgOnce(array('title' => array('like', '会员套餐还有1天将过期'), 'orderby' => 'ctime,desc'), array('field' => '`ctime`'));
+        $todaydue = $emailM->getEmsgOnce(array('title' => array('like', 'admin_yunying_00023'), 'orderby' => 'ctime,desc'), array('field' => '`ctime`'));
 
-        $sevenduew['title'][] = array('like', '会员套餐还有');
-        $sevenduew['title'][] = array('like', '天将过期');
+        $sevenduew['title'][] = array('like', 'admin_yunying_00036');
+        $sevenduew['title'][] = array('like', 'admin_yunying_00041');
         $sevenduew['orderby'] = 'ctime,desc';
 
         $sevendue = $emailM->getEmsgOnce($sevenduew, array('field' => '`ctime`'));
 
-        $useradd = $emailM->getEmsgOnce(array('title' => array('like', '未发布简历'), 'orderby' => 'ctime,desc'), array('field' => '`ctime`'));
+        $useradd = $emailM->getEmsgOnce(array('title' => array('like', 'admin_yunying_00040'), 'orderby' => 'ctime,desc'), array('field' => '`ctime`'));
 
-        $userup = $emailM->getEmsgOnce(array('title' => array('like', '今天简历刷新'), 'orderby' => 'ctime,desc'), array('field' => '`ctime`'));
+        $userup = $emailM->getEmsgOnce(array('title' => array('like', 'admin_01403'), 'orderby' => 'ctime,desc'), array('field' => '`ctime`'));
 
-        $addjob = $emailM->getEmsgOnce(array('title' => array('like', '未发布职位'), 'orderby' => 'ctime,desc'), array('field' => '`ctime`'));
+        $addjob = $emailM->getEmsgOnce(array('title' => array('like', 'admin_yunying_00222'), 'orderby' => 'ctime,desc'), array('field' => '`ctime`'));
 
-        $upjob = $emailM->getEmsgOnce(array('title' => array('like', '未刷新职位'), 'orderby' => 'ctime,desc'), array('field' => '`ctime`'));
+        $upjob = $emailM->getEmsgOnce(array('title' => array('like', 'admin_yunying_00039'), 'orderby' => 'ctime,desc'), array('field' => '`ctime`'));
 
         $this->render_json(0, 'ok', array(
             'anniversary' => $anniversary,
@@ -43,19 +43,19 @@ class yingxiao_tuiguang_controller extends adminCommon
     {
         $mobliemsgM = $this->MODEL('mobliemsg');
 
-        $anniversary = $mobliemsgM->getInfo(array('content' => array('like', '周年庆'), 'orderby' => 'ctime,desc'), array('field' => '`ctime`'));
+        $anniversary = $mobliemsgM->getInfo(array('content' => array('like', 'admin_yunying_00045'), 'orderby' => 'ctime,desc'), array('field' => '`ctime`'));
 
-        $todaydue = $mobliemsgM->getInfo(array('content' => array('like', '将于1天后到期'), 'orderby' => 'ctime,desc'), array('field' => '`ctime`'));
+        $todaydue = $mobliemsgM->getInfo(array('content' => array('like', 'admin_yunying_00034'), 'orderby' => 'ctime,desc'), array('field' => '`ctime`'));
 
-        $sevendue = $mobliemsgM->getInfo(array('content' => array('like', '将于7天后到期'), 'orderby' => 'ctime,desc'), array('field' => '`ctime`'));
+        $sevendue = $mobliemsgM->getInfo(array('content' => array('like', 'admin_yunying_00035'), 'orderby' => 'ctime,desc'), array('field' => '`ctime`'));
 
-        $useradd = $mobliemsgM->getInfo(array('content' => array('like', '未发布简历'), 'orderby' => 'ctime,desc'), array('field' => '`ctime`'));
+        $useradd = $mobliemsgM->getInfo(array('content' => array('like', 'admin_yunying_00040'), 'orderby' => 'ctime,desc'), array('field' => '`ctime`'));
 
-        $userup = $mobliemsgM->getInfo(array('content' => array('like', '未刷新简历'), 'orderby' => 'ctime,desc'), array('field' => '`ctime`'));
+        $userup = $mobliemsgM->getInfo(array('content' => array('like', 'admin_yunying_00038'), 'orderby' => 'ctime,desc'), array('field' => '`ctime`'));
 
-        $addjob = $mobliemsgM->getInfo(array('content' => array('like', '未发布职位'), 'orderby' => 'ctime,desc'), array('field' => '`ctime`'));
+        $addjob = $mobliemsgM->getInfo(array('content' => array('like', 'admin_yunying_00222'), 'orderby' => 'ctime,desc'), array('field' => '`ctime`'));
 
-        $upjob = $mobliemsgM->getInfo(array('content' => array('like', '未刷新职位'), 'orderby' => 'ctime,desc'), array('field' => '`ctime`'));
+        $upjob = $mobliemsgM->getInfo(array('content' => array('like', 'admin_yunying_00039'), 'orderby' => 'ctime,desc'), array('field' => '`ctime`'));
 
         $this->render_json(0, 'ok', array(
             'anniversary' => $anniversary,
@@ -399,11 +399,11 @@ class yingxiao_tuiguang_controller extends adminCommon
             ob_end_clean();
             $data = [
                 'file' => base64_encode($xlsData),
-                'file_name' => ($xls_type == 'email' ? '推广邮箱' : '推广手机号') . date('YmdHis') . '.xlsx'
+                'file_name' => ($xls_type == 'email' ? yun_at('admin_01404') : yun_at('admin_01405')) . date('YmdHis') . '.xlsx'
             ];
-            return $this->admin_json(0, $xls_type == 'email' ? '推广营销导出邮箱信息' : '推广营销导出手机号信息', $data);
+            return $this->admin_json(0, $xls_type == 'email' ? yun_at('admin_01406') : yun_at('admin_01407'), $data);
         } else {
-            $this->render_json(1, '没有可以导出的邮箱信息');
+            $this->render_json(1, yun_at('admin_yunying_00025'));
         }
     }
 
@@ -426,26 +426,26 @@ class yingxiao_tuiguang_controller extends adminCommon
             // $emaildata['title'] = '生日提醒';
             // $msgdata['content'] = '生日提醒';
         } elseif ($_POST['type'] == 'anniversary') {
-            $emaildata['title'] = '网站周年';
-            $msgdata['content'] = '周年庆';
+            $emaildata['title'] = yun_at('admin_yunying_00044');
+            $msgdata['content'] = yun_at('admin_yunying_00045');
         } elseif ($_POST['type'] == 'todaydue') {
-            $emaildata['title'] = '会员套餐还有1天将过期';
-            $msgdata['content'] = '将于1天后到期';
+            $emaildata['title'] = yun_at('admin_yunying_00023');
+            $msgdata['content'] = yun_at('admin_yunying_00034');
         } elseif ($_POST['type'] == 'sevendue') {
-            $emaildata['title'] = '会员套餐还有x天将过期';
-            $msgdata['content'] = '将于7天后到期';
+            $emaildata['title'] = yun_at('admin_yunying_00024');
+            $msgdata['content'] = yun_at('admin_yunying_00035');
         } elseif ($_POST['type'] == 'useradd') {
-            $emaildata['title'] = '未发布简历';
-            $msgdata['content'] = '未发布简历';
+            $emaildata['title'] = yun_at('admin_yunying_00040');
+            $msgdata['content'] = yun_at('admin_yunying_00040');
         } elseif ($_POST['type'] == 'userup') {
-            $emaildata['title'] = '今天简历刷新';
-            $msgdata['content'] = '未刷新简历';
+            $emaildata['title'] = yun_at('admin_01403');
+            $msgdata['content'] = yun_at('admin_yunying_00038');
         } elseif ($_POST['type'] == 'addjob') {
-            $emaildata['title'] = '未发布职位';
-            $msgdata['content'] = '未发布职位';
+            $emaildata['title'] = yun_at('admin_yunying_00222');
+            $msgdata['content'] = yun_at('admin_yunying_00222');
         } elseif ($_POST['type'] == 'upjob') {
-            $emaildata['title'] = '未刷新职位';
-            $msgdata['content'] = '未刷新职位';
+            $emaildata['title'] = yun_at('admin_yunying_00039');
+            $msgdata['content'] = yun_at('admin_yunying_00039');
         }
 
         if ($_POST['xls_type'] == 'email') {
@@ -455,7 +455,7 @@ class yingxiao_tuiguang_controller extends adminCommon
         }
 
         if ($id) {
-            $this->admin_json(0, '邮件推广标记已发送');
+            $this->admin_json(0, 'admin_yunying_00031');
         } else {
             $this->render_json(1);
         }
@@ -478,11 +478,11 @@ class yingxiao_tuiguang_controller extends adminCommon
 
         if ($sort) {
             if ($this->config['sy_email_set'] != "1") {
-                $this->render_json(1, '还没有配置邮箱，请联系管理员');
+                $this->render_json(1, yun_at('admin_yunying_00022'));
             }
         } else {
             if (!checkMsgOpen($this->config)) {
-                $this->render_json(1, '还没有配置短信，请联系管理员');
+                $this->render_json(1, yun_at('admin_yunying_00021'));
             }
         }
 
@@ -510,7 +510,7 @@ class yingxiao_tuiguang_controller extends adminCommon
             // }
         } else if ($emailtype == '2') {
             if (($this->config['sy_email_webbirthday'] != 1 && $sort == '1') || ($this->config['sy_msg_webbirthday'] != 1 && !$sort)) {
-                $this->render_json(1, '请先开启周年提醒');
+                $this->render_json(1, yun_at('admin_yunying_00032'));
             }
             if ($type == '2') {
                 if ($sort) {
@@ -526,7 +526,7 @@ class yingxiao_tuiguang_controller extends adminCommon
             }
         } else if ($emailtype == '3') {
             if (($this->config['sy_email_vipmr'] != 1 && $sort == '1') || ($this->config['sy_msg_vipmr'] != 1 && !$sort)) {
-                $this->render_json(1, '请先开启会员到期提醒');
+                $this->render_json(1, yun_at('admin_yunying_00030'));
             }
             $statiswh['vip_etime'][] = array('>', time());
 
@@ -571,7 +571,7 @@ class yingxiao_tuiguang_controller extends adminCommon
             }
         } else if ($emailtype == '4') {
             if (($this->config['sy_email_useradd'] != 1 && $sort == '1') || ($this->config['sy_msg_useradd'] != 1 && !$sort)) {
-                $this->render_json(1, '请先开启未发布简历提醒');
+                $this->render_json(1, yun_at('admin_yunying_00028'));
             }
             if ($type == '1') {
                 /*
@@ -624,7 +624,7 @@ class yingxiao_tuiguang_controller extends adminCommon
             }
         } else if ($emailtype == '5') {
             if (($this->config['sy_email_userup'] != 1 && $sort == '1') || ($this->config['sy_msg_userup'] != 1 && !$sort)) {
-                $this->render_json(1, '请先开启未刷新简历提醒');
+                $this->render_json(1, yun_at('admin_yunying_00026'));
             }
 
             if ($type == '1') {
@@ -656,7 +656,7 @@ class yingxiao_tuiguang_controller extends adminCommon
 
         } else if ($emailtype == '6') {
             if (($this->config['sy_email_addjob'] != 1 && $sort == '1') || ($this->config['sy_msg_addjob'] != 1 && !$sort)) {
-                $this->render_json(1, '请先开启未发布职位提醒');
+                $this->render_json(1, yun_at('admin_yunying_00029'));
             }
 
             if ($type == '2') {
@@ -698,7 +698,7 @@ class yingxiao_tuiguang_controller extends adminCommon
             }
         } else if ($emailtype == '7') {
             if (($this->config['sy_email_upjob'] != 1 && $sort == '1') || ($this->config['sy_msg_upjob'] != 1 && !$sort)) {
-                $this->render_json(1, '请先开启未刷新职位提醒');
+                $this->render_json(1, yun_at('admin_yunying_00027'));
             }
             if ($type == '2') {
                 $comjobsA = $jobM->getList(array('lastupdate' => array('<', strtotime('-7 day')), 'r_status' => array('<>', '2'), 'groupby' => 'uid', 'orderby' => 'lastupdate,desc'), array('field' => '`uid`,`lastupdate`'));
@@ -755,9 +755,9 @@ class yingxiao_tuiguang_controller extends adminCommon
             set_time_limit(1000);
             if (count($userinfo) > 500) {
                 if ($sort) {
-                    $msg = '数量过多，第三方发送服务器将会影响，部分邮件无法发送。建议找专业的群发软件！';
+                    $msg = 'admin_yunying_00020';
                 } else {
-                    $msg = '数量过多，第三方发送服务器将会影响，部分短信无法发送。建议找专业的群发软件！';
+                    $msg = 'admin_yunying_00019';
                 }
                 $this->render_json(1, $msg);
             }
@@ -784,9 +784,9 @@ class yingxiao_tuiguang_controller extends adminCommon
                         $topage = ($npage + 1) * $pagesize;
 
                         $name = $spage . "-" . $topage;
-                        $this->get_return(3, $npage, "正在发送" . $name . "份数据", $result['sendok'], $result['sendno']);
+                        $this->get_return(3, $npage, 'admin_user_00374' . $name . 'admin_01408', $result['sendok'], $result['sendno']);
                     } else {
-                        $this->get_return(0, 0, "发送成功:" . $result['sendok'] . ",失败:" . $result['sendno']);
+                        $this->get_return(0, 0, 'admin_user_00013' . $result['sendok'] . 'admin_user_00014' . $result['sendno']);
                     }
                 }
             }
@@ -1051,15 +1051,15 @@ class yingxiao_tuiguang_controller extends adminCommon
                         $topage = ($npage + 1) * $pagesize;
                         $name = $spage . "-" . $topage;
 
-                        $this->get_return(3, $npage, "正在发送" . $name . "份邮件", $result['sendok'], $result['sendno']);
+                        $this->get_return(3, $npage, 'admin_user_00374' . $name . 'admin_01409', $result['sendok'], $result['sendno']);
                     } else {
-                        $this->get_return(0, 0, "发送成功:" . $result['sendok'] . ",失败:" . $result['sendno']);
+                        $this->get_return(0, 0, 'admin_user_00013' . $result['sendok'] . 'admin_user_00014' . $result['sendno']);
                     }
                 }
             }
         } else {
             if (!checkMsgOpen($this->config)) {
-                $this->render_json(2, '还没有配置短信');
+                $this->render_json(2, yun_at('admin_user_00011'));
             }
             $company = $this->getsendcom($com, $sendnum, 2);
 
@@ -1081,9 +1081,9 @@ class yingxiao_tuiguang_controller extends adminCommon
                         $topage = ($npage + 1) * $pagesize;
                         $name = $spage . "-" . $topage;
 
-                        $this->get_return(3, $npage, "正在发送" . $name . "条信息", $result['sendok'], $result['sendno']);
+                        $this->get_return(3, $npage, 'admin_user_00374' . $name . 'admin_01410', $result['sendok'], $result['sendno']);
                     } else {
-                        $this->get_return(0, 0, "发送成功:" . $result['sendok'] . ",失败:" . $result['sendno']);
+                        $this->get_return(0, 0, 'admin_user_00013' . $result['sendok'] . 'admin_user_00014' . $result['sendno']);
                     }
                 }
             }
@@ -1426,15 +1426,15 @@ class yingxiao_tuiguang_controller extends adminCommon
                         $topage = ($npage + 1) * $pagesize;
                         $name = $spage . "-" . $topage;
 
-                        $this->get_return(3, $npage, "正在发送" . $name . "份邮件", $result['sendok'], $result['sendno']);
+                        $this->get_return(3, $npage, 'admin_user_00374' . $name . 'admin_01409', $result['sendok'], $result['sendno']);
                     } else {
-                        $this->get_return(0, 0, "发送成功:" . $result['sendok'] . ",失败:" . $result['sendno']);
+                        $this->get_return(0, 0, 'admin_user_00013' . $result['sendok'] . 'admin_user_00014' . $result['sendno']);
                     }
                 }
             }
         } else {
             if (!checkMsgOpen($this->config)) {
-                $this->render_json(2, '还没有配置短信');
+                $this->render_json(2, yun_at('admin_user_00011'));
             }
             $resume = $this->getsenduser($_POST['user'], $_POST['sendnum'], 2);
 
@@ -1455,9 +1455,9 @@ class yingxiao_tuiguang_controller extends adminCommon
                         $topage = ($npage + 1) * $pagesize;
                         $name = $spage . "-" . $topage;
 
-                        $this->get_return(3, $npage, "正在发送" . $name . "条信息", $result['sendok'], $result['sendno']);
+                        $this->get_return(3, $npage, 'admin_user_00374' . $name . 'admin_01410', $result['sendok'], $result['sendno']);
                     } else {
-                        $this->get_return(0, 0, "发送成功:" . $result['sendok'] . ",失败:" . $result['sendno']);
+                        $this->get_return(0, 0, 'admin_user_00013' . $result['sendok'] . 'admin_user_00014' . $result['sendno']);
                     }
                 }
             }
@@ -1707,7 +1707,7 @@ class yingxiao_tuiguang_controller extends adminCommon
         $UserInfoM = $this->MODEL('userinfo');
 
         if ($_POST['email_title'] == '' || $_POST['content'] == '') {
-            $this->render_json(2, '邮件标题均不能为空');
+            $this->render_json(2, yun_at('admin_user_00009'));
         }
 
         $emailarr = $user = $com = $lt = $px = $userinfo = array();
@@ -1766,7 +1766,7 @@ class yingxiao_tuiguang_controller extends adminCommon
         }
 
         if (!count($emailarr)) {
-            $this->render_json(2, '没有符合条件的邮箱，请先检查');
+            $this->render_json(2, yun_at('admin_user_00005'));
         } else {
             set_time_limit(10000);
 
@@ -1787,10 +1787,10 @@ class yingxiao_tuiguang_controller extends adminCommon
                     $topage = ($npage + 1) * $pagesize;
                     $name = $spage . "-" . $topage;
 
-                    $this->get_return(3, $result['page'], "正在发送" . $name . "封邮件", $result['sendok'], $result['sendno']);
+                    $this->get_return(3, $result['page'], 'admin_user_00374' . $name . 'admin_user_00017', $result['sendok'], $result['sendno']);
 
                 } else {
-                    $this->get_return(0, $result['page'], "发送成功:" . $result['sendok'] . ",失败:" . $result['sendno']);
+                    $this->get_return(0, $result['page'], 'admin_user_00013' . $result['sendok'] . 'admin_user_00014' . $result['sendno']);
                 }
             }
         }
@@ -1813,7 +1813,7 @@ class yingxiao_tuiguang_controller extends adminCommon
                     $emailData['content'] = stripslashes($emailcoment);
                     $emailData['uid'] = $key;
                     $emailData['name'] = $userinfo[$key];
-                    $emailData['cname'] = "系统";
+                    $emailData['cname'] = yun_at('common_02020');
                     if ($v) {
                         $sendid = $notice->sendEmail($emailData);
                     }
@@ -1847,7 +1847,7 @@ class yingxiao_tuiguang_controller extends adminCommon
                     $emailData['content'] = stripslashes($emailcoment);
                     $emailData['uid'] = $key;
                     $emailData['name'] = $userinfo[$key]['name'];
-                    $emailData['cname'] = "系统";
+                    $emailData['cname'] = yun_at('common_02020');
 
                     if ($v) {
                         $sendid = $notice->sendEmail($emailData);
@@ -1878,13 +1878,13 @@ class yingxiao_tuiguang_controller extends adminCommon
         $userinfoM = $this->MODEL('userinfo');
 
         if (!checkMsgOpen($this->config)) {
-            $this->render_json(2, '还没有配置短信');
+            $this->render_json(2, yun_at('admin_user_00011'));
         }
         if (trim($_POST['content']) == '') {
-            $this->render_json(2, '请输入短信内容');
+            $this->render_json(2, yun_at('admin_01111'));
         }
         if ($_POST['userarr'] == '' && $_POST['utype'] == '5') {
-            $this->render_json(2, '手机号码不能为空');
+            $this->render_json(2, yun_at('admin_01411'));
         }
         if ($_POST['utype'] == 5) {
             $where = array('moblie' => array('in', $_POST['userarr']));
@@ -1911,7 +1911,7 @@ class yingxiao_tuiguang_controller extends adminCommon
                 $msgData['mobile'] = $v['moblie'];
                 $msgData['content'] = trim($_POST['content']);
                 $msgData['uid'] = $v['uid'];
-                $msgData['cname'] = '系统';
+                $msgData['cname'] = yun_at('common_02020');
                 $msgData['port'] = '5';
 
                 $sendid = $notice->sendSMS($msgData);
@@ -1923,19 +1923,19 @@ class yingxiao_tuiguang_controller extends adminCommon
             }
             $msg = '';
             if ($page < $num) {
-                $msg = '发送中...';
+                $msg = 'admin_yunying_00037';
                 $status = 3;
             } else {
                 $status = 0;
             }
-            $msg .= '已发送短信成功：' . $sendok . '条';
+            $msg .= 'admin_01412' . $sendok . '条';
             if ($sendno) {
                 $msg .= ',失败：' . $sendno . '条';
             }
 
             $this->render_json($status, $msg);
         } else {
-            $this->render_json(2, '没有符合条件号码，请先检查');
+            $this->render_json(2, yun_at('admin_user_00006'));
         }
     }
 

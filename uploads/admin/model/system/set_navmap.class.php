@@ -96,13 +96,13 @@ class set_navmap_controller extends adminCommon{
                 $msg = "更新网站地图(ID:".$_POST['id'].")";
             }else{
                 $nbid =	$NavmapM->addNavMap($postData);
-                $msg = "添加网站地图";
+                $msg = 'admin_system_00472';
             }
             $this->cache_action();
             if (isset($nbid) && $nbid) {
-                $this->admin_json(0, $msg."成功！");
+                $this->admin_json(0, $msg.'wap_js_00104');
             } else {
-                $this->admin_json(1, $msg."失败！");
+                $this->admin_json(1, $msg.'wap_js_00103');
             }
         }
     }
@@ -132,7 +132,7 @@ class set_navmap_controller extends adminCommon{
         if($_POST['type']=='display'){
             $this->MODEL('log')->addAdminLog("网站地图是否显示(ID:".$_POST['id'].")设置成功！");
         }else{
-            $this->MODEL('log')->addAdminLog("网站地图是否新窗口打开(ID:".$_POST['id'].")设置成功！");
+            $this->MODEL('log')->addAdminLog('admin_system_00051'.$_POST['id'].")设置成功！");
         }
         $this->cache_action();
         $this->render_json($nid ? 0 : 1);

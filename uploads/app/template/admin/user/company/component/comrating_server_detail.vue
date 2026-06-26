@@ -5,7 +5,7 @@
         </div>
         <div class="admin_datatip">
             <i class="el-icon-document"></i>
-            该页面您设置的增值服务详细信息，可对增值服务进行选择查看，编辑，删除等操作
+            {yun:}t key='admin_user_company_00209'{/yun}
         </div>
         <div class="moduleElenAlRight">
             <div class="moduleElTable" style="height: calc(100% - 70px);">
@@ -45,8 +45,8 @@
                     <el-table-column label="操作" width="140" fixed="right">
                         <template slot-scope="scope">
                             <div class="cz_button">
-                                <el-button size="small" plain @click="editRow(scope)">修改</el-button>
-                                <el-button type="danger" size="small" @click="deleteRow(scope)">删除</el-button>
+                                <el-button size="small" plain @click="editRow(scope)">{yun:}t key='wap_js_00073'{/yun}</el-button>
+                                <el-button type="danger" size="small" @click="deleteRow(scope)">{yun:}t key='common.delete'{/yun}</el-button>
                             </div>
                         </template>
                     </el-table-column>
@@ -54,15 +54,15 @@
             </div>
             <div class="modulePaging">
                 <div class="modulecz modulePagButn">
-                    <el-checkbox :indeterminate="isIndeterminate" v-model="checked" @change="selectAllBottom">全选</el-checkbox>
-                    <el-button size="mini" @click="deleteRow('',1)">批量删除</el-button>
+                    <el-checkbox :indeterminate="isIndeterminate" v-model="checked" @change="selectAllBottom">{yun:}t key='wap_js_00074'{/yun}</el-checkbox>
+                    <el-button size="mini" @click="deleteRow('',1)">{yun:}t key='member_com_00055'{/yun}</el-button>
                 </div>
                 <div class="modulePagNum">
                 </div>
             </div>
         </div>
         <!--修改-->
-        <el-drawer title="设置增值包" :visible.sync="addVisible" :destroy-on-close="true" :modal-append-to-body="false" :append-to-body="true" :wrapper-closable="false" size="770px">
+        <el-drawer title="{yun:}t key='admin_00697'{/yun}" :visible.sync="addVisible" :destroy-on-close="true" :modal-append-to-body="false" :append-to-body="true" :wrapper-closable="false" size="770px">
             <comrating_server_detail_edit :tid="info?info.id:0" @child-event-list="handleEditClose"></comrating_server_detail_edit>
         </el-drawer>
     </div>
@@ -76,7 +76,7 @@ module.exports = {
     data: function () {
         return {
             loading: false,
-            emptytext: '暂无数据',
+            emptytext: "{yun:}t key='wap_js_00113'{/yun}",
             searchForm: {
                 page: 1,
                 limit: null,
@@ -137,7 +137,7 @@ module.exports = {
             }
             params.id = this.id;
             _this.loading = true;
-            _this.emptytext = "数据加载中";
+            _this.emptytext = "{yun:}t key='admin_user_weipin_00026'{/yun}";
             httpPost('m=user&c=company_comrating&a=list', params).then(function (response) {
                 let res = response.data;
                 if (res.error === 0) {
@@ -145,7 +145,7 @@ module.exports = {
                     _this.config = res.data.config;
                     _this.loading = false;
                     if (_this.tableData.length === 0){
-                        _this.emptytext = "暂无数据";
+                        _this.emptytext = "{yun:}t key='wap_js_00113'{/yun}";
                     }
                 }
             }).catch(function (error) {
@@ -166,7 +166,7 @@ module.exports = {
             let params = {};
             if (isMore) {
                 if (!this.selectedItem.length) {
-                    message.error('请选择要删除的数据');
+                    message.error("{yun:}t key='admin_user_weipin_00005'{/yun}");
                     return false;
                 }
                 let list = [];
@@ -187,10 +187,10 @@ module.exports = {
             httpPost('m=user&c=company_comrating&a=del', params).then(function (response) {
                 let res = response.data;
                 if (res.error === 0) {
-                    message.success('删除成功！');
+                    message.success("{yun:}t key='admin_user_00187'{/yun}");
                     _this.getList();
                 } else {
-                    message.error('删除失败！');
+                    message.error("{yun:}t key='admin_user_00186'{/yun}");
                 }
             }).catch(function (error) {
                 console.log(error);

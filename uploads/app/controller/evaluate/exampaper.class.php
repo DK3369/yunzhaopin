@@ -10,7 +10,7 @@ class exampaper_controller extends evaluate_controller{
 		$this->yunset('info',$info);
 		
 		if($info['id']==''){
-			$this->ACT_msg($this->config['sy_weburl'],"没有找到相关测评！");
+			$this->ACT_msg($this->config['sy_weburl'],yun_at('evaluate_00001'));
 		} 
 		
 		
@@ -86,7 +86,7 @@ class exampaper_controller extends evaluate_controller{
 		$this->yunset('info',$info);
 		
 		if($info['id']==''){
-			$this->ACT_msg(Url('evaluate'),"试卷不存在哦！");
+			$this->ACT_msg(Url('evaluate'),yun_at('wap_00193'));
 		}
 		//试卷信息
 		$exambase	=	$evaluateM->getInfo(array('id'=>$info['examid']),array('field'=>'`id`,`name`,`num`,`comnum`,`toscore`,`fromscore`,`comment`,`visits`'));

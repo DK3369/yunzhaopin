@@ -16,24 +16,24 @@
                 <el-table-column label="状态" width="120">
                     <template slot-scope="scope">
                         <el-switch :value="scope.row.status == 0" @change="zpstatuschange($event, scope.row.id)"></el-switch>
-                        <div>{{ scope.row.status == 0 ? '招聘中' : '已下架' }}</div>
+                        <div>{yun:}t key='admin_00612'{/yun}</div>
                     </template>
                 </el-table-column>
                 <el-table-column label="推广">
                     <template slot-scope="scope">
                         <div style="margin:5px;">
-                            置顶
+                            {yun:}t key='wap_user_00335'{/yun}
                             <el-switch v-model="scope.row.xsdate > curr_time"
                                 @change="tgchange($event, scope.row, 1)">
                             </el-switch>
                         </div>
                         <div style="margin:5px;">
-                            推荐
+                            {yun:}t key='common.recommended'{/yun}
                             <el-switch v-model="scope.row.isrec" @change="tgchange($event, scope.row, 2)">
                             </el-switch>
                         </div>
                         <div style="margin:5px;">
-                            紧急
+                            {yun:}t key='wap_00222'{/yun}
                             <el-switch v-model="scope.row.urgent_time > curr_time"
                                 @change="tgchange($event, scope.row, 3)">
                             </el-switch>
@@ -46,7 +46,7 @@
                     <template slot-scope="scope">
                         <div class="admin_state">
                             <div v-if="scope.row.r_status == '2'">
-                                <span class="admin_state3">已锁定</span>
+                                <span class="admin_state3">{yun:}t key='admin_user_00138'{/yun}</span>
                                 <div style="display:inline-block">
                                     <el-popover trigger="hover" placement="right">
                                         <p>{{ scope.row.lock_info }}</p>
@@ -56,10 +56,10 @@
                                     </el-popover>
                                 </div>
                             </div>
-                            <span class="admin_state1" v-else-if="scope.row.state == '1'">已审核</span>
-                            <span class="admin_state1" v-else-if="scope.row.state == '0'">未审核</span>
+                            <span class="admin_state1" v-else-if="scope.row.state == '1'">{yun:}t key='wap_user_00165'{/yun}</span>
+                            <span class="admin_state1" v-else-if="scope.row.state == '0'">{yun:}t key='wap_user_00166'{/yun}</span>
                             <div v-else-if="scope.row.state == '3'">
-                                <span class="admin_state2">未通过</span>
+                                <span class="admin_state2">{yun:}t key='wap_user_00167'{/yun}</span>
                                 <div style="display:inline-block">
                                     <el-popover trigger="hover" placement="right">
                                         <p>{{ scope.row.statusbody }}</p>
@@ -75,7 +75,7 @@
                 <el-table-column label="操作" width="110">
                     <template slot-scope="scope">
                         <div class="cz_button">
-                            <el-button size="mini" @click="jobedit(scope.row)">编辑
+                            <el-button size="mini" @click="jobedit(scope.row)">{yun:}t key='common.edit'{/yun}
                             </el-button>
                         </div>
                     </template>
@@ -95,33 +95,33 @@
         <div class="modluDrawer">
             <el-dialog :title="jobtgtit" :visible.sync="jobtgdrawer" :with-header="true" append-to-body :show-close="true"
                 width="400px">
-                <div class="wxsettip_small" v-if="jobtgtype == 1">置顶天数</div>
-                <div class="wxsettip_small" v-else-if="jobtgtype == 2">推荐天数</div>
-                <div class="wxsettip_small" v-else-if="jobtgtype == 3">紧急天数</div>
-                <el-input type="number" placeholder="请输入天数" v-model="jobtgdays">
-                    <template slot="append">天</template>
+                <div class="wxsettip_small" v-if="jobtgtype == 1">{yun:}t key='wap_user_00209'{/yun}</div>
+                <div class="wxsettip_small" v-else-if="jobtgtype == 2">{yun:}t key='wap_com_00041'{/yun}</div>
+                <div class="wxsettip_small" v-else-if="jobtgtype == 3">{yun:}t key='wap_com_00043'{/yun}</div>
+                <el-input type="number" placeholder="{yun:}t key='admin_00614'{/yun}" v-model="jobtgdays">
+                    <template slot="append">{yun:}t key='common_02067'{/yun}</template>
                 </el-input>
-                <div class="wxsettip_small" v-if="jobtgetime != ''">当前结束日期</div>
+                <div class="wxsettip_small" v-if="jobtgetime != ''">{yun:}t key='admin_00613'{/yun}</div>
                 <el-input v-if="jobtgetime != ''" v-model="jobtgetime" disabled>
                 </el-input>
                 <div style="margin-top:10px;">
                     <i class="el-icon-warning"></i>
-                    如需取消
-                    <span v-if="jobtgtype == 1">职位置顶</span>
-                    <span v-else-if="jobtgtype == 2">推荐职位</span>
-                    <span v-else-if="jobtgtype == 3">紧急职位</span>
-                    请单击
+                    {yun:}t key='admin_user_company_00037'{/yun}
+                    <span v-if="jobtgtype == 1">{yun:}t key='wap_com_00238'{/yun}</span>
+                    <span v-else-if="jobtgtype == 2">{yun:}t key='home.recommended_jobs'{/yun}</span>
+                    <span v-else-if="jobtgtype == 3">{yun:}t key='member_com_00326'{/yun}</span>
+                    {yun:}t key='admin_user_company_00039'{/yun}
                     <el-checkbox v-model="qxtgchecked" true-label="1" false-label="0"></el-checkbox>
-                    <span>点击确认即可</span>
+                    <span>{yun:}t key='admin_user_company_00036'{/yun}</span>
                 </div>
                 <span slot="footer" class="dialog-footer">
-                    <el-button @click="jobtgdrawer = false">取 消</el-button>
-                    <el-button type="primary" @click="jobTgSubmit">确 定</el-button>
+                    <el-button @click="jobtgdrawer = false">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
+                    <el-button type="primary" @click="jobTgSubmit">{yun:}t key='wap_com_00019'{/yun}</el-button>
                 </span>
             </el-dialog>
         </div>
         <div class="modluDrawer">
-            <el-drawer title="职位基本信息" :visible.sync="drawerEditJob" append-to-body :wrapper-closable="false" size="60%">
+            <el-drawer title="{yun:}t key='admin_00615'{/yun}" :visible.sync="drawerEditJob" append-to-body :wrapper-closable="false" size="60%">
                 <addjob ref="jobedit" :jid="jobid" :jtypes="job_types" :ctypes="city_types"></addjob>
             </el-drawer>
         </div>
@@ -147,7 +147,7 @@ module.exports = {
     data: function () {
         return {
             loading: false,
-            emptytext: '暂无数据',
+            emptytext: "{yun:}t key='wap_js_00113'{/yun}",
             searchForm: {
                 page: 1,
                 limit: null,
@@ -156,12 +156,12 @@ module.exports = {
                 time: null,
 				uid:'',
 				state:'',
-				status:''
+				status:'"
             },
             total: 0,
             tableData: [],
             tableHig: true,
-            checked: false,//全选
+            checked: false,//{yun:}t key='wap_js_00074'{/yun}
             isIndeterminate: false,// checkbox 的不确定状态
             selectedItem: [],
             info: {},
@@ -181,7 +181,7 @@ module.exports = {
             pageSizes: [],
             pagerCount: 5,
             curr_job: null,
-            jobtgtype: '',
+            jobtgtype: "',
             jobtgtit: '',
             jobtgdrawer: false,
             jobtgdays: '',
@@ -257,7 +257,7 @@ module.exports = {
         // 职位招聘状态修改
         zpstatuschange: function (val, id) {
             var that = this
-            httpPost('m=user&c=company_job&a=checkstate', { id: id, state: val ? 2 : 1 }).then(function (result) {
+            httpPost('m=user&c=company_job&a=checkstate", { id: id, state: val ? 2 : 1 }).then(function (result) {
                 var res = result.data
                 if (res.error == 0) {
                     that.getList()
@@ -279,18 +279,18 @@ module.exports = {
             this.jobtgtype = type
             this.curr_job = data
             this.tgjid = data.id
-            if (type == 1) { // 置顶
+            if (type == 1) { // {yun:}t key='wap_user_00335'{/yun}
                 this.curr_job.istop = !this.curr_job.istop // 防止switch状态直接改变
-                this.jobtgetime = data.top_time_n ? data.top_time_n : ''
-                this.jobtgtit = '职位置顶'
+                this.jobtgetime = data.top_time_n ? data.top_time_n : "'
+                this.jobtgtit = "{yun:}t key='wap_com_00238'{/yun}"
             } else if (type == 2) { // 推荐
                 this.curr_job.isrec = !this.curr_job.isrec // 防止switch状态直接改变
                 this.jobtgetime = data.rec_time_n != undefined ? data.rec_time_n : ''
-                this.jobtgtit = '职位推荐'
+                this.jobtgtit = "{yun:}t key='wap_com_00237'{/yun}"
             } else if (type == 3) { // 紧急
                 this.curr_job.isurgent = !this.curr_job.isurgent // 防止switch状态直接改变
                 this.jobtgetime = data.urgent_time_n ? data.urgent_time_n : ''
-                this.jobtgtit = '紧急招聘'
+                this.jobtgtit = "{yun:}t key='member_com_00613'{/yun}"
             }
             this.jobtgdrawer = true
         },
@@ -358,7 +358,7 @@ module.exports = {
             params.page = _this.currentPage;
             params.pageSize = _this.perPage;
             _this.loading = true;
-            _this.emptytext = "数据加载中";
+            _this.emptytext = "{yun:}t key='admin_user_weipin_00026'{/yun}";
 
 			var url = 'm=user&c=company_job&a=index';
             httpPost(url, params).then(function (response) {
@@ -390,7 +390,7 @@ module.exports = {
                         _this.$refs.multipleTable.bodyWrapper.scrollTop = 0;
                     }
                     if (_this.tableData.length === 0){
-                        _this.emptytext = "暂无数据";
+                        _this.emptytext = "{yun:}t key='wap_js_00113'{/yun}";
                     }
                 }
             }).catch(function (error) {

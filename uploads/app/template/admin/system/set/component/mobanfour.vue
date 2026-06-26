@@ -2,11 +2,11 @@
 	<div style="position: relative; overflow: hidden; height: 100%;">
 		<div class="moduleElHight">
 			<div class="tableDome_tip">
-				<el-alert title="根据节假日或重大节日设置首页主题模板" type="success" :closable="false">
+				<el-alert title="{yun:}t key='admin_system_00335'{/yun}" type="success" :closable="false">
 				</el-alert>
 			</div>
 			<div class="moduleHeadrButn" style=" margin-bottom: 12px;;">
-				<el-button type="primary" icon="el-icon-document-add" @click="addTplBox">添加主题模板</el-button>
+				<el-button type="primary" icon="el-icon-document-add" @click="addTplBox">{yun:}t key='admin_system_00341'{/yun}</el-button>
 			</div>
 			<div class="moduleElTable" style="height: calc(100% - 105px);">
 				<el-table :data="tableData" border style="width: 100%"
@@ -27,9 +27,9 @@
 					<el-table-column fixed="right" label="操作" width="140">
 						<template slot-scope="scope">
 							<div class="moduleElTaCaoz">
-								<el-button size="mini" @click="editTpl(scope.row)">修改</el-button>
-								<el-button size="mini" @click="previewTpl(scope.row.id)">预览</el-button>
-								<el-button size="mini" @click="delTpl(scope.row)" type="danger">删除</el-button>
+								<el-button size="mini" @click="editTpl(scope.row)">{yun:}t key='wap_js_00073'{/yun}</el-button>
+								<el-button size="mini" @click="previewTpl(scope.row.id)">{yun:}t key='wap_00071'{/yun}</el-button>
+								<el-button size="mini" @click="delTpl(scope.row)" type="danger">{yun:}t key='common.delete'{/yun}</el-button>
 
 							</div>
 						</template>
@@ -37,27 +37,27 @@
 				</el-table>
 			</div>
 			<div class="modluDrawer">
-				<el-drawer title="节假日主题模板" :visible.sync="editTplBox" :modal-append-to-body="false" :show-close="true"
+				<el-drawer title="{yun:}t key='admin_system_00338'{/yun}" :visible.sync="editTplBox" :modal-append-to-body="false" :show-close="true"
 					:with-header="true" size="50%">
 					<div class="drawerModlue">
 						<div class="drawerModInfo">
 
 							<div class="drawerModLis">
 								<div class="drawerModTite">
-									<span>主题名称</span>
+									<span>{yun:}t key='admin_system_00342'{/yun}</span>
 								</div>
 								<div class="drawerModInpt">
 									<el-input v-model="indexTplInfo.name"></el-input>
 								</div>
 								<div class="drawerModTips">
-									<el-alert title="如：墨画风格" type="info" show-icon :closable="false">
+									<el-alert title="{yun:}t key='admin_system_00340'{/yun}" type="info" show-icon :closable="false">
 									</el-alert>
 								</div>
 							</div>
 
 							<div class="drawerModLis">
 								<div class="drawerModTite">
-									<span>顶部高度</span>
+									<span>{yun:}t key='admin_system_00344'{/yun}</span>
 								</div>
 								<div class="drawerModInpt">
 									<el-input v-model="indexTplInfo.top">
@@ -65,26 +65,26 @@
 									</el-input>
 								</div>
 								<div class="drawerModTips">
-									<el-alert title="提示：不设置，将有部分图片无法显示" type="info" show-icon :closable="false">
+									<el-alert title="{yun:}t key='admin_system_00336'{/yun}" type="info" show-icon :closable="false">
 									</el-alert>
 								</div>
 							</div>
 							<div class="drawerModLis">
 								<div class="drawerModTite">
-									<span>灰色</span>
+									<span>{yun:}t key='admin_system_00345'{/yun}</span>
 								</div>
 								<div class="drawerModInpt">
 									<el-switch v-model="indexTplInfo.hse" active-color="#13ce66" inactive-color="#ccc">
 									</el-switch>
 								</div>
 								<div class="drawerModTips">
-									<el-alert title="提示：开启，网站首页变成黑白色" type="info" show-icon :closable="false">
+									<el-alert title="{yun:}t key='admin_system_00337'{/yun}" type="info" show-icon :closable="false">
 									</el-alert>
 								</div>
 							</div>
 							<div class="drawerModLis">
 								<div class="drawerModTite">
-									<span>状态</span>
+									<span>{yun:}t key='member_user_00181'{/yun}</span>
 								</div>
 								<div class="drawerModInpt">
 									<el-switch v-model="indexTplInfo.status" active-color="#13ce66" inactive-color="#ccc">
@@ -93,17 +93,17 @@
 							</div>
 							<div class="drawerModLis">
 								<div class="drawerModTite">
-									<span>展示时间</span>
+									<span>{yun:}t key='admin_system_00343'{/yun}</span>
 								</div>
 								<div class="drawerModInpt">
 									<el-date-picker v-model="indexTplInfo.strtimes" type="daterange" range-separator="至"
-										start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd">
+										start-placeholder="{yun:}t key='admin_00343'{/yun}" end-placeholder="{yun:}t key='admin_00344'{/yun}" value-format="yyyy-MM-dd">
 									</el-date-picker>
 								</div>
 							</div>
 							<div class="drawerModLis">
 								<div class="drawerModTite">
-									<span>缩略图</span>
+									<span>{yun:}t key='admin_00119'{/yun}</span>
 								</div>
 								<div class="drawerModInpt">
 									<el-upload class="avatar-uploader" :accept="pic_accept" :action="uploadAction" :show-file-list="false"
@@ -115,7 +115,7 @@
 							</div>
 						</div>
 						<div class="setBasicButn" style="border: none;">
-							<el-button type="primary" size="medium" @click="tplSave" :disabled="saveLoading">提交</el-button>
+							<el-button type="primary" size="medium" @click="tplSave" :disabled="saveLoading">{yun:}t key='common.submit'{/yun}</el-button>
 						</div>
 					</div>
 				</el-drawer>
@@ -129,7 +129,7 @@ module.exports = {
 	data: function () {
 		return {
 			pic_accept: localStorage.getItem("pic_accept"),
-			emptytext: '暂无数据',
+			emptytext: "{yun:}t key='wap_js_00113'{/yun}",
 			loading: false,
 			tableData: [],
 			srcList: [],
@@ -172,12 +172,12 @@ module.exports = {
 		},
 		delTpl(row) {
 			this.tplid = row.id;
-			delConfirm(this, {}, this.delTplSubmit, '确定要删除？');
+			delConfirm(this, {}, this.delTplSubmit, "{yun:}t key='wap_user_00001'{/yun}");
 		},
 		async delTplSubmit() {
 			let that = this;
 			if (that.tplid == '') {
-				message.error('请选择要删除的模板');
+				message.error("{yun:}t key='admin_00307'{/yun}");
 				return false;
 			}
 			httpPost('m=system&c=set_tplset&a=indextpldel', { id: that.tplid }).then(function (response) {
@@ -198,11 +198,11 @@ module.exports = {
 			let that = this;
 			let formData = new FormData();
 			if (that.indexTplInfo.name == '') {
-				message.error('请填写主题名称');
+				message.error("{yun:}t key='admin_system_00339'{/yun}");
 				return false;
 			}
 			if (that.indexTplInfo.picurl == '' && that.indexTplInfo.pic == '') {
-				message.error('请上传缩略图');
+				message.error("{yun:}t key='admin_00258'{/yun}");
 				return false;
 			}
 			if (that.indexTplInfo.status) {
@@ -259,7 +259,7 @@ module.exports = {
 			let that = this;
 			let param = {};
 			that.loading = true;
-			that.emptytext = "数据加载中";
+			that.emptytext = "{yun:}t key='admin_user_weipin_00026'{/yun}";
 			httpPost('m=system&c=set_tplset&a=pcindextpl', param).then(function (response) {
 				let res = response.data;
 				if (res.error == 0) {
@@ -267,7 +267,7 @@ module.exports = {
 					that.srcList = res.data.imgarr;
 					that.loading = false;
 					if (that.tableData.length === 0){
-                        that.emptytext = "暂无数据";
+                        that.emptytext = "{yun:}t key='wap_js_00113'{/yun}";
                     }
 				}
 			}).catch(function (error) {

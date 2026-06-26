@@ -83,7 +83,7 @@ class set_web_config_controller extends adminCommon{
         $configM -> setConfig($_POST);
         $this->web_config();
 
-        $this->render_json('0','页面设置修改成功！');
+        $this->render_json('0',yun_at('admin_01400'));
 
 	}
 }

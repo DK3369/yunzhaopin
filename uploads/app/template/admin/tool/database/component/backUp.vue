@@ -1,34 +1,34 @@
 <template>
     <div class="moduleElHight">
         <div class="tableDome_tip">
-            <el-alert title="该页面展示了网站数据库信息，可对数据库进行备案还原操作，也可通过其它软件进行操作" type="success" :closable="false"></el-alert>
+            <el-alert title="{yun:}t key='admin_tool_00073'{/yun}" type="success" :closable="false"></el-alert>
         </div>
 
         <div class="moduleTable" v-show="!progressShow">
             <table class="tableVue">
                 <thead>
                 <tr align="left">
-                    <th width="200">名称</th>
-                    <th width="400">状态</th>
-                    <th>说明</th>
+                    <th width="200">{yun:}t key='member_com_00021'{/yun}</th>
+                    <th width="400">{yun:}t key='member_user_00181'{/yun}</th>
+                    <th>{yun:}t key='member_com_00207'{/yun}</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr>
                     <td>
-                        <div class="TableTite">选择备份类型</div>
+                        <div class="TableTite">{yun:}t key='admin_tool_00074'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableButn">
                             <el-radio-group v-model="backType" @change="checkBackType">
-                                <el-radio label="1">全部备份</el-radio>
-                                <el-radio label="2">自定义备份</el-radio>
+                                <el-radio label="1">{yun:}t key='admin_tool_00075'{/yun}</el-radio>
+                                <el-radio label="2">{yun:}t key='admin_tool_00076'{/yun}</el-radio>
                             </el-radio-group>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>全部备份：备份数据库所有表，自定义备份：根据自行选择备份数据表</span>
+                            <span>{yun:}t key='admin_tool_00077'{/yun}</span>
                         </div>
                     </td>
                 </tr>
@@ -38,7 +38,7 @@
                     </td>
                     <td colspan="2">
                         <div class="TableButn">
-                            <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">全选</el-checkbox>
+                            <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">{yun:}t key='wap_js_00074'{/yun}</el-checkbox>
                             <div style="margin: 15px 0;"></div>
                             <div v-for="(table,tkey) in dbTable" :key="tkey">
                                 <el-checkbox-group v-model="checkedTable" @change="handleCheckedTableChange">
@@ -50,7 +50,7 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">分卷备份</div>
+                        <div class="TableTite">{yun:}t key='admin_tool_00078'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
@@ -59,14 +59,14 @@
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>文件长度限制(kb)</span>
+                            <span>{yun:}t key='admin_tool_00079'{/yun}</span>
                         </div>
                     </td>
                 </tr>
                 </tbody>
             </table>
             <div class="setBasicButn" style="border: none;">
-                <el-button type="primary" size="medium" @click="backUp">提交</el-button>
+                <el-button type="primary" size="medium" @click="backUp">{yun:}t key='common.submit'{/yun}</el-button>
             </div>
         </div>
         <div v-show="progressShow">
@@ -140,10 +140,10 @@
                 param.backType = that.backType
 
                 if (that.backType == 2 && that.checkedTable.length == 0){
-                    message.error(window.yunAdminT('请选择需要备份的数据！'));
+                    message.error(window.yunAdminT("{yun:}t key='admin_tool_00080'{/yun}"));
                     return false;
                 }
-                delConfirm(this, param, that.backUpDb, window.yunAdminT('确定备份数据？'));
+                delConfirm(this, param, that.backUpDb, window.yunAdminT("{yun:}t key='admin_tool_00081'{/yun}"));
 
             },
             backUpDb: function (param) {

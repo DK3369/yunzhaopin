@@ -54,7 +54,7 @@ class gongzhao_controller extends adminCommon
         $info = $_POST;
         $info = $this->post_trim($info);
         if (!$info['title']) {
-            $this->render_json(1, '公招标题不能为空');
+            $this->render_json(1, yun_at('admin_01329'));
         }
         $info['startime'] = $info['startime_n'] ? $info['startime_n'] : date('Y-m-d');
         $info['endtime'] = $info['endtime_n'] ? $info['endtime_n'] : '';
@@ -74,7 +74,7 @@ class gongzhao_controller extends adminCommon
                 $picsl = $uploadM->newUpload($upArrsl);
             }
             if ($picsl && !empty($picsl['msg'])){
-                $return['msg'] = $picsl['msg'] ? $picsl['msg'] : '上传失败';
+                $return['msg'] = $picsl['msg'] ? $picsl['msg'] : 'wap_00538';
                 $this->render_json(1, $return['msg']);
             } else {
                 if (!empty($picsl['picurl'])){
@@ -85,16 +85,16 @@ class gongzhao_controller extends adminCommon
         if ($info['id']) {
             $nid = $gongzhaoM->upInfo(array('id' => intval($info['id'])), $info);
             if ($nid) {
-                $this->admin_json(0, "公招(ID:" . $info['id'] . ")更新成功！");
+                $this->admin_json(0, 'admin_01328' . $info['id'] . 'admin_neirong_00008');
             } else {
-                $this->render_json(1, "公招(ID:" . $info['id'] . ")更新失败！");
+                $this->render_json(1, 'admin_01328' . $info['id'] . 'admin_neirong_00007');
             }
         } else {
             $nid = $gongzhaoM->addInfo($info);
             if ($nid) {
-                $this->admin_json(0, "公招添加成功！");
+                $this->admin_json(0, 'admin_neirong_00006');
             } else {
-                $this->render_json(1, "公招添加失败！");
+                $this->render_json(1, yun_at('admin_neirong_00005'));
             }
         }
     }
@@ -118,12 +118,12 @@ class gongzhao_controller extends adminCommon
             if ($id) {
                 $siteDomain = $this->MODEL('site');
                 $siteDomain->updDid(array('gongzhao'), array('id' => array('in', $id)), array('did' => $_POST['did']));
-                $this->admin_json(0, '公招(ID:' . $_POST['uid'] . ')分配站点成功！');
+                $this->admin_json(0, 'admin_01328' . $_POST['uid'] . ')分配站点成功！');
             } else {
-                $this->render_json(1, '请正确选择需分配数据！');
+                $this->render_json(1, yun_at('admin_neirong_00004'));
             }
         } else {
-            $this->render_json(1, '参数不全请重试！');
+            $this->render_json(1, yun_at('common_01236'));
         }
     }
 
@@ -154,13 +154,13 @@ class gongzhao_controller extends adminCommon
         $id = intval($_POST['del']);
         if (isset($_POST['rec']) && intval($_POST['rec'] == 1)){
             $rec = 1;
-            $msg = '设置推荐';
+            $msg = 'admin_01330';
         }else{
             $rec = 0;
-            $msg = '取消推荐';
+            $msg = 'wap_com_00230';
         }
         $gongzhaoM = $this->Model('gongzhao');
         $nid = $gongzhaoM->upInfo(array('id' => $id), array('rec' => $rec));
-        $nid ? $this->admin_json(0, $msg."成功(ID:" . $id . ")") : $this->render_json(1,$msg."失败(ID:" . $id . ")");
+        $nid ? $this->admin_json(0, $msg.'common_01499' . $id . ")") : $this->render_json(1,$msg.'admin_neirong_00009' . $id . ")");
     }
 }

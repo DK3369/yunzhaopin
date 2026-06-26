@@ -2,43 +2,43 @@
     <div>
         <div>
             <div class="hydialog_item" style="display: flex; align-items: center;">
-                <span class="item_span" style="margin-top: -3px;">类别选择：</span>
+                <span class="item_span" style="margin-top: -3px;">{yun:}t key='admin_system_00092'{/yun}</span>
                 <el-radio-group v-model="ruleForm.ctype" @change="handleChange" style="flex: 1;">
-                    <el-radio label="1">一级分类</el-radio>
-                    <el-radio label="2">二级分类</el-radio>
+                    <el-radio label="1">{yun:}t key='admin_00290'{/yun}</el-radio>
+                    <el-radio label="2">{yun:}t key='admin_00291'{/yun}</el-radio>
                 </el-radio-group>
             </div>
             <el-tabs v-model="ruleForm.ctype">
                 <el-tab-pane label="1" name="1">
                     <div class="dialog_item">
-                        <span class="item_span">类别名称：</span>
+                        <span class="item_span">{yun:}t key='admin_00260'{/yun}</span>
                         <el-input type="textarea" v-model="ruleForm.name" style="flex: 1;"></el-input>
                     </div>
                     <div class="dialog_item">
-                        <span class="item_span">变量名称：</span>
+                        <span class="item_span">{yun:}t key='admin_system_00093'{/yun}</span>
                         <el-input type="textarea" v-model="ruleForm.str" style="flex: 1;"></el-input>
                     </div>
                 </el-tab-pane>
                 <el-tab-pane label="2" name="2">
                     <div class="dialog_item">
-                        <span class="item_span">父类：</span>
-                        <el-select v-model="ruleForm.nid" placeholder="请选择" style="flex: 1;">
+                        <span class="item_span">{yun:}t key='admin_system_00094'{/yun}</span>
+                        <el-select v-model="ruleForm.nid" placeholder="{yun:}t key='wap_user_00100'{/yun}" style="flex: 1;">
                             <el-option v-for="item in position" :key="item.id" :label="item.name" :value="item.id"></el-option>
                         </el-select>
                     </div>
                     <div class="dialog_item">
-                        <span class="item_span">类别名称：</span>
+                        <span class="item_span">{yun:}t key='admin_00260'{/yun}</span>
                         <el-input type="textarea" v-model="ruleForm.name" style="flex: 1;"></el-input>
                     </div>
                 </el-tab-pane>
             </el-tabs>
             <div style="overflow: hidden;position: relative;padding-left: 74px;">
-                <i class="el-icon-info" style="margin-top: 10px;">说明：可以添加多条分类（请按回车Enter键换行，一行一个)</i>
+                <i class="el-icon-info" style="margin-top: 10px;">{yun:}t key='admin_system_00091'{/yun}</i>
             </div>
             
         </div>
         <div slot="footer" class="dialog-footer">
-            <el-button type="primary" @click="submitForm('ruleForm')" :disabled="submitLoading">添加</el-button>
+            <el-button type="primary" @click="submitForm('ruleForm')" :disabled="submitLoading">{yun:}t key='wap_js_00091'{/yun}</el-button>
         </div>
     </div>
 </template>
@@ -72,15 +72,15 @@ module.exports = {
             params.str = params.str.split("\n").join("-");
 
             if (params.ctype == '' || params.ctype == null) {
-                message.error(window.yunAdminT('请选择类型！'));
+                message.error(window.yunAdminT("{yun:}t key='admin_system_00095'{/yun}"));
                 return;
             }
             if (params.name == '') {
-                message.error(window.yunAdminT('类别名称不能为空！'));
+                message.error(window.yunAdminT("{yun:}t key='admin_00208'{/yun}"));
                 return;
             }
             if (params.ctype == '1' && $.trim(params.str) == '') {
-                message.error(window.yunAdminT('调用变量名不能为空！'));
+                message.error(window.yunAdminT("{yun:}t key='admin_system_00096'{/yun}"));
                 return;
             }
             _this.submitLoading = true;

@@ -76,7 +76,7 @@ class partapply_controller extends company
         $this -> yunset('rows', $rows);
         
         // 未查看 已查看 已联系
-        $this -> yunset(array( 'StateList' => array( array( 'id' => 1, 'name' => '未查看' ), array( 'id' => 2, 'name' => '已查看' ), array( 'id' => 3, 'name' => '已联系' ) ) ));
+        $this -> yunset(array( 'StateList' => array( array( 'id' => 1, 'name' => 'wap_user_00260' ), array( 'id' => 2, 'name' => 'wap_user_00258' ), array( 'id' => 3, 'name' => 'member_com_00311' ) ) ));
         
         $this -> public_action();
         
@@ -115,7 +115,7 @@ class partapply_controller extends company
         $delRes =   $partM->delPartApply($delID, array('uid' => $this->uid, 'usertype' => $this->usertype));
 
         $logM       =   $this->Model('log');
-        $logContent =   '兼职报名：删除报名信息';
+        $logContent =   'member_com_00701';
         $logDetail  =   '删除兼职报名信息（ID：'.pylode(',', $delID).'）';
         $logM->addMemberLog($this->uid, $this->usertype, $logContent, 6, 3, $logDetail);
 

@@ -201,46 +201,46 @@ class redeem_model extends model
 		$integral	=	$gift['integral']*$num;
 		
 		if(!$data['uid'] && !$data['username']){
-			$return['msg']		=	'您还没有登录，请先登录！';
+			$return['msg']		=	yun_at('wap_js_00154');
 			$return['errcode']		=	'8';
 		}elseif(!$data['linkman'] || !$data['linktel'] ){
-			$return['msg']		=	'收件人和手机号码不能为空！';
+			$return['msg']		=	yun_at('common_00718');
 			$return['errcode']		=	'8';
 		}elseif($data['linktel']&&CheckMobile($data['linktel'])==false){
-			$return['msg']		=	'手机格式错误！';
+			$return['msg']		=	yun_at('wap_00306');
 			$return['errcode']		=	'8';
 		}elseif(!$data['password']){
-			$return['msg']		=	'密码不能为空！';
+			$return['msg']		=	yun_at('wap_01273');
 			$return['errcode']		=	'8';
 		}elseif(!passCheck($data['password'],$info['salt'],$info['password'])){
-			$return['msg']		=	'用户名或密码不正确！';
+			$return['msg']		=	yun_at('model_00066');
 			$return['errcode']		=	'8';
 		}elseif($num<1){
-			$return['msg']		=	'请填写正确的数量！';
+			$return['msg']		=	yun_at('common_01154');
 			$return['errcode']		=	'8';
 		}elseif($num>$gift['stock']){
-			$return['msg']		=	'已超出库存数量！';
+			$return['msg']		=	yun_at('common_01250');
 			$return['errcode']		=	'8';
 		}elseif($gift['restriction']!='0' && $nums+$num>$gift['restriction']){
-			$return['msg']		=	'已超出限购数量！';
+			$return['msg']		=	yun_at('common_01251');
 			$return['errcode']		=	'8';
 		}elseif($statis['integral']<$integral){
-			$return['msg']		=	'您的'.$this->config['integral_pricename'].'不足！';
+			$return['msg']		=	yun_at('wap_js_00157').$this->config['integral_pricename'].'wap_js_00156';
 			$return['errcode']		=	'8';
 		}else{
 			require_once ('integral.model.php');
 			$integralM = new integral_model($this->db, $this->def);
 			//积分操作记录
-			$integralM->company_invtal($data['uid'],$data['usertype'],$integral,false,"".$this->config['integral_pricename']."兑换",true,2,'integral',24);
+			$integralM->company_invtal($data['uid'],$data['usertype'],$integral,false,"".$this->config['integral_pricename'].'admin_yunying_00117',true,2,'integral',24);
       if($data['bodyt']){
          $data['body']=$data['bodyt'];
       }else{
-        $data['body']='收货地址：'.$data['provinceid'].' '.$data['cityid'].' '.$data['three_cityid'];
+        $data['body']=yun_at('wap_js_00155').$data['provinceid'].' '.$data['cityid'].' '.$data['three_cityid'];
         if($data['address']){
           $data['body'].=' '.$data['address'];
         }
         if($data['other']){
-          $data['body'].=' 用户留言：'.$data['other'];
+          $data['body'].=yun_at('wap_01697').$data['other'];
         }
       }
 
@@ -264,7 +264,7 @@ class redeem_model extends model
 
             $this->addMemberLog($data['uid'], $data['usertype'], $this->config['integral_pricename'].'兑换：兑换商品（ID：'.$gift['id'].'）' , 17, 1);
 
-			$return['msg']='兑换成功，请等待管理员审核！';
+			$return['msg']=yun_at('model_00051');
 			$return['errcode']='9';
 			if($data['utype']=='pc'){
 				$return['url']=Url('redeem',array('c'=>'show','id'=>$id));
@@ -330,7 +330,7 @@ class redeem_model extends model
 				||($data['member']=='com'&&$data['usertype']!='2')
 				||($data['member']=='user'&&$data['usertype']!='1')){
 
-				$result['msg']	=	'登录超时';
+				$result['msg']	=	yun_at('common_02124');
 				$result['cod']	=	8;
 			}else{
 				$rows	=	$this	->	getChangeInfo(array('uid'=>$data['uid'],'id'=>$data['id']));
@@ -340,11 +340,11 @@ class redeem_model extends model
 					
 					$this	->	update_once('reward',array('num'=>array('-',$rows['num']),'stock'=>array('+',$rows['num'])),array('id'=>$rows['gid']));
 
-					$IntegralM	->	company_invtal($data['uid'],$data['usertype'],$rows['integral'],true,"取消商品兑换",true,2,'integral',24);
+					$IntegralM	->	company_invtal($data['uid'],$data['usertype'],$rows['integral'],true,'common_06573',true,2,'integral',24);
 					$this		->	delete_all('change',array('uid'=>$data['uid'],'id'=>$data['id']),$limit);
 				}
-                $this->addMemberLog($data['uid'], $data['usertype'], $this->config['integral_pricename'] . '兑换：取消兑换', 17, 3);//会员日志
-				$result['msg']	=	'取消成功！';
+                $this->addMemberLog($data['uid'], $data['usertype'], $this->config['integral_pricename'] . 'common_06574', 17, 3);//会员日志
+				$result['msg']	=	yun_at('wap_01290');
 				$result['cod']	=	9;
 			}
 		}else{

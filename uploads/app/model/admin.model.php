@@ -111,11 +111,11 @@ class admin_model extends model{
         
         if ($return['id']){
             
-            $return['msg']      = '管理员(id:'.$return['id'].')添加成功';
+            $return['msg']      = yun_auto_t('管理员(id:').$return['id'].')添加成功';
             $return['errcode']  =  '9';
             
         }else{
-            $return['msg']      =  '管理员添加失败';
+            $return['msg']      =  yun_at('common_06357');
             $return['errcode']  =  '8';
         }
         
@@ -180,19 +180,19 @@ class admin_model extends model{
                 if (isset($data['oldpass'])){
                     if(empty($data['oldpass'])){
                         
-                        $return['msg']      =  '原始密码不能为空！';
+                        $return['msg']      =  yun_at('common_06358');
                         $return['errcode']  =  '8';
                         return $return;
                         
                     }elseif($data['oldpass'] == $upData['password']){
                         
-                        $return['msg']      =  '新密码和原始密码一致，不需要修改！';
+                        $return['msg']      =  yun_at('common_00480');
                         $return['errcode']  =  '8';
                         return $return;
                         
                     }elseif($upData['password'] != $data['okpassword']){
                         
-                        $return['msg']      =  '新密码两次输入不一致！';
+                        $return['msg']      =  yun_at('common_00890');
                         $return['errcode']  =  '8';
                         return $return;
                     }
@@ -201,7 +201,7 @@ class admin_model extends model{
                     
                     if ($verify == false){
                         
-                        $return['msg']      =  '原始密码不正确！';
+                        $return['msg']      =  yun_at('common_01235');
                         $return['errcode']  =  '8';
                         return $return;
                     }
@@ -211,11 +211,11 @@ class admin_model extends model{
                     }
                 }
                 
-                $msg                 =  '密码';
+                $msg                 =  'wap_user_00371';
                 
                 $upData['password']  =  $this->makePass($upData['password']);
             }else{
-                $return['msg']      =  '新密码不能为空！';
+                $return['msg']      =  yun_at('common_06359');
                 $return['errcode']  =  '8';
                 return $return;
             }
@@ -224,11 +224,11 @@ class admin_model extends model{
         
         if ($return['id']){
             
-            $return['msg']      =  '管理员'.$msg.'(ID:'.$whereData['uid'].')修改成功';
+            $return['msg']      =  yun_at('wap_user_00361').$msg.'(ID:'.$whereData['uid'].')修改成功';
             $return['errcode']  =  '9';
             
         }else{
-            $return['msg']      =  '管理员'.$msg.'(ID:'.$whereData['uid'].')修改失败';
+            $return['msg']      =  yun_at('wap_user_00361').$msg.'(ID:'.$whereData['uid'].')修改失败';
             $return['errcode']  =  '8';
         }
         return	$return;
@@ -244,7 +244,7 @@ class admin_model extends model{
         $return  =  array();
         
         if ($user && ($uid == '' || ($uid !='' && $uid != $user['uid']))){
-            $return['msg']      =  '管理员用户名已存在';
+            $return['msg']      =  yun_at('common_01138');
             $return['errcode']  =  '8';
         }
         
@@ -266,11 +266,11 @@ class admin_model extends model{
             $this->update_once('company', array('crm_uid'=>0,'crm_status'=>0), array('crm_uid'=>$whereData['uid']));
             $this->update_once('company_order', array('crm_uid'=>0), array('crm_uid'=>$whereData['uid']));
 
-            $return['msg']      =  '管理员(ID:'.$whereData['uid'].')删除成功';
+            $return['msg']      =  yun_auto_t('管理员(ID:').$whereData['uid'].')删除成功';
             $return['errcode']  =  '9';
             
         }else{
-            $return['msg']      =  '管理员(ID:'.$whereData['uid'].')删除失败';
+            $return['msg']      =  yun_auto_t('管理员(ID:').$whereData['uid'].')删除失败';
             $return['errcode']  =  '8';
         }
         return	$return;
@@ -286,11 +286,11 @@ class admin_model extends model{
         
         if ($return['id']){
             
-            $return['msg']      =  '管理员类型添加成功';
+            $return['msg']      =  yun_at('common_06360');
             $return['errcode']  =  '9';
             
         }else{
-            $return['msg']      =  '管理员类型添加失败';
+            $return['msg']      =  yun_at('common_06361');
             $return['errcode']  =  '8';
         }
         
@@ -371,11 +371,11 @@ class admin_model extends model{
         
         if ($return['id']){
             
-            $return['msg']      =  '管理员类型(ID:'.$whereData['id'].')修改成功';
+            $return['msg']      =  yun_auto_t('管理员类型(ID:').$whereData['id'].')修改成功';
             $return['errcode']  =  '9';
             
         }else{
-            $return['msg']      =  '管理员类型(ID:'.$whereData['id'].')修改失败';
+            $return['msg']      =  yun_auto_t('管理员类型(ID:').$whereData['id'].')修改失败';
             $return['errcode']  =  '8';
         }
         
@@ -392,23 +392,23 @@ class admin_model extends model{
             $num  =  $this->select_num('admin_user',array('m_id'=>$whereData['id']));
             
             if ($num>0){
-                $return['msg']      =  '该管理员类型下有管理员，请先删除相关管理员';
+                $return['msg']      =  yun_at('common_00307');
                 $return['errcode']  =  '8';
             }else{
 				 
                 $return['id']  =  $this -> delete_all('admin_user_group',$whereData, '');
                 
                 if ($return['id']){
-                    $return['msg']      =  '管理员类型(ID:'.$whereData['id'].')删除成功';
+                    $return['msg']      =  yun_auto_t('管理员类型(ID:').$whereData['id'].')删除成功';
                     $return['errcode']  =  '9';
                     
                 }else{
-                    $return['msg']      =  '管理员类型(ID:'.$whereData['id'].')删除失败';
+                    $return['msg']      =  yun_auto_t('管理员类型(ID:').$whereData['id'].')删除失败';
                     $return['errcode']  =  '8';
                 }
             }
         }else{
-            $return['msg']      =  '请选择需要删除的管理员类型';
+            $return['msg']      =  yun_at('common_00747');
             $return['errcode']  =  '8';
         }
         return	$return;

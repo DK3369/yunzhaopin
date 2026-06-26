@@ -13,11 +13,11 @@
 			 {yun:}if $userStatue || $userStat || $userSta{/yun}
 			    <div class="transfer_stepbox">
         <ul class="transfer_stepbox_list">
-        <li class="transfer_stepcur"><span class="transfer_stepbox_n">1</span><em class="transfer_stepbox_name">核对信息</em></li>
+        <li class="transfer_stepcur"><span class="transfer_stepbox_n">1</span><em class="transfer_stepbox_name">{yun:}t key='wap_00998'{/yun}</em></li>
         <li class="transfer_stepcur"><span class="transfer_stepbox_line"></span></li>
-        <li><span class="transfer_stepbox_n">2</span><em class="transfer_stepbox_name">账号验证 </em></li>
+        <li><span class="transfer_stepbox_n">2</span><em class="transfer_stepbox_name">{yun:}t key='wap_00999'{/yun} </em></li>
         <li><span class="transfer_stepbox_line"></span></li>
-        <li><span class="transfer_stepbox_n"><i class="transfer_stepbox_cgicon"></i></span><em class="transfer_stepbox_name">迁移成功</em></li>
+        <li><span class="transfer_stepbox_n"><i class="transfer_stepbox_cgicon"></i></span><em class="transfer_stepbox_name">{yun:}t key='wap_01000'{/yun}</em></li>
         </ul>
         </div>
         <div class="clear"></div>
@@ -31,12 +31,12 @@
 		<input   name="bdtype[]"  value="email"  type="checkbox" title="{yun:}t key='wap_user_00370'{/yun}" data-tag="{yun:}t key='wap_user_00370'{/yun}" class="changewelfare" >
 		<input   name="bdtype[]"  value="wxid"  type="checkbox" title="{yun:}t key='wap_user_00368'{/yun}" data-tag="{yun:}t key='wap_user_00368'{/yun}" class="changewelfare" >
 		<input   name="bdtype[]"  value="qqid"  type="checkbox" title="{yun:}t key='wap_js_00065'{/yun}QQ" data-tag="{yun:}t key='wap_js_00065'{/yun}QQ" class="changewelfare" >
-		<input   name="bdtype[]"  value="sinaid"  type="checkbox" title="解绑微博" data-tag="解绑微博" class="changewelfare" >
+		<input   name="bdtype[]"  value="sinaid"  type="checkbox" title="{yun:}t key='wap_01013'{/yun}" data-tag="{yun:}t key='wap_01013'{/yun}" class="changewelfare" >
 		</div>
 		</div>
-		<div class="transfer_textlist"><span class="transfer_textlist_n"><font color="#f00">*</font>  当前账号密码：</span><input type="password" name="oldpass" value="" class="transfer_text" placeholder="请输入当前账户密码"></div>
+		<div class="transfer_textlist"><span class="transfer_textlist_n"><font color="#f00">*</font>  {yun:}t key='member_user_00584'{/yun}</span><input type="password" name="oldpass" value="" class="transfer_text" placeholder="{yun:}t key='wap_01002'{/yun}"></div>
 
-          <div class="transfer_textlist"><span class="transfer_textlist_n"><font color="#f00">*</font> 新账户用户名：</span><input type="text"  name="username" value="" class="transfer_text" placeholder="请设置新账户用户名">
+          <div class="transfer_textlist"><span class="transfer_textlist_n"><font color="#f00">*</font> {yun:}t key='member_user_00585'{/yun}</span><input type="text"  name="username" value="" class="transfer_text" placeholder="{yun:}t key='member_user_00588'{/yun}">
           	<div style="padding-top:10px; color:#999; font-size:12px; ">
           	用户名要求长度{yun:}$config.sy_reg_nameminlen{/yun}-{yun:}$config.sy_reg_namemaxlen{/yun}{yun:}t key='common_02053'{/yun}
             {yun:}if $config.reg_name_han=='1' || $config.reg_name_sp=='1' || $config.reg_name_num=='1' || $config.reg_name_zm=='1'{/yun}
@@ -49,7 +49,7 @@
             </div>
           </div>
 
-           <div class="transfer_textlist"><span class="transfer_textlist_n"><font color="#f00">*</font>新账户密码：</span><input type="password" name="password" value="" class="transfer_text" placeholder="请设置新账户密码">
+           <div class="transfer_textlist"><span class="transfer_textlist_n"><font color="#f00">*</font>{yun:}t key='wap_01005'{/yun}：</span><input type="password" name="password" value="" class="transfer_text" placeholder="{yun:}t key='member_user_00589'{/yun}">
            	{yun:}if $config.reg_pw_sp=='1' || $config.reg_pw_num=='1' || $config.reg_pw_zm=='1'{/yun}
                            
              <div style="padding-top:10px; color:#999; font-size:12px; ">
@@ -60,14 +60,14 @@
            </div>
 
             <div class="transfer_textlist"> <div class="transfer_tip">数据迁移后，可登录新账户，{yun:}t key='member_com_00203'{/yun}、微信等</div>
-				<input type="submit" name="submit" value="确认分离" class="transfer_bth">
+				<input type="submit" name="submit" value="{yun:}t key='member_user_00590'{/yun}" class="transfer_bth">
             </div>
 
 			</form>
    </div>
 			 {yun:}else{/yun}
 			 <div class="msg_no">
-				 <p>亲爱的用户，目前你的账号只有个人身份，无需账户分离</p>
+				 <p>{yun:}t key='wap_01007'{/yun}，目前你的账号只有个人身份，无需账户分离</p>
 			 </div>
 			 {yun:}/if {/yun}
 			<div class="clear"></div>
@@ -94,7 +94,7 @@
 		var password = $("input[name='password']").val();
 
 		if(oldpass == '') {
-			layer.msg('请输入当前账户密码!', 2, 8);return false;
+			layer.msg("{yun:}t key='member_user_00591'{/yun}", 2, 8);return false;
 
 		}
 		if(username == '') {
@@ -107,7 +107,7 @@
 			
 			  layer.msg("{yun:}t key='admin_00245'{/yun}6{yun:}t key='common_02098'{/yun}20位新密码!", 2, 8);return false;
 		}
-		layer.msg('数据迁移中，请稍候....', {
+		layer.msg("{yun:}t key='member_user_00592'{/yun}", {
 		  icon: 16
 		  ,shade: 0.5,
 		  time: 20000

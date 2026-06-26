@@ -38,14 +38,14 @@ class shop_class_controller extends adminCommon{
 			$this->cache_action();
 			$add		?	$msg	=	2	:	$msg	=	3;
 			if ($add){
-                $tit = '商品类别添加成功';
+                $tit = 'admin_01426';
             }else{
-			    $tit = '添加失败';
+			    $tit = 'api_wxapp_00012';
             }
 			$this->MODEL('log')->addAdminLog("商品类别(ID:".$add.")添加成功");
 		}else{
 			$msg	=	1;
-			$tit = '类别已存在';
+			$tit = 'admin_system_00050';
 		}
         $this->render_json($msg ==2 ? 0 : 1, $tit);
 	}
@@ -82,10 +82,10 @@ class shop_class_controller extends adminCommon{
 		}
 		
 		if(!$delid){
-            $this->render_json(1, '请选择要删除的内容');
+            $this->render_json(1, yun_at('common_01162'));
 		}
 		$this->cache_action();
-        $this->render_json(isset($del)?0:1, isset($del)?'商品类别删除成功':'删除失败');
+        $this->render_json(isset($del)?0:1, isset($del)?yun_at('admin_01427'):yun_at('wap_user_00146'));
 		
 	}
 	
@@ -105,7 +105,7 @@ class shop_class_controller extends adminCommon{
 			$this->MODEL('log')->addAdminLog("商品类别(ID:".$_POST['id'].")名称修改成功");
 		}
 		$this->cache_action();
-        $this->render_json(0, '修改成功');
+        $this->render_json(0, yun_at('admin_user_company_00208'));
 	}
 	
 	function cache_action()	{

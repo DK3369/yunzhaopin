@@ -12,37 +12,37 @@
 				<div class="pinyuGuanli">
 					<div class="pinyuGuFensu">
 						<div class="pinyuName">
-							<span>成绩</span>
+							<span>{yun:}t key='admin_00863'{/yun}</span>
 						</div>
 						<div class="pinyuFroms">
-							<el-input v-model="item.from" placeholder="请输入成绩"></el-input>
+							<el-input v-model="item.from" placeholder="{yun:}t key='admin_00866'{/yun}"></el-input>
 							<span class="spantite">到</span>
-							<el-input v-model="item.to" placeholder="请输入成绩"></el-input>
+							<el-input v-model="item.to" placeholder="{yun:}t key='admin_00866'{/yun}"></el-input>
 						</div>
 					</div>
 					<div class="pinyuGuFensu">
 						<div class="pinyuName">
-							<span>评语</span>
+							<span>{yun:}t key='admin_00864'{/yun}</span>
 						</div>
 						<div class="pinyuFroms">
-							<el-input type="textarea" :rows="2" placeholder="请输入评语" v-model="item.content">
+							<el-input type="textarea" :rows="2" placeholder="{yun:}t key='admin_00867'{/yun}" v-model="item.content">
 							</el-input>
 						</div>
 					</div>
 				</div>
 				<div class="pinyuClose">
-					<el-button type="text" @click="delrow(index)">删除</el-button>
+					<el-button type="text" @click="delrow(index)">{yun:}t key='common.delete'{/yun}</el-button>
 				</div>
 			
 			</div>
             <div class="drawerModLis" style="align-items: initial;">
                 <div class="drawerModInpt">
-                    <el-button type="primary" icon="el-icon-plus" plain size="medium" @click="addrow">添加评语</el-button>
+                    <el-button type="primary" icon="el-icon-plus" plain size="medium" @click="addrow">{yun:}t key='admin_00865'{/yun}</el-button>
                 </div>
             </div>
         </div>
         <div class="setBasicButn" style="border: none;">
-            <el-button type="primary" size="medium" @click="save">确定</el-button>
+            <el-button type="primary" size="medium" @click="save">{yun:}t key='common.confirm'{/yun}</el-button>
         </div>
     </div>
 </template>

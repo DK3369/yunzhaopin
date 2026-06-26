@@ -48,7 +48,7 @@ class admin_uc_controller extends adminCommon{
 		$this -> MODEL('config') -> setConfig(array('sy_uc_type'=>$sy_uc_type));
 		
 		$this->web_config();		
-		$this->render_json(0,'保存成功');
+		$this->render_json(0,yun_at('wap_user_00104'));
 	}
 
 
@@ -114,7 +114,7 @@ class admin_uc_controller extends adminCommon{
 				}
 			} 
 		}
-		$this->render_json(0,'保存成功');
+		$this->render_json(0,yun_at('wap_user_00104'));
 	}
 }
 ?>

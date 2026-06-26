@@ -13,24 +13,24 @@ class index_controller extends common
 
             if ($this->uid) {
 
-                $this->ACT_msg($this->config['sy_weburl'], "您已经登录了！");
+                $this->ACT_msg($this->config['sy_weburl'], yun_at('wap_00416'));
             }
             $type   =   $_GET['type'];
             if ($type) {
                 switch ($type) {
                     case 1:
                         if ($this->config['reg_user'] != 1) {
-                            $this->ACT_msg("index.php", "用户名注册已关闭！");
+                            $this->ACT_msg("index.php", yun_at('wap_01797'));
                         }
                         break;
                     case 2:
                         if ($this->config['reg_moblie'] != 1) {
-                            $this->ACT_msg("index.php", "手机号注册已关闭！");
+                            $this->ACT_msg("index.php", yun_at('wap_01798'));
                         }
                         break;
                     case 3:
                         if ($this->config['reg_email'] != 1) {
-                            $this->ACT_msg("index.php", "email注册已关闭！");
+                            $this->ACT_msg("index.php", yun_auto_t('email注册已关闭！'));
                         }
                     default:
                         break;
@@ -93,22 +93,22 @@ class index_controller extends common
         }
         if ((int)$_GET['type'] == 1) {
 
-            $title = $this->config['sy_webname'] . "- 注册成功";
+            $title = $this->config['sy_webname'] . 'model_00083';
         } elseif ((int)$_GET['type'] == 2) {
 
-            $title = $this->config['sy_webname'] . "- 帐号被锁定";
+            $title = $this->config['sy_webname'] . 'register_00001';
         } elseif ((int)$_GET['type'] == 3) {
 
-            $title = $this->config['sy_webname'] . "- 审核未通过";
+            $title = $this->config['sy_webname'] . 'model_00084';
         } elseif ((int)$_GET['type'] == 4) {
 
-            $title = $this->config['sy_webname'] . "- 邮件认证成功";
+            $title = $this->config['sy_webname'] . 'model_00085';
         } elseif ((int)$_GET['type'] == 5) {
 
-            $title = $this->config['sy_webname'] . "- 未审核";
+            $title = $this->config['sy_webname'] . 'model_00086';
         } elseif ((int)$_GET['type'] == 6) {
 
-            $title = $this->config['sy_webname'] . "- 订阅";
+            $title = $this->config['sy_webname'] . 'register_00002';
         } else {
 
             header("location:" . $this->config['sy_weburl']);

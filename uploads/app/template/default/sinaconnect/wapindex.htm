@@ -5,7 +5,7 @@
       <div class="model-prompt">
         <div class="yun-img"> <img width="100px;" height="100px;" src="{yun:}$smarty.session.qq.pic{/yun}"> </div>
         <div class="yun_model-text">
-          <p> 来自新浪的 <b>{yun:}$smarty.session.sina.nickname{/yun}</b> ，你好。 </p>
+          <p> {yun:}t key='common_02505'{/yun} <b>{yun:}$smarty.session.sina.nickname{/yun}</b> {yun:}t key='common_02291'{/yun} </p>
           <p>最后一步 ，就可以直接登录{yun:}$config.sy_webname{/yun}啦！</p>
          
         </div>
@@ -19,7 +19,7 @@
 		 
           <input type="submit" value="{yun:}t key='default_00283'{/yun}" class="yun_sub_12" onclick="window.location.href='{yun:}url  m=sinaconnect c=qqbind usertype=2{/yun}'">
 	
-             <input type="submit" value="绑定我的账户" class="yun_sub_13" onclick="window.location.href='{yun:}url m=wap c=login{/yun}'">
+             <input type="submit" value="{yun:}t key='common_02292'{/yun}" class="yun_sub_13" onclick="window.location.href='{yun:}url m=wap c=login{/yun}'">
          
         </div>
       </div>

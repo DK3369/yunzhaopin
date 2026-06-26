@@ -156,7 +156,7 @@ class friend_controller extends ask_controller{
 		$M		=	$this -> MODEL('ask');
 		
 		if($this->uid==''||$this->username==''){
-			$this->layer_msg('请先登录！',8,0,$_SERVER['HTTP_REFERER']);
+			$this->layer_msg('common_06042',8,0,$_SERVER['HTTP_REFERER']);
 		}
 		$this->is_login();
 		
@@ -207,7 +207,7 @@ class friend_controller extends ask_controller{
 			
 				$result	=	$AskM -> delquestion($id,array('uid'=>$this -> uid));
 			}
-			$result?$this->layer_msg('操作成功！',9,0,$_SERVER['HTTP_REFERER']):$this->layer_msg('操作失败！',8,0,$_SERVER['HTTP_REFERER']);
+			$result?$this->layer_msg('wap_js_00159',9,0,$_SERVER['HTTP_REFERER']):$this->layer_msg('model_00003',8,0,$_SERVER['HTTP_REFERER']);
 		}
 	}
 }

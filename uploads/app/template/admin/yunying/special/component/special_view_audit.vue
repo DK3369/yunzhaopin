@@ -7,13 +7,12 @@
       </div>
       <div class="sh_zwsz_add">
         <template v-if="info.linkman">{{ lc("admin_contact_person_value", [info.linkman]) }}{{ info.linkjob ? '（' + info.linkjob + '）' : '' }}</template>
-        <span v-if="info.linktel" class="shcomtel_n">{{ lc("admin_contact_phone_value", [info.linktel]) }}{{ info.infostatus == '1' ? '（公开）' :
-          '（不公开）' }}</span>
+        <span v-if="info.linktel" class="shcomtel_n">{yun:}t key='admin_01221'{/yun}</span>
         <template v-if="info.crm_name">{{ lc("admin_salesperson_value", [info.crm_name]) }}</template>
       </div>
       <div class="shcomtel">
-        <template v-if="info.reg_date_n">注册时间：{{ info.reg_date_n }}</template>
-        <span v-if="info.login_date > 0" class="shcomtel_n">最近登录时间：{{ info.login_date_n }} </span>
+        <template v-if="info.reg_date_n">{yun:}t key='admin_01222'{/yun}</template>
+        <span v-if="info.login_date > 0" class="shcomtel_n">{yun:}t key='admin_00450'{/yun}：{{ info.login_date_n }} </span>
         <template v-if="info.login_ip">IP：{{ info.login_ip }}</template>
       </div>
       <div class="shshowall">
@@ -21,15 +20,15 @@
           <el-tabs v-model="activeName" @tab-click="handleClick">
             <el-tab-pane label="基本资料" name="first">
               <div class="shshow_p">
-                <div class="" v-if="info.welfare_n">企业福利：
+                <div class="" v-if="info.welfare_n">{yun:}t key='admin_00644'{/yun}
                   <el-tag v-for="(item, index) in info.welfare_n" :key="index" size="mini"
                     class="welfare-margin">{{ item }}</el-tag>
                 </div>
                 <div class="">{{ lc("admin_industry_value", [info.hy_n ? info.hy_n : '']) }} </div>
                 <div class="">{{ lc("admin_company_nature_value", [info.pr_n ? info.pr_n : '']) }} </div>
                 <div class="">{{ lc("admin_company_size_value", [info.mun_n ? info.mun_n : '']) }}</div>
-                <div class="">注册资金：{{ info.money ? info.money : '' }} {{ info.money && info.moneytype_n ? info.moneytype_n : '' }}</div>
-                <div class="">企业地址： {{ info.job_city_one ? info.job_city_one : '' }}&nbsp;{{ info.job_city_two ? info.job_city_two : '' }}&nbsp;{{ info.job_city_three ? info.job_city_three : '' }}&nbsp;{{ info.address ? info.address : '' }}</div>
+                <div class="">{yun:}t key='admin_01223'{/yun}</div>
+                <div class="">{yun:}t key='wap_com_00158'{/yun}： {{ info.job_city_one ? info.job_city_one : '' }}&nbsp;{{ info.job_city_two ? info.job_city_two : '' }}&nbsp;{{ info.job_city_three ? info.job_city_three : '' }}&nbsp;{{ info.address ? info.address : '' }}</div>
                 <div class="" v-html="info.content ? info.content : ''"></div>
               </div>
             </el-tab-pane>
@@ -42,11 +41,11 @@
                     </el-link>
                     <div class="shshow_jobinfo"><span class="shshow_jobxz">{{item.job_salary}}</span> <span
                         class="shshow_line">|</span>
-                      {{item.job_exp}}经验 <span class="shshow_line">|</span> {{item.job_edu}}学历
+                      {yun:}t key='admin_01224'{/yun} <span class="shshow_line">|</span> {yun:}t key='admin_01225'{/yun}
                     </div>
                   </li>
                 </ul>
-                <div v-if="total <= 0" class="firm_tips_no"> 该企业还没有发布职位信息!</div>
+                <div v-if="total <= 0" class="firm_tips_no"> {yun:}t key='wap_00027'{/yun}</div>
               </div>
               <div v-if="total > 0" class="modulePagNum">
                 <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
@@ -57,16 +56,16 @@
           </el-tabs>
         </div>
         <div class="shcz">
-          <div class="wxsettip_small ">企业加入状态 </div>
+          <div class="wxsettip_small ">{yun:}t key='admin_01226'{/yun} </div>
           <template>
-            <el-radio v-model="ruleForm.status" label="1">允许加入</el-radio>
-            <el-radio v-model="ruleForm.status" label="2">拒绝加入</el-radio>
+            <el-radio v-model="ruleForm.status" label="1">{yun:}t key='admin_01227'{/yun}</el-radio>
+            <el-radio v-model="ruleForm.status" label="2">{yun:}t key='admin_01228'{/yun}</el-radio>
           </template>
-          <div class="wxsettip_small ">状态说明 </div>
-          <el-input type="textarea" :rows="2" placeholder="请输入内容" v-model="ruleForm.statusbody">
+          <div class="wxsettip_small ">{yun:}t key='admin_01229'{/yun} </div>
+          <el-input type="textarea" :rows="2" placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="ruleForm.statusbody">
           </el-input>
           <div class=" shczbth">
-            <el-button type="primary" @click="submitForm('ruleForm')">提 交</el-button>
+            <el-button type="primary" @click="submitForm('ruleForm')">{yun:}t key='member_com_00248'{/yun}</el-button>
           </div>
         </div>
       </div>
@@ -114,7 +113,7 @@ module.exports = {
             _this.ruleForm.statusbody = _this.info.special.statusbody;
           }
         } else {
-          message.error('暂无数据');
+          message.error("{yun:}t key='wap_js_00113'{/yun}");
         }
       }).catch(function (error) {
         console.log(error);
@@ -124,17 +123,17 @@ module.exports = {
       let _this = this;
       let params = JSON.parse(JSON.stringify(this.ruleForm));
       if (params.status != '1' && params.status != '2') {
-        message.error('请选择审核状态！');
+        message.error("{yun:}t key='admin_01311'{/yun}");
         return false;
       }
 
       httpPost('m=yunying&c=special_special&a=statuscom', params).then(function (response) {
         let res = response.data;
         if (res.error === 0) {
-          message.success('操作成功！');
+          message.success("{yun:}t key='wap_js_00159'{/yun}");
           _this.$emit("child-event");
         } else {
-          message.error('操作失败！');
+          message.error("{yun:}t key='model_00003'{/yun}");
         }
       }).catch(function (error) {
         console.log(error);

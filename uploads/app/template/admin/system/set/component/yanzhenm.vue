@@ -4,15 +4,15 @@
             <table class="tableVue">
                 <thead>
                     <tr align="left">
-                        <th width="180">名称</th>
-                        <th>状态</th>
-                        <th width="520">说明</th>
+                        <th width="180">{yun:}t key='member_com_00021'{/yun}</th>
+                        <th>{yun:}t key='member_user_00181'{/yun}</th>
+                        <th width="520">{yun:}t key='member_com_00207'{/yun}</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td>
-                            <div class="TableTite">开启系统验证码</div>
+                            <div class="TableTite">{yun:}t key='admin_system_00417'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableButn">
@@ -30,49 +30,49 @@
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>开启系统验证码</span>
+                                <span>{yun:}t key='admin_system_00417'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">验证码类型</div>
+                            <div class="TableTite">{yun:}t key='admin_system_00422'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableButn">
                                 <el-radio-group v-model="list.code_kind">
-                                    <el-radio label="1">文字验证码</el-radio>
-                                    <el-radio label="4">顶象无感智能验证</el-radio>
-                                    <el-radio label="5">手势验证（vaptcha）</el-radio>
-                                    <el-radio label="3">极验智能验证码</el-radio>
-                                    <el-radio label="6">腾讯云验证码</el-radio>
+                                    <el-radio label="1">{yun:}t key='admin_system_00421'{/yun}</el-radio>
+                                    <el-radio label="4">{yun:}t key='admin_system_00416'{/yun}</el-radio>
+                                    <el-radio label="5">{yun:}t key='admin_00997'{/yun}</el-radio>
+                                    <el-radio label="3">{yun:}t key='admin_system_00418'{/yun}</el-radio>
+                                    <el-radio label="6">{yun:}t key='admin_system_00420'{/yun}</el-radio>
                                 </el-radio-group>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>验证码类型</span>
+                                <span>{yun:}t key='admin_system_00422'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <template v-if="list.code_kind == 1">
                         <tr>
                             <td>
-                                <div class="TableTite">文字验证码生成类型：</div>
+                                <div class="TableTite">{yun:}t key='admin_00998'{/yun}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
                                     <el-radio-group v-model="list.code_type">
-                                        <el-radio label="1">数字</el-radio>
-                                        <el-radio label="2">英文</el-radio>
-                                        <el-radio label="3">英文+数字</el-radio>
+                                        <el-radio label="1">{yun:}t key='common_01997'{/yun}</el-radio>
+                                        <el-radio label="2">{yun:}t key='admin_system_00425'{/yun}</el-radio>
+                                        <el-radio label="3">{yun:}t key='admin_00999'{/yun}</el-radio>
                                     </el-radio-group>
                                 </div>
                             </td>
                         </tr>
                         <tr>
                             <td>
-                                <div class="TableTite">选择验证码文件类型：</div>
+                                <div class="TableTite">{yun:}t key='admin_01000'{/yun}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
@@ -87,7 +87,7 @@
                         </tr>
                         <tr>
                             <td>
-                                <div class="TableTite">验证码图片大小</div>
+                                <div class="TableTite">{yun:}t key='admin_system_00419'{/yun}</div>
                             </td>
                             <td>
                                 <!-- <div class="TableInpt">
@@ -106,7 +106,7 @@
                                     </div>
                                     <div class="TableInCooLis">
                                         <el-input v-model="list.code_height" type="text" class="input-text" size="10" maxlength="255" onkeyup="this.value=this.value.replace(/[^0-9.]/g,'')">
-                                            <template slot="prepend">高</template>
+                                            <template slot="prepend">{yun:}t key='common_02105'{/yun}</template>
                                             <span slot="suffix" class="slotspan">px</span>
                                         </el-input>
                                     </div>
@@ -114,24 +114,24 @@
                             </td>
                             <td>
                                 <div class="TableShuom">
-                                    <span>验证码图片大小</span>
+                                    <span>{yun:}t key='admin_system_00419'{/yun}</span>
                                 </div>
                             </td>
                         </tr>
                         <tr>
                             <td>
-                                <div class="TableTite">验证码字符数：</div>
+                                <div class="TableTite">{yun:}t key='admin_01002'{/yun}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
                                     <el-input v-model="list.code_strlength" maxlength="1"
                                         onKeyUp="this.value=this.value.replace(/[^0-9]/g,'')"
-                                        placeholder="请输入内容"></el-input>
+                                        placeholder="{yun:}t key='wap_user_00076'{/yun}"></el-input>
                                 </div>
                             </td>
                             <td>
                                 <div class="TableShuom">
-                                    <span>提示：字符数不要大于4</span>
+                                    <span>{yun:}t key='admin_01003'{/yun}</span>
                                 </div>
                             </td>
                         </tr>
@@ -139,31 +139,31 @@
                     <template v-if="list.code_kind == 4">
                         <tr>
                             <td>
-                                <div class="TableTite">顶象appId</div>
+                                <div class="TableTite">{yun:}t key='admin_01004'{/yun}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
-                                    <el-input v-model="list.sy_dxappid" placeholder="请输入内容"></el-input>
+                                    <el-input v-model="list.sy_dxappid" placeholder="{yun:}t key='wap_user_00076'{/yun}"></el-input>
                                 </div>
                             </td>
                             <td>
                                 <div class="TableShuom">
-                                    <span>申请地址：<el-link target="_blank" type="info" href="https://www.dingxiang-inc.com">https://www.dingxiang-inc.com</el-link></span>
+                                    <span>{yun:}t key='admin_01005'{/yun}<el-link target="_blank" type="info" href="https://www.dingxiang-inc.com">https://www.dingxiang-inc.com</el-link></span>
                                 </div>
                             </td>
                         </tr>
                         <tr>
                             <td>
-                                <div class="TableTite">顶象appSecret</div>
+                                <div class="TableTite">{yun:}t key='admin_01006'{/yun}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
-                                    <el-input v-model="list.sy_dxappsecret" placeholder="请输入内容"></el-input>
+                                    <el-input v-model="list.sy_dxappsecret" placeholder="{yun:}t key='wap_user_00076'{/yun}"></el-input>
                                 </div>
                             </td>
                             <td>
                                 <div class="TableShuom">
-                                    <span>申请地址：<el-link target="_blank" type="info" href="https://www.dingxiang-inc.com">https://www.dingxiang-inc.com</el-link></span>
+                                    <span>{yun:}t key='admin_01005'{/yun}<el-link target="_blank" type="info" href="https://www.dingxiang-inc.com">https://www.dingxiang-inc.com</el-link></span>
                                 </div>
                             </td>
                         </tr>
@@ -175,12 +175,12 @@
                             </td>
                             <td>
                                 <div class="TableInpt">
-                                    <el-input v-model="list.sy_vaptcha_vid" placeholder="请输入内容"></el-input>
+                                    <el-input v-model="list.sy_vaptcha_vid" placeholder="{yun:}t key='wap_user_00076'{/yun}"></el-input>
                                 </div>
                             </td>
                             <td>
                                 <div class="TableShuom">
-                                    <span>申请地址：<el-link target="_blank" type="info" href="https://www.vaptcha.com">https://www.vaptcha.com</el-link></span>
+                                    <span>{yun:}t key='admin_01005'{/yun}<el-link target="_blank" type="info" href="https://www.vaptcha.com">https://www.vaptcha.com</el-link></span>
                                 </div>
                             </td>
                         </tr>
@@ -190,7 +190,7 @@
                             </td>
                             <td>
                                 <div class="TableInpt">
-                                    <el-input v-model="list.sy_vaptcha_key" placeholder="请输入内容"></el-input>
+                                    <el-input v-model="list.sy_vaptcha_key" placeholder="{yun:}t key='wap_user_00076'{/yun}"></el-input>
                                 </div>
                             </td>
                             <td>
@@ -203,31 +203,31 @@
                     <template v-if="list.code_kind == 3">
                         <tr>
                             <td>
-                                <div class="TableTite">极验ID：</div>
+                                <div class="TableTite">{yun:}t key='admin_01007'{/yun}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
-                                    <el-input v-model="list.sy_geetestid" placeholder="请输入内容"></el-input>
+                                    <el-input v-model="list.sy_geetestid" placeholder="{yun:}t key='wap_user_00076'{/yun}"></el-input>
                                 </div>
                             </td>
                             <td>
                                 <div class="TableShuom">
-                                    <span>申请地址：<el-link target="_blank" type="info" href="http://www.geetest.com">http://www.geetest.com</el-link></span>
+                                    <span>{yun:}t key='admin_01005'{/yun}<el-link target="_blank" type="info" href="http://www.geetest.com">http://www.geetest.com</el-link></span>
                                 </div>
                             </td>
                         </tr>
                         <tr>
                             <td>
-                                <div class="TableTite">极验KEY：</div>
+                                <div class="TableTite">{yun:}t key='admin_01008'{/yun}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
-                                    <el-input v-model="list.sy_geetestkey" placeholder="请输入内容"></el-input>
+                                    <el-input v-model="list.sy_geetestkey" placeholder="{yun:}t key='wap_user_00076'{/yun}"></el-input>
                                 </div>
                             </td>
                             <td>
                                 <div class="TableShuom">
-                                    <span>申请地址：<el-link target="_blank" type="info" href="http://www.geetest.com">http://www.geetest.com</el-link></span>
+                                    <span>{yun:}t key='admin_01005'{/yun}<el-link target="_blank" type="info" href="http://www.geetest.com">http://www.geetest.com</el-link></span>
                                 </div>
                             </td>
                         </tr>
@@ -239,12 +239,12 @@
                             </td>
                             <td>
                                 <div class="TableInpt">
-                                    <el-input v-model="list.sy_tecentappid" placeholder="请输入内容"></el-input>
+                                    <el-input v-model="list.sy_tecentappid" placeholder="{yun:}t key='wap_user_00076'{/yun}"></el-input>
                                 </div>
                             </td>
                             <td>
                                 <div class="TableShuom">
-                                    <span>申请地址：<el-link target="_blank" type="info" href="https://cloud.tencent.com">https://cloud.tencent.com</el-link><span
+                                    <span>{yun:}t key='admin_01005'{/yun}<el-link target="_blank" type="info" href="https://cloud.tencent.com">https://cloud.tencent.com</el-link><span
                                             style="color:red;padding-left: 5px;">(使用此功能需php版本>=7.0)</span></span>
                                 </div>
                             </td>
@@ -255,12 +255,12 @@
                             </td>
                             <td>
                                 <div class="TableInpt">
-                                    <el-input v-model="list.sy_tecentappsecret" placeholder="请输入内容"></el-input>
+                                    <el-input v-model="list.sy_tecentappsecret" placeholder="{yun:}t key='wap_user_00076'{/yun}"></el-input>
                                 </div>
                             </td>
                             <td>
                                 <div class="TableShuom">
-                                    <span>申请地址： <el-link target="_blank" type="info" href="https://cloud.tencent.com">https://cloud.tencent.com</el-link></span>
+                                    <span>{yun:}t key='admin_01005'{/yun} <el-link target="_blank" type="info" href="https://cloud.tencent.com">https://cloud.tencent.com</el-link></span>
                                 </div>
                             </td>
                         </tr>
@@ -270,12 +270,12 @@
                             </td>
                             <td>
                                 <div class="TableInpt">
-                                    <el-input v-model="list.sy_tecentsecretid" placeholder="请输入内容"></el-input>
+                                    <el-input v-model="list.sy_tecentsecretid" placeholder="{yun:}t key='wap_user_00076'{/yun}"></el-input>
                                 </div>
                             </td>
                             <td>
                                 <div class="TableShuom">
-                                    <span>申请地址： <el-link target="_blank" type="info" href="https://cloud.tencent.com">https://cloud.tencent.com</el-link></span>
+                                    <span>{yun:}t key='admin_01005'{/yun} <el-link target="_blank" type="info" href="https://cloud.tencent.com">https://cloud.tencent.com</el-link></span>
                                 </div>
                             </td>
                         </tr>
@@ -285,12 +285,12 @@
                             </td>
                             <td>
                                 <div class="TableInpt">
-                                    <el-input v-model="list.sy_tecentsecretkey" placeholder="请输入内容"></el-input>
+                                    <el-input v-model="list.sy_tecentsecretkey" placeholder="{yun:}t key='wap_user_00076'{/yun}"></el-input>
                                 </div>
                             </td>
                             <td>
                                 <div class="TableShuom">
-                                    <span>申请地址： <el-link target="_blank" type="info" href="https://cloud.tencent.com">https://cloud.tencent.com</el-link></span>
+                                    <span>{yun:}t key='admin_01005'{/yun} <el-link target="_blank" type="info" href="https://cloud.tencent.com">https://cloud.tencent.com</el-link></span>
                                 </div>
                             </td>
                         </tr>
@@ -299,7 +299,7 @@
             </table>
         </div>
         <div class="setBasicButn" style="border: none; height: 80px;">
-            <el-button type="primary" size="medium" @click="save" :disabled="saveLoading">提交</el-button>
+            <el-button type="primary" size="medium" @click="save" :disabled="saveLoading">{yun:}t key='common.submit'{/yun}</el-button>
         </div>
     </div>
 </template>
@@ -352,7 +352,7 @@ module.exports = {
             httpPost(url, ruleForm).then(function (response) {
                 var res = response.data;
                 if (res.error == 0) {
-                    message.success('操作成功');
+                    message.success("{yun:}t key='wap_user_00264'{/yun}");
                     _this.$emit('get-list', true)
                 } else {
                     message.error(res.msg);

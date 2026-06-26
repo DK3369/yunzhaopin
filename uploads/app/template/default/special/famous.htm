@@ -27,7 +27,7 @@
 </div>
 </div>
 </div>
-<div class="special_one_tit"><span class="special_one_tit_n"><i class="special_one_tit_line"></i>{yun:}t key='wap_00299'{/yun}</span><span class="special_one_tit_na"><i class="special_one_tit_liner"></i>大集合</span></div>
+<div class="special_one_tit"><span class="special_one_tit_n"><i class="special_one_tit_line"></i>{yun:}t key='wap_00299'{/yun}</span><span class="special_one_tit_na"><i class="special_one_tit_liner"></i>{yun:}t key='common_02306'{/yun}</span></div>
 <div class="special_one_tit_e">Recruitment of Famous Enterprises</div>
 <div class="w1200">
 <ul class="special_one_job">
@@ -58,15 +58,15 @@
         {yun:}if $info.com_bm==1{/yun}
 		    {yun:}if !$isapply{/yun}
 			<div class="famous_content_p_bth">    
-				<div class="special_one_bm_tip">我是企业 , 我想参加招聘</div>
+				<div class="special_one_bm_tip">{yun:}t key='common_02307'{/yun}</div>
                 {yun:}if $uid{/yun}
                 {yun:}if $usertype=='2'{/yun}
                   <input type='button' value="{yun:}t key='wap_00375'{/yun}" onclick="comapply('{yun:}$info.id{/yun}','{yun:}$info.integral{/yun}','{yun:}url m=special c=apply{/yun}')" class="special_one_bm_bth" />
                 {yun:}else{/yun}
                 {yun:}if $config.sy_user_change==1{/yun}
-                 <input type='button' value="{yun:}t key='wap_00375'{/yun}" onclick="layer.msg('请先申请企业用户才能报名！',2, 8)" class="special_one_bm_bth" />
+                 <input type='button' value="{yun:}t key='wap_00375'{/yun}" onclick="layer.msg("{yun:}t key='common_02305'{/yun}",2, 8)" class="special_one_bm_bth" />
                 {yun:}else{/yun} 
-                       <input type='button' value="{yun:}t key='wap_00375'{/yun}" onclick="layer.msg('只有企业用户才能报名！',2, 8)" class="special_one_bm_bth" />
+                       <input type='button' value="{yun:}t key='wap_00375'{/yun}" onclick="layer.msg("{yun:}t key='model_00055'{/yun}",2, 8)" class="special_one_bm_bth" />
                  {yun:}/if{/yun}
                 {yun:}/if{/yun}
                 {yun:}else{/yun}

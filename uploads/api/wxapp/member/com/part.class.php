@@ -232,7 +232,7 @@ class part_controller extends com_controller
 
         if (!$_POST['name'] || !$_POST['type'] || !$_POST['number'] || !$_POST['address'] || !$_POST['linkman'] || !$_POST['linktel']) {
 
-            $this->render_json(3, yun_auto_t('请完善信息'));
+            $this->render_json(3, yun_at('wap_01839'));
         }
 
         $msg        =   array();
@@ -243,14 +243,14 @@ class part_controller extends com_controller
             if ($this->comInfo['email_status'] != '1') {
 
                 $isallow_addjob =   '0';
-                $msg[]          =   yun_auto_t('请先完成邮箱认证');
+                $msg[]          =   yun_at('wap_01301');
             }
         }
         if ($this->config['com_enforce_mobilecert'] == '1') {
             if ($this->comInfo['moblie_status'] != '1') {
 
                 $isallow_addjob =   '0';
-                $msg[]          =   yun_auto_t('请先完成手机认证');
+                $msg[]          =   yun_at('wap_01302');
             }
         }
         if ($this->config['com_enforce_licensecert'] == '1') {
@@ -260,13 +260,13 @@ class part_controller extends com_controller
 
             if ($this->comInfo['yyzz_status'] != '1' && (empty($cert) || $cert['status'] == 2)) {
                 $isallow_addjob =   '0';
-                $msg[]          =   yun_auto_t('请先完成企业资质认证');
+                $msg[]          =   yun_at('wap_01303');
             }
         }
         if ($this->config['com_enforce_setposition'] == '1' && !empty($this->config['map_key'])) {
             if (empty($this->comInfo['x']) || empty($this->comInfo['y'])) {
                 $isallow_addjob =   '0';
-                $msg[]          =   yun_auto_t('请先完成企业地图设置');
+                $msg[]          =   yun_at('wap_01304');
             }
         }
         if ($this->config['com_gzgzh'] == '1') {
@@ -293,9 +293,9 @@ class part_controller extends com_controller
                 if ($isSubscribe == 0) {
                     $isallow_addjob = '0';
                     if (isset($_POST['source']) && $_POST['source'] == 'wap') {
-                        $msg[] = yun_auto_t('微信公众号未关注');
+                        $msg[] = yun_at('wap_00096');
                     } else if ($provider == 'weixin' && empty($uInfo['wxopenid'])) {
-                        $msg[] = yun_auto_t('请先完成微信绑定');
+                        $msg[] = yun_at('wap_01305');
                     }
                 }
             }
@@ -314,7 +314,7 @@ class part_controller extends com_controller
             if ($statis['addjobnum'] == 0) {
 
                 $arr['error']   =   3;
-                $arr['msg']     =   yun_auto_t('您的会员已到期 ');
+                $arr['msg']     =   yun_at('wap_01287');
                 $this->render_json($arr['error'], $arr['msg']);
             }
         }
@@ -343,7 +343,7 @@ class part_controller extends com_controller
 
         if (empty($partids)) {
 
-            $this->render_json(1, yun_auto_t('没有招聘中的职位'));
+            $this->render_json(1, yun_at('wap_01247'));
         }
 
         $this->company_statis($this->member['uid']);
@@ -384,7 +384,7 @@ class part_controller extends com_controller
     {
         $applyid    =   $_POST['applyid'];
         if (empty($applyid)) {
-            $this->render_json(2, yun_auto_t('没有该申请'));
+            $this->render_json(2, yun_at('wap_01840'));
         }
         $partM      =   $this->MODEL('part');
         $nid        =   $partM->upPartSq(array('id' => $applyid, 'comid'=>$this->member['uid']), array('status' => 2));
@@ -393,7 +393,7 @@ class part_controller extends com_controller
             $this->render_json(1, '');
         } else {
 
-            $this->render_json(2, yun_auto_t('查看失败'));
+            $this->render_json(2, yun_at('wap_01841'));
         }
     }
 
@@ -402,7 +402,7 @@ class part_controller extends com_controller
     {
         if (!$_POST['id']) {
 
-            $this->render_json(3, yun_auto_t('参数不正确'));
+            $this->render_json(3, yun_at('wap_01833'));
         } else {
 
             $partM  =   $this->MODEL('part');
@@ -416,11 +416,11 @@ class part_controller extends com_controller
                 if (!isVip($statis['vip_etime'])) {
 
                     $error  =   8;
-                    $msg    =   yun_auto_t('会员已到期，无法上架，请先升级会员！');
+                    $msg    =   yun_at('wap_01293');
                     if ($this->config['sy_iospay'] == 2) {
 
                         $error  =   2;
-                        $msg    =   yun_auto_t('您好，目前不支持上架职位');
+                        $msg    =   yun_at('wap_01294');
                     }
                     $this->render_json($error, $msg);
                 }
@@ -446,7 +446,7 @@ class part_controller extends com_controller
                         if ($this->config['sy_iospay'] == 2) {
 
                             $return['errcode']  =   2;
-                            $return['msg']      =   yun_auto_t('您好，目前不支持上架职位');// 苹果关闭支付功能
+                            $return['msg']      =   yun_at('wap_01294');// 苹果关闭支付功能
                         }
                         $this->render_json($return['errcode'], $return['msg']);
                     }
@@ -473,7 +473,7 @@ class part_controller extends com_controller
                 if ($statis['rating_type'] == 1){
 
                     $statisM = $this->MODEL('statis');
-                    $payDetail  =   yun_auto_t('上架兼职，消耗上架套餐数量：1');
+                    $payDetail  =   yun_at('wap_01842');
                     $statisM->addStatisDetail(array('uid' => $this->uid, 'type' => 1, 'num' => 1, 'detail' => $payDetail, 'uri' => $_SERVER['REQUEST_URI']));
                 }
             }
@@ -483,13 +483,13 @@ class part_controller extends com_controller
             if ($nid) {
 
                 $logM       =   $this->MODEL('log');
-                $logContent =   yun_auto_t('职位更新：调整兼职招聘状态');
+                $logContent =   yun_at('wap_01843');
                 $logDetail  =   $_POST['status'] == 0 ? '调整兼职《'.$part['name']. yun_auto_t('》招聘状态：下架->上架') : '调整兼职('.$part['name']. yun_auto_t(')招聘状态：上架->下架');
                 $logM->addMemberLog($this->member['uid'], $this->member['usertype'], $logContent, 9, 2, $logDetail);
 
                 $this->render_json(0, 'ok');
             } else {
-                $this->render_json(2, yun_auto_t('设置失败'));
+                $this->render_json(2, yun_at('api_wxapp_00016'));
             }
         }
     }

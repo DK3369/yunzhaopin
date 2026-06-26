@@ -6,72 +6,72 @@
                 <table class="tableVue">
                     <thead>
                         <tr align="left">
-                            <th width="200">名称</th>
-                            <th width="440">状态</th>
-                            <th>说明</th>
+                            <th width="200">{yun:}t key='member_com_00021'{/yun}</th>
+                            <th width="440">{yun:}t key='member_user_00181'{/yun}</th>
+                            <th>{yun:}t key='member_com_00207'{/yun}</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
                             <td>
-                                <div class="TableTite">开通用户名</div>
+                                <div class="TableTite">{yun:}t key='admin_01238'{/yun}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
                                     <el-autocomplete v-model="save.username" :fetch-suggestions="remoteMethod"
-                                        placeholder="请输入内容" :trigger-on-focus="false" @select="usernameChange"
+                                        placeholder="{yun:}t key='wap_user_00076'{/yun}" :trigger-on-focus="false" @select="usernameChange"
                                         size="small"></el-autocomplete>
                                 </div>
                             </td>
                             <td>
                                 <div class="TableShuom">
-                                    <span>单次只能为一个会员开通套餐</span>
+                                    <span>{yun:}t key='admin_01239'{/yun}</span>
                                 </div>
                             </td>
                         </tr>
                         <tr>
                             <td>
-                                <div class="TableTite">开通企业名称</div>
+                                <div class="TableTite">{yun:}t key='admin_01240'{/yun}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
                                     <el-autocomplete v-model="save.comname" :fetch-suggestions="remoteMethodCom"
-                                        placeholder="请输入内容" :trigger-on-focus="false" @select="comnameChange"
+                                        placeholder="{yun:}t key='wap_user_00076'{/yun}" :trigger-on-focus="false" @select="comnameChange"
                                         size="small"></el-autocomplete>
                                 </div>
                             </td>
                             <td>
                                 <div class="TableShuom">
-                                    <span>开通企业名称</span>
+                                    <span>{yun:}t key='admin_01240'{/yun}</span>
                                 </div>
                             </td>
                         </tr>
                         <tr>
                             <td>
-                                <div class="TableTite">是否累加</div>
+                                <div class="TableTite">{yun:}t key='admin_01241'{/yun}</div>
                             </td>
                             <td>
                                 <div class="TableButn">
                                     <el-radio-group v-model="save.leijia" @change="leijiaFun">
-                                        <el-radio label="1">是 </el-radio>
-                                        <el-radio label="2">否</el-radio>
+                                        <el-radio label="1">{yun:}t key='common.yes'{/yun} </el-radio>
+                                        <el-radio label="2">{yun:}t key='common.no'{/yun}</el-radio>
                                     </el-radio-group>
                                 </div>
                             </td>
                             <td>
                                 <div class="TableShuom">
-                                    <span>是否累加</span>
+                                    <span>{yun:}t key='admin_01241'{/yun}</span>
                                 </div>
                             </td>
                         </tr>
                         <tr v-if="leijiaStatus">
                             <td>
-                                <div class="TableTite">原本套餐：</div>
+                                <div class="TableTite">{yun:}t key='admin_01242'{/yun}</div>
                             </td>
                             <td>
                                 <div class="TableButn">
                                     <span style="margin-right: 10px;">{{ lc("admin_package_name_value", [package_data.rating_name]) }}</span>
-                                    <span style="margin-right: 10px;">截止日期：
+                                    <span style="margin-right: 10px;">{yun:}t key='admin_01243'{/yun}
                                         <span v-if="expireTimeStatus" style="color: red">{{ package_data.time_ymd }}</span>
                                         <span v-else>{{ package_data.time_ymd }}</span>
                                     </span>
@@ -82,11 +82,11 @@
                         </tr>
                         <tr>
                             <td>
-                                <div class="TableTite">开通等级</div>
+                                <div class="TableTite">{yun:}t key='admin_01244'{/yun}</div>
                             </td>
                             <td>
                                 <div class="TableSelect" style="display: flex;align-items: center;">
-                                    <el-select v-model="save.ratingid" placeholder="请选择" @change="ratingFun">
+                                    <el-select v-model="save.ratingid" placeholder="{yun:}t key='wap_user_00100'{/yun}" @change="ratingFun">
                                         <el-option v-for="item in ratinglist" :key="item.id" :label="item.name"
                                             :value="item.id">
                                         </el-option>
@@ -102,12 +102,12 @@
                         </tr>
                         <tr>
                             <td>
-                                <div class="TableTite">套餐时间</div>
+                                <div class="TableTite">{yun:}t key='admin_01245'{/yun}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
                                     <el-input v-model="save.taocanshijian" placeholder=" " disabled>
-                                        <span slot="suffix" class="slotspan">天</span>
+                                        <span slot="suffix" class="slotspan">{yun:}t key='common_02067'{/yun}</span>
                                     </el-input>
                                 </div>
                             </td>
@@ -119,12 +119,12 @@
                         </tr>
                         <tr>
                             <td>
-                                <div class="TableTite">价格</div>
+                                <div class="TableTite">{yun:}t key='wap_00563'{/yun}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
                                     <el-input v-model="save.vipprice" placeholder=" ">
-                                        <span slot="suffix" class="slotspan">元</span>
+                                        <span slot="suffix" class="slotspan">{yun:}t key='common_02056'{/yun}</span>
                                     </el-input>
                                 </div>
                             </td>
@@ -136,11 +136,11 @@
                         </tr>
                         <tr>
                             <td>
-                                <div class="TableTite">到期时间</div>
+                                <div class="TableTite">{yun:}t key='admin_user_company_00052'{/yun}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
-                                    <el-date-picker v-model="save.vipetime" type="date" placeholder="选择日期"
+                                    <el-date-picker v-model="save.vipetime" type="date" placeholder="{yun:}t key='admin_00346'{/yun}"
                                         @change="changeDate" :picker-options="pickerOptions">
                                     </el-date-picker>
                                 </div>
@@ -153,11 +153,11 @@
                         </tr>
                         <tr>
                             <td>
-                                <div class="TableTite">备　　注</div>
+                                <div class="TableTite">{yun:}t key='admin_01246'{/yun}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
-                                    <el-input type="textarea" :rows="2" placeholder="请输入内容" v-model="save.remark">
+                                    <el-input type="textarea" :rows="2" placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="save.remark">
                                     </el-input>
                                 </div>
                             </td>
@@ -171,7 +171,7 @@
                 </table>
             </div>
             <div class="setBasicButn" style="border: none;">
-                <el-button type="primary" size="medium" @click="saveFun" :disabled="submitLoading">开通</el-button>
+                <el-button type="primary" size="medium" @click="saveFun" :disabled="submitLoading">{yun:}t key='admin_01247'{/yun}</el-button>
             </div>
         </div>
     </div>
@@ -274,7 +274,7 @@ module.exports = {
             let vipetime = item.vipetime;
             let vipetime_ymd = item.vipetime_ymd;
             let $time = parseInt(Date.now() / 1000);
-            if (vipetime_ymd == '不限' || vipetime > $time) {
+            if (vipetime_ymd == '{yun:}t key='common_01936'{/yun}' || vipetime > $time) {
                 this.expireTimeStatus = false;
             } else {
                 this.expireTimeStatus = true;
@@ -324,7 +324,7 @@ module.exports = {
             let vipetime = item.vipetime;
             let vipetime_ymd = item.vipetime_ymd;
             let $time = parseInt(Date.now() / 1000);
-            if (vipetime_ymd == '不限' || vipetime > $time) {
+            if (vipetime_ymd == '{yun:}t key='common_01936'{/yun}' || vipetime > $time) {
                 this.expireTimeStatus = false;
             } else {
                 this.expireTimeStatus = true;
@@ -355,7 +355,7 @@ module.exports = {
         leijiaFun: function () {
             let leijia = this.save.leijia;
             if (!this.save.comname) {
-                message.error('请选择企业名称');
+                message.error("{yun:}t key='admin_yunying_00090'{/yun}");
                 return;
             }
             if (!this.save.username) {
@@ -383,7 +383,7 @@ module.exports = {
                 }
             } else {
                 if (!this.save.comname) {
-                    message.error('请选择企业名称');
+                    message.error("{yun:}t key='admin_yunying_00090'{/yun}");
                     return;
                 }
                 if (!this.save.username) {
@@ -399,7 +399,7 @@ module.exports = {
         saveFun: function () {
 
             if (!this.save.comname) {
-                message.error('请选择企业名称');
+                message.error("{yun:}t key='admin_yunying_00090'{/yun}");
                 return;
             }
             if (!this.save.username) {
@@ -408,7 +408,7 @@ module.exports = {
             }
 
             if (!this.save.ratingid) {
-                message.error('请选择开通等级！');
+                message.error("{yun:}t key='admin_yunying_00091'{/yun}");
                 return;
             }
             let url = this.uri + "finance_recharge&a=comvip";

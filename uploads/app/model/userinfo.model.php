@@ -6,11 +6,11 @@ class userinfo_model extends model
 {
 
     private $comstatusStr =array(
-    	0	=>	' 被设为未审核状态',
-    	1	=>	' 通过审核',
-    	2	=>	' 被锁定',
-    	3	=>	' 审核未通过',
-    	4	=>	' 被暂停'
+    	0	=>	'common_01299',
+    	1	=>	'common_06618',
+    	2	=>	'wap_com_00113',
+    	3	=>	'wap_user_00325',
+    	4	=>	'admin_user_company_00204'
     );
 
     private function addErrorLog($uid,$type='',$content)
@@ -43,7 +43,7 @@ class userinfo_model extends model
 	            }
 				if (isset($data['sf']) && $data['sf'] == '1') {
 	                
-					$sflist  		=  array(1=>'个人会员',2=>'企业会员');
+					$sflist  		=  array(1=>'admin_system_00129',2=>'admin_user_company_00281');
 					
 	                $member['sf']  	=  $sflist[$member['usertype']];
 	            }
@@ -201,8 +201,8 @@ class userinfo_model extends model
         // 增加积分记录
         require_once('integral.model.php');
         $IntegralM = new integral_model($this->db, $this->def);
-        !empty($integral) && $IntegralM->insert_company_pay($integral, 2, $uid, 2, '管理员添加企业赠送积分', 1, 2, true);
-        !empty($rInfo['integral_buy']) && $IntegralM->insert_company_pay($rInfo['integral_buy'], 2, $uid, 2, '管理员修改会员套餐赠送积分', 1, 2, true);
+        !empty($integral) && $IntegralM->insert_company_pay($integral, 2, $uid, 2, 'common_06619', 1, 2, true);
+        !empty($rInfo['integral_buy']) && $IntegralM->insert_company_pay($rInfo['integral_buy'], 2, $uid, 2, 'common_06584', 1, 2, true);
 	}
 	
 	//修改用户信息
@@ -246,12 +246,12 @@ class userinfo_model extends model
 	        
 	        if(CheckRegUser($data['username']) == false && CheckRegEmail($data['username']) == false){
 	            
-	            return array('error'=>'101','msg'=>'用户名包含特殊字符');
+	            return array('error'=>'101','msg'=>yun_at('wap_00205'));
 			}
 
             if (!checkRegnameLegal($data['username'])) {
 
-                return array('error'=>'107','msg'=>'该用户名禁止使用！');
+                return array('error'=>'107','msg'=>yun_at('common_01147'));
             }
 	        
 	        $reged	=  $this -> select_once('member',array('username'=>trim($data['username'])),'`uid`');
@@ -262,12 +262,12 @@ class userinfo_model extends model
 	                
 	                if ($reged['uid'] != $uid){
 	                    
-	                    return array('error'=>'102','msg'=>'用户名已被使用');
+	                    return array('error'=>'102','msg'=>yun_at('common_01388'));
 	                    
 	                }
 	            }else{
 	                
-	                return array('error'=>'102','msg'=>'用户名已被使用');
+	                return array('error'=>'102','msg'=>yun_at('common_01388'));
 	            }
 	        }else{
 	            $return['username']  =  $data['username'];
@@ -283,7 +283,7 @@ class userinfo_model extends model
 	            
 	            if ($member['restname'] == '1') {
 	                
-	                return array('error'=>'100','msg'=>'您无权限修改用户名！');
+	                return array('error'=>'100','msg'=>yun_at('common_01009'));
 	            }
 
 	            $nmsg	=	regUserNameComplex($data['username']);
@@ -304,7 +304,7 @@ class userinfo_model extends model
   	                
 	                if ($member['password'] != $oldpass) {
 	                    
-	                    return array('error'=>'108','msg'=>'您的密码验证错误，请重试！');
+	                    return array('error'=>'108','msg'=>yun_at('common_00707'));
 	                }
 	            }
 	        } 
@@ -317,10 +317,10 @@ class userinfo_model extends model
 
                 if (!empty($uid)){
                     if ($reged['uid'] != $uid){
-                        return array('error'=>'106','msg'=>'企业名称已被使用');
+                        return array('error'=>'106','msg'=>yun_at('admin_user_00021'));
                     }
                 }else{
-                    return array('error'=>'106','msg'=>'企业名称已被使用');
+                    return array('error'=>'106','msg'=>yun_at('admin_user_00021'));
                 }
 
             }
@@ -330,11 +330,11 @@ class userinfo_model extends model
 	        
 	        if(CheckMobile($data['moblie']) == false){
 	            
-	            return array('error'=>'103','msg'=>'手机号格式错误');
+	            return array('error'=>'103','msg'=>yun_at('wap_js_00117'));
 	        }
             if (!checkMobileLegal($data['moblie'])) {
 
-                return array('error'=>'103','msg'=>'该手机号已被禁止使用！');
+                return array('error'=>'103','msg'=>yun_at('wap_js_00049'));
             }
 	        $reged	=  $this -> select_once('member',array('moblie'=>trim($data['moblie']),'username'=>array('=',trim($data['moblie']),'or')),'`uid`');
 			
@@ -344,7 +344,7 @@ class userinfo_model extends model
 	                
 	                if ($reged['uid'] != $uid){
 	                    
-	                    return array('error'=>'104','msg'=>'手机号已被使用');
+	                    return array('error'=>'104','msg'=>yun_at('api_wxapp_00008'));
 	                    
 	                }elseif (!empty($oldMem) && $data['moblie'] != $oldMem['moblie']){//判断现有的和之前是否相同，不同返回可修改的值
 	                    
@@ -353,7 +353,7 @@ class userinfo_model extends model
 	                }
 	            }else{
 	               
-	                return array('error'=>'104','msg'=>'手机号已被使用');
+	                return array('error'=>'104','msg'=>yun_at('api_wxapp_00008'));
 	            }
 	        }else {
 	            
@@ -365,7 +365,7 @@ class userinfo_model extends model
 	        
 	        if (CheckRegEmail($data['email']) == false){
 	            
-	            return array('error'=>'105','msg'=>'邮箱格式错误');
+	            return array('error'=>'105','msg'=>yun_at('wap_js_00120'));
 	        }
 	        $reged	=  $this -> select_once('member',array('email'=>trim($data['email']),'username'=>array('=',trim($data['email']),'or')),'`uid`');
 	        if ($reged){
@@ -374,7 +374,7 @@ class userinfo_model extends model
 	                
                     if ($reged['uid'] != $uid){
 	                    
-                        return array('error'=>'106','msg'=>'邮箱已被使用');
+                        return array('error'=>'106','msg'=>yun_at('default_00012'));
                         
                     }elseif (!empty($oldMem) && $data['moblie'] != $oldMem['moblie']){//判断现有的和之前是否相同，不同返回可修改的值
                         
@@ -382,7 +382,7 @@ class userinfo_model extends model
                     }
 	            }else{
 	                
-	                return array('error'=>'106','msg'=>'邮箱已被使用');
+	                return array('error'=>'106','msg'=>yun_at('default_00012'));
 	            }
 	        }else{
 	            
@@ -450,7 +450,7 @@ class userinfo_model extends model
                     // 如果现有数据中，存在用户名是这个手机号的，要修改
                     $this->upInfo(array('uid' => $omb['uid']), array('username' => $up['moblie'] . '_s'));
 
-                    $logDetail  =   '账号修改：账号（UID：'.$uid.'）认证手机号，因本账号用户名与该手机号相同，调整本账号（ID：'.$omb['uid'].'）用户名（'.$up['moblie'].' → '.$up['moblie'].'_s）';
+                    $logDetail  =   'admin_user_00077'.$uid.'admin_user_00075'.$omb['uid'].'common_06620'.$up['moblie'].' → '.$up['moblie'].'_s）';
 
                     include_once('log.model.php');
                     $logM = new log_model($this->db, $this->def);
@@ -681,11 +681,11 @@ class userinfo_model extends model
 			}else{
 				if ($usertype == 1) {
 					
-					$utname	=	'个人';
+					$utname	=	'admin_user_00304';
 					$nid	=	$this->delUser($uid);
 				}else if ($usertype == 2) {
 					
-					$utname	=	'企业';
+					$utname	=	'wap_user_00153';
 					$nid	=	$this->delCom($uid);
 				}
 			}
@@ -702,16 +702,16 @@ class userinfo_model extends model
 					$this -> update_once('member',array('usertype'=>0),array('uid'=>array('in',pylode(',',$mids))));
 				}
 				
-	            $return['msg']      =  $utname.'会员(ID:'.$uid.')删除成功';
+	            $return['msg']      =  $utname.'common_01459'.$uid.')删除成功';
 	            $return['errcode']  =  '9';
 	        }else{
 
-	            $return['msg']      =  $utname.'会员(ID:'.$uid.')删除失败';
+	            $return['msg']      =  $utname.'common_01459'.$uid.')删除失败';
 	            $return['errcode']  =  '8';
 	        }
 	    }else{
 
-	        $return['msg']      =  '请选择您要删除的会员';
+	        $return['msg']      =  yun_at('common_06621');
 	        $return['errcode']  =  '8';
 	    }
 	    
@@ -733,7 +733,7 @@ class userinfo_model extends model
 	        
 	        if ($status == 2 && $lock_info=='') {
 	            
-	            $return['msg']      =  '请填写锁定原因';
+	            $return['msg']      =  yun_at('common_06622');
 	            $return['errcode']  =  '8';
 	            
 	        }else{
@@ -744,19 +744,19 @@ class userinfo_model extends model
                 $member  =  $this->getInfo(array('uid' => $uid), array('field' => '`uid`,`username`,`email`,`moblie`'));
 				
 				if($status==1){
-				    $sd = '解除锁定';
+				    $sd = 'wap_00314';
 				    $lock_info = '';
                     // 已注销的账号，不支持解除锁定
 				    $logout  =  $this->select_once('member_logout',array('uid'=>$uid,'status'=>1));
 				    if (!empty($logout)){
 				        
-				        $return['msg']      =  '会员(ID:'.$whereData['uid'].')账号已注销，无法解除锁定';
+				        $return['msg']      =  yun_at('common_01459').$whereData['uid'].')账号已注销，无法解除锁定';
 				        $return['errcode']  =  '8';
 				        return $return;
 				    }
 				}else{
-				    $sd = '锁定';
-				    $lock_info = '。原因：'.$post['lock_info'];
+				    $sd = 'admin_user_00150';
+				    $lock_info = 'common_06278'.$post['lock_info'];
 				}
 				$nid    =    $this -> upInfo(array('uid' => $uid), $post);
 				
@@ -801,16 +801,16 @@ class userinfo_model extends model
     	            
 	            	$comcrm = $this->select_all('company',array('uid' => $uid),'`name`,`r_status`,`crm_uid`');
 
-                    $return['msg']      =  '会员'.$sd.'设置成功(ID:'.$whereData['uid'].$lock_info.')';
+                    $return['msg']      =  yun_at('common_01944').$sd.'设置成功(ID:'.$whereData['uid'].$lock_info.')';
     	            $return['errcode']  =  '9';
     	            
     	        }else{
-    	            $return['msg']      =  '会员'.$sd.'设置失败(ID:'.$whereData['uid'].')';
+    	            $return['msg']      =  yun_at('common_01944').$sd.'设置失败(ID:'.$whereData['uid'].')';
     	            $return['errcode']  =  '8';
     	        }
 	        }
 	    }else{
-	        $return['msg']      =  '请选择需要锁定的会员';
+	        $return['msg']      =  yun_at('common_01071');
 	        $return['errcode']  =  '8';
 	    }
 	    return $return;
@@ -855,15 +855,15 @@ class userinfo_model extends model
 			$comText = '';
             // 处理审核提示和管理员日志需要的内容
             if ($up['r_status'] == 4){
-                $msg = '暂停';
+                $msg = 'wap_com_00117';
             }elseif ($up['r_status'] == 3){
-                $msg = '审核未通过';
+                $msg = 'wap_user_00325';
             }elseif ($up['r_status'] == 0){
-                $msg = '未审核';
+                $msg = 'wap_user_00166';
             }elseif ($up['r_status'] == 1){
-                $msg = '审核通过';
+                $msg = 'wap_com_00099';
             }
-            $lock_info = !empty($post['lock_info']) ? '。原因：'.$post['lock_info'] : '';
+            $lock_info = !empty($post['lock_info']) ? 'common_06278'.$post['lock_info'] : '';
             // 保存审核信息
             if (isset($post['lock_info'])){
                 $this->update_once('member',array('lock_info'=>$post['lock_info']),array('uid'=>$whereData['uid']));
@@ -905,7 +905,7 @@ class userinfo_model extends model
                     $comWhere = trim($comWhere,",");
                     $where['uid'] =  array("in", $comWhere);
                     if(count($countNotIds) > 0 ){
-                        $comText =   '成功'.count($countUids).'条，失败'.count($countNotIds).'条。原因:企业账户未审核';
+                        $comText =   'admin_tool_00502'.count($countUids).'common_01791'.count($countNotIds).'common_00798';
                     }
                 } else {
                     if($post['lock_status'] == 1){//解锁企业并解锁企业子账户
@@ -919,7 +919,7 @@ class userinfo_model extends model
                 $this->update_once('partjob', $up, $where);
                 $this->update_once('company_job', $up, $where);
 
-                $identity = '企业';                           
+                $identity = 'wap_user_00153';                           
             } 
             
             if ($nid) {
@@ -932,15 +932,15 @@ class userinfo_model extends model
 	                );
 	            }
                 $this->sendStatus($whereData['uid'], $stData);
-                $return['msg'] = $identity.'会员'.$msg.'设置成功'.$comText.'(ID:' .$whereData['uid']['1'].$lock_info. ')';
+                $return['msg'] = $identity.'common_01944'.$msg.'wap_com_00240'.$comText.'(ID:' .$whereData['uid']['1'].$lock_info. ')';
                 
                 $return['errcode'] = '9';
             } else {
-                $return['msg'] = $identity.'会员'.$msg.'设置失败(ID:' . $whereData['uid']['1'] . ')';
+                $return['msg'] = $identity.'common_01944'.$msg.'设置失败(ID:' . $whereData['uid']['1'] . ')';
                 $return['errcode'] = '8';
             }
         } else {
-            $return['msg'] = '系统繁忙';
+            $return['msg'] = yun_at('common_01831');
             $return['errcode'] = '8';
         }
         return $return;
@@ -967,15 +967,15 @@ class userinfo_model extends model
 	            //处理审核信息
 	            if($post['status'] == 1){
 	                
-	                $statusInfo  =  '审核通过！';
+	                $statusInfo  =  'common_06623';
 	                
 	            }elseif($post['status'] == 3){
 	                
-	                $statusInfo  =  '审核未通过，';
+	                $statusInfo  =  'common_06624';
 	                
 	                if($post['statusbody']){
 	                    
-	                    $statusInfo  .=  '原因：'.$post['statusbody'];
+	                    $statusInfo  .=  'admin_system_00134'.$post['statusbody'];
 	                    
 	                }
 	            }
@@ -1031,7 +1031,7 @@ class userinfo_model extends model
 	            
 	            $sysmsgM    =   new sysmsg_model($this->db, $this->def);
 	            
-				$statusInfo	=	'您的账号'.$statusInfo;
+				$statusInfo	=	'login_00008'.$statusInfo;
 	            $sysmsgM    ->  addInfo(array('uid'=>$uids,'content'=>$statusInfo,'usertype' => $post['usertype']));
 	        }
 	    }
@@ -1354,14 +1354,14 @@ class userinfo_model extends model
                 
                 require_once ('log.model.php');
                 $LogM = new log_model($this->db, $this->def);
-                $LogM->addMemberLog($data['uid'], $data['usertype'], '修改用户名：'.$result['oldusername'].' → '.$value['username'], 11, 2);
+                $LogM->addMemberLog($data['uid'], $data['usertype'], 'common_06625'.$result['oldusername'].' → '.$value['username'], 11, 2);
 				
 				$this -> update_once('member', $value,  array('uid' => $uid));
                 
 				$return['errcode'] = '1';
             }else{
                 
-				$return['msg'] = '修改次数已用完！';
+				$return['msg'] = yun_at('common_01228');
 			}
             
         }else{
@@ -1371,7 +1371,7 @@ class userinfo_model extends model
                 return $result;
             }else{
                 
-		        $return['msg'] = $result['msg']?$result['msg']:'修改失败！';
+		        $return['msg'] = $result['msg']?$result['msg']:'member_user_00603';
             }
 		}
         
@@ -1408,13 +1408,13 @@ class userinfo_model extends model
 	                
 	                $return['errcode']     =   8;
 	                
-	                $return['msg']         =   '原始密码错误，请重试！';
+	                $return['msg']         =   yun_at('common_06626');
 	                
 	            }elseif ($pass != $repass) {
 	                
 	                $return['errcode']     =   8;
 	                
-	                $return['msg']         =   '确认密码与新密码不一致，请重试！';
+	                $return['msg']         =   yun_at('common_00538');
 	                
 	            }elseif($pwmsg!=''){
 
@@ -1432,11 +1432,11 @@ class userinfo_model extends model
     	            
     	            require_once ('log.model.php');
     	            $LogM = new log_model($this->db, $this->def);
-    	            $LogM->addMemberLog($data['uid'], $data['usertype'], '修改密码', 8,2);
+    	            $LogM->addMemberLog($data['uid'], $data['usertype'], 'member_user_00226', 8,2);
     	            
     	            $return['errcode']         =   9 ;
     	            
-    	            $return['msg']             =   '密码修改成功，请重新登录！';
+    	            $return['msg']             =   yun_at('common_06627');
     	            
 	            }
 	        }
@@ -1482,7 +1482,7 @@ class userinfo_model extends model
 			
 			$IntegralM 	= 	new integral_model($this -> db, $this -> def);
 			
-			$IntegralM	->	invtalCheck($id,1,'integral_avatar','上传头像',20);
+			$IntegralM	->	invtalCheck($id,1,'integral_avatar','wap_user_00110',20);
 		
 			
 			if($data['wap']){
@@ -1586,32 +1586,32 @@ class userinfo_model extends model
 				
 				if ((!is_array($resume) || $resume['idcard_pic']=='') && $this->config['user_idcard_status']!=1){
 					
-					$com	=	$this->select_once('company_pay',array('com_id'=>$whereData['uid'],'pay_remark'=>'上传身份验证'));
+					$com	=	$this->select_once('company_pay',array('com_id'=>$whereData['uid'],'pay_remark'=>'wap_user_00106'));
 					
 					if(empty($com)){
 						require_once ('integral.model.php');
 						$IntegralM	=	new integral_model($this->db, $this->def);
-						$IntegralM->invtalCheck($whereData['uid'],$data['usertype'],'integral_identity','上传身份验证',21);
+						$IntegralM->invtalCheck($whereData['uid'],$data['usertype'],'integral_identity','wap_user_00106',21);
 					}
 				}
 				require_once ('log.model.php');
 				$LogM = new log_model($this->db, $this->def);
-                $LogM->addMemberLog($whereData['uid'], $data['usertype'], '账号认证：上传身份正', 12, 1);
+                $LogM->addMemberLog($whereData['uid'], $data['usertype'], 'common_01073', 12, 1);
 
 				if ($this -> config['user_idcard_status'] == '1'){
                         
 					$return['errcode']  =  '9';
 					
-					$return['msg']      =  '上传成功，请等待审核';
+					$return['msg']      =  yun_at('common_06628');
 
 				}else{
 					
 					$return['errcode']  =  '9';
-					$return['msg']      =  '上传成功';
+					$return['msg']      =  yun_at('common_06339');
 				}
 			}else{
 				
-				$return['msg']		=	'上传失败！';
+				$return['msg']		=	yun_at('common_05611');
 				$return['errcode']	=	8;
 			}
 			return $return;
@@ -1674,7 +1674,7 @@ class userinfo_model extends model
 		}
         if($ismoblie>0){
             $return['errcode'] = $errcode;
-            $return['msg'] = '当前手机号已被使用，请更换其他手机号！';
+            $return['msg'] = yun_at('common_00374');
             return $return;
         }else{
             $res = true;
@@ -1686,7 +1686,7 @@ class userinfo_model extends model
 				$this->config['reg_real_name_check'] == 1) || ($isyuliu == 1 && $needMsgcodeCheck == 1)) {
                 if(($from== 1 && !$params['authcode']) || ($from > 1 && !$params['checkcode'])){
                     $return['errcode'] = $errcode;
-                    $return['msg'] = '请输入短信验证码！';
+                    $return['msg'] = yun_at('wap_js_00106');
                     return $return;
                 }
                 $cert_arr = $companyM->getCertInfo(array('check' => $params['telphone'],'type' => 2,'orderby' => 'ctime,desc'),array('`ctime`,`check2`'));
@@ -1700,7 +1700,7 @@ class userinfo_model extends model
                                 $errcode = 6;
                             }
                             $return['errcode'] = $errcode;
-                            $return['msg'] = '短信验证码错误！';
+                            $return['msg'] = yun_at('common_01289');
                             return $return;
                         }
                         $udata['moblie_status']	= 1;
@@ -1708,7 +1708,7 @@ class userinfo_model extends model
                         if ($from == 3) {// 移动端返回特定错误码
                             $errcode = 5;
                         }
-                        $return['msg'] = '验证码验证超时，请重新点击发送验证码！';
+                        $return['msg'] = yun_at('common_00409');
                         $return['errcode'] = $errcode;
                         return $return;
                     }
@@ -1716,7 +1716,7 @@ class userinfo_model extends model
                     if ($from == 3) {// 移动端返回特定错误码
                         $errcode = 5;
                     }
-                    $return['msg'] = '验证码发送不成功，请重新点击发送验证码！';
+                    $return['msg'] = yun_at('common_00346');
                     $return['errcode'] = $errcode;
                     return $return;
                 }
@@ -1726,7 +1726,7 @@ class userinfo_model extends model
                 } elseif($from == 2) {
                     $piccheckcode = $params['authcode'];// 图形验证码
                 }
-                $result = $noticeM->jycheck($piccheckcode,'注册会员');
+                $result = $noticeM->jycheck($piccheckcode,'wap_js_00064');
                 if(!empty($result)){
                     $return['msg'] = $result['msg'];
                     $return['errcode'] = 8;
@@ -2003,7 +2003,7 @@ class userinfo_model extends model
                             } else if ($from == 3) {
                                 $errcode = 3;
                             }
-                            $return['msg'] = '您的简历需要通过审核，才能投递简历哦！';
+                            $return['msg'] = yun_at('common_00377');
                             $return['errcode'] = $errcode;
                             if ($from == 1 || $from == 2) {
                                 $return['url'] = Url('job',array('c'=>'comapply','id'=>$jobid));
@@ -2054,7 +2054,7 @@ class userinfo_model extends model
                                 
 
                                 if (!$checkUserSqintegrity) {
-                                    $return['msg'] = '该简历完整度未达到'.$this->config['user_sqintegrity'].'%，请先完善简历！';
+                                    $return['msg'] = yun_at('common_01148').$this->config['user_sqintegrity'].'common_01087';
                                     $return['errcode'] = $errcode;
                                     $return['url'] = Url('job',array('c'=>'comapply','id'=>$jobid));
                                     return $return;
@@ -2088,12 +2088,12 @@ class userinfo_model extends model
                             if(!empty($rexp)){
                                 if($rexp['sort']<$sexp['sort']){
                                     $return['errcode']  = $errcode;
-                                    $return['msg']      = '您的工作经验不符合投递要求';
+                                    $return['msg']      = yun_at('common_00708');
                                     return $return;
                                 }
                             }else{
                                 $return['errcode']  = $errcode;
-                                $return['msg']      = '您的工作经验不符合投递要求';
+                                $return['msg']      = yun_at('common_00708');
                                 return $return;
                             }
                         }
@@ -2117,12 +2117,12 @@ class userinfo_model extends model
                             if (!empty($redu)) {
                                 if ($redu['sort'] < $sedu['sort']) {
                                     $return['errcode'] = $errcode;
-                                    $return['msg'] = '您的学历不符合投递要求';
+                                    $return['msg'] = yun_at('common_00883');
                                     return $return;
                                 }
                             } else {
                                 $return['errcode'] = $errcode;
-                                $return['msg'] = '您的学历不符合投递要求';
+                                $return['msg'] = yun_at('common_00883');
                                 return $return;
                             }
                         }
@@ -2140,7 +2140,7 @@ class userinfo_model extends model
                             if ($eData['sex'] != $sex_reqs && $eData['sex'] != 3 && $sex_reqs != 3) {
 
                                 $return['errcode'] = $errcode;
-                                $return['msg'] = '您的性别不符合投递要求';
+                                $return['msg'] = yun_at('common_00885');
                                 return $return;
                             }
                         }
@@ -2162,7 +2162,7 @@ class userinfo_model extends model
                             if ($age < $minage_req || $age > $maxage_req) {
 
                                 $return['errcode'] = $errcode;
-                                $return['msg'] = '您的年龄不符合投递要求';
+                                $return['msg'] = yun_at('common_00884');
                                 return $return;
                             }
                         }
@@ -2183,7 +2183,7 @@ class userinfo_model extends model
                     }
                     $nid = $jobM->addSqJob($value, array('comjob'=>$comjob));
                     $resumeM->updateExpect(array('sq_jobid'=>''),array('id'=>$eid));
-                    $return['msg'] = $isyuliu==1 ? '保存成功' : '申请成功！';
+                    $return['msg'] = $isyuliu==1 ? yun_at('wap_user_00104') : yun_at('common_06290');
                     $errcode = $from == 3 ? 1 : 9;
                     $return['errcode'] = $errcode;
                     if ($from == 1 || $from == 2) {
@@ -2198,7 +2198,7 @@ class userinfo_model extends model
                     return $return;
                 }else{
                     $jobid = intval($_POST['jobid']);
-                    $return['msg'] = '保存失败！';
+                    $return['msg'] = yun_at('common_06629');
                     $return['errcode'] = $from == 1 ? 8 : 7;
                     if ($from == 1 || $from == 2) {
                         $return['url'] = Url('job',array('c'=>'comapply','id'=>$jobid));
@@ -2223,21 +2223,21 @@ class userinfo_model extends model
 		}else{
 			$moblie  =  $data['username'];
 		}
-		$return  =  array('msg'=>'系统繁忙','errcode'=>8);
+		$return  =  array('msg'=>yun_at('common_01831'),'errcode'=>8);
 		require ('notice.model.php');
 		$noticeM  =  new notice_model($this->db, $this->def);
 		//会员已登录判断
 		if(!empty($data['uid'])  && $data['uid'] > 0 && $username!=''){
 			if($data['usertype']=='1'){
-				return array('msg'=>'您现在是个人会员登录状态!');
+				return array('msg'=>yun_at('common_00705'));
 			}elseif($data['usertype']=='2'){					
-				return array('msg'=>'您现在是企业会员登录状态!');
+				return array('msg'=>yun_at('common_00706'));
 			}
 		}
 		//username验证
 		if($this->config['sy_msg_isopen'] && $this->config['sy_msg_login'] && !empty($data['act_login'])){
 			if(!CheckMobile($moblie)){
-				return array('msg'=>'手机号码格式不正确!','errcode'=>'8');
+				return array('msg'=>yun_at('common_01012'),'errcode'=>'8');
 			}
 			// 未注册手机登录直接注册新账号
 			$member_arr	=	$this->getMemberNum(array('moblie'=>$moblie));
@@ -2295,14 +2295,14 @@ class userinfo_model extends model
 		}else {
 			//验证码判断 手机动态码登录 无需验证验证码
 			if($data['wxapp'] != '1'){
-				$result			=		$noticeM->jycheck($data['authcode'],'前台登录');
+				$result			=		$noticeM->jycheck($data['authcode'],'wap_js_00062');
 				if(!empty($result)){
 					return array('msg'=>$result['msg'],'errcode'=>'8');
 				}
 			}
 
 			if(CheckRegUser($username)==false && CheckRegEmail($username)==false && ($username!='')){
-				return array('msg'=>'用户名或密码不正确！','errcode'=>'8');
+				return array('msg'=>yun_at('model_00066'),'errcode'=>'8');
 			}
 			
 			$where			=		array('username'=> $username);
@@ -2383,12 +2383,12 @@ class userinfo_model extends model
 				$res	        =	true;
 				$loginType      =   'UC';
 			}else{
-				return array('msg'=>'该用户不存在!','errcode'=>'8');
+				return array('msg'=>yun_at('common_01402'),'errcode'=>'8');
 			}
 		}else{
 			
 			if($user['status']=='2'){
-				return array('msg'=>'您的账号已被锁定!','errcode'=>'8','url'=>Url('register',array('c'=>'ok','type'=>2),'1'));	
+				return array('msg'=>yun_at('model_00067'),'errcode'=>'8','url'=>Url('register',array('c'=>'ok','type'=>2),'1'));	
 			}
 			if($regNew == 1){
 			    // 未注册手机登录直接注册新账号的，在直接注册里面已验证过短信验证码，不需要重复验证
@@ -2408,19 +2408,19 @@ class userinfo_model extends model
 			            if($checkTime){
 			                $res 				= 		$data['password'] == $cert_arr['check2'] ? true : false;
 			                if($res == false){
-			                    return array('msg'=>'短信验证码错误！','errcode'=>'8');
+			                    return array('msg'=>yun_at('common_01289'),'errcode'=>'8');
 			                }
 			            }else {
-			                return array('msg'=>'验证码验证超时，请重新点击发送验证码！','errcode'=>'8');
+			                return array('msg'=>yun_at('common_00409'),'errcode'=>'8');
 			            }
 			        }else {
-			            return array('msg'=>'验证码发送不成功，请重新点击发送短信验证码！','errcode'=>'8');
+			            return array('msg'=>yun_at('common_00278'),'errcode'=>'8');
 			        }
-			        $loginType  =  '短信验证码';
+			        $loginType  =  'wap_01371';
 			    }else{
 			        //普通密码校验
 			        $res  =  passCheck($data['password'],$user['salt'],$user['password']);
-			        $loginType  =  '账号';
+			        $loginType  =  'common_02032';
 			    }
 			}
 		}
@@ -2516,7 +2516,7 @@ class userinfo_model extends model
 				    //登录积分
 				    include_once ('integral.model.php');
 				    $integralM  =  new integral_model($this->db, $this->def);	
-					$integralM->invtalCheck($user['uid'],$user['usertype'],'integral_login','会员登录',22);
+					$integralM->invtalCheck($user['uid'],$user['usertype'],'integral_login','wap_00555',22);
 					//登录日志
 					$logdata['uid']			=	$user['uid'];
 					$logdata['usertype']	=	$user['usertype'];
@@ -2549,7 +2549,7 @@ class userinfo_model extends model
 				$return['msg']				=		'';
 			}else if(!empty($_COOKIE['wxid'])){
 				$cookie->setcookie('wxid','',time() - 86400);
-				$return['msg']				=		'绑定成功，请按左上方返回进入微信客户端';
+				$return['msg']				=		yun_at('common_00402');
 				$return['url']				=		Url('wap').'member/';
 				$return['errcode']			=		9;
 			}else if(!empty($data['job'])){
@@ -2576,7 +2576,7 @@ class userinfo_model extends model
 					}
 				}
 				$return['errcode']		    =		9;
-				$return['msg']				=		'登录成功';
+				$return['msg']				=		yun_at('wap_01263');
 			}
 			if (!empty($return['url'])){
 			    if (strpos($return['url'], 'register') !==false || strpos($return['url'], 'login') !==false || strpos($return['url'], 'setname') !==false || stripos($return['url'], 'forgetpw') !== false || ($return['url'] == $this->config['sy_weburl'] || $return['url'] == $this->config['sy_weburl'].'/') || $return['url'] == Url('wap')){
@@ -2591,7 +2591,7 @@ class userinfo_model extends model
 			return $return;
 		}else{
 			
-			return array('msg'=>'用户名或密码不正确！','errcode'=>'8');
+			return array('msg'=>yun_at('model_00066'),'errcode'=>'8');
 		}
 		return $return;
 	}
@@ -2623,13 +2623,13 @@ class userinfo_model extends model
             if($checkTime){
                 $res 				= 		$code == $cert_arr['check2'] ? true : false;
                 if($res == false){
-                    return array('msg'=>'短信验证码错误！','errcode'=>'8');
+                    return array('msg'=>yun_at('common_01289'),'errcode'=>'8');
                 }
             }else {
-                return array('msg'=>'验证码验证超时，请重新点击发送验证码！','errcode'=>'8');
+                return array('msg'=>yun_at('common_00409'),'errcode'=>'8');
             }
         }else {
-            return array('msg'=>'验证码发送不成功，请重新点击发送短信验证码！','errcode'=>'8');
+            return array('msg'=>yun_at('common_00278'),'errcode'=>'8');
         }
 
 		$data['username']	=	$moblie;
@@ -2725,12 +2725,12 @@ class userinfo_model extends model
 			
 		   	// 浏览器需要cookie
 		    $cookie->add_cookie($userid,$data['username'],$salt,$data['email'],$pass,'',$this->config['sy_logintime'],$adata['did']);
-			$return['msg']		=		'注册成功';
+			$return['msg']		=		yun_at('common_02313');
 			$return['errcode']	=		1;
 			return $return;
 		}else{
 
-			$return['msg']	=		'注册失败';
+			$return['msg']	=		yun_at('common_06630');
 			$this -> addErrorLog('', 1,$return['msg']);
 			$return['errcode']	=	8;
 			return	$return;
@@ -2812,13 +2812,13 @@ class userinfo_model extends model
 		$return		=	array('errcode'=>8);
 
 		if($this->config['reg_user_stop']!=1){
-			$return['msg']		=		'网站已关闭注册！';	
+			$return['msg']		=		yun_at('wap_00415');	
 			$return['errcode']	=		8;
 			return	$return;
 		}
 		 
 		if(!empty($data['uid'])){
-			$return['msg']		=		'您已经登录了！';	
+			$return['msg']		=		yun_at('wap_00416');	
 			$return['errcode']	=		8;
 			return 		$return;
 		}
@@ -2833,7 +2833,7 @@ class userinfo_model extends model
 			
 			if($regnum){
 				$return['errcode']			=		8;
-				$return['msg']				=		'请勿频繁注册！';	
+				$return['msg']				=		yun_at('common_01407');	
 
 				return 		$return;
 			}
@@ -2842,21 +2842,21 @@ class userinfo_model extends model
 		//关闭用户名注册
 		if($data['codeid']=='1' && $this->config['reg_user']!='1'){
 		    
-		    $return['msg']		=		'网站已关闭用户名注册！';	
+		    $return['msg']		=		yun_at('common_06631');	
 			$return['errcode']	=		8;
 			return		$return;
 		}
 		//关闭手机注册
 		if($data['codeid']=='2' && $this->config['reg_moblie']!='1'){
 		    
-		    $return['msg']		=		'网站已关闭手机注册！';	
+		    $return['msg']		=		yun_at('common_06632');	
 			$return['errcode']	=		8;
 			return		$return;
 		}
 		//关闭邮箱注册
 		if($data['codeid']=='3' && $this->config['reg_email']!='1'){
 		    
-		    $return['msg']		=		'网站已关闭邮箱注册！';	
+		    $return['msg']		=		yun_at('common_06633');	
 			$return['errcode']	=		8;
 			return		$return;
 		}
@@ -2869,7 +2869,7 @@ class userinfo_model extends model
 
                     if (!$data['reg_name'] || !preg_match("/^[\x{4e00}-\x{9fa5}]{2,6}$/u", $data['reg_name'])) {
 
-                        $return['msg'] = '姓名请输入2-6位汉字！';
+                        $return['msg'] = yun_at('wap_js_00044');
                         $return['errcode'] = 8;
                         return $return;
                     }
@@ -2879,7 +2879,7 @@ class userinfo_model extends model
                 $comNum = $this->select_num('company',array('name' => $data['reg_name']));
 
                 if ((int)$comNum > 0) {
-                    $return['msg']      =   '企业名称已存在！';
+                    $return['msg']      =   yun_at('wap_01269');
                     $return['errcode']  =   8;
                     return $return;
                 }
@@ -2895,10 +2895,10 @@ class userinfo_model extends model
 
             if ($username == '') {
 
-                $return['msg']  =   '用户名不能为空！';
+                $return['msg']  =   yun_at('common_06634');
             } elseif (CheckRegUser($username) == false && CheckRegEmail($username) == false) {
 
-                $return['msg']  =   '用户名不得包含特殊字符！';
+                $return['msg']  =   yun_at('wap_js_00046');
             } elseif ($msg != '') {
 
                 $return['msg']  =   $msg;
@@ -2906,7 +2906,7 @@ class userinfo_model extends model
 
                 $usernameNum    =   $this->getMemberNum(array('username' => $username));
                 if ($usernameNum > 0) {
-                    $return['msg'] = '用户名已存在，请重新输入！';
+                    $return['msg'] = yun_at('wap_01779');
                 }
             }
 
@@ -2925,13 +2925,13 @@ class userinfo_model extends model
         }
         if ($needMobile) {
             if ($data['moblie'] == '') {
-                $return['msg']  =   '手机号码不能为空！';
+                $return['msg']  =   yun_at('wap_00399');
             } elseif (!CheckMobile($data['moblie'])) {
-                $return['msg']  =   '手机格式错误！';
+                $return['msg']  =   yun_at('wap_00306');
             } else {
                 $moblieNum      =   $this->getMemberNum(array('moblie' => $data['moblie']));
                 if ($moblieNum > 0) {
-                    $return['msg']  =   '手机已存在！';
+                    $return['msg']  =   yun_at('common_01501');
                 }
             }
             if ($return['msg']) {
@@ -2947,13 +2947,13 @@ class userinfo_model extends model
         }
         if ($needEmail) {
             if ($data['email'] == '') {
-                $return['msg'] = '邮箱不能为空';
+                $return['msg'] = yun_at('common_06635');
             } elseif (CheckRegEmail($data['email']) == false) {
-                $return['msg'] = '邮箱格式错误！';
+                $return['msg'] = yun_at('wap_js_00108');
             } else {
                 $emailNum = $this->getMemberNum(array('email' => $data['email']));
                 if ($emailNum > 0) {
-                    $return['msg'] = '邮箱已存在，请重新输入！';
+                    $return['msg'] = yun_at('common_00828');
                 }
             }
             if ($return['msg']) {
@@ -2976,17 +2976,17 @@ class userinfo_model extends model
             $codeTime = $noticeM->checkTime($regCertMobile['ctime']);
             if ($data['moblie_code'] == '') {
 
-                $return['msg'] = '短信验证码不能为空！';
+                $return['msg'] = yun_at('wap_01274');
                 $return['errcode'] = 8;
                 return $return;
             } elseif (!$codeTime) {
 
-                $return['msg'] = '短信验证码验证超时，请重新点击发送验证码！';
+                $return['msg'] = yun_at('common_06636');
                 $return['errcode'] = 8;
                 return $return;
             } elseif ($regCertMobile['check2'] != $data['moblie_code']) {
 
-                $return['msg'] = '短信验证码错误！';
+                $return['msg'] = yun_at('common_01289');
                 $return['errcode'] = 8;
                 return $return;
             } else {
@@ -2998,7 +2998,7 @@ class userinfo_model extends model
 		/* 已通过短信验证，则不需要极验证、图片验证 */
         if ($data['wxapp'] != 1) {
             if (!$needMsg) {
-                $result = $noticeM->jycheck($data['code'], '注册会员');
+                $result = $noticeM->jycheck($data['code'], 'wap_js_00064');
                 if (!empty($result)) {
                     $return['msg'] = $result['msg'];
                     $return['errcode'] = 8;
@@ -3020,12 +3020,12 @@ class userinfo_model extends model
         /* 密码 */
         if ($data['password'] == '') {
 
-            $return['msg'] = '密码不能为空！';
+            $return['msg'] = yun_at('wap_01273');
             $return['errcode'] = 8;
             return $return;
         } elseif (mb_strlen($data['password']) < 6 || mb_strlen($data['password']) > 20) {
 
-            $return['msg'] = '密码长度应在6-20位！';
+            $return['msg'] = yun_at('wap_js_00045');
             $return['errcode'] = 8;
             return $return;
         } elseif ($pwmsg != '') {
@@ -3039,7 +3039,7 @@ class userinfo_model extends model
             $nid = $this->getMemberNum(array('username' => $data['username']));
 
             if ($nid) {
-                $return['msg'] = '账户名已存在！';
+                $return['msg'] = yun_at('common_01413');
                 $return['errcode'] = 8;
                 return $return;
             }
@@ -3059,22 +3059,22 @@ class userinfo_model extends model
                 if ($uid <= 0) {
                     switch ($uid) {
                         case "-1":
-                            $return['msg'] = '用户名不合法!';
+                            $return['msg'] = yun_at('common_01387');
                             break;
                         case "-2":
-                            $return['msg'] = '包含不允许注册的词语!';
+                            $return['msg'] = yun_at('common_00858');
                             break;
                         case "-3":
-                            $return['msg'] = '用户名已经存在!';
+                            $return['msg'] = yun_at('common_01288');
                             break;
                         case "-4":
-                            $return['msg'] = 'Email 格式有误!';
+                            $return['msg'] = yun_at('common_00834');
                             break;
                         case "-5":
-                            $return['msg'] = 'Email 不允许注册!';
+                            $return['msg'] = yun_at('common_00762');
                             break;
                         case "-6":
-                            $return['msg'] = '该 Email 已经被注册!';
+                            $return['msg'] = yun_at('common_00673');
                             break;
                     }
                     $return['errcode'] = 8;
@@ -3194,7 +3194,7 @@ class userinfo_model extends model
 					if(!empty($regMember)){
 					    include_once ('integral.model.php');
 					    $IntegralM	=	new integral_model($this->db, $this->def);
-						$IntegralM -> invtalCheck((int)$_COOKIE['regcode'],$regMember['usertype'], 'integral_invite_reg', '邀请注册', 23);
+						$IntegralM -> invtalCheck((int)$_COOKIE['regcode'],$regMember['usertype'], 'integral_invite_reg', 'wap_01590', 23);
 					}
 				}
  
@@ -3210,7 +3210,7 @@ class userinfo_model extends model
 				 
 				$this->upInfo(array('uid'=>$userid),array('login_date'=>time(),'login_ip'=>$ip,'login_address'=>$ipaddress));
 
-                $return['msg'] = '注册成功';
+                $return['msg'] = yun_at('common_02313');
                 $return['errcode'] = 1;
 
           
@@ -3237,13 +3237,13 @@ class userinfo_model extends model
 
                 $this->addErrorLog('', 1, $return['msg']);
 
-                $return['msg'] = '注册失败';
+                $return['msg'] = yun_at('common_06630');
                 $return['errcode'] = 8;
                 return $return;
 			}
 
 		}else{
-            $return['msg'] = '用户名不能为空！';
+            $return['msg'] = yun_at('common_06634');
             $return['errcode'] = 8;
             return $return;
 		}
@@ -3331,32 +3331,32 @@ class userinfo_model extends model
             if ($existTable < 1) {
                 $this->insert_into($table, $data1);
                 //会员注册插入会员日志
-                $LogM->addMemberLog($user['uid'], $usertype, '用户:' . $user['username'] . '注册成功');
+                $LogM->addMemberLog($user['uid'], $usertype, '用户:' . $user['username'] . 'common_02313');
 
                 //判断是否记录已发送
                 require_once 'integral.model.php';
                 $IntegralM = new integral_model($this->db, $this->def);
                 $integralwhere['com_id'] = $user['uid'];
-                $integralwhere['pay_remark'] = '注册赠送';
+                $integralwhere['pay_remark'] = yun_at('common_01806');
                 $Interpay = $IntegralM->getInfo($integralwhere);
 
                 if (empty($Interpay) && $usertype != 5) {
 
                     if ($this->config['integral_reg'] > 0) {
-                        $IntegralM->company_invtal($user['uid'], $usertype, $this->config['integral_reg'], true, '注册赠送', true, 2, 'integral', 23);
+                        $IntegralM->company_invtal($user['uid'], $usertype, $this->config['integral_reg'], true, 'common_01806', true, 2, 'integral', 23);
                     }
 
                     if ($this->config['integral_login']) {
-                        $IntegralM->invtalCheck($user['uid'], $usertype, 'integral_login', '会员登录', 22);
+                        $IntegralM->invtalCheck($user['uid'], $usertype, 'integral_login', 'wap_00555', 22);
                     }
 
                     if ($this->config['integral_mobliecert'] && $user['moblie_status'] == 1) {
-                        $IntegralM->invtalCheck($user['uid'], $usertype, 'integral_mobliecert', '手机绑定');
+                        $IntegralM->invtalCheck($user['uid'], $usertype, 'integral_mobliecert', 'common_06395');
                     }
                 }
             }
             //会员日志，记录手动登录
-            $LogM->addMemberLog($user['uid'], $usertype, '用户选择身份成功');
+            $LogM->addMemberLog($user['uid'], $usertype, 'common_06637');
             // 登录日志
             $logdata['uid'] = $user['uid'];
             $logdata['usertype'] = $usertype;
@@ -3482,12 +3482,12 @@ class userinfo_model extends model
                 }
             } else {
                 
-                $return['msg']      =   '请先注册';
+                $return['msg']      =   yun_at('wap_00312');
                 $return['errcode']  =   9;
             }
         } else {
 
-            $return['msg']      =   '参数错误，请正确选择！';
+            $return['msg']      =   yun_at('common_00862');
             $return['errcode']  =   9;
         }
 
@@ -3578,33 +3578,33 @@ class userinfo_model extends model
                 $this->insert_into($table, $data1);
                 // 增加注册日志
                 if ($isreg){
-                    $LogM->addMemberLog($user['uid'], $usertype, '用户:'.$user['username'].'注册成功');
+                    $LogM->addMemberLog($user['uid'], $usertype, '用户:'.$user['username'].'common_02313');
                 }
 
                 //判断是否记录已发送
                 require_once 'integral.model.php';
                 $IntegralM = new integral_model($this->db, $this->def);
                 $integralwhere['com_id'] = $user['uid'];
-                $integralwhere['pay_remark'] = '注册赠送';
+                $integralwhere['pay_remark'] = yun_at('common_01806');
                 $Interpay = $IntegralM->getInfo($integralwhere);
 
                 if (empty($Interpay)) {
 
                     if ($this->config['integral_reg'] > 0) {
-                        $IntegralM->company_invtal($user['uid'], $usertype, $this->config['integral_reg'], true, '注册赠送', true, 2, 'integral', 23);
+                        $IntegralM->company_invtal($user['uid'], $usertype, $this->config['integral_reg'], true, 'common_01806', true, 2, 'integral', 23);
                     }
 
                     if ($this->config['integral_login']) {
-                        $IntegralM->invtalCheck($user['uid'], $usertype, 'integral_login', '会员登录', 22);
+                        $IntegralM->invtalCheck($user['uid'], $usertype, 'integral_login', 'wap_00555', 22);
                     }
 
                     if ($this->config['integral_mobliecert'] && $user['moblie_status'] == 1) {
-                        $IntegralM->invtalCheck($user['uid'], $usertype, 'integral_mobliecert', '手机绑定');
+                        $IntegralM->invtalCheck($user['uid'], $usertype, 'integral_mobliecert', 'common_06395');
                     }
                 }
             }
             //会员日志，记录手动登录
-            $LogM->addMemberLog($user['uid'], $usertype, '用户选择身份成功');
+            $LogM->addMemberLog($user['uid'], $usertype, 'common_06637');
             // 登录日志
             $logtime = date('Ymd', $user['login_date']);
             $nowtime = date('Ymd', time());
@@ -3755,19 +3755,19 @@ class userinfo_model extends model
 							$error['info'] 	= $userinfo;
 							$error['error'] = '1';
 						}else{
-							$error['msg'] = '绑定失败！';
+							$error['msg'] = yun_at('common_06638');
 						}
 					}else{
-						$error['msg'] = '该账户正在审核中，请稍后再绑定';
+						$error['msg'] = yun_at('common_00595');
 					}
 				}else{
-					$error['msg'] = '密码错误，请重试！';
+					$error['msg'] = yun_at('common_06639');
 				}
 			}else{
-				$error['msg'] = '请输入正确的账户名！';
+				$error['msg'] = yun_at('common_01062');
 			}
 		}else{
-			$error['msg'] = '请输入需要绑定的账户、密码！';
+			$error['msg'] = yun_at('default_00039');
 		}
 		return $error;
 	}
@@ -3808,7 +3808,7 @@ class userinfo_model extends model
 						// 如果现有数据中，存在用户名是这个手机号的，要修改
 						$this->upInfo(array('uid' => $omb['uid']), array('username' => $result['moblie'] . '_s'));
 
-						$logDetail  =   '账号修改：账号（UID：'.$uData['uid'].'）认证手机号，因本账号用户名与该手机号相同，调整本账号（ID：'.$omb['uid'].'）用户名（'.$result['moblie'].' → '.$result['moblie'].'_s）';
+						$logDetail  =   'admin_user_00077'.$uData['uid'].'admin_user_00075'.$omb['uid'].'common_06620'.$result['moblie'].' → '.$result['moblie'].'_s）';
 
 						include_once('log.model.php');
 						$logM = new log_model($this->db, $this->def);
@@ -3844,7 +3844,7 @@ class userinfo_model extends model
                 }
             } 
 
-            $result['msg']      =   $nid ? '修改成功！' : '修改失败！';
+            $result['msg']      =   $nid ? yun_at('member_user_00602') : yun_at('member_user_00603');
 
             $result['errcode']  =   $nid ? 9 : 8;
 
@@ -3906,11 +3906,11 @@ class userinfo_model extends model
 				 
 			}
             $return['errcode']  =   $result ? 9 : 8;
-            $return['msg']      =   $result ? '会员删除成功' : '会员删除失败';
+            $return['msg']      =   $result ? yun_at('common_06640') : yun_at('common_06641');
             
         } else {
             
-            $return['msg']      =   '请选择您要删除的会员';
+            $return['msg']      =   yun_at('common_06621');
             $return['errcode']  =   '8';
         }
         return $return;
@@ -3926,7 +3926,7 @@ class userinfo_model extends model
     {
 
 	    $username   =  $data['username'];
-	    $return     =  array('msg'=>'系统繁忙','errcode'=>8);
+	    $return     =  array('msg'=>yun_at('common_01831'),'errcode'=>8);
 
 	    require ('notice.model.php');
 	    $noticeM    =  new notice_model($this->db, $this->def);
@@ -3935,22 +3935,22 @@ class userinfo_model extends model
 	    if(!empty($data['uid'])  && $data['uid'] > 0 && $username!=''){
 
 	        if($data['usertype']=='1'){
-	            return array('msg'=>'您现在是个人会员登录状态!');
+	            return array('msg'=>yun_at('common_00705'));
 	        }elseif($data['usertype']=='2'){
-	            return array('msg'=>'您现在是企业会员登录状态!');
+	            return array('msg'=>yun_at('common_00706'));
 	        }
 	    }
 	    //验证码判断
 	    if(!isset($data['provider'])){
 
-	        $result =   $noticeM->jycheck($data['authcode'],'前台登录');
+	        $result =   $noticeM->jycheck($data['authcode'],'wap_js_00062');
 	        if(!empty($result)){
 	            return array('msg'=>$result['msg'],'errcode'=>'8');
 	        }
 	    }
 	    
 	    if(CheckRegUser($username)==false && CheckRegEmail($username)==false && ($username!='')){
-	        return array('msg'=>'用户名包含特殊字符或为空!','errcode'=>'8');
+	        return array('msg'=>yun_at('common_00724'),'errcode'=>'8');
 	    }
 	    
 	    $where  =  array('username'=> $username);
@@ -3976,7 +3976,7 @@ class userinfo_model extends model
 	    if (!empty($user)){
 
 	        if($user['status']=='2'){
-	            return array('msg'=>'您的账号已被锁定!','errcode'=>'8','url'=>Url('register',array('c'=>'ok','type'=>2),'1'));
+	            return array('msg'=>yun_at('model_00067'),'errcode'=>'8','url'=>Url('register',array('c'=>'ok','type'=>2),'1'));
 	        }
 	        //普通密码校验
 	        $res  =  passCheck($data['password'],$user['salt'],$user['password']);
@@ -4043,18 +4043,18 @@ class userinfo_model extends model
 	                //登录日志
 	                if ($type=='weixin'){
 	                    
-	                    $state_content  =  $data['source'] == 1 ? 'PC绑定微信' : 'wap绑定微信';
+	                    $state_content  =  $data['source'] == 1 ? yun_auto_t('PC绑定微信') : yun_auto_t('wap绑定微信');
 	                }elseif ($type=='qq'){
 	                    
-	                    $state_content  =  $data['source'] == 1 ? 'PC绑定QQ' : 'wap绑定QQ';
+	                    $state_content  =  $data['source'] == 1 ? yun_auto_t('PC绑定QQ') : yun_auto_t('wap绑定QQ');
 	                }elseif ($type=='sinaweibo'){
 	                    
-	                    $state_content  =  $data['source'] == 1 ? 'PC绑定新浪微博' : 'wap绑定新浪微博';
+	                    $state_content  =  $data['source'] == 1 ? yun_auto_t('PC绑定新浪微博') : yun_auto_t('wap绑定新浪微博');
 	                }
 	                //会员日志，记录手动登录
 					require_once ('log.model.php');
 					$LogM = new log_model($this->db, $this->def);
-                    $LogM->addMemberLog($user['uid'],$user['usertype'], '账号登录：'.$state_content. '登录成功', 32, 1);
+                    $LogM->addMemberLog($user['uid'],$user['usertype'], 'common_06642'.$state_content. 'wap_01263', 32, 1);
 					
 	                $logtime					   	=		date('Ymd',$user['login_date']);
 	                $nowtime					   	=		date('Ymd',time());
@@ -4063,9 +4063,9 @@ class userinfo_model extends model
 	                    //登录积分
 	                    include_once ('integral.model.php');
 	                    $integralM  =  new integral_model($this->db, $this->def);
-	                    $integralM->invtalCheck($user['uid'],$user['usertype'],'integral_login','会员登录',22);
+	                    $integralM->invtalCheck($user['uid'],$user['usertype'],'integral_login','wap_00555',22);
 	                    if ($type = 'weixin'){
-                            $integralM->invtalCheck($user['uid'],$user['usertype'],'integral_bind_wx','微信扫码绑定',28);
+                            $integralM->invtalCheck($user['uid'],$user['usertype'],'integral_bind_wx','admin_00682',28);
                         }
 	                    // 登录日志
 	                    $logdata['content']		=	$state_content;
@@ -4084,7 +4084,7 @@ class userinfo_model extends model
 	            }else{
 	                
 	                $return['errcode']		    =		9;
-	                $return['msg']				=		'登录成功';
+	                $return['msg']				=		yun_at('wap_01263');
 	            }
 	            
 	            if (isset($data['source'])){
@@ -4100,10 +4100,10 @@ class userinfo_model extends model
 	            return $return;
 	        }else{
 	            
-	            return array('msg'=>'用户名或密码不正确！','errcode'=>'8');
+	            return array('msg'=>yun_at('model_00066'),'errcode'=>'8');
 	        }
 	    }else{
-	        return array('msg'=>'用户名或密码不正确！','errcode'=>'8');
+	        return array('msg'=>yun_at('model_00066'),'errcode'=>'8');
 	    }
 	    return $return;
 	}
@@ -4124,7 +4124,7 @@ class userinfo_model extends model
 	        // 验证手机号
 			if(!CheckMobile($data['moblie'])){
 
-				$return['msg']			=		'手机格式错误！';	
+				$return['msg']			=		yun_at('wap_00306');	
 			}else{
                 //检查手机号是否已存在 如果存在则直接绑定
 				$mobileUser =   $this -> getInfo(array('moblie' => $data['moblie']));
@@ -4143,17 +4143,17 @@ class userinfo_model extends model
 			
 			if($data['moblie_code']==''){
 
-				$return['msg']			=		'短信验证码不能为空！';
+				$return['msg']			=		yun_at('wap_01274');
 				$return['errcode']		=		8;
 				return  $return;
 			}elseif(!$codeTime){
 
-				$return['msg']			=		'短信验证码验证超时，请重新点击发送验证码！';
+				$return['msg']			=		yun_at('common_06636');
 				$return['errcode']		=		8;
 				return  $return;
 			}elseif($regCertMobile['check2']!=$data['moblie_code']){
 
-				$return['msg']			=		'短信验证码错误！';
+				$return['msg']			=		yun_at('common_01289');
 				$return['errcode']		=		8;
 				return  $return;
 			}
@@ -4162,7 +4162,7 @@ class userinfo_model extends model
 			}
 			if(!$needMsg){
     			
-    			$result				    =		$noticeM->jycheck($data['code'],'前台登录');
+    			$result				    =		$noticeM->jycheck($data['code'],'wap_js_00062');
 
     			if(!empty($result)){
     				
@@ -4176,7 +4176,7 @@ class userinfo_model extends model
 		    //直接绑定该账户
 		    if($mobileUser['status']=='2'){
 
-			    $return['msg']		    =		'当前手机号对应账户已被锁定！';
+			    $return['msg']		    =		yun_at('common_00654');
     			$return['errcode']		=		8;
 		    }else{
 		        
@@ -4185,7 +4185,7 @@ class userinfo_model extends model
         	     
     	            $mdata['wxid']  =  !empty($data['openid']) ? $data['openid'] : '';
     	            $mdata['wxbindtime'] = time();
-    	            $loginType      = '微信公众号';
+    	            $loginType      = 'default_00130';
         	         
         	        $mdata['unionid']   =  !empty($data['unionid']) ? $data['unionid'] : '';
         	        
@@ -4223,7 +4223,7 @@ class userinfo_model extends model
                     //会员日志，记录手动登录
 				    require_once ('log.model.php');
 				    $LogM = new log_model($this->db, $this->def);
-                    $LogM->addMemberLog($mobileUser['uid'],$mobileUser['usertype'], '账号登录：'.$loginType. '绑定账号短信登录成功', 32, 1);
+                    $LogM->addMemberLog($mobileUser['uid'],$mobileUser['usertype'], 'common_06642'.$loginType. 'common_06643', 32, 1);
 
 					$logtime					   	=		date('Ymd',$mobileUser['login_date']);
 					$nowtime					   	=		date('Ymd',time());
@@ -4231,12 +4231,12 @@ class userinfo_model extends model
 					    //登录积分
 					    require_once ('integral.model.php');
 					    $IntegralM 	= 	new integral_model($this -> db, $this -> def);
-					    $IntegralM->invtalCheck($mobileUser['uid'],$mobileUser['usertype'],'integral_login','会员登录',22);
+					    $IntegralM->invtalCheck($mobileUser['uid'],$mobileUser['usertype'],'integral_login','wap_00555',22);
 					    //登录日志
 					    $logdata['uid']			=	$mobileUser['uid'];
 					    $logdata['usertype']	=	$mobileUser['usertype'];
 					    $logdata['did']			=	$mobileUser['did'];
-					    $logdata['content']     =   $loginType. '绑定账号短信登录成功';
+					    $logdata['content']     =   $loginType. 'common_06643';
 					    $LogM->addLoginlog($logdata, array('provider'=>$provider));
 					}
 				}
@@ -4251,7 +4251,7 @@ class userinfo_model extends model
     	        
     	        }
     	        
-    	        $return['msg']		    =  '账户绑定成功！';
+    	        $return['msg']		    =  yun_at('common_06644');
     	        $return['errcode'] 	    =  9;
     	        if ($type != ''){
     	            
@@ -4335,7 +4335,7 @@ class userinfo_model extends model
     	        
     	        }
     	        
-    	        $return['msg']		=  '注册成功';
+    	        $return['msg']		=  yun_at('common_02313');
     			
     			$return['errcode'] 	=   9;
     	        if($type != ''){
@@ -4346,7 +4346,7 @@ class userinfo_model extends model
     	        
     	    }else{
     
-    	        $return['msg']		=  '注册失败';
+    	        $return['msg']		=  yun_at('common_06630');
     	        $return['errcode']  =  8;
     			//增加错误日志
     			$this -> addErrorLog('', 1,$return['msg']);

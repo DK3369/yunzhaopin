@@ -3,16 +3,16 @@
 		<div class="moduleSeachbig">
 			<!--关键字搜索和查询在一起-->
 			<div class="tableSeachInpt tableSeachInptsmall">
-				<el-input v-model="searchForm.keyword" placeholder="输入你要搜索的关键字" size="small"
+				<el-input v-model="searchForm.keyword" placeholder="{yun:}t key='admin_user_weipin_00003'{/yun}" size="small"
 						  prefix-icon="el-icon-search" clearable>
-					<el-select v-model="searchForm.type" size="small" slot="prepend" placeholder="公司名">
+					<el-select v-model="searchForm.type" size="small" slot="prepend" placeholder="{yun:}t key='admin_00490'{/yun}">
 						<el-option label="公司名" :value="1"></el-option>
 						<el-option label="职位名" :value="2"></el-option>
 					</el-select>
 				</el-input>
 			</div>
 			<div class="tableSeachInpt">
-				<el-button type="primary" icon="el-icon-search" size="mini" @click="search">查询</el-button>
+				<el-button type="primary" icon="el-icon-search" size="mini" @click="search">{yun:}t key='admin_user_weipin_00049'{/yun}</el-button>
 			</div>
 			 
 		</div>
@@ -51,7 +51,7 @@
 				<el-table-column label="操作" width="80" align="center">
 					<template slot-scope="scope">
 						<div class="cz_button">
-							<el-button plain @click="rec(scope.$index)">推荐</el-button>
+							<el-button plain @click="rec(scope.$index)">{yun:}t key='common.recommended'{/yun}</el-button>
 						</div>
 					</template>
 				</el-table-column>
@@ -60,8 +60,8 @@
        	<div class="modulePaging">
 			<div>
 				<el-checkbox v-model="checkedAll" :indeterminate="checkedAllIndeterminate"
-							 @change="checkAll">全选</el-checkbox>
-				<el-button @click="batch('rec')" size="mini">批量推荐</el-button>
+							 @change="checkAll">{yun:}t key='wap_js_00074'{/yun}</el-checkbox>
+				<el-button @click="batch('rec')" size="mini">{yun:}t key='admin_user_00237'{/yun}</el-button>
 			</div>
 			<div class="modulePagNum">
 				<el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
@@ -73,7 +73,7 @@
 
 		<div class="modluDrawer">
 			<!--推荐发送进度-->
-			<el-dialog title="发送进度" :visible.sync="dialogSend" center append-to-body width="12%">
+			<el-dialog title="{yun:}t key='admin_00494'{/yun}" :visible.sync="dialogSend" center append-to-body width="12%">
 				<div style="text-align:center;">
 					<el-progress type="circle" :percentage="sendPercentage" :format="formatSend"></el-progress>
 				</div>
@@ -91,7 +91,7 @@
 		data: function() {
 			return {
 				loading: false,
-				dataText: '数据加载中',
+				dataText: "{yun:}t key='admin_user_weipin_00026'{/yun}",
 				tableHig: true,
 				saveLoading: false,
 
@@ -100,7 +100,7 @@
 					type: 1
 				},
 
-				// 列表
+				// list
 				page: 1,
 				limit: 0,
 				list: [],
@@ -109,9 +109,9 @@
 
 				// 列表排序
 				t: '',
-				order: '',
+				order: '",
 
-				checkedAll: false, // 全选
+				checkedAll: false, // {yun:}t key='wap_js_00074'{/yun}
 				checkedAllIndeterminate: false,
 				multipleSelection: [], // 多选值存储
 				idArr: [],
@@ -153,7 +153,7 @@
 				this.getList();
 			},
 			sortChange(event) {
-				this.t = event.order ? event.prop : '';
+				this.t = event.order ? event.prop : "';
 				this.order = event.order ? event.order == 'descending' ? 'desc' : 'asc' : '';
 				this.search();
 			},
@@ -194,7 +194,7 @@
 	                    that.$refs.multipleTable.bodyWrapper.scrollTop = 0;
 	                }
 					if (that.list.length === 0) {
-	                    that.dataText = "暂无数据";
+	                    that.dataText = "{yun:}t key='wap_js_00113'{/yun}";
 	                }
 				})
 			},
@@ -217,7 +217,7 @@
 			},
 			batch(type) {
 				if (this.multipleSelection.length == 0) {
-					message.error('请选择要操作的数据项');
+					message.error("{yun:}t key='admin_user_weipin_00001'{/yun}");
 					return false;
 				}
 
@@ -236,7 +236,7 @@
 				this.$refs.multipleTable.toggleAllSelection();
 			},
 
-			// 推荐
+			// recommend
 			rec(idx) {
 				let that = this;
 
@@ -283,7 +283,7 @@
 					}, 1500);
 					return '发送完成';
 				} else {
-					return '发送中：' + that.sendNum + '/' + that.idArr.length;
+					return "{yun:}t key='admin_00872'{/yun}" + that.sendNum + '/' + that.idArr.length;
 				}
 			},
 			async sendEmail(type, params) {

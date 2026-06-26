@@ -103,8 +103,8 @@ class job_controller extends common
         $this->yunset('jobChoosed', $jobChoosed);
 
         $this->yunset('backurl', Url('wap'));
-        $this->yunset('headertitle', yun_auto_t('职位搜索'));
-        $this->yunset('topplaceholder', yun_auto_t('请输入职位关键字,如：会计...'));
+        $this->yunset('headertitle', yun_at('wap_00237'));
+        $this->yunset('topplaceholder', yun_at('wap_00226'));
 
         $this->yuntpl(array('wap/job')); 
         
@@ -125,7 +125,7 @@ class job_controller extends common
         $this->yunset('sexData', $arr_data['sex']);
         $id = intval($_GET['id']);
         if (empty($id)) {
-            $this->ACT_msg_wap(1, yun_auto_t('参数错误！'), 2, 5);
+            $this->ACT_msg_wap(1, yun_at('wap_01298'), 2, 5);
         }
         
         // 
@@ -148,7 +148,7 @@ class job_controller extends common
         }
         $job        =   $JobM -> getInfo(array('id' => $id), $jobField);
         if (empty($job)) {
-            $this->ACT_msg_wap(1, yun_auto_t('职位不存在！'), 2, 5);
+            $this->ACT_msg_wap(1, yun_at('wap_01787'), 2, 5);
         }
         $job['staticimg'] =   $staticimg;
         $userinfoM  =   $this->MODEL('userinfo');
@@ -167,17 +167,17 @@ class job_controller extends common
         } else {
             
             if ($job['r_status'] == 0 || $job['r_status'] == 3) {
-                $this->ACT_msg_wap(1, yun_auto_t('企业暂未通过审核！'));
+                $this->ACT_msg_wap(1, yun_at('wap_00228'));
             } elseif ($job['r_status'] == 2 || $job['r_status'] == 4) {
-                $this->ACT_msg_wap(1, yun_auto_t('企业已被锁定！'));
+                $this->ACT_msg_wap(1, yun_at('wap_00233'));
             }
             
             if ($job['state'] == 0) {
-                $this->ACT_msg_wap(1, yun_auto_t('职位审核中！'), 2, 5);
+                $this->ACT_msg_wap(1, yun_at('wap_01788'), 2, 5);
             } elseif ($job['state'] == 2) {
                 $this->yunset('entype', 1);
             } elseif ($job['state'] == 3) {
-                $this->ACT_msg_wap(1, yun_auto_t('该职位未通过审核！'), 2, 5);
+                $this->ACT_msg_wap(1, yun_at('wap_01789'), 2, 5);
             } 
         }
 
@@ -260,7 +260,7 @@ class job_controller extends common
         
         $this->yunset('job', $job);
         $this->yunset('comrat', $comrat);
-        $this->yunset('headertitle', yun_auto_t('职位详情'));
+        $this->yunset('headertitle', yun_at('wap_00287'));
         if($this->config['sy_h5_share']==1){
           $this->yunset('shareurl', Url('wap', array('c' => 'job', 'a' => 'share', 'id' => $id )));
         }else{
@@ -340,14 +340,14 @@ class job_controller extends common
         
         if ($this->usertype != '1') {
             $data['url']    =   $_SERVER['HTTP_REFERER'];
-            $data['msg']    =   yun_auto_t('只有个人会员才可举报！');
+            $data['msg']    =   yun_at('wap_00227');
             echo yun_json_encode($data);
             die();
         }
         if (md5(strtolower($_POST['authcode'])) != $_SESSION['authcode'] || empty($_SESSION['authcode'])) {
             unset($_SESSION['authcode']);
             $data['url'] = $_SERVER['HTTP_REFERER'];
-            $data['msg'] = yun_auto_t('验证码错误！');
+            $data['msg'] = yun_at('model_00047');
             echo yun_json_encode($data);
             die();
         }
@@ -357,7 +357,7 @@ class job_controller extends common
 
         if (is_array($row)) {
             $data['url']    =   $_SERVER['HTTP_REFERER'];
-            $data['msg']    =   yun_auto_t('您已举报过该用户！');
+            $data['msg']    =   yun_at('wap_00229');
             echo yun_json_encode($data);
             die();
         }
@@ -378,12 +378,12 @@ class job_controller extends common
         
         if ($nid) {
             $data['url']    =   $_SERVER['HTTP_REFERER'];
-            $data['msg']    =   yun_auto_t('举报成功！');
+            $data['msg']    =   yun_at('wap_01310');
             echo yun_json_encode($data);
             die();
         } else {
             $data['url']    =   $_SERVER['HTTP_REFERER'];
-            $data['msg']    =   yun_auto_t('举报失败！');
+            $data['msg']    =   yun_at('model_00052');
             echo yun_json_encode($data);
             die();
         }
@@ -410,7 +410,7 @@ class job_controller extends common
         $this->data = $data;
         $this->seo('comapply');
 
-        $this->yunset('headertitle', yun_auto_t('快速申请'));
+        $this->yunset('headertitle', yun_at('wap_00235'));
         $this->yuntpl(array('wap/applyjobuid'));
     }
 
@@ -496,7 +496,7 @@ class job_controller extends common
             $companyM = $this->MODEL('company');
             $com = $companyM->getInfo($comid, array('field' => '`uid`,`name`,`cityid`,`address`,`x`,`y`'));
 
-            $this->yunset(array('title' =>yun_auto_t('企业位置'), 'headertitle' => yun_auto_t('企业位置')));
+            $this->yunset(array('title' =>yun_at('wap_com_00156'), 'headertitle' => yun_at('wap_com_00156')));
             $this->yunset('com', $com);
         } else if ($_GET['id']) {
 
@@ -512,7 +512,7 @@ class job_controller extends common
             }
             $com['name']    =   $jobInfo['name'];
 
-            $this->yunset(array('title' =>yun_auto_t('工作地址'), 'headertitle' => yun_auto_t('工作地址')));
+            $this->yunset(array('title' =>yun_at('wap_com_00331'), 'headertitle' => yun_at('wap_com_00331')));
             $this->yunset('com', $com);
         }
 
@@ -864,7 +864,7 @@ class job_controller extends common
         } else {
 
             $return['errcode']  =   2;
-            $return['errmsg']   =   yun_auto_t('暂未开启海报分享');
+            $return['errmsg']   =   yun_at('wap_00231');
         }
     }
 	/**

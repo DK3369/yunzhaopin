@@ -591,7 +591,7 @@ class company_comlog_controller extends adminCommon
             }
         }
         $search_list = array();
-        $search_list[] = array('param' => 'source', 'name' => '操作平台', 'value' => $source);
+        $search_list[] = array('param' => 'source', 'name' => 'admin_user_00047', 'value' => $source);
         $this->render_json(0, '', $search_list);
     }
     function jobtellog_action(){

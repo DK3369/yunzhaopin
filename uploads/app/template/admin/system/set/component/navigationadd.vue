@@ -4,19 +4,19 @@
             <table class="tableVue">
                 <thead>
                 <tr align="left">
-                    <th width="200">名称</th>
-                    <th width="400">状态</th>
-                    <th>说明</th>
+                    <th width="200">{yun:}t key='member_com_00021'{/yun}</th>
+                    <th width="400">{yun:}t key='member_user_00181'{/yun}</th>
+                    <th>{yun:}t key='member_com_00207'{/yun}</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr>
                     <td>
-                        <div class="TableTite">导航类别</div>
+                        <div class="TableTite">{yun:}t key='admin_00192'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableSelect" style="display: flex;align-items: center;">
-                            <el-select v-model="ruleForm.nid" placeholder="请选择">
+                            <el-select v-model="ruleForm.nid" placeholder="{yun:}t key='wap_user_00100'{/yun}">
                                 <el-option v-for="titem in type" :key="titem.id" :label="titem.typename" :value="titem.id">
                                 </el-option>
                             </el-select>
@@ -25,65 +25,65 @@
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>导航类别可自由修改可添加分类</span>   <el-link icon="el-icon-edit" type="primary" @click="openType">添加分类</el-link>
+                            <span>{yun:}t key='admin_00954'{/yun}</span>   <el-link icon="el-icon-edit" type="primary" @click="openType">{yun:}t key='admin_00197'{/yun}</el-link>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">导航名称</div>
+                        <div class="TableTite">{yun:}t key='admin_00191'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-input placeholder="请输入导航名称" v-model="ruleForm.name">
+                            <el-input placeholder="{yun:}t key='admin_00180'{/yun}" v-model="ruleForm.name">
                             </el-input>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>导航是用户对网站核心栏目内容有清晰了解的指路牌</span>
+                            <span>{yun:}t key='admin_00955'{/yun}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">导航链接</div>
+                        <div class="TableTite">{yun:}t key='admin_system_00354'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-input placeholder="请输入导航链接" v-model="ruleForm.url">
+                            <el-input placeholder="{yun:}t key='admin_00963'{/yun}" v-model="ruleForm.url">
                             </el-input>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>导航链接</span>
+                            <span>{yun:}t key='admin_system_00354'{/yun}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">伪静态链接</div>
+                        <div class="TableTite">{yun:}t key='admin_00956'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-input placeholder="请输入伪静态链接" v-model="ruleForm.furl">
+                            <el-input placeholder="{yun:}t key='admin_00964'{/yun}" v-model="ruleForm.furl">
                             </el-input>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>伪静态链接是指在URL中包含了关键词或者其他词汇，看起来像静态链接</span>
+                            <span>{yun:}t key='admin_00957'{/yun}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">导航类型</div>
+                        <div class="TableTite">{yun:}t key='admin_00193'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableSelect" style="display: flex;align-items: center;">
-                            <el-select v-model="ruleForm.type" placeholder="请选择">
+                            <el-select v-model="ruleForm.type" placeholder="{yun:}t key='wap_user_00100'{/yun}">
                                 <el-option key="1" label="站内链接" value="1"></el-option>
                                 <el-option key="2" label="外部链接" value="2"></el-option>
                             </el-select>
@@ -91,84 +91,84 @@
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>站内链接如：job/ 外部链接如：http://www.ov6.com/job/</span>
+                            <span>{yun:}t key='admin_00958'{/yun}</span>
                         </div>
                     </td>
                 </tr>
 
                 <tr>
                     <td>
-                        <div class="TableTite">排　　序</div>
+                        <div class="TableTite">{yun:}t key='admin_system_00105'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-input placeholder="排列顺序" v-model="ruleForm.sort">
+                            <el-input placeholder="{yun:}t key='admin_00965'{/yun}" v-model="ruleForm.sort">
                             </el-input>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>列表排序</span>
+                            <span>{yun:}t key='admin_00959'{/yun}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">弹出窗口</div>
+                        <div class="TableTite">{yun:}t key='member_com_00020'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableButn">
-                            <el-radio v-model="ruleForm.eject" label="1">新窗口</el-radio>
-                            <el-radio v-model="ruleForm.eject" label="0">原窗口</el-radio>
+                            <el-radio v-model="ruleForm.eject" label="1">{yun:}t key='admin_00205'{/yun}</el-radio>
+                            <el-radio v-model="ruleForm.eject" label="0">{yun:}t key='admin_00203'{/yun}</el-radio>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>弹出窗口</span>
+                            <span>{yun:}t key='member_com_00020'{/yun}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">状　　态</div>
+                        <div class="TableTite">{yun:}t key='admin_00960'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableButn">
-                            <el-radio v-model="ruleForm.model" label="hot">热</el-radio>
-                            <el-radio v-model="ruleForm.model" label="new">新</el-radio>
-                            <el-radio v-model="ruleForm.model" label="">无</el-radio>
+                            <el-radio v-model="ruleForm.model" label="hot">{yun:}t key='common_02091'{/yun}</el-radio>
+                            <el-radio v-model="ruleForm.model" label="new">{yun:}t key='common_02081'{/yun}</el-radio>
+                            <el-radio v-model="ruleForm.model" label="">{yun:}t key='common_02082'{/yun}</el-radio>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>状态</span>
+                            <span>{yun:}t key='member_user_00181'{/yun}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">显　　示</div>
+                        <div class="TableTite">{yun:}t key='admin_system_00356'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableButn">
-                            <el-radio v-model="ruleForm.display" label="1">是</el-radio>
-                            <el-radio v-model="ruleForm.display" label="0">否</el-radio>
+                            <el-radio v-model="ruleForm.display" label="1">{yun:}t key='common.yes'{/yun}</el-radio>
+                            <el-radio v-model="ruleForm.display" label="0">{yun:}t key='common.no'{/yun}</el-radio>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>是否显示</span>
+                            <span>{yun:}t key='admin_system_00355'{/yun}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">导航图标</div>
+                        <div class="TableTite">{yun:}t key='admin_00961'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableUpload">
                             <el-upload class="upload-demo" list-type="picture" action="" :accept="pic_accept" :auto-upload="false" :on-change="handleChange" :show-file-list="false">
-                                <el-button slot="trigger" size="small" type="primary">点击上传</el-button>
+                                <el-button slot="trigger" size="small" type="primary">{yun:}t key='wap_js_00071'{/yun}</el-button>
                                 <div v-if="ruleForm.pic_n != ''" class="el-upload-list el-upload-list--picture">
                                     <img :src="ruleForm.pic_n" style="width: 100px; height: 100px">
                                 </div>
@@ -177,7 +177,7 @@
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>仅限于wap端首页导航展示</span>
+                            <span>{yun:}t key='admin_00962'{/yun}</span>
                         </div>
                     </td>
                 </tr>
@@ -186,7 +186,7 @@
         </div>
 
         <div class="setBasicButn" style="border: none;">
-            <el-button type="primary" size="medium" @click="save">提交</el-button>
+            <el-button type="primary" size="medium" @click="save">{yun:}t key='common.submit'{/yun}</el-button>
         </div>
     </div>
 </template>
@@ -249,7 +249,7 @@
                     }
                 });
                 if (!isImage) {
-                    message.error('上传头像图片只能是 （' + this.picType + '） 格式!');
+                    message.error('上传头像图片只能是 （' + this.picType + "） {yun:}t key='common_02005'{/yun}!");
                     return false;
                 }
                 //  判断图片大小
@@ -270,19 +270,19 @@
                 let that = this;
                 let formData = new FormData();
                 if (typeof that.ruleForm.name == 'undefined' || that.ruleForm.name == '') {
-                    message.warning('请填写导航名称');
+                    message.warning("{yun:}t key='admin_system_00352'{/yun}");
                     return;
                 }else{
                     formData.append('name', that.ruleForm.name);
                 }
                 if (typeof that.ruleForm.url == 'undefined' || that.ruleForm.url == '') {
-                    message.warning('请填写链接地址');
+                    message.warning("{yun:}t key='admin_system_00286'{/yun}");
                     return;
                 }else{
                     formData.append('url', that.ruleForm.url);
                 }
                 if (typeof that.ruleForm.sort == 'undefined' || that.ruleForm.sort == '') {
-                    message.warning('请填写导航排序');
+                    message.warning("{yun:}t key='admin_system_00353'{/yun}");
                     return;
                 }else{
                     formData.append('sort', that.ruleForm.sort);

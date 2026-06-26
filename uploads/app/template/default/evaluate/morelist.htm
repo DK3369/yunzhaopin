@@ -20,7 +20,7 @@
         <div class="more_list_box_content">
           <div class="more_list_box_content_box">
        <div class="more_list_box_left">
-         <div class="more_list_box_h1 yun_bg_color"><span class="more_list_box_span">趣味测试分类</span></div>
+         <div class="more_list_box_h1 yun_bg_color"><span class="more_list_box_span">{yun:}t key='common_02340'{/yun}</span></div>
         {yun:}foreach from=$group item=v{/yun}
         	{yun:}if $gid==$v.id{/yun}
             	<a href="{yun:}url m=evaluate c=morelist gid=$v.id{/yun}" class="more_list_box_a" style="background:#fff url({yun:}$style{/yun}/images/map_icon_job.png) no-repeat 10px 8px; font-weight:bold">{yun:}$v.name{/yun}</a>
@@ -28,7 +28,7 @@
             	<a href="{yun:}url m=evaluate c=morelist gid=$v.id{/yun}" class="more_list_box_a">{yun:}$v.name{/yun}</a>     
             {yun:}/if{/yun}        
         {yun:}foreachelse{/yun}
-        <div class="cp_ts">目前没有测评分类</div>
+        <div class="cp_ts">{yun:}t key='common_02341'{/yun}</div>
         {yun:}/foreach{/yun}
        
        </div>
@@ -42,9 +42,9 @@
 <div class="evaluate_left_list_r" style="width:570px;">
 <div class="evaluate_left_list_h1"><a href="{yun:}url m=evaluate c=exampaper titleid=$v.id gid=$v.keyid{/yun}"  target="_blank" title="{yun:}$v.name{/yun}">{yun:}$v.name{/yun}</a></div>
 <div class="evaluate_left_list_p">{yun:}$v.description{/yun}</div>
-<div class="evaluate_left_list_info">{yun:}$v.visits{/yun}人访问过</div>
+<div class="evaluate_left_list_info">{yun:}$v.visits{/yun}{yun:}t key='wap_00612'{/yun}</div>
 </div>
-<a href="{yun:}url m=evaluate c=exampaper titleid=$v.id gid=$v.keyid{/yun}" title="{yun:}$v.name{/yun}" target="_blank" class="evaluate_left_list_bth">开始测试</a>
+<a href="{yun:}url m=evaluate c=exampaper titleid=$v.id gid=$v.keyid{/yun}" title="{yun:}$v.name{/yun}" target="_blank" class="evaluate_left_list_bth">{yun:}t key='wap_01480'{/yun}</a>
 </div>
 
 			{yun:}foreachelse{/yun}

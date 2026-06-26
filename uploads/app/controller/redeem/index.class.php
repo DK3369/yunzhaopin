@@ -66,7 +66,7 @@ class index_controller extends common{
 		}
 		$row	=	$redeemM->getInfo(array("id"=>(int)$_GET['id']));
 		if($row['id']==''){
-			$this->ACT_msg(Url('redeem'),"没有找到相关商品！");
+			$this->ACT_msg(Url('redeem'),yun_at('wap_00395'));
 		}
 		$this->yunset("row",$row);
 		$info	=	$statisM->getInfo($this->uid,array("usertype"=>$this->usertype,"field"=>"`integral`"));
@@ -86,7 +86,7 @@ class index_controller extends common{
 		$statisM	=	$this->MODEL("statis");
 		
 		if(!$this->uid && !$this->username){
-		     $this->ACT_msg($_SERVER['HTTP_REFERER'],"您还没有登录，请先登录！");
+		     $this->ACT_msg($_SERVER['HTTP_REFERER'],yun_at('wap_js_00154'));
 		}
 		
 		$info		=	$statisM->getInfo($this->uid,array("usertype"=>$this->usertype,"field"=>"`integral`"));
@@ -96,7 +96,7 @@ class index_controller extends common{
 		
 		if($info['integral']<$integral){
 			
-			$this->ACT_msg($_SERVER['HTTP_REFERER'],"您的".$this->config['integral_pricename']."是".$info['integral'].$this->config['integral_priceunit']."，不够兑换商品！");
+			$this->ACT_msg($_SERVER['HTTP_REFERER'],'wap_js_00157'.$this->config['integral_pricename']."是".$info['integral'].$this->config['integral_priceunit'].'redeem_00001');
 			
 		}
 		$link		=	$userinfoM->getUserInfo(array("uid"=>(int)$this->uid),array('usertype'=>$this->usertype));
@@ -131,16 +131,16 @@ class index_controller extends common{
 		
 		if(count($body)>2){
 			
-			$change['province']		=	str_replace("收货地址：",'', $body['0']);
+			$change['province']		=	str_replace('wap_js_00155','', $body['0']);
 			$change['city']			=	$body['1'];
 			$change['threecity']	=	$body['2'];
 			$change['address']		=	$body['3'];
-			$change['cityname']		=	str_replace("收货地址：",'', $body['0']).' '.$body['1'].' '.$body['2'];
+			$change['cityname']		=	str_replace('wap_js_00155','', $body['0']).' '.$body['1'].' '.$body['2'];
 			$change['body']			=	$change['cityname'].' '.$body['3'];
 			$this->yunset('change',$change);
 		}
 		
-		$this->yunset("title","兑换确认 - ".$this->config['sy_webname']);
+		$this->yunset("title",'redeem_00002'.$this->config['sy_webname']);
 		$this->yun_tpl(array('dh_show'));
 	}
 	function savedh_action(){

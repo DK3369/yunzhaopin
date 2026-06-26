@@ -7,19 +7,19 @@ class set_guanjianci_controller extends adminCommon
      */
     function keyWord_action(){
         $keywordarr = array(
-            "1" => "店铺招聘", "2" => "兼职", "3" => "职位",
-            "4" => "公司", "5" => "简历",
-            "8" => "微信搜索", "9" => "培训课程",
-            "10" => "培训机构", "11" => "培训师", '12' => '问答',
-            '13' => '普工简历'
+            "1" => 'wap_js_00130', "2" => 'wap_user_00220', "3" => 'wap_user_00154',
+            "4" => 'default_00262', "5" => 'wap_com_00428',
+            "8" => 'admin_01381', "9" => 'admin_01382',
+            "10" => 'wap_user_00084', "11" => 'admin_user_00018', '12' => 'wap_user_00223',
+            '13' => 'wap_js_00066'
         );
         $this->render_json(0, '', $keywordarr);
     }
 
     function index_action(){
         $hotM = $this->MODEL('hotkey');
-        $search_list[] = array("param" => "rec", "name" => '推荐', "value" => array("1" => "已推荐", "2" => "未推荐"));
-        $search_list[] = array("param" => "check", "name" => '审核状态', "value" => array("1" => "已审核", "2" => "未审核"));
+        $search_list[] = array("param" => "rec", "name" => 'wap_01465', "value" => array("1" => 'admin_01339', "2" => 'admin_system_00448'));
+        $search_list[] = array("param" => "check", "name" => 'wap_com_00406', "value" => array("1" => 'wap_user_00165', "2" => 'wap_user_00166'));
         $type = (int)$_POST['type'];
         if ($type) {
             $where['type'] = $type;
@@ -51,7 +51,7 @@ class set_guanjianci_controller extends adminCommon
         $pageSize = !empty($_POST['pageSize']) ? intval($_POST['pageSize']) : intval($this->config['sy_listnum']);
         $pages = $pageM->adminPageList('hot_key', $where, $page, array('limit' => $pageSize));
         if (!$pages['total']) {
-            $this->render_json(0, '数据为空!',['list' => [], 'total' => 0,'pageSize'=>$pageSize]);
+            $this->render_json(0, yun_auto_t('数据为空!'),['list' => [], 'total' => 0,'pageSize'=>$pageSize]);
         }
         if ($_POST['order']) {
             $where['orderby'] = $_POST['t'] . ',' . $_POST['order'];
@@ -79,7 +79,7 @@ class set_guanjianci_controller extends adminCommon
 
     function save_action(){
         if (!trim($_POST['key_name'])) {
-            $this->render_json(1, '关键字名称不能为空！');
+            $this->render_json(1, yun_at('admin_01383'));
         }
         $value['key_name'] = trim($_POST['key_name']);
         $value['num'] = trim($_POST['num']);
@@ -101,7 +101,7 @@ class set_guanjianci_controller extends adminCommon
         if ($oid){
             $this->admin_json(0,"关键字(ID:" . $id . ")保存成功！");
         }else{
-            $this->render_json(1,"保存失败，请销后再试！");
+            $this->render_json(1,yun_at('admin_system_00042'));
         }
     }
 
@@ -111,14 +111,14 @@ class set_guanjianci_controller extends adminCommon
             if (is_array($_POST['del'])) {
                 $where['id'] = array('in', pylode(',', $_POST['del']));
             } else {
-                $this->render_json(1, '非法参数,请重试!');
+                $this->render_json(1, yun_at('admin_system_00043'));
             }
         }
         if ($_POST['id']) {
             $where['id'] = $_POST['id'];
         }
         if (!isset($where)) {
-            $this->render_json(1, '非法参数,请重试!');
+            $this->render_json(1, yun_at('admin_system_00043'));
         }
         $hotM = $this->MODEL('hotkey');
         $return = $hotM->delHotkey($where);
@@ -142,9 +142,9 @@ class set_guanjianci_controller extends adminCommon
         $return = $hotM->recupHotkey($data);
         $this->get_cache();
         if ($return) {
-            $this->render_json(0, '操作成功!');
+            $this->render_json(0, yun_auto_t('操作成功!'));
         }
-        $this->render_json(0, '操作失败!');
+        $this->render_json(0, yun_auto_t('操作失败!'));
     }
 
     function get_cache()
@@ -159,7 +159,7 @@ class set_guanjianci_controller extends adminCommon
 
         $hotM = $this->MODEL('hotkey');
         if (!$_POST['pid']) {
-            $this->render_json(1, '非法操作!');
+            $this->render_json(1, yun_auto_t('非法操作!'));
 
         }
         if (is_array($_POST['pid'])){
@@ -178,7 +178,7 @@ class set_guanjianci_controller extends adminCommon
         $id = $hotM->upHotkey(array('id' => array('in', $aid)), $data);
         $this->get_cache();
         if ($id){
-            $this->admin_json(0, "关键字(ID:" . $aid . ")批量审核成功！");
+            $this->admin_json(0, "关键字(ID:" . $aid . 'admin_system_00044');
         }
         $this->admin_json(1,"关键字(ID:" . $aid . ")批量审核失败！");
 
@@ -191,7 +191,7 @@ class set_guanjianci_controller extends adminCommon
     function state_action()
     {
         if (!$_POST['sid']) {
-            $this->render_json(1, '请选择关键词!');
+            $this->render_json(1, yun_auto_t('请选择关键词!'));
         }
         if (is_array($_POST['sid'])){
             $aid = implode(',',$_POST['sid']);
@@ -203,7 +203,7 @@ class set_guanjianci_controller extends adminCommon
         $id = $hotM->upHotkey(array('id' => array('in', $aid)), $data);
         $this->get_cache();
         if ($id){
-            $this->admin_json(0, "关键字(ID:" . $aid . ")批量审核成功！");
+            $this->admin_json(0, "关键字(ID:" . $aid . 'admin_system_00044');
         }
         $this->admin_json(1,"关键字(ID:" . $aid . ")批量审核失败！");
     }

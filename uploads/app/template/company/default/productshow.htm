@@ -28,7 +28,7 @@
 		{yun:}/if{/yun}    
         
        
-        {yun:}if $com.yyzz_status==1{/yun}<i class="job_details_cominfo_rz job_details_cominfo_rz_zz" title="执照认证"></i> {yun:}/if{/yun}
+        {yun:}if $com.yyzz_status==1{/yun}<i class="job_details_cominfo_rz job_details_cominfo_rz_zz" title="{yun:}t key='common_02381'{/yun}"></i> {yun:}/if{/yun}
         {yun:}if $com.moblie_status==1{/yun}<i class="job_details_cominfo_rz job_details_cominfo_rz_sj" title="{yun:}t key='member_com_00071'{/yun}"></i>{yun:}/if{/yun}
         {yun:}if $com.email_status==1{/yun}<i class="job_details_cominfo_rz job_details_cominfo_rz_yx" title="{yun:}t key='wap_com_00186'{/yun}"></i>{yun:}/if{/yun}
                 
@@ -71,7 +71,7 @@
 									{yun:}$com.login_date|date_format:"%Y-%m-%d"{/yun}
 								{yun:}else{/yun}
 									{yun:}t key='admin_user_00139'{/yun} 
-								{yun:}/if{/yun}</div><div class="com_details_dataname"> 最近登录时间</div></div>
+								{yun:}/if{/yun}</div><div class="com_details_dataname"> {yun:}t key='admin_00450'{/yun}</div></div>
 
 		</div>
 		</div>
@@ -120,7 +120,7 @@
     
 
      <div class="com_show_leftbox" style="min-height:1000px" id="product_photos">
-		<div class="com_details_tit"><span class="com_details_tit_s">公司产品</span><i class="com_details_tit_line yun_bg_color"></i></div>
+		<div class="com_details_tit"><span class="com_details_tit_s">{yun:}t key='common_02520'{/yun}</span><i class="com_details_tit_line yun_bg_color"></i></div>
 		<div style="width:100%; padding:20px 0; text-align:center; font-size:18px;">{yun:}$ProductInfo.title{/yun}</div>
 		<div class="firm_det_con" style="text-align:center; padding:20px 0"><img src="{yun:}$ProductInfo.pic{/yun}" lay-src="{yun:}$ProductInfo.pic{/yun}" width="300" /></div>
 		<div style="width:100%; padding:10px 0; font-size:14px;" class="company_img_auto">{yun:}$ProductInfo.body{/yun}</div>

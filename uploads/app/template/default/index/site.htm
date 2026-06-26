@@ -14,7 +14,7 @@
 <body class="body_bg">
 	{yun:}include file="$tplstyle/header.htm"{/yun}
 	<div class="yun_content">
-		<div class="current_Location icon"> {yun:}t key='common_01498'{/yun}：<a href="{yun:}$config.sy_weburl{/yun}">{yun:}t key='common.home'{/yun}</a> &gt; <span>全部城市</span> </div>
+		<div class="current_Location icon"> {yun:}t key='common_01498'{/yun}：<a href="{yun:}$config.sy_weburl{/yun}">{yun:}t key='common.home'{/yun}</a> &gt; <span>{yun:}t key='common_02423'{/yun}</span> </div>
 	</div>
 	
 	<div class="clear"></div>
@@ -23,12 +23,12 @@
 		<ul class="">
 			{yun:}fz_list fz_list=city_list{/yun}
 			{yun:}if $city_list{/yun}
-			<li class="city_list_nav_cur" id="css_city"><a href="javascript:;" onClick="show_site('site_city')" class="">按城市</strong></a></li>
+			<li class="city_list_nav_cur" id="css_city"><a href="javascript:;" onClick="show_site('site_city')" class="">{yun:}t key='common_02424'{/yun}</strong></a></li>
 			{yun:}/if{/yun}
 
 			{yun:}hy_list hy_list=hy_list{/yun}
 			{yun:}if $hy_list{/yun}
-			<li class="" id="css_hy"><a href="javascript:;" onClick="show_site('site_hy')" class="">按行业</a></li>
+			<li class="" id="css_hy"><a href="javascript:;" onClick="show_site('site_hy')" class="">{yun:}t key='common_02425'{/yun}</a></li>
 			{yun:}/if{/yun}
 		</ul>
 	</div>
@@ -42,7 +42,7 @@
 					{yun:}if $siteinfo.cityname{/yun}
 						点击进入当前所在城市：<span><a href="{yun:}$vurl{/yun}">{yun:}$siteinfo.cityname{/yun}</a></span> 
 						<em class="site_city_tit_all">
-							您也可以点击进入:  <a href="{yun:}$config.sy_indexdomain{/yun}" class="city_come_all">{yun:}$config.sy_indexcity{/yun}</a>
+							{yun:}t key='common_02426'{/yun}  <a href="{yun:}$config.sy_indexdomain{/yun}" class="city_come_all">{yun:}$config.sy_indexcity{/yun}</a>
 						</em>
 					{yun:}else{/yun}
 						点击进入:  <a href="{yun:}$config.sy_indexdomain{/yun}" class="city_come_all">{yun:}$config.sy_indexcity{/yun}</a>
@@ -51,7 +51,7 @@
 					
 				</div>
 
-				<div class="site_city_tit">按首字母选择</div>
+				<div class="site_city_tit">{yun:}t key='common_02427'{/yun}</div>
 				{yun:}fz_list fz_list=city_list{/yun}
 				{yun:}foreach key=key item=list from=$city_list{/yun}
 					<div class="city_list">
@@ -66,9 +66,9 @@
 			</div>
 			<div id='site_hy' class="none">
 				{yun:}hy_list hy_list=hy_list{/yun}
-				<div class="site_city_hytit ">按行业选择</div>
+				<div class="site_city_hytit ">{yun:}t key='common_02428'{/yun}</div>
 				<div class="site_city_hy">
-					<a href="javascript:;" onclick="setsite_hy('0');" class="site_city_hy_cur">所有行业</a>
+					<a href="javascript:;" onclick="setsite_hy('0');" class="site_city_hy_cur">{yun:}t key='common_02429'{/yun}</a>
 					{yun:}foreach key=key item=list from=$hy_list{/yun}
 						<a href="{yun:}$list.url{/yun}" class="">{yun:}$list.hyname{/yun}</a>
 					{yun:}/foreach{/yun}

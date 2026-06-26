@@ -433,7 +433,7 @@
                 <div class="search_h1_box_title">
                     <ul class="search_h1_box_list">
                         <li {yun:}if $smarty.get.pic=='' {/yun}class="search_job_all " {yun:}/if{/yun} class="search_job_all ">
-                            <a href="{yun:}url m=resume c=search{/yun}">所有人才</a><i class="search_h1_box_list_icon"></i>
+                            <a href="{yun:}url m=resume c=search{/yun}">{yun:}t key='common_02274'{/yun}</a><i class="search_h1_box_list_icon"></i>
                         </li>
                         <li {yun:}if $smarty.get.order=='lastdate' {/yun}class="search_Filter_current" {yun:}/if{/yun}>
                             <a href="{yun:}listurl m=resume type=order v=lastdate{/yun}"><span>{yun:}t key='wap_00326'{/yun}</span><i class="search_Filter_icon"></i></a>
@@ -442,7 +442,7 @@
                             <a href="{yun:}listurl m=resume type=order v=ctime{/yun}"><span>{yun:}t key='admin_user_weipin_00030'{/yun}</span><i class="search_Filter_icon"></i></a>
                         </li>
                         <li class="{yun:}if $smarty.get.pic{/yun}search_h1_box_cur{yun:}/if{/yun} job_tj_t">
-                            <a href="{yun:}if $smarty.get.pic{/yun}{yun:}listurl m=resume type=tp v=0{/yun}{yun:}else{/yun}{yun:}listurl m=resume type=tp v=1{/yun}{yun:}/if{/yun}" class="job_zt">有照片<i class="job_tj_chk"></i></a>
+                            <a href="{yun:}if $smarty.get.pic{/yun}{yun:}listurl m=resume type=tp v=0{/yun}{yun:}else{/yun}{yun:}listurl m=resume type=tp v=1{/yun}{yun:}/if{/yun}" class="job_zt">{yun:}t key='common_02275'{/yun}<i class="job_tj_chk"></i></a>
                         </li>
                          <li class="{yun:}if $smarty.get.idcard{/yun}search_h1_box_cur{yun:}/if{/yun}">
                             <a href="{yun:}if $smarty.get.idcard{/yun}{yun:}listurl m=resume type=idcard v=0{/yun}{yun:}else{/yun}{yun:}listurl m=resume type=idcard v=1{/yun}{yun:}/if{/yun}" class="job_zt">{yun:}t key='member_com_00026'{/yun}<i class="job_tj_chk"></i></a>
@@ -511,7 +511,7 @@
                                         <dd>{yun:}t key='wap_00426'{/yun}</dd>
                                     </dl>
                                     <div class="search_nologin_tip_p">{yun:}t key='wap_com_00389'{/yun}，加快审核，高效挑选人才</div>
-                                    <div class="search_nologin_tip_tel">贴心服务热线：<span class="search_nologin_tip_tel_n">{yun:}$config.sy_comwebtel{/yun}</span></div>
+                                    <div class="search_nologin_tip_tel">{yun:}t key='common_02276'{/yun}<span class="search_nologin_tip_tel_n">{yun:}$config.sy_comwebtel{/yun}</span></div>
                                 </div>
                             {yun:}else{/yun}
                                 {yun:}include file="$tplstyle/resume/normal_list.htm"{/yun}

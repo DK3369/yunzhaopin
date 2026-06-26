@@ -89,13 +89,13 @@ class index_controller extends common
     {
 
         $descM      =   $this->MODEL('description');
-        $content    =   $descM->getDes(array('name' => yun_auto_t('关于我们')), array('field' => 'content'));
+        $content    =   $descM->getDes(array('name' => yun_at('wap_00218')), array('field' => 'content'));
         $this->yunset('content', $content);
         if ($_GET['fr'] == 'wxapp') {
             $this->yunset('wxapp', 1);
         }
-        $this->yunset('headertitle', yun_auto_t('关于我们'));
-        $this->yunset('title', yun_auto_t('关于我们'));
+        $this->yunset('headertitle', yun_at('wap_00218'));
+        $this->yunset('title', yun_at('wap_00218'));
         $this->yuntpl(array('wap/about'));
     }
 
@@ -103,13 +103,13 @@ class index_controller extends common
     function contact_action()
     {
         $descM      =   $this->MODEL('description');
-        $content    =   $descM->getDes(array('name' => yun_auto_t('联系我们')), array('field' => 'content'));
+        $content    =   $descM->getDes(array('name' => yun_at('wap_00220')), array('field' => 'content'));
         $this->yunset('content', $content);
         if ($_GET['fr'] == 'wxapp') {
             $this->yunset('wxapp', 1);
         }
-        $this->yunset('headertitle', yun_auto_t('联系我们'));
-        $this->yunset('title', yun_auto_t('联系我们'));
+        $this->yunset('headertitle', yun_at('wap_00220'));
+        $this->yunset('title', yun_at('wap_00220'));
         $this->yuntpl(array('wap/about'));
     }
 
@@ -150,7 +150,7 @@ class index_controller extends common
             $down['version'] = $appconfig['androidversion'];
         }
         $this->yunset('down', $down);
-        $this->yunset('headertitle', yun_auto_t('下载APP'));
+        $this->yunset('headertitle', yun_at('wap_00217'));
         $this->yuntpl(array('wap/appdown'));
     }
 
@@ -158,13 +158,13 @@ class index_controller extends common
     function privacy_action()
     {
         $descM      =   $this->MODEL('description');
-        $content    =   $descM->getDes(array('name' => yun_auto_t('隐私政策')), array('field' => 'content'));
+        $content    =   $descM->getDes(array('name' => yun_at('wap_00313')), array('field' => 'content'));
         $this->yunset('content', $content);
         if ($_GET['fr'] == 'wxapp') {
             $this->yunset('wxapp', 1);
         }
-        $this->yunset('headertitle', yun_auto_t('隐私政策'));
-        $this->yunset('title', yun_auto_t('隐私政策'));
+        $this->yunset('headertitle', yun_at('wap_00313'));
+        $this->yunset('title', yun_at('wap_00313'));
         $this->yuntpl(array('wap/about'));
     }
 
@@ -172,13 +172,13 @@ class index_controller extends common
     function protocol_action()
     {
         $descM      =   $this->MODEL('description');
-        $content    =   $descM->getDes(array('name' => yun_auto_t('注册协议')), array('field' => 'content'));
+        $content    =   $descM->getDes(array('name' => yun_at('wap_00219')), array('field' => 'content'));
         $this->yunset('content', $content);
         if ($_GET['fr'] == 'wxapp') {
             $this->yunset('wxapp', 1);
         }
-        $this->yunset('headertitle', yun_auto_t('服务协议'));
-        $this->yunset('title', yun_auto_t('服务协议'));
+        $this->yunset('headertitle', yun_at('wap_00498'));
+        $this->yunset('title', yun_at('wap_00498'));
         $this->yuntpl(array('wap/about'));
     }
 

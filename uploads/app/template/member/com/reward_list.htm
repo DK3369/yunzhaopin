@@ -57,12 +57,12 @@
 									<tr>
 										<td class="table_end">{yun:}$v.name{/yun}</td>
 										<td class="table_end">{yun:}$v.integral{/yun}</td>
-										<td class="table_end">{yun:}$v.num{/yun}(件)</td>
+										<td class="table_end">{yun:}$v.num{/yun}({yun:}t key='wap_00620'{/yun})</td>
 										<td class="table_end">{yun:}$v.ctime|date_format:"%Y-%m-%d %H:%M"{/yun}</td>
 										<td class="table_end">{yun:}$v.linkman{/yun}&nbsp;Tel:{yun:}$v.linktel{/yun}</td>
 										{yun:}if $v.status=="0"{/yun} 
 											<td class="table_end"align="center"><span class="wate_verify">{yun:}t key='wap_user_00166'{/yun}</span> </td>
-											<td class="table_end"align="center"><a href="javascript:void(0)" onclick="layer_del('确定要取消？', 'index.php?c=reward_list&act=del&id={yun:}$v.id{/yun}');" class="com_bth cblue">{yun:}t key='common.cancel'{/yun}</a></td>
+											<td class="table_end"align="center"><a href="javascript:void(0)" onclick="layer_del("{yun:}t key='member_user_00547'{/yun}", 'index.php?c=reward_list&act=del&id={yun:}$v.id{/yun}');" class="com_bth cblue">{yun:}t key='common.cancel'{/yun}</a></td>
 										{yun:}elseif $v.status=="1"{/yun} 
 											<td class="table_end"align="center"> <span class="y_verify">{yun:}t key='wap_user_00165'{/yun}</span></td>
   										{yun:}else if $v.status=="2"{/yun} 
@@ -89,9 +89,9 @@
             {yun:}else{/yun}
             <div class="msg_no">
             {yun:}if $config.sy_redeem_web==1{/yun}
-	          <p>您共有<span class="f60">{yun:}$statis.integral_format{/yun}</span>
+	          <p>{yun:}t key='wap_01084'{/yun}<span class="f60">{yun:}$statis.integral_format{/yun}</span>
 		          	
-		          {yun:}$config.integral_priceunit{/yun}{yun:}$config.integral_pricename{/yun}，还没有在商城兑换礼品，快去商城兑换礼品吧！</p><a href="{yun:}url m=redeem{/yun}" target="_blank" class="com_msg_no_bth com_submit">我要兑换</a>
+		          {yun:}$config.integral_priceunit{/yun}{yun:}$config.integral_pricename{/yun}，还没有在商城兑换礼品，快去商城兑换礼品吧！</p><a href="{yun:}url m=redeem{/yun}" target="_blank" class="com_msg_no_bth com_submit">{yun:}t key='wap_00621'{/yun}</a>
 		    {yun:}/if{/yun}      
 		      </div>
 	      	

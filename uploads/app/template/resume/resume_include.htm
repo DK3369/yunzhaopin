@@ -2,7 +2,7 @@
     <div class="r_Interview" style="z-index:11">
         <span class="Interview_span">{yun:}t key='wap_user_00256'{/yun}</span>
         <div class="Interview_text_box">
-            <input type="button" value="请选择面试职位" class="Interview_text_box_t" id="name" onClick="search_show('job_name');" />
+            <input type="button" value="{yun:}t key='wap_01439'{/yun}" class="Interview_text_box_t" id="name" onClick="search_show('job_name');" />
             <input type="hidden" id="nameid" name="name" value='' />
             <div class="Interview_text_box_list none" id="job_name">
                 <ul>
@@ -18,9 +18,9 @@
     <!--切换使用模板-->
     {yun:}if !empty($ymlist){/yun}
     <div class="r_Interview" style="z-index:10">
-        <span class="Interview_span">选择面试模板</span>
+        <span class="Interview_span">{yun:}t key='resume_00068'{/yun}</span>
         <div class="Interview_text_box">
-            <input type="button" value="请选择面试模板" class="Interview_text_box_t" id="mbname" onClick="search_show('mb_name');" />
+            <input type="button" value="{yun:}t key='resume_00069'{/yun}" class="Interview_text_box_t" id="mbname" onClick="search_show('mb_name');" />
             <input type="hidden" id="ymid" name="ymid" value='' />
             <div class="Interview_text_box_list none" id="mb_name">
                 <ul>
@@ -36,13 +36,13 @@
     {yun:}/if{/yun}
     <div class="r_Interview" style="z-index:9"><span class="Interview_span">{yun:}t key='wap_user_00267'{/yun}</span><input size='5' id='linkman' value='' class="Interview_text" /></div>
     <div class="r_Interview"><span class="Interview_span">{yun:}t key='wap_user_00265'{/yun}</span><input size='19' id='linktel' value='' class="Interview_text" /></div>
-    <div class="r_Interview"><span class="Interview_span">{yun:}t key='wap_user_00255'{/yun}</span><input size='40' id='intertime' value='' class="Interview_text" placeholder="请选择面试时间"  autocomplete="off" /></div>
-    <div class="r_Interview"><span class="Interview_span">面试地址</span><input size='40' id='address' value='' class="Interview_text" /></div>
+    <div class="r_Interview"><span class="Interview_span">{yun:}t key='wap_user_00255'{/yun}</span><input size='40' id='intertime' value='' class="Interview_text" placeholder="{yun:}t key='wap_01217'{/yun}"  autocomplete="off" /></div>
+    <div class="r_Interview"><span class="Interview_span">{yun:}t key='wap_01055'{/yun}</span><input size='40' id='address' value='' class="Interview_text" /></div>
     <div class="r_Interview"><span class="Interview_span">{yun:}t key='member_com_00353'{/yun}</span><textarea id="content" cols="40" rows="5" class="Interview_textarea_text"></textarea></div>
     
     <div id="ymctrl" class="r_Interview {yun:}if !$ymcan{/yun}none{yun:}/if{/yun}">
         <form  method="post" action=""  class="layui-form">
-            <input type="checkbox" id="save_yqmb" name="save_yqmb" title="保存面试模板"  value="1" lay-filter="save_yqmb" lay-skin="primary" />
+            <input type="checkbox" id="save_yqmb" name="save_yqmb" title="{yun:}t key='resume_00070'{/yun}"  value="1" lay-filter="save_yqmb" lay-skin="primary" />
         </form>
     </div>  
     
@@ -98,7 +98,7 @@
 
         
         $('#ymctrl').removeClass('none');
-        $('#save_yqmb').attr('title','更新面试模板')
+        $('#save_yqmb').attr('title',"{yun:}t key='wap_01699'{/yun}")
 
         $('#save_yqmb').prop("checked", false);
         

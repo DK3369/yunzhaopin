@@ -83,7 +83,7 @@ class hr_model extends model{
         if (empty($delId)) {
             return array(
                 'errcode' => 1,
-                'msg' => '请选择要删除的数据',
+                'msg' => yun_at('admin_user_weipin_00005'),
             );
         }
 
@@ -105,7 +105,7 @@ class hr_model extends model{
 
         $msg = '文档(' . $delId . ')';
         $return['errcode'] = $result ? 0 : 1;
-        $return['msg'] = $result ? $msg . '删除成功' : $msg . '删除失败';
+        $return['msg'] = $result ? $msg . 'wap_user_00147' : $msg . 'wap_user_00146';
 
         return $return;
 	}
@@ -206,7 +206,7 @@ class hr_model extends model{
         if (empty($delId)) {
             return array(
                 'errcode' => 1,
-                'msg' => '请选择要删除的数据！',
+                'msg' => yun_at('member_com_00084'),
             );
         }
 
@@ -222,7 +222,7 @@ class hr_model extends model{
 
         $msg = '工具箱类别(ID:' . $delId . ')';
         $return['errcode'] = $result ? 0 : 1;
-        $return['msg'] = $result ? $msg . '删除成功' : $msg . '删除失败';
+        $return['msg'] = $result ? $msg . 'wap_user_00147' : $msg . 'wap_user_00146';
 
         return $return;
     }

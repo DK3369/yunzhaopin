@@ -326,7 +326,7 @@ class company_pic_controller extends adminCommon
                     $nbid = $CompanyM->upLogo(array('uid' => $id), array('thumb' => $pictures, 'utype' => 'admin'));
                     $this->automsg('管理员操作：修改企业logo', $id);
                 }
-                isset($nbid) ? $this->admin_json(0, '企业logo(ID:' . $id . ')修改成功！') : $this->render_json(8, '修改失败！');
+                isset($nbid) ? $this->admin_json(0, '企业logo(ID:' . $id . ')修改成功！') : $this->render_json(8, 'member_user_00603');
             }
             if ($_POST['type'] == 'show') {
                 $row = $CompanyM->getCompanyShowInfo($id, array('field' => 'picurl,title,uid'));
@@ -340,16 +340,16 @@ class company_pic_controller extends adminCommon
                 }
                 $nbid = $CompanyM->upCompanyShow($id, $data);
                 $this->automsg('管理员：修改企业环境(ID:' . $id . ')', $row['uid']);
-                isset($nbid) ? $this->admin_json(0, '企业环境(ID:' . $id . ')修改成功！') : $this->render_json(8, '修改失败！');
+                isset($nbid) ? $this->admin_json(0, '企业环境(ID:' . $id . ')修改成功！') : $this->render_json(8, 'member_user_00603');
             }
             if ($_POST['type'] == 'banner') {
                 $row = $CompanyM->getBannerInfo($id, array('field' => 'pic,uid'));
                 if (isset($pictures)) {
                     $data['pic'] = $pictures;
                     $nbid = $CompanyM->upBanner($id, $data);
-                    $this->automsg('管理员修改企业横幅', $row['uid']);
+                    $this->automsg('admin_01313', $row['uid']);
                 }
-                isset($nbid) ? $this->admin_json(0, '企业横幅(ID:' . $id . ')修改成功！') : $this->render_json(8, '修改失败！');
+                isset($nbid) ? $this->admin_json(0, '企业横幅(ID:' . $id . ')修改成功！') : $this->render_json(8, 'member_user_00603');
             }
         }
     }
@@ -365,19 +365,19 @@ class company_pic_controller extends adminCommon
             if ($_POST['type'] == 'logo') {
                 $delid = $CompanyM->upInfo($id, '', array('logo' => ''));
                 $this->automsg('管理员 ：删除企业logo', $id);
-                $delid ? $this->admin_json(0, '企业logo(ID:' . pylode(',', $_POST['delid']) . ')删除成功！') : $this->render_json(1, '删除失败！');
+                $delid ? $this->admin_json(0, '企业logo(ID:' . pylode(',', $_POST['delid']) . ')删除成功！') : $this->render_json(1, 'admin_user_00186');
             }
             if ($_POST['type'] == 'show') {
                 $row = $CompanyM->getCompanyShowInfo($id, array('field' => 'uid,picurl'));
                 $delid = $CompanyM->delCompanyShow($id, array('utype' => 'admin'));
                 $this->automsg('管理员：删除企业环境(ID:' . $id . ')', $row['uid']);
-                $delid ? $this->admin_json(0, '企业环境(ID:' . pylode(',', $id) . ')删除成功！') : $this->render_json(1, '删除失败！');
+                $delid ? $this->admin_json(0, '企业环境(ID:' . pylode(',', $id) . ')删除成功！') : $this->render_json(1, 'admin_user_00186');
             }
             if ($_POST['type'] == 'banner') { // 删除企业横幅
                 $row = $CompanyM->getBannerInfo($id, array('field' => 'uid,pic'));
                 $delid = $CompanyM->delBanner($id);
-                $this->automsg('管理员：删除企业横幅', $row['uid']);
-                $delid ? $this->admin_json(0, '企业横幅(ID:' . pylode(',', $id) . ')删除成功！') : $this->render_json(1, '删除失败！');
+                $this->automsg('admin_01314', $row['uid']);
+                $delid ? $this->admin_json(0, '企业横幅(ID:' . pylode(',', $id) . ')删除成功！') : $this->render_json(1, 'admin_user_00186');
             }
         } else if (is_array($_POST['del'])) {
             if ($_POST['type'] == 'logo') { // 删除logo
@@ -388,7 +388,7 @@ class company_pic_controller extends adminCommon
                         $this->automsg('管理员操作：删除企业logo', $v['uid']);
                     }
                 }
-                $delid ? $this->admin_json(0, '企业logo(ID:' . pylode(',', $_POST['del']) . ')删除成功！') : $this->render_json(1, '删除失败！');
+                $delid ? $this->admin_json(0, '企业logo(ID:' . pylode(',', $_POST['del']) . ')删除成功！') : $this->render_json(1, 'admin_user_00186');
             }
             if ($_POST['type'] == 'show') {
                 $ids = $_POST['del'];
@@ -399,7 +399,7 @@ class company_pic_controller extends adminCommon
                         $this->automsg('管理员操作：删除企业环境(ID:' . $v['id'] . ')', $v['uid']);
                     }
                 }
-                $delid ? $this->admin_json(0, '企业环境(ID:' . pylode(',', $ids) . ')删除成功！') : $this->render_json(1, '删除失败！');
+                $delid ? $this->admin_json(0, '企业环境(ID:' . pylode(',', $ids) . ')删除成功！') : $this->render_json(1, 'admin_user_00186');
             }
             if ($_POST['type'] == 'banner') { // 删除企业横幅
                 $ids = $_POST['del'];
@@ -407,13 +407,13 @@ class company_pic_controller extends adminCommon
                 $delid = $CompanyM->delBanner($ids);
                 if ($row) {
                     foreach ($row as $v) {
-                        $this->automsg('管理员操作：删除企业横幅', $v['uid']);
+                        $this->automsg('admin_01315', $v['uid']);
                     }
                 }
-                $delid ? $this->admin_json(0, '企业横幅(ID:' . pylode(',', $ids) . ')删除成功！') : $this->render_json(1, '删除失败！');
+                $delid ? $this->admin_json(0, '企业横幅(ID:' . pylode(',', $ids) . ')删除成功！') : $this->render_json(1, 'admin_user_00186');
             }
         } else {
-            $this->render_json(2, '请选择您要删除的图片！');
+            $this->render_json(2, yun_at('admin_user_00071'));
         }
     }
 }

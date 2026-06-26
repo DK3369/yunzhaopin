@@ -34,12 +34,12 @@
 <form action="{yun:}if !$config.sy_hrdir{/yun}index.php{yun:}else{/yun}{yun:}url m=hr{/yun}{yun:}/if{/yun}" method="get" onsubmit="return checkkey();"> 
 {yun:}if !$config.sy_hrdir || $config.sy_seo_rewrite!='1'{/yun}<input type="hidden" value="hr" name="m" />{yun:}/if{/yun}
 <input type="hidden" name="c" value="list" />
-<input type="text" name="keyword" value="请输入资料名称" class="Toolbox_search_text" onblur="if(this.value==''){this.value='{yun:}t key='admin_system_00198'{/yun}'}" onclick="if(this.value=='{yun:}t key='admin_system_00198'{/yun}'){this.value=''}" />
+<input type="text" name="keyword" value="{yun:}t key='common_02407'{/yun}" class="Toolbox_search_text" onblur="if(this.value==''){this.value='{yun:}t key='admin_system_00198'{/yun}'}" onclick="if(this.value=='{yun:}t key='admin_system_00198'{/yun}'){this.value=''}" />
 <input type="submit" value="{yun:}t key='common.search'{/yun}" class="Toolbox_search_sub"/>
 </form>
 </div>
 <div class="Toolbox_Ranking_box">
-<div class="Toolbox_Ranking_h1">下载排行</div>
+<div class="Toolbox_Ranking_h1">{yun:}t key='common_02406'{/yun}</div>
 <ul class="Toolbox_Ranking_list">
 {yun:}hrlist item=down order=downnum key=key limit=10{/yun}
 <li><span class="Ranking_no {yun:}if $key<3{/yun}Ranking_no_mc{yun:}/if{/yun}">{yun:}$key+1{/yun}</span>

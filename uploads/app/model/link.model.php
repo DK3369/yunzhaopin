@@ -26,9 +26,9 @@ class link_model extends model{
 				}
                 $List[$k]['ctime_n'] = date('Y-m-d', $v['link_time']);
 				if ($v['link_type'] == 1){
-                    $List[$k]['link_type_n'] = '文字链接';
+                    $List[$k]['link_type_n'] = yun_at('admin_01013');
                 }else{
-                    $List[$k]['link_type_n'] = '图片链接';
+                    $List[$k]['link_type_n'] = yun_at('admin_00100');
                 }
                 foreach ($domain['Dname'] as $dk=>$dv){
                     if ($v['did'] == $dk){
@@ -69,14 +69,14 @@ class link_model extends model{
 				
 				$this->get_cache();
 				
-				$return['msg']		=	'友情链接审核成功！';
+				$return['msg']		=	yun_at('common_06516');
 				$return['errcode']	=	9;
 			}else{
-				$return['msg']		=	'友情链接审核失败！';
+				$return['msg']		=	yun_at('common_06517');
 				$return['errcode']	=	8;
 			}
 		}else{
-			$return['msg']		=	'请选择审核数据！';
+			$return['msg']		=	yun_at('common_06518');
 			$return['errcode']	=	8;
 		}
 		return $return;
@@ -89,7 +89,7 @@ class link_model extends model{
 			session_start();
 			if(md5(strtolower($data['authcode'])) != $_SESSION['authcode'] || empty($_SESSION['authcode'])){
 				unset($_SESSION['authcode']);
-				$return['msg']		=	'验证码不正确！';
+				$return['msg']		=	yun_at('wap_js_00109');
 				$return['errcode']	=	8;
 				return	$return;
 			}
@@ -97,7 +97,7 @@ class link_model extends model{
 		}
 		if($data['utype']=='admin'){
 			if(preg_match("/[^\d-., ]/",$post['link_sorting'])){
-				$return['msg']		=	'请正确填写，排序是数字！';
+				$return['msg']		=	yun_at('common_00811');
 				$return['errcode']	=	8;
 			}
 		}
@@ -110,25 +110,25 @@ class link_model extends model{
 		if($return['msg']==''){
 			if($id){
 				$return['id']		=	$this -> update_once("admin_link",$post,array('id'=>$id));
-				$msg	=	'修改';
+				$msg	=	'wap_js_00073';
 			}else{
 				
 				$post['link_time']	=	time();
 				$return['id']		=	$this -> insert_into("admin_link",$post);
-				$msg	=	'添加';
+				$msg	=	'wap_js_00091';
 			}
 			if($return['id']){
 				$this->get_cache();
 				if($data['utype']=='index'){
-					$return['msg']	=	'请等待管理员审核！';
+					$return['msg']	=	yun_at('common_01157');
 				}
 				if($data['utype']=='admin'){
 					
-					$return['msg']	=	'友情链接(ID:'.$return['id'].')'.$msg.'成功！';
+					$return['msg']	=	yun_auto_t('友情链接(ID:').$return['id'].')'.$msg.'wap_js_00104';
 				}
 				$return['errcode']	=	9;
 			}else{
-				$return['msg']		=	$msg.'失败！';
+				$return['msg']		=	$msg.'wap_js_00103';
 				$return['errcode']	=	8;
 			}
 		}
@@ -145,7 +145,7 @@ class link_model extends model{
 			return	array(
               
 				'errcode' 	=> 	8,
-				'msg' 		=> 	'请选择要删除的数据！',
+				'msg' 		=> 	yun_at('member_com_00084'),
 				'layertype'	=>	0
             );
         
@@ -164,9 +164,9 @@ class link_model extends model{
 			
 			$return['id']	=	$this -> delete_all('admin_link',array('id' => array('in',$ids)),'');
 			$this->get_cache();
-			$return['msg']		=	'友情链接(ID:'.$ids.')';
+			$return['msg']		=	yun_auto_t('友情链接(ID:').$ids.')';
 			$return['errcode']	=	$return['id'] ? '9' :'8';
-			$return['msg']		=	$return['id'] ? $return['msg'].'删除成功！' : $return['msg'].'删除失败！';
+			$return['msg']		=	$return['id'] ? $return['msg'].'admin_user_00187' : $return['msg'].'admin_user_00186';
 		}
 		return	$return;
 	}
@@ -182,14 +182,14 @@ class link_model extends model{
 				
 				$this->get_cache();
 				
-				$return['msg']		=	"友情链接(ID:".$data['uid'].")分配站点成功！";
+				$return['msg']		=	yun_auto_t('友情链接(ID:').$data['uid'].")分配站点成功！";
 				$return['errcode']	=	9;
 			}else{
-				$return['msg']		=	'请正确选择需分配用户！';
+				$return['msg']		=	yun_at('admin_user_00030');
 				$return['errcode']	=	8;
 			}
 		}else{
-			$return['msg']			=	'参数不全请重试！';
+			$return['msg']			=	yun_at('common_01236');
 			$return['errcode']		=	8;
 		}
 		return $return;

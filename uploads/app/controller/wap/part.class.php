@@ -14,7 +14,7 @@ class part_controller extends common
 
         if ($this->config['sy_part_web'] == '2') {
 
-            $this->ACT_msg_wap('index.php', yun_auto_t('很抱歉！该模块已关闭！'), 1, 3);
+            $this->ACT_msg_wap('index.php', yun_at('wap_00365'), 1, 3);
         }
 
         $CacheM     =   $this->MODEL('cache');
@@ -36,8 +36,8 @@ class part_controller extends common
 
         $this->yunset('backurl', Url('wap'));
         $this->seo('part_index');
-        $this->yunset('topplaceholder', yun_auto_t('请输入关键字'));
-        $this->yunset('headertitle', yun_auto_t('兼职'));
+        $this->yunset('topplaceholder', yun_at('admin_system_00198'));
+        $this->yunset('headertitle', yun_at('wap_user_00220'));
         $this->yuntpl(array('wap/part'));
     }
 
@@ -45,7 +45,7 @@ class part_controller extends common
     {
 
         if ($this->config['sy_part_web'] == '2') {
-            $this->ACT_msg_wap('index.php', yun_auto_t('很抱歉！该模块已关闭！'), 1, 3);
+            $this->ACT_msg_wap('index.php', yun_at('wap_00365'), 1, 3);
         }
 
         $this->get_moblie();
@@ -76,7 +76,7 @@ class part_controller extends common
                 $this->yunset('job', $job);
             } else {
 
-                $this->ACT_msg_wap('index.php', yun_auto_t('该兼职暂无法展示！'), 1, 3);
+                $this->ACT_msg_wap('index.php', yun_at('wap_00366'), 1, 3);
             }
         }
 
@@ -84,7 +84,7 @@ class part_controller extends common
         $this->data         =   $data;
 
         $this->seo('part_show');
-        $this->yunset('headertitle', yun_auto_t('兼职'));
+        $this->yunset('headertitle', yun_at('wap_user_00220'));
         $this->yuntpl(array('wap/part_show'));
     }
 

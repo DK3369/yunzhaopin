@@ -65,27 +65,27 @@ class cron_model extends model
 
                 if ($dirArr[0] == '' || strpos($dirArr[0], '/') !== false || end($dirArr) != 'php') {
 
-                    return array('msg' => '无效的执行文件！', 'errcode' => '8');
+                    return array('msg' => yun_at('common_01269'), 'errcode' => '8');
                 } else {
 
                     $data['dir']=   $dirArr[0].'.php';
                 }
             } else {
 
-                return array('msg' => '请填写计划任务执行文件！', 'errcode' => '8');
+                return array('msg' => yun_at('model_00028'), 'errcode' => '8');
             }
 
             if ($data['type'] == 5) {
                 if (trim($data['minu']) == '') {
 
-                    return array('msg' => '请填写执行任务的间隔分钟数！', 'errcode' => '8');
+                    return array('msg' => yun_at('common_00674'), 'errcode' => '8');
                 }
                 $data['minute'] =   intval($data['minu']);
             }
             if ($data['type'] == 4) {
                 if (trim($data['second']) == '') {
 
-                    return array('msg' => '请填写执行任务的间隔秒数！', 'errcode' => '8');
+                    return array('msg' => yun_at('common_00738'), 'errcode' => '8');
                 }
                 $data['minute'] =   intval($data['second']);
             }
@@ -96,17 +96,17 @@ class cron_model extends model
 
                 $nbid           =   $this->insert_into('cron', $data);
 
-                $return['msg']  =   "计划任务(id:" . $nbid . ")添加";
+                $return['msg']  =   yun_auto_t('计划任务(id:') . $nbid . ")添加";
             } else {
 
                 $nbid           =   $this->update_once('cron', $data, array('id' => $id));
 
-                $return['msg']  =   "计划任务(ID:" . $id . ")修改";
+                $return['msg']  =   yun_auto_t('计划任务(ID:') . $id . ")修改";
             }
 
             $return['errcode']  =   $nbid ? '9' : '8';
 
-            $return['msg']      =   $nbid ? $return['msg'] . '成功！' : $return['msg'] . '失败！';
+            $return['msg']      =   $nbid ? $return['msg'] . 'wap_js_00104' : $return['msg'] . 'wap_js_00103';
         }
 
         return $return;
@@ -122,9 +122,9 @@ class cron_model extends model
         if (!empty($delId)) {
 
             $nbid               =   $this->delete_all('cron', array('id' => $delId), '');
-            $return['msg']      =   "计划任务(ID:" . $delId . ")";
+            $return['msg']      =   yun_auto_t('计划任务(ID:') . $delId . ")";
             $return['errcode']  =   $nbid ? '9' : '8';
-            $return['msg']      =   $nbid ? $return['msg'] . '删除成功！' : $return['msg'] . '删除失败！';
+            $return['msg']      =   $nbid ? $return['msg'] . 'admin_user_00187' : $return['msg'] . 'admin_user_00186';
         }
         return $return;
     }
@@ -364,12 +364,12 @@ class cron_model extends model
                 $return['id']   =   $this->delete_all('cron_log', $whereData, '');
             }
 
-            $return['msg']      =   '计划任务日志';
+            $return['msg']      =   yun_at('common_01536');
             $return['errcode']  =   $return['id'] ? '9' : '8';
-            $return['msg']      =   $return['id'] ? $return['msg'] . '删除成功！' : $return['msg'] . '删除失败！';
+            $return['msg']      =   $return['id'] ? $return['msg'] . 'admin_user_00187' : $return['msg'] . 'admin_user_00186';
         } else {
 
-            $return['msg']      =   '请选择您要删除的计划任务日志！';
+            $return['msg']      =   yun_at('common_00597');
             $return['errcode']  =   8;
         }
 

@@ -81,7 +81,7 @@ class notice_model extends model{
            
             return $tpl;
         }else{
-            return array('status' => -1, 'msg' => '信息模板有误，请联系管理员');
+            return array('status' => -1, 'msg' => yun_at('common_00698'));
         }
     }
     //替换模板中的变量
@@ -123,15 +123,15 @@ class notice_model extends model{
 				$this->smtpClass = $this->_getSmtp($serverId);
 			}
 			if(!$this->smtpClass){
-				return array('status' => -1, 'msg' => '还没有配置邮箱，请联系管理员！');
+				return array('status' => -1, 'msg' => yun_at('model_00035'));
 			}
 			
 			if($this->_isKey('email', $data) == false || CheckRegEmail($data['email']) == false){
-				return array('status' => -1, 'msg' => 'email地址错误');
+				return array('status' => -1, 'msg' => yun_at('common_01100'));
 			}
 			
 			if(!$this->_isKey('subject', $data) || !$this->_isKey('content', $data)){
-				return array('status' => -1, 'msg' => 'email主题/正文为空');
+				return array('status' => -1, 'msg' => yun_at('common_00772'));
 			}
 			
 			$cc = isset($data['cc']) ? $data['cc'] : '';
@@ -141,14 +141,14 @@ class notice_model extends model{
 			$sendid = $this->smtpClass->sendmail($data['email'],$data['subject'],$data['content'],'HTML',$cc,$bcc,$additional_headers);
 			if($sendid){
 				$state = '1';
-				$retval = array('status' => 1, 'msg' => 'email发送成功！');
+				$retval = array('status' => 1, 'msg' => yun_at('model_00036'));
 			}else{
 
 			    $this->smtpClass = null;
 
 				$state = '0';
-				$retval = array('status' => -1, 'msg' => 'email发送失败！');
-				$this->addErrorLog($data['uid'], 9,'email发送失败！');
+				$retval = array('status' => -1, 'msg' => yun_at('model_00037'));
+				$this->addErrorLog($data['uid'], 9,'model_00037');
 			}
 		}
 		
@@ -157,16 +157,16 @@ class notice_model extends model{
 		        $this->smtpClass = $this->_getSmtp();
 		    }
 		    if(!$this->smtpClass){
-		        return array('status' => -1, 'msg' => '还没有配置邮箱，请联系管理员！');
+		        return array('status' => -1, 'msg' => yun_at('model_00035'));
 		    }
 			$sendid = $this->smtpClass->sendemail($data['email'],$data['subject'],$data['content']);
 			if($sendid){
 				$state = '1';
-				$retval = array('status' => 1, 'msg' => 'email发送成功！');
+				$retval = array('status' => 1, 'msg' => yun_at('model_00036'));
 			}else{
 				$state = '0';
-				$retval = array('status' => -1, 'msg' => 'email发送失败！');
-				$this->addErrorLog($data['uid'], 9,'email发送失败！');
+				$retval = array('status' => -1, 'msg' => yun_at('model_00037'));
+				$this->addErrorLog($data['uid'], 9,'model_00037');
 			}
 		}
         
@@ -217,7 +217,7 @@ class notice_model extends model{
         if (! $this->_isKey('type', $data) || ! $this->_isKey('sy_email_'.$data['type'], $this->config) || $this->config['sy_email_'.$data['type']] != 1) {
             return array(
                 'status' => - 1,
-                'msg' => '未开启email提醒，请联系管理员！(code:' . $data['type'] . ')'
+                'msg' => yun_at('common_00211') . $data['type'] . ')'
             );
         }
         // 邮件内容，如发送的内容相同，可以先把内容处理好传入，减少数据处理
@@ -289,19 +289,19 @@ class notice_model extends model{
     */
     public function sendSMS($data){
         if(!checkMsgOpen($this -> config)){
-            return array('status' => -1, 'msg' => '还没有配置短信，请联系管理员！');
+            return array('status' => -1, 'msg' => yun_at('model_00038'));
         }
     
         $data['mobile'] = $data['moblie'] ? $data['moblie'] : $data['mobile'];
         if($this->_isKey('mobile', $data) == false || CheckMobile($data['mobile']) == false){
-            return array('status' => -1, 'msg' => '手机号错误');
+            return array('status' => -1, 'msg' => yun_at('common_01611'));
         }
         if (!checkMobileLegal($data['mobile'])) {
-            return array('status' => -1, 'msg' => '该手机号已被禁止使用');
+            return array('status' => -1, 'msg' => yun_at('wap_js_00051'));
         }
 			
         if($this->_isKey('content', $data) == false || $data['content'] == ''){
-            return array('status' => -1, 'msg' => '短信内容为空');
+            return array('status' => -1, 'msg' => yun_at('model_00039'));
         }
     
         //发送短信
@@ -328,10 +328,10 @@ class notice_model extends model{
 				$location  =	$checkData['phoneList']['province'] . '-' . $checkData['phoneList']['city'];
 
 				//检测归属地
-				if($this -> config['sy_kh_city'] && $checkData['phoneList']['province']!='未知' && $checkData['phoneList']['city']!='未知'){
+				if($this -> config['sy_kh_city'] && $checkData['phoneList']['province']!='common_02004' && $checkData['phoneList']['city']!='common_02004'){
 
 					$re['code']		=	'502';//归属地检测失败
-					$re['message']	=	'号码检测有误！';
+					$re['message']	=	yun_at('common_01349');
 
 					$kh_province		=	str_replace("，",",",$this -> config['sy_kh_city']);
 					$kh_province_arr	=	explode(',',$kh_province);
@@ -351,7 +351,7 @@ class notice_model extends model{
 				}
 			}else{
 				$re['code']		=	'501';//空号检测失败
-				$re['message']	=	'号码检测有误！';
+				$re['message']	=	yun_at('common_01349');
 			}
 		}
 		if(!isset($re['code'])){
@@ -383,18 +383,18 @@ class notice_model extends model{
             
             $sqlResult  =  $this -> insert_into('moblie_msg',$sql_data);
             
-            return array('status' => 1, 'msg' => '发送成功!');
+            return array('status' => 1, 'msg' => yun_at('model_00040'));
     	}else{
     		$sql_data['state']  =  $re['code'];
             $this -> insert_into('moblie_msg',$sql_data);
           
-            $content = '短信发送失败！手机号：'.$data['mobile'].'，状态：'.$re['code']."," . $re['message'];
+            $content = 'common_06541'.$data['mobile'].'common_06542'.$re['code']."," . $re['message'];
             if ($re['code'] == '501'){
                 // 记录空号检测失败，综合平台返回的错误原因
                 $content .= $checkInfo['message'];
             }
             $this->addErrorLog($data['uid'], 8, $content);
-			return array('status' => -1, 'msg' => '发送失败！状态：'.$re['code']."," . $re['message']);
+			return array('status' => -1, 'msg' => yun_at('model_00041').$re['code']."," . $re['message']);
         }
     }
     /**
@@ -407,7 +407,7 @@ class notice_model extends model{
         if(!$this->_isKey('type', $data) 
         || !$this->_isKey('sy_msg_'.$data['type'], $this->config) 
         || $this->config['sy_msg_'.$data['type']] !=1){ //是否后台设置了需要短信提醒
-          return array('status' => -1, 'msg' => '未开启短信提醒，请联系管理员');
+          return array('status' => -1, 'msg' => yun_at('common_00664'));
         }
         
         //短信内容，如发送的内容相同，可以先把内容处理好传入，减少数据处理
@@ -474,7 +474,7 @@ class notice_model extends model{
                         $est = date('Y-m-d',$usec);
                         $Info['fromTime'] =$est;
                     }else{
-                        $Info['fromTime'] = '自创立起';
+                        $Info['fromTime'] = yun_at('common_01838');
                     }
                 	if($Info['toTime']){
                 		$toTime=new DateTime('@'.substr($Info['toTime'],0,10));
@@ -482,7 +482,7 @@ class notice_model extends model{
                 		$toTime->setTimezone(new DateTimeZone('PRC'));
                 		$Info['toTime'] = $toTime->format('Y-m-d');
                 	}else{
-                		$Info['toTime'] = '长期';
+                		$Info['toTime'] = yun_at('wap_com_00341');
                 	}
                 }
             }
@@ -535,12 +535,12 @@ class notice_model extends model{
  	        
  	        if (CheckMobile($sended) == false){
  	            
- 	            return array('error'=> 106, 'msg'=> '手机号码格式错误');
+ 	            return array('error'=> 106, 'msg'=> yun_at('wap_user_00039'));
  	            
  	        }
 			if(!checkMsgOpen($this -> config)){
 			
-				return array('error'=> 107, 'msg'=> '网站没有配置短信，请联系管理员！');
+				return array('error'=> 107, 'msg'=> yun_at('common_00541'));
 			
 			}
 			
@@ -548,7 +548,7 @@ class notice_model extends model{
 			
 			if($ipnum >= $this->config['ip_msgnum']){
 			    
-			    return array('error'=> 107, 'msg'=> '同一IP一天最多发送'.$this->config['ip_msgnum'].'条');
+			    return array('error'=> 107, 'msg'=> yun_at('common_00984').$this->config['ip_msgnum'].'条');
 				
 			}
 			// 数量判断只查验证类短信
@@ -556,7 +556,7 @@ class notice_model extends model{
 			
 			if($num	>=	$this->config['moblie_msgnum']){
 			    
-			    return array('error'=> 107, 'msg'=> '同一手机号一天最多发送'.$this->config['moblie_msgnum'].'条');
+			    return array('error'=> 107, 'msg'=> yun_at('common_00868').$this->config['moblie_msgnum'].'条');
 				
 			}
 			
@@ -574,7 +574,7 @@ class notice_model extends model{
  	                
  	            }else{
  	                
- 	                return array('error'=> 105, 'msg'=> '该手机尚未注册');
+ 	                return array('error'=> 105, 'msg'=> yun_at('common_01401'));
  	                
  	            }
  	            
@@ -586,7 +586,7 @@ class notice_model extends model{
  	        }
  	        if($lastSend['ctime'] > $overtime){
  	            
- 	            return array('error' => 102, 'msg' => '两次发送间隔需超过'.$validity.'秒');
+ 	            return array('error' => 102, 'msg' => yun_at('common_01107').$validity.'秒');
  	            
  	        }
  	        if ($type == 'cert'){
@@ -595,7 +595,7 @@ class notice_model extends model{
  	            
  	            if ($lastSend['ctime'] > $certover){
  	                
- 	                return array('error' => 102, 'msg' => '手机认证短信发送间隔需超过'.$this->config['cert_msgtime'].'分钟');
+ 	                return array('error' => 102, 'msg' => yun_at('common_00711').$this->config['cert_msgtime'].'wap_com_00247');
  	            }
  	        }
  	        $result  =  $this -> sendType($sended, $type, $code, 'msg', $user, $port, 1);
@@ -603,16 +603,16 @@ class notice_model extends model{
  	    }elseif ($kind == 'email'){
  	        if (CheckRegEmail($sended) ==false){
  	            
- 	            return array('error'=> 101, 'msg'=> '邮箱格式错误');
+ 	            return array('error'=> 101, 'msg'=> yun_at('wap_js_00120'));
  	        }
 			
 			if($this->config['sy_email_set']!="1"){
-				return array('error'=> 107, 'msg'=> '网站邮件服务器暂不可用');
+				return array('error'=> 107, 'msg'=> yun_at('invitereg_00004'));
 			}
 			
 			$num	=	$this->select_num("company_cert" , array('check'=>$sended , 'ctime'=>array('>',strtotime(date('Y-m-d')))) );
 			if($num>=5){
-				$data['errmsg']  = '请不要频繁发送邮件！';
+				$data['errmsg']  = yun_at('common_01052');
 				$data['error']   = 17;
 				echo json_encode($data);die;
 			}
@@ -623,7 +623,7 @@ class notice_model extends model{
  	            
 				if($this->config['sy_email_getpass']=="2"){
 				
-					return array('error'=> 108, 'msg'=> '网站未开启邮件找回密码');
+					return array('error'=> 108, 'msg'=> yun_at('common_00910'));
 				}
 				
  	            if ($member){
@@ -634,14 +634,14 @@ class notice_model extends model{
  	                );
  	            }else{
  	                
- 	                return array('error'=> 105, 'msg'=> '该邮箱尚未注册');
+ 	                return array('error'=> 105, 'msg'=> yun_at('common_01405'));
  	            }
  	            
  	            $num  =  $this -> select_num('company_cert',array('check'=>$sended,'type'=>7,'ctime'=>array('>',$today)));
  	            
  	            if($num >= 5){
  	                
- 	                return array('error'=> 106, 'msg'=> '请不要频繁发送邮件');
+ 	                return array('error'=> 106, 'msg'=> yun_at('common_01152'));
  	            }
  	            $lastSend  =  $this -> select_once('company_cert',array('check'=>$sended,'type'=>7),'`ctime`,`type`');
  	            
@@ -718,10 +718,10 @@ class notice_model extends model{
  	//手机验证码类型
  	private function codeType($type){
  	    $status = array(
- 	        'login'    =>  '手机登录验证码',
- 	        'regcode'  =>  '手机注册验证码',
- 	        'cert'     =>  '手机认证',
- 	        'getpass'  =>  '找回密码'
+ 	        'login'    =>  'common_01373',
+ 	        'regcode'  =>  'common_01372',
+ 	        'cert'     =>  'member_com_00071',
+ 	        'getpass'  =>  'wap_js_00123'
  	    );
  	}
  	//查询接收短信、邮件用户信息
@@ -730,7 +730,7 @@ class notice_model extends model{
  	        'uid'   =>  0,
  	        'name'  =>  '',
  	        'cuid'  =>  0,
- 	        'cname' =>  '系统'
+ 	        'cname' =>  'common_02020'
  	    );
  	    if (!empty($user['uid'])){
  	        
@@ -781,7 +781,7 @@ class notice_model extends model{
         if ($image) {
             if (md5(strtolower(trim($authcode))) != $_SESSION['authcode'] || trim($authcode) == '') {
                 unset($_SESSION['authcode']);
-                return array('error' => 106, 'msg' => '图片验证码填写错误！');
+                return array('error' => 106, 'msg' => yun_at('model_00042'));
             } else {
                 unset($_SESSION['authcode']);
             }

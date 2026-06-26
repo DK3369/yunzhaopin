@@ -1,7 +1,7 @@
 <template>
 	<div class="tableDome" style="position: relative;">
 		<div class="tableDome_tip">
-			<el-alert title="管理员根据网站运营需求，添加不同类型的管理员！管理员类型分为：“CRM、超级管理员、分站管理员”用户权限组成相关设置，超级管理员可以根据运营需求设置"
+			<el-alert title="{yun:}t key='admin_system_00216'{/yun}"
 				type="success" :closable="false">
 			</el-alert>
 		</div>
@@ -9,22 +9,22 @@
 			<table class="quanxiantable" v-if="islook">
 				<tbody>
 					<tr>
-						<td bgcolor="#F5F7FA">用户组名称</td>
+						<td bgcolor="#F5F7FA">{yun:}t key='admin_system_00212'{/yun}</td>
 						<td colspan="2">
 							<div class="quanxiantext">
 								<div class="quanxiantext_in">
-									<el-input v-model="groupinfo.group_name" placeholder="请输入名称" size="small"></el-input>
+									<el-input v-model="groupinfo.group_name" placeholder="{yun:}t key='admin_00210'{/yun}" size="small"></el-input>
 								</div>
 								<div class="quanxiantip">
-									<span>名称如：技术部 ，财务部，销售部等</span>
+									<span>{yun:}t key='admin_system_00215'{/yun}</span>
 								</div>
 							</div>
 						</td>
 					</tr>
 					<tr align="left">
-						<th width="150" bgcolor="#F5F7FA">一级类别</th>
-						<th width="150"  bgcolor="#F5F7FA">二级类别</th>
-						<th  bgcolor="#F5F7FA">功能管理权限</th>
+						<th width="150" bgcolor="#F5F7FA">{yun:}t key='admin_user_company_00362'{/yun}</th>
+						<th width="150"  bgcolor="#F5F7FA">{yun:}t key='admin_user_company_00364'{/yun}</th>
+						<th  bgcolor="#F5F7FA">{yun:}t key='admin_system_00214'{/yun}</th>
 					</tr>
 					<tr>
 						<td valign="top">
@@ -59,7 +59,7 @@
 			
 		</div>
 		<div class="setBasicButn" style="border: none;">
-			<el-button type="primary" size="medium" @click="submitForm" :disabled="saveLoading">提交</el-button>
+			<el-button type="primary" size="medium" @click="submitForm" :disabled="saveLoading">{yun:}t key='common.submit'{/yun}</el-button>
 		</div>
 	</div>
 </template>
@@ -78,7 +78,7 @@
 				one: [],
 				two: [],
 				three: [],
-				groupinfo: {group_name: ''},
+				groupinfo: {group_name: '"},
 				power: [],
 				checked: true,
 				islook: false,
@@ -117,7 +117,7 @@
 			},
 			handleCheckedThreeChange(val) {
 				var that = this
-				if (that.checked_three_ids.includes(that.curr_checked_id)) {// 新增
+				if (that.checked_three_ids.includes(that.curr_checked_id)) {// {yun:}t key='admin_user_company_00028'{/yun}
 					if (that.three[that.curr_checked_id]) {
 						that.three[that.curr_checked_id].forEach(function(item, index) {
 							if (!that.checked_four_ids.includes(item.id)) {
@@ -125,7 +125,7 @@
 							}
 						})
 					}
-				} else {// 取消
+				} else {// {yun:}t key='common.cancel'{/yun}
 					if (that.three[that.curr_checked_id]) {
 						that.three[that.curr_checked_id].forEach(function(id_item, index) {
 							if (that.checked_four_ids.includes(id_item.id)) {
@@ -137,7 +137,7 @@
 			},
 			async getInfo() {
 				var that = this
-				let res = await httpPost('m=system&c=role_ugroup&a=info', { id: this.id });
+				let res = await httpPost("m=system&c=role_ugroup&a=info', { id: this.id });
 				if (res.data.error == 0) {
 					let data = res.data.data;
 					that.navs = data.navigation

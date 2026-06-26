@@ -41,7 +41,7 @@
 
 				<div class="tiny_show_left_info">
 					{yun:}if $config.user_wzp_link=="1" && $uid <= 0{/yun} 
-						<div class="once_no_show">{yun:}t key='common_01912'{/yun}, <a href="javascript:void(0);" onclick="showlogin('');">【{yun:}t key='common.login'{/yun}】</a>后才可以查看联系方式</div>
+						<div class="once_no_show">{yun:}t key='common_01912'{/yun}, <a href="javascript:void(0);" onclick="showlogin('');">【{yun:}t key='common.login'{/yun}】</a>{yun:}t key='common_02264'{/yun}</div>
 					{yun:}else{/yun}
 						<div class="tiny_show_left_info_p">
 							<i class="tiny_show_left_info_icon tiny_show_left_info_icon1"></i>联&nbsp;系&nbsp;{yun:}t key='common_02051'{/yun}：{yun:}$o_info.linkman{/yun}
@@ -84,7 +84,7 @@
 			</div>
 			
 			<div class="tiny_show_left_box mt20">
-				<div class="tiny_show_tit">你可能感兴趣的店铺</div>
+				<div class="tiny_show_tit">{yun:}t key='common_02267'{/yun}</div>
 				
 				<div class="tiny_show_xq_list">
 					<div class="tiny_show_xq_list_box">
@@ -109,7 +109,7 @@
 										{yun:}if $config.user_wzp_link==1 && $uid<=0{/yun} 
 											<div class="once_tel_p_login fl">
 												<a href="javascript:void(0);" onclick="showlogin('');" style="color:#f60;">[{yun:}t key='common.login'{/yun}]</a> 
-												后才可以查看联系方式
+												{yun:}t key='common_02264'{/yun}
 											</div>
 										{yun:}else{/yun} 
 											{yun:}if $list.phone{/yun}
@@ -134,7 +134,7 @@
 		<div class="tiny_show_right">
 
 			<div class="tiny_show_right_box">
-				<div class="tiny_show_right_h1">招聘发布者操作</div>
+				<div class="tiny_show_right_h1">{yun:}t key='common_02268'{/yun}</div>
 				<div class="tiny_show_right_p">{yun:}t key='member_com_00207'{/yun}：{yun:}t key='wap_user_00334'{/yun}，{yun:}t key='wap_js_00073'{/yun}，删除只有信息发布者可以操作，每刷新一次招聘信息就会自动排在最前面</div>
 				<div class="tiny_show_right_cz">
 					<a href="javascript:;" onclick="showdd('1', '{yun:}$o_info.id{/yun}','vcode_imgs');" class="tiny_show_right_cz_sz">{yun:}t key='wap_user_00334'{/yun}</a>
@@ -143,18 +143,18 @@
 				</div>
 			</div>
 			<div class="tiny_show_right_fbbox mt20">
-				<div class="tiny_show_right_h1">我也要发布招聘</div>
-				<div class="tiny_show_right_p">不用注册，快速发布招聘信息，这里也能找到满意人才！</div>
+				<div class="tiny_show_right_h1">{yun:}t key='common_02269'{/yun}</div>
+				<div class="tiny_show_right_p">不用注册，{yun:}t key='common_02256'{/yun}，这里也能找到满意人才！</div>
 				
 				<div class="tiny_show_right_cz">
 					{yun:}if $num{/yun} 
 						{yun:}if $ordernum{/yun}
-							<a href='javascript:;' onclick="showOrder('{yun:}$ordernum{/yun}')" class="tiny_show_right_cz_sz tiny_show_right_cz_pg" >发布店铺招聘</a>
+							<a href='javascript:;' onclick="showOrder('{yun:}$ordernum{/yun}')" class="tiny_show_right_cz_sz tiny_show_right_cz_pg" >{yun:}t key='common_02255'{/yun}</a>
 						{yun:}else{/yun}
-							<a href='{yun:}url m=once c=add{/yun}'  class="tiny_show_right_cz_sz tiny_show_right_cz_pg">发布店铺招聘</a>
+							<a href='{yun:}url m=once c=add{/yun}'  class="tiny_show_right_cz_sz tiny_show_right_cz_pg">{yun:}t key='common_02255'{/yun}</a>
 						{yun:}/if{/yun} 
 					{yun:}else{/yun}
-						<a href='javascript:;' onclick="layer.msg('每天最多可发布{yun:}$config.sy_once{/yun}份店铺招聘！',2,8)" class="tiny_show_right_cz_sz tiny_show_right_cz_pg">发布店铺招聘</a>
+						<a href='javascript:;' onclick="layer.msg('每天最多可发布{yun:}$config.sy_once{/yun}份店铺招聘！',2,8)" class="tiny_show_right_cz_sz tiny_show_right_cz_pg">{yun:}t key='common_02255'{/yun}</a>
 					{yun:}/if{/yun}
 				</div>
 			</div>
@@ -167,7 +167,7 @@
 				<li> 
 					<span class="micro_resume_release_s fl"><font color="#FF3300">*</font> {yun:}t key='wap_user_00371'{/yun}：</span>
 					<input id="pw" type='password' class="micro_resume_release_text" style='width:100px' />
-					<em style="line-height:28px; display:inline-block; margin-left:5px;">请输入添加时的密码。</em> 
+					<em style="line-height:28px; display:inline-block; margin-left:5px;">{yun:}t key='wap_00644'{/yun}。</em> 
 				</li>
 				<li> 
 					<span class="micro_resume_release_s fl"><font color="#FF3300">*</font> {yun:}t key='wap_00110'{/yun}：</span>

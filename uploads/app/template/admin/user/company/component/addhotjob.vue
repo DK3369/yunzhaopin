@@ -2,10 +2,10 @@
     <div class="minqizhapin">
         <div class="minqizhaFromd minqizhaXizeng">
             <div class="xinzenLite">
-                <div class="wxsettip_small ">企业名称</div>
+                <div class="wxsettip_small ">{yun:}t key='wap_com_00157'{/yun}</div>
                 <div class="wxsetokdsu">
-                    <el-input v-if="isedit" v-model="info.username" disabled placeholder="企业名称"></el-input>
-                    <el-select v-else v-model="info.uid" filterable remote placeholder="搜索企业" :remote-method="getComArr"
+                    <el-input v-if="isedit" v-model="info.username" disabled placeholder="{yun:}t key='wap_com_00157'{/yun}"></el-input>
+                    <el-select v-else v-model="info.uid" filterable remote placeholder="{yun:}t key='admin_user_company_00019'{/yun}" :remote-method="getComArr"
                         @change="comChange">
                         <el-option v-for="item in com_arr" :key="item.value" :label="item.label" :value="item.value">
                         </el-option>
@@ -14,40 +14,40 @@
 
             </div>
             <div class="xinzenLite">
-                <div class="wxsettip_small ">会员等级</div>
+                <div class="wxsettip_small ">{yun:}t key='admin_user_company_00018'{/yun}</div>
                 <div class="wxsetokdsu">
-                    <el-input v-model="info.rating" disabled placeholder="会员等级"></el-input>
+                    <el-input v-model="info.rating" disabled placeholder="{yun:}t key='admin_user_company_00018'{/yun}"></el-input>
                 </div>
 
             </div>
             <div class="xinzenLite">
-                <div class="wxsettip_small ">服务时间</div>
+                <div class="wxsettip_small ">{yun:}t key='admin_user_company_00022'{/yun}</div>
                 <div class="wxsetokdsu">
-                    <el-date-picker v-model="start" value-format="yyyy-MM-dd" placeholder="开始日期">
+                    <el-date-picker v-model="start" value-format="yyyy-MM-dd" placeholder="{yun:}t key='admin_00343'{/yun}">
                     </el-date-picker>
-                    <el-date-picker style="margin-left: 10px;" v-model="end" value-format="yyyy-MM-dd" placeholder="结束日期">
+                    <el-date-picker style="margin-left: 10px;" v-model="end" value-format="yyyy-MM-dd" placeholder="{yun:}t key='admin_00344'{/yun}">
                     </el-date-picker>
                 </div>
             </div>
             <div class="xinzenLite">
-                <div class="wxsettip_small ">服务价格</div>
+                <div class="wxsettip_small ">{yun:}t key='admin_user_company_00021'{/yun}</div>
                 <div class="wxsetokdsu">
-                    <el-input v-model="info.service_price" placeholder="服务价格"
+                    <el-input v-model="info.service_price" placeholder="{yun:}t key='admin_user_company_00021'{/yun}"
                         @input="inputIntNumber($event, 'info', 'service_price')"><template
-                            slot="append">元</template></el-input>
+                            slot="append">{yun:}t key='common_02056'{/yun}</template></el-input>
                 </div>
 
             </div>
             <div class="xinzenLite">
-                <div class="wxsettip_small ">显示排序</div>
+                <div class="wxsettip_small ">{yun:}t key='admin_user_company_00020'{/yun}</div>
                 <div class="wxsetokdsu">
-                    <el-input v-model="info.sort" placeholder="显示排序"
+                    <el-input v-model="info.sort" placeholder="{yun:}t key='admin_user_company_00020'{/yun}"
                         @input="inputIntNumber($event, 'info', 'sort')"></el-input>
                 </div>
 
             </div>
             <div class="xinzenLite">
-                <div class="wxsettip_small ">企业展示LOGO</div>
+                <div class="wxsettip_small ">{yun:}t key='admin_user_company_00016'{/yun}</div>
                 <div class="wxsetokdsu">
                     <el-upload class="avatar-uploader" :action="''" :show-file-list="false" :on-change="mqlogoChange"
                         :accept="pic_accept">
@@ -58,9 +58,9 @@
 
             </div>
             <div class="xinzenLite">
-                <div class="wxsettip_small ">名企备注</div>
+                <div class="wxsettip_small ">{yun:}t key='admin_00573'{/yun}</div>
                 <div class="wxsetokdsu">
-                    <el-input type="textarea" :rows="2" placeholder="请输入名企备注" v-model="info.beizhu"></el-input>
+                    <el-input type="textarea" :rows="2" placeholder="{yun:}t key='admin_00574'{/yun}" v-model="info.beizhu"></el-input>
                 </div>
 
             </div>
@@ -68,8 +68,8 @@
         </div>
         <div slot="footer" class="xinzdialoGooter">
             <div>
-                <el-button @click="closedrawermq" size="small">取 消</el-button>
-                <el-button type="primary" @click="mqsave" :loading="saveLoading" size="small">确 定</el-button>
+                <el-button @click="closedrawermq" size="small">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
+                <el-button type="primary" @click="mqsave" :loading="saveLoading" size="small">{yun:}t key='wap_com_00019'{/yun}</el-button>
             </div>
             
         </div>
@@ -171,7 +171,7 @@ module.exports = {
                         if (response.data.error == 0) {
                             that.com_arr = response.data.data
                         } else {
-                            message.error('获取参会企业失败');
+                            message.error("{yun:}t key='admin_user_company_00017'{/yun}");
                         }
                     }).catch(function (error) {
                         console.log(error);
@@ -221,7 +221,7 @@ module.exports = {
                 that.info.time_end_n = that.end
             }
             if (that.mqlogolist.length == 0 && that.info.hot_pic_n == '') {
-                message.error('企业展示LOGO不能为空！')
+                message.error("企业展示LOGO{yun:}t key='member_com_00044'{/yun}！")
                 return false
             }
             if (that.info.beizhu && that.info.beizhu.length > 200) {

@@ -50,11 +50,11 @@ class info_systeminfo_controller extends adminCommon{
 	function sendSys_action(){
 
 	    if ($_POST['utype'] == ''){
-            $this->render_json(1, '请选择用户身份');
+            $this->render_json(1, yun_at('admin_system_00210'));
         }
 	    if($_POST['content']=="")
 	    {
-            $this->render_json(1, '请填写发送内容');
+            $this->render_json(1, yun_at('admin_system_00016'));
 	    }
 
 	    $userinfoM = $this -> MODEL('userinfo');
@@ -95,7 +95,7 @@ class info_systeminfo_controller extends adminCommon{
 	            // 按用户类型分批发送的
 	            if ($num > $page){
 	                $return = array(
-	                    'msg'=>'共'.$count.'条，已发送'.$page * $size.'条',
+	                    'msg'=>'共'.$count.'admin_system_00017'.$page * $size.'条',
 	                    'error'=> 3,
 	                    'page'=>$page + 1
 	                );
@@ -103,12 +103,12 @@ class info_systeminfo_controller extends adminCommon{
 	            }
 	        }
 	        $return = array(
-	            'msg'=>'发送完成',
+	            'msg'=>yun_at('admin_system_00018'),
 	            'error'=> 0
 	        );
 	    }else{
 	        $return = array(
-	            'msg'=>'用户不存在',
+	            'msg'=>yun_at('wap_js_00060'),
 	            'error'=> 1
 	        );
 	    }
@@ -121,7 +121,7 @@ class info_systeminfo_controller extends adminCommon{
 	    	$return	=	$this -> MODEL('sysmsg') -> delInfo($del,'');
             $this->admin_json($return['errcode'] == 9 ? 0 : 1,$return['msg']);
 	    }else{
-            $this->render_json(1, '参数错误,请重试');
+            $this->render_json(1, yun_at('common_01237'));
 	    }
 	}
 

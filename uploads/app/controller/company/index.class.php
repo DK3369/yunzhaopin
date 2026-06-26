@@ -88,40 +88,40 @@ class index_controller extends common{
             if ($row['uid'] != $this->uid) {
                 if ($row ['r_status'] == 0) {
 
-                    $this->ACT_msg($this->config['sy_weburl'] . '/member', '企业正在审核中！');
+                    $this->ACT_msg($this->config['sy_weburl'] . '/member', yun_at('model_00106'));
                 } elseif ($row ['r_status'] == 2) {
 
-                    $this->ACT_msg($this->config['sy_weburl'] . '/member', '企业暂被锁定，请稍后查看！');
+                    $this->ACT_msg($this->config['sy_weburl'] . '/member', yun_at('company_00025'));
                 } elseif ($row ['r_status'] == 3) {
 
-                    $this->ACT_msg($this->config['sy_weburl'] . '/member', '企业审核暂未通过！');
+                    $this->ACT_msg($this->config['sy_weburl'] . '/member', yun_at('company_00026'));
                 }
             }
         }
 
 		if(!is_array($row)){
 
-            $this->ACT_msg($this->config['sy_weburl'],"没有找到该企业！");
+            $this->ACT_msg($this->config['sy_weburl'],yun_at('wap_00179'));
 
 		}elseif($row['r_status'] == 0 && $row['uid'] != $this->uid){
 
             session_start();
             if(empty($_SESSION['auid'])){
-                $this->ACT_msg($this->config['sy_weburl'],"该企业正在审核中，请稍后查看！");
+                $this->ACT_msg($this->config['sy_weburl'],yun_at('wap_01782'));
             }
 
 		}elseif($row['r_status'] == 3 && $row['uid'] != $this->uid){
 
             session_start();
             if(empty($_SESSION['auid'])){
-                $this->ACT_msg($this->config['sy_weburl'],"该企业未通过审核！");
+                $this->ACT_msg($this->config['sy_weburl'],yun_at('wap_01783'));
             }
 
         }elseif($row['r_status'] == 2){
 
             session_start();
             if(empty($_SESSION['auid'])){
-                $this->ACT_msg($this->config['sy_weburl'],"该企业暂被锁定，请稍后查看！");
+                $this->ACT_msg($this->config['sy_weburl'],yun_at('wap_00177'));
             }
         }
 
@@ -301,9 +301,9 @@ class index_controller extends common{
 		if(!$times or !$timejobs){
 			$times='0';
 		}else if($operatime<3600){
-			$times='一小时以内';
+			$times='company_00029';
 		}else if($operatime>=3600&&$operatime<86400){
-			$times=floor($operatime/3600).'小时';
+			$times=floor($operatime/3600).'wap_js_00128';
 		}else if($operatime>=86400){
 			$times=floor($operatime/86400).'天';
 		}
@@ -578,13 +578,13 @@ class index_controller extends common{
     				$joblist    .=  "<div class='com_details_com_otherjob_info'>";
 
     				if($v['job_exp']){
-     					$joblist  .= $v['job_exp']."经验";
+     					$joblist  .= $v['job_exp'].'wap_01424';
     				}
     				if($v['job_edu'] && $v['job_exp']){
      					$joblist  .= "<span class='com_details_line'>|</span>";
     				}
     				if($v['job_exp']){
-     					$joblist  .= $v['job_edu']."学历";
+     					$joblist  .= $v['job_edu'].'wap_com_00301';
     				}
     				$joblist    .=  "</div></div>";
 

@@ -3,7 +3,7 @@
 class once_controller extends common{
 	function index_action(){
 		if($this->config['sy_once_web']=="2"){
-			$this->ACT_msg_wap('index.php',yun_auto_t('很抱歉！该模块已关闭！'), 1, 3);
+			$this->ACT_msg_wap('index.php',yun_at('wap_00365'), 1, 3);
 		}
 		
 		$CacheM		=	$this->MODEL('cache');
@@ -38,19 +38,19 @@ class once_controller extends common{
 		$this->yunset("num",$num);
 		$adtime	=	array(
 			"0" => yun_auto_t(WapDbEnum::UNLIMITED),
-			"7" => yun_auto_t('一周以内'),
-			"15" => yun_auto_t('半个月'),
-			"30" => yun_auto_t('一个月'),
-			"60" => yun_auto_t('两个月'),
-			"180" => yun_auto_t('半年'),
-			"365" => yun_auto_t('一年')
+			"7" => yun_at('wap_00339'),
+			"15" => yun_at('wap_00344'),
+			"30" => yun_at('wap_00342'),
+			"60" => yun_at('wap_00343'),
+			"180" => yun_at('admin_tool_00146'),
+			"365" => yun_at('admin_tool_00145')
 		);
 		$this->yunset("adtime",$adtime);
 		$this->yunset('backurl', Url('wap'));
 		$this->get_moblie();
 		$this->seo("once");
-		$this->yunset("topplaceholder",yun_auto_t('请输入招聘关键字,如：服务员...'));
-		$this->yunset("headertitle",yun_auto_t('店铺招聘'));
+		$this->yunset("topplaceholder",yun_at('wap_00334'));
+		$this->yunset("headertitle",yun_at('wap_js_00130'));
 		$this->yuntpl(array('wap/once'));
 	}
 	// 
@@ -69,7 +69,7 @@ class once_controller extends common{
     }
 	function add_action(){ 
 		if($this->config['sy_once_web']=="2"){
-			$this->ACT_msg_wap('index.php',yun_auto_t('很抱歉！该模块已关闭！'), 1, 3);
+			$this->ACT_msg_wap('index.php',yun_at('wap_00365'), 1, 3);
 		}
  		$ip		=	fun_ip_get();
 		$this->yunset("ip",$ip);
@@ -152,13 +152,13 @@ class once_controller extends common{
 		
 		$this->get_moblie();
 		
-		$this->yunset("headertitle",yun_auto_t('店铺招聘'));
-		$this->yunset("title",yun_auto_t('添加店铺招聘'));
+		$this->yunset("headertitle",yun_at('wap_js_00130'));
+		$this->yunset("title",yun_at('wap_01792'));
 		$this->yuntpl(array('wap/once_add'));
 	}
 	function show_action(){
 		if($this->config['sy_once_web']=="2"){
-			$this->ACT_msg_wap('index.php',yun_auto_t('很抱歉！该模块已关闭！'), 1, 3);
+			$this->ACT_msg_wap('index.php',yun_at('wap_00365'), 1, 3);
 		}
 		
         $onceM	=	$this->MODEL('once');
@@ -168,10 +168,10 @@ class once_controller extends common{
 		$row	=	$onceM->getOnceInfo(array('id'=>$id));
 		
 		if($row['status']<1  && !$_GET['pay']){
-			$this->ACT_msg_wap(Url('wap',array('c'=>'once')),yun_auto_t('店铺正在审核！'), 1, 3);
+			$this->ACT_msg_wap(Url('wap',array('c'=>'once')),yun_at('wap_00337'), 1, 3);
 			
 		}elseif($row['pay']=='1' && !$_GET['pay']){
-			$this->ACT_msg_wap(Url('wap',array('c'=>'once')),yun_auto_t('店铺招聘付费中！'), 1, 3);
+			$this->ACT_msg_wap(Url('wap',array('c'=>'once')),yun_at('wap_00336'), 1, 3);
 		}
 		$this->yunset("row",$row);
 		
@@ -185,23 +185,23 @@ class once_controller extends common{
 		$CacheList	=	$CacheM->GetCache(array('city'));
         $this->yunset($CacheList);
 		$this->get_moblie();
-		$this->yunset("headertitle",yun_auto_t('店铺招聘'));
+		$this->yunset("headertitle",yun_at('wap_js_00130'));
 		$this->yuntpl(array('wap/once_show'));
 	}
 	
 	function pay_action(){
 		if($this->config['sy_once_web']=="2"){
-			$this->ACT_msg_wap('index.php',yun_auto_t('很抱歉！该模块已关闭！'), 1, 3);
+			$this->ACT_msg_wap('index.php',yun_at('wap_00365'), 1, 3);
 		}
 		$onceM	=	$this->MODEL('once');
 		$row	=	$onceM->getOnceInfo(array('id'=>(int)$_GET[id]));
 		if($_GET['id']){
             if(empty($_GET['oncepricegear'])){
-                $this->ACT_msg_wap(Url('wap',array('c'=>'once')),yun_auto_t('数据异常！'), 1, 3);
+                $this->ACT_msg_wap(Url('wap',array('c'=>'once')),yun_at('wap_01793'), 1, 3);
             }
 			
 			if(!$row){
-				$this->ACT_msg_wap(Url('wap',array('c'=>'once')),yun_auto_t('店铺信息不存在！'), 1, 3);
+				$this->ACT_msg_wap(Url('wap',array('c'=>'once')),yun_at('wap_00335'), 1, 3);
 			}
 
             $cacheM		=	$this->MODEL('cache');
@@ -226,7 +226,7 @@ class once_controller extends common{
 		
 		$this->get_moblie();
 		
-		$this->yunset("headertitle",yun_auto_t('店铺招聘'));
+		$this->yunset("headertitle",yun_at('wap_js_00130'));
 		$this->yuntpl(array('wap/once_pay'));
 	}
 	
@@ -247,7 +247,7 @@ class once_controller extends common{
 
 			if($return['id']){
 				if ($return['order_state'] == 2) {
-                    $data['msg']	=	yun_auto_t('支付成功');
+                    $data['msg']	=	yun_at('admin_01265');
                     $this->ACT_msg_wap($data['url'], $data['msg'], 1, 3);
                 } else {
                     if($_POST['paytype']=='alipay'){
@@ -261,7 +261,7 @@ class once_controller extends common{
                     header('Location: '.$url);exit();
                 }
 			}else{
-				$data['msg']	=	yun_auto_t('提交失败！！');
+				$data['msg']	=	yun_at('wap_01794');
 				$this->ACT_msg_wap($data['url'],$data['msg'], 1, 3);
 			}
 			
@@ -276,7 +276,7 @@ class once_controller extends common{
 		
 		$this->yunset("rows",$rows);
 			
-		$this->yunset("headertitle",yun_auto_t('待付款店铺'));
+		$this->yunset("headertitle",yun_at('default_00031'));
 		$this->seo('once');
 		$this->yuntpl(array('wap/once_paylog'));
 	}
@@ -285,9 +285,9 @@ class once_controller extends common{
 		$orderM	=	$this->MODEL('companyorder');
 		$return	=	$orderM->del((int)$_GET['id'],array('utype'=>'once'));
 		if($return['errcode']==9){
-			$return['msg']=yun_auto_t('取消订单成功！');
+			$return['msg']=yun_at('common_02186');
 		}else{
-			$return['msg']=yun_auto_t('取消订单失败！');
+			$return['msg']=yun_at('common_02187');
 		}
 		$this->layer_msg($return['msg'],$return['errcode'],$return['layertype'],$_SERVER['HTTP_REFERER']);
 	}

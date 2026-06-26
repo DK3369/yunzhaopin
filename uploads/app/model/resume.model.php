@@ -15,21 +15,21 @@ class resume_model extends model{
     );
 
     public $resume_state_arr = array(
-            '0'=>'未审核',
-            '1'=>'已审核',
-            '2'=>'被举报',
-            '3'=>'未通过'
+            '0'=>'wap_user_00166',
+            '1'=>'wap_user_00165',
+            '2'=>'admin_user_00255',
+            '3'=>'wap_user_00167'
         );
     public $resume_status_arr = array(
-            '1'=>'公开',
-            '2'=>'隐藏',
-            '3'=>'仅投递企业可见'
+            '1'=>'wap_js_00005',
+            '2'=>'admin_user_00259',
+            '3'=>'member_user_00256'
         );
     public $resume_rstatus_arr = array(
-            '0'=>'未审核',
-            '1'=>'已审核',
-            '2'=>'账户被锁定',
-            '3'=>'未通过'
+            '0'=>'wap_user_00166',
+            '1'=>'wap_user_00165',
+            '2'=>'common_01641',
+            '3'=>'wap_user_00167'
         );
 	/* 查询数量 */
 	function getResumeNum($Where=array()){
@@ -209,7 +209,7 @@ class resume_model extends model{
         $CacheArr	=	$this -> getClass(array('user','city'));
         if($_POST['exp']){
             // 简历搜索，排序比搜索小的都符合条件。如搜“五年”，类别排序大于等于“五年”排序的（要排除不限）都符合
-            if (stripos($CacheArr['userclass_name'][$_POST['exp']], '应届生') !== false){
+            if (stripos($CacheArr['userclass_name'][$_POST['exp']], 'wap_com_00298') !== false){
                 // 应届生特殊，只搜应届生
                 $where .= " AND a.`exp`=".$_POST['exp'];
             }else{
@@ -217,13 +217,13 @@ class resume_model extends model{
                 $expSort = 0;
                 $expIds  = array();
                 foreach ($expArr as $k => $v) {
-                    if ($v == $_POST['exp'] && $CacheArr['userclass_name'][$v] != '不限'){
+                    if ($v == $_POST['exp'] && $CacheArr['userclass_name'][$v] != 'common_01936'){
                         $expSort = $k;
                         break;
                     }
                 }
                 foreach ($expArr as $k => $v) {
-                    if ($k >= $expSort && $CacheArr['userclass_name'][$v] != '不限'){
+                    if ($k >= $expSort && $CacheArr['userclass_name'][$v] != 'common_01936'){
                         $expIds[] = $v;
                     }
                 }
@@ -244,13 +244,13 @@ class resume_model extends model{
             $eduSort = 0;
             $eduIds  = array();
             foreach ($eduArr as $k => $v) {
-                if ($v == $_POST['edu'] && $CacheArr['userclass_name'][$v] != '不限'){
+                if ($v == $_POST['edu'] && $CacheArr['userclass_name'][$v] != 'common_01936'){
 			        $eduSort = $k;
 			        break;
 			    }
 			}
 			foreach ($eduArr as $k => $v) {
-			    if ($k >= $eduSort && $CacheArr['userclass_name'][$v] != '不限'){
+			    if ($k >= $eduSort && $CacheArr['userclass_name'][$v] != 'common_01936'){
 			        $eduIds[] = $v;
 			    }
 			}
@@ -477,7 +477,7 @@ class resume_model extends model{
 
 	            $List[$k]['age_n']		=  date('Y') - date('Y',strtotime($v['birthday']));
 
-	            $List[$k]['hy_n']		=  $cache['industry_name'][$v['hy']] ? $cache['industry_name'][$v['hy']] : '不限';
+	            $List[$k]['hy_n']		=  $cache['industry_name'][$v['hy']] ? $cache['industry_name'][$v['hy']] : WapDbEnum::UNLIMITED;
 
 	            $List[$k]['sex_n']		=  $cache['user_sex'][$v['sex']];
 
@@ -504,7 +504,7 @@ class resume_model extends model{
                         $beginYesterday		=  strtotime('yesterday');
                         //一周内时间戳
                         if($ltime>$beginYesterday && $ltime<$beginToday){
-                            $List[$k]['lastupdate_n']	=	"昨天";
+                            $List[$k]['lastupdate_n']	=	yun_at('common_02000');
                         }elseif($ltime>$beginToday){
                             $List[$k]['lastupdate_n']	=	lastupdateStyle($ltime);
                         }else{
@@ -704,14 +704,14 @@ class resume_model extends model{
                 }
                 $return             =   array();
                 $return['edumin']   =   date('Y.m',$edumin);
-                $return['edumax']		=		$edumax  == 0 ?  '至今': date('Y',$edumax);
+                $return['edumax']		=		$edumax  == 0 ?  'wap_js_00170': date('Y',$edumax);
                 $return['education']=   @implode(',',$education);
                 $return['edu_time'] =   $return['edumin']."-".$return['edumax'];
                 $return['eduspecialty']		=		@implode('、',$edutitle);
                 if($return['eduspecialty']){
-                    $workexpList[$k]['edu_content']	=	$return['education'].'学历 · '.$return['eduspecialty'].' · 毕业于'.$return['edumax'].'年';
+                    $workexpList[$k]['edu_content']	=	$return['education'].'wap_00816'.$return['eduspecialty'].'common_01569'.$return['edumax'].'年';
                 }else{
-                    $workexpList[$k]['edu_content']	=	$return['education'].'学历 · 毕业于'.$return['edumax'].'年';
+                    $workexpList[$k]['edu_content']	=	$return['education'].'common_01245'.$return['edumax'].'年';
                 }
             }
         }
@@ -758,14 +758,14 @@ class resume_model extends model{
                 $return['workavg']      =   $workavg  > 11 ?  avgToYm($workavg) : $workavg;
 
                 $return['workmin']      =   date('Y.m',$workmin);
-                $return['workmax']      =   $workmax  == 0 ?  '至今': date('Y.m',$workmax);
+                $return['workmax']      =   $workmax  == 0 ?  'wap_js_00170': date('Y.m',$workmax);
                 $return['worktit']      =   @implode(',',$wtitle);
                 $return['work_time']    =   $return['workmin'].'-'.$return['workmax'];
                 if($return['workavg']>0){
                     if($return['worktit']!=''){
-                        $workexpList[$k]['work_content']  =  ' 参加过'.$return['worknum'].'份工作 · 涉及'.$return['worktit'].'等岗位';
+                        $workexpList[$k]['work_content']  =  yun_at('wap_00467').$return['worknum'].'common_06319'.$return['worktit'].'wap_00472';
                     }else{
-                        $workexpList[$k]['work_content']  =   '参加过'.$return['worknum'].'份工作';
+                        $workexpList[$k]['work_content']  =   yun_at('wap_00467').$return['worknum'].'common_01887';
                     }
                 }
             }
@@ -820,20 +820,20 @@ class resume_model extends model{
 				$resumeInfo['age']	        =	date("Y")-$a;
 			}
             $resumeInfo['wapurl']             =   Url('wap', array('c'=>'resume','a'=>'show','id'=>$resumeInfo['def_job']));
-			$resumeInfo['sex_n']	        =	$resumeInfo['sex'] == 1?'男':'女';
+			$resumeInfo['sex_n']	        =	$resumeInfo['sex'] == 1?yun_at('common_02092'):yun_at('common_02069');
 
             if ($resumeInfo['nametype'] == 1) {
 
-                $resumeInfo['nametype_n']   =   '完全公开';
+                $resumeInfo['nametype_n']   =   yun_at('wap_user_00239');
             } elseif ($resumeInfo['nametype'] == 2) {
 
-                $resumeInfo['nametype_n']   =   '显示编号(例:NO.11)';
+                $resumeInfo['nametype_n']   =   yun_at('wap_js_00167');
             } elseif ($resumeInfo['nametype'] == 3) {
 
-                $resumeInfo['nametype_n']   =   '性别称呼(例:X先生)';
+                $resumeInfo['nametype_n']   =   yun_at('wap_js_00168');
             } else {
 
-                $resumeInfo['nametype_n']   =   '完全公开';
+                $resumeInfo['nametype_n']   =   yun_at('wap_user_00239');
             }
             if ($resumeInfo['marriage']) {
 
@@ -1010,14 +1010,14 @@ class resume_model extends model{
                         $cookieM->SetCookie('delay', '', time() - 60);
 
                         // 会员日志
-                        $this->addMemberLog($whereData['uid'], 1, '基本信息：完善基本信息', 7, 2);
+                        $this->addMemberLog($whereData['uid'], 1, 'common_06320', 7, 2);
 
                         // 首次完善获取积分
                         if ($resume['name'] == '' || $resume['living'] == '') {
 
                             require_once('integral.model.php');
                             $IntegralM = new integral_model($this->db, $this->def);
-                            $IntegralM->invtalCheck($whereData['uid'], 1, 'integral_userinfo', '首次填写基本资料', 25);
+                            $IntegralM->invtalCheck($whereData['uid'], 1, 'integral_userinfo', 'common_01314', 25);
                         }
 
                         $status         =   '1';
@@ -1053,16 +1053,16 @@ class resume_model extends model{
                 } else {
 
                     $status             =   '2';
-                    $return['msg']      =   '基本资料修改失败';
+                    $return['msg']      =   yun_at('common_06321');
                     $return['errcode']  =   8;
                 }
             } else {
-                $return['msg']          =   '没有要修改的信息';
+                $return['msg']          =   yun_at('common_01283');
                 $return['errcode']      =   8;
             }
         } else {
 
-            $return['msg']      =   '请选择要修改的个人';
+            $return['msg']      =   yun_at('common_01159');
             $return['errcode']  =   8;
         }
 
@@ -1169,7 +1169,7 @@ class resume_model extends model{
 
                     if (!empty($eidSArr)){
 
-                        $this->update_once('resume_expect', array('state' => 0, 'statusbody' => '审核未通过简历，重新修改提交审核'), array('id' => array('in', pylode(',', $eidSArr))));
+                        $this->update_once('resume_expect', array('state' => 0, 'statusbody' => yun_at('common_00531')), array('id' => array('in', pylode(',', $eidSArr))));
                     }
 
                     $this->update_once('userid_job', array('resume_state' => 0), array('eid' => array('in', pylode(',', $eidArr))));
@@ -1355,7 +1355,7 @@ class resume_model extends model{
 				$whour 				=	floor($expect['whour']/12).'年';
 			}
 			if(($expect['whour']%12) >= 1){
-				$whour 				=	floor($expect['whour']%12).'个月';
+				$whour 				=	floor($expect['whour']%12).'wap_00474';
 			}
 			$resume['whourInfo']	=	$whour;
 		}
@@ -1367,11 +1367,11 @@ class resume_model extends model{
 				$avghour 			.=	floor($expect['avghour']/12).'年';
 			}
 			if(($expect['avghour']%12) >= 1){
-				$avghour 			.=	floor($expect['avghour']%12).'个月';
+				$avghour 			.=	floor($expect['avghour']%12).'wap_00474';
 			}
 			$resume['avghourInfo']	=	$avghour;
 		}else{
-			$resume['avghourInfo']	=	'1个月内';
+			$resume['avghourInfo']	=	yun_at('admin_yunying_00016');
 		}
 
 		$resume['jobname']			=	$expect['job_classname'];
@@ -1621,7 +1621,7 @@ class resume_model extends model{
 
 	            if($this->config['user_number'] && $enum >= $this->config['user_number']){
 
-	                return array('errcode'=>8,'msg'=>'您最多可以拥有'.$this->config['user_number'].'份简历');
+	                return array('errcode'=>8,'msg'=>yun_at('common_01367').$this->config['user_number'].'common_01888');
 	            }
 	        }
 	        if (isset($result['r_status'])){
@@ -1754,14 +1754,14 @@ class resume_model extends model{
 
 	                if ($data['utype'] == 'user' && empty($resumeInfo['resumetime'])){ // 第一次创建简历发红包
 	                    // 创建首份简历加积分，先要检测是否已获得过此积分
-	                    $ipay  =  $this -> select_once('company_pay',array('com_id'=>$uid,'pay_remark'=>'发布简历'));
+	                    $ipay  =  $this -> select_once('company_pay',array('com_id'=>$uid,'pay_remark'=>'wap_user_00111'));
 
                         if (empty($ipay)) {
 
                             require_once('integral.model.php');
                             $integralM                      =   new integral_model($this->db, $this->def);
 
-                            $integralM->invtalCheck($uid, 1, 'integral_add_resume', '发布简历');
+                            $integralM->invtalCheck($uid, 1, 'integral_add_resume', 'wap_user_00111');
                         }
 	                }
 	            }else {
@@ -1801,13 +1801,13 @@ class resume_model extends model{
 	                $logM -> addAdminLog('添加简历(ID:'.$return['id'].')');
 				}
 				$return['errcode']  =  9;
-	            $return['msg']  	=  '保存成功';
+	            $return['msg']  	=  yun_at('wap_user_00104');
 
 	        }else {
 
 				$return['errcode']  =  8;
-	            $return['msg']  	=  '保存失败';
-                $this->addErrorLog($uid,2,'简历保存失败');
+	            $return['msg']  	=  yun_at('wap_user_00077');
+                $this->addErrorLog($uid,2,'common_06322');
 	        }
 	    }
 	    return $return;
@@ -1953,12 +1953,12 @@ class resume_model extends model{
                 $this->update_once('resume_expect', $upExpect, array('id'=>$eid, 'uid'=> $uid));
                 
                 $return['errcode'] = 9;
-                $return['msg'] = '保存成功';
+                $return['msg'] = yun_at('wap_user_00104');
             
             }else {
                 $return['errcode']  =  8;
-                $return['msg']  	=  '保存失败';
-                $this->addErrorLog($uid,2,'简历保存失败');
+                $return['msg']  	=  yun_at('wap_user_00077');
+                $this->addErrorLog($uid,2,'common_06322');
             }
         }
         return $return;
@@ -1980,79 +1980,79 @@ class resume_model extends model{
 
 	    if (!empty($rData)){
 
-	        if($rData['name']=='')      {$return['msg']  == '请填写真实姓名';}
+	        if($rData['name']=='')      {$return['msg']  == 'admin_00008';}
 
-	        if($rData['sex']=='')       {$return['msg']  == '请选择性别';}
+	        if($rData['sex']=='')       {$return['msg']  == 'wap_js_00134';}
 
-	        if($rData['birthday']=='')  {$return['msg'] == '请选择出生年月';}
+	        if($rData['birthday']=='')  {$return['msg'] == 'wap_00138';}
 
-	        if($rData['living']=='')    {$return['msg'] == '请填写现居住地';}
+	        if($rData['living']=='')    {$return['msg'] == 'wap_user_00040';}
 
-	        if($rData['edu']=='')       {$return['msg'] == '请选择最高学历';}
+	        if($rData['edu']=='')       {$return['msg'] == 'wap_user_00049';}
 
-	        if($rData['exp']=='')       {$return['msg'] == '请选择工作经验';}
+	        if($rData['exp']=='')       {$return['msg'] == 'wap_00937';}
 
-	        if($rData['telphone']=='')  {$return['msg'] == '请填写手机号码';}
+	        if($rData['telphone']=='')  {$return['msg'] == 'wap_user_00274';}
 	    }
 
 	    if (!empty($eData)){
 
-	        if($eData['name']=='')      {$return['msg'] == '请填写期望职位';}
+	        if($eData['name']=='')      {$return['msg'] == 'wap_00935';}
 
-	        if($eData['hy']=='')        {$return['msg'] == '请选择从事行业';}
+	        if($eData['hy']=='')        {$return['msg'] == 'wap_user_00009';}
 
-	        if($eData['job_class']=='') {$return['msg'] == '请选择期望职位';}
+	        if($eData['job_class']=='') {$return['msg'] == 'wap_00979';}
 
-	        if($eData['minsalary']=='') {$return['msg'] == '请填写期望薪资';}
+	        if($eData['minsalary']=='') {$return['msg'] == 'wap_js_00162';}
 
-	        elseif($eData['maxsalary']>0 && (int)$eData['minsalary'] > (int)$eData['maxsalary']){$return['msg'] == '最高薪资必须大于最低薪资';}
+	        elseif($eData['maxsalary']>0 && (int)$eData['minsalary'] > (int)$eData['maxsalary']){$return['msg'] == 'member_user_00095';}
 
-	        if($eData['city_class']==''){$return['msg'] == '请选择工作地区';}
+	        if($eData['city_class']==''){$return['msg'] == 'member_user_00109';}
 
-	        if($eData['type']=='')      {$return['msg'] == '请选择工作性质';}
+	        if($eData['type']=='')      {$return['msg'] == 'wap_js_00163';}
 
-	        if($eData['report']=='')    {$return['msg'] == '请选择到岗时间';}
+	        if($eData['report']=='')    {$return['msg'] == 'wap_00980';}
 
-	        if($eData['jobstatus']=='') {$return['msg'] == '请选择求职状态';}
+	        if($eData['jobstatus']=='') {$return['msg'] == 'wap_00934';}
 	    }
 
 	    if (!empty($workData)){
 
-	        if($workData['workname']=='') {$return['msg'] == '请填写公司名称';}
+	        if($workData['workname']=='') {$return['msg'] == 'wap_01416';}
 
-	        if($workData['worksdate']==''){$return['msg'] == '请填写工作时间';}
+	        if($workData['worksdate']==''){$return['msg'] == 'common_06323';}
 
-	        if($workData['worktitle']==''){$return['msg'] == '请填写公司职务';}
+	        if($workData['worktitle']==''){$return['msg'] == 'common_06324';}
 
-	        if($workData['workedate'] < $workData['worksdate']){$return['msg'] == '工作时间不合理';}
+	        if($workData['workedate'] < $workData['worksdate']){$return['msg'] == 'common_01358';}
 	    }
 
 	    if (!empty($eduData)){
 
-	        if($eduData['eduname']=='')  {$return['msg'] == '请填写学校名称';}
+	        if($eduData['eduname']=='')  {$return['msg'] == 'wap_user_00064';}
 
-	        if($eduData['edusdate']=='') {$return['msg'] == '请填写在校时间';}
+	        if($eduData['edusdate']=='') {$return['msg'] == 'common_06325';}
 
-	        if($eduData['eduedate']=='') {$return['msg'] == '请填写离校或预计离校时间';}
+	        if($eduData['eduedate']=='') {$return['msg'] == 'default_00010';}
 
-	        if($eduData['education']==''){$return['msg'] == '请选择相关学历';}
+	        if($eduData['education']==''){$return['msg'] == 'member_user_00024';}
 
-	        if($eduData['eduspec']=='')  {$return['msg'] == '请填写相关专业';}
+	        if($eduData['eduspec']=='')  {$return['msg'] == 'common_01409';}
 
-	        if($eduData['eduedate'] < $eduData['edusdate']){$return['msg'] == '在校时间不合理';}
+	        if($eduData['eduedate'] < $eduData['edusdate']){$return['msg'] == 'common_01351';}
 	    }
 
 	    if (!empty($proData)){
 
-	        if($proData['proname']=='') {$return['msg'] == '请填写项目名称';}
+	        if($proData['proname']=='') {$return['msg'] == 'wap_user_00069';}
 
-	        if($proData['prosdate']==''){$return['msg'] == '请填写项目开始时间';}
+	        if($proData['prosdate']==''){$return['msg'] == 'common_06326';}
 
-	        if($proData['proedate']==''){$return['msg'] == '请填写项目结束时间';}
+	        if($proData['proedate']==''){$return['msg'] == 'common_06327';}
 
-	        if($proData['protitle']==''){$return['msg'] == '请填写项目担任职务';}
+	        if($proData['protitle']==''){$return['msg'] == 'common_06328';}
 
-	        if($eduData['proedate'] < $eduData['prosdate']){$return['msg'] == '项目时间不合理';}
+	        if($eduData['proedate'] < $eduData['prosdate']){$return['msg'] == 'common_01421';}
 	    }
 	    return $return;
     }
@@ -2086,7 +2086,7 @@ class resume_model extends model{
             $num  		=   $this -> getExpectNum(array('uid'=>$uid));
             if($this->config['user_number'] && $num >= $this->config['user_number']){
 
-                return array('errcode'=>1,'msg'=>'您最多可以拥有'.$this->config['user_number'].'份简历');
+                return array('errcode'=>1,'msg'=>yun_at('common_01367').$this->config['user_number'].'common_01888');
             }
 
             //拥有简历数量为0，新添加的简历设为默认简历
@@ -2114,7 +2114,7 @@ class resume_model extends model{
 				}
 			}
 			$etype		=	1;
-			$msg		=	'添加';
+			$msg		=	'wap_js_00091';
 		}else{
 
 		    $oldresume  =   $this->getExpect(array('uid'=>$uid),array('field'=>'`city_classid`,`job_classid`,`state`'));
@@ -2124,18 +2124,18 @@ class resume_model extends model{
 				$this->update_once('resume_doc',array('doc'=>$doc),array('uid'=>$uid,'eid'=>$eid));
 			}
 			$etype		=	2;
-			$msg		=	'修改';
+			$msg		=	'wap_js_00073';
 		}
 		if($nid){
 
 			//判断是否已获取发布简历送积分
-			$paynum		=	$this->select_num('company_pay',array('com_id'=>$uid,'pay_remark'=>'发布简历'));
+			$paynum		=	$this->select_num('company_pay',array('com_id'=>$uid,'pay_remark'=>'wap_user_00111'));
 
 			if($paynum < 1){
 
 				include_once('integral.model.php');
 	            $integralM  =  new integral_model($this->db, $this->def);
-				$integralM->invtalCheck($uid,$usertype,'integral_add_resume','发布简历');
+				$integralM->invtalCheck($uid,$usertype,'integral_add_resume','wap_user_00111');
 			}
 
 			//更新与resume里相同的字段
@@ -2181,21 +2181,21 @@ class resume_model extends model{
 			$this->city_job($eid,$uid,$expect['lastupdate'],$expect['city_classid'],$expect['job_classid'],$oldCity,$oldJob);
 
 			if($doctype){
-				$docmsg =   '粘贴';
+				$docmsg =   'admin_user_00258';
 			}
 
 			if($etype==1 && $usertype && $uid){
 
-				$this->addMemberLog($uid,$usertype,$msg.$docmsg.'简历',2,2);
+				$this->addMemberLog($uid,$usertype,$msg.$docmsg.'wap_com_00428',2,2);
 			}elseif($etype==2 && $usertype && $uid){
 
-				$this->addMemberLog($uid,$usertype,$msg.$docmsg.'简历',2,1);
+				$this->addMemberLog($uid,$usertype,$msg.$docmsg.'wap_com_00428',2,1);
 			}
-			return array('errcode'=>9,'msg'=>$msg.'成功');
+			return array('errcode'=>9,'msg'=>$msg.'admin_tool_00502');
 		}else{
 
-			$this->addErrorLog($uid,2,'粘贴简历'.$msg.'失败');
-			return array('errcode'=>9,'msg'=>$msg.'失败');
+			$this->addErrorLog($uid,2,'member_user_00101'.$msg.'admin_tool_00501');
+			return array('errcode'=>9,'msg'=>$msg.'admin_tool_00501');
 		}
 	}
 
@@ -2213,7 +2213,7 @@ class resume_model extends model{
             //修改求职意向
             if (!empty($data['eData'])) {
 
-                $return['msg']  =   '简历信息';
+                $return['msg']  =   yun_at('admin_tool_00134');
 
                 $eData          =   $data['eData'];
 
@@ -2226,7 +2226,7 @@ class resume_model extends model{
 
                     if ($data['utype'] != 'admin' && $whereData['uid'] != $oldExpect['uid']) {
 
-                        $return['msg']      =   '简历信息修改失败！';
+                        $return['msg']      =   yun_at('common_06329');
                         $return['errcode']  =   8;
                         return $return;
                     }
@@ -2299,11 +2299,11 @@ class resume_model extends model{
                         $logM   =   new log_model($this->db, $this->def);
                         $logM->addAdminLog('修改简历信息(ID:' . $whereData['id'] . ')');
                     }
-                    $return['msg']      =   '简历信息修改成功！';
+                    $return['msg']      =   yun_at('common_06330');
                     $return['errcode']  =   9;
                 } else {
 
-                    $return['msg']      =   '简历信息修改失败！';
+                    $return['msg']      =   yun_at('common_06329');
                     $return['errcode']  =   8;
                 }
             }
@@ -2389,15 +2389,15 @@ class resume_model extends model{
 	        }
 			$expect['lastupdate_n']	  =   date('Y-m-d',$expect['lastupdate']);
 			if($expect['state']=='1'){
-				$expect['r_status_n'] =   '已审核';
+				$expect['r_status_n'] =   yun_at('wap_user_00165');
 			}elseif($expect['state']=='0'){
-				$expect['r_status_n'] =   '正在审核中';
+				$expect['r_status_n'] =   yun_at('wap_com_00060');
 			}elseif($expect['state']=='3'){
-				$expect['r_status_n'] =   '未通过审核';
+				$expect['r_status_n'] =   yun_at('common_06331');
 			}
 			$expect['exp_n']          =   $cache['userclass_name'][$expect['exp']];
 			$expect['edu_n']          =   $cache['userclass_name'][$expect['edu']];
-			$expect['hy_n']           =   isset($cache['industry_name'][$expect['hy']]) ? $cache['industry_name'][$expect['hy']] : '不限';
+			$expect['hy_n']           =   isset($cache['industry_name'][$expect['hy']]) ? $cache['industry_name'][$expect['hy']] : WapDbEnum::UNLIMITED;
 	        $expect['report_n']       =   $cache['userclass_name'][$expect['report']];
 	        $expect['type_n']         =   $cache['userclass_name'][$expect['type']];
 	        $expect['jobstatus_n']    =   $cache['userclass_name'][$expect['jobstatus']];
@@ -2410,25 +2410,25 @@ class resume_model extends model{
             if($data['member']){
                 $ur		=	$this->getUserResumeInfo(array('eid'=>$expect['id'],'uid'=>$whereData['uid']));
                 if ($ur['expect'] == 0){
-                    $expect['wstitle'] = '求职意向';
+                    $expect['wstitle'] = yun_at('wap_00460');
 
                 }elseif ($ur['work'] == 0){
-                    $expect['wstitle'] ='工作经历';
+                    $expect['wstitle'] =yun_at('wap_00457');
                     $expect['wspcurl']= 'index.php?c=expect&e=' .$expect['id'] ."#work_upbox";
                 }elseif ($ur['edu'] == 0){
-                    $expect['wstitle'] ='教育经历';
+                    $expect['wstitle'] =yun_at('wap_00459');
                     $expect['wspcurl']= 'index.php?c=expect&e=' .$expect['id'] ."#edu_upbox";
                 }elseif ($ur['project'] == 0){
-                    $expect['wstitle'] ='项目经历';
+                    $expect['wstitle'] =yun_at('wap_00465');
                     $expect['wspcurl']= 'index.php?c=expect&e=' .$expect['id'] ."#project_upbox";
                 }elseif ($ur['training'] == 0){
-                    $expect['wstitle'] ='培训经历';
+                    $expect['wstitle'] =yun_at('wap_00455');
                     $expect['wspcurl']= 'index.php?c=expect&e=' .$expect['id'] ."#training_upbox";
                 }elseif ($ur['skill'] == 0){
-                    $expect['wstitle'] ='职业技能';
+                    $expect['wstitle'] =yun_at('wap_00461');
                     $expect['wspcurl']= 'index.php?c=expect&e=' .$expect['id'] ."#skill_upbox";
                 }elseif($ur['other'] == 0){
-                    $expect['wstitle'] ='其他信息';
+                    $expect['wstitle'] =yun_at('wap_00493');
                     $expect['wspcurl']= 'index.php?c=expect&e=' .$expect['id'] ."#other_upbox";
                 }
             }
@@ -2444,7 +2444,7 @@ class resume_model extends model{
       if($edu){
         $edu['sdate_n']  =   date('Y-m',$edu['sdate']);
 
-        $edu['edate_n']  =   $edu['edate'] == 0 ? '至今' : date('Y-m',$edu['edate']);
+        $edu['edate_n']  =   $edu['edate'] == 0 ? 'wap_js_00170' : date('Y-m',$edu['edate']);
 
         //如没有传入缓存，重新调取
         if ($userclass_name == null){
@@ -2470,7 +2470,7 @@ class resume_model extends model{
 
 	        $edus[$k]['sdate_n'] =   date('Y-m',$v['sdate']);
 
-	        $edus[$k]['edate_n'] =   $v['edate'] == 0 ? '至今' : date('Y-m',$v['edate']);
+	        $edus[$k]['edate_n'] =   $v['edate'] == 0 ? 'wap_js_00170' : date('Y-m',$v['edate']);
 
 			$edus[$k]['date_n']  =   $edus[$k]['sdate_n'].'-'.$edus[$k]['edate_n'];
 
@@ -2552,7 +2552,7 @@ class resume_model extends model{
 
         $project['sdate_n'] =   date('Y-m',$project['sdate']);
 
-         $project['edate_n'] =   $project['edate'] == 0 ? '至今' : date('Y-m',$project['edate']);
+         $project['edate_n'] =   $project['edate'] == 0 ? 'wap_js_00170' : date('Y-m',$project['edate']);
       }
 
 
@@ -2568,7 +2568,7 @@ class resume_model extends model{
 
 	        $projects[$k]['sdate_n'] =   date('Y-m',$v['sdate']);
 
-	        $projects[$k]['edate_n'] =   $v['edate'] == 0 ? '至今' : date('Y-m',$v['edate']);
+	        $projects[$k]['edate_n'] =   $v['edate'] == 0 ? 'wap_js_00170' : date('Y-m',$v['edate']);
 
 			$projects[$k]['date_n']  =   $projects[$k]['sdate_n'].'-'.$projects[$k]['edate_n'];
 	    }
@@ -2683,7 +2683,7 @@ class resume_model extends model{
 
 	    $training['sdate_n'] =   date('Y-m',$training['sdate']);
 
-	    $training['edate_n'] =   $training['edate'] == 0 ? '至今' : date('Y-m',$training['edate']);
+	    $training['edate_n'] =   $training['edate'] == 0 ? 'wap_js_00170' : date('Y-m',$training['edate']);
 
 	    return $training;
 	}
@@ -2697,7 +2697,7 @@ class resume_model extends model{
 
 	        $trainings[$k]['sdate_n'] =   date('Y-m', $v['sdate']);
 
-	        $trainings[$k]['edate_n'] =   $v['edate'] == 0 ? '至今' : date('Y-m',$v['edate']);
+	        $trainings[$k]['edate_n'] =   $v['edate'] == 0 ? 'wap_js_00170' : date('Y-m',$v['edate']);
 
 			$trainings[$k]['date_n']  =   $trainings[$k]['sdate_n'].'-'.$trainings[$k]['edate_n'];
             $trainings[$k]['time_n']  =   $trainings[$k]['sdate_n'].'~'.$trainings[$k]['edate_n'];
@@ -2735,7 +2735,7 @@ class resume_model extends model{
 
         $work['sdate_n'] =   date('Y-m',$work['sdate']);
 
-        $work['edate_n'] =   $work['edate'] == 0 ? '至今' : date('Y-m',$work['edate']);
+        $work['edate_n'] =   $work['edate'] == 0 ? 'wap_js_00170' : date('Y-m',$work['edate']);
       }
 
 
@@ -2758,7 +2758,7 @@ class resume_model extends model{
 
             $works[$k]['content']   =   str_replace('\r\n', '<br/>', strip_tags($v['content'], '\r\n'));
             $works[$k]['sdate_n']   =   date('Y-m', $v['sdate']);
-            $works[$k]['edate_n']   =   $v['edate'] == 0 ? '至今' : date('Y-m', $v['edate']);
+            $works[$k]['edate_n']   =   $v['edate'] == 0 ? 'wap_js_00170' : date('Y-m', $v['edate']);
             $works[$k]['date_n']    =   $works[$k]['sdate_n'] . '-' . $works[$k]['edate_n'];
             if ($v['edate'] == 0) {
 
@@ -2787,17 +2787,17 @@ class resume_model extends model{
 
             if (bcmod($avgHour, 12) > 0) {
 
-                return $time . '个月';
+                return $time . 'wap_00474';
             } else {
 
                 return $time;
             }
         } else if($avgHour > 0){
 
-            return $avgHour . '个月';
+            return $avgHour . 'wap_00474';
         } else {
 
-            return '1个月';
+            return 'common_06332';
         }
 
     }
@@ -2927,7 +2927,7 @@ class resume_model extends model{
 
 	    if(!in_array($table,array('expect','edu','other','project','show','skill','training','work'))){
 
-	        $return['msg']      =  '请选择要删除的内容';
+	        $return['msg']      =  yun_at('common_01162');
 	        $return['errcode']  =  '8';
 
 	        return $return;
@@ -2981,22 +2981,22 @@ class resume_model extends model{
 	    //根据操作类型，分别返回
 	    if ($data['type'] == 'add'){
 
-	        $msg  .=  '添加';
+	        $msg  .=  'wap_js_00091';
 	        $type  =  1;
 	    }elseif ($data['type'] ==  'up'){
 
-	        $msg  .=  '修改';
+	        $msg  .=  'wap_js_00073';
 	        $type  =  2;
 	    }elseif ($data['type'] == 'del'){
 
-	        $msg  .=  '删除';
+	        $msg  .=  'wap_js_00077';
 	        $type  =  3;
 	    }
         $msg .= "(eid:{$fbData['eid']},id:" . ($fbData['id'] ? is_array($fbData['id']) ? pylode(',', $fbData['id'][1]) : $fbData['id'] : $data['success']) . ")";
 	    //操作是否成功判断
 	    if ($data['success']){
 
-	        $msg  .=  '成功';
+	        $msg  .=  'admin_tool_00502';
 	        $return['errcode']  =  '9';
 
 	        if ($fbName == 'work'){
@@ -3013,7 +3013,7 @@ class resume_model extends model{
 	        }
 	    }else {
 
-	        $msg  .=  '失败';
+	        $msg  .=  'admin_tool_00501';
 	        $return['errcode']  =  '8';
 	    }
 	    $return['id']   =  $data['success'];
@@ -3036,12 +3036,12 @@ class resume_model extends model{
 	//简历附表名称处理
 	private function getFbName($fb){
 	    $tname  =  array(
-	        'work'      =>  '工作经历',
-	        'edu'       =>  '教育经历',
-	        'skill'     =>  '职业技能',
-	        'project'   =>  '项目经历',
-	        'training'  =>  '培训经历',
-	        'other'     =>  '其他描述'
+	        'work'      =>  'wap_00457',
+	        'edu'       =>  'wap_00459',
+	        'skill'     =>  'wap_00461',
+	        'project'   =>  'wap_00465',
+	        'training'  =>  'wap_00455',
+	        'other'     =>  'admin_00068'
 	    );
 
 	    return $tname[$fb];
@@ -3121,7 +3121,7 @@ class resume_model extends model{
 
 	        $return     =   array(
 	            'errcode' => 8,
-	            'msg'     => '参数错误！'
+	            'msg'     => yun_at('wap_01298')
 	        );
 	        return $return;
 	    }else{
@@ -3143,7 +3143,7 @@ class resume_model extends model{
                 } else {
                     $return     =   array(
                         'errcode' => 8,
-                        'msg'     => '参数错误！'
+                        'msg'     => yun_at('wap_01298')
                     );
                     return $return;
                 }
@@ -3164,7 +3164,7 @@ class resume_model extends model{
 	        if ($result) {
 
 	            if ($data['state'] == '1') {
-	                $state_n = '已通过';
+	                $state_n = 'member_user_00042';
 	                $body    = '';
 	                $msg     = '您的简历<a href="resumetpl,'.$id.'">《'.$resume['name'].'》</a>审核通过';
 
@@ -3195,8 +3195,8 @@ class resume_model extends model{
                         $this -> update_once('resume_expect',array('sq_jobid'=>''), array('id' => $id, 'uid' => $uid));
                     }
 			    }else{
-			        $state_n = '未通过';
-			        $body    = '。原因：'.$data['statusbody'];
+			        $state_n = 'wap_user_00167';
+			        $body    = 'common_06278'.$data['statusbody'];
 			        $msg     = '您的简历<a href="resumetpl,'.$id.'">《'.$resume['name'].'》</a>审核未通过；原因：'.$data['statusbody'];
 			    }
                 if($resumeinfo['telphone'] && $resume['state']!=$upData['state']){
@@ -3223,12 +3223,12 @@ class resume_model extends model{
 
 	            $return = array(
 	                'errcode' => 9,
-	                'msg'     => '简历审核'.$state_n.'设置成功！(ID:'.$id.$body.')'
+	                'msg'     => yun_at('admin_user_00251').$state_n.'设置成功！(ID:'.$id.$body.')'
 	            );
 	        }else{
 	            $return = array(
 	                'errcode' => 8,
-	                'msg'     => '简历审核设置失败！(ID:'.$id.')'
+	                'msg'     => yun_at('model_00012').$id.')'
 	            );
 	        }
 	        return $return;
@@ -3298,12 +3298,12 @@ class resume_model extends model{
 					/* 处理审核信息 */
 					if ($post['state'] == 3){
 
-					    $state_n =  '未通过';
-					    $body    =  !empty($post['statusbody']) ? '。 原因：'.$post['statusbody'] : '';
+					    $state_n =  'wap_user_00167';
+					    $body    =  !empty($post['statusbody']) ? 'common_06277'.$post['statusbody'] : '';
 
 					}elseif($post['state'] == 1){
 
-					    $state_n =  '已通过';
+					    $state_n =  'member_user_00042';
 					}
 
                     require_once 'notice.model.php';
@@ -3353,9 +3353,9 @@ class resume_model extends model{
                   $resumewwhere['r_status']     =     2;
                   $resumewnum              =     $this->getExpectNum($resumewwhere);
                   if($resumewnum>0){
-                     $return['msg']      =  '简历批量审核'.$state_n.'成功'.$resumetnum.'条，失败'.$resumewnum.'条。原因:个人账户被锁定';
+                     $return['msg']      =  yun_at('common_06333').$state_n.'admin_tool_00502'.$resumetnum.'common_01791'.$resumewnum.'common_00797';
                   }else{
-                    $return['msg']       =  '简历批量审核'.$state_n.'成功(ID:'.$idstr.$body.')';
+                    $return['msg']       =  yun_at('common_06333').$state_n.'common_01499'.$idstr.$body.')';
                   }
 
                   $return['errcode']  =  9;
@@ -3364,20 +3364,20 @@ class resume_model extends model{
 					$resumewwhere['r_status']     =     2;
 					$resumetnum                   =     $this->getExpectNum($resumewwhere);
 					if($resumetnum>0){
-						$return['msg']      =  '审核简历'.$state_n.'失败，原因:个人账户被锁定(ID:'.$idstr.')';
+						$return['msg']      =  yun_at('common_06334').$state_n.'common_00466'.$idstr.')';
 						$return['errcode']  =  8;
 					}else{
-					    $return['msg']      =  '审核简历'.$state_n.'设置成功(ID:'.$idstr.$body.')';
+					    $return['msg']      =  yun_at('common_06334').$state_n.'设置成功(ID:'.$idstr.$body.')';
 						$return['errcode']  =  9;
 					}
 
                 }
 	        }else{
-	            $return['msg']      =  '审核简历设置失败(ID:'.$idstr.')';
+	            $return['msg']      =  yun_auto_t('审核简历设置失败(ID:').$idstr.')';
 	            $return['errcode']  =  '8';
 	        }
 	    }else{
-	        $return['msg']      =  '请选择要审核的简历';
+	        $return['msg']      =  yun_at('common_01168');
 	        $return['errcode']  =  '8';
 	    }
 	    return $return;
@@ -3440,16 +3440,16 @@ class resume_model extends model{
                 $logM       =   new log_model($this->db, $this->def);
                 $logM->addResumeSxLogS($logSxData);
 
-                $return['msg']      =   '刷新简历(ID:' . $idstr . ')设置成功';
+                $return['msg']      =   yun_auto_t('刷新简历(ID:') . $idstr . ')设置成功';
                 $return['errcode']  =   '9';
             } else {
 
-                $return['msg']      =   '刷新简历(ID:' . $idstr . ')设置失败';
+                $return['msg']      =   yun_auto_t('刷新简历(ID:') . $idstr . ')设置失败';
                 $return['errcode']  =   '8';
             }
         } else {
 
-            $return['msg']      =   '请选择要刷新的简历';
+            $return['msg']      =   yun_at('common_01165');
             $return['errcode']  =   '8';
         }
         return $return;
@@ -3506,18 +3506,18 @@ class resume_model extends model{
 	            $sysmsgM -> addInfo(array('uid'=>$uids,'usertype'=>1, 'content'=>$msg));
 
                 if ($rec == 1) {
-                    $return['msg'] = '推荐简历(ID:' . $idstr . ')设置成功';
+                    $return['msg'] = yun_auto_t('推荐简历(ID:') . $idstr . ')设置成功';
                     $return['errcode'] = '9';
                 }elseif ($rec == 0){
-                    $return['msg'] = '取消推荐简历(ID:' . $idstr . ')设置成功';
+                    $return['msg'] = yun_auto_t('取消推荐简历(ID:') . $idstr . ')设置成功';
                     $return['errcode'] = '9';
                 }
 	        }else{
-	            $return['msg']      =  '推荐简历(ID:'.$idstr.')设置失败';
+	            $return['msg']      =  yun_auto_t('推荐简历(ID:').$idstr.')设置失败';
 	            $return['errcode']  =  '8';
 	        }
 	    }else{
-	        $return['msg']      =  '请选择要推荐的简历';
+	        $return['msg']      =  yun_at('common_01171');
 	        $return['errcode']  =  '8';
 	    }
 	    return $return;
@@ -3572,18 +3572,18 @@ class resume_model extends model{
 	            $sysmsgM -> addInfo(array('uid'=>$uids,'usertype'=>1, 'content'=>$msg));
 
                 if ($post['top'] == 1) {
-                    $return['msg'] = '置顶简历(ID:' . $idstr . ')设置成功';
+                    $return['msg'] = yun_auto_t('置顶简历(ID:') . $idstr . ')设置成功';
                     $return['errcode'] = '9';
                 }elseif ($post['top'] == 0){
-                    $return['msg'] = '取消置顶简历(ID:' . $idstr . ')设置成功';
+                    $return['msg'] = yun_auto_t('取消置顶简历(ID:') . $idstr . ')设置成功';
                     $return['errcode'] = '9';
                 }
 	        }else{
-	            $return['msg']      =  '置顶简历(ID:'.$idstr.')设置失败';
+	            $return['msg']      =  yun_auto_t('置顶简历(ID:').$idstr.')设置失败';
 	            $return['errcode']  =  '8';
 	        }
 	    }else{
-	        $return['msg']      =  '请选择要置顶的简历';
+	        $return['msg']      =  yun_at('common_01173');
 	        $return['errcode']  =  '8';
 	    }
 	    return $return;
@@ -3596,8 +3596,8 @@ class resume_model extends model{
             $return1 = $this->update_once('resume', $post, array('uid' => $uid));
             $return2 = $this->update_once('resume_expect', $post, array('uid' => $uid));
 
-            $return['msg']      =   '简历状态(UID:'.$uid.')';
-            $return['msg']      =   $return1 && $return2 ? $return['msg'].'设置成功！' : $return['msg'].'设置失败！';
+            $return['msg']      =   yun_auto_t('简历状态(UID:').$uid.')';
+            $return['msg']      =   $return1 && $return2 ? $return['msg'].'model_00011' : $return['msg'].'wap_01715';
             //操作状态 9：成功 8:失败 配合原有提示函数
             $return['errcode']  =   $return1 && $return2 ? '9' :'8';
 
@@ -3615,9 +3615,9 @@ class resume_model extends model{
         if (!empty($data['id'])){
             $result = $this->update_once('resume_expect', array('label' => $data['label'], 'content' => $data['content']), array('id' => $data['id']));
             
-            $return['msg']  =	'简历备注(ID:'.$data['id'].')';
+            $return['msg']  =	yun_auto_t('简历备注(ID:').$data['id'].')';
         }
-        $return['msg']		=	$result ? $return['msg'].'设置成功！' : $return['msg'].'设置失败！';
+        $return['msg']		=	$result ? $return['msg'].'model_00011' : $return['msg'].'wap_01715';
         //操作状态 9：成功 8:失败 配合原有提示函数
         $return['errcode']	=	$result ? '9' :'8';
         
@@ -3650,14 +3650,14 @@ class resume_model extends model{
 				foreach($elist['list'] as $v){
 
 					if($data['uid'] != $v['uid']){
-						$return['msg']      =  '非法操作！';
+						$return['msg']      =  yun_at('model_00001');
 						$return['errcode']  =  '8';
 						return $return;
 					}
 
 					$resumenum=  $this -> getExpectNum(array('uid'=>array('in',$v['uid'])));
 					if($resumenum==1){
-						$return['msg']      =  '请至少保留一份简历！';
+						$return['msg']      =  yun_at('common_01058');
 						$return['errcode']  =  '8';
 						return $return;
 					}
@@ -3742,16 +3742,16 @@ class resume_model extends model{
                 }
 
                 $return['id']       =  $nid;
-                $return['msg']      =  '简历(ID:'.$id.')删除成功';
+                $return['msg']      =  yun_auto_t('简历(ID:').$id.')删除成功';
                 $return['errcode']  =  '9';
 
             }else{
-                $return['msg']      =  '简历(ID:'.$id.')删除失败';
+                $return['msg']      =  yun_auto_t('简历(ID:').$id.')删除失败';
                 $return['errcode']  =  '8';
 
             }
 	    }else{
-	        $return['msg']      =  '请选择要删除的简历';
+	        $return['msg']      =  yun_at('common_01163');
 	        $return['errcode']  =  '8';
 
 	    }
@@ -3848,7 +3848,7 @@ class resume_model extends model{
 	                //通过审核，并后台设置的上传身份验证所加积分大于0，才需要处理加积分
 	                if ($status == 1 && $this->config['integral_identity'] > 0){
 
-	                    $compays  =  $this -> select_all('company_pay',array('com_id'=>array('in',$uidstr),'pay_remark'=>'上传身份验证'),'com_id');
+	                    $compays  =  $this -> select_all('company_pay',array('com_id'=>array('in',$uidstr),'pay_remark'=>'wap_user_00106'),'com_id');
 
 	                    if (!empty($compays)){
 	                        //获取已经获得过验证积分的uid
@@ -3870,7 +3870,7 @@ class resume_model extends model{
 
 	                        foreach ($needs as $v){
 
-	                            $integralM -> invtalCheck($v,1,'integral_identity','上传身份验证');
+	                            $integralM -> invtalCheck($v,1,'integral_identity','wap_user_00106');
 	                        }
 	                    }
 	                }
@@ -3880,7 +3880,7 @@ class resume_model extends model{
                       /* 处理审核信息 */
                       if ($post['idcard_status'] == 2){
 
-                        $statusInfo  =  '您的身份证审核未通过 ';
+                        $statusInfo  =  'common_06335';
 
                         if($post['statusbody']){
 
@@ -3892,7 +3892,7 @@ class resume_model extends model{
 
                       }elseif($post['idcard_status'] == 1){
 
-                        $msg  =  '您的身份证已审核通过';
+                        $msg  =  'common_01010';
 
                       }
 	                }
@@ -3933,14 +3933,14 @@ class resume_model extends model{
 	                }
 	            }
 
-	            $return['msg']      =  '个人认证审核(ID:'.$uidstr.')设置成功';
+	            $return['msg']      =  yun_auto_t('个人认证审核(ID:').$uidstr.')设置成功';
 	            $return['errcode']  =  '9';
 	        }else{
-	            $return['msg']      =  '个人认证审核(ID:'.$uidstr.')设置失败';
+	            $return['msg']      =  yun_auto_t('个人认证审核(ID:').$uidstr.')设置失败';
 	            $return['errcode']  =  '8';
 	        }
 	    }else{
-	        $return['msg']      =  '请选择要审核的认证';
+	        $return['msg']      =  yun_at('common_01169');
 	        $return['errcode']  =  '8';
 	    }
 	    return $return;
@@ -3970,14 +3970,14 @@ class resume_model extends model{
 
 	        $nid      =  $this -> update_once('resume',$cdata,array('uid'=>array('in',$uid)));
 	        if ($nid){
-	            $return['msg']      =  '个人身份认证(ID:'.$uid.')删除成功';
+	            $return['msg']      =  yun_auto_t('个人身份认证(ID:').$uid.')删除成功';
 	            $return['errcode']  =  '9';
 	        }else{
-	            $return['msg']      =  '个人身份认证(ID:'.$uid.')删除失败';
+	            $return['msg']      =  yun_auto_t('个人身份认证(ID:').$uid.')删除失败';
 	            $return['errcode']  =  '8';
 	        }
 	    }else{
-	        $return['msg']      =  '请选择要删除的个人身份认证';
+	        $return['msg']      =  yun_at('common_00746');
 	        $return['errcode']  =  '8';
 	    }
 	    return $return;
@@ -4018,17 +4018,17 @@ class resume_model extends model{
 	                $this -> update_once('answer',array('pic'=>''),array('uid'=>array('in',$uidstr)));
 	                $this -> update_once('question',array('pic'=>''),array('uid'=>array('in',$uidstr)));
 
-	                $statusInfo  =  '您的头像';
+	                $statusInfo  =  'common_06336';
 
 					foreach ($uids as $k=>$v){
 
 						/* 处理审核信息 */
 					    if($post['photo_statusbody']){
 
-					        $statusInfo  .=  ' , 因为'.$post['photo_statusbody'].' , ';
+					        $statusInfo  .=  'common_01654'.$post['photo_statusbody'].' , ';
 					    }
 
-					    $statusInfo  .=  '已被管理员删除';
+					    $statusInfo  .=  'common_01360';
 
 					    $msg[$v]  =  $statusInfo;
 	                }
@@ -4052,14 +4052,14 @@ class resume_model extends model{
 	                $this -> update_once('answer',array('pic'=>array('CASE','uid',$newphoto)),array('uid'=>array('in',$uidstr)));
 	                $this -> update_once('question',array('pic'=>array('CASE','uid',$newphoto)),array('uid'=>array('in',$uidstr)));
 	            }
-	            $return['msg']      =  '头像审核(ID:'.$uidstr.')设置成功';
+	            $return['msg']      =  yun_auto_t('头像审核(ID:').$uidstr.')设置成功';
 	            $return['errcode']  =  '9';
 	        }else{
-	            $return['msg']      =  '头像审核(ID:'.$uidstr.')设置失败';
+	            $return['msg']      =  yun_auto_t('头像审核(ID:').$uidstr.')设置失败';
 	            $return['errcode']  =  '8';
 	        }
 	    }else{
-	        $return['msg']      =  '请选择要审核的头像';
+	        $return['msg']      =  yun_at('common_01167');
 	        $return['errcode']  =  '8';
 	    }
 	    return $return;
@@ -4111,7 +4111,7 @@ class resume_model extends model{
                                 $statusInfo		=	'您的作品案例('.$v['title'].')审核未通过';
                             }else{
 
-                                $statusInfo		=	'您的作品案例审核未通过';
+                                $statusInfo		=	'common_06337';
                             }
 
 							if($post['statusbody']){
@@ -4124,9 +4124,9 @@ class resume_model extends model{
 						}elseif($post['status'] == 0){
 
                             if ($v['title'] != ''){
-                                $msg[$v['uid']][]  =  '您的作品案例('.$v['title'].')已审核通过';
+                                $msg[$v['uid']][]  =  '您的作品案例('.$v['title'].'common_01425';
                             }else{
-                                $msg[$v['uid']][]  =  '您的作品案例已审核通过';
+                                $msg[$v['uid']][]  =  'common_00881';
                             }
 						}
 	                }
@@ -4139,14 +4139,14 @@ class resume_model extends model{
 
 	            }
 
-	            $return['msg']      =  '作品案例审核(ID:'.$idstr.')设置成功';
+	            $return['msg']      =  yun_auto_t('作品案例审核(ID:').$idstr.')设置成功';
 	            $return['errcode']  =  '9';
 	        }else{
-	            $return['msg']      =  '作品案例审核(ID:'.$idstr.')设置失败';
+	            $return['msg']      =  yun_auto_t('作品案例审核(ID:').$idstr.')设置失败';
 	            $return['errcode']  =  '8';
 	        }
 	    }else{
-	        $return['msg']      =  '请选择要审核的作品案';
+	        $return['msg']      =  yun_at('common_01067');
 	        $return['errcode']  =  '8';
 	    }
 	    return $return;
@@ -4217,20 +4217,20 @@ class resume_model extends model{
 	                require_once ('integral.model.php');
 
 	                $IntegralM 	= 	new integral_model($this -> db, $this -> def);
-	                $IntegralM	->	invtalCheck($uid,1,'integral_avatar','上传头像');
+	                $IntegralM	->	invtalCheck($uid,1,'integral_avatar','wap_user_00110');
 
-	                $this -> addMemberLog($uid, 1, '图片信息：上传头像', 16, 1);
+	                $this -> addMemberLog($uid, 1, 'common_06338', 16, 1);
 
 	                if ($this -> config['user_photo_status'] == 1){
 						// 需审核时，简历表，以前的头像要清除
 	                    $this -> update_once('resume_expect',array('photo'=>'', 'defphoto' => 1),array('uid'=>$uid));
 	                    $return['errcode']  =  '9';
-						$return['msg']      =  '上传成功，管理员审核后对其他用户开放显示';
+						$return['msg']      =  yun_at('common_00327');
 
 	                }else{
                         $this->update_once('resume_expect', array('photo' => $photo, 'defphoto' => 1), array('uid' => $uid));
 	                    $return['errcode']  =  '9';
-	                    $return['msg']      =  '上传成功';
+	                    $return['msg']      =  yun_at('common_06339');
 
 	                }
 	                // pc会员中心预览即上传，处理预览图
@@ -4239,19 +4239,19 @@ class resume_model extends model{
 	                    $return['picurl']  =  checkpic($photo);
 	                }
 	            }else{
-	                $return['msg']      =  '个人头像(ID:'.$uid.')修改成功';
+	                $return['msg']      =  yun_auto_t('个人头像(ID:').$uid.')修改成功';
 	                $return['errcode']  =  '9';
 
 	            }
 	        }else{
 
-	            $return['msg']      =  '个人头像(ID:'.$uid.')修改失败';
+	            $return['msg']      =  yun_auto_t('个人头像(ID:').$uid.')修改失败';
 	            $return['errcode']  =  '8';
 
 	        }
 	    }else{
 
-	        $return['msg']      =  '请选择需要修改的用户';
+	        $return['msg']      =  yun_at('common_01069');
 	        $return['errcode']  =  '8';
 
 	    }
@@ -4305,7 +4305,7 @@ class resume_model extends model{
 
 	        if (isset($return['id'])) {
 
-                $this -> addMemberLog($uid, 1, '图片信息：上传二维码', 16, 1);
+                $this -> addMemberLog($uid, 1, 'common_06340', 16, 1);
 
                 // 处理预览图
                 if ($data['preview']){
@@ -4313,16 +4313,16 @@ class resume_model extends model{
                     $return['picurl']  =  checkpic($photo);
                 }
 
-	            $return['msg']      =  '个人二维码修改成功';
+	            $return['msg']      =  yun_at('common_06341');
                 $return['errcode']  =  '9';
 	        }else{
 
-	            $return['msg']      =  '个人二维码修改失败';
+	            $return['msg']      =  yun_at('common_06342');
 	            $return['errcode']  =  '8';
 	        }
 	    }else{
 
-	        $return['msg']      =  '请选择需要修改的用户';
+	        $return['msg']      =  yun_at('common_01069');
 	        $return['errcode']  =  '8';
 	    }
 	    return $return;
@@ -4358,16 +4358,16 @@ class resume_model extends model{
 
 	            $this -> update_once('question',array('pic'=>''),array('uid'=>array('in',$uid)));
 
-	            $return['msg']      =  '个人头像(ID:'.$uid.')删除成功';
+	            $return['msg']      =  yun_auto_t('个人头像(ID:').$uid.')删除成功';
 	            $return['errcode']  =  '9';
 	        }else{
 
-	            $return['msg']      =  '个人头像(ID:'.$uid.')删除失败';
+	            $return['msg']      =  yun_auto_t('个人头像(ID:').$uid.')删除失败';
 	            $return['errcode']  =  '8';
 	        }
 	    }else{
 
-	        $return['msg']      =  '请选择要删除的个人头像';
+	        $return['msg']      =  yun_at('common_00931');
 	        $return['errcode']  =  '8';
 	    }
 	    return $return;
@@ -4499,10 +4499,10 @@ class resume_model extends model{
             }
             $nid  =  $this -> update_once('resume_show',$post,$updateWhere);
 			if ($nid) {
-				$return['msg']      =  '个人作品(ID:'.$data['id'].')修改成功';
+				$return['msg']      =  yun_auto_t('个人作品(ID:').$data['id'].')修改成功';
 				$return['errcode']  =  '9';
 			}else{
-				$return['msg']      =  '个人作品(ID:'.$data['id'].')修改失败';
+				$return['msg']      =  yun_auto_t('个人作品(ID:').$data['id'].')修改失败';
 				$return['errcode']  =  '8';
 			}
 			return $return;
@@ -4514,7 +4514,7 @@ class resume_model extends model{
 			$post['ctime']	=	time();
 			$nid   =	 $this->insert_into('resume_show',$post);
 			if ($nid){
-                $this -> addMemberLog($data['uid'], $data['usertype'], '图片信息：添加作品展示',16,1);
+                $this -> addMemberLog($data['uid'], $data['usertype'], 'common_00870',16,1);
 			}
 			return $nid;
 		}
@@ -4552,17 +4552,17 @@ class resume_model extends model{
 	        $return['id']  =  $this -> delete_all('resume_show',$delWhere,$limit);
 
 	        if ($return['id']){
-	            $this -> addMemberLog($data['uid'],$data['usertype'],'图片信息：删除作品案例',16,3);
-	            $return['msg']      =  '个人作品(ID:'.$id.')删除成功';
+	            $this -> addMemberLog($data['uid'],$data['usertype'],'common_06343',16,3);
+	            $return['msg']      =  yun_auto_t('个人作品(ID:').$id.')删除成功';
 	            $return['errcode']  =  '9';
 	        }else{
 
-	            $return['msg']      =  '个人作品(ID:'.$id.')删除失败';
+	            $return['msg']      =  yun_auto_t('个人作品(ID:').$id.')删除失败';
 	            $return['errcode']  =  '8';
 	        }
 	    }else{
 
-	        $return['msg']      =  '请选择要删除的个人作品';
+	        $return['msg']      =  yun_at('common_00930');
 	        $return['errcode']  =  '8';
 	    }
 	    return $return;
@@ -5195,12 +5195,12 @@ class resume_model extends model{
 
 			$return['id']	=	$this -> delete_all('talent_pool',$delWhere,'');
 
-			$this -> addMemberLog($data['uid'],$data['usertype'],'收藏管理：删除收藏简历人才',5,3);
+			$this -> addMemberLog($data['uid'],$data['usertype'],'common_00719',5,3);
 
-            $return['msg']		=	'简历被收藏记录(ID:'.$id.')';
+            $return['msg']		=	yun_auto_t('简历被收藏记录(ID:').$id.')';
 
 	        $return['errcode']	=	$return['id'] ? '9' :'8';
-	        $return['msg']		=	$return['id'] ? $return['msg'].'删除成功！' : $return['msg'].'删除失败！';
+	        $return['msg']		=	$return['id'] ? $return['msg'].'admin_user_00187' : $return['msg'].'admin_user_00186';
 		}elseif($data['where']){
 
 			$where		=	$data['where'];
@@ -5217,7 +5217,7 @@ class resume_model extends model{
 			return	$nid;
 	    }else{
 
-	        $return['msg']		=	'请选择您要删除的数据！';
+	        $return['msg']		=	yun_at('common_00921');
 	        $return['errcode']	=	8;
 	    }
 
@@ -5240,7 +5240,7 @@ class resume_model extends model{
 
 		if($data['cuid']==''){
 
-			$return['msg']      =  '您还未登录企业账号，是否登录？';
+			$return['msg']      =  yun_at('wap_js_00171');
 			$return['errcode']  =  8;
 			$return['state']  	=  3;
 			return $return;
@@ -5248,7 +5248,7 @@ class resume_model extends model{
 
 		if($data['usertype'] != "2"){
 
-		    $return['msg']      =  '只有企业用户，才可以操作！';
+		    $return['msg']      =  yun_at('default_00055');
 			$return['errcode']  =  8;
 			$return['state']  	=  0;
 			return $return;
@@ -5275,7 +5275,7 @@ class resume_model extends model{
       		$sysmsgM = new sysmsg_model($this->db, $this->def);
       		$sysmsgM -> addInfo(array('uid' => $data['uid'],'usertype'=>1,  'content' => '企业<a href="comtpl,'.$data['cuid'].'"> '.$company['name'].'</a> 收藏您的简历'));
 
-			$return['msg']      =  '收藏成功！';
+			$return['msg']      =  yun_at('model_00048');
 			$return['errcode']  =  9;
 			$return['state']  	=  1;
 		}else{
@@ -5285,9 +5285,9 @@ class resume_model extends model{
 
             $this -> delete_all('talent_pool', array('id' => $row['id']));
 
-            $this -> addMemberLog($data['cuid'],$data['usertype'],'收藏管理：取消收藏简历',5,3);
+            $this -> addMemberLog($data['cuid'],$data['usertype'],'common_06344',5,3);
 
-            $return['msg']      =  '取消收藏！';
+            $return['msg']      =  yun_at('common_06345');
             $return['errcode']  =  9;
             $return['state']  	=  1;
 		}
@@ -5320,10 +5320,10 @@ class resume_model extends model{
 
 				if($data['sex'] == 1){
 
-					$resUserName	=	mb_substr($data['name'], 0, 1, 'utf-8').'先生';
+					$resUserName	=	mb_substr($data['name'], 0, 1, 'utf-8').'wap_js_00169';
 				}else{
 
-					$resUserName	=	mb_substr($data['name'], 0, 1, 'utf-8').'女士';
+					$resUserName	=	mb_substr($data['name'], 0, 1, 'utf-8').'admin_user_00341';
 				}
 			}
 		}elseif($this -> config['user_name'] == 2 && !empty($data['eid'])){
@@ -5333,10 +5333,10 @@ class resume_model extends model{
 
 			if($data['sex'] == 1){
 
-				$resUserName 		=	mb_substr($data['name'], 0, 1, 'utf-8').'先生';
+				$resUserName 		=	mb_substr($data['name'], 0, 1, 'utf-8').'wap_js_00169';
 			}else{
 
-				$resUserName 		=	mb_substr($data['name'], 0, 1, 'utf-8').'女士';
+				$resUserName 		=	mb_substr($data['name'], 0, 1, 'utf-8').'admin_user_00341';
 			}
 		}elseif($this -> config['user_name'] == 4 && !empty($data['name'])){
 
@@ -5472,10 +5472,10 @@ class resume_model extends model{
             $rnwhere=array('uid'=>$param['uid'],'rec_type'=>3,'addtime'=>array('>',strtotime('today')));
             $num    =   $recomM -> getRecommendNum($rnwhere);
             if($num >= $this->config['sy_resumeout_day_num']){
-                return array('msg'=>'每天最多外发'.$this->config['sy_resumeout_day_num'].'次简历！','errcode'=>8);
+                return array('msg'=>yun_at('common_01517').$this->config['sy_resumeout_day_num'].'member_user_00612','errcode'=>8);
             }
         }else{
-            return array('msg'=>'外发简历功能已关闭！','errcode'=>8);
+            return array('msg'=>yun_at('common_00987'),'errcode'=>8);
         }
         //判断上一次外发的时间间隔
         if(isset($this->config['sy_resumeout_interval']) && $this->config['sy_resumeout_interval'] > 0){
@@ -5508,38 +5508,38 @@ class resume_model extends model{
                 }else{
                     $recs           =   $recs.'秒';
                 }
-                return array('msg'=>'外发简历间隔不得少于'.$recs.'，请'.$needTime.'后再外发！','errcode'=>8);
+                return array('msg'=>yun_at('common_00988').$recs.'common_02049'.$needTime.'common_01594','errcode'=>8);
             }
         }
 
 	    if (!empty($data)){
 			if($data['resume']==''){
-				return array('msg'=>'请选择简历','errcode'=>8);
+				return array('msg'=>yun_at('member_user_00279'),'errcode'=>8);
             }
             $email=$data['email'];
             if($email==''){
-				return array('msg'=>'请输入邮箱','errcode'=>8);
+				return array('msg'=>yun_at('wap_00697'),'errcode'=>8);
             }elseif (CheckRegEmail($email)==false){
-				return array('msg'=>'邮箱格式错误','errcode'=>8);
+				return array('msg'=>yun_at('wap_js_00120'),'errcode'=>8);
             }
             if($data['comname']==''){
-				return array('msg'=>'请输入企业名称','errcode'=>8);
+				return array('msg'=>yun_at('wap_user_00149'),'errcode'=>8);
             }
             if ($data['jobname']==''){
-				return array('msg'=>'请输入职位名称','errcode'=>8);
+				return array('msg'=>yun_at('admin_user_weipin_00014'),'errcode'=>8);
             }
             if($this->config['sy_email_set']!='1'){
-				return array('msg'=>'网站邮件服务器不可用','errcode'=>8);
+				return array('msg'=>yun_at('job_00005'),'errcode'=>8);
             }
             $today  = strtotime('today');
             $outnum = $this->select_num('resumeout', array('uid'=>$data['uid'],'datetime'=>array('>', $today)));
 
             if(!empty($this->config['sy_recommend_day_num']) && $outnum > $this->config['sy_recommend_day_num']){
-                return array('msg'=>'简历每天只能推荐'.$this->config['sy_recommend_day_num'].'次','errcode'=>8);
+                return array('msg'=>yun_at('common_01291').$this->config['sy_recommend_day_num'].'次','errcode'=>8);
             }elseif(!$this->config['sy_recommend_day_num'] || $this->config['sy_recommend_day_num']<=0){
-                return array('msg'=>'推荐功能已关闭','errcode'=>8);
+                return array('msg'=>yun_at('ajax_00008'),'errcode'=>8);
             }elseif(isset($_COOKIE['resumeout']) && $_COOKIE['resumeout'] == $data['resume']){
-                return array('msg'=>'请不要频繁发送邮件！同一简历发送间隔为两分钟！','errcode'=>8);
+                return array('msg'=>yun_at('common_00247'),'errcode'=>8);
             }
 
             $Info       =   $this->getInfoByEid(array('eid' => $data['resume']));
@@ -5554,7 +5554,7 @@ class resume_model extends model{
 
 			$emailData=array(
 				'email'		=> $email,
-				'subject'	=> '我看到贵公司在招收'.$data['jobname'].'，向您自荐一份简历！',
+				'subject'	=> 'common_01125'.$data['jobname'].'common_01084',
 				'content'	=> $contents,
 				'uid'		=> '',
 				'name'		=> $data['recipient'],
@@ -5589,9 +5589,9 @@ class resume_model extends model{
                 );
                 $result                     =   $recomM -> addRecommendInfo($recommend);
 
-				return array('msg'=>'发送成功','errcode'=>9);
+				return array('msg'=>yun_at('admin_tool_00495'),'errcode'=>9);
 			}else{
-				return array('msg'=>'邮件发送错误 原因：' . $sendid['msg'],'errcode'=>8);
+				return array('msg'=>yun_at('common_01077') . $sendid['msg'],'errcode'=>8);
 			}
 		}
 	}
@@ -5616,17 +5616,17 @@ class resume_model extends model{
 	        $return['id']  =  $this -> delete_all('resumeout',array('uid'=>$data['uid'],'id'=>array('in',$id)),$limit);
 
 	        if ($return['id']){
-	            $this->addMemberLog($data['uid'],$data['usertype'],'简历信息：删除简历外发记录',2,3);
-	            $return['msg']      =  '删除成功';
+	            $this->addMemberLog($data['uid'],$data['usertype'],'common_00730',2,3);
+	            $return['msg']      =  yun_at('wap_user_00147');
 	            $return['errcode']  =  '9';
 	        }else{
 
-	            $return['msg']      =  '删除失败';
+	            $return['msg']      =  yun_at('wap_user_00146');
 	            $return['errcode']  =  '8';
 	        }
 	    }else{
 
-	        $return['msg']      =  '请选择要删除的记录';
+	        $return['msg']      =  yun_at('common_01164');
 	        $return['errcode']  =  '8';
 	    }
 	    return $return;
@@ -5757,7 +5757,7 @@ class resume_model extends model{
 	 */
     public function defaults($data = array()){
 
-        $return	=	array('errcode'=>'2','msg'=>'设置失败！');
+        $return	=	array('errcode'=>'2','msg'=>yun_at('wap_01715'));
 
         if (!empty($data)){
 
@@ -5786,7 +5786,7 @@ class resume_model extends model{
 
                 $this->addMemberLog($row['uid'], 1, '简历管理：设置默认简历（ID：' . $row['id'] . '）', 2, 2);
 
-                $return = $id ? array('errcode' => '1', 'msg' => '设置成功！') : array('errcode' => '2', 'msg' => '设置失败！');
+                $return = $id ? array('errcode' => '1', 'msg' => yun_at('model_00011')) : array('errcode' => '2', 'msg' => yun_at('wap_01715'));
 
             }
         }
@@ -5823,12 +5823,12 @@ class resume_model extends model{
 				}
 
 				$return['edumin']		=		date('Y.m',$edumin);
-				$return['edumax']		=		$edumax  == 0 ?  '至今': date('Y.m',$edumax);
+				$return['edumax']		=		$edumax  == 0 ?  'wap_js_00170': date('Y.m',$edumax);
 				$return['education']	=		@implode(',',$education);
 				$return['edutit']		=		@implode(',',$edutitle);
 
 				$return['edu_time']		=		$return['edumin'].'-'.$return['edumax'];
-				$return['edu_content']	=		'已完成'.$return['education'].'段学业';
+				$return['edu_content']	=		yun_at('wap_00469').$return['education'].'wap_00471';
 			}
 
 			/*工作经历*/
@@ -5874,15 +5874,15 @@ class resume_model extends model{
 				$return['workavg']		=		$workavg  > 11 ?  avgToYm($workavg) :  $workavg;
 
 				$return['workmin']		=		date('Y.m',$workmin);
-				$return['workmax']		=		$workmax  == 0 ?  '至今': date('Y.m',$workmax);
+				$return['workmax']		=		$workmax  == 0 ?  'wap_js_00170': date('Y.m',$workmax);
 				$return['worktit']		=		@implode(',',$wtitle);
 
 				$return['work_time']	=		$return['workmin'].'-'.$return['workmax'];
 				if($return['workavg']>0){
 					if($return['worktit']!=''){
-						$return['work_content']	=	'参加过'.$return['worknum'].'份工作 , 平均工作时长'.$return['workavg'].'个月，涉及'.$return['worktit'].'等岗位';
+						$return['work_content']	=	yun_at('wap_00467').$return['worknum'].'份工作 , 平均工作时长'.$return['workavg'].'common_06346'.$return['worktit'].'wap_00472';
 					}else{
-						$return['work_content']	=	'参加过'.$return['worknum'].'份工作 , 平均工作时长'.$return['workavg'].'个月';
+						$return['work_content']	=	yun_at('wap_00467').$return['worknum'].'份工作 , 平均工作时长'.$return['workavg'].'wap_00474';
 					}
 				}
 			}
@@ -5911,14 +5911,14 @@ class resume_model extends model{
 
 				$return['xmnum']		=		$xmnum  > 0 ?  $xmnum:0;
 				$return['xmmin']		=		date('Y.m',$xmmin);
-				$return['xmmax']		=		$xmmax  == 0 ?  '至今':date('Y.m',$xmmax);
+				$return['xmmax']		=		$xmmax  == 0 ?  'wap_js_00170':date('Y.m',$xmmax);
 				$return['xmtit']		=		@implode(',',$xmtitle);
 
 				$return['xm_time']		=		$return['xmmin'].'-'.$return['xmmax'];
 				if($return['xmtit']!=''){
-					$return['xm_content']	=	'独自完成或参与过'.$return['xmnum'].'个项目，并在其中担任过'.$return['xmtit'].'等职务';
+					$return['xm_content']	=	yun_at('wap_00443').$return['xmnum'].'common_06347'.$return['xmtit'].'wap_00473';
 				}else{
-					$return['xm_content']	=	'独自完成或参与过'.$return['xmnum'].'个项目';
+					$return['xm_content']	=	yun_at('wap_00443').$return['xmnum'].'wap_00466';
 				}
 			}
 
@@ -5944,10 +5944,10 @@ class resume_model extends model{
 
 				$return['trainnum']		=		$trainnum  > 0 ?  $trainnum:0;
 				$return['trainmin']		=		date('Y.m',$trainmin);
-				$return['trainmax']		=		$trainmax  == 0 ?  '至今':date('Y.m',$trainmax);
+				$return['trainmax']		=		$trainmax  == 0 ?  'wap_js_00170':date('Y.m',$trainmax);
 
 				$return['train_time']	=		$return['trainmin'].'-'.$return['trainmax'];
-				$return['train_content']=		'参加过'.$return['trainnum'].'次培训，进行自我充电，能力提升';
+				$return['train_content']=		yun_at('wap_00467').$return['trainnum'].'wap_00441';
 			}
 
 			/*职业技能*/
@@ -5963,7 +5963,7 @@ class resume_model extends model{
 				$return['skillnum']		=		$skillnum  > 0 ?  $skillnum:0;
 				$return['skillpic']		=		$skillpic  > 0 ?  $skillpic:0;
 
-				$return['skill_content']=		'目前已掌握'.$return['skillnum'].'项技能，其中'.$return['skillpic'].'项拥有技能证书';
+				$return['skill_content']=		yun_at('wap_00450').$return['skillnum'].'wap_00448'.$return['skillpic'].'wap_00445';
 			}
 
 			/*作品案例*/
@@ -5973,7 +5973,7 @@ class resume_model extends model{
 				$shownum				=		count($showList);
 				$return['shownum']		=		$shownum  > 0 ?  $shownum:0;
 
-				$return['show_content']=		'已上传'.$return['shownum'].'份作品案例给招聘企业提前预览';
+				$return['show_content']=		yun_at('wap_user_00123').$return['shownum'].'wap_00442';
 			}
 		}
 
@@ -6028,7 +6028,7 @@ class resume_model extends model{
 						$Info['rsalary']	=	$Info['minsalary'];
 					}
 				}else{
-					$Info['rsalary']		=	'面议';
+					$Info['rsalary']		=	yun_at('common_02045');
 				}
 				//处理学历
 				if(isset($CacheList['userclass_name'][$Info['edu']])){
@@ -6092,27 +6092,27 @@ class resume_model extends model{
         $project  =  $this->select_num('resume_project',array('eid'=>$data['eid'],'uid'=>$data['uid']));
 
         if(empty($expect)){
-            $return['msg']  =  '请先创建简历！';
+            $return['msg']  =  yun_at('common_06348');
         }else if($expect['state']!=1){
-            $return['msg']  =  '您的简历尚未审核，无法置顶操作！';
+            $return['msg']  =  yun_at('common_00534');
         }else{
             if($expect['doc'] == 0){
                 if($this->config['user_work_regiser']==1){
                     if($work < 1){
 
-                        $return['msg']  =  '你的简历没有工作经历，请填写工作经历';
+                        $return['msg']  =  yun_at('common_00423');
                     }
                 }
                 if($this->config['user_edu_regiser']==1){
                     if($edu < 1){
 
-                        $return['msg']  =  '你的简历没有教育经历，请填写教育经历';
+                        $return['msg']  =  yun_at('common_00424');
                     }
                 }
                 if($this->config['user_project_regiser']==1){
                     if($project < 1){
 
-                        $return['msg']  =  '你的简历没有项目经历，请填写项目经历';
+                        $return['msg']  =  yun_at('common_00425');
                     }
                 }
             }
@@ -6167,24 +6167,24 @@ class resume_model extends model{
                     if(in_array($v['cityid'],$city_classname) || in_array($v['three_cityid'],$city_classname)){//地区
                         $pre		=	$pre+10;
                     }
-                    if($resume['useredu']==$v['job_edu'] || $v['job_edu']=="不限"){//学历
+                    if($resume['useredu']==$v['job_edu'] || $v['job_edu']=='common_01936'){//学历
                         $pre		=	$pre+5;
                     }
-                    if($resume['user_marriage']==$v['job_marriage'] || $v['job_marriage']=="不限"){//婚姻
+                    if($resume['user_marriage']==$v['job_marriage'] || $v['job_marriage']=='common_01936'){//婚姻
                         $pre		=	$pre+5;
                     }
-                    if($resume['sex']==$v['job_sex'] || $v['job_sex']=='不限'){
+                    if($resume['sex']==$v['job_sex'] || $v['job_sex']=='common_01936'){
                         $pre		=	$pre+5;
                     }
-                    if($resume['report']==$v['job_report'] || $v['job_report']=="不限"){//到岗时间
+                    if($resume['report']==$v['job_report'] || $v['job_report']=='common_01936'){//到岗时间
                         $pre		=	$pre+5;
                     }
-                    if($resume['user_exp']==$v['job_exp'] || $v['job_exp']=="不限"){//工作经验
+                    if($resume['user_exp']==$v['job_exp'] || $v['job_exp']=='common_01936'){//工作经验
                         $pre		=	$pre+5;
                     }
                     $job[$k]['pre']	=	$pre;
 					if(empty($v['job_sex'])){
-						$job[$k]['job_sex']	=	'保密';
+						$job[$k]['job_sex']	=	yun_at('wap_user_00333');
 					}
 					$job[$k]['wapjob_url'] = Url('wap',array('c'=>'job','a'=>'comapply','id'=>$v['id']));
                     $job[$k]['wapcom_url'] = Url('wap',array('c'=>'company','a'=>'show','id'=>$v['uid']));
@@ -6224,7 +6224,7 @@ class resume_model extends model{
 			if($this->config['user_number']!='' && $num >= $this->config['user_number']){
 
 				$error['err']  =	1;
-				$error['msg']  =	'您最多可以拥有'.$this->config['user_number'].'份简历';
+				$error['msg']  =	yun_at('common_01367').$this->config['user_number'].'common_01888';
 				$error['url']  =	'index.php?c=resume';
 			}
 
@@ -6269,7 +6269,7 @@ class resume_model extends model{
 					case 'wap':
 						$setarr  =	array(
 							'resume'      =>  $resume,
-							'headertitle' => '创建简历'
+							'headertitle' => 'wap_user_00197'
 						);
 						break;
 
@@ -6369,7 +6369,7 @@ class resume_model extends model{
 
             $userclass_name     =  $cache['userclass_name'];
 
-            $resume['sex']      =   $resume['sex'] == 1?'男':'女';
+            $resume['sex']      =   $resume['sex'] == 1?yun_at('common_02092'):yun_at('common_02069');
 
             if($resume['edu']){
                 $resume['edu']  =  $userclass_name[$resume['edu']];
@@ -6395,10 +6395,10 @@ class resume_model extends model{
                 $resume_expect          =   $this->select_once('resume_expect',array('uid'=>$resume['uid'],'defaults'=>1));
 
                 if(!empty($resume_expect)){
-                    $resume_expect['sex']          =   $resume_expect['sex'] == 1?'男':'女';
+                    $resume_expect['sex']          =   $resume_expect['sex'] == 1?yun_at('common_02092'):yun_at('common_02069');
                     $resume_expect['exp']          =   $cache['userclass_name'][$resume_expect['exp']];
                     $resume_expect['edu']          =   $cache['userclass_name'][$resume_expect['edu']];
-                    $resume_expect['hy']           =   $cache['industry_name'][$resume_expect['hy']] ? $cache['industry_name'][$resume_expect['hy']] : '不限';
+                    $resume_expect['hy']           =   $cache['industry_name'][$resume_expect['hy']] ? $cache['industry_name'][$resume_expect['hy']] : WapDbEnum::UNLIMITED;
                     $resume_expect['report']       =   $cache['userclass_name'][$resume_expect['report']];
                     $resume_expect['type']         =   $cache['userclass_name'][$resume_expect['type']];
                     $resume_expect['jobstatus']    =   $cache['userclass_name'][$resume_expect['jobstatus']];
@@ -6486,29 +6486,29 @@ class resume_model extends model{
 
             if($list['age']==0){
 
-                $list['age']='保密';
+                $list['age']=yun_at('wap_user_00333');
             }else{
                 $list['age']=$list['age'].'岁';
             }
 
             if($list['user_exp']){
 
-                $list['user_exp']=$list['user_exp'].'经验';
+                $list['user_exp']=$list['user_exp'].'wap_01424';
             }
 
             if($list['useredu']){
 
-                $list['useredu']=$list['useredu'].'学历';
+                $list['useredu']=$list['useredu'].'wap_com_00301';
             }
 
             if($list['tj']['worknum']>0){
 
-                $list['resume_workjj'] = $list['tj']['workmin'].'-'.$list['tj']['workmax'].'参加过'.$list['tj']['worknum'].'份工作，平均工作时长'.$list['tj']['workavg'].'个月，涉及'.$list['tj']['worktit'].'等岗位。';
+                $list['resume_workjj'] = $list['tj']['workmin'].'-'.$list['tj']['workmax'].'wap_00467'.$list['tj']['worknum'].'common_06349'.$list['tj']['workavg'].'common_06346'.$list['tj']['worktit'].'common_06350';
             }
 
             if($list['tj']['education']){
 
-                $list['resume_edujj'] = $list['tj']['edumin'].'-'.$list['tj']['edumax'].'已完成'.$list['tj']['education'].'段学业。';
+                $list['resume_edujj'] = $list['tj']['edumin'].'-'.$list['tj']['edumax'].'wap_00469'.$list['tj']['education'].'common_06351';
             }
 
 

@@ -12,7 +12,7 @@
                     <div class="com_body" >
                 <div class="com_new_tip">
         
-                        <span class="com_new_tip_h">{yun:}t key='member_com_00040'{/yun}</span>回复请勿输入电话，QQ，邮箱等联系方式
+                        <span class="com_new_tip_h">{yun:}t key='member_com_00040'{/yun}</span>{yun:}t key='member_com_00615'{/yun}
                     </div>
                     <iframe id="supportiframe" name="supportiframe" onload="returnmessage('supportiframe');" style="display:none"></iframe>
                     <table class="com_table mt20">
@@ -22,7 +22,7 @@
                             <th>{yun:}t key='wap_com_00288'{/yun}</th>
                             <th>{yun:}t key='member_user_00061'{/yun}</th>
                             <th>{yun:}t key='wap_user_00162'{/yun}</th>
-                            <th>回复状态 </th>
+                            <th>{yun:}t key='member_com_00616'{/yun} </th>
                             <th>{yun:}t key='member_user_00048'{/yun}</th>
                         </tr>
                         {yun:}/if{/yun}
@@ -52,7 +52,7 @@
                             <td align="center">{yun:}$msg.content|mb_substr:0:20:'utf-8'{/yun}</td>
                             <td align="center">
                                 {yun:}if $msg.reply!=""{/yun}
-                                <a href="javascript:void(0)" onclick="show_reply('{yun:}$msg.reply{/yun}','{yun:}$msg.reply_time|date_format:'%Y-%m-%d %H:%M:%S'{/yun}')" style="color:#999"><span style="font-size:12px;color:#f00; text-decoration:underline; margin-left:5px;">查看我的回复</span></a>
+                                <a href="javascript:void(0)" onclick="show_reply('{yun:}$msg.reply{/yun}','{yun:}$msg.reply_time|date_format:'%Y-%m-%d %H:%M:%S'{/yun}')" style="color:#999"><span style="font-size:12px;color:#f00; text-decoration:underline; margin-left:5px;">{yun:}t key='member_com_00617'{/yun}</span></a>
                                 {yun:}else{/yun}
                                 <span onclick="reply_msg('{yun:}$msg.id{/yun}');" class="com_bth cblue" style="cursor:pointer">{yun:}t key='common_01967'{/yun}TA</span> 
                                 {yun:}/if{/yun}
@@ -64,7 +64,7 @@
                         {yun:}foreachelse{/yun}
                         <tr>
                             <td colspan="6" class="table_end">
-                                <div class="msg_no">亲 , 暂时还没有求职者向贵公司提出疑问哦~</div>
+                                <div class="msg_no">{yun:}t key='member_com_00618'{/yun}</div>
                             </td>
                         </tr>
                         {yun:}/foreach{/yun}
@@ -87,7 +87,7 @@
         $("#msgrtime").html(time);
         var layindex = $.layer({
             type: 1,
-            title: '查看回复',
+            title: "{yun:}t key='member_com_00620'{/yun}",
             closeBtn: [0, true],
             border: [10, 0.3, '#000', true],
             area: ['400px', 'auto'],
@@ -121,7 +121,7 @@
 
     function check_msg() {
         if($.trim($("#content").val()) == "") {
-            layer.msg('回复内容不能为空！', 2, 8);
+            layer.msg("{yun:}t key='wap_00641'{/yun}", 2, 8);
             return false;
         }
     }
@@ -143,10 +143,10 @@
             
                 <div class="user_ask">{yun:}t key='wap_user_00162'{/yun}<span class="user_ask_c"></span>  </div>
                 
-                <div class="user_ask_tit">我的回复：</div>
+                <div class="user_ask_tit">{yun:}t key='wap_01183'{/yun}：</div>
                 <div>
                     <input type="hidden" id="msgid" name="id" value="" />
-                    <textarea id="content" name="reply" class="user_ask_textarea" placeholder="回复信息，请勿输入电话，QQ，邮箱等联系方式"></textarea>
+                    <textarea id="content" name="reply" class="user_ask_textarea" placeholder="{yun:}t key='wap_01188'{/yun}"></textarea>
                 </div>
                 <div class="user_ask_bth">
                     <input type="submit" name='submit' value='{yun:}t key='common.submit'{/yun}' class="user_ask_bth_b"> 

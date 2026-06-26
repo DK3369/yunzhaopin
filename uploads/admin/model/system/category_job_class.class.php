@@ -183,9 +183,9 @@ class category_job_class_controller extends adminCommon
             $categoryM = $this->MODEL('category');
             $return = $categoryM->setPinYin($where, $data);
             if ($return['error'] === 0) {
-                $this->admin_json($return['error'], '职位类别' . $return['msg']);
+                $this->admin_json($return['error'], 'wap_user_00018' . $return['msg']);
             } else {
-                $this->render_json($return['error'], '职位类别' . $return['msg'], array('page' => $return['page']));
+                $this->render_json($return['error'], 'wap_user_00018' . $return['msg'], array('page' => $return['page']));
             }
         }
     }
@@ -214,6 +214,6 @@ class category_job_class_controller extends adminCommon
     {
         $categoryM = $this->MODEL('category');
         $categoryM->clearPinYin('job_class');
-        $this->admin_json(0, '职位类别清空拼音成功');
+        $this->admin_json(0, 'admin_01370');
     }
 }

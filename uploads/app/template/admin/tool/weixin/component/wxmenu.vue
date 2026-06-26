@@ -1,16 +1,16 @@
 <template>
     <div class="moduleElHight">
         <div class="tableDome_tip">
-            <el-alert title="最多创建3个一级菜单，一级菜单名称不多于4个汉字或8个字母。一级菜单下的子菜单最多可创建5个，子菜单名称不多于8个汉字或16个字母。" type="success"
+            <el-alert title="{yun:}t key='admin_tool_00641'{/yun}" type="success"
                       :closable="false">
             </el-alert>
         </div>
         <div class="moduleSeachs">
             <div class="moduleSeachButn">
                 <el-button type="primary" icon="el-icon-document-add" size="mini" @click="navsync"
-                           plain>同步微信菜单
+                           plain>{yun:}t key='admin_tool_00659'{/yun}
                 </el-button>
-                <el-button type="primary" icon="el-icon-document-add" size="mini" @click="addinfo">增加微信菜单</el-button>
+                <el-button type="primary" icon="el-icon-document-add" size="mini" @click="addinfo">{yun:}t key='admin_tool_00660'{/yun}</el-button>
             </div>
         </div>
 
@@ -25,7 +25,7 @@
                 <el-table-column prop="name" label="菜单标题">
                     <template slot-scope="scope">
 				        <span v-if="editname_id==scope.row.id">
-                            <el-input id="inputref" placeholder="请输入内容" v-model="editname" :data-preval="scope.row.name"
+                            <el-input id="inputref" placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="editname" :data-preval="scope.row.name"
                                       data-type="name" @blur="editChange" clearable></el-input>
 				        </span>
                         <div class="moduleElTaPax" v-else>
@@ -44,7 +44,7 @@
                 <el-table-column label="	排序	" width="180">
                     <template slot-scope="scope">
                         <div class="moduleElTaPax" v-if="editsort_id==scope.row.id">
-                            <el-input id="inputref" placeholder="请输入内容" v-model="editsort" :data-preval="scope.row.sort"
+                            <el-input id="inputref" placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="editsort" :data-preval="scope.row.sort"
                                       onKeyUp="this.value=this.value.replace(/[^0-9.]/g,'')" data-type="sort"
                                       @blur="editChange" clearable></el-input>
                         </div>
@@ -58,8 +58,8 @@
                 <el-table-column label="操作" width="130" fixed="right" header-align="center">
                     <template slot-scope="scope">
                         <div class="cz_button">
-                            <el-button size="mini" @click="editinfo(scope.row)">修改</el-button>
-                            <el-button size="mini" type="danger" @click="deleteinfo(scope.row.id)">删除</el-button>
+                            <el-button size="mini" @click="editinfo(scope.row)">{yun:}t key='wap_js_00073'{/yun}</el-button>
+                            <el-button size="mini" type="danger" @click="deleteinfo(scope.row.id)">{yun:}t key='common.delete'{/yun}</el-button>
                         </div>
                     </template>
                 </el-table-column>
@@ -69,19 +69,19 @@
         <div class="otherPageButn">
             <div class="modulePaging">
                 <div class="modulecz modulePagButn">
-                    <el-checkbox v-model="allchecked" @change="allcheckChange">全选</el-checkbox>
-                    <el-button size="mini" @click="deleteAll">批量删除</el-button>
+                    <el-checkbox v-model="allchecked" @change="allcheckChange">{yun:}t key='wap_js_00074'{/yun}</el-checkbox>
+                    <el-button size="mini" @click="deleteAll">{yun:}t key='member_com_00055'{/yun}</el-button>
                 </div>
             </div>
         </div>
         <!--新增微信菜单-->
         <div class="modluDrawer">
-            <el-dialog title="新增微信菜单" :visible.sync="editshow" :with-header="true" :modal-append-to-body="false"
+            <el-dialog title="{yun:}t key='admin_tool_00661'{/yun}" :visible.sync="editshow" :with-header="true" :modal-append-to-body="false"
                        :show-close="true" width="440px">
                 <div>
-                    <div class="wxsettip_small ">菜单标题</div>
+                    <div class="wxsettip_small ">{yun:}t key='admin_tool_00654'{/yun}</div>
                     <el-input v-model="einfo.name"></el-input>
-                    <div class="wxsettip_small ">菜单数组</div>
+                    <div class="wxsettip_small ">{yun:}t key='admin_tool_00653'{/yun}</div>
                     <div class="wxsettip_smallselect ">
                         <el-select v-model="einfo.keyid">
                             <el-option key="0" label="一级菜单" value="0"></el-option>
@@ -89,37 +89,37 @@
                                        :value="item.id"></el-option>
                         </el-select>
                     </div>
-                    <div class="wxsettip_small ">菜单类型</div>
+                    <div class="wxsettip_small ">{yun:}t key='admin_tool_00655'{/yun}</div>
                     <div class="wxsettip_smallselect ">
-                        <el-select v-model="einfo.type" placeholder="请选择">
+                        <el-select v-model="einfo.type" placeholder="{yun:}t key='wap_user_00100'{/yun}">
                             <el-option label="点击事件" value="click"></el-option>
                             <el-option label="链接事件" value="view"></el-option>
                             <el-option label="小程序" value="miniprogram"></el-option>
                         </el-select>
                     </div>
                     <div v-show="einfo.type=='click'">
-                        <div class="wxsettip_small ">菜单关键字</div>
+                        <div class="wxsettip_small ">{yun:}t key='admin_tool_00650'{/yun}</div>
                         <el-input v-model="einfo.key"></el-input>
                     </div>
                     <div v-show="einfo.type=='view'">
-                        <div class="wxsettip_small ">菜单链接</div>
+                        <div class="wxsettip_small ">{yun:}t key='admin_tool_00656'{/yun}</div>
                         <el-input v-model="einfo.url"></el-input>
                     </div>
                     <div v-show="einfo.type=='miniprogram'">
-                        <div class="wxsettip_small ">菜单链接</div>
+                        <div class="wxsettip_small ">{yun:}t key='admin_tool_00656'{/yun}</div>
                         <el-input v-model="einfo.url"></el-input>
-                        <div class="wxsettip_small ">小程序APPID</div>
+                        <div class="wxsettip_small ">{yun:}t key='admin_tool_00648'{/yun}</div>
                         <el-input v-model="einfo.appid"></el-input>
-                        <div class="wxsettip_small ">小程序入口文件</div>
+                        <div class="wxsettip_small ">{yun:}t key='admin_tool_00649'{/yun}</div>
                         <el-input v-model="einfo.apppage"></el-input>
                     </div>
 
-                    <div class="wxsettip_small ">排序</div>
+                    <div class="wxsettip_small ">{yun:}t key='member_com_00022'{/yun}</div>
                     <el-input v-model="einfo.sort"></el-input>
                 </div>
                 <span slot="footer" class="dialog-footer">
-					<el-button @click="editshow = false">取 消</el-button>
-					<el-button type="primary" @click="saveinfo" :loading="post_loading">确 定</el-button>
+					<el-button @click="editshow = false">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
+					<el-button type="primary" @click="saveinfo" :loading="post_loading">{yun:}t key='wap_com_00019'{/yun}</el-button>
 				</span>
             </el-dialog>
         </div>
@@ -131,7 +131,7 @@ var timer = null;
 module.exports = {
     data: function () {
         return {
-            emptytext: window.yunAdminT('暂无数据'),
+            emptytext: window.yunAdminT("{yun:}t key='wap_js_00113'{/yun}"),
             tableData: [],
             list_loading: false,
             choosedata: [],
@@ -156,14 +156,14 @@ module.exports = {
             let params = {};
 
             this.list_loading = true;
-            that.emptytext = window.yunAdminT('数据加载中');
+            that.emptytext = window.yunAdminT("{yun:}t key='admin_user_weipin_00026'{/yun}");
             httpPost('m=tool&c=weixinmenu&a=wxnav', params).then((result) => {
                 this.list_loading = false;
                 var res = result.data
                 if (res.error == 0) {
                     that.tableData = res.data.list;
                     if (that.tableData.length === 0) {
-                        that.emptytext = window.yunAdminT('暂无数据');
+                        that.emptytext = window.yunAdminT("{yun:}t key='wap_js_00113'{/yun}");
                     }
                 }
             }).catch(function (e) {
@@ -195,7 +195,7 @@ module.exports = {
                     idarr.push(this.choosedata[i].id);
                 }
             } else {
-                message.error(window.yunAdminT('请选择要删除的数据'));
+                message.error(window.yunAdminT("{yun:}t key='admin_user_weipin_00005'{/yun}"));
                 return;
             }
             var params = {
@@ -249,15 +249,15 @@ module.exports = {
             var that = this,
                 param = {};
             if (this.einfo.name == '') {
-                message.warning(window.yunAdminT('菜单名称不能为空！'));
+                message.warning(window.yunAdminT("{yun:}t key='admin_tool_00646'{/yun}"));
                 return;
             }
             if (this.einfo.keyid != '0' && this.einfo.type == 'click' && this.einfo.key == '') {
-                message.warning(window.yunAdminT('点击事件，菜单关键字不得为空！'));
+                message.warning(window.yunAdminT("{yun:}t key='admin_tool_00642'{/yun}"));
                 return;
             }
             if (this.einfo.keyid != '0' && this.einfo.type == 'view' && this.einfo.url == '') {
-                message.warning(window.yunAdminT('链接事件，菜单链接不得为空！'));
+                message.warning(window.yunAdminT("{yun:}t key='admin_tool_00644'{/yun}"));
                 return;
             }
 
@@ -281,19 +281,19 @@ module.exports = {
                 var res = result.data;
 
                 if (res.error == 1) {
-                    message.error(window.yunAdminT('请按要求填写信息！'));
+                    message.error(window.yunAdminT("{yun:}t key='admin_tool_00647'{/yun}"));
                     return false;
                 } else if (res.error == 2) {
-                    message.error(window.yunAdminT('相同名称或关键字已存在！'));
+                    message.error(window.yunAdminT("{yun:}t key='admin_tool_00645'{/yun}"));
                     return false;
                 } else if (res.error == 3) {
-                    message.success(window.yunAdminT('操作成功！'), () => {
+                    message.success(window.yunAdminT("{yun:}t key='wap_js_00159'{/yun}"), () => {
                         that.editshow = false;
                         that.getList();
                     });
                     return false;
                 } else if (res.error == 4) {
-                    message.success(window.yunAdminT('操作成功！'), () => {
+                    message.success(window.yunAdminT("{yun:}t key='wap_js_00159'{/yun}"), () => {
                         that.editshow = false;
                         that.getList();
                     });
@@ -336,7 +336,7 @@ module.exports = {
             } else {
                 if (type == 'name' && val == '') {
                     this[`edit${type}_id`] = '';
-                    message.error(window.yunAdminT('类别名称不能为空！'));
+                    message.error(window.yunAdminT("{yun:}t key='admin_00208'{/yun}"));
                     return;
                 }
                 var param = {id: id};
@@ -353,7 +353,7 @@ module.exports = {
 
                     that[`edit${type}_id`] = '';
                     that[`edit${type}`] = '';
-                    message.success(window.yunAdminT('修改成功'), function () {
+                    message.success(window.yunAdminT("{yun:}t key='admin_user_company_00208'{/yun}"), function () {
                         that.getList()
                     });
                 }).catch(function (e) {
@@ -376,7 +376,7 @@ module.exports = {
                         message.error(res.msg);
                     }
                 })
-            }, window.yunAdminT('确定要同步菜单至微信服务器？'));
+            }, window.yunAdminT("{yun:}t key='admin_tool_00643'{/yun}"));
         },
         doLayout(){
             if (this.$refs.table) {

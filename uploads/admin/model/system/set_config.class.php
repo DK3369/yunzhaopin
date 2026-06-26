@@ -122,10 +122,10 @@ class set_config_controller extends adminCommon{
      */
     function save_logo_action(){
         if (!$_POST['waterconfig']) {
-            $this->render_json(1,'参数错误,请重试');
+            $this->render_json(1,yun_at('common_01237'));
         }
         $this->web_config();
-        $this->render_json(0,'操作成功');
+        $this->render_json(0,yun_at('wap_user_00264'));
     }
 
     // 保存
@@ -189,7 +189,7 @@ class set_config_controller extends adminCommon{
         if (!empty($_POST['sy_weburl'])) {
             $weburl = trim($_POST['sy_weburl']);
             if (stripos($weburl, 'http') === false){
-                $this->render_json('1','网站地址缺少http://或https://');
+                $this->render_json('1',yun_at('admin_system_00038'));
             }
             // 保存域名时，相关的内容要重新保存，防止域名或http头改变后，有关功能异常
             if (!empty($this->config['map_key'])){
@@ -220,9 +220,9 @@ class set_config_controller extends adminCommon{
         // 判断验证字符
         if ($_POST['code_strlength'] < 5) {
             $this->web_config();
-            $this->render_json('0','网站配置设置成功!');
+            $this->render_json('0',yun_auto_t('网站配置设置成功!'));
         } else {
-            $this->render_json('1','验证码字符数不要大于4!');
+            $this->render_json('1',yun_at('admin_system_00039'));
         }
     }
 
@@ -236,7 +236,7 @@ class set_config_controller extends adminCommon{
             $newModel[$key]['value'] = $value;
             $newModel[$key]['cache'] = $cache_config['sy_' . $key . '_cache'];
         }
-        $this->render_json(0,'操作成功',['newModel'=>$newModel,'sy_index_cache'=>$cache_config['sy_index_cache']]);
+        $this->render_json(0,yun_at('wap_user_00264'),['newModel'=>$newModel,'sy_index_cache'=>$cache_config['sy_index_cache']]);
 
     }
 
@@ -255,7 +255,7 @@ class set_config_controller extends adminCommon{
 
         made_web(PLUS_PATH . 'cache.config.php', ArrayToString($config_new), 'cache_config');
 
-        $this->render_json(0, '操作成功');
+        $this->render_json(0, yun_at('wap_user_00264'));
 
     }
 

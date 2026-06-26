@@ -121,12 +121,12 @@ class set_navigation_controller extends adminCommon
                 $this->cache_action();
                 $this->admin_json(0, "网站导航(ID:" . $_POST['id'] . ")修改成功");
             } else {
-                $this->render_json(1, '网站导航修改失败');
+                $this->render_json(1, yun_at('admin_01389'));
             }
         } else {
             $nav = $navigationM->getNav(array('name' => $_POST['name'], 'nid' => $_POST['nid']));
             if ($nav) {
-                $this->render_json(1, '已经存在此导航');
+                $this->render_json(1, yun_at('admin_neirong_00021'));
             } else {
                 $return = $navigationM->addNav($postData);
 
@@ -139,7 +139,7 @@ class set_navigation_controller extends adminCommon
                     $this->cache_action();
                     $this->admin_json(0, "网站导航(ID:" . $return . ")添加成功");
                 } else {
-                    $this->render_json(1, '网站导航添加失败');
+                    $this->render_json(1, yun_at('admin_01390'));
                 }
             }
         }
@@ -182,7 +182,7 @@ class set_navigation_controller extends adminCommon
                 $this->cache_action();
                 $this->admin_json(0, "导航(ID:" . @implode(',', $_POST['del']) . ")删除成功");
             } else {
-                $this->render_json(1, '请选择您要删除的信息');
+                $this->render_json(1, yun_at('common_01063'));
             }
         }
         //删除
@@ -201,7 +201,7 @@ class set_navigation_controller extends adminCommon
             if ($result) {
                 $this->admin_json(0, '导航(ID:' . $_POST['id'] . ')删除成功');
             } else {
-                $this->render_json(1, '导航删除失败');
+                $this->render_json(1, yun_at('model_00033'));
             }
         }
     }
@@ -218,14 +218,14 @@ class set_navigation_controller extends adminCommon
         if ($_POST['type'] == 'display') {
             $msg = "导航是否显示(ID:" . $_POST['id'] . ")设置成功";
         } else {
-            $msg = "导航是否新窗口打开(ID:" . $_POST['id'] . ")设置成功";
+            $msg = 'admin_system_00048' . $_POST['id'] . ")设置成功";
         }
 
         if ($return) {
             $this->cache_action();
             $this->admin_json(0, $msg);
         } else {
-            $this->render_json(1, '导航设置失败');
+            $this->render_json(1, yun_at('admin_01388'));
         }
     }
 
@@ -242,9 +242,9 @@ class set_navigation_controller extends adminCommon
         $return = $navigationM->upNav($postData, array("id" => $_POST['id']));
         if ($return) {
             $this->cache_action();
-            $this->admin_json(0, '导航排序（ID:' . $_POST['id'] . '）修改成功');
+            $this->admin_json(0, '导航排序（ID:' . $_POST['id'] . 'admin_01391');
         } else {
-            $this->render_json(1, '导航排序修改失败');
+            $this->render_json(1, yun_at('admin_01392'));
         }
     }
 
@@ -270,19 +270,19 @@ class set_navigation_controller extends adminCommon
         $navigationM = $this->MODEL('navigation');
 
         if (!isset($_POST['typename']) || trim($_POST['typename']) === '') {
-            $this->render_json(1, '请填写分类名称');
+            $this->render_json(1, yun_at('admin_01393'));
         }
 
         $navtype = $navigationM->getNavType(array('typename' => $_POST['typename']));
         if ($navtype) {
-            $this->render_json(1, '导航类别已存在');
+            $this->render_json(1, yun_at('admin_system_00049'));
         } else {
             $nbid = $navigationM->addNavType(array('typename' => $_POST['typename']));
             if ($nbid) {
                 $this->cache_action();
                 $this->admin_json(0, "导航类别(ID:" . $nbid . ")添加成功");
             } else {
-                $this->render_json(1, '导航类别添加失败');
+                $this->render_json(1, yun_at('admin_01394'));
             }
         }
     }
@@ -293,7 +293,7 @@ class set_navigation_controller extends adminCommon
         $navigationM = $this->MODEL('navigation');
 
         if (!isset($_POST['typename']) || trim($_POST['typename']) === '') {
-            $this->render_json(1, '请填写分类名称');
+            $this->render_json(1, yun_at('admin_01393'));
         }
 
         $return = $navigationM->upNavType(array('id' => $_POST['id']), array('typename' => trim($_POST['typename'])));
@@ -302,7 +302,7 @@ class set_navigation_controller extends adminCommon
             $this->cache_action();
             $this->admin_json(0, "导航类别(ID:" . $_POST['id'] . ")修改成功");
         } else {
-            $this->render_json(1, '导航类别修改失败');
+            $this->render_json(1, yun_at('admin_01395'));
         }
     }
 
@@ -314,7 +314,7 @@ class set_navigation_controller extends adminCommon
         $articleM = $this->MODEL('article');
 
         if (empty($_POST['id'])) {
-            $this->render_json(1, '非法操作');
+            $this->render_json(1, yun_at('member_com_00320'));
         }
 
         $return = $navigationM->delNavType(array('id' => $_POST['id']));
@@ -343,7 +343,7 @@ class set_navigation_controller extends adminCommon
             $this->cache_action();
             $this->admin_json(0, "导航类别(ID:" . $_POST['id'] . ")删除成功");
         } else {
-            $this->render_json(1, '导航类别删除失败');
+            $this->render_json(1, yun_at('admin_01396'));
         }
     }
 }

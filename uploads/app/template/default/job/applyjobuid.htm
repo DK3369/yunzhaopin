@@ -15,7 +15,7 @@
 			<div id="applydiv">
 				<div class="yun_reg_BasicInfo" style="overflow:hidden">
 					<div class="yun_reg_BasicInfo_h1">
-						<span class="yun_reg_BasicInfo_h1_span ">申请职位需要先创建一份简历哦，如果已有简历，可直接登录</span>
+						<span class="yun_reg_BasicInfo_h1_span ">{yun:}t key='common_02363'{/yun}</span>
 						<a href="javascript:void(0);" onclick="OnLogin();" class="yun_reg_BasicInfo_loginbth">{yun:}t key='common.login'{/yun}</a>
 					</div>
 					<div class="yun_reg_BasicInfo_box">
@@ -66,7 +66,7 @@
 								<span class="yun_reg_BasicInfo_s"><i class="yun_reg_BasicInfo_i">*</i>{yun:}t key='wap_user_00240'{/yun}：</span>
 								<div class="yun_reg_BasicInfo_l_s_box ">
 									<select name="exp" id="expid">
-										<option value="">请选择工作经验</option>
+										<option value="">{yun:}t key='wap_00937'{/yun}</option>
 										{yun:}foreach from=$userdata.user_word item=v{/yun}
 										<option value="{yun:}$v{/yun}">{yun:}$userclass_name[$v]{/yun}</option>
 										{yun:}/foreach{/yun}
@@ -83,7 +83,7 @@
 							</div>
 							<div class="yun_reg_BasicInfo_tit m10"><span class="">{yun:}t key='member_user_00059'{/yun}</span></div>
 							<div class="yun_reg_BasicInfo_list">
-								<span class="yun_reg_BasicInfo_s"><i class="yun_reg_BasicInfo_i">*</i><em>登录密码：</em></span>
+								<span class="yun_reg_BasicInfo_s"><i class="yun_reg_BasicInfo_i">*</i><em>{yun:}t key='wap_00702'{/yun}：</em></span>
 								<span>
 									<input type="password" name="password" placeholder="{yun:}t key='admin_00245'{/yun}6-20{yun:}t key='common_02053'{/yun}{yun:}if $config.reg_pw_sp=='1' || $config.reg_pw_num=='1' || $config.reg_pw_zm=='1'{/yun}{yun:}if $config.reg_pw_num=='1'{/yun} {yun:}t key='common_01997'{/yun}{yun:}/if{/yun}{yun:}if $config.reg_pw_zm=='1'{/yun} {yun:}t key='common_01973'{/yun}{yun:}/if{/yun}{yun:}if $config.reg_pw_sp=='1'{/yun} {yun:}t key='common_01697'{/yun}@!#.$-_{yun:}/if{/yun}{yun:}/if{/yun}" class="yun_reg_BasicInfo_text" id="reg_password" onblur="pwdCheck();"/>
 								</span>
@@ -106,9 +106,9 @@
 							{yun:}/if{/yun}
 							{yun:}if $config.sy_msg_isopen==1 && $config.reg_real_name_check==1 && $config.sy_msg_regcode==1{/yun}
 							<div class="yun_reg_BasicInfo_list">
-								<span class="yun_reg_BasicInfo_s"><i class="yun_reg_BasicInfo_i">*</i>手机验证：</span>
+								<span class="yun_reg_BasicInfo_s"><i class="yun_reg_BasicInfo_i">*</i>{yun:}t key='member_user_00515'{/yun}：</span>
 								<input type="text" name="authcode" id="authcode" class="yun_reg_BasicInfo_text yun_reg_BasicInfo_text_w155" />
-								<a href="javascript:void(0);" class="login_m_send" id="send_msg_tips" onclick="send_msg('{yun:}url m=ajax c=regcodeks{/yun}');">发送验证码</a>
+								<a href="javascript:void(0);" class="login_m_send" id="send_msg_tips" onclick="send_msg('{yun:}url m=ajax c=regcodeks{/yun}');">{yun:}t key='common_02365'{/yun}</a>
 							</div>
 							{yun:}/if{/yun}
 							<div class="yun_reg_BasicInfo_bth_box" style="{yun:}if $config.code_kind > 2{/yun}bottom:50px;{yun:}/if{/yun}"> 
@@ -118,7 +118,7 @@
 								<input type='hidden' id='resume_pro' value='{yun:}$config.resume_create_project{/yun}'>
 								<input type="button" value="{yun:}t key='common_01878'{/yun}" class="yun_reg_BasicInfo_bth" onclick="nextaddresume()" />
 								{yun:}else{/yun}
-								<input type="submit" value="保存并投递" class="yun_reg_BasicInfo_bth" />
+								<input type="submit" value="{yun:}t key='common_02370'{/yun}" class="yun_reg_BasicInfo_bth" />
 								{yun:}/if{/yun}
 							</div>
 						</div>
@@ -131,12 +131,12 @@
 					<div class="yun_reg_BasicInfo_box" style="height:560px;">
 						<div class="yun_reg_BasicInfo_left">
 							<div class="yun_reg_BasicInfo_h1">
-								<span class="yun_reg_BasicInfo_h1_span ">为了提高求职成功率，请完善以下信息！</span>
+								<span class="yun_reg_BasicInfo_h1_span ">{yun:}t key='common_02366'{/yun}</span>
 							</div>
 							{yun:}if $config.resume_create_exp=='1'{/yun}
-							<!--最近一份工作-->
+							<!--{yun:}t key='common_02367'{/yun}-->
 							<div class="yun_reg_BasicInfo_tit">
-								<span class="">最近一份工作</span>
+								<span class="">{yun:}t key='common_02367'{/yun}</span>
 								<span id="isexpshow" style="top: -5px;left:50px; position:relative;display:none">
 									<input type="radio" name="iscreateexp" checked="checked" id="iscreateexp1" lay-filter="iscreateexp" value="1" title="{yun:}t key='common_02087'{/yun}">
 									<input type="radio" name="iscreateexp" id="iscreateexp2" lay-filter="iscreateexp" value="2" title="{yun:}t key='common_02082'{/yun}">
@@ -161,7 +161,7 @@
 								</div>
 								<div class="yun_reg_BasicInfo_list">
 									<span class="yun_reg_BasicInfo_s"><i class="yun_reg_BasicInfo_i">*</i>{yun:}t key='wap_user_00086'{/yun}：</span>
-									<textarea class="yun_reg_BasicInfo_listtextarea" id="workcontent" name="workcontent" placeholder="请对工作内容进行简单阐述~"></textarea>
+									<textarea class="yun_reg_BasicInfo_listtextarea" id="workcontent" name="workcontent" placeholder="{yun:}t key='common_02371'{/yun}"></textarea>
 								</div>
 							</div>
 							{yun:}/if{/yun}
@@ -201,15 +201,15 @@
 								</div>
 								<div class="yun_reg_BasicInfo_list">
 									<span class="yun_reg_BasicInfo_s">{yun:}t key='admin_user_00224'{/yun}：</span>
-									<input type="text" class="yun_reg_BasicInfo_text" id="eduspec" name="eduspec" value="" placeholder="请填写所学专业">
+									<input type="text" class="yun_reg_BasicInfo_text" id="eduspec" name="eduspec" value="" placeholder="{yun:}t key='member_user_00307'{/yun}">
 								</div>
 							</div>
 							<!---end--->
 							{yun:}/if{/yun}
 							{yun:}if $config.resume_create_project=='1'{/yun}
-							<!--        近期项目-->
+							<!--        {yun:}t key='common_02368'{/yun}-->
 							<div class="yun_reg_BasicInfo_tit">
-								<span class="">近期项目</span>
+								<span class="">{yun:}t key='common_02368'{/yun}</span>
 								<span id="isproshow" style="top: -5px;left:50px; position:relative;display:none">
 									<input type="radio" name="iscreatepro" checked="checked" id="iscreatepro1" lay-filter="iscreatepro" value="1" title="{yun:}t key='common_02087'{/yun}">
 									<input type="radio" name="iscreatepro" id="iscreatepro2" lay-filter="iscreatepro" value="2" title="{yun:}t key='common_02082'{/yun}">
@@ -234,7 +234,7 @@
 								</div>
 								<div class="yun_reg_BasicInfo_list">
 									<span class="yun_reg_BasicInfo_s"><i class="yun_reg_BasicInfo_i">*</i>{yun:}t key='wap_user_00098'{/yun}：</span>
-									<textarea class="yun_reg_BasicInfo_listtextarea" id="procontent" name="procontent" placeholder="请对工作内容进行简单阐述~"></textarea>
+									<textarea class="yun_reg_BasicInfo_listtextarea" id="procontent" name="procontent" placeholder="{yun:}t key='common_02371'{/yun}"></textarea>
 								</div>
 							</div>
 							{yun:}/if{/yun}
@@ -243,7 +243,7 @@
 						</div>
 						<div class="yun_reg_BasicInfo_towbth_box">
 							<input name="jobid" type="hidden" value="{yun:}$smarty.get.jobid{/yun}" />
-							<input type="submit" value="保存并投递" class="yun_reg_BasicInfo_bth" />
+							<input type="submit" value="{yun:}t key='common_02370'{/yun}" class="yun_reg_BasicInfo_bth" />
 							<input type="button" value="{yun:}t key='wap_com_00278'{/yun}>" class="" onclick="addresumereturn()" style="border:none; background:#fff;color:#a6a3a3;; margin-left:50px;">
 						</div>
 					</div>

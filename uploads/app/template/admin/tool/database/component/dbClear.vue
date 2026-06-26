@@ -1,53 +1,53 @@
 <template>
     <div class="moduleElHight">
         <div class="tableDome_tip">
-            <el-alert title="定期清理数据表碎片可以提升数据库的查询速度。从而提升用户体验度，站长可自行选择老数据清理。" type="success" :closable="false"></el-alert>
+            <el-alert title="{yun:}t key='admin_tool_00191'{/yun}" type="success" :closable="false"></el-alert>
         </div>
         <div class=" moduleTable">
 
             <table class="tableVue">
                 <thead>
                 <tr align="left">
-                    <th width="100">类目</th>
-                    <th>状态</th>
+                    <th width="100">{yun:}t key='admin_tool_00192'{/yun}</th>
+                    <th>{yun:}t key='member_user_00181'{/yun}</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr>
                     <td>
-                        <div class="TableTite">清理内容</div>
+                        <div class="TableTite">{yun:}t key='admin_tool_00193'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableButn">
                             <el-checkbox-group v-model="clearTable">
-                                <el-checkbox label="userid_job">职位申请记录</el-checkbox>
-                                <el-checkbox label="userid_msg">面试邀请记录</el-checkbox>
-                                <el-checkbox label="down_resume">下载简历记录</el-checkbox>
-                                <el-checkbox label="talent_pool">收藏简历记录</el-checkbox>
-                                <el-checkbox label="look_resume">浏览简历记录</el-checkbox>
-                                <el-checkbox label="look_job">浏览职位记录</el-checkbox>
-                                <el-checkbox label="email_msg">邮件发送记录</el-checkbox>
-                                <el-checkbox label="moblie_msg">短信发送记录</el-checkbox>
-                                <el-checkbox label="member_log">会员日志记录</el-checkbox>
-                                <el-checkbox label="sysmsg">系统消息</el-checkbox>
-                                <el-checkbox label="recycle">回收站</el-checkbox>
+                                <el-checkbox label="userid_job">{yun:}t key='admin_user_company_00352'{/yun}</el-checkbox>
+                                <el-checkbox label="userid_msg">{yun:}t key='admin_tool_00195'{/yun}</el-checkbox>
+                                <el-checkbox label="down_resume">{yun:}t key='admin_tool_00196'{/yun}</el-checkbox>
+                                <el-checkbox label="talent_pool">{yun:}t key='admin_tool_00197'{/yun}</el-checkbox>
+                                <el-checkbox label="look_resume">{yun:}t key='admin_tool_00198'{/yun}</el-checkbox>
+                                <el-checkbox label="look_job">{yun:}t key='admin_tool_00199'{/yun}</el-checkbox>
+                                <el-checkbox label="email_msg">{yun:}t key='admin_tool_00200'{/yun}</el-checkbox>
+                                <el-checkbox label="moblie_msg">{yun:}t key='admin_tool_00201'{/yun}</el-checkbox>
+                                <el-checkbox label="member_log">{yun:}t key='admin_tool_00202'{/yun}</el-checkbox>
+                                <el-checkbox label="sysmsg">{yun:}t key='wap_user_00363'{/yun}</el-checkbox>
+                                <el-checkbox label="recycle">{yun:}t key='admin_tool_00190'{/yun}</el-checkbox>
                             </el-checkbox-group>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">清理时间</div>
+                        <div class="TableTite">{yun:}t key='admin_tool_00194'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
                             <el-radio-group v-model="clearTime">
-                                <el-radio label="730">两年前</el-radio>
-                                <el-radio label="360">一年前</el-radio>
-                                <el-radio label="180">半年前</el-radio>
-                                <el-radio label="90">三个月前</el-radio>
-                                <el-radio label="60">两个月前</el-radio>
-                                <el-radio label="30">一个月前</el-radio>
+                                <el-radio label="730">{yun:}t key='admin_tool_00203'{/yun}</el-radio>
+                                <el-radio label="360">{yun:}t key='admin_tool_00204'{/yun}</el-radio>
+                                <el-radio label="180">{yun:}t key='admin_tool_00205'{/yun}</el-radio>
+                                <el-radio label="90">{yun:}t key='admin_tool_00206'{/yun}</el-radio>
+                                <el-radio label="60">{yun:}t key='admin_tool_00207'{/yun}</el-radio>
+                                <el-radio label="30">{yun:}t key='admin_tool_00208'{/yun}</el-radio>
                             </el-radio-group>
                         </div>
                     </td>
@@ -55,7 +55,7 @@
                 </tbody>
             </table>
             <div class="setBasicButn" style="border: none;">
-                <el-button type="primary" size="medium" @click="checkData">提交</el-button>
+                <el-button type="primary" size="medium" @click="checkData">{yun:}t key='common.submit'{/yun}</el-button>
             </div>
         </div>
     </div>
@@ -77,11 +77,11 @@
                 let that = this;
                 let params = {};
                 if (that.clearTable.length == 0){
-                    message.error(window.yunAdminT('请选择需要清理的数据表！'));
+                    message.error(window.yunAdminT("{yun:}t key='admin_tool_00209'{/yun}"));
                     return false;
                 }
                 if (that.clearTime == 0){
-                    message.error(window.yunAdminT('请选择需要清理时间！'));
+                    message.error(window.yunAdminT("{yun:}t key='admin_tool_00210'{/yun}"));
                     return false;
                 }
 
@@ -91,14 +91,14 @@
 
                     that.clearTable.forEach(function (item) {
 
-                        console.log(item + window.yunAdminT('数据清理中'));
+                        console.log(item + window.yunAdminT("{yun:}t key='admin_tool_00211'{/yun}"));
 
                         params.clearTable = item;
                         that.clearData(params);
 
-                        console.log(item + window.yunAdminT('数据清除完成'));
+                        console.log(item + window.yunAdminT("{yun:}t key='admin_tool_00212'{/yun}"));
                     })
-                    message.success(window.yunAdminT('数据清除完成'), function () {
+                    message.success(window.yunAdminT("{yun:}t key='admin_tool_00212'{/yun}"), function () {
 
                         that.clearTable = [];
                         that.clearTime = 0;

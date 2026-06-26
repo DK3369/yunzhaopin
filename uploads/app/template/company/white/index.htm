@@ -28,12 +28,12 @@
                 <div class="header_cominfo_top"><h1 class="header_cominfo_name" style="display:inline-block">
                     {yun:}$com.name{/yun}</h1>
                     <div class="header_combox_rz">
-                        {yun:}if $com.email_status=="1"{/yun} <img src="{yun:}$com_style{/yun}images/rz_yx2.png" alt="邮箱未认证" title="{yun:}t key='admin_user_00286'{/yun}" class="png"/>
-                        {yun:}else{/yun} <img src="{yun:}$com_style{/yun}images/rz_yx.png" alt="邮箱未认证" title="邮箱未认证" class="png"/> {yun:}/if{/yun}
-                        {yun:}if $com.moblie_status=="1"{/yun} <img src="{yun:}$com_style{/yun}images/rz_sj2.png" alt="手机未认证" title="{yun:}t key='member_user_00117'{/yun}" class="png"/>
-                        {yun:}else{/yun} <img src="{yun:}$com_style{/yun}images/rz_sj.png" alt="手机未认证" title="手机未认证" class="png"/> {yun:}/if{/yun}
-                        {yun:}if $com.yyzz_status=="1"{/yun} <img src="{yun:}$com_style{/yun}images/rz_zz2.png" alt="执照未认证" title="执照已认证" class="png"/>
-                        {yun:}else{/yun} <img src="{yun:}$com_style{/yun}images/rz_zz.png" alt="执照未认证" title="执照未认证" class="png"/> {yun:}/if{/yun}
+                        {yun:}if $com.email_status=="1"{/yun} <img src="{yun:}$com_style{/yun}images/rz_yx2.png" alt="{yun:}t key='wap_01246'{/yun}" title="{yun:}t key='admin_user_00286'{/yun}" class="png"/>
+                        {yun:}else{/yun} <img src="{yun:}$com_style{/yun}images/rz_yx.png" alt="{yun:}t key='wap_01246'{/yun}" title="{yun:}t key='wap_01246'{/yun}" class="png"/> {yun:}/if{/yun}
+                        {yun:}if $com.moblie_status=="1"{/yun} <img src="{yun:}$com_style{/yun}images/rz_sj2.png" alt="{yun:}t key='wap_01245'{/yun}" title="{yun:}t key='member_user_00117'{/yun}" class="png"/>
+                        {yun:}else{/yun} <img src="{yun:}$com_style{/yun}images/rz_sj.png" alt="{yun:}t key='wap_01245'{/yun}" title="{yun:}t key='wap_01245'{/yun}" class="png"/> {yun:}/if{/yun}
+                        {yun:}if $com.yyzz_status=="1"{/yun} <img src="{yun:}$com_style{/yun}images/rz_zz2.png" alt="{yun:}t key='common_02517'{/yun}" title="{yun:}t key='common_02518'{/yun}" class="png"/>
+                        {yun:}else{/yun} <img src="{yun:}$com_style{/yun}images/rz_zz.png" alt="{yun:}t key='common_02517'{/yun}" title="{yun:}t key='common_02517'{/yun}" class="png"/> {yun:}/if{/yun}
                     </div>
                     {yun:}if $ComMember.source==6 && $ComMember.claim==0 && $ComMember.email!=""{/yun}
                     <a href="javascript:claim('{yun:}url m=ajax c=claim uid=$com.uid{/yun}');">{yun:}t key='resume_00011'{/yun}</a>
@@ -126,7 +126,7 @@
                             <li><div class="clearfix"><span>{yun:}t key='wap_00035'{/yun}</span><em id="regCapital"></em></div></li>
                         </ul>
                         <dl class="basicMsgList">
-                            <dt>注册地址：</dt>
+                            <dt>{yun:}t key='wap_01574'{/yun}</dt>
                             <dd id="regLocation"></dd>
                         </dl>
                         <dl class="basicMsgList mt20">
@@ -134,7 +134,7 @@
                             <dd id="businessScope"></dd>
                         </dl>
                         <div class="qxb clearfix">
-                            <div class="qxb_tg"><span>以上内容由</span>
+                            <div class="qxb_tg"><span>{yun:}t key='common_02513'{/yun}</span>
                                 <div class="hxb"><a href="" class="tianyancha" id="tianyancha" target='_blank'></a></div>
                                 <span>{yun:}t key='company_00022'{/yun}</span>
                             </div>
@@ -249,7 +249,7 @@
                     {yun:}/foreach{/yun}
                 </div>
                 {yun:}else{/yun}
-                <div class="com_msg_no">暂无企业产品</div>
+                <div class="com_msg_no">{yun:}t key='common_02525'{/yun}</div>
                 {yun:}/if{/yun}
             </div>
 
@@ -367,8 +367,8 @@
             {yun:}elseif $config.com_link_look == 2 && ($com.linkphone || $com.linktel){/yun}
             <!--扫码查看联系方式-->
             <div class="firm_login">
-                <div class="firm_login_con"><span>微信扫码查看联系方式</span>
-                    <a href="javascript:void(0)" onclick="wxscanshowtel('{yun:}$com.uid{/yun}')" class="firm_login_zc">扫码查看</a>
+                <div class="firm_login_con"><span>{yun:}t key='common_02477'{/yun}</span>
+                    <a href="javascript:void(0)" onclick="wxscanshowtel('{yun:}$com.uid{/yun}')" class="firm_login_zc">{yun:}t key='common_02514'{/yun}</a>
                 </div>
             </div>
             {yun:}/if{/yun}
@@ -563,7 +563,7 @@
         $('#tel_wxqrcode').html('<img src="index.php?c=telQrcode&id=' + id + '" width="120" height="120">');
         $.layer({
             type: 1,
-            title: '微信扫码查看联系方式',
+            title: "{yun:}t key='common_02477'{/yun}",
             closeBtn: [0, true],
             offset: ['100px', ''],
             border: [10, 0.3, '#000', true],

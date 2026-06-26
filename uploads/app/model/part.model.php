@@ -133,7 +133,7 @@ class part_model extends model
                 if(!empty($Info['edate'])){
                     $Info['edate_n']        =   date('Y-m-d',$Info['edate']);
                 }else{
-                    $Info['edate_n']        =   '长期招聘';
+                    $Info['edate_n']        =   yun_at('wap_js_00135');
                 }
                 
                 // 微信小程序处理描述内容
@@ -254,7 +254,7 @@ class part_model extends model
             if (!empty($id)) {
 
                 $nid            =   $this -> update_once('partjob', $data, $getWhere);
-                $return['msg']  =   '兼职职位修改';
+                $return['msg']  =   yun_at('common_06546');
                 $type           =   '2';
 
             } else {
@@ -283,7 +283,7 @@ class part_model extends model
                     
                     $warningM -> warning(1, $uid);//预警提醒
                 }
-                $return['msg']      =   '兼职职位添加';
+                $return['msg']      =   yun_at('common_06547');
                 $type               =   '1';
             }
             
@@ -300,15 +300,15 @@ class part_model extends model
                 $return['errcode'] = 9;
                 if (intval($postData['state']) == 0) {// 待审核
 
-                    $return['msg']  =    $return['msg'].'成功，等待审核！';
+                    $return['msg']  =    $return['msg'].'common_06548';
                 } else {
                     
-                    $return['msg']  =    $return['msg'].'成功！';
+                    $return['msg']  =    $return['msg'].'wap_js_00104';
                 }
             } else {
 
                 $return['errcode']  =   8;
-                $return['msg']      =   $return['msg'] . '失败！';
+                $return['msg']      =   $return['msg'] . 'wap_js_00103';
             }
             return $return;
         }
@@ -404,19 +404,19 @@ class part_model extends model
 
             if ($v['edate'] == 0) {
 
-                $List[$k]['end_n']          =   '长期招聘';
+                $List[$k]['end_n']          =   yun_at('wap_js_00135');
             } elseif ($v['edate'] < time()) {
 
-                $List[$k]['end_n']          =   '已到期';
+                $List[$k]['end_n']          =   yun_at('wap_com_00319');
 
                 $List[$k]['edate_n']        =   formatTime($v['edate']);
 
             } elseif ($v['edate'] < (time() + 3 * 86400)) {
 
-                $List[$k]['end_n']          =   '3天内到期';
+                $List[$k]['end_n']          =   yun_at('common_01566');
             } elseif ($v['edate'] < (time() + 7 * 86400)) {
 
-                $List[$k]['end_n']          =   '7天内到期';
+                $List[$k]['end_n']          =   yun_at('common_01568');
             } else {
 
                 $List[$k]['end_n']          =   date('Y-m-d', $v['edate']);
@@ -518,12 +518,12 @@ class part_model extends model
                 
             }
 
-            $return['msg']      =   '兼职(ID:' . $id . ')';
+            $return['msg']      =   yun_at('model_00050') . $id . ')';
             $return['errcode']  =   $return['id'] ? 9 : 8;
-            $return['msg']      =   $return['id'] ? $return['msg'] . '删除成功！' : $return['msg'] . '删除失败！';
+            $return['msg']      =   $return['id'] ? $return['msg'] . 'admin_user_00187' : $return['msg'] . 'admin_user_00186';
         } else {
 
-            $return['msg']      =   '请选择您要删除的兼职！';
+            $return['msg']      =   yun_at('common_00920');
             $return['errcode']  =   8;
         }
 
@@ -552,9 +552,9 @@ class part_model extends model
 
                         $return['id']       =   $this -> upInfo(array('rec_time' => 0), array('id' => array('in', pylode(',', $ids))));
 
-                        $return['msg']      =   '取消兼职推荐(ID:' . pylode(',', $ids) . ')';
+                        $return['msg']      =   yun_auto_t('取消兼职推荐(ID:') . pylode(',', $ids) . ')';
 
-                        $return['msg']      =   $return['id'] ? $return['msg'] . '成功！' : $return['msg'] . '失败！';
+                        $return['msg']      =   $return['id'] ? $return['msg'] . 'wap_js_00104' : $return['msg'] . 'wap_js_00103';
                         
                     } else if (intval($data['days']) > 0) {
                         
@@ -583,11 +583,11 @@ class part_model extends model
                             $return['id']       =   $this -> upInfo(array('rec_time'=>array('+', $time)), array('id'=>array('in',pylode(',', $mid))));
                         }
 
-                        $return['msg']  =   '兼职推荐(ID:' . pylode(',', $id) . ')';
-                        $return['msg']  =   $return['id'] ? $return['msg'] . '设置成功！' : $return['msg'] . '设置失败！';
+                        $return['msg']  =   yun_auto_t('兼职推荐(ID:') . pylode(',', $id) . ')';
+                        $return['msg']  =   $return['id'] ? $return['msg'] . 'model_00011' : $return['msg'] . 'wap_01715';
                     } else {
 
-                        $return['msg']  =   '推荐天数不能为空，请重试！';
+                        $return['msg']  =   yun_at('common_06282');
                     }
 
                     if ($return['id']) {
@@ -617,7 +617,7 @@ class part_model extends model
                     }
                 } else {
 
-                    $return['msg']  =   '系统繁忙';
+                    $return['msg']  =   yun_at('common_01831');
                 }
             }
         }
@@ -701,11 +701,11 @@ class part_model extends model
                     $sysmsgM -> addInfo(array('uid' => $uids,'usertype'=>2,  'content' => $msg));
                 }
 
-                $return['msg']  =   '兼职职位(ID:' . pylode(',', $id) . ')延期';
-                $return['msg']  =   $return['id'] ? $return['msg'] . '设置成功！' : $return['msg'] . '设置失败！';
+                $return['msg']  =   yun_auto_t('兼职职位(ID:') . pylode(',', $id) . ')延期';
+                $return['msg']  =   $return['id'] ? $return['msg'] . 'model_00011' : $return['msg'] . 'wap_01715';
             } else {
 
-                $return['msg']  =   '系统繁忙！';
+                $return['msg']  =   yun_at('common_01632');
             }
 
             $return['errcode']  =   $return['id'] ? 9 : 8;
@@ -760,7 +760,7 @@ class part_model extends model
 
         if ($data['usertype'] != 1) {
             
-            $return =   array('msg' => '只有个人用户才能申请报名！', 'status' => 8);
+            $return =   array('msg' => yun_at('common_00701'), 'status' => 8);
             return  $return;
         } else {
 
@@ -771,26 +771,26 @@ class part_model extends model
 
                 $num        =   $this -> select_num('resume_expect', array('uid' => $data['uid']));
                 if ($num < 1) {
-                    $return =   array('msg' => '拥有简历才可以报名兼职！', 'status' => 8);
+                    $return =   array('msg' => yun_at('common_00794'), 'status' => 8);
                     return  $return;
                 }
 
                 $expectnum  =   $this -> select_num('resume_expect', array('uid' => $data['uid'],'state'=>1));
                 if($expectnum<1){
-                    $return =   array('msg' => '您的简历尚未完成审核，请联系管理员加快审核进度！', 'status' => 8);
+                    $return =   array('msg' => yun_at('common_00208'), 'status' => 8);
                     return  $return;
                 }
             }
             
             if ($job['edate'] < time() && $job['edate'] != 0) {
                 
-                $return =   array('msg' => '兼职已过期无法报名！', 'status' => 8);
+                $return =   array('msg' => yun_at('common_00981'), 'status' => 8);
                 return  $return;
             }
 
             if ($job['status'] == 1) {
 
-                $return =   array('msg' => '兼职已下架无法报名！', 'status' => 8);
+                $return =   array('msg' => yun_at('common_00980'), 'status' => 8);
                 return  $return;
             }
 
@@ -800,7 +800,7 @@ class part_model extends model
                 
                 if (! empty($row)) {
                     
-                    $return =   array('msg' => '您已经报名过该兼职！', 'status' => 8);
+                    $return =   array('msg' => yun_at('common_01005'), 'status' => 8);
                     return  $return;
                 } else {
                     $pdata          =   array();
@@ -842,7 +842,7 @@ class part_model extends model
                         $noticeM->sendSMSType($data);
                     }
                     $return['status']   =   9;
-                    $return['msg']      =   '报名成功！';
+                    $return['msg']      =   yun_at('common_06549');
                     return $return;
                 }
             }
@@ -890,7 +890,7 @@ class part_model extends model
         $jobList        =   $this->getList($pWhere, $pData);
 
         // 与企业里的兼职报名里的状态一致
-        $StateList      =   array('1' => '未查看','2' => '已查看','3' => '已联系');
+        $StateList      =   array('1' => 'wap_user_00260','2' => 'wap_user_00258','3' => 'member_com_00311');
 
         foreach ($List as $k => $v) {
 
@@ -973,12 +973,12 @@ class part_model extends model
 
                 $this->addMemberLog($data['uid'], $data['usertype'], '兼职报名：删除报名信息（ID：'.$id.'）', 6, 3);
             }
-            $return['msg']      = '兼职报名记录(ID:' . pylode(',', $id) . ')';
+            $return['msg']      = yun_auto_t('兼职报名记录(ID:') . pylode(',', $id) . ')';
 
             $return['errcode']  =   $return['id'] ? 9 : 8;
-            $return['msg']      =   $return['id'] ? $return['msg'] . '删除成功！' : $return['msg'] . '删除失败！';
+            $return['msg']      =   $return['id'] ? $return['msg'] . 'admin_user_00187' : $return['msg'] . 'admin_user_00186';
         } else {
-            $return['msg']      =   '请选择您要删除的数据！';
+            $return['msg']      =   yun_at('common_00921');
             $return['errcode']  =   8;
         }
 
@@ -1053,7 +1053,7 @@ class part_model extends model
     {
         if ($data['usertype'] != 1) {
             
-            $return =   array('msg' => '只有个人用户才能收藏！', 'status' => 8);
+            $return =   array('msg' => yun_at('common_00867'), 'status' => 8);
             return $return;
         } else {
             
@@ -1061,7 +1061,7 @@ class part_model extends model
             
             if (! empty($row)) {
                 
-                $return =   array('msg' => '您已经收藏过该兼职！', 'status' => 8);
+                $return =   array('msg' => yun_at('common_01006'), 'status' => 8);
                 return $return;
             } else {
                 
@@ -1073,9 +1073,9 @@ class part_model extends model
                 $nid            =   $this -> insert_into('part_collect', $data);
                 
                 if($nid){
-                    $return =   array('msg' => '收藏成功！', 'status' => 9);
+                    $return =   array('msg' => yun_at('model_00048'), 'status' => 9);
                 }else{
-                    $return =   array('msg' => '收藏失败！', 'status' => 8);
+                    $return =   array('msg' => yun_at('model_00049'), 'status' => 8);
                 }
 
               
@@ -1123,12 +1123,12 @@ class part_model extends model
                 $this->addMemberLog($data['uid'], $data['usertype'], '收藏管理：删除兼职收藏（ID：'.$id.'）', 5, 3);
             }
 
-            $return['msg']      =   '兼职记录(ID:' . pylode(',', $id) . ')';
+            $return['msg']      =   yun_auto_t('兼职记录(ID:') . pylode(',', $id) . ')';
             $return['errcode']  =   $return['id'] ? 9 : 8;
-            $return['msg']      =   $return['id'] ? $return['msg'] . '删除成功！' : $return['msg'] . '删除失败！';
+            $return['msg']      =   $return['id'] ? $return['msg'] . 'admin_user_00187' : $return['msg'] . 'admin_user_00186';
         } else {
 
-            $return['msg']      =   '请选择您要删除的数据！';
+            $return['msg']      =   yun_at('common_00921');
             $return['errcode']  =   8;
         }
 
@@ -1149,7 +1149,7 @@ class part_model extends model
     public function statusPartJob($id, $upData = array())
     {
 
-        $return =   array('msg' => '非法操作！', 'errcode' => 8);
+        $return =   array('msg' => yun_at('model_00001'), 'errcode' => 8);
 
         if (!empty($id)) {
             $pids   =   @explode(',', trim($id));
@@ -1202,7 +1202,7 @@ class part_model extends model
                             $statusInfo =   '您的兼职<a href="parttpl,'.$v['id'].'">《'.$v['name'].'》</a>审核未通过';
                             if ($upData['statusbody']) {
 
-                                $statusInfo .=  '，原因：'.$upData['statusbody'];
+                                $statusInfo .=  'wap_00800'.$upData['statusbody'];
                             }
 
                             $msg[$v['uid']][]   =   $statusInfo;
@@ -1255,10 +1255,10 @@ class part_model extends model
 
                     if ($jobwnum > 0) {
 
-                        $return['msg']      =   '兼职批量审核成功'.$jobtnum.'条，失败'.$jobwnum.'条。原因:企业账户未审核';
+                        $return['msg']      =   yun_at('common_01233').$jobtnum.'common_01791'.$jobwnum.'common_00798';
                     } else {
 
-                        $return['msg']      =   '兼职批量审核成功(ID:'.$pidstr.')';
+                        $return['msg']      =   yun_auto_t('兼职批量审核成功(ID:').$pidstr.')';
                     }
                     $return['errcode']      =   9;
                 } else {
@@ -1268,22 +1268,22 @@ class part_model extends model
                     $jobtnum                =   $this->getpartJobNum($jobwwhere);
                     if ($jobtnum > 0) {
 
-                        $return['msg']      =   '审核兼职(ID:'.$pidstr.')失败，原因:企业账户未审核';
+                        $return['msg']      =   yun_auto_t('审核兼职(ID:').$pidstr.')失败，原因:企业账户未审核';
                         $return['errcode']  =   8;
                     } else {
 
-                        $return['msg']      =   '审核兼职(ID:'.$pidstr.')设置成功';
+                        $return['msg']      =   yun_auto_t('审核兼职(ID:').$pidstr.')设置成功';
                         $return['errcode']  =   9;
                     }
                 }
             } else {
 
-                $return['msg']      =   '审核兼职(ID:'.$pidstr.')设置失败';
+                $return['msg']      =   yun_auto_t('审核兼职(ID:').$pidstr.')设置失败';
                 $return['errcode']  =   8;
             }
         } else {
 
-            $return['msg']      =   '请选择需要审核的兼职操作！';
+            $return['msg']      =   yun_at('common_00748');
             $return['errcode']  =   8;
         }
         return $return;
@@ -1300,7 +1300,7 @@ class part_model extends model
 
         if (!$id) {
 
-            return array('errcode' => 8, 'msg' => '参数错误！');
+            return array('errcode' => 8, 'msg' => yun_at('wap_01298'));
         } else {
 
             $partArr    =   $this->getInfo(array('id' => $id), array('field' => '`id`,`uid`,`name`'));
@@ -1347,11 +1347,11 @@ class part_model extends model
                     $noticeM->sendSMSType($sendData);
                 }
 
-                $return =   array('errcode' => 9, 'msg' => '兼职(ID:'.$id.')审核设置成功！');
+                $return =   array('errcode' => 9, 'msg' => yun_at('model_00050').$id.')审核设置成功！');
 
             } else {
 
-                $return =   array('errcode' => 8, 'msg' => '兼职(ID:'.$id.')审核设置失败！');
+                $return =   array('errcode' => 8, 'msg' => yun_at('model_00050').$id.')审核设置失败！');
             }
 
             return $return;
@@ -1389,7 +1389,7 @@ class part_model extends model
                     $sxLogData[$k]['r_time']    =   time();
                     $sxLogData[$k]['port']      =   5;
                     $sxLogData[$k]['ip']        =   fun_ip_get();
-                    $sxLogData[$k]['remark']    =   '管理员操作：后台兼职列表刷新兼职';
+                    $sxLogData[$k]['remark']    =   yun_at('common_06550');
                 }
 
                 include_once('sysmsg.model.php');

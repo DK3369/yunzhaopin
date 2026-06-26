@@ -43,8 +43,8 @@
 					{yun:}if $Info.sqInfo{/yun}
 					<div class="yun_resume_sq_job">
 						<ul>
-							<li>投递职位：{yun:}$Info.sqInfo.sq_job_name{/yun}</li>
-							<li>投递时间：{yun:}$Info.sqInfo.sq_job_time{/yun}</li>
+							<li>{yun:}t key='wap_01596'{/yun}：{yun:}$Info.sqInfo.sq_job_name{/yun}</li>
+							<li>{yun:}t key='member_user_00431'{/yun}：{yun:}$Info.sqInfo.sq_job_time{/yun}</li>
 							<li>{yun:}t key='admin_yunying_00131'{/yun}：{yun:}$Info.login_date_n{/yun}</li>
 						</ul>
 					</div>
@@ -82,7 +82,7 @@
 											<tr>
 												<td width="60" height="22" align="center" class="resume_table_blod">{yun:}t key='common_02077'{/yun}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;龄</td>
 												<td height="22" align="center">{yun:}$Info.age{/yun}</td>
-												<td width="60" height="22" align="center" class="resume_table_blod">所在城市</td>
+												<td width="60" height="22" align="center" class="resume_table_blod">{yun:}t key='resume_00058'{/yun}</td>
 												<td class="tmpl_mod_hoverBg " align="center">{yun:}$Info.living{/yun}</td>
 											</tr>
 											<tr>
@@ -295,7 +295,7 @@
 									
 											
 											{yun:}if is_array($Info.user_other) && !empty($Info.user_other){/yun}
-											<!--附加信息-->
+											<!--{yun:}t key='wap_01607'{/yun}-->
 
 											<table width="840" border="0" cellspacing="1" cellpadding="0" class="resume_table_bg resume_table_bg_nt">
 												<tbody>
@@ -316,13 +316,13 @@
 												</tbody>
 											</table>
 											{yun:}/if{/yun}
-											<!-- 我的作品-->
+											<!-- {yun:}t key='wap_01601'{/yun}-->
 											{yun:}if is_array($Info.user_show) && !empty($Info.user_show){/yun}
 											{yun:}if ($Info.uid == $uid && $usertype == 1) || $Info.m_status == 1{/yun}
 											<table width="840" border="0" cellspacing="1" cellpadding="0" class="resume_table_bg resume_table_bg_nt">
 												<tbody>
 													<tr>
-														<td width="60" bgcolor="#ffffff" align="center" class="resume_table_blod">我的作品</td>
+														<td width="60" bgcolor="#ffffff" align="center" class="resume_table_blod">{yun:}t key='wap_01601'{/yun}</td>
 														<td class="tmpl_mod_hoverBg faseData_color">
 															<div class="fairs_introduction_p">
 																<ul class="fairs_introduction_img" id="rolling_img1">
@@ -403,7 +403,7 @@
 																<div class="one_vita_Intention one_vita_Intention_w420"><i class="one_vita_Intention_i one_vita_red"></i>{yun:}t key='wap_user_00179'{/yun}：{yun:}$Info.email{/yun} </div>
 																{yun:}/if{/yun} 
 																{yun:}if $Info.qq{/yun}
-																<div class="one_vita_Intention"><i class="one_vita_Intention_i one_vita_red"></i>联系Q Q：{yun:}$Info.qq{/yun}</div>
+																<div class="one_vita_Intention"><i class="one_vita_Intention_i one_vita_red"></i>{yun:}t key='common_02458'{/yun}Q Q：{yun:}$Info.qq{/yun}</div>
 																{yun:}/if{/yun} 
 																{yun:}if $Info.homepage{/yun}
 																<div class="one_vita_Intention"><i class="one_vita_Intention_i one_vita_red"></i>{yun:}t key='member_com_00008'{/yun}：{yun:}$Info.homepage{/yun}</div>

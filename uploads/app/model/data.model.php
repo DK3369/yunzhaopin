@@ -68,11 +68,11 @@ class data_model extends model{
 			
 			$return['id']		=	$this -> insert_into('outside',$data);
 			
-            $return['msg']		=	'数据调用(ID:'.$return['id'].')';
+            $return['msg']		=	yun_auto_t('数据调用(ID:').$return['id'].')';
 			
 			$return['errcode']	=	$return['id'] ? '9' :'8';
             
-            $return['msg']		=	$return['id'] ? $return['msg'].'添加成功！' : $return['msg'].'添加失败！';
+            $return['msg']		=	$return['id'] ? $return['msg'].'admin_system_00138' : $return['msg'].'admin_system_00137';
             
             return $return;
 		}
@@ -105,11 +105,11 @@ class data_model extends model{
 			);
 			$return['id']		=	$this -> update_once('outside',$data,$whereData);
 			
-            $return['msg']		=	'数据调用(ID:'.$return['id'].')';
+            $return['msg']		=	yun_auto_t('数据调用(ID:').$return['id'].')';
 			
 			$return['errcode']	=	$return['id'] ? '9' :'8';
             
-            $return['msg']		=	$return['id'] ? $return['msg'].'修改成功！' : $return['msg'].'修改成功！';
+            $return['msg']		=	$return['id'] ? $return['msg'].'member_user_00602' : $return['msg'].'member_user_00602';
             
             return $return;
 			
@@ -140,12 +140,12 @@ class data_model extends model{
             }
 
             $return['id'] = $this->delete_all('outside', array('id' => array('in', $delId)), '');
-            $return['msg'] = '数据调用(ID:' . $delId . ')';
+            $return['msg'] = yun_auto_t('数据调用(ID:') . $delId . ')';
             $return['errcode'] = $return['id'] ? '9' : '8';
-            $return['msg'] = $return['id'] ? $return['msg'] . '删除成功！' : $return['msg'] . '删除失败！';
+            $return['msg'] = $return['id'] ? $return['msg'] . 'admin_user_00187' : $return['msg'] . 'admin_user_00186';
         } else {
 
-            $return['msg'] = '请选择您要删除的数据调用！';
+            $return['msg'] = yun_at('common_00742');
             $return['errcode'] = 8;
         }
         return $return;

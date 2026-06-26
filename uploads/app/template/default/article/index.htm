@@ -76,7 +76,7 @@
          <div class="news_index_box_search">
 		 <input name='m' value="article" type="hidden">
     <input name='c' value="list" type="hidden">
-    <input type="text" id="keyword" name="keyword" value="{yun:}$smarty.get.keyword{/yun}" placeholder="大家都在搜" class="news_index_box_search_text"><input type="submit" value="" class="news_index_box_search_bth">
+    <input type="text" id="keyword" name="keyword" value="{yun:}$smarty.get.keyword{/yun}" placeholder="{yun:}t key='common_02481'{/yun}" class="news_index_box_search_text"><input type="submit" value="" class="news_index_box_search_bth">
     </div>
     </form>
     
@@ -86,7 +86,7 @@
 {yun:}/adlist{/yun}
     </div>
      <div class="news_index_box_ph">
-        <div class="news_index_today_h1"> <span class="news_index_today_hot_s">热搜排行</span></div>
+        <div class="news_index_today_h1"> <span class="news_index_today_hot_s">{yun:}t key='common_02480'{/yun}</span></div>
         <ul>
          {yun:}article item=alist t_len=15 order='hits'  limit=10 key=key name=newlist1{/yun}
         <li><span {yun:}if $key lt 3{/yun}class="yun_in_news_span yun_in_news_span_cur"{yun:}else{/yun}class="yun_in_news_span "{yun:}/if{/yun}>{yun:}$key+1{/yun}</span><a href="{yun:}$alist.url{/yun}" class="yun_in_news_a" target="_blank" title="{yun:}$alist.title{/yun}">{yun:}$alist.title{/yun}</a></li>

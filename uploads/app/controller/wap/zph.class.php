@@ -7,7 +7,7 @@ class zph_controller extends common{
 		$newZphInfo = $zphM->getNewZph();
 		$this->yunset("zphList", $zphList);
 		$this->yunset("newZph", $newZphInfo);
-		$this->yunset("headertitle",yun_auto_t('招聘会'));
+		$this->yunset("headertitle",yun_at('member_com_00293'));
         $backurl=Url('wap',array());
         $this->yunset('backurl',$backurl);
 		$this->seo("zph");
@@ -25,7 +25,7 @@ class zph_controller extends common{
 		$this->data			=	$data;
 		
 		
-		$this->yunset("headertitle",yun_auto_t('招聘会详情'));
+		$this->yunset("headertitle",yun_at('wap_00557'));
 		$this->seo("zph_show");
 		$this->yuntpl(array('wap/zph_show'));
 	}
@@ -62,7 +62,7 @@ class zph_controller extends common{
 		$data['zph_desc']	=	$this->GET_content_desc($row['body']);
 		$this->data=$data;
 		
-		$this->yunset("headertitle",yun_auto_t('参会企业'));
+		$this->yunset("headertitle",yun_at('wap_00559'));
 		$this->seo("zph_com");
 		$this->yuntpl(array('wap/zph_com'));
 	}
@@ -82,7 +82,7 @@ class zph_controller extends common{
 		$spacelist	=	$zphM->getZphSpaceList(array("keyid"=>$row['sid'],"orderby"=>"sort,asc"),array("id"=>$id,'utype'=>'index'));
 		$this->yunset("spacelist",$spacelist);
 		
-		$this->yunset("headertitle",yun_auto_t('在线预订'));
+		$this->yunset("headertitle",yun_at('default_00340'));
 		
 		$statisM	=	$this -> MODEL('statis');
 		$statis		=	$statisM -> getInfo($this->uid, array('usertype' => 2));
@@ -151,7 +151,7 @@ class zph_controller extends common{
         }else{
             $return['zclist']   =   array();
             $return['error']    =   0;
-            $return['msg']      =   yun_auto_t('参数错误请重试');
+            $return['msg']      =   yun_at('wap_00556');
         }
 
         echo yun_json_encode($return);exit();
@@ -198,7 +198,7 @@ class zph_controller extends common{
         }else{
             $return['list']   	=   array();
             $return['error']    =   0;
-            $return['msg']      =   yun_auto_t('参数错误请重试');
+            $return['msg']      =   yun_at('wap_00556');
         }
 
         echo yun_json_encode($return);exit();

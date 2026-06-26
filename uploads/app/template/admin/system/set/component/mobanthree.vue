@@ -2,12 +2,12 @@
 	<div>
 		<div class="moduleElHight">
 			<div class="tableDome_tip">
-				<el-alert title="可以为个人用户提供个性化简历模板,管理员把个人简历模板后上传到个人简历模板目录即可！可以设置模板价格，提供个人用户自由选择" type="success"
+				<el-alert title="{yun:}t key='admin_00948'{/yun}" type="success"
 					:closable="false">
 				</el-alert>
 			</div>
 			<div class="moduleHeadrButn" style=" margin-bottom: 12px;;">
-				<el-button type="primary" icon="el-icon-document-add" @click="addTplBox">添加模板</el-button>
+				<el-button type="primary" icon="el-icon-document-add" @click="addTplBox">{yun:}t key='member_com_00354'{/yun}</el-button>
 			</div>
 			<div class="moduleElTable">
 				<el-table :data="tableData" border style="width: 100%"
@@ -30,8 +30,8 @@
 					<el-table-column label="操作" width="140">
 						<template slot-scope="scope">
 							<div class="moduleElTaCaoz">
-								<el-button size="mini" @click="editTpl(scope.row)">修改</el-button>
-								<el-button size="mini" @click="delTpl(scope.row)" type="danger">删除</el-button>
+								<el-button size="mini" @click="editTpl(scope.row)">{yun:}t key='wap_js_00073'{/yun}</el-button>
+								<el-button size="mini" @click="delTpl(scope.row)" type="danger">{yun:}t key='common.delete'{/yun}</el-button>
 							</div>
 						</template>
 					</el-table-column>
@@ -39,26 +39,26 @@
 			</div>
 
 			<div class="modluDrawer">
-				<el-drawer title="简历模板" :visible.sync="editTplBox" :modal-append-to-body="false" :show-close="true"
+				<el-drawer title="{yun:}t key='member_user_00189'{/yun}" :visible.sync="editTplBox" :modal-append-to-body="false" :show-close="true"
 					:with-header="true" size="45%">
 					<div class="drawerModlue">
 						<div class="drawerModInfo" style="max-height: calc(100% - 80px); overflow-y: auto;">
 
 							<div class="drawerModLis">
 								<div class="drawerModTite">
-									<span>模板名称</span>
+									<span>{yun:}t key='wap_com_00413'{/yun}</span>
 								</div>
 								<div class="drawerModInpt">
 									<el-input v-model="resumeTplInfo.name"></el-input>
 								</div>
 								<div class="drawerModTips">
-									<el-alert title="如：经典红色" type="info" show-icon :closable="false">
+									<el-alert title="{yun:}t key='admin_00949'{/yun}" type="info" show-icon :closable="false">
 									</el-alert>
 								</div>
 							</div>
 							<div class="drawerModLis">
 								<div class="drawerModTite">
-									<span>状态</span>
+									<span>{yun:}t key='member_user_00181'{/yun}</span>
 								</div>
 								<div class="drawerModInpt">
 									<el-switch v-model="resumeTplInfo.status" active-color="#13ce66" inactive-color="#ccc">
@@ -67,34 +67,34 @@
 							</div>
 							<div class="drawerModLis">
 								<div class="drawerModTite">
-									<span>模板路径</span>
+									<span>{yun:}t key='admin_00946'{/yun}</span>
 								</div>
 								<div class="drawerModInpt">
 									<el-input v-model="resumeTplInfo.dir"></el-input>
 
 								</div>
 								<div class="drawerModTips">
-									<el-alert title="如：default。注意：简历模板放在app/template/resume下面，不存在系统将自动建立" type="info"
+									<el-alert title="{yun:}t key='admin_00950'{/yun}" type="info"
 										show-icon :closable="false">
 									</el-alert>
 								</div>
 							</div>
 							<div class="drawerModLis">
 								<div class="drawerModTite">
-									<span>积分</span>
+									<span>{yun:}t key='wap_user_00008'{/yun}</span>
 								</div>
 								<div class="drawerModInpt">
 									<el-input v-model="resumeTplInfo.price" @input="inputIntNumber($event, 'resumeTplInfo', 'price')"></el-input>
 
 								</div>
 								<div class="drawerModTips">
-									<el-alert title="如：100，0或空为免费" type="info" show-icon :closable="false">
+									<el-alert title="{yun:}t key='admin_00951'{/yun}" type="info" show-icon :closable="false">
 									</el-alert>
 								</div>
 							</div>
 							<div class="drawerModLis">
 								<div class="drawerModTite">
-									<span>缩略图</span>
+									<span>{yun:}t key='admin_00119'{/yun}</span>
 								</div>
 								<div class="drawerModInpt">
 									<el-upload class="avatar-uploader" :accept="pic_accept" :action="uploadAction" :show-file-list="false"
@@ -106,19 +106,19 @@
 							</div>
 							<div class="drawerModLis">
 								<div class="drawerModTite">
-									<span>针对用户</span>
+									<span>{yun:}t key='admin_00947'{/yun}</span>
 								</div>
 								<div class="drawerModInpt">
 									<el-input v-model="resumeTplInfo.struid"></el-input>
 								</div>
 								<div class="drawerModTips">
-									<el-alert title="可以直接填写用户ID，多个以（半角逗号,）隔开" type="info" show-icon :closable="false">
+									<el-alert title="{yun:}t key='admin_00952'{/yun}" type="info" show-icon :closable="false">
 									</el-alert>
 								</div>
 							</div>
 						</div>
 						<div class="setBasicButn" style="border: none;">
-							<el-button type="primary" size="medium" @click="tplSave" :disabled="saveLoading">提交</el-button>
+							<el-button type="primary" size="medium" @click="tplSave" :disabled="saveLoading">{yun:}t key='common.submit'{/yun}</el-button>
 						</div>
 					</div>
 				</el-drawer>
@@ -132,7 +132,7 @@ module.exports = {
 	data: function () {
 		return {
 			pic_accept: localStorage.getItem("pic_accept"),
-			emptytext: '暂无数据',
+			emptytext: "{yun:}t key='wap_js_00113'{/yun}",
 			loading: false,
 			tableData: [],
 			srcList: [],
@@ -175,12 +175,12 @@ module.exports = {
 		},
 		delTpl(row) {
 			this.tplid = row.id;
-			delConfirm(this, {}, this.delTplSubmit, '确定要删除？');
+			delConfirm(this, {}, this.delTplSubmit, "{yun:}t key='wap_user_00001'{/yun}");
 		},
 		async delTplSubmit() {
 			let that = this;
 			if (that.tplid == '') {
-				message.error('请选择要删除的模板');
+				message.error("{yun:}t key='admin_00307'{/yun}");
 				return false;
 			}
 			httpPost('m=system&c=set_tplset&a=resumetpldel', { id: that.tplid }).then(function (response) {
@@ -205,7 +205,7 @@ module.exports = {
 				return false;
 			}
 			if (that.resumeTplInfo.picurl == '' && that.resumeTplInfo.pic == '') {
-				message.error('请上传缩略图');
+				message.error("{yun:}t key='admin_00258'{/yun}");
 				return false;
 			}
 			if (that.resumeTplInfo.status) {
@@ -257,7 +257,7 @@ module.exports = {
 			let that = this;
 			let param = {};
 			that.loading = true;
-			that.emptytext = "数据加载中";
+			that.emptytext = "{yun:}t key='admin_user_weipin_00026'{/yun}";
 			httpPost('m=system&c=set_tplset&a=resumetpl', param).then(function (response) {
 				let res = response.data;
 				if (res.error == 0) {
@@ -265,7 +265,7 @@ module.exports = {
 					that.srcList = res.data.imgarr;
 					that.loading = false;
 					if (that.tableData.length === 0){
-                        that.emptytext = "暂无数据";
+                        that.emptytext = "{yun:}t key='wap_js_00113'{/yun}";
                     }
 				}
 			}).catch(function (error) {

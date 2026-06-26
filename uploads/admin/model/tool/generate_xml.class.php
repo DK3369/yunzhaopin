@@ -211,7 +211,7 @@ class generate_xml_controller extends adminCommon
 
                 if (CheckRegUser($_POST['name']) == false) {
 
-                    $this->layer_msg("XML名称包含特殊字符！", 8, 0, 'index.php?m=admin_xml');
+                    $this->layer_msg('admin_tool_00041', 8, 0, 'index.php?m=admin_xml');
                 }
                 $path = APP_PATH . "/" . $_POST['name'] . ".xml";
 
@@ -223,10 +223,10 @@ class generate_xml_controller extends adminCommon
 
                 @chmod($path, 0777);
 
-                $this->render_json(0, "生成成功！");
+                $this->render_json(0, yun_at('admin_01467'));
             } else {
 
-                $this->render_json(0, "没有数据可以生成！");
+                $this->render_json(0, yun_at('admin_tool_00042'));
             }
         }
     }

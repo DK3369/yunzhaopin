@@ -1,8 +1,8 @@
 <div id="promote_div" style="display: none;">
     <div class="set_tips">
         <div class="set_tips_hello">{yun:}t key='common_02173'{/yun}</div>
-        <div class="set_tips_p" id="peomote_etime_div" style="display: none"> 目前置顶职位的到期时间为：<span id="promote_etime"></span></div>
-        <div class="set_tips_p" id='promote_tc'> 您的套餐内置顶职位余量为：<span class="set_tips_n">{yun:}$statis.top_num{/yun}</span>{yun:}t key='common_02067'{/yun}</div>
+        <div class="set_tips_p" id="peomote_etime_div" style="display: none"> {yun:}t key='member_com_00589'{/yun}<span id="promote_etime"></span></div>
+        <div class="set_tips_p" id='promote_tc'> {yun:}t key='member_com_00590'{/yun}<span class="set_tips_n">{yun:}$statis.top_num{/yun}</span>{yun:}t key='common_02067'{/yun}</div>
         <div class="set_tips_textbox"> {yun:}t key='member_com_00282'{/yun}
             <input type="text" value="" class="set_tips_text" id="promote_day" name="promote_day" maxlength='3' onkeyup="checkPromoteDay();" oninput="myFunction(this)">{yun:}t key='common_02067'{/yun}
         </div>
@@ -17,9 +17,9 @@
 <div id="close_promote_div" style="display: none;">
     <div class="set_tips">
         <div class="set_tips_hello">{yun:}t key='common_02173'{/yun}：</div>
-        <div class="set_tips_p" id="close_peomote_etime_div" style="display: none"> 目前置顶职位的到期时间为：<span id="close_promote_etime"></span></div>
-        <div class="set_tips_p" id='close_promote_tc'> 您的职位置顶剩余：<span class="set_tips_n">0</span>{yun:}t key='common_02067'{/yun}</div>
-        <div class="set_tips_p" style="font-weight: bold;"> 您确定要<span id="close_promote_title">关闭职位置顶</span>{yun:}t key='common_02062'{/yun}？</div>
+        <div class="set_tips_p" id="close_peomote_etime_div" style="display: none"> {yun:}t key='member_com_00589'{/yun}<span id="close_promote_etime"></span></div>
+        <div class="set_tips_p" id='close_promote_tc'> {yun:}t key='member_com_00591'{/yun}<span class="set_tips_n">0</span>{yun:}t key='common_02067'{/yun}</div>
+        <div class="set_tips_p" style="font-weight: bold;"> {yun:}t key='member_com_00592'{/yun}<span id="close_promote_title">{yun:}t key='member_com_00593'{/yun}</span>{yun:}t key='common_02062'{/yun}？</div>
         <input type="hidden" name="promote_jobid" id="close_promote_jobid" value=""/>
         <input type="hidden" name="promote_type" id="close_promote_type" value=""/>
         <div class="set_tips_bthbox" style="padding-left: 72px; margin: 10px 0;">
@@ -33,7 +33,7 @@
 <div id="auto_promote_div" style="display: none;">
     <div class="set_tips">
         <div class="set_tips_hello">{yun:}t key='common_02173'{/yun}：</div>
-        <div class="set_tips_p"> 当前职位自动刷新的到期时间为：<span id="auto_promote_etime" class="set_tips_n"></span></div>
+        <div class="set_tips_p"> {yun:}t key='member_com_00594'{/yun}<span id="auto_promote_etime" class="set_tips_n"></span></div>
         <div class="set_tips_p"> {yun:}t key='member_com_00285'{/yun} <span class="set_tips_n" id="auto_promote_day">0</span>{yun:}t key='common_02067'{/yun}</div>
         <div class="set_tips_p" style="font-weight: bold;"> {yun:}t key='member_com_00277'{/yun}</div>
         <div class="set_tips_bthbox" style="padding-left: 72px; margin: 10px 0;" id="auto_btn"></div>
@@ -44,7 +44,7 @@
 <div id="reserve_box" style="display:none;">
     <form class="layui-form">
         <div class="aisx_job_left">
-            <div class="aisx_job_list"><span class="aisx_job_name">刷新状态：</span>
+            <div class="aisx_job_list"><span class="aisx_job_name">{yun:}t key='member_com_00595'{/yun}</span>
                 <div class="layui-input-block">
                     <input type="radio" name="status" value="1" title="{yun:}t key='member_com_00287'{/yun}">
                     <input type="radio" name="status" value="2" title="{yun:}t key='common.close'{/yun}">
@@ -54,7 +54,7 @@
                 <span class="aisx_job_name">{yun:}t key='wap_com_00227'{/yun}：</span>
                 <div class="layui-input-inline" style="width: 152px;height: 35px;position: relative;border-radius: 3px;margin-left: 20px;">
                     <select name="intervalId" id="intervalId" lay-filter="intervalId">
-                        <option value="">请选择刷新间隔</option>
+                        <option value="">{yun:}t key='wap_00851'{/yun}</option>
                         <option value="60" selected>{yun:}t key='wap_com_00252'{/yun}1小时刷新</option>
                         <option value="120">{yun:}t key='wap_com_00252'{/yun}2小时刷新</option>
                         <option value="180">{yun:}t key='wap_com_00252'{/yun}3小时刷新</option>
@@ -63,7 +63,7 @@
                         <option value="360">{yun:}t key='wap_com_00252'{/yun}6小时刷新</option>
                         <option value="420">{yun:}t key='wap_com_00252'{/yun}7小时刷新</option>
                         <option value="480">{yun:}t key='wap_com_00252'{/yun}8小时刷新</option>
-                        <option value="1">自定义刷新间隔</option>
+                        <option value="1">{yun:}t key='wap_00852'{/yun}</option>
                     </select>
                 </div>
             </div>
@@ -102,7 +102,7 @@
             单个职位可预约 <span class="aisx_zy_n">{yun:}intval($statis.upJobNum/$config.sy_reserve_refresh_price){/yun}</span> {yun:}t key='wap_com_00222'{/yun}
             {yun:}if $statis.rating_type == 1{/yun}<a href="index.php?c=right&act=added&id={yun:}$config.sy_reserve_service_id{/yun}" target="_blank" class="aisx_zy_buy">{yun:}t key='member_com_00284'{/yun}</a>{yun:}/if{/yun}
         </div>
-        <div class="aisx_job_fot"><a href="javascript:;" onclick="setReserveRefreshJob();" class="aisx_job_bth">确定设置</a></div>
+        <div class="aisx_job_fot"><a href="javascript:;" onclick="setReserveRefreshJob();" class="aisx_job_bth">{yun:}t key='member_com_00596'{/yun}</a></div>
         <input type="hidden" id="reserve_id" value=""/>
     </form>
 </div>
@@ -197,7 +197,7 @@
             return false;
         } else if (status == 1) {
             if (interval == '') {
-                layer.msg('请填写刷新时间间隔', 2, 8);
+                layer.msg("{yun:}t key='wap_00883'{/yun}", 2, 8);
                 return false;
             }
             if (s_time.length > 0  && e_time.length > 0 ){

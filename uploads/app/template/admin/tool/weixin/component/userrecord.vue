@@ -4,8 +4,8 @@
         <div class="moduleSeachs">
             <div class="moduleSeachleft">
                 <div class="moduleInptList">
-                    <el-input placeholder="请输入绑定用户" v-model="keyword" class="input-with-select" size="small" clearable>
-                        <el-select v-model="wtype" slot="prepend" placeholder="搜索类型">
+                    <el-input placeholder="{yun:}t key='admin_tool_00591'{/yun}" v-model="keyword" class="input-with-select" size="small" clearable>
+                        <el-select v-model="wtype" slot="prepend" placeholder="{yun:}t key='admin_tool_00503'{/yun}">
                             <el-option label="微信昵称" value="1"></el-option>
                             <el-option label="已绑定用户" value="2"></el-option>
                         </el-select>
@@ -13,14 +13,14 @@
                 </div>
 
                 <div class="tableSeachInpt tableSeachInptsmall">
-                    <el-select v-model="status" clearable size="small" slot="prepend" placeholder="状态" @change="search">
+                    <el-select v-model="status" clearable size="small" slot="prepend" placeholder="{yun:}t key='member_user_00181'{/yun}" @change="search">
                         <el-option label="已登录" value="1"></el-option>
                         <el-option label="未登录" value="2"></el-option>
                     </el-select>
                 </div>
                 <div class="tableSeachInpt tableSeachInptsmall">
 
-                    <el-select v-model="time" clearable size="small" slot="prepend" placeholder="登录时间" @change="search">
+                    <el-select v-model="time" clearable size="small" slot="prepend" placeholder="{yun:}t key='admin_user_00134'{/yun}" @change="search">
                         <el-option label="今天" value="1"></el-option>
                         <el-option label="最近三天" value="3"></el-option>
                         <el-option label="最近七天" value="7"></el-option>
@@ -29,11 +29,11 @@
                     </el-select>
                 </div>
                 <div class="tableSeachInpt">
-                    <el-button type="primary" icon="el-icon-search" size="mini" @click="search">查询</el-button>
+                    <el-button type="primary" icon="el-icon-search" size="mini" @click="search">{yun:}t key='admin_user_weipin_00049'{/yun}</el-button>
                 </div>
             </div>
             <div class="moduleSeachButn">
-                <el-button type="danger" icon="el-icon-document-add" size="mini" @click="clearwx">清理前三天数据</el-button>
+                <el-button type="danger" icon="el-icon-document-add" size="mini" @click="clearwx">{yun:}t key='admin_tool_00599'{/yun}</el-button>
             </div>
         </div>
         <div class="moduleElTable">
@@ -47,8 +47,8 @@
                 </el-table-column>
                 <el-table-column label="用户类型">
                     <template slot-scope="scope">
-                        <span v-if="scope.row.usertype==1">个人</span>
-                        <span v-else-if="scope.row.usertype==2">企业</span>
+                        <span v-if="scope.row.usertype==1">{yun:}t key='admin_user_00304'{/yun}</span>
+                        <span v-else-if="scope.row.usertype==2">{yun:}t key='common.company'{/yun}</span>
                     </template>
                 </el-table-column>
                 <el-table-column prop="wxid" label="绑定ID（OpenId）">
@@ -58,8 +58,8 @@
 
                 <el-table-column prop="zt" label="扫码状态">
                     <template slot-scope="scope">
-                        <span v-if="scope.row.status==1" class="admin_state1">已登陆</span>
-                        <span v-else class="admin_state2">未登录</span>
+                        <span v-if="scope.row.status==1" class="admin_state1">{yun:}t key='admin_tool_00595'{/yun}</span>
+                        <span v-else class="admin_state2">{yun:}t key='admin_user_00139'{/yun}</span>
                     </template>
                 </el-table-column>
             </el-table>
@@ -81,7 +81,7 @@
 module.exports = {
     data: function () {
         return {
-            emptytext: window.yunAdminT('暂无数据'),
+            emptytext: window.yunAdminT("{yun:}t key='wap_js_00113'{/yun}"),
             tableData: [],
             total: 0,
             limit: 0,
@@ -121,7 +121,7 @@ module.exports = {
 
 
             this.list_loading = true;
-            that.emptytext = window.yunAdminT('数据加载中');
+            that.emptytext = window.yunAdminT("{yun:}t key='admin_user_weipin_00026'{/yun}");
             httpPost('m=tool&c=weixinrecord&a=index', params, {hideloading: true}).then((result) => {
                 this.list_loading = false;
                 var res = result.data;
@@ -137,7 +137,7 @@ module.exports = {
 						that.$refs.table.bodyWrapper.scrollTop = 0;
 					}
                     if (that.tableData.length === 0) {
-                        that.emptytext = window.yunAdminT('暂无数据');
+                        that.emptytext = window.yunAdminT("{yun:}t key='wap_js_00113'{/yun}");
                     }
                 }
             }).catch(function (e) {
@@ -161,9 +161,9 @@ module.exports = {
 
         async clearwx() {
             var that = this;
-            this.$confirm(window.yunAdminT('确定要清除三天前的数据？'), window.yunAdminT('温馨提示'), {
-                confirmButtonText: window.yunAdminT('确定'),
-                cancelButtonText: window.yunAdminT('取消'),
+            this.$confirm(window.yunAdminT("{yun:}t key='admin_tool_00601'{/yun}"), window.yunAdminT("{yun:}t key='wap_user_00205'{/yun}"), {
+                confirmButtonText: window.yunAdminT("{yun:}t key='common.confirm'{/yun}"),
+                cancelButtonText: window.yunAdminT("{yun:}t key='common.cancel'{/yun}"),
                 type: 'warning'
             }).then(() => {
                 httpPost('m=tool&c=weixinrecord&a=clearwx', {}).then(function (response) {

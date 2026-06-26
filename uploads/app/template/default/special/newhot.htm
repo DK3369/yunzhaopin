@@ -19,7 +19,7 @@
   <div class="newhot_box_topbg"></div>
   <i class="newhot_box_top_icon"></i>
   <div class="newhot_box_topwz">
-  <div class="newhot_box_topwz_name">名企之约开启你的高薪之旅</div>
+  <div class="newhot_box_topwz_name">{yun:}t key='common_02309'{/yun}</div>
   <div class="newhot_box_topwz_name_e">Famous Business Contracts Start Your High-Pay Journey</div>
   </div>
   </div>
@@ -49,15 +49,15 @@
   {yun:}if $info.com_bm==1{/yun}
     {yun:}if !$isapply{/yun}
   		
-  			<div class="newhot_jsbox_my">我是企业，我要参加报名</div>
+  			<div class="newhot_jsbox_my">{yun:}t key='common_02310'{/yun}</div>
   			{yun:}if $uid{/yun}
         {yun:}if $usertype=='2'{/yun}
   <input type='button' value="{yun:}t key='wap_00375'{/yun}" onclick="comapply('{yun:}$info.id{/yun}','{yun:}$info.integral{/yun}','{yun:}url m=special c=apply{/yun}')" class="special_one_bm_bth" />
         {yun:}else{/yun}
              {yun:}if $config.sy_user_change==1{/yun}
-                   <input type='button' value="{yun:}t key='wap_00375'{/yun}" onclick="layer.msg('请先申请企业用户才能报名！',2, 8)" class="special_one_bm_bth" />
+                   <input type='button' value="{yun:}t key='wap_00375'{/yun}" onclick="layer.msg("{yun:}t key='common_02305'{/yun}",2, 8)" class="special_one_bm_bth" />
              {yun:}else{/yun} 
-                  <input type='button' value="{yun:}t key='wap_00375'{/yun}" onclick="layer.msg('只有企业用户才能报名！',2, 8)" class="special_one_bm_bth" />
+                  <input type='button' value="{yun:}t key='wap_00375'{/yun}" onclick="layer.msg("{yun:}t key='model_00055'{/yun}",2, 8)" class="special_one_bm_bth" />
              {yun:}/if{/yun}
         {yun:}/if{/yun}
         {yun:}else{/yun}

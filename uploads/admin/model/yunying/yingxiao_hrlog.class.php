@@ -96,14 +96,14 @@ class yingxiao_hrlog_controller extends adminCommon
 
         $this->web_config();
 
-        $this->admin_json(0, '设置配置修改成功');
+        $this->admin_json(0, 'admin_01452');
     }
 
     // 年度报告修改-保存
     function editsave_action()
     {
         if (empty($_POST['id'])) {
-            $this->render_json(1, '参数错误');
+            $this->render_json(1, yun_at('wap_com_00228'));
         }
 
         $id = $_POST['id'];
@@ -119,12 +119,12 @@ class yingxiao_hrlog_controller extends adminCommon
         if ($return) {
             $this->admin_json(0, '年度报告数据(ID:' . $id . ')修改成功');
         } else {
-            $this->render_json(1, '年度报告数据修改失败');
+            $this->render_json(1, yun_at('admin_01453'));
         }
     }
     function rehrlog_action(){
         if (empty($_POST['id'])) {
-            $this->render_json(1, '参数错误');
+            $this->render_json(1, yun_at('wap_com_00228'));
         }
 
         $id = $_POST['id'];
@@ -140,7 +140,7 @@ class yingxiao_hrlog_controller extends adminCommon
         if ($return) {
             $this->admin_json(0, '年度报告数据(ID:' . $id . ')修改成功');
         } else {
-            $this->render_json(1, '年度报告数据修改失败');
+            $this->render_json(1, yun_at('admin_01453'));
         }
     }
     // 年度报告-海报链接生成
@@ -193,7 +193,7 @@ class yingxiao_hrlog_controller extends adminCommon
 
         $this->web_config();
 
-        $this->admin_json(0, '区域报告配置修改成功');
+        $this->admin_json(0, 'admin_01454');
     }
 
     function setlog_action()
@@ -229,9 +229,9 @@ class yingxiao_hrlog_controller extends adminCommon
             $hrM->sethrlog($v['uid']);
         }
         if ($remaind > 0) {
-            echo json_encode(array('error' => 1, 'msg' => '数据生成中，还剩余' . $remaind . '条', 'page' => $_POST['page'] + 1));
+            echo json_encode(array('error' => 1, 'msg' => yun_at('admin_yunying_00018') . $remaind . yun_at('common_02088'), 'page' => $_POST['page'] + 1));
         } else {
-            echo json_encode(array('error' => 0, 'msg' => '数据已全部生成'));
+            echo json_encode(array('error' => 0, 'msg' => yun_at('admin_00388')));
         }
     }
 }

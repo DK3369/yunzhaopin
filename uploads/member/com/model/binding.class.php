@@ -98,7 +98,7 @@ class binding_controller extends company{
         );
         //判断是否上传必要资质
         $errcode     =   0;
-        $msg         =   '必须上传';
+        $msg         =   'wap_01844';
         $douhao      =   false;
 
         if($this->config['com_social_credit']==1 && !$_POST['social_credit']){
@@ -106,7 +106,7 @@ class binding_controller extends company{
                 $msg     .= ',';
             }
             $douhao  =   true;
-            $msg     .=  '统一社会信用代码';
+            $msg     .=  'admin_user_company_00063';
             $errcode =   8;
         }
 
@@ -115,7 +115,7 @@ class binding_controller extends company{
                 $msg     .= ',';
             }
             $douhao  =   true;
-            $msg     .=  '经办人身份证';
+            $msg     .=  'member_com_00067';
             $errcode =   8;
         }
         
@@ -124,7 +124,7 @@ class binding_controller extends company{
                 $msg     .= ',';
             }
             $douhao  =   true;
-            $msg     .=   '委托函';
+            $msg     .=   'member_com_00685';
             $errcode =   8;
         }
         

@@ -14,9 +14,9 @@ class admin_user_member_controller extends adminCommon
   	    $where['opera']     =  12;
 
         $where['PHPYUNBTWSTART_A'] = '';
-        $where['content'][] = array('like', '解除绑定');
-        $where['content'][] = array('like', '解绑', 'OR');
-        $where['content'][] = array('like', '解除', 'OR');
+        $where['content'][] = array('like', 'wap_user_00138');
+        $where['content'][] = array('like', 'wap_js_00065', 'OR');
+        $where['content'][] = array('like', 'common_02028', 'OR');
         $where['PHPYUNBTWEND_A'] = '';
 
         if ($_POST['utype']) {
@@ -39,7 +39,7 @@ class admin_user_member_controller extends adminCommon
                     }
                     $where['uid'] = array('in', pylode(',', $muids));
                 }else{
-                    $this->render_json(0,'暂无数据',['data'=>[],'total'=>0]);
+                    $this->render_json(0,yun_at('wap_js_00113'),['data'=>[],'total'=>0]);
                 }
             } elseif ($type == 2) {
 
@@ -60,7 +60,7 @@ class admin_user_member_controller extends adminCommon
         $pageM	=	$this  -> MODEL('page');
         $pages	=	$pageM -> adminPageList('member_log',$where,$page,array('limit' => $pageSize));
         if(!$pages['total']){
-            $this->render_json(0,'暂无数据',['data'=>[],'total'=>0,'pageSizes'=>$pages['page_sizes']]);
+            $this->render_json(0,yun_at('wap_js_00113'),['data'=>[],'total'=>0,'pageSizes'=>$pages['page_sizes']]);
         }
 
         //limit order 只有在列表查询时才需要
@@ -85,7 +85,7 @@ class admin_user_member_controller extends adminCommon
 	function delwflog_action(){
 	    
 	    if (!$_POST['del']){
-            $this->render_json(1,'参数错误');
+            $this->render_json(1,yun_at('wap_com_00228'));
         }
 	        
         if (is_array($_POST['del'])){

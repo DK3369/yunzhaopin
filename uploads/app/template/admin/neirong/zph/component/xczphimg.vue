@@ -8,7 +8,7 @@
             <div class="moduleSeachleft">
             </div>
             <div class="moduleHeadrButn" style="margin-bottom: 12px;margin-left: 10px;">
-                <el-button type="primary" icon="el-icon-document-add" size="mini" @click="addPic">添加图片</el-button>
+                <el-button type="primary" icon="el-icon-document-add" size="mini" @click="addPic">{yun:}t key='admin_00586'{/yun}</el-button>
             </div>
         </div>
         <div class="moduleElTable">
@@ -31,10 +31,10 @@
                 <el-table-column fixed="right" label="操作" width="250">
                     <template slot-scope="scope">
                         <div class="moduleElTaCaoz">
-                            <el-button size="mini" @click="editPic(scope.row)">修改</el-button>
-                            <el-button type="danger" size="mini" @click="delrow(scope.row.id)">删除</el-button>
+                            <el-button size="mini" @click="editPic(scope.row)">{yun:}t key='wap_js_00073'{/yun}</el-button>
+                            <el-button type="danger" size="mini" @click="delrow(scope.row.id)">{yun:}t key='common.delete'{/yun}</el-button>
                             <el-button v-if="scope.row.is_themb == '0'" size="mini"
-                                @click="thumb(scope.row.id)">设为缩略图</el-button>
+                                @click="thumb(scope.row.id)">{yun:}t key='admin_00844'{/yun}</el-button>
                         </div>
                     </template>
                 </el-table-column>
@@ -47,7 +47,7 @@
                     <div class="drawerModInfo">
                         <div class="drawerModLis">
                             <div class="drawerModTite">
-                                <span>图片名称</span>
+                                <span>{yun:}t key='admin_00845'{/yun}</span>
                             </div>
                             <div class="drawerModInpt">
                                 <el-input v-model="info.title"></el-input>
@@ -55,7 +55,7 @@
                         </div>
                         <div class="drawerModLis">
                             <div class="drawerModTite">
-                                <span>招聘会图片</span>
+                                <span>{yun:}t key='admin_00846'{/yun}</span>
                             </div>
                             <div class="drawerModInpt">
                                 <el-upload :accept="pic_accept" class="avatar-uploader" :action="uploadAction"
@@ -67,7 +67,7 @@
                         </div>
                         <div class="drawerModLis">
                             <div class="drawerModTite">
-                                <span>排序</span>
+                                <span>{yun:}t key='member_com_00022'{/yun}</span>
                             </div>
                             <div class="drawerModInpt">
                                 <el-input v-model="info.sort"
@@ -77,18 +77,18 @@
 
                     </div>
                     <div class="setBasicButn" style="border: none;">
-                        <el-button type="primary" size="medium" @click="save" :disabled="submitLoading">提交</el-button>
+                        <el-button type="primary" size="medium" @click="save" :disabled="submitLoading">{yun:}t key='common.submit'{/yun}</el-button>
                     </div>
                 </div>
             </el-drawer>
         </div>
         <div class="modluDrawer">
-            <el-dialog title="信息" :visible.sync="delTplBox" :with-header="true" :modal-append-to-body="false"
+            <el-dialog title="{yun:}t key='admin_00308'{/yun}" :visible.sync="delTplBox" :with-header="true" :modal-append-to-body="false"
                 :show-close="true" width="30%">
-                <span>确定要删除？</span>
+                <span>{yun:}t key='wap_user_00001'{/yun}</span>
                 <span slot="footer" class="dialog-footer">
-                    <el-button @click="delTplBox = false">取 消</el-button>
-                    <el-button type="primary" @click="delTplSubmit">确 定</el-button>
+                    <el-button @click="delTplBox = false">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
+                    <el-button type="primary" @click="delTplSubmit">{yun:}t key='wap_com_00019'{/yun}</el-button>
                 </span>
             </el-dialog>
         </div>
@@ -105,7 +105,7 @@ module.exports = {
     data: function () {
         return {
             pic_accept: localStorage.getItem("pic_accept"),
-            emptytext: '暂无数据',
+            emptytext: "{yun:}t key='wap_js_00113'{/yun}",
             loading: false,
             submitLoading: false,
             zph_id: '',
@@ -180,7 +180,7 @@ module.exports = {
         async delTplSubmit() {
             let that = this;
             if (that.tplid == '') {
-                message.error('请选择要删除的模板');
+                message.error("{yun:}t key='admin_00307'{/yun}");
                 return false;
             }
             httpPost('m=system&c=set_tplset&a=comtpldel', { id: that.tplid }).then(function (response) {
@@ -205,7 +205,7 @@ module.exports = {
                 return false;
             }
             if (that.info.pic_n == '') {
-                message.error('请上传图片');
+                message.error("{yun:}t key='wap_01412'{/yun}");
                 return false;
             }
             formData.append('title', that.info.title);
@@ -243,7 +243,7 @@ module.exports = {
             let that = this;
             let param = { id: that.zph_id };
             that.loading = true;
-            that.emptytext = "数据加载中";
+            that.emptytext = "{yun:}t key='admin_user_weipin_00026'{/yun}";
             httpPost('m=neirong&c=zhaopinhui&a=upload', param).then(function (response) {
                 let res = response.data;
                 if (res.error == 0) {
@@ -251,7 +251,7 @@ module.exports = {
                     that.srcList = res.data.pics;
                     that.loading = false;
                     if (that.tableData.length === 0) {
-                        that.emptytext = "暂无数据";
+                        that.emptytext = "{yun:}t key='wap_js_00113'{/yun}";
                     }
                 }
             }).catch(function (error) {

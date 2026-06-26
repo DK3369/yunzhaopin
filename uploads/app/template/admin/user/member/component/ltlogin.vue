@@ -2,11 +2,11 @@
     <div class="moduleElHight">
         <div class="moduleSeachbig">
             <div class="tableSeachInpt tableSeachInptsmalltwo">
-                <el-date-picker v-model="search.times" type="daterange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" size="mini" @change="doUserQuery"></el-date-picker>
+                <el-date-picker v-model="search.times" type="daterange" range-separator="至" start-placeholder="{yun:}t key='admin_00343'{/yun}" end-placeholder="{yun:}t key='admin_00344'{/yun}" size="mini" @change="doUserQuery"></el-date-picker>
             </div>
             <div class="tableSeachInpt tableSeachInptsmall">
-                <el-input placeholder="请输入你要搜索的关键字" @keyup.enter.native="doUserQuery" size="small" v-model="search.keyword" class="input-with-select" clearable>
-                	<el-select v-model="search.type" slot="prepend" placeholder="身份类型">
+                <el-input placeholder="{yun:}t key='admin_user_00158'{/yun}" @keyup.enter.native="doUserQuery" size="small" v-model="search.keyword" class="input-with-select" clearable>
+                	<el-select v-model="search.type" slot="prepend" placeholder="{yun:}t key='admin_user_00136'{/yun}">
                 		<el-option label="用户名" value="1"></el-option>
                 		<el-option label="内容" value="2"></el-option>
                 		<el-option label="用户ID" value="3"></el-option>
@@ -14,7 +14,7 @@
                 </el-input>
             </div>
             <div class="tableSeachInpt">
-                <el-button type="primary" icon="el-icon-search" size="mini" @click="doUserQuery">查询</el-button>
+                <el-button type="primary" icon="el-icon-search" size="mini" @click="doUserQuery">{yun:}t key='admin_user_weipin_00049'{/yun}</el-button>
             </div>
         </div>
         <div class="moduleElTable" :class="{ 'moduleElTableHig': tableHig }" style="border: 1px solid #ebeef5; width: calc(100% - 2px);">
@@ -34,7 +34,7 @@
                 <el-table-column label="操作" width="80" fixed="right">
                     <template slot-scope="scope">
                         <div class="cz_button">
-                            <el-button type="danger" size="mini" @click="del(scope.row)">删除</el-button>
+                            <el-button type="danger" size="mini" @click="del(scope.row)">{yun:}t key='common.delete'{/yun}</el-button>
                         </div>
                     </template>
                 </el-table-column>
@@ -42,8 +42,8 @@
         </div>
         <div class="modulePaging">
             <div>
-                <el-checkbox v-model="checkedAll" @change="selectAllBottom">全选</el-checkbox>
-                <el-button @click="batchDel" size="mini">批量删除</el-button></div>
+                <el-checkbox v-model="checkedAll" @change="selectAllBottom">{yun:}t key='wap_js_00074'{/yun}</el-checkbox>
+                <el-button @click="batchDel" size="mini">{yun:}t key='member_com_00055'{/yun}</el-button></div>
             <div class="modulePagNum">
                 <el-pagination :total="total" @current-change="userPageChange" :page-size="pageSize"
                                :page-sizes="pageSizes"
@@ -63,7 +63,7 @@ module.exports = {
     data: function () {
         return {
             loading: false,
-            dataText: '数据加载中',
+            dataText: "{yun:}t key='admin_user_weipin_00026'{/yun}",
             checkedAll:false,
             input: '',
             select: '',
@@ -71,7 +71,7 @@ module.exports = {
             tableHig: true,
             tableData: [],
             items: [
-                { type: '', label: '正常' },
+                { type: '', label: "{yun:}t key='admin_user_00149'{/yun}" },
             ],
             search:{
                 times:'',
@@ -121,7 +121,7 @@ module.exports = {
                         _this.$refs.multipleTable.bodyWrapper.scrollTop = 0;
                     }
                     if (_this.tableData.length === 0) {
-                        _this.dataText = "暂无数据";
+                        _this.dataText = "{yun:}t key='wap_js_00113'{/yun}";
                     }
                 }
             })

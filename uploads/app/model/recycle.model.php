@@ -56,9 +56,9 @@ class recycle_model extends model
         if (isset($data) && !empty($data)) {
 
             $return['id']       =   $this->insert_into('outside', $data);
-            $return['msg']      =   '回收站(ID:' . $return['id'] . ')';
+            $return['msg']      =   yun_auto_t('回收站(ID:') . $return['id'] . ')';
             $return['errcode']  =   $return['id'] ? '9' : '8';
-            $return['msg']      =   $return['id'] ? $return['msg'] . '添加成功！' : $return['msg'] . '添加失败！';
+            $return['msg']      =   $return['id'] ? $return['msg'] . 'admin_system_00138' : $return['msg'] . 'admin_system_00137';
 
             return $return;
         }
@@ -100,14 +100,14 @@ class recycle_model extends model
                 }
 
                 $return['errcode']  =                                                                                            9;
-                $return['msg']      =   '数据恢复成功！';
+                $return['msg']      =   yun_at('common_06572');
             } else {
 
-                $return['msg']      =   '请选择有效数据进行恢复！';
+                $return['msg']      =   yun_at('common_00818');
             }
         } else {
 
-            $return['msg']          =   '参数错误！';
+            $return['msg']          =   yun_at('wap_01298');
         }
 
         return $return;
@@ -142,15 +142,15 @@ class recycle_model extends model
                 }
 
                 $return['errcode']  =   9;
-                $return['msg']      =   '数据恢复成功！';
+                $return['msg']      =   yun_at('common_06572');
 
             } else {
 
-                $return['msg']      = '请选择有效数据进行恢复！';
+                $return['msg']      = yun_at('common_00818');
             }
         } else {
 
-            $return['msg']          =   '参数错误！';
+            $return['msg']          =   yun_at('wap_01298');
         }
 
         return $return;
@@ -174,14 +174,14 @@ class recycle_model extends model
 
             $return['id']   =   $this->delete_all('recycle', $whereData, $data['limit'], '', '1');
 
-            $return['msg']  =   '回收站数据(ID:' . $delId . ')';
+            $return['msg']  =   yun_auto_t('回收站数据(ID:') . $delId . ')';
 
             $return['errcode']  =   $return['id'] ? '9' : '8';
 
-            $return['msg']  =   $return['id'] ? $return['msg'] . '删除成功！' : $return['msg'] . '删除失败！';
+            $return['msg']  =   $return['id'] ? $return['msg'] . 'admin_user_00187' : $return['msg'] . 'admin_user_00186';
         } else {
 
-            $return['msg']  =   '请选择您要删除的信息！';
+            $return['msg']  =   yun_at('model_00034');
             $return['errcode'] = 8;
         }
 

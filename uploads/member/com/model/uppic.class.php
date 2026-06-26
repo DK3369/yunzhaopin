@@ -17,7 +17,7 @@ class uppic_controller extends company{
 	        
 	        if($imginfo[0] < 140 || $imginfo[1] < 140){
 	            
-	            $res['s_thumb']  =  'LOGO尺寸比例太小，最小像素：140*140';
+	            $res['s_thumb']  =  yun_auto_t('LOGO尺寸比例太小，最小像素：140*140');
 	            
 	        }else{
 	            $upArr  =  array(
@@ -39,7 +39,7 @@ class uppic_controller extends company{
 	        }
 	    }else{
 	        
-	        $res['s_thumb']  =  '请选择上传图片';
+	        $res['s_thumb']  =  yun_at('common_01412');
 	    }
 	    echo yun_json_encode($res);die;
 	}
@@ -49,7 +49,7 @@ class uppic_controller extends company{
 		$upload_path 	= 	'data/upload/company/';
 		
 		if(stripos(trim($_POST['img1']),$upload_path)===false){
-			$this->ACT_layer_msg("非法操作！",8,$_SERVER['HTTP_REFERER']);
+			$this->ACT_layer_msg('model_00001',8,$_SERVER['HTTP_REFERER']);
 		}
 		
 		$uploadM   =  $this->MODEL('upload');

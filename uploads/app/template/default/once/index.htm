@@ -24,24 +24,24 @@
 			<div class="once_banner_cont_b"><img src="{yun:}$style{/yun}/images/once_bg.jpg" width="1200" height="220" /></div>
 			<div class="tiny_banner_bg"></div>
 			<div class="tiny_banner_fb">
-				<div class="tiny_banner_fb_h1">发布店铺招聘</div>
-				<div class="tiny_banner_fb_p">不用注册，快速发布招聘信息，这里也能找到满意人才！</div>
+				<div class="tiny_banner_fb_h1">{yun:}t key='common_02255'{/yun}</div>
+				<div class="tiny_banner_fb_p">不用注册，{yun:}t key='common_02256'{/yun}，这里也能找到满意人才！</div>
 				
 				<div class="tiny_banner_fb_fb">
 					{yun:}if $isFb{/yun}						
 						{yun:}if $config.sy_once == 0{/yun}
-							<a href='{yun:}url m=once c=add{/yun}'  class="recruit_user_public">发布店铺招聘</a>
+							<a href='{yun:}url m=once c=add{/yun}'  class="recruit_user_public">{yun:}t key='common_02255'{/yun}</a>
 						{yun:}elseif $num>0{/yun}
 							{yun:}if $ordernum{/yun}
-								<a href='javascript:;' onclick="showOrder('{yun:}$ordernum{/yun}')"  class="recruit_user_public">发布店铺招聘</a>
+								<a href='javascript:;' onclick="showOrder('{yun:}$ordernum{/yun}')"  class="recruit_user_public">{yun:}t key='common_02255'{/yun}</a>
 							{yun:}else{/yun}
-								<a href='javascript:;' onclick="addoncemsg('{yun:}t key='common_02178'{/yun}{yun:}$config.sy_once{/yun}{yun:}t key='common_02089'{/yun}，剩余可发布{yun:}$num{/yun}{yun:}t key='common_02089'{/yun}','{yun:}url m=once c=add{/yun}')" class="recruit_user_public">发布店铺招聘</a>
+								<a href='javascript:;' onclick="addoncemsg('{yun:}t key='common_02178'{/yun}{yun:}$config.sy_once{/yun}{yun:}t key='common_02089'{/yun}{yun:}t key='wap_00593'{/yun}{yun:}$num{/yun}{yun:}t key='common_02089'{/yun}','{yun:}url m=once c=add{/yun}')" class="recruit_user_public">{yun:}t key='common_02255'{/yun}</a>
 							{yun:}/if{/yun}
 						{yun:}else{/yun}
-							<a href="javascript:;" onclick="layer.msg('每天最多可发布{yun:}$config.sy_once{/yun}份店铺招聘！',2,8)" class="">发布店铺招聘</a>
+							<a href="javascript:;" onclick="layer.msg('每天最多可发布{yun:}$config.sy_once{/yun}份店铺招聘！',2,8)" class="">{yun:}t key='common_02255'{/yun}</a>
 						{yun:}/if{/yun}	
 					{yun:}else{/yun}
-						<a href="javascript:;" onclick="layer.msg("{yun:}t key='wap_00333'{/yun}",2,8)" class="">发布店铺招聘</a>
+						<a href="javascript:;" onclick="layer.msg("{yun:}t key='wap_00333'{/yun}",2,8)" class="">{yun:}t key='common_02255'{/yun}</a>
 					{yun:}/if{/yun}   
 								   
            </div>
@@ -55,9 +55,9 @@
          {yun:}foreach from=$finder item=v key=key{/yun}
          <input type="hidden" name="{yun:}$key{/yun}" value="{yun:}$v{/yun}" /> 
          {yun:}/foreach{/yun}
-  <div class="tiny_search_list"><span class="tiny_search_name">筛选条件：</span>
+  <div class="tiny_search_list"><span class="tiny_search_name">{yun:}t key='common_02261'{/yun}</span>
   <div class="tiny_search_choice">
-  <input type="button" value="{yun:}if $add_time[$smarty.get.add_time]{/yun}{yun:}$add_time[$smarty.get.add_time]{/yun}{yun:}else{/yun}时间范围{yun:}/if{/yun}" id="add_times" class="tiny_search_but">
+  <input type="button" value="{yun:}if $add_time[$smarty.get.add_time]{/yun}{yun:}$add_time[$smarty.get.add_time]{/yun}{yun:}else{/yun}{yun:}t key='wap_00591'{/yun}{yun:}/if{/yun}" id="add_times" class="tiny_search_but">
   <div class="tiny_search_select none"id="res_menu"> <ul class="" >
 		{yun:}foreach item=v key=key from=$add_time{/yun}
 		<li>
@@ -171,7 +171,7 @@
         <div class="once_list_left">
   
           
- <div class="once_list_tit"> 共为您找到 <span class="tiny_list_tit_n" id="totalshow"> 0 </span> 条店铺信息</div>
+ <div class="once_list_tit"> {yun:}t key='common_02262'{/yun} <span class="tiny_list_tit_n" id="totalshow"> 0 </span> {yun:}t key='common_02263'{/yun}</div>
 <div class="once_list_left_box">
 	{yun:}fast item=once ispage=1 limit=20 keyword='auto.keyword' add_time='auto.add_time' provinceid='auto.provinceid' cityid='auto.cityid' three_cityid='auto.three_cityid' {/yun}
     <div class="once_list">
@@ -184,7 +184,7 @@
 			<div class="once_list_p">要求：{yun:}$once.require|mb_substr:0:38:'utf-8'{/yun}<a href="{yun:}url m=once c=show id='`$once.id`'{/yun}" class="once_list_p_a">{yun:}t key='member_com_00380'{/yun}</a></div>
 			<span class="once_list_xz">{yun:}if $once.salary{/yun}￥{yun:}$once.salary{/yun}{yun:}else{/yun}{yun:}t key='common.negotiable'{/yun}{yun:}/if{/yun}</span>
 			{yun:}if $config.user_wzp_link==1 && $uid<=0{/yun}
-				<div class="once_list_login"><a href="javascript:void(0);" onclick="showlogin('');" style="color:#1c99ef">[{yun:}t key='common.login'{/yun}]</a> 后才可以查看联系方式</div>
+				<div class="once_list_login"><a href="javascript:void(0);" onclick="showlogin('');" style="color:#1c99ef">[{yun:}t key='common.login'{/yun}]</a> {yun:}t key='common_02264'{/yun}</div>
 			{yun:}else{/yun}
 				{yun:}if $once.phone{/yun}
 					<div class="once_list_tel">{yun:}$once.phone{/yun}<span class="once_list_tel_man">{yun:}$once.linkman{/yun}</span></div>
@@ -207,8 +207,8 @@
 	<div class="onceseachno_left"> <img src="{yun:}$style{/yun}/images/search-no.gif" /></div>
 	<div class="onceseachno_content"> <strong>{yun:}t key='common_01912'{/yun}，没有找到满足条件的职位</strong><br/>
 		<span> {yun:}t key='common_01910'{/yun}：<br/>
-  1、适当减少已选择的条件<br/>
-  2、适当删减或更改搜索关键字<br/>
+  1、{yun:}t key='common_02286'{/yun}<br/>
+  {yun:}t key='common_02266'{/yun}<br/>
   </span> <span> {yun:}t key='admin_system_00443'{/yun}：<br/>
   {yun:}key limit=6 recom=1 type=1 item=top_key{/yun} <a href="{yun:}$top_key.url{/yun}">{yun:}$top_key.key_name{/yun}</a> {yun:}/key{/yun} </span> </div>
 			</div>

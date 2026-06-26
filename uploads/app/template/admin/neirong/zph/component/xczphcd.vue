@@ -3,20 +3,20 @@
         <div class="modulemoreSeach">
             <div class="moduleSeachleft">
                 <div class="tableSeachInpt">
-                    <el-input placeholder="请输入搜索内容" clearable size="small" prefix-icon="el-icon-search" v-model="keyword">
+                    <el-input placeholder="{yun:}t key='admin_00340'{/yun}" clearable size="small" prefix-icon="el-icon-search" v-model="keyword">
                     </el-input>
                 </div>
                 <div class="tableSeachInpt">
-                    <el-button type="primary" icon="el-icon-search" size="mini" @click="search">查询</el-button>
+                    <el-button type="primary" icon="el-icon-search" size="mini" @click="search">{yun:}t key='admin_user_weipin_00049'{/yun}</el-button>
                 </div>
             </div>
             <div class="moduleSeachButn">
                 <div class="tableSeachInpt">
-                    <el-button type="primary" icon="el-icon-document-add" size="mini" @click="toadd({id: ''})">新增场地</el-button>
+                    <el-button type="primary" icon="el-icon-document-add" size="mini" @click="toadd({id: ''})">{yun:}t key='admin_00829'{/yun}</el-button>
                 </div>
             </div>
         </div>
-        <div class="admin_datatip"><i class="el-icon-document"></i> 可以实现区域、展位等进行自主设置，企业可在线付费报名参加招聘会等操作
+        <div class="admin_datatip"><i class="el-icon-document"></i> {yun:}t key='admin_00830'{/yun}
         </div>
         <div class="moduleElTable moduleElMoreLive" style="border: 1px solid #ebeef5; width: calc(100% - 2px);">
             <el-table :data="tableData" style="width: 100%" stripe @selection-change="handleSelectionChange"
@@ -56,9 +56,9 @@
                 <el-table-column label="操作" fixed="right" width="200">
                     <template slot-scope="scope">
                         <div class="cz_button">
-                            <el-button size="mini" plain @click="toadd(scope.row)">修改</el-button>
-                            <el-button size="mini" plain @click="todtl(scope.row.id)">详细</el-button>
-                            <el-button type="danger" size="mini" @click="delrow(scope.row.id, 1)">删除</el-button>
+                            <el-button size="mini" plain @click="toadd(scope.row)">{yun:}t key='wap_js_00073'{/yun}</el-button>
+                            <el-button size="mini" plain @click="todtl(scope.row.id)">{yun:}t key='admin_00294'{/yun}</el-button>
+                            <el-button type="danger" size="mini" @click="delrow(scope.row.id, 1)">{yun:}t key='common.delete'{/yun}</el-button>
                         </div>
                     </template>
                 </el-table-column>
@@ -66,18 +66,18 @@
         </div>
         <div class="modulePaging">
             <div>
-                <el-checkbox v-model="checkedAll" @change="selectAllBottom">全选</el-checkbox>
-                <el-button @click="delAllBottom(1)" size="mini">批量删除</el-button>
+                <el-checkbox v-model="checkedAll" @change="selectAllBottom">{yun:}t key='wap_js_00074'{/yun}</el-checkbox>
+                <el-button @click="delAllBottom(1)" size="mini">{yun:}t key='member_com_00055'{/yun}</el-button>
             </div>
         </div>
         <!-- 场地详细 -->
-        <el-drawer title="场地详细" :visible.sync="drawerdtl" append-to-body :modal-append-to-body="false" size="80%">
+        <el-drawer title="{yun:}t key='admin_00833'{/yun}" :visible.sync="drawerdtl" append-to-body :modal-append-to-body="false" size="80%">
             <div class="moduleElHight" style="padding: 0 20px;">
                 <div class="modulemoreSeach" style="width: 100%; padding-bottom: 10px;">
                     <div class="">
                     </div>
                     <div class="moduleHeadrButn" >
-                        <el-button type="primary" icon="el-icon-document-add" @click="toadd({id: ''})" size="mini">添加场地
+                        <el-button type="primary" icon="el-icon-document-add" @click="toadd({id: ''})" size="mini">{yun:}t key='admin_00823'{/yun}
                         </el-button>
                     </div>
                 </div>
@@ -126,7 +126,7 @@
                         <template slot-scope="scope">
                             <div class="cz_button">
                                 <el-button type="danger" size="small "
-                                           @click="delrow(scope.row.id, 2)">删除
+                                           @click="delrow(scope.row.id, 2)">{yun:}t key='common.delete'{/yun}
                                 </el-button>
                             </div>
                         </template>
@@ -136,8 +136,8 @@
                 <div class="modulePaging" style="padding-left: 20px;">
                     <div class="">
                         <div class="">
-                            <el-checkbox v-model="checkedSubTblAll" @change="selectSubTblAllBottom">全选</el-checkbox>
-                            <el-button @click="delAllBottom(2)" size="mini">批量删除</el-button>
+                            <el-checkbox v-model="checkedSubTblAll" @change="selectSubTblAllBottom">{yun:}t key='wap_js_00074'{/yun}</el-checkbox>
+                            <el-button @click="delAllBottom(2)" size="mini">{yun:}t key='member_com_00055'{/yun}</el-button>
                         </div>
                     </div>
                 </div>
@@ -151,25 +151,25 @@
                     <div>
                         <div class="drawerModLis">
                             <div class="drawerModTite">
-                                <span>区域名称</span>
+                                <span>{yun:}t key='admin_00292'{/yun}</span>
                             </div>
                             <div class="drawerModInpt">
-                                <el-input v-if="curr_data.id == ''" type="textarea" :rows="2" placeholder="请输入区域名称" v-model="curr_data.name">
+                                <el-input v-if="curr_data.id == ''" type="textarea" :rows="2" placeholder="{yun:}t key='admin_00288'{/yun}" v-model="curr_data.name">
                                 </el-input>
-                                <el-input v-else placeholder="请输入区域名称" v-model="curr_data.name">
+                                <el-input v-else placeholder="{yun:}t key='admin_00288'{/yun}" v-model="curr_data.name">
                                 </el-input>
                             </div>
                             <div class="drawerModTips" v-if="curr_data.id">
-                                <el-alert title="说明：可以添加多个场地（请用,分割)" type="info" show-icon :closable="false">
+                                <el-alert title="{yun:}t key='admin_00834'{/yun}" type="info" show-icon :closable="false">
                                 </el-alert>
                             </div>
                         </div>
                         <div class="drawerModLis" v-if="curr_data.id == ''">
                             <div class="drawerModTite">
-                                <span>一级分类</span>
+                                <span>{yun:}t key='admin_00290'{/yun}</span>
                             </div>
                             <div class="drawerModInpt">
-                                <el-select v-model="fir_id" placeholder="请选择" @change="firChange">
+                                <el-select v-model="fir_id" placeholder="{yun:}t key='wap_user_00100'{/yun}" @change="firChange">
                                     <el-option label="请选择" value="">
                                     </el-option>
                                     <el-option v-for="item in tableData" :key="item.id" :label="item.name" :value="item.id">
@@ -177,16 +177,16 @@
                                 </el-select>
                             </div>
                             <div class="drawerModTips">
-                                <el-alert title="一级分类已选择为添加二级分类，不选择为添加一级分类" type="info" show-icon :closable="false">
+                                <el-alert title="{yun:}t key='admin_00835'{/yun}" type="info" show-icon :closable="false">
                                 </el-alert>
                             </div>
                         </div>
                         <div class="drawerModLis" v-if="curr_data.id == ''">
                             <div class="drawerModTite">
-                                <span>二级分类</span>
+                                <span>{yun:}t key='admin_00291'{/yun}</span>
                             </div>
                             <div class="drawerModInpt">
-                                <el-select v-model="sec_id" placeholder="请选择">
+                                <el-select v-model="sec_id" placeholder="{yun:}t key='wap_user_00100'{/yun}">
                                     <el-option label="请选择" value="">
                                     </el-option>
                                     <el-option v-for="item in secClass" :key="item.id" :label="item.name" :value="item.id">
@@ -194,49 +194,49 @@
                                 </el-select>
                             </div>
                             <div class="drawerModTips">
-                                <el-alert title="二级分类已选择为添加三级分类，不选择为添加二级分类(需先选择一级分类)" type="info" show-icon
+                                <el-alert title="{yun:}t key='admin_00836'{/yun}" type="info" show-icon
                                           :closable="false">
                                 </el-alert>
                             </div>
                         </div>
                         <div class="drawerModLis" v-if="curr_data.keyid == '' || fir_id == ''">
                             <div class="drawerModTite">
-                                <span>展位平面图</span>
+                                <span>{yun:}t key='admin_00289'{/yun}</span>
                             </div>
                             <div class="drawerModInpt">
                                 <el-upload class="avatar-uploader" :action="uploadAction" :accept="pic_accept" :show-file-list="false" :on-change="picChange">
                                     <img style="width:200px;" v-if="curr_data.pic_n" :src="curr_data.pic_n" class="avatar">
-                                    <el-button v-else type="primary" icon="el-icon-document-add">上传图片</el-button>
+                                    <el-button v-else type="primary" icon="el-icon-document-add">{yun:}t key='wap_00540'{/yun}</el-button>
                                 </el-upload>
                             </div>
                         </div>
                         <div class="drawerModLis" v-if="curr_data.keyid != '' || fir_id != ''">
                             <div class="drawerModTite">
-                                <span>价格</span>
+                                <span>{yun:}t key='wap_00563'{/yun}</span>
                             </div>
                             <div class="drawerModInpt">
-                                <el-input v-model="curr_data.price" placeholder="请输入价格"
+                                <el-input v-model="curr_data.price" placeholder="{yun:}t key='admin_00837'{/yun}"
                                           @input="inputIntNumber($event, 'curr_data', 'price')">
-                                    <template slot="append">积分</template>
+                                    <template slot="append">{yun:}t key='wap_user_00008'{/yun}</template>
                                 </el-input>
                             </div>
                         </div>
                         <div class="drawerModLis">
                             <div class="drawerModTite">
-                                <span>排序</span>
+                                <span>{yun:}t key='member_com_00022'{/yun}</span>
                             </div>
                             <div class="drawerModInpt">
-                                <el-input v-model="curr_data.sort" placeholder="请输入排序"
+                                <el-input v-model="curr_data.sort" placeholder="{yun:}t key='admin_00814'{/yun}"
                                           @input="inputIntNumber($event, 'curr_data', 'sort')"></el-input>
                             </div>
                             <div class="drawerModTips">
-                                <el-alert title="越小越在前" type="info" show-icon :closable="false">
+                                <el-alert title="{yun:}t key='admin_00218'{/yun}" type="info" show-icon :closable="false">
                                 </el-alert>
                             </div>
                         </div>
                         <div class="drawerModLis">
                             <div class="drawerModTite">
-                                <span>使用说明</span>
+                                <span>{yun:}t key='admin_00831'{/yun}</span>
                             </div>
                             <div class="drawerModInpt">
                                 <div style="border: 1px solid #ccc;">
@@ -247,7 +247,7 @@
                         </div>
                     </div>
                     <div class="setBasicButn" style="border: none;">
-                        <el-button type="primary" size="medium" @click="save" :disabled="submitLoading">提交</el-button>
+                        <el-button type="primary" size="medium" @click="save" :disabled="submitLoading">{yun:}t key='common.submit'{/yun}</el-button>
                     </div>
                 </div>
             </el-drawer>
@@ -261,7 +261,7 @@
         data: function () {
             return {
                 pic_accept: localStorage.getItem("pic_accept"),
-                emptytext: '暂无数据',
+                emptytext: "{yun:}t key='wap_js_00113'{/yun}",
                 loading: false,
                 submitLoading: false,
                 srcList: [],
@@ -301,7 +301,7 @@
             getdtlinfo(){
                 var that = this
                 that.loading = true;
-                that.emptytext = "数据加载中";
+                that.emptytext = "{yun:}t key='admin_user_weipin_00026'{/yun}";
                 httpPost('m=neirong&c=zph_space&a=up', {id: that.del_id}, {hideloading: true}).then(function (response) {
                     let res = response.data;
                     if (res.error === 0) {
@@ -313,10 +313,10 @@
                         }
                         that.loading = false;
                         if (that.spaceTableData.length === 0){
-                            that.emptytext = "暂无数据";
+                            that.emptytext = "{yun:}t key='wap_js_00113'{/yun}";
                         }
                     } else {
-                        message.error('修改失败');
+                        message.error("{yun:}t key='admin_00187'{/yun}");
                     }
                 }).catch(function (error) {
                     console.log(error);
@@ -465,9 +465,9 @@
                 httpPost('m=neirong&c=zph_space&a=ajax', sendData, {hideloading: true}).then(function (response) {
                     let res = response.data;
                     if (res.error === 0) {
-                        message.success('修改成功');
+                        message.success("{yun:}t key='admin_user_company_00208'{/yun}");
                     } else {
-                        message.error('修改失败');
+                        message.error("{yun:}t key='admin_00187'{/yun}");
                     }
                     _this.oldData = null;
                     // if (type == 1) {
@@ -483,7 +483,7 @@
                 that.sec_id = ''
                 that.secClass = []
                 if (data) {
-                    httpPost('m=neirong&c=zph_space&a=ajaxspace', {id: data}).then(function (result) {
+                    httpPost('m=neirong&c=zph_space&a=ajaxspace", {id: data}).then(function (result) {
                         var res = result.data
                         if (res.error == 0) {
                             that.secClass = res.data
@@ -493,7 +493,7 @@
                     })
                 }
             },
-            // 展位平面图
+            // {yun:}t key='admin_00289'{/yun}
             picChange(file) {
                 var tmp = deepClone(this.curr_data)
                 // 预览文件处理
@@ -515,15 +515,15 @@
                         let editorConfig = {
                             MENU_CONF: {
                                 uploadImage: {
-                                    server: baseUrl + 'm=index&c=uploadfile',
-                                    fieldName: 'file'
+                                    server: baseUrl + "m=index&c=uploadfile',
+                                    fieldName: 'file"
                                 }
                             }
                         };
-                        // 招聘会介绍
+                        // {yun:}t key='wap_00566'{/yun}
                         if (!editor) {
                             editor = createEditor({
-                                selector: '#editor-container',
+                                selector: "#editor-container',
                                 html: '',
                                 config: editorConfig,
                                 mode: 'simple'
@@ -601,7 +601,7 @@
                     params.keyword = that.keyword
                 }
                 that.loading = true;
-                that.emptytext = "数据加载中";
+                that.emptytext = "{yun:}t key='admin_user_weipin_00026'{/yun}";
                 httpPost('m=neirong&c=zph_space&a=index', params, {hideloading: true}).then(function (result) {
                     var res = result.data
                     if (res.error == 0) {
@@ -609,7 +609,7 @@
                         that.srcList = res.data.pics
                         that.loading = false;
                         if (that.tableData.length === 0){
-                            that.emptytext = "暂无数据";
+                            that.emptytext = "{yun:}t key='wap_js_00113'{/yun}";
                         }
                     }
                 }).catch(function (e) {
@@ -622,7 +622,7 @@
             },
             delAllBottom(type) {
                 if (!this.selectedItem.length) {
-                    message.error('请选择要删除的数据项');
+                    message.error("{yun:}t key='admin_00136'{/yun}");
                     return false;
                 }
                 this.del_type = type

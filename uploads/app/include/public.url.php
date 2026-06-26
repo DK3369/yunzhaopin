@@ -927,7 +927,7 @@ function navcalss($menu,$classname){
     $http = ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https')) ? 'https' : 'http';
     $CurrentAllPath= $http . '://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
     $get = $_GET;
-    if($menu['name']=="首页"){
+    if($menu['name']=='wap_00191'){
         if($CurrentAllPath==$config['sy_weburl']."/" || $CurrentAllPath==$config['sy_weburl'] ||$CurrentAllPath==$config['sy_weburl']."/lietou/"){
             return $classname;
         }

@@ -44,21 +44,21 @@ class privacy_controller extends user{
 
             if (intval($_GET['status']) == 2) {
 
-                $stext  =   '隐藏';
+                $stext  =   'admin_user_00259';
             } else if (intval($_GET['status']) == 1) {
 
-                $stext  =   '公开';
+                $stext  =   'wap_js_00005';
             } else if (intval($_GET['status']) == 3) {
 
-                $stext  =   '仅投递企业可见';
+                $stext  =   'member_user_00256';
             }
 
             $logM		=	$this->MODEL('log');
-            $logContent =   '简历更新：调整隐私状态';
-            $logDetail  =   "简历更新隐私状态：".$stext;
+            $logContent =   'member_user_00609';
+            $logDetail  =   'member_user_00610'.$stext;
             $logM->addMemberLog($this->uid, $this->usertype, $logContent, 2, 2, $logDetail);
 
-            $this->layer_msg('简历设置成功！',9,0);
+            $this->layer_msg('member_user_00611',9,0);
         }
 	}
     //取消屏蔽

@@ -4,9 +4,9 @@
             <table class="tableVue">
                 <thead>
                     <tr align="left">
-                        <th width="180">名称</th>
-                        <th width="400">状态</th>
-                        <th>说明</th>
+                        <th width="180">{yun:}t key='member_com_00021'{/yun}</th>
+                        <th width="400">{yun:}t key='member_user_00181'{/yun}</th>
+                        <th>{yun:}t key='member_com_00207'{/yun}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -22,7 +22,7 @@
                         </td>
                         <td>
                             <div class="TableShuom" >
-                                <span>如：1002478x</span>
+                                <span>{yun:}t key='admin_tool_00639'{/yun}</span>
                             </div>
                         </td>
                     </tr>
@@ -38,7 +38,7 @@
                          </td>
                          <td>
                              <div class="TableShuom">
-                                 <span>如：4dd1c30d472676914f2fbfbnjt</span>
+                                 <span>{yun:}t key='admin_tool_00640'{/yun}</span>
                              </div>
                          </td>
                      </tr>
@@ -46,7 +46,7 @@
             </table>
         </div>
         <div class="setBasicButn" style="border: none; height: 80px;">
-            <el-button type="primary" size="medium" @click="post">提交</el-button>
+            <el-button type="primary" size="medium" @click="post">{yun:}t key='common.submit'{/yun}</el-button>
         </div>
     </div>
 </template>

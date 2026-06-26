@@ -2,24 +2,24 @@
     <div class="moduleElHight" style="margin-left:10px;">
         <div class="moduleSeachbig">
             <div class="tableSeachInpt">
-                <el-input placeholder="请输入你要搜索的关键字" size="small" v-model="search_params.keyword"
+                <el-input placeholder="{yun:}t key='admin_user_00158'{/yun}" size="small" v-model="search_params.keyword"
                           clearable prefix-icon="el-icon-search">
                 </el-input>
             </div>
             <div class="tableSeachInpt">
                 <div class="block">
                     <el-cascader  v-model="sel_jobtype" :options="joboptions" :props="{ checkStrictly: true }"
-                                 clearable placeholder="职位分类" size="small" filterable></el-cascader>
+                                 clearable placeholder="{yun:}t key='admin_user_company_00377'{/yun}" size="small" filterable></el-cascader>
                 </div>
             </div>
             <div class=" tableSeachInpt">
                 <div class="block">
                     <el-cascader  v-model="sel_city" :options="cityoptions" :props="{ checkStrictly: true }"
-                                 clearable placeholder="工作地点" size="small" filterable></el-cascader>
+                                 clearable placeholder="{yun:}t key='member_user_00198'{/yun}" size="small" filterable></el-cascader>
                 </div>
             </div>
             <div class="tableSeachInpt">
-                <el-button type="primary" icon="el-icon-search" size="mini" @click="search">查询</el-button>
+                <el-button type="primary" icon="el-icon-search" size="mini" @click="search">{yun:}t key='admin_user_weipin_00049'{/yun}</el-button>
             </div>
         </div>
         <div class="moduleElTable"
@@ -50,13 +50,12 @@
                         <div class=" ">
                             <div class="user_resumejob">
                                 <span @click="openPreview(scope.row)">{{ scope.row.name }}</span>
-                                <span v-if="scope.row.defaults == 1" class="user_resumrmr">默认</span>
+                                <span v-if="scope.row.defaults == 1" class="user_resumrmr">{yun:}t key='wap_js_00098'{/yun}</span>
                             </div>
                             <div class="">
-                                {{ scope.row.age_n }}岁
-                                .{{ scope.row.sex_n }}
-                                <span v-if="scope.row.edu_n">.{{ scope.row.edu_n }}学历</span>
-                                <span v-if="scope.row.exp_n">.{{ scope.row.exp_n }}经验</span>
+                                {yun:}t key='admin_00496'{/yun}
+                                <span v-if="scope.row.edu_n">{yun:}t key='admin_00497'{/yun}</span>
+                                <span v-if="scope.row.exp_n">{yun:}t key='admin_00498'{/yun}</span>
                             </div>
                             <div class="">
                                 <span class="gsd">
@@ -78,13 +77,13 @@
                             <el-progress type="circle" :percentage="parseInt(scope.row.integrity)" :width="45"></el-progress>
                         </div>
                         <div v-if="scope.row.status == 1" class="jlzt">
-                            <i class="el-icon-unlock"></i> 公开
+                            <i class="el-icon-unlock"></i> {yun:}t key='wap_js_00005'{/yun}
                         </div>
                         <div v-else-if="scope.row.status == 3" class="jlzt">
-                            <i class="el-icon-unlock"></i> 投递可见
+                            <i class="el-icon-unlock"></i> {yun:}t key='admin_user_00249'{/yun}
                         </div>
                         <div v-else class="jlwgk jlzt">
-                            <i class="el-icon-lock"></i> 未公开
+                            <i class="el-icon-lock"></i> {yun:}t key='admin_user_00253'{/yun}
                         </div>
                     </template>
                 </el-table-column>
@@ -106,8 +105,8 @@
                 <el-table-column label="操作" width="140" fixed="right">
                     <template slot-scope="scope">
                         <div class="cz_button">
-                            <el-button type="small  " size=" " plain @click="sendOrToudi(scope.row.id,scope.row.uid,'0', 1)">推送</el-button>
-                            <el-button type="small  " size=" " plain @click="sendOrToudi(scope.row.id,scope.row.uid,'0', 2)">投递</el-button>
+                            <el-button type="small  " size=" " plain @click="sendOrToudi(scope.row.id,scope.row.uid,'0', 1)">{yun:}t key='admin_user_company_00379'{/yun}</el-button>
+                            <el-button type="small  " size=" " plain @click="sendOrToudi(scope.row.id,scope.row.uid,'0', 2)">{yun:}t key='admin_user_company_00378'{/yun}</el-button>
                         </div>
                     </template>
                 </el-table-column>
@@ -115,9 +114,9 @@
         </div>
         <div class="modulePaging">
             <div>
-                <el-checkbox v-model="checkedAll" @change="selectAllBottom">全选</el-checkbox>
-                <el-button @click="directs(1)" size="mini">批量推送</el-button>
-                <el-button  @click="directs(2)" size="mini">批量投递</el-button>
+                <el-checkbox v-model="checkedAll" @change="selectAllBottom">{yun:}t key='wap_js_00074'{/yun}</el-checkbox>
+                <el-button @click="directs(1)" size="mini">{yun:}t key='admin_user_company_00376'{/yun}</el-button>
+                <el-button  @click="directs(2)" size="mini">{yun:}t key='admin_user_company_00375'{/yun}</el-button>
             </div>
             <div class="modulePagNum">
                 <el-pagination background @size-change="handleSizeChange"
@@ -133,7 +132,7 @@
             <el-dialog :title="cztype+'进度'" :visible.sync="showprogress" :with-header="true" append-to-body
                        :modal-append-to-body="false" :show-close="true" width="200px">
                 <div class="code_img" style="display:flex;justify-content: center;margin-bottom: 20px;">
-                    <span style="margin-bottom: 10px;">{{cztype}}进度：{{sendnum}}/{{selectedItem.length}}</span>
+                    <span style="margin-bottom: 10px;">{yun:}t key='admin_00765'{/yun}</span>
                 </div>
             </el-dialog>
         </div>
@@ -159,7 +158,7 @@ module.exports = {
     data: function () {
         return {
             loading: false,
-            emptytext: '暂无数据',
+            emptytext: "{yun:}t key='wap_js_00113'{/yun}",
             checkedAllIndeterminate: false,
             seachbutn: true,
             tableHig: true,
@@ -181,7 +180,7 @@ module.exports = {
             job_types: [],
             sendnum: 0,
             showprogress: false,
-            cztype: '',
+            cztype: '",
             islook: false,
 
             prevPage: 0
@@ -235,13 +234,13 @@ module.exports = {
 
     },
     methods: {
-        // 批量推送、投递
+        // {yun:}t key='admin_user_company_00376'{/yun}、{yun:}t key='admin_user_company_00378'{/yun}
         directs:function (cz_type) {
             var that= this
             if (cz_type == 1) {
-                that.cztype = '推送'
+                that.cztype = "推送'
             } else if (cz_type == 2) {
-                that.cztype = '投递'
+                that.cztype = "{yun:}t key='admin_user_company_00378'{/yun}"
             }
             if (!this.selectedItem.length) {
                 message.error('请选择要'+that.cztype+'的数据');
@@ -255,7 +254,7 @@ module.exports = {
                         that.sendOrToudi(item.id, item.uid, that.selectedItem.length, cz_type)
                     }
                 })
-            }, '确定' + that.cztype + '吗？')
+            }, "{yun:}t key='common.confirm'{/yun}" + that.cztype + "{yun:}t key='member_com_00286'{/yun}")
         },
         async sendOrToudi(eid, uid, type, cz_type) {//type=0单条发送，其他数组为批量发送总数量
             var that = this
@@ -265,16 +264,16 @@ module.exports = {
                 eid: eid,
                 uid: uid
             }
-            var url = '', msgtype = ''
-            if (cz_type == 1) {// 推送
-                url = 'm=user&c=company&a=directrecom'
-                msgtype = '推送'
+            var url = '', msgtype = '"
+            if (cz_type == 1) {// {yun:}t key='admin_user_company_00379'{/yun}
+                url = "m=user&c=company&a=directrecom'
+                msgtype = "{yun:}t key='admin_user_company_00379'{/yun}"
             } else if (cz_type == 2) {// 投递
                 url = 'm=user&c=company_job&a=applyJob'
-                msgtype = '投递'
+                msgtype = "{yun:}t key='admin_user_company_00378'{/yun}"
             }
             if (url == '') {
-                message.error('非法操作！')
+                message.error("{yun:}t key='model_00001'{/yun}")
                 return false
             }
             if (type == 0) {
@@ -296,7 +295,7 @@ module.exports = {
                     if (res.error == 0) {
                         that.sendnum++
                         if (that.sendnum == that.selectedItem.length) {
-                            message.success(msgtype + '成功！', function(){
+                            message.success(msgtype + "{yun:}t key='wap_js_00104'{/yun}", function(){
                                 that.getList()
                                 that.showprogress = false
                             })
@@ -367,7 +366,7 @@ module.exports = {
                 params.id = that.jobinfo.id
             }
             that.loading = true;
-            that.emptytext = "数据加载中";
+            that.emptytext = "{yun:}t key='admin_user_weipin_00026'{/yun}";
             httpPost('m=user&c=company_job&a=matching', params, {hideloading: true}).then(function (result) {
                 var res = result.data
                 if (res.error == 0) {
@@ -381,7 +380,7 @@ module.exports = {
                     }
                     that.loading = false;
                     if (that.tableData.length === 0){
-                        that.emptytext = "暂无数据";
+                        that.emptytext = "{yun:}t key='wap_js_00113'{/yun}";
                     }
                 }
             }).catch(function (e) {

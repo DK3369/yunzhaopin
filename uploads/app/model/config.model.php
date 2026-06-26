@@ -206,18 +206,18 @@ class config_model extends model{
      * $type : 1-发布职位 2-简历下载 3-发布简历 4-充值 5-短信 6-投递 7-浏览简历 8-浏览职位 9-拨号
      */
     public $warnConfig = array(
-        1 => '上架职位',
-        2 => '下载简历',
-        3 => '发布简历',
-        4 => '充值额度',
-        5 => '发送短信',
-        6 => '申请职位',
-        7 => '浏览简历',
-        8 => '浏览职位',
-        9 => '求职拨号',
+        1 => 'wap_com_00028',
+        2 => 'wap_00451',
+        3 => 'wap_user_00111',
+        4 => 'common_01686',
+        5 => 'admin_user_00166',
+        6 => 'common_06469',
+        7 => 'wap_com_00355',
+        8 => 'member_com_00032',
+        9 => 'common_01800',
         
         
-        12 => '同一IP注册账号'
+        12 => 'common_01239'
     );
 	/**
 	 * 获取预警设置列表
@@ -266,16 +266,16 @@ class config_model extends model{
                 foreach ($List as $k => $v) {
                     $usertype_n = '';
                     if ($v['usertype'] == 1) {
-                        $usertype_n = '个人用户';
+                        $usertype_n = 'admin_user_00122';
                     } else if ($v['usertype'] == 2) {
-                        $usertype_n = '企业用户';
+                        $usertype_n = 'admin_user_00124';
                     }
                     $List[$k]['type_n'] =   $this->warnConfig[$v['type']];
                     $List[$k]['usertype_n'] = $usertype_n;
                     $List[$k]['name_n'] = $v['usertype'] && isset($nameArr[$v['uid']]) && $nameArr[$v['uid']] ? $nameArr[$v['uid']] : '';
                     
                     if($v['type']!=15){
-                        $List[$k]['content'] = $List[$k]['type_n'].'超过预警设置';
+                        $List[$k]['content'] = $List[$k]['type_n'].'common_01546';
                     }
                     $List[$k]['ctime_n'] = date('Y-m-d H:i:s',$v['ctime']);
                     
@@ -299,7 +299,7 @@ class config_model extends model{
             
             return array(
                 'errcode'   => 8,
-                'msg'       => '请选择要删除的数据！'
+                'msg'       => yun_at('member_com_00084')
             );
             
         } else {
@@ -318,9 +318,9 @@ class config_model extends model{
             
             if ($nid) {
             
-                $return['msg']      =   '预警信息(ID:' . $delId . ')';
+                $return['msg']      =   yun_auto_t('预警信息(ID:') . $delId . ')';
                 $return['errcode']  =   $nid ? '9' : '8';
-                $return['msg']      =   $nid ? $return['msg'] . '删除成功！' : $return['msg'] . '删除失败！';
+                $return['msg']      =   $nid ? $return['msg'] . 'admin_user_00187' : $return['msg'] . 'admin_user_00186';
             }
         }
         

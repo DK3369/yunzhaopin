@@ -44,7 +44,7 @@ class show_controller extends resume_controller
             $this->yunset('ymcan', $ymcan);
 			$companyinfo=$companyM->getCompanyInfo(array('uid'=>$this->uid),array('field'=>'`r_status`,`rating`,`crm_uid`,`package`,`vipetime`'));
             if ($companyinfo['r_status']!='1' && $companyinfo['r_status'] == '4') {
-                $this->ACT_msg($this->config['sy_weburl'], '账户正在审核中，无法查看！');
+                $this->ACT_msg($this->config['sy_weburl'], yun_at('wap_01799'));
             }
         }
 
@@ -52,7 +52,7 @@ class show_controller extends resume_controller
         if (($this->uid == '' || $this->username == '') && $this->config['sy_resume_visitors'] > 0) {
             if ($_COOKIE['resumevisitors'] >= $this->config['sy_resume_visitors'] && $_GET['look']!='admin') {
 
-                $this->ACT_msg(Url('login'), '游客用户，每天只能访问' . $this->config['sy_resume_visitors'] . '份简历，请登录后继续访问！');
+                $this->ACT_msg(Url('login'), 'wap_00424' . $this->config['sy_resume_visitors'] . 'wap_00422');
             } else {
 
                 if ($_COOKIE['resumevisitors'] == '') {
@@ -85,10 +85,10 @@ class show_controller extends resume_controller
 
             if (empty($def_job)) {
 
-                $this->ACT_msg($this->config['sy_weburl'], '没有找到该人才！');
+                $this->ACT_msg($this->config['sy_weburl'], yun_at('wap_01800'));
             } else if ($def_job['def_job'] < 1) {
 
-                $this->ACT_msg($this->config['sy_weburl'] . '/member', '还没有创建简历！');
+                $this->ACT_msg($this->config['sy_weburl'] . '/member', yun_at('wap_00429'));
             } else if ($def_job['def_job']) {
 
                 $id     =   $def_job['def_job'];
@@ -106,14 +106,14 @@ class show_controller extends resume_controller
         
         if (empty($resume_expect)) {
 
-            $this->ACT_msg($this->config['sy_weburl'], '没有找到该人才！');
+            $this->ACT_msg($this->config['sy_weburl'], yun_at('wap_01800'));
         }
         if ($this->config['com_search'] == 1 && !$this->uid){
-            $this->ACT_msg(Url('resume'), '请先登录');
+            $this->ACT_msg(Url('resume'), yun_at('wap_00376'));
         }
         if ($this->config['sy_user_visit_resume'] == 0 && $this->usertype == 1 && $this->uid != $resume_expect['uid']) {
             
-            $this->ACT_msg(Url('resume'), '个人用户无权限查看简历！');
+            $this->ACT_msg(Url('resume'), yun_at('resume_00038'));
         }
         if ($this->uid != $resume_expect['uid']) {
             // 检查简历隐私状态设置
@@ -130,7 +130,7 @@ class show_controller extends resume_controller
                 }
             }
             if (!$canShow){
-                $this->ACT_msg(Url('resume'), '简历已设置不对外开放！');
+                $this->ACT_msg(Url('resume'), yun_at('resume_00040'));
             }
         }
 
@@ -140,19 +140,19 @@ class show_controller extends resume_controller
         
         if(!empty($blackInfo)){
             
-            $this->ACT_msg($this->config['sy_weburl'] . '/member', '该用户已关闭简历!');
+            $this->ACT_msg($this->config['sy_weburl'] . '/member', yun_at('wap_00428'));
         }
         
         if ($resume_expect['uid'] != $this->uid) {
             if ($resume_expect['state'] == 0) {
                 
-                $this->ACT_msg($this->config['sy_weburl'] . '/member', '简历正在审核中！');
+                $this->ACT_msg($this->config['sy_weburl'] . '/member', yun_at('wap_01801'));
             } elseif ($resume_expect['r_status'] == 2) {
                 
-                $this->ACT_msg($this->config['sy_weburl'] . '/member', '简历暂被锁定，请稍后查看！');
+                $this->ACT_msg($this->config['sy_weburl'] . '/member', yun_at('wap_00423'));
             } elseif ($resume_expect['state'] == 3) {
                 
-                $this->ACT_msg($this->config['sy_weburl'] . '/member', '简历审核暂未通过！');
+                $this->ACT_msg($this->config['sy_weburl'] . '/member', yun_at('wap_00427'));
             }
         }
         // 查询当前企业用户，是不是采集用户
@@ -389,14 +389,14 @@ class show_controller extends resume_controller
 
         if ($_POST['reason'] == '') {
 
-            $this->ACT_layer_msg('请选择举报理由', 8);
+            $this->ACT_layer_msg('resume_00042', 8);
         }
         if(empty($this->uid)){
-            $this->ACT_layer_msg('请先登录！', 8);
+            $this->ACT_layer_msg('common_06042', 8);
         }
 
         if($_POST['reason'] == ''){
-            $this->ACT_layer_msg('举报内容不能为空！', 8);
+            $this->ACT_layer_msg('model_00082', 8);
         }
 
         $Where = array(
@@ -408,7 +408,7 @@ class show_controller extends resume_controller
         $resumeM  =  $this->MODEL('resume');
         $jlres	  =  $resumeM->openResumeCheck($Where);
         if($jlres != 1){
-            $this->ACT_layer_msg('下载之后才可以举报哦！', 8);
+            $this->ACT_layer_msg('resume_00039', 8);
         }
 
         $data           =   array(

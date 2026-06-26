@@ -487,8 +487,8 @@ class tongji_model extends model
 
                     if ($value['maxsalary'] > 0) {
                         if ($value['maxsalary'] <= 2000) {
-                            $Count['salary']['2000以下']['count']++;
-                            $Count['salary']['2000以下']['name'] = '2000以下';
+                            $Count['salary']['common_06589']['count']++;
+                            $Count['salary']['common_06589']['name'] = yun_at('common_06589');
                         }
                         if ($value['maxsalary'] > 2000 && $value['maxsalary'] <= 4000) {
                             $Count['salary']['2000-4000']['count']++;
@@ -507,13 +507,13 @@ class tongji_model extends model
                             $Count['salary']['8000-10000']['name'] = '8000-10000';
                         }
                         if ($value['maxsalary'] > 10000) {
-                            $Count['salary']['10000以上']['count']++;
-                            $Count['salary']['10000以上']['name'] = '10000以上';
+                            $Count['salary']['common_06590']['count']++;
+                            $Count['salary']['common_06590']['name'] = yun_at('common_06590');
                         }
                     } else {
                         if ($value['minsalary'] <= 2000) {
-                            $Count['salary']['2000以下']['count']++;
-                            $Count['salary']['2000以下']['name'] = '2000以下';
+                            $Count['salary']['common_06589']['count']++;
+                            $Count['salary']['common_06589']['name'] = yun_at('common_06589');
                         }
                         if ($value['minsalary'] > 2000 && $value['minsalary'] <= 4000) {
                             $Count['salary']['2000-4000']['count']++;
@@ -532,8 +532,8 @@ class tongji_model extends model
                             $Count['salary']['8000-10000']['name'] = '8000-10000';
                         }
                         if ($value['minsalary'] > 10000) {
-                            $Count['salary']['10000以上']['count']++;
-                            $Count['salary']['10000以上']['name'] = '10000以上';
+                            $Count['salary']['common_06590']['count']++;
+                            $Count['salary']['common_06590']['name'] = yun_at('common_06590');
                         }
 
                     }
@@ -574,8 +574,8 @@ class tongji_model extends model
 
                     if ($value['maxsalary'] > 0) {
                         if ($value['maxsalary'] <= 2000) {
-                            $Count['salary']['2000以下']['count']++;
-                            $Count['salary']['2000以下']['name'] = '2000以下';
+                            $Count['salary']['common_06589']['count']++;
+                            $Count['salary']['common_06589']['name'] = yun_at('common_06589');
                         }
                         if ($value['maxsalary'] > 2000 && $value['maxsalary'] <= 4000) {
                             $Count['salary']['2000-4000']['count']++;
@@ -594,13 +594,13 @@ class tongji_model extends model
                             $Count['salary']['4000-6000']['name'] = '4000-6000';
                         }
                         if ($value['maxsalary'] > 10000) {
-                            $Count['salary']['10000以上']['count']++;
-                            $Count['salary']['10000以上']['name'] = '10000以上';
+                            $Count['salary']['common_06590']['count']++;
+                            $Count['salary']['common_06590']['name'] = yun_at('common_06590');
                         }
                     } else {
                         if ($value['minsalary'] <= 2000) {
-                            $Count['salary']['2000以下']['count']++;
-                            $Count['salary']['2000以下']['name'] = '2000以下';
+                            $Count['salary']['common_06589']['count']++;
+                            $Count['salary']['common_06589']['name'] = yun_at('common_06589');
                         }
                         if ($value['minsalary'] > 2000 && $value['minsalary'] <= 4000) {
                             $Count['salary']['2000-4000']['count']++;
@@ -619,8 +619,8 @@ class tongji_model extends model
                             $Count['salary']['4000-6000']['name'] = '4000-6000';
                         }
                         if ($value['minsalary'] > 10000) {
-                            $Count['salary']['10000以上']['count']++;
-                            $Count['salary']['10000以上']['name'] = '10000以上';
+                            $Count['salary']['common_06590']['count']++;
+                            $Count['salary']['common_06590']['name'] = yun_at('common_06590');
                         }
 
                     }
@@ -654,13 +654,13 @@ class tongji_model extends model
                         $value['order_type']    =   0;
                     }
                     $Count['ordertype'][$value['order_type']]['count']++;
-                    $Count['ordertype'][$value['order_type']]['name']   =   $OrderTypeName[$value['order_type']] ? $OrderTypeName[$value['order_type']] : '其他';
+                    $Count['ordertype'][$value['order_type']]['name']   =   $OrderTypeName[$value['order_type']] ? $OrderTypeName[$value['order_type']] : 'member_com_00038';
 
                     if (!$value['type']) {
                         $value['type'] = 0;
                     }
                     $Count['type'][$value['type']]['count']++;
-                    $Count['type'][$value['type']]['name']  =   $TypeName[$value['type']] ? $TypeName[$value['type']] : '其他';
+                    $Count['type'][$value['type']]['name']  =   $TypeName[$value['type']] ? $TypeName[$value['type']] : 'member_com_00038';
                 }
             } elseif ($Type == 'company') {
                 $rating = $this->select_all('company_rating', array(), '`id`,`name`');
@@ -684,7 +684,7 @@ class tongji_model extends model
                 foreach ($CompanyList as $key => $value) {
                     if (!$value['hy']) {
                         $Count['hy'][0]['count']++;
-                        $Count['hy'][0]['name'] = '其他';
+                        $Count['hy'][0]['name'] = yun_at('member_com_00038');
                         $Count['hy'][0]['isother'] = true;
                         $Count['is'][0]['count']++;//完善企业资料数量
                     } else {
@@ -694,9 +694,9 @@ class tongji_model extends model
                     }
 
 
-                    $Count['is'][0]['name'] = '信息不全';
+                    $Count['is'][0]['name'] = yun_at('common_01680');
 
-                    $Count['is'][1]['name'] = '信息完善';
+                    $Count['is'][1]['name'] = yun_at('admin_tool_00124');
 
                 }
 
@@ -720,7 +720,7 @@ class tongji_model extends model
                 foreach ($CompanyList as $key => $value) {
                     if (!$value['hy']) {
                         $Count['hy'][0]['count']++;
-                        $Count['hy'][0]['name'] = '其他';
+                        $Count['hy'][0]['name'] = yun_at('member_com_00038');
                         $Count['hy'][0]['isother'] = true;
                         $Count['is'][0]['count']++;//完善企业资料数量
                     } else {
@@ -730,9 +730,9 @@ class tongji_model extends model
                     }
 
 
-                    $Count['is'][0]['name'] = '信息不全';
+                    $Count['is'][0]['name'] = yun_at('common_01680');
 
-                    $Count['is'][1]['name'] = '信息完善';
+                    $Count['is'][1]['name'] = yun_at('admin_tool_00124');
 
                 }
 
@@ -900,7 +900,7 @@ class tongji_model extends model
         $other = 0;// 企业性质中是否已设置其他
         foreach ($data as $k => $v) {
             $total += $v['num'];
-            if ($comclass_name[$v['pr']] == '其他') {
+            if ($comclass_name[$v['pr']] == 'member_com_00038') {
                 $otherKey = $k;
                 $other = 1;
             }
@@ -917,7 +917,7 @@ class tongji_model extends model
                     // 有其他且其他不在前7项中，将7项之后的统计项合并到第七项中，第七项名字改为其他
                     // 或者没有其他项，直接将7项之后的所有项合并到第七项
                     $tmp[6]['num'] += $v['num'];
-                    $tmp[6]['pr_n'] = '其他';
+                    $tmp[6]['pr_n'] = yun_at('member_com_00038');
                 }
             }
         }
@@ -1078,7 +1078,7 @@ class tongji_model extends model
         $other = 0;// 学历中是否已设置其他
         foreach ($data as $k => $v) {
             $total += $v['num'];
-            if ($userclass_name[$v['edu']] == '其他') {
+            if ($userclass_name[$v['edu']] == 'member_com_00038') {
                 $otherKey = $k;
                 $other = 1;
             }
@@ -1095,7 +1095,7 @@ class tongji_model extends model
                     // 有其他且其他不在前7项中，将7项之后的统计项合并到第七项中，第七项名字改为其他
                     // 或者没有其他项，直接将7项之后的所有项合并到第七项
                     $tmp[6]['num'] += $v['num'];
-                    $tmp[6]['edu_n'] = '其他';
+                    $tmp[6]['edu_n'] = yun_at('member_com_00038');
                 }
             }
         }
@@ -1193,18 +1193,18 @@ class tongji_model extends model
             $base = 0;
         }
         $data = array(
-            array('month' => '1月', 'num' => $base),
-            array('month' => '2月', 'num' => $base),
-            array('month' => '3月', 'num' => $base),
-            array('month' => '4月', 'num' => $base),
-            array('month' => '5月', 'num' => $base),
-            array('month' => '6月', 'num' => $base),
-            array('month' => '7月', 'num' => $base),
-            array('month' => '8月', 'num' => $base),
-            array('month' => '9月', 'num' => $base),
-            array('month' => '10月', 'num' => $base),
-            array('month' => '11月', 'num' => $base),
-            array('month' => '12月', 'num' => $base),
+            array('month' => 'wap_js_00011', 'num' => $base),
+            array('month' => 'wap_js_00012', 'num' => $base),
+            array('month' => 'wap_js_00013', 'num' => $base),
+            array('month' => 'wap_js_00014', 'num' => $base),
+            array('month' => 'wap_js_00015', 'num' => $base),
+            array('month' => 'wap_js_00016', 'num' => $base),
+            array('month' => 'wap_js_00017', 'num' => $base),
+            array('month' => 'wap_js_00018', 'num' => $base),
+            array('month' => 'wap_js_00019', 'num' => $base),
+            array('month' => 'wap_js_00006', 'num' => $base),
+            array('month' => 'wap_js_00007', 'num' => $base),
+            array('month' => 'wap_js_00008', 'num' => $base),
         );
         foreach ($monthsData as $v) {
             $data[intval($v['month']) - 1]['num'] += $v['num'];
@@ -1221,17 +1221,17 @@ class tongji_model extends model
 
         $countfield = 'count(*) as count ';
         $statistics  = array(
-            array('table'=>'member','field'=>'reg_date','name'=>'新增个人','where'=>array('usertype' => '1')),
-            array('table'=>'login_log','field'=>'ctime','name'=>'个人登录','where'=>array('usertype' => '1')),
-            array('table'=>'resume_expect','field'=>'ctime','name'=>'新增简历'),
-            array('table'=>'member','field'=>'reg_date','name'=>'新增企业','where'=>array('usertype' => '2')),
-            array('table'=>'login_log','field'=>'ctime','name'=>'企业登录','where'=>array('usertype' => '2')),
-            array('table'=>'company_job','field'=>'sdate','name'=>'新增职位'),
-            array('table'=>'userid_job','field'=>'datetime','name'=>'简历投递'),
-            array('table'=>'chat_log','field'=>'sendTime','name'=>'聊天'),
-            array('table'=>'userid_msg','field'=>'datetime','name'=>'邀请面试'),
-            array('table'=>'down_resume','field'=>'downtime','name'=>'简历下载'),
-            array('table'=>'freedown_resume','field'=>'downtime','name'=>'简历下载'),
+            array('table'=>'member','field'=>'reg_date','name'=>'admin_user_00305','where'=>array('usertype' => '1')),
+            array('table'=>'login_log','field'=>'ctime','name'=>'admin_tool_00223','where'=>array('usertype' => '1')),
+            array('table'=>'resume_expect','field'=>'ctime','name'=>'admin_user_00193'),
+            array('table'=>'member','field'=>'reg_date','name'=>'admin_user_company_00162','where'=>array('usertype' => '2')),
+            array('table'=>'login_log','field'=>'ctime','name'=>'admin_user_00335','where'=>array('usertype' => '2')),
+            array('table'=>'company_job','field'=>'sdate','name'=>'member_com_00250'),
+            array('table'=>'userid_job','field'=>'datetime','name'=>'member_com_00152'),
+            array('table'=>'chat_log','field'=>'sendTime','name'=>'wap_user_00247'),
+            array('table'=>'userid_msg','field'=>'datetime','name'=>'resume_00029'),
+            array('table'=>'down_resume','field'=>'downtime','name'=>'wap_com_00042'),
+            array('table'=>'freedown_resume','field'=>'downtime','name'=>'wap_com_00042'),
         );
         $bigCount = array();
         foreach ($statistics as $statistic){

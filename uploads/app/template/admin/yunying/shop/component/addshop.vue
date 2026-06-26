@@ -4,40 +4,40 @@
             <table class="tableVue">
                 <thead>
                     <tr align="left">
-                        <th width="200">名称</th>
-                        <th width="500">状态</th>
-                        <th width="150">说明</th>
+                        <th width="200">{yun:}t key='member_com_00021'{/yun}</th>
+                        <th width="500">{yun:}t key='member_user_00181'{/yun}</th>
+                        <th width="150">{yun:}t key='member_com_00207'{/yun}</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td>
-                            <div class="TableTite">商品名称</div>
+                            <div class="TableTite">{yun:}t key='member_user_00039'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input placeholder="请输入内容" v-model="info.name">
+                                <el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="info.name">
                                 </el-input>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>商品名称</span>
+                                <span>{yun:}t key='member_user_00039'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">商品类别</div>
+                            <div class="TableTite">{yun:}t key='admin_yunying_00111'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableSelect" style="display: flex;align-items: center;">
-                                <el-select v-model="info.nid" placeholder="请选择" style="width: 50%;" @change="classchange">
+                                <el-select v-model="info.nid" placeholder="{yun:}t key='wap_user_00100'{/yun}" style="width: 50%;" @change="classchange">
                                     <el-option v-for="item in positionOne" :key="item.id" :label="item.name"
                                         :value="item.id">
                                     </el-option>
                                 </el-select>
-                                <el-select v-model="info.tnid" placeholder="请选择" style="width: 50%;">
+                                <el-select v-model="info.tnid" placeholder="{yun:}t key='wap_user_00100'{/yun}" style="width: 50%;">
                                     <el-option v-for="item in positionTwo" :key="item.id" :label="item.name" :value="item.id">
                                     </el-option>
                                 </el-select>
@@ -45,80 +45,80 @@
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>商品类别</span>
+                                <span>{yun:}t key='admin_yunying_00111'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">商品图片</div>
+                            <div class="TableTite">{yun:}t key='admin_01194'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableUpload">
                                 <el-upload class="upload-demo" :auto-upload="false" action="" :show-file-list="false"
                                     :on-change="uploadChange" :accept="pic_accept">
-                                    <el-button size="small" type="primary">点击上传</el-button>
+                                    <el-button size="small" type="primary">{yun:}t key='wap_js_00071'{/yun}</el-button>
                                     <img v-if="info.pic" :src="info.pic" class="avatar" width="70" height="70">
                                 </el-upload>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>商品图片</span>
+                                <span>{yun:}t key='admin_01194'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">兑换{{ integral_pricename }}</div>
+                            <div class="TableTite">{yun:}t key='admin_01195'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input placeholder="请输入内容" v-model="info.integral">
+                                <el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="info.integral">
                                 </el-input>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>兑换{{ integral_pricename }}</span>
+                                <span>{yun:}t key='admin_01195'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">限购数量</div>
+                            <div class="TableTite">{yun:}t key='wap_00406'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input placeholder="请输入内容" v-model="info.restriction">
+                                <el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="info.restriction">
                                 </el-input>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>0为不限</span>
+                                <span>{yun:}t key='admin_system_00645'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">库存数量</div>
+                            <div class="TableTite">{yun:}t key='admin_01196'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input placeholder="请输入内容" v-model="info.stock">
+                                <el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="info.stock">
                                 </el-input>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>库存数量</span>
+                                <span>{yun:}t key='admin_01196'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">简介内容</div>
+                            <div class="TableTite">{yun:}t key='admin_00778'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
@@ -130,40 +130,40 @@
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>简介内容</span>
+                                <span>{yun:}t key='admin_00778'{/yun}</span>
                             </div>
                         </td>
                     </tr>
 
                     <tr>
                         <td>
-                            <div class="TableTite">排序</div>
+                            <div class="TableTite">{yun:}t key='member_com_00022'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input placeholder="请输入内容" v-model="info.sort" type="number">
+                                <el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="info.sort" type="number">
                                 </el-input>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>越小越在前</span>
+                                <span>{yun:}t key='admin_00218'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">状态</div>
+                            <div class="TableTite">{yun:}t key='member_user_00181'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableButn">
-                                <el-radio v-model="info.status" label="1">上架</el-radio>
-                                <el-radio v-model="info.status" label="2">下架</el-radio>
+                                <el-radio v-model="info.status" label="1">{yun:}t key='wap_com_00244'{/yun}</el-radio>
+                                <el-radio v-model="info.status" label="2">{yun:}t key='wap_com_00245'{/yun}</el-radio>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>状态</span>
+                                <span>{yun:}t key='member_user_00181'{/yun}</span>
                             </div>
                         </td>
                     </tr>
@@ -173,7 +173,7 @@
         </div>
 
         <div class="setBasicButn">
-            <el-button type="primary" size="medium" @click="save" :disabled="saveLoading">提交</el-button>
+            <el-button type="primary" size="medium" @click="save" :disabled="saveLoading">{yun:}t key='common.submit'{/yun}</el-button>
         </div>
     </div>
 </template>

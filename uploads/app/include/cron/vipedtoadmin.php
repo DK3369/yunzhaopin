@@ -11,8 +11,8 @@ $endtime = strtotime('+'.$config['sy_maturityday'].' day',$time);
 $num = $db->select_num("company_statis","`vip_etime`<'".$endtime."' and `vip_etime`>'".$time."'");
 if ($num>0){
     //给管理员提醒
-    $emailtitle=$config['sy_webname']."-会员到期提醒";
-    $emailcoment=$config['sy_webname']."-有".$num."位企业会员".$config['sy_maturityday']."天内将要到期，请登录网站后台查看！";
+    $emailtitle=$config['sy_webname'].'common_06165';
+    $emailcoment=$config['sy_webname']."-有".$num.'common_06166'.$config['sy_maturityday'].'common_06167';
     $emailData['email'] = $config['sy_webemail'];
     $emailData['subject'] = $emailtitle;
     $emailData['content'] = $emailcoment;

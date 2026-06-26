@@ -35,12 +35,12 @@ class generate_page_controller extends adminCommon
                 if (file_exists($index)) {
                     @unlink($index);
                 }
-                $this->render_json(8, "分站已开启，不支持生成首页静态！");
+                $this->render_json(8, yun_at('admin_tool_00032'));
             } else {
                 $fw = $this->webindex($_POST['make_index_url']);
                 $configM->setConfig(array('make_index_url' => $_POST['make_index_url']));
                 $this->web_config();
-                $fw ? $this->admin_json(0, '生成首页成功！') : $this->render_json(1, '生成失败！');
+                $fw ? $this->admin_json(0, 'admin_01464') : $this->render_json(1, yun_at('admin_01401'));
             }
         }
     }
@@ -84,12 +84,12 @@ class generate_page_controller extends adminCommon
                 if (file_exists($index)) {
                     @unlink($index);
                 }
-                $this->render_json(8, "分站已开启，不支持生成文件！");
+                $this->render_json(8, yun_at('admin_tool_00033'));
             } else {
                 $fw = $this->articleindex($_POST["make_new_url"]);
                 $configM->setConfig(array('make_new_url' => $_POST['make_new_url']));
                 $this->web_config();
-                $fw ? $this->admin_json(0, "生成新闻首页(ID:$fw)成功！") : $this->render_json(1, "生成失败！");
+                $fw ? $this->admin_json(0, "生成新闻首页(ID:$fw)成功！") : $this->render_json(1, yun_at('admin_01401'));
             }
         }
     }
@@ -135,9 +135,9 @@ class generate_page_controller extends adminCommon
                     $topage = $pagesize;
                 }
                 $name = $spage . "-" . $topage;
-                $this->render_json(0, '正在生成' . $name . '新闻', array('type' => 'archive', 'value' => $npage));
+                $this->render_json(0, 'admin_tool_00040' . $name . 'admin_tool_00428', array('type' => 'archive', 'value' => $npage));
             } else {
-                $this->render_json(0, '全部生成完成', array('type' => 'ok', 'value' => 0));
+                $this->render_json(0, yun_at('admin_01465'), array('type' => 'ok', 'value' => 0));
             }
         }
     }
@@ -314,7 +314,7 @@ class generate_page_controller extends adminCommon
                     $this->descriptionshow($row['id'], $row['url']);
                 }
             }
-            $this->render_json(0, '生成单页面成功！');
+            $this->render_json(0, yun_at('admin_01466'));
         }
     }
 
@@ -390,9 +390,9 @@ class generate_page_controller extends adminCommon
                         $name = $va;
                     }
                 }
-                $this->render_json(0, "正在生成新闻类别--" . $name, array('type' => "class", 'value' => $val));
+                $this->render_json(0, 'admin_tool_00035' . $name, array('type' => "class", 'value' => $val));
             } else {
-                $this->render_json(0, "全部生成完成", array('type' => "ok", 'value' => 0));
+                $this->render_json(0, yun_at('admin_01465'), array('type' => "ok", 'value' => 0));
             }
         }
     }
@@ -572,7 +572,7 @@ class generate_page_controller extends adminCommon
                     }
                     if ($value <= 28) {
                         $v = $value + 1;
-                        $this->render_json(0, "正在生成" . $arr_data['cache'][$v], array('type' => "cache", 'value' => $value));
+                        $this->render_json(0, 'admin_tool_00040' . $arr_data['cache'][$v], array('type' => "cache", 'value' => $value));
                     }
                     $index = '../index.html';
                     $news = '../news.html';
@@ -580,7 +580,7 @@ class generate_page_controller extends adminCommon
                         @unlink($index);
                         @unlink($news);
                     }
-                    $this->render_json(0, "全部生成完成", array('type' => "ok", 'value' => 0));
+                    $this->render_json(0, yun_at('admin_01465'), array('type' => "ok", 'value' => 0));
                 }
             } else {
                 if ($_POST['type'] == "cache") {
@@ -666,14 +666,14 @@ class generate_page_controller extends adminCommon
                     }
                     if ($value <= 28) {
                         $v = $value + 1;
-                        $this->render_json(0, "正在生成" . $arr_data['cache'][$v], array('type' => "cache", 'value' => $value));
+                        $this->render_json(0, 'admin_tool_00040' . $arr_data['cache'][$v], array('type' => "cache", 'value' => $value));
                     }
                     $fw = $this->webindex($_POST['make_index_url']);
 
                     $configM->setConfig(array('make_index_url' => $_POST['make_index_url']));
 
                     $this->web_config();
-                    $this->render_json(0, "正在生成首页", array('type' => "index", 'value' => "index"));
+                    $this->render_json(0, yun_at('admin_tool_00039'), array('type' => "index", 'value' => "index"));
                 }
                 if ($_POST['type'] == "index") {
                     if ($_POST['value'] == "make_index_url") {
@@ -684,7 +684,7 @@ class generate_page_controller extends adminCommon
 
                         $this->web_config();
 
-                        $this->render_json(0, "正在生成新闻首页", array('type' => "index", 'value' => "news"));
+                        $this->render_json(0, yun_at('admin_tool_00038'), array('type' => "index", 'value' => "news"));
                     } else {
 
                         $this->articleindex($_POST["make_new_url"]);
@@ -693,7 +693,7 @@ class generate_page_controller extends adminCommon
 
                         $this->web_config();
 
-                        $this->render_json(0, "正在获取新闻类别数目", array('type' => "class", 'value' => 0));
+                        $this->render_json(0, yun_at('admin_tool_00036'), array('type' => "class", 'value' => 0));
                     }
                 }
                 if ($_POST['type'] == "class") {
@@ -705,9 +705,9 @@ class generate_page_controller extends adminCommon
                                 $name = $va;
                             }
                         }
-                        $this->render_json(0, "正在生成新闻类别" . $name, array('type' => "class", 'value' => $val));
+                        $this->render_json(0, 'admin_tool_00037' . $name, array('type' => "class", 'value' => $val));
                     } else {
-                        $this->render_json(0, "正在获取新闻详细页数目", array('type' => "archive", 'value' => 0));
+                        $this->render_json(0, yun_at('admin_tool_00034'), array('type' => "archive", 'value' => 0));
                     }
                 }
                 if ($_POST['type'] == "archive") {
@@ -725,9 +725,9 @@ class generate_page_controller extends adminCommon
                             $topage = $pagesize;
                         }
                         $name = $spage . "-" . $topage;
-                        $this->render_json(0, "正在生成" . $name . "新闻", array('type' => "archive", 'value' => $npage));
+                        $this->render_json(0, 'admin_tool_00040' . $name . 'admin_tool_00428', array('type' => "archive", 'value' => $npage));
                     } else {
-                        $this->render_json(0, "全部生成完成", array('type' => 'ok', 'value' => 0));
+                        $this->render_json(0, yun_at('admin_01465'), array('type' => 'ok', 'value' => 0));
                     }
                 }
             }

@@ -2,11 +2,11 @@
     <div>
         <div class="moduleElHight">
             <div class="tableDome_tip">
-                <el-alert title="可添加订单合同图片" type="success" :closable="false">
+                <el-alert title="{yun:}t key='admin_00587'{/yun}" type="success" :closable="false">
                 </el-alert>
             </div>
             <div class="moduleHeadrButn" style=" margin-bottom: 12px;">
-                <el-button type="primary" icon="el-icon-document-add" @click="addPic">添加图片</el-button>
+                <el-button type="primary" icon="el-icon-document-add" @click="addPic">{yun:}t key='admin_00586'{/yun}</el-button>
             </div>
             <div class="moduleElTable">
                 <el-table :data="tableData" border style="width: 100%;" ref="multipleTable"
@@ -25,7 +25,7 @@
                     <el-table-column fixed="right" label="操作" width="120">
                         <template slot-scope="scope">
                             <div class="moduleElTaCaoz">
-                                <el-button type="text" size="small" @click="delrow(scope.row.id)">删除</el-button>
+                                <el-button type="text" size="small" @click="delrow(scope.row.id)">{yun:}t key='common.delete'{/yun}</el-button>
                             </div>
                         </template>
                     </el-table-column>
@@ -46,13 +46,13 @@
                 </div>
             </div>
             <div class="modluDrawer">
-                <el-drawer title="添加图片" :visible.sync="editBox" append-to-body :modal-append-to-body="false"
+                <el-drawer title="{yun:}t key='admin_00586'{/yun}" :visible.sync="editBox" append-to-body :modal-append-to-body="false"
                            :show-close="true" :with-header="true" size="45%">
                     <div class="drawerModlue">
                         <div class="drawerModInfo">
                             <div class="drawerModLis">
                                 <div class="drawerModTite">
-                                    <span>合同图片</span>
+                                    <span>{yun:}t key='admin_user_company_00030'{/yun}</span>
                                 </div>
                                 <div class="drawerModInpt">
                                     <el-upload :action='uploadAction' multiple :limit="3" list-type="picture-card"
@@ -72,13 +72,13 @@
                                     </el-upload>
                                     <div style="font-size: 12px;color: #8c939d">
                                         <i class="el-icon-warning-outline"></i>
-                                        <span>只能上传jpg/png文件，且不超过500kb</span>
+                                        <span>{yun:}t key='admin_user_company_00029'{/yun}</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="setBasicButn" style="border: none;">
-                            <el-button type="primary" size="medium" @click="saveImg">提交</el-button>
+                            <el-button type="primary" size="medium" @click="saveImg">{yun:}t key='common.submit'{/yun}</el-button>
                         </div>
                     </div>
                 </el-drawer>
@@ -98,7 +98,7 @@
             return {
                 pic_accept: localStorage.getItem("pic_accept"),
                 loading: false,
-                emptytext: '暂无数据',
+                emptytext: "{yun:}t key='wap_js_00113'{/yun}",
                 order_id: '',
                 tableData: [],
                 srcList: [],
@@ -162,10 +162,10 @@
                     file.type === 'image/jpg' || file.type === 'image/png' || file.type === 'image/jpeg' || file.type === 'image/gif';
                 const isLt2M = file.size / 1024 / 1024 < 5;
                 if (!isJPG) {
-                    this.$message.error('上传图片只能是 JPG, PNG, JPEG, GIF 格式!');
+                    this.$message.error("上传图片只能是 JPG, PNG, JPEG, GIF {yun:}t key='common_02005'{/yun}!");
                 }
                 if (!isLt2M) {
-                    this.$message.error('上传图片大小不能超过 2MB!');
+                    this.$message.error("{yun:}t key='admin_yunying_00057'{/yun} 2MB!");
                 }
                 return isJPG && isLt2M;
             },
@@ -204,7 +204,7 @@
                 let that = this;
                 let param = {id: that.order_id};
                 that.loading = true;
-                that.emptytext = "数据加载中";
+                that.emptytext = "{yun:}t key='admin_user_weipin_00026'{/yun}";
                 httpPost('m=user&c=company_order&a=upload', param).then(function (response) {
                     let res = response.data;
                     if (res.error == 0) {
@@ -219,7 +219,7 @@
                             that.$refs.multipleTable.bodyWrapper.scrollTop = 0;
                         }
                         if (that.tableData.length === 0){
-                            that.emptytext = "暂无数据";
+                            that.emptytext = "{yun:}t key='wap_js_00113'{/yun}";
                         }
                     }
                 }).catch(function (error) {

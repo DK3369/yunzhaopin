@@ -40,7 +40,7 @@ class wxpubtemp_model extends model
                         'urltype'=>'company',
                     )
                 ),
-                '{薪资待遇}'=>array('php'=>'job_salary'),
+                'common_01436'=>array('php'=>'job_salary'),
                 '{招聘人数}'=>array('php'=>'job_number'),
                 '{年龄要求}'=>array('php'=>'job_age'),
                 '{性别要求}'=>array('php'=>'job_sex'),
@@ -50,8 +50,8 @@ class wxpubtemp_model extends model
                 '{二级城市}'=>array('php'=>'job_city_two'),
                 '{三级城市}'=>array('php'=>'job_city_three'),
                 '{联系电话}'=>array('php'=>'phone'),
-                '{联系地址}'=>array('php'=>'address'),
-                '{福利开始}'=>array(
+                'common_01435'=>array('php'=>'address'),
+                'common_01433'=>array(
                     'php'=>array(
                         'type'=>'foreach',
                         'from'=>'arraywelfare',
@@ -65,7 +65,7 @@ class wxpubtemp_model extends model
                         'item'=>'welv'
                     )
                 ),
-                '{福利结束}'=>array(
+                'common_01434'=>array(
                     'php'=>array(
                         'type'=>'foreach',
                         'from'=>'arraywelfare',
@@ -80,47 +80,47 @@ class wxpubtemp_model extends model
                 '{职位名称}'=>array('php'=>'{yun:}$v.name{/yun}','js'=>'xx职位'),
                 '{职位网址}'=>array('php'=>'{yun:}url m=wap c=job a=comapply id=$v.id{/yun}','js'=>Url('wap')),
                 '{企业名称}'=>array('php'=>'{yun:}$v.com_name{/yun}','js'=>'xx企业'),
-                '{企业描述}'=>array('php'=>'{yun:}$v.com_desc{/yun}','js'=>'企业简介就是对一个公司进行一个简单全面的介绍，这种介绍不是一句话带过，也不是长篇大论...'),
+                '{企业描述}'=>array('php'=>'{yun:}$v.com_desc{/yun}','js'=>'common_00070'),
                 '{企业网址}'=>array('php'=>'{yun:}url m=wap c=company a=show id=$v.uid{/yun}','js'=>Url('wap')),
-                '{薪资待遇}'=>array('php'=>'{yun:}$v.job_salary{/yun}','js'=>'10000-15000'),
-                '{招聘人数}'=>array('php'=>'{yun:}$v.job_number{/yun}','js'=>'1-2人'),
-                '{年龄要求}'=>array('php'=>'{yun:}$v.job_age{/yun}','js'=>'35岁以上'),
+                'common_01436'=>array('php'=>'{yun:}$v.job_salary{/yun}','js'=>'10000-15000'),
+                '{招聘人数}'=>array('php'=>'{yun:}$v.job_number{/yun}','js'=>'common_01655'),
+                '{年龄要求}'=>array('php'=>'{yun:}$v.job_age{/yun}','js'=>'common_06662'),
                 '{性别要求}'=>array('php'=>'{yun:}$v.job_sex{/yun}','js'=>'男'),
-                '{经验要求}'=>array('php'=>'{yun:}$v.job_exp{/yun}','js'=>'5-10年'),
-                '{学历要求}'=>array('php'=>'{yun:}$v.job_edu{/yun}','js'=>'本科'),
-                '{一级城市}'=>array('php'=>'{yun:}$v.job_city_one{/yun}','js'=>'北京'),
+                '{经验要求}'=>array('php'=>'{yun:}$v.job_exp{/yun}','js'=>'common_01567'),
+                '{学历要求}'=>array('php'=>'{yun:}$v.job_edu{/yun}','js'=>'wap_00067'),
+                '{一级城市}'=>array('php'=>'{yun:}$v.job_city_one{/yun}','js'=>'wap_js_00079'),
                 '{二级城市}'=>array('php'=>'{yun:}$v.job_city_two{/yun}','js'=>'OV6'),
-                '{三级城市}'=>array('php'=>'{yun:}$v.job_city_three{/yun}','js'=>'北京'),
+                '{三级城市}'=>array('php'=>'{yun:}$v.job_city_three{/yun}','js'=>'wap_js_00079'),
                 '{联系电话}'=>array('php'=>'{yun:}$v.phone{/yun}','js'=>'0527-83698666'),
-                '{联系地址}'=>array('php'=>'{yun:}$v.address{/yun}','js'=>'人民路xx号'),
-                '{福利开始}'=>array('php'=>'{yun:}foreach from=$v.job_welfare item = welv{/yun}','js'=>'{forstart_1}'),
-                '{职位福利}'=>array('php'=>'{yun:}$welv{/yun}','js'=>'职位福利'),
-                '{福利结束}'=>array('php'=>'{yun:}/foreach{/yun}','js'=>'{forend_1}'),
+                'common_01435'=>array('php'=>'{yun:}$v.address{/yun}','js'=>'common_01449'),
+                'common_01433'=>array('php'=>'{yun:}foreach from=$v.job_welfare item = welv{/yun}','js'=>'{forstart_1}'),
+                '{职位福利}'=>array('php'=>'{yun:}$welv{/yun}','js'=>'wap_00286'),
+                'common_01434'=>array('php'=>'{yun:}/foreach{/yun}','js'=>'{forend_1}'),
                 '{职位描述}'=>array(
                     'php'=>'{yun:}$v.job_description{/yun}',
-                    'js'=>'职责描述：1.负责数据中心机房整体规划、部署，架构优化、容灾优化、性能优化；2.负责数据中心基础设施...'
+                    'js'=>'common_00046'
                 ),
                 
             );
 
     
         $this->pubtoolself_jobcolumn = array(
-                    'jobcolumn_name'        =>  array('职位名称','{职位名称}','job_column'),
-                    'jobcolumn_jobwapurl'   =>  array('职位网址','{职位网址}','job_column'),
-                    'jobcolumn_comname'     =>  array('企业名称','{企业名称}','job_column'),
-                    'jobcolumn_comdesc'     =>  array('企业描述|字数','{str|企业描述|length:200}','job_column'),
-                    'jobcolumn_comwapurl'   =>  array('企业网址','{企业网址}','job_column'),
-                    'jobcolumn_salary'      =>  array('薪资待遇','{薪资待遇}','job_column'),
-                    'jobcolumn_number'      =>  array('招聘人数','{招聘人数}','job_column'),
-                    'jobcolumn_age'         =>  array('年龄要求','{年龄要求}','job_column'),
-                    'jobcolumn_sex'         =>  array('性别要求','{性别要求}','job_column'),
-                    'jobcolumn_exp'         =>  array('经验要求','{经验要求}','job_column'),
-                    'jobcolumn_edu'         =>  array('学历要求','{学历要求}','job_column'),
-                    'jobcolumn_city'        =>  array('地址','{一级城市}{二级城市}{三级城市}','job_column'),
-                    'jobcolumn_address'     =>  array('联系地址','{联系地址}','job_column'),
-                    'jobcolumn_phone'       =>  array('联系电话','{联系电话}','job_column'),
-                    'jobcolumn_welfare'     =>  array('职位福利','{福利开始}{职位福利}{福利结束}','job_column'),
-                    'jobcolumn_description' =>  array('职位描述|字数','{str|职位描述|length:200}','job_column'),
+                    'jobcolumn_name'        =>  array('wap_com_00288','{职位名称}','job_column'),
+                    'jobcolumn_jobwapurl'   =>  array('common_06663','{职位网址}','job_column'),
+                    'jobcolumn_comname'     =>  array('wap_com_00157','{企业名称}','job_column'),
+                    'jobcolumn_comdesc'     =>  array('common_01338','{str|企业描述|length:200}','job_column'),
+                    'jobcolumn_comwapurl'   =>  array('wap_com_00162','{企业网址}','job_column'),
+                    'jobcolumn_salary'      =>  array('wap_com_00290','common_01436','job_column'),
+                    'jobcolumn_number'      =>  array('wap_com_00333','{招聘人数}','job_column'),
+                    'jobcolumn_age'         =>  array('wap_com_00284','{年龄要求}','job_column'),
+                    'jobcolumn_sex'         =>  array('wap_com_00332','{性别要求}','job_column'),
+                    'jobcolumn_exp'         =>  array('wap_com_00287','{经验要求}','job_column'),
+                    'jobcolumn_edu'         =>  array('wap_com_00283','{学历要求}','job_column'),
+                    'jobcolumn_city'        =>  array('wap_js_00082','{一级城市}{二级城市}{三级城市}','job_column'),
+                    'jobcolumn_address'     =>  array('admin_system_00690','common_01435','job_column'),
+                    'jobcolumn_phone'       =>  array('wap_user_00265','{联系电话}','job_column'),
+                    'jobcolumn_welfare'     =>  array('wap_00286','common_00420','job_column'),
+                    'jobcolumn_description' =>  array('common_01395','{str|职位描述|length:200}','job_column'),
                     
                 );
         //简历参数
@@ -129,89 +129,89 @@ class wxpubtemp_model extends model
                     
                     '{期望职位}'            =>  array('php'=>'{yun:}$v.list.customjob{/yun}','js'=>'xx职位'),
                     '{简历网址}'            =>  array('php'=>'{yun:}url m=wap c=resume a=show id=$v.list.id{/yun}','js'=>Url('wap')),
-                    '{姓名}'              =>  array('php'=>'{yun:}$v.list.username_n{/yun}','js'=>'王xx'),
-                    '{年龄}'              =>  array('php'=>'{yun:}$v.list.age{/yun}','js'=>'25岁'),
-                    '{经验}'              =>  array('php'=>'{yun:}$v.list.user_exp{/yun}','js'=>'应届生经验'),
-                    '{学历}'              =>  array('php'=>'{yun:}$v.list.useredu{/yun}','js'=>'初中学历'),
-                    '{求职状态}'            =>  array('php'=>'{yun:}$v.list.jobstatus{/yun}','js'=>'在职'),
-                    '{到岗时间}'            =>  array('php'=>'{yun:}$v.list.report{/yun}','js'=>'随时到岗'),
-                    '{工作经历}'            =>  array('php'=>'{yun:}$v.list.resume_workjj{/yun}','js'=>'2021-04-至今参加过1份工作，平均工作时长2个月，涉及技术开发岗位。'),
-                    '{教育经历}'            =>  array('php'=>'{yun:}$v.list.resume_edujj{/yun}','js'=>'2016-09-2020-06已完成本科段学业。'),
+                    '{姓名}'              =>  array('php'=>'{yun:}$v.list.username_n{/yun}','js'=>'common_01926'),
+                    '{年龄}'              =>  array('php'=>'{yun:}$v.list.age{/yun}','js'=>'common_01872'),
+                    '{经验}'              =>  array('php'=>'{yun:}$v.list.user_exp{/yun}','js'=>'common_06664'),
+                    '{学历}'              =>  array('php'=>'{yun:}$v.list.useredu{/yun}','js'=>'common_01702'),
+                    '{求职状态}'            =>  array('php'=>'{yun:}$v.list.jobstatus{/yun}','js'=>'wap_00296'),
+                    '{到岗时间}'            =>  array('php'=>'{yun:}$v.list.report{/yun}','js'=>'common_01865'),
+                    '{工作经历}'            =>  array('php'=>'{yun:}$v.list.resume_workjj{/yun}','js'=>'common_00089'),
+                    '{教育经历}'            =>  array('php'=>'{yun:}$v.list.resume_edujj{/yun}','js'=>'common_00198'),
                     '{期望薪资}'            =>  array('php'=>'{yun:}$v.list.salary{/yun}','js'=>'1000-18000'),
-                    '{期望地点开始}'      =>  array('php'=>'{yun:}foreach from=$v.list.expectcity item=v1 key=key{/yun}','js'=>'{forstart_1}'),
-                    '{期望地点}'            =>  array('php'=>'{yun:}$v1{/yun}','js'=>'上海'),
-                    '{期望地点结束}'      =>  array('php'=>'{yun:}/foreach{/yun}','js'=>'{forend_1}'),
+                    'common_01202'      =>  array('php'=>'{yun:}foreach from=$v.list.expectcity item=v1 key=key{/yun}','js'=>'{forstart_1}'),
+                    '{期望地点}'            =>  array('php'=>'{yun:}$v1{/yun}','js'=>'admin_system_00533'),
+                    'common_01203'      =>  array('php'=>'{yun:}/foreach{/yun}','js'=>'{forend_1}'),
 
-                    '{工作职能开始}'      =>  array('php'=>'{yun:}foreach from=$v.list.expectjob item=v2 key=key{/yun}','js'=>'{forstart_2}'),
-                    '{工作职能}'            =>  array('php'=>'{yun:}$v2{/yun}','js'=>'公务员'),
-                    '{工作职能结束}'      =>  array('php'=>'{yun:}/foreach{/yun}','js'=>'{forend_2}'),
+                    'common_01200'      =>  array('php'=>'{yun:}foreach from=$v.list.expectjob item=v2 key=key{/yun}','js'=>'{forstart_2}'),
+                    '{工作职能}'            =>  array('php'=>'{yun:}$v2{/yun}','js'=>'common_01892'),
+                    'common_01201'      =>  array('php'=>'{yun:}/foreach{/yun}','js'=>'{forend_2}'),
                     '{头像}'              =>  array(
                         'php'=>'<img src="{yun:}$v.list.photo{/yun}" style=style_v/>',
                         'js'=>checkpic($this->config['sy_member_icon'])
                     ),
                 );
         $this->pubtoolself_resumecolumn = array(
-                    'resumecolumn_username'     =>  array('用户姓名','{姓名}','resume_column'),
-                    'resumecolumn_photo'        =>  array('用户头像','{img|头像|样式=&quot;width:100px;height:100px;&quot;}','resume_column'),
-                    'resumecolumn_age'          =>  array('年龄','{年龄}','resume_column'),
-                    'resumecolumn_exp'          =>  array('经验','{经验}','resume_column'),
-                    'resumecolumn_edu'          =>  array('学历','{学历}','resume_column'),
-                    'resumecolumn_name'         =>  array('期望职位','{期望职位}','resume_column'),
-                    'resumecolumn_wapurl'       =>  array('简历网址','{简历网址}','resume_column'),
-                    'resumecolumn_jobstatus'    =>  array('求职状态','{求职状态}','resume_column'),
-                    'resumecolumn_report'       =>  array('到岗时间','{到岗时间}','resume_column'),
-                    'resumecolumn_salary'       =>  array('期望薪资','{期望薪资}','resume_column'),
-                    'resumecolumn_city'         =>  array('期望地点','{期望地点开始}{期望地点}{期望地点结束}','resume_column'),
-                    'resumecolumn_job'          =>  array('工作职能','{工作职能开始}{工作职能}{工作职能结束}','resume_column'),
-                    'resumecolumn_workjj'       =>  array('工作经历','{工作经历}','resume_column'),
-                    'resumecolumn_edujj'        =>  array('教育经历','{教育经历}','resume_column'),
+                    'resumecolumn_username'     =>  array('admin_00429','{姓名}','resume_column'),
+                    'resumecolumn_photo'        =>  array('common_06665','{img|头像|样式=&quot;width:100px;height:100px;&quot;}','resume_column'),
+                    'resumecolumn_age'          =>  array('wap_com_00302','{年龄}','resume_column'),
+                    'resumecolumn_exp'          =>  array('wap_01424','{经验}','resume_column'),
+                    'resumecolumn_edu'          =>  array('wap_com_00301','{学历}','resume_column'),
+                    'resumecolumn_name'         =>  array('wap_user_00015','{期望职位}','resume_column'),
+                    'resumecolumn_wapurl'       =>  array('common_06666','{简历网址}','resume_column'),
+                    'resumecolumn_jobstatus'    =>  array('wap_user_00017','{求职状态}','resume_column'),
+                    'resumecolumn_report'       =>  array('wap_com_00279','{到岗时间}','resume_column'),
+                    'resumecolumn_salary'       =>  array('wap_user_00016','{期望薪资}','resume_column'),
+                    'resumecolumn_city'         =>  array('admin_user_00226','common_00259','resume_column'),
+                    'resumecolumn_job'          =>  array('wap_user_00055','common_00258','resume_column'),
+                    'resumecolumn_workjj'       =>  array('wap_00457','{工作经历}','resume_column'),
+                    'resumecolumn_edujj'        =>  array('wap_00459','{教育经历}','resume_column'),
                 );
         //企业参数
         
         $this->pubtoolself_companycolumn = array(
-                    'companycolumn_name'        =>  array('企业名称','{企业名称}','company_column'),
-                    'companycolumn_welfare'     =>  array('企业福利','{企业福利开始}{企业福利}{企业福利结束}','company_column'),
-                    'companycolumn_desc'        =>  array('企业描述|字数','{str|企业描述|length:200}','company_column'),
-                    'companycolumn_comwapurl'   =>  array('企业网址','{企业网址}','company_column'),
-                    'companycolumn_linkman'     =>  array('企业联系人','{企业联系人}','company_column'),
-                    'companycolumn_linktel'     =>  array('企业联系电话','{企业联系电话}','company_column'),
-                    'companycolumn_linkaddress' =>  array('企业联系地址','{企业联系地址}','company_column'),
+                    'companycolumn_name'        =>  array('wap_com_00157','{企业名称}','company_column'),
+                    'companycolumn_welfare'     =>  array('company_00007','common_00257','company_column'),
+                    'companycolumn_desc'        =>  array('common_01338','{str|企业描述|length:200}','company_column'),
+                    'companycolumn_comwapurl'   =>  array('wap_com_00162','{企业网址}','company_column'),
+                    'companycolumn_linkman'     =>  array('wap_js_00058','{企业联系人}','company_column'),
+                    'companycolumn_linktel'     =>  array('common_06667','{企业联系电话}','company_column'),
+                    'companycolumn_linkaddress' =>  array('common_01458','common_01197','company_column'),
 
-                    'companycolumn_job'         =>  array('企业职位','{职位列表开始}{职位列表结束}','company_column'),
-                    'companycolumn_jobname'     =>  array('职位名称','{职位名称}','company_column'),
-                    'companycolumn_jobwapurl'   =>  array('职位网址','{职位网址}','company_column'),
-                    'companycolumn_jobsalary'   =>  array('职位薪资','{职位薪资}','company_column'),
-                    'companycolumn_jobexp'      =>  array('职位经验要求','{职位经验要求}','company_column'),
-                    'companycolumn_jobedu'      =>  array('职位学历要求','{职位学历要求}','company_column'),
-                    'companycolumn_jobdesc'     =>  array('职位描述|字数','{str|职位描述|length:200}','company_column'),
-                    'companycolumn_jobxcxurl'   =>  array('职位小程序外链','{职位小程序外链}','company_column'),
+                    'companycolumn_job'         =>  array('common_06668','common_00514','company_column'),
+                    'companycolumn_jobname'     =>  array('wap_com_00288','{职位名称}','company_column'),
+                    'companycolumn_jobwapurl'   =>  array('common_06663','{职位网址}','company_column'),
+                    'companycolumn_jobsalary'   =>  array('common_06669','{职位薪资}','company_column'),
+                    'companycolumn_jobexp'      =>  array('common_06670','{职位经验要求}','company_column'),
+                    'companycolumn_jobedu'      =>  array('common_06671','{职位学历要求}','company_column'),
+                    'companycolumn_jobdesc'     =>  array('common_01395','{str|职位描述|length:200}','company_column'),
+                    'companycolumn_jobxcxurl'   =>  array('common_06672','{职位小程序外链}','company_column'),
                     
                 );
         $this->pubtoolself_companycolumn_map = array(
                     '{企业名称}'            =>  array('php'=>'{yun:}$v.name{/yun}','js'=>'xx企业'),
-                    '{企业福利开始}'        =>  array('php'=>'{yun:}foreach from=$v.welfare_arr item = cwel{/yun}','js'=>'{forstart_1}'),
-                    '{企业福利}'            =>  array('php'=>'{yun:}$cwel{/yun}','js'=>'企业福利'),
-                    '{企业福利结束}'        =>  array('php'=>'{yun:}/foreach{/yun}','js'=>'{forend_1}'),
+                    'common_01195'        =>  array('php'=>'{yun:}foreach from=$v.welfare_arr item = cwel{/yun}','js'=>'{forstart_1}'),
+                    '{企业福利}'            =>  array('php'=>'{yun:}$cwel{/yun}','js'=>'company_00007'),
+                    'common_01196'        =>  array('php'=>'{yun:}/foreach{/yun}','js'=>'{forend_1}'),
 
-                    '{企业描述}'            =>  array('php'=>'{yun:}$v.desc{/yun}','js'=>'企业简介就是对一个公司进行一个简单全面的介绍，这种介绍不是一句话带过，也不是长篇大论...'),
+                    '{企业描述}'            =>  array('php'=>'{yun:}$v.desc{/yun}','js'=>'common_00070'),
                     '{企业网址}'            =>  array('php'=>'{yun:}url m=wap c=company a=show id=$v.uid{/yun}','js'=>Url('wap')),
 
-                    '{职位列表开始}'      =>  array('php'=>'{yun:}foreach item=v1 key=k1 from=$v.row{/yun}','js'=>''),
+                    'common_01204'      =>  array('php'=>'{yun:}foreach item=v1 key=k1 from=$v.row{/yun}','js'=>''),
                     '{职位名称}'            =>  array('php'=>'{yun:}$v1.name{/yun}','js'=>'xx职位'),
                     '{职位网址}'            =>  array('php'=>'{yun:}url m=wap c=job a=comapply id=$v1.id{/yun}','js'=>Url('wap')),
                     '{职位薪资}'            =>  array('php'=>'{yun:}$v1.job_salary{/yun}','js'=>'15000-25000(元/月)'),
-                    '{职位经验要求}'      =>  array('php'=>'{yun:}$v1.job_exp{/yun}','js'=>'1-3年经验'),
-                    '{职位学历要求}'      =>  array('php'=>'{yun:}$v1.job_edu{/yun}','js'=>'硕士学历'),
-                    '{职位描述}'            =>  array('php'=>'{yun:}$v1.description{/yun}','js'=>'1.负责数据中心机房整体规划、部署，架构优化、容灾优化、性能优化；2.负责数据中心基础设施...'),
+                    '{职位经验要求}'      =>  array('php'=>'{yun:}$v1.job_exp{/yun}','js'=>'common_01428'),
+                    '{职位学历要求}'      =>  array('php'=>'{yun:}$v1.job_edu{/yun}','js'=>'common_01826'),
+                    '{职位描述}'            =>  array('php'=>'{yun:}$v1.description{/yun}','js'=>'common_00057'),
                     '{职位小程序外链}'       =>      array(
                         'php'=>'{yun:}xcxurl  type=job id=$v1.id{/yun}',
                         'js'=>'https://wxaurl.cn/job_xxx'
                     ),
-                    '{职位列表结束}'      =>  array('php'=>'{yun:}/foreach{/yun}','js'=>''),
+                    'common_01205'      =>  array('php'=>'{yun:}/foreach{/yun}','js'=>''),
 
-                    '{企业联系人}'       =>  array('php'=>'{yun:}$v.linkman{/yun}','js'=>'小王'),
+                    '{企业联系人}'       =>  array('php'=>'{yun:}$v.linkman{/yun}','js'=>'common_01977'),
                     '{企业联系电话}'      =>  array('php'=>'{yun:}$v.linktel{/yun}','js'=>'18888888888'),
-                    '{企业联系地址}'      =>  array('php'=>'{yun:}$v.address{/yun}','js'=>'人民路xx号'),
+                    'common_01197'      =>  array('php'=>'{yun:}$v.address{/yun}','js'=>'common_01449'),
                 );
         //模板类型公共参数
         $this->pubtoolself_publiccolumn_map = array(
@@ -219,19 +219,19 @@ class wxpubtemp_model extends model
                         'php'=>'<img src="{yun:}pubqrcode  toc=toc_v toa=toa_v toid=toid_v totype=wap{/yun}" style=style_v/>',
                         'js'=>Url('ajax',array("c"=>"wappubqrcode")),
                     ),
-                    '{小程序场景码}'=>array(
+                    'common_01199'=>array(
                         'php'=>'<img src="{yun:}pubqrcode  toc=toc_v toa=toa_v toid=toid_v totype=weixinxcx{/yun}" style=style_v/>',
                         'js'=>Url('ajax',array("c"=>"wappubqrcode"))
                     ),
-                    '{公众号场景码}'=>array(
+                    'common_01198'=>array(
                         'php'=>'<img src="{yun:}pubqrcode  toc=toc_v toa=toa_v toid=toid_v totype=weixin{/yun}" style=style_v/>',
                         'js'=>Url('ajax',array("c"=>"wappubqrcode"))
                     ),
-                    '{小程序H5跳转}'=>array(
+                    'common_01101'=>array(
                         'php'=>'minipath',
                         'js'=>''
                     ),
-                    '{小程序APPID}'=>array(
+                    'common_00961'=>array(
                         'php'=>'{yun:}$config.sy_xcxappid{/yun}',
                         'js'=>''
                     ),
@@ -241,24 +241,24 @@ class wxpubtemp_model extends model
                     ),
                 );
         $this->pubtoolself_publiccolumn = array(
-                    'wapewm'        =>  array('移动端二维码','{img|移动端二维码|样式=&quot;width:100px;height:100px;&quot;}','public_column'),
-                    'weixinewm'     =>  array('公众号场景码','{img|公众号场景码|样式=&quot;width:100px;height:100px;&quot;}','public_column'),
-                    'weixinxcxewm'  =>  array('小程序场景码','{img|小程序场景码|样式=&quot;width:100px;height:100px;&quot;}','public_column'),
-                    'xcxewm'        =>  array('小程序H5跳转','H5xcx_{小程序APPID}_{小程序H5跳转}','public_column'),
-                    'xcxurl'        =>  array('小程序外链','{小程序外链}','public_column'),
+                    'wapewm'        =>  array('common_06673','{img|移动端二维码|样式=&quot;width:100px;height:100px;&quot;}','public_column'),
+                    'weixinewm'     =>  array('wap_00123','common_00044','public_column'),
+                    'weixinxcxewm'  =>  array('common_01489','common_00045','public_column'),
+                    'xcxewm'        =>  array('common_01357','common_00172','public_column'),
+                    'xcxurl'        =>  array('common_01600','{小程序外链}','public_column'),
                 );
         //整体公共参数
         $this->pubtoolself_totalcolumn_map = array(
                     
                     '{网站名称}'=>array('php'=>$this->config['sy_webname'],'js'=>$this->config['sy_webname']),
                     '{网站地址}'=>array('php'=>$this->config['sy_weburl'],'js'=>$this->config['sy_weburl']),
-                    '{当前日期}'=>array('php'=>date('Y-m-d',time()),'js'=>date('Y-m-d',time())),
+                    'common_01432'=>array('php'=>date('Y-m-d',time()),'js'=>date('Y-m-d',time())),
                     '{admin_style}'=>array('php'=>$this->config['sy_weburl']."/app/template/admin",'js'=>$this->config['sy_weburl']."/app/template/admin")
                 );
         $this->pubtoolself_totalcolumn = array(
-                    'webname'       =>  array('网站名称','{网站名称}','total_column'),
-                    'weburl'        =>  array('网站地址','{网站地址}','total_column'),
-                    'datetime'      =>  array('当前日期','{当前日期}','total_column'),
+                    'webname'       =>  array('admin_system_00331','{网站名称}','total_column'),
+                    'weburl'        =>  array('admin_01014','{网站地址}','total_column'),
+                    'datetime'      =>  array('member_com_00309','common_01432','total_column'),
                 );
     }
     
@@ -330,11 +330,11 @@ class wxpubtemp_model extends model
 
         $return['id']       =   $this -> delete_all('wxpub_temps',$where,'');
         
-        $return['msg']      =   '模板(ID:'.$delId.')';
+        $return['msg']      =   yun_auto_t('模板(ID:').$delId.')';
         
         $return['errcode']  =   $return['id'] ? '9' :'8';
         
-        $return['msg']      =   $return['id'] ? $return['msg'].'删除成功！' :$return['msg'].'删除失败！';
+        $return['msg']      =   $return['id'] ? $return['msg'].'admin_user_00187' :$return['msg'].'admin_user_00186';
         
         return  $return;
     }
@@ -344,17 +344,17 @@ class wxpubtemp_model extends model
             
             $return['id']   =     $this -> update_once('wxpub_temps',$updata, $whereData);
             
-            $return['msg']  =   '模板更新';
+            $return['msg']  =   yun_at('common_06674');
         }else{
             
             $return['id']   =     $this -> insert_into('wxpub_temps',$updata);
             
-            $return['msg']  =   '模板添加';
+            $return['msg']  =   yun_at('common_06675');
         }
 
         $return['errcode']  =   $return['id'] ? '9' :'8';
         
-        $return['msg']      =   $return['id'] ? $return['msg'].'成功！' :$return['msg'].'失败！';
+        $return['msg']      =   $return['id'] ? $return['msg'].'wap_js_00104' :$return['msg'].'wap_js_00103';
         
         return  $return;
     }
@@ -473,7 +473,7 @@ class wxpubtemp_model extends model
                 
                 foreach ($result[0] as $rk => $rv) {
                     $whtml = '';
-                    $wv    =   str_replace(array('{福利开始}','{福利结束}'),array('',''), $rv);
+                    $wv    =   str_replace(array('common_01433','common_01434'),array('',''), $rv);
                     
                     foreach ($job['arraywelfare'] as $k => $v) {
                         $whtml .= str_replace('{职位福利}',$v, $wv);
@@ -504,7 +504,7 @@ class wxpubtemp_model extends model
                 if ($provider == 'baidu' || $provider == 'toutiao'){
                     
                     // 将微信汉字替换，防止审核时被判断为诱导分享
-                    $html  =  str_ireplace(array('微信','同号','{小程序外链}','小程序外链'), '', $html);
+                    $html  =  str_ireplace(array('wap_com_00249','common_01960','{小程序外链}','common_01600'), '', $html);
                     
                 }else{
                     //小程序外链
@@ -545,7 +545,7 @@ class wxpubtemp_model extends model
 
         if (empty($post['type']) || (empty($post['jobid']) && empty($post['cuid'])) || empty($data['auid'])) {
 
-            return array('code' => 8, 'msg' => '参数错误，请重试');
+            return array('code' => 8, 'msg' => yun_at('common_01238'));
         } else {
 
             if ($post['type'] == 1) {
@@ -578,7 +578,7 @@ class wxpubtemp_model extends model
                 $result     =   $this->DB_insert_multi('wxpub_twtask', $valueData);
 
                 $return['code'] =   $result ? 9 : 8;
-                $return['msg']  =   $result ? '推文任务添加成功' : '推文任务添加失败';
+                $return['msg']  =   $result ? yun_at('common_06676') : yun_at('common_06677');
                 return $return;
 
             } elseif ($post['type'] == 2) {
@@ -609,7 +609,7 @@ class wxpubtemp_model extends model
                 $result     =   $this->DB_insert_multi('wxpub_twtask', $valueData);
 
                 $return['code'] =   $result ? 9 : 8;
-                $return['msg']  =   $result ? '推文任务添加成功' : '推文任务添加失败';
+                $return['msg']  =   $result ? yun_at('common_06676') : yun_at('common_06677');
                 return $return;
             }
         }
@@ -778,11 +778,11 @@ class wxpubtemp_model extends model
         
         $return['id']       =   $this -> delete_all('wxpub_twtask',$where,'');
         
-        $return['msg']      =   '推文任务(ID:'.$delId.')';
+        $return['msg']      =   yun_auto_t('推文任务(ID:').$delId.')';
         
         $return['errcode']  =   $return['id'] ? '9' :'8';
         
-        $return['msg']      =   $return['id'] ? $return['msg'].'删除成功！' :$return['msg'].'删除失败！';
+        $return['msg']      =   $return['id'] ? $return['msg'].'admin_user_00187' :$return['msg'].'admin_user_00186';
         
         return  $return;
     }

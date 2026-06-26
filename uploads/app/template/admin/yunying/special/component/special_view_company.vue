@@ -5,9 +5,9 @@
       <div class="moduleSeachbig">
         <!--关键字搜索和查询在一起-------------------------------------------------------------------->
         <div class="tableSeakusydsg" style="padding: 2px 0;">
-          <el-input v-model="searchForm.keyword" placeholder="请输入搜索内容" class="input-with-select" size="small"
+          <el-input v-model="searchForm.keyword" placeholder="{yun:}t key='admin_00340'{/yun}" class="input-with-select" size="small"
             prefix-icon="el-icon-search" clearable>
-            <el-select slot="prepend" v-model="searchForm.type" size="small" placeholder="职位名称">
+            <el-select slot="prepend" v-model="searchForm.type" size="small" placeholder="{yun:}t key='wap_com_00288'{/yun}">
               <el-option label="企业名称/简称" value="1"></el-option>
               <el-option label="用户名称" value="2"></el-option>
               <el-option label="联系人" value="3"></el-option>
@@ -19,64 +19,64 @@
         </div>
         <!--收起部分-->
         <div class="tableSeachInpt tableSeachInptsmall" :class="{ 'searchbutnOnff': seachbutn }">
-          <el-select v-model="searchForm.rating" size="small" slot="prepend" placeholder="会员等级" clearable @change="handleSearch">
+          <el-select v-model="searchForm.rating" size="small" slot="prepend" placeholder="{yun:}t key='admin_user_company_00018'{/yun}" clearable @change="handleSearch">
             <el-option v-for="(item, index) in ratingList" :label="item.label" :value="item.value"
               :key="index"></el-option>
           </el-select>
         </div>
         <div class="tableSeachInpt tableSeachInptsmall" :class="{ 'searchbutnOnff': seachbutn }">
-          <el-select v-model="searchForm.time" size="small" slot="prepend" placeholder="到期时间" clearable @change="handleSearch">
+          <el-select v-model="searchForm.time" size="small" slot="prepend" placeholder="{yun:}t key='admin_user_company_00052'{/yun}" clearable @change="handleSearch">
             <el-option v-for="(item, index) in timeList" :label="item.label" :value="item.value" :key="index"></el-option>
           </el-select>
         </div>
         <div class="tableSeachInpt tableSeachInptsmall" :class="{ 'searchbutnOnff': seachbutn }">
-          <el-select v-model="searchForm.status" size="small" slot="prepend" placeholder="审核状态" clearable @change="handleSearch">
+          <el-select v-model="searchForm.status" size="small" slot="prepend" placeholder="{yun:}t key='wap_com_00406'{/yun}" clearable @change="handleSearch">
             <el-option v-for="(item, index) in statusList" :label="item.label" :value="item.value"
               :key="index"></el-option>
           </el-select>
         </div>
         <div class="tableSeachInpt tableSeachInptsmall" :class="{ 'searchbutnOnff': seachbutn }">
-          <el-select v-model="searchForm.source" size="small" slot="prepend" placeholder="数据来源" clearable @change="handleSearch">
+          <el-select v-model="searchForm.source" size="small" slot="prepend" placeholder="{yun:}t key='admin_yunying_00139'{/yun}" clearable @change="handleSearch">
             <el-option v-for="(item, index) in sourceList" :label="item.label" :value="item.value"
               :key="index"></el-option>
           </el-select>
         </div>
         <div class="tableSeachInpt tableSeachInptsmall" :class="{ 'searchbutnOnff': seachbutn }">
-          <el-select v-model="searchForm.rec" size="small" slot="prepend" placeholder="知名企业" clearable @change="handleSearch">
+          <el-select v-model="searchForm.rec" size="small" slot="prepend" placeholder="{yun:}t key='admin_user_company_00145'{/yun}" clearable @change="handleSearch">
             <el-option v-for="(item, index) in recList" :label="item.label" :value="item.value" :key="index"></el-option>
           </el-select>
         </div>
         <div class="tableSeachInpt tableSeachInptsmall" :class="{ 'searchbutnOnff': seachbutn }">
-          <el-select v-model="searchForm.gw" size="small" slot="prepend" placeholder="企业顾问" clearable @change="handleSearch">
+          <el-select v-model="searchForm.gw" size="small" slot="prepend" placeholder="{yun:}t key='admin_01231'{/yun}" clearable @change="handleSearch">
             <el-option v-for="(item, index) in gwList" :label="item.label" :value="item.value" :key="index"></el-option>
           </el-select>
         </div>
         <div class="tableSeachInpt tableSeachInptsmall" :class="{ 'searchbutnOnff': seachbutn }">
-          <el-select v-model="searchForm.lotime" size="small" slot="prepend" placeholder="最近登录" clearable @change="handleSearch">
+          <el-select v-model="searchForm.lotime" size="small" slot="prepend" placeholder="{yun:}t key='admin_yunying_00131'{/yun}" clearable @change="handleSearch">
             <el-option v-for="(item, index) in lotimeList" :label="item.label" :value="item.value"
               :key="index"></el-option>
           </el-select>
         </div>
         <div class="tableSeachInpt tableSeachInptsmall" :class="{ 'searchbutnOnff': seachbutn }">
-          <el-select v-model="searchForm.adtime" size="small" slot="prepend" placeholder="最近注册" clearable @change="handleSearch">
+          <el-select v-model="searchForm.adtime" size="small" slot="prepend" placeholder="{yun:}t key='admin_yunying_00130'{/yun}" clearable @change="handleSearch">
             <el-option v-for="(item, index) in adtimeList" :label="item.label" :value="item.value"
               :key="index"></el-option>
           </el-select>
         </div>
         <div class="tableSeachInpt tableSeachInptsmall" :class="{ 'searchbutnOnff': seachbutn }">
-          <el-select v-model="searchForm.job" size="small" slot="prepend" placeholder="职位状况" clearable @change="handleSearch">
+          <el-select v-model="searchForm.job" size="small" slot="prepend" placeholder="{yun:}t key='admin_yunying_00132'{/yun}" clearable @change="handleSearch">
             <el-option label="有职位" value="1"></el-option>
             <el-option label="无职位" value="2"></el-option>
           </el-select>
         </div>
         <div class="tableSeachInpt">
-          <el-button type="primary" icon="el-icon-search" size="mini" @click="handleSearch">查询</el-button>
+          <el-button type="primary" icon="el-icon-search" size="mini" @click="handleSearch">{yun:}t key='admin_user_weipin_00049'{/yun}</el-button>
         </div>
         <div class="tableSeachzk" :class="{ 'searchbutnKai': seachbutn }" style="margin-bottom: 12px;">
           <el-button type="info" class="zhankai" @click="seachbutn = !seachbutn, tableHig = !tableHig"
-            aria-disabled="false" size="mini" plain>展开<i class="el-icon-arrow-down el-icon--right"></i></el-button>
+            aria-disabled="false" size="mini" plain>{yun:}t key='admin_user_00145'{/yun}<i class="el-icon-arrow-down el-icon--right"></i></el-button>
           <el-button type="info" class="shouqi" @click="seachbutn = !seachbutn, tableHig = !tableHig"
-            aria-disabled="false" size="mini" plain>合并<i class="el-icon-arrow-up el-icon--right"></i></el-button>
+            aria-disabled="false" size="mini" plain>{yun:}t key='admin_user_00144'{/yun}<i class="el-icon-arrow-up el-icon--right"></i></el-button>
         </div>
       </div>
 
@@ -97,7 +97,7 @@
             <el-table-column label="企业名称" min-width="180">
               <template slot-scope="scope">
                 <el-popover trigger="hover" placement="top">
-                  <p>{{ scope.row.name }}<span v-if="scope.row.shortname">【简称: {{ scope.row.shortname }}】</span></p>
+                  <p>{{ scope.row.name }}<span v-if="scope.row.shortname">{yun:}t key='admin_01230'{/yun}</span></p>
                   <span slot="reference" class="name-wrapper">
                     <el-link type="primary" :href="scope.row.comUrl" target="_blank">{{ scope.row.name }}</el-link>
                   </span>
@@ -120,18 +120,18 @@
             <el-table-column prop="zz_jobnum" label="在招职位数" width="150"></el-table-column>
             <el-table-column label="参与状态">
               <template slot-scope="scope">
-                <span v-if="scope.row.join == '1'">已参加</span>
-                <span v-else style="color: #c1c1c1;">未参加</span>
+                <span v-if="scope.row.join == '1'">{yun:}t key='admin_yunying_00133'{/yun}</span>
+                <span v-else style="color: #c1c1c1;">{yun:}t key='admin_yunying_00136'{/yun}</span>
               </template>
             </el-table-column>
             <el-table-column fixed="right" label="操作" width="210" align="center">
               <template slot-scope="scope">
                 <div class="cz_button">
                   <template v-if="scope.row.jobnum > 0 && scope.row.r_status == 1">
-                    <el-button size="mini" @click="handleInsert(scope)">加入</el-button>
+                    <el-button size="mini" @click="handleInsert(scope)">{yun:}t key='admin_yunying_00138'{/yun}</el-button>
                   </template>
                   <template v-else>
-                    <template v-if="scope.row.r_status != 1">企业未审核</template>
+                    <template v-if="scope.row.r_status != 1">{yun:}t key='admin_yunying_00126'{/yun}</template>
                     <template v-if="scope.row.jobnum <= 0">-</template>
                   </template>
                 </div>
@@ -141,8 +141,8 @@
         </div>
         <div class="modulePaging">
           <div>
-            <el-checkbox :indeterminate="isIndeterminate" v-model="checked" @change="selectAllBottom">全选</el-checkbox>
-            <el-button @click="handleInsert(null, true)" size="mini">批量加入</el-button>
+            <el-checkbox :indeterminate="isIndeterminate" v-model="checked" @change="selectAllBottom">{yun:}t key='wap_js_00074'{/yun}</el-checkbox>
+            <el-button @click="handleInsert(null, true)" size="mini">{yun:}t key='admin_yunying_00129'{/yun}</el-button>
           </div>
           <div class="modulePagNum">
             <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
@@ -165,42 +165,42 @@ module.exports = {
   data: function () {
     return {
       loading: false,
-      dataText: '数据加载中',
+      dataText: "{yun:}t key='admin_user_weipin_00026'{/yun}",
       pytoken: localStorage.getItem("pytoken"),
       searchForm: {
         page: 1,
         limit: null,
-        type: '1',
-        keyword: null,//关键字
-        rating: null,//会员等级
-        time: null,//到期时间
-        status: null,//审核状态
-        source: null,//数据来源
-        rec: null,//知名企业
-        gw: null,//企业顾问
-        lotime: null,//最近登录
-        adtime: null,//最近注册
-        job: null,//职位状况
+        type: '1",
+        keyword: null,//{yun:}t key='admin_tool_00574'{/yun}
+        rating: null,//{yun:}t key='admin_user_company_00018'{/yun}
+        time: null,//{yun:}t key='admin_user_company_00052'{/yun}
+        status: null,//{yun:}t key='wap_com_00406'{/yun}
+        source: null,//{yun:}t key='admin_yunying_00139'{/yun}
+        rec: null,//{yun:}t key='admin_user_company_00145'{/yun}
+        gw: null,//{yun:}t key='admin_01231'{/yun}
+        lotime: null,//{yun:}t key='admin_yunying_00131'{/yun}
+        adtime: null,//{yun:}t key='admin_yunying_00130'{/yun}
+        job: null,//{yun:}t key='admin_yunying_00132'{/yun}
       },
       total: 0,
       tableData: [],
       pageSizes: [],
-      checked: false,//全选
+      checked: false,//{yun:}t key='wap_js_00074'{/yun}
       isIndeterminate: false,// checkbox 的不确定状态
       selectedItem: [],
       //搜索条件的基本数据
-      ratingList: [],//会员等级
-      timeList: [],//到期时间
-      statusList: [],//审核状态
-      sourceList: [],//数据来源
-      recList: [],//知名企业
-      gwList: [],//企业顾问
-      lotimeList: [],//最近登录
-      adtimeList: [],//最近注册
+      ratingList: [],//{yun:}t key='admin_user_company_00018'{/yun}
+      timeList: [],//{yun:}t key='admin_user_company_00052'{/yun}
+      statusList: [],//{yun:}t key='wap_com_00406'{/yun}
+      sourceList: [],//{yun:}t key='admin_yunying_00139'{/yun}
+      recList: [],//{yun:}t key='admin_user_company_00145'{/yun}
+      gwList: [],//{yun:}t key='admin_01231'{/yun}
+      lotimeList: [],//{yun:}t key='admin_yunying_00131'{/yun}
+      adtimeList: [],//{yun:}t key='admin_yunying_00130'{/yun}
       totalNum: 0,
       applyNum: 0,//参会企业的数量
       noNum: 0,//未加入
-      statuscomVisible: false,//批量审核
+      statuscomVisible: false,//{yun:}t key='admin_user_weipin_00037'{/yun}
 
       tableHig: 100,
       seachbutn: false,
@@ -213,7 +213,7 @@ module.exports = {
   },
   methods: {
     selectable(row, index) {
-      if (row.jobnum <= 0 || row.r_status != '1') {
+      if (row.jobnum <= 0 || row.r_status != "1') {
         return false;
       } else {
         return true;
@@ -273,7 +273,7 @@ module.exports = {
           }
           _this.loading = false;
           if (_this.tableData.length === 0) {
-            _this.dataText = "暂无数据";
+            _this.dataText = "{yun:}t key='wap_js_00113'{/yun}";
           }
         }
       }).catch(function (error) {
@@ -302,7 +302,7 @@ module.exports = {
       let params = {};
       if (isMore) {
         if (!this.selectedItem.length) {
-          message.error('您还未选择参会企业！');
+          message.error("{yun:}t key='admin_yunying_00123'{/yun}");
           return false;
         }
         let list = [];
@@ -320,7 +320,7 @@ module.exports = {
         params.type = 'one';
       }
 
-      delConfirm(this, params, this.insert, '确认添加至专题招聘？');
+      delConfirm(this, params, this.insert, "{yun:}t key='admin_yunying_00124'{/yun}");
     },
     insert(params) {
       let _this = this;

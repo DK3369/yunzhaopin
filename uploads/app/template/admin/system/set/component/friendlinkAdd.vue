@@ -1,26 +1,26 @@
 <template>
     <div class="tableDome" style="top: 40px;">
         <div class="tableDome_tip">
-            <el-alert title="添加链接时，请正确选择链接类型！" type="success" :closable="false">
+            <el-alert title="{yun:}t key='admin_system_00284'{/yun}" type="success" :closable="false">
             </el-alert>
         </div>
         <div class="moduleTable">
             <table class="tableVue">
                 <thead>
                 <tr align="left">
-                    <th width="140">名称</th>
-                    <th width="450">状态</th>
-                    <th width="200">说明</th>
+                    <th width="140">{yun:}t key='member_com_00021'{/yun}</th>
+                    <th width="450">{yun:}t key='member_user_00181'{/yun}</th>
+                    <th width="200">{yun:}t key='member_com_00207'{/yun}</th>
                 </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td>
-                            <div class="TableTite">链接类型</div>
+                            <div class="TableTite">{yun:}t key='admin_system_00688'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableSelect">
-                                <el-select v-model="infoData.linktype" placeholder="请选择">
+                                <el-select v-model="infoData.linktype" placeholder="{yun:}t key='wap_user_00100'{/yun}">
                                     <el-option label="文字链接" value="1"></el-option>
                                     <el-option label="图片链接" value="2"></el-option>
                                 </el-select>
@@ -30,7 +30,7 @@
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">链接标题</div>
+                            <div class="TableTite">{yun:}t key='admin_system_00292'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
@@ -39,13 +39,13 @@
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>例：phpyun</span>
+                                <span>{yun:}t key='admin_system_00285'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">链接地址</div>
+                            <div class="TableTite">{yun:}t key='admin_00101'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
@@ -54,17 +54,17 @@
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>例：http://www.ov6.com</span>
+                                <span>{yun:}t key='admin_01009'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">显示站点</div>
+                            <div class="TableTite">{yun:}t key='admin_system_00291'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableSelect">
-                                <el-select v-model="infoData.did" size="small" slot="prepend" placeholder="请选择">
+                                <el-select v-model="infoData.did" size="small" slot="prepend" placeholder="{yun:}t key='wap_user_00100'{/yun}">
                                     <el-option v-for="item in domainData" :key="item.value" :label="item.label" :value="item.value"></el-option>
                                 </el-select>
                             </div>
@@ -73,11 +73,11 @@
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">使用范围</div>
+                            <div class="TableTite">{yun:}t key='admin_user_00126'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableSelect">
-                                <el-select v-model="infoData.didtype" placeholder="请选择">
+                                <el-select v-model="infoData.didtype" placeholder="{yun:}t key='wap_user_00100'{/yun}">
                                     <el-option label="全站使用" value="1"></el-option>
                                     <el-option label="仅在首页使用" value="2"></el-option>
                                 </el-select>
@@ -87,19 +87,19 @@
                     </tr>
                     <tr v-show="infoData.linktype == 2">
                         <td>
-                            <div class="TableTite">缩 略 图</div>
+                            <div class="TableTite">{yun:}t key='admin_00165'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableSelect">
                                 <el-radio-group v-model="infoData.imgtype">
-                                    <el-radio label="1">上传图片</el-radio>
-                                    <el-radio label="2">远程图片</el-radio>
+                                    <el-radio label="1">{yun:}t key='wap_00540'{/yun}</el-radio>
+                                    <el-radio label="2">{yun:}t key='admin_01010'{/yun}</el-radio>
                                 </el-radio-group>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>尺寸：160*50px</span>
+                                <span>{yun:}t key='admin_01011'{/yun}</span>
                             </div>
                         </td>
                     </tr>
@@ -116,7 +116,7 @@
                                   :on-change="uploadChange"
                                 >
                                   <img v-if="infoData.imgurl" :src="infoData.imgurl" class="avatar" width="160" height="50">
-                                  <el-button size="small" type="primary">重新上传</el-button>
+                                  <el-button size="small" type="primary">{yun:}t key='wap_user_00097'{/yun}</el-button>
                                 </el-upload>
                             </div>
                         </td>
@@ -133,13 +133,13 @@
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>例：http://www.hr135.com/yun.jpg</span>
+                                <span>{yun:}t key='admin_01012'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">排序</div>
+                            <div class="TableTite">{yun:}t key='member_com_00022'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
@@ -148,7 +148,7 @@
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>例：大前小后</span>
+                                <span>{yun:}t key='admin_system_00289'{/yun}</span>
                             </div>
                         </td>
                     </tr>
@@ -170,10 +170,10 @@ module.exports = {
         link_id: {
             handler(newValue, oldValue) {
                 if (newValue > 0) {
-                    this.btnTis = '修 改';
+                    this.btnTis = "{yun:}t key='member_user_00288'{/yun}";
                     this.getInfo();
                 }else{
-                    this.btnTis = '添 加';
+                    this.btnTis = "{yun:}t key='admin_00305'{/yun}";
                     this.infoData = {
                         linktype: '',
                         linkname: '',
@@ -207,7 +207,7 @@ module.exports = {
             },
             domainData: {},
             files: [],
-            btnTis: '添 加',
+            btnTis: "{yun:}t key='admin_00305'{/yun}",
 			save_load:false,
         }
     },
@@ -251,7 +251,7 @@ module.exports = {
             let that = this;
             let formData = new FormData();
             if (that.infoData.linktype == ''){
-                message.error('请选择链接类型');
+                message.error("{yun:}t key='admin_system_00287'{/yun}");
                 return false;
             }
             if (that.infoData.linkname == '') {
@@ -259,7 +259,7 @@ module.exports = {
                 return false;
             }
             if (that.infoData.linkurl == '') {
-                message.error('请填写链接地址');
+                message.error("{yun:}t key='admin_system_00286'{/yun}");
                 return false;
             }
             if (that.infoData.didtype == '') {

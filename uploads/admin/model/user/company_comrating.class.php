@@ -73,7 +73,7 @@ class company_comrating_controller extends adminCommon
         $postData = $_POST;
         
         if(intval($postData['max_time'])>0 && intval($postData['max_time'])<intval($postData['service_time'])){
-            $this->render_json(8,'最长有效期不能小于服务时间!');
+            $this->render_json(8,yun_at('admin_user_00051'));
         }
 
         $id = intval($_POST['id']);
@@ -168,11 +168,11 @@ class company_comrating_controller extends adminCommon
         if (!empty($name) && !empty($id)) {
             $serviceNum = $ratingM->getComServiceNum(array('name' => $name, 'id' => array('<>', $id)));
             if ($serviceNum) {
-                $this->render_json(2, '名称已存在！');
+                $this->render_json(2, yun_at('wap_js_00054'));
             }
 
             $ratingM->setComService(array('name' => $name), array('id' => $id));
-            $this->admin_json(0, "企业增值类型(ID:" . $_POST['id'] . ")名称修改成功");
+            $this->admin_json(0, 'admin_user_00052' . $_POST['id'] . ")名称修改成功");
         }
     }
 
@@ -186,9 +186,9 @@ class company_comrating_controller extends adminCommon
         if (!empty($id) && !empty($display)) {
             $nid = $this->MODEL('rating')->setComService(array("display" => $display), array("id" => $id));
             if ($nid) {
-                $this->render_json(0, '设置成功！');
+                $this->render_json(0, yun_at('model_00011'));
             } else {
-                $this->render_json(2, '设置失败！');
+                $this->render_json(2, yun_at('wap_01715'));
             }
         }
     }
@@ -291,11 +291,11 @@ class company_comrating_controller extends adminCommon
 
         }else{
             $err['errcode'] = 8;
-            $err['msg'] = '参数错误请重试';
+            $err['msg'] = yun_at('wap_00556');
         }
 
         if ($err['errcode'] == 9) {
-            $this->admin_json(0,'企业会员等级（ID：(ID:'.$_POST['id'].')图标删除成功！');
+            $this->admin_json(0,'admin_user_00050'.$_POST['id'].'admin_user_00053');
         }else{
             $this->render_json($err['errcode'], $err['msg']);
         }

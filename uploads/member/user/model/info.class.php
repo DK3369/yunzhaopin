@@ -5,7 +5,7 @@ class info_controller extends user
 	//基本信息
 	function index_action(){
 		
-		$nametype	=	array('1'=>'完全公开','2'=>'显示编号','3'=>'性别称呼');
+		$nametype	=	array('1'=>'wap_user_00239','2'=>'member_user_00606','3'=>'admin_user_00339');
 		
 		$this -> yunset("nametype",$nametype);
 		

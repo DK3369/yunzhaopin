@@ -162,7 +162,7 @@ class company_comset_controller extends adminCommon
             $configM = $this->MODEL("config");
             $configM->setConfig($_POST);
             $this->web_config();
-            $this->admin_json(0, '企业设置配置修改成功！');
+            $this->admin_json(0, 'admin_user_00054');
         }
     }
 //endregion
@@ -171,7 +171,7 @@ class company_comset_controller extends adminCommon
     {
         if ($_POST['submit']) {
             $this->web_config();
-            $this->admin_json(0, '会员头像配置设置成功！');
+            $this->admin_json(0, 'admin_user_00055');
         }
         $config = array(
             //默认LOGO
@@ -220,7 +220,7 @@ class company_comset_controller extends adminCommon
         }
         $rating = $this->MODEL('rating');
         $qy_rows = $rating->getList(array('category' => 1, 'orderby' => array('sort,desc')));
-        $expireVip  =   array('id' => '999', 'name' => '过期会员');
+        $expireVip  =   array('id' => '999', 'name' => 'admin_user_company_00297');
         $tcPackage  =   $qy_rows;
         $tcPackage[]=   $expireVip;
         $this->render_json(0, '', array(
@@ -272,7 +272,7 @@ class company_comset_controller extends adminCommon
             $configM = $this->MODEL("config");
             $configM->setConfig($_POST);
             $this->web_config();
-            $this->admin_json(0, '消费设置配置修改成功！');
+            $this->admin_json(0, 'admin_user_00056');
         }
     }
 //endregion

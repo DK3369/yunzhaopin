@@ -2,11 +2,11 @@
     <!--会员-企业-套餐服务：套餐设置-->
     <div class="moduleElHight">
         <div class="tableSeachInpt">
-            <el-button type="primary" icon="el-icon-plus" size="mini" @click="handleAdd">设置会员套餐</el-button>
+            <el-button type="primary" icon="el-icon-plus" size="mini" @click="handleAdd">{yun:}t key='admin_00689'{/yun}</el-button>
         </div>
         <div class="admin_datatip" style="margin-bottom: 12px;">
             <i class="el-icon-document"></i>
-            <span>可设置的等级包括：普通会员，高级会员，钻石会员等等，按照实际情况去设置等级的区分，会员等级需满足的条件和享受的优惠</span>
+            <span>{yun:}t key='admin_user_company_00164'{/yun}</span>
         </div>
         <div class="moduleElTable" :class="{ 'moduleElTableHig': tableHig }"
             style="border: 1px solid #ebeef5; width: calc(100% - 2px); height: calc(100% - 132px) !important;">
@@ -32,7 +32,7 @@
                                     {{ lc("admin_day_count", [scope.row.service_time]) }}
                                  </template>
                                 <template v-else>
-                                    不限
+                                    {yun:}t key='common_01936'{/yun}
                                 </template>
                             </span>
                         </div>
@@ -97,8 +97,8 @@
                 <el-table-column prop="zt" label="服务状态" width="80">
                     <template slot-scope="scope">
                         <div class="admin_state">
-                            <span v-if="scope.row.display == 1" class="admin_state1">已启用</span>
-                            <span v-else class="admin_state2">未启用</span>
+                            <span v-if="scope.row.display == 1" class="admin_state1">{yun:}t key='admin_user_company_00171'{/yun}</span>
+                            <span v-else class="admin_state2">{yun:}t key='admin_user_company_00173'{/yun}</span>
                             <!--<span class="admin_state1"> 已开启</span>-->
                             <!--<span class="admin_state2">未通过</span>-->
                             <!--<span class="admin_state3">已锁定</span>-->
@@ -110,8 +110,8 @@
                 <el-table-column label="操作" width="140" fixed="right">
                     <template slot-scope="scope">
                         <div class="cz_button">
-                            <el-button size="mini" plain @click="editRow(scope)">修改</el-button>
-                            <el-button type="danger" size="mini" @click="deleteRow(scope)">删除</el-button>
+                            <el-button size="mini" plain @click="editRow(scope)">{yun:}t key='wap_js_00073'{/yun}</el-button>
+                            <el-button type="danger" size="mini" @click="deleteRow(scope)">{yun:}t key='common.delete'{/yun}</el-button>
                         </div>
                     </template>
                 </el-table-column>
@@ -119,8 +119,8 @@
         </div>
         <div class="modulePaging">
             <div>
-                <el-checkbox :indeterminate="isIndeterminate" v-model="checked" @change="selectAllBottom">全选</el-checkbox>
-                <el-button @click="deleteRow(null, true)" size="mini">批量删除</el-button>
+                <el-checkbox :indeterminate="isIndeterminate" v-model="checked" @change="selectAllBottom">{yun:}t key='wap_js_00074'{/yun}</el-checkbox>
+                <el-button @click="deleteRow(null, true)" size="mini">{yun:}t key='member_com_00055'{/yun}</el-button>
             </div>
             <div class="modulePagNum">
                 <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
@@ -141,7 +141,7 @@ module.exports = {
     data: function () {
         return {
             loading: false,
-            emptytext: '暂无数据',
+            emptytext: "{yun:}t key='wap_js_00113'{/yun}",
             searchForm: {
                 page: 1,
                 limit: null,
@@ -154,7 +154,7 @@ module.exports = {
             isIndeterminate: false,// checkbox 的不确定状态
             selectedItem: [],
             addVisible: false,
-            titleAddEdit: '设置会员套餐',
+            titleAddEdit: "{yun:}t key='admin_00689'{/yun}",
             config: {},
             info: {},
 
@@ -206,7 +206,7 @@ module.exports = {
                 (params[index] === '') && (params[index] = null);
             }
             _this.loading = true;
-            _this.emptytext = "数据加载中";
+            _this.emptytext = "{yun:}t key='admin_user_weipin_00026'{/yun}";
             httpPost('m=user&c=company_comrating&a=index', params, {hideloading: true}).then(function (response) {
                 let res = response.data;
                 if (res.error === 0) {
@@ -220,7 +220,7 @@ module.exports = {
                         _this.$refs.multipleTable.bodyWrapper.scrollTop = 0;
                     }
                     if (_this.tableData.length === 0){
-                        _this.emptytext = "暂无数据";
+                        _this.emptytext = "{yun:}t key='wap_js_00113'{/yun}";
                     }
                 }
             }).catch(function (error) {
@@ -242,7 +242,7 @@ module.exports = {
 
         },
         handleAdd() {
-            this.titleAddEdit = '设置会员套餐';
+            this.titleAddEdit = "{yun:}t key='admin_00689'{/yun}";
             this.info = {};
             this.addVisible = true;
         },
@@ -263,7 +263,7 @@ module.exports = {
             let params = {};
             if (isMore) {
                 if (!this.selectedItem.length) {
-                    message.error('请选择要删除的数据');
+                    message.error("{yun:}t key='admin_user_weipin_00005'{/yun}");
                     return false;
                 }
                 let list = [];
@@ -284,10 +284,10 @@ module.exports = {
             httpPost('m=user&c=company_comrating&a=delrating', params).then(function (response) {
                 let res = response.data;
                 if (res.error === 0) {
-                    message.success('删除成功！');
+                    message.success("{yun:}t key='admin_user_00187'{/yun}");
                     _this.getList();
                 } else {
-                    message.error('删除失败！');
+                    message.error("{yun:}t key='admin_user_00186'{/yun}");
                 }
             }).catch(function (error) {
                 console.log(error);

@@ -40,13 +40,13 @@ class special_controller extends company{
         if ($delRes) {
 
             $logM = $this->MODEL('log');
-            $logContent =   '专题招聘：取消专题招聘报名';
+            $logContent =   'common_00694';
             $logM->addMemberLog($this->uid, $this->usertype, $logContent, 14, 3);
 
-            $this->layer_msg('删除成功！', 9, 0, $_SERVER['HTTP_REFERER']);
+            $this->layer_msg('admin_user_00187', 9, 0, $_SERVER['HTTP_REFERER']);
         } else {
 
-            $this->layer_msg('删除失败！', 8, 0, $_SERVER['HTTP_REFERER']);
+            $this->layer_msg('admin_user_00186', 8, 0, $_SERVER['HTTP_REFERER']);
         }
     }
 }

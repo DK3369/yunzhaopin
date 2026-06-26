@@ -4,59 +4,59 @@
             <table class="tableVue">
                 <thead>
                     <tr align="left">
-                        <th width="180">名称</th>
-                        <th width="500">状态</th>
-                        <th>说明</th>
+                        <th width="180">{yun:}t key='member_com_00021'{/yun}</th>
+                        <th width="500">{yun:}t key='member_user_00181'{/yun}</th>
+                        <th>{yun:}t key='member_com_00207'{/yun}</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td>
-                            <div class="TableTite">选择用户</div>
+                            <div class="TableTite">{yun:}t key='admin_01106'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
                                 <el-radio-group v-model="utype" @change="utypeChange">
-                                    <el-radio label="1">个人用户</el-radio>
-                                    <el-radio label="2">企业用户</el-radio>
-                                    <el-radio label="5">自定义用户</el-radio>
+                                    <el-radio label="1">{yun:}t key='admin_user_00122'{/yun}</el-radio>
+                                    <el-radio label="2">{yun:}t key='admin_user_00124'{/yun}</el-radio>
+                                    <el-radio label="5">{yun:}t key='admin_system_00206'{/yun}</el-radio>
                                 </el-radio-group>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>注：全部用户发送，时间较长，建议分批发送</span>
+                                <span>{yun:}t key='admin_01107'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr v-if="utype == 5">
                         <td>
-                            <div class="TableTite">手机号</div>
+                            <div class="TableTite">{yun:}t key='wap_01619'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableButn">
-                                <el-input v-model="userarr" placeholder="请输入手机号"></el-input>
+                                <el-input v-model="userarr" placeholder="{yun:}t key='wap_js_00119'{/yun}"></el-input>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>多个手机号请用,(半角)隔开</span>
+                                <span>{yun:}t key='admin_01110'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">短信内容</div>
+                            <div class="TableTite">{yun:}t key='admin_00666'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input type="textarea" :rows="4" placeholder="请输入短信内容" v-model="content">
+                                <el-input type="textarea" :rows="4" placeholder="{yun:}t key='admin_01111'{/yun}" v-model="content">
                                 </el-input>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>短信内容</span>
+                                <span>{yun:}t key='admin_00666'{/yun}</span>
                             </div>
                         </td>
                     </tr>
@@ -64,7 +64,7 @@
             </table>
         </div>
         <div class="setBasicButn" style="border: none; height: 80px;">
-            <el-button type="primary" size="medium" @click="send">发送</el-button>
+            <el-button type="primary" size="medium" @click="send">{yun:}t key='resume_00033'{/yun}</el-button>
         </div>
     </div>
 </template>
@@ -114,12 +114,12 @@ module.exports = {
             }
             if (utype == "5") {
                 if (userarr == "") {
-                    message.error('请输入手机号');
+                    message.error("{yun:}t key='wap_js_00119'{/yun}");
                     return false;
                 }
             }
             if (content == '') {
-                message.error('请输入短信内容');
+                message.error("{yun:}t key='admin_01111'{/yun}");
                 return false;
             }
 
@@ -127,7 +127,7 @@ module.exports = {
                 utype: utype,
                 userarr: userarr,
                 content: content
-            }, 1, "正在发送，请稍候。。。", 3);
+            }, 1, "{yun:}t key='admin_yunying_00170'{/yun}", 3);
         },
 
         sendDivMsg(params, page, msg, status) {

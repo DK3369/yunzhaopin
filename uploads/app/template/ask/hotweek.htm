@@ -20,7 +20,7 @@
 									<p>{yun:}$list.content|strip_tags|mb_substr:0:100:'utf-8'{/yun}</p>
 								<div class="wt_jl " >
                                  <div class="clear"></div>
-								<div style="width:100%; float:left">	<span class="answer_per"><font><a href="{yun:}url m=ask c=friend a=myquestion  uid='`$list.uid`'{/yun}" TARGET="_blank">{yun:}$list.nickname|mb_substr:0:8:'utf-8'{/yun}</a></font> 发起了话题 </span>
+								<div style="width:100%; float:left">	<span class="answer_per"><font><a href="{yun:}url m=ask c=friend a=myquestion  uid='`$list.uid`'{/yun}" TARGET="_blank">{yun:}$list.nickname|mb_substr:0:8:'utf-8'{/yun}</a></font> {yun:}t key='common_02201'{/yun} </span>
                                     <span class="attention q{yun:}$list.id{/yun}" style="margin-top:3px; float:right">
 								{yun:}if $list.isatn!='2'{/yun}
 									{yun:}if in_array($list.id,$my_atten){/yun}
@@ -36,10 +36,10 @@
 							</span>
                             </div>
                             <div class="clear"></div>
-								<div style="width:100%; float:left"><span class="gz_icon"><font class="index_num{yun:}$list.id{/yun}">{yun:}$list.atnnum{/yun}</font>人关注</span>
+								<div style="width:100%; float:left"><span class="gz_icon"><font class="index_num{yun:}$list.id{/yun}">{yun:}$list.atnnum{/yun}</font>{yun:}t key='wap_01257'{/yun}</span>
                                     
 									<span class="hd_icon"><font>{yun:}$list.answer_num{/yun}</font>{yun:}t key='ask_00005'{/yun}</span>
-									<span class="ll_icon"><font>{yun:}$list.visit{/yun}</font>次浏览</span>
+									<span class="ll_icon"><font>{yun:}$list.visit{/yun}</font>{yun:}t key='common_02191'{/yun}</span>
 									<span class="time_icon">{yun:}$list.add_time|date_format:"%Y-%m-%d %H:%M"{/yun}</span>
 								</div></div>
 							</div>
@@ -50,7 +50,7 @@
 				</div>
 				{yun:}/qlist{/yun}  
 				{yun:}if $total==0{/yun}
-			<div class="noresult png" >您还没有任何问题，抓紧提问吧！</div>
+			<div class="noresult png" >{yun:}t key='common_02202'{/yun}</div>
 				{yun:}else{/yun} 
 				<div class="pages">{yun:}$pagenav{/yun}</div>
 				{yun:}/if{/yun}  
@@ -81,7 +81,7 @@
 
 	</div>	
      <div class="ask_index_right_box"  >
-        <div class="ask_index_ask_rtit"><span class="ask_index_ask_rtit_s">推荐达人</span></div>
+        <div class="ask_index_ask_rtit"><span class="ask_index_ask_rtit_s">{yun:}t key='common_02203'{/yun}</span></div>
     <div class="recom_con">
 					<ul>
 						{yun:}foreach from=$recom item=rlist{/yun}

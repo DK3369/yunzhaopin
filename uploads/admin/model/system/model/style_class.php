@@ -47,7 +47,7 @@ class style
                 $text       =   @fread($fp, $size);
                 if ($text == '') {
 
-                    $text   =   '暂未命名||暂无添加作者信息||' . $value . '||' . '../app/template/' . $value . '/images/preview.jpg';
+                    $text   =   'admin_system_00019' . $value . '||' . '../app/template/' . $value . '/images/preview.jpg';
                     @fwrite($fp, $text);
                 }
                 @fclose($fp);

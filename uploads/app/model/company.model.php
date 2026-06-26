@@ -46,7 +46,7 @@ class company_model extends model{
         );
 
         if (!isset($typeMapping[$type])) {
-            return array('status' => -1, 'msg' => '函数参数错误');
+            return array('status' => -1, 'msg' => yun_at('common_01470'));
         }
 
         $field  =   $typeMapping[$type];
@@ -55,14 +55,14 @@ class company_model extends model{
         //如果该配置为0，则不限操作次数
         $row    =   $statis;
         $typeMsgMapping =   array(
-            'jobnum'        =>  '发布或上架职位',    //发布职位
-            'resume'        =>  '下载简历（查看联系方式）', //下载（查看联系方式）简历
-            'interview'     =>  '邀请面试', //邀请面试
-            'refreshjob'    =>  '刷新职位', //刷新职位
-            'zph'           =>  '报名招聘会'    //报名招聘会
+            'jobnum'        =>  'common_01347',    //发布职位
+            'resume'        =>  'common_06392', //下载（查看联系方式）简历
+            'interview'     =>  'resume_00029', //邀请面试
+            'refreshjob'    =>  'wap_com_00029', //刷新职位
+            'zph'           =>  'admin_user_company_00210'    //报名招聘会
         );
         if (!isset($row[$field]) || $row[$field] == 0) {
-            return array('status' => -1, 'msg' => '您的套餐暂无权限'.$typeMsgMapping[$type]);
+            return array('status' => -1, 'msg' => yun_at('model_00018').$typeMsgMapping[$type]);
         }
 
         $dayMaxNum  =   $row[$field];
@@ -113,7 +113,7 @@ class company_model extends model{
         }
 
         
-        $msg    =   $row['name'].'每天最多'.$typeMsgMapping[$type] . $dayMaxNum . '次';
+        $msg    =   $row['name'].'common_01798'.$typeMsgMapping[$type] . $dayMaxNum . '次';
         $num    =   $dayMaxNum - $currentNum;
 
         if ($type == 'refreshjob') {
@@ -259,7 +259,7 @@ class company_model extends model{
 				if($ComInfo['vipetime']>0){
 				    $ComInfo['vipetime_n']     =   date('Y-m-d',$ComInfo['vipetime']);
 				}else{
-				    $ComInfo['vipetime_n']     =   '不限';
+				    $ComInfo['vipetime_n']     =   yun_at('common_01936');
 				}
                 if($ComInfo['shortname'] && !empty($data['short'])){//企业名称显示成简称
 					$ComInfo['name']           =	$ComInfo['shortname'];
@@ -293,7 +293,7 @@ class company_model extends model{
                     $ComInfo['lastupdate_n']   =    date('Y-m-d', $ComInfo['lastupdate']);
                 }
                 if($ComInfo['moneytype']){
-                    $ComInfo['moneytype_n']    =    $ComInfo['moneytype']==1 ? '万元':'万美元';
+                    $ComInfo['moneytype_n']    =    $ComInfo['moneytype']==1 ? yun_at('wap_js_00004'):yun_at('wap_js_00002');
                 }
                 if (isset($ComInfo['money'])){
                     $ComInfo['money']          =    $ComInfo['money'] == '0' ? '' : $ComInfo['money'];
@@ -773,7 +773,7 @@ class company_model extends model{
             }
 
             //  提取company_cer查询数据，默认显示未认证，查到数据再进行审核等判断
-            $List[$k]['yyzz_n']                     =   '未认证';
+            $List[$k]['yyzz_n']                     =   yun_at('wap_user_00175');
 
             if (!empty($cList)) {
 
@@ -789,13 +789,13 @@ class company_model extends model{
 
                         if($cv['status'] ==  1){
 
-                            $List[$k]['yyzz_n']     =   '已审核';
+                            $List[$k]['yyzz_n']     =   yun_at('wap_user_00165');
                         }elseif($cv['status'] == 2){
 
-                            $List[$k]['yyzz_n']     =   '未通过';
+                            $List[$k]['yyzz_n']     =   yun_at('wap_user_00167');
                         }elseif($cv['status'] == 0){
 
-                            $List[$k]['yyzz_n']     =   '未审核';
+                            $List[$k]['yyzz_n']     =   yun_at('wap_user_00166');
                         }
                     }
                 }
@@ -1153,8 +1153,8 @@ class company_model extends model{
                     // 如果现有数据中，存在用户名是这个手机号的，要修改
                     $this->update_once('member', array('username' => $moblie.'_s'), array('uid'=>$omb['uid']));
 
-                    $logContent =   '账号修改：用户名被动调整';
-                    $logDetail  =   '账号修改：账号（UID：'.$uid.'）认证手机号，因本账号用户名与该手机号相同，调整本账号用户名（'.$moblie.' → '.$moblie.'_s）';
+                    $logContent =   'common_00823';
+                    $logDetail  =   'admin_user_00077'.$uid.'common_00130'.$moblie.' → '.$moblie.'_s）';
                     $this->addMemberLog($omb['uid'], $omb['usertype'], $logContent, 11, 1, $logDetail);
                 }
 
@@ -1166,16 +1166,16 @@ class company_model extends model{
                 $this->update_once('company', array('linktel' => $moblie, 'moblie_status' => '1'), array('uid' => $uid));
 				
                 /* 添加日志 */
-                $logContent =   '账号认证：手机认证';
-                $logDetail  =   '账号认证，手机号（'.$moblie.'）认证成功';
+                $logContent =   'common_06382';
+                $logDetail  =   'common_06393'.$moblie.'common_06394';
                 $this->addMemberLog($uid, $usertype, $logContent, 12, 1, $logDetail);
 
                 /* 第一次绑定查询，获取积分奖励 */
-                $pay        =   $this->select_once('company_pay', array('pay_remark' => '手机绑定', 'com_id' => intval($whereData['uid'])));
+                $pay        =   $this->select_once('company_pay', array('pay_remark' => 'common_06395', 'com_id' => intval($whereData['uid'])));
 
                 if (empty($pay)) {
 
-                    $this->getIntegral(intval($whereData['uid']), $usertype, 'integral_mobliecert', '手机绑定', 29);
+                    $this->getIntegral(intval($whereData['uid']), $usertype, 'integral_mobliecert', 'common_06395', 29);
                 }
             }
         }else{
@@ -1230,8 +1230,8 @@ class company_model extends model{
             if ($cert && is_array($cert)) {
 
                 $this->update_once('company_cert', $value, $whereData);
-                $logContent =   '账号认证：邮箱认证';
-                $logDetail  =   '账号认证，更新邮箱认证，认证邮箱（'.$email.'）';
+                $logContent =   'common_06383';
+                $logDetail  =   'common_06396'.$email.'）';
                 $this->addMemberLog($uid, $usertype, $logContent, 12, 2, $logDetail);
             } else {
 
@@ -1239,8 +1239,8 @@ class company_model extends model{
                 $value  =   array_merge($value, $values);
                 $this->insert_into('company_cert', $value);
 
-                $logContent =   '账号认证：邮箱认证';
-                $logDetail  =   '账号认证，认证邮箱（'.$email.'）';
+                $logContent =   'common_06383';
+                $logDetail  =   'common_06397'.$email.'）';
                 $this->addMemberLog($uid, $usertype, $logContent, 12, 1, $logDetail);
             }
 
@@ -1311,27 +1311,27 @@ class company_model extends model{
 				$this ->  update_once('company', array('linkmail'=>$email,'email_status'=>'1'), array('uid'=>$uid));
 
 				/* 添加日志 */
-                $logContent =   '账号认证：邮箱认证';
-                $logDetail  =   '账号认证，认证邮箱（'.$email.'）';
+                $logContent =   'common_06383';
+                $logDetail  =   'common_06397'.$email.'）';
                 $this->addMemberLog($uid, $usertype, $logContent, 12, 1, $logDetail);
 
                 /*认证邮箱，获取积分*/
-                $pay    =   $this->select_once('company_pay', array('pay_remark' => '邮箱认证', 'com_id' => $uid));
+                $pay    =   $this->select_once('company_pay', array('pay_remark' => 'wap_com_00186', 'com_id' => $uid));
                 if (empty($pay)) {
-                    $this->getIntegral($uid, $usertype, 'integral_emailcert', '邮箱认证', 30);
+                    $this->getIntegral($uid, $usertype, 'integral_emailcert', 'wap_com_00186', 30);
                 }
 
                 $return['errcode']  =   '9';
-                $return['msg']      =   '认证成功！';
+                $return['msg']      =   yun_at('common_06398');
             } else {
 
                 $return['errcode']  =   8;
-                $return['msg']      =   '认证失败，联系管理员认证！';
+                $return['msg']      =   yun_at('common_00736');
             }
         } else {
 
             $return['errcode']      =   8;
-            $return['msg']          =   '认证失败，请检查来路！';
+            $return['msg']          =   yun_at('common_00914');
         }
         return $return;
     }
@@ -1397,28 +1397,28 @@ class company_model extends model{
                 }
             }
             if (isset($return['id'])) {
-                $logContent = '账号认证：更新企业资质';
+                $logContent = 'common_06384';
                 //  账号认证更新操作
                 $this->addMemberLog($uid, 2, $logContent, 12, 2);
                 $this->update_once('company', array('yyzz_status' => intval($status)), array('uid' => $uid));
                 $this->update_once('company_job', array('yyzz_status' => intval($status)), array('uid' => $uid));
                 if ($this->config['com_cert_status'] == '0') {
-                    $return['msg'] = '更新成功！';
+                    $return['msg'] = yun_at('admin_system_00064');
                 } else {
-                    $return['msg'] = '更新成功，等待审核！';
+                    $return['msg'] = yun_at('common_01020');
                 }
-                $return['msg'] = '企业资质(ID:'.$uid.')修改成功';
+                $return['msg'] = yun_auto_t('企业资质(ID:').$uid.')修改成功';
                 $return['errcode']  =  '9';
                 // pc会员中心预览即上传，处理预览图
                 if ($data['preview']){
                     $return['picurl']  =  checkpic($picurl);
                 }
             }else{
-                $return['msg']      =  '企业资质(ID:'.$uid.')修改失败';
+                $return['msg']      =  yun_auto_t('企业资质(ID:').$uid.')修改失败';
                 $return['errcode']  =  '8';
             }
         }else{
-            $return['msg']      =  '请选择需要修改的用户';
+            $return['msg']      =  yun_at('common_01069');
             $return['errcode']  =  '8';
         }
         return $return;
@@ -1444,19 +1444,19 @@ class company_model extends model{
 
                 if ($comnum > 0) {
 
-                    $return['msg']      =   '企业名称已存在！';
+                    $return['msg']      =   yun_at('wap_01269');
                     $return['errcode']  =   8;
 					return $return;
                 }
             }else{
-                $return['msg']      =   '企业名称不能为空！';
+                $return['msg']      =   yun_at('common_06399');
                 $return['errcode']  =   8;
             }
-            $logContent =   '账号认证：更新企业资质';
+            $logContent =   'common_06384';
         }
         if ($data['type']=='4') {
 
-            $logContent =   '账号认证：更新职业资格';
+            $logContent =   'common_00936';
         }
         //营业执照
         if ((is_array($upData['check']) && $upData['check']['tmp_name']) || $upData['base']){
@@ -1599,16 +1599,16 @@ class company_model extends model{
                 $this->update_once('company_job',array('yyzz_status'=>intval($upData['status'])),array('uid'=>$uid));
                 if ($this->config['com_cert_status'] == '0') {
 
-                    $return['msg']      =   '更新成功！';
+                    $return['msg']      =   yun_at('admin_system_00064');
                 }else{
-                    $return['msg']      =   '更新成功，等待审核！';
+                    $return['msg']      =   yun_at('common_01020');
                 }
             }
             
             $return['errcode']  =   9;
         }else{
 
-            $return['msg']      =   '更新失败！';
+            $return['msg']      =   yun_at('api_wxapp_00009');
             $return['errcode']  =   8;
         }
         return $return;
@@ -1753,7 +1753,7 @@ class company_model extends model{
 
                 $value['check'] =   $picurl;
             }else if($data['type'] != '6'){
-                $return['msg']      =   '请上传营业执照！';
+                $return['msg']      =   yun_at('member_com_00182');
                 $return['errcode']  =   8;
                 return $return;
             }
@@ -1763,7 +1763,7 @@ class company_model extends model{
 
                 $value['social_credit'] =   $data['social_credit'];
             }else if($data['type'] == '3' && $this->config['com_social_credit']==1){
-                $return['msg']      =   '请填写统一社会信用代码！';
+                $return['msg']      =   yun_at('common_05983');
                 $return['errcode']  =   8;
                 return $return;
             }
@@ -1772,7 +1772,7 @@ class company_model extends model{
 
                 $value['owner_cert'] =   $picurl_owner_cert;
             }else if($data['type'] == '3' && $this->config['com_cert_owner']==1){
-                $return['msg']      =   '请上传经办人身份证！';
+                $return['msg']      =   yun_at('member_com_00176');
                 $return['errcode']  =   8;
                 return $return;
             }
@@ -1780,7 +1780,7 @@ class company_model extends model{
 
                 $value['wt_cert'] =   $picurl_wt_cert;
             }else if($data['type'] == '3' && $this->config['com_cert_wt']==1){
-                $return['msg']      =   '请上传委托书/承诺函！';
+                $return['msg']      =   yun_at('member_com_00173');
                 $return['errcode']  =   8;
                 return $return;
             }
@@ -1797,12 +1797,12 @@ class company_model extends model{
                     $comnum     =   $this -> select_num('company', array('uid' => array('<>', $data['uid']), 'name'=>trim($data['com_name'])));
                     if ($comnum > 0) {
 
-                        $return['msg']      =   '企业名称已存在！';
+                        $return['msg']      =   yun_at('wap_01269');
                         $return['errcode']  =   8;
 						return $return;
                     }
                 }else{
-                    $return['msg']      =   '企业名称不能为空！';
+                    $return['msg']      =   yun_at('common_06399');
                     $return['errcode']  =   8;
                 }
             }
@@ -1828,7 +1828,7 @@ class company_model extends model{
                         $this->update_once('company', array('yyzz_status' => intval($data['status'])), array('uid' => intval($data['uid'])));
                         $this->update_once('company_job', array('yyzz_status' => intval($data['status'])), array('uid' => intval($data['uid'])));
                     }
-                    $logContent =   '账号认证：上传企业资质';
+                    $logContent =   'common_06385';
                 }
 
                 $this->addMemberLog(intval($data['uid']), intval($data['usertype']), $logContent, 12, 1);
@@ -1836,17 +1836,17 @@ class company_model extends model{
                 if($data['usertype']==2){
                     if ($this->config['com_cert_status'] == '0') {
 
-                        $this -> getIntegral(intval($data['uid']), intval($data['usertype']), 'integral_comcert', '认证企业资质');
-                        $return['msg']      =   '上传成功！';
+                        $this -> getIntegral(intval($data['uid']), intval($data['usertype']), 'integral_comcert', 'wap_com_00181');
+                        $return['msg']      =   yun_at('common_05610');
                     }else{
 
-                        $return['msg']  =   '上传成功，等待审核！';
+                        $return['msg']  =   yun_at('common_00965');
                     }
                 }
                 
                 $return['errcode']  =   9;
             }else{
-                $return['msg']      =   '上传失败！';
+                $return['msg']      =   yun_at('common_05611');
                 $return['errcode']  =   8;
 
             }
@@ -1894,7 +1894,7 @@ class company_model extends model{
 
             if (empty($certs)) {
 
-                $return['msg']          =   '数据错误，请重试！';
+                $return['msg']          =   yun_at('common_06400');
                 $return['errcode']      =   '8';
             } else {
 
@@ -1903,7 +1903,7 @@ class company_model extends model{
                 if ($return['id']) {
                     if ($data['type'] == '3') {
 
-                        $return['msg']  =   '企业认证(UID:' . pylode(',', $uid);
+                        $return['msg']  =   yun_auto_t('企业认证(UID:') . pylode(',', $uid);
                    }
                     $return['msg']      .=  ')删除成功';
                     $return['errcode']  =   '9';
@@ -1915,7 +1915,7 @@ class company_model extends model{
             }
         } else {
 
-            $return['msg']              =   '请选择您要删除的信息！';
+            $return['msg']              =   yun_at('model_00034');
             $return['errcode']          =   '8';
         }
 
@@ -1978,7 +1978,7 @@ class company_model extends model{
 
             if ($result) {
 
-                $msg    =   '管理员为您分配招聘顾问：' . $adminUser['name'];
+                $msg    =   'common_00802' . $adminUser['name'];
 
                 //发送系统通知
                 include_once('sysmsg.model.php');
@@ -1986,9 +1986,9 @@ class company_model extends model{
                 $msgM->addInfo(array('uid' => $uids, 'usertype' => 2, 'content' => $msg));
             }
 
-            $return['msg']      =   '顾问(ID:' . $crm_uid . ')';
+            $return['msg']      =   yun_auto_t('顾问(ID:') . $crm_uid . ')';
             $return['errcode']  =   $result ? '9' : '8';
-            $return['msg']      =   $result ? $return['msg'] . '分配成功！' : $return['msg'] . '分配失败！';
+            $return['msg']      =   $result ? $return['msg'] . 'common_06401' : $return['msg'] . 'common_06402';
         }
 
         return $return;
@@ -2024,7 +2024,7 @@ class company_model extends model{
 
                     $this -> update_once('company',array('hottime' => $data['time_end'], 'rec' => '1','hotstart' => $data['time_start']),array('uid'=>$uid));
 
-                    $msg    =  '您的企业已被设置为名企招聘，时间：'.date('Y-m-d',$data['time_start']).'-'.date('Y-m-d',$data['time_end']);
+                    $msg    =  'common_00472'.date('Y-m-d',$data['time_start']).'-'.date('Y-m-d',$data['time_end']);
 
                     //发送系统通知
                     include_once('sysmsg.model.php');
@@ -2035,14 +2035,14 @@ class company_model extends model{
 
                 }
 
-                $return['msg']		=	'名企招聘(ID:'.$return['id'].')';
+                $return['msg']		=	yun_auto_t('名企招聘(ID:').$return['id'].')';
 
                 $return['errcode']	=	$return['id'] ? '9' :'8';
-                $return['msg']		=	$return['id'] ? $return['msg'].'设置成功！' : $return['msg'].'设置失败！';
+                $return['msg']		=	$return['id'] ? $return['msg'].'model_00011' : $return['msg'].'wap_01715';
 
             }else{
 
-                $return['msg']		=	'名企结束时间必须大于开始时间！';
+                $return['msg']		=	yun_at('common_00568');
                 $return['errcode']	=	8;
             }
 
@@ -2089,20 +2089,20 @@ class company_model extends model{
 					$this -> update_once('company',array('hottime' => $data['time_end'], 'rec' => '1','hotstart' =>$data['time_start']),array('uid'=>$uid));
                 }
 
-                $return['msg']		=	'名企招聘(ID:'.$return['id'].')';
+                $return['msg']		=	yun_auto_t('名企招聘(ID:').$return['id'].')';
 
                 $return['errcode']	=	$return['id'] ? '9' :'8';
-                $return['msg']		=	$return['id'] ? $return['msg'].'设置成功！' : $return['msg'].'设置失败！';
+                $return['msg']		=	$return['id'] ? $return['msg'].'model_00011' : $return['msg'].'wap_01715';
 
             }else {
 
-                $return['msg']		=	'名企结束时间必须大于开始时间！';
+                $return['msg']		=	yun_at('common_00568');
                 $return['errcode']	=	8;
             }
 
         }else{
 
-            $return['msg']		=	'系统繁忙！';
+            $return['msg']		=	yun_at('common_01632');
             $return['errcode']	=	8;
 
         }
@@ -2188,7 +2188,7 @@ class company_model extends model{
 
             $list[$k]['hot_pic']		=	checkpic($v['hot_pic']);
             $list[$k]['time_start_n'] = date('Y-m-d', $v['time_start']);
-            $list[$k]['time_end_n'] = $v['time_end'] <= time() ? '已到期' : date('Y-m-d', $v['time_end']);
+            $list[$k]['time_end_n'] = $v['time_end'] <= time() ? 'wap_com_00319' : date('Y-m-d', $v['time_end']);
             $list[$k]['time_end_nn'] = date('Y-m-d', $v['time_end']);
 
         }
@@ -2264,7 +2264,7 @@ class company_model extends model{
             if ($result) {
                 $this -> update_once('company',array('hottime'=>' ','rec'=>'0'),$where);
 
-                $msg    =  '管理员设置：名企招聘已取消';
+                $msg    =  'common_00731';
 
                 //发送系统通知
                 include_once('sysmsg.model.php');
@@ -2432,18 +2432,18 @@ class company_model extends model{
             if($return['id']){
 
 
-                $return['msg']      =  $data['utype'] == 'user' ? '删除成功' : '企业产品(ID:'.pylode(',', $id).')删除成功';
+                $return['msg']      =  $data['utype'] == 'user' ? yun_at('wap_user_00147') : yun_auto_t('企业产品(ID:').pylode(',', $id).')删除成功';
 
                 $return['errcode']  =  '9';
 
             } else{
-                $return['msg']      =  $data['utype'] == 'user' ? '删除失败' : '企业产品(ID:'.pylode(',', $id).')删除失败';
+                $return['msg']      =  $data['utype'] == 'user' ? yun_at('wap_user_00146') : yun_auto_t('企业产品(ID:').pylode(',', $id).')删除失败';
 
                 $return['errcode']  =  '8';
             }
         }else{
 
-            $return['msg']      =  '系统繁忙';
+            $return['msg']      =  yun_at('common_01831');
 
             $return['errcode']  =  '8';
 
@@ -2575,28 +2575,28 @@ class company_model extends model{
 
             $nid        =	$this->upCompanyProduct($whereData,$data);
             $type	    =	'2';
-            $logContent	=	'企业资料：修改企业产品（ID：'.$whereData['id'].'）';
+            $logContent	=	'common_06386'.$whereData['id'].'）';
         }else{
             if(!isset($picurl)){
 
-                $return['msg']      =   '请上传图片！';
+                $return['msg']      =   yun_at('common_06403');
                 $return['errcode']  =   8;
                 return $return;
             }
             $nid  	    =	$this->addCompanyProduct($data);
             $type	    =	'1';
-            $logContent	=	'企业资料：添加企业产品（ID：'.$nid.'）';
+            $logContent	=	'common_06387'.$nid.'）';
         }
         if($nid){
 
             $this->addMemberLog($data['uid'], $usertype, $logContent, 16, $type);
 
-            $return['msg']		=	'操作成功！';
+            $return['msg']		=	yun_at('wap_js_00159');
             $return['errcode']	=	9;
             $return['url']      =   'index.php?c=product';
         }else{
 
-            $return['msg']		=	'操作失败，请稍后再试！';
+            $return['msg']		=	yun_at('common_00888');
             $return['url']      =   'index.php?c=product';
         }
         return $return;
@@ -2733,19 +2733,19 @@ class company_model extends model{
 
             if($return['id']){
 
-                $logContent         =   '企业资料：删除企业新闻（ID：'.pylode(',', $id).'）';
+                $logContent         =   'common_06388'.pylode(',', $id).'）';
                 $this->addMemberLog($data['uid'], $data['usertype'], $logContent, 16, 3);
 
-                $return['msg']      =  $data['utype'] == 'user' ? '删除成功' : '企业新闻(ID:'.pylode(',', $id).')删除成功';
+                $return['msg']      =  $data['utype'] == 'user' ? yun_at('wap_user_00147') : yun_auto_t('企业新闻(ID:').pylode(',', $id).')删除成功';
                 $return['errcode']  =  '9';
             } else{
 
-                $return['msg']      =  $data['utype'] == 'user' ? '删除失败' : '企业新闻(ID:'.pylode(',', $id).')删除失败';
+                $return['msg']      =  $data['utype'] == 'user' ? yun_at('wap_user_00146') : yun_auto_t('企业新闻(ID:').pylode(',', $id).')删除失败';
                 $return['errcode']  =  '8';
             }
         } else {
 
-            $return['msg']      =   '系统繁忙';
+            $return['msg']      =   yun_at('common_01831');
             $return['errcode']  =   '8';
             $return['layertype']=   '0';
         }
@@ -2874,12 +2874,12 @@ class company_model extends model{
 
             $nid    =   $this->upCompanyNews($whereData, $data);
             $type   =   '2';
-            $logContent =   '企业资料：修改企业新闻（ID：'.$whereData['id'].'）';
+            $logContent =   'common_06389'.$whereData['id'].'）';
         } else {
 
             $nid    =   $this->addCompanyNews($data);
             $type   =   '1';
-            $logContent =   '企业资料：添加企业新闻（ID：'.$nid.'）';
+            $logContent =   'common_06390'.$nid.'）';
         }
         if ($nid) {
             if (!$data['uid']) {
@@ -2888,11 +2888,11 @@ class company_model extends model{
             }
             $this->addMemberLog($data['uid'], $data['usertype'], $logContent, 16, $type);
 
-            $return['msg']      =   '操作成功！';
+            $return['msg']      =   yun_at('wap_js_00159');
             $return['errcode']  =   9;
         } else {
 
-            $return['msg']      =   '操作失败，请稍后再试！';
+            $return['msg']      =   yun_at('common_00888');
             $return['errcode']  =   8;
         }
         return $return;
@@ -3070,7 +3070,7 @@ class company_model extends model{
 
             $result =   $this->delete_all('company_show', array('id' => $whereData['id'], 'uid' => $whereData['uid']), '');
 
-            $this->addMemberLog($whereData['uid'], $whereData['usertype'], '企业资料：删除企业环境', 16, 3);
+            $this->addMemberLog($whereData['uid'], $whereData['usertype'], 'common_06404', 16, 3);
         }
         return $result;
     }
@@ -3224,18 +3224,18 @@ class company_model extends model{
                 $row	=   $this->getBannerNum(array('uid'=>$data['uid']));
 
                 if($row>0){
-                    $return['msg']      =  '已有横幅，不能再添加横幅！';
+                    $return['msg']      =  yun_at('common_00704');
                     $return['errcode']  =  8;
                     $return['url']      =  $_SERVER['HTTP_REFERER'];
 
                 }else{
 
                     $this->addBanner($valueData);
-                    $this->addMemberLog($data['uid'], $data['usertype'], "企业资料：上传企业横幅", 16, 1);
+                    $this->addMemberLog($data['uid'], $data['usertype'], 'common_06405', 16, 1);
 
-                    $this->getIntegral($data['uid'], $data['usertype'], "integral_banner", "上传企业横幅", 31);
+                    $this->getIntegral($data['uid'], $data['usertype'], "integral_banner", 'wap_com_00033', 31);
 
-                    $return['msg']      =   '设置成功！';
+                    $return['msg']      =   yun_at('model_00011');
                     $return['errcode']  =   9;
                     $return['url']      =   $_SERVER['HTTP_REFERER'];
                 }
@@ -3244,9 +3244,9 @@ class company_model extends model{
                 $whereData['uid'] = $data['uid'];
                 $this->upBanner("", $valueData, $whereData);
 
-                $this->addMemberLog($data['uid'], $data['usertype'], "企业资料：修改企业横幅", 16, 2);//会员日志
+                $this->addMemberLog($data['uid'], $data['usertype'], 'common_06406', 16, 2);//会员日志
 
-                $return['msg']      =   '修改成功！';
+                $return['msg']      =   yun_at('member_user_00602');
                 $return['errcode']  =   9;
                 $return['url']      =   $_SERVER['HTTP_REFERER'];
             }
@@ -3514,16 +3514,16 @@ class company_model extends model{
                         $cookieM -> SetCookie('delay', '', time() - 60);
 	
                         //会员日志
-                        $this->addMemberLog($whereData['uid'], 2, '基本信息：完善基本信息资料', 7, 2);
+                        $this->addMemberLog($whereData['uid'], 2, 'common_00702', 7, 2);
 						
 						if($is_map == 1 && $com['x']!='' && $com['y']!=''){
-						    $this->getIntegral($whereData['uid'], '2', 'integral_map', '设置企业地图', 32);
+						    $this->getIntegral($whereData['uid'], '2', 'integral_map', 'wap_com_00182', 32);
 						}
 
                         //首次完善基本资料获得积分
                         if(!empty($com)  && $com['lastupdate'] == ''){
 
-                            $this->getIntegral($whereData['uid'], '2', 'integral_userinfo', '首次填写基本资料', 25);
+                            $this->getIntegral($whereData['uid'], '2', 'integral_userinfo', 'common_01314', 25);
 
                             $return['integralnum']      =     1;
 
@@ -3557,29 +3557,29 @@ class company_model extends model{
                         $return['moblie_i'] =   $com['moblie_status'];
                         $return['email_i']  =   $com['email_status'];
                         $return['map_i']    =   ($com['x'] != '' && $com['y']!='') ? 1 : 0;
-                        $return['msg']      =   '基本资料修改成功';
+                        $return['msg']      =   yun_at('common_06407');
                     }else{
-                        $return['msg']      =   '企业会员(ID:'.$whereData['uid'].')基本资料修改成功';
+                        $return['msg']      =   yun_auto_t('企业会员(ID:').$whereData['uid'].')基本资料修改成功';
                     }
 
                     $return['errcode']      =    9;
                 }else{
 
                     if ($data['utype'] == 'user'){
-                        $return['msg']		=  '基本资料修改失败';
+                        $return['msg']		=  yun_at('common_06321');
                     }else{
-                        $return['msg']		=  '企业会员(ID:'.$whereData['uid'].')基本资料修改失败';
+                        $return['msg']		=  yun_auto_t('企业会员(ID:').$whereData['uid'].')基本资料修改失败';
                     }
                     $return['errcode']	=  8;
                 }
             }else{
 
-                $return['msg']		=   '没有要修改的企业信息';
+                $return['msg']		=   yun_at('common_01029');
                 $return['errcode']	=    8;
             }
         }else{
 
-            $return['msg']		    =   '请选择要修改的企业';
+            $return['msg']		    =   yun_at('common_01160');
             $return['errcode']      =   8;
         }
         return $return;
@@ -3650,31 +3650,31 @@ class company_model extends model{
                         $cookieM -> SetCookie('delay', '', time() - 60);
     
                         //会员日志
-                        $this->addMemberLog($whereData['uid'], 2, '基本信息：完善补充信息资料', 7, 2);
+                        $this->addMemberLog($whereData['uid'], 2, 'common_00703', 7, 2);
                         
                     }else{
-                        $return['msg']      =   '企业会员(ID:'.$whereData['uid'].')企业补充信息修改成功';
+                        $return['msg']      =   yun_auto_t('企业会员(ID:').$whereData['uid'].'common_00831';
                     }
 
                     $return['errcode']      =    9;
                 }else{
                     if ($data['utype'] == 'user'){
 
-                        $return['msg']      =  '补充信息修改失败';
+                        $return['msg']      =  yun_at('common_01298');
                     }else{
 
-                        $return['msg']      =  '企业会员(ID:'.$whereData['uid'].')补充信息修改失败';
+                        $return['msg']      =  yun_auto_t('企业会员(ID:').$whereData['uid'].'common_01088';
                     }
                     $return['errcode']  =  8;
                 }
             }else{
 
-                $return['msg']      =   '没有要修改的企业信息';
+                $return['msg']      =   yun_at('common_01029');
                 $return['errcode']  =    8;
             }
         }else{
 
-            $return['msg']          =   '请选择要修改的企业';
+            $return['msg']          =   yun_at('common_01160');
             $return['errcode']      =   8;
         }
         return $return;
@@ -3699,35 +3699,35 @@ class company_model extends model{
 				
 				if($key == 'job_num' && $value != $comRating[$key]){
 
-					$msg[]	=	" 发布职位数：".$comRating[$key]." -> ".$value;
+					$msg[]	=	'admin_user_00038'.$comRating[$key]." -> ".$value;
 				}else if($key == 'breakjob_num' && $value != $comRating[$key]){
 
-					$msg[]	=	" 刷新职位数：".$comRating[$key]." -> ".$value;
+					$msg[]	=	'common_06408'.$comRating[$key]." -> ".$value;
 				}else if($key == 'down_resume' && $value != $comRating[$key]){
 
-					$msg[]	=	" 下载简历数：".$comRating[$key]." -> ".$value;
+					$msg[]	=	'common_06409'.$comRating[$key]." -> ".$value;
 				}else if($key == 'invite_resume' && $value != $comRating[$key]){
 
-					$msg[]	=	" 邀请面试数：".$comRating[$key]." -> ".$value;
+					$msg[]	=	'common_06410'.$comRating[$key]." -> ".$value;
 				}else if($key == 'zph_num' && $value != $comRating[$key]){
 
-					$msg[]	=	" 招聘会报名：".$comRating[$key]." -> ".$value;
+					$msg[]	=	'admin_user_00041'.$comRating[$key]." -> ".$value;
 				}else if($key == 'top_num' && $value != $comRating[$key]){
 
-					$msg[]	=	" 职位置顶数：".$comRating[$key]." -> ".$value;
+					$msg[]	=	'admin_user_00044'.$comRating[$key]." -> ".$value;
 				}else if($key == 'urgent_num' && $value != $comRating[$key]){
 
-					$msg[]	=	" 紧急招聘数：".$comRating[$key]." -> ".$value;
+					$msg[]	=	'admin_user_00042'.$comRating[$key]." -> ".$value;
 				}else if($key == 'rec_num' && $value != $comRating[$key]){
 
-					$msg[]	=	" 职位推荐数：".$comRating[$key]." -> ".$value;
+					$msg[]	=	'admin_user_00043'.$comRating[$key]." -> ".$value;
 				}else if($key == 'vip_etime' && $value != $comRating[$key]){
 
-					$vEtime	=	$value ? $value : '不限';
+					$vEtime	=	$value ? $value : WapDbEnum::UNLIMITED;
 
-					$vRtime	=	$comRating[$key] ? date('Y-m-d', $comRating[$key]) : '不限';
+					$vRtime	=	$comRating[$key] ? date('Y-m-d', $comRating[$key]) : WapDbEnum::UNLIMITED;
 
-					$msg[]	=	"会员到期时间：".$vRtime." -> ".date('Y-m-d', $vEtime);
+					$msg[]	=	'common_06411'.$vRtime." -> ".date('Y-m-d', $vEtime);
 				}
 			}
 			
@@ -3755,7 +3755,7 @@ class company_model extends model{
                 $rinfo      =   $ratingM -> getInfo(array('id'=>$sData['rating']),array('field'=>'`name`,`time_start`,`time_end`,`yh_price`,`service_price`'));
                 $result		=	$statisM -> upInfo($rvalue, array('uid' => $uid, 'usertype' => 2, 'adminedit' => '1', 'info' => $rinfo));
 
-				$msg		=	"会员等级：".$comRating['rating_name']." -> ".$rinfo['name'];
+				$msg		=	'admin_user_company_00122'.$comRating['rating_name']." -> ".$rinfo['name'];
 
 				$msgContent	=	$msgContent ? $msg.'，'.$msgContent : $msg;
 
@@ -3772,17 +3772,17 @@ class company_model extends model{
 					require_once ('log.model.php');
 					$logM	=	new log_model($this->db, $this->def);
 
-					$msgContent	=	'企业（UID：'.$uid.'）修改套餐信息；'.$msgContent;
+					$msgContent	=	'common_06391'.$uid.'）修改套餐信息；'.$msgContent;
 
 					$logM -> addAdminLog($msgContent); 
 					$return	=	array(
 						'errcode' =>	'9',
-						'msg'     =>	'套餐信息更新成功！'
+						'msg'     =>	yun_at('model_00019')
 					);
 				}else{
 					$return	=	array(
 						'errcode' =>	'9',
-						'msg'     =>	'套餐信息未做修改！'
+						'msg'     =>	yun_at('common_01118')
 					);
 				}
 				
@@ -3790,7 +3790,7 @@ class company_model extends model{
 
 				$return	=	array(
 					'errcode' =>	'8',
-					'msg'     =>	'套餐信息更新失败！'
+					'msg'     =>	yun_at('model_00020')
 				);
 			}
         }else{
@@ -3798,7 +3798,7 @@ class company_model extends model{
 			$return	=	array(
 
 				'errcode'	=>	'8',
-				'msg'		=>	'参数错误，请重试！'
+				'msg'		=>	yun_at('wap_00203')
 			);
 		}
 
@@ -3920,31 +3920,31 @@ class company_model extends model{
 
         if($comData['name']==''){
 
-            $return['msg']  =  '企业全称不能为空！';
+            $return['msg']  =  yun_at('common_05982');
         }elseif(!empty($comname) && $comname['uid'] != $uid){
 
-            $return['msg']	= '企业全称已存在！';
+            $return['msg']	= yun_at('common_01222');
         }elseif($comData['hy']==''){
 
-            $return['msg']	=  '从事行业不能为空！';
+            $return['msg']	=  yun_at('common_06412');
         }elseif($comData['pr']==''){
 
-            $return['msg']	=  '企业性质不能为空！';
+            $return['msg']	=  yun_at('member_com_00424');
 
         }elseif($comData['mun']==''){
-            $return['msg'] = '企业规模不能为空！';
+            $return['msg'] = yun_at('common_06413');
         } elseif ($comData['provinceid'] == '') {
 
-            $return['msg'] = '所在地不能为空！';
+            $return['msg'] = yun_at('common_01263');
         } elseif ($comData['address'] == '') {
 
-            $return['msg'] = '公司地址不能为空！';
+            $return['msg'] = yun_at('common_06414');
         } elseif ($comData['linkman'] == '') {
 
-            $return['msg'] = '联系人不能为空！';
+            $return['msg'] = yun_at('member_com_00677');
         } elseif ($comData['content'] == '') {
 
-            $return['msg'] = '企业简介不能为空！';
+            $return['msg'] = yun_at('member_com_00445');
         }
 		$mstatus	=	 $this -> select_once('company', array('uid' => $uid), '`moblie_status`');
 		if($mstatus['moblie_status']!=1){
@@ -3952,12 +3952,12 @@ class company_model extends model{
 
 				if($comData['linkphone']==''){
 
-					$return['msg']	=  '联系手机和固定电话任填一项！';
+					$return['msg']	=  yun_at('common_00670');
 				}
 			} else {
                 if (!checkMobileLegal($comData['linktel'])) {
 
-                    $return['msg']  =  '该手机号已被禁止使用！';
+                    $return['msg']  =  yun_at('wap_js_00049');
                 }
             }
 		}
@@ -4054,22 +4054,22 @@ class company_model extends model{
                 // 用户操作的，判断处理logo上传积分
                 if ($data['utype'] == 'user'){
 
-                    $this->getIntegral($uid, '2', 'integral_avatar', '上传LOGO', 20);
+                    $this->getIntegral($uid, '2', 'integral_avatar', 'member_com_00186', 20);
 
                     $this->addMemberLog($uid, 2, '企业资料：上传LOGO', 16, 1);
 
                     if ($this->config['com_logo_status'] == 1) {
 
                         $return['errcode']  =  '9';
-                        $return['msg']      =  '上传成功，管理员审核后对其他用户开放显示';
+                        $return['msg']      =  yun_at('common_00327');
                     }else{
 
                         $return['errcode']  =  '9';
-                        $return['msg']      =  '上传成功';
+                        $return['msg']      =  yun_at('common_06339');
                     }
                 }else{
 
-                    $return['msg']      =  '企业LOGO(ID:'.$uid.')修改成功';
+                    $return['msg']      =  yun_auto_t('企业LOGO(ID:').$uid.')修改成功';
                     $return['errcode']  =  '9';
                 }
                 // pc会员中心预览即上传，处理预览图
@@ -4078,12 +4078,12 @@ class company_model extends model{
                 }
             }else{
 
-                $return['msg']      =  '企业LOGO(ID:'.$uid.')修改失败';
+                $return['msg']      =  yun_auto_t('企业LOGO(ID:').$uid.')修改失败';
                 $return['errcode']  =  '8';
             }
         }else{
 
-            $return['msg']      =  '请选择需要修改的用户';
+            $return['msg']      =  yun_at('common_01069');
             $return['errcode']  =  '8';
         }
         return $return;
@@ -4136,23 +4136,23 @@ class company_model extends model{
 
             if (isset($return['id'])) {
 
-                $this->addMemberLog($uid, 2, '企业资料：上传二维码', 16, 1);
+                $this->addMemberLog($uid, 2, 'common_06415', 16, 1);
 
                 if ($data['preview']){
 
                     $return['picurl']  =  checkpic($logo);
                 }
 
-                $return['msg']      =  $data['utype'] == 'user' ? '修改成功' : '企业二维码(ID:'.$uid.')修改成功';
+                $return['msg']      =  $data['utype'] == 'user' ? yun_at('admin_user_company_00208') : yun_auto_t('企业二维码(ID:').$uid.')修改成功';
                 $return['errcode']  =  '9';
             }else{
 
-                $return['msg']      =  $data['utype'] == 'user' ? '修改失败' : '企业二维码(ID:'.$uid.')修改失败';
+                $return['msg']      =  $data['utype'] == 'user' ? yun_at('admin_00187') : yun_auto_t('企业二维码(ID:').$uid.')修改失败';
                 $return['errcode']  =  '8';
             }
         }else{
 
-            $return['msg']      =  '请选择需要修改的用户';
+            $return['msg']      =  yun_at('common_01069');
             $return['errcode']  =  '8';
         }
         return $return;
@@ -4208,7 +4208,7 @@ class company_model extends model{
             if($data){
                 $row	= 	$this->getInfo($id,array('field'=>'`x`,`y`'));
                 if($row['x'] == '' && $row['y'] == ''){
-                    $this->getIntegral($id,'2','integral_map','设置企业地图', 32);
+                    $this->getIntegral($id,'2','integral_map','wap_com_00182', 32);
                 }
 
                 $updata['x']	=	(float)$data['xvalue'];
@@ -4219,11 +4219,11 @@ class company_model extends model{
 					require_once ('log.model.php');
                     $logM 		= 	new log_model($this->db, $this->def);
 
-					$logM		->	member_log('设置企业地图',15);//会员日志
+					$logM		->	member_log(yun_at('wap_com_00182'),15);//会员日志
 
                     $this		->	update_once('company_job',array('x'=>$updata['x'],'y'=>$updata['y']),array('uid'=>$id));
 
-					$return['msg']		=	'地图设置成功！';
+					$return['msg']		=	yun_at('common_06416');
 
 					if($data['type']=='wap'){
 						$return['url']	=	'index.php?c=set';
@@ -4234,17 +4234,17 @@ class company_model extends model{
                     $return['cod']		=	9;
                 }else{
 
-					$return['msg']		=	'地图设置失败！';
+					$return['msg']		=	yun_at('common_06417');
 
 				}
             }else{
 
-				$return['msg']		=	'请设置企业地图！';
+				$return['msg']		=	yun_at('member_com_00183');
 
 			}
         }else{
 
-			$return['msg']		=	'系统繁忙！';
+			$return['msg']		=	yun_at('common_01632');
 		}
 
         return $return;
@@ -4278,7 +4278,7 @@ class company_model extends model{
                 $resumeM = new resume_model($this->db, $this->def);
                 $resumeM->setExpectState(array('state' => '0'), array('uid' => $id));
 
-                $this->addMemberLog($id, $data['usertype'], "账号认证：解除手机绑定", 12, 3);
+                $this->addMemberLog($id, $data['usertype'], 'common_06418', 12, 3);
             }
 
             if ($data['type'] == 'email') {
@@ -4288,7 +4288,7 @@ class company_model extends model{
                 $this->update_once('resume', array('email_status' => '0'), array('uid' => $id));
                 $this->update_once('company', array('email_status' => '0'), array('uid' => $id));
 
-                $this->addMemberLog($id, $data['usertype'], "账号认证：解除邮箱绑定", 12, 3);
+                $this->addMemberLog($id, $data['usertype'], 'common_06419', 12, 3);
             }
 
             if ($data['type'] == 'qqid' || $data['type'] == 'qq') {
@@ -4302,32 +4302,32 @@ class company_model extends model{
 
                 $nid    =   $this->update_once('member', array('sinaid' => ''), array('uid' => $id));
 
-                $this->addMemberLog($id, $data['usertype'], "账号认证：解除新浪微博绑定", 12, 3);
+                $this->addMemberLog($id, $data['usertype'], 'common_00751', 12, 3);
             }
 
             if ($data['type'] == 'wxid' || $data['type'] == 'weixin') {
 
                 $nid    =   $this->update_once('member', array('wxid' => '', 'wxopenid' => '', 'unionid' => '','subscribe' => 2), array('uid' => $id));
-                $this->addMemberLog($id, $data['usertype'], "账号认证：解除微信公众号绑定", 12, 3);
+                $this->addMemberLog($id, $data['usertype'], 'common_06420', 12, 3);
             }
 
             if ($data['type'] == 'baidu') {
 
                 $nid    =   $this->update_once('member', array('bdopenid' => ''), array('uid' => $id));
-                $this->addMemberLog($id, $data['usertype'], "账号认证：解除百度绑定", 12, 3);
+                $this->addMemberLog($id, $data['usertype'], 'common_00937', 12, 3);
             }
             if ($nid) {
 
-                $return['msg']      =   '解除绑定成功';
+                $return['msg']      =   yun_at('common_06421');
                 $return['errcode']  =   '9';
             } else {
 
-                $return['msg']      =   '解除绑定失败';
+                $return['msg']      =   yun_at('common_06422');
                 $return['errcode']  =   '8';
             }
 		}else{
 
-			$return['msg']		=	'系统繁忙';
+			$return['msg']		=	yun_at('common_01831');
 			$return['errcode']	=	'8' ;
 		}
 		return $return;
@@ -4387,15 +4387,15 @@ class company_model extends model{
 			    $nid = $this->upCompanyShow(intval($data['id']),$datashow);
 
 			    if($nid){
-			        $return['msg']	=	'更新成功！';
+			        $return['msg']	=	yun_at('admin_system_00064');
 			        $return['errcode']	=	9;
 			    }else{
-			        $return['msg']	=	'更新失败！';
+			        $return['msg']	=	yun_at('api_wxapp_00009');
 			    }
 
 			}else{
 			    if(!$picurl){
-			        $return['msg']		=	'请上传企业环境！';
+			        $return['msg']		=	yun_at('common_01303');
 			    }else{
 			        if($data['title']){
 
@@ -4415,19 +4415,19 @@ class company_model extends model{
 			        $id 				= 	$this->addCompanyShow($datashow);
                     if ($id) {
 
-                        $this->addMemberLog($data['uid'], 2, '企业资料：添加环境展示', 16, 1);
-                        $return['msg'] = '上传成功！';
+                        $this->addMemberLog($data['uid'], 2, 'common_00849', 16, 1);
+                        $return['msg'] = yun_at('common_05610');
                         $return['id'] = $id;
                         $return['errcode'] = 9;
                     } else {
 
-                        $return['msg'] = '上传失败！';
+                        $return['msg'] = yun_at('common_05611');
                     }
 			    }
 			}
 		}else{
 
-			$return['msg']		=	'系统繁忙';
+			$return['msg']		=	yun_at('common_01831');
 		}
 		return $return;
 	}
@@ -4508,10 +4508,10 @@ class company_model extends model{
                         /* 处理审核信息 */
                         if($post['logo_statusbody']){
 
-                            $statusInfo  .=  ' , 因为'.$post['logo_statusbody'].' , ';
+                            $statusInfo  .=  'common_01654'.$post['logo_statusbody'].' , ';
                         }
 
-                        $statusInfo  .=  '已被管理员删除';
+                        $statusInfo  .=  'common_01360';
 
                         $msg[$v]  =  $statusInfo;
                     }
@@ -4536,14 +4536,14 @@ class company_model extends model{
                     $this -> update_once('question',array('pic'=>array('CASE','uid',$newlogo)),array('uid'=>array('in',$uidstr)));
                 }
 
-                $return['msg']      =  'LOGO审核(ID:'.$uidstr.')设置成功';
+                $return['msg']      =  yun_auto_t('LOGO审核(ID:').$uidstr.')设置成功';
                 $return['errcode']  =  '9';
             }else{
-                $return['msg']      =  'LOGO审核(ID:'.$uidstr.')设置失败';
+                $return['msg']      =  yun_auto_t('LOGO审核(ID:').$uidstr.')设置失败';
                 $return['errcode']  =  '8';
             }
         }else{
-            $return['msg']      =  '请选择要审核的LOGO';
+            $return['msg']      =  yun_at('common_00932');
             $return['errcode']  =  '8';
         }
         return $return;
@@ -4590,7 +4590,7 @@ class company_model extends model{
 						    if ($v['title'] != ''){
                                 $statusInfo		=	'您的企业环境('.$v['title'].')审核未通过';
                             }else{
-                                $statusInfo		=	'您的企业环境审核未通过';
+                                $statusInfo		=	'common_06423';
                             }
 							if($post['statusbody']){
 
@@ -4602,9 +4602,9 @@ class company_model extends model{
 						}elseif($post['status'] == 0){
 
                             if ($v['title'] != '') {
-                                $msg[$v['uid']][] = '您的企业环境(' . $v['title'] . ')已审核通过';
+                                $msg[$v['uid']][] = '您的企业环境(' . $v['title'] . 'common_01425';
                             }else{
-                                $msg[$v['uid']][] = '您的企业环境已审核通过';
+                                $msg[$v['uid']][] = 'common_00880';
                             }
 						}
 	                }
@@ -4617,14 +4617,14 @@ class company_model extends model{
 
 	            }
 
-	            $return['msg']      =  '企业环境审核(ID:'.$idstr.')设置成功';
+	            $return['msg']      =  yun_auto_t('企业环境审核(ID:').$idstr.')设置成功';
 	            $return['errcode']  =  '9';
 	        }else{
-	            $return['msg']      =  '企业环境审核(ID:'.$idstr.')设置失败';
+	            $return['msg']      =  yun_auto_t('企业环境审核(ID:').$idstr.')设置失败';
 	            $return['errcode']  =  '8';
 	        }
 	    }else{
-	        $return['msg']      =  '请选择要审核的企业环境';
+	        $return['msg']      =  yun_at('common_00934');
             $return['errcode']  =  '8';
         }
 
@@ -4670,7 +4670,7 @@ class company_model extends model{
 						/* 处理审核信息 */
 						if ($post['status'] == 2){
 
-							$statusInfo		=	'您的企业横幅审核未通过';
+							$statusInfo		=	'common_06424';
 
 							if($post['statusbody']){
 
@@ -4682,7 +4682,7 @@ class company_model extends model{
 
 						}elseif($post['status'] == 0){
 
-							$msg[$v['uid']][]  =  '您的企业横幅已审核通过';
+							$msg[$v['uid']][]  =  'common_00879';
 
 						}
 	                }
@@ -4695,14 +4695,14 @@ class company_model extends model{
 
 	            }
 
-	            $return['msg']      =  '企业横幅审核(ID:'.$idstr.')设置成功';
+	            $return['msg']      =  yun_auto_t('企业横幅审核(ID:').$idstr.')设置成功';
 	            $return['errcode']  =  '9';
 	        }else{
-	            $return['msg']      =  '企业横幅审核(ID:'.$idstr.')设置失败';
+	            $return['msg']      =  yun_auto_t('企业横幅审核(ID:').$idstr.')设置失败';
 	            $return['errcode']  =  '8';
 	        }
 	    }else{
-	        $return['msg']      =  '请选择要审核的企业横幅';
+	        $return['msg']      =  yun_at('common_00933');
             $return['errcode']  =  '8';
         }
 
@@ -4715,17 +4715,17 @@ class company_model extends model{
 		$type 		=	$data['type'];
 	    $company 	= 	$this->getInfo($uid);
 	    if($this->config['com_enforce_mobilecert']==1 && $company['moblie_status']!=1){
-			$return['msg']		=	'请先认证手机号';
+			$return['msg']		=	yun_at('common_01406');
 			$return['errcode']	=	10;
 			return $return;
 	    }
 	    if($this->config['com_enforce_licensecert']==1 && $company['yyzz_status']!=1){
-			$return['msg']		=	'请先认证企业资质';
+			$return['msg']		=	yun_at('common_01304');
 			$return['errcode']	=	11;
 			return $return;
 	    }
 	    if($this->config['com_enforce_emailcert']==1 && $company['email_status']!=1){
-			$return['msg']		=	'请先认证邮箱';
+			$return['msg']		=	yun_at('common_01542');
 			$return['errcode']	=	12;
 			return $return;
 	    }
@@ -4805,16 +4805,16 @@ class company_model extends model{
                         $jrv['description'] = str_replace(array('&quot;', '&nbsp;', '<>'), array('', '', ''),strip_tags($jrv['description']));
 
 
-                        if($jrv['job_salary']!='面议'){
+                        if($jrv['job_salary']!='common_02045'){
                             $jrv['job_salary'] = $jrv['job_salary'];
                         }
 
                         if($jrv['job_exp']){
-                            $jrv['job_exp'] = $jrv['job_exp'].'经验';
+                            $jrv['job_exp'] = $jrv['job_exp'].'wap_01424';
                         }
 
                         if($jrv['job_edu']){
-                            $jrv['job_edu'] = $jrv['job_edu'].'学历';
+                            $jrv['job_edu'] = $jrv['job_edu'].'wap_com_00301';
                         }
 
                         $jobbycom[$jrv['uid']][] = $jrv;
@@ -4959,12 +4959,12 @@ class company_model extends model{
 
                 $this->update_once('company', array('is_nav' => 2), array('uid' => $data['uid']));
                 $return['errcode'] = 9;
-                $return['errmsg'] = '自定义导航设置成功！';
+                $return['errmsg'] = yun_at('common_06425');
                 $return['url'] = 'index.php';
             } else {
 
                 $return['errcode'] = 8;
-                $return['errmsg'] = '自定义导航设置失败！';
+                $return['errmsg'] = yun_at('common_06426');
                 $return['url'] = $_SERVER['HTTP_REFERER'];
             }
         } else {
@@ -4973,12 +4973,12 @@ class company_model extends model{
             if ($result) {
 
                 $return['errcode'] = 9;
-                $return['errmsg'] = '自定义导航设置成功！';
+                $return['errmsg'] = yun_at('common_06425');
                 $return['url'] = 'index.php';
             } else {
 
                 $return['errcode'] = 8;
-                $return['errmsg'] = '自定义导航设置失败！';
+                $return['errmsg'] = yun_at('common_06426');
                 $return['url'] = $_SERVER['HTTP_REFERER'];
             }
         }
@@ -5022,7 +5022,7 @@ class company_model extends model{
 
         if (empty($uid)) {
             $res['errcode'] = 8;
-            $res['msg'] = '参数错误请重试！';
+            $res['msg'] = yun_at('common_06427');
         } else{
 
             
@@ -5049,13 +5049,13 @@ class company_model extends model{
                 $vipover = true;
             }
             
-            $msgContent =   '解除企业暂停';
+            $msgContent =   'common_01535';
 
             $zt_time = 0;
 
             if($company['zt_time']){
                 $zt_time = time() - $company['zt_time'];
-                $msgContent .=  '，共暂停'.intval((time()-$company['zt_time'])/86400).'天';
+                $msgContent .=  'common_01870'.intval((time()-$company['zt_time'])/86400).'天';
             }
 
             $data['vip_etime']  =   $statis['vip_etime'];
@@ -5063,29 +5063,29 @@ class company_model extends model{
             if(empty($rating_info['service_time'])){
                 
                 if (empty($rid)){
-                    $msgContent .=  '，当前是已过期会员，无法延期';
+                    $msgContent .=  'common_00678';
                 }else{
-                    $msgContent .=  '，当前是【'.$rating_info['name'].'】，没有到期时间，无法延期';
+                    $msgContent .=  'common_01650'.$rating_info['name'].'common_00691';
                 }
                 $ztType =   2;
             }else{
                 if($addzttime=='1'){
 
                     $data['vip_etime']  =   $statis['vip_etime'] + $zt_time;
-                    $vEtime     =   $data['vip_etime'] ? date('Y-m-d',$data['vip_etime']) : '不限';
-                    $msgContent .=  "，选择延续会员有效期，会员到期时间：".$statis['vip_etime_n']." -> ".$vEtime;
+                    $vEtime     =   $data['vip_etime'] ? date('Y-m-d',$data['vip_etime']) : WapDbEnum::UNLIMITED;
+                    $msgContent .=  'common_00447'.$statis['vip_etime_n']." -> ".$vEtime;
                     $ztType =   1;
                 }else{
 
                     $data['vip_etime']  =   $statis['vip_etime'];
-                    $msgContent .=  '，未选择延续会员有效期';
+                    $msgContent .=  'common_00946';
                     $ztType =   2;
                 }
             }
 
             if($vipover){//超过了最长有效期，按过期处理
                 $data['vip_etime'] = $statis['vip_etime'];
-                $msgContent .=  '，该企业已超过套餐最大有效期，变更为过期会员';
+                $msgContent .=  'common_00279';
             }else{
                 $this->restoreComStatic($uid, $ztType);
                 $statisM -> upInfo($data, array('uid' => $uid, 'usertype' => 2));
@@ -5100,7 +5100,7 @@ class company_model extends model{
 
             $userinfoM->status(array('uid' => $uid, 'usertype' => 2), array('post' => array('status' => 1, 'setup' => 1)));
 
-            $msgContent =   '企业(ID:' . $uid . ')，'.$msgContent;
+            $msgContent =   'common_01452' . $uid . ')，'.$msgContent;
             $logM->addAdminLog($msgContent);
             
             if($vipover){
@@ -5108,7 +5108,7 @@ class company_model extends model{
             }
 
             $res['errcode'] =   9;
-            $res['msg']     =   '解除暂停成功！';
+            $res['msg']     =   yun_at('admin_user_company_00111');
             $res['url']     =   $_SERVER['HTTP_REFERER'];
         }
         return $res;

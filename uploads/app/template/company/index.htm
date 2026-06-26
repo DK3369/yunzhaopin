@@ -22,7 +22,7 @@
           <form method="get" name="myform" onsubmit="return search_keyword(this,'{yun:}t key='admin_system_00198'{/yun}');" action="index.php">
 			{yun:}if  !$config.sy_firmdir || $config.sy_seo_rewrite!='1'{/yun}<input type="hidden" value="firm" name="m" />{yun:}/if{/yun}  
             <input class="tykeywords placeholder" id="ipt" type="text" value="{yun:}if $getinfo.keyword!=""{/yun}{yun:}$getinfo.keyword{/yun}{yun:}else{/yun}{yun:}t key='admin_system_00198'{/yun}{yun:}/if{/yun}" name="keyword" onclick="if(this.value=='{yun:}t key='admin_system_00198'{/yun}'){this.value=''}" onblur="if(this.value==''){this.value='{yun:}t key='admin_system_00198'{/yun}'}">
-            <input class="ty_button placeholder" type="button" id="city" placeholder='请选择城市' value="请选择城市" onclick="index_city();">
+            <input class="ty_button placeholder" type="button" id="city" placeholder='{yun:}t key='common_02529'{/yun}' value="{yun:}t key='common_02529'{/yun}" onclick="index_city();">
             <input type="hidden" name="cityid" id="cityid" />
             <input class="tysubmit" type="submit" value="{yun:}t key='common.search'{/yun} ">
           </form>
@@ -40,9 +40,9 @@
           <div class="firm_qy_name"><a href='{yun:}$list.com_url{/yun}'>{yun:}$list.name|mb_substr:0:16:'utf-8'{/yun}</a></div>
           <div class="firm_qy_list"> <span >{yun:}t key='admin_user_company_00373'{/yun}：{yun:}$list.job_hy|mb_substr:0:12:'utf-8'{/yun}</span> <span >{yun:}t key='default_00281'{/yun}：{yun:}$list.job_pr{/yun}</span> <span>{yun:}t key='wap_com_00015'{/yun}：{yun:}$list.job_city_one{/yun} {yun:}$list.job_city_two{/yun}</span> </div>
           <div class="firm_qy_list"> <span >{yun:}t key='company_00024'{/yun}：<em>{yun:}$list.job_mun{/yun}</em></span><span >{yun:}t key='wap_com_00171'{/yun}：<em>{yun:}$list.money{/yun}</em>{yun:}if $list.moneytype==1{/yun}{yun:}t key='wap_js_00004'{/yun}{yun:}else{/yun}{yun:}t key='wap_js_00002'{/yun}{yun:}/if{/yun}</span> <span >{yun:}t key='member_com_00300'{/yun}：<em>{yun:}$list.lastupdate|date_format:'%Y-%m-%d'{/yun}</em></span></div>
-                    <div class="firm_qy_list" style="font-weight:bold"> <span >招聘职位数：<em>{yun:}$list.jobnum{/yun}</em></span> <span >公司资讯数：<em>{yun:}$list.newsnum{/yun}</em></span> <span >公司环境数：<em>{yun:}$list.shownum{/yun}</em></span></div>
+                    <div class="firm_qy_list" style="font-weight:bold"> <span >{yun:}t key='common_02526'{/yun}<em>{yun:}$list.jobnum{/yun}</em></span> <span >{yun:}t key='common_02527'{/yun}<em>{yun:}$list.newsnum{/yun}</em></span> <span >{yun:}t key='common_02528'{/yun}<em>{yun:}$list.shownum{/yun}</em></span></div>
         </div>
-        <div class='firm_list_right'> <a href="javascript:void(0);" id="atn_{yun:}$list.uid{/yun}" onclick="atn('{yun:}$list.uid{/yun}');" class="crop-add-yb">{yun:}$list.atn{/yun}</a> <span><label><font id="antnum{yun:}$list.uid{/yun}">{yun:}$list.ant_num{/yun}</font>人关注 </label></span> </div>
+        <div class='firm_list_right'> <a href="javascript:void(0);" id="atn_{yun:}$list.uid{/yun}" onclick="atn('{yun:}$list.uid{/yun}');" class="crop-add-yb">{yun:}$list.atn{/yun}</a> <span><label><font id="antnum{yun:}$list.uid{/yun}">{yun:}$list.ant_num{/yun}</font>{yun:}t key='wap_01257'{/yun} </label></span> </div>
         {yun:}if $list.jobnum>0 || $list.shownum>0{/yun}
         <div class="firm_list_cur_box none" id="com{yun:}$list.uid{/yun}">
         <div class="firm_list_cur_cont">
@@ -93,8 +93,8 @@
         <div class="seachno_left"><img src="{yun:}$style{/yun}/images/search-no.gif"></div>
         <div class="listno-content"> <strong>{yun:}t key='common_01912'{/yun}，没有找到满足条件的企业</strong><br>
           <span> {yun:}t key='common_01910'{/yun}：<br>
-          1、适当减少已选择的条件<br>
-          2、适当删减或更改搜索关键字<br>
+          1、{yun:}t key='common_02286'{/yun}<br>
+          {yun:}t key='common_02266'{/yun}<br>
           </span> <span> {yun:}t key='admin_system_00443'{/yun}：<br>
           {yun:}key limit=6 recom=1 type=4 item=top_key{/yun} <a href="{yun:}$top_key.url{/yun}">{yun:}$top_key.key_name{/yun}</a> {yun:}/key{/yun} </span> </div>
       </div>

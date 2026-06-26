@@ -1,28 +1,28 @@
 <template>
     <div class="moduleElHight">
         <div class="tableDome_tip">
-            <el-alert title="采集前务必设置自己的接口密码，以免被其他人利用，这里所设置的参数，只作为没有值的情况下使用，若采集软件有值传输，会优先使用传输值" type="success" :closable="false"></el-alert>
+            <el-alert title="{yun:}t key='admin_tool_00059'{/yun}" type="success" :closable="false"></el-alert>
         </div>
         <div class=" moduleTable">
 
             <table class="tableVue">
                 <thead>
                 <tr align="left">
-                    <th width="200">名称</th>
-                    <th width="400">状态</th>
-                    <th>说明</th>
+                    <th width="200">{yun:}t key='member_com_00021'{/yun}</th>
+                    <th width="400">{yun:}t key='member_user_00181'{/yun}</th>
+                    <th>{yun:}t key='member_com_00207'{/yun}</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr>
                     <td>
-                        <div class="TableTite">简历状态</div>
+                        <div class="TableTite">{yun:}t key='member_com_00110'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableButn">
 							<el-radio-group v-model="locoy_config.locoy_resume_status">
-								<el-radio label="1">已通过</el-radio>
-								<el-radio label="0">未审核</el-radio>
+								<el-radio label="1">{yun:}t key='member_user_00042'{/yun}</el-radio>
+								<el-radio label="0">{yun:}t key='wap_user_00166'{/yun}</el-radio>
 							</el-radio-group>
                         </div>
                     </td>
@@ -34,11 +34,11 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">期望从事行业无法匹配为</div>
+                        <div class="TableTite">{yun:}t key='admin_tool_00264'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableSelect" style="display: flex;align-items: center;">
-                            <el-select v-model="locoy_config.locoy_resume_hy" placeholder="请选择">
+                            <el-select v-model="locoy_config.locoy_resume_hy" placeholder="{yun:}t key='wap_user_00100'{/yun}">
                                 <el-option v-for="hy in hyOptions" :key="hy.value" :label="hy.label" :value="hy.value"></el-option>
                             </el-select>
                         </div>
@@ -51,17 +51,17 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">期望从事职位无法匹配为</div>
+                        <div class="TableTite">{yun:}t key='admin_tool_00265'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableSelect" style="display: flex;align-items: center;">
-                            <el-select v-model="locoy_config.locoy_resume_job1" placeholder="请选择" @change="handelJobOneOption">
+                            <el-select v-model="locoy_config.locoy_resume_job1" placeholder="{yun:}t key='wap_user_00100'{/yun}" @change="handelJobOneOption">
 							<el-option v-for="job1 in jobOne" :key="job1.value" :label="job1.label" :value="job1.value"></el-option>
 						</el-select>
-							<el-select v-model="locoy_config.locoy_resume_son" placeholder="请选择" style="margin-left: 20px;" @change="handelJobTwoOption">
+							<el-select v-model="locoy_config.locoy_resume_son" placeholder="{yun:}t key='wap_user_00100'{/yun}" style="margin-left: 20px;" @change="handelJobTwoOption">
 								<el-option v-for="job2 in jobTwo" :key="job2.value" :label="job2.label" :value="job2.value"></el-option>
 							</el-select>
-							<el-select v-model="locoy_config.locoy_resume_post" placeholder="请选择" style="margin-left: 20px;" @change="handelJobThreeOption">
+							<el-select v-model="locoy_config.locoy_resume_post" placeholder="{yun:}t key='wap_user_00100'{/yun}" style="margin-left: 20px;" @change="handelJobThreeOption">
 								<el-option v-for="job3 in jobThree" :key="job3.value" :label="job3.label" :value="job3.value"></el-option>
 							</el-select>
                         </div>
@@ -74,17 +74,17 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">期望工作地点无法匹配为</div>
+                        <div class="TableTite">{yun:}t key='admin_tool_00266'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableSelect" style="display: flex;align-items: center;">
-							<el-select v-model="locoy_config.locoy_resume_province" placeholder="请选择" @change="handelCityOneOption">
+							<el-select v-model="locoy_config.locoy_resume_province" placeholder="{yun:}t key='wap_user_00100'{/yun}" @change="handelCityOneOption">
 								<el-option v-for="city1 in cityOne" :key="city1.value" :label="city1.label" :value="city1.value"></el-option>
 							</el-select>
-							<el-select v-model="locoy_config.locoy_resume_city" placeholder="请选择" style="margin-left: 20px;" @change="handelCityTwoOption">
+							<el-select v-model="locoy_config.locoy_resume_city" placeholder="{yun:}t key='wap_user_00100'{/yun}" style="margin-left: 20px;" @change="handelCityTwoOption">
 								<el-option v-for="city2 in cityTwo" :key="city2.value" :label="city2.label" :value="city2.value"></el-option>
 							</el-select>
-							<el-select v-model="locoy_config.locoy_resume_three" placeholder="请选择" style="margin-left: 20px;" @change="handelCityThreeOption">
+							<el-select v-model="locoy_config.locoy_resume_three" placeholder="{yun:}t key='wap_user_00100'{/yun}" style="margin-left: 20px;" @change="handelCityThreeOption">
 								<el-option v-for="city3 in cityThree" :key="city3.value" :label="city3.label" :value="city3.value"></el-option>
 							</el-select>
                         </div>
@@ -97,15 +97,15 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">期望月薪无法匹配为</div>
+                        <div class="TableTite">{yun:}t key='admin_tool_00267'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableSelect" style="display: flex;align-items: center;">
-							<el-input v-model="locoy_config.locoy_user_minsalary" @input="inputIntNumber($event, 'locoy_config', 'locoy_user_minsalary')" placeholder="最低薪资" style="width: 187px;">
-								<template slot="append">元</template>
+							<el-input v-model="locoy_config.locoy_user_minsalary" @input="inputIntNumber($event, 'locoy_config', 'locoy_user_minsalary')" placeholder="{yun:}t key='wap_user_00013'{/yun}" style="width: 187px;">
+								<template slot="append">{yun:}t key='common_02056'{/yun}</template>
 							</el-input>
-							<el-input v-model="locoy_config.locoy_user_maxsalary" @input="inputIntNumber($event, 'locoy_config', 'locoy_user_maxsalary')" placeholder="最高薪资" style="width: 187px; margin-left: 20px;">
-								<template slot="append">元</template>
+							<el-input v-model="locoy_config.locoy_user_maxsalary" @input="inputIntNumber($event, 'locoy_config', 'locoy_user_maxsalary')" placeholder="{yun:}t key='wap_user_00014'{/yun}" style="width: 187px; margin-left: 20px;">
+								<template slot="append">{yun:}t key='common_02056'{/yun}</template>
 							</el-input>
                         </div>
                     </td>
@@ -117,11 +117,11 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">到岗时间无法匹配为</div>
+                        <div class="TableTite">{yun:}t key='admin_tool_00268'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableSelect" style="display: flex;align-items: center;">
-                            <el-select v-model="locoy_config.locoy_user_report" placeholder="请选择">
+                            <el-select v-model="locoy_config.locoy_user_report" placeholder="{yun:}t key='wap_user_00100'{/yun}">
                                 <el-option v-for="report in reportOptions" :key="report.value" :label="report.label" :value="report.value"></el-option>
                             </el-select>
                         </div>
@@ -134,7 +134,7 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">浏览数随机范围</div>
+                        <div class="TableTite">{yun:}t key='admin_tool_00252'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
@@ -143,14 +143,14 @@
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>如：0-100，默认为0</span>
+                            <span>{yun:}t key='admin_tool_00255'{/yun}</span>
                         </div>
                     </td>
                 </tr>
                 </tbody>
             </table>
             <div class="setBasicButn" style="border: none;">
-                <el-button type="primary" size="medium" @click="submitLocoyConfig" :disabled="saveLoading">提交</el-button>
+                <el-button type="primary" size="medium" @click="submitLocoyConfig" :disabled="saveLoading">{yun:}t key='common.submit'{/yun}</el-button>
             </div>
         </div>
     </div>

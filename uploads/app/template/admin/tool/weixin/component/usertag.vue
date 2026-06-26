@@ -1,19 +1,19 @@
 <template>
     <div class="moduleElHight">
         <div class="tableDome_tip">
-            <el-alert title="搜索关健词主要记录微信用户通过微信公众号发送“关健词”系统会一一记录网站所有微信用户发送的关健词" type="success" :closable="false">
+            <el-alert title="{yun:}t key='admin_tool_00603'{/yun}" type="success" :closable="false">
             </el-alert>
         </div>
         <div class="moduleSeachs">
             <div class="moduleSeachleft">
 
                 <div class="tableSeachInpt" style="margin-bottom: 0px;;">
-                    <el-input placeholder="请输入搜索内容" v-model="keyword" size="small" prefix-icon="el-icon-search"
+                    <el-input placeholder="{yun:}t key='admin_00340'{/yun}" v-model="keyword" size="small" prefix-icon="el-icon-search"
                               clearable>
                     </el-input>
                 </div>
                 <div class="tableSeachInpt" style="margin-bottom: 0px;;">
-                    <el-button type="primary" icon="el-icon-search" size="mini" @click="search">查询</el-button>
+                    <el-button type="primary" icon="el-icon-search" size="mini" @click="search">{yun:}t key='admin_user_weipin_00049'{/yun}</el-button>
                 </div>
             </div>
         </div>
@@ -40,8 +40,8 @@
 
         <div class="modulePaging">
             <div class="modulecz">
-                <el-checkbox v-model="allchecked" @change="allcheckChange">全选</el-checkbox>
-                <el-button size="mini" @click="deleteAll">批量删除</el-button>
+                <el-checkbox v-model="allchecked" @change="allcheckChange">{yun:}t key='wap_js_00074'{/yun}</el-checkbox>
+                <el-button size="mini" @click="deleteAll">{yun:}t key='member_com_00055'{/yun}</el-button>
             </div>
             <div class="modulePagNum">
                 <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
@@ -57,7 +57,7 @@
 module.exports = {
     data: function () {
         return {
-            emptytext: window.yunAdminT('暂无数据'),
+            emptytext: window.yunAdminT("{yun:}t key='wap_js_00113'{/yun}"),
             tableData: [],
             total: 0,
             limit: 0,
@@ -95,7 +95,7 @@ module.exports = {
             }
 
             this.list_loading = true;
-            that.emptytext = window.yunAdminT('数据加载中');
+            that.emptytext = window.yunAdminT("{yun:}t key='admin_user_weipin_00026'{/yun}");
             httpPost('m=tool&c=weixinrecord&a=keyword', params, {hideloading: true}).then((result) => {
                 this.list_loading = false;
                 var res = result.data;
@@ -111,7 +111,7 @@ module.exports = {
 						that.$refs.table.bodyWrapper.scrollTop = 0;
 					}
                     if (that.tableData.length === 0) {
-                        that.emptytext = window.yunAdminT('暂无数据');
+                        that.emptytext = window.yunAdminT("{yun:}t key='wap_js_00113'{/yun}");
                     }
                 }
             }).catch(function (e) {
@@ -154,7 +154,7 @@ module.exports = {
                     idarr.push(this.choosedata[i].id);
                 }
             } else {
-                message.error(window.yunAdminT('请选择要删除的数据'));
+                message.error(window.yunAdminT("{yun:}t key='admin_user_weipin_00005'{/yun}"));
                 return;
             }
             var params = {

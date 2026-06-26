@@ -4,28 +4,28 @@
             <table class="tableVue">
                 <thead>
                 <tr align="left">
-                    <th width="100">参数</th>
-                    <th>内容</th>
+                    <th width="100">{yun:}t key='admin_00103'{/yun}</th>
+                    <th>{yun:}t key='wap_user_00102'{/yun}</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr>
                     <td>
-                        <div class="TableTite">公告标题</div>
+                        <div class="TableTite">{yun:}t key='admin_00102'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableInpt w_400">
-                            <el-input placeholder="请输入公告标题" v-model="ruleForm.title"></el-input>
+                            <el-input placeholder="{yun:}t key='admin_00869'{/yun}" v-model="ruleForm.title"></el-input>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">使用范围</div>
+                        <div class="TableTite">{yun:}t key='admin_user_00126'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableSelect w_400" style="display: flex;align-items: center;">
-                            <el-select v-model="ruleForm.did" placeholder="请选择">
+                            <el-select v-model="ruleForm.did" placeholder="{yun:}t key='wap_user_00100'{/yun}">
                                 <el-option v-for="(item, key) in domainList" :key="key" :label="item" :value="key"></el-option>
                             </el-select>
                         </div>
@@ -33,56 +33,56 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">关键词</div>
+                        <div class="TableTite">{yun:}t key='admin_00149'{/yun}</div>
                     </td>
                     <td style="display: flex;">
                         <div class="w_400" style="display: flex;align-items: center;">
-                            <el-input placeholder="请输入关键词" v-model="ruleForm.keyword"></el-input>
+                            <el-input placeholder="{yun:}t key='wap_00510'{/yun}" v-model="ruleForm.keyword"></el-input>
                         </div>
                         <div class="TableShuom" style="padding: 6px;">
-                            <span><i class="el-icon-warning"></i>多关键字,请用,隔开,请不要为空</span>
+                            <span><i class="el-icon-warning"></i>{yun:}t key='admin_00135'{/yun}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">开始时间</div>
+                        <div class="TableTite">{yun:}t key='wap_user_00087'{/yun}</div>
                     </td>
                     <td style="display: flex;">
                         <div class="TableInpt w_400">
-                            <el-date-picker v-model="ruleForm.startime" type="date" :picker-options="pickerOptions" style="width: 100%;" placeholder="选择开始时间"></el-date-picker>
+                            <el-date-picker v-model="ruleForm.startime" type="date" :picker-options="pickerOptions" style="width: 100%;" placeholder="{yun:}t key='wap_com_00323'{/yun}"></el-date-picker>
                         </div>
                         <div class="TableShuom" style="padding: 6px;">
-                            <span><i class="el-icon-warning"></i>默认当前时间</span>
+                            <span><i class="el-icon-warning"></i>{yun:}t key='admin_00140'{/yun}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">结束时间</div>
+                        <div class="TableTite">{yun:}t key='wap_user_00096'{/yun}</div>
                     </td>
                     <td style="display: flex;">
                         <div class="TableInpt w_400">
-                            <el-date-picker v-model="ruleForm.endtime" type="date" :picker-options="pickerOptions" style="width: 100%;" placeholder="选择结束时间"></el-date-picker>
+                            <el-date-picker v-model="ruleForm.endtime" type="date" :picker-options="pickerOptions" style="width: 100%;" placeholder="{yun:}t key='wap_com_00324'{/yun}"></el-date-picker>
                         </div>
                         <div class="TableShuom" style="padding: 6px;">
-                            <span><i class="el-icon-warning"></i>默认时间为永久</span>
+                            <span><i class="el-icon-warning"></i>{yun:}t key='admin_00138'{/yun}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">描述</div>
+                        <div class="TableTite">{yun:}t key='admin_user_00231'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableInpt w_400">
-                            <el-input type="textarea" placeholder="请输入描述" v-model="ruleForm.description"></el-input>
+                            <el-input type="textarea" placeholder="{yun:}t key='wap_00936'{/yun}" v-model="ruleForm.description"></el-input>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">公告内容</div>
+                        <div class="TableTite">{yun:}t key='admin_00868'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
@@ -95,7 +95,7 @@
             </table>
         </div>
         <div class="setBasicButn" style="border: none;">
-            <el-button type="primary" size="medium" @click="save" :disabled="saveLoading">提交</el-button>
+            <el-button type="primary" size="medium" @click="save" :disabled="saveLoading">{yun:}t key='common.submit'{/yun}</el-button>
         </div>
     </div>
 </template>
@@ -118,12 +118,12 @@
             }
         },
         mounted() {
-            var ue = UE.getEditor('projectBasis', {
+            var ue = UE.getEditor('projectBasis", {
                 wordCount: false,           // 关闭字数统计
-                elementPathEnabled: false,  //关闭elementPath 元素路径
+                elementPathEnabled: false,  //{yun:}t key='common.close'{/yun}elementPath {yun:}t key='common_05704'{/yun}
                 autoHeightEnabled: false,   //关闭自适应高度，超出部分以滚动条形式展示
                 initialFrameHeight: 480,    //默认的编辑区域高度
-                initialFrameWidth: 600      //初始化编辑器宽度,默认1000
+                initialFrameWidth: 600      //初始化编辑器宽度,{yun:}t key='wap_js_00098'{/yun}1000
             });
 
         },
@@ -133,7 +133,7 @@
         methods: {
             getInfo() {
                 let that = this;
-                httpPost('m=neirong&c=announcement&a=add', {id: that.id ? that.id : ''}).then(function (response) {
+                httpPost("m=neirong&c=announcement&a=add', {id: that.id ? that.id : ''}).then(function (response) {
                     let res = response.data,
                         data = res.data,
                         info = data.info;
@@ -167,7 +167,7 @@
                     params = that.ruleForm;
 
                 if (typeof params.title == 'undefined' || params.title == '') {
-                    message.warning('请输入公告标题');
+                    message.warning("{yun:}t key='admin_00869'{/yun}");
                     return;
                 }
                 if (typeof params.keyword == 'undefined' || params.keyword == '') {

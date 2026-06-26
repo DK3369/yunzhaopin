@@ -23,6 +23,6 @@ function smarty_function_queryinfo($paramer,&$smarty){
     $dbCounts = count($QuerySQL);
     $QuerySQL = implode('<br/>', $QuerySQL);
     //echo '共执行 '.$db->queryCount.' 个查询，用时 '.$query_time.' 秒，在线 1 人，Gzip 已禁用，占用内存 3.269 MB';
-    echo '共执行 '.$dbCounts.' 个查询，用时 '.$query_time.' 秒'.$memory_usage.'<br/>'.$QuerySQL;
+    echo yun_at('common_06114').$dbCounts.' 个查询，用时 '.$query_time.' 秒'.$memory_usage.'<br/>'.$QuerySQL;
 }
 ?>

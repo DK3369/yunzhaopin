@@ -45,17 +45,17 @@
                     
                     <img src="{yun:}url m=ajax c=pubqrcode toc=gongzhao toid=$Info.id{/yun}" width="150" height="150">
                 </div>
-                <div class="zx_ewm_p">微信扫一扫分享</div>
+                <div class="zx_ewm_p">{yun:}t key='common_02300'{/yun}</div>
             </div>
         </div>
 
         <div class="gongzhao_sp">
             {yun:}if !empty($Info.last){/yun}
-            <div>上一篇： <a title="{yun:}$Info.last.title{/yun}" href="{yun:}$Info.last.url{/yun}">{yun:}$Info.last.title|mb_substr:0:20:'utf-8'{/yun}</a>
+            <div>{yun:}t key='common_02301'{/yun} <a title="{yun:}$Info.last.title{/yun}" href="{yun:}$Info.last.url{/yun}">{yun:}$Info.last.title|mb_substr:0:20:'utf-8'{/yun}</a>
             </div>
             {yun:}/if{/yun}
             {yun:}if !empty($Info.next){/yun}
-            <div>下一篇： <a title="{yun:}$Info.next.title{/yun}" href="{yun:}$Info.next.url{/yun}">{yun:}$Info.next.title|mb_substr:0:20:'utf-8'{/yun}</a>
+            <div>{yun:}t key='common_02302'{/yun} <a title="{yun:}$Info.next.title{/yun}" href="{yun:}$Info.next.url{/yun}">{yun:}$Info.next.title|mb_substr:0:20:'utf-8'{/yun}</a>
             </div>
             {yun:}/if{/yun}
         </div>

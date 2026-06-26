@@ -2,18 +2,18 @@
     <div class="moduleElHight">
         <div class="moduleSeachbig" v-if="cansearch">
             <div class="tableSeachInpt">
-                <el-select v-model="type" size="small" slot="prepend" placeholder="操作类型">
+                <el-select v-model="type" size="small" slot="prepend" placeholder="{yun:}t key='wap_com_00030'{/yun}">
                     <el-option label="消费单号" value="1"></el-option>
                     <el-option label="用户名" value="2"></el-option>
                     <el-option label="备注说明" value="3"></el-option>
                 </el-select>
             </div>
             <div class="tableSeachInpt">
-                <el-input placeholder="请输入内容" size="small" prefix-icon="el-icon-search" v-model="keyword">
+                <el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" size="small" prefix-icon="el-icon-search" v-model="keyword">
                 </el-input>
             </div>
             <div class="tableSeachInpt">
-                <el-button type="primary" icon="el-icon-search" size="mini" @click="search">查询</el-button>
+                <el-button type="primary" icon="el-icon-search" size="mini" @click="search">{yun:}t key='admin_user_weipin_00049'{/yun}</el-button>
             </div>
         </div>
         <div class="moduleElTable"
@@ -38,7 +38,7 @@
                 <el-table-column label="操作" width="80" fixed="right">
                     <template slot-scope="scope">
                         <div class="cz_button">
-                            <el-button type="danger" size="small " @click="del(scope.row.id)">删除</el-button>
+                            <el-button type="danger" size="small " @click="del(scope.row.id)">{yun:}t key='common.delete'{/yun}</el-button>
                         </div>
                     </template>
                 </el-table-column>
@@ -74,7 +74,7 @@
         data: function () {
             return {
                 loading: false,
-                emptytext: '暂无数据',
+                emptytext: "{yun:}t key='wap_js_00113'{/yun}",
                 type: '1',
                 keyword: '',
                 currentPage: 1,
@@ -174,7 +174,7 @@
                     params.t = that.sort_col
                 }
                 that.loading = true;
-                that.emptytext = "数据加载中";
+                that.emptytext = "{yun:}t key='admin_user_weipin_00026'{/yun}";
                 httpPost('m=user&c=company_pay&a=index', params).then(function (result) {
                     var res = result.data
                     if (res.error == 0) {
@@ -189,7 +189,7 @@
                             that.$refs.multipleTable.bodyWrapper.scrollTop = 0;
                         }
                         if (that.tableData.length === 0){
-                            that.emptytext = "暂无数据";
+                            that.emptytext = "{yun:}t key='wap_js_00113'{/yun}";
                         }
                     }
                 }).catch(function (e) {
@@ -198,9 +198,9 @@
             },
             del: function (id) {
                 let _this = this;
-                _this.$confirm('确定要删除？', '温馨提示', {
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
+                _this.$confirm("{yun:}t key='wap_user_00001'{/yun}", "{yun:}t key='wap_user_00205'{/yun}", {
+                    confirmButtonText: "{yun:}t key='common.confirm'{/yun}",
+                    cancelButtonText: "{yun:}t key='common.cancel'{/yun}",
                     type: 'warning'
                 }).then(() => {
                     httpPost('m=user&c=company_pay&a=del', {id: id}).then(function (response) {

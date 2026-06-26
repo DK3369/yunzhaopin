@@ -86,7 +86,7 @@ class wxapp_controller extends common
             $this->wxappMember(array('uid'=>$uid,'token'=>$token), $isMember);
             
         }elseif($_GET['c']!='advice'){
-            $this -> render_json(1002, yun_auto_t('请先登录'));
+            $this -> render_json(1002, yun_at('wap_00376'));
         }
     }
     // 
@@ -124,9 +124,9 @@ class wxapp_controller extends common
                 $logout	  =	 $logoutM->getInfo(array('uid'=>$param['uid'],'status'=>1));
                 
                 if (!empty($logout)){
-                    $this -> render_json(1002, yun_auto_t('您的账号已注销'));
+                    $this -> render_json(1002, yun_at('wap_01861'));
                 }else{
-                    $this -> render_json(1002, yun_auto_t('您的账号已被锁定，请联系网站客服'));
+                    $this -> render_json(1002, yun_at('wap_01862'));
                 }
             }
             // token。tokenwap，common
@@ -134,7 +134,7 @@ class wxapp_controller extends common
                 $mdtoken  =  md5($member['username'].$member['password'].$member['salt'].$member['usertype']);
                 if($param['token'] != $mdtoken){
                     
-                    $this -> render_json(1002, yun_auto_t('登录信息有误，请重新登录'));
+                    $this -> render_json(1002, yun_at('wap_01863'));
                 }
             }
             // ，
@@ -171,7 +171,7 @@ class wxapp_controller extends common
                         }
                     }
                 }else{
-                    $this -> render_json(1003, yun_auto_t('登录身份不符，请重新登录'));
+                    $this -> render_json(1003, yun_at('wap_01864'));
                 }
             }
             // ，。，
@@ -233,7 +233,7 @@ class wxapp_controller extends common
                 }
             }
         }else{
-            $this -> render_json(1002, yun_auto_t('用户信息错误，请重新登录'));
+            $this -> render_json(1002, yun_at('wap_01865'));
         }
     }
 
@@ -258,15 +258,15 @@ class wxapp_controller extends common
 	function fktype()
 	{
 	    $fktype  =  array(
-	        'goumai' => yun_auto_t('购买'),
+	        'goumai' => yun_at('member_user_00285'),
 	        'fuhao'  => '￥',
-	        'fkjg'   => yun_auto_t('价格'),
+	        'fkjg'   => yun_at('wap_00563'),
 	        'wxsrc'  => $this->config['sy_weburl'].'/api/wxapp/static/image/wxzf.png',
 	        'alsrc'  => $this->config['sy_weburl'].'/api/wxapp/static/image/zfb.png',
 	    );
 
 	    if($this->config['alipay']=='1' &&  $this->config['alipaytype']=='1'){
-	        $fktype['fkal']  =  yun_auto_t('支付宝');
+	        $fktype['fkal']  =  yun_at('wap_user_00319');
 	    }
 	    return $fktype;
 	}
@@ -458,14 +458,14 @@ class wxapp_controller extends common
 	        if(!empty($this->config['sy_web_city_one']) && empty($this->config['sy_web_city_two'])){
 	            // 
 	            $provinceid        =  $this->config['sy_web_city_one'];
-	            $citytwo[0][]      =  array('value'=>0,'label'=>yun_auto_t('全部'));// Column 2: all
+	            $citytwo[0][]      =  array('value'=>0,'label'=>yun_at('wap_js_00075'));// Column 2: all
 	            $citythreetwoArr[$provinceid][]	=  array(array());// level-1 all placeholder
 	            foreach ($city_type[$provinceid] as $v){
 	                
 	                $citytwo[0][]  =  array('value'=>$v,'label'=>$city_name[$v]);
 	                if (is_array($city_type[$v]) && !empty($city_three)){
 	                    $citythreeArr  =  array();
-	                    $citythreeArr[] =  array('value'=>0,'label'=>yun_auto_t('全部'));
+	                    $citythreeArr[] =  array('value'=>0,'label'=>yun_at('wap_js_00075'));
 	                    foreach ($city_type[$v] as $ka=>$va){
 	                        $citythreeArr[]  =	array('value'=>$va,'label'=>$city_name[$va]);
 	                    }
@@ -483,7 +483,7 @@ class wxapp_controller extends common
 	            $citytwo[0][]  =  array('value'=>$cityid,'label'=>$city_name[$cityid]);
 	            if (!empty($city_three)){
 	                // ，3
-	                $citythree[0][0][]  =  array('value'=>0,'label'=>yun_auto_t('全部'));// Column 3: all
+	                $citythree[0][0][]  =  array('value'=>0,'label'=>yun_at('wap_js_00075'));// Column 3: all
 	                foreach ($city_type[$cityid] as $v){
 	                    
 	                    $citythree[0][0][]  =  array('value'=>$v,'label'=>$city_name[$v]);
@@ -506,11 +506,11 @@ class wxapp_controller extends common
 	function checkMcsdk($moblie = '')
 	{
 	    if(empty($moblie)){
-	        $this->render_json(-1, yun_auto_t('缺少手机号'));
+	        $this->render_json(-1, yun_at('wap_01866'));
 	    }
 	    $mcsdk = $_SERVER['HTTP_MCSDK'];
 	    if (empty($mcsdk)){
-	        $this -> render_json(-1, yun_auto_t('手机号异常'));
+	        $this -> render_json(-1, yun_at('wap_01867'));
 	    }else{
 	        $phone = '';
 	        if (isset($_SERVER['HTTP_TIMEOFFSET'])){
@@ -535,7 +535,7 @@ class wxapp_controller extends common
 	            
 	        }
 	        if (!empty($moblie) && $phone != $moblie){
-	            $this -> render_json(-1, yun_auto_t('手机号验证异常'));
+	            $this -> render_json(-1, yun_at('wap_01868'));
 	        }
 	    }
 	}

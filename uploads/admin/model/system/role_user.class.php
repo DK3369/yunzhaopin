@@ -65,13 +65,13 @@ class role_user_controller extends adminCommon{
         $group = $adminM->getAdminGroupList(array('did' => $this->config['did'], 'orderby' => 'id'));
         $data['group'] = $group;
         $week = array(
-            '1' => '礼拜一',
-            '2' => '礼拜二',
-            '3' => '礼拜三',
-            '4' => '礼拜四',
-            '5' => '礼拜五',
-            '6' => '礼拜六',
-            '7' => '礼拜日'
+            '1' => 'admin_system_00031',
+            '2' => 'admin_system_00033',
+            '3' => 'admin_system_00032',
+            '4' => 'admin_system_00036',
+            '5' => 'admin_system_00034',
+            '6' => 'admin_system_00035',
+            '7' => 'admin_system_00037'
         );
         $data['week'] = $week;
         $data['total'] = intval($pages['total']);
@@ -184,7 +184,7 @@ class role_user_controller extends adminCommon{
                         unset($_SESSION['auid']);
                         unset($_SESSION['ausername']);
                         unset($_SESSION['ashell']);
-                        $this->admin_json(0, '管理员(ID:'.$_POST['uid'].')修改成功,请重新登录！');
+                        $this->admin_json(0, '管理员(ID:'.$_POST['uid'].'admin_system_00008');
                     }
                 }
             }

@@ -35,7 +35,7 @@ for ($i = 0; $i < $num; $i++) {
         $logData[$key]['r_time']    =   $LastTime;
         $logData[$key]['port']      =   1;
         $logData[$key]['ip']        =   fun_ip_get();
-        $logData[$key]['remark']    =   '计划任务：职位自动刷新';
+        $logData[$key]['remark']    =   yun_at('common_06163');
     }
     $SqlCase .= 'END';
 

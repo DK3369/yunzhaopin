@@ -6,7 +6,7 @@ define('ROOT', dirname(__DIR__) . '/');
 $zh = include ROOT . 'data/lang/auto/zh_cn.php';
 $flip = array_flip($zh);
 
-$dirs = array('app/model', 'app/controller', 'member', 'admin/model', 'api/wxapp');
+$dirs = array('app/model', 'app/controller', 'member', 'admin/model', 'api/wxapp', 'wap/member', 'app/include');
 $issues = array();
 $total = 0;
 
@@ -64,6 +64,27 @@ echo "Total assignments: $total\n";
 echo "In pack but NOT yun_auto_t: " . count($issues['hardcoded'] ?? array()) . "\n";
 echo "NOT in pack: " . count($issues['missing_pack'] ?? array()) . "\n";
 echo "echo/die: " . count($issues['echo'] ?? array()) . "\n\n";
+
+$byDir = array();
+foreach (array('hardcoded', 'missing_pack', 'echo') as $type) {
+    foreach (($issues[$type] ?? array()) as $s => $rel) {
+        $parts = explode('/', $rel);
+        $bucket = $parts[0] . (isset($parts[1]) ? '/' . $parts[1] : '');
+        if (!isset($byDir[$bucket])) {
+            $byDir[$bucket] = array('hardcoded' => 0, 'missing_pack' => 0, 'echo' => 0);
+        }
+        $byDir[$bucket][$type]++;
+    }
+}
+arsort($byDir);
+echo "By directory:\n";
+foreach ($byDir as $dir => $counts) {
+    $sum = $counts['hardcoded'] + $counts['missing_pack'] + $counts['echo'];
+    if ($sum > 0) {
+        echo "  $dir: hardcoded={$counts['hardcoded']} missing={$counts['missing_pack']} echo={$counts['echo']}\n";
+    }
+}
+echo "\n";
 
 $i = 0;
 foreach (($issues['hardcoded'] ?? array()) as $s => $f) {

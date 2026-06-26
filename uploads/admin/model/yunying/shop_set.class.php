@@ -19,9 +19,9 @@ class shop_set_controller extends adminCommon{
                 // 后台上传logo后，重新生成缓存
                 $this->web_config();
             }
-            $this->render_json(0, '商品配置设置成功');
+            $this->render_json(0, yun_at('admin_01437'));
         }else{
-            $this->render_json(1, '请上传文件');
+            $this->render_json(1, yun_at('ajax_00015'));
         }
 
 	}

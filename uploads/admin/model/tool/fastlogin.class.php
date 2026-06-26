@@ -30,7 +30,7 @@ class fastlogin_controller extends adminCommon{
         
         $this->web_config();
         
-        $this->render_json(0,'快捷登录参数配置修改成功！');
+        $this->render_json(0,yun_at('admin_01463'));
     }
 
 }

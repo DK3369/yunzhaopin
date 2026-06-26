@@ -169,7 +169,7 @@
           {yun:}if $smarty.get.cycle{/yun}
           <li {yun:}if $smarty.get.order=='salary'{/yun}class="search_Filter_current"{yun:}/if{/yun}> <a href="{yun:}listurl m=part type=order v=salary{/yun}"><span>{yun:}t key='member_com_00017'{/yun}</span><i class="search_Filter_icon"></i></a> </li>
           {yun:}/if{/yun}
-          <li {yun:}if $smarty.get.order=='hits'{/yun}class="search_Filter_current"{yun:}/if{/yun}> <a href="{yun:}listurl m=part type=order v=hits{/yun}"><span>热度</span><i class="search_Filter_icon"></i></a> </li>
+          <li {yun:}if $smarty.get.order=='hits'{/yun}class="search_Filter_current"{yun:}/if{/yun}> <a href="{yun:}listurl m=part type=order v=hits{/yun}"><span>{yun:}t key='common_02472'{/yun}</span><i class="search_Filter_icon"></i></a> </li>
         </ul>
       </div>
     </div>
@@ -197,8 +197,8 @@
       <div class="seachno_left"> <img src="{yun:}$style{/yun}/images/search-no.gif" width="144" height="102"></div>
       <div class="listno-content" style="margin-left:30px;"> <strong>{yun:}t key='common_01912'{/yun}，没有找到满足条件的兼职</strong><br>
         <span> {yun:}t key='common_01910'{/yun}：<br>
-        1、适当减少已选择的条件<br>
-        2、适当删减或更改搜索关键字<br>
+        1、{yun:}t key='common_02286'{/yun}<br>
+        {yun:}t key='common_02266'{/yun}<br>
         </span> </div>
     </div>
     {yun:}/if{/yun}
@@ -242,7 +242,7 @@
     </div>
        {yun:}if $partkeyword{/yun}
     <div class="yun_part_tjbox">
-      <div class="yun_part_tjbox_h1"><i class="yun_part_tjbox_h1_n"></i><span class="yun_part_tjbox_h1_s">热门兼职</span></div>
+      <div class="yun_part_tjbox_h1"><i class="yun_part_tjbox_h1_n"></i><span class="yun_part_tjbox_h1_s">{yun:}t key='common_02473'{/yun}</span></div>
       <div class="yun_part_tjbox_tag">
          {yun:}key limit=30 type=2 item=keylist{/yun} 
 				  <a href="{yun:}listurl m=part type=keyword v=$keylist.key_title{/yun}">{yun:}$keylist.key_name{/yun}</a> 

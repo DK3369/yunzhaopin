@@ -21,7 +21,7 @@ class yingxiao_hbconfig_controller extends adminCommon
     function saveSet_action()
     {
         if (empty($_POST)) {
-            $this->render_json(1, '参数错误');
+            $this->render_json(1, yun_at('wap_com_00228'));
         }
 
         if ($_FILES['sy_haibao_web_logo']['tmp_name']) {
@@ -48,7 +48,7 @@ class yingxiao_hbconfig_controller extends adminCommon
 
         $this->web_config();
 
-        $this->admin_json(0, "海报设置保存成功");
+        $this->admin_json(0, 'admin_01450');
     }
 
     // 职位海报
@@ -95,7 +95,7 @@ class yingxiao_hbconfig_controller extends adminCommon
     function saveWhbConfig_action()
     {
         if (!isset($_POST["sy_job_hb"]) && !isset($_POST["sy_com_hb"]) && !isset($_POST["sy_invite_reg_hb"]) && !isset($_POST["sy_gongzhao_hb"])) {
-            $this->render_json(1, '参数错误');
+            $this->render_json(1, yun_at('wap_com_00228'));
         }
 
         unset($_POST['pytoken']);
@@ -146,14 +146,14 @@ class yingxiao_hbconfig_controller extends adminCommon
 
         $this->web_config();
 
-        $this->admin_json(0, '海报设置配置修改成功');
+        $this->admin_json(0, 'admin_01451');
     }
 
     // 删除海报
     function delWhb_action()
     {
         if (empty($_POST['id'])) {
-            $this->render_json(1, '参数错误');
+            $this->render_json(1, yun_at('wap_com_00228'));
         }
 
         $WhbM = $this->MODEL('whb');
@@ -162,7 +162,7 @@ class yingxiao_hbconfig_controller extends adminCommon
 
         if (!empty($whb)) {
             $WhbM->delWhb(array('id' => $whb['id']));
-            $this->admin_json(0, '海报（ID：' . $whb['id'] . '）删除成功');
+            $this->admin_json(0, '海报（ID：' . $whb['id'] . 'admin_01291');
         }
     }
 

@@ -12,7 +12,7 @@ class index_controller extends special_controller{
 		$specialM	=	$this->MODEL('special');
 		$info		=	$specialM->getSpecialOne(array("id"=>(int)$_GET['id'],"display"=>1));
         if (empty($info)){
-            $this->ACT_msg($this->config['sy_weburl'], '没有找到该专题招聘');
+            $this->ACT_msg($this->config['sy_weburl'], yun_at('wap_00520'));
         }
 		$this->yunset("info",$info);
 

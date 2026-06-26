@@ -4,21 +4,21 @@
 			<table class="tableVue">
 				<thead>
 					<tr align="left">
-						<th width="200">名称</th>
-						<th width="500">状态</th>
-						<th>说明</th>
+						<th width="200">{yun:}t key='member_com_00021'{/yun}</th>
+						<th width="500">{yun:}t key='member_user_00181'{/yun}</th>
+						<th>{yun:}t key='member_com_00207'{/yun}</th>
 					</tr>
 				</thead>
 				<tbody>
 					<tr>
 						<td colspan="3" style="padding:0px;">
-							<el-divider content-position="left">短信内容支持长短信，最多500个字，65个字按一条短信计费</el-divider>
+							<el-divider content-position="left">{yun:}t key='admin_tool_00474'{/yun}</el-divider>
 						</td>
 
 					</tr>
 					<tr>
 						<td>
-							<div class="TableTite">短信状态</div>
+							<div class="TableTite">{yun:}t key='admin_tool_00492'{/yun}</div>
 						</td>
 						<td>
 							<div class="TableButn">
@@ -37,7 +37,7 @@
 						</td>
 						<td>
 							<div class="TableInpt">
-								<el-input placeholder="请输入内容" v-model="sy_msg_appkey"></el-input>
+								<el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="sy_msg_appkey"></el-input>
 							</div>
 						</td>
 						<td>
@@ -53,7 +53,7 @@
 						</td>
 						<td>
 							<div class="TableInpt">
-								<el-input placeholder="请输入内容" v-model="sy_msg_appsecret"></el-input>
+								<el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="sy_msg_appsecret"></el-input>
 							</div>
 						</td>
 						<td>
@@ -65,12 +65,12 @@
 
 					<tr>
 						<td>
-							<div class="TableTite">单IP每日最大发送</div>
+							<div class="TableTite">{yun:}t key='admin_tool_00481'{/yun}</div>
 						</td>
 						<td>
 							<div class="TableInpt">
-								<el-input placeholder="请输入内容" v-model="ip_msgnum" @input="inputIntNumber($event, 'ip_msgnum')">
-									<template slot="append">条</template>
+								<el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="ip_msgnum" @input="inputIntNumber($event, 'ip_msgnum')">
+									<template slot="append">{yun:}t key='common_02088'{/yun}</template>
 								</el-input>
 							</div>
 						</td>
@@ -82,12 +82,12 @@
 					</tr>
 					<tr>
 						<td>
-							<div class="TableTite">单手机号每日最大发送</div>
+							<div class="TableTite">{yun:}t key='admin_tool_00480'{/yun}</div>
 						</td>
 						<td>
 							<div class="TableInpt">
-								<el-input placeholder="请输入内容" v-model="moblie_msgnum" @input="inputIntNumber($event, 'moblie_msgnum')">
-									<template slot="append">条</template>
+								<el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="moblie_msgnum" @input="inputIntNumber($event, 'moblie_msgnum')">
+									<template slot="append">{yun:}t key='common_02088'{/yun}</template>
 								</el-input>
 							</div>
 						</td>
@@ -99,12 +99,12 @@
 					</tr>
 					<tr>
 						<td>
-							<div class="TableTite">单手机号认证类短信发送频率</div>
+							<div class="TableTite">{yun:}t key='admin_tool_00478'{/yun}</div>
 						</td>
 						<td>
 							<div class="TableInpt">
-								<el-input placeholder="请输入内容" v-model="cert_msgtime" @input="inputIntNumber($event, 'cert_msgtime')">
-									<template slot="append">分钟</template>
+								<el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="cert_msgtime" @input="inputIntNumber($event, 'cert_msgtime')">
+									<template slot="append">{yun:}t key='wap_com_00247'{/yun}</template>
 								</el-input>
 							</div>
 						</td>
@@ -116,30 +116,30 @@
 					</tr>
 					<tr>
 						<td>
-							<div class="TableTite">短信验证码时效</div>
+							<div class="TableTite">{yun:}t key='admin_tool_00483'{/yun}</div>
 						</td>
 						<td>
 							<div class="TableInpt">
-								<el-input placeholder="请输入内容" v-model="moblie_codetime" @input="inputIntNumber($event, 'moblie_codetime')">
-									<template slot="append">分钟</template>
+								<el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="moblie_codetime" @input="inputIntNumber($event, 'moblie_codetime')">
+									<template slot="append">{yun:}t key='wap_com_00247'{/yun}</template>
 								</el-input>
 							</div>
 						</td>
 						<td>
 							<div class="TableShuom">
-								<span> 验证码类短信有效时长，建议大于两分钟。</span>
+								<span> {yun:}t key='admin_tool_00475'{/yun}</span>
 							</div>
 						</td>
 					</tr>
 
 					<tr>
 						<td>
-							<div class="TableTite">剩余短信数量</div>
+							<div class="TableTite">{yun:}t key='admin_00096'{/yun}</div>
 						</td>
 						<td>
 							<div class="TableInpt">
-								<el-input placeholder="请输入内容" v-model="rest_msgnum" :disabled="true">
-									<template slot="append">条</template>
+								<el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="rest_msgnum" :disabled="true">
+									<template slot="append">{yun:}t key='common_02088'{/yun}</template>
 								</el-input>
 							</div>
 						</td>
@@ -151,11 +151,11 @@
 					</tr>
 					<tr>
 						<td>
-							<div class="TableTite">购买短信</div>
+							<div class="TableTite">{yun:}t key='admin_tool_00490'{/yun}</div>
 						</td>
 						<td>
 							<div class="TableInpt">
-								<el-link type="primary" href="https://u.ov6.com/" target="_blank">购买地址</el-link>
+								<el-link type="primary" href="https://u.ov6.com/" target="_blank">{yun:}t key='admin_tool_00491'{/yun}</el-link>
 							</div>
 						</td>
 						<td>
@@ -166,7 +166,7 @@
 					</tr>
 					<tr>
 						<td colspan="3" style="padding:0px;">
-							<el-divider content-position="left">空号检测</el-divider>
+							<el-divider content-position="left">{yun:}t key='admin_tool_00487'{/yun}</el-divider>
 						</td>
 
 					</tr>
@@ -174,7 +174,7 @@
 
 					<tr>
 						<td>
-							<div class="TableTite">空号检测</div>
+							<div class="TableTite">{yun:}t key='admin_tool_00487'{/yun}</div>
 						</td>
 						<td>
 							<div class="TableButn">
@@ -183,7 +183,7 @@
 						</td>
 						<td>
 							<div class="TableShuom">
-								<span>无效手机号、空号禁止注册发送验证码</span>
+								<span>{yun:}t key='admin_tool_00476'{/yun}</span>
 							</div>
 						</td>
 					</tr>
@@ -193,14 +193,14 @@
 						</td>
 						<td>
 							<div class="TableInpt">
-								<el-input placeholder="请输入内容" v-model="sy_kh_appkey">
+								<el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="sy_kh_appkey">
 
 								</el-input>
 							</div>
 						</td>
 						<td>
 							<div class="TableShuom">
-								<span>如：smtp.qq.com</span>
+								<span>{yun:}t key='admin_tool_00479'{/yun}</span>
 							</div>
 						</td>
 					</tr>
@@ -210,7 +210,7 @@
 						</td>
 						<td>
 							<div class="TableInpt">
-								<el-input placeholder="请输入内容" v-model="sy_kh_appsecret">
+								<el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="sy_kh_appsecret">
 
 								</el-input>
 							</div>
@@ -224,29 +224,29 @@
 
 					<tr>
 						<td>
-							<div class="TableTite">手机归属地限制</div>
+							<div class="TableTite">{yun:}t key='admin_tool_00482'{/yun}</div>
 						</td>
 						<td>
 							<div class="TableInpt">
-								<el-input placeholder="请输入内容" v-model="sy_kh_city">
+								<el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="sy_kh_city">
 
 								</el-input>
 							</div>
 						</td>
 						<td>
 							<div class="TableShuom">
-								<span>归属地以外的手机号禁止注册,省市以 / 分隔，多个地区以英文逗号 , 分隔，如：北京,江苏/南京,浙江/杭州 , 留空则不限制</span>
+								<span>{yun:}t key='admin_tool_00473'{/yun}</span>
 							</div>
 						</td>
 					</tr>
 					<tr>
 						<td>
-							<div class="TableTite">剩余检测量</div>
+							<div class="TableTite">{yun:}t key='admin_tool_00484'{/yun}</div>
 						</td>
 						<td>
 							<div class="TableInpt">
-								<el-input placeholder="请输入内容" v-model="rest_khnum" :disabled="true">
-									<template slot="append">条</template>
+								<el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="rest_khnum" :disabled="true">
+									<template slot="append">{yun:}t key='common_02088'{/yun}</template>
 								</el-input>
 							</div>
 						</td>
@@ -258,7 +258,7 @@
 					</tr>
 					<tr>
 						<td colspan="3" style="padding:0px;">
-							<el-divider content-position="left">天眼查</el-divider>
+							<el-divider content-position="left">{yun:}t key='admin_tool_00488'{/yun}</el-divider>
 						</td>
 
 					</tr>
@@ -268,7 +268,7 @@
 						</td>
 						<td>
 							<div class="TableInpt">
-								<el-input placeholder="请输入内容" v-model="sy_tyc_appkey">
+								<el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="sy_tyc_appkey">
 
 								</el-input>
 							</div>
@@ -285,7 +285,7 @@
 						</td>
 						<td>
 							<div class="TableInpt">
-								<el-input placeholder="请输入内容" v-model="sy_tyc_appsecret">
+								<el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="sy_tyc_appsecret">
 
 								</el-input>
 							</div>
@@ -298,12 +298,12 @@
 					</tr>
 					<tr>
 						<td>
-							<div class="TableTite">天眼查数量</div>
+							<div class="TableTite">{yun:}t key='admin_tool_00485'{/yun}</div>
 						</td>
 						<td>
 							<div class="TableInpt">
-								<el-input placeholder="请输入内容" v-model="rest_businessnum" :disabled="true">
-									<template slot="append">条</template>
+								<el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="rest_businessnum" :disabled="true">
+									<template slot="append">{yun:}t key='common_02088'{/yun}</template>
 								</el-input>
 							</div>
 						</td>
@@ -315,11 +315,11 @@
 					</tr>
 					<tr>
 						<td>
-							<div class="TableTite">购买天眼查</div>
+							<div class="TableTite">{yun:}t key='admin_tool_00486'{/yun}</div>
 						</td>
 						<td>
 							<div class="TableInpt">
-								<el-link type="primary" href="https://u.ov6.com/" target="_blank">购买地址</el-link>
+								<el-link type="primary" href="https://u.ov6.com/" target="_blank">{yun:}t key='admin_tool_00491'{/yun}</el-link>
 							</div>
 						</td>
 						<td>
@@ -334,7 +334,7 @@
 			</table>
 		</div>
 		<div class="setBasicButn" style="border: none;">
-			<el-button type="primary" :loading='post_loading' size="medium" @click="postSet">提交</el-button>
+			<el-button type="primary" :loading='post_loading' size="medium" @click="postSet">{yun:}t key='common.submit'{/yun}</el-button>
 		</div>
 
 	</div>
@@ -416,7 +416,7 @@
                 
                 if (parseInt(that.moblie_codetime) < 2) {
 
-                    message.warning(window.yunAdminT('短信验证时效，建议大于两分钟！'));
+                    message.warning(window.yunAdminT("{yun:}t key='admin_tool_00477'{/yun}"));
                     return false;
                     
                 }

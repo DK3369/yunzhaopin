@@ -239,9 +239,9 @@ class integral_model extends model{
 		    $signin = true;
 		}
 
-		$question	=	$this->max_time('发布问题',$data['uid'],$data['usertype']);
-		$answer		=	$this->max_time('回答问题',$data['uid'],$data['usertype']);
-		$answerpl	=	$this->max_time('评论问答',$data['uid'],$data['usertype']); 
+		$question	=	$this->max_time('wap_user_00112',$data['uid'],$data['usertype']);
+		$answer		=	$this->max_time('wap_user_00113',$data['uid'],$data['usertype']);
+		$answerpl	=	$this->max_time('common_06374',$data['uid'],$data['usertype']); 
 
 		$statusList = array(
 			'baseInfo'		=> 	$baseInfo,

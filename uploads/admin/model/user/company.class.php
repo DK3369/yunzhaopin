@@ -17,10 +17,10 @@ class company_controller extends adminCommon
         $CacheList = $cacheM->GetCache(array('city'));
         $setArr	= array('city_name' => $CacheList['city_name']);
         $this->yunset($setArr);
-        $status = array('1'=>'已审核', '2'=>'已锁定', '3'=>'未通过', '4'=>'未审核','5'=>'已暂停');
-        $edtime = array('1'=>'7天内', '2'=>'一个月内', '3'=>'半年内', '4'=>'一年内', '5'=>'已到期','6'=>'当月');
-        $isrec = array('1'=>'是', '2'=>'否', '3'=>'已到期');
-        $isgw = array('-1'=>'已分配', '-2'=>'未分配');
+        $status = array('1'=>'wap_user_00165', '2'=>'admin_user_00138', '3'=>'wap_user_00167', '4'=>'wap_user_00166','5'=>'admin_user_00184');
+        $edtime = array('1'=>'admin_tool_00622', '2'=>'common_01659', '3'=>'common_01897', '4'=>'common_01875', '5'=>'wap_com_00319','6'=>'common_01985');
+        $isrec = array('1'=>'是', '2'=>'否', '3'=>'wap_com_00319');
+        $isgw = array('-1'=>'admin_01303', '-2'=>'admin_user_company_00153');
         //顾问
         $adminM = $this->MODEL('admin');
         if($this->config['did']>0){
@@ -35,15 +35,15 @@ class company_controller extends adminCommon
         }
 
         $search_list = array();
-        $search_list['rating'] = array('name' => '会员等级', 'value' => $ratingarr);
-        $search_list['time'] = array('name' => '到期时间', 'value' => $edtime);
-        $search_list['status'] = array('name' => '审核状态', 'value' => $status);
-        $search_list['source'] = array('name' => '数据来源', 'value' => $source);
-        $search_list['rec'] = array('name' => '知名企业', 'value' => $isrec);
-        $search_list['gw'] = array('name' => '企业顾问', 'value' => $isgw);
-        $search_list['has_job'] = array('name' => '拥有职位', 'value' => array('1' => '是', '2' => '否'));
-        $search_list['fact_status'] = array('name' => '实地核验', 'value' => array('1' => '是', '2' => '否'));
-        $search_list['map_status'] = array('name' => '设置地图', 'value' => array('1' => '是', '2' => '否'));
+        $search_list['rating'] = array('name' => 'admin_user_company_00018', 'value' => $ratingarr);
+        $search_list['time'] = array('name' => 'admin_user_company_00052', 'value' => $edtime);
+        $search_list['status'] = array('name' => 'wap_com_00406', 'value' => $status);
+        $search_list['source'] = array('name' => 'admin_yunying_00139', 'value' => $source);
+        $search_list['rec'] = array('name' => 'admin_user_company_00145', 'value' => $isrec);
+        $search_list['gw'] = array('name' => 'admin_01231', 'value' => $isgw);
+        $search_list['has_job'] = array('name' => 'admin_user_00045', 'value' => array('1' => '是', '2' => '否'));
+        $search_list['fact_status'] = array('name' => 'wap_00274', 'value' => array('1' => '是', '2' => '否'));
+        $search_list['map_status'] = array('name' => 'member_com_00204', 'value' => array('1' => '是', '2' => '否'));
         return array('source' => $source, 'ratingarr' => $ratingarr, 'search_list' => $search_list);
     }
 
@@ -432,9 +432,9 @@ class company_controller extends adminCommon
         $noticeM = $this->MODEL('notice');
         if ($_POST['submit']) {
             if ($_POST['username'] == '' || mb_strlen($_POST['username']) < 2 || mb_strlen($_POST['username']) > 16) {
-                $this->render_json(1, '用户名格式错误');
+                $this->render_json(1, yun_at('admin_user_00084'));
             } elseif ($_POST['password'] == '' || mb_strlen($_POST['password']) < 6 || mb_strlen($_POST['password']) > 20) {
-                $this->render_json(1, '密码格式错误');
+                $this->render_json(1, yun_at('admin_user_00085'));
             }
             $mPost = array(
                 'username' => trim($_POST['username']),
@@ -451,7 +451,7 @@ class company_controller extends adminCommon
                 $this->obj->uc_open();
                 $user = uc_get_user($_POST['username']);
                 if(is_array($user)){
-                    $this->render_json(1, '该会员已经存在！');
+                    $this->render_json(1, yun_at('admin_user_00036'));
                 }
             }
             $time = time();
@@ -461,17 +461,17 @@ class company_controller extends adminCommon
                 $uid = uc_user_register($_POST['username'], $pass, $_POST['email']);
                 if($uid < 0){
                     switch($uid){
-                        case '-1' : $data['msg'] = '用户名不合法!';
+                        case '-1' : $data['msg'] = yun_at('common_01387');
                             break;
-                        case '-2' : $data['msg'] = '包含不允许注册的词语!';
+                        case '-2' : $data['msg'] = yun_at('common_00858');
                             break;
-                        case '-3' : $data['msg'] = '用户名已经存在!';
+                        case '-3' : $data['msg'] = yun_at('common_01288');
                             break;
-                        case '-4' : $data['msg'] = 'Email 格式有误!';
+                        case '-4' : $data['msg'] = yun_at('common_00834');
                             break;
-                        case '-5' : $data['msg'] = 'Email 不允许注册!';
+                        case '-5' : $data['msg'] = yun_at('common_00762');
                             break;
-                        case '-6' : $data['msg'] = '该 Email 已经被注册!';
+                        case '-6' : $data['msg'] = yun_at('common_00673');
                             break;
                     }
                     $this->render_json(1, $data['msg']);
@@ -537,7 +537,7 @@ class company_controller extends adminCommon
                 }
                 $this->admin_json(0, '企业会员(ID:'.$nid.')添加成功！');
             }else{
-                $this->render_json(1, '企业会员添加失败，请重试！');
+                $this->render_json(1, yun_at('admin_01304'));
             }
         }
         $rt['com_rating'] = $this->config['com_rating'];
@@ -745,7 +745,7 @@ class company_controller extends adminCommon
         $_POST = $this->post_trim($_POST);
 
         if (empty($_POST['uid']) || empty($_POST['username']) || empty($_POST['status'])) {
-            $this->render_json(1, '参数错误');
+            $this->render_json(1, yun_at('wap_com_00228'));
         }
 
         $userInfoM = $this->MODEL('userinfo');
@@ -765,9 +765,9 @@ class company_controller extends adminCommon
         } else {
             $return = $userInfoM->upInfo(array('uid' => $uid), $data);
             if ($return) {
-                $this->admin_json(0, '账户信息修改成功');
+                $this->admin_json(0, 'admin_user_00083');
             } else {
-                $this->render_json(1, '账户信息修改失败');
+                $this->render_json(1, yun_at('admin_user_00082'));
             }
         }
     }
@@ -897,7 +897,7 @@ class company_controller extends adminCommon
             if($rating['vip_etime']>0){
                 $rating['vipetime'] = date('Y-m-d',$rating['vip_etime']);
             }else{
-                $rating['vipetime'] = '不限';
+                $rating['vipetime'] = yun_at('common_01936');
             }
             $rating['rating'] = intval($rating['rating'])>0?$rating['rating']:'';
             $this->render_json(0, '', $rating);
@@ -918,7 +918,7 @@ class company_controller extends adminCommon
                 $rating['vipetime'] = date('Y-m-d',$rating['vip_etime']);
             }else{
                 $rating['oldetime'] = 0;
-                $rating['vipetime'] = '不限';
+                $rating['vipetime'] = yun_at('common_01936');
             }
 
             if($rating['max_time'] > 0){
@@ -926,7 +926,7 @@ class company_controller extends adminCommon
                 $rating['max_time_n'] = date('Y-m-d',$rating['max_time']);
             }else{
                 $rating['max_time'] = 0;
-                $rating['max_time_n'] = '不限';
+                $rating['max_time_n'] = yun_at('common_01936');
             }
 
             $this->render_json(0, '', $rating);
@@ -944,7 +944,7 @@ class company_controller extends adminCommon
         $ratingM = $this->MODEL('rating');
         $rating_info = $ratingM->getInfo(array('id' => $rid));
         if (empty($rid)) {
-            $this->render_json(1, '请选择会员等级！');
+            $this->render_json(1, yun_at('admin_01305'));
         } else if ($uid) {
             $statisM = $this->MODEL('statis');
             $statis = $statisM->getInfo($uid, array('usertype' => 2));
@@ -953,7 +953,7 @@ class company_controller extends adminCommon
 			$company	=	$companyM->getInfo($uid);
 
 			if ($company['r_status'] == '4'){
-                $this->render_json(8, '请先解除暂停，再进行套餐调整！');
+                $this->render_json(8, yun_at('admin_user_00024'));
 			}
 
             if($rating_info['service_time'] == 0){
@@ -968,7 +968,7 @@ class company_controller extends adminCommon
             }
 
             if($_POST['vip_etime']>0 && $_POST['max_time']>0 && $_POST['max_time']<$_POST['vip_etime']){
-                $this->render_json(1, '最长有效期不能短于会员到期时间');
+                $this->render_json(1, yun_at('admin_user_company_00081'));
             }
 
             $data = array();
@@ -979,31 +979,31 @@ class company_controller extends adminCommon
                     $value = $value ? $value : 0;
                     $data[$key] = $value;
                     if($key == 'integral' && $value != $statis[$key]){
-                        $msg[] = " 会员".$this->config['integral_pricename']."：".$statis[$key]." -> ".$value;
+                        $msg[] = 'common_01944'.$this->config['integral_pricename']."：".$statis[$key]." -> ".$value;
                     }else if($key == 'vip_etime' && $value != $statis[$key]){
-                        $vEtime	= $value ? date('Y-m-d', $value) : '不限';
-                        $msg[] = " 会员到期时间：".$statis['vip_etime_n']." -> ".$vEtime;
+                        $vEtime	= $value ? date('Y-m-d', $value) : WapDbEnum::UNLIMITED;
+                        $msg[] = 'common_06411'.$statis['vip_etime_n']." -> ".$vEtime;
                     }else if($key == 'max_time' && $value != $statis[$key]){
-                        $maxtime = $value ? date('Y-m-d', $value) : '不限';
-                        $msg[] = " 会员最长有效期：".$statis['max_time_n']." -> ".$maxtime;
+                        $maxtime = $value ? date('Y-m-d', $value) : WapDbEnum::UNLIMITED;
+                        $msg[] = 'admin_user_00034'.$statis['max_time_n']." -> ".$maxtime;
                     }else if($key == 'suspend_num' && $value != $statis[$key]){
-                        $msg[] = " 可暂停次数：".$statis[$key]." -> ".$value;
+                        $msg[] = 'admin_01306'.$statis[$key]." -> ".$value;
                     }else if($key == 'job_num' && $value != $statis[$key]){
-                        $msg[] = " 发布职位数：".$statis[$key]." -> ".$value;
+                        $msg[] = 'admin_user_00038'.$statis[$key]." -> ".$value;
                     }else if($key == 'breakjob_num' && $value != $statis[$key]){
-                        $msg[] = " 刷新职位数：".$statis[$key]." -> ".$value;
+                        $msg[] = 'common_06408'.$statis[$key]." -> ".$value;
                     }else if($key == 'down_resume' && $value != $statis[$key]){
-                        $msg[] = " 下载简历数：".$statis[$key]." -> ".$value;
+                        $msg[] = 'common_06409'.$statis[$key]." -> ".$value;
                     }else if($key == 'invite_resume' && $value != $statis[$key]){
-                        $msg[] = " 邀请面试数：".$statis[$key]." -> ".$value;
+                        $msg[] = 'common_06410'.$statis[$key]." -> ".$value;
                     }else if($key == 'zph_num' && $value != $statis[$key]){
-                        $msg[] = " 招聘会报名：".$statis[$key]." -> ".$value;
+                        $msg[] = 'admin_user_00041'.$statis[$key]." -> ".$value;
                     }else if($key == 'top_num' && $value != $statis[$key]){
-                        $msg[] = " 职位置顶数：".$statis[$key]." -> ".$value;
+                        $msg[] = 'admin_user_00044'.$statis[$key]." -> ".$value;
                     }else if($key == 'urgent_num' && $value != $statis[$key]){
-                        $msg[] = " 紧急招聘数：".$statis[$key]." -> ".$value;
+                        $msg[] = 'admin_user_00042'.$statis[$key]." -> ".$value;
                     }else if($key == 'rec_num' && $value != $statis[$key]){
-                        $msg[] = " 职位推荐数：".$statis[$key]." -> ".$value;
+                        $msg[] = 'admin_user_00043'.$statis[$key]." -> ".$value;
                     }
                 }
             }
@@ -1015,7 +1015,7 @@ class company_controller extends adminCommon
 
             if ($_POST['hotjob']) {
                 if (empty($company['name'])) {
-                    $this->render_json(1, '请先完善企业资料！');
+                    $this->render_json(1, yun_at('admin_user_company_00099'));
                 }
             }
             if ($statis['rating'] != $_POST['rating'] || ($statis['rating'] == $_POST['rating'] && !isVip($statis['vip_etime']) && (int) $_POST['addday'] == 0)) {
@@ -1028,8 +1028,8 @@ class company_controller extends adminCommon
                     }
                 }
                 $statisM->upInfo($data, array('uid' => $uid, 'usertype' => 2, 'adminedit' => '1', 'info' => $rating_info));
-                $sName = !isVip($statis['vip_etime']) ? '过期会员' : $statis['rating_name'];
-                $mContent = '会员等级：'.$sName.' -> '.$rating_info['name'];
+                $sName = !isVip($statis['vip_etime']) ? 'admin_user_company_00297' : $statis['rating_name'];
+                $mContent = 'admin_user_company_00122'.$sName.' -> '.$rating_info['name'];
                 $msgContent	= $msgContent ? $mContent.'，'.$msgContent : $mContent;
             } else {
                 unset($data['rating']);
@@ -1079,13 +1079,13 @@ class company_controller extends adminCommon
                 $companyData['hottime'] = 0;
             }
             $companyM->upInfo($uid, '', $companyData);
-            $content = '企业列表修改会员等级(ID:' . $uid . ')；';
-            $logContent = isset($msgContent) ? $content.$msgContent : $content.'未修改会员等级、套餐';
+            $content = 'admin_01302' . $uid . ')；';
+            $logContent = isset($msgContent) ? $content.$msgContent : $content.'admin_user_00032';
             $logM =	$this->MODEL('log');
             $logM->addAdminLog($logContent);
-            $this->admin_json(0, '企业(ID:' . $uid . ')修改成功！');
+            $this->admin_json(0, 'common_01452' . $uid . ')修改成功！');
         } else {
-            $this->render_json(1, '非法操作！');
+            $this->render_json(1, yun_at('model_00001'));
         }
     }
     function setupcom_action(){
@@ -1111,7 +1111,7 @@ class company_controller extends adminCommon
         $uids = pylode(',', $uid);
         $crmUser = $adminM->getAdminUser(array( 'uid' => $gid ));
         if (!is_array($crmUser)) {
-            $this->render_json(1, '请选择分配顾问！');
+            $this->render_json(1, yun_at('admin_01307'));
         }
         $gData = array('crm_uid' => $gid, 'crm_time' => time(), 'crm_source' => 5);
         $whereData = array('crm_uid' => $gid, 'uid' => $uids);
@@ -1143,7 +1143,7 @@ class company_controller extends adminCommon
             }
         }
         $logM = $this->MODEL('log');
-        $content = '管理员'.$_SESSION['ausername'].'登录企业账户(ID:'.$member['uid'].')';
+        $content = 'wap_user_00361'.$_SESSION['ausername'].'登录企业账户(ID:'.$member['uid'].')';
         $logM->addAdminLog($content);
         $this->render_json(0, '', $this->config['sy_weburl'].'/member/'.$url);
     }
@@ -1193,7 +1193,7 @@ class company_controller extends adminCommon
             !is_null($_COOKIE['companyXls']) && $this->cookie->SetCookie("companyXls",true,time() - 86400);// 手动控制上一次下载成功的cookie过期
             $this->render_json(0, '', array('field' => $_SESSION['xlsFields']));
         } else {
-            $this->render_json(1, '暂无符合条件的企业数据！');
+            $this->render_json(1, yun_at('admin_01308'));
         }
     }
 
@@ -1202,29 +1202,29 @@ class company_controller extends adminCommon
     {
         // rtype 开头 简历字段 type 开头 个人信息字段
         $fieldsList = [
-            'uid' => '企业UID',
-            'name' => '企业名称',
-            'hy' => '从事行业',
-            'pr' => '企业性质',
-            'rating' => '会员等级',
+            'uid' => 'admin_user_company_00120',
+            'name' => 'wap_com_00157',
+            'hy' => 'wap_user_00010',
+            'pr' => 'wap_com_00159',
+            'rating' => 'admin_user_company_00018',
             'provinceid' => '省',
             'cityid' => '市',
-            'mun' => '规模',
-            'sdate' => '创办时间',
-            'money' => '注册资金',
-            'address' => '公司地址',
-            'linkman' => '联系人',
-            'linkqq' => '所属职位',
-            'type_email' => '联系QQ',
-            'linkphone' => '固定电话',
-            'linktel' => '联系手机',
-            'linkmail' => '邮件',
-            'website' => '网址',
-            'rec' => '知名企业',
-            'lastupdate' => '更新时间',
-            'vip_stime' => '会员开始时间',
-            'vip_etime' => '会员到期时间',
-            'crm_salesman' => '当前业务员',
+            'mun' => 'company_00024',
+            'sdate' => 'wap_com_00169',
+            'money' => 'wap_com_00171',
+            'address' => 'wap_00040',
+            'linkman' => 'wap_01431',
+            'linkqq' => 'admin_user_company_00139',
+            'type_email' => 'wap_com_00174',
+            'linkphone' => 'wap_com_00014',
+            'linktel' => 'wap_00109',
+            'linkmail' => 'member_com_00018',
+            'website' => 'admin_user_company_00160',
+            'rec' => 'admin_user_company_00145',
+            'lastupdate' => 'wap_00326',
+            'vip_stime' => 'admin_00687',
+            'vip_etime' => 'admin_00661',
+            'crm_salesman' => 'admin_00688',
         ];
         return $fieldsList;
     }
@@ -1292,12 +1292,12 @@ class company_controller extends adminCommon
                     } else if ($tval == 'money') {
                         $text = $val['money'];
                         if ($val['moneytype'] == 1) {
-                            $text .= '人民币';
+                            $text .= 'wap_com_00177';
                         } else if ($val['moneytype'] == 2) {
-                            $text .= '美元';
+                            $text .= 'wap_com_00178';
                         }
                     } else if ($tval == 'rec') {
-                        $text = $val['rec'] == 1 ? '是' : '否';
+                        $text = $val['rec'] == 1 ? yun_at('common_02085') : yun_at('common_02063');
                     } else {
                         $text = $val[$tval] ? $val[$tval] : '';
                     }
@@ -1316,11 +1316,11 @@ class company_controller extends adminCommon
             ob_end_clean();
             $data = [
                 'file' => base64_encode($xlsData),
-                'file_name' => '公司信息' . date('YmdHis') . '.xlsx'
+                'file_name' => 'wap_00270' . date('YmdHis') . '.xlsx'
             ];
-            return $this->admin_json(0, "导出公司信息", $data);
+            return $this->admin_json(0, 'admin_user_00039', $data);
         } else {
-            $this->render_json(1, '暂无符合条件的企业数据');
+            $this->render_json(1, yun_at('admin_user_00029'));
         }
     }
 
@@ -1331,12 +1331,12 @@ class company_controller extends adminCommon
         $uid = trim($_POST['uid']);
         $did = intval($_POST['did']);
         if(empty($uid)){
-            $this->render_json(0, '参数不全请重试！');
+            $this->render_json(0, yun_at('common_01236'));
         }
         $uids =	@explode(',', $_POST['uid']);
         $uid = pylode(',', $uids);
         if(empty($uid)){
-            $this->render_json(0, '请正确选择需分配用户！');
+            $this->render_json(0, yun_at('admin_user_00030'));
         }
         $siteM = $this->MODEL('site');
         $didData = array('did' => $did);
@@ -1358,7 +1358,7 @@ class company_controller extends adminCommon
         $siteM->updDid(array('down_resume'), array('comid' => array('in', $uid), 'usertype' => 2), $didData);
         $siteM->updDid(array('ad_order'), array('comid' => array('in', $uid)), $didData);
         $siteM->updDid($Table,array('uid' => array('in', $uid)), $didData);
-        $this->admin_json(0, '会员(ID:'.$_POST['uid'].')分配站点成功！');
+        $this->admin_json(0, 'common_01459'.$_POST['uid'].')分配站点成功！');
     }
 
     /**
@@ -1441,7 +1441,7 @@ class company_controller extends adminCommon
     function reset_companypassword_action(){
         $userinfoM = $this->MODEL('userinfo');
         $userinfoM->upInfo(array('uid' => intval($_POST['uid'])), array('password' => '123456'));
-        $this->admin_json(0, '会员(ID:' . $_POST['uid'] . ')重置密码成功');
+        $this->admin_json(0, 'common_01459' . $_POST['uid'] . ')重置密码成功');
     }
 
     /**
@@ -1490,9 +1490,9 @@ class company_controller extends adminCommon
         if ($nid){
             $sysmsgM = $this->MODEL('sysmsg');
             $sysmsgM->addInfo(array('uid' => $uid, 'usertype'=>2, 'content' => '管理员为您设置企业模板：<a href="comtpl,'.$uid.'">'.trim($tpl['url'].'</a>')));
-            $this->admin_json(0, '设置成功！');
+            $this->admin_json(0, 'model_00011');
         }else{
-            $this->render_json(1, '设置失败！');
+            $this->render_json(1, yun_at('wap_01715'));
         }
     }
 
@@ -1542,9 +1542,9 @@ class company_controller extends adminCommon
         $CompanyM = $this->MODEL('company');
         $UserinfoM = $this->MODEL('userinfo');
         if ($_POST['comemail'] == "") {
-            $this->render_json(1, "请填写邮箱");
+            $this->render_json(1, yun_at('wap_01119'));
         } elseif (CheckRegEmail($_POST['comemail']) == false) {
-            $this->render_json(1, "邮箱格式错误");
+            $this->render_json(1, yun_at('wap_js_00120'));
         }
         $uid = $_POST['uid'];
         $status = $_POST['estatus'];
@@ -1552,7 +1552,7 @@ class company_controller extends adminCommon
         $comInfo = $CompanyM->getInfo($uid, array('field' => '`linkmail`, `email_status`'));
         if ($comInfo) {
             if ($comInfo['linkmail'] == $email && $comInfo['email_status'] == 1){
-                $this->render_json(1, "邮箱未变更，无需调整！");
+                $this->render_json(1, yun_at('admin_user_00031'));
             }
             $data = array('email_status' => $status, 'linkmail' => $email);
             $nid = $CompanyM->upInfo($uid, '', $data);
@@ -1564,17 +1564,17 @@ class company_controller extends adminCommon
                 $this->obj->update_once('resume', array('email' => '', 'email_status' => 0), array('uid' => array('<>', $uid), 'email' => $email));
                 $this->obj->update_once('lt_info', array('email' => '', 'email_status' => 0), array('uid' => array('<>', $uid), 'email' => $email));
                 $this->obj->update_once('px_train', array('linkmail' => '', 'email_status' => 0), array('uid' => array('<>', $uid), 'linkmail' => $email));
-                $msg = '新邮箱：' . $email;
+                $msg = 'admin_01286' . $email;
                 if (!empty($comInfo['linkmail']) && $comInfo['linkmail'] != $email) {
-                    $msg .= '，原邮箱：' . $comInfo['linkmail'];
+                    $msg .= 'admin_user_00091' . $comInfo['linkmail'];
                 }
-                $this->MODEL('log')->addAdminLog("企业会员(ID".$_POST['uid'].")认证邮箱【".$email."】");
+                $this->MODEL('log')->addAdminLog('model_00027'.$_POST['uid'].")认证邮箱【".$email."】");
                 $this->admin_json(0, "邮箱认证成功(用户ID：" . $uid . "，" . $msg . ")");
             } else {
-                $this->render_json(1, "邮箱认证失败");
+                $this->render_json(1, yun_at('admin_user_00089'));
             }
         } else {
-            $this->render_json(1, "当前数据错误");
+            $this->render_json(1, yun_at('admin_user_00086'));
         }
     }
 
@@ -1587,9 +1587,9 @@ class company_controller extends adminCommon
         $CompanyM = $this->MODEL('company');
         $UserinfoM = $this->MODEL('userinfo');
         if ($_POST['comlinktel'] == "") {
-            $this->render_json(1, "请填写手机号码");
+            $this->render_json(1, yun_at('wap_user_00274'));
         } elseif (CheckMobile($_POST['comlinktel']) == false) {
-            $this->render_json(1, "手机号码格式错误");
+            $this->render_json(1, yun_at('wap_user_00039'));
         }
         $uid = $_POST['uid'];
         $status = $_POST['mstatus'];
@@ -1597,29 +1597,29 @@ class company_controller extends adminCommon
         $comInfo = $CompanyM->getInfo($uid, array('field' => '`linktel`,`moblie_status`'));
         if (!empty($comInfo)) {
             if ($comInfo['linktel'] == $moblie && $comInfo['moblie_status'] == 1){
-                $this->render_json(1, "手机号未变更，无需调整！");
+                $this->render_json(1, yun_at('admin_user_00025'));
             }
             $data = array('moblie_status' => $status, 'linktel' => $moblie);
             $nid = $CompanyM->upInfo($uid, '', $data);
             if ($nid) {
                 $mobliedata = array('moblie' => $moblie, 'moblie_status' => $status);
-                $msg = '新手机号：' . $moblie;
+                $msg = 'admin_01287' . $moblie;
                 if (!empty($comInfo['linktel']) && $comInfo['linktel'] != $moblie) {
-                    $msg .= '，原手机号：' . $comInfo['linktel'];
+                    $msg .= 'admin_user_00090' . $comInfo['linktel'];
                 }
                 // 获取用户信息，用来判断旧手机号和用户名是否一致
                 $member =   $UserinfoM->getInfo(array('uid' => $uid), array('field'=>'username,moblie'));
                 if ($member['username'] == $member['moblie']) {
 
                     $mobliedata['username'] = $moblie;
-                    $msg .= '，同步调整用户名为'.$moblie;
+                    $msg .= 'admin_user_00081'.$moblie;
                 }
                 // 有账号的用户名与新手机号一致的，将用户名改成新手机号
                 $omb = $UserinfoM->getInfo(array('username' => $moblie), array('field'=>'uid'));
                 if (!empty($omb)) {
                     // 如果现有数据中，存在用户名是这个手机号的，要修改
                     $UserinfoM->upInfo(array('uid' => $omb['uid']), array('username' => $moblie . '_s'));
-                    $logDetail = '账号修改：账号（UID：'.$uid.'）认证手机号，因本账号用户名与该手机号相同，调整本账号（ID：'.$omb['uid'].'）用户名（'.$moblie.' → '.$moblie.'_s）';
+                    $logDetail = 'admin_user_00077'.$uid.'admin_user_00075'.$omb['uid'].'common_06620'.$moblie.' → '.$moblie.'_s）';
                     $logM = $this->MODEL('log');
                     $logM -> addAdminLog($logDetail);
                 }
@@ -1631,10 +1631,10 @@ class company_controller extends adminCommon
                 $this->obj->update_once('pr_train', array('linktel' => '', 'moblie_status' => 0), array('uid' => array('<>', $uid), 'linktel' => $moblie));
                 $this->admin_json(0, "手机认证成功(用户ID：" . $uid . "，" . $msg . ")");
             } else {
-                $this->render_json(1, "手机认证失败");
+                $this->render_json(1, yun_at('admin_user_00087'));
             }
         } else {
-            $this->render_json(1, "当前数据错误");
+            $this->render_json(1, yun_at('admin_user_00086'));
         }
     }
 
@@ -1648,20 +1648,20 @@ class company_controller extends adminCommon
         $status = $_POST['plstatus'];
         $msg = array();
         if ($_POST['comname_email'] == "" && $_POST['comname_moblie'] == "" && $_POST['comname_yyzz'] == "") {
-            $this->render_json(1, "请选择认证类型");
+            $this->render_json(1, yun_at('admin_01288'));
         }
         if ($_POST['uid'] == "") {
-            $this->render_json(1, "非法操作");
+            $this->render_json(1, yun_at('member_com_00320'));
         }
         if ($status == "") {
-            $this->render_json(1, "请选择认证状态");
+            $this->render_json(1, yun_at('admin_01289'));
         }
         if ($_POST['comname_email'] || $_POST['comname_moblie']) {
             $where['uid'] = array('in', pylode(',', $_POST['uid']));
             $rows = $CompanyM->getChCompanyList($where, array('field' => '`uid`,`linktel`,`linkmail`,`moblie_status`,`email_status`'));
             if (is_array($rows) && $rows) {
                 if ($_POST['comname_email']) {
-                    array_push($msg, '邮箱');
+                    array_push($msg, 'member_user_00282');
                     foreach ($rows as $val) {
                         if ($val['linkmail'] || $val['email_status'] == 1) {
                             $emailuid[] = $val['uid'];
@@ -1673,7 +1673,7 @@ class company_controller extends adminCommon
                     $CompanyM->upInfo($emailuid, '', $emaildata);
                 }
                 if ($_POST['comname_moblie']) {
-                    array_push($msg, '手机');
+                    array_push($msg, 'member_user_00163');
                     foreach ($rows as $val) {
                         if ($val['linktel'] || $val['moblie_status'] == 1) {
                             $moblieuid[] = $val['uid'];
@@ -1688,7 +1688,7 @@ class company_controller extends adminCommon
         }
         if ($_POST['comname_yyzz']) {
             //企业资质
-            array_push($msg, '企业资质');
+            array_push($msg, 'wap_com_00075');
             if ($status != 0) {
                 //已认证
                 $yyzzwhere['uid'] = array('in', pylode(',', $_POST['uid']));
@@ -1721,8 +1721,8 @@ class company_controller extends adminCommon
             $checwhere['type'] = 3;
             $CompanyM->upCertInfo($checwhere, $checkdata, array('utype' => 'admin'));
         }
-        $ty = $status = 1 ? '已认证' : '待认证';
-        $this->admin_json(0, '(企业列表)' . implode(',', $msg) . '批量设置' . $ty . '成功(ID:' . pylode(',', $_POST['uid']) . ')');
+        $ty = $status = 1 ? yun_at('wap_user_00128') : yun_at('admin_user_00300');
+        $this->admin_json(0, '(企业列表)' . implode(',', $msg) . 'admin_user_00092' . $ty . 'common_01499' . pylode(',', $_POST['uid']) . ')');
     }
 
     /**
@@ -1733,7 +1733,7 @@ class company_controller extends adminCommon
         $companyorder = $this->MODEL('companyorder');
         $companyM = $this->MODEL('company');
         if (empty($_POST['r_status'])) {
-            $this->render_json(1, '请选审核状态！');
+            $this->render_json(1, yun_at('admin_user_00037'));
         }else{
             $status = intval($_POST['r_status']);
         }
@@ -1747,7 +1747,7 @@ class company_controller extends adminCommon
                 if (!empty($uid) && is_array($uid)) {
                     $comids = @explode(',', $uid);
                     $paywhere['com_id'] = array('in', pylode(',', $comids));
-                    $paywhere['pay_remark'] = '认证企业资质';
+                    $paywhere['pay_remark'] = yun_at('wap_com_00181');
                     $companypay = $companyorder->getPayList($paywhere, array('field' => 'com_id'));
                     foreach ($companypay as $k => $v) {
                         if (in_array($v, $uid)) {
@@ -1755,14 +1755,14 @@ class company_controller extends adminCommon
                         }
                     }
                     foreach ($uid as $v) {
-                        $this->MODEL('integral')->invtalCheck($v, 2, 'integral_comcert', '认证企业资质', 21);
+                        $this->MODEL('integral')->invtalCheck($v, 2, 'integral_comcert', 'wap_com_00181', 21);
                     }
                 } elseif ($uid != '') {
                     $paywhere['com_id'] = $uid;
-                    $paywhere['pay_remark'] = '认证企业资质';
+                    $paywhere['pay_remark'] = yun_at('wap_com_00181');
                     $num = $companyorder->getCompanyPayNum($paywhere);
                     if ($num < 1) {
-                        $this->MODEL('integral')->invtalCheck($uid, 2, 'integral_comcert', '认证企业资质', 21);
+                        $this->MODEL('integral')->invtalCheck($uid, 2, 'integral_comcert', 'wap_com_00181', 21);
                     }
                 }
             }
@@ -1791,9 +1791,9 @@ class company_controller extends adminCommon
                     foreach ($company as $v) {
                         if ($this->config['sy_email_comcert'] == '1' && $status > 0) {
                             if ($status == '1') {
-                                $certinfo = '企业资质审核通过！';
+                                $certinfo = 'admin_01309';
                             } else {
-                                $certinfo = '企业资质审核未通过！';
+                                $certinfo = 'admin_01310';
                             }
                             $notice->sendEmailType(array('email' => $v['linkmail'], 'certinfo' => $certinfo, 'comname' => $v['name'], 'uid' => $v['uid'], 'name' => $v['name'], 'type' => 'comcert'));
                         }
@@ -1805,25 +1805,25 @@ class company_controller extends adminCommon
                 $uids[] =   $v['uid'];
                 /* 处理审核信息 */
                 if ($status == 2) {
-                    $statusInfo = '很遗憾 , 贵公司企业资质未能通过审核';
+                    $statusInfo = 'admin_user_00023';
                     if ($_POST['statusbody']) {
                         $statusInfo .= ' , 原因：' . $_POST['statusbody'];
                     }
                     $msg[$v['uid']] = $statusInfo;
                 } elseif ($status == 1) {
-                    $msg[$v['uid']] = '贵公司企业资质审核通过，招聘人才更轻松！';
+                    $msg[$v['uid']] = 'admin_user_00022';
                 }
             }
             //发送系统通知
             $sysmsgM = $this->MODEL('sysmsg');
             $sysmsgM->addInfo(array('uid' => $uids, 'usertype' => 2, 'content' => $msg));
             if ($id) {
-                $this->admin_json(0, '企业资质审核(UID:' . $uid . ')设置成功！');
+                $this->admin_json(0, 'admin_user_00027' . $uid . ')设置成功！');
             } else {
-                $this->render_json(1, '设置失败！');
+                $this->render_json(1, yun_at('wap_01715'));
             }
         } else {
-            $this->render_json(1, '非法操作！');
+            $this->render_json(1, yun_at('model_00001'));
         }
     }
 
@@ -1858,7 +1858,7 @@ class company_controller extends adminCommon
         $WxM = $this->MODEL('weixin');
         $qrcode = $WxM->applyWxQrcode($randStr, 'acwxbind', $_POST['comid']);
         if(!$qrcode){
-            $this->render_json(1, '二维码获取失败');
+            $this->render_json(1, yun_at('common_01335'));
         }else{
             $this->render_json(0, 'ok', array('code_url' => $qrcode));
         }
@@ -1870,9 +1870,9 @@ class company_controller extends adminCommon
             $result = $WxM->getWxLoginStatus($_COOKIE['acwxbind'], $_POST['comid']);
             if($result['status'] == 1){
                 if (!empty($result['member'])){
-                    $this->admin_json(0, '扫码绑定成功');
+                    $this->admin_json(0, 'weixin_00005');
                 }else{
-                    $this->render_json(1, '扫码绑定失败');
+                    $this->render_json(1, yun_at('admin_user_00040'));
                 }
             }
         }
@@ -1885,7 +1885,7 @@ class company_controller extends adminCommon
             if ($result) {
                 $this->admin_json(0, 'LOGO设置成功（企业UID: '.$_POST['uid'].'）');
             } else {
-                $this->render_json(1, '设置失败');
+                $this->render_json(1, yun_at('api_wxapp_00016'));
             }
         }
     }
@@ -1904,7 +1904,7 @@ class company_controller extends adminCommon
             if ($pic) {
                 $this->render_json(0, '', $pic);
             } else {
-                $this->render_json(1, '生成LOGO出错');
+                $this->render_json(1, yun_at('admin_user_00035'));
             }
         } else {
             $data = array('text' => $_GET['name'], 'hb' => $_GET['hb']);
@@ -1929,9 +1929,9 @@ class company_controller extends adminCommon
             $coms = $comM->getKhList(array('name' => array('like', $_POST['companyName'])));
         }
         if ($coms) {
-            $rt[] = array('value' => '已存在企业 (业务员)');
+            $rt[] = array('value' => 'admin_user_00028');
             foreach ($coms as $v) {
-                $crmname = $v['crm_uid'] > 0 ? $v['crm_name'] : '未分配';
+                $crmname = $v['crm_uid'] > 0 ? $v['crm_name'] : 'admin_user_company_00153';
                 $rt[] = array('value' => $v['name'] . ' (' . $crmname . ')');
             }
         }
@@ -1987,9 +1987,9 @@ class company_controller extends adminCommon
         $rt['total'] = intval($pages['total']);
         $rt['perPage'] = $pageSize;
         $rt['pageSizes'] = $pages['page_sizes'];
-        $typeArr = array('1' => '上架|发布 职位', '2' => '刷新职位', '3' => '下载简历', '4' => '邀请面试', '5' => '职位推荐', '6' => '紧急招聘', '7' => '职位置顶', '8' => '招聘会报名');
+        $typeArr = array('1' => '上架|发布 职位', '2' => 'wap_com_00029', '3' => 'wap_00451', '4' => 'resume_00029', '5' => 'wap_com_00237', '6' => 'member_com_00613', '7' => 'wap_com_00238', '8' => 'wap_com_00039');
         $search_list = array();
-        $search_list[] = array('param' => 'type', 'name' => '套餐类目', 'value' => $typeArr);
+        $search_list[] = array('param' => 'type', 'name' => 'admin_user_company_00051', 'value' => $typeArr);
         $rt['search_list'] = $search_list;
         $this->render_json(0, '', $rt);
     }
@@ -2012,10 +2012,10 @@ class company_controller extends adminCommon
             $comM = $this->MODEL('company');
             $result	= $comM->upInfo($_POST['uid'], array(), array('package' => pylode(',', $_POST['package'])));
             if ($result){
-                $this->MODEL('log')->addAdminLog('企业（UID：' . $_POST['uid'].'）绑定会员套餐（ID：' . $_POST['package'] . '）成功');
-                $this->render_json(0, '操作成功');
+                $this->MODEL('log')->addAdminLog('common_06391' . $_POST['uid'].'）绑定会员套餐（ID：' . $_POST['package'] . 'admin_user_00046');
+                $this->render_json(0, yun_at('wap_user_00264'));
             }else{
-                $this->render_json(1, '操作失败');
+                $this->render_json(1, yun_at('wap_js_00141'));
             }
         }
     }
@@ -2027,9 +2027,9 @@ class company_controller extends adminCommon
     {
         $where['opera'] = 12;
         $where['PHPYUNBTWSTART_A'] = '';
-        $where['content'][] = array('like', '解除绑定');
-        $where['content'][] = array('like', '解绑', 'OR');
-        $where['content'][] = array('like', '解除', 'OR');
+        $where['content'][] = array('like', 'wap_user_00138');
+        $where['content'][] = array('like', 'wap_js_00065', 'OR');
+        $where['content'][] = array('like', 'common_02028', 'OR');
         $where['PHPYUNBTWEND_A'] = '';
         $where['usertype'] = 2; // TODO 建议各写各的，统一走这里权限会导致加载不了
         if ($_POST['keyword']) {
@@ -2084,7 +2084,7 @@ class company_controller extends adminCommon
     function delwflog_action()
     {
         if (empty($_POST['del'])) {
-            $this->render_json(1, '参数错误');
+            $this->render_json(1, yun_at('wap_com_00228'));
         }
         $del = $_POST['del'];
         $ids = pylode(',', $del);
@@ -2101,9 +2101,9 @@ class company_controller extends adminCommon
         $logM = $this->MODEL('log');
         $return = $logM->delMemlog($where);
         if ($return['errcode'] == 9) {
-            $this->admin_json(0, $ids == 'all' ? '解绑记录清空成功' : '解绑记录（ID:' . $ids . '）删除成功');
+            $this->admin_json(0, $ids == 'all' ? 'admin_01290' : '解绑记录（ID:' . $ids . 'admin_01291');
         } else {
-            $this->render_json(1, '解绑记录删除失败');
+            $this->render_json(1, yun_at('admin_01292'));
         }
     }
 
@@ -2158,29 +2158,29 @@ class company_controller extends adminCommon
         if (!empty($_POST['operas'])){
             $operaStr = intval($_POST['operas']);
             $operaSql = array(
-                '1' => array('name' => array('职位')),
-                '2' => array('name' => array('创建','简历', '经历')),
-                '3' => array('name' => array('下载')),
-                '4'	=> array('name' => array('邀请')),
-                '5'	=> array('name' => array('收藏', '关注', '备注')),
-                '6'	=> array('name' => array('申请', '报名', '应聘', '委托')),
-                '7'	=> array('name' => array('基本信息')),
-                '8'	=> array('name' => array('修改密码')),
-                '9'	=> array('name' => array('兼职')),
-                '11' =>	array('name' => array('用户名', '身份')),
-                '12' =>	array('name' => array('账号认证', '解除', '绑定', '验证', '资质', '执照', '认证')),
-                '14' =>	array('name' => array('招聘会', '专题')),
-                '15' =>	array('name' => array('地图', '助力')),
-                '16' =>	array('name' => array('图片', '头像', 'LOGO', '环境', '产品', '新闻', '二维码', '横幅')),
-                '17' =>	array('name' => array('兑换', '积分'), 'realId' => 17),
-                '18' =>	array('name' => array('回复', '咨询', '留言', '系统消息')),
-                '19' =>	array('name' => array('问答')),
-                '22' =>	array('name' => array('新闻')),
-                '23' =>	array('name' => array('举报')),
-                '25' =>	array('name' => array('悬赏', '推送')),
-                '26' =>	array('name' => array('浏览', '黑名单')),
-                '29' =>	array('name' => array('项目')),
-                '88' =>	array('name' => array('订单'))
+                '1' => array('name' => array('wap_user_00154')),
+                '2' => array('name' => array('common_01951','wap_com_00428', 'common_02021')),
+                '3' => array('name' => array('wap_00070')),
+                '4'	=> array('name' => array('common_02040')),
+                '5'	=> array('name' => array('wap_00379', 'common_01949', 'member_user_00242')),
+                '6'	=> array('name' => array('wap_00574', 'common_01991', 'common_01982', 'common_01971')),
+                '7'	=> array('name' => array('wap_00456')),
+                '8'	=> array('name' => array('member_user_00226')),
+                '9'	=> array('name' => array('wap_user_00220')),
+                '11' =>	array('name' => array('admin_user_00140', 'common_02035')),
+                '12' =>	array('name' => array('member_com_00093', 'common_02028', 'member_user_00234', 'member_user_00236', 'common_02034', 'admin_user_00171', 'member_user_00235')),
+                '14' =>	array('name' => array('member_com_00293', 'common_01937')),
+                '15' =>	array('name' => array('wap_00317', 'common_01954')),
+                '16' =>	array('name' => array('wap_js_00081', 'member_user_00161', 'LOGO', 'common_02012', 'default_00092', 'admin_tool_00428', 'common_01886', 'member_com_00077')),
+                '17' =>	array('name' => array('admin_yunying_00117', 'wap_user_00008'), 'realId' => 17),
+                '18' =>	array('name' => array('common_01967', 'common_01965', 'common_02015', 'wap_user_00363')),
+                '19' =>	array('name' => array('wap_user_00223')),
+                '22' =>	array('name' => array('admin_tool_00428')),
+                '23' =>	array('name' => array('wap_com_00350')),
+                '25' =>	array('name' => array('wap_com_00357', 'admin_user_company_00379')),
+                '26' =>	array('name' => array('wap_user_00221', 'member_user_00044')),
+                '29' =>	array('name' => array('common_02046')),
+                '88' =>	array('name' => array('common_02029'))
             );
             if (array_key_exists($operaStr, $operaSql)) {
                 if (count($operaSql[$operaStr]['name']) == 1){
@@ -2211,7 +2211,7 @@ class company_controller extends adminCommon
         $pageSize = !empty($_POST['pageSize']) ? intval($_POST['pageSize']) : intval($this->config['sy_listnum']);
         $pages = $pageM->adminPageList('member_log',$where,$page,array('limit' => $pageSize));
         if(!$pages['total']){
-            $this->render_json(0,'暂无数据',['data'=>[],'total'=>0,'pageSizes'=>$pages['page_sizes']]);
+            $this->render_json(0,yun_at('wap_js_00113'),['data'=>[],'total'=>0,'pageSizes'=>$pages['page_sizes']]);
         }
         if ($_POST['order']) {
             $where['orderby'] = $_POST['t'].','.$_POST['order'];
@@ -2232,7 +2232,7 @@ class company_controller extends adminCommon
         if ($_POST['del'] == 'allcom') {
             $where['usertype']  =   2;
             $logM->delMemlog($where);
-            $this->layer_msg('已清空企业日志！', 9, 0, $_SERVER['HTTP_REFERER']);
+            $this->layer_msg('admin_01296', 9, 0, $_SERVER['HTTP_REFERER']);
         } elseif ($_POST['del']) {
             $del = $_POST['del'];
             if (is_array($del)) {
@@ -2255,7 +2255,7 @@ class company_controller extends adminCommon
         $_POST = $this->post_trim($_POST);
         
         if (!$_POST['uid']){
-            $this->render_json('1','参数错误，请重试！');
+            $this->render_json('1',yun_at('wap_00203'));
         }
         
         $newpic = array();
@@ -2305,7 +2305,7 @@ class company_controller extends adminCommon
 
         $companyM->upInfo($_POST['uid'],array(),array('fact_status'=>$_POST['fact_status']));
 
-        $this->admin_json('0',"实地核验保存成功！");
+        $this->admin_json('0','admin_user_00033');
         
     }
 }

@@ -98,8 +98,8 @@ class report_resume_controller extends adminCommon
                 }
 
                 if (isset($dreport) && !empty($dreport)) {
-                    $order  =   $orderM->getList(array('type' => 19, 'order_remark' => array('like', '下载简历'), 'uid' => array('in', pylode(',', $comid))));
-                    $compay =   $integralM->getList(array('type' => 1, 'pay_type' => '12', 'pay_remark' => array('like', '简历下载'), 'com_id' => array('in', pylode(',', $comid))));
+                    $order  =   $orderM->getList(array('type' => 19, 'order_remark' => array('like', 'wap_00451'), 'uid' => array('in', pylode(',', $comid))));
+                    $compay =   $integralM->getList(array('type' => 1, 'pay_type' => '12', 'pay_remark' => array('like', 'wap_com_00042'), 'com_id' => array('in', pylode(',', $comid))));
                     foreach ($dreport as $key => $val) {
                         foreach ($order as $k => $v) {
                             if ($val['p_uid'] == $v['uid'] && $val['eid'] == $v['sid']) {
@@ -122,12 +122,12 @@ class report_resume_controller extends adminCommon
 
                     foreach ($dreport as $key => $val) {
                         if ($val['fhtype'] == 2) {
-                            $integralM->company_invtal($val['p_uid'], 2, $val['fhprice'], true, '举报简历返还金额', true, 2, 'packpay', 99);
+                            $integralM->company_invtal($val['p_uid'], 2, $val['fhprice'], true, 'admin_01423', true, 2, 'packpay', 99);
                         } elseif ($val['fhtype'] == 3) {
-                            $integralM->company_invtal($val['p_uid'], 2, $val['fhprice'], true, '举报简历返还积分', true, 2, 'integral', 99);
+                            $integralM->company_invtal($val['p_uid'], 2, $val['fhprice'], true, 'admin_01424', true, 2, 'integral', 99);
                         } elseif ($val['fhtype'] == 4) {
-                            $integralM->company_invtal($val['p_uid'], 2, $val['fhprice'], true, '举报简历返还金额', true, 2, 'packpay', 99);
-                            $integralM->company_invtal($val['p_uid'], 2, $val['fhprice_two'], true, '举报简历返还积分', true, 2, 'integral', 99);
+                            $integralM->company_invtal($val['p_uid'], 2, $val['fhprice'], true, 'admin_01423', true, 2, 'packpay', 99);
+                            $integralM->company_invtal($val['p_uid'], 2, $val['fhprice_two'], true, 'admin_01424', true, 2, 'integral', 99);
                         } else {
                             $statisM->upInfo(array('down_resume' => array('+', 1)), array('usertype' => 2, 'uid' => $val['p_uid']));
                         }
@@ -145,9 +145,9 @@ class report_resume_controller extends adminCommon
             if ($return){
                 $logM   =   $this->MODEL('log');
                 $logM->addAdminLog("简历投诉(ID:" . pylode(',', $rids) . ")处理");
-                $this->render_json(0, '操作成功');
+                $this->render_json(0, yun_at('wap_user_00264'));
             }else{
-                $this->render_json(1, '操作失败，请重试');
+                $this->render_json(1, yun_at('common_01266'));
             }
         }
     }
@@ -185,15 +185,15 @@ class report_resume_controller extends adminCommon
                     }
                 }
                 $notUid =   array();
-                $order  =   $orderM->getList(array('type' => 19, 'sid' => $eid, 'order_remark' => array('like', '下载简历'), 'uid' => array('in', pylode(',', $comIdA))));
-                $compay =   $integralM->getList(array('type' => 1, 'eid' => $eid, 'pay_type' => '12', 'pay_remark' => array('like', '简历下载'), 'com_id' => array('in', pylode(',', $comIdA))));
+                $order  =   $orderM->getList(array('type' => 19, 'sid' => $eid, 'order_remark' => array('like', 'wap_00451'), 'uid' => array('in', pylode(',', $comIdA))));
+                $compay =   $integralM->getList(array('type' => 1, 'eid' => $eid, 'pay_type' => '12', 'pay_remark' => array('like', 'wap_com_00042'), 'com_id' => array('in', pylode(',', $comIdA))));
                 foreach ($order as $k => $v) {
                     $notUid[]   =   $v['uid'];
-                    $integralM->company_invtal($v['uid'], 2, $v['order_price'], true, '举报简历返还金额', true, 2, 'packpay', 99);
+                    $integralM->company_invtal($v['uid'], 2, $v['order_price'], true, 'admin_01423', true, 2, 'packpay', 99);
                 }
                 foreach ($compay as $k => $v) {
                     $noUid[]    =   $v['com_id'];
-                    $integralM->company_invtal($v['com_id'], 2, abs($v['order_price']), true, '举报简历返还积分', true, 2, 'integral', 99);
+                    $integralM->company_invtal($v['com_id'], 2, abs($v['order_price']), true, 'admin_01424', true, 2, 'integral', 99);
                 }
                 foreach ($dReport as $drk => $drv) {
                     if (!in_array($drv['p_uid'], $notUid) && in_array($drv['p_uid'], $comIdA)) {
@@ -216,15 +216,15 @@ class report_resume_controller extends adminCommon
                 $dResume    =   $downM->getDownResumeInfo(array('eid' => $eid, 'uid' => $uid, 'comid' => $comId), array('field' => '`eid`'));
                 if (!empty($dResume)) {
 
-                    $order  =   $orderM->getInfo(array('type' => 19, 'sid' => $eid, 'order_remark' => array('like', '下载简历'), 'uid' => $comId), array('field' => '`order_price`'));
-                    $compay =   $integralM->getInfo(array('type' => 1, 'eid' => $eid, 'pay_type' => '12', 'pay_remark' => array('like', '下载简历'), 'com_id' => $comId), array('field' => '`order_price`'));
+                    $order  =   $orderM->getInfo(array('type' => 19, 'sid' => $eid, 'order_remark' => array('like', 'wap_00451'), 'uid' => $comId), array('field' => '`order_price`'));
+                    $compay =   $integralM->getInfo(array('type' => 1, 'eid' => $eid, 'pay_type' => '12', 'pay_remark' => array('like', 'wap_00451'), 'com_id' => $comId), array('field' => '`order_price`'));
                 }
 
                 if (isset($order) && !empty($order)) {
-                    $integralM->company_invtal($comId, 2, $order['order_price'], true, '举报简历返还金额', true, 2, 'packpay', 99);
+                    $integralM->company_invtal($comId, 2, $order['order_price'], true, 'admin_01423', true, 2, 'packpay', 99);
                 }
                 if (isset($compay) && !empty($compay)) {
-                    $integralM->company_invtal($comId, 2, abs($compay['order_price']), true, '举报简历返还积分', true, 2, 'integral', 99);
+                    $integralM->company_invtal($comId, 2, abs($compay['order_price']), true, 'admin_01424', true, 2, 'integral', 99);
                 }
                 if (empty($order) && empty($compay) && !empty($dResume)) {
                     !in_array($comId, $rtComIds) && array_push($rtComIds, $comId);// 记录返还下载数量的企业用户id
@@ -245,11 +245,11 @@ class report_resume_controller extends adminCommon
         $return     =   $reportM->upReport($where, $upData);
         if ($return){
             $logM   =   $this->MODEL('log');
-            $m = $rtComIds ? "，已为ID为(" . implode(',', $rtComIds) . ")的企业用户返还简历下载数量" : "";
+            $m = $rtComIds ? 'admin_yunying_00008' . implode(',', $rtComIds) . 'admin_yunying_00007' : "";
             $logM->addAdminLog("简历投诉(ID:" . implode(',', $rids) . ")处理" . $m);
-            $this->render_json(0, '操作成功');
+            $this->render_json(0, yun_at('wap_user_00264'));
         }else{
-            $this->render_json(1, '操作失败，请重试');
+            $this->render_json(1, yun_at('common_01266'));
         }
     }
     /**
@@ -277,8 +277,8 @@ class report_resume_controller extends adminCommon
 
         if (!empty($dresume)) {
 
-            $order  =   $orderM->getInfo(array('type' => 19, 'sid' => $eid, 'order_remark' => array('like', '下载简历'), 'uid' => $comid), array('field' => '`order_price`'));
-            $compay =   $integralM->getInfo(array('type' => 1, 'eid' => $eid, 'pay_type' => '12', 'pay_remark' => array('like', '下载简历'), 'com_id' => $comid), array('field' => '`order_price`'));
+            $order  =   $orderM->getInfo(array('type' => 19, 'sid' => $eid, 'order_remark' => array('like', 'wap_00451'), 'uid' => $comid), array('field' => '`order_price`'));
+            $compay =   $integralM->getInfo(array('type' => 1, 'eid' => $eid, 'pay_type' => '12', 'pay_remark' => array('like', 'wap_00451'), 'com_id' => $comid), array('field' => '`order_price`'));
         }
         $result     =   $resumeM->delResume($eid, array('utype' => 'admin'));
 
@@ -286,11 +286,11 @@ class report_resume_controller extends adminCommon
 
             if (!empty($order) && is_array($order) && $report['datafh'] != 1) {
 
-                $integralM->company_invtal($comid, 2, $order['order_price'], true, '举报简历返还金额', true, 2, 'packpay', 99);
+                $integralM->company_invtal($comid, 2, $order['order_price'], true, 'admin_01423', true, 2, 'packpay', 99);
             }
             if (!empty($compay) && is_array($compay) && $report['datafh'] != 1) {
 
-                $integralM->company_invtal($comid, 2, abs($compay['order_price']), true, '举报简历返还积分', true, 2, 'integral', 99);
+                $integralM->company_invtal($comid, 2, abs($compay['order_price']), true, 'admin_01424', true, 2, 'integral', 99);
             }
             if (empty($order) && empty($compay) && !empty($dresume) && $report['datafh'] != 1) {
                 // 没有充值购买记录，有下载记录的，返还下载数量
@@ -301,9 +301,9 @@ class report_resume_controller extends adminCommon
 
             if ($result){
 
-                $return =   array('msg' => '投诉简历（ID:'.$eid.'）删除成功', 'errcode' => 0);
+                $return =   array('msg' => yun_at('admin_00387').$eid.yun_at('admin_01291'), 'errcode' => 0);
             }else{
-                $return =   array('msg' => '投诉简历（ID:'.$eid.'）删除失败', 'errcode' => 1);
+                $return =   array('msg' => yun_at('admin_00387').$eid.yun_at('admin_01425'), 'errcode' => 1);
             }
             $this->render_json($return['errcode'], $return['msg']);
         }
@@ -336,8 +336,8 @@ class report_resume_controller extends adminCommon
             }
             $result     =   $resumeM->delResume($resumeIds, array('utype' => 'admin'));
             if ($result && isset($comid) && !empty($comid)) {
-                $order  =   $orderM->getList(array('type' => 19, 'order_remark' => array('like', '下载简历'), 'uid' => array('in', pylode(',', $comid))));
-                $compay =   $integralM->getList(array('type' => 1, 'pay_type' => '12', 'pay_remark' => array('like', '简历下载'), 'com_id' => array('in', pylode(',', $comid))));
+                $order  =   $orderM->getList(array('type' => 19, 'order_remark' => array('like', 'wap_00451'), 'uid' => array('in', pylode(',', $comid))));
+                $compay =   $integralM->getList(array('type' => 1, 'pay_type' => '12', 'pay_remark' => array('like', 'wap_com_00042'), 'com_id' => array('in', pylode(',', $comid))));
                 foreach ($dreport as $key => $val) {
                     foreach ($order as $k => $v) {
                         if ($val['p_uid'] == $v['uid'] && $val['eid'] == $v['sid']) {
@@ -360,21 +360,21 @@ class report_resume_controller extends adminCommon
 
                 foreach ($dreport as $key => $val) {
                     if ($val['fhtype'] == 2) {
-                        $integralM->company_invtal($val['p_uid'], 2, $val['fhprice'], true, '举报简历返还金额', true, 2, 'packpay', 99);
+                        $integralM->company_invtal($val['p_uid'], 2, $val['fhprice'], true, 'admin_01423', true, 2, 'packpay', 99);
                     } elseif ($val['fhtype'] == 3) {
-                        $integralM->company_invtal($val['p_uid'], 2, $val['fhprice'], true, '举报简历返还积分', true, 2, 'integral', 99);
+                        $integralM->company_invtal($val['p_uid'], 2, $val['fhprice'], true, 'admin_01424', true, 2, 'integral', 99);
                     } elseif ($val['fhtype'] == 4) {
-                        $integralM->company_invtal($val['p_uid'], 2, $val['fhprice'], true, '举报简历返还金额', true, 2, 'packpay', 99);
-                        $integralM->company_invtal($val['p_uid'], 2, $val['fhprice_two'], true, '举报简历返还积分', true, 2, 'integral', 99);
+                        $integralM->company_invtal($val['p_uid'], 2, $val['fhprice'], true, 'admin_01423', true, 2, 'packpay', 99);
+                        $integralM->company_invtal($val['p_uid'], 2, $val['fhprice_two'], true, 'admin_01424', true, 2, 'integral', 99);
                     } else {
                         $statisM->upInfo(array('down_resume' => array('+', 1)), array('usertype' => 2, 'uid' => $val['p_uid']));
                     }
                 }
             }
             if ($result){
-                $return =   array('msg' => '投诉简历（ID:'.pylode(',', $resumeIds).'）删除成功', 'errcode' => 9, 'layertype' => 1);
+                $return =   array('msg' => yun_at('admin_00387').pylode(',', $resumeIds).yun_at('admin_01291'), 'errcode' => 9, 'layertype' => 1);
             }else{
-                $return =   array('msg' => '投诉简历（ID:'.pylode(',', $resumeIds).'）删除失败', 'errcode' => 8, 'layertype' => 1);
+                $return =   array('msg' => yun_at('admin_00387').pylode(',', $resumeIds).yun_at('admin_01425'), 'errcode' => 8, 'layertype' => 1);
             }
             $this->render_json($return['errcode']==9?0:1, $return['msg']);
         }
@@ -393,7 +393,7 @@ class report_resume_controller extends adminCommon
         } else {
             $where['id']    =   $_POST['del'];
         }
-        $return =   $reportM->delReport($where, array('title' => '举报'));
+        $return =   $reportM->delReport($where, array('title' => yun_at('wap_com_00350')));
 
         $this->render_json($return['errcode']==9?0:1, $return['msg']);
     }

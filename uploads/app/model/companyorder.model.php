@@ -183,13 +183,13 @@ class companyorder_model extends model
             }
 			/* 处理企业所需数据 */
             if ($data['utype']=='com') {
-				$arr_data['ordertype'][2]  =  $this->config['integral_pricename'].'充值';
+				$arr_data['ordertype'][2]  =  $this->config['integral_pricename'].'common_01946';
               
                 foreach($List as $key=>$val){
                     $List[$key]['type_n']			=	$arr_data['ordertype'][$val['type']];
 					$List[$key]['dingdan_id']		=	$val['order_id'];
 					$List[$key]['dingdan_state_n']	=	strip_tags($arr_data['paystate'][$val['order_state']]);
-					$List[$key]['dingdan_type_n']	=	$val['order_type']?strip_tags($arr_data['pay'][$val['order_type']]):'手动';
+					$List[$key]['dingdan_type_n']	=	$val['order_type']?strip_tags($arr_data['pay'][$val['order_type']]):'wap_user_00316';
 					$List[$key]['dingdan_time_n']	=	date('Y-m-d H:i:s',$val['order_time']);
 					$List[$key]['dingdan_price']	=	$val['order_price'];
 					$List[$key]['dingdan_remark']	=	$val['order_remark'];
@@ -320,7 +320,7 @@ class companyorder_model extends model
                 $oldOrder = $this -> select_once('company_order', $where, 'id,order_id,order_price');
 			    if ( bccomp($Data['order_price'], $oldOrder['order_price'], 2) !== 0 ) {
                     $Data['order_id'] = time().rand(10000,99999); // 改价需要生成新的单号
-                    $Data['order_remark'] .= "\n后台改价，原单号(" . $oldOrder['order_id'] . ")，原价格（" . $oldOrder['order_price'] . "）";
+                    $Data['order_remark'] .= 'common_01115' . $oldOrder['order_id'] . 'common_01426' . $oldOrder['order_price'] . "）";
 
                     // 记录管理员日志
                     require_once ('log.model.php');
@@ -331,9 +331,9 @@ class companyorder_model extends model
             }
             $nid    =   $this -> update_once('company_order', $Data, $where);
             if($nid){
-				return array('errcode'=>'9','msg'=>'充值记录(ID:'.$id.')修改成功！');
+				return array('errcode'=>'9','msg'=>yun_at('model_00021').$id.')修改成功！');
 			}else{
-				return array('errcode'=>'8','msg'=>'充值记录(ID:'.$id.')修改失败！');
+				return array('errcode'=>'8','msg'=>yun_at('model_00021').$id.')修改失败！');
 			}
         }
     }
@@ -356,14 +356,14 @@ class companyorder_model extends model
 
                 if ($nid) {
 
-                    return array('errcode' => '9', 'msg' => '充值记录(ID:' . $id . ')确认成功！');
+                    return array('errcode' => '9', 'msg' => yun_at('model_00021') . $id . ')确认成功！');
                 } else {
 
-                    return array('errcode' => '8', 'msg' => '确认失败,请稍后再试！');
+                    return array('errcode' => '8', 'msg' => yun_at('common_00905'));
                 }
             } else {
 
-                return array('errcode' => '8', 'msg' => '订单已确认，请勿重复操作！');
+                return array('errcode' => '8', 'msg' => yun_at('common_00735'));
             }
         }
     }
@@ -428,7 +428,7 @@ class companyorder_model extends model
 								
 			}else{
 
-				$return['msg']		=  '非法操作！';
+				$return['msg']		=  yun_at('model_00001');
 				$return['errcode']	=  '8';
 				return $return;  
 			
@@ -450,7 +450,7 @@ class companyorder_model extends model
 				/* 未付款订单删除，返还积分  */
 				foreach ($order as $v){
 				    if (!empty($v['order_dkjf']) && $v['order_state'] == '1' && $v['order_dkjf']>0) {
-				        $integralM -> company_invtal($v['uid'], $v['usertype'], $v['order_dkjf'], true, '取消订单，返还'.$this->config['integral_pricename'], true, 2, 'integral', 66);
+				        $integralM -> company_invtal($v['uid'], $v['usertype'], $v['order_dkjf'], true, 'common_06428'.$this->config['integral_pricename'], true, 2, 'integral', 66);
 				    }
 				}
 				 
@@ -470,18 +470,18 @@ class companyorder_model extends model
 				    
 				}
 				
-				$return['msg']      	=  '充值记录(ID:'.$id.')删除成功';
+				$return['msg']      	=  yun_at('model_00021').$id.')删除成功';
 				$return['errcode']  	=  '9';
 				
 			}else{
 			    
-				$return['msg']      	=  '充值记录(ID:'.$id.')删除失败';
+				$return['msg']      	=  yun_at('model_00021').$id.')删除失败';
 				$return['errcode']  	=  '8';
 			}
 			
 		}else{
 		    
-			$return['msg']      		=  '请选择要删除的记录';
+			$return['msg']      		=  yun_at('common_01164');
 			$return['errcode']  		=  '8';
 		}
 		return $return;  
@@ -599,14 +599,14 @@ class companyorder_model extends model
 			$return['id']				=	$this -> delete_all('company_pay',array('id' => array('in',$id)),'');
 			
 			if($return['id']){
-				$return['msg']      	=  '消费记录(ID:'.$id.')删除成功';
+				$return['msg']      	=  yun_auto_t('消费记录(ID:').$id.')删除成功';
 				$return['errcode']  	=  '9';
 			}else{
-				$return['msg']      	=  '消费记录(ID:'.$id.')删除失败';
+				$return['msg']      	=  yun_auto_t('消费记录(ID:').$id.')删除失败';
 				$return['errcode']  	=  '8';
 			}
 		}else{
-			$return['msg']      		=  '请选择要删除的记录';
+			$return['msg']      		=  yun_at('common_01164');
 			$return['errcode']  		=  '8';
 		}
 		return $return;  
@@ -642,7 +642,7 @@ class companyorder_model extends model
         if (!empty($userarr)) {
             $integral                           =   $data['integral'];
 			$msg								=	$integral.$this -> config['integral_pricename'];
-			$fsmsg								=	$data['fs']==1?'充值':'扣除';
+			$fsmsg								=	$data['fs']==1?yun_at('common_01946'):yun_at('admin_yunying_00092');
 			
 			if(is_array($userarr)){
 				$uidarr							=	array();
@@ -674,14 +674,14 @@ class companyorder_model extends model
 			
 			if($nid){
 				if($fnum){
-					$nummsg						=	'，'.$fnum.'个用户名('.pylode(',',$fname).')不存在';
+					$nummsg						=	'，'.$fnum.'common_01577'.pylode(',',$fname).'common_01652';
 				}
-				return array('errcode'=>'9','msg'=>$snum.'个会员(ID:'.pylode(',',$uids).')'.$fsmsg.$msg.'成功'.$nummsg.'！','url'=>$_SERVER['HTTP_REFERER']);
+				return array('errcode'=>'9','msg'=>$snum.'common_01333'.pylode(',',$uids).')'.$fsmsg.$msg.'admin_tool_00502'.$nummsg.'！','url'=>$_SERVER['HTTP_REFERER']);
 			}else{
 				if($fnum){
-					$fmsg						=	'用户名(:'.pylode(',',$userarr).')不存在，';
+					$fmsg						=	'用户名(:'.pylode(',',$userarr).'common_01563';
 				}
-				return array('errcode'=>'8','msg'=>$fmsg.$fsmsg.'失败！');
+				return array('errcode'=>'8','msg'=>$fmsg.$fsmsg.'wap_js_00103');
 			}
         }
     }
@@ -789,7 +789,7 @@ class companyorder_model extends model
 			
 			if($data['comvip']){
 			    
-			    $msg      =  '购买会员';
+			    $msg      =  'default_00090';
 			    $breturn  =  $this -> buyVip($data);
 			    $oData    =  $breturn;
 			    
@@ -802,10 +802,10 @@ class companyorder_model extends model
 			    $statis   =  $statisM -> getInfo($data['uid'],array('usertype' =>$data['usertype']));
 			    if (!isVip($statis['vip_etime'])) {
                     
-			        return array('msg'=>'你的会员已经到期，请先购买会员！','errcode'=>8);
+			        return array('msg'=>yun_at('common_00525'),'errcode'=>8);
                 }else{
                     
-    			    $msg      =  '购买增值服务';
+    			    $msg      =  'common_06429';
     			    $breturn  =  $this -> buyZzb($data);
     			    $oData    =  $breturn;
     			    
@@ -814,10 +814,10 @@ class companyorder_model extends model
 			}elseif($data['price_int']){
 
 			    if ($data['price_int'] > 10000000){
-                    return array('msg'=>'充值积分不合理，请重新输入！','errcode'=>8);
+                    return array('msg'=>yun_at('common_00644'),'errcode'=>8);
                 }
 
-			    $msg      =  '充值'.$this->config['integral_pricename'];
+			    $msg      =  'common_01946'.$this->config['integral_pricename'];
 			    $breturn  =  $this -> buyIntegral($data);
 			    $oData    =  $breturn;
 			}
@@ -866,9 +866,9 @@ class companyorder_model extends model
 			    }
 
 			    $msg  .= ',订单ID'.$oData['order_id'];
-                $this->addMemberLog($data['uid'], $data['usertype'], "财务订单：".$msg, 88, 1);//会员日志
+                $this->addMemberLog($data['uid'], $data['usertype'], 'common_06430'.$msg, 88, 1);//会员日志
 
-				$return  =  array('msg'=>'下单成功，请付款！','errcode'=>9);
+				$return  =  array('msg'=>yun_at('common_01106'),'errcode'=>9);
 				//pc,wap返回区分
 				if($data['type'] == 'wap'){
 				    
@@ -888,11 +888,11 @@ class companyorder_model extends model
 				return $return;
 				
 			}else{
-				$return  =	array('msg'=>'提交失败，请重新提交订单！','errcode'=>8,'url'=>$_SERVER['HTTP_REFERER']);
+				$return  =	array('msg'=>yun_at('common_00717'),'errcode'=>8,'url'=>$_SERVER['HTTP_REFERER']);
 				return $return;
 			}
 		}else{
-			$return	 =  array('msg'=>'提交失败，请正确提交订单！','errcode'=>8,'url'=>$_SERVER['HTTP_REFERER']);
+			$return	 =  array('msg'=>yun_at('common_00716'),'errcode'=>8,'url'=>$_SERVER['HTTP_REFERER']);
 			return $return;
 		}
 	}
@@ -906,19 +906,19 @@ class companyorder_model extends model
 		//数据判断
 		if($data['bank_name']==''){
 		    
-			$return  =  array('msg'=>'请填写汇款银行', 'errcode'=>'8');
+			$return  =  array('msg'=>yun_at('model_00022'), 'errcode'=>'8');
 			
 		}elseif($data['bank_number']==''){
 		    
-			$return  =  array('msg'=>'请填写汇入账号', 'errcode'=>'8');
+			$return  =  array('msg'=>yun_at('model_00023'), 'errcode'=>'8');
 			
 		}elseif($data['bank_price']==''){
 		    
-			$return  =  array('msg'=>'请填写汇款金额', 'errcode'=>'8');
+			$return  =  array('msg'=>yun_at('model_00024'), 'errcode'=>'8');
 			
 		}elseif($data['bank_time']==''){
 		    
-			$return  =  array('msg'=>'请填写汇款时间', 'errcode'=>'8');
+			$return  =  array('msg'=>yun_at('wap_js_00127'), 'errcode'=>'8');
 			
 		}else{
 		    
@@ -977,10 +977,10 @@ class companyorder_model extends model
 
             switch ($order['usertype']) {
                 case '1':
-                    $wxtempMsg .= '，个人用户《'.$userinfo['name'].'》 银行转账支付'.$data['bank_price'].'元，请及时查看。';
+                    $wxtempMsg .= '，个人用户《'.$userinfo['name'].'common_01207'.$data['bank_price'].'common_01229';
                     break;
                 case '2':
-                    $wxtempMsg .= '，企业用户《'.$userinfo['name'].'》 银行转账支付'.$data['bank_price'].'元，请及时查看。';
+                    $wxtempMsg .= '，企业用户《'.$userinfo['name'].'common_01207'.$data['bank_price'].'common_01229';
                     break;
                 
             }
@@ -993,7 +993,7 @@ class companyorder_model extends model
 		        
 		        if($return['errcode']==9){
 
-		            $return['msg']  =   '操作成功，请等待管理员审核！';
+		            $return['msg']  =   yun_at('common_00661');
 		            $return['url']  =   'index.php?c=paylog';
 
 		        }else{
@@ -1004,10 +1004,10 @@ class companyorder_model extends model
 		        if($order['id']){
 
 		            $this->upInfo($order['id'],$company_order);
-		            $return =   array('msg'=>'操作成功，请等待管理员审核！','errcode'=>9,'url'=>'index.php?c=paylog');
+		            $return =   array('msg'=>yun_at('common_00661'),'errcode'=>9,'url'=>'index.php?c=paylog');
 
 		        }else{
-		            $return =   array('msg'=>'非法操作！','errcode'=>8,'url'=>$_SERVER['HTTP_REFERER']);
+		            $return =   array('msg'=>yun_at('model_00001'),'errcode'=>8,'url'=>$_SERVER['HTTP_REFERER']);
 		        }
 		    }
 		}
@@ -1045,24 +1045,24 @@ class companyorder_model extends model
     public function ComVip($data)
     {
         if ($data['username'] == '' && $data['comname'] == '') {
-            return array('errcode' => 8, 'msg' => '用户名和企业名称不能全为空');
+            return array('errcode' => 8, 'msg' => yun_at('common_00725'));
         }
         if (empty($data['uid'])){
-            return array('errcode' => 8, 'msg' => '企业用户不存在');
+            return array('errcode' => 8, 'msg' => yun_at('model_00025'));
         }
         if ($data['ratingid'] == '') {
-            return array('errcode' => 8, 'msg' => '请选择开通等级');
+            return array('errcode' => 8, 'msg' => yun_at('admin_yunying_00091'));
         }
         if ($data['vipprice'] == '') {
-            return array('errcode' => 8, 'msg' => '请填写开通价格');
+            return array('errcode' => 8, 'msg' => yun_at('common_01408'));
         }
         if(!$data['vipetime']){
-            return array('errcode' => 8, 'msg' => '到期时间为空');
+            return array('errcode' => 8, 'msg' => yun_at('model_00026'));
         }
         $comInfo    =   $this->select_once('company', array('uid' => $data['uid']), 'uid,crm_uid');
         if (empty($comInfo)) {
 
-            return array('errcode' => 8, 'msg' => '企业用户不存在');
+            return array('errcode' => 8, 'msg' => yun_at('model_00025'));
         }
 
         require_once('rating.model.php');
@@ -1092,7 +1092,7 @@ class companyorder_model extends model
             $order['type']          =   '1';
             $order['order_time']    =   time();
             $order['order_state']   =   '2';
-            $order['order_remark']  =   '管理员开通会员套餐'.$remark;
+            $order['order_remark']  =   yun_at('common_01137').$remark;
             $order['uid']           =   $data['uid'];
             $order['usertype']      =   2;
             $order['did']           =   $this->config['did'];
@@ -1108,30 +1108,30 @@ class companyorder_model extends model
                 require_once 'integral.model.php';
                 $IntegralM  =   new integral_model($this->db, $this->def);
                 $addJF      =   $newstatis['integral'][1];
-                $IntegralM->insert_company_pay($addJF,2,$data['uid'], 2,'开通会员赠送积分',1,2,true);
+                $IntegralM->insert_company_pay($addJF,2,$data['uid'], 2,'common_01253',1,2,true);
             }
 
-            return array('errcode' => 9, 'msg' => '企业会员(ID' . $data['uid'] . ')开通会员套餐【' . $rating['name'] . '】成功', 'url' => $_SERVER['HTTP_REFERER']);
+            return array('errcode' => 9, 'msg' => yun_at('model_00027') . $data['uid'] . 'common_01179' . $rating['name'] . 'common_06431', 'url' => $_SERVER['HTTP_REFERER']);
         } else {
-            return array('errcode' => 8, 'msg' => '开通会员套餐失败', 'url' => $_SERVER['HTTP_REFERER']);
+            return array('errcode' => 8, 'msg' => yun_at('common_01252'), 'url' => $_SERVER['HTTP_REFERER']);
         }
     }
     function comservice($data){
         if ($data['username'] == '' && $data['comname'] == '') {
-            return array('errcode' => 8, 'msg' => '用户名和企业名称不能全为空');
+            return array('errcode' => 8, 'msg' => yun_at('common_00725'));
         }
         if (empty($data['uid'])){
-            return array('errcode' => 8, 'msg' => '企业用户不存在');
+            return array('errcode' => 8, 'msg' => yun_at('model_00025'));
         }
         if ($data['service_package'] == '') {
-            return array('errcode' => 8, 'msg' => '请选择开通增值包');
+            return array('errcode' => 8, 'msg' => yun_at('common_01307'));
         }
         if ($data['service_price'] == '') {
-            return array('errcode' => 8, 'msg' => '请填写开通价格');
+            return array('errcode' => 8, 'msg' => yun_at('common_01408'));
         }
         $comInfo    =   $this->select_once('company', array('uid' => $data['uid']), 'uid,crm_uid');
         if (empty($comInfo)) {
-            return array('errcode' => 8, 'msg' => '企业用户不存在');
+            return array('errcode' => 8, 'msg' => yun_at('model_00025'));
         }
         require_once('rating.model.php');
         $ratingM    =   new rating_model($this->db, $this->def);
@@ -1157,7 +1157,7 @@ class companyorder_model extends model
             $order['type']          =   '5';
             $order['order_time']    =   time();
             $order['order_state']   =   '2';
-            $order['order_remark']  =   '管理员开通增值包';
+            $order['order_remark']  =   yun_at('common_01293');
             $order['uid']           =   $data['uid'];
             $order['usertype']      =   2;
             $order['did']           =   $this->config['did'];
@@ -1167,9 +1167,9 @@ class companyorder_model extends model
                 $order['crm_uid']   =   $comInfo['crm_uid'];
             }
             $this->insert_into('company_order', $order);
-            return array('errcode' => 9, 'msg' => '企业会员(ID' . $data['uid'] . ')开通增值包成功', 'url' => $_SERVER['HTTP_REFERER']);
+            return array('errcode' => 9, 'msg' => yun_at('model_00027') . $data['uid'] . 'common_01180', 'url' => $_SERVER['HTTP_REFERER']);
         }else{
-            return array('errcode' => 8, 'msg' => '开通增值包失败', 'url' => $_SERVER['HTTP_REFERER']);
+            return array('errcode' => 8, 'msg' => yun_at('common_01363'), 'url' => $_SERVER['HTTP_REFERER']);
         }
     }
 	/**
@@ -1196,7 +1196,7 @@ class companyorder_model extends model
                             $namelist[$k]['rating_name']=	$val['rating_name'];
                             // 这里需要判断时间  如果过期时间小于当前时间 设置为当前时间; todo
                             if (empty($val['vipetime'])){
-                                $namelist[$k]['vipetime_ymd']		=	'不限';
+                                $namelist[$k]['vipetime_ymd']		=	yun_at('common_01936');
                                 $namelist[$k]['vipetime']			=	0;
                             }else{
         //                        $vipetime = $this->viptime($v['vipetime']);
@@ -1239,7 +1239,7 @@ class companyorder_model extends model
                     $namelist[$k]['rating_name']		=   $v['rating_name'];
                     // 这里需要判断时间  如果过期时间小于当前时间 设置为当前时间; todo
                     if (empty($v['vipetime'])){
-                        $namelist[$k]['vipetime_ymd']		=	'不限';
+                        $namelist[$k]['vipetime_ymd']		=	yun_at('common_01936');
                         $namelist[$k]['vipetime']			=	0;
                     }else{
 //                        $vipetime = $this->viptime($v['vipetime']);
@@ -1308,7 +1308,7 @@ class companyorder_model extends model
 			
 			if(empty($order)){
 				
-				$return['msg']		=	'订单不存在！';
+				$return['msg']		=	yun_at('wap_01291');
 				
 				$return['errcode']	=	8;
 				
@@ -1320,16 +1320,16 @@ class companyorder_model extends model
 				$nid	=	$this->del($data['id'],array('uid'=>$data['uid']));
 				
 				if($nid){
-					$logM->member_log('取消订单',88,3);
+					$logM->member_log(yun_at('common_06432'),88,3);
 					
-					$return['msg']		=	'订单取消成功！';
+					$return['msg']		=	yun_at('common_06433');
 				
 					$return['errcode']	=	9;
 					
 					$return['url']		=	'index.php?c=paylist';
 				}else{
 					
-					$return['msg']		=	'订单取消失败！';
+					$return['msg']		=	yun_at('common_06434');
 				
 					$return['errcode']	=	8;
 				
@@ -1337,7 +1337,7 @@ class companyorder_model extends model
 				}
 			}
 		}else{
-			$return['msg']		=	'系统超时！';
+			$return['msg']		=	yun_at('common_01633');
 				
 			$return['errcode']	=	8;
 		
@@ -1512,12 +1512,12 @@ class companyorder_model extends model
 
                 require_once ('log.model.php');
                 $logM	    =	new log_model($this->db, $this->def);
-                $msgContent	=	'管理员将订单（ID：'.$ID.'）分配给了业务员：' . $adminUser['name'];
+                $msgContent	=	'common_01040'.$ID.'common_01178' . $adminUser['name'];
                 $logM -> addAdminLog($msgContent);
             }
 
             $return['errcode']  =   $result ? '9' : '8';
-            $return['msg']      =   $result ? '订单分配成功！' : '订单分配失败！';
+            $return['msg']      =   $result ? yun_at('common_06435') : yun_at('common_06436');
         }
 
         return $return;

@@ -36,8 +36,8 @@
     {yun:}if $Info.sqInfo{/yun}
     <div class="yun_resume_sq_job">
         <ul>
-            <li>投递职位：{yun:}$Info.sqInfo.sq_job_name{/yun}</li>
-            <li>投递时间：{yun:}$Info.sqInfo.sq_job_time{/yun}</li>
+            <li>{yun:}t key='wap_01596'{/yun}：{yun:}$Info.sqInfo.sq_job_name{/yun}</li>
+            <li>{yun:}t key='member_user_00431'{/yun}：{yun:}$Info.sqInfo.sq_job_time{/yun}</li>
             <li>{yun:}t key='admin_yunying_00131'{/yun}：{yun:}$Info.login_date_n{/yun}</li>
         </ul>
     </div>
@@ -104,7 +104,7 @@
 {yun:}/foreach{/yun}
 </div>        
 <div class="two_vita_Intention ">{yun:}t key='admin_tool_00129'{/yun}：{yun:}$Info.hy{/yun}  </div>
-<div class="two_vita_Intention two_vita_Intention_w420">待遇要求：{yun:}$Info.salary{/yun}</div>                             
+<div class="two_vita_Intention two_vita_Intention_w420">{yun:}t key='resume_00056'{/yun}：{yun:}$Info.salary{/yun}</div>                             
 {yun:}if $Info.report{/yun}<div class="two_vita_Intention ">{yun:}t key='common_01705'{/yun}：{yun:}$Info.report{/yun}</div>{yun:}/if{/yun}
 {yun:}if $Info.type{/yun}<div class="two_vita_Intention two_vita_Intention_w420">{yun:}t key='common_01837'{/yun}：{yun:}$Info.type{/yun}</div>{yun:}/if{/yun}
 {yun:}if $Info.jobstatus{/yun}<div class="two_vita_Intention  two_vita_Intention_w420">{yun:}t key='wap_user_00017'{/yun}：{yun:}$Info.jobstatus{/yun}</div>{yun:}/if{/yun}
@@ -137,7 +137,7 @@
       <div class="two_vita_skill_icon"></div>
           {yun:}if $one.sdate!=0{/yun}<div class="two_vita_introduction_a two_vita_date">{yun:}$one.sdate|date_format:"%Y年%m月"{/yun} - {yun:}if $one.edate{/yun}{yun:}$one.edate|date_format:"%Y年%m月"{/yun}{yun:}else{/yun}{yun:}t key='wap_js_00170'{/yun}{yun:}/if{/yun}</div >{yun:}/if{/yun}
       <div  class="two_vita_introduction_a two_vita_dw_name blod">{yun:}$one.name{/yun}</div >
-      {yun:}if $one.title{/yun}<div  class="two_vita_introduction_a two_vita_dw_zw  blod">担任：{yun:}$one.title{/yun}</div >{yun:}/if{/yun}
+      {yun:}if $one.title{/yun}<div  class="two_vita_introduction_a two_vita_dw_zw  blod">{yun:}t key='wap_00975'{/yun}：{yun:}$one.title{/yun}</div >{yun:}/if{/yun}
       </div>
           {yun:}if $one.content{/yun}<div class="two_vita_skill_Intention">工作职责：{yun:}$one.content{/yun} </div>{yun:}/if{/yun}
           {yun:}if $one.sdate!=0{/yun}<div class="two_vita_skill_Intention"><span style="color: red;">工作时长：{yun:}$one.time_n{/yun}</span></div>{yun:}/if{/yun}
@@ -193,7 +193,7 @@
         <div class="two_vita_skill_icon"></div>
             {yun:}if $one.sdate>0{/yun}<div class="two_vita_introduction_a two_vita_date">{yun:}$one.sdate|date_format:"%Y年%m月"{/yun} - {yun:}$one.edate|date_format:"%Y年%m月"{/yun} </div >{yun:}/if{/yun}
         <div  class="two_vita_introduction_a two_vita_dw_name blod">{yun:}$one.name{/yun}</div >   
-        {yun:}if $one.title{/yun}<div  class="two_vita_introduction_a two_vita_dw_zw blod">担任：{yun:}$one.title{/yun}</div> {yun:}/if{/yun} 
+        {yun:}if $one.title{/yun}<div  class="two_vita_introduction_a two_vita_dw_zw blod">{yun:}t key='wap_00975'{/yun}：{yun:}$one.title{/yun}</div> {yun:}/if{/yun} 
         </div>
         {yun:}if $one.content{/yun}<div class="two_vita_skill_Intention">{yun:}t key='admin_user_00228'{/yun}：{yun:}$one.content{/yun} </div>{yun:}/if{/yun}        
         </div>
@@ -236,7 +236,7 @@
 			<div class="two_vita_list">
 				<div class="two_vita_list_h1">
 					<span class="two_vita_list_h1_span">
-						我的作品
+						{yun:}t key='wap_01601'{/yun}
 						<i class="two_vita_list_h1_icon reaume_iconzp"></i>
 						<i class="two_vita_list_h1_icon2 two_vita_red"></i>
 					</span>
@@ -286,7 +286,7 @@
           <div class="two_vita_Intention">{yun:}t key='wap_user_00243'{/yun}：{yun:}$Info.address|mb_substr:0:16:'utf-8'{/yun}</div>
           {yun:}/if{/yun}
           {yun:}if $Info.qq{/yun}
-          <div class="two_vita_Intention">联系Q Q：{yun:}$Info.qq{/yun}</div>
+          <div class="two_vita_Intention">{yun:}t key='common_02458'{/yun}Q Q：{yun:}$Info.qq{/yun}</div>
             {yun:}/if{/yun}  
           {yun:}if $Info.homepage{/yun}
           <div class="two_vita_Intention">{yun:}t key='member_com_00008'{/yun}：{yun:}$Info.homepage{/yun}</div>

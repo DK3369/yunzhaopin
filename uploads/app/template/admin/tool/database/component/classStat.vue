@@ -5,20 +5,20 @@
                 <div class="yejiTabCont">
                     <div class="yejiTabHead">
                         <div class="yejiTabHeaButn">
-                            <span :class="search.days == -1 ? 'dayCur' : ''" @click="handleSearch(-1)">昨天</span>
-                            <span :class="search.days == 1 ? 'dayCur' : ''" @click="handleSearch(1)">今天</span>
-                            <span :class="search.days == 2 ? 'dayCur' : ''" @click="handleSearch(2)">一周内</span>
-                            <span :class="search.days == 3 ? 'dayCur' : ''" @click="handleSearch(3)">一月内</span>
-                            <span :class="search.days == 4 ? 'dayCur' : ''" @click="handleSearch(4)">半年</span>
-                            <span :class="search.days == 5 ? 'dayCur' : ''" @click="handleSearch(5)">一年</span>
+                            <span :class="search.days == -1 ? 'dayCur' : ''" @click="handleSearch(-1)">{yun:}t key='common_02000'{/yun}</span>
+                            <span :class="search.days == 1 ? 'dayCur' : ''" @click="handleSearch(1)">{yun:}t key='common_01940'{/yun}</span>
+                            <span :class="search.days == 2 ? 'dayCur' : ''" @click="handleSearch(2)">{yun:}t key='admin_tool_00142'{/yun}</span>
+                            <span :class="search.days == 3 ? 'dayCur' : ''" @click="handleSearch(3)">{yun:}t key='admin_tool_00143'{/yun}</span>
+                            <span :class="search.days == 4 ? 'dayCur' : ''" @click="handleSearch(4)">{yun:}t key='admin_tool_00146'{/yun}</span>
+                            <span :class="search.days == 5 ? 'dayCur' : ''" @click="handleSearch(5)">{yun:}t key='admin_tool_00145'{/yun}</span>
                         </div>
                         <div class="yejiTabHeaIput">
                             <el-date-picker v-model="search.time" type="daterange" :picker-options="pickerOptions"
-                                range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期"
+                                range-separator="至" start-placeholder="{yun:}t key='admin_00343'{/yun}" end-placeholder="{yun:}t key='admin_00344'{/yun}"
                                 value-format="timestamp" @change="handleSearch(0)"></el-date-picker>
                         </div>
                         <div style="margin-left: 5px;">
-                            <el-button type="primary" size="mini" icon="el-icon-search" @click="handleSearch(0)">查询</el-button>
+                            <el-button type="primary" size="mini" icon="el-icon-search" @click="handleSearch(0)">{yun:}t key='admin_user_weipin_00049'{/yun}</el-button>
                         </div>
                     </div>
                     <div class="yejiTabChats">
@@ -27,7 +27,7 @@
                                 <div class="yejiTabDatLis">
                                     <div class="yejiTabDatTite">
                                         <img src="../../images/number1.png" alt="">
-                                        <span class="spannum">注册会员总数</span>
+                                        <span class="spannum">{yun:}t key='admin_tool_00105'{/yun}</span>
                                     </div>
                                     <div class="yejiTabDatNum">
                                         <span>{{ AllNum.allReg }}</span>
@@ -36,8 +36,8 @@
                                 <div class="yejiTabDatLis">
                                     <div class="yejiTabDatTite">
                                         <img src="../../images/number2.png" alt="">
-                                        <span class="spannum">企业会员</span>
-                                        <el-button type="primary" plain @click="showComBox(1)">点击查看</el-button>
+                                        <span class="spannum">{yun:}t key='admin_user_company_00281'{/yun}</span>
+                                        <el-button type="primary" plain @click="showComBox(1)">{yun:}t key='member_com_00325'{/yun}</el-button>
                                     </div>
                                     <div class="yejiTabDatNum">
                                         <span>{{ AllNum.comReg }}</span>
@@ -46,8 +46,8 @@
                                 <div class="yejiTabDatLis">
                                     <div class="yejiTabDatTite">
                                         <img src="../../images/number3.png" alt="">
-                                        <span class="spannum">个人会员</span>
-                                        <el-button type="primary" plain @click="showUserBox(1)">点击查看</el-button>
+                                        <span class="spannum">{yun:}t key='admin_system_00129'{/yun}</span>
+                                        <el-button type="primary" plain @click="showUserBox(1)">{yun:}t key='member_com_00325'{/yun}</el-button>
                                     </div>
                                     <div class="yejiTabDatNum">
                                         <span>{{ AllNum.userReg }}</span>
@@ -56,13 +56,13 @@
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>会员注册统计</span>
+                                    <span>{yun:}t key='admin_tool_00168'{/yun}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main11"></div>
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>注册来源</span>
+                                    <span>{yun:}t key='admin_tool_00154'{/yun}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main11_1"></div>
                             </div>
@@ -72,7 +72,7 @@
                                 <div class="yejiTabDatLis">
                                     <div class="yejiTabDatTite">
                                         <img src="../../images/number1.png" alt="">
-                                        <span class="spannum">登录会员总数</span>
+                                        <span class="spannum">{yun:}t key='admin_tool_00106'{/yun}</span>
                                     </div>
                                     <div class="yejiTabDatNum">
                                         <span>{{ AllNum.allLogin }}</span>
@@ -81,8 +81,8 @@
                                 <div class="yejiTabDatLis">
                                     <div class="yejiTabDatTite">
                                         <img src="../../images/number2.png" alt="">
-                                        <span class="spannum">企业会员</span>
-                                        <el-button type="primary" plain @click="showComBox(2)">点击查看</el-button>
+                                        <span class="spannum">{yun:}t key='admin_user_company_00281'{/yun}</span>
+                                        <el-button type="primary" plain @click="showComBox(2)">{yun:}t key='member_com_00325'{/yun}</el-button>
                                     </div>
                                     <div class="yejiTabDatNum">
                                         <span>{{ AllNum.comLogin }}</span>
@@ -91,8 +91,8 @@
                                 <div class="yejiTabDatLis">
                                     <div class="yejiTabDatTite">
                                         <img src="../../images/number3.png" alt="">
-                                        <span class="spannum">个人会员</span>
-                                        <el-button type="primary" plain @click="showUserBox(2)">点击查看</el-button>
+                                        <span class="spannum">{yun:}t key='admin_system_00129'{/yun}</span>
+                                        <el-button type="primary" plain @click="showUserBox(2)">{yun:}t key='member_com_00325'{/yun}</el-button>
                                     </div>
                                     <div class="yejiTabDatNum">
                                         <span>{{ AllNum.userLogin }}</span>
@@ -101,7 +101,7 @@
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>会员登录统计</span>
+                                    <span>{yun:}t key='admin_tool_00169'{/yun}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main12"></div>
                             </div>
@@ -113,18 +113,18 @@
                 <div class="yejiTabCont">
                     <div class="yejiTabHead">
                         <div class="yejiTabHeaButn">
-                            <span :class="search.days == -1 ? 'dayCur' : ''" @click="handleSearch(-1)">昨天</span>
-                            <span :class="search.days == 1 ? 'dayCur' : ''" @click="handleSearch(1)">今天</span>
-                            <span :class="search.days == 2 ? 'dayCur' : ''" @click="handleSearch(2)">一周内</span>
-                            <span :class="search.days == 3 ? 'dayCur' : ''" @click="handleSearch(3)">一月内</span>
-                            <span :class="search.days == 4 ? 'dayCur' : ''" @click="handleSearch(4)">半年</span>
-                            <span :class="search.days == 5 ? 'dayCur' : ''" @click="handleSearch(5)">一年</span>
+                            <span :class="search.days == -1 ? 'dayCur' : ''" @click="handleSearch(-1)">{yun:}t key='common_02000'{/yun}</span>
+                            <span :class="search.days == 1 ? 'dayCur' : ''" @click="handleSearch(1)">{yun:}t key='common_01940'{/yun}</span>
+                            <span :class="search.days == 2 ? 'dayCur' : ''" @click="handleSearch(2)">{yun:}t key='admin_tool_00142'{/yun}</span>
+                            <span :class="search.days == 3 ? 'dayCur' : ''" @click="handleSearch(3)">{yun:}t key='admin_tool_00143'{/yun}</span>
+                            <span :class="search.days == 4 ? 'dayCur' : ''" @click="handleSearch(4)">{yun:}t key='admin_tool_00146'{/yun}</span>
+                            <span :class="search.days == 5 ? 'dayCur' : ''" @click="handleSearch(5)">{yun:}t key='admin_tool_00145'{/yun}</span>
                         </div>
                         <div class="yejiTabHeaIput">
                             <el-date-picker v-model="search.time" size="small" type="daterange"
-                                :picker-options="pickerOptions" range-separator="至" start-placeholder="开始日期"
-                                end-placeholder="结束日期" value-format="timestamp" @change="handleSearch(0)"></el-date-picker>
-                            <el-button type="primary" icon="el-icon-search" @click="handleSearch(0)">查询</el-button>
+                                :picker-options="pickerOptions" range-separator="至" start-placeholder="{yun:}t key='admin_00343'{/yun}"
+                                end-placeholder="{yun:}t key='admin_00344'{/yun}" value-format="timestamp" @change="handleSearch(0)"></el-date-picker>
+                            <el-button type="primary" icon="el-icon-search" @click="handleSearch(0)">{yun:}t key='admin_user_weipin_00049'{/yun}</el-button>
                         </div>
                     </div>
                     <div class="yejiTabChats">
@@ -133,7 +133,7 @@
                                 <div class="yejiTabDatLis">
                                     <div class="yejiTabDatTite">
                                         <img src="../../images/dataim4.png" alt="">
-                                        <span class="spannum">职位浏览总数</span>
+                                        <span class="spannum">{yun:}t key='admin_tool_00112'{/yun}</span>
                                     </div>
                                     <div class="yejiTabDatNum">
                                         <span>{{ AllNum.job }}</span>
@@ -142,13 +142,13 @@
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>职位浏览统计</span>
+                                    <span>{yun:}t key='admin_tool_00171'{/yun}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main13"></div>
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>最受关注岗位</span>
+                                    <span>{yun:}t key='admin_tool_00100'{/yun}</span>
                                 </div>
                                 <div class="tabEchatDome">
                                     <el-table :data="topList.jobList" height="300" border style="width: 100%" v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
@@ -158,7 +158,7 @@
                                             <template slot-scope="scope">
                                                 <div class="cz_button">
                                                     <el-button size="small" type="primary"
-                                                        @click="openPage(scope.row.id, 'job')">查看
+                                                        @click="openPage(scope.row.id, 'job')">{yun:}t key='wap_com_00427'{/yun}
                                                     </el-button>
                                                 </div>
                                             </template>
@@ -168,7 +168,7 @@
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>最受欢迎企业</span>
+                                    <span>{yun:}t key='admin_tool_00102'{/yun}</span>
                                 </div>
                                 <div class="tabEchatDome">
                                     <el-table :data="topList.jobComList" height="300" border style="width: 100%" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
@@ -178,7 +178,7 @@
                                             <template slot-scope="scope">
                                                 <div class="cz_button">
                                                     <el-button size="small" type="primary"
-                                                        @click="openPage(scope.row.uid, 'company')">查看
+                                                        @click="openPage(scope.row.uid, 'company')">{yun:}t key='wap_com_00427'{/yun}
                                                     </el-button>
                                                 </div>
                                             </template>
@@ -192,7 +192,7 @@
                                 <div class="yejiTabDatLis">
                                     <div class="yejiTabDatTite">
                                         <img src="../../images/dataim5.png" alt="">
-                                        <span class="spannum">简历浏览总数</span>
+                                        <span class="spannum">{yun:}t key='admin_tool_00110'{/yun}</span>
                                     </div>
                                     <div class="yejiTabDatNum">
                                         <span>{{ AllNum.resume }}</span>
@@ -201,13 +201,13 @@
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>简历浏览统计</span>
+                                    <span>{yun:}t key='admin_tool_00170'{/yun}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main14"></div>
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>最受关注简历</span>
+                                    <span>{yun:}t key='admin_tool_00101'{/yun}</span>
                                 </div>
                                 <div class="tabEchatDome">
                                     <el-table :data="topList.resumeList" height="300" border style="width: 100%" v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
@@ -225,7 +225,7 @@
                                             <template slot-scope="scope">
                                                 <div class="cz_button">
                                                     <el-button size="small" type="primary"
-                                                        @click="openPage(scope.row.id, 'resume')">查看
+                                                        @click="openPage(scope.row.id, 'resume')">{yun:}t key='wap_com_00427'{/yun}
                                                     </el-button>
                                                 </div>
                                             </template>
@@ -235,7 +235,7 @@
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>最活跃企业</span>
+                                    <span>{yun:}t key='admin_tool_00118'{/yun}</span>
                                 </div>
                                 <div class="tabEchatDome">
                                     <el-table :data="topList.resumeComList" height="300" border style="width: 100%" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
@@ -245,7 +245,7 @@
                                             <template slot-scope="scope">
                                                 <div class="cz_button">
                                                     <el-button size="small" type="primary"
-                                                        @click="openPage(scope.row.uid, 'company')">查看
+                                                        @click="openPage(scope.row.uid, 'company')">{yun:}t key='wap_com_00427'{/yun}
                                                     </el-button>
                                                 </div>
                                             </template>
@@ -261,18 +261,18 @@
                 <div class="yejiTabCont">
                     <div class="yejiTabHead">
                         <div class="yejiTabHeaButn">
-                            <span :class="search.days == -1 ? 'dayCur' : ''" @click="handleSearch(-1)">昨天</span>
-                            <span :class="search.days == 1 ? 'dayCur' : ''" @click="handleSearch(1)">今天</span>
-                            <span :class="search.days == 2 ? 'dayCur' : ''" @click="handleSearch(2)">一周内</span>
-                            <span :class="search.days == 3 ? 'dayCur' : ''" @click="handleSearch(3)">一月内</span>
-                            <span :class="search.days == 4 ? 'dayCur' : ''" @click="handleSearch(4)">半年</span>
-                            <span :class="search.days == 5 ? 'dayCur' : ''" @click="handleSearch(5)">一年</span>
+                            <span :class="search.days == -1 ? 'dayCur' : ''" @click="handleSearch(-1)">{yun:}t key='common_02000'{/yun}</span>
+                            <span :class="search.days == 1 ? 'dayCur' : ''" @click="handleSearch(1)">{yun:}t key='common_01940'{/yun}</span>
+                            <span :class="search.days == 2 ? 'dayCur' : ''" @click="handleSearch(2)">{yun:}t key='admin_tool_00142'{/yun}</span>
+                            <span :class="search.days == 3 ? 'dayCur' : ''" @click="handleSearch(3)">{yun:}t key='admin_tool_00143'{/yun}</span>
+                            <span :class="search.days == 4 ? 'dayCur' : ''" @click="handleSearch(4)">{yun:}t key='admin_tool_00146'{/yun}</span>
+                            <span :class="search.days == 5 ? 'dayCur' : ''" @click="handleSearch(5)">{yun:}t key='admin_tool_00145'{/yun}</span>
                         </div>
                         <div class="yejiTabHeaIput">
                             <el-date-picker v-model="search.time" size="small" type="daterange"
-                                :picker-options="pickerOptions" range-separator="至" start-placeholder="开始日期"
-                                end-placeholder="结束日期" value-format="timestamp" @change="handleSearch(0)"></el-date-picker>
-                            <el-button type="primary" icon="el-icon-search" @click="handleSearch(0)">查询</el-button>
+                                :picker-options="pickerOptions" range-separator="至" start-placeholder="{yun:}t key='admin_00343'{/yun}"
+                                end-placeholder="{yun:}t key='admin_00344'{/yun}" value-format="timestamp" @change="handleSearch(0)"></el-date-picker>
+                            <el-button type="primary" icon="el-icon-search" @click="handleSearch(0)">{yun:}t key='admin_user_weipin_00049'{/yun}</el-button>
                         </div>
                     </div>
                     <div class="yejiTabChats">
@@ -281,7 +281,7 @@
                                 <div class="yejiTabDatLis">
                                     <div class="yejiTabDatTite">
                                         <img src="../../images/dataim7.png" alt="">
-                                        <span class="spannum">邀请面试总数</span>
+                                        <span class="spannum">{yun:}t key='admin_tool_00113'{/yun}</span>
                                     </div>
                                     <div class="yejiTabDatNum">
                                         <span>{{ AllNum.invite }}</span>
@@ -290,13 +290,13 @@
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>邀请面试统计</span>
+                                    <span>{yun:}t key='admin_tool_00114'{/yun}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main15"></div>
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>求职者被邀请排行</span>
+                                    <span>{yun:}t key='admin_tool_00093'{/yun}</span>
                                 </div>
                                 <div class="tabEchatDome">
                                     <el-table :data="topList.inviteResume" height="300" border style="width: 100%" v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
@@ -306,7 +306,7 @@
                                             <template slot-scope="scope">
                                                 <div class="cz_button">
                                                     <el-button size="small" type="primary"
-                                                        @click="openPage(scope.row.eid, 'resume')">查看
+                                                        @click="openPage(scope.row.eid, 'resume')">{yun:}t key='wap_com_00427'{/yun}
                                                     </el-button>
                                                 </div>
                                             </template>
@@ -316,7 +316,7 @@
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>企业邀请面试排行</span>
+                                    <span>{yun:}t key='admin_tool_00089'{/yun}</span>
                                 </div>
                                 <div class="tabEchatDome">
                                     <el-table :data="topList.inviteCom" height="300" border style="width: 100%" v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
@@ -326,7 +326,7 @@
                                             <template slot-scope="scope">
                                                 <div class="cz_button">
                                                     <el-button size="small" type="primary"
-                                                        @click="openPage(scope.row.uid, 'company')">查看
+                                                        @click="openPage(scope.row.uid, 'company')">{yun:}t key='wap_com_00427'{/yun}
                                                     </el-button>
                                                 </div>
                                             </template>
@@ -336,31 +336,31 @@
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>热门招聘需求行业统计</span>
+                                    <span>{yun:}t key='admin_tool_00083'{/yun}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main15_1"></div>
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>招聘需求区域统计</span>
+                                    <span>{yun:}t key='admin_tool_00090'{/yun}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main15_2"></div>
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>招聘需求薪资统计</span>
+                                    <span>{yun:}t key='admin_tool_00092'{/yun}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main15_3"></div>
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>招聘需求学历统计</span>
+                                    <span>{yun:}t key='admin_tool_00091'{/yun}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main15_4"></div>
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>招聘需求工作经验统计</span>
+                                    <span>{yun:}t key='admin_tool_00082'{/yun}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main15_5"></div>
                             </div>
@@ -370,7 +370,7 @@
                                 <div class="yejiTabDatLis">
                                     <div class="yejiTabDatTite">
                                         <img src="../../images/dataim6.png" alt="">
-                                        <span class="spannum">简历下载总数</span>
+                                        <span class="spannum">{yun:}t key='admin_tool_00107'{/yun}</span>
                                     </div>
                                     <div class="yejiTabDatNum">
                                         <span>{{ AllNum.down }}</span>
@@ -379,13 +379,13 @@
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>简历下载统计</span>
+                                    <span>{yun:}t key='admin_tool_00108'{/yun}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main16"></div>
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>简历被下载次数排行</span>
+                                    <span>{yun:}t key='admin_tool_00085'{/yun}</span>
                                 </div>
                                 <div class="tabEchatDome">
                                     <el-table :data="topList.downResume" height="300" border style="width: 100%" v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
@@ -395,7 +395,7 @@
                                             <template slot-scope="scope">
                                                 <div class="cz_button">
                                                     <el-button size="small" type="primary"
-                                                        @click="openPage(scope.row.eid, 'resume')">查看
+                                                        @click="openPage(scope.row.eid, 'resume')">{yun:}t key='wap_com_00427'{/yun}
                                                     </el-button>
                                                 </div>
                                             </template>
@@ -405,7 +405,7 @@
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>企业下载简历数排行</span>
+                                    <span>{yun:}t key='admin_tool_00084'{/yun}</span>
                                 </div>
                                 <div class="tabEchatDome">
                                     <el-table :data="topList.downCom" height="300" border style="width: 100%" v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
@@ -415,7 +415,7 @@
                                             <template slot-scope="scope">
                                                 <div class="cz_button">
                                                     <el-button size="small" type="primary"
-                                                        @click="openPage(scope.row.uid, 'company')">查看
+                                                        @click="openPage(scope.row.uid, 'company')">{yun:}t key='wap_com_00427'{/yun}
                                                     </el-button>
                                                 </div>
                                             </template>
@@ -425,37 +425,37 @@
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>热门企业需求行业</span>
+                                    <span>{yun:}t key='admin_tool_00094'{/yun}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main16_1"></div>
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>紧缺人才地区</span>
+                                    <span>{yun:}t key='admin_tool_00111'{/yun}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main16_2"></div>
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>可接受薪资要求</span>
+                                    <span>{yun:}t key='admin_tool_00095'{/yun}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main16_3"></div>
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>关注学历配比</span>
+                                    <span>{yun:}t key='admin_tool_00097'{/yun}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main16_4"></div>
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>求职工作经验</span>
+                                    <span>{yun:}t key='admin_tool_00104'{/yun}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main16_5"></div>
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>男女比例</span>
+                                    <span>{yun:}t key='admin_tool_00133'{/yun}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main16_6"></div>
                             </div>
@@ -467,18 +467,18 @@
                 <div class="yejiTabCont">
                     <div class="yejiTabHead">
                         <div class="yejiTabHeaButn">
-                            <span :class="search.days == -1 ? 'dayCur' : ''" @click="handleSearch(-1)">昨天</span>
-                            <span :class="search.days == 1 ? 'dayCur' : ''" @click="handleSearch(1)">今天</span>
-                            <span :class="search.days == 2 ? 'dayCur' : ''" @click="handleSearch(2)">一周内</span>
-                            <span :class="search.days == 3 ? 'dayCur' : ''" @click="handleSearch(3)">一月内</span>
-                            <span :class="search.days == 4 ? 'dayCur' : ''" @click="handleSearch(4)">半年</span>
-                            <span :class="search.days == 5 ? 'dayCur' : ''" @click="handleSearch(5)">一年</span>
+                            <span :class="search.days == -1 ? 'dayCur' : ''" @click="handleSearch(-1)">{yun:}t key='common_02000'{/yun}</span>
+                            <span :class="search.days == 1 ? 'dayCur' : ''" @click="handleSearch(1)">{yun:}t key='common_01940'{/yun}</span>
+                            <span :class="search.days == 2 ? 'dayCur' : ''" @click="handleSearch(2)">{yun:}t key='admin_tool_00142'{/yun}</span>
+                            <span :class="search.days == 3 ? 'dayCur' : ''" @click="handleSearch(3)">{yun:}t key='admin_tool_00143'{/yun}</span>
+                            <span :class="search.days == 4 ? 'dayCur' : ''" @click="handleSearch(4)">{yun:}t key='admin_tool_00146'{/yun}</span>
+                            <span :class="search.days == 5 ? 'dayCur' : ''" @click="handleSearch(5)">{yun:}t key='admin_tool_00145'{/yun}</span>
                         </div>
                         <div class="yejiTabHeaIput">
                             <el-date-picker v-model="search.time" size="small" type="daterange"
-                                :picker-options="pickerOptions" range-separator="至" start-placeholder="开始日期"
-                                end-placeholder="结束日期" value-format="timestamp" @change="handleSearch(0)"></el-date-picker>
-                            <el-button type="primary" icon="el-icon-search" @click="handleSearch(0)">查询</el-button>
+                                :picker-options="pickerOptions" range-separator="至" start-placeholder="{yun:}t key='admin_00343'{/yun}"
+                                end-placeholder="{yun:}t key='admin_00344'{/yun}" value-format="timestamp" @change="handleSearch(0)"></el-date-picker>
+                            <el-button type="primary" icon="el-icon-search" @click="handleSearch(0)">{yun:}t key='admin_user_weipin_00049'{/yun}</el-button>
                         </div>
                     </div>
                     <div class="yejiTabChats">
@@ -487,7 +487,7 @@
                                 <div class="yejiTabDatLis">
                                     <div class="yejiTabDatTite">
                                         <img src="../../images/nav_reward1.png" alt="">
-                                        <span class="spannum">充值总金额</span>
+                                        <span class="spannum">{yun:}t key='admin_tool_00158'{/yun}</span>
                                     </div>
                                     <div class="yejiTabDatNum">
                                         <span>{{ AllNum.order }}</span>
@@ -496,13 +496,13 @@
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>充值金额统计</span>
+                                    <span>{yun:}t key='admin_tool_00159'{/yun}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main17"></div>
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>充值用户排行</span>
+                                    <span>{yun:}t key='admin_tool_00096'{/yun}</span>
                                 </div>
                                 <div class="tabEchatDome">
                                     <el-table :data="topList.orderCom" height="300" border style="width: 100%" v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
@@ -513,13 +513,13 @@
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>订单类型</span>
+                                    <span>{yun:}t key='wap_user_00318'{/yun}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main17_1"></div>
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>支付方式</span>
+                                    <span>{yun:}t key='wap_user_00313'{/yun}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main17_2"></div>
                             </div>
@@ -529,7 +529,7 @@
                                 <div class="yejiTabDatLis">
                                     <div class="yejiTabDatTite">
                                         <img src="../../images/nav_data1.png" alt="">
-                                        <span class="spannum">广告点击数</span>
+                                        <span class="spannum">{yun:}t key='admin_tool_00116'{/yun}</span>
                                     </div>
                                     <div class="yejiTabDatNum">
                                         <span>{{ AllNum.ad }}</span>
@@ -538,13 +538,13 @@
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>广告点击统计</span>
+                                    <span>{yun:}t key='admin_tool_00099'{/yun}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main18"></div>
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>点击量排名</span>
+                                    <span>{yun:}t key='admin_tool_00119'{/yun}</span>
                                 </div>
                                 <div class="tabEchatDome">
                                     <el-table :data="topList.adClick" height="300" border style="width: 100%" v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
@@ -561,18 +561,18 @@
                 <div class="yejiTabCont">
                     <div class="yejiTabHead">
                         <div class="yejiTabHeaButn">
-                            <span :class="search.days == -1 ? 'dayCur' : ''" @click="handleSearch(-1)">昨天</span>
-                            <span :class="search.days == 1 ? 'dayCur' : ''" @click="handleSearch(1)">今天</span>
-                            <span :class="search.days == 2 ? 'dayCur' : ''" @click="handleSearch(2)">一周内</span>
-                            <span :class="search.days == 3 ? 'dayCur' : ''" @click="handleSearch(3)">一月内</span>
-                            <span :class="search.days == 4 ? 'dayCur' : ''" @click="handleSearch(4)">半年</span>
-                            <span :class="search.days == 5 ? 'dayCur' : ''" @click="handleSearch(5)">一年</span>
+                            <span :class="search.days == -1 ? 'dayCur' : ''" @click="handleSearch(-1)">{yun:}t key='common_02000'{/yun}</span>
+                            <span :class="search.days == 1 ? 'dayCur' : ''" @click="handleSearch(1)">{yun:}t key='common_01940'{/yun}</span>
+                            <span :class="search.days == 2 ? 'dayCur' : ''" @click="handleSearch(2)">{yun:}t key='admin_tool_00142'{/yun}</span>
+                            <span :class="search.days == 3 ? 'dayCur' : ''" @click="handleSearch(3)">{yun:}t key='admin_tool_00143'{/yun}</span>
+                            <span :class="search.days == 4 ? 'dayCur' : ''" @click="handleSearch(4)">{yun:}t key='admin_tool_00146'{/yun}</span>
+                            <span :class="search.days == 5 ? 'dayCur' : ''" @click="handleSearch(5)">{yun:}t key='admin_tool_00145'{/yun}</span>
                         </div>
                         <div class="yejiTabHeaIput">
                             <el-date-picker v-model="search.time" type="daterange" :picker-options="pickerOptions"
-                                range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期"
+                                range-separator="至" start-placeholder="{yun:}t key='admin_00343'{/yun}" end-placeholder="{yun:}t key='admin_00344'{/yun}"
                                 value-format="timestamp" @change="handleSearch(0)"></el-date-picker>
-                            <el-button type="primary" icon="el-icon-search" @click="handleSearch(0)">查询</el-button>
+                            <el-button type="primary" icon="el-icon-search" @click="handleSearch(0)">{yun:}t key='admin_user_weipin_00049'{/yun}</el-button>
                         </div>
                     </div>
                     <div class="yejiTabChats">
@@ -581,7 +581,7 @@
                                 <div class="yejiTabDatLis">
                                     <div class="yejiTabDatTite">
                                         <img src="../../images/dataim4.png" alt="">
-                                        <span class="spannum">发布职位数据</span>
+                                        <span class="spannum">{yun:}t key='admin_tool_00160'{/yun}</span>
                                     </div>
                                     <div class="yejiTabDatNum">
                                         <span>{{ AllNum.addJob }}</span>
@@ -590,7 +590,7 @@
                                 <div class="yejiTabDatLis">
                                     <div class="yejiTabDatTite">
                                         <img src="../../images/dataim5.png" alt="">
-                                        <span class="spannum">刷新职位数据</span>
+                                        <span class="spannum">{yun:}t key='admin_tool_00098'{/yun}</span>
                                     </div>
                                     <div class="yejiTabDatNum">
                                         <span>{{ AllNum.upJob }}</span>
@@ -599,13 +599,13 @@
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>发布/刷新职位统计</span>
+                                    <span>{yun:}t key='admin_tool_00161'{/yun}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main19"></div>
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>最多发布企业</span>
+                                    <span>{yun:}t key='admin_tool_00103'{/yun}</span>
                                 </div>
                                 <div class="tabEchatDome">
                                     <el-table :data="topList.addJobCom" height="300" border style="width: 100%" v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
@@ -615,7 +615,7 @@
                                             <template slot-scope="scope">
                                                 <div class="cz_button">
                                                     <el-button size="small" type="primary"
-                                                        @click="openPage(scope.row.uid, 'company')">查看
+                                                        @click="openPage(scope.row.uid, 'company')">{yun:}t key='wap_com_00427'{/yun}
                                                     </el-button>
                                                 </div>
                                             </template>
@@ -625,31 +625,31 @@
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>热招行业</span>
+                                    <span>{yun:}t key='admin_tool_00131'{/yun}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main19_1"></div>
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>热门区域</span>
+                                    <span>{yun:}t key='admin_tool_00132'{/yun}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main19_2"></div>
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>薪资待遇</span>
+                                    <span>{yun:}t key='wap_com_00290'{/yun}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main19_3"></div>
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>学历要求</span>
+                                    <span>{yun:}t key='wap_com_00283'{/yun}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main19_4"></div>
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>工作经验</span>
+                                    <span>{yun:}t key='wap_user_00240'{/yun}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main19_5"></div>
                             </div>
@@ -659,7 +659,7 @@
                                 <div class="yejiTabDatLis">
                                     <div class="yejiTabDatTite">
                                         <img src="../../images/dataim1.png" alt="">
-                                        <span class="spannum">发布简历数据</span>
+                                        <span class="spannum">{yun:}t key='admin_tool_00162'{/yun}</span>
                                     </div>
                                     <div class="yejiTabDatNum">
                                         <span>{{ AllNum.addResume }}</span>
@@ -668,7 +668,7 @@
                                 <div class="yejiTabDatLis">
                                     <div class="yejiTabDatTite">
                                         <img src="../../images/dataim5.png" alt="">
-                                        <span class="spannum">刷新简历数据</span>
+                                        <span class="spannum">{yun:}t key='admin_tool_00163'{/yun}</span>
                                     </div>
                                     <div class="yejiTabDatNum">
                                         <span>{{ AllNum.upResume }}</span>
@@ -677,49 +677,49 @@
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>发布/刷新简历统计</span>
+                                    <span>{yun:}t key='admin_tool_00164'{/yun}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main20"></div>
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>期望行业</span>
+                                    <span>{yun:}t key='admin_tool_00129'{/yun}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main20_1"></div>
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>意向区域</span>
+                                    <span>{yun:}t key='admin_tool_00126'{/yun}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main20_2"></div>
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>期望薪资</span>
+                                    <span>{yun:}t key='wap_user_00016'{/yun}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main20_3"></div>
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>教育程度</span>
+                                    <span>{yun:}t key='member_com_00011'{/yun}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main20_4"></div>
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>工作经验</span>
+                                    <span>{yun:}t key='wap_user_00240'{/yun}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main20_5"></div>
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>男女比例</span>
+                                    <span>{yun:}t key='admin_tool_00133'{/yun}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main20_6"></div>
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>数据来源</span>
+                                    <span>{yun:}t key='admin_yunying_00139'{/yun}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main20_7"></div>
                             </div>
@@ -731,18 +731,18 @@
                 <div class="yejiTabCont">
                     <div class="yejiTabHead">
                         <div class="yejiTabHeaButn">
-                            <span :class="search.days == -1 ? 'dayCur' : ''" @click="handleSearch(-1)">昨天</span>
-                            <span :class="search.days == 1 ? 'dayCur' : ''" @click="handleSearch(1)">今天</span>
-                            <span :class="search.days == 2 ? 'dayCur' : ''" @click="handleSearch(2)">一周内</span>
-                            <span :class="search.days == 3 ? 'dayCur' : ''" @click="handleSearch(3)">一月内</span>
-                            <span :class="search.days == 4 ? 'dayCur' : ''" @click="handleSearch(4)">半年</span>
-                            <span :class="search.days == 5 ? 'dayCur' : ''" @click="handleSearch(5)">一年</span>
+                            <span :class="search.days == -1 ? 'dayCur' : ''" @click="handleSearch(-1)">{yun:}t key='common_02000'{/yun}</span>
+                            <span :class="search.days == 1 ? 'dayCur' : ''" @click="handleSearch(1)">{yun:}t key='common_01940'{/yun}</span>
+                            <span :class="search.days == 2 ? 'dayCur' : ''" @click="handleSearch(2)">{yun:}t key='admin_tool_00142'{/yun}</span>
+                            <span :class="search.days == 3 ? 'dayCur' : ''" @click="handleSearch(3)">{yun:}t key='admin_tool_00143'{/yun}</span>
+                            <span :class="search.days == 4 ? 'dayCur' : ''" @click="handleSearch(4)">{yun:}t key='admin_tool_00146'{/yun}</span>
+                            <span :class="search.days == 5 ? 'dayCur' : ''" @click="handleSearch(5)">{yun:}t key='admin_tool_00145'{/yun}</span>
                         </div>
                         <div class="yejiTabHeaIput">
                             <el-date-picker v-model="search.time" type="daterange" :picker-options="pickerOptions"
-                                range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期"
+                                range-separator="至" start-placeholder="{yun:}t key='admin_00343'{/yun}" end-placeholder="{yun:}t key='admin_00344'{/yun}"
                                 value-format="timestamp" @change="handleSearch(0)"></el-date-picker>
-                            <el-button type="primary" icon="el-icon-search" @click="handleSearch(0)">查询</el-button>
+                            <el-button type="primary" icon="el-icon-search" @click="handleSearch(0)">{yun:}t key='admin_user_weipin_00049'{/yun}</el-button>
                         </div>
                     </div>
                     <div class="yejiTabChats">
@@ -751,7 +751,7 @@
                                 <div class="yejiTabDatLis">
                                     <div class="yejiTabDatTite">
                                         <img src="../../images/number2.png" alt="">
-                                        <span class="spannum">企业数量</span>
+                                        <span class="spannum">{yun:}t key='admin_tool_00122'{/yun}</span>
                                     </div>
                                     <div class="yejiTabDatNum">
                                         <span>{{ AllNum.comOne }}</span>
@@ -760,25 +760,25 @@
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>企业统计</span>
+                                    <span>{yun:}t key='admin_tool_00123'{/yun}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main21"></div>
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>热门行业</span>
+                                    <span>{yun:}t key='admin_tool_00156'{/yun}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main21_1"></div>
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>会员类型</span>
+                                    <span>{yun:}t key='admin_tool_00157'{/yun}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main21_2"></div>
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>信息完善</span>
+                                    <span>{yun:}t key='admin_tool_00124'{/yun}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main21_3"></div>
                             </div>
@@ -788,7 +788,7 @@
                                 <div class="yejiTabDatLis">
                                     <div class="yejiTabDatTite">
                                         <img src="../../images/number3.png" alt="">
-                                        <span class="spannum">简历投递</span>
+                                        <span class="spannum">{yun:}t key='member_com_00152'{/yun}</span>
                                     </div>
                                     <div class="yejiTabDatNum">
                                         <span>{{ AllNum.apply }}</span>
@@ -797,13 +797,13 @@
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>简历投递统计</span>
+                                    <span>{yun:}t key='admin_tool_00109'{/yun}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main22"></div>
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>个人投递次数排行</span>
+                                    <span>{yun:}t key='admin_tool_00087'{/yun}</span>
                                 </div>
                                 <div class="tabEchatDome">
                                     <el-table :data="topList.applyResume" height="300" border style="width: 100%" v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
@@ -813,7 +813,7 @@
                                             <template slot-scope="scope">
                                                 <div class="cz_button">
                                                     <el-button size="small" type="primary"
-                                                        @click="openPage(scope.row.id, 'resume')">查看
+                                                        @click="openPage(scope.row.id, 'resume')">{yun:}t key='wap_com_00427'{/yun}
                                                     </el-button>
                                                 </div>
                                             </template>
@@ -823,7 +823,7 @@
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>企业收到简历排行</span>
+                                    <span>{yun:}t key='admin_tool_00088'{/yun}</span>
                                 </div>
                                 <div class="tabEchatDome">
                                     <el-table :data="topList.applyCom" height="300" border style="width: 100%" v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
@@ -833,7 +833,7 @@
                                             <template slot-scope="scope">
                                                 <div class="cz_button">
                                                     <el-button size="small" type="primary"
-                                                        @click="openPage(scope.row.uid, 'company')">查看
+                                                        @click="openPage(scope.row.uid, 'company')">{yun:}t key='wap_com_00427'{/yun}
                                                     </el-button>
                                                 </div>
                                             </template>
@@ -843,37 +843,37 @@
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>热门行业</span>
+                                    <span>{yun:}t key='admin_tool_00156'{/yun}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main22_1"></div>
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>热门区域</span>
+                                    <span>{yun:}t key='admin_tool_00132'{/yun}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main22_2"></div>
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>期望薪资</span>
+                                    <span>{yun:}t key='wap_user_00016'{/yun}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main22_3"></div>
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>教育程度</span>
+                                    <span>{yun:}t key='member_com_00011'{/yun}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main22_4"></div>
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>工作经验</span>
+                                    <span>{yun:}t key='wap_user_00240'{/yun}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main22_5"></div>
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>男女比例</span>
+                                    <span>{yun:}t key='admin_tool_00133'{/yun}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main22_6"></div>
                             </div>
@@ -884,11 +884,11 @@
         </el-tabs>
 
         <!-- 企业用户信息弹出框 -->
-        <el-drawer title="企业用户信息" :visible.sync="comBoxShow" append-to-body size="85%">
+        <el-drawer title="{yun:}t key='admin_tool_00153'{/yun}" :visible.sync="comBoxShow" append-to-body size="85%">
             <company-user ref="companyUser" :jump_params="jumpParams" v-if="comBoxShow"></company-user>
         </el-drawer>
         <!-- 个人用户信息弹出框 -->
-        <el-drawer title="个人用户信息" :visible.sync="userBoxShow" append-to-body size="85%">
+        <el-drawer title="{yun:}t key='admin_tool_00152'{/yun}" :visible.sync="userBoxShow" append-to-body size="85%">
             <users-all ref="userBoxShow" :jump_params="jumpParams" v-if="userBoxShow"></users-all>
         </el-drawer>
     </div>
@@ -899,7 +899,7 @@ module.exports = {
     data: function () {
         return {
             loading: false,
-            emptytext: window.yunAdminT('暂无数据'),
+            emptytext: window.yunAdminT("{yun:}t key='wap_js_00113'{/yun}"),
             webUrl: localStorage.getItem("sy_weburl"),
             activeName: 'first',
             tabPosition: 'left',
@@ -1200,7 +1200,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: window.yunAdminT('注册来源'),
+                        name: window.yunAdminT("{yun:}t key='admin_tool_00154'{/yun}"),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '42%'],
@@ -1574,7 +1574,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: window.yunAdminT('需求行业'),
+                        name: window.yunAdminT("{yun:}t key='admin_tool_00141'{/yun}"),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '42%'],
@@ -1620,7 +1620,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: window.yunAdminT('需求区域'),
+                        name: window.yunAdminT("{yun:}t key='admin_tool_00138'{/yun}"),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -1666,7 +1666,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: window.yunAdminT('需求薪资'),
+                        name: window.yunAdminT("{yun:}t key='admin_tool_00140'{/yun}"),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -1712,7 +1712,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: window.yunAdminT('需求学历'),
+                        name: window.yunAdminT("{yun:}t key='admin_tool_00139'{/yun}"),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -1758,7 +1758,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: window.yunAdminT('需求工作经验'),
+                        name: window.yunAdminT("{yun:}t key='admin_tool_00115'{/yun}"),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -1879,7 +1879,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: window.yunAdminT('需求行业'),
+                        name: window.yunAdminT("{yun:}t key='admin_tool_00141'{/yun}"),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '42%'],
@@ -1925,7 +1925,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: window.yunAdminT('人才区域'),
+                        name: window.yunAdminT("{yun:}t key='admin_tool_00121'{/yun}"),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -1971,7 +1971,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: window.yunAdminT('薪资需求'),
+                        name: window.yunAdminT("{yun:}t key='admin_tool_00135'{/yun}"),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -2017,7 +2017,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: window.yunAdminT('学历配比'),
+                        name: window.yunAdminT("{yun:}t key='admin_tool_00125'{/yun}"),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -2063,7 +2063,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: window.yunAdminT('工作经验'),
+                        name: window.yunAdminT("{yun:}t key='wap_user_00240'{/yun}"),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '38%'],
@@ -2109,7 +2109,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: window.yunAdminT('男女比例'),
+                        name: window.yunAdminT("{yun:}t key='admin_tool_00133'{/yun}"),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -2230,7 +2230,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: window.yunAdminT('订单类型'),
+                        name: window.yunAdminT("{yun:}t key='wap_user_00318'{/yun}"),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -2276,7 +2276,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: window.yunAdminT('支付方式'),
+                        name: window.yunAdminT("{yun:}t key='wap_user_00313'{/yun}"),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -2508,7 +2508,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: window.yunAdminT('热招行业'),
+                        name: window.yunAdminT("{yun:}t key='admin_tool_00131'{/yun}"),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '42%'],
@@ -2554,7 +2554,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: window.yunAdminT('热门区域'),
+                        name: window.yunAdminT("{yun:}t key='admin_tool_00132'{/yun}"),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -2600,7 +2600,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: window.yunAdminT('薪资待遇'),
+                        name: window.yunAdminT("{yun:}t key='wap_com_00290'{/yun}"),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -2646,7 +2646,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: window.yunAdminT('学历要求'),
+                        name: window.yunAdminT("{yun:}t key='wap_com_00283'{/yun}"),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -2692,7 +2692,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: window.yunAdminT('工作经验'),
+                        name: window.yunAdminT("{yun:}t key='wap_user_00240'{/yun}"),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -2849,7 +2849,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: window.yunAdminT('期望行业'),
+                        name: window.yunAdminT("{yun:}t key='admin_tool_00129'{/yun}"),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '42%'],
@@ -2895,7 +2895,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: window.yunAdminT('意向地区'),
+                        name: window.yunAdminT("{yun:}t key='admin_tool_00127'{/yun}"),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -2941,7 +2941,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: window.yunAdminT('期望薪资'),
+                        name: window.yunAdminT("{yun:}t key='wap_user_00016'{/yun}"),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -2987,7 +2987,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: window.yunAdminT('教育程度'),
+                        name: window.yunAdminT("{yun:}t key='member_com_00011'{/yun}"),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -3033,7 +3033,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: window.yunAdminT('工作经验'),
+                        name: window.yunAdminT("{yun:}t key='wap_user_00240'{/yun}"),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -3079,7 +3079,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: window.yunAdminT('男女比例'),
+                        name: window.yunAdminT("{yun:}t key='admin_tool_00133'{/yun}"),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -3125,7 +3125,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: window.yunAdminT('数据来源'),
+                        name: window.yunAdminT("{yun:}t key='admin_yunying_00139'{/yun}"),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '42%'],
@@ -3282,7 +3282,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: window.yunAdminT('行业统计'),
+                        name: window.yunAdminT("{yun:}t key='admin_tool_00136'{/yun}"),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -3328,7 +3328,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: window.yunAdminT('会员类型'),
+                        name: window.yunAdminT("{yun:}t key='admin_tool_00157'{/yun}"),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -3374,7 +3374,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: window.yunAdminT('信息完善'),
+                        name: window.yunAdminT("{yun:}t key='admin_tool_00124'{/yun}"),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -3495,7 +3495,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: window.yunAdminT('热门行业'),
+                        name: window.yunAdminT("{yun:}t key='admin_tool_00156'{/yun}"),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -3541,7 +3541,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: window.yunAdminT('热门地区'),
+                        name: window.yunAdminT("{yun:}t key='admin_tool_00155'{/yun}"),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -3587,7 +3587,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: window.yunAdminT('期望薪资'),
+                        name: window.yunAdminT("{yun:}t key='wap_user_00016'{/yun}"),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -3633,7 +3633,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: window.yunAdminT('教育程度'),
+                        name: window.yunAdminT("{yun:}t key='member_com_00011'{/yun}"),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -3679,7 +3679,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: window.yunAdminT('工作经验'),
+                        name: window.yunAdminT("{yun:}t key='wap_user_00240'{/yun}"),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -3725,7 +3725,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: window.yunAdminT('男女比例'),
+                        name: window.yunAdminT("{yun:}t key='admin_tool_00133'{/yun}"),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],

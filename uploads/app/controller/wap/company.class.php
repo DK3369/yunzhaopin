@@ -69,8 +69,8 @@ class company_controller extends common
 
         
         $this -> yunset('backurl', Url('wap'));
-        $this -> yunset('topplaceholder', yun_auto_t('请输入企业关键字,如：有限公司...'));
-        $this -> yunset('headertitle', yun_auto_t('公司搜索'));
+        $this -> yunset('topplaceholder', yun_at('wap_00176'));
+        $this -> yunset('headertitle', yun_at('wap_00183'));
         $this -> yuntpl(array('wap/company'));
     }
 
@@ -100,19 +100,19 @@ class company_controller extends common
 
         if (!is_array($row)) {
             
-            $this -> ACT_msg_wap($_SERVER['HTTP_REFERER'], yun_auto_t('没有找到该企业！'));
+            $this -> ACT_msg_wap($_SERVER['HTTP_REFERER'], yun_at('wap_00179'));
             
         } elseif ($row['r_status'] == 0 && $row['uid'] != $this->uid) {
             
-            $this -> ACT_msg_wap($_SERVER['HTTP_REFERER'], yun_auto_t('该企业正在审核中，请稍后查看！'));
+            $this -> ACT_msg_wap($_SERVER['HTTP_REFERER'], yun_at('wap_01782'));
             
         } elseif ($row['r_status'] == 3 && $row['uid'] != $this->uid) {
             
-            $this -> ACT_msg_wap($_SERVER['HTTP_REFERER'], yun_auto_t('该企业未通过审核！'));
+            $this -> ACT_msg_wap($_SERVER['HTTP_REFERER'], yun_at('wap_01783'));
             
         } elseif ($row['r_status'] == 2) {
             
-            $this -> ACT_msg_wap($_SERVER['HTTP_REFERER'], yun_auto_t('该企业暂被锁定，请稍后查看！'));
+            $this -> ACT_msg_wap($_SERVER['HTTP_REFERER'], yun_at('wap_00177'));
             
         }
 
@@ -169,7 +169,7 @@ class company_controller extends common
         $this -> data   =   $data;
         $this -> seo('company_index');
         
-        $this -> yunset('headertitle', yun_auto_t('公司详情'));
+        $this -> yunset('headertitle', yun_at('wap_00184'));
         if($this->config['sy_h5_share']==1){
 			$this -> yunset("shareurl", Url('wap', array('c' => 'company','a' => 'share','id' => $cuid)));
 		}else{
@@ -292,7 +292,7 @@ class company_controller extends common
         $this->yunset('id', $id);
 
         $this->seo('whb');
-        $this->yunset('headertitle', yun_auto_t('企业微海报生成'));
+        $this->yunset('headertitle', yun_at('wap_00181'));
         $this->yuntpl(array('wap/hb/whb'));
     }
 	

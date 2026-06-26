@@ -6,30 +6,30 @@
                 <div class="homeTopSubCoy">
                     <div class="homeTopLeList">
                         <div class="homeTopLeLTite">
-                            <div class="homeTopLeLName"><span>今日总收益</span></div>
+                            <div class="homeTopLeLName"><span>{yun:}t key='admin_00083'{/yun}</span></div>
                             <div class="homeTopLeLButn">
-                                <span :class="ordertype=='day'?'spanxz':''" @click="ordertype='day'">今日</span>
-                                <span :class="ordertype=='month'?'spanxz':''" @click="ordertype='month';dataChange('month', 'money')">本月</span>
+                                <span :class="ordertype=='day'?'spanxz':''" @click="ordertype='day'">{yun:}t key='admin_00091'{/yun}</span>
+                                <span :class="ordertype=='month'?'spanxz':''" @click="ordertype='month';dataChange('month', 'money')">{yun:}t key='admin_user_00147'{/yun}</span>
                             </div>
                         </div>
                         <div class="homeTopLeMoney" @click="toOrder({order_state:'2'})">
                             <div class="homeTopMonNum"><span>￥</span>{{ordertype=='day'?numdata.moneyTotal:numdata.monthMoneyTotal}}</div>
                             <div class="homeTopMonTxt">
-                                <span>{{ordertype=='day'?'今日收益':'本月收益'}}</span>
+                                <span>{yun:}t key='admin_01054'{/yun}</span>
                             </div>
                         </div>
                         <div class="homeTopLeTaoc">
                             <div @click="toOrder({order_state:'2',typedd:'1'})">
                                 <span>{{ordertype=='day'?numdata.moneyVip:numdata.monthMoneyVip}}</span>
-                                <b>会员套餐</b>
+                                <b>{yun:}t key='admin_user_company_00034'{/yun}</b>
                             </div>
                             <div @click="toOrder({order_state:'2',typedd:'5'})">
                                 <span>{{ordertype=='day'?numdata.moneyService:numdata.monthMoneyService}}</span>
-                                <b>增值服务</b>
+                                <b>{yun:}t key='admin_user_company_00290'{/yun}</b>
                             </div>
                             <div @click="toOrder({order_state:'2'})">
                                 <span>{{ordertype=='day'?numdata.moneyIntegral:numdata.monthMoneyIntegral}}</span>
-                                <b>其他服务</b>
+                                <b>{yun:}t key='wap_user_00196'{/yun}</b>
                             </div>
                         </div>
                     </div>
@@ -37,30 +37,30 @@
                 <div class="homeTopSubCoy">
                     <div class="homeTopLeList homeTopLeLisTwo">
                         <div class="homeTopLeLTite">
-                            <div class="homeTopLeLName"><span>新增会员总数</span></div>
+                            <div class="homeTopLeLName"><span>{yun:}t key='admin_00081'{/yun}</span></div>
                             <div class="homeTopLeLButn">
-                                <span :class="memtype=='day'?'spanxz':''" @click="memtype='day'">今日</span>
-                                <span :class="memtype=='month'?'spanxz':''" @click="memtype='month';dataChange('month', 'member')">本月</span>
+                                <span :class="memtype=='day'?'spanxz':''" @click="memtype='day'">{yun:}t key='admin_00091'{/yun}</span>
+                                <span :class="memtype=='month'?'spanxz':''" @click="memtype='month';dataChange('month', 'member')">{yun:}t key='admin_user_00147'{/yun}</span>
                             </div>
                         </div>
                         <div class="homeTopLeMoney" @click="toMem()">
                             <div class="homeTopMonNum">{{memtype=='day'?numdata.memberNum:numdata.monthMemberNum}}</div>
                             <div class="homeTopMonTxt">
-                                <span>{{memtype=='day'?'今日会员总数':'本月会员总数'}}</span>
+                                <span>{yun:}t key='admin_01055'{/yun}</span>
                             </div>
                         </div>
                         <div class="homeTopLeTaoc">
                             <div @click="touserMem()">
                                 <span>{{memtype=='day'?numdata.userNum:numdata.userNumMon}}</span>
-                                <b>个人会员</b>
+                                <b>{yun:}t key='admin_system_00129'{/yun}</b>
                             </div>
                             <div @click="tocomMem()">
                                 <span>{{memtype=='day'?numdata.companyNum:numdata.companyNumMon}}</span>
-                                <b>企业会员</b>
+                                <b>{yun:}t key='admin_user_company_00281'{/yun}</b>
                             </div>
                             <div @click="toMem({utype:5})">
                                 <span>{{memtype=='day'?numdata.otmemberNum:numdata.ommemberNum}}</span>
-                                <b>其他会员</b>
+                                <b>{yun:}t key='admin_00087'{/yun}</b>
                             </div>
                         </div>
                     </div>
@@ -72,7 +72,7 @@
                                 <img src="../../images/adxinw.png" alt="">
                             </div>
                             <div class="homeTopLshu">
-                                <span>今日新增简历</span>
+                                <span>{yun:}t key='admin_00078'{/yun}</span>
                                 <b>{{numdata.resumeNum}}</b>
                             </div>
                         </div>
@@ -89,7 +89,7 @@
 					            <img src="../../images/adzhiwei.png" alt="">
 					        </div>
 					        <div class="homeTopLshu">
-					            <span>今日新增职位</span>
+					            <span>{yun:}t key='admin_00079'{/yun}</span>
 					            <b>{{numdata.jobNum}}</b>
 					        </div>
 					    </div>
@@ -109,7 +109,7 @@
                                 <img src="../../images/adjl.png" alt="">
                             </div>
                             <div class="homeTopLshu">
-                                <span>今日简历投递</span>
+                                <span>{yun:}t key='admin_00080'{/yun}</span>
                                 <b>{{numdata.useridjobNum}}</b>
                             </div>
                         </div>
@@ -126,7 +126,7 @@
                                 <img src="../../images/chatyh.png" alt="">
                             </div>
                             <div class="homeTopLshu">
-                                <span>今日拨号</span>
+                                <span>{yun:}t key='admin_00084'{/yun}</span>
                                 <b>{{numdata.tellognum}}</b>
                             </div>
                         </div>
@@ -147,7 +147,7 @@
                                 <img src="../../images/xaizyh.png" alt="">
                             </div>
                             <div class="homeTopLshu">
-                                <span>今日下载简历</span>
+                                <span>{yun:}t key='admin_00076'{/yun}</span>
                                 <b>{{numdata.downresumeNum}}</b>
                             </div>
                         </div>
@@ -274,7 +274,7 @@ module.exports = {
                 params.times = this.monthrange;
             }
 			
-			window.parent.homeapp.checkMenuTwo(3,161,162,'充值订单','/chongzhidd',params)
+			window.parent.homeapp.checkMenuTwo(3,161,162,"{yun:}t key='admin_user_company_00136'{/yun}",'/chongzhidd',params)
 			
         },
         toMem: function(params = {}) {
@@ -287,7 +287,7 @@ module.exports = {
 			query.tabs = 'first';
 			query.params = params;
 			
-			window.parent.homeapp.checkMenuTwo(1,401,402,'会员列表','/usercrm',query)
+			window.parent.homeapp.checkMenuTwo(1,401,402,"{yun:}t key='admin_00086'{/yun}",'/usercrm',query)
             
         },
         touserMem: function(params = {}) {
@@ -297,7 +297,7 @@ module.exports = {
                 params.times = this.monthrange;
             }
 			
-			window.parent.homeapp.checkMenuTwo(1,7,17,'个人用户','/userscrm',params)
+			window.parent.homeapp.checkMenuTwo(1,7,17,"{yun:}t key='admin_user_00122'{/yun}",'/userscrm',params)
             
         },
         tocomMem: function(params = {}) {
@@ -308,7 +308,7 @@ module.exports = {
             }
 			var query ={};
 			query.params = params;
-			window.parent.homeapp.checkMenuTwo(1,6,16,'企业用户','/companycrm',query)
+			window.parent.homeapp.checkMenuTwo(1,6,16,"{yun:}t key='admin_user_00124'{/yun}",'/companycrm',query)
             
         },
         toPage: function(nval, oval, tval,name, path, query = null) {
@@ -317,7 +317,7 @@ module.exports = {
 			
         },
         toCompanyJob(params = {}) {
-            window.parent.homeapp.checkMenuTwo(1, 6, 40, '职位管理', '/companyjob', params);
+            window.parent.homeapp.checkMenuTwo(1, 6, 40, "{yun:}t key='wap_com_00106'{/yun}", '/companyjob', params);
         },
         tomsg: function() {
             window.open('https://u.ov6.com/');

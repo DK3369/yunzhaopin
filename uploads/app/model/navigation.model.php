@@ -12,7 +12,7 @@ class navigation_model extends model{
 
         if (!empty($list)) {
             foreach ($list as $key => $val) {
-                isset($val['type']) && $list[$key]['type_n'] = $val['type'] == 1 ? '站内链接' : '外部链接';
+                isset($val['type']) && $list[$key]['type_n'] = $val['type'] == 1 ? yun_at('admin_00198') : yun_at('admin_system_00663');
             }
         }
 
@@ -347,16 +347,16 @@ class navigation_model extends model{
         if (!empty($whereData['id'])) { // 基于ID删除
             $num = $this->select_num('admin_navigation', array('keyid' => $whereData['id']), 'id');
             if ($num > 0) {
-                return array('error' => 8, 'msg' => '请先删除子导航');
+                return array('error' => 8, 'msg' => yun_at('model_00031'));
             }
         }
 
         $return = $this->delete_all('admin_navigation', $whereData, '');
 
         if ($return) {
-            return array('error' => 9, 'msg' => '导航删除成功');
+            return array('error' => 9, 'msg' => yun_at('model_00032'));
         } else {
-            return array('error' => 8, 'msg' => '导航删除失败');
+            return array('error' => 8, 'msg' => yun_at('model_00033'));
         }
 	}
 	

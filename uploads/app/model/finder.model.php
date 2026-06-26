@@ -27,12 +27,12 @@ class finder_model extends model{
 
         if ($id) {
 
-            $this->addMemberLog($data['uid'], $data['usertype'], '搜索器：更新搜索器《'.$name.'》', 28, 2);
+            $this->addMemberLog($data['uid'], $data['usertype'], 'common_01016'.$name.'》', 28, 2);
             return $this->update_once("finder", $data, array('id' => $id, 'uid' => $data['uid']));
         } else {
 
             $data['addtime']    =   time();
-            $this->addMemberLog($data['uid'], $data['usertype'], '搜索器：添加搜索器《'.$name.'》', 28, 1);
+            $this->addMemberLog($data['uid'], $data['usertype'], 'common_01017'.$name.'》', 28, 1);
             return $this->insert_into("finder", $data);
         }
 	}
@@ -182,7 +182,7 @@ class finder_model extends model{
 				$allnum	=	$this->config['user_finder'];
 			}
 			if($num >= $allnum && $allnum){
-				$return['msg']      =  "已达到最大搜索器数量！";
+				$return['msg']      =  yun_at('common_00874');
 				$return['errcode']  =  '8';
 				$return['url']		=	"index.php?c=finder";
 				return $return;
@@ -215,24 +215,24 @@ class finder_model extends model{
 		$paras	=	@implode('##',$para);
 		
 		if($paras==""){
-			$return['msg']      =  "搜索器内容不能为空必须任意选一项";
+			$return['msg']      =  yun_at('common_00535');
 			$return['errcode']  =  '8';
 			return $return;
 		}
 	
 		$nid					=	$this -> insertfinder($paras,$post['id'],$post['name'],1,array('uid'=>$post['uid'],'usertype'=>$post['usertype']));
 		if($post['id']==""){
-			$msg				=	'添加';
+			$msg				=	'wap_js_00091';
 		}else{
-			$msg				=	'更新';
+			$msg				=	'wap_00225';
 		}
 		
 		if ($nid){
-			$return['msg']      =  $msg."成功！";
+			$return['msg']      =  $msg.'wap_js_00104';
 			$return['errcode']  =  '9';
 			$return['url']		=	Url('member',array('c'=>'finder'));
 		}else{
-			$return['msg']      =  $msg."失败！";
+			$return['msg']      =  $msg.'wap_js_00103';
 			$return['errcode']  =  '8';
 			$return['url']		=	Url('member',array('c'=>'finder'));
 		}
@@ -251,10 +251,10 @@ class finder_model extends model{
 	        $nid      =  $this->delete_all('finder',array('id'=>$id,'uid'=>$data['uid']), '');
 	        
 	        if ($nid){
-	            $return['msg']      =  '删除成功';
+	            $return['msg']      =  yun_at('wap_user_00147');
 	            $return['errcode']  =  '9';
 	        }else{
-	            $return['msg']      =  '删除失败';
+	            $return['msg']      =  yun_at('wap_user_00146');
 	            $return['errcode']  =  '8';
 	        }
 	    }

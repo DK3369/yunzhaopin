@@ -182,12 +182,12 @@ class site_model extends model
             }
 
             $return['id'] = $this->delete_all("domain", array('id' => array('in', $delId)), "");
-            $return['msg'] = '分站(ID:' . $delId . ')';
+            $return['msg'] = yun_auto_t('分站(ID:') . $delId . ')';
             $return['error'] = $return['id'] ? 0 : 1;
-            $return['msg'] = $return['id'] ? $return['msg'] . '删除成功！' : $return['msg'] . '删除失败！';
+            $return['msg'] = $return['id'] ? $return['msg'] . 'admin_user_00187' : $return['msg'] . 'admin_user_00186';
         } else {
 
-            $return['msg'] = '请选择要删除的分站信息！';
+            $return['msg'] = yun_at('common_00819');
             $return['error'] = 1;
         }
         return $return;
@@ -203,14 +203,14 @@ class site_model extends model
 		if(!empty($data)){
 			if(empty($data['uid'])){
 				
-				return array('msg'=>'参数不全请重试！','status'=>8);
+				return array('msg'=>yun_at('common_01236'),'status'=>8);
 			}
 			
 			$uids	=	@explode(',',$data['uid']);
 			$uid	=	pylode(',',$uids);
 			if(empty($uid)){
 				
-				return array('msg'=>'请正确选择需分配用户！','status'=>8);
+				return array('msg'=>yun_at('admin_user_00030'),'status'=>8);
 			}
 			$didData	=	array('did' => intval($data['did']));
 			$minfo		=	$this->select_all('member',array('uid'=>array('in',$uid)),'`uid`,`usertype`');
@@ -256,7 +256,7 @@ class site_model extends model
 			
 			$this -> updDid(array('company_pay'),array('com_id'=>array('in', $uid)),$didData);
 			$this -> updDid($Table,array('uid'=>array('in', $uid)),$didData);
-			$return['msg']		=	'会员(ID:'.$data['uid'].')分配站点成功！';
+			$return['msg']		=	yun_at('common_01459').$data['uid'].')分配站点成功！';
 			$return['errcode']	=	9;
 		}
 		return $return;

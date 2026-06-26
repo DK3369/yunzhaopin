@@ -58,7 +58,7 @@ class index_controller extends common
                     }elseif ($postObj->Event == 'CLICK'){
                         // 点击事件，符合下面的，里面都有查询处理
                         if (!empty($postObj->EventKey)) {
-                            if (in_array($postObj->EventKey, array('我的帐号','我的消息','面试邀请','简历浏览','刷新简历','刷新职位','简历投递','兼职报名'))){
+                            if (in_array($postObj->EventKey, array('weixin_00009','model_00088','wap_com_00046','weixin_00010','wap_user_00199','wap_com_00029','member_com_00152','wap_user_00302'))){
                                 $openidNeedSearch = false;
                             }
                         }
@@ -193,7 +193,7 @@ class index_controller extends common
                                     $centerStr = "<Content><![CDATA[" . $this->config['wx_welcom']."]]></Content>";
                                 } else {
 
-                                    $centerStr = "<Content><![CDATA[欢迎您关注" . $this->config['sy_webname'] . "！\n 1：您可以直接回复关键字如【销售】、【销售 XX公司】查找您想要的职位\n绑定您的账户体验更多精彩功能\n感谢您的关注！"."]]></Content>";
+                                    $centerStr = "<Content><![CDATA[欢迎您关注" . $this->config['sy_webname'] . 'common_00039'."]]></Content>";
                                 }
                                 
                                 $this->MsgType = 'text';
@@ -308,48 +308,48 @@ class index_controller extends common
                         $ismatch    =   true;
                         $EventKey   =   $postObj->EventKey;
 
-                        if ($EventKey == '我的帐号') {
+                        if ($EventKey == 'weixin_00009') {
 
                             $Return =   $M->bindUser($fromUsername);
-                        } elseif ($EventKey == '我的消息') {
+                        } elseif ($EventKey == 'model_00088') {
 
                             $Return =   $M->myMsg($fromUsername);
-                        } elseif ($EventKey == '面试邀请') {
+                        } elseif ($EventKey == 'wap_com_00046') {
 
                             $Return =   $M->Audition($fromUsername);
-                        } elseif ($EventKey == '简历浏览') {
+                        } elseif ($EventKey == 'weixin_00010') {
 
                             $Return =   $M->lookResume($fromUsername);
-                        } elseif ($EventKey == '刷新简历') {
+                        } elseif ($EventKey == 'wap_user_00199') {
 
                             $Return =   $M->refResume($fromUsername);
-                        } elseif ($EventKey == '推荐职位') {
+                        } elseif ($EventKey == 'member_com_00324') {
 
                             $Return =   $M->recJob($fromUsername);
-                        } elseif ($EventKey == '刷新职位') {
+                        } elseif ($EventKey == 'wap_com_00029') {
 
                             $Return =   $M->refJob($fromUsername);
-                        } elseif ($EventKey == '简历投递') {
+                        } elseif ($EventKey == 'member_com_00152') {
 
                             $Return =   $M->ApplyJob($fromUsername);
-                        } elseif ($EventKey == '兼职报名') {
+                        } elseif ($EventKey == 'wap_user_00302') {
 
                             $Return =   $M->PartApply($fromUsername);
-                        } elseif ($EventKey == '职位搜索') {
+                        } elseif ($EventKey == 'wap_00237') {
 
                             if ($this->config['wx_search']) {
 
                                 $Return['centerStr']    =   "<Content><![CDATA[" . $this->config['wx_search'] . "]]></Content>";
                             } else {
 
-                                $Return['centerStr']    =   "<Content><![CDATA[直接回复城市、职位、公司名称等关键字搜索您需要的职位信息。\n 如：【经理】、【xx公司】]]></Content>";
+                                $Return['centerStr']    =   yun_auto_t('<Content><![CDATA[直接回复城市、职位、公司名称等关键字搜索您需要的职位信息。\n 如：【经理】、【xx公司】]]></Content>');
                             }
 
                             $Return['MsgType']          =   'text';
 
-                        } elseif ($EventKey == '周边职位') {
+                        } elseif ($EventKey == 'default_00195') {
 
-                            $Return['centerStr']        =   "<Content><![CDATA[/可怜 亲，把您的位置先发我一下。\n\n方法：点屏幕左下角输入框旁的“+”，选择“位置”，点“发送”。]]></Content>";
+                            $Return['centerStr']        =   yun_auto_t('<Content><![CDATA[/可怜 亲，把您的位置先发我一下。\n\n方法：点屏幕左下角输入框旁的“+”，选择“位置”，点“发送”。]]></Content>');
                             $Return['MsgType']          =   'text';
                         }else{
                             $ismatch  =  false;
@@ -385,7 +385,7 @@ class index_controller extends common
                         $this->MsgType  =   $Return['MsgType'];
                     } else {
 
-                        $Return['centerStr']    =   "<Content><![CDATA[未找到相关数据]]></Content>";
+                        $Return['centerStr']    =   yun_auto_t('<Content><![CDATA[未找到相关数据]]></Content>');
                         $Return['MsgType']      =   'text';
                     }
 
@@ -467,10 +467,10 @@ class index_controller extends common
 
             // 会员日志
             $LogM       =   $this->MODEL('log');
-            $logContent =   '账号认证：换绑微信';
-            $logDetail  =   '通过强制关注公众号场景码，换绑微信';
+            $logContent =   'weixin_00004';
+            $logDetail  =   'weixin_00002';
             $LogM->addMemberLog($userid, $uInfo['usertype'], $logContent, 12, 2, $logDetail);
-			$this->MODEL('integral')->invtalCheck($userid,$uInfo['usertype'],'integral_bind_wx','微信扫码绑定',28);
+			$this->MODEL('integral')->invtalCheck($userid,$uInfo['usertype'],'integral_bind_wx','admin_00682',28);
         }
         // 修改扫码记录
         $weixinM = $this->MODEL('weixin');
@@ -491,8 +491,8 @@ class index_controller extends common
 
             $userInfoM->upInfo(array('uid' => $uInfo['uid'], 'wxid' => $openId), array('subscribe' => $subscribe));
             $LogM       =   $this->MODEL('log');
-            $subContent =   $subscribe == 1 ? '关注微信公众号' : '取消关注微信公众号';
-            $logContent =   '账号认证：'.$subContent;
+            $subContent =   $subscribe == 1 ? yun_at('admin_user_company_00260') : yun_at('weixin_00003');
+            $logContent =   'model_00087'.$subContent;
             $LogM->addMemberLog($uInfo['uid'], $uInfo['usertype'], $logContent, 12, 2);
         }
     }
@@ -546,7 +546,7 @@ class index_controller extends common
 
         if (($i + 1) >= $num) {
 
-            echo yun_auto_t("完成");
+            echo yun_at('wap_00763');
         } else {
 
             $getnum = $i + 1;

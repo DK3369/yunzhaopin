@@ -246,11 +246,11 @@ class index_controller extends job_controller{
 			$this->layer_msg($return['msg'],$return['errcode'],0);
 		}else{
 			if($_POST['usertype']=="1"){
-				$msg	=	"只有个人用户才能添加职位搜索器";
+				$msg	=	'job_00002';
 			}elseif($_POST['usertype']=="2"){
-                $msg	=	"只有企业用户才能添加人才搜索器！";
+                $msg	=	'job_00001';
 			}else{
-                $msg	=	"当前会员类型不允许添加搜索器！";
+                $msg	=	'job_00003';
             }
 			$this->layer_msg($msg,8,0);
 		}
@@ -305,16 +305,16 @@ class index_controller extends job_controller{
 
 		if(!empty($_POST)){
 			if($_POST['femail'] == '' || $_POST['authcode'] == ''){
-				echo yun_auto_t("请完整填写信息！");die;
+				echo yun_at('resume_00032');die;
 			}
 			session_start();
 			if(md5(strtolower($_POST['authcode'])) != $_SESSION['authcode']){
-				echo yun_auto_t("验证码不正确！");die;
+				echo yun_at('wap_js_00109');die;
 			}
 			unset($_SESSION['authcode']);
 
 			if($this->config['sy_email_set']!="1"){
-				echo yun_auto_t("网站邮件服务器不可用");die;
+				echo yun_at('job_00005');die;
 			}
 
 			$recomM						=	$this -> MODEL('recommend');
@@ -328,7 +328,7 @@ class index_controller extends job_controller{
 					echo lc('recommend_daily_limit', array($this->config['sy_recommend_day_num']));exit;
 				}
 			}else{
-				echo yun_auto_t("推荐职位/简历功能已关闭！");exit;
+				echo yun_at('resume_00034');exit;
 			}
 			//判断上一次推荐的时间间隔
 			if(isset($this->config['sy_recommend_interval']) && $this->config['sy_recommend_interval'] > 0){

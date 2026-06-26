@@ -4,74 +4,74 @@
             <table class="tableVue">
                 <thead>
                     <tr align="left">
-                        <th width="180">名称</th>
-                        <th width="460">状态</th>
-                        <th>说明</th>
+                        <th width="180">{yun:}t key='member_com_00021'{/yun}</th>
+                        <th width="460">{yun:}t key='member_user_00181'{/yun}</th>
+                        <th>{yun:}t key='member_com_00207'{/yun}</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td>
-                            <div class="TableTite">推送方式</div>
+                            <div class="TableTite">{yun:}t key='admin_yunying_00200'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
                                 <el-radio-group v-model="stype" @change="stypeChange">
-                                    <el-radio :label="1">邮件</el-radio>
-                                    <el-radio :label="2">短信</el-radio>
+                                    <el-radio :label="1">{yun:}t key='member_com_00018'{/yun}</el-radio>
+                                    <el-radio :label="2">{yun:}t key='admin_yunying_00201'{/yun}</el-radio>
                                 </el-radio-group>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>推送方式</span>
+                                <span>{yun:}t key='admin_yunying_00200'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">选择企业</div>
+                            <div class="TableTite">{yun:}t key='admin_yunying_00216'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableButn">
                                 <el-radio-group v-model="com" @change="getcom">
-                                    <el-radio :label="1">VIP企业</el-radio>
-                                    <el-radio :label="2">最近7天刷新职位企业</el-radio>
-                                    <el-radio :label="3">最近3天注册企业</el-radio>
+                                    <el-radio :label="1">{yun:}t key='admin_01117'{/yun}</el-radio>
+                                    <el-radio :label="2">{yun:}t key='admin_01118'{/yun}</el-radio>
+                                    <el-radio :label="3">{yun:}t key='admin_01119'{/yun}</el-radio>
                                 </el-radio-group>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>如选择后发送数量为0，表示没有符合条件的企业</span>
+                                <span>{yun:}t key='admin_yunying_00203'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">发送数量</div>
+                            <div class="TableTite">{yun:}t key='admin_yunying_00199'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableButn">
-                                <el-input v-model="sendnum" placeholder="请输入发送数量"></el-input>
+                                <el-input v-model="sendnum" placeholder="{yun:}t key='admin_yunying_00198'{/yun}"></el-input>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>注：如发送数量大于500，建议找专业的群发软件</span>
+                                <span>{yun:}t key='admin_yunying_00182'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">选择简历</div>
+                            <div class="TableTite">{yun:}t key='admin_yunying_00217'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
                                 <el-radio-group v-model="resume" @change="resumeChange">
-                                    <el-radio :label="1">优质人才</el-radio>
-                                    <el-radio :label="2">最新人才</el-radio>
-                                    <el-radio :label="3">有工作经验的人才</el-radio>
+                                    <el-radio :label="1">{yun:}t key='admin_yunying_00215'{/yun}</el-radio>
+                                    <el-radio :label="2">{yun:}t key='home.latest_talents'{/yun}</el-radio>
+                                    <el-radio :label="3">{yun:}t key='admin_yunying_00213'{/yun}</el-radio>
                                 </el-radio-group>
                             </div>
                         </td>
@@ -83,46 +83,46 @@
                     </tr>
                     <tr v-if="stype == 1">
                         <td>
-                            <div class="TableTite">推送简历数量</div>
+                            <div class="TableTite">{yun:}t key='admin_01120'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input v-model="num" placeholder="请输入推送简历数量"></el-input>
+                                <el-input v-model="num" placeholder="{yun:}t key='admin_01121'{/yun}"></el-input>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>注：推送数量超过已有简历数量则按已有数量推广</span>
+                                <span>{yun:}t key='admin_yunying_00204'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr v-if="stype == 1">
                         <td>
-                            <div class="TableTite">邮件主题</div>
+                            <div class="TableTite">{yun:}t key='admin_yunying_00172'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input v-model="email_title" placeholder="请输入内容"></el-input>
+                                <el-input v-model="email_title" placeholder="{yun:}t key='wap_user_00076'{/yun}"></el-input>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>邮件主题</span>
+                                <span>{yun:}t key='admin_yunying_00172'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr v-if="stype == 2">
                         <td>
-                            <div class="TableTite">短信内容</div>
+                            <div class="TableTite">{yun:}t key='admin_00666'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input v-model="content" type="textarea" placeholder="请输入内容"></el-input>
+                                <el-input v-model="content" type="textarea" placeholder="{yun:}t key='wap_user_00076'{/yun}"></el-input>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>短信内容</span>
+                                <span>{yun:}t key='admin_00666'{/yun}</span>
                             </div>
                         </td>
                     </tr>
@@ -130,7 +130,7 @@
             </table>
         </div>
         <div class="setBasicButn" style="border: none; height: 80px;">
-            <el-button type="primary" size="medium" @click="send">发送</el-button>
+            <el-button type="primary" size="medium" @click="send">{yun:}t key='resume_00033'{/yun}</el-button>
         </div>
     </div>
 </template>
@@ -217,19 +217,19 @@ module.exports = {
                 sy_weburl = this.sy_weburl;
             if (this.stype == 1) {
                 if (val == 1) {
-                    this.email_title = sy_webname + '向您推荐的优质人才';
+                    this.email_title = sy_webname + "{yun:}t key='admin_yunying_00211'{/yun}";
                 } else if (val == 2) {
-                    this.email_title = sy_webname + '向您推荐的最新人才';
+                    this.email_title = sy_webname + "{yun:}t key='admin_yunying_00212'{/yun}";
                 } else if (val == 3) {
-                    this.email_title = sy_webname + '向您推荐的有工作经验的人才';
+                    this.email_title = sy_webname + "{yun:}t key='admin_yunying_00208'{/yun}";
                 }
             } else {
                 if (val == 1) {
-                    this.content = sy_webname + '向您推荐了符合您的优质人才，请点击' + sy_weburl + '！查看详情';
+                    this.content = sy_webname + "{yun:}t key='admin_yunying_00206'{/yun}" + sy_weburl + "！{yun:}t key='wap_00561'{/yun}";
                 } else if (val == 2) {
-                    this.content = sy_webname + '向您推荐了符合您的最新人才，请点击' + sy_weburl + '！查看详情';
+                    this.content = sy_webname + "{yun:}t key='admin_yunying_00207'{/yun}" + sy_weburl + "！{yun:}t key='wap_00561'{/yun}";
                 } else if (val == 3) {
-                    this.content = sy_webname + '向您推荐了符合您的有工作经验的人才，请点击' + sy_weburl + '！查看详情';
+                    this.content = sy_webname + "{yun:}t key='admin_yunying_00205'{/yun}" + sy_weburl + "！{yun:}t key='wap_00561'{/yun}";
                 }
             }
         },
@@ -245,37 +245,37 @@ module.exports = {
                 content = that.content;
 
             if (!com) {
-                message.error('请选择推广的企业');
+                message.error("{yun:}t key='admin_yunying_00214'{/yun}");
                 return false;
             }
             if (sendnum < 1) {
-                message.error('请输入需要发送的数量');
+                message.error("{yun:}t key='admin_yunying_00191'{/yun}");
                 return false;
             } else if (sendnum > 500) {
-                message.error('数量过多，第三方发送服务器将会影响。建议找专业的群发软件');
+                message.error("{yun:}t key='admin_yunying_00181'{/yun}");
                 return false;
             }
             if (!resume) {
-                message.error('请选择需要推广的简历');
+                message.error("{yun:}t key='admin_yunying_00210'{/yun}");
                 return false;
             }
             if (stype == 1) {
                 if (num === '' || num < 1) {
-                    message.error('请输入需要推广的简历数量');
+                    message.error("{yun:}t key='admin_yunying_00209'{/yun}");
                     return false;
                 }
                 if (title == '') {
-                    message.error('请输入邮件主题');
+                    message.error("{yun:}t key='admin_yunying_00171'{/yun}");
                     return false;
                 }
             } else {
                 if (content == '') {
-                    message.error('请输入短信内容');
+                    message.error("{yun:}t key='admin_01111'{/yun}");
                     return false;
                 }
             }
 
-            that.sendMsg(stype, com, sendnum, resume, num, title, content, 3, 0, 0, 0, 0, "正在发送，请稍候。。。");
+            that.sendMsg(stype, com, sendnum, resume, num, title, content, 3, 0, 0, 0, 0, "{yun:}t key='admin_yunying_00170'{/yun}");
         },
 
         sendMsg(stype, com, sendnum, resume, num, title, content, status, pagelimit, value, sendok, sendno, msg) {

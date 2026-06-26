@@ -170,7 +170,7 @@ class index_controller extends zph_controller
         }else{
             $return['zclist']   =   array();
             $return['error']    =   0;
-            $return['msg']      =   '参数错误请重试';
+            $return['msg']      =   yun_at('wap_00556');
         }
 
         echo yun_json_encode($return);exit();
@@ -224,7 +224,7 @@ class index_controller extends zph_controller
         }else{
             $return['zjlist']   =   array();
             $return['error']    =   0;
-            $return['msg']      =   '参数错误请重试';
+            $return['msg']      =   yun_at('wap_00556');
         }
 
         echo yun_json_encode($return);exit();

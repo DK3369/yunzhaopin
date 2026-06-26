@@ -12,8 +12,8 @@
             <div class="wxts_box" style="padding: 30px">
                 <div class="wxts">{yun:}t key='wap_user_00205'{/yun}：注销账号后将放弃以下资产和权益</div>
                 1. 身份信息，{yun:}t key='admin_user_00191'{/yun}，会员权益将清空且无法恢复<br>
-                2. 交易记录将被清空<br>
-                3. 账号绑定的手机邮箱QQ等相关信息将被释放，账号将无法登陆
+                {yun:}t key='wap_00744'{/yun}<br>
+                {yun:}t key='wap_00745'{/yun}
             </div>
 			<div class="clear"></div>
             <form class="layui-form" style="padding:0 30px;">
@@ -21,8 +21,8 @@
             <div class="password_chlose"  id="pw_style" style="width:252px;">
 
                 <select name="type" lay-filter="type">
-                    <option value="1">通过密码申请注销</option>
-                    <option value="2">通过手机申请注销</option>
+                    <option value="1">{yun:}t key='member_user_00519'{/yun}</option>
+                    <option value="2">{yun:}t key='member_user_00520'{/yun}</option>
                 </select>
 
                 <!--<input type="hidden" id="zstype" name="zstype" value="password">-->
@@ -32,7 +32,7 @@
                 <div class="Binding_pop_box_list">
                     <input type="password" name="password" id="password" value="" class="Binding_pop_box_list_text Binding_pop_box_list_textw200" style="padding-left:10px;" placeholder="{yun:}t key='wap_js_00139'{/yun}"/>
                 </div>
-                <a href="javascript:;" onclick="logoutApply();" class="msg_no_sq uesr_submit" style="padding: 10px 60px;">申请注销</a>
+                <a href="javascript:;" onclick="logoutApply();" class="msg_no_sq uesr_submit" style="padding: 10px 60px;">{yun:}t key='member_user_00521'{/yun}</a>
             </div>
 
             <div style="display:none" id="mobile_type" >
@@ -62,18 +62,18 @@
                     {yun:}/if{/yun}
                     {yun:}/if{/yun}
                     <div class="code_all">
-                        <input name="mobile_vcode" style="padding-left:10px;margin-top: 20px;" id="mobile_vcode" type="text" class="Binding_pop_box_list_text Binding_pop_box_list_textw200" placeholder="请输入短信验证码" >
+                        <input name="mobile_vcode" style="padding-left:10px;margin-top: 20px;" id="mobile_vcode" type="text" class="Binding_pop_box_list_text Binding_pop_box_list_textw200" placeholder="{yun:}t key='wap_00690'{/yun}" >
                         <input type="button" class="btn_yell J_hoverbut msg_tip logout_yzm" id="send_msg_tip"  onclick="send_msg()" value="{yun:}t key='wap_user_00144'{/yun}" style="color:#06a7ff">
                     </div>
-                    <a href="javascript:;" onclick="logoutmsg();" class="msg_no_sq uesr_submit" style="padding: 10px 60px;">申请注销</a>
+                    <a href="javascript:;" onclick="logoutmsg();" class="msg_no_sq uesr_submit" style="padding: 10px 60px;">{yun:}t key='member_user_00521'{/yun}</a>
                 </div>
             </div>
 
             {yun:}else{/yun}
             <div class="msg_no">
-                <p>亲爱的用户，您已提交账户注销申请，</p>
-                <p>工作人员正在进行处理中，注销结果将以短信或邮件的形式通知，请耐心等待~</p>
-                <p>如果您需要再次使用，请重新注册！</p>
+                <p>{yun:}t key='wap_01007'{/yun}，您已提交账户注销申请，</p>
+                <p>{yun:}t key='wap_00749'{/yun}</p>
+                <p>{yun:}t key='wap_00750'{/yun}</p>
             </div>
             {yun:}/if{/yun}
             </form>
@@ -124,7 +124,7 @@
     function logoutApply() {
         var password = $('#password').val();
         if (password == ''){
-            layer.msg('请填写账户密码',2,8);
+            layer.msg("{yun:}t key='member_user_00522'{/yun}",2,8);
             return false;
         }
         layer.load("{yun:}t key='wap_js_00148'{/yun}",0);
@@ -148,10 +148,10 @@
         var mobile = $('#mobile').val();
         var code = $('#mobile_vcode').val();
         if (mobile == ''){
-            layer.msg('请填写手机号',2,8);
+            layer.msg("{yun:}t key='wap_01117'{/yun}",2,8);
             return false;
         }else if(code == ''){
-            layer.msg('请填写验证码',2,8);
+            layer.msg("{yun:}t key='member_user_00523'{/yun}",2,8);
             return false;
         }
         layer.load("{yun:}t key='wap_js_00148'{/yun}",0);

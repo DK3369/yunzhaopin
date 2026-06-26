@@ -144,11 +144,11 @@ class hr_controller extends company
                 $yrzNum++;
             }
         }
-        $this->yunset(array('current' => $current, 'rows' => $rows, 'JobList' => $JobList, 'StateList' => array(array('id' => 1, 'name' => '未查看', 'num' => $dclNum), array('id' => 3, 'name' => '已面试', 'num' => $dtzNum), array('id' => 4, 'name' => '不合适', 'num' => $bhsNum), array('id' => 7, 'name' => '已入职', 'num' => $yrzNum))));
+        $this->yunset(array('current' => $current, 'rows' => $rows, 'JobList' => $JobList, 'StateList' => array(array('id' => 1, 'name' => 'wap_user_00260', 'num' => $dclNum), array('id' => 3, 'name' => 'wap_user_00266', 'num' => $dtzNum), array('id' => 4, 'name' => 'wap_user_00354', 'num' => $bhsNum), array('id' => 7, 'name' => 'wap_user_00356', 'num' => $yrzNum))));
         $resumestate = array(
-            array('name'=>'已审核','val'=>1),
-            array('name'=>'未审核','val'=>0),
-            array('name'=>'未通过','val'=>3)
+            array('name'=>'wap_user_00165','val'=>1),
+            array('name'=>'wap_user_00166','val'=>0),
+            array('name'=>'wap_user_00167','val'=>3)
         );
         $this->yunset('resumestate',$resumestate);
 		//查询该会员套餐数量
@@ -222,7 +222,7 @@ class hr_controller extends company
     function remark_action()
     {
         if (empty($_POST['remark'])){
-            $this -> ACT_layer_msg('请填写备注内容', 8);
+            $this -> ACT_layer_msg('member_com_00102', 8);
         }
         $RemarkM    =   $this->MODEL('remark');
         $data       =   array(
@@ -276,7 +276,7 @@ class hr_controller extends company
             $resume_expect = $resumeM->getInfoByEid(array('eid' => $id, 'uid' => $this->uid, 'usertype' => $this->usertype));
 
             if (empty($resume_expect)) {
-                $this->yunset(array('errmsg' => '没有找到该人才！'));
+                $this->yunset(array('errmsg' => yun_at('wap_01800')));
                 $this->com_tpl('hr_resume');exit();
             }
 
@@ -295,7 +295,7 @@ class hr_controller extends company
                     }
                 }
                 if (!$canShow){
-                    $this->yunset(array('errmsg' => '简历已设置不对外开放！'));
+                    $this->yunset(array('errmsg' => yun_at('resume_00040')));
                     $this->com_tpl('hr_resume');exit();
                 }
             }
@@ -422,14 +422,14 @@ class hr_controller extends company
             $this->yunset($cache);
             $this->com_tpl('hr_resume');
         } else {
-            $this->yunset(array('errmsg' => '参数错误！'));
+            $this->yunset(array('errmsg' => yun_at('wap_01298')));
             $this->com_tpl('hr_resume');exit();
         }
     }
     //简历是否申请过公司职位
     function everApplied_action(){
         if (!$_GET['eid']){
-            echo yun_json_encode(array('code' => 400, 'msg' => '非法访问'));
+            echo yun_json_encode(array('code' => 400, 'msg' => yun_at('admin_neirong_00031')));
             exit();
         }
         // 企业登录时，获取企业的职位列表
@@ -437,10 +437,10 @@ class hr_controller extends company
             $JobM = $this->MODEL('job');
             $sqJob = $JobM->getSqJobInfo(array('eid' => intval($_GET['eid']), 'com_id' => $this->uid));
             if ($sqJob) {
-                echo yun_json_encode(array('code' => 200, 'msg' => '用户申请过该企业职位'));
+                echo yun_json_encode(array('code' => 200, 'msg' => yun_at('common_01036')));
                 exit();
             } else {
-                echo yun_json_encode(array('code' => 400, 'msg' => '用户未申请过该企业职位', 'data' => $sqJob));
+                echo yun_json_encode(array('code' => 400, 'msg' => yun_at('common_00902'), 'data' => $sqJob));
                 exit();
             }
         }

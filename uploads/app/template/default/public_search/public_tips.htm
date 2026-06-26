@@ -8,7 +8,7 @@
 			{yun:}/if{/yun}
 			<div class="yun_tipsboxbox_hello">{yun:}t key='member_com_00128'{/yun}！</div>
 			<div class="yun_tipsboxbox_level">
-				您当前是<span class="yun_tipsboxbox_level_name">{yun:}$statis.rating_name{/yun}</span>，{yun:}t key='wap_js_00157'{/yun}{yun:}if $statis.vip_etime < strtotime('today') && $statis.vip_etime!=0{/yun}会员已到期{yun:}else{/yun}套餐已用完{yun:}/if{/yun}，升级会员享受更多特权，选择适合您的企业VIP{yun:}t key='common_01970'{/yun}
+				{yun:}t key='common_02235'{/yun}<span class="yun_tipsboxbox_level_name">{yun:}$statis.rating_name{/yun}</span>，{yun:}t key='wap_js_00157'{/yun}{yun:}if $statis.vip_etime < strtotime('today') && $statis.vip_etime!=0{/yun}会员已到期{yun:}else{/yun}套餐已用完{yun:}/if{/yun}，升级会员享受更多特权，选择适合您的企业VIP{yun:}t key='common_01970'{/yun}
 			</div>
 			<ul class="buymeal_tit" id='rating_type'>
 
@@ -18,7 +18,7 @@
 
 				{yun:}if $noPermission == 1 || $isPaused == 1{/yun}
 				{yun:}if ($config.com_vip_type == '2' || $config.com_vip_type == '0') && !empty($rating_1){/yun} 
-					<li class="buymeal_tit_cur" rating='1' ishide='0'><a><span class="buymeal_tit_name">{yun:}t key='wap_com_00380'{/yun}</span><em class="buymeal_p">购买套餐会员更划算</em></a><span class="buymeal_tit_tj">{yun:}t key='common.recommended'{/yun}</span></li>
+					<li class="buymeal_tit_cur" rating='1' ishide='0'><a><span class="buymeal_tit_name">{yun:}t key='wap_com_00380'{/yun}</span><em class="buymeal_p">{yun:}t key='common_02236'{/yun}</em></a><span class="buymeal_tit_tj">{yun:}t key='common.recommended'{/yun}</span></li>
 				{yun:}/if{/yun} 
 				
 				{yun:}if ($config.com_vip_type == '1' || $config.com_vip_type == '0') && !empty($rating_2){/yun} 
@@ -238,7 +238,7 @@
 									{yun:}if $v.breakjob_num{/yun}<div class="buymeal_increment_detailed"><span class="buymeal_increment_detailed_name">{yun:}t key='wap_com_00029'{/yun} </span><span class="buymeal_increment_detailed_n">{yun:}$v.breakjob_num{/yun}</span>{yun:}t key='common_02052'{/yun}</div>{yun:}/if{/yun}
 									{yun:}if $v.top_num{/yun}<div class="buymeal_increment_detailed"><span class="buymeal_increment_detailed_name">{yun:}t key='wap_com_00238'{/yun} </span><span class="buymeal_increment_detailed_n">{yun:}$v.top_num{/yun}</span>{yun:}t key='common_02067'{/yun}</div>{yun:}/if{/yun}
 									{yun:}if $v.rec_num{/yun}<div class="buymeal_increment_detailed"><span class="buymeal_increment_detailed_name">{yun:}t key='wap_com_00237'{/yun} </span><span class="buymeal_increment_detailed_n">{yun:}$v.rec_num{/yun}</span>{yun:}t key='common_02067'{/yun}</div>{yun:}/if{/yun}
-									{yun:}if $v.urgent_num{/yun}<div class="buymeal_increment_detailed"><span class="buymeal_increment_detailed_name">紧急招聘 </span><span class="buymeal_increment_detailed_n">{yun:}$v.urgent_num{/yun}</span>{yun:}t key='common_02067'{/yun}</div>{yun:}/if{/yun}
+									{yun:}if $v.urgent_num{/yun}<div class="buymeal_increment_detailed"><span class="buymeal_increment_detailed_name">{yun:}t key='member_com_00613'{/yun} </span><span class="buymeal_increment_detailed_n">{yun:}$v.urgent_num{/yun}</span>{yun:}t key='common_02067'{/yun}</div>{yun:}/if{/yun}
 									{yun:}if $v.zph_num{/yun}<div class="buymeal_increment_detailed"><span class="buymeal_increment_detailed_name">{yun:}t key='admin_user_company_00210'{/yun} </span><span class="buymeal_increment_detailed_n">{yun:}$v.zph_num{/yun}</span>{yun:}t key='common_02089'{/yun}</div>{yun:}/if{/yun}
 								</td>
 								{yun:}else{/yun}
@@ -343,7 +343,7 @@
 	          		<div class="new_pattern_paylist cI3_server">
 	           			<span class="new_pattern_paylist_name">所需{yun:}$config.integral_pricename{/yun}:</span>
 	           			<div class="new_pattern_paylist_tip">
-							当前拥有<span class="single_box_price">{yun:}$statis.integral{/yun}</span>{yun:}$config.integral_pricename{/yun} ， 本次操作将扣除您
+							{yun:}t key='wap_00922'{/yun}<span class="single_box_price">{yun:}$statis.integral{/yun}</span>{yun:}$config.integral_pricename{/yun} ， 本次操作将扣除您
 							<span class="single_box_price" id="single_integral"></span>{yun:}$config.integral_pricename{/yun}
 						</div>
 	           		</div>
@@ -353,7 +353,7 @@
 		           		<div class="new_pattern_paylist cI3_server">
 		           			<span class="new_pattern_paylist_name">{yun:}t key='common_01946'{/yun}{yun:}$config.integral_pricename{/yun}：</span>
 		           			<input type="text" value="" id="integral_int" maxlength='6' onkeyup="checkIntegralPaySingle({yun:}$statis.integral{/yun}, {yun:}$config.integral_min_recharge{/yun}, {yun:}$config.integral_proportion{/yun});" oninput="myFunction(this)" placeholder="请输入充值{yun:}$config.integral_pricename{/yun}{yun:}t key='admin_tool_00214'{/yun}" class="single_text" />
-							<div style="width:400px; float: left; padding-left:10px;color:#999;line-height: 33px;">{yun:}t key='default_00088'{/yun}<font color="red"> {yun:}$config.integral_min_recharge{/yun}</font> {yun:}$config.integral_pricename{/yun} ,兑换比为1{yun:}t key='common_02056'{/yun}={yun:}$config.integral_proportion{/yun}{yun:}$config.integral_priceunit{/yun}{yun:}$config.integral_pricename{/yun}</div>
+							<div style="width:400px; float: left; padding-left:10px;color:#999;line-height: 33px;">{yun:}t key='default_00088'{/yun}<font color="red"> {yun:}$config.integral_min_recharge{/yun}</font> {yun:}$config.integral_pricename{/yun} ,{yun:}t key='wap_01145'{/yun}1{yun:}t key='common_02056'{/yun}={yun:}$config.integral_proportion{/yun}{yun:}$config.integral_priceunit{/yun}{yun:}$config.integral_pricename{/yun}</div>
 		           		</div>
 		           		<div class="new_pattern_paylist">
 		           			<span class="new_pattern_paylist_name">{yun:}t key='default_00091'{/yun}</span>
@@ -463,8 +463,8 @@
 					{yun:}if $statis.integral>0{/yun}
 					<div class="single_list cI3_server" id="integral_dk_div">
 						<span class="single_left">{yun:}$config.integral_pricename{/yun}{yun:}t key='common_01992'{/yun}：</span>
-						<input type="text"  id="server_integral_dk" value="" placeholder="请输入抵扣数量" maxlength='6' onkeyup="checkIntegralDKSingle({yun:}$statis.integral{/yun},{yun:}$config.integral_proportion{/yun});" oninput="myFunction(this)" class="single_text" autocomplete="off">
-						<span class="single_dq">您当前拥有<span class="single_box_price">{yun:}$statis.integral{/yun}</span>{yun:}$config.integral_pricename{/yun}（1{yun:}t key='common_02056'{/yun}={yun:}$config.integral_proportion{/yun}{yun:}$config.integral_pricename{/yun})</span>
+						<input type="text"  id="server_integral_dk" value="" placeholder="{yun:}t key='wap_00865'{/yun}" maxlength='6' onkeyup="checkIntegralDKSingle({yun:}$statis.integral{/yun},{yun:}$config.integral_proportion{/yun});" oninput="myFunction(this)" class="single_text" autocomplete="off">
+						<span class="single_dq">{yun:}t key='common_02237'{/yun}<span class="single_box_price">{yun:}$statis.integral{/yun}</span>{yun:}$config.integral_pricename{/yun}（1{yun:}t key='common_02056'{/yun}={yun:}$config.integral_proportion{/yun}{yun:}$config.integral_pricename{/yun})</span>
 					</div>
 					{yun:}/if{/yun}
 					
@@ -552,7 +552,7 @@
 		<span class="yun_purchase_payment_titname">{yun:}t key='member_user_00285'{/yun}<span class="" id='service_name_2'></span></span>
 	</div>
 	<div class="yun_purchase_payment_tip">
-		您当前拥有<span class="single_box_price">{yun:}$statis.integral{/yun}</span>{yun:}$config.integral_pricename{/yun} , 本次购买需扣除<span class="single_box_price" id='vip_order_price_2'></span>{yun:}$config.integral_pricename{/yun}
+		{yun:}t key='common_02237'{/yun}<span class="single_box_price">{yun:}$statis.integral{/yun}</span>{yun:}$config.integral_pricename{/yun} , 本次购买需扣除<span class="single_box_price" id='vip_order_price_2'></span>{yun:}$config.integral_pricename{/yun}
 	</div>
 	<div class="single_bthbox">
 		<a href="javascript:void(0);" onclick="integralBuy();" class="single_bth">{yun:}t key='default_00089'{/yun}</a>
@@ -567,7 +567,7 @@
 	</div>
 	
 	<div class="yun_purchase_payment_list">
-		<span class="yun_purchase_payment_listname">产品价格：</span>
+		<span class="yun_purchase_payment_listname">{yun:}t key='common_02238'{/yun}</span>
 		<div class="yun_purchase_payment_price">
 			<span class="yun_purchase_payment_price_n" id='service_price_3'></span> {yun:}$config.integral_pricename{/yun} 
 			<span class="yun_purchase_payment_price_yj" id='origin_tag_3'>{yun:}t key='default_00093'{/yun}：<i class="buymeal_original_price_delete" id='service_origin_price_3'></i></span>
@@ -577,10 +577,10 @@
 	<div class="yun_purchase_payment_list">
 		<span class="yun_purchase_payment_listname">{yun:}$config.integral_pricename{/yun}{yun:}t key='common_01946'{/yun}：</span>
 		<input type="text" value="" id='integral_int_vip' name='integral_int_vip' maxlength='6' onkeyup="checkIntegralPay({yun:}$statis.integral{/yun}, {yun:}$config.integral_min_recharge{/yun}, {yun:}$config.integral_proportion{/yun});" oninput="myFunction(this)" placeholder="{yun:}t key='default_00075'{/yun}"  class="yun_purchase_text" >
-		<span class="single_dq">您当前拥有<span class="single_box_price">{yun:}$statis.integral{/yun}</span>{yun:}$config.integral_pricename{/yun}</span>
+		<span class="single_dq">{yun:}t key='common_02237'{/yun}<span class="single_box_price">{yun:}$statis.integral{/yun}</span>{yun:}$config.integral_pricename{/yun}</span>
 		
 	</div>
-	<div class="new_pattern_paylist_tip" style="padding-left:130px;color:#999">{yun:}t key='default_00088'{/yun} <font color="red">{yun:}$config.integral_min_recharge{/yun}</font> {yun:}$config.integral_pricename{/yun},兑换比为1{yun:}t key='common_02056'{/yun}={yun:}$config.integral_proportion{/yun}{yun:}$config.integral_priceunit{/yun}{yun:}$config.integral_pricename{/yun}</div>
+	<div class="new_pattern_paylist_tip" style="padding-left:130px;color:#999">{yun:}t key='default_00088'{/yun} <font color="red">{yun:}$config.integral_min_recharge{/yun}</font> {yun:}$config.integral_pricename{/yun},{yun:}t key='wap_01145'{/yun}1{yun:}t key='common_02056'{/yun}={yun:}$config.integral_proportion{/yun}{yun:}$config.integral_priceunit{/yun}{yun:}$config.integral_pricename{/yun}</div>
 	<div class="yun_purchase_payment_list">
 		<span class="yun_purchase_payment_listname">{yun:}t key='default_00091'{/yun}</span>
 		<span class="single_payprice"><em class="single_payprice_n" id='vip_order_price_3'>0</em> {yun:}t key='common_02056'{/yun}</span>
@@ -618,7 +618,7 @@
  	</div>
 	
 	<div class="yun_purchase_payment_list">
-		<span class="yun_purchase_payment_listname">产品价格：</span>
+		<span class="yun_purchase_payment_listname">{yun:}t key='common_02238'{/yun}</span>
 		<div class="yun_purchase_payment_price">
 			<span class="yun_purchase_payment_price_n" id='service_price_1'></span> {yun:}t key='common_02056'{/yun} 
 			<span class="yun_purchase_payment_price_yj" id='origin_tag_1'>{yun:}t key='default_00093'{/yun}：<i class="buymeal_original_price_delete" id='service_origin_price_1'></i></span>
@@ -632,8 +632,8 @@
 		
 		<div class="yun_purchase_payment_list cI4_server">
 			<span class="yun_purchase_payment_listname">{yun:}$config.integral_printegral_dk_divicename{/yun}{yun:}t key='common_01992'{/yun}：</span>
-			<input type="text" value="" placeholder="请输入抵扣数量" id='integral_dk_vip' name='integral_dk_vip' oninput="myFunction(this)" onkeyup="checkIntegralDK('{yun:}$statis.integral{/yun}','{yun:}$config.integral_proportion{/yun}','1');" class="yun_purchase_text" />
-			<span class="single_dq">您当前拥有<span class="single_box_price">{yun:}$statis.integral{/yun}</span>{yun:}$config.integral_pricename{/yun}</span>
+			<input type="text" value="" placeholder="{yun:}t key='wap_00865'{/yun}" id='integral_dk_vip' name='integral_dk_vip' oninput="myFunction(this)" onkeyup="checkIntegralDK('{yun:}$statis.integral{/yun}','{yun:}$config.integral_proportion{/yun}','1');" class="yun_purchase_text" />
+			<span class="single_dq">{yun:}t key='common_02237'{/yun}<span class="single_box_price">{yun:}$statis.integral{/yun}</span>{yun:}$config.integral_pricename{/yun}</span>
 		</div>
 		
 	{yun:}/if{/yun}
@@ -676,7 +676,7 @@
 <!--支付弹出框-->
 <div id="payshow" style="width:450px; position:absolute;left:0px;top:0px; background:#fff; display:none;">
     <div class="payment_tip">
-        请在新打开的支付页面上完成付款，付款完成前请不要关闭此窗口。<br> 如您在支付过程中遇到问题，请联系客服：
+        {yun:}t key='member_user_00443'{/yun}<br> {yun:}t key='member_user_00444'{/yun}
         <span class="payment_tip_s">{yun:}$config.sy_freewebtel{/yun}</span>
     </div>
     <div class="payment_bottom">

@@ -20,20 +20,20 @@ class set_cron_controller extends adminCommon{
                 $v['nowtime_n'] = $v['nowtime'] ? date('Y-m-d H:i', $v['nowtime']) : '-';
                 $v['nexttime_n'] = $v['nexttime'] ? date('Y-m-d H:i', $v['nexttime']) : '-';
                 if ($v['type'] == 1) {
-                    $v['type_n'] = '每周';
+                    $v['type_n'] = yun_at('admin_system_00268');
                 } elseif ($v['type'] == 2) {
-                    $v['type_n'] = '每月';
+                    $v['type_n'] = yun_at('admin_system_00270');
                 } elseif ($v['type'] == 3) {
-                    $v['type_n'] = '每天';
+                    $v['type_n'] = yun_at('admin_system_00269');
                 } elseif ($v['type'] == 4) {
-                    $v['type_n'] = '每隔N秒';
+                    $v['type_n'] = yun_at('admin_00894');
                 } elseif ($v['type'] == 5) {
-                    $v['type_n'] = '每隔N分钟';
+                    $v['type_n'] = yun_at('admin_system_00261');
                 }
                 if ($v['display'] == 1) {
-                    $v['display_n'] = '是';
+                    $v['display_n'] = yun_at('common_02085');
                 } elseif ($v['display'] == 2) {
-                    $v['display_n'] = '否';
+                    $v['display_n'] = yun_at('common_02063');
                 }
             }
         }
@@ -48,7 +48,7 @@ class set_cron_controller extends adminCommon{
     function run_action()
     {
         if (!$_POST['id']) {
-            $this->render_json(1, '参数异常');
+            $this->render_json(1, yun_at('upgrade_00015'));
         }
         $CronM = $this->MODEL('cron');
         $cron = $CronM->getList();
@@ -58,13 +58,13 @@ class set_cron_controller extends adminCommon{
 
     function info_action()
     {
-        $arrweek[] = array('label' => '周一', 'value' => '0');
-        $arrweek[] = array('label' => '周二', 'value' => '1');
-        $arrweek[] = array('label' => '周三', 'value' => '2');
-        $arrweek[] = array('label' => '周四', 'value' => '3');
-        $arrweek[] = array('label' => '周五', 'value' => '4');
-        $arrweek[] = array('label' => '周六', 'value' => '5');
-        $arrweek[] = array('label' => '周日', 'value' => '6');
+        $arrweek[] = array('label' => 'wap_com_00338', 'value' => '0');
+        $arrweek[] = array('label' => 'wap_com_00339', 'value' => '1');
+        $arrweek[] = array('label' => 'wap_js_00029', 'value' => '2');
+        $arrweek[] = array('label' => 'wap_js_00032', 'value' => '3');
+        $arrweek[] = array('label' => 'wap_js_00030', 'value' => '4');
+        $arrweek[] = array('label' => 'wap_js_00031', 'value' => '5');
+        $arrweek[] = array('label' => 'wap_js_00033', 'value' => '6');
         for ($i = 1; $i <= 31; $i++) {
             $montharr[] = array('label' => $i . "日", 'value' => '' . $i);
         }

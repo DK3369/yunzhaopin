@@ -4,64 +4,64 @@
             <table class="tableVue">
                 <thead>
                     <tr align="left">
-                        <th width="180">名称</th>
-                        <th width="500">状态</th>
-                        <th>说明</th>
+                        <th width="180">{yun:}t key='member_com_00021'{/yun}</th>
+                        <th width="500">{yun:}t key='member_user_00181'{/yun}</th>
+                        <th>{yun:}t key='member_com_00207'{/yun}</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td>
-                            <div class="TableTite">选择用户</div>
+                            <div class="TableTite">{yun:}t key='admin_01106'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
                                 <el-radio-group v-model="utype" @change="utypeChange">
-                                    <el-radio label="1">个人用户</el-radio>
-                                    <el-radio label="2">企业用户</el-radio>
-                                    <el-radio label="5">自定义用户</el-radio>
+                                    <el-radio label="1">{yun:}t key='admin_user_00122'{/yun}</el-radio>
+                                    <el-radio label="2">{yun:}t key='admin_user_00124'{/yun}</el-radio>
+                                    <el-radio label="5">{yun:}t key='admin_system_00206'{/yun}</el-radio>
                                 </el-radio-group>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>注：全部用户发送，时间较长，建议分批发送</span>
+                                <span>{yun:}t key='admin_01107'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr v-if="utype == 5">
                         <td>
-                            <div class="TableTite">用户邮箱</div>
+                            <div class="TableTite">{yun:}t key='admin_00673'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableButn">
-                                <el-input v-model="email_user" placeholder="请输入用户邮箱"></el-input>
+                                <el-input v-model="email_user" placeholder="{yun:}t key='admin_01109'{/yun}"></el-input>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>多个邮箱请用,(半角)隔开</span>
+                                <span>{yun:}t key='admin_01108'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">邮件主题</div>
+                            <div class="TableTite">{yun:}t key='admin_yunying_00172'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableButn">
-                                <el-input v-model="email_title" placeholder="请输入邮件主题"></el-input>
+                                <el-input v-model="email_title" placeholder="{yun:}t key='admin_yunying_00171'{/yun}"></el-input>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>邮件主题</span>
+                                <span>{yun:}t key='admin_yunying_00172'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">邮件内容</div>
+                            <div class="TableTite">{yun:}t key='admin_00668'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
@@ -73,7 +73,7 @@
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>邮件内容</span>
+                                <span>{yun:}t key='admin_00668'{/yun}</span>
                             </div>
                         </td>
                     </tr>
@@ -81,7 +81,7 @@
             </table>
         </div>
         <div class="setBasicButn" style="border: none; height: 80px;">
-            <el-button type="primary" size="medium" @click="send">发送</el-button>
+            <el-button type="primary" size="medium" @click="send">{yun:}t key='resume_00033'{/yun}</el-button>
         </div>
     </div>
 </template>
@@ -177,14 +177,14 @@ module.exports = {
                 }
             }
             if (title == '') {
-                message.error('请输入邮件主题');
+                message.error("{yun:}t key='admin_yunying_00171'{/yun}");
                 return false;
             }
             if (content == '' || content == '<p><br></p>') {
                 message.error('请输入邮件内容');
                 return false;
             }
-            that.sendDivEmail(utype, title, content, email, 3, 20, 0, 0, 0, "正在发送，请稍候。。。");
+            that.sendDivEmail(utype, title, content, email, 3, 20, 0, 0, 0, "{yun:}t key='admin_yunying_00170'{/yun}");
         },
 
         sendDivEmail(utype, title, content, email, status, pagelimit, value, sendok, sendno, msg) {

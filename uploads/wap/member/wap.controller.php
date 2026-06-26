@@ -26,8 +26,8 @@ class wap_controller extends common
 
                     if ($expectnum < 1) {
 
-                        $this->yunset('header_title', yun_auto_t('创建简历'));
-                        $this->yunset("remind", array('info' => yun_auto_t('请先创建一份简历！'), 'url' => 'index.php?c=addresume', 'btn' => yun_auto_t('立即创建')));
+                        $this->yunset('header_title', yun_at('wap_user_00197'));
+                        $this->yunset("remind", array('info' => yun_at('member_user_00615'), 'url' => 'index.php?c=addresume', 'btn' => yun_auto_t('立即创建')));
                         $this->yuntpl(array('wap/member/user/addresume'));
                     }
                 }
@@ -54,8 +54,8 @@ class wap_controller extends common
                 if ($this->config['com_enforce_info'] == 1) {
                     if (!$this->comInfo['info']['name'] || !$this->comInfo['info']['provinceid'] || !$this->comInfo['info']['linktel']) {
 
-                        $this->yunset('header_title', yun_auto_t('基本信息'));
-                        $this->yunset("remind", array('info' => yun_auto_t('请先完善信息！'), 'url' => 'index.php?c=info', 'btn' => yun_auto_t('立即完善')));
+                        $this->yunset('header_title', yun_at('wap_00456'));
+                        $this->yunset("remind", array('info' => yun_auto_t('请先完善信息！'), 'url' => 'index.php?c=info', 'btn' => yun_at('wap_user_00117')));
                         $this->yuntpl(array('wap/member/com/info'));
                     }
                 } elseif (!$this->comInfo['info']['uid']) {

@@ -8,35 +8,35 @@
                 {{ lc("admin_contact_person_value", [info.linkman]) }} <span class="shcomtel_n">{{ lc("admin_contact_phone_value", [info.tel]) }} </span> <span v-if="info.crm_name">{{ lc("admin_salesperson_value", [info.crm_name]) }}</span>
             </div>
             <div class="shcomtel">
-                <template v-if="info.reg_date_n">注册时间：{{info.reg_date_n}}</template>
+                <template v-if="info.reg_date_n">{yun:}t key='admin_00734'{/yun}</template>
                 <template v-if="info.login_date_n">
-                    <span class="shcomtel_n">最近登录时间：{{ info.login_date_n }} </span>
+                    <span class="shcomtel_n">{yun:}t key='admin_00735'{/yun} </span>
                     <span v-if="info.add_ip">IP：{{ info.add_ip }}</span>
-                    <span v-if="info.add_ip" class="shcomtel_n">IP归属地：{{ info.ip_address }}</span>
+                    <span v-if="info.add_ip" class="shcomtel_n">{yun:}t key='admin_00736'{/yun}</span>
                 </template>
                 <template v-else>
-                    <span class="shcomtel_n">未登录</span>
+                    <span class="shcomtel_n">{yun:}t key='admin_user_00139'{/yun}</span>
                 </template>
             </div>
             <div class="shshowall">
                 <div class="shshow">
-                    <div class="shshow_tit"><i class="el-icon-document"></i> 基本要求</div>
+                    <div class="shshow_tit"><i class="el-icon-document"></i> {yun:}t key='member_user_00194'{/yun}</div>
                     <div class="shshow_p">
-                        <div class="" v-if="info.job_welfare">职位福利：
+                        <div class="" v-if="info.job_welfare">{yun:}t key='admin_00737'{/yun}
                             <el-tag size="mini" v-for="(item,key) in info.job_welfare" :key="key" style="margin-right: 5px;">{{item}}</el-tag>
                         </div>
-                        <div class="">职位薪资：{{info.job_salary}} </div>
-                        <div class="">经验要求：{{info.job_exp}} </div>
-                        <div class="">学历要求：{{info.job_edu}} </div>
+                        <div class="">{yun:}t key='admin_00738'{/yun} </div>
+                        <div class="">{yun:}t key='admin_00739'{/yun} </div>
+                        <div class="">{yun:}t key='admin_00740'{/yun} </div>
                         <div class="" v-if="info.job_number">{{ lc("admin_headcount_value", [info.job_number]) }}</div>
-                        <div class="" v-else>招聘人数：若干人</div>
+                        <div class="" v-else>{yun:}t key='admin_user_company_00324'{/yun}</div>
                         <div class="">{{ lc("admin_arrival_time_value", [info.job_report]) }} </div>
                         <div class="" v-if="info.job_sex">{{ lc("admin_gender_requirement_value", [info.job_sex]) }} </div>
-                        <div class="" v-else>性别要求：不限性别 </div>
-                        <div class="">婚况要求：{{info.job_marriage}}</div>
+                        <div class="" v-else>{yun:}t key='admin_00741'{/yun} </div>
+                        <div class="">{yun:}t key='admin_00742'{/yun}</div>
                         <div class="">{{ lc("admin_work_address_value", [info.address]) }}</div>
                     </div>
-                    <div class="shshow_tit"><i class="el-icon-office-building"></i> 职位描述</div>
+                    <div class="shshow_tit"><i class="el-icon-office-building"></i> {yun:}t key='wap_com_00289'{/yun}</div>
                     <div class="shshow_p">
                         <div class="" v-html="info.description"></div>
                     </div>
@@ -44,69 +44,69 @@
                 <div class="shcz">
                     <template v-if="is_graduate==1 ">
                         <div v-if="r_status != 1">
-                            <div class="wxsettip_small ">企业审核 </div>
+                            <div class="wxsettip_small ">{yun:}t key='admin_user_company_00134'{/yun} </div>
                             <template>
-                                <el-radio v-model="info.r_status" label="1">通过</el-radio>
-                                <el-radio v-model="info.r_status" label="3">未通过</el-radio>
+                                <el-radio v-model="info.r_status" label="1">{yun:}t key='admin_user_company_00161'{/yun}</el-radio>
+                                <el-radio v-model="info.r_status" label="3">{yun:}t key='wap_user_00167'{/yun}</el-radio>
                             </template>
-                            <div class="wxsettip_small ">职位审核 </div>
-                            <el-checkbox v-model="job_status">同步审核</el-checkbox>
-                            <div class="admin_jobshtip">同步说明：当前职位根据企业审核（除了未通过）同步审核</div>
+                            <div class="wxsettip_small ">{yun:}t key='admin_user_company_00326'{/yun} </div>
+                            <el-checkbox v-model="job_status">{yun:}t key='admin_user_company_00325'{/yun}</el-checkbox>
+                            <div class="admin_jobshtip">{yun:}t key='admin_user_company_00323'{/yun}</div>
                         </div>
                         <div v-else>
-                            <div class="wxsettip_small ">职位审核 </div>
+                            <div class="wxsettip_small ">{yun:}t key='admin_user_company_00326'{/yun} </div>
                             <template>
-                                <el-radio v-model="info.state" label="1">通过</el-radio>
-                                <el-radio v-model="info.state" label="3">未通过</el-radio>
+                                <el-radio v-model="info.state" label="1">{yun:}t key='admin_user_company_00161'{/yun}</el-radio>
+                                <el-radio v-model="info.state" label="3">{yun:}t key='wap_user_00167'{/yun}</el-radio>
                             </template>
-                            <div class="wxsettip_small ">审核说明模板</div>
-                            <el-select v-model="info.tpl" placeholder="请选择" @change="tplChange" clearable>
+                            <div class="wxsettip_small ">{yun:}t key='admin_user_00244'{/yun}</div>
+                            <el-select v-model="info.tpl" placeholder="{yun:}t key='wap_user_00100'{/yun}" @change="tplChange" clearable>
                                 <el-option v-for="item in job_audit" :key="item" :label="comclass_name[item]"
                                            :value="item">
                                 </el-option>
                             </el-select>
                         </div>
-                        <div class="wxsettip_small ">审核状态说明 </div>
-                        <el-input type="textarea" :rows="2" placeholder="请输入内容" v-model="info.statusbody">
+                        <div class="wxsettip_small ">{yun:}t key='admin_user_00365'{/yun} </div>
+                        <el-input type="textarea" :rows="2" placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="info.statusbody">
                         </el-input>
                         <div class=" shczbth">
-                            <el-button type="primary" @click="audit(1)" :disabled="submitLoading">提 交</el-button>
+                            <el-button type="primary" @click="audit(1)" :disabled="submitLoading">{yun:}t key='member_com_00248'{/yun}</el-button>
                         </div>
                         <div class=" shczbth" v-if="snum>1">
-                            <el-button type="primary" @click="audit(2)" :disabled="submitLoading" plain>提交，并审核下一个</el-button>
+                            <el-button type="primary" @click="audit(2)" :disabled="submitLoading" plain>{yun:}t key='admin_user_00239'{/yun}</el-button>
                         </div>
                     </template>
                     <template v-else>
                         <div v-if="info.c_status == 2">
-                            <div class="wxsettip_small ">锁定状态</div>
+                            <div class="wxsettip_small ">{yun:}t key='admin_00743'{/yun}</div>
                             <template>
-                                <el-radio v-model="info.c_status" label="1">正常</el-radio>
-                                <el-radio v-model="info.c_status" label="2">锁定</el-radio>
+                                <el-radio v-model="info.c_status" label="1">{yun:}t key='admin_user_00149'{/yun}</el-radio>
+                                <el-radio v-model="info.c_status" label="2">{yun:}t key='admin_user_00150'{/yun}</el-radio>
                             </template>
-                            <div class="wxsettip_small ">锁定原因</div>
-                            <el-input type="textarea" disabled :rows="2" placeholder="锁定原因" :value="info.statusbody"></el-input>
+                            <div class="wxsettip_small ">{yun:}t key='admin_00744'{/yun}</div>
+                            <el-input type="textarea" disabled :rows="2" placeholder="{yun:}t key='admin_00744'{/yun}" :value="info.statusbody"></el-input>
                         </div>
                         <div v-else class="shcz">
-                            <div class="wxsettip_small ">职位审核</div>
+                            <div class="wxsettip_small ">{yun:}t key='admin_user_company_00326'{/yun}</div>
                             <template>
-                                <el-radio v-model="info.state" label="1">通过</el-radio>
-                                <el-radio v-model="info.state" label="3">未通过</el-radio>
+                                <el-radio v-model="info.state" label="1">{yun:}t key='admin_user_company_00161'{/yun}</el-radio>
+                                <el-radio v-model="info.state" label="3">{yun:}t key='wap_user_00167'{/yun}</el-radio>
                             </template>
-                            <div class="wxsettip_small ">审核说明模板</div>
-                            <el-select v-model="info.tpl" placeholder="请选择" @change="tplChange">
+                            <div class="wxsettip_small ">{yun:}t key='admin_user_00244'{/yun}</div>
+                            <el-select v-model="info.tpl" placeholder="{yun:}t key='wap_user_00100'{/yun}" @change="tplChange">
                                 <el-option v-for="(item, index) in job_audit" :key="index" :label="comclass_name[item]" :value="item"></el-option>
                             </el-select>
-                            <div class="wxsettip_small " v-if="info.r_status == 0">企业审核</div>
+                            <div class="wxsettip_small " v-if="info.r_status == 0">{yun:}t key='admin_user_company_00134'{/yun}</div>
                             <template>
-                                <el-checkbox v-if="info.r_status == 0" :value="true" disabled>同步审核</el-checkbox>
+                                <el-checkbox v-if="info.r_status == 0" :value="true" disabled>{yun:}t key='admin_user_company_00325'{/yun}</el-checkbox>
                             </template>
-                            <div class="wxsettip_small ">审核状态说明</div>
-                            <el-input type="textarea" :rows="2" placeholder="请输入审核状态说明" v-model="info.statusbody"></el-input>
+                            <div class="wxsettip_small ">{yun:}t key='admin_user_00365'{/yun}</div>
+                            <el-input type="textarea" :rows="2" placeholder="{yun:}t key='admin_00745'{/yun}" v-model="info.statusbody"></el-input>
                             <div class=" shczbth">
-                                <el-button type="primary" :disabled="submitLoading" @click="audit(1)">提 交</el-button>
+                                <el-button type="primary" :disabled="submitLoading" @click="audit(1)">{yun:}t key='member_com_00248'{/yun}</el-button>
                             </div>
                             <div class=" shczbth" v-if="snum > 0">
-                                <el-button type="primary" :disabled="submitLoading" @click="audit(2)" plain>提交，并审核下一个</el-button>
+                                <el-button type="primary" :disabled="submitLoading" @click="audit(2)" plain>{yun:}t key='admin_user_00239'{/yun}</el-button>
                             </div>
                         </div>
                     </template>
@@ -176,7 +176,7 @@ module.exports = {
             let params = {};
             if (this.is_graduate == 0){
                 if (!that.info.state) {
-                    message.error("请选择审核状态")
+                    message.error("{yun:}t key='admin_user_weipin_00015'{/yun}")
                     return false;
                 }
                 params = {

@@ -4,7 +4,7 @@
  *
  * 结构化 key：yun_t('home.search_placeholder')
  * 编号 key：  yun_at('wap_00703') 或 yun_t('common_09190')
- * 中文兜底：  yun_auto_t('成为企业会员，高效挑选人才！')
+ * 中文兜底：  yun_at('wap_00421')
  */
 
 function yun_i18n()

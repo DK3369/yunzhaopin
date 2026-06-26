@@ -4,48 +4,48 @@
             <table class="tableVue">
                 <thead>
                 <tr align="left">
-                    <th width="200">名称</th>
-                    <th width="460">状态</th>
-                    <th>说明</th>
+                    <th width="200">{yun:}t key='member_com_00021'{/yun}</th>
+                    <th width="460">{yun:}t key='member_user_00181'{/yun}</th>
+                    <th>{yun:}t key='member_com_00207'{/yun}</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr>
                     <td>
-                        <div class="TableTite">专题名称</div>
+                        <div class="TableTite">{yun:}t key='member_com_00343'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-input placeholder="请输入内容" v-model="ruleForm.title">
+                            <el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="ruleForm.title">
                                 <!-- <span slot="suffix" class="slotspan">天</span> -->
                             </el-input>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>专题名称</span>
+                            <span>{yun:}t key='member_com_00343'{/yun}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">企业报名上限</div>
+                        <div class="TableTite">{yun:}t key='admin_yunying_00122'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
 
-                            <el-input placeholder="请输入内容" v-model="ruleForm.limit" onkeyup="this.value=this.value.replace(/[^0-9]/g,'')"></el-input>
+                            <el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="ruleForm.limit" onkeyup="this.value=this.value.replace(/[^0-9]/g,'')"></el-input>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>例：最多可有多少家企业报名</span>
+                            <span>{yun:}t key='admin_01205'{/yun}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">企业等级</div>
+                        <div class="TableTite">{yun:}t key='admin_01206'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableButn">
@@ -62,11 +62,11 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">专题模板</div>
+                        <div class="TableTite">{yun:}t key='admin_01207'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableSelect">
-                            <el-select v-model="ruleForm.tpl" placeholder="请选择">
+                            <el-select v-model="ruleForm.tpl" placeholder="{yun:}t key='wap_user_00100'{/yun}">
                                 <el-option v-for="(item, index) in fileData" :key="index" :label="item"
                                     :value="item">
                                 </el-option>
@@ -75,18 +75,18 @@
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>选择的模板类型只在PC版生效，其他端有专用模板</span>
+                            <span>{yun:}t key='admin_01208'{/yun}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">是否启用</div>
+                        <div class="TableTite">{yun:}t key='admin_system_00263'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableButn">
-                            <el-radio v-model="ruleForm.display" label="1">开启</el-radio>
-                            <el-radio v-model="ruleForm.display" label="0">关闭</el-radio>
+                            <el-radio v-model="ruleForm.display" label="1">{yun:}t key='member_com_00287'{/yun}</el-radio>
+                            <el-radio v-model="ruleForm.display" label="0">{yun:}t key='common.close'{/yun}</el-radio>
                         </div>
                     </td>
                     <td>
@@ -97,12 +97,12 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">允许企业报名</div>
+                        <div class="TableTite">{yun:}t key='admin_01209'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableButn">
-                            <el-radio v-model="ruleForm.com_bm" label="1">开启</el-radio>
-                            <el-radio v-model="ruleForm.com_bm" label="0">关闭</el-radio>
+                            <el-radio v-model="ruleForm.com_bm" label="1">{yun:}t key='member_com_00287'{/yun}</el-radio>
+                            <el-radio v-model="ruleForm.com_bm" label="0">{yun:}t key='common.close'{/yun}</el-radio>
                         </div>
                     </td>
                     <td>
@@ -113,28 +113,28 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">扣除积分</div>
+                        <div class="TableTite">{yun:}t key='admin_01210'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
 
-                            <el-input placeholder="请输入内容" v-model="ruleForm.integral" onkeyup="this.value=this.value.replace(/[^0-9]/g,'')"></el-input>
+                            <el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="ruleForm.integral" onkeyup="this.value=this.value.replace(/[^0-9]/g,'')"></el-input>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>扣除积分</span>
+                            <span>{yun:}t key='admin_01210'{/yun}</span>
                         </div>
                     </td>
                 </tr>
 
                 <tr>
                     <td>
-                        <div class="TableTite">报名结束时间</div>
+                        <div class="TableTite">{yun:}t key='admin_01211'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-date-picker v-model="ruleForm.etime" type="date" value-format="yyyy-MM-dd" placeholder="选择日期">
+                            <el-date-picker v-model="ruleForm.etime" type="date" value-format="yyyy-MM-dd" placeholder="{yun:}t key='admin_00346'{/yun}">
                             </el-date-picker>
                         </div>
                     </td>
@@ -147,29 +147,29 @@
 
                 <tr>
                     <td>
-                        <div class="TableTite">排序</div>
+                        <div class="TableTite">{yun:}t key='member_com_00022'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
 
-                            <el-input placeholder="请输入内容" v-model="ruleForm.sort" onkeyup="this.value=this.value.replace(/[^0-9]/g,'')"></el-input>
+                            <el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="ruleForm.sort" onkeyup="this.value=this.value.replace(/[^0-9]/g,'')"></el-input>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>越大越在前!</span>
+                            <span>{yun:}t key='admin_01212'{/yun}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">PC缩略图</div>
+                        <div class="TableTite">{yun:}t key='admin_01213'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableUpload" style="display: flex;align-items: center;">
                             <el-upload :accept="pic_accept" :action="uploadAction" :on-change="uploadChangePic"
                                 :show-file-list="false">
-                                <el-button size="small" type="primary">上传图片</el-button>
+                                <el-button size="small" type="primary">{yun:}t key='wap_00540'{/yun}</el-button>
                             </el-upload>
                             <div class="up_sy_logo_div" style="margin-left: 15px;">
                                 <el-image v-if="ruleForm.pic" style="width:100px;" :src="ruleForm.pic" :preview-src-list="ruleForm.pic ? [ruleForm.pic] : []"></el-image>
@@ -178,19 +178,19 @@
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>尺寸：宽度530*，高度250px</span>
+                            <span>{yun:}t key='admin_01214'{/yun}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">PC背景图</div>
+                        <div class="TableTite">{yun:}t key='admin_01215'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableUpload" style="display: flex;align-items: center;">
                             <el-upload :accept="pic_accept" :action="uploadAction" :on-change="uploadChangeBackground"
                                 :show-file-list="false">
-                                <el-button size="small" type="primary">上传图片</el-button>
+                                <el-button size="small" type="primary">{yun:}t key='wap_00540'{/yun}</el-button>
                             </el-upload>
                             <div class="up_sy_logo_div" style="margin-left: 15px;">
                                 <el-image v-if="ruleForm.background" style="width:100px;" :src="ruleForm.background" :preview-src-list="ruleForm.background ? [ruleForm.background] : []"></el-image>
@@ -199,19 +199,19 @@
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>尺寸：宽度1920*高度，高度不限最佳展示区域为420px</span>
+                            <span>{yun:}t key='admin_01216'{/yun}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">移动端缩略图</div>
+                        <div class="TableTite">{yun:}t key='admin_01217'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableUpload" style="display: flex;align-items: center;">
                             <el-upload :accept="pic_accept" :action="uploadAction" :on-change="uploadChangeWappic"
                                 :show-file-list="false">
-                                <el-button size="small" type="primary">上传图片</el-button>
+                                <el-button size="small" type="primary">{yun:}t key='wap_00540'{/yun}</el-button>
                             </el-upload>
                             <div class="up_sy_logo_div" style="margin-left: 15px;">
                                 <el-image v-if="ruleForm.wappic" style="width:100px;" :src="ruleForm.wappic" :preview-src-list="ruleForm.wappic ? [ruleForm.wappic] : []"></el-image>
@@ -220,19 +220,19 @@
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>尺寸：宽度700*，高度300px</span>
+                            <span>{yun:}t key='admin_01218'{/yun}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">移动端背景图</div>
+                        <div class="TableTite">{yun:}t key='admin_01219'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableUpload" style="display: flex;align-items: center;">
                             <el-upload :accept="pic_accept" :action="uploadAction" :on-change="uploadChangeWapback"
                                 :show-file-list="false">
-                                <el-button size="small" type="primary">上传图片</el-button>
+                                <el-button size="small" type="primary">{yun:}t key='wap_00540'{/yun}</el-button>
                             </el-upload>
                             <div class="up_sy_logo_div" style="margin-left: 15px;">
                                 <el-image v-if="ruleForm.wapback" style="width:100px;" :src="ruleForm.wapback" :preview-src-list="ruleForm.wapback ? [ruleForm.wapback] : []"></el-image>
@@ -241,13 +241,13 @@
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>尺寸：宽度830px*高度510px</span>
+                            <span>{yun:}t key='admin_01220'{/yun}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">专题介绍</div>
+                        <div class="TableTite">{yun:}t key='default_00328'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
@@ -268,7 +268,7 @@
             </table>
         </div>
         <div class="setBasicButn" style="border: none;">
-            <el-button type="primary" size="medium" @click="submitForm('ruleForm')" :disabled="submitLoading">提交</el-button>
+            <el-button type="primary" size="medium" @click="submitForm('ruleForm')" :disabled="submitLoading">{yun:}t key='common.submit'{/yun}</el-button>
         </div>
     </div>
 </template>
@@ -286,27 +286,27 @@ module.exports = {
             pic_accept: localStorage.getItem("pic_accept"),
             ruleForm: {
                 id: 0,
-                title: '',//专题名称
-                limit: '',//企业报名上限
-                rating: [],//企业等级
-                tpl: '',//专题模板
-                display: '1',//是否启用
-                com_bm: '1',//允许企业报名
-                integral: '',//integral
-                etime: '',//报名结束时间
-                sort: '',//排序
-                pic: '',//PC缩略图
-                background: '',//PC背景图
-                wappic: '',//移动端缩略图
-                wapback: '',//移动端背景图
-                intro: '',//专题介绍
+                title: '",//{yun:}t key='member_com_00343'{/yun}
+                limit: "",//{yun:}t key='admin_yunying_00122'{/yun}
+                rating: [],//{yun:}t key='admin_01206'{/yun}
+                tpl: "",//{yun:}t key='admin_01207'{/yun}
+                display: "1",//{yun:}t key='admin_system_00263'{/yun}
+                com_bm: "1",//{yun:}t key='admin_01209'{/yun}
+                integral: "',//integral
+                etime: '",//{yun:}t key='admin_01211'{/yun}
+                sort: "",//{yun:}t key='member_com_00022'{/yun}
+                pic: "",//PC{yun:}t key='admin_00119'{/yun}
+                background: "',//PC背景图
+                wappic: '",//{yun:}t key='admin_01217'{/yun}
+                wapback: "",//{yun:}t key='admin_01219'{/yun}
+                intro: "",//{yun:}t key='default_00328'{/yun}
             },
             filePic: {},
             fileBackground: {},
             fileWappic: {},
             fileWapback: {},
             submitLoading: false,
-			uploadAction: baseUrl + 'm=common&c=common_upload'
+			uploadAction: baseUrl + "m=common&c=common_upload'
         }
     },
     mounted() {
@@ -391,7 +391,7 @@ module.exports = {
                     }
                     _this.initEditor(_this.ruleForm.intro);
                 } else {
-                    message.error('暂无数据');
+                    message.error("{yun:}t key='wap_js_00113'{/yun}");
                 }
             }).catch(function (error) {
                 console.log(error);
@@ -402,11 +402,11 @@ module.exports = {
             this.ruleForm.intro = editor.getHtml();
             let params = JSON.parse(JSON.stringify(this.ruleForm));
             if (params.title == '') {
-                message.error('请填写专题名称！');
+                message.error("{yun:}t key='admin_01439'{/yun}");
                 return false;
             }
             if (params.tpl == '') {
-                message.error('请选择专题模板！');
+                message.error("{yun:}t key='admin_01440'{/yun}");
                 return false;
             }
             delete params.pic;

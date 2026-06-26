@@ -59,10 +59,10 @@ class report_xjh_controller extends adminCommon
         $return =   $reportM->upReport(array('id' => $id), $upData);
         if ($return){
             $logM   =   $this->MODEL('log');
-            $logM->addAdminLog("宣讲会投诉(ID:" . $id . ")处理");
-            $this->render_json(0, '操作成功');
+            $logM->addAdminLog('admin_yunying_00010' . $id . ")处理");
+            $this->render_json(0, yun_at('wap_user_00264'));
         }else{
-            $this->render_json(1, '操作失败，请重试');
+            $this->render_json(1, yun_at('common_01266'));
         }
     }
 
@@ -71,7 +71,7 @@ class report_xjh_controller extends adminCommon
         $reportM    =   $this->MODEL('report');
         $del = $_POST['del'];
         $where['id'] = $del;
-        $return =   $reportM->delReport($where, array('title' => '举报'));
+        $return =   $reportM->delReport($where, array('title' => yun_at('wap_com_00350')));
 
         $this->render_json($return['errcode']==9?0:1, $return['msg']);
     }

@@ -42,7 +42,7 @@ class finance_company_pay_controller extends adminCommon{
         $pageM	=	$this  -> MODEL('page');
         $pages	=	$pageM -> adminPageList('company_pay',$where,$page,array('limit' => $pageSize));
 		if(!$pages['total']) {
-            $this->render_json(0,'暂无数据',['data'=>array(),'total'=>0,'pageSizes'=>$pages['page_sizes']]);
+            $this->render_json(0,yun_at('wap_js_00113'),['data'=>array(),'total'=>0,'pageSizes'=>$pages['page_sizes']]);
         }
         //limit order 只有在列表查询时才需要
         if($_POST['order']){
@@ -70,7 +70,7 @@ class finance_company_pay_controller extends adminCommon{
 		$OrderM		=	$this -> MODEL('companyorder');
 		$delID		=	is_array($_POST['del']) ? $_POST['del'] : $_POST['id'];
         if (!$delID){
-            $this->render_json(1,'参数错误,请重试');
+            $this->render_json(1,yun_at('common_01237'));
         }
 		$return		=	$OrderM -> delPay($delID);
         if ($return['errcode']==9){

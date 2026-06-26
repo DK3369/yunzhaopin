@@ -62,7 +62,7 @@ class sysnews_controller extends company{
             $sysMsgM    =   $this->MODEL('sysmsg');
             $return     =   $sysMsgM->delSysmsg($id, array('fa_uid' => $this->uid));
 
-            $logContent =   '消息处理：删除系统消息';
+            $logContent =   'member_com_00706';
             $this->MODEL('log')->addMemberLog($this->uid, 2, $logContent, 18, 3);
 
             $this->layer_msg($return['msg'], $return['errcode'], $return['layertype'], $_SERVER['HTTP_REFERER']);

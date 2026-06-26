@@ -3,7 +3,7 @@
         <div class="drawerModInfo">
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>模板页面：</span>
+                    <span>{yun:}t key='admin_tool_00467'{/yun}</span>
                 </div>
                 <div class="drawerModInpt">
                     {{tpl_n}}
@@ -12,16 +12,16 @@
 
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>标题：</span>
+                    <span>{yun:}t key='wap_js_00099'{/yun}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input placeholder="请输入标题" v-model="info.title" maxlength="60" show-word-limit></el-input>
+                    <el-input placeholder="{yun:}t key='admin_tool_00353'{/yun}" v-model="info.title" maxlength="60" show-word-limit></el-input>
                 </div>
             </div>
 
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>内容：</span>
+                    <span>{yun:}t key='member_user_00010'{/yun}</span>
                 </div>
                 <div class="drawerModInpt">
                     <div id="editor—wrapper" style="border: 1px solid #ccc;">
@@ -33,13 +33,13 @@
 
         </div>
         <div class="setBasicButn" style="border: none;">
-            <el-button type="primary" size="medium" @click="saveinfo" :loading="saveloading">提交</el-button>
+            <el-button type="primary" size="medium" @click="saveinfo" :loading="saveloading">{yun:}t key='common.submit'{/yun}</el-button>
         </div>
         <div>
             <table width="100%" class="table_form">
                 <tr>
                     <th colspan="2" class="admin_bold_box">
-                        <div class="admin_bold">调用说明</div>
+                        <div class="admin_bold">{yun:}t key='admin_tool_00320'{/yun}</div>
                     </th>
                 </tr>
                 <tr v-for="(item,index) in tpl_temp" :key="index">

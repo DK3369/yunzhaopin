@@ -4,15 +4,15 @@
             <table class="tableVue">
                 <thead>
                     <tr align="left">
-                        <th width="180">名称</th>
-                        <th width="560">状态</th>
-                        <th>说明</th>
+                        <th width="180">{yun:}t key='member_com_00021'{/yun}</th>
+                        <th width="560">{yun:}t key='member_user_00181'{/yun}</th>
+                        <th>{yun:}t key='member_com_00207'{/yun}</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td>
-                            <div class="TableTite">标题名称</div>
+                            <div class="TableTite">{yun:}t key='admin_01091'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
@@ -22,13 +22,13 @@
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>标题名称</span>
+                                <span>{yun:}t key='admin_01091'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">活跃趋势基数</div>
+                            <div class="TableTite">{yun:}t key='admin_01092'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
@@ -38,13 +38,13 @@
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>活跃趋势基数</span>
+                                <span>{yun:}t key='admin_01092'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">注册趋势基数</div>
+                            <div class="TableTite">{yun:}t key='admin_01093'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
@@ -54,13 +54,13 @@
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>注册趋势基数</span>
+                                <span>{yun:}t key='admin_01093'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">登陆趋势基数</div>
+                            <div class="TableTite">{yun:}t key='admin_01094'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
@@ -70,13 +70,13 @@
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>登陆趋势基数</span>
+                                <span>{yun:}t key='admin_01094'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">发布岗位趋势基数</div>
+                            <div class="TableTite">{yun:}t key='admin_01095'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
@@ -86,44 +86,44 @@
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>发布岗位趋势基数</span>
+                                <span>{yun:}t key='admin_01095'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">预览地址</div>
+                            <div class="TableTite">{yun:}t key='admin_01096'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
                                 <el-input v-model="previewUrl" readonly placeholder="">
                                 </el-input>
-                                <el-button type="primary" style="margin-left: 10px;" @click="dialogPreview = true">预览</el-button>
-                                <el-button type="primary" plain @click="copyPreviewUrl">复制链接</el-button>
+                                <el-button type="primary" style="margin-left: 10px;" @click="dialogPreview = true">{yun:}t key='wap_00071'{/yun}</el-button>
+                                <el-button type="primary" plain @click="copyPreviewUrl">{yun:}t key='wap_com_00233'{/yun}</el-button>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>预览地址</span>
+                                <span>{yun:}t key='admin_01096'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">地区层级</div>
+                            <div class="TableTite">{yun:}t key='admin_01097'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
                                 <el-radio-group v-model="ruleForm.sy_datashow_city_lev">
-                                    <el-radio label="1">一级</el-radio>
-                                    <el-radio label="2">二级</el-radio>
-                                    <el-radio label="3">三级</el-radio>
+                                    <el-radio label="1">{yun:}t key='admin_yunying_00145'{/yun}</el-radio>
+                                    <el-radio label="2">{yun:}t key='admin_yunying_00147'{/yun}</el-radio>
+                                    <el-radio label="3">{yun:}t key='admin_yunying_00146'{/yun}</el-radio>
                                 </el-radio-group>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>地区层级</span>
+                                <span>{yun:}t key='admin_01097'{/yun}</span>
                             </div>
                         </td>
                     </tr>
@@ -131,17 +131,17 @@
             </table>
         </div>
         <div class="setBasicButn" style="border: none; height: 80px;">
-            <el-button type="primary" size="medium" @click="save">提交</el-button>
+            <el-button type="primary" size="medium" @click="save">{yun:}t key='common.submit'{/yun}</el-button>
         </div>
 
         <div class="modluDrawer">
-            <el-dialog title="手机扫码预览" :visible.sync="dialogPreview" :with-header="true" :modal-append-to-body="false"
+            <el-dialog title="{yun:}t key='admin_01099'{/yun}" :visible.sync="dialogPreview" :with-header="true" :modal-append-to-body="false"
                        :show-close="true" width="300px">
                 <div class="center">
                     <img :src="previewCode" width="200" height="200">
                 </div>
                 <div class="code_p">
-                    <div class="center">扫码预览</div>
+                    <div class="center">{yun:}t key='admin_01098'{/yun}</div>
                     <br/>
                 </div>
             </el-dialog>
@@ -198,7 +198,7 @@ module.exports = {
             // 执行浏览器复制命令
             document.execCommand('Copy');
             // 弹出复制成功信息
-            message.success('复制成功');
+            message.success('{yun:}t key='admin_user_company_00368'{/yun}');
             // 复制后移除输入框
             oInput.remove();
         },

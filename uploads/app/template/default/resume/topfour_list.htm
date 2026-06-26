@@ -2,7 +2,7 @@
 <div class="search_job_list {yun:}if $key%2!='0'{/yun}{yun:}/if{/yun}">
 
 	
-	<div class="resume_newlist">{yun:}if $user3.newtime==1{/yun}<i class="yunjoblist_newicon" title="新简历"> </i>{yun:}/if{/yun}
+	<div class="resume_newlist">{yun:}if $user3.newtime==1{/yun}<i class="yunjoblist_newicon" title="{yun:}t key='wap_00587'{/yun}"> </i>{yun:}/if{/yun}
 		<div class="resume_newlist_jobname">
 			{yun:}if $config.com_search==1 && !$uid{/yun}
 				<a href="javascript:void(0);" onclick="showlogin('2');" class="resume_newlist_job">{yun:}$user3.name{/yun}</a>
@@ -11,7 +11,7 @@
 			{yun:}/if{/yun}
 
 			{yun:}if $user3.idcard_status=='1'{/yun}<img src="{yun:}$style{/yun}/images/sf.png" title="{yun:}t key='resume_00008'{/yun}" class="user_rz_img png fl" />{yun:}/if{/yun}
-			{yun:}if $user3.ispic{/yun}<img src="{yun:}$style{/yun}/images/profile.png" title="有形象照" class="user_rz_img png fl" />{yun:}/if{/yun}
+			{yun:}if $user3.ispic{/yun}<img src="{yun:}$style{/yun}/images/profile.png" title="{yun:}t key='common_02273'{/yun}" class="user_rz_img png fl" />{yun:}/if{/yun}
 
 			{yun:}if in_array($user3.id,$talentpool){/yun}<span class="co_fav">{yun:}t key='wap_00378'{/yun}</span>{yun:}/if{/yun}
 			{yun:}if in_array($user3.uid,$useridmsg){/yun}<span class="co_fav">{yun:}t key='wap_00291'{/yun}</span>{yun:}/if{/yun}

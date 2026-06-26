@@ -78,17 +78,17 @@ class singlepage_controller extends adminCommon{
 			$url 		=	str_replace("./","",$url);
 			$p_delfiles =	path_tidy($url);
 			if($p_delfiles!=$url){
-				$this->render_json(1, '无效的文件名！');
+				$this->render_json(1, yun_at('admin_system_00060'));
 			}
 			$urlArr	=	explode('/',$url);
 			foreach($urlArr as $v){
 				if(!preg_match("/^[".chr(0xa1)."-".chr(0xff)." |a-z|0-9|A-Z|\@\.\_\]\[\!]+$/",$v) && $v!='') {
-					$this->render_json(1, '无效的文件名！');
+					$this->render_json(1, yun_at('admin_system_00060'));
 				}
 			}
 			$urlarr	=	explode(".",$url);
 			if(end($urlarr)!="html"){
-				$this->render_json(1, '请正确填写静态网页名称！');
+				$this->render_json(1, yun_at('admin_system_00058'));
 			}
 			if(substr($url,0,1)=="/"){
 				$url	=	substr($url,1);
@@ -113,7 +113,7 @@ class singlepage_controller extends adminCommon{
 		if(!$_POST['id']){
 			$descid	=	$descM	->	addDes($addData);
 			$ids=$descid;
-			$alert="添加";
+			$alert='wap_js_00091';
 		}else{
 			$row	=	$descM	->	getDes(array('id'=>$_POST['id']));
 			if($row['is_menu']=="1"){
@@ -127,7 +127,7 @@ class singlepage_controller extends adminCommon{
 			}
 			$descid =   $descM	->	upDes($addData,array('id'=>$_POST['id']));
 			$ids    =   $_POST['id'];
-			$alert  =   "更新";
+			$alert  =   'wap_00225';
 		}
 
 		if($descid){
@@ -135,9 +135,9 @@ class singlepage_controller extends adminCommon{
 			if($_POST['is_type']==1){
                 $this	->	descriptionshow($ids,$url);
 			}
-			$this->admin_json(0,"单页面(ID:".$ids.")".$alert."成功！");
+			$this->admin_json(0,"单页面(ID:".$ids.")".$alert.'wap_js_00104');
 		}else{
-			$this->render_json(1,$alert."失败！");
+			$this->render_json(1,$alert.'wap_js_00103');
 		}
 	}
 	//删除
@@ -176,9 +176,9 @@ class singlepage_controller extends adminCommon{
 		}
 
 	    if($fw){
- 			$this->render_json(0,"单页面生成成功！");
+ 			$this->render_json(0,yun_at('admin_system_00059'));
  		}else{
- 			$this->render_json(-1,"生成失败！");
+ 			$this->render_json(-1,yun_at('admin_01401'));
  		}
 	}
 	

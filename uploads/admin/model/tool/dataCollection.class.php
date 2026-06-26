@@ -218,7 +218,7 @@ class dataCollection_controller extends adminCommon
             fwrite($fp,$config);
             fclose($fp);
 
-            $this->admin_json(0, '信息采集配置成功');
+            $this->admin_json(0, 'admin_01456');
         }
     }
 }

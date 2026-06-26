@@ -12,7 +12,7 @@
             <iframe id="supportiframe" name="supportiframe" onload="returnmessage('supportiframe');" style="display:none"></iframe>
                 <form name="MyForm" onsubmit="return check_out();" target="supportiframe" action="index.php?c=resumeout&act=send" method="post" class="layui-form">
                   <div class="yun_send_resume_list">
-                  <div class="yun_send_resume_list_name"><span class="yun_send_resume_list_x">*</span>将要发送的简历：</div>
+                  <div class="yun_send_resume_list_name"><span class="yun_send_resume_list_x">*</span>{yun:}t key='member_user_00565'{/yun}</div>
                   <div class="yun_send_resume_list_right" >
                     <div class="layui-form-item">
                       <div class="layui-input-inline">
@@ -29,19 +29,19 @@
                   </div>
                   </div>
                   <div class="yun_send_resume_list">
-                    <div class="yun_send_resume_list_name"> <span class="yun_send_resume_list_x">*</span>企业的邮箱地址：</div>
+                    <div class="yun_send_resume_list_name"> <span class="yun_send_resume_list_x">*</span>{yun:}t key='member_user_00566'{/yun}</div>
                     <div class="yun_send_resume_list_right">
                     <input type="text" class="yun_send_resume_txt" id="email" name="email" value="">
                     </div>
                   </div>
                   <div class="yun_send_resume_list">
-                    <div class="yun_send_resume_list_name"><span class="yun_send_resume_list_x">*</span>应聘的企业名称：</div> 
+                    <div class="yun_send_resume_list_name"><span class="yun_send_resume_list_x">*</span>{yun:}t key='member_user_00567'{/yun}</div> 
                     <div class="yun_send_resume_list_right" >
                     <input type="text" class="yun_send_resume_txt" id="comname" name="comname" value="" maxlength="20"><i>（限20{yun:}t key='common_02073'{/yun}）</i>
                     </div>
                   </div>
                   <div class="yun_send_resume_list">
-                    <div class="yun_send_resume_list_name"><span class="yun_send_resume_list_x">*</span>应聘的职位名称：</div>
+                    <div class="yun_send_resume_list_name"><span class="yun_send_resume_list_x">*</span>{yun:}t key='member_user_00568'{/yun}</div>
                     <div class="yun_send_resume_list_right" >
                     <input type="text" class="yun_send_resume_txt" id="jobname" name="jobname" value="" maxlength="20"><i>（限20{yun:}t key='common_02073'{/yun}）</i>
                     </div>
@@ -64,7 +64,7 @@
             <div class="resumeout_span resumeout_jobname" >{yun:}t key='wap_com_00288'{/yun}</div>
             <div class="resumeout_span resumeout_pop" >{yun:}t key='member_user_00281'{/yun}</div>
             <div class="resumeout_span resumeout_emil">{yun:}t key='member_user_00282'{/yun}</div>
-            <div class="resumeout_span resumeout_xg">相关简历</div>
+            <div class="resumeout_span resumeout_xg">{yun:}t key='member_user_00569'{/yun}</div>
             <div class="resumeout_span resumeout_send" >{yun:}t key='member_user_00280'{/yun}</div>
             <div class="resumeout_span List_Title_w80" >{yun:}t key='member_user_00048'{/yun}</div>
         </div>
@@ -79,7 +79,7 @@
             <div class="resumeout_span List_Title_w80" ><a href="javascript:void(0)" onclick="layer_del("{yun:}t key='wap_user_00001'{/yun}",'index.php?c=resumeout&act=del&id={yun:}$item.id{/yun}');" class="List_dete cblue"> {yun:}t key='common.delete'{/yun}</a></div>
         </div>
         {yun:}foreachelse{/yun}
-        <div class="msg_no">暂无简历外发信息！</div>
+        <div class="msg_no">{yun:}t key='member_user_00570'{/yun}</div>
         {yun:}/foreach{/yun}
         <div class="diggg">{yun:}$pagenav{/yun}</div>
     </div>

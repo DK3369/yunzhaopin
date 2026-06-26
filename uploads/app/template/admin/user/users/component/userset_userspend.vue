@@ -5,43 +5,43 @@
             <table class="tableVue">
                 <thead>
                 <tr align="left">
-                    <th width="180">名称</th>
-                    <th width="400">状态</th>
-                    <th>说明</th>
+                    <th width="180">{yun:}t key='member_com_00021'{/yun}</th>
+                    <th width="400">{yun:}t key='member_user_00181'{/yun}</th>
+                    <th>{yun:}t key='member_com_00207'{/yun}</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr>
                     <td>
-                        <div class="TableTite">个人简历置顶费用</div>
+                        <div class="TableTite">{yun:}t key='admin_user_00348'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-input v-model="ruleForm.integral_resume_top" placeholder="请输入数字">
-                                <span slot="suffix" class="slotspan">元/天</span>
+                            <el-input v-model="ruleForm.integral_resume_top" placeholder="{yun:}t key='admin_user_00342'{/yun}">
+                                <span slot="suffix" class="slotspan">{yun:}t key='admin_user_00350'{/yun}</span>
                             </el-input>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>个人简历置顶费用</span>
+                            <span>{yun:}t key='admin_user_00348'{/yun}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">个人委托简历费用</div>
+                        <div class="TableTite">{yun:}t key='admin_user_00347'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-input v-model="ruleForm.pay_trust_resume" placeholder="请输入数字">
-                                <span slot="suffix" class="slotspan">元/份</span>
+                            <el-input v-model="ruleForm.pay_trust_resume" placeholder="{yun:}t key='admin_user_00342'{/yun}">
+                                <span slot="suffix" class="slotspan">{yun:}t key='admin_user_00349'{/yun}</span>
                             </el-input>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>个人委托简历费用</span>
+                            <span>{yun:}t key='admin_user_00347'{/yun}</span>
                         </div>
                     </td>
                 </tr>
@@ -50,7 +50,7 @@
             </table>
         </div>
         <div class="setBasicButn" style="border: none; height: 80px;">
-            <el-button type="primary" size="medium" @click="submitForm('ruleForm')" :disabled="submitLoading">提交</el-button>
+            <el-button type="primary" size="medium" @click="submitForm('ruleForm')" :disabled="submitLoading">{yun:}t key='common.submit'{/yun}</el-button>
         </div>
     </div>
 </template>
@@ -63,9 +63,9 @@ module.exports = {
             ruleForm: {
                 integral_resume_top_type: 2,
                 //个人简历置顶费用
-                integral_resume_top: '',
-                //个人委托简历费用
-                pay_trust_resume: '',
+                integral_resume_top: '",
+                //{yun:}t key='admin_user_00347'{/yun}
+                pay_trust_resume: "',
             },
             submitLoading: false,
         }
@@ -96,7 +96,7 @@ module.exports = {
             // this.$refs[formName].validate((valid) => {if (valid) {}});
             let _this = this;
             let params = JSON.parse(JSON.stringify(this.ruleForm));
-            params.config = '提交';
+            params.config = "{yun:}t key='common.submit'{/yun}";
             _this.submitLoading = true;
             httpPost('m=user&c=users_userset&a=saveSpend', params).then(function (response) {
                 let res = response.data;

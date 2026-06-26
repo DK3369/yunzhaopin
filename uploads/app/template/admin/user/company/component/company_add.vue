@@ -4,22 +4,22 @@
             <table class="tableVue">
                 <thead>
                 <tr align="left">
-                    <th width="200">名称</th>
-                    <th width="400">状态</th>
-                    <th>说明</th>
+                    <th width="200">{yun:}t key='member_com_00021'{/yun}</th>
+                    <th width="400">{yun:}t key='member_user_00181'{/yun}</th>
+                    <th>{yun:}t key='member_com_00207'{/yun}</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr>
-                    <td colspan="3">会员信息</td>
+                    <td colspan="3">{yun:}t key='admin_00603'{/yun}</td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">用户名</div>
+                        <div class="TableTite">{yun:}t key='admin_user_00140'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-input placeholder="请输入用户名" v-model="username" @blur="checkuname">
+                            <el-input placeholder="{yun:}t key='wap_00208'{/yun}" v-model="username" @blur="checkuname">
                             </el-input>
                         </div>
                     </td>
@@ -31,11 +31,11 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">设置密码</div>
+                        <div class="TableTite">{yun:}t key='wap_00356'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableSelect" style="display: flex;align-items: center; ">
-                            <el-input type="password" @mousedown.native="pwdMousedown" @input="pwdchange" @focus="readonlyCtl(false)" @blur="readonlyCtl(true)" :readonly="pwdreadonly" placeholder="请输入密码" v-model="password">
+                            <el-input type="password" @mousedown.native="pwdMousedown" @input="pwdchange" @focus="readonlyCtl(false)" @blur="readonlyCtl(true)" :readonly="pwdreadonly" placeholder="{yun:}t key='wap_01380'{/yun}" v-model="password">
                             </el-input>
                         </div>
                     </td>
@@ -46,34 +46,34 @@
                     </td>
                 </tr>
                 <tr>
-                    <td colspan="3">企业信息</td>
+                    <td colspan="3">{yun:}t key='wap_com_00095'{/yun}</td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">企业全称</div>
+                        <div class="TableTite">{yun:}t key='wap_com_00061'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
                             <el-autocomplete style="width: 400px;" class="inline-input" v-model="name"
                                              :fetch-suggestions="querySearch"
-                                             placeholder="请输入企业全称"
+                                             placeholder="{yun:}t key='wap_00838'{/yun}"
                                              :trigger-on-focus="false"
                             ></el-autocomplete>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span style="color:red;">下拉框为已存在企业</span>
+                            <span style="color:red;">{yun:}t key='admin_00604'{/yun}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">简称</div>
+                        <div class="TableTite">{yun:}t key='admin_user_company_00035'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-input placeholder="请输入企业简称" v-model="shortname">
+                            <el-input placeholder="{yun:}t key='wap_com_00137'{/yun}" v-model="shortname">
                             </el-input>
                         </div>
                     </td>
@@ -85,11 +85,11 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">从事行业</div>
+                        <div class="TableTite">{yun:}t key='wap_user_00010'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-select v-model="hy" placeholder="请选择">
+                            <el-select v-model="hy" placeholder="{yun:}t key='wap_user_00100'{/yun}">
                                 <el-option v-for="(item, index) in cache.industry_index" :key="index"
                                            :label="cache.industry_name[item]"
                                            :value="item">
@@ -105,11 +105,11 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">企业性质</div>
+                        <div class="TableTite">{yun:}t key='wap_com_00159'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-select v-model="pr" placeholder="请选择">
+                            <el-select v-model="pr" placeholder="{yun:}t key='wap_user_00100'{/yun}">
                                 <el-option v-for="(item,index) in cache.comdata.job_pr" :key="index"
                                            :label="cache.comclass_name[item]"
                                            :value="item">
@@ -125,11 +125,11 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">企业规模</div>
+                        <div class="TableTite">{yun:}t key='wap_com_00163'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-select v-model="mun" placeholder="请选择">
+                            <el-select v-model="mun" placeholder="{yun:}t key='wap_user_00100'{/yun}">
                                 <el-option v-for="(item,index) in cache.comdata.job_mun" :key="index"
                                            :label="cache.comclass_name[item]"
                                            :value="item">
@@ -145,7 +145,7 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">所在地</div>
+                        <div class="TableTite">{yun:}t key='admin_00605'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
@@ -161,7 +161,7 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">公司地址</div>
+                        <div class="TableTite">{yun:}t key='wap_00040'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
@@ -170,7 +170,7 @@
                                              :debounce="1000"
                                              v-model="address"
                                              :fetch-suggestions="addressKeyup"
-                                             placeholder="请输入公司地址"
+                                             placeholder="{yun:}t key='admin_user_company_00033'{/yun}"
                                              @select="poiSearchClick">
                                 <i class="el-icon-location-outline el-input__icon" slot="suffix" @click="localsearch('全国')"></i>
                                 <template slot-scope="{ item }">
@@ -198,11 +198,11 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">联系人</div>
+                        <div class="TableTite">{yun:}t key='wap_01431'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-input placeholder="请输入联系人" v-model="linkman">
+                            <el-input placeholder="{yun:}t key='wap_com_00013'{/yun}" v-model="linkman">
                             </el-input>
                         </div>
                     </td>
@@ -214,11 +214,11 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">联系手机</div>
+                        <div class="TableTite">{yun:}t key='wap_00109'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-input placeholder="请输入联系手机" v-model="moblie">
+                            <el-input placeholder="{yun:}t key='wap_com_00142'{/yun}" v-model="moblie">
                             </el-input>
                         </div>
                     </td>
@@ -230,15 +230,15 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">固定电话</div>
+                        <div class="TableTite">{yun:}t key='wap_com_00014'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-input style="width:100px;" placeholder="如：0527" v-model="areacode" maxlength="7">
+                            <el-input style="width:100px;" placeholder="{yun:}t key='admin_00609'{/yun}" v-model="areacode" maxlength="7">
                             </el-input>
-                            <el-input style="width:230px;margin-left: 12px;" placeholder="固定电话" v-model="telphone" maxlength="8">
+                            <el-input style="width:230px;margin-left: 12px;" placeholder="{yun:}t key='wap_com_00014'{/yun}" v-model="telphone" maxlength="8">
                             </el-input>
-                            <el-input style="width:100px;margin-left: 12px;" placeholder="分机号" v-model="exten" maxlength="4">
+                            <el-input style="width:100px;margin-left: 12px;" placeholder="{yun:}t key='admin_00610'{/yun}" v-model="exten" maxlength="4">
                             </el-input>
                         </div>
                     </td>
@@ -250,11 +250,11 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">邮箱</div>
+                        <div class="TableTite">{yun:}t key='member_user_00282'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-input placeholder="请输入邮箱" v-model="email">
+                            <el-input placeholder="{yun:}t key='wap_00697'{/yun}" v-model="email">
                             </el-input>
                         </div>
                     </td>
@@ -266,7 +266,7 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">企业简介</div>
+                        <div class="TableTite">{yun:}t key='wap_com_00160'{/yun}</div>
                     </td>
                     <td colspan="2">
                         <div style="border: 1px solid #ccc;">
@@ -282,11 +282,11 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">消息通知</div>
+                        <div class="TableTite">{yun:}t key='admin_00606'{/yun}</div>
                     </td>
                     <td>
-                        <el-checkbox v-model="sendmsg">发送短信</el-checkbox>
-                        <el-checkbox v-model="sendemail">发送邮件</el-checkbox>
+                        <el-checkbox v-model="sendmsg">{yun:}t key='admin_user_00166'{/yun}</el-checkbox>
+                        <el-checkbox v-model="sendemail">{yun:}t key='admin_user_00167'{/yun}</el-checkbox>
                     </td>
                     <td>
                         <div class="TableShuom">
@@ -295,14 +295,14 @@
                     </td>
                 </tr>
                 <tr>
-                    <td colspan="3">{{integral_pricename}}套餐</td>
+                    <td colspan="3">{yun:}t key='admin_00607'{/yun}</td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">赠送{{integral_pricename}}数量</div>
+                        <div class="TableTite">{yun:}t key='admin_00608'{/yun}</div>
                     </td>
                     <td>
-                        <el-input placeholder="请输入赠送积分数量" v-model="integral">
+                        <el-input placeholder="{yun:}t key='admin_00611'{/yun}" v-model="integral">
                         </el-input>
                     </td>
                     <td>
@@ -313,10 +313,10 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">会员套餐</div>
+                        <div class="TableTite">{yun:}t key='admin_user_company_00034'{/yun}</div>
                     </td>
                     <td>
-                        <el-select v-model="rating_name" placeholder="请选择">
+                        <el-select v-model="rating_name" placeholder="{yun:}t key='wap_user_00100'{/yun}">
                             <el-option v-for="(item, index) in ratingarr" :key="index" :label="item"
                                        :value="index">
                             </el-option>
@@ -332,7 +332,7 @@
             </table>
         </div>
         <div class="setBasicButn" style="border: none;">
-            <el-button type="primary" size="medium" @click="save">提交</el-button>
+            <el-button type="primary" size="medium" @click="save">{yun:}t key='common.submit'{/yun}</el-button>
         </div>
     </div>
 </template>
@@ -386,7 +386,7 @@
                 y:'',
                 address_v:'',
                 mapurl: '',
-                mapsecret: '',
+                mapsecret: '",
             }
         },
         watch: {
@@ -417,15 +417,15 @@
                 this.pwdreadonly = true
                 setTimeout(function(){ that.pwdreadonly = false, 100})
             },
-            // 防止密码框内容清楚后展示用户密码清单
+            // {yun:}t key='common_00444'{/yun}
             pwdchange: function(val){
                 var that = this
-                if (val == '') {
+                if (val == "") {
                     this.pwdreadonly = true
                     setTimeout(function(){ that.pwdreadonly = false, 100})
                 }
             },
-            // 修改密码框readonly属性，防止密码框展示浏览器记录的密码信息
+            // 修改密码框readonly{yun:}t key='wap_js_00085'{/yun}，防止密码框展示浏览器记录的密码信息
             readonlyCtl: function(res){
                 var that = this
                 setTimeout(function(){
@@ -437,7 +437,7 @@
             },
             getinfo: function(){
                 var that = this
-                httpPost('m=user&c=company&a=add', {}).then(function (response) {
+                httpPost("m=user&c=company&a=add', {}).then(function (response) {
                     let res = response.data;
                     if (res.error == 0) {
                         that.cache = res.data.cache
@@ -616,14 +616,14 @@
                     MENU_CONF: {
                         uploadImage: {
                             server: baseUrl + 'm=index&c=uploadfile',
-                            fieldName: 'file'
+                            fieldName: 'file"
                         }
                     }
                 };
-                // 企业简介
+                // {yun:}t key='wap_com_00160'{/yun}
                 if (!editor_desc) {
                     editor_desc = createEditor({
-                        selector: '#editor-container-comdesc',
+                        selector: "#editor-container-comdesc',
                         html: '',
                         config: editorConfig,
                         mode: 'simple'
@@ -644,35 +644,35 @@
             async save() {
                 let that = this;
                 if(that.username == '') {
-                    message.error('请输入用户名');
+                    message.error("{yun:}t key='wap_00208'{/yun}");
                     return false;
                 }
                 if(that.password == '') {
-                    message.error('请输入密码');
+                    message.error("{yun:}t key='wap_01380'{/yun}");
                     return false;
                 }
                 if(that.name == '') {
-                    message.error('请输入企业全称');
+                    message.error("{yun:}t key='wap_00838'{/yun}");
                     return false;
                 }
                 if(that.hy == '') {
-                    message.error('请选择从事行业');
+                    message.error("{yun:}t key='wap_user_00009'{/yun}");
                     return false;
                 }
                 if(that.pr == '') {
-                    message.error('请选择企业性质');
+                    message.error("{yun:}t key='wap_com_00143'{/yun}");
                     return false;
                 }
                 if(that.mun == '') {
-                    message.error('请选择企业规模');
+                    message.error("{yun:}t key='wap_com_00144'{/yun}");
                     return false;
                 }
                 if(that.cionly == '1' && (that.sel_city.length == 0 || that.sel_city[0] == '')) {
-                    message.error('请选择所在地');
+                    message.error("{yun:}t key='member_com_00194'{/yun}");
                     return false;
                 }
                 if(that.cionly == '0' && (that.sel_city.length <= 1 || that.sel_city[1] == '')) {
-                    message.error('请选择所在地');
+                    message.error("{yun:}t key='member_com_00194'{/yun}");
                     return false;
                 }
                 if(that.address == '') {
@@ -680,23 +680,23 @@
                     return false;
                 }
                 if(that.linkman == '') {
-                    message.error('请输入联系人');
+                    message.error("{yun:}t key='wap_com_00013'{/yun}");
                     return false;
                 } else{
                     var link_name = that.linkman;
-                    var link_man = link_name.replace(/[-_ ]/g,'');// 去掉空格
+                    var link_man = link_name.replace(/[-_ ]/g,'");// {yun:}t key='common_01715'{/yun}
                     if(!link_man){
                         return ;
                     }
-                    var test = link_man.replace(/[0-9]/g,'');
+                    var test = link_man.replace(/[0-9]/g,"');
                     if (!test){
-                        message.error('联系人不支持全数字');
+                        message.error("{yun:}t key='wap_com_00005'{/yun}");
                         return false;
                     }else{
                         if(/\d/.test(link_man)){
                             if(link_man.length>8){
                                 // obj.value = obj.value.substring(0,8);
-                                message.error('联系人填写字数不能超过8个');
+                                message.error("{yun:}t key='wap_com_00002'{/yun}");
                                 return false;
                             }
                         }
@@ -708,7 +708,7 @@
                 } else {
                     var obj = that.moblie;
                     if(isjsMobile(obj) == false) {
-                        message.error('联系手机格式错误');
+                        message.error("{yun:}t key='wap_com_00006'{/yun}");
                         return false;
                     }
                 }
@@ -730,11 +730,11 @@
                     return false;
                 }
                 if(that.sendmsg == true && that.moblie == '') {
-                    message.error('请输入联系手机！')
+                    message.error("{yun:}t key='wap_js_00132'{/yun}")
                     return false;
                 }
                 if(that.sendemail==true&&that.email == '') {
-                    message.error('请输入联系邮箱！')
+                    message.error("{yun:}t key='admin_user_company_00032'{/yun}")
                     return false;
                 }
                 var params = {

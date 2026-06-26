@@ -45,7 +45,7 @@ class remark_model extends model{
         // 去除换行符
         $data['remark'] = str_replace(PHP_EOL, '', $data['remark']);
         if($data['remark']==''){
-            $return['msg']      =  '备注内容不能为空！';
+            $return['msg']      =  yun_at('member_com_00486');
             $return['errcode']  =  8;
         }
         // 设置简历备注，先查询此简历是否有备注
@@ -69,13 +69,13 @@ class remark_model extends model{
         }
         
         if ($id){
-            $logContent =   '信息备注：备注备注';
-            $logDetail  =   '简历（ID：'.$data['eid'].'）备注：'.$data['remark'];
+            $logContent =   'common_06576';
+            $logDetail  =   '简历（ID：'.$data['eid'].'common_06577'.$data['remark'];
             $this -> addMemberLog($data['uid'],$data['usertype'],$logContent,5,1, $logDetail);
-            $return['msg']      =  '备注成功！';
+            $return['msg']      =  yun_at('common_06578');
             $return['errcode']  =  '9';
         }else{
-            $return['msg']      =  '备注失败！';
+            $return['msg']      =  yun_at('common_06579');
             $return['errcode']  =  '8';
         }
         return $return;

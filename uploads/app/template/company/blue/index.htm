@@ -19,16 +19,16 @@
             <div class="wrap_l_name">
                 <h1 class="wrap_l_name_n" style="display:inline-block">{yun:}$com.name{/yun}</h1>
                 {yun:}if $com.email_status=="1"{/yun}
-                <img src="{yun:}$com_style{/yun}images/rz_yx2.png" alt="邮箱未认证" title="{yun:}t key='admin_user_00286'{/yun}" class="png"/>
-                {yun:}else{/yun} <img src="{yun:}$com_style{/yun}images/rz_yx.png" alt="邮箱未认证" title="邮箱未认证" class="png"/> {yun:}/if{/yun}
+                <img src="{yun:}$com_style{/yun}images/rz_yx2.png" alt="{yun:}t key='wap_01246'{/yun}" title="{yun:}t key='admin_user_00286'{/yun}" class="png"/>
+                {yun:}else{/yun} <img src="{yun:}$com_style{/yun}images/rz_yx.png" alt="{yun:}t key='wap_01246'{/yun}" title="{yun:}t key='wap_01246'{/yun}" class="png"/> {yun:}/if{/yun}
 
                 {yun:}if $com.moblie_status=="1"{/yun}
-                <img src="{yun:}$com_style{/yun}images/rz_sj2.png" alt="手机未认证" title="{yun:}t key='member_user_00117'{/yun}" class="png"/>
-                {yun:}else{/yun} <img src="{yun:}$com_style{/yun}images/rz_sj.png" alt="手机未认证" title="手机未认证" class="png"/> {yun:}/if{/yun}
+                <img src="{yun:}$com_style{/yun}images/rz_sj2.png" alt="{yun:}t key='wap_01245'{/yun}" title="{yun:}t key='member_user_00117'{/yun}" class="png"/>
+                {yun:}else{/yun} <img src="{yun:}$com_style{/yun}images/rz_sj.png" alt="{yun:}t key='wap_01245'{/yun}" title="{yun:}t key='wap_01245'{/yun}" class="png"/> {yun:}/if{/yun}
 
                 {yun:}if $com.yyzz_status=="1"{/yun}
-                <img src="{yun:}$com_style{/yun}images/rz_zz2.png" alt="执照未认证" title="执照已认证" class="png"/>
-                {yun:}else{/yun} <img src="{yun:}$com_style{/yun}images/rz_zz.png" alt="执照未认证" title="执照未认证" class="png"/> {yun:}/if{/yun}
+                <img src="{yun:}$com_style{/yun}images/rz_zz2.png" alt="{yun:}t key='common_02517'{/yun}" title="{yun:}t key='common_02518'{/yun}" class="png"/>
+                {yun:}else{/yun} <img src="{yun:}$com_style{/yun}images/rz_zz.png" alt="{yun:}t key='common_02517'{/yun}" title="{yun:}t key='common_02517'{/yun}" class="png"/> {yun:}/if{/yun}
 
                 {yun:}if $ComMember.source==6 && $ComMember.claim==0 && $ComMember.email!=""{/yun}
                 <a href="javascript:claim('{yun:}url m=ajax c=claim uid=$com.uid{/yun}');">{yun:}t key='resume_00011'{/yun}</a>
@@ -100,7 +100,7 @@
                                         <li><div class="clearfix"><span>{yun:}t key='wap_00035'{/yun}</span><em id="regCapital"></em></div></li>
                                     </ul>
                                     <dl class="basicMsgList">
-                                        <dt>注册地址：</dt>
+                                        <dt>{yun:}t key='wap_01574'{/yun}</dt>
                                         <dd id="regLocation"></dd>
                                     </dl>
                                     <dl class="basicMsgList mt20">
@@ -108,7 +108,7 @@
                                         <dd id="businessScope"></dd>
                                     </dl>
                                     <div class="qxb clearfix">
-                                        <div class="qxb_tg"><span>以上内容由</span>
+                                        <div class="qxb_tg"><span>{yun:}t key='common_02513'{/yun}</span>
                                             <div class="hxb"><a href="" class="tianyancha" id="tianyancha" target='_blank'></a></div>
                                             <span>{yun:}t key='company_00022'{/yun}</span>
                                         </div>
@@ -277,7 +277,7 @@
                         </div>
                     </div>
                     <div class="c_jianjie_right fr">
-                        <div class="com_ans"><span class="com_ans_tp">{yun:}$pre{/yun}%</span><span class="com_ans_tex">两周内简历回复率</span></div>
+                        <div class="com_ans"><span class="com_ans_tp">{yun:}$pre{/yun}%</span><span class="com_ans_tex">{yun:}t key='common_02519'{/yun}</span></div>
                         <div class="c_right_nr">
                             <div class="c_nr_hy"><em>{yun:}t key='admin_user_company_00373'{/yun}</em><span>{yun:}$com.hy_info{/yun}</span></div>
                             <div class="c_nr_hy"><em>{yun:}t key='default_00281'{/yun}</em><span>{yun:}$com.pr_info{/yun}</span></div>
@@ -483,7 +483,7 @@
         $('#tel_wxqrcode').html('<img src="index.php?c=telQrcode&id=' + id + '" width="120" height="120">');
         $.layer({
             type: 1,
-            title: '微信扫码查看联系方式',
+            title: "{yun:}t key='common_02477'{/yun}",
             closeBtn: [0, true],
             offset: ['100px', ''],
             border: [10, 0.3, '#000', true],

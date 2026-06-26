@@ -79,7 +79,7 @@ class dataCall_controller extends adminCommon
             /*$row    =   $dataM->getInfo(array('name' => $_POST['name'], 'id' => array('<>', $_POST['id'])));
             if (!empty($row)) {
 
-                $this->render_json(1, '数据调用名称重复，请重新输入', $row);
+                $this->render_json(1, yun_at('admin_tool_00017'), $row);
             }*/
 
             include LIB_PATH."/datacall.class.php";
@@ -102,7 +102,7 @@ class dataCall_controller extends adminCommon
             }
         }else{
 
-            $this->render_json(1, '参数异常，请稍后重试！');
+            $this->render_json(1, yun_at('admin_tool_00018'));
         }
     }
 
@@ -113,7 +113,7 @@ class dataCall_controller extends adminCommon
         include LIB_PATH . "datacall.class.php";
         $call = new datacall("../data/plus/data/", $this->obj);
         $call->editcache($_POST['id']);
-        $this->admin_json(0, '数据调用（Id：' . $_POST['id'] . '）更新成功！');
+        $this->admin_json(0, '数据调用（Id：' . $_POST['id'] . 'admin_01374');
     }
 
     //  删除数据信息
@@ -135,7 +135,7 @@ class dataCall_controller extends adminCommon
             }
         } else {
 
-            $this->render_json(1, '参数错误，请重试！');
+            $this->render_json(1, yun_at('wap_00203'));
         }
     }
 }

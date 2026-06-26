@@ -22,7 +22,7 @@
 <div class="newmember_screenbox">
 				<div class="newmember_screen">
 	 <div class="com_topbth_box">
-		 <input  class="com_topbth_input" onclick="location.href='index.php?c=product&act=add'" type="button" value="添加产品"> 
+		 <input  class="com_topbth_input" onclick="location.href='index.php?c=product&act=add'" type="button" value="{yun:}t key='member_com_00652'{/yun}"> 
 		 </div></div></div>
 			<div class="clear"></div>
 			<div class=admincont_box>
@@ -77,15 +77,15 @@
 									{yun:}if $smarty.get.keyword!="" {/yun}
 									<tr>
 										<td colspan="8" class="table_end">
-											<div class="msg_no">没有搜索到相关的企业产品信息。</div>
+											<div class="msg_no">{yun:}t key='member_com_00649'{/yun}</div>
 										</td>
 									</tr>
 									{yun:}else{/yun}
 									<tr>
 										<td colspan="8" class="table_end">
 											<div class="com_msg_no">
-												<p class="com_msg_no_name">添加产品或服务介绍</p>
-												<p>产品指的公司研发的网站、手机应用、生成销售的硬件设备或服务</p>
+												<p class="com_msg_no_name">{yun:}t key='member_com_00650'{/yun}</p>
+												<p>{yun:}t key='member_com_00651'{/yun}</p>
 												<a href="index.php?c=product&act=add"
 													class="com_msg_no_bth com_submit">{yun:}t key='member_com_00328'{/yun}</a>
 											</div>

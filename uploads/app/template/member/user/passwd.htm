@@ -42,7 +42,7 @@
                 <div class="account_settings_list_left">
                     <i class="account_settings_list_left_icon account_settings_list_left_icon_user"></i>
                     <div class="account_settings_tit">{yun:}t key='wap_user_00336'{/yun}</div>
-                   	您有一次修改用户名机会（仅限一次）
+                   	{yun:}t key='member_user_00535'{/yun}
                 </div>
                 
                 {yun:}if $member.setname==1{/yun}
@@ -56,8 +56,8 @@
             <div class="account_settings_list">
                 <div class="account_settings_list_left">
                     <i class="account_settings_list_left_icon account_settings_list_left_icon_m"></i>
-                    <div class="account_settings_tit">用户密码</div>
-                 	用于保护用户信息和登录安全
+                    <div class="account_settings_tit">{yun:}t key='member_user_00536'{/yun}</div>
+                 	{yun:}t key='member_user_00537'{/yun}
                 </div>
                 <a href="javascript:void(0);" onclick="showEditPass();" class="account_settings_bth_hv">{yun:}t key='wap_js_00073'{/yun}</a>
             </div>
@@ -113,13 +113,13 @@
             <div class="account_settings_list">
                 <div class="account_settings_list_left">
                     <i class="account_settings_list_left_icon account_settings_list_left_icon_sf"></i>
-                    <div class="account_settings_tit">身份认证{yun:}if $resume.idcard_status lt 1&& !$resume.idcard_pic{/yun}<span class="account_settings_tit_zt"><i class="account_settings_tit_icon"></i>{yun:}t key='wap_user_00182'{/yun}</span>{yun:}/if{/yun}</div>
+                    <div class="account_settings_tit">{yun:}t key='wap_01030'{/yun}{yun:}if $resume.idcard_status lt 1&& !$resume.idcard_pic{/yun}<span class="account_settings_tit_zt"><i class="account_settings_tit_icon"></i>{yun:}t key='wap_user_00182'{/yun}</span>{yun:}/if{/yun}</div>
                     <div class="account_settings_tip"> {yun:}t key='member_user_00210'{/yun}</div>
                     {yun:}if $resume.idcard_status==2&& $resume.statusbody{/yun}{yun:}t key='member_user_00062'{/yun}{yun:}$resume.statusbody{/yun}{yun:}/if{/yun}
                 </div>
                 {yun:}if $resume.idcard_status==1{/yun}
                 	
-                	<a href="javascript:getshow2('yyzz','身份认证');" class="account_settings_bth">{yun:}t key='wap_user_00128'{/yun}</a>
+                	<a href="javascript:getshow2('yyzz','{yun:}t key='wap_01030'{/yun}');" class="account_settings_bth">{yun:}t key='wap_user_00128'{/yun}</a>
                 	
                 {yun:}else{/yun} 
                 
@@ -127,17 +127,17 @@
 						
 						{yun:}if $resume.idcard_status==2{/yun}
 				
-							<a href="javascript:getshow2('yyzz','身份认证');" class="account_settings_bth">认证未通过</a>
+							<a href="javascript:getshow2('yyzz','{yun:}t key='wap_01030'{/yun}');" class="account_settings_bth">{yun:}t key='member_user_00538'{/yun}</a>
 				
 						{yun:}else{/yun}
 				
-							<a href="javascript:getshow2('yyzz','身份认证');" class="account_settings_bth">{yun:}t key='wap_user_00178'{/yun}</a>
+							<a href="javascript:getshow2('yyzz','{yun:}t key='wap_01030'{/yun}');" class="account_settings_bth">{yun:}t key='wap_user_00178'{/yun}</a>
 				
 						{yun:}/if{/yun} 
 						
 					{yun:}else{/yun}
 
-						<a href="javascript:getshow2('yyzz','身份认证');" class="account_settings_bth">{yun:}t key='member_user_00235'{/yun}</a>
+						<a href="javascript:getshow2('yyzz','{yun:}t key='wap_01030'{/yun}');" class="account_settings_bth">{yun:}t key='member_user_00235'{/yun}</a>
 
 					{yun:}/if{/yun} 
 					

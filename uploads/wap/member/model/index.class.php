@@ -76,7 +76,7 @@ class index_controller extends wap_controller{
 
         $backurl  =  Url('wap',array(),'member');
         $this->yunset('backurl',$backurl);
-        $this->yunset('headertitle',yun_auto_t('其他服务'));
+        $this->yunset('headertitle',yun_at('wap_user_00196'));
         $this->waptpl('other_service');
     }
 
@@ -85,7 +85,7 @@ class index_controller extends wap_controller{
 	    $backurl  =  Url('wap',array(),'member');
 	    $this->yunset('backurl',$backurl);
 	    
-	    $this->yunset('headertitle',yun_auto_t('上传形象照'));
+	    $this->yunset('headertitle',yun_at('admin_00015'));
 	    $this->waptpl('photo');
 	}
 
@@ -93,7 +93,7 @@ class index_controller extends wap_controller{
 
         $backurl	=	Url('wap',array(),'member');
         $this->yunset('backurl',$backurl);
-		$this->yunset('headertitle',yun_auto_t('申请的职位'));
+		$this->yunset('headertitle',yun_at('wap_user_00270'));
 		$this->waptpl('sq');
 	}
 
@@ -102,7 +102,7 @@ class index_controller extends wap_controller{
 
         $backurl = Url('wap', array(), 'member');
         $this->yunset('backurl', $backurl);
-        $this->yunset('headertitle', yun_auto_t('兼职管理'));
+        $this->yunset('headertitle', yun_at('wap_user_00271'));
         $this->waptpl('partapply');
     }
 
@@ -110,7 +110,7 @@ class index_controller extends wap_controller{
 
 		$backurl	=	Url('wap',array(),'member');
 		$this->yunset('backurl',$backurl);
-		$this->yunset('headertitle',yun_auto_t('收藏/关注'));
+		$this->yunset('headertitle',yun_at('wap_user_00193'));
 		$this->waptpl('collect');
 	}
 	
@@ -118,7 +118,7 @@ class index_controller extends wap_controller{
 
 		$this->yunset('backurl',Url('wap',array('c'=>'safe'),'member'));
 
-		$this->yunset('headertitle',yun_auto_t('密码设置'));
+		$this->yunset('headertitle',yun_at('wap_user_00337'));
 		$this->waptpl('password');
 	}
 	function invitecont_action(){
@@ -131,7 +131,7 @@ class index_controller extends wap_controller{
 
         $backurl	=	Url('wap',array(),'member');
         $this->yunset('backurl',$backurl);
-		$this->yunset('headertitle',yun_auto_t('面试通知'));
+		$this->yunset('headertitle',yun_at('wap_user_00216'));
 		$this->waptpl('invite');
 	}
 
@@ -139,7 +139,7 @@ class index_controller extends wap_controller{
 
         $backurl	=	Url('wap',array(),'member');
         $this->yunset('backurl',$backurl);
-		$this->yunset('headertitle',yun_auto_t('记录'));
+		$this->yunset('headertitle',yun_at('member_com_00322'));
 		$this->waptpl('look');
 	}
 
@@ -157,22 +157,22 @@ class index_controller extends wap_controller{
 
 		switch($_GET['type']){
 
-			case 'work':		$headertitle=yun_auto_t('工作经历');  break;
-			case 'edu':			$headertitle=yun_auto_t('教育经历');  break;
-			case 'project':		$headertitle=yun_auto_t('项目经历');  break;
-			case 'training':	$headertitle=yun_auto_t('培训经历');  break;
-			case 'skill':		$headertitle=yun_auto_t('职业技能');  break;
-			case 'other':		$headertitle=yun_auto_t('其他信息');  break;
-			case 'desc':		$headertitle=yun_auto_t('自我评价');  break;
-			case 'show':		$headertitle=yun_auto_t('作品案例');  break;
-			case 'doc':	        $headertitle=yun_auto_t('粘贴简历');  break;
+			case 'work':		$headertitle=yun_at('wap_00457');  break;
+			case 'edu':			$headertitle=yun_at('wap_00459');  break;
+			case 'project':		$headertitle=yun_at('wap_00465');  break;
+			case 'training':	$headertitle=yun_at('wap_00455');  break;
+			case 'skill':		$headertitle=yun_at('wap_00461');  break;
+			case 'other':		$headertitle=yun_at('wap_00493');  break;
+			case 'desc':		$headertitle=yun_at('wap_00463');  break;
+			case 'show':		$headertitle=yun_at('wap_00492');  break;
+			case 'doc':	        $headertitle=yun_at('member_user_00101');  break;
 		}
 		$this->yunset('headertitle',$headertitle);
 		$this->waptpl('addresumeson');
 	}
 
 	function info_action(){
-		$this->yunset('headertitle',yun_auto_t('基本信息'));
+		$this->yunset('headertitle',yun_at('wap_00456'));
  		$this->waptpl('info');
 	}
 	
@@ -197,7 +197,7 @@ class index_controller extends wap_controller{
 
 		$backurl		=Url('wap',array(),'member');
 		$this->yunset('backurl',$backurl);
-		$this->yunset('headertitle',yun_auto_t('我的简历'));
+		$this->yunset('headertitle',yun_at('wap_user_00204'));
 		$this->waptpl('resume');
 	}
 	function optimize_action(){
@@ -231,9 +231,9 @@ class index_controller extends wap_controller{
 	}
 	function bindingbox_action(){
 		switch($_GET['type']){
-			case 'moblie':$headertitle=yun_auto_t('手机认证');
+			case 'moblie':$headertitle=yun_at('member_com_00071');
 			break;
-			case 'email':$headertitle=yun_auto_t('邮箱认证');
+			case 'email':$headertitle=yun_at('wap_com_00186');
 			break;
 		}
 		$this->yunset('headertitle',$headertitle);
@@ -247,11 +247,11 @@ class index_controller extends wap_controller{
 
 		$backurl	=	Url('wap',array('c'=>'safe'),'member');
 		$this->yunset('backurl',$backurl);
-		$this->yunset('headertitle',yun_auto_t('修改用户名'));
+		$this->yunset('headertitle',yun_at('member_user_00220'));
 		$this->waptpl('setname');
 	}
 	function reward_list_action(){
-		$this->yunset('headertitle',yun_auto_t('兑换记录'));
+		$this->yunset('headertitle',yun_at('wap_user_00170'));
 		if($_GET['back']){
 			$backurl		=	Url('wap',array('c'=>'redeem'));
 		}else{
@@ -262,7 +262,7 @@ class index_controller extends wap_controller{
 	}
 
 	function privacy_action(){
-		$this->yunset('headertitle',yun_auto_t('隐私设置'));
+		$this->yunset('headertitle',yun_at('wap_user_00215'));
 
 		$this->waptpl('privacy');
 	}
@@ -290,7 +290,7 @@ class index_controller extends wap_controller{
 				$_POST['dingdan']		=	$dingdan;
 				$_POST['dingdanname']	=	$dingdan;
 				$_POST['alimoney']		=	$price;
-				$data['msg']			=	yun_auto_t('下单成功，请付款！');
+				$data['msg']			=	yun_at('common_01106');
 
 				if($_POST['paytype']=='alipay'){
 
@@ -299,24 +299,24 @@ class index_controller extends wap_controller{
  				echo json_encode(array(
  				    'error' => 0,
  				    'url'   => $url,
- 				    'msg'   =>  yun_auto_t('下单成功，请付款！')
+ 				    'msg'   =>  yun_at('common_01106')
  				));
 			}else{
 			    echo json_encode(array(
 			        'error' => 1,
-			        'msg' => yun_auto_t('提交失败，请重新提交订单！')
+			        'msg' => yun_at('common_00717')
 			    ));
 			}
  		}else{
  		    echo json_encode(array(
  		        'error' => 1,
- 		        'msg' => yun_auto_t('参数错误，请重试！')
+ 		        'msg' => yun_at('wap_00203')
  		    ));
 		}
 	}
 
 	function pay_action(){
-		$this->yunset('headertitle',yun_auto_t('充值'));
+		$this->yunset('headertitle',yun_at('common_01946'));
 		$this->waptpl('pay');
 	}
 
@@ -332,7 +332,7 @@ class index_controller extends wap_controller{
 			if($_GET['id']){
 				$order	=	$orderM->getInfo(array('id'=>(int)$_GET['id']));
 				if(empty($order)){
-					$this->ACT_msg_wap($_SERVER['HTTP_REFERER'],yun_auto_t('订单不存在！'),2,5);
+					$this->ACT_msg_wap($_SERVER['HTTP_REFERER'],yun_at('wap_01291'),2,5);
 				}elseif($order['order_state']!='1'){
 					header("Location:index.php?c=paylog");
 				}else{
@@ -343,13 +343,13 @@ class index_controller extends wap_controller{
 			$this->yunset("paytype",$paytype);
 
 		}else{
-			$data['msg']	=	yun_auto_t('暂未开通手机支付，请移步至电脑端充值！');
+			$data['msg']	=	yun_at('wap_01286');
 			$data['url']	=	$_SERVER['HTTP_REFERER'];
 			$this->yunset("layer",$data);
 		}
 
 		$this->get_user();
-		$this->yunset('headertitle',yun_auto_t('收银台'));
+		$this->yunset('headertitle',yun_at('member_user_00251'));
 		$this->waptpl('payment');
 	}
 	/**
@@ -379,26 +379,26 @@ class index_controller extends wap_controller{
 		$backurl  =  Url('wap',array(),'member');
 		$this->get_user();
 		$this->yunset('backurl',$backurl);
-		$this->yunset('headertitle',yun_auto_t('订单'));
+		$this->yunset('headertitle',yun_at('common_02029'));
 
 		$this->waptpl('pay');
 	}
 
     function paylog_action(){
-        $this->yunset('headertitle',yun_auto_t('明细'));
+        $this->yunset('headertitle',yun_at('wap_com_00068'));
         $backurl	=	Url('wap',array('c'=>'finance'),'member');
         $this		->	yunset('backurl',$backurl);
         $this->waptpl('paylog');
     }
 
 	function likejob_action(){
-		$this		->	yunset('headertitle',yun_auto_t('职位速配'));
+		$this		->	yunset('headertitle',yun_at('wap_user_00211'));
 
 		$this		->	waptpl('likejob');
 	}
 
 	function set_action(){
-		$this->yunset('headertitle',yun_auto_t('账户设置'));
+		$this->yunset('headertitle',yun_at('wap_user_00214'));
 		
 		$backurl	=	Url('wap',array(),'member');
 		$this->yunset('backurl',$backurl);
@@ -407,13 +407,13 @@ class index_controller extends wap_controller{
 
 	function sysnews_action(){
 
-		$this->yunset('headertitle',yun_auto_t('消息'));
+		$this->yunset('headertitle',yun_at('wap_user_00365'));
 		$this->waptpl('sysnews');
 
 	}
 
 	function sxnews_action(){
-		$this->yunset('headertitle',yun_auto_t('系统消息'));
+		$this->yunset('headertitle',yun_at('wap_user_00363'));
 
 		$backurl	=	Url('wap',array('c'=>'sysnews'),'member');
 		$this->yunset('backurl',$backurl);
@@ -421,7 +421,7 @@ class index_controller extends wap_controller{
 	}
 
 	function commsg_action(){
-		$this->yunset('headertitle',yun_auto_t('求职咨询'));
+		$this->yunset('headertitle',yun_at('wap_com_00408'));
 
 		$backurl=Url('wap',array('c'=>'sysnews'),'member');
 		$this->yunset('backurl',$backurl);
@@ -429,7 +429,7 @@ class index_controller extends wap_controller{
 	}
 	function finance_action(){
 
-		$this->yunset('headertitle',yun_auto_t('财务管理'));
+		$this->yunset('headertitle',yun_at('wap_user_00213'));
         $reg_url = Url('wap',array('c'=>'register','uid'=>$this->uid));
         $this->yunset('reg_url', $reg_url);
 		$backurl	=	Url('wap',array(),'member');
@@ -438,7 +438,7 @@ class index_controller extends wap_controller{
 		$this->waptpl('finance');
 	}
 	function integral_action(){
-        $this->yunset('headertitle',yun_auto_t('全部任务'));
+        $this->yunset('headertitle',yun_at('wap_user_00171'));
         $reg_url = Url('wap',array('c'=>'register','uid'=>$this->uid));
         $this->yunset('reg_url', $reg_url);
         $this->waptpl('alltask');
@@ -450,12 +450,12 @@ class index_controller extends wap_controller{
         $backurl	=	Url('wap',array(),'member');
 
         $this->yunset('backurl',$backurl);
-        $this->yunset('headertitle', yun_auto_t('屏蔽企业'));
+        $this->yunset('headertitle', yun_at('wap_01060'));
         $this->waptpl('blacklist');
     }
 	function blacklistadd_action(){
 
-		$this->yunset('headertitle',yun_auto_t('添加屏蔽'));
+		$this->yunset('headertitle',yun_at('wap_01125'));
         $backurl	=	Url('wap',array('c'=>'blacklist'),'member');
 
         $this->yunset('backurl',$backurl);
@@ -493,7 +493,7 @@ class index_controller extends wap_controller{
 	}
 
 	function transfer_action(){
-		$this->yunset('headertitle',yun_auto_t('账户分离'));
+		$this->yunset('headertitle',yun_at('wap_user_00339'));
 		$this->waptpl('transfer');
 	}
 
@@ -504,7 +504,7 @@ class index_controller extends wap_controller{
         $backurl	=	Url('wap',array('c' => 'safe'),'member');
         $this->yunset('backurl',$backurl);
 
-        $this->yunset('headertitle',yun_auto_t('账号注销'));
+        $this->yunset('headertitle',yun_at('member_com_00538'));
         $this->waptpl('logout');
     }
     /****************** gengzs start ************************/
@@ -514,7 +514,7 @@ class index_controller extends wap_controller{
 
         $this->yunset('backurl',$backurl);
 
-        $this->yunset('header_title',yun_auto_t('认证与绑定'));
+        $this->yunset('header_title',yun_at('wap_user_00340'));
 
         $this->waptpl('ident');
     }
@@ -523,7 +523,7 @@ class index_controller extends wap_controller{
         $backurl=Url('wap',array('c'=>'set'),'member');
         $this->yunset('backurl',$backurl);
 
-        $this->yunset('header_title',yun_auto_t('账号与安全'));
+        $this->yunset('header_title',yun_at('wap_00817'));
 
         $this->waptpl('safe');
     }

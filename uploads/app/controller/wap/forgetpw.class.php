@@ -3,7 +3,7 @@
 class forgetpw_controller extends common{
 	function index_action(){
 		$this->get_moblie();
-		$this->yunset("headertitle",yun_auto_t('找回密码'));
+		$this->yunset("headertitle",yun_at('wap_js_00123'));
 		$this->seo("forgetpw");
 		$this->yuntpl(array('wap/forgetpw'));
 	}
@@ -45,16 +45,16 @@ class forgetpw_controller extends common{
 		
 		if (!$codeTime) {
 		    
-		    $res['msg']		=	yun_auto_t('短信验证码验证超时，请重新验证！');
+		    $res['msg']		=	yun_at('wap_00201');
 		    $res['error']	=	'8';
 		    echo yun_json_encode($res);die;
 		    
 		}else  if(($_POST['code']!=$cert['check2'])||(!$cert)){
-		    $res['msg']		=	yun_auto_t('验证码错误');
+		    $res['msg']		=	yun_at('wap_00211');
 		    $res['type']	=	'8';
 		    echo yun_json_encode($res);die;
 		}
-		$res['msg']		=	yun_auto_t('验证码正确！');
+		$res['msg']		=	yun_at('wap_01784');
 		$res['error']	=	0;
 		$res['uid']		=	$info['uid'];
 		$res['username']=	$info['username'];
@@ -68,12 +68,12 @@ class forgetpw_controller extends common{
 		$member 		= 	$userinfoM->getInfo(array('username'=>$username),array("field"=>"`uid`,`username`"));
 		
 	    if($member['username']==""){
-			$res['msg']		=	yun_auto_t('用户名不存在！');
+			$res['msg']		=	yun_at('wap_01785');
 	        $res['error']	=	'8';
 	        echo yun_json_encode($res);die;
 		}
 		if(CheckRegUser($username)==false && CheckRegEmail($username)==false){
-	        $res['msg']		=	yun_auto_t('用户名包含特殊字符！');
+	        $res['msg']		=	yun_at('wap_00202');
 	        $res['error']	=	'8';
 	        echo yun_json_encode($res);die;
 	    }
@@ -116,18 +116,18 @@ class forgetpw_controller extends common{
 			$pwmsg 	   		=   regPassWordComplex($_POST['password']);
 
 			if($uid != $cert['uid']){
-				$res['msg']		=	yun_auto_t('参数错误，请重试！');
+				$res['msg']		=	yun_at('wap_00203');
 			    $res['error']	=	'8';
 			    echo yun_json_encode($res);die;
 			
 			}elseif (!$codeTime) {
 			    
-			    $res['msg']		=	yun_auto_t('短信验证码验证超时，请重新验证！');
+			    $res['msg']		=	yun_at('wap_00201');
 			    $res['error']	=	'8';
 			    echo yun_json_encode($res);die;
 			    
 			}else  if(($code!=$cert['check2'])||(!$cert)){
-				$res['msg']		=	yun_auto_t('验证码错误');
+				$res['msg']		=	yun_at('wap_00211');
 				$res['error']	=	'8';
 				echo yun_json_encode($res);die;
 			}else  if($pwmsg!=''){
@@ -147,15 +147,15 @@ class forgetpw_controller extends common{
 					}
 					$userinfoM->upInfo(array("uid"=>$uid),array("password"=>$password));
 					
-					$res['msg']		=	yun_auto_t('密码修改成功！');
+					$res['msg']		=	yun_at('wap_01786');
 					$res['error']	=	0;
 					echo yun_json_encode($res);die;
 				}else{
-					$res['msg']		=	yun_auto_t('没有该用户');
+					$res['msg']		=	yun_at('wap_00209');
 				}
 			}
         }else{
-            $res['msg']				=	yun_auto_t('对不起,没有该用户');
+            $res['msg']				=	yun_at('wap_00204');
         }
         echo yun_json_encode($res);die;
     }

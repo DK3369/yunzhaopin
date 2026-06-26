@@ -114,18 +114,18 @@ class comtc_model extends model
 
             $return['login']    =   1;
             $return['status']   =   -1;
-            $return['msg']      =   '请先登录';
+            $return['msg']      =   yun_at('wap_00376');
         } else {
 
             if ($usertype != 2) {
 
-                $typename           =   array('1' => '个人账户', '2' => '企业账户');
+                $typename           =   array('1' => 'common_06459', '2' => 'common_06460');
                 $return['typename'] =   $typename[$usertype];
                 $return['username'] =   $username;
                 $return['typeurl']  =   Url('wap', array('c' => 'ajax', 'a' => 'notuserout'));
                 $return['login']    =   2;
                 $return['status']   =   -1;
-                $return['msg']      =   '您不是企业用户，请先登录';
+                $return['msg']      =   yun_at('common_00791');
             } else {
 
                 // 查询黑名单 
@@ -134,7 +134,7 @@ class comtc_model extends model
                 if (!empty($blackInfo)) {
 
                     $return['status']   =   -1;
-                    $return['msg']      =   '该用户暂不接受面试邀请！';
+                    $return['msg']      =   yun_at('common_00810');
                     return $return;
                 }
 
@@ -146,11 +146,11 @@ class comtc_model extends model
                 if ($company['r_status'] != 1) {
 
                     if ($company['r_status'] == 4){
-                        $return['msg'] = '当前账户会员权益已暂停，请联系客服开启服务~';
+                        $return['msg'] = yun_at('wap_com_00081');
                         $return['status'] = -1;
                         return $return;
                     }else {
-                        $return['msg'] = '您的帐号未通过审核，请联系客服加快审核进度！';
+                        $return['msg'] = yun_at('common_00268');
                         $return['status'] = -1;
                         return $return;
                     }
@@ -208,7 +208,7 @@ class comtc_model extends model
                             }
                             $return['invite']   =   1;
                             $return['status']   =   1;
-                            $return['msg']      =   '暂无发布中的职位！';
+                            $return['msg']      =   yun_at('default_00025');
                         }
                     }
                 }
@@ -248,27 +248,27 @@ class comtc_model extends model
 
                                     if ($serverOpen) {
 
-                                        $return['msg']  =   '您的会员套餐已用完，继续邀请将扣除<span style=color:red;>' . $return['jifen'].'</span>' . $this->config['integral_pricename'] . '，是否继续？';
+                                        $return['msg']  =   yun_auto_t('您的会员套餐已用完，继续邀请将扣除<span style=color:red;>') . $return['jifen'].'</span>' . $this->config['integral_pricename'] . 'common_06074';
                                     } else {
 
-                                        $return['msg']  =   '您的会员套餐已用完，请先购买套餐，是否继续？';
+                                        $return['msg']  =   yun_at('common_00267');
                                     }
 
                                     $return['url']      =   $this->config['sy_weburl'] . 'wap/member/index.php?c=getserver&id=' . $uid . '&server=11';
                                 } else {
                                     if ($serverOpen) {
 
-                                        $return['msg']  =   '您的会员套餐已用完，继续邀请将扣除<span style=color:red;>' . $this->config['integral_interview'] . '</span>元，是否继续？';
+                                        $return['msg']  =   yun_auto_t('您的会员套餐已用完，继续邀请将扣除<span style=color:red;>') . $this->config['integral_interview'] . 'common_00608';
                                     } else {
 
-                                        $return['msg']  =   '您的会员套餐已用完，请先购买套餐，是否继续？';
+                                        $return['msg']  =   yun_at('common_00267');
                                     }
                                     $return['url']      =   $this->config['sy_weburl'] . 'wap/member/index.php?c=getserver&id=' . $uid . '&server=11';
                                     $return['price']    =   $this->config['integral_interview'];
                                 }
                             } else {
 
-                                $return['msg']          =   '您的会员套餐已用完，请先购买套餐，是否继续？';
+                                $return['msg']          =   yun_at('common_00267');
                             }
 
                             $return['type']     =   $online;
@@ -282,7 +282,7 @@ class comtc_model extends model
                 }else{
                     $return['status']	=   2;
 
-                    $return['msg']		=   '当前账户会员已过期，请先购买会员特权！';
+                    $return['msg']		=   yun_at('common_00375');
                 }
             } else { // 会员已到期
                 if ($online != 4) {
@@ -298,7 +298,7 @@ class comtc_model extends model
                     }
                 }
 
-                $return['msg']      =   '您的会员已到期，请先购买会员特权！';
+                $return['msg']      =   yun_at('common_00474');
                 $return['online']   =   $online;
                 $return['status']   =   2;
             }
@@ -333,7 +333,7 @@ class comtc_model extends model
 
             if (empty($jobs)) {
 
-                $return['msg'] = '职位参数错误！';
+                $return['msg'] = yun_at('member_com_00697');
             } else {
 
                 // 会员信息
@@ -385,39 +385,39 @@ class comtc_model extends model
 
                                 if ($jobnum == 1) {
 
-                                    $logContent =   '职位刷新（ID：'.$jobs[0]['id'].'，名称：'.$jobs[0]['name'].'）';
-                                    $logDetail  =   '单职位刷新，扣除1个刷新套餐';
+                                    $logContent =   'common_06453'.$jobs[0]['id'].'common_06275'.$jobs[0]['name'].'）';
+                                    $logDetail  =   'common_00648';
                                     $this->addMemberLog($uid, $usertype, $logContent, 1, 4, $logDetail);
 
                                     $free       =   $freeNum > 0 ? 1 : 2;
-                                    $this->addJobSxLog(array('uid' => $uid, 'usertype' => 2, 'jobid' => $jobs[0]['id'], 'type' => 1, 'port' => $data['port'], 'remark' => '用户操作：刷新职位'), $free, 1);
+                                    $this->addJobSxLog(array('uid' => $uid, 'usertype' => 2, 'jobid' => $jobs[0]['id'], 'type' => 1, 'port' => $data['port'], 'remark' => 'common_06461'), $free, 1);
                                 } else {
 
-                                    $logContent =   '职位刷新：批量刷新';
-                                    $logDetail  =   '批量刷新，扣除'.$jobnum.'个刷新套餐；职位ID（'.$jobid.'）';
+                                    $logContent =   'common_06454';
+                                    $logDetail  =   'common_01376'.$jobnum.'common_00845'.$jobid.'）';
                                     $this->addMemberLog($uid, $usertype, $logContent, 1, 4, $logDetail);
 
-                                    $this->addJobSxLogs($uid, 2, $data['port'], 1, $jobIdS, '用户操作：批量刷新职位', $freeNum);
+                                    $this->addJobSxLogs($uid, 2, $data['port'], 1, $jobIdS, 'common_00901', $freeNum);
                                 }
 
                                 if ($freeNum > 0) {
 
                                     $tcNum      =   $jobnum - $freeNum > 0 ? $jobnum - $freeNum : 0;
                                     $mfNum      =   $jobnum - $freeNum > 0 ? $freeNum : $freeNum - $jobnum;
-                                    $payDetail  =   '刷新操作，消耗刷新套餐数量：'.$tcNum.'；免费刷新套餐数量：'.$mfNum;
+                                    $payDetail  =   'common_00647'.$tcNum.'common_01085'.$mfNum;
                                     $jobnum     =   $tcNum;
                                 } else {
 
-                                    $payDetail  = ' 刷新操作，消耗刷新套餐数量：' . $jobnum;
+                                    $payDetail  = 'common_00647' . $jobnum;
                                 }
 
                                 $this->addStatisDetail(array('uid' => $uid, 'type' => 2, 'num' => $jobnum, 'detail' => $payDetail, 'uri' => $_SERVER['REQUEST_URI']));
 
                                 $return['status']   =   1;
-                                $return['msg']      =   '职位刷新成功';
+                                $return['msg']      =   yun_at('common_01530');
                             } else {
 
-                                $return['msg']      =   '职位刷新失败';
+                                $return['msg']      =   yun_at('common_06462');
                                 $this->addErrorLog($uid,5,$return['msg']);
                             }
                         } else { // 刷新职位数不足
@@ -434,36 +434,36 @@ class comtc_model extends model
 
                                     if ($jobnum == 1) {
 
-                                        $logContent =   '职位刷新（ID：'.$jobs[0]['id'].'，名称：'.$jobs[0]['name'].'）';
-                                        $logDetail  =   '消费金额为0，直接刷新';
+                                        $logContent =   'common_06453'.$jobs[0]['id'].'common_06275'.$jobs[0]['name'].'）';
+                                        $logDetail  =   'common_00894';
                                         $this->addMemberLog($uid, $usertype, $logContent, 1, 4, $logDetail);
                                         $free       =   $freeNum > 0 ? 1 : 2;
-                                        $this->addJobSxLog(array('uid' => $uid, 'usertype' => 2, 'jobid' => $jobs[0]['id'], 'type' => 1, 'port' => $data['port'], 'remark' => '用户操作：刷新职位'), $free, 1);
+                                        $this->addJobSxLog(array('uid' => $uid, 'usertype' => 2, 'jobid' => $jobs[0]['id'], 'type' => 1, 'port' => $data['port'], 'remark' => 'common_06461'), $free, 1);
                                     } else {
 
-                                        $logContent =   '职位刷新：批量操作，职位ID（'.$jobid.'）';
-                                        $logDetail  =   '消费金额为0，直接刷新';
+                                        $logContent =   'common_06455'.$jobid.'）';
+                                        $logDetail  =   'common_00894';
                                         $this->addMemberLog($uid, $usertype, $logContent, 1, 4, $logDetail);
-                                        $this->addJobSxLogs($uid, 2, $data['port'], 1, $jobIdS, '用户操作：批量刷新职位', $freeNum);
+                                        $this->addJobSxLogs($uid, 2, $data['port'], 1, $jobIdS, 'common_00901', $freeNum);
                                     }
 
                                     if ((int)$statis['breakjob_num'] > 0) {
 
                                         if ($freeNum > 0){
 
-                                            $payDetail  =   '刷新操作，消耗刷新套餐数量：'.$statis['breakjob_num'].'；免费刷新数量：'.$freeNum;
+                                            $payDetail  =   'common_00647'.$statis['breakjob_num'].'common_01319'.$freeNum;
                                         }else{
 
-                                            $payDetail  =   '刷新操作，消耗刷新套餐数量：'.$statis['breakjob_num'];
+                                            $payDetail  =   'common_00647'.$statis['breakjob_num'];
                                         }
                                         $this->addStatisDetail(array('uid' => $uid, 'type' => 2, 'num' => $statis['breakjob_num'], 'detail' => $payDetail, 'uri' => $_SERVER['REQUEST_URI']));
                                     }
 
                                     $return['status']   =   1;
-                                    $return['msg']      =   '职位刷新成功';
+                                    $return['msg']      =   yun_at('common_01530');
                                 } else {
 
-                                    $return['msg']      =   '职位刷新失败';
+                                    $return['msg']      =   yun_at('common_06462');
                                     $this->addErrorLog($uid,5,$return['msg']);
                                 }
                             }else{
@@ -481,11 +481,11 @@ class comtc_model extends model
                                         $return['integral'] =   intval($statis['integral']);
                                     }
 
-                                    $return['msg']  =   '刷新套餐不足，是否继续？';
+                                    $return['msg']  =   yun_at('common_00782');
 
                                 } else {
 
-                                    $return['msg']  =   '刷新套餐不足，请先购买会员！';
+                                    $return['msg']  =   yun_at('common_00646');
                                 }
 
                                 $return['online']   =   $online;
@@ -502,48 +502,48 @@ class comtc_model extends model
                             $this->update_once('hotjob', array('lastupdate' => time()), array('uid' => $uid));
                             if ($jobnum == 1) {
 
-                                $logContent =   '职位刷新（ID：'.$jobs[0]['id'].'，名称：'.$jobs[0]['name'].'）';
-                                $logDetail  =   '单职位刷新，时间会员，不消耗套餐';
+                                $logContent =   'common_06453'.$jobs[0]['id'].'common_06275'.$jobs[0]['name'].'）';
+                                $logDetail  =   'common_00529';
                                 $this->addMemberLog($uid, $usertype, $logContent, 1, 4, $logDetail);
                                 $free       =   $freeNum > 0 ? 1 : 2;
-                                $this->addJobSxLog(array('uid' => $uid, 'usertype' => 2, 'jobid' => $jobs[0]['id'], 'type' => 1, 'port' => $data['port'], 'remark' => '用户操作：刷新职位'), $free, 1);
+                                $this->addJobSxLog(array('uid' => $uid, 'usertype' => 2, 'jobid' => $jobs[0]['id'], 'type' => 1, 'port' => $data['port'], 'remark' => 'common_06461'), $free, 1);
                             } else {
 
-                                $logContent =   '职位刷新：批量刷新';
-                                $logDetail  =   '批量刷新，时间会员；不消耗套餐，职位ID（'.$jobid.'）';
+                                $logContent =   'common_06454';
+                                $logDetail  =   'common_00294'.$jobid.'）';
                                 $this->addMemberLog($uid, $usertype, $logContent, 1, 4, $logDetail);
-                                $this->addJobSxLogs($uid, 2, $data['port'], 1, $jobIdS, '用户操作：批量刷新职位', $freeNum);
+                                $this->addJobSxLogs($uid, 2, $data['port'], 1, $jobIdS, 'common_00901', $freeNum);
                             }
 
                             if ($freeNum > 0) {
 
                                 $tcNum      =   $jobnum - $freeNum > 0 ? $jobnum - $freeNum : 0;
                                 $mfNum      =   $jobnum - $freeNum > 0 ? $freeNum : $freeNum - $jobnum;
-                                $payDetail  =   '刷新操作，消耗今日刷新套餐数量：'.$tcNum.'；免费刷新套餐数量：'.$mfNum;
+                                $payDetail  =   'common_00527'.$tcNum.'common_01085'.$mfNum;
                                 $jobnum     =   $tcNum;
                             } else {
 
-                                $payDetail  = ' 刷新操作，消耗今日刷新套餐数量：' . $jobnum;
+                                $payDetail  = 'common_00527' . $jobnum;
                             }
                             $this->addStatisDetail(array('uid' => $uid, 'type' => 2, 'num' => $jobnum, 'detail' => $payDetail, 'uri' => $_SERVER['REQUEST_URI']));
 
                             $return['status']   =   1;
-                            $return['msg']      =   '职位刷新成功';
+                            $return['msg']      =   yun_at('common_01530');
                         } else {
 
-                            $return['msg']      =   '职位刷新失败';
+                            $return['msg']      =   yun_at('common_06462');
                             $this->addErrorLog($uid,5,$return['msg']);
                         }
                     }
                 } else { // 会员时间到期
 
-                    $return['msg']      =   '您的会员已到期，请先购买会员！';
+                    $return['msg']      =   yun_at('common_00574');
                     $return['status']   =   2;
                 }
             }
         } else {
             // 职位ID参数错误
-            $return['msg'] = '请先选择职位！';
+            $return['msg'] = yun_at('common_06463');
         }
         return $return;
     }
@@ -576,7 +576,7 @@ class comtc_model extends model
 
             if (empty($parts)) {
 
-                $return['msg'] = '职位参数错误！';
+                $return['msg'] = yun_at('member_com_00697');
             } else {
                 $partGetId = array();
                 foreach($parts as $value){
@@ -630,36 +630,36 @@ class comtc_model extends model
 
                                 if ($pnum == 1) {
 
-                                    $logContent =   '兼职刷新（ID：'.$parts[0]['id'].'，名称：'.$parts[0]['name'].'）';
-                                    $logDetail  =   '单职位刷新，扣除1个刷新套餐';
+                                    $logContent =   'common_06456'.$parts[0]['id'].'common_06275'.$parts[0]['name'].'）';
+                                    $logDetail  =   'common_00648';
                                     $this->addMemberLog($uid, $usertype, $logContent, 9, 4, $logDetail);
                                     $free       =   $freeNum > 0 ? 1 : 2;
-                                    $this->addJobSxLog(array('uid' => $uid, 'usertype' => 2, 'jobid' => $parts[0]['id'], 'type' => 2, 'port' => $data['port'], 'remark' => '用户操作：刷新兼职'), $free, 1);
+                                    $this->addJobSxLog(array('uid' => $uid, 'usertype' => 2, 'jobid' => $parts[0]['id'], 'type' => 2, 'port' => $data['port'], 'remark' => 'common_06464'), $free, 1);
                                 } else {
 
-                                    $logContent =   '兼职刷新：批量刷新';
-                                    $logDetail  =   '批量刷新，扣除'.$pnum.'个刷新套餐；兼职ID（'.$partid.'）';
+                                    $logContent =   'common_06457';
+                                    $logDetail  =   'common_01376'.$pnum.'common_00844'.$partid.'）';
                                     $this->addMemberLog($uid, $usertype, $logContent, 9, 4, $logDetail);
-                                    $this->addJobSxLogs($uid, 2, $data['port'], 2, $partIds, '用户操作：批量刷新兼职', $freeNum);
+                                    $this->addJobSxLogs($uid, 2, $data['port'], 2, $partIds, 'common_06465', $freeNum);
                                 }
 
                                 if ($freeNum > 0) {
 
                                     $tcNum      =   $pnum - $freeNum > 0 ? $pnum - $freeNum : 0;
                                     $mfNum      =   $pnum - $freeNum > 0 ? $freeNum : $freeNum - $pnum;
-                                    $payDetail  =   '刷新操作，消耗刷新套餐数量：'.$tcNum.'；免费刷新套餐数量：'.$mfNum;
+                                    $payDetail  =   'common_00647'.$tcNum.'common_01085'.$mfNum;
                                     $pnum     =   $tcNum;
                                 } else {
 
-                                    $payDetail  = ' 刷新操作，消耗刷新套餐数量：' . $pnum;
+                                    $payDetail  = 'common_00647' . $pnum;
                                 }
                                 $this->addStatisDetail(array('uid' => $uid, 'type' => 2, 'num' => $pnum, 'detail' => $payDetail, 'uri' => $_SERVER['REQUEST_URI']));
 
                                 $return['status']   =   1;
-                                $return['msg']      =   '兼职刷新成功';
+                                $return['msg']      =   yun_at('common_06466');
                             } else {
 
-                                $return['msg']      =   '兼职刷新失败';
+                                $return['msg']      =   yun_at('common_06467');
                             }
                         } else { // 刷新兼职数不足
 
@@ -675,36 +675,36 @@ class comtc_model extends model
 
                                     if ($pnum == 1) {
 
-                                        $logContent =   '兼职刷新（ID：'.$parts[0]['id'].'，名称：'.$parts[0]['name'].'）';
-                                        $logDetail  =   '消费金额为0，直接刷新';
+                                        $logContent =   'common_06456'.$parts[0]['id'].'common_06275'.$parts[0]['name'].'）';
+                                        $logDetail  =   'common_00894';
                                         $this->addMemberLog($uid, $usertype, $logContent, 9, 4, $logDetail);
                                         $free       =   $freeNum > 0 ? 1 : 2;
-                                        $this->addJobSxLog(array('uid' => $uid, 'usertype' => 2, 'jobid' => $parts[0]['id'], 'type' => 2, 'port' => $data['port'], 'remark' => '用户操作：刷新兼职'), $free, 1);
+                                        $this->addJobSxLog(array('uid' => $uid, 'usertype' => 2, 'jobid' => $parts[0]['id'], 'type' => 2, 'port' => $data['port'], 'remark' => 'common_06464'), $free, 1);
                                     } else {
 
-                                        $logContent =   '兼职刷新：批量操作，兼职ID（'.$partid.'）';
-                                        $logDetail  =   '消费金额为0，直接刷新';
+                                        $logContent =   'common_06458'.$partid.'）';
+                                        $logDetail  =   'common_00894';
                                         $this->addMemberLog($uid, $usertype, $logContent, 9, 4, $logDetail);
 
-                                        $this->addJobSxLogs($uid, 2, $data['port'], 2, $partIds, '用户操作：批量刷新兼职', $freeNum);
+                                        $this->addJobSxLogs($uid, 2, $data['port'], 2, $partIds, 'common_06465', $freeNum);
                                     }
 
                                     if ((int)$statis['breakjob_num'] > 0) {
                                         if ($freeNum > 0){
 
-                                            $payDetail  =   '刷新操作，消耗刷新套餐数量：'.$statis['breakjob_num'].'；免费刷新数量：'.$freeNum;
+                                            $payDetail  =   'common_00647'.$statis['breakjob_num'].'common_01319'.$freeNum;
                                         }else{
 
-                                            $payDetail  =   '刷新操作，消耗刷新套餐数量：'.$statis['breakjob_num'];
+                                            $payDetail  =   'common_00647'.$statis['breakjob_num'];
                                         }
                                         $this->addStatisDetail(array('uid' => $uid, 'type' => 2, 'num' => $statis['breakjob_num'], 'detail' => $payDetail, 'uri' => $_SERVER['REQUEST_URI']));
                                     }
 
                                     $return['status']   =   1;
-                                    $return['msg']      =   '兼职刷新成功';
+                                    $return['msg']      =   yun_at('common_06466');
                                 } else {
 
-                                    $return['msg']      =   '兼职刷新失败';
+                                    $return['msg']      =   yun_at('common_06467');
                                 }
                             }else{
                                 if ($online != 4) {
@@ -719,10 +719,10 @@ class comtc_model extends model
                                         $return['integral'] =   intval($statis['integral']);
                                     }
 
-                                    $return['msg']  =   '刷新套餐不足，是否继续刷新？';
+                                    $return['msg']  =   yun_at('common_06468');
                                 } else {
 
-                                    $return['msg']  =   '刷新套餐不足，请先购买会员！';
+                                    $return['msg']  =   yun_at('common_00646');
                                 }
 
                                 $return['online']   =   $online;
@@ -737,46 +737,46 @@ class comtc_model extends model
 
                             if ($pnum == 1) {
 
-                                $logContent =   '兼职刷新（ID：'.$parts[0]['id'].'，名称：'.$parts[0]['name'].'）';
-                                $logDetail  =   '单职位刷新，时间会员，不消耗套餐';
+                                $logContent =   'common_06456'.$parts[0]['id'].'common_06275'.$parts[0]['name'].'）';
+                                $logDetail  =   'common_00529';
                                 $this->addMemberLog($uid, $usertype, $logContent, 9, 4, $logDetail);
                                 $free       =   $freeNum > 0 ? 1 : 2;
-                                $this->addJobSxLog(array('uid' => $uid, 'usertype' => 2, 'jobid' => $parts[0]['id'], 'type' => 2, 'port' => $data['port'], 'remark' => '用户操作：刷新兼职'), $free, 1);
+                                $this->addJobSxLog(array('uid' => $uid, 'usertype' => 2, 'jobid' => $parts[0]['id'], 'type' => 2, 'port' => $data['port'], 'remark' => 'common_06464'), $free, 1);
                             } else {
 
-                                $logContent =   '兼职刷新：批量刷新';
-                                $logDetail  =   '批量刷新，时间会员，不消耗刷新套餐；兼职ID（'.$partid.'）';
+                                $logContent =   'common_06457';
+                                $logDetail  =   'common_00232'.$partid.'）';
                                 $this->addMemberLog($uid, $usertype, $logContent, 9, 4, $logDetail);
-                                $this->addJobSxLogs($uid, 2, $data['port'], 2, $partIds, '用户操作：批量刷新兼职', $freeNum);
+                                $this->addJobSxLogs($uid, 2, $data['port'], 2, $partIds, 'common_06465', $freeNum);
                             }
                             if ($freeNum > 0) {
 
                                 $tcNum      =   $pnum - $freeNum > 0 ? $pnum - $freeNum : 0;
                                 $mfNum      =   $pnum - $freeNum > 0 ? $freeNum : $freeNum - $pnum;
-                                $payDetail  =   '刷新操作，消耗今日刷新套餐数量：'.$tcNum.'；免费刷新套餐数量：'.$mfNum;
+                                $payDetail  =   'common_00527'.$tcNum.'common_01085'.$mfNum;
                                 $pnum     =   $tcNum;
                             } else {
 
-                                $payDetail  = ' 刷新操作，消耗今日刷新套餐数量：' . $pnum;
+                                $payDetail  = 'common_00527' . $pnum;
                             }
                             $this->addStatisDetail(array('uid' => $uid, 'type' => 2, 'num' => $pnum, 'detail' => $payDetail, 'uri' => $_SERVER['REQUEST_URI']));
 
                             $return['status']   =   1;
-                            $return['msg']      =   '兼职刷新成功';
+                            $return['msg']      =   yun_at('common_06466');
                         } else {
-                            $return['msg']      =   '兼职刷新失败';
+                            $return['msg']      =   yun_at('common_06467');
                         }
                     }
                 } else { // 会员时间到期
 
-                    $return['msg']      =   '您的会员已到期，请先购买会员！';
+                    $return['msg']      =   yun_at('common_00574');
                     $return['status']   =   2;
                 }
             }
         } else {
 
             // 职位ID参数错误
-            $return['msg']  =   '请正确选择职位刷新！';
+            $return['msg']  =   yun_at('common_01056');
         }
         return $return;
     }

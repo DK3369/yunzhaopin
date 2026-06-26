@@ -49,25 +49,25 @@ class index_controller extends common{
         /* SECURITY DISABLED 2026-04-26 — CR-4
         session_start();
         if (!$this->config['sy_update_secret']) {
-            echo '请先配置自动升级秘钥！';
+            echo yun_at('upgrade_00007');
             die;
         }
         if (!$_GET['secret'] || $_GET['secret'] != $this->config['sy_update_secret']) {
-            echo '参数异常！';
+            echo yun_at('model_00074');
             die;
         }
         $down_path = DATA_PATH . 'update_dir/';// 下载升级包保存地址
         $unzip_path = DATA_PATH . 'update_data/';// 升级包解压地址
         $step = isset($_GET['step']) && $_GET['step'] ? intval($_GET['step']) : 1;
         if (!is_writable(DATA_PATH)) {
-            echo '/data目录没有写入权限，请先修改对应目录权限后再试！';
+            echo yun_at('upgrade_00001');
             die;
         }
         include (APP_PATH . '/version.php');
         if ($step == 1) {
             // 定制版不支持自动升级
             if (strpos($version, '定制') !== false) {
-                echo '您的系统版本为定制版，请联系客服进行升级！';
+                echo yun_at('upgrade_00002');
                 die;
             }
             // 根据当前系统版本请求综合平台获取是否有新版更新包
@@ -78,7 +78,7 @@ class index_controller extends common{
                 die;
             }
             if (!(intval($r['code']) == 200 && $r['data']['path'])) {
-                echo '您的系统已经是最新版，暂无可用更新包！';
+                echo yun_at('upgrade_00003');
                 die;
             } else {
                 $_SESSION['down_url'] = $r['data']['path'];
@@ -93,7 +93,7 @@ class index_controller extends common{
             // 解压下载的新版更新包
             $unzip = $this->deal_zip($_SESSION['zip_path'], $unzip_path);
             if (!$unzip) {
-                echo '解压失败！';
+                echo yun_at('upgrade_00013');
                 die;
             }
             include (PLUS_PATH . '/admindir.php');

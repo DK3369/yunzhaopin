@@ -2,8 +2,8 @@
     <div class="moduleElHight">
         <div class="moduleSeachbig">
             <div class="tableSeachInpt tableSeachInptsmall tableSeacFromer">
-				<el-input v-model="search_params.keyword" @keyup.enter.native="search" placeholder="请输入搜索内容" size="small" clearable>
-					<el-select v-model="search_params.type" size="small" slot="prepend" placeholder="企业名称">
+				<el-input v-model="search_params.keyword" @keyup.enter.native="search" placeholder="{yun:}t key='admin_00340'{/yun}" size="small" clearable>
+					<el-select v-model="search_params.type" size="small" slot="prepend" placeholder="{yun:}t key='wap_com_00157'{/yun}">
 					    <el-option label="企业名称" value="1"></el-option>
 					    <el-option label="用户名" value="2"></el-option>
 					</el-select>
@@ -18,7 +18,7 @@
 
             </div>
             <div class="tableSeachInpt">
-                <el-button type="primary" icon="el-icon-search" size="mini" @click="search">查询</el-button>
+                <el-button type="primary" icon="el-icon-search" size="mini" @click="search">{yun:}t key='admin_user_weipin_00049'{/yun}</el-button>
             </div>
         </div>
         <div class="moduleElTable" :class="{ 'moduleElTableHig': tableHig }"
@@ -35,13 +35,13 @@
                 <el-table-column prop="vip_etime_n" label="过期时间"></el-table-column>
                 <el-table-column prop="ywy" label="业务员">
                     <template slot-scope="props">
-                        {{props.row.crm_uid != '0' && props.row.crm_name ? props.row.crm_name : '未分配'}}
+                        {yun:}t key='admin_00732'{/yun}
                     </template>
                 </el-table-column>
                 <el-table-column label="操作" width="80" fixed="right">
                     <template slot-scope="scope">
                         <div class="cz_button">
-                            <el-button type="danger" size="mini" @click="delrow(scope.row.uid)">删除</el-button>
+                            <el-button type="danger" size="mini" @click="delrow(scope.row.uid)">{yun:}t key='common.delete'{/yun}</el-button>
                         </div>
                     </template>
                 </el-table-column>
@@ -49,8 +49,8 @@
         </div>
         <div class="modulePaging">
             <div>
-                <el-checkbox v-model="checkedAll" @change="selectAllBottom">全选</el-checkbox>
-                <el-button @click="delAllBottom" size="mini">批量删除</el-button>
+                <el-checkbox v-model="checkedAll" @change="selectAllBottom">{yun:}t key='wap_js_00074'{/yun}</el-checkbox>
+                <el-button @click="delAllBottom" size="mini">{yun:}t key='member_com_00055'{/yun}</el-button>
             </div>
             <div class="modulePagNum">
                 <el-pagination background @size-change="handleSizeChange"
@@ -68,7 +68,7 @@
         data: function () {
             return {
                 loading: false,
-                emptytext: '暂无数据',
+                emptytext: "{yun:}t key='wap_js_00113'{/yun}",
                 search_params:{
                     type: '1',
                     keyword: '',
@@ -83,7 +83,7 @@
                 pageSizes: [],
                 total: 0,
                 items: [
-                    {type: '', label: '正常'},
+                    {type: '', label: "{yun:}t key='admin_user_00149'{/yun}"},
                 ],
                 islook: false,
                 sort_type: '',
@@ -183,7 +183,7 @@
                     params.t = that.sort_col
                 }
                 that.loading = true;
-                that.emptytext = "数据加载中";
+                that.emptytext = "{yun:}t key='admin_user_weipin_00026'{/yun}";
                 httpPost('m=user&c=company_expire&a=index', params, {hideloading: true}).then(function (result) {
                     var res = result.data
                     if (res.error == 0) {
@@ -198,7 +198,7 @@
                             scrollToTop()
                         }
                         if (that.tableData.length === 0){
-                            that.emptytext = "暂无数据";
+                            that.emptytext = "{yun:}t key='wap_js_00113'{/yun}";
                         }
                     }
                 }).catch(function (e) {
@@ -210,7 +210,7 @@
             },
             delAllBottom() {
                 if (!this.selectedItem.length) {
-                    message.error('请选择要删除的数据');
+                    message.error("{yun:}t key='admin_user_weipin_00005'{/yun}");
                     return false;
                 }
                 delConfirm(this, this.selectedItem, this.delete);

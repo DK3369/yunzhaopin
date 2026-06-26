@@ -67,7 +67,7 @@
                             move: false,
                             fix: true,
                             zIndex: 666,
-                            title: '系统提示',
+                            title: "{yun:}t key='member_com_00584'{/yun}",
                             offset: ['100px', ''],
                             border: [10, 0.3, '#000', true],
                             area: ['710px', '330px'],
@@ -124,14 +124,14 @@
                         <span class="com_new_tip_h">{yun:}t key='member_com_00040'{/yun}</span>
                         {yun:}if $statis.vip_etime > $todayStart || $statis.vip_etime=="0"{/yun}
                             {yun:}if $statis.rating_type==2{/yun}
-                                您当前是 <span class="com_new_tip_v">{yun:}$statis.rating_name{/yun}</span>，到期时间是{yun:}if $statis.vip_etime!="0"{/yun}{yun:}$statis.vip_etime|date_format:'%Y-%m-%d'{/yun}{yun:}else{/yun}{yun:}t key='api_wxapp_00019'{/yun}{yun:}/if{/yun}，在此之前您可以任意发布职位&nbsp;&nbsp;&nbsp;
+                                {yun:}t key='common_02235'{/yun} <span class="com_new_tip_v">{yun:}$statis.rating_name{/yun}</span>，到期时间是{yun:}if $statis.vip_etime!="0"{/yun}{yun:}$statis.vip_etime|date_format:'%Y-%m-%d'{/yun}{yun:}else{/yun}{yun:}t key='api_wxapp_00019'{/yun}{yun:}/if{/yun}，在此之前您可以任意发布职位&nbsp;&nbsp;&nbsp;
                             {yun:}else{/yun}
-                                您当前是 <span class="com_new_tip_v">{yun:}$statis.rating_name{/yun} </span>{yun:}if $jobnum{/yun}，现已上架 {yun:}$jobnum{/yun} {yun:}t key='wap_user_00151'{/yun}{yun:}/if{/yun}， 您共可上架：{yun:}$statis.job_num{/yun}{yun:}t key='wap_user_00151'{/yun}。超出后发布的职位需要手动上架&nbsp;&nbsp;&nbsp;
+                                {yun:}t key='common_02235'{/yun} <span class="com_new_tip_v">{yun:}$statis.rating_name{/yun} </span>{yun:}if $jobnum{/yun}，现已上架 {yun:}$jobnum{/yun} {yun:}t key='wap_user_00151'{/yun}{yun:}/if{/yun}， 您共可上架：{yun:}$statis.job_num{/yun}{yun:}t key='wap_user_00151'{/yun}。超出后发布的职位需要手动上架&nbsp;&nbsp;&nbsp;
                             {yun:}/if{/yun}
                         {yun:}else{/yun}
-                            您的会员已到期，为了更好的招聘人才，请先<a href="index.php?c=right" class="cblue"> {yun:}t key='member_com_00308'{/yun}</a>！&nbsp;&nbsp;&nbsp;
+                            {yun:}t key='wap_01287'{/yun}，为了更好的招聘人才，请先<a href="index.php?c=right" class="cblue"> {yun:}t key='member_com_00308'{/yun}</a>！&nbsp;&nbsp;&nbsp;
                         {yun:}/if{/yun}
-                        <span class="add_tit_bz">（注 带 <i class="ff0">*</i> {yun:}t key='member_com_00306'{/yun}</span>
+                        <span class="add_tit_bz">{yun:}t key='member_com_00574'{/yun} <i class="ff0">*</i> {yun:}t key='member_com_00306'{/yun}</span>
                     </div>
                     <iframe id="supportiframejob" name="supportiframejob" onload="returnmessagejob('supportiframejob');" style="display:none"></iframe>
                     <form name="MyForm" id="myform" target="supportiframejob" method="post" action="index.php?c=jobadd&act=save" class="layui-form">
@@ -225,10 +225,10 @@
                                                 <i class="Description_icon_i"></i>
                                                 <div class="Description_box" style="display:none;">
                                                     <i class="Description_icon_i_j"></i>
-                                                    点击职位链接，为你推荐的职位要求模板复制到编辑区域内！<br>您也可以编辑，直至完美！
+                                                    {yun:}t key='member_com_00575'{/yun}<br>{yun:}t key='member_com_00576'{/yun}
                                                 </div>
                                             </div>
-                                            <div class="Description_box_mb">样本：<span id="JobRequInfoTemplate"></span>
+                                            <div class="Description_box_mb">{yun:}t key='member_com_00577'{/yun}<span id="JobRequInfoTemplate"></span>
                                             </div>
                                         </div>
                                         <div class="clear"></div>
@@ -241,7 +241,7 @@
                                     <div class="com_release_cont" style="height:38px;">
                                         <div class="layui-input-inline" style="width:675px; float: left;">
                                             <select name="link_id" lay-filter="link_id" id="link_id">
-                                                <option id="link_id_-1" data-provinceid="{yun:}$defLink.provinceid{/yun}" data-cityid="{yun:}$defLink.cityid{/yun}" data-three_cityid="{yun:}$defLink.three_cityid{/yun}" data-address="{yun:}$defLink.address{/yun}" data-x="{yun:}$defLink.x{/yun}" data-y="{yun:}$defLink.y{/yun}" data-link_man="{yun:}$defLink.link_man{/yun}" data-link_moblie="{yun:}$defLink.link_moblie{/yun}" data-link_phone="{yun:}$defLink.link_phone{/yun}" data-email="{yun:}$defLink.email{/yun}" value="-1" {yun:}if $row.is_link== 1{/yun}selected{yun:}/if{/yun}>{yun:}$defLink.link_man{/yun} - {yun:}$defLink.link_moblie{/yun} - {yun:}$defLink.city{/yun} - {yun:}$defLink.address{/yun} （默认企业地址）</option>
+                                                <option id="link_id_-1" data-provinceid="{yun:}$defLink.provinceid{/yun}" data-cityid="{yun:}$defLink.cityid{/yun}" data-three_cityid="{yun:}$defLink.three_cityid{/yun}" data-address="{yun:}$defLink.address{/yun}" data-x="{yun:}$defLink.x{/yun}" data-y="{yun:}$defLink.y{/yun}" data-link_man="{yun:}$defLink.link_man{/yun}" data-link_moblie="{yun:}$defLink.link_moblie{/yun}" data-link_phone="{yun:}$defLink.link_phone{/yun}" data-email="{yun:}$defLink.email{/yun}" value="-1" {yun:}if $row.is_link== 1{/yun}selected{yun:}/if{/yun}>{yun:}$defLink.link_man{/yun} - {yun:}$defLink.link_moblie{/yun} - {yun:}$defLink.city{/yun} - {yun:}$defLink.address{/yun} （{yun:}t key='member_com_00528'{/yun}）</option>
                                                 {yun:}foreach from=$addressList item=v key=key{/yun}
                                                 {yun:}if $row.link_id==$v.id{/yun}
                                                 {yun:}assign var="linkid" value=$key{/yun}
@@ -355,14 +355,14 @@
                                     </div>
                                     <div class="jobadd_setbox" id="spshow_xx1">
                                         <div class="jobadd_setlist jobadd_setlist_line ">
-                                            <div class="jobadd_setname">同步联系方式</div>
+                                            <div class="jobadd_setname">{yun:}t key='wap_00892'{/yun}</div>
                                             <div class="jobadd_set_p">{yun:}t key='wap_com_00260'{/yun}</div>
                                             <span class="jobadd_set_kg" onclick="setLink('tblink');" id="istblink"><i class="jobadd_set_kgicon"></i></span>
                                             <input type="hidden" name="is_tblink" id="is_tblink" value="0"/>
                                         </div>
                                         <div class="jobadd_setlist jobadd_setlist_line jobadd_setlist_linepv">
                                             <i class="jobadd_setlist_line_l"></i>
-                                            <div class="jobadd_setname">投递短信通知</div>
+                                            <div class="jobadd_setname">{yun:}t key='member_com_00578'{/yun}</div>
                                             <div class="jobadd_set_p">{yun:}t key='wap_com_00261'{/yun}</div>
                                             <span class="jobadd_set_kg {yun:}if $row.is_message==1 || $row.is_message == ''{/yun}com_job_tel_setlist_zt_cur{yun:}/if{/yun}" onclick="setLink('message');" id="ismessage"><i class="jobadd_set_kgicon "></i></span>
                                             <input type="hidden" name="is_message" id="is_message" value="{yun:}if $row.is_message{/yun}{yun:}$row.is_message{/yun}{yun:}else{/yun}1{yun:}/if{/yun}"/>
@@ -465,7 +465,7 @@
 <div class="job_tck_box" id="addjob" style="display:none;">
     <div style="width:710px; background:#fff;">
         <div class="yun_prompt_writingicon"><i class="yun_prompt_writingicon_right"></i></div>
-        <div class="yun_prompt_writing">职位发布成功！</div>
+        <div class="yun_prompt_writing">{yun:}t key='wap_01173'{/yun}！</div>
         {yun:}if $jobState == 1{/yun}
             <div class="yun_prompt_writing_tip">{yun:}t key='member_com_00232'{/yun}</div>
         {yun:}else{/yun}
@@ -473,11 +473,11 @@
         {yun:}/if{/yun}
         <div class="yun_prompt_writing_operation">
             <a href="javascript:void(0)" onclick="addjob_continue('{yun:}$uid{/yun}');return false;" class="yun_prompt_jobtgbth">{yun:}t key='member_com_00245'{/yun}</a>
-            <a id="jobshow" href="javascript:;" s class="yun_prompt_jobtgbth">查看信息</a>
-            <a href="index.php?c=job&w=5" class="yun_prompt_jobtgbth">管理我的信息</a>
+            <a id="jobshow" href="javascript:;" s class="yun_prompt_jobtgbth">{yun:}t key='member_com_00580'{/yun}</a>
+            <a href="index.php?c=job&w=5" class="yun_prompt_jobtgbth">{yun:}t key='member_com_00581'{/yun}</a>
             {yun:}if $jobState == 1{/yun}
             <a href="javascript:;" class="yun_prompt_jobtgbth yun_prompt_jobtgbth_sm">
-                扫码分享职位
+                {yun:}t key='member_com_00582'{/yun}
                 <div class="yun_prompt_jobtgbth_smbox none">
                     <div class="yun_prompt_jobtgbth_smboxpic">
                         <img id="sharecode" src="" width="60" height="60">
@@ -519,7 +519,7 @@
                 <div class="yun_prompt_jobgzh_img">
                     <img src='{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_wx_qcode{/yun}' width='130' height='130'>
                 </div>
-                {yun:}t key='wap_user_00191'{/yun}<br>随时接受简历投递
+                {yun:}t key='wap_user_00191'{/yun}<br>{yun:}t key='member_com_00583'{/yun}
             </div>
         </div>
         
@@ -655,11 +655,11 @@
             var jobid = $("#id").val();
 
             if ($.trim($("#name").val()) == '') {
-                layer.msg('职位名称不能为空！', 2, 8);
+                layer.msg("{yun:}t key='member_com_00585'{/yun}", 2, 8);
                 return false;
             }
             if ($("#job_post").val() == '') {
-                layer.msg('职位类别不能为空！', 2, 8);
+                layer.msg("{yun:}t key='member_com_00586'{/yun}", 2, 8);
                 return false;
             }
 
@@ -682,7 +682,7 @@
             }
             var zp_num = $.trim($("#zp_num").val());
             if (zp_num == 0 || zp_num == '') {
-                layer.msg('请填写招聘人数', 2, 8);
+                layer.msg("{yun:}t key='wap_00888'{/yun}", 2, 8);
                 return false;
             }
             var zp_minage = $.trim($("#zp_minage").val());
@@ -717,13 +717,13 @@
             }
             var description = editor.getContent();
             if ($.trim(description) == '') {
-                layer.msg('职位描述不能为空！', 2, 8);
+                layer.msg("{yun:}t key='member_com_00587'{/yun}", 2, 8);
                 return false;
             }
 
             var link_id = $("#link_id").val();
             if (link_id == '') {
-                layer.msg('工作地址不能为空！', 2, 8);
+                layer.msg("{yun:}t key='member_com_00588'{/yun}", 2, 8);
                 return false;
             }
 
@@ -829,7 +829,7 @@
                             return false;
                         });
                     } else if (data1 == 0) {
-                        var msg = '会员已到期，您可以<a href="index.php?c=right" style="color:red">{yun:}t key='default_00090'{/yun}</a>，{yun:}t key='common_01784'{/yun}？';
+                        var msg = '会员已到期，{yun:}t key='common_01916'{/yun}<a href="index.php?c=right" style="color:red">{yun:}t key='default_00090'{/yun}</a>，{yun:}t key='common_01784'{/yun}？';
 
                         layer.confirm(msg, function () {
                             window.location.href = "index.php?c=right";

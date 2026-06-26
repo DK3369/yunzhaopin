@@ -28,10 +28,10 @@ class fk_controller extends com_controller{
                     // 
                     if($ratingV['service_time']>0){
                         
-                        $ratingV['service_time']	=	$ratingV['service_time']. yun_auto_t('天');
+                        $ratingV['service_time']	=	$ratingV['service_time']. yun_at('wap_01197');
                         
                     }else{
-                        $ratingV['service_time']	=	yun_auto_t('永久');
+                        $ratingV['service_time']	=	yun_at('api_wxapp_00019');
                     }
                     // end
                     
@@ -56,7 +56,7 @@ class fk_controller extends com_controller{
                     // end
                     $ratingV['explains']    	=   $ratingV['explains']?$ratingV['explains']:$ratingV['name'];
                     if ($ratingV['integral_buy']>0){
-                        $ratingV['explains']	.=	yun_auto_t(' 赠送').$ratingV['integral_buy'].$this->config['integral_pricename'];
+                        $ratingV['explains']	.=	yun_at('wap_01823').$ratingV['integral_buy'].$this->config['integral_pricename'];
                     }
 
                     if ($ratingV['type'] == 1) {
@@ -67,10 +67,10 @@ class fk_controller extends com_controller{
                         if ($ratingV['interview'] > 0 || $ratingV['resume'] > 0){
                             $ratingV['interview_resume']	=	'';
                             if($ratingV['interview'] > 0){
-                                $ratingV['interview_resume'].=yun_auto_t('面试邀请: ').$ratingV['interview']. yun_auto_t('次；');
+                                $ratingV['interview_resume'].=yun_at('wap_00911').$ratingV['interview']. yun_auto_t('次；');
                             }
                             if($ratingV['resume'] > 0){
-                                $ratingV['interview_resume'].=yun_auto_t('简历下载: ').$ratingV['resume']. yun_auto_t('次；');
+                                $ratingV['interview_resume'].=yun_at('wap_00912').$ratingV['resume']. yun_auto_t('次；');
                             }
                         }
                         if ($ratingV['breakjob_num'] > 0){
@@ -78,7 +78,7 @@ class fk_controller extends com_controller{
                             $ratingV['job_breakjob'].=yun_auto_t('刷新职位: ').$ratingV['breakjob_num']. yun_auto_t('份；');
                         }
                         if($ratingV['zph_num'] > 0){
-                            $ratingV['zph'].=yun_auto_t('招聘会报名 : ').$ratingV['zph_num']. yun_auto_t('次');
+                            $ratingV['zph'].=yun_auto_t('招聘会报名 : ').$ratingV['zph_num']. yun_at('wap_01543');
                         }
                         // 
                         
@@ -177,22 +177,22 @@ class fk_controller extends com_controller{
             case 'issuejob':
                 $single_price	  =	 $this->config['integral_job'];
                 $single_integral  =  $single_price * $this->config['integral_proportion'];
-                $single_msg		  =	 yun_auto_t('本次上架职位');
+                $single_msg		  =	 yun_at('wap_01824');
                 break;
             case 'jobtop':
                 $single_price	  =	 $this->config['integral_job_top'];
                 $single_integral  =  $single_price * $this->config['integral_proportion'];
-                $single_msg		  =	 yun_auto_t('本次职位置顶');
+                $single_msg		  =	 yun_at('wap_01825');
                 break;
             case 'jobrec':
                 $single_price	  =	 $this->config['com_recjob'];
                 $single_integral  =  $single_price * $this->config['integral_proportion'];
-                $single_msg		  =	 yun_auto_t('本次职位推荐');
+                $single_msg		  =	 yun_at('wap_01826');
                 break;
             case 'joburgent':
                 $single_price	  =	 $this->config['com_urgent'];
                 $single_integral  =  $single_price * $this->config['integral_proportion'];
-                $single_msg		  =	 yun_auto_t('本次职位紧急招聘');
+                $single_msg		  =	 yun_at('wap_01827');
                 break;
             case 'sxjob':
                 
@@ -208,13 +208,13 @@ class fk_controller extends com_controller{
                 $num    	      =  count($jobid) - $statis['breakjob_num'];
                 $single_price	  =	 $this->config['integral_jobefresh'] * $num;
                 $single_integral  =  $single_price * $this->config['integral_proportion'];
-                $single_msg		  =	 yun_auto_t('本次刷新职位');
+                $single_msg		  =	 yun_at('wap_01828');
                 
                 break;
             case 'sxpart':
                 $single_price	  =	 $this->config['integral_jobefresh'];
                 $single_integral  =  $single_price * $this->config['integral_proportion'];
-                $single_msg		  =	 yun_auto_t('本次刷新职位');
+                $single_msg		  =	 yun_at('wap_01828');
                 
                 break;
             case 'downresume':
@@ -224,13 +224,13 @@ class fk_controller extends com_controller{
                 
                 $single_price	  =	 $price;
                 $single_integral  =  $price * $this->config['integral_proportion'];
-                $single_msg		  =	 yun_auto_t('本次下载简历');
+                $single_msg		  =	 yun_at('wap_01829');
                 
                 break;
             case 'invite':
                 $single_price	  =	 $this->config['integral_interview'];
                 $single_integral  =  $single_price * $this->config['integral_proportion'];
-                $single_msg		  =	 yun_auto_t('本次邀请面试');
+                $single_msg		  =	 yun_at('wap_01830');
                 
                 break;
             case 'zph':
@@ -240,13 +240,13 @@ class fk_controller extends com_controller{
                 
                 $single_price	  =	 $space['price'] / $this->config['integral_proportion'];
                 $single_integral  =  $space['price'];
-                $single_msg		  =	yun_auto_t('本次报名招聘会');
+                $single_msg		  =	yun_at('wap_01831');
                 
                 break;
             case 'autojob':
                 $single_price	  =	 $this->config['job_auto'];
                 $single_integral  =  $single_price * $this->config['integral_proportion'];
-                $single_msg		  =	 yun_auto_t('本次设置自动刷新');
+                $single_msg		  =	 yun_at('wap_01832');
                 break;
         }
         
@@ -411,7 +411,7 @@ class fk_controller extends com_controller{
             }
         }else{
             
-            $this->render_json(1, yun_auto_t('参数错误，请重试！'));
+            $this->render_json(1, yun_at('wap_00203'));
         }
     }
 }

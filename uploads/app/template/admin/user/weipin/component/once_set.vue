@@ -4,67 +4,67 @@
             <table class="tableVue">
                 <thead>
                     <tr align="left">
-                        <th width="260">名称</th>
-                        <th width="320">状态</th>
-                        <th>说明</th>
+                        <th width="260">{yun:}t key='member_com_00021'{/yun}</th>
+                        <th width="320">{yun:}t key='member_user_00181'{/yun}</th>
+                        <th>{yun:}t key='member_com_00207'{/yun}</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td>
-                            <div class="TableTite">前台店铺招聘发布次数</div>
+                            <div class="TableTite">{yun:}t key='admin_00414'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
                                 <el-input v-model="ruleForm.sy_once" placeholder=""
                                           @input="inputIntNumber($event, 'ruleForm', 'sy_once')">
-                                    <span slot="suffix" class="slotspan">次/天</span>
+                                    <span slot="suffix" class="slotspan">{yun:}t key='wap_com_00049'{/yun}</span>
                                 </el-input>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>提示：0为不限。按IP限制每天发布次数</span>
+                                <span>{yun:}t key='admin_user_weipin_00055'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">前台店铺招聘发布总次数</div>
+                            <div class="TableTite">{yun:}t key='admin_00415'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
                                 <el-input v-model="ruleForm.sy_once_totalnum" placeholder=""
                                           @input="inputIntNumber($event, 'ruleForm', 'sy_once_totalnum')">
-                                    <span slot="suffix" class="slotspan">次/天</span>
+                                    <span slot="suffix" class="slotspan">{yun:}t key='wap_com_00049'{/yun}</span>
                                 </el-input>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>提示：0为不限。网站每天可以发布的店铺招聘总数量</span>
+                                <span>{yun:}t key='admin_user_weipin_00054'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">查看店铺招聘联系方式</div>
+                            <div class="TableTite">{yun:}t key='admin_00416'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableButn">
-                                <el-radio v-model="ruleForm.user_wzp_link" label="0">公开</el-radio>
-                                <el-radio v-model="ruleForm.user_wzp_link" label="1">登录查看</el-radio>
+                                <el-radio v-model="ruleForm.user_wzp_link" label="0">{yun:}t key='wap_js_00005'{/yun}</el-radio>
+                                <el-radio v-model="ruleForm.user_wzp_link" label="1">{yun:}t key='admin_00417'{/yun}</el-radio>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>查看店铺招聘联系方式</span>
+                                <span>{yun:}t key='admin_00416'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">店铺招聘审核</div>
+                            <div class="TableTite">{yun:}t key='admin_user_weipin_00057'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
@@ -74,13 +74,13 @@
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>店铺招聘审核</span>
+                                <span>{yun:}t key='admin_user_weipin_00057'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">店铺上传营业执照</div>
+                            <div class="TableTite">{yun:}t key='admin_user_weipin_00056'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
@@ -90,31 +90,31 @@
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>店铺上传营业执照</span>
+                                <span>{yun:}t key='admin_user_weipin_00056'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">店铺招聘刷新次数</div>
+                            <div class="TableTite">{yun:}t key='admin_00418'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
                                 <el-input v-model="ruleForm.com_xin" placeholder=""
                                           @input="inputIntNumber($event, 'ruleForm', 'com_xin')">
-                                    <span slot="suffix" class="slotspan">次</span>
+                                    <span slot="suffix" class="slotspan">{yun:}t key='common_02089'{/yun}</span>
                                 </el-input>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>店铺招聘刷新次数</span>
+                                <span>{yun:}t key='admin_00418'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">默认店铺形象</div>
+                            <div class="TableTite">{yun:}t key='admin_00419'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableUpload">
@@ -124,7 +124,7 @@
                                            :auto-upload="false"
                                            :on-change="handleChangeLogo"
                                            :show-file-list="false">
-                                    <el-button slot="trigger" size="small" type="primary">点击上传</el-button>
+                                    <el-button slot="trigger" size="small" type="primary">{yun:}t key='wap_js_00071'{/yun}</el-button>
                                     <img class="el-upload-list__item-thumbnail" width="200" height="130" style="padding-left: 5px;"
                                          v-if="ruleForm.sy_once_icon_n" :src="ruleForm.sy_once_icon_n"/>
                                 </el-upload>
@@ -132,7 +132,7 @@
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>建议尺寸：标准尺寸200px*130px</span>
+                                <span>{yun:}t key='admin_00420'{/yun}</span>
                             </div>
                         </td>
                     </tr>
@@ -140,7 +140,7 @@
             </table>
         </div>
         <div class="setBasicButn" style="border: none;">
-            <el-button type="primary" size="medium" @click="submit" :disabled="saveLoading">提交</el-button>
+            <el-button type="primary" size="medium" @click="submit" :disabled="saveLoading">{yun:}t key='common.submit'{/yun}</el-button>
         </div>
     </div>
 </template>

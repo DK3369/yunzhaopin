@@ -13,7 +13,7 @@
                 <el-table-column label="商品名称(点击修改)">
                     <template slot-scope="scope">
                         <div class="moduleElTaPax" v-if="scope.row.keyid ==0">
-                            <span>一级分类：</span>
+                            <span>{yun:}t key='admin_system_00111'{/yun}</span>
                             <span :id="'pname'+scope.row.id">{{scope.row.name}}</span>
                             <input type="text" :value="scope.row.name" :id="'cname'+scope.row.id" @blur="subname" class="input-text hidden">
                             <img src="../../../admin/images/bine.png" alt="" style="cursor:pointer;" @click="checkname(scope.row.id)">
@@ -38,7 +38,7 @@
                 <el-table-column label="操作">
                     <template slot-scope="scope">
                         <div class="cz_button">
-                            <el-button type="danger" size="mini" @click="del(scope.$index)">删除</el-button>
+                            <el-button type="danger" size="mini" @click="del(scope.$index)">{yun:}t key='common.delete'{/yun}</el-button>
                         </div>
                     </template>
                 </el-table-column>
@@ -46,49 +46,49 @@
         </div>
         <div class="modulePaging">
             <div>
-                <el-checkbox v-model="checkedAll" :indeterminate="checkedAllIndeterminate" @change="checkAll">全选</el-checkbox>
+                <el-checkbox v-model="checkedAll" :indeterminate="checkedAllIndeterminate" @change="checkAll">{yun:}t key='wap_js_00074'{/yun}</el-checkbox>
 
-                <el-button @click="batch('del')" size="mini">批量删除</el-button>
+                <el-button @click="batch('del')" size="mini">{yun:}t key='member_com_00055'{/yun}</el-button>
 
             </div>
         </div>
         <div class="modluDrawer">
-            <el-dialog title="商品类别" :visible.sync="classbox" :with-header="true" :modal-append-to-body="false"
+            <el-dialog title="{yun:}t key='admin_yunying_00111'{/yun}" :visible.sync="classbox" :with-header="true" :modal-append-to-body="false"
                 :show-close="true" width="500px">
                 <div class="yunyinDialog">
                     
                     <div class="yunyinDiaList">
                         <div class="yunyinDiaTite">
-                            <span>类别选择</span>
+                            <span>{yun:}t key='admin_yunying_00113'{/yun}</span>
                         </div>
                         <div class="yunyinDiaInpt">
-                            <el-radio v-model="btype" label="1" @input="radioLevel">一级分类</el-radio>
-                            <el-radio v-model="btype" label="2" @input="radioLevel">二级分类</el-radio>
+                            <el-radio v-model="btype" label="1" @input="radioLevel">{yun:}t key='admin_00290'{/yun}</el-radio>
+                            <el-radio v-model="btype" label="2" @input="radioLevel">{yun:}t key='admin_00291'{/yun}</el-radio>
                         </div>
                     </div>
                     <div class="yunyinDiaList" v-if="isShow == true">
                         <div class="yunyinDiaTite">
-                            <span>一级分类</span>
+                            <span>{yun:}t key='admin_00290'{/yun}</span>
                         </div>
                         <div class="yunyinDiaInpt">
-                            <el-select v-model="nid" placeholder="请选择">
+                            <el-select v-model="nid" placeholder="{yun:}t key='wap_user_00100'{/yun}">
                                 <el-option v-for="(item, index) in list" :key="index" :label="item.name" :value="item.id"></el-option>
                             </el-select>
                         </div>
                     </div>
                     <div class="yunyinDiaList">
                         <div class="yunyinDiaTite">
-                            <span>类别名称</span>
+                            <span>{yun:}t key='admin_00219'{/yun}</span>
                         </div>
                         <div class="yunyinDiaInpt">
-                            <el-input type="textarea" :rows="2" placeholder="可以添加多条分类（请按回车键换行，一行一个）" v-model="classname">
+                            <el-input type="textarea" :rows="2" placeholder="{yun:}t key='admin_yunying_00112'{/yun}" v-model="classname">
                             </el-input>
                         </div>
                     </div>
                 </div>
                 <span slot="footer" class="dialog-footer">
-                    <el-button @click="classbox = false">取 消</el-button>
-                    <el-button type="primary" @click="save">确 定</el-button>
+                    <el-button @click="classbox = false">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
+                    <el-button type="primary" @click="save">{yun:}t key='wap_com_00019'{/yun}</el-button>
                 </span>
             </el-dialog>
         </div>
@@ -106,7 +106,7 @@
             data: function () {
                 return {
                     loading: false,
-                    dataText: '数据加载中',
+                    dataText: "{yun:}t key='admin_user_weipin_00026'{/yun}",
                     list: [],
 
                     checkedAll: false, // 全选
@@ -144,7 +144,7 @@
                     let that = this;
                     var sort = $("#csort"+that.id).val();
                     if (sort == '') {
-                        message.error('排序不能为空');
+                        message.error("{yun:}t key='admin_01199'{/yun}");
                         return false;
                     }
                     let params= {
@@ -169,7 +169,7 @@
                     let that = this;
                     var name = $("#cname"+that.id).val();
                     if (name == '') {
-                        message.error('类别名称不能为空');
+                        message.error("{yun:}t key='admin_01200'{/yun}");
                         return false;
                     }
                     let params= {
@@ -199,7 +199,7 @@
                     var position = that.classname.split("\n");
                     var name=position.join("-");
                     if (position == '') {
-                        message.error('类别名称不能为空');
+                        message.error("{yun:}t key='admin_01200'{/yun}");
                     }
                     params['name'] = name;
                     httpPost('m=yunying&c=shop_class&a=save', params).then(function (res) {
@@ -247,7 +247,7 @@
                         that.list = data.list;
                         that.loading = false;
                         if (that.list.length === 0) {
-                            that.dataText = "暂无数据";
+                            that.dataText = "{yun:}t key='wap_js_00113'{/yun}";
                         }
                     })
                 },
@@ -268,7 +268,7 @@
                 },
                 batch(type) {
                     if (this.multipleSelection.length == 0) {
-                        message.error('请选择要删除的数据项');
+                        message.error("{yun:}t key='admin_00136'{/yun}");
                         return false;
                     }
 
@@ -291,12 +291,12 @@
                         params = {},
                         msg = '';
 
-                    if (typeof idx == 'undefined') { // 批量删除
+                    if (typeof idx == 'undefined") { // {yun:}t key='member_com_00055'{/yun}
                         params.del = this.idArr;
-                        msg = '你确定要删除选中项吗？';
-                    } else {// 单个删除
+                        msg = "你确定要删除选中项吗？";
+                    } else {// {yun:}t key='common_01711'{/yun}
                         params.del = that.list[idx].id;
-                        msg = '你确定要删除当前项吗？';
+                        msg = "你确定要删除当前项吗？';
                     }
 
                     delConfirm(this, params, function (params) {

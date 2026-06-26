@@ -3,9 +3,9 @@
 		<div class="moduleSeachbig">
 			<!--关键字搜索和查询在一起-->
 			<div class="tableSeachInpt tableSeachInptsmall">
-				<el-input v-model="searchForm.keyword" @keyup.enter.native="search" placeholder="输入你要搜索的关键字" size="small"
+				<el-input v-model="searchForm.keyword" @keyup.enter.native="search" placeholder="{yun:}t key='admin_user_weipin_00003'{/yun}" size="small"
 						  prefix-icon="el-icon-search" clearable>
-					<el-select v-model="searchForm.type" size="small" slot="prepend" placeholder="姓名">
+					<el-select v-model="searchForm.type" size="small" slot="prepend" placeholder="{yun:}t key='wap_00529'{/yun}">
 						<el-option label="姓名" :value="1"></el-option>
 						<el-option label="期望职位" :value="2"></el-option>
 					</el-select>
@@ -17,7 +17,7 @@
 				</el-select>
 			</div>
 			<div class="tableSeachInpt">
-				<el-button type="primary" icon="el-icon-search" size="mini" @click="search">查询</el-button>
+				<el-button type="primary" icon="el-icon-search" size="mini" @click="search">{yun:}t key='admin_user_weipin_00049'{/yun}</el-button>
 			</div>
 
 		</div>
@@ -25,7 +25,7 @@
 		<div class="admin_datatip">
 			<i class="el-icon-document"></i> {{ lc("admin_data_stats") }} <span @click="init">{{ lc("admin_total_count", [resumeAllNum]) }}</span>
 			<span class="admin_datatip_n"><span @click="statusSearch('3')">{{ lc("admin_pending_review_count", [resumeStatusNum1 ? resumeStatusNum1 : 0]) }}</span></span>
-			<span class="admin_datatip_n">未接受：<span @click="statusSearch('2')">{{resumeStatusNum2 ? resumeStatusNum2 : 0}}</span> 条</span>
+			<span class="admin_datatip_n">{yun:}t key='admin_user_00233'{/yun}<span @click="statusSearch('2')">{{resumeStatusNum2 ? resumeStatusNum2 : 0}}</span> {yun:}t key='common_02088'{/yun}</span>
 			<span class="admin_datatip_n">{{ lc("admin_search_results_count", [total]) }}</span>
 		</div>
 		<div class="moduleElTable" :class="{ 'modulElTableGai': tableHig }"
@@ -42,7 +42,7 @@
 					<template slot-scope="scope">
 						<div>
 							<span v-if="scope.row.name">{{scope.row.name}}</span>
-							<span v-else style="color: #FF0000;">简历已删除</span>
+							<span v-else style="color: #FF0000;">{yun:}t key='member_com_00211'{/yun}</span>
 						</div>
 					</template>
 				</el-table-column>
@@ -56,7 +56,7 @@
 					<template slot-scope="scope">
 						<el-button v-if="scope.row.name && scope.row.status == 1" type="text" size="small" plain
 								   @click="openRecom(scope.row)">
-							<i class="el-icon-search"></i> 匹配岗位
+							<i class="el-icon-search"></i> {yun:}t key='admin_00488'{/yun}
 						</el-button>
 						<div v-else>-</div>
 					</template>
@@ -64,9 +64,9 @@
 				<el-table-column label="状态" width="60" fixed="right">
 					<template slot-scope="scope">
 						<div class="admin_state">
-							<span v-if="scope.row.status == 1" class="admin_state1">已接受</span>
-					        <span v-else-if="scope.row.status == 2" class="admin_state2">不接受</span>
-							<span v-else class="admin_state5">未审核</span>
+							<span v-if="scope.row.status == 1" class="admin_state1">{yun:}t key='wap_com_00191'{/yun}</span>
+					        <span v-else-if="scope.row.status == 2" class="admin_state2">{yun:}t key='admin_user_00234'{/yun}</span>
+							<span v-else class="admin_state5">{yun:}t key='wap_user_00166'{/yun}</span>
 						</div>
 					</template>
 				</el-table-column>
@@ -74,10 +74,10 @@
 					<template slot-scope="scope">
 						<div class="cz_button">
 							<template v-if="scope.row.name">
-								<el-button plain @click="openPreview(scope.row)">预览</el-button>
-								<el-button v-if="scope.row.status == 0" size="mini" plain @click="openAudit(scope.row)">审核</el-button>
+								<el-button plain @click="openPreview(scope.row)">{yun:}t key='wap_00071'{/yun}</el-button>
+								<el-button v-if="scope.row.status == 0" size="mini" plain @click="openAudit(scope.row)">{yun:}t key='member_user_00152'{/yun}</el-button>
 							</template>
-							<el-button v-if="scope.row.status != 0" type="danger" size="mini" @click="del(scope.$index)">删除</el-button>
+							<el-button v-if="scope.row.status != 0" type="danger" size="mini" @click="del(scope.$index)">{yun:}t key='common.delete'{/yun}</el-button>
 						</div>
 					</template>
 				</el-table-column>
@@ -86,8 +86,8 @@
        	<div class="modulePaging">
 			<div>
 				<el-checkbox v-model="checkedAll" :indeterminate="checkedAllIndeterminate"
-							 @change="checkAll">全选</el-checkbox>
-				<el-button @click="batch('del')" size="mini">批量删除</el-button>
+							 @change="checkAll">{yun:}t key='wap_js_00074'{/yun}</el-checkbox>
+				<el-button @click="batch('del')" size="mini">{yun:}t key='member_com_00055'{/yun}</el-button>
 			</div>
 			<div class="modulePagNum">
 				<el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
@@ -98,31 +98,31 @@
 		</div>
 		 <!--审核-->
 		<div class="modluDrawer">
-			<el-dialog title="简历委托审核" :visible.sync="dialogAudit" :with-header="true" :modal-append-to-body="false"
+			<el-dialog title="{yun:}t key='admin_00489'{/yun}" :visible.sync="dialogAudit" :with-header="true" :modal-append-to-body="false"
 				:show-close="true" width="450px">
 				<div>
-					<div class="wxsettip_small ">审核操作 </div>
+					<div class="wxsettip_small ">{yun:}t key='admin_user_weipin_00032'{/yun} </div>
 					<template>
-						<el-radio v-model="ruleFormAudit.status" label="1">接受</el-radio>
-						<el-radio v-model="ruleFormAudit.status" label="2">不接受</el-radio>
+						<el-radio v-model="ruleFormAudit.status" label="1">{yun:}t key='admin_user_00236'{/yun}</el-radio>
+						<el-radio v-model="ruleFormAudit.status" label="2">{yun:}t key='admin_user_00234'{/yun}</el-radio>
 					</template>
-					<div class="wxsettip_small ">审核说明 </div>
-					<div class="wxsettip">设定“未接受”时，将会退还金额。 </div>
+					<div class="wxsettip_small ">{yun:}t key='member_user_00062'{/yun} </div>
+					<div class="wxsettip">{yun:}t key='admin_user_00232'{/yun} </div>
 				</div>
 				<span slot="footer" class="dialog-footer">
-					<el-button @click="dialogAudit = false">取 消</el-button>
-					<el-button type="primary" @click="submitAudit">确 定</el-button>
+					<el-button @click="dialogAudit = false">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
+					<el-button type="primary" @click="submitAudit">{yun:}t key='wap_com_00019'{/yun}</el-button>
 				</span>
 			</el-dialog>
 		</div>
 
 		<div class="modluDrawer">
 			<!--预览简历-->
-			<el-drawer title="预览简历" :visible.sync="drawerPreview" append-to-body size="60%">
+			<el-drawer title="{yun:}t key='wap_user_00217'{/yun}" :visible.sync="drawerPreview" append-to-body size="60%">
 				<preview :id="detail.eid"></preview>
 			</el-drawer>
 			<!--匹配岗位-->
-			<el-drawer title="匹配岗位" :append-to-body="true" :visible.sync="drawerRecom" :show-close="true"
+			<el-drawer title="{yun:}t key='admin_00488'{/yun}" :append-to-body="true" :visible.sync="drawerRecom" :show-close="true"
 					   :with-header="true" size="80%">
 				<recom :id="detail.id" :eid="detail.eid"></recom>
 			</el-drawer>
@@ -138,7 +138,7 @@
 		data: function() {
 			return {
 				loading: false,
-				dataText: '数据加载中',
+				dataText: "{yun:}t key='admin_user_weipin_00026'{/yun}",
 				tableHig: true,
 				saveLoading: false,
 
@@ -149,7 +149,7 @@
 					status: this.status,
 				},
 
-				// 列表
+				// list
 				page: 1,
 				limit: 0,
 				list: [],
@@ -158,28 +158,28 @@
 
 				// 列表排序
 				t: '',
-				order: '',
+				order: '",
 
-				checkedAll: false, // 全选
+				checkedAll: false, // {yun:}t key='wap_js_00074'{/yun}
 				checkedAllIndeterminate: false,
 				multipleSelection: [], // 多选值存储
 				idArr: [],
 
 				detail: {}, // 单条数据记录
 
-				// 数据统计
+				// Data statistics
 				resumeAllNum: 0,
 				resumeStatusNum1: 0,
 				resumeStatusNum2: 0,
 
-				// 审核
+				// Audit
 				dialogAudit: false,
 				ruleFormAudit: {},
 
-				// 预览简历
+				// {yun:}t key='wap_user_00217'{/yun}
 				drawerPreview: false,
 
-				// 匹配岗位
+				// {yun:}t key='admin_00488'{/yun}
 				drawerRecom: false,
 
 				prevPage: 0
@@ -193,7 +193,7 @@
 	        }, 200)
 		},
 		components: {
-			'preview': httpVueLoader('../../../component/resume_preview.vue'),
+			"preview': httpVueLoader('../../../component/resume_preview.vue'),
 			'recom': httpVueLoader('./resume_trust_recom.vue'),
 		},
 		created() {
@@ -251,7 +251,7 @@
 				this.search();
 			},
 
-			// 数据统计
+			// Data statistics
 			statusSearch(status) {
 				this.resetSearch();
 				this.searchForm.status = status;
@@ -312,7 +312,7 @@
 	                    scrollToTop()
 	                }
 					if (that.list.length === 0) {
-	                    that.dataText = "暂无数据";
+	                    that.dataText = "{yun:}t key='wap_js_00113'{/yun}";
 	                }
 				})
 			},
@@ -335,7 +335,7 @@
 			},
 			batch(type) {
 				if (this.multipleSelection.length == 0) {
-					message.warning('请选择要操作的数据项');
+					message.warning("{yun:}t key='admin_user_weipin_00001'{/yun}");
 					return false;
 				}
 
@@ -359,12 +359,12 @@
 					params = {},
 					msg = '';
 
-				if (typeof idx == 'undefined') { // 批量删除
+				if (typeof idx == 'undefined") { // {yun:}t key='member_com_00055'{/yun}
 					params.del = this.idArr;
-					msg = '你确定要删除选中项吗？';
-				}  else {// 单个删除
+					msg = "你确定要删除选中项吗？";
+				}  else {// {yun:}t key='common_01711'{/yun}
 					params.del = that.list[idx].id;
-					msg = '你确定要删除当前项吗？';
+					msg = "你确定要删除当前项吗？';
 				}
 
 				delConfirm(this, params, function (params) {
@@ -380,7 +380,7 @@
 				}, msg)
 			},
 
-			// 审核
+			// Audit
 			openAudit(row) {
 				this.ruleFormAudit = {
 					id: row.id,
@@ -393,7 +393,7 @@
 					params = that.ruleFormAudit;
 
 				if (params.status === '0') {
-					message.warning('请选择审核状态');
+					message.warning("{yun:}t key='admin_user_weipin_00015'{/yun}");
 					return false;
 				}
 

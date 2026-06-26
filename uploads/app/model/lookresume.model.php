@@ -108,11 +108,11 @@ class lookresume_model extends model{
 
                     $this->addMemberLog($where['uid'], $where['usertype'], '浏览记录：删除浏览简历记录（ID：'.$id.'）',26,3);
 	            }
-	            $return['msg']      =  '简历浏览记录(ID:'.$id.')删除成功';
+	            $return['msg']      =  yun_auto_t('简历浏览记录(ID:').$id.')删除成功';
 	            $return['errcode']  =  '9';
 
 	        }else{
-	            $return['msg']      =  '简历浏览记录(ID:'.$id.')删除失败';
+	            $return['msg']      =  yun_auto_t('简历浏览记录(ID:').$id.')删除失败';
 	            $return['errcode']  =  '8';
 
 	        }
@@ -131,7 +131,7 @@ class lookresume_model extends model{
 			return $nid;
 	    }else{
 
-	        $return['msg']      =  '请选择您要删除的简历浏览';
+	        $return['msg']      =  yun_at('common_00816');
 	        $return['errcode']  =  '8';
 	    }
 	    return $return;

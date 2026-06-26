@@ -16,7 +16,7 @@ class role_ugroup_controller extends adminCommon{
             $where['limit'] = $pages['limit'];
             $List = $adminM->getAdminGroupList(array('did' => $this->config['did'], 'orderby' => 'id'), array('utype' => 'admin'));
             foreach ($List as &$v) {
-                $v['group_type_n'] = $v['group_type'] ==  1 ? '普通分组' : '分站管理组';
+                $v['group_type_n'] = $v['group_type'] ==  1 ? yun_at('admin_system_00029') : yun_at('admin_system_00028');
             }
         }
         $data['list'] = $List;
@@ -88,12 +88,12 @@ class role_ugroup_controller extends adminCommon{
     function save_action()
     {
         if (!$_POST['group_name']) {
-            $this->render_json(1, '请填写权限组名称');
+            $this->render_json(1, yun_at('admin_system_00010'));
         }
         $powerA = array_merge($_POST['one_ids'], $_POST['two_ids'], $_POST['three_ids'], $_POST['four_ids']);
         $power = array_filter($powerA);
         if (empty($power)) {
-            $this->render_json(1, '请至少选择一项权限');
+            $this->render_json(1, yun_at('admin_system_00009'));
         }
         $post = array(
             'group_name'   =>  $_POST['group_name'],
@@ -103,7 +103,7 @@ class role_ugroup_controller extends adminCommon{
         //检查权限组名称是否重复
         $info = $adminM->getAdminGroup(array('group_name'=>$_POST['group_name']));
         if (!empty($info) && !$_POST['groupid']){
-            $this->render_json(1, '权限组名称已存在');
+            $this->render_json(1, yun_at('admin_system_00027'));
         }
         if (empty($_POST['groupid'])) {
             $post['group_type'] = 1;
@@ -114,7 +114,7 @@ class role_ugroup_controller extends adminCommon{
             $return = $adminM->upAdminGroup($post, array('id' => intval($_POST['groupid'])));
         }
         if ($return['errcode'] == 9) {
-            if ($_POST['group_name'] == '分站管理员') {
+            if ($_POST['group_name'] == 'admin_system_00011') {
                 $navigationM = $this->MODEL('navigation');
                 $navigationM->upAdminNav(array('dids' => 0), array('display' => array('<>', 1)));
                 $navigationM->upAdminNav(array('dids' => 1), array('id' => array('in', pylode(',', $power)), 'display' => array('<>', 1)));
@@ -136,7 +136,7 @@ class role_ugroup_controller extends adminCommon{
             $return	= $this->MODEL('admin')->delAdminGroup(array('id' => $del));
             $this->admin_json($return['errcode'] == 9 ? 0 : 1, $return['msg']);
         }else{
-            $this->render_json(1, '参数错误,请重试');
+            $this->render_json(1, yun_at('common_01237'));
         }
     }
 }

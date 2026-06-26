@@ -25,7 +25,7 @@ class admin_appeal_controller extends adminCommon{
         $pages	=	$pageM -> adminPageList('member',$where,$page,array('limit' => $pageSize));
 
 	    if(!$pages['total'] ){
-            $this->render_json(0,'暂无数据',['data'=>[],'total'=>0,'promiss'=>$promiss,'pageSizes'=>$pages['page_sizes']]);
+            $this->render_json(0,yun_at('wap_js_00113'),['data'=>[],'total'=>0,'promiss'=>$promiss,'pageSizes'=>$pages['page_sizes']]);
         }
         if($_POST['order']){
             $where['orderby']		=		$_POST['t'].','.$_POST['order'];
@@ -44,7 +44,7 @@ class admin_appeal_controller extends adminCommon{
     }
     function info_action(){
         if (!$_POST['id']){
-            $this->render_json(1,'参数错误');
+            $this->render_json(1,yun_at('wap_com_00228'));
         }
 		$memberM						=		$this->MODEL('userinfo');
 		$info 							= 		$memberM->getInfo(array('uid'=>$_POST['id']));
@@ -59,15 +59,15 @@ class admin_appeal_controller extends adminCommon{
 
     function success_action(){
         if (!$_POST['id']) {
-            $this->render_json(1,'参数错误');
+            $this->render_json(1,yun_at('wap_com_00228'));
         }
         $memberM					=		$this->MODEL('userinfo');
 
         $result						=		$memberM->upInfo(array('uid'=>intval($_POST['id'])),array('appealstate'=>'2'));
         if ($result){
-            $this->admin_json(0,'申诉确认成功！');
+            $this->admin_json(0,'admin_user_00001');
         }else{
-            $this->render_json(1,'确认失败！');
+            $this->render_json(1,yun_at('admin_user_00002'));
         }
     }
     //删除
@@ -81,14 +81,14 @@ class admin_appeal_controller extends adminCommon{
         }
 		
 		if(!$delid){
-            $this->render_json('1','请选择要删除的内容！');
+            $this->render_json('1',yun_at('common_01066'));
         }
 		
 		$result 						=		$memberM->upInfo(array('uid'=>array('in',pylode(',',$delid))),array('appeal'=>'','appealtime'=>'','appealstate'=>'1'));
         if ($result){
             $this->admin_json(0,'申诉(ID:'.pylode(',',$delid).')删除成功！');
         }else{
-            $this->render_json(1,'删除失败！');
+            $this->render_json(1,yun_at('admin_user_00186'));
         }
     }
 }

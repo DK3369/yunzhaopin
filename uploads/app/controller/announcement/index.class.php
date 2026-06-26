@@ -13,7 +13,7 @@ class index_controller extends common{
 			$gonggao		=	$announcementM->getInfo(array('id'=>$id));
 			
 			if($gonggao['id']==''){
-				$this->ACT_msg($this->config['sy_weburl'],"没有找到该公告！");
+				$this->ACT_msg($this->config['sy_weburl'],yun_at('model_00091'));
 			}
 			//上一篇
 			$where['id']				=	array('<', $id);

@@ -3,14 +3,14 @@
         <!--运营-广告-广告管理 批量延期-->
         <div>
             <div class="hydialog_item" style="display: flex; align-items: center;">
-                <span class="item_span">延长时间：</span>
-                <el-input v-model="ruleForm.endtime" placeholder="请输入天数" onkeyup="this.value=this.value.replace(/[^0-9]/g,'')">
-                    <template slot="append">天</template>
+                <span class="item_span">{yun:}t key='admin_user_weipin_00025'{/yun}</span>
+                <el-input v-model="ruleForm.endtime" placeholder="{yun:}t key='admin_00614'{/yun}" onkeyup="this.value=this.value.replace(/[^0-9]/g,'')">
+                    <template slot="append">{yun:}t key='common_02067'{/yun}</template>
                 </el-input>
             </div>
         </div>
         <div slot="footer" class="dialog-footer">
-            <el-button type="primary" @click="submitForm('ruleForm')" :disabled="submitLoading">添加</el-button>
+            <el-button type="primary" @click="submitForm('ruleForm')" :disabled="submitLoading">{yun:}t key='wap_js_00091'{/yun}</el-button>
         </div>
     </div>
 </template>

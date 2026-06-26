@@ -8,20 +8,20 @@
             <table class="tableVue">
                 <thead>
                 <tr align="left">
-                    <th width="180">名称</th>
-                    <th width="260">状态</th>
-                    <th>说明</th>
+                    <th width="180">{yun:}t key='member_com_00021'{/yun}</th>
+                    <th width="260">{yun:}t key='member_user_00181'{/yun}</th>
+                    <th>{yun:}t key='member_com_00207'{/yun}</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr>
                     <td>
-                        <div class="TableTite">上架职位</div>
+                        <div class="TableTite">{yun:}t key='wap_com_00028'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-input v-model="ruleForm.integral_job" placeholder="请输入数字">
-                                <span slot="suffix" class="slotspan">元/份</span></el-input>
+                            <el-input v-model="ruleForm.integral_job" placeholder="{yun:}t key='admin_user_00342'{/yun}">
+                                <span slot="suffix" class="slotspan">{yun:}t key='admin_user_00349'{/yun}</span></el-input>
                         </div>
                     </td>
                     <td>
@@ -32,12 +32,12 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">下载人才简历</div>
+                        <div class="TableTite">{yun:}t key='wap_com_00022'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-input v-model="ruleForm.integral_down_resume" placeholder="请输入数字">
-                                <span slot="suffix" class="slotspan">元/份</span></el-input>
+                            <el-input v-model="ruleForm.integral_down_resume" placeholder="{yun:}t key='admin_user_00342'{/yun}">
+                                <span slot="suffix" class="slotspan">{yun:}t key='admin_user_00349'{/yun}</span></el-input>
                         </div>
                     </td>
                     <td>
@@ -48,12 +48,12 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">邀请人才面试</div>
+                        <div class="TableTite">{yun:}t key='admin_user_company_00218'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-input v-model="ruleForm.integral_interview" placeholder="请输入数字">
-                                <span slot="suffix" class="slotspan">元/份</span></el-input>
+                            <el-input v-model="ruleForm.integral_interview" placeholder="{yun:}t key='admin_user_00342'{/yun}">
+                                <span slot="suffix" class="slotspan">{yun:}t key='admin_user_00349'{/yun}</span></el-input>
                         </div>
                     </td>
                     <td>
@@ -64,12 +64,12 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">刷新职位</div>
+                        <div class="TableTite">{yun:}t key='wap_com_00029'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-input v-model="ruleForm.integral_jobefresh" placeholder="请输入数字">
-                                <span slot="suffix" class="slotspan">元/份</span></el-input>
+                            <el-input v-model="ruleForm.integral_jobefresh" placeholder="{yun:}t key='admin_user_00342'{/yun}">
+                                <span slot="suffix" class="slotspan">{yun:}t key='admin_user_00349'{/yun}</span></el-input>
                         </div>
                     </td>
                     <td>
@@ -80,12 +80,12 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">发布紧急招聘</div>
+                        <div class="TableTite">{yun:}t key='wap_com_00024'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-input v-model="ruleForm.com_urgent" placeholder="请输入数字">
-                                <span slot="suffix" class="slotspan">元/天</span></el-input>
+                            <el-input v-model="ruleForm.com_urgent" placeholder="{yun:}t key='admin_user_00342'{/yun}">
+                                <span slot="suffix" class="slotspan">{yun:}t key='admin_user_00350'{/yun}</span></el-input>
                         </div>
                     </td>
                     <td>
@@ -96,12 +96,12 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">发布置顶职位</div>
+                        <div class="TableTite">{yun:}t key='wap_com_00025'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-input v-model="ruleForm.integral_job_top" placeholder="请输入数字">
-                                <span slot="suffix" class="slotspan">元/天</span></el-input>
+                            <el-input v-model="ruleForm.integral_job_top" placeholder="{yun:}t key='admin_user_00342'{/yun}">
+                                <span slot="suffix" class="slotspan">{yun:}t key='admin_user_00350'{/yun}</span></el-input>
                         </div>
                     </td>
                     <td>
@@ -112,12 +112,12 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">发布推荐招聘</div>
+                        <div class="TableTite">{yun:}t key='wap_com_00023'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-input v-model="ruleForm.com_recjob" placeholder="请输入数字">
-                                <span slot="suffix" class="slotspan">元/天</span></el-input>
+                            <el-input v-model="ruleForm.com_recjob" placeholder="{yun:}t key='admin_user_00342'{/yun}">
+                                <span slot="suffix" class="slotspan">{yun:}t key='admin_user_00350'{/yun}</span></el-input>
                         </div>
                     </td>
                     <td>
@@ -128,12 +128,12 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">职位自动刷新</div>
+                        <div class="TableTite">{yun:}t key='wap_com_00027'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-input v-model="ruleForm.job_auto" placeholder="请输入数字">
-                                <span slot="suffix" class="slotspan">元/天</span></el-input>
+                            <el-input v-model="ruleForm.job_auto" placeholder="{yun:}t key='admin_user_00342'{/yun}">
+                                <span slot="suffix" class="slotspan">{yun:}t key='admin_user_00350'{/yun}</span></el-input>
                         </div>
                     </td>
                     <td>
@@ -145,27 +145,27 @@
                 <!--下载人才简历定价-->
                 <tr>
                     <td>
-                        <div class="TableTite">下载人才简历定价</div>
+                        <div class="TableTite">{yun:}t key='admin_user_company_00217'{/yun}</div>
                     </td>
                     <td>
                         <div v-for="(item,index) in data" :key="index" class="TableInpt" style="padding: 2px 0;">
-                            <el-input v-model="item.days" style="width: 230px;" placeholder="请输入数字">
-                                <template slot="prepend">更新时间</template>
-                                <span slot="suffix" class="slotspan">天内</span>
+                            <el-input v-model="item.days" style="width: 230px;" placeholder="{yun:}t key='admin_user_00342'{/yun}">
+                                <template slot="prepend">{yun:}t key='wap_00326'{/yun}</template>
+                                <span slot="suffix" class="slotspan">{yun:}t key='admin_user_company_00221'{/yun}</span>
                             </el-input>
-                            <el-input v-model="item.price" style="width: 210px;margin-left: 10px;"  placeholder="请输入数字">
-                                <template slot="prepend">单价</template>
-                                <span slot="suffix" class="slotspan">元/份</span>
+                            <el-input v-model="item.price" style="width: 210px;margin-left: 10px;"  placeholder="{yun:}t key='admin_user_00342'{/yun}">
+                                <template slot="prepend">{yun:}t key='admin_user_company_00220'{/yun}</template>
+                                <span slot="suffix" class="slotspan">{yun:}t key='admin_user_00349'{/yun}</span>
                             </el-input>
-                            <el-button type="text" style="margin-left: 10px;" @click="handleDelete(index)">删除</el-button>
+                            <el-button type="text" style="margin-left: 10px;" @click="handleDelete(index)">{yun:}t key='common.delete'{/yun}</el-button>
                         </div>
                         <div>
-                            <el-button type="text" icon="el-icon-circle-plus-outline" @click="handleAdd">添加新定价</el-button>
+                            <el-button type="text" icon="el-icon-circle-plus-outline" @click="handleAdd">{yun:}t key='admin_user_company_00219'{/yun}</el-button>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>简历可按照更新时间，<br>如：1天内更新,3天内更新或7天内更新等等分别定价</span>
+                            <span>{yun:}t key='admin_user_company_00216'{/yun}<br>{yun:}t key='admin_user_company_00215'{/yun}</span>
                         </div>
                     </td>
                 </tr>
@@ -173,7 +173,7 @@
             </table>
         </div>
         <div class="setBasicButn" style="border: none; height: 80px;">
-            <el-button type="primary" size="medium" @click="submitForm('ruleForm')" :disabled="submitLoading">提交</el-button>
+            <el-button type="primary" size="medium" @click="submitForm('ruleForm')" :disabled="submitLoading">{yun:}t key='common.submit'{/yun}</el-button>
         </div>
     </div>
 </template>
@@ -188,21 +188,21 @@ module.exports = {
             config: {},
             ruleForm: {
                 //上架职位
-                integral_job: '',
-                //下载人才简历
-                integral_down_resume: '',
-                //邀请人才面试
-                integral_interview: '',
-                //刷新职位
-                integral_jobefresh: '',
-                //发布紧急招聘
-                com_urgent: '',
-                //发布置顶职位
-                integral_job_top: '',
-                //发布推荐招聘
-                com_recjob: '',
-                //职位自动刷新
-                job_auto: '',
+                integral_job: '",
+                //{yun:}t key='wap_com_00022'{/yun}
+                integral_down_resume: "",
+                //{yun:}t key='admin_user_company_00218'{/yun}
+                integral_interview: "',
+                // refreshJob
+                integral_jobefresh: '",
+                //{yun:}t key='wap_com_00024'{/yun}
+                com_urgent: "",
+                //{yun:}t key='wap_com_00025'{/yun}
+                integral_job_top: "",
+                //{yun:}t key='wap_com_00023'{/yun}
+                com_recjob: "",
+                //{yun:}t key='wap_com_00027'{/yun}
+                job_auto: "',
                 //sy_chat_name
                 integral_chat_num: '',
             },
@@ -228,24 +228,24 @@ module.exports = {
                     let config = res.data.config ? res.data.config : {};
                     _this.config.integral_pricename = config.integral_pricename !== undefined ? config.integral_pricename : '';
                     _this.config.integral_proportion = config.integral_proportion !== undefined ? config.integral_proportion : '';
-                    _this.config.integral_priceunit = config.integral_priceunit !== undefined ? config.integral_priceunit : '';
+                    _this.config.integral_priceunit = config.integral_priceunit !== undefined ? config.integral_priceunit : '";
                     
-                    //上架职位
-                    _this.ruleForm.integral_job = config.integral_job !== undefined ? config.integral_job : '';
-                    //下载人才简历
-                    _this.ruleForm.integral_down_resume = config.integral_down_resume !== undefined ? config.integral_down_resume : '';
-                    //邀请人才面试
-                    _this.ruleForm.integral_interview = config.integral_interview !== undefined ? config.integral_interview : '';
-                    //刷新职位
-                    _this.ruleForm.integral_jobefresh = config.integral_jobefresh !== undefined ? config.integral_jobefresh : '';
-                    //发布紧急招聘
-                    _this.ruleForm.com_urgent = config.com_urgent !== undefined ? config.com_urgent : '';
-                    //发布置顶职位
-                    _this.ruleForm.integral_job_top = config.integral_job_top !== undefined ? config.integral_job_top : '';
-                    //发布推荐招聘
-                    _this.ruleForm.com_recjob = config.com_recjob !== undefined ? config.com_recjob : '';
-                    //职位自动刷新
-                    _this.ruleForm.job_auto = config.job_auto !== undefined ? config.job_auto : '';
+                    //{yun:}t key='wap_com_00028'{/yun}
+                    _this.ruleForm.integral_job = config.integral_job !== undefined ? config.integral_job : "";
+                    //{yun:}t key='wap_com_00022'{/yun}
+                    _this.ruleForm.integral_down_resume = config.integral_down_resume !== undefined ? config.integral_down_resume : "";
+                    //{yun:}t key='admin_user_company_00218'{/yun}
+                    _this.ruleForm.integral_interview = config.integral_interview !== undefined ? config.integral_interview : "';
+                    // refreshJob
+                    _this.ruleForm.integral_jobefresh = config.integral_jobefresh !== undefined ? config.integral_jobefresh : '";
+                    //{yun:}t key='wap_com_00024'{/yun}
+                    _this.ruleForm.com_urgent = config.com_urgent !== undefined ? config.com_urgent : "";
+                    //{yun:}t key='wap_com_00025'{/yun}
+                    _this.ruleForm.integral_job_top = config.integral_job_top !== undefined ? config.integral_job_top : "";
+                    //{yun:}t key='wap_com_00023'{/yun}
+                    _this.ruleForm.com_recjob = config.com_recjob !== undefined ? config.com_recjob : "";
+                    //{yun:}t key='wap_com_00027'{/yun}
+                    _this.ruleForm.job_auto = config.job_auto !== undefined ? config.job_auto : "';
                 }
             }).catch(function (error) {
                 console.log(error);
@@ -255,7 +255,7 @@ module.exports = {
             // this.$refs[formName].validate((valid) => {if (valid) {}});
             let _this = this;
             let params = JSON.parse(JSON.stringify(this.ruleForm));
-            params.config = '提交';
+            params.config = "{yun:}t key='common.submit'{/yun}";
             let arrTmp = [];
             this.data.forEach((item) => {
                 arrTmp.push(item.days + '_' + item.price);

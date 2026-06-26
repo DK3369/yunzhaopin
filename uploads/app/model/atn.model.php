@@ -286,7 +286,7 @@ class atn_model extends model{
 		        
                 $result             =   $this->delete_all('atn', array('id' => array('in', $id)), '');
 		        
-                $return['msg']      =   $result ? '删除成功' : '删除失败';
+                $return['msg']      =   $result ? yun_at('wap_user_00147') : yun_at('wap_user_00146');
                 $return['errcode']  =   $result ? 9 : 8;
 		        
 		        return $return;
@@ -312,17 +312,17 @@ class atn_model extends model{
                     $logDetail  =   '取消关注企业：《'.$comInfo['name'].'》';
                     $this->addMemberLog($data['uid'], $data['usertype'], '取消关注：招聘企业（UID：'.$atnInfo['sc_uid'].'）', 5, 3, $logDetail);
 
-                    $return['msg']      =  '取消成功';
+                    $return['msg']      =  yun_at('wap_00985');
                     $return['errcode']  =  '9';
                 } else{
-                    $return['msg']      =  '取消失败';
+                    $return['msg']      =  yun_at('wap_00986');
                     $return['errcode']  =  '8';
                 }
 		    }
 			
 		}else{
 
-			$return['msg']      	=  '系统繁忙';
+			$return['msg']      	=  yun_at('common_01831');
 			$return['errcode']  	=  '8';
 			$return['layertype']	=	0;
 		}
@@ -375,13 +375,13 @@ class atn_model extends model{
 
                 if ($data['usertype'] != '1') {
 
-                    $return['msg'] = '只有个人用户才可以关注！';
+                    $return['msg'] = yun_at('common_00784');
                     $return['errcode'] = 2;
                 }
 
                 if ($_POST['id'] == $data['uid']) {
 
-                    $return['msg'] = '自己不能关注自己！';
+                    $return['msg'] = yun_at('common_01142');
                     $return['errcode'] = 2;
                 }
                 
@@ -397,7 +397,7 @@ class atn_model extends model{
                     $where['xjhid'] =   '0';
                     $company        =   $this->select_once('company', array('uid' => $id), "`name`");
                     $name           =   $company['name'];
-                    $logContent     =   '关注：招聘企业（UID：'.$id.'）';
+                    $logContent     =   'common_06377'.$id.'）';
                     $logDetail      =   '关注招聘企业：《'.$name.'》';
                     $utype          =   2;
                 }
@@ -418,13 +418,13 @@ class atn_model extends model{
                         $sysmsgM    =   new sysmsg_model($this->db, $this->def);
 
                         $userurl    =   '<a href="usertpl,'.$data['uid'].'">'.sub_string($data['username']).'</a>';
-                        $content    =   "用户 ".$userurl." 取消了对您（".$name."）的关注！";
+                        $content    =   'common_02014'.$userurl.'common_01480'.$name.'common_01649';
                         $sysmsgM->addInfo(array('uid' => $id, 'usertype' => $utype, 'content' => $content));
                     }
 
-                    $this->addMemberLog($data['uid'], $data['usertype'], '取消'.$logContent, 5, 3, '取消'.$logDetail);
+                    $this->addMemberLog($data['uid'], $data['usertype'], 'wap_01172'.$logContent, 5, 3, 'wap_01172'.$logDetail);
 
-                    $return['msg']      =   '取消关注成功！';
+                    $return['msg']      =   yun_at('common_06378');
                     $return['cancel']   =   1;
                     $return['errcode']  =   1;
                 } else {
@@ -444,18 +444,18 @@ class atn_model extends model{
                         include_once('sysmsg.model.php');
                         $sysmsgM = new sysmsg_model($this->db, $this->def);
                         $userurl = '<a href="usertpl,' . $data['uid'] . '">' . sub_string($data['username']) . '</a>';
-                        $content = "用户 " . $userurl . " 关注了你(" . $name . ")";
+                        $content = 'common_02014' . $userurl . " 关注了你(" . $name . ")";
                         $sysmsgM->addInfo(array('uid' => $id, 'usertype' => $utype, 'content' => $content));
                     }
 
                     $this->addMemberLog($data['uid'], $data['usertype'], $logContent, 5, 1, $logDetail);
 
-                    $return['msg'] = '关注成功！';
+                    $return['msg'] = yun_at('wap_01256');
                     $return['errcode'] = 1;
                 }
             } else {
 
-                $return['msg'] = '您还没有登录！';
+                $return['msg'] = yun_at('common_01368');
                 $return['errcode'] = 2;
             }
         }

@@ -51,13 +51,13 @@ class ossUpload
         //判断后缀名是否合法
         if (!$file['tmp_name']) {
 
-            $returnMsg['msg'] = '未找到相关图片';
+            $returnMsg['msg'] = yun_at('common_06156');
         } elseif (!in_array(strtolower($imgType), $this->pic_type)) {
 
-            $returnMsg['msg'] = '上传文件类型不符';
+            $returnMsg['msg'] = yun_at('common_06157');
         } elseif ($file['size'] > $this->maxsize * 1024) {//判断大小是否超限
 
-            $returnMsg['msg'] = '上传图片太大';
+            $returnMsg['msg'] = yun_at('common_06158');
         } else {
 
             if ($dir) {
@@ -174,13 +174,13 @@ class ossUpload
         //判断后缀名是否合法
         if (!$file['tmp_name']) {
 
-            $returnMsg['error'] = '未找到相关文件';
+            $returnMsg['error'] = yun_at('common_06159');
         } elseif (!in_array(strtolower($docType), $upTypes)) {
 
-            $returnMsg['error'] = '仅允许上传 doc,docx,xls,rar,zip,txt格式文件';
+            $returnMsg['error'] = yun_auto_t('仅允许上传 doc,docx,xls,rar,zip,txt格式文件');
         } elseif ($file['size'] > 10 * 1024 * 1024) {//判断大小是否超限 限定10M
 
-            $returnMsg['error'] = '上传文件大小不能超过10M';
+            $returnMsg['error'] = yun_auto_t('上传文件大小不能超过10M');
         } else {
 
             if ($dir) {
@@ -436,7 +436,7 @@ class ossUpload
         $fileType = end(@explode('.', $file['name']));
         if (!$file['tmp_name']) {
 
-            $returnMsg['msg'] = '录音文件不存在，请重试';
+            $returnMsg['msg'] = yun_at('common_06160');
 
         } else {
             if ($dir) {

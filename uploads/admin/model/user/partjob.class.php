@@ -12,15 +12,15 @@ class partjob_controller extends adminCommon
         foreach ($partdata['part_billing_cycle'] as $k => $v) {
             $billing_cycle[$v] = $partclass_name[$v];
         }
-        $states = array("1" => "已审核", "4" => "未审核", "3" => "未通过", "2" => "已过期", "5" => "已锁定");
-        $updates = array("1" => "今天", "3" => "最近三天", "7" => "最近七天", "15" => "最近半月", "30" => "最近一个月");
-        $edates = array("1" => "已到期", "3" => "最近三天", "7" => "最近七天", "15" => "最近半月", "30" => "最近一个月");
+        $states = array("1" => 'wap_user_00165', "4" => 'wap_user_00166', "3" => 'wap_user_00167', "2" => 'member_com_00304', "5" => 'admin_user_00138');
+        $updates = array("1" => 'common_01940', "3" => 'admin_user_00179', "7" => 'admin_user_00178', "15" => 'admin_user_00180', "30" => 'admin_user_00175');
+        $edates = array("1" => 'wap_com_00319', "3" => 'admin_user_00179', "7" => 'admin_user_00178', "15" => 'admin_user_00180', "30" => 'admin_user_00175');
         $search_list = array();
-        $search_list['state'] = array("name" => '审核状态', "value" => $states);
-        $search_list['status'] = array('name' => '招聘状态', 'value' => array('1' => '已下架', '2' => '招聘中'));
-        $search_list['lastupdate'] = array("name" => '更新时间', "value" => $updates);
-        $search_list['edate'] = array("name" => '结束日期', "value" => $edates);
-        $search_list['billing_cycle'] = array("name" => '结算周期', "value" => $billing_cycle);
+        $search_list['state'] = array("name" => 'wap_com_00406', "value" => $states);
+        $search_list['status'] = array('name' => 'member_user_00178', 'value' => array('1' => 'wap_com_00242', '2' => 'wap_com_00243'));
+        $search_list['lastupdate'] = array("name" => 'wap_00326', "value" => $updates);
+        $search_list['edate'] = array("name" => 'admin_00344', "value" => $edates);
+        $search_list['billing_cycle'] = array("name" => 'member_user_00199', "value" => $billing_cycle);
         return array('search_list' => $search_list);
     }
 
@@ -303,7 +303,7 @@ class partjob_controller extends adminCommon
         $partM = $this->MODEL('part');
         $data['ids'] = $_POST['ids'];
         $partM->refreshPartJob($data);
-        $this->admin_json(0, "兼职职位(ID" . $_POST['ids'] . ")刷新成功");
+        $this->admin_json(0, 'admin_user_00074' . $_POST['ids'] . ")刷新成功");
     }
 
     /**

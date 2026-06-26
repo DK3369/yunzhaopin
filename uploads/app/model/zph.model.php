@@ -647,7 +647,7 @@ class zph_model extends model{
 
         if (empty($delId)) {
 
-            $return     =   array( 'errcode' => 8, 'msg' => '请选择要删除的数据！');
+            $return     =   array( 'errcode' => 8, 'msg' => yun_at('member_com_00084'));
 
         } else {
 
@@ -670,11 +670,11 @@ class zph_model extends model{
 
                 $this -> delete_all('zhaopinhui_com', array('zid' => array('in', $delId)), '');
 
-                $return['msg']      =   '招聘会';
+                $return['msg']      =   yun_at('member_com_00293');
 
                 $return['errcode']  =   $delid ? '9' : '8';
 
-                $return['msg']      =   $delid ? $return['msg'].'删除成功！' : $return['msg'].'删除失败！';
+                $return['msg']      =   $delid ? $return['msg'].'admin_user_00187' : $return['msg'].'admin_user_00186';
             }
 
         }
@@ -1021,10 +1021,10 @@ class zph_model extends model{
                                     $spacelistall[$k]['unit']       =   $this->config['integral_priceunit'].$this->config['integral_pricename'];
                                 }else{
                                     $spacelistall[$k]['price_n']    =   $v['price']/$this->config['integral_proportion'];
-                                    $spacelistall[$k]['unit']       =   '元';
+                                    $spacelistall[$k]['unit']       =   yun_at('common_02056');
                                 }
                             }else{
-                                $spacelistall[$k]['price_n']    =   '免费';
+                                $spacelistall[$k]['price_n']    =   yun_at('member_user_00572');
                             }
                             if (!empty($reserved) && in_array($v['id'], $reserved)){
                                 $spacelistall[$k]['comstatus']  =   3;
@@ -1143,7 +1143,7 @@ class zph_model extends model{
 
 			  'errcode' => 8,
 
-			  'msg' 	=> '请选择要删除的数据！',
+			  'msg' 	=> yun_at('member_com_00084'),
             );
 
 		}else{
@@ -1162,11 +1162,11 @@ class zph_model extends model{
 
 			if($delid){
 
-				$return['msg']		=	'招聘会场地';
+				$return['msg']		=	yun_at('admin_00322');
 
 				$return['errcode']	=	$delid ? '9' :'8';
 
-				$return['msg']		=	$delid ? $return['msg'].'删除成功！' : $return['msg'].'删除失败！';
+				$return['msg']		=	$delid ? $return['msg'].'admin_user_00187' : $return['msg'].'admin_user_00186';
 
 			}
 
@@ -1227,7 +1227,7 @@ class zph_model extends model{
                 $List           =   $this -> getZphCompanyList($where, array('field' => '`zid`,`uid`,`com_name`'));
 
                 /* 消息前缀 */
-                $tagName        =   '参会企业';
+                $tagName        =   'wap_00559';
 
                 if (! empty($List)) {
 					
@@ -1295,14 +1295,14 @@ class zph_model extends model{
             $result  =  $this->update_once('zhaopinhui',array('is_open' => $is_open), array('id' => $id));
 
             if ($result){
-                $return['msg']          =   '修改成功！';
+                $return['msg']          =   yun_at('member_user_00602');
                 $return['errcode']      =   9;
             }else{
-                $return['msg']          =   '修改失败！';
+                $return['msg']          =   yun_at('member_user_00603');
                 $return['errcode']      =   8;
             }
         }else{
-            $return['msg']          =   '参数错误！';
+            $return['msg']          =   yun_at('wap_01298');
             $return['errcode']      =   8;
         }
         return $return;
@@ -1331,7 +1331,7 @@ class zph_model extends model{
 
         if (empty($delId)) {
 
-            $return         =   array('errcode' => 8, 'msg' => '请选择要删除的数据！');
+            $return         =   array('errcode' => 8, 'msg' => yun_at('member_com_00084'));
         } else {
 
             if (is_array($delId)) {
@@ -1351,7 +1351,7 @@ class zph_model extends model{
 				$delWhere	=	array('id' => array('in', $delId));
 			}
 			$comlist           =   $this -> getZphCompanyList(array('id' => array('in', $delId)));
-			$tagName        =   '参会企业';
+			$tagName        =   'wap_00559';
 			if (!empty($comlist)) {
 				foreach ($comlist as $v) {
 					$uids[] =   $v['uid'];
@@ -1373,7 +1373,7 @@ class zph_model extends model{
 
             $msg                =   '招聘会参会企业（ID：'.$delId.'）';
 
-            $return['msg']      =   $return['id'] ? $msg.'删除成功！' : '删除失败！';
+            $return['msg']      =   $return['id'] ? $msg.'admin_user_00187' : 'admin_user_00186';
 
         }
 
@@ -1548,30 +1548,30 @@ class zph_model extends model{
 	        $return['login']    =   1;
 	    } else if ($usertype != 2) {
 
-	        $return['msg']      =   '企业用户才可以预定招聘会！';
+	        $return['msg']      =   yun_at('common_06684');
 	    } else {
 
 	        $comInfo  =  $this->select_once('company',array('uid' => $uid), '`name`,`r_status`');
 
 	        if(empty($comInfo['name'])){
 
-	            $return['msg']	=	'请先完善基本资料！';
+	            $return['msg']	=	yun_at('member_com_00692');
     	   }else{
 
     	        $zph    =   $this->getInfo(array('id' => $zid), array('field' => '`starttime`,`endtime`'));
 
     	        if (strtotime($zph['starttime']) < time()) {
 
-    	            $return['msg']  =   '招聘会已经开始！';
+    	            $return['msg']  =   yun_at('common_06685');
     	        } else if (strtotime($zph['endtime']) < time()) {
 
-    	            $return['msg']  =   '招聘会已经结束！';
+    	            $return['msg']  =   yun_at('common_06686');
     	        } else {
     	            if ($comInfo['r_status'] != 1) {
                         if ($comInfo['r_status'] == 4) {
-                            $return['msg'] = '当前账户会员权益已暂停，请联系客服开启服务~';
+                            $return['msg'] = yun_at('wap_com_00081');
                         }else{
-                            $return['msg'] = '您的账号未通过审核，请联系管理员加速审核进度！';
+                            $return['msg'] = yun_at('common_06687');
                         }
     	            } else {
 
@@ -1586,7 +1586,7 @@ class zph_model extends model{
     	                if (!empty($zphzw)){
 
     	                    $return['status']  =  3;
-    	                    $return['msg']     =  '展位已有其他企业报名，请重新选择展位';
+    	                    $return['msg']     =  yun_at('common_06688');
 
     	                    return $return;
     	                }
@@ -1597,10 +1597,10 @@ class zph_model extends model{
 
     	                    if ($zphcom['status'] == 2) {
 
-    	                        $return['msg'] = '您的报名未通过审核，请联系管理员！';
+    	                        $return['msg'] = yun_at('common_06513');
     	                    } else {
 
-    	                        $return['msg'] = '您已报名该招聘会！';
+    	                        $return['msg'] = yun_at('common_01124');
     	                    }
 
     	                    return $return;
@@ -1642,10 +1642,10 @@ class zph_model extends model{
 
                                                     if ($serverOpen) {
 
-                                                        $return['msg']  =   "您的等级特权已经用完，继续报名将消费 <span style=color:red;>".$space['price']."</span> ".$this->config['integral_pricename']."，是否继续？";
+                                                        $return['msg']  =   yun_at('common_00434') . ' <span style=color:red;>'.$space['price'].'</span> '.$this->config['integral_pricename'].yun_at('common_06074');
                                                     } else {
 
-                                                        $return['msg']  =   "您的等级特权已经用完，可以<a href=\"".$this->config['sy_weburl']."/wap/member/index.php?c=rating\" style=\"color:red;cursor:pointer;\">购买会员</a>！";
+                                                        $return['msg']  =   yun_at('common_00709') . '<a href="'.$this->config['sy_weburl'].'/wap/member/index.php?c=rating" style="color:red;cursor:pointer;">'.yun_at('default_00090').'</a>！';
                                                     }
 
                                                     $return['url']      =   $this->config['sy_weburl'].'wap/member/index.php?c=getserver&id='.$uid.'&server=15';
@@ -1657,17 +1657,17 @@ class zph_model extends model{
                                                     $return['url']      =   $this->config['sy_weburl'].'wap/member/index.php?c=getserver&id='.$uid.'&server=15';
                                                     if ($serverOpen) {
 
-                                                        $return['msg']  =   "您的等级特权已经用完，继续报名将消费 <span style=color:red;>".$price."</span> 元，是否继续？";
+                                                        $return['msg']  =   yun_auto_t('您的等级特权已经用完，继续报名将消费 <span style=color:red;>').$price."</span> 元，是否继续？";
                                                     } else {
 
-                                                        $return['msg']  =   "您的等级特权已经用完，可以<a href=\"".$this->config['sy_weburl']."/wap/member/index.php?c=rating\" style=\"color:red;cursor:pointer;\">购买会员</a>！";
+                                                        $return['msg']  =   yun_at('common_00709') . '<a href="'.$this->config['sy_weburl'].'/wap/member/index.php?c=rating" style="color:red;cursor:pointer;">'.yun_at('default_00090').'</a>！';
                                                     }
                                                     $return['price']    =   $price;
                                                 }
                                             } else {
                                                 $return['price']=   $price;
                                                 $return['url']  =   $this->config['sy_weburl'].'wap/member/index.php?c=rating';
-                                                $return['msg']  =   "您的等级特权已经用完，可以<a href=\"".$this->config['sy_weburl']."/wap/member/index.php?c=rating\" style=\"color:red;cursor:pointer;\">购买会员</a>！";
+                                                $return['msg']  =   yun_at('common_00709') . '<a href="'.$this->config['sy_weburl'].'/wap/member/index.php?c=rating" style="color:red;cursor:pointer;">'.yun_at('default_00090').'</a>！';
                                             }
                                             $return['zid']      =   $zid;
                                             $return['bid']      =   $id;
@@ -1679,7 +1679,7 @@ class zph_model extends model{
 
                                         $statisM->upInfo(array('zph_num' => array('-', 1)), array('uid' => $suid, 'usertype' => $usertype));
 
-                                        $payDetail = '报名招聘会，扣除招聘会套餐数量：1';
+                                        $payDetail = 'common_06689';
                                         $statisM->addStatisDetail(array('uid' => $uid, 'type' => 8, 'num' => 1, 'detail' => $payDetail, 'uri' => $_SERVER['REQUEST_URI']));
 
                                         $return =   $this->reserveZph($zData);
@@ -1687,7 +1687,7 @@ class zph_model extends model{
                                     }
                                 } else if ($statis['rating_type'] == 2) {
 
-                                    $payDetail = '报名招聘会，消耗今日招聘会套餐数量：1';
+                                    $payDetail = 'common_06690';
                                     $statisM->addStatisDetail(array('uid' => $uid, 'type' => 8, 'num' => 1, 'detail' => $payDetail, 'uri' => $_SERVER['REQUEST_URI']));
 
                                     $return =   $this->reserveZph($zData);
@@ -1705,10 +1705,10 @@ class zph_model extends model{
                                     } else {
                                         $return['price'] = $price;
                                     }
-                                    $return['msg'] = "你的会员已到期，请先购买会员！";
+                                    $return['msg'] = yun_at('common_00561');
                                 } else {
                                     $return['url'] = $this->config['sy_weburl'] . 'wap/member/index.php?c=rating';
-                                    $return['msg'] = "你的会员已到期，你可以<a href='" . $this->config['sy_weburl'] . "/wap/member/index.php?c=rating' style='color:red;cursor:pointer;'>购买会员</a>！";
+                                    $return['msg'] = 'common_00333' . $this->config['sy_weburl'] . "/wap/member/index.php?c=rating' style='color:red;cursor:pointer;'>购买会员</a>！";
                                 }
                                 $return['zid'] = $zid;
                                 $return['bid'] = $id;
@@ -1756,13 +1756,13 @@ class zph_model extends model{
         if ($nid) {
             require_once('log.model.php');
             $logM   =   new log_model($this->db, $this->def);
-            $logM->addMemberLog($data['fuid'], $data['usertype'], '报名招聘会（ID:' . $data['zid'] . '，展位：' . $bid . '）', 14, 1);
+            $logM->addMemberLog($data['fuid'], $data['usertype'], '报名招聘会（ID:' . $data['zid'] . 'common_06691' . $bid . '）', 14, 1);
 
             $return['status'] = 1;
-            $return['msg'] = '报名成功,等待管理员审核！';
+            $return['msg'] = yun_at('common_00714');
 
         } else {
-            $return['msg'] = '报名失败,请稍候重试！';
+            $return['msg'] = yun_auto_t('报名失败,请稍候重试！');
         }
 
 	    return $return;

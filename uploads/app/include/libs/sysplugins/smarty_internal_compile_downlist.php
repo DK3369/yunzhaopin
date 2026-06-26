@@ -52,7 +52,7 @@ class Smarty_Internal_Compile_Downlist extends Smarty_Internal_CompileBase{
 				}elseif($time>60 && $time<3600){
 					$list[$key][\'time\'] = ceil($time/60)."分钟前";
 				}elseif($time<60){
-					$list[$key][\'time\'] = "刚刚";
+					$list[$key][\'time\'] = yun_auto_t('刚刚');
 				}else{
 					$list[$key][\'time\'] = date("Y-m-d",$val[\'downtime\']);
 				}

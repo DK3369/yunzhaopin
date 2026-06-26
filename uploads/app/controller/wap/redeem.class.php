@@ -24,7 +24,7 @@ class redeem_controller extends common{
 		}
 		$this->yunset('photo',$photo);
 		
-		$this->yunset('headertitle',$this->config['integral_pricename']. yun_auto_t('商城'));
+		$this->yunset('headertitle',$this->config['integral_pricename']. yun_at('wap_00398'));
 		$this->seo("redeem");
 		$this->yuntpl(array('wap/redeem'));
 	}
@@ -42,7 +42,7 @@ class redeem_controller extends common{
 		$this->yunset("searchurl",$searchurl);
 		
 		$this->seo('redeem');
-		$this->yunset('headertitle',$this->config['integral_pricename']. yun_auto_t('商城'));
+		$this->yunset('headertitle',$this->config['integral_pricename']. yun_at('wap_00398'));
 		$this->yuntpl(array('wap/redeemlist'));
 	}
 	function show_action(){
@@ -77,7 +77,7 @@ class redeem_controller extends common{
 		}
 		$row		=	$redeemM->getInfo(array("id"=>(int)$_GET['id']));
 		if($row['id']==''){
-			$this->ACT_msg_wap(Url('redeem'),yun_auto_t('没有找到相关商品！'),2,5);
+			$this->ACT_msg_wap(Url('redeem'),yun_at('wap_00395'),2,5);
 		}
 		$this->yunset("row",$row);
 		
@@ -92,7 +92,7 @@ class redeem_controller extends common{
 	}
 	function dh_action(){
 		if(!$this->uid && !$this->username){
-		     $this->ACT_layer_msg(yun_auto_t('您还没有登录，请先登录！'),8,$_SERVER['HTTP_REFERER']);
+		     $this->ACT_layer_msg(yun_at('wap_js_00154'),8,$_SERVER['HTTP_REFERER']);
 		}
 		$userinfoM		=	$this->MODEL("userinfo");
 		$redeemM	=	$this->MODEL("redeem");
@@ -146,7 +146,7 @@ class redeem_controller extends common{
 		$integral	=	$row['integral']*(int)$_GET['num'];
 		$this->yunset('integral',$integral);
 		
-		$this->yunset('headertitle',yun_auto_t('兑换确认 '));
+		$this->yunset('headertitle',yun_at('wap_00396'));
 		$this->seo('redeem');
 		$this->yuntpl(array('wap/redeemdh'));
 	}

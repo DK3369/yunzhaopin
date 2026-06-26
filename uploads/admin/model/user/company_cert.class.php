@@ -104,7 +104,7 @@ class company_cert_controller extends adminCommon
         $companyorder = $this->MODEL('companyorder');
         $companyM = $this->MODEL('company');
         if ($_POST['status'] == '') {
-            $this->render_json(1, '请选择审核状态！');
+            $this->render_json(1, yun_at('admin_01311'));
         }
         if ($_POST['uid']) {
             $uid = $_POST['uid'];
@@ -117,7 +117,7 @@ class company_cert_controller extends adminCommon
                 // 如果是“审核通过”，判断之前是否有过“审核通过的记录”，没有则增加企业资质审核通过的积分（只有第一次审核通过才加积分）
                 if (count($comids) > 1) {
                     $paywhere['com_id'] = array('in', pylode(',', $comids));
-                    $paywhere['pay_remark'] = '认证企业资质';
+                    $paywhere['pay_remark'] = yun_at('wap_com_00181');
                     $companypay = $companyorder->getPayList($paywhere, array('field' => 'com_id'));
                     foreach ($companypay as $k => $v) {
                         if (in_array($v, $uid)) {
@@ -125,14 +125,14 @@ class company_cert_controller extends adminCommon
                         }
                     }
                     foreach ($uid as $v) {
-                        $this->MODEL('integral')->invtalCheck($v, 2, 'integral_comcert', '认证企业资质');
+                        $this->MODEL('integral')->invtalCheck($v, 2, 'integral_comcert', 'wap_com_00181');
                     }
                 } elseif ($uid != '') {
                     $paywhere['com_id'] = $uid;
-                    $paywhere['pay_remark'] = '认证企业资质';
+                    $paywhere['pay_remark'] = yun_at('wap_com_00181');
                     $num = $companyorder->getCompanyPayNum($paywhere);
                     if ($num < 1) {
-                        $this->MODEL('integral')->invtalCheck($uid, 2, 'integral_comcert', '认证企业资质');
+                        $this->MODEL('integral')->invtalCheck($uid, 2, 'integral_comcert', 'wap_com_00181');
                     }
                 }
             }
@@ -157,7 +157,7 @@ class company_cert_controller extends adminCommon
             }
 			$certname=$companyM->getCompanyInfo(array('name'=>$_POST['name'],'uid'=>array('<>',$uid)),array('field'=>'`uid`,`name`'));
 			if($certname['name']){
-				$this->admin_json(1, '企业名称已被使用');
+				$this->admin_json(1, 'admin_user_00021');
 				
 			}
             $companyM->upInfo($comids, '', $companyData);
@@ -175,9 +175,9 @@ class company_cert_controller extends adminCommon
                     foreach ($company as $v) {
                         if ($this->config['sy_email_comcert'] == '1' && $_POST['status'] > 0) {
                             if ($_POST['status'] == '1') {
-                                $certinfo = '企业资质审核通过！';
+                                $certinfo = 'admin_01309';
                             } else {
-                                $certinfo = '企业资质审核未通过！';
+                                $certinfo = 'admin_01310';
                             }
                             $notice->sendEmailType(array(
                                 'email' => $v['linkmail'],
@@ -197,25 +197,25 @@ class company_cert_controller extends adminCommon
                 $uids[] = $v['uid'];
                 /* 处理审核信息 */
                 if ($_POST['status'] == 2) {
-                    $statusInfo = '很遗憾 , 贵公司企业资质未能通过审核';
+                    $statusInfo = 'admin_user_00023';
                     if ($_POST['statusbody']) {
                         $statusInfo .= ' , 原因：' . $_POST['statusbody'];
                     }
                     $msg[$v['uid']] = $statusInfo;
                 } elseif ($_POST['status'] == 1) {
-                    $msg[$v['uid']] = '贵公司企业资质审核通过，招聘人才更轻松！';
+                    $msg[$v['uid']] = 'admin_user_00022';
                 }
             }
             //发送系统通知
             $sysmsgM = $this->MODEL('sysmsg');
             $sysmsgM->addInfo(array('uid' => $uids, 'usertype' => 2, 'content' => $msg));
             if ($id) {
-                $this->admin_json(0, '企业资质审核(UID:' . $uid . ')设置成功！');
+                $this->admin_json(0, 'admin_user_00027' . $uid . ')设置成功！');
             } else {
-                $this->render_json(3, '设置失败！');
+                $this->render_json(3, yun_at('wap_01715'));
             }
         } else {
-            $this->render_json(2, '非法操作！');
+            $this->render_json(2, yun_at('model_00001'));
         }
     }
 

@@ -31,9 +31,9 @@ class statis_model extends model{
 				$statis['packfk'] 		=   sprintf('%.2f', $statis['packpay']);
                 $statis['freeze_n']		=   sprintf('%.2f', $statis['freeze']);
                 $statis['vip_stime_n']	=   date('Y-m-d', $statis['vip_stime']);
-                $statis['vip_etime_n']	=   $statis['vip_etime'] > 0 ? date('Y-m-d', $statis['vip_etime']): '不限';
+                $statis['vip_etime_n']	=   $statis['vip_etime'] > 0 ? date('Y-m-d', $statis['vip_etime']): WapDbEnum::UNLIMITED;
                 if($uType=='2'){
-                    $statis['max_time_n']  =   $statis['max_time'] > 0 ? date('Y-m-d', $statis['max_time']): '不限';
+                    $statis['max_time_n']  =   $statis['max_time'] > 0 ? date('Y-m-d', $statis['max_time']): WapDbEnum::UNLIMITED;
                 }
                 return $statis;
             }
@@ -75,14 +75,14 @@ class statis_model extends model{
                             $statis[$sk]['vip_etime_str']    =   date('Y-m-d', $sv['vip_etime']);
                         }else{
                             
-                            $statis[$sk]['vip_etime_str']    =   '永久';
+                            $statis[$sk]['vip_etime_str']    =   yun_at('api_wxapp_00019');
                         }
                         if($sv['rating_type'] == 1){
                             
-                            $statis[$sk]['rating_type_name'] =   '套餐模式';
+                            $statis[$sk]['rating_type_name'] =   yun_at('admin_user_company_00198');
                         }elseif ($sv['rating_type'] == 2) {
                             
-                            $statis[$sk]['rating_type_name'] =   '时间模式';
+                            $statis[$sk]['rating_type_name'] =   yun_at('admin_user_company_00199');
                         }
                     }
                 }
@@ -200,7 +200,7 @@ class statis_model extends model{
             'type'          =>  1,
             'order_time'    =>  time(),
             'order_state'   =>  '2',
-            'order_remark'  =>  '管理员修改会员套餐'.$ratingInfo['name'],
+            'order_remark'  =>  'common_06583'.$ratingInfo['name'],
             'uid'           =>  intval($uid),
 			'usertype'      =>  $data['usertype'],
             'did'           =>  $this->config['did'],
@@ -217,7 +217,7 @@ class statis_model extends model{
         if ($data['usertype'] == 2 && $ratingInfo['integral_buy'] > 0) {
             require_once('integral.model.php');
             $IntegralM = new integral_model($this->db, $this->def);
-            $IntegralM->insert_company_pay($ratingInfo['integral_buy'], 2, $uid, 2, '管理员修改会员套餐赠送积分', 1, 2, true);
+            $IntegralM->insert_company_pay($ratingInfo['integral_buy'], 2, $uid, 2, 'common_06584', 1, 2, true);
         }
     }
 	
@@ -283,7 +283,7 @@ class statis_model extends model{
                         'rec_num'       =>  '0',
                         'urgent_num'    =>  '0',
                         'oldrating_name'=>  $statis['rating_name'],
-                        'rating_name'   =>  '过期会员',
+                        'rating_name'   =>  'admin_user_company_00297',
                         'rating_type'   =>  '0',
                         'rating'        =>  '0',
                         'suspend_num'   =>  '0',
@@ -307,7 +307,7 @@ class statis_model extends model{
                     
                 }
                 //  过期会员，会员模式、会员等级清0
-                $statis['rating_name']  =   '过期会员';
+                $statis['rating_name']  =   yun_at('admin_user_company_00297');
                 $statis['rating_type']  =   '0';
                 $statis['rating']       =   '0';
                 
@@ -423,15 +423,15 @@ class statis_model extends model{
                 $zpnum      =   $zpjobnum + $zppartnum;
                 // 待发布或待上架的数量加上现有上架职位数量，大于等于套餐量的，无法继续执行
                 if (($jobnum + $zpnum) > $statis['job_num']){
-                    return array('msg'=>'你的套餐已用完！','errcode' => 8);
+                    return array('msg'=>yun_at('model_00056'),'errcode' => 8);
                 }
             } else {
                 
-                return array('msg'=>'你的套餐已用完！','errcode' => 8);
+                return array('msg'=>yun_at('model_00056'),'errcode' => 8);
             }
         } else {
             
-            return array('msg'=>'你的会员已经到期，请先购买会员！','errcode'=>8);
+            return array('msg'=>yun_at('common_00525'),'errcode'=>8);
         }
     }
 
@@ -707,7 +707,7 @@ class statis_model extends model{
                                 'top_num'       =>  '0',
                                 'rec_num'       =>  '0',
                                 'urgent_num'    =>  '0',
-                                'rating_name'   =>  '过期会员',
+                                'rating_name'   =>  'admin_user_company_00297',
                                 'rating_type'   =>  '0',
                                 'rating'        =>  '0',
                                 'suspend_num'   =>  '0',
@@ -796,7 +796,7 @@ class statis_model extends model{
         $this->insert_into('company_statis_detail', $valData);
     }
 
-    public $typeN = array('1' => '上架|发布 职位', '2' => '刷新职位', '3' => '下载简历', '4' => '邀请面试', '5' => '职位推荐', '6' => '紧急招聘', '7' => '职位置顶', '8' => '招聘会报名', '10' => '直聊', '11' => '视频面试');
+    public $typeN = array('1' => '上架|发布 职位', '2' => 'wap_com_00029', '3' => 'wap_00451', '4' => 'resume_00029', '5' => 'wap_com_00237', '6' => 'member_com_00613', '7' => 'wap_com_00238', '8' => 'wap_com_00039', '10' => 'admin_user_00019', '11' => 'wap_00788');
 
     public function getStatisDetail($where = array(), $data = array())
     {
@@ -829,12 +829,12 @@ class statis_model extends model{
 
             $result =   $this->delete_all('company_statis_detail', array('id' => array('in', pylode(',', $ids))), '');
 
-            $return['msg']      =   '套餐记录(ID:'.$id.')';
+            $return['msg']      =   yun_auto_t('套餐记录(ID:').$id.')';
             $return['errcode']  =   $result ? '9' : '8';
-            $return['msg']      =   $result ? $return['msg'].'删除成功！' : $return['msg'].'删除失败！';
+            $return['msg']      =   $result ? $return['msg'].'admin_user_00187' : $return['msg'].'admin_user_00186';
         } else {
 
-            $return['msg']      =   '请选择您要删除的记录！';
+            $return['msg']      =   yun_at('common_06585');
             $return['errcode']  =   8;
         }
 

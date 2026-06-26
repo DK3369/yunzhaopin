@@ -8,33 +8,33 @@
             <table class="tableVue">
                 <thead>
                 <tr align="left">
-                    <th width="200">名称</th>
-                    <th width="400">状态</th>
-                    <th>说明</th>
+                    <th width="200">{yun:}t key='member_com_00021'{/yun}</th>
+                    <th width="400">{yun:}t key='member_user_00181'{/yun}</th>
+                    <th>{yun:}t key='member_com_00207'{/yun}</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr>
                     <td>
-                        <div class="TableTite">IP归属地</div>
+                        <div class="TableTite">{yun:}t key='admin_tool_00233'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableButn">
                             <el-radio-group v-model="gsd_config.sy_ip">
-                                <el-radio :label="1">开启</el-radio>
-                                <el-radio :label="2">关闭</el-radio>
+                                <el-radio :label="1">{yun:}t key='member_com_00287'{/yun}</el-radio>
+                                <el-radio :label="2">{yun:}t key='common.close'{/yun}</el-radio>
                             </el-radio-group>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>关闭时不获取Ip归属地，开启后获取Ip归属地</span>
+                            <span>{yun:}t key='admin_tool_00238'{/yun}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">IP地址APPKEY</div>
+                        <div class="TableTite">{yun:}t key='admin_tool_00234'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
@@ -49,7 +49,7 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">IP地址APPSECRET</div>
+                        <div class="TableTite">{yun:}t key='admin_tool_00235'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
@@ -64,7 +64,7 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">剩余数量</div>
+                        <div class="TableTite">{yun:}t key='admin_tool_00239'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
@@ -80,7 +80,7 @@
                 </tbody>
             </table>
             <div class="setBasicButn" style="border: none;">
-                <el-button type="primary" size="medium" @click="setIpAddressConfig" :disabled="saveLoading">提交</el-button>
+                <el-button type="primary" size="medium" @click="setIpAddressConfig" :disabled="saveLoading">{yun:}t key='common.submit'{/yun}</el-button>
             </div>
         </div>
     </div>

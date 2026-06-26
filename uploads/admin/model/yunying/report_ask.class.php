@@ -63,9 +63,9 @@ class report_ask_controller extends adminCommon
         if ($return){
             $logM   =   $this->MODEL('log');
             $logM->addAdminLog("问答投诉(ID:" . $id . ")处理");
-            $this->render_json(0, '操作成功');
+            $this->render_json(0, yun_at('wap_user_00264'));
         }else{
-            $this->render_json(1, '操作失败，请重试');
+            $this->render_json(1, yun_at('common_01266'));
         }
     }
 
@@ -74,7 +74,7 @@ class report_ask_controller extends adminCommon
         $reportM    =   $this->MODEL('report');
         $del = $_POST['del'];
         $where['id'] = $del;
-        $return =   $reportM->delReport($where, array('title' => '举报'));
+        $return =   $reportM->delReport($where, array('title' => yun_at('wap_com_00350')));
 
         $this->render_json($return['errcode']==9?0:1, $return['msg']);
     }
@@ -83,7 +83,7 @@ class report_ask_controller extends adminCommon
         if ($_POST['del']) {
             $askM = $this->MODEL('ask');
             $askM->delquestion($_POST['del'],array('utype'=>'admin'));
-            $this->render_json(0, '问答(ID:' . $_POST['del'] . ')删除成功！');
+            $this->render_json(0, 'admin_01420' . $_POST['del'] . ')删除成功！');
         }
     }
     function getclass_action(){
@@ -120,7 +120,7 @@ class report_ask_controller extends adminCommon
 
             $nbid	=	$AskM -> upAskInfo(array('id'=>intval($_POST['id'])),$_POST);
 
-            $this->render_json(isset($nbid)? 0: 1, isset($nbid)?'更新成功':'更新失败');
+            $this->render_json(isset($nbid)? 0: 1, isset($nbid)?yun_at('admin_01421'):yun_at('admin_01422'));
         }
     }
 }

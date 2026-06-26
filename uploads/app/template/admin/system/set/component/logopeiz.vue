@@ -4,15 +4,15 @@
             <table class="tableVue">
                 <thead>
                     <tr align="left">
-                        <th width="180">名称</th>
-                        <th width="360">状态</th>
-                        <th>说明</th>
+                        <th width="180">{yun:}t key='member_com_00021'{/yun}</th>
+                        <th width="360">{yun:}t key='member_user_00181'{/yun}</th>
+                        <th>{yun:}t key='member_com_00207'{/yun}</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td>
-                            <div class="TableTite">整站LOGO：</div>
+                            <div class="TableTite">{yun:}t key='admin_00924'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableUpload">
@@ -20,20 +20,20 @@
                                     :data="{ name: 'sy_logo', imgid: 'imglogo', path: 'logo', source: 'back',pytoken: pytoken }"
                                            :on-success="(response, file, fileList) =>onSuccess(response,file,fileList,'sy_logo_list')"
                                            :file-list="sy_logo_list" list-type="picture">
-                                    <el-button size="small" type="primary">点击上传</el-button>
+                                    <el-button size="small" type="primary">{yun:}t key='wap_js_00071'{/yun}</el-button>
                                     <!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
                                 </el-upload>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>建议尺寸：最大适应范围：300px*100px 之间,可根据LOGO形状定义高度70px效果最好</span>
+                                <span>{yun:}t key='admin_00925'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">个人会员中心LOGO：</div>
+                            <div class="TableTite">{yun:}t key='admin_00926'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableUpload">
@@ -41,20 +41,20 @@
                                     :data="{ name: 'sy_member_logo', imgid: 'imgmember', path: 'logo', path: 'logo', source: 'back',pytoken: pytoken }"
                                            :on-success="(response, file, fileList) =>onSuccess(response,file,fileList,'sy_member_logo_list')"
                                            list-type="picture">
-                                    <el-button size="small" type="primary">点击上传</el-button>
+                                    <el-button size="small" type="primary">{yun:}t key='wap_js_00071'{/yun}</el-button>
                                     <!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
                                 </el-upload>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>建议尺寸：最大适应范围：300px*60px 之间 ,可根据LOGO形状定义高度</span>
+                                <span>{yun:}t key='admin_00927'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">企业会员中心LOGO：</div>
+                            <div class="TableTite">{yun:}t key='admin_00928'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableUpload">
@@ -62,19 +62,19 @@
                                     :data="{ name: 'sy_unit_logo', imgid: 'imgunit', path: 'logo', source: 'back',pytoken: pytoken }"
                                     :on-success="(response, file, fileList) =>onSuccess(response,file,fileList,'sy_unit_logo_list')"
                                            list-type="picture">
-                                    <el-button size="small" type="primary">点击上传</el-button>
+                                    <el-button size="small" type="primary">{yun:}t key='wap_js_00071'{/yun}</el-button>
                                 </el-upload>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>建议尺寸：最大适应范围：300px*60px 之间 ,可根据LOGO形状定义高度</span>
+                                <span>{yun:}t key='admin_00927'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">手机LOGO：</div>
+                            <div class="TableTite">{yun:}t key='admin_system_00334'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableUpload">
@@ -82,20 +82,20 @@
                                     :data="{ name: 'sy_wap_logo', imgid: 'imgwaplogo', path: 'logo', source: 'back',pytoken: pytoken }"
                                            :on-success="(response, file, fileList) =>onSuccess(response,file,fileList,'sy_wap_logo_list')"
                                            :file-list="sy_wap_logo_list" list-type="picture">
-                                    <el-button size="small" type="primary">点击上传</el-button>
+                                    <el-button size="small" type="primary">{yun:}t key='wap_js_00071'{/yun}</el-button>
                                     <!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
                                 </el-upload>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>建议尺寸：最大适应范围：300px*60px 之间 ,可根据LOGO形状定义高度</span>
+                                <span>{yun:}t key='admin_00927'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">WAP二维码：</div>
+                            <div class="TableTite">{yun:}t key='admin_00929'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableUpload">
@@ -103,20 +103,20 @@
                                     :data="{ name: 'sy_wap_qcode', imgid: 'imgwapqcode', path: 'logo', source: 'back',pytoken: pytoken }"
                                            :on-success="(response, file, fileList) =>onSuccess(response,file,fileList,'sy_wap_qcode_list')"
                                            list-type="picture">
-                                    <el-button size="small" type="primary">点击上传</el-button>
+                                    <el-button size="small" type="primary">{yun:}t key='wap_js_00071'{/yun}</el-button>
                                     <!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
                                 </el-upload>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>建议尺寸：最大适应范围：300px*60px 之间 ,可根据LOGO形状定义高度</span>
+                                <span>{yun:}t key='admin_00927'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">android二维码：</div>
+                            <div class="TableTite">{yun:}t key='admin_00930'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableUpload">
@@ -124,20 +124,20 @@
                                     :data="{ name: 'sy_androidu_qcode', imgid: 'imgandroid', path: 'logo', source: 'back',pytoken: pytoken }"
                                            :on-success="(response, file, fileList) =>onSuccess(response,file,fileList,'sy_androidu_qcode_list')"
                                            :file-list="sy_androidu_qcode_list" list-type="picture">
-                                    <el-button size="small" type="primary">点击上传</el-button>
+                                    <el-button size="small" type="primary">{yun:}t key='wap_js_00071'{/yun}</el-button>
                                     <!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
                                 </el-upload>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>建议尺寸：最大适应范围：300px*60px 之间 ,可根据LOGO形状定义高度</span>
+                                <span>{yun:}t key='admin_00927'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">IOS二维码：</div>
+                            <div class="TableTite">{yun:}t key='admin_00931'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableUpload">
@@ -145,20 +145,20 @@
                                            :on-success="(response, file, fileList) =>onSuccess(response,file,fileList,'sy_iosu_qcode_list')"
                                            :data="{ name: 'sy_iosu_qcode', imgid: 'imgios', path: 'logo', source: 'back',pytoken: pytoken }"
                                     list-type="picture">
-                                    <el-button size="small" type="primary">点击上传</el-button>
+                                    <el-button size="small" type="primary">{yun:}t key='wap_js_00071'{/yun}</el-button>
                                     <!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
                                 </el-upload>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>建议尺寸：最大适应范围：300px*60px 之间 ,可根据LOGO形状定义高度</span>
+                                <span>{yun:}t key='admin_00927'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">招聘会缩略图：</div>
+                            <div class="TableTite">{yun:}t key='admin_00932'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableUpload">
@@ -166,20 +166,20 @@
                                     :data="{ name: 'sy_zph_icon', imgid: 'imgzph', path: 'logo', source: 'back',pytoken: pytoken }"
                                            :on-success="(response, file, fileList) =>onSuccess(response,file,fileList,'sy_zph_icon_list')"
                                            :file-list="sy_zph_icon_list" list-type="picture">
-                                    <el-button size="small" type="primary">点击上传</el-button>
+                                    <el-button size="small" type="primary">{yun:}t key='wap_js_00071'{/yun}</el-button>
                                     <!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
                                 </el-upload>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>建议尺寸：最大适应范围：300px*60px 之间 ,可根据LOGO形状定义高度</span>
+                                <span>{yun:}t key='admin_00927'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">招聘会横幅：</div>
+                            <div class="TableTite">{yun:}t key='admin_00933'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableUpload">
@@ -187,20 +187,20 @@
                                     :data="{ name: 'sy_zphbanner_icon', imgid: 'imgzphbanner', path: 'logo', source: 'back',pytoken: pytoken }"
                                            :on-success="(response, file, fileList) =>onSuccess(response,file,fileList,'sy_zphbanner_icon_list')"
                                            :file-list="sy_zphbanner_icon_list" list-type="picture">
-                                    <el-button size="small" type="primary">点击上传</el-button>
+                                    <el-button size="small" type="primary">{yun:}t key='wap_js_00071'{/yun}</el-button>
                                     <!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
                                 </el-upload>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>建议尺寸：标准尺寸1920px*380px，手机版会按照比列自动缩小</span>
+                                <span>{yun:}t key='admin_00934'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">测评缩略图：</div>
+                            <div class="TableTite">{yun:}t key='admin_00935'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableUpload">
@@ -208,20 +208,20 @@
                                     :data="{ name: 'sy_cplogo', imgid: 'cpimglogo', path: 'logo', source: 'back',pytoken: pytoken }"
                                     :on-success="(response, file, fileList) =>onSuccess(response,file,fileList,'sy_cplogo_list')"
                                     :file-list="sy_cplogo_list" list-type="picture">
-                                    <el-button size="small" type="primary">点击上传</el-button>
+                                    <el-button size="small" type="primary">{yun:}t key='wap_js_00071'{/yun}</el-button>
                                     <!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
                                 </el-upload>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>建议尺寸：标准尺寸100px*64px。</span>
+                                <span>{yun:}t key='admin_00936'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">公招缩略图：</div>
+                            <div class="TableTite">{yun:}t key='admin_00937'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableUpload">
@@ -229,14 +229,14 @@
                                     :data="{ name: 'sy_gongzhaologo', imgid: 'gongzhaologo', path: 'logo', source: 'back',pytoken: pytoken }"
                                     :on-success="(response, file, fileList) =>onSuccess(response,file,fileList,'sy_gongzhaologo_list')"
                                     :file-list="sy_gongzhaologo_list" list-type="picture">
-                                    <el-button size="small" type="primary">点击上传</el-button>
+                                    <el-button size="small" type="primary">{yun:}t key='wap_js_00071'{/yun}</el-button>
                                     <!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
                                 </el-upload>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>建议尺寸：标准尺寸960px*540px，手机版会按照比列自动缩小</span>
+                                <span>{yun:}t key='admin_00938'{/yun}</span>
                             </div>
                         </td>
                     </tr>
@@ -245,7 +245,7 @@
             </table>
         </div>
         <div class="setBasicButn" style="border: none; height: 80px;">
-            <el-button type="primary" size="medium" @click="save" :disabled="saveLoading">提交</el-button>
+            <el-button type="primary" size="medium" @click="save" :disabled="saveLoading">{yun:}t key='common.submit'{/yun}</el-button>
         </div>
     </div>
 </template>
@@ -287,7 +287,7 @@ module.exports = {
         }
     },
     mounted() {
-        // 处理数据
+        // ProcessData
         this.handleImage();
     },
     methods: {
@@ -311,7 +311,7 @@ module.exports = {
             httpPost(url, ruleForm).then(function (response) {
                 var res = response.data;
                 if (res.error == 0) {
-                    message.success('操作成功');
+                    message.success("{yun:}t key='wap_user_00264'{/yun}");
                     _this.$emit('get-list', true)
                 } else {
                     message.error(res.msg);

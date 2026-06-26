@@ -60,7 +60,7 @@ class compay_model extends model{
                 if($serverCheck && in_array($serverCheck,$singleServer) && !in_array($serverCheck,$single_can)){
                       return  array(
                         'error' => 1,
-                        'msg'   => '该服务已关闭单项购买，请选择其它购买方式'
+                        'msg'   => yun_at('common_00345')
                     );
                 }
             }
@@ -131,7 +131,7 @@ class compay_model extends model{
         }else{
             $return = array(
                 'error' => 1,
-                'msg'   => '请先登录'
+                'msg'   => yun_at('wap_00376')
             );
         }
         return $return;
@@ -194,11 +194,11 @@ class compay_model extends model{
                 
                 if (($jifen + intval($statis['integral'])) <  intval($vip_integral)) {
                     
-                    $return['error']    =   '充值'.$this->config['integral_pricename'].'不足购买会员套餐，请重新输入'.$this->config['integral_pricename'].'数量！';
+                    $return['error']    =   yun_at('common_01946').$this->config['integral_pricename'].'common_00634'.$this->config['integral_pricename'].'数量！';
                     return $return;
                 }else if ($jifen < intval($integral_min)) {
                     
-                    $return['error']    =   '最低充值'.$this->config['integral_pricename'].'不低于'.$integral_min;
+                    $return['error']    =   yun_at('default_00088').$this->config['integral_pricename'].'common_01880'.$integral_min;
                     return $return;
                 }
                 
@@ -212,7 +212,7 @@ class compay_model extends model{
  
                 if(empty($rating)){
                     
-                    $return['error']    =   '请选择正确的会员套餐！';
+                    $return['error']    =   yun_at('common_00924');
                     
                 }else {
                     
@@ -227,9 +227,9 @@ class compay_model extends model{
                     $orderData['order_state']   =   1;
                     $orderData['rating']        =   $ratingId;
                     
-                    $orderData['order_remark']  .=   $jifen ? '充值'.$this->config['integral_pricename'].'购买会员：' : '';
+                    $orderData['order_remark']  .=   $jifen ? 'common_01946'.$this->config['integral_pricename'].'common_06437' : '';
                     $orderData['order_remark']  .=  $rating['name'];
-                    $orderData['order_remark']	.=	$dkjf ? ', '.$this->config['integral_pricename'].'抵扣金额'.round(($dkjf / $this->config['integral_proportion']), 2).'元' : '';                   
+                    $orderData['order_remark']	.=	$dkjf ? ', '.$this->config['integral_pricename'].'wap_com_00383'.round(($dkjf / $this->config['integral_proportion']), 2).'元' : '';                   
                     
                     $orderData['uid']           =   $uid;
 					$orderData['usertype']      =   $usertype;
@@ -252,7 +252,7 @@ class compay_model extends model{
                         $integral   =   new integral_model($this->db,$this->def,array('uid'=>$uid,'username'=>$username,'usertype'=>$usertype));
                         
                         if($dkjf){
-                            $integral -> company_invtal($uid, $usertype, $dkjf, false, '购买会员，使用'.$this->config['integral_pricename'].'抵扣', true, 2, 'integral', 12);
+                            $integral -> company_invtal($uid, $usertype, $dkjf, false, 'common_06438'.$this->config['integral_pricename'].'common_01992', true, 2, 'integral', 12);
                         } 
                         
                         $orderData['id']    =   $id;
@@ -261,16 +261,16 @@ class compay_model extends model{
 						 
                     }else{
                         
-                        $return['error'] = '订单生成失败！';
+                        $return['error'] = yun_at('common_06439');
                     }
                 }
             }else{
                 
-                $return['error'] = '套餐金额出错！';
+                $return['error'] = yun_at('common_01355');
             }
         }else{
             
-            $return['error'] = '参数错误，请重新选择！';
+            $return['error'] = yun_at('common_00864');
         }
         return $return;
     }
@@ -343,11 +343,11 @@ class compay_model extends model{
                 
                 if (($jifen + intval($statis['integral'])) <  intval($pack_integral)) {
                     
-                    $return['error']    =   '充值'.$this->config['integral_pricename'].'不足购买增值服务，请重新输入'.$this->config['integral_pricename'].'数量！';
+                    $return['error']    =   yun_at('common_01946').$this->config['integral_pricename'].'common_00636'.$this->config['integral_pricename'].'数量！';
                     return $return;
                 }else if ($jifen < intval($integral_min)) {
                     
-                    $return['error']    =   '最低充值'.$this->config['integral_pricename'].'不低于'.$integral_min;
+                    $return['error']    =   yun_at('default_00088').$this->config['integral_pricename'].'common_01880'.$integral_min;
                     return $return;
                 }
                 
@@ -363,7 +363,7 @@ class compay_model extends model{
                 
                 if(empty($packinfo)){
                     
-                    $return['error']    =   '请选择正确的增值套餐！';
+                    $return['error']    =   yun_at('common_00926');
                 }else {
                     
                     $dingdan                    =   time().rand(10000,99999);
@@ -376,9 +376,9 @@ class compay_model extends model{
                     $orderData['order_state']   =   1;
                     $orderData['rating']        =   $tid;
                     
-                    $orderData['order_remark']  =   $jifen ? '充值'.$this->config['integral_pricename'].'购买增值包：' : '';
+                    $orderData['order_remark']  =   $jifen ? 'common_01946'.$this->config['integral_pricename'].'common_06186' : '';
                     $orderData['order_remark'] .=  $serviceinfo['name'].'(ID:'.$data['tcid'].')' ;
-                    $orderData['order_remark']	.=	$dkjf ? $this->config['integral_pricename'].'抵扣金额'.round(($dkjf / $this->config['integral_proportion']), 2).'元。' : '';
+                    $orderData['order_remark']	.=	$dkjf ? $this->config['integral_pricename'].'wap_com_00383'.round(($dkjf / $this->config['integral_proportion']), 2).'common_01945' : '';
                     
                     
                     $orderData['uid']           =   $uid;
@@ -404,7 +404,7 @@ class compay_model extends model{
                                               
                         if($dkjf){
                             
-                            $integral   ->  company_invtal($uid, $usertype, $dkjf, false, '购买增值包，使用'.$this->config['integral_pricename'].'抵扣', true, 2, 'integral', 12);
+                            $integral   ->  company_invtal($uid, $usertype, $dkjf, false, 'common_06440'.$this->config['integral_pricename'].'common_01992', true, 2, 'integral', 12);
                             
                         }
                         
@@ -414,18 +414,18 @@ class compay_model extends model{
                         
                     }else{
                         
-                        $return['error']    =   '订单生成失败！';
+                        $return['error']    =   yun_at('common_06439');
                     }
                 }
         
             }else{
                 
-                $return['error'] = '套餐金额出错！';
+                $return['error'] = yun_at('common_01355');
             }
             
         }else{
             
-            $return['error'] = '参数错误，请重新选择！';
+            $return['error'] = yun_at('common_00864');
         }
         
         return $return;
@@ -474,7 +474,7 @@ class compay_model extends model{
                 
                 if(empty($jobs)){
                     
-                    $return['error']    =   '请选择正确的刷新职位！';
+                    $return['error']    =   yun_at('common_00925');
                     
                 }else {
                     
@@ -496,11 +496,11 @@ class compay_model extends model{
                         
                         if (($jifen + intval($statis['integral'])) <  intval($auto_integral)) {
                             
-                            $return['error']    =   '充值'.$this->config['integral_pricename'].'不足购买自动刷新，请重新输入'.$this->config['integral_pricename'].'数量！';
+                            $return['error']    =   yun_at('common_01946').$this->config['integral_pricename'].'common_00641'.$this->config['integral_pricename'].'数量！';
                             return $return;
                         }else if ($jifen < intval($integral_min)) {
                             
-                            $return['error']    =   '最低充值'.$this->config['integral_pricename'].'不低于'.$integral_min;
+                            $return['error']    =   yun_at('default_00088').$this->config['integral_pricename'].'common_01880'.$integral_min;
                             return $return;
                         }
                         
@@ -511,7 +511,7 @@ class compay_model extends model{
                     
                     if ($price < 0.01){
                         
-                        $return['error']  =   '购买总金额不得小于0.01元！';
+                        $return['error']  =   yun_at('common_00598');
                         
                     } else {
                         
@@ -527,9 +527,9 @@ class compay_model extends model{
                         $orderData['order_dkjf']    =	$dkjf ? $dkjf : '';
                         $orderData['order_time']	=	time();
                         $orderData['order_state']	=	'1';
-                        $orderData['order_remark']	=	$jifen ? '充值'.$this->config['integral_pricename'].'购买' : '';
-                        $orderData['order_remark'] .= '自动刷新';
-                        $orderData['order_remark']	.=	$dkjf ? ', '.$this->config['integral_pricename'].'抵扣金额'.round(($dkjf / $this->config['integral_proportion']), 2).'元' : '';
+                        $orderData['order_remark']	=	$jifen ? 'common_01946'.$this->config['integral_pricename'].'member_user_00285' : '';
+                        $orderData['order_remark'] .= 'wap_com_00239';
+                        $orderData['order_remark']	.=	$dkjf ? ', '.$this->config['integral_pricename'].'wap_com_00383'.round(($dkjf / $this->config['integral_proportion']), 2).'元' : '';
                         
                         
                         $orderData['uid']			=	$uid;
@@ -557,28 +557,28 @@ class compay_model extends model{
                                                 
                             if ($dkjf) {
                                 
-                                $integral  ->  company_invtal($uid, $usertype, $dkjf, false, '购买自动刷新职位，使用'.$this->config['integral_pricename'].'抵扣', true , 2 , 'integral' , 12);
+                                $integral  ->  company_invtal($uid, $usertype, $dkjf, false, 'common_06441'.$this->config['integral_pricename'].'common_01992', true , 2 , 'integral' , 12);
                             }
                             $orderData['id']   =   $id;
                             $return['order']   =   $orderData;
                             
                         }else{
                             
-                            $return['error']   =   '订单生成失败！';
+                            $return['error']   =   yun_at('common_06439');
                         }
                     }
                 }
                 
             }else{
                 
-                $return['error'] = '请正确选择自动刷新职位以及刷新天数！';
+                $return['error'] = yun_at('common_00443');
                 
             }
             
             
         } else {
             
-            $return['error'] = '参数填写错误，请重新设置！';
+            $return['error'] = yun_at('common_00700');
             
         }
         
@@ -629,7 +629,7 @@ class compay_model extends model{
                 
                 if(empty($job)){
                     
-                    $return['error']    =   '请选择正确的职位置顶！';
+                    $return['error']    =   yun_at('common_00929');
                     
                 }else {
                     
@@ -649,11 +649,11 @@ class compay_model extends model{
                         
                         if (($jifen + intval($statis['integral'])) <  intval($jobzd_integral)) {
                             
-                            $return['error']    =   '充值'.$this->config['integral_pricename'].'不足购买职位置顶，请重新输入'.$this->config['integral_pricename'].'数量！';
+                            $return['error']    =   yun_at('common_01946').$this->config['integral_pricename'].'common_00640'.$this->config['integral_pricename'].'数量！';
                             return $return;
                         }else if ($jifen < intval($integral_min)) {
                             
-                            $return['error']    =   '最低充值'.$this->config['integral_pricename'].'不低于'.$integral_min;
+                            $return['error']    =   yun_at('default_00088').$this->config['integral_pricename'].'common_01880'.$integral_min;
                             return $return;
                         }
                         
@@ -665,7 +665,7 @@ class compay_model extends model{
                     
                     if ($price < 0.01){
                         
-                        $return['error']    =   '购买总金额不得小于0.01元！';
+                        $return['error']    =   yun_at('common_00598');
                         
                     } else {
                         //生成相关订单
@@ -679,9 +679,9 @@ class compay_model extends model{
                         $orderData['order_dkjf']    =	$dkjf ? $dkjf : '';
                         $orderData['order_time']	=	time();
                         $orderData['order_state']	=	'1';
-                        $orderData['order_remark']	=	$jifen ? '充值'.$this->config['integral_pricename'].'购买' : '';
-                        $orderData['order_remark'] .= '置顶服务';
-                        $orderData['order_remark']	.=	$dkjf ? ', '.$this->config['integral_pricename'].'抵扣金额'.round(($dkjf / $this->config['integral_proportion']), 2).'元' : '';
+                        $orderData['order_remark']	=	$jifen ? 'common_01946'.$this->config['integral_pricename'].'member_user_00285' : '';
+                        $orderData['order_remark'] .= 'member_user_00286';
+                        $orderData['order_remark']	.=	$dkjf ? ', '.$this->config['integral_pricename'].'wap_com_00383'.round(($dkjf / $this->config['integral_proportion']), 2).'元' : '';
                         
                         
                         $orderData['uid']			=	$uid;
@@ -710,7 +710,7 @@ class compay_model extends model{
                            
                             if ($dkjf) {
                                 
-                                $integral   ->  company_invtal($uid,$usertype, $dkjf, false, '购买职位置顶，使用'.$this->config['integral_pricename'].'抵扣', true, 2, 'integral', 12);
+                                $integral   ->  company_invtal($uid,$usertype, $dkjf, false, 'common_06442'.$this->config['integral_pricename'].'common_01992', true, 2, 'integral', 12);
                             }
                             
                             $orderData['id']    =   $id;
@@ -718,7 +718,7 @@ class compay_model extends model{
                             
                         }else {
                             
-                            $return['error']    =   '订单生成失败！';
+                            $return['error']    =   yun_at('common_06439');
                         }
                          
                     }
@@ -726,15 +726,15 @@ class compay_model extends model{
                 
             }else{
                 
-                $return['error']    =   '请正确选择职位置顶以及置顶的天数！';
+                $return['error']    =   yun_at('common_00488');
                 
             }
             
         } else {
             
-            $return['error']        =   '参数填写错误，请重新设置！';
+            $return['error']        =   yun_at('common_00700');
             if (!$data['days'] && !$data['xdays']){
-                $return['error']        =   '请设置需要置顶的天数';
+                $return['error']        =   yun_at('common_01061');
             }
 
         }
@@ -785,7 +785,7 @@ class compay_model extends model{
                 
                 if(empty($job)){
                     
-                    $return['error'] = '请选择正确的职位推荐！';
+                    $return['error'] = yun_at('common_00928');
                 }else {
                     //计算需付费金额
                     $price      =   $recdays * $this->config['com_recjob']; // 购买职位推荐所需金额                                                      
@@ -802,11 +802,11 @@ class compay_model extends model{
                         
                         if (($jifen + intval($statis['integral'])) <  intval($jobrec_integral)) {
                             
-                            $return['error']    =   '充值'.$this->config['integral_pricename'].'不足购买职位推荐，请重新输入'.$this->config['integral_pricename'].'数量！';
+                            $return['error']    =   yun_at('common_01946').$this->config['integral_pricename'].'common_00639'.$this->config['integral_pricename'].'数量！';
                             return $return;
                         }else if ($jifen < intval($integral_min)) {
                             
-                            $return['error']    =   '最低充值'.$this->config['integral_pricename'].'不低于'.$integral_min;
+                            $return['error']    =   yun_at('default_00088').$this->config['integral_pricename'].'common_01880'.$integral_min;
                             return $return;
                         }
                         
@@ -818,7 +818,7 @@ class compay_model extends model{
                     
                     if ($price < 0.01){
                         
-                        $return['error']            =   '购买总金额不得小于0.01元！';
+                        $return['error']            =   yun_at('common_00598');
                     } else {
                          
                         //生成相关订单
@@ -833,9 +833,9 @@ class compay_model extends model{
                         $orderData['order_time']	=	time();
                         $orderData['order_state']	=	'1';
                         
-                        $orderData['order_remark']	=	$jifen ? '充值'.$this->config['integral_pricename'].'购买' : '';
-                        $orderData['order_remark'] .= '职位推荐';
-                        $orderData['order_remark']	.=	$dkjf ? ', '.$this->config['integral_pricename'].'抵扣金额'.round(($dkjf / $this->config['integral_proportion']), 2).'元' : '';                       
+                        $orderData['order_remark']	=	$jifen ? 'common_01946'.$this->config['integral_pricename'].'member_user_00285' : '';
+                        $orderData['order_remark'] .= 'wap_com_00237';
+                        $orderData['order_remark']	.=	$dkjf ? ', '.$this->config['integral_pricename'].'wap_com_00383'.round(($dkjf / $this->config['integral_proportion']), 2).'元' : '';                       
                         
                         $orderData['uid']			=	$uid;
 						$orderData['usertype']		=	$usertype;
@@ -862,28 +862,28 @@ class compay_model extends model{
                             
                            	if ($dkjf) {
                                 
-                                $integral -> company_invtal($uid,$usertype, $dkjf, false, '购买职位推荐，使用'.$this->config['integral_pricename'].'抵扣', true, 2, 'integral', 12);
+                                $integral -> company_invtal($uid,$usertype, $dkjf, false, 'common_06443'.$this->config['integral_pricename'].'common_01992', true, 2, 'integral', 12);
                             }
                             $orderData['id']    =   $id;
                             $return['order']    =   $orderData;
                             
                         }else {
                             
-                            $return['error']    =   '订单生成失败！';
+                            $return['error']    =   yun_at('common_06439');
                         }
                     }
                 }
             }else{
                 
-                $return['error']    =   '请正确选择职位推荐以及推荐的时长！';
+                $return['error']    =   yun_at('common_00487');
                 
             }
             
         } else {
             
-            $return['error']        =   '参数填写错误，请重新设置！';
+            $return['error']        =   yun_at('common_00700');
             if (!$data['days'] && !$data['xdays']){
-                $return['error']        =   '请设置需要推荐的天数';
+                $return['error']        =   yun_at('common_01059');
             }
 
         }
@@ -936,7 +936,7 @@ class compay_model extends model{
                 
                 if(empty($job)){
                     
-                    $return['error']    =   '请选择正确的职位推荐！';
+                    $return['error']    =   yun_at('common_00928');
                     
                 }else {
                     
@@ -955,11 +955,11 @@ class compay_model extends model{
                         
                         if (($jifen + intval($statis['integral'])) <  intval($recpart_integral)) {
                             
-                            $return['error']    =   '充值'.$this->config['integral_pricename'].'不足购买推荐兼职，请重新输入'.$this->config['integral_pricename'].'数量！';
+                            $return['error']    =   yun_at('common_01946').$this->config['integral_pricename'].'common_00637'.$this->config['integral_pricename'].'数量！';
                             return $return;
                         }else if ($jifen < intval($integral_min)) {
                             
-                            $return['error']    =   '最低充值'.$this->config['integral_pricename'].'不低于'.$integral_min;
+                            $return['error']    =   yun_at('default_00088').$this->config['integral_pricename'].'common_01880'.$integral_min;
                             return $return;
                         }
                         
@@ -971,7 +971,7 @@ class compay_model extends model{
                     
                     if ($price < 0.01){
                         
-                        $return['error']            =   '购买总金额不得小于0.01元！';
+                        $return['error']            =   yun_at('common_00598');
                         
                     } else {
                         //生成相关订单
@@ -986,9 +986,9 @@ class compay_model extends model{
                         $orderData['order_time']	=	time();
                         $orderData['order_state']	=	'1';
                         
-                        $orderData['order_remark']	=	$jifen ? '充值'.$this->config['integral_pricename'].'购买兼职推荐' : '兼职推荐';
+                        $orderData['order_remark']	=	$jifen ? 'common_01946'.$this->config['integral_pricename'].'common_06444' : 'default_00030';
                         
-                        $orderData['order_remark']	.=	$dkjf ? ', '.$this->config['integral_pricename'].'抵扣金额'.round(($dkjf / $this->config['integral_proportion']), 2).'元' : '';
+                        $orderData['order_remark']	.=	$dkjf ? ', '.$this->config['integral_pricename'].'wap_com_00383'.round(($dkjf / $this->config['integral_proportion']), 2).'元' : '';
                         
                         
                         $orderData['uid']			=	$uid;
@@ -1015,27 +1015,27 @@ class compay_model extends model{
                             $integral   =   new integral_model($this->db , $this->def , array('uid' => $uid, 'username' => $username, 'usertype' => $usertype));
                             if ($dkjf) {
                                 
-                                $integral -> company_invtal($uid,$usertype, $dkjf, false, '购买兼职推荐，使用'.$this->config['integral_pricename'].'抵扣', true, 2, 'integral', 12);
+                                $integral -> company_invtal($uid,$usertype, $dkjf, false, 'common_06445'.$this->config['integral_pricename'].'common_01992', true, 2, 'integral', 12);
                             }
                             $orderData['id']    =   $id;
                             $return['order']    =   $orderData;
                             
                         }else {
                             
-                            $return['error']    =   '订单生成失败！';
+                            $return['error']    =   yun_at('common_06439');
                         }
                     }
                 }
             
             }else{
                 
-                $return['error']    =   '请正确选择职位推荐以及推荐的时长！';
+                $return['error']    =   yun_at('common_00487');
                 
             }
             
         } else {
             
-            $return['error']        =   '参数填写错误，请重新设置！';
+            $return['error']        =   yun_at('common_00700');
             
         }
         
@@ -1086,7 +1086,7 @@ class compay_model extends model{
                 
                 if(empty($job)){
                     
-                    $return['error']    =   '请选择正确的职位！';
+                    $return['error']    =   yun_at('common_01158');
                     
                 }else {
                     
@@ -1106,11 +1106,11 @@ class compay_model extends model{
                         
                         if (($jifen + intval($statis['integral'])) <  intval($joburgent_integral)) {
                             
-                            $return['error']    =   '充值'.$this->config['integral_pricename'].'不足购买职位紧急招聘，请重新输入'.$this->config['integral_pricename'].'数量！';
+                            $return['error']    =   yun_at('common_01946').$this->config['integral_pricename'].'common_00523'.$this->config['integral_pricename'].'数量！';
                             return $return;
                         }else if ($jifen < intval($integral_min)) {
                             
-                            $return['error']    =   '最低充值'.$this->config['integral_pricename'].'不低于'.$integral_min;
+                            $return['error']    =   yun_at('default_00088').$this->config['integral_pricename'].'common_01880'.$integral_min;
                             return $return;
                         }
                         
@@ -1122,7 +1122,7 @@ class compay_model extends model{
                     
                     if ($price < 0.01){
                         
-                        $return['error'] = '购买总金额不得小于0.01元！';
+                        $return['error'] = yun_at('common_00598');
                         
                     } else {
                         
@@ -1139,9 +1139,9 @@ class compay_model extends model{
                         $orderData['order_time']	=	time();
                         $orderData['order_state']	=	'1';
                         
-                        $orderData['order_remark']	=	$jifen ? '充值'.$this->config['integral_pricename'].'购买职位紧急招聘' : '紧急招聘';
+                        $orderData['order_remark']	=	$jifen ? 'common_01946'.$this->config['integral_pricename'].'common_06194' : 'member_com_00613';
                         
-                        $orderData['order_remark']	.=	$dkjf ? ', '.$this->config['integral_pricename'].'抵扣金额'.round(($dkjf / $this->config['integral_proportion']), 2).'元' : '';
+                        $orderData['order_remark']	.=	$dkjf ? ', '.$this->config['integral_pricename'].'wap_com_00383'.round(($dkjf / $this->config['integral_proportion']), 2).'元' : '';
                         
                         
                         $orderData['uid']			=	$uid;
@@ -1170,14 +1170,14 @@ class compay_model extends model{
                                                       
                             if ($dkjf) {
                                 
-                                $integral -> company_invtal($uid,$usertype, $dkjf, false, '购买紧急招聘，使用'.$this->config['integral_pricename'].'抵扣', true, 2, 'integral', 12);
+                                $integral -> company_invtal($uid,$usertype, $dkjf, false, 'common_06446'.$this->config['integral_pricename'].'common_01992', true, 2, 'integral', 12);
                             }
                             $orderData['id']    =   $id;
                             $return['order']    =   $orderData;
                             
                         }else {
                             
-                            $return['error']    =   '订单生成失败！';
+                            $return['error']    =   yun_at('common_06439');
                         }
                         
                     }
@@ -1185,15 +1185,15 @@ class compay_model extends model{
                 
             }else{
                 
-                $return['error']    =   '请正确选择职位以及紧急招聘天数！';
+                $return['error']    =   yun_at('common_00544');
                 
             }
             
         } else {
             
-            $return['error']    =   '参数填写错误，请重新设置！';
+            $return['error']    =   yun_at('common_00700');
             if (!$data['days'] && !$data['xdays']){
-                $return['error']        =   '请设置需要紧急的天数';
+                $return['error']        =   yun_at('common_01060');
             }
         }
         
@@ -1259,7 +1259,7 @@ class compay_model extends model{
 
                 if (empty($jobs)) {
                     
-                    $return['error']    =   '请选择正确的职位刷新！';
+                    $return['error']    =   yun_at('common_00927');
                 } else {
                     
                     $jobnum =   $this->select_num('company_job', array('uid' => $uid, 'id' => array('in', $jobid))); // 计算刷新职位数量
@@ -1285,11 +1285,11 @@ class compay_model extends model{
                         
                         if (($jifen + intval($statis['integral'])) <  intval($sxjob_integral)) {
                             
-                            $return['error']    =   '充值'.$this->config['integral_pricename'].'不足购买职位刷新，请重新输入'.$this->config['integral_pricename'].'数量！';
+                            $return['error']    =   yun_at('common_01946').$this->config['integral_pricename'].'common_00638'.$this->config['integral_pricename'].'数量！';
                             return $return;
                         }else if ($jifen < intval($integral_min)) {
                             
-                            $return['error']    =   '最低充值'.$this->config['integral_pricename'].'不低于'.$integral_min;
+                            $return['error']    =   yun_at('default_00088').$this->config['integral_pricename'].'common_01880'.$integral_min;
                             return $return;
                         }
                         
@@ -1301,7 +1301,7 @@ class compay_model extends model{
                     
                     if ($price < 0.01) {
                     
-                        $return['error'] = '购买总金额不得小于0.01元！';
+                        $return['error'] = yun_at('common_00598');
                     } else {
                         
                         //生成相关订单
@@ -1317,9 +1317,9 @@ class compay_model extends model{
                         $orderData['order_time']	=	time();
                         $orderData['order_state']	=	'1';
                         
-                        $orderData['order_remark']	=	$jifen ? '充值'.$this->config['integral_pricename'].'购买职位刷新' : '刷新职位';
+                        $orderData['order_remark']	=	$jifen ? 'common_01946'.$this->config['integral_pricename'].'common_06212' : 'wap_com_00029';
                         
-                        $orderData['order_remark']	.=	$dkjf ? ', '.$this->config['integral_pricename'].'抵扣金额'.round(($dkjf / $this->config['integral_proportion']), 2).'元' : '';
+                        $orderData['order_remark']	.=	$dkjf ? ', '.$this->config['integral_pricename'].'wap_com_00383'.round(($dkjf / $this->config['integral_proportion']), 2).'元' : '';
                                                 
                         $orderData['uid']			=	$uid;
                         $orderData['usertype']		=	$usertype;
@@ -1345,7 +1345,7 @@ class compay_model extends model{
                                 
                                 $this->update_once('company_statis', array('breakjob_num' => '0'), array('uid' => $uid));
 
-                                $payDetail      =   '金额刷新，扣除剩余刷新套餐数量：'.$breakjob_num;
+                                $payDetail      =   'common_00545'.$breakjob_num;
                                 $this->addStatisDetail(array('uid' => $uid, 'type' => 2, 'num' => $breakjob_num, 'detail' => $payDetail, 'uri' => $_SERVER['REQUEST_URI']));
                             }
                             
@@ -1355,7 +1355,7 @@ class compay_model extends model{
                             
                             if($dkjf){
                                 
-                                $integral->company_invtal($uid, $usertype, $dkjf, false, "购买刷新职位，使用".$this->config['integral_pricename']."抵扣", true, 2, 'integral', 12);
+                                $integral->company_invtal($uid, $usertype, $dkjf, false, 'common_06447'.$this->config['integral_pricename'].'common_01992', true, 2, 'integral', 12);
                             }
                             
                             $orderData['id'] = $id;
@@ -1363,18 +1363,18 @@ class compay_model extends model{
                             
                         }else{
                             
-                            $return['error'] = '订单生成失败！';
+                            $return['error'] = yun_at('common_06439');
                         }
                     }
                 }
                 
             } else {
-                $return['error'] = '请正确选择职位刷新！';
+                $return['error'] = yun_at('common_01056');
             }
             
         } else {
             
-            $return['error'] = '参数填写错误，请重新设置！';
+            $return['error'] = yun_at('common_00700');
         }
         
         return $return;
@@ -1427,7 +1427,7 @@ class compay_model extends model{
 
                 if (empty($parts)) {
                     
-                    $return['error']    =   '职位参数错误！';
+                    $return['error']    =   yun_at('member_com_00697');
                     
                 } else {
                     
@@ -1454,11 +1454,11 @@ class compay_model extends model{
                         
                         if (($jifen + intval($statis['integral'])) <  intval($sxpart_integral)) {
                             
-                            $return['error']    =   '充值'.$this->config['integral_pricename'].'不足购买兼职刷新，请重新输入'.$this->config['integral_pricename'].'数量！';
+                            $return['error']    =   yun_at('common_01946').$this->config['integral_pricename'].'common_00635'.$this->config['integral_pricename'].'数量！';
                             return $return;
                         }else if ($jifen < intval($integral_min)) {
                             
-                            $return['error']    =   '最低充值'.$this->config['integral_pricename'].'不低于'.$integral_min;
+                            $return['error']    =   yun_at('default_00088').$this->config['integral_pricename'].'common_01880'.$integral_min;
                             return $return;
                         }
                         
@@ -1469,7 +1469,7 @@ class compay_model extends model{
                     
                     if ($price < 0.01) {
                         
-                        $return['error'] = '购买总金额不得小于0.01元！';
+                        $return['error'] = yun_at('common_00598');
                     } else {
                         
                         //生成相关订单
@@ -1485,9 +1485,9 @@ class compay_model extends model{
                         $orderData['order_time']	=	time();
                         $orderData['order_state']	=	'1';
                         
-                        $orderData['order_remark']	=	$jifen ? '充值'.$this->config['integral_pricename'].'购买兼职刷新' : '兼职刷新';
+                        $orderData['order_remark']	=	$jifen ? 'common_01946'.$this->config['integral_pricename'].'common_06216' : 'default_00034';
                         
-                        $orderData['order_remark']	.=	$dkjf ? ', '.$this->config['integral_pricename'].'抵扣金额'.round(($dkjf / $this->config['integral_proportion']), 2).'元' : '';
+                        $orderData['order_remark']	.=	$dkjf ? ', '.$this->config['integral_pricename'].'wap_com_00383'.round(($dkjf / $this->config['integral_proportion']), 2).'元' : '';
                         
                         
                         $orderData['uid']			=	$uid;
@@ -1514,7 +1514,7 @@ class compay_model extends model{
                                 
                                 $this->update_once('company_statis', array('breakjob_num' => '0'), array('uid' => $uid));
 
-                                $payDetail      =   '金额刷新，扣除剩余刷新套餐数量：'.$breakpart_num;
+                                $payDetail      =   'common_00545'.$breakpart_num;
                                 $this->addStatisDetail(array('uid' => $uid, 'type' => 2, 'num' => $breakpart_num, 'detail' => $payDetail, 'uri' => $_SERVER['REQUEST_URI']));
                             }
                             
@@ -1524,24 +1524,24 @@ class compay_model extends model{
                                                        
                             if ($dkjf) {
                             
-                                $integral->company_invtal($uid, $usertype, $dkjf, false, "购买兼职刷新，使用".$this->config['integral_pricename']."抵扣", true, 2, 'integral', 12);
+                                $integral->company_invtal($uid, $usertype, $dkjf, false, 'common_06448'.$this->config['integral_pricename'].'common_01992', true, 2, 'integral', 12);
                             }
                             
                             $orderData['id'] = $id;
                             $return['order'] = $orderData;
                         }else{
                             
-                            $return['error'] = '订单生成失败！';
+                            $return['error'] = yun_at('common_06439');
                         }
                     }
                 }
             } else {
             
-                $return['error'] = '请正确选择职位刷新！';
+                $return['error'] = yun_at('common_01056');
             }
         } else {
             
-            $return['error'] = '参数填写错误，请重新设置！';
+            $return['error'] = yun_at('common_00700');
         }
         return $return;
     }
@@ -1589,7 +1589,7 @@ class compay_model extends model{
             
             if(empty($resume)){
                 
-                $return['error']    =   '请选择正确的简历下载';
+                $return['error']    =   yun_at('common_01065');
                 
             }else {
                 
@@ -1614,11 +1614,11 @@ class compay_model extends model{
                     
                     if (($jifen + intval($statis['integral'])) <  intval($resume_integral)) {
                         
-                        $return['error']    =   '充值'.$this->config['integral_pricename'].'不足购买下载简历，请重新输入'.$this->config['integral_pricename'].'数量！';
+                        $return['error']    =   yun_at('common_01946').$this->config['integral_pricename'].'common_00633'.$this->config['integral_pricename'].'数量！';
                         return $return;
                     }else if ($jifen < intval($integral_min)) {
                         
-                        $return['error']    =   '最低充值'.$this->config['integral_pricename'].'不低于'.$integral_min;
+                        $return['error']    =   yun_at('default_00088').$this->config['integral_pricename'].'common_01880'.$integral_min;
                         return $return;
                     }
                     
@@ -1631,7 +1631,7 @@ class compay_model extends model{
                 
                 if ($price < 0.01){
                     
-                    $return['error'] = '购买总金额不得小于0.01元！';
+                    $return['error'] = yun_at('common_00598');
                     
                 } else {
                     //生成相关订单
@@ -1647,9 +1647,9 @@ class compay_model extends model{
                     $orderData['order_time']	=	time();
                     $orderData['order_state']	=	'1';
                     
-                    $orderData['order_remark']	=	$jifen ? '充值'.$this->config['integral_pricename'].'下载简历':'下载简历';
+                    $orderData['order_remark']	=	$jifen ? 'common_01946'.$this->config['integral_pricename'].'wap_00451':'wap_00451';
                     
-                    $orderData['order_remark']	.=	$dkjf ? ', '.$this->config['integral_pricename'].'抵扣金额'.round(($dkjf / $this->config['integral_proportion']), 2).'元' : '';
+                    $orderData['order_remark']	.=	$dkjf ? ', '.$this->config['integral_pricename'].'wap_com_00383'.round(($dkjf / $this->config['integral_proportion']), 2).'元' : '';
                     
                     
                     $orderData['uid']			=	$uid;
@@ -1679,7 +1679,7 @@ class compay_model extends model{
                         
                       	if ($dkjf) {
                             
-                            $integral -> company_invtal($uid, $usertype, $dkjf, false, '简历下载，使用'.$this->config['integral_pricename'].'抵扣',true, 2, 'integral', 12, $data['eid']);
+                            $integral -> company_invtal($uid, $usertype, $dkjf, false, 'common_06449'.$this->config['integral_pricename'].'common_01992',true, 2, 'integral', 12, $data['eid']);
                         }
 
                         $orderData['id']    =   $id;
@@ -1687,13 +1687,13 @@ class compay_model extends model{
                         $return['order']    =   $orderData;
                     }else {
                         
-                        $return['error']    =   '订单生成失败！';
+                        $return['error']    =   yun_at('common_06439');
                     }
                 }
             }
              
         } else {
-            $return['error'] = '参数错误，请重新设置！';
+            $return['error'] = yun_at('common_00863');
         }
         
         return $return;
@@ -1750,11 +1750,11 @@ class compay_model extends model{
             
             if (($jifen + intval($statis['integral'])) <  intval($issue_integral)) {
                 
-                $return['error']    =   '充值'.$this->config['integral_pricename'].'不足购买上架职位数，请重新输入'.$this->config['integral_pricename'].'数量！';
+                $return['error']    =   yun_at('common_01946').$this->config['integral_pricename'].'common_00557'.$this->config['integral_pricename'].'数量！';
                 return $return;
             }else if ($jifen < intval($integral_min)) {
                 
-                $return['error']    =   '最低充值'.$this->config['integral_pricename'].'不低于'.$integral_min;
+                $return['error']    =   yun_at('default_00088').$this->config['integral_pricename'].'common_01880'.$integral_min;
                 return $return;
             }
             
@@ -1766,9 +1766,9 @@ class compay_model extends model{
         
         if ($price < 0.01) {
             
-            $return['error']    =   '购买总金额不得小于0.01元！';
+            $return['error']    =   yun_at('common_00598');
         } else {
-            $msg  =  $usertype == 2 ? '购买上架职位数' : '';
+            $msg  =  $usertype == 2 ? 'common_06222' : '';
             //生成相关订单
             $dingdan					=	time().rand(10000,99999);
             $orderData                  =   array();
@@ -1779,9 +1779,9 @@ class compay_model extends model{
             $orderData['order_time']	=	time();
             $orderData['order_state']	=	'1';
             
-            $orderData['order_remark']	=	$jifen ? '充值'.$this->config['integral_pricename'].$msg : $msg;
+            $orderData['order_remark']	=	$jifen ? 'common_01946'.$this->config['integral_pricename'].$msg : $msg;
             
-            $orderData['order_remark']	.=	$dkjf ? ', '.$this->config['integral_pricename'].'抵扣金额'.round(($dkjf / $this->config['integral_proportion']), 2).'元' : '';
+            $orderData['order_remark']	.=	$dkjf ? ', '.$this->config['integral_pricename'].'wap_com_00383'.round(($dkjf / $this->config['integral_proportion']), 2).'元' : '';
                         
             $orderData['uid']			=	$uid;
             $orderData['usertype']		=	$usertype;
@@ -1805,7 +1805,7 @@ class compay_model extends model{
                 require_once ('integral.model.php');
                 $integral   =   new integral_model($this->db, $this->def, array('uid' => $uid, 'username' => $username, 'usertype' => $usertype));                             
                 if ($dkjf) {
-                    $integral -> company_invtal($uid, $usertype, $dkjf, false, $msg.'，使用'.$this->config['integral_pricename'].'抵扣', true, 2, 'integral', 12);
+                    $integral -> company_invtal($uid, $usertype, $dkjf, false, $msg.'common_06450'.$this->config['integral_pricename'].'common_01992', true, 2, 'integral', 12);
                 }
                 
                 
@@ -1814,7 +1814,7 @@ class compay_model extends model{
                 
             }else{
                 
-                $return['error']    =   '订单生成失败！';
+                $return['error']    =   yun_at('common_06439');
             }
         }
         return $return;
@@ -1867,11 +1867,11 @@ class compay_model extends model{
             
             if (($jifen + intval($statis['integral'])) <  intval($invite_integral)) {
                 
-                $return['error']    =   '充值'.$this->config['integral_pricename'].'不足购买邀请面试，请重新输入'.$this->config['integral_pricename'].'数量！';
+                $return['error']    =   yun_at('common_01946').$this->config['integral_pricename'].'common_00642'.$this->config['integral_pricename'].'数量！';
                 return $return;
             }else if ($jifen < intval($integral_min)) {
                 
-                $return['error']    =   '最低充值'.$this->config['integral_pricename'].'不低于'.$integral_min;
+                $return['error']    =   yun_at('default_00088').$this->config['integral_pricename'].'common_01880'.$integral_min;
                 return $return;
             }
             
@@ -1883,7 +1883,7 @@ class compay_model extends model{
         
         if ($price < 0.01){
             
-            $return['error'] = '购买总金额不得小于0.01元！';
+            $return['error'] = yun_at('common_00598');
         } else {
             
             // 生成相关订单
@@ -1898,9 +1898,9 @@ class compay_model extends model{
             $orderData['order_time']    =   time();
             $orderData['order_state']   =   '1';
             
-            $orderData['order_remark']  =   $jifen ? '充值'.$this->config['integral_pricename'].'购买面试邀请' : '面试邀请';
+            $orderData['order_remark']  =   $jifen ? 'common_01946'.$this->config['integral_pricename'].'common_06228' : 'wap_com_00046';
             
-            $orderData['order_remark']	.=	$dkjf ? ', '.$this->config['integral_pricename'].'抵扣金额'.round(($dkjf / $this->config['integral_proportion']), 2).'元' : '';
+            $orderData['order_remark']	.=	$dkjf ? ', '.$this->config['integral_pricename'].'wap_com_00383'.round(($dkjf / $this->config['integral_proportion']), 2).'元' : '';
             
             
             $orderData['uid']           =   $uid;
@@ -1923,7 +1923,7 @@ class compay_model extends model{
                                
                 if($dkjf){
                     
-                    $integral -> company_invtal($uid, $usertype, $dkjf, false, '购买面试邀请，使用'.$this->config['integral_pricename'].'抵扣', true, 2, 'integral', 12);
+                    $integral -> company_invtal($uid, $usertype, $dkjf, false, 'common_06451'.$this->config['integral_pricename'].'common_01992', true, 2, 'integral', 12);
                     
                 }
                 
@@ -1932,7 +1932,7 @@ class compay_model extends model{
                 
             }else{
                 
-                $return['error']    =   '订单生成失败！';
+                $return['error']    =   yun_at('common_06439');
             }
         }
         
@@ -1979,7 +1979,7 @@ class compay_model extends model{
             
             if(empty($zph) || empty($space)){
                 
-                $return['error']  =  '参数错误，请重新预定！';
+                $return['error']  =  yun_at('common_00865');
                 
             }else {
                 
@@ -1999,11 +1999,11 @@ class compay_model extends model{
                     
                     if (($jifen + intval($statis['integral'])) <  intval($zph_integral)) {
                         
-                        $return['error']  =  '充值'.$this->config['integral_pricename'].'不足预定招聘会，请重新输入'.$this->config['integral_pricename'].'数量！';
+                        $return['error']  =  yun_at('common_01946').$this->config['integral_pricename'].'common_00693'.$this->config['integral_pricename'].'数量！';
                         return $return;
                     }else if ($jifen < intval($integral_min)) {
                         
-                        $return['error']  =  '最低充值'.$this->config['integral_pricename'].'不低于'.$integral_min;
+                        $return['error']  =  yun_at('default_00088').$this->config['integral_pricename'].'common_01880'.$integral_min;
                         return $return;
                     }
                     
@@ -2015,7 +2015,7 @@ class compay_model extends model{
     			 
                 if ($price < 0.01){
                     
-                    $return['error']  =  '购买总金额不得小于0.01元！';
+                    $return['error']  =  yun_at('common_00598');
                 } else {
 
                     //生成相关订单
@@ -2030,9 +2030,9 @@ class compay_model extends model{
                     $orderData['order_time']     =	time();
                     $orderData['order_state']    =	'1';
                     
-                    $orderData['order_remark']   =	$jifen ? '充值'.$this->config['integral_pricename'].'预定招聘会' :'预定招聘会';
+                    $orderData['order_remark']   =	$jifen ? 'common_01946'.$this->config['integral_pricename'].'default_00057' :'default_00057';
                     
-                    $orderData['order_remark']	.=	$dkjf ? ', '.$this->config['integral_pricename'].'抵扣金额'.round(($dkjf / $this->config['integral_proportion']), 2).'元' : '';
+                    $orderData['order_remark']	.=	$dkjf ? ', '.$this->config['integral_pricename'].'wap_com_00383'.round(($dkjf / $this->config['integral_proportion']), 2).'元' : '';
                     
                     
                     $orderData['uid']            =	$uid;
@@ -2075,7 +2075,7 @@ class compay_model extends model{
                                                                       
                         if($dkjf){
                             
-                            $integral -> company_invtal($uid, $usertype, $dkjf, false, '报名招聘会，使用'.$this->config['integral_pricename'].'抵扣', true, 2, 'integral');
+                            $integral -> company_invtal($uid, $usertype, $dkjf, false, 'common_06452'.$this->config['integral_pricename'].'common_01992', true, 2, 'integral');
                         }
                         
                         $orderData['id']  =  $id;
@@ -2084,13 +2084,13 @@ class compay_model extends model{
                         
                     }else {
                         
-                        $return['error']  =  '订单生成失败！';
+                        $return['error']  =  yun_at('common_06439');
                     }
                     
                 }
             }
         }else{
-            $return['error'] = '参数填写错误，请重新设置！';
+            $return['error'] = yun_at('common_00700');
         }
         return $return;
     }        

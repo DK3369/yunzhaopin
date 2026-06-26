@@ -44,7 +44,7 @@ class admin_loginlog_controller extends adminCommon
 		$pageM	=	$this  -> MODEL('page');
 		$pages	=	$pageM -> adminPageList('login_log',$where,$page,array('limit' => $pageSize));
 		if (!$pages['total']) {
-			$this->render_json(0,'暂无数据',['data'=>[],'total'=>0,'pageSizes'=>$pages['page_sizes']]);
+			$this->render_json(0,yun_at('wap_js_00113'),['data'=>[],'total'=>0,'pageSizes'=>$pages['page_sizes']]);
 		}
 		if ($_POST['order']) {
 			$where['orderby'] = $_POST['t'] . ',' . $_POST['order'];
@@ -77,22 +77,22 @@ class admin_loginlog_controller extends adminCommon
 			$where['usertype'] = '2';
 
 			$logM->delLoginlog('', $where);
-			$this->render_json('0','已清空企业日志！');
+			$this->render_json('0',yun_at('admin_01296'));
 		} elseif ($_POST['del'] == 'alluser') {
 			$where['usertype'] = '1';
 
 			$logM->delLoginlog('', $where);
-			$this->render_json(0,'已清空个人日志！');
+			$this->render_json(0,yun_at('admin_01297'));
 		} elseif ($_POST['del'] == 'alltrain') {
 			$where['usertype'] = '4';
 
 			$logM->delLoginlog('', $where);
-			$this->render_json(0,'已清空培训日志！');
+			$this->render_json(0,yun_at('admin_01298'));
 
 		} elseif ($_POST['del']) {
 			$del = $_POST['del'];
 			if (!$del) {
-				$this->render_json(0,'请选择您要删除的信息！');
+				$this->render_json(0,yun_at('model_00034'));
 			}
 			if (is_array($del)) {
 				$where['id'] = array('in', pylode(',', $del));
@@ -100,7 +100,7 @@ class admin_loginlog_controller extends adminCommon
 			} else {
 				$logM->delLoginlog('', array('id' => $del));
 			}
-			$this->render_json(0,'登录日志(ID:' . pylode(',', $del) . ')删除成功！');
+			$this->render_json(0,'admin_01295' . pylode(',', $del) . ')删除成功！');
 		}
 	}
 }

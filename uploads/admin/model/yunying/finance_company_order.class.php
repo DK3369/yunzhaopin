@@ -102,7 +102,7 @@ class finance_company_order_controller extends adminCommon
         $pageM	=	$this  -> MODEL('page');
         $pages	=	$pageM -> adminPageList('company_order',$where,$page,array('limit' => $pageSize));
         if(!$pages['total']) {
-            $this->render_json(0,'暂无数据',['data'=>[],'total'=>0,'pageSizes'=>$pages['page_sizes']]);
+            $this->render_json(0,yun_at('wap_js_00113'),['data'=>[],'total'=>0,'pageSizes'=>$pages['page_sizes']]);
         }
         //统计
         $MsgNum =   $this->MODEL('msgNum');
@@ -132,7 +132,7 @@ class finance_company_order_controller extends adminCommon
         $OrderM =   $this->MODEL('companyorder');
         $row    =   $OrderM->getInfo(array('id' => $_POST['id']));
         if (!$row){
-            $this->render_json(1,'参数错误,请重试');
+            $this->render_json(1,yun_at('common_01237'));
         }
         $htpics = $OrderM->getOrderHtPicList(array('order_id' => $row['id']));
         $row['order_time_ymd'] = $row['order_time']?date('Y-m-d H:i:s',$row['order_time']):'';
@@ -141,12 +141,12 @@ class finance_company_order_controller extends adminCommon
     public function htpics_action(){
 
         if (!$_POST['id']){
-            $this->render_json(1,'参数错误,请重试');
+            $this->render_json(1,yun_at('common_01237'));
         }
         $OrderM =   $this->MODEL('companyorder');
         $row    =   $OrderM->getInfo(array('id' => $_POST['id']));
         if (!$row){
-            $this->render_json(1,'参数错误,请重试');
+            $this->render_json(1,yun_at('common_01237'));
         }
         $htpics = $OrderM->getOrderHtPicList(array('order_id' => $row['id']));
         $this->render_json(0,'',['htpics'=>$htpics]);
@@ -157,7 +157,7 @@ class finance_company_order_controller extends adminCommon
 
         $id     =   intval($_POST['id']);
         if(!$id){
-            $this->render_json(1,'参数错误');
+            $this->render_json(1,yun_at('wap_com_00228'));
         }
         $OrderM =   $this->MODEL('companyorder');
 
@@ -177,7 +177,7 @@ class finance_company_order_controller extends adminCommon
     {
         $id     =   intval($_POST['id']);
         if(!$id){
-            $this->render_json(1,'参数错误');
+            $this->render_json(1,yun_at('wap_com_00228'));
         }
         $OrderM =   $this->MODEL('companyorder');
 
@@ -212,13 +212,13 @@ class finance_company_order_controller extends adminCommon
         }
         $rows   =   $OrderM->getList($where, array('utype' => 'admin', 'field' => 'id,uid,order_id,order_price,type,usertype,order_state,order_type,order_time,once_id,crm_uid'));
         if (!$rows){
-            $this->render_json(1,'没有可以导出的订单信息！');
+            $this->render_json(1,yun_at('admin_yunying_00004'));
         }
         $result = $this->excel_export($rows);
         if (!$result['status']){
-            $this->render_json(1,'参数错误,请重试');
+            $this->render_json(1,yun_at('common_01237'));
         }
-        $this->MODEL('log')->addAdminLog("导出支付订单信息");
+        $this->MODEL('log')->addAdminLog('admin_01416');
         $this->admin_json(0,'',$result);
     }
 
@@ -232,7 +232,7 @@ class finance_company_order_controller extends adminCommon
         $objPHPExcel->setActiveSheetIndex(0);
 
         $col = 'A';
-        $thead = ['编号', '用户名称', '公司名称（姓名）', '充值单号', '支付类型', '订单类型', '订单金额', '时间', '状态','业务员'];
+        $thead = ['member_com_00345', 'admin_user_company_00144', 'admin_01417', 'wap_user_00311', 'member_user_00240', 'wap_user_00318', 'admin_01418', 'wap_js_00088', 'member_user_00181','admin_user_company_00049'];
         // 循环字段
         foreach ($thead as $tval) {
             $width = 20;
@@ -245,12 +245,12 @@ class finance_company_order_controller extends adminCommon
         include (APP_PATH."/config/db.data.php");
         $ordertype = $arr_data['ordertype'];
         $col = 'A';
-        $paystate = array ('支付失败','等待付款','支付成功','等待确认','交易关闭');
+        $paystate = array ('admin_01264','admin_yunying_00085','admin_01265','admin_yunying_00086','admin_yunying_00078');
 
         foreach ($rows as $key => $val) {
             $No = $key + 2;
             if($val['type'] == 2) {
-                $typeName =$this->config['integral_pricename']."充值";
+                $typeName =$this->config['integral_pricename'].'common_01946';
             }else {
                 $typeName = $ordertype[$val['type']];
             }
@@ -275,7 +275,7 @@ class finance_company_order_controller extends adminCommon
         ob_end_clean();
         $data = [
             'file' => base64_encode($xlsData),
-            'file_name' => '订单导出' . date('YmdHis') . '.xlsx',
+            'file_name' => 'admin_01419' . date('YmdHis') . '.xlsx',
             'status' => 1,
         ];
         return  $data;
@@ -286,7 +286,7 @@ class finance_company_order_controller extends adminCommon
         $delID  =   is_array($_POST['del']) ? $_POST['del'] : $_POST['id'];
 
         if (!$delID){
-            $this->render_json(1,'参数错误');
+            $this->render_json(1,yun_at('wap_com_00228'));
         }
 
         $OrderM =   $this->MODEL('companyorder');
@@ -325,14 +325,14 @@ class finance_company_order_controller extends adminCommon
         $orderM =	$this->MODEL('companyorder');
         $_POST = $this->post_trim($_POST);
         if (!$_POST['order_id']){
-            $this->render_json('1','参数错误，请重试！');
+            $this->render_json('1',yun_at('wap_00203'));
         }
 
         $nbid = $orderM->addOrderHtPicInfo($_POST);
         if($nbid){
             $this->admin_json('0',"订单合同图片(ID:" . $nbid . ")添加成功！");
         }else{
-            $this->admin_json('1',"添加失败！");
+            $this->admin_json('1','admin_system_00137');
         }
     }
     /*
@@ -342,13 +342,13 @@ class finance_company_order_controller extends adminCommon
         $ZphM =	$this->MODEL('companyorder');
         $id	= $_POST['delid'];
         if(!$id) {
-            $this->render_json(1,'参数错误');
+            $this->render_json(1,yun_at('wap_com_00228'));
         }
         $delid = $ZphM->delOrderHtPic(array('id'=>$id));
         if ($delid){
             $this->admin_json('0',"订单合同图片(ID:".$_POST['delid'].")删除成功！");
         }else{
-            $this->render_json('1','删除失败');
+            $this->render_json('1',yun_at('wap_user_00146'));
         }
     }
 }

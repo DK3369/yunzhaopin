@@ -13,7 +13,7 @@ class messagelog_controller extends adminCommon
             if ($_POST['type']=='1'){
                 $where['moblie']    =   array('like',$_POST['keyword']);
             }else if($_POST['type']=='2'){
-                if($_POST['keyword'] == '系统'){
+                if($_POST['keyword'] == 'common_02020'){
                     $where['cuid']  =   0;
                 }else{
                     $mwhere=array(
@@ -43,7 +43,7 @@ class messagelog_controller extends adminCommon
                 }
                  
             }else if($_POST['type']=='3'){
-                if($_POST['keyword']=='系统'){
+                if($_POST['keyword']=='common_02020'){
                     $where['uid']   =   0;
                 }else{
                     $mwhere=array(
@@ -159,7 +159,7 @@ class messagelog_controller extends adminCommon
     
         if(!$delid){
             
-            $this->render_json(1, '请选择要删除的内容！');
+            $this->render_json(1, yun_at('common_01066'));
         
         }
         
@@ -167,7 +167,7 @@ class messagelog_controller extends adminCommon
             $msg = '短信记录(ID:'.$delid.')删除成功！';
             $error = 0;
         }else{
-            $msg = '删除失败！';
+            $msg = 'admin_user_00186';
             $error = 1;
         }
 
@@ -186,7 +186,7 @@ class messagelog_controller extends adminCommon
             $error      =   0;
         }else{
             $error      =   1;
-            $msg = "请选择需要重发的短信！";
+            $msg = 'admin_tool_00021';
         }
         
         $this->render_json($error,$msg);

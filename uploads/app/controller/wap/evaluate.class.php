@@ -27,7 +27,7 @@ class evaluate_controller extends common{
 			$this->yunset("rows",$List);
 		}
 		$this->seo("evaluate");
-		$this->yunset("headertitle",yun_auto_t('职业测评'));
+		$this->yunset("headertitle",yun_at('wap_00194'));
 		$this->yuntpl(array('wap/evaluatelist'));
 	}
 	function show_action(){
@@ -38,7 +38,7 @@ class evaluate_controller extends common{
 		$this->yunset('info',$info);
 		
 		if($info['id']==''){
-			$this->ACT_msg_wap(Url("wap",array('c'=>"evaluate")),yun_auto_t('没有找到相关测评哦！'));
+			$this->ACT_msg_wap(Url("wap",array('c'=>"evaluate")),yun_at('wap_00192'));
 		}
 		// 
 		$questions 	= 	$evaluateM->getEvaluateNum(array('gid'=>$id));
@@ -50,7 +50,7 @@ class evaluate_controller extends common{
 		$this->data			=	$data;
 		$this->seo('exampaper');
 		
-		$this->yunset("headertitle",yun_auto_t('职业测评'));
+		$this->yunset("headertitle",yun_at('wap_00194'));
 		$this->yuntpl(array('wap/evaluateshow'));
 	}
 	function exampaper_action(){
@@ -60,7 +60,7 @@ class evaluate_controller extends common{
 		$this->yunset('info',$info);
 		
 		if($info['id']==''){
-			$this->ACT_msg_wap(Url("wap",array('c'=>"evaluate")),yun_auto_t('没有找到相关测评哦！'));
+			$this->ACT_msg_wap(Url("wap",array('c'=>"evaluate")),yun_at('wap_00192'));
 		}
 		
 		$arr=array();
@@ -71,7 +71,7 @@ class evaluate_controller extends common{
 		$this->data			=	$data;
 		$this->seo('exampaper');
 		
-		$this->yunset("headertitle",yun_auto_t('职业测评'));
+		$this->yunset("headertitle",yun_at('wap_00194'));
 		$this->yuntpl(array('wap/evaluatepaper'));
 	}
 		/* score display */
@@ -136,7 +136,7 @@ class evaluate_controller extends common{
 		$this->yunset('info',$info);
 		
 		if($info['id']==''){
-			$this->ACT_msg_wap(Url("wap",array('c'=>"evaluate")),yun_auto_t('试卷不存在哦！'));
+			$this->ACT_msg_wap(Url("wap",array('c'=>"evaluate")),yun_at('wap_00193'));
 		}
 		$exambase	=	$evaluateM->getInfo(array('id'=>$info['examid']),array('field'=>'`id`,`name`,`toscore`,`fromscore`,`comment`'));
 		$this->yunset('exambase',$exambase); 
@@ -164,7 +164,7 @@ class evaluate_controller extends common{
 		$this->data			=	$data;
 		$this->seo('gradeshow');
 		
-		$this->yunset("headertitle",yun_auto_t('职业测评'));
+		$this->yunset("headertitle",yun_at('wap_00194'));
 		$this->yuntpl(array('wap/evaluategradeshow'));
 	}
 	function create_uuid($prefix = "yun"){    // optional prefix

@@ -97,7 +97,7 @@ class black_model extends model
             $haves      =   $this->getBlackInfo(array('c_uid' => $uid, 'p_uid' => $info['fid'], 'usertype' => 1));
             if (is_array($haves)) {
 
-                return array('msg' => '该用户已在您黑名单中！', 'errcode' => 8);
+                return array('msg' => yun_at('common_00916'), 'errcode' => 8);
             } else {
 
                 $nid    =   $this->insert_into('blacklist', $arr);
@@ -106,13 +106,13 @@ class black_model extends model
 
                 if ($nid) {
 
-                    $logContent =   '屏蔽企业：UID'.$info['uid'];
-                    $logDetail  =   '屏蔽企业《'.$info['fname'].'》，并且删除邀请信息';
+                    $logContent =   'common_01246'.$info['uid'];
+                    $logDetail  =   'common_01601'.$info['fname'].'common_00964';
                     $this->addMemberLog($data['uid'], $data['usertype'], $logContent, 26, 1, $logDetail);
-                    return array('msg' => '操作成功！', 'errcode' => 9);
+                    return array('msg' => yun_at('wap_js_00159'), 'errcode' => 9);
                 } else {
 
-                    return array('msg' => '操作失败！', 'errcode' => 8);
+                    return array('msg' => yun_at('model_00003'), 'errcode' => 8);
                 }
             }
         } elseif ($data['cuid']) {      //个人隐私里屏蔽企业
@@ -145,10 +145,10 @@ class black_model extends model
                     $this->insert_into('blacklist', $cdata);
                 }
 
-                return array('msg' => '操作成功！', 'errcode' => 9, 'layertype' => 1);
+                return array('msg' => yun_at('wap_js_00159'), 'errcode' => 9, 'layertype' => 1);
             } else {
 
-                return array('msg' => '请选择要屏蔽的公司！', 'errcode' => 8, 'layertype' => 1);
+                return array('msg' => yun_at('common_01068'), 'errcode' => 8, 'layertype' => 1);
             }
         }
     }
@@ -191,14 +191,14 @@ class black_model extends model
             if ($data['uid']) {
                 if ($data['type'] == 'all') {
 
-                    $this->addMemberLog($data['uid'], $data['usertype'], '屏蔽解除：清空公司黑名单信息', 26, 3);
+                    $this->addMemberLog($data['uid'], $data['usertype'], 'common_00652', 26, 3);
                 } else {
 
-                    $this->addMemberLog($data['uid'], $data['usertype'], '屏蔽解除：删除公司黑名单信息', 26, 3);
+                    $this->addMemberLog($data['uid'], $data['usertype'], 'common_00651', 26, 3);
                 }
             }
             $return['errcode']  =   $result ? 9 : 8;
-            $return['msg']      =   $result ? '删除成功！' : '删除失败！';
+            $return['msg']      =   $result ? yun_at('admin_user_00187') : yun_at('admin_user_00186');
         } elseif ($data['where']) {
 
             $where  =   $data['where'];
@@ -207,7 +207,7 @@ class black_model extends model
 
             return $nid;
         } else {
-            $return['msg']          =   '请选择您要删除的数据！';
+            $return['msg']          =   yun_at('common_00921');
             $return['errcode']      =   8;
             $return['layertype']    =   0;
         }

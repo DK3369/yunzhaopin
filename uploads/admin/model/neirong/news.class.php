@@ -122,12 +122,12 @@ class news_controller extends adminCommon
      */
     public function checksitedid_action(){
         if(empty($_POST['uid'])){
-            $this->render_json(1, '参数不全请重试！');
+            $this->render_json(1, yun_at('common_01236'));
         }
         $uids =	@explode(',', $_POST['uid']);
         $uid = pylode(',', $uids);
         if(empty($uid)){
-            $this->render_json(1, '请正确选择需分配新闻！');
+            $this->render_json(1, yun_at('admin_neirong_00014'));
         }
         $siteDomain = $this->MODEL('site');
         $didData = array('did' => $_POST['did']);
@@ -144,23 +144,23 @@ class news_controller extends adminCommon
         $typeStr = trim($_POST['type']);
         $_POST = $this->post_trim($_POST);
         if(empty($_POST['proid'])){
-            $this->render_json(1, '参数错误！');
+            $this->render_json(1, yun_at('wap_01298'));
         }
         //实例化新闻类
         $articleM =	$this->MODEL('article');
         $baseWhereData = array('id' => array('in', $_POST['proid']));
         $list =	$articleM->getList($baseWhereData, array('field' => '`id`, `describe`'));
         if(empty($list['list'])){
-            $this->render_json(1, '数据错误！');
+            $this->render_json(1, yun_at('member_com_00051'));
         }
         //保存新闻属性
         if($typeStr == 'add'){
             $describe =	pylode(',', $_POST['describe']);
             if(empty($describe)){
-                $this->render_json(1, '请选择属性！');
+                $this->render_json(1, yun_at('admin_01331'));
             }
             $articleM->upBase($baseWhereData, array('describe' => $describe));
-            $this->admin_json(0, '新闻(ID:'.$_POST['proid'].')设置属性成功！');
+            $this->admin_json(0, '新闻(ID:'.$_POST['proid'].'admin_neirong_00017');
         }
         //删除新闻属性
         if($typeStr == 'del'){
@@ -175,7 +175,7 @@ class news_controller extends adminCommon
                     $articleM->upBase(array('id' => array('=', $value['id'])), array('describe' => pylode(',', $describe)));
                 }
             }
-            $this->admin_json(0, '新闻(ID:'.$_POST['proid'].')删除属性成功！');
+            $this->admin_json(0, '新闻(ID:'.$_POST['proid'].'admin_neirong_00016');
         }
     }
 
@@ -195,13 +195,13 @@ class news_controller extends adminCommon
         }else{
             $postData = $this->post_trim($_POST);
             if (!$postData['title']) {
-                $this->render_json(1, '新闻标题不能为空');
+                $this->render_json(1, yun_at('admin_01332'));
             }
             if (!$postData['nid']) {
-                $this->render_json(1, '请选择新闻类别');
+                $this->render_json(1, yun_at('admin_01333'));
             }
             if (!$postData['content']) {
-                $this->render_json(1, '新闻内容不能为空');
+                $this->render_json(1, yun_at('admin_01334'));
             }
             // 新上传图片文件处理
             foreach ($_FILES['pic'] as $nk => $nv) {
@@ -316,7 +316,7 @@ class news_controller extends adminCommon
             $linkid = $del;
         }
         if(empty($linkid)){
-            $this->render_json(1, '请选择您要删除的信息！');
+            $this->render_json(1, yun_at('model_00034'));
         }
         $articleM =	$this->MODEL('article');
         $articleM->delNews(array('id' => array('in', $linkid)));
@@ -331,7 +331,7 @@ class news_controller extends adminCommon
     public function changeClass_action(){
         $_POST = $this->post_trim($_POST);
         if(empty($_POST['id'])){
-            $this->render_json(1, '参数不全请重试！');
+            $this->render_json(1, yun_at('common_01236'));
         }
         $ids = @explode(',', $_POST['id']);
         $id = pylode(',', $ids);
@@ -339,9 +339,9 @@ class news_controller extends adminCommon
         if(!empty($id)){
             $articleM =	$this->MODEL('article');
             $articleM->upBase(array('id' => array('in', $id)), array('nid' => $nid));
-            $this->admin_json(0, '新闻转移类别成功！');
+            $this->admin_json(0, 'admin_neirong_00015');
         }else{
-            $this->render_json(1, '请正确选择需转移的新闻！');
+            $this->render_json(1, yun_at('admin_neirong_00012'));
         }
     }
 
@@ -411,12 +411,12 @@ class news_controller extends adminCommon
             $name[] = $val;
         }
         if(empty($name)){
-            $this->render_json(1, '类别名称不能为空');
+            $this->render_json(1, yun_at('admin_01200'));
         }
         $articleM =	$this->MODEL('article');
         $newsclass = $articleM->getClass(array('name' => array('in', implode(",", $name))));
         if (!empty($newsclass)) {
-            $this->render_json(1, '已有此类别，请重新输入！');
+            $this->render_json(1, yun_at('admin_system_00130'));
         }
         $fid = intval($_POST['fid']);
         $rec = intval($_POST['rec']);
@@ -431,9 +431,9 @@ class news_controller extends adminCommon
         }
         $this->get_cache();
         if ($add) {
-            $this->admin_json(0, '新闻类别添加成功');
+            $this->admin_json(0, 'admin_01335');
         } else {
-            $this->render_json(1, '新闻类别添加失败');
+            $this->render_json(1, yun_at('admin_01336'));
         }
     }
     /**
@@ -446,11 +446,11 @@ class news_controller extends adminCommon
         $nid = $articleM->updGroup(array('id' => $_POST['id'], 'keyid'=>'0'), array('' . $_POST['type'] . '' => intval($_POST['rec'])));
         $this->get_cache();
         if ($_POST['type'] == 'rec_news') {
-            $type = '新闻首页';
+            $type = 'admin_00195';
         } else {
-            $type = '首页是否推荐';
+            $type = 'admin_00184';
         }
-        $this->render_json($nid ? 0 : 1, $nid ? $type . '修改成功' : $type . '修改失败');
+        $this->render_json($nid ? 0 : 1, $nid ? $type . 'admin_user_company_00208' : $type . 'admin_00187');
     }
     /**
      * 内容 - 新闻 - 新闻类别
@@ -476,16 +476,16 @@ class news_controller extends adminCommon
         $articleM =	$this->MODEL('article');
         $idStr = intval($_POST['id']);
         if(empty($idStr)){
-            $this->render_json(1, '参数错误');
+            $this->render_json(1, yun_at('wap_com_00228'));
         }
         $row = $articleM->getGroup(array('id' => array('=', $idStr)));
         if(empty($row)){
-            $this->render_json(1, '数据错误');
+            $this->render_json(1, yun_at('member_com_00056'));
         }
         $_POST = $this->post_trim($_POST);
         if(isset($_POST['sort'])&& $_POST['sort'] >= 0){//修改排序
             $articleM->updGroup(array('id' => array('=', $idStr)), array('sort' => $_POST['sort']));
-            $msg = '新闻类别(ID:'.$idStr.')修改排序成功';
+            $msg = '新闻类别(ID:'.$idStr.'admin_neirong_00020';
         }
         if($_POST['name']){//修改类别名称
             if($row['is_menu'] == 1){
@@ -494,7 +494,7 @@ class news_controller extends adminCommon
                 $this->menu_cache_action();
             }
             $articleM->updGroup(array('id' => array('=', $idStr)), array('name' => $_POST['name']));
-            $msg = '新闻类别(ID:'.$idStr.')修改名称成功';
+            $msg = '新闻类别(ID:'.$idStr.'admin_neirong_00019';
         }
         $this->get_cache();
         $this->admin_json(0, $msg);
@@ -505,7 +505,7 @@ class news_controller extends adminCommon
      */
     public function make_cache_action(){
         $result = $this->get_cache();
-        $this->render_json($result ? 0 : 1, $result ? "更新成功！" : "更新失败！");
+        $this->render_json($result ? 0 : 1, $result ? yun_at('admin_system_00064') : yun_at('api_wxapp_00009'));
     }
     public function get_cache(){
         include_once(LIB_PATH.'cache.class.php');
@@ -554,7 +554,7 @@ class news_controller extends adminCommon
      */
     public function set_menu_action(){//设置导航
         if(empty($_POST['submit'])){
-            $this->render_json(1, "参数错误！");
+            $this->render_json(1, yun_at('wap_01298'));
         }
         $_POST = $this->post_trim($_POST);
         $idStr = intval($_POST['id']);
@@ -571,22 +571,22 @@ class news_controller extends adminCommon
             $addData['url'] = str_replace("amp;", "", $_POST['url']);
             if(!empty($idStr)){
                 $nbid =	$naviM->upNav($addData, array('id' => array('=', $idStr)));
-                $msg = '新闻类别导航更新';
+                $msg = 'admin_01337';
             }else{
                 $addData['news'] = $_POST['did'];
                 $nbid =	$naviM->addNav($addData);
                 $articleM =	$this->Model('article');
                 $articleM->updGroup(array('id' => array('=', $_POST['did'])), array('is_menu' => 1));
-                $msg = '新闻类别导航添加';
+                $msg = 'admin_01338';
             }
             $this->menu_cache_action();
             if(!empty($nbid)){
-                $this->admin_json(0, $msg."成功！");
+                $this->admin_json(0, $msg.'wap_js_00104');
             }else{
-                $this->render_json(1, $msg."失败！");
+                $this->render_json(1, $msg.'wap_js_00103');
             }
         }else{
-            $this->render_json(1, '已经存在此导航！');
+            $this->render_json(1, yun_at('admin_neirong_00018'));
         }
     }
     /**
@@ -596,14 +596,14 @@ class news_controller extends adminCommon
     public function delmenu_action(){
         $idStr = intval($_POST['id']);
         if(empty($idStr)){
-            $this->render_json(1, '非法操作');
+            $this->render_json(1, yun_at('member_com_00320'));
         }
         $articleM =	$this->Model('article');
         $articleM->updGroup(array('id' => array('=', $idStr)), array('is_menu' => 0));
         $naviM = $this->MODEL('navigation');
         $naviM->delNav(array('news' => array('=', $idStr)));
         $this->menu_cache_action();
-        $this->admin_json(0, '新闻类别导航('.$idStr.')取消成功');
+        $this->admin_json(0, '新闻类别导航('.$idStr.'admin_neirong_00023');
     }
     /**
      * 内容 - 新闻 - 新闻类别
@@ -622,20 +622,20 @@ class news_controller extends adminCommon
     public function changeSon_action(){
         $_POST = $this->post_trim($_POST);
         if(empty($_POST['id'])){
-            $this->render_json(1, '参数不全请重试！');
+            $this->render_json(1, yun_at('common_01236'));
         }
         $idss =	@explode(',', $_POST['id']);
         $nid = intval($_POST['nid']);
         if(in_array($nid, $idss)){
-            $this->render_json(1, '一级类别不能转移到本类别之下！');
+            $this->render_json(1, yun_at('admin_neirong_00011'));
         }
         if(empty($idss)){
-            $this->render_json(1, '请正确选择需转移的类别！');
+            $this->render_json(1, yun_at('admin_neirong_00013'));
         }
         $articleM =	$this->MODEL('article');
         $articleM->updGroup(array('id' => array('in', pylode(',', $idss))), array('keyid' => $nid));
         $this->get_cache();
-        $this->admin_json(0, '转移类别成功！');
+        $this->admin_json(0, 'admin_neirong_00022');
     }
     /**
      * 内容 - 新闻 - 新闻属性

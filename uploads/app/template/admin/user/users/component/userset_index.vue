@@ -5,15 +5,15 @@
             <table class="tableVue">
                 <thead>
                 <tr align="left">
-                    <th width="200">名称</th>
-                    <th width="680">状态</th>
-                    <th>说明</th>
+                    <th width="200">{yun:}t key='member_com_00021'{/yun}</th>
+                    <th width="680">{yun:}t key='member_user_00181'{/yun}</th>
+                    <th>{yun:}t key='member_com_00207'{/yun}</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr>
                     <td>
-                        <div class="TableTite">信息审核</div>
+                        <div class="TableTite">{yun:}t key='admin_user_00336'{/yun}</div>
                     </td>
                     <td>
                         <div class="tc_checkbox">
@@ -38,13 +38,13 @@
                     </td>
                     <td>
                         <div class="TableShuom">
-                            开启则需审核后展示
+                            {yun:}t key='admin_00557'{/yun}
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">简历审核</div>
+                        <div class="TableTite">{yun:}t key='admin_user_00251'{/yun}</div>
                     </td>
                     <td>
                         <div class="tc_checkbox">
@@ -56,7 +56,7 @@
                         <div v-if="ruleForm.resume_status == true || ruleForm.user_revise_state == true"
                              class="content-sub">
                             <div class="TableShuom" style="margin-bottom: 8px">
-                                创建、修改简历审核，可设置强制审核时间段。未配置或为空则全天审核，可跨天设置，如：22:00-08:00
+                                {yun:}t key='admin_00558'{/yun}
                             </div>
                             <el-time-picker v-model="ruleForm.resume_statetime_start" placeholder=""
                                             value-format="HH:mm" format="HH:mm" style="width: 150px;">
@@ -73,7 +73,7 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">强制操作</div>
+                        <div class="TableTite">{yun:}t key='admin_user_00337'{/yun}</div>
                     </td>
                     <td>
                         <div class="tc_checkbox">
@@ -90,12 +90,12 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">快速投递</div>
+                        <div class="TableTite">{yun:}t key='admin_user_00338'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableButn">
-                            <el-radio v-model="ruleForm.resume_kstd" label="1">开启</el-radio>
-                            <el-radio v-model="ruleForm.resume_kstd" label="2">关闭</el-radio>
+                            <el-radio v-model="ruleForm.resume_kstd" label="1">{yun:}t key='member_com_00287'{/yun}</el-radio>
+                            <el-radio v-model="ruleForm.resume_kstd" label="2">{yun:}t key='common.close'{/yun}</el-radio>
                         </div>
                     </td>
                     <td>
@@ -106,7 +106,7 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">创建简历必填项</div>
+                        <div class="TableTite">{yun:}t key='admin_user_00327'{/yun}</div>
                         <!--<div style="color:red;">这一块要重新写样式</div>-->
                     </td>
                     <td>
@@ -127,8 +127,7 @@
                                 </div>
                             </el-checkbox-group>
                             <div class="TableShuom">
-                                <div class="tc_checktip el-icon-info"> 工作经历非必填条件选择
-                                    根据求职者填写基本信息时选择的工作经验，创建简历时可不强制填写工作经历
+                                <div class="tc_checktip el-icon-info"> {yun:}t key='admin_00559'{/yun}
                                 </div>
                             </div>
                         </div>
@@ -141,14 +140,14 @@
                             </el-checkbox-group>
                             <div class="TableShuom">
                                 <div class="tc_checktip el-icon-info">
-                                    说明：求职者创建简历时满足勾选条件的则可不强制填写
+                                    {yun:}t key='admin_00560'{/yun}
                                 </div>
                             </div>
                         </div>
                         <div class="content-sub">
-                            <p>根据求职者所选的职位类别设置是否强制填写以上必填选项</p>
+                            <p>{yun:}t key='admin_user_00312'{/yun}</p>
                             <div class="TableShuom tc_checktip">
-                                说明：例如设置的职位类别是“普工”，求职者创建简历时选择“普工”后可不强制填写以上任何条件，且投递时不判断简历完整度。
+                                {yun:}t key='admin_00561'{/yun}
                             </div>
                             <!--TODO 7.0 统一类别选择-->
                             <!-- <el-button>设置不强制填写职位类别项</el-button> -->
@@ -158,43 +157,43 @@
                             </div>
                         </div>
                         <div class="content-sub">
-                            <p>跨职位类别投递，是否要判断完整度</p>
+                            <p>{yun:}t key='admin_user_00316'{/yun}</p>
                             <div class="contentRadio">
-                                <el-radio v-model="ruleForm.sy_resume_kh_td" label="1">开启</el-radio>
-                                <el-radio v-model="ruleForm.sy_resume_kh_td" label="0">关闭</el-radio>
+                                <el-radio v-model="ruleForm.sy_resume_kh_td" label="1">{yun:}t key='member_com_00287'{/yun}</el-radio>
+                                <el-radio v-model="ruleForm.sy_resume_kh_td" label="0">{yun:}t key='common.close'{/yun}</el-radio>
                             </div>
                             <div class="TableShuom">
                                 <div class="tc_checktip el-icon-info">
-                                    说明：符合不强制填写职位类别项的简历，投递设置项之外的职位，是否开启判断简历完整度。（例如“普工”简历投递设置项之外的职位，是否要判断完整度）
+                                    {yun:}t key='admin_00562'{/yun}
                                 </div>
                             </div>
                         </div>
                         <div class="content-sub">
-                            <p>快速投递，是否遵从简历必填项</p>
+                            <p>{yun:}t key='admin_user_00317'{/yun}</p>
                             <div class="contentRadio">
-                                <el-radio v-model="ruleForm.resume_kstd_req" label="1">开启</el-radio>
-                                <el-radio v-model="ruleForm.resume_kstd_req" label="2">关闭</el-radio>
+                                <el-radio v-model="ruleForm.resume_kstd_req" label="1">{yun:}t key='member_com_00287'{/yun}</el-radio>
+                                <el-radio v-model="ruleForm.resume_kstd_req" label="2">{yun:}t key='common.close'{/yun}</el-radio>
                             </div>
                             <div class="TableShuom">
                                 <div class="tc_checktip el-icon-info">
-                                    说明：快速投递是否遵从简历必填项，默认开启。关闭后，不再判断简历完整度
+                                    {yun:}t key='admin_00563'{/yun}
                                 </div>
                             </div>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <div class="tc_checktip"> 求职者创建简历时强制填写已勾选项目</div>
+                            <div class="tc_checktip"> {yun:}t key='admin_user_00315'{/yun}</div>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">申请职位要求简历完整度达到</div>
+                        <div class="TableTite">{yun:}t key='admin_user_00318'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-input v-model="ruleForm.user_sqintegrity" placeholder="请输入数字">
+                            <el-input v-model="ruleForm.user_sqintegrity" placeholder="{yun:}t key='admin_user_00342'{/yun}">
                                 <span slot="suffix" class="slotspan">%</span>
                             </el-input>
                         </div>
@@ -206,7 +205,7 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">简历置顶要求</div>
+                        <div class="TableTite">{yun:}t key='admin_user_00331'{/yun}</div>
                     </td>
                     <td>
                         <div class="tc_checkbox">
@@ -226,12 +225,12 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">简历求职意向字数</div>
+                        <div class="TableTite">{yun:}t key='admin_user_00325'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-input v-model="ruleForm.sy_rname_num" placeholder="请输入数字">
-                                <span slot="suffix" class="slotspan">字</span>
+                            <el-input v-model="ruleForm.sy_rname_num" placeholder="{yun:}t key='admin_user_00342'{/yun}">
+                                <span slot="suffix" class="slotspan">{yun:}t key='common_02073'{/yun}</span>
                             </el-input>
                         </div>
                     </td>
@@ -242,82 +241,82 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">个人会员发布简历数</div>
+                        <div class="TableTite">{yun:}t key='admin_user_00321'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-input v-model="ruleForm.user_number" placeholder="请输入数字">
-                                <span slot="suffix" class="slotspan">份</span>
+                            <el-input v-model="ruleForm.user_number" placeholder="{yun:}t key='admin_user_00342'{/yun}">
+                                <span slot="suffix" class="slotspan">{yun:}t key='common_02052'{/yun}</span>
                             </el-input>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <div class="tc_checktip"> 为空则不限</div>
+                            <div class="tc_checktip"> {yun:}t key='admin_user_00332'{/yun}</div>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">个人搜索器数量</div>
+                        <div class="TableTite">{yun:}t key='admin_00564'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-input v-model="ruleForm.user_finder" placeholder="请输入数字">
-                                <span slot="suffix" class="slotspan">个</span>
+                            <el-input v-model="ruleForm.user_finder" placeholder="{yun:}t key='admin_user_00342'{/yun}">
+                                <span slot="suffix" class="slotspan">{yun:}t key='common_02050'{/yun}</span>
                             </el-input>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <div class="tc_checktip"> 数量太多，发送订阅邮件会很慢，为空则不限</div>
+                            <div class="tc_checktip"> {yun:}t key='admin_user_00314'{/yun}</div>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">个人会员向网站委托简历数</div>
+                        <div class="TableTite">{yun:}t key='admin_user_00319'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-input v-model="ruleForm.user_trust_number" placeholder="请输入数字">
-                                <span slot="suffix" class="slotspan">份</span>
+                            <el-input v-model="ruleForm.user_trust_number" placeholder="{yun:}t key='admin_user_00342'{/yun}">
+                                <span slot="suffix" class="slotspan">{yun:}t key='common_02052'{/yun}</span>
                             </el-input>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <div class="tc_checktip"> 为空或0则关闭委托</div>
+                            <div class="tc_checktip"> {yun:}t key='admin_user_00322'{/yun}</div>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">姓名展示</div>
+                        <div class="TableTite">{yun:}t key='wap_user_00238'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableButn">
-                            <el-radio v-model="ruleForm.user_name" label="1">用户自定义</el-radio>
-                            <el-radio v-model="ruleForm.user_name" label="2">编号</el-radio>
-                            <el-radio v-model="ruleForm.user_name" label="3">性别称呼</el-radio>
-                            <el-radio v-model="ruleForm.user_name" label="4">真实姓名</el-radio>
+                            <el-radio v-model="ruleForm.user_name" label="1">{yun:}t key='admin_00565'{/yun}</el-radio>
+                            <el-radio v-model="ruleForm.user_name" label="2">{yun:}t key='member_com_00345'{/yun}</el-radio>
+                            <el-radio v-model="ruleForm.user_name" label="3">{yun:}t key='admin_user_00339'{/yun}</el-radio>
+                            <el-radio v-model="ruleForm.user_name" label="4">{yun:}t key='member_user_00230'{/yun}</el-radio>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <div class="tc_checktip">编号：如NO.12，性别称呼：如冯先生/女士，真实姓名：如冯云鹏</div>
+                            <div class="tc_checktip">{yun:}t key='admin_user_00311'{/yun}</div>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">个人简历头像</div>
+                        <div class="TableTite">{yun:}t key='admin_00566'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableButn">
-                            <el-radio v-model="ruleForm.user_pic" label="1">用户自定义</el-radio>
-                            <el-radio v-model="ruleForm.user_pic" label="2">显示</el-radio>
-                            <el-radio v-model="ruleForm.user_pic" label="3">不显示</el-radio>
+                            <el-radio v-model="ruleForm.user_pic" label="1">{yun:}t key='admin_00565'{/yun}</el-radio>
+                            <el-radio v-model="ruleForm.user_pic" label="2">{yun:}t key='member_com_00023'{/yun}</el-radio>
+                            <el-radio v-model="ruleForm.user_pic" label="3">{yun:}t key='admin_user_00340'{/yun}</el-radio>
                         </div>
                     </td>
                     <td>
@@ -328,12 +327,12 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">个人简历刷新类型</div>
+                        <div class="TableTite">{yun:}t key='admin_00567'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableButn">
-                            <el-radio v-model="ruleForm.resume_sx" label="1">登录后自动刷新</el-radio>
-                            <el-radio v-model="ruleForm.resume_sx" label="2">弹出框手动刷新</el-radio>
+                            <el-radio v-model="ruleForm.resume_sx" label="1">{yun:}t key='admin_user_00329'{/yun}</el-radio>
+                            <el-radio v-model="ruleForm.resume_sx" label="2">{yun:}t key='admin_user_00328'{/yun}</el-radio>
                         </div>
                     </td>
                     <td>
@@ -344,64 +343,64 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">简历模糊化</div>
+                        <div class="TableTite">{yun:}t key='admin_user_00333'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableButn">
-                            <el-radio v-model="ruleForm.resume_open_check" label="1">关闭</el-radio>
-                            <el-radio v-model="ruleForm.resume_open_check" label="2">企业登录</el-radio>
-                            <el-radio v-model="ruleForm.resume_open_check" label="3">发布职位</el-radio>
-                            <el-radio v-model="ruleForm.resume_open_check" label="4">下载简历(查看联系方式)</el-radio>
+                            <el-radio v-model="ruleForm.resume_open_check" label="1">{yun:}t key='common.close'{/yun}</el-radio>
+                            <el-radio v-model="ruleForm.resume_open_check" label="2">{yun:}t key='admin_user_00335'{/yun}</el-radio>
+                            <el-radio v-model="ruleForm.resume_open_check" label="3">{yun:}t key='common.publish_job'{/yun}</el-radio>
+                            <el-radio v-model="ruleForm.resume_open_check" label="4">{yun:}t key='admin_00568'{/yun}</el-radio>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
                             <div class="tc_checktip">
-                                简历模糊化是指对简历详情页的工作经历等栏目的内容进行模糊化处理，无法看到详细内容。若选择除"关闭"外的其他选项，需当前登录账号符合对应的条件才会关闭
+                                {yun:}t key='admin_user_00306'{/yun}
                             </div>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">个人用户访问简历权限</div>
+                        <div class="TableTite">{yun:}t key='admin_00569'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableButn">
-                            <el-radio v-model="ruleForm.sy_user_visit_resume" label="1">开启</el-radio>
-                            <el-radio v-model="ruleForm.sy_user_visit_resume" label="0">关闭</el-radio>
+                            <el-radio v-model="ruleForm.sy_user_visit_resume" label="1">{yun:}t key='member_com_00287'{/yun}</el-radio>
+                            <el-radio v-model="ruleForm.sy_user_visit_resume" label="0">{yun:}t key='common.close'{/yun}</el-radio>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <div class="tc_checktip">若选择"关闭"，个人用户将无法直接访问简历信息</div>
+                            <div class="tc_checktip">{yun:}t key='admin_user_00313'{/yun}</div>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">待审核简历可以投递</div>
+                        <div class="TableTite">{yun:}t key='admin_user_00323'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableButn">
-                            <el-radio v-model="ruleForm.sy_shresume_applyjob" label="1">开启</el-radio>
-                            <el-radio v-model="ruleForm.sy_shresume_applyjob" label="0">关闭</el-radio>
+                            <el-radio v-model="ruleForm.sy_shresume_applyjob" label="1">{yun:}t key='member_com_00287'{/yun}</el-radio>
+                            <el-radio v-model="ruleForm.sy_shresume_applyjob" label="0">{yun:}t key='common.close'{/yun}</el-radio>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <div class="tc_checktip">若选择"关闭"，待审核简历将无法投递</div>
+                            <div class="tc_checktip">{yun:}t key='admin_00570'{/yun}</div>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">拥有简历才可报名兼职</div>
+                        <div class="TableTite">{yun:}t key='admin_user_00320'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableButn">
-                            <el-radio v-model="ruleForm.com_resume_partapply" label="1">开启</el-radio>
-                            <el-radio v-model="ruleForm.com_resume_partapply" label="0">关闭</el-radio>
+                            <el-radio v-model="ruleForm.com_resume_partapply" label="1">{yun:}t key='member_com_00287'{/yun}</el-radio>
+                            <el-radio v-model="ruleForm.com_resume_partapply" label="0">{yun:}t key='common.close'{/yun}</el-radio>
                         </div>
                     </td>
                     <td>
@@ -412,36 +411,36 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">简历姓名限制</div>
+                        <div class="TableTite">{yun:}t key='admin_user_00330'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableButn">
-                            <el-radio v-model="ruleForm.sy_resumename_num" label="1">开启</el-radio>
-                            <el-radio v-model="ruleForm.sy_resumename_num" label="0">关闭</el-radio>
+                            <el-radio v-model="ruleForm.sy_resumename_num" label="1">{yun:}t key='member_com_00287'{/yun}</el-radio>
+                            <el-radio v-model="ruleForm.sy_resumename_num" label="0">{yun:}t key='common.close'{/yun}</el-radio>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
                             <div class="tc_checktip">
-                                若选择"开启"，简历姓名不少于2个汉字,不大于6个汉字,只能是汉字禁止其他字符
+                                {yun:}t key='admin_00571'{/yun}
                             </div>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">简历重复投递周期</div>
+                        <div class="TableTite">{yun:}t key='admin_user_00326'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-input v-model="ruleForm.sq_resume_interval" placeholder="请输入数字">
-                                <span slot="suffix" class="slotspan">天</span>
+                            <el-input v-model="ruleForm.sq_resume_interval" placeholder="{yun:}t key='admin_user_00342'{/yun}">
+                                <span slot="suffix" class="slotspan">{yun:}t key='common_02067'{/yun}</span>
                             </el-input>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>即使个人撤回申请或企业删除投递记录，X天内也无法重复投递。为0则不限制</span>
+                            <span>{yun:}t key='admin_user_00310'{/yun}</span>
                         </div>
                     </td>
                 </tr>
@@ -449,7 +448,7 @@
             </table>
         </div>
         <div class="setBasicButn" style="border: none; height: 80px;">
-            <el-button type="primary" size="medium" @click="submitForm('ruleForm')" :disabled="submitLoading">提交
+            <el-button type="primary" size="medium" @click="submitForm('ruleForm')" :disabled="submitLoading">{yun:}t key='common.submit'{/yun}
             </el-button>
         </div>
     </div>
@@ -461,7 +460,7 @@ module.exports = {
             sy_weburl: localStorage.getItem("sy_weburl"),
             searchForm: {},
             ruleForm: {
-                config: '提交',
+                config: "{yun:}t key='common.submit'{/yun}",
                 //信息审核
                 user_height_resume: false,
                 user_idcard_status: false,
@@ -535,43 +534,43 @@ module.exports = {
             for (let index in params) {
                 (params[index] === '') && (params[index] = null);
             }
-            httpPost('m=user&c=users_userset&a=index', params).then(function (response) {
+            httpPost('m=user&c=users_userset&a=index", params).then(function (response) {
                 let res = response.data;
                 if (res.error === 0) {
                     let config = res.data.config ? res.data.config : {};
-                    //----信息审核
-                    //优质简历
-                    _this.ruleForm.user_height_resume = config.user_height_resume == '1' ? true : false;
-                    //身份证
-                    _this.ruleForm.user_idcard_status = config.user_idcard_status == '1' ? true : false;
-                    //求职咨询
-                    _this.ruleForm.user_msg_status = config.user_msg_status == '0' ? true : false;
-                    //头像
-                    _this.ruleForm.user_photo_status = config.user_photo_status == '1' ? true : false;
-                    //作品
-                    _this.ruleForm.rshow_photo_status = config.rshow_photo_status == '1' ? true : false;
-                    //委托简历
-                    _this.ruleForm.user_trust_status = config.user_trust_status == '0' ? true : false;
-                    //----简历审核
-                    //创建简历
-                    _this.ruleForm.resume_status = config.resume_status == '0' ? true : false;
-                    //修改简历
-                    _this.ruleForm.user_revise_state = config.user_revise_state == '0' ? true : false;
+                    // ----InfoAudit
+                    //{yun:}t key='wap_com_00375'{/yun}
+                    _this.ruleForm.user_height_resume = config.user_height_resume == "1" ? true : false;
+                    //{yun:}t key='member_com_00014'{/yun}
+                    _this.ruleForm.user_idcard_status = config.user_idcard_status == "1" ? true : false;
+                    //{yun:}t key='wap_com_00408'{/yun}
+                    _this.ruleForm.user_msg_status = config.user_msg_status == "0" ? true : false;
+                    //{yun:}t key='member_user_00161'{/yun}
+                    _this.ruleForm.user_photo_status = config.user_photo_status == "1' ? true : false;
+                    // work
+                    _this.ruleForm.rshow_photo_status = config.rshow_photo_status == '1" ? true : false;
+                    //{yun:}t key='member_user_00276'{/yun}
+                    _this.ruleForm.user_trust_status = config.user_trust_status == "0" ? true : false;
+                    // ----ResumeAudit
+                    //{yun:}t key='wap_user_00197'{/yun}
+                    _this.ruleForm.resume_status = config.resume_status == "0" ? true : false;
+                    //{yun:}t key='wap_00269'{/yun}
+                    _this.ruleForm.user_revise_state = config.user_revise_state == "0' ? true : false;
                     _this.ruleForm.resume_statetime_start = config.resume_statetime_start !== undefined ? config.resume_statetime_start : '';
-                    _this.ruleForm.resume_statetime_end = config.resume_statetime_end !== undefined ? config.resume_statetime_end : '';
-                    //----强制操作
-                    //创建简历
-                    _this.ruleForm.user_resume_status = config.user_resume_status == '1' ? true : false;
-                    //关注微信公众号
-                    _this.ruleForm.user_gzgzh = config.user_gzgzh == '1' ? true : false;
-                    //----快速投递
+                    _this.ruleForm.resume_statetime_end = config.resume_statetime_end !== undefined ? config.resume_statetime_end : '";
+                    //----{yun:}t key='admin_user_00337'{/yun}
+                    //{yun:}t key='wap_user_00197'{/yun}
+                    _this.ruleForm.user_resume_status = config.user_resume_status == "1" ? true : false;
+                    //{yun:}t key='admin_user_company_00260'{/yun}
+                    _this.ruleForm.user_gzgzh = config.user_gzgzh == "1" ? true : false;
+                    //----{yun:}t key='admin_user_00338'{/yun}
                     _this.ruleForm.resume_kstd = config.resume_kstd !== undefined ? config.resume_kstd : null;
                     //----简历创建必填项
-                    //工作经历
-                    _this.ruleForm.resume_create_exp = config.resume_create_exp == '1' ? true : false;
-                    //教育经历
+                    // Work experience
+                    _this.ruleForm.resume_create_exp = config.resume_create_exp == "1' ? true : false;
+                    // Educational experience
                     _this.ruleForm.resume_create_edu = config.resume_create_edu == '1' ? true : false;
-                    //项目经历
+                    // Project experience
                     _this.ruleForm.resume_create_project = config.resume_create_project == '1' ? true : false;
                     //工作经历选项
                     if (config.expcreate !== undefined && config.expcreate.length) {
@@ -581,56 +580,56 @@ module.exports = {
                     }
                     //教育经历选项
                     if (config.educreate !== undefined && config.educreate.length) {
-                        _this.ruleForm.educreate = config.educreate.split(',');
+                        _this.ruleForm.educreate = config.educreate.split(',");
                     } else {
                         _this.ruleForm.educreate = [];
                     }
-                    //设置不强制填写职位类别项
+                    //{yun:}t key='admin_00052'{/yun}
                     if (config.sy_resume_job_classid !== undefined && config.sy_resume_job_classid.length) {
-                        _this.ruleForm.sy_resume_job_classid = config.sy_resume_job_classid.split(',');
+                        _this.ruleForm.sy_resume_job_classid = config.sy_resume_job_classid.split(",");
                         _this.jobSelected = JSON.parse(JSON.stringify(res.data.selected))
                     } else {
                         _this.ruleForm.sy_resume_job_classid = [];
                     }
                     //跨职位类别投递，是否要判断完整度  1 0
                     _this.ruleForm.sy_resume_kh_td = config.sy_resume_kh_td !== undefined ? config.sy_resume_kh_td : null;
-                    //快速投递，是否遵从简历必填项  1 2
+                    //{yun:}t key='admin_user_00338'{/yun}，是否遵从简历必填项  1 2
                     _this.ruleForm.resume_kstd_req = config.resume_kstd_req !== undefined ? config.resume_kstd_req : null;
-                    //----申请职位要求简历完整度达到
-                    _this.ruleForm.user_sqintegrity = config.user_sqintegrity !== undefined ? config.user_sqintegrity : '';
-                    //----简历置顶要求
-                    //工作经历
-                    _this.ruleForm.user_work_regiser = config.user_work_regiser == '1' ? true : false;
-                    //教育经历
+                    //----{yun:}t key='admin_user_00318'{/yun}
+                    _this.ruleForm.user_sqintegrity = config.user_sqintegrity !== undefined ? config.user_sqintegrity : "";
+                    //----{yun:}t key='admin_user_00331'{/yun}
+                    // Work experience
+                    _this.ruleForm.user_work_regiser = config.user_work_regiser == "1' ? true : false;
+                    // Educational experience
                     _this.ruleForm.user_edu_regiser = config.user_edu_regiser == '1' ? true : false;
-                    //项目经历
-                    _this.ruleForm.user_project_regiser = config.user_project_regiser == '1' ? true : false;
-                    //简历求职意向字数
-                    _this.ruleForm.sy_rname_num = config.sy_rname_num !== undefined ? config.sy_rname_num : '';
-                    //个人会员发布简历数
-                    _this.ruleForm.user_number = config.user_number !== undefined ? config.user_number : '';
-                    //个人搜索器数量
-                    _this.ruleForm.user_finder = config.user_finder !== undefined ? config.user_finder : '';
-                    //个人会员向网站委托简历数
-                    _this.ruleForm.user_trust_number = config.user_trust_number !== undefined ? config.user_trust_number : '';
-                    //姓名展示
+                    // Project experience
+                    _this.ruleForm.user_project_regiser = config.user_project_regiser == '1" ? true : false;
+                    //{yun:}t key='admin_user_00325'{/yun}
+                    _this.ruleForm.sy_rname_num = config.sy_rname_num !== undefined ? config.sy_rname_num : "";
+                    //{yun:}t key='admin_user_00321'{/yun}
+                    _this.ruleForm.user_number = config.user_number !== undefined ? config.user_number : "";
+                    //{yun:}t key='admin_00564'{/yun}
+                    _this.ruleForm.user_finder = config.user_finder !== undefined ? config.user_finder : "";
+                    //{yun:}t key='admin_user_00319'{/yun}
+                    _this.ruleForm.user_trust_number = config.user_trust_number !== undefined ? config.user_trust_number : "";
+                    //{yun:}t key='wap_user_00238'{/yun}
                     _this.ruleForm.user_name = config.user_name !== undefined ? config.user_name : null;
-                    //个人简历头像
+                    //{yun:}t key='admin_00566'{/yun}
                     _this.ruleForm.user_pic = config.user_pic !== undefined ? config.user_pic : null;
-                    //个人简历刷新类型
+                    //{yun:}t key='admin_00567'{/yun}
                     _this.ruleForm.resume_sx = config.resume_sx !== undefined ? config.resume_sx : null;
-                    //简历模糊化
+                    //{yun:}t key='admin_user_00333'{/yun}
                     _this.ruleForm.resume_open_check = config.resume_open_check !== undefined ? config.resume_open_check : null;
-                    //个人用户访问简历权限
+                    //{yun:}t key='admin_00569'{/yun}
                     _this.ruleForm.sy_user_visit_resume = config.sy_user_visit_resume !== undefined ? config.sy_user_visit_resume : null;
-                    //待审核简历可以投递
+                    //{yun:}t key='admin_user_00323'{/yun}
                     _this.ruleForm.sy_shresume_applyjob = config.sy_shresume_applyjob !== undefined ? config.sy_shresume_applyjob : null;
-                    //拥有简历才可报名兼职
+                    //{yun:}t key='admin_user_00320'{/yun}
                     _this.ruleForm.com_resume_partapply = config.com_resume_partapply !== undefined ? config.com_resume_partapply : null;
-                    //简历姓名限制
+                    //{yun:}t key='admin_user_00330'{/yun}
                     _this.ruleForm.sy_resumename_num = config.sy_resumename_num !== undefined ? config.sy_resumename_num : null;
-                    //简历重复投递周期
-                    _this.ruleForm.sq_resume_interval = config.sq_resume_interval !== undefined ? config.sq_resume_interval : '';
+                    //{yun:}t key='admin_user_00326'{/yun}
+                    _this.ruleForm.sq_resume_interval = config.sq_resume_interval !== undefined ? config.sq_resume_interval : "';
 
                     _this.getBaseData();
                 }

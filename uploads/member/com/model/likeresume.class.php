@@ -68,10 +68,10 @@ class likeresume_controller extends company
                     }
                     if ($v['sex'] == '152') {
 
-                        $resume[$k]['sex']  =   '女';
+                        $resume[$k]['sex']  =   yun_at('common_02069');
                     } elseif ($v['sex'] == '153') {
 
-                        $resume[$k]['sex']  =   '男';
+                        $resume[$k]['sex']  =   yun_at('common_02092');
                     } else {
 
                         $resume[$k]['sex']  =   $v['sex_n'];
@@ -82,7 +82,7 @@ class likeresume_controller extends company
 
                     $pre        =   60;
 
-                    if ($job['job_edu'] == $v['edu_n'] || $job['job_edu'] == '不限') {
+                    if ($job['job_edu'] == $v['edu_n'] || $job['job_edu'] == 'common_01936') {
                         $pre    =   $pre + 5;
                     }
                     if ($job['job_sex'] == $v['sex_n']) {
@@ -91,16 +91,16 @@ class likeresume_controller extends company
                     if (isset($user) && !empty($user)) {
                         foreach ($user as $val) {
                             if ($v['uid'] == $val['uid']) {
-                                if ($job['job_marriage'] == $val['marriage_n'] || $job['job_marriage'] == "不限") {
+                                if ($job['job_marriage'] == $val['marriage_n'] || $job['job_marriage'] == 'common_01936') {
                                     $pre = $pre + 5;
                                 }
                             }
                         }
                     }
-                    if ($job['job_report'] == $v['report_n'] || $job['job_report'] == "不限") {
+                    if ($job['job_report'] == $v['report_n'] || $job['job_report'] == 'common_01936') {
                         $pre    =   $pre + 5;
                     }
-                    if ($job['job_exp'] == $v['exp_n'] || $job['job_exp'] == "不限") {
+                    if ($job['job_exp'] == $v['exp_n'] || $job['job_exp'] == 'common_01936') {
                         $pre    =   $pre + 5;
                     }
                     $resume[$k]['pre']  =   $pre;

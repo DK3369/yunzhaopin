@@ -2,27 +2,27 @@
   <div>
     <!--广告管理 调用-->
     <div style="margin-top: -20px;">
-      <div class="wxsettip_small">广告调用方式</div>
+      <div class="wxsettip_small">{yun:}t key='admin_01157'{/yun}</div>
       <div class="">
         <template v-if="info.is_end == '1'">
-          广告已过期，不可调用。
+          {yun:}t key='admin_01158'{/yun}
         </template>
         <template v-else-if="info.is_open == '0'">
-          广告停用，不可调用
+          {yun:}t key='admin_01159'{/yun}
         </template>
         <template v-else>
-          <el-radio v-model="type" label="1" @input="handleType">站内调用</el-radio>
-          <el-radio v-model="type" label="2" @input="handleType">站外调用</el-radio>
+          <el-radio v-model="type" label="1" @input="handleType">{yun:}t key='admin_01160'{/yun}</el-radio>
+          <el-radio v-model="type" label="2" @input="handleType">{yun:}t key='admin_01161'{/yun}</el-radio>
         </template>
       </div>
       <div v-if="type != null">
-        <div class="wxsettip_small">广告调用代码
+        <div class="wxsettip_small">{yun:}t key='admin_01162'{/yun}
           <el-tooltip class="item" effect="dark" content="复制(CTRL+C)以下內容并添加到模板中" placement="right-start"><i class="el-icon-warning-outline"></i>
-            <el-button>右上</el-button>
+            <el-button>{yun:}t key='admin_00207'{/yun}</el-button>
           </el-tooltip>
         </div>
         <el-input id="elementCode" v-model="code" placeholder=""></el-input>
-        <div class="wxsettip">将JS代码复制 粘贴到需要投放该广告的页面</div>
+        <div class="wxsettip">{yun:}t key='admin_01163'{/yun}</div>
     <!--    <div class="wxsettip"> 可以在-->
     <!--      <el-link href="https://work.weixin.qq.com" target="_blank">后台模板管理中修改</el-link>-->
     <!--    </div>-->
@@ -30,7 +30,7 @@
           <el-button id="copyBtn" type="primary"
                      data-clipboard-action="copy"
                      data-clipboard-target="#elementCode"
-                     @click="handleCopyValue">复制代码</el-button>
+                     @click="handleCopyValue">{yun:}t key='admin_yunying_00073'{/yun}</el-button>
         </div>
       </div>
     </div>
@@ -61,7 +61,7 @@ module.exports = {
         if (res.error === 0) {
           _this.info = res.data;
         } else {
-          message.error('暂无数据');
+          message.error("{yun:}t key='wap_js_00113'{/yun}");
         }
       }).catch(function (error) {
         console.log(error);
@@ -77,7 +77,7 @@ module.exports = {
       }
     },
     /**
-     * 复制代码
+     * {yun:}t key='admin_yunying_00073'{/yun}
      */
     handleCopyValue() {
       let clipboard = new ClipboardJS('#copyBtn'); // 获取点击按钮的元素
@@ -86,7 +86,7 @@ module.exports = {
         e.clearSelection();
         // 释放内存
         clipboard.destroy();
-        message.success('复制成功');
+        message.success('{yun:}t key='admin_user_company_00368'{/yun}');
       });
       // 复制失败
       clipboard.on('error', (e) => {

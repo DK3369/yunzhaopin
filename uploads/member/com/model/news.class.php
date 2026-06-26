@@ -61,7 +61,7 @@ class news_controller extends company
 			$sql['body']	=	$_POST['body'];
 			
 			if(trim($sql['title'])=="" || $sql['body']==""){
- 				$this->ACT_layer_msg("新闻标题内容不能为空！",2,$_SERVER['HTTP_REFERER']);
+ 				$this->ACT_layer_msg('member_com_00700',2,$_SERVER['HTTP_REFERER']);
 			}
 			if(!$_POST['id']){
 				$sql['uid']		=	$this->uid;

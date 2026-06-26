@@ -145,7 +145,7 @@ class downresume_model extends model
             $nid    =   $this->insert_into('down_resume', $addData);
             if (!$nid) {
 
-                $this->addErrorLog($addData['comid'], 6, '下载简历失败！');
+                $this->addErrorLog($addData['comid'], 6, 'common_06476');
             }
         }
 
@@ -166,7 +166,7 @@ class downresume_model extends model
             $nid    =   $this->insert_into('freedown_resume', $addData);
             if (!$nid) {
 
-                $this->addErrorLog($addData['comid'], 6, '下载简历失败！');
+                $this->addErrorLog($addData['comid'], 6, 'common_06476');
             }
         }
 
@@ -258,9 +258,9 @@ class downresume_model extends model
             $List[$k]['wapurl'] = Url('wap', array('c' => 'resume', 'a' => 'show', 'id' => $v['eid']));
             $List[$k]['datetime_n'] = timeForYear($v['downtime']);
             if ($v['isdel'] == 2) {
-                $List[$k]['isdel_n'] = '企业用户删除';
+                $List[$k]['isdel_n'] = yun_at('common_06285');
             } else {
-                $List[$k]['isdel_n'] = '正常';
+                $List[$k]['isdel_n'] = yun_at('admin_user_00149');
             }
             if (isset($cache)) {
                 $List[$k]['status_n'] = $cache['comclass_name'][$v['status']];
@@ -371,13 +371,13 @@ class downresume_model extends model
 
             if ($result) {
 
-                $this->addMemberLog($data['uid'], $data['usertype'], "简历下载：删除已下载简历（ID:".$id."）", 3, 3);
+                $this->addMemberLog($data['uid'], $data['usertype'], 'common_00539'.$id."）", 3, 3);
 
-                $return['msg']          =   '下载记录(ID:' . $id . ')删除成功';
+                $return['msg']          =   yun_auto_t('下载记录(ID:') . $id . ')删除成功';
                 $return['errcode']      =   '9';
             } else {
 
-                $return['msg']          =   '下载记录(ID:' . $id . ')删除失败';
+                $return['msg']          =   yun_auto_t('下载记录(ID:') . $id . ')删除失败';
                 $return['errcode']      =   '8';
             }
         } elseif ($data['where']) {
@@ -395,7 +395,7 @@ class downresume_model extends model
             return $result;
         } else {
 
-            $return['msg']              =   '请选择您要删除的下载记录';
+            $return['msg']              =   yun_at('common_00813');
             $return['errcode']          =   '8';
         }
         return $return;
@@ -432,12 +432,12 @@ class downresume_model extends model
         /* 登录状态判断 */
         if (empty($uid)) {
 
-            $res['msg']     =   '请先登录！';
+            $res['msg']     =   yun_at('common_06042');
             $res['login']   =   2;
             return $res;
         }
 
-        $tag        =   $data['utype'] == 'wap' || $data['utype'] == 'wxapp' ? '查看' : '下载';
+        $tag        =   $data['utype'] == 'wap' || $data['utype'] == 'wxapp' ? yun_at('wap_com_00427') : yun_at('wap_00070');
 
         /* 会员类型判断 */
         if ($usertype == 1) { //  个人会员
@@ -448,7 +448,7 @@ class downresume_model extends model
                 return $res;
             } else {
 
-                $res['msg']     =   '个人用户无法'.$tag.'简历！';
+                $res['msg']     =   yun_at('wap_00430').$tag.'简历！';
                 return $res;
             }
         } else if ($usertype == 2) {
@@ -460,11 +460,11 @@ class downresume_model extends model
 
                     if ($member['r_status'] == '4'){
 
-                        $res['msg'] = '当前账户会员权益已暂停，请联系客服开启服务~';
+                        $res['msg'] = yun_at('wap_com_00081');
                         $res['status'] = 4;
                         return $res;
                     }else {
-                        $res['msg'] = '您的帐号未通过审核，请联系客服加快审核进度！';
+                        $res['msg'] = yun_at('common_00268');
                         $res['status'] = 4;
                         return $res;
                     }
@@ -477,7 +477,7 @@ class downresume_model extends model
                 $black          =   $blackM->getBlackNum(array('c_uid' => $user['uid'], 'p_uid' => $uid));
                 if (!empty($black)) {
 
-                    $res['msg'] =   '该简历暂时无法' . $tag . '，您可以先浏览其他简历信息！';
+                    $res['msg'] =   yun_at('common_01403') . $tag . 'common_00679';
                     return $res;
                 }
 
@@ -500,37 +500,37 @@ class downresume_model extends model
             $resumeArr          =   $resumeM->getResumeInfo(array('uid' => $user['uid']), $resumeField);
             if ($resumeArr['r_status'] == '0') {
 
-                $res['msg']     =   '个人用户账号未审核！';
+                $res['msg']     =   yun_at('common_00971');
                 return $res;
             }else if($resumeArr['r_status'] == '2'){
 
-                $res['msg']     =   '个人用户账号已锁定！';
+                $res['msg']     =   yun_at('common_00970');
                 return $res;
             }else if($resumeArr['r_status'] == '3'){
 
-                $res['msg']     =   '个人用户账号未通过审核！';
+                $res['msg']     =   yun_at('common_00777');
                 return $res;
             }
 
             $user               =   array_merge($user, $resumeArr);
             if (empty($user)) {
 
-                $res['msg']     =   '数据错误！';
+                $res['msg']     =   yun_at('member_com_00051');
                 return $res;
             }elseif ($user['state'] == '0') {
-                $res['msg']     =   '该简历未审核！';
+                $res['msg']     =   yun_at('common_01404');
                 return $res;
             }elseif ($user['state'] == '2') {
-                $res['msg']     =   '该简历已被举报！';
+                $res['msg']     =   yun_at('common_01301');
                 return $res;
             }elseif ($user['state'] == '3') {
-                $res['msg']     =   '该简历未通过审核！';
+                $res['msg']     =   yun_at('common_01150');
                 return $res;
             }
 
             /* 如果联系方式都是空的，给以提醒，不能扣除企业用户的积分、套餐等 */
             if (empty($user['telhome']) && empty($user['telphone']) && empty($user['email'])) {
-                $res['msg']     =   '该简历暂无联系方式';
+                $res['msg']     =   yun_at('common_01149');
                 return $res;
             }
 
@@ -559,7 +559,7 @@ class downresume_model extends model
                         }
                         $res['down']        =   1;
                         $res['status']      =   1;
-                        $res['msg']         =   '还未发布职位,无法' . $tag . '简历！';
+                        $res['msg']         =   yun_at('common_01175') . $tag . '简历！';
                         $res['type']        =   intval($user['height_status']);
                         return $res;
                     }
@@ -679,10 +679,10 @@ class downresume_model extends model
 
                                 if ($serverOpen) {
 
-                                    $res['msg'] =   "你的等级特权已经用完，继续" . $tag . "将消费 <span style=color:red;>" . $tmpJifen . "</span> " . $this->config['integral_pricename'] . "，是否" . $tag . "？";
+                                    $res['msg'] =   yun_at('common_00697') . $tag . 'common_00161' . $tmpJifen . "</span> " . $this->config['integral_pricename'] . 'common_01935' . $tag . "？";
                                 } else {
 
-                                    $res['msg'] =   "你的套餐已经用完，你可以<a href=\"" . $this->config['sy_weburl'] . "/wap/member/index.php?c=rating\" style=\"color:red;cursor:pointer;\">购买会员</a>！";
+                                    $res['msg'] =   yun_at('common_00781') . '<a href="' . $this->config['sy_weburl'] . '/wap/member/index.php?c=rating" style="color:red;cursor:pointer;">' . yun_at('default_00090') . '</a>！';
                                 }
 
                                 /* 积分模式，是否需要充值判断 */
@@ -693,10 +693,10 @@ class downresume_model extends model
 
                                 if ($serverOpen) {
 
-                                    $res['msg'] =   "你的等级特权已经用完,继续" . $tag . "将消费 <span style=color:red;>" . $tmpYuan . "</span> 元，是否" . $tag . "?";
+                                    $res['msg'] =   yun_at('common_00696') . $tag . 'common_00161' . $tmpYuan . 'common_00757' . $tag . "?";
                                 } else {
 
-                                    $res['msg'] =   "你的套餐已经用完，你可以<a href=\"" . $this->config['sy_weburl'] . "/wap/member/index.php?c=rating\" style=\"color:red;cursor:pointer;\">购买会员</a>！";
+                                    $res['msg'] =   yun_at('common_00781') . '<a href="' . $this->config['sy_weburl'] . '/wap/member/index.php?c=rating" style="color:red;cursor:pointer;">' . yun_at('default_00090') . '</a>！';
                                 }
                                 $res['price']   =   $tmpYuan;
                             }
@@ -706,7 +706,7 @@ class downresume_model extends model
                         } else { // 套餐消费模式
 
                             $res['price']       =   $tmpYuan;
-                            $res['msg']         =   "你的套餐已经用完，你可以<a href=\"" . $this->config['sy_weburl'] . "/wap/member/index.php?c=rating\" style=\"color:red;cursor:pointer;\">购买会员</a>！";
+                            $res['msg']         =   yun_at('common_00781') . '<a href="' . $this->config['sy_weburl'] . '/wap/member/index.php?c=rating" style="color:red;cursor:pointer;">' . yun_at('default_00090') . '</a>！';
                         }
 
                         $res['status']          =   2;
@@ -722,7 +722,7 @@ class downresume_model extends model
                             $suid                   =   $uid;
                             $statisM->upInfo(array('down_resume' => array('-', 1)), array('uid' => $suid, 'usertype' => $usertype));
 
-                            $payDetail = '下载简历，消耗下载套餐数量：1';
+                            $payDetail = 'common_00556';
                             $statisM->addStatisDetail(array('uid' => $suid, 'type' => 3, 'num' => 1, 'detail' => $payDetail, 'uri' => $_SERVER['REQUEST_URI']));
                         } else {
 
@@ -760,7 +760,7 @@ class downresume_model extends model
                         return $result;
                     }
 
-                    $payDetail  =   '下载简历，消耗今日下载套餐数量：1';
+                    $payDetail  =   'common_00463';
                     $statisM->addStatisDetail(array('uid' => $suid, 'type' => 3, 'num' => 1, 'detail' => $payDetail, 'uri' => $_SERVER['REQUEST_URI']));
                     
                     $this->_downResume($downData, $eid, $user, $uid);
@@ -785,7 +785,7 @@ class downresume_model extends model
                     return $res;
                 } else {
 
-                    $res['msg']                     =   '当前账户会员已过期，请联系网站管理员！';
+                    $res['msg']                     =   yun_at('common_00376');
 
                     return $res;
                 }
@@ -799,19 +799,19 @@ class downresume_model extends model
                     if ($online == 3 && !in_array('downresume', explode(',', $this->config['sy_only_price']))) {
 
                         $tmpJifen2              =   $resumeM->setDayprice($eid, array('integral' => 'yes'));
-                        $res['msg']             =   '你的会员已到期，请先购买会员！';
+                        $res['msg']             =   yun_at('common_00561');
                         $res['jifen']           =   $tmpJifen2;
                         $res['integral']        =   intval($statis['integral']);
                         $res['pro']             =   $this->config['integral_proportion'];
                     } else {
 
                         $tmpYuan2               =   $resumeM->setDayprice($eid);
-                        $res['msg']             =   '你的会员已到期，请先购买会员！';
+                        $res['msg']             =   yun_at('common_00561');
                         $res['price']           =   $tmpYuan2;
                     }
                 } else {
 
-                    $res['msg']                 =   "你的会员已到期，你可以<a href='" . $this->config['sy_weburl'] . "/wap/member/index.php?c=rating' style='color:red;cursor:pointer;'>购买会员</a>！";
+                    $res['msg']                 =   'common_00333' . $this->config['sy_weburl'] . "/wap/member/index.php?c=rating' style='color:red;cursor:pointer;'>购买会员</a>！";
                 }
                 $res['online']                  =   $online;
                 $res['status']                  =   2;
@@ -878,9 +878,9 @@ class downresume_model extends model
         }else {
             $this->addInfo($data);
         }
-        $content = '简历下载：下载简历《'.$user['name'].'》';
+        $content = 'common_06474'.$user['name'].'》';
         if ($isFree){
-            $content = $content."(免费下载)";
+            $content = $content.'common_01424';
         }
         // 增加下载简历数量
         $this->update_once('resume_expect', array('dnum' => array('+', 1)), array('id' => $eid));
@@ -893,7 +893,7 @@ class downresume_model extends model
         $sysmsgM            =   new sysmsg_model($this->db, $this->def);
 
             $uinfo          =   $this->select_once('company', array('uid' => $data['comid']), '`name`');
-            $content        =   '企业 <a href="comtpl,' . $data['comid'] . '">' . $uinfo['name'] . '</a> 下载了您('.$user['name'].')的简历';
+            $content        =   '企业 <a href="comtpl,' . $data['comid'] . '">' . $uinfo['name'] . 'common_00948'.$user['name'].'common_01653';
 
         $sysmsgM->addInfo(array('uid' => $user['uid'], 'usertype' => 1, 'content' => $content));
 
@@ -965,7 +965,7 @@ class downresume_model extends model
                         $time                   =   date("Y-m", $v['sdate']) . "-" . date("Y-m", $v['edate']);
                     } else {
 
-                        $time                   =   date("Y-m", $v['sdate']) . "-至今 ";
+                        $time                   =   date("Y-m", $v['sdate']) . 'common_06477';
                     }
                     $userwork[$v['eid']][]      =   $v['name'] . "##" . $time . "##" . $v['department'] . "##" . $v['title'] . "##" . $v['content'];
                 }
@@ -1033,7 +1033,7 @@ class downresume_model extends model
                         }
                     }
                 }
-                $this->addMemberLog($data['uid'], $data['usertype'], "简历下载：导出已下载简历信息", 3, 1);
+                $this->addMemberLog($data['uid'], $data['usertype'], 'common_00666', 3, 1);
             }
         }
         return $list;
@@ -1128,14 +1128,14 @@ class downresume_model extends model
 
                 if ($data['uid']){
 
-                    $this->addMemberLog($data['uid'], $data['usertype'], "简历下载：删除已免费下载简历（ID:".$id."）", 3, 3);
+                    $this->addMemberLog($data['uid'], $data['usertype'], 'common_00440'.$id."）", 3, 3);
                 }
 
-                $return['msg'] = '简历免费下载记录(ID:' . $id . ')删除成功';
+                $return['msg'] = yun_auto_t('简历免费下载记录(ID:') . $id . ')删除成功';
                 $return['errcode'] = '9';
             } else {
 
-                $return['msg'] = '简历免费下载记录(ID:' . $id . ')删除失败';
+                $return['msg'] = yun_auto_t('简历免费下载记录(ID:') . $id . ')删除失败';
                 $return['errcode'] = '8';
             }
         } elseif ($data['where']) {
@@ -1153,7 +1153,7 @@ class downresume_model extends model
             return $result;
         } else {
 
-            $return['msg'] = '请选择您要删除的下载记录';
+            $return['msg'] = yun_at('common_00813');
             $return['errcode'] = '8';
         }
         return $return;

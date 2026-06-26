@@ -27,12 +27,12 @@
         <div class="evaluation_results_df">  
        <div class="evaluation_results_df_c"> 
        <div class="evaluation_results_df_c_n">{yun:}$info.grade{/yun}<span class="evaluation_results_df_c_n_dw">{yun:}t key='common_02058'{/yun}</span></div>
-       您的测评得分
+       {yun:}t key='wap_00638'{/yun}
        </div>
        </div>
      </div>
              <div class="evaluation_results_fx">
-          <div class="evaluation_results_fx_tit"><i class="evaluation_results_fx_tit_icon"></i><span class="evaluation_results_fx_tit_s">测试结果分析</span></div>
+          <div class="evaluation_results_fx_tit"><i class="evaluation_results_fx_tit_icon"></i><span class="evaluation_results_fx_tit_s">{yun:}t key='wap_00637'{/yun}</span></div>
           <div class="evaluation_results_fx_p">  {yun:}$info.comment_n{/yun}    </div>
              </div>
                 <div class="evaluation_results_fx">
@@ -40,8 +40,8 @@
           <div class="evaluation_results_fx_p">   
           {yun:}foreach from=$exambase.result item=v key=key{/yun}
 		<div class="evaluation_results_fx_list">
-        <div class="cp_jg_box_list_tit">成绩范围：<span style="color:#C30; font-size:30px;">{yun:}$v.fromscore{/yun}</span> 分到 <span style="color:#C30; font-size:30px;">{yun:}$v.toscore{/yun}</span> {yun:}t key='common_02058'{/yun}</div>
-        <div class="cp_jg_box_list_p">评语：{yun:}$v.comment{/yun}</div></div>
+        <div class="cp_jg_box_list_tit">{yun:}t key='common_02337'{/yun}<span style="color:#C30; font-size:30px;">{yun:}$v.fromscore{/yun}</span> {yun:}t key='common_02338'{/yun} <span style="color:#C30; font-size:30px;">{yun:}$v.toscore{/yun}</span> {yun:}t key='common_02058'{/yun}</div>
+        <div class="cp_jg_box_list_p">{yun:}t key='admin_00864'{/yun}：{yun:}$v.comment{/yun}</div></div>
         {yun:}/foreach{/yun}   </div>
             
              </div>
@@ -52,8 +52,8 @@
                   <div class="bdsharebuttonbox" style="margin:0 auto;width:195px;">
                       <a href="#" class="bds_more" data-cmd="more"></a>
                       <a title="{yun:}t key='wap_js_00040'{/yun}QQ空间" href="#" class="bds_qzone" data-cmd="qzone"></a>
-                      <a title="分享到新浪微博" href="#" class="bds_tsina" data-cmd="tsina"></a>
-                      <a title="分享到微信" href="#" class="bds_weixin" data-cmd="weixin"></a>
+                      <a title="{yun:}t key='common_02250'{/yun}" href="#" class="bds_tsina" data-cmd="tsina"></a>
+                      <a title="{yun:}t key='common_02251'{/yun}" href="#" class="bds_weixin" data-cmd="weixin"></a>
                   </div>
               </span>
           </div>
@@ -162,7 +162,7 @@ DD_belatedPNG.fix('.png');
   window._bd_share_config={
 	  "common":{
 		  "bdSnsKey":{},
-		  "bdText":"我在 {yun:}$config.sy_webname{/yun} {yun:}t key='admin_tool_00371'{/yun}《{yun:}$exambase.name{/yun}》得到了{yun:}$info.grade{/yun}{yun:}t key='common_02058'{/yun}，评语：{yun:}$comment{/yun}",
+		  "bdText":"我在 {yun:}$config.sy_webname{/yun} {yun:}t key='admin_tool_00371'{/yun}《{yun:}$exambase.name{/yun}》得到了{yun:}$info.grade{/yun}{yun:}t key='common_02058'{/yun}，{yun:}t key='admin_00864'{/yun}：{yun:}$comment{/yun}",
 		  "bdMini":"2",
 		  "bdUrl":'{yun:}$config.sy_weburl{/yun}',
 		  "bdPic":"{yun:}$config.sy_weburl{/yun}/{yun:}$config.sy_logo{/yun}",

@@ -16,17 +16,17 @@ class claim_controller extends common
             $member     =   $UserinfoM->getInfo(array('uid' => $uid), array('field' => '`claim`'));
             
             if ($member['claim'] == '1') {
-                $this->ACT_msg_wap($_SERVER['HTTP_REFERER'], yun_auto_t('该用户已经被认领！'));
+                $this->ACT_msg_wap($_SERVER['HTTP_REFERER'], yun_at('wap_00170'));
             }
             
 			$ComM       =   $this->MODEL('company');
             $cert       =   $ComM->getCertInfo(array('uid' => $uid, 'type' => 6));
             if ($cert['check2'] != $_GET['code'] || $cert['check2'] == '') {
-                $this->ACT_msg_wap($_SERVER['HTTP_REFERER'], yun_auto_t('参数不正确！'));
+                $this->ACT_msg_wap($_SERVER['HTTP_REFERER'], yun_at('wap_00171'));
             } 
         }
 	
-		$this->yunset("headertitle",yun_auto_t('认领会员'));
+		$this->yunset("headertitle",yun_at('wap_00174'));
 		
         $this -> seo('claim');
         $this -> yuntpl(array('wap/claim'));
@@ -39,19 +39,19 @@ class claim_controller extends common
             $UserinfoM  =   $this->MODEL('userinfo');
             $member     =   $UserinfoM->getInfo(array('uid' => intval($_POST['uid'])), array('field' => '`claim`'));
             if ($member['claim'] == '1') {
-                $this->ACT_msg_wap($_SERVER['HTTP_REFERER'], yun_auto_t('该用户已经被认领！'));
+                $this->ACT_msg_wap($_SERVER['HTTP_REFERER'], yun_at('wap_00170'));
             }
             
             $ComM       =   $this -> MODEL('company');
             $cert       =   $ComM -> getCertInfo(array('uid' => intval($_POST['uid']), 'type' => 6));
             
             if ($cert['check2'] != $_POST['code'] || $cert['check2'] == '') {
-                $this->ACT_msg_wap($_SERVER['HTTP_REFERER'], yun_auto_t('参数不正确！'));
+                $this->ACT_msg_wap($_SERVER['HTTP_REFERER'], yun_at('wap_00171'));
             }
             $row        =   $UserinfoM -> getInfo(array('username' => $_POST['username']), array('field' => '`uid`'));
             
             if ($row['uid'] > 0) {
-                $this->ACT_msg_wap($_SERVER['HTTP_REFERER'], yun_auto_t('用户名已存在，请重新输入！'));
+                $this->ACT_msg_wap($_SERVER['HTTP_REFERER'], yun_at('wap_01779'));
             }
             $salt       =   substr(uniqid(rand()), - 6);
             $pass       =   passCheck($_POST['password'], $salt);
@@ -69,7 +69,7 @@ class claim_controller extends common
 			$return	=	array(
 				
 				'errcode'	=>	$result ? 9 : 8,
-				'msg'		=>	$result	? yun_auto_t('认领成功！') : yun_auto_t('认领失败！'),
+				'msg'		=>	$result	? yun_at('wap_01780') : yun_at('wap_01781'),
 			);
 			
 			echo yun_json_encode($return);die;

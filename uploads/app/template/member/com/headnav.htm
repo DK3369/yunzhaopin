@@ -11,7 +11,7 @@
 					<div class="user_headerright">
 						<a href="{yun:}$config.sy_weburl{/yun}" target="_blank" title="{yun:}t key='member_user_00116'{/yun}" class="user_m_fanh">{yun:}t key='member_user_00119'{/yun}</a>
 						<div class="yun_m_headermsg" onmouseover="tzmsgNumShow('show')" onmouseout="tzmsgNumShow('hide')">
-							<i class="yun_m_headermsg_icon"></i>通知中心
+							<i class="yun_m_headermsg_icon"></i>{yun:}t key='member_user_00498'{/yun}
 							<span class="yun_m_headermsg_n" id="tzmsgNum" style="display:none"></span>
 							<div class="yun_m_headermsg_box" style="display:none">
 								<div class="yun_m_headermsg_list">
@@ -37,11 +37,11 @@
 							{yun:}if (isset($vipIsDown) || empty($company.rating)){/yun}
 							<!--未开通会员或会员到期，显示购买提示-->
 							<div class="new_com_headervipbox" onMouseOver="headervipShow('show')" onMouseOut="headervipShow('hide')">
-								<div class="new_com_headervip">开通超级会员</div>
+								<div class="new_com_headervip">{yun:}t key='member_com_00559'{/yun}</div>
 								<div class="new_com_headervipshow" style="display: none;">
 									<div class="new_com_headerviptop">
-										<div class="new_com_headerviptop_c">你还不是VIP超级会员
-											<a href="index.php?c=right" class="new_com_headervipbth">开通会员</a>
+										<div class="new_com_headerviptop_c">{yun:}t key='member_com_00560'{/yun}
+											<a href="index.php?c=right" class="new_com_headervipbth">{yun:}t key='member_com_00561'{/yun}</a>
 										</div>
 									</div>
 									<div class="new_com_headerviptit"></div>
@@ -51,7 +51,7 @@
 										<a href="index.php?c=right" class="headervip_bth"><i class="headervipicon headervip3"></i>{yun:}t key='wap_com_00387'{/yun}</a>
 										<a href="index.php?c=right" class="headervip_bth"><i class="headervipicon headervip4"></i>{yun:}t key='common.view_more'{/yun}</a>
 									</div>
-									<div class="headerviptit">我的权益</div>
+									<div class="headerviptit">{yun:}t key='wap_01229'{/yun}</div>
 									<div class="headervip">
 										<a href="index.php?c=paylogtc" class="headervip_bth"><i class="headervipicon headervip1"></i>{yun:}t key='wap_com_00064'{/yun}</a>
 										<a href="index.php?c=paylog" target="_blank" class="headervip_bth"><i class="headervipicon headervip2"></i>{yun:}t key='wap_user_00315'{/yun}</a>
@@ -83,7 +83,7 @@
 												<img src="{yun:}$company_rating.com_pic{/yun}" width="16">
 												{yun:}/if{/yun}
 												{yun:}else{/yun}
-												<a href="index.php?c=info" style="color: #f60; text-decoration: underline">您还未完善企业信息，点击完善！</a>
+												<a href="index.php?c=info" style="color: #f60; text-decoration: underline">{yun:}t key='member_com_00562'{/yun}</a>
 												{yun:}/if{/yun}
 											</div>
 										</div>

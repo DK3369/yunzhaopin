@@ -16,7 +16,7 @@
 <div class="clear"></div>
 <div class="Toolbox_content_box">
 <div class="Toolbox_content_box_left">
-<div class="Toolbox_content_h1 yun_bg_color"><span class="Toolbox_content_span">HR必备工具</span></div>
+<div class="Toolbox_content_h1 yun_bg_color"><span class="Toolbox_content_span">{yun:}t key='common_02408'{/yun}</span></div>
 <ul class="Toolbox_content_nav">
 {yun:}foreach item=v key=key from=$list{/yun}
 <li {yun:}if $smarty.get.id==$v.id{/yun}class="Toolbox_content_nav_cur"{yun:}/if{/yun}><a href="{yun:}url m=hr c=list id='`$v.id`'{/yun}" title="{yun:}$v.name{/yun}">{yun:}$v.name{/yun}</a></li>
@@ -44,7 +44,7 @@
 <li><a href="javascript:downhr('{yun:}$lists.id{/yun}');" title="{yun:}$lists.name{/yun}">{yun:}$lists.name{/yun}</a></li>                        
 {yun:}/hrlist{/yun}
        {yun:}if !$lists{/yun}
-	<div class="Toolbox_content_msg">暂无信息</div>
+	<div class="Toolbox_content_msg">{yun:}t key='common_02409'{/yun}</div>
 	   {yun:}/if{/yun}
 
 </ul>

@@ -54,7 +54,7 @@ class tiny_model extends model{
                     //一周内时间戳
                     if($ltime>$beginYesterday && $ltime<$beginToday){
 
-                        $List[$k]['lastupdate_n']	=	"昨天";
+                        $List[$k]['lastupdate_n']	=	yun_at('common_02000');
 
                     }elseif($ltime>$beginToday){
 
@@ -161,16 +161,16 @@ class tiny_model extends model{
 			
 			if($return['id']){
 
-				$return['msg']      =  '普工简历(ID:'.pylode(',',$id).')删除成功';
+				$return['msg']      =  yun_at('admin_user_00111').pylode(',',$id).')删除成功';
 				$return['errcode']  =  '9';
 			}else{
 				
-				$return['msg']      =  '普工简历(ID:'.pylode(',',$id).')删除失败';
+				$return['msg']      =  yun_at('admin_user_00111').pylode(',',$id).')删除失败';
 				$return['errcode']  =  '8';
 			}
 		}else{
 			
-			$return['msg']      	=  '系统繁忙';
+			$return['msg']      	=  yun_at('common_01831');
 			$return['errcode']  	=  '8';
 			$return['layertype']	=	0;
 		}
@@ -214,25 +214,25 @@ class tiny_model extends model{
         	}
         }
 		if($post['username']==''){
-			return array('msg'=>'请填写姓名！','errcode'=>8);
+			return array('msg'=>yun_at('wap_01703'),'errcode'=>8);
 		}
 		if($post['sex']==''){
-			return array('msg'=>'请填写性别！','errcode'=>8);
+			return array('msg'=>yun_at('model_00057'),'errcode'=>8);
 		}
 		if($post['exp']==''){
-			return array('msg'=>'请填写工作年限！','errcode'=>8);
+			return array('msg'=>yun_at('model_00058'),'errcode'=>8);
 		}
 		if($citymsg){
-			return array('msg'=>'请选择工作地区！','errcode'=>8);
+			return array('msg'=>yun_at('wap_01675'),'errcode'=>8);
 		}
 		if($post['job']==''){
-			return array('msg'=>'请填写意向职位！','errcode'=>8);
+			return array('msg'=>yun_at('model_00059'),'errcode'=>8);
 		}
 		if($post['mobile']==''){
-			return array('msg'=>'请填写手机！','errcode'=>8);
+			return array('msg'=>yun_at('model_00060'),'errcode'=>8);
 		}
 		if($post['production']==''){
-			return array('msg'=>'请填写自我介绍！','errcode'=>8);
+			return array('msg'=>yun_at('model_00061'),'errcode'=>8);
 		}
 
         include_once ('notice.model.php');
@@ -252,19 +252,19 @@ class tiny_model extends model{
                     if ($checkTime) {
                         $res = $data['moblie_code'] == $cert_arr['check2'] ? true : false;
                         if ($res == false) {
-                            return array('msg' => '短信验证码错误！', 'errcode' => '8');
+                            return array('msg' => yun_at('common_01289'), 'errcode' => '8');
                         }
                     } else {
-                        return array('msg' => '验证码验证超时，请重新点击发送验证码！', 'errcode' => '8');
+                        return array('msg' => yun_at('common_00409'), 'errcode' => '8');
                     }
                 } else {
-                    return array('msg' => '验证码发送不成功，请重新点击发送短信验证码！', 'errcode' => '8');
+                    return array('msg' => yun_at('common_00278'), 'errcode' => '8');
                 }
             }
         }else{
             if($type!='admin' && $type!='wxapp'){
                 //if ($this->config['code_kind'] ==1) {
-                    $result = $noticeM->jycheck($_POST['authcode'], '普工简历');
+                    $result = $noticeM->jycheck($_POST['authcode'], 'wap_js_00066');
 
                     if (!empty($result)) {
                         return array('msg' => $result['msg'], 'errcode' => 8);
@@ -286,7 +286,7 @@ class tiny_model extends model{
 				$arr			=	$this->getResumeTinyInfo(array('id'=>$id,'password'=>$post['password']));
 				
 				if(empty($arr)){
-					return array('msg'=>'密码不正确','errcode'=>8);
+					return array('msg'=>yun_at('model_00062'),'errcode'=>8);
 				}
 			}
 		
@@ -294,7 +294,7 @@ class tiny_model extends model{
 			
 			if($nid){
 				if($this->config['user_wjl']=="0" && $type != 'admin'){
-					$msg="修改成功，等待审核！";
+					$msg='common_06587';
 				}else{
 					$msg="修改成功!";
 				}
@@ -307,7 +307,7 @@ class tiny_model extends model{
                 $return['errcode']	=	9;
 			}else{
 
-                $return['msg']		=	'修改失败！';
+                $return['msg']		=	yun_at('member_user_00603');
                 $return['errcode']	=	8;
 			}
 		}else{
@@ -321,7 +321,7 @@ class tiny_model extends model{
                     $nid = $this->insert_into('resume_tiny', $post);
 
                     if ($this->config['user_wjl'] == "0" && $type != 'admin') {
-                        $msg = "发布成功，等待审核！";
+                        $msg = 'common_06588';
                     } else {
                         $msg = "发布成功!";
                     }
@@ -334,18 +334,18 @@ class tiny_model extends model{
                         $return['msg']		=	$msg;
                         $return['errcode']	=	9;
                     } else {
-                        $return['msg'] = '发布失败！';
+                        $return['msg'] = yun_at('common_06544');
                         $return['errcode'] = 8;
                     }
                 } else {
-                    $return['msg'] = '一天内只能发布' . $this->config['sy_tiny'] . '次！';
+                    $return['msg'] = yun_at('common_02178') . $this->config['sy_tiny'] . 'common_02179';
                     $return['errcode'] = 8;
                     if ($data['utype'] == 'wap') {
                         $return['url'] = Url('wap', array('c' => 'tiny'));
                     }
                 }
             }else{
-                $return['msg'] = '网站发布普工简历本日已到上限，如有急需，请联系网站客服！';
+                $return['msg'] = yun_at('wap_00594');
                 $return['errcode'] = 8;
             }
 		}
@@ -363,13 +363,13 @@ class tiny_model extends model{
 		if(!empty($data['code'])){
 			if(md5(strtolower($data['code'])) != $_SESSION['authcode'] || empty($_SESSION['authcode'])){//验证码错误
 				unset($_SESSION['authcode']);
-				return array('msg'=>'验证码错误！','errcode'=>8,'type'=>1);
+				return array('msg'=>yun_at('model_00047'),'errcode'=>8,'type'=>1);
 			}
 		}
 		
 		$jobinfo	=	$this->getResumeTinyInfo(array('id'=>(int)$data['id'],'password'=>md5($data['password'])));
 		if(!is_array($jobinfo) || empty($jobinfo)){
-			return array('msg'=>'密码错误！','errcode'=>8,'type'=>2);
+			return array('msg'=>yun_at('wap_js_00059'),'errcode'=>8,'type'=>2);
 		}else{
 			$_SESSION['tinypass'] = md5($data['password']);
 		}
@@ -377,12 +377,12 @@ class tiny_model extends model{
 		if($data['type']==1){//刷新
 			
 			$this -> upResumeTiny(array('lastupdate'=>time()),array('id'=>(int)$jobinfo['id']));
-			return array('msg'=>'刷新成功！','errcode'=>9,'type'=>3);
+			return array('msg'=>yun_at('wap_01714'),'errcode'=>9,'type'=>3);
 			
 		}elseif($data['type']==3){//删除
 			
 			$this -> delResumeTiny((int)$jobinfo['id']);
-			return array('msg'=>'删除成功！','errcode'=>9,'type'=>4);
+			return array('msg'=>yun_at('admin_user_00187'),'errcode'=>9,'type'=>4);
 			
 		}else{//修改
 			if($data['utype']=='pc'){
@@ -392,7 +392,7 @@ class tiny_model extends model{
 				$url	=	Url('wap',array('c'=>'tiny','a'=>'add','id'=>(int)$jobinfo['id']));
 				return array('url'=>$url);
 			}else{
-				return array('msg'=>'密码正确！','errcode'=>9,'type'=>2);
+				return array('msg'=>yun_at('common_01599'),'errcode'=>9,'type'=>2);
 			}
 			
 		}
@@ -429,16 +429,16 @@ class tiny_model extends model{
                 //简历刷新成功，修改个人基本信息表中的更新时间
                 $this->update_once('resume_tiny', $post, array('id' => array('in', pylode(',', $ids))));
 
-                $return['msg']      =   '刷新简历(ID:' . $idstr . ')成功';
+                $return['msg']      =   yun_auto_t('刷新简历(ID:') . $idstr . ')成功';
                 $return['errcode']  =   '9';
             } else {
 
-                $return['msg']      =   '刷新简历(ID:' . $idstr . ')失败';
+                $return['msg']      =   yun_auto_t('刷新简历(ID:') . $idstr . ')失败';
                 $return['errcode']  =   '8';
             }
         } else {
 
-            $return['msg']      =   '请选择要刷新的简历';
+            $return['msg']      =   yun_at('common_01165');
             $return['errcode']  =   '8';
         }
         return $return;

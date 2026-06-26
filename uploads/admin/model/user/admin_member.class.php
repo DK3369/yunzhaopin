@@ -76,7 +76,7 @@ class admin_member_controller extends adminCommon
         $pageM	=	$this  -> MODEL('page');
         $pages	=	$pageM -> adminPageList('member',$where,$page,array('limit' => $pageSize));
 		if(!$pages['total']){
-            $this->render_json(0,'暂无数据',['data'=>[],'total'=>0,'pageSizes'=>$pages['page_sizes']]);
+            $this->render_json(0,yun_at('wap_js_00113'),['data'=>[],'total'=>0,'pageSizes'=>$pages['page_sizes']]);
         }
 
         $where['limit']	=  	$pages['limit'];
@@ -91,7 +91,7 @@ class admin_member_controller extends adminCommon
             'data'=>$List,'total'=>(int)$pages['total'],
             'pageSizes'=>$pages['page_sizes']
         );
-        $this->render_json(0,'暂无数据',$data);
+        $this->render_json(0,yun_at('wap_js_00113'),$data);
 
 	}
 
@@ -101,7 +101,7 @@ class admin_member_controller extends adminCommon
 
         $_POST      =   $this->post_trim($_POST);
         if(!$_POST['uid']){
-            $this->render_json(1,'参数错误');
+            $this->render_json(1,yun_at('wap_com_00228'));
         }
         $memberM    =   $this->MODEL('userinfo');
         $uData	=  array(
@@ -136,7 +136,7 @@ class admin_member_controller extends adminCommon
 
         $userinfoM  =   $this->MODEL('userinfo');
         if (!$_POST['uid']){
-            $this->render_json(1,'参数错误');
+            $this->render_json(1,yun_at('wap_com_00228'));
         }
 
         $post       =   array(
@@ -170,13 +170,13 @@ class admin_member_controller extends adminCommon
 
 		$userinfoM  =  $this->MODEL('userinfo');
         if(!$_POST['uid']){
-            $this->render_json(1,'参数错误');
+            $this->render_json(1,yun_at('wap_com_00228'));
         }
 
 		$userinfoM -> upInfo(array('uid'=>intval($_POST['uid'])),array('password'=>'123456'));
 
-		$this -> MODEL('log') -> addAdminLog('会员(ID:'.$_POST['uid'].')重置密码成功');
-        $this->render_json('0','修改成功');
+		$this -> MODEL('log') -> addAdminLog('common_01459'.$_POST['uid'].')重置密码成功');
+        $this->render_json('0',yun_at('admin_user_company_00208'));
 
     }
 	function del_action(){
@@ -184,7 +184,7 @@ class admin_member_controller extends adminCommon
 		$userinfoM	=	$this->MODEL('userinfo');
 
 		if(!$_POST['del']){
-            $this->render_json(1,'参数错误');
+            $this->render_json(1,yun_at('wap_com_00228'));
         }
         $del = $_POST['del'];
 		$return	=	$userinfoM->delMember($del);
@@ -200,7 +200,7 @@ class admin_member_controller extends adminCommon
 	function checksitedid_action(){
 
         if(!$_POST['uid']){
-            $this->render_json(1,'参数错误');
+            $this->render_json(1,yun_at('wap_com_00228'));
         }
         $siteM	=	$this -> MODEL('site');
 
@@ -219,7 +219,7 @@ class admin_member_controller extends adminCommon
 
 
 		if($_POST['email_title']==''||$_POST['content']==''){
-            $this->render_json(1,"邮件标题均不能为空！");
+            $this->render_json(1,yun_at('admin_user_00007'));
  		}
 
 		$emailarr=$user=$com=$lt=$px=$userinfo=array();
@@ -270,7 +270,7 @@ class admin_member_controller extends adminCommon
 		}
 
 		if(!count($emailarr)){
-            $this->render_json(1,"没有符合条件的邮箱，请先检查！");
+            $this->render_json(1,yun_at('admin_user_00003'));
 		}else{
 			set_time_limit(10000);
 
@@ -291,9 +291,9 @@ class admin_member_controller extends adminCommon
 					$topage	=	($npage+1)*$pagesize;
 					$name	=	$spage."-".$topage;
 
-					$this->get_return("3",$result['page'],"正在发送".$name."封邮件",$result['sendok'],$result['sendno']);
+					$this->get_return("3",$result['page'],'admin_user_00374'.$name.'admin_user_00017',$result['sendok'],$result['sendno']);
 				}else{
-                    $this->render_json(0,'发送成功');
+                    $this->render_json(0,yun_at('admin_tool_00495'));
 //					$this->get_return("1",$result['page'],"发送成功:".$result['sendok'].",失败:".$result['sendno']);
  				}
 			}
@@ -316,7 +316,7 @@ class admin_member_controller extends adminCommon
 					$emailData['content']	=	stripslashes($emailcoment);
 					$emailData['uid']		=	$key;
 					$emailData['name']		=	$userinfo[$key];
-					$emailData['cname']		=	"系统";
+					$emailData['cname']		=	yun_at('common_02020');
 					if($v){
 						$sendid = $notice->sendEmail($emailData);
 					}
@@ -350,7 +350,7 @@ class admin_member_controller extends adminCommon
 					$emailData['content']	=	stripslashes($emailcoment);
 					$emailData['uid']		=	$key;
 					$emailData['name']		=	$userinfo[$key]['name'];
-					$emailData['cname']		=	"系统";
+					$emailData['cname']		=	yun_at('common_02020');
 
 					if($v){
 						$sendid = $notice->sendEmail($emailData);
@@ -378,13 +378,13 @@ class admin_member_controller extends adminCommon
 	function msgsave_action(){
 		$userinfoM	=	$this->MODEL('userinfo');
 		if(!checkMsgOpen($this -> config)){
-            $this->render_json(1,'还没有配置短信！');
+            $this->render_json(1,yun_at('admin_user_00010'));
 		}
 		if(trim($_POST['content'])==''){
-            $this->render_json(1,'请输入短信内容！');
+            $this->render_json(1,yun_at('admin_01299'));
         }
 		if($_POST['userarr']=='' && $_POST['utype']=='5'){
-            $this->render_json(1,'手机号码不能为空！');
+            $this->render_json(1,yun_at('wap_00399'));
         }
 		$uidarr=array();
 		if($_POST['utype']==5){
@@ -436,7 +436,7 @@ class admin_member_controller extends adminCommon
 		}
 
 		if(!count($uidarr)){
-            $this->render_json(1,'没有符合条件号码，请先检查！');
+            $this->render_json(1,yun_at('admin_user_00004'));
 		}else{
 			set_time_limit(10000);
 
@@ -455,9 +455,9 @@ class admin_member_controller extends adminCommon
 					$spage	=	$npage*$pagesize+1;
 					$topage	=	($npage+1)*$pagesize;
 					$name	=	$spage."-".$topage;
-					$this->get_return("3",$result['page'],"正在发送".$name."条短信",$result['sendok'],$result['sendno']);
+					$this->get_return("3",$result['page'],'admin_user_00374'.$name.'admin_01300',$result['sendok'],$result['sendno']);
 				}else{
-                    $this->render_json(0,'发送成功');
+                    $this->render_json(0,yun_at('admin_tool_00495'));
 				}
 			}
 		}
@@ -478,7 +478,7 @@ class admin_member_controller extends adminCommon
  					$msgData['content']	=	$content;
 					$msgData['uid']		=	$key;
 					$msgData['name']	=	$userinfo[$key];
-					$msgData['cname']	=	"系统";
+					$msgData['cname']	=	yun_at('common_02020');
 					$msgData['port']	=	'5';
 
 					if($v){
@@ -511,7 +511,7 @@ class admin_member_controller extends adminCommon
  					$msgData['content'] =	$content;
 					$msgData['uid']		=	$key;
  					$msgData['name']	=	$userinfo[$key]['name'];
-					$msgData['cname']	=	"系统";
+					$msgData['cname']	=	yun_at('common_02020');
 					$msgData['port']	=	'5';
 
 					if($v){
@@ -547,13 +547,13 @@ class admin_member_controller extends adminCommon
 
     function getIpAddress_action(){
         if($this->config['sy_ip'] == 2){
-            $this->render_json(1,'请先开启归属地查询');
+            $this->render_json(1,yun_at('admin_user_00008'));
         }
         if (!$_POST['uid']) {
-            $this->render_json(1,'参数错误');
+            $this->render_json(1,yun_at('wap_com_00228'));
         }
         if (!$_POST['ip']) {
-            $this->render_json(1,'参数错误');
+            $this->render_json(1,yun_at('wap_com_00228'));
         }
 
         $ipaddress = getIpAddress($_POST['ip']);
@@ -561,10 +561,10 @@ class admin_member_controller extends adminCommon
         $userinfoM->upInfo(array('uid'=>$_POST['uid']),array('login_address'=>$ipaddress));
         $status =1;
         if ($ipaddress){
-            $msg = '查询成功';
+            $msg = 'admin_user_00294';
             $status = 0;
         }else{
-            $msg = '查询失败';
+            $msg = 'admin_user_00016';
         }
         $this->render_json($status,$msg);
     }
@@ -572,13 +572,13 @@ class admin_member_controller extends adminCommon
     function getMobileAddress_action(){
 
         if ($this->config['sy_mobile'] == 2) {
-            $this->render_json(1, '请先开启归属地查询');
+            $this->render_json(1, yun_at('admin_user_00008'));
         }
         if (!$_POST['uid']) {
-            $this->render_json(1, '参数错误');
+            $this->render_json(1, yun_at('wap_com_00228'));
         }
         if (!$_POST['moblie']) {
-            $this->render_json(1, '电话号码为空');
+            $this->render_json(1, yun_at('admin_user_00012'));
         }
 
         $moblieaddress = getMoblieAddress($_POST['moblie']);
@@ -587,10 +587,10 @@ class admin_member_controller extends adminCommon
         $status = 1;
 
         if ($moblieaddress) {
-            $msg = '查询成功';
+            $msg = 'admin_user_00294';
             $status = 0;
         } else {
-            $msg = '查询失败';
+            $msg = 'admin_user_00016';
         }
 
         $this->render_json($status, $msg);
@@ -609,11 +609,11 @@ class admin_member_controller extends adminCommon
 
         $logM = $this->MODEL('log');
         if ($_POST['utype'] == 1){
-            $msg = '个人';
+            $msg = 'admin_user_00304';
         }else if($_POST['utype'] == 2){
-            $msg = '企业';
+            $msg = 'wap_user_00153';
         }
-        $content = '管理员' . $_SESSION['ausername'] . '登录个人'.$msg.'(ID:' . $member['uid'] . ')';
+        $content = 'wap_user_00361' . $_SESSION['ausername'] . 'default_00234'.$msg.'(ID:' . $member['uid'] . ')';
 
         $adminLo = $logM->addAdminLog($content);
 

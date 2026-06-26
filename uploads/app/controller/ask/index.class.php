@@ -144,8 +144,8 @@ class index_controller extends ask_controller{
 			if($new_id){
 
                 $logM           =   $this->MODEL('log');
-                $logContent     =   '举报：问答';
-                $logDetail      =   '举报问答：《'.$question['title'].'》；原因：'.$reason;
+                $logContent     =   'wap_00152';
+                $logDetail      =   'wap_00151'.$question['title'].'》；原因：'.$reason;
                 $logM->addMemberLog($this->uid, $this->usertype, $logContent, 23, 1, $logDetail);
 				
 				echo '1';
@@ -199,7 +199,7 @@ class index_controller extends ask_controller{
 		
 		if($this->uid==''||$this->username==''){
 			
-			$this->ACT_layer_msg( "请先登录！",8,$_SERVER['HTTP_REFERER']);
+			$this->ACT_layer_msg( 'common_06042',8,$_SERVER['HTTP_REFERER']);
 		}
 		
 		$data	=	array(
@@ -261,7 +261,7 @@ class index_controller extends ask_controller{
 			
 			if($this->uid==''){
 				
-				$this->ACT_layer_msg( "请先登录！", 8);
+				$this->ACT_layer_msg( 'common_06042', 8);
 			}
 			$data	=	array(
 				'uid'		=>	$this->uid,
@@ -308,7 +308,7 @@ class index_controller extends ask_controller{
 	}
 
 	function savecode_action(){
-	    if(strpos($this->config['code_web'],'职场提问')!==false){
+	    if(strpos($this->config['code_web'],'wap_00105')!==false){
 	        session_start();
 	        if ($this->config['code_kind']==1){
 	            if(md5(strtolower($_POST['authcode']))!=$_SESSION['authcode'] || empty($_SESSION['authcode'])){

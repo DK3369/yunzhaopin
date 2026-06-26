@@ -21,13 +21,13 @@
         <div class="clear"></div>
         <div class="search_Looking_work">
 
-            <form method="get" action="{yun:}if !$config.sy_resumedir{/yun}index.php{yun:}else{/yun}{yun:}url m=resume{/yun}{yun:}/if{/yun}" onsubmit="return search_keyword(this,'请输入要搜索的关键字');">
+            <form method="get" action="{yun:}if !$config.sy_resumedir{/yun}index.php{yun:}else{/yun}{yun:}url m=resume{/yun}{yun:}/if{/yun}" onsubmit="return search_keyword(this,'{yun:}t key='common_02272'{/yun}');">
 
                 {yun:}if !$config.sy_resumedir || $config.sy_seo_rewrite!='1'{/yun}<input type="hidden" value="resume" name="m"/>{yun:}/if{/yun}
                 <input type="hidden" name="c" value="search"/>
 
                 <div class="search_Look_left">
-                    <input type="text" name="keyword" id="userkeyword" value="请输入要搜索的关键字" onclick="if(this.value=='请输入要搜索的关键字'){this.value=''}" onblur="if(this.value==''){this.value='请输入要搜索的关键字'}" class="search_Look_text placeholder"/>
+                    <input type="text" name="keyword" id="userkeyword" value="{yun:}t key='common_02272'{/yun}" onclick="if(this.value=='{yun:}t key='common_02272'{/yun}'){this.value=''}" onblur="if(this.value==''){this.value='{yun:}t key='common_02272'{/yun}'}" class="search_Look_text placeholder"/>
                 </div>
                 <input type="submit" value="{yun:}t key='common.search'{/yun}" class="search_submit"/>
             </form>
@@ -47,13 +47,13 @@
                 <div class="search_menuBox">
                     <ul>
                         <li class="search_cur" id="typejob" onmousemove="searchtype('job');">{yun:}t key='member_com_00223'{/yun}</li>
-                        <li id="typehy" onmousemove="searchtype('hy');">行业招聘</li>
+                        <li id="typehy" onmousemove="searchtype('hy');">{yun:}t key='common_02271'{/yun}</li>
                         <li id="typecity" onmousemove="searchtype('city');" style="border-right:none;">{yun:}t key='default_00310'{/yun}</li>
                     </ul>
                 </div>
 
                 <div class="contentBox">
-                    <!-- 行业招聘 start-->
+                    <!-- {yun:}t key='common_02271'{/yun} start-->
                     <div class="contentBox_cont none" id="type_hy">
                         <div class="Industry_list">
                             {yun:}foreach item=v from=$industry_index{/yun}
@@ -61,7 +61,7 @@
                             {yun:}/foreach{/yun}
                         </div>
                     </div>
-                    <!-- 行业招聘 end-->
+                    <!-- {yun:}t key='common_02271'{/yun} end-->
 
                     <!-- {yun:}t key='member_com_00223'{/yun} start-->
                     <div class="contentBox_cont" id="type_job" style="display:block">

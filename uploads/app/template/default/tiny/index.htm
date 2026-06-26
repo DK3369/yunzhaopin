@@ -24,19 +24,19 @@
 		<div class="tiny_banner_bg"></div>
 		
 		<div class="tiny_banner_fb">
-			<div class="tiny_banner_fb_h1"> 我要发布简历</div>
-			<div class="tiny_banner_fb_p">用简短的文字介绍自己的优势，针对性的找到自己满意的工作！</div>
+			<div class="tiny_banner_fb_h1"> {yun:}t key='common_02346'{/yun}</div>
+			<div class="tiny_banner_fb_p">{yun:}t key='common_02347'{/yun}</div>
 			<div class="tiny_banner_fb_fb">
 			{yun:}if $isFb{/yun}						
 				{yun:}if $config.sy_tiny == 0{/yun}	
 				<a href='{yun:}url m=tiny c=add{/yun}' title="{yun:}t key='wap_00523'{/yun}" >{yun:}t key='wap_00523'{/yun}</a> 
 				{yun:}elseif $num>0{/yun}			
-					<a href='javascript:;' onclick="addtinymsg('{yun:}t key='common_02178'{/yun}{yun:}$config.sy_tiny{/yun}{yun:}t key='common_02089'{/yun}，剩余可发布{yun:}$num{/yun}{yun:}t key='common_02089'{/yun}','{yun:}url m=tiny c=add{/yun}')" class="recruit_user_public">{yun:}t key='wap_00523'{/yun}</a>
+					<a href='javascript:;' onclick="addtinymsg('{yun:}t key='common_02178'{/yun}{yun:}$config.sy_tiny{/yun}{yun:}t key='common_02089'{/yun}{yun:}t key='wap_00593'{/yun}{yun:}$num{/yun}{yun:}t key='common_02089'{/yun}','{yun:}url m=tiny c=add{/yun}')" class="recruit_user_public">{yun:}t key='wap_00523'{/yun}</a>
 				{yun:}else{/yun}
 					<a href="javascript:;" onclick="layer.msg('每天最多可发布{yun:}$config.sy_tiny{/yun}份普工简历！',2,8)" class="">{yun:}t key='wap_00523'{/yun}</a>
 				{yun:}/if{/yun}		
 			{yun:}else{/yun}
-			<a href="javascript:;" onclick="layer.msg('网站发布普工简历本日已到上限，如有急需，请联系网站客服！',2,8)" class="">{yun:}t key='wap_00523'{/yun}</a>
+			<a href="javascript:;" onclick="layer.msg("{yun:}t key='wap_00594'{/yun}",2,8)" class="">{yun:}t key='wap_00523'{/yun}</a>
 			{yun:}/if{/yun}
 				
 			</div>
@@ -54,9 +54,9 @@
   <input type="hidden" name="{yun:}$key{/yun}" value="{yun:}$v{/yun}" /> 
   {yun:}/foreach{/yun}
   <div class="tiny_search">
-  <div class="tiny_search_list"><span class="tiny_search_name">筛选条件：</span>
+  <div class="tiny_search_list"><span class="tiny_search_name">{yun:}t key='common_02261'{/yun}</span>
   <div class="tiny_search_choice">
-  <input type="button" value="{yun:}if $add_time[$smarty.get.add_time]{/yun}{yun:}$add_time[$smarty.get.add_time]{/yun}{yun:}else{/yun}时间范围{yun:}/if{/yun}" id="add_times" class="tiny_search_but">
+  <input type="button" value="{yun:}if $add_time[$smarty.get.add_time]{/yun}{yun:}$add_time[$smarty.get.add_time]{/yun}{yun:}else{/yun}{yun:}t key='wap_00591'{/yun}{yun:}/if{/yun}" id="add_times" class="tiny_search_but">
   <div class="tiny_search_select none" id="tiny_time">
   <ul> 
   {yun:}foreach item=v key=key from=$add_time{/yun}
@@ -180,7 +180,7 @@
      
       
       <div class="tiny_list_box">
-      <div class="tiny_list_tit"> 共为您找到 <span class="tiny_list_tit_n" id="totalshow"> 0 </span> 条普工信息</div>
+      <div class="tiny_list_tit"> {yun:}t key='common_02262'{/yun} <span class="tiny_list_tit_n" id="totalshow"> 0 </span> {yun:}t key='common_02348'{/yun}</div>
           <div class="tiny_list_box_c">
        {yun:}tiny add_time='auto.add_time' sex='auto.sex' exp='auto.exp' provinceid='auto.provinceid' cityid='auto.cityid' three_cityid='auto.three_cityid' item=wres ispage=1 limit=24 keyword='auto.keyword' {/yun}
        
@@ -190,7 +190,7 @@
                 {yun:}$wres.lastupdate{/yun}
                 {yun:}/if{/yun}{yun:}t key='wap_00225'{/yun}</span>
                  <div class="tiny_list_info">{yun:}$wres.username{/yun} <i>|</i>{yun:}$wres.sex{/yun}<i>|</i> {yun:}$wres.exp_name{/yun}{yun:}t key='home.experience_suffix'{/yun}</div>
-                <div class="tiny_list_info_tel">  {yun:}if $config.user_wjl_link==1 && $uid<=0{/yun} <span>登录查看联系方式<a href="javascript:void(0);" onclick="showlogin('');" class="tiny_list_info_tel_login">{yun:}t key='common.login'{/yun}</a></span> {yun:}else{/yun}
+                <div class="tiny_list_info_tel">  {yun:}if $config.user_wjl_link==1 && $uid<=0{/yun} <span>{yun:}t key='common_02349'{/yun}<a href="javascript:void(0);" onclick="showlogin('');" class="tiny_list_info_tel_login">{yun:}t key='common.login'{/yun}</a></span> {yun:}else{/yun}
                 <span class="tiny_tel">{yun:}t key='wap_user_00265'{/yun}：{yun:}$wres.mobile{/yun}</span>
                 {yun:}/if{/yun}</div>
      
@@ -205,8 +205,8 @@
             <div class="onceseachno_left"> <img src="{yun:}$style{/yun}/images/search-no.gif"/></div>
             <div class="onceseachno_content"> <strong>{yun:}t key='common_01912'{/yun}，没有找到满足条件的简历</strong><br/>
           <span> {yun:}t key='common_01910'{/yun}：<br/>
-          1、适当减少已选择的条件<br/>
-          2、适当删减或更改搜索关键字<br/>
+          1、{yun:}t key='common_02286'{/yun}<br/>
+          {yun:}t key='common_02266'{/yun}<br/>
           </span> </div>
       </div>
       {yun:}/if{/yun} </div>

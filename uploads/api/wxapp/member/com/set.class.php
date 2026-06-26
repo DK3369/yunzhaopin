@@ -75,7 +75,7 @@ class set_controller extends com_controller
 		    }
 		}else{
 			$error	=	2;
-		    $msg 	= 	yun_auto_t('请选择图片');
+		    $msg 	= 	yun_at('wap_00537');
 		}
 
 		$this->render_json($error,$msg,$picurl);
@@ -135,7 +135,7 @@ class set_controller extends com_controller
 		
 		// 
         $errcode    =   0;
-        $msg        =   yun_auto_t('必须上传');
+        $msg        =   yun_at('wap_01844');
         $douhao     =   false;
 
 
@@ -144,7 +144,7 @@ class set_controller extends com_controller
                 $msg    .=  ',';
             }
             $douhao     =   true;
-            $msg        .=  yun_auto_t('经办人身份证');
+            $msg        .=  yun_at('member_com_00067');
             $errcode    =   8;
         }
         if($this->config['com_cert_wt']==1 && !$_POST['wt_cert'] && !$_POST['base_wt_cert'] && !$cert['wt_cert']){
@@ -152,7 +152,7 @@ class set_controller extends com_controller
                 $msg    .=  ',';
             }
             $douhao     =   true;
-            $msg        .=  yun_auto_t('委托函');
+            $msg        .=  yun_at('member_com_00685');
             $errcode    =   8;
         }
         
@@ -181,9 +181,9 @@ class set_controller extends com_controller
 		if($err){
 			$error		=	$err['errcode']==9 ? 1 : 2;
 			if($error==1){
-                $msg    =   yun_auto_t('更新成功！');
+                $msg    =   yun_at('admin_system_00064');
 			}else{
-			    $msg    =   !empty($err['msg']) ? $err['msg'] : yun_auto_t('更新失败！');
+			    $msg    =   !empty($err['msg']) ? $err['msg'] : yun_at('api_wxapp_00009');
 			}
 		}
 		$this->render_json($error,$msg);
@@ -206,8 +206,8 @@ class set_controller extends com_controller
 		if ($result['error'] == 1){
 
             $logM       =   $this->MODEL('log');
-            $logContent =   yun_auto_t('账号认证：发送手机认证验证码');
-            $logDetail  =   yun_auto_t('手机认证，发送短信验证码；认证手机号码：').$moblie;
+            $logContent =   yun_at('wap_00117');
+            $logDetail  =   yun_at('wap_00114').$moblie;
             $logM->addMemberLog($com['uid'], $com['usertype'], $logContent, 12, 1, $logDetail);
 
 		    $this->render_json(0,'ok');
@@ -233,7 +233,7 @@ class set_controller extends com_controller
 		
 			$Info              	=  		$UserinfoM->getInfo($where);
 			if($Info){
-				$this	->	render_json(2, yun_auto_t('手机号码已存在，请重新填写新号码'),'');
+				$this	->	render_json(2, yun_at('wap_01813'),'');
 			}else{
 				$data     =   array(
 					'uid'         =>	$this ->member['uid'],
@@ -250,17 +250,17 @@ class set_controller extends com_controller
 				$result  =   $comM -> upCertInfo(array('uid'=>$this ->member['uid'], 'check2'=>$_POST['code']), array('status'=>'0'), $data);
 				
 				if($result==1){
-				    $this	->	render_json(0, yun_auto_t('手机绑定成功'),$return);	
+				    $this	->	render_json(0, yun_at('wap_01845'),$return);	
 				}if($result==4){
 					
-				   $this	->	render_json(4, yun_auto_t('短信验证码已过期，请重新发送！'));
+				   $this	->	render_json(4, yun_at('wap_01632'));
 					
 				}else  if($result==3){
-					$this	->	render_json(3, yun_auto_t('短信验证码不正确！'));
+					$this	->	render_json(3, yun_at('wap_01650'));
 				}else if($result==2){
-					$this	->	render_json(2, yun_auto_t('请先获取短信验证码！'));
+					$this	->	render_json(2, yun_at('wap_01645'));
 				}else{
-					$this	->	render_json(2, yun_auto_t('手机绑定失败！'));
+					$this	->	render_json(2, yun_at('wap_01846'));
 				}
 
 			}
@@ -271,7 +271,7 @@ class set_controller extends com_controller
                 $code       =   $_POST['authcode'];
                 if (md5(strtolower($code)) != $_SESSION['authcode'] || empty($_SESSION['authcode'])) {
                     $error	=	4;
-                    $data['errmsg']	=	yun_auto_t('验证码不正确');
+                    $data['errmsg']	=	yun_at('wap_01847');
                     $this	->	render_json($error,$data['errmsg']);
                 }
             }
@@ -286,7 +286,7 @@ class set_controller extends com_controller
 
 			if($Info){
 				$error	=	2;
-				$data['errmsg']	=	yun_auto_t('邮箱已存在，请重新填写邮箱');
+				$data['errmsg']	=	yun_at('wap_01817');
 				$this	->	render_json($error,$data['errmsg']);
 			}else{
 				$data      =   array(
@@ -297,16 +297,16 @@ class set_controller extends com_controller
 				$return   =   $comM -> sendCertEmail(array('uid'=>$this->member['uid'], 'type'=>'1'), $data);
 				if($return=='1'){
 					$error	=	0;
-					$data['errmsg']	=	yun_auto_t('邮箱绑定成功');
+					$data['errmsg']	=	yun_at('wap_01848');
 					$this	->	render_json($error,$data['errmsg']);
 				}elseif($return  == 3){
-					$data['errmsg']    		=    	yun_auto_t('邮件没有配置，请联系管理员！');
+					$data['errmsg']    		=    	yun_at('wap_01635');
 					$this	->	render_json($return,$data['errmsg']);
 				}elseif($return ==2){
-					$data['errmsg']			=		yun_auto_t('邮件通知已关闭，请联系管理员');
+					$data['errmsg']			=		yun_at('wap_01818');
 					$this	->	render_json($return,$data['errmsg']);
 				}else{
-					$data['errmsg']	=	yun_auto_t('操作错误');
+					$data['errmsg']	=	yun_at('wap_01819');
 					$this	->	render_json($return,$data['errmsg']);
 				}
 				
@@ -355,7 +355,7 @@ class set_controller extends com_controller
 			}
 		}else{
 			$error	=	2;
-			$msg	=	yun_auto_t('修改失败');
+			$msg	=	yun_at('admin_00187');
 		}
 		$this -> render_json($error, $msg,$return);
 	}
@@ -426,8 +426,8 @@ class set_controller extends com_controller
 	        $userInfoM->upInfo(array('uid'=>$this->member['uid']), $up);
 
             $logM       =   $this->Model('log');
-            $logContent =   yun_auto_t('账号认证：解除绑定');
-            $logDetail  =   $uni. yun_auto_t('解除绑定');
+            $logContent =   yun_at('wap_01820');
+            $logDetail  =   $uni. yun_at('wap_user_00138');
             $logM->addMemberLog($this->member['uid'], $this->member['usertype'], $logContent, 12, 3, $logDetail);
 	        
 	        $this->render_json(0, 'ok');
@@ -441,7 +441,7 @@ class set_controller extends com_controller
 	    
 	    if (!empty($row)){
 	        
-	        $this->render_json(1, yun_auto_t('您已申请了注销账号'));
+	        $this->render_json(1, yun_at('wap_01299'));
 	    }else{
 	        
 	        $this->render_json(0,'ok');
@@ -561,13 +561,13 @@ class set_controller extends com_controller
 			    'content'  =>  ''
 			);
 			if($mbnum>=$this->config['com_yqmb_num']){
-				$msg	=	yun_auto_t('最多可以创建').$this->config['com_yqmb_num'].'个模板';	
+				$msg	=	yun_at('wap_01849').$this->config['com_yqmb_num'].'wap_01216';	
 				$error	=	3;
 			}
 		}else{
 			$info		=	$yqmbM -> getInfo(array('id' => $yid));
 			if(empty($info)){
-				$msg	=	yun_auto_t('模板不存在');
+				$msg	=	yun_at('wap_01850');
 				$error	=	2;
 			}
 		}
@@ -722,14 +722,14 @@ class set_controller extends com_controller
 
             $linkData['id'] =   $_POST['id'];
             $linkData['uid']=   $this->member['uid'];
-            $msg            =   $result ? yun_auto_t('工作地址更新成功') : yun_auto_t('工作地址更新失败');
+            $msg            =   $result ? yun_at('member_com_00684') : yun_at('api_wxapp_00005');
         }else{
 
             $linkData['uid']=   $this->member['uid'];
             $result         =   $addressM->saveAddress($linkData, array('uid' => $this->member['uid']));
 
             $linkData['id'] =   $result;
-            $msg            =   $result ? yun_auto_t('工作地址添加成功') : yun_auto_t('工作地址添加失败');
+            $msg            =   $result ? yun_at('api_wxapp_00007') : yun_at('api_wxapp_00006');
         }
 
         if ($result){

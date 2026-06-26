@@ -11,7 +11,7 @@
         <a href="{yun:}$config.sy_weburl{/yun}" target="_blank" title='{yun:}t key='member_user_00116'{/yun}' class="user_m_fanh">{yun:}t key='member_user_00119'{/yun}</a>
 
         <div class="yun_m_headermsg" onMouseOver="tzmsgNumShow('show')" onMouseOut="tzmsgNumShow('hide')">
-            <i class="yun_m_headermsg_icon"></i>通知中心<span class="yun_m_headermsg_n" id="msgNum" style="display:none">0</span>
+            <i class="yun_m_headermsg_icon"></i>{yun:}t key='member_user_00498'{/yun}<span class="yun_m_headermsg_n" id="msgNum" style="display:none">0</span>
             <div class="yun_m_headermsg_box" style="display:none">
                 <div class="yun_m_headermsg_list">
                     <a href="{yun:}$config.sy_weburl{/yun}/member/index.php?c=invite">{yun:}t key='wap_user_00216'{/yun} <em class="yun_m_headermsg_list_n" id="userid_msgNum"></em></a>
@@ -27,7 +27,7 @@
         <div class="header_m_navright">
 
             <div class="header_m_navright_tip" style="display:none;">
-                <div class="header_m_navright_tip_box">7 项资料未完善, <a href="###" class="cblue">{yun:}t key='wap_user_00117'{/yun}</a><a href="###" class="header_m_navright_tip_close"></a></div>
+                <div class="header_m_navright_tip_box">{yun:}t key='member_user_00499'{/yun} <a href="###" class="cblue">{yun:}t key='wap_user_00117'{/yun}</a><a href="###" class="header_m_navright_tip_close"></a></div>
             </div>
             <div class="yun_m_indexinfo_user_qd"><i class="yun_m_indexinfo_user_qd_icon"></i>{yun:}sign{/yun}</div>
             <div class="yun_m_headertx">
@@ -49,17 +49,17 @@
                         {yun:}$config.integral_priceunit{/yun}{yun:}$config.integral_pricename{/yun}
                         <a href="index.php?c=pay" class="yun_m_index_pay_a">{yun:}t key='common_01946'{/yun}</a>
                         {yun:}if $config.sy_redeem_web==1{/yun}
-                        <a href="{yun:}url m=redeem{/yun}" class="yun_m_index_pay_a" target="_blank">兑换礼品</a>
+                        <a href="{yun:}url m=redeem{/yun}" class="yun_m_index_pay_a" target="_blank">{yun:}t key='member_user_00500'{/yun}</a>
                         {yun:}/if{/yun}
-                        <a href="index.php?c=integral" class="yun_m_index_pay_a">赚{yun:}$config.integral_pricename{/yun}</a>
+                        <a href="index.php?c=integral" class="yun_m_index_pay_a">{yun:}t key='wap_00712'{/yun}{yun:}$config.integral_pricename{/yun}</a>
                     </div>
 
-                    <div class="user_tc_tit">我的认证</div>
+                    <div class="user_tc_tit">{yun:}t key='member_user_00501'{/yun}</div>
                     <div class="yun_m_indexinfo_user_bding">
                         <div class="yun_m_indexinfo_user_bding_p">
                             <a href="index.php?c=passwd">
                                 {yun:}if $resume.moblie_status!='1'{/yun}
-                                <span class="yun_user_rz_box yun_user_rz_sj"><i class="yun_user_rz_no_icon"></i><em class="yun_user_rz_no">手机未认证</em></span>
+                                <span class="yun_user_rz_box yun_user_rz_sj"><i class="yun_user_rz_no_icon"></i><em class="yun_user_rz_no">{yun:}t key='wap_01245'{/yun}</em></span>
                                 {yun:}else{/yun}
                                 <span class="yun_user_rz_box yun_user_rz_sj"><i class="yun_user_rz_yes_icon"></i><em class="yun_user_rz_yes">{yun:}t key='member_user_00117'{/yun}</em></span>
                                 {yun:}/if{/yun}
@@ -68,7 +68,7 @@
                         <div class="yun_m_indexinfo_user_bding_p">
                             <a href="index.php?c=passwd">
                                 {yun:}if $resume.idcard_status!='1'{/yun}
-                                    <span class="yun_user_rz_box yun_user_rz_sf"><i class="yun_user_rz_no_icon"></i><em class="yun_user_rz_no">身份未认证</em></span>
+                                    <span class="yun_user_rz_box yun_user_rz_sf"><i class="yun_user_rz_no_icon"></i><em class="yun_user_rz_no">{yun:}t key='member_user_00502'{/yun}</em></span>
                                 {yun:}else{/yun}
                                     <span class="yun_user_rz_box yun_user_rz_sf"><i class="yun_user_rz_yes_icon"></i><em class="yun_user_rz_yes">{yun:}t key='resume_00008'{/yun}</em></span>
                                 {yun:}/if{/yun}
@@ -79,9 +79,9 @@
                         <div class="yun_m_indexinfo_user_bding_p">
                             <a href="index.php?c=binding">
                                 {yun:}if $member.unionid!="" || $member.wxid!=''{/yun}
-                                    <span class="yun_user_rz_box yun_user_rz_wx"><i class="yun_user_rz_yes_icon"></i><em class="yun_user_rz_yes">微信认证</em></span>
+                                    <span class="yun_user_rz_box yun_user_rz_wx"><i class="yun_user_rz_yes_icon"></i><em class="yun_user_rz_yes">{yun:}t key='member_user_00503'{/yun}</em></span>
                                 {yun:}else{/yun}
-                                    <span class="yun_user_rz_box yun_user_rz_wx"><i class="yun_user_rz_no_icon"></i><em class="yun_user_rz_no">微信未认证</em></span>
+                                    <span class="yun_user_rz_box yun_user_rz_wx"><i class="yun_user_rz_no_icon"></i><em class="yun_user_rz_no">{yun:}t key='member_user_00504'{/yun}</em></span>
                                 {yun:}/if{/yun}
                             </a>
                         </div>
@@ -90,7 +90,7 @@
                         <div class="yun_m_indexinfo_user_bding_p">
                             <a href="index.php?c=passwd">
                                 {yun:}if $resume.email_status!='1'{/yun}
-                                    <span class="yun_user_rz_box yun_user_rz_yx"><i class="yun_user_rz_no_icon"></i><em class="yun_user_rz_no">邮箱未认证</em></span>
+                                    <span class="yun_user_rz_box yun_user_rz_yx"><i class="yun_user_rz_no_icon"></i><em class="yun_user_rz_no">{yun:}t key='wap_01246'{/yun}</em></span>
                                 {yun:}else{/yun}
                                     <span class="yun_user_rz_box yun_user_rz_yx"><i class="yun_user_rz_yes_icon"></i><em class="yun_user_rz_yes">{yun:}t key='wap_com_00186'{/yun}</em></span>
                                 {yun:}/if{/yun}
@@ -103,7 +103,7 @@
                     <div class="user_tc_tset">
                         <a href="index.php?c=passwd" class="user_set_bth"><i class="user_set_icon user_set_icon1"></i>{yun:}t key='wap_user_00214'{/yun}</a>
                         <a href="index.php?c=transfer" target="_blank" class="user_set_bth"><i class="user_set_icon user_set_icon2"></i>{yun:}t key='wap_user_00339'{/yun}</a>
-                        <a href="index.php?c=logout" class="user_set_bth"><i class="user_set_icon user_set_icon4"></i>账户注销</a>
+                        <a href="index.php?c=logout" class="user_set_bth"><i class="user_set_icon user_set_icon4"></i>{yun:}t key='member_user_00505'{/yun}</a>
                     </div>
                     <div class="user_tcdl">
                         <a href="javascript:void(0)" onClick="logout('index.php?act=logout')" title="{yun:}t key='wap_user_00342'{/yun}" class="user_tcdlbth" style="border:none;">{yun:}t key='wap_user_00342'{/yun}</a>

@@ -4,7 +4,7 @@
     <div class="yun_m_rightbox fltR mt20 re">
 
         <div class="yun_m_tit fltL">
-            <span class="member_right_h1_span fltL">上传我的作品</span>
+            <span class="member_right_h1_span fltL">{yun:}t key='member_user_00293'{/yun}</span>
             <i class="member_right_h1_icon user_bg"></i>
         </div>
 
@@ -13,7 +13,7 @@
                 <i class="resume_Prompt_icon"></i>为了您的个人信息安全，请不要公开您的电话号码、{yun:}t key='wap_user_00173'{/yun}、证件号等个人证件信息；建议上传清晰自然生活照，或者您的专业代表作品。
             </div>
 
-            <input class="resume_box_list_zp" type="button" value="+ 作品上传" onclick="location.href='index.php?c=show&act=addshow&eid={yun:}$smarty.get.eid{/yun}'"/>
+            <input class="resume_box_list_zp" type="button" value="{yun:}t key='member_user_00582'{/yun}" onclick="location.href='index.php?c=show&act=addshow&eid={yun:}$smarty.get.eid{/yun}'"/>
             <input class="resume_box_list_zp" style="background:#999;width:90px;" type="button" value="{yun:}t key='common.back'{/yun}" onclick="location.href='index.php?c=expect&e={yun:}$smarty.get.eid{/yun}'"/>
             <div class="clear"></div>
             <sapn style="float: left; color: #999; line-height: 38px; padding: 20px 0 0 0;">{yun:}t key='common_01996'{/yun}{yun:}$config.pic_type{/yun}{yun:}t key='common_02005'{/yun}，{yun:}t key='common_02002'{/yun}{yun:}$config.file_maxsize{/yun}M；</sapn>
@@ -36,11 +36,11 @@
                                    data_url="{yun:}$show.picurl{/yun}">{yun:}t key='wap_com_00427'{/yun}</a><span class="compl_list_line">|</span><a
                                     href="index.php?c=show&act=showpic&eid={yun:}$smarty.get.eid{/yun}&id={yun:}$show.id{/yun}">{yun:}t key='wap_js_00073'{/yun}</a><span
                                     class="compl_list_line">|</span><a href="javascript:void(0)"
-                                                                       onclick="layer_del('确定要删除该数据？', 'index.php?c=show&act=del&id={yun:}$show.id{/yun}'); ">{yun:}t key='common.delete'{/yun}</a>
+                                                                       onclick="layer_del("{yun:}t key='member_user_00583'{/yun}", 'index.php?c=show&act=del&id={yun:}$show.id{/yun}'); ">{yun:}t key='common.delete'{/yun}</a>
                             </dd>
                         </dl>
                         {yun:}foreachelse{/yun}
-                        <div class="msg_no">您还没有上传作品。</div>
+                        <div class="msg_no">{yun:}t key='member_user_00581'{/yun}</div>
                         {yun:}/foreach{/yun}
                     </div>
                 </div>
@@ -71,7 +71,7 @@
         }
         layer.photos({
             photos: picjson
-            , anim: 5 //0-6的选择，指定弹出图片动画类型，默认随机（请注意，3.0之前的版本用shift参数）
+            , anim: 5 //0-6的选择，指定弹出图片动画类型，默认随机（请注意，3.0之前的版本用shift{yun:}t key='admin_00103'{/yun}）
         });
     }
 </script>

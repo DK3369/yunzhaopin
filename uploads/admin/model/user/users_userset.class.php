@@ -165,7 +165,7 @@ class users_userset_controller extends adminCommon
             $configM = $this->MODEL('config');
             $configM->setConfig($post);
             $this->web_config();
-            $this->admin_json(0, '个人设置配置修改成功');
+            $this->admin_json(0, 'admin_user_00099');
         }
     }
 //endregion
@@ -241,12 +241,12 @@ class users_userset_controller extends adminCommon
             $manicon = array_merge($manicon_sys, $man_addpicArr);
             $manicon = array_slice($manicon, 0, 6);
             if (empty($manicon)) {
-                $this->render_json(8, '至少保留一份默认头像');
+                $this->render_json(8, yun_at('admin_user_00100'));
             }
             $womanicon = array_merge($womanicon_sys, $woman_addpicArr);
             $womanicon = array_slice($womanicon, 0, 6);
             if (empty($womanicon)) {
-                $this->render_json(8, '至少保留一份默认头像');
+                $this->render_json(8, yun_at('admin_user_00100'));
             }
             $memberlogo = array(
                 'sy_member_icon_arr' => !empty($manicon) ? serialize($manicon) : '',
@@ -257,7 +257,7 @@ class users_userset_controller extends adminCommon
             $configM = $this->MODEL("config");
             $configM->setConfig($memberlogo);
             $this->web_config();
-            $this->admin_json(0, '个人头像配置设置成功');
+            $this->admin_json(0, 'admin_user_00098');
         }
     }
 
@@ -290,7 +290,7 @@ class users_userset_controller extends adminCommon
             $configM = $this->MODEL('config');
             $configM->setConfig($post);
             $this->web_config();
-            $this->admin_json(0, '个人消费设置配置修改成功');
+            $this->admin_json(0, 'admin_user_00097');
         }
     }
 //endregion

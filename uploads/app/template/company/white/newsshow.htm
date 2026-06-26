@@ -20,9 +20,9 @@
 <div class="header_comlogo">{yun:}if $com.logo{/yun}<img src="{yun:}$com.logo{/yun}" width="90" height="90" onerror="showImgDelay(this,'{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_unit_icon{/yun}',2);" />{yun:}else{/yun}<img src="{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_unit_icon{/yun}" width="185" height="75" />{yun:}/if{/yun}</div>
 <div class="header_cominfo"> <div class="header_cominfo_top">  <h1 class="header_cominfo_name" style="display:inline-block">{yun:}$com.name{/yun}</h1>
 <div class="header_combox_rz">
-{yun:}if $com.email_status=="1"{/yun} <img src="{yun:}$com_style{/yun}images/rz_yx2.png" alt="邮箱未认证" title="{yun:}t key='admin_user_00286'{/yun}" class="png" /> {yun:}else{/yun} <img src="{yun:}$com_style{/yun}images/rz_yx.png" alt="邮箱未认证" title="邮箱未认证" class="png" /> {yun:}/if{/yun}
-        {yun:}if $com.moblie_status=="1"{/yun} <img src="{yun:}$com_style{/yun}images/rz_sj2.png" alt="手机未认证" title="{yun:}t key='member_user_00117'{/yun}" class="png" /> {yun:}else{/yun} <img src="{yun:}$com_style{/yun}images/rz_sj.png" alt="手机未认证" title="手机未认证" class="png" /> {yun:}/if{/yun}
-        {yun:}if $com.yyzz_status=="1"{/yun} <img src="{yun:}$com_style{/yun}images/rz_zz2.png" alt="执照未认证" title="执照已认证" class="png" /> {yun:}else{/yun} <img src="{yun:}$com_style{/yun}images/rz_zz.png" alt="执照未认证" title="执照未认证" class="png" /> {yun:}/if{/yun}
+{yun:}if $com.email_status=="1"{/yun} <img src="{yun:}$com_style{/yun}images/rz_yx2.png" alt="{yun:}t key='wap_01246'{/yun}" title="{yun:}t key='admin_user_00286'{/yun}" class="png" /> {yun:}else{/yun} <img src="{yun:}$com_style{/yun}images/rz_yx.png" alt="{yun:}t key='wap_01246'{/yun}" title="{yun:}t key='wap_01246'{/yun}" class="png" /> {yun:}/if{/yun}
+        {yun:}if $com.moblie_status=="1"{/yun} <img src="{yun:}$com_style{/yun}images/rz_sj2.png" alt="{yun:}t key='wap_01245'{/yun}" title="{yun:}t key='member_user_00117'{/yun}" class="png" /> {yun:}else{/yun} <img src="{yun:}$com_style{/yun}images/rz_sj.png" alt="{yun:}t key='wap_01245'{/yun}" title="{yun:}t key='wap_01245'{/yun}" class="png" /> {yun:}/if{/yun}
+        {yun:}if $com.yyzz_status=="1"{/yun} <img src="{yun:}$com_style{/yun}images/rz_zz2.png" alt="{yun:}t key='common_02517'{/yun}" title="{yun:}t key='common_02518'{/yun}" class="png" /> {yun:}else{/yun} <img src="{yun:}$com_style{/yun}images/rz_zz.png" alt="{yun:}t key='common_02517'{/yun}" title="{yun:}t key='common_02517'{/yun}" class="png" /> {yun:}/if{/yun}
         </div>
  {yun:}if $ComMember.source==6 && $ComMember.claim==0 && $ComMember.email!=""{/yun}
         <a href="javascript:claim('{yun:}url m=ajax c=claim uid=$com.uid{/yun}');">{yun:}t key='resume_00011'{/yun}</a>
@@ -96,7 +96,7 @@
     <li ><a href="{yun:}url m=company c=show id=$com.uid{/yun}#job">{yun:}t key='wap_00185'{/yun}</a><i class="c_currer_line"></i></li>
     <li ><a href="{yun:}url m=company c=show id=$com.uid{/yun}#show">{yun:}t key='wap_user_00157'{/yun}</a><i class="c_currer_line"></i></li>
     <li   class="c_currer"><a href="{yun:}url m=company c=show id=$com.uid{/yun}#news">{yun:}t key='company_00019'{/yun}</a><i class="c_currer_line"></i></li>
-    <li><a href="{yun:}url m=company c=show id=$com.uid{/yun}#product">公司产品</a><i class="c_currer_line"></i></li>
+    <li><a href="{yun:}url m=company c=show id=$com.uid{/yun}#product">{yun:}t key='common_02520'{/yun}</a><i class="c_currer_line"></i></li>
   </ul></div><div class="com_left_pd">
   <div class="com_list">
   

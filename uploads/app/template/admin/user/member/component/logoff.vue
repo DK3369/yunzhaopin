@@ -2,14 +2,14 @@
 	<div class="moduleElHight">
 		<div class="moduleSeachbig">
             <div class="tableSeachInpt tableSeachInptsmall" >
-                <el-select v-model="search.status" size="small" slot="prepend" placeholder="处理状态" clearable @change="doUserQuery">
+                <el-select v-model="search.status" size="small" slot="prepend" placeholder="{yun:}t key='admin_user_00161'{/yun}" clearable @change="doUserQuery">
                     <el-option label="未处理" value="1"></el-option>
                     <el-option label="已处理" value="2"></el-option>
                 </el-select>
             </div>
 			<div class="tableSeachInpt tableSeachInptsmall">
-				<el-input placeholder="请输入搜索内容" size="small" @keyup.enter.native="doUserQuery" v-model="search.keyword" class="input-with-select" clearable>
-					<el-select v-model="search.type" size="small" slot="prepend" placeholder="用户名" >
+				<el-input placeholder="{yun:}t key='admin_00340'{/yun}" size="small" @keyup.enter.native="doUserQuery" v-model="search.keyword" class="input-with-select" clearable>
+					<el-select v-model="search.type" size="small" slot="prepend" placeholder="{yun:}t key='admin_user_00140'{/yun}" >
 						<el-option label="用户名" value="1"></el-option>
 						<el-option label="手机号" value="2"></el-option>
 						<el-option label="用户ID" value="3"></el-option>
@@ -17,12 +17,12 @@
 				</el-input>
 			</div>
 			<div class="tableSeachInpt">
-				<el-button type="primary" icon="el-icon-search" size="mini" @click="doUserQuery">查询</el-button>
+				<el-button type="primary" icon="el-icon-search" size="mini" @click="doUserQuery">{yun:}t key='admin_user_weipin_00049'{/yun}</el-button>
 			</div>
 					 
 		</div>
 		<div class="admin_datatip"><i class="el-icon-document"></i>  {{ lc("admin_data_stats") }} {{ lc("admin_total_count", [memNum.count]) }}
-            <span class="admin_datatip_n cp_n" @click="lockList">未处理：{{ memNum.weishenhe }} 条</span>
+            <span class="admin_datatip_n cp_n" @click="lockList">{yun:}t key='admin_00447'{/yun}</span>
             <span class="admin_datatip_n">{{ lc("admin_search_results_count", [total]) }}</span>
 		</div>
 		<div class="moduleElTable" :class="{ 'moduleElTableHig': tableHig }" style="border: 1px solid #ebeef5; width: calc(100% - 2px);">
@@ -41,16 +41,16 @@
                 <el-table-column prop="zt" label="状态">
                     <template slot-scope="scope">
                         <div class="admin_state">
-                            <span v-if="scope.row.status == '2'" class="admin_state1">已处理</span>
-                            <span v-else class="admin_state2">未处理</span>
+                            <span v-if="scope.row.status == '2'" class="admin_state1">{yun:}t key='admin_user_00163'{/yun}</span>
+                            <span v-else class="admin_state2">{yun:}t key='admin_user_00164'{/yun}</span>
                         </div>
                     </template>
                 </el-table-column>
 			    <el-table-column label="操作" width="140" fixed="right">
                     <template slot-scope="scope">
                         <div class="cz_button">
-                            <el-button  v-if="scope.row.status == '1'"  size="small " plain @click="handle(scope.row)">处理</el-button>
-                            <el-button   type="danger" size="small "  @click="del(scope.row)">删除</el-button>
+                            <el-button  v-if="scope.row.status == '1'"  size="small " plain @click="handle(scope.row)">{yun:}t key='admin_user_00165'{/yun}</el-button>
+                            <el-button   type="danger" size="small "  @click="del(scope.row)">{yun:}t key='common.delete'{/yun}</el-button>
                         </div>
                     </template>
                 </el-table-column>
@@ -59,8 +59,8 @@
 
 		<div class="modulePaging">
             <div>
-                <el-checkbox v-model="checkedAll" @change="selectAllBottom">全选</el-checkbox>
-                <el-button @click="batchDel" size="mini">批量删除</el-button></div>
+                <el-checkbox v-model="checkedAll" @change="selectAllBottom">{yun:}t key='wap_js_00074'{/yun}</el-checkbox>
+                <el-button @click="batchDel" size="mini">{yun:}t key='member_com_00055'{/yun}</el-button></div>
             <div class="modulePagNum">
                 <el-pagination :total="total" @current-change="userPageChange"
                                @size-change="handleSizeChange"
@@ -71,14 +71,14 @@
 		</div>
 
 		 <div class="modluDrawer">
-		 	<el-dialog title="注销提示" :visible.sync="cldrawer" :with-header="true" :modal-append-to-body="false"
+		 	<el-dialog title="{yun:}t key='admin_00448'{/yun}" :visible.sync="cldrawer" :with-header="true" :modal-append-to-body="false"
 		 		:show-close="true" width="300px">
 		 		<div>
-		 			<i class="el-icon-warning"></i> 注销账号？, 是否继续
+		 			<i class="el-icon-warning"></i> {yun:}t key='admin_user_00160'{/yun}
 		 		</div>
 		 		<span slot="footer" class="dialog-footer">
-		 			<el-button @click="cldrawer = false">取 消</el-button>
-		 			<el-button type="primary" @click="cldrawer = false">确 定</el-button>
+		 			<el-button @click="cldrawer = false">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
+		 			<el-button type="primary" @click="cldrawer = false">{yun:}t key='wap_com_00019'{/yun}</el-button>
 		 		</span>
 		 	</el-dialog>
 		 </div>
@@ -93,7 +93,7 @@ module.exports = {
 	data: function () {
 		return {
 			loading: false,
-			dataText: '数据加载中',
+			dataText: "{yun:}t key='admin_user_weipin_00026'{/yun}",
             search:{
 				type: '1',
 				keyword:'',
@@ -112,7 +112,7 @@ module.exports = {
 			currentPage4: 4,
 			tableData: [],
 			items: [
-				{ type: '', label: '正常' }, 
+				{ type: '', label: "{yun:}t key='admin_user_00149'{/yun}" }, 
 			],
             idsArr:[],
             uri: "m=user&c=",
@@ -182,7 +182,7 @@ module.exports = {
 					}
                     _this.pageSizes =res.data.pageSizes;
                     if (_this.tableData.length === 0) {
-	                    _this.dataText = "暂无数据";
+	                    _this.dataText = "{yun:}t key='wap_js_00113'{/yun}";
 	                }
                 }
             })

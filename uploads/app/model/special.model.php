@@ -57,8 +57,8 @@ class special_model extends model{
 		
 			$List			=	$this -> select_once('special',$whereData,$data['field']);
 			if(!empty($List)){
-				$List['ctime_n']=date('Y年-m月-d日',$List['ctime']);
-				$List['etime_n']=date('Y年-m月-d日',$List['etime']);
+				$List['ctime_n']=date('common_01193',$List['ctime']);
+				$List['etime_n']=date('common_01193',$List['etime']);
                 $List['intro']=str_replace(array("&amp;","background-color:#ffffff","background-color:#fff","white-space:nowrap;"),array("&",'','',''),$List["intro"]);
 				if($List['pic']){
 					$List['pic']		=	checkpic($List['pic']);
@@ -154,16 +154,16 @@ class special_model extends model{
                 }
 
                 $return['error'] = 0;
-                $return['msg'] = '添加成功';
+                $return['msg'] = yun_at('api_wxapp_00013');
 
             } else {
                 $return['error'] = 8;
-                $return['msg'] = '请选择要添加的企业';
+                $return['msg'] = yun_at('common_01172');
             }
 
         } else {
             $return['error'] = 8;
-            $return['msg'] = '参数错误请重试';
+            $return['msg'] = yun_at('wap_00556');
         }
 
         return $return;
@@ -243,7 +243,7 @@ class special_model extends model{
 				
 				if($val['integral']>0){
 					
-					$IntegralM->company_invtal($val['uid'],2,$val['integral'],true,"取消专题招聘报名，退还".$this->config['integral_pricename'],true,2,'integral');
+					$IntegralM->company_invtal($val['uid'],2,$val['integral'],true,'common_00866'.$this->config['integral_pricename'],true,2,'integral');
 				}
 			
 			}
@@ -416,9 +416,9 @@ class special_model extends model{
 			$info	=	$this->getSpecialOne(array("id"=>$id));
 			
 			if($info['com_bm']!='1'){
-				return array('msg'=>'该专题禁止报名！','errcode'=>8);
+				return array('msg'=>yun_at('common_01300'),'errcode'=>8);
 			}else if($info['etime']<time()){
-				return array('msg'=>'该专题报名已结束！','errcode'=>8);
+				return array('msg'=>yun_at('wap_00508'),'errcode'=>8);
 			}
 			require_once ('statis.model.php');
 			$statisM	= new statis_model($this->db, $this->def);
@@ -429,7 +429,7 @@ class special_model extends model{
 			
 
 			if($isapply){
-				return array('msg'=>'您已报名该专题，请等待管理员审核！','errcode'=>8);
+				return array('msg'=>yun_at('common_00470'),'errcode'=>8);
 			}
 			
 			if($info['rating']){
@@ -439,10 +439,10 @@ class special_model extends model{
 			$jobnum		=	$this->select_num('company_job',array("uid"=>$data['uid'],"state"=>'1','sdate'=>array('<',time())));
 			
 			if($info['limit']<=$applynum){
-				return array('msg'=>'报名已满，请下次提前报名！','errcode'=>8);
+				return array('msg'=>yun_at('common_00713'),'errcode'=>8);
 			}
 			if($jobnum<1){
-				return array('msg'=>'您暂无公开且合适职位！','errcode'=>8);
+				return array('msg'=>yun_at('common_00877'),'errcode'=>8);
 			}  
 			if($rating&&is_array($rating)){ 
 				
@@ -456,26 +456,26 @@ class special_model extends model{
 					foreach($ratings as $val){
 						$rname[]	=	$val['name'];
 					}
-					return array('msg'=>'只有'.@implode('、',$rname).'才能报名该专题！','errcode'=>8);
+					return array('msg'=>yun_at('common_01959').@implode('、',$rname).'common_06581','errcode'=>8);
 				}
 			}
 			if($statis['integral']<$info['integral']){
-				return array('msg'=>$this->config['integral_pricename'].'不足，请先充值！','errcode'=>8);
+				return array('msg'=>$this->config['integral_pricename'].'model_00104','errcode'=>8);
 			}
 			require_once ('integral.model.php');
 			$integralM		= 	new integral_model($this->db, $this->def);
 					
-			$nid	=	$integralM->company_invtal($data['uid'],2,$info['integral'],false,"报名专题招聘",true,2,'integral',9);
+			$nid	=	$integralM->company_invtal($data['uid'],2,$info['integral'],false,'common_06582',true,2,'integral',9);
 			if($nid){
 				
 				$this->insert_into('special_com',array("sid"=>$id,"uid"=>$data['uid'],'integral'=>$info['integral'],'status'=>'0','time'=>time()));
 				$cominfo = $this->select_once('company',array('uid'=>$data['uid']),'`name`');
-				return array('msg'=>'报名成功，请耐心等我们工作人员审核！','errcode'=>9,'url'=>$_SERVER['HTTP_REFERER']);
+				return array('msg'=>yun_at('model_00053'),'errcode'=>9,'url'=>$_SERVER['HTTP_REFERER']);
 			}else{
-				return array('msg'=>'报名失败，请稍后重试！','errcode'=>8,'url'=>$_SERVER['HTTP_REFERER']);
+				return array('msg'=>yun_at('model_00054'),'errcode'=>8,'url'=>$_SERVER['HTTP_REFERER']);
 			}
 		}else{
-			return array('msg'=>'只有企业用户才能报名！','errcode'=>8);
+			return array('msg'=>yun_at('model_00055'),'errcode'=>8);
 		}
     }	
     // gl模板所需的参会企业行业

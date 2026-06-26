@@ -39,7 +39,7 @@
                                 <img src="{yun:}url m=upload c=qrcode type=1{/yun}" alt="{yun:}t key='member_user_00213'{/yun}" width="130" height="130" />
                             </div>
                             <div class="license_right_p"> {yun:}t key='member_user_00222'{/yun} </div>
-                            <div class="">  打开我-修改资料-点击我要认证 </div>
+                            <div class="">  {yun:}t key='member_com_00549'{/yun} </div>
                            </div>
                             <div class="authentication">
                                 <div class="authentication_list"><span class="authentication_list_name"><i class="Binding_pop_box_list_left_i">*</i>{yun:}t key='wap_user_00080'{/yun}：</span><input type="text" value="{yun:}$company.name{/yun}" name="company_name" id="company_name" class="authentication_text"></div>
@@ -49,7 +49,7 @@
 
                                 <div class="authentication_list">
                                     <div class="authentication_tip">
-                                    <div class="">营业执照需是在有效期范围内的原件照片，扫描或者加盖公章的复印件，若无营业执照可上传组织机构代码证</div>
+                                    <div class="">{yun:}t key='member_com_00550'{/yun}</div>
                                     </div>
                                     <span class="authentication_list_name"><i class="Binding_pop_box_list_left_i">*</i>{yun:}t key='wap_user_00212'{/yun}：</span>
                                     <button type="button" class="authentication_bth noupload0" lay-data="{imgid: 'imgicon',parentid: 'imgparent',fieldname:'check'}"> </button>
@@ -66,7 +66,7 @@
                                 {yun:}if $config.com_cert_owner=="1"{/yun}
                                 <div class="authentication_list">
                                     <div class="authentication_tip">
-                                    <div class="">此处提交经办人身份证材料</div>
+                                    <div class="">{yun:}t key='member_com_00551'{/yun}</div>
                                     格式要求：原件照片无遮挡，文字信息清晰可辨识，扫描或者加盖公章的复印件，{yun:}t key='common_01996'{/yun}{yun:}$config.file_maxsize{/yun}M,{yun:}t key='common_01996'{/yun}{yun:}$config.pic_type{/yun}{yun:}t key='common_02005'{/yun}
                                     </div>
                                     <span class="authentication_list_name"><i class="Binding_pop_box_list_left_i">*</i>{yun:}t key='member_com_00067'{/yun}：</span>
@@ -106,7 +106,7 @@
                                         <a id="checka_imgicon3"  href="javascript:;" data_url="{yun:}$cert.old_other_cert{/yun}" onclick="showpic(this)"  class="aut_show_p">{yun:}t key='member_user_00229'{/yun}</a>
                                     </div>     </div>
                                      <!-- <div class="authentication_tip">
-                                    <div class="">此处提交其他证明材料</div>
+                                    <div class="">{yun:}t key='member_com_00552'{/yun}</div>
                                     
                                     
                                     格式要求：{yun:}t key='common_01996'{/yun}{yun:}$config.pic_type{/yun}{yun:}t key='common_02005'{/yun}，大小不超过{yun:}$config.file_maxsize{/yun}M,</div> -->
@@ -252,7 +252,7 @@
         
         layer.photos({
             photos: picjson
-            ,anim: 5 //0-6的选择，指定弹出图片动画类型，默认随机（请注意，3.0之前的版本用shift参数）
+            ,anim: 5 //0-6的选择，指定弹出图片动画类型，默认随机（请注意，3.0之前的版本用shift{yun:}t key='admin_00103'{/yun}）
         });
     }
 </script>

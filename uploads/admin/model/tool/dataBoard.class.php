@@ -17,47 +17,47 @@ class dataBoard_controller extends adminCommon
 
         $userStats = $TongJi->getTj('member', $_POST, 'reg_date', array('usertype' => '1'));
 
-        $list['adduser']['name'] = '新增个人';
+        $list['adduser']['name'] = yun_at('admin_user_00305');
         $list['adduser']['list'] = $userStats['list'];
         $allNum['adduser'] = $userStats['allnum'];
 
         $expectStats = $TongJi->getTj('resume_expect', $_POST, 'ctime');
-        $list['addexpect']['name'] = '新增简历';
+        $list['addexpect']['name'] = yun_at('admin_user_00193');
         $list['addexpect']['list'] = $expectStats['list'];
         $allNum['addexpect'] = $expectStats['allnum'];
 
         $resumeDeliveryStats = $TongJi->getTj('userid_job', $_POST, 'datetime');
-        $list['resumeDelivery']['name'] = '简历投递';
+        $list['resumeDelivery']['name'] = yun_at('member_com_00152');
         $list['resumeDelivery']['list'] = $resumeDeliveryStats['list'];
         $allNum['resumeDelivery'] = $resumeDeliveryStats['allnum'];
 
         $resumeRefreshStats = $TongJi->getTj('resume_refresh_log', $_POST, 'r_time');
-        $list['resumeRefresh']['name'] = '简历刷新';
+        $list['resumeRefresh']['name'] = yun_at('admin_tool_00176');
         $list['resumeRefresh']['list'] = $resumeRefreshStats['list'];
         $allNum['resumeRefresh'] = $resumeRefreshStats['allnum'];
 
         $comStats = $TongJi->getTj('member', $_POST, 'reg_date', array('usertype' => '2'));
-        $list['addcom']['name'] = '新增企业';
+        $list['addcom']['name'] = yun_at('admin_user_company_00162');
         $list['addcom']['list'] = $comStats['list'];
         $allNum['addcom'] = $comStats['allnum'];
 
         $jobStats = $TongJi->getTj('company_job', $_POST, 'sdate');
-        $list['addjob']['name'] = '新增职位';
+        $list['addjob']['name'] = yun_at('member_com_00250');
         $list['addjob']['list'] = $jobStats['list'];
         $allNum['addjob'] = $jobStats['allnum'];
 
         $downResumeStats = $TongJi->getTj('down_resume', $_POST, 'downtime');
-        $list['downResume']['name'] = '简历下载';
+        $list['downResume']['name'] = yun_at('wap_com_00042');
         $list['downResume']['list'] = $downResumeStats['list'];
         $allNum['downResume'] = $downResumeStats['allnum'];
 
         $jobRefreshStats = $TongJi->getTj('job_refresh_log', $_POST, 'r_time');
-        $list['jobRefresh']['name'] = '职位刷新';
+        $list['jobRefresh']['name'] = yun_at('wap_com_00045');
         $list['jobRefresh']['list'] = $jobRefreshStats['list'];
         $allNum['jobRefresh'] = $jobRefreshStats['allnum'];
 
         $Stats = $TongJi->getTj('userid_msg', $_POST, 'datetime');
-        $list['inviteInterview']['name'] = '邀请面试';
+        $list['inviteInterview']['name'] = yun_at('resume_00029');
         $list['inviteInterview']['list'] = $Stats['list'];
         $allNum['inviteInterview'] = $Stats['allnum'];
 
@@ -73,34 +73,34 @@ class dataBoard_controller extends adminCommon
         if ($_POST['type'] == 1) {
 
             $Stats = $TongJi->getTj('member', $_POST, 'reg_date');
-            $List['allReg']['name'] = '所有会员';
+            $List['allReg']['name'] = yun_at('admin_tool_00015');
             $List['allReg']['list'] = $Stats['list'];
             $AllNum['allReg'] = $Stats['allnum'];
 
             $comStats = $TongJi->getTj('member', $_POST, 'reg_date', array('usertype' => '2'));
-            $List['comReg']['name'] = '企业会员';
+            $List['comReg']['name'] = yun_at('admin_user_company_00281');
             $List['comReg']['list'] = $comStats['list'];
             $AllNum['comReg'] = $comStats['allnum'];
 
             $userStats = $TongJi->getTj('member', $_POST, 'reg_date', array('usertype' => '1'));
-            $List['userReg']['name'] = '个人会员';
+            $List['userReg']['name'] = yun_at('admin_system_00129');
             $List['userReg']['list'] = $userStats['list'];
             $AllNum['userReg'] = $userStats['allnum'];
 
             $CountTj = $TongJi->DataTj('reg', $Stats['timedate']['DateWhere'], 'member', 'uid');
 
             $Stats = $TongJi->getTj('login_log', $_POST, 'ctime', array('usertype' => array('in', '1,2')));
-            $List['allLogin']['name'] = '所有会员';
+            $List['allLogin']['name'] = yun_at('admin_tool_00015');
             $List['allLogin']['list'] = $Stats['list'];
             $AllNum['allLogin'] = $Stats['allnum'];
 
             $comStats = $TongJi->getTj('login_log', $_POST, 'ctime', array('usertype' => '2'));
-            $List['comLogin']['name'] = '企业会员';
+            $List['comLogin']['name'] = yun_at('admin_user_company_00281');
             $List['comLogin']['list'] = $comStats['list'];
             $AllNum['comLogin'] = $comStats['allnum'];
 
             $userStats = $TongJi->getTj('login_log', $_POST, 'ctime', array('usertype' => '1'));
-            $List['userLogin']['name'] = '个人会员';
+            $List['userLogin']['name'] = yun_at('admin_system_00129');
             $List['userLogin']['list'] = $userStats['list'];
             $AllNum['userLogin'] = $userStats['allnum'];
 
@@ -109,14 +109,14 @@ class dataBoard_controller extends adminCommon
 
             $Stats = $TongJi->getTj('look_job', $_POST, 'datetime');
 
-            $List['job']['name'] = '职位浏览';
+            $List['job']['name'] = yun_at('admin_01455');
             $List['job']['list'] = $Stats['list'];
             $AllNum['job'] = $Stats['allnum'];
             $TopList['jobList'] = $TongJi->TopTen("look_job", $Stats['timedate']['DateWhere'], "jobid", "job");
             $TopList['jobComList'] = $TongJi->TopTen("look_job", $Stats['timedate']['DateWhere'], "com_id", "company");
 
             $Stats = $TongJi->getTj('look_resume', $_POST, 'datetime');
-            $List['resume']['name'] = '简历浏览';
+            $List['resume']['name'] = yun_at('weixin_00010');
             $List['resume']['list'] = $Stats['list'];
             $AllNum['resume'] = $Stats['allnum'];
 
@@ -127,7 +127,7 @@ class dataBoard_controller extends adminCommon
 
             $Stats = $TongJi->getTj('userid_msg', $_POST, 'datetime');
 
-            $List['invite']['name'] = '邀请面试';
+            $List['invite']['name'] = yun_at('resume_00029');
             $List['invite']['list'] = $Stats['list'];
             $AllNum['invite'] = $Stats['allnum'];
 
@@ -137,7 +137,7 @@ class dataBoard_controller extends adminCommon
 
             $Stats = $TongJi->getTj('down_resume', $_POST, 'downtime');
             $freeStats = $TongJi->getTj('freedown_resume', $_POST, 'downtime');
-            $List['down']['name'] = '简历下载';
+            $List['down']['name'] = yun_at('wap_com_00042');
             $List['down']['list'] =  $this->handlerDownResume($Stats['list'],$freeStats['list']) ;
             $AllNum['down'] = $Stats['allnum']+$freeStats['allnum'];
 
@@ -162,7 +162,7 @@ class dataBoard_controller extends adminCommon
 
             $Stats = $TongJi->getTj('company_order', $_POST, 'order_time', $where, "SUM(`order_price`) as count");
 
-            $List['order']['name'] = '充值金额';
+            $List['order']['name'] = yun_at('wap_user_00312');
             $List['order']['list'] = $Stats['list'];
             $AllNum['order'] = round($Stats['allnum'], 2);
 
@@ -171,7 +171,7 @@ class dataBoard_controller extends adminCommon
             $CountTj = $TongJi->DataTj('order', array_merge($Stats['timedate']['DateWhere'], $where), 'company_order', 'id');
 
             $Stats = $TongJi->getTj('adclick', $_POST, 'addtime');
-            $List['ad']['name'] = '点击量';
+            $List['ad']['name'] = yun_at('admin_yunying_00049');
             $List['ad']['list'] = $Stats['list'];
             $AllNum['ad'] = $Stats['allnum'];
 
@@ -181,12 +181,12 @@ class dataBoard_controller extends adminCommon
 
             $Stats = $TongJi->getTj('company_job', $_POST, 'sdate');
             $List['addJob']['list'] = $Stats['list'];
-            $List['addJob']['name'] = '发布职位';
+            $List['addJob']['name'] = yun_at('wap_00322');
             $AllNum['addJob'] = $Stats['allnum'];
 
             $updateStats = $TongJi->getTj('job_refresh_log', $_POST, 'r_time');
             $List['upJob']['list'] = $updateStats['list'];
-            $List['upJob']['name'] = '刷新职位';
+            $List['upJob']['name'] = yun_at('wap_com_00029');
             $AllNum['upJob'] = $updateStats['allnum'];
 
             $TopList['addJobCom'] = $TongJi->TopTen("company_job", $Stats['timedate']['DateWhere'], "uid", "company");
@@ -195,11 +195,11 @@ class dataBoard_controller extends adminCommon
 
             $Stats = $TongJi->getTj('resume_expect', $_POST, 'ctime');
             $List['addResume']['list'] = $Stats['list'];
-            $List['addResume']['name'] = '简历新增';
+            $List['addResume']['name'] = yun_at('admin_tool_00016');
             $AllNum['addResume'] = $Stats['allnum'];
             $updateStats = $TongJi->getTj('resume_refresh_log', $_POST, 'r_time');
             $List['upResume']['list'] = $updateStats['list'];
-            $List['upResume']['name'] = '简历刷新';
+            $List['upResume']['name'] = yun_at('admin_tool_00176');
             $AllNum['upResume'] = $updateStats['allnum'];
 
             $CountTjResume = $TongJi->DataTj('resume_expect', $Stats['timedate']['DateWhere'], 'resume_expect', 'id');
@@ -209,12 +209,12 @@ class dataBoard_controller extends adminCommon
         } elseif ($_POST['type'] == 6) {
 
             $Stats = $TongJi->getTj('member', $_POST, 'reg_date', array('usertype' => '2'));
-            $List['comOne']['name'] = '企业统计';
+            $List['comOne']['name'] = yun_at('admin_tool_00123');
             $List['comOne']['list'] = $Stats['list'];
             $AllNum['comOne'] = $Stats['allnum'];
 
             $comStats = $TongJi->getTj('member', $_POST, 'reg_date', array('usertype' => '2', 'status' => '0'));
-            $List['comTwo']['name'] = '待审核企业';
+            $List['comTwo']['name'] = yun_at('admin_00316');
             $List['comTwo']['list'] = $comStats['list'];
             $AllNum['comTwo'] = $comStats['allnum'];
 
@@ -223,7 +223,7 @@ class dataBoard_controller extends adminCommon
 
             $CountTjCom['hy'] = $this->pieMutiDeal(array('arr'=>$CountTjCom['hy'],'isother'=>true));
             $Stats = $TongJi->getTj('userid_job', $_POST, 'datetime');
-            $List['apply']['name'] = '简历投递';
+            $List['apply']['name'] = yun_at('member_com_00152');
             $List['apply']['list'] = $Stats['list'];
             $AllNum['apply'] = $Stats['allnum'];
 
@@ -282,7 +282,7 @@ class dataBoard_controller extends adminCommon
                     if($hasother){
                         $result[$otherKey][$sortkey] = $otherCount;
                     }else{
-                        $result[] = array('name'=>'其他',$sortkey=>$otherCount);
+                        $result[] = array('name'=>'member_com_00038',$sortkey=>$otherCount);
                     }
                     
                 }
@@ -299,7 +299,7 @@ class dataBoard_controller extends adminCommon
     public function fenxiabiao_action(){
         $_POST['fxStatus'] = 1;
         if (!$_POST['startTime'] && !$_POST['endTime']){
-            $this->render_json('1','请选择对比的时间');
+            $this->render_json('1',yun_at('admin_tool_00014'));
         }
         $fxType = $_POST['type']?$_POST['type']:1; // 1表示一年2表示月
         $time = $_POST['startTime'];
@@ -335,8 +335,8 @@ class dataBoard_controller extends adminCommon
             if ($i == ($steps-1)){
                 $onday = 'sum';
                 $onday2 = 'sum';
-                $firstResult[$onday]['years'] = '总计';
-                $secondResult[$onday2]['years'] = '总计';
+                $firstResult[$onday]['years'] = yun_at('member_com_00348');
+                $secondResult[$onday2]['years'] = yun_at('member_com_00348');
             }else{
                 $onday = date("Y-m", strtotime('+'.$i. ' month ',$timeStart));
                 $onday2 = date("Y-m", strtotime('+'.$i. ' month ',$timeEnd));
@@ -394,7 +394,7 @@ class dataBoard_controller extends adminCommon
     public function getAuth_action(){
         $navi_id = $_POST['navi_id'];
         if (!$navi_id){
-            $this->render_json(1,'参数错误');
+            $this->render_json(1,yun_at('wap_com_00228'));
         }
         $status = false;
         if (in_array($navi_id,$this->adminPower['power'])){

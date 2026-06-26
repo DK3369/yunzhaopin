@@ -4,7 +4,7 @@
             <div class="moduleSeachInpt">
             </div>
             <div class="moduleSeachButn">
-                <el-button type="primary" icon="el-icon-document-add" size="mini" @click="dialogAdd = true">添加分类</el-button>
+                <el-button type="primary" icon="el-icon-document-add" size="mini" @click="dialogAdd = true">{yun:}t key='admin_00197'{/yun}</el-button>
             </div>
         </div>
         <div class="moduleElTable">
@@ -27,7 +27,7 @@
                 <el-table-column fixed="right" label="操作" width="110">
                     <template slot-scope="scope">
                         <div class="cz_button">
-                            <el-button type="danger" size="small" @click="delanv(scope.$index)">删除</el-button>
+                            <el-button type="danger" size="small" @click="delanv(scope.$index)">{yun:}t key='common.delete'{/yun}</el-button>
                         </div>
                     </template>
                 </el-table-column>
@@ -35,7 +35,7 @@
         </div>
 
         <div class="modluDrawer">
-            <el-dialog title="添加分类" :visible.sync="dialogAdd" :with-header="true" :append-to-body="false"
+            <el-dialog title="{yun:}t key='admin_00197'{/yun}" :visible.sync="dialogAdd" :with-header="true" :append-to-body="false"
                        :show-close="true" width="30%" :modal="false">
                 <el-form :model="ruleForm" ref="ruleForm" label-width="100px" class="demo-ruleForm">
                     <el-form-item label="分类名称" prop="name">
@@ -43,8 +43,8 @@
                     </el-form-item>
                 </el-form>
                 <span slot="footer" class="dialog-footer">
-                    <el-button type="primary" @click="submitForm('ruleForm')" :disabled="saveLoading">添加</el-button>
-                    <el-button @click="dialogAdd = false">取消</el-button>
+                    <el-button type="primary" @click="submitForm('ruleForm')" :disabled="saveLoading">{yun:}t key='wap_js_00091'{/yun}</el-button>
+                    <el-button @click="dialogAdd = false">{yun:}t key='common.cancel'{/yun}</el-button>
                 </span>
             </el-dialog>
         </div>
@@ -55,7 +55,7 @@
     module.exports = {
         data: function () {
             return {
-                emptytext: '暂无数据',
+                emptytext: "{yun:}t key='wap_js_00113'{/yun}",
                 loading: false,
                 list: [],
 
@@ -78,7 +78,7 @@
                 let that = this,
                     params = {};
                 that.loading = true;
-                that.emptytext = "数据加载中";
+                that.emptytext = "{yun:}t key='admin_user_weipin_00026'{/yun}";
                 httpPost('m=system&c=set_navigation&a=type', params).then(function (response) {
                     let res = response.data,
                         data = res.data;
@@ -92,7 +92,7 @@
                     that.list = list;
                     that.loading = false;
                     if (that.list.length === 0){
-                        that.emptytext = "暂无数据";
+                        that.emptytext = "{yun:}t key='wap_js_00113'{/yun}";
                     }
                 })
             },
@@ -127,7 +127,7 @@
                 params[column.property] = row[column.property];
 
                 if (row[column.property] == '') {
-                    message.warning('请填写分类名称');
+                    message.warning("{yun:}t key='admin_01393'{/yun}");
                     return false;
                 }
 
@@ -151,7 +151,7 @@
                     params = that.ruleForm;
 
                 if (typeof params.typename == 'undefined' || params.typename == '') {
-                    message.warning('请填写分类名称');
+                    message.warning("{yun:}t key='admin_01393'{/yun}");
                     return;
                 }
 

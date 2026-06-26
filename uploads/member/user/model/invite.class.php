@@ -10,10 +10,10 @@ class invite_controller extends user{
         
         if($resume['sex']==1){
             
-            $name  =   mb_substr($resume['name'],0,1,'utf-8').'先生';
+            $name  =   mb_substr($resume['name'],0,1,'utf-8').'wap_js_00169';
         }elseif($resume['sex']==2){
             
-            $name  =   mb_substr($resume['name'],0,1,'utf-8').'女士';
+            $name  =   mb_substr($resume['name'],0,1,'utf-8').'admin_user_00341';
         }else{
             
             $name  =   $resume['name'];

@@ -3,20 +3,20 @@
 		<div class="moduleElSearchInf">
 			<div class="moduleElTabInpt" style="flex-wrap: wrap;">
 				<div class="moduleInptList moduleInptWidt">
-					<el-input placeholder="请输入用户名 / ID" @keyup.enter.native="search" size="small" v-model="searchForm.keyword" class="input-with-select" clearable>
-						<el-select v-model="searchForm.type" slot="prepend" placeholder="用户名">
+					<el-input placeholder="{yun:}t key='admin_00518'{/yun}" @keyup.enter.native="search" size="small" v-model="searchForm.keyword" class="input-with-select" clearable>
+						<el-select v-model="searchForm.type" slot="prepend" placeholder="{yun:}t key='admin_user_00140'{/yun}">
 							<el-option label="用户名" :value="1"></el-option>
 							<el-option label="用户ID" :value="3"></el-option>
 						</el-select>
 					</el-input>
 				</div>
 				<div class="moduleInptList">
-					<el-input placeholder="请输入内容" size="small" v-model="searchForm.content" clearable>
+					<el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" size="small" v-model="searchForm.content" clearable>
 					</el-input>
 				</div>
 				<div class="moduleInptList">
-					<el-date-picker v-model="daterange" size="small" type="daterange" range-separator="至" start-placeholder="开始日期"
-									end-placeholder="结束日期" style="width: 280px;" @change="search">
+					<el-date-picker v-model="daterange" size="small" type="daterange" range-separator="至" start-placeholder="{yun:}t key='admin_00343'{/yun}"
+									end-placeholder="{yun:}t key='admin_00344'{/yun}" style="width: 280px;" @change="search">
 					</el-date-picker>
 				</div>
 				<div v-for="(searchItem, searchIndex) in searchList" :key="searchIndex" class="moduleInptList">
@@ -26,7 +26,7 @@
 					</el-select>
 				</div>
 				<div class="moduleInptList">
-					<el-button type="primary" icon="el-icon-search" size="mini" @click="search">查询</el-button>
+					<el-button type="primary" icon="el-icon-search" size="mini" @click="search">{yun:}t key='admin_user_weipin_00049'{/yun}</el-button>
 				</div>
 			</div>
 		</div>
@@ -62,7 +62,7 @@
 				<el-table-column label="操作" width="80" fixed="right">
 					<template slot-scope="scope">
 						<div class="cz_button">
-							<el-button type="danger" size="mini" @click="del(scope.$index)">删除</el-button>
+							<el-button type="danger" size="mini" @click="del(scope.$index)">{yun:}t key='common.delete'{/yun}</el-button>
 						</div>
 					</template>
 				</el-table-column>
@@ -71,9 +71,9 @@
 		<div class="modulePaging">
 			<div>
 				<el-checkbox v-model="checkedAll" :indeterminate="checkedAllIndeterminate"
-							 @change="checkAll">全选</el-checkbox>
-				<el-button @click="batch('del')" size="mini">批量删除</el-button>
-				<el-button @click="del('all')" size="mini">一键删除</el-button>
+							 @change="checkAll">{yun:}t key='wap_js_00074'{/yun}</el-checkbox>
+				<el-button @click="batch('del')" size="mini">{yun:}t key='member_com_00055'{/yun}</el-button>
+				<el-button @click="del('all')" size="mini">{yun:}t key='admin_user_00260'{/yun}</el-button>
 			</div>
 			<div class="modulePagNum">
 				<el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
@@ -82,7 +82,7 @@
 				</el-pagination>
 			</div>
 		</div>
-        <el-drawer title="预览简历" :visible.sync="drawerPreview" append-to-body size="60%">
+        <el-drawer title="{yun:}t key='wap_user_00217'{/yun}" :visible.sync="drawerPreview" append-to-body size="60%">
             <preview :id="detail.eid"></preview>
         </el-drawer>
 	</div>
@@ -93,9 +93,9 @@
 		data: function () {
 			return {
 				loading: false,
-				dataText: '数据加载中',
-				// 日期选择
-				daterange: '',
+				dataText: "{yun:}t key='admin_user_weipin_00026'{/yun}",
+				// date selection
+				daterange: '",
 
 				// 搜索筛选项
 				searchList: [],
@@ -103,31 +103,31 @@
 					type: 1
 				},
 
-				// 列表
+				// list
 				page: 1,
 				limit: 0,
 				list: [],
 				total: 0,
 				pageSizes: [],
 
-				// 列表排序
-				t: '',
-				order: '',
+				// {yun:}t key='admin_00959'{/yun}
+				t: "',
+				order: '",
 
-				checkedAll: false, // 全选
+				checkedAll: false, // {yun:}t key='wap_js_00074'{/yun}
 				checkedAllIndeterminate: false,
 				multipleSelection: [], // 多选值存储
 				idArr: [],
 
 				prevPage: 0,
 
-                // 预览简历
+                // {yun:}t key='wap_user_00217'{/yun}
                 drawerPreview: false,
                 detail:{}
 			}
 		},
         components: {
-            'preview': httpVueLoader('../../../component/resume_preview.vue')
+            "preview': httpVueLoader('../../../component/resume_preview.vue")
         },
 		mounted() {
 			var that = this
@@ -151,7 +151,7 @@
 			this.init();
 		},
 		methods: {
-            // 预览简历
+            // {yun:}t key='wap_user_00217'{/yun}
             openPreview(row) {
                 this.detail = row;
                 this.drawerPreview = true;
@@ -163,7 +163,7 @@
 			getParams:function(params={},search=false){
 				var that = this;
 				for(let i in params){
-					if(typeof that.searchForm[i]!='undefined'){
+					if(typeof that.searchForm[i]!="undefined'){
 						that.searchForm[i] = params[i];
 					}
 				}
@@ -243,7 +243,7 @@
 	                    scrollToTop()
 	                }
 					if (that.list.length === 0) {
-	                    that.dataText = "暂无数据";
+	                    that.dataText = "{yun:}t key='wap_js_00113'{/yun}";
 	                }
 				})
 			},
@@ -266,7 +266,7 @@
 			},
 			batch(type) {
 				if (this.multipleSelection.length == 0) {
-					message.error('请选择要删除的数据');
+					message.error("{yun:}t key='admin_user_weipin_00005'{/yun}");
 					return false;
 				}
 
@@ -290,15 +290,15 @@
 						params = {},
 						msg = '';
 
-				if (typeof idx == 'undefined') { // 批量删除
+				if (typeof idx == 'undefined") { // {yun:}t key='member_com_00055'{/yun}
 					params.del = this.idArr;
-					msg = '你确定要删除选中项吗？';
-				} else if (idx == 'all') { // 一键删除
-					params.del = 'all';
+					msg = "你确定要删除选中项吗？';
+				} else if (idx == 'all") { // {yun:}t key='admin_user_00260'{/yun}
+					params.del = "all';
 					msg = '确定要清空用户解绑日志？';
 				} else {// 单个删除
 					params.del = that.list[idx].id;
-					msg = '你确定要删除当前项吗？';
+					msg = "{yun:}t key='admin_00333'{/yun}";
 				}
 
 				delConfirm(this, params, function (params) {

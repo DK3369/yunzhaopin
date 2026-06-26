@@ -53,12 +53,12 @@ class index_controller extends common
         if ($_GET['login'] != '1') {
             if ($this->uid != '' && $this->username != '' && empty($code)) {
 
-                $this->actMsg($msgUrl, '您已经登录了！');
+                $this->actMsg($msgUrl, yun_at('wap_00416'));
             }
         }
         if ($this->config['sy_qqlogin'] != '1') {
 
-            $this->actMsg($msgUrl, '对不起，QQ绑定已关闭！');
+            $this->actMsg($msgUrl, yun_auto_t('对不起，QQ绑定已关闭！'));
         }
         $this->seo('qqlogin');
 
@@ -82,7 +82,7 @@ class index_controller extends common
 
             if (!function_exists('curl_init')) {
 
-                echo yun_auto_t("请开启CURL函数，否则将无法进行下一步操作！");
+                echo yun_at('wap_00390');
                 die();
             }
 
@@ -144,7 +144,7 @@ class index_controller extends common
                     if ($userinfo['usertype'] > 0) {
                         if ($userinfo['status'] == '2' || $userinfo['status'] == '4') {
 
-                            $this->ACT_msg(Url(), '您的帐号被锁定，请联系客服解除锁定！');
+                            $this->ACT_msg(Url(), yun_at('qqconnect_00001'));
                             exit();
                         }
                         $qqdata = array(
@@ -159,8 +159,8 @@ class index_controller extends common
 
                         // 会员日志，记录手动登录
                         $LogM       =   $this->MODEL('log');
-                        $logContent =   '账号登录：快捷登录';
-                        $logDetail  =   '电脑端QQ快捷登录';
+                        $logContent =   'wap_01795';
+                        $logDetail  =   'qqconnect_00004';
                         $LogM->addMemberLog($userinfo['uid'], $userinfo['usertype'], $logContent, 32, 1, $logDetail);
 
                         $logtime    =   date("Ymd", $userinfo['login_date']);
@@ -176,11 +176,11 @@ class index_controller extends common
                         }
 
                         if ($logtime != $nowtime) {
-                            $this->MODEL('integral')->invtalCheck($userinfo['uid'], $userinfo['usertype'], "integral_login", "会员登录", 22);
+                            $this->MODEL('integral')->invtalCheck($userinfo['uid'], $userinfo['usertype'], "integral_login", 'wap_00555', 22);
                             $logdata['uid']         =   $userinfo['uid'];
                             $logdata['usertype']    =   $userinfo['usertype'];
                             $logdata['did']         =   $userinfo['did'];
-                            $logdata['content']     =   'WAP微信登录';
+                            $logdata['content']     =   yun_at('wap_00551');
                             $LogM->addLoginlog($logdata);
                             $ip    =  fun_ip_get();
                             $upLogin = array(
@@ -202,12 +202,12 @@ class index_controller extends common
                         $ucsynlogin = uc_user_synlogin($user[0]);
                         $this->cookie->unset_cookie();
                         $this->cookie->add_cookie($userinfo['uid'], $userinfo['username'], $userinfo['salt'], $userinfo['email'], $userinfo['password'], $userinfo['usertype'], $this->config['sy_logintime'], $userinfo['did']);
-                        $this->actMsg($msgUrl, "登录成功！" . $ucsynlogin);
+                        $this->actMsg($msgUrl, 'wap_01796' . $ucsynlogin);
                     } else {
 
                         $this->cookie->unset_cookie();
                         $this->cookie->add_cookie($userinfo['uid'], $userinfo['username'], $userinfo['salt'], $userinfo['email'], $userinfo['password'], $userinfo['usertype'], $this->config['sy_logintime'], $userinfo['did']);
-                        $this->actMsg($msgUrl, "登录成功！");
+                        $this->actMsg($msgUrl, yun_at('wap_01796'));
                     }
 
                 } else {
@@ -215,7 +215,7 @@ class index_controller extends common
                     $_SESSION['qq']["openid"]       =   $user->openid;
                     $_SESSION['qq']["unionid"]      =   $user->unionid;
                     $_SESSION['qq']["tooken"]       =   $params['access_token'];
-                    $_SESSION['qq']["logininfo"]    =   "您已登录QQ，请绑定您的帐户！";
+                    $_SESSION['qq']["logininfo"]    =   yun_at('wap_00392');
 
                     if ($this->uid) {
 
@@ -236,7 +236,7 @@ class index_controller extends common
 
                         $where2['uid']  =   $this->uid;
                         $UserinfoM->upInfo($where2, $data2);
-                        $this->actMsg($msgUrl . "/member/index.php?c=binding", "QQ 登录绑定成功！");
+                        $this->actMsg($msgUrl . "/member/index.php?c=binding", yun_auto_t('QQ 登录绑定成功！'));
                     } else {
 
                         $GetUrl =   "https://graph.qq.com/user/get_user_info?oauth_consumer_key=" . $this->config['sy_qqappid'] . "&access_token=" . $_SESSION['qq']['tooken'] . "&openid=" . $_SESSION['qq']['openid'] . "&format=json";
@@ -258,7 +258,7 @@ class index_controller extends common
                             $_SESSION['qq']['pic']      =   $user['figureurl_qq_2'];
                         } else {
 
-                            $this->actMsg($msgUrl, "用户信息获取失败，请重新登录QQ！");
+                            $this->actMsg($msgUrl, yun_at('wap_00391'));
                         }
 
                         header("location:" . Url("qqconnect", array("c" => "qqbind", "type" => 'ba')));
@@ -292,7 +292,7 @@ class index_controller extends common
 
         if (!CheckRegEmail($arr[2])) {
 
-            $this->ACT_msg($_SERVER['HTTP_REFERER'], "非法操作！", 8);
+            $this->ACT_msg($_SERVER['HTTP_REFERER'], yun_at('model_00001'), 8);
 
         } elseif ($id && is_array($arr) && $arr[0]) {
 
@@ -323,7 +323,7 @@ class index_controller extends common
                 $this->ACT_msg($_SERVER['HTTP_REFERER'], $err['msg'], 8);
             }
         } else {
-            $this->ACT_msg($_SERVER['HTTP_REFERER'], "非法操作！", 8);
+            $this->ACT_msg($_SERVER['HTTP_REFERER'], yun_at('model_00001'), 8);
         }
     }
 
@@ -351,11 +351,11 @@ class index_controller extends common
 
             $userinfoM->upInfo($where, $memberdata);
 
-            $nid ? $this->ACT_msg(Url('login'), "激活成功，请登录！", 9) : $this->ACT_msg($this->config['sy_weburl'], "激活失败，联系管理员认证！", 8);
+            $nid ? $this->ACT_msg(Url('login'), yun_at('qqconnect_00003'), 9) : $this->ACT_msg($this->config['sy_weburl'], yun_at('qqconnect_00002'), 8);
 
         } else {
 
-            $this->ACT_msg($_SERVER['HTTP_REFERER'], "非法操作！", 8);
+            $this->ACT_msg($_SERVER['HTTP_REFERER'], yun_at('model_00001'), 8);
 
         }
 

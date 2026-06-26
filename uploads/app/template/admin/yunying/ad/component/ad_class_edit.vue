@@ -4,23 +4,23 @@
         <div class="drawerModInfo">
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>类别名称：</span>
+                    <span>{yun:}t key='admin_00260'{/yun}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input v-model="ruleForm.class_name" placeholder="请输入类别名称"></el-input>
+                    <el-input v-model="ruleForm.class_name" placeholder="{yun:}t key='admin_00217'{/yun}"></el-input>
                 </div>
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>排　　序：</span>
+                    <span>{yun:}t key='member_user_00299'{/yun}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input v-model="ruleForm.orders" placeholder="请输入内容" onkeyup="this.value=this.value.replace(/[^0-9]/g,'')"></el-input>
+                    <el-input v-model="ruleForm.orders" placeholder="{yun:}t key='wap_user_00076'{/yun}" onkeyup="this.value=this.value.replace(/[^0-9]/g,'')"></el-input>
                 </div>
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>广告位置：</span>
+                    <span>{yun:}t key='admin_01130'{/yun}</span>
                 </div>
                 <div class="drawerModInpt">
                     <el-radio v-model="ruleForm.place" label="1">PC</el-radio>
@@ -29,41 +29,41 @@
             </div>
             <div v-if="!changeToBuy" class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>广告类型：</span>
+                    <span>{yun:}t key='admin_01131'{/yun}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-radio v-model="ruleForm.type" label="1">可购买</el-radio>
-                    <el-radio v-model="ruleForm.type" label="2">不可购买</el-radio>
+                    <el-radio v-model="ruleForm.type" label="1">{yun:}t key='admin_yunying_00070'{/yun}</el-radio>
+                    <el-radio v-model="ruleForm.type" label="2">{yun:}t key='admin_yunying_00068'{/yun}</el-radio>
                 </div>
             </div>
             <div v-show="ruleForm.type == 1" class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>消费类型：</span>
+                    <span>{yun:}t key='admin_01132'{/yun}</span>
                 </div>
                 <div class="drawerModInpt">
                     <el-radio v-model="ruleForm.btype" label="1">{{ this.integral_pricename }}</el-radio>
-                    <el-radio v-model="ruleForm.btype" label="2">金额</el-radio>
+                    <el-radio v-model="ruleForm.btype" label="2">{yun:}t key='member_user_00254'{/yun}</el-radio>
                 </div>
             </div>
             <div v-show="ruleForm.type == 1" class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>购买费用：</span>
+                    <span>{yun:}t key='admin_yunying_00067'{/yun}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input v-model="ruleForm.integral_buy" @keyup.native="handleKeyupIntegral" placeholder="请输入购买费用">
-                        <span v-if="ruleForm.btype == '1'" slot="suffix" class="slotspan">积分/月</span>
-                        <span v-else-if="ruleForm.btype == '2'" slot="suffix" class="slotspan">元/月</span>
+                    <el-input v-model="ruleForm.integral_buy" @keyup.native="handleKeyupIntegral" placeholder="{yun:}t key='admin_yunying_00062'{/yun}">
+                        <span v-if="ruleForm.btype == '1'" slot="suffix" class="slotspan">{yun:}t key='admin_yunying_00069'{/yun}</span>
+                        <span v-else-if="ruleForm.btype == '2'" slot="suffix" class="slotspan">{yun:}t key='wap_com_00295'{/yun}</span>
                     </el-input>
                 </div>
             </div>
             <div v-show="ruleForm.type == 1" class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>位置示意图：</span>
+                    <span>{yun:}t key='admin_yunying_00064'{/yun}</span>
                 </div>
                 <div class="drawerModInpt" style="display: flex;align-items: center;">
                     <el-upload :accept="pic_accept" :action="uploadAction" :on-change="uploadChange"
                         :show-file-list="false">
-                        <el-button size="small" type="primary">上传图片</el-button>
+                        <el-button size="small" type="primary">{yun:}t key='wap_00540'{/yun}</el-button>
                     </el-upload>
                     <div class="up_sy_logo_div" style="margin-left: 15px;">
                         <el-image v-if="ruleForm.hrefn" style="width:100px;" :src="ruleForm.hrefn" :preview-src-list="ruleForm.hrefn ? [ruleForm.hrefn] : []"></el-image>
@@ -72,23 +72,23 @@
             </div>
             <div v-show="ruleForm.type == 1" class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>广告宽度：</span>
+                    <span>{yun:}t key='admin_yunying_00065'{/yun}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input v-model="ruleForm.x" placeholder="请输入广告宽度">px(像素)</el-input>
+                    <el-input v-model="ruleForm.x" placeholder="{yun:}t key='admin_yunying_00061'{/yun}">{yun:}t key='admin_yunying_00063'{/yun}</el-input>
                 </div>
             </div>
             <div v-show="ruleForm.type == 1" class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>广告高度：</span>
+                    <span>{yun:}t key='admin_yunying_00066'{/yun}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input v-model="ruleForm.y" placeholder="请输入广告宽度">px(像素)</el-input>
+                    <el-input v-model="ruleForm.y" placeholder="{yun:}t key='admin_yunying_00061'{/yun}">{yun:}t key='admin_yunying_00063'{/yun}</el-input>
                 </div>
             </div>
             <div v-show="ruleForm.type == 1" class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>备注说明：</span>
+                    <span>{yun:}t key='member_com_00404'{/yun}</span>
                 </div>
                 <div class="drawerModInpt">
                     <el-input type="textarea" :rows="2" v-model="ruleForm.remark"></el-input>
@@ -96,7 +96,7 @@
             </div>
         </div>
         <div class="setBasicButn" style="border: none;">
-            <el-button type="primary" size="medium" @click="submitForm('ruleForm')" :disabled="submitLoading">保存</el-button>
+            <el-button type="primary" size="medium" @click="submitForm('ruleForm')" :disabled="submitLoading">{yun:}t key='common.save'{/yun}</el-button>
         </div>
     </div>
 </template>
@@ -117,11 +117,11 @@ module.exports = {
                 id: 0,
                 class_name: '',
                 orders: '',
-                href: '',//图片
-                hrefn: '',
-                place: '',//广告位置
-                type: '',//广告类型
-                btype: '',//消费类型
+                href: '",//{yun:}t key='wap_js_00081'{/yun}
+                hrefn: "',
+                place: '",//{yun:}t key='admin_01174'{/yun}
+                type: "",//{yun:}t key='admin_01168'{/yun}
+                btype: "',//消费类型
                 integral_buy: '',
                 x: '',
                 y: '',
@@ -164,7 +164,7 @@ module.exports = {
                     }
                 });
                 if (!isImage) {
-                    message.error('上传图片只能是 （' + this.pic_type + '） 格式!');
+                    message.error("{yun:}t key='admin_yunying_00058'{/yun}" + this.pic_type + "） {yun:}t key='common_02005'{/yun}!");
                     return false;
                 }
             }
@@ -172,7 +172,7 @@ module.exports = {
             if (this.pic_maxsize > 0) {
                 let isLtNumM = file.size / 1024 / 1024 < this.pic_maxsize;
                 if (!isLtNumM) {
-                    message.error('上传图片大小不能超过 ' + this.pic_maxsize + 'MB!');
+                    message.error("{yun:}t key='admin_yunying_00057'{/yun} " + this.pic_maxsize + 'MB!');
                     return false;
                 }
             }
@@ -183,7 +183,7 @@ module.exports = {
             let params = JSON.parse(JSON.stringify(this.ruleForm));
 
             if (params.class_name == '') {
-                message.error('广告类别名称不能为空！');
+                message.error("{yun:}t key='admin_01413'{/yun}");
                 return false;
             }
             if (params.place == '') {
@@ -208,11 +208,11 @@ module.exports = {
                     }
                 }
                 if (params.x == '') {
-                    message.error('请填写广告宽度！');
+                    message.error("{yun:}t key='admin_yunying_00059'{/yun}");
                     return false;
                 }
                 if (params.y == '') {
-                    message.error('请填写广告高度！');
+                    message.error("{yun:}t key='admin_yunying_00060'{/yun}");
                     return false;
                 }
             }

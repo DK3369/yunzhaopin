@@ -37,7 +37,7 @@ class resume_controller extends common{
         }
         $this->yunset($CacheArr);
         
-        $uptime		=	array(1 => yun_auto_t('今天'), 3 => yun_auto_t('最近3天'), 7 => yun_auto_t('最近7天'), 30 => yun_auto_t('最近一个月'), 90 => yun_auto_t('最近三个月'));
+        $uptime		=	array(1 => yun_at('common_01940'), 3 => yun_at('wap_00432'), 7 => yun_at('wap_00433'), 30 => yun_at('admin_user_00175'), 90 => yun_at('wap_00431'));
         $this -> yunset('uptime', $uptime);
 		
         if (isset($_GET['ecity']) || isset($_GET['ejob'])){
@@ -131,8 +131,8 @@ class resume_controller extends common{
 		$recnum = $resumeM->getExpectNum(array('rec_resume'=>1,'defaults'=>1,'state'=>1,'r_status'=>1,'status'=>1));
 		$this->yunset("recnum", $recnum);
 
-		$this -> yunset('headertitle', yun_auto_t('找人才'));
-		$this -> yunset('topplaceholder', yun_auto_t('请输入简历关键字,如：服务员...'));
+		$this -> yunset('headertitle', yun_at('default_00312'));
+		$this -> yunset('topplaceholder', yun_at('wap_00419'));
 		$this -> yuntpl(array('wap/resume'));
 	}
 
@@ -154,7 +154,7 @@ class resume_controller extends common{
         if ($this->uid && $this->usertype == 2) {
             $companyInfo    =   $companyM->getCompanyInfo(array('uid' => $this->uid), array('field' => 'r_status'));
             if ($companyInfo['r_status'] != '1' && $companyInfo['r_status'] != '4') {
-                $this->ACT_msg_wap(1, yun_auto_t('账户正在审核中，无法查看！'), 2, 5);
+                $this->ACT_msg_wap(1, yun_at('wap_01799'), 2, 5);
             }
         }
 		// 
@@ -162,7 +162,7 @@ class resume_controller extends common{
 		    
 			if($_COOKIE['resumevisitors'] >= $this->config['sy_resume_visitors']){ 				
 			     
-			    $this->ACT_msg_wap($returnUrl,yun_auto_t('游客用户，每天只能访问').$this->config['sy_resume_visitors']. yun_auto_t('份简历，请登录后继续访问！'), 2, 5);
+			    $this->ACT_msg_wap($returnUrl,yun_at('wap_00424').$this->config['sy_resume_visitors']. yun_at('wap_00422'), 2, 5);
 			}else{
 			    
 				if ($_COOKIE['resumevisitors']==''){
@@ -182,11 +182,11 @@ class resume_controller extends common{
 			
 			if(empty($def_job)){
 			
-			    $this->ACT_msg_wap(1,yun_auto_t('没有找到该人才！'), 2, 5);
+			    $this->ACT_msg_wap(1,yun_at('wap_01800'), 2, 5);
 			    
 			}else if($def_job['def_job'] < 1){
 			    
-			    $this->ACT_msg_wap(1,yun_auto_t('还没有创建简历！'), 2, 5);
+			    $this->ACT_msg_wap(1,yun_at('wap_00429'), 2, 5);
 			}else if($def_job['def_job']){
 			    
 				$id      =	$def_job['def_job'];
@@ -201,29 +201,29 @@ class resume_controller extends common{
 		$resume_expect	     =	$resumeM -> getInfoByEid(array('eid' => $id, 'uid' => $this->uid, 'usertype' => $this->usertype));
 		
 		if(empty($resume_expect)){
-		    $this->ACT_msg_wap(1,yun_auto_t('没有找到该人才！'), 2, 5);
+		    $this->ACT_msg_wap(1,yun_at('wap_01800'), 2, 5);
 		}
 
 		// 
 		if($resume_expect['state'] == 0 && $resume_expect['uid'] != $this->uid){		    
 
-		    $this->ACT_msg_wap(1,yun_auto_t('简历正在审核中！'), 2, 5);
+		    $this->ACT_msg_wap(1,yun_at('wap_01801'), 2, 5);
 			
 		}elseif($resume_expect['r_status'] == 2 && $resume_expect['uid'] != $this->uid){
 		    
-		    $this->ACT_msg_wap(1,yun_auto_t('简历暂被锁定，请稍后查看！'), 2, 5);
+		    $this->ACT_msg_wap(1,yun_at('wap_00423'), 2, 5);
 
 		}elseif($resume_expect['state'] == 3 && $resume_expect['uid'] != $this->uid){
 
-		    $this->ACT_msg_wap(1,yun_auto_t('简历审核暂未通过！'), 2, 5);
+		    $this->ACT_msg_wap(1,yun_at('wap_00427'), 2, 5);
 		}
 		if ($this->config['com_search'] == 1 && !$this->uid){
-            $this->ACT_msg_wap($returnUrl, yun_auto_t('请先登录'), 2, 5);
+            $this->ACT_msg_wap($returnUrl, yun_at('wap_00376'), 2, 5);
         }
 		// 
 		if($this->config['sy_user_visit_resume'] == '0' && $this->usertype == 1 && $this->uid != $resume_expect['uid']){
 			
-		    $this->ACT_msg_wap($returnUrl,yun_auto_t('个人用户无权限查看！'), 2, 5);
+		    $this->ACT_msg_wap($returnUrl,yun_at('wap_00425'), 2, 5);
 		}
 
 		if ($this->uid != $resume_expect['uid']) {
@@ -241,7 +241,7 @@ class resume_controller extends common{
                 }
             }
             if (!$canShow){
-                $this->ACT_msg_wap(1,yun_auto_t('简历已设置不对外开放'), 2, 5);
+                $this->ACT_msg_wap(1,yun_at('common_01039'), 2, 5);
             }
         }
 
@@ -251,7 +251,7 @@ class resume_controller extends common{
         
         if(!empty($blackInfo)){
             
-            $this->ACT_msg_wap(1, yun_auto_t('该用户已关闭简历!'), 2, 5);
+            $this->ACT_msg_wap(1, yun_at('wap_00428'), 2, 5);
             
         }
 		// 
@@ -292,7 +292,7 @@ class resume_controller extends common{
         }
 		$this -> yunset('uid', $this->uid);
  		$this -> yunset('Info', $resume_expect);
-  		$this -> yunset('headertitle', yun_auto_t('个人简历'));
+  		$this -> yunset('headertitle', yun_at('wap_00453'));
 		if($this->config['sy_h5_share']==1){
 			$this -> yunset('shareurl', Url('wap',array('c'=>'resume','a'=>'share', 'id' => $id)));
 		}else{
@@ -418,7 +418,7 @@ class resume_controller extends common{
 		
 		    $this->yunset('backurl', Url('wap',array('c' => 'look_resume'),'member'));
 		}
-		$this -> yunset('headertitle', yun_auto_t('面试邀请'));
+		$this -> yunset('headertitle', yun_at('wap_com_00046'));
 		$this -> yuntpl(array('wap/invite'));
 	}
 

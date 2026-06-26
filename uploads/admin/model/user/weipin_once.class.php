@@ -7,8 +7,8 @@ class weipin_once_controller extends adminCommon
     //设置高级搜索功能
     function set_search()
     {
-        $search_list[] = array("param" => "status", "name" => '审核状态', "value" => array("1" => "已审核", "3" => "未审核", "2" => "已过期"));
-        $search_list[] = array("param" => "time", "name" => '发布时间', "value" => array('1' => '今天', '3' => '最近三天', '7' => '最近七天', '15' => '最近半月', '30' => '最近一个月'));
+        $search_list[] = array("param" => "status", "name" => 'wap_com_00406', "value" => array("1" => 'wap_user_00165', "3" => 'wap_user_00166', "2" => 'member_com_00304'));
+        $search_list[] = array("param" => "time", "name" => 'admin_user_weipin_00030', "value" => array('1' => 'common_01940', '3' => 'admin_user_00179', '7' => 'admin_user_00178', '15' => 'admin_user_00180', '30' => 'admin_user_00175'));
 
         return $search_list;
     }
@@ -97,7 +97,7 @@ class weipin_once_controller extends adminCommon
     {
         $_POST = $this->post_trim($_POST);
         if (empty($_POST['id'])) {
-            $this->render_json(1, '参数错误');
+            $this->render_json(1, yun_at('wap_com_00228'));
         }
 
         $did = intval($_POST['did']);
@@ -109,7 +109,7 @@ class weipin_once_controller extends adminCommon
 
         $siteM->updDid(array('once_job'), array('id' => array('in', $ids)), $didData);
 
-        $this->admin_json(0, '店铺招聘(ID:' . $ids . ')分配站点成功');
+        $this->admin_json(0, 'admin_user_00105' . $ids . ')分配站点成功');
     }
 
 
@@ -117,7 +117,7 @@ class weipin_once_controller extends adminCommon
     function status_action()
     {
         if (empty($_POST['id'])) {
-            $this->render_json(1, '参数错误');
+            $this->render_json(1, yun_at('wap_com_00228'));
         }
 
         $onceM = $this->MODEL('once');
@@ -126,14 +126,14 @@ class weipin_once_controller extends adminCommon
 
         $return = $onceM->setOnceStatus($_POST['id'], array('status' => $status));
 
-        $this->render_json(0, '店铺招聘审核设置成功', $return);
+        $this->render_json(0, yun_at('admin_01280'), $return);
     }
 
     // 批量延期
     function ctime_action()
     {
         if (empty($_POST['id']) || empty($_POST['endtime'])) {
-            $this->render_json(1, '参数错误');
+            $this->render_json(1, yun_at('wap_com_00228'));
         }
 
         $onceM = $this->MODEL('once');
@@ -205,7 +205,7 @@ class weipin_once_controller extends adminCommon
     {
         $_POST = $this->post_trim($_POST);
         if (empty($_POST['id'])) {
-            $this->render_json(1, '参数错误');
+            $this->render_json(1, yun_at('wap_com_00228'));
         }
 
         $onceM = $this->MODEL('once');
@@ -223,7 +223,7 @@ class weipin_once_controller extends adminCommon
     function del_action()
     {
         if (empty($_POST['del'])) {
-            $this->render_json(1, '参数错误');
+            $this->render_json(1, yun_at('wap_com_00228'));
         }
 
         $onceM = $this->Model('once');
@@ -259,7 +259,7 @@ class weipin_once_controller extends adminCommon
     {
         $_POST = $this->post_trim($_POST);
         if (empty($_POST)) {
-            $this->render_json(1, '参数错误');
+            $this->render_json(1, yun_at('wap_com_00228'));
         }
 
         if ($_FILES['sy_once_icon']['tmp_name']) {
@@ -289,7 +289,7 @@ class weipin_once_controller extends adminCommon
         $configM->setConfig($configData);
 
         $this->web_config();
-        $this->admin_json(0, '店铺设置保存成功');
+        $this->admin_json(0, 'admin_user_00106');
     }
 
     // 招聘时长
@@ -307,7 +307,7 @@ class weipin_once_controller extends adminCommon
     {
         $_POST = $this->post_trim($_POST);
         if (empty($_POST['days'])) {
-            $this->render_json(1, '参数错误');
+            $this->render_json(1, yun_at('wap_com_00228'));
         }
 
         $onceM = $this->MODEL('once');
@@ -324,12 +324,12 @@ class weipin_once_controller extends adminCommon
 
             if ($add) {
                 $this->cache_action();
-                $this->admin_json(0, "价格档位(ID:" . $add . ")添加成功");
+                $this->admin_json(0, 'admin_user_00104' . $add . ")添加成功");
             } else {
-                $this->render_json(2, '价格档位添加失败');
+                $this->render_json(2, yun_at('admin_01281'));
             }
         } else {
-            $this->render_json(1, '已有此天数，请重新输入');
+            $this->render_json(1, yun_at('admin_user_00103'));
         }
     }
 
@@ -342,23 +342,23 @@ class weipin_once_controller extends adminCommon
             $priceGear = $onceM->getPriceGear(array('days' => (int)$_POST['days'], 'id' => array('<>', $_POST['id'])));
 
             if ($priceGear) {
-                $this->render_json(2, '已有此天数，请重新输入');
+                $this->render_json(2, yun_at('admin_user_00103'));
             }
 
             $nid = $onceM->upPriceGear(array('id' => (int)$_POST['id']), array('days' => $_POST['days']));
-            $msg = "价格档位(ID:" . $_POST['id'] . ")修改天数";
+            $msg = 'admin_user_00104' . $_POST['id'] . ")修改天数";
         }
 
         if (isset($_POST['price'])) {
             $nid = $onceM->upPriceGear(array('id' => (int)$_POST['id']), array('price' => $_POST['price']));
-            $msg = "价格档位(ID:" . $_POST['id'] . ")修改价格";
+            $msg = 'admin_user_00104' . $_POST['id'] . ")修改价格";
         }
 
         if ($nid) {
             $this->cache_action();
-            $this->admin_json(0, $msg . '成功');
+            $this->admin_json(0, $msg . 'admin_tool_00502');
         } else {
-            $this->render_json(1, $msg . '失败');
+            $this->render_json(1, $msg . 'admin_tool_00501');
         }
     }
 
@@ -366,7 +366,7 @@ class weipin_once_controller extends adminCommon
     function price_gear_del_action()
     {
         if (empty($_POST['del'])) {
-            $this->render_json(1, '参数错误');
+            $this->render_json(1, yun_at('wap_com_00228'));
         }
 
         $onceM = $this->MODEL('once');
@@ -377,9 +377,9 @@ class weipin_once_controller extends adminCommon
 
         if ($id) {
             $this->cache_action();
-            $this->admin_json(0, '价格档位(ID:' . $ids . ')删除成功');
+            $this->admin_json(0, 'admin_user_00104' . $ids . ')删除成功');
         } else {
-            $this->render_json(1, '价格档位删除失败');
+            $this->render_json(1, yun_at('admin_01282'));
         }
     }
 

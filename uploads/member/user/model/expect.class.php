@@ -113,13 +113,13 @@ class expect_controller extends user
         if ($_POST['submit']) {
             $_POST = $this->post_trim($_POST);
             if (strlen($_POST['name']) > $this->config['sy_rname_num'] * 3 && (int)$this->config['sy_rname_num'] > 0){
-                $this->ACT_layer_msg("求职意向最多输入".$this->config['sy_rname_num']."个字！", 8, $_SERVER['HTTP_REFERER'], 2, 0);
+                $this->ACT_layer_msg('member_user_00595'.$this->config['sy_rname_num']."个字！", 8, $_SERVER['HTTP_REFERER'], 2, 0);
                 die();
             }
             if($this->config['sy_resumename_num'] == 1){
                 $name = isset($_POST['uname']) ? $_POST['uname'] : '';
                 if (!$name || !preg_match("/^[\x{4e00}-\x{9fa5}]{2,6}$/u",$name)) {
-                    $this->ACT_layer_msg("姓名请输入2-6位汉字", 8, $_SERVER['HTTP_REFERER'], 2, 0);
+                    $this->ACT_layer_msg('wap_js_00160', 8, $_SERVER['HTTP_REFERER'], 2, 0);
                     die();
                 }
             }
@@ -154,7 +154,7 @@ class expect_controller extends user
                 'sex' => $_POST['sex'],
                 'birthday' => $_POST['birthday'],
                 'source' => 1,
-                'content' => '简历创建未完成，中途退出，信息不完整',
+                'content' => yun_at('member_user_00596'),
                 'r_status' => 1
             );
             if(!$rinfo['photo'] || ($rinfo['defphoto']==2 && $rData['sex']!=$rinfo['sex'])){
@@ -191,10 +191,10 @@ class expect_controller extends user
                 $return = $resumeM->addInfo($addArr);
             }
             if ($return['errcode'] == 9) {
-                echo yun_json_encode(array('code' => 200, 'msg' => '保存成功', 'eid' => isset($return['id']) && $return['id'] ? $return['id'] : 0));
+                echo yun_json_encode(array('code' => 200, 'msg' => yun_at('wap_user_00104'), 'eid' => isset($return['id']) && $return['id'] ? $return['id'] : 0));
                 die();
             } else {
-                echo yun_json_encode(array('code' => 400, 'msg' => '保存失败' . $return['msg'], 'eid' => 0));
+                echo yun_json_encode(array('code' => 400, 'msg' => yun_at('wap_user_00077') . $return['msg'], 'eid' => 0));
                 die();
             }
         }
@@ -210,13 +210,13 @@ class expect_controller extends user
         if ($_POST['submit']) {
             $_POST = $this->post_trim($_POST);
             if (strlen($_POST['name']) > $this->config['sy_rname_num'] * 3 && (int)$this->config['sy_rname_num'] > 0){
-                $this->ACT_layer_msg("求职意向最多输入".$this->config['sy_rname_num']."个字！", 8, $_SERVER['HTTP_REFERER'], 2, 0);
+                $this->ACT_layer_msg('member_user_00595'.$this->config['sy_rname_num']."个字！", 8, $_SERVER['HTTP_REFERER'], 2, 0);
                 die();
             }
             if($this->config['sy_resumename_num'] == 1){
                 $name = isset($_POST['uname']) ? $_POST['uname'] : '';
                 if (!$name || !preg_match("/^[\x{4e00}-\x{9fa5}]{2,6}$/u",$name)) {
-                    $this->ACT_layer_msg("姓名请输入2-6位汉字", 8, $_SERVER['HTTP_REFERER'], 2, 0);
+                    $this->ACT_layer_msg('wap_js_00160', 8, $_SERVER['HTTP_REFERER'], 2, 0);
                     die();
                 }
             }
@@ -347,10 +347,10 @@ class expect_controller extends user
             }
             if (resumeTimeState($this->config['resume_status'])) {
                 
-                $this->ACT_layer_msg('简历创建成功，继续完善！', 9, 'index.php?c=expect&act=success&e=' . $return['id']);
+                $this->ACT_layer_msg('member_user_00597', 9, 'index.php?c=expect&act=success&e=' . $return['id']);
             } else {
                 
-                $this->ACT_layer_msg('简历创建成功，等待审核，您可以继续完善！', 9, 'index.php?c=expect&act=success&e=' . $return['id']);
+                $this->ACT_layer_msg('member_user_00598', 9, 'index.php?c=expect&act=success&e=' . $return['id']);
             }
         }
     }
@@ -502,17 +502,17 @@ class expect_controller extends user
         
         if (! is_numeric($eid)) {
             
-            $this->ACT_layer_msg("简历编号格式不正确！", 8, $_SERVER['HTTP_REFERER'], 2, 0);
+            $this->ACT_layer_msg('member_user_00599', 8, $_SERVER['HTTP_REFERER'], 2, 0);
             die();
         }
         
         if (CheckRegUser($_POST['name']) == false) {
             
-            $this->ACT_layer_msg("简历名称包含特殊字符！", 8, $_SERVER['HTTP_REFERER'], 2, 0);
+            $this->ACT_layer_msg('member_user_00600', 8, $_SERVER['HTTP_REFERER'], 2, 0);
             die();
         }elseif (strlen($_POST['name']) > $this->config['sy_rname_num'] * 3 && (int)$this->config['sy_rname_num'] > 0){
 
-            $this->ACT_layer_msg("简历名称最多"+$this->config['sy_rname_num']+"个字！", 8, $_SERVER['HTTP_REFERER'], 2, 0);
+            $this->ACT_layer_msg('member_user_00601'+$this->config['sy_rname_num']+"个字！", 8, $_SERVER['HTTP_REFERER'], 2, 0);
             die();
         }
         
@@ -526,11 +526,11 @@ class expect_controller extends user
         
         if ($IsSuccess) {
             
-            $this->ACT_layer_msg("修改成功！", 9, $_SERVER['HTTP_REFERER'], 2, 0);
+            $this->ACT_layer_msg('member_user_00602', 9, $_SERVER['HTTP_REFERER'], 2, 0);
             die();
         } else {
             
-            $this->ACT_layer_msg("修改失败！", 8, $_SERVER['HTTP_REFERER'], 2, 0);
+            $this->ACT_layer_msg('member_user_00603', 8, $_SERVER['HTTP_REFERER'], 2, 0);
             die();
         }
     }
@@ -546,7 +546,7 @@ class expect_controller extends user
 
         if (!is_numeric($eid)) {
 
-            $this->ACT_layer_msg("简历编号格式不正确！", 8, $_SERVER['HTTP_REFERER'], 2, 0);
+            $this->ACT_layer_msg('member_user_00599', 8, $_SERVER['HTTP_REFERER'], 2, 0);
             die();
         }
 
@@ -582,7 +582,7 @@ class expect_controller extends user
 
             if (!is_numeric($eid)) {
 
-                $this->ACT_layer_msg("简历编号格式不正确！", 8, $_SERVER['HTTP_REFERER'], 2, 0);
+                $this->ACT_layer_msg('member_user_00599', 8, $_SERVER['HTTP_REFERER'], 2, 0);
                 die();
             }
             if ($_FILES['skillfile']) {

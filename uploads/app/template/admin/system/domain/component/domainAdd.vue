@@ -1,40 +1,40 @@
 <template>
     <div class="tableDome" style="top: 40px;">
         <div class="tableDome_tip">
-            <el-alert title="同一域名不得绑定多个城市，多个域名可以绑定同一城市，但是前台选择城市域名跳转会以最后添加域名为基准，外部访问则不作限制！" type="info" :closable="false"></el-alert>
+            <el-alert title="{yun:}t key='admin_system_00144'{/yun}" type="info" :closable="false"></el-alert>
         </div>
         <div class="moduleTable">
             <table class="tableVue">
                 <thead>
                     <tr align="left">
-                        <th width="200">名称</th>
-                        <th width="500">状态</th>
-                        <th>说明</th>
+                        <th width="200">{yun:}t key='member_com_00021'{/yun}</th>
+                        <th width="500">{yun:}t key='member_user_00181'{/yun}</th>
+                        <th>{yun:}t key='member_com_00207'{/yun}</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td>
-                            <div class="TableTite">域名备注</div>
+                            <div class="TableTite">{yun:}t key='admin_system_00166'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input placeholder="请输入内容" v-model="domainInfo.title"></el-input>
+                                <el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="domainInfo.title"></el-input>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>如：北京站</span>
+                                <span>{yun:}t key='admin_01040'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">分站形式</div>
+                            <div class="TableTite">{yun:}t key='admin_system_00161'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableSelect">
-                                <el-select v-model="domainInfo.mode" placeholder="请选择">
+                                <el-select v-model="domainInfo.mode" placeholder="{yun:}t key='wap_user_00100'{/yun}">
                                     <el-option v-for="(item,key) in modeOptionS" :key="key" :label="item.label"
                                         :value="item.value">
                                     </el-option>
@@ -43,47 +43,47 @@
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>分站形式</span>
+                                <span>{yun:}t key='admin_system_00161'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr v-show="domainInfo.mode == 1">
                         <td>
-                            <div class="TableTite">绑定域名</div>
+                            <div class="TableTite">{yun:}t key='admin_system_00168'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input placeholder="请输入内容" v-model="domainInfo.domain"></el-input>
+                                <el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="domainInfo.domain"></el-input>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>如：beijing.hr135.com(不带http://)</span>
+                                <span>{yun:}t key='admin_01041'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr v-show="domainInfo.mode == 2">
                         <td>
-                            <div class="TableTite">分站目录</div>
+                            <div class="TableTite">{yun:}t key='admin_system_00162'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input placeholder="请输入内容" v-model="domainInfo.indexdir"></el-input>
+                                <el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="domainInfo.indexdir"></el-input>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>如：beijing(自定义城市、行业拼音目录)</span>
+                                <span>{yun:}t key='admin_01042'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">分站类型</div>
+                            <div class="TableTite">{yun:}t key='admin_system_00163'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableSelect">
-                                <el-select v-model="domainInfo.fz_type" placeholder="请选择">
+                                <el-select v-model="domainInfo.fz_type" placeholder="{yun:}t key='wap_user_00100'{/yun}">
                                     <el-option v-for="(item,key) in typeOptionS" :key="key" :label="item.label"
                                         :value="item.value">
                                     </el-option>
@@ -92,28 +92,28 @@
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>分站类型</span>
+                                <span>{yun:}t key='admin_system_00163'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr v-show="domainInfo.fz_type == 1">
                         <td>
-                            <div class="TableTite">所在地区</div>
+                            <div class="TableTite">{yun:}t key='wap_com_00015'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableSelect" style="display: flex;align-items: center;">
-                                <el-select v-model="domainInfo.province" placeholder="请选择" @change="handelProOption">
+                                <el-select v-model="domainInfo.province" placeholder="{yun:}t key='wap_user_00100'{/yun}" @change="handelProOption">
                                     <el-option v-for="(item,key) in provinceOptionS" :key="key" :label="item.label"
                                         :value="item.value">
                                     </el-option>
                                 </el-select>
-                                <el-select v-model="domainInfo.cityid" placeholder="请选择" style="margin: 0 6px;"
+                                <el-select v-model="domainInfo.cityid" placeholder="{yun:}t key='wap_user_00100'{/yun}" style="margin: 0 6px;"
                                     @change="handelCityOption">
                                     <el-option v-for="(item,key) in cityOptionS" :key="key" :label="item.label"
                                         :value="item.value">
                                     </el-option>
                                 </el-select>
-                                <el-select v-model="domainInfo.three_cityid" placeholder="请选择" @change="handelCountyOption">
+                                <el-select v-model="domainInfo.three_cityid" placeholder="{yun:}t key='wap_user_00100'{/yun}" @change="handelCountyOption">
                                     <el-option v-for="(item,key) in countyOptionS" :key="key" :label="item.label"
                                         :value="item.value">
                                     </el-option>
@@ -122,17 +122,17 @@
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>分站地区</span>
+                                <span>{yun:}t key='admin_system_00160'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr v-show="domainInfo.fz_type == 2">
                         <td>
-                            <div class="TableTite">所属行业</div>
+                            <div class="TableTite">{yun:}t key='admin_system_00167'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableSelect">
-                                <el-select v-model="domainInfo.hy" placeholder="请选择">
+                                <el-select v-model="domainInfo.hy" placeholder="{yun:}t key='wap_user_00100'{/yun}">
                                     <el-option v-for="(item,key) in hyOptionS" :key="key" :label="item.label"
                                         :value="item.value">
                                     </el-option>
@@ -141,18 +141,18 @@
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>分站行业</span>
+                                <span>{yun:}t key='admin_system_00164'{/yun}</span>
                             </div>
                         </td>
                     </tr>
 
                     <tr>
                         <td>
-                            <div class="TableTite">风格分站</div>
+                            <div class="TableTite">{yun:}t key='admin_system_00169'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableSelect">
-                                <el-select v-model="domainInfo.style" placeholder="请选择">
+                                <el-select v-model="domainInfo.style" placeholder="{yun:}t key='wap_user_00100'{/yun}">
                                     <el-option v-for="(item,key) in styleOptionS" :key="key" :label="item.label"
                                         :value="item.value">
                                     </el-option>
@@ -161,28 +161,28 @@
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>选择您需要绑定的模板风格目录，绑定成功后通过该域名访问人才网会自动进入到该风格下</span>
+                                <span>{yun:}t key='admin_system_00146'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">首页模板</div>
+                            <div class="TableTite">{yun:}t key='admin_system_00170'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input placeholder="请输入内容" v-model="domainInfo.tpl"></el-input>
+                                <el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="domainInfo.tpl"></el-input>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>如：index.htm(后缀是.htm 不填则是默认siteindex.htm模板)</span>
+                                <span>{yun:}t key='admin_system_00145'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">是否启用该域名</div>
+                            <div class="TableTite">{yun:}t key='admin_system_00153'{/yun}</div>
                         </td>
                         <td>
                             <div class="setBasicIput">
@@ -191,75 +191,75 @@
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>提示：停用该域名则不在前台选择城市处显示并且外部访问不对该域名进行解析</span>
+                                <span>{yun:}t key='admin_system_00147'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">分站首页标题</div>
+                            <div class="TableTite">{yun:}t key='admin_system_00157'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input type="textarea" :rows="2" placeholder="请输入内容"
+                                <el-input type="textarea" :rows="2" placeholder="{yun:}t key='wap_user_00076'{/yun}"
                                     v-model="domainInfo.webtitle"></el-input>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>分站首页标题</span>
+                                <span>{yun:}t key='admin_system_00157'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">分站首页关键词</div>
+                            <div class="TableTite">{yun:}t key='admin_system_00152'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input type="textarea" :rows="2" placeholder="请输入内容"
+                                <el-input type="textarea" :rows="2" placeholder="{yun:}t key='wap_user_00076'{/yun}"
                                     v-model="domainInfo.webkeyword"></el-input>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>分站首页关键词</span>
+                                <span>{yun:}t key='admin_system_00152'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">分站首页描述</div>
+                            <div class="TableTite">{yun:}t key='admin_system_00156'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input type="textarea" :rows="2" placeholder="请输入内容"
+                                <el-input type="textarea" :rows="2" placeholder="{yun:}t key='wap_user_00076'{/yun}"
                                     v-model="domainInfo.webmeta"></el-input>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>分站首页描述</span>
+                                <span>{yun:}t key='admin_system_00156'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">分站LOGO</div>
+                            <div class="TableTite">{yun:}t key='admin_system_00154'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableUpload">
                                 <el-upload class="upload-demo" :accept="pic_accept" :action="upLogoUrl" :auto-upload="false"
                                     :show-file-list="false" :on-change="upLogoChange">
-                                    <el-button slot="trigger" size="small" type="primary">选取Logo</el-button>
+                                    <el-button slot="trigger" size="small" type="primary">{yun:}t key='admin_system_00158'{/yun}</el-button>
                                     <img class="el-upload-list__item-thumbnail" v-if="domainInfo.weblogo"
-                                        :src="domainInfo.weblogo" alt="分站Logo" />
+                                        :src="domainInfo.weblogo" alt="{yun:}t key='admin_system_00155'{/yun}" />
                                 </el-upload>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>建议尺寸：最大适应范围：300px*100px 之间,可根据LOGO形状定义高度70px效果最好；<br>默认为空则调用网站Logo</span>
+                                <span>{yun:}t key='admin_01043'{/yun}<br>{yun:}t key='admin_01044'{/yun}</span>
                             </div>
                         </td>
                     </tr>
@@ -267,7 +267,7 @@
             </table>
         </div>
         <div class="setBasicButn" style="border: none;">
-            <el-button type="primary" size="medium" @click="saveDomain" :disabled="saveLoading">提交</el-button>
+            <el-button type="primary" size="medium" @click="saveDomain" :disabled="saveLoading">{yun:}t key='common.submit'{/yun}</el-button>
         </div>
     </div>
 </template>
@@ -317,17 +317,17 @@ module.exports = {
             isType: true,
             modeOptionS: [{
                 value: 1,
-                label: '二级域名'
+                label: "{yun:}t key='admin_system_00159'{/yun}"
             }, {
                 value: 2,
-                label: '首页目录'
+                label: "{yun:}t key='admin_system_00171'{/yun}"
             }],
             typeOptionS: [{
                 value: 1,
-                label: '地区分站'
+                label: "{yun:}t key='admin_system_00165'{/yun}"
             }, {
                 value: 2,
-                label: '行业分站'
+                label: "{yun:}t key='wap_00507'{/yun}"
             }],
             styleOptionS: [],
 
@@ -456,7 +456,7 @@ module.exports = {
                 }
             });
             if (!isImage) {
-                message.error('上传头像图片只能是 （' + this.picType + '） 格式!');
+                message.error('上传头像图片只能是 （' + this.picType + "） {yun:}t key='common_02005'{/yun}!");
                 return false;
             }
 
@@ -488,7 +488,7 @@ module.exports = {
             formData.append('mode', self.domainInfo.mode);
             if (self.domainInfo.mode == 1) {
                 if (self.domainInfo.domain == '') {
-                    message.error('请填写二级域名分站所绑定的域名');
+                    message.error("{yun:}t key='admin_system_00148'{/yun}");
                     return false;
                 } else {
                     formData.append('domain', self.domainInfo.domain);
@@ -496,7 +496,7 @@ module.exports = {
             }
             if (self.domainInfo.mode == 2) {
                 if (self.domainInfo.indexdir == '') {
-                    message.error('请填写首页目录分站所在目录');
+                    message.error("{yun:}t key='admin_system_00149'{/yun}");
                     return false;
                 } else {
                     formData.append('indexdir', self.domainInfo.indexdir);
@@ -507,7 +507,7 @@ module.exports = {
             if (self.domainInfo.fz_type == 1) {
                 if (self.domainInfo.province == '') {
 
-                    message.error('请选择地区分站所在地区');
+                    message.error("{yun:}t key='admin_system_00150'{/yun}");
                     return false;
                 } else {
 
@@ -519,7 +519,7 @@ module.exports = {
             if (self.domainInfo.fz_type == 2) {
                 if (self.domainInfo.hy == '') {
 
-                    message.error('请选择行业分站所说行业');
+                    message.error("{yun:}t key='admin_system_00151'{/yun}");
                     return false;
                 } else {
 

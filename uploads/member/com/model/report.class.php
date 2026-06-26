@@ -43,7 +43,7 @@ class report_controller extends company
 
             if ($new_id) {
 
-                $this->MODEL('log')->addMemberLog($this->uid, $this->usertype, '投诉：招聘顾问', 23, 1);
+                $this->MODEL('log')->addMemberLog($this->uid, $this->usertype, 'member_com_00704', 23, 1);
                 echo '1';
             } else {
                 
@@ -108,7 +108,7 @@ class report_controller extends company
                 $this->layer_msg($return['msg'], $return['errcode'], 0, $_SERVER['HTTP_REFERER']);
             } else {
 
-                $this->layer_msg('请选择您要删除的信息！', 8, 0, $_SERVER['HTTP_REFERER']);
+                $this->layer_msg('model_00034', 8, 0, $_SERVER['HTTP_REFERER']);
             }
         }
     }

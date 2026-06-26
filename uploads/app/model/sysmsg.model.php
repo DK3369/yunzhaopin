@@ -429,9 +429,9 @@ class sysmsg_model extends model{
                     $List[$key]['content_arr']    =   $carr;
                 }
                 if ($value['remind_status'] == 1) {
-                    $List[$key]['status_n'] = '已查看';
+                    $List[$key]['status_n'] = yun_at('wap_user_00258');
                 } else {
-                    $List[$key]['status_n'] = '未查看';
+                    $List[$key]['status_n'] = yun_at('wap_user_00260');
                 }
             }
 
@@ -542,11 +542,11 @@ class sysmsg_model extends model{
 	        
 	        if ($nid){
 	            
-	            $return['msg']      =  '系统消息(ID:'.$id.')删除成功';
+	            $return['msg']      =  yun_auto_t('系统消息(ID:').$id.')删除成功';
 	            $return['errcode']  =  '9';
 	        }else{
 
-	            $return['msg']      =  '系统消息(ID:'.$id.')删除成功';
+	            $return['msg']      =  yun_auto_t('系统消息(ID:').$id.')删除成功';
 	            $return['errcode']  =  '8';
 	        }
 	    } elseif ($data['where']) {
@@ -564,7 +564,7 @@ class sysmsg_model extends model{
             return $result;
         } else {
 
-	        $return['msg']      =  '请选择您要删除的系统消息';
+	        $return['msg']      =  yun_at('common_06586');
 	        $return['errcode']  =  '8';
 	    }
 	    return $return;
@@ -613,12 +613,12 @@ class sysmsg_model extends model{
             
             $id	                =	pylode(',', $ids);
             $return['id']		=	$this -> delete_all('sysmsg',array('id' => array('in',$id),'fa_uid'=>$data['fa_uid']),'');
-            $return['msg']		=	'系统消息';
+            $return['msg']		=	yun_at('wap_user_00363');
             $return['errcode']	=	$return['id'] ? '9' :'8';
-		    $return['msg']		=	$return['id'] ? $return['msg'].'删除成功！' : $return['msg'].'删除失败！';
+		    $return['msg']		=	$return['id'] ? $return['msg'].'admin_user_00187' : $return['msg'].'admin_user_00186';
 	    }else{
 
-			$return['msg']		=	'请选择您要删除的数据！';
+			$return['msg']		=	yun_at('common_00921');
 			$return['errcode']	=	8;
 		}
         

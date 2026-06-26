@@ -251,7 +251,7 @@ class resume_controller extends user_controller{
         if ($this->config['resume_create_exp'] == '1' || $this->config['resume_create_edu'] == '1' || $this->config['resume_create_project'] == '1') {
             if (isset($_POST['presave']) && empty($_POST['eid'])){
                 // 
-                $eData['content']   =   yun_auto_t('简历创建未完成，中途退出，信息不完整');     // 简历备注为未完善
+                $eData['content']   =   yun_at('member_user_00596');     // 简历备注为未完善
                 $eData['state']     =   0;              // resume pending review
             } else {
 
@@ -378,7 +378,7 @@ class resume_controller extends user_controller{
 		if($eid){
 
 		    if (strlen($_POST['name']) > $this->config['sy_rname_num'] * 3 && (int)$this->config['sy_rname_num']>0){
-                $this->render_json(2, yun_auto_t('求职意向最多').$this->config['sy_rname_num'].'个字');
+                $this->render_json(2, yun_at('wap_01808').$this->config['sy_rname_num'].'wap_00982');
             }
 			
 			$expectDate  =  array(
@@ -395,7 +395,7 @@ class resume_controller extends user_controller{
 			foreach ($expectDate as $k=>$v){
 				if (empty($v)){
 					$data['error']=3;
-					$data['msg']=yun_auto_t('请完善信息！！');
+					$data['msg']=yun_at('wap_01809');
                     $this->render_json($data['error'],$data['msg']);
 				}
 			}
@@ -450,7 +450,7 @@ class resume_controller extends user_controller{
 			$return	=	$ResumeM->upResumeInfo(array('uid'=>$this->member['uid']),array('rData'=>$rData,'utype'=>'user','source'=>$_POST['source']));
 			
 			$data['error']	=	$return['errcode']==9 ? 1 : 2;
-			$data['msg']	=	$return['errcode']==9 ? yun_auto_t('保存成功！') : yun_auto_t('保存失败！');
+			$data['msg']	=	$return['errcode']==9 ? yun_at('wap_01810') : yun_at('common_06629');
 			$this->render_json($data['error'],$data['msg']);
 		}
 
@@ -459,7 +459,7 @@ class resume_controller extends user_controller{
 			if(!in_array($_POST['table'],array('expect','edu','exp','other','project','skill','training','work'))){
 				
 				$data['error']	=	2;
-				$data['msg']	=	yun_auto_t('参数错误');
+				$data['msg']	=	yun_at('wap_com_00228');
 				$this->render_json($data['error'],$data['msg']);
 			} 
 			$table	=	"resume_".$_POST['table'];
@@ -630,7 +630,7 @@ class resume_controller extends user_controller{
 				$ResumeM->upInfo(array('id'=>(int)$_POST['eid'],'uid'=>$this->member['uid']),array('eData'=>array('whour'=>$whour,'avghour'=>$avghour)));
 			}
 
-			$nid?$data['msg']	=	yun_auto_t('保存成功！'):$data['msg']=yun_auto_t('保存失败！');
+			$nid?$data['msg']	=	yun_at('wap_01810'):$data['msg']=yun_at('common_06629');
 			$nid?$data['error']	=	'1' : $data['error'] = '2';
 		}
 		$this->render_json($data['error'],$data['msg']);
@@ -648,7 +648,7 @@ class resume_controller extends user_controller{
 		$ResumeM				=	$this->MODEL('resume');
 		$nid					=   $ResumeM->upInfo($upexpectWhere, array('eData' => $upexpectData, 'port' => $this->port, 'sxlog' => 1));
 		$data['error']			=	$nid? 1 : 2;
-		$data['msg']			=	$nid ? yun_auto_t('刷新成功！') : yun_auto_t('刷新失败！');
+		$data['msg']			=	$nid ? yun_at('wap_01714') : yun_at('wap_01713');
 		$this->render_json($data['error'],$data['msg']);
 	}
 	/* wxapp: set default resume */
@@ -675,12 +675,12 @@ class resume_controller extends user_controller{
             $resumeM->upResumeInfo(array('uid' => $this->member['uid']), array('rData' => array('status' => $status)));
 
             $logM       =   $this->MODEL('log');
-            $logContent =   yun_auto_t('简历更新：设置隐私状态');
-            $logDetail  =   yun_auto_t('更新简历隐私状态：公开');
+            $logContent =   yun_at('wap_01806');
+            $logDetail  =   yun_at('wap_01811');
             $logM->addMemberLog($this->member['uid'], 1, $logContent, 2, 2, $logDetail);
         }
         $data['error']  =   $return['errcode'] == 9 ? 1 : 2;
-        $data['msg']    =   $return['errcode'] == 9 ? yun_auto_t('设置成功！') : yun_auto_t('设置失败！');
+        $data['msg']    =   $return['errcode'] == 9 ? yun_at('model_00011') : yun_at('wap_01715');
         $this->render_json($data['error'], $data['msg']);
 	}
 	/* wxapp: delete resume */
@@ -815,7 +815,7 @@ class resume_controller extends user_controller{
 			
 			$data['id']		=	'';
 			
-			$data['content']	=	yun_auto_t('暂无示例');
+			$data['content']	=	yun_at('wap_01812');
 
 		}
 		
@@ -873,7 +873,7 @@ class resume_controller extends user_controller{
 
                 }
             }else{
-                $this->render_json(2, yun_auto_t('请上传图片'));
+                $this->render_json(2, yun_at('wap_01412'));
             }
         }else {
             if ($_FILES['show']['tmp_name']) {
@@ -898,7 +898,7 @@ class resume_controller extends user_controller{
 
                 }
             } else {
-                $this->render_json(2, yun_auto_t('请上传图片'));
+                $this->render_json(2, yun_at('wap_01412'));
             }
         }
 
@@ -917,7 +917,7 @@ class resume_controller extends user_controller{
 		
 		$udata['show']	=  count($list);
 		$ResumeM->upUserResume($udata,array('eid'=>(int)$_POST['eid'],'uid'=>$this->member['uid']));
-		$nid?$data['msg']	=	yun_auto_t('保存成功！'):$data['msg']=yun_auto_t('保存失败！');
+		$nid?$data['msg']	=	yun_at('wap_01810'):$data['msg']=yun_at('common_06629');
 		$nid?$data['error']	=	'1' : $data['error'] = '2';
 		$this->render_json($data['error'],$data['msg']);
 	}

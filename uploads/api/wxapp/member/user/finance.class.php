@@ -11,7 +11,7 @@ class finance_controller extends user_controller{
         if($info['topdate']>1){
 			$info['topdate']	=	date('Y-m-d',$info['topdate']);
 		}else{
-			$info['topdate']	=	yun_auto_t('未设置');
+			$info['topdate']	=	yun_at('api_wxapp_00017');
 		}
 		$data['info']	=	$info;
 	    $data['webtel']	=	$this->config['sy_freewebtel'];
@@ -91,7 +91,7 @@ class finance_controller extends user_controller{
 
             $data['shareData']  =   array(
                 'url'       =>  Url('wap').'index.php?c=register&uid='.$this->member['uid'],
-                'title'     =>  yun_auto_t('邀请注册'),
+                'title'     =>  yun_at('wap_01590'),
                 'summary'   =>  yun_auto_t('我在').$this->config['sy_webname'].'上找工作；真的很不错，忍不住推荐给你',
                 'imageUrl'  =>  checkpic($this->config['sy_wx_sharelogo'])
             );
@@ -167,15 +167,15 @@ class finance_controller extends user_controller{
 	    	$List[$lk]['dingdan_state']		=	$lv['order_state'];
 	    	$List[$lk]['dingdan_type']		=	$lv['order_type'];
 	    	if ($lv['type']=='1'){
-		    	$List[$lk]['type_n']		=	yun_auto_t('购买会员');
+		    	$List[$lk]['type_n']		=	yun_at('default_00090');
 		    }elseif($lv['type']=='2'){
-		    	$List[$lk]['type_n']		=	$this->config['integral_pricename']. yun_auto_t('充值');
+		    	$List[$lk]['type_n']		=	$this->config['integral_pricename']. yun_at('common_01946');
 		    }elseif($lv['type']=='3'){
-		    	$List[$lk]['type_n']		=	yun_auto_t('银行转账');
+		    	$List[$lk]['type_n']		=	yun_at('wap_01805');
 		    }elseif($lv['type']=='4'){
-		    	$List[$lk]['type_n']		=	yun_auto_t('金额充值');
+		    	$List[$lk]['type_n']		=	yun_at('wap_01041');
 		    }elseif($lv['type']=='14'){
-		    	$List[$lk]['type_n']		=	yun_auto_t('简历置顶');
+		    	$List[$lk]['type_n']		=	yun_at('wap_user_00207');
 		    }
 	    }
 		$data['list']		=	$List ;
@@ -211,16 +211,16 @@ class finance_controller extends user_controller{
 
 				if(empty($order)){
 					$error	=	2;
-					$msg	=	yun_auto_t('订单不存在'); 
+					$msg	=	yun_at('api_wxapp_00010'); 
 				}elseif($order['order_state']!='1'){
 				    $error	=	3;
-				    $msg	=	yun_auto_t('请检查订单状态,本订单无需付款');
+				    $msg	=	yun_at('wap_01285');
 				}else{
 					$ordertype	=	array(
-						'2'	=>	$this->config['integral_pricename']. yun_auto_t('充值'),
-						'3'	=>	yun_auto_t('银行转帐'),
-						'4'	=>	yun_auto_t('金额充值'),
-						'14'=>	yun_auto_t('简历置顶')
+						'2'	=>	$this->config['integral_pricename']. yun_at('common_01946'),
+						'3'	=>	yun_at('admin_system_00529'),
+						'4'	=>	yun_at('wap_01041'),
+						'14'=>	yun_at('wap_user_00207')
 					);
 					$order['type_n']	=	$ordertype[$order['type']];
 					$error	=	1;
@@ -231,7 +231,7 @@ class finance_controller extends user_controller{
 			$data['fktype']  =  $fktype;
 		}else{
 			$error	=  2;
-			$msg	=  yun_auto_t('暂未开通支付'); 
+			$msg	=  yun_at('wap_01295'); 
 			$data   =  array();
 		}
 
@@ -358,7 +358,7 @@ class finance_controller extends user_controller{
 
             $data['shareData']  =   array(
                 'url'       =>  Url('wap').'index.php?c=register&uid='.$this->member['uid'],
-                'title'     =>  yun_auto_t('邀请注册'),
+                'title'     =>  yun_at('wap_01590'),
                 'summary'   =>  yun_auto_t('我在').$this->config['sy_webname'].'上找工作；真的很不错，忍不住推荐给你',
                 'imageUrl'  =>  checkpic($this->config['sy_wx_sharelogo'])
             );

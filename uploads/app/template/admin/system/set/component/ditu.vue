@@ -4,74 +4,74 @@
             <table class="tableVue">
                 <thead>
                     <tr align="left">
-                        <th width="180">名称</th>
-                        <th width="380">状态</th>
-                        <th>说明</th>
+                        <th width="180">{yun:}t key='member_com_00021'{/yun}</th>
+                        <th width="380">{yun:}t key='member_user_00181'{/yun}</th>
+                        <th>{yun:}t key='member_com_00207'{/yun}</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td>
-                            <div class="TableTite">IP跳转到当前城市</div>
+                            <div class="TableTite">{yun:}t key='admin_system_00279'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableButn">
                                 <el-radio-group v-model="list.map_tocity">
-                                    <el-radio label="1">跳转</el-radio>
-                                    <el-radio label="2">保持默认坐标</el-radio>
+                                    <el-radio label="1">{yun:}t key='admin_system_00283'{/yun}</el-radio>
+                                    <el-radio label="2">{yun:}t key='admin_system_00280'{/yun}</el-radio>
                                 </el-radio-group>
 
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>IP跳转到当前城市</span>
+                                <span>{yun:}t key='admin_system_00279'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">高德地图Web端Key</div>
+                            <div class="TableTite">{yun:}t key='admin_system_00278'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input v-model="list.map_key" placeholder="请输入内容"></el-input>
+                                <el-input v-model="list.map_key" placeholder="{yun:}t key='wap_user_00076'{/yun}"></el-input>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>服务平台必须是“Web端(JS API)”</span><a href="https://lbs.amap.com" target="_balnk">申请地址</a>
+                                <span>{yun:}t key='admin_00904'{/yun}</span><a href="https://lbs.amap.com" target="_balnk">{yun:}t key='admin_00905'{/yun}</a>
                             </div>
                         </td>
                     </tr>
 					<tr>
                         <td>
-                            <div class="TableTite">高德地图Web端安全秘钥</div>
+                            <div class="TableTite">{yun:}t key='admin_system_00277'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input v-model="list.map_secret" placeholder="请输入内容"></el-input>
+                                <el-input v-model="list.map_secret" placeholder="{yun:}t key='wap_user_00076'{/yun}"></el-input>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">高德地图Web服务Key</div>
+                            <div class="TableTite">{yun:}t key='admin_system_00276'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input v-model="list.bmap_webak" placeholder="请输入内容"></el-input>
+                                <el-input v-model="list.bmap_webak" placeholder="{yun:}t key='wap_user_00076'{/yun}"></el-input>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>服务平台必须是“Web服务”</span>
+                                <span>{yun:}t key='admin_00906'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">默认坐标</div>
+                            <div class="TableTite">{yun:}t key='admin_system_00282'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableInpt TableInptCoor">
@@ -92,13 +92,13 @@
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>默认坐标</span>
+                                <span>{yun:}t key='admin_system_00282'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr v-show="dituShow">
                         <td>
-                            <div class="TableTite">获取坐标：</div>
+                            <div class="TableTite">{yun:}t key='admin_00907'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableInpt TableInptCoor" style=" position:relative; z-index:0px;width: 600px;">
@@ -107,7 +107,7 @@
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>默认坐标</span>
+                                <span>{yun:}t key='admin_system_00282'{/yun}</span>
                             </div>
                         </td>
                     </tr>
@@ -115,7 +115,7 @@
             </table>
         </div>
         <div class="setBasicButn" style="border: none; height: 80px;">
-            <el-button type="primary" size="medium"  @click="save" :disabled="saveLoading">提交</el-button>
+            <el-button type="primary" size="medium"  @click="save" :disabled="saveLoading">{yun:}t key='common.submit'{/yun}</el-button>
         </div>
     </div>
 </template>
@@ -126,7 +126,7 @@ module.exports = {
     },
     data: function () {
         return {
-            title:'点击获取坐标',
+            title:"{yun:}t key='admin_system_00281'{/yun}",
             uri:"m=system&c=",
             saveLoading: false,
 			dituShow: false
@@ -210,7 +210,7 @@ module.exports = {
             httpPost(url, ruleForm).then(function (response) {
                 var res = response.data;
                 if (res.error == 0) {
-                    message.success('操作成功', function () {
+                    message.success("{yun:}t key='wap_user_00264'{/yun}", function () {
 						localStorage.setItem('systemTab', 'fifth');
                         location.reload();
                     });

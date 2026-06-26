@@ -52,19 +52,19 @@ class privacy_controller extends user_controller{
 
         $logM       =   $this->MODEL('log');
 
-        $logContent =   yun_auto_t('简历更新：设置隐私状态');
+        $logContent =   yun_at('wap_01806');
 
         $status     =   $resumeM->getResumeInfo(array('uid' => $this->member['uid']), array('field' => '`status`'));
 
         if (intval($_POST['status']) == 2) {
-            $stext  =   yun_auto_t('隐藏');
+            $stext  =   yun_at('admin_user_00259');
         } else if (intval($_POST['status']) == 1) {
-            $stext  =   yun_auto_t('公开');
+            $stext  =   yun_at('wap_js_00005');
         } else if (intval($_GET['status']) == 3) {
-            $stext  =   yun_auto_t('仅投递企业可见');
+            $stext  =   yun_at('member_user_00256');
         }
 
-        $logDetail  =   yun_auto_t('更新简历隐私状态：').$stext;
+        $logDetail  =   yun_at('wap_01807').$stext;
 
         $logM->addMemberLog($this->member['uid'], $this->member['usertype'], $logContent, 2, 2, $logDetail);
 

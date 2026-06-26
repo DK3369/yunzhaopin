@@ -2,9 +2,9 @@
     <div class="moduleElHight">
         <div class="moduleSeachbig">
             <div class="tableSeachInpt tableSeachInptsmall">
-                <el-input placeholder="请输入你要搜索的关键字" @keyup.enter.native="search" size="small" v-model="searchForm.keyword"
+                <el-input placeholder="{yun:}t key='admin_user_00158'{/yun}" @keyup.enter.native="search" size="small" v-model="searchForm.keyword"
                           clearable>
-					<el-select v-model="searchForm.keytype" style="padding-left: 12px;" size="small" slot="prepend" placeholder="期望职位">
+					<el-select v-model="searchForm.keytype" style="padding-left: 12px;" size="small" slot="prepend" placeholder="{yun:}t key='wap_user_00015'{/yun}">
 					    <el-option label="期望职位" :value="1"></el-option>
 					    <el-option label="姓名" :value="2"></el-option>
 					    <el-option label="简历ID" :value="3"></el-option>
@@ -21,13 +21,13 @@
             </div>
             <!--收起部分-->
             <div class="tableSeachInpt tableSeachInptsmall" :class="{ 'searchbutnOnff': seachbutn }">
-                <el-select v-model="searchForm.time_type" size="small" slot="prepend" placeholder="筛选日期" clearable @change="handleTimeChange">
+                <el-select v-model="searchForm.time_type" size="small" slot="prepend" placeholder="{yun:}t key='admin_user_00135'{/yun}" clearable @change="handleTimeChange">
                     <el-option label="创建时间" value="adtime"></el-option>
                     <el-option label="更新时间" value="uptime"></el-option>
                 </el-select>
             </div>
             <div class="tableSeachInpt tableSeachInptsmalltwo" :class="{ 'searchbutnOnff': seachbutn }">
-                <el-date-picker v-model="searchForm.times" type="daterange" align="right" unlink-panels range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" :picker-options="timeOptions" value-format="yyyy-MM-dd" size="small" @change="handleTimeChange"></el-date-picker>
+                <el-date-picker v-model="searchForm.times" type="daterange" align="right" unlink-panels range-separator="至" start-placeholder="{yun:}t key='admin_00343'{/yun}" end-placeholder="{yun:}t key='admin_00344'{/yun}" :picker-options="timeOptions" value-format="yyyy-MM-dd" size="small" @change="handleTimeChange"></el-date-picker>
             </div>
             <div v-for="(searchItem, searchIndex) in searchList" :key="searchIndex" class="tableSeachInpt tableSeachInptsmall"
                 :class="{ 'searchbutnOnff': seachbutn }">
@@ -50,18 +50,18 @@
                 </div>
             </div>
             <div class="tableSeachInpt">
-                <el-button type="primary" icon="el-icon-search" size="mini" @click="search">查询</el-button>
+                <el-button type="primary" icon="el-icon-search" size="mini" @click="search">{yun:}t key='admin_user_weipin_00049'{/yun}</el-button>
             </div>
             <div class="tableSeachInpt">
-                <el-button type="primary" plain icon="el-icon-plus" size="mini" @click="openAdd">新增简历</el-button>
+                <el-button type="primary" plain icon="el-icon-plus" size="mini" @click="openAdd">{yun:}t key='admin_user_00193'{/yun}</el-button>
 
             </div>
             <div class="tableSeachInpt tableSeachzk" :class="{ 'searchbutnKai': seachbutn }">
                 <el-button type="info" class="zhankai" @click="seachbutn = !seachbutn, tableHig = !tableHig"
-                    aria-disabled="false" size="mini" plain>展开<i class="el-icon-arrow-down el-icon--right"></i>
+                    aria-disabled="false" size="mini" plain>{yun:}t key='admin_user_00145'{/yun}<i class="el-icon-arrow-down el-icon--right"></i>
                 </el-button>
                 <el-button type="info" class="shouqi" @click="seachbutn = !seachbutn, tableHig = !tableHig"
-                    aria-disabled="false" size="mini" plain>合并<i class="el-icon-arrow-up el-icon--right"></i>
+                    aria-disabled="false" size="mini" plain>{yun:}t key='admin_user_00144'{/yun}<i class="el-icon-arrow-up el-icon--right"></i>
                 </el-button>
             </div>
         </div>
@@ -70,7 +70,7 @@
             <span class="admin_datatip_n"><span class="cp_n" @click="statusSearch('4')">{{ lc("admin_pending_review_count", [resumeStatusNum1 ? resumeStatusNum1 : 0]) }}</span></span>
             <span class="admin_datatip_n"><span class="cp_n" @click="statusSearch('3')">{{ lc("admin_failed_count", [resumeStatusNum2 ? resumeStatusNum2 : 0]) }}</span></span>
             <span class="admin_datatip_n"><span class="cp_n" @click="statusSearch('2')">{{ lc("admin_locked_count", [resumeStatusNum3 ? resumeStatusNum3 : 0]) }}</span></span>
-            <span class="admin_datatip_n">未成年：<span class="cp_n" @click="statusSearch('1')">{{ resumeTeenNum ? resumeTeenNum : 0 }}</span> 条</span>
+            <span class="admin_datatip_n">{yun:}t key='admin_00495'{/yun}<span class="cp_n" @click="statusSearch('1')">{{ resumeTeenNum ? resumeTeenNum : 0 }}</span> {yun:}t key='common_02088'{/yun}</span>
             <span class="admin_datatip_n">{{ lc("admin_search_results_count", [total]) }}</span>
         </div>
         <div class="moduleElTable" :class="{ 'moduleElTabGetResuma': tableHig }"
@@ -114,10 +114,9 @@
                                <!-- <span v-if="scope.row.defaults == 1" class="user_resumrmr">默认</span>-->
                             </div>
                             <div class="">
-                                {{ scope.row.age_n }}岁
-                                .{{ scope.row.sex_n }}
-                                <span v-if="scope.row.edu_n">.{{ scope.row.edu_n }}学历</span>
-                                <span v-if="scope.row.exp_n">.{{ scope.row.exp_n }}经验</span>
+                                {yun:}t key='admin_00496'{/yun}
+                                <span v-if="scope.row.edu_n">{yun:}t key='admin_00497'{/yun}</span>
+                                <span v-if="scope.row.exp_n">{yun:}t key='admin_00498'{/yun}</span>
                             </div>
                             <div class="">
                                 <span class="gsd">
@@ -140,15 +139,15 @@
 						<el-tag type="success" size="small" effect="dark" v-else>{{ scope.row.integrity }}%</el-tag>
 
                         <div v-if="scope.row.status == 1" class="jlzt">
-                            <el-button type="text" @click="openStatus(scope.row)"><i class="el-icon-unlock"></i> 公开
+                            <el-button type="text" @click="openStatus(scope.row)"><i class="el-icon-unlock"></i> {yun:}t key='wap_js_00005'{/yun}
                             </el-button>
                         </div>
                         <div v-else-if="scope.row.status == 3" class="jlzt">
-                            <el-button type="text" @click="openStatus(scope.row)"><i class="el-icon-unlock"></i> 投递可见
+                            <el-button type="text" @click="openStatus(scope.row)"><i class="el-icon-unlock"></i> {yun:}t key='admin_user_00249'{/yun}
                             </el-button>
                         </div>
                         <div v-else class="jlwgk jlzt">
-                            <el-button type="text" @click="openStatus(scope.row)"><i class="el-icon-lock"></i> 未公开
+                            <el-button type="text" @click="openStatus(scope.row)"><i class="el-icon-lock"></i> {yun:}t key='admin_user_00253'{/yun}
                             </el-button>
                         </div>
                     </template>
@@ -161,7 +160,7 @@
                         </div>
                         <div class="moduleProps" v-if="scope.row.sq_num > 0">
                             <span class="jobtj">
-                                <el-button type="text" @click="openJobSqlLog(scope.row)">查看</el-button>
+                                <el-button type="text" @click="openJobSqlLog(scope.row)">{yun:}t key='wap_com_00427'{/yun}</el-button>
                             </span>
                         </div>
                     </template>
@@ -176,7 +175,7 @@
 				        </div>
 				        <div class="job_tg_bth jobBthChufa">
 				            <!--因点击switch会触发值的改变，固需遮罩层触发事件-->
-				            <div class="chufaButn" @click="openTop(scope.row)">事件</div>
+				            <div class="chufaButn" @click="openTop(scope.row)">{yun:}t key='admin_00499'{/yun}</div>
 				            <el-switch v-model="scope.row.top_day" inactive-text="置顶" :width="30"
 				                :active-value="scope.row.top_day > 0 ? scope.row.top_day : 1"
 				                inactive-value="0"></el-switch>
@@ -194,7 +193,7 @@
                 <el-table-column prop="ip" label="来源/IP/归属地" min-width="150">
                     <template slot-scope="scope">
                         <div class="moduleProps">
-                            <span>{{ source[scope.row.source] }}<span v-if="scope.row.doc == 1">粘贴</span></span>
+                            <span>{{ source[scope.row.source] }}<span v-if="scope.row.doc == 1">{yun:}t key='admin_user_00258'{/yun}</span></span>
                             <span v-if="scope.row.add_ip">{{ scope.row.add_ip }}</span>
                             <span v-if="scope.row.ip_address" class="gsd"> {{ scope.row.ip_address }}</span>
                         </div>
@@ -205,7 +204,7 @@
                     <template slot-scope="scope">
                         <div class="admin_state">
                             <div v-if="scope.row.r_status == '2'">
-                                <span class="admin_state3">已锁定</span>
+                                <span class="admin_state3">{yun:}t key='admin_user_00138'{/yun}</span>
                                 <div style="display:inline-block" v-if="scope.row.lock_info">
                                     <el-popover trigger="hover" placement="right">
                                         <p>{{ scope.row.lock_info }}</p>
@@ -215,16 +214,16 @@
                                     </el-popover>
                                 </div>
                             </div>
-                            <span v-else-if="scope.row.state == 1" class="admin_state1">已审核</span>
+                            <span v-else-if="scope.row.state == 1" class="admin_state1">{yun:}t key='wap_user_00165'{/yun}</span>
                             <span v-else-if="scope.row.state == 3" class="admin_state2">
-                                未通过
+                                {yun:}t key='wap_user_00167'{/yun}
                                 <el-tooltip effect="dark" :content="scope.row.statusbody" placement="top"
                                     v-if="scope.row.statusbody">
                                     <i class="el-icon-warning-outline"></i>
                                 </el-tooltip>
                             </span>
-                            <span v-else-if="scope.row.state == 2" class="admin_state3">被举报</span>
-                            <span v-else class="admin_state5">未审核</span>
+                            <span v-else-if="scope.row.state == 2" class="admin_state3">{yun:}t key='admin_user_00255'{/yun}</span>
+                            <span v-else class="admin_state5">{yun:}t key='wap_user_00166'{/yun}</span>
                         </div>
                     </template>
                 </el-table-column>
@@ -232,14 +231,14 @@
                 <el-table-column label="操作" width="140" fixed="right">
                     <template slot-scope="scope">
                         <div class="cz_button">
-                            <el-button size="mini" plain @click="openAudit(scope.row)">审核</el-button>
+                            <el-button size="mini" plain @click="openAudit(scope.row)">{yun:}t key='member_user_00152'{/yun}</el-button>
 
-                            <el-button size="mini" plain @click="refresh(scope.row)">刷新</el-button>
+                            <el-button size="mini" plain @click="refresh(scope.row)">{yun:}t key='wap_user_00334'{/yun}</el-button>
                         </div>
                         <div class="cz_button" style="margin-top: 10px;">
-                            <el-button size="mini" plain @click="openRemark(scope.row)">备注</el-button>
+                            <el-button size="mini" plain @click="openRemark(scope.row)">{yun:}t key='member_user_00242'{/yun}</el-button>
 
-                            <el-button type="danger" size="mini" @click="openDel(scope.$index)">删除</el-button>
+                            <el-button type="danger" size="mini" @click="openDel(scope.$index)">{yun:}t key='common.delete'{/yun}</el-button>
                         </div>
                     </template>
                 </el-table-column>
@@ -249,15 +248,15 @@
             <div class="bottomButnBull" style="width:100%;">
                 <div class="bottomButnBlak">
                     <el-checkbox v-model="checkedAll" :indeterminate="checkedAllIndeterminate"
-                    @change="checkAll">全选</el-checkbox>
-                    <el-button size="mini" @click="batch('del')">批量删除</el-button>
-                    <el-button size="mini" @click="batch('audit')">批量审核</el-button>
-                    <el-button size="mini" @click="batch('refresh')">批量刷新</el-button>
-                    <el-button size="mini" @click="batch('rec')">批量推荐</el-button>
-                    <el-button size="mini" @click="batch('rec_cancel')">取消推荐</el-button>
-                    <el-button size="mini" @click="batch('top')">批量置顶</el-button>
-                    <el-button size="mini" @click="batch('top_cancel')">取消置顶</el-button>
-                    <el-button size="mini" @click="batch('export')">导出</el-button>
+                    @change="checkAll">{yun:}t key='wap_js_00074'{/yun}</el-checkbox>
+                    <el-button size="mini" @click="batch('del')">{yun:}t key='member_com_00055'{/yun}</el-button>
+                    <el-button size="mini" @click="batch('audit')">{yun:}t key='admin_user_weipin_00037'{/yun}</el-button>
+                    <el-button size="mini" @click="batch('refresh')">{yun:}t key='admin_user_00248'{/yun}</el-button>
+                    <el-button size="mini" @click="batch('rec')">{yun:}t key='admin_user_00237'{/yun}</el-button>
+                    <el-button size="mini" @click="batch('rec_cancel')">{yun:}t key='wap_com_00230'{/yun}</el-button>
+                    <el-button size="mini" @click="batch('top')">{yun:}t key='admin_00500'{/yun}</el-button>
+                    <el-button size="mini" @click="batch('top_cancel')">{yun:}t key='wap_com_00231'{/yun}</el-button>
+                    <el-button size="mini" @click="batch('export')">{yun:}t key='admin_user_00257'{/yun}</el-button>
                 </div>
             </div>
             <div class="modulePagNum" style="padding-top: 8px;">
@@ -269,18 +268,18 @@
         </div>
         <div class="modluDrawer">
             <!-- 导出字段选择弹出 -->
-            <el-dialog title="选择导出字段" :visible.sync="dialogExport" :with-header="true" :modal-append-to-body="false"
+            <el-dialog title="{yun:}t key='admin_user_00246'{/yun}" :visible.sync="dialogExport" :with-header="true" :modal-append-to-body="false"
                 :show-close="true" width="650px">
                 <div class="tck_setname">
                     <el-checkbox-group v-model="ruleFormExport.type" @change="handleCheckedExportType">
                         <el-checkbox :label="field" v-for="(fieldName, field) in typeExport" :key="field">{{ fieldName }}</el-checkbox>
                     </el-checkbox-group>
                     <el-checkbox :indeterminate="isIndeterminateExport" v-model="checkAllExport"
-                        @change="handleCheckAllExport">全选</el-checkbox>
+                        @change="handleCheckAllExport">{yun:}t key='wap_js_00074'{/yun}</el-checkbox>
                 </div>
                 <div class="daochuNumer">
                     <div class="daochuTite">
-                        <span>导出数量</span>
+                        <span>{yun:}t key='admin_00501'{/yun}</span>
                     </div>
                     <div class="daochuFrom">
                         <div class="daochuFroInpt">
@@ -288,7 +287,7 @@
                                 @input="inputIntNumber($event, 'ruleFormExport', 'limit')"></el-input>
                         </div>
                         <div>
-                            <el-alert :closable="false" title="数字太大会导致运行缓慢，请慎重填写" type="info" show-icon>
+                            <el-alert :closable="false" title="{yun:}t key='admin_00513'{/yun}" type="info" show-icon>
                             </el-alert>
                         </div>
                     </div>
@@ -302,14 +301,14 @@
                 </div>
                 <div class="daochuNumer">
                     <div class="daochuTite">
-                        <span>导出区段</span>
+                        <span>{yun:}t key='admin_00502'{/yun}</span>
                     </div>
                     <div class="daochuFrom">
                         <div class="daochuFroInpt">
                             <el-input v-model="ruleFormExport.section"></el-input>
                         </div>
                         <div>
-                            <el-alert :closable="false" title="例如101,100  从101条开始导出100条" type="info" show-icon>
+                            <el-alert :closable="false" title="{yun:}t key='admin_00514'{/yun}" type="info" show-icon>
                             </el-alert>
                         </div>
                     </div>
@@ -319,79 +318,79 @@
                     </el-alert> -->
                 </div>
                 <span slot="footer" class="dialog-footer">
-                    <el-button @click="dialogExport = false">取 消</el-button>
-                    <el-button type="primary" @click="submitExport" :disabled="saveLoading">确 认</el-button>
+                    <el-button @click="dialogExport = false">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
+                    <el-button type="primary" @click="submitExport" :disabled="saveLoading">{yun:}t key='admin_user_00254'{/yun}</el-button>
                 </span>
             </el-dialog>
         </div>
         <!--公开简历-->
         <div class="modluDrawer">
-            <el-dialog title="简历状态" :visible.sync="dialogStatus" :with-header="true" :modal-append-to-body="false"
+            <el-dialog title="{yun:}t key='member_com_00110'{/yun}" :visible.sync="dialogStatus" :with-header="true" :modal-append-to-body="false"
                 :show-close="true" width="450px">
-                <div class="wxsettip_small ">姓名</div>
+                <div class="wxsettip_small ">{yun:}t key='wap_00529'{/yun}</div>
                 <el-input :value="detail.uname" :disabled="true"></el-input>
-                <div class="wxsettip_small ">简历状态</div>
+                <div class="wxsettip_small ">{yun:}t key='member_com_00110'{/yun}</div>
                 <div class="wxsettip_Sealect">
-                    <el-select v-model="ruleFormStatus.status" placeholder="请选择">
+                    <el-select v-model="ruleFormStatus.status" placeholder="{yun:}t key='wap_user_00100'{/yun}">
                         <el-option key="1" label="公开" value="1"></el-option>
                         <el-option key="3" label="投递企业可见" value="3"></el-option>
                         <el-option key="2" label="隐藏" value="2"></el-option>
                     </el-select>
                 </div>
                 <span slot="footer" class="dialog-footer">
-                    <el-button @click="dialogStatus = false">取 消</el-button>
-                    <el-button type="primary" @click="submitStatus" :disabled="saveLoading">确 定</el-button>
+                    <el-button @click="dialogStatus = false">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
+                    <el-button type="primary" @click="submitStatus" :disabled="saveLoading">{yun:}t key='wap_com_00019'{/yun}</el-button>
                 </span>
             </el-dialog>
         </div>
         <!--简历置顶-->
         <div class="modluDrawer">
-            <el-dialog title="简历置顶" :visible.sync="dialogTop" :with-header="true" :modal-append-to-body="false"
+            <el-dialog title="{yun:}t key='wap_user_00207'{/yun}" :visible.sync="dialogTop" :with-header="true" :modal-append-to-body="false"
                 :show-close="true" width="450px">
-                <div class="wxsettip_small ">置顶天数</div>
+                <div class="wxsettip_small ">{yun:}t key='wap_user_00209'{/yun}</div>
                 <el-input v-model="ruleFormTop.addday" @input="inputIntNumber($event, 'ruleFormTop', 'addday')">
-                    <template slot="append">天</template>
+                    <template slot="append">{yun:}t key='common_02067'{/yun}</template>
                 </el-input>
                 <template v-if="detail.top_day > 0">
                     <div class="danqainDataFlex">
-                        <div class="wxsettip_small ">当前结束日期：</div>
+                        <div class="wxsettip_small ">{yun:}t key='admin_00503'{/yun}</div>
                         <div style="color:#f60">{{ detail.topdate_n }}</div>
                     </div>
 
                 </template>
                 <div>
-                    如需取消置顶简历请单击 <el-checkbox v-model="ruleFormTop.s" true-label="1" false-label="0"></el-checkbox> 点击确定即可
+                    {yun:}t key='admin_00504'{/yun} <el-checkbox v-model="ruleFormTop.s" true-label="1" false-label="0"></el-checkbox> {yun:}t key='admin_00505'{/yun}
                 </div>
                 <span slot="footer" class="dialog-footer">
-                    <el-button @click="dialogTop = false">取 消</el-button>
-                    <el-button type="primary" @click="submitTop" :disabled="saveLoading">确 定</el-button>
+                    <el-button @click="dialogTop = false">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
+                    <el-button type="primary" @click="submitTop" :disabled="saveLoading">{yun:}t key='wap_com_00019'{/yun}</el-button>
                 </span>
             </el-dialog>
         </div>
         <!--简历备注-->
         <div class=" ">
-            <el-dialog title="简历备注" :visible.sync="dialogRemark" :with-header="true" :modal-append-to-body="false"
+            <el-dialog title="{yun:}t key='wap_com_00070'{/yun}" :visible.sync="dialogRemark" :with-header="true" :modal-append-to-body="false"
                 :show-close="true" width="450px">
-                <div class="wxsettip_small ">简历标签</div>
+                <div class="wxsettip_small ">{yun:}t key='admin_00506'{/yun}</div>
                 <div class="wxsettip_Sealect">
-                    <el-select v-model="ruleFormRemark.label" placeholder="请选择">
+                    <el-select v-model="ruleFormRemark.label" placeholder="{yun:}t key='wap_user_00100'{/yun}">
                         <el-option v-for="labelkey in userdata.user_label" :key="labelkey" :label="userclass_name[labelkey]"
                             :value="labelkey">
                         </el-option>
                     </el-select>
                 </div>
-                <div class="wxsettip_small ">客服评价</div>
-                <el-input v-model="ruleFormRemark.content" type="textarea" placeholder="请输入客服评价"></el-input>
+                <div class="wxsettip_small ">{yun:}t key='admin_00507'{/yun}</div>
+                <el-input v-model="ruleFormRemark.content" type="textarea" placeholder="{yun:}t key='admin_00516'{/yun}"></el-input>
 
                 <span slot="footer" class="dialog-footer">
-                    <el-button @click="dialogRemark = false">取 消</el-button>
-                    <el-button type="primary" @click="submitRemark">确 定</el-button>
+                    <el-button @click="dialogRemark = false">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
+                    <el-button type="primary" @click="submitRemark">{yun:}t key='wap_com_00019'{/yun}</el-button>
                 </span>
             </el-dialog>
         </div>
 
         <!--投递记录-->
-        <el-drawer title="投递岗位记录" :append-to-body="true" :visible.sync="drawerJobSqLog" size="80%">
+        <el-drawer title="{yun:}t key='admin_00517'{/yun}" :append-to-body="true" :visible.sync="drawerJobSqLog" size="80%">
             <div class="uploadTable" style="padding:0px 20px;font-size:14px;color:#666">
                 <div class="moduleElHight">
                     <div class="moduleElTable moduleElMoreInt" style="border: 1px solid #ebeef5; width: calc(100% - 2px);">
@@ -420,11 +419,11 @@
                             <el-table-column label="是否查看">
                                 <template slot-scope="scope">
                                     <div class="admin_state">
-                                        <span class="admin_state1" v-if="scope.row.is_browse == 2">已查看</span>
-                                        <span class="admin_state2" v-else-if="scope.row.is_browse == 3">待通知</span>
-                                        <span class="admin_state3" v-else-if="scope.row.is_browse == 4">不合适</span>
-                                        <span class="admin_state4" v-else-if="scope.row.is_browse == 5">未接通</span>
-                                        <span class="admin_state5" v-else>未查看</span>
+                                        <span class="admin_state1" v-if="scope.row.is_browse == 2">{yun:}t key='wap_user_00258'{/yun}</span>
+                                        <span class="admin_state2" v-else-if="scope.row.is_browse == 3">{yun:}t key='admin_user_00252'{/yun}</span>
+                                        <span class="admin_state3" v-else-if="scope.row.is_browse == 4">{yun:}t key='wap_user_00354'{/yun}</span>
+                                        <span class="admin_state4" v-else-if="scope.row.is_browse == 5">{yun:}t key='member_com_00108'{/yun}</span>
+                                        <span class="admin_state5" v-else>{yun:}t key='wap_user_00260'{/yun}</span>
                                     </div>
                                 </template>
                             </el-table-column>
@@ -445,20 +444,20 @@
             </div>
         </el-drawer>
         <!--批量审核-->
-        <el-dialog title="批量审核" :visible.sync="dialogAudit" :modal-append-to-body="false" :show-close="true" width="500px">
+        <el-dialog title="{yun:}t key='admin_user_weipin_00037'{/yun}" :visible.sync="dialogAudit" :modal-append-to-body="false" :show-close="true" width="500px">
             <div class="toolClasDia fenpeizhand">
                 <div class="toolClasList">
                     <div class="toolClasTite">
-                        <span>审核操作：</span>
+                        <span>{yun:}t key='admin_user_weipin_00065'{/yun}</span>
                     </div>
                     <div class="toolClasCont">
-                        <el-radio v-model="ruleFormAudit.status" label="1">正常</el-radio>
-                        <el-radio v-model="ruleFormAudit.status" label="3">未通过</el-radio>
+                        <el-radio v-model="ruleFormAudit.status" label="1">{yun:}t key='admin_user_00149'{/yun}</el-radio>
+                        <el-radio v-model="ruleFormAudit.status" label="3">{yun:}t key='wap_user_00167'{/yun}</el-radio>
                     </div>
                 </div>
                 <div class="toolClasList">
                     <div class="toolClasTite">
-                        <span>审核说明：</span>
+                        <span>{yun:}t key='member_user_00450'{/yun}</span>
                     </div>
                     <div class="toolClasCont">
                         <el-input type="textarea" :rows="2" placeholder="" v-model="ruleFormAudit.statusbody">
@@ -467,20 +466,20 @@
                 </div>
             </div>
             <span slot="footer" class="dialog-footer">
-                <el-button @click="dialogAudit = false">取 消</el-button>
-                <el-button type="primary" @click="submitBatchAudit">确 定</el-button>
+                <el-button @click="dialogAudit = false">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
+                <el-button type="primary" @click="submitBatchAudit">{yun:}t key='wap_com_00019'{/yun}</el-button>
             </span>
         </el-dialog>
         <!--简历审核-->
-        <el-drawer title="简历详情" :visible.sync="drawerAudit" @closed="closedAudit"
+        <el-drawer title="{yun:}t key='member_com_00028'{/yun}" :visible.sync="drawerAudit" @closed="closedAudit"
             :modal-append-to-body="false" size="90%" :append-to-body="true">
             <div class="shbox" style="padding-right: 380px;;" v-loading="expectLoading">
                 <div style="overflow-y: auto;position: relative;height: 100%; padding-right: 25px; border-right: 1px solid #eee;">
                     <div class="shshow_tit">
-                        <i class="el-icon-office-building"></i> 基本资料
+                        <i class="el-icon-office-building"></i> {yun:}t key='wap_user_00341'{/yun}
                         <span class="shshow_cz">
                             <el-button type="text" @click="openBasic">
-                                <i class="el-icon-edit"></i>编辑资料
+                                <i class="el-icon-edit"></i>{yun:}t key='admin_user_00227'{/yun}
                             </el-button>
                         </span>
                     </div>
@@ -490,16 +489,16 @@
                             <div class="userinfo_name">{{ resume.name }}</div>
                             <div class="userinfo">
                                 {{ resume.sex_n }}
-                                <span v-if="resume.age">，{{ resume.age }}岁</span>
+                                <span v-if="resume.age">{yun:}t key='admin_user_00198'{/yun}</span>
                                 <span v-if="resume.height">，{{ resume.height }}cm</span>
                                 <span v-if="resume.weight">，{{ resume.weight }}kg</span>
                                 <span v-if="resume.marriage_n">，{{ resume.marriage_n }}</span>
-                                <span v-if="resume.living">，现居{{ resume.living }}</span>
+                                <span v-if="resume.living">{yun:}t key='admin_00468'{/yun}</span>
                             </div>
                             <div class="userinfo" v-if="resume.edu_n || resume.exp_n">
-                                <span v-if="resume.edu_n">{{ resume.edu_n }}学历 </span>
+                                <span v-if="resume.edu_n">{yun:}t key='admin_00469'{/yun} </span>
                                 <span class="userline" v-if="resume.edu_n && resume.exp_n">|</span>
-                                <span v-if="resume.exp_n">{{ resume.exp_n }}经验</span>
+                                <span v-if="resume.exp_n">{yun:}t key='admin_00470'{/yun}</span>
                             </div>
                         </div>
                     </div>
@@ -519,7 +518,7 @@
                     <!--个人优势-->
                     <div class="user_resume_list">
                         <div class="shshow_tit">
-                            <i class="el-icon-medal-1"></i> 个人优势
+                            <i class="el-icon-medal-1"></i> {yun:}t key='wap_user_00326'{/yun}
                         </div>
                         <div class="shshow_p">
                             <el-tag size="mini" v-for="(tagItem,key) in resume.arrayTag" :key="key">{{ tagItem }}</el-tag>
@@ -530,14 +529,14 @@
                             <div class="user_resume_addbth">
                                 <el-button type="primary" size="small" style="width:150px" @click="openTag">
                                     <i class="el-icon-circle-plus-outline"></i> {{ (resume.arrayTag &&
-                                        resume.arrayTag.length > 0) || resume.description ? '编辑' : '添加' }}
+                                        resume.arrayTag.length > 0) || resume.description ? '{yun:}t key='common.edit'{/yun}' : '{yun:}t key='wap_js_00091'{/yun}' }}
                                 </el-button>
                             </div>
                         </div>
                     </div>
                     <!--求职意向-->
                     <div class="user_resume_list">
-                        <div class="shshow_tit"><i class="el-icon-notebook-2"></i> 求职意向</div>
+                        <div class="shshow_tit"><i class="el-icon-notebook-2"></i> {yun:}t key='wap_00460'{/yun}</div>
                         <div class="shshow_p" v-if="expectData.expect">
                             <div class="cominfo">{{ lc("admin_expected_position_value", [expectData.expect.name]) }} </div>
                             <div class="cominfo">{{ lc("admin_current_position_value", [expectData.expect.job_classname]) }}</div>
@@ -554,7 +553,7 @@
                             <!-- <div class="">建议完善求职偏好</div> -->
                             <div class="user_resume_addbth">
                                 <el-button type="primary" size="small" style="width:150px" @click="openJob">
-                                    <i class="el-icon-circle-plus-outline"></i> {{ expectData.expect ? '编辑' : '添加' }}
+                                    <i class="el-icon-circle-plus-outline"></i> {yun:}t key='admin_00472'{/yun}
                                 </el-button>
                             </div>
                         </div>
@@ -562,15 +561,15 @@
 
                     <!--工作经历-->
                     <div class="user_resume_list">
-                        <div class="shshow_tit"><i class="el-icon-suitcase-1"></i> 工作经历</div>
+                        <div class="shshow_tit"><i class="el-icon-suitcase-1"></i> {yun:}t key='wap_00457'{/yun}</div>
                         <!--循环-->
                         <div class="user_resume_show" v-for="(work, workkey) in expectData.work" :key="workkey">
                             <div class="user_resume_addname ">{{ work.name }}
                                 <el-button type="text" @click="openWork(workkey)">
-                                    <i class="el-icon-edit"></i> 修改
+                                    <i class="el-icon-edit"></i> {yun:}t key='wap_js_00073'{/yun}
                                 </el-button>
                                 <el-button type="text" @click="delResumeFb('work', workkey, work.id)">
-                                    <i class="el-icon-delete"></i> 删除
+                                    <i class="el-icon-delete"></i> {yun:}t key='common.delete'{/yun}
                                 </el-button>
                             </div>
                             <div class="user_resume_addjy">
@@ -584,22 +583,22 @@
                             <!-- <div class="">展示工作经验、工作能力否符合岗位要求的重要依据</div> -->
                             <div class="user_resume_addbth">
                                 <el-button type="primary" size="small" style="width:150px" @click="openWork('')">
-                                    <i class="el-icon-circle-plus-outline"></i> 添加
+                                    <i class="el-icon-circle-plus-outline"></i> {yun:}t key='wap_js_00091'{/yun}
                                 </el-button>
                             </div>
                         </div>
                     </div>
                     <!--教育经历-->
                     <div class="user_resume_list">
-                        <div class="shshow_tit"><i class="el-icon-school"></i> 教育经历</div>
+                        <div class="shshow_tit"><i class="el-icon-school"></i> {yun:}t key='wap_00459'{/yun}</div>
                         <!--循环-->
                         <div class="user_resume_show" v-for="(edu, edukey) in expectData.edu" :key="edukey">
                             <div class="user_resume_addname ">{{ edu.name }}
                                 <el-button type="text" @click="openEdu(edukey)">
-                                    <i class="el-icon-edit"></i> 修改
+                                    <i class="el-icon-edit"></i> {yun:}t key='wap_js_00073'{/yun}
                                 </el-button>
                                 <el-button type="text" @click="delResumeFb('edu', edukey, edu.id)">
-                                    <i class="el-icon-delete"></i> 删除
+                                    <i class="el-icon-delete"></i> {yun:}t key='common.delete'{/yun}
                                 </el-button>
                             </div>
                             <div class="user_resume_addjy">
@@ -613,22 +612,22 @@
                             <!-- <div class="">补足HR对学历背景的了解</div> -->
                             <div class="user_resume_addbth">
                                 <el-button type="primary" size="small" style="width:150px" @click="openEdu('')">
-                                    <i class="el-icon-circle-plus-outline"></i> 添加
+                                    <i class="el-icon-circle-plus-outline"></i> {yun:}t key='wap_js_00091'{/yun}
                                 </el-button>
                             </div>
                         </div>
                     </div>
                     <!--培训经历-->
                     <div class="user_resume_list">
-                        <div class="shshow_tit"><i class="el-icon-data-analysis"></i> 培训经历</div>
+                        <div class="shshow_tit"><i class="el-icon-data-analysis"></i> {yun:}t key='wap_00455'{/yun}</div>
                         <!--循环-->
                         <div class="user_resume_show" v-for="(training, trainingKey) in expectData.training" :key="trainingKey">
                             <div class="user_resume_addname ">{{ training.name }}
                                 <el-button type="text" @click="openTraining(trainingKey)">
-                                    <i class="el-icon-edit"></i> 修改
+                                    <i class="el-icon-edit"></i> {yun:}t key='wap_js_00073'{/yun}
                                 </el-button>
                                 <el-button type="text" @click="delResumeFb('training', trainingKey, training.id)">
-                                    <i class="el-icon-delete"></i> 删除
+                                    <i class="el-icon-delete"></i> {yun:}t key='common.delete'{/yun}
                                 </el-button>
                             </div>
                             <div class="user_resume_addjy">
@@ -643,27 +642,27 @@
                             <!-- <div class="">展示培训经验否符合岗位要求的重要依据</div> -->
                             <div class="user_resume_addbth">
                                 <el-button type="primary" size="small" style="width:150px" @click="openTraining('')">
-                                    <i class="el-icon-circle-plus-outline"></i> 添加
+                                    <i class="el-icon-circle-plus-outline"></i> {yun:}t key='wap_js_00091'{/yun}
                                 </el-button>
                             </div>
                         </div>
                     </div>
                     <!--职业技能-->
                     <div class="user_resume_list">
-                        <div class="shshow_tit"><i class="el-icon-reading"></i> 职业技能</div>
+                        <div class="shshow_tit"><i class="el-icon-reading"></i> {yun:}t key='wap_00461'{/yun}</div>
                         <!--循环-->
                         <div class="user_resume_show" v-for="(skill, skillkey) in expectData.skill" :key="skillkey">
                             <div class="user_resume_addname ">{{ skill.name }}
                                 <el-button type="text" @click="openSkill(skillkey)">
-                                    <i class="el-icon-edit"></i> 修改
+                                    <i class="el-icon-edit"></i> {yun:}t key='wap_js_00073'{/yun}
                                 </el-button>
                                 <el-button type="text" @click="delResumeFb('skill', skillkey, skill.id)">
-                                    <i class="el-icon-delete"></i> 删除
+                                    <i class="el-icon-delete"></i> {yun:}t key='common.delete'{/yun}
                                 </el-button>
                             </div>
                             <div class="user_resume_addjy">
                                 <div class=" ">{{ skill.ing_n }} </div>
-                                <div class="user_resume_time">{{ skill.longtime }} 年</div>
+                                <div class="user_resume_time">{yun:}t key='admin_user_00238'{/yun}</div>
                             </div>
                             <div class="user_resume_ms" v-if="skill.pic">
                                 <img :src="skill.pic" width="95" height="70" :preview-src-list="skill.pic">
@@ -675,22 +674,22 @@
                             <!-- <div class="">技能专长建议填写职业技能为简历加分</div> -->
                             <div class="user_resume_addbth">
                                 <el-button type="primary" size="small" style="width:150px" @click="openSkill('')">
-                                    <i class="el-icon-circle-plus-outline"></i> 添加
+                                    <i class="el-icon-circle-plus-outline"></i> {yun:}t key='wap_js_00091'{/yun}
                                 </el-button>
                             </div>
                         </div>
                     </div>
                     <!--项目经历-->
                     <div class="user_resume_list">
-                        <div class="shshow_tit"><i class="el-icon-wallet"></i> 项目经历</div>
+                        <div class="shshow_tit"><i class="el-icon-wallet"></i> {yun:}t key='wap_00465'{/yun}</div>
                         <!--循环-->
                         <div class="user_resume_show" v-for="(project, projectkey) in expectData.project" :key="projectkey">
                             <div class="user_resume_addname ">{{ project.name }}
                                 <el-button type="text" @click="openProject(projectkey)">
-                                    <i class="el-icon-edit"></i> 修改
+                                    <i class="el-icon-edit"></i> {yun:}t key='wap_js_00073'{/yun}
                                 </el-button>
                                 <el-button type="text" @click="delResumeFb('project', projectkey, project.id)">
-                                    <i class="el-icon-delete"></i> 删除
+                                    <i class="el-icon-delete"></i> {yun:}t key='common.delete'{/yun}
                                 </el-button>
                             </div>
                             <div class="user_resume_addjy">
@@ -705,22 +704,22 @@
                             <!-- <div class="">展示工作经验、能力，这也是HR判断是否符合岗位要求的重要依据。</div> -->
                             <div class="user_resume_addbth">
                                 <el-button type="primary" size="small" style="width:150px" @click="openProject('')">
-                                    <i class="el-icon-circle-plus-outline"></i> 添加
+                                    <i class="el-icon-circle-plus-outline"></i> {yun:}t key='wap_js_00091'{/yun}
                                 </el-button>
                             </div>
                         </div>
                     </div>
                     <!--其他描述-->
                     <div class="user_resume_list" style="padding-bottom:80px; ;">
-                        <div class="shshow_tit"><i class="el-icon-mic"></i> 其他描述</div>
+                        <div class="shshow_tit"><i class="el-icon-mic"></i> {yun:}t key='admin_00068'{/yun}</div>
                         <!--循环-->
                         <div class="user_resume_show" v-for="(other, otherkey) in expectData.other" :key="otherkey">
                             <div class="user_resume_addname ">{{ other.name }}
                                 <el-button type="text" @click="openOther(otherkey)">
-                                    <i class="el-icon-edit"></i> 修改
+                                    <i class="el-icon-edit"></i> {yun:}t key='wap_js_00073'{/yun}
                                 </el-button>
                                 <el-button type="text" @click="delResumeFb('other', otherkey, other.id)">
-                                    <i class="el-icon-delete"></i> 删除
+                                    <i class="el-icon-delete"></i> {yun:}t key='common.delete'{/yun}
                                 </el-button>
                             </div>
                             <div class="user_resume_ms">{{ other.content }}</div>
@@ -730,7 +729,7 @@
                             <!-- <div class="">其他加分补充</div> -->
                             <div class="user_resume_addbth">
                                 <el-button type="primary" size="small" style="width:150px" @click="openOther('')">
-                                    <i class="el-icon-circle-plus-outline"></i> 添加
+                                    <i class="el-icon-circle-plus-outline"></i> {yun:}t key='wap_js_00091'{/yun}
                                 </el-button>
                             </div>
                         </div>
@@ -738,11 +737,11 @@
                 </div>
                 <div class="shcz" style="top:60px;right:30px;">
                     <template v-if="detail.r_status == 2">
-                        <div class="wxsettip_small ">简历审核</div>
+                        <div class="wxsettip_small ">{yun:}t key='admin_user_00251'{/yun}</div>
                         <template>
                             <el-radio-group v-model="ruleFormAudit.r_status">
-                                <el-radio label="1">正常</el-radio>
-                                <el-radio label="2">锁定</el-radio>
+                                <el-radio label="1">{yun:}t key='admin_user_00149'{/yun}</el-radio>
+                                <el-radio label="2">{yun:}t key='admin_user_00150'{/yun}</el-radio>
                             </el-radio-group>
                             <el-alert v-if="detail.lock_info" :closable="false" :title="'锁定原因：' + detail.lock_info"
                                 type="warning" show-icon>
@@ -750,32 +749,32 @@
                         </template>
                     </template>
                     <template v-if="ruleFormAudit.r_status == 1">
-                        <div class="wxsettip_small ">简历审核</div>
+                        <div class="wxsettip_small ">{yun:}t key='admin_user_00251'{/yun}</div>
                         <template>
                             <el-radio-group v-model="ruleFormAudit.status">
-                                <el-radio label="1">正常</el-radio>
-                                <el-radio label="3">未通过</el-radio>
+                                <el-radio label="1">{yun:}t key='admin_user_00149'{/yun}</el-radio>
+                                <el-radio label="3">{yun:}t key='wap_user_00167'{/yun}</el-radio>
                             </el-radio-group>
                         </template>
-                        <div class="wxsettip_small ">审核说明模板</div>
-                        <el-select v-model="auditTpl" placeholder="请选择" @change="changeTpl">
+                        <div class="wxsettip_small ">{yun:}t key='admin_user_00244'{/yun}</div>
+                        <el-select v-model="auditTpl" placeholder="{yun:}t key='wap_user_00100'{/yun}" @change="changeTpl">
                             <el-option v-for="auditkey in userdata.user_audit" :key="auditkey"
                                 :label="userclass_name[auditkey]" :value="auditkey">
                             </el-option>
                         </el-select>
-                        <div class="wxsettip_small ">审核说明</div>
+                        <div class="wxsettip_small ">{yun:}t key='member_user_00062'{/yun}</div>
                         <el-input type="textarea" :rows="2" v-model="ruleFormAudit.statusbody">
                         </el-input>
                         <template v-if="ruleFormAudit.content">
-                            <div class="wxsettip_small ">备注信息</div>
+                            <div class="wxsettip_small ">{yun:}t key='wap_01435'{/yun}</div>
                             <el-input type="textarea" :rows="2" v-model="ruleFormAudit.content">
                             </el-input>
                         </template>
                         <div class=" shczbth">
-                            <el-button type="primary" @click="submitAudit(1)">提 交</el-button>
+                            <el-button type="primary" @click="submitAudit(1)">{yun:}t key='member_com_00248'{/yun}</el-button>
                         </div>
                         <div v-if="todoAuditNum > 0" class=" shczbth">
-                            <el-button type="primary" @click="submitAudit(2)" plain>提交，并审核下一个</el-button>
+                            <el-button type="primary" @click="submitAudit(2)" plain>{yun:}t key='admin_user_00239'{/yun}</el-button>
                         </div>
                     </template>
                 </div>
@@ -783,29 +782,29 @@
         </el-drawer>
 
         <!---编辑简历 基本资料-->
-        <el-drawer title="编辑基本资料" :append-to-body="true" :visible.sync="drawerBasic" :wrapper-closable="false" size="60%">
+        <el-drawer title="{yun:}t key='admin_00475'{/yun}" :append-to-body="true" :visible.sync="drawerBasic" :wrapper-closable="false" size="60%">
             <div class="uploadTable" style="padding:0px 20px;">
                 <table class="tableVue">
                     <thead>
                         <tr align="left">
-                            <th width="120">名称</th>
-                            <th width=" ">状态</th>
+                            <th width="120">{yun:}t key='member_com_00021'{/yun}</th>
+                            <th width=" ">{yun:}t key='member_user_00181'{/yun}</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
                             <td>
-                                <div class="TableTite">姓名</div>
+                                <div class="TableTite">{yun:}t key='wap_00529'{/yun}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
-                                    <el-input v-model="ruleFormBasic.name" placeholder="请输入姓名"> </el-input>
+                                    <el-input v-model="ruleFormBasic.name" placeholder="{yun:}t key='wap_user_00234'{/yun}"> </el-input>
                                 </div>
                             </td>
                         </tr>
                         <tr>
                             <td>
-                                <div class="TableTite">性别</div>
+                                <div class="TableTite">{yun:}t key='wap_com_00303'{/yun}</div>
                             </td>
                             <td>
                                 <div class="job_set_list">
@@ -817,22 +816,22 @@
                         </tr>
                         <tr>
                             <td>
-                                <div class="TableTite">出生年月</div>
+                                <div class="TableTite">{yun:}t key='wap_user_00236'{/yun}</div>
                             </td>
                             <td>
                                 <div class="TableSelect">
-                                    <el-date-picker v-model="ruleFormBasic.birthday" type="month" placeholder="选择月">
+                                    <el-date-picker v-model="ruleFormBasic.birthday" type="month" placeholder="{yun:}t key='admin_user_00192'{/yun}">
                                     </el-date-picker>
                                 </div>
                             </td>
                         </tr>
                         <tr>
                             <td>
-                                <div class="TableTite">最高学历</div>
+                                <div class="TableTite">{yun:}t key='wap_user_00092'{/yun}</div>
                             </td>
                             <td>
                                 <div class="TableSelect">
-                                    <el-select v-model="ruleFormBasic.edu" placeholder="请选择">
+                                    <el-select v-model="ruleFormBasic.edu" placeholder="{yun:}t key='wap_user_00100'{/yun}">
                                         <el-option v-for="edukey in userdata.user_edu" :key="edukey"
                                             :label="userclass_name[edukey]" :value="edukey">
                                         </el-option>
@@ -842,11 +841,11 @@
                         </tr>
                         <tr>
                             <td>
-                                <div class="TableTite">工作经验</div>
+                                <div class="TableTite">{yun:}t key='wap_user_00240'{/yun}</div>
                             </td>
                             <td>
                                 <div class="TableSelect">
-                                    <el-select v-model="ruleFormBasic.exp" placeholder="请选择">
+                                    <el-select v-model="ruleFormBasic.exp" placeholder="{yun:}t key='wap_user_00100'{/yun}">
                                         <el-option v-for="wordkey in userdata.user_word" :key="wordkey"
                                             :label="userclass_name[wordkey]" :value="wordkey">
                                         </el-option>
@@ -856,94 +855,94 @@
                         </tr>
                         <tr>
                             <td>
-                                <div class="TableTite">联系电话</div>
+                                <div class="TableTite">{yun:}t key='wap_user_00265'{/yun}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
-                                    <el-input v-model="ruleFormBasic.telphone" placeholder="请输入联系电话"> </el-input>
+                                    <el-input v-model="ruleFormBasic.telphone" placeholder="{yun:}t key='wap_com_00322'{/yun}"> </el-input>
                                 </div>
                             </td>
                         </tr>
                         <tr>
                             <td>
-                                <div class="TableTite">联系邮箱</div>
+                                <div class="TableTite">{yun:}t key='wap_com_00016'{/yun}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
-                                    <el-input v-model="ruleFormBasic.email" placeholder="请输入联系邮箱"> </el-input>
+                                    <el-input v-model="ruleFormBasic.email" placeholder="{yun:}t key='wap_com_00009'{/yun}"> </el-input>
                                 </div>
                             </td>
                         </tr>
                         <tr>
                             <td>
-                                <div class="TableTite">身份证号</div>
+                                <div class="TableTite">{yun:}t key='wap_user_00173'{/yun}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
-                                    <el-input v-model="ruleFormBasic.idcard" placeholder="请输入身份证号"
+                                    <el-input v-model="ruleFormBasic.idcard" placeholder="{yun:}t key='admin_00476'{/yun}"
                                         @input="inputIdcard($event, 'ruleFormBasic', 'idcard')"> </el-input>
                                 </div>
                             </td>
                         </tr>
                         <tr>
                             <td>
-                                <div class="TableTite">户籍所在地</div>
+                                <div class="TableTite">{yun:}t key='member_user_00158'{/yun}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
-                                    <el-input v-model="ruleFormBasic.domicile" placeholder="请输入户籍所在地"> </el-input>
+                                    <el-input v-model="ruleFormBasic.domicile" placeholder="{yun:}t key='admin_00477'{/yun}"> </el-input>
                                 </div>
                             </td>
                         </tr>
                         <tr>
                             <td>
-                                <div class="TableTite">现居地</div>
+                                <div class="TableTite">{yun:}t key='admin_user_00230'{/yun}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
-                                    <el-input v-model="ruleFormBasic.living" placeholder="请输入现居地"> </el-input>
+                                    <el-input v-model="ruleFormBasic.living" placeholder="{yun:}t key='admin_00478'{/yun}"> </el-input>
                                 </div>
                             </td>
                         </tr>
                         <tr>
                             <td>
-                                <div class="TableTite">详细地址</div>
+                                <div class="TableTite">{yun:}t key='wap_01362'{/yun}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
-                                    <el-input v-model="ruleFormBasic.address" placeholder="请输入详细地址"></el-input>
+                                    <el-input v-model="ruleFormBasic.address" placeholder="{yun:}t key='wap_00905'{/yun}"></el-input>
                                 </div>
                             </td>
                         </tr>
                         <tr>
                             <td>
-                                <div class="TableTite">身高</div>
+                                <div class="TableTite">{yun:}t key='member_user_00165'{/yun}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
-                                    <el-input v-model="ruleFormBasic.height" placeholder="请输入身高"
+                                    <el-input v-model="ruleFormBasic.height" placeholder="{yun:}t key='admin_00479'{/yun}"
                                         @input="inputFloatNumber($event, 'ruleFormBasic', 'height')"> </el-input>
                                 </div>
                             </td>
                         </tr>
                         <tr>
                             <td>
-                                <div class="TableTite">体重</div>
+                                <div class="TableTite">{yun:}t key='member_user_00160'{/yun}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
-                                    <el-input v-model="ruleFormBasic.weight" placeholder="请输入体重"
+                                    <el-input v-model="ruleFormBasic.weight" placeholder="{yun:}t key='admin_00480'{/yun}"
                                         @input="inputFloatNumber($event, 'ruleFormBasic', 'weight')"> </el-input>
                                 </div>
                             </td>
                         </tr>
                         <tr>
                             <td>
-                                <div class="TableTite">婚姻状况</div>
+                                <div class="TableTite">{yun:}t key='wap_com_00282'{/yun}</div>
                             </td>
                             <td>
                                 <div class="TableSelect">
-                                    <el-select v-model="ruleFormBasic.marriage" placeholder="请选择">
+                                    <el-select v-model="ruleFormBasic.marriage" placeholder="{yun:}t key='wap_user_00100'{/yun}">
                                         <el-option v-for="marriagekey in userdata.user_marriage" :key="marriagekey"
                                             :label="userclass_name[marriagekey]" :value="marriagekey">
                                         </el-option>
@@ -953,21 +952,21 @@
                         </tr>
                         <tr>
                             <td>
-                                <div class="TableTite">民族</div>
+                                <div class="TableTite">{yun:}t key='member_user_00164'{/yun}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
-                                    <el-input v-model="ruleFormBasic.nationality" placeholder="请输入民族"> </el-input>
+                                    <el-input v-model="ruleFormBasic.nationality" placeholder="{yun:}t key='admin_00481'{/yun}"> </el-input>
                                 </div>
                             </td>
                         </tr>
                         <tr>
                             <td>
-                                <div class="TableTite">个人主页/博客</div>
+                                <div class="TableTite">{yun:}t key='member_user_00155'{/yun}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
-                                    <el-input v-model="ruleFormBasic.homepage" placeholder="请输入个人主页/博客"> </el-input>
+                                    <el-input v-model="ruleFormBasic.homepage" placeholder="{yun:}t key='admin_00482'{/yun}"> </el-input>
                                 </div>
                             </td>
                         </tr>
@@ -977,13 +976,13 @@
                             </td>
                             <td>
                                 <div class="TableInpt">
-                                    <el-input v-model="ruleFormBasic.qq" placeholder="请输入QQ"> </el-input>
+                                    <el-input v-model="ruleFormBasic.qq" placeholder="{yun:}t key='admin_user_00217'{/yun}"> </el-input>
                                 </div>
                             </td>
                         </tr>
                         <tr>
                             <td>
-                                <div class="TableTite">个人二维码</div>
+                                <div class="TableTite">{yun:}t key='resume_00003'{/yun}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
@@ -997,11 +996,11 @@
                         </tr>
                         <tr>
                             <td>
-                                <div class="TableTite">自我介绍</div>
+                                <div class="TableTite">{yun:}t key='wap_00527'{/yun}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
-                                    <el-input type="textarea" :rows="2" placeholder="请自我介绍下吧"
+                                    <el-input type="textarea" :rows="2" placeholder="{yun:}t key='admin_user_00208'{/yun}"
                                         v-model="ruleFormBasic.description">
                                     </el-input>
                                 </div>
@@ -1011,36 +1010,36 @@
                 </table>
             </div>
             <div class="setBasicButn" style="border: none; height: 80px;">
-                <el-button type="primary" size="medium" @click="submitBasic">提交</el-button>
+                <el-button type="primary" size="medium" @click="submitBasic">{yun:}t key='common.submit'{/yun}</el-button>
             </div>
 
 
         </el-drawer>
         <!---编辑求职意向-->
-        <el-drawer title="编辑求职意向" :append-to-body="true" :visible.sync="drawerJob" :wrapper-closable="false" size="60%">
+        <el-drawer title="{yun:}t key='admin_00483'{/yun}" :append-to-body="true" :visible.sync="drawerJob" :wrapper-closable="false" size="60%">
             <div class="uploadTable" style="padding:0px 20px;">
                 <table class="tableVue">
                     <thead>
                         <tr align="left">
-                            <th width="120">名称</th>
-                            <th width=" ">状态</th>
+                            <th width="120">{yun:}t key='member_com_00021'{/yun}</th>
+                            <th width=" ">{yun:}t key='member_user_00181'{/yun}</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
                             <td>
-                                <div class="TableTite">期望职位</div>
+                                <div class="TableTite">{yun:}t key='wap_user_00015'{/yun}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
-                                    <el-input v-model="ruleFormJob.name" placeholder="请输入期望职位">
+                                    <el-input v-model="ruleFormJob.name" placeholder="{yun:}t key='admin_00484'{/yun}">
                                     </el-input>
                                 </div>
                             </td>
                         </tr>
                         <tr>
                             <td>
-                                <div class="TableTite">从事职位</div>
+                                <div class="TableTite">{yun:}t key='admin_user_00218'{/yun}</div>
                             </td>
                             <td>
                                 <div class="TableSelect">
@@ -1051,7 +1050,7 @@
                         </tr>
                         <tr>
                             <td>
-                                <div class="TableTite">期望地点</div>
+                                <div class="TableTite">{yun:}t key='admin_user_00226'{/yun}</div>
                             </td>
                             <td>
                                 <div class="TableSelect">
@@ -1062,15 +1061,15 @@
                         </tr>
                         <tr>
                             <td>
-                                <div class="TableTite">期望薪资</div>
+                                <div class="TableTite">{yun:}t key='wap_user_00016'{/yun}</div>
                             </td>
                             <td>
                                 <div class="TableInpt" style="max-width: 700px;">
-                                    <el-select v-model="ruleFormJob.minsalary" placeholder="请选择" @change="salaryChange" style="margin-right:8px;">
+                                    <el-select v-model="ruleFormJob.minsalary" placeholder="{yun:}t key='wap_user_00100'{/yun}" @change="salaryChange" style="margin-right:8px;">
                                         <el-option v-for="maxsalary1Val in minsalaryList" :key="maxsalary1Val" :label="maxsalary1Val" :value="maxsalary1Val">
                                         </el-option>
                                     </el-select>
-                                    <el-select v-model="ruleFormJob.maxsalary" placeholder="请选择">
+                                    <el-select v-model="ruleFormJob.maxsalary" placeholder="{yun:}t key='wap_user_00100'{/yun}">
                                         <el-option v-for="maxsalary2Val in maxsalaryList" :key="maxsalary2Val" :label="maxsalary2Val" :value="maxsalary2Val">
                                         </el-option>
                                     </el-select>
@@ -1079,11 +1078,11 @@
                         </tr>
                         <tr>
                             <td>
-                                <div class="TableTite">从事行业</div>
+                                <div class="TableTite">{yun:}t key='wap_user_00010'{/yun}</div>
                             </td>
                             <td>
                                 <div class="TableSelect">
-                                    <el-select v-model="ruleFormJob.hy" placeholder="请选择">
+                                    <el-select v-model="ruleFormJob.hy" placeholder="{yun:}t key='wap_user_00100'{/yun}">
                                         <el-option v-for="industrykey in industry_index" :key="industrykey"
                                             :label="industry_name[industrykey]" :value="industrykey">
                                         </el-option>
@@ -1093,11 +1092,11 @@
                         </tr>
                         <tr>
                             <td>
-                                <div class="TableTite">到岗时间</div>
+                                <div class="TableTite">{yun:}t key='wap_com_00279'{/yun}</div>
                             </td>
                             <td>
                                 <div class="TableSelect">
-                                    <el-select v-model="ruleFormJob.report" placeholder="请选择">
+                                    <el-select v-model="ruleFormJob.report" placeholder="{yun:}t key='wap_user_00100'{/yun}">
                                         <el-option v-for="reportkey in userdata.user_report" :key="reportkey"
                                             :label="userclass_name[reportkey]" :value="reportkey">
                                         </el-option>
@@ -1107,11 +1106,11 @@
                         </tr>
                         <tr>
                             <td>
-                                <div class="TableTite">工作性质</div>
+                                <div class="TableTite">{yun:}t key='wap_user_00012'{/yun}</div>
                             </td>
                             <td>
                                 <div class="TableSelect">
-                                    <el-select v-model="ruleFormJob.type" placeholder="请选择">
+                                    <el-select v-model="ruleFormJob.type" placeholder="{yun:}t key='wap_user_00100'{/yun}">
                                         <el-option v-for="typekey in userdata.user_type" :key="typekey"
                                             :label="userclass_name[typekey]" :value="typekey">
                                         </el-option>
@@ -1121,11 +1120,11 @@
                         </tr>
                         <tr>
                             <td>
-                                <div class="TableTite">求职状态</div>
+                                <div class="TableTite">{yun:}t key='wap_user_00017'{/yun}</div>
                             </td>
                             <td>
                                 <div class="TableSelect">
-                                    <el-select v-model="ruleFormJob.jobstatus" placeholder="请选择">
+                                    <el-select v-model="ruleFormJob.jobstatus" placeholder="{yun:}t key='wap_user_00100'{/yun}">
                                         <el-option v-for="jobstatuskey in userdata.user_jobstatus" :key="jobstatuskey"
                                             :label="userclass_name[jobstatuskey]" :value="jobstatuskey">
                                         </el-option>
@@ -1137,16 +1136,16 @@
                 </table>
             </div>
             <div class="setBasicButn" style="border: none; height: 80px;">
-                <el-button type="primary" size="medium" @click="submitJob">提交</el-button>
+                <el-button type="primary" size="medium" @click="submitJob">{yun:}t key='common.submit'{/yun}</el-button>
             </div>
         </el-drawer>
 
         <!---编辑个人优势-->
         <div class="modluDrawer">
-            <el-dialog title="个人优势" :visible.sync="dialogTag" :with-header="true" :modal-append-to-body="false"
+            <el-dialog title="{yun:}t key='wap_user_00326'{/yun}" :visible.sync="dialogTag" :with-header="true" :modal-append-to-body="false"
                 :show-close="true" width="450px" append-to-body>
                 <div>
-                    <div class="wxsettip_small ">优势标签</div>
+                    <div class="wxsettip_small ">{yun:}t key='admin_user_00219'{/yun}</div>
                     <div class="wxsettipBiaoqin">
                         <el-tag :key="tagkey" v-for="(tag, tagkey) in userTag" :disable-transitions="false"
                             @click="checkTag(tag)" :effect="ruleFormTag.tag.indexOf(tag) > -1 ? 'dark' : 'light'">
@@ -1155,123 +1154,123 @@
                         <el-input class="input-new-tag" v-if="inputTag" v-model="tagval"
                             autofoucs size="small" @keyup.enter.native="confirmTag">
                         </el-input>
-                        <el-button v-else class="button-new-tag" size="small" @click="showTag">+ 新增
+                        <el-button v-else class="button-new-tag" size="small" @click="showTag">{yun:}t key='admin_00474'{/yun}
                         </el-button>
                     </div>
-                    <div class="wxsettip_small ">自我评价</div>
+                    <div class="wxsettip_small ">{yun:}t key='wap_00463'{/yun}</div>
                     <el-input type="textarea"
                         :placeholder="'用一两句话总结一下自己的优势，突出亮点。\n示例：\n2年销售管理经验，在担任区域负责人期间，带领区域同事做到移动业务量全省第一。口齿伶俐、思维灵敏，管理组织能力强，精通各种营销手段。'"
                         v-model="ruleFormTag.description" :autosize="{ minRows: 3, maxRows: 6 }">
                     </el-input>
                 </div>
                 <span slot="footer" class="dialog-footer">
-                    <el-button @click="dialogTag = false">取 消</el-button>
-                    <el-button type="primary" @click="submitTag">确 定</el-button>
+                    <el-button @click="dialogTag = false">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
+                    <el-button type="primary" @click="submitTag">{yun:}t key='wap_com_00019'{/yun}</el-button>
                 </span>
             </el-dialog>
         </div>
         <!---编辑工作经历-->
         <div class="modluDrawer">
-            <el-dialog title="工作经历" :visible.sync="dialogWork" :with-header="true" :modal-append-to-body="false"
+            <el-dialog title="{yun:}t key='wap_00457'{/yun}" :visible.sync="dialogWork" :with-header="true" :modal-append-to-body="false"
                 :show-close="true" width="450px" append-to-body>
                 <div>
-                    <div class="wxsettip_small ">公司名称</div>
-                    <div class=""><el-input v-model="ruleFormWork.name" placeholder="请输入公司名称"></el-input> </div>
-                    <div class="wxsettip_small ">担任职位</div>
-                    <div class=""><el-input v-model="ruleFormWork.title" placeholder="请输入担任职位"></el-input> </div>
-                    <div class="wxsettip_small ">工作时间</div>
+                    <div class="wxsettip_small ">{yun:}t key='wap_01403'{/yun}</div>
+                    <div class=""><el-input v-model="ruleFormWork.name" placeholder="{yun:}t key='wap_00137'{/yun}"></el-input> </div>
+                    <div class="wxsettip_small ">{yun:}t key='wap_user_00091'{/yun}</div>
+                    <div class=""><el-input v-model="ruleFormWork.title" placeholder="{yun:}t key='wap_user_00045'{/yun}"></el-input> </div>
+                    <div class="wxsettip_small ">{yun:}t key='admin_user_00223'{/yun}</div>
                     <div class="wxsettip_Sealect" style="display: flex; align-items: center;">
-                        <el-date-picker v-model="ruleFormWork.sdate" type="month" placeholder="选择开始时间">
+                        <el-date-picker v-model="ruleFormWork.sdate" type="month" placeholder="{yun:}t key='wap_com_00323'{/yun}">
                         </el-date-picker>
                         <el-date-picker style="margin: 0 8px;" :disabled="todayCheck" v-model="ruleFormWork.edate"
-                            type="month" placeholder="选择结束时间">
+                            type="month" placeholder="{yun:}t key='wap_com_00324'{/yun}">
                         </el-date-picker>
-                        <el-checkbox v-model="todayCheck" @change="todayChange($event, 'work')">至今</el-checkbox>
+                        <el-checkbox v-model="todayCheck" @change="todayChange($event, 'work')">{yun:}t key='wap_js_00170'{/yun}</el-checkbox>
                     </div>
-                    <div class="wxsettip_small ">工作内容</div>
+                    <div class="wxsettip_small ">{yun:}t key='wap_user_00086'{/yun}</div>
                     <el-input type="textarea" :placeholder="'请简短介绍公司与自己负责的任务，分条罗列在什么项目中，通过某些动作或技能达到可量化的结果。\n示例：\n1、主要负责新员工入职培训；\n2、分析制定员工每月个人销售业绩；\n3、帮助员工提高每日客单价，整体店面管理工作等；'"
                               v-model="ruleFormWork.content" :autosize="{ minRows: 3, maxRows: 6 }">
                     </el-input>
                 </div>
 
                 <span slot="footer" class="dialog-footer">
-                    <el-button @click="dialogWork = false">取 消</el-button>
-                    <el-button type="primary" @click="submitWork">确 定</el-button>
+                    <el-button @click="dialogWork = false">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
+                    <el-button type="primary" @click="submitWork">{yun:}t key='wap_com_00019'{/yun}</el-button>
                 </span>
             </el-dialog>
         </div>
         <!---编辑学历-->
         <div class="modluDrawer">
-            <el-dialog title="教育经历" :visible.sync="dialogEdu" :with-header="true" :modal-append-to-body="false"
+            <el-dialog title="{yun:}t key='wap_00459'{/yun}" :visible.sync="dialogEdu" :with-header="true" :modal-append-to-body="false"
                 :show-close="true" width="450px" append-to-body>
                 <div>
-                    <div class="wxsettip_small ">学校名称</div>
-                    <div class=""><el-input v-model="ruleFormEdu.name" placeholder="请输入学校名称"></el-input> </div>
-                    <div class="wxsettip_small ">在校时间</div>
+                    <div class="wxsettip_small ">{yun:}t key='wap_user_00085'{/yun}</div>
+                    <div class=""><el-input v-model="ruleFormEdu.name" placeholder="{yun:}t key='wap_user_00044'{/yun}"></el-input> </div>
+                    <div class="wxsettip_small ">{yun:}t key='admin_user_00220'{/yun}</div>
                     <div class="wxsettip_Sealect">
                         <el-date-picker v-model="daterangeEdu" type="monthrange" range-separator="至"
-                            start-placeholder="开始日期" end-placeholder="结束日期">
+                            start-placeholder="{yun:}t key='admin_00343'{/yun}" end-placeholder="{yun:}t key='admin_00344'{/yun}">
                         </el-date-picker>
                     </div>
-                    <div class="wxsettip_small ">最高学历</div>
+                    <div class="wxsettip_small ">{yun:}t key='wap_user_00092'{/yun}</div>
                     <div class="wxsettip_Sealect">
-                        <el-select v-model="ruleFormEdu.education" placeholder="请选择">
+                        <el-select v-model="ruleFormEdu.education" placeholder="{yun:}t key='wap_user_00100'{/yun}">
                             <el-option v-for="edukey in userdata.user_edu" :key="edukey" :label="userclass_name[edukey]"
                                 :value="edukey">
                             </el-option>
                         </el-select>
                     </div>
-                    <div class="wxsettip_small ">所学专业</div>
-                    <div class=""><el-input v-model="ruleFormEdu.specialty" placeholder="请输入专业名称"></el-input> </div>
+                    <div class="wxsettip_small ">{yun:}t key='admin_user_00224'{/yun}</div>
+                    <div class=""><el-input v-model="ruleFormEdu.specialty" placeholder="{yun:}t key='wap_user_00042'{/yun}"></el-input> </div>
                 </div>
                 <span slot="footer" class="dialog-footer">
-                    <el-button @click="dialogEdu = false">取 消</el-button>
-                    <el-button type="primary" @click="submitEdu">确 定</el-button>
+                    <el-button @click="dialogEdu = false">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
+                    <el-button type="primary" @click="submitEdu">{yun:}t key='wap_com_00019'{/yun}</el-button>
                 </span>
             </el-dialog>
         </div>
 
         <!---编辑培训经历-->
         <div class="modluDrawer">
-            <el-dialog title="培训经历" :visible.sync="dialogTraining" :with-header="true" :modal-append-to-body="false"
+            <el-dialog title="{yun:}t key='wap_00455'{/yun}" :visible.sync="dialogTraining" :with-header="true" :modal-append-to-body="false"
                 :show-close="true" width="450px" append-to-body>
                 <div>
-                    <div class="wxsettip_small ">培训中心</div>
-                    <div class=""><el-input v-model="ruleFormTraining.name" placeholder="请输入培训中心"></el-input> </div>
-                    <div class="wxsettip_small ">培训方向</div>
-                    <div class=""><el-input v-model="ruleFormTraining.title" placeholder="请输入培训方向"></el-input> </div>
-                    <div class="wxsettip_small ">培训时间</div>
+                    <div class="wxsettip_small ">{yun:}t key='admin_user_00221'{/yun}</div>
+                    <div class=""><el-input v-model="ruleFormTraining.name" placeholder="{yun:}t key='admin_00485'{/yun}"></el-input> </div>
+                    <div class="wxsettip_small ">{yun:}t key='wap_user_00083'{/yun}</div>
+                    <div class=""><el-input v-model="ruleFormTraining.title" placeholder="{yun:}t key='admin_user_00209'{/yun}"></el-input> </div>
+                    <div class="wxsettip_small ">{yun:}t key='admin_user_00222'{/yun}</div>
                     <div class="wxsettip_Sealect">
                         <el-date-picker v-model="daterangeTraining" type="monthrange" range-separator="至"
-                            start-placeholder="开始日期" end-placeholder="结束日期">
+                            start-placeholder="{yun:}t key='admin_00343'{/yun}" end-placeholder="{yun:}t key='admin_00344'{/yun}">
                         </el-date-picker>
                     </div>
-                    <div class="wxsettip_small ">培训描述</div>
-                    <el-input type="textarea" placeholder="请简短介绍培训经历所获收获等；" v-model="ruleFormTraining.content"
+                    <div class="wxsettip_small ">{yun:}t key='wap_user_00082'{/yun}</div>
+                    <el-input type="textarea" placeholder="{yun:}t key='admin_user_00200'{/yun}" v-model="ruleFormTraining.content"
                         :autosize="{ minRows: 3, maxRows: 6 }"></el-input>
                 </div>
                 <span slot="footer" class="dialog-footer">
-                    <el-button @click="dialogTraining = false">取 消</el-button>
-                    <el-button type="primary" @click="submitTraining">确 定</el-button>
+                    <el-button @click="dialogTraining = false">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
+                    <el-button type="primary" @click="submitTraining">{yun:}t key='wap_com_00019'{/yun}</el-button>
                 </span>
             </el-dialog>
         </div>
         <!---编辑项目经历-->
         <div class="modluDrawer">
-            <el-dialog title="项目经历" :visible.sync="dialogProject" :with-header="true" :modal-append-to-body="false"
+            <el-dialog title="{yun:}t key='wap_00465'{/yun}" :visible.sync="dialogProject" :with-header="true" :modal-append-to-body="false"
                 :show-close="true" width="450px" append-to-body>
                 <div>
-                    <div class="wxsettip_small ">项目名称</div>
-                    <div class=""><el-input v-model="ruleFormProject.name" placeholder="请输入项目名称"></el-input> </div>
-                    <div class="wxsettip_small ">担任职务</div>
-                    <div class=""><el-input v-model="ruleFormProject.title" placeholder="请输入担任职务"></el-input> </div>
-                    <div class="wxsettip_small ">项目时间</div>
+                    <div class="wxsettip_small ">{yun:}t key='wap_user_00099'{/yun}</div>
+                    <div class=""><el-input v-model="ruleFormProject.name" placeholder="{yun:}t key='wap_user_00046'{/yun}"></el-input> </div>
+                    <div class="wxsettip_small ">{yun:}t key='admin_user_00225'{/yun}</div>
+                    <div class=""><el-input v-model="ruleFormProject.title" placeholder="{yun:}t key='admin_00486'{/yun}"></el-input> </div>
+                    <div class="wxsettip_small ">{yun:}t key='admin_user_00229'{/yun}</div>
                     <div class="wxsettip_Sealect">
                         <el-date-picker v-model="daterangeProject" type="monthrange" range-separator="至"
-                            start-placeholder="开始日期" end-placeholder="结束日期">
+                            start-placeholder="{yun:}t key='admin_00343'{/yun}" end-placeholder="{yun:}t key='admin_00344'{/yun}">
                         </el-date-picker>
                     </div>
-                    <div class="wxsettip_small ">项目描述</div>
+                    <div class="wxsettip_small ">{yun:}t key='admin_user_00228'{/yun}</div>
                     <el-input type="textarea" placeholder="请简短介绍公司与自己负责的任务，分条罗列在什么项目中，通过某些动作或技能达到可量化的结果。
 示例：
 1、主要负责新员工入职培训；
@@ -1279,50 +1278,50 @@
 3、帮助员工提高每日客单价，整体店面管理工作等；" v-model="ruleFormProject.content" :autosize="{ minRows: 3, maxRows: 6 }"></el-input>
                 </div>
                 <span slot="footer" class="dialog-footer">
-                    <el-button @click="dialogProject = false">取 消</el-button>
-                    <el-button type="primary" @click="submitProject">确 定</el-button>
+                    <el-button @click="dialogProject = false">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
+                    <el-button type="primary" @click="submitProject">{yun:}t key='wap_com_00019'{/yun}</el-button>
                 </span>
             </el-dialog>
         </div>
         <!---编辑其他-->
         <div class="modluDrawer">
-            <el-dialog title="其他加分项" :visible.sync="dialogOther" :with-header="true" :modal-append-to-body="false"
+            <el-dialog title="{yun:}t key='admin_user_00216'{/yun}" :visible.sync="dialogOther" :with-header="true" :modal-append-to-body="false"
                 :show-close="true" width="450px" append-to-body>
                 <div>
-                    <div class="wxsettip_small ">标题</div>
-                    <div class=""><el-input v-model="ruleFormOther.name" placeholder="请输入标题名称"></el-input> </div>
-                    <div class="wxsettip_small ">描述</div>
-                    <el-input type="textarea" v-model="ruleFormOther.content" placeholder="请简短介绍其他加分优势"
+                    <div class="wxsettip_small ">{yun:}t key='wap_user_00103'{/yun}</div>
+                    <div class=""><el-input v-model="ruleFormOther.name" placeholder="{yun:}t key='admin_00487'{/yun}"></el-input> </div>
+                    <div class="wxsettip_small ">{yun:}t key='admin_user_00231'{/yun}</div>
+                    <el-input type="textarea" v-model="ruleFormOther.content" placeholder="{yun:}t key='admin_user_00203'{/yun}"
                         :autosize="{ minRows: 3, maxRows: 6 }"></el-input>
                 </div>
                 <span slot="footer" class="dialog-footer">
-                    <el-button @click="dialogOther = false">取 消</el-button>
-                    <el-button type="primary" @click="submitOther">确 定</el-button>
+                    <el-button @click="dialogOther = false">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
+                    <el-button type="primary" @click="submitOther">{yun:}t key='wap_com_00019'{/yun}</el-button>
                 </span>
             </el-dialog>
         </div>
         <!---编辑技能-->
         <div class="modluDrawer">
-            <el-dialog title="职业技能" :visible.sync="dialogSkill" :with-header="true" :modal-append-to-body="false"
+            <el-dialog title="{yun:}t key='wap_00461'{/yun}" :visible.sync="dialogSkill" :with-header="true" :modal-append-to-body="false"
                 :show-close="true" width="450px" append-to-body>
                 <div>
-                    <div class="wxsettip_small ">技能名称</div>
-                    <div class=""><el-input v-model="ruleFormSkill.name" placeholder="请输入技能名称"></el-input> </div>
-                    <div class="wxsettip_small ">掌握时间</div>
+                    <div class="wxsettip_small ">{yun:}t key='wap_user_00089'{/yun}</div>
+                    <div class=""><el-input v-model="ruleFormSkill.name" placeholder="{yun:}t key='admin_user_00210'{/yun}"></el-input> </div>
+                    <div class="wxsettip_small ">{yun:}t key='wap_00458'{/yun}</div>
                     <div class="wxsettip_Sealect">
-                        <el-input v-model="ruleFormSkill.longtime" placeholder="请输入掌握时间">
-                            <template slot="append">年</template>
+                        <el-input v-model="ruleFormSkill.longtime" placeholder="{yun:}t key='admin_user_00211'{/yun}">
+                            <template slot="append">{yun:}t key='common_02077'{/yun}</template>
                         </el-input>
                     </div>
-                    <div class="wxsettip_small ">熟练程度</div>
+                    <div class="wxsettip_small ">{yun:}t key='wap_user_00094'{/yun}</div>
                     <div class="wxsettip_Sealect">
-                        <el-select v-model="ruleFormSkill.ing" placeholder="请选择">
+                        <el-select v-model="ruleFormSkill.ing" placeholder="{yun:}t key='wap_user_00100'{/yun}">
                             <el-option v-for="ingkey in userdata.user_ing" :key="ingkey" :label="userclass_name[ingkey]"
                                 :value="ingkey">
                             </el-option>
                         </el-select>
                     </div>
-                    <div class="wxsettip_small ">技能证书</div>
+                    <div class="wxsettip_small ">{yun:}t key='wap_user_00090'{/yun}</div>
                     <div>
                         <el-upload class="avatar-uploader" list-type="picture" :accept="pic_accept" action="" :auto-upload="false"
                             :on-change="handleChangeSkillPic" :show-file-list="false">
@@ -1332,36 +1331,36 @@
                     </div>
                 </div>
                 <span slot="footer" class="dialog-footer">
-                    <el-button @click="dialogSkill = false">取 消</el-button>
-                    <el-button type="primary" @click="submitSkill">确 定</el-button>
+                    <el-button @click="dialogSkill = false">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
+                    <el-button type="primary" @click="submitSkill">{yun:}t key='wap_com_00019'{/yun}</el-button>
                 </span>
             </el-dialog>
         </div>
 
         <!--删除弹窗-->
         <div class="modluDrawer">
-            <el-dialog title="删除简历数据" :visible.sync="dialogDel" :with-header="true" append-to-body :show-close="true"
+            <el-dialog title="{yun:}t key='admin_user_00241'{/yun}" :visible.sync="dialogDel" :with-header="true" append-to-body :show-close="true"
                 width="300px">
                 <div>
-                    <el-checkbox v-model="ruleFormDel.delAccount" true-label="1" false-label="0">同步删除账号</el-checkbox>
+                    <el-checkbox v-model="ruleFormDel.delAccount" true-label="1" false-label="0">{yun:}t key='admin_user_00242'{/yun}</el-checkbox>
                 </div>
                 <div>
-                    <i class="el-icon-warning"></i> 勾选删除账号所有数据信息
+                    <i class="el-icon-warning"></i> {yun:}t key='admin_00508'{/yun}
                 </div>
                 <span slot="footer" class="dialog-footer">
-                    <el-button @click="dialogDel = false">取 消</el-button>
-                    <el-button type="primary" @click="delSubmit">确 定</el-button>
+                    <el-button @click="dialogDel = false">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
+                    <el-button type="primary" @click="delSubmit">{yun:}t key='wap_com_00019'{/yun}</el-button>
                 </span>
             </el-dialog>
         </div>
 
         <div class="modluDrawer">
             <!--预览简历-->
-            <el-drawer title="预览简历" :visible.sync="drawerPreview" append-to-body size="60%">
+            <el-drawer title="{yun:}t key='wap_user_00217'{/yun}" :visible.sync="drawerPreview" append-to-body size="60%">
                 <preview :id="detail.id"></preview>
             </el-drawer>
             <!--新增简历-->
-            <el-drawer title="新增简历" :visible.sync="drawerAdd" append-to-body :wrapper-closable="false" size="45%">
+            <el-drawer title="{yun:}t key='admin_user_00193'{/yun}" :visible.sync="drawerAdd" append-to-body :wrapper-closable="false" size="45%">
                 <add @child-event="closeAdd"></add>
             </el-drawer>
         </div>
@@ -1384,7 +1383,7 @@ module.exports = {
 
             pic_accept: localStorage.getItem("pic_accept"),
             loading: false,
-			dataText: '数据加载中',
+			dataText: "{yun:}t key='admin_user_weipin_00026'{/yun}",
             value: true,
             seachbutn: true,
             tableHig: true,
@@ -1402,7 +1401,7 @@ module.exports = {
 			},
             timeOptions: {
                 shortcuts: [{
-                    text: '昨天',
+                    text: "{yun:}t key='common_02000'{/yun}",
                     onClick(picker) {
                         const end = new Date();
                         const start = new Date();
@@ -1411,61 +1410,61 @@ module.exports = {
                         picker.$emit('pick', [start, end]);
                     }
                 }, {
-                    text: '今天',
+                    text: "{yun:}t key='common_01940'{/yun}",
                     onClick(picker) {
                         const end = new Date();
                         const start = new Date();
                         picker.$emit('pick', [start, end]);
                     }
                 }, {
-                    text: '本周',
+                    text: "{yun:}t key='admin_user_00146'{/yun}",
                     onClick(picker) {
                         const start = new Date(new Date().setHours(0, 0, 0) - (new Date().getDay() - 1) * 24 * 60 * 60 * 1000);
                         const end = new Date();
                         picker.$emit('pick', [start, end]);
                     }
                 }, {
-                    text: '上周',
+                    text: "{yun:}t key='admin_user_00142'{/yun}",
                     onClick(picker) {
                         const start = new Date(new Date().setHours(0, 0, 0) - (new Date().getDay() + 6) * 24 * 60 * 60 * 1000);
                         const end = new Date(new Date().setHours(0, 0, 0) + (0 - new Date().getDay()) *24 * 60 * 60 *1000);
                         picker.$emit('pick', [start, end]);
                     }
                 }, {
-                    text: '本月',
+                    text: "{yun:}t key='admin_user_00147'{/yun}",
                     onClick(picker) {
                         const end = new Date();
                         const start = new Date(new Date(new Date().getFullYear(), new Date().getMonth(), 1).setHours(0, 0, 0));
                         picker.$emit('pick', [start, end]);
                     }
                 }, {
-                    text: '上月',
+                    text: "{yun:}t key='admin_user_00143'{/yun}",
                     onClick(picker) {
                         const end = new Date(new Date(new Date().getFullYear(), new Date().getMonth(), 0).setHours(23, 59, 59, 59));
                         const start = new Date(new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1).setHours(0, 0, 0));
-                        picker.$emit('pick', [start, end]);
+                        picker.$emit('pick", [start, end]);
                     }
                 }]
             },
             isSearchTime: false,
-            // 列表
+            // list
             page: 1,
             limit: 0,
             list: [],
             total: 0,
             pageSizes: [],
 
-            // 列表排序
-            t: '',
-            order: '',
+            // {yun:}t key='admin_00959'{/yun}
+            t: "',
+            order: '",
 
-            checkedAll: false, // 全选
+            checkedAll: false, // {yun:}t key='wap_js_00074'{/yun}
             checkedAllIndeterminate: false,
             multipleSelection: [], // 多选值存储
             idArr: [],
 
             detail: {},
-            index: '',
+            index: "",
 
             resumeAllNum: 0,
             resumeStatusNum1: 0,
@@ -1475,67 +1474,67 @@ module.exports = {
 
             saveLoading: false,
 
-            // 简历状态
+            // {yun:}t key='member_com_00110'{/yun}
             dialogStatus: false,
             ruleFormStatus: {},
 
-            // 置顶
+            // top/sticky
             dialogTop: false,
             ruleFormTop: {},
 
-            // 导出
+            // {yun:}t key='admin_user_00257'{/yun}
             dialogExport: false,
             isIndeterminateExport: false,
             checkAllExport: false,
             typeExport: {}, // 导出字段
             ruleFormExport: {
                 type: [],
-                limit: '',
-                section: ''
+                limit: "',
+                section: '"
             },
 
-            // 备注
+            // remark
             dialogRemark: false,
             ruleFormRemark: {},
 
-            // 审核
-            dialogAudit: false, // 批量审核
+            // Audit
+            dialogAudit: false, // {yun:}t key='admin_user_weipin_00037'{/yun}
             drawerAudit: false,
             ruleFormAudit: {},
-            auditTpl: '',
+            auditTpl: "",
             todoAuditNum: 0,
             resume: {},
             expectData: {},
 
-            // 缓存
+            // {yun:}t key='common_02022'{/yun}
             user_sex: {},
             userclass_name: {},
             userdata: {},
             industry_index: [],
             industry_name: {},
 
-            // 预览简历
+            // {yun:}t key='wap_user_00217'{/yun}
             drawerPreview: false,
 
-            // 添加
+            // Add
             drawerAdd: false,
 
-            // 删除
+            // Delete
             dialogDel: false,
             ruleFormDel: {},
 
             expectLoading: false,
 
-            // 编辑基本资料
+            // {yun:}t key='admin_00475'{/yun}
             drawerBasic: false,
             ruleFormBasic: {},
-            // 个人优势
+            // personal advantage
             dialogTag: false,
             ruleFormTag: {},
             userTag: [],
             inputTag: false,
-            tagval: '',
-            // 求职意向
+            tagval: "",
+            // Job intention
             drawerJob: false,
             ruleFormJob: {},
             jobSelected: null,
@@ -1545,16 +1544,16 @@ module.exports = {
 
             todayCheck: false, // 至今选中
 
-            // 工作经历
+            // Work experience
             dialogWork: false,
             indexWork: -1,
             ruleFormWork: {},
-            // 教育经历
+            // Educational experience
             dialogEdu: false,
             indexEdu: -1,
             daterangeEdu: [],
             ruleFormEdu: {},
-            // 培训经历
+            // Training experience
             dialogTraining: false,
             indexTraining: -1,
             daterangeTraining: [],
@@ -1563,17 +1562,17 @@ module.exports = {
             dialogSkill: false,
             indexSkill: -1,
             ruleFormSkill: {},
-            // 项目经历
+            // Project experience
             dialogProject: false,
             indexProject: -1,
             daterangeProject: [],
             ruleFormProject: {},
-            // 其他描述
+            // {yun:}t key='admin_00068'{/yun}
             dialogOther: false,
             indexOther: -1,
             ruleFormOther: {},
 
-            // 投递记录
+            // {yun:}t key='admin_00551'{/yun}
             drawerJobSqLog: false,
             jobSqLog: {},
 
@@ -1582,10 +1581,10 @@ module.exports = {
         }
     },
     components: {
-        'add': httpVueLoader('./resume_add.vue'),
+        "add': httpVueLoader('./resume_add.vue'),
         'job_class': httpVueLoader('../../../component/job_class.vue'),
         'city_class': httpVueLoader('../../../component/city_class.vue'),
-        'preview': httpVueLoader('../../../component/resume_preview.vue')
+        'preview': httpVueLoader('../../../component/resume_preview.vue")
     },
     mounted() {
         var that = this
@@ -1619,7 +1618,7 @@ module.exports = {
             this.mouseFlag = false;
         },
         mouseMoveHandler(e) {
-            // 这里面需要注意，通过ref需要那个那个包含table元素的父元素
+            // 这里面需要注意，{yun:}t key='admin_user_company_00161'{/yun}ref需要那个那个包含table元素的父元素
             let divData = this.$refs.multipleTable.bodyWrapper;
             if (this.mouseFlag) {
                 // 设置水平方向的元素的位置
@@ -1633,7 +1632,7 @@ module.exports = {
 		getParams:function(params={},search=false){
 			var that = this;
 			for(let i in params){
-				if(typeof that.searchForm[i]!='undefined'){
+				if(typeof that.searchForm[i]!="undefined'){
                     that.searchForm[i] = params[i];
                 }
 			}
@@ -1749,7 +1748,7 @@ module.exports = {
                     scrollToTop()
                 }
                 if (that.list.length === 0) {
-                    that.dataText = "暂无数据";
+                    that.dataText = "{yun:}t key='wap_js_00113'{/yun}";
                 }
             })
         },
@@ -1773,10 +1772,10 @@ module.exports = {
         batch(type) {
             let that = this;
             if (this.multipleSelection.length == 0 && type == 'del') {
-                message.error('请选择要删除的数据');
+                message.error("{yun:}t key='admin_user_weipin_00005'{/yun}");
                 return false;
             }else if(this.multipleSelection.length == 0){
-                message.error('请选择要操作的数据项');
+                message.error("{yun:}t key='admin_user_weipin_00001'{/yun}");
                 return false;
             }
 
@@ -1813,14 +1812,14 @@ module.exports = {
             this.$refs.multipleTable.toggleAllSelection();
         },
 
-        // 删除
+        // Delete
         openDel(idx) {
-            if (typeof idx == 'undefined') { // 批量删除
+            if (typeof idx == 'undefined") { // {yun:}t key='member_com_00055'{/yun}
                 this.ruleFormDel = {
                     del: this.idArr,
                     delAccount: 0
                 }
-            } else {// 单个删除
+            } else {// {yun:}t key='common_01711'{/yun}
                 this.ruleFormDel = {
                     del: this.list[idx].id,
                     delAccount: 0
@@ -1838,7 +1837,7 @@ module.exports = {
             }
             that.saveLoading = true;
 
-            httpPost('m=user&c=users_resume&a=delResume', ruleForm).then(function (response) {
+            httpPost("m=user&c=users_resume&a=delResume', ruleForm).then(function (response) {
                 let res = response.data;
 
                 if (res.error > 0) {
@@ -1862,10 +1861,10 @@ module.exports = {
             this.$data[form][key] = val.replace(/[^0-9.]/g, '');
         },
         inputIdcard(val, form, key) {
-            this.$data[form][key] = val.replace(/[^0-9Xx.]/g, '');
+            this.$data[form][key] = val.replace(/[^0-9Xx.]/g, '");
         },
 
-        // 简历状态
+        // {yun:}t key='member_com_00110'{/yun}
         openStatus(row) {
             this.detail = row;
             this.ruleFormStatus = {
@@ -1873,7 +1872,7 @@ module.exports = {
                 status: row.status
             };
             this.dialogStatus = true;
-            if (typeof this.userdata.user_label === 'undefined') {
+            if (typeof this.userdata.user_label === "undefined') {
                 this.getCache();
             }
         },
@@ -1882,7 +1881,7 @@ module.exports = {
                 params = that.ruleFormStatus;
 
             if (!params.status || params.status === '0') {
-                message.warning('请选择简历状态');
+                message.warning("{yun:}t key='wap_00809'{/yun}");
                 return false;
             }
 
@@ -1905,7 +1904,7 @@ module.exports = {
 				}, 2000);
 			});
         },
-        // 推荐
+        // recommend
         changeRec(val, row) {
             let that = this,
                 id = '';
@@ -1919,14 +1918,14 @@ module.exports = {
             httpPost('m=user&c=users_resume&a=rec', { id: id, rec: val }).then(function (res) {
                 if (res.data.error > 0) {
                     message.error(res.data.msg);
-                } else if (typeof row === 'undefined') { // 批量推荐
+                } else if (typeof row === 'undefined") { // {yun:}t key='admin_user_00237'{/yun}
                     message.success(res.data.msg);
                     that.getList();
                 }
             })
         },
-        // 置顶
-        openTop(row, s = '0') {
+        // top/sticky
+        openTop(row, s = "0') {
             this.detail = row;
             if (row == '') {
                 this.ruleFormTop = {
@@ -1947,10 +1946,10 @@ module.exports = {
             let that = this,
                 params = that.ruleFormTop;
 
-            if (params.s === '1') { // 取消置顶
-            } else { // 置顶
+            if (params.s === '1") { // {yun:}t key='wap_com_00231'{/yun}
+            } else { // {yun:}t key='wap_user_00335'{/yun}
                 if (!params.addday) {
-                    message.warning('请输入置顶天数');
+                    message.warning("请输入置顶天数');
                     return false;
                 }
             }
@@ -2024,7 +2023,7 @@ module.exports = {
 				}, 2000);
 			});
         },
-        // 备注
+        // remark
         openRemark(row) {
             this.detail = row;
             this.ruleFormRemark = {
@@ -2047,7 +2046,7 @@ module.exports = {
                 return false;
             }
             if (!params.content) {
-                message.warning('请输入客服评价');
+                message.warning("{yun:}t key='admin_00516'{/yun}");
                 return false;
             }
 
@@ -2070,7 +2069,7 @@ module.exports = {
 				}, 2000);
 			});
         },
-        // 批量审核
+        // BatchAudit
         openBatchAudit() {
             this.ruleFormAudit = {
                 id: this.idArr,
@@ -2084,7 +2083,7 @@ module.exports = {
                 params = that.ruleFormAudit;
 
             if (typeof params.status == 'undefined' || params.status === '' || params.status === '0') {
-                message.warning('请选择审核状态');
+                message.warning("{yun:}t key='admin_user_weipin_00015'{/yun}");
                 return false;
             }
 
@@ -2167,7 +2166,7 @@ module.exports = {
                 url = 'm=user&c=users_resume&a=status';
 
             if (typeof params.status == 'undefined' || params.status === '' || params.status === '0') {
-                message.warning('请选择审核状态');
+                message.warning("{yun:}t key='admin_user_weipin_00015'{/yun}");
                 return false;
             }
 
@@ -2215,7 +2214,7 @@ module.exports = {
         getCache() {
             let that = this;
 
-            httpPost('m=user&c=users_resume&a=getCache', {}, { hideloading: true }).then(function (response) {
+            httpPost('m=user&c=users_resume&a=getCache", {}, { hideloading: true }).then(function (response) {
                 let res = response.data,
                     data = res.data;
 
@@ -2224,16 +2223,16 @@ module.exports = {
             })
         },
 
-        // 预览简历
+        // {yun:}t key='wap_user_00217'{/yun}
         openPreview(row) {
             this.detail = row;
             this.drawerPreview = true;
         },
 
-        // 新增简历
+        // {yun:}t key='admin_user_00193'{/yun}
         openAdd() {
             let that =this;
-            httpPost('m=user&c=users_resume&a=add', {add:1}).then(function (response) {
+            httpPost("m=user&c=users_resume&a=add', {add:1}).then(function (response) {
                 let res = response.data;
                 that.drawerAdd = true;
             })
@@ -2243,19 +2242,19 @@ module.exports = {
             this.getList();
         },
 
-        // 刷新简历
+        // refreshResume
         refresh(row) {
             let that = this,
                 params = {};
 
-            if (typeof row === 'undefined') { // 批量刷新
+            if (typeof row === 'undefined") { // {yun:}t key='admin_user_00248'{/yun}
                 params.ids = this.idArr;
             } else { // 单个刷新
                 params.id = row.id;
             }
 
             delConfirm(this, params, function (params) {
-                httpPost('m=user&c=users_resume&a=refresh', params).then(function (response) {
+                httpPost("m=user&c=users_resume&a=refresh', params).then(function (response) {
                     let res = response.data;
 
                     if (res.error > 0) {
@@ -2274,7 +2273,7 @@ module.exports = {
         },
 
         async getMemberUrl(uid) {
-            let response = await httpPost('m=user&c=users_member&a=Imitate', { uid: uid });
+            let response = await httpPost('m=user&c=users_member&a=Imitate", { uid: uid });
 
             let res = response.data;
             if (res.error === 0) {
@@ -2288,14 +2287,14 @@ module.exports = {
             window.open(url);
         },
 
-        // 编辑资料
+        // {yun:}t key='admin_user_00227'{/yun}
         openBasic() {
             let resume = this.resume;
             this.ruleFormBasic = {
                 uid: resume.uid,
                 name: resume.name,
                 sex: resume.sex,
-                birthday: resume.birthday ? new Date(resume.birthday) : '',
+                birthday: resume.birthday ? new Date(resume.birthday) : "',
                 edu: resume.edu && resume.edu > 0 ? resume.edu : '',
                 exp: resume.exp && resume.exp > 0 ? resume.exp : '',
                 telphone: resume.telphone,
@@ -2359,7 +2358,7 @@ module.exports = {
 				}, 2000);
 			});
         },
-        // 个人优势
+        // personal advantage
         openTag() {
             let resume = deepClone(this.resume),
                 // expect = this.expectData.expect,
@@ -2401,15 +2400,15 @@ module.exports = {
 
             if (len > 0) {
                 if (len < 2 || len > 8) {
-                    message.warning('请输入2-8个标签字符');
+                    message.warning("{yun:}t key='wap_user_00060'{/yun}");
                     return false;
                 }
                 if (tag.length >= 5) {
-                    message.warning('标签最多选择5个');
+                    message.warning("{yun:}t key='admin_user_00206'{/yun}");
                     return false;
                 }
                 if (userTag.indexOf(tagval) > -1) {
-                    message.warning('标签已存在');
+                    message.warning("{yun:}t key='wap_user_00074'{/yun}");
                     return false;
                 }
                 tag.push(tagval);
@@ -2427,7 +2426,7 @@ module.exports = {
                 tag.splice(index, 1);
             } else { // 首次点击选中
                 if (tag.length >= 5) {
-                    message.warning('标签最多选择5个');
+                    message.warning("{yun:}t key='admin_user_00206'{/yun}");
                     return false;
                 }
                 tag.push(val);
@@ -2440,15 +2439,15 @@ module.exports = {
                 ruleForm = that.ruleFormTag;
 
             if (ruleForm.eid == '') {
-                message.warning('请先完善求职意向');
+                message.warning("{yun:}t key='admin_user_00207'{/yun}");
                 return false;
             }
             if (ruleForm.tag.length > 5) {
-                message.warning('标签最多选择5个');
+                message.warning("{yun:}t key='admin_user_00206'{/yun}");
                 return false;
             }
             if (ruleForm.description == '' || ruleForm.description == null) {
-                message.warning('请输入自我评价');
+                message.warning("{yun:}t key='admin_01319'{/yun}");
                 return false;
             }
 
@@ -2457,7 +2456,7 @@ module.exports = {
             }
             that.saveLoading = true;
 
-            httpPost('m=user&c=users_resume&a=saveTag', ruleForm).then(function (response) {
+            httpPost('m=user&c=users_resume&a=saveTag", ruleForm).then(function (response) {
                 let res = response.data;
 
                 if (res.error > 0) {
@@ -2475,7 +2474,7 @@ module.exports = {
 				}, 2000);
 			});
         },
-        // 求职意向
+        // Job intention
         openJob() {
             let resume = this.resume,
                 expect = this.expectData.expect;
@@ -2503,10 +2502,10 @@ module.exports = {
             this.ruleFormJob = {
                 uid: resume.uid,
                 eid: expect.id,
-                job_classid: expect.job_classid, // TODO 选择职位
-                city_classid: expect.city_classid, // TODO 选择城市
+                job_classid: expect.job_classid, // TODO {yun:}t key='admin_00300'{/yun}
+                city_classid: expect.city_classid, // TODO {yun:}t key='member_user_00362'{/yun}
                 name: expect.name,
-                minsalary: expect.minsalary && expect.minsalary > 0 ? parseInt(expect.minsalary) : '',
+                minsalary: expect.minsalary && expect.minsalary > 0 ? parseInt(expect.minsalary) : "',
                 maxsalary: expect.maxsalary && expect.maxsalary > 0 ? parseInt(expect.maxsalary) : '',
                 hy: expect.hy && expect.hy > 0 ? expect.hy : '',
                 report: expect.report && expect.report > 0 ? expect.report : '',
@@ -2541,7 +2540,7 @@ module.exports = {
                 ruleForm = that.ruleFormJob;
 
             if (ruleForm.name == "") {
-                message.warning('请输入期望职位');
+                message.warning("{yun:}t key='admin_00484'{/yun}");
                 return false;
             }
             if (ruleForm.job_classid == "") {
@@ -2557,19 +2556,19 @@ module.exports = {
                 return false;
             }
             if (ruleForm.maxsalary && parseInt(ruleForm.maxsalary) <= parseInt(ruleForm.minsalary)) {
-                message.warning('最高薪资必须大于最低薪资');
+                message.warning("{yun:}t key='member_user_00095'{/yun}");
                 return false;
             }
             if (ruleForm.report == "") {
-                message.warning('请选择到岗时间');
+                message.warning("{yun:}t key='wap_00980'{/yun}");
                 return false;
             }
             if (ruleForm.type == "") {
-                message.warning('请选择工作性质');
+                message.warning("{yun:}t key='wap_js_00163'{/yun}");
                 return false;
             }
             if (ruleForm.jobstatus == "") {
-                message.warning('请选择求职状态');
+                message.warning("{yun:}t key='wap_00934'{/yun}");
                 return false;
             }
 
@@ -2604,7 +2603,7 @@ module.exports = {
             }
         },
 
-        // 工作经历
+        // Work experience
         openWork(index) {
             let expectData = this.expectData,
                 expect = expectData.expect,
@@ -2650,21 +2649,21 @@ module.exports = {
                 ruleForm = that.ruleFormWork;
 
             if (ruleForm.eid == "") {
-                message.warning('请先完善求职意向');
+                message.warning("{yun:}t key='admin_user_00207'{/yun}");
                 return false;
             }
             if (ruleForm.name == "") {
-                message.warning('请输入公司名称');
+                message.warning("{yun:}t key='wap_00137'{/yun}");
                 return false;
             }
             if (ruleForm.sdate == "") {
-                message.warning('请选择工作时间');
+                message.warning("{yun:}t key='admin_user_00213'{/yun}");
                 return false
             }
             ruleForm.sdate = formatMonth(ruleForm.sdate);
             if (ruleForm.edate != '') {
                 if (ruleForm.sdate >= ruleForm.edate) {
-                    message.warning('结束日期必须大于开始日期');
+                    message.warning("{yun:}t key='admin_user_00201'{/yun}");
                     return false
                 }
                 ruleForm.edate = formatMonth(ruleForm.edate);
@@ -2691,7 +2690,7 @@ module.exports = {
                         work.sdate = 1;
                         work.sdate_n = ruleForm.sdate;
                         work.edate = ruleForm.edate != '' ? 2 : 0;
-                        work.edate_n = ruleForm.edate != '' ? ruleForm.edate : '至今';
+                        work.edate_n = ruleForm.edate != '' ? ruleForm.edate : "{yun:}t key='wap_js_00170'{/yun}";
                         that.expectData.work.unshift(work);
                     } else {
                         let work = that.expectData.work[indexWork];
@@ -2700,7 +2699,7 @@ module.exports = {
                         work.sdate = 1;
                         work.sdate_n = ruleForm.sdate;
                         work.edate = ruleForm.edate != '' ? 2 : 0;
-                        work.edate_n = ruleForm.edate != '' ? ruleForm.edate : '至今';
+                        work.edate_n = ruleForm.edate != '' ? ruleForm.edate : "{yun:}t key='wap_js_00170'{/yun}";
                         work.content = ruleForm.content;
                         that.expectData.work[indexWork] = deepClone(work);
                     }
@@ -2714,7 +2713,7 @@ module.exports = {
 			});
         },
 
-        // 工作经历
+        // Work experience
         openEdu(index) {
             let expectData = this.expectData,
                 expect = expectData.expect,
@@ -2761,11 +2760,11 @@ module.exports = {
                 ruleForm = that.ruleFormEdu;
 
             if (ruleForm.eid == "") {
-                message.warning('请先完善求职意向');
+                message.warning("{yun:}t key='admin_user_00207'{/yun}");
                 return false;
             }
             if (ruleForm.name == "") {
-                message.warning('请输入学校名称');
+                message.warning("{yun:}t key='wap_user_00044'{/yun}");
                 return false;
             }
             if (daterangeEdu.length == 0) {
@@ -2773,7 +2772,7 @@ module.exports = {
                 return false
             }
             if (ruleForm.education == "") {
-                message.warning('请选择最高学历');
+                message.warning("{yun:}t key='wap_user_00049'{/yun}");
                 return false
             }
 
@@ -2823,7 +2822,7 @@ module.exports = {
 			});
         },
 
-        // 培训经历
+        // Training experience
         openTraining(index) {
             let expectData = this.expectData,
                 expect = expectData.expect,
@@ -2868,15 +2867,15 @@ module.exports = {
                 ruleForm = that.ruleFormTraining;
 
             if (ruleForm.eid == "") {
-                message.warning('请先完善求职意向');
+                message.warning("{yun:}t key='admin_user_00207'{/yun}");
                 return false;
             }
             if (ruleForm.name == "") {
-                message.warning('请输入培训中心');
+                message.warning("{yun:}t key='admin_00485'{/yun}");
                 return false;
             }
             if (daterangeTraining.length == 0) {
-                message.warning('请选择培训时间');
+                message.warning("{yun:}t key='admin_user_00212'{/yun}");
                 return false
             }
 
@@ -2923,7 +2922,7 @@ module.exports = {
 			});
         },
 
-        // 职业技能
+        // Vocational skills
         openSkill(index) {
             let expectData = this.expectData,
                 expect = expectData.expect,
@@ -2968,15 +2967,15 @@ module.exports = {
                 formData = new FormData();
 
             if (ruleForm.eid == "") {
-                message.warning('请先完善求职意向');
+                message.warning("{yun:}t key='admin_user_00207'{/yun}");
                 return false;
             }
             if (ruleForm.name == "") {
-                message.warning('请输入技能名称');
+                message.warning("{yun:}t key='admin_user_00210'{/yun}");
                 return false;
             }
             if (ruleForm.ing == "") {
-                message.warning('请选择熟练程度');
+                message.warning("{yun:}t key='wap_user_00072'{/yun}");
                 return false;
             }
 
@@ -3025,7 +3024,7 @@ module.exports = {
 			});
         },
 
-        // 项目经历
+        // Project experience
         openProject(index) {
             let expectData = this.expectData,
                 expect = expectData.expect,
@@ -3070,15 +3069,15 @@ module.exports = {
                 ruleForm = that.ruleFormProject;
 
             if (ruleForm.eid == "") {
-                message.warning('请先完善求职意向');
+                message.warning("{yun:}t key='admin_user_00207'{/yun}");
                 return false;
             }
             if (ruleForm.name == "") {
-                message.warning('请输入项目名称');
+                message.warning("{yun:}t key='wap_user_00046'{/yun}");
                 return false;
             }
             if (daterangeProject.length == 0) {
-                message.warning('请选择项目时间');
+                message.warning("{yun:}t key='admin_user_00214'{/yun}");
                 return false
             }
 
@@ -3100,7 +3099,7 @@ module.exports = {
                     that.refreshList = true;
 
                     // 拼接工作经历数据 - 减少请求服务器
-                    if (ruleForm.id == '') {
+                    if (ruleForm.id == '") {
                         let project = deepClone(ruleForm);
                         project.id = res.data.id;
                         project.sdate_n = ruleForm.sdate;
@@ -3125,13 +3124,13 @@ module.exports = {
 			});
         },
 
-        // 其他描述
+        // {yun:}t key='admin_00068'{/yun}
         openOther(index) {
             let expectData = this.expectData,
                 expect = expectData.expect,
                 otherList = expectData.other;
 
-            if (index !== '') {
+            if (index !== "') {
                 let other = deepClone(otherList[index])
                 this.ruleFormOther = {
                     uid: expectData.uid,
@@ -3160,11 +3159,11 @@ module.exports = {
                 ruleForm = that.ruleFormOther;
 
             if (ruleForm.eid == "") {
-                message.warning('请先完善求职意向');
+                message.warning("{yun:}t key='admin_user_00207'{/yun}");
                 return false;
             }
             if (ruleForm.name == "") {
-                message.warning('请输入标题名称');
+                message.warning("{yun:}t key='admin_00487'{/yun}");
                 return false;
             }
 
@@ -3225,7 +3224,7 @@ module.exports = {
                         message.success(res.msg);
                     }
                 })
-            }, '确定要删除该项内容？');
+            }, "{yun:}t key='admin_user_00204'{/yun}");
         },
 
         // 投递岗位记录
@@ -3276,7 +3275,7 @@ module.exports = {
                 that.jobSqLog = jobSqLog;
                 that.loading = false;
                 if (that.jobSqLog.list.length === 0) {
-                    that.dataText = "暂无数据";
+                    that.dataText = "{yun:}t key='wap_js_00113'{/yun}";
                 }
             })
         },

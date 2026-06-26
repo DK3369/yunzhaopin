@@ -1,40 +1,40 @@
 <template>
     <div class="moduleElHight">
         <div class="tableDome_tip">
-            <el-alert title="采集前务必设置自己的接口密码，以免被其他人利用，这里所设置的参数，只作为没有值的情况下使用，若采集软件有值传输，会优先使用传输值" type="success" :closable="false"></el-alert>
+            <el-alert title="{yun:}t key='admin_tool_00059'{/yun}" type="success" :closable="false"></el-alert>
         </div>
         <div class=" moduleTable">
 
             <table class="tableVue">
                 <thead>
                 <tr align="left">
-                    <th width="200">名称</th>
-                    <th width="400">状态</th>
-                    <th>说明</th>
+                    <th width="200">{yun:}t key='member_com_00021'{/yun}</th>
+                    <th width="400">{yun:}t key='member_user_00181'{/yun}</th>
+                    <th>{yun:}t key='member_com_00207'{/yun}</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr>
                     <td>
-                        <div class="TableTite">采集状态</div>
+                        <div class="TableTite">{yun:}t key='admin_tool_00173'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableButn">
                             <el-radio-group v-model="locoy_config.locoy_online">
-                                <el-radio label="1">开启</el-radio>
-                                <el-radio label="2">关闭</el-radio>
+                                <el-radio label="1">{yun:}t key='member_com_00287'{/yun}</el-radio>
+                                <el-radio label="2">{yun:}t key='common.close'{/yun}</el-radio>
                             </el-radio-group>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>采集来的职位状态</span>
+                            <span>{yun:}t key='admin_tool_00172'{/yun}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">接口密码</div>
+                        <div class="TableTite">{yun:}t key='admin_tool_00174'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
@@ -49,7 +49,7 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">匹配精准度</div>
+                        <div class="TableTite">{yun:}t key='admin_tool_00175'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
@@ -65,7 +65,7 @@
                 </tbody>
             </table>
             <div class="setBasicButn" style="border: none;">
-                <el-button type="primary" size="medium" @click="submitLocoyConfig" :disabled="saveLoading">提交</el-button>
+                <el-button type="primary" size="medium" @click="submitLocoyConfig" :disabled="saveLoading">{yun:}t key='common.submit'{/yun}</el-button>
             </div>
         </div>
     </div>

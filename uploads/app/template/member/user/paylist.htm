@@ -10,7 +10,7 @@
           
             <div class="job_list_tit"> <ul class="">
 	<li class="job_list_tit_cur" ><a href="index.php?c=paylist">{yun:}t key='member_user_00239'{/yun}</a></li>
-      <li><a href="index.php?c=paylog">账单明细</a></li>
+      <li><a href="index.php?c=paylog">{yun:}t key='member_user_00544'{/yun}</a></li>
 
 	</ul> 
     </div>  <div class="resume_box_list  mt20  fltL">
@@ -35,8 +35,8 @@
                    <div class="paylist_span paylist_time">{yun:}$log.order_time|date_format:'%Y-%m-%d %H:%M'{/yun}</div>
                     <div class="paylist_span paylist_cz">
                         {yun:}if $log.order_state=='1'{/yun} <a href="index.php?c=payment&id={yun:}$log.id{/yun}" class="cblue">{yun:}t key='wap_user_00308'{/yun}</a>  <span class="jobnotice_cz_line">|</span>
-                        <a href="javascript:void(0)" onclick="layer_del('确定要取消？','index.php?c=paylist&act=del&id={yun:}$log.id{/yun}');" class="cblue">
-                            取消充值
+                        <a href="javascript:void(0)" onclick="layer_del("{yun:}t key='member_user_00547'{/yun}",'index.php?c=paylist&act=del&id={yun:}$log.id{/yun}');" class="cblue">
+                            {yun:}t key='wap_00629'{/yun}
                         </a>
                         {yun:}else{/yun}
                         {yun:}$arr_data.paystate.$state{/yun}
@@ -47,7 +47,7 @@
                 </div>
                 
                 {yun:}foreachelse{/yun}
-                <div class="msg_no">您还没有充值记录，<a href="index.php?c=pay" class="cblue">点击充值</a>。</div>
+                <div class="msg_no">{yun:}t key='member_user_00545'{/yun}<a href="index.php?c=pay" class="cblue">{yun:}t key='member_user_00546'{/yun}</a>。</div>
                 {yun:}/foreach{/yun}
                 {yun:}if !empty($rows){/yun}
                

@@ -13,10 +13,10 @@ class weipin_tiny_controller extends adminCommon
             $ltar[$v] = $cache['userclass_name'][$v];
         }
 
-        $search_list[] = array("param" => "sex", "name" => '用户性别', "value" => $cache['user_sex']);
-        $search_list[] = array("param" => "exp", "name" => '工作年限', "value" => $ltar);
-        $search_list[] = array("param" => "status", "name" => '审核状态', "value" => array("1" => "已审核", "2" => "未审核"));
-        $search_list[] = array("param" => "time", "name" => '发布时间', "value" => array('1' => '今天', '3' => '最近三天', '7' => '最近七天', '15' => '最近半月', '30' => '最近一个月'));
+        $search_list[] = array("param" => "sex", "name" => 'admin_01323', "value" => $cache['user_sex']);
+        $search_list[] = array("param" => "exp", "name" => 'wap_00526', "value" => $ltar);
+        $search_list[] = array("param" => "status", "name" => 'wap_com_00406', "value" => array("1" => 'wap_user_00165', "2" => 'wap_user_00166'));
+        $search_list[] = array("param" => "time", "name" => 'admin_user_weipin_00030', "value" => array('1' => 'common_01940', '3' => 'admin_user_00179', '7' => 'admin_user_00178', '15' => 'admin_user_00180', '30' => 'admin_user_00175'));
 
         return $search_list;
     }
@@ -85,7 +85,7 @@ class weipin_tiny_controller extends adminCommon
     function status_action()
     {
         if (empty($_POST['id'])) {
-            $this->render_json(1, '参数错误');
+            $this->render_json(1, yun_at('wap_com_00228'));
         }
 
         $tinyM = $this->MODEL('tiny');
@@ -93,9 +93,9 @@ class weipin_tiny_controller extends adminCommon
 
         $nid = $tinyM->setResumeTinyStatus($_POST['id'], array('status' => $status));
         if ($nid) {
-            $this->render_json(0, '普工审核成功'); // 因模型里增加了管理员日志，这里就用 render_json 返回结果
+            $this->render_json(0, yun_at('admin_01324')); // 因模型里增加了管理员日志，这里就用 render_json 返回结果
         } else {
-            $this->render_json(1, '普工审核失败');
+            $this->render_json(1, yun_at('admin_user_00113'));
         }
     }
 
@@ -103,7 +103,7 @@ class weipin_tiny_controller extends adminCommon
     function del_action()
     {
         if (empty($_POST['del'])) {
-            $this->render_json(1, '参数错误');
+            $this->render_json(1, yun_at('wap_com_00228'));
         }
 
         $tinyM = $this->MODEL('tiny');
@@ -185,7 +185,7 @@ class weipin_tiny_controller extends adminCommon
     function checksitedid_action()
     {
         if (empty($_POST['id']) || !isset($_POST['did'])) {
-            $this->render_json(1, '参数错误');
+            $this->render_json(1, yun_at('wap_com_00228'));
         }
 
         $ids = pylode(',', $_POST['id']);
@@ -197,7 +197,7 @@ class weipin_tiny_controller extends adminCommon
 
         $siteM->updDid(array('resume_tiny'), array('id' => array('in', $ids)), $didData);
 
-        $this->admin_json(0, '普工简历(ID:' . $ids . ')分配站点成功');
+        $this->admin_json(0, 'admin_user_00111' . $ids . ')分配站点成功');
     }
 
     /**
@@ -236,7 +236,7 @@ class weipin_tiny_controller extends adminCommon
     {
         $_POST = $this->post_trim($_POST);
         if (empty($_POST)) {
-            $this->render_json(1, '参数错误');
+            $this->render_json(1, yun_at('wap_com_00228'));
         }
 
         $configM = $this->MODEL("config");
@@ -249,7 +249,7 @@ class weipin_tiny_controller extends adminCommon
         $configM->setConfig($configData);
 
         $this->web_config();
-        $this->admin_json(0, '普工设置保存成功');
+        $this->admin_json(0, 'admin_user_00112');
     }
 }
 

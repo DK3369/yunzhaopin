@@ -4,169 +4,152 @@
             <table class="tableVue">
                 <thead>
                     <tr align="left">
-                        <th width="260">名称</th>
-                        <th width="320">状态</th>
-                        <th>说明</th>
+                        <th width="260">{yun:}t key='member_com_00021'{/yun}</th>
+                        <th width="320">{yun:}t key='member_user_00181'{/yun}</th>
+                        <th>{yun:}t key='member_com_00207'{/yun}</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td>
-                            <div class="TableTite">积分代替词</div>
+                            <div class="TableTite">{yun:}t key='admin_system_00309'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input placeholder="请输入内容" v-model="list.integral_pricename">
+                                <el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="list.integral_pricename">
                                     <!-- <span slot="suffix" class="slotspan">天</span> -->
                                 </el-input>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>默认为积分，例：金币</span>
+                                <span>{yun:}t key='admin_00915'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">最低充值积分</div>
+                            <div class="TableTite">{yun:}t key='admin_system_00306'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input type="number" placeholder="请输入内容" v-model="list.integral_min_recharge"></el-input>
+                                <el-input type="number" placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="list.integral_min_recharge"></el-input>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>0 表示不限</span>
+                                <span>{yun:}t key='admin_00916'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">赏金转换积分次数</div>
+                            <div class="TableTite">{yun:}t key='admin_system_00304'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input type="number" placeholder="请输入内容" v-model="list.paypack_max_recharge">
-                                    <span slot="suffix" class="slotspan">次/日</span>
+                                <el-input type="number" placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="list.paypack_max_recharge">
+                                    <span slot="suffix" class="slotspan">{yun:}t key='admin_system_00311'{/yun}</span>
                                 </el-input>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>0 表示不限</span>
+                                <span>{yun:}t key='admin_00916'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">赏金转换积分最低金额</div>
+                            <div class="TableTite">{yun:}t key='admin_system_00303'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input @input="formatMoney('packprice_min_recharge')" placeholder="请输入内容" v-model="list.packprice_min_recharge">
-                                    <span slot="suffix" class="slotspan">元</span>
+                                <el-input @input="formatMoney('packprice_min_recharge')" placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="list.packprice_min_recharge">
+                                    <span slot="suffix" class="slotspan">{yun:}t key='common_02056'{/yun}</span>
                                 </el-input>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>0 表示不限</span>
+                                <span>{yun:}t key='admin_00916'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">最低充值金额</div>
+                            <div class="TableTite">{yun:}t key='admin_system_00307'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input @input="formatMoney('money_min_recharge')" placeholder="请输入内容" v-model="list.money_min_recharge">
-                                    <span slot="suffix" class="slotspan">元</span>
+                                <el-input @input="formatMoney('money_min_recharge')" placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="list.money_min_recharge">
+                                    <span slot="suffix" class="slotspan">{yun:}t key='common_02056'{/yun}</span>
                                 </el-input>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>0 表示不限</span>
+                                <span>{yun:}t key='admin_00916'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">积分单位</div>
+                            <div class="TableTite">{yun:}t key='admin_system_00310'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input placeholder="请输入内容" v-model="list.integral_priceunit"></el-input>
+                                <el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="list.integral_priceunit"></el-input>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>默认为点，例：个，位</span>
+                                <span>{yun:}t key='admin_00917'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">积分兑换比例</div>
+                            <div class="TableTite">{yun:}t key='admin_system_00308'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input type="number" placeholder="请输入内容" v-model="list.integral_proportion">
-                                    <span slot="suffix" class="slotspan">点</span>
+                                <el-input type="number" placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="list.integral_proportion">
+                                    <span slot="suffix" class="slotspan">{yun:}t key='common_02090'{/yun}</span>
                                 </el-input>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>例：1元=30点积分</span>
+                                <span>{yun:}t key='admin_00918'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">每日签到送积分</div>
+                            <div class="TableTite">{yun:}t key='admin_system_00305'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input type="number" placeholder="请输入内容" v-model="list.integral_signin">
-                                    <span slot="suffix" class="slotspan">个积分</span>
+                                <el-input type="number" placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="list.integral_signin">
+                                    <span slot="suffix" class="slotspan">{yun:}t key='admin_00891'{/yun}</span>
                                 </el-input>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>第六日起，获得积分将翻倍。</span>
+                                <span>{yun:}t key='admin_00919'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">会员注册</div>
+                            <div class="TableTite">{yun:}t key='admin_00920'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input type="number" placeholder="请输入内容" v-model="list.integral_reg">
-                                    <span slot="suffix" class="slotspan">个积分</span>
-                                </el-input>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="TableShuom">
-                                
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <div class="TableTite">每天第一次登录</div>
-                        </td>
-                        <td>
-                            <div class="TableInpt">
-                                <el-input type="number" placeholder="请输入内容" v-model="list.integral_login">
-                                    <span slot="suffix" class="slotspan">个积分</span>
+                                <el-input type="number" placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="list.integral_reg">
+                                    <span slot="suffix" class="slotspan">{yun:}t key='admin_00891'{/yun}</span>
                                 </el-input>
                             </div>
                         </td>
@@ -178,12 +161,12 @@
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">完善基本资料</div>
+                            <div class="TableTite">{yun:}t key='wap_01025'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input type="number" placeholder="请输入内容" v-model="list.integral_userinfo">
-                                    <span slot="suffix" class="slotspan">个积分</span>
+                                <el-input type="number" placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="list.integral_login">
+                                    <span slot="suffix" class="slotspan">{yun:}t key='admin_00891'{/yun}</span>
                                 </el-input>
                             </div>
                         </td>
@@ -195,12 +178,12 @@
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">邮箱认证</div>
+                            <div class="TableTite">{yun:}t key='wap_00990'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input type="number" placeholder="请输入内容" v-model="list.integral_emailcert">
-                                    <span slot="suffix" class="slotspan">个积分</span>
+                                <el-input type="number" placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="list.integral_userinfo">
+                                    <span slot="suffix" class="slotspan">{yun:}t key='admin_00891'{/yun}</span>
                                 </el-input>
                             </div>
                         </td>
@@ -212,12 +195,12 @@
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">手机认证</div>
+                            <div class="TableTite">{yun:}t key='wap_com_00186'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input type="number" placeholder="请输入内容" v-model="list.integral_mobliecert">
-                                    <span slot="suffix" class="slotspan">个积分</span>
+                                <el-input type="number" placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="list.integral_emailcert">
+                                    <span slot="suffix" class="slotspan">{yun:}t key='admin_00891'{/yun}</span>
                                 </el-input>
                             </div>
                         </td>
@@ -229,12 +212,12 @@
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">上传头像</div>
+                            <div class="TableTite">{yun:}t key='member_com_00071'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input type="number" placeholder="请输入内容" v-model="list.integral_avatar">
-                                    <span slot="suffix" class="slotspan">个积分</span>
+                                <el-input type="number" placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="list.integral_mobliecert">
+                                    <span slot="suffix" class="slotspan">{yun:}t key='admin_00891'{/yun}</span>
                                 </el-input>
                             </div>
                         </td>
@@ -246,12 +229,12 @@
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">发布问题</div>
+                            <div class="TableTite">{yun:}t key='wap_user_00110'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input type="number" placeholder="请输入内容" v-model="list.integral_question">
-                                    <span slot="suffix" class="slotspan">个积分</span>
+                                <el-input type="number" placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="list.integral_avatar">
+                                    <span slot="suffix" class="slotspan">{yun:}t key='admin_00891'{/yun}</span>
                                 </el-input>
                             </div>
                         </td>
@@ -263,12 +246,12 @@
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">回答问题</div>
+                            <div class="TableTite">{yun:}t key='wap_user_00112'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input type="number" placeholder="请输入内容" v-model="list.integral_answer">
-                                    <span slot="suffix" class="slotspan">个积分</span>
+                                <el-input type="number" placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="list.integral_question">
+                                    <span slot="suffix" class="slotspan">{yun:}t key='admin_00891'{/yun}</span>
                                 </el-input>
                             </div>
                         </td>
@@ -280,12 +263,12 @@
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">评论回答</div>
+                            <div class="TableTite">{yun:}t key='wap_user_00113'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input type="number" placeholder="请输入内容" v-model="list.integral_answerpl">
-                                    <span slot="suffix" class="slotspan">个积分</span>
+                                <el-input type="number" placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="list.integral_answer">
+                                    <span slot="suffix" class="slotspan">{yun:}t key='admin_00891'{/yun}</span>
                                 </el-input>
                             </div>
                         </td>
@@ -297,12 +280,12 @@
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">邀请注册</div>
+                            <div class="TableTite">{yun:}t key='wap_00995'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input type="number" placeholder="请输入内容" v-model="list.integral_invite_reg">
-                                    <span slot="suffix" class="slotspan">个积分</span>
+                                <el-input type="number" placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="list.integral_answerpl">
+                                    <span slot="suffix" class="slotspan">{yun:}t key='admin_00891'{/yun}</span>
                                 </el-input>
                             </div>
                         </td>
@@ -314,12 +297,29 @@
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">绑定微信</div>
+                            <div class="TableTite">{yun:}t key='wap_01590'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input type="number" placeholder="请输入内容" v-model="list.integral_bind_wx">
-                                    <span slot="suffix" class="slotspan">个积分</span>
+                                <el-input type="number" placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="list.integral_invite_reg">
+                                    <span slot="suffix" class="slotspan">{yun:}t key='admin_00891'{/yun}</span>
+                                </el-input>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="TableShuom">
+                                
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="TableTite">{yun:}t key='member_user_00056'{/yun}</div>
+                        </td>
+                        <td>
+                            <div class="TableInpt">
+                                <el-input type="number" placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="list.integral_bind_wx">
+                                    <span slot="suffix" class="slotspan">{yun:}t key='admin_00891'{/yun}</span>
                                 </el-input>
                             </div>
                         </td>
@@ -333,7 +333,7 @@
             </table>
         </div>
         <div class="setBasicButn" style="border: none;">
-            <el-button type="primary" size="medium" @click="save" :disabled="saveLoading">提交</el-button>
+            <el-button type="primary" size="medium" @click="save" :disabled="saveLoading">{yun:}t key='common.submit'{/yun}</el-button>
         </div>
     </div>
 </template>
@@ -387,7 +387,7 @@ module.exports = {
             httpPost(url, ruleForm).then(function (response) {
                 var res = response.data;
                 if (res.error == 0) {
-                    message.success('操作成功');
+                    message.success("{yun:}t key='wap_user_00264'{/yun}");
                     _this.$emit('get-list', true)
                 } else {
                     message.error(res.msg);

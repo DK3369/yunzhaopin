@@ -28,14 +28,14 @@ class transfer_model extends model
                 $return['msg']  =   $msg;
             } elseif (CheckRegUser($data['username']) == false && CheckRegEmail($data['username']) == false) {
 
-                $return['msg']  =   '新用户名不得包含特殊字符！';
+                $return['msg']  =   yun_at('common_06592');
             } else {
 
                 $usernameNum    =   $this->select_num('member', array("username" => $data['username']));
 
                 if ($usernameNum > 0) {
 
-                    $return['msg']  =   '用户名已存在，请重新输入！';
+                    $return['msg']  =   yun_at('wap_01779');
                 } elseif ($pmsg != '') {
 
                     $return['msg']  =   $pmsg;
@@ -184,25 +184,25 @@ class transfer_model extends model
                             require_once('log.model.php');
                             $LogM = new log_model($this->db, $this->def);
 
-                            $LogM->addMemberLog($uid, 1, '账号分离成功，新账号用户名：' . $data['username']);
-                            $LogM->addMemberLog($userid, 1, '账号分离成功，原账号用户名：' . $memberInfo['username']);
+                            $LogM->addMemberLog($uid, 1, 'common_06593' . $data['username']);
+                            $LogM->addMemberLog($userid, 1, 'common_06594' . $memberInfo['username']);
 
-                            $return['msg'] = '账户分离成功！';
+                            $return['msg'] = yun_at('common_06595');
                             $return['errcode'] = 1;
                         } else {
-                            $return['msg'] = '账户分离失败，请重试！';
+                            $return['msg'] = yun_at('common_06596');
                         }
                     } else {
 
-                        $return['msg'] = '原账户密码错误！';
+                        $return['msg'] = yun_at('common_06597');
                     }
                 } else {
 
-                    $return['msg'] = '未找到原账号！';
+                    $return['msg'] = yun_at('common_06598');
                 }
             }
         } else {
-            $return['msg'] = '请正确填写相关信息！';
+            $return['msg'] = yun_at('common_06599');
         }
 
         $return['errcode'] = $return['errcode'] ? $return['errcode'] : 0;
@@ -328,11 +328,11 @@ class transfer_model extends model
 
         $com        =   $this->select_once('member', array('uid' => $com_uid, 'usertype' => 2), $mFiled);
         if (empty($com)){
-            $return['msg']  =   '目标企业账户信息不存在';
+            $return['msg']  =   yun_at('common_06600');
         }
         $user       =   $this->select_once('member', array('uid' => $uid), $mFiled);
         if (empty($user)){
-            $return['msg']  =   '当前个人用户账户信息不存在';
+            $return['msg']  =   yun_at('common_06601');
         }
 
         /**
@@ -342,7 +342,7 @@ class transfer_model extends model
         
         if ((int)$existCom > 0 ){
 
-            $return['msg']  =   '当前个人用户存在其他身份，不可进行合并';
+            $return['msg']  =   yun_at('common_06602');
         }
 
         /**
@@ -351,7 +351,7 @@ class transfer_model extends model
         $existNum   =   $this->select_num('resume', array('uid' => $com_uid));
         if ((int)$existNum > 0){
 
-            $return['msg']  =   '目标企业用户已存在个人身份，不可进行合并';
+            $return['msg']  =   yun_at('common_06603');
         }
 
         if (!isset($return['msg'])) {
@@ -433,15 +433,15 @@ class transfer_model extends model
                 // 增加账号分离会员日志
                 require_once('log.model.php');
                 $LogM               =   new log_model($this->db, $this->def);
-                $content            =   "合并账户：个人（UID：".$uid."） 合并到企业（UID：".$com_uid."）";
+                $content            =   'common_06591'.$uid."） 合并到企业（UID：".$com_uid."）";
                 $LogM->addAdminLog($content);
 
-                $return['msg']      =   '账户合并成功！';
+                $return['msg']      =   yun_at('common_06604');
                 $return['errcode']  =   9;
 
             }else{
 
-                $return['msg']      =   '账户合并失败，请重试！';
+                $return['msg']      =   yun_at('common_06605');
             }
         }
 

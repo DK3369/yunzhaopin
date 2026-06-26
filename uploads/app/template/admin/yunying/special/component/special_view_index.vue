@@ -2,14 +2,14 @@
     <div class="jobspecial_box">
         <div class="moduleSeachbig">
             <div class="tableSeachInpt">
-                <el-input v-model="searchForm.keyword" placeholder="企业名称" size="small" prefix-icon="el-icon-search" clearable>
+                <el-input v-model="searchForm.keyword" placeholder="{yun:}t key='wap_com_00157'{/yun}" size="small" prefix-icon="el-icon-search" clearable>
                 </el-input>
             </div>
             <div class="tableSeachInpt">
-                <el-button type="primary" icon="el-icon-search" size="mini" @click="handleSearch">查询</el-button>
+                <el-button type="primary" icon="el-icon-search" size="mini" @click="handleSearch">{yun:}t key='admin_user_weipin_00049'{/yun}</el-button>
             </div>
             <div v-if="showAdd" class="tableSeachInpt">
-                <el-button type="primary" plain icon="el-icon-plus" size="mini" @click="companyVisible = true">添加参会企业</el-button>
+                <el-button type="primary" plain icon="el-icon-plus" size="mini" @click="companyVisible = true">{yun:}t key='admin_00850'{/yun}</el-button>
             </div>
         </div>
 
@@ -44,24 +44,24 @@
                     </el-table-column>
                     <el-table-column prop="tpl" label="状态" width="140">
                         <template slot-scope="scope">
-                            <template v-if="scope.row.status == 1"><span style="color:#61687C;">已参加</span></template>
-                            <template v-else-if="scope.row.status == 2"><span style="color:red;">未通过</span></template>
-                            <template v-else>申请加入</template>
+                            <template v-if="scope.row.status == 1"><span style="color:#61687C;">{yun:}t key='admin_yunying_00133'{/yun}</span></template>
+                            <template v-else-if="scope.row.status == 2"><span style="color:red;">{yun:}t key='wap_user_00167'{/yun}</span></template>
+                            <template v-else>{yun:}t key='admin_01232'{/yun}</template>
                         </template>
                     </el-table-column>
                     <el-table-column v-if="special.tpl == 'gl.htm'" prop="limit" label="名企展示" width="150">
                         <template slot-scope="scope">
                             <div class="cz_button">
-                                <el-button v-if="scope.row.famous == 1" size="mini" @click="handleSpecialFamous(scope)">取消</el-button>
-                                <el-button v-else size="mini" @click="handleSpecialFamous(scope)">设为名企</el-button>
+                                <el-button v-if="scope.row.famous == 1" size="mini" @click="handleSpecialFamous(scope)">{yun:}t key='common.cancel'{/yun}</el-button>
+                                <el-button v-else size="mini" @click="handleSpecialFamous(scope)">{yun:}t key='admin_user_company_00147'{/yun}</el-button>
                             </div>
                         </template>
                     </el-table-column>
                     <el-table-column label="操作" width="140" header-align="center" align="right">
                         <template slot-scope="scope">
                             <div class="cz_button">
-                                <el-button size="mini" @click="handleAudit(scope)">加入</el-button>
-                                <el-button type="danger" size="mini" @click="deleteRow(scope)">取消</el-button>
+                                <el-button size="mini" @click="handleAudit(scope)">{yun:}t key='admin_yunying_00138'{/yun}</el-button>
+                                <el-button type="danger" size="mini" @click="deleteRow(scope)">{yun:}t key='common.cancel'{/yun}</el-button>
                             </div>
                         </template>
                     </el-table-column>
@@ -69,10 +69,10 @@
             </div>
             <div class="modulePaging">
                 <div>
-                    <el-checkbox :indeterminate="isIndeterminate" v-model="checked" @change="selectAllBottom">全选</el-checkbox>
-                    <el-button @click="deleteRow(null, true)" size="mini">批量删除</el-button>
-                    <el-button @click="handleStatuscom" size="mini">批量审核</el-button>
-                    <el-button plain icon="el-icon-download" @click.native.prevent="handleExport" size="mini">导出参会企业</el-button>
+                    <el-checkbox :indeterminate="isIndeterminate" v-model="checked" @change="selectAllBottom">{yun:}t key='wap_js_00074'{/yun}</el-checkbox>
+                    <el-button @click="deleteRow(null, true)" size="mini">{yun:}t key='member_com_00055'{/yun}</el-button>
+                    <el-button @click="handleStatuscom" size="mini">{yun:}t key='admin_user_weipin_00037'{/yun}</el-button>
+                    <el-button plain icon="el-icon-download" @click.native.prevent="handleExport" size="mini">{yun:}t key='admin_00851'{/yun}</el-button>
                 </div>
                 <div class="modulePagNum">
                     <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
@@ -85,7 +85,7 @@
 
         <!-- 批量审核 弹窗 -->
         <div class="modluDrawer">
-            <el-dialog :visible.sync="statuscomVisible" title="申请审核" width="400px" :modal-append-to-body="false"
+            <el-dialog :visible.sync="statuscomVisible" title="{yun:}t key='admin_01234'{/yun}" width="400px" :modal-append-to-body="false"
                 :append-to-body="true" :show-close="true" :destroy-on-close="true">
                 <special_view_status :pid="statuscomPids" @child-event="statuscomVisible = false; getList();"
                     @child-event-close="statuscomVisible = false"></special_view_status>
@@ -93,13 +93,13 @@
         </div>
 
         <!--企业详情审核 -->
-        <el-drawer :visible.sync="auditVisible" title="企业详情" :append-to-body="true" :destroy-on-close="true"
+        <el-drawer :visible.sync="auditVisible" title="{yun:}t key='wap_00188'{/yun}" :append-to-body="true" :destroy-on-close="true"
             :modal-append-to-body="false" size="80%">
             <special_view_audit :id="info.id" :uid="info.uid" @child-event="auditVisible = false; getList();"></special_view_audit>
         </el-drawer>
 
         <!--添加参会企业-->
-        <el-drawer :visible.sync="companyVisible" title="添加参会企业" :append-to-body="true" :destroy-on-close="true"
+        <el-drawer :visible.sync="companyVisible" title="{yun:}t key='admin_00850'{/yun}" :append-to-body="true" :destroy-on-close="true"
             :modal-append-to-body="false" size="90%">
             <special_view_company :id="id" @child-event="companyVisible = false; getList();"></special_view_company>
         </el-drawer>
@@ -116,7 +116,7 @@ module.exports = {
         return {
             loading: false,
 			pagerCount: 5,
-            dataText: '数据加载中',
+            dataText: "{yun:}t key='admin_user_weipin_00026'{/yun}",
             pytoken: localStorage.getItem("pytoken"),
             searchForm: {
                 page: 1,
@@ -134,10 +134,10 @@ module.exports = {
             jobsNum: 0,//参会企业的职位数量
             special: {},//专题的部分信息
             statuscomVisible: false,//批量审核
-            statuscomPids: '',
-            auditVisible: false,//加入
+            statuscomPids: '",
+            auditVisible: false,//{yun:}t key='admin_yunying_00138'{/yun}
             info: {},
-            companyVisible: false,//添加参会企业
+            companyVisible: false,//{yun:}t key='admin_00850'{/yun}
             prevPage:0
         }
     },
@@ -165,7 +165,7 @@ module.exports = {
             value ? this.$refs.multipleTable.toggleAllSelection() : this.$refs.multipleTable.clearSelection();
         },
         shortChange(e) {
-            let orderMap = {ascending: 'asc', descending: 'desc'}
+            let orderMap = {ascending: "asc', descending: 'desc'}
             this.searchForm.t = e.order ? e.prop : null;
             this.searchForm.order = orderMap[e.order];
             this.searchForm.page = 1;
@@ -208,7 +208,7 @@ module.exports = {
                     }
                     _this.loading = false;
                     if (_this.tableData.length === 0) {
-                        _this.dataText = "暂无数据";
+                        _this.dataText = "{yun:}t key='wap_js_00113'{/yun}";
                     }
                 }
             }).catch(function (error) {
@@ -219,7 +219,7 @@ module.exports = {
             let params = {};
             if (isMore) {
                 if (!this.selectedItem.length) {
-                    message.error('请选择要删除的数据');
+                    message.error("{yun:}t key='admin_user_weipin_00005'{/yun}");
                     return false;
                 }
                 let list = [];
@@ -284,9 +284,9 @@ module.exports = {
             httpPost('m=yunying&c=special_special&a=ajaxsort', params, {hideloading: true}).then(function (response) {
                 let res = response.data;
                 if (res.error === 0) {
-                    message.success('修改成功');
+                    message.success("{yun:}t key='admin_user_company_00208'{/yun}");
                 } else {
-                    message.error('修改失败');
+                    message.error("{yun:}t key='admin_00187'{/yun}");
                 }
                 _this.oldData = null;
                 _this.getList();
@@ -299,9 +299,9 @@ module.exports = {
             this.auditVisible = true;
         },
         handleStatuscom() {
-            //批量审核
+            // BatchAudit
             if (!this.selectedItem.length) {
-                message.error('您还未选择任何信息！');
+                message.error("{yun:}t key='admin_00572'{/yun}");
                 return false;
             }
 
@@ -387,7 +387,7 @@ module.exports = {
             }
             formElement.submit();
             formElement.remove();
-            message.success('处理中...');
+            message.success("{yun:}t key='wap_01063'{/yun}");
         }
     },
     components: {

@@ -82,19 +82,19 @@ class category_model extends model{
                 }
             }
             if($nid){
-                $return['msg']		=	'正在生成'.($page*$post['pagesize']+1).'-'.($page+1)*$post['pagesize'].'条数据！';
+                $return['msg']		=	yun_at('admin_tool_00040').($page*$post['pagesize']+1).'-'.($page+1)*$post['pagesize'].'common_01789';
                 $page++;
                 $return['page']		=	$page;
                 $return['pagesize']	=	$post['pagesize'];
                 $return['error']	=	1;
             }else{
-                $return['msg']		=	'生成拼音成功！';
+                $return['msg']		=	yun_at('admin_system_00081');
                 $return['error']	=	0;
                 
                 $this->cache_action($name, $data['type']);
             }
         }else{
-            $return['msg']		=	'生成拼音成功！';
+            $return['msg']		=	yun_at('admin_system_00081');
             $return['error']	=	0;
         }
         return $return;
@@ -176,13 +176,13 @@ class category_model extends model{
             $field = '';
             $changeValue = '';
             if ($addData['name']) {//修改名称
-                $type = '名称';
+                $type = 'member_com_00021';
                 $field = 'name';
             } else {
                 unset($addData['name']);
             }
             if ($addData['sort'] || $addData['sort'] === '0') {//修改排序
-                $type = '排序';
+                $type = 'member_com_00022';
                 $field = 'sort';
             } else {
                 unset($addData['sort']);
@@ -195,7 +195,7 @@ class category_model extends model{
             $this->cache_action('user_cache', 'user');
             $showid = $whereData['id'] ? '(ID：' . $whereData['id'] . $changeValue . ')' : '';
             $return['error'] = 0;
-            $return['msg'] = "个人会员分类" . $showid . $type . "修改成功";
+            $return['msg'] = yun_at('admin_system_00124') . $showid . $type . 'admin_user_company_00208';
         } else {
             $namestring = "'" . @implode("','", $addData['name']) . "'";
             $name = array();
@@ -235,15 +235,15 @@ class category_model extends model{
                 $this->cache_action('user_cache', 'user');
                 if ($ucid) {
                     $return['error'] = 0;
-                    $return['msg'] = '个人会员分类(' . $namestring . ')添加成功';
+                    $return['msg'] = yun_auto_t('个人会员分类(') . $namestring . ')添加成功';
                 } else {
                     $return['error'] = 1;
-                    $return['msg'] = '个人会员分类(' . $namestring . ')添加失败';
+                    $return['msg'] = yun_auto_t('个人会员分类(') . $namestring . ')添加失败';
                 }
             } else {//有同名类，给出提示
                 $namestring = $userclass[0]['name'];
                 $return['error'] = 2;
-                $return['msg'] = '个人会员分类添加失败！已有此类别(' . $namestring . ')，请重新输入！';
+                $return['msg'] = yun_at('common_00464') . $namestring . 'common_01181';
             }
         }
         return $return;
@@ -269,7 +269,7 @@ class category_model extends model{
 		$this 				->  cache_action('user_cache','user');
         $msgDetail = '(ID：' . pylode(',', $ids) . ')';
         $return['error'] = $result ? 0 : 1;
-        $return['msg'] = $result ? '个人会员分类' . $msgDetail . '删除成功！' : '个人会员分类' . $msgDetail . '删除失败！';
+        $return['msg'] = $result ? 'admin_system_00124' . $msgDetail . 'admin_user_00187' : 'admin_system_00124' . $msgDetail . 'admin_user_00186';
 		return	$return;
 	}
 //endregion
@@ -310,9 +310,9 @@ class category_model extends model{
             if ($data['type'] == 'single') {
                 $this->cache_action('city_cache', 'city');
             }
-            $return = array('error' => 0, 'msg' => '更新城市(ID：' . $whereData['id'] . ')成功');
+            $return = array('error' => 0, 'msg' => yun_at('model_00015') . $whereData['id'] . ')成功');
         } else {
-            $return = array('error' => 2, 'msg' => '城市名称不能为空！');
+            $return = array('error' => 2, 'msg' => yun_at('admin_system_00089'));
         }
         return $return;
     }
@@ -334,12 +334,12 @@ class category_model extends model{
         if (count($ids)) {
             $result = $this->delete_all('city_class', array('id' => array('in', pylode(',', $ids))), '');
         }
-        $this->adminLog("删除城市");
+        $this->adminLog('common_06380');
         if ($result) {
             $this->cache_action('city_cache', 'city');
-            $return = array('error' => 0, 'msg' => '删除城市(ID：' . pylode(',', $ids) . ')成功');
+            $return = array('error' => 0, 'msg' => yun_at('model_00016') . pylode(',', $ids) . ')成功');
         } else {
-            $return = array('error' => 2, 'msg' => '删除城市失败');
+            $return = array('error' => 2, 'msg' => yun_at('model_00017'));
         }
         return $return;
     }
@@ -396,15 +396,15 @@ class category_model extends model{
 		    $this	->	cache_action('industry_cache','industry');
             if ($result) {
                 $return['error'] = 0;
-                $return['msg'] = '行业类别(' . $namestring . ')添加成功！';
+                $return['msg'] = yun_auto_t('行业类别(') . $namestring . ')添加成功！';
             } else {
                 $return['error'] = 1;
-                $return['msg'] = '行业类别(' . $namestring . ')添加失败！';
+                $return['msg'] = yun_auto_t('行业类别(') . $namestring . ')添加失败！';
             }
 		}else{
             $namestring = $industry[0]['name'];
             $return['error'] = 2;
-            $return['msg'] = '行业类别添加失败！已有此类别(' . $namestring . ')，请重新输入！';
+            $return['msg'] = yun_at('common_00592') . $namestring . 'common_01181';
 		}
 		return	$return;
 	}
@@ -419,13 +419,13 @@ class category_model extends model{
         $field = '';
         $changeValue = '';
 		if($addData['name']){//修改名称
-			$type	=	'名称';
+			$type	=	'member_com_00021';
             $field = 'name';
 		}else{
 			unset($addData['name']);
 		}
 		if($addData['sort'] || $addData['sort'] === '0'){//修改排序
-			$type	=	'排序';
+			$type	=	'member_com_00022';
             $field = 'sort';
 		}else{
 			unset($addData['sort']);
@@ -437,7 +437,7 @@ class category_model extends model{
 		$this	->	update_once('industry',$addData,$whereData);
 		$showid	=   $whereData['id'] ? '(ID：' . $whereData['id'] . $changeValue . ')' : '';
 		$this	->	cache_action('industry_cache','industry');
-        $msg = '行业分类' . $showid . $type . '修改成功';
+        $msg = 'admin_system_00126' . $showid . $type . 'admin_user_company_00208';
         return ['error' => 0, 'msg' => $msg];
 	}
 
@@ -463,7 +463,7 @@ class category_model extends model{
 		$result	=	$this -> delete_all('industry',$whereData,$limit);
 		$this -> cache_action('industry_cache','industry');
 		$return['error']	=	$result ? 0 : 1;
-		$return['msg']		= '行业分类(ID：' . $idstring . ')' . ($result ? '删除成功！' : '删除失败！');
+		$return['msg']		= yun_auto_t('行业分类(ID：') . $idstring . ')' . ($result ? yun_at('admin_user_00187') : yun_at('admin_user_00186'));
 		return	$return;
 	}
 //endregion
@@ -584,8 +584,8 @@ class category_model extends model{
 		if($info['id']){//检查同类别下是否重名
             $namestring = $info['name'];
             $return['error'] = 2;
-            $type = $data['id'] ? '更新' : '添加';
-            $return['msg'] = '职位类别' . $type . '失败！已有此类别(' . $namestring . ')，请重新输入！';
+            $type = $data['id'] ? yun_at('wap_00225') : yun_at('wap_js_00091');
+            $return['msg'] = yun_at('wap_user_00018') . $type . 'common_01117' . $namestring . 'common_01181';
 		}else{//开始添加
             $idstring = '';
 			if($data['keyid']!=""){
@@ -599,17 +599,17 @@ class category_model extends model{
 			$addData['content']	=	str_replace(array("&amp;","background-color:#ffffff","background-color:#fff","white-space:nowrap;"),array("&",'','',''),$data['content']);
 			if($data['id']){
 				$nid	=	$this	->	update_once("job_class",$addData,array('id'=>$data['id']));
-				$msg="更新";
+				$msg='wap_00225';
                 $idstring = $data['id'];
 			}else{
 				$nid	=	$this	->	insert_into("job_class",$addData);
-				$msg="添加";
+				$msg='wap_js_00091';
                 $idstring = $nid;
 			}
 			$this	->	cache_action('job_cache','job');
 
             $return['error'] = $nid ? 0 : 1;
-            $return['msg'] = '职位类别(ID：' . $idstring . ')' . $msg . "成功！";
+            $return['msg'] = yun_auto_t('职位类别(ID：') . $idstring . ')' . $msg . 'wap_js_00104';
 		}
 		return $return;
 	}
@@ -624,37 +624,37 @@ class category_model extends model{
         $field = '';
         $changeValue = '';
 		if($addData['name']){//修改名称
-			$type	=	'名称';
+			$type	=	'member_com_00021';
             $field = 'name';
 		}else{
 			unset($addData['name']);
 		}
 		if($addData['sort'] || $addData['sort'] === '0'){//修改排序
-			$type	=	'排序';
+			$type	=	'member_com_00022';
             $field = 'sort';
 		}else{
 			unset($addData['sort']);
 		}
         if ($addData['e_name']) {//修改英文名称/拼音
-            $type = '英文名称/拼音';
+            $type = 'admin_system_00104';
             $field = 'e_name';
         } else {
             unset($addData['e_name']);
         }
         if ($addData['s_name']) {//就业分类映射
-            $type = '就业分类映射';
+            $type = 'admin_system_00110';
             $field = 's_name';
         } else {
             unset($addData['s_name']);
         }
         if ($addData['rec'] || $addData['rec'] === '0') {//首页推荐
-            $type = '首页推荐';
+            $type = 'admin_system_00114';
             $field = 'rec';
         } else {
             unset($addData['rec']);
         }
         if ($addData['keyid'] || $addData['keyid'] === 0) {//移动
-            $type = '移动';
+            $type = 'admin_system_00115';
             $field = 'keyid';
         } else {
             unset($addData['keyid']);
@@ -668,7 +668,7 @@ class category_model extends model{
 		$this	->	cache_action('job_cache','job');
 
         $return['error'] = $result ? 0 : 1;
-        $return['msg'] = '职位类别' . $showid . $type . ($result ? '修改成功' : '修改失败');
+        $return['msg'] = yun_at('wap_user_00018') . $showid . $type . ($result ? yun_at('admin_user_company_00208') : yun_at('admin_00187'));
 		return $return;
 	}
 
@@ -695,7 +695,7 @@ class category_model extends model{
 		}
 		$this 				->  cache_action('job_cache','job');
         $return['error'] = $result ? 0 : 1;
-        $return['msg'] = '职位类别' . $idstring . ($result ? '删除成功！' : '删除失败！');
+        $return['msg'] = yun_at('wap_user_00018') . $idstring . ($result ? yun_at('admin_user_00187') : yun_at('admin_user_00186'));
         return $return;
 	}
 //endregion
@@ -737,13 +737,13 @@ class category_model extends model{
             $field = '';
             $changeValue = '';
 			if($addData['name']){//修改名称
-				$type	=	'名称';
+				$type	=	'member_com_00021';
                 $field = 'name';
 			}else{
 				unset($addData['name']);
 			}
 			if($addData['sort'] || $addData['sort'] === '0'){//修改排序
-				$type	=	'排序';
+				$type	=	'member_com_00022';
                 $field = 'sort';
 			}else{
 				unset($addData['sort']);
@@ -756,7 +756,7 @@ class category_model extends model{
 			$this 	->  cache_action('com_cache','com');
             $showid = $whereData['id'] ? '(ID：' . $whereData['id'] . $changeValue . ')' : '';
             $return['error'] = 0;
-            $return['msg'] = "企业会员分类" . $showid . $type . "修改成功";
+            $return['msg'] = yun_at('admin_system_00099') . $showid . $type . 'admin_user_company_00208';
 		}else{
             $namestring = "'" . @implode("','", $addData['name']) . "'";
 			$name				=	array();
@@ -796,15 +796,15 @@ class category_model extends model{
 				$this 			->  cache_action('com_cache','com');
                 if ($ucid) {
                     $return['error'] = 0;
-                    $return['msg'] = '企业会员分类(' . $namestring . ')添加成功';
+                    $return['msg'] = yun_auto_t('企业会员分类(') . $namestring . ')添加成功';
                 } else {
                     $return['error'] = 1;
-                    $return['msg'] = '企业会员分类(' . $namestring . ')添加失败';
+                    $return['msg'] = yun_auto_t('企业会员分类(') . $namestring . ')添加失败';
                 }
 			}else{//有同名类，给出提示
                 $namestring = $class[0]['name'];
                 $return['error'] = 2;
-                $return['msg'] = '企业会员添加失败！已有此类别(' . $namestring . ')，请重新输入！';
+                $return['msg'] = yun_at('common_00560') . $namestring . 'common_01181';
 			}
 		}
 		return	$return;
@@ -832,7 +832,7 @@ class category_model extends model{
 		$this -> cache_action('com_cache','com');
         $msgDetail = '(ID：' . pylode(',', $ids) . ')';
         $return['error'] = $result ? 0 : 1;
-        $return['msg'] = $result ? '企业会员分类' . $msgDetail . '删除成功！' : '企业会员分类' . $msgDetail . '删除失败！';
+        $return['msg'] = $result ? 'admin_system_00099' . $msgDetail . 'admin_user_00187' : 'admin_system_00099' . $msgDetail . 'admin_user_00186';
 		return	$return;
 	}
 //endregion
@@ -874,13 +874,13 @@ class category_model extends model{
             $field = '';
             $changeValue = '';
 			if($addData['name']){//修改名称
-				$type	=	'名称';
+				$type	=	'member_com_00021';
                 $field = 'name';
 			}else{
 				unset($addData['name']);
 			}
 			if($addData['sort'] || $addData['sort'] === '0'){//修改排序
-				$type	=	'排序';
+				$type	=	'member_com_00022';
                 $field = 'sort';
 			}else{
 				unset($addData['sort']);
@@ -893,7 +893,7 @@ class category_model extends model{
 			$this 	->  cache_action('part_cache','part');
 			$showid	=	$whereData['id'] ? '(ID：' . $whereData['id'] . $changeValue . ')' : '';
             $return['error'] = 0;
-            $return['msg'] = "兼职分类" . $showid . $type . "修改成功";
+            $return['msg'] = yun_at('admin_system_00125') . $showid . $type . 'admin_user_company_00208';
 		}else{
             $namestring = "'" . @implode("','", $addData['name']) . "'";
 			$name				=	array();
@@ -933,15 +933,15 @@ class category_model extends model{
 				$this 			->  cache_action('part_cache','part');
                 if ($ucid) {
                     $return['error'] = 0;
-                    $return['msg'] = '兼职分类(' . $namestring . ')添加成功';
+                    $return['msg'] = yun_auto_t('兼职分类(') . $namestring . ')添加成功';
                 } else {
                     $return['error'] = 1;
-                    $return['msg'] = '兼职分类(' . $namestring . ')添加失败';
+                    $return['msg'] = yun_auto_t('兼职分类(') . $namestring . ')添加失败';
                 }
 			}else{//有同名类，给出提示
                 $namestring = $class[0]['name'];
                 $return['error'] = 2;
-                $return['msg'] = '兼职分类添加失败！已有此类别(' . $namestring . ')，请重新输入！';
+                $return['msg'] = yun_at('common_00564') . $namestring . 'common_01181';
 			}
 		}
 		return	$return;
@@ -970,7 +970,7 @@ class category_model extends model{
 		}
 		$this -> cache_action('part_cache','part');
         $return['error'] = $result ? 0 : 1;
-	$return['msg'] = '兼职分类(ID：' . $idstring . ')' . ($result ? '删除成功！' : '删除失败！');
+	$return['msg'] = yun_auto_t('兼职分类(ID：') . $idstring . ')' . ($result ? yun_at('admin_user_00187') : yun_at('admin_user_00186'));
 	return	$return;
 
 	}
@@ -1002,7 +1002,7 @@ class category_model extends model{
         $industry = $this->select_once('reason', $addData);
         if ($industry) {
             $return['error'] = 2;
-            $return['msg'] = '举报原因(' . $addData['name'] . ')已存在，请重新输入！';
+            $return['msg'] = yun_auto_t('举报原因(') . $addData['name'] . 'common_00832';
             return $return;
         }
 
@@ -1011,17 +1011,17 @@ class category_model extends model{
             $result = $this->update_once('reason', $addData, $whereData);
             $idstring = $whereData['id'];
             $reason = $oldOnce['name'] . ' -> ' . $addData['name'];
-            $type = '修改';
+            $type = 'wap_js_00073';
         } else {
             $idstring = $result = $this->insert_into('reason', $addData);
             $reason = $addData['name'];
-            $type = '添加';
+            $type = 'wap_js_00091';
         }
-        $status = $result ? '成功' : '失败';
+        $status = $result ? yun_at('admin_tool_00502') : yun_at('admin_tool_00501');
         $this->cache_action('reason_cache', 'reason');
 
         $return['error'] = $result ? 0 : 1;
-        $return['msg'] = '举报原因(ID：' . $idstring . ' ' . $reason . ')' . $type . $status;
+        $return['msg'] = yun_auto_t('举报原因(ID：') . $idstring . ' ' . $reason . ')' . $type . $status;
         return $return;
     }
 
@@ -1047,7 +1047,7 @@ class category_model extends model{
         $result = $this->delete_all('reason', $whereData, $limit);
         $this->cache_action('reason_cache', 'reason');
         $return['error'] = $result ? 0 : 1;
-        $return['msg'] = '举报原因(ID：' . $idstring . ')' . ($result ? '删除成功！' : '删除失败！');
+        $return['msg'] = yun_auto_t('举报原因(ID：') . $idstring . ')' . ($result ? yun_at('admin_user_00187') : yun_at('admin_user_00186'));
         return $return;
     }
 //endregion
@@ -1074,17 +1074,17 @@ class category_model extends model{
         $idstring = '';
 	    if(count($whereData)){
 			$result	=	$this	->	update_once('introduce_class',$addData,$whereData);
-			$type	=	'修改';
+			$type	=	'wap_js_00073';
             $idstring = $whereData['id'];
 	    }else{
 	    	$result	=	$this	->	insert_into('introduce_class',$addData);
-	    	$type	=	'添加';
+	    	$type	=	'wap_js_00091';
             $idstring = $result;
 	    }
-	    $status			=	$result	?	'成功'	:	'失败';
+	    $status			=	$result	?	yun_at('admin_tool_00502')	:	yun_at('admin_tool_00501');
 		$this 	->  cache_action('introduce_cache','introduce');
         $return['error'] = $result ? 0 : 1;
-        $return['msg'] = '自我介绍(ID：' . $idstring . ')' . $type . $status;
+        $return['msg'] = yun_auto_t('自我介绍(ID：') . $idstring . ')' . $type . $status;
         return $return;
 	}
 
@@ -1115,7 +1115,7 @@ class category_model extends model{
 	    }
 	    $return['errcode']	=	$result ? '9' :'8';
 	    $return['layertype']=	$data['type']=='all' ? 1 : 0;
-	    $return['msg']		=	$result ? '自我介绍删除成功！' : '删除失败！';
+	    $return['msg']		=	$result ? yun_at('common_06381') : yun_at('admin_user_00186');
 		$this 	->  cache_action('introduce_cache','introduce');
 	    return	$return;
 	}

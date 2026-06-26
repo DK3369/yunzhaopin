@@ -14,23 +14,23 @@ class register_controller extends common
         }
         if ($this->config['reg_user_stop'] != 1) {// registration disabled
 
-            $this->ACT_msg_wap('index.php', yun_auto_t('网站已关闭注册！'), 2, 5);
+            $this->ACT_msg_wap('index.php', yun_at('wap_00415'), 2, 5);
 
         } else {
             if ($this->uid) {
-                $this->ACT_msg_wap('index.php', yun_auto_t('您已经登录了！'), 2, 5);
+                $this->ACT_msg_wap('index.php', yun_at('wap_00416'), 2, 5);
             }
             $type = $_GET['type'];
             if ($type) {
                 switch ($type) {
                     case 1:
                         if ($this->config['reg_user'] != 1) {
-                            $this->ACT_msg_wap('index.php', yun_auto_t('用户名注册已关闭！'), 2, 5);
+                            $this->ACT_msg_wap('index.php', yun_at('wap_01797'), 2, 5);
                         }
                         break;
                     case 2:
                         if ($this->config['reg_moblie'] != 1) {
-                            $this->ACT_msg_wap('index.php', yun_auto_t('手机号注册已关闭！'), 2, 5);
+                            $this->ACT_msg_wap('index.php', yun_at('wap_01798'), 2, 5);
                         }
                         break;
                     case 3:
@@ -147,16 +147,16 @@ class register_controller extends common
 
                 $this->yunset('usertype', $_GET['usertype']);
                 $this->yunset('backurl', Url('wap', array('c' => 'register')));
-                $this->yunset('headertitle', yun_auto_t('创建账户'));
+                $this->yunset('headertitle', yun_at('default_00288'));
                 $this->yuntpl(array('wap/reg_create'));
             }else{
 
-                $this->yunset('headertitle', yun_auto_t('选择注册身份'));
+                $this->yunset('headertitle', yun_at('default_00094'));
                 $this->yuntpl(array('wap/reg_new'));
             }
         }else{
 
-            $this->yunset('headertitle', yun_auto_t('选择注册类型'));
+            $this->yunset('headertitle', yun_at('wap_00417'));
             $this->yuntpl(array('wap/register'));
         }
     }
@@ -227,7 +227,7 @@ class register_controller extends common
 
     function regok_action()
     {
-        $this->yunset('headertitle', yun_auto_t('会员注册'));
+        $this->yunset('headertitle', yun_at('admin_00920'));
         $this->seo('register');
         $this->yuntpl(array('wap/registerok'));
     }

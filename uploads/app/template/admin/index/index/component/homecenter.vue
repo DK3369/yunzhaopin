@@ -2,9 +2,9 @@
     <div class="homeCenterAll">
         <div class="homeCentLeft">
             <div class="homeCentLeTite">
-                <div class="homeCentLeName"><span>月数据统计</span></div>
+                <div class="homeCentLeName"><span>{yun:}t key='admin_00072'{/yun}</span></div>
                 <div class="homeCentLeTime">
-                    <el-date-picker v-model="date" type="month" value-format="yyyy-MM" placeholder="选择月" @change="dateChange" :picker-options="pickerOptions" :clearable="false">
+                    <el-date-picker v-model="date" type="month" value-format="yyyy-MM" placeholder="{yun:}t key='admin_user_00192'{/yun}" @change="dateChange" :picker-options="pickerOptions" :clearable="false">
                     </el-date-picker>
                 </div>
             </div>
@@ -12,39 +12,39 @@
                 <div class="homeLeEchatInfo">
                     <ul>
                         <li :class="tjTbName=='getweb'?'spanCurs':''" @click="clicktb('getweb')">
-                            <span>个人注册</span>
+                            <span>{yun:}t key='admin_00073'{/yun}</span>
                             <b>{{userNumMon}}</b>
                         </li>
                         <li :class="tjTbName=='resumetj'?'spanCurs':''" @click="clicktb('resumetj')">
-                            <span>简历</span>
+                            <span>{yun:}t key='common.resume'{/yun}</span>
                             <b>{{resumeNumMon}}</b>
                         </li>
                         <li :class="tjTbName=='comtj'?'spanCurs':''" @click="clicktb('comtj')">
-                            <span>企业注册</span>
+                            <span>{yun:}t key='admin_00074'{/yun}</span>
                             <b>{{companyNumMon}}</b>
                         </li>
                         <li :class="tjTbName=='jobtj'?'spanCurs':''" @click="clicktb('jobtj')">
-                            <span>职位</span>
+                            <span>{yun:}t key='common.job'{/yun}</span>
                             <b>{{jobNumMon}}</b>
                         </li>
                         <li :class="tjTbName=='ujobtj'?'spanCurs':''" @click="clicktb('ujobtj')">
-                            <span>简历投递</span>
+                            <span>{yun:}t key='member_com_00152'{/yun}</span>
                             <b>{{userjobNumMon}}</b>
                         </li>
                         <li :class="tjTbName=='yqmstj'?'spanCurs':''" @click="clicktb('yqmstj')">
-                            <span>邀请面试</span>
+                            <span>{yun:}t key='resume_00029'{/yun}</span>
                             <b>{{yqmsNumMon}}</b>
                         </li>
                         <li :class="tjTbName=='downresumetj'?'spanCurs':''" @click="clicktb('downresumetj')">
-                            <span>简历下载</span>
+                            <span>{yun:}t key='wap_com_00042'{/yun}</span>
                             <b>{{downreusmeNumMon}}</b>
                         </li>
                         <li :class="tjTbName=='adtj'?'spanCurs':''" @click="clicktb('adtj')">
-                            <span>广告点击</span>
+                            <span>{yun:}t key='admin_00075'{/yun}</span>
                             <b>{{ggNumMon}}</b>
                         </li>
                         <li :class="tjTbName=='wxbdtj'?'spanCurs':''" @click="clicktb('wxbdtj')">
-                            <span>微信绑定</span>
+                            <span>{yun:}t key='wap_user_00115'{/yun}</span>
                             <b>{{wxbdNumMon}}</b>
                         </li>
                     </ul>
@@ -55,12 +55,12 @@
                     </div>
                     <div class="homeEchatWebText">
                         <div class="homeEchatWebInfo">
-                            <h3>企业微信绑定（总数）</h3>
+                            <h3>{yun:}t key='admin_00071'{/yun}</h3>
                             <b>{{wxbdcomNumMon}}</b>
                             <span>{{ lc("admin_percent_value", [comwx_percent]) }}</span>
                         </div>
                         <div class="homeEchatWebInfo">
-                            <h3>个人微信绑定（总数）</h3>
+                            <h3>{yun:}t key='admin_00070'{/yun}</h3>
                             <b>{{wxbduserNumMon}}</b>
                             <span>{{ lc("admin_percent_value", [userwx_percent]) }}</span>
                         </div>

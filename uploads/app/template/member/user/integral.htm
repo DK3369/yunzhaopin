@@ -24,7 +24,7 @@
             <ul class="integral_list">
                 <li>
                     <div class="integral_list_n integral_list_n_c1">{yun:}$config.integral_userinfo{/yun}</div>
-                    <div class="integral_listname">完善基本资料</div>
+                    <div class="integral_listname">{yun:}t key='wap_00990'{/yun}</div>
                     <div class="integral_list_p"> +{yun:}$config.integral_userinfo{/yun}{yun:}$config.integral_priceunit{/yun}{yun:}$config.integral_pricename{/yun} </div>
                     <div class="integral_list_bth">
                         {yun:}if $statusList.baseInfo{/yun}<span class="integral_list_bth_s">{yun:}t key='wap_user_00125'{/yun}</span> {yun:}else{/yun}
@@ -40,35 +40,35 @@
                 </li>
                 <li>
                     <div class="integral_list_n integral_list_n_c3"> {yun:}$config.integral_invite_reg{/yun}</div>
-                    <div class="integral_listname">邀请朋友注册</div>
+                    <div class="integral_listname">{yun:}t key='member_user_00512'{/yun}</div>
                     <div class="integral_list_p"> +{yun:}$config.integral_invite_reg{/yun}{yun:}$config.integral_priceunit{/yun}{yun:}$config.integral_pricename{/yun} </div>
                     <div class="integral_list_bth">
-                        <a href="javascript:void(0);" onclick="getInviteRegHb(0);" class="integral_list_bth_a">现在就邀请</a>
+                        <a href="javascript:void(0);" onclick="getInviteRegHb(0);" class="integral_list_bth_a">{yun:}t key='member_user_00513'{/yun}</a>
                     </div>
                 </li>
 
                 <li>
                     <div class="integral_list_n integral_list_n_c4">{yun:}$config.integral_login{/yun}</div>
-                    <div class="integral_listname">每天第一次登录</div>
+                    <div class="integral_listname">{yun:}t key='wap_01025'{/yun}</div>
                     <div class="integral_list_p"> +{yun:}$config.integral_login{/yun}{yun:}$config.integral_priceunit{/yun}{yun:}$config.integral_pricename{/yun} </div>
-                    <div class="integral_list_bth"><span class="integral_list_bth_s">今日已登录</span> </div>
+                    <div class="integral_list_bth"><span class="integral_list_bth_s">{yun:}t key='wap_01026'{/yun}</span> </div>
                 </li>
                    <li>
                     <div class="integral_list_n integral_list_n_c4">{yun:}$config.integral_signin{/yun}</div>
-                    <div class="integral_listname">每天签到</div>
+                    <div class="integral_listname">{yun:}t key='member_user_00514'{/yun}</div>
                     <div class="integral_list_p"> +{yun:}$config.integral_signin{/yun}{yun:}$config.integral_priceunit{/yun}{yun:}$config.integral_pricename{/yun} </div>
                     <div class="integral_list_bth">                    
                     {yun:}if $statusList.signin{/yun}
-                      <span class="integral_list_bth_s">今日已签到</span> 
+                      <span class="integral_list_bth_s">{yun:}t key='wap_01022'{/yun}</span> 
                       {yun:}else{/yun}
-                        <a href="javascript:void(0);" onClick="sign();" class="integral_list_bth_a">签到</a>
+                        <a href="javascript:void(0);" onClick="sign();" class="integral_list_bth_a">{yun:}t key='wap_01023'{/yun}</a>
                     {yun:}/if{/yun}
                     </div> 
             
                 </li>
                 <li>
                     <div class="integral_list_n integral_list_n_c5"> {yun:}$config.integral_emailcert{/yun}</div>
-                    <div class="integral_listname">认证电子邮箱</div>
+                    <div class="integral_listname">{yun:}t key='wap_01027'{/yun}</div>
                     <div class="integral_list_p">+{yun:}$config.integral_emailcert{/yun}{yun:}$config.integral_priceunit{/yun}{yun:}$config.integral_pricename{/yun} </div>
 
                     <div class="integral_list_bth">{yun:}if $statusList.emailChecked{/yun} <span class="integral_list_bth_s">{yun:}t key='wap_user_00246'{/yun}</span> {yun:}else{/yun}
@@ -76,11 +76,11 @@
                 </li>
                 <li>
                     <div class="integral_list_n integral_list_n_c6">{yun:}$config.integral_mobliecert{/yun}</div>
-                    <div class="integral_listname">认证手机号码</div>
+                    <div class="integral_listname">{yun:}t key='wap_01028'{/yun}</div>
                     <div class="integral_list_p"> +{yun:}$config.integral_mobliecert{/yun}{yun:}$config.integral_priceunit{/yun}{yun:}$config.integral_pricename{/yun}</div>
                     <div class="integral_list_bth">{yun:}if $statusList.phoneChecked{/yun}
                         <span class="integral_list_bth_s"> {yun:}t key='wap_user_00246'{/yun}</span> {yun:}else{/yun}
-                        <a href="index.php?c=passwd" target="_blank" class="integral_list_bth_a">手机验证</a> {yun:}/if{/yun} </div>
+                        <a href="index.php?c=passwd" target="_blank" class="integral_list_bth_a">{yun:}t key='member_user_00515'{/yun}</a> {yun:}/if{/yun} </div>
                 </li>
 				<li>
                     <div class="integral_list_n integral_list_n_c6">{yun:}$config.integral_bind_wx{/yun}</div>
@@ -95,20 +95,20 @@
                     <div class="integral_listname">{yun:}t key='common.publish_resume'{/yun}</div>
                     <div class="integral_list_p"> +{yun:}$config.integral_add_resume{/yun}{yun:}$config.integral_priceunit{/yun}{yun:}$config.integral_pricename{/yun}</div>
                     <div class="integral_list_bth">{yun:}if $expectnum{/yun}<span class="integral_list_bth_s">{yun:}t key='wap_user_00124'{/yun}</span>{yun:}else{/yun}
-                        <a href="index.php?c=expect&act=add" target="_blank" class="integral_list_bth_a">现在去发布</a>{yun:}/if{/yun}</div>
+                        <a href="index.php?c=expect&act=add" target="_blank" class="integral_list_bth_a">{yun:}t key='member_user_00516'{/yun}</a>{yun:}/if{/yun}</div>
                 </li>
                 <li>
                     <div class="integral_list_n integral_list_n_c8"> {yun:}$config.integral_identity{/yun}</div>
                     <div class="integral_listname">{yun:}t key='wap_user_00106'{/yun}</div>
                     <div class="integral_list_p"> +{yun:}$config.integral_identity{/yun}{yun:}$config.integral_priceunit{/yun}{yun:}$config.integral_pricename{/yun}</div>
                     <div class="integral_list_bth"> {yun:}if $statusList.identification{/yun}<span class="integral_list_bth_s">{yun:}t key='wap_user_00246'{/yun}</span>{yun:}else{/yun}
-                        <a href="index.php?c=passwd" target="_blank" class="integral_list_bth_a">现在去验证</a> {yun:}/if{/yun} </div>
+                        <a href="index.php?c=passwd" target="_blank" class="integral_list_bth_a">{yun:}t key='member_user_00517'{/yun}</a> {yun:}/if{/yun} </div>
                 </li>
                 <li>
                     <div class="integral_list_n integral_list_n_c9">{yun:}$config.integral_question{/yun}</div>
                     <div class="integral_listname">{yun:}t key='wap_user_00112'{/yun}</div>
                     <div class="integral_list_p"> +{yun:}$config.integral_question{/yun}{yun:}$config.integral_priceunit{/yun}{yun:}$config.integral_pricename{/yun}</div>
-                    <div class="integral_list_bth">{yun:}if $statusList.question==false{/yun}<span class="integral_list_bth_s">今日已发布</span>{yun:}else{/yun}
+                    <div class="integral_list_bth">{yun:}if $statusList.question==false{/yun}<span class="integral_list_bth_s">{yun:}t key='wap_00992'{/yun}</span>{yun:}else{/yun}
                         <a href="{yun:}url m=ask c=addquestion {/yun}" target="_blank" class="integral_list_bth_a">{yun:}t key='wap_user_00112'{/yun}</a>{yun:}/if{/yun}</div>
                 </li>
                 
@@ -116,16 +116,16 @@
                     <div class="integral_list_n integral_list_n_c10">{yun:}$config.integral_answer{/yun}</div>
                     <div class="integral_listname">{yun:}t key='wap_user_00113'{/yun}</div>
                     <div class="integral_list_p"> +{yun:}$config.integral_answer{/yun}{yun:}$config.integral_priceunit{/yun}{yun:}$config.integral_pricename{/yun}</div>
-                    <div class="integral_list_bth">{yun:}if $statusList.answer==false{/yun}<span class="integral_list_bth_s">今日已回答</span> {yun:}else{/yun}
+                    <div class="integral_list_bth">{yun:}if $statusList.answer==false{/yun}<span class="integral_list_bth_s">{yun:}t key='wap_00993'{/yun}</span> {yun:}else{/yun}
                         <a href="{yun:}url m=ask {/yun}#last-question" target="_blank" class="integral_list_bth_a">{yun:}t key='wap_user_00113'{/yun}</a>{yun:}/if{/yun}</div>
                 </li>
                 
                 <li>
                     <div class="integral_list_n integral_list_n_c11">{yun:}$config.integral_answerpl{/yun}</div>
-                    <div class="integral_listname">评论回答</div>
+                    <div class="integral_listname">{yun:}t key='wap_00995'{/yun}</div>
                     <div class="integral_list_p"> +{yun:}$config.integral_answerpl{/yun}{yun:}$config.integral_priceunit{/yun}{yun:}$config.integral_pricename{/yun}</div>
-                    <div class="integral_list_bth">{yun:}if $statusList.answerpl==false{/yun}<span class="integral_list_bth_s">今日已评论</span>{yun:}else{/yun}
-                        <a href="{yun:}url m=ask {/yun}#last-question" target="_blank" class="integral_list_bth_a">评论回答</a> {yun:}/if{/yun}</div>
+                    <div class="integral_list_bth">{yun:}if $statusList.answerpl==false{/yun}<span class="integral_list_bth_s">{yun:}t key='wap_00996'{/yun}</span>{yun:}else{/yun}
+                        <a href="{yun:}url m=ask {/yun}#last-question" target="_blank" class="integral_list_bth_a">{yun:}t key='wap_00995'{/yun}</a> {yun:}/if{/yun}</div>
                 </li>
 
             </ul>
@@ -139,7 +139,7 @@ function sign(){
         if(data.type=="-2"){
          	layer.msg("{yun:}t key='wap_js_00141'{/yun}",2,8);return false;
         }else{ 
-        	layer.msg('签到成功！', 2, 9,function(){ window.location.reload();window.event.returnValue = false;return false;});return false; 
+        	layer.msg("{yun:}t key='member_user_00518'{/yun}", 2, 9,function(){ window.location.reload();window.event.returnValue = false;return false;});return false; 
         }
   });
 }

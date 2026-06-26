@@ -39,7 +39,7 @@ class index_controller extends common{
 			header("location:".Url('error'));
 		}
 		
-		if($_GET['keyword']=='请输入普工简历的关键字'){
+		if($_GET['keyword']=='default_00332'){
 			$_GET['keyword']	=	'';
 		}
 		
@@ -65,7 +65,7 @@ class index_controller extends common{
 		$this->yunset("isFb",$isFb);
         $this->yunset("num",$num);
 		
-		$add_time	=	array("0"=>"不限","7"=>"一周以内","15"=>"半个月","30"=>"一个月","60"=>"两个月","180"=>"半年","365"=>"一年");
+		$add_time	=	array("0"=>'common_01936',"7"=>'wap_00339',"15"=>'wap_00344',"30"=>'wap_00342',"60"=>'wap_00343',"180"=>'admin_tool_00146',"365"=>'admin_tool_00145');
 		$this->yunset("add_time",$add_time); 
 		
 		$this->seo("tiny");
@@ -122,7 +122,7 @@ class index_controller extends common{
 			
  			$this->yun_tpl(array('show'));
 		}else{
-			$this->ACT_msg($this->config['sy_weburl'],"没有找到该简历！");
+			$this->ACT_msg($this->config['sy_weburl'],yun_at('model_00089'));
 		}
 		
 	} 
@@ -159,7 +159,7 @@ class index_controller extends common{
 	function sendmsg_action()
 	{
 		$noticeM	=	$this->MODEL('notice');
-		$result		=	$noticeM->jycheck($_POST['code'],'普工简历');
+		$result		=	$noticeM->jycheck($_POST['code'],'wap_js_00066');
 		if(!empty($result)){
 			echo yun_json_encode(array('msg'=>$result['msg'],'error'=>$result['error']));
 			return;

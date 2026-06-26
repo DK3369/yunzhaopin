@@ -22,7 +22,7 @@
 <div class="evaluate_left">
 <div class="">{yun:}ad cid=89 id=360{/yun}</div>
 
-<div class="evaluate_left_tit"><i class="evaluate_left_tit_icon"></i><span class="evaluate_left_tit_s">最受欢迎的职业测评</span></div>
+<div class="evaluate_left_tit"><i class="evaluate_left_tit_icon"></i><span class="evaluate_left_tit_s">{yun:}t key='common_02339'{/yun}</span></div>
 	{yun:}if $rows{/yun}
 {yun:}foreach from=$rows item=item key=key{/yun}
 
@@ -32,9 +32,9 @@
 <div class="evaluate_left_list_r">
 <div class="evaluate_left_list_h1"><a href="{yun:}url m=evaluate c=exampaper titleid='`$item.id`' gid='`$item.keyid`'{/yun}" target="_blank" title="{yun:}$item.name{/yun}">{yun:}$item.name{/yun}</a></div>
 <div class="evaluate_left_list_p">{yun:}$item.description{/yun}</div>
-<div class="evaluate_left_list_info">{yun:}$item.visits{/yun}人访问过</div>
+<div class="evaluate_left_list_info">{yun:}$item.visits{/yun}{yun:}t key='wap_00612'{/yun}</div>
 </div>
-<a href="{yun:}url m=evaluate c=exampaper titleid='`$item.id`' gid='`$item.keyid`'{/yun}"  target="_blank" class="evaluate_left_list_bth">开始测试</a>
+<a href="{yun:}url m=evaluate c=exampaper titleid='`$item.id`' gid='`$item.keyid`'{/yun}"  target="_blank" class="evaluate_left_list_bth">{yun:}t key='wap_01480'{/yun}</a>
 </div>
 
 				{yun:}/foreach{/yun}

@@ -24,7 +24,7 @@ if($p>=$tb[$btb[$t]]){
 //        echo json_encode($result);
 //        exit;
 
-		echo"成功<br/>";
+		echo yun_auto_t('成功<br/>');
 		exit();
 	}
 

@@ -3,7 +3,7 @@
 
 		<div class="moduleSeachs">
 			<div class="moduleSeachButn" style="margin-left: auto;">
-				<el-button type="primary" icon="el-icon-document-add" size="mini" @click="addinfo('')">添加模板</el-button>
+				<el-button type="primary" icon="el-icon-document-add" size="mini" @click="addinfo('')">{yun:}t key='member_com_00354'{/yun}</el-button>
 			</div>
 		</div>
 
@@ -18,17 +18,17 @@
 				</el-table-column>
 				<el-table-column prop="keyword" label="模板类型">
 					<template slot-scope="scope">
-						<span v-if="scope.row.type == 'onejob' || scope.row.type == 'job'">职位模板</span>
-						<span v-else-if="scope.row.type == 'resume'">简历模板</span>
-						<span v-else-if="scope.row.type == 'company'">企业模板</span>
+						<span v-if="scope.row.type == 'onejob' || scope.row.type == 'job'">{yun:}t key='admin_tool_00557'{/yun}</span>
+						<span v-else-if="scope.row.type == 'resume'">{yun:}t key='member_user_00189'{/yun}</span>
+						<span v-else-if="scope.row.type == 'company'">{yun:}t key='admin_user_company_00135'{/yun}</span>
 					</template>
 				</el-table-column>
 				<el-table-column label="操作" width="150">
 					<template slot-scope="scope">
 						<div class="cz_button">
-							<el-button size="mini" @click="addinfo(scope.row.id)">编辑</el-button>
+							<el-button size="mini" @click="addinfo(scope.row.id)">{yun:}t key='common.edit'{/yun}</el-button>
 							<el-button type="danger" size="small" @click="deleteinfo(scope.row.id)"
-								v-if="scope.row.type != 'onejob'">删除</el-button>
+								v-if="scope.row.type != 'onejob'">{yun:}t key='common.delete'{/yun}</el-button>
 						</div>
 					</template>
 				</el-table-column>
@@ -38,8 +38,8 @@
 
 		<div class="modulePaging">
 			<div class="modulecz">
-				<el-checkbox v-model="allchecked" @change="allcheckChange">全选</el-checkbox>
-				<el-button size="mini" @click="deleteAll">批量删除</el-button>
+				<el-checkbox v-model="allchecked" @change="allcheckChange">{yun:}t key='wap_js_00074'{/yun}</el-checkbox>
+				<el-button size="mini" @click="deleteAll">{yun:}t key='member_com_00055'{/yun}</el-button>
 			</div>
 			<div class="modulePagNum">
 				<el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
@@ -66,7 +66,7 @@ module.exports = {
 	},
 	data: function () {
 		return {
-			emptytext: window.yunAdminT('暂无数据'),
+			emptytext: window.yunAdminT("{yun:}t key='wap_js_00113'{/yun}"),
 			tableData: [],
 			total: 0,
 			limit: 0,
@@ -104,7 +104,7 @@ module.exports = {
 			}
 
 			this.list_loading = true;
-			that.emptytext = window.yunAdminT('数据加载中');
+			that.emptytext = window.yunAdminT("{yun:}t key='admin_user_weipin_00026'{/yun}");
 			httpPost('m=tool&c=fabutool&a=index', params).then((result) => {
 				this.list_loading = false;
 				var res = result.data;
@@ -120,7 +120,7 @@ module.exports = {
 						that.$refs.table.bodyWrapper.scrollTop = 0;
 					}
 					if (that.tableData.length === 0){
-                        that.emptytext = window.yunAdminT('暂无数据');
+                        that.emptytext = window.yunAdminT("{yun:}t key='wap_js_00113'{/yun}");
                     }
 				}
 			}).catch(function (e) {
@@ -170,7 +170,7 @@ module.exports = {
 					idarr.push(this.choosedata[i].id);
 				}
 			} else {
-				message.error(window.yunAdminT('请选择要删除的数据')); return;
+				message.error(window.yunAdminT("{yun:}t key='admin_user_weipin_00005'{/yun}")); return;
 			}
 			var params = {
 				del: idarr

@@ -60,7 +60,7 @@ class sysnews_controller extends user{
             $return =   $SysmsgM->delSysmsg($id, array('fa_uid' => $this->uid));
 
             $LogM       =   $this->MODEL('log');
-            $logContent =   '消息处理，删除系统消息';
+            $logContent =   'member_user_00613';
             $LogM->addMemberLog($this->uid, $this->usertype, $logContent, 18, 3);
 
             $this->layer_msg($return['msg'], $return['errcode'], $return['layertype'], $_SERVER['HTTP_REFERER']);

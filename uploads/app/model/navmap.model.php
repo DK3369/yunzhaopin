@@ -44,7 +44,7 @@ class navmap_model extends model{
 	 */
 	public function delNavMap($delId){
 		if(empty($delId)){
-			return array('msg'=>'请选择您要删除的信息！','errcode'=>8);
+			return array('msg'=>yun_at('model_00034'),'errcode'=>8);
 		}else{
 			if(is_array($delId)){
 				$delId	=	pylode(',',$delId);
@@ -55,9 +55,9 @@ class navmap_model extends model{
 			 
 			$nid	=	$this->delete_all('navmap',array('id'=>array('in',$delId),'nid'=>array('in',$delId,'OR')),'');	
 			if($nid){
-				$return['msg']		=	'网站地图';
+				$return['msg']		=	yun_at('admin_system_00052');
 				$return['errcode']	=	$nid?'9':'8';
-				$return['msg']		.=	$nid?'删除成功！':'删除失败！';
+				$return['msg']		.=	$nid?yun_at('admin_user_00187'):yun_at('admin_user_00186');
 			}
 		}	
 		return	$return;

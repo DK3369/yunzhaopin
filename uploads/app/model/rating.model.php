@@ -194,9 +194,9 @@ class rating_model extends model{
 
         foreach ($ListRating as $k => $v){
             if ($v['type'] == 1){
-                $ListRating[$k]['type_n']       =   '套餐会员';
+                $ListRating[$k]['type_n']       =   yun_at('wap_com_00380');
             }else if ($v['type'] == 2){
-                $ListRating[$k]['type_n']           =   '时间会员';
+                $ListRating[$k]['type_n']           =   yun_at('wap_com_00384');
             }
         }
         if ($data['utype'] != 'admin'){
@@ -341,14 +341,14 @@ class rating_model extends model{
 	            
 	            if ($addData['time']=='') {
 	                $return['errcode']      =   8;
-	                $return['msg']          =   '请选择优惠日期！';
+	                $return['msg']          =   yun_at('common_01305');
 	                
 	                return $return;
 	            }
 	            
 	            if ($addData['yh_price'] == '' || $addData['yh_price'] > $addData['service_price']) {
 	                $return['errcode']      =   8;
-	                $return['msg']          =   '优惠价格不得大于初始售价！';
+	                $return['msg']          =   yun_at('common_00695');
 	                
 	                return $return;
 	            }
@@ -411,10 +411,10 @@ class rating_model extends model{
 		
 		$typeStr							=	$this -> categoryMap($addData['category']);
 		
-		$typeStr							.=	'（ID：'.$return['id'].'）添加';
+		$typeStr							.=	'（ID：'.$return['id'].'common_06563';
 		
         $return['errcode']                  =   $return['id'] ? 9 : 8;                
-        $return['msg']                      =	$return['id'] ? $typeStr.'成功！' : $typeStr.'失败！';
+        $return['msg']                      =	$return['id'] ? $typeStr.'wap_js_00104' : $typeStr.'wap_js_00103';
 
         return $return;
 		
@@ -440,14 +440,14 @@ class rating_model extends model{
  	            
  	            if ($upData['time']=='') {
                     $return['errcode']      =   8;
-                    $return['msg']          =   '请选择优惠日期！';
+                    $return['msg']          =   yun_at('common_01305');
                     
                     return $return;
   	            }
  	            
   	            if ($upData['yh_price'] == '' || $upData['yh_price'] > $upData['service_price']) {
                     $return['errcode']      =   8;
-                    $return['msg']          =   '优惠价格不得大于初始售价！';
+                    $return['msg']          =   yun_at('common_00695');
                     
                     return $return;
   	            }
@@ -510,11 +510,11 @@ class rating_model extends model{
 		
 		$typeStr                    =	$this -> categoryMap($upData['category']);
 		
-        $typeStr                    .=	'（ID：'.$id.'）更新';
+        $typeStr                    .=	'（ID：'.$id.'common_06564';
 
         $return['errcode']          =   $return['id'] ? 9 : 8;
         
-        $return['msg']              =   $return['id'] ? $typeStr.'成功！' : $typeStr.'失败！';
+        $return['msg']              =   $return['id'] ? $typeStr.'wap_js_00104' : $typeStr.'wap_js_00103';
         
 		return $return;
 	}
@@ -554,10 +554,10 @@ class rating_model extends model{
             
 		}
         
-        $typeStr	.=	'（ID：'.$id.'）删除';
+        $typeStr	.=	'（ID：'.$id.'common_06565';
 		
         $return['errcode']	=	$return['id'] ? 9 : 8;                    
-        $return['msg']		=	$return['id'] ? $typeStr.'成功！' : $typeStr.'失败！';
+        $return['msg']		=	$return['id'] ? $typeStr.'wap_js_00104' : $typeStr.'wap_js_00103';
         
 		return $return;
 	}
@@ -568,8 +568,8 @@ class rating_model extends model{
 	private function categoryMap($cId){
 	    
 		$categoryMap	=	array(
-			1	=>	'企业会员等级',
-			3	=>	'企业增值包'
+			1	=>	'admin_tool_00063',
+			3	=>	'common_06566'
 		);
 		return isset($categoryMap[$cId]) ? $categoryMap[$cId] : '';
 	}
@@ -660,7 +660,7 @@ class rating_model extends model{
 	            if (!empty($service)) {
 	                
 	                $return['errcode'] =   8;
-	                $return['msg']     =   '增值类型名称已存在！';
+	                $return['msg']     =   yun_at('common_06567');
 	                
 	                return $return;
 	                
@@ -668,9 +668,9 @@ class rating_model extends model{
 	            
 	                $return['id']      =   $this -> update_once('company_service', $value, array('id' => $id));
 	            
-	                $msg               =   '企业增值服务类型（ID：'.$id.'）修改';
+	                $msg               =   '企业增值服务类型（ID：'.$id.'common_06568';
 	                
-	                $return['msg']     =   $return['id'] ? $msg.'成功！' : $msg.'失败！' ;
+	                $return['msg']     =   $return['id'] ? $msg.'wap_js_00104' : $msg.'wap_js_00103' ;
 	                
 	                $return['errcode'] =   $return['id'] ? 9 : 8 ;
 	                
@@ -685,7 +685,7 @@ class rating_model extends model{
 	            if (!empty($service)) {
 	                
 	                $return['errcode'] =   8;
-	                $return['msg']     =   '增值类型名称已存在！';
+	                $return['msg']     =   yun_at('common_06567');
 	                
 	                return $return;
 	                
@@ -693,9 +693,9 @@ class rating_model extends model{
 	                
 	                $return['id']      =   $this -> insert_into('company_service', $value);
 	                
-	                $msg               =   '企业增值服务类型（ID：'.$return['id'].'）添加';
+	                $msg               =   '企业增值服务类型（ID：'.$return['id'].'common_06563';
 	                
-	                $return['msg']     =   $return['id'] ? $msg.'成功！' : $msg.'失败！' ;
+	                $return['msg']     =   $return['id'] ? $msg.'wap_js_00104' : $msg.'wap_js_00103' ;
 	                
 	                $return['errcode'] =   $return['id'] ? 9 : 8 ;
 	                
@@ -759,10 +759,10 @@ class rating_model extends model{
 	    }
 	    
 	    
-	    $typeStr	.=	'（ID：'.$id.'）删除';
+	    $typeStr	.=	'（ID：'.$id.'common_06565';
  	    
 	    $return['errcode']	=	$return['id'] ? 9 : 8;
-	    $return['msg']		=	$return['id'] ? $typeStr.'成功！' : $typeStr.'失败！';
+	    $return['msg']		=	$return['id'] ? $typeStr.'wap_js_00104' : $typeStr.'wap_js_00103';
 	    
 	    return $return;
 	}
@@ -885,9 +885,9 @@ class rating_model extends model{
 	            
                 $return['id']      =   $this -> update_once('company_service_detail', $value, array('id' => $id));
                 
-                $msg               =   '企业增值服务套餐（ID：'.$id.'）详情修改';
+                $msg               =   '企业增值服务套餐（ID：'.$id.'common_06569';
                 
-                $return['msg']     =   $return['id'] ? $msg.'成功！' : $msg.'失败！' ;
+                $return['msg']     =   $return['id'] ? $msg.'wap_js_00104' : $msg.'wap_js_00103' ;
                 
                 $return['errcode'] =   $return['id'] ? 9 : 8 ;
                 
@@ -898,9 +898,9 @@ class rating_model extends model{
 
 	                $return['id']      =   $this -> insert_into('company_service_detail', $value);
 	                
-	                $msg               =   '企业增值服务套餐（ID：'.$return['id'].'）详情添加';
+	                $msg               =   '企业增值服务套餐（ID：'.$return['id'].'common_06570';
 	                
-	                $return['msg']     =   $return['id'] ? $msg.'成功！' : $msg.'失败！' ;
+	                $return['msg']     =   $return['id'] ? $msg.'wap_js_00104' : $msg.'wap_js_00103' ;
 	                
 	                $return['errcode'] =   $return['id'] ? 9 : 8 ;
 	                
@@ -944,11 +944,11 @@ class rating_model extends model{
 	        $return['id']	=	$this -> delete_all('company_service_detail', array('id'=>array('in', pylode(',', $ids))), '');
 		}
  	    
-        $msg				=	'套餐（ID：'.$id.'）删除';
+        $msg				=	'套餐（ID：'.$id.'common_06565';
 	    
         $return['errcode']	=	$return['id'] ? 9 : 8;
         
-        $return['msg']		=   $return['id'] ? $msg.'成功！' : $msg.'失败！';
+        $return['msg']		=   $return['id'] ? $msg.'wap_js_00104' : $msg.'wap_js_00103';
 	    
 	    return $return;
 	}

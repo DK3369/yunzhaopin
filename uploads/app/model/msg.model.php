@@ -168,7 +168,7 @@ class msg_model extends model{
 
         $ids    =   @explode(',', trim($id));
 
-        $return =   array('msg' => '非法操作！', 'errcode' =>  8);
+        $return =   array('msg' => yun_at('model_00001'), 'errcode' =>  8);
 
         if (!empty($id)) {
 
@@ -212,38 +212,38 @@ class msg_model extends model{
                     	$jobmsg = '';
 
                     	if($v['job_name']){
-                    		$jobmsg = '，咨询职位：'.$v['job_name'];
+                    		$jobmsg = 'common_06535'.$v['job_name'];
                     	}
                         if ($upData['status'] == 2) {
                         	
-                            $statusInfo         =   '您的企业咨询审核未通过，咨询企业：'.$v['com_name'].$jobmsg;
+                            $statusInfo         =   'common_06536'.$v['com_name'].$jobmsg;
 
                             if ($upData['statusbody']) {
-                                $statusInfo     .=  '，原因：'.$upData['statusbody'];
+                                $statusInfo     .=  'wap_00800'.$upData['statusbody'];
                             }
 
                             $msg[$v['uid']][]   =   $statusInfo;
 
                         }elseif ($upData['status'] == 1){
 
-                            $msg[$v['uid']][]   =  '您的企业咨询审核通过，咨询企业：'.$v['com_name'].$jobmsg;
+                            $msg[$v['uid']][]   =  'common_06537'.$v['com_name'].$jobmsg;
                         }
 					}
                 }
                 
-                $return['msg']      =   '求职咨询(ID:'.$idstr.')审核成功!';
+                $return['msg']      =   yun_auto_t('求职咨询(ID:').$idstr.')审核成功!';
                     
 				$return['errcode']  =  9;
                 
 			}else{
 
-                $return['msg']      =  '审核咨询(ID:'.$idstr.')设置失败';
+                $return['msg']      =  yun_auto_t('审核咨询(ID:').$idstr.')设置失败';
                 $return['errcode']  =  8;
             }
 
         }else {
 
-            $return['msg']          =   '请选择需要审核的咨询！';
+            $return['msg']          =   yun_at('common_00935');
             $return['errcode']      =   8;
         }
 
@@ -260,31 +260,31 @@ class msg_model extends model{
 		$res['msg']         =   '';
 
 		if(empty($data)){
-			$res['msg']         =   '参数错误，请重试！';
+			$res['msg']         =   yun_at('wap_00203');
 			return $res;
 		}
 		if(empty($data['uid']) || empty($data['username'])){
-			$res['msg']		=	'请先登录！';
+			$res['msg']		=	yun_at('common_06042');
 			return	$res;
 		}
 		if($data['usertype'] != 1){
-			$res['msg']		=	'只有个人用户才可以留言！';
+			$res['msg']		=	yun_at('common_00785');
 			return	$res;
 		}
 
 		//参数判断
 		if(empty($data['content'])){
-			$res['msg']			=	'留言内容不能为空！';
+			$res['msg']			=	yun_at('common_06538');
 			return	$res;
 		}
 		if($code == ''){
 			if(empty($data['authcode'])){
-				$res['msg']			=	'验证码不能为空！';
+				$res['msg']			=	yun_at('wap_js_00107');
 				return	$res;
 			}
 			session_start();
 			if(md5(strtolower($data['authcode'])) != $_SESSION['authcode'] || empty($_SESSION['authcode'])){
-				$res['msg']			=	'验证码错误！';
+				$res['msg']			=	yun_at('model_00047');
 				return	$res;
 			}
 		}
@@ -327,7 +327,7 @@ class msg_model extends model{
 		    'c_uid'				=>	$sql['job_uid']
 		));
 		if(!empty($black)){
-			$res['msg']			=	'该企业暂不接受相关咨询！';
+			$res['msg']			=	yun_at('common_00809');
 			return	$res;			
 		}
 		
@@ -346,14 +346,14 @@ class msg_model extends model{
 			if($sql['status']=='1'){
 				include_once ('sysmsg.model.php');
 				$sysmsgM    		=   new sysmsg_model($this->db, $this->def);
-				$sysmsgM -> addInfo(array('uid' => $sql['job_uid'],'usertype'=>2,  'content' => '您有一个留言，请及时查看'));
+				$sysmsgM -> addInfo(array('uid' => $sql['job_uid'],'usertype'=>2,  'content' => yun_at('common_00792')));
 			}
 
-			$res['msg']			=	'留言成功，请等待回复！';
+			$res['msg']			=	yun_at('common_00903');
 			$res['errorcode']   =   9;
 			return	$res;	
 		}else{
-			$res['msg']			=	'留言失败！';
+			$res['msg']			=	yun_at('common_06539');
 			return	$res;	
 		}
 
@@ -405,16 +405,16 @@ class msg_model extends model{
                     $this->addMemberLog($data['uid'], $data['usertype'], '消息处理：删除求职咨询（ID：'.$id.'）', 18, 3);
                 }
 
-                $return['msg']      =   '求职咨询(ID:'.$id.')删除成功';
+                $return['msg']      =   yun_auto_t('求职咨询(ID:').$id.')删除成功';
                 $return['errcode']  =   9;
             } else {
 
-                $return['msg']      =   '求职咨询(ID:'.$id.')删除成功';
+                $return['msg']      =   yun_auto_t('求职咨询(ID:').$id.')删除成功';
                 $return['errcode']  =   8;
             }
         } else {
 
-            $return['msg']          =   '请选择您要删除的求职咨询';
+            $return['msg']          =   yun_at('common_00815');
             $return['errcode']      =   8;
         }
         return $return;
@@ -428,14 +428,14 @@ class msg_model extends model{
             $data['status'] = 1;
             $nid = $this -> update_once('msg',$data,array('id'=>$id));
             if($nid){
-                $return['msg'] = '职咨询回复(ID:' . $id . ')修改成功！';
+                $return['msg'] = yun_auto_t('职咨询回复(ID:') . $id . ')修改成功！';
                 $return['errcode'] = 9;
             }else{
-                $return['msg'] = '职咨询回复修改失败！';
+                $return['msg'] = yun_at('common_06540');
                 $return['errcode'] = 8;
             }
         }else{
-	        $return['msg'] = '请选择要修改的数据';
+	        $return['msg'] = yun_at('common_01161');
 	        $return['errcode'] = 8;
         }
         return $return;
@@ -513,15 +513,15 @@ class msg_model extends model{
 
             $return['id']		=	$this -> delete_all('msg',array('id' => array('in',$id),'job_uid'=>$data['job_uid']),'');
             
-            $return['msg']		=	'求职咨询';
+            $return['msg']		=	yun_at('wap_com_00408');
             
             $return['errcode']	=	$return['id'] ? '9' :'8';
            
-		    $return['msg']		=	$return['id'] ? $return['msg'].'删除成功！' : $return['msg'].'删除失败！';
+		    $return['msg']		=	$return['id'] ? $return['msg'].'admin_user_00187' : $return['msg'].'admin_user_00186';
        
 	    }else{
             
-			$return['msg']		=	'请选择您要删除的数据！';
+			$return['msg']		=	yun_at('common_00921');
             
 			$return['errcode']	=	8;
         

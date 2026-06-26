@@ -15,7 +15,7 @@ module.exports = {
         },
         text:{
             type:String,
-            default:"轻触播放"
+            default:"{yun:}t key='admin_00332'{/yun}"
         },
         showDuration:{
             type:Boolean,

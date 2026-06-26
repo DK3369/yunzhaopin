@@ -173,7 +173,7 @@ class cache_controller extends adminCommon
     public function getJobChildIds_action()
     {
         if (empty($_POST['pid'])) {
-            return $this->render_json(1, '参数错误');
+            return $this->render_json(1, yun_at('wap_com_00228'));
         }
 
         $pid = intval($_POST['pid']);
@@ -343,7 +343,7 @@ class cache_controller extends adminCommon
     public function getCityChildIds_action()
     {
         if (empty($_POST['pid'])) {
-            return $this->render_json(1, '参数错误');
+            return $this->render_json(1, yun_at('wap_com_00228'));
         }
 
         $pid = intval($_POST['pid']);

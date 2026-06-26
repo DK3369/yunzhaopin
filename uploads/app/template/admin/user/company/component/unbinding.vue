@@ -3,18 +3,18 @@
 		<div class="moduleElSearchInf">
 			<div class="moduleElTabInpt" style="flex-wrap: wrap;">
 				<div class="moduleInptList moduleInptWidt">
-					<el-input placeholder="输入你要搜索的关键字" size="small" @keyup.enter.native="search" v-model="searchForm.keyword" class="input-with-select" clearable>
-						<el-select v-model="searchForm.type" slot="prepend" placeholder="请选择">
+					<el-input placeholder="{yun:}t key='admin_user_weipin_00003'{/yun}" size="small" @keyup.enter.native="search" v-model="searchForm.keyword" class="input-with-select" clearable>
+						<el-select v-model="searchForm.type" slot="prepend" placeholder="{yun:}t key='wap_user_00100'{/yun}">
 							<el-option label="用户名" :value="1"></el-option>
 							<el-option label="内容" :value="2"></el-option>
 						</el-select>
 					</el-input>
 				</div>
 				<div class="moduleInptList">
-					<el-date-picker size="small" v-model="daterange" type="daterange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" style="width: 280px;" @change="search"></el-date-picker>
+					<el-date-picker size="small" v-model="daterange" type="daterange" range-separator="至" start-placeholder="{yun:}t key='admin_00343'{/yun}" end-placeholder="{yun:}t key='admin_00344'{/yun}" style="width: 280px;" @change="search"></el-date-picker>
 				</div>
 				<div class="moduleInptList">
-					<el-button type="primary" icon="el-icon-search" size="mini" @click="search">查询</el-button>
+					<el-button type="primary" icon="el-icon-search" size="mini" @click="search">{yun:}t key='admin_user_weipin_00049'{/yun}</el-button>
 				</div>
 			</div>
 		</div>
@@ -37,7 +37,7 @@
 				<el-table-column fixed="right" label="操作" width="90">
 					<template slot-scope="scope">
 						<div class="moduleElTaCaoz">
-							<el-button type="danger" size="mini" @click="del(scope.$index)">删除</el-button>
+							<el-button type="danger" size="mini" @click="del(scope.$index)">{yun:}t key='common.delete'{/yun}</el-button>
 						</div>
 					</template>
 				</el-table-column>
@@ -46,9 +46,9 @@
 		<div class="modulePaging">
 			<div>
 				<el-checkbox v-model="checkedAll" :indeterminate="checkedAllIndeterminate"
-							 @change="checkAll">全选</el-checkbox>
-				<el-button @click="batch('del')" size="mini">批量删除</el-button>
-				<el-button @click="del('all')" size="mini">一键删除</el-button>
+							 @change="checkAll">{yun:}t key='wap_js_00074'{/yun}</el-checkbox>
+				<el-button @click="batch('del')" size="mini">{yun:}t key='member_com_00055'{/yun}</el-button>
+				<el-button @click="del('all')" size="mini">{yun:}t key='admin_user_00260'{/yun}</el-button>
 			</div>
 			<div class="modulePagNum">
 				<el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
@@ -65,27 +65,27 @@
         data: function () {
             return {
                 loading: false,
-                emptytext: '暂无数据',
-                // 日期选择
-                daterange: '',
+                emptytext: "{yun:}t key='wap_js_00113'{/yun}",
+                // date selection
+                daterange: '",
 
                 // 搜索筛选项
                 searchForm: {
                     type: 1
                 },
 
-                // 列表
+                // list
                 page: 1,
                 limit: 0,
                 list: [],
                 total: 0,
                 pageSizes: [],
 
-                // 列表排序
-                t: '',
-                order: '',
+                // {yun:}t key='admin_00959'{/yun}
+                t: "',
+                order: '",
 
-                checkedAll: false, // 全选
+                checkedAll: false, // {yun:}t key='wap_js_00074'{/yun}
                 checkedAllIndeterminate: false,
                 multipleSelection: [], // 多选值存储
                 idArr: [],
@@ -119,7 +119,7 @@
 			getParams:function(params={},search=false){
 				var that = this;
 				for(let i in params){
-					if(typeof that.searchForm[i]!='undefined'){
+					if(typeof that.searchForm[i]!="undefined'){
 						that.searchForm[i] = params[i];
 					}
 				}
@@ -170,7 +170,7 @@
                         order: that.order,
                     };
 				that.loading = true;
-				that.emptytext = "数据加载中";
+				that.emptytext = "{yun:}t key='admin_user_weipin_00026'{/yun}";
                 // 分页切换清空表格数据重新加载数据后回调页面顶部
                 if(that.prevPage != that.page){
                     that.list = []
@@ -194,7 +194,7 @@
                         that.$refs.multipleTable.bodyWrapper.scrollTop = 0;
                     }
                     if (that.list.length === 0){
-                        that.emptytext = "暂无数据";
+                        that.emptytext = "{yun:}t key='wap_js_00113'{/yun}";
                     }
                 })
             },
@@ -217,7 +217,7 @@
             },
             batch(type) {
                 if (this.multipleSelection.length == 0) {
-                    message.error('请选择要操作的数据项');
+                    message.error("{yun:}t key='admin_user_weipin_00001'{/yun}");
                     return false;
                 }
 
@@ -241,15 +241,15 @@
                     params = {},
                     msg = '';
 
-                if (typeof idx == 'undefined') { // 批量删除
+                if (typeof idx == 'undefined") { // {yun:}t key='member_com_00055'{/yun}
                     params.del = this.idArr;
-                    msg = '你确定要删除选中项吗？';
-                } else if (idx == 'all') { // 一键删除
-                    params.del = 'all';
+                    msg = "你确定要删除选中项吗？';
+                } else if (idx == 'all") { // {yun:}t key='admin_user_00260'{/yun}
+                    params.del = "all';
                     msg = '确定要清空用户解绑日志？';
                 } else {// 单个删除
                     params.del = that.list[idx].id;
-                    msg = '你确定要删除当前项吗？';
+                    msg = "{yun:}t key='admin_00333'{/yun}";
                 }
 
                 delConfirm(this, params, function (params) {

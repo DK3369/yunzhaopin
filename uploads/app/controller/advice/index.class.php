@@ -47,7 +47,7 @@ class index_controller extends common{
      */
 	function sendmsg_action(){
 		$noticeM	=	$this->MODEL('notice');
-		$result		=	$noticeM->jycheck($_POST['code'],'意见反馈');
+		$result		=	$noticeM->jycheck($_POST['code'],'wap_user_00203');
 		if(!empty($result)){
 			$this->layer_msg($result['msg'], 9, 0, '', 2, $result['error']);
 		}

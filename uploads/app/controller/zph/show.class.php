@@ -13,7 +13,7 @@ class show_controller extends zph_controller
         $row    =   $zphM->getInfo(array('id' => $id), array('banner' => 1));
         
         if (empty($row)) {
-            $this -> ACT_msg(url('zph'), '没有找到该招聘会！');
+            $this -> ACT_msg(url('zph'), 'zph_00001');
         }
         
         $this->yunset('Info', $row);

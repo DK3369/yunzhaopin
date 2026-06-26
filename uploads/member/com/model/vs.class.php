@@ -41,20 +41,20 @@ class vs_controller extends company
                 
                     if ($ucresult == - 1) {
 
-                        $this->ACT_layer_msg("原始密码错误！", 8, "index.php?c=vs");
+                        $this->ACT_layer_msg('member_user_00607', 8, "index.php?c=vs");
                         
                     }elseif ($ucresult == 1){
                         $err    =   $UserinfoM -> savePassword($data);
                     }elseif ($ucresult == 0||$ucresult == -7){
-                        $err    =   array('msg'=>'没有做任何修改！','errcode'=>8);
+                        $err    =   array('msg'=>yun_at('member_com_00383'),'errcode'=>8);
                     }elseif ($ucresult == -4){
-                        $err    =   array('msg'=>'Email 格式有误！','errcode'=>8);
+                        $err    =   array('msg'=>yun_at('member_com_00384'),'errcode'=>8);
                     }elseif ($ucresult == -5){
-                        $err    =   array('msg'=>'Email 不允许注册！','errcode'=>8);
+                        $err    =   array('msg'=>yun_at('member_com_00385'),'errcode'=>8);
                     }elseif ($ucresult == -6){
-                        $err    =   array('msg'=>'该 Email 已经被注册！','errcode'=>8);
+                        $err    =   array('msg'=>yun_at('member_com_00386'),'errcode'=>8);
                     }elseif ($ucresult == -8){
-                        $err    =   array('msg'=>'该用户受保护无权限更改！','errcode'=>8);
+                        $err    =   array('msg'=>yun_at('member_com_00387'),'errcode'=>8);
                     }
                     
                 }

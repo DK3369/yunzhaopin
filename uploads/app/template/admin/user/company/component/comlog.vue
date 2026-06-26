@@ -2,28 +2,28 @@
     <div class="moduleElHight">
         <div class="moduleSeachbig">
             <div class="tableSeachInpt tableSeachInptsmall">
-                <el-input placeholder="请输入用户名/ID" size="small" @keyup.enter.native="doUserQuery" v-model="search.keyword" class="input-with-select" clearable>
-                    <el-select v-model="search.type" slot="prepend" placeholder="用户名">
+                <el-input placeholder="{yun:}t key='admin_00446'{/yun}" size="small" @keyup.enter.native="doUserQuery" v-model="search.keyword" class="input-with-select" clearable>
+                    <el-select v-model="search.type" slot="prepend" placeholder="{yun:}t key='admin_user_00140'{/yun}">
                         <el-option label="用户名" value="1"></el-option>
                         <el-option label="用户ID" value="3"></el-option>
                     </el-select>
                 </el-input>
             </div>
             <div class="tableSeachInpt">
-                <el-input placeholder="请输入内容" size="small" prefix-icon="el-icon-search" v-model="search.content" clearable>
+                <el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" size="small" prefix-icon="el-icon-search" v-model="search.content" clearable>
                 </el-input>
             </div>
             <div class="tableSeachInpt tableSeachInptsmalltwo">
-                <el-date-picker v-model="search.time" type="daterange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" size="mini" @change="doUserQuery">
+                <el-date-picker v-model="search.time" type="daterange" range-separator="至" start-placeholder="{yun:}t key='admin_00343'{/yun}" end-placeholder="{yun:}t key='admin_00344'{/yun}" size="mini" @change="doUserQuery">
                 </el-date-picker>
             </div>
             <div class="tableSeachInpt tableSeachInptsmall">
-                <el-select v-model="search.operas" size="small" slot="prepend" placeholder="操作内容" clearable @change="doUserQuery">
+                <el-select v-model="search.operas" size="small" slot="prepend" placeholder="{yun:}t key='admin_user_00155'{/yun}" clearable @change="doUserQuery">
                     <el-option v-for="(value,key) in operasArr" :label="value" :key="key" :value="key"></el-option>
                 </el-select>
             </div>
             <div class="tableSeachInpt tableSeachInptsmall">
-                <el-select v-model="search.parrs" size="small" slot="prepend" placeholder="操作类型" clearable @change="doUserQuery">
+                <el-select v-model="search.parrs" size="small" slot="prepend" placeholder="{yun:}t key='wap_com_00030'{/yun}" clearable @change="doUserQuery">
                     <el-option label="增加" value="1"></el-option>
                     <el-option label="修改" value="2"></el-option>
                     <el-option label="删除" value="3"></el-option>
@@ -31,12 +31,12 @@
                 </el-select>
             </div>
             <div class="tableSeachInpt tableSeachInptsmall">
-                <el-select v-model="search.end" size="small" slot="prepend" placeholder="操作时间" clearable  @change="doUserQuery">
+                <el-select v-model="search.end" size="small" slot="prepend" placeholder="{yun:}t key='member_user_00241'{/yun}" clearable  @change="doUserQuery">
                     <el-option v-for="item in time" :label="item.label" :key="item.value" :value="item.value"></el-option>
                 </el-select>
             </div>
             <div class="tableSeachInpt">
-                <el-button type="primary" icon="el-icon-search" size="mini" @click="doUserQuery">查询</el-button>
+                <el-button type="primary" icon="el-icon-search" size="mini" @click="doUserQuery">{yun:}t key='admin_user_weipin_00049'{/yun}</el-button>
             </div>
         </div>
         <div class="moduleElTable" style="border: 1px solid #ebeef5; width: calc(100% - 2px);">
@@ -66,7 +66,7 @@
                 <el-table-column label="操作" width="100" fixed="right">
                     <template slot-scope="scope">
                         <div class="cz_button">
-                            <el-button type="danger" size="mini" @click="del(scope.row)">删除</el-button>
+                            <el-button type="danger" size="mini" @click="del(scope.row)">{yun:}t key='common.delete'{/yun}</el-button>
                         </div>
                     </template>
                 </el-table-column>
@@ -74,8 +74,8 @@
         </div>
         <div class="modulePaging">
             <div>
-                <el-checkbox v-model="checkedAll" @change="selectAllBottom">全选</el-checkbox>
-                <el-button @click="batchDel" size="mini">批量删除</el-button>
+                <el-checkbox v-model="checkedAll" @change="selectAllBottom">{yun:}t key='wap_js_00074'{/yun}</el-checkbox>
+                <el-button @click="batchDel" size="mini">{yun:}t key='member_com_00055'{/yun}</el-button>
             </div>
             <div class="modulePagNum">
                 <el-pagination :total="total" @current-change="userPageChange" :page-size="pageSize" :page-sizes="pageSizes" @size-change="userPageSizeChange" :current-page.sync="page" layout="total, sizes, prev, pager, next, jumper">
@@ -99,7 +99,7 @@ module.exports = {
     data: function() {
         return {
             loading: false,
-            dataText: '数据加载中',
+            dataText: "{yun:}t key='admin_user_weipin_00026'{/yun}",
 
             checkedAll: false,
             search: {
@@ -112,27 +112,27 @@ module.exports = {
                 operas: ''
             },
             operasArr: {
-                1: '职位',
-                9: '兼职',
-                88: '财务',
-                3: '下载简历',
-                23: '举报',
-                4: '邀请面试',
-                5: '收藏/关注',
-                6: '申请/报名',
-                7: '基本信息',
-                8: '修改密码',
-                11: '修改账号',
-                12: '账号认证',
-                14: '招聘会/专题',
-                15: '地图设置',
-                16: '图片',
-                17: '积分兑换',
-                18: '消息',
-                19: '问答',
-                24: '优惠券',
-                25: '悬赏推荐',
-                26: '浏览/屏蔽'
+                1: "{yun:}t key='common.job'{/yun}",
+                9: "{yun:}t key='wap_user_00220'{/yun}",
+                88: "{yun:}t key='admin_user_00157'{/yun}",
+                3: "{yun:}t key='wap_00451'{/yun}",
+                23: "{yun:}t key='wap_com_00350'{/yun}",
+                4: "{yun:}t key='resume_00029'{/yun}",
+                5: "{yun:}t key='wap_user_00193'{/yun}",
+                6: "{yun:}t key='wap_00574'{/yun}/{yun:}t key='common_01991'{/yun}",
+                7: "{yun:}t key='wap_00456'{/yun}",
+                8: "{yun:}t key='member_user_00226'{/yun}",
+                11: "{yun:}t key='admin_user_00152'{/yun}",
+                12: "{yun:}t key='member_com_00093'{/yun}",
+                14: "{yun:}t key='member_com_00293'{/yun}/{yun:}t key='common_01937'{/yun}",
+                15: "{yun:}t key='admin_user_00153'{/yun}",
+                16: "{yun:}t key='wap_js_00081'{/yun}",
+                17: "{yun:}t key='common_06524'{/yun}",
+                18: "{yun:}t key='common.message'{/yun}",
+                19: "{yun:}t key='wap_user_00223'{/yun}",
+                24: "{yun:}t key='wap_com_00356'{/yun}",
+                25: "{yun:}t key='admin_user_00154'{/yun}",
+                26: "{yun:}t key='admin_user_00151'{/yun}"
             },
             tableHig: true,
             tableData: [],
@@ -263,7 +263,7 @@ module.exports = {
                         }
 					}
                     if (_this.tableData.length === 0) {
-                        _this.dataText = "暂无数据";
+                        _this.dataText = "{yun:}t key='wap_js_00113'{/yun}";
                     }
                 }
             })

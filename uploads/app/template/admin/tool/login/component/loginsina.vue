@@ -4,15 +4,15 @@
             <table class="tableVue">
                 <thead>
                     <tr align="left">
-                        <th width="200">名称</th>
-                        <th width="500">状态</th>
-                        <th>说明</th>
+                        <th width="200">{yun:}t key='member_com_00021'{/yun}</th>
+                        <th width="500">{yun:}t key='member_user_00181'{/yun}</th>
+                        <th>{yun:}t key='member_com_00207'{/yun}</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td>
-                            <div class="TableTite">微博登录是否开启</div>
+                            <div class="TableTite">{yun:}t key='admin_tool_00439'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableButn">
@@ -31,7 +31,7 @@
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input placeholder="请输入内容" v-model="configdata.sy_sinaappid">
+                                <el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="configdata.sy_sinaappid">
                                 </el-input>
                             </div>
                         </td>
@@ -47,7 +47,7 @@
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input placeholder="请输入内容" v-model="configdata.sy_sinaappkey">
+                                <el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="configdata.sy_sinaappkey">
                                 </el-input>
                             </div>
                         </td>
@@ -61,7 +61,7 @@
             </table>
         </div>
         <div class="setBasicButn" style="border: none;">
-            <el-button type="primary" size="medium" @click="post">提交</el-button>
+            <el-button type="primary" size="medium" @click="post">{yun:}t key='common.submit'{/yun}</el-button>
         </div>
     </div>
 </template>

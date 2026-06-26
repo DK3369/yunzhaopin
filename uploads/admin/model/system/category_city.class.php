@@ -25,7 +25,7 @@ class category_city_controller extends adminCommon
         $keyid = $_POST['keyid'];
         $level = intval($_POST['level']);
         if (!$_POST['keyid']) {
-            $this->render_json(1, '参数错误');
+            $this->render_json(1, yun_at('wap_com_00228'));
         }
 
         $whereData['keyid'] = $keyid;
@@ -45,7 +45,7 @@ class category_city_controller extends adminCommon
             $idArr = explode(',', $_POST['delid']);
             foreach ($idArr as $id) {
                 if (intval($id) <= 0) {
-                    $this->render_json(1, '参数有误');
+                    $this->render_json(1, yun_at('common_01716'));
                 };
             }
 
@@ -77,9 +77,9 @@ class category_city_controller extends adminCommon
         $categoryM = $this->MODEL('category');
         $bool = $categoryM->addCityClass($addData);
         if ($bool) {
-            $this->admin_json(0, '城市管理添加成功！');
+            $this->admin_json(0, 'admin_01367');
         } else {
-            $this->render_json(0, '城市管理添加失败！');
+            $this->render_json(0, yun_at('admin_01368'));
         }
     }
 
@@ -136,9 +136,9 @@ class category_city_controller extends adminCommon
             $categoryM = $this->MODEL('category');
             $return = $categoryM->setPinYin($where, $data);
             if ($return['error'] === 0) {
-                $this->admin_json($return['error'], '城市管理' . $return['msg']);
+                $this->admin_json($return['error'], 'admin_system_00003' . $return['msg']);
             } else {
-                $this->render_json($return['error'], '城市管理' . $return['msg'], array('page' => $return['page']));
+                $this->render_json($return['error'], 'admin_system_00003' . $return['msg'], array('page' => $return['page']));
             }
         }
     }
@@ -170,7 +170,7 @@ class category_city_controller extends adminCommon
     {
         $categoryM = $this->MODEL('category');
         $categoryM->clearPinYin('city_class');
-        $this->admin_json(0, '城市管理清空拼音成功');
+        $this->admin_json(0, 'admin_01369');
     }
 
     function upp_action(){
@@ -198,7 +198,7 @@ class category_city_controller extends adminCommon
             $categoryM  ->  cache_action('city_cache','city');
             
             $error = 0;
-            $msg = '区域修改成功！';
+            $msg = 'admin_system_00002';
             
         }
 

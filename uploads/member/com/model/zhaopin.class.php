@@ -129,7 +129,7 @@ class zhaopin_controller extends company{
                 'com_status' => 0
             );
             $tbl = 'look_resume';
-            $name = '我看过';
+            $name = 'member_com_00371';
         } else if ($type == 2) {// 看过我
             $field = 'datetime';
             $where = array(
@@ -137,7 +137,7 @@ class zhaopin_controller extends company{
                 'com_status' => 0
             );
             $tbl = 'look_job';
-            $name = '看过我';
+            $name = 'member_com_00372';
         } else if ($type == 5) {// 下载简历
             $field = 'downtime';
             $where = array(
@@ -145,7 +145,7 @@ class zhaopin_controller extends company{
                 'usertype' => $this->usertype,
             );
             $tbl = 'down_resume';
-            $name = '下载简历';
+            $name = 'wap_00451';
         } else if ($type == 6) {// 投递简历
             $field = 'datetime';
             $where = array(
@@ -153,14 +153,14 @@ class zhaopin_controller extends company{
                 'type' => array('<>', 3),
             );
             $tbl = 'userid_job';
-            $name = '投递简历';
+            $name = 'wap_com_00235';
         } else {// 邀请面试
             $field = 'datetime';
             $where = array(
                 'fid' => $this->uid,
             );
             $tbl = 'userid_msg';
-            $name = '邀请面试';
+            $name = 'resume_00029';
         }
 
         if ($days > 1) {
@@ -235,7 +235,7 @@ class zhaopin_controller extends company{
             $statis['job_num'] = $JobNum > 0 ? $JobNum : 0;
         }
         // 可上架职位数
-        $list['ksj'] = array('title' => '可上架职位数', 'tc_num' => $rating['job_num'], 'num' => $statis['job_num'], 'unit' => '个');
+        $list['ksj'] = array('title' => yun_at('member_com_00134'), 'tc_num' => $rating['job_num'], 'num' => $statis['job_num'], 'unit' => '个');
         $recUnit = $urgentUnit = $topUnit = $zphUnit = $downUnit = $inviteUnit = $refreshUnit = '';
         $refreshTcNum = $rating['breakjob_num'];
         $inviteTcNum = $rating['interview'];
@@ -249,28 +249,28 @@ class zhaopin_controller extends company{
                 $refreshNum = '-';
             } else {
                 $refreshNum = $statis['breakjob_num'];
-                $refreshUnit = '次/天';
+                $refreshUnit = 'wap_com_00049';
             }
             $rating['breakjob_num'] == 0 && $refreshTcNum = '-';
             if ($statis['invite_resume'] == 0) {
                 $inviteNum = '-';
             } else {
                 $inviteNum = $statis['invite_resume'];
-                $inviteUnit = '次/天';
+                $inviteUnit = 'wap_com_00049';
             }
             $rating['interview'] == 0 && $inviteTcNum = '-';
             if ($statis['down_resume'] == 0) {
                 $downNum = '-';
             } else {
                 $downNum = $statis['down_resume'];
-                $downUnit = '份/天';
+                $downUnit = 'admin_system_00408';
             }
             $rating['resume'] == 0 && $downTcNum = '-';
             if ($statis['zph_num'] == 0) {
                 $zphNum = '-';
             } else {
                 $zphNum = $statis['zph_num'];
-                $zphUnit = '次/天';
+                $zphUnit = 'wap_com_00049';
             }
             $rating['zph_num'] == 0 && $zphTcNum = '-';
             if ($statis['top_num'] == 0) {
@@ -311,20 +311,20 @@ class zhaopin_controller extends company{
             $recUnit = '天';
         }
         // 可刷新职位数
-        $list['ksx'] = array('title' => '可刷新职位数', 'tc_num' => $refreshTcNum, 'num' => $refreshNum, 'unit' => $refreshUnit);
+        $list['ksx'] = array('title' => yun_at('member_com_00136'), 'tc_num' => $refreshTcNum, 'num' => $refreshNum, 'unit' => $refreshUnit);
         // 可邀请面试数
-        $list['kms'] = array('title' => '可邀请面试数', 'tc_num' => $inviteTcNum, 'num' => $inviteNum, 'unit' => $inviteUnit);
+        $list['kms'] = array('title' => yun_at('member_com_00137'), 'tc_num' => $inviteTcNum, 'num' => $inviteNum, 'unit' => $inviteUnit);
         // 可下载简历数
-        $list['kxz'] = array('title' => '可下载简历数', 'tc_num' => $downTcNum, 'num' => $downNum, 'unit' => $downUnit);
+        $list['kxz'] = array('title' => yun_at('member_com_00135'), 'tc_num' => $downTcNum, 'num' => $downNum, 'unit' => $downUnit);
         
         // 置顶天数
-        $list['zd'] = array('title' => '置顶天数', 'tc_num' => $topTcNum, 'num' => $topNum, 'unit' => $topUnit);
+        $list['zd'] = array('title' => yun_at('wap_user_00209'), 'tc_num' => $topTcNum, 'num' => $topNum, 'unit' => $topUnit);
         // 紧急天数
-        $list['jj'] = array('title' => '紧急天数', 'tc_num' => $urgentTcNum, 'num' => $urgentNum, 'unit' => $urgentUnit);
+        $list['jj'] = array('title' => yun_at('wap_com_00043'), 'tc_num' => $urgentTcNum, 'num' => $urgentNum, 'unit' => $urgentUnit);
         // 推荐天数
-        $list['tj'] = array('title' => '推荐天数', 'tc_num' => $recTcNum, 'num' => $recNum, 'unit' => $recUnit);
+        $list['tj'] = array('title' => yun_at('wap_com_00041'), 'tc_num' => $recTcNum, 'num' => $recNum, 'unit' => $recUnit);
         // 招聘会报名次数
-        $list['zph'] = array('title' => '招聘会报名次数', 'tc_num' => $zphTcNum, 'num' => $zphNum, 'unit' => $zphUnit);
+        $list['zph'] = array('title' => yun_at('member_com_00323'), 'tc_num' => $zphTcNum, 'num' => $zphNum, 'unit' => $zphUnit);
        
         foreach ($list as $key => &$val) {
             // 计算进度条宽度
@@ -598,7 +598,7 @@ class zhaopin_controller extends company{
             $fu = '%m%d';
             $day = 24*60*60;
             for ($i = $start; $i <= $end;) {
-                $dates[] = date('m月d日', $i);
+                $dates[] = date('common_01656', $i);
                 $i += $day;
             }
         }
@@ -685,7 +685,7 @@ class zhaopin_controller extends company{
     private function checkOpen()
     {
         if (isset($this->config['com_zpdata']) && $this->config['com_zpdata'] != 1) {
-            exit(yun_auto_t('招聘数据未开放'));
+            exit(yun_at('wap_01284'));
         }
     }
 }

@@ -9,12 +9,12 @@ class users_msg_controller extends adminCommon
      */
     function set_search()
     {
-        $search[] = array('param' => 'status', 'name' => '审核状态', 'value' => array('0' => '未审核', '1' => '已审核', '2' => '未通过'));
-        $search[] = array('param' => 'job', 'name' => '职位类型', 'value' => array('1' => '普通', '2' => '高级'));
-        $lo_time = array('1' => '今天', '3' => '最近三天', '7' => '最近七天', '15' => '最近半月', '30' => '最近一个月');
-        $search[] = array('param' => 'zx', 'name' => '咨询时间', 'value' => $lo_time);
-        $f_time = array('1' => '今天', '3' => '最近三天', '7' => '最近七天', '15' => '最近半月', '30' => '最近一个月');
-        $search[] = array('param' => 'hf', 'name' => '回复时间', 'value' => $f_time);
+        $search[] = array('param' => 'status', 'name' => 'wap_com_00406', 'value' => array('0' => 'wap_user_00166', '1' => 'wap_user_00165', '2' => 'wap_user_00167'));
+        $search[] = array('param' => 'job', 'name' => 'wap_00516', 'value' => array('1' => 'admin_user_00372', '2' => 'admin_user_00373'));
+        $lo_time = array('1' => 'common_01940', '3' => 'admin_user_00179', '7' => 'admin_user_00178', '15' => 'admin_user_00180', '30' => 'admin_user_00175');
+        $search[] = array('param' => 'zx', 'name' => 'member_user_00061', 'value' => $lo_time);
+        $f_time = array('1' => 'common_01940', '3' => 'admin_user_00179', '7' => 'admin_user_00178', '15' => 'admin_user_00180', '30' => 'admin_user_00175');
+        $search[] = array('param' => 'hf', 'name' => 'admin_user_00369', 'value' => $f_time);
         return $search;
     }
 

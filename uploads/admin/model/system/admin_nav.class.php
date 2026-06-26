@@ -40,16 +40,16 @@ class admin_nav_controller extends adminCommon{
         if (!empty($_POST['id'])) {
             $id = $navM->upAdminNav($data, array('id' => intval($_POST['id'])));
             if ($id) {
-                $this->admin_json(0, '导航修改成功');
+                $this->admin_json(0, 'admin_01363');
             } else {
-                $this->admin_json(1, '导航修改失败');
+                $this->admin_json(1, 'admin_01364');
             }
         } else {
             $id = $navM->addAdminNav($data);
             if ($id) {
-                $this->admin_json(0, '导航添加成功');
+                $this->admin_json(0, 'admin_01365');
             } else {
-                $this->admin_json(1, '导航添加失败');
+                $this->admin_json(1, 'admin_01366');
             }
         }
 	}

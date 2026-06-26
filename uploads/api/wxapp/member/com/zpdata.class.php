@@ -43,7 +43,7 @@ class zpdata_controller extends com_controller
         }
 
         // 
-        $list[] = array('id' => 'ksj', 'title' => $this->zpdataTitle('可上架职位数'), 'tc_num' => $rating['job_num'], 'num' => $statis['job_num'], 'unit' => $this->zpdataUnit('个'));
+        $list[] = array('id' => 'ksj', 'title' => $this->zpdataTitle('member_com_00134'), 'tc_num' => $rating['job_num'], 'num' => $statis['job_num'], 'unit' => $this->zpdataUnit('个'));
 
         $recUnit = $urgentUnit = $topUnit = $zphUnit = $downUnit = $inviteUnit = $refreshUnit = '';
         $refreshTcNum = $rating['breakjob_num'];
@@ -58,7 +58,7 @@ class zpdata_controller extends com_controller
                 $refreshNum = '-';
             } else {
                 $refreshNum = $statis['breakjob_num'];
-                $refreshUnit = yun_auto_t('次/天');
+                $refreshUnit = yun_at('wap_com_00049');
             }
             $rating['breakjob_num'] == 0 && $refreshTcNum = '-';
 
@@ -66,7 +66,7 @@ class zpdata_controller extends com_controller
                 $inviteNum = '-';
             } else {
                 $inviteNum = $statis['invite_resume'];
-                $inviteUnit = yun_auto_t('次/天');
+                $inviteUnit = yun_at('wap_com_00049');
             }
             $rating['interview'] == 0 && $inviteTcNum = '-';
 
@@ -74,7 +74,7 @@ class zpdata_controller extends com_controller
                 $downNum = '-';
             } else {
                 $downNum = $statis['down_resume'];
-                $downUnit = yun_auto_t('份/天');
+                $downUnit = yun_at('admin_system_00408');
             }
             $rating['resume'] == 0 && $downTcNum = '-';
 
@@ -82,7 +82,7 @@ class zpdata_controller extends com_controller
                 $zphNum = '-';
             } else {
                 $zphNum = $statis['zph_num'];
-                $zphUnit = yun_auto_t('次/天');
+                $zphUnit = yun_at('wap_com_00049');
             }
             $rating['zph_num'] == 0 && $zphTcNum = '-';
 
@@ -90,7 +90,7 @@ class zpdata_controller extends com_controller
                 $topNum = '-';
             } else {
                 $topNum = $statis['top_num'];
-                $topUnit = yun_auto_t('天');
+                $topUnit = yun_at('wap_01197');
             }
             $rating['top_num'] == 0 && $topTcNum = '-';
 
@@ -98,7 +98,7 @@ class zpdata_controller extends com_controller
                 $urgentNum = '-';
             } else {
                 $urgentNum = $statis['urgent_num'];
-                $urgentUnit = yun_auto_t('天');
+                $urgentUnit = yun_at('wap_01197');
             }
             $rating['urgent_num'] == 0 && $urgentTcNum = '-';
 
@@ -106,52 +106,52 @@ class zpdata_controller extends com_controller
                 $recNum = '-';
             } else {
                 $recNum = $statis['rec_num'];
-                $recUnit = yun_auto_t('天');
+                $recUnit = yun_at('wap_01197');
             }
             $rating['rec_num'] == 0 && $recTcNum = '-';
         } else {
             $refreshNum = $statis['breakjob_num'];
-            $refreshUnit = yun_auto_t('次');
+            $refreshUnit = yun_at('wap_01543');
 
             $inviteNum = $statis['invite_resume'];
-            $inviteUnit = yun_auto_t('次');
+            $inviteUnit = yun_at('wap_01543');
 
             $downNum = $statis['down_resume'];
-            $downUnit = yun_auto_t('份');
+            $downUnit = yun_at('wap_00929');
 
             $zphNum = $statis['zph_num'];
-            $zphUnit = yun_auto_t('次');
+            $zphUnit = yun_at('wap_01543');
 
             $topNum = $statis['top_num'];
-            $topUnit = yun_auto_t('天');
+            $topUnit = yun_at('wap_01197');
 
             $urgentNum = $statis['urgent_num'];
-            $urgentUnit = yun_auto_t('天');
+            $urgentUnit = yun_at('wap_01197');
 
             $recNum = $statis['rec_num'];
-            $recUnit = yun_auto_t('天');
+            $recUnit = yun_at('wap_01197');
         }
 
         // 
-        $list[] = array('id' => 'ksx', 'title' => $this->zpdataTitle('可刷新职位数'), 'tc_num' => $refreshTcNum, 'num' => $refreshNum, 'unit' => $this->zpdataUnit($refreshUnit));
+        $list[] = array('id' => 'ksx', 'title' => $this->zpdataTitle('member_com_00136'), 'tc_num' => $refreshTcNum, 'num' => $refreshNum, 'unit' => $this->zpdataUnit($refreshUnit));
 
         // 
-        $list[] = array('id' => 'kms', 'title' => $this->zpdataTitle('可邀请面试数'), 'tc_num' => $inviteTcNum, 'num' => $inviteNum, 'unit' => $this->zpdataUnit($inviteUnit));
+        $list[] = array('id' => 'kms', 'title' => $this->zpdataTitle('member_com_00137'), 'tc_num' => $inviteTcNum, 'num' => $inviteNum, 'unit' => $this->zpdataUnit($inviteUnit));
 
         // 
-        $list[] = array('id' => 'kxz', 'title' => $this->zpdataTitle('可下载简历数'), 'tc_num' => $downTcNum, 'num' => $downNum, 'unit' => $this->zpdataUnit($downUnit));
+        $list[] = array('id' => 'kxz', 'title' => $this->zpdataTitle('member_com_00135'), 'tc_num' => $downTcNum, 'num' => $downNum, 'unit' => $this->zpdataUnit($downUnit));
 
         // 
-        $list[] = array('id' => 'zd', 'title' => $this->zpdataTitle('置顶天数'), 'tc_num' => $topTcNum, 'num' => $topNum, 'unit' => $this->zpdataUnit($topUnit));
+        $list[] = array('id' => 'zd', 'title' => $this->zpdataTitle('wap_user_00209'), 'tc_num' => $topTcNum, 'num' => $topNum, 'unit' => $this->zpdataUnit($topUnit));
 
         // 
-        $list[] = array('id' => 'jj', 'title' => $this->zpdataTitle('紧急天数'), 'tc_num' => $urgentTcNum, 'num' => $urgentNum, 'unit' => $this->zpdataUnit($urgentUnit));
+        $list[] = array('id' => 'jj', 'title' => $this->zpdataTitle('wap_com_00043'), 'tc_num' => $urgentTcNum, 'num' => $urgentNum, 'unit' => $this->zpdataUnit($urgentUnit));
 
         // 
-        $list[] = array('id' => 'tj', 'title' => $this->zpdataTitle('推荐天数'), 'tc_num' => $recTcNum, 'num' => $recNum, 'unit' => $this->zpdataUnit($recUnit));
+        $list[] = array('id' => 'tj', 'title' => $this->zpdataTitle('wap_com_00041'), 'tc_num' => $recTcNum, 'num' => $recNum, 'unit' => $this->zpdataUnit($recUnit));
 
         // 
-        $list[] = array('id' => 'zph', 'title' => $this->zpdataTitle('招聘会报名次数'), 'tc_num' => $zphTcNum, 'num' => $zphNum, 'unit' => $this->zpdataUnit($zphUnit));
+        $list[] = array('id' => 'zph', 'title' => $this->zpdataTitle('member_com_00323'), 'tc_num' => $zphTcNum, 'num' => $zphNum, 'unit' => $this->zpdataUnit($zphUnit));
         foreach ($list as $key => &$val) {
             // 
             if ($val['tc_num'] === '-') {
@@ -190,7 +190,7 @@ class zpdata_controller extends com_controller
         $look_resume_num = $lookresumeM->getLookNum(array_merge($lookResumeWhere, array('datetime' => $todayWhere)));
         $look_resume_num_y = $lookresumeM->getLookNum(array_merge($lookResumeWhere, array('datetime' => $yesterdayWhere)));
         $look_resume_jzr = $this->jzrPercentage($look_resume_num, $look_resume_num_y);
-        $list[] = array('id' => 'wkg', 'title' => $this->zpdataTitle('我看过'), 'num' => $look_resume_num, 'unit' => $this->zpdataUnit('人'), 'jzr' => $look_resume_jzr, 'wap_url' => Url('wap') . 'member/index.php?c=resumecolumn&page=1&type=3', 'page' => 'pson/pages/commember/resumecolumn/index?type=3');
+        $list[] = array('id' => 'wkg', 'title' => $this->zpdataTitle('member_com_00371'), 'num' => $look_resume_num, 'unit' => $this->zpdataUnit('人'), 'jzr' => $look_resume_jzr, 'wap_url' => Url('wap') . 'member/index.php?c=resumecolumn&page=1&type=3', 'page' => 'pson/pages/commember/resumecolumn/index?type=3');
 
         // 
         $jobM = $this->MODEL("job");
@@ -198,7 +198,7 @@ class zpdata_controller extends com_controller
         $look_job_num = $jobM->getLookJobNum(array_merge($lookJobWhere, array('datetime' => $todayWhere)));
         $look_job_num_y = $jobM->getLookJobNum(array_merge($lookJobWhere, array('datetime' => $yesterdayWhere)));
         $look_job_jzr = $this->jzrPercentage($look_job_num, $look_job_num_y);
-        $list[] = array('id' => 'kgw', 'title' => $this->zpdataTitle('看过我'), 'num' => $look_job_num, 'unit' => $this->zpdataUnit('人'), 'jzr' => $look_job_jzr, 'wap_url' => Url('wap') . 'member/index.php?c=look_job', 'page' => 'pson/pages/commember/lookjob/index');
+        $list[] = array('id' => 'kgw', 'title' => $this->zpdataTitle('member_com_00372'), 'num' => $look_job_num, 'unit' => $this->zpdataUnit('人'), 'jzr' => $look_job_jzr, 'wap_url' => Url('wap') . 'member/index.php?c=look_job', 'page' => 'pson/pages/commember/lookjob/index');
 
         // 
         $downM = $this->MODEL('downresume');
@@ -210,21 +210,21 @@ class zpdata_controller extends com_controller
         $down_num_sum = intval($down_num) + intval($fdown_num);
         $down_num_sum_y = intval($down_num_y) + intval($fdown_num_y);
         $down_jzr = $down_num_sum - $down_num_sum_y;
-        $list[] = array('id' => 'xzjl', 'title' => $this->zpdataTitle('下载简历'), 'num' => $down_num_sum, 'unit' => $this->zpdataUnit('人'), 'jzr' => $down_jzr, 'wap_url' => Url('wap') . 'member/index.php?c=resumecolumn', 'page' => 'pson/pages/commember/resumecolumn/index');
+        $list[] = array('id' => 'xzjl', 'title' => $this->zpdataTitle('wap_00451'), 'num' => $down_num_sum, 'unit' => $this->zpdataUnit('人'), 'jzr' => $down_jzr, 'wap_url' => Url('wap') . 'member/index.php?c=resumecolumn', 'page' => 'pson/pages/commember/resumecolumn/index');
 
         // 
         $tdWhere = array('com_id' => $this->member['uid'], 'type' => array('<>', 3));
         $td_num = $jobM->getSqJobNum(array_merge($tdWhere, array('datetime' => $todayWhere)));
         $td_num_y = $jobM->getSqJobNum(array_merge($tdWhere, array('datetime' => $yesterdayWhere)));
         $td_jzr = $this->jzrPercentage($td_num, $td_num_y);
-        $list[] = array('id' => 'tdjl', 'title' => $this->zpdataTitle('投递简历'), 'num' => $td_num, 'unit' => $this->zpdataUnit('人'), 'jzr' => $td_jzr, 'wap_url' => Url('wap') . 'member/index.php?c=hr', 'page' => 'pson/pages/commember/hr/index');
+        $list[] = array('id' => 'tdjl', 'title' => $this->zpdataTitle('wap_com_00235'), 'num' => $td_num, 'unit' => $this->zpdataUnit('人'), 'jzr' => $td_jzr, 'wap_url' => Url('wap') . 'member/index.php?c=hr', 'page' => 'pson/pages/commember/hr/index');
 
         // 
         $inviteWhere = array('fid' => $this->member['uid']);
         $invite_num = $jobM->getYqmsNum(array_merge($inviteWhere, array('datetime' => $todayWhere)));
         $invite_num_y = $jobM->getYqmsNum(array_merge($inviteWhere, array('datetime' => $yesterdayWhere)));
         $invite_jzr = $this->jzrPercentage($invite_num, $invite_num_y);
-        $list[] = array('id' => 'yqms', 'title' => $this->zpdataTitle('邀请面试'), 'num' => $invite_num, 'unit' => $this->zpdataUnit('人'), 'jzr' => $invite_jzr, 'wap_url' => Url('wap') . 'member/index.php?c=invite', 'page' => 'pson/pages/commember/invite/index');
+        $list[] = array('id' => 'yqms', 'title' => $this->zpdataTitle('resume_00029'), 'num' => $invite_num, 'unit' => $this->zpdataUnit('人'), 'jzr' => $invite_jzr, 'wap_url' => Url('wap') . 'member/index.php?c=invite', 'page' => 'pson/pages/commember/invite/index');
 
         foreach ($list as $key => &$val) {
             $val['num'] = intval($val['num']);
@@ -279,16 +279,16 @@ class zpdata_controller extends com_controller
         $lookresumeM = $this->MODEL('lookresume');
         $lookResumeWhere = array('com_id' => $this->member['uid'], 'usertype' => $this->member['usertype'], 'com_status' => 0);
         $look_resume_num = $lookresumeM->getLookNum(array_merge($lookResumeWhere, array('datetime' => $where)));
-        $lookData[] = array('id' => 'wkg', 'title' => $this->zpdataTitle('我看过'), 'num' => $look_resume_num, 'wap_url' => Url('wap') . 'member/index.php?c=resumecolumn&page=1&type=3', 'page' => 'pson/pages/commember/resumecolumn/index?type=3');
+        $lookData[] = array('id' => 'wkg', 'title' => $this->zpdataTitle('member_com_00371'), 'num' => $look_resume_num, 'wap_url' => Url('wap') . 'member/index.php?c=resumecolumn&page=1&type=3', 'page' => 'pson/pages/commember/resumecolumn/index?type=3');
         // 
         $jobM = $this->MODEL("job");
         $lookJobWhere = array('com_id' => $this->member['uid'], 'com_status' => 0);
         $look_job_num = $jobM->getLookJobNum(array_merge($lookJobWhere, array('datetime' => $where)));
-        $lookData[] = array('id' => 'kgw', 'title' => $this->zpdataTitle('看过我'), 'num' => $look_job_num, 'wap_url' => Url('wap') . 'member/index.php?c=look_job', 'page' => 'pson/pages/commember/lookjob/index');
+        $lookData[] = array('id' => 'kgw', 'title' => $this->zpdataTitle('member_com_00372'), 'num' => $look_job_num, 'wap_url' => Url('wap') . 'member/index.php?c=look_job', 'page' => 'pson/pages/commember/lookjob/index');
         // 
         $logWhere = array('uid' => $this->member['uid'], 'usertype' => 2);
         $login_num = $this->MODEL("log")->getLoginlogNum(array_merge($logWhere, array('ctime' => $where)));
-        $lookData[] = array('id' => 'wdl', 'title' => $this->zpdataTitle('我登录'), 'num' => $login_num, 'wap_url' => '', 'page' => '');
+        $lookData[] = array('id' => 'wdl', 'title' => $this->zpdataTitle('member_com_00370'), 'num' => $login_num, 'wap_url' => '', 'page' => '');
 
         // 
         // 
@@ -297,21 +297,21 @@ class zpdata_controller extends com_controller
         $down_num = $downM->getDownNum(array_merge($downWhere, array('downtime' => $where)));
         $fdown_num = $downM->getFreeDownNum(array_merge($downWhere, array('downtime' => $where)));
         $down_num_sum = intval($down_num) + intval($fdown_num);
-        $resumeData[] = array('id' => 'xzjl', 'title' => $this->zpdataTitle('下载简历'), 'num' => $down_num_sum, 'wap_url' => Url('wap') . 'member/index.php?c=resumecolumn', 'page' => 'pson/pages/commember/resumecolumn/index');
+        $resumeData[] = array('id' => 'xzjl', 'title' => $this->zpdataTitle('wap_00451'), 'num' => $down_num_sum, 'wap_url' => Url('wap') . 'member/index.php?c=resumecolumn', 'page' => 'pson/pages/commember/resumecolumn/index');
         // 
         $tdWhere = array('com_id' => $this->member['uid'], 'type' => array('<>', 3));
         $td_num = $jobM->getSqJobNum(array_merge($tdWhere, array('datetime' => $where)));
-        $resumeData[] = array('id' => 'tdjl', 'title' => $this->zpdataTitle('投递简历'), 'num' => $td_num, 'wap_url' => Url('wap') . 'member/index.php?c=hr', 'page' => 'pson/pages/commember/hr/index');
+        $resumeData[] = array('id' => 'tdjl', 'title' => $this->zpdataTitle('wap_com_00235'), 'num' => $td_num, 'wap_url' => Url('wap') . 'member/index.php?c=hr', 'page' => 'pson/pages/commember/hr/index');
         // 
-        array_unshift($resumeData, array('id' => 'total', 'title' => $this->zpdataTitle('合计'), 'num' => intval($td_num)));
+        array_unshift($resumeData, array('id' => 'total', 'title' => $this->zpdataTitle('wap_com_00426'), 'num' => intval($td_num)));
 
         // 
         // 
         $inviteWhere = array('fid' => $this->member['uid']);
         $invite_num = $jobM->getYqmsNum(array_merge($inviteWhere, array('datetime' => $where)));
-        $msData[] = array('id' => 'yqms', 'title' => $this->zpdataTitle('邀请面试'), 'num' => $invite_num, 'wap_url' => Url('wap') . 'member/index.php?c=invite', 'page' => 'pson/pages/commember/invite/index');
+        $msData[] = array('id' => 'yqms', 'title' => $this->zpdataTitle('resume_00029'), 'num' => $invite_num, 'wap_url' => Url('wap') . 'member/index.php?c=invite', 'page' => 'pson/pages/commember/invite/index');
         // 
-        // $msData[] = array('title'=>yun_auto_t('接受面试'), 'num' => $accept_num, 'wap_url' => Url('wap') . 'member/index.php?c=invite', 'page' => 'pson/pages/commember/invite/index');
+        // $msData[] = array('title'=>yun_at('wap_01056'), 'num' => $accept_num, 'wap_url' => Url('wap') . 'member/index.php?c=invite', 'page' => 'pson/pages/commember/invite/index');
 
         $this->render_json(0, '', compact('lookData', 'resumeData', 'msData', 'dates'));
     }
@@ -320,7 +320,7 @@ class zpdata_controller extends com_controller
     private function checkOpen()
     {
         if (isset($this->config['com_zpdata']) && $this->config['com_zpdata'] != 1) {
-            $this->render_json(403, yun_auto_t('招聘数据未开放'));
+            $this->render_json(403, yun_at('wap_01284'));
         }
     }
 }

@@ -14,15 +14,15 @@
 					<div class="resume_template_pd">
 					<div class="resume_template_name">	{yun:}t key='member_user_00283'{/yun} </div>
 						<div class="resume_template_p">
-							模板价格：<b class="comtpl_b">免费</b>
+							{yun:}t key='member_user_00571'{/yun}<b class="comtpl_b">{yun:}t key='member_user_00572'{/yun}</b>
 						</div>
 						</div>
 							<div class="resume_template_cz">
 							{yun:}if $statis.tpl=='0'{/yun}
-							<span class=" resume_template_bth_sy">使用中</span>
+							<span class=" resume_template_bth_sy">{yun:}t key='member_user_00573'{/yun}</span>
 							<i class="resume_template_cz_icon"></i>
 							{yun:}else{/yun}  
-								<a href="javascript:void(0);" onclick="layer_del('确定试用该模板？', 'index.php?c=resumetpl&act=settpl&id=0');" class="resume_template_bth">{yun:}t key='member_user_00284'{/yun}</a> 
+								<a href="javascript:void(0);" onclick="layer_del("{yun:}t key='member_user_00574'{/yun}", 'index.php?c=resumetpl&act=settpl&id=0');" class="resume_template_bth">{yun:}t key='member_user_00284'{/yun}</a> 
 							{yun:}/if{/yun}
 								<a href="{yun:}url m=resume c=show id=$resume.def_job tmp=2{/yun}" target="_blank" class="resume_template_ylbth">{yun:}t key='wap_00071'{/yun}</a>
 
@@ -41,17 +41,17 @@
 								{yun:}if $style.price!=0{/yun}
 								<span class="resume_template_jg">{yun:}$style.price{/yun}</span> {yun:}$config.integral_priceunit{/yun}{yun:}$config.integral_pricename{/yun}
 								{yun:}else{/yun}
-								<span class="resume_template_jg">免费</span>
+								<span class="resume_template_jg">{yun:}t key='member_user_00572'{/yun}</span>
 								{yun:}/if{/yun}
 								</div>
 						</div>
 						<div class="resume_template_cz">
 							{yun:}if $statis.tpl==$style.id{/yun}
-							<div class=" resume_template_bth_sy">使用中</div>
+							<div class=" resume_template_bth_sy">{yun:}t key='member_user_00573'{/yun}</div>
 								<i class="resume_template_cz_icon"></i>
 							{yun:}else{/yun} 
 								{yun:}if in_array($style.id,$paytpls){/yun}
-									<a href="javascript:void(0);" onclick="layer_del('确定试用该模板？', 'index.php?c=resumetpl&act=settpl&id={yun:}$style.id{/yun}');" class="resume_template_bth">{yun:}t key='member_user_00284'{/yun}</a>
+									<a href="javascript:void(0);" onclick="layer_del("{yun:}t key='member_user_00574'{/yun}", 'index.php?c=resumetpl&act=settpl&id={yun:}$style.id{/yun}');" class="resume_template_bth">{yun:}t key='member_user_00284'{/yun}</a>
 								{yun:}else{/yun}
 									<a href="javascript:void(0);" onclick="layer_del('购买模板将花费{yun:}$style.price{/yun}{yun:}$config.integral_pricename{/yun}，{yun:}t key='common_01784'{/yun}？', 'index.php?c=resumetpl&act=pay&id={yun:}$style.id{/yun}');" class="resume_template_bth">{yun:}t key='member_user_00285'{/yun}</a>
 								{yun:}/if{/yun} 

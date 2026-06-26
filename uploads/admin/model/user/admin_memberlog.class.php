@@ -78,32 +78,32 @@ class admin_memberlog_controller extends adminCommon
 
             $operaStr   =   intval($_POST['operas']);
             $operaSql 	= 	array(
-                '1'		=>	array('name' => array('职位')),
-                '2'		=>	array('name' => array('创建','简历', '经历')),
-                '3'		=>	array('name' => array('下载')),
-                '4'	 	=>	array('name' => array('邀请')),
-                '5'	 	=>	array('name' => array('收藏', '关注', '备注')),
-                '6'		=>	array('name' => array('申请', '报名', '应聘', '委托')),
-                '7'		=>	array('name' => array('基本信息')),
-                '8'		=>	array('name' => array('修改密码')),
-                '9'		=>	array('name' => array('兼职')),
-                '11'    =>	array('name' => array('用户名', '身份')),
-                '12'    =>	array('name' => array('账号认证', '解除', '绑定', '验证', '资质', '执照', '认证')),
-                '14'    =>	array('name' => array('招聘会', '专题')),
-                '15'    =>	array('name' => array('地图', '助力')),
-                '16'	=>	array('name' => array('图片', '头像', 'LOGO', '环境', '产品', '新闻', '二维码', '横幅')),
-                '17' 	=>	array('name' => array('兑换', '积分'), 'realId' => 17),
-                '18'	=>	array('name' => array('回复', '咨询', '留言', '系统消息')),
-                '19' 	=>	array('name' => array('问答')),
-                '20'	=>	array('name' => array('培训师', '讲师')),
-                '21'	=>	array('name' => array('课程')),
-                '22'	=>	array('name' => array('新闻')),
-                '23'	=>	array('name' => array('举报')),
-                '25' 	=>	array('name' => array('悬赏', '推送')),
-                '26' 	=>	array('name' => array('浏览', '黑名单')),
-                '29' 	=>	array('name' => array('项目')),
-                '30' 	=>	array('name' => array('直聊')),
-                '88' 	=>	array('name' => array('订单'))
+                '1'		=>	array('name' => array('wap_user_00154')),
+                '2'		=>	array('name' => array('common_01951','wap_com_00428', 'common_02021')),
+                '3'		=>	array('name' => array('wap_00070')),
+                '4'	 	=>	array('name' => array('common_02040')),
+                '5'	 	=>	array('name' => array('wap_00379', 'common_01949', 'member_user_00242')),
+                '6'		=>	array('name' => array('wap_00574', 'common_01991', 'common_01982', 'common_01971')),
+                '7'		=>	array('name' => array('wap_00456')),
+                '8'		=>	array('name' => array('member_user_00226')),
+                '9'		=>	array('name' => array('wap_user_00220')),
+                '11'    =>	array('name' => array('admin_user_00140', 'common_02035')),
+                '12'    =>	array('name' => array('member_com_00093', 'common_02028', 'member_user_00234', 'member_user_00236', 'common_02034', 'admin_user_00171', 'member_user_00235')),
+                '14'    =>	array('name' => array('member_com_00293', 'common_01937')),
+                '15'    =>	array('name' => array('wap_00317', 'common_01954')),
+                '16'	=>	array('name' => array('wap_js_00081', 'member_user_00161', 'LOGO', 'common_02012', 'default_00092', 'admin_tool_00428', 'common_01886', 'member_com_00077')),
+                '17' 	=>	array('name' => array('admin_yunying_00117', 'wap_user_00008'), 'realId' => 17),
+                '18'	=>	array('name' => array('common_01967', 'common_01965', 'common_02015', 'wap_user_00363')),
+                '19' 	=>	array('name' => array('wap_user_00223')),
+                '20'	=>	array('name' => array('admin_user_00018', 'admin_user_00020')),
+                '21'	=>	array('name' => array('common_02031')),
+                '22'	=>	array('name' => array('admin_tool_00428')),
+                '23'	=>	array('name' => array('wap_com_00350')),
+                '25' 	=>	array('name' => array('wap_com_00357', 'admin_user_company_00379')),
+                '26' 	=>	array('name' => array('wap_user_00221', 'member_user_00044')),
+                '29' 	=>	array('name' => array('common_02046')),
+                '30' 	=>	array('name' => array('admin_user_00019')),
+                '88' 	=>	array('name' => array('common_02029'))
             );
             if (array_key_exists($operaStr, $operaSql)) {
 
@@ -137,7 +137,7 @@ class admin_memberlog_controller extends adminCommon
         $pageSize = !empty($_POST['pageSize']) ? intval($_POST['pageSize']) : intval($this->config['sy_listnum']);
         $pages	=	$pageM -> adminPageList('member_log',$where,$page,array('limit' => $pageSize));
         if(!$pages['total']){
-            $this->render_json(0,'暂无数据',['data'=>[],'total'=>0,'pageSizes'=>$pages['page_sizes']]);
+            $this->render_json(0,yun_at('wap_js_00113'),['data'=>[],'total'=>0,'pageSizes'=>$pages['page_sizes']]);
         }
 
         if ($_POST['order']) {
@@ -166,17 +166,17 @@ class admin_memberlog_controller extends adminCommon
 
             $where['usertype']  =   2;
             $logM->delMemlog($where);
-            $this->layer_msg('已清空企业日志！', 9, 0, $_SERVER['HTTP_REFERER']);
+            $this->layer_msg('admin_01296', 9, 0, $_SERVER['HTTP_REFERER']);
         } elseif ($_POST['del'] == 'alluser') {
 
             $where['usertype']  =   1;
             $logM->delMemlog($where);
-            $this->layer_msg('已清空个人日志！', 9, 0, $_SERVER['HTTP_REFERER']);
+            $this->layer_msg('admin_01297', 9, 0, $_SERVER['HTTP_REFERER']);
         } elseif ($_POST['del'] == 'alltrain') {
 
             $where['usertype']  =   4;
             $logM->delMemlog($where);
-            $this->layer_msg('已清空培训日志！', 9, 0, $_SERVER['HTTP_REFERER']);
+            $this->layer_msg('admin_01298', 9, 0, $_SERVER['HTTP_REFERER']);
         } elseif ($_POST['del']) {
 
             $del    =   $_POST['del'];

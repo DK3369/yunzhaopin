@@ -4,8 +4,8 @@ class company_product_controller extends adminCommon
 {
     function set_search()
     {
-        $search_list[] = array("param" => "status", "name" => '审核状态', "value" => array("1" => "已审核", "3" => "未审核", "2" => "未通过"));
-        $search_list[] = array("param" => "time", "name" => '发布时间', "value" => array('1' => '今天', '3' => '最近三天', '7' => '最近七天', '15' => '最近半月', '30' => '最近一个月'));
+        $search_list[] = array("param" => "status", "name" => 'wap_com_00406', "value" => array("1" => 'wap_user_00165', "3" => 'wap_user_00166', "2" => 'wap_user_00167'));
+        $search_list[] = array("param" => "time", "name" => 'admin_user_weipin_00030', "value" => array('1' => 'common_01940', '3' => 'admin_user_00179', '7' => 'admin_user_00178', '15' => 'admin_user_00180', '30' => 'admin_user_00175'));
         return $search_list;
     }
 
@@ -91,7 +91,7 @@ class company_product_controller extends adminCommon
     function status_action()
     {
         if (empty($_POST['status'])) {
-            $this->render_json(8, "请选择审核状态！");
+            $this->render_json(8, yun_at('admin_01311'));
         }
         $CompanyM = $this->MODEL('company');
         $sysmsgM = $this->MODEL('sysmsg');
@@ -104,18 +104,18 @@ class company_product_controller extends adminCommon
             $where['id'] = array('in', $id);
             $CpList = $CompanyM->getCompanyProductList($where, array('field' => 'uid,title'));
             /* 消息前缀 */
-            $tagName = '产品';
+            $tagName = 'default_00092';
             foreach ($CpList as $v) {
                 $uids[] = $v['uid'];
                 /* 处理审核信息 */
                 if ($data['status'] == 2) {
                     $statusInfo = $tagName . $v['name'] . '审核未通过 , ';
                     if ($data['statusbody']) {
-                        $statusInfo .= '原因：' . $data['statusbody'];
+                        $statusInfo .= 'admin_system_00134' . $data['statusbody'];
                     }
                     $msg[$v['uid']][] = $statusInfo;
                 } elseif ($data['status'] == 1) {
-                    $msg[$v['uid']][] = $tagName . $v['name'] . '已审核通过';
+                    $msg[$v['uid']][] = $tagName . $v['name'] . 'admin_01312';
                 }
             }
             // 发送系统通知
@@ -124,9 +124,9 @@ class company_product_controller extends adminCommon
                 'usertype' => 2,
                 'content' => $msg
             ));
-            $nid ? $this->admin_json(0, "企业产品(ID:" . $id . ")审核成功") : $this->render_json(1, "设置失败！");
+            $nid ? $this->admin_json(0, "企业产品(ID:" . $id . ")审核成功") : $this->render_json(1, 'wap_01715');
         } else {
-            $this->render_json(8, "非法操作！");
+            $this->render_json(8, yun_at('model_00001'));
         }
     }
 

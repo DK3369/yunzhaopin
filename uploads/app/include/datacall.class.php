@@ -438,9 +438,9 @@ class datacall{
 				    if ($va['minsalary'] && $va['maxsalary']){
 				        $salary					=	$va['minsalary'].'-'.$va['maxsalary'];
 				    }elseif ($va['minsalary']){
-				        $salary					=	$va['minsalary']."以上";
+				        $salary					=	$va['minsalary'].'common_01942';
 				    }else {
-				        $salary					=	"面议";
+				        $salary					=	'common_02045';
 				    }
 				    $data[$key]['salary']		=	$salary;
 				}

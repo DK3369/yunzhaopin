@@ -20,7 +20,7 @@ class cache_model extends model{
             $CacheTypeList=$CacheType;
         }
         if(count($CacheTypeList)!=count(array_unique($CacheTypeList))){
-            return '参数重复！';
+            return 'common_06379';
         }
         $ReturnCacheList=array();
         foreach($CacheTypeList as $v){
@@ -113,7 +113,7 @@ class cache_model extends model{
 	}
 	private function uptime_cache($Options=array('needreturn'=>false,'needassign'=>true)){
 		//更新时间
-		$uptime=array(1=>'今天',3=>'最近3天',7=>'最近7天',30=>'最近一个月',90=>'最近三个月');
+		$uptime=array(1=>'common_01940',3=>'wap_00432',7=>'wap_00433',30=>'admin_user_00175',90=>'wap_00431');
         if($Options['needreturn']==true){
             return array('uptime'=>$uptime);
         }
@@ -201,9 +201,9 @@ class cache_model extends model{
         if($Options['needreturn']==true){
             //后台分配分站所需
 			if($Options['needall']==true){
-				$Dname[-1]  =  '全站';
+				$Dname[-1]  =  yun_at('api_wxapp_00018');
 			}
-			$Dname[0]	=  '主站';
+			$Dname[0]	=  yun_at('ajax_00021');
             if(is_array($site_domain)){
                 foreach($site_domain as $k=>$v){
                     $Dname[$v['id']]  =  $v['webname'];

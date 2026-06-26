@@ -334,8 +334,8 @@ class index_controller extends company{
                 $list[$k]['uid']                    =   $v['uid'];
                 $list[$k]['age_n']                  =   $v['age_n'] ? $v['age_n'] . '岁' : '';
                 $list[$k]['sex_n']                  =   $v['sex_n'];
-	            $list[$k]['edu_n']					=	$v['edu_n']?$v['edu_n'].'学历':'';
-	            $list[$k]['exp_n']					=	$v['exp_n']?$v['exp_n'].'经验':'';
+	            $list[$k]['edu_n']					=	$v['edu_n']?$v['edu_n'].'wap_com_00301':'';
+	            $list[$k]['exp_n']					=	$v['exp_n']?$v['exp_n'].'wap_01424':'';
                 $list[$k]['status']                 =   $v['status'];
 	            
 	            $jobname							=	@explode(',', $v['job_classname']);

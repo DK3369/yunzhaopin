@@ -51,7 +51,7 @@ class index_controller extends common
         if ($this->config['sy_sinalogin'] != "1") {
             if ((int)$_GET['login'] == "1") {
 
-                $this->actMsg($msgUrl, "对不起，新浪登录已关闭！");
+                $this->actMsg($msgUrl, yun_at('wap_00502'));
             }
         }
 
@@ -92,7 +92,7 @@ class index_controller extends common
                         );
                         $where2['uid'] = $this->uid;
                         $UserinfoM->upInfo($where2, $data2);
-                        $this->actMsg($msgUrl . '/member/index.php?c=binding', "新浪微博登录绑定成功！", 9);
+                        $this->actMsg($msgUrl . '/member/index.php?c=binding', yun_at('model_00107'), 9);
                     }
 
                     $userwhere['sinaid']    =   $tokenuid;
@@ -104,7 +104,7 @@ class index_controller extends common
                             if ($userinfo['status'] == '2' || $userinfo['status'] == '4') {
 
                                 // 账号被锁定
-                                $this->ACT_msg(Url(), '您的帐号被锁定，请联系客服解除锁定！');
+                                $this->ACT_msg(Url(), yun_at('qqconnect_00001'));
                                 exit();
                             }
                             $uwhere['uid']  =   $userinfo['uid'];
@@ -117,8 +117,8 @@ class index_controller extends common
 
                             // 会员日志，记录手动登录
                             $LogM       =   $this->MODEL('log');
-                            $logContent =   '账号登录：快捷登录';
-                            $logDetail  =   '电脑端新浪微博快捷登录';
+                            $logContent =   'wap_01795';
+                            $logDetail  =   'sinaconnect_00001';
                             $LogM->addMemberLog($userinfo['uid'], $userinfo['usertype'], $logContent, 32, 1, $logDetail);
 
                             $logtime    =   date("Ymd", $userinfo['login_date']);
@@ -135,12 +135,12 @@ class index_controller extends common
 
                             if ($logtime != $nowtime) {
 
-                                $this->MODEL('integral')->invtalCheck($userinfo['uid'], $userinfo['usertype'], "integral_login", "会员登录", 22);
+                                $this->MODEL('integral')->invtalCheck($userinfo['uid'], $userinfo['usertype'], "integral_login", 'wap_00555', 22);
                                 //登录日志
                                 $logdata['uid']         =   $userinfo['uid'];
                                 $logdata['usertype']    =   $userinfo['usertype'];
                                 $logdata['did']         =   $userinfo['did'];
-                                $logdata['content']     =   'WAP微信登录';
+                                $logdata['content']     =   yun_at('wap_00551');
                                 $LogM->addLoginlog($logdata);
                                 $ip    =  fun_ip_get();
                                 $upLogin = array(
@@ -160,12 +160,12 @@ class index_controller extends common
                             $this->obj->uc_open();
                             $user = uc_get_user($userinfo['username']);
                             $ucsynlogin = uc_user_synlogin($user[0]);
-                            $this->actMsg($msgUrl, "登录成功！", 9);
+                            $this->actMsg($msgUrl, yun_at('wap_01796'), 9);
                         } else {
 
                             $this->cookie->unset_cookie();
                             $this->cookie->add_cookie($userinfo['uid'], $userinfo['username'], $userinfo['salt'], $userinfo['email'], $userinfo['password'], $userinfo['usertype'], $this->config['sy_logintime'], $userinfo['did']);
-                            $this->actMsg($msgUrl, "登录成功！", 9);
+                            $this->actMsg($msgUrl, yun_at('wap_01796'), 9);
                         }
 
                     } else {
@@ -174,7 +174,7 @@ class index_controller extends common
 
                         $_SESSION['sina']["openid"]     =   $tokenuid;
                         $_SESSION['sina']["tooken"]     =   $token['access_token'];
-                        $_SESSION['sina']["logininfo"]  =   "您已登录新浪微博，请绑定您的帐户！";
+                        $_SESSION['sina']["logininfo"]  =   yun_at('wap_00500');
                         $GetUrl =   "https://api.weibo.com/2/users/show.json?uid=" . $tokenuid . "&access_token=" . $token['access_token'];
 
                         $ch = curl_init();
@@ -195,7 +195,7 @@ class index_controller extends common
                             $_SESSION['sina']['pic']        =   $user['avatar_hd'];
                         } else {
 
-                            $this->actMsg($msgUrl, "用户信息获取失败，请重新登录新浪微博！");
+                            $this->actMsg($msgUrl, yun_at('wap_00499'));
                         }
                         if (isMobileUser()) {
 
@@ -207,7 +207,7 @@ class index_controller extends common
                     }
                 } else {
 
-                    $this->actMsg($msgUrl, "新浪微博授权失败，请重新授权！");
+                    $this->actMsg($msgUrl, yun_at('wap_00501'));
                 }
             }
         } else {

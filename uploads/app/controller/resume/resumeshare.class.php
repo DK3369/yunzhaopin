@@ -57,18 +57,18 @@ class resumeshare_controller extends resume_controller{
 			$_POST['id']	=	intval($_POST['id']);
 			//参数判断
 			if(empty($_POST['femail']) || empty($_POST['authcode'])){
-				echo yun_auto_t('请完整填写信息！');die;
+				echo yun_at('resume_00032');die;
 			}
 			session_start();
 			if(md5(strtolower($_POST['authcode'])) != $_SESSION['authcode'] || empty($_SESSION['authcode'])){
-				echo yun_auto_t('验证码不正确！');die;
+				echo yun_at('wap_js_00109');die;
 			}
 			unset($_SESSION['authcode']);
 			if($this->config['sy_email_set'] != 1){
-				echo yun_auto_t('网站邮件服务器不可用!');die;
+				echo yun_at('resume_00036');die;
 			}
 			if(CheckRegEmail(trim($_POST['femail'])) == false){
-				echo yun_auto_t('邮箱格式错误！');die;
+				echo yun_at('wap_js_00108');die;
 			}
 
 			$recomM						=	$this -> MODEL('recommend');
@@ -80,7 +80,7 @@ class resumeshare_controller extends resume_controller{
 					exit;
 				}
 			}else{
-				echo yun_auto_t("推荐职位/简历功能已关闭！");exit;
+				echo yun_at('resume_00034');exit;
 			}
 
 			//判断上一次推荐的时间间隔

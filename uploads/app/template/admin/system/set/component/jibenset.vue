@@ -4,47 +4,47 @@
 	            <table class="tableVue">
 	                <thead>
 	                    <tr align="left">
-	                        <th width="180">名称</th>
-	                        <th width="360">状态</th>
-	                        <th>说明</th>
+	                        <th width="180">{yun:}t key='member_com_00021'{/yun}</th>
+	                        <th width="360">{yun:}t key='member_user_00181'{/yun}</th>
+	                        <th>{yun:}t key='member_com_00207'{/yun}</th>
 	                    </tr>
 	                </thead>
 	                <tbody>
 	                    <tr>
 	                        <td>
-	                            <div class="TableTite">网站名称</div>
+	                            <div class="TableTite">{yun:}t key='admin_system_00331'{/yun}</div>
 	                        </td>
 	                        <td>
 	                            <div class="TableInpt">
-	                                <el-input v-model="list.sy_webname" placeholder="请输入内容">
+	                                <el-input v-model="list.sy_webname" placeholder="{yun:}t key='wap_user_00076'{/yun}">
 	                                </el-input>
 	                            </div>
 	                        </td>
 	                        <td>
 	                            <div class="TableShuom">
-	                                <span>如：XXX人才网</span>
+	                                <span>{yun:}t key='admin_system_00322'{/yun}</span>
 	                            </div>
 	                        </td>
 	                    </tr>
 						<tr>
 						    <td>
-						        <div class="TableTite">网站地址</div>
+						        <div class="TableTite">{yun:}t key='admin_01014'{/yun}</div>
 						    </td>
 						    <td>
 						        <div class="TableInpt">
-						            <el-input v-model="list.sy_weburl" placeholder="请输入内容">
+						            <el-input v-model="list.sy_weburl" placeholder="{yun:}t key='wap_user_00076'{/yun}">
 						            </el-input>
 						        </div>
 						    </td>
 						    <td>
 						        <div class="TableShuom">
-						            <span>如：http://www.hr135.com</span>
+						            <span>{yun:}t key='admin_01015'{/yun}</span>
 						        </div>
 						    </td>
 						</tr>
 	                    <tr>
 	                        <td>
-	                            <div class="TableTite">网站状态</div>
+	                            <div class="TableTite">{yun:}t key='admin_01016'{/yun}</div>
 	                        </td>
 	                        <td>
 	                            <div class="TableButn">
@@ -54,18 +54,18 @@
 	                        </td>
 	                        <td>
 	                            <div class="TableShuom">
-	                                <span>开启才能正常访问</span>
+	                                <span>{yun:}t key='admin_system_00323'{/yun}</span>
 	                            </div>
 	                        </td>
 	                    </tr>
                         <tr>
 	                        <td>
-	                            <div class="TableTite">后台列表页显示条数：</div>
+	                            <div class="TableTite">{yun:}t key='admin_system_00318'{/yun}</div>
 	                        </td>
 	                        <td>
 	                            <div class="TableButn">
-                                    <el-input v-model="list.sy_listnum" placeholder="请输入内容" onkeyup="this.value=this.value.replace(/[^0-9.]/g,'')" >
-                                    	<span slot="suffix" class="slotspan">条</span>
+                                    <el-input v-model="list.sy_listnum" placeholder="{yun:}t key='wap_user_00076'{/yun}" onkeyup="this.value=this.value.replace(/[^0-9.]/g,'')" >
+                                    	<span slot="suffix" class="slotspan">{yun:}t key='common_02088'{/yun}</span>
                                     </el-input>
 	                            </div>
 	                        </td>
@@ -77,11 +77,11 @@
 	                    </tr>
                         <tr>
                             <td>
-                                <div class="TableTite">网站关闭原因：</div>
+                                <div class="TableTite">{yun:}t key='admin_01017'{/yun}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
-                                    <el-input type="textarea" :rows="2" autosize placeholder="请输入内容" v-model="list.sy_webclose">
+                                    <el-input type="textarea" :rows="2" autosize placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="list.sy_webclose">
                                     </el-input>
                                 </div>
                             </td>
@@ -93,75 +93,75 @@
                         </tr>
                         <tr>
                             <td>
-                                <div class="TableTite">网站关键词：</div>
+                                <div class="TableTite">{yun:}t key='admin_01018'{/yun}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
-                                    <el-input type="textarea" :rows="2" autosize placeholder="请输入内容" v-model="list.sy_webkeyword">
+                                    <el-input type="textarea" :rows="2" autosize placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="list.sy_webkeyword">
                                     </el-input>
                                 </div>
                             </td>
                             <td>
                                 <div class="TableShuom">
-                                    <span>提示：网站关键词作为公共部分详细设置请到系统-》SEO设置单独设置</span>
+                                    <span>{yun:}t key='admin_system_00312'{/yun}</span>
                                 </div>
                             </td>
                         </tr>
                         <tr>
                             <td>
-                                <div class="TableTite">网站描述：</div>
+                                <div class="TableTite">{yun:}t key='admin_01019'{/yun}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
-                                    <el-input type="textarea" :rows="2" autosize placeholder="请输入内容" v-model="list.sy_webmeta">
+                                    <el-input type="textarea" :rows="2" autosize placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="list.sy_webmeta">
                                     </el-input>
                                 </div>
                             </td>
                             <td>
                                 <div class="TableShuom">
-                                    <span>提示：网站描述作为公共部分，详细设置请到系统-》SEO管理设置</span>
+                                    <span>{yun:}t key='admin_system_00313'{/yun}</span>
                                 </div>
                             </td>
                         </tr>
                         <tr>
                             <td>
-                                <div class="TableTite">网站版权信息：</div>
+                                <div class="TableTite">{yun:}t key='admin_system_00327'{/yun}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
-                                    <el-input type="textarea" :rows="2" autosize placeholder="请输入内容" v-model="list.sy_webcopyright">
+                                    <el-input type="textarea" :rows="2" autosize placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="list.sy_webcopyright">
                                     </el-input>
                                 </div>
                             </td>
                             <td>
                                 <div class="TableShuom">
-                                    <span>提示：© 可复制使用</span>
+                                    <span>{yun:}t key='admin_system_00320'{/yun}</span>
                                 </div>
                             </td>
                         </tr>
 						<tr>
 						    <td>
-						        <div class="TableTite">站长EMAIL：</div>
+						        <div class="TableTite">{yun:}t key='admin_system_00324'{/yun}</div>
 						    </td>
 						    <td>
 						        <div class="TableInpt">
-						            <el-input v-model="list.sy_webemail" placeholder="请输入内容">
+						            <el-input v-model="list.sy_webemail" placeholder="{yun:}t key='wap_user_00076'{/yun}">
 						            </el-input>
 						        </div>
 						    </td>
 						    <td>
 						        <div class="TableShuom">
-						            <span>网站客服联系方式</span>
+						            <span>{yun:}t key='admin_system_00325'{/yun}</span>
 						        </div>
 						    </td>
 						</tr>
                         <tr>
 						    <td>
-						        <div class="TableTite">站长手机：</div>
+						        <div class="TableTite">{yun:}t key='admin_system_00330'{/yun}</div>
 						    </td>
 						    <td>
 						        <div class="TableInpt">
-						            <el-input v-model="list.sy_webmoblie" @input="inputIntNumber($event, 'list', 'sy_webmoblie')" placeholder="请输入内容">
+						            <el-input v-model="list.sy_webmoblie" @input="inputIntNumber($event, 'list', 'sy_webmoblie')" placeholder="{yun:}t key='wap_user_00076'{/yun}">
 						            </el-input>
 						        </div>
 						    </td>
@@ -173,43 +173,43 @@
 						</tr>
                         <tr>
 						    <td>
-						        <div class="TableTite">站长传真：</div>
+						        <div class="TableTite">{yun:}t key='default_00255'{/yun}</div>
 						    </td>
 						    <td>
 						        <div class="TableInpt">
-						            <el-input v-model="list.sy_webtel" placeholder="请输入内容">
+						            <el-input v-model="list.sy_webtel" placeholder="{yun:}t key='wap_user_00076'{/yun}">
 						            </el-input>
 						        </div>
 						    </td>
 						    <td>
 						        <div class="TableShuom">
-						            <span>如：021-61190281</span>
+						            <span>{yun:}t key='admin_system_00317'{/yun}</span>
 						        </div>
 						    </td>
 						</tr>
                         <tr>
 						    <td>
-						        <div class="TableTite">ICP备案号：</div>
+						        <div class="TableTite">{yun:}t key='admin_system_00326'{/yun}</div>
 						    </td>
 						    <td>
 						        <div class="TableInpt">
-						            <el-input v-model="list.sy_webrecord" placeholder="请输入内容">
+						            <el-input v-model="list.sy_webrecord" placeholder="{yun:}t key='wap_user_00076'{/yun}">
 						            </el-input>
 						        </div>
 						    </td>
 						    <td>
 						        <div class="TableShuom">
-						            <span>网站客服联系方式</span>
+						            <span>{yun:}t key='admin_system_00325'{/yun}</span>
 						        </div>
 						    </td>
 						</tr>
                         <tr>
                             <td>
-                                <div class="TableTite">网安备案号：</div>
+                                <div class="TableTite">{yun:}t key='admin_system_00329'{/yun}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
-                                    <el-input v-model="list.sy_websecord" placeholder="请输入内容">
+                                    <el-input v-model="list.sy_websecord" placeholder="{yun:}t key='wap_user_00076'{/yun}">
                                     </el-input>
                                 </div>
                             </td>
@@ -220,11 +220,11 @@
                         </tr>
                         <tr>
                             <td>
-                                <div class="TableTite">ICP经营许可证编号：</div>
+                                <div class="TableTite">{yun:}t key='admin_01020'{/yun}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
-                                    <el-input v-model="list.sy_perfor" placeholder="请输入内容"></el-input>
+                                    <el-input v-model="list.sy_perfor" placeholder="{yun:}t key='wap_user_00076'{/yun}"></el-input>
                                 </div>
                             </td>
                             <td>
@@ -234,11 +234,11 @@
                         </tr>
                         <tr>
                             <td>
-                                <div class="TableTite">人力资源证编号：</div>
+                                <div class="TableTite">{yun:}t key='admin_system_00321'{/yun}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
-                                    <el-input v-model="list.sy_hrlicense" placeholder="请输入内容"></el-input>
+                                    <el-input v-model="list.sy_hrlicense" placeholder="{yun:}t key='wap_user_00076'{/yun}"></el-input>
                                 </div>
                             </td>
                             <td>
@@ -248,97 +248,97 @@
                         </tr>
                         <tr>
 						    <td>
-						        <div class="TableTite">客服电话</div>
+						        <div class="TableTite">{yun:}t key='wap_com_00102'{/yun}</div>
 						    </td>
 						    <td>
 						        <div class="TableInpt">
-						            <el-input v-model="list.sy_freewebtel" placeholder="请输入内容">
+						            <el-input v-model="list.sy_freewebtel" placeholder="{yun:}t key='wap_user_00076'{/yun}">
 						            </el-input>
 						        </div>
 						    </td>
 						    <td>
 						        <div class="TableShuom">
-						            <span>网站客服联系方式</span>
+						            <span>{yun:}t key='admin_system_00325'{/yun}</span>
 						        </div>
 						    </td>
 						</tr>
 						<tr>
 						    <td>
-						        <div class="TableTite">企业咨询电话</div>
+						        <div class="TableTite">{yun:}t key='admin_01021'{/yun}</div>
 						    </td>
 						    <td>
 						        <div class="TableInpt">
-						            <el-input v-model="list.sy_comwebtel" placeholder="请输入内容">
+						            <el-input v-model="list.sy_comwebtel" placeholder="{yun:}t key='wap_user_00076'{/yun}">
 						            </el-input>
 						        </div>
 						    </td>
 						    <td>
 						        <div class="TableShuom">
-						            <span>专门用于企业相关功能咨询的客服电话，如购买套餐、企业审核等</span>
+						            <span>{yun:}t key='admin_system_00314'{/yun}</span>
 						        </div>
 						    </td>
 						</tr>
                         <tr>
                             <td>
-                                <div class="TableTite">工作时间</div>
+                                <div class="TableTite">{yun:}t key='admin_user_00223'{/yun}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
-                                    <el-input v-model="list.sy_worktime" placeholder="请输入内容">
+                                    <el-input v-model="list.sy_worktime" placeholder="{yun:}t key='wap_user_00076'{/yun}">
                                     </el-input>
                                 </div>
                             </td>
                             <td>
                                 <div class="TableShuom">
-                                    <span>如：工作日 9:00-18:00</span>
+                                    <span>{yun:}t key='admin_system_00316'{/yun}</span>
                                 </div>
                             </td>
                         </tr>
 						<tr>
 						    <td>
-						        <div class="TableTite">客服QQ</div>
+						        <div class="TableTite">{yun:}t key='wap_com_00101'{/yun}</div>
 						    </td>
 						    <td>
 						        <div class="TableInpt">
-						            <el-input v-model="list.sy_qq" @input="inputIntNumber($event, 'list', 'sy_qq')" placeholder="请输入内容">
+						            <el-input v-model="list.sy_qq" @input="inputIntNumber($event, 'list', 'sy_qq')" placeholder="{yun:}t key='wap_user_00076'{/yun}">
 						            </el-input>
 						        </div>
 						    </td>
 						    <td>
 						        <div class="TableShuom">
-						            <span>多个则用半角逗号隔开</span>
+						            <span>{yun:}t key='admin_system_00319'{/yun}</span>
 						        </div>
 						    </td>
 						</tr>
 						<tr>
 						    <td>
-						        <div class="TableTite">公司地址</div>
+						        <div class="TableTite">{yun:}t key='wap_00040'{/yun}</div>
 						    </td>
 						    <td>
 						        <div class="TableInpt">
-						            <el-input v-model="list.sy_webadd" placeholder="请输入内容">
+						            <el-input v-model="list.sy_webadd" placeholder="{yun:}t key='wap_user_00076'{/yun}">
 						            </el-input>
 						        </div>
 						    </td>
 						    <td>
 						        <div class="TableShuom">
-						            <span>公司联系地址</span>
+						            <span>{yun:}t key='admin_system_00328'{/yun}</span>
 						        </div>
 						    </td>
 						</tr>
 						<tr>
 						    <td>
-						        <div class="TableTite">统计代码</div>
+						        <div class="TableTite">{yun:}t key='admin_01022'{/yun}</div>
 						    </td>
 						    <td>
 						        <div class="TableInpt">
-						          <el-input type="textarea" :rows="2" autosize placeholder="请输入内容" v-model="list.sy_webtongji">
+						          <el-input type="textarea" :rows="2" autosize placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="list.sy_webtongji">
 						          </el-input>
 						        </div>
 						    </td>
 						    <td>
 						        <div class="TableShuom">
-						         网站底部的统计代码
+						         {yun:}t key='admin_01023'{/yun}
 						        </div>
 						    </td>
 						</tr>
@@ -347,7 +347,7 @@
 	            </table>
 	        </div>
 	        <div class="setBasicButn" style="border: none; height: 80px;">
-	            <el-button type="primary" size="medium" @click="save" :disabled="saveLoading">提交</el-button>
+	            <el-button type="primary" size="medium" @click="save" :disabled="saveLoading">{yun:}t key='common.submit'{/yun}</el-button>
 	        </div>
 	    </div>
 </template>
@@ -398,7 +398,7 @@ module.exports = {
             httpPost(url, ruleForm).then(function (response) {
                 var res = response.data;
                 if (res.error == 0) {
-                    message.success('操作成功');
+                    message.success("{yun:}t key='wap_user_00264'{/yun}");
                     _this.$emit('get-list', true)
 
                 } else {

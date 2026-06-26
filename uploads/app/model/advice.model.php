@@ -14,15 +14,15 @@ class advice_model extends model{
 		if($List&&is_array($List)){
 			foreach($List as $k=>$v){
 			    if ($v['infotype'] == 1){
-                    $List[$k]['infotype_n'] = '建议';
+                    $List[$k]['infotype_n'] = yun_at('common_01983');
                 }else if ($v['infotype'] == 2){
-                    $List[$k]['infotype_n'] = '意见';
+                    $List[$k]['infotype_n'] = yun_at('wap_00111');
                 }else if ($v['infotype'] == 3){
-                    $List[$k]['infotype_n'] = '求助';
+                    $List[$k]['infotype_n'] = yun_at('wap_00113');
                 }else if ($v['infotype'] == 4){
-                    $List[$k]['infotype_n'] = '投诉';
+                    $List[$k]['infotype_n'] = yun_at('wap_00112');
                 }else{
-                    $List[$k]['infotype_n'] = '建议';
+                    $List[$k]['infotype_n'] = yun_at('common_01983');
                 }
                 $List[$k]['ctime_n'] = date('Y-m-d', $v['ctime']);
 				$List[$k]['content']=str_replace(array('<!--','-->'),array('&lt;!--','--&gt;'),$v['content']);
@@ -64,13 +64,13 @@ class advice_model extends model{
 	public function addInfo($data=array()){
 		
 		if($data['infotype']==''){
-			return array('msg'=>'请选择意见类型','errcode'=>8);
+			return array('msg'=>yun_at('wap_01458'),'errcode'=>8);
 		}elseif($data['username']==''){
-			return array('msg'=>'请填写联系人姓名','errcode'=>8);
+			return array('msg'=>yun_at('model_00013'),'errcode'=>8);
 		}elseif($data['mobile']==''){
-			return array('msg'=>'请填写联系手机','errcode'=>8);
+			return array('msg'=>yun_at('wap_00661'),'errcode'=>8);
 		}elseif($data['content']==''){
-			return array('msg'=>'请填写反馈内容','errcode'=>8);
+			return array('msg'=>yun_at('model_00014'),'errcode'=>8);
 		}
 
 		require ('notice.model.php');
@@ -78,7 +78,7 @@ class advice_model extends model{
 
 		if($data['utype'] != 'wxapp' && $this->config['sy_advice_mobilecode']!=1){
 
-			$result	  =	 $noticeM->jycheck($data['authcode'],'意见反馈');
+			$result	  =	 $noticeM->jycheck($data['authcode'],'wap_user_00203');
 
 			if(!empty($result)){
 
@@ -92,7 +92,7 @@ class advice_model extends model{
 
 			if($data['advice_code']==''){
 
-				return array('msg'=>'请填写手机验证码','errcode'=>8);
+				return array('msg'=>yun_at('common_02172'),'errcode'=>8);
 
 			}else{
 
@@ -108,13 +108,13 @@ class advice_model extends model{
 					if($checkTime){
 						$res 				= 		$data['advice_code'] == $cert_arr['check2'] ? true : false;
 						if($res == false){
-							return array('msg'=>'短信验证码错误！','errcode'=>'8'); 
+							return array('msg'=>yun_at('common_01289'),'errcode'=>'8'); 
 						}						
 					}else {		
-						return array('msg'=>'验证码验证超时，请重新点击发送验证码！','errcode'=>'8'); 			
+						return array('msg'=>yun_at('common_00409'),'errcode'=>'8'); 			
 					}					
 				}else {		
-					return array('msg'=>'验证码发送不成功，请重新点击发送短信验证码！','errcode'=>'8'); 			
+					return array('msg'=>yun_at('common_00278'),'errcode'=>'8'); 			
 				}
 			}
 		}
@@ -135,9 +135,9 @@ class advice_model extends model{
 			$url	=	Url('wap',array('c'=>'advice'));
 		}
 		if($nid){
-			return array('msg'=>'提交成功，感谢你的反馈！','errcode'=>9,'url'=>$url);
+			return array('msg'=>yun_at('common_00795'),'errcode'=>9,'url'=>$url);
 		}else{
-			return array('msg'=>'提交失败，请重新填写！','errcode'=>8,'url'=>$url);
+			return array('msg'=>yun_at('common_00887'),'errcode'=>8,'url'=>$url);
 		}
 		
 	}
@@ -160,11 +160,11 @@ class advice_model extends model{
 		 
 			$return['id']		=	$this->delete_all('advice_question',array('id'=>array('in',$delId)),"");
 			
-	        $return['msg']		=	'意见反馈(ID:'.$delId.')';
+	        $return['msg']		=	yun_auto_t('意见反馈(ID:').$delId.')';
 			$return['errcode']	=	$return['id'] ? '9' :'8';
-			$return['msg']		=	$return['id'] ? $return['msg'].'删除成功！' : $return['msg'].'删除失败！';
+			$return['msg']		=	$return['id'] ? $return['msg'].'admin_user_00187' : $return['msg'].'admin_user_00186';
 	    }else{
-	        $return['msg']		=	'请选择您要删除的意见反馈';
+	        $return['msg']		=	yun_at('common_00814');
 	        $return['errcode']	=	'8';
 	    }
 	    return $return;
@@ -174,11 +174,11 @@ class advice_model extends model{
 		if(!empty($data)){
 			$nid      					=	$this->update_once('advice_question',$data,$whereData);
 			
-	        $return['msg']				=	'意见反馈(ID:'.$whereData['id'].')';
+	        $return['msg']				=	yun_auto_t('意见反馈(ID:').$whereData['id'].')';
 			$return['errcode']			=	$nid ? '9' :'8';
-			$return['msg']				=	$nid ? $return['msg'].'处理成功！' : $return['msg'].'处理失败！';
+			$return['msg']				=	$nid ? $return['msg'].'common_06362' : $return['msg'].'common_06363';
 	    }else{
-	        $return['msg']      		=	'请选择您要处理的意见反馈';
+	        $return['msg']      		=	yun_at('common_00817');
 	        $return['errcode']  		=	'8';
 	    }
 	    return $return;

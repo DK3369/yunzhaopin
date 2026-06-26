@@ -58,15 +58,15 @@
 {yun:}if $info.com_bm==1{/yun}
     {yun:}if !$isapply{/yun}
 	<div class="">
-	<div class="senior_new_t">我是企业，我要加入招聘</div>
+	<div class="senior_new_t">{yun:}t key='common_02311'{/yun}</div>
 		{yun:}if $uid{/yun}
         {yun:}if $usertype=='2'{/yun}
 		<input type='button' value="{yun:}t key='wap_00375'{/yun}" onclick="comapply('{yun:}$info.id{/yun}','{yun:}$info.integral{/yun}','{yun:}url m=special c=apply{/yun}')" class="senior_new_bth" />
         {yun:}else{/yun}
             {yun:}if $config.sy_user_change==1{/yun}
-                 <input type='button' value="{yun:}t key='wap_00375'{/yun}" onclick="layer.msg('请先申请企业用户才能报名！',2, 8)" class="senior_new_bth" />
+                 <input type='button' value="{yun:}t key='wap_00375'{/yun}" onclick="layer.msg("{yun:}t key='common_02305'{/yun}",2, 8)" class="senior_new_bth" />
            {yun:}else{/yun} 
-                <input type='button' value="{yun:}t key='wap_00375'{/yun}" onclick="layer.msg('只有企业用户才能报名！',2, 8)" class="senior_new_bth" />
+                <input type='button' value="{yun:}t key='wap_00375'{/yun}" onclick="layer.msg("{yun:}t key='model_00055'{/yun}",2, 8)" class="senior_new_bth" />
            {yun:}/if{/yun}
         {yun:}/if{/yun}
         {yun:}else{/yun}

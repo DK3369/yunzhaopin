@@ -4,143 +4,143 @@
             <table class="tableVue">
                 <thead>
                 <tr align="left">
-                    <th width="180">名称</th>
-                    <th width="360">状态</th>
-                    <th>说明</th>
+                    <th width="180">{yun:}t key='member_com_00021'{/yun}</th>
+                    <th width="360">{yun:}t key='member_user_00181'{/yun}</th>
+                    <th>{yun:}t key='member_com_00207'{/yun}</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr>
                     <td>
-                        <div class="TableTite">Memcache缓存</div>
+                        <div class="TableTite">{yun:}t key='admin_system_00297'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableButn">
                             <el-radio-group v-model="list.ismemcache">
-                                <el-radio label="1">开启</el-radio>
-                                <el-radio label="2">关闭</el-radio>
+                                <el-radio label="1">{yun:}t key='member_com_00287'{/yun}</el-radio>
+                                <el-radio label="2">{yun:}t key='common.close'{/yun}</el-radio>
                             </el-radio-group>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>如果服务器上未安装Memcache,则不要开启此项。</span>
+                            <span>{yun:}t key='admin_00908'{/yun}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">Memcache服务器</div>
+                        <div class="TableTite">{yun:}t key='admin_system_00295'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-input v-model="list.memcachehost" placeholder="请输入内容"></el-input>
+                            <el-input v-model="list.memcachehost" placeholder="{yun:}t key='wap_user_00076'{/yun}"></el-input>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>服务器IP，本机127.0.0.1</span>
+                            <span>{yun:}t key='admin_system_00293'{/yun}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">Memcache端口</div>
+                        <div class="TableTite">{yun:}t key='admin_system_00296'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-input v-model="list.memcacheport" @input="inputIntNumber($event, 'list', 'memcacheport')" placeholder="请输入内容"></el-input>
+                            <el-input v-model="list.memcacheport" @input="inputIntNumber($event, 'list', 'memcacheport')" placeholder="{yun:}t key='wap_user_00076'{/yun}"></el-input>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>默认11211</span>
+                            <span>{yun:}t key='admin_00909'{/yun}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">Memcache缓存时间</div>
+                        <div class="TableTite">{yun:}t key='admin_system_00294'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-input v-model="list.memcachetime" @input="inputIntNumber($event, 'list', 'memcachetime')" placeholder="请输入内容"></el-input>
+                            <el-input v-model="list.memcachetime" @input="inputIntNumber($event, 'list', 'memcachetime')" placeholder="{yun:}t key='wap_user_00076'{/yun}"></el-input>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>秒为单位,一般为3600秒</span>
+                            <span>{yun:}t key='admin_00910'{/yun}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">页面缓存</div>
+                        <div class="TableTite">{yun:}t key='admin_system_00301'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableButn" style="display: flex;align-items: center;">
                             <div>
                                 <el-radio-group v-model="list.webcache">
-                                    <el-radio label="1">开启</el-radio>
-                                    <el-radio label="2">关闭</el-radio>
+                                    <el-radio label="1">{yun:}t key='member_com_00287'{/yun}</el-radio>
+                                    <el-radio label="2">{yun:}t key='common.close'{/yun}</el-radio>
                                 </el-radio-group>
                             </div>
                             <div class="huncmokuai">
-                                <a href="#" @click="setCache">设置缓存模块</a>
+                                <a href="#" @click="setCache">{yun:}t key='admin_system_00299'{/yun}</a>
                             </div>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>缓存整个页面的内容</span>设置缓存模块
+                            <span>{yun:}t key='admin_00911'{/yun}</span>{yun:}t key='admin_system_00299'{/yun}
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">页面缓存时间</div>
+                        <div class="TableTite">{yun:}t key='admin_system_00300'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-input v-model="list.webcachetime" @input="inputIntNumber($event, 'list', 'webcachetime')" placeholder="请输入内容"></el-input>
+                            <el-input v-model="list.webcachetime" @input="inputIntNumber($event, 'list', 'webcachetime')" placeholder="{yun:}t key='wap_user_00076'{/yun}"></el-input>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>秒为单位,一般为3600秒</span>
+                            <span>{yun:}t key='admin_00910'{/yun}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">smarty缓存</div>
+                        <div class="TableTite">{yun:}t key='admin_00912'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableButn">
                             <el-radio-group v-model="list.issmartycache">
-                                <el-radio label="1">开启</el-radio>
-                                <el-radio label="2">关闭</el-radio>
+                                <el-radio label="1">{yun:}t key='member_com_00287'{/yun}</el-radio>
+                                <el-radio label="2">{yun:}t key='common.close'{/yun}</el-radio>
                             </el-radio-group>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>smarty缓存</span>
+                            <span>{yun:}t key='admin_00912'{/yun}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">smarty缓存时间</div>
+                        <div class="TableTite">{yun:}t key='admin_00913'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-input v-model="list.smartycachetime" @input="inputIntNumber($event, 'list', 'smartycachetime')" placeholder="请输入内容"></el-input>
+                            <el-input v-model="list.smartycachetime" @input="inputIntNumber($event, 'list', 'smartycachetime')" placeholder="{yun:}t key='wap_user_00076'{/yun}"></el-input>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>秒为单位,一般为3600秒</span>
+                            <span>{yun:}t key='admin_00910'{/yun}</span>
                         </div>
                     </td>
                 </tr>
@@ -149,12 +149,12 @@
             </table>
         </div>
         <div class="setBasicButn" style="border: none; height: 80px;">
-            <el-button type="primary" size="medium" @click="save" :disabled="saveLoading">提交</el-button>
+            <el-button type="primary" size="medium" @click="save" :disabled="saveLoading">{yun:}t key='common.submit'{/yun}</el-button>
         </div>
-        <el-drawer title="缓存模块设置" :visible.sync="cacheDrawer" :modal-append-to-body="false" :show-close="true"
+        <el-drawer title="{yun:}t key='admin_00914'{/yun}" :visible.sync="cacheDrawer" :modal-append-to-body="false" :show-close="true"
                    :with-header="true" size="70%">
             <div class="tableDome_tip">
-                <el-alert title="该页面展示了缓存模块" type="success" show-icon>
+                <el-alert title="{yun:}t key='admin_system_00298'{/yun}" type="success" show-icon>
                 </el-alert>
             </div>
             <div class="moduleTable">
@@ -162,12 +162,12 @@
                     <ul>
                         <li>
                             <div class="moduleHcTite">
-                                <span>首页</span>
+                                <span>{yun:}t key='common.home'{/yun}</span>
                             </div>
                             <div class="moduleHcKg">
                                 <el-radio-group v-model="sy_index_cache">
-                                    <el-radio label="1">开启</el-radio>
-                                    <el-radio label="2">关闭</el-radio>
+                                    <el-radio label="1">{yun:}t key='member_com_00287'{/yun}</el-radio>
+                                    <el-radio label="2">{yun:}t key='common.close'{/yun}</el-radio>
                                 </el-radio-group>
                             </div>
                         </li>
@@ -177,8 +177,8 @@
                             </div>
                             <div class="moduleHcKg">
                                 <el-radio-group v-model="item.cache">
-                                    <el-radio label="1">开启</el-radio>
-                                    <el-radio label="2">关闭</el-radio>
+                                    <el-radio label="1">{yun:}t key='member_com_00287'{/yun}</el-radio>
+                                    <el-radio label="2">{yun:}t key='common.close'{/yun}</el-radio>
                                 </el-radio-group>
                             </div>
                         </li>
@@ -186,7 +186,7 @@
                 </div>
             </div>
             <div class="setBasicButn" style="border: none;">
-                <el-button type="primary" size="medium" @click="saveCache" :disabled="saveLoading">保存</el-button>
+                <el-button type="primary" size="medium" @click="saveCache" :disabled="saveLoading">{yun:}t key='common.save'{/yun}</el-button>
             </div>
         </el-drawer>
     </div>
@@ -206,7 +206,7 @@ module.exports = {
             textarea: '',
             radio: '1',
             uri: "m=system&c=",
-            title: '缓存模块设置',
+            title: "{yun:}t key='admin_00914'{/yun}",
             cacheDrawer: false,
             newModel:[],
             sy_index_cache:'',
@@ -236,7 +236,7 @@ module.exports = {
             httpPost(url, ruleForm).then(function (response) {
                 var res = response.data;
                 if (res.error == 0) {
-                    message.success('操作成功');
+                    message.success("{yun:}t key='wap_user_00264'{/yun}");
                     _this.$emit('get-list', true)
                 } else {
                     message.error(res.msg);

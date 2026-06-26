@@ -86,7 +86,7 @@ class index_controller extends common{
 
 			if(!is_numeric($_POST['code']) || CheckRegUser($_POST['username'])==false){
 
-				$this->ACT_msg($this->url("index","forgetpw","1"), $msg = "无效的信息！", $st = 2, $tm = 3);
+				$this->ACT_msg($this->url("index","forgetpw","1"), $msg = 'activate_00004', $st = 2, $tm = 3);
 
 				exit();
 
@@ -107,13 +107,13 @@ class index_controller extends common{
 
 			if(!$cert['uid']){
 				
-				$this->ACT_msg($this->url("index","forgetpw","1"), $msg = "验证码填写错误！", $st = 2, $tm = 3);
+				$this->ACT_msg($this->url("index","forgetpw","1"), $msg = 'model_00090', $st = 2, $tm = 3);
 				
 				exit();
 			
 			}elseif((time()-$cert['ctime'])>1200){
 				
-				$this->ACT_msg($this->url("index","forgetpw","1"), $msg = "验证码已失效，请重新获取！", $st = 2, $tm = 3);
+				$this->ACT_msg($this->url("index","forgetpw","1"), $msg = 'activate_00001', $st = 2, $tm = 3);
 				
 				exit();
 			
@@ -147,17 +147,17 @@ class index_controller extends common{
 					
 				
 				
-				$this->ACT_msg($this->url("index","login","1"), $msg = "密码修改成功！", $st = 1, $tm = 3);
+				$this->ACT_msg($this->url("index","login","1"), $msg = 'wap_01786', $st = 1, $tm = 3);
 			
 			}else{
 				
-				$this->ACT_msg($this->url("index","forgetpw","1"), $msg = "对不起！没有该用户！", $st = 2, $tm = 3);
+				$this->ACT_msg($this->url("index","forgetpw","1"), $msg = 'activate_00002', $st = 2, $tm = 3);
 			
 			}
 		
 		}else{
 			
-			$this->ACT_msg($this->url("index","forgetpw","1"), $msg = "请完整填写信息！", $st = 2, $tm = 3);
+			$this->ACT_msg($this->url("index","forgetpw","1"), $msg = 'resume_00032', $st = 2, $tm = 3);
 			
 			exit();
 		

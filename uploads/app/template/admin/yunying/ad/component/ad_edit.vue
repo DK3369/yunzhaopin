@@ -3,21 +3,21 @@
         <!--运营-广告-广告管理 添加/修改-->
         <div class="drawerModInfo" style="height: calc(100% - 80px); overflow-y: auto;">
             <div class="adminBoldTips guangaoBanner">
-                {{ textAddEdit }}广告时，请正确选择分类和类型。广告分类由：“分站、主站”和广告形式（联盟广告、图片）等个性化设置。
+                {yun:}t key='admin_01133'{/yun}
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>广告名称：</span>
+                    <span>{yun:}t key='admin_01134'{/yun}</span>
                 </div>
                 <div class="drawerModInpt" style="display: flex; align-items: center;">
-                    <el-input v-model="ruleForm.ad_name" placeholder="请输入类别名称"></el-input>
+                    <el-input v-model="ruleForm.ad_name" placeholder="{yun:}t key='admin_00217'{/yun}"></el-input>
                     <el-checkbox v-model="ruleForm.targetChecked" label="新窗口打开" @change="handleTarget"
                         style="padding-left: 20px;"></el-checkbox>
                 </div>
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>使用范围：</span>
+                    <span>{yun:}t key='admin_01135'{/yun}</span>
                 </div>
                 <div class="drawerModInpt">
                     <el-select v-model="ruleForm.did" filterable placeholder="">
@@ -28,7 +28,7 @@
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>广告所属分类：</span>
+                    <span>{yun:}t key='admin_01136'{/yun}</span>
                 </div>
                 <div class="drawerModInpt">
                     <el-cascader v-model="ruleForm.class_id" :options="classData" :props="{ emitPath: false }"
@@ -37,26 +37,26 @@
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>广告是否启用：</span>
+                    <span>{yun:}t key='admin_01137'{/yun}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-radio v-model="ruleForm.is_open" label="1">启用</el-radio>
-                    <el-radio v-model="ruleForm.is_open" label="0">关闭</el-radio>
+                    <el-radio v-model="ruleForm.is_open" label="1">{yun:}t key='admin_user_company_00205'{/yun}</el-radio>
+                    <el-radio v-model="ruleForm.is_open" label="0">{yun:}t key='common.close'{/yun}</el-radio>
                 </div>
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>广告有效期：</span>
+                    <span>{yun:}t key='admin_01138'{/yun}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-date-picker v-model="ruleForm.ad_time" type="daterange" range-separator="至" start-placeholder="开始日期"
-                        end-placeholder="结束日期" value-format="yyyy-MM-dd">
+                    <el-date-picker v-model="ruleForm.ad_time" type="daterange" range-separator="至" start-placeholder="{yun:}t key='admin_00343'{/yun}"
+                        end-placeholder="{yun:}t key='admin_00344'{/yun}" value-format="yyyy-MM-dd">
                     </el-date-picker>
                 </div>
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>备注：</span>
+                    <span>{yun:}t key='admin_01139'{/yun}</span>
                 </div>
                 <div class="drawerModInpt">
                     <el-input type="textarea" :rows="2" v-model="ruleForm.remark"></el-input>
@@ -64,46 +64,46 @@
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>排序：</span>
+                    <span>{yun:}t key='admin_system_00103'{/yun}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input v-model="ruleForm.sort" placeholder="请输入内容"
+                    <el-input v-model="ruleForm.sort" placeholder="{yun:}t key='wap_user_00076'{/yun}"
                         onkeyup="this.value=this.value.replace(/[^0-9]/g,'')"></el-input>
                 </div>
                 <div class="drawerModTips">
-                    <el-alert title="越大越在前" type="info" show-icon :closable="false"></el-alert>
+                    <el-alert title="{yun:}t key='admin_01153'{/yun}" type="info" show-icon :closable="false"></el-alert>
                 </div>
             </div>
             
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>广告类型：</span>
+                    <span>{yun:}t key='admin_01131'{/yun}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-radio v-model="ruleForm.ad_type" label="word">文字广告</el-radio>
-                    <el-radio v-model="ruleForm.ad_type" label="pic">图片广告</el-radio>
-                    <el-radio v-model="ruleForm.ad_type" label="lianmeng">联盟广告</el-radio>
+                    <el-radio v-model="ruleForm.ad_type" label="word">{yun:}t key='admin_01140'{/yun}</el-radio>
+                    <el-radio v-model="ruleForm.ad_type" label="pic">{yun:}t key='admin_01141'{/yun}</el-radio>
+                    <el-radio v-model="ruleForm.ad_type" label="lianmeng">{yun:}t key='admin_yunying_00072'{/yun}</el-radio>
                 </div>
             </div>
 
             <div v-if="ruleForm.ad_type == 'word'">
                 <div class="drawerModLis">
                     <div class="drawerModTite">
-                        <span>文字信息：</span>
+                        <span>{yun:}t key='admin_01142'{/yun}</span>
                     </div>
                     <div class="drawerModInpt">
-                        <el-input v-model="ruleForm.word_info" placeholder="请输入内容"></el-input>
+                        <el-input v-model="ruleForm.word_info" placeholder="{yun:}t key='wap_user_00076'{/yun}"></el-input>
                     </div>
                 </div>
                 <div class="drawerModLis">
                     <div class="drawerModTite">
-                        <span>文字链接：</span>
+                        <span>{yun:}t key='admin_01143'{/yun}</span>
                     </div>
                     <div class="drawerModInpt">
-                        <el-input v-model="ruleForm.word_url" placeholder="请输入内容"></el-input>
+                        <el-input v-model="ruleForm.word_url" placeholder="{yun:}t key='wap_user_00076'{/yun}"></el-input>
                     </div>
                     <div class="drawerModTips">
-                        <el-alert title="外部链接请加上“http://”" type="info" show-icon :closable="false"></el-alert>
+                        <el-alert title="{yun:}t key='admin_01154'{/yun}" type="info" show-icon :closable="false"></el-alert>
                     </div>
                 </div>
             </div>
@@ -111,11 +111,11 @@
             <div v-if="ruleForm.ad_type == 'pic'">
                 <div class="drawerModLis">
                     <div class="drawerModTite">
-                        <span>图片地址：</span>
+                        <span>{yun:}t key='admin_01144'{/yun}</span>
                     </div>
                     <div class="drawerModInpt">
-                        <el-radio v-model="ruleForm.upload" label="upload">远程地址</el-radio>
-                        <el-radio v-model="ruleForm.upload" label="upload_pic">本地上传</el-radio>
+                        <el-radio v-model="ruleForm.upload" label="upload">{yun:}t key='admin_01145'{/yun}</el-radio>
+                        <el-radio v-model="ruleForm.upload" label="upload_pic">{yun:}t key='admin_01146'{/yun}</el-radio>
                     </div>
                 </div>
                 <div v-if="ruleForm.upload == 'upload'" class="drawerModLis">
@@ -123,7 +123,7 @@
 
                     </div>
                     <div class="drawerModInpt">
-                        <el-input v-model="ruleForm.pic_url_n" placeholder="请输入远程地址"></el-input>
+                        <el-input v-model="ruleForm.pic_url_n" placeholder="{yun:}t key='admin_01155'{/yun}"></el-input>
                         <div class="up_sy_logo_div">
                             <el-image v-if="ruleForm.pic_url_n" style="width:100px;" :src="ruleForm.pic_url_n"
                                 :preview-src-list="ruleForm.pic_url_n ? [ruleForm.pic_url_n] : []"></el-image>
@@ -137,7 +137,7 @@
                     <div class="drawerModInpt" style="display: flex;align-items: center;">
                         <el-upload :accept="pic_accept" :action="uploadAction" :on-change="uploadChange"
                             :show-file-list="false">
-                            <el-button size="small" type="primary">上传图片</el-button>
+                            <el-button size="small" type="primary">{yun:}t key='wap_00540'{/yun}</el-button>
                         </el-upload>
                         <div class="up_sy_logo_div" style="margin-left: 15px;">
                             <el-image v-if="ruleForm.pic_upload_n" style="width:100px;" :src="ruleForm.pic_upload_n"
@@ -147,45 +147,45 @@
                 </div>
                 <div class="drawerModLis">
                     <div class="drawerModTite">
-                        <span>图片链接：</span>
+                        <span>{yun:}t key='admin_01147'{/yun}</span>
                     </div>
                     <div class="drawerModInpt">
                         <el-input v-model="ruleForm.pic_src" placeholder=""></el-input>
                     </div>
                     <div class="drawerModTips">
-                        <el-alert title="外部链接请加上“http://”" type="info" show-icon :closable="false"></el-alert>
+                        <el-alert title="{yun:}t key='admin_01154'{/yun}" type="info" show-icon :closable="false"></el-alert>
                     </div>
                 </div>
                 <div class="drawerModLis">
                     <div class="drawerModTite">
-                        <span>图片描述：</span>
+                        <span>{yun:}t key='admin_01148'{/yun}</span>
                     </div>
                     <div class="drawerModInpt">
                         <el-input v-model="ruleForm.pic_content" placeholder=""></el-input>
                     </div>
                     <div class="drawerModTips">
-                        <el-alert title="例如：公司名称或图片介绍，可留空" type="info" show-icon :closable="false"></el-alert>
+                        <el-alert title="{yun:}t key='admin_01156'{/yun}" type="info" show-icon :closable="false"></el-alert>
                     </div>
                 </div>
                 <div class="drawerModLis">
                     <div class="drawerModTite">
-                        <span>图片宽度：</span>
+                        <span>{yun:}t key='admin_01149'{/yun}</span>
                     </div>
                     <div class="drawerModInpt">
                         <el-input v-model="ruleForm.pic_width" placeholder=""
                             onkeyup="this.value=this.value.replace(/[^0-9]/g,'')">
-                            <template slot="append">px(像素)</template>
+                            <template slot="append">{yun:}t key='admin_yunying_00063'{/yun}</template>
                         </el-input>
                     </div>
                 </div>
                 <div class="drawerModLis">
                     <div class="drawerModTite">
-                        <span>图片高度：</span>
+                        <span>{yun:}t key='admin_01150'{/yun}</span>
                     </div>
                     <div class="drawerModInpt">
                         <el-input v-model="ruleForm.pic_height" placeholder=""
                             onkeyup="this.value=this.value.replace(/[^0-9]/g,'')">
-                            <template slot="append">px(像素)</template>
+                            <template slot="append">{yun:}t key='admin_yunying_00063'{/yun}</template>
                         </el-input>
                     </div>
                 </div>
@@ -195,7 +195,7 @@
             <div v-if="ruleForm.ad_type == 'lianmeng'">
                 <div class="drawerModLis">
                     <div class="drawerModTite">
-                        <span>联盟广告代码：</span>
+                        <span>{yun:}t key='admin_01151'{/yun}</span>
                     </div>
                     <div class="drawerModInpt">
                         <el-input type="textarea" :rows="4" v-model="ruleForm.lianmeng_url"></el-input>
@@ -205,7 +205,7 @@
 
         </div>
         <div class="setBasicButn" style="border: none;">
-            <el-button type="primary" size="medium" @click="submitForm('ruleForm')" :disabled="submitLoading">保存</el-button>
+            <el-button type="primary" size="medium" @click="submitForm('ruleForm')" :disabled="submitLoading">{yun:}t key='common.save'{/yun}</el-button>
         </div>
     </div>
 </template>
@@ -220,29 +220,29 @@ module.exports = {
     data: function () {
         return {
             pic_accept: localStorage.getItem("pic_accept"),
-            textAddEdit: '添加',
+            textAddEdit: "{yun:}t key='wap_js_00091'{/yun}",
             appad: 0,
             ruleForm: {
                 id: 0,
-                ad_name: '',//广告名称
-                target: '1',//2 新窗口打开
+                ad_name: '",//{yun:}t key='admin_01170'{/yun}
+                target: "1",//2 {yun:}t key='admin_01152'{/yun}
                 targetChecked: false,
-                did: '0',//使用范围
-                class_id: '',//广告分类
-                is_open: null,//广告是否启用 1启用 0关闭
+                did: "0",//{yun:}t key='admin_user_00126'{/yun}
+                class_id: "",//{yun:}t key='admin_01167'{/yun}
+                is_open: null,//广告是否启用 1{yun:}t key='admin_user_company_00205'{/yun} 0{yun:}t key='common.close'{/yun}
                 ad_time: null,//广告有效期
-                remark: '',
-                sort: null,//排序
-                appurl: '',//移动端跳转链接
-                ad_type: null,//广告类型
-                word_info: '',//文字信息
-                word_url: '',//文字链接
-                upload: 'upload',//图片地址
+                remark: "",
+                sort: null,//{yun:}t key='member_com_00022'{/yun}
+                appurl: "",//移动端跳转链接
+                ad_type: null,//{yun:}t key='admin_01168'{/yun}
+                word_info: "',//文字信息
+                word_url: '",//{yun:}t key='admin_01013'{/yun}
+                upload: "upload',//图片地址
                 pic_url: '',//图片远程地址
                 pic_url_n: '',
                 pic_upload_n: '',
-                pic_src: '',//图片链接
-                pic_content: '',//图片描述
+                pic_src: '",//{yun:}t key='admin_00100'{/yun}
+                pic_content: "',//图片描述
                 pic_width: '',//图片宽度
                 pic_height: '',//图片高度
                 lianmeng_url: '',//广告联盟代码
@@ -287,7 +287,7 @@ module.exports = {
                         _this.ruleForm.ad_time = [info.time_start, info.time_end];
                     }
                 } else {
-                    message.error('暂无数据');
+                    message.error("{yun:}t key='wap_js_00113'{/yun}");
                 }
             }).catch(function (error) {
                 console.log(error);
@@ -301,7 +301,7 @@ module.exports = {
                 return false;
             }
             if ((!Array.isArray(params.ad_time)) || (Array.isArray(params.ad_time) && params.ad_time.length < 1)) {
-                message.error('请填写广告有效期！');
+                message.error("{yun:}t key='admin_01414'{/yun}");
                 return false;
             }
             if (!params.ad_type) {
@@ -352,10 +352,10 @@ module.exports = {
             handler: function (newValue, oldValue) {
                 console.log('ad_edit watch', newValue);
                 if (newValue) {
-                    this.textAddEdit = '修改';
+                    this.textAddEdit = "{yun:}t key='wap_js_00073'{/yun}";
                     
                 } else {
-                    this.textAddEdit = '添加';
+                    this.textAddEdit = "{yun:}t key='wap_js_00091'{/yun}";
                 }
                 this.getInfo();
             },

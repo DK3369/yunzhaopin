@@ -2,15 +2,15 @@
     <div class="moduleElHight">
         <div class="moduleSeachbig">
             <div class="tableSeachInpt tableSeachInptsmall tableSeacFromer" style="padding: 2px 0;">
-                <el-input v-model="search_params.keyword" @keyup.enter.native="search" placeholder="请输入搜索内容" size="small" clearable>
-                	<el-select v-model="search_params.type" size="small" slot="prepend" placeholder="用户名">
+                <el-input v-model="search_params.keyword" @keyup.enter.native="search" placeholder="{yun:}t key='admin_00340'{/yun}" size="small" clearable>
+                	<el-select v-model="search_params.type" size="small" slot="prepend" placeholder="{yun:}t key='admin_user_00140'{/yun}">
                 	    <el-option label="公司名称" value="1"></el-option>
                 	    <el-option label="职位名称" value="2"></el-option>
                 	</el-select>
                 </el-input>
             </div>
             <div class="tableSeachInpt">
-                <el-button type="primary" icon="el-icon-search" size="mini" @click="search">查询</el-button>
+                <el-button type="primary" icon="el-icon-search" size="mini" @click="search">{yun:}t key='admin_user_weipin_00049'{/yun}</el-button>
             </div>
         </div>
         <!--<div class="admin_datatip"><i class="el-icon-document"></i> 数据统计：共 400 条<span class="admin_datatip_n">未审核：32 条-->
@@ -55,9 +55,9 @@
                     <template slot-scope="scope">
                         <div class="cz_button">
 
-                            <el-button size="mini" plain @click="tz(scope.row)">调整</el-button>
-                            <el-button size="mini" plain @click="closeReserve(scope.row.id, 1)">关闭</el-button>
-                            <el-button size="mini" type="danger"  @click="delrow(scope.row.id)">删除</el-button>
+                            <el-button size="mini" plain @click="tz(scope.row)">{yun:}t key='admin_user_company_00401'{/yun}</el-button>
+                            <el-button size="mini" plain @click="closeReserve(scope.row.id, 1)">{yun:}t key='common.close'{/yun}</el-button>
+                            <el-button size="mini" type="danger"  @click="delrow(scope.row.id)">{yun:}t key='common.delete'{/yun}</el-button>
 
                         </div>
                     </template>
@@ -66,9 +66,9 @@
         </div>
         <div class="modulePaging">
             <div>
-                <el-checkbox v-model="checkedAll" @change="selectAllBottom">全选</el-checkbox>
-                <el-button @click="delAllBottom" size="mini">批量删除</el-button>
-                <el-button @click="closeReserve('', 2)" size="mini">批量关闭</el-button>
+                <el-checkbox v-model="checkedAll" @change="selectAllBottom">{yun:}t key='wap_js_00074'{/yun}</el-checkbox>
+                <el-button @click="delAllBottom" size="mini">{yun:}t key='member_com_00055'{/yun}</el-button>
+                <el-button @click="closeReserve('', 2)" size="mini">{yun:}t key='admin_user_company_00399'{/yun}</el-button>
             </div>
             <div class="modulePagNum">
                 <el-pagination background @size-change="handleSizeChange"
@@ -81,33 +81,33 @@
         </div>
         <!--批量转移类别-->
         <div class="modluDrawer">
-            <el-dialog title="预约刷新调整" :visible.sync="drawertz" :with-header="true" append-to-body :show-close="true"
+            <el-dialog title="{yun:}t key='admin_00755'{/yun}" :visible.sync="drawertz" :with-header="true" append-to-body :show-close="true"
                        width="400px">
                 <div v-if="curr_data">
-                    <div class="wxsettip_small">刷新状态</div>
+                    <div class="wxsettip_small">{yun:}t key='wap_00850'{/yun}</div>
                     <div class="TableInpt">
-                        <el-radio v-model="curr_data.reserve_status" label="1">开启</el-radio>
-                        <el-radio v-model="curr_data.reserve_status" label="2">关闭</el-radio>
+                        <el-radio v-model="curr_data.reserve_status" label="1">{yun:}t key='member_com_00287'{/yun}</el-radio>
+                        <el-radio v-model="curr_data.reserve_status" label="2">{yun:}t key='common.close'{/yun}</el-radio>
                     </div>
-                    <div class="wxsettip_small">刷新间隔</div>
+                    <div class="wxsettip_small">{yun:}t key='wap_com_00227'{/yun}</div>
                     <div class="TableSelect">
-                        <el-select v-model="curr_data.reserve_interval" placeholder="请选择">
+                        <el-select v-model="curr_data.reserve_interval" placeholder="{yun:}t key='wap_user_00100'{/yun}">
                             <el-option v-for="(item, index) in jg_data" :key="index" :label="item.label" :value="item.value">
                             </el-option>
                         </el-select>
                     </div>
-                    <div v-if="curr_data.reserve_interval == 1" class="wxsettip_small">自定义间隔</div>
+                    <div v-if="curr_data.reserve_interval == 1" class="wxsettip_small">{yun:}t key='admin_user_company_00361'{/yun}</div>
                     <div class="TableInpt" v-if="curr_data.reserve_interval == 1">
-                        <el-input v-model="userinterval" placeholder="请输入自定义间隔" size="small">
-                            <template slot="append">分钟</template>
+                        <el-input v-model="userinterval" placeholder="{yun:}t key='admin_00756'{/yun}" size="small">
+                            <template slot="append">{yun:}t key='wap_com_00247'{/yun}</template>
                         </el-input>
                     </div>
-                    <div class="wxsettip_small">截止日期</div>
+                    <div class="wxsettip_small">{yun:}t key='wap_com_00234'{/yun}</div>
                     <div class="TableInpt">
-                        <el-date-picker v-model="curr_data.reserve_end" value-format="yyyy-MM-dd" type="date" placeholder="选择日期" :picker-options="pickerOptions">
+                        <el-date-picker v-model="curr_data.reserve_end" value-format="yyyy-MM-dd" type="date" placeholder="{yun:}t key='admin_00346'{/yun}" :picker-options="pickerOptions">
                         </el-date-picker>
                     </div>
-                    <div class="wxsettip_small">刷新时间段</div>
+                    <div class="wxsettip_small">{yun:}t key='wap_com_00220'{/yun}</div>
                     <div class="TableInpt">
                         <el-time-picker v-model="curr_data.s_time" value-format="HH:mm">
                         </el-time-picker>
@@ -117,8 +117,8 @@
                     </div>
                 </div>
                 <span slot="footer" class="dialog-footer">
-					<el-button @click="drawertz = false">取 消</el-button>
-					<el-button type="primary" @click="submitTz" :loading="saveLoading">确 定</el-button>
+					<el-button @click="drawertz = false">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
+					<el-button type="primary" @click="submitTz" :loading="saveLoading">{yun:}t key='wap_com_00019'{/yun}</el-button>
 				</span>
             </el-dialog>
         </div>
@@ -129,7 +129,7 @@
         data: function () {
             return {
                 loading: false,
-                emptytext: '暂无数据',
+                emptytext: "{yun:}t key='wap_js_00113'{/yun}",
                 search_params: {
                     type: '1',
                     keyword: '',
@@ -156,14 +156,14 @@
                 },
                 jg_data: [
                     {label: '每隔1小时', value: '60'},
-                    {label: '每隔2小时', value: '120'},
-                    {label: '每隔3小时', value: '180'},
-                    {label: '每隔4小时', value: '240'},
-                    {label: '每隔5小时', value: '300'},
-                    {label: '每隔6小时', value: '360'},
-                    {label: '每隔7小时', value: '420'},
-                    {label: '每隔8小时', value: '480'},
-                    {label: '自定义刷新间隔', value: '1'},
+                    {label: "{yun:}t key='admin_00758'{/yun}", value: '120'},
+                    {label: "{yun:}t key='admin_00759'{/yun}", value: '180'},
+                    {label: "{yun:}t key='admin_00760'{/yun}", value: '240'},
+                    {label: "{yun:}t key='admin_00761'{/yun}", value: '300'},
+                    {label: "{yun:}t key='admin_00762'{/yun}", value: '360'},
+                    {label: "{yun:}t key='admin_00763'{/yun}", value: '420'},
+                    {label: "{yun:}t key='admin_00764'{/yun}", value: '480'},
+                    {label: "{yun:}t key='wap_00852'{/yun}", value: '1'},
                 ],
                 userinterval: '',
                 islook: false,
@@ -193,7 +193,7 @@
             tz: function(row){
                 let date = new Date();
                 this.curr_data = row;
-                this.curr_data.reserve_end = this.curr_data.reserve_end == '不限'? date:this.curr_data.reserve_end;
+                this.curr_data.reserve_end = this.curr_data.reserve_end == "{yun:}t key='common_01936'{/yun}"? date:this.curr_data.reserve_end;
 
                 var intervalArr = ['60', '120', '180', '240', '300', '360', '420', '480'];
                 if (intervalArr.indexOf(this.curr_data.reserve_interval) < 0){
@@ -205,11 +205,11 @@
             submitTz: function(){
                 var that = this
                 if (that.curr_data.reserve_status == '' || that.curr_data.reserve_status == 0 || that.curr_data.reserve_status == undefined) {
-                    message.error('请选择预约状态');
+                    message.error("{yun:}t key='member_com_00279'{/yun}");
                     return false;
                 } else if (that.curr_data.reserve_status == 1) {
                     if (that.curr_data.reserve_interval <= 0) {
-                        message.error('请选择刷新间隔');
+                        message.error("{yun:}t key='wap_00851'{/yun}");
                         return false;
                     }
                     if (that.curr_data.reserve_interval == 1 && that.userinterval == '') {
@@ -220,7 +220,7 @@
                         var stime = that.curr_data.s_time.split(':');
                         var etime = that.curr_data.e_time.split(':');
                         if (parseInt(stime[0]) > parseInt(etime[0]) || (parseInt(stime[0]) == parseInt(etime[0]) && parseInt(stime[1]) >= parseInt(etime[1]))) {
-                            message.error('请合理设置刷新时间段');
+                            message.error("{yun:}t key='wap_com_00213'{/yun}");
                             return false;
                         }
                     }
@@ -347,7 +347,7 @@
                     params.t = that.sort_col
                 }
                 that.loading = true;
-                that.emptytext = "数据加载中";
+                that.emptytext = "{yun:}t key='admin_user_weipin_00026'{/yun}";
                 httpPost('m=user&c=company_job&a=reserveJob', params, {hideloading: true}).then(function (result) {
                     var res = result.data
                     if (res.error == 0) {
@@ -362,7 +362,7 @@
                             scrollToTop()
                         }
                         if (that.tableData.length === 0){
-                            that.emptytext = "暂无数据";
+                            that.emptytext = "{yun:}t key='wap_js_00113'{/yun}";
                         }
                     }
                 }).catch(function (e) {
@@ -374,7 +374,7 @@
             },
             delAllBottom() {
                 if (!this.selectedItem.length) {
-                    message.error('请选择要删除的数据');
+                    message.error("{yun:}t key='admin_user_weipin_00005'{/yun}");
                     return false;
                 }
                 delConfirm(this, this.selectedItem, this.delete);
@@ -386,7 +386,7 @@
                 };
                 httpPost('m=user&c=company_job&a=del', params).then(function (response) {
                     if (response.data.error == 0) {
-                        message.success('操作成功', function(){
+                        message.success("{yun:}t key='wap_user_00264'{/yun}", function(){
                             that.$refs.multipleTable.clearSelection();
                             that.getList();
                         });

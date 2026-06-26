@@ -55,7 +55,7 @@ class info_feedback_controller extends adminCommon{
             $return	=	$this -> MODEL('advice') -> delInfo($del,'');
             $this->admin_json($return['errcode'] == 9 ? 0 : 1,$return['msg']);
         }else{
-            $this->render_json(500, '参数错误,请重试');
+            $this->render_json(500, yun_at('common_01237'));
         }
 	}
 	function status_action(){

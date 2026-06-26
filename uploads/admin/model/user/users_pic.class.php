@@ -8,8 +8,8 @@ class users_pic_controller extends adminCommon
     {
         $search_list[] = array(
             "param" => "status",
-            "name" => '审核状态',
-            "value" => array('0' => '已审核', '1' => '未审核')
+            "name" => 'wap_com_00406',
+            "value" => array('0' => 'wap_user_00165', '1' => 'wap_user_00166')
         );
         return $search_list;
     }

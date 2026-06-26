@@ -19,7 +19,7 @@ class uppic_controller extends user{
 		    
 		    if($imginfo[0] < 80 || $imginfo[1] < 100){
 		        
-		        $res['s_thumb']  =  '头像尺寸比例太小,最小尺寸：宽80/高100';
+		        $res['s_thumb']  =  yun_auto_t('头像尺寸比例太小,最小尺寸：宽80/高100');
 		        
 		    }else{
 		        $upArr  =  array(
@@ -41,7 +41,7 @@ class uppic_controller extends user{
 		    }
 		}else{
 			
-			$res['s_thumb']  =  '请选择上传图片';
+			$res['s_thumb']  =  yun_at('common_01412');
 		}
 		echo yun_json_encode($res);die;
 	}
@@ -52,7 +52,7 @@ class uppic_controller extends user{
 	    
 	    if(stripos(trim($_POST['img1']),$upload_path)===false ){
 	        
-	        $this->ACT_layer_msg('非法操作！',8,$_SERVER['HTTP_REFERER']);
+	        $this->ACT_layer_msg('model_00001',8,$_SERVER['HTTP_REFERER']);
 	        
 	    }
 		

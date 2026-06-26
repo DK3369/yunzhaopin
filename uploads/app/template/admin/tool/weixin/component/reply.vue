@@ -1,7 +1,7 @@
 <template>
     <div class="moduleElHight">
         <div class="tableDome_tip">
-            <el-alert title="运营人员可以针对微信公众号设置“回复关健词”方式后，用户在微信公众号上回复该关健词可以自动返回已设置的关健词或用户解决日常问题" type="success"
+            <el-alert title="{yun:}t key='admin_tool_00558'{/yun}" type="success"
                       :closable="false">
             </el-alert>
         </div>
@@ -9,17 +9,17 @@
             <div class="moduleSeachleft">
 
                 <div class="tableSeachInpt" style="margin-bottom: 0px;;">
-                    <el-input placeholder="请输入搜索内容" v-model="keyword" size="small" prefix-icon="el-icon-search"
+                    <el-input placeholder="{yun:}t key='admin_00340'{/yun}" v-model="keyword" size="small" prefix-icon="el-icon-search"
                               clearable>
                     </el-input>
                 </div>
 
                 <div class="tableSeachInpt" style="margin-bottom: 0px;;">
-                    <el-button type="primary" icon="el-icon-search" size="mini" @click="search">查询</el-button>
+                    <el-button type="primary" icon="el-icon-search" size="mini" @click="search">{yun:}t key='admin_user_weipin_00049'{/yun}</el-button>
                 </div>
             </div>
             <div class="moduleSeachButn">
-                <el-button type="primary" icon="el-icon-document-add" size="mini" @click="addinfo()">添加规则</el-button>
+                <el-button type="primary" icon="el-icon-document-add" size="mini" @click="addinfo()">{yun:}t key='admin_tool_00573'{/yun}</el-button>
             </div>
         </div>
 
@@ -38,8 +38,8 @@
                 <el-table-column label="操作" width="130" fixed="right" header-align="center">
                     <template slot-scope="scope">
                         <div class="cz_button">
-                            <el-button size="mini" @click="editinfo(scope.row.id)">修改</el-button>
-                            <el-button type="danger" size="small" @click="deleteinfo(scope.row.id)">删除</el-button>
+                            <el-button size="mini" @click="editinfo(scope.row.id)">{yun:}t key='wap_js_00073'{/yun}</el-button>
+                            <el-button type="danger" size="small" @click="deleteinfo(scope.row.id)">{yun:}t key='common.delete'{/yun}</el-button>
                         </div>
                     </template>
                 </el-table-column>
@@ -49,8 +49,8 @@
 
         <div class="modulePaging">
             <div class="modulecz modulePagButn">
-                <el-checkbox v-model="allchecked" @change="allcheckChange">全选</el-checkbox>
-                <el-button size="mini" @click="deleteAll">批量删除</el-button>
+                <el-checkbox v-model="allchecked" @change="allcheckChange">{yun:}t key='wap_js_00074'{/yun}</el-checkbox>
+                <el-button size="mini" @click="deleteAll">{yun:}t key='member_com_00055'{/yun}</el-button>
             </div>
             <div class="modulePagNum">
                 <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
@@ -68,20 +68,20 @@
                 <div class="drawerReply">
                     <div class="drawerModLis">
                         <div class="drawerModTite">
-                            <span>规则名</span>
+                            <span>{yun:}t key='admin_tool_00575'{/yun}</span>
                         </div>
                         <div class="drawerModInpt">
-                            <el-input v-model="row.title" :maxlength="255" placeholder="请输入规则名"></el-input>
+                            <el-input v-model="row.title" :maxlength="255" placeholder="{yun:}t key='admin_tool_00583'{/yun}"></el-input>
                         </div>
 
                     </div>
                     <div class="drawerModLis" style="align-items: initial;">
                         <div class="drawerModTite" style="margin-top: 8px;">
-                            <span>关键 字</span>
+                            <span>{yun:}t key='admin_tool_00571'{/yun}</span>
                         </div>
                         <div class="drawerModInpt">
                             <el-input type="textarea" v-model="row.keyword" :maxlength="255"
-                                      placeholder="请输入关键字"></el-input>
+                                      placeholder="{yun:}t key='admin_system_00198'{/yun}"></el-input>
                         </div>
                         <div class="drawerModTips">
                             <el-alert title="设置多个关键字请按英文','分隔" type="info" show-icon :closable="false">
@@ -90,7 +90,7 @@
                     </div>
                     <div class="drawerModLis" style="align-items: initial;">
                         <div class="drawerModTite" style="margin-top: 10px;">
-                            <span>回复消息</span>
+                            <span>{yun:}t key='admin_tool_00579'{/yun}</span>
                         </div>
                         <div class="drawerModInpt">
                             <div class="ReplyHuifu">
@@ -100,13 +100,13 @@
                                                  :label="'消息' + (index + 1) + ' ' + item.msgtype_n">
                                         <div class="drawerModLis">
                                             <div class="drawerModTite">
-                                                <span>消息类型</span>
+                                                <span>{yun:}t key='admin_tool_00581'{/yun}</span>
                                             </div>
                                             <div class="drawerModInpt">
                                                 <el-radio-group v-model="item.msgtype" @input="radio_type">
-                                                    <el-radio label="text">文字</el-radio>
-                                                    <el-radio label="image">图片</el-radio>
-                                                    <el-radio label="xcx">小程序卡片</el-radio>
+                                                    <el-radio label="text">{yun:}t key='admin_system_00432'{/yun}</el-radio>
+                                                    <el-radio label="image">{yun:}t key='wap_js_00081'{/yun}</el-radio>
+                                                    <el-radio label="xcx">{yun:}t key='admin_tool_00567'{/yun}</el-radio>
                                                 </el-radio-group>
                                             </div>
 
@@ -114,20 +114,20 @@
 
                                         <div class="drawerModLis">
                                             <div class="drawerModTite">
-                                                <span>优先级别</span>
+                                                <span>{yun:}t key='admin_tool_00569'{/yun}</span>
                                             </div>
                                             <div class="drawerModInpt">
-                                                <el-input v-model="item.sort" placeholder="请输入优先级别"></el-input>
+                                                <el-input v-model="item.sort" placeholder="{yun:}t key='admin_tool_00565'{/yun}"></el-input>
                                             </div>
                                         </div>
 
 
                                         <div class="drawerModLis" v-show="item.msgtype == 'text'">
                                             <div class="drawerModTite">
-                                                <span>回复内容</span>
+                                                <span>{yun:}t key='wap_com_00313'{/yun}</span>
                                             </div>
                                             <div class="drawerModInpt">
-                                                <el-input type="textarea" :rows="2" placeholder="请输入内容"
+                                                <el-input type="textarea" :rows="2" placeholder="{yun:}t key='wap_user_00076'{/yun}"
                                                           v-model="item.content">
                                                 </el-input>
                                             </div>
@@ -135,27 +135,27 @@
                                         <div v-show="item.msgtype == 'xcx'">
                                             <div class="drawerModLis">
                                                 <div class="drawerModTite">
-                                                    <span>卡片标题</span>
+                                                    <span>{yun:}t key='admin_tool_00572'{/yun}</span>
                                                 </div>
                                                 <div class="drawerModInpt">
-                                                    <el-input placeholder="请输入卡片标题" v-model="item.xcx_title"></el-input>
+                                                    <el-input placeholder="{yun:}t key='admin_tool_00566'{/yun}" v-model="item.xcx_title"></el-input>
                                                 </div>
                                             </div>
                                             <div class="drawerModLis">
                                                 <div class="drawerModTite">
-                                                    <span>小程序AppID</span>
+                                                    <span>{yun:}t key='admin_tool_00564'{/yun}</span>
                                                 </div>
                                                 <div class="drawerModInpt">
-                                                    <el-input placeholder="请输入小程序AppID"
+                                                    <el-input placeholder="{yun:}t key='admin_tool_00563'{/yun}"
                                                               v-model="item.xcx_appid"></el-input>
                                                 </div>
                                             </div>
                                             <div class="drawerModLis">
                                                 <div class="drawerModTite">
-                                                    <span>小程序路径</span>
+                                                    <span>{yun:}t key='admin_tool_00568'{/yun}</span>
                                                 </div>
                                                 <div class="drawerModInpt">
-                                                    <el-input placeholder="请输入跳转小程序页面 实例：pages/index/index"
+                                                    <el-input placeholder="{yun:}t key='admin_tool_00560'{/yun}"
                                                               v-model="item.xcx_pagepath"></el-input>
                                                 </div>
                                             </div>
@@ -164,7 +164,7 @@
                                              v-show="item.msgtype == 'image' || item.msgtype == 'xcx'"
                                              style="align-items: initial;">
                                             <div class="drawerModTite" style="margin-top: 8px;">
-                                                <span>{{ item.msgtype == 'image' ? '图片' : '封面图' }}</span>
+                                                <span>{yun:}t key='admin_tool_00559'{/yun}</span>
                                             </div>
                                             <div class="drawerModInpt">
                                                 <el-upload :action="uploadAction" class="avatar-uploader" :auto-upload="false"
@@ -177,11 +177,11 @@
                                                                   fit="contain"></el-image>
                                                     </div>
 
-                                                    <el-button slot="trigger" size="small" type="primary">选取文件
+                                                    <el-button slot="trigger" size="small" type="primary">{yun:}t key='admin_tool_00584'{/yun}
                                                     </el-button>
                                                     <div slot="tip" class="el-upload__tip"
                                                          v-show="item.msgtype == 'xcx'">
-                                                        建议大小520*416，大小2M
+                                                        {yun:}t key='admin_tool_00580'{/yun}
                                                     </div>
                                                 </el-upload>
                                             </div>
@@ -194,7 +194,7 @@
                         </div>
                     </div>
                     <div class="ReplyButn">
-                        <el-button type="primary" @click="saveinfo" :loading="post_loading">确 定</el-button>
+                        <el-button type="primary" @click="saveinfo" :loading="post_loading">{yun:}t key='wap_com_00019'{/yun}</el-button>
                     </div>
                 </div>
             </el-drawer>
@@ -207,7 +207,7 @@ const defaultcon = {
     id: '',
     sort: '',
     msgtype: 'text',
-    msgtype_n: '文本',
+    msgtype_n: "{yun:}t key='admin_tool_00578'{/yun}",
 
     content: '',
 
@@ -226,7 +226,7 @@ module.exports = {
     data: function () {
         return {
             pic_accept: localStorage.getItem("pic_accept"),
-            emptytext: window.yunAdminT('暂无数据'),
+            emptytext: window.yunAdminT("{yun:}t key='wap_js_00113'{/yun}"),
             tableData: [],
             total: 0,
             limit: 0,
@@ -274,7 +274,7 @@ module.exports = {
             }
 
             this.list_loading = true;
-            that.emptytext = window.yunAdminT('数据加载中');
+            that.emptytext = window.yunAdminT("{yun:}t key='admin_user_weipin_00026'{/yun}");
             httpPost('m=tool&c=weixinmenu&a=zdkeyword', params).then((result) => {
                 this.list_loading = false;
                 var res = result.data;
@@ -290,7 +290,7 @@ module.exports = {
 						that.$refs.table.bodyWrapper.scrollTop = 0;
 					}
                     if (that.tableData.length === 0) {
-                        that.emptytext = window.yunAdminT('暂无数据');
+                        that.emptytext = window.yunAdminT("{yun:}t key='wap_js_00113'{/yun}");
                     }
                 }
             }).catch(function (e) {
@@ -340,7 +340,7 @@ module.exports = {
                     idarr.push(this.choosedata[i].id);
                 }
             } else {
-                message.error(window.yunAdminT('请选择要删除的数据'));
+                message.error(window.yunAdminT("{yun:}t key='admin_user_weipin_00005'{/yun}"));
                 return;
             }
             var params = {
@@ -439,7 +439,7 @@ module.exports = {
             } else {
 
                 if (self.conarr.length >= 3) {
-                    message.warning(window.yunAdminT('最多只能添加3条消息！'));
+                    message.warning(window.yunAdminT("{yun:}t key='admin_tool_00561'{/yun}"));
                     return;
                 }
                 var randnum = parseInt(Math.random() * 1000);
@@ -477,11 +477,11 @@ module.exports = {
             var conkey = parseInt(this.conkey);
             var conarr = deepClone(this.conarr);
 
-            var msgtype_n = window.yunAdminT('文本');
+            var msgtype_n = window.yunAdminT("{yun:}t key='admin_tool_00578'{/yun}");
             if (msgtype == 'image') {
-                msgtype_n = window.yunAdminT('图片');
+                msgtype_n = window.yunAdminT("{yun:}t key='wap_js_00081'{/yun}");
             } else if (msgtype == 'xcx') {
-                msgtype_n = window.yunAdminT('小程序卡片');
+                msgtype_n = window.yunAdminT("{yun:}t key='admin_tool_00567'{/yun}");
             }
             conarr[conkey].msgtype = msgtype;
             conarr[conkey].msgtype_n = msgtype_n;
@@ -510,10 +510,10 @@ module.exports = {
             var con_post = [];
 
             if (row.title == '') {
-                message.warning(window.yunAdminT('规则名不能为空！'));
+                message.warning(window.yunAdminT("{yun:}t key='admin_tool_00585'{/yun}"));
                 return;
             } else if (row.keyword.trim() == '') {
-                message.warning(window.yunAdminT('关键字不能为空！'));
+                message.warning(window.yunAdminT("{yun:}t key='admin_tool_00586'{/yun}"));
                 return;
             }
 

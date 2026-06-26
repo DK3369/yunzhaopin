@@ -4,22 +4,22 @@
 		<div class="moduleTable" style="max-height: calc(100% - (60px + 25px));">
 			<div class="tableDome_tip">
 				<el-alert
-					title="如果整合失败导致后台无法进入或者出现前台用户混乱，请将根目录下/data/plus/config.php 打开找到 sy_pw_type 将PW_UC置空,再登录后台关闭PW_UC"
+					title="{yun:}t key='admin_tool_00442'{/yun}"
 					:closable="false">
 				</el-alert>
 			</div>
 			<table class="tableVue">
 				<thead>
 					<tr align="left">
-						<th width="200">名称</th>
-						<th width="500">状态</th>
-						<th>说明</th>
+						<th width="200">{yun:}t key='member_com_00021'{/yun}</th>
+						<th width="500">{yun:}t key='member_user_00181'{/yun}</th>
+						<th>{yun:}t key='member_com_00207'{/yun}</th>
 					</tr>
 				</thead>
 				<tbody>
 					<tr>
 						<td>
-							<div class="TableTite">整合UCenter </div>
+							<div class="TableTite">{yun:}t key='admin_tool_00441'{/yun} </div>
 						</td>
 						<td>
 							<div class="TableButn">
@@ -34,80 +34,80 @@
 					</tr>
 					<tr>
 						<td>
-							<div class="TableTite">数据库地址 UC_DBHOST</div>
+							<div class="TableTite">{yun:}t key='admin_tool_00445'{/yun}</div>
 						</td>
 						<td>
 							<div class="TableInpt">
-								<el-input placeholder="请输入内容" v-model="ucinfo.UC_DBHOST">
+								<el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="ucinfo.UC_DBHOST">
 
 								</el-input>
 							</div>
 						</td>
 						<td>
 							<div class="TableShuom">
-								<span>如：localhost</span>
+								<span>{yun:}t key='admin_tool_00457'{/yun}</span>
 							</div>
 						</td>
 					</tr>
 
 					<tr>
 						<td>
-							<div class="TableTite">数据库用户名 UC_DBUSER</div>
+							<div class="TableTite">{yun:}t key='admin_tool_00446'{/yun}</div>
 						</td>
 						<td>
 							<div class="TableInpt">
-								<el-input placeholder="请输入内容" v-model="ucinfo.UC_DBUSER">
-
-								</el-input>
-							</div>
-						</td>
-						<td>
-							<div class="TableShuom">
-								<span>ucenter数据库用户名</span>
-							</div>
-						</td>
-					</tr>
-					<tr>
-						<td>
-							<div class="TableTite">数据库密码 UC_DBPW</div>
-						</td>
-						<td>
-							<div class="TableInpt">
-								<el-input placeholder="请输入内容" v-model="ucinfo.UC_DBPW">
+								<el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="ucinfo.UC_DBUSER">
 
 								</el-input>
 							</div>
 						</td>
 						<td>
 							<div class="TableShuom">
-								<span>ucenter数据库密码</span>
+								<span>{yun:}t key='admin_tool_00447'{/yun}</span>
 							</div>
 						</td>
 					</tr>
 					<tr>
 						<td>
-							<div class="TableTite">数据库名称 UC_DBNAME</div>
+							<div class="TableTite">{yun:}t key='admin_tool_00448'{/yun}</div>
 						</td>
 						<td>
 							<div class="TableInpt">
-								<el-input placeholder="请输入内容" v-model="ucinfo.UC_DBNAME">
+								<el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="ucinfo.UC_DBPW">
 
 								</el-input>
 							</div>
 						</td>
 						<td>
 							<div class="TableShuom">
-								<span>如：ucenter</span>
+								<span>{yun:}t key='admin_tool_00449'{/yun}</span>
 							</div>
 						</td>
 					</tr>
 					<tr>
 						<td>
-							<div class="TableTite">数据表前缀 UC_DBTABLEPRE</div>
+							<div class="TableTite">{yun:}t key='admin_tool_00450'{/yun}</div>
 						</td>
 						<td>
 							<div class="TableInpt">
-								<el-input placeholder="请输入内容" v-model="ucinfo.UC_DBTABLEPRE">
+								<el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="ucinfo.UC_DBNAME">
+
+								</el-input>
+							</div>
+						</td>
+						<td>
+							<div class="TableShuom">
+								<span>{yun:}t key='admin_tool_00458'{/yun}</span>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<div class="TableTite">{yun:}t key='admin_tool_00451'{/yun}</div>
+						</td>
+						<td>
+							<div class="TableInpt">
+								<el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="ucinfo.UC_DBTABLEPRE">
 
 								</el-input>
 							</div>
@@ -120,42 +120,42 @@
 					</tr>
 					<tr>
 						<td>
-							<div class="TableTite">通信密钥 UC_KEY</div>
+							<div class="TableTite">{yun:}t key='admin_tool_00452'{/yun}</div>
 						</td>
 						<td>
 							<div class="TableInpt">
-								<el-input placeholder="请输入内容" v-model="ucinfo.UC_KEY">
+								<el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="ucinfo.UC_KEY">
 
 								</el-input>
 							</div>
 						</td>
 						<td>
 							<div class="TableShuom">
-								<span>如：phpyun123456</span>
+								<span>{yun:}t key='admin_tool_00459'{/yun}</span>
 							</div>
 						</td>
 					</tr>
 					<tr>
 						<td>
-							<div class="TableTite">Phpwind地址 UC_API</div>
+							<div class="TableTite">{yun:}t key='admin_tool_00463'{/yun}</div>
 						</td>
 						<td>
 							<div class="TableInpt">
-								<el-input placeholder="请输入内容" v-model="ucinfo.UC_API">
+								<el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="ucinfo.UC_API">
 
 								</el-input>
 							</div>
 						</td>
 						<td>
 							<div class="TableShuom">
-								<span>如：http://localhost/ucenter</span>
+								<span>{yun:}t key='admin_tool_00460'{/yun}</span>
 							</div>
 						</td>
 					</tr>
 
 					<tr>
 						<td>
-							<div class="TableTite">Phpwind编码</div>
+							<div class="TableTite">{yun:}t key='admin_tool_00464'{/yun}</div>
 						</td>
 						<td>
 							<div class="TableButn">
@@ -171,18 +171,18 @@
 					</tr>
 					<tr>
 						<td>
-							<div class="TableTite">应用ID UC_APPID</div>
+							<div class="TableTite">{yun:}t key='admin_tool_00455'{/yun}</div>
 						</td>
 						<td>
 							<div class="TableInpt">
-								<el-input placeholder="请输入内容" v-model="ucinfo.UC_APPID">
+								<el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="ucinfo.UC_APPID">
 
 								</el-input>
 							</div>
 						</td>
 						<td>
 							<div class="TableShuom">
-								<span>如：7</span>
+								<span>{yun:}t key='admin_tool_00461'{/yun}</span>
 							</div>
 						</td>
 					</tr>
@@ -192,14 +192,14 @@
 						</td>
 						<td>
 							<div class="TableInpt">
-								<el-input placeholder="请输入内容" v-model="ucinfo.UC_APP">
+								<el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="ucinfo.UC_APP">
 
 								</el-input>
 							</div>
 						</td>
 						<td>
 							<div class="TableShuom">
-								<span>如：20</span>
+								<span>{yun:}t key='admin_tool_00462'{/yun}</span>
 							</div>
 						</td>
 					</tr>
@@ -209,7 +209,7 @@
 			</table>
 		</div>
 		<div class="setBasicButn" style="border: none;">
-			<el-button type="primary" size="medium" @click="post">提交</el-button>
+			<el-button type="primary" size="medium" @click="post">{yun:}t key='common.submit'{/yun}</el-button>
 		</div>
 
 	</div>

@@ -2,21 +2,21 @@
     <div class="moduleElHight">
         <div class="moduleSeachs">
             <div class="moduleSeachInpt">
-                <el-input placeholder="请输入搜索内容" size="small" style="margin-right: 8px;" v-model="keyword" clearable class="input-with-select">
-                    <el-select v-model="type" slot="prepend" placeholder="请选择">
+                <el-input placeholder="{yun:}t key='admin_00340'{/yun}" size="small" style="margin-right: 8px;" v-model="keyword" clearable class="input-with-select">
+                    <el-select v-model="type" slot="prepend" placeholder="{yun:}t key='wap_user_00100'{/yun}">
                         <el-option label="招聘会名称" value="1"></el-option>
                         <el-option label="企业名称" value="2"></el-option>
                     </el-select>
                 </el-input>
-                <el-select v-model="status" size="small" slot="prepend" style="margin-right: 8px;" placeholder="审核状态" clearable @change="search">
+                <el-select v-model="status" size="small" slot="prepend" style="margin-right: 8px;" placeholder="{yun:}t key='wap_com_00406'{/yun}" clearable @change="search">
                     <el-option label="已通过" value="1"></el-option>
                     <el-option label="未审核" value="3"></el-option>
                     <el-option label="未通过" value="2"></el-option>
                 </el-select>
-                <el-button type="primary" icon="el-icon-search" size="mini" @click="search">查询</el-button>
+                <el-button type="primary" icon="el-icon-search" size="mini" @click="search">{yun:}t key='admin_user_weipin_00049'{/yun}</el-button>
             </div>
         </div>
-        <div class="admin_datatip"><i class="el-icon-document"></i> 可以实现区域、展位等进行自主设置，企业可在线付费报名参加招聘会等操作
+        <div class="admin_datatip"><i class="el-icon-document"></i> {yun:}t key='admin_00830'{/yun}
         </div>
         <div class="moduleElTable moduleElMoreLive" style="border: 1px solid #ebeef5; width: calc(100% - 2px);">
             <el-table :data="tableData" style="width: 100%" stripe :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" height="100%" @selection-change="handleSelectionChange" ref="multipleTable" :default-sort="{ prop: 'id', order: 'descending' }" @sort-change='sortChange' v-loading="loading" :empty-text="emptytext">
@@ -38,17 +38,17 @@
                 <el-table-column prop="zt" label="状态">
                     <template slot-scope="props">
                         <div class="admin_state">
-                            <span v-if="props.row.status == '1'" class="admin_state1"> 正常</span>
-                            <span v-else-if="props.row.status == '0'" class="admin_state2"> 未审核</span>
-                            <span v-else-if="props.row.status == '2'" class="admin_state2"> 未通过</span>
+                            <span v-if="props.row.status == '1'" class="admin_state1"> {yun:}t key='admin_user_00149'{/yun}</span>
+                            <span v-else-if="props.row.status == '0'" class="admin_state2"> {yun:}t key='wap_user_00166'{/yun}</span>
+                            <span v-else-if="props.row.status == '2'" class="admin_state2"> {yun:}t key='wap_user_00167'{/yun}</span>
                         </div>
                     </template>
                 </el-table-column>
                 <el-table-column label="操作" fixed="right" width="150" align="center">
                     <template slot-scope="scope">
                         <div class="cz_button">
-                            <el-button size="mini" plain @click="cominfo(scope.row)">详情</el-button>
-                            <el-button type="danger" size="mini" @click="delrow(scope.row.id)">删除</el-button>
+                            <el-button size="mini" plain @click="cominfo(scope.row)">{yun:}t key='member_com_00380'{/yun}</el-button>
+                            <el-button type="danger" size="mini" @click="delrow(scope.row.id)">{yun:}t key='common.delete'{/yun}</el-button>
                         </div>
                     </template>
                 </el-table-column>
@@ -56,9 +56,9 @@
         </div>
         <div class="modulePaging">
             <div>
-                <el-checkbox v-model="checkedAll" @change="selectAllBottom">全选</el-checkbox>
-                <el-button @click="delAllBottom" size="mini">批量删除</el-button>
-                <el-button @click="multiAudit" size="mini">批量审核</el-button>
+                <el-checkbox v-model="checkedAll" @change="selectAllBottom">{yun:}t key='wap_js_00074'{/yun}</el-checkbox>
+                <el-button @click="delAllBottom" size="mini">{yun:}t key='member_com_00055'{/yun}</el-button>
+                <el-button @click="multiAudit" size="mini">{yun:}t key='admin_user_weipin_00037'{/yun}</el-button>
             </div>
             <div class="modulePagNum">
                 <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="pageSizes" :page-size="perPage" layout="total, sizes, prev, pager, next, jumper" :total="total">
@@ -66,7 +66,7 @@
             </div>
         </div>
         <!--参会企业详情-->
-        <el-drawer title="参会企业详情" v-if="dtlislook" :visible.sync="comdrawersh" :modal-append-to-body="false" append-to-body size="80%">
+        <el-drawer title="{yun:}t key='admin_00843'{/yun}" v-if="dtlislook" :visible.sync="comdrawersh" :modal-append-to-body="false" append-to-body size="80%">
             <div class="shbox">
                 <div class="shinfo">
                     <div class="shcomname">{{info.name}}
@@ -74,9 +74,9 @@
                     </div>
                     <div class="sh_zwsz_add">{{ lc("admin_company_booth_value", [curr_comdata.zphname, curr_comdata.space_n]) }}</div>
                     <div class="sh_zwsz" style="top: 0;">
-                        <el-button type="primary" size="mini" plain @click="setZw"><i class="el-icon-edit"></i> 设置展位
+                        <el-button type="primary" size="mini" plain @click="setZw"><i class="el-icon-edit"></i> {yun:}t key='admin_00838'{/yun}
                         </el-button>
-                        <el-button type="primary" size="mini" @click="showComJob"><i class="el-icon-suitcase-1"></i> 参会职位</el-button>
+                        <el-button type="primary" size="mini" @click="showComJob"><i class="el-icon-suitcase-1"></i> {yun:}t key='wap_00560'{/yun}</el-button>
                     </div>
                     <div class="shcomtel">
                         <span v-if="info.linkman">
@@ -91,9 +91,9 @@
                     </div>
                     <div class="shshowall" style="height: calc(100% - 105px);">
                         <div class="shshow" style="overflow-y: auto; position: relative; height: 100%;">
-                            <div class="shshow_tit"><i class="el-icon-office-building"></i> 基本资料</div>
+                            <div class="shshow_tit"><i class="el-icon-office-building"></i> {yun:}t key='wap_user_00341'{/yun}</div>
                             <div class="shshow_p">
-                                <div class="" v-if="info.welfare">企业福利：
+                                <div class="" v-if="info.welfare">{yun:}t key='admin_00644'{/yun}
                                     <el-tag style="margin-right: 5px;" v-for="(item,index) in info.welfare_n" :key="index" size="mini">
                                         {{item}}
                                     </el-tag>
@@ -101,13 +101,12 @@
                                 <div class="" v-if="info.hy">{{ lc("admin_industry_value", [info.hy_n]) }}</div>
                                 <div class="" v-if="info.pr">{{ lc("admin_company_nature_value", [info.pr_n]) }}</div>
                                 <div class="" v-if="info.mun">{{ lc("admin_company_size_value", [info.mun_n]) }}</div>
-                                <div class="" v-if="info.provinceid">企业地址：{{info.job_city_one}} {{info.job_city_two}}
-                                    {{info.job_city_three}} {{info.address}}
+                                <div class="" v-if="info.provinceid">{yun:}t key='admin_00839'{/yun}
                                 </div>
                                 <div class="" v-if="info.content" v-html="info.content"></div>
                             </div>
                             <div class="shshow_tit" v-if="info.job_list.length > 0"><i class="el-icon-suitcase-1"></i>
-                                招聘岗位
+                                {yun:}t key='wap_01536'{/yun}
                             </div>
                             <ul class="shshow_joblist">
                                 <li v-for="(item,index) in info.job_list" :key="index">
@@ -118,8 +117,8 @@
                                         <span class="shshow_jobxz">
                                             {{item.job_salary}}
                                         </span>
-                                        <span class="shshow_line" v-if="item.job_exp">| {{item.job_exp == '不限' ? '不限经验' : item.job_exp}}</span>
-                                        <span class="shshow_line" v-if="item.job_edu">| {{item.job_edu == '不限' ? '不限学历' : item.job_edu}}</span>
+                                        <span class="shshow_line" v-if="item.job_exp">{yun:}t key='admin_00840'{/yun}</span>
+                                        <span class="shshow_line" v-if="item.job_edu">{yun:}t key='admin_00841'{/yun}</span>
                                     </div>
                                     <span class="shshow_zt" v-if="item.ch_n == '已参会'">{{item.ch_n}}</span>
                                     <span class="shshow_zt shshow_ztno" v-else>{{item.ch_n}}</span>
@@ -127,16 +126,16 @@
                             </ul>
                         </div>
                         <div class="shcz">
-                            <div class="wxsettip_small ">参会企业审核</div>
+                            <div class="wxsettip_small ">{yun:}t key='admin_00842'{/yun}</div>
                             <template>
-                                <el-radio v-model="info.zph.status" label="1">正常</el-radio>
-                                <el-radio v-model="info.zph.status" label="2">未通过</el-radio>
+                                <el-radio v-model="info.zph.status" label="1">{yun:}t key='admin_user_00149'{/yun}</el-radio>
+                                <el-radio v-model="info.zph.status" label="2">{yun:}t key='wap_user_00167'{/yun}</el-radio>
                             </template>
-                            <div class="wxsettip_small ">审核状态说明</div>
-                            <el-input type="textarea" v-model="info.zph.statusbody" :rows="2" placeholder="请输入内容">
+                            <div class="wxsettip_small ">{yun:}t key='admin_user_00365'{/yun}</div>
+                            <el-input type="textarea" v-model="info.zph.statusbody" :rows="2" placeholder="{yun:}t key='wap_user_00076'{/yun}">
                             </el-input>
                             <div class=" shczbth">
-                                <el-button type="primary" @click="comStatusSave(info.zph.id)" :disabled="submitLoading">提 交</el-button>
+                                <el-button type="primary" @click="comStatusSave(info.zph.id)" :disabled="submitLoading">{yun:}t key='member_com_00248'{/yun}</el-button>
                             </div>
                         </div>
                     </div>
@@ -145,44 +144,44 @@
         </el-drawer>
         <!--批量审核参会企业-->
         <div class="modluDrawer">
-            <el-dialog title="参会企业审核" width="300px" :visible.sync="drawercomstatusmultiple" append-to-body :modal-append-to-body="false">
+            <el-dialog title="{yun:}t key='admin_00842'{/yun}" width="300px" :visible.sync="drawercomstatusmultiple" append-to-body :modal-append-to-body="false">
                 <div class="toolClasDia fenpeizhand">
                     <div class="toolClasList">
                         <div class="toolClasTite">
-                            <span>审核操作：</span>
+                            <span>{yun:}t key='admin_user_weipin_00065'{/yun}</span>
                         </div>
                         <div class="toolClasCont">
-                            <el-radio v-model="multiComStatus" label="1">正常</el-radio>
-                            <el-radio v-model="multiComStatus" label="2">未通过</el-radio>
+                            <el-radio v-model="multiComStatus" label="1">{yun:}t key='admin_user_00149'{/yun}</el-radio>
+                            <el-radio v-model="multiComStatus" label="2">{yun:}t key='wap_user_00167'{/yun}</el-radio>
                         </div>
                     </div>
                     <div class="toolClasList">
                         <div class="toolClasTite">
-                            <span>审核说明：</span>
+                            <span>{yun:}t key='member_user_00450'{/yun}</span>
                         </div>
                         <div class="toolClasCont">
-                            <el-input type="textarea" v-model="multiComStatusBody" :rows="2" placeholder="请输入内容">
+                            <el-input type="textarea" v-model="multiComStatusBody" :rows="2" placeholder="{yun:}t key='wap_user_00076'{/yun}">
                             </el-input>
                         </div>
                     </div>
                 </div>
                 <span slot="footer" class="dialog-footer">
-                    <el-button @click="drawercomstatusmultiple = false">取 消</el-button>
-                    <el-button type="primary" @click="multipleComStatusSave">确 定</el-button>
+                    <el-button @click="drawercomstatusmultiple = false">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
+                    <el-button type="primary" @click="multipleComStatusSave">{yun:}t key='wap_com_00019'{/yun}</el-button>
                 </span>
             </el-dialog>
         </div>
         <!--参会企业详情 设置展位-->
-        <el-drawer title="设置展位" :visible.sync="drawersetzw" :modal-append-to-body="false" append-to-body size="80%">
+        <el-drawer title="{yun:}t key='admin_00838'{/yun}" :visible.sync="drawersetzw" :modal-append-to-body="false" append-to-body size="80%">
             <div class="yd_qy">{{ lc("admin_booth_selection_title", [curr_zphtitle]) }}</div>
             <div class="yd_qylist" v-for="(item,index) in space_list" style="margin-left: 20px;" :key="index">
                 <el-divider content-position="center">{{item.name}}</el-divider>
                 <div class="yd_ztbox">
                     <div :class="ydCls(item, childit)" @click="changezw(childit, item, $event)" v-for="(childit,index) in item.list" :key="item.id + index + ''">
-                        <span v-if="childit.comstatus == '-1'" class="yd_zt_n">可预订</span>
-                        <span v-if="childit.comstatus == '1'" class="yd_zt_n">已预定</span>
-                        <span v-if="childit.comstatus == '0'" class="yd_zt_n">审核中</span>
-                        <span v-if="childit.comstatus == '2' || childit.comstatus == '3'" class="yd_zt_n">不可预订</span>
+                        <span v-if="childit.comstatus == '-1'" class="yd_zt_n">{yun:}t key='admin_00301'{/yun}</span>
+                        <span v-if="childit.comstatus == '1'" class="yd_zt_n">{yun:}t key='admin_00303'{/yun}</span>
+                        <span v-if="childit.comstatus == '0'" class="yd_zt_n">{yun:}t key='wap_user_00174'{/yun}</span>
+                        <span v-if="childit.comstatus == '2' || childit.comstatus == '3'" class="yd_zt_n">{yun:}t key='admin_00298'{/yun}</span>
                         <span class="yd_zt_zw">{{childit.name}}</span>
                     </div>
                 </div>
@@ -193,21 +192,21 @@
                         <div class="yd_zt_bthzwbox">{{ lc("admin_booth_value", [sel_zwname]) }}</div>
                     </div>
                     <div class="yd_zt_bthbot">
-                        <el-button type="primary" @click="saveChangeZw">添 加</el-button>
+                        <el-button type="primary" @click="saveChangeZw">{yun:}t key='admin_00305'{/yun}</el-button>
                     </div>
                 </div>
             </div>
         </el-drawer>
         <!--参会职位-->
         <div class="modluDrawer">
-            <el-dialog title="参会职位" width="300px" :visible.sync="drawercomjob" append-to-body :modal-append-to-body="false">
+            <el-dialog title="{yun:}t key='wap_00560'{/yun}" width="300px" :visible.sync="drawercomjob" append-to-body :modal-append-to-body="false">
                 <div class="toolClasDia fenpeizhand">
                     <div class="toolClasList">
                         <div class="toolClasTite">
-                            <span>选择职位：</span>
+                            <span>{yun:}t key='admin_00297'{/yun}</span>
                         </div>
                         <div class="toolClasCont">
-                            <el-select v-model="jobids" filterable remote placeholder="选择职位" multiple>
+                            <el-select v-model="jobids" filterable remote placeholder="{yun:}t key='admin_00300'{/yun}" multiple>
                                 <el-option v-for="item in job_arr" :key="item.value" :label="item.label" :value="item.value">
                                 </el-option>
                             </el-select>
@@ -215,8 +214,8 @@
                     </div>
                 </div>
                 <span slot="footer" class="dialog-footer">
-                    <el-button @click="drawercomjob = false">取 消</el-button>
-                    <el-button type="primary" @click="saveComJob">确 定</el-button>
+                    <el-button @click="drawercomjob = false">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
+                    <el-button type="primary" @click="saveComJob">{yun:}t key='wap_com_00019'{/yun}</el-button>
                 </span>
             </el-dialog>
         </div>
@@ -229,7 +228,7 @@ module.exports = {
     },
     data: function() {
         return {
-            emptytext: '暂无数据',
+            emptytext: "{yun:}t key='wap_js_00113'{/yun}",
             loading: false,
             submitLoading: false,
             status: this.shstatus,
@@ -258,7 +257,7 @@ module.exports = {
             sel_comname: '',
             sel_zwid: '',
             sel_cdid: '',
-            sel_zwname: '未选择',
+            sel_zwname: "{yun:}t key='admin_00304'{/yun}",
             drawercomstatusmultiple: false,
             multiComStatus: '',
             multiComStatusBody: '',
@@ -285,10 +284,10 @@ module.exports = {
                         that.job_arr = response.data.data
                         that.drawercomjob = true
                     } else {
-                        message.error('该企业没有可作展出的职位！');
+                        message.error("{yun:}t key='admin_00295'{/yun}");
                     }
                 } else {
-                    message.error('该企业没有可作展出的职位！');
+                    message.error("{yun:}t key='admin_00295'{/yun}");
                 }
             }).catch(function(error) {
                 console.log(error);
@@ -324,24 +323,24 @@ module.exports = {
                 rt.push('yd_ztbkyd')
             }
             if (childit.comstatus == '-1' && this.sel_zwid == childit.id) {
-                rt.push('yd_ztkyd_active')
+                rt.push('yd_ztkyd_active")
             }
             if (this.sel_zwid == childit.id) {
                 this.sel_zwname = childit.name
             }
             return rt
         },
-        // 设置展位
+        // {yun:}t key='admin_00838'{/yun}
         setZw() {
             var that = this
-            httpPost('m=neirong&c=zhaopinhui&a=comadd', { id: that.info.zph.zid }).then(function(response) {
+            httpPost("m=neirong&c=zhaopinhui&a=comadd', { id: that.info.zph.zid }).then(function(response) {
                 if (response.data.error == 0) {
                     that.space_list = response.data.data.spacelist
                     that.sel_zwid = that.curr_comdata.bid
                     that.sel_cdid = that.curr_comdata.cid
                     that.drawersetzw = true
                 } else {
-                    message.error('获取参会企业失败');
+                    message.error("{yun:}t key='admin_user_company_00017'{/yun}");
                 }
             }).catch(function(error) {
                 console.log(error);
@@ -369,7 +368,7 @@ module.exports = {
         // 选择展位
         changezw(childit, item, event) {
             if (childit.comstatus != '-1') {
-                message.error('请选择可预订的展位！');
+                message.error("{yun:}t key='admin_00296'{/yun}");
                 return false
             }
             this.sel_zwid = childit.id
@@ -393,10 +392,10 @@ module.exports = {
                     if (response.data.data.length > 0) {
                         that.job_arr = response.data.data
                     } else {
-                        message.error('该企业没有可作展出的职位！');
+                        message.error("{yun:}t key='admin_00295'{/yun}");
                     }
                 } else {
-                    message.error('该企业没有可作展出的职位！');
+                    message.error("{yun:}t key='admin_00295'{/yun}");
                 }
             }).catch(function(error) {
                 console.log(error);
@@ -412,7 +411,7 @@ module.exports = {
                     that.dtlislook = true
                     that.comdrawersh = true
                 } else {
-                    message.error('获取参会企业失败');
+                    message.error("{yun:}t key='admin_user_company_00017'{/yun}");
                 }
             }).catch(function(error) {
                 console.log(error);
@@ -452,7 +451,7 @@ module.exports = {
         },
         delAllBottom() {
             if (!this.selectedItem.length) {
-                message.error('请选择要删除的数据项');
+                message.error("{yun:}t key='admin_00136'{/yun}");
                 return false;
             }
             delConfirm(this, this.selectedItem, this.delete);
@@ -505,9 +504,9 @@ module.exports = {
             httpPost('m=neirong&c=zhaopinhui&a=ajaxsort', sendData, { hideloading: true }).then(function(response) {
                 let res = response.data;
                 if (res.error === 0) {
-                    message.success('修改成功');
+                    message.success("{yun:}t key='admin_user_company_00208'{/yun}");
                 } else {
-                    message.error('修改失败');
+                    message.error("{yun:}t key='admin_00187'{/yun}");
                 }
                 _this.oldData = null;
                 _this.getList();
@@ -553,7 +552,7 @@ module.exports = {
                 params.t = that.sort_col
             }
             that.loading = true;
-            that.emptytext = "数据加载中";
+            that.emptytext = "{yun:}t key='admin_user_weipin_00026'{/yun}";
             httpPost('m=neirong&c=zhaopinhui&a=com', params, {hideloading: true}).then(function(result) {
                 var res = result.data
                 if (res.error == 0) {
@@ -567,7 +566,7 @@ module.exports = {
                     }
                     that.loading = false;
                     if (that.tableData.length === 0){
-                        that.emptytext = "暂无数据";
+                        that.emptytext = "{yun:}t key='wap_js_00113'{/yun}";
                     }
                 }
             }).catch(function(e) {
@@ -577,7 +576,7 @@ module.exports = {
         // 参会企业批量审核
         multiAudit: function(){
             if (!this.selectedItem.length) {
-                message.error('请选择要审核的数据项');
+                message.error("{yun:}t key='admin_00246'{/yun}");
                 return false;
             }
             this.drawercomstatusmultiple = true
@@ -586,7 +585,7 @@ module.exports = {
         multipleComStatusSave() {
             var that = this
             if (!that.selectedItem.length) {
-                message.error('请选择要审核的数据项');
+                message.error("{yun:}t key='admin_00246'{/yun}");
                 return false;
             }
             that.comstatus({
@@ -613,7 +612,7 @@ module.exports = {
                         that.getList()
                     });
                 } else {
-                    message.error('获取参会企业失败');
+                    message.error("{yun:}t key='admin_user_company_00017'{/yun}");
                 }
             }).catch(function(error) {
                 console.log(error);

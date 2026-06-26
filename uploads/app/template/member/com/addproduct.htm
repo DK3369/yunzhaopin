@@ -17,7 +17,7 @@
   	  <div class="newmember_screenbox">
   	  	<div class="newmember_screen">
   	  		<div class="newmember_screenname"><a href="index.php?c=product" class="newcom_fh">{yun:}t key='common.back'{/yun} </a><span
-  	  				class="newcom_fh_line">|</span>公司产品详细</div>
+  	  				class="newcom_fh_line">|</span>{yun:}t key='member_com_00524'{/yun}</div>
   	  	</div>
   	  </div>
   					  <div class="clear"></div>
@@ -66,16 +66,16 @@
 function CheckPost(){ 
 	var title=$.trim($("input[name='title']").val());
 	if(title==''){
-		layer.msg('产品标题不能为空！', 2, 8);return false;
+		layer.msg("{yun:}t key='member_com_00525'{/yun}", 2, 8);return false;
 	}
 	if(title.lentgh>30){
-		layer.msg('请将标题控制在30字以内！', 2, 8);return false;
+		layer.msg("{yun:}t key='member_com_00390'{/yun}", 2, 8);return false;
 	}
 	// if($.trim($("input[name='pic']").val())=='' && $.trim($("input[name='id']").val())==''){
-	// 	layer.msg('产品图片不能为空！', 2, 8);return false;
+	// 	layer.msg("{yun:}t key='member_com_00526'{/yun}", 2, 8);return false;
 	// }
 	if(UE.getEditor('description').getContent()==''){
-		layer.msg('产品描述不能为空！', 2, 8);return false;
+		layer.msg("{yun:}t key='member_com_00527'{/yun}", 2, 8);return false;
 	}  
 	$("#productform").submit();
 	layer.load("{yun:}t key='wap_js_00148'{/yun}",0);

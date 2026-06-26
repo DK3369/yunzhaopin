@@ -112,7 +112,7 @@ class domain_list_controller extends adminCommon
             $configM=   $this->MODEL('config');
             $configM->setConfig($data);
             $this->web_config();
-            $this->admin_json(0, '分站设置成功');
+            $this->admin_json(0, 'admin_01371');
         }
     }
     //  开启/关闭分站
@@ -124,11 +124,11 @@ class domain_list_controller extends adminCommon
             $this->MODEL('site')->upInfo(array('type' => $_POST['type']), array('id' => $_POST['id']));
             $this->DomainArr();
 
-            $msg    =   $_POST['type'] == 1 ? '分站已启用' : '分站已关闭';
+            $msg    =   $_POST['type'] == 1 ? yun_at('admin_01372') : yun_at('admin_01373');
             $this->render_json(0, $msg);
         }else{
 
-            $this->render_json(1, '参数错误，请重试！');
+            $this->render_json(1, yun_at('wap_00203'));
         }
     }
 
@@ -152,7 +152,7 @@ class domain_list_controller extends adminCommon
             }
         } else {
 
-            $this->render_json(1, '参数错误，请重试！');
+            $this->render_json(1, yun_at('wap_00203'));
         }
     }
 
@@ -202,14 +202,14 @@ class domain_list_controller extends adminCommon
 
         if ($_POST['title'] == '' || ($_POST['domain'] == '' && $_POST['indexdir'] == '') || ($_POST['province'] == '' && $_POST['hy'] == '')){
 
-            $this->render_json(1, '信息不完整，请重新填写！');
+            $this->render_json(1, yun_at('admin_system_00014'));
         }
         if (isset($_POST['domain']) && $_POST['domain'] != '') {
 
             $domain =   @str_replace(array('http://', 'https://'), '', $_POST['domain']);
             if ($domain == str_replace(array('http://', 'https://'), '', $this->config['sy_weburl'])) {
 
-                $this->render_json(1, '分站域名和总站域名一致，请重新填写！');
+                $this->render_json(1, yun_at('admin_system_00013'));
             }
         }
 
@@ -254,19 +254,19 @@ class domain_list_controller extends adminCommon
         }
         $domain_list    =   $siteM->getInfo($whereData);
         if (is_array($domain_list)) {
-            $this->render_json(1, '该域名已经被绑定!');
+            $this->render_json(1, yun_at('admin_system_00015'));
         }
 
         if (isset($_POST['id'])){
 
             $result =   $siteM->addInfo($_POST, array('id' => $_POST['id']));
             $this->DomainArr();
-            $this->admin_json(0, '分站（ID：'.$_POST['id'].'）更新成功！');
+            $this->admin_json(0, '分站（ID：'.$_POST['id'].'admin_01374');
         }else{
 
             $result =   $siteM->addInfo($_POST);
             $this->DomainArr();
-            $this->admin_json(0, '分站（ID：'.$result.'）创建成功！');
+            $this->admin_json(0, '分站（ID：'.$result.'admin_01375');
         }
     }
 }

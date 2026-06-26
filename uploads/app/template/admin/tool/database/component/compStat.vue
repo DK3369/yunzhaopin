@@ -2,23 +2,23 @@
     <div class="moduleElHight">
         <div class="dataEchatFrom">
             <div class="dataEchFromTip">
-                <span :class="search.days == -1 ? 'spanDay': ''" @click="handleSearch(-1)">昨天</span>
-                <span :class="search.days == 1 ? 'spanDay': ''" @click="handleSearch(1)">今天</span>
-                <span :class="search.days == 2 ? 'spanDay': ''" @click="handleSearch(2)">一周内</span>
-                <span :class="search.days == 3 ? 'spanDay': ''" @click="handleSearch(3)">一月内</span>
-                <span :class="search.days == 4 ? 'spanDay': ''" @click="handleSearch(4)">半年</span>
-                <span :class="search.days == 5 ? 'spanDay': ''" @click="handleSearch(5)">一年</span>
+                <span :class="search.days == -1 ? 'spanDay': ''" @click="handleSearch(-1)">{yun:}t key='common_02000'{/yun}</span>
+                <span :class="search.days == 1 ? 'spanDay': ''" @click="handleSearch(1)">{yun:}t key='common_01940'{/yun}</span>
+                <span :class="search.days == 2 ? 'spanDay': ''" @click="handleSearch(2)">{yun:}t key='admin_tool_00142'{/yun}</span>
+                <span :class="search.days == 3 ? 'spanDay': ''" @click="handleSearch(3)">{yun:}t key='admin_tool_00143'{/yun}</span>
+                <span :class="search.days == 4 ? 'spanDay': ''" @click="handleSearch(4)">{yun:}t key='admin_tool_00146'{/yun}</span>
+                <span :class="search.days == 5 ? 'spanDay': ''" @click="handleSearch(5)">{yun:}t key='admin_tool_00145'{/yun}</span>
             </div>
             <div class="dataEchFromInpt">
-                <el-date-picker v-model="search.time" type="daterange" range-separator="至" :picker-options="pickerOptions" start-placeholder="开始日期" end-placeholder="结束日期" value-format="timestamp" @change="handleSearch(0)"></el-date-picker>
-                <el-button type="primary" icon="el-icon-search" size="mini" @click="handleSearch(0)">查询</el-button>
+                <el-date-picker v-model="search.time" type="daterange" range-separator="至" :picker-options="pickerOptions" start-placeholder="{yun:}t key='admin_00343'{/yun}" end-placeholder="{yun:}t key='admin_00344'{/yun}" value-format="timestamp" @change="handleSearch(0)"></el-date-picker>
+                <el-button type="primary" icon="el-icon-search" size="mini" @click="handleSearch(0)">{yun:}t key='admin_user_weipin_00049'{/yun}</el-button>
             </div>
         </div>
         <div class="dataEchNumber">
             <div class="dataEchNuWione">
                 <div class="dataEchNumxzen">
                     <div>
-                        <span>新增个人</span>
+                        <span>{yun:}t key='admin_user_00305'{/yun}</span>
                         <b>{{allNum.adduser}}</b>
                     </div>
                 </div>
@@ -26,7 +26,7 @@
                     <div class="dataEchNumList">
                         <div class="dataEchNumName">
                             <img src="../../images/dataim1.png" alt="">
-                            <span>新增简历</span>
+                            <span>{yun:}t key='admin_user_00193'{/yun}</span>
                         </div>
                         <div class="dataEchNumSusn">
                             <b>{{allNum.addexpect}}</b>
@@ -35,7 +35,7 @@
                     <div class="dataEchNumList">
                         <div class="dataEchNumName">
                             <img src="../../images/dataim2.png" alt="">
-                            <span>简历刷新</span>
+                            <span>{yun:}t key='admin_tool_00176'{/yun}</span>
                         </div>
                         <div class="dataEchNumSusn">
                             <b>{{allNum.resumeRefresh}}</b>
@@ -44,7 +44,7 @@
                     <div class="dataEchNumList">
                         <div class="dataEchNumName">
                             <img src="../../images/dataim3.png" alt="">
-                            <span>简历投递</span>
+                            <span>{yun:}t key='member_com_00152'{/yun}</span>
                         </div>
                         <div class="dataEchNumSusn">
                             <b>{{allNum.resumeDelivery}}</b>
@@ -55,7 +55,7 @@
             <div class="dataEchNuWitwo">
                 <div class="dataEchNumxzen" style="background: #5880FC;">
                     <div>
-                        <span>新增企业</span>
+                        <span>{yun:}t key='admin_user_company_00162'{/yun}</span>
                         <b>{{allNum.addcom}}</b>
                     </div>
                 </div>
@@ -63,7 +63,7 @@
                     <div class="dataEchNumList">
                         <div class="dataEchNumName">
                             <img src="../../images/dataim4.png" alt="">
-                            <span>新增职位</span>
+                            <span>{yun:}t key='member_com_00250'{/yun}</span>
                         </div>
                         <div class="dataEchNumSusn">
                             <b>{{allNum.addjob}}</b>
@@ -72,7 +72,7 @@
                     <div class="dataEchNumList">
                         <div class="dataEchNumName">
                             <img src="../../images/dataim5.png" alt="">
-                            <span>职位刷新</span>
+                            <span>{yun:}t key='wap_com_00045'{/yun}</span>
                         </div>
                         <div class="dataEchNumSusn">
                             <b>{{allNum.jobRefresh}}</b>
@@ -81,7 +81,7 @@
                     <div class="dataEchNumList">
                         <div class="dataEchNumName">
                             <img src="../../images/dataim6.png" alt="">
-                            <span>简历下载</span>
+                            <span>{yun:}t key='wap_com_00042'{/yun}</span>
                         </div>
                         <div class="dataEchNumSusn">
                             <b>{{allNum.downResume}}</b>
@@ -90,7 +90,7 @@
                     <div class="dataEchNumList">
                         <div class="dataEchNumName">
                             <img src="../../images/dataim7.png" alt="">
-                            <span>邀请面试</span>
+                            <span>{yun:}t key='resume_00029'{/yun}</span>
                         </div>
                         <div class="dataEchNumSusn">
                             <b>{{allNum.inviteInterview}}</b>
@@ -102,14 +102,14 @@
         </div>
 
         <div class="dataEchatTite">
-            <span>个人用户统计趋势图</span>
+            <span>{yun:}t key='admin_tool_00177'{/yun}</span>
         </div>
         <div class="dataEchatInfo">
             <div class="dataEchatModul" id="main1"></div>
             <div class="dataEchatModul" id="main2"></div>
         </div>
         <div class="dataEchatTite">
-            <span>企业用户统计趋势图</span>
+            <span>{yun:}t key='admin_tool_00178'{/yun}</span>
         </div>
         <div class="dataEchatInfo">
             <div class="dataEchatModul" id="main3"></div>
@@ -206,7 +206,7 @@
                 var option = {
                     color: ['#39c3d5', '#46a6ff', '#5259F4'],
                     title: {
-                        text: window.yunAdminT('用户/简历趋势对比图'),
+                        text: window.yunAdminT("{yun:}t key='admin_tool_00179'{/yun}"),
                         textStyle: {
                             color: '#333',
                             fontWeight: '500',
@@ -302,7 +302,7 @@
                 var myChart = echarts.init(document.getElementById('main2'));
                 var option = {
                     title: {
-                        text: window.yunAdminT('简历投递/刷新趋势对比图'),
+                        text: window.yunAdminT("{yun:}t key='admin_tool_00180'{/yun}"),
                         textStyle: {
                             color: '#333',
                             fontWeight: '500',
@@ -414,7 +414,7 @@
                 var option = {
                     color: ['#23C9C9', '#1890FF'],
                     title: {
-                        text: window.yunAdminT('企业/职位趋势对比图'),
+                        text: window.yunAdminT("{yun:}t key='admin_tool_00181'{/yun}"),
                         textStyle: {
                             color: '#333',
                             fontWeight: '500',
@@ -504,7 +504,7 @@
                 var option = {
                     color: ['#1890FF', '#23C9C9', '#5259F4'],
                     title: {
-                        text: window.yunAdminT('简历下载统计'),
+                        text: window.yunAdminT("{yun:}t key='admin_tool_00108'{/yun}"),
                         textStyle: {
                             color: '#333',
                             fontWeight: '500',
@@ -558,15 +558,15 @@
                         {
                             name: seriesArr.name,
                             data: seriesArr.data,
-                            type: 'line',
+                            type: 'line",
                             // smooth: true,
                             areaStyle: {
                                 normal: {
-                                    //右，下，左，上
+                                    //右，下，{yun:}t key='wap_01540'{/yun}，上
                                     color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
                                         {
                                             offset: 0,
-                                            color: '#1890FF'
+                                            color: "#1890FF'
                                         },
                                         {
                                             offset: 0.7,
@@ -600,7 +600,7 @@
                 var myChart = echarts.init(document.getElementById('main5'));
                 var option = {
                     title: {
-                        text: window.yunAdminT('职位刷新统计'),
+                        text: window.yunAdminT("{yun:}t key='admin_tool_00182'{/yun}"),
                         textStyle: {
                             color: '#333',
                             fontWeight: '500',
@@ -691,7 +691,7 @@
                 var option = {
                     color: ['#39c3d5', '#46a6ff', '#5259F4'],
                     title: {
-                        text: window.yunAdminT('邀请面试统计'),
+                        text: window.yunAdminT("{yun:}t key='admin_tool_00114'{/yun}"),
                         textStyle: {
                             color: '#333',
                             fontWeight: '500',

@@ -7,11 +7,11 @@ class toolbox_doc_controller extends adminCommon
     // 设置高级搜索功能
     function set_search()
     {
-        $search_list[] = array("param" => "status", "name" => '前台显示', "value" => array("1" => "显示", "0" => "不显示"));
+        $search_list[] = array("param" => "status", "name" => 'admin_00271', "value" => array("1" => 'member_com_00023', "0" => 'admin_user_00340'));
 
-        $ad_time = array('1' => '今天', '3' => '最近三天', '7' => '最近七天', '15' => '最近半月', '30' => '最近一个月');
+        $ad_time = array('1' => 'common_01940', '3' => 'admin_user_00179', '7' => 'admin_user_00178', '15' => 'admin_user_00180', '30' => 'admin_user_00175');
 
-        $search_list[] = array("param" => "end", "name" => '上传日期', "value" => $ad_time);
+        $search_list[] = array("param" => "end", "name" => 'admin_00269', "value" => $ad_time);
 
         return $search_list;
     }
@@ -118,15 +118,15 @@ class toolbox_doc_controller extends adminCommon
         $hrM = $this->MODEL('hr');
 
         if ($_POST['name'] == '') {
-            $this->render_json(1, '文档名称不能为空');
+            $this->render_json(1, yun_at('admin_neirong_00026'));
         } else if ($_POST['cid'] == '') {
-            $this->render_json(1, '请选择文档分类');
+            $this->render_json(1, yun_at('admin_01348'));
         }
 
         $id = !empty($_POST['id']) ? intval($_POST['id']) : '';
 
         if (!$id && $_FILES['file']['name'] == '') {
-            $this->render_json(1, '请上传文档');
+            $this->render_json(1, yun_at('admin_00268'));
         }
 
         $post = array(
@@ -162,9 +162,9 @@ class toolbox_doc_controller extends adminCommon
         }
 
         if ($nid) {
-            $this->admin_json(0, $msg . "成功");
+            $this->admin_json(0, $msg . 'admin_tool_00502');
         } else {
-            $this->render_json(1, $msg . "失败");
+            $this->render_json(1, $msg . 'admin_tool_00501');
         }
     }
 
@@ -193,7 +193,7 @@ class toolbox_doc_controller extends adminCommon
         if ($nid) {
             $this->admin_json(0, "文档(ID:{$_POST['id']})显示状态设置成功");
         } else {
-            $this->render_json(1, "文档显示状态设置失败");
+            $this->render_json(1, yun_at('admin_01349'));
         }
     }
 }

@@ -8,7 +8,7 @@ class index_controller extends common{
 				$this->cookie->unset_cookie();
 				
 			}else{
-				$this->ACT_msg($this->config['sy_weburl']."/member", "您已经登录了！");
+				$this->ACT_msg($this->config['sy_weburl']."/member", yun_at('wap_00416'));
 			}
 		}
 		if($_GET['backurl']=='1'){
@@ -73,7 +73,7 @@ class index_controller extends common{
 	function sendmsg_action()
 	{
 		$noticeM	=	$this->MODEL('notice');
-		$result		=	$noticeM->jycheck($_POST['code'],'前台登录');
+		$result		=	$noticeM->jycheck($_POST['code'],'wap_js_00062');
 		if(!empty($result)){
 			$this->layer_msg($result['msg'], 9, 0, '', 2, $result['error']);
 		}
@@ -84,7 +84,7 @@ class index_controller extends common{
 
             $result =   array(
                 'error' =>  2,
-                'msg'   =>  '请先注册账号',
+                'msg'   =>  yun_at('wap_00307'),
                 'url'   =>  Url('register')
             );
         }else{
@@ -144,11 +144,11 @@ class index_controller extends common{
 					header("Location:".$this->config['sy_weburl'].'/member');
 				}else{
 					$this->cookie->unset_cookie();
-					echo yun_auto_t("激活失败");
+					echo yun_at('wap_00311');
 				}
 			}else{
 				$this->cookie->unset_cookie();
-				echo yun_auto_t("激活失败");
+				echo yun_at('wap_00311');
 			}
 		}else{
 			header("Location:".Url('index'));
@@ -185,11 +185,11 @@ class index_controller extends common{
 
                         $this->cookie->unset_cookie();
                         $this->cookie->add_cookie($user['uid'], $user['username'], $user['salt'], $user['email'], $user['password'], '', $this->config['sy_logintime'], $user['did']);
-                        $this->layer_msg('扫码成功', 9, 0, Url('register', array('c' => 'ident')));
+                        $this->layer_msg('wap_00310', 9, 0, Url('register', array('c' => 'ident')));
                     } else {
 
                         if ($user['status'] == "2") {
-                            $this->layer_msg('您的账号已被锁定', 9, 0, Url("register", array("c" => "ok", "type" => 2), "1"), 2);
+                            $this->layer_msg('login_00004', 9, 0, Url("register", array("c" => "ok", "type" => 2), "1"), 2);
                         }
                         $this->cookie->unset_cookie();
                         $this->cookie->add_cookie($user['uid'], $user['username'], $user['salt'], $user['email'], $user['password'], $user['usertype'], $this->config['sy_logintime'], $user['did']);
@@ -197,7 +197,7 @@ class index_controller extends common{
                     }
                 } else {
 
-                    $this->layer_msg('扫码成功,请绑定已有账号或直接创建新账号', 9, 0, Url('wxconnect', array('bind' => 1, 'type' => 'ba')));
+                    $this->layer_msg('login_00001', 9, 0, Url('wxconnect', array('bind' => 1, 'type' => 'ba')));
                 }
             } else {
 
@@ -236,7 +236,7 @@ class index_controller extends common{
 	                $return	    =  $userinfoM->bindacount($lData,'weixin');
 	            }
 	        }else{
-	            $return['msg']		=	'微信登录信息已失效，请重新登录！';
+	            $return['msg']		=	yun_at('wap_00546');
 	        }
 	    }else if($_POST['provider'] == 'qq'){
 
@@ -257,7 +257,7 @@ class index_controller extends common{
 	            
 	            $return	    =  $userinfoM->bindacount($lData,'qq');
 	        }else{
-	            $return['msg']		=	'qq登录信息已失效，请重新登录！';
+	            $return['msg']		=	yun_at('login_00003');
 	        }
 	    }else if ($_POST['provider'] == 'sinaweibo'){
 	        
@@ -278,7 +278,7 @@ class index_controller extends common{
 	            $return	    =  $userinfoM->bindacount($lData,'sinaweibo');
 
 	        }else{
-	            $return['msg']		=	'新浪微博登录信息已失效，请重新登录！';
+	            $return['msg']		=	yun_at('login_00002');
 	        }
 	    }
 
@@ -309,14 +309,14 @@ class index_controller extends common{
 				
 				if ($result['errcode'] == 9){
 				    
-				    $this->layer_msg('创建成功',9,0, Url('register',array('c'=>'ident')));
+				    $this->layer_msg('model_00092',9,0, Url('register',array('c'=>'ident')));
 				    
 				}else{
-				    $this->layer_msg('账号注册失败',8,0);
+				    $this->layer_msg('login_00006',8,0);
 				}
 
 			}else{
-			    $this->layer_msg('请扫描微信二维码',9,0, Url('wxconnect'));
+			    $this->layer_msg('login_00005',9,0, Url('wxconnect'));
 			}
 		}else if($_POST['provider'] == 'qq'){
 			session_start();
@@ -335,13 +335,13 @@ class index_controller extends common{
 	            
 	            if ($result['errcode'] == 9){
 	                
-	                $this->layer_msg('创建成功',9,0, Url('register',array('c'=>'ident')));
+	                $this->layer_msg('model_00092',9,0, Url('register',array('c'=>'ident')));
 	                
 	            }else{
-	                $this->layer_msg('账号注册失败',8,0);
+	                $this->layer_msg('login_00006',8,0);
 	            }
 	        }else{
-	            $this->layer_msg('qq登录信息已失效，请重新登录！',8,0);
+	            $this->layer_msg('login_00003',8,0);
 	        }
 		}else if($_POST['provider'] == 'sinaweibo'){
 			session_start();
@@ -359,14 +359,14 @@ class index_controller extends common{
 	            
 	            if ($result['errcode'] == 9){
 	                
-	                $this->layer_msg('创建成功',9,0, Url('register',array('c'=>'ident')));
+	                $this->layer_msg('model_00092',9,0, Url('register',array('c'=>'ident')));
 	                
 	            }else{
 	                
-	                $this->layer_msg('账号注册失败',8,0);
+	                $this->layer_msg('login_00006',8,0);
 	            }
 	        }else{
-	            $this->layer_msg('新浪微博登录信息已失效，请重新登录！',8,0);
+	            $this->layer_msg('login_00002',8,0);
 	        }
 		}
 	}
@@ -397,7 +397,7 @@ class index_controller extends common{
 	                $return	    =  $userinfoM->fastReg($data, '', 'weixin');
 	            }
 	        }else{
-	            $return['msg']		=	'微信登录信息已失效，请重新登录！';
+	            $return['msg']		=	yun_at('wap_00546');
 	        }
 	    }
 	    if ($_POST['provider'] == 'qq'){
@@ -418,7 +418,7 @@ class index_controller extends common{
 	            $userinfoM	=  $this->MODEL('userinfo');
 	            $return	    =  $userinfoM->fastReg($data, '', 'qq');
 	        }else{
-	            $return['msg']		=	'QQ登录信息已失效，请重新登录！';      
+	            $return['msg']		=	yun_at('wap_00300');      
 	        }
 	    }
 	    if ($_POST['provider'] == 'sinaweibo'){
@@ -438,7 +438,7 @@ class index_controller extends common{
 	            $userinfoM	=  $this->MODEL('userinfo');
 	            $return	    =  $userinfoM->fastReg($data, '', 'sinaweibo');
 	        }else{
-	            $return['msg']		=	'新浪微博登录信息已失效，请重新登录！';
+	            $return['msg']		=	yun_at('login_00002');
 	        }
 	    }
         if($return['errcode']==9){

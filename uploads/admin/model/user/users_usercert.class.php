@@ -7,9 +7,9 @@ class users_usercert_controller extends adminCommon
     //设置高级搜索功能
     function set_search()
     {
-        $search[] = array("param" => "status", "name" => '审核状态', "value" => array("1" => "已审核", "2" => "未审核", "3" => "未通过"));
-        $lo_time = array('1' => '今天', '3' => '最近三天', '7' => '最近七天', '15' => '最近半月', '30' => '最近一个月');
-        $search[] = array("param" => "time", "name" => '发布时间', "value" => $lo_time);
+        $search[] = array("param" => "status", "name" => 'wap_com_00406', "value" => array("1" => 'wap_user_00165', "2" => 'wap_user_00166', "3" => 'wap_user_00167'));
+        $lo_time = array('1' => 'common_01940', '3' => 'admin_user_00179', '7' => 'admin_user_00178', '15' => 'admin_user_00180', '30' => 'admin_user_00175');
+        $search[] = array("param" => "time", "name" => 'admin_user_weipin_00030', "value" => $lo_time);
         $this->render_json(0, '', $search);
     }
 

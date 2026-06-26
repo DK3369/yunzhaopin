@@ -37,7 +37,7 @@ class set_tplset_controller extends adminCommon
 
         $style  =   new style($this->obj);
         $style->model_save_action($_POST);
-        $this->admin_json(0,'信息修改成功');
+        $this->admin_json(0,'admin_01399');
     }
 
     function check_style_action()
@@ -47,9 +47,9 @@ class set_tplset_controller extends adminCommon
             $configM        =   $this->MODEL('config');
             $configM->setConfig($data);
             $this->web_config();
-            $this->admin_json(0,'模板风格更换成功');
+            $this->admin_json(0,'admin_system_00056');
         } else {
-            $this->admin_json(1,'该目录无效');
+            $this->admin_json(1,'admin_system_00057');
         }
     }
 
@@ -124,7 +124,7 @@ class set_tplset_controller extends adminCommon
     {
         //验证URL 必须只能是数字字母形式
         if (!ctype_alnum($url)) {
-            $this->render_json(1,'目录名称只能是字母或数字');
+            $this->render_json(1,yun_at('admin_system_00055'));
         }
         if (!is_dir("../app/template/company/".$url)) {
             mkdir("../app/template/company/".$url, 0777, true);
@@ -138,7 +138,7 @@ class set_tplset_controller extends adminCommon
     {
         $del    =   $_POST['id'];
         if (!$del) {
-            $this->render_json(1,'请先选择');
+            $this->render_json(1,yun_at('common_01843'));
         }
         $return =   $this->MODEL('tpl')->delComtpl($del);
         $this->admin_json($return['errcode']==9?0:1,$return['msg']);
@@ -196,7 +196,7 @@ class set_tplset_controller extends adminCommon
     function resumetpl_sava_action($url)
     {
         if (!ctype_alnum($url)) {
-            $this->render_json(1,'目录名称只能是字母或数字');
+            $this->render_json(1,yun_at('admin_system_00055'));
         }
         if (!is_dir("../app/template/resume/" . $url)) {
             mkdir("../app/template/resume/" . $url, 0777, true);
@@ -207,7 +207,7 @@ class set_tplset_controller extends adminCommon
     {
         $del    =   $_POST['id'];
         if (!$del) {
-            $this->render_json(1,'请先选择');
+            $this->render_json(1,yun_at('common_01843'));
         }
         $return =   $this->MODEL('tpl')->delResumetpl($del);
 
@@ -273,7 +273,7 @@ class set_tplset_controller extends adminCommon
             $this->admin_json($return['errcode']==9?0:1,$return['msg']);
         }else{
             $this->cache();
-            $this->render_json(1,'请先选择');
+            $this->render_json(1,yun_at('common_01843'));
         }
     }
     /*生成主题的缓存文件*/

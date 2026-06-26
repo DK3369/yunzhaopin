@@ -3,14 +3,14 @@
     <div v-loading="loading" class="drawerModlue">
         <div class="drawerModInfo drawerModInfoOne">
             <div class="adminBoldTips">
-                <el-alert title="企业会员增值包等级关乎您的收入问题，请谨慎添加和修改并注意整体的合理性。" show-icon type="success"></el-alert>
+                <el-alert title="{yun:}t key='admin_00699'{/yun}" show-icon type="success"></el-alert>
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>增值类型</span>
+                    <span>{yun:}t key='admin_user_company_00214'{/yun}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-select v-model="ruleForm.type" placeholder="请选择" clearable>
+                    <el-select v-model="ruleForm.type" placeholder="{yun:}t key='wap_user_00100'{/yun}" clearable>
                         <el-option
                             v-for="item in zzData"
                             :key="item.id"
@@ -24,12 +24,12 @@
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>增值包价格</span>
+                    <span>{yun:}t key='admin_user_company_00212'{/yun}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input v-model="ruleForm.service_price" placeholder="请输入数字">
-                        <template slot="prepend">服务价格</template>
-                        <span slot="suffix" class="slotspan">元</span>
+                    <el-input v-model="ruleForm.service_price" placeholder="{yun:}t key='admin_user_00342'{/yun}">
+                        <template slot="prepend">{yun:}t key='admin_user_company_00021'{/yun}</template>
+                        <span slot="suffix" class="slotspan">{yun:}t key='common_02056'{/yun}</span>
                     </el-input>
                 </div>
                 <div class="drawerModTips">
@@ -37,64 +37,64 @@
             </div>
             <div class="drawerModLis drawerModInFlex">
                 <div class="drawerModTite">
-                    <span>增值包设置</span>
+                    <span>{yun:}t key='admin_user_company_00213'{/yun}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input v-model="ruleForm.job_num" placeholder="请输入数字">
-                        <template slot="prepend">上架职位数</template>
-                        <span slot="suffix" class="slotspan">份</span>
+                    <el-input v-model="ruleForm.job_num" placeholder="{yun:}t key='admin_user_00342'{/yun}">
+                        <template slot="prepend">{yun:}t key='member_com_00033'{/yun}</template>
+                        <span slot="suffix" class="slotspan">{yun:}t key='common_02052'{/yun}</span>
                     </el-input>
-                    <el-input v-model="ruleForm.breakjob_num" placeholder="请输入数字" style="margin-left: 10px;">
-                        <template slot="prepend">刷新职位数</template>
-                        <span slot="suffix" class="slotspan">次</span>
+                    <el-input v-model="ruleForm.breakjob_num" placeholder="{yun:}t key='admin_user_00342'{/yun}" style="margin-left: 10px;">
+                        <template slot="prepend">{yun:}t key='member_com_00035'{/yun}</template>
+                        <span slot="suffix" class="slotspan">{yun:}t key='common_02089'{/yun}</span>
                     </el-input>
-                    <el-input v-model="ruleForm.resume" placeholder="请输入数字">
-                        <template slot="prepend">下载简历数</template>
-                        <span slot="suffix" class="slotspan">份</span>
+                    <el-input v-model="ruleForm.resume" placeholder="{yun:}t key='admin_user_00342'{/yun}">
+                        <template slot="prepend">{yun:}t key='member_com_00034'{/yun}</template>
+                        <span slot="suffix" class="slotspan">{yun:}t key='common_02052'{/yun}</span>
                     </el-input>
-                    <el-input v-model="ruleForm.interview" placeholder="请输入数字" style="margin-left: 10px;">
-                        <template slot="prepend">邀请面试数</template>
-                        <span slot="suffix" class="slotspan">份</span>
+                    <el-input v-model="ruleForm.interview" placeholder="{yun:}t key='admin_user_00342'{/yun}" style="margin-left: 10px;">
+                        <template slot="prepend">{yun:}t key='member_com_00037'{/yun}</template>
+                        <span slot="suffix" class="slotspan">{yun:}t key='common_02052'{/yun}</span>
                     </el-input>
-                    <el-input v-model="ruleForm.zph_num" placeholder="请输入数字">
-                        <template slot="prepend">招聘会报名数</template>
-                        <span slot="suffix" class="slotspan">份</span>
+                    <el-input v-model="ruleForm.zph_num" placeholder="{yun:}t key='admin_user_00342'{/yun}">
+                        <template slot="prepend">{yun:}t key='admin_user_company_00211'{/yun}</template>
+                        <span slot="suffix" class="slotspan">{yun:}t key='common_02052'{/yun}</span>
                     </el-input>
-                    <el-input v-model="ruleForm.top_num" placeholder="请输入数字" style="margin-left: 10px;">
-                        <template slot="prepend">置顶天数</template>
-                        <span slot="suffix" class="slotspan">天</span>
+                    <el-input v-model="ruleForm.top_num" placeholder="{yun:}t key='admin_user_00342'{/yun}" style="margin-left: 10px;">
+                        <template slot="prepend">{yun:}t key='wap_user_00209'{/yun}</template>
+                        <span slot="suffix" class="slotspan">{yun:}t key='common_02067'{/yun}</span>
                     </el-input>
-                    <el-input v-model="ruleForm.urgent_num" placeholder="请输入数字">
-                        <template slot="prepend">紧急天数</template>
-                        <span slot="suffix" class="slotspan">天</span>
+                    <el-input v-model="ruleForm.urgent_num" placeholder="{yun:}t key='admin_user_00342'{/yun}">
+                        <template slot="prepend">{yun:}t key='wap_com_00043'{/yun}</template>
+                        <span slot="suffix" class="slotspan">{yun:}t key='common_02067'{/yun}</span>
                     </el-input>
-                    <el-input v-model="ruleForm.rec_num" placeholder="请输入数字" style="margin-left: 10px;">
-                        <template slot="prepend">推荐天数</template>
-                        <span slot="suffix" class="slotspan">天</span>
+                    <el-input v-model="ruleForm.rec_num" placeholder="{yun:}t key='admin_user_00342'{/yun}" style="margin-left: 10px;">
+                        <template slot="prepend">{yun:}t key='wap_com_00041'{/yun}</template>
+                        <span slot="suffix" class="slotspan">{yun:}t key='common_02067'{/yun}</span>
                     </el-input>
                     
                 </div>
                 <div class="drawerModTips">
-                    <el-alert title="上架职位数：套餐模式会员限制企业上架的职位数量，时间模式会员限制企业每天发布的职位数量" type="warning" show-icon :closable="false">
+                    <el-alert title="{yun:}t key='admin_00700'{/yun}" type="warning" show-icon :closable="false">
                     </el-alert>
                 </div>
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>排序</span>
+                    <span>{yun:}t key='member_com_00022'{/yun}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input v-model="ruleForm.sort" placeholder="请输入数字">
+                    <el-input v-model="ruleForm.sort" placeholder="{yun:}t key='admin_user_00342'{/yun}">
                     </el-input>
                 </div>
                 <div class="drawerModTips">
-                    <el-alert title="大前小后" type="info" show-icon :closable="false">
+                    <el-alert title="{yun:}t key='admin_user_company_00197'{/yun}" type="info" show-icon :closable="false">
                     </el-alert>
                 </div>
             </div>
         </div>
         <div class="setBasicButn" style="border: none;">
-            <el-button type="primary" size="medium" @click="submitForm('ruleForm')" :disabled="submitLoading">提交</el-button>
+            <el-button type="primary" size="medium" @click="submitForm('ruleForm')" :disabled="submitLoading">{yun:}t key='common.submit'{/yun}</el-button>
         </div>
     </div>
 </template>
@@ -111,29 +111,29 @@ module.exports = {
             config: {},
             zzData: [],//增值类型列表
             ruleForm: {
-                //增值类型
+                // value-addedtype
                 type: null,
                 //服务价格
-                service_price: '',
-                //上架职位数
-                job_num: '',
-                //刷新职位数
-                breakjob_num: '',
-                //下载简历数
-                resume: '',
-                //邀请面试数
-                interview: '',
-                //招聘会报名数
-                zph_num: '',
-                //置顶天数
-                top_num: '',
-                //紧急天数
-                urgent_num: '',
-                //推荐天数
-                rec_num: '',
+                service_price: '",
+                //{yun:}t key='member_com_00033'{/yun}
+                job_num: "",
+                //{yun:}t key='member_com_00035'{/yun}
+                breakjob_num: "",
+                //{yun:}t key='member_com_00034'{/yun}
+                resume: "",
+                //{yun:}t key='member_com_00037'{/yun}
+                interview: "",
+                //{yun:}t key='admin_user_company_00211'{/yun}
+                zph_num: "",
+                //{yun:}t key='wap_user_00209'{/yun}
+                top_num: "",
+                //{yun:}t key='wap_com_00043'{/yun}
+                urgent_num: "",
+                //{yun:}t key='wap_com_00041'{/yun}
+                rec_num: "',
                 //sy_chat_name
                 chat_num: '',
-                //排序
+                // Sort
                 sort: '',
             },
         }

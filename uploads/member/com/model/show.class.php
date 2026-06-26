@@ -39,13 +39,13 @@ class show_controller extends company{
 			
 			if($oid){
 				
-				$logM->member_log("删除企业环境展示",16,3);//会员日志
+				$logM->member_log(yun_at('api_wxapp_00004'),16,3);//会员日志
 				
-				$this->layer_msg('删除成功！',9,0,"index.php?c=show");
+				$this->layer_msg('admin_user_00187',9,0,"index.php?c=show");
 				
 			}else{
 				
-				$this->layer_msg('删除失败！',8,0,"index.php?c=show");
+				$this->layer_msg('admin_user_00186',8,0,"index.php?c=show");
 				
 			}
 		}

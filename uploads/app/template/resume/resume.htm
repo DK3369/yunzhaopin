@@ -29,7 +29,7 @@
 	<div {yun:}if $smarty.get.see!='member'{/yun} class="yun_newedition_resume_top" {yun:}/if{/yun}>
    		<div class="w1200" style="{yun:}if $smarty.get.see=='member'{/yun}width:850px;margin:0{yun:}/if{/yun}"> 
 			{yun:}if $smarty.get.see!='member'{/yun}
-    		<div class="yun_newedition_resume_current"> {yun:}t key='common.home'{/yun}  > {yun:}t key='default_00312'{/yun} > 简历详细</div>
+    		<div class="yun_newedition_resume_current"> {yun:}t key='common.home'{/yun}  > {yun:}t key='default_00312'{/yun} > {yun:}t key='resume_00062'{/yun}</div>
 			{yun:}/if{/yun}
 			{yun:}if $uid!=$Info.uid && $usertype != 1 && $smarty.get.see!='member'{/yun}
 			<!-- 浮动 -->
@@ -67,8 +67,8 @@
     		<div class="yun_newedition_resume_info" style="{yun:}if $smarty.get.see=='member'{/yun}width:750px{yun:}/if{/yun}"> 
 				{yun:}if $Info.sqInfo{/yun}
 				<div class="td_tip">
-                该简历投递过贵公司的职位  <span class="td_job">投递职位：<em class="td_job_n">【{yun:}$Info.sqInfo.sq_job_name{/yun}】</em></span>
-						<span class="td_job">投递时间：{yun:}$Info.sqInfo.sq_job_time{/yun}</span>
+                {yun:}t key='resume_00063'{/yun}  <span class="td_job">{yun:}t key='wap_01596'{/yun}：<em class="td_job_n">【{yun:}$Info.sqInfo.sq_job_name{/yun}】</em></span>
+						<span class="td_job">{yun:}t key='member_user_00431'{/yun}：{yun:}$Info.sqInfo.sq_job_time{/yun}</span>
 						<span class="td_job">{yun:}t key='admin_yunying_00131'{/yun}：{yun:}$Info.login_date_n{/yun}</span>
 					
 				</div>
@@ -284,12 +284,12 @@
 					</div>
 					{yun:}/if{/yun} 
               
-					<!-- 我的作品--> 
+					<!-- {yun:}t key='wap_01601'{/yun}--> 
 					{yun:}if is_array($Info.user_show) && !empty($Info.user_show){/yun}
 					
 					<div class="yun_newedition_exhibition">
 						<div class="yun_newedition_tit">
-							<span class="yun_newedition_tit_s">我的作品</span>
+							<span class="yun_newedition_tit_s">{yun:}t key='wap_01601'{/yun}</span>
 							<i class="yun_newedition_tit_line"></i>
 						</div>
 						<div class="fairs_introduction_p">
@@ -303,7 +303,7 @@
 			
 					{yun:}/if{/yun} 
               
-					<!--附加信息--> 
+					<!--{yun:}t key='wap_01607'{/yun}--> 
 					{yun:}if is_array($Info.user_other) && !empty($Info.user_other){/yun}
 					<div class="yun_newedition_exhibition">
 						<div class="yun_newedition_tit">
@@ -477,8 +477,8 @@
 							<input type="hidden" name="r_name" value="{yun:}$Info.name{/yun}" />
 							
 							<div class="yun_resume_cz_dt" style="margin-top:20px;">
-								若该简历为无效简历，您可以在此举报<br>
-								核实后我们将为你补偿：
+								{yun:}t key='resume_00065'{/yun}<br>
+								{yun:}t key='resume_00066'{/yun}
 							</div>
 							
 							<div class="yun_resume_cz_dt">
@@ -552,7 +552,7 @@
 							
 							<div class="yun_newedition_resume_other_userinfo">{yun:}$look.exp_n{/yun}{yun:}t key='home.experience_suffix'{/yun}<span class="yun_newedition_resume_line">|</span>{yun:}$look.edu_n{/yun}{yun:}t key='home.education_suffix'{/yun}</div>
 
-							<div class="yun_newedition_resume_other_userwant">求职：<span class="yun_newedition_resume_other_userwantjob">{yun:}$look.job_post_n{/yun}</span></div>
+							<div class="yun_newedition_resume_other_userwant">{yun:}t key='resume_00067'{/yun}<span class="yun_newedition_resume_other_userwantjob">{yun:}$look.job_post_n{/yun}</span></div>
 						</li>
 					{yun:}/userlist{/yun}
 				</ul>

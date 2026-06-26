@@ -18,7 +18,7 @@ class show_controller extends article_controller{
 		$info		=	$news;
 		
 		if($news['id']==''){
-			$this->ACT_msg(Url('article'),"没有找到该文章！");
+			$this->ACT_msg(Url('article'),yun_at('wap_01777'));
 		}
 		
 		$nlwhere['id']	=	array('<',$id);

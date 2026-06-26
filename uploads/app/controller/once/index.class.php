@@ -34,7 +34,7 @@ class index_controller extends common{
 		if($this->config['sy_once_web']=="2"){
 			header("location:".Url('error'));
 		}
-		if($_GET['keyword']=='请输入店铺招聘的关键字'){
+		if($_GET['keyword']=='once_00001'){
 			$_GET['keyword']	=	'';
 		}
 		$ip			=	fun_ip_get();
@@ -82,7 +82,7 @@ class index_controller extends common{
 		$this->yunset("oncekeyword",$oncekeyword);
 		//关键字显示end
 		
-        $add_time	=	array("0"=>"不限","7"=>"一周以内","15"=>"半个月","30"=>"一个月","60"=>"两个月","180"=>"半年","365"=>"一年");
+        $add_time	=	array("0"=>'common_01936',"7"=>'wap_00339',"15"=>'wap_00344',"30"=>'wap_00342',"60"=>'wap_00343',"180"=>'admin_tool_00146',"365"=>'admin_tool_00145');
         $this->yunset("add_time",$add_time);
 		
 		
@@ -122,7 +122,7 @@ class index_controller extends common{
 		$o_info	=	$onceM->getOnceInfo(array('id'=>$id));
 		
 		if($o_info['status']<'1' && !$_GET['pay']){
-			$this->ACT_msg(Url('once'),"店铺正在审核中！");
+			$this->ACT_msg(Url('once'),yun_at('model_00081'));
 		}
 		$this->yunset('o_info',$o_info);
 		
@@ -181,9 +181,9 @@ class index_controller extends common{
 		$orderM	=	$this->MODEL('companyorder');
 		$return	=	$orderM->del((int)$_GET['id'],array('utype'=>'once'));
 		if($return['errcode']==9){
-			$return['msg']='取消订单成功！';
+			$return['msg']=yun_at('common_02186');
 		}else{
-			$return['msg']='取消订单失败！';
+			$return['msg']=yun_at('common_02187');
 		}
 		$this->layer_msg($return['msg'],$return['errcode'],$return['layertype'],Url("once"));
 		
@@ -217,7 +217,7 @@ class index_controller extends common{
     function sendmsg_action()
     {
         $noticeM	=	$this->MODEL('notice');
-        $result		=	$noticeM->jycheck($_POST['code'],'店铺招聘');
+        $result		=	$noticeM->jycheck($_POST['code'],'wap_js_00130');
         if(!empty($result)){
             echo yun_json_encode(array('msg'=>$result['msg'],'error'=>$result['error']));
             return;

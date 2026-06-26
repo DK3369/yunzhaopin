@@ -404,7 +404,7 @@
 							{yun:}/if{/yun} 
 							
 							{yun:}if $smarty.get.cert{/yun} 
-								<a href="{yun:}listurl untype='cert'{/yun}" class="Search_jobs_c_a disc_fac">资质已认证</a>
+								<a href="{yun:}listurl untype='cert'{/yun}" class="Search_jobs_c_a disc_fac">{yun:}t key='common_02393'{/yun}</a>
 							{yun:}/if{/yun} 
 							
 							{yun:}if $smarty.get.welfare{/yun} 
@@ -423,12 +423,12 @@
 				<div class="search_h1_box_title">
 
 					<ul class="search_h1_box_list">
-						<li {yun:}if $smarty.get.urgent=='' &&$smarty.get.rec=='' {/yun}class="search_job_all " {yun:}/if{/yun} class="search_job_all"> <a href="{yun:}listurl type=tp v=0{/yun}">所有职位</a><i class="search_h1_box_list_icon"></i></li>
+						<li {yun:}if $smarty.get.urgent=='' &&$smarty.get.rec=='' {/yun}class="search_job_all " {yun:}/if{/yun} class="search_job_all"> <a href="{yun:}listurl type=tp v=0{/yun}">{yun:}t key='common_02394'{/yun}</a><i class="search_h1_box_list_icon"></i></li>
 						<li {yun:}if $smarty.get.order=='lastdate' {/yun}class="search_Filter_current" {yun:}/if{/yun}> <a href="{yun:}listurl type=order v=lastdate{/yun}"><span>{yun:}t key='wap_00326'{/yun}</span><i class="search_Filter_icon"></i></a></li>
 						<li {yun:}if $smarty.get.order=='sdate' {/yun}class="search_Filter_current" {yun:}/if{/yun}> <a href="{yun:}listurl type=order v=sdate{/yun}"><span>{yun:}t key='admin_user_weipin_00030'{/yun}</span><i class="search_Filter_icon"></i></a></li>
 						<li class="{yun:}if $smarty.get.urgent{/yun}search_h1_box_cur{yun:}/if{/yun} job_jp_t"> <a href="{yun:}if $smarty.get.urgent{/yun}{yun:}listurl type=tp v=0{/yun}{yun:}else{/yun}{yun:}listurl type=tp v=1{/yun}{yun:}/if{/yun}"class="job_zt"> {yun:}t key='member_com_00326'{/yun} <i class="job_jp_chk"></i>  </a> </li>
 						<li class="{yun:}if $smarty.get.rec{/yun}search_h1_box_cur{yun:}/if{/yun} job_tj_t"> <a href="{yun:}if $smarty.get.rec{/yun}{yun:}listurl type=tp v=0{/yun}{yun:}else{/yun}{yun:}listurl type=tp v=2{/yun}{yun:}/if{/yun}"class="job_zt"> {yun:}t key='home.recommended_jobs'{/yun} <i class="job_tj_chk"></i> </a> </li>
-						<li class=" {yun:}if $smarty.get.cert{/yun}search_h1_box_cur{yun:}/if{/yun}"><a href="{yun:}if $smarty.get.cert{/yun}{yun:}listurl type=cert v=0{/yun}{yun:}else{/yun}{yun:}listurl type=cert v=3{/yun}{yun:}/if{/yun}" class="job_zt"><i class="job_tj_chk"></i><em>资质认证</em> </a></li>
+						<li class=" {yun:}if $smarty.get.cert{/yun}search_h1_box_cur{yun:}/if{/yun}"><a href="{yun:}if $smarty.get.cert{/yun}{yun:}listurl type=cert v=0{/yun}{yun:}else{/yun}{yun:}listurl type=cert v=3{/yun}{yun:}/if{/yun}" class="job_zt"><i class="job_tj_chk"></i><em>{yun:}t key='common_02395'{/yun}</em> </a></li>
 					</ul>
 					<div class="search_mxbox">
 						<a href="{yun:}listurl untype=jobtype{/yun}" class="search_mx {yun:}if $smarty.get.jobtype!='1'{/yun}search_mxcur{yun:}/if{/yun}"><i class="search_mx_a"></i></a> <a href="{yun:}listurl type=jobtype v=1{/yun}" class="search_mx {yun:}if $smarty.get.jobtype=='1'{/yun}search_mxcur{yun:}/if{/yun}"><i class="search_mx_b"></i></a>
@@ -447,8 +447,8 @@
 			 <!-----微信通知---------->
 			 <div class="wxtz_box" id="wxtz_tips">
 				 <div class="wxtz_box_c">
-					 <div class="wxtz_box_name">新职位发布时通知我</div>
-					 <div class="wxtz_box_p">订阅相关岗位，新岗位上线实时通知，求职快人一步</div>
+					 <div class="wxtz_box_name">{yun:}t key='common_02396'{/yun}</div>
+					 <div class="wxtz_box_p">{yun:}t key='common_02397'{/yun}</div>
 					 <div class="wxtz_box_s">
 						 <div class="wxtz_box_ewm">
 							 <img src="{yun:}if $config.sy_wx_qcode{/yun}{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_wx_qcode{/yun}{yun:}/if{/yun}"  >
@@ -476,9 +476,9 @@
 				<div class="yunjoblist_newname">
 					
 					<a href="{yun:}$zd_list.job_url{/yun}" class="yunjoblist_newname_a " target="_blank" title="{yun:}$zd_list.name{/yun}">{yun:}$zd_list.name_n{/yun}</a>
-					{yun:}if $zd_list.newtime==1{/yun}<i class="job_newicon" title="新职位">{yun:}t key='common_02081'{/yun}</i>{yun:}/if{/yun}
+					{yun:}if $zd_list.newtime==1{/yun}<i class="job_newicon" title="{yun:}t key='common_02403'{/yun}">{yun:}t key='common_02081'{/yun}</i>{yun:}/if{/yun}
 					{yun:}if $zd_list.urgent_time>time(){/yun}
-					<img src="{yun:}$style{/yun}/images/jobjp.png" alt="紧急招聘" class="co_zzjp png" />
+					<img src="{yun:}$style{/yun}/images/jobjp.png" alt="{yun:}t key='member_com_00613'{/yun}" class="co_zzjp png" />
 					{yun:}/if{/yun} {yun:}if $zd_list.rec_time>time(){/yun}
 					<img src="{yun:}$style{/yun}/images/jobtj.png" alt="{yun:}t key='default_00095'{/yun}" class="co_zzjp png" />
 					{yun:}/if{/yun}   
@@ -561,18 +561,18 @@
 					</div>	
 					<div class="job_bottomcont">
 						{yun:}if $config.sy_ewm_type == 'xcxcode'{/yun}
-						<a href="javascript:;" purl="{yun:}url m=ajax c=xcxQrcode id=$zd_list.id type=job{/yun}" class="yunjoblist_newwxbth">微信扫一扫快速求职</a>
+						<a href="javascript:;" purl="{yun:}url m=ajax c=xcxQrcode id=$zd_list.id type=job{/yun}" class="yunjoblist_newwxbth">{yun:}t key='common_02398'{/yun}</a>
 						{yun:}else if $config.sy_h5_share==1{/yun}
-						<a href="javascript:;" purl="{yun:}url m=ajax c=pubqrcode toc=job toa=share toid=$zd_list.id{/yun}" class="yunjoblist_newwxbth">微信扫一扫快速求职</a>
+						<a href="javascript:;" purl="{yun:}url m=ajax c=pubqrcode toc=job toa=share toid=$zd_list.id{/yun}" class="yunjoblist_newwxbth">{yun:}t key='common_02398'{/yun}</a>
 						{yun:}else{/yun}
-						<a href="javascript:;" purl="{yun:}url m=ajax c=pubqrcode toc=job toa=view toid=$zd_list.id{/yun}" class="yunjoblist_newwxbth">微信扫一扫快速求职</a>
+						<a href="javascript:;" purl="{yun:}url m=ajax c=pubqrcode toc=job toa=view toid=$zd_list.id{/yun}" class="yunjoblist_newwxbth">{yun:}t key='common_02398'{/yun}</a>
 						{yun:}/if{/yun}
 					</div>
 					<span class="yunjoblist_new_time">  <span style="color:#2778f8;">{yun:}t key='wap_user_00335'{/yun}</span> </span>
 				</div>
 			</div>
 			<!-----详细部分 end---------->
-			{yun:}if $zd_list.isLookEd == 1{/yun}<div class="lookjob">浏览过</div>{yun:}/if{/yun}
+			{yun:}if $zd_list.isLookEd == 1{/yun}<div class="lookjob">{yun:}t key='member_com_00660'{/yun}</div>{yun:}/if{/yun}
 		</div>
         {yun:}/joblist{/yun} 
         {yun:}/if{/yun} 
@@ -594,9 +594,9 @@
 				<div class="yunjoblist_newname">
 					
 					<a href="{yun:}$job_list.job_url{/yun}" class="yunjoblist_newname_a" target="_blank" title="{yun:}$job_list.name{/yun}">{yun:}$job_list.name_n{/yun}</a> 
-					{yun:}if $job_list.newtime==1{/yun}<i class="job_newicon" title="新职位">{yun:}t key='common_02081'{/yun}</i>{yun:}/if{/yun}
+					{yun:}if $job_list.newtime==1{/yun}<i class="job_newicon" title="{yun:}t key='common_02403'{/yun}">{yun:}t key='common_02081'{/yun}</i>{yun:}/if{/yun}
 					{yun:}if $job_list.urgent_time>time(){/yun}
-					<img src="{yun:}$style{/yun}/images/jobjp.png" alt="紧急招聘" class="co_zzjp png" />
+					<img src="{yun:}$style{/yun}/images/jobjp.png" alt="{yun:}t key='member_com_00613'{/yun}" class="co_zzjp png" />
 					{yun:}/if{/yun} 
 					{yun:}if $job_list.rec_time>time(){/yun}
 					<img src="{yun:}$style{/yun}/images/jobtj.png" alt="{yun:}t key='default_00095'{/yun}" class="co_zzjp png" />
@@ -655,7 +655,7 @@
 					<a href="{yun:}url m=job c=comapply id='`$job_list.id`'{/yun}" target="_blank" class="search_job_Apply_fast ">{yun:}t key='wap_00574'{/yun}</a> 
 					{yun:}/if{/yun}
 				</div>
-				{yun:}if $job_list.isLookEd == 1{/yun}<div class="lookjob">浏览过</div>{yun:}/if{/yun}
+				{yun:}if $job_list.isLookEd == 1{/yun}<div class="lookjob">{yun:}t key='member_com_00660'{/yun}</div>{yun:}/if{/yun}
 				<div class="job_bottom">
 					<div class="job_bottomleft">
 						{yun:}if $job_list.welfarename{/yun}
@@ -680,11 +680,11 @@
 					</div>	
 					<div class="job_bottomcont">
 						{yun:}if $config.sy_ewm_type == 'xcxcode'{/yun}
-						<a href="javascript:;" purl="{yun:}url m=ajax c=xcxQrcode id=$job_list.id type=job{/yun}" class="yunjoblist_newwxbth">微信扫一扫快速求职</a>
+						<a href="javascript:;" purl="{yun:}url m=ajax c=xcxQrcode id=$job_list.id type=job{/yun}" class="yunjoblist_newwxbth">{yun:}t key='common_02398'{/yun}</a>
 						{yun:}else if $config.sy_h5_share==1{/yun}
-						<a href="javascript:;" purl="{yun:}url m=ajax c=pubqrcode toc=job toa=share toid=$job_list.id{/yun}" class="yunjoblist_newwxbth">微信扫一扫快速求职</a>
+						<a href="javascript:;" purl="{yun:}url m=ajax c=pubqrcode toc=job toa=share toid=$job_list.id{/yun}" class="yunjoblist_newwxbth">{yun:}t key='common_02398'{/yun}</a>
 						{yun:}else{/yun}
-						<a href="javascript:;" purl="{yun:}url m=ajax c=pubqrcode toc=job toa=view toid=$job_list.id{/yun}" class="yunjoblist_newwxbth">微信扫一扫快速求职</a>
+						<a href="javascript:;" purl="{yun:}url m=ajax c=pubqrcode toc=job toa=view toid=$job_list.id{/yun}" class="yunjoblist_newwxbth">{yun:}t key='common_02398'{/yun}</a>
 						{yun:}/if{/yun}
 					</div>
 					<span class="yunjoblist_new_time"> 
@@ -711,7 +711,7 @@
         <div class=" new_notip">
           <div class="new_notip_img"><img src="{yun:}$style{/yun}/images/notip.png"  ></div>
           <div class="new_notip_tit">{yun:}t key='common_01912'{/yun}，没有找到满足条件的职位</div> 
-		  <div class="new_notip_p">建议您适当减少已选择的条件或适当删减或更改搜索关键字</div> 
+		  <div class="new_notip_p">{yun:}t key='common_02399'{/yun}</div> 
 
         </div>
         {yun:}/if{/yun} </div>
@@ -722,7 +722,7 @@
         {yun:}$adlist_7.html{/yun}
         {yun:}/adlist{/yun} </div>
       <div class="job_recommendation">
-        <div class="job_recommendation_title"><span class="job_recommendation_span"><i class="job_recommendation_span_line"></i>{yun:}t key='default_00249'{/yun}</span> {yun:}if $recNum > 10{/yun}<a href="javascript:void(0)" onclick="exchange();" class="job_right_box_more png" rel="nofollow">换一组</a>{yun:}/if{/yun} </div>
+        <div class="job_recommendation_title"><span class="job_recommendation_span"><i class="job_recommendation_span_line"></i>{yun:}t key='default_00249'{/yun}</span> {yun:}if $recNum > 10{/yun}<a href="javascript:void(0)" onclick="exchange();" class="job_right_box_more png" rel="nofollow">{yun:}t key='common_02400'{/yun}</a>{yun:}/if{/yun} </div>
         <ul class="job_recommendation_list">
           <input type="hidden" value='2' id='exchangep' />
           {yun:}joblist namelen=15 comlen=19 rec=1 limit=10 item=blist{/yun}
@@ -733,7 +733,7 @@
         </ul>
       </div>
 	   <div class="job_recommendation">
-		    <div class="job_recommendation_title"><span class="job_recommendation_span"><i class="job_recommendation_span_line"></i>推荐企业</span> </div>
+		    <div class="job_recommendation_title"><span class="job_recommendation_span"><i class="job_recommendation_span_line"></i>{yun:}t key='common_02401'{/yun}</span> </div>
 	  <ul class="job_mq_box">
 	   {yun:}hotjob item=hotjoblist limit=8{/yun}
 	    <li> <a href="{yun:}$hotjoblist.url{/yun}" target="_blank" title="{yun:}$hotjoblist.username{/yun}">
@@ -741,7 +741,7 @@
 	      <p>{yun:}$hotjoblist.username|mb_substr:0:13:'utf-8'{/yun}</p>
 	      </a> </li>
 	    {yun:}hotjobelse{/yun}
-	    <div class="pc_notip">暂无推荐企业</div>
+	    <div class="pc_notip">{yun:}t key='common_02402'{/yun}</div>
 	     {yun:}/hotjob{/yun}
 	  </ul>
 	     </div>

@@ -2,8 +2,8 @@
     <div class="moduleElHight">
         <div class="moduleSeachbig">
             <div class="tableSeachInpt tableSeachInptsmall tableSeacFromer" style="padding: 2px 0;">
-				<el-input v-model="search_params.keyword" @keyup.enter.native="search" placeholder="请输入搜索内容" size="small" clearable>
-					<el-select v-model="search_params.ctype" size="small" slot="prepend" placeholder="用户名">
+				<el-input v-model="search_params.keyword" @keyup.enter.native="search" placeholder="{yun:}t key='admin_00340'{/yun}" size="small" clearable>
+					<el-select v-model="search_params.ctype" size="small" slot="prepend" placeholder="{yun:}t key='admin_user_00140'{/yun}">
 					    <el-option label="企业名称" value="1"></el-option>
 					    <el-option label="备注" value="2"></el-option>
 					</el-select>
@@ -11,32 +11,32 @@
             </div>
             <!--收起部分-->
             <div class="tableSeachInpt tableSeachInptsmall" :class="{ 'searchbutnOnff': seachbutn }">
-                <el-select v-if="searchlist" v-model="search_params.rating" size="small" slot="prepend" placeholder="会员等级" clearable @change="search">
+                <el-select v-if="searchlist" v-model="search_params.rating" size="small" slot="prepend" placeholder="{yun:}t key='admin_user_company_00018'{/yun}" clearable @change="search">
                     <el-option v-for="(item, index) in searchlist.rating.value" :key="index" :label="item"
                                :value="index">
                     </el-option>
                 </el-select>
             </div>
             <div class="tableSeachInpt tableSeachInptsmall" :class="{ 'searchbutnOnff': seachbutn }">
-                <el-select v-if="searchlist" v-model="search_params.time" size="small" slot="prepend" placeholder="到期时间" clearable @change="search">
+                <el-select v-if="searchlist" v-model="search_params.time" size="small" slot="prepend" placeholder="{yun:}t key='admin_user_company_00052'{/yun}" clearable @change="search">
                     <el-option v-for="(item, index) in searchlist.time.value" :key="index" :label="item"
                                :value="index">
                     </el-option>
                 </el-select>
             </div>
             <div class="tableSeachInpt">
-                <el-button type="primary" icon="el-icon-search" size="mini" @click="search">查询</el-button>
+                <el-button type="primary" icon="el-icon-search" size="mini" @click="search">{yun:}t key='admin_user_weipin_00049'{/yun}</el-button>
             </div>
             <div class="tableSeachInpt">
-                <el-button type="primary" plain icon="el-icon-plus" size="mini" @click="add">新增名企
+                <el-button type="primary" plain icon="el-icon-plus" size="mini" @click="add">{yun:}t key='admin_user_company_00053'{/yun}
                 </el-button>
             </div>
             <div class="tableSeachzk" :class="{ 'searchbutnKai': seachbutn }" style="margin-bottom: 8px;">
                 <el-button type="info" class="zhankai" @click="seachbutn = !seachbutn, tableHig = !tableHig"
-                           aria-disabled="false" size="mini" plain>展开<i class="el-icon-arrow-down el-icon--right"></i>
+                           aria-disabled="false" size="mini" plain>{yun:}t key='admin_user_00145'{/yun}<i class="el-icon-arrow-down el-icon--right"></i>
                 </el-button>
                 <el-button type="info" class="shouqi" @click="seachbutn = !seachbutn, tableHig = !tableHig"
-                           aria-disabled="false" size="mini" plain>合并<i class="el-icon-arrow-up el-icon--right"></i>
+                           aria-disabled="false" size="mini" plain>{yun:}t key='admin_user_00144'{/yun}<i class="el-icon-arrow-up el-icon--right"></i>
                 </el-button>
             </div>
         </div>
@@ -69,7 +69,7 @@
                     <template slot-scope="props">
                         <div class="layuiSmallImg">
                             <el-image v-if="props.row.hot_pic" :src="props.row.hot_pic" :preview-src-list="[props.row.hot_pic]"  style="width:48px;height:48px"></el-image>
-                            <span v-else>无</span>
+                            <span v-else>{yun:}t key='common_02082'{/yun}</span>
                         </div>
                     </template>
                 </el-table-column>
@@ -85,22 +85,22 @@
                 </el-table-column>
                 <el-table-column prop="time_end" label="结束时间" width="150">
                     <template slot-scope="props">
-                        <span v-if="props.row.time_end_n == '已到期'" style="color: red">已到期</span>
+                        <span v-if="props.row.time_end_n == '已到期'" style="color: red">{yun:}t key='wap_com_00319'{/yun}</span>
                         <span v-else>{{props.row.time_end_n}}</span>
                     </template>
                 </el-table-column>
                 <el-table-column prop="beizhu" label="备注" width="150">
                     <template slot-scope="props">
                         <span v-if="props.row.beizhu">{{props.row.beizhu}}</span>
-                        <span v-else>未备注</span>
+                        <span v-else>{yun:}t key='admin_user_company_00054'{/yun}</span>
                     </template>
                 </el-table-column>
                 <el-table-column prop="sort" label="排序" width="150" sortable="custom"></el-table-column>
                 <el-table-column label="操作" width="140" fixed="right">
                     <template slot-scope="scope">
                         <div class="cz_button">
-                            <el-button size="mini" plain @click="edit(scope.row)">修改</el-button>
-                            <el-button type="danger" size="mini"  @click="delrow(scope.row.uid)">删除</el-button>
+                            <el-button size="mini" plain @click="edit(scope.row)">{yun:}t key='wap_js_00073'{/yun}</el-button>
+                            <el-button type="danger" size="mini"  @click="delrow(scope.row.uid)">{yun:}t key='common.delete'{/yun}</el-button>
                         </div>
                     </template>
                 </el-table-column>
@@ -108,8 +108,8 @@
         </div>
         <div class="modulePaging">
             <div>
-                <el-checkbox v-model="checkedAll" @change="selectAllBottom">全选</el-checkbox>
-                <el-button @click="delAllBottom" size="mini">批量删除</el-button>
+                <el-checkbox v-model="checkedAll" @change="selectAllBottom">{yun:}t key='wap_js_00074'{/yun}</el-checkbox>
+                <el-button @click="delAllBottom" size="mini">{yun:}t key='member_com_00055'{/yun}</el-button>
             </div>
             <div class="modulePagNum">
                 <el-pagination background @size-change="handleSizeChange"
@@ -136,7 +136,7 @@
                 mouseFlag: false,
                 mouseOffset: 0,
                 loading: false,
-                dataText: '数据加载中',
+                dataText: "{yun:}t key='admin_user_weipin_00026'{/yun}",
                 input3: '',
                 input: '',
                 select: '',
@@ -207,7 +207,7 @@
             }, 200)
         },
         components: {
-            'addhotjob': httpVueLoader('./addhotjob.vue'),
+            'addhotjob': httpVueLoader('./addhotjob.vue"),
         },
         methods: {
             mouseDownHandler(e) {
@@ -218,7 +218,7 @@
                 this.mouseFlag = false;
             },
             mouseMoveHandler(e) {
-                // 这里面需要注意，通过ref需要那个那个包含table元素的父元素
+                // 这里面需要注意，{yun:}t key='admin_user_company_00161'{/yun}ref需要那个那个包含table元素的父元素
                 let divData = this.$refs.multipleTable.bodyWrapper;
                 if (this.mouseFlag) {
                     // 设置水平方向的元素的位置
@@ -233,7 +233,7 @@
 			getParams:function(params={},search=false){
 				var that = this;
 				for(let i in params){
-					if(typeof that.search_params[i]!='undefined'){
+					if(typeof that.search_params[i]!="undefined'){
 						that.search_params[i] = params[i];
 					}
 				}
@@ -250,7 +250,7 @@
                             if (response.data.error == 0) {
                                 that.com_arr = response.data.data
                             } else {
-                                message.error('获取参会企业失败');
+                                message.error("{yun:}t key='admin_user_company_00017'{/yun}");
                             }
                         }).catch(function (error) {
                             console.log(error);
@@ -264,7 +264,7 @@
                 this.info = data
                 this.info.hot_pic_n = this.info.hot_pic
                 this.info.time_end_n = this.info.time_end_nn
-                this.title = '修改名企'
+                this.title = "{yun:}t key='admin_00625'{/yun}"
                 this.isedit = true
                 this.drawermq = true
             },
@@ -282,7 +282,7 @@
                     time_end_n: ''
                 }
                 this.isedit = false
-                this.title = '新增名企'
+                this.title = "{yun:}t key='admin_user_company_00053'{/yun}"
                 this.drawermq = true
             },
             sortChange: function (column) {
@@ -405,7 +405,7 @@
                             scrollToTop()
                         }
                         if (that.tableData.length === 0) {
-                            that.dataText = "暂无数据";
+                            that.dataText = "{yun:}t key='wap_js_00113'{/yun}";
                         }
                     }
                 }).catch(function (e) {
@@ -417,7 +417,7 @@
             },
             delAllBottom() {
                 if (!this.selectedItem.length) {
-                    message.error('请选择要删除的数据');
+                    message.error("{yun:}t key='admin_user_weipin_00005'{/yun}");
                     return false;
                 }
                 delConfirm(this, this.selectedItem, this.delete);

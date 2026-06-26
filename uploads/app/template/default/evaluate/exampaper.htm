@@ -15,7 +15,7 @@
 <!--content内容部分-->
 <div class="cp_content">
 <div class="wrap">
-<div class="current_Location  png">{yun:}t key='common_01498'{/yun}：<a href="{yun:}$config.sy_weburl{/yun}">{yun:}t key='common.home'{/yun}</a>  >  <span>测评试题</span></div>
+<div class="current_Location  png">{yun:}t key='common_01498'{/yun}：<a href="{yun:}$config.sy_weburl{/yun}">{yun:}t key='common.home'{/yun}</a>  >  <span>{yun:}t key='common_02335'{/yun}</span></div>
 <div class="evaluate_showbox">
 <div class="evaluate_showbox_pic"><img src="{yun:}$info.pic_n{/yun}"  width="220" height="140px;"></div>
 
@@ -30,7 +30,7 @@
 <div class="evaluate_showbox_cont">
 <div class="evaluate_showbox_top">
 <div class="evaluate_show_name">{yun:}$info.name{/yun}试题</div>
-<div class="evaluate_show_info">{yun:}t key='common_02057'{/yun}<em class="evaluate_show_info_n">{yun:}$questions|@count{/yun}</em>题</div>
+<div class="evaluate_show_info">{yun:}t key='common_02057'{/yun}<em class="evaluate_show_info_n">{yun:}$questions|@count{/yun}</em>{yun:}t key='wap_00633'{/yun}</div>
 
     <div class="cp_full_yb fl">
     	
@@ -54,7 +54,7 @@
             </div>
         </div>  
         {yun:}/foreach{/yun}  
-        <div class="cp_tijiao"><input id="submitexam" type="button" class="cp_tj_button" name="submitexam" value="提交答案" ></div>
+        <div class="cp_tijiao"><input id="submitexam" type="button" class="cp_tj_button" name="submitexam" value="{yun:}t key='common_02336'{/yun}" ></div>
         <input type="hidden" name="examid" value="{yun:}$info.id{/yun}" />
     </div> 
     </form>  

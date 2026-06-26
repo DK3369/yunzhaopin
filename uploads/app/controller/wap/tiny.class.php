@@ -3,7 +3,7 @@
 class tiny_controller extends common{
 	function index_action(){
 		if($this->config['sy_tiny_web']=="2"){
-			$this->ACT_msg_wap('index.php',yun_auto_t('很抱歉！该模块已关闭！'), 1, 3);
+			$this->ACT_msg_wap('index.php',yun_at('wap_00365'), 1, 3);
 		}
 		$tinyM		=	$this->MODEL('tiny');
 		
@@ -39,17 +39,17 @@ class tiny_controller extends common{
         $this->yunset("num",$num);
 		$adtime	=	array(
 			"0" => yun_auto_t(WapDbEnum::UNLIMITED),
-			"7" => yun_auto_t('一周以内'),
-			"15" => yun_auto_t('半个月'),
-			"30" => yun_auto_t('一个月'),
-			"60" => yun_auto_t('两个月'),
-			"180" => yun_auto_t('半年'),
-			"365" => yun_auto_t('一年')
+			"7" => yun_at('wap_00339'),
+			"15" => yun_at('wap_00344'),
+			"30" => yun_at('wap_00342'),
+			"60" => yun_at('wap_00343'),
+			"180" => yun_at('admin_tool_00146'),
+			"365" => yun_at('admin_tool_00145')
 		);
 		$this->yunset("adtime",$adtime);
 		$this->seo("tiny");
-		$this->yunset("topplaceholder",yun_auto_t('请输入关键字如：普工'));
-		$this->yunset("headertitle",yun_auto_t('普工专区'));
+		$this->yunset("topplaceholder",yun_at('wap_00522'));
+		$this->yunset("headertitle",yun_at('default_00331'));
 		$this->yuntpl(array('wap/tiny'));
 	}
 	function ajax_action(){
@@ -83,7 +83,7 @@ class tiny_controller extends common{
     }
 	function add_action(){
 		if($this->config['sy_tiny_web']=="2"){
-			$this->ACT_msg_wap('index.php',yun_auto_t('很抱歉！该模块已关闭！'), 1, 3);
+			$this->ACT_msg_wap('index.php',yun_at('wap_00365'), 1, 3);
 		}
 		$this->get_moblie();
         $tinyM	=	$this->MODEL('tiny');
@@ -143,13 +143,13 @@ class tiny_controller extends common{
 		} 
 		$this->yunset($this->MODEL('cache')->GetCache(array('user')));
 		
-		$this->yunset("headertitle",yun_auto_t('普工专区'));
-		$this->yunset("title",yun_auto_t('添加普工简历'));
+		$this->yunset("headertitle",yun_at('default_00331'));
+		$this->yunset("title",yun_at('wap_00525'));
 		$this->yuntpl(array('wap/tiny_add'));
 	}
 	function show_action(){
 		if($this->config['sy_tiny_web']=="2"){
-			$this->ACT_msg_wap('index.php',yun_auto_t('很抱歉！该模块已关闭！'), 1, 3);
+			$this->ACT_msg_wap('index.php',yun_at('wap_00365'), 1, 3);
 		}
 		$id			=	(int)$_GET['id'];
 		$tinyM		=	$this->MODEL('tiny');
@@ -167,7 +167,7 @@ class tiny_controller extends common{
 		$this->seo('tiny_cont');
 		
 		$this->get_moblie();
-		$this->yunset("headertitle",yun_auto_t('普工专区'));
+		$this->yunset("headertitle",yun_at('default_00331'));
 		$this->yuntpl(array('wap/tiny_show'));
 	}
 }

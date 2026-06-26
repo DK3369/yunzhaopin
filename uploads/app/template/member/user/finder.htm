@@ -8,7 +8,7 @@
 
       {yun:}if $syfinder>0{/yun} 
 				<div  class="resume_Prompt"><i class="resume_Prompt_icon"></i>{yun:}t key='wap_user_00205'{/yun}：
-               {yun:}t key='common_02161'{/yun}<span class="job_search_box_msg_n">{yun:}$config.user_finder{/yun}</span>{yun:}t key='common_02050'{/yun}，还可创建<span class="job_search_box_msg_n">{yun:}$syfinder{/yun}</span>个搜索器 <a href="index.php?c=finder&act=edit" class="finder_btn">新增搜索器</a> 
+               {yun:}t key='common_02161'{/yun}<span class="job_search_box_msg_n">{yun:}$config.user_finder{/yun}</span>{yun:}t key='common_02050'{/yun}，还可创建<span class="job_search_box_msg_n">{yun:}$syfinder{/yun}</span>{yun:}t key='member_user_00490'{/yun} <a href="index.php?c=finder&act=edit" class="finder_btn">{yun:}t key='member_user_00491'{/yun}</a> 
 				</div></div>
 				{yun:}/if{/yun}
         <div class="resume_box_list">
@@ -18,7 +18,7 @@
            <div class="job_search_box_left">
           <div class="job_search_box_jobmane"> <a href="{yun:}$flist.url{/yun}" class="index_Job_Finder_cont_name_a">{yun:}if $flist.name{/yun}{yun:}$flist.name{/yun}{yun:}else{/yun}未命名{yun:}/if{/yun}</a>
 		  </div>
-          <div class="job_search_box_tj">搜索条件：{yun:}$flist.findername{/yun} </div>
+          <div class="job_search_box_tj">{yun:}t key='member_com_00557'{/yun}：{yun:}$flist.findername{/yun} </div>
 		  <div class="job_search_box_tj">{yun:}t key='member_com_00087'{/yun}：{yun:}$flist.addtime|date_format:'%Y-%m-%d %H:%M'{/yun} </div>
 		
 		  </div>
@@ -34,8 +34,8 @@
 			
                 {yun:}foreachelse{/yun}
         <div class="msg_no">
-        <p>您还没有创建搜索器</p>
-        <a href="index.php?c=finder&act=edit" class="msg_no_bth">新增搜索器</a> 
+        <p>{yun:}t key='member_user_00492'{/yun}</p>
+        <a href="index.php?c=finder&act=edit" class="msg_no_bth">{yun:}t key='member_user_00491'{/yun}</a> 
         </div>
         
                 {yun:}/foreach{/yun}

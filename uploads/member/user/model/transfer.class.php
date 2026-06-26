@@ -19,7 +19,7 @@ class transfer_controller extends user{
 			
 			if($return['errcode'] == '1'){
 				$this->cookie->unset_cookie();
-				$this->ACT_layer_msg('账户分离成功，请使用新账户登录！',9,Url('login'));
+				$this->ACT_layer_msg('member_user_00614',9,Url('login'));
 
 			}else{
 				$this->ACT_layer_msg($return['msg'],8);

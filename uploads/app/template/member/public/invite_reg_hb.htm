@@ -52,7 +52,7 @@
             layer.open({
                 type: 1,
                 title: false,
-                content: '<div class="hb_tc"><img src="' + image.src + '" style="max-width: 100%;"><div class="hb_tc_bth"><a href="javascript:;" onclick="getInviteRegHb(' + next + ');" class="hb_tc_hyz">{yun:}t key='wap_user_00129'{/yun}</a><a href="javascript:;" onclick="downInviteRegHb(' + hb + ');" class="hb_tc_xz">下载海报</a></div></div>',
+                content: '<div class="hb_tc"><img src="' + image.src + '" style="max-width: 100%;"><div class="hb_tc_bth"><a href="javascript:;" onclick="getInviteRegHb(' + next + ');" class="hb_tc_hyz">{yun:}t key='wap_user_00129'{/yun}</a><a href="javascript:;" onclick="downInviteRegHb(' + hb + ');" class="hb_tc_xz">{yun:}t key='common_02219'{/yun}</a></div></div>',
                 area: ['360px', 'auto'],
                 offset: '55px',
                 closeBtn: 0,
@@ -70,7 +70,7 @@
             layer.closeAll();
             var a = document.createElement('a');          // 创建一个a节点插入的document
             var event = new MouseEvent('click")           // 模拟鼠标click{yun:}t key='admin_tool_00652'{/yun}
-            a.download = "whb_' +invite_reg_hbids[hb];     // 设置a节点的download属性值
+            a.download = "whb_' +invite_reg_hbids[hb];     // {yun:}t key='wap_com_00307'{/yun}a节点的download属性值
             a.href = url;                                 // 将图片的src赋值给a节点的href
             a.dispatchEvent(event);
         }

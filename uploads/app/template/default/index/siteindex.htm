@@ -44,14 +44,14 @@
 				</div>
 
 				<div class="fz_index_search_textbox">
-					<input class="fz_index_search_text" type="text" name="keyword" value="{yun:}$smarty.get.keyword{/yun}" placeholder="请输入职位关键词，如：java ,销售代表，行政助理等">
+					<input class="fz_index_search_text" type="text" name="keyword" value="{yun:}$smarty.get.keyword{/yun}" placeholder="{yun:}t key='common_02435'{/yun}">
 					
 				</div><input class="fz_index_search_bth" type="submit" value="{yun:}t key='common.search'{/yun}"/>
 			</form>
 			
             <!--<div class="fz_index_search_select">
             <span class="">{yun:}t key='common.job'{/yun}</span>
-            <div class="fz_index_search_select_box"><a href="###">人才</a><a href="###">{yun:}t key='common.company'{/yun}</a><a href="###">{yun:}t key='default_00153'{/yun}</a><a href="###">{yun:}t key='default_00152'{/yun}</a><a href="###">{yun:}t key='common.article'{/yun}</a></div>
+            <div class="fz_index_search_select_box"><a href="###">{yun:}t key='common_02430'{/yun}</a><a href="###">{yun:}t key='common.company'{/yun}</a><a href="###">{yun:}t key='default_00153'{/yun}</a><a href="###">{yun:}t key='default_00152'{/yun}</a><a href="###">{yun:}t key='common.article'{/yun}</a></div>
             </div>
            <div class="fz_index_search_textbox"><input type="text" value="" class="fz_index_search_text" placeholder="请输入职位关键词，如：java ,销售代表，行政助理等"></div>
            <input type="submit" value="{yun:}t key='common.search'{/yun}" class="fz_index_search_bth">-->
@@ -156,7 +156,7 @@
 <div class="fz_index_tit"><ul class="fz_index_titlist">
 <li class="fz_index_titlist_cur fzcomnav fzhotcomnav" onclick="fz_index_show('hot','com');"><a>{yun:}t key='home.famous_companies'{/yun}<i class="fz_index_titlist_line"></i></a></li>
 
-<li class=" fzcomnav fzrzcomnav" onclick="fz_index_show('rz','com');"><a>认证企业<i class="fz_index_titlist_line"></i></a></li>
+<li class=" fzcomnav fzrzcomnav" onclick="fz_index_show('rz','com');"><a>{yun:}t key='common_02412'{/yun}<i class="fz_index_titlist_line"></i></a></li>
 <li class=" fzcomnav fznewcomnav" onclick="fz_index_show('new','com');"><a>{yun:}t key='home.latest_companies'{/yun}<i class="fz_index_titlist_line"></i></a></li>
 
 </ul></div>
@@ -175,7 +175,7 @@
 {yun:}$hotjoblist.hotjob{/yun}
 </div>
 <div class="fz_index_com_jobn">
-<span class="fz_index_com_jobm">{yun:}$hotjoblist.num{/yun}</span>个在招聘职位
+<span class="fz_index_com_jobm">{yun:}$hotjoblist.num{/yun}</span>{yun:}t key='common_02431'{/yun}
 </div>
 </div>
 </li> 
@@ -198,7 +198,7 @@
 {yun:}/foreach{/yun}  
 </div>
 <div class="fz_index_com_jobn">
-<span class="fz_index_com_jobm">{yun:}if $rzcomlist.jobnum{/yun}{yun:}$rzcomlist.jobnum{/yun}{yun:}else{/yun}0{yun:}/if{/yun}</span>个在招聘职位
+<span class="fz_index_com_jobm">{yun:}if $rzcomlist.jobnum{/yun}{yun:}$rzcomlist.jobnum{/yun}{yun:}else{/yun}0{yun:}/if{/yun}</span>{yun:}t key='common_02431'{/yun}
 </div>
 </div>
 </li> 
@@ -221,13 +221,13 @@
 {yun:}/foreach{/yun}  
 </div>
 <div class="fz_index_com_jobn">
-<span class="fz_index_com_jobm">{yun:}if $newcomlist.jobnum{/yun}{yun:}$newcomlist.jobnum{/yun}{yun:}else{/yun}0{yun:}/if{/yun}</span>个在招聘职位
+<span class="fz_index_com_jobm">{yun:}if $newcomlist.jobnum{/yun}{yun:}$newcomlist.jobnum{/yun}{yun:}else{/yun}0{yun:}/if{/yun}</span>{yun:}t key='common_02431'{/yun}
 </div>
 </div>
 </li> 
 {yun:}/comlist{/yun} 
 </ul>
-<div class="fz_look_more_box"><a href="{yun:}url m=company{/yun}" target="_blank"  class="fz_look_more">查看更多企业</a></div>
+<div class="fz_look_more_box"><a href="{yun:}url m=company{/yun}" target="_blank"  class="fz_look_more">{yun:}t key='common_02432'{/yun}</a></div>
 </div>
 
 <!--{yun:}t key='common.resume'{/yun}-->
@@ -243,7 +243,7 @@
 <div class="fz_index_user_photo"><img src="{yun:}$recuser.photo{/yun}" width="70" height="70"></div>
 <div class="fz_index_username"><span class="fz_index_username_p"><a {yun:}if $config.com_search==1 && !$uid{/yun} href="{yun:}url m=login{/yun}"{yun:}else{/yun}href="{yun:}$recuser.user_url{/yun}"{yun:}/if{/yun}>{yun:}if in_array($recuser.id,$eid){/yun}{yun:}$recuser.uname{/yun}{yun:}else{/yun}{yun:}$recuser.username_n{/yun}{yun:}/if{/yun}</a></span> {yun:}$recuser.sex{/yun}，{yun:}$recuser.age{/yun}{yun:}t key='home.age_suffix'{/yun}</div>
 <div class="fz_index_userinfo">{yun:}$recuser.exp_n{/yun}{yun:}t key='home.experience_suffix'{/yun}<span class="fz_index_jobinfo_line">|</span>{yun:}$recuser.edu_n{/yun}{yun:}t key='home.education_suffix'{/yun}</div>
-<div class="fz_index_user_wanjob">求职：<span class="fz_index_user_wanjob_n">{yun:}$recuser.job_post_n{/yun}</span></div>
+<div class="fz_index_user_wanjob">{yun:}t key='resume_00067'{/yun}<span class="fz_index_user_wanjob_n">{yun:}$recuser.job_post_n{/yun}</span></div>
 </div>
 <div class="fz_index_usertime">{yun:}$recuser.time{/yun}</div>
 </li> 
@@ -256,7 +256,7 @@
 <div class="fz_index_user_photo"><img src="{yun:}$newuser.photo{/yun}" width="70" height="70"></div>
 <div class="fz_index_username"><span class="fz_index_username_p"><a {yun:}if $config.com_search==1 && !$uid{/yun} href="{yun:}url m=login{/yun}"{yun:}else{/yun}href="{yun:}$newuser.user_url{/yun}"{yun:}/if{/yun}>{yun:}if in_array($newuser.id,$eid){/yun}{yun:}$newuser.uname{/yun}{yun:}else{/yun}{yun:}$newuser.username_n{/yun}{yun:}/if{/yun}</a></span> {yun:}$newuser.sex{/yun}，{yun:}$newuser.age{/yun}{yun:}t key='home.age_suffix'{/yun}</div>
 <div class="fz_index_userinfo">{yun:}$newuser.exp_n{/yun}{yun:}t key='home.experience_suffix'{/yun}<span class="fz_index_jobinfo_line">|</span>{yun:}$newuser.edu_n{/yun}{yun:}t key='home.education_suffix'{/yun}</div>
-<div class="fz_index_user_wanjob">求职：<span class="fz_index_user_wanjob_n">{yun:}$newuser.job_post_n{/yun}</span></div>
+<div class="fz_index_user_wanjob">{yun:}t key='resume_00067'{/yun}<span class="fz_index_user_wanjob_n">{yun:}$newuser.job_post_n{/yun}</span></div>
 </div>
 <div class="fz_index_usertime">{yun:}$newuser.time{/yun}</div>
 </li> 
@@ -340,11 +340,11 @@
 									<i class="tip_bottom_ewm_p_icon"></i>
 									<img src="{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_wx_qcode{/yun}" width="90" height="90">
 								</div>
-								<div class="tip_bottom_ewm_p">手机也能找工作</div>
+								<div class="tip_bottom_ewm_p">{yun:}t key='common_02410'{/yun}</div>
 							</div>
 							
 							<span class="tip_bottom_logo">
-								<h2><span class="tip_bottom_fast"><span class="tip_bottom_time">30{yun:}t key='common_02094'{/yun}</span> 填写简历</span>，好工作轻松搞定！</h2>
+								<h2><span class="tip_bottom_fast"><span class="tip_bottom_time">30{yun:}t key='common_02094'{/yun}</span> {yun:}t key='common_02433'{/yun}</span>{yun:}t key='common_02434'{/yun}</h2>
 							</span>
 							
 							<div class="tip_bottom_num "><span>0</span>{yun:}t key='default_00262'{/yun}</div>

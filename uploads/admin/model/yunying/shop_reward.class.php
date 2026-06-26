@@ -70,10 +70,10 @@ class shop_reward_controller extends adminCommon{
             $classdata[$val['id']] = $val['name'];
         }
 
-        $search_list[] = array("param" => "status", "name" => '状态', "value" => array("1" => "上架", "2" => "下架"));
-        $search_list[] = array("param" => "nid", "name" => '类别', "value" => $classdata);
-        $search_list[] = array("param" => "rec", "name" => '推荐', "value" => array("1" => "是", "2" => "否"));
-        $search_list[] = array("param" => "hot", "name" => '热门', "value" => array("1" => "是", "2" => "否"));
+        $search_list[] = array("param" => "status", "name" => 'member_user_00181', "value" => array("1" => 'wap_com_00244', "2" => 'wap_com_00245'));
+        $search_list[] = array("param" => "nid", "name" => 'admin_00223', "value" => $classdata);
+        $search_list[] = array("param" => "rec", "name" => 'wap_01465', "value" => array("1" => "是", "2" => "否"));
+        $search_list[] = array("param" => "hot", "name" => 'wap_js_00093', "value" => array("1" => "是", "2" => "否"));
         $this->render_json(0, 'ok', compact('search_list'));
     }
 	
@@ -127,10 +127,10 @@ class shop_reward_controller extends adminCommon{
 
             if($_POST['id']){
                 $nbid	=	$redeemM->upInfo($value,array('id'=>(int)$_POST['id']));
-                $this->render_json( isset($nbid)?0:1,  isset($nbid)?'商品更新成功':'更新失败');
+                $this->render_json( isset($nbid)?0:1,  isset($nbid)?yun_at('admin_01431'):yun_at('admin_01422'));
             }else{
                 $nbid	=	$redeemM->addInfo($value);
-                $this->render_json( isset($nbid)?0:1,  isset($nbid)?'商品添加成功':'添加失败');
+                $this->render_json( isset($nbid)?0:1,  isset($nbid)?yun_at('admin_01432'):yun_at('api_wxapp_00012'));
             }
         }
 
@@ -140,7 +140,7 @@ class shop_reward_controller extends adminCommon{
         $redeemM	=	$this->MODEL("redeem");
         $nid = $_POST['nid'];
         if (!$nid){
-            $this->render_json('1','参数错误,请重试');
+            $this->render_json('1',yun_at('common_01237'));
         }
         $cWhere['keyid']	=	$nid;
         $class = $redeemM->GetRewardClass($cWhere);
@@ -156,21 +156,21 @@ class shop_reward_controller extends adminCommon{
 		$id			=	$redeemM->upInfo(array('status'=>$_POST['status']),array('id'=>(int)$_POST['id']));
 		$this->MODEL('log')->addAdminLog("商品(ID:".$_POST['id'].")状态设置成功！");
 
-        $this->render_json($id?0:1, $id?'状态设置成功':'设置失败');
+        $this->render_json($id?0:1, $id?yun_at('admin_01433'):yun_at('api_wxapp_00016'));
 	}
 
 	function rec_action(){
 		$redeemM	=	$this->MODEL("redeem");
 		$id			=	$redeemM->upInfo(array('rec'=>$_POST['rec']),array('id'=>(int)$_POST['id']));
 		$this->MODEL('log')->addAdminLog("商品(ID:".$_POST['id'].")推荐设置成功！");
-        $this->render_json($id?0:1, $id?'推荐设置成功':'设置失败');
+        $this->render_json($id?0:1, $id?yun_at('admin_01434'):yun_at('api_wxapp_00016'));
 	}
 
     function hot_action(){
 		$redeemM	=	$this->MODEL("redeem");
 		$id			=	$redeemM->upInfo(array('hot'=>$_POST['hot']),array('id'=>(int)$_POST['id']));
 		$this->MODEL('log')->addAdminLog("商品(ID:".$_POST['id'].")热门设置成功！");
-        $this->render_json($id?0:1, $id?'热门设置成功':'设置失败');
+        $this->render_json($id?0:1, $id?yun_at('admin_01435'):yun_at('api_wxapp_00016'));
 	}
 
 	function del_action(){
@@ -186,9 +186,9 @@ class shop_reward_controller extends adminCommon{
 		}
 		
 		if(!$delid){
-            $this->render_json(1, '请选择要删除的内容');
+            $this->render_json(1, yun_at('common_01162'));
 		}
-        $this->render_json($del?0:1, $del?'商品删除成功':'删除失败');
+        $this->render_json($del?0:1, $del?yun_at('admin_01436'):yun_at('wap_user_00146'));
 	}	
 
 }

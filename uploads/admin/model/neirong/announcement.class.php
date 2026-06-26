@@ -6,8 +6,8 @@ class announcement_controller extends adminCommon
 {
     function set_search()
     {
-        $ad_time = array('1' => '今天', '3' => '最近三天', '7' => '最近七天', '15' => '最近半月', '30' => '最近一个月');
-        $search_list[] = array("param" => "end", "name" => '发布时间', "value" => $ad_time);
+        $ad_time = array('1' => 'common_01940', '3' => 'admin_user_00179', '7' => 'admin_user_00178', '15' => 'admin_user_00180', '30' => 'admin_user_00175');
+        $search_list[] = array("param" => "end", "name" => 'admin_user_weipin_00030', "value" => $ad_time);
 
         return $search_list;
     }
@@ -81,7 +81,7 @@ class announcement_controller extends adminCommon
             $post = $this->post_trim($_POST);
 
             if (empty($post) || empty($post['title']) || empty($post['keyword']) || empty($post['description'])) {
-                $this->render_json(1, '参数错误');
+                $this->render_json(1, yun_at('wap_com_00228'));
             }
 
             $announcementM = $this->MODEL('announcement');
@@ -108,9 +108,9 @@ class announcement_controller extends adminCommon
             }
 
             if ($nid) {
-                $this->admin_json(0, $msg . '成功');
+                $this->admin_json(0, $msg . 'admin_tool_00502');
             } else {
-                $this->render_json(1, $msg . '失败');
+                $this->render_json(1, $msg . 'admin_tool_00501');
             }
         }else{
             $announcementM = $this->MODEL('announcement');
@@ -149,7 +149,7 @@ class announcement_controller extends adminCommon
     function checksitedid_action()
     {
         if (empty($_POST['id']) || !isset($_POST['did'])) {
-            $this->render_json(1, '参数错误');
+            $this->render_json(1, yun_at('wap_com_00228'));
         }
 
         $ids = is_array($_POST['id']) ? pylode(',', $_POST['id']) : intval($_POST['id']);

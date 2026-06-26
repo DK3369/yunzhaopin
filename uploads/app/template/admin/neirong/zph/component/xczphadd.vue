@@ -4,35 +4,35 @@
             <table class="tableVue">
                 <thead>
                 <tr align="left">
-                    <th width="200">名称</th>
-                    <th width="400">状态</th>
-                    <th>说明</th>
+                    <th width="200">{yun:}t key='member_com_00021'{/yun}</th>
+                    <th width="400">{yun:}t key='member_user_00181'{/yun}</th>
+                    <th>{yun:}t key='member_com_00207'{/yun}</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr>
                     <td>
-                        <div class="TableTite">招聘会标题</div>
+                        <div class="TableTite">{yun:}t key='admin_00821'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-input placeholder="请输入招聘会标题" v-model="info.title">
+                            <el-input placeholder="{yun:}t key='admin_00822'{/yun}" v-model="info.title">
                             </el-input>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>请输入招聘会标题</span>
+                            <span>{yun:}t key='admin_00822'{/yun}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">举办场地</div>
+                        <div class="TableTite">{yun:}t key='admin_00283'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableSelect" style="display: flex;align-items: center;">
-                            <el-select v-model="info.sid" placeholder="请选择" @change="cdChange">
+                            <el-select v-model="info.sid" placeholder="{yun:}t key='wap_user_00100'{/yun}" @change="cdChange">
                                 <el-option v-for="item in spaces" :key="item.id" :label="item.name" :value="item.id">
                                 </el-option>
                             </el-select>
@@ -40,30 +40,30 @@
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>举办场地</span>
+                            <span>{yun:}t key='admin_00283'{/yun}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">预留展位</div>
+                        <div class="TableTite">{yun:}t key='admin_00286'{/yun}</div>
                     </td>
                     <td>
-                        <el-cascader v-model="reserved_arr" placeholder="请选择预留展位" :options="zwarr" :props="{ multiple: true }"></el-cascader>
+                        <el-cascader v-model="reserved_arr" placeholder="{yun:}t key='admin_00825'{/yun}" :options="zwarr" :props="{ multiple: true }"></el-cascader>
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <el-button type="primary" icon="el-icon-document-add" @click="addLocal">添加场地</el-button>
+                            <el-button type="primary" icon="el-icon-document-add" @click="addLocal">{yun:}t key='admin_00823'{/yun}</el-button>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">使用范围</div>
+                        <div class="TableTite">{yun:}t key='admin_user_00126'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableSelect" style="display: flex;align-items: center;">
-                            <el-select v-model="info.did" placeholder="请选择">
+                            <el-select v-model="info.did" placeholder="{yun:}t key='wap_user_00100'{/yun}">
                                 <el-option v-for="(item,index) in dnames" :key="index" :label="item" :value="index"></el-option>
                             </el-select>
                         </div>
@@ -76,7 +76,7 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">开始时间</div>
+                        <div class="TableTite">{yun:}t key='wap_user_00087'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
@@ -85,7 +85,7 @@
                                     type="datetime"
                                     style="width: 100%;"
                                     value-format="yyyy-MM-dd HH:mm:ss"
-                                    placeholder="选择日期时间">
+                                    placeholder="{yun:}t key='admin_user_company_00055'{/yun}">
                             </el-date-picker>
                         </div>
                     </td>
@@ -97,7 +97,7 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">结束时间</div>
+                        <div class="TableTite">{yun:}t key='wap_user_00096'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
@@ -106,7 +106,7 @@
                                     type="datetime"
                                     style="width: 100%;"
                                     value-format="yyyy-MM-dd HH:mm:ss"
-                                    placeholder="选择日期时间">
+                                    placeholder="{yun:}t key='admin_user_company_00055'{/yun}">
                             </el-date-picker>
                         </div>
                     </td>
@@ -118,11 +118,11 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">举办地点</div>
+                        <div class="TableTite">{yun:}t key='admin_00282'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-input placeholder="请输入举办会场" v-model="info.address">
+                            <el-input placeholder="{yun:}t key='admin_00826'{/yun}" v-model="info.address">
                             </el-input>
                         </div>
                     </td>
@@ -134,11 +134,11 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">交通路线</div>
+                        <div class="TableTite">{yun:}t key='admin_00284'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-input type="textarea" placeholder="请输入交通路线" v-model="info.traffic">
+                            <el-input type="textarea" placeholder="{yun:}t key='admin_00827'{/yun}" v-model="info.traffic">
                             </el-input>
                         </div>
                     </td>
@@ -150,11 +150,11 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">联系电话</div>
+                        <div class="TableTite">{yun:}t key='wap_user_00265'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-input placeholder="请输入联系电话" v-model="info.phone">
+                            <el-input placeholder="{yun:}t key='wap_com_00322'{/yun}" v-model="info.phone">
                             </el-input>
                         </div>
                     </td>
@@ -166,11 +166,11 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">主办方</div>
+                        <div class="TableTite">{yun:}t key='admin_00287'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-input placeholder="请输入主办方" v-model="info.organizers">
+                            <el-input placeholder="{yun:}t key='admin_00828'{/yun}" v-model="info.organizers">
                             </el-input>
                         </div>
                     </td>
@@ -182,11 +182,11 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">联系人</div>
+                        <div class="TableTite">{yun:}t key='wap_01431'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-input placeholder="请输入联系人" v-model="info.user">
+                            <el-input placeholder="{yun:}t key='wap_com_00013'{/yun}" v-model="info.user">
                             </el-input>
                         </div>
                     </td>
@@ -198,12 +198,12 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">显示状态</div>
+                        <div class="TableTite">{yun:}t key='admin_00285'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-radio v-model="info.is_open" label="1">开启</el-radio>
-                            <el-radio v-model="info.is_open" label="0">隐藏</el-radio>
+                            <el-radio v-model="info.is_open" label="1">{yun:}t key='member_com_00287'{/yun}</el-radio>
+                            <el-radio v-model="info.is_open" label="0">{yun:}t key='admin_user_00259'{/yun}</el-radio>
                         </div>
                     </td>
                     <td>
@@ -214,62 +214,62 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">PC略缩图</div>
+                        <div class="TableTite">{yun:}t key='admin_00280'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
                             <el-upload class="avatar-uploader" :action="uploadAction" :show-file-list="false" :on-change="thumbChange"
                                        :accept="pic_accept">
                                 <img style="width:200px;" v-if="info.is_themb_n" :src="info.is_themb_n" class="avatar">
-                                <el-button v-else type="primary" icon="el-icon-document-add">上传图片</el-button>
+                                <el-button v-else type="primary" icon="el-icon-document-add">{yun:}t key='wap_00540'{/yun}</el-button>
                             </el-upload>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span><i class="el-icon-warning"></i>尺寸：200PX*120PX</span>
+                            <span><i class="el-icon-warning"></i>{yun:}t key='admin_00276'{/yun}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">PC横幅</div>
+                        <div class="TableTite">{yun:}t key='admin_00824'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
                             <el-upload class="avatar-uploader" :action="uploadAction" :show-file-list="false" :accept="pic_accept" :on-change="bannerChange">
                                 <img style="width:200px;" v-if="info.banner_n" :src="info.banner_n" class="avatar">
-                                <el-button v-else type="primary" icon="el-icon-document-add">上传图片</el-button>
+                                <el-button v-else type="primary" icon="el-icon-document-add">{yun:}t key='wap_00540'{/yun}</el-button>
                             </el-upload>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span><i class="el-icon-warning"></i>尺寸：1920PX*300PX</span>
+                            <span><i class="el-icon-warning"></i>{yun:}t key='admin_00275'{/yun}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">移动端略缩图</div>
+                        <div class="TableTite">{yun:}t key='admin_00279'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
                             <el-upload class="avatar-uploader" :action="uploadAction" :show-file-list="false" :accept="pic_accept" :on-change="thembwapChange">
                                 <img style="width:200px;" v-if="info.is_themb_wap_n" :src="info.is_themb_wap_n" class="avatar">
-                                <el-button v-else type="primary" icon="el-icon-document-add">上传图片</el-button>
+                                <el-button v-else type="primary" icon="el-icon-document-add">{yun:}t key='wap_00540'{/yun}</el-button>
                             </el-upload>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span><i class="el-icon-warning"></i>尺寸：250PX*160PX</span>
+                            <span><i class="el-icon-warning"></i>{yun:}t key='admin_00277'{/yun}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">移动端横幅</div>
+                        <div class="TableTite">{yun:}t key='admin_00281'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
@@ -277,19 +277,19 @@
                                        :accept="pic_accept"
                                        :show-file-list="false" :on-change="bannerwapChange">
                                 <img style="width:200px;" v-if="info.banner_wap_n" :src="info.banner_wap_n" class="avatar">
-                                <el-button v-else type="primary" icon="el-icon-document-add">上传图片</el-button>
+                                <el-button v-else type="primary" icon="el-icon-document-add">{yun:}t key='wap_00540'{/yun}</el-button>
                             </el-upload>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span><i class="el-icon-warning"></i>尺寸：930PX*510PX</span>
+                            <span><i class="el-icon-warning"></i>{yun:}t key='admin_00278'{/yun}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">招聘会介绍</div>
+                        <div class="TableTite">{yun:}t key='wap_00566'{/yun}</div>
                     </td>
                     <td colspan="2">
                         <div style="border: 1px solid #ccc;">
@@ -305,7 +305,7 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">媒体宣传</div>
+                        <div class="TableTite">{yun:}t key='wap_00569'{/yun}</div>
                     </td>
                     <td colspan="2">
                         <div style="border: 1px solid #ccc;">
@@ -321,7 +321,7 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">服务套餐</div>
+                        <div class="TableTite">{yun:}t key='default_00344'{/yun}</div>
                     </td>
                     <td colspan="2">
                         <div style="border: 1px solid #ccc;">
@@ -337,7 +337,7 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">展位设置方案</div>
+                        <div class="TableTite">{yun:}t key='wap_00564'{/yun}</div>
                     </td>
                     <td colspan="2">
                         <div style="border: 1px solid #ccc;">
@@ -348,7 +348,7 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">参与办法</div>
+                        <div class="TableTite">{yun:}t key='wap_00568'{/yun}</div>
                     </td>
                     <td colspan="2">
                         <div id="editor—wrapper" style="border: 1px solid #ccc;">
@@ -361,7 +361,7 @@
             </table>
         </div>
         <div class="setBasicButn" style="border: none;">
-            <el-button type="primary" size="medium" @click="save" :disabled="submitLoading">提交</el-button>
+            <el-button type="primary" size="medium" @click="save" :disabled="submitLoading">{yun:}t key='common.submit'{/yun}</el-button>
         </div>
     </div>
 </template>
@@ -441,7 +441,7 @@
                     sid: val,
                     zid: that.info.id
                 };
-                httpPost('m=neirong&c=zhaopinhui&a=getzhanwei', params).then(function (response) {
+                httpPost('m=neirong&c=zhaopinhui&a=getzhanwei", params).then(function (response) {
                     if (response.data.error == 0) {
                         that.zwarr = response.data.data.space;
                         that.reserved_arr = response.data.data.reserved_arr;
@@ -452,7 +452,7 @@
                     console.log(error);
                 })
             },
-            // pc缩略图
+            // pc{yun:}t key='admin_00119'{/yun}
             thumbChange(file) {
                 var tmp = deepClone(this.info)
                 // 预览文件处理
@@ -461,7 +461,7 @@
                 this.thumblist[0] = file.raw;
                 this.info = tmp
             },
-            //PC横幅
+            //PC{yun:}t key='member_com_00077'{/yun}
             bannerChange(file){
                 var tmp = deepClone(this.info)
                 // 预览文件处理
@@ -470,7 +470,7 @@
                 this.bannerlist[0] = file.raw;
                 this.info = tmp
             },
-            // wap缩略图
+            // wap{yun:}t key='admin_00119'{/yun}
             thembwapChange(file) {
                 var tmp = deepClone(this.info)
                 // 预览文件处理
@@ -479,7 +479,7 @@
                 this.wapthumblist[0] = file.raw;
                 this.info = tmp
             },
-            // wap横幅
+            // wap{yun:}t key='member_com_00077'{/yun}
             bannerwapChange(file){
                 var tmp = deepClone(this.info)
                 // 预览文件处理
@@ -495,7 +495,7 @@
                 let editorConfig = {
                     MENU_CONF: {
                         uploadImage: {
-                            server: baseUrl + 'm=index&c=uploadfile',
+                            server: baseUrl + "m=index&c=uploadfile',
                             fieldName: 'file'
                         }
                     }
@@ -508,13 +508,13 @@
                             
                             editor_desc.setHtml(that.info.body);
                         } else {
-                            editor_desc.setHtml('');
+                            editor_desc.setHtml('");
                         }
                     }else{
-                        // 招聘会介绍
+                        // {yun:}t key='wap_00566'{/yun}
                         if (!editor_desc) {
                             editor_desc = createEditor({
-                                selector: '#editor-container-desc',
+                                selector: "#editor-container-desc',
                                 html: '',
                                 config: editorConfig,
                                 mode: 'simple'
@@ -527,14 +527,14 @@
                                 config: {
                                     excludeKeys: ['blockquote', 'header1', 'header2', 'header3', '|', 'through', 'todo', '|', 'insertVideo', 'insertTable', 'codeBlock', '|', 'undo', 'redo', '|',]
                                 },
-                                mode: 'simple'
+                                mode: 'simple"
                             });
                         }
                     }
                 },300);
                 
                 
-                // 媒体宣传
+                // {yun:}t key='wap_00569'{/yun}
                 clearInterval(editorInterval_mt);
                 editorInterval_mt = setInterval(()=>{
                     if (editor_mt !== null){
@@ -542,7 +542,7 @@
                         if (that.info.media) {
                             editor_mt.setHtml(that.info.media);
                         } else {
-                            editor_mt.setHtml('');
+                            editor_mt.setHtml("');
                         }
                     }else{
                         if (!editor_mt) {
@@ -560,7 +560,7 @@
                                 config: {
                                     excludeKeys: ['blockquote', 'header1', 'header2', 'header3', '|', 'through', 'todo', '|', 'insertVideo', 'insertTable', 'codeBlock', '|', 'undo', 'redo', '|',]
                                 },
-                                mode: 'simple'
+                                mode: 'simple"
                             });
                         }
                         
@@ -568,7 +568,7 @@
                 },300);
                 
                 
-                // 服务套餐
+                // {yun:}t key='default_00344'{/yun}
                 clearInterval(editorInterval_fw);
                 editorInterval_fw = setInterval(()=>{
                     if (editor_fw !== null){
@@ -576,7 +576,7 @@
                         if (that.info.packages) {
                             editor_fw.setHtml(that.info.packages);
                         } else {
-                            editor_fw.setHtml('');
+                            editor_fw.setHtml("');
                         }
                     }else{
                         if (!editor_fw) {
@@ -594,14 +594,14 @@
                                 config: {
                                     excludeKeys: ['blockquote', 'header1', 'header2', 'header3', '|', 'through', 'todo', '|', 'insertVideo', 'insertTable', 'codeBlock', '|', 'undo', 'redo', '|',]
                                 },
-                                mode: 'simple'
+                                mode: 'simple"
                             });
                         }
                         
                     }
                 },300);
                 
-                // 展位设置方案
+                // {yun:}t key='wap_00564'{/yun}
                 clearInterval(editorInterval_sz);
                 editorInterval_sz = setInterval(()=>{
                     if (editor_sz !== null){
@@ -609,7 +609,7 @@
                         if (that.info.booth) {
                             editor_sz.setHtml(that.info.booth);
                         } else {
-                            editor_sz.setHtml('');
+                            editor_sz.setHtml("');
                         }
                     }else{
                         if (!editor_sz) {
@@ -627,7 +627,7 @@
                                 config: {
                                     excludeKeys: ['blockquote', 'header1', 'header2', 'header3', '|', 'through', 'todo', '|', 'insertVideo', 'insertTable', 'codeBlock', '|', 'undo', 'redo', '|',]
                                 },
-                                mode: 'simple'
+                                mode: 'simple"
                             });
                         }
                         
@@ -635,7 +635,7 @@
                 },300);
                 
                 
-                // 参与办法
+                // {yun:}t key='wap_00568'{/yun}
                 clearInterval(editorInterval_cy);
                 editorInterval_cy = setInterval(()=>{
                     if (editor_cy !== null){
@@ -643,7 +643,7 @@
                         if (that.info.participate) {
                             editor_cy.setHtml(that.info.participate);
                         } else {
-                            editor_cy.setHtml('');
+                            editor_cy.setHtml("');
                         }
                     }else{
                         if (!editor_cy) {

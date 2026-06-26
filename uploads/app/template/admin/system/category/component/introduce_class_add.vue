@@ -3,31 +3,31 @@
         <div class="drawerModInfo">
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>介绍名称：</span>
+                    <span>{yun:}t key='admin_system_00102'{/yun}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input v-model="ruleForm.name" placeholder="请输入内容"></el-input>
+                    <el-input v-model="ruleForm.name" placeholder="{yun:}t key='wap_user_00076'{/yun}"></el-input>
                 </div>
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>介绍内容：</span>
+                    <span>{yun:}t key='admin_system_00101'{/yun}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input type="textarea" :rows="10" placeholder="请输入内容" v-model="ruleForm.content"></el-input>
+                    <el-input type="textarea" :rows="10" placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="ruleForm.content"></el-input>
                 </div>
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>排序：</span>
+                    <span>{yun:}t key='admin_system_00103'{/yun}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input v-model="ruleForm.sort" placeholder="请输入内容" onkeyup="this.value=this.value.replace(/[^0-9]/g,'')"></el-input>
+                    <el-input v-model="ruleForm.sort" placeholder="{yun:}t key='wap_user_00076'{/yun}" onkeyup="this.value=this.value.replace(/[^0-9]/g,'')"></el-input>
                 </div>
             </div>
         </div>
         <div class="setBasicButn" style="border: none;">
-            <el-button type="primary" size="medium" @click="submitForm" :disabled="submitLoading">提交</el-button>
+            <el-button type="primary" size="medium" @click="submitForm" :disabled="submitLoading">{yun:}t key='common.submit'{/yun}</el-button>
         </div>
     </div>
 </template>
@@ -75,7 +75,7 @@ module.exports = {
             let params = JSON.parse(JSON.stringify(this.ruleForm));
 
             if (params.name == '') {
-                message.error(window.yunAdminT('类别名称不能为空！'));
+                message.error(window.yunAdminT("{yun:}t key='admin_00208'{/yun}"));
                 return;
             }
             params.id = this.id;

@@ -21,7 +21,7 @@ class admin_member_logout_controller extends adminCommon{
         $pageM	=	$this  -> MODEL('page');
         $pages	=	$pageM -> adminPageList('member_logout',$where,$page,array('limit' => $pageSize));
         if (!$pages['total']) {
-            $this->render_json(0,'暂无数据',['data'=>[],'total'=>0]);
+            $this->render_json(0,yun_at('wap_js_00113'),['data'=>[],'total'=>0]);
         }
         $where['limit']	=  	$pages['limit'];
 
@@ -29,15 +29,15 @@ class admin_member_logout_controller extends adminCommon{
         $List     =  $logoutM -> getList($where);
 
         if (!$List) {
-            $this->render_json(0,'暂无数据',['data'=>[],'total'=>0,'pageSizes'=>$pages['page_sizes']]);
+            $this->render_json(0,yun_at('wap_js_00113'),['data'=>[],'total'=>0,'pageSizes'=>$pages['page_sizes']]);
         }
         $uIds = array();
         foreach ($List as $value) {
             $uIds[] = $value['uid'];
         }
         $userType = [
-            1 => '个人',
-            2 => '企业',
+            1 => 'admin_user_00304',
+            2 => 'wap_user_00153',
         ];
         // 查询会员对应角色
         $userInfoModel = $this->MODEL('userinfo');
@@ -48,7 +48,7 @@ class admin_member_logout_controller extends adminCommon{
             $userListNew[$value['uid']] = $value['usertype'];
         }
         foreach ($List as $key => $value) {
-            $List[$key]['usertype_name'] = isset($userType[$userListNew[$value['uid']]])? $userType[$userListNew[$value['uid']]] : '未知';
+            $List[$key]['usertype_name'] = isset($userType[$userListNew[$value['uid']]])? $userType[$userListNew[$value['uid']]] : 'common_02004';
             $List[$key]['ctime_ymd'] = $value['ctime']? date('Y-m-d H:i:s',$value['ctime']) : '-';
         }
         $data = array(
@@ -84,7 +84,7 @@ class admin_member_logout_controller extends adminCommon{
 	        $delid  =  $_POST['del'];
 	    }
         if (!$delid){
-            $this->render_json(1,'参数错误');
+            $this->render_json(1,yun_at('wap_com_00228'));
         }
 	    $logoutM  =  $this->MODEL('logout');
 	    $return	  =	 $logoutM->del($delid);

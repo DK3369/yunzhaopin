@@ -2,7 +2,7 @@
     <div class="tabseoTemps">
         <div class="moduleHeadrcz">
             <div class="moduleHeadrButn">
-                <el-button type="primary" icon="el-icon-document-add" size="mini" @click="openSeo('')">添加SEO</el-button>
+                <el-button type="primary" icon="el-icon-document-add" size="mini" @click="openSeo('')">{yun:}t key='admin_system_00380'{/yun}</el-button>
             </div>
         </div>
         <el-table :data="list" border style="width: 100%" :header-cell-style="{ background: '#f5f7fa', color: '#606266' }"
@@ -21,19 +21,19 @@
             <el-table-column fixed="right" label="操作" width="140">
                 <template slot-scope="scope">
                     <div class="cz_button">
-                        <el-button size="mini" @click="openSeo(scope.row)">修改</el-button>
-                        <el-button size="mini" type="danger" @click="del(scope.$index)">删除</el-button>
+                        <el-button size="mini" @click="openSeo(scope.row)">{yun:}t key='wap_js_00073'{/yun}</el-button>
+                        <el-button size="mini" type="danger" @click="del(scope.$index)">{yun:}t key='common.delete'{/yun}</el-button>
                     </div>
                 </template>
             </el-table-column>
         </el-table>
         <div class="modluDrawer">
-            <el-dialog title="信息" :visible.sync="drawer" :with-header="true" :modal-append-to-body="false"
+            <el-dialog title="{yun:}t key='admin_00308'{/yun}" :visible.sync="drawer" :with-header="true" :modal-append-to-body="false"
                 :show-close="true" width="30%">
-                <span>确定要删除？</span>
+                <span>{yun:}t key='wap_user_00001'{/yun}</span>
                 <span slot="footer" class="dialog-footer">
-                    <el-button @click="drawer = false">取 消</el-button>
-                    <el-button type="primary" @click="drawer = false">确 定</el-button>
+                    <el-button @click="drawer = false">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
+                    <el-button type="primary" @click="drawer = false">{yun:}t key='wap_com_00019'{/yun}</el-button>
                 </span>
             </el-dialog>
         </div>
@@ -45,7 +45,7 @@ module.exports = {
     props: ['action'],
     data: function () {
         return {
-            emptytext: '暂无数据',
+            emptytext: "{yun:}t key='wap_js_00113'{/yun}",
             loading: false,
             drawer: false,
 
@@ -67,14 +67,14 @@ module.exports = {
 
             this.list = data.seolist ? data.seolist : [];
             this.loading = false;
-            this.emptytext = "数据加载中";
+            this.emptytext = "{yun:}t key='admin_user_weipin_00026'{/yun}";
             let listlen = this.list.length
             if (listlen > 0) {
                 let height = 48 + (60 * listlen);
                 this.tableHeight = height > 750 ? '750px' : height + 'px';
             }
             if (this.list.length === 0){
-                this.emptytext = "暂无数据";
+                this.emptytext = "{yun:}t key='wap_js_00113'{/yun}";
             }
         },
         openSeo(data) {

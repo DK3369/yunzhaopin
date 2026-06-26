@@ -1,28 +1,28 @@
 <template>
     <div class="moduleElHight">
         <div class="tableDome_tip">
-            <el-alert title="采集前务必设置自己的接口密码，以免被其他人利用，这里所设置的参数，只作为没有值的情况下使用，若采集软件有值传输，会优先使用传输值" type="success" :closable="false"></el-alert>
+            <el-alert title="{yun:}t key='admin_tool_00059'{/yun}" type="success" :closable="false"></el-alert>
         </div>
         <div class=" moduleTable">
 
             <table class="tableVue">
                 <thead>
                 <tr align="left">
-                    <th width="200">名称</th>
-                    <th width="400">状态</th>
-                    <th>说明</th>
+                    <th width="200">{yun:}t key='member_com_00021'{/yun}</th>
+                    <th width="400">{yun:}t key='member_user_00181'{/yun}</th>
+                    <th>{yun:}t key='member_com_00207'{/yun}</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr>
                     <td>
-                        <div class="TableTite">兼职状态：</div>
+                        <div class="TableTite">{yun:}t key='admin_tool_00257'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableButn">
                             <el-radio-group v-model="locoy_config.locoy_partjob_status">
-                                <el-radio label="1">已通过</el-radio>
-                                <el-radio label="0">未审核</el-radio>
+                                <el-radio label="1">{yun:}t key='member_user_00042'{/yun}</el-radio>
+                                <el-radio label="0">{yun:}t key='wap_user_00166'{/yun}</el-radio>
                             </el-radio-group>
                         </div>
                     </td>
@@ -34,11 +34,11 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">工作类型无法匹配为</div>
+                        <div class="TableTite">{yun:}t key='admin_tool_00258'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableSelect" style="display: flex;align-items: center;">
-                            <el-select v-model="locoy_config.locoy_part_type" placeholder="请选择">
+                            <el-select v-model="locoy_config.locoy_part_type" placeholder="{yun:}t key='wap_user_00100'{/yun}">
                                 <el-option v-for="type in typeOptions" :key="type.value" :label="type.label" :value="type.value"></el-option>
                             </el-select>
                         </div>
@@ -51,12 +51,12 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">薪水无法匹配为</div>
+                        <div class="TableTite">{yun:}t key='admin_tool_00259'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
                             <el-input v-model="locoy_config.locoy_part_salary" @input="inputIntNumber($event, 'locoy_config', 'locoy_part_salary')" placeholder=" ">
-                                <template slot="append">元/天</template>
+                                <template slot="append">{yun:}t key='admin_user_00350'{/yun}</template>
                             </el-input>
                         </div>
                     </td>
@@ -68,11 +68,11 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">结算周期无法匹配为</div>
+                        <div class="TableTite">{yun:}t key='admin_tool_00260'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableSelect" style="display: flex;align-items: center;">
-                            <el-select v-model="locoy_config.locoy_part_billing" placeholder="请选择">
+                            <el-select v-model="locoy_config.locoy_part_billing" placeholder="{yun:}t key='wap_user_00100'{/yun}">
                                 <el-option v-for="item in billingOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
                             </el-select>
                         </div>
@@ -85,7 +85,7 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">浏览数随机范围</div>
+                        <div class="TableTite">{yun:}t key='admin_tool_00252'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableSelect" style="display: flex;align-items: center;">
@@ -94,14 +94,14 @@
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>如：0-100，默认为0</span>
+                            <span>{yun:}t key='admin_tool_00255'{/yun}</span>
                         </div>
                     </td>
                 </tr>
                 </tbody>
             </table>
             <div class="setBasicButn" style="border: none;">
-                <el-button type="primary" size="medium" @click="submitLocoyConfig" :disabled="saveLoading">提交</el-button>
+                <el-button type="primary" size="medium" @click="submitLocoyConfig" :disabled="saveLoading">{yun:}t key='common.submit'{/yun}</el-button>
             </div>
         </div>
     </div>

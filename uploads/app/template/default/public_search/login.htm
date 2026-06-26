@@ -14,10 +14,10 @@
 					<ul>
                        <li id="acount_login" class="login_pop_up_cur">{yun:}t key='default_00062'{/yun}<i class="login_pop_up_curline"></i></li>
                         {yun:}if $config.sy_msg_isopen==1 && $config.sy_msg_login==1{/yun}
-						<li id="mobile_login">短信登录<i class="login_pop_up_curline"></i></li>
+						<li id="mobile_login">{yun:}t key='wap_00648'{/yun}<i class="login_pop_up_curline"></i></li>
 						{yun:}/if{/yun}
 						{yun:}if $config.wx_author=='1'{/yun}
-						<li id="code_login" >扫码登录<i class="login_pop_up_curline"></i></li>
+						<li id="code_login" >{yun:}t key='common_02228'{/yun}<i class="login_pop_up_curline"></i></li>
                         {yun:}/if{/yun}
 					</ul>
 				</div></div>
@@ -82,7 +82,7 @@
 						<img id="vcode_img" src="{yun:}$config.sy_weburl{/yun}/app/include/authcode.inc.php" onclick="checkCode('vcode_img');" style="margin-right:5px; margin-left:5px;cursor:pointer;" />
 					</div>
 					<div class="login_pop_up_msg none" id="show_code">
-						<div class="login_pop_up_msg_tx">请填写验证码</div>
+						<div class="login_pop_up_msg_tx">{yun:}t key='member_user_00523'{/yun}</div>
 						<div class="login_pop_up_msg_icon"></div>
 					</div>
 					<input type="hidden" id="login_codekind" value="1" />
@@ -94,26 +94,26 @@
 				<div class="clear"></div>
 				<div class="none" id="login_sjyz_box">
 					<div class="login_pop_up_box_sjtext"><i class="login_pop_up_box_icon login_pop_up_box_icon_dx"></i>
-						<input id="dynamiccode" type="text" tabindex="3" maxlength="6" name="authcode" autocomplete="off" placeholder="请输入短信验证码" class="login_pop_up_box_t">
+						<input id="dynamiccode" type="text" tabindex="3" maxlength="6" name="authcode" autocomplete="off" placeholder="{yun:}t key='wap_00690'{/yun}" class="login_pop_up_box_t">
 						<div class="login_pop_up_msg none" id="show_dynamiccode">
-							<div class="login_pop_up_msg_tx">请填写短信动态码</div>
+							<div class="login_pop_up_msg_tx">{yun:}t key='common_02229'{/yun}</div>
 							<div class="login_pop_up_msg_icon"></div>
 						</div>
-						<a href="javascript:void(0);" class=" login_pop_up_box_yztext_hq" id="send_msg_tip" onclick="send_msg2('{yun:}url m=login c=sendmsg{/yun}');">发送动态码</a>
+						<a href="javascript:void(0);" class=" login_pop_up_box_yztext_hq" id="send_msg_tip" onclick="send_msg2('{yun:}url m=login c=sendmsg{/yun}');">{yun:}t key='common_02230'{/yun}</a>
                         <i class="login_pop_up_box_yztext_line"></i>
 					</div>
 				</div>
 				<input type="hidden" id="login_usertype" />
-				<input id="sublogin" class="login_pop_up_box_bth" type="button" onclick="check_login('{yun:}url m=login c=loginsave{/yun}','vcode_img',1);" value="登 录">
+				<input id="sublogin" class="login_pop_up_box_bth" type="button" onclick="check_login('{yun:}url m=login c=loginsave{/yun}','vcode_img',1);" value="{yun:}t key='common_02234'{/yun}">
 				
 				<div class="login_pop_up_box_fot">
-                	没有账号？<a href="###" id="onregister" target="_blank">{yun:}t key='wap_00284'{/yun}</a>
-					<a href="{yun:}url m=forgetpw{/yun}" class="login_pop_up_box_rightreg">忘记密码？</a>
+                	{yun:}t key='common_02231'{/yun}<a href="###" id="onregister" target="_blank">{yun:}t key='wap_00284'{/yun}</a>
+					<a href="{yun:}url m=forgetpw{/yun}" class="login_pop_up_box_rightreg">{yun:}t key='wap_00680'{/yun}？</a>
 					
 				</div>
                  {yun:}if $config.sy_qqlogin==1 || $config.sy_sinalogin==1 || $config.wx_author==1{/yun}
                 
-				<div class="login_pop_up_box_other"><div class="login_pop_up_box_othertit"><span class="login_pop_up_box_othertit_n">其他方式登录</span></div>
+				<div class="login_pop_up_box_other"><div class="login_pop_up_box_othertit"><span class="login_pop_up_box_othertit_n">{yun:}t key='common_02233'{/yun}</span></div>
 					{yun:}if $config.wx_author==1{/yun}
 					<a href="{yun:}url m=wxconnect{/yun}" class="login_pop_up_box_other_wx"></a>
 					{yun:}/if{/yun}
@@ -151,7 +151,7 @@
 		layer.open({
 			id: 'onloginid',
 			type: 1,
-			title: '欢迎登录',
+			title: "{yun:}t key='wap_00675'{/yun}",
 			closeBtn: [0, true],
 			offset: ['20%'],
 			border: [10, 0.3, '#000', true],

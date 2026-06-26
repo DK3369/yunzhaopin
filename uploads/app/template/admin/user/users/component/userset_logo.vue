@@ -5,53 +5,53 @@
             <table class="tableVue">
                 <thead>
                 <tr align="left">
-                    <th width="180">名称</th>
-                    <th>状态</th>
-                    <th>说明</th>
+                    <th width="180">{yun:}t key='member_com_00021'{/yun}</th>
+                    <th>{yun:}t key='member_user_00181'{/yun}</th>
+                    <th>{yun:}t key='member_com_00207'{/yun}</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr>
                     <td>
-                        <div class="TableTite">默认男生头像</div>
+                        <div class="TableTite">{yun:}t key='admin_user_00346'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableUpload">
                             <el-upload class="upload-demo" :accept="pic_accept" :action="uploadAction" :on-change="uploadChangeMan"
                                 :on-remove="handleRemoveMan" :file-list="fileListMan"
                                 list-type="picture">
-                                <el-button size="small" type="primary">点击上传</el-button>
+                                <el-button size="small" type="primary">{yun:}t key='wap_js_00071'{/yun}</el-button>
                             </el-upload>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>只能上传jpg/png/jpeg/gif文件</span>
+                            <span>{yun:}t key='admin_user_00343'{/yun}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">默认女生头像</div>
+                        <div class="TableTite">{yun:}t key='admin_user_00345'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableUpload">
                             <el-upload class="upload-demo" :accept="pic_accept" :action="uploadAction" :on-change="uploadChangeWoman"
                                 :on-remove="handleRemoveWoman" :file-list="fileListWoman"
                                 list-type="picture">
-                                <el-button size="small" type="primary">点击上传</el-button>
+                                <el-button size="small" type="primary">{yun:}t key='wap_js_00071'{/yun}</el-button>
                             </el-upload>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>只能上传jpg/png/jpeg/gif文件</span>
+                            <span>{yun:}t key='admin_user_00343'{/yun}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">默认职业技能和作品</div>
+                        <div class="TableTite">{yun:}t key='admin_user_00344'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableUpload" style="display: flex;align-items: center;">
@@ -60,7 +60,7 @@
                                 :on-success="(response, file, fileList) =>onSuccess(response,file,fileList,'fileList')"
                                 :accept="pic_accept"
                                 :show-file-list="false">
-                                <el-button size="small" type="primary">点击上传</el-button>
+                                <el-button size="small" type="primary">{yun:}t key='wap_js_00071'{/yun}</el-button>
                             </el-upload>
                             <div class="up_sy_logo_div" style="margin-left: 15px;">
                                 <el-image v-if="sy_member_skill" style="width:100px;" :src="sy_member_skill"
@@ -70,7 +70,7 @@
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>只能上传jpg/png/jpeg/gif文件</span>
+                            <span>{yun:}t key='admin_user_00343'{/yun}</span>
                         </div>
                     </td>
                 </tr>
@@ -78,7 +78,7 @@
             </table>
         </div>
         <div class="setBasicButn" style="border: none; height: 80px;">
-            <el-button type="primary" size="medium" @click="submitForm('ruleForm')" :disabled="submitLoading">提交</el-button>
+            <el-button type="primary" size="medium" @click="submitForm('ruleForm')" :disabled="submitLoading">{yun:}t key='common.submit'{/yun}</el-button>
         </div>
 
         <el-dialog :visible.sync="dialogVisible">
@@ -96,15 +96,15 @@ module.exports = {
             pytoken: localStorage.getItem("pytoken"),
             sy_weburl: localStorage.getItem("sy_weburl"),
             curl:'',
-            dialogImageUrl: '',
+            dialogImageUrl: '",
             dialogVisible: false,
             ruleForm: {
-                //默认男生头像
+                //{yun:}t key='admin_user_00346'{/yun}
                 manicon_sys: [],
-                //默认女生头像
+                //{yun:}t key='admin_user_00345'{/yun}
                 womanicon_sys: [],
             },
-            sy_member_skill: '',
+            sy_member_skill: "',
             fileListMan: [],
             fileListWoman: [],
             submitLoading: false,
@@ -133,7 +133,7 @@ module.exports = {
             let numMax = 6;
             if (fileList.length > numMax) {
                 fileList.splice(numMax, fileList.length - numMax);
-                message.error("最多只能设置6个默认头像！");
+                message.error("{yun:}t key='common_06678'{/yun}6个默认头像！");
                 return false;
             }
             this.fileListMan = fileList;//新元素有raw
@@ -146,7 +146,7 @@ module.exports = {
             let numMax = 6;
             if (fileList.length > numMax) {
                 fileList.splice(numMax, fileList.length - numMax);
-                message.error("最多只能设置6个默认头像！");
+                message.error("{yun:}t key='common_06678'{/yun}6个默认头像！");
                 return false;
             }
             this.fileListWoman = fileList;//新元素有raw
@@ -177,7 +177,7 @@ module.exports = {
             // this.$refs[formName].validate((valid) => {if (valid) {}});
             let _this = this;
             let formData = new FormData();
-            formData.append('submit', '提交');
+            formData.append('submit', "{yun:}t key='common.submit'{/yun}");
             _this.fileListMan.forEach((item) => {
                 if (item.hasOwnProperty('raw')) {
                     formData.append('man_files[]', item.raw);

@@ -286,7 +286,8 @@ function iterFiles($singleFile)
     $base = ROOT . 'app/template';
     $it = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($base));
     foreach ($it as $f) {
-        if ($f->isFile() && strtolower($f->getExtension()) === 'htm') {
+        $ext = strtolower($f->getExtension());
+        if ($f->isFile() && in_array($ext, array('htm', 'vue'), true)) {
             yield $f->getPathname();
         }
     }

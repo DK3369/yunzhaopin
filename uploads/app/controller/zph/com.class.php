@@ -15,7 +15,7 @@ class com_controller extends zph_controller
         $row    =   $zphM -> getInfo(array('id' => $id), array('pic' => 1));
         
         if (empty($row)) {
-            $this -> ACT_msg(url("zph"), '没有找到该招聘会！');
+            $this -> ACT_msg(url("zph"), 'zph_00001');
         }
         
         $this -> yunset('row', $row);

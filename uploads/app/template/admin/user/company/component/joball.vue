@@ -3,9 +3,9 @@
 
         <div class="moduleSeachbig" v-if="!simple">
             <div class="tableSeachInpt tableSeachInptsmall tableSeacFromer" style="padding: 2px 0;">
-                <el-input v-model="search_params.keyword" @keyup.enter.native="search" placeholder="请输入搜索内容" size="small"
+                <el-input v-model="search_params.keyword" @keyup.enter.native="search" placeholder="{yun:}t key='admin_00340'{/yun}" size="small"
                     clearable>
-                    <el-select v-model="search_params.type" size="small" slot="prepend" placeholder="用户名">
+                    <el-select v-model="search_params.type" size="small" slot="prepend" placeholder="{yun:}t key='admin_user_00140'{/yun}">
                         <el-option label="职位/企业名称" value="1"></el-option>
                         <el-option label="职位ID" value="3"></el-option>
                         <el-option label="IP" value="4"></el-option>
@@ -14,13 +14,13 @@
             </div>
             <!--收起部分-->
             <div class="tableSeachInpt tableSeachInptsmall" :class="{ 'searchbutnOnff': seachbutn }">
-                <el-select v-model="search_params.time_type" size="small" slot="prepend" placeholder="筛选日期" clearable @change="handleTimeChange">
+                <el-select v-model="search_params.time_type" size="small" slot="prepend" placeholder="{yun:}t key='admin_user_00135'{/yun}" clearable @change="handleTimeChange">
                     <el-option label="发布时间" value="sdate"></el-option>
                     <el-option label="更新时间" value="lastup"></el-option>
                 </el-select>
             </div>
             <div class="tableSeachInpt tableSeachInptsmalltwo" :class="{ 'searchbutnOnff': seachbutn }">
-                <el-date-picker v-model="search_params.times" type="daterange" align="right" unlink-panels range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" :picker-options="timeOptions" value-format="yyyy-MM-dd" size="small" @change="handleTimeChange"></el-date-picker>
+                <el-date-picker v-model="search_params.times" type="daterange" align="right" unlink-panels range-separator="至" start-placeholder="{yun:}t key='admin_00343'{/yun}" end-placeholder="{yun:}t key='admin_00344'{/yun}" :picker-options="timeOptions" value-format="yyyy-MM-dd" size="small" @change="handleTimeChange"></el-date-picker>
             </div>
 
 
@@ -45,14 +45,14 @@
                 </div>
             </div>
             <div class="tableSeachInpt">
-                <el-button type="primary" icon="el-icon-search" size="mini" @click="search">查询</el-button>
+                <el-button type="primary" icon="el-icon-search" size="mini" @click="search">{yun:}t key='admin_user_weipin_00049'{/yun}</el-button>
             </div>
             <div class="tableSeachzk" :class="{ 'searchbutnKai': seachbutn }" style="margin-bottom: 8px;">
                 <el-button type="info" class="zhankai" @click="seachbutn = !seachbutn, tableHig = !tableHig"
-                    aria-disabled="false" size="mini" plain>展开<i class="el-icon-arrow-down el-icon--right"></i>
+                    aria-disabled="false" size="mini" plain>{yun:}t key='admin_user_00145'{/yun}<i class="el-icon-arrow-down el-icon--right"></i>
                 </el-button>
                 <el-button type="info" class="shouqi" @click="seachbutn = !seachbutn, tableHig = !tableHig"
-                    aria-disabled="false" size="mini" plain>合并<i class="el-icon-arrow-up el-icon--right"></i>
+                    aria-disabled="false" size="mini" plain>{yun:}t key='admin_user_00144'{/yun}<i class="el-icon-arrow-up el-icon--right"></i>
                 </el-button>
             </div>
         </div>
@@ -94,9 +94,9 @@
                 <el-table-column prop="comd" label="简历量" width="130">
                     <template slot-scope="props">
                         <div class="moduleProps">
-                            <span>简历数：<el-button type="text" style="padding: 0;" @click="showComJobLogBox(props.row, 0)">{{ props.row.snum }}</el-button></span>
-                            <span>未查看：<el-button type="text" style="padding: 0;" @click="showComJobLogBox(props.row, 1)">{{ props.row.browseNum }}</el-button></span>
-                            <span>已面试：<el-button type="text" style="padding: 0;" @click="showComUserIdMsgBox(props.row)">{{ props.row.inviteNum }}</el-button></span>
+                            <span>{yun:}t key='admin_user_company_00369'{/yun}<el-button type="text" style="padding: 0;" @click="showComJobLogBox(props.row, 0)">{{ props.row.snum }}</el-button></span>
+                            <span>{yun:}t key='admin_00746'{/yun}<el-button type="text" style="padding: 0;" @click="showComJobLogBox(props.row, 1)">{{ props.row.browseNum }}</el-button></span>
+                            <span>{yun:}t key='admin_00747'{/yun}<el-button type="text" style="padding: 0;" @click="showComUserIdMsgBox(props.row)">{{ props.row.inviteNum }}</el-button></span>
                         </div>
                     </template>
                 </el-table-column>
@@ -116,7 +116,7 @@
                 <el-table-column prop="comd" label=" 招聘状态" width="130">
                     <template slot-scope="props">
                         <el-switch v-model="props.row.iszp" @change="zpstatuschange($event, props.row)"></el-switch>
-                        <div class="gsd">{{ props.row.status != 1 ? '招聘中' : '已下架' }}</div>
+                        <div class="gsd">{yun:}t key='admin_00748'{/yun}</div>
                     </template>
                 </el-table-column>
                 <el-table-column prop="logintime" label="发布/更新时间" width="150">
@@ -142,7 +142,7 @@
                             <span class=" "> {{ props.row.jobhits }}/{{ props.row.jobexpoure }}</span>
                         </div>
                         <div class="jobtj">
-                            <el-link icon="el-icon-edit" size="mini" @click="jobhitedit(props.row)">修改</el-link>
+                            <el-link icon="el-icon-edit" size="mini" @click="jobhitedit(props.row)">{yun:}t key='wap_js_00073'{/yun}</el-link>
                         </div>
                     </template>
                 </el-table-column>
@@ -150,7 +150,7 @@
                     <template slot-scope="props">
                         <div class="admin_state">
                             <template v-if="props.row.r_status == '2'">
-                                <span class="admin_state3">已锁定</span>
+                                <span class="admin_state3">{yun:}t key='admin_user_00138'{/yun}</span>
                                 <div style="display:inline-block" v-if="props.row.lock_info">
                                     <el-popover trigger="hover" placement="right">
                                         <p>{{ props.row.lock_info }}</p>
@@ -161,40 +161,40 @@
                                 </div>
                             </template>
                             <template v-else-if="props.row.state == 1">
-                    			<span class="admin_state1">已审核</span>
+                    			<span class="admin_state1">{yun:}t key='wap_user_00165'{/yun}</span>
                     		</template>
                             <template v-else-if="props.row.state == 0">
                     			<!--职位未审核的要显示企业审核状态，企业锁定的前面有单独处理-->
                     			<div v-if="props.row.r_status != '2'">
                     				<div>
-                    					<span class="admin_state4" v-if="props.row.r_status == '0'">企:未审核</span>
-                    					<span class="admin_state1" v-else-if="props.row.r_status == '1'">企:已审核</span>
-                    					<span class="admin_state2" v-else-if="props.row.r_status == '3'">企:未通过</span>
-                    					<span class="admin_state3" v-else-if="props.row.r_status == '4'">企:暂停</span>
+                    					<span class="admin_state4" v-if="props.row.r_status == '0'">{yun:}t key='admin_user_company_00355'{/yun}</span>
+                    					<span class="admin_state1" v-else-if="props.row.r_status == '1'">{yun:}t key='admin_user_company_00354'{/yun}</span>
+                    					<span class="admin_state2" v-else-if="props.row.r_status == '3'">{yun:}t key='admin_user_company_00356'{/yun}</span>
+                    					<span class="admin_state3" v-else-if="props.row.r_status == '4'">{yun:}t key='admin_user_company_00365'{/yun}</span>
                     				</div>
                     				<div>
-                    					<span class="admin_state4">职:未审核</span>
+                    					<span class="admin_state4">{yun:}t key='admin_user_company_00358'{/yun}</span>
                     				</div>
                     			</div>
                     			<div v-else>
-                    				<span class="admin_state4">未审核</span>
+                    				<span class="admin_state4">{yun:}t key='wap_user_00166'{/yun}</span>
                     			</div>
                     		</template>
                             <template v-else-if="props.row.state == 3">
                     			<!--职位未通过的要显示企业审核状态，企业锁定的前面有单独处理-->
                     			<div v-if="props.row.r_status != '2'">
                     				<div>
-                    					<span class="admin_state4" v-if="props.row.r_status == '0'">企:未审核</span>
-                    					<span class="admin_state1" v-else-if="props.row.r_status == '1'">企:已审核</span>
-                    					<span class="admin_state2" v-else-if="props.row.r_status == '3'">企:未通过</span>
-                    					<span class="admin_state3" v-else-if="props.row.r_status == '4'">企:暂停</span>
+                    					<span class="admin_state4" v-if="props.row.r_status == '0'">{yun:}t key='admin_user_company_00355'{/yun}</span>
+                    					<span class="admin_state1" v-else-if="props.row.r_status == '1'">{yun:}t key='admin_user_company_00354'{/yun}</span>
+                    					<span class="admin_state2" v-else-if="props.row.r_status == '3'">{yun:}t key='admin_user_company_00356'{/yun}</span>
+                    					<span class="admin_state3" v-else-if="props.row.r_status == '4'">{yun:}t key='admin_user_company_00365'{/yun}</span>
                     				</div>
                     				<div>
-                    					<span class="admin_state2">职:未通过</span>
+                    					<span class="admin_state2">{yun:}t key='admin_user_company_00359'{/yun}</span>
                     				</div>
                     			</div>
                     			<div v-else>
-                    				<span class="admin_state2">未通过</span>
+                    				<span class="admin_state2">{yun:}t key='wap_user_00167'{/yun}</span>
                     			</div>
                                 <div style="display:inline-block" v-if="props.row.statusbody">
                                     <el-popover trigger="hover" placement="right">
@@ -211,28 +211,28 @@
                 <el-table-column label="操作" width="140" fixed="right">
                     <template slot-scope="scope">
                         <div class="moduleElTaCaoz">
-                            <el-button size="small" plain @click="jobAudit(scope.row)">审核</el-button>
-                            <el-button size="small" v-if="scope.row.status == 1" plain @click="msg('职位已下架！')">匹配</el-button>
-                            <el-button size="small" v-else plain @click="tw(scope.row)">推文</el-button>
-                            <el-button size="small" plain @click="edit(scope.row)">修改</el-button>
+                            <el-button size="small" plain @click="jobAudit(scope.row)">{yun:}t key='member_user_00152'{/yun}</el-button>
+                            <el-button size="small" v-if="scope.row.status == 1" plain @click="msg('职位已下架！')">{yun:}t key='member_com_00269'{/yun}</el-button>
+                            <el-button size="small" v-else plain @click="tw(scope.row)">{yun:}t key='admin_user_company_00157'{/yun}</el-button>
+                            <el-button size="small" plain @click="edit(scope.row)">{yun:}t key='wap_js_00073'{/yun}</el-button>
                             <el-popover placement="bottom" width="90" trigger="hover">
                                 <div class="moduleMores">
                                     <template v-if="search_params.openautho == 2">
-                                        <el-button type="text" @click="linkopen(scope.row)">权限</el-button>
+                                        <el-button type="text" @click="linkopen(scope.row)">{yun:}t key='admin_user_company_00372'{/yun}</el-button>
                                         
                                     </template>
-                                    <el-button v-else type="text" @click="linkopen(scope.row)">开放权限</el-button>
+                                    <el-button v-else type="text" @click="linkopen(scope.row)">{yun:}t key='admin_00749'{/yun}</el-button>
                                     <template v-if="scope.row.status == 0 && scope.row.state == 1 && scope.row.r_status == 1">
-                                        <el-button @click="getJobHtml(scope.row.id)" type="text">复制文本</el-button>
-                                        <el-button v-if="hbNum > 0 && hb_isopen == 1" @click="createhb(scope.row)" type="text">生成海报</el-button>
-                                        <el-button type="text" @click="resumematch(scope.row)">匹配简历</el-button>
+                                        <el-button @click="getJobHtml(scope.row.id)" type="text">{yun:}t key='wap_com_00232'{/yun}</el-button>
+                                        <el-button v-if="hbNum > 0 && hb_isopen == 1" @click="createhb(scope.row)" type="text">{yun:}t key='wap_01572'{/yun}</el-button>
+                                        <el-button type="text" @click="resumematch(scope.row)">{yun:}t key='member_com_00296'{/yun}</el-button>
                                     </template>
-                                    <el-button @click="yyrefresh(scope.row)" type="text">预约刷新</el-button>
-                                    <el-button v-if="scope.row.is_depower == 1" @click="depower(2, scope.row.id)" type="text">取消降权</el-button>
-                                    <el-button v-else type="text" @click="depower(1, scope.row.id)">降权</el-button>
-                                    <el-button type="text" @click="delrow(scope.row.id)">删除职位</el-button>
+                                    <el-button @click="yyrefresh(scope.row)" type="text">{yun:}t key='member_com_00267'{/yun}</el-button>
+                                    <el-button v-if="scope.row.is_depower == 1" @click="depower(2, scope.row.id)" type="text">{yun:}t key='admin_user_company_00367'{/yun}</el-button>
+                                    <el-button v-else type="text" @click="depower(1, scope.row.id)">{yun:}t key='admin_user_company_00374'{/yun}</el-button>
+                                    <el-button type="text" @click="delrow(scope.row.id)">{yun:}t key='admin_user_company_00366'{/yun}</el-button>
                                 </div>
-                                <el-button size="small" plain slot="reference" @click="visible = !visible">更多</el-button>
+                                <el-button size="small" plain slot="reference" @click="visible = !visible">{yun:}t key='common.more'{/yun}</el-button>
                             </el-popover>
                         </div>
                     </template>
@@ -242,17 +242,17 @@
         <div class="modulePaging" style="height: initial; flex-wrap: wrap; padding-top: 10px;">
             <div class="bottomButnBull" style="width:100%;">
                 <div class="bottomButnBlak">
-                    <el-checkbox v-model="checkedAll" @change="selectAllBottom">全选</el-checkbox>
-                    <el-button @click="delAllBottom" size="mini">批量删除</el-button>
-                    <el-button @click="multipleStatus" size="mini">审核</el-button>
-                    <el-button @click="multitg(3)" size="mini">紧急</el-button>
-                    <el-button @click="multitg(1)" size="mini">置顶</el-button>
-                    <el-button @click="multitg(2)" size="mini">推荐</el-button>
-                    <el-button @click="refresh" size="mini">刷新</el-button>
+                    <el-checkbox v-model="checkedAll" @change="selectAllBottom">{yun:}t key='wap_js_00074'{/yun}</el-checkbox>
+                    <el-button @click="delAllBottom" size="mini">{yun:}t key='member_com_00055'{/yun}</el-button>
+                    <el-button @click="multipleStatus" size="mini">{yun:}t key='member_user_00152'{/yun}</el-button>
+                    <el-button @click="multitg(3)" size="mini">{yun:}t key='wap_00222'{/yun}</el-button>
+                    <el-button @click="multitg(1)" size="mini">{yun:}t key='wap_user_00335'{/yun}</el-button>
+                    <el-button @click="multitg(2)" size="mini">{yun:}t key='common.recommended'{/yun}</el-button>
+                    <el-button @click="refresh" size="mini">{yun:}t key='wap_user_00334'{/yun}</el-button>
                     
-                    <el-button @click="exportdrawer = true" size="mini">导出</el-button>
-                    <el-button @click="multicate" size="mini">分类</el-button>
-                    <el-button @click="twtaskall" size="mini">推文</el-button>
+                    <el-button @click="exportdrawer = true" size="mini">{yun:}t key='admin_user_00257'{/yun}</el-button>
+                    <el-button @click="multicate" size="mini">{yun:}t key='admin_user_company_00371'{/yun}</el-button>
+                    <el-button @click="twtaskall" size="mini">{yun:}t key='admin_user_company_00157'{/yun}</el-button>
                 </div>
             </div>
             <div class="modulePagNum" style="padding-top: 8px;">
@@ -269,102 +269,102 @@
         </el-drawer>
         <!--曝光量弹出-->
         <div class="modluDrawer" v-if="curr_job">
-            <el-dialog title="浏览量编辑" :visible.sync="bgdrawer" :modal-append-to-body="false" append-to-body width="390px">
+            <el-dialog title="{yun:}t key='admin_00753'{/yun}" :visible.sync="bgdrawer" :modal-append-to-body="false" append-to-body width="390px">
                 <div>
-                    <div class="wxsettip_small ">企业名称</div>
-                    <el-input v-model="curr_job.com_name" placeholder="企业名称" :disabled="true"></el-input>
-                    <div class="wxsettip_small ">曝光量</div>
-                    <el-input type="number" v-model="curr_job.jobexpoure" placeholder="曝光量"></el-input>
-                    <div class="wxsettip_small ">浏览量</div>
-                    <el-input type="number" v-model="curr_job.jobhits" placeholder="浏览量"></el-input>
+                    <div class="wxsettip_small ">{yun:}t key='wap_com_00157'{/yun}</div>
+                    <el-input v-model="curr_job.com_name" placeholder="{yun:}t key='wap_com_00157'{/yun}" :disabled="true"></el-input>
+                    <div class="wxsettip_small ">{yun:}t key='wap_com_00111'{/yun}</div>
+                    <el-input type="number" v-model="curr_job.jobexpoure" placeholder="{yun:}t key='wap_com_00111'{/yun}"></el-input>
+                    <div class="wxsettip_small ">{yun:}t key='wap_com_00112'{/yun}</div>
+                    <el-input type="number" v-model="curr_job.jobhits" placeholder="{yun:}t key='wap_com_00112'{/yun}"></el-input>
                 </div>
                 <span slot="footer" class="dialog-footer">
-                    <el-button @click="bgdrawer = false">取 消</el-button>
-                    <el-button type="primary" :loading="jobhit_load" @click="jobhiteditsave">确 定</el-button>
+                    <el-button @click="bgdrawer = false">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
+                    <el-button type="primary" :loading="jobhit_load" @click="jobhiteditsave">{yun:}t key='wap_com_00019'{/yun}</el-button>
                 </span>
             </el-dialog>
         </div>
         <!--企业发送至推文弹窗-->
         <div class="modluDrawer">
-            <el-dialog title="职位发送至推文" :visible.sync="twdrawer" :modal-append-to-body="false" append-to-body width="450px">
+            <el-dialog title="{yun:}t key='admin_user_company_00345'{/yun}" :visible.sync="twdrawer" :modal-append-to-body="false" append-to-body width="450px">
                 <div v-if="curr_job || multitw">
-                    <div v-if="!multitw" class="wxsettip_small ">职位名称</div>
-                    <el-input v-if="!multitw" placeholder="职位名称" v-model="curr_job.name" :disabled="true"></el-input>
-                    <div class="wxsettip_small ">标签</div>
-                    <el-checkbox v-model="twtask_urgent">加急</el-checkbox>
-                    <el-checkbox v-model="twtask_wcmoments">朋友圈</el-checkbox>
-                    <el-checkbox v-model="twtask_gzh">公众号</el-checkbox>
-                    <div class="wxsettip_small ">备注</div>
-                    <el-input type="textarea" :rows="2" placeholder="请输入备注" v-model="twtask_content"></el-input>
+                    <div v-if="!multitw" class="wxsettip_small ">{yun:}t key='wap_com_00288'{/yun}</div>
+                    <el-input v-if="!multitw" placeholder="{yun:}t key='wap_com_00288'{/yun}" v-model="curr_job.name" :disabled="true"></el-input>
+                    <div class="wxsettip_small ">{yun:}t key='admin_user_company_00159'{/yun}</div>
+                    <el-checkbox v-model="twtask_urgent">{yun:}t key='admin_user_company_00156'{/yun}</el-checkbox>
+                    <el-checkbox v-model="twtask_wcmoments">{yun:}t key='admin_user_company_00152'{/yun}</el-checkbox>
+                    <el-checkbox v-model="twtask_gzh">{yun:}t key='admin_user_company_00148'{/yun}</el-checkbox>
+                    <div class="wxsettip_small ">{yun:}t key='member_user_00242'{/yun}</div>
+                    <el-input type="textarea" :rows="2" placeholder="{yun:}t key='admin_00621'{/yun}" v-model="twtask_content"></el-input>
                     <div class="tw_tip" v-if="twTip">
                         <el-alert :title="twTip" type="warning" show-icon :closable="false"></el-alert>
                     </div>
                 </div>
                 <span slot="footer" class="dialog-footer">
-                    <el-button @click="twdrawer = false">取 消</el-button>
-                    <el-button type="primary" :loading="twtask_load" @click="addTwTask">确 定</el-button>
+                    <el-button @click="twdrawer = false">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
+                    <el-button type="primary" :loading="twtask_load" @click="addTwTask">{yun:}t key='wap_com_00019'{/yun}</el-button>
                 </span>
             </el-dialog>
         </div>
         <!--联系方式选择性开放弹窗-->
         <div class="modluDrawer">
-            <el-dialog title="联系方式选择性开放" :visible.sync="drawerlinkopen" :modal-append-to-body="false" append-to-body width="350px">
+            <el-dialog title="{yun:}t key='admin_user_company_00341'{/yun}" :visible.sync="drawerlinkopen" :modal-append-to-body="false" append-to-body width="350px">
                 <div v-if="curr_job">
                     <el-radio-group v-model="curr_job.linkopen" size="small">
-                        <el-radio label="1" border>默认</el-radio>
-                        <el-radio label="2" border>开放</el-radio>
+                        <el-radio label="1" border>{yun:}t key='wap_js_00098'{/yun}</el-radio>
+                        <el-radio label="2" border>{yun:}t key='admin_user_company_00304'{/yun}</el-radio>
                     </el-radio-group>
                     <div class="tw_tip">
-                        <el-alert title="默认" description="默认职位联系方式逻辑不变" type="warning" show-icon :closable="false"></el-alert>
-                        <el-alert title="开放" type="warning" show-icon :closable="false">
-                            <span>开启登录短信验证码，未登录用户有预留<br />信息提示，非必填。登录用户直接查看</span>
+                        <el-alert title="{yun:}t key='wap_js_00098'{/yun}" description="默认职位联系方式逻辑不变" type="warning" show-icon :closable="false"></el-alert>
+                        <el-alert title="{yun:}t key='admin_user_company_00304'{/yun}" type="warning" show-icon :closable="false">
+                            <span>{yun:}t key='admin_user_company_00333'{/yun}<br />{yun:}t key='admin_user_company_00336'{/yun}</span>
                         </el-alert>
                     </div>
                 </div>
                 <span slot="footer" class="dialog-footer">
-                    <el-button @click="drawerlinkopen = false">取 消</el-button>
-                    <el-button type="primary" @click="setlinkopen">确 定</el-button>
+                    <el-button @click="drawerlinkopen = false">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
+                    <el-button type="primary" @click="setlinkopen">{yun:}t key='wap_com_00019'{/yun}</el-button>
                 </span>
             </el-dialog>
         </div>
         <!--职位详情审核 ---------------------------------------------------------------------->
-        <el-drawer title="职位审核" :visible.sync="jobdrawersh" :modal-append-to-body="false" append-to-body size="80%">
+        <el-drawer title="{yun:}t key='admin_user_company_00326'{/yun}" :visible.sync="jobdrawersh" :modal-append-to-body="false" append-to-body size="80%">
             <job_review :id="statusId" :comclass_name="jobcomclassnamecache" :job_audit="job_audit" @confirm="jobdrawersh=false;getList()"   ></job_review>
         </el-drawer>
         <!--职位推广弹窗-->
         <div class="modluDrawer">
             <el-dialog :title="jobtgtit" :visible.sync="jobtgdrawer" append-to-body width="400px">
-                <div class="wxsettip_small" v-if="jobtgtype == 1">置顶天数</div>
-                <div class="wxsettip_small" v-else-if="jobtgtype == 2">推荐天数</div>
-                <div class="wxsettip_small" v-else-if="jobtgtype == 3">紧急天数</div>
-                <el-input type="number" placeholder="请输入天数" v-model="jobtgdays">
-                    <template slot="append">天</template>
+                <div class="wxsettip_small" v-if="jobtgtype == 1">{yun:}t key='wap_user_00209'{/yun}</div>
+                <div class="wxsettip_small" v-else-if="jobtgtype == 2">{yun:}t key='wap_com_00041'{/yun}</div>
+                <div class="wxsettip_small" v-else-if="jobtgtype == 3">{yun:}t key='wap_com_00043'{/yun}</div>
+                <el-input type="number" placeholder="{yun:}t key='admin_00614'{/yun}" v-model="jobtgdays">
+                    <template slot="append">{yun:}t key='common_02067'{/yun}</template>
                 </el-input>
-                <div class="wxsettip_small" v-if="jobtgetime != ''">当前结束日期</div>
+                <div class="wxsettip_small" v-if="jobtgetime != ''">{yun:}t key='admin_00613'{/yun}</div>
                 <el-input v-if="jobtgetime != ''" v-model="jobtgetime" disabled></el-input>
                 <div style="margin-top:10px;">
                     <i class="el-icon-warning"></i>
-                    如需取消
-                    <span v-if="jobtgtype == 1">职位置顶</span>
-                    <span v-else-if="jobtgtype == 2">推荐职位</span>
-                    <span v-else-if="jobtgtype == 3">紧急职位</span>
-                    请单击
+                    {yun:}t key='admin_user_company_00037'{/yun}
+                    <span v-if="jobtgtype == 1">{yun:}t key='wap_com_00238'{/yun}</span>
+                    <span v-else-if="jobtgtype == 2">{yun:}t key='home.recommended_jobs'{/yun}</span>
+                    <span v-else-if="jobtgtype == 3">{yun:}t key='member_com_00326'{/yun}</span>
+                    {yun:}t key='admin_user_company_00039'{/yun}
                     <el-checkbox v-model="qxtgchecked" true-label="1" false-label="0"></el-checkbox>
-                    <span>点击确认即可</span>
+                    <span>{yun:}t key='admin_user_company_00036'{/yun}</span>
                 </div>
                 <span slot="footer" class="dialog-footer">
-                    <el-button @click="jobtgdrawer = false">取 消</el-button>
-                    <el-button type="primary" :loading="jobtg_load" @click="jobTgSubmit">确 定</el-button>
+                    <el-button @click="jobtgdrawer = false">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
+                    <el-button type="primary" :loading="jobtg_load" @click="jobTgSubmit">{yun:}t key='wap_com_00019'{/yun}</el-button>
                 </span>
             </el-dialog>
         </div>
         <!--复制文本弹窗-->
         <div class="modluDrawer">
-            <el-dialog title="复制文本" :visible.sync="drawercopy" append-to-body width="290px">
+            <el-dialog title="{yun:}t key='wap_com_00232'{/yun}" :visible.sync="drawercopy" append-to-body width="290px">
                 <div id="to_copy" v-html="htmlcont"></div>
                 <span slot="footer" class="dialog-footer">
-                    <el-button @click="drawercopy = false">取 消</el-button>
-                    <el-button type="primary" id="copyBtn" data-clipboard-action="copy" data-clipboard-target="#to_copy" @click="handleCopyText('copyBtn')">复制文本</el-button>
+                    <el-button @click="drawercopy = false">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
+                    <el-button type="primary" id="copyBtn" data-clipboard-action="copy" data-clipboard-target="#to_copy" @click="handleCopyText('copyBtn')">{yun:}t key='wap_com_00232'{/yun}</el-button>
                 </span>
             </el-dialog>
         </div>
@@ -378,8 +378,8 @@
                                 <div class="poster_pic"><img :src="item.pic_n"></div>
                                 <div class="hb_listbox_name" style="background:#fff;">
                                     <div class="hb_cz">
-                                        <a href="javascript:;" @click="showHb(item.id)">预览</a>
-                                        <a href="javascript:;" @click="downHb(item.id)">下载</a>
+                                        <a href="javascript:;" @click="showHb(item.id)">{yun:}t key='wap_00071'{/yun}</a>
+                                        <a href="javascript:;" @click="downHb(item.id)">{yun:}t key='wap_00070'{/yun}</a>
                                     </div>
                                 </div>
                             </div>
@@ -390,7 +390,7 @@
         </div>
         <!-- 海报预览弹窗 -->
         <div class="tck_setbox" v-if="hburl != ''">
-            <el-dialog title="海报预览" :visible.sync="showhb" append-to-body width="300px">
+            <el-dialog title="{yun:}t key='admin_user_company_00142'{/yun}" :visible.sync="showhb" append-to-body width="300px">
                 <div class="code_img" style="display:flex;justify-content: center;margin-bottom: 20px;">
                     <img :src="hburl" :key="hbkey" width="260">
                 </div>
@@ -398,110 +398,110 @@
         </div>
         <!--匹配简历弹窗-->
         <div class="modluDrawer">
-            <el-drawer title="匹配简历" :visible.sync="drawermatchresume" :modal-append-to-body="false" append-to-body size="95%">
+            <el-drawer title="{yun:}t key='member_com_00296'{/yun}" :visible.sync="drawermatchresume" :modal-append-to-body="false" append-to-body size="95%">
                 <matchresume ref="matchresume" :job="curr_job" :jobtypes="job_types" :citytypes="city_types"></matchresume>
             </el-drawer>
         </div>
         <!--批量审核职位-->
         <div class="modluDrawer">
-            <el-dialog title="职位批量审核" width="300px" :visible.sync="drawerauditmultiple" append-to-body :modal-append-to-body="false">
+            <el-dialog title="{yun:}t key='admin_user_company_00350'{/yun}" width="300px" :visible.sync="drawerauditmultiple" append-to-body :modal-append-to-body="false">
                 <div class="toolClasDia fenpeizhand">
                     <div class="toolClasList">
                         <div class="toolClasTite">
-                            <span>审核操作：</span>
+                            <span>{yun:}t key='admin_user_weipin_00065'{/yun}</span>
                         </div>
                         <div class="toolClasCont">
-                            <el-radio v-model="multiStatus" label="1">正常</el-radio>
-                            <el-radio v-model="multiStatus" label="3">未通过</el-radio>
+                            <el-radio v-model="multiStatus" label="1">{yun:}t key='admin_user_00149'{/yun}</el-radio>
+                            <el-radio v-model="multiStatus" label="3">{yun:}t key='wap_user_00167'{/yun}</el-radio>
                         </div>
                     </div>
                     <div class="toolClasList">
                         <div class="toolClasTite">
-                            <span>审核说明：</span>
+                            <span>{yun:}t key='member_user_00450'{/yun}</span>
                         </div>
                         <div class="toolClasCont">
-                            <el-input type="textarea" v-model="multiStatusBody" :rows="2" placeholder="请输入审核说明">
+                            <el-input type="textarea" v-model="multiStatusBody" :rows="2" placeholder="{yun:}t key='admin_00676'{/yun}">
                             </el-input>
                         </div>
                     </div>
                 </div>
                 <span slot="footer" class="dialog-footer">
-                    <el-button @click="drawerauditmultiple = false">取 消</el-button>
-                    <el-button type="primary" :loading="multipleStatus_load" @click="multipleStatusSave">确 定</el-button>
+                    <el-button @click="drawerauditmultiple = false">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
+                    <el-button type="primary" :loading="multipleStatus_load" @click="multipleStatusSave">{yun:}t key='wap_com_00019'{/yun}</el-button>
                 </span>
             </el-dialog>
         </div>
         <!--导出字段弹窗-->
         <div class="modluDrawer">
-            <el-dialog title="选择导出字段" :visible.sync="exportdrawer" append-to-body width="740px">
+            <el-dialog title="{yun:}t key='admin_user_00246'{/yun}" :visible.sync="exportdrawer" append-to-body width="740px">
                 <div style="">
                     <el-checkbox-group v-model="checkedCols" @change="handleColCheckedChange">
                         <el-checkbox style="width:110px;margin-bottom: 5px;margin-left:0" size="small" border v-for="(item, index) in cols" :key="index" :label="item.value">{{ item.label }}</el-checkbox>
-                        <el-checkbox style="width:110px;margin-left:0" size="small" border :indeterminate="isIndeterminate" v-model="colCheckAll" @change="handleColCheckAllChange">全选</el-checkbox>
+                        <el-checkbox style="width:110px;margin-left:0" size="small" border :indeterminate="isIndeterminate" v-model="colCheckAll" @change="handleColCheckAllChange">{yun:}t key='wap_js_00074'{/yun}</el-checkbox>
                     </el-checkbox-group>
                 </div>
-                <div class="wxsettip_small">导出数量</div>
-                <el-input type="number" placeholder="请输入导出数量" v-model="exp_num"></el-input>
-                <el-alert style="margin-top: 10px;" title="数字太大会导致运行缓慢，请慎重填写。" type="warning" show-icon :closable="false"></el-alert>
+                <div class="wxsettip_small">{yun:}t key='admin_00501'{/yun}</div>
+                <el-input type="number" placeholder="{yun:}t key='admin_00686'{/yun}" v-model="exp_num"></el-input>
+                <el-alert style="margin-top: 10px;" title="{yun:}t key='admin_user_company_00076'{/yun}" type="warning" show-icon :closable="false"></el-alert>
                 <span slot="footer" class="dialog-footer">
-                    <el-button @click="exportdrawer = false">取 消</el-button>
-                    <el-button type="primary" :loading="export_load" @click="submitExport">确 定</el-button>
+                    <el-button @click="exportdrawer = false">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
+                    <el-button type="primary" :loading="export_load" @click="submitExport">{yun:}t key='wap_com_00019'{/yun}</el-button>
                 </span>
             </el-dialog>
         </div>
         <!--批量转移类别-->
         <div class="modluDrawer">
-            <el-dialog title="批量转移类别" :visible.sync="drawermulticate" append-to-body width="300px">
-                <div class="wxsettip_small">行业类别</div>
+            <el-dialog title="{yun:}t key='admin_user_company_00348'{/yun}" :visible.sync="drawermulticate" append-to-body width="300px">
+                <div class="wxsettip_small">{yun:}t key='member_com_00091'{/yun}</div>
                 <div class="TableSelect">
-                    <el-select v-model="multihy" placeholder="请选择">
+                    <el-select v-model="multihy" placeholder="{yun:}t key='wap_user_00100'{/yun}">
                         <el-option v-for="(item, index) in cacheData.industry_index" :key="index" :label="cacheData.industry_name[item]" :value="item"></el-option>
                     </el-select>
                 </div>
-                <div class="wxsettip_small">职位类别</div>
+                <div class="wxsettip_small">{yun:}t key='wap_user_00018'{/yun}</div>
                 <div class="TableInpt">
                     <el-cascader style="width:260px;" v-model="multijobtype" :options="job_types" filterable clearable></el-cascader>
                 </div>
                 <span slot="footer" class="dialog-footer">
-                    <el-button @click="drawermulticate = false">取 消</el-button>
-                    <el-button type="primary" :loading="multicate_load" @click="submitMulticate">确 定</el-button>
+                    <el-button @click="drawermulticate = false">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
+                    <el-button type="primary" :loading="multicate_load" @click="submitMulticate">{yun:}t key='wap_com_00019'{/yun}</el-button>
                 </span>
             </el-dialog>
         </div>
         <!--修改职位提示-->
-        <el-drawer title="修改职位" :visible.sync="drawerEditJob" append-to-body :wrapper-closable="false" size="880px">
+        <el-drawer title="{yun:}t key='admin_00754'{/yun}" :visible.sync="drawerEditJob" append-to-body :wrapper-closable="false" size="880px">
             <addjob ref="jobedit" :jid="jobid" :jtypes="job_types" :ctypes="city_types" v-if="drawerEditJob"></addjob>
         </el-drawer>
     </div>
     <!--        预约刷新职位-->
     <div class="modluDrawer">
-        <el-dialog title="预约刷新调整" :visible.sync="drawertz" :with-header="true" append-to-body :show-close="true"
+        <el-dialog title="{yun:}t key='admin_00755'{/yun}" :visible.sync="drawertz" :with-header="true" append-to-body :show-close="true"
                    width="400px">
             <div>
-                <div class="wxsettip_small">刷新状态</div>
+                <div class="wxsettip_small">{yun:}t key='wap_00850'{/yun}</div>
                 <div class="TableInpt">
-                    <el-radio v-model="curr_data.reserve_status" label="1">开启</el-radio>
-                    <el-radio v-model="curr_data.reserve_status" label="2">关闭</el-radio>
+                    <el-radio v-model="curr_data.reserve_status" label="1">{yun:}t key='member_com_00287'{/yun}</el-radio>
+                    <el-radio v-model="curr_data.reserve_status" label="2">{yun:}t key='common.close'{/yun}</el-radio>
                 </div>
-                <div class="wxsettip_small">刷新间隔</div>
+                <div class="wxsettip_small">{yun:}t key='wap_com_00227'{/yun}</div>
                 <div class="TableSelect">
-                    <el-select v-model="curr_data.reserve_interval" placeholder="请选择">
+                    <el-select v-model="curr_data.reserve_interval" placeholder="{yun:}t key='wap_user_00100'{/yun}">
                         <el-option v-for="(item, index) in jg_data" :key="index" :label="item.label" :value="item.value">
                         </el-option>
                     </el-select>
                 </div>
-                <div v-if="curr_data.reserve_interval == 1" class="wxsettip_small">自定义间隔</div>
+                <div v-if="curr_data.reserve_interval == 1" class="wxsettip_small">{yun:}t key='admin_user_company_00361'{/yun}</div>
                 <div class="TableInpt" v-if="curr_data.reserve_interval == 1">
-                    <el-input v-model="userinterval" placeholder="请输入自定义间隔" size="small" onkeyup="this.value=this.value.replace(/[^0-9]/g,'')">
-                        <template slot="append">分钟</template>
+                    <el-input v-model="userinterval" placeholder="{yun:}t key='admin_00756'{/yun}" size="small" onkeyup="this.value=this.value.replace(/[^0-9]/g,'')">
+                        <template slot="append">{yun:}t key='wap_com_00247'{/yun}</template>
                     </el-input>
                 </div>
-                <div class="wxsettip_small">截止日期</div>
+                <div class="wxsettip_small">{yun:}t key='wap_com_00234'{/yun}</div>
                 <div class="TableInpt">
-                    <el-date-picker v-model="curr_data.reserve_end" value-format="yyyy-MM-dd" type="date" placeholder="选择日期" :picker-options="pickerOptions">
+                    <el-date-picker v-model="curr_data.reserve_end" value-format="yyyy-MM-dd" type="date" placeholder="{yun:}t key='admin_00346'{/yun}" :picker-options="pickerOptions">
                     </el-date-picker>
                 </div>
-                <div class="wxsettip_small">刷新时间段</div>
+                <div class="wxsettip_small">{yun:}t key='wap_com_00220'{/yun}</div>
                 <div class="TableInpt">
                     <el-time-picker v-model="curr_data.s_time" value-format="HH:mm">
                     </el-time-picker>
@@ -511,8 +511,8 @@
                 </div>
             </div>
             <span slot="footer" class="dialog-footer">
-					<el-button @click="drawertz = false">取 消</el-button>
-					<el-button type="primary" @click="submitTz" :loading="saveLoading">确 定</el-button>
+					<el-button @click="drawertz = false">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
+					<el-button type="primary" @click="submitTz" :loading="saveLoading">{yun:}t key='wap_com_00019'{/yun}</el-button>
 				</span>
         </el-dialog>
     </div>
@@ -545,14 +545,14 @@ module.exports = {
             mouseFlag: false,
             mouseOffset: 0,
             loading: false,
-            emptytext: '暂无数据',
+            emptytext: '暂无数据",
             allNum: 0,
             status1Num: 0,
             status2Num: 0,
             status3Num: 0,
-            // 批量转移类别
+            // {yun:}t key='admin_user_company_00348'{/yun}
             drawermulticate: false,
-            multihy: '',
+            multihy: "',
             multijobtype: [],
             multitw: false, // 是否是批量推文任务
             drawermatchresume: false,
@@ -613,31 +613,31 @@ module.exports = {
             multiStatus: '',
             multiStatusBody: '',
             cols: [
-                { label: '职位ID', value: 'id' },
-                { label: '企业UID', value: 'uid' },
-                { label: '职位名称', value: 'name' },
-                { label: '行业', value: 'hy' },
-                { label: '一级类别', value: 'job1' },
-                { label: '二级类别', value: 'job1_son' },
-                { label: '三级类别', value: 'job_post' },
-                { label: '省', value: 'provinceid' },
-                { label: '市', value: 'cityid' },
-                { label: '县', value: 'three_cityid' },
-                { label: '薪水', value: 'minsalary,maxsalary' },
-                { label: '招聘人数', value: 'zp_num' },
-                { label: '工作经验', value: 'exp' },
-                { label: '到岗时间', value: 'report' },
-                { label: '性别要求', value: 'sex' },
-                { label: '教育程度', value: 'edu' },
-                { label: '婚姻状况', value: 'marriage' },
-                { label: '开始日期', value: 'sdate' },
-                { label: '更新时间', value: 'lastdate' },
-                { label: '年龄要求', value: 'zp_minage,zp_maxage' },
-                { label: '语言要求', value: 'lang' },
-                { label: '福利待遇', value: 'welfare' },
-                { label: '公司名称', value: 'com_name' },
-                { label: '公司性质', value: 'pr' },
-                { label: '企业规模', value: 'mun' }
+                { label: "{yun:}t key='admin_user_company_00370'{/yun}", value: 'id' },
+                { label: "{yun:}t key='admin_user_company_00120'{/yun}", value: 'uid' },
+                { label: "{yun:}t key='wap_com_00288'{/yun}", value: 'name' },
+                { label: "{yun:}t key='admin_user_company_00373'{/yun}", value: 'hy' },
+                { label: "{yun:}t key='admin_user_company_00362'{/yun}", value: 'job1' },
+                { label: "{yun:}t key='admin_user_company_00364'{/yun}", value: 'job1_son' },
+                { label: "{yun:}t key='admin_user_company_00363'{/yun}", value: 'job_post' },
+                { label: "{yun:}t key='wap_user_00250'{/yun}", value: 'provinceid' },
+                { label: "{yun:}t key='common_02076'{/yun}", value: 'cityid' },
+                { label: "{yun:}t key='wap_com_00179'{/yun}", value: 'three_cityid' },
+                { label: "{yun:}t key='member_com_00017'{/yun}", value: 'minsalary,maxsalary' },
+                { label: "{yun:}t key='wap_com_00333'{/yun}", value: 'zp_num' },
+                { label: "{yun:}t key='wap_user_00240'{/yun}", value: 'exp' },
+                { label: "{yun:}t key='wap_com_00279'{/yun}", value: 'report' },
+                { label: "{yun:}t key='wap_com_00332'{/yun}", value: 'sex' },
+                { label: "{yun:}t key='member_com_00011'{/yun}", value: 'edu' },
+                { label: "{yun:}t key='wap_com_00282'{/yun}", value: 'marriage' },
+                { label: "{yun:}t key='admin_00343'{/yun}", value: 'sdate' },
+                { label: "{yun:}t key='wap_00326'{/yun}", value: 'lastdate' },
+                { label: "{yun:}t key='wap_com_00284'{/yun}", value: 'zp_minage,zp_maxage' },
+                { label: "{yun:}t key='wap_com_00292'{/yun}", value: 'lang' },
+                { label: "{yun:}t key='wap_com_00173'{/yun}", value: 'welfare' },
+                { label: "{yun:}t key='wap_01403'{/yun}", value: 'com_name' },
+                { label: "{yun:}t key='wap_00324'{/yun}", value: 'pr' },
+                { label: "{yun:}t key='wap_com_00163'{/yun}", value: 'mun' }
             ],
             sort_type: '',
             sort_col: '',
@@ -646,7 +646,7 @@ module.exports = {
             r_status:'',
             job_audit:{},
             drawerCompanyJobLog: false,
-            applyJobBoxTitle: '职位申请记录',
+            applyJobBoxTitle: "{yun:}t key='admin_user_company_00352'{/yun}",
             sqJobBrowse: '',
             drawerCompanyUserIdMsg: false,
             interviewBoxTitle: '职位面试记录',
@@ -686,7 +686,7 @@ module.exports = {
             audit_load: false,
             prevPage: 0,
 
-            //  预约刷新
+            // Appointment refresh
             curr_data: {
                 reserve_end:'',
                 reserve_interval:'60',
@@ -698,15 +698,15 @@ module.exports = {
             userinterval:'',
             saveLoading:false,
             jg_data: [
-                {label: '每隔1小时', value: '60'},
-                {label: '每隔2小时', value: '120'},
-                {label: '每隔3小时', value: '180'},
-                {label: '每隔4小时', value: '240'},
-                {label: '每隔5小时', value: '300'},
-                {label: '每隔6小时', value: '360'},
-                {label: '每隔7小时', value: '420'},
-                {label: '每隔8小时', value: '480'},
-                {label: '自定义刷新间隔', value: '1'},
+                {label: "{yun:}t key='admin_00757'{/yun}", value: '60'},
+                {label: "{yun:}t key='admin_00758'{/yun}", value: '120'},
+                {label: "{yun:}t key='admin_00759'{/yun}", value: '180'},
+                {label: "{yun:}t key='admin_00760'{/yun}", value: '240'},
+                {label: "{yun:}t key='admin_00761'{/yun}", value: '300'},
+                {label: "{yun:}t key='admin_00762'{/yun}", value: '360'},
+                {label: "{yun:}t key='admin_00763'{/yun}", value: '420'},
+                {label: "{yun:}t key='admin_00764'{/yun}", value: '480'},
+                {label: "{yun:}t key='wap_00852'{/yun}", value: '1'},
             ],
             pickerOptions: {//el-date-picker 时间限定
                 disabledDate(time) {
@@ -729,35 +729,35 @@ module.exports = {
                         picker.$emit('pick', [start, end]);
                     }
                 }, {
-                    text: '今天',
+                    text: "{yun:}t key='common_01940'{/yun}",
                     onClick(picker) {
                         const end = new Date();
                         const start = new Date();
                         picker.$emit('pick', [start, end]);
                     }
                 }, {
-                    text: '本周',
+                    text: "{yun:}t key='admin_user_00146'{/yun}",
                     onClick(picker) {
                         const start = new Date(new Date().setHours(0, 0, 0) - (new Date().getDay() - 1) * 24 * 60 * 60 * 1000);
                         const end = new Date();
                         picker.$emit('pick', [start, end]);
                     }
                 }, {
-                    text: '上周',
+                    text: "{yun:}t key='admin_user_00142'{/yun}",
                     onClick(picker) {
                         const start = new Date(new Date().setHours(0, 0, 0) - (new Date().getDay() + 6) * 24 * 60 * 60 * 1000);
                         const end = new Date(new Date().setHours(0, 0, 0) + (0 - new Date().getDay()) *24 * 60 * 60 *1000);
                         picker.$emit('pick', [start, end]);
                     }
                 }, {
-                    text: '本月',
+                    text: "{yun:}t key='admin_user_00147'{/yun}",
                     onClick(picker) {
                         const end = new Date();
                         const start = new Date(new Date(new Date().getFullYear(), new Date().getMonth(), 1).setHours(0, 0, 0));
                         picker.$emit('pick', [start, end]);
                     }
                 }, {
-                    text: '上月',
+                    text: "{yun:}t key='admin_user_00143'{/yun}",
                     onClick(picker) {
                         const end = new Date(new Date(new Date().getFullYear(), new Date().getMonth(), 0).setHours(23, 59, 59, 59));
                         const start = new Date(new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1).setHours(0, 0, 0));
@@ -775,7 +775,7 @@ module.exports = {
         'matchresume': httpVueLoader('./match_resume.vue'),
         'addjob': httpVueLoader('./addjob.vue'),
         'job_class': httpVueLoader('../../../component/job_class.vue'),
-        'city_class': httpVueLoader('../../../component/city_class.vue'),
+        'city_class': httpVueLoader('../../../component/city_class.vue"),
     },
     mounted() {
         var that = this
@@ -807,7 +807,7 @@ module.exports = {
             this.mouseFlag = false;
         },
         mouseMoveHandler(e) {
-            // 这里面需要注意，通过ref需要那个那个包含table元素的父元素
+            // 这里面需要注意，{yun:}t key='admin_user_company_00161'{/yun}ref需要那个那个包含table元素的父元素
             let divData = this.$refs.multipleTable.bodyWrapper;
             if (this.mouseFlag) {
                 // 设置水平方向的元素的位置
@@ -829,7 +829,7 @@ module.exports = {
         // 获取职位数量统计
         getTjNum: function () {
             var that = this;
-            httpPost('m=user&c=company_job&a=jobNum', {}, { hideloading: true }).then(function (result) {
+            httpPost("m=user&c=company_job&a=jobNum', {}, { hideloading: true }).then(function (result) {
                 var res = result.data;
                 if (res.error == 0) {
                     that.allNum = res.data.jobAllNum ? res.data.jobAllNum : 0
@@ -859,16 +859,16 @@ module.exports = {
                 return false
             }
             if (that.multihy == "") {
-                message.error("请选择行业类别")
+                message.error("{yun:}t key='admin_user_company_00346'{/yun}")
                 return false
             }
             if (that.multijobtype[0] == '' || that.multijobtype[1] == '') {
-                message.error("请选择职位类别")
+                message.error("{yun:}t key='wap_com_00272'{/yun}")
                 return false
             }
             that.multicate_load = true;
             httpPost('m=user&c=company_job&a=saveclass', {
-                jobid: that.selectedItem.join(','),
+                jobid: that.selectedItem.join(',"),
                 hy: that.multihy,
                 job1: that.multijobtype[0],
                 job1_son: that.multijobtype[1],
@@ -902,11 +902,11 @@ module.exports = {
             this.colCheckAll = checkedCount === this.cols.length;
             this.isIndeterminate = checkedCount > 0 && checkedCount < this.cols.length;
         },
-        // 导出exp_num
+        // {yun:}t key='admin_user_00257'{/yun}exp_num
         submitExport() {
             let that = this
             if (that.checkedCols.length == 0) {
-                message.error('请选择要操作的数据项');
+                message.error("请选择要操作的数据项');
                 return;
             }
             params = {
@@ -926,11 +926,11 @@ module.exports = {
                 }
             })
         },
-        // 批量审核
+        // BatchAudit
         multipleStatus() {
             var that = this
             if (!that.selectedItem.length) {
-                message.error('请选择要操作的数据项');
+                message.error("{yun:}t key='admin_user_weipin_00001'{/yun}");
                 return false;
             }
             that.drawerauditmultiple = true
@@ -939,7 +939,7 @@ module.exports = {
         multipleStatusSave() {
             var that = this
             if (!that.selectedItem.length) {
-                message.error('请选择要操作的数据项');
+                message.error("{yun:}t key='admin_user_weipin_00001'{/yun}");
                 return false;
             }
             that.multipleStatus_load = true;
@@ -968,7 +968,7 @@ module.exports = {
         refresh: function () {
             var that = this
             if (this.selectedItem.length == 0) {
-                message.error("请选择要操作的数据项")
+                message.error("{yun:}t key='admin_user_weipin_00001'{/yun}")
                 return false
             }
             httpPost('m=user&c=company_job&a=refresh', {
@@ -976,11 +976,11 @@ module.exports = {
             }).then(function (result) {
                 var res = result.data
                 if (res.error == 0) {
-                    message.success('刷新成功！', function () {
+                    message.success("{yun:}t key='wap_01714'{/yun}", function () {
                         that.getList()
                     })
                 } else {
-                    message.error('刷新失败！')
+                    message.error("{yun:}t key='wap_01713'{/yun}")
                 }
             }).catch(function (e) {
                 console.log(e)
@@ -991,9 +991,9 @@ module.exports = {
             var msg = '',
                 that = this;
             if (type == 1) {
-                msg = '确定降权？降权后职位仅在企业详情显示';
+                msg = "{yun:}t key='admin_user_company_00334'{/yun}";
             } else {
-                msg = '确定取消降权？取消后职位将正常显示在职位列表';
+                msg = "{yun:}t key='admin_user_company_00330'{/yun}";
             }
 
             var params = {
@@ -1007,7 +1007,7 @@ module.exports = {
 
             let that = this;
 
-            httpPost('m=user&c=company_job&a=depower', params).then(function (result) {
+            httpPost('m=user&c=company_job&a=depower", params).then(function (result) {
 
                 var res = result.data
                 if (res.error == 0) {
@@ -1021,7 +1021,7 @@ module.exports = {
                 console.log(e)
             })
         },
-        // 匹配简历
+        // {yun:}t key='member_com_00296'{/yun}
         resumematch: function (row) {
             var that = this
             that.curr_job = row
@@ -1034,14 +1034,14 @@ module.exports = {
         createhb: function (row) {
             var that = this
             that.curr_job = row
-            httpPost('m=user&c=company_job&a=whb', {}).then(function (result) {
+            httpPost("m=user&c=company_job&a=whb', {}).then(function (result) {
                 var res = result.data;
                 if (res.error == 0) {
                     that.hbarr = res.data.comHb
                     that.basehburl = res.data.hburl
                     that.drawerhb = true
                 } else {
-                    message.error('获取企业海报模板失败')
+                    message.error("{yun:}t key='admin_user_company_00096'{/yun}")
                     return false
                 }
             }).catch(function (e) {
@@ -1086,7 +1086,7 @@ module.exports = {
         // 复制文本弹窗
         getJobHtml: function (id) {
             var that = this
-            httpPost('m=user&c=company_job&a=getJobHtml', { id: id }).then(function (result) {
+            httpPost('m=user&c=company_job&a=getJobHtml", { id: id }).then(function (result) {
                 var res = result.data
                 if (res.error == 0) {
                     that.htmlcont = res.data
@@ -1097,18 +1097,18 @@ module.exports = {
             })
         },
 
-        // 复制文本
+        // {yun:}t key='wap_com_00232'{/yun}
         handleCopyText: function (id) {
-            let clipboard = new ClipboardJS('#' + id); // 获取点击按钮的元素
+            let clipboard = new ClipboardJS("#' + id); // 获取点击按钮的元素
             clipboard.on('success', (e) => {
                 e.clearSelection();
                 clipboard.destroy();
-                message.success('复制成功');
+                message.success("{yun:}t key='admin_user_company_00368'{/yun}");
             });
             // 复制失败
             clipboard.on('error', (e) => {
                 clipboard.destroy();
-                message.error('该浏览器不支持自动复制');
+                message.error("{yun:}t key='admin_user_company_00339'{/yun}");
             });
         },
         
@@ -1153,21 +1153,21 @@ module.exports = {
                     }
                     lastupdate = parseInt(item.lastupdate);
                     if (that.twTip == '' && nowTime - lastupdate > 60 * 60 * 24 * 3) {
-                        that.twTip = '有部分职位已超过3天没有更新，请确认无误后添加';
+                        that.twTip = "{yun:}t key='admin_user_company_00329'{/yun}";
                     }
                     if (item.status != '0') {
-                        statusMsg = '已下架';
+                        statusMsg = "{yun:}t key='wap_com_00242'{/yun}";
                     }
                     if (item.state != '1') {
-                        stateMsg = '未审核';
+                        stateMsg = "{yun:}t key='wap_user_00166'{/yun}";
                     }
                     if (item.r_status != '1') {
-                        rstatusMsg = '对应企业未审核';
+                        rstatusMsg = "{yun:}t key='admin_user_company_00343'{/yun}";
                     }
                 }
             })
             if (statusMsg != '' || stateMsg != '' || rstatusMsg != '') {
-                var msg = '部分所选职位';
+                var msg = "{yun:}t key='admin_user_company_00353'{/yun}";
                 var douhao = '';
                 if (statusMsg != '') {
                     msg += douhao + statusMsg;
@@ -1181,18 +1181,18 @@ module.exports = {
                     msg += douhao + rstatusMsg;
                     douhao = '、';
                 }
-                msg += '，请重新选择。';
+                msg += "{yun:}t key='admin_user_company_00347'{/yun}";
                 message.error(msg)
                 return false
             }
             if (that.selectedItem.length == 0) {
-                message.error("请选择要操作的数据项")
+                message.error("{yun:}t key='admin_user_weipin_00001'{/yun}")
                 return false
             } else if (twnum > 0) {
                 delConfirm(this, {}, function (params) {
                     that.multitw = true
                     that.twdrawer = true
-                }, '有部分职位已添加推文未发送，是否继续添加？')
+                }, "{yun:}t key='admin_user_company_00331'{/yun}")
             } else {
                 that.multitw = true
                 that.twdrawer = true
@@ -1205,7 +1205,7 @@ module.exports = {
             if (this.curr_job.tw_num > 0) {
                 delConfirm(this, {}, function (params) {
                     that.addTw()
-                }, '该职位上有推文未发送，是否继续添加？')
+                }, "{yun:}t key='admin_user_company_00335'{/yun}")
             } else {
                 that.addTw()
             }
@@ -1215,7 +1215,7 @@ module.exports = {
             lastupdate = Number(this.curr_job.lastupdate);
             this.twTip = '';
             if (nowTime - lastupdate > 60 * 60 * 24 * 3) {
-                this.twTip = '职位已超过3天没有更新，请确认无误后添加';
+                this.twTip = "{yun:}t key='admin_user_company_00332'{/yun}";
             }
             this.twdrawer = true
         },
@@ -1270,17 +1270,17 @@ module.exports = {
             this.jobtgtype = type
             this.jobtgetime = ''
             if (this.selectedItem.length == 0) {
-                message.error('请选择要操作的数据项')
+                message.error("{yun:}t key='admin_user_weipin_00001'{/yun}")
                 return false
             }
             if (type == 1) { // 置顶
-                this.jobtgtit = '职位批量置顶'
+                this.jobtgtit = "{yun:}t key='admin_user_company_00351'{/yun}"
             } else if (type == 2) { // 推荐
                 this.jobtgtit = '职位批量推荐'
             } else if (type == 3) { // 紧急
-                this.jobtgtit = '紧急批量招聘'
+                this.jobtgtit = "{yun:}t key='admin_user_company_00349'{/yun}"
             }
-            this.tgjid = this.selectedItem.join(',')
+            this.tgjid = this.selectedItem.join(',")
             this.jobtgdrawer = true
         },
         // 职位推广设置
@@ -1288,18 +1288,18 @@ module.exports = {
             this.jobtgtype = type
             this.curr_job = data
             this.tgjid = data.id
-            if (type == 1) { // 置顶
+            if (type == 1) { // {yun:}t key='wap_user_00335'{/yun}
                 this.curr_job.istop = !this.curr_job.istop // 防止switch状态直接改变
-                this.jobtgetime = data.top_time_n ? data.top_time_n : ''
-                this.jobtgtit = '职位置顶'
+                this.jobtgetime = data.top_time_n ? data.top_time_n : "'
+                this.jobtgtit = "{yun:}t key='wap_com_00238'{/yun}"
             } else if (type == 2) { // 推荐
                 this.curr_job.isrec = !this.curr_job.isrec // 防止switch状态直接改变
                 this.jobtgetime = data.rec_time_n != undefined ? data.rec_time_n : ''
-                this.jobtgtit = '职位推荐'
+                this.jobtgtit = "{yun:}t key='wap_com_00237'{/yun}"
             } else if (type == 3) { // 紧急
                 this.curr_job.isurgent = !this.curr_job.isurgent // 防止switch状态直接改变
                 this.jobtgetime = data.urgent_time_n ? data.urgent_time_n : ''
-                this.jobtgtit = '紧急招聘'
+                this.jobtgtit = "{yun:}t key='member_com_00613'{/yun}"
             }
             this.jobtgdrawer = true
         },
@@ -1371,7 +1371,7 @@ module.exports = {
             that.curr_job.jobhits = that.curr_job.job_hits;
             that.curr_job.jobexpoure = that.curr_job.job_expoure;
             if (that.curr_job.r_status == 2) {
-                message.error("用户已锁定,无法修改相关信息")
+                message.error("{yun:}t key='admin_user_company_00337'{/yun}")
                 return false
             } else {
                 that.bgdrawer = true
@@ -1380,7 +1380,7 @@ module.exports = {
         jobhiteditsave: function () {
             var that = this
             if (parseInt(that.curr_job.jobexpoure) < parseInt(that.curr_job.jobhits)) {
-                message.error("曝光量不能低于浏览量");
+                message.error("{yun:}t key='admin_user_company_00340'{/yun}");
                 return false;
             }
             var params = {
@@ -1562,7 +1562,7 @@ module.exports = {
                 params.t = that.sort_col
             }
             that.loading = true;
-            that.emptytext = "数据加载中";
+            that.emptytext = "{yun:}t key='admin_user_weipin_00026'{/yun}";
 
             if (this.simple){
                 params.simple = 1;
@@ -1583,7 +1583,7 @@ module.exports = {
                         }
                     }
                     if (that.tableData.length === 0) {
-                        that.emptytext = "暂无数据";
+                        that.emptytext = "{yun:}t key='wap_js_00113'{/yun}";
                     }
                 }
 
@@ -1597,7 +1597,7 @@ module.exports = {
         },
         delAllBottom() {
             if (!this.selectedItem.length) {
-                message.error('请选择要删除的数据');
+                message.error("{yun:}t key='admin_user_weipin_00005'{/yun}");
                 return false;
             }
             delConfirm(this, this.selectedItem, this.delete);
@@ -1609,7 +1609,7 @@ module.exports = {
             };
             httpPost('m=user&c=company_job&a=del', params).then(function (response) {
                 if (response.data.error == 0) {
-                    message.success('操作成功', function () {
+                    message.success("{yun:}t key='wap_user_00264'{/yun}", function () {
                         that.$refs.multipleTable.clearSelection();
                         that.getList();
                     });
@@ -1643,11 +1643,11 @@ module.exports = {
             _this.interviewBoxTitle = e.name + ' 面试记录';
             _this.drawerCompanyUserIdMsg = true;
         },
-        // 预约刷新
+        // Appointment refresh
         yyrefresh(detail) {
             let date = new Date();
             // this.curr_data = detail;
-            this.curr_data.reserve_end = (detail.reserve_end == '不限' ||detail.reserve_end == ''|| detail.reserve_end == undefined)  ? '' : detail.reserve_end;
+            this.curr_data.reserve_end = (detail.reserve_end == "{yun:}t key='common_01936'{/yun}" ||detail.reserve_end == ''|| detail.reserve_end == undefined)  ? '' : detail.reserve_end;
             this.userinterval = 0;
             var intervalArr = ['60', '120', '180', '240', '300', '360', '420', '480'];
             if (intervalArr.indexOf(detail.reserve_interval) < 0) {
@@ -1689,11 +1689,11 @@ module.exports = {
         submitTz: function(){
             var that = this
             if (that.curr_data.reserve_status == '' || that.curr_data.reserve_status == 0 || that.curr_data.reserve_status == undefined) {
-                message.error('请选择预约状态');
+                message.error("{yun:}t key='member_com_00279'{/yun}");
                 return false;
             } else if (that.curr_data.reserve_status == 1) {
                 if (that.curr_data.reserve_interval <= 0) {
-                    message.error('请选择刷新间隔');
+                    message.error("{yun:}t key='wap_00851'{/yun}");
                     return false;
                 }
                 if (that.curr_data.reserve_interval == 1 && that.userinterval == '') {
@@ -1704,7 +1704,7 @@ module.exports = {
                     var stime = that.curr_data.s_time.split(':');
                     var etime = that.curr_data.e_time.split(':');
                     if (parseInt(stime[0]) > parseInt(etime[0]) || (parseInt(stime[0]) == parseInt(etime[0]) && parseInt(stime[1]) >= parseInt(etime[1]))) {
-                        message.error('请合理设置刷新时间段');
+                        message.error("{yun:}t key='wap_com_00213'{/yun}");
                         return false;
                     }
                 }

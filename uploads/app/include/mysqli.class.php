@@ -146,7 +146,7 @@ class mysql {
 		$name=str_replace(array(" ","`","'",".","="),"",$name);
 
 		$memcache = new memcache;
-		$memcache->connect($memcachehost,$memcacheport) or die ("Memcache连接失败或您的服务器不支持Memcache,请在后台关闭！");
+		$memcache->connect($memcachehost,$memcacheport) or die (yun_auto_t('Memcache连接失败或您的服务器不支持Memcache,请在后台关闭！'));
 		$val=$memcache->get($name);
 		if(!is_array($val) && !$val){
         $memcache->set($name,$value,$memcachezip,$memcachetime);
@@ -315,7 +315,7 @@ class mysql {
 	//将系统数据库与用户数据库分开，更直观的显示？
 	public function show_databases() {
 		$this->query("show databases");
-		echo "现有数据库：" . $amount = $this->db_num_rows($rs);
+		echo yun_auto_t('现有数据库：') . $amount = $this->db_num_rows($rs);
 		echo "<br />";
 		$i = 1;
 		while ($row = $this->fetch_array($rs)) {
@@ -340,7 +340,7 @@ class mysql {
 	public function show_tables($database_name) {
 		$this->connect();
 		$this->query("show tables");
-		echo "现有数据库：" . $amount = $this->db_num_rows($rs);
+		echo yun_auto_t('现有数据库：') . $amount = $this->db_num_rows($rs);
 		echo "<br />";
 		$i = 1;
 		while ($row = $this->fetch_array($rs)) {

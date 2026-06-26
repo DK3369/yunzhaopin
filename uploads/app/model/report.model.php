@@ -141,7 +141,7 @@ class report_model extends model
                     if ($data['type'] == '1') {
 
                         $List[$key]['c']        =   "add";
-                        $List[$key]['is_del']   =   '问题已被删除';
+                        $List[$key]['is_del']   =   yun_at('common_01552');
 
                         if (!empty($question)) {
                             foreach ($question as $qv) {
@@ -162,7 +162,7 @@ class report_model extends model
                                     $List[$key]['reason']       =   $v['name'];
                                 } elseif ($val['r_reason'] == '0') {
 
-                                    $List[$key]['reason']       =   '原因已被删除';
+                                    $List[$key]['reason']       =   yun_at('common_01477');
                                 }
                             }
                         }
@@ -210,9 +210,9 @@ class report_model extends model
             $adminM     =   new admin_model($this->db, $this->def);
 
             $thingtitle = strlen($data['r_name'])>8?mb_substr($data['r_name'],0,5,'utf-8').'...':$data['r_name'];
-            $thing = '举报了《'.$thingtitle.'》的校招宣讲会';
+            $thing = '举报了《'.$thingtitle.'common_01328';
 
-            $adminM->sendAdminMsg(array('first' => '用户《'.$data['username'].'》举报了《'.$data['r_name'].'》的校招宣讲会。', 'type' => 27,'customer'=>$data['username'],'thing'=>$thing));
+            $adminM->sendAdminMsg(array('first' => '用户《'.$data['username'].'》举报了《'.$data['r_name'].'common_01208', 'type' => 27,'customer'=>$data['username'],'thing'=>$thing));
         }
         return $nid;
     }
@@ -220,14 +220,14 @@ class report_model extends model
         $nid    =   $this->addReport($data);
         if ($nid) {
 
-            $wxtempMsg = '用户《'.$data['username'].'》举报了聊天对象《'.$data['r_name'].'》';
+            $wxtempMsg = '用户《'.$data['username'].'common_01102'.$data['r_name'].'》';
             if($data['r_reason']){
-                $wxtempMsg .= '，理由：'.$data['r_reason'];
+                $wxtempMsg .= 'common_01871'.$data['r_reason'];
             }
             require_once('admin.model.php');
             $adminM =   new admin_model($this->db, $this->def);
             $thingtitle = strlen($data['r_name'])>10?mb_substr($data['r_name'],0,7,'utf-8').'...':$data['r_name'];
-            $thing = '举报了聊天对象《'.$thingtitle.'》';
+            $thing = 'common_01214'.$thingtitle.'》';
 
             $adminM->sendAdminMsg(array('first' =>$wxtempMsg, 'type' => 32,'customer'=>$data['username'],'thing'=>$thing));
         }
@@ -245,7 +245,7 @@ class report_model extends model
         if ($nid) {
             $wxtempMsg = '用户《'.$data['username'].'》举报了顾问《'.$data['r_name'].'》';
             if($data['r_reason']){
-                $wxtempMsg .= '，理由：'.$data['r_reason'];
+                $wxtempMsg .= 'common_01871'.$data['r_reason'];
             }
             require_once('admin.model.php');
             $adminM =   new admin_model($this->db, $this->def);
@@ -272,10 +272,10 @@ class report_model extends model
             $adminM =   new admin_model($this->db, $this->def);
             $ask    =   $this->select_once('question', array('id' => $data['eid']), '`title`');
 
-            $wxtempMsg = '《'.$data['username'].'》举报了《'.$data['r_name'].'》的问答《'.$ask['title'].'》';
+            $wxtempMsg = '《'.$data['username'].'》举报了《'.$data['r_name'].'common_01572'.$ask['title'].'》';
 
             if($data['r_reason']){
-                $wxtempMsg .= '，理由：'.$data['r_reason'];
+                $wxtempMsg .= 'common_01871'.$data['r_reason'];
             }
 
             $thingtitle = strlen($ask['title'])>12?mb_substr($ask['title'],0,9,'utf-8').'...':$ask['title'];
@@ -301,10 +301,10 @@ class report_model extends model
 
             $job    =   $this->select_once('company_job', array('id' => $data['eid']), '`name`,`com_name`');
 
-            $wxtempMsg = '《'.$data['username'].'》举报了《'.$data['r_name'].'》的职位《'.$job['name'].'》';
+            $wxtempMsg = '《'.$data['username'].'》举报了《'.$data['r_name'].'common_01571'.$job['name'].'》';
             
             if($data['r_reason']){
-                $wxtempMsg .= '，理由：'.$data['r_reason'];
+                $wxtempMsg .= 'common_01871'.$data['r_reason'];
             }
 
             $thingtitle = strlen($job['name'])>12?mb_substr($job['name'],0,9,'utf-8').'...':$job['name'];
@@ -328,7 +328,7 @@ class report_model extends model
         if (is_array($haves)) {
 
             $return =   array(
-                'msg'       =>  '您已经举报过该用户！',
+                'msg'       =>  yun_at('job_00004'),
                 'errcode'   =>  8
             );
         } else {
@@ -356,25 +356,25 @@ class report_model extends model
                 require_once('admin.model.php');
                 $adminM     =   new admin_model($this->db, $this->def);
 
-                $wxtempMsg = '《'.$datas['username'].'》举报了《'.$datas['r_name'].'》的简历《'.$R_expect['name'].'》';
+                $wxtempMsg = '《'.$datas['username'].'》举报了《'.$datas['r_name'].'common_01570'.$R_expect['name'].'》';
             
                 if($datas['r_reason']){
-                    $wxtempMsg .= '，理由：'.$datas['r_reason'];
+                    $wxtempMsg .= 'common_01871'.$datas['r_reason'];
                 }
 
                 $thingtitle = strlen($R_expect['name'])>12?mb_substr($R_expect['name'],0,9,'utf-8').'...':$R_expect['name'];
                 $thing = '举报了简历《'.$thingtitle.'》';
 
                 $adminM->sendAdminMsg(array('first' =>$wxtempMsg, 'type' => 3,'customer'=>$data['username'],'thing'=>$thing));
-                $this->addMemberLog($data['p_uid'], $data['usertype'], "举报：简历".$data['r_name'], 23, 1);
+                $this->addMemberLog($data['p_uid'], $data['usertype'], 'common_06580'.$data['r_name'], 23, 1);
                 $return = array(
-                    'msg'       =>  '举报成功！',
+                    'msg'       =>  yun_at('wap_01310'),
                     'errcode'   =>  9
                 );
             } else {
 
                 $return =   array(
-                    'msg'       =>  '举报失败！',
+                    'msg'       =>  yun_at('model_00052'),
                     'errcode'   =>  8
                 );
             }
@@ -439,11 +439,11 @@ class report_model extends model
 
             $return['msg']          =   $data['title'] . '(ID:' . $del . ')';
             $return['errcode']      =   $return['id'] ? '9' : '8';
-            $return['msg']          =   $return['id'] ? $return['msg'] . '删除成功！' : $return['msg'] . '删除失败！';
+            $return['msg']          =   $return['id'] ? $return['msg'] . 'admin_user_00187' : $return['msg'] . 'admin_user_00186';
 
         } else {
 
-            $return['msg']          =   '请选择您要删除的' . $data['title'] . '！';
+            $return['msg']          =   yun_at('common_01308') . $data['title'] . '！';
             $return['layertype']    =   0;
             $return['errcode']      =   8;
         }

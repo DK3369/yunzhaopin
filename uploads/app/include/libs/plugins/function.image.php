@@ -57,7 +57,7 @@ function smarty_function_image($paramer,&$smarty){
 				}
 
 				if($p==""){
-					return "用户未填写";
+					return 'common_06111';
 				}
 				if($action=="idcard"){
 					$p=substr($p,0,strlen($p)-8).'******';
@@ -78,7 +78,7 @@ function smarty_function_image($paramer,&$smarty){
 				@imagegif($im,$dir.$dir2.$name); //建立png图型
 				@imagedestroy($im); //结束图型
 			}else{
-				return "用户未填写";
+				return 'common_06111';
 			}
 		}
 		$strrand=mt_rand(00,99);

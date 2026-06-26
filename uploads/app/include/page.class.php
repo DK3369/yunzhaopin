@@ -54,7 +54,7 @@ class page{
 			$numTpl['curr']='<a href="#" class="selected">[num]</a>';
 			$numTpl['shenglue']='<em style="padding:0 10px;">...</em>';
 		}else{
-			$tpl['str']='[prestr][numselect][nextstr]<em>共[maxPage]页</em>[selectjs]';
+			$tpl['str']=yun_auto_t('[prestr][numselect][nextstr]<em>共[maxPage]页</em>[selectjs]');
 			$numTpl['curr']='<a href="#" class="selected">[num]</a>';
 		}
 		if(!$this->notpl){

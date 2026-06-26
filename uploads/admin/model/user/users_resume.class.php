@@ -34,29 +34,29 @@ class users_resume_controller extends adminCommon
         include(CONFIG_PATH.'db.data.php');
 
         $source		=    $arr_data['source'];
-        $status		=	array('1'=>'已审核','2'=>'已锁定','3'=>'未通过','4'=>'未审核');
-        $service	=	array('1'=>'置顶','2'=>'推荐');
+        $status		=	array('1'=>'wap_user_00165','2'=>'admin_user_00138','3'=>'wap_user_00167','4'=>'wap_user_00166');
+        $service	=	array('1'=>'wap_user_00335','2'=>'wap_01465');
         $integrity  =	$arr_data['integrity_name'];
-        $salary     =   array('2000_4000' => '2000-4000', '4000_6000' => '4000-6000', '6000_8000' => '6000-8000', '8000_10000' => '8000-10000', '10000' => '10000以上');
-        $age        =   array('16_20' => '16-20岁', '21_30' => '21-30岁', '31_40' => '31-40岁', '41_50' => '41-50岁', '50' => '50岁以上');
+        $salary     =   array('2000_4000' => '2000-4000', '4000_6000' => '4000-6000', '6000_8000' => '6000-8000', '8000_10000' => '8000-10000', '10000' => 'common_06590');
+        $age        =   array('16_20' => 'admin_user_00376', '21_30' => 'admin_user_00377', '31_40' => 'admin_user_00378', '41_50' => 'admin_user_00379', '50' => 'admin_01316');
         $sex        =   $arr_data['sex'];
         $isRemark	=	array('1'=>'是','2'=>'否');
 
-        $search_list[]	=	array('param'=>'status','name'=>'审核状态','value'=>$status);
-        $search_list[]	=	array('param'=>'source','name'=>'数据来源','value'=>$source);
-        $search_list[]	=	array('param'=>'service','name'=>'简历类型','value'=>$service);
-        $search_list[]	=	array('param'=>'type','name'=>'工作性质','value'=>$type);
-        $search_list[]	=	array('param'=>'salary','name'=>'薪资','value'=>$salary);
-        $search_list[]	=	array('param'=>'age','name'=>'年龄','value'=>$age);
-        $search_list[]	=	array('param'=>'sex','name'=>'性别','value'=>$sex);
-        $search_list[]	=	array('param'=>'marriage','name'=>'婚姻状况','value'=>$marriage);
-        $search_list[]	=	array('param'=>'remark','name'=>'是否备注','value'=>$isRemark);
+        $search_list[]	=	array('param'=>'status','name'=>'wap_com_00406','value'=>$status);
+        $search_list[]	=	array('param'=>'source','name'=>'admin_yunying_00139','value'=>$source);
+        $search_list[]	=	array('param'=>'service','name'=>'member_com_00107','value'=>$service);
+        $search_list[]	=	array('param'=>'type','name'=>'wap_user_00012','value'=>$type);
+        $search_list[]	=	array('param'=>'salary','name'=>'member_user_00106','value'=>$salary);
+        $search_list[]	=	array('param'=>'age','name'=>'wap_com_00302','value'=>$age);
+        $search_list[]	=	array('param'=>'sex','name'=>'wap_com_00303','value'=>$sex);
+        $search_list[]	=	array('param'=>'marriage','name'=>'wap_com_00282','value'=>$marriage);
+        $search_list[]	=	array('param'=>'remark','name'=>'admin_01317','value'=>$isRemark);
 
         // 其它条件
-        $search_list[]	=	array('param'=>'edu','name'=>'学历要求','value'=>$edu);
-        $search_list[]	=	array('param'=>'exp','name'=>'工作经验','value'=>$exp);
-        $search_list[]	=	array('param'=>'report','name'=>'到岗时间','value'=>$report);
-        $search_list[]	=	array('param'=>'integrity','name'=>'完整度','value'=>$integrity);
+        $search_list[]	=	array('param'=>'edu','name'=>'wap_com_00283','value'=>$edu);
+        $search_list[]	=	array('param'=>'exp','name'=>'wap_user_00240','value'=>$exp);
+        $search_list[]	=	array('param'=>'report','name'=>'wap_com_00279','value'=>$report);
+        $search_list[]	=	array('param'=>'integrity','name'=>'member_user_00151','value'=>$integrity);
 
         return compact('source', 'search_list');
     }
@@ -471,11 +471,11 @@ class users_resume_controller extends adminCommon
             $result  =  $resumeM -> upResumeInfo(array('uid'=>$uid),array('mData'=>$mData,'rData'=>$rData));
 
             if ($result['id']){
-                $this->admin_json(0, '下一步：填写求职意向', array('uid' => $uid));
+                $this->admin_json(0, 'admin_01318', array('uid' => $uid));
             }elseif ($result['msg']){
                 $this->render_json(1, $result['msg']);
             }else{
-                $this->render_json(1, '保存失败，请重试');
+                $this->render_json(1, yun_at('admin_user_00096'));
             }
         }else{
             if($this->config['sy_uc_type']=='uc_center'){
@@ -484,7 +484,7 @@ class users_resume_controller extends adminCommon
                 $user = uc_get_user($_POST['username']);
 
                 if ($user){
-                    $this->render_json(1, '该会员已经存在');
+                    $this->render_json(1, yun_at('common_01400'));
                 }
             }
             $userinfoM = $this->MODEL('userinfo');
@@ -511,17 +511,17 @@ class users_resume_controller extends adminCommon
                 if($uid < 0){
 
                     switch($uid){
-                        case "-1" : $data['msg']='用户名不合法!';
+                        case "-1" : $data['msg']=yun_at('common_01387');
                             break;
-                        case "-2" : $data['msg']='包含不允许注册的词语!';
+                        case "-2" : $data['msg']=yun_at('common_00858');
                             break;
-                        case "-3" : $data['msg']='用户名已经存在!';
+                        case "-3" : $data['msg']=yun_at('common_01288');
                             break;
-                        case "-4" : $data['msg']='Email 格式有误!';
+                        case "-4" : $data['msg']=yun_at('common_00834');
                             break;
-                        case "-5" : $data['msg']='Email 不允许注册!';
+                        case "-5" : $data['msg']=yun_at('common_00762');
                             break;
-                        case "-6" : $data['msg']='该 Email 已经被注册!';
+                        case "-6" : $data['msg']=yun_at('common_00673');
                             break;
                     }
                     $this->render_json(1, $data['msg']);
@@ -561,9 +561,9 @@ class users_resume_controller extends adminCommon
             $nid  =  $userinfoM -> addInfo(array('mdata'=>$mdata,'udata'=>$udata,'sdata'=>array('integral'=>0)));
 
             if($nid > 0){
-                $this->admin_json(0, '下一步：填写求职意向', array('uid' => $nid));
+                $this->admin_json(0, 'admin_01318', array('uid' => $nid));
             }else{
-                $this->render_json(1, '会员添加失败，请重试');
+                $this->render_json(1, yun_at('common_00978'));
             }
         }
     }
@@ -671,9 +671,9 @@ class users_resume_controller extends adminCommon
         }
 
         if ($return['id']) {
-            $this->admin_json(0, $msg . '成功', compact('eid'));
+            $this->admin_json(0, $msg . 'admin_tool_00502', compact('eid'));
         } else {
-            $this->render_json(1, $msg . '失败');
+            $this->render_json(1, $msg . 'admin_tool_00501');
         }
     }
     /**
@@ -682,13 +682,13 @@ class users_resume_controller extends adminCommon
     public function saveTag_action()
     {
         if (empty($_POST['uid'])) {
-            $this->render_json(1, '参数错误');
+            $this->render_json(1, yun_at('wap_com_00228'));
         }
         if (is_array($_POST['tag']) && count($_POST['tag']) > 5) {
-            $this->render_json(2, '标签最多选择5个');
+            $this->render_json(2, yun_at('admin_user_00206'));
         }
         if (strlen($_POST['description']) < 1) {
-            $this->render_json(3, '请输入自我评价');
+            $this->render_json(3, yun_at('admin_01319'));
         }
 
         $uid = (int)$_POST['uid'];
@@ -721,7 +721,7 @@ class users_resume_controller extends adminCommon
         if ($return['id']) {
             $this->admin_json(0, '简历(UID:' . $uid . ')个人优势保存成功');
         } else {
-            $this->render_json(1, '简历个人优势保存失败');
+            $this->render_json(1, yun_at('admin_01320'));
         }
     }
     /**
@@ -973,10 +973,10 @@ class users_resume_controller extends adminCommon
                     $this->render_json(1, $return['msg']);
                 }
             } else {
-                $this->render_json(0, '删除成功');
+                $this->render_json(0, yun_at('wap_user_00147'));
             }
         } else {
-            $this->render_json(1, '系统异常');
+            $this->render_json(1, yun_at('admin_01321'));
         }
     }
     /**
@@ -1034,7 +1034,7 @@ class users_resume_controller extends adminCommon
     function resumestatus_action()
     {
         if (empty($_POST['id']) || empty($_POST['uid']) || empty($_POST['status'])) {
-            $this->render_json(1, '参数错误');
+            $this->render_json(1, yun_at('wap_com_00228'));
         }
 
         $id = intval($_POST['id']);
@@ -1095,7 +1095,7 @@ class users_resume_controller extends adminCommon
     function refresh_action()
     {
         if (empty($_POST['id']) && empty($_POST['ids'])) {
-            $this->render_json(1, '参数错误');
+            $this->render_json(1, yun_at('wap_com_00228'));
         }
 
         if ($_POST['id']) {
@@ -1119,7 +1119,7 @@ class users_resume_controller extends adminCommon
     function rec_action()
     {
         if (empty($_POST['id'])) {
-            $this->render_json(1, '参数错误');
+            $this->render_json(1, yun_at('wap_com_00228'));
         }
 
         $id = is_array($_POST['id']) ? $_POST['id'] : intval($_POST['id']);
@@ -1140,7 +1140,7 @@ class users_resume_controller extends adminCommon
      */
     function top_action(){
         if (empty($_POST['id'])) {
-            $this->render_json(1, '参数错误');
+            $this->render_json(1, yun_at('wap_com_00228'));
         }
 
         $id = $_POST['id'];
@@ -1172,7 +1172,7 @@ class users_resume_controller extends adminCommon
     function cstatus_action()
     {
         if (empty($_POST['uid']) || empty($_POST['status'])) {
-            $this->render_json(1, '参数错误');
+            $this->render_json(1, yun_at('wap_com_00228'));
         }
 
         $uid = (int)$_POST['uid'];
@@ -1217,7 +1217,7 @@ class users_resume_controller extends adminCommon
      */
     function delResume_action(){
         if (empty($_POST['del'])) {
-            $this->render_json(1, '参数错误');
+            $this->render_json(1, yun_at('wap_com_00228'));
         }
 
         $resumeM = $this->MODEL('resume');
@@ -1259,34 +1259,34 @@ class users_resume_controller extends adminCommon
     {
         // rtype 开头 简历字段 type 开头 个人信息字段
         $fieldsList = [
-            'rtype_id' => '简历ID',
-            'rtype_name' => '简历名称',
-            'rtype_uid' => '用户ID',
-            'rtype_uname' => '姓名',
-            'rtype_sex' => '性别',
-            'rtype_birthday' => '生日',
-            'type_marriage' => '婚姻',
-            'type_height' => '身高',
-            'type_nationality' => '民族',
-            'type_weight' => '体重',
-            'type_idcard' => '身份证',
-            'type_telphone' => '手机',
-            'type_telhome' => '座机',
-            'type_email' => '邮件',
-            'rtype_edu' => '教育程度',
-            'type_homepage' => '个人主页',
-            'type_address' => '详细地址',
-            'rtype_exp' => '工作经验',
-            'type_domicile' => '户籍',
-            'type_living' => '现居住地',
-            'type_description' => '个人说明',
-            'rtype_hy' => '意向行业',
-            'rtype_job_classid' => '意向职位',
-            'rtype_city_classid' => '城市',
-            'rtype_minsalary,maxsalary' => '薪水',
-            'rtype_type' => '工作性质',
-            'rtype_report' => '到岗时间',
-            'rtype_lastdate' => '更新时间'
+            'rtype_id' => 'member_com_00012',
+            'rtype_name' => 'member_com_00013',
+            'rtype_uid' => 'admin_user_00130',
+            'rtype_uname' => 'wap_00529',
+            'rtype_sex' => 'wap_com_00303',
+            'rtype_birthday' => 'member_com_00016',
+            'type_marriage' => 'member_user_00162',
+            'type_height' => 'member_user_00165',
+            'type_nationality' => 'member_user_00164',
+            'type_weight' => 'member_user_00160',
+            'type_idcard' => 'member_com_00014',
+            'type_telphone' => 'member_user_00163',
+            'type_telhome' => 'member_com_00015',
+            'type_email' => 'member_com_00018',
+            'rtype_edu' => 'member_com_00011',
+            'type_homepage' => 'member_com_00008',
+            'type_address' => 'wap_01362',
+            'rtype_exp' => 'wap_user_00240',
+            'type_domicile' => 'common_01989',
+            'type_living' => 'wap_user_00242',
+            'type_description' => 'member_com_00009',
+            'rtype_hy' => 'member_com_00010',
+            'rtype_job_classid' => 'wap_com_00353',
+            'rtype_city_classid' => 'wap_js_00083',
+            'rtype_minsalary,maxsalary' => 'member_com_00017',
+            'rtype_type' => 'wap_user_00012',
+            'rtype_report' => 'wap_com_00279',
+            'rtype_lastdate' => 'wap_00326'
         ];
 
         return $fieldsList;
@@ -1298,7 +1298,7 @@ class users_resume_controller extends adminCommon
     function export_check_action(){
 
         if (empty($_POST['type']) || !is_array($_POST['type'])) {
-            $this->render_json(1, '参数错误');
+            $this->render_json(1, yun_at('wap_com_00228'));
         }
 
         $city_job_class = '';
@@ -1370,7 +1370,7 @@ class users_resume_controller extends adminCommon
 
             $this->render_json(0);
         } else {
-            $this->render_json(1, '暂无符合条件的简历数据');
+            $this->render_json(1, yun_at('admin_user_00095'));
         }
     }
 
@@ -1474,11 +1474,11 @@ class users_resume_controller extends adminCommon
             ob_end_clean();
             $data = [
                 'file' => base64_encode($xlsData),
-                'file_name' => '简历信息' . date('YmdHis') . '.xlsx'
+                'file_name' => 'admin_tool_00134' . date('YmdHis') . '.xlsx'
             ];
-            return $this->admin_json(0, "导出简历信息", $data);
+            return $this->admin_json(0, 'admin_01322', $data);
         } else {
-            $this->render_json(1, '暂无符合条件的简历数据');
+            $this->render_json(1, yun_at('admin_user_00095'));
         }
     }
 

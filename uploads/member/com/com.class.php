@@ -51,17 +51,17 @@ class company extends common
                 if (!$this->comInfo['info']['name'] || !$this->comInfo['info']['provinceid'] || (!$this->comInfo['info']['linktel'] && !$this->comInfo['info']['linkphone'])) {
 
                     $remindInfo['url']          =   'index.php?c=info';
-                    $remindInfo['msg']          =   '完善企业信息有助于帮您快速招聘人才！';
+                    $remindInfo['msg']          =   yun_at('member_com_00690');
 
                     if (!$this->comInfo['info']['provinceid']) {
 
-                        $remindInfo['title']    =   '所在地区尚未完善！';
+                        $remindInfo['title']    =   yun_at('member_com_00716');
                     } elseif (!$this->comInfo['info']['linktel'] && !$this->comInfo['info']['linkphone']) {
 
-                        $remindInfo['title']    =   '联系方式尚未完善！';
+                        $remindInfo['title']    =   yun_at('member_com_00717');
                     } else {
 
-                        $remindInfo['title']    =   '企业信息尚未完善！';
+                        $remindInfo['title']    =   yun_at('member_com_00718');
                     }
 
                     $this->yunset('isremind', 1);
@@ -267,7 +267,7 @@ class company extends common
         if ($_GET['r_uid']) {
             if ($_GET['r_reason'] == "") {
 
-                $this->ACT_layer_msg('举报内容不能为空！', 8, 'index.php?c=down');
+                $this->ACT_layer_msg('model_00082', 8, 'index.php?c=down');
             }
 
             $data['p_uid']      =   (int)$_GET['r_uid'];
@@ -346,7 +346,7 @@ class company extends common
                         if ($statis['rating_type'] == 1) {
 
                             $statisM    =   $this->MODEL('statis');
-                            $payDetail  =   '上架职位，消耗上架套餐数量：' . $jobnum;
+                            $payDetail  =   'member_com_00719' . $jobnum;
                             $statisM->addStatisDetail(array('uid' => $this->uid, 'type' => 1, 'num' => $jobnum, 'detail' => $payDetail, 'uri' => $_SERVER['REQUEST_URI']));
                         }
                     }
@@ -359,7 +359,7 @@ class company extends common
 
             if ($nid) {
 
-                $logContent =   '职位更新：调整职位招聘状态';
+                $logContent =   'member_com_00713';
                 $logDetail  =   $_POST['status'] == 0 ? '修改职位(ID:'.pylode(',', $id).')发布状态：下架->上架' : '修改职位(ID:'.pylode(',', $id).')发布状态：上架->下架';
                 $logM->addMemberLog($this->uid, $this->usertype, $logContent, 1, 2, $logDetail);
 
@@ -367,7 +367,7 @@ class company extends common
                 die();
             } else {
 
-                echo yun_json_encode(array('errcode'=>8,'msg'=>'设置失败！'));
+                echo yun_json_encode(array('errcode'=>8,'msg'=>yun_at('wap_01715')));
                 die();
             }
         }
@@ -395,7 +395,7 @@ class company extends common
 
             if ($rewardJobNum > 0 || $shareJobNum > 0) {
 
-                $this->layer_msg('您还有赏金职位未处理！', 8, $layer_type, $_SERVER['HTTP_REFERER']);
+                $this->layer_msg('member_com_00720', 8, $layer_type, $_SERVER['HTTP_REFERER']);
             } else {
 
                 $return         =   $jobM->delJob($delid, array('uid' => $this->uid));
@@ -442,7 +442,7 @@ class company extends common
 
             if ($_POST['day'] < 1) {
 
-                $this->ACT_layer_msg("请正确填写延期天数！", 8);
+                $this->ACT_layer_msg('member_com_00721', 8);
             } else {
 
                 $postTime   =   (int)$_POST['day'] * 86400;
@@ -477,14 +477,14 @@ class company extends common
                     $id =   $partM->upInfo($data, $where);
                     if ($id) {
 
-                        $logContent =   '兼职更新：延期招聘';
-                        $logDetail  =   '兼职延期招聘天数 + '. $_POST['day'];
+                        $logContent =   'member_com_00714';
+                        $logDetail  =   'member_com_00722'. $_POST['day'];
                         $logM->addMemberLog($this->uid, $this->usertype, $logContent, 9, 2, $logDetail);
 
-                        $this->ACT_layer_msg("兼职延期成功！", 9, $_SERVER['HTTP_REFERER']);
+                        $this->ACT_layer_msg('member_com_00723', 9, $_SERVER['HTTP_REFERER']);
                     } else {
 
-                        $this->ACT_layer_msg("兼职延期失败！", 8, $_SERVER['HTTP_REFERER']);
+                        $this->ACT_layer_msg('member_com_00724', 8, $_SERVER['HTTP_REFERER']);
                     }
                 }
             }
@@ -502,7 +502,7 @@ class company extends common
             $_POST['day'] = intval($_POST['day']);
 
             if ($_POST['day'] < 1) {
-                $this->ACT_layer_msg("请正确填写推荐天数！", 8, $_SERVER['HTTP_REFERER']);
+                $this->ACT_layer_msg('member_com_00725', 8, $_SERVER['HTTP_REFERER']);
             }
 
             $reow       =   $StatisM->getInfo($uid, array('usertype' => '2', 'field' => 'integral'));
@@ -522,10 +522,10 @@ class company extends common
 
             if ($reow['integral'] < $integral && $this->config['com_recjob_type'] == "2") {
 
-                $this->ACT_layer_msg("您的" . $this->config['integral_pricename'] . "不足，请充值！", 8, "index.php?c=pay");
+                $this->ACT_layer_msg('wap_js_00157' . $this->config['integral_pricename'] . 'member_com_00726', 8, "index.php?c=pay");
             } else {
                 // 积分处理
-                $IntegralM->company_invtal($this->uid, $this->usertype, $integral, false, "推荐兼职职位", true, 2, 'integral', 12);
+                $IntegralM->company_invtal($this->uid, $this->usertype, $integral, false, 'common_01507', true, 2, 'integral', 12);
             }
 
             $jobdata    =   array(
@@ -538,11 +538,11 @@ class company extends common
             $where['uid']   =   $uid;
             $partM->upInfo($jobdata, $where);
 
-            $logContent =   '兼职推广：推荐兼职职位《'.$part['name'].'》';
-            $logDetail  =   '兼职推荐，推荐天数 + '.$_POST['day'];
+            $logContent =   'common_02112'.$part['name'].'》';
+            $logDetail  =   'common_02113'.$_POST['day'];
             $logM->addMemberLog($this->uid, $this->usertype, $logContent, 9, 2, $logDetail);
 
-            $this->ACT_layer_msg("推荐兼职成功！", 9, $_SERVER['HTTP_REFERER']);
+            $this->ACT_layer_msg('member_com_00727', 9, $_SERVER['HTTP_REFERER']);
         }
 
         // 兼职上下架
@@ -606,7 +606,7 @@ class company extends common
                         if ($statis['rating_type'] == 1) {
 
                             $statisM    =   $this->MODEL('statis');
-                            $payDetail  =   '上架兼职，消耗上架套餐数量：' . $jobnum;
+                            $payDetail  =   'member_com_00728' . $jobnum;
                             $statisM->addStatisDetail(array('uid' => $this->uid, 'type' => 1, 'num' => $jobnum, 'detail' => $payDetail, 'uri' => $_SERVER['REQUEST_URI']));
                         }
                     }
@@ -618,15 +618,15 @@ class company extends common
 
             if ($nid) {
 
-                $logContent =   '兼职更新：调整兼职发布状态';
-                $logDetail  =   $_POST['status'] == 0 ? '修改兼职发布状态：下架->上架' : '修改兼职发布状态：上架->下架';
+                $logContent =   'member_com_00715';
+                $logDetail  =   $_POST['status'] == 0 ? yun_auto_t('修改兼职发布状态：下架->上架') : yun_auto_t('修改兼职发布状态：上架->下架');
                 $logM->addMemberLog($this->uid, $this->usertype, $logContent, 9, 2, $logDetail);
 
                 echo yun_json_encode(array('errcode'=>1));
                 die();
             } else {
 
-                echo yun_json_encode(array('errcode'=>8,'msg'=>'设置失败！'));
+                echo yun_json_encode(array('errcode'=>8,'msg'=>yun_at('wap_01715')));
                 die();
             }
         }

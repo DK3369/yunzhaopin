@@ -3,34 +3,34 @@
         <div class="drawerModInfo">
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>用户名：</span>
+                    <span>{yun:}t key='admin_00534'{/yun}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input v-model="userInfo.username" placeholder="请输入登录用户名"></el-input>
+                    <el-input v-model="userInfo.username" placeholder="{yun:}t key='admin_01030'{/yun}"></el-input>
                 </div>
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>密码：</span>
+                    <span>{yun:}t key='member_user_00232'{/yun}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input v-model="userInfo.password" placeholder="请输入登录密码" show-password></el-input>
+                    <el-input v-model="userInfo.password" placeholder="{yun:}t key='wap_00703'{/yun}" show-password></el-input>
                 </div>
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>真实姓名：</span>
+                    <span>{yun:}t key='admin_system_00141'{/yun}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input v-model="userInfo.name" placeholder="请输入真实姓名"></el-input>
+                    <el-input v-model="userInfo.name" placeholder="{yun:}t key='admin_00011'{/yun}"></el-input>
                 </div>
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>分站：</span>
+                    <span>{yun:}t key='admin_system_00142'{/yun}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-select v-model="userInfo.did" placeholder="请选择所属分站">
+                    <el-select v-model="userInfo.did" placeholder="{yun:}t key='admin_01031'{/yun}">
                         <el-option v-for="item in domainOptionS" :key="item.value" :label="item.label"
                             :value="item.value"></el-option>
                     </el-select>
@@ -38,18 +38,18 @@
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>分站用户组：</span>
+                    <span>{yun:}t key='admin_01029'{/yun}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-select v-model="userInfo.m_id" placeholder="请选择所在用户组">
+                    <el-select v-model="userInfo.m_id" placeholder="{yun:}t key='admin_01032'{/yun}">
                         <el-option v-for="item in groupOptionS" :key="item.value" :label="item.label"
                             :value="item.value"></el-option>
                     </el-select>
                 </div>
             </div>
             <div slot="footer" class="dialog-footer">
-                <el-button @click="closeAdminBox">取 消</el-button>
-                <el-button type="primary" @click="saveAdmin" :disabled="saveLoading">确 定</el-button>
+                <el-button @click="closeAdminBox">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
+                <el-button type="primary" @click="saveAdmin" :disabled="saveLoading">{yun:}t key='wap_com_00019'{/yun}</el-button>
             </div>
         </div>
 
@@ -130,7 +130,7 @@ module.exports = {
                 return false;
             }
             if (!self.userInfo.name) {
-                message.error('请填写真实姓名');
+                message.error("{yun:}t key='admin_00008'{/yun}");
                 return false;
             }
             params = self.userInfo;

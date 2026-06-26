@@ -2,12 +2,12 @@
     <!--会员-企业-套餐服务：增值服务-->
     <div class="moduleElHight">
         <div class="tableSeachInpt">
-            <el-button type="primary" icon="el-icon-plus" size="mini" @click="handleAdd">设置增值套餐</el-button>
-            <el-button type="primary" icon="el-icon-plus" plain size="mini" @click="handleDetailAdd">设置增值包</el-button>
+            <el-button type="primary" icon="el-icon-plus" size="mini" @click="handleAdd">{yun:}t key='admin_user_company_00207'{/yun}</el-button>
+            <el-button type="primary" icon="el-icon-plus" plain size="mini" @click="handleDetailAdd">{yun:}t key='admin_00697'{/yun}</el-button>
         </div>
         <div class="admin_datatip" style="margin-bottom: 12px;">
             <i class="el-icon-document"></i>
-            <span>可设置的等级包括：普通会员，高级会员，钻石会员等等，按照实际情况去设置等级的区分，会员等级需满足的条件和享受的优惠</span>
+            <span>{yun:}t key='admin_user_company_00164'{/yun}</span>
         </div>
         <div class="moduleElTable"
             style="border: 1px solid #ebeef5; width: calc(100% - 2px); height: calc(100% - 135px) !important;">
@@ -36,9 +36,9 @@
                 <el-table-column label="操作" width="210" fixed="right">
                     <template slot-scope="scope">
                         <div class="cz_button">
-                            <el-button size="mini" plain @click="editRow(scope)">修改</el-button>
-                            <el-button size="mini" plain @click="handleDetail(scope)">详情</el-button>
-                            <el-button type="danger" size="mini" @click="deleteRow(scope)">删除</el-button>
+                            <el-button size="mini" plain @click="editRow(scope)">{yun:}t key='wap_js_00073'{/yun}</el-button>
+                            <el-button size="mini" plain @click="handleDetail(scope)">{yun:}t key='member_com_00380'{/yun}</el-button>
+                            <el-button type="danger" size="mini" @click="deleteRow(scope)">{yun:}t key='common.delete'{/yun}</el-button>
                         </div>
                     </template>
                 </el-table-column>
@@ -46,8 +46,8 @@
         </div>
         <div class="modulePaging">
             <div>
-                <el-checkbox :indeterminate="isIndeterminate" v-model="checked" @change="selectAllBottom">全选</el-checkbox>
-                <el-button @click="deleteRow(null, true)" size="mini">批量删除</el-button>
+                <el-checkbox :indeterminate="isIndeterminate" v-model="checked" @change="selectAllBottom">{yun:}t key='wap_js_00074'{/yun}</el-checkbox>
+                <el-button @click="deleteRow(null, true)" size="mini">{yun:}t key='member_com_00055'{/yun}</el-button>
             </div>
             <div class="modulePagNum">
             </div>
@@ -59,47 +59,47 @@
                 <div class="alogModlue">
                     <div class="alogModlList">
                         <div class="alogModlTite">
-                            <span>增值类型名称</span>
+                            <span>{yun:}t key='admin_user_company_00206'{/yun}</span>
                         </div>
                         <div class="alogModInpt">
-                            <el-input v-model="ruleForm.name" placeholder="请输入内容"></el-input>
+                            <el-input v-model="ruleForm.name" placeholder="{yun:}t key='wap_user_00076'{/yun}"></el-input>
                         </div>
                         <div class="alogModlTips">
-                            <el-alert title="如：简历下载服务" type="info" show-icon :closable="false">
+                            <el-alert title="{yun:}t key='admin_00698'{/yun}" type="info" show-icon :closable="false">
                             </el-alert>
                         </div>
                     </div>
                     <div class="alogModlList">
                         <div class="alogModlTite">
-                            <span>状态</span>
+                            <span>{yun:}t key='member_user_00181'{/yun}</span>
                         </div>
                         <div class="alogModInpt">
                             <el-radio-group v-model="ruleForm.display">
-                                <el-radio label="1">启用</el-radio>
-                                <el-radio label="2">不启用</el-radio>
+                                <el-radio label="1">{yun:}t key='admin_user_company_00205'{/yun}</el-radio>
+                                <el-radio label="2">{yun:}t key='admin_user_company_00203'{/yun}</el-radio>
                             </el-radio-group>
                         </div>
                         <div class="alogModlTips">
-                            <el-alert title="前台是否可见" type="info" show-icon :closable="false">
+                            <el-alert title="{yun:}t key='admin_user_company_00188'{/yun}" type="info" show-icon :closable="false">
                             </el-alert>
                         </div>
                     </div>
                     <div class="alogModlList">
                         <div class="alogModlTite">
-                            <span>排序</span>
+                            <span>{yun:}t key='member_com_00022'{/yun}</span>
                         </div>
                         <div class="alogModInpt">
-                            <el-input v-model="ruleForm.sort" placeholder="请输入数字"></el-input>
+                            <el-input v-model="ruleForm.sort" placeholder="{yun:}t key='admin_user_00342'{/yun}"></el-input>
                         </div>
                         <div class="alogModlTips">
-                            <el-alert title="大前小后" type="info" show-icon :closable="false">
+                            <el-alert title="{yun:}t key='admin_user_company_00197'{/yun}" type="info" show-icon :closable="false">
                             </el-alert>
                         </div>
                     </div>
                 </div>
                 <span slot="footer" class="dialog-footer">
-                    <el-button @click="cancelFrom">取 消</el-button>
-                    <el-button type="primary" @click="submitForm" :disabled="submitLoading">确 定</el-button>
+                    <el-button @click="cancelFrom">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
+                    <el-button type="primary" @click="submitForm" :disabled="submitLoading">{yun:}t key='wap_com_00019'{/yun}</el-button>
                 </span>
             </el-dialog>
         </div>
@@ -111,7 +111,7 @@
             </el-drawer>
         </div>
         <div class="modluDrawer">
-            <el-drawer title="设置增值包" :visible.sync="detailAddVisible" :append-to-body="true" :modal-append-to-body="false" :wrapper-closable="false" :destroy-on-close="true" size="770px">
+            <el-drawer title="{yun:}t key='admin_00697'{/yun}" :visible.sync="detailAddVisible" :append-to-body="true" :modal-append-to-body="false" :wrapper-closable="false" :destroy-on-close="true" size="770px">
                 <comrating_server_detail_edit @child-event-list="detailAddVisible=false;getList();"></comrating_server_detail_edit>
             </el-drawer>
         </div>
@@ -123,7 +123,7 @@ module.exports = {
     data: function () {
         return {
             loading: false,
-            emptytext: '暂无数据',
+            emptytext: "{yun:}t key='wap_js_00113'{/yun}",
             searchForm: {
                 page: 1,
                 limit: null,
@@ -135,19 +135,19 @@ module.exports = {
             isIndeterminate: false,// checkbox 的不确定状态
             selectedItem: [],
             addVisible: false,
-            titleAddEdit: '设置增值套餐',
+            titleAddEdit: "{yun:}t key='admin_user_company_00207'{/yun}",
             oldData: null,
             ruleForm: {
                 id: '0',
                 name: '',
                 display: '2',
-                sort: '',
+                sort: '",
             },
             info: {},
             submitLoading: false,
-            detailAddVisible: false,//设置增值包
+            detailAddVisible: false,//{yun:}t key='admin_00697'{/yun}
             detailVisible: false,
-            titleDetail: '详情',
+            titleDetail: "详情',
         }
     },
     created() {
@@ -194,14 +194,14 @@ module.exports = {
                 (params[index] === '') && (params[index] = null);
             }
             _this.loading = true;
-            _this.emptytext = "数据加载中";
+            _this.emptytext = "{yun:}t key='admin_user_weipin_00026'{/yun}";
             httpPost('m=user&c=company_comrating&a=server', params, {hideloading: true}).then(function (response) {
                 let res = response.data;
                 if (res.error === 0) {
                     _this.tableData = res.data.list;
                     _this.loading = false;
                     if (_this.tableData.length === 0){
-                        _this.emptytext = "暂无数据";
+                        _this.emptytext = "{yun:}t key='wap_js_00113'{/yun}";
                     }
                 }
             }).catch(function (error) {
@@ -209,7 +209,7 @@ module.exports = {
             });
         },
         handleAdd() {
-            this.titleAddEdit = '设置增值套餐';
+            this.titleAddEdit = "{yun:}t key='admin_user_company_00207'{/yun}";
             this.info = {};
             this.ruleForm.id = '0';
             this.ruleForm.name = '';
@@ -241,7 +241,7 @@ module.exports = {
             let params = {};
             if (isMore) {
                 if (!this.selectedItem.length) {
-                    message.error('请选择要删除的数据');
+                    message.error("{yun:}t key='admin_user_weipin_00005'{/yun}");
                     return false;
                 }
                 let list = [];
@@ -262,10 +262,10 @@ module.exports = {
             httpPost('m=user&c=company_comrating&a=delserver', params).then(function (response) {
                 let res = response.data;
                 if (res.error === 0) {
-                    message.success('删除成功！');
+                    message.success("{yun:}t key='admin_user_00187'{/yun}");
                     _this.getList();
                 } else {
-                    message.error('删除失败！');
+                    message.error("{yun:}t key='admin_user_00186'{/yun}");
                 }
             }).catch(function (error) {
                 console.log(error);
@@ -305,7 +305,7 @@ module.exports = {
             httpPost('m=user&c=company_comrating&a=ajax', sendData).then(function (response) {
                 let res = response.data;
                 if (res.error === 0) {
-                    message.success('修改成功');
+                    message.success("{yun:}t key='admin_user_company_00208'{/yun}");
                 } else {
                     message.error(res.msg);
                 }
@@ -321,7 +321,7 @@ module.exports = {
         handleDetail(scope) {
             this.info = scope.row;
             this.detailVisible = true;
-            this.titleDetail = scope.row.name + ' 详情'
+            this.titleDetail = scope.row.name + " {yun:}t key='member_com_00380'{/yun}"
         },
         handleStatus(scope) {
             let _this = this;
@@ -331,7 +331,7 @@ module.exports = {
             httpPost('m=user&c=company_comrating&a=opera', params).then(function (response) {
                 let res = response.data;
                 if (res.error !== 0) {
-                    message.error('设置失败！');
+                    message.error("{yun:}t key='wap_01715'{/yun}");
                     _this.getList();
                 }
             }).catch(function (error) {

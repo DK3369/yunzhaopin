@@ -55,7 +55,7 @@ class database_controller extends adminCommon
             $tables = $_POST['table'];
         }
         if (!$tables){
-            $this->admin_json(1, '请选择要备份的表！');
+            $this->admin_json(1, 'admin_tool_00005');
         }
 
         $DBParameter	=	array(
@@ -88,10 +88,10 @@ class database_controller extends adminCommon
         $fw		=   $dbTable->backup_action($table, 10000000000, $db_config);
         if ($fw){
 
-            $this->admin_json(0, '备份成功！');
+            $this->admin_json(0, 'admin_tool_00010');
         }else{
 
-            $this->admin_json(1, '备份失败！');
+            $this->admin_json(1, 'admin_tool_00009');
         }
     }
 
@@ -172,7 +172,7 @@ class database_controller extends adminCommon
         extract($_GET);
         $dbbak	=	$this->get_table();
         $dbbak	=	$dbbak->bakindata($sql);
-        $dbbak?$this->layer_msg("数据库恢复成功！",9,0,$_SERVER['HTTP_REFERER']):$this->ACT_msg("恢复成功！",8,0,$_SERVER['HTTP_REFERER']);
+        $dbbak?$this->layer_msg('admin_tool_00006',9,0,$_SERVER['HTTP_REFERER']):$this->ACT_msg('admin_tool_00011',8,0,$_SERVER['HTTP_REFERER']);
 
 
     }
@@ -201,7 +201,7 @@ class database_controller extends adminCommon
                         $fail++;
                     }
                 }
-                $this->admin_json(0,'数据备份删除操作完成：成功'.$success.'，失败'.$fail.'！');
+                $this->admin_json(0,'admin_tool_00001'.$success.'common_05632'.$fail.'！');
             }else{
                 if (preg_match('/^[_0-9a-z]+$/i', $_POST['sql'])){
 
@@ -215,19 +215,19 @@ class database_controller extends adminCommon
                     $res    =   rmdir(PLUS_PATH.'/bdata/'.$_POST['sql']);
                     if ($res){
 
-                        $this->admin_json(0,'数据备份删除成功！');
+                        $this->admin_json(0,'admin_tool_00004');
                     }else{
 
-                        $this->admin_json(1,'数据备份删除失败！');
+                        $this->admin_json(1,'admin_tool_00003');
                     }
                 }else{
 
-                    $this->render_json(0, '非法操作！');
+                    $this->render_json(0, yun_at('model_00001'));
                 }
             }
         }else{
 
-            $this->render_json(0, '非法操作！');
+            $this->render_json(0, yun_at('model_00001'));
         }
     }
 
@@ -266,15 +266,15 @@ class database_controller extends adminCommon
         if ($_POST['type'] == 2) {
 
             $result =   $this->db->query("REPAIR TABLE `".$_POST['name']."`");
-            $errorMsg   =   "修复数据表：".$_POST['name'];
+            $errorMsg   =   'admin_tool_00008'.$_POST['name'];
         } elseif ($_POST['type'] == 3) {
 
             $result =   $this->db->query("OPTIMIZE TABLE `".$_POST['name']."`");
-            $errorMsg   =   "优化数据库：".$_POST['name'];
+            $errorMsg   =   'admin_tool_00007'.$_POST['name'];
         }
 
         $error      =   $result ? 0 : 1;
-        $errorMsg   =   $result ? $errorMsg.' 成功' : $errorMsg.' 失败';
+        $errorMsg   =   $result ? $errorMsg.'admin_tool_00502' : $errorMsg.'admin_tool_00501';
         $this->admin_json($error, $errorMsg);
     }
 
@@ -437,14 +437,14 @@ class database_controller extends adminCommon
         if ($nid) {
             if ($num - $limit > 0) {
 
-                $this->admin_json(2, '数据表：'.$clearTable.' 已清理');
+                $this->admin_json(2, 'admin_tool_00012'.$clearTable.'admin_tool_00013');
             } else {
 
-                $this->admin_json(0, '数据表：'.$clearTable.' 已清理');
+                $this->admin_json(0, 'admin_tool_00012'.$clearTable.'admin_tool_00013');
             }
         } else {
 
-            $this->admin_json(1, '数据表：'.$clearTable.' 清理异常，请稍候重试！');
+            $this->admin_json(1, 'admin_tool_00012'.$clearTable.'admin_tool_00002');
         }
     }
 

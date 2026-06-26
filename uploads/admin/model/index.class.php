@@ -32,7 +32,7 @@ class index_controller extends adminCommon{
                 'nav_id' => 0,
                 'one_menu_id' => 213,
                 'two_menu_id' => 216,
-                'name' => '工作台',
+                'name' => 'admin_index_00079',
 			    'path' => '/jobtai'
             ));
 		}else{
@@ -40,7 +40,7 @@ class index_controller extends adminCommon{
                 'nav_id' => 0,
                 'one_menu_id' => 0,
                 'two_menu_id' => 0,
-                'name' => '首页',
+                'name' => 'wap_00191',
                 'path' => '/index'
             ));
 		}
@@ -53,7 +53,7 @@ class index_controller extends adminCommon{
         //查询最近登录时间
         $logM  =  $this->MODEL('log');
 
-        $adminLog  =  $logM -> getAdminLog(array('uid' => $_SESSION['auid'],'content' => '登录成功','orderby' => 'ctime'));
+        $adminLog  =  $logM -> getAdminLog(array('uid' => $_SESSION['auid'],'content' => yun_at('wap_01263'),'orderby' => 'ctime'));
 
         // 导航配置
         $navM      =  $this -> MODEL('navigation');
@@ -134,12 +134,12 @@ class index_controller extends adminCommon{
 
         $_POST  =  $this -> post_trim($_POST);
         if (empty($_POST['username'])) {
-            $this->render_json(1, '请填写用户名');
+            $this->render_json(1, yun_at('wap_js_00056'));
         }elseif (empty($_POST['password'])){
-            $this->render_json(2, '请填写密码');
+            $this->render_json(2, yun_at('wap_js_00061'));
         }
 
-        if (strpos($this -> config['code_web'], '后台登录') !== false) {
+        if (strpos($this -> config['code_web'], 'admin_system_00423') !== false) {
 
             if ($this -> config['code_kind'] > 2) {
 
@@ -163,7 +163,7 @@ class index_controller extends adminCommon{
 
                     unset($_SESSION['authcode']);
 
-                    $this->render_json(-1, '验证码错误');
+                    $this->render_json(-1, yun_at('wap_00211'));
                 }
             }
 
@@ -179,7 +179,7 @@ class index_controller extends adminCommon{
         $WxM        =   $this->MODEL('weixin');
         $qrcode     =   $WxM->applyWxQrcode($admin_wxloginid,'admin_wxloginid');
         if(!$qrcode){
-            $this->render_json(1, '二维码获取失败');
+            $this->render_json(1, yun_at('common_01335'));
         }else{
             $this->render_json(0, 'ok', array('code_url' => $qrcode));
         }
@@ -201,7 +201,7 @@ class index_controller extends adminCommon{
 
         $this -> adminlogout();
 
-        $this -> layer_msg('您已成功退出！', 9, 0, 'index.php');
+        $this -> layer_msg('ask_00001', 9, 0, 'index.php');
     }
 
     /**
@@ -218,9 +218,9 @@ class index_controller extends adminCommon{
         $this -> web_config();
 
         if ($cache == true) {
-            $this->admin_json(0, '清除缓存成功');
+            $this->admin_json(0, 'admin_index_00052');
         } else {
-            $this->render_json(1, '清除缓存失败，请检查是否有权限！');
+            $this->render_json(1, yun_at('admin_index_00001'));
         }
     }
 
@@ -298,15 +298,15 @@ class index_controller extends adminCommon{
      */
     function shortcut_menu_action(){
         if (empty($_POST['chk_value'])) {
-            $this->render_json(1, '参数错误');
+            $this->render_json(1, yun_at('wap_com_00228'));
         }
 
         $navM = $this->MODEL('navigation');
         $return = $navM->setCustomizeNav($_POST['chk_value'], $_SESSION['auid']);
         if ($return) {
-            $this->admin_json(0, '快捷导航设置成功');
+            $this->admin_json(0, 'admin_index_00011');
         } else {
-            $this->render_json(1, '快捷导航设置失败');
+            $this->render_json(1, yun_at('admin_index_00010'));
         }
     }
     /**
@@ -324,7 +324,7 @@ class index_controller extends adminCommon{
         $qrcode = $WxM->applyWxQrcode($_COOKIE['wxadminbind'],'wxadminbind');
 //        $qrcode = 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQG57zwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyYW1YWWd5ci05MlUxc3gyTmhBY1MAAgShcHBkAwSAUQEA';
         if(!$qrcode){
-            $this->render_json(1, '二维码获取失败');
+            $this->render_json(1, yun_at('common_01335'));
         }else{
             $this->render_json(0, 'ok', array('code_url' => $qrcode));
         }
@@ -334,9 +334,9 @@ class index_controller extends adminCommon{
             $adminM  =  $this -> MODEL('admin');
             $uadmin = $adminM ->  getAdminUser(array('uid'=>$_SESSION['auid']));
             if($uadmin['wxid']!=''){
-                $this->render_json(0, '已绑定', array('wxid' => $uadmin['wxid']));
+                $this->render_json(0, yun_at('wap_user_00127'), array('wxid' => $uadmin['wxid']));
             }else{
-                $this->render_json(1, '暂未绑定');
+                $this->render_json(1, yun_at('admin_system_00225'));
             }
         }
     }
@@ -423,7 +423,7 @@ class index_controller extends adminCommon{
         }else{
             $return  =  array(
                 'code'  =>  1,
-                'msg'   =>  '请上传文件',
+                'msg'   =>  yun_at('ajax_00015'),
                 'data'  =>  array()
             );
         }
@@ -444,9 +444,9 @@ class index_controller extends adminCommon{
             if ($moblieaddress){
                 $msg = $moblieaddress;
             }elseif($this->config['sy_mobile'] == 2){
-                $msg = '请先开启归属地查询';
+                $msg = 'admin_user_00008';
             }else{
-                $msg = '查询失败';
+                $msg = 'admin_user_00016';
             }
 
             $this->render_json($moblieaddress ? 0 : 1, $msg);
@@ -467,9 +467,9 @@ class index_controller extends adminCommon{
             if ($ipaddress){
                 $msg = $ipaddress;
             }elseif($this->config['sy_ip'] == 2){
-                $msg = '请先开启归属地查询';
+                $msg = 'admin_user_00008';
             }else{
-                $msg = '查询失败';
+                $msg = 'admin_user_00016';
             }
 
             $this->render_json($ipaddress ? 0 : 1, $msg);
@@ -899,32 +899,32 @@ class index_controller extends adminCommon{
     
     // 网站统计
     function getweb_action(){
-        $this->tjl("member","login_log", array('reg_date','ctime'), array('个人注册','个人登录','上月个人注册','上月个人登录'), array('type'=>1));
+        $this->tjl("member","login_log", array('reg_date','ctime'), array('admin_00073','admin_tool_00223','admin_index_00040','admin_index_00041'), array('type'=>1));
     }
     function comtj_action(){
-        $this->tjl("member","login_log", array('reg_date','ctime'), array('企业注册','企业登录','上月企业注册','上月企业登录'), array('type'=>2));
+        $this->tjl("member","login_log", array('reg_date','ctime'), array('admin_00074','admin_user_00335','admin_index_00042','admin_index_00043'), array('type'=>2));
     }
     function resumetj_action(){
-        $this->tj("resume_expect", array('ctime','r_time'), array('简历新增','简历刷新','上月简历新增','上月简历刷新'));
+        $this->tj("resume_expect", array('ctime','r_time'), array('admin_tool_00016','admin_tool_00176','admin_index_00045','admin_index_00044'));
     }
     function jobtj_action(){
-        $this->tj("company_job", array('sdate','r_time'), array('职位新增','职位刷新','上月职位新增','上月职位刷新'));
+        $this->tj("company_job", array('sdate','r_time'), array('admin_index_00074','wap_com_00045','admin_index_00047','admin_index_00046'));
     }
     function ujobtj_action(){
-        $this->tj("userid_job", array('datetime'), array('简历投递统计','上月简历投递统计'));
+        $this->tj("userid_job", array('datetime'), array('admin_tool_00109','admin_index_00008'));
     }
     function yqmstj_action(){
-        $this->tj("userid_msg", array('datetime'), array('邀请面试统计','上月邀请面试统计'));
+        $this->tj("userid_msg", array('datetime'), array('admin_tool_00114','admin_index_00009'));
     }
     function downresumetj_action(){
-        $this->tj("down_resume", array('downtime'), array('简历下载统计','上月简历下载统计'));
+        $this->tj("down_resume", array('downtime'), array('admin_tool_00108','admin_index_00007'));
     }
     
     function adtj_action(){
-        $this->tj("adclick", array('addtime'), array('广告点击统计','上月广告点击统计'));
+        $this->tj("adclick", array('addtime'), array('admin_tool_00099','admin_index_00006'));
     }
     function wxbdtj_action(){
-        $this->tjl("member","member", array('wxbindtime','wxbindtime'), array('个人微信绑定','企业微信绑定','上月个人微信绑定','上月企业微信绑定'), array('type'=>1,'type2'=>2,'where'=>array('wxid'=>array('<>',''))));
+        $this->tjl("member","member", array('wxbindtime','wxbindtime'), array('admin_index_00048','admin_index_00049','admin_index_00004','admin_index_00005'), array('type'=>1,'type2'=>2,'where'=>array('wxid'=>array('<>',''))));
     }
     function tjl($tablename1, $tablename2, $field = array(), $name = array(), $data = array())
     {

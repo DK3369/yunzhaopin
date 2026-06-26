@@ -8,6 +8,6 @@ function smarty_function_querytime($paramer,&$smarty){
         list($start_usec, $start_sec) = explode(' ', $GlobalStartTime);
         $query_time = number_format(($now_sec - $start_sec) + ($now_usec - $start_usec), 6);
     }
-    echo '<div style="background-color:red; width:100%; display:block; float:left; height:40px; font-size:18px;">用时 '.$query_time.' 秒</div>';
+    echo '<div style="background-color:red; width:100%; display:block; float:left; height:40px; font-size:18px;">' . yun_at('common_06116') . ' '.$query_time.' ' . yun_at('common_02094') . '</div>';
 }
 ?>

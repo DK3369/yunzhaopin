@@ -5,15 +5,15 @@
             <table class="tableVue">
                 <thead>
                 <tr align="left">
-                    <th width="180">名称</th>
-                    <th width="260">状态</th>
-                    <th>说明</th>
+                    <th width="180">{yun:}t key='member_com_00021'{/yun}</th>
+                    <th width="260">{yun:}t key='member_user_00181'{/yun}</th>
+                    <th>{yun:}t key='member_com_00207'{/yun}</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr>
                     <td>
-                        <div class="TableTite">默认LOGO</div>
+                        <div class="TableTite">{yun:}t key='admin_00710'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableUpload" style="display: flex;align-items: center;">
@@ -22,7 +22,7 @@
                                 :on-success="(response, file, fileList) =>onSuccessLogo(response,file,fileList,'fileList')"
                                 :accept="pic_accept"
                                 :show-file-list="false">
-                                <el-button size="small" type="primary">上传图片</el-button>
+                                <el-button size="small" type="primary">{yun:}t key='wap_00540'{/yun}</el-button>
                             </el-upload>
                             <div class="up_sy_logo_div" style="margin-left: 15px;">
                                 <el-image v-if="ruleForm.sy_unit_icon" style="width:100px;" :src="ruleForm.sy_unit_icon"
@@ -32,13 +32,13 @@
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>企业没有上传logo时展示的图片</span>
+                            <span>{yun:}t key='admin_user_company_00306'{/yun}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">默认顾问头像</div>
+                        <div class="TableTite">{yun:}t key='admin_00711'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableUpload" style="display: flex;align-items: center;">
@@ -47,7 +47,7 @@
                                 :on-success="(response, file, fileList) =>onSuccessGuwen(response,file,fileList,'fileList')"
                                 :accept="pic_accept"
                                 :show-file-list="false">
-                                <el-button size="small" type="primary">上传图片</el-button>
+                                <el-button size="small" type="primary">{yun:}t key='wap_00540'{/yun}</el-button>
                             </el-upload>
                             <div class="up_sy_logo_div" style="margin-left: 15px;">
                                 <el-image v-if="ruleForm.sy_guwen" style="width:100px;" :src="ruleForm.sy_guwen"
@@ -57,13 +57,13 @@
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>企业中心销售顾问的默认头像</span>
+                            <span>{yun:}t key='admin_user_company_00307'{/yun}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">默认企业横幅</div>
+                        <div class="TableTite">{yun:}t key='admin_00712'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableUpload" style="display: flex;align-items: center;">
@@ -72,7 +72,7 @@
                                 :on-success="(response, file, fileList) =>onSuccessBanner(response,file,fileList,'fileList')"
                                 :accept="pic_accept"
                                 :show-file-list="false">
-                                <el-button size="small" type="primary">上传图片</el-button>
+                                <el-button size="small" type="primary">{yun:}t key='wap_00540'{/yun}</el-button>
                             </el-upload>
                             <div class="up_sy_logo_div" style="margin-left: 15px;">
                                 <el-image v-if="ruleForm.sy_banner" style="width:100px;" :src="ruleForm.sy_banner"
@@ -82,13 +82,13 @@
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>企业未上传横幅时的默认图片</span>
+                            <span>{yun:}t key='admin_user_company_00308'{/yun}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">二维码提示图</div>
+                        <div class="TableTite">{yun:}t key='admin_user_company_00310'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableUpload" style="display: flex;align-items: center;">
@@ -97,7 +97,7 @@
                                 :on-success="(response, file, fileList) =>onSuccessEwm(response,file,fileList,'fileList')"
                                 :accept="pic_accept"
                                 :show-file-list="false">
-                                <el-button size="small" type="primary">上传图片</el-button>
+                                <el-button size="small" type="primary">{yun:}t key='wap_00540'{/yun}</el-button>
                             </el-upload>
                             <div class="up_sy_logo_div" style="margin-left: 15px;">
                                 <el-image v-if="ruleForm.sy_member_ewm" style="width:100px;" :src="ruleForm.sy_member_ewm"
@@ -107,7 +107,7 @@
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>未上传二维码时的默认图片</span>
+                            <span>{yun:}t key='admin_user_company_00309'{/yun}</span>
                         </div>
                     </td>
                 </tr>
@@ -115,7 +115,7 @@
             </table>
         </div>
         <div class="setBasicButn" style="border: none; height: 80px;">
-            <el-button type="primary" size="medium" @click="submitForm('ruleForm')" :disabled="submitLoading">提交</el-button>
+            <el-button type="primary" size="medium" @click="submitForm('ruleForm')" :disabled="submitLoading">{yun:}t key='common.submit'{/yun}</el-button>
         </div>
     </div>
 </template>
@@ -130,11 +130,11 @@ module.exports = {
             sy_weburl: localStorage.getItem("sy_weburl"),
             searchForm: {},
             ruleForm: {
-                'submit': '提交',
-                'sy_unit_icon': '',//默认LOGO
-                'sy_guwen': '',//默认顾问头像
-                'sy_banner': '',//默认企业横幅
-                'sy_member_ewm': '',//未上传二维码提示图
+                'submit': "{yun:}t key='common.submit'{/yun}",
+                'sy_unit_icon': '",//{yun:}t key='wap_js_00098'{/yun}LOGO
+                "sy_guwen': '",//{yun:}t key='admin_00711'{/yun}
+                "sy_banner': '",//{yun:}t key='admin_00712'{/yun}
+                "sy_member_ewm': '',//未上传二维码提示图
             },
             submitLoading: false,
         }

@@ -111,10 +111,10 @@ class special_special_controller extends adminCommon
             }
         }else{
             if (!is_string($_POST['title']) || !strlen($_POST['title'])) {
-                $this->render_json(2, '请填写专题名称！');
+                $this->render_json(2, yun_at('admin_01439'));
             }
             if (!is_string($_POST['tpl']) || !strlen($_POST['tpl'])) {
-                $this->render_json(3, '请选择专题模板！');
+                $this->render_json(3, yun_at('admin_01440'));
             }
             $specialM = $this->MODEL("special");
             $id = (int)$_POST['id'];
@@ -198,12 +198,12 @@ class special_special_controller extends adminCommon
             }
             if (!$id) {
                 $nid = $specialM->addSpecial($data);
-                $name = "专题招聘（ID：" . $nid . "）添加";
+                $name = "专题招聘（ID：" . $nid . 'common_06563';
             } else {
                 $nid = $specialM->upSpecial(array('id' => $id), $data);
-                $name = "专题招聘（ID：" . $id . "）更新";
+                $name = "专题招聘（ID：" . $id . 'common_06564';
             }
-            $nid ? $this->admin_json(0, $name . "成功！") : $this->render_json(1, $name . "失败！");
+            $nid ? $this->admin_json(0, $name . 'wap_js_00104') : $this->render_json(1, $name . 'wap_js_00103');
 
         }
     }
@@ -395,7 +395,7 @@ class special_special_controller extends adminCommon
 
                 $this -> yunset('list',$companys);
 
-                $this -> MODEL('log') -> addAdminLog('导出报名专题招聘信息');
+                $this -> MODEL('log') -> addAdminLog('admin_01441');
 
                 header('Content-Type: application/vnd.ms-excel');
 
@@ -433,7 +433,7 @@ class special_special_controller extends adminCommon
         if($id&&is_array($rows['list'])){
             foreach($rows['list'] as $val){
                 if($val['integral']>0){
-                    $IntegralM->company_invtal($val['uid'],2,$val['integral'],true,"专题招聘未通过审核，退还".$this->config['integral_pricename'],true,2,'integral');
+                    $IntegralM->company_invtal($val['uid'],2,$val['integral'],true,'admin_yunying_00013'.$this->config['integral_pricename'],true,2,'integral');
                 }
             }
         }
@@ -446,7 +446,7 @@ class special_special_controller extends adminCommon
             /* 消息前缀 */
             $sysmsgM			=	$this->MODEL('sysmsg');
 
-            $tagName  			=	'专题报名';
+            $tagName  			=	'admin_01442';
 
             $v  	    		=	reset($list['list']);
             $sid    			=	$v['sid'];
@@ -460,7 +460,7 @@ class special_special_controller extends adminCommon
                 /* 处理审核信息 */
                 if ($_POST['status'] == 2){
 
-                    $statusInfo  =  '您参与的专题'.$special['title'].':报名审核未通过';
+                    $statusInfo  =  'admin_yunying_00014'.$special['title'].':报名审核未通过';
 
                     if($_POST['statusbody']){
 
@@ -472,7 +472,7 @@ class special_special_controller extends adminCommon
 
                 }elseif($_POST['status'] == 1){
 
-                    $msg[$v['uid']]  =   '您参与的专题'.$special['title'].':报名已审核通过';
+                    $msg[$v['uid']]  =   'admin_yunying_00014'.$special['title'].':报名已审核通过';
 
                 }
             }
@@ -485,10 +485,10 @@ class special_special_controller extends adminCommon
             if ($id){
                 $this->admin_json(0, '招聘专题参会企业审核(ID：' . $pid . ')成功！');
             }else{
-                $this->render_json(1, '操作失败！');
+                $this->render_json(1, yun_at('model_00003'));
             }
         }else{
-            $id ? $this->admin_json(0, '招聘专题参会企业审核(ID：' . $pid . ')成功！') : $this->render_json(1, '操作失败！');
+            $id ? $this->admin_json(0, '招聘专题参会企业审核(ID：' . $pid . ')成功！') : $this->render_json(1, 'model_00003');
         }
     }
 
@@ -541,7 +541,7 @@ class special_special_controller extends adminCommon
     {
         $uid = intval($_POST['uid']);
         if ($uid < 1) {
-            $this->render_json(1, '参数有误');;
+            $this->render_json(1, yun_at('common_01716'));;
         }
 
         $pageM = $this->MODEL('page');
@@ -607,7 +607,7 @@ class special_special_controller extends adminCommon
 
             $this->admin_json(0, "公司申请(ID:" . $del . ")删除成功！");
         } else {
-            $this->render_json(1, "请选择您要删除的信息！");
+            $this->render_json(1, yun_at('model_00034'));
         }
     }
 
@@ -630,7 +630,7 @@ class special_special_controller extends adminCommon
 
             $this->admin_json(0, "专题(ID:" . $del . ")删除成功！");
         } else {
-            $this->render_json(1, "请选择您要删除的信息！");
+            $this->render_json(1, yun_at('model_00034'));
         }
     }
 
@@ -644,11 +644,11 @@ class special_special_controller extends adminCommon
             $data['display'] = $_POST['rec'];
             $where['id'] = $_POST['id'];
             $nid = $specialM->upSpecial($where, $data);
-            $msg = $_POST['rec'] == 1 ? '开启' : '关闭';
+            $msg = $_POST['rec'] == 1 ? yun_at('member_com_00287') : yun_at('resume_00030');
             if ($nid) {
-                $this->admin_json(0, "专题招聘(ID:" . $_POST['id'] . ")" . $msg . "成功！");
+                $this->admin_json(0, 'admin_01438' . $_POST['id'] . ")" . $msg . 'wap_js_00104');
             } else {
-                $this->render_json(1, "专题招聘(ID:" . $_POST['id'] . ")" . $msg . "失败！");
+                $this->render_json(1, 'admin_01438' . $_POST['id'] . ")" . $msg . 'wap_js_00103');
             }
         }
     }
@@ -681,7 +681,7 @@ class special_special_controller extends adminCommon
             if ($nid) {
                 $this->admin_json(0, '专题招聘(ID：' . $post['id'] . ', sort=' . $post['sort'] . ')排序更新成功');
             } else {
-                $this->render_json(1, '专题招聘排序更新失败');
+                $this->render_json(1, yun_at('admin_01443'));
             }
         }
     }
@@ -706,11 +706,11 @@ class special_special_controller extends adminCommon
             $sourceList[] = array('value' => $k, 'label' => $v);
         }
 
-        $timeSection = array(array('value' => '1', 'label' => '今天'), array('value' => '3', 'label' => '3天内'), array('value' => '7', 'label' => '7天内'), array('value' => '15', 'label' => '半月内'), array('value' => '30', 'label' => '1个月内'), array('value' => '31', 'label' => '1-3个月'), array('value' => '32', 'label' => '3-6个月'), array('value' => '33', 'label' => '6个月-1年'), array('value' => '34', 'label' => '1年以上'),);
-        $status = array(array('value' => '1', 'label' => '已审核'), array('value' => '2', 'label' => '已锁定'), array('value' => '3', 'label' => '未通过'), array('value' => '4', 'label' => '未审核'), array('value' => '5', 'label' => '已暂停'),);
-        $edtime = array(array('value' => '1', 'label' => '7天内'), array('value' => '2', 'label' => '一个月内'), array('value' => '3', 'label' => '半年内'), array('value' => '4', 'label' => '一年内'), array('value' => '5', 'label' => '已到期'),);
-        $isrec = array(array('value' => '1', 'label' => '是'), array('value' => '2', 'label' => '否'), array('value' => '3', 'label' => '已到期'),);
-        $isgw = array(array('value' => '1', 'label' => '已分配'), array('value' => '2', 'label' => '未分配'),);
+        $timeSection = array(array('value' => '1', 'label' => 'common_01940'), array('value' => '3', 'label' => 'admin_tool_00619'), array('value' => '7', 'label' => 'admin_tool_00622'), array('value' => '15', 'label' => 'admin_yunying_00017'), array('value' => '30', 'label' => 'admin_yunying_00016'), array('value' => '31', 'label' => 'admin_01444'), array('value' => '32', 'label' => 'admin_01445'), array('value' => '33', 'label' => 'admin_01446'), array('value' => '34', 'label' => 'admin_01447'),);
+        $status = array(array('value' => '1', 'label' => 'wap_user_00165'), array('value' => '2', 'label' => 'admin_user_00138'), array('value' => '3', 'label' => 'wap_user_00167'), array('value' => '4', 'label' => 'wap_user_00166'), array('value' => '5', 'label' => 'admin_user_00184'),);
+        $edtime = array(array('value' => '1', 'label' => 'admin_tool_00622'), array('value' => '2', 'label' => 'common_01659'), array('value' => '3', 'label' => 'common_01897'), array('value' => '4', 'label' => 'common_01875'), array('value' => '5', 'label' => 'wap_com_00319'),);
+        $isrec = array(array('value' => '1', 'label' => '是'), array('value' => '2', 'label' => '否'), array('value' => '3', 'label' => 'wap_com_00319'),);
+        $isgw = array(array('value' => '1', 'label' => 'admin_01303'), array('value' => '2', 'label' => 'admin_user_company_00153'),);
 
         $result = array(
             'ratingList' => $ratingList,//会员等级
@@ -1005,9 +1005,9 @@ class special_special_controller extends adminCommon
                     'oldrating_name' => $val['oldrating_name'],
                     'linktel' => $val['linktel'],
                     'linkphone' => $val['linkphone'],
-                    'login_date_n' => $val['login_date'] ? date('Y-m-d H:i', $val['login_date']) : '未登录',
+                    'login_date_n' => $val['login_date'] ? date('Y-m-d H:i', $val['login_date']) : 'admin_user_00139',
                     'crm_uid' => $val['crm_uid'],
-                    'crm_uid_n' => $val['crm_uid'] ? $val['crm_name'] : '未分配',
+                    'crm_uid_n' => $val['crm_uid'] ? $val['crm_name'] : 'admin_user_company_00153',
                     'join' => $ListNew['list'][$key]['join'],
                 ];
             }
@@ -1031,14 +1031,14 @@ class special_special_controller extends adminCommon
         $uid    =   intval($_POST['uid']);
         $isapply=   $SpecialM->getSpecialComNum(array("uid" => $uid, "sid" => $id));
         if ((int)$isapply > 0) {
-            $this->render_json(1, '该企业已报名');
+            $this->render_json(1, yun_at('admin_yunying_00015'));
         }
 
         $nid    =   $SpecialM->addSpecialCom(array("sid" => $id, "uid" => $uid, 'sort' => 0, 'status' => '1', 'time' => time()));
         if (isset($nid)) {
             $this->admin_json(0, '专题招聘报名成功(专题ID：' . $id . '，企业ID：' . $uid . ')');
         } else {
-            $this->render_json(2, '专题招聘报名失败');
+            $this->render_json(2, yun_at('admin_01448'));
         }
     }
 
@@ -1085,7 +1085,7 @@ class special_special_controller extends adminCommon
             $specialM = $this->MODEL('special');
             $specialInfo = $specialM->getSpecialOne(array('id' => $_POST['sid'], 'tpl' => 'gl.htm'));
             if (!$specialInfo) {
-                $this->render_json(2, '名企设置失败');
+                $this->render_json(2, yun_at('admin_01449'));
             }
 
             $nid = $specialM->upSpecialCom(array('sid' => $_POST['sid'], 'uid' => $_POST['uid']), array('famous' => $famous));
@@ -1093,7 +1093,7 @@ class special_special_controller extends adminCommon
             if ($nid) {
                 $this->admin_json(0, '名企设置成功(sid=' . $_POST['sid'] . ',uid=' . $_POST['uid'] . ')');
             } else {
-                $this->render_json(1, '名企设置失败');
+                $this->render_json(1, yun_at('admin_01449'));
             }
         }
     }

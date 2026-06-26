@@ -65,14 +65,14 @@ class fabutool_controller extends adminCommon{
                 $msg = '(ID:'.$delid.')删除成功！';
             }else{
                 $error = 1;
-                $msg = '删除失败！';
+                $msg = 'admin_user_00186';
             }
 
         }else{
 
             $error = 1;
 
-            $msg = '请选择要删除的内容！';
+            $msg = 'common_01066';
         }
         
 
@@ -209,7 +209,7 @@ class fabutool_controller extends adminCommon{
 
         if ($temp) {
 
-            $return['msg']      =   '该模板名称已使用，请重新命名';
+            $return['msg']      =   yun_at('admin_tool_00031');
             $return['errcode']  =   8;
         } else {
 
@@ -393,7 +393,7 @@ class fabutool_controller extends adminCommon{
                 $this->Getcompany($get);
                 break;
             default:
-                echo "暂无信息";
+                echo yun_at('common_02409');
                 break;
         }
     }
@@ -851,7 +851,7 @@ class fabutool_controller extends adminCommon{
                 if (count($img_arr) > 1) {
 
                     $tempmap_key    =   '{' . $img_arr[0] . '}';
-                    $style_v        =   str_replace('样式=', '', $img_arr[1]);
+                    $style_v        =   str_replace('admin_tool_00515', '', $img_arr[1]);
                     $style_v        =   str_replace(array('&amp;', '&quot;', '&lt;', '&gt;'), array('&', '"', '<', '>'), $style_v);
                     //将{img|xxxx|样式=""}整体加入$tempmap
                     $tempmap['{img|'.$value.'}']    =   array(
@@ -1119,7 +1119,7 @@ class fabutool_controller extends adminCommon{
             $msg        =   $return['msg'];
         } else {
             $error      =   1;
-            $msg        =   '请选择要删除的内容！';
+            $msg        =   'common_01066';
         }
 
         $this->render_json($error,$msg);
@@ -1143,14 +1143,14 @@ class fabutool_controller extends adminCommon{
 
             if ($return) {
                 $error = 0;
-                $msg = '操作成功';
+                $msg = 'wap_user_00264';
             } else {
                 $error = 1;
-                $msg = '操作失败请重试';
+                $msg = 'admin_system_00397';
             }
         }else{
             $error = 1;
-            $msg = '参数错误请重试';
+            $msg = 'wap_00556';
         }
 
         $this->render_json($error,$msg);

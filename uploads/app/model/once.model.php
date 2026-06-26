@@ -134,16 +134,16 @@ class once_model extends model{
 			
 			if($return['id']){
 
-				$return['msg']      =  '店铺招聘(ID:'.$id.')删除成功';
+				$return['msg']      =  yun_at('admin_user_00105').$id.')删除成功';
 				$return['errcode']  =  '9';
 			}else{
 				
-				$return['msg']      =  '店铺招聘(ID:'.$id.')删除失败';
+				$return['msg']      =  yun_at('admin_user_00105').$id.')删除失败';
 				$return['errcode']  =  '8';
 			}
 		}else{
 			
-			$return['msg']      	=  '系统繁忙';
+			$return['msg']      	=  yun_at('common_01831');
 			$return['errcode']  	=  '8';
 			$return['layertype']	=	0;
 		}
@@ -225,22 +225,22 @@ class once_model extends model{
         	}
         }
 		if($post['title']==''){
-			return array('msg'=>'请填写职位名称！','errcode'=>8);
+			return array('msg'=>yun_at('model_00043'),'errcode'=>8);
 		}
 		if ($post['title'] && mb_strlen($post['title'],'utf8')>30){
-			return array('msg'=>'我想招聘标题最多30个字！','errcode'=>8);
+			return array('msg'=>yun_at('common_00710'),'errcode'=>8);
 		}
 		if($post['salary']==''){
-			return array('msg'=>'请填写工资！','errcode'=>8);
+			return array('msg'=>yun_at('wap_01706'),'errcode'=>8);
 		}
 		if (empty($id)) {
 		    if($type != 'admin'){
 		        // 非后台发布，处理时间
 		        if($data['oncepricegear']==''){
-		            return array('msg'=>'请选择招聘有效期！','errcode'=>8);
+		            return array('msg'=>yun_at('model_00044'),'errcode'=>8);
 		        }
 		        if(!isset($cache['oncepricegear_name'][$data['oncepricegear']])){
-		            return array('msg'=>'招聘有效期数据异常！','errcode'=>8);
+		            return array('msg'=>yun_at('model_00045'),'errcode'=>8);
 		        }
 		        $post['edate'] = strtotime("+".(int)$cache['oncepricegear_name'][$data['oncepricegear']]." days");
 		    }
@@ -249,22 +249,22 @@ class once_model extends model{
         }
         
 		if($citymsg){
-			return array('msg'=>'请选择工作地区！','errcode'=>8);
+			return array('msg'=>yun_at('wap_01675'),'errcode'=>8);
 		}
 		if($post['address']==''){
-			return array('msg'=>'请选择工作地点！','errcode'=>8);
+			return array('msg'=>yun_at('wap_01676'),'errcode'=>8);
 		}
 		if($post['require']==''){
-			return array('msg'=>'请填写招聘要求！','errcode'=>8);
+			return array('msg'=>yun_at('wap_01660'),'errcode'=>8);
 		}
 		if($post['companyname']==''){
-			return array('msg'=>'请填写店铺名称！','errcode'=>8);
+			return array('msg'=>yun_at('model_00046'),'errcode'=>8);
 		}
 		if($post['phone']==''){
-			return array('msg'=>'请填写联系电话！','errcode'=>8);
+			return array('msg'=>yun_at('wap_00770'),'errcode'=>8);
 		}
 		if($post['linkman']==''){
-			return array('msg'=>'请填写联系人！','errcode'=>8);
+			return array('msg'=>yun_at('wap_00769'),'errcode'=>8);
 		}
         include_once ('notice.model.php');
         $noticeM		=		new notice_model($this->db, $this->def);
@@ -283,19 +283,19 @@ class once_model extends model{
                     if ($checkTime) {
                         $res = $data['moblie_code'] == $cert_arr['check2'] ? true : false;
                         if ($res == false) {
-                            return array('msg' => '短信验证码错误！', 'errcode' => '8');
+                            return array('msg' => yun_at('common_01289'), 'errcode' => '8');
                         }
                     } else {
-                        return array('msg' => '验证码验证超时，请重新点击发送验证码！', 'errcode' => '8');
+                        return array('msg' => yun_at('common_00409'), 'errcode' => '8');
                     }
                 } else {
-                    return array('msg' => '验证码发送不成功，请重新点击发送短信验证码！', 'errcode' => '8');
+                    return array('msg' => yun_at('common_00278'), 'errcode' => '8');
                 }
             }
         }else{
             if($type!='admin' && $type!='wxapp'){
                 if ($this->config['code_kind'] ==1) {
-                    $result = $noticeM->jycheck($_POST['authcode'], '店铺招聘');
+                    $result = $noticeM->jycheck($_POST['authcode'], 'wap_js_00130');
 
                     if (!empty($result)) {
                         return array('msg' => $result['msg'], 'errcode' => 8);
@@ -383,7 +383,7 @@ class once_model extends model{
 					if($data['utype']=='wap'){
 						$return['url']	=	Url('wap',array('c'=>'once','a'=>'show','id'=>$id));
 					}
-					$return['msg']		=	'密码不正确';
+					$return['msg']		=	yun_at('model_00062');
 					$return['errcode']	=	8;
 					return $return;
 				}
@@ -404,7 +404,7 @@ class once_model extends model{
 				$return['msg']		=	$msg;
 				$return['errcode']	=	9;
 			}else{
-				$return['msg']		=	'修改失败！';
+				$return['msg']		=	yun_at('member_user_00603');
 				$return['errcode']	=	8;
 			}
 		}else{
@@ -438,7 +438,7 @@ class once_model extends model{
 
 
                         if ($type != 'admin' && floatval($once_price) > 0) {
-                            $return['msg'] = '发布信息添加完成，请付款';
+                            $return['msg'] = yun_at('common_06543');
                             $return['errcode'] = 10;
 
                             if ($data['utype'] == 'wap') {
@@ -463,18 +463,18 @@ class once_model extends model{
                             $return['errcode'] = 9;
                         }
                     } else {
-                        $return['msg'] = '发布失败！';
+                        $return['msg'] = yun_at('common_06544');
                         $return['errcode'] = 8;
                     }
                 } else {
-                    $return['msg'] = '一天内只能发布' . $this->config['sy_once'] . '次！';
+                    $return['msg'] = yun_at('common_02178') . $this->config['sy_once'] . 'common_02179';
                     $return['errcode'] = 8;
                     if ($data['utype'] == 'wap') {
                         $return['url'] = Url('wap', array('c' => 'once'));
                     }
                 }
             }else{
-                $return['msg'] = '网站发布店铺招聘本日已到上限，如有急需，请联系网站客服！';
+                $return['msg'] = yun_at('wap_00333');
                 $return['errcode'] = 8;
             }
 		}
@@ -532,14 +532,14 @@ class once_model extends model{
 				$return['id']		=	$this -> update_once("once_job",array('edate'=>$time),array('id'=>$value['id']));
 			}
 			if($return['id']){
-				$return['msg']		=	'店铺招聘延期(ID:'.implode(',', $id).')设置成功！';
+				$return['msg']		=	yun_auto_t('店铺招聘延期(ID:').implode(',', $id).')设置成功！';
 				$return['errcode']	=	9;
 			}else{
-				$return['msg']		=	'店铺招聘延期(ID:'.implode(',', $id).')设置失败！';
+				$return['msg']		=	yun_auto_t('店铺招聘延期(ID:').implode(',', $id).')设置失败！';
 				$return['errcode']	=	8;
 			}
 		}else{
-			$return['msg']			=	'请选择要延期的店铺招聘！';
+			$return['msg']			=	yun_at('common_00820');
 			$return['errcode']		=	8;
 		}
 		return $return;
@@ -573,7 +573,7 @@ class once_model extends model{
 					'order_time'	=>	time(),
 					'order_type'	=>	$data['pay_type'],
 					'order_state'	=>	$once_price == '0' ? 2 : 1,
-					'order_remark'	=>	'店铺招聘收费',
+					'order_remark'	=>	'default_00263',
 					'did'			=>	$data['did'],
 					'once_id'		=>	$id,
 					'fast'			=>	$fast
@@ -595,10 +595,10 @@ class once_model extends model{
 					return array('error'=>0,'oid'=>$nid,'orderid'=>$dingdan,'id'=>$id,'fast'=>$fast, 'order_state' => $orderData['order_state']);
 				}else{
 					//生成失败 返回具体原因
-					return array('error'=>1,'msg'=>"下单失败");
+					return array('error'=>1,'msg'=>yun_at('common_01661'));
 				}
 			}else{
-				return array('error'=>1,'msg'=>"店铺数据不存在");
+				return array('error'=>1,'msg'=>yun_at('common_01362'));
 			}
 		}
 	}
@@ -609,14 +609,14 @@ class once_model extends model{
 		if (!empty($data['code'])){
 		    if(md5(strtolower($data['code'])) != $_SESSION['authcode'] || empty($_SESSION['authcode'])){//验证码错误
 		        unset($_SESSION['authcode']);
-		        return array('msg'=>'验证码错误！','errcode'=>8,'type'=>1);
+		        return array('msg'=>yun_at('model_00047'),'errcode'=>8,'type'=>1);
 		    }
 		}
 		
 		$jobinfo	=	$this->getOnceInfo(array('id'=>(int)$data['id'],'password'=>md5($data['password'])));
 		
 		if(!is_array($jobinfo) || empty($jobinfo)){
-			return array('msg'=>'密码错误！','errcode'=>8,'type'=>2);
+			return array('msg'=>yun_at('wap_js_00059'),'errcode'=>8,'type'=>2);
 		}else{
 			$_SESSION['oncepass'] = md5($data['password']);
 		}
@@ -625,15 +625,15 @@ class once_model extends model{
 				
 				$this->upOnce(array('ctime'=>time(),'sxtime'=>time(),'sxnumber'=>$jobinfo['sxnumber']+1),array('id'=>(int)$jobinfo['id']));
 				
-				return array('msg'=>'刷新成功','errcode'=>9,'type'=>3);
+				return array('msg'=>yun_at('wap_user_00198'),'errcode'=>9,'type'=>3);
 			}else{
-				return array('msg'=>'对不起你已达到一天最多刷新次数！','errcode'=>8,'type'=>5);
+				return array('msg'=>yun_at('common_00532'),'errcode'=>8,'type'=>5);
 			}
 			
 		}elseif($data['type']==3){//删除
 			
 			$this -> delOnce((int)$jobinfo['id']);
-			return array('msg'=>'删除成功！','errcode'=>9,'type'=>4);
+			return array('msg'=>yun_at('admin_user_00187'),'errcode'=>9,'type'=>4);
 			
 		}else{//修改
 			if($data['utype']=='pc'){
@@ -643,7 +643,7 @@ class once_model extends model{
 				$url	=	Url('wap',array('c'=>'once','a'=>'add','id'=>(int)$jobinfo['id']));
 				return array('url'=>$url);
 			}else{
-				return array('msg'=>'密码正确！','errcode'=>9,'type'=>2);
+				return array('msg'=>yun_at('common_01599'),'errcode'=>9,'type'=>2);
 			}
 			
 		}
@@ -717,14 +717,14 @@ class once_model extends model{
             $result['id'] = $this->update_once('once_job', $post, array('id' => array('in', $idstr)));
 
             if ($result['id']) {
-                $return['msg'] = '刷新职位(ID:' . $idstr . ')成功';
+                $return['msg'] = yun_auto_t('刷新职位(ID:') . $idstr . ')成功';
                 $return['errcode'] = 0;
             } else {
-                $return['msg'] = '刷新职位(ID:' . $idstr . ')失败';
+                $return['msg'] = yun_auto_t('刷新职位(ID:') . $idstr . ')失败';
                 $return['errcode'] = 1;
             }
         } else {
-            $return['msg'] = '请选择要刷新的职位';
+            $return['msg'] = yun_at('common_01166');
             $return['errcode'] = 1;
         }
         return $return;

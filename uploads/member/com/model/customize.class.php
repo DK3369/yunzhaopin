@@ -16,14 +16,14 @@ class customize_controller extends company
         } else {
 
             $navList = array(
-                0 => array('name' => '职位管理', 'url' => 'job', 'sort' => 1, 'target' => 1, 'show' => 1),
-                1 => array('name' => '简历管理', 'url' => 'hr', 'sort' => 2, 'target' => 1, 'show' => 1),
-                2 => array('name' => '面试管理', 'url' => 'invite', 'sort' => 3, 'target' => 1, 'show' => 1),
-                3 => array('name' => '人才库', 'url' => 'resume', 'sort' => 4, 'target' => 1, 'show' => 1),
-                4 => array('name' => '招聘会', 'url' => 'zhaopinhui', 'sort' => 5, 'target' => 1, 'show' => 1),
-                5 => array('name' => '会员服务', 'url' => 'right', 'sort' => 6, 'target' => 1, 'show' => 1),
-                6 => array('name' => '企业资料', 'url' => 'info', 'sort' => 7, 'target' => 1, 'show' => 1),
-                7 => array('name' => '账号设置', 'url' => 'binding', 'sort' => 8, 'target' => 1, 'show' => 1)
+                0 => array('name' => 'wap_com_00106', 'url' => 'job', 'sort' => 1, 'target' => 1, 'show' => 1),
+                1 => array('name' => 'wap_com_00105', 'url' => 'hr', 'sort' => 2, 'target' => 1, 'show' => 1),
+                2 => array('name' => 'member_com_00213', 'url' => 'invite', 'sort' => 3, 'target' => 1, 'show' => 1),
+                3 => array('name' => 'member_com_00597', 'url' => 'resume', 'sort' => 4, 'target' => 1, 'show' => 1),
+                4 => array('name' => 'member_com_00293', 'url' => 'zhaopinhui', 'sort' => 5, 'target' => 1, 'show' => 1),
+                5 => array('name' => 'wap_com_00097', 'url' => 'right', 'sort' => 6, 'target' => 1, 'show' => 1),
+                6 => array('name' => 'wap_com_00096', 'url' => 'info', 'sort' => 7, 'target' => 1, 'show' => 1),
+                7 => array('name' => 'member_user_00059', 'url' => 'binding', 'sort' => 8, 'target' => 1, 'show' => 1)
             );
         }
 
@@ -33,14 +33,14 @@ class customize_controller extends company
     }
 
     public $navNameArr = array(
-        'job' => array('name' => '职位管理', 'icon' => 2),
-        'hr' => array('name' => '简历管理', 'icon' => 4),
-        'invite' => array('name' => '面试管理', 'icon' => 10),
-        'resume' => array('name' => '人才库', 'icon' => 3),
-        'zhaopinhui' => array('name' => '招聘会', 'icon' => 12),
-        'right' => array('name' => '会员服务', 'icon' => 7),
-        'info' => array('name' => '企业资料', 'icon' => 8),
-        'binding' => array('name' => '账号设置', 'icon' => 11)
+        'job' => array('name' => 'wap_com_00106', 'icon' => 2),
+        'hr' => array('name' => 'wap_com_00105', 'icon' => 4),
+        'invite' => array('name' => 'member_com_00213', 'icon' => 10),
+        'resume' => array('name' => 'member_com_00597', 'icon' => 3),
+        'zhaopinhui' => array('name' => 'member_com_00293', 'icon' => 12),
+        'right' => array('name' => 'wap_com_00097', 'icon' => 7),
+        'info' => array('name' => 'wap_com_00096', 'icon' => 8),
+        'binding' => array('name' => 'member_user_00059', 'icon' => 11)
     );
 
     function saveCustomize_action()

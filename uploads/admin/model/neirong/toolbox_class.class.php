@@ -20,7 +20,7 @@ class toolbox_class_controller extends adminCommon
         $post = $this->post_trim($_POST);
 
         if (empty($post) || empty($post['name']) || empty($post['content'])) {
-            $this->render_json(1, '参数错误');
+            $this->render_json(1, yun_at('wap_com_00228'));
         }
 
         $hrM = $this->MODEL('hr');
@@ -55,9 +55,9 @@ class toolbox_class_controller extends adminCommon
         }
 
         if ($nid) {
-            $this->admin_json(0, $msg . '成功');
+            $this->admin_json(0, $msg . 'admin_tool_00502');
         } else {
-            $this->render_json(1, $msg . '失败');
+            $this->render_json(1, $msg . 'admin_tool_00501');
         }
     }
 
@@ -65,7 +65,7 @@ class toolbox_class_controller extends adminCommon
     function del_action()
     {
         if (empty($_POST['del'])) {
-            $this->render_json(1, '参数错误');
+            $this->render_json(1, yun_at('wap_com_00228'));
         }
 
         if (is_array($_POST['del'])) {

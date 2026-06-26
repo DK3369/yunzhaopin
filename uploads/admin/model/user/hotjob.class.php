@@ -11,18 +11,18 @@ class hotjob_controller extends adminCommon
             }
         }
         $edtime = array(
-            '1' => '7天内',
-            '2' => '一个月内',
-            '3' => '半年内',
-            '4' => '一年内',
-            '5' => '已到期'
+            '1' => 'admin_tool_00622',
+            '2' => 'common_01659',
+            '3' => 'common_01897',
+            '4' => 'common_01875',
+            '5' => 'wap_com_00319'
         );
         $search_list['rating'] = array(
-            "name" => '会员等级',
+            "name" => 'admin_user_company_00018',
             "value" => $ratingarr
         );
         $search_list['time'] = array(
-            "name" => '到期时间',
+            "name" => 'admin_user_company_00052',
             "value" => $edtime
         );
         return array('search_list' => $search_list);
@@ -179,7 +179,7 @@ class hotjob_controller extends adminCommon
         if ($return) {
             $this->admin_json(0, '名企(ID:'.pylode(',', $uid).')删除成功！');
         } else {
-            $this->render_json(1, '删除失败！');
+            $this->render_json(1, yun_at('admin_user_00186'));
         }
     }
 
@@ -228,7 +228,7 @@ class hotjob_controller extends adminCommon
         );
         if(!$info['id']){
             if (empty($hotJob['hot_pic']) && $_FILES['mqlogo']['tmp_name']==''){
-                $this->render_json(1, '请上传企业展示LOGO');
+                $this->render_json(1, yun_at('admin_user_00072'));
             }
             $value['did'] = intval($hotJob['did']);
             $arr = $ComM->addHotJob($value);

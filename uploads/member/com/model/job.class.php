@@ -173,7 +173,7 @@ class job_controller extends company
         } else {
             echo yun_json_encode(array(
                 'error' => 3,
-                'msg' => '参数错误，请重试！'
+                'msg' => yun_at('wap_00203')
             ));
         }
     }
@@ -274,7 +274,7 @@ class job_controller extends company
             die;
         } else {
 
-            echo yun_json_encode(array('error' => 0, 'msg' => '参数错误'));
+            echo yun_json_encode(array('error' => 0, 'msg' => yun_at('wap_com_00228')));
             die;
         }
     }

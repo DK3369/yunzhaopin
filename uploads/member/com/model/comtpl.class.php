@@ -73,16 +73,16 @@ class comtpl_controller extends company{
 					if($row['type']==1){
 						
 						if($statis['integral']<$row['price']){
-							$this->ACT_layer_msg("您的".$this->config['integral_pricename']."不足，请先充值！",8,"index.php?c=pay");
+							$this->ACT_layer_msg('wap_js_00157'.$this->config['integral_pricename'].'model_00104',8,"index.php?c=pay");
 						}
 						
-						$nid		=	$IntegralM->company_invtal($this->uid,$this -> usertype, $row['price'],false,"购买企业模板",true,2,'integral',15);
+						$nid		=	$IntegralM->company_invtal($this->uid,$this -> usertype, $row['price'],false,'common_01544',true,2,'integral',15);
 					}
 					else{
 						if($statis['integral']<$row['price']){
-							$this	->	ACT_layer_msg("您的余额不够购买，请先充值！",8,"index.php?c=pay");
+							$this	->	ACT_layer_msg('member_com_00686',8,"index.php?c=pay");
 						}
-						$nid		=	$IntegralM->company_invtal($this->uid,$this -> usertype, $row['price'],false,"购买企业模板",true,2,"integral",15);//积分操作记录
+						$nid		=	$IntegralM->company_invtal($this->uid,$this -> usertype, $row['price'],false,'common_01544',true,2,"integral",15);//积分操作记录
 					
 					}
 					if($statis['comtpl_all']==''){
@@ -95,16 +95,16 @@ class comtpl_controller extends company{
 				$oid	=	$statisM->upInfo(array("comtpl"=>$row['url']),array("uid"=>$this->uid,'usertype'=>2));
 				if($oid){
 					if($bannernum==0){
-						$this->ACT_layer_msg("设置成功！",9,"index.php?c=comtpl");
+						$this->ACT_layer_msg('model_00011',9,"index.php?c=comtpl");
 					}else{
 						$this->ACT_layer_msg("恭喜您设置成功,您还可以上传横幅广告！",9,"index.php?c=comtpl");
 					}
-                    $logM->addMemberLog($this->uid, $this->usertype, '图片信息：设置企业模版', 16, 1);//会员日志
+                    $logM->addMemberLog($this->uid, $this->usertype, 'member_com_00687', 16, 1);//会员日志
 				}else{
-					$this->ACT_layer_msg("设置失败，请稍后再试！",8,$_SERVER['HTTP_REFERER']);
+					$this->ACT_layer_msg('member_com_00688',8,$_SERVER['HTTP_REFERER']);
 				}
 			}else{
- 				$this->ACT_layer_msg("请正确选择模版！",8,"index.php?c=comtpl");
+ 				$this->ACT_layer_msg('member_com_00689',8,"index.php?c=comtpl");
 			}
 		}
 	}

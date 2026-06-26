@@ -45,7 +45,7 @@ class description_model extends model{
 		    }
 		    $result	=	$this	->	DB_insert_multi('desc_class',$valueData);
 		    $return	=	$result	?	2	:	3;
-		    $this	->	AdminLog("单页面类别添加成功！");
+		    $this	->	AdminLog('common_06470');
 		}else{
 			$return=1;
 		}
@@ -59,18 +59,18 @@ class description_model extends model{
 	function upDesClass($addData=array(),$whereData=array()){
 		
 		if($addData['name']){//修改名称
-			$type	=	'名称';
+			$type	=	'member_com_00021';
 		}else{
 			unset($addData['name']);
 		}
 		if($addData['sort']){//修改排序
-			$type	=	'排序';
+			$type	=	'member_com_00022';
 		}else{
 			unset($addData['sort']);
 		}
 		$this	->	update_once('desc_class',$addData,$whereData);
 		$showid	=	$whereData['id']	?	"(ID:".$whereData['id'].")"	:	'';
-		$this	->	adminLog("单页面类别".$showid.$type."修改成功");
+		$this	->	adminLog('admin_00362'.$showid.$type.'admin_user_company_00208');
 	}
 	/*
 	 * 删除单页面类别
@@ -90,7 +90,7 @@ class description_model extends model{
 		$result				=	$this	->	delete_all('desc_class',$whereData,$limit);
 		$return['errcode']	=	$result ? '9' :'8';
 		$return['layertype']=	$data['type']=='all' ? 1 : 0;
-		$return['msg']		=	$result ? '单页面类别删除成功！' : '删除失败！';
+		$return['msg']		=	$result ? yun_at('common_06471') : yun_at('admin_user_00186');
 		return	$return;
 	}
 	/*
@@ -103,11 +103,11 @@ class description_model extends model{
 		if(!empty($list)){
 			foreach ($list as $k => $v) {
 				if($v['is_type']==1){
-					$list[$k]['is_type_n'] = '自定义页面';
+					$list[$k]['is_type_n'] = yun_at('admin_system_00661');
 				}else if($v['is_type']==2){
-					$list[$k]['is_type_n'] = '站内链接';
+					$list[$k]['is_type_n'] = yun_at('admin_00198');
 				}else{
-					$list[$k]['is_type_n'] = '外部链接';
+					$list[$k]['is_type_n'] = yun_at('admin_system_00663');
 				}
 				$list[$k]['ctime_n'] = date('Y-m-d',$v['ctime']);
 				$list[$k]['url_pc'] = Url('index',array('c'=>'get','id'=>$v['id']));
@@ -188,7 +188,7 @@ class description_model extends model{
 		$result				=	$this	->	delete_all('description',$where,$limit);
 		$return['errcode']	=	$result ? '9' :'8';
 		$return['layertype']=	$data['type']=='all' ? 1 : 0;
-		$return['msg']		=	$result ? '单页面删除成功！' : '删除失败！';
+		$return['msg']		=	$result ? yun_at('common_06472') : yun_at('admin_user_00186');
 		return	$return;
 	}
 	

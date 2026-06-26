@@ -13,7 +13,7 @@ class register_controller extends wxapp_controller
 			$member     =  $this->yzToken($_POST['uid'], $_POST['token']);
 			if(!empty($member['uid'])){
 				$error	=   2;
-				$msg	=	yun_auto_t('您已登录！');
+				$msg	=	yun_at('wap_01855');
                 $this->render_json($error, $msg, '');
 			}
 		}
@@ -109,14 +109,14 @@ class register_controller extends wxapp_controller
         } else {
 
             $error  =   2;
-            $msg    =   yun_auto_t('参数错误！');
+            $msg    =   yun_at('wap_01298');
             $this->render_json($error, $msg, '');
         }
 
         if (empty($_POST['usertype'])) {
 
             $error  =   2;
-            $msg    =   yun_auto_t('请选择用户类型！');
+            $msg    =   yun_at('wap_01856');
         } else {
 
             $UserInfoM  =   $this->MODEL('userinfo');
@@ -235,10 +235,10 @@ class register_controller extends wxapp_controller
 			            }
 			        }
 			    }else{
-			        $msg    =   yun_auto_t('该手机号已被使用');
+			        $msg    =   yun_at('wap_01857');
 			    }
 			}else{
-				$msg		=	yun_auto_t('该手机号已被禁止使用');
+				$msg		=	yun_at('wap_js_00051');
 			}
 		}
 		$this -> render_json($errcode,$msg,$arr);

@@ -14,7 +14,7 @@
 <div class="pwdmain_cont" style="float:left">
     <div class="getpwd">
         <div class="pwdcon">
-            <div class="pwdalert"> 请输入您注册时所使用的帐号。 </div>
+            <div class="pwdalert"> {yun:}t key='common_02221'{/yun} </div>
             <div class="pwdemail" >
 				<iframe id="supportiframe"  name="supportiframe" onload="returnmessage('supportiframe');" class="dn"></iframe> 
                 <form target="supportiframe" action="{yun:}url m=sendcert c=sendcert{/yun}" method="post" onkeydown="if(event.keyCode==13){return false;}" >
@@ -31,7 +31,7 @@
                   <li style="width:100%;float:left">
                          <span>&nbsp;</span>
                     <input type="hidden" name="usertypr" value="{yun:}$usertype{/yun}"  />
-                    <input class="pwdsub" type="submit" value="发送激活邮件" name="pwd_add" onclick="return forget();"/>
+                    <input class="pwdsub" type="submit" value="{yun:}t key='common_02222'{/yun}" name="pwd_add" onclick="return forget();"/>
                     </li>
                     </ul>
                 </form>

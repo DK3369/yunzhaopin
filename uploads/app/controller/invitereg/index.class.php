@@ -7,7 +7,7 @@ class index_controller extends common{
 		
 		if($this->uid==""){
 			
-			$this->ACT_msg($this->config['sy_weburl'], "您还没有登录，请先登录！");
+			$this->ACT_msg($this->config['sy_weburl'], yun_at('wap_js_00154'));
 		
 		}
 		if($_POST['submit']){
@@ -16,19 +16,19 @@ class index_controller extends common{
 				
 				$where['uid']	=	$this->uid;
 				$where['ctime']	=	array('>',strtotime(date('Y-m-d')));
-				$where['title']	=	array('like%','邀请注册-');
+				$where['title']	=	array('like%','invitereg_00009');
 				
 				$inviteregNum 	= 	$msgM->getEmsgNum($where);
 				
 				if($inviteregNum >= $this->config['sy_reg_invite']){
-					$this->ACT_layer_msg("今日邀请注册已达限额，请明天继续！",8,$_SERVER['HTTP_REFERER']);
+					$this->ACT_layer_msg('invitereg_00002',8,$_SERVER['HTTP_REFERER']);
 					exit();
 				}
 			}
 			
 			$emailData['uid']	=	$this->uid;
 			
-			$_POST['content']	=	'我一直在用'.$this->config['sy_webname'].'找工作；真的很不错；忍不住的想推荐给你，快去注册吧！免费哦！链接地址：'.Url('register',array('uid'=>$this->uid));
+			$_POST['content']	=	'invitereg_00008'.$this->config['sy_webname'].'invitereg_00001'.Url('register',array('uid'=>$this->uid));
 
 			session_start();
 			
@@ -40,41 +40,41 @@ class index_controller extends common{
 			
 			if($this->config['sy_email_set']!="1"){
 				
-				$this->ACT_layer_msg("网站邮件服务器暂不可用！",8,$_SERVER['HTTP_REFERER']);
+				$this->ACT_layer_msg('invitereg_00003',8,$_SERVER['HTTP_REFERER']);
 			}
 			
 			if($_POST['email']==""){
 				
-				$this->ACT_layer_msg("邮件不能为空！",8,$_SERVER['HTTP_REFERER']);
+				$this->ACT_layer_msg('model_00077',8,$_SERVER['HTTP_REFERER']);
 			} 
 			if(CheckRegEmail($_POST['email'])==false){
 				
-				$this->ACT_layer_msg("邮件格式不正确！",8,$_SERVER['HTTP_REFERER']);
+				$this->ACT_layer_msg('model_00078',8,$_SERVER['HTTP_REFERER']);
 			}
 			if($_POST['content']==""){
 				
-				$this->ACT_layer_msg("内容不能为空！",8,$_SERVER['HTTP_REFERER']);
+				$this->ACT_layer_msg('member_com_00391',8,$_SERVER['HTTP_REFERER']);
 			}
 			if($authcode!=$_SESSION['authcode'] || empty($_SESSION['authcode'])){
 				
 				unset($_SESSION['authcode']);
 				
-				$this->ACT_layer_msg($_POST['authcode']."验证码错误！".$_SESSION['authcode'],8);
+				$this->ACT_layer_msg($_POST['authcode'].'model_00047'.$_SESSION['authcode'],8);
 			} 
 			
 			//发送邮件并记录入库
 			$emailData['email'] 	=	$_POST['email'];
-			$emailData['subject']	= 	"邀请注册-".$this->config['sy_webname'];
+			$emailData['subject']	= 	'invitereg_00009'.$this->config['sy_webname'];
 			$emailData['content']	= 	$_POST['content'];
 			
 			$sendid					= 	$notice->sendEmail($emailData);
 
 			if($sendid['status'] != -1){
 				
-				$this->ACT_layer_msg("邀请注册邮件已发送！",9,$_SERVER['HTTP_REFERER']);
+				$this->ACT_layer_msg('invitereg_00006',9,$_SERVER['HTTP_REFERER']);
 			}else{
 				
-				$this->ACT_layer_msg("邀请注册邮件发送失败！",8,$_SERVER['HTTP_REFERER']);
+				$this->ACT_layer_msg('model_00079',8,$_SERVER['HTTP_REFERER']);
 			}
 		}
 

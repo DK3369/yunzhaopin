@@ -60,13 +60,13 @@ class paylog_controller extends company{
         if ($_POST['submit']) {
             if (trim($_POST['order_remark']) == "") {
 
-                $this->ACT_layer_msg("备注不能为空！", 8, $_SERVER['HTTP_REFERER']);
+                $this->ACT_layer_msg('member_com_00702', 8, $_SERVER['HTTP_REFERER']);
             }
 
             $return =   $comorderM->upInfo((int)$_POST['id'], array('order_remark' => trim($_POST['order_remark'])), $this->uid);
             if ($return['errcode'] == 9) {
 
-                $this->MODEL('log')->addMemberLog($this->uid, 2, "财务订单：修改订单备注", 88, 2);//会员日志
+                $this->MODEL('log')->addMemberLog($this->uid, 2, 'member_com_00703', 88, 2);//会员日志
             }
             $this->ACT_layer_msg($return['msg'], $return['errcode'], $_SERVER['HTTP_REFERER']);
         }

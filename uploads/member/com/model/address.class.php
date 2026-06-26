@@ -78,7 +78,7 @@ class address_controller extends company
         if ((int)$_POST['id'] > 0){
 
             $result         =   $addressM->upAddress($linkData, array('id' => $_POST['id'], 'uid' => $this->uid));
-            $msg            =   $result ? '工作地址更新成功' : '工作地址更新失败';
+            $msg            =   $result ? yun_at('member_com_00684') : yun_at('api_wxapp_00005');
         } else if ($_POST['id'] == -1) {
             $comM = $this->MODEL('company');
             $upLink = array(
@@ -116,12 +116,12 @@ class address_controller extends company
             }
             
             $result = $comM->upInfo('', array('uid' => $this->uid), $upLink);
-            $msg = $result ? '工作地址更新成功' : '工作地址更新失败';
+            $msg = $result ? yun_at('member_com_00684') : yun_at('api_wxapp_00005');
         } else {
 
             $linkData['uid']=   $this->uid;
             $result         =   $addressM->saveAddress($linkData, array('uid' => $this->uid));
-            $msg            =   $result ? '工作地址添加成功' : '工作地址添加失败';
+            $msg            =   $result ? yun_at('api_wxapp_00007') : yun_at('api_wxapp_00006');
             $link_id        =   $result;
         }
 
@@ -180,10 +180,10 @@ class address_controller extends company
         $result     =   $addressM->delAddress(array('uid' => $this->uid, 'id' => array('in', pylode(',', $_POST['delid']))));
         if ($result) {
 
-            $this->layer_msg('删除成功！', 9, 1, $_SERVER['HTTP_REFERER']);
+            $this->layer_msg('admin_user_00187', 9, 1, $_SERVER['HTTP_REFERER']);
         } else {
 
-            $this->layer_msg('删除失败！', 8, 0, $_SERVER['HTTP_REFERER']);
+            $this->layer_msg('admin_user_00186', 8, 0, $_SERVER['HTTP_REFERER']);
         }
     }
 }

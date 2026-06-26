@@ -43,7 +43,7 @@
             </div>
         </div>
         <div class="modluDrawer">
-            <el-drawer title="简历预览" :append-to-body="true" :visible.sync="resumePreviewVisible" :destroy-on-close="true" size="530px">
+            <el-drawer title="{yun:}t key='member_user_00037'{/yun}" :append-to-body="true" :visible.sync="resumePreviewVisible" :destroy-on-close="true" size="530px">
                 <resume_preview :id="info.resume_id" :uid="info.uid"></resume_preview>
             </el-drawer>
         </div>
@@ -72,19 +72,19 @@ module.exports = {
     data: function () {
         return {
             loading: false,
-            emptytext: '暂无数据',
+            emptytext: "{yun:}t key='wap_js_00113'{/yun}",
             searchForm: {
                 page: 1,
                 limit: null,
                 type: "2",
                 keyword: null,
                 time: null,
-				comid:''
+				comid:'"
             },
             total: 0,
             tableData: [],
             tableHig: true,
-            checked: false,//全选
+            checked: false,//{yun:}t key='wap_js_00074'{/yun}
             isIndeterminate: false,// checkbox 的不确定状态
             selectedItem: [],
             info: {},
@@ -118,7 +118,7 @@ module.exports = {
 			handler(obj) {
 				if (!$.isEmptyObject(obj)) {
 					for(let i in obj){
-					    if(typeof this.searchForm[i]!='undefined'){
+					    if(typeof this.searchForm[i]!="undefined'){
 					        this.searchForm[i] = obj[i];
 					    }
 					}
@@ -155,7 +155,7 @@ module.exports = {
                 (params[index] === '') && (params[index] = null);
             }
             _this.loading = true;
-            _this.emptytext = "数据加载中";
+            _this.emptytext = "{yun:}t key='admin_user_weipin_00026'{/yun}";
 			var url = 'm=user&c=users_userlog&a=down';
             httpPost(url, params).then(function (response) {
                 let res = response.data;
@@ -170,7 +170,7 @@ module.exports = {
                         _this.$refs.multipleTable.bodyWrapper.scrollTop = 0;
                     }
                     if (_this.tableData.length === 0){
-                        _this.emptytext = "暂无数据";
+                        _this.emptytext = "{yun:}t key='wap_js_00113'{/yun}";
                     }
                 }
             }).catch(function (error) {

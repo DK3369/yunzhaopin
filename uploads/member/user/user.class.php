@@ -18,8 +18,8 @@ class user extends common{
 				if($expectnum < 1){
 					
 					$remindInfo['url']		=	'index.php?c=expect&act=add';
-					$remindInfo['title']	=	'请先创建一份简历！';
-					$remindInfo['msg']		=	'一份完整的简历是您成功求职的良好起点！';
+					$remindInfo['title']	=	yun_at('member_user_00615');
+					$remindInfo['msg']		=	yun_at('member_user_00616');
 
 					$this   ->  yunset('isremind',1);
 					$this	->	yunset('remindInfo',$remindInfo);
@@ -85,7 +85,7 @@ class user extends common{
 		}elseif(in_array($_GET['c'], array('paylist','paylog','integral','integral_reduce','reward_list','pay','payment'))||$_GET['m']=='invitereg' || in_array($_GET['act'], array('loglist','withdrawlist','withdraw','change','changelist'))){
 			
 		    if ($_GET['act'] == 'withdraw' && empty($member['wxid'])){
-                $this -> ACT_msg("index.php?c=binding","请先绑定微信！");
+                $this -> ACT_msg("index.php?c=binding",'member_user_00617');
 		    }
 		    
 			$this->yunset('left',5);

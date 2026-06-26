@@ -56,8 +56,8 @@ class template
 				$tp_list[$key]['path'] = $v[1];
 				$tp_list[$key]['file_path'] = str_replace(APP_PATH,"..",$v[1]);
 				$tp_list[$key]['dir'] = $tp_list[$key]['file_path'];
-				$tp_list[$key]['tp_name'] = "暂无说明";
-				$tp_list[$key][time] = "暂未做修改";
+				$tp_list[$key]['tp_name'] = yun_at('admin_01358');
+				$tp_list[$key][time] = yun_at('admin_system_00022');
 			}
 
 		}
@@ -121,7 +121,7 @@ class template
 		$fp = fopen($tp_path."/".$name,"w");
 		fwrite($fp,$content);
 		fclose($fp); 
-		$this->ACT_layer_msg("模板修改成功！",9,"index.php?m=admin_template",2,1);
+		$this->ACT_layer_msg('admin_01359',9,"index.php?m=admin_template",2,1);
 	}
 	/******新增模板*****/
 	function model_tpaddsave_action($post,$table)
@@ -146,7 +146,7 @@ class template
 					$v = @explode("+",$value);
 					if($v[0]==$tpname)
 					{
-						$this->ACT_layer_msg("该文件已经存在！",8,"index.php?m=admin_template&c=tpadd",2,1);
+						$this->ACT_layer_msg('admin_system_00021',8,"index.php?m=admin_template&c=tpadd",2,1);
 					}
 				}
 			}
@@ -166,13 +166,13 @@ class template
 					//$content = str_replace("\\\"","\"",$content);
 					fwrite($fp,$content);
 					fclose($fp); 
-					$this->ACT_layer_msg("模板添加成功！",9,"index.php?m=admin_template",2,1);
+					$this->ACT_layer_msg('admin_01360',9,"index.php?m=admin_template",2,1);
 				}
 			}else{ 
-				$this->ACT_layer_msg("模板添加失败！",8,"index.php?m=admin_template");
+				$this->ACT_layer_msg('admin_01361',8,"index.php?m=admin_template");
 			}
 		}else{ 
-			$this->ACT_layer_msg("文件名称不得为空！",8,"index.php?m=admin_template&c=tpadd");
+			$this->ACT_layer_msg('admin_system_00020',8,"index.php?m=admin_template&c=tpadd");
 		}
 	}
 }

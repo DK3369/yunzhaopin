@@ -26,7 +26,7 @@
 					<i id="tabacount" class="{yun:}if $smarty.get.type=='ba'{/yun}wx_login_bdnameline{yun:}/if{/yun}"></i>
 				</div>
 				{yun:}if $config.sy_msg_isopen==1 && $config.sy_msg_login==1{/yun}
-				<div id="bindphone" class="wx_login_bdname">短信登录
+				<div id="bindphone" class="wx_login_bdname">{yun:}t key='wap_00648'{/yun}
 					<i id="tabphone" class="{yun:}if !$smarty.get.type{/yun}wx_login_bdnameline{yun:}/if{/yun}"></i>
 				</div>
 				{yun:}/if{/yun}
@@ -100,9 +100,9 @@
 
 		{yun:}if !$smarty.get.type{/yun}
 		<div class="wx_login_bdlist">
-			<span class="wx_login_bdlistname">短信验证：</span>
+			<span class="wx_login_bdlistname">{yun:}t key='wap_01456'{/yun}：</span>
 			<div class="wx_login_bdtext">
-				<input type="text" id="moblie_code" autocomplete="off" placeholder="请输入短信验证码" class="wx_login_input" style="width:150px;">
+				<input type="text" id="moblie_code" autocomplete="off" placeholder="{yun:}t key='wap_00690'{/yun}" class="wx_login_input" style="width:150px;">
 				<a href="javascript:void(0);" href="javascript:void(0);" id="send_msg_tip" onclick="send_bind_msg('{yun:}url m=login c=sendmsg{/yun}');" class="wx_login_dxyz"><span>{yun:}t key='default_00334'{/yun}</span></a>
 				<span class="reg_tips reg_tips_red none" id="ajax_moblie_code"></span>
 				<input type="hidden" id="send" value="0" />

@@ -195,7 +195,7 @@ class announcement_model extends model{
 
 			  'errcode' => 8,
 
-			  'msg' 	=> '请选择要删除的数据！',
+			  'msg' 	=> yun_at('member_com_00084'),
             );
 
 		}else{
@@ -216,11 +216,11 @@ class announcement_model extends model{
 
 			if($nid){
 
-				$return['msg']		=	'公告(ID:' . $delId . ')';
+				$return['msg']		=	yun_auto_t('公告(ID:') . $delId . ')';
 
 				$return['errcode']	=	$nid ? '9' :'8';
 
-				$return['msg']		=	$nid ? $return['msg'].'删除成功！' : $return['msg'].'删除失败！';
+				$return['msg']		=	$nid ? $return['msg'].'admin_user_00187' : $return['msg'].'admin_user_00186';
 
 			}
 

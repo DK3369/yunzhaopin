@@ -94,9 +94,9 @@ class question_class_controller extends adminCommon
 
         if ($nbid) {
             $this->cache_action();
-            $this->admin_json(0, $msg . '成功');
+            $this->admin_json(0, $msg . 'admin_tool_00502');
         } else {
-            $this->render_json(1, $msg . '失败');
+            $this->render_json(1, $msg . 'admin_tool_00501');
         }
     }
 
@@ -114,7 +114,7 @@ class question_class_controller extends adminCommon
             $delID    =   $_POST['id'];
         }
         if (!$delID){
-            $this->render_json(1,'参数错误');
+            $this->render_json(1,yun_at('wap_com_00228'));
         }
         $return = $askM->delQclass($delID);
         if ($return['errcode'] === 0) {

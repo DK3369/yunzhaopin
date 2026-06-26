@@ -19,22 +19,22 @@
 	 
 					<ul class="">
 						<li {yun:}if $smarty.get.w=="1"{/yun}class="job_list_tit_cur"{yun:}/if{/yun}>
-							<a href="index.php?c=partok&w=1" title="招聘中的兼职">{yun:}t key='wap_com_00243'{/yun}</a>
+							<a href="index.php?c=partok&w=1" title="{yun:}t key='member_com_00469'{/yun}">{yun:}t key='wap_com_00243'{/yun}</a>
 						</li>
 						<li {yun:}if $smarty.get.w=="0"{/yun} class="job_list_tit_cur"{yun:}/if{/yun}>
-							<a href="index.php?c=partok&w=0" title="待审核的兼职">{yun:}t key='wap_user_00006'{/yun}</a>
+							<a href="index.php?c=partok&w=0" title="{yun:}t key='member_com_00470'{/yun}">{yun:}t key='wap_user_00006'{/yun}</a>
 						</li>
 						<li {yun:}if $smarty.get.w=="3"{/yun} class="job_list_tit_cur"{yun:}/if{/yun}>
-							<a href="index.php?c=partok&w=3" title="未通过的兼职">{yun:}t key='wap_user_00167'{/yun}</a>
+							<a href="index.php?c=partok&w=3" title="{yun:}t key='member_com_00471'{/yun}">{yun:}t key='wap_user_00167'{/yun}</a>
 						</li>
 						<li {yun:}if $smarty.get.w=="4" {/yun} class="job_list_tit_cur" {yun:}/if{/yun}>
-							<a href="index.php?c=partok&w=4" title="已下架的兼职">{yun:}t key='wap_com_00242'{/yun}</a>
+							<a href="index.php?c=partok&w=4" title="{yun:}t key='member_com_00472'{/yun}">{yun:}t key='wap_com_00242'{/yun}</a>
 						</li>
 						<li {yun:}if $smarty.get.w=="2"{/yun} class="job_list_tit_cur"{yun:}/if{/yun}>
-							<a href="index.php?c=partok&w=2" title="过期的兼职">{yun:}t key='member_com_00304'{/yun}</a>
+							<a href="index.php?c=partok&w=2" title="{yun:}t key='member_com_00473'{/yun}">{yun:}t key='member_com_00304'{/yun}</a>
 						</li>
 						<li {yun:}if $smarty.get.c=="part"{/yun} class="job_list_tit_cur"{yun:}/if{/yun}>
-							<a href="index.php?c=part" title="全部兼职">全部兼职</a>
+							<a href="index.php?c=part" title="{yun:}t key='member_com_00465'{/yun}">{yun:}t key='member_com_00465'{/yun}</a>
 						</li>
 					</ul>
 					<div class="joblist_search">
@@ -42,7 +42,7 @@
 						<form action="" method="get">
 							<div class="joblist_search_box">
 								<input name="c" type="hidden" value="part">
-								<input name="keyword" type="text" class="joblist_search_box_text" value="{yun:}$smarty.get.keyword{/yun}" placeholder="搜索已有兼职">
+								<input name="keyword" type="text" class="joblist_search_box_text" value="{yun:}$smarty.get.keyword{/yun}" placeholder="{yun:}t key='member_com_00643'{/yun}">
 								<input  type="submit" class="joblist_search_bth" value=" ">
 							</div>
 						</form>
@@ -57,8 +57,8 @@
 					<div class="admin_new_tip mt20">
 						<div class="admin_new_tit"><i class="admin_new_tit_icon"></i>{yun:}t key='member_com_00314'{/yun}</div>
 						<div class="admin_new_tip_list_cont">
-							<div class="admin_new_tip_list"> 如果贵公司想快速招聘人才，建议成为我们的会员，获取更多的展示机会，以帮助您快速找到满意的人才。 </div>
-							<div class="admin_new_tip_list"> 请贵公司保证兼职信息的真实性、合法性，并及时更新兼职信息，如被举报或投诉，确认发布的信息违反相关规定后，本站将会关闭贵公司的招聘服务，敬请谅解！</div>
+							<div class="admin_new_tip_list"> {yun:}t key='member_com_00641'{/yun} </div>
+							<div class="admin_new_tip_list"> {yun:}t key='member_com_00642'{/yun}</div>
 						</div>
 					</div>
 					
@@ -135,7 +135,7 @@
 							<tr>
 								<td colspan="9" class="table_end">
 									<div class="msg_no">
-										<p>暂无相关兼职信息</p><a href="javascript:;" onclick="jobadd_url('{yun:}$addjobnum{/yun}','part');" class="com_msg_no_bth com_submit">{yun:}t key='member_com_00312'{/yun}</a>
+										<p>{yun:}t key='member_com_00477'{/yun}</p><a href="javascript:;" onclick="jobadd_url('{yun:}$addjobnum{/yun}','part');" class="com_msg_no_bth com_submit">{yun:}t key='member_com_00312'{/yun}</a>
 									</div>	
 								</td>
 							</tr>
@@ -150,7 +150,7 @@
 											<input id='checkAll' type="checkbox" lay-skin='primary' lay-filter='allcom' class="com_Release_job_qx_check">{yun:}t key='wap_js_00074'{/yun}
 										</span>
 										<input class="c_btn_02 c_btn_02_w110" type="button" value="{yun:}t key='member_com_00055'{/yun}" onclick="return really('del[]');">
-										<input class="c_btn_02 c_btn_02_w110" type="button" value="添加兼职" onclick="jobadd_url('{yun:}$addjobnum{/yun}','part');">
+										<input class="c_btn_02 c_btn_02_w110" type="button" value="{yun:}t key='member_com_00644'{/yun}" onclick="jobadd_url('{yun:}$addjobnum{/yun}','part');">
 									</div>	
 								</td>
 							</tr>

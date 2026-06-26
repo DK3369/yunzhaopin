@@ -48,12 +48,12 @@ class upload_controller extends common{
 	// （）
 	public function qrcode_action(){
 		if(!$this->uid){
-			exit(yun_auto_t('请先登录登录'));
+			exit(yun_at('wap_00536'));
 		}
 		// type , save_action
 		$type 	= isset($_GET['type']) ? $_GET['type'] : '';
 		if($type == ''){
-			exit(yun_auto_t('扫码上传图片可选类型type：1企业营业执照上传，2个人身份证上传，3个人头像，4企业logo'));
+			exit(yun_at('wap_00531'));
 		}
 		$token 	= $this->generateToken($type, $this->uid);
 		$token 	= urlencode($token);
@@ -71,7 +71,7 @@ class upload_controller extends common{
 		$token 	= isset($_GET['t']) ? $_GET['t'] : '';
 		$arr 	= $this->checkToken($token);
 		if($arr == false || !isset($arr['type']) || !isset($arr['uid']) ){
-			exit(yun_auto_t('抱歉，功能维护中'));
+			exit(yun_at('wap_00535'));
 		}
 		$this->yunset('token', $token);
 		$this->yunset('type', $arr['type']);
@@ -115,12 +115,12 @@ class upload_controller extends common{
 	public function uploadimg_save_action(){
 	    $token = isset($_POST['token']) ? $_POST['token'] : '';
 		if($token == ''){
-			echo yun_json_encode(array('status' => -1, 'msg' => yun_auto_t('二维码传图出错，请联系网站管理员')));
+			echo yun_json_encode(array('status' => -1, 'msg' => yun_at('wap_00533')));
 			exit;
 		}
 		$arr = $this->checkToken($token);
 		if($arr == false || !isset($arr['type']) || !isset($arr['uid']) ){
-			echo yun_json_encode(array('status' => -1, 'msg' => yun_auto_t('操作超时，请刷新pc端网页二维码重试') . $token));
+			echo yun_json_encode(array('status' => -1, 'msg' => yun_at('wap_00532') . $token));
 			exit;
 		}
 
@@ -132,7 +132,7 @@ class upload_controller extends common{
 			echo yun_json_encode(array('status' => 1, 'path' => $path));
 			exit;
 		}else{
-			echo yun_json_encode(array('status' => -1, 'msg' => yun_auto_t('上传失败，请重试')));
+			echo yun_json_encode(array('status' => -1, 'msg' => yun_at('wap_00534')));
 			exit;
 		}
 	}
@@ -242,7 +242,7 @@ class upload_controller extends common{
             }
             
 		}else{
-			echo yun_json_encode(array('status' => -1, 'msg' => yun_auto_t('请上传图片')));exit;
+			echo yun_json_encode(array('status' => -1, 'msg' => yun_at('wap_01412')));exit;
 		}
 	}
 	/**
@@ -298,7 +298,7 @@ class upload_controller extends common{
 		    }
 		}else{
 			$error	=	2;
-		    $msg 	= 	yun_auto_t('请选择图片');
+		    $msg 	= 	yun_at('wap_00537');
 		}
 
 		$return['error'] 	= $error;

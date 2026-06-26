@@ -2,28 +2,28 @@
     <div class="moduleElHight">
         <div class="fenxiabHeadr">
             <div class="fenxiabHeadTite">
-                <span>统计对照表</span>
+                <span>{yun:}t key='admin_tool_00225'{/yun}</span>
             </div>
             <div class="fenxiabHeadFrom">
                 <div class="fenxiabHeadFomList" style="padding-right: 12px;">
-                    <el-select v-model="searchType" size="small" placeholder="请选择" @change="changeType">
+                    <el-select v-model="searchType" size="small" placeholder="{yun:}t key='wap_user_00100'{/yun}" @change="changeType">
                         <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
                         </el-option>
                     </el-select>
                 </div>
                 <div class="fenxiabHeadFomList">
-                    <el-date-picker v-model="startTime" size="small" :value-format="valueFormat" :type="type" placeholder="选择周期">
+                    <el-date-picker v-model="startTime" size="small" :value-format="valueFormat" :type="type" placeholder="{yun:}t key='admin_tool_00230'{/yun}">
                     </el-date-picker>
                 </div>
                 <div class="fenxiabHeadTexts">
                     <span>VS</span>
                 </div>
                 <div class="fenxiabHeadFomList">
-                    <el-date-picker v-model="endTime"  size="small" :type="type" :value-format="valueFormat"  placeholder="选择周期">
+                    <el-date-picker v-model="endTime"  size="small" :type="type" :value-format="valueFormat"  placeholder="{yun:}t key='admin_tool_00230'{/yun}">
                     </el-date-picker>
                 </div>
                 <div class="fenxiabHeadFomList" style="padding-left: 12px;">
-                    <el-button icon="el-icon-search" size="mini" type="primary" @click="search">统计</el-button>
+                    <el-button icon="el-icon-search" size="mini" type="primary" @click="search">{yun:}t key='admin_tool_00224'{/yun}</el-button>
                 </div>
             </div>
         </div>
@@ -255,10 +255,10 @@ module.exports = {
             tableData2: [],
             options: [{
                 value: '1',
-                label: window.yunAdminT('按年统计')
+                label: window.yunAdminT("{yun:}t key='admin_tool_00227'{/yun}")
             }, {
                 value: '2',
-                label: window.yunAdminT('按月统计')
+                label: window.yunAdminT("{yun:}t key='admin_tool_00226'{/yun}")
             }],
             value: '',
             statistics : ['gerezce','login_log','jilizce','comzce','company_login_log','fabuzhw', 'jilitod', 'liaotan', 'yaoqms', 'jilixza']
@@ -269,7 +269,7 @@ module.exports = {
     },
     methods: {
         addClass:function({row,rowIndex,columnIndex}){
-            if (row.years == "总计" && columnIndex !=0){
+            if (row.years == "{yun:}t key='member_com_00348'{/yun}" && columnIndex !=0){
                 var i = columnIndex -1;
                 let key = this.statistics[i];
                 if (row[key+"_percent"]<'0' && row[key]!='0'){
@@ -303,7 +303,7 @@ module.exports = {
                 params.type = this.searchType;
                 params.startTime = this.startTime
             if (!this.startTime || !this.endTime){
-                message.error(window.yunAdminT('请输入时间！'));return;
+                message.error(window.yunAdminT("{yun:}t key='admin_tool_00222'{/yun}"));return;
             }
                 params.endTime = this.endTime
                 httpPost('m=tool&c=dataBoard&a=fenxiabiao', params).then(function (response) {

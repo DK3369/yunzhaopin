@@ -74,31 +74,31 @@ class errlog_model extends model{
 
                 if ($value['type'] == 1) {
 
-                    $List[$key]['type_n'] = '注册';
+                    $List[$key]['type_n'] = yun_at('wap_00242');
                 } elseif ($value['type'] == 2) {
 
-                    $List[$key]['type_n'] = '添加简历';
+                    $List[$key]['type_n'] = yun_at('admin_user_00296');
                 } elseif ($value['type'] == 3) {
 
-                    $List[$key]['type_n'] = '应聘简历';
+                    $List[$key]['type_n'] = yun_at('wap_00794');
                 } elseif ($value['type'] == 4) {
 
-                    $List[$key]['type_n'] = '发布职位';
+                    $List[$key]['type_n'] = yun_at('wap_00322');
                 } elseif ($value['type'] == 5) {
 
-                    $List[$key]['type_n'] = '更新职位';
+                    $List[$key]['type_n'] = yun_at('common_06479');
                 } elseif ($value['type'] == 6) {
 
-                    $List[$key]['type_n'] = '下载简历';
+                    $List[$key]['type_n'] = yun_at('wap_00451');
                 } elseif ($value['type'] == 7) {
 
-                    $List[$key]['type_n'] = '邀请面试';
+                    $List[$key]['type_n'] = yun_at('resume_00029');
                 } elseif ($value['type'] == 8) {
 
-                    $List[$key]['type_n'] = '发送短信';
+                    $List[$key]['type_n'] = yun_at('admin_user_00166');
                 } elseif ($value['type'] == 9) {
 
-                    $List[$key]['type_n'] = '发送邮件';
+                    $List[$key]['type_n'] = yun_at('admin_user_00167');
                 }  
             }
             return $List;
@@ -122,12 +122,12 @@ class errlog_model extends model{
 
                 $return['id']   =   $this->delete_all('error_log', $whereData, '');
             }
-            $return['msg']      =   '错误日志';
+            $return['msg']      =   yun_at('admin_index_00076');
             $return['errcode']  =   $return['id'] ? '9' : '8';
-            $return['msg']      =   $return['id'] ? $return['msg'] . '删除成功！' : $return['msg'] . '删除失败！';
+            $return['msg']      =   $return['id'] ? $return['msg'] . 'admin_user_00187' : $return['msg'] . 'admin_user_00186';
         } else {
 
-            $return['msg']      =   '请选择您要删除的错误日志！';
+            $return['msg']      =   yun_at('common_00745');
             $return['errcode']  =   8;
         }
         return $return;

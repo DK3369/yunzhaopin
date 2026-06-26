@@ -31,8 +31,8 @@
     {yun:}if $Info.sqInfo{/yun}
     <div class="yun_resume_sq_job">
         <ul>
-            <li>投递职位：{yun:}$Info.sqInfo.sq_job_name{/yun}</li>
-            <li>投递时间：{yun:}$Info.sqInfo.sq_job_time{/yun}</li>
+            <li>{yun:}t key='wap_01596'{/yun}：{yun:}$Info.sqInfo.sq_job_name{/yun}</li>
+            <li>{yun:}t key='member_user_00431'{/yun}：{yun:}$Info.sqInfo.sq_job_time{/yun}</li>
             <li>{yun:}t key='admin_yunying_00131'{/yun}：{yun:}$Info.login_date_n{/yun}</li>
         </ul>
     </div>
@@ -74,7 +74,7 @@
  {yun:}if $Info.living {/yun}
          <span class="resume_content_msg_c" style="width:200px;"> 
        
-        <span class="resume_content_msg_span">所在地：</span>{yun:}$Info.living{/yun}
+        <span class="resume_content_msg_span">{yun:}t key='admin_00605'{/yun}：</span>{yun:}$Info.living{/yun}
       
         </span>  {yun:}/if{/yun} 
         {yun:}/if{/yun} 
@@ -100,7 +100,7 @@
 		</div>
          <div class="resume_content_yx_list"><span class="resume_c6">{yun:}t key='resume_00006'{/yun}</span>{yun:}$Info.customjob{/yun} </div>
         <div class="resume_content_yx_list"><span class="resume_c6">{yun:}t key='admin_tool_00129'{/yun}：</span>{yun:}$Info.hy{/yun}</div>
-        <div class="resume_content_yx_list"><span class="resume_c6">待遇要求：</span>{yun:}$Info.salary{/yun}</div>
+        <div class="resume_content_yx_list"><span class="resume_c6">{yun:}t key='resume_00056'{/yun}：</span>{yun:}$Info.salary{/yun}</div>
         <div class="resume_content_yx_list"><span class="resume_c6">{yun:}t key='wap_00349'{/yun}：</span>
         	{yun:}foreach from=$Info.expectcity key=key item=v{/yun} 
 				{yun:}if $key< 5{/yun} 
@@ -226,7 +226,7 @@
       {yun:}if is_array($Info.user_show) && !empty($Info.user_show){/yun}
 	  {yun:}if ($Info.uid == $uid && $usertype == 1) || $Info.m_status == 1{/yun}
       <div class="resume_list">
-        <div class="resume_content_h1"><i class="resume_content_h1_icon resume_content_h1_icon9"></i><span class="resume_content_h1_name">我的作品</span></div>
+        <div class="resume_content_h1"><i class="resume_content_h1_icon resume_content_h1_icon9"></i><span class="resume_content_h1_name">{yun:}t key='wap_01601'{/yun}</span></div>
         <div class="resume_jl_box">
           <div class="dom_resume_sp_img"> 
             <!--{yun:}t key='admin_user_00189'{/yun}-->
@@ -276,13 +276,13 @@
           <div class="resume_jl_box_tc"> <span class="resume_jl_box_t1">{yun:}t key='wap_user_00243'{/yun}：</span>{yun:}$Info.address|mb_substr:0:16:'utf-8'{/yun}</span> </div>
           {yun:}/if{/yun}
            {yun:}if $Info.qq{/yun}
-	 <div class="resume_jl_box_tc"> <span class="resume_jl_box_t1">联系Q Q：{yun:}$Info.qq{/yun}</span></div>
+	 <div class="resume_jl_box_tc"> <span class="resume_jl_box_t1">{yun:}t key='common_02458'{/yun}Q Q：{yun:}$Info.qq{/yun}</span></div>
    {yun:}/if{/yun}     
           {yun:}if $Info.homepage{/yun}
           <div class="resume_jl_box_tc"> <span class="resume_jl_box_t1">{yun:}t key='member_com_00008'{/yun}：</span>{yun:}$Info.homepage{/yun}</div>
           {yun:}/if{/yun}                    
           {yun:}/if{/yun}
-          {yun:}if $Info.email{/yun}<div class="resume_jl_box_tc"> <span class="resume_jl_box_t1"> 电子邮件：</span><em class="resume_jl_box_t2">{yun:}$Info.email{/yun}</em> </div>{yun:}/if{/yun}
+          {yun:}if $Info.email{/yun}<div class="resume_jl_box_tc"> <span class="resume_jl_box_t1"> {yun:}t key='member_user_00404'{/yun}：</span><em class="resume_jl_box_t2">{yun:}$Info.email{/yun}</em> </div>{yun:}/if{/yun}
 		{yun:}if $Info.wxewm{/yun}
 		<div class="resume_show_wx"><img src="{yun:}$Info.wxewm{/yun}" width="120" height="120"><div class="resume_show_wx_p">{yun:}t key='resume_00003'{/yun}</div></div>
 		{yun:}/if{/yun}

@@ -21,7 +21,7 @@
     {yun:}else {/yun}
     <div class="integral_login_hi"> 欢迎访问{yun:}$config.integral_pricename{/yun}{yun:}t key='wap_00398'{/yun} !</div> 
       <div class="integral_login_zjf">{yun:}$statis.integral{/yun}</div>
-    <div class="integral_login_zjf_p">您当前总{yun:}$config.integral_pricename{/yun}
+    <div class="integral_login_zjf_p">{yun:}t key='wap_00622'{/yun}{yun:}$config.integral_pricename{/yun}
    </div>
      <div class="integral_loginbth_box"> 
    <div class="integral_loginbth"> <a href="{yun:}$config.sy_weburl{/yun}/member/index.php?c=integral">赚取{yun:}$config.integral_pricename{/yun}</a></div>
@@ -46,7 +46,7 @@
     </div>
   </div>
   <div class="yun_Integral_top_right"> 
-   <div class="yun_Integral_ta_h1">TA们正在换好礼…</div>
+   <div class="yun_Integral_ta_h1">{yun:}t key='common_02283'{/yun}</div>
     <div class="yun_Integral_ta">
      
       <ul class="yun_Integral_ta_box fl">
@@ -56,17 +56,17 @@
             <dt><img src="{yun:}$v.pic{/yun}" onerror="showImgDelay(this,'{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_imgsc_mr{/yun}',2);" width="50" height="50"></dt>
             <dd>
               <div class="yun_Integral_ta_name">{yun:}$v.username{/yun} {yun:}t key='common_01944'{/yun}</div>
-              <div class="yun_Integral_ta_dh">兑换了<a href="{yun:}url m=redeem c=show id='`$v.gid`'{/yun}" target="_blank" title="{yun:}$v.name{/yun}">{yun:}$v.name{/yun}</a></div>
-              <em>花了{yun:}$v.integral{/yun}{yun:}$config.integral_pricename{/yun}</em> </dd>
+              <div class="yun_Integral_ta_dh">{yun:}t key='wap_00716'{/yun}<a href="{yun:}url m=redeem c=show id='`$v.gid`'{/yun}" target="_blank" title="{yun:}$v.name{/yun}">{yun:}$v.name{/yun}</a></div>
+              <em>{yun:}t key='wap_00715'{/yun}{yun:}$v.integral{/yun}{yun:}$config.integral_pricename{/yun}</em> </dd>
           </dl>
         </li>
         {yun:}/foreach{/yun}
       </ul>
     </div>
   </div>
-  <!--推荐商品-->
+  <!--{yun:}t key='common_02284'{/yun}-->
   <div class="yun_Integral_box">
-    <div class="yun_Integral_box_h1"><span class="yun_Integral_box_h1_name">推荐商品</span><a href="{yun:}url m=redeem c=list {/yun}" class="yun_Integral_box_h1_more">{yun:}t key='common.more'{/yun}>></a></div>
+    <div class="yun_Integral_box_h1"><span class="yun_Integral_box_h1_name">{yun:}t key='common_02284'{/yun}</span><a href="{yun:}url m=redeem c=list {/yun}" class="yun_Integral_box_h1_more">{yun:}t key='common.more'{/yun}>></a></div>
     <div class="yun_Integral_cont">
       <div class="yun_Integral_cont_w"> 
 	  {yun:}redeem item=val rec=1 limit=16{/yun}
@@ -99,7 +99,7 @@
   </div>
    <!--{yun:}t key='wap_00397'{/yun}-->
     <div class="yun_Integral_box">
-    <div class="yun_Integral_box_h1"><span class="yun_Integral_box_h1_name yun_Integral_box_h1_name_hot">最新礼品</span><a href="{yun:}url m=redeem c=list {/yun}" class="yun_Integral_box_h1_more">{yun:}t key='common.more'{/yun}>></a></div>
+    <div class="yun_Integral_box_h1"><span class="yun_Integral_box_h1_name yun_Integral_box_h1_name_hot">{yun:}t key='wap_00717'{/yun}</span><a href="{yun:}url m=redeem c=list {/yun}" class="yun_Integral_box_h1_more">{yun:}t key='common.more'{/yun}>></a></div>
     <div class="yun_Integral_cont">
       <div class="yun_Integral_cont_w"> 
          {yun:}redeem  item=new limit=16{/yun}

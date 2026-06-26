@@ -47,7 +47,7 @@ class msg_controller extends com_controller{
         if(!$_POST['id']){
 
             $data['error']  =   3;
-            $data['errmsg'] =   yun_auto_t('参数不正确');
+            $data['errmsg'] =   yun_at('wap_01833');
         }else{
 
             $MsgM   =   $this->MODEL('msg');
@@ -60,11 +60,11 @@ class msg_controller extends com_controller{
                 $LogM->addMemberLog($this->member['uid'], $this->member['usertype'], $logContent, 18, 3);
 
                 $data['error']  =   0;
-                $data['errmsg'] =   yun_auto_t('删除成功！');
+                $data['errmsg'] =   yun_at('admin_user_00187');
             } else {
 
                 $data['error']  =   1;
-                $data['errmsg'] =   yun_auto_t('删除失败！');
+                $data['errmsg'] =   yun_at('admin_user_00186');
             }
         }
         $this->render_json($data['error'],$data['errmsg']);
@@ -76,7 +76,7 @@ class msg_controller extends com_controller{
         if (!$_POST['id']) {
 
             $data['error']  =   3;
-            $data['errmsg'] =   yun_auto_t('参数不正确');
+            $data['errmsg'] =   yun_at('wap_01833');
         } else {
 
 
@@ -91,15 +91,15 @@ class msg_controller extends com_controller{
             if ($nid) {
 
                 $LogM       =   $this->MODEL('log');
-                $logContent =   yun_auto_t('消息处理：回复求职咨询');
-                $logDetail  =   yun_auto_t('回复求职咨询：').$_POST['reply'];
+                $logContent =   yun_at('api_wxapp_00003');
+                $logDetail  =   yun_at('wap_01836').$_POST['reply'];
                 $LogM->addMemberLog($this->member['uid'], $this->member['usertype'], $logContent, 18, 2, $logDetail);
 
                 $data['error']  =    1;
-                $data['errmsg'] =   yun_auto_t('回复成功');
+                $data['errmsg'] =   yun_at('wap_01837');
             } else {
                 $data['error']  =   2;
-                $data['errmsg'] =   yun_auto_t('回复失败');
+                $data['errmsg'] =   yun_at('wap_01838');
             }
         }
         $this->render_json($data['error'], $data['errmsg']);
@@ -195,7 +195,7 @@ class msg_controller extends com_controller{
         $SysmsgM	=	$this -> MODEL('sysmsg');
         if(!$_POST['id']){
             $data['error']	=	3;
-            $data['errmsg']	=	yun_auto_t('参数不正确');
+            $data['errmsg']	=	yun_at('wap_01833');
         }else{
             $return  =	 $SysmsgM -> delSysmsg($_POST['id'],array('fa_uid'=>$this->member['uid']));
             if($return['errcode']==9){
@@ -205,10 +205,10 @@ class msg_controller extends com_controller{
                 $LogM->addMemberLog($this->member['uid'], $this->member['usertype'], $logContent, 18, 3);
 
                 $data['error']	=	0;
-                $data['errmsg']	=	yun_auto_t('删除成功！');
+                $data['errmsg']	=	yun_at('admin_user_00187');
             }else{
                 $data['error']	=	1;
-                $data['errmsg']	=	yun_auto_t('删除失败！');
+                $data['errmsg']	=	yun_at('admin_user_00186');
             }
         }
         $this->render_json($data['error'],$data['errmsg']);

@@ -43,17 +43,17 @@ class zhaopinhui_controller extends company{
             if ($row['status'] == 0 && $row['price'] > 0) {
 
                 $IntegralM  =   $this->MODEL('integral');
-                $IntegralM->company_invtal($this->uid, $this->usertype, $row['price'], true, "退出招聘会", true, 2, 'integral');
+                $IntegralM->company_invtal($this->uid, $this->usertype, $row['price'], true, 'member_com_00711', true, 2, 'integral');
             }
 
             $logM       =   $this->MODEL('log');
-            $logContent =   '招聘会：取消报名';
+            $logContent =   'common_01265';
             $logM->addMemberLog($this->uid, $this->usertype, $logContent, 14, 3);
 
-            $this->layer_msg('退出成功！', 9, 0, $_SERVER['HTTP_REFERER']);
+            $this->layer_msg('member_com_00712', 9, 0, $_SERVER['HTTP_REFERER']);
         } else {
 
-            $this->layer_msg('退出失败！', 8, 0, $_SERVER['HTTP_REFERER']);
+            $this->layer_msg('common_06036', 8, 0, $_SERVER['HTTP_REFERER']);
         }
 	}
 }

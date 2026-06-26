@@ -38,10 +38,10 @@ class job_controller extends user{
 
 		
         //未查看 已查看 等待通知 条件不符 无法联系
-        $StateList		=	array('1'=>'未查看','3'=>'已面试','4'=>'不合适','7'=>'已入职');
+        $StateList		=	array('1'=>'wap_user_00260','3'=>'wap_user_00266','4'=>'wap_user_00354','7'=>'wap_user_00356');
         $this->yunset("StateList",$StateList);
         
-        $search_list	=	array('1'=>'今天','3'=>'最近三天','7'=>'最近七天','15'=>'最近半月','30'=>'最近一个月');
+        $search_list	=	array('1'=>'common_01940','3'=>'admin_user_00179','7'=>'admin_user_00178','15'=>'admin_user_00180','30'=>'admin_user_00175');
         $this->yunset("search_list",$search_list);
         
         $num=$JobM -> getSqJobNum(array('uid'=>$this->uid,'isdel'=>9));

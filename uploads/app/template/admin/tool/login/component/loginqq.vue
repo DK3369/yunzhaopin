@@ -4,15 +4,15 @@
             <table class="tableVue">
                 <thead>
                     <tr align="left">
-                        <th width="200">名称</th>
-                        <th width="500">状态</th>
-                        <th>说明</th>
+                        <th width="200">{yun:}t key='member_com_00021'{/yun}</th>
+                        <th width="500">{yun:}t key='member_user_00181'{/yun}</th>
+                        <th>{yun:}t key='member_com_00207'{/yun}</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td>
-                            <div class="TableTite">登录是否开启</div>
+                            <div class="TableTite">{yun:}t key='admin_tool_00437'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableButn">
@@ -31,7 +31,7 @@
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input placeholder="请输入内容" v-model="configdata.sy_qqappid">
+                                <el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="configdata.sy_qqappid">
                                 </el-input>
                             </div>
                         </td>
@@ -47,7 +47,7 @@
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input placeholder="请输入内容" v-model="configdata.sy_qqappkey">
+                                <el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="configdata.sy_qqappkey">
                                 </el-input>
                             </div>
                         </td>
@@ -59,7 +59,7 @@
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">应用打通是否申请通过</div>
+                            <div class="TableTite">{yun:}t key='admin_tool_00438'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableButn">
@@ -68,7 +68,7 @@
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>QQ互联平台移动应用和网站应用是否已打通，未打通的请不要打开</span>
+                                <span>{yun:}t key='admin_tool_00436'{/yun}</span>
                             </div>
                         </td>
                     </tr>
@@ -76,7 +76,7 @@
             </table>
         </div>
         <div class="setBasicButn" style="border: none;">
-            <el-button type="primary" size="medium" @click="post">提交</el-button>
+            <el-button type="primary" size="medium" @click="post">{yun:}t key='common.submit'{/yun}</el-button>
         </div>
     </div>
 </template>

@@ -33,10 +33,10 @@
                                         <!-- <span>{yun:}t key='wap_user_00259'{/yun}...</span> -->
                                     {yun:}elseif $zph.stime < 0 && $zph.etime > 0{/yun}
                                         <div class="promptbox"><img src="{yun:}$style{/yun}/images/goon.png">
-                                        <span>进行中...</span></div>
+                                        <span>{yun:}t key='wap_00604'{/yun}...</span></div>
                                     {yun:}else{/yun}
                                         <div class="promptbox"><img src="{yun:}$style{/yun}/images/signup.png">
-                                        <span>报名中...</span></div>
+                                        <span>{yun:}t key='common_02452'{/yun}</span></div>
                                     {yun:}/if{/yun} 
                                 
                             </div>
@@ -46,7 +46,7 @@
                                 <p class="cont_infotxt_add">{yun:}t key='admin_00282'{/yun}：<span>{yun:}$zph.address{/yun}</span></p>
                             </div>
                             {yun:}if $zph.stime < 0 && $zph.etime < 0{/yun}
-                                <a class="fair_cont_link fair_cont_obso" href="{yun:}url m=zph c=show id='`$zph.id`'{/yun}">往期回顾</a>
+                                <a class="fair_cont_link fair_cont_obso" href="{yun:}url m=zph c=show id='`$zph.id`'{/yun}">{yun:}t key='wap_00602'{/yun}</a>
                             {yun:}else{/yun}
                                 <a class="fair_cont_link" href="{yun:}url m=zph c=show id='`$zph.id`'{/yun}">{yun:}t key='wap_00561'{/yun}</a>
                             {yun:}/if{/yun} 
@@ -66,27 +66,27 @@
             <div class="careerfair_fixed">
                 {yun:}if !$uid{/yun}
                 <div class="fixed_info fixed_info_resume">
-                    <h4>求职参会必备</h4>
+                    <h4>{yun:}t key='common_02453'{/yun}</h4>
                         <a href="{yun:}url m=login{/yun}" >
                             <img src="{yun:}$style{/yun}/images/registe.png">
                             <span>{yun:}t key='default_00336'{/yun}</span>
                         </a>
-                    <p>线上线下随时可用</p>
+                    <p>{yun:}t key='common_02454'{/yun}</p>
                 </div>
                 {yun:}elseif $usertype == 1 && $rlist.name == "" {/yun}
                     <div class="fixed_info fixed_info_resume">
-                        <h4>求职参会必备</h4>
+                        <h4>{yun:}t key='common_02453'{/yun}</h4>
                             <a href="{yun:}$config.sy_weburl{/yun}/member/index.php?c=expect&act=add">
                                 <img src="{yun:}$style{/yun}/images/registe.png">
                                 <span>{yun:}t key='default_00336'{/yun}</span>
                             </a>
-                        <p>线上线下随时可用</p>
+                        <p>{yun:}t key='common_02454'{/yun}</p>
                     </div>
                 {yun:}/if{/yun}
                 <div class="fixed_info fixed_info_weChat">
                     <img src="{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_wx_qcode{/yun}"  width="130" height="130">
                     <span>{yun:}t key='wap_user_00191'{/yun}</span>
-                    <p>即时了解参会岗位信息</p>
+                    <p>{yun:}t key='common_02455'{/yun}</p>
                 </div>
             </div>
         </div>

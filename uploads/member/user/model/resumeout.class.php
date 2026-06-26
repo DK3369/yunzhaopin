@@ -31,12 +31,12 @@ class resumeout_controller extends user{
             
             if ($num > $this->config['sy_resumeout_day_num']) {
                 
-                $outmsg ='每天最多外发'.$this->config['sy_resumeout_day_num'].'次简历！';
+                $outmsg ='common_01517'.$this->config['sy_resumeout_day_num'].'member_user_00612';
 
             }
             
         }else{
-            $outmsg ='外发简历功能已关闭！';
+            $outmsg ='common_00987';
         }
         if(isset($this->config['sy_resumeout_interval']) && $this->config['sy_resumeout_interval'] > 0){
     
@@ -70,7 +70,7 @@ class resumeout_controller extends user{
                 }else{
                     $recs           =   $recs.'秒';
                 }
-                $outmsg ='外发简历间隔不得少于'.$recs.'，请'.$needTime.'后再外发！';
+                $outmsg ='common_00988'.$recs.'common_02049'.$needTime.'common_01594';
             }
         }
         $this->yunset('outmsg',$outmsg);

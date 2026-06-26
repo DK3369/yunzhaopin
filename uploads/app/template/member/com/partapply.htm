@@ -76,7 +76,7 @@
 				                	<th>{yun:}t key='wap_com_00303'{/yun}</th> 
 				                	<th>{yun:}t key='home.education_suffix'{/yun}</th> 
 				                	<th>{yun:}t key='wap_com_00342'{/yun}</th> 
-				                  	<th>标记状态</th> 
+				                  	<th>{yun:}t key='member_com_00638'{/yun}</th> 
 				                	<th>{yun:}t key='member_user_00048'{/yun}</th> 
 				             	</tr>
 								{yun:}/if{/yun}
@@ -95,14 +95,14 @@
 								   		<span class="com_mem_hr_list_bj {yun:}if $v.status=='3'{/yun}com_mem_hr_list_bj_cur{yun:}/if{/yun}" name='{yun:}$v.id{/yun}' status='3'>  <i class="com_mem_hr_list_icon"></i>{yun:}t key='member_com_00311'{/yun}  </span>    
 				            		</td>  
 				            		<td align="center">
-				       					<a href="javascript:void(0)" onclick="layer_del('确定删除该条信息？', 'index.php?c=partapply&act=del&del={yun:}$v.id{/yun}'); " class="com_bth cblue">{yun:}t key='common.delete'{/yun}</a>
+				       					<a href="javascript:void(0)" onclick="layer_del("{yun:}t key='member_com_00640'{/yun}", 'index.php?c=partapply&act=del&del={yun:}$v.id{/yun}'); " class="com_bth cblue">{yun:}t key='common.delete'{/yun}</a>
 				             		</td>
 				              	</tr>
 				              	
 				                 {yun:}foreachelse{/yun}
 				              	<tr>
 					                <td colspan="9" class="table_end">
-					                	<div class="msg_no">亲，暂时还没有求职者报名您发布的兼职职位哦~</div>
+					                	<div class="msg_no">{yun:}t key='member_com_00639'{/yun}</div>
 					                </td>
 				                </tr>
 				                {yun:}/foreach{/yun}

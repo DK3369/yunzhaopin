@@ -38,7 +38,7 @@ class ad_model extends model{
                     $List[$k]['place_n'] = 'WAP';
                 }else{
 
-                    $List[$k]['place_n'] = '未定义';
+                    $List[$k]['place_n'] = yun_at('common_01924');
                 }
             }
             $ListNew['list']    =   $List;
@@ -188,7 +188,7 @@ class ad_model extends model{
     function getAdClassArr()
     {
         $adClass    =   $this->select_all('ad_class', array('orderby' => 'id, desc'), '`id`,`class_name`,`place`');
-        $classOne   =   array(array('id' => 1, 'name' => 'PC'), array('id' => 2, 'name' => 'WAP'), array('id' => 3, 'name' => '未定义'));
+        $classOne   =   array(array('id' => 1, 'name' => 'PC'), array('id' => 2, 'name' => 'WAP'), array('id' => 3, 'name' => 'common_01924'));
         $classTwo   =   array();
         $classNameArr   =   array();
         $maxidlen = 1;
@@ -249,10 +249,10 @@ class ad_model extends model{
                         $linkrows[$key]['d_title']  =   $domain['Dname'][$value['did']];
                     } elseif ($value['did'] == -1) {
 
-                        $linkrows[$key]['d_title']  =   '全站';
+                        $linkrows[$key]['d_title']  =   yun_at('api_wxapp_00018');
                     } else {
 
-                        $linkrows[$key]['d_title']  =   '主站';
+                        $linkrows[$key]['d_title']  =   yun_at('ajax_00021');
                     }
                     if ($value['is_check'] == "1") {
                         $linkrows[$key]['check']    =   "<font color='green'>已审核</font>";
@@ -263,16 +263,16 @@ class ad_model extends model{
 
                     switch ($value['ad_type']) {
                         case "word":
-                            $linkrows[$key]['ad_typename'] = "文字广告";
+                            $linkrows[$key]['ad_typename'] = yun_at('admin_01140');
                             break;
                         case "pic":
                             $linkrows[$key]['ad_typename'] = '<a href="javascript:void(0)" class="preview admin_n_img" url="' . $value['pic_url'] . '"></a>';
                             break;
                         case "flash":
-                            $linkrows[$key]['ad_typename'] = "FLASH广告";
+                            $linkrows[$key]['ad_typename'] = yun_at('admin_01169');
                             break;
                         case "lianmeng":
-                            $linkrows[$key]['ad_typename'] = "联盟广告";
+                            $linkrows[$key]['ad_typename'] = yun_at('admin_yunying_00072');
                             break;
                     }
 
@@ -522,16 +522,16 @@ class ad_model extends model{
             $this->model_ad_arr();
             
             if ($nid) {
-                $return['msg']		= 	$msg."成功！";
+                $return['msg']		= 	$msg.'wap_js_00104';
                 $return['error']	=	0;
             } else {
                 
-                $return['msg']		=	$msg."失败！";
+                $return['msg']		=	$msg.'wap_js_00103';
                 $return['error']	=	1;
             }
         } else {
             
-            $return['msg'] 		= 	"您还未选择广告类型！";
+            $return['msg'] 		= 	yun_at('common_01011');
             $return['error']	=	2;
         }
         return $return;
@@ -549,7 +549,7 @@ class ad_model extends model{
 
             $result =   $this->delete_all('ad', array('id' => $id));
 
-            $return['msg']      =   $result ? '删除成功！' : '删除失败！';
+            $return['msg']      =   $result ? yun_at('admin_user_00187') : yun_at('admin_user_00186');
             $return['url']      =   'index.php?m=advertise';
             $return['errcode']  =   $result ? 9 : 8;
 

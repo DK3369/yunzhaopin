@@ -6,41 +6,41 @@
                 <table class="tableVue" style="overflow-y: auto; height: 100%;">
                     <thead>
                         <tr align="left">
-                            <th width="150">名称</th>
-                            <th>状态</th>
+                            <th width="150">{yun:}t key='member_com_00021'{/yun}</th>
+                            <th>{yun:}t key='member_user_00181'{/yun}</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
                             <td>
-                                <div class="TableTite">场景</div>
+                                <div class="TableTite">{yun:}t key='admin_tool_00624'{/yun}</div>
                             </td>
                             <td>
                                 <div class="TableButn">
                                     <el-radio-group v-model="temptype" @input="temptypeFun">
-                                        <el-radio label="0">微信公众号文章</el-radio>
-                                        <el-radio label="1">社群推文</el-radio>
+                                        <el-radio label="0">{yun:}t key='admin_tool_00630'{/yun}</el-radio>
+                                        <el-radio label="1">{yun:}t key='admin_tool_00612'{/yun}</el-radio>
                                     </el-radio-group>
                                 </div>
                             </td>
                         </tr>
                         <tr>
                             <td>
-                                <div class="TableTite">信息类型</div>
+                                <div class="TableTite">{yun:}t key='admin_tool_00629'{/yun}</div>
                             </td>
                             <td>
                                 <div class="TableButn">
                                     <el-radio-group v-model="type" @input="typeFun">
-                                        <el-radio label="job">职位列表</el-radio>
-                                        <el-radio label="resume">简历列表</el-radio>
-                                        <el-radio label="company">企业列表</el-radio>
+                                        <el-radio label="job">{yun:}t key='default_00236'{/yun}</el-radio>
+                                        <el-radio label="resume">{yun:}t key='admin_tool_00631'{/yun}</el-radio>
+                                        <el-radio label="company">{yun:}t key='default_00113'{/yun}</el-radio>
                                     </el-radio-group>
                                 </div>
                             </td>
                         </tr>
                         <tr v-show="type=='job' || type=='company'">
                             <td>
-                                <div class="TableTite">会员等级</div>
+                                <div class="TableTite">{yun:}t key='admin_user_company_00018'{/yun}</div>
                             </td>
                             <td>
                                 <div class="TableButn">
@@ -52,101 +52,101 @@
                         </tr>
                         <tr v-show="type=='job'">
                             <td>
-                                <div class="TableTite">职位推广</div>
+                                <div class="TableTite">{yun:}t key='wap_com_00236'{/yun}</div>
                             </td>
                             <td>
                                 <div class="TableButn">
                                     <el-checkbox-group v-model="jobtg">
-                                        <el-checkbox label="0">置顶职位</el-checkbox>
-                                        <el-checkbox label="1">紧急职位</el-checkbox>
-                                        <el-checkbox label="2">推荐职位</el-checkbox>
+                                        <el-checkbox label="0">{yun:}t key='member_com_00327'{/yun}</el-checkbox>
+                                        <el-checkbox label="1">{yun:}t key='member_com_00326'{/yun}</el-checkbox>
+                                        <el-checkbox label="2">{yun:}t key='home.recommended_jobs'{/yun}</el-checkbox>
                                     </el-checkbox-group>
                                 </div>
                             </td>
                         </tr>
                         <tr v-show="type=='job'">
                             <td>
-                                <div class="TableTite">职位更新时间</div>
+                                <div class="TableTite">{yun:}t key='admin_user_company_00272'{/yun}</div>
                             </td>
                             <td>
                                 <div class="TableButn">
                                     <el-radio-group v-model="times">
-                                        <el-radio label="0">不限</el-radio>
-                                        <el-radio label="1">1天内</el-radio>
-                                        <el-radio label="3">3天内</el-radio>
-                                        <el-radio label="7">7天内</el-radio>
-                                        <el-radio label="15">15天内</el-radio>
-                                        <el-radio label="30">30天内</el-radio>
+                                        <el-radio label="0">{yun:}t key='common_01936'{/yun}</el-radio>
+                                        <el-radio label="1">{yun:}t key='admin_tool_00616'{/yun}</el-radio>
+                                        <el-radio label="3">{yun:}t key='admin_tool_00619'{/yun}</el-radio>
+                                        <el-radio label="7">{yun:}t key='admin_tool_00622'{/yun}</el-radio>
+                                        <el-radio label="15">{yun:}t key='admin_tool_00609'{/yun}</el-radio>
+                                        <el-radio label="30">{yun:}t key='admin_tool_00610'{/yun}</el-radio>
                                     </el-radio-group>
                                 </div>
                             </td>
                         </tr>
                         <tr v-show="type=='job'">
                             <td>
-                                <div class="TableTite">职位发布时间</div>
+                                <div class="TableTite">{yun:}t key='admin_tool_00634'{/yun}</div>
                             </td>
                             <td>
                                 <div class="TableButn">
                                     <el-radio-group v-model="ftimes">
-                                        <el-radio label="0">不限</el-radio>
-                                        <el-radio label="1">1天内</el-radio>
-                                        <el-radio label="3">3天内</el-radio>
-                                        <el-radio label="7">7天内</el-radio>
-                                        <el-radio label="15">15天内</el-radio>
-                                        <el-radio label="30">30天内</el-radio>
+                                        <el-radio label="0">{yun:}t key='common_01936'{/yun}</el-radio>
+                                        <el-radio label="1">{yun:}t key='admin_tool_00616'{/yun}</el-radio>
+                                        <el-radio label="3">{yun:}t key='admin_tool_00619'{/yun}</el-radio>
+                                        <el-radio label="7">{yun:}t key='admin_tool_00622'{/yun}</el-radio>
+                                        <el-radio label="15">{yun:}t key='admin_tool_00609'{/yun}</el-radio>
+                                        <el-radio label="30">{yun:}t key='admin_tool_00610'{/yun}</el-radio>
                                     </el-radio-group>
                                 </div>
                             </td>
                         </tr>
                         <tr v-show="type=='company'">
                             <td>
-                                <div class="TableTite">套餐开通时间</div>
+                                <div class="TableTite">{yun:}t key='admin_tool_00607'{/yun}</div>
                             </td>
                             <td>
                                 <div class="TableButn">
                                     <el-radio-group v-model="vtimes">
-                                        <el-radio label="0">不限</el-radio>
-                                        <el-radio label="1">1天内</el-radio>
-                                        <el-radio label="7">1周内</el-radio>
-                                        <el-radio label="30">1月内</el-radio>
+                                        <el-radio label="0">{yun:}t key='common_01936'{/yun}</el-radio>
+                                        <el-radio label="1">{yun:}t key='admin_tool_00616'{/yun}</el-radio>
+                                        <el-radio label="7">{yun:}t key='admin_tool_00615'{/yun}</el-radio>
+                                        <el-radio label="30">{yun:}t key='admin_tool_00617'{/yun}</el-radio>
                                     </el-radio-group>
                                 </div>
                             </td>
                         </tr>
                         <tr v-show="type=='job'">
                             <td>
-                                <div class="TableTite">指定职位</div>
+                                <div class="TableTite">{yun:}t key='admin_tool_00550'{/yun}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
-                                    <el-select v-model="jobcopos" multiple filterable remote reserve-keyword placeholder="请输入关键词" :remote-method="job_search" :loading="job_searchloading">
+                                    <el-select v-model="jobcopos" multiple filterable remote reserve-keyword placeholder="{yun:}t key='wap_00510'{/yun}" :remote-method="job_search" :loading="job_searchloading">
                                         <el-option v-for="item in job_search_list" :key="item.value" :label="item.name" :value="item.value">
                                             <span style="float: left; color: #333; font-size: 14px;font-weight:bold;">{{item.name}}</span>
                                             <span style="float: right; color: #a5a5a5; font-size: x-small;">{{item.upname}}</span>
                                         </el-option>
                                     </el-select>
                                 </div>
-                                <div class="tool_inputips"><i class="el-icon-question"></i> 指定职位(输入职位名称、ID、企业名称，选择职位)</div>
+                                <div class="tool_inputips"><i class="el-icon-question"></i> {yun:}t key='admin_tool_00604'{/yun}</div>
                             </td>
                         </tr>
                         <tr v-show="type=='company'">
                             <td>
-                                <div class="TableTite">指定企业</div>
+                                <div class="TableTite">{yun:}t key='admin_tool_00527'{/yun}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
-                                    <el-select v-model="copos" multiple filterable remote reserve-keyword placeholder="输入企业名称" :remote-method="company_search" :loading="company_searchloading">
+                                    <el-select v-model="copos" multiple filterable remote reserve-keyword placeholder="{yun:}t key='admin_tool_00635'{/yun}" :remote-method="company_search" :loading="company_searchloading">
                                         <el-option v-for="item in company_search_list" :key="item.value" :label="item.name" :value="item.value">
                                             <span style="float: left; color: #333; font-size: 14px;font-weight:bold;">{{item.name}}</span>
                                         </el-option>
                                     </el-select>
                                 </div>
-                                <div class="tool_inputips"><i class="el-icon-question"></i>指定企业(输入企业名称，选择企业)</div>
+                                <div class="tool_inputips"><i class="el-icon-question"></i>{yun:}t key='admin_tool_00605'{/yun}</div>
                             </td>
                         </tr>
                         <tr v-show="type=='job' || type=='company'">
                             <td>
-                                <div class="TableTite">工作地点</div>
+                                <div class="TableTite">{yun:}t key='member_user_00198'{/yun}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
@@ -156,7 +156,7 @@
                         </tr>
                         <tr v-show="type=='job'">
                             <td>
-                                <div class="TableTite">职位类别</div>
+                                <div class="TableTite">{yun:}t key='wap_user_00018'{/yun}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
@@ -166,11 +166,11 @@
                         </tr>
                         <tr v-show="type=='company'">
                             <td>
-                                <div class="TableTite">行业</div>
+                                <div class="TableTite">{yun:}t key='admin_user_company_00373'{/yun}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
-                                    <el-select v-model="hy" placeholder="请选择">
+                                    <el-select v-model="hy" placeholder="{yun:}t key='wap_user_00100'{/yun}">
                                         <el-option v-for="item in hi" :key="item" :label="hyname[item]" :value="item"></el-option>
                                     </el-select>
                                 </div>
@@ -178,19 +178,19 @@
                         </tr>
                         <tr v-show="type=='job'">
                             <td>
-                                <div class="TableTite">薪资待遇</div>
+                                <div class="TableTite">{yun:}t key='wap_com_00290'{/yun}</div>
                             </td>
                             <td>
                                 <div class="jianlidian">
                                     <div class="TableInpt">
-                                        <el-input type="number" placeholder="最低薪资" v-model="minsalary">
-                                            <span slot="suffix" class="slotspan">元</span>
+                                        <el-input type="number" placeholder="{yun:}t key='wap_user_00013'{/yun}" v-model="minsalary">
+                                            <span slot="suffix" class="slotspan">{yun:}t key='common_02056'{/yun}</span>
                                         </el-input>
                                     </div>
                                     <div class="hxian"></div>
                                     <div class="TableInpt">
-                                        <el-input type="number" placeholder="最高薪资" v-model="maxsalary">
-                                            <span slot="suffix" class="slotspan">元</span>
+                                        <el-input type="number" placeholder="{yun:}t key='wap_user_00014'{/yun}" v-model="maxsalary">
+                                            <span slot="suffix" class="slotspan">{yun:}t key='common_02056'{/yun}</span>
                                         </el-input>
                                     </div>
                                 </div>
@@ -198,39 +198,38 @@
                         </tr>
                         <tr v-show="type=='job'">
                             <td>
-                                <div class="TableTite">福利待遇</div>
+                                <div class="TableTite">{yun:}t key='wap_com_00173'{/yun}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
-                                    <el-input placeholder="请输入内容" v-model="welfare"></el-input>
+                                    <el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="welfare"></el-input>
                                 </div>
-                                <div class="tool_inputips"><i class="el-icon-question"></i> 1；多项福利同时满足以空格分隔 如：五险 车补 双休
-                                    2：多项福利满足一项以|分隔 如：五险|车补|双休</div>
+                                <div class="tool_inputips"><i class="el-icon-question"></i> {yun:}t key='admin_tool_00625'{/yun}</div>
                             </td>
                         </tr>
                         <tr v-show="type=='job'">
                             <td>
-                                <div class="TableTite">关键词</div>
+                                <div class="TableTite">{yun:}t key='admin_00149'{/yun}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
-                                    <el-input placeholder="请输入内容" v-model="keyword"></el-input>
+                                    <el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="keyword"></el-input>
                                 </div>
                             </td>
                         </tr>
                         <tr v-show="type=='resume'">
                             <td>
-                                <div class="TableTite">简历类型</div>
+                                <div class="TableTite">{yun:}t key='member_com_00107'{/yun}</div>
                             </td>
                             <td>
                                 <div class="TableButn">
-                                    <el-checkbox :true-label='1' v-model="cvkind">置顶简历</el-checkbox>
+                                    <el-checkbox :true-label='1' v-model="cvkind">{yun:}t key='wap_user_00210'{/yun}</el-checkbox>
                                 </div>
                             </td>
                         </tr>
                         <tr v-show="type=='resume'">
                             <td>
-                                <div class="TableTite">意向职位</div>
+                                <div class="TableTite">{yun:}t key='wap_com_00353'{/yun}</div>
                             </td>
                             <td>
                                 <div class="TableButn">
@@ -243,7 +242,7 @@
                         </tr>
                         <tr v-show="type=='resume'">
                             <td>
-                                <div class="TableTite">意向地区</div>
+                                <div class="TableTite">{yun:}t key='admin_tool_00127'{/yun}</div>
                             </td>
                             <td>
                                 <div class="TableButn">
@@ -256,41 +255,41 @@
                         </tr>
                         <tr v-show="type=='resume'">
                             <td>
-                                <div class="TableTite">简历发布时间</div>
+                                <div class="TableTite">{yun:}t key='admin_tool_00633'{/yun}</div>
                             </td>
                             <td>
                                 <div class="TableButn">
                                     <el-radio-group v-model="rtimes">
-                                        <el-radio label="0">不限</el-radio>
-                                        <el-radio label="1">1天内</el-radio>
-                                        <el-radio label="3">3天内</el-radio>
-                                        <el-radio label="7">7天内</el-radio>
-                                        <el-radio label="15">15天内</el-radio>
-                                        <el-radio label="30">30天内</el-radio>
+                                        <el-radio label="0">{yun:}t key='common_01936'{/yun}</el-radio>
+                                        <el-radio label="1">{yun:}t key='admin_tool_00616'{/yun}</el-radio>
+                                        <el-radio label="3">{yun:}t key='admin_tool_00619'{/yun}</el-radio>
+                                        <el-radio label="7">{yun:}t key='admin_tool_00622'{/yun}</el-radio>
+                                        <el-radio label="15">{yun:}t key='admin_tool_00609'{/yun}</el-radio>
+                                        <el-radio label="30">{yun:}t key='admin_tool_00610'{/yun}</el-radio>
                                     </el-radio-group>
                                 </div>
                             </td>
                         </tr>
                         <tr v-show="type=='resume'">
                             <td>
-                                <div class="TableTite">简历刷新时间</div>
+                                <div class="TableTite">{yun:}t key='admin_tool_00632'{/yun}</div>
                             </td>
                             <td>
                                 <div class="TableButn">
                                     <el-radio-group v-model="rltimes">
-                                        <el-radio label="0">不限</el-radio>
-                                        <el-radio label="1">1天内</el-radio>
-                                        <el-radio label="3">3天内</el-radio>
-                                        <el-radio label="7">7天内</el-radio>
-                                        <el-radio label="15">15天内</el-radio>
-                                        <el-radio label="30">30天内</el-radio>
+                                        <el-radio label="0">{yun:}t key='common_01936'{/yun}</el-radio>
+                                        <el-radio label="1">{yun:}t key='admin_tool_00616'{/yun}</el-radio>
+                                        <el-radio label="3">{yun:}t key='admin_tool_00619'{/yun}</el-radio>
+                                        <el-radio label="7">{yun:}t key='admin_tool_00622'{/yun}</el-radio>
+                                        <el-radio label="15">{yun:}t key='admin_tool_00609'{/yun}</el-radio>
+                                        <el-radio label="30">{yun:}t key='admin_tool_00610'{/yun}</el-radio>
                                     </el-radio-group>
                                 </div>
                             </td>
                         </tr>
                         <tr v-show="type=='resume'">
                             <td>
-                                <div class="TableTite">学历要求</div>
+                                <div class="TableTite">{yun:}t key='wap_com_00283'{/yun}</div>
                             </td>
                             <td>
                                 <div class="TableButn">
@@ -302,7 +301,7 @@
                         </tr>
                         <tr v-show="type=='resume'">
                             <td>
-                                <div class="TableTite">经验要求</div>
+                                <div class="TableTite">{yun:}t key='wap_com_00287'{/yun}</div>
                             </td>
                             <td>
                                 <div class="TableButn">
@@ -314,26 +313,26 @@
                         </tr>
                         <tr v-show="type=='resume'">
                             <td>
-                                <div class="TableTite">简历完整度</div>
+                                <div class="TableTite">{yun:}t key='wap_00328'{/yun}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
                                     <el-radio-group v-model="whole">
-                                        <el-radio label="55">55%以上</el-radio>
-                                        <el-radio label="75">75%以上</el-radio>
-                                        <el-radio label="95">95%以上</el-radio>
+                                        <el-radio label="55">{yun:}t key='admin_tool_00626'{/yun}</el-radio>
+                                        <el-radio label="75">{yun:}t key='admin_tool_00627'{/yun}</el-radio>
+                                        <el-radio label="95">{yun:}t key='admin_tool_00628'{/yun}</el-radio>
                                     </el-radio-group>
                                 </div>
                             </td>
                         </tr>
                         <tr v-show="type=='company'">
                             <td>
-                                <div class="TableTite">站点/分站</div>
+                                <div class="TableTite">{yun:}t key='admin_tool_00608'{/yun}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
-                                    <el-select v-model="did" placeholder="请选择">
-                                        <el-option value="">全部</el-option>
+                                    <el-select v-model="did" placeholder="{yun:}t key='wap_user_00100'{/yun}">
+                                        <el-option value="">{yun:}t key='common.all'{/yun}</el-option>
                                         <el-option v-for="(item,key) in domain" :key="key" :label="item" :value="key"></el-option>
                                     </el-select>
                                 </div>
@@ -341,33 +340,33 @@
                         </tr>
                         <tr v-show="type=='company'">
                             <td>
-                                <div class="TableTite">企业类型</div>
+                                <div class="TableTite">{yun:}t key='wap_00087'{/yun}</div>
                             </td>
                             <td>
                                 <div class="TableButn">
-                                    <el-checkbox :true-label='1' v-model="bekind">名企</el-checkbox>
+                                    <el-checkbox :true-label='1' v-model="bekind">{yun:}t key='wap_00299'{/yun}</el-checkbox>
                                 </div>
                             </td>
                         </tr>
                         <tr v-show="type=='company'">
                             <td>
-                                <div class="TableTite">职位限制</div>
+                                <div class="TableTite">{yun:}t key='admin_tool_00613'{/yun}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
                                     <el-radio-group v-model="rule">
-                                        <el-radio label="0">不限</el-radio>
-                                        <el-radio label="1">1条</el-radio>
-                                        <el-radio label="2">2条</el-radio>
-                                        <el-radio label="3">3条</el-radio>
+                                        <el-radio label="0">{yun:}t key='common_01936'{/yun}</el-radio>
+                                        <el-radio label="1">{yun:}t key='admin_user_00256'{/yun}</el-radio>
+                                        <el-radio label="2">{yun:}t key='admin_tool_00623'{/yun}</el-radio>
+                                        <el-radio label="3">{yun:}t key='admin_tool_00576'{/yun}</el-radio>
                                     </el-radio-group>
                                 </div>
-                                <div class="tool_inputips"><i class="el-icon-question"></i>每家企业最多展示多少职位</div>
+                                <div class="tool_inputips"><i class="el-icon-question"></i>{yun:}t key='admin_tool_00606'{/yun}</div>
                             </td>
                         </tr>
                         <tr>
                             <td>
-                                <div class="TableTite">风格模板</div>
+                                <div class="TableTite">{yun:}t key='admin_tool_00614'{/yun}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
@@ -376,22 +375,22 @@
                                     </el-radio-group>
                                 </div>
                                 <div class="TableInpt">
-                                    <el-button @click="urlchange">添加模板</el-button>
+                                    <el-button @click="urlchange">{yun:}t key='member_com_00354'{/yun}</el-button>
                                 </div>
                             </td>
                         </tr>
                         <tr>
                             <td>
-                                <div class="TableTite">信息数量</div>
+                                <div class="TableTite">{yun:}t key='admin_tool_00611'{/yun}</div>
                             </td>
                             <td>
                                 <div class="TableButn">
                                     <el-radio-group v-model="num">
-                                        <el-radio label="10">10条</el-radio>
-                                        <el-radio label="20">20条</el-radio>
-                                        <el-radio label="30">30条</el-radio>
-                                        <el-radio label="40">40条</el-radio>
-                                        <el-radio label="50">50条</el-radio>
+                                        <el-radio label="10">{yun:}t key='api_alipay_00001'{/yun}</el-radio>
+                                        <el-radio label="20">{yun:}t key='admin_user_company_00299'{/yun}</el-radio>
+                                        <el-radio label="30">{yun:}t key='admin_tool_00618'{/yun}</el-radio>
+                                        <el-radio label="40">{yun:}t key='admin_tool_00620'{/yun}</el-radio>
+                                        <el-radio label="50">{yun:}t key='admin_tool_00621'{/yun}</el-radio>
                                     </el-radio-group>
                                 </div>
                             </td>
@@ -405,12 +404,12 @@
                     <div id="content" v-html="htmlcon" :class="temptype=='1'?'wxpubtool_gj_con':'wxpubtool_gj_con_1'"></div>
                 </div>
                 <div class="wxfbtoolfuzhis">
-                    <input type="button" class="wxpubtool_CZbth" id="copy" data-clipboard-action="copy" data-clipboard-target="#content" value="一键复制" />
+                    <input type="button" class="wxpubtool_CZbth" id="copy" data-clipboard-action="copy" data-clipboard-target="#content" value="{yun:}t key='admin_tool_00526'{/yun}" />
                 </div>
             </div>
         </div>
         <div class="setBasicButn" style="border: none;">
-            <el-button type="primary" size="medium" :loading='post_loading' @click="save(false)">提交</el-button>
+            <el-button type="primary" size="medium" :loading='post_loading' @click="save(false)">{yun:}t key='common.submit'{/yun}</el-button>
         </div>
     </div>
 </template>
@@ -501,7 +500,7 @@ module.exports = {
 
             const clipboard = new ClipboardJS("#copy");
             clipboard.on('success', function(e) {
-                message.success(window.yunAdminT('复制成功！'));
+                message.success(window.yunAdminT("{yun:}t key='wap_com_00254'{/yun}"));
                 e.clearSelection();
             });
             clipboard.on('error', function(e) {});

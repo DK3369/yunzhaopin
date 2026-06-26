@@ -59,12 +59,12 @@ class hotkey_model extends model
             }
             $return['id']       =   $this->delete_all('hot_key', $whereData, '');
 
-            $return['msg']      =   '关键字';
+            $return['msg']      =   yun_at('admin_tool_00574');
             $return['errcode']  =   $return['id'] ? '9' : '8';
-            $return['msg']      =   $return['id'] ? $return['msg'] . '删除成功！' : $return['msg'] . '删除失败！';
+            $return['msg']      =   $return['id'] ? $return['msg'] . 'admin_user_00187' : $return['msg'] . 'admin_user_00186';
         } else {
             
-            $return['msg']      =   '请选择要删除的内容！';
+            $return['msg']      =   yun_at('common_01066');
             $return['errcode']  =   8;
         }
         
@@ -83,13 +83,13 @@ class hotkey_model extends model
             
             if ($type == "bold") {
             
-                $this->addAdminLog("对关键字 " . $row['name'] . " 是否加粗进行设置");
+                $this->addAdminLog('admin_system_00045' . $row['name'] . 'common_01270');
             } elseif ($type == "tuijian") {
                 
-                $this->addAdminLog("对关键字 " . $row['name'] . " 是否推荐进行设置");
+                $this->addAdminLog('admin_system_00045' . $row['name'] . 'common_01272');
             } elseif ($type == "check") {
                 
-                $this->addAdminLog("对关键字 " . $row['name'] . " 是否审核进行设置");
+                $this->addAdminLog('admin_system_00045' . $row['name'] . 'common_01271');
             }
 
             return $nid;

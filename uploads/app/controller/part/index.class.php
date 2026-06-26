@@ -79,7 +79,7 @@ class index_controller extends part_controller
             $this->yunset($info['cache']);
 
             if ($job['uid'] != $this->uid && ($job['id'] == '' || $job['state'] == 0 || $job['state'] == 3)) {
-                $this->ACT_msg($this->config['sy_weburl'], '该兼职暂无法展示！');
+                $this->ACT_msg($this->config['sy_weburl'], yun_at('wap_00366'));
             }
 
             $partM->upInfo(array('hits' => array('+', 1)), array('id' => $id));

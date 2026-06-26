@@ -20,9 +20,9 @@
       <h1 class="yun_Integral_show_right_name">{yun:}$row.name{/yun}</h1>
       <ul class="yun_Integral_show_texts ">
         <li>所需{yun:}$config.integral_pricename{/yun}：<i class="dh_jf">{yun:}$row.integral{/yun}</i>{yun:}$config.integral_priceunit{/yun}{yun:}$config.integral_pricename{/yun}</li>
-        <li>{yun:}t key='wap_00405'{/yun}：<i class="dh_j">{yun:}$row.stock{/yun}</i> 件（{yun:}t key='wap_user_00005'{/yun} <b>{yun:}$row.num{/yun}</b> 件）</li>
+        <li>{yun:}t key='wap_00405'{/yun}：<i class="dh_j">{yun:}$row.stock{/yun}</i> {yun:}t key='wap_00620'{/yun}（{yun:}t key='wap_user_00005'{/yun} <b>{yun:}$row.num{/yun}</b> {yun:}t key='wap_00620'{/yun}）</li>
         {yun:}if $row.stock!="0"{/yun}
-        <li>{yun:}t key='wap_00406'{/yun}：{yun:}if $row.restriction=="0"{/yun}{yun:}t key='common_01936'{/yun}{yun:}else{/yun}{yun:}$row.restriction{/yun}件{yun:}/if{/yun}</li>
+        <li>{yun:}t key='wap_00406'{/yun}：{yun:}if $row.restriction=="0"{/yun}{yun:}t key='common_01936'{/yun}{yun:}else{/yun}{yun:}$row.restriction{/yun}{yun:}t key='wap_00620'{/yun}{yun:}/if{/yun}</li>
         <form action="index.php" method="get" onsubmit="return checkform_redeem_show();">
           {yun:}if  !$config.sy_redeemdir || $config.sy_seo_rewrite!='1'{/yun}
           <input type="hidden" value="redeem" name="m" />
@@ -50,7 +50,7 @@
   <div class="redeem_show_left fl">
     <div class="redeem_detail fl">
       <ul class="redeem_detail_h fl">
-        <li tab_name="xq" {yun:}if $smarty.get.page==''{/yun}class="redeem_detail_content"{yun:}/if{/yun}>礼品详情</li>
+        <li tab_name="xq" {yun:}if $smarty.get.page==''{/yun}class="redeem_detail_content"{yun:}/if{/yun}>{yun:}t key='wap_00623'{/yun}</li>
         <li tab_name="jl" {yun:}if $smarty.get.page{/yun}class="redeem_detail_content"{yun:}/if{/yun}>{yun:}t key='wap_user_00170'{/yun}</li>
       </ul>
       <div class="redeem_gift_detail fl {yun:}if $smarty.get.page{/yun}none{yun:}/if{/yun}" id="xq" style=" padding:20px; width:840px;"> {yun:}$row.content_n{/yun} </div>
@@ -59,14 +59,14 @@
       
         <ul class="redeem_record_title redeem_record_h fl">
           <li class="redeem_record_a">{yun:}t key='admin_user_company_00191'{/yun}</li>
-          <li class="redeem_record_b">商品数量（件）</li>
+          <li class="redeem_record_b">商品数量（{yun:}t key='wap_00620'{/yun}）</li>
           <li class="redeem_record_c">{yun:}t key='wap_user_00002'{/yun}</li>
-          <!--<li class="redeem_record_d">兑换状态</li>-->
+          <!--<li class="redeem_record_d">{yun:}t key='common_02289'{/yun}</li>-->
         </ul>
         {yun:}foreach item=v from=$jilu{/yun}
         <ul class="redeem_record_title fl">
           <li class="redeem_record_a">{yun:}$v.username|mb_substr:0:1:'utf-8'{/yun}***{yun:}$v.username|mb_substr:-1:1:'utf-8'{/yun}</li>
-          <li class="redeem_record_b">{yun:}$v.num{/yun}件</li>
+          <li class="redeem_record_b">{yun:}$v.num{/yun}{yun:}t key='wap_00620'{/yun}</li>
           <li class="redeem_record_c">{yun:}$v.ctime|date_format:"%Y-%m-%d %H:%M:%S"{/yun}</li>
           <!--<li class="redeem_record_d"> {yun:}if $v.status=="1"{/yun}{yun:}t key='wap_user_00005'{/yun}
             {yun:}elseif $v.status=="2"{/yun}{yun:}t key='wap_user_00325'{/yun}

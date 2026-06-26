@@ -90,7 +90,7 @@ class dataRecycle_controller extends adminCommon
             $this->admin_json($error, $return['msg']);
         } else {
 
-            $this->render_json(1, '参数错误，请重试！');
+            $this->render_json(1, yun_at('wap_00203'));
         }
     }
 
@@ -105,7 +105,7 @@ class dataRecycle_controller extends adminCommon
             $this->admin_json($error, $return['msg']);
         } else {
 
-            $this->render_json(1, '参数错误，请重试！');
+            $this->render_json(1, yun_at('wap_00203'));
         }
     }
 
@@ -136,11 +136,11 @@ class dataRecycle_controller extends adminCommon
             }
         } else {
 
-            $this->render_json(1, '参数错误，请重试！');
+            $this->render_json(1, yun_at('wap_00203'));
         }
 
         $this->db->Query("TRUNCATE `" . $this->def . "recycle`");
-        $this->layer_msg("已清空回收站！", 9, 0, $_SERVER['HTTP_REFERER']);
+        $this->layer_msg('admin_01457', 9, 0, $_SERVER['HTTP_REFERER']);
     }
 
     function tuncateRecycle_action()
@@ -149,10 +149,10 @@ class dataRecycle_controller extends adminCommon
         if (isset($_POST['recycle']) && $_POST['recycle'] == 'tuncate') {
 
             $this->db->Query("TRUNCATE `" . $this->def . "recycle`");
-            $this->admin_json(0, '回收站已清空！');
+            $this->admin_json(0, 'admin_01458');
         } else {
 
-            $this->admin_json(1, '清空回收站操作错误！');
+            $this->admin_json(1, 'admin_tool_00019');
         }
     }
 

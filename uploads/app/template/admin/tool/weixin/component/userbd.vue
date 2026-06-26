@@ -1,19 +1,19 @@
 <template>
     <div class="moduleElHight">
 		<div class="tableDome_tip">
-			<el-alert title="用户绑定是指微信用户通过“微信开放平台（微信登录）”方式后，进行绑定帐号，系统会自动记录用户绑定记录" type="success" :closable="false">
+			<el-alert title="{yun:}t key='admin_tool_00587'{/yun}" type="success" :closable="false">
 			</el-alert>
 		</div>
         <div class="moduleSeachs">
             <div class="moduleSeachleft">
                 
                 <div class="tableSeachInpt" style="margin-bottom: 0px;;">
-                    <el-input placeholder="请输入绑定用户" v-model="keyword" size="small" prefix-icon="el-icon-search" clearable>
+                    <el-input placeholder="{yun:}t key='admin_tool_00591'{/yun}" v-model="keyword" size="small" prefix-icon="el-icon-search" clearable>
                     </el-input>
                 </div>
 
                 <div class="tableSeachInpt" style="margin-bottom: 0px;;">
-                    <el-button type="primary" icon="el-icon-search" size="mini" @click="search">查询</el-button>
+                    <el-button type="primary" icon="el-icon-search" size="mini" @click="search">{yun:}t key='admin_user_weipin_00049'{/yun}</el-button>
                 </div>
             </div>
             
@@ -41,8 +41,8 @@
 
         <div class="modulePaging">
             <div class="modulecz">
-                <el-checkbox v-model="allchecked" @change="allcheckChange">全选</el-checkbox>
-                <el-button  size="mini" @click="deleteAll">取消绑定</el-button>
+                <el-checkbox v-model="allchecked" @change="allcheckChange">{yun:}t key='wap_js_00074'{/yun}</el-checkbox>
+                <el-button  size="mini" @click="deleteAll">{yun:}t key='member_user_00054'{/yun}</el-button>
             </div>
             <div class="modulePagNum"  >
                 <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
@@ -59,7 +59,7 @@
 module.exports = {
     data: function () {
         return {
-            emptytext: window.yunAdminT('暂无数据'),
+            emptytext: window.yunAdminT("{yun:}t key='wap_js_00113'{/yun}"),
             tableData: [],
             total: 0,
             limit: 0,
@@ -97,7 +97,7 @@ module.exports = {
             }
             
             this.list_loading = true;
-            that.emptytext = window.yunAdminT('数据加载中');
+            that.emptytext = window.yunAdminT("{yun:}t key='admin_user_weipin_00026'{/yun}");
             httpPost('m=tool&c=weixinrecord&a=userbd', params, {hideloading: true}).then((result) => {
                 this.list_loading = false;
                 var res = result.data;
@@ -113,7 +113,7 @@ module.exports = {
 						that.$refs.table.bodyWrapper.scrollTop = 0;
 					}
                     if (that.tableData.length === 0){
-                        that.emptytext = window.yunAdminT('暂无数据');
+                        that.emptytext = window.yunAdminT("{yun:}t key='wap_js_00113'{/yun}");
                     }
                 }
             }).catch(function (e) {
@@ -156,13 +156,13 @@ module.exports = {
                     idarr.push(this.choosedata[i].uid);
                 }
             } else {
-                message.error(window.yunAdminT('请选择要取消绑定的数据')); return;
+                message.error(window.yunAdminT("{yun:}t key='admin_tool_00592'{/yun}")); return;
             }
             var params = {
                 del: idarr
             };
 
-            delConfirm(_this, params, this.deletePost,window.yunAdminT('确定取消绑定？'))
+            delConfirm(_this, params, this.deletePost,window.yunAdminT("{yun:}t key='admin_tool_00593'{/yun}"))
         },
         async deletePost(params) {
 

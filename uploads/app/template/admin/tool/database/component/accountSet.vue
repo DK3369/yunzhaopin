@@ -1,22 +1,22 @@
 <template>
     <div class="moduleElHight">
         <div class="tableDome_tip">
-            <el-alert title="采集前务必设置自己的接口密码，以免被其他人利用，这里所设置的参数，只作为没有值的情况下使用，若采集软件有值传输，会优先使用传输值" type="success" :closable="false"></el-alert>
+            <el-alert title="{yun:}t key='admin_tool_00059'{/yun}" type="success" :closable="false"></el-alert>
         </div>
         <div class=" moduleTable">
 
             <table class="tableVue">
                 <thead>
                 <tr align="left">
-                    <th width="200">名称</th>
-                    <th width="400">状态</th>
-                    <th>说明</th>
+                    <th width="200">{yun:}t key='member_com_00021'{/yun}</th>
+                    <th width="400">{yun:}t key='member_user_00181'{/yun}</th>
+                    <th>{yun:}t key='member_com_00207'{/yun}</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr>
                     <td>
-                        <div class="TableTite">生成用户名长度</div>
+                        <div class="TableTite">{yun:}t key='admin_tool_00060'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
@@ -25,13 +25,13 @@
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>如：8</span>
+                            <span>{yun:}t key='admin_tool_00065'{/yun}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">生成用户名前缀</div>
+                        <div class="TableTite">{yun:}t key='admin_tool_00061'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
@@ -40,13 +40,13 @@
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>如：user 加随机字符</span>
+                            <span>{yun:}t key='admin_tool_00066'{/yun}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">生成指定密码</div>
+                        <div class="TableTite">{yun:}t key='admin_tool_00062'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
@@ -55,19 +55,19 @@
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>如：123456</span>
+                            <span>{yun:}t key='admin_tool_00064'{/yun}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">用户状态</div>
+                        <div class="TableTite">{yun:}t key='admin_user_00133'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableButn">
                             <el-radio-group v-model="locoy_config.locoy_user_status">
-                                <el-radio label="1">已审核</el-radio>
-                                <el-radio label="0">未审核</el-radio>
+                                <el-radio label="1">{yun:}t key='wap_user_00165'{/yun}</el-radio>
+                                <el-radio label="0">{yun:}t key='wap_user_00166'{/yun}</el-radio>
                             </el-radio-group>
                         </div>
                     </td>
@@ -79,11 +79,11 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">企业会员等级</div>
+                        <div class="TableTite">{yun:}t key='admin_tool_00063'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableButn">
-                            <el-select v-model="locoy_config.locoy_rating" placeholder="请选择">
+                            <el-select v-model="locoy_config.locoy_rating" placeholder="{yun:}t key='wap_user_00100'{/yun}">
                                 <el-option v-for="item in ratingOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
                             </el-select>
 
@@ -98,7 +98,7 @@
                 </tbody>
             </table>
             <div class="setBasicButn" style="border: none;">
-                <el-button type="primary" size="medium" @click="submitLocoyConfig" :disabled="saveLoading">提交</el-button>
+                <el-button type="primary" size="medium" @click="submitLocoyConfig" :disabled="saveLoading">{yun:}t key='common.submit'{/yun}</el-button>
             </div>
         </div>
     </div>

@@ -26,8 +26,8 @@
       {yun:}if $Info.sqInfo{/yun}
       <div class="yun_resume_sq_job">
           <ul>
-              <li>投递职位：{yun:}$Info.sqInfo.sq_job_name{/yun}</li>
-              <li>投递时间：{yun:}$Info.sqInfo.sq_job_time{/yun}</li>
+              <li>{yun:}t key='wap_01596'{/yun}：{yun:}$Info.sqInfo.sq_job_name{/yun}</li>
+              <li>{yun:}t key='member_user_00431'{/yun}：{yun:}$Info.sqInfo.sq_job_time{/yun}</li>
               <li>{yun:}t key='admin_yunying_00131'{/yun}：{yun:}$Info.login_date_n{/yun}</li>
           </ul>
       </div>
@@ -206,11 +206,11 @@
 		
 		
         
-        <!-- 我的作品--> 
+        <!-- {yun:}t key='wap_01601'{/yun}--> 
         {yun:}if is_array($Info.user_show) && !empty($Info.user_show){/yun}
 		{yun:}if ($Info.uid == $uid && $usertype == 1) || $Info.m_status == 1{/yun}
         <div class="yun_resume_joblist">
-          <div class="yun_resume_three_h1"><i class="yun_resume_three_h1_icon reaume_iconzp"></i><i class="yun_resume_three_h1_iconbg"></i><span class="yun_resume_three_h1_s">我的作品</span></div>
+          <div class="yun_resume_three_h1"><i class="yun_resume_three_h1_icon reaume_iconzp"></i><i class="yun_resume_three_h1_iconbg"></i><span class="yun_resume_three_h1_s">{yun:}t key='wap_01601'{/yun}</span></div>
           <div class="fairs_introduction_p" style="width:100%; overflow:hidden" >
             <ul class="fairs_introduction_img" id="rolling_img1">
               {yun:}foreach item=v from=$Info.user_show{/yun}
@@ -228,7 +228,7 @@
         {yun:}/if{/yun} 
 
         {yun:}if is_array($Info.user_other) && !empty($Info.user_other){/yun} 
-        <!--附加信息-->
+        <!--{yun:}t key='wap_01607'{/yun}-->
         <div class="yun_resume_joblist">
           <div class="yun_resume_three_h1"><i class="yun_resume_three_h1_icon reaume_iconqt"></i><i class="yun_resume_three_h1_iconbg"></i><span class="yun_resume_three_h1_s">{yun:}t key='wap_00493'{/yun}</span></div>
           <ul class=" resume_skill_three">
@@ -279,7 +279,7 @@
           <div class="one_vita_Intention one_vita_Intention_w420">{yun:}t key='wap_user_00179'{/yun}：{yun:}$Info.email{/yun} </div>
           {yun:}/if{/yun}
                        {yun:}if $Info.qq{/yun}
-	  <div class="one_vita_Intention">联系Q Q：{yun:}$Info.qq{/yun}</div>
+	  <div class="one_vita_Intention">{yun:}t key='common_02458'{/yun}Q Q：{yun:}$Info.qq{/yun}</div>
    {yun:}/if{/yun}    
           {yun:}if $Info.homepage{/yun}
           <div class="one_vita_Intention">{yun:}t key='member_com_00008'{/yun}：{yun:}$Info.homepage{/yun}</div>
@@ -340,7 +340,7 @@
 						{yun:}/if{/yun}
 						{yun:}if $tj.shownum>0{/yun}
 						<div class="yun_newedition_resume_nologin_list">
-							<div class="yun_resume_three_h1"><i class="yun_resume_three_h1_icon reaume_iconzp"></i><i class="yun_resume_three_h1_iconbg"></i><span class="yun_resume_three_h1_s">我的作品</span></div>
+							<div class="yun_resume_three_h1"><i class="yun_resume_three_h1_icon reaume_iconzp"></i><i class="yun_resume_three_h1_iconbg"></i><span class="yun_resume_three_h1_s">{yun:}t key='wap_01601'{/yun}</span></div>
 							  <div class="resume_bg_r">{yun:}t key='wap_user_00123'{/yun}{yun:}$tj.shownum{/yun}{yun:}t key='wap_00442'{/yun}
 							  </div>
 						</div>

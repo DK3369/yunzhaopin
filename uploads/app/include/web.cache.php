@@ -36,7 +36,7 @@ class Phpyun_Cache
             if (self::Create_Dir($this->cache_dir)) {
                 self::Get_Cache(); // 输出缓存文件信息
             } else {
-                echo "缓存文件夹创建失败!";
+                echo yun_auto_t('缓存文件夹创建失败!');
                 return false;
             }
         } catch (Exception $e) {
@@ -83,7 +83,7 @@ class Phpyun_Cache
                     exit();
                 }
             } else {
-                echo "缓存文件读取失败";
+                echo yun_at('common_06240');
                 exit();
             }
         } elseif (@file_exists($file_name)) {
@@ -113,7 +113,7 @@ class Phpyun_Cache
                 }
                 return true;
             } catch (Exception $e) {
-                echo "缓存文件写入失败:" . $e;
+                echo yun_auto_t('缓存文件写入失败:') . $e;
                 exit();
             }
             return true;

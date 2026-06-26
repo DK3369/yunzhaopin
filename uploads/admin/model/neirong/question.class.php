@@ -7,11 +7,11 @@ class question_controller extends adminCommon
     //设置高级搜索功能
     function set_search()
     {
-        $search_list[] = array("param" => "is_recom", "name" => '是否推荐', "value" => array("1" => "已推荐", "2" => "未推荐"));
-        $search_list[] = array("param" => "status", "name" => '审核状态', "value" => array("0" => "未审核", "1" => "已审核", "2" => "未通过"));
+        $search_list[] = array("param" => "is_recom", "name" => 'admin_00231', "value" => array("1" => 'admin_01339', "2" => 'admin_system_00448'));
+        $search_list[] = array("param" => "status", "name" => 'wap_com_00406', "value" => array("0" => 'wap_user_00166', "1" => 'wap_user_00165', "2" => 'wap_user_00167'));
 
-        $ad_time = array('1' => '今天', '3' => '最近三天', '7' => '最近七天', '15' => '最近半月', '30' => '最近一个月');
-        $search_list[] = array("param" => "end", "name" => '提问时间', "value" => $ad_time);
+        $ad_time = array('1' => 'common_01940', '3' => 'admin_user_00179', '7' => 'admin_user_00178', '15' => 'admin_user_00180', '30' => 'admin_user_00175');
+        $search_list[] = array("param" => "end", "name" => 'admin_00251', "value" => $ad_time);
 
         return $search_list;
     }
@@ -84,7 +84,7 @@ class question_controller extends adminCommon
     function recommend_action()
     {
         if (empty($_POST['id']) || !isset($_POST['rec'])) {
-            $this->render_json(1, '参数错误');
+            $this->render_json(1, yun_at('wap_com_00228'));
         }
 
         $askM = $this->Model('ask');
@@ -93,9 +93,9 @@ class question_controller extends adminCommon
         $nid = $askM->upRecommend(array('id' => $id), array('is_recom' => intval($_POST['rec'])));
 
         if ($nid) {
-            $this->admin_json(0, '问答(ID:' . $id . ')推荐设置成功');
+            $this->admin_json(0, 'admin_01420' . $id . ')推荐设置成功');
         } else {
-            $this->render_json(1, '问答推荐设置失败');
+            $this->render_json(1, yun_at('admin_01340'));
         }
     }
 
@@ -157,7 +157,7 @@ class question_controller extends adminCommon
     {
         $post = $this->post_trim($_POST);
         if (empty($post['title']) || empty($post['cid'])) {
-            $this->render_json(1, '参数错误');
+            $this->render_json(1, yun_at('wap_com_00228'));
         }
 
         $askM = $this->Model('ask');
@@ -167,9 +167,9 @@ class question_controller extends adminCommon
         $nbid = $askM->upAskInfo(array('id' => $id), $post);
 
         if ($nbid) {
-            $this->admin_json(0, "问答(ID:" . $id . ")更新成功");
+            $this->admin_json(0, 'admin_01420' . $id . 'admin_neirong_00010');
         } else {
-            $this->render_json(1, '问答更新失败');
+            $this->render_json(1, yun_at('admin_neirong_00025'));
         }
     }
 
@@ -177,7 +177,7 @@ class question_controller extends adminCommon
     function del_action()
     {
         if (empty($_POST['del']) && empty($_POST['id'])) {
-            $this->render_json(1, '参数错误');
+            $this->render_json(1, yun_at('wap_com_00228'));
         }
 
         if (!empty($_POST['del'])) { // 批量删除
@@ -193,7 +193,7 @@ class question_controller extends adminCommon
         if ($return) {
             $this->admin_json(0, "问答(ID:{$ids})删除成功");
         } else {
-            $this->render_json(1, '问答删除失败');
+            $this->render_json(1, yun_at('admin_01341'));
         }
     }
 
@@ -201,7 +201,7 @@ class question_controller extends adminCommon
     function status_action()
     {
         if (empty($_POST['id']) || empty($_POST['status'])) {
-            $this->render_json(1, '参数错误');
+            $this->render_json(1, yun_at('wap_com_00228'));
         }
 
         $askM = $this->MODEL('ask');
@@ -217,7 +217,7 @@ class question_controller extends adminCommon
         $List = $askM->getList(array('id' => array('in', $ids)), array('field' => '`id`,`uid`,`title`'));
 
         /* 消息前缀 */
-        $tagName = '问答';
+        $tagName = 'wap_user_00223';
 
         if (!empty($List)) {
             foreach ($List as $v) {
@@ -245,7 +245,7 @@ class question_controller extends adminCommon
         if ($nid) {
             $this->admin_json(0, "问答审核(ID:{$ids})设置成功");
         } else {
-            $this->render_json(1, '问答审核设置失败');
+            $this->render_json(1, yun_at('admin_01342'));
         }
     }
 
@@ -286,7 +286,7 @@ class question_controller extends adminCommon
     function statusAnswer_action()
     {
         if (empty($_POST['id']) || empty($_POST['status'])) {
-            $this->render_json(1, '参数错误');
+            $this->render_json(1, yun_at('wap_com_00228'));
         }
 
         $askM = $this->MODEL('ask');
@@ -309,7 +309,7 @@ class question_controller extends adminCommon
     function save_answer_action()
     {
         if (empty($_POST['id']) || empty($_POST['content'])) {
-            $this->render_json(1, '参数错误');
+            $this->render_json(1, yun_at('wap_com_00228'));
         }
 
         $askM = $this->MODEL('ask');
@@ -323,7 +323,7 @@ class question_controller extends adminCommon
         if ($return) {
             $this->admin_json(0, "回答(ID:{$id})修改成功");
         } else {
-            $this->render_json(1, '回答修改失败');
+            $this->render_json(1, yun_at('admin_01343'));
         }
     }
 
@@ -331,7 +331,7 @@ class question_controller extends adminCommon
     function delanswer_action()
     {
         if ((empty($_POST['del']) && empty($_POST['id'])) || empty($_POST['qid'])) {
-            $this->render_json(1, '参数错误');
+            $this->render_json(1, yun_at('wap_com_00228'));
         }
 
         if (!empty($_POST['del'])) { // 批量删除
@@ -351,7 +351,7 @@ class question_controller extends adminCommon
             $askM->upStatusInfo(intval($_POST['qid']), '', array('answer_num' => array('-', $nums)));
             $this->admin_json(0, '问答回答(ID:' . $ids . ')删除成功');
         } else {
-            $this->render_json(1, '问答回答删除失败');
+            $this->render_json(1, yun_at('admin_01344'));
         }
     }
 
@@ -387,7 +387,7 @@ class question_controller extends adminCommon
     function statusAnswerReview_action()
     {
         if (empty($_POST['id']) || empty($_POST['status'])) {
-            $this->render_json(1, '参数错误');
+            $this->render_json(1, yun_at('wap_com_00228'));
         }
 
         $askM = $this->MODEL('ask');
@@ -410,7 +410,7 @@ class question_controller extends adminCommon
     function save_review_action()
     {
         if (empty($_POST['id']) || empty($_POST['content'])) {
-            $this->render_json(1, '参数错误');
+            $this->render_json(1, yun_at('wap_com_00228'));
         }
 
         $askM = $this->MODEL('ask');
@@ -421,7 +421,7 @@ class question_controller extends adminCommon
         if ($return) {
             $this->admin_json(0, '问答评论(ID:' . $id . ')修改成功');
         } else {
-            $this->render_json(1, '问答评论修改失败');
+            $this->render_json(1, yun_at('admin_01345'));
         }
     }
 
@@ -437,7 +437,7 @@ class question_controller extends adminCommon
         if ($return['errcode'] == 9) {
             $this->admin_json(0, '问答评论(ID:' . pylode(',', $delID) . ')删除成功');
         } else {
-            $this->render_json(1, '问答评论删除失败');
+            $this->render_json(1, yun_at('admin_01346'));
         }
     }
 
@@ -461,7 +461,7 @@ class question_controller extends adminCommon
     function configSave_action()
     {
         if (empty($_POST)) {
-            $this->render_json(1, '参数错误');
+            $this->render_json(1, yun_at('wap_com_00228'));
         }
 
         if ($_FILES['sy_friend_icon']['tmp_name']) {
@@ -490,7 +490,7 @@ class question_controller extends adminCommon
 
         $this->web_config();
 
-        $this->admin_json(0, '问答设置配置修改成功');
+        $this->admin_json(0, 'admin_01347');
     }
 }
 

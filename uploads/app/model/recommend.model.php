@@ -59,11 +59,11 @@ class recommend_model extends model{
 			
 			$return['id']		=	$this -> insert_into('outside',$data);
 			
-            $return['msg']		=	'回收站(ID:'.$return['id'].')';
+            $return['msg']		=	yun_auto_t('回收站(ID:').$return['id'].')';
 			
 			$return['errcode']	=	$return['id'] ? '9' :'8';
             
-            $return['msg']		=	$return['id'] ? $return['msg'].'添加成功！' : $return['msg'].'添加失败！';
+            $return['msg']		=	$return['id'] ? $return['msg'].'admin_system_00138' : $return['msg'].'admin_system_00137';
             
             return $return;
 		}
@@ -86,7 +86,7 @@ class recommend_model extends model{
 			
 			$return['errcode']	=	$return['id'] ? '9' :'8';
             
-            $return['msg']		=	$return['id'] ? $return['msg'].'恢复成功！' : $return['msg'].'恢复失败！';
+            $return['msg']		=	$return['id'] ? $return['msg'].'admin_tool_00011' : $return['msg'].'common_06571';
             
             return $return;
 		}

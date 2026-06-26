@@ -45,7 +45,7 @@ class logout_model extends model{
         if (!$res) {
 
             $return =   array(
-                'msg'       =>  '密码错误',
+                'msg'       =>  yun_at('wap_js_00063'),
                 'errcode'   =>  8
             );
         } else {
@@ -59,11 +59,11 @@ class logout_model extends model{
 
             require_once('log.model.php');
             $logM = new log_model($this->db, $this->def);
-            $logM->addMemberLog($user['uid'], $user['usertype'], '申请注销账号', 31, 1);
+            $logM->addMemberLog($user['uid'], $user['usertype'], 'common_06532', 31, 1);
 
-            $msg = '注销账号申请';
+            $msg = 'common_06526';
 
-            $return['msg'] = $nid ? $msg . '成功' : $msg . '失败 ';
+            $return['msg'] = $nid ? $msg . 'admin_tool_00502' : $msg . 'admin_tool_00501';
             $return['errcode'] = $nid ? 9 : 8;
         }
         return $return;
@@ -85,7 +85,7 @@ class logout_model extends model{
 
         if($code!=$cert['check2']){
 
-            $return['msg']		=	"验证码错误";
+            $return['msg']		=	yun_at('wap_00211');
             $return['error']	=	'8';
 
         }else{
@@ -100,11 +100,11 @@ class logout_model extends model{
 
             require_once('log.model.php');
             $logM = new log_model($this->db, $this->def);
-            $logM->addMemberLog($user['uid'], $user['usertype'], '申请注销账号', 31, 1);
+            $logM->addMemberLog($user['uid'], $user['usertype'], 'common_06532', 31, 1);
 
-            $msg = '注销账号申请';
+            $msg = 'common_06526';
 
-            $return['msg'] = $nid ? $msg . '成功' : $msg . '失败 ';
+            $return['msg'] = $nid ? $msg . 'admin_tool_00502' : $msg . 'admin_tool_00501';
             $return['errcode'] = $nid ? 9 : 8;
         }
         return $return;
@@ -138,7 +138,7 @@ class logout_model extends model{
 	                        'moblie'       =>  $str.'_'.$member['moblie'],
 	                        'email'        =>  $str.'_'.$member['email'].'_'.$str,
 	                        'status'       =>  2,
-	                        'lock_info'    =>  '会员注销账号',
+	                        'lock_info'    =>  'common_06533',
 	                        'pwuid'        =>  0,
 	                        'pw_repeat'    =>  0,
 	                        'qqid'         =>  '',
@@ -178,22 +178,22 @@ class logout_model extends model{
 	                    $noticeM -> sendSMSType($sendData);
 	                }
 	                
-	                $return['msg']      =  '注销账号申请(ID：'.$row['id'].')处理成功';
+	                $return['msg']      =  yun_auto_t('注销账号申请(ID：').$row['id'].')处理成功';
 	                $return['errcode']  =  9;
 	                
 	            }else{
 	                
-	                $return['msg']      =  '注销账号申请处理失败 ';
+	                $return['msg']      =  yun_at('common_06534');
 	                $return['errcode']  =  8;
 	            }
 	        }else{
 	            
-	            $return['msg']      =  '没有该注销申请';
+	            $return['msg']      =  yun_at('common_01383');
 	            $return['errcode']  =  8;
 	        }
 	    }else{
 	        
-	        $return['msg']      =  '请选择需要处理的申请';
+	        $return['msg']      =  yun_at('common_01070');
 	        $return['errcode']  =  8;
 	    }
 	    return $return;
@@ -224,7 +224,7 @@ class logout_model extends model{
 	{
 	    if (empty($delId)) {
 	        
-	        $return  =  array('errcode' => 8, 'msg' => '请选择要删除的数据！');
+	        $return  =  array('errcode' => 8, 'msg' => yun_at('member_com_00084'));
 	    } else {
 	        
 	        if (is_array($delId)) {
@@ -243,7 +243,7 @@ class logout_model extends model{
 	        
 	        $msg                =   '注销账号申请（ID：'.pylode(',', $delId).'）';
 	        
-	        $return['msg']      =   $return['id'] ? $msg.'删除成功！' : '删除失败！';
+	        $return['msg']      =   $return['id'] ? $msg.'admin_user_00187' : 'admin_user_00186';
 	    }
 	    return $return;
 	}

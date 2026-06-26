@@ -216,7 +216,7 @@ class company_order_controller extends adminCommon
             if ($nbid) {
                 $this->admin_json(0, "订单合同图片(ID:" . $nbid . ")添加成功！");
             } else {
-                $this->render_json(1, '添加失败！');
+                $this->render_json(1, yun_at('admin_system_00137'));
             }
         }
     }
@@ -231,7 +231,7 @@ class company_order_controller extends adminCommon
             if ($delid) {
                 $this->admin_json(0, "订单合同图片(ID:" . $id . ")删除成功！");
             } else {
-                $this->render_json(1, '删除失败！');
+                $this->render_json(1, yun_at('admin_user_00186'));
             }
         }
     }

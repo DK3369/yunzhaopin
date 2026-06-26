@@ -7,10 +7,10 @@
                 </div>
                 <div class="jiliTanJinCont">
                     <span>IP：{{Info.login_ip}}</span>
-                    <span v-if="Info.login_address">IP归属地 {{Info.login_address}}</span>
+                    <span v-if="Info.login_address">{yun:}t key='admin_00391'{/yun}</span>
                 </div>
 				<div class="jiliTanJinCont" v-if="Info.shortname">
-				    <span>企业简称：{{Info.shortname}}</span>
+				    <span>{yun:}t key='admin_00392'{/yun}</span>
 				</div>
 				<div class="jiliTanJinCont" v-if="Info.hy">
 				    <span>{{ lc("admin_industry_value", [Info.hy_n]) }}</span>
@@ -22,42 +22,42 @@
 				    <span>{{ lc("admin_company_size_value", [Info.mun_n]) }}</span>
 				</div>
 				<div class="jiliTanJinCont" v-if="Info.money">
-				    <span>注册资金：{{Info.money}} {{Info.moneytype_n}}</span>
+				    <span>{yun:}t key='admin_00393'{/yun}</span>
 				</div>
 			</div>
 			<div class="jiliTanJinli" v-if="Info.content">
 			    <div class="jiliTanJinTite">
-			        <span>企业简介</span>
+			        <span>{yun:}t key='wap_com_00160'{/yun}</span>
 			    </div>
 				<div class="jiliTanJinCont" v-html="Info.content"></div>
 			</div>
 			<div class="jiliTanJinli">
 			    <div class="jiliTanJinTite">
-			        <span>联系方式</span>
+			        <span>{yun:}t key='wap_00462'{/yun}</span>
 			    </div>
 				<div class="jiliTanJinCont" v-if="Info.linkman">
 				    <span>{{ lc("admin_contact_person_value", [Info.linkman]) }} <span v-if="Info.linkjob">（{{Info.linkjob}})</span></span>
 				</div>
 				<div class="jiliTanJinCont" v-if="Info.linktel">
-				    <span>{{ lc("admin_contact_mobile_value", [Info.linktel]) }} {{Info.infostatus=='1'?'（公开）':'（不公开）'}}</span>
+				    <span>{yun:}t key='admin_00394'{/yun}</span>
 				</div>
 				<div class="jiliTanJinCont" v-if="Info.linkphone">
-				    <span>固定电话：{{Info.linkphone}}</span>
+				    <span>{yun:}t key='admin_00395'{/yun}</span>
 				</div>
 				<div class="jiliTanJinCont" v-if="Info.linkmail">
 				    <span>{{ lc("admin_email_value", [Info.linkmail]) }}</span>
 				</div>
 				<div class="jiliTanJinCont" v-if="Info.linkqq">
-				    <span>联系QQ：{{Info.linkqq}}</span>
+				    <span>{yun:}t key='admin_00396'{/yun}</span>
 				</div>
 				<div class="jiliTanJinCont" v-if="Info.website">
-				    <span>企业网址：{{Info.website}}</span>
+				    <span>{yun:}t key='admin_00397'{/yun}</span>
 				</div>
 				<div class="jiliTanJinCont" v-if="Info.provinceid">
-				    <span>企业地址：{{Info.job_city_one}} {{Info.job_city_two}} {{Info.job_city_three}} {{Info.address}}</span>
+				    <span>{yun:}t key='admin_00398'{/yun}</span>
 				</div>
 				<div class="jiliTanJinCont" v-if="Info.comqcode">
-				    <span>公司二维码：<el-image :src="Info.comqcode" width="150" height="150"></el-image></span>
+				    <span>{yun:}t key='admin_00049'{/yun}<el-image :src="Info.comqcode" width="150" height="150"></el-image></span>
 				</div>
 				<div class="jiliTanJinCont" v-if="Info.busstops">
 				    <span>{{ lc("admin_bus_stop_value", [Info.busstops]) }}</span>

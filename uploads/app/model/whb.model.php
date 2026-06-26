@@ -78,24 +78,24 @@ class whb_model extends model
 
         if (trim($updata['name']) == '') {
 
-            return array('msg' => '海报名称不能为空！', 'errcode' => 8);
+            return array('msg' => yun_at('model_00068'), 'errcode' => 8);
         }
 
         if (!empty($whereData)) {
 
             $return['id']   =   $this->update_once('admin_jobwhb', $updata, $whereData);
 
-            $return['msg']  =   '微海报更新';
+            $return['msg']  =   yun_at('common_06660');
         } else {
 
             $return['id']   =   $this->insert_into('admin_jobwhb', $updata);
 
-            $return['msg']  =   '微海报添加';
+            $return['msg']  =   yun_at('common_06661');
         }
 
         $return['errcode']  =   $return['id'] ? '9' : '8';
 
-        $return['msg']      =   $return['id'] ? $return['msg'] . '成功！' : $return['msg'] . '失败！';
+        $return['msg']      =   $return['id'] ? $return['msg'] . 'wap_js_00104' : $return['msg'] . 'wap_js_00103';
 
         return $return;
     }
@@ -122,8 +122,8 @@ class whb_model extends model
             if (!empty($job) && is_array($job)) {
 
                 $jobCity    =   !empty($job['job_city_two']) ? $job['job_city_two'] : $job['job_city_one'];
-                $jobExp     =   !empty($job['job_exp']) ? $job['job_exp'] : '经验不限';
-                $jobEdu     =   !empty($job['job_edu']) ? $job['job_edu'] : '学历不限';
+                $jobExp     =   !empty($job['job_exp']) ? $job['job_exp'] : 'common_06296';
+                $jobEdu     =   !empty($job['job_edu']) ? $job['job_edu'] : 'common_06297';
 
                 if (!isset($this->config['sy_oss']) || $this->config['sy_oss'] != 1) {
                     $job['com_logo_n']  =   str_replace($this->config['sy_weburl'] . '/data/', DATA_PATH, $job['com_logo_n']);
@@ -154,14 +154,14 @@ class whb_model extends model
                         ),
 
                         array(
-                            'text'      =>  mb_substr($jobCity . ' - ' . $jobExp . ' - ' . $jobEdu . '学历', 0, 35, 'utf-8'),
+                            'text'      =>  mb_substr($jobCity . ' - ' . $jobExp . ' - ' . $jobEdu . 'wap_com_00301', 0, 35, 'utf-8'),
                             'left'      =>  240,
                             'top'       =>  1760,
                             'fontSize'  =>  '22px',         //字号
                             'fontColor' =>  '102,102,102',  //字体颜色
                         ),
                         array(
-                            'text'      =>  '长按识别二维码',
+                            'text'      =>  'wap_user_00188',
                             'left'      =>  782,
                             'top'       =>  1760,
                             'fontSize'  =>  '22px',         //字号

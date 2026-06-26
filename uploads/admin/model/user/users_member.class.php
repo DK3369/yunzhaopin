@@ -14,9 +14,9 @@ class users_member_controller extends adminCommon
         /* @var $arr_data */
         include(CONFIG_PATH . 'db.data.php');
         $source = $arr_data['source'];
-        $search_list[] = array('param' => 'source', 'name' => '数据来源', 'value' => $source);
-        $search_list[] = array('param' => 'status', 'name' => '状态', 'value' => array('1' => '正常', '2' => '锁定'));
-        $search_list[] = array('param' => 'def_job', 'name' => '拥有简历', 'value' => array('1' => '是', '2' => '否'));
+        $search_list[] = array('param' => 'source', 'name' => 'admin_yunying_00139', 'value' => $source);
+        $search_list[] = array('param' => 'status', 'name' => 'member_user_00181', 'value' => array('1' => 'admin_user_00149', '2' => 'admin_user_00150'));
+        $search_list[] = array('param' => 'def_job', 'name' => 'admin_user_company_00294', 'value' => array('1' => '是', '2' => '否'));
 
         return compact('source', 'search_list');
     }
@@ -242,11 +242,11 @@ class users_member_controller extends adminCommon
             $this->render_json(0);
         }else{
             if ($_POST['username'] == '' || mb_strlen($_POST['username']) < 2 || mb_strlen($_POST['username']) > 16) {
-                $this->render_json(1, '用户名格式错误');
+                $this->render_json(1, yun_at('admin_user_00084'));
             } elseif ($_POST['password'] == '' || mb_strlen($_POST['password']) < 6 || mb_strlen($_POST['password']) > 20) {
-                $this->render_json(1, '密码格式错误');
+                $this->render_json(1, yun_at('admin_user_00085'));
             } elseif ($_POST['moblie'] == '') {
-                $this->render_json(1, '手机号不能为空');
+                $this->render_json(1, yun_at('admin_01285'));
             }
 
             $userinfoM = $this->MODEL('userinfo');
@@ -263,7 +263,7 @@ class users_member_controller extends adminCommon
                 $user = uc_get_user($_POST['username']);
 
                 if (is_array($user)) {
-                    $this->render_json(1, '该会员已经存在');
+                    $this->render_json(1, yun_at('common_01400'));
                 }
             }
             $time = time();
@@ -276,22 +276,22 @@ class users_member_controller extends adminCommon
                 if ($result < 0) {
                     switch ($result) {
                         case '-1' :
-                            $data['msg'] = '用户名不合法!';
+                            $data['msg'] = yun_at('common_01387');
                             break;
                         case '-2' :
-                            $data['msg'] = '包含不允许注册的词语!';
+                            $data['msg'] = yun_at('common_00858');
                             break;
                         case '-3' :
-                            $data['msg'] = '用户名已经存在!';
+                            $data['msg'] = yun_at('common_01288');
                             break;
                         case '-4' :
-                            $data['msg'] = 'Email 格式有误!';
+                            $data['msg'] = yun_at('common_00834');
                             break;
                         case '-5' :
-                            $data['msg'] = 'Email 不允许注册!';
+                            $data['msg'] = yun_at('common_00762');
                             break;
                         case '-6' :
-                            $data['msg'] = '该 Email 已经被注册!';
+                            $data['msg'] = yun_at('common_00673');
                             break;
                     }
 
@@ -325,7 +325,7 @@ class users_member_controller extends adminCommon
             if ($nid > 0) {
                 $this->admin_json(0, '个人会员(ID:' . $nid . ')添加成功');
             } else {
-                $this->render_json(1, '个人会员添加失败，请重试');
+                $this->render_json(1, yun_at('admin_user_00076'));
             }
         }
 
@@ -337,7 +337,7 @@ class users_member_controller extends adminCommon
     function edit_action()
     {
         if (empty($_POST['uid'])) {
-            $this->render_json(1, '参数错误');
+            $this->render_json(1, yun_at('wap_com_00228'));
         }
 
         $uid = intval($_POST['uid']);
@@ -388,7 +388,7 @@ class users_member_controller extends adminCommon
         $_POST = $this->post_trim($_POST);
 
         if (empty($_POST) || empty($_POST['uid'])) {
-            $this->render_json(1, '参数错误');
+            $this->render_json(1, yun_at('wap_com_00228'));
         }
 
         $uid = intval($_POST['uid']);
@@ -478,9 +478,9 @@ class users_member_controller extends adminCommon
         $UserinfoM = $this->MODEL('userinfo');
 
         if ($_POST['email'] == "") {
-            $this->render_json(1, '请填写邮箱');
+            $this->render_json(1, yun_at('wap_01119'));
         } elseif (CheckRegEmail($_POST['email']) == false) {
-            $this->render_json(1, '邮箱格式错误');
+            $this->render_json(1, yun_at('wap_js_00120'));
         }
 
         $uid = $_POST['uid'];
@@ -491,7 +491,7 @@ class users_member_controller extends adminCommon
 
         if ($rInfo) {
             if ($rInfo['email'] == $email && $rInfo['email_status'] == 1) {
-                $this->render_json(0, '邮箱未变更，无需调整');
+                $this->render_json(0, yun_at('admin_user_00080'));
             }
 
             $rdata = array('email_status' => $status, 'email' => $email);
@@ -507,20 +507,20 @@ class users_member_controller extends adminCommon
                 $this->obj->update_once('lt_info', array('email' => '', 'email_status' => 0), array('uid' => array('<>', $uid), 'email' => $email));
                 $this->obj->update_once('px_train', array('linkmail' => '', 'email_status' => 0), array('uid' => array('<>', $uid), 'linkmail' => $email));
 
-                $msg = '新邮箱：' . $email;
+                $msg = 'admin_01286' . $email;
                 if (!empty($rInfo['email']) && $rInfo['email'] != $email) {
 
-                    $msg .= '，原邮箱：' . $rInfo['email'];
+                    $msg .= 'admin_user_00091' . $rInfo['email'];
                 }
 
                 $this->MODEL('log')->addAdminLog("个人会员(ID" . $uid . ")认证邮箱【" . $email . "】");
 
                 $this->admin_json(0, "邮箱认证成功(用户ID：" . $uid . "，" . $msg . ")");
             } else {
-                $this->render_json(1, '邮箱认证失败');
+                $this->render_json(1, yun_at('admin_user_00089'));
             }
         } else {
-            $this->render_json(1, '当前数据错误');
+            $this->render_json(1, yun_at('admin_user_00086'));
         }
     }
 
@@ -535,9 +535,9 @@ class users_member_controller extends adminCommon
         $UserinfoM = $this->MODEL('userinfo');
 
         if ($_POST['moblie'] == "") {
-            $this->render_json(1, '请填写手机号码');
+            $this->render_json(1, yun_at('wap_user_00274'));
         } elseif (CheckMobile($_POST['moblie']) == false) {
-            $this->render_json(1, '手机号码格式错误');
+            $this->render_json(1, yun_at('wap_user_00039'));
         }
 
         $uid = $_POST['uid'];
@@ -549,7 +549,7 @@ class users_member_controller extends adminCommon
 
         if (!empty($rInfo)) {
             if ($rInfo['telphone'] == $phone && $rInfo['moblie_status'] == 1) {
-                $this->render_json(0, '手机号未变更，无需调整');
+                $this->render_json(0, yun_at('admin_user_00078'));
             }
 
             $data = array('moblie_status' => $status, 'telphone' => $phone);
@@ -558,16 +558,16 @@ class users_member_controller extends adminCommon
             if ($nid) {
                 $memberData = array('moblie_status' => $status, 'moblie' => $phone);
 
-                $msg = '新手机号：' . $phone;
+                $msg = 'admin_01287' . $phone;
                 if (!empty($rInfo['telphone'])) {
-                    $msg .= '，原手机号：' . $rInfo['telphone'];
+                    $msg .= 'admin_user_00090' . $rInfo['telphone'];
                 }
                 // 获取用户信息，用来判断旧手机号和用户名是否一致
                 $member = $UserinfoM->getInfo(array('uid' => $uid), array('field' => 'username,moblie'));
                 if ($member['username'] == $member['moblie']) {
 
                     $memberData['username'] = $phone;
-                    $msg .= '，同步调整用户名为' . $phone;
+                    $msg .= 'admin_user_00081' . $phone;
                 }
                 // 有账号的用户名与新手机号一致的，将用户名改成新手机号
                 $omb = $UserinfoM->getInfo(array('username' => $phone), array('field' => 'uid'));
@@ -575,7 +575,7 @@ class users_member_controller extends adminCommon
                     // 如果现有数据中，存在用户名是这个手机号的，要修改
                     $UserinfoM->upInfo(array('uid' => $omb['uid']), array('username' => $phone . '_s'));
 
-                    $logDetail = '账号修改：账号（UID：' . $uid . '）认证手机号，因本账号用户名与该手机号相同，调整本账号（ID：' . $omb['uid'] . '）用户名（' . $phone . ' → ' . $phone . '_s）';
+                    $logDetail = 'admin_user_00077' . $uid . 'admin_user_00075' . $omb['uid'] . 'common_06620' . $phone . ' → ' . $phone . '_s）';
 
                     $logM = $this->MODEL('log');
                     $logM->addAdminLog($logDetail);
@@ -590,10 +590,10 @@ class users_member_controller extends adminCommon
 
                 $this->admin_json(0, "手机认证成功(用户ID：" . $uid . "，" . $msg . ")");
             } else {
-                $this->render_json(1, '手机认证失败');
+                $this->render_json(1, yun_at('admin_user_00087'));
             }
         } else {
-            $this->render_json(1, '当前数据错误');
+            $this->render_json(1, yun_at('admin_user_00086'));
         }
     }
 
@@ -608,13 +608,13 @@ class users_member_controller extends adminCommon
         $msg = array();
 
         if (empty($_POST['type']) || !is_array($_POST['type'])) {
-            $this->render_json(1, '请选择认证类型');
+            $this->render_json(1, yun_at('admin_01288'));
         }
         if (!isset($_POST['status'])) {
-            $this->render_json(1, '请选择认证状态');
+            $this->render_json(1, yun_at('admin_01289'));
         }
         if (empty($_POST['uid'])) {
-            $this->render_json(1, '非法操作');
+            $this->render_json(1, yun_at('member_com_00320'));
         }
 
         $type = $_POST['type'];
@@ -626,7 +626,7 @@ class users_member_controller extends adminCommon
 
         if (is_array($rows) && $rows) {
             if (in_array('email', $type)) {
-                array_push($msg, '邮箱');
+                array_push($msg, 'member_user_00282');
 
                 foreach ($rows as $val) {
 //                    if ($val['email'] || $val['email_status'] == 1) {
@@ -642,7 +642,7 @@ class users_member_controller extends adminCommon
             }
 
             if (in_array('moblie', $type)) {
-                array_push($msg, '手机');
+                array_push($msg, 'member_user_00163');
 
                 foreach ($rows as $val) {
 //                    if ($val['telphone'] || $val['moblie_status'] == 1) {
@@ -658,7 +658,7 @@ class users_member_controller extends adminCommon
             }
 
             if (in_array('idcard', $type)) {
-                array_push($msg, '身份证');
+                array_push($msg, 'member_com_00014');
 
                 foreach ($rows as $val) {
 //                    if ($val['idcard_pic'] && $val['idcard'] || $val['idcard_status'] == 1) {
@@ -672,9 +672,9 @@ class users_member_controller extends adminCommon
                 $ResumeM->upResumeInfo($idcardwhere, array('rData' => $idcarddata));
             }
 
-            $ty = $status == 1 ? '已认证' : '待认证';
+            $ty = $status == 1 ? yun_at('wap_user_00128') : yun_at('admin_user_00300');
 
-            $this->admin_json(0, '(个人列表)' . implode(',', $msg) . '批量设置' . $ty . '成功(ID:' . $ids . ')');
+            $this->admin_json(0, '(个人列表)' . implode(',', $msg) . 'admin_user_00092' . $ty . 'common_01499' . $ids . ')');
         }
     }
 
@@ -684,7 +684,7 @@ class users_member_controller extends adminCommon
     function userStatus()
     {
         if (empty($_POST['uid'])) {
-            $this->render_json(1, '参数错误');
+            $this->render_json(1, yun_at('wap_com_00228'));
         }
 
         $resumeM = $this->MODEL('resume');
@@ -709,7 +709,7 @@ class users_member_controller extends adminCommon
     function checksitedid_action()
     {
         if (empty($_POST['uid'])) {
-            $this->render_json(1, '参数错误');
+            $this->render_json(1, yun_at('wap_com_00228'));
         }
 
         $did = intval($_POST['did']);
@@ -717,7 +717,7 @@ class users_member_controller extends adminCommon
         $uid = pylode(',', $_POST['uid']);
 
         if (empty($uid)) {
-            $this->render_json(1, '请正确选择需分配用户');
+            $this->render_json(1, yun_at('admin_user_00079'));
         }
 
         $siteM = $this->MODEL('site');
@@ -743,7 +743,7 @@ class users_member_controller extends adminCommon
 
         $siteM->updDid($Table, array('uid' => array('in', $uid)), $didData);
 
-        $this->admin_json(0, '会员(ID:' . $uid . ')分配站点成功');
+        $this->admin_json(0, 'common_01459' . $uid . ')分配站点成功');
     }
 
     /**
@@ -754,7 +754,7 @@ class users_member_controller extends adminCommon
         $_POST = $this->post_trim($_POST);
 
         if (empty($_POST['uid']) || empty($_POST['username']) || empty($_POST['status'])) {
-            $this->render_json(1, '参数错误');
+            $this->render_json(1, yun_at('wap_com_00228'));
         }
 
         $userInfoM = $this->MODEL('userinfo');
@@ -774,9 +774,9 @@ class users_member_controller extends adminCommon
         } else {
             $return = $userInfoM->upInfo(array('uid' => $uid), $data);
             if ($return) {
-                $this->admin_json(0, '账户信息修改成功');
+                $this->admin_json(0, 'admin_user_00083');
             } else {
-                $this->render_json(1, '账户信息修改失败');
+                $this->render_json(1, yun_at('admin_user_00082'));
             }
         }
     }
@@ -810,7 +810,7 @@ class users_member_controller extends adminCommon
     function merge_action()
     {
         if (empty($_POST['uid'])) {
-            $this->render_json(1, '参数错误');
+            $this->render_json(1, yun_at('wap_com_00228'));
         }
 
         $transferM = $this->MODEL('transfer');
@@ -840,7 +840,7 @@ class users_member_controller extends adminCommon
     function reset_pw_action()
     {
         if (empty($_POST['uid'])) {
-            $this->render_json(1, '参数错误');
+            $this->render_json(1, yun_at('wap_com_00228'));
         }
 
         $userinfoM = $this->MODEL('userinfo');
@@ -848,7 +848,7 @@ class users_member_controller extends adminCommon
         $uid = intval($_POST['uid']);
         $userinfoM->upInfo(array('uid' => $uid), array('password' => '123456'));
 
-        $this->admin_json(0, '会员(ID:' . $uid . ')重置密码成功');
+        $this->admin_json(0, 'common_01459' . $uid . ')重置密码成功');
     }
 
     /**
@@ -857,7 +857,7 @@ class users_member_controller extends adminCommon
     function del_action()
     {
         if (empty($_POST['del'])) {
-            $this->render_json(1, '参数错误');
+            $this->render_json(1, yun_at('wap_com_00228'));
         }
 
         $userinfoM = $this->MODEL('userinfo');
@@ -879,9 +879,9 @@ class users_member_controller extends adminCommon
         $where['opera'] = 12;
 
         $where['PHPYUNBTWSTART_A'] = '';
-        $where['content'][] = array('like', '解除绑定');
-        $where['content'][] = array('like', '解绑', 'OR');
-        $where['content'][] = array('like', '解除', 'OR');
+        $where['content'][] = array('like', 'wap_user_00138');
+        $where['content'][] = array('like', 'wap_js_00065', 'OR');
+        $where['content'][] = array('like', 'common_02028', 'OR');
         $where['PHPYUNBTWEND_A'] = '';
 
         $where['usertype'] = 1; // TODO 建议各写各的，统一走这里权限会导致加载不了
@@ -943,7 +943,7 @@ class users_member_controller extends adminCommon
     function delwflog_action()
     {
         if (empty($_POST['del'])) {
-            $this->render_json(1, '参数错误');
+            $this->render_json(1, yun_at('wap_com_00228'));
         }
 
         $del = $_POST['del'];
@@ -964,9 +964,9 @@ class users_member_controller extends adminCommon
         $return = $logM->delMemlog($where);
 
         if ($return['errcode'] == 9) {
-            $this->admin_json(0, $ids == 'all' ? '解绑记录清空成功' : '解绑记录（ID:' . $ids . '）删除成功');
+            $this->admin_json(0, $ids == 'all' ? 'admin_01290' : '解绑记录（ID:' . $ids . 'admin_01291');
         } else {
-            $this->render_json(1, '解绑记录删除失败');
+            $this->render_json(1, yun_at('admin_01292'));
         }
     }
 
@@ -1027,29 +1027,29 @@ class users_member_controller extends adminCommon
             $operaStr = intval($_POST['operas']);
 
             $operaSql = array(
-                '1' => array('name' => array('职位')),
-                '2' => array('name' => array('创建', '简历', '经历')),
-                '3' => array('name' => array('下载')),
-                '4' => array('name' => array('邀请')),
-                '5' => array('name' => array('收藏', '关注', '备注')),
-                '6' => array('name' => array('申请', '报名', '应聘', '委托')),
-                '7' => array('name' => array('基本信息')),
-                '8' => array('name' => array('修改密码')),
-                '9' => array('name' => array('兼职')),
-                '11' => array('name' => array('用户名', '身份')),
-                '12' => array('name' => array('账号认证', '解除', '绑定', '验证', '资质', '执照', '认证')),
-                '14' => array('name' => array('招聘会', '专题')),
-                '15' => array('name' => array('地图', '助力')),
-                '16' => array('name' => array('图片', '头像', 'LOGO', '环境', '产品', '新闻', '二维码', '横幅')),
-                '17' => array('name' => array('兑换', '积分'), 'realId' => 17),
-                '18' => array('name' => array('回复', '咨询', '留言', '系统消息')),
-                '19' => array('name' => array('问答')),
-                '22' => array('name' => array('新闻')),
-                '23' => array('name' => array('举报')),
-                '25' => array('name' => array('悬赏', '推送')),
-                '26' => array('name' => array('浏览', '黑名单')),
-                '29' => array('name' => array('项目')),
-                '88' => array('name' => array('订单'))
+                '1' => array('name' => array('wap_user_00154')),
+                '2' => array('name' => array('common_01951', 'wap_com_00428', 'common_02021')),
+                '3' => array('name' => array('wap_00070')),
+                '4' => array('name' => array('common_02040')),
+                '5' => array('name' => array('wap_00379', 'common_01949', 'member_user_00242')),
+                '6' => array('name' => array('wap_00574', 'common_01991', 'common_01982', 'common_01971')),
+                '7' => array('name' => array('wap_00456')),
+                '8' => array('name' => array('member_user_00226')),
+                '9' => array('name' => array('wap_user_00220')),
+                '11' => array('name' => array('admin_user_00140', 'common_02035')),
+                '12' => array('name' => array('member_com_00093', 'common_02028', 'member_user_00234', 'member_user_00236', 'common_02034', 'admin_user_00171', 'member_user_00235')),
+                '14' => array('name' => array('member_com_00293', 'common_01937')),
+                '15' => array('name' => array('wap_00317', 'common_01954')),
+                '16' => array('name' => array('wap_js_00081', 'member_user_00161', 'LOGO', 'common_02012', 'default_00092', 'admin_tool_00428', 'common_01886', 'member_com_00077')),
+                '17' => array('name' => array('admin_yunying_00117', 'wap_user_00008'), 'realId' => 17),
+                '18' => array('name' => array('common_01967', 'common_01965', 'common_02015', 'wap_user_00363')),
+                '19' => array('name' => array('wap_user_00223')),
+                '22' => array('name' => array('admin_tool_00428')),
+                '23' => array('name' => array('wap_com_00350')),
+                '25' => array('name' => array('wap_com_00357', 'admin_user_company_00379')),
+                '26' => array('name' => array('wap_user_00221', 'member_user_00044')),
+                '29' => array('name' => array('common_02046')),
+                '88' => array('name' => array('common_02029'))
             );
 
             if (array_key_exists($operaStr, $operaSql)) {
@@ -1091,11 +1091,11 @@ class users_member_controller extends adminCommon
             $where['limit'] = $pages['limit'];
 
             $list = $logM->getMemlogList($where, array('utype' => 'admin'));
-            $weekArr = array('星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六');
+            $weekArr = array('wap_00014', 'wap_00008', 'wap_00010', 'wap_00009', 'wap_00013', 'wap_00011', 'wap_00012');
             foreach($list as $key => $val) {
                 $list[$key]['date_n'] = date('Y-m-d', $val['ctime']);
                 $list[$key]['time_n'] = date('H:i', $val['ctime']);
-                $list[$key]['week'] = $list[$key]['date_n'] == date('Y-m-d') ? '今天' : $weekArr[date('w', $val['ctime'])];
+                $list[$key]['week'] = $list[$key]['date_n'] == date('Y-m-d') ? 'common_01940' : $weekArr[date('w', $val['ctime'])];
             }
         }
 
@@ -1104,21 +1104,21 @@ class users_member_controller extends adminCommon
         $this->render_json(0, 'ok', compact('search_list', 'list', 'total', 'page_sizes', 'limit', 'page', 'last_page'));
     }
     public function getSearchData_action(){
-        $opera = array('88' => '财务', '2' => '简历', '6' => '申请', '5' => '收藏/关注', '7' => '基本信息', '11' => '修改账号', '8' => '修改密码', '12' => '账号认证', '16' => '图片', '17' => '积分兑换', '18' => '消息', '19' => '问答', '23' => '举报', '25' => '悬赏推荐', '26' => '浏览');
-        $search_list[] = array('param' => 'operas', 'name' => '操作内容', 'value' => $opera);
+        $opera = array('88' => 'admin_user_00157', '2' => 'wap_com_00428', '6' => 'wap_00574', '5' => 'wap_user_00193', '7' => 'wap_00456', '11' => 'admin_user_00152', '8' => 'member_user_00226', '12' => 'member_com_00093', '16' => 'wap_js_00081', '17' => 'common_06524', '18' => 'wap_user_00365', '19' => 'wap_user_00223', '23' => 'wap_com_00350', '25' => 'admin_user_00154', '26' => 'wap_user_00221');
+        $search_list[] = array('param' => 'operas', 'name' => 'admin_user_00155', 'value' => $opera);
 
-        $parr = array('1' => '增加', '2' => '修改', '3' => '删除', '4' => '刷新');
-        $search_list[] = array('param' => 'parrs', 'name' => '操作类型', 'value' => $parr);
+        $parr = array('1' => 'admin_user_00156', '2' => 'wap_js_00073', '3' => 'wap_js_00077', '4' => 'wap_user_00334');
+        $search_list[] = array('param' => 'parrs', 'name' => 'wap_com_00030', 'value' => $parr);
 
-        $ad_time = array('1' => '今天', '3' => '最近三天', '7' => '最近七天', '15' => '最近半月', '30' => '最近一个月');
-        $search_list[] = array("param" => "end", "name" => '操作时间', "value" => $ad_time);
+        $ad_time = array('1' => 'common_01940', '3' => 'admin_user_00179', '7' => 'admin_user_00178', '15' => 'admin_user_00180', '30' => 'admin_user_00175');
+        $search_list[] = array("param" => "end", "name" => 'member_user_00241', "value" => $ad_time);
         $this->render_json(0, 'ok', compact('search_list'));
     }
     // 会员日志删除
     function logDel_action()
     {
         if (empty($_POST['del'])) {
-            $this->render_json(1, '参数错误');
+            $this->render_json(1, yun_at('wap_com_00228'));
         }
 
         $logM = $this->MODEL('log');
@@ -1139,9 +1139,9 @@ class users_member_controller extends adminCommon
         $return = $logM->delMemlog($where);
 
         if ($return['errcode'] == 9) {
-            $this->admin_json(0, $ids == 'all' ? '个人日志清空成功' : '个人日志（ID:' . $ids . '）删除成功');
+            $this->admin_json(0, $ids == 'all' ? 'admin_01293' : '个人日志（ID:' . $ids . 'admin_01291');
         } else {
-            $this->render_json(1, '个人日志删除失败');
+            $this->render_json(1, yun_at('admin_01294'));
         }
     }
 
@@ -1258,14 +1258,14 @@ class users_member_controller extends adminCommon
     function Imitate_action()
     {
         if (empty($_POST['uid'])) {
-            $this->render_json(1, '参数错误');
+            $this->render_json(1, yun_at('wap_com_00228'));
         }
 
         $userinfoM = $this->MODEL('userinfo');
 
         $member = $userinfoM->getInfo(array('uid' => intval($_POST['uid'])), array('field' => '`uid`,`username`,`salt`,`email`,`password`,`usertype`,`did`'));
         if (empty($member)) {
-            $this->render_json(1, '数据异常');
+            $this->render_json(1, yun_at('wap_00341'));
         }
 
         $this->cookie->unset_cookie($_SESSION['auid']);
@@ -1274,7 +1274,7 @@ class users_member_controller extends adminCommon
 
         $logM = $this->MODEL('log');
 
-        $content = '管理员' . $_SESSION['ausername'] . '登录个人账户(ID:' . $member['uid'] . ')';
+        $content = 'wap_user_00361' . $_SESSION['ausername'] . '登录个人账户(ID:' . $member['uid'] . ')';
 
         $logM->addAdminLog($content);
 

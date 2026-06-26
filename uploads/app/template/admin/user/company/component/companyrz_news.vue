@@ -4,22 +4,22 @@
         <div class="moduleElSearchInf">
             <div class="moduleElTabInpt" style="flex-wrap: wrap;">
                 <div class="moduleInptList" style="margin-bottom: 8px;">
-                    <el-input placeholder="输入你要搜索的关键字" @keyup.enter.native="handleSearch" size="small" v-model="searchForm.keyword" class="input-with-select" clearable>
-                        <el-select v-model="searchForm.type" slot="prepend" placeholder="请选择">
+                    <el-input placeholder="{yun:}t key='admin_user_weipin_00003'{/yun}" @keyup.enter.native="handleSearch" size="small" v-model="searchForm.keyword" class="input-with-select" clearable>
+                        <el-select v-model="searchForm.type" slot="prepend" placeholder="{yun:}t key='wap_user_00100'{/yun}">
                             <el-option label="企业名称" value="1"></el-option>
                             <el-option label="新闻标题" value="2"></el-option>
                         </el-select>
                     </el-input>
                 </div>
                 <div class="tableSeachInpt tableSeachInptsmall">
-                    <el-select v-model="searchForm.status" size="small" slot="prepend" placeholder="审核状态" clearable @change="handleSearch">
+                    <el-select v-model="searchForm.status" size="small" slot="prepend" placeholder="{yun:}t key='wap_com_00406'{/yun}" clearable @change="handleSearch">
                         <el-option label="已审核" value="1"></el-option>
                         <el-option label="未审核" value="3"></el-option>
                         <el-option label="未通过" value="2"></el-option>
                     </el-select>
                 </div>
                 <div class="tableSeachInpt tableSeachInptsmall">
-                    <el-select v-model="searchForm.time" size="small" slot="prepend" placeholder="发布时间" clearable @change="handleSearch">
+                    <el-select v-model="searchForm.time" size="small" slot="prepend" placeholder="{yun:}t key='admin_user_weipin_00030'{/yun}" clearable @change="handleSearch">
                         <el-option label="今天" value="1"></el-option>
                         <el-option label="最近三天" value="3"></el-option>
                         <el-option label="最近七天" value="7"></el-option>
@@ -28,7 +28,7 @@
                     </el-select>
                 </div>
                 <div class="tableSeachInpt">
-                    <el-button type="primary" icon="el-icon-search" size="mini" @click="handleSearch">查询</el-button>
+                    <el-button type="primary" icon="el-icon-search" size="mini" @click="handleSearch">{yun:}t key='admin_user_weipin_00049'{/yun}</el-button>
                 </div>
             </div>
         </div>
@@ -58,9 +58,9 @@
                 <el-table-column prop="zt" label="状态" width="100">
                     <template slot-scope="scope">
                         <div class="admin_state">
-                            <span v-if="scope.row.status == '1'" class="admin_state1">已审核</span>
-                            <span v-else-if="scope.row.status == '0'" class="admin_state4">未审核</span>
-                            <span v-else-if="scope.row.status == '2'" class="admin_state2">未通过</span>
+                            <span v-if="scope.row.status == '1'" class="admin_state1">{yun:}t key='wap_user_00165'{/yun}</span>
+                            <span v-else-if="scope.row.status == '0'" class="admin_state4">{yun:}t key='wap_user_00166'{/yun}</span>
+                            <span v-else-if="scope.row.status == '2'" class="admin_state2">{yun:}t key='wap_user_00167'{/yun}</span>
                             <template v-else>--</template>
                             <!--<span class="admin_state1">已审核</span>-->
                             <!--<span class="admin_state2">未通过</span>-->
@@ -73,9 +73,9 @@
                 <el-table-column label="操作" width="200" fixed="right">
                     <template slot-scope="scope">
                         <div class="cz_button">
-                            <el-button size="mini" plain @click="handleStatus(scope)">审核</el-button>
-                            <el-button size="mini" plain @click="handlePreview(scope)">预览</el-button>
-                            <el-button type="danger" size="mini" @click="deleteRow(scope)">删除</el-button>
+                            <el-button size="mini" plain @click="handleStatus(scope)">{yun:}t key='member_user_00152'{/yun}</el-button>
+                            <el-button size="mini" plain @click="handlePreview(scope)">{yun:}t key='wap_00071'{/yun}</el-button>
+                            <el-button type="danger" size="mini" @click="deleteRow(scope)">{yun:}t key='common.delete'{/yun}</el-button>
                         </div>
                     </template>
                 </el-table-column>
@@ -83,9 +83,9 @@
         </div>
         <div class="modulePaging">
             <div>
-                <el-checkbox :indeterminate="isIndeterminate" v-model="checked" @change="selectAllBottom">全选</el-checkbox>
-                <el-button @click="deleteRow(null, true)" size="mini">批量删除</el-button>
-                <el-button @click="handleStatus(null, true)" size="mini">批量审核</el-button>
+                <el-checkbox :indeterminate="isIndeterminate" v-model="checked" @change="selectAllBottom">{yun:}t key='wap_js_00074'{/yun}</el-checkbox>
+                <el-button @click="deleteRow(null, true)" size="mini">{yun:}t key='member_com_00055'{/yun}</el-button>
+                <el-button @click="handleStatus(null, true)" size="mini">{yun:}t key='admin_user_weipin_00037'{/yun}</el-button>
             </div>
             <div class="modulePagNum">
                 <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
@@ -99,15 +99,15 @@
             <el-dialog :title="titleStatus" :visible.sync="statusVisible" :with-header="true" :modal-append-to-body="false"
                 :show-close="true" width="450px">
                 <div>
-                    <div class="wxsettip_small ">审核操作</div>
-                    <el-radio v-model="ruleFormStatus.status" label="1">正常</el-radio>
-                    <el-radio v-model="ruleFormStatus.status" label="2">未通过</el-radio>
-                    <div class="wxsettip_small ">审核说明</div>
-                    <el-input type="textarea" :rows="2" placeholder="说明原因" v-model="ruleFormStatus.statusbody"></el-input>
+                    <div class="wxsettip_small ">{yun:}t key='admin_user_weipin_00032'{/yun}</div>
+                    <el-radio v-model="ruleFormStatus.status" label="1">{yun:}t key='admin_user_00149'{/yun}</el-radio>
+                    <el-radio v-model="ruleFormStatus.status" label="2">{yun:}t key='wap_user_00167'{/yun}</el-radio>
+                    <div class="wxsettip_small ">{yun:}t key='member_user_00062'{/yun}</div>
+                    <el-input type="textarea" :rows="2" placeholder="{yun:}t key='admin_00627'{/yun}" v-model="ruleFormStatus.statusbody"></el-input>
                 </div>
                 <span slot="footer" class="dialog-footer">
-                    <el-button @click="resetFormStatus('ruleFormStatus')">取 消</el-button>
-                    <el-button type="primary" @click="submitFormStatus('ruleFormStatus')" :disabled="submitLoading">确 定</el-button>
+                    <el-button @click="resetFormStatus('ruleFormStatus')">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
+                    <el-button type="primary" @click="submitFormStatus('ruleFormStatus')" :disabled="submitLoading">{yun:}t key='wap_com_00019'{/yun}</el-button>
                 </span>
             </el-dialog>
         </div>
@@ -122,12 +122,12 @@ module.exports = {
     data: function () {
         return {
             loading: false,
-            dataText: '数据加载中',
+            dataText: "{yun:}t key='admin_user_weipin_00026'{/yun}",
             searchForm: {
                 page: 1,
                 limit: null,
                 keyword: null,
-                type: '1',
+                type: '1",
                 status: this.status,
             },
             numAll: 0,
@@ -138,17 +138,17 @@ module.exports = {
             tableData: [],
             pageSizes: [],
             tableHig: true,
-            checked: false,//全选
+            checked: false,//{yun:}t key='wap_js_00074'{/yun}
             isIndeterminate: false,// checkbox 的不确定状态
             selectedItem: [],
-            //审核
+            // Audit
             statusVisible: false,
             ruleFormStatus: {
                 id: null,
                 status: null,
-                statusbody: '',
+                statusbody: "',
             },
-            titleStatus: '企业新闻审核',
+            titleStatus: "{yun:}t key='admin_user_company_00057'{/yun}",
             submitLoading: false,
 
             prevPage: 0
@@ -234,7 +234,7 @@ module.exports = {
                         _this.$refs.multipleTable.bodyWrapper.scrollTop = 0;
                     }
                     if (_this.tableData.length === 0) {
-                        _this.dataText = "暂无数据";
+                        _this.dataText = "{yun:}t key='wap_js_00113'{/yun}";
                     }
                 }
             }).catch(function (error) {
@@ -245,7 +245,7 @@ module.exports = {
             let params = {};
             if (isMore) {
                 if (!this.selectedItem.length) {
-                    message.error('请选择要删除的数据');
+                    message.error("{yun:}t key='admin_user_weipin_00005'{/yun}");
                     return false;
                 }
                 let list = [];
@@ -266,10 +266,10 @@ module.exports = {
             httpPost('m=user&c=company_news&a=del', params).then(function (response) {
                 let res = response.data;
                 if (res.error === 0) {
-                    message.success('删除成功！');
+                    message.success("{yun:}t key='admin_user_00187'{/yun}");
                     _this.getList();
                 } else {
-                    message.error('删除失败！');
+                    message.error("{yun:}t key='admin_user_00186'{/yun}");
                 }
             }).catch(function (error) {
                 console.log(error);
@@ -278,7 +278,7 @@ module.exports = {
         handleStatus(scope, isMore) {
             if (isMore) {
                 if (!this.selectedItem.length) {
-                    message.error('请选择要操作的数据项');
+                    message.error("{yun:}t key='admin_user_weipin_00001'{/yun}");
                     return false;
                 }
                 let list = [];
@@ -287,11 +287,11 @@ module.exports = {
                 }
                 this.ruleFormStatus.id = list.join(',');
                 this.ruleFormStatus.statusbody = '';
-                this.titleStatus = '批量审核';
+                this.titleStatus = "{yun:}t key='admin_user_weipin_00037'{/yun}";
                 this.statusVisible = true;
             } else {
                 this.ruleFormStatus.id = scope.row.id;
-                this.titleStatus = '企业新闻审核';
+                this.titleStatus = "{yun:}t key='admin_user_company_00057'{/yun}";
                 let _this = this;
                 let params = {id: scope.row.id};
                 httpPost('m=user&c=company_news&a=statusbody', params).then(function (response) {
@@ -310,7 +310,7 @@ module.exports = {
             let _this = this;
             let params = this.ruleFormStatus;
             if (params.status == null) {
-                message.error('请选择要操作的数据项');
+                message.error("{yun:}t key='admin_user_weipin_00001'{/yun}");
                 return false;
             }
             _this.submitLoading = true;

@@ -1,15 +1,642 @@
 {
+    "成功<br\/>": [
+        "app\/include\/dbbackup\/inc\/footer.php"
+    ],
+    "刚刚": [
+        "app\/include\/libs\/sysplugins\/smarty_internal_compile_downlist.php"
+    ],
+    "仅允许上传 doc,docx,xls,rar,zip,txt格式文件": [
+        "app\/include\/oss\/ossupload.class.php"
+    ],
+    "上传文件大小不能超过10M": [
+        "app\/include\/oss\/ossupload.class.php"
+    ],
+    "购买：": [
+        "app\/include\/ApiPay.class.php"
+    ],
+    "数据库连接出错!": [
+        "app\/include\/mysql.class.php"
+    ],
     "Memcache连接失败或您的服务器不支持Memcache,请在后台关闭！": [
+        "app\/include\/mysql.class.php",
+        "app\/include\/mysqli.class.php",
         "app\/public\/action.class.php"
+    ],
+    "现有数据库：": [
+        "app\/include\/mysql.class.php",
+        "app\/include\/mysql.class.php",
+        "app\/include\/mysqli.class.php",
+        "app\/include\/mysqli.class.php"
+    ],
+    "[prestr][numselect][nextstr]<em>共[maxPage]页<\/em>[selectjs]": [
+        "app\/include\/page.class.php"
+    ],
+    "缓存文件夹创建失败!": [
+        "app\/include\/web.cache.php"
+    ],
+    "缓存文件写入失败:": [
+        "app\/include\/web.cache.php"
+    ],
+    "','job1');\"><a href=\"javascript:;\">全部<\/a><\/li>": [
+        "app\/controller\/wap\/ajax.class.php",
+        "app\/controller\/wap\/ajax.class.php"
+    ],
+    "','job1_son');\"><a href=\"javascript:;\">全部<\/a><\/li>": [
+        "app\/controller\/wap\/ajax.class.php",
+        "app\/controller\/wap\/ajax.class.php"
+    ],
+    "','provinceid');\"><a href=\"javascript:;\">全部<\/a><\/li>": [
+        "app\/controller\/wap\/ajax.class.php",
+        "app\/controller\/wap\/ajax.class.php"
+    ],
+    "','cityid');\"><a href=\"javascript:;\">全部<\/a><\/li>": [
+        "app\/controller\/wap\/ajax.class.php",
+        "app\/controller\/wap\/ajax.class.php"
+    ],
+    "','nid');\"><a href=\"javascript:;\">全部<\/a><\/li>": [
+        "app\/controller\/wap\/ajax.class.php"
+    ],
+    "》；原因：": [
+        "app\/controller\/wap\/ask.class.php"
+    ],
+    "对不起，QQ绑定已关闭！": [
+        "app\/controller\/wap\/qqconnect.class.php",
+        "app\/controller\/qqconnect\/index.class.php"
+    ],
+    "对不起，QQ登录已关闭！": [
+        "app\/controller\/wap\/qqconnect.class.php"
+    ],
+    "H5 QQ快捷登录": [
+        "app\/controller\/wap\/qqconnect.class.php"
+    ],
+    "QQ登录绑定": [
+        "app\/controller\/wap\/qqconnect.class.php"
+    ],
+    "email注册已关闭！": [
+        "app\/controller\/wap\/register.class.php",
+        "app\/controller\/register\/index.class.php"
+    ],
+    "H5 微信绑定": [
+        "app\/controller\/wap\/wxconnect.class.php"
+    ],
+    "H5 微信快捷登录": [
+        "app\/controller\/wap\/wxconnect.class.php"
+    ],
+    "H5微信绑定": [
+        "app\/controller\/wap\/wxconnect.class.php"
+    ],
+    "QQ 登录绑定成功！": [
+        "app\/controller\/qqconnect\/index.class.php"
+    ],
+    "<Content><![CDATA[直接回复城市、职位、公司名称等关键字搜索您需要的职位信息。\n 如：【经理】、【xx公司】]]><\/Content>": [
+        "app\/controller\/weixin\/index.class.php"
+    ],
+    "<Content><![CDATA[\/可怜 亲，把您的位置先发我一下。\n\n方法：点屏幕左下角输入框旁的“+”，选择“位置”，点“发送”。]]><\/Content>": [
+        "app\/controller\/weixin\/index.class.php"
+    ],
+    "<Content><![CDATA[未找到相关数据]]><\/Content>": [
+        "app\/controller\/weixin\/index.class.php"
+    ],
+    "职位不存在!": [
+        "app\/controller\/job\/comapply.class.php"
+    ],
+    "推荐职位\/简历间隔不得少于{$recs}，请{$needTime}后操作！": [
+        "app\/controller\/ajax\/index.class.php"
     ],
     "模版不能为空！": [
         "app\/public\/common.php",
         "app\/public\/common.php"
     ],
+    "审核职位设置失败(ID:": [
+        "app\/model\/job.model.php"
+    ],
+    "取消职位置顶(ID:": [
+        "app\/model\/job.model.php"
+    ],
+    "职位置顶(ID:": [
+        "app\/model\/job.model.php"
+    ],
+    "取消职位推荐(ID:": [
+        "app\/model\/job.model.php"
+    ],
+    "职位推荐(ID:": [
+        "app\/model\/job.model.php"
+    ],
+    "取消职位紧急招聘(ID:": [
+        "app\/model\/job.model.php"
+    ],
+    "职位紧急招聘(ID:": [
+        "app\/model\/job.model.php"
+    ],
+    "职位申请记录(ID:": [
+        "app\/model\/job.model.php"
+    ],
+    "邀请面试记录(ID:": [
+        "app\/model\/job.model.php"
+    ],
+    "职位浏览记录(ID:": [
+        "app\/model\/job.model.php",
+        "app\/model\/job.model.php"
+    ],
+    "审核简历设置失败(ID:": [
+        "app\/model\/resume.model.php"
+    ],
+    "刷新简历(ID:": [
+        "app\/model\/resume.model.php",
+        "app\/model\/resume.model.php",
+        "app\/model\/tiny.model.php",
+        "app\/model\/tiny.model.php"
+    ],
+    "推荐简历(ID:": [
+        "app\/model\/resume.model.php",
+        "app\/model\/resume.model.php"
+    ],
+    "取消推荐简历(ID:": [
+        "app\/model\/resume.model.php"
+    ],
+    "置顶简历(ID:": [
+        "app\/model\/resume.model.php",
+        "app\/model\/resume.model.php"
+    ],
+    "取消置顶简历(ID:": [
+        "app\/model\/resume.model.php"
+    ],
+    "简历状态(UID:": [
+        "app\/model\/resume.model.php"
+    ],
+    "简历备注(ID:": [
+        "app\/model\/resume.model.php"
+    ],
+    "简历(ID:": [
+        "app\/model\/resume.model.php",
+        "app\/model\/resume.model.php"
+    ],
+    "个人认证审核(ID:": [
+        "app\/model\/resume.model.php",
+        "app\/model\/resume.model.php"
+    ],
+    "个人身份认证(ID:": [
+        "app\/model\/resume.model.php",
+        "app\/model\/resume.model.php"
+    ],
+    "头像审核(ID:": [
+        "app\/model\/resume.model.php",
+        "app\/model\/resume.model.php"
+    ],
+    "作品案例审核(ID:": [
+        "app\/model\/resume.model.php",
+        "app\/model\/resume.model.php"
+    ],
+    "个人头像(ID:": [
+        "app\/model\/resume.model.php",
+        "app\/model\/resume.model.php",
+        "app\/model\/resume.model.php",
+        "app\/model\/resume.model.php"
+    ],
+    "个人作品(ID:": [
+        "app\/model\/resume.model.php",
+        "app\/model\/resume.model.php",
+        "app\/model\/resume.model.php",
+        "app\/model\/resume.model.php"
+    ],
+    "简历被收藏记录(ID:": [
+        "app\/model\/resume.model.php"
+    ],
+    "管理员(id:": [
+        "app\/model\/admin.model.php"
+    ],
+    "管理员(ID:": [
+        "app\/model\/admin.model.php",
+        "app\/model\/admin.model.php"
+    ],
+    "管理员类型(ID:": [
+        "app\/model\/admin.model.php",
+        "app\/model\/admin.model.php",
+        "app\/model\/admin.model.php",
+        "app\/model\/admin.model.php"
+    ],
+    "意见反馈(ID:": [
+        "app\/model\/advice.model.php",
+        "app\/model\/advice.model.php"
+    ],
+    "公告(ID:": [
+        "app\/model\/announcement.model.php"
+    ],
+    "新闻(ID:": [
+        "app\/model\/article.model.php",
+        "app\/model\/article.model.php"
+    ],
+    "新闻属性(ID:": [
+        "app\/model\/article.model.php",
+        "app\/model\/article.model.php",
+        "app\/model\/article.model.php"
+    ],
+    "新闻类别(ID:": [
+        "app\/model\/article.model.php",
+        "app\/model\/article.model.php",
+        "app\/model\/article.model.php"
+    ],
+    "问答回复(ID:": [
+        "app\/model\/ask.model.php"
+    ],
+    "审核回复(ID:": [
+        "app\/model\/ask.model.php"
+    ],
+    "审核回复评论(ID:": [
+        "app\/model\/ask.model.php",
+        "app\/model\/ask.model.php"
+    ],
+    "用户回答(ID:": [
+        "app\/model\/ask.model.php"
+    ],
+    "个人会员分类(": [
+        "app\/model\/category.model.php",
+        "app\/model\/category.model.php"
+    ],
+    "行业类别(": [
+        "app\/model\/category.model.php",
+        "app\/model\/category.model.php"
+    ],
+    "行业分类(ID：": [
+        "app\/model\/category.model.php"
+    ],
+    "职位类别(ID：": [
+        "app\/model\/category.model.php"
+    ],
+    "企业会员分类(": [
+        "app\/model\/category.model.php",
+        "app\/model\/category.model.php"
+    ],
+    "兼职分类(": [
+        "app\/model\/category.model.php",
+        "app\/model\/category.model.php"
+    ],
+    "兼职分类(ID：": [
+        "app\/model\/category.model.php"
+    ],
+    "举报原因(": [
+        "app\/model\/category.model.php"
+    ],
+    "举报原因(ID：": [
+        "app\/model\/category.model.php",
+        "app\/model\/category.model.php"
+    ],
+    "自我介绍(ID：": [
+        "app\/model\/category.model.php"
+    ],
+    "企业资质(ID:": [
+        "app\/model\/company.model.php",
+        "app\/model\/company.model.php"
+    ],
+    "企业认证(UID:": [
+        "app\/model\/company.model.php"
+    ],
+    "顾问(ID:": [
+        "app\/model\/company.model.php"
+    ],
+    "名企招聘(ID:": [
+        "app\/model\/company.model.php",
+        "app\/model\/company.model.php"
+    ],
+    "企业产品(ID:": [
+        "app\/model\/company.model.php",
+        "app\/model\/company.model.php"
+    ],
+    "企业新闻(ID:": [
+        "app\/model\/company.model.php",
+        "app\/model\/company.model.php"
+    ],
+    "企业会员(ID:": [
+        "app\/model\/company.model.php",
+        "app\/model\/company.model.php",
+        "app\/model\/company.model.php",
+        "app\/model\/company.model.php"
+    ],
+    "企业LOGO(ID:": [
+        "app\/model\/company.model.php",
+        "app\/model\/company.model.php"
+    ],
+    "企业二维码(ID:": [
+        "app\/model\/company.model.php",
+        "app\/model\/company.model.php"
+    ],
+    "LOGO审核(ID:": [
+        "app\/model\/company.model.php",
+        "app\/model\/company.model.php"
+    ],
+    "企业环境审核(ID:": [
+        "app\/model\/company.model.php",
+        "app\/model\/company.model.php"
+    ],
+    "企业横幅审核(ID:": [
+        "app\/model\/company.model.php",
+        "app\/model\/company.model.php"
+    ],
+    "消费记录(ID:": [
+        "app\/model\/companyorder.model.php",
+        "app\/model\/companyorder.model.php"
+    ],
+    "您的会员套餐已用完，继续邀请将扣除<span style=color:red;>": [
+        "app\/model\/comtc.model.php",
+        "app\/model\/comtc.model.php"
+    ],
+    "预警信息(ID:": [
+        "app\/model\/config.model.php"
+    ],
+    "计划任务(id:": [
+        "app\/model\/cron.model.php"
+    ],
+    "计划任务(ID:": [
+        "app\/model\/cron.model.php",
+        "app\/model\/cron.model.php"
+    ],
+    "数据调用(ID:": [
+        "app\/model\/data.model.php",
+        "app\/model\/data.model.php",
+        "app\/model\/data.model.php"
+    ],
+    "下载记录(ID:": [
+        "app\/model\/downresume.model.php",
+        "app\/model\/downresume.model.php"
+    ],
+    "简历免费下载记录(ID:": [
+        "app\/model\/downresume.model.php",
+        "app\/model\/downresume.model.php"
+    ],
+    "友情链接(ID:": [
+        "app\/model\/link.model.php",
+        "app\/model\/link.model.php",
+        "app\/model\/link.model.php"
+    ],
+    "会员登录日志(ID:": [
+        "app\/model\/log.model.php"
+    ],
+    "注销账号申请(ID：": [
+        "app\/model\/logout.model.php"
+    ],
+    "简历浏览记录(ID:": [
+        "app\/model\/lookresume.model.php",
+        "app\/model\/lookresume.model.php"
+    ],
+    "求职咨询(ID:": [
+        "app\/model\/msg.model.php",
+        "app\/model\/msg.model.php",
+        "app\/model\/msg.model.php"
+    ],
+    "审核咨询(ID:": [
+        "app\/model\/msg.model.php"
+    ],
+    "职咨询回复(ID:": [
+        "app\/model\/msg.model.php"
+    ],
+    "店铺招聘延期(ID:": [
+        "app\/model\/once.model.php",
+        "app\/model\/once.model.php"
+    ],
+    "刷新职位(ID:": [
+        "app\/model\/once.model.php",
+        "app\/model\/once.model.php"
+    ],
+    "取消兼职推荐(ID:": [
+        "app\/model\/part.model.php"
+    ],
+    "兼职推荐(ID:": [
+        "app\/model\/part.model.php"
+    ],
+    "兼职职位(ID:": [
+        "app\/model\/part.model.php"
+    ],
+    "兼职报名记录(ID:": [
+        "app\/model\/part.model.php"
+    ],
+    "兼职记录(ID:": [
+        "app\/model\/part.model.php"
+    ],
+    "兼职批量审核成功(ID:": [
+        "app\/model\/part.model.php"
+    ],
+    "审核兼职(ID:": [
+        "app\/model\/part.model.php",
+        "app\/model\/part.model.php",
+        "app\/model\/part.model.php"
+    ],
+    "回收站(ID:": [
+        "app\/model\/recommend.model.php",
+        "app\/model\/recycle.model.php"
+    ],
+    "回收站数据(ID:": [
+        "app\/model\/recycle.model.php"
+    ],
+    "分站(ID:": [
+        "app\/model\/site.model.php"
+    ],
+    "套餐记录(ID:": [
+        "app\/model\/statis.model.php"
+    ],
+    "系统消息(ID:": [
+        "app\/model\/sysmsg.model.php",
+        "app\/model\/sysmsg.model.php"
+    ],
+    "企业模板(ID:": [
+        "app\/model\/tpl.model.php",
+        "app\/model\/tpl.model.php",
+        "app\/model\/tpl.model.php"
+    ],
+    "模板(ID:": [
+        "app\/model\/tpl.model.php",
+        "app\/model\/tpl.model.php",
+        "app\/model\/tpl.model.php",
+        "app\/model\/wxpubtemp.model.php"
+    ],
+    "主题模板(ID:": [
+        "app\/model\/tpl.model.php",
+        "app\/model\/tpl.model.php",
+        "app\/model\/tpl.model.php"
+    ],
     "文件上传失败，请检查DATA目录权限！": [
         "app\/model\/upload.model.php"
     ],
+    "简历推送(ID:": [
+        "app\/model\/userEntrust.model.php",
+        "app\/model\/userEntrust.model.php"
+    ],
+    "PC绑定微信": [
+        "app\/model\/userinfo.model.php"
+    ],
+    "wap绑定微信": [
+        "app\/model\/userinfo.model.php"
+    ],
+    "PC绑定QQ": [
+        "app\/model\/userinfo.model.php"
+    ],
+    "wap绑定QQ": [
+        "app\/model\/userinfo.model.php"
+    ],
+    "PC绑定新浪微博": [
+        "app\/model\/userinfo.model.php"
+    ],
+    "wap绑定新浪微博": [
+        "app\/model\/userinfo.model.php"
+    ],
+    "<Content><![CDATA[您最新没有新的消息！]]><\/Content>": [
+        "app\/model\/weixin.model.php"
+    ],
+    "<Content><![CDATA[最近暂无报名]]><\/Content>": [
+        "app\/model\/weixin.model.php"
+    ],
+    "<Content><![CDATA[已经很久没公司查看您的简历了！]]><\/Content>": [
+        "app\/model\/weixin.model.php",
+        "app\/model\/weixin.model.php"
+    ],
+    "<Content><![CDATA[简历刷新成功\n刷新时间:": [
+        "app\/model\/weixin.model.php"
+    ],
+    "<Content><![CDATA[请先完善您的简历！]]><\/Content>": [
+        "app\/model\/weixin.model.php"
+    ],
+    "<Content><![CDATA[未找到合适的职位！]]><\/Content>": [
+        "app\/model\/weixin.model.php"
+    ],
+    "招聘:": [
+        "app\/model\/weixin.model.php",
+        "app\/model\/weixin.model.php"
+    ],
+    "性别:": [
+        "app\/model\/weixin.model.php"
+    ],
+    "企业：": [
+        "app\/model\/weixin.model.php",
+        "app\/model\/weixin.model.php"
+    ],
+    "职位：": [
+        "app\/model\/weixin.model.php"
+    ],
+    "<Content><![CDATA[联系方式获取失败]]><\/Content>": [
+        "app\/model\/weixin.model.php",
+        "app\/model\/weixin.model.php",
+        "app\/model\/weixin.model.php"
+    ],
+    "兼职：": [
+        "app\/model\/weixin.model.php"
+    ],
+    "<Content><![CDATA[企业：": [
+        "app\/model\/weixin.model.php"
+    ],
+    "<Content><![CDATA[二维码已失效！]]><\/Content>": [
+        "app\/model\/weixin.model.php"
+    ],
+    "<Content><![CDATA[您的": [
+        "app\/model\/weixin.model.php",
+        "app\/model\/weixin.model.php",
+        "app\/model\/weixin.model.php"
+    ],
+    "<Content><![CDATA[没有合适的职位！]]><\/Content>": [
+        "app\/model\/weixin.model.php"
+    ],
+    "推文任务(ID:": [
+        "app\/model\/wxpubtemp.model.php"
+    ],
+    "邀请面试模板(ID:": [
+        "app\/model\/yqmb.model.php"
+    ],
+    "审核模板(ID:": [
+        "app\/model\/yqmb.model.php"
+    ],
+    "您的等级特权已经用完，继续报名将消费 <span style=color:red;>": [
+        "app\/model\/zph.model.php"
+    ],
     "报名失败,请稍候重试！": [
         "app\/model\/zph.model.php"
+    ],
+    "职位{$msg}操作失败": [
+        "admin\/model\/user\/company_job.class.php"
+    ],
+    "招聘会(ID:$nbid)添加失败！": [
+        "admin\/model\/neirong\/zhaopinhui.class.php"
+    ],
+    "网站配置设置成功!": [
+        "admin\/model\/system\/set_config.class.php"
+    ],
+    "数据为空!": [
+        "admin\/model\/system\/set_guanjianci.class.php"
+    ],
+    "操作成功!": [
+        "admin\/model\/system\/set_guanjianci.class.php"
+    ],
+    "操作失败!": [
+        "admin\/model\/system\/set_guanjianci.class.php"
+    ],
+    "非法操作!": [
+        "admin\/model\/system\/set_guanjianci.class.php"
+    ],
+    "请选择关键词!": [
+        "admin\/model\/system\/set_guanjianci.class.php"
+    ],
+    "SEO设置成功": [
+        "admin\/model\/system\/set_module.class.php"
+    ],
+    "SEO设置失败": [
+        "admin\/model\/system\/set_module.class.php"
+    ],
+    "头像尺寸比例太小,最小尺寸：宽80\/高100": [
+        "member\/user\/model\/uppic.class.php"
+    ],
+    "LOGO尺寸比例太小，最小像素：140*140": [
+        "member\/com\/model\/uppic.class.php"
+    ],
+    "修改兼职发布状态：下架->上架": [
+        "member\/com\/com.class.php"
+    ],
+    "修改兼职发布状态：上架->下架": [
+        "member\/com\/com.class.php"
+    ],
+    "我在": [
+        "api\/wxapp\/member\/user\/finance.class.php",
+        "api\/wxapp\/member\/user\/finance.class.php",
+        "api\/wxapp\/member\/com\/finance.class.php",
+        "api\/wxapp\/member\/com\/finance.class.php"
+    ],
+    "消息处理：删除系统消息（ID：": [
+        "api\/wxapp\/member\/user\/msg.class.php",
+        "api\/wxapp\/member\/com\/msg.class.php"
+    ],
+    "(默认)": [
+        "api\/wxapp\/member\/user\/resume.class.php"
+    ],
+    "H5\/微信": [
+        "api\/wxapp\/member\/user\/set.class.php"
+    ],
+    "转换": [
+        "api\/wxapp\/member\/com\/finance.class.php"
+    ],
+    "次；": [
+        "api\/wxapp\/member\/com\/fk.class.php",
+        "api\/wxapp\/member\/com\/fk.class.php"
+    ],
+    "刷新职位: ": [
+        "api\/wxapp\/member\/com\/fk.class.php"
+    ],
+    "份；": [
+        "api\/wxapp\/member\/com\/fk.class.php"
+    ],
+    "招聘会报名 : ": [
+        "api\/wxapp\/member\/com\/fk.class.php"
+    ],
+    "》招聘状态：下架->上架": [
+        "api\/wxapp\/member\/com\/job.class.php",
+        "api\/wxapp\/member\/com\/part.class.php"
+    ],
+    ")招聘状态：上架->下架": [
+        "api\/wxapp\/member\/com\/job.class.php",
+        "api\/wxapp\/member\/com\/part.class.php"
+    ],
+    "消息处理：删除求职咨询（ID：": [
+        "api\/wxapp\/member\/com\/msg.class.php"
+    ],
+    "wap端口延续登录": [
+        "api\/wxapp\/wxapp.controller.php"
+    ],
+    "不支持curl": [
+        "api\/wxapp\/wxapp.controller.php"
     ]
 }

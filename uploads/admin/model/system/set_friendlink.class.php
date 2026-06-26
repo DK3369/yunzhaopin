@@ -96,7 +96,7 @@ class set_friendlink_controller extends adminCommon{
             $return	=	$linkM -> delInfo($id);
             $this->admin_json($return['errcode'] == 9 ? 0 : 1,$return['msg']);
         }else{
-            $this->render_json(1, '参数错误,请重试');
+            $this->render_json(1, yun_at('common_01237'));
         }
 	}
 	//审核链接

@@ -40,7 +40,7 @@
 	   	 
 								<div class="mapbox">
      <div class="com_new_tip mt20"> 
-          <span class="com_new_tip_h">{yun:}t key='member_com_00040'{/yun}</span>搜索框内输入地址搜索，在地图区域点击公司所在的位置，点击保存地图</div>
+          <span class="com_new_tip_h">{yun:}t key='member_com_00040'{/yun}</span>{yun:}t key='member_com_00604'{/yun}</div>
       
           
     
@@ -48,7 +48,7 @@
 		
 			<div class="joblist_mapsearch_box">
 		
-            <input id="map_keyword" type="text" value="{yun:}$row.address{/yun}" class="joblist_mapsearch_text" placeholder="建议格式：XX{yun:}t key='common_02076'{/yun}XX{yun:}t key='wap_com_00179'{/yun}XX路" onkeyup="addressKeyup();" /><input type="button" value="精准查找" onclick="localsearch();" class="joblist_mapsearch_bth"/>
+            <input id="map_keyword" type="text" value="{yun:}$row.address{/yun}" class="joblist_mapsearch_text" placeholder="建议格式：XX{yun:}t key='common_02076'{/yun}XX{yun:}t key='wap_com_00179'{/yun}XX路" onkeyup="addressKeyup();" /><input type="button" value="{yun:}t key='member_com_00608'{/yun}" onclick="localsearch();" class="joblist_mapsearch_bth"/>
                 <div class="comEleaseMaps" id="poiSearch" style="display: none;"></div>
             </div>
 		
@@ -67,13 +67,13 @@
               <tr>
                 <th>&nbsp;</th>
                 <td height="40">
-                <span class="com_info_text_s"> X轴：</span>
+                <span class="com_info_text_s"> {yun:}t key='member_com_00605'{/yun}</span>
                   <input name="xvalue" id="map_x" onkeyup="this.value=this.value.replace(/[^0-9.]/g,'')" readonly="readonly" value="{yun:}$row.x{/yun}"  class="com_info_text">
-                 <span class="com_info_text_s"> Y轴：</span>
+                 <span class="com_info_text_s"> {yun:}t key='member_com_00606'{/yun}</span>
                   <input name="yvalue" id="map_y" onkeyup="this.value=this.value.replace(/[^0-9.]/g,'')" readonly="readonly" value="{yun:}$row.y{/yun}"  class="com_info_text">
                 
                   <input type="submit" name="savemap" class="com_info_mapbth" value="{yun:}t key='member_com_00297'{/yun}" style="">
-                  <span id="by_map" class="errordisplay">请先设置地图位置</span></td>
+                  <span id="by_map" class="errordisplay">{yun:}t key='member_com_00607'{/yun}</span></td>
               </tr>
             
           </table>
@@ -175,7 +175,7 @@
 		}
 		function checkpost(){
 			if($.trim($("#map_x").val())==''||$.trim($("#map_y").val())==''){
-				layer.msg('请先设置地图位置！', 2, 8);return false;
+				layer.msg("{yun:}t key='member_com_00609'{/yun}", 2, 8);return false;
 			}
 		}
 		function setLocation(id,x,y,xid,yid){

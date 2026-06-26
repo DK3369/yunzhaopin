@@ -1,22 +1,22 @@
 <template>
     <div class="tableDome" style="top: 40px; width: initial;">
         <div class="tableDome_tip">
-            <el-alert title="管理员根据网站运营需求，添加不同类型的权限组！管理员权限组可分为：“会员、内容、运营”等用户权限组成相关设置，超级管理员可以根据运营需求设置" type="info" :closable="false"></el-alert>
+            <el-alert title="{yun:}t key='admin_01033'{/yun}" type="info" :closable="false"></el-alert>
         </div>
         <div class="moduleTable" style="height: calc(100% - 80px); max-height: initial;">
             <div style="overflow-y: auto; position: relative; width: 100%; height: calc(100% - 80px);">
                 <table class="quanxiantable">
                     <tbody>
                         <tr>
-                            <td bgcolor="#F5F7FA">用户组名称</td>
+                            <td bgcolor="#F5F7FA">{yun:}t key='admin_system_00212'{/yun}</td>
                             <td colspan="2">
                                 <div class="quanxiantext">
                                     <div class="quanxiantext_in">
-                                        <el-input v-model="groupInfo.group_name" placeholder="请输入名称如：销售部等"
+                                        <el-input v-model="groupInfo.group_name" placeholder="{yun:}t key='admin_01034'{/yun}"
                                             size="small"></el-input>
                                     </div>
                                     <div class="quanxiantext_in">
-                                        <el-select v-model="groupInfo.did" placeholder="选择分站" size="small">
+                                        <el-select v-model="groupInfo.did" placeholder="{yun:}t key='admin_system_00143'{/yun}" size="small">
                                             <el-option v-for="item in domainOptionS" :key="item.value" :label="item.label"
                                                 :value="item.value"></el-option>
                                         </el-select>
@@ -25,9 +25,9 @@
                             </td>
                         </tr>
                         <tr align="left">
-                            <th width="150" bgcolor="#F5F7FA">一级类别</th>
-                            <th width="150" bgcolor="#F5F7FA">二级类别</th>
-                            <th bgcolor="#F5F7FA">功能管理权限</th>
+                            <th width="150" bgcolor="#F5F7FA">{yun:}t key='admin_user_company_00362'{/yun}</th>
+                            <th width="150" bgcolor="#F5F7FA">{yun:}t key='admin_user_company_00364'{/yun}</th>
+                            <th bgcolor="#F5F7FA">{yun:}t key='admin_system_00214'{/yun}</th>
                         </tr>
                         <tr>
                             <td valign="top">
@@ -69,7 +69,7 @@
                 </table>
             </div>
             <div class="setBasicButn" style="border: none;">
-                <el-button type="primary" size="medium" @click="saveGroup" :loading="saveLoading">提交</el-button>
+                <el-button type="primary" size="medium" @click="saveGroup" :loading="saveLoading">{yun:}t key='common.submit'{/yun}</el-button>
             </div>
         </div>
     </div>
@@ -140,7 +140,7 @@ module.exports = {
         },
         getGroupInfo: function () {
             var self = this;
-            httpPost('m=system&c=domain_group&a=groupInfo', { id: this.group_id }).then(function (res) {
+            httpPost('m=system&c=domain_group&a=groupInfo", { id: this.group_id }).then(function (res) {
                 if (res.data.error == 0) {
                     let data = res.data.data;
 
@@ -182,7 +182,7 @@ module.exports = {
         },
         handleCheckedThreeChange(val) {
             var that = this
-            if (that.checkedThreeIds.includes(that.currCheckedId)) {// 新增
+            if (that.checkedThreeIds.includes(that.currCheckedId)) {// {yun:}t key='admin_user_company_00028'{/yun}
                 if (that.threeMenu[that.currCheckedId]) {
                     that.threeMenu[that.currCheckedId].forEach(function (item, index) {
                         if (!that.checkedFourIds.includes(item.id)) {
@@ -190,7 +190,7 @@ module.exports = {
                         }
                     })
                 }
-            } else {// 取消
+            } else {// {yun:}t key='common.cancel'{/yun}
                 if (that.threeMenu[that.currCheckedId]) {
                     that.threeMenu[that.currCheckedId].forEach(function (id_item, index) {
                         if (that.checkedFourIds.includes(id_item.id)) {
@@ -237,7 +237,7 @@ module.exports = {
                 params.groupid = that.group_id;
             }
             that.saveLoading = true;
-            httpPost('m=system&c=domain_group&a=saveGroup', params).then(function (res) {
+            httpPost("m=system&c=domain_group&a=saveGroup', params).then(function (res) {
                 if (res.data.error == 0) {
                     message.success(res.data.msg, function () {
                         that.$emit("child-event");

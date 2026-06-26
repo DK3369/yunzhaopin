@@ -4,15 +4,15 @@
             <table class="tableVue">
                 <thead>
                     <tr align="left">
-                        <th width="250">名称</th>
-                        <th>状态</th>
-                        <th width="300">操作</th>
+                        <th width="250">{yun:}t key='member_com_00021'{/yun}</th>
+                        <th>{yun:}t key='member_user_00181'{/yun}</th>
+                        <th width="300">{yun:}t key='member_user_00048'{/yun}</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td>
-                            <div class="TableTite">周年提醒（所有用户）</div>
+                            <div class="TableTite">{yun:}t key='admin_yunying_00178'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableTexta">
@@ -21,15 +21,15 @@
                         </td>
                         <td>
                             <div class="TableCaozuo">
-                                <el-button :disabled="anniversary.disabled==1 || anniversary_m == 0" plain size="mini" @click="sendmsg('2','2','1','0','3','0','正在发送，请稍候。。。','0','0')">发送短信</el-button>
-                                <el-button :disabled="anniversary.disabled==1 || anniversary_m == 0" plain size="mini" @click="outmobile('anniversary')">导出手机号</el-button>
-                                <el-button :disabled="anniversary.disabled==1 || anniversary_m == 0" plain size="mini" @click="finishmobile('anniversary')">已发送</el-button>
+                                <el-button :disabled="anniversary.disabled==1 || anniversary_m == 0" plain size="mini" @click="sendmsg('2','2','1','0','3','0','正在发送，请稍候。。。','0','0')">{yun:}t key='admin_user_00166'{/yun}</el-button>
+                                <el-button :disabled="anniversary.disabled==1 || anniversary_m == 0" plain size="mini" @click="outmobile('anniversary')">{yun:}t key='admin_01116'{/yun}</el-button>
+                                <el-button :disabled="anniversary.disabled==1 || anniversary_m == 0" plain size="mini" @click="finishmobile('anniversary')">{yun:}t key='admin_yunying_00180'{/yun}</el-button>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">今日会员到期提醒（企业用户）</div>
+                            <div class="TableTite">{yun:}t key='admin_01113'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableTexta">
@@ -38,15 +38,15 @@
                         </td>
                         <td>
                             <div class="TableCaozuo">
-                                <el-button :disabled="todaydue.disabled==1 || todaydue_m == 0" plain size="mini" @click="sendmsg('1','3','1','1','3','0','正在发送，请稍候。。。','0','0')">发送短信</el-button>
-                                <el-button :disabled="todaydue.disabled==1 || todaydue_m == 0" plain size="mini" @click="outmobile('todaydue')">导出手机号</el-button>
-                                <el-button :disabled="todaydue.disabled==1 || todaydue_m == 0" plain size="mini" @click="finishmobile('todaydue')">已发送</el-button>
+                                <el-button :disabled="todaydue.disabled==1 || todaydue_m == 0" plain size="mini" @click="sendmsg('1','3','1','1','3','0','正在发送，请稍候。。。','0','0')">{yun:}t key='admin_user_00166'{/yun}</el-button>
+                                <el-button :disabled="todaydue.disabled==1 || todaydue_m == 0" plain size="mini" @click="outmobile('todaydue')">{yun:}t key='admin_01116'{/yun}</el-button>
+                                <el-button :disabled="todaydue.disabled==1 || todaydue_m == 0" plain size="mini" @click="finishmobile('todaydue')">{yun:}t key='admin_yunying_00180'{/yun}</el-button>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">7日会员到期提醒（企业用户）</div>
+                            <div class="TableTite">{yun:}t key='admin_yunying_00175'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableTexta">
@@ -55,15 +55,15 @@
                         </td>
                         <td>
                             <div class="TableCaozuo">
-                                <el-button :disabled="sevendue.disabled==1 || sevendue_m == 0" plain size="mini" @click="sendmsg('1','3','1','7','3','0','正在发送，请稍候。。。','0','0')">发送短信</el-button>
-                                <el-button :disabled="sevendue.disabled==1 || sevendue_m == 0" plain size="mini" @click="outmobile('sevendue')">导出手机号</el-button>
-                                <el-button :disabled="sevendue.disabled==1 || sevendue_m == 0" plain size="mini" @click="finishmobile('sevendue')">已发送</el-button>
+                                <el-button :disabled="sevendue.disabled==1 || sevendue_m == 0" plain size="mini" @click="sendmsg('1','3','1','7','3','0','正在发送，请稍候。。。','0','0')">{yun:}t key='admin_user_00166'{/yun}</el-button>
+                                <el-button :disabled="sevendue.disabled==1 || sevendue_m == 0" plain size="mini" @click="outmobile('sevendue')">{yun:}t key='admin_01116'{/yun}</el-button>
+                                <el-button :disabled="sevendue.disabled==1 || sevendue_m == 0" plain size="mini" @click="finishmobile('sevendue')">{yun:}t key='admin_yunying_00180'{/yun}</el-button>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">注册后7日内未发布简历（个人用户）</div>
+                            <div class="TableTite">{yun:}t key='admin_yunying_00173'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableTexta">
@@ -72,15 +72,15 @@
                         </td>
                         <td>
                             <div class="TableCaozuo">
-                                <el-button :disabled="useradd.disabled==1 || useradd_m == 0" plain size="mini" @click="sendmsg('1','4','1','7','3','0','正在发送，请稍候。。。','0','0')">发送短信</el-button>
-                                <el-button :disabled="useradd.disabled==1 || useradd_m == 0" plain size="mini" @click="outmobile('useradd')">导出手机号</el-button>
-                                <el-button :disabled="useradd.disabled==1 || useradd_m == 0" plain size="mini" @click="finishmobile('useradd')">已发送</el-button>
+                                <el-button :disabled="useradd.disabled==1 || useradd_m == 0" plain size="mini" @click="sendmsg('1','4','1','7','3','0','正在发送，请稍候。。。','0','0')">{yun:}t key='admin_user_00166'{/yun}</el-button>
+                                <el-button :disabled="useradd.disabled==1 || useradd_m == 0" plain size="mini" @click="outmobile('useradd')">{yun:}t key='admin_01116'{/yun}</el-button>
+                                <el-button :disabled="useradd.disabled==1 || useradd_m == 0" plain size="mini" @click="finishmobile('useradd')">{yun:}t key='admin_yunying_00180'{/yun}</el-button>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">7日未刷新简历（个人用户）</div>
+                            <div class="TableTite">{yun:}t key='admin_yunying_00176'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableTexta">
@@ -89,15 +89,15 @@
                         </td>
                         <td>
                             <div class="TableCaozuo">
-                                <el-button :disabled="userup.disabled==1 || userup_m == 0" plain size="mini" @click="sendmsg('1','5','1','7','3','0','正在发送，请稍候。。。','0','0')">发送短信</el-button>
-                                <el-button :disabled="userup.disabled==1 || userup_m == 0" plain size="mini" @click="outmobile('userup')">导出手机号</el-button>
-                                <el-button :disabled="userup.disabled==1 || userup_m == 0" plain size="mini" @click="finishmobile('userup')">已发送</el-button>
+                                <el-button :disabled="userup.disabled==1 || userup_m == 0" plain size="mini" @click="sendmsg('1','5','1','7','3','0','正在发送，请稍候。。。','0','0')">{yun:}t key='admin_user_00166'{/yun}</el-button>
+                                <el-button :disabled="userup.disabled==1 || userup_m == 0" plain size="mini" @click="outmobile('userup')">{yun:}t key='admin_01116'{/yun}</el-button>
+                                <el-button :disabled="userup.disabled==1 || userup_m == 0" plain size="mini" @click="finishmobile('userup')">{yun:}t key='admin_yunying_00180'{/yun}</el-button>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">注册后7日内未发布职位（企业用户）</div>
+                            <div class="TableTite">{yun:}t key='admin_yunying_00174'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableTexta">
@@ -106,15 +106,15 @@
                         </td>
                         <td>
                             <div class="TableCaozuo">
-                                <el-button :disabled="addjob.disabled==1 || addjob_m == 0" plain size="mini" @click="sendmsg('2','6','1','7','3','0','正在发送，请稍候。。。','0','0')">发送短信</el-button>
-                                <el-button :disabled="addjob.disabled==1 || addjob_m == 0" plain size="mini" @click="outmobile('addjob')">导出手机号</el-button>
-                                <el-button :disabled="addjob.disabled==1 || addjob_m == 0" plain size="mini" @click="finishmobile('addjob')">已发送</el-button>
+                                <el-button :disabled="addjob.disabled==1 || addjob_m == 0" plain size="mini" @click="sendmsg('2','6','1','7','3','0','正在发送，请稍候。。。','0','0')">{yun:}t key='admin_user_00166'{/yun}</el-button>
+                                <el-button :disabled="addjob.disabled==1 || addjob_m == 0" plain size="mini" @click="outmobile('addjob')">{yun:}t key='admin_01116'{/yun}</el-button>
+                                <el-button :disabled="addjob.disabled==1 || addjob_m == 0" plain size="mini" @click="finishmobile('addjob')">{yun:}t key='admin_yunying_00180'{/yun}</el-button>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">7日未刷新职位（企业用户）</div>
+                            <div class="TableTite">{yun:}t key='admin_yunying_00177'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableTexta">
@@ -123,9 +123,9 @@
                         </td>
                         <td>
                             <div class="TableCaozuo">
-                                <el-button :disabled="upjob.disabled==1 || upjob_m == 0" plain size="mini" @click="sendmsg('2','7','1','7','3','0','正在发送，请稍候。。。','0','0')">发送短信</el-button>
-                                <el-button :disabled="upjob.disabled==1 || upjob_m == 0" plain size="mini" @click="outmobile('upjob')">导出手机号</el-button>
-                                <el-button :disabled="upjob.disabled==1 || upjob_m == 0" plain size="mini" @click="finishmobile('upjob')">已发送</el-button>
+                                <el-button :disabled="upjob.disabled==1 || upjob_m == 0" plain size="mini" @click="sendmsg('2','7','1','7','3','0','正在发送，请稍候。。。','0','0')">{yun:}t key='admin_user_00166'{/yun}</el-button>
+                                <el-button :disabled="upjob.disabled==1 || upjob_m == 0" plain size="mini" @click="outmobile('upjob')">{yun:}t key='admin_01116'{/yun}</el-button>
+                                <el-button :disabled="upjob.disabled==1 || upjob_m == 0" plain size="mini" @click="finishmobile('upjob')">{yun:}t key='admin_yunying_00180'{/yun}</el-button>
                             </div>
                         </td>
                     </tr>
@@ -243,7 +243,7 @@ module.exports = {
         },
         outmobile(outtype) {
             let that = this;
-            message.confirm('确定导出相关手机号？', function() {
+            message.confirm("{yun:}t key='admin_yunying_00202'{/yun}", function() {
                 httpPost('m=yunying&c=yingxiao_tuiguang&a=xls', {outtype: outtype, xls_type: 'mobile'}).then(function (response) {
                     let res = response.data;
 
@@ -262,9 +262,9 @@ module.exports = {
                     data = res.data;
 
                 if (res.error > 0) {
-                    message.error('操作失败请重试');
+                    message.error("{yun:}t key='admin_system_00397'{/yun}");
                 } else {
-                    message.success('操作成功', function () {
+                    message.success("{yun:}t key='wap_user_00264'{/yun}", function () {
                         that.getData();
                     });
                 }

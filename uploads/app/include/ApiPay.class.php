@@ -56,14 +56,14 @@ class ApiPay extends common
             if ($usertype == 1) {
 
                 $marr       =   $resumeM->getResumeInfo(array('uid' => $uid), array('field' => '`name`,`email`,`telphone` as `moblie`'));
-                $usertype_n =   '个人用户';
+                $usertype_n =   'admin_user_00122';
 
             } else if ($usertype == 2) {
 
                 $tvalue['all_pay']  =   array('+', $order['order_price']);
 
                 $marr       =   $comM->getInfo($uid, array('field' => '`name`,`crm_uid`,`linkmail` as `email`, `linktel` as moblie'));
-                $usertype_n =   '企业用户';
+                $usertype_n =   'admin_user_00124';
 
             }
 
@@ -81,7 +81,7 @@ class ApiPay extends common
             //  微信通知参数
             $sendInfo               =   array();
             $sendInfo['wxid']       =   $member['wxid'];
-            $sendInfo['first']      =   '您有一笔订单支付成功！';
+            $sendInfo['first']      =   yun_at('common_06172');
             $sendInfo['username']   =   $member['username'];
             $sendInfo['order']      =   $orderid;
             $sendInfo['price']      =   $order['order_price'];
@@ -92,19 +92,19 @@ class ApiPay extends common
             switch ($paytype) {
 
                 case 'alipay':
-                    $sendInfo['paytype'] = '支付宝支付';
+                    $sendInfo['paytype'] = yun_at('wap_00627');
                     break;
                 case 'wapalipay':
-                    $sendInfo['paytype'] = '支付宝手机支付';
+                    $sendInfo['paytype'] = yun_at('common_06173');
                     break;
                 case 'tenpay':
-                    $sendInfo['paytype'] = '财付通支付';
+                    $sendInfo['paytype'] = yun_at('member_user_00434');
                     break;
                 case 'baidu':
-                    $sendInfo['paytype'] = '百度闪付';
+                    $sendInfo['paytype'] = yun_at('common_06174');
                     break;
                 default :
-                    $sendInfo['paytype'] = '其他支付';
+                    $sendInfo['paytype'] = yun_at('common_06175');
                     break;
             }
 
@@ -119,7 +119,7 @@ class ApiPay extends common
                     if (isset($value['integral'])) {
 
                         $addJF  =   $value['integral'][1];
-                        $integralM->insert_company_pay($addJF, 2, $uid, $order['usertype'], '开通会员赠送积分', 1, 2, true);
+                        $integralM->insert_company_pay($addJF, 2, $uid, $order['usertype'], 'common_01253', 1, 2, true);
                     }
 
                     $order_info =   unserialize($order['order_info']);
@@ -129,19 +129,19 @@ class ApiPay extends common
                         $tvalue['integral'] =   array('+', $order['integral']);
 
                         $statisM->upInfo($tvalue, array('uid' => $uid, 'usertype' => $usertype));
-                        $integralM->insert_company_pay($order['integral'], 2, $uid, $order['usertype'], "充值" . $this->config['integral_pricename'] . '，购买会员', 1, 2, true);
+                        $integralM->insert_company_pay($order['integral'], 2, $uid, $order['usertype'], 'common_01946' . $this->config['integral_pricename'] . 'common_06176', 1, 2, true);
                         $statisM->upInfo(array('integral' => array('-', $order_info['vip_integral'])), array('uid' => $uid, 'usertype' => $usertype));
-                        $integralM->insert_company_pay($order_info['vip_integral'], 2, $uid, $order['usertype'], "购买会员，扣除" . $this->config['integral_pricename'], 1, 2, false);
+                        $integralM->insert_company_pay($order_info['vip_integral'], 2, $uid, $order['usertype'], 'common_06177' . $this->config['integral_pricename'], 1, 2, false);
                         $warningM->warning(4, $uid);
                     }
 
-                    $logContent = $sendInfo['paytype'] . $value['rating_name'] . '购买成功，价格:' . $order['order_price'] . '元，' . '订单编号：' . $order['id'];
-                    $logContent .= $order['order_dkjf'] > 0 ? '，使用抵扣' . $this->config['integral_pricename'] . $order['order_dkjf'] : '';
-                    $logM->addMemberLog($uid, $usertype, '财务订单：购买会员', 88, 1, $logContent);
+                    $logContent = $sendInfo['paytype'] . $value['rating_name'] . '购买成功，价格:' . $order['order_price'] . '元，' . 'common_06178' . $order['id'];
+                    $logContent .= $order['order_dkjf'] > 0 ? 'common_06179' . $this->config['integral_pricename'] . $order['order_dkjf'] : '';
+                    $logM->addMemberLog($uid, $usertype, 'common_06180', 88, 1, $logContent);
                 }
 
                 $sendMail           =   1;
-                $sendInfo['info']   =   '购买：'.$value['rating_name'];
+                $sendInfo['info']   =   yun_auto_t('购买：').$value['rating_name'];
             } else if ($type == 2 && $order['integral']) {  //充值积分
 
                 $tvalue['integral'] =   array('+', $order['integral']);
@@ -150,12 +150,12 @@ class ApiPay extends common
 
                 if ($nid) {
                     $warningM->warning(4, $uid);
-                    $logContent =   $sendInfo['paytype'] . '充值' . $this->config['integral_pricename'] . $order['integral'] . '成功';
-                    $logContent .=  $order['order_dkjf'] > 0 ? '，使用抵扣' . $this->config['integral_pricename'] . $order['order_dkjf'] : '';
-                    $logM->addMemberLog($uid, $usertype, '财务订单：充值' . $this->config['integral_pricename'], 88, 1, $logContent);
+                    $logContent =   $sendInfo['paytype'] . 'common_01946' . $this->config['integral_pricename'] . $order['integral'] . 'admin_tool_00502';
+                    $logContent .=  $order['order_dkjf'] > 0 ? 'common_06179' . $this->config['integral_pricename'] . $order['order_dkjf'] : '';
+                    $logM->addMemberLog($uid, $usertype, 'common_06181' . $this->config['integral_pricename'], 88, 1, $logContent);
                 }
                 $sendMail           =   1;
-                $sendInfo['info']   =   '充值'.$this->config['integral_pricename'].'：'.$order['integral'];
+                $sendInfo['info']   =   yun_at('common_01946').$this->config['integral_pricename'].'：'.$order['integral'];
             } else if ($type == 5) {    //购买增值包
 
                 $row = $ratingM->getComSerDetailInfo($ratingId);
@@ -181,18 +181,18 @@ class ApiPay extends common
                         $tvalue['integral'] = array('+', $order['integral']);
 
                         $statisM->upInfo($tvalue, array('uid' => $uid, 'usertype' => $usertype));
-                        $integralM->insert_company_pay($order['integral'], 2, $uid, $order['usertype'], "充值" . $this->config['integral_pricename'] . '，购买增值服务', 1, 2, true);
+                        $integralM->insert_company_pay($order['integral'], 2, $uid, $order['usertype'], 'common_01946' . $this->config['integral_pricename'] . 'common_06182', 1, 2, true);
                         $statisM->upInfo(array('integral' => array('-', $order_info['pack_integral'])), array('uid' => $uid, 'usertype' => $usertype));
-                        $integralM->insert_company_pay($order_info['pack_integral'], 2, $uid, $order['usertype'], "购买增值服务，扣除" . $this->config['integral_pricename'], 1, 2, false);
+                        $integralM->insert_company_pay($order_info['pack_integral'], 2, $uid, $order['usertype'], 'common_06183' . $this->config['integral_pricename'], 1, 2, false);
                         $warningM->warning(4, $uid);
                     }
-                    $logContent = $sendInfo['paytype'] . '增值服务购买成功';
-                    $logContent .= $order['order_dkjf'] > 0 ? '，使用抵扣' . $this->config['integral_pricename'] . $order['order_dkjf'] : '';
-                    $logM->addMemberLog($uid, $usertype, '财务订单：购买增值服务', 88, 1, $logContent);
+                    $logContent = $sendInfo['paytype'] . 'common_06184';
+                    $logContent .= $order['order_dkjf'] > 0 ? 'common_06179' . $this->config['integral_pricename'] . $order['order_dkjf'] : '';
+                    $logM->addMemberLog($uid, $usertype, 'common_06185', 88, 1, $logContent);
                 }
 
                 $sendMail           =   1;
-                $sendInfo['info']   =   '购买增值包：'.$rinfo['name'];
+                $sendInfo['info']   =   yun_at('common_06186').$rinfo['name'];
             } else if ($order['type'] == 10) {    //职位置顶
                 /**
                  * 购买置顶职位，付款成功后续操作，
@@ -209,7 +209,7 @@ class ApiPay extends common
 
                     if (!empty($xsJob)) {
 
-                        $jobname=   '，置顶职位' . $xsJob['name'] . $order_info['days'] . '天';
+                        $jobname=   'common_06187' . $xsJob['name'] . $order_info['days'] . '天';
                         $xsdate =   $xsJob['xsdate'] > time() ? array('+', $order_info['days'] * 86400) : strtotime('+' . $order_info['days'] . ' day');
 
                         $nid    =   $jobM->upInfo(array('xsdate' => $xsdate), array('uid' => $uid, 'id' => intval($order_info['jobid'])));
@@ -219,19 +219,19 @@ class ApiPay extends common
                             $tvalue['integral'] =   array('+', $order['integral']);
 
                             $statisM->upInfo($tvalue, array('uid' => $uid, 'usertype' => $usertype));
-                            $integralM->insert_company_pay($order['integral'], 2, $uid, $order['usertype'], "充值" . $this->config['integral_pricename'] . '，购买职位置顶', 1, 2, true);
+                            $integralM->insert_company_pay($order['integral'], 2, $uid, $order['usertype'], 'common_01946' . $this->config['integral_pricename'] . 'common_06188', 1, 2, true);
                             $statisM->upInfo(array('integral' => array('-', $order_info['jobzd_integral'])), array('uid' => $uid, 'usertype' => $usertype));
-                            $integralM->insert_company_pay($order_info['jobzd_integral'], 2, $uid, $order['usertype'], "职位置顶，扣除" . $this->config['integral_pricename'], 1, 2, false);
+                            $integralM->insert_company_pay($order_info['jobzd_integral'], 2, $uid, $order['usertype'], 'common_06189' . $this->config['integral_pricename'], 1, 2, false);
                             $warningM->warning(4, $uid);
                         }
 
-                        $logM->addMemberLog($uid, $usertype, '财务订单：购买职位置顶', 88, 1, $sendInfo['paytype'].'购买职位置顶'.$jobname);
+                        $logM->addMemberLog($uid, $usertype, 'common_06190', 88, 1, $sendInfo['paytype'].'common_06191'.$jobname);
                     }
                 }
 
                 $sendMail           =   1;
-                $sendInfo['info']   =   '职位置顶';
-                $wxtempMsg          =   $usertype_n.$marr['name'].$sendInfo['paytype'].'购买职位置顶'.$jobname."，实际支付".$order['order_price']."元,订单编号：".$order['id'];
+                $sendInfo['info']   =   yun_at('wap_com_00238');
+                $wxtempMsg          =   $usertype_n.$marr['name'].$sendInfo['paytype'].'common_06191'.$jobname.'common_06192'.$order['order_price']."元,订单编号：".$order['id'];
             } else if ($type == 11) {   //职位紧急
                 /**
                  * 购买紧急招聘，付款成功后续操作，
@@ -248,7 +248,7 @@ class ApiPay extends common
 
                     if (!empty($uJob)) {
 
-                        $jobname    =   '，设置职位'.$uJob['name'].'紧急'.$order_info['days'].'天';
+                        $jobname    =   'common_06193'.$uJob['name'].'wap_00222'.$order_info['days'].'天';
                         $urgent_time=   $uJob['urgent_time'] > time() ? array('+', $order_info['days'] * 86400) : strtotime('+' . $order_info['days'] . ' day');
 
                         $nid        =   $jobM->upInfo(array('urgent_time' => $urgent_time, 'urgent' => '1'), array('uid' => $uid, 'id' => intval($order_info['jobid'])));
@@ -258,18 +258,18 @@ class ApiPay extends common
                             $tvalue['integral'] = array('+', $order['integral']);
 
                             $statisM->upInfo($tvalue, array('uid' => $uid, 'usertype' => $usertype));
-                            $integralM->insert_company_pay($order['integral'], 2, $uid, $order['usertype'], "充值" . $this->config['integral_pricename'] . '购买职位紧急招聘', 1, 2, true);
+                            $integralM->insert_company_pay($order['integral'], 2, $uid, $order['usertype'], 'common_01946' . $this->config['integral_pricename'] . 'common_06194', 1, 2, true);
                             $statisM->upInfo(array('integral' => array('-', $order_info['joburgent_integral'])), array('uid' => $uid, 'usertype' => $usertype));
-                            $integralM->insert_company_pay($order_info['joburgent_integral'], 2, $uid, $order['usertype'], "职位紧急招聘，扣除" . $this->config['integral_pricename'], 1, 2, false);
+                            $integralM->insert_company_pay($order_info['joburgent_integral'], 2, $uid, $order['usertype'], 'common_06195' . $this->config['integral_pricename'], 1, 2, false);
                             $warningM->warning(4, $uid);
                         }
 
-                        $logM->addMemberLog($uid, $usertype, '财务订单：购买职位紧急招聘', 88, 1, $sendInfo['paytype'].'购买职位紧急招聘'.$jobname);
+                        $logM->addMemberLog($uid, $usertype, 'common_06196', 88, 1, $sendInfo['paytype'].'common_06194'.$jobname);
                     }
                 }
                 $sendMail           =   1;
-                $sendInfo['info']   =   '职位紧急';
-                $wxtempMsg          =   $usertype_n.$marr['name'].$sendInfo['paytype'].'购买职位紧急'.$jobname."，实际支付".$order['order_price']."元,订单编号：".$order['id'];
+                $sendInfo['info']   =   yun_at('member_com_00247');
+                $wxtempMsg          =   $usertype_n.$marr['name'].$sendInfo['paytype'].'common_06197'.$jobname.'common_06192'.$order['order_price']."元,订单编号：".$order['id'];
             } else if ($type == 12) {   //职位推荐
 
                 /**
@@ -287,7 +287,7 @@ class ApiPay extends common
 
                     if (!empty($recJob)) {
 
-                        $jobname    =   '，推荐职位：' . $recJob['name'] . $order_info['days'] . '天';
+                        $jobname    =   'common_06198' . $recJob['name'] . $order_info['days'] . '天';
                         $rec_time   =   $recJob['rec_time'] > time() ? array('+', $order_info['days']) : strtotime('+' . $order_info['days'] . ' day');
 
                         $nid        =   $jobM->upInfo(array('rec_time' => $rec_time, 'rec' => '1'), array('uid' => $uid, 'id' => intval($order_info['jobid'])));
@@ -297,18 +297,18 @@ class ApiPay extends common
                             $tvalue['integral'] = array('+', $order['integral']);
 
                             $statisM->upInfo($tvalue, array('uid' => $uid, 'usertype' => $usertype));
-                            $integralM->insert_company_pay($order['integral'], 2, $uid, $order['usertype'], "充值" . $this->config['integral_pricename'] . '，购买职位推荐', 1, 2, true);
+                            $integralM->insert_company_pay($order['integral'], 2, $uid, $order['usertype'], 'common_01946' . $this->config['integral_pricename'] . 'common_06199', 1, 2, true);
                             $statisM->upInfo(array('integral' => array('-', $order_info['jobrec_integral'])), array('uid' => $uid, 'usertype' => $usertype));
-                            $integralM->insert_company_pay($order_info['jobrec_integral'], 2, $uid, $order['usertype'], "职位推荐，扣除" . $this->config['integral_pricename'], 1, 2, false);
+                            $integralM->insert_company_pay($order_info['jobrec_integral'], 2, $uid, $order['usertype'], 'common_06200' . $this->config['integral_pricename'], 1, 2, false);
                             $warningM->warning(4, $uid);
                         }
 
-                        $logM->addMemberLog($uid, $usertype, '财务订单：购买职位推荐', 88, 1, $sendInfo['paytype'].'购买职位推荐'.$jobname);
+                        $logM->addMemberLog($uid, $usertype, 'common_06201', 88, 1, $sendInfo['paytype'].'common_06202'.$jobname);
                     }
                 }
                 $sendMail           =   1;
-                $sendInfo['info']   =   '职位推荐';
-                $wxtempMsg          =   $usertype_n.$marr['name'].$sendInfo['paytype'].'购买职位推荐'.$jobname."，实际支付".$order['order_price']."元,订单编号：".$order['id'];
+                $sendInfo['info']   =   yun_at('wap_com_00237');
+                $wxtempMsg          =   $usertype_n.$marr['name'].$sendInfo['paytype'].'common_06202'.$jobname.'common_06192'.$order['order_price']."元,订单编号：".$order['id'];
             } else if ($type == 13) {   //职位自动刷新
                 /**
                  * 购买自动刷新，付款成功后续操作，
@@ -342,17 +342,17 @@ class ApiPay extends common
                             $tvalue['integral'] =   array('+', $order['integral']);
 
                             $statisM->upInfo($tvalue, array('uid' => $uid, 'usertype' => 2));
-                            $integralM->insert_company_pay($order['integral'], 2, $uid, 2, "充值" . $this->config['integral_pricename'] . '，购买职位自动刷新', 1, 2, true);
+                            $integralM->insert_company_pay($order['integral'], 2, $uid, 2, 'common_01946' . $this->config['integral_pricename'] . 'common_06203', 1, 2, true);
                             $statisM->upInfo(array('integral' => array('-', $order_info['auto_integral'])), array('uid' => $uid, 'usertype' => $usertype));
-                            $integralM->insert_company_pay($order_info['auto_integral'], 2, $uid, $order['usertype'], "职位自动刷新，扣除" . $this->config['integral_pricename'], 1, 2, false);
+                            $integralM->insert_company_pay($order_info['auto_integral'], 2, $uid, $order['usertype'], 'common_06204' . $this->config['integral_pricename'], 1, 2, false);
                             $warningM->warning(4, $uid);
                         }
 
-                        $logM->addMemberLog($uid, $usertype, '财务订单：职位自动刷新', 88, 1, $sendInfo['paytype'].'购买职位自动刷新');
+                        $logM->addMemberLog($uid, $usertype, 'common_06205', 88, 1, $sendInfo['paytype'].'common_06206');
                     }
                 }
                 $sendMail           =   1;
-                $sendInfo['info']   =   '职位刷新';
+                $sendInfo['info']   =   yun_at('wap_com_00045');
             } else if ($type == 14) {   //简历置顶
 
                 /**
@@ -372,13 +372,13 @@ class ApiPay extends common
 
                         $topdate    =   $zdResume['topdate'] > time() ? array('+', $order_info['days'] * 86400) : strtotime('+' . $order_info['days'] . ' day');
                         $nid        =   $resumeM->upInfo(array('id' => intval($order_info['resumeid'])), array('eData' => array('topdate' => $topdate, 'top' => '1')));
-                        $orderMsg   =   '，置顶简历' . $zdResume['name'] . $order_info['days'] . '天';
-                        $logM->addMemberLog($uid, $usertype, '财务订单：购买简历置顶', 88, 1, $sendInfo['paytype'].'购买简历置顶'.$orderMsg);
+                        $orderMsg   =   'common_06207' . $zdResume['name'] . $order_info['days'] . '天';
+                        $logM->addMemberLog($uid, $usertype, 'common_06208', 88, 1, $sendInfo['paytype'].'common_01545'.$orderMsg);
                     }
                 }
 
                 $sendMail           =   1;
-                $sendInfo['info']   =   '简历置顶';
+                $sendInfo['info']   =   yun_at('wap_user_00207');
             }  else if ($type == 16) {   //职位刷新
 
                 $order_info =   unserialize($order['order_info']);
@@ -397,19 +397,19 @@ class ApiPay extends common
                             $tvalue['integral'] = array('+', $order['integral']);
 
                             $statisM->upInfo($tvalue, array('uid' => $uid, 'usertype' => $usertype));
-                            $integralM->insert_company_pay($order['integral'], 2, $uid, $order['usertype'], "充值" . $this->config['integral_pricename'] . '， 购买职位刷新', 1, 2, true);
+                            $integralM->insert_company_pay($order['integral'], 2, $uid, $order['usertype'], 'common_01946' . $this->config['integral_pricename'] . 'common_06209', 1, 2, true);
                             $statisM->upInfo(array('integral' => array('-', $order_info['sxjob_integral'])), array('uid' => $uid, 'usertype' => $usertype));
-                            $integralM->insert_company_pay($order_info['sxjob_integral'], 2, $uid, $order['usertype'], "职位刷新，扣除" . $this->config['integral_pricename'], 1, 2, false);
+                            $integralM->insert_company_pay($order_info['sxjob_integral'], 2, $uid, $order['usertype'], 'common_06210' . $this->config['integral_pricename'], 1, 2, false);
                             $warningM->warning(4, $uid);
                         }
 
                         $comM->upInfo($uid, '', array('lastupdate' => time()));
-                        $logM->addMemberLog($uid, $usertype, '财务订单：购买职位刷新', 88, 1, $sendInfo['paytype']."购买职位刷新");
+                        $logM->addMemberLog($uid, $usertype, 'common_06211', 88, 1, $sendInfo['paytype'].'common_06212');
                     }
                 }
 
                 $sendMail           =   1;
-                $sendInfo['info']   =   '职位刷新';
+                $sendInfo['info']   =   yun_at('wap_com_00045');
             } else if ($type == 17) {   //兼职刷新
 
                 $order_info = unserialize($order['order_info']);
@@ -427,18 +427,18 @@ class ApiPay extends common
                             $tvalue['integral'] = array('+', $order['integral']);
 
                             $statisM->upInfo($tvalue, array('uid' => $uid, 'usertype' => $usertype));
-                            $integralM->insert_company_pay($order['integral'], 2, $uid, $order['usertype'], "充值" . $this->config['integral_pricename'] . '， 购买兼职刷新', 1, 2, true);
+                            $integralM->insert_company_pay($order['integral'], 2, $uid, $order['usertype'], 'common_01946' . $this->config['integral_pricename'] . 'common_06213', 1, 2, true);
                             $statisM->upInfo(array('integral' => array('-', $order_info['sxpart_integral'])), array('uid' => $uid, 'usertype' => $usertype));
-                            $integralM->insert_company_pay($order_info['sxpart_integral'], 2, $uid, $order['usertype'], "兼职刷新，扣除" . $this->config['integral_pricename'], 1, 2, false);
+                            $integralM->insert_company_pay($order_info['sxpart_integral'], 2, $uid, $order['usertype'], 'common_06214' . $this->config['integral_pricename'], 1, 2, false);
                             $warningM->warning(4, $uid);
                         }
 
-                        $logM->addMemberLog($uid, $usertype, '财务订单：购买兼职刷新', 88, 1, $sendInfo['paytype'].'购买兼职刷新');
+                        $logM->addMemberLog($uid, $usertype, 'common_06215', 88, 1, $sendInfo['paytype'].'common_06216');
                     }
                 }
 
                 $sendMail           =   1;
-                $sendInfo['info']   =   '兼职刷新';
+                $sendInfo['info']   =   yun_at('default_00034');
             } else if ($type == 19) {   //下载简历
 
                 $order_info =   unserialize($order['order_info']);
@@ -465,7 +465,7 @@ class ApiPay extends common
 
                         if (empty($isDown)) {
 
-                            $orderMsg   =   '，下载简历：' . $expect['name'];
+                            $orderMsg   =   'common_06217' . $expect['name'];
 
                             $nid        =   $downM->addInfo($dData);
 
@@ -476,25 +476,25 @@ class ApiPay extends common
                                 $tvalue['integral'] = array('+', $order['integral']);
 
                                 $statisM->upInfo($tvalue, array('uid' => $uid, 'usertype' => $usertype));
-                                $integralM->insert_company_pay($order['integral'], 2, $uid, $order['usertype'], "充值" . $this->config['integral_pricename'] . '，下载简历', 1, 2, true);
+                                $integralM->insert_company_pay($order['integral'], 2, $uid, $order['usertype'], 'common_01946' . $this->config['integral_pricename'] . 'common_06218', 1, 2, true);
                                 $statisM->upInfo(array('integral' => array('-', $order_info['resume_integral'])), array('uid' => $uid, 'usertype' => $usertype));
-                                $integralM->insert_company_pay($order_info['resume_integral'], 2, $uid, $order['usertype'], "下载简历，扣除" . $this->config['integral_pricename'], 1, 2, false);
+                                $integralM->insert_company_pay($order_info['resume_integral'], 2, $uid, $order['usertype'], 'common_06219' . $this->config['integral_pricename'], 1, 2, false);
                                 $warningM->warning(4, $uid);
                             }
 
-                            $logM->addMemberLog($uid, $usertype, '财务订单：购买下载简历：', 88, 1, $sendInfo['paytype'] . '购买简历下载'.$orderMsg);
+                            $logM->addMemberLog($uid, $usertype, 'common_06220', 88, 1, $sendInfo['paytype'] . 'common_06221'.$orderMsg);
 
                             $sendMail           =   1;
-                            $sendInfo['info']   =   '下载简历';
+                            $sendInfo['info']   =   yun_at('wap_00451');
                         } else {
 
-                            $this->obj->update_once('company_order', array('order_state' => '4', 'order_remark' => '简历（ID:' . $expect['id'] . '）您已经下载过，关闭无效交易订单！'), array('id' => $order['id']));
+                            $this->obj->update_once('company_order', array('order_state' => '4', 'order_remark' => '简历（ID:' . $expect['id'] . 'common_00492'), array('id' => $order['id']));
                         }
                     }
                 }
             } else if ($type == 20) {   //上架职位
 
-                $msg        =   '购买上架职位数';
+                $msg        =   'common_06222';
                 $order_info =   unserialize($order['order_info']);
 
                 if ($usertype == 2) {
@@ -508,13 +508,13 @@ class ApiPay extends common
                     $tvalue['integral'] = array('+', $order['integral']);
 
                     $statisM->upInfo($tvalue, array('uid' => $uid, 'usertype' => $usertype));
-                    $integralM->insert_company_pay($order['integral'], 2, $uid, $order['usertype'], "充值" . $this->config['integral_pricename'] . '，' . $msg, 1, 2, true);
+                    $integralM->insert_company_pay($order['integral'], 2, $uid, $order['usertype'], 'common_01946' . $this->config['integral_pricename'] . '，' . $msg, 1, 2, true);
                     $statisM->upInfo(array('integral' => array('-', $order_info['issue_integral'])), array('uid' => $uid, 'usertype' => $usertype));
-                    $integralM->insert_company_pay($order_info['issue_integral'], 2, $uid, $order['usertype'], $msg . "，扣除" . $this->config['integral_pricename'], 1, 2, false);
+                    $integralM->insert_company_pay($order_info['issue_integral'], 2, $uid, $order['usertype'], $msg . 'common_06223' . $this->config['integral_pricename'], 1, 2, false);
                     $warningM->warning(4, $uid);
                 }
 
-                $logM->addMemberLog($uid, $usertype, '财务订单：职位上架套餐：', 88, 1, $sendInfo['paytype'].$msg);
+                $logM->addMemberLog($uid, $usertype, 'common_06224', 88, 1, $sendInfo['paytype'].$msg);
 
                 $sendMail           =   1;
                 $sendInfo['info']   =   $msg;
@@ -533,16 +533,16 @@ class ApiPay extends common
                     $tvalue['integral'] = array('+', $order['integral']);
 
                     $statisM->upInfo($tvalue, array('uid' => $uid, 'usertype' => $usertype));
-                    $integralM->insert_company_pay($order['integral'], 2, $uid, $order['usertype'], "充值" . $this->config['integral_pricename'] . '，购买面试邀请', 1, 2, true);
+                    $integralM->insert_company_pay($order['integral'], 2, $uid, $order['usertype'], 'common_01946' . $this->config['integral_pricename'] . 'common_06225', 1, 2, true);
                     $statisM->upInfo(array('integral' => array('-', $order_info['invite_integral'])), array('uid' => $uid, 'usertype' => $usertype));
-                    $integralM->insert_company_pay($order_info['invite_integral'], 2, $uid, $order['usertype'], "面试邀请，扣除" . $this->config['integral_pricename'], 1, 2, false);
+                    $integralM->insert_company_pay($order_info['invite_integral'], 2, $uid, $order['usertype'], 'common_06226' . $this->config['integral_pricename'], 1, 2, false);
                     $warningM->warning(4, $uid);
                 }
 
-                $logM->addMemberLog($uid, $usertype, '财务订单：职位上架套餐：', 88, 1, $sendInfo['paytype'].'购买面试邀请次数');
+                $logM->addMemberLog($uid, $usertype, 'common_06224', 88, 1, $sendInfo['paytype'].'common_06227');
 
                 $sendMail           =   1;
-                $sendInfo['info']   =   '购买面试邀请';
+                $sendInfo['info']   =   yun_at('common_06228');
             } else if ($type == 24) {   //兼职推荐
 
                 $order_info =   unserialize($order['order_info']);
@@ -558,24 +558,24 @@ class ApiPay extends common
 
                         $nid        =   $partM->upInfo(array('rec_time' => $rec_time), array('id' => intval($order_info['jobid']), 'uid' => $uid));
 
-                        $orderMsg   =   '，推荐兼职'.$recJob['name'].$order_info['days'].'天';
+                        $orderMsg   =   'common_06229'.$recJob['name'].$order_info['days'].'天';
 
                         if ($order_info['recpart_integral'] && $order['integral']) {
 
                             $tvalue['integral'] = array('+', $order['integral']);
 
                             $statisM->upInfo($tvalue, array('uid' => $uid, 'usertype' => $usertype));
-                            $integralM->insert_company_pay($order['integral'], 2, $uid, $order['usertype'], "充值" . $this->config['integral_pricename'] . '，购买兼职推荐', 1, 2, true);
+                            $integralM->insert_company_pay($order['integral'], 2, $uid, $order['usertype'], 'common_01946' . $this->config['integral_pricename'] . 'common_06230', 1, 2, true);
                             $statisM->upInfo(array('integral' => array('-', $order_info['recpart_integral'])), array('uid' => $uid, 'usertype' => $usertype));
-                            $integralM->insert_company_pay($order_info['recpart_integral'], 2, $uid, $order['usertype'], "推荐兼职，扣除" . $this->config['integral_pricename'], 1, 2, false);
+                            $integralM->insert_company_pay($order_info['recpart_integral'], 2, $uid, $order['usertype'], 'common_06231' . $this->config['integral_pricename'], 1, 2, false);
                             $warningM->warning(4, $uid);
                         }
 
-                        $logM->addMemberLog($uid, $usertype, '财务订单：购买职位推荐', 88, 1, $sendInfo['paytype'] . '购买推荐套餐；'.$orderMsg);
+                        $logM->addMemberLog($uid, $usertype, 'common_06201', 88, 1, $sendInfo['paytype'] . '购买推荐套餐；'.$orderMsg);
                     }
                 }
                 $sendMail           =   1;
-                $sendInfo['info']   =   '兼职推荐';
+                $sendInfo['info']   =   yun_at('default_00030');
             } else if ($type == 25) {   //店铺招聘
 
                 if ($order['once_id']) {
@@ -600,12 +600,12 @@ class ApiPay extends common
                         $orderMsg   =   '，广告位id(' . $ad['aid'] . ')';
                         $nid        =   $adM->upOrderAd(array('order_id' => $orderid), array('order_state' => '2'));
 
-                        $logM->addMemberLog($uid, $usertype, '财务订单：购买广告位', 88, 1, $sendInfo['paytype'].'购买广告位'.$orderMsg);
+                        $logM->addMemberLog($uid, $usertype, 'common_06232', 88, 1, $sendInfo['paytype'].'common_06233'.$orderMsg);
                     }
                 }
 
                 $sendMail           =   1;
-                $sendInfo['info']   =   '购买广告位';
+                $sendInfo['info']   =   yun_at('common_06233');
             } else if ($type == 28) {   //招聘会报名
 
                 $order_info =   unserialize($order['order_info']);
@@ -639,21 +639,21 @@ class ApiPay extends common
                                 $tvalue['integral'] = array('+', $order['integral']);
 
                                 $statisM->upInfo($tvalue, array('uid' => $uid, 'usertype' => $usertype));
-                                $integralM->insert_company_pay($order['integral'], 2, $uid, $order['usertype'], "充值" . $this->config['integral_pricename'] . '，预定招聘会', 1, 2, true);
+                                $integralM->insert_company_pay($order['integral'], 2, $uid, $order['usertype'], 'common_01946' . $this->config['integral_pricename'] . 'common_06234', 1, 2, true);
                                 $statisM->upInfo(array('integral' => array('-', $order_info['zph_integral'])), array('uid' => $uid, 'usertype' => $usertype));
-                                $integralM->insert_company_pay($order_info['zph_integral'], 2, $uid, $order['usertype'], "预定招聘会，扣除" . $this->config['integral_pricename'], 1, 2, false);
+                                $integralM->insert_company_pay($order_info['zph_integral'], 2, $uid, $order['usertype'], 'common_06235' . $this->config['integral_pricename'], 1, 2, false);
                                 $warningM->warning(4, $uid);
                             }
 
                             $orderMsg   =   '，招聘会id('.$zid.')';
 
-                            $logM->addMemberLog($uid, $usertype, '财务订单：报名招聘会：', 88, 1, $sendInfo['paytype'].'购买报名招聘会次数'.$orderMsg);
+                            $logM->addMemberLog($uid, $usertype, 'common_06236', 88, 1, $sendInfo['paytype'].'common_06237'.$orderMsg);
                         }
                     }
                 }
 
                 $sendMail           =   1;
-                $sendInfo['info']   =   '报名招聘会';
+                $sendInfo['info']   =   yun_at('admin_user_company_00210');
             }
 
             if ($nid) {
@@ -670,7 +670,7 @@ class ApiPay extends common
                 if ($order['type'] == '2') {
 
                     $integralM  =   $this->MODEL('integral');
-                    $integralM->insert_company_pay($order['integral'], 2, $order['uid'], $order['usertype'], "购买" . $this->config['integral_pricename'], 1, 2, true);
+                    $integralM->insert_company_pay($order['integral'], 2, $order['uid'], $order['usertype'], 'member_user_00285' . $this->config['integral_pricename'], 1, 2, true);
                 }
                 return 2;
             }

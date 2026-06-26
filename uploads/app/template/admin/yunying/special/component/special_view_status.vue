@@ -1,15 +1,15 @@
 <template>
   <div style="padding: 10px 20px;">
-    <div class="wxsettip_small">审核操作</div>
+    <div class="wxsettip_small">{yun:}t key='admin_user_weipin_00032'{/yun}</div>
     <template>
-      <el-radio v-model="ruleForm.status" label="1">已通过</el-radio>
-      <el-radio v-model="ruleForm.status" label="2">未通过</el-radio>
+      <el-radio v-model="ruleForm.status" label="1">{yun:}t key='member_user_00042'{/yun}</el-radio>
+      <el-radio v-model="ruleForm.status" label="2">{yun:}t key='wap_user_00167'{/yun}</el-radio>
     </template>
-    <div class="wxsettip_small">审核说明 </div>
-    <el-input type="textarea" :rows="2" placeholder="请输入内容" v-model="ruleForm.statusbody" style="margin-bottom: 10px;"></el-input>
+    <div class="wxsettip_small">{yun:}t key='member_user_00062'{/yun} </div>
+    <el-input type="textarea" :rows="2" placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="ruleForm.statusbody" style="margin-bottom: 10px;"></el-input>
     <span slot="footer" class="dialog-footer">
-      <el-button @click="handleCancel">取 消</el-button>
-      <el-button type="primary" @click="submitForm('ruleForm')">确 定</el-button>
+      <el-button @click="handleCancel">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
+      <el-button type="primary" @click="submitForm('ruleForm')">{yun:}t key='wap_com_00019'{/yun}</el-button>
     </span>
   </div>
 </template>
@@ -34,17 +34,17 @@ module.exports = {
       let _this = this;
       let params = JSON.parse(JSON.stringify(this.ruleForm));
       if (params.status != '1' && params.status != '2') {
-        message.error('请选择审核状态！');
+        message.error("{yun:}t key='admin_01311'{/yun}");
         return false;
       }
 
       httpPost('m=yunying&c=special_special&a=statuscom', params).then(function (response) {
         let res = response.data;
         if (res.error === 0) {
-          message.success('操作成功！');
+          message.success("{yun:}t key='wap_js_00159'{/yun}");
           _this.$emit("child-event");
         } else {
-          message.error('操作失败！');
+          message.error("{yun:}t key='model_00003'{/yun}");
         }
       }).catch(function (error) {
         console.log(error);

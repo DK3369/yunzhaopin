@@ -34,9 +34,9 @@
         
            <div class="com_body"> 
 						<table class="com_table" >
-							<tr><th>{yun:}t key='member_com_00209'{/yun}</th><th width="200">奖励</th><th width="200">{yun:}t key='member_user_00048'{/yun}</th></tr>
+							<tr><th>{yun:}t key='member_com_00209'{/yun}</th><th width="200">{yun:}t key='member_com_00571'{/yun}</th><th width="200">{yun:}t key='member_user_00048'{/yun}</th></tr>
 							<tr>
-								<td><span class="integral_table_name integral_table_name_ws">完善基本资料</span></td>
+								<td><span class="integral_table_name integral_table_name_ws">{yun:}t key='wap_00990'{/yun}</span></td>
 								<td align="left">
 									<em class="integral_table_n">+{yun:}$config.integral_userinfo{/yun}</em>
 									{yun:}$config.integral_priceunit{/yun}{yun:}$config.integral_pricename{/yun}
@@ -69,31 +69,31 @@
 							</tr>
              
 							<tr>	
-								<td><span class="integral_table_name integral_table_name_yq">邀请朋友注册</span></td>
+								<td><span class="integral_table_name integral_table_name_yq">{yun:}t key='member_user_00512'{/yun}</span></td>
 								<td align="left">
 									<em class="integral_table_n">+{yun:}$config.integral_invite_reg{/yun}</em>
 									{yun:}$config.integral_priceunit{/yun}{yun:}$config.integral_pricename{/yun} 
 								</td> 
 								<td  align="center">
 									<span class="integral_list_bth_s">
-										<a href="javascript:void(0);" onclick="getInviteRegHb(0);" class="integral_list_bth_a">现在就邀请</a>
+										<a href="javascript:void(0);" onclick="getInviteRegHb(0);" class="integral_list_bth_a">{yun:}t key='member_user_00513'{/yun}</a>
 									</span>
 								</td>
                             </tr>
 
                             <tr>
-								<td><span class="integral_table_name integral_table_name_dl">每天第一次登录</td>
+								<td><span class="integral_table_name integral_table_name_dl">{yun:}t key='wap_01025'{/yun}</td>
 								<td align="left">
 									<em class="integral_table_n">+{yun:}$config.integral_login{/yun}</em>
 									{yun:}$config.integral_priceunit{/yun}{yun:}$config.integral_pricename{/yun}
 								</td> 
 								
-								<td align="center"><span class="integral_list_bth_s">今日已登录 </span></td>
+								<td align="center"><span class="integral_list_bth_s">{yun:}t key='wap_01026'{/yun} </span></td>
 
                             </tr>
 
                             <tr>
-								<td><span class="integral_table_name integral_table_name_qd">每日签到</span></td>
+								<td><span class="integral_table_name integral_table_name_qd">{yun:}t key='member_com_00572'{/yun}</span></td>
 								<td align="left">
 									<em class="integral_table_n">+{yun:}$config.integral_signin{/yun}</em>
 									{yun:}$config.integral_priceunit{/yun}{yun:}$config.integral_pricename{/yun}
@@ -101,16 +101,16 @@
 								<td align="center">
 									<span class="integral_list_bth_s"> 
 										{yun:}if $statusList.signin{/yun}
-											今日已签到
+											{yun:}t key='wap_01022'{/yun}
 										{yun:}else{/yun} 
-											<a href="index.php" target="_blank"  class="integral_list_bth_a">去签到</a> 
+											<a href="index.php" target="_blank"  class="integral_list_bth_a">{yun:}t key='member_com_00573'{/yun}</a> 
 										{yun:}/if{/yun}
 									</span>
 								</td>
                             </tr>
 
                             <tr>
-								<td><span class="integral_table_name integral_table_name_yx">认证电子邮箱</span></td>
+								<td><span class="integral_table_name integral_table_name_yx">{yun:}t key='wap_01027'{/yun}</span></td>
 								<td align="left">
 									<em class="integral_table_n">+{yun:}$config.integral_emailcert{/yun}</em>
 									{yun:}$config.integral_priceunit{/yun}{yun:}$config.integral_pricename{/yun} 
@@ -127,7 +127,7 @@
                             </tr>
 
                             <tr>
-								<td><span class="integral_table_name integral_table_name_sj">认证手机号码</span></td>
+								<td><span class="integral_table_name integral_table_name_sj">{yun:}t key='wap_01028'{/yun}</span></td>
 								<td align="left">
 									<em class="integral_table_n">+{yun:}$config.integral_mobliecert{/yun}</em>
 									{yun:}$config.integral_priceunit{/yun}{yun:}$config.integral_pricename{/yun}
@@ -137,7 +137,7 @@
 										{yun:}if $statusList.phoneChecked{/yun}
 											{yun:}t key='wap_user_00246'{/yun}
 										{yun:}else{/yun} 
-											<a href="index.php?c=binding" target="_blank"  class="integral_list_bth_a">手机验证</a>
+											<a href="index.php?c=binding" target="_blank"  class="integral_list_bth_a">{yun:}t key='member_user_00515'{/yun}</a>
 										{yun:}/if{/yun} 
 									</span>
 								</td>
@@ -228,7 +228,7 @@
 										<em class="integral_table_n">+{yun:}$config.integral_question{/yun}</em>
 										{yun:}$config.integral_priceunit{/yun}{yun:}$config.integral_pricename{/yun}
 									</td> 
-									<td align="center"><span class="integral_list_bth_s">今日已发布</span></td>
+									<td align="center"><span class="integral_list_bth_s">{yun:}t key='wap_00992'{/yun}</span></td>
 								</tr>
 							{yun:}/if{/yun} 
 						
@@ -252,27 +252,27 @@
 										<em class="integral_table_n">+{yun:}$config.integral_answer{/yun}</em>
 										{yun:}$config.integral_priceunit{/yun}{yun:}$config.integral_pricename{/yun}
 									</td> 
-									<td align="center"><span class="integral_list_bth_s">今日已回答</span></td>
+									<td align="center"><span class="integral_list_bth_s">{yun:}t key='wap_00993'{/yun}</span></td>
 								</tr>
 							{yun:}/if{/yun} 
 								
 							{yun:}if $statusList.answerpl{/yun}
 								<tr>
-									<td><span class="integral_table_name integral_table_name_pl">评论回答</span></td>
+									<td><span class="integral_table_name integral_table_name_pl">{yun:}t key='wap_00995'{/yun}</span></td>
 									<td align="left">
 										<em class="integral_table_n">+{yun:}$config.integral_answerpl{/yun}</em>
 										{yun:}$config.integral_priceunit{/yun}{yun:}$config.integral_pricename{/yun}
 									</td> 
 									<td  align="center">
 										<span class="integral_list_bth_s">
-											<a href="{yun:}url m=ask {/yun}#last-question"  target="_blank"  class="integral_list_bth_a">评论回答</a>
+											<a href="{yun:}url m=ask {/yun}#last-question"  target="_blank"  class="integral_list_bth_a">{yun:}t key='wap_00995'{/yun}</a>
 										</span>
 									</td>
 								</tr>
 							{yun:}else{/yun}
 								<tr>
-								   <td align="left"><span class="integral_table_name integral_table_name_pl">评论回答</span></td><td align="left"><em class="integral_table_n">+{yun:}$config.integral_answerpl{/yun}</em>{yun:}$config.integral_priceunit{/yun}{yun:}$config.integral_pricename{/yun}</td> 
-								   <td  align="center"><span class="integral_list_bth_s">今日已评论</span></td>
+								   <td align="left"><span class="integral_table_name integral_table_name_pl">{yun:}t key='wap_00995'{/yun}</span></td><td align="left"><em class="integral_table_n">+{yun:}$config.integral_answerpl{/yun}</em>{yun:}$config.integral_priceunit{/yun}{yun:}$config.integral_pricename{/yun}</td> 
+								   <td  align="center"><span class="integral_list_bth_s">{yun:}t key='wap_00996'{/yun}</span></td>
 								</tr>
 							{yun:}/if{/yun} 
 						</table>

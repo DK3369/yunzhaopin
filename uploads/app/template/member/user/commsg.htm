@@ -68,13 +68,13 @@
                     
                    <div class="job_Consulting_my">
                    <div class="job_Consulting_my_box">
-                   <span class="job_Consulting_my_ask">我的咨询：</span>{yun:}$log.content{/yun}</div>
+                   <span class="job_Consulting_my_ask">{yun:}t key='member_user_00480'{/yun}</span>{yun:}$log.content{/yun}</div>
                    </div>
                    <span class="List_Title_content_Advisory_r">
                     {yun:}if $log.reply!=""{/yun}
                     <a href="javascript:;" class="" id="{yun:}$log.id{/yun}"></a>
                     {yun:}else{/yun}
-                      <div class="job_Consulting_my">  <div class=""><span class="job_Consulting_zt"><i class="job_Consulting_zticon"></i>该企业尚未回复，请耐心等待,您也可以拨打该企业电话进行电话咨询</span></div></div>
+                      <div class="job_Consulting_my">  <div class=""><span class="job_Consulting_zt"><i class="job_Consulting_zticon"></i>{yun:}t key='member_user_00481'{/yun}</span></div></div>
                     {yun:}/if{/yun}
                     {yun:}if $log.reply!=""{/yun}
                        <div class="job_Consulting_my">
@@ -90,7 +90,7 @@
                 </div>
             </div>
             {yun:}foreachelse{/yun}
-            <div class="msg_no"> 您还没有咨询信息。</div>
+            <div class="msg_no"> {yun:}t key='member_user_00482'{/yun}</div>
             {yun:}/foreach{/yun}
         </div>
         <div class="diggg">{yun:}$pagenav{/yun}</div>

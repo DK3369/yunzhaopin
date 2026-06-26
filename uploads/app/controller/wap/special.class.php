@@ -2,7 +2,7 @@
 
 class special_controller extends common{
 	function index_action(){
-		$this->yunset("headertitle",yun_auto_t('专题招聘'));
+		$this->yunset("headertitle",yun_at('wap_com_00310'));
 		$this->seo("spe_index");
 		$this->yuntpl(array('wap/spe_index'));
 	}
@@ -10,7 +10,7 @@ class special_controller extends common{
 		$specialM	=	$this->MODEL('special');
 		$info		=	$specialM->getSpecialOne(array("id"=>(int)$_GET['id'],"display"=>1));
         if(empty($info)){
-            $this -> ACT_msg_wap($_SERVER['HTTP_REFERER'], yun_auto_t('没有找到该专题招聘'));
+            $this -> ACT_msg_wap($_SERVER['HTTP_REFERER'], yun_at('wap_00520'));
         }
 		$this->yunset("info",$info);
 
@@ -26,7 +26,7 @@ class special_controller extends common{
 		$this->data	=	array('spename'=>$info['title']);
 		$this->seo("spe_show");
 
-		$this->yunset("headertitle",yun_auto_t('专题详情页'));
+		$this->yunset("headertitle",yun_at('wap_00521'));
 
         if ($info['tpl'] == 'gl.htm'){
             // uid，

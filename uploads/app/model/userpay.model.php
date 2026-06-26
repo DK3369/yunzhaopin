@@ -22,7 +22,7 @@ class userpay_model extends model{
  				//判断简历ID真实性
  			    $resume		=		$this->select_once("resume_expect",array('uid'=>$data['uid'] , 'id'=>$resumeid));
 				if(empty($resume)){
-					$return['error'] 		= 	'请选择正确的简历置顶！';
+					$return['error'] 		= 	yun_at('common_06645');
 				}else {
 					//计算需付费金额
 					$price 	= 		$days * $this->config['integral_resume_top']; // 购买置顶简历所需金额
@@ -36,7 +36,7 @@ class userpay_model extends model{
                         $orderData['order_time']	=		time();
                         $orderData['order_state']	=		"2";
                         $orderData['order_type']	=		$data['paytype'];
-                        $orderData['order_remark']	=		'简历置顶';
+                        $orderData['order_remark']	=		yun_at('wap_user_00207');
                         $orderData['uid']			=		$data['uid'];
                         $orderData['did']			=		$data['did'];
                         $orderData['usertype']		=		$data['usertype'];
@@ -52,7 +52,7 @@ class userpay_model extends model{
                                 $topdate   =   $zdresume['topdate'] > time() ? array('+' , $data['days'] * 86400) : time() +$data['days']*86400;
 
                                 $status	   =   $this -> update_once('resume_expect',array('topdate'=>$topdate,'top'=>'1'),array('uid'=>$data['uid'],'id'=>$data['resumeid']));
-                                $return['error'] = '置顶成功！';
+                                $return['error'] = yun_at('common_06646');
                                 $orderData['id']		=		$id;
                                 $return['order']		=		$orderData;
                                 if($data['type'] == 'wap') {
@@ -70,7 +70,7 @@ class userpay_model extends model{
 						$orderData['order_time']	=		time();
 						$orderData['order_state']	=		"1";
 						$orderData['order_type']	=		$data['paytype'];
-						$orderData['order_remark']	=		'简历置顶';
+						$orderData['order_remark']	=		yun_at('wap_user_00207');
 						$orderData['uid']			=		$data['uid'];
 						$orderData['did']			=		$data['did'];
 						$orderData['usertype']		=		$data['usertype'];
@@ -93,15 +93,15 @@ class userpay_model extends model{
                             }
                             $return['pic0'] = 1;
  						}else{
-							$return['error'] 		= 		'订单生成失败！';
+							$return['error'] 		= 		yun_at('common_06439');
 						}
 					}
 				}
  			}else{
-				$return['error'] = '请正确选择简历置顶以及置顶的天数！';
+				$return['error'] = yun_at('common_06647');
 			}
 		} else {
-			$return['error'] = '参数填写错误，请重新设置！';
+			$return['error'] = yun_at('common_00700');
 		}
 		return $return;
 	}

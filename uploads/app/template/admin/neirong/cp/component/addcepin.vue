@@ -7,18 +7,18 @@
         <div class="drawerModInfo drawerModInfoOne">
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>试卷名称</span>
+                    <span>{yun:}t key='admin_00113'{/yun}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input v-model="info.name" placeholder="请输入试卷名称"></el-input>
+                    <el-input v-model="info.name" placeholder="{yun:}t key='admin_00108'{/yun}"></el-input>
                 </div>
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>试卷类别选择</span>
+                    <span>{yun:}t key='admin_00110'{/yun}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-select v-model="info.keyid" placeholder="请选择试卷类别">
+                    <el-select v-model="info.keyid" placeholder="{yun:}t key='admin_00857'{/yun}">
                         <el-option v-for="group in group_all" :key="group.id" :label="group.name" :value="group.id">
                         </el-option>
                     </el-select>
@@ -26,64 +26,64 @@
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>缩略图</span>
+                    <span>{yun:}t key='admin_00119'{/yun}</span>
                 </div>
                 <div class="drawerModInpt">
                     <el-upload class="upload-demo" st :action="''" :auto-upload="false" :show-file-list="false" :accept="pic_accept"
                         :on-change="picChange">
-                        <el-button size="small" type="primary" plain icon="el-icon-plus">上传图片</el-button>
+                        <el-button size="small" type="primary" plain icon="el-icon-plus">{yun:}t key='wap_00540'{/yun}</el-button>
                     </el-upload>
                     <img style="width: 208px; height: 167px;padding-left: 5px;" v-if="info.pic_n" :src="info.pic_n">
                 </div>
                 <div class="drawerModTips">
-                    <el-alert title="尺寸：220*140px" type="info" show-icon :closable="false">
+                    <el-alert title="{yun:}t key='admin_00107'{/yun}" type="info" show-icon :closable="false">
                     </el-alert>
                 </div>
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>试卷排序</span>
+                    <span>{yun:}t key='admin_00115'{/yun}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input v-model="info.sort" placeholder="请输入试卷排序"></el-input>
+                    <el-input v-model="info.sort" placeholder="{yun:}t key='admin_00109'{/yun}"></el-input>
                 </div>
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>试卷属性</span>
+                    <span>{yun:}t key='admin_00114'{/yun}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-checkbox v-model="topcheck">首页幻灯片</el-checkbox>
-                    <el-checkbox v-model="hotcheck">头条</el-checkbox>
-                    <el-checkbox v-model="reccheck">推荐</el-checkbox>
+                    <el-checkbox v-model="topcheck">{yun:}t key='admin_00111'{/yun}</el-checkbox>
+                    <el-checkbox v-model="hotcheck">{yun:}t key='admin_00120'{/yun}</el-checkbox>
+                    <el-checkbox v-model="reccheck">{yun:}t key='common.recommended'{/yun}</el-checkbox>
                 </div>
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>描　　述</span>
+                    <span>{yun:}t key='admin_00118'{/yun}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input type="textarea" :rows="2" placeholder="请输入描述" v-model="info.description">
+                    <el-input type="textarea" :rows="2" placeholder="{yun:}t key='wap_00936'{/yun}" v-model="info.description">
                     </el-input>
                 </div>
             </div>
             <div class="drawerModLis" style="align-items: initial;">
                 <div class="drawerModTite"></div>
                 <div class="drawerModInpt">
-                    <el-button type="primary" icon="el-icon-plus" plain size="medium" @click="addrate">评语管理</el-button>
-					<el-button type="primary" icon="el-icon-plus" plain size="medium" @click="addquestion">题目管理</el-button>
+                    <el-button type="primary" icon="el-icon-plus" plain size="medium" @click="addrate">{yun:}t key='admin_00112'{/yun}</el-button>
+					<el-button type="primary" icon="el-icon-plus" plain size="medium" @click="addquestion">{yun:}t key='admin_00117'{/yun}</el-button>
                 </div>
             </div>
         </div>
         <div class="setBasicButn" style="border: none;">
-            <el-button type="primary" size="medium" @click="save" :disabled="submitLoading">提交</el-button>
+            <el-button type="primary" size="medium" @click="save" :disabled="submitLoading">{yun:}t key='common.submit'{/yun}</el-button>
         </div>
 		<div class="modluDrawer">
-			<el-drawer title="评语管理" :visible.sync="drawerrate" :append-to-body="true" :modal-append-to-body="false" :show-close="true"
+			<el-drawer title="{yun:}t key='admin_00112'{/yun}" :visible.sync="drawerrate" :append-to-body="true" :modal-append-to-body="false" :show-close="true"
 			    :with-header="true" size="40%">
 			    <addrate ref="addrate" :sjid="id" :ratedata="ratedata"></addrate>
 			</el-drawer>
-		    <el-drawer title="试题管理" :visible.sync="drawerquestion" :append-to-body="true" :modal-append-to-body="false" :show-close="true"
+		    <el-drawer title="{yun:}t key='admin_00116'{/yun}" :visible.sync="drawerquestion" :append-to-body="true" :modal-append-to-body="false" :show-close="true"
 		        :with-header="true" size="42%">
 		        <addquestion ref="addask" :sjid="id" :askdata="askdata"></addquestion>
 		    </el-drawer>
@@ -162,7 +162,7 @@ module.exports = {
                 return false;
             }
             if (!that.info.keyid) {
-				message.error('请选择试卷类别');
+				message.error("{yun:}t key='admin_00857'{/yun}");
                 return false;
             }
             that.info.top = that.topcheck == true ? '1' : '0'

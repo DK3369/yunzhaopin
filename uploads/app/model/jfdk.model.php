@@ -58,7 +58,7 @@ class jfdk_model extends model{
                 if($serverCheck && !in_array($serverCheck,$single_can)){
                     return  array(
                         'error' => 1,
-                        'msg'   => '该服务已关闭单项购买，请选择其它购买方式'
+                        'msg'   => yun_at('common_00345')
                     );
                 }
             }
@@ -68,7 +68,7 @@ class jfdk_model extends model{
             if (stripos($serverStr, $data['server']) !== false && stripos($this->config['sy_only_price'], $data['server']) !== false) {
                 return array(
                     'error' => 1,
-                    'msg' => '该服务只能使用金额购买'
+                    'msg' => yun_at('common_00915')
                 );
             }
 
@@ -134,7 +134,7 @@ class jfdk_model extends model{
         }else{
             $return = array(
                 'error' => 1,
-                'msg'   => '请先登录'
+                'msg'   => yun_at('wap_00376')
             );
         }
         return $return;
@@ -165,7 +165,7 @@ class jfdk_model extends model{
 
                     if (empty($jobs)) {
 
-                        $return['error'] = '请选择正确的刷新职位！';
+                        $return['error'] = yun_at('common_00925');
                     } else {
 
                         $jobnum     =   $this->select_num('company_job', array('uid' => $uid, 'id' => array('in', $jobautoids)));   // 计算自动刷新职位数量
@@ -209,14 +209,14 @@ class jfdk_model extends model{
 
                                     $integral   =   new integral_model($this->db, $this->def, array('uid' => $uid, 'username' => $username, 'usertype' => $usertype));
 
-                                    $integral->company_invtal($uid, $usertype, $dkjf, false, $this->config['integral_pricename'] . '抵扣购买自动刷新职位', true, 2, 'integral', 12);
+                                    $integral->company_invtal($uid, $usertype, $dkjf, false, $this->config['integral_pricename'] . 'common_06489', true, 2, 'integral', 12);
 
                                    	$return['status'] = '1';
 
-                                    $return['msg'] = '自动刷新职位购买成功';
+                                    $return['msg'] = yun_at('common_06490');
 
-                                    $logContent =   '职位推广：'.$this->config['integral_pricename'].'购买';
-                                    $logDetail  =   '使用'.$this->config['integral_pricename'].'购买职位（ID：'.$jobautoids.'）自动刷新；自动刷新天数 + '.$autodays;
+                                    $logContent =   'common_06480'.$this->config['integral_pricename'].'member_user_00285';
+                                    $logDetail  =   'member_user_00284'.$this->config['integral_pricename'].'购买职位（ID：'.$jobautoids.'）自动刷新；自动刷新天数 + '.$autodays;
                                     $this->addMemberLog($uid, $usertype, $logContent, 1, 4, $logDetail);
                                 }
                             }
@@ -224,26 +224,26 @@ class jfdk_model extends model{
 
                             if ($this->config['com_integral_online'] == 3) {
 
-                                $return['error'] = $this->config['integral_pricename'] . '不足，请先充值'.$this->config['integral_pricename'].'！';
+                                $return['error'] = $this->config['integral_pricename'] . 'wap_js_00136'.$this->config['integral_pricename'].'！';
 
                                 $return['url'] = $this->config['sy_weburl'] . '/member/index.php?c=pay';
                             } else {
 
-                                $return['error'] = $this->config['integral_pricename'] . '不足，请正确输入抵扣'.$this->config['integral_pricename'].'！';
+                                $return['error'] = $this->config['integral_pricename'] . 'common_00969'.$this->config['integral_pricename'].'！';
                             }
                         }
                     }
                 } else {
 
-                    $return['error'] = '请正确选择自动刷新职位以及刷新天数！';
+                    $return['error'] = yun_at('common_00443');
                 }
             } else {
 
-                $return['error'] = '参数填写错误，请重新设置！';
+                $return['error'] = yun_at('common_00700');
             }
         } else {
 
-            $return['error'] = '系统目前只支持金额消费！';
+            $return['error'] = yun_at('common_00804');
         }
         return $return;
     }
@@ -273,7 +273,7 @@ class jfdk_model extends model{
 
                     if (empty($job)) {
 
-                        $return['error'] = '请选择正确的职位置顶！';
+                        $return['error'] = yun_at('common_00929');
                         
                     } else {
                         
@@ -312,13 +312,13 @@ class jfdk_model extends model{
 
                                     $integral   =   new integral_model($this->db, $this->def, array('uid' => $uid, 'username' => $username, 'usertype' => $usertype));
 
-                                    $integral->company_invtal($uid, $usertype, $dkjf, false, $this->config['integral_pricename'] . '抵扣购买职位置顶', true, 2, 'integral', 12);
+                                    $integral->company_invtal($uid, $usertype, $dkjf, false, $this->config['integral_pricename'] . 'common_06491', true, 2, 'integral', 12);
                                     $return['status']   =   '1';
 
-                                    $return['msg']      =   '职位置顶购买成功';
+                                    $return['msg']      =   yun_at('common_06492');
 
-                                    $logContent =   '职位推广：'.$this->config['integral_pricename'].'购买';
-                                    $logDetail  =   '使用'.$this->config['integral_pricename'].'购买职位（ID：'.$jobid.'）置顶；置顶天数 + '.$xsdays;
+                                    $logContent =   'common_06480'.$this->config['integral_pricename'].'member_user_00285';
+                                    $logDetail  =   'member_user_00284'.$this->config['integral_pricename'].'购买职位（ID：'.$jobid.'）置顶；置顶天数 + '.$xsdays;
                                     $this->addMemberLog($uid, $usertype, $logContent, 1, 4, $logDetail);
                                 }
                             }
@@ -326,26 +326,26 @@ class jfdk_model extends model{
 
                             if ($this->config['com_integral_online'] == 3) {
 
-                                $return['error'] = $this->config['integral_pricename'] . '不足，请先充值'.$this->config['integral_pricename'].'！';
+                                $return['error'] = $this->config['integral_pricename'] . 'wap_js_00136'.$this->config['integral_pricename'].'！';
 
                                 $return['url'] = $this->config['sy_weburl'] . '/member/index.php?c=pay';
                             } else {
 
-                                $return['error'] = $this->config['integral_pricename'] . '不足，请正确输入抵扣'.$this->config['integral_pricename'].'！';
+                                $return['error'] = $this->config['integral_pricename'] . 'common_00969'.$this->config['integral_pricename'].'！';
                             }
                         }
                     }
                 } else {
 
-                    $return['error'] = '请正确选择职位置顶以及置顶的天数！';
+                    $return['error'] = yun_at('common_00488');
                 }
             } else {
 
-                $return['error'] = '参数填写错误，请重新设置！';
+                $return['error'] = yun_at('common_00700');
             }
         } else {
 
-            $return['error'] = '系统目前只支持金额消费！';
+            $return['error'] = yun_at('common_00804');
         }
         return $return;
     }
@@ -375,7 +375,7 @@ class jfdk_model extends model{
 
                     if (empty($job)) {
 
-                        $return['error']    =   '请选择正确的职位推荐！';
+                        $return['error']    =   yun_at('common_00928');
                     } else {
                         
                         
@@ -413,14 +413,14 @@ class jfdk_model extends model{
 
                                     $integral   =   new integral_model($this->db, $this->def, array('uid' => $uid,  'username' => $username, 'usertype' => $usertype));
 
-                                    $integral -> company_invtal($uid, $usertype, $dkjf, false, $this->config['integral_pricename'].'抵扣购买职位推荐', true, 2, 'integral', 12);
+                                    $integral -> company_invtal($uid, $usertype, $dkjf, false, $this->config['integral_pricename'].'common_06493', true, 2, 'integral', 12);
                                     
                                     $return['status']   =   '1';
 
-                                    $return['msg']      =   '职位推荐购买成功';
+                                    $return['msg']      =   yun_at('common_06494');
 
-                                    $logContent =   '职位推广：'.$this->config['integral_pricename'].'购买';
-                                    $logDetail  =   '使用'.$this->config['integral_pricename'].'购买职位（ID：'.$jobid.'）推荐；推荐天数 + '.$recdays;
+                                    $logContent =   'common_06480'.$this->config['integral_pricename'].'member_user_00285';
+                                    $logDetail  =   'member_user_00284'.$this->config['integral_pricename'].'购买职位（ID：'.$jobid.'）推荐；推荐天数 + '.$recdays;
                                     $this->addMemberLog($uid, $usertype, $logContent, 1, 4, $logDetail);
                                 }
                             }
@@ -428,26 +428,26 @@ class jfdk_model extends model{
 
                             if ($this->config['com_integral_online'] == 3) {
 
-                                $return['error'] = $this->config['integral_pricename'].'不足，请先充值'.$this->config['integral_pricename'].'！';
+                                $return['error'] = $this->config['integral_pricename'].'wap_js_00136'.$this->config['integral_pricename'].'！';
 
                                 $return['url'] = $this->config['sy_weburl'] . '/member/index.php?c=pay';
                             } else {
 
-                                $return['error'] = $this->config['integral_pricename'].'不足，请正确输入抵扣'.$this->config['integral_pricename'].'！';
+                                $return['error'] = $this->config['integral_pricename'].'common_00969'.$this->config['integral_pricename'].'！';
                             }
                         }
                     }
                 } else {
 
-                    $return['error'] = '请正确选择职位推荐以及推荐的时长！';
+                    $return['error'] = yun_at('common_00487');
                 }
             } else {
 
-                $return['error'] = '参数填写错误，请重新设置！';
+                $return['error'] = yun_at('common_00700');
             }
         } else {
 
-            $return['error'] = '系统目前只支持金额消费！';
+            $return['error'] = yun_at('common_00804');
         }
         return $return;
     }
@@ -478,7 +478,7 @@ class jfdk_model extends model{
                     
                     if (empty($part)) {
                         
-                        $return['error'] = '请选择正确的职位推荐！';
+                        $return['error'] = yun_at('common_00928');
                         
                     } else {
                         
@@ -518,14 +518,14 @@ class jfdk_model extends model{
                                     
                                     $integral   =   new integral_model($this->db, $this->def, array('uid' => $uid, 'username' => $username, 'usertype' => $usertype));
                                     
-                                    $integral->company_invtal($uid, $usertype, $dkjf, false, $this->config['integral_pricename'] . '抵扣购买兼职推荐', true, 2, 'integral', 12);
+                                    $integral->company_invtal($uid, $usertype, $dkjf, false, $this->config['integral_pricename'] . 'common_06495', true, 2, 'integral', 12);
                                                                      
                                     $return['status']   =   '1';
                                     
-                                    $return['msg']      =   '兼职推荐购买成功';
+                                    $return['msg']      =   yun_at('common_06496');
 
-                                    $logContent =   '职位推广：'.$this->config['integral_pricename'].'购买';
-                                    $logDetail  =   '使用'.$this->config['integral_pricename'].'购买兼职（ID：'.$partid.'）推荐；推荐天数 + '.$recdays;
+                                    $logContent =   'common_06480'.$this->config['integral_pricename'].'member_user_00285';
+                                    $logDetail  =   'member_user_00284'.$this->config['integral_pricename'].'购买兼职（ID：'.$partid.'）推荐；推荐天数 + '.$recdays;
                                     $this->addMemberLog($uid, $usertype, $logContent, 9, 4, $logDetail);
                                 }
                             }
@@ -533,25 +533,25 @@ class jfdk_model extends model{
                             
                             if ($this->config['com_integral_online'] == 3) {
                                 
-                                $return['error'] = $this->config['integral_pricename'].'不足，请先充值'.$this->config['integral_pricename'].'！';
+                                $return['error'] = $this->config['integral_pricename'].'wap_js_00136'.$this->config['integral_pricename'].'！';
                                 
                                 $return['url'] = $this->config['sy_weburl'] . '/member/index.php?c=pay';
                             } else {
                                 
-                                $return['error'] = $this->config['integral_pricename'].'不足，请正确输入抵扣'.$this->config['integral_pricename'].'！';
+                                $return['error'] = $this->config['integral_pricename'].'common_00969'.$this->config['integral_pricename'].'！';
                             }
                         }
                     }
                 } else {
                     
-                    $return['error'] = '请正确选择职位推荐以及推荐的时长！';
+                    $return['error'] = yun_at('common_00487');
                 }
             } else {
                 
-                $return['error'] = '参数填写错误，请重新设置！';
+                $return['error'] = yun_at('common_00700');
             }
         } else {
-            $return['error'] = '系统目前只支持金额消费！';
+            $return['error'] = yun_at('common_00804');
         }
         return $return;
     }
@@ -582,7 +582,7 @@ class jfdk_model extends model{
 
                     if (empty($job)) {
 
-                        $return['error']    =   '请选择正确的职位！';
+                        $return['error']    =   yun_at('common_01158');
                     } else {
                         
                         $price      =   $udays * $this->config['com_urgent'];
@@ -620,15 +620,15 @@ class jfdk_model extends model{
 
                                     $integral   =   new integral_model($this->db, $this->def, array('uid' => $uid, 'username' => $username, 'usertype' => $usertype));
 
-                                    $integral -> company_invtal($uid,$usertype, $dkjf, false, $this->config['integral_pricename'] . '抵扣购买紧急职位', true, 2, 'integral', 12);
+                                    $integral -> company_invtal($uid,$usertype, $dkjf, false, $this->config['integral_pricename'] . 'common_06497', true, 2, 'integral', 12);
                                     
                                     
                                     $return['status'] = '1';
 
-                                    $return['msg'] = '紧急职位购买成功';
+                                    $return['msg'] = yun_at('common_06498');
 
-                                    $logContent =   '职位推广：'.$this->config['integral_pricename'].'购买';
-                                    $logDetail  =   '使用'.$this->config['integral_pricename'].'购买职位（ID：'.$jobid.'）紧急招聘；紧急天数 + '.$udays;
+                                    $logContent =   'common_06480'.$this->config['integral_pricename'].'member_user_00285';
+                                    $logDetail  =   'member_user_00284'.$this->config['integral_pricename'].'购买职位（ID：'.$jobid.'）紧急招聘；紧急天数 + '.$udays;
                                     $this->addMemberLog($uid, $usertype, $logContent, 1, 4, $logDetail);
                                 }
                             }
@@ -636,26 +636,26 @@ class jfdk_model extends model{
 
                             if ($this->config['com_integral_online'] == 3) {
 
-                                $return['error'] = $this->config['integral_pricename'] . '不足，请先充值'.$this->config['integral_pricename'].'！';
+                                $return['error'] = $this->config['integral_pricename'] . 'wap_js_00136'.$this->config['integral_pricename'].'！';
 
                                 $return['url'] = $this->config['sy_weburl'] . '/member/index.php?c=pay';
                             } else {
 
-                                $return['error'] = $this->config['integral_pricename'] . '不足，请正确输入抵扣'.$this->config['integral_pricename'].'！';
+                                $return['error'] = $this->config['integral_pricename'] . 'common_00969'.$this->config['integral_pricename'].'！';
                             }
                         }
                     }
                 } else {
 
-                    $return['error'] = '请正确选择职位以及紧急招聘天数！';
+                    $return['error'] = yun_at('common_00544');
                 }
             } else {
 
-                $return['error'] = '参数填写错误，请重新设置！';
+                $return['error'] = yun_at('common_00700');
             }
         } else {
 
-            $return['error'] = '系统目前只支持金额消费！';
+            $return['error'] = yun_at('common_00804');
         }
         return $return;
     }
@@ -683,7 +683,7 @@ class jfdk_model extends model{
 			
 				if(empty($ratinginfo)){
 	
-					$return['error']	=	'该会员套餐已下架，请重新选择！';
+					$return['error']	=	yun_at('common_00594');
 
 				}else {
 
@@ -730,19 +730,19 @@ class jfdk_model extends model{
 
 						$integral	=	new integral_model($this->db,$this->def,array('uid'=>$uid,'username'=>$username,'usertype'=>$usertype));
 
-						$integral	->	company_invtal($uid, $usertype, $integral_dk, false, $this->config['integral_pricename'].'抵扣，购买会员', true, 2, 'integral', 27);
+						$integral	->	company_invtal($uid, $usertype, $integral_dk, false, $this->config['integral_pricename'].'common_06499', true, 2, 'integral', 27);
 
 						
 						$return['status']	=	'1';
-						$return['msg']		=	'会员购买成功';
+						$return['msg']		=	yun_at('common_06500');
 
                         if ($price > 0){
 
-                            $logContent =   '会员服务：'.$this->config['integral_pricename'].'购买';
-                            $logDetail  =   '使用'.$this->config['integral_pricename'].'购买会员'.$ratinginfo['name'];
+                            $logContent =   'common_06481'.$this->config['integral_pricename'].'member_user_00285';
+                            $logDetail  =   'member_user_00284'.$this->config['integral_pricename'].'default_00090'.$ratinginfo['name'];
                         }else{
 
-                            $logContent =   '会员服务：购买会员'.$ratinginfo['name'];
+                            $logContent =   'common_06482'.$ratinginfo['name'];
                         }
 
                         $this->addMemberLog($uid, $usertype, $logContent, 88, 1, $logDetail);
@@ -751,23 +751,23 @@ class jfdk_model extends model{
 
 						if($this->config['com_integral_online']==3){
 
-							$return['error']	=	$this->config['integral_pricename'].'不足，请先充值'.$this->config['integral_pricename'].'！';
+							$return['error']	=	$this->config['integral_pricename'].'wap_js_00136'.$this->config['integral_pricename'].'！';
 
 							$return['url']		=	$this->config['sy_weburl'].'/member/index.php?c=pay';
 
 						}else{
 
-							$return['error']	=	$this->config['integral_pricename'].'不足，请正确输入抵扣'.$this->config['integral_pricename'].'！';
+							$return['error']	=	$this->config['integral_pricename'].'common_00969'.$this->config['integral_pricename'].'！';
 						}
 					}
 				}
 			} else {
 
-				$return['error'] = '参数填写错误，请重新设置！';
+				$return['error'] = yun_at('common_00700');
 			}
 		}else{
 
-			$return['error'] = '系统目前只支持金额消费！';
+			$return['error'] = yun_at('common_00804');
 		}
 		return $return;
 	}
@@ -798,7 +798,7 @@ class jfdk_model extends model{
                     
 					if(empty($service)){
 
-						$return['error']		=	'请选择正确增值套餐！';
+						$return['error']		=	yun_at('common_01064');
 
 					}else {
                         
@@ -807,7 +807,7 @@ class jfdk_model extends model{
 					    if(!isVip($statis['vip_etime'])){
 
 	
-							$return['error'] =	'您的会员已到期，请先购买会员！';
+							$return['error'] =	yun_at('common_00574');
  
 						}else{
 
@@ -861,15 +861,15 @@ class jfdk_model extends model{
 
 									$integral	=	new integral_model($this->db,$this->def,array('uid'=>$uid,'username'=>$username,'usertype'=>$usertype));
 
-									$integral	->	company_invtal($uid, $usertype, $dkjf,false,$this->config['integral_pricename'].'抵扣购买增值包',true,2,'integral',12);
+									$integral	->	company_invtal($uid, $usertype, $dkjf,false,$this->config['integral_pricename'].'common_06501',true,2,'integral',12);
                                    
 									
 									$return['status']	=	'1';
 
-									$return['msg']		=	'增值包购买成功';
+									$return['msg']		=	yun_at('common_06502');
 
-                                    $logContent =   '增值服务：'.$this->config['integral_pricename'].'购买';
-                                    $logDetail  =   '使用'.$this->config['integral_pricename'].'购买增值服务';
+                                    $logContent =   'common_06483'.$this->config['integral_pricename'].'member_user_00285';
+                                    $logDetail  =   'member_user_00284'.$this->config['integral_pricename'].'common_06429';
 
                                     $this->addMemberLog($uid, $usertype, $logContent, 88, 1, $logDetail);
 								}
@@ -877,13 +877,13 @@ class jfdk_model extends model{
 
 								if($this->config['com_integral_online']==3){
 
-									$return['error']	=	$this->config['integral_pricename'].'不足，请先充值'.$this->config['integral_pricename'].'！';
+									$return['error']	=	$this->config['integral_pricename'].'wap_js_00136'.$this->config['integral_pricename'].'！';
 			
 									$return['url']		=	$this->config['sy_weburl'].'/member/index.php?c=pay';
 	
 								}else{
 
-									$return['error']	=	$this->config['integral_pricename'].'不足，请正确输入抵扣'.$this->config['integral_pricename'].'！';
+									$return['error']	=	$this->config['integral_pricename'].'common_00969'.$this->config['integral_pricename'].'！';
 						
 								}
 							}
@@ -891,15 +891,15 @@ class jfdk_model extends model{
 					}
 				}else{
 
-					$return['error']	=	'请正确选择增值服务套餐！';
+					$return['error']	=	yun_at('common_00812');
 				}
 			} else {
 			
-				$return['error']	=	'参数填写错误，请重新设置！';
+				$return['error']	=	yun_at('common_00700');
 			}
 		}else{
 		
-			$return['error']	=	'系统目前只支持金额消费！';
+			$return['error']	=	yun_at('common_00804');
 		}
 		return $return;
 	}
@@ -949,7 +949,7 @@ class jfdk_model extends model{
                     
                     if (empty($jobs)) {
 
-                        $return['error'] = '请选择正确的职位刷新！';
+                        $return['error'] = yun_at('common_00927');
                     } else {
 
                         $jobnum     =   $this->select_num('company_job', array('uid' => $uid, 'id' => array('in', $sxjobid)));
@@ -983,7 +983,7 @@ class jfdk_model extends model{
 
                                 $this->update_once('company_statis', array('breakjob_num' => '0'), array('uid' => $uid));
 
-                                $payDetail      =   $this->config['integral_pricename'].'抵扣刷新，扣除剩余刷新套餐数量：'.$breakjob_num;
+                                $payDetail      =   $this->config['integral_pricename'].'common_06503'.$breakjob_num;
                                 $this->addStatisDetail(array('uid' => $uid, 'type' => 2, 'num' => $breakjob_num, 'detail' => $payDetail, 'uri' => $_SERVER['REQUEST_URI']));
                             }
 
@@ -993,48 +993,48 @@ class jfdk_model extends model{
 
                                 $integral = new integral_model($this->db, $this->def, array('uid' => $uid, 'username' => $username, 'usertype' => $usertype));
 
-                                $integral->company_invtal($data['uid'], $data['usertype'], $dkjf, false, $this->config['integral_pricename'] . '抵扣购买刷新职位', true, 2, 'integral', 12);
+                                $integral->company_invtal($data['uid'], $data['usertype'], $dkjf, false, $this->config['integral_pricename'] . 'common_06504', true, 2, 'integral', 12);
 
                                 if ($jobnum == 1) {
 
-                                    $logContent =   '职位刷新：'.$this->config['integral_pricename'].'购买';
-                                    $logDetail  =   '使用'.$this->config['integral_pricename'].'刷新职位《'.$jobs[0]['job_name'].'》';
+                                    $logContent =   'common_06484'.$this->config['integral_pricename'].'member_user_00285';
+                                    $logDetail  =   'member_user_00284'.$this->config['integral_pricename'].'刷新职位《'.$jobs[0]['job_name'].'》';
                                 }else{
 
-                                    $logContent =   '职位刷新：'.$this->config['integral_pricename'].'购买';
-                                    $logDetail  =   '使用'.$this->config['integral_pricename'].'批量刷新职位（ID：'.$sxjobid.'）';
+                                    $logContent =   'common_06484'.$this->config['integral_pricename'].'member_user_00285';
+                                    $logDetail  =   'member_user_00284'.$this->config['integral_pricename'].'common_01013'.$sxjobid.'）';
                                 }
 
                                 $this->addMemberLog($data['uid'], $data['usertype'], $logContent, 1, 4, $logDetail);
 
                                 $return['status'] = '1';
 
-                                $return['msg'] = '职位刷新成功';
+                                $return['msg'] = yun_at('common_01530');
                             }
                         } else {
 
                             if ($this->config['com_integral_online'] == 3) {
 
-                                $return['error'] = $this->config['integral_pricename'] . '不足，请先充值'.$this->config['integral_pricename'].'！';
+                                $return['error'] = $this->config['integral_pricename'] . 'wap_js_00136'.$this->config['integral_pricename'].'！';
 
                                 $return['url'] = $this->config['sy_weburl'] . '/member/index.php?c=pay';
                             } else {
 
-                                $return['error'] = $this->config['integral_pricename'] . '不足，请正确输入抵扣'.$this->config['integral_pricename'].'！';
+                                $return['error'] = $this->config['integral_pricename'] . 'common_00969'.$this->config['integral_pricename'].'！';
                             }
                         }
                     }
                 } else {
 
-                    $return['error'] = '请先选择职位！';
+                    $return['error'] = yun_at('common_06463');
                 }
             } else {
 
-                $return['error'] = '参数填写错误，请重新设置！';
+                $return['error'] = yun_at('common_00700');
             }
         } else {
 
-            $return['error'] = '系统目前只支持金额消费！';
+            $return['error'] = yun_at('common_00804');
         }
         return $return;
     }
@@ -1065,7 +1065,7 @@ class jfdk_model extends model{
 
                     if (empty($parts)) {
 
-                        $return['error'] = '请选择正确的职位刷新！';
+                        $return['error'] = yun_at('common_00927');
                     } else {
 
                         $partnum = $this->select_num('partjob', array('uid' => $uid,'id' => array('in', $sxpartid)));
@@ -1097,7 +1097,7 @@ class jfdk_model extends model{
                                     
                                     $this->update_once('company_statis', array('breakjob_num' => '0'), array('uid' => $uid));
 
-                                    $payDetail      =   $this->config['integral_pricename'].'抵扣刷新，扣除剩余刷新套餐数量：'.$breakjob_num;
+                                    $payDetail      =   $this->config['integral_pricename'].'common_06503'.$breakjob_num;
                                     $this->addStatisDetail(array('uid' => $uid, 'type' => 2, 'num' => $breakjob_num, 'detail' => $payDetail, 'uri' => $_SERVER['REQUEST_URI']));
                                 }
                                 $this->update_once('company', array('lastupdate' => time()), array('uid' => $uid));
@@ -1107,49 +1107,49 @@ class jfdk_model extends model{
                                 
                                 $integral = new integral_model($this->db, $this->def, array('uid' => $uid, 'username' => $username, 'usertype' => $usertype));
                                 
-                                $integral->company_invtal($uid, $usertype, $dkjf, false, $this->config['integral_pricename'].'抵扣购买刷新兼职', true, 2, 'integral', 12);
+                                $integral->company_invtal($uid, $usertype, $dkjf, false, $this->config['integral_pricename'].'common_06505', true, 2, 'integral', 12);
 
                                 if ($partnum == 1) {
 
-                                    $logContent =   '职位刷新：'.$this->config['integral_pricename'].'购买';
-                                    $logDetail  =   '使用'.$this->config['integral_pricename'].'刷新兼职职位《'.$parts[0]['job_name'].'》';
+                                    $logContent =   'common_06484'.$this->config['integral_pricename'].'member_user_00285';
+                                    $logDetail  =   'member_user_00284'.$this->config['integral_pricename'].'刷新兼职职位《'.$parts[0]['job_name'].'》';
                                 }else{
 
-                                    $logContent =   '职位刷新：'.$this->config['integral_pricename'].'购买';
-                                    $logDetail  =   '使用'.$this->config['integral_pricename'].'批量刷新兼职职位（ID：'.$sxpartid.'）';
+                                    $logContent =   'common_06484'.$this->config['integral_pricename'].'member_user_00285';
+                                    $logDetail  =   'member_user_00284'.$this->config['integral_pricename'].'批量刷新兼职职位（ID：'.$sxpartid.'）';
                                 }
 
                                 $this->addMemberLog($uid, $data['usertype'], $logContent, 9, 4, $logDetail);
                                 
                                 $return['status'] = '1';
                                 
-                                $return['msg'] = '兼职刷新成功';
+                                $return['msg'] = yun_at('common_06466');
                             }
                             
                         } else {
 
                             if ($this->config['com_integral_online'] == 3) {
 
-                                $return['error'] = $this->config['integral_pricename'].'不足，请先充值'.$this->config['integral_pricename'].'！';
+                                $return['error'] = $this->config['integral_pricename'].'wap_js_00136'.$this->config['integral_pricename'].'！';
 
                                 $return['url'] = $this->config['sy_weburl'] . '/member/index.php?c=pay';
                             } else {
 
-                                $return['error'] = $this->config['integral_pricename'].'不足，请正确输入抵扣'.$this->config['integral_pricename'].'！';
+                                $return['error'] = $this->config['integral_pricename'].'common_00969'.$this->config['integral_pricename'].'！';
                             }
                         }
                     }
                 } else {
 
-                    $return['error'] = '请正确选择的职位刷新！';
+                    $return['error'] = yun_at('common_00918');
                 }
             } else {
 
-                $return['error'] = '参数填写错误，请重新设置！';
+                $return['error'] = yun_at('common_00700');
             }
         } else {
 
-            $return['error'] = '系统目前只支持金额消费！';
+            $return['error'] = yun_at('common_00804');
         }
         return $return;
     }
@@ -1188,7 +1188,7 @@ class jfdk_model extends model{
 				    
 				    if (!empty($isDownresume)) {
 				        
-				        $return['msg']      =   '您已经下载过该份简历，请直接查看！';
+				        $return['msg']      =   yun_at('common_00471');
 				        $return['status']   =   '1';
 				        
 				        return $return;
@@ -1209,7 +1209,7 @@ class jfdk_model extends model{
                     
                     if(empty($user)){
                         
-                        $return['error']    =   '请选择正确的简历下载！';
+                        $return['error']    =   yun_at('common_06506');
                         
                     }else {
                         
@@ -1232,40 +1232,40 @@ class jfdk_model extends model{
 
 							if($nid){
 
-                                $integral->company_invtal($uid, $usertype, $dkjf, false, $this->config['integral_pricename'] . '抵扣购买下载简历', true, 2, 'integral', 12, $eid);
+                                $integral->company_invtal($uid, $usertype, $dkjf, false, $this->config['integral_pricename'] . 'common_06507', true, 2, 'integral', 12, $eid);
                                 $this->update_once('resume_expect', array('dnum' => array('+', '1')), array('id' => $eid));
 
-                                $logContent =   '简历下载：'.$this->config['integral_pricename'].'购买';
-                                $logDetail  =   '使用'.$this->config['integral_pricename'].'下载简历（'.$user['name'].'）';
+                                $logContent =   'common_06485'.$this->config['integral_pricename'].'member_user_00285';
+                                $logDetail  =   'member_user_00284'.$this->config['integral_pricename'].'common_06508'.$user['name'].'）';
 
                                 $this->addMemberLog($uid, $usertype, $logContent, 3, 1, $logDetail);
 
 								$return['status']   =   '1';
-								$return['msg']      =   '购买简历下载成功';
+								$return['msg']      =   yun_at('common_06509');
 							}
 							
 						}else{
 
 							if($this->config['com_integral_online']==3){
 
-								$return['error']    =   $this->config['integral_pricename'].'不足，请先充值'.$this->config['integral_pricename'].'！';
+								$return['error']    =   $this->config['integral_pricename'].'wap_js_00136'.$this->config['integral_pricename'].'！';
 
 								$return['url']      =   $this->config['sy_weburl'].'/member/index.php?c=pay';
 							
 							}else{
 
-								$return['error']    =   $this->config['integral_pricename'].'不足，请正确输入抵扣'.$this->config['integral_pricename'].'！';
+								$return['error']    =   $this->config['integral_pricename'].'common_00969'.$this->config['integral_pricename'].'！';
 							}
 						}
 					}
 				}
 			} else {
 
-				$return['error'] = '参数填写错误，请重试！';
+				$return['error'] = yun_at('common_00861');
 			}
 		}else{
 
-			$return['error'] = '系统目前只支持金额消费！';
+			$return['error'] = yun_at('common_00804');
 		}
 		return $return;
 	}
@@ -1302,7 +1302,7 @@ class jfdk_model extends model{
             
             if ($statis['integral'] >= $dkjf) {
                 
-                $msg    =   '购买上架职位数';
+                $msg    =   'common_06222';
                 // 积分抵扣，会员发布职位套餐加1
                 $sValue =   array('job_num' => array('+', 1));
                 
@@ -1313,10 +1313,10 @@ class jfdk_model extends model{
                     $integral->company_invtal($uid, $usertype, $dkjf, false, $this->config['integral_pricename'].'抵扣，'.$msg, true, 2, 'integral', 12);
                     
                    	$return['status']   =   '1';
-                    $return['msg']      =   $msg . '成功';
+                    $return['msg']      =   $msg . 'admin_tool_00502';
 
-                    $logContent =   '职位套餐：'.$this->config['integral_pricename'].'购买';
-                    $logDetail  =   '使用'.$this->config['integral_pricename'].'购买职位套餐，职位套餐数量 + 1';
+                    $logContent =   'common_06486'.$this->config['integral_pricename'].'member_user_00285';
+                    $logDetail  =   'member_user_00284'.$this->config['integral_pricename'].'common_06510';
 
                     $this->addMemberLog($uid, $usertype, $logContent, 1, 1, $logDetail);
                 }
@@ -1324,17 +1324,17 @@ class jfdk_model extends model{
                 
                 if ($this->config['com_integral_online'] == 3) {
                     
-                    $return['error'] = $this->config['integral_pricename'].'不足，请先充值'.$this->config['integral_pricename'].'！';
+                    $return['error'] = $this->config['integral_pricename'].'wap_js_00136'.$this->config['integral_pricename'].'！';
                     
                     $return['url'] = $this->config['sy_weburl'] . '/member/index.php?c=pay';
                 } else {
                     
-                    $return['error'] = $this->config['integral_pricename'].'不足，请正确输入抵扣'.$this->config['integral_pricename'].'！';
+                    $return['error'] = $this->config['integral_pricename'].'common_00969'.$this->config['integral_pricename'].'！';
                 }
             }
         } else {
 
-            $return['error'] = '系统目前只支持金额消费！';
+            $return['error'] = yun_at('common_00804');
         }
         return $return;
     }
@@ -1360,7 +1360,7 @@ class jfdk_model extends model{
 
             if (!$data['uid']) {
                 
-                $return['error'] = '用户不存在，请重新登录';
+                $return['error'] = yun_at('common_00900');
             } else {
                 
                 $price      =   $this->config['integral_interview'];
@@ -1381,13 +1381,13 @@ class jfdk_model extends model{
                     
                     if ($status) {
                         
-                        $integral -> company_invtal($data['uid'], $data['usertype'], $dkjf, false, $this->config['integral_pricename'] . '抵扣购买邀请面试', true, 2, 'integral', 12);                                               
+                        $integral -> company_invtal($data['uid'], $data['usertype'], $dkjf, false, $this->config['integral_pricename'] . 'common_06511', true, 2, 'integral', 12);                                               
                         $return['status']   =   '1';
                         
-                        $return['msg']      =   '购买面试邀请成功';
+                        $return['msg']      =   yun_at('common_06512');
 
-                        $logContent =   '面试邀请：'.$this->config['integral_pricename'].'购买';
-                        $logDetail  =   '使用'.$this->config['integral_pricename'].'购买面试掏钱套餐，面试邀请套餐数量 + 1';
+                        $logContent =   'common_06487'.$this->config['integral_pricename'].'member_user_00285';
+                        $logDetail  =   'member_user_00284'.$this->config['integral_pricename'].'common_00308';
 
                         $this->addMemberLog($data['uid'], $uid, $logContent, 4, 1, $logDetail);
                     }
@@ -1395,18 +1395,18 @@ class jfdk_model extends model{
                     
                     if ($this->config['com_integral_online'] == 3) {
                         
-                        $return['error'] = $this->config['integral_pricename'].'不足，请先充值'.$this->config['integral_pricename'].'！';
+                        $return['error'] = $this->config['integral_pricename'].'wap_js_00136'.$this->config['integral_pricename'].'！';
                         
                         $return['url'] = $this->config['sy_weburl'] . '/member/index.php?c=pay';
                     } else {
                         
-                        $return['error'] = $this->config['integral_pricename'].'不足，请正确输入抵扣'.$this->config['integral_pricename'].'！';
+                        $return['error'] = $this->config['integral_pricename'].'common_00969'.$this->config['integral_pricename'].'！';
                     }
                 }
             }
         } else {
 
-            $return['error'] = '系统目前只支持金额消费！';
+            $return['error'] = yun_at('common_00804');
         }
         return $return;
     }
@@ -1451,15 +1451,15 @@ class jfdk_model extends model{
 			        
 			        if ($zphcom['status'] == 2) {
 			            
-			            $return['error'] = '您的报名未通过审核，请联系管理员！';
+			            $return['error'] = yun_at('common_06513');
 			        } else {
 			            
-			            $return['error'] = '您已报名该招聘会！';
+			            $return['error'] = yun_at('common_01124');
 			        }
  			        
 			    } else if (empty($zph)) {
 			        
-			        $return['error']     =	'参数错误，请重新预定 ！';
+			        $return['error']     =	yun_at('common_00783');
 			    }else{
 			        
 			        $space               =   $zphM -> getZphSpaceInfo(array('id' => $bid));
@@ -1503,35 +1503,35 @@ class jfdk_model extends model{
     			        
     			        if($status){
     			            
-    			            $integralM -> company_invtal($uid, $usertype,$dkjf, false,$this->config['integral_pricename'].'抵扣预定招聘会',true,2,'integral');//积分操作记录    			               			           
+    			            $integralM -> company_invtal($uid, $usertype,$dkjf, false,$this->config['integral_pricename'].'common_06514',true,2,'integral');//积分操作记录    			               			           
 
-                            $logContent =   '招聘会：'.$this->config['integral_pricename'].'报名';
-                            $logDetail  =   '使用'.$this->config['integral_pricename'].'报名招聘会（ID：'.$data['zid'].'， 展位：'.$bid.'）';
+                            $logContent =   'common_06488'.$this->config['integral_pricename'].'common_01991';
+                            $logDetail  =   'member_user_00284'.$this->config['integral_pricename'].'报名招聘会（ID：'.$data['zid'].'common_06515'.$bid.'）';
 
                             $this->addMemberLog($uid, $usertype,$logContent,14,1, $logDetail);
 
     			            $return['status']  =   1;
-    			            $return['msg']     =   '报名成功,等待管理员审核！';
+    			            $return['msg']     =   yun_at('common_00714');
     			        }
     			        
     			    }else{
     			        
     			        if($this->config['com_integral_online']==3){
     			        
-    			            $return['error'] 	= 	$this->config['integral_pricename'].'不足，请先充值'.$this->config['integral_pricename'].'！';
+    			            $return['error'] 	= 	$this->config['integral_pricename'].'wap_js_00136'.$this->config['integral_pricename'].'！';
     			            $return['url'] 		= 	$this->config['sy_weburl'].'/member/index.php?c=pay';
     			            
     			        }else{
     			            
-    			            $return['error'] 	= 	$this->config['integral_pricename'].'不足，请正确输入抵扣'.$this->config['integral_pricename'].'！';
+    			            $return['error'] 	= 	$this->config['integral_pricename'].'common_00969'.$this->config['integral_pricename'].'！';
     			        }
     			    }
 			    }
 			}else{
-				$return['error']	=	'参数异常'; 
+				$return['error']	=	yun_at('upgrade_00015'); 
 			}
 		}else{
-			$return['error']	=	'系统目前只支持金额消费！';
+			$return['error']	=	yun_at('common_00804');
 		}
 		return $return;
 	}

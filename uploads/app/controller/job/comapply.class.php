@@ -12,7 +12,7 @@ class comapply_controller extends job_controller
     {
         $id = intval($_GET['id']);
         if (empty($id)) {
-            $this->ACT_msg($_SERVER['HTTP_REFERER'], '参数错误！');
+            $this->ACT_msg($_SERVER['HTTP_REFERER'], yun_at('wap_01298'));
         }
 
         $JobM       =   $this->MODEL('job');
@@ -57,7 +57,7 @@ class comapply_controller extends job_controller
         $this->yunset('link', $link);
         
         if(empty($JobInfo)){
-            $this->ACT_msg($this->config['sy_weburl'], '职位不存在!');
+            $this->ACT_msg($this->config['sy_weburl'], yun_auto_t('职位不存在!'));
         }else{
             // 管理员查看
             $look = '';
@@ -72,13 +72,13 @@ class comapply_controller extends job_controller
                 if (empty($this->uid) || $this->uid != $JobInfo['uid']) {
                     
                     if ($JobInfo['r_status'] == 0 || $JobInfo['r_status'] == 3) {
-                        $this->ACT_msg($this->config['sy_weburl'], '企业暂未通过审核！');
+                        $this->ACT_msg($this->config['sy_weburl'], yun_at('wap_00228'));
                     } elseif ($JobInfo['r_status'] == 2 || $JobInfo['r_status'] == 4) {
-                        $this->ACT_msg($this->config['sy_weburl'], '企业已被锁定！');
+                        $this->ACT_msg($this->config['sy_weburl'], yun_at('wap_00233'));
                     }elseif ($JobInfo['state'] == 0) {
-                        $this->ACT_msg($_SERVER['HTTP_REFERER'], '职位审核中！');
+                        $this->ACT_msg($_SERVER['HTTP_REFERER'], yun_at('wap_01788'));
                     } elseif ($JobInfo['state'] == 3) {
-                        $this->ACT_msg($_SERVER['HTTP_REFERER'], '该职位未通过审核！');
+                        $this->ACT_msg($_SERVER['HTTP_REFERER'], yun_at('wap_01789'));
                     }
                 }
             }

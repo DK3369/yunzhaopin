@@ -35,7 +35,7 @@ class login_controller extends common{
 		if($this->uid || $this->username){
 			if((int)$_GET['bind']=='1'){
 				$this->cookie->unset_cookie();
-				$data['msg']=yun_auto_t('重新绑定您的求职账户！');
+				$data['msg']=yun_at('wap_01790');
 			}elseif($_GET['wxid']){
 				$this->cookie->unset_cookie();
 			}else{
@@ -50,7 +50,7 @@ class login_controller extends common{
 		$checkurl=$_COOKIE['checkurl'];
        	$this->yunset("checkurl",$checkurl);
         unset($checkurl);
-		$this->yunset('headertitle',yun_auto_t('会员登录'));
+		$this->yunset('headertitle',yun_at('wap_00555'));
 		$this->seo('login');	
 		if(strpos($_SERVER['HTTP_REFERER'],'applyjobuid')){
 			if($this->config['sy_seo_rewrite']){
@@ -130,7 +130,7 @@ class login_controller extends common{
 
             $result =   array(
                 'error' =>  2,
-                'msg'   =>  yun_auto_t('请先注册账号'),
+                'msg'   =>  yun_at('wap_00307'),
                 'url'   =>  Url('wap', array('c' => 'register'))
             );
         } else {
@@ -186,7 +186,7 @@ class login_controller extends common{
 					$Member->InsertReg($table2,$data2);
 					
 					if(($usertype == '2' && $this->config['com_status']!='1') || ($usertype == '3' && $this->config['lt_status']!='1')){
-						$this->ACT_msg_wap(Url('wap',array('c'=>'login')),yun_auto_t('请等待账户审核！'), 1, 3);
+						$this->ACT_msg_wap(Url('wap',array('c'=>'login')),yun_at('wap_00305'), 1, 3);
 						$this->yuntpl(array('wap/utype'));
 					}else{
 						$this->cookie->add_cookie($userid,$user['username'],$user['salt'],$user['email'],$user['password'],$usertype,$this->config['sy_logintime'],$user['did']);
@@ -195,11 +195,11 @@ class login_controller extends common{
 					
 				}else{
 					$this->cookie->unset_cookie();
-					echo yun_auto_t("激活失败");
+					echo yun_at('wap_00311');
 				}
 			}else{
 				$this->cookie->unset_cookie();
-				echo yun_auto_t("激活失败");
+				echo yun_at('wap_00311');
 			}
 		}else{
 			header("Location:".Url('wap'));
@@ -225,7 +225,7 @@ class login_controller extends common{
 	        $result  =  $WxM->getWxLoginStatus($_COOKIE['wxloginid'], $this->uid);
 	        if($result['status'] == 1 && !empty($result['member'])){
 	            
-	            $this->layer_msg(yun_auto_t('扫码成功'),9);
+	            $this->layer_msg(yun_at('wap_00310'),9);
 	            
 	        }else{
 	            
@@ -256,7 +256,7 @@ class login_controller extends common{
 	            $result	    		=	$userinfoM->bindacount($lData,'weixin');
 	            
 	        }else{
-	            $result['msg']		=	yun_auto_t('微信登录信息已失效，请重新登录！');
+	            $result['msg']		=	yun_at('wap_00546');
 	        }
 	    }else if($_POST['provider']=='qq'){
 	    	session_start();
@@ -274,7 +274,7 @@ class login_controller extends common{
 			    $result	    		=  $userinfoM->bindacount($lData,'qq');
 			    
 			}else{
-			    $result['msg'] 		= yun_auto_t('QQ登录信息已失效，请重新登录！');
+			    $result['msg'] 		= yun_at('wap_00300');
 			}
 
 	    }else if($_POST['provider']=='sinaweibo'){
@@ -292,7 +292,7 @@ class login_controller extends common{
 			    $result	    		=  $userinfoM->bindacount($lData,'sinaweibo');
 			    
 			}else{
-			    $result['msg'] 		= yun_auto_t('微博登录信息已失效，请重新登录！');
+			    $result['msg'] 		= yun_at('wap_00301');
 			}
 	    }
 
@@ -322,16 +322,16 @@ class login_controller extends common{
 		        
 		        if ($result['errcode'] == 9){
 		            $res['error'] 	= 1;
-					$res['msg'] 	= yun_auto_t('注册成功，请选择身份类型');
+					$res['msg'] 	= yun_at('wap_00303');
 					$res['url'] 	= Url('wap',array('c'=>'register','a'=>'ident'));
 		        }else{
 		            $res['error'] 	= 2;
-					$res['msg'] 	= yun_auto_t('账号注册失败！');
+					$res['msg'] 	= yun_at('wap_01791');
 					$res['url'] 	= Url('wap');
 		        }
 			}else{
 				$res['error'] 	= 2;
-				$res['msg'] 	= yun_auto_t('微信登录信息已失效，请重新登录！');
+				$res['msg'] 	= yun_at('wap_00546');
 				$res['url'] 	= Url('wap');
 			}
 		}else if($_POST['provider']=='qq'){
@@ -348,16 +348,16 @@ class login_controller extends common{
 		        $result     =  $userinfoM->fastReg($wdata, '' ,'qq');
 		        if ($result['errcode'] == 9){
 		            $res['error'] 	= 1;
-					$res['msg'] 	= yun_auto_t('注册成功，请选择身份类型');
+					$res['msg'] 	= yun_at('wap_00303');
 					$res['url'] 	= Url('wap',array('c'=>'register','a'=>'ident'));
 		        }else{
 		            $res['error'] 	= 2;
-					$res['msg'] 	= yun_auto_t('账号注册失败！');
+					$res['msg'] 	= yun_at('wap_01791');
 					$res['url'] 	= Url('wap');
 		        }
 			}else{
 			    $res['error'] 	= 2;
-				$res['msg'] 	= yun_auto_t('QQ登录信息已失效，请重新登录！');
+				$res['msg'] 	= yun_at('wap_00300');
 				$res['url'] 	= Url('wap');
 			}
 
@@ -375,16 +375,16 @@ class login_controller extends common{
 		        
 		        if ($result['errcode'] == 9){
 		            $res['error'] 	= 1;
-					$res['msg'] 	= yun_auto_t('注册成功，请选择身份类型');
+					$res['msg'] 	= yun_at('wap_00303');
 					$res['url'] 	= Url('wap',array('c'=>'register','a'=>'ident'));
 		        }else{
 		            $res['error'] 	= 2;
-					$res['msg'] 	= yun_auto_t('账号注册失败！');
+					$res['msg'] 	= yun_at('wap_01791');
 					$res['url'] 	= Url('wap');
 		        }
 			}else{
 			    $res['error'] 	= 2;
-				$res['msg'] 	= yun_auto_t('微博登录信息已失效，请重新登录！');
+				$res['msg'] 	= yun_at('wap_00301');
 				$res['url'] 	= Url('wap');
 			}
 		}

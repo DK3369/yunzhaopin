@@ -95,10 +95,10 @@ class weixinrecord_controller extends adminCommon{
 
         if($del){
             $error = 0;
-            $msg = '清理完成！';
+            $msg = 'admin_tool_00058';
         }else{
             $error = 0;
-            $msg = '删除失败！';
+            $msg = 'admin_user_00186';
         }
 
         $this->render_json($error,$msg);
@@ -158,11 +158,11 @@ class weixinrecord_controller extends adminCommon{
             $userInfoM->upInfo($where,$data);
 
             $error = 0;
-            $msg = '微信用户(ID:'.pylode(',',$_POST['del']).')取消绑定成功！';
+            $msg = 'admin_tool_00056'.pylode(',',$_POST['del']).')取消绑定成功！';
 
         }else{
             $error = 1;
-            $msg = '请选择需要取消绑定的数据';
+            $msg = 'admin_tool_00055';
         }
 
 

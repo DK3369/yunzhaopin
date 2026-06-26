@@ -12,7 +12,7 @@
     <div class="clear"></div>
 <div class="pwdmain">
 <div class="pwdmain_cont">
-<div class="pwdmain_title_r">激活邮箱</div>
+<div class="pwdmain_title_r">{yun:}t key='common_02445'{/yun}</div>
     <div class="getpwd">
         <div class="pwdcon">
             <div class="pwdalert"> {yun:}t key='common_02129'{/yun}。 </div>
@@ -24,7 +24,7 @@
                     <input id="username" type="text" name="username" value="" class="fedcon_text">
                   </li>
 
-                    <li> <span>&nbsp;</span> <input class="pwdsub" type="button" value="激活" onclick="send_str();">    </li>
+                    <li> <span>&nbsp;</span> <input class="pwdsub" type="button" value="{yun:}t key='common_02446'{/yun}" onclick="send_str();">    </li>
                     </ul>
 
             </div>
@@ -46,17 +46,17 @@ DD_belatedPNG.fix('.png,.index_logoin,.index_logoin_current,.nav_list,.fairs_Sta
 function send_str(){	
 	 var username = $("#username").val();
 	 if($.trim(username)=="") { 
-		layer.msg('请填写您注册时的用户名！', 2, 8);return false;
+		layer.msg("{yun:}t key='common_02447'{/yun}", 2, 8);return false;
 	 }else{
 		layer.load("{yun:}t key='admin_user_00374'{/yun}....",0);
 		$.post('{yun:}url m=activate c=sendstr{/yun}',{username:username},function(data){		
 			layer.closeAll();
 			if(data==0){
-				layer.msg("邮件激活已关闭", 2, 8);
+				layer.msg("{yun:}t key='common_02448'{/yun}", 2, 8);
 			}else if(data==1){
-				layer.msg("帐号激活邮件已发送到您邮箱，请先激活！", 2, 9);
+				layer.msg("{yun:}t key='common_02449'{/yun}", 2, 9);
 			}else if(data==2){
-				layer.msg("该用户名不存在", 2, 8);
+				layer.msg("{yun:}t key='common_02450'{/yun}", 2, 8);
 			}else if(data==3){
 				layer.msg("还没有设置邮箱，{yun:}t key='wap_00509'{/yun}！", 2, 8);
 			}

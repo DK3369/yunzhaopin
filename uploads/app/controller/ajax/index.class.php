@@ -385,7 +385,7 @@ class index_controller extends common{
 
 		$expect		=	$resumeM->getExpect(array('id'=>$eid,'uid'=>$this->uid),array('field'=>'`id`'));
 		if($expect['id']==''){
-			$this->layer_msg('简历不存在！',8,0,Url("resume"));
+			$this->layer_msg('model_00103',8,0,Url("resume"));
 		}
 
 		$statis		=	$statisM->getInfo($this->uid,array('usertype'=>$this->usertype,'field'=>'`tpl`,`paytpls`,`integral`'));
@@ -400,22 +400,22 @@ class index_controller extends common{
 
 			if(in_array($info['id'],$paytpls)){
 
-				$this->layer_msg('请勿重复购买！',8,0,"index.php?c=resumetpl");
+				$this->layer_msg('ajax_00009',8,0,"index.php?c=resumetpl");
 			}
 		}
 		if($info['price']>$statis['integral']){
 
-			$this->layer_msg($this->config['integral_pricename'].'不足，请先充值！',8,0);
+			$this->layer_msg($this->config['integral_pricename'].'model_00104',8,0);
 		}else{
-			$nid	=	$IntegralM->company_invtal($this->uid,1,$info['price'],false,"购买简历模板",true,2,'integral',15);
+			$nid	=	$IntegralM->company_invtal($this->uid,1,$info['price'],false,'ajax_00011',true,2,'integral',15);
 			if($nid){
 				$paytpls[]	=	$info['id'];
 
 				$statisM->upInfo(array('tpl'=>$info['id'],'paytpls'=>pylode(',',$paytpls)),array('uid'=>$this->uid,'usertype'=>1));
 
-				$this->layer_msg('购买成功！',9,0,Url('resume',array('c'=>'show','id'=>$expect['id'],'see'=>'member','look'=>'admin')));
+				$this->layer_msg('model_00063',9,0,Url('resume',array('c'=>'show','id'=>$expect['id'],'see'=>'member','look'=>'admin')));
 			}else{
-			    $this->layer_msg('购买失败！',8,0,Url('resume',array('c'=>'show','id'=>$expect['id'],'see'=>'member','look'=>'admin')));
+			    $this->layer_msg('model_00064',8,0,Url('resume',array('c'=>'show','id'=>$expect['id'],'see'=>'member','look'=>'admin')));
 			}
 		} 
 	}
@@ -429,7 +429,7 @@ class index_controller extends common{
 		
 		$expect	=	$resumeM->getExpect(array('id'=>$eid,'uid'=>$this->uid),array('field'=>'`id`'));
 		if($expect['id']==''){
-			$this->layer_msg('简历不存在！',8,0,Url("resume"));
+			$this->layer_msg('model_00103',8,0,Url("resume"));
 		}
 		$statis		=	$statisM->getInfo($this->uid,array('usertype'=>$this->usertype,'field'=>'`tpl`,`paytpls`,`integral`'));
 		
@@ -439,7 +439,7 @@ class index_controller extends common{
 		}
 		$statisM->upInfo(array('tpl'=>$id),array('uid'=>$this->uid,'usertype'=>1));
 		
-		$this->layer_msg('操作成功！',9,0,Url('resume',array('c'=>'show','id'=>$eid,'see'=>'member','look'=>'admin')));
+		$this->layer_msg('wap_js_00159',9,0,Url('resume',array('c'=>'show','id'=>$eid,'see'=>'member','look'=>'admin')));
 	}
 	
     
@@ -527,7 +527,7 @@ class index_controller extends common{
 		
         $noticeM 	= 	$this->MODEL('notice');
 		
-		$result		=		$noticeM->jycheck($_POST['code'],'注册会员');
+		$result		=		$noticeM->jycheck($_POST['code'],'wap_js_00064');
 		
 		if(!empty($result)){
 		    
@@ -770,7 +770,7 @@ class index_controller extends common{
 
 			echo $_SESSION['host'];die;
 		}else{
-			$this->ACT_layer_msg("传递了非法参数！",8,$_SERVER['HTTP_REFERER']);
+			$this->ACT_layer_msg('model_00105',8,$_SERVER['HTTP_REFERER']);
 		}
 	}
 
@@ -803,7 +803,7 @@ class index_controller extends common{
 			$_SESSION['hyclass'] = $_POST['hyid'];
 			echo $_SESSION['host'];die;
 		}else{
-			$this->ACT_layer_msg("传递了非法参数！",8,$_SERVER['HTTP_REFERER']);
+			$this->ACT_layer_msg('model_00105',8,$_SERVER['HTTP_REFERER']);
 		}
 	}
 	//认领
@@ -818,7 +818,7 @@ class index_controller extends common{
 			if($row['source']=="6" && $row['email']!=""){
 
 				if($row['claim']=="1"){
-					$this->layer_msg('该用户已被认领！',8,0); 
+					$this->layer_msg('ajax_00006',8,0); 
 
 				}
 
@@ -865,7 +865,7 @@ class index_controller extends common{
 				$this->layer_msg('<div class="rl_box"><div class="rl_yx_p">已发送到您的邮箱：</div><div class="rl_yx">'.$newemail.'，</div><div class="">请登录您的邮箱重置帐号密码！</div><div class="">如换邮箱请联系客服电话：</div><div class="rl_tel">'. $this->config['sy_freewebtel'] .'</div></div>',9,0); 
 
 			}else{
-				$this->layer_msg('该用户不符合认领条件！',8,0); 
+				$this->layer_msg('ajax_00002',8,0); 
 			}
 		}
 	}
@@ -900,15 +900,15 @@ class index_controller extends common{
 	        
 	        if($comrow['status']==0){
 
-	        	$data['msg']	= "您已报名,请等待审核！";
+	        	$data['msg']	= yun_at('wap_00119');
 
 	        }else if($comrow['status']==1){
 
-	        	$data['msg']	= "您已报名了，请不要重复报名！";
+	        	$data['msg']	= yun_at('wap_00116');
 
 	        }else if($comrow['status']==2){
 	        	
-	        	$data['msg']	= "您已报名,且审核未通过！";
+	        	$data['msg']	= yun_at('wap_00118');
 	        }
 	        
 	    }else{
@@ -945,7 +945,7 @@ class index_controller extends common{
 	            
 	            $data['status']	= 2;
 	            
-	            $data['msg']	= "您还没有发布职位，请先发布职位！";
+	            $data['msg']	= yun_at('wap_00115');
 	        }
 	    }
 		
@@ -1041,7 +1041,7 @@ class index_controller extends common{
 	//显示分站，TODO:后台
 	function selsite_action(){
 	    if($_POST['keyword']){
-	        if ($_POST['keyword'] == '主站' || $_POST['keyword'] == '总站') {
+	        if ($_POST['keyword'] == 'ajax_00021' || $_POST['keyword'] == 'ajax_00022') {
                 echo "<option></option><option  value='0'>" . $_POST['keyword'] . "</option>";
             } else {
                 $siteM = $this->MODEL('site');
@@ -1240,7 +1240,7 @@ class index_controller extends common{
 					exit;
 				}
 			}else{
-				$data['msg'] = "推荐功能已关闭！";
+				$data['msg'] = yun_at('ajax_00005');
 				$data['status'] = 1;
 				echo yun_json_encode($data);
 				exit;
@@ -1280,7 +1280,7 @@ class index_controller extends common{
 					}else{
 						$recs		=	$recs.'秒';
 					}
-					$data['msg'] 	= 	"推荐职位/简历间隔不得少于{$recs}，请{$needTime}后操作！";
+					$data['msg'] 	= 	yun_auto_t('推荐职位/简历间隔不得少于{$recs}，请{$needTime}后操作！');
 					$data['status']	= 	2;
  					echo yun_json_encode($data);exit;
 				}
@@ -1366,7 +1366,7 @@ class index_controller extends common{
                 session_start();
                 if (!isset($_SESSION['auid'])){
 
-                    echo yun_json_encode(array('code' => 1, 'msg' => '操作异常，请重试！' ));
+                    echo yun_json_encode(array('code' => 1, 'msg' => yun_at('ajax_00004') ));
                 }else{
 
                     $data['uid']        =   $_POST['uid'];
@@ -1388,7 +1388,7 @@ class index_controller extends common{
 	    }else{
 	        $return  =  array(
 	            'code'  =>  1,
-	            'msg'   =>  '请上传文件',
+	            'msg'   =>  yun_at('ajax_00015'),
 	            'data'  =>  array()
 	        );
 	    }
@@ -1552,7 +1552,7 @@ class index_controller extends common{
 	    $_POST				=	$this -> post_trim($_POST);
 	    
 	    if (empty($_POST)) {
-	        echo yun_json_encode(array('error' => 1, 'msg' => '参数错误，请重试！'));die();
+	        echo yun_json_encode(array('error' => 1, 'msg' => yun_at('wap_00203')));die();
 	    }
 	    $data				=	$_POST;
 	    $data['uid']		=   $this -> uid;
@@ -1574,7 +1574,7 @@ class index_controller extends common{
 	    
 	    if(empty($_POST)){
 	        
-	        echo yun_json_encode(array('error'=>1,'msg'=>'参数错误，请重试！'));die;
+	        echo yun_json_encode(array('error'=>1,'msg'=>yun_at('wap_00203')));die;
 	    }
 	    
 	    $data				=	$_POST;

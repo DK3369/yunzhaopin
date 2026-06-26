@@ -4,7 +4,7 @@
             <div class="moduleElTabInpt">
             </div>
             <div class="moduleSeachButn moduleSeachMart">
-                <el-button type="primary" icon="el-icon-document-add" size="mini" @click="openAdd">添加档位</el-button>
+                <el-button type="primary" icon="el-icon-document-add" size="mini" @click="openAdd">{yun:}t key='admin_user_weipin_00051'{/yun}</el-button>
             </div>
         </div>
         <div class="moduleElTable modulElTableOnes" style="border: 1px solid #ebeef5; width: calc(100% - 2px);">
@@ -44,7 +44,7 @@
                 <el-table-column label="操作" width="80">
                     <template slot-scope="scope">
                         <div class="moduleElTaCaoz">
-                            <el-button type="danger" size="mini" @click="del(scope.$index)">删除</el-button>
+                            <el-button type="danger" size="mini" @click="del(scope.$index)">{yun:}t key='common.delete'{/yun}</el-button>
                         </div>
                     </template>
                 </el-table-column>
@@ -53,43 +53,43 @@
         <div class="modulePaging">
             <div>
                 <el-checkbox v-model="checkedAll" :indeterminate="checkedAllIndeterminate"
-                             @change="checkAll">全选</el-checkbox>
-                <el-button @click="batch('del')" size="mini">批量删除</el-button>
+                             @change="checkAll">{yun:}t key='wap_js_00074'{/yun}</el-checkbox>
+                <el-button @click="batch('del')" size="mini">{yun:}t key='member_com_00055'{/yun}</el-button>
             </div>
             <div class="modulePagNum">
             </div>
         </div>
         <!-- 弹窗 -->
         <div class="modluDrawer">
-            <el-dialog title="添加档位" :visible.sync="dialogAdd" :with-header="true" :modal-append-to-body="false"
+            <el-dialog title="{yun:}t key='admin_user_weipin_00051'{/yun}" :visible.sync="dialogAdd" :with-header="true" :modal-append-to-body="false"
                 :show-close="true" width="350px">
                 <div class="toolClasDia fenpeizhand">
                     <div class="toolClasList">
                         <div class="toolClasTite">
-                            <span>天数：</span>
+                            <span>{yun:}t key='admin_00413'{/yun}</span>
                         </div>
                         <div class="toolClasCont">
                             <el-input v-model="ruleFormAdd.days" placeholder=""
                                       @input="inputIntNumber($event, 'ruleFormAdd', 'days')">
-                                <template slot="append">天</template>
+                                <template slot="append">{yun:}t key='common_02067'{/yun}</template>
                             </el-input>
                         </div>
                     </div>
                     <div class="toolClasList">
                         <div class="toolClasTite">
-                            <span>价格：</span>
+                            <span>{yun:}t key='admin_user_weipin_00052'{/yun}</span>
                         </div>
                         <div class="toolClasCont">
                             <el-input v-model="ruleFormAdd.price" placeholder=""
                                       @input="inputIntNumber($event, 'ruleFormAdd', 'price')">
-                                <template slot="append">元</template>
+                                <template slot="append">{yun:}t key='common_02056'{/yun}</template>
                             </el-input>
                         </div>
                     </div>
                 </div>
                 <span slot="footer" class="dialog-footer">
-                    <el-button @click="dialogAdd = false">取 消</el-button>
-                    <el-button type="primary" @click="saveAdd" :disabled="saveLoading">确 定</el-button>
+                    <el-button @click="dialogAdd = false">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
+                    <el-button type="primary" @click="saveAdd" :disabled="saveLoading">{yun:}t key='wap_com_00019'{/yun}</el-button>
                 </span>
             </el-dialog>
         </div>
@@ -101,8 +101,8 @@ module.exports = {
     data: function () {
         return {
             loading: false,
-            dataText: '数据加载中',
-            // 列表
+            dataText: "{yun:}t key='admin_user_weipin_00026'{/yun}",
+            // list
             list: [],
 
             checkedAll: false, // 全选
@@ -114,7 +114,7 @@ module.exports = {
 
             saveLoading: false,
 
-            // 添加
+            // Add
             dialogAdd: false,
             ruleFormAdd: {},
 
@@ -144,7 +144,7 @@ module.exports = {
                 that.list = data.list;
                 that.loading = false;
                 if (that.list.length === 0) {
-                    that.dataText = "暂无数据";
+                    that.dataText = "{yun:}t key='wap_js_00113'{/yun}";
                 }
             })
         },
@@ -168,10 +168,10 @@ module.exports = {
         batch(type) {
             let that = this;
             if (this.multipleSelection.length == 0 && type == 'del') {
-                message.error('请选择要删除的数据');
+                message.error("{yun:}t key='admin_user_weipin_00005'{/yun}");
                 return false;
             }else if (this.multipleSelection.length == 0){
-                message.error('请选择要操作的数据项');
+                message.error("{yun:}t key='admin_user_weipin_00001'{/yun}");
                 return false;
             }
 
@@ -195,12 +195,12 @@ module.exports = {
                 params = {},
                 msg = '';
 
-            if (typeof idx == 'undefined') { // 批量删除
+            if (typeof idx == 'undefined") { // {yun:}t key='member_com_00055'{/yun}
                 params.del = this.idArr;
-                msg = '你确定要删除选中项吗？';
-            } else {// 单个删除
+                msg = "你确定要删除选中项吗？";
+            } else {// {yun:}t key='common_01711'{/yun}
                 params.del = that.list[idx].id;
-                msg = '你确定要删除当前项吗？';
+                msg = "你确定要删除当前项吗？';
             }
 
             delConfirm(this, params, function (params) {
@@ -230,7 +230,7 @@ module.exports = {
                 ruleForm = that.ruleFormAdd;
 
             if (typeof ruleForm.days === 'undefined' || $.trim(ruleForm.days) == "" || $.trim(ruleForm.days) == 0) {
-                message.error('请输入天数');
+                message.error("{yun:}t key='admin_00614'{/yun}");
                 return false;
             }
 

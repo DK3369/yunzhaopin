@@ -1,0 +1,27 @@
+{
+    "generated": "2026-06-26T22:47:38+08:00",
+    "wap_actionable": 0,
+    "hardcoded_php": {
+        "total": 3,
+        "hardcoded": 0,
+        "missing_pack": 0,
+        "echo": 3
+    },
+    "hardcoded_by_dir": {
+        "app\/include": {
+            "hardcoded": 0,
+            "missing_pack": 0,
+            "echo": 3
+        }
+    },
+    "template_missing_pack": 27,
+    "lang_pack": {
+        "zh_keys": 15635,
+        "en_keys": 15635,
+        "only_zh": 0,
+        "only_en": 0,
+        "en_same_or_empty": 12,
+        "en_same_zh_need_fix": 0,
+        "en_contains_chinese": 0
+    }
+}

@@ -13,15 +13,15 @@
 	<div class="job_list_tit"> 
 		<ul class="">
 			<li><a href="index.php?c=paylist">{yun:}t key='member_user_00239'{/yun}</a></li>
-			<li class="job_list_tit_cur"><a href="index.php?c=paylog">账单明细</a></li>
+			<li class="job_list_tit_cur"><a href="index.php?c=paylog">{yun:}t key='member_user_00544'{/yun}</a></li>
 		</ul> 
 	</div> 
 	
 	<div class="resume_box_list mt20">
 	{yun:}if !empty($rows){/yun}
 		<div class="paylist_tit">
-			<div class="paylist_span paylist_dh">流水单号</div>
-			<div class="paylist_span paylist_money">财务出入</div>
+			<div class="paylist_span paylist_dh">{yun:}t key='member_user_00548'{/yun}</div>
+			<div class="paylist_span paylist_money">{yun:}t key='member_user_00549'{/yun}</div>
 			<div class="paylist_span paylist_paylong_bz">{yun:}t key='member_user_00242'{/yun}</div>
 			<div class="paylist_span paylist_cz"> {yun:}t key='member_user_00241'{/yun}	 </div>
 		</div>
@@ -40,7 +40,7 @@
 			<div class="paylist_span paylist_cz">{yun:}$log.pay_time{/yun} </div>
 		</div>
 	{yun:}foreachelse{/yun}
-		<div class="msg_no">您还没有财务记录</div>
+		<div class="msg_no">{yun:}t key='member_user_00550'{/yun}</div>
 	{yun:}/foreach{/yun}
 	<div class="diggg">{yun:}$pagenav{/yun}</div>
 </div>

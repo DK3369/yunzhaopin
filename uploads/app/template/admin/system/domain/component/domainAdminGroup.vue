@@ -2,17 +2,17 @@
     <div class="moduleElenAl">
         <div class="moduleSeachs">
             <div class="moduleSeachInpt">
-                <el-input placeholder="请输入用户组名称" v-model="search.keyword" class="input-with-select" size="small"
+                <el-input placeholder="{yun:}t key='admin_01036'{/yun}" v-model="search.keyword" class="input-with-select" size="small"
                     clearable></el-input>
-                <el-button type="primary" icon="el-icon-search" size="mini" @click="handelSearch">查询</el-button>
+                <el-button type="primary" icon="el-icon-search" size="mini" @click="handelSearch">{yun:}t key='admin_user_weipin_00049'{/yun}</el-button>
             </div>
             <div class="">
-                <el-button type="primary" icon="el-icon-document-add" size="mini" @click="addGroup">添加管理员权限</el-button>
+                <el-button type="primary" icon="el-icon-document-add" size="mini" @click="addGroup">{yun:}t key='admin_01035'{/yun}</el-button>
             </div>
         </div>
         <div class="moduleElTable" style="height: calc(100% - 110px); padding: 0 12px; margin-top: 0;">
             <div class="tableDome_tip">
-                <el-alert title="分站管理权限列表：主要展示不同分站权限组，以及管理员人数；超级管理员可以根据不通运营需求进行添加、调整" type="info"
+                <el-alert title="{yun:}t key='admin_01037'{/yun}" type="info"
                     :closable="false"></el-alert>
             </div>
             <el-table :data="tableData" border style="width: 100%"
@@ -29,8 +29,8 @@
                             <!-- <a href="javascript:;" @click="editGroup(scope);">
                                 <el-button @click="editGroup(scope);" size="small">修改</el-button>
                             </a> -->
-                            <el-button @click="editGroup(scope);" size="mini">修改</el-button>
-                            <el-button size="mini" @click="delGroup(scope)" type="danger">删除</el-button>
+                            <el-button @click="editGroup(scope);" size="mini">{yun:}t key='wap_js_00073'{/yun}</el-button>
+                            <el-button size="mini" @click="delGroup(scope)" type="danger">{yun:}t key='common.delete'{/yun}</el-button>
                         </div>
                     </template>
                 </el-table-column>
@@ -38,8 +38,8 @@
         </div>
         <div class="modulePaging">
             <div class="modulecz" style="margin-left: 10px;">
-                <el-checkbox v-model="checkAll" @change="handleCheckAllChange">全选</el-checkbox>
-                <el-button size="mini" @click="delGroupSel">批量删除</el-button>
+                <el-checkbox v-model="checkAll" @change="handleCheckAllChange">{yun:}t key='wap_js_00074'{/yun}</el-checkbox>
+                <el-button size="mini" @click="delGroupSel">{yun:}t key='member_com_00055'{/yun}</el-button>
             </div>
             <div class="modulePagNum">
                 <div class="modulePagNum" style="margin: 0 auto;">
@@ -62,7 +62,7 @@ module.exports = {
     },
     data: function () {
         return {
-            emptytext: '暂无数据',
+            emptytext: "{yun:}t key='wap_js_00113'{/yun}",
             search: {
                 keyword: null
             },
@@ -107,7 +107,7 @@ module.exports = {
             params.pageSize = that.pageSize;
             params.page = that.currentPage;
             that.loading = true;
-            that.emptytext = "数据加载中";
+            that.emptytext = "{yun:}t key='admin_user_weipin_00026'{/yun}";
             httpPost('m=system&c=domain_group&a=groupList', params).then(function (res) {
                 let data = res.data.data;
                 that.tableData = data.list;
@@ -120,7 +120,7 @@ module.exports = {
                 }
                 that.loading = false;
                 if (that.tableData.length === 0){
-                    that.emptytext = "暂无数据";
+                    that.emptytext = "{yun:}t key='wap_js_00113'{/yun}";
                 }
             }).catch(function (error) {
                 console.log(error);
@@ -133,13 +133,13 @@ module.exports = {
         addGroup: function () {
             var self = this;
             self.groupId = 0;
-            self.addGroupTitle = '添加分站管理员权限';
+            self.addGroupTitle = "{yun:}t key='admin_01038'{/yun}";
             self.addGroupShow = true;
         },
         editGroup(scope) {
             var self = this;
             self.groupId = parseInt(scope.row.id);
-            self.addGroupTitle = '修改分站管理员权限';
+            self.addGroupTitle = "{yun:}t key='admin_01039'{/yun}";
             self.addGroupShow = true;
         },
         closeGroupAdd: function () {
@@ -182,7 +182,7 @@ module.exports = {
                 name = '（' + scope.row.group_name + '）';
                 params.id = scope.row.id;
             }
-            delConfirm(this, params, this.delete, '您确定要删除' + name + '管理员权限组信息吗？');
+            delConfirm(this, params, this.delete, "{yun:}t key='admin_system_00172'{/yun}" + name + '管理员权限组信息吗？');
         },
         delGroupSel() {
             var that = this;

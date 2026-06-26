@@ -202,13 +202,13 @@ class ask_model extends model{
 
             if ($data['title'] == "") {
 
-                $return['msg']      =   "标题不能为空！";
+                $return['msg']      =   yun_at('member_user_00301');
                 $return['errcode']  =   8;
                 return $return;
             }
             include_once('notice.model.php');
             $noticeM    =   new notice_model($this->db, $this->def);
-            $result     =   $noticeM->jycheck($_POST['authcode'], '职场提问');
+            $result     =   $noticeM->jycheck($_POST['authcode'], 'wap_00105');
             if (!empty($result)) {
 
                 $return['errcode']  =   8;
@@ -239,7 +239,7 @@ class ask_model extends model{
 
                 if ($dayAskNum >= $this->config['sy_day_ask_num']) {
 
-                    $return['msg']      =   "您今天已发布" . $dayAskNum . "个问答了，请明日再发！";
+                    $return['msg']      =   yun_at('common_01497') . $dayAskNum . 'common_00846';
                     $return['errcode']  =   8;
                     return $return;
                 }
@@ -265,7 +265,7 @@ class ask_model extends model{
 
                 if ($dayIpAskNum >= $this->config['sy_ip_ask_num']) {
 
-                    $return['msg']      =   "今日已发布".$dayIpAskNum."个问答了，请明日再发！";
+                    $return['msg']      =   yun_at('wap_00992').$dayIpAskNum.'common_00846';
                     $return['errcode']  =   8;
                     return $return;
                 }
@@ -321,27 +321,27 @@ class ask_model extends model{
 
                 include_once('integral.model.php');
                 $integralM  =   new integral_model($this->db, $this->def);
-                $result     =   $integralM->max_time('发布问题', $data['uid'], $data['usertype']);
+                $result     =   $integralM->max_time('wap_user_00112', $data['uid'], $data['usertype']);
                 if ($result == true || $auto == false) {
 
-                    $integralM->company_invtal($data['uid'], $data['usertype'], $this->config['integral_question'], $auto, "发布问题", true, 2, 'integral');
+                    $integralM->company_invtal($data['uid'], $data['usertype'], $this->config['integral_question'], $auto, 'wap_user_00112', true, 2, 'integral');
                 }
 
-                $this->addMemberLog($data['uid'], $data['usertype'], "发布了问答《" . $data['title'] . "》", 19, 1);
+                $this->addMemberLog($data['uid'], $data['usertype'], 'common_01479' . $data['title'] . "》", 19, 1);
 
                 unset($_SESSION['authcode']);
 
                 if ($addData['state'] == 0) {
-                    $return['msg']      =   "已发布，正在审核中！";
+                    $return['msg']      =   yun_at('common_00993');
                     $return['errcode']  =   9;
                 } else {
 
-                    $return['msg']      =   "发布成功！";
+                    $return['msg']      =   yun_at('common_06367');
                     $return['errcode']  =   9;
                 }
             } else {
 
-                $return['msg']          =   "提问失败！";
+                $return['msg']          =   yun_at('common_01614');
                 $return['errcode']      =   8;
             }
         }
@@ -608,7 +608,7 @@ class ask_model extends model{
 						
 						unset($_SESSION['authcode']);
 						
-						$arr['msg']		=	"验证码错误！";
+						$arr['msg']		=	yun_at('model_00047');
 						
 						return $arr;	
 					}
@@ -669,27 +669,27 @@ class ask_model extends model{
 				if($arr['id']){
                     include_once('integral.model.php');
                     $integralM = new integral_model($this->db, $this->def);
-                    $result = $integralM->max_time('回答问题', $data['uid'], $data['usertype']);
+                    $result = $integralM->max_time('wap_user_00113', $data['uid'], $data['usertype']);
 
                     if ($result == true || $auto == false) {
-                        $integralM->company_invtal($data['uid'], $data['usertype'], $this->config['integral_answer'], $auto, "回答问题", true, 2, 'integral');
+                        $integralM->company_invtal($data['uid'], $data['usertype'], $this->config['integral_answer'], $auto, 'wap_user_00113', true, 2, 'integral');
                     }
                     if ($addData['status'] == '1') {
                         $this->update_once('question', array('answer_num' => array('+', '1'), "lastupdate" => time()), array('id' => $info['id']));
                     }
 
-                    $this->addMemberLog($data['uid'], $data['usertype'], "回答了问答《" . $info['title'] . "》", 19, 1);
+                    $this->addMemberLog($data['uid'], $data['usertype'], 'common_01484' . $info['title'] . "》", 19, 1);
 					
-					$arr['msg']		=	"回答成功！";
+					$arr['msg']		=	yun_at('common_06368');
 					
 					$arr['errcode']	=	9;
 				}else{
-					$arr['msg']		=	"回答失败！";
+					$arr['msg']		=	yun_at('common_06369');
 					
 					$arr['errcode']	=	8;
 				}
 			}else{
-				$arr['msg']		=	"非法操作！";
+				$arr['msg']		=	yun_at('model_00001');
 				
 				$arr['errcode']	=	8;
 			}
@@ -813,16 +813,16 @@ class ask_model extends model{
 
                         if ($upData['status'] == 2) {
 
-                            $statusInfo         =   '您的问答回复审核未通过';
+                            $statusInfo         =   'common_06370';
 
                             if ($upData['statusbody']) {
-                                $statusInfo     .=  '，原因：'.$upData['statusbody'];
+                                $statusInfo     .=  'wap_00800'.$upData['statusbody'];
                             }
 
                             $msg[$v['uid']][]   =   $statusInfo;
                         }elseif ($upData['status'] == 1){
 
-                            $msg[$v['uid']][]   =  '您的问答回复审核通过';
+                            $msg[$v['uid']][]   =  'common_06371';
                         }
 					}
 
@@ -833,14 +833,14 @@ class ask_model extends model{
                     $sysmsgM -> addInfo(array('uid' => $uids,'usertype'=>2,'content'=>$msg));
                 }
                 
-                $return['msg']      =   '问答回复(ID:'.$idstr.')审核成功';
+                $return['msg']      =   yun_auto_t('问答回复(ID:').$idstr.')审核成功';
 				$return['errcode']  =  0;
 			}else{
-                $return['msg']      =  '审核回复(ID:'.$idstr.')审核失败';
+                $return['msg']      =  yun_auto_t('审核回复(ID:').$idstr.')审核失败';
                 $return['errcode']  =  1;
             }
         }else {
-            $return['msg']          =   '请选择需要审核的问答回复';
+            $return['msg']          =   yun_at('common_00821');
             $return['errcode']      =   1;
         }
 
@@ -876,16 +876,16 @@ class ask_model extends model{
 
                         if ($upData['status'] == 2) {
 
-                            $statusInfo         =   '您的回复评论审核未通过';
+                            $statusInfo         =   'common_06372';
 
                             if ($upData['statusbody']) {
-                                $statusInfo     .=  '，原因：'.$upData['statusbody'];
+                                $statusInfo     .=  'wap_00800'.$upData['statusbody'];
                             }
 
                             $msg[$v['uid']][]   =   $statusInfo;
                         }elseif ($upData['status'] == 1){
 
-                            $msg[$v['uid']][]   =  '您的回复评论审核通过';
+                            $msg[$v['uid']][]   =  'common_06373';
                         }
 					}
 
@@ -896,14 +896,14 @@ class ask_model extends model{
                     $sysmsgM -> addInfo(array('uid' => $uids,'usertype'=>2,'content'=>$msg));
                 }
                 
-                $return['msg']      =  '审核回复评论(ID:'.$idstr.')设置成功';
+                $return['msg']      =  yun_auto_t('审核回复评论(ID:').$idstr.')设置成功';
 				$return['errcode']  =  0;
 			}else{
-                $return['msg']      =  '审核回复评论(ID:'.$idstr.')设置失败';
+                $return['msg']      =  yun_auto_t('审核回复评论(ID:').$idstr.')设置失败';
                 $return['errcode']  =  1;
             }
         }else {
-            $return['msg']          =   '请选择需要审核的回复评论！';
+            $return['msg']          =   yun_at('common_00749');
             $return['errcode']      =   1;
         }
 
@@ -988,14 +988,14 @@ class ask_model extends model{
 				
 				$integralM	=	new integral_model($this->db, $this->def);
 				
-				$result		=	$integralM -> max_time('评论问答',$addData['uid'],$data['usertype']);
+				$result		=	$integralM -> max_time('common_06374',$addData['uid'],$data['usertype']);
 				
 				if($result==true||$auto==false){
 					
-					$integralM->company_invtal($data['uid'],$data['usertype'],$this->config['integral_answerpl'],$auto,"评论问答",true,2,'integral');
+					$integralM->company_invtal($data['uid'],$data['usertype'],$this->config['integral_answerpl'],$auto,'common_06374',true,2,'integral');
 				}
 				
-				$this -> addMemberLog($addData['uid'],$addData['usertype'],"评论问答",19,1);
+				$this -> addMemberLog($addData['uid'],$addData['usertype'],'common_06374',19,1);
 				if($data['status']=='1'){
 					$this -> upAnswerInfo(array('id'=>$addData['aid']),array('comment'=>array('+','1')));
 				}
@@ -1019,7 +1019,7 @@ class ask_model extends model{
 				
 				'errcode'	=>	8,
 				
-				'msg'		=>	'请选择要删除的数据！',
+				'msg'		=>	yun_at('member_com_00084'),
 			
 			);
 		
@@ -1044,7 +1044,7 @@ class ask_model extends model{
 				
 				$return['errcode']	=	$nid?'9':'8';
 				
-				$return['msg']		=	$nid ?'问答评论删除成功！' : '问答评论删除失败！';
+				$return['msg']		=	$nid ?yun_at('common_06375') : yun_at('common_06376');
 			
 			}
 		
@@ -1087,7 +1087,7 @@ class ask_model extends model{
         if (empty($delId)) {
             return array(
                 'errcode' => 1,
-                'msg' => '请选择要删除的数据！',
+                'msg' => yun_at('member_com_00084'),
             );
         }
         if (is_array($delId)) {
@@ -1107,7 +1107,7 @@ class ask_model extends model{
 
         $msg = '问答分类(ID:' . $delId . ')';
         $return['errcode'] = $result ? 0 : 1;
-        $return['msg'] = $result ? $msg . '删除成功' : $msg . '删除失败';
+        $return['msg'] = $result ? $msg . 'wap_user_00147' : $msg . 'wap_user_00146';
         return $return;
     }
 	
@@ -1144,11 +1144,11 @@ class ask_model extends model{
 			
 			$this -> delete_all("answer_review",array('aid'=>array('in',$delId)),'');
 			
-			$result['msg']		=	'用户回答(ID:'.$delId.')';
+			$result['msg']		=	yun_auto_t('用户回答(ID:').$delId.')';
 			
 			$result['errcode']	=	$result['id']?9:8;
 			
-			$result['msg']		=	$result['id']?'删除成功！':'删除失败！';
+			$result['msg']		=	$result['id']?yun_at('admin_user_00187'):yun_at('admin_user_00186');
 		}
 		return $result;
 	}
@@ -1247,19 +1247,19 @@ class ask_model extends model{
             $gourl      =   Url('ask', array("c" => "content", "id" => $info['id']));
             $content    =   "关注了<a href=\"".$gourl."\" target=\"_blank\">《".$info['title']."》</a>。";
             $n_contemt  =   "取消了对<a href=\"".$gourl."\" target=\"_blank\">《".$info['title']."》</a>的关注。";
-            $log        =   "关注了《".$info['title']."》";
-            $n_log      =   "取消了对《".$info['title']."》的关注";
+            $log        =   'common_01693'.$info['title']."》";
+            $n_log      =   'common_01593'.$info['title'].'common_01658';
         } else {
             $info       =   $this->getQclassInfo($data['id'], array('field' => "`id`,`name`,`atnnum`"));
-            $content    =   "关注了《".$info['name']."》。";
-            $n_contemt  =   "取消了《".$info['name']."》。";
-            $log        =   "关注了".$info['name'];
-            $n_log      =   "取消了对".$info['name']."的关注。";
+            $content    =   'common_01693'.$info['name']."》。";
+            $n_contemt  =   'common_01718'.$info['name']."》。";
+            $log        =   'common_01894'.$info['name'];
+            $n_log      =   'common_01719'.$info['name'].'common_01824';
         }
 
 		if($info['uid']==$data['uid']){
 
-			$return['msg']		=	'不能关注自己发布的问题！';
+			$return['msg']		=	yun_at('common_00776');
 			$return['errcode']	=	8;
 			return $return;
 		}else{
@@ -1327,14 +1327,14 @@ class ask_model extends model{
                 }
 
 				$return['id']		=	$nid;
-				$return['msg']		=	'操作成功！';
+				$return['msg']		=	yun_at('wap_js_00159');
 				$return['errcode']	=	9;
 				$return['atnnum']	=	$atnnum > 0 ? $atnnum : 0;
 				$return['isadd']	=	$arr['isadd'];
 				return $return;
 			}else{
 
-				$return['msg']		=	'操作失败！';
+				$return['msg']		=	yun_at('model_00003');
 				$return['errcode']	=	8;
 				return $return;
 			}
@@ -1353,7 +1353,7 @@ class ask_model extends model{
 				$id	=	$this -> upAnswerInfo(array('id'=>$data['aid']),array('support'=>array('+','1')));
 				
 				if($id){
-					$this -> addMemberLog($data['uid'],$data['usertype'],"给问题回答点赞",19,1);
+					$this -> addMemberLog($data['uid'],$data['usertype'],'common_01393',19,1);
 					
 					$sendid		=	array();
 					

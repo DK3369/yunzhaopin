@@ -94,7 +94,7 @@ class warning_controller extends adminCommon
 
         }
 
-        $this->admin_json(0, '预警配置设置成功');
+        $this->admin_json(0, 'admin_01362');
     }
 
     function del_action()

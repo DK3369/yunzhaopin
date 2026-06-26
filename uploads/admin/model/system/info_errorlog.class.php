@@ -57,7 +57,7 @@ class info_errorlog_controller extends adminCommon
         if ($_POST["id"] == 'all') {
             $where['id']    =   array('>', 0);
             $errlogM->delErrlog($where);
-            $this->admin_json(0, "已清空错误日志！");
+            $this->admin_json(0, 'admin_01376');
         } else {
 
             if ($_POST["del"]) {

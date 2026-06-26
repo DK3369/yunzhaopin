@@ -54,10 +54,10 @@
 							<dd>
 								<p>{yun:}$list.content|strip_tags|mb_substr:0:100:'utf-8'{/yun}</p> 
 								<div class="answer_on">
-									<span><font><a href="{yun:}url m=ask c=friend a=myquestion uid='`$list.uid`'{/yun}" TARGET="_blank">{yun:}$list.nickname{/yun}</a></font>发起了话题 </span>&middot;
-									<span><font class="index_num{yun:}$list.id{/yun}">{yun:}$list.atnnum{/yun}</font>人关注 </span>&middot;
+									<span><font><a href="{yun:}url m=ask c=friend a=myquestion uid='`$list.uid`'{/yun}" TARGET="_blank">{yun:}$list.nickname{/yun}</a></font>{yun:}t key='common_02201'{/yun} </span>&middot;
+									<span><font class="index_num{yun:}$list.id{/yun}">{yun:}$list.atnnum{/yun}</font>{yun:}t key='wap_01257'{/yun} </span>&middot;
 									<span><font>{yun:}$list.answer_num{/yun}</font>{yun:}t key='ask_00005'{/yun} </span>&middot;
-									<span><font>{yun:}$list.visit{/yun}</font>次浏览 </span>&middot;
+									<span><font>{yun:}$list.visit{/yun}</font>{yun:}t key='common_02191'{/yun} </span>&middot;
 									<span>{yun:}$list.add_time|date_format:"%Y-%m-%d %H:%M"{/yun}</span>
 								</div>
 								
@@ -71,8 +71,8 @@
 				{yun:}if $total==0{/yun}
                 <div style="padding:0px 10px 10px 10px;">
 				 <div class="noresult">
-               		 暂时没有提问相关问题 <br>
-                	<span><a href="{yun:}url m=ask c=addquestion{/yun}">抓紧提问吧!</a></span>
+               		 {yun:}t key='common_02212'{/yun} <br>
+                	<span><a href="{yun:}url m=ask c=addquestion{/yun}">{yun:}t key='common_02213'{/yun}</a></span>
             	</div>	</div>
 				{yun:}else{/yun} 
 				<div class="pages">{yun:}$pagenav{/yun}</div> 
@@ -96,7 +96,7 @@
                     {yun:}qlistelse{/yun}
                     <dl class="hot_pro_no">
                     <dt></dt>
-                    <dd>还没有热门问题</dd>
+                    <dd>{yun:}t key='common_02214'{/yun}</dd>
                     </dl>
 					{yun:}/qlist{/yun} 
 					<div class="clear"></div>
@@ -114,7 +114,7 @@
 				</div>
 			</div>
                 <div class="ask_index_right_box" >
-        <div class="ask_index_ask_rtit"><span class="ask_index_ask_rtit_s">本月答人</span></div>
+        <div class="ask_index_ask_rtit"><span class="ask_index_ask_rtit_s">{yun:}t key='common_02215'{/yun}</span></div>
         
 			
 				{yun:}foreach from=$hotuser item=hulist{/yun}
@@ -126,7 +126,7 @@
 							</div>
 							<div class="user_name">
 								<p><a href="{yun:}url m=ask c=friend a=myquestion uid='`$hulist.uid`'{/yun}" TARGET="_blank">{yun:}$hulist.nickname{/yun}</a></p>
-								<span><font>{yun:}$hulist.num{/yun}</font>{yun:}t key='ask_00005'{/yun}，<font>{yun:}$hulist.support{/yun}</font>次赞同</span>
+								<span><font>{yun:}$hulist.num{/yun}</font>{yun:}t key='ask_00005'{/yun}，<font>{yun:}$hulist.support{/yun}</font>{yun:}t key='common_02216'{/yun}</span>
 							</div>
 						</div>
 						{yun:}if $hulist.description{/yun}<div class="user_tag">签名：{yun:}$hulist.description{/yun}</div>{yun:}/if{/yun}

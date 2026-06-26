@@ -4,15 +4,15 @@
         <div class="moduleElSearchInf">
             <div class="moduleElTabInpt" style="flex-wrap: wrap;">
                 <div class="moduleInptList">
-                    <el-input placeholder="输入你要搜索的关键字" @keyup.enter.native="handleSearch" size="small" v-model="searchForm.keyword" class="input-with-select" clearable>
-                        <el-select v-model="searchForm.ktype" slot="prepend" placeholder="请选择">
+                    <el-input placeholder="{yun:}t key='admin_user_weipin_00003'{/yun}" @keyup.enter.native="handleSearch" size="small" v-model="searchForm.keyword" class="input-with-select" clearable>
+                        <el-select v-model="searchForm.ktype" slot="prepend" placeholder="{yun:}t key='wap_user_00100'{/yun}">
                             <el-option label="发布企业" value="1"></el-option>
                             <el-option label="职位名称" value="2"></el-option>
                         </el-select>
                     </el-input>
                 </div>
                 <div class="tableSeachInpt">
-                    <el-button type="primary" icon="el-icon-search" size="mini" @click="handleSearch">查询</el-button>
+                    <el-button type="primary" icon="el-icon-search" size="mini" @click="handleSearch">{yun:}t key='admin_user_weipin_00049'{/yun}</el-button>
                 </div>
             </div>
         </div>
@@ -39,7 +39,7 @@
                 <el-table-column label="操作" width="80" fixed="right">
                     <template slot-scope="scope">
                         <div class="cz_button">
-                            <el-button type="danger" size="mini" @click="deleteRow(scope)">删除</el-button>
+                            <el-button type="danger" size="mini" @click="deleteRow(scope)">{yun:}t key='common.delete'{/yun}</el-button>
                         </div>
                     </template>
                 </el-table-column>
@@ -47,8 +47,8 @@
         </div>
         <div class="modulePaging">
             <div>
-                <el-checkbox :indeterminate="isIndeterminate" v-model="checked" @change="selectAllBottom">全选</el-checkbox>
-                <el-button @click="deleteRow(null, true)" size="mini">批量删除</el-button>
+                <el-checkbox :indeterminate="isIndeterminate" v-model="checked" @change="selectAllBottom">{yun:}t key='wap_js_00074'{/yun}</el-checkbox>
+                <el-button @click="deleteRow(null, true)" size="mini">{yun:}t key='member_com_00055'{/yun}</el-button>
             </div>
             <div class="modulePagNum">
                 <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
@@ -73,16 +73,16 @@ module.exports = {
                 limit: null,
                 type: this.type,
                 keyword: null,
-                ktype: '1',
+                ktype: '1",
             },
             total: 0,
             tableData: [],
             pageSizes: [],
             tableHig: true,
-            checked: false,//全选
+            checked: false,//{yun:}t key='wap_js_00074'{/yun}
             isIndeterminate: false,// checkbox 的不确定状态
             selectedItem: [],
-            emptytext: '暂无数据',
+            emptytext: "暂无数据',
 
             prevPage: 0
         }
@@ -135,7 +135,7 @@ module.exports = {
                 (params[index] === '') && (params[index] = null);
             }
             _this.loading = true;
-            _this.emptytext = "数据加载中";
+            _this.emptytext = "{yun:}t key='admin_user_weipin_00026'{/yun}";
             httpPost('m=user&c=company_job_refresh_log&a=index', params,{hideloading: true}).then(function (response) {
                 let res = response.data;
                 if (res.error === 0) {
@@ -149,7 +149,7 @@ module.exports = {
                         _this.$refs.multipleTable.bodyWrapper.scrollTop = 0;
                     }
                     if (_this.tableData.length === 0){
-                        _this.emptytext = "暂无数据";
+                        _this.emptytext = "{yun:}t key='wap_js_00113'{/yun}";
                     }
                 }
             }).catch(function (error) {
@@ -160,7 +160,7 @@ module.exports = {
             let params = {};
             if (isMore) {
                 if (!this.selectedItem.length) {
-                    message.error('请选择要删除的数据');
+                    message.error("{yun:}t key='admin_user_weipin_00005'{/yun}");
                     return false;
                 }
                 let list = [];
@@ -181,10 +181,10 @@ module.exports = {
             httpPost('m=user&c=company_job_refresh_log&a=delSxLog', params).then(function (response) {
                 let res = response.data;
                 if (res.error === 0) {
-                    message.success('删除成功！');
+                    message.success("{yun:}t key='admin_user_00187'{/yun}");
                     _this.getList();
                 } else {
-                    message.error('删除失败！');
+                    message.error("{yun:}t key='admin_user_00186'{/yun}");
                 }
             }).catch(function (error) {
                 console.log(error);

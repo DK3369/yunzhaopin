@@ -65,7 +65,7 @@
                             {yun:}if $noPermission == 1 || $isPaused == 1{/yun}
                             {yun:}include file="$temstyle/default/public_search/vipTips.htm"{/yun}
                             {yun:}else{/yun}
-                            <div class="vip_box_db">套餐权益对比</div>
+                            <div class="vip_box_db">{yun:}t key='member_com_00610'{/yun}</div>
                             <!--{yun:}t key='admin_user_company_00199'{/yun}-->
                             <div class="vip_timebox">
                                 <ul class="">
@@ -126,7 +126,7 @@
                                                             <span class="vip_box_time"><span class="vip_box_time_n">{yun:}$v.top_num{/yun}</span>{yun:}if $v.top_num > 0{/yun}{yun:}t key='common_02067'{/yun}{yun:}/if{/yun}</span>
                                                         </td>
                                                         <td class="">
-                                                            <span class="vip_box_timename">紧急招聘</span>
+                                                            <span class="vip_box_timename">{yun:}t key='member_com_00613'{/yun}</span>
                                                             <span class="vip_box_time"><span class="vip_box_time_n">{yun:}$v.urgent_num{/yun}</span>{yun:}if $v.urgent_num > 0{/yun}{yun:}t key='common_02067'{/yun}{yun:}/if{/yun}</span>
                                                         </td>
                                                         <td class="">
@@ -154,14 +154,14 @@
                                             </div>
                                             <div class="vip_time_sm" style="padding-left:15px;;">
                                                 {yun:}t key='wap_com_00381'{/yun} {yun:}if $v.explains{/yun}{yun:}$v.explains{/yun}{yun:}else{/yun}{yun:}$v.name{/yun}{yun:}/if{/yun}
-                                                {yun:}if $v.integral_buy>0{/yun}赠送{yun:}$v.integral_buy{/yun}{yun:}$config.integral_pricename{/yun}{yun:}/if{/yun}
+                                                {yun:}if $v.integral_buy>0{/yun}{yun:}t key='wap_01823'{/yun}{yun:}$v.integral_buy{/yun}{yun:}$config.integral_pricename{/yun}{yun:}/if{/yun}
                                             </div>
                                         </div>
 
                                     </li>
                                     {yun:}foreachelse{/yun}
                                     <div class="msg_no">
-                                        <p>亲爱的用户，目前没有时间会员服务</p>
+                                        <p>{yun:}t key='wap_01007'{/yun}，目前没有时间会员服务</p>
                                     </div>
                                     {yun:}/foreach{/yun}
                                 </ul>

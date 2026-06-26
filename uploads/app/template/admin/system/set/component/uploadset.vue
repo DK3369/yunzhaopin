@@ -4,137 +4,137 @@
             <table class="tableVue">
                 <thead>
                     <tr align="left">
-                        <th width="180">名称</th>
-                        <th width="240">状态</th>
-                        <th>说明</th>
+                        <th width="180">{yun:}t key='member_com_00021'{/yun}</th>
+                        <th width="240">{yun:}t key='member_user_00181'{/yun}</th>
+                        <th>{yun:}t key='member_com_00207'{/yun}</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td>
-                            <div class="TableTite">上传图片大小</div>
+                            <div class="TableTite">{yun:}t key='admin_system_00382'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input v-model="list.pic_maxsize" @input="inputIntNumber($event, 'list', 'pic_maxsize')" placeholder="请输入内容">
+                                <el-input v-model="list.pic_maxsize" @input="inputIntNumber($event, 'list', 'pic_maxsize')" placeholder="{yun:}t key='wap_user_00076'{/yun}">
                                     <span slot="suffix" class="slotspan">M</span>
                                 </el-input>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>允许上传文件的最大限制，单位为 M，不填则默认5M</span>
+                                <span>{yun:}t key='admin_00983'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">上传文件大小</div>
+                            <div class="TableTite">{yun:}t key='admin_system_00384'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input v-model="list.file_maxsize" @input="inputIntNumber($event, 'list', 'file_maxsize')" placeholder="请输入内容">
+                                <el-input v-model="list.file_maxsize" @input="inputIntNumber($event, 'list', 'file_maxsize')" placeholder="{yun:}t key='wap_user_00076'{/yun}">
                                     <span slot="suffix" class="slotspan">M</span>
                                 </el-input>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>允许上传文件的最大限制，单位为 M，不填则默认5M</span>
+                                <span>{yun:}t key='admin_00983'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">上传图片类型</div>
+                            <div class="TableTite">{yun:}t key='admin_system_00383'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input v-model="list.pic_type" placeholder="请输入内容"></el-input>
+                                <el-input v-model="list.pic_type" placeholder="{yun:}t key='wap_user_00076'{/yun}"></el-input>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>允许上传图片的类型，多个类型以英文逗号（,）分隔，不填则默认jpg,png,jpeg,bmp,gif</span>
+                                <span>{yun:}t key='admin_00984'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">上传文件类型</div>
+                            <div class="TableTite">{yun:}t key='admin_system_00385'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input v-model="list.file_type" placeholder="请输入内容"></el-input>
+                                <el-input v-model="list.file_type" placeholder="{yun:}t key='wap_user_00076'{/yun}"></el-input>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>允许上传文件的类型，多个类型以英文逗号（,）分隔，不填则默认rar,zip,doc,docx,xls</span>
+                                <span>{yun:}t key='admin_00985'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">图片安全验证</div>
+                            <div class="TableTite">{yun:}t key='admin_system_00388'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableButn">
                                 <el-radio-group v-model="list.is_picself">
-                                    <el-radio  label="1">开启</el-radio>
-                                    <el-radio  label="2">关闭</el-radio>
+                                    <el-radio  label="1">{yun:}t key='member_com_00287'{/yun}</el-radio>
+                                    <el-radio  label="2">{yun:}t key='common.close'{/yun}</el-radio>
                                 </el-radio-group>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>对图片源码进行扫描，检测是否包含非法代码</span>
+                                <span>{yun:}t key='admin_00986'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">强制压缩图片</div>
+                            <div class="TableTite">{yun:}t key='admin_system_00389'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableButn">
                                 <el-radio-group v-model="list.is_picthumb">
-                                    <el-radio label="1">开启</el-radio>
-                                    <el-radio label="2">关闭</el-radio>
+                                    <el-radio label="1">{yun:}t key='member_com_00287'{/yun}</el-radio>
+                                    <el-radio label="2">{yun:}t key='common.close'{/yun}</el-radio>
                                 </el-radio-group>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>根据图片原始比例重新压缩成新图片，彻底去除图片中可能包含的非法代码，但有可能会影响图片清晰度</span>
+                                <span>{yun:}t key='admin_00987'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">自动水印</div>
+                            <div class="TableTite">{yun:}t key='admin_system_00392'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableButn">
                                 <el-radio-group v-model="list.is_watermark">
-                                    <el-radio  label="1">开启</el-radio>
-                                    <el-radio  label="2">关闭</el-radio>
+                                    <el-radio  label="1">{yun:}t key='member_com_00287'{/yun}</el-radio>
+                                    <el-radio  label="2">{yun:}t key='common.close'{/yun}</el-radio>
                                 </el-radio-group>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>设置上传图片是否自动添加水印</span>
+                                <span>{yun:}t key='admin_00988'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">水印位置</div>
+                            <div class="TableTite">{yun:}t key='admin_system_00391'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableSelect">
-                                <el-select v-model="list.wmark_position" placeholder="请选择">
+                                <el-select v-model="list.wmark_position" placeholder="{yun:}t key='wap_user_00100'{/yun}">
                                     <el-option v-for="item in options" :key="item.value" :label="item.label"
                                         :value="item.value">
                                     </el-option>
@@ -143,13 +143,13 @@
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>水印在上传图片中的位置</span>
+                                <span>{yun:}t key='admin_system_00381'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">水印LOGO</div>
+                            <div class="TableTite">{yun:}t key='admin_system_00390'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableUpload">
@@ -159,7 +159,7 @@
                                         :file-list="fileList" :limit="1"
                                         :on-success="handleAvatarSuccess"
                                         list-type="picture">
-                                        <el-button size="small" type="primary">点击上传</el-button>
+                                        <el-button size="small" type="primary">{yun:}t key='wap_js_00071'{/yun}</el-button>
                                         <!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
                                     </el-upload>
                                 </div>
@@ -167,7 +167,7 @@
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>水印在上传图片中的位置</span>
+                                <span>{yun:}t key='admin_system_00381'{/yun}</span>
                             </div>
                         </td>
                     </tr>
@@ -175,7 +175,7 @@
             </table>
         </div>
         <div class="setBasicButn" style="border: none; height: 80px;">
-            <el-button type="primary" size="medium" @click="save" :disabled="saveLoading">提交</el-button>
+            <el-button type="primary" size="medium" @click="save" :disabled="saveLoading">{yun:}t key='common.submit'{/yun}</el-button>
         </div>
     </div>
 </template>
@@ -198,19 +198,19 @@ module.exports = {
             pytoken:localStorage.getItem("pytoken"),
             options: [{
                 value: '1',
-                label: '左上'
+                label: "{yun:}t key='admin_00989'{/yun}"
             }, {
                 value: '3',
-                label: '右上'
+                label: "{yun:}t key='admin_00207'{/yun}"
             }, {
                 value: '5',
-                label: '居中'
+                label: "{yun:}t key='admin_00990'{/yun}"
             }, {
                 value: '7',
-                label: '左下'
+                label: "{yun:}t key='admin_00991'{/yun}"
             }, {
                 value: '9',
-                label: '右下'
+                label: "{yun:}t key='admin_00992'{/yun}"
             }],
             uri:"m=system&c=",
             files: [],
@@ -249,7 +249,7 @@ module.exports = {
                     // 修改图片类型缓存
                     let pic_accept = '.' + _this.list.pic_type;
                     localStorage.setItem("pic_accept", pic_accept ? pic_accept.split(',').join(',.') : '.jpg,.png,.jpeg,.bmp,.gif');
-                    message.success('操作成功');
+                    message.success("{yun:}t key='wap_user_00264'{/yun}");
                     _this.$emit('get-list', true)
                 } else {
                     message.error(res.msg);

@@ -5,15 +5,15 @@
             <table class="tableVue">
                 <thead>
                     <tr align="left">
-                        <th width="200">名称</th>
-                        <th width="440">状态</th>
-                        <th>说明</th>
+                        <th width="200">{yun:}t key='member_com_00021'{/yun}</th>
+                        <th width="440">{yun:}t key='member_user_00181'{/yun}</th>
+                        <th>{yun:}t key='member_com_00207'{/yun}</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td>
-                            <div class="TableTite">开通用户名</div>
+                            <div class="TableTite">{yun:}t key='admin_01238'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableFlexty">
@@ -21,7 +21,7 @@
                                     <el-autocomplete
                                         v-model="save.username2"
                                         :fetch-suggestions="remoteMethod"
-                                        placeholder="请输入内容"
+                                        placeholder="{yun:}t key='wap_user_00076'{/yun}"
                                         :trigger-on-focus="false"
                                         @select="usernameChange"
                                         size="small"
@@ -35,13 +35,13 @@
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>单次只能为一个会员开通套餐</span>
+                                <span>{yun:}t key='admin_01239'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">开通企业名称</div>
+                            <div class="TableTite">{yun:}t key='admin_01240'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableFlexty">
@@ -49,7 +49,7 @@
                                     <el-autocomplete
                                         v-model="save.comname2"
                                         :fetch-suggestions="remoteMethodCom"
-                                        placeholder="请输入内容"
+                                        placeholder="{yun:}t key='wap_user_00076'{/yun}"
                                         :trigger-on-focus="false"
                                         @select="comnameChange"
                                         size="small"
@@ -62,18 +62,18 @@
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>开通企业名称</span>
+                                <span>{yun:}t key='admin_01240'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     
                     <tr>
                         <td>
-                            <div class="TableTite">增值包</div>
+                            <div class="TableTite">{yun:}t key='wap_com_00393'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableSelect" style="display: flex;align-items: center;">
-                                <el-select v-model="save.serviceId" placeholder="请选择" @change="handleChange">
+                                <el-select v-model="save.serviceId" placeholder="{yun:}t key='wap_user_00100'{/yun}" @change="handleChange">
                                     <el-option v-for="item in serviceList" :key="item.id" :label="item.name"
                                         :value="item.id">
                                     </el-option>
@@ -94,14 +94,14 @@
                                 <div class="TableButn" v-for="(item,key) in serviceDetails" :key="key">
                                     <el-radio-group v-model="save.service_package" @change="serviceChange(item)">
                                         <el-radio :label="item.id">
-                                            <span v-if="item.resume>0">下载简历：{{item.resume}}份</span>
-                                            <span v-if="item.interview>0">邀请面试：{{item.interview}}份</span>
-                                            <span v-if="item.job_num>0">上架职位：{{item.job_num}}份</span>
-                                            <span v-if="item.breakjob_num>0">刷新职位：{{item.breakjob_num}}份</span>
-                                            <span v-if="item.top_num>0">刷新职位：{{item.top_num}}份</span>
-                                            <span v-if="item.rec_num>0">职位推荐：{{item.rec_num}}份</span>
-                                            <span v-if="item.urgent_num>0">紧急招聘：{{item.rec_num}}份</span>
-                                            <span v-if="item.zph_num>0">报名招聘会：{{item.zph_num}}份</span>
+                                            <span v-if="item.resume>0">{yun:}t key='wap_00451'{/yun}：{{item.resume}}{yun:}t key='common_02052'{/yun}</span>
+                                            <span v-if="item.interview>0">{yun:}t key='resume_00029'{/yun}：{{item.interview}}{yun:}t key='common_02052'{/yun}</span>
+                                            <span v-if="item.job_num>0">{yun:}t key='wap_com_00028'{/yun}：{{item.job_num}}{yun:}t key='common_02052'{/yun}</span>
+                                            <span v-if="item.breakjob_num>0">{yun:}t key='wap_com_00029'{/yun}：{{item.breakjob_num}}{yun:}t key='common_02052'{/yun}</span>
+                                            <span v-if="item.top_num>0">{yun:}t key='wap_com_00029'{/yun}：{{item.top_num}}{yun:}t key='common_02052'{/yun}</span>
+                                            <span v-if="item.rec_num>0">{yun:}t key='wap_com_00237'{/yun}：{{item.rec_num}}{yun:}t key='common_02052'{/yun}</span>
+                                            <span v-if="item.urgent_num>0">{yun:}t key='member_com_00613'{/yun}：{{item.rec_num}}{yun:}t key='common_02052'{/yun}</span>
+                                            <span v-if="item.zph_num>0">{yun:}t key='admin_user_company_00210'{/yun}：{{item.zph_num}}{yun:}t key='common_02052'{/yun}</span>
                                             
                                         </el-radio>
                                     </el-radio-group>
@@ -117,12 +117,12 @@
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">价格</div>
+                            <div class="TableTite">{yun:}t key='wap_00563'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
                                 <el-input v-model="save.service_price" placeholder=" " onKeyUp="priceCk(this)">
-                                    <span slot="suffix" class="slotspan">元</span>
+                                    <span slot="suffix" class="slotspan">{yun:}t key='common_02056'{/yun}</span>
                                 </el-input>
                             </div>
                         </td>
@@ -135,7 +135,7 @@
                 </tbody>
             </table>
             <div class="setBasicButn" style="border: none;">
-                <el-button type="primary" size="medium" @click="saveFun" :disabled="submitLoading">开通</el-button>
+                <el-button type="primary" size="medium" @click="saveFun" :disabled="submitLoading">{yun:}t key='admin_01247'{/yun}</el-button>
             </div>
         </div>
     </div>

@@ -1,24 +1,24 @@
 <template>
 	<div class="moduleElHight" v-if="islook">
 		<div class="tableDome_tip">
-			<el-alert title="可以使用QQ/163等邮箱，465端口需要开启SSL服务，注意邮箱密码不是账户密码一般是独立授权密码" type="success" :closable="false">
+			<el-alert title="{yun:}t key='admin_tool_00354'{/yun}" type="success" :closable="false">
 			</el-alert>
 		</div>
 		<div class="moduleTable">
 			<div>
-				<div class="TableTite">邮件发送方式</div>
+				<div class="TableTite">{yun:}t key='admin_tool_00367'{/yun}</div>
 				<div class="TableButn">
-					<el-radio v-model="sy_email_online" :label="1">SMTP服务器发送邮件</el-radio>
-					<el-radio v-model="sy_email_online" :label="2">阿里云DirectMail</el-radio>
+					<el-radio v-model="sy_email_online" :label="1">{yun:}t key='admin_tool_00363'{/yun}</el-radio>
+					<el-radio v-model="sy_email_online" :label="2">{yun:}t key='admin_tool_00361'{/yun}</el-radio>
 				</div>
 			</div>
 
 			<table class="tableVue" v-if="sy_email_online==2">
 				<thead>
 					<tr align="left">
-						<th width="200">名称</th>
-						<th width="500">状态</th>
-						<th>说明</th>
+						<th width="200">{yun:}t key='member_com_00021'{/yun}</th>
+						<th width="500">{yun:}t key='member_user_00181'{/yun}</th>
+						<th>{yun:}t key='member_com_00207'{/yun}</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -29,14 +29,14 @@
 							</td>
 							<td>
 								<div class="TableInpt">
-									<el-input placeholder="请输入内容" v-model="accesskey">
+									<el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="accesskey">
 
 									</el-input>
 								</div>
 							</td>
 							<td>
 								<div class="TableShuom">
-									<span>如：js4Blub11sd14BwQEe</span>
+									<span>{yun:}t key='admin_tool_00356'{/yun}</span>
 								</div>
 							</td>
 						</tr>
@@ -46,7 +46,7 @@
 							</td>
 							<td>
 								<div class="TableInpt">
-									<el-input placeholder="请输入内容" v-model="accesssecret">
+									<el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="accesssecret">
 
 									</el-input>
 								</div>
@@ -59,28 +59,28 @@
 						</tr>
 						<tr>
 							<td>
-								<div class="TableTite">发信地址</div>
+								<div class="TableTite">{yun:}t key='admin_tool_00369'{/yun}</div>
 							</td>
 							<td>
 								<div class="TableInpt">
-									<el-input placeholder="请输入内容" v-model="ali_email">
+									<el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="ali_email">
 
 									</el-input>
 								</div>
 							</td>
 							<td>
 								<div class="TableShuom">
-									<span>如：phpyun@qq.com</span>
+									<span>{yun:}t key='admin_tool_00357'{/yun}</span>
 								</div>
 							</td>
 						</tr>
 						<tr>
 							<td>
-								<div class="TableTite">标签</div>
+								<div class="TableTite">{yun:}t key='admin_user_company_00159'{/yun}</div>
 							</td>
 							<td>
 								<div class="TableInpt">
-									<el-input placeholder="请输入内容" v-model="ali_tag">
+									<el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="ali_tag">
 
 									</el-input>
 								</div>
@@ -93,11 +93,11 @@
 						</tr>
 						<tr>
 							<td>
-								<div class="TableTite">发件人昵称</div>
+								<div class="TableTite">{yun:}t key='admin_tool_00368'{/yun}</div>
 							</td>
 							<td>
 								<div class="TableInpt">
-									<el-input placeholder="请输入内容" v-model="ali_name">
+									<el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="ali_name">
 
 									</el-input>
 								</div>
@@ -115,9 +115,9 @@
 					<table class="tableVue">
 						<thead>
 							<tr align="left">
-								<th width="200">名称</th>
-								<th width="500">状态</th>
-								<th>说明</th>
+								<th width="200">{yun:}t key='member_com_00021'{/yun}</th>
+								<th width="500">{yun:}t key='member_user_00181'{/yun}</th>
+								<th>{yun:}t key='member_com_00207'{/yun}</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -125,64 +125,64 @@
 								
 							<tr>
 								<td>
-									<div class="TableTite">SMTP服务器</div>
+									<div class="TableTite">{yun:}t key='admin_tool_00365'{/yun}</div>
 								</td>
 								<td>
 									<div class="TableInpt">
-										<el-input placeholder="请输入内容" v-model="eclist.smtpserver">
+										<el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="eclist.smtpserver">
 
 										</el-input>
 									</div>
 								</td>
 								<td>
 									<div class="TableShuom">
-										<span>如：smtp.qq.com</span>
+										<span>{yun:}t key='admin_tool_00479'{/yun}</span>
 									</div>
 								</td>
 							</tr>
 
 							<tr>
 								<td>
-									<div class="TableTite">SMTP服务器的用户邮箱</div>
+									<div class="TableTite">{yun:}t key='admin_tool_00362'{/yun}</div>
 								</td>
 								<td>
 									<div class="TableInpt">
-										<el-input placeholder="请输入内容" v-model="eclist.smtpuser">
+										<el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="eclist.smtpuser">
 
 										</el-input>
 									</div>
 								</td>
 								<td>
 									<div class="TableShuom">
-										<span>如：phpyun@qq.com</span>
+										<span>{yun:}t key='admin_tool_00357'{/yun}</span>
 									</div>
 								</td>
 							</tr>
 
 							<tr>
 								<td>
-									<div class="TableTite">邮箱密码</div>
+									<div class="TableTite">{yun:}t key='admin_tool_00370'{/yun}</div>
 								</td>
 								<td>
 									<div class="TableInpt">
-										<el-input placeholder="请输入内容" v-model="eclist.smtppass" show-password>
+										<el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="eclist.smtppass" show-password>
 
 										</el-input>
 									</div>
 								</td>
 								<td>
 									<div class="TableShuom">
-										<span>此处密码一般为邮箱独立的授权密码而并非原始邮箱密码，具体可查看各邮箱设置详细信息</span>
+										<span>{yun:}t key='admin_tool_00355'{/yun}</span>
 									</div>
 								</td>
 							</tr>
 							<tr>
 								<td>
-									<div class="TableTite">SMTP服务器端口</div>
+									<div class="TableTite">{yun:}t key='admin_tool_00364'{/yun}</div>
 								</td>
 								<td>
 									<div class="TableInpt">
-										<el-input placeholder="请输入内容" v-model="eclist.smtpport"></el-input>
+										<el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="eclist.smtpport"></el-input>
 									</div>
 								</td>
 								<td>
@@ -193,11 +193,11 @@
 							</tr>
 							<tr>
 								<td>
-									<div class="TableTite">发件人昵称</div>
+									<div class="TableTite">{yun:}t key='admin_tool_00368'{/yun}</div>
 								</td>
 								<td>
 									<div class="TableInpt">
-										<el-input placeholder="请输入内容" v-model="eclist.smtpnick">
+										<el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="eclist.smtpnick">
 
 										</el-input>
 									</div>
@@ -211,7 +211,7 @@
 
 							<tr>
 								<td>
-									<div class="TableTite">启用邮箱</div>
+									<div class="TableTite">{yun:}t key='admin_tool_00372'{/yun}</div>
 								</td>
 								<td>
 									<div class="TableButn">
@@ -220,18 +220,18 @@
 								</td>
 								<td>
 									<div class="TableShuom">
-										<span>QQ互联平台移动应用和网站应用是否已打通，未打通的请不要打开</span>
+										<span>{yun:}t key='admin_tool_00436'{/yun}</span>
 									</div>
 								</td>
 							</tr>
 							<tr v-if="eclist.isadd!=1">
 								<td>
-									<div class="TableTite">操作</div>
+									<div class="TableTite">{yun:}t key='member_user_00048'{/yun}</div>
 								</td>
 								<td>
 									<div class="TableButn">
-										<el-button type="text" size="medium" @click="delEmail(eclist.id)"><i class="el-icon-delete "></i> 删除</el-button>
-										<el-button type="text" size="medium"  @click="testEamil(eclist.id)"><i class="el-icon-timer "></i> 测试</el-button>
+										<el-button type="text" size="medium" @click="delEmail(eclist.id)"><i class="el-icon-delete "></i> {yun:}t key='common.delete'{/yun}</el-button>
+										<el-button type="text" size="medium"  @click="testEamil(eclist.id)"><i class="el-icon-timer "></i> {yun:}t key='admin_tool_00371'{/yun}</el-button>
 									</div>
 								</td>
 								<td>
@@ -248,9 +248,9 @@
 			</div>
 		</div>
 		<div class="setBasicButn" style="border: none;">
-			<el-button type="primary" size="medium" @click="postSet" :disabled="saveLoading">提交</el-button>
-			<el-button type="primary" size="medium" plain v-if="sy_email_online==1" @click="addSMTP">新增</el-button>
-			<el-button type="primary" size="medium" plain v-if="sy_email_online==2" @click="testEamil('aliyun')">测试</el-button>
+			<el-button type="primary" size="medium" @click="postSet" :disabled="saveLoading">{yun:}t key='common.submit'{/yun}</el-button>
+			<el-button type="primary" size="medium" plain v-if="sy_email_online==1" @click="addSMTP">{yun:}t key='admin_user_company_00028'{/yun}</el-button>
+			<el-button type="primary" size="medium" plain v-if="sy_email_online==2" @click="testEamil('aliyun')">{yun:}t key='admin_tool_00371'{/yun}</el-button>
 		</div>
 
 	</div>
@@ -322,7 +322,7 @@
                 
                 if (that.sy_email_online == '') {
 
-                    message.warning(window.yunAdminT('请选择邮件发送方式！'));
+                    message.warning(window.yunAdminT("{yun:}t key='admin_tool_00373'{/yun}"));
                     return false;
                     
                 }
@@ -376,14 +376,14 @@
             testEamil:function(id){
             	var that = this;
                 if(!id){
-                    message.warning(window.yunAdminT('请选择需要测试的邮件服务器！'));
+                    message.warning(window.yunAdminT("{yun:}t key='admin_tool_00359'{/yun}"));
                     return false;
 				}else{
-					this.$prompt(window.yunAdminT('填写测试邮箱'), window.yunAdminT('提示'), {
-						confirmButtonText: window.yunAdminT('确定'),
-						cancelButtonText: window.yunAdminT('取消'),
+					this.$prompt(window.yunAdminT("{yun:}t key='admin_tool_00366'{/yun}"), window.yunAdminT("{yun:}t key='wap_js_00125'{/yun}"), {
+						confirmButtonText: window.yunAdminT("{yun:}t key='common.confirm'{/yun}"),
+						cancelButtonText: window.yunAdminT("{yun:}t key='common.cancel'{/yun}"),
 						inputPattern: /^([a-zA-Z0-9\-]+[_|\_|\.]?)*[a-zA-Z0-9\-]+@([a-zA-Z0-9\-]+[_|\_|\.]?)*[a-zA-Z0-9]+\.[a-zA-Z]{2,4}$/,
-						inputErrorMessage: window.yunAdminT('邮箱格式不正确，请重新输入！'),
+						inputErrorMessage: window.yunAdminT("{yun:}t key='admin_tool_00360'{/yun}"),
 					}).then(({ value }) => {
 						var param = {
 							ceshi_email:value,
@@ -414,7 +414,7 @@
             delEmail:function(id){
             	var _this = this;
                 if(!id){
-					message.warning(window.yunAdminT('请选择需要删除的邮件服务器！'));
+					message.warning(window.yunAdminT("{yun:}t key='admin_tool_00358'{/yun}"));
                     return false;
                 }        
                 var params = {

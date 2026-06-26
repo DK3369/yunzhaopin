@@ -7,7 +7,7 @@ class gongzhao_controller extends common
     function index_action()
     {
         $this->yunset('backurl', Url('wap'));
-        $this->yunset("headertitle", yun_auto_t('公招'));
+        $this->yunset("headertitle", yun_at('default_00134'));
         $this->seo("gongzhao_index");
         $this->yuntpl(array('wap/gongzhao'));
     }
@@ -26,7 +26,7 @@ class gongzhao_controller extends common
             $this->seo("gongzhao");
             
             $this->yunset('backurl', Url('wap',array('c'=>'gongzhao')));
-            $this->yunset("headertitle", yun_auto_t('公招'));
+            $this->yunset("headertitle", yun_at('default_00134'));
             $this->yuntpl(array('wap/gongzhaos'));
         }
     }

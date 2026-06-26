@@ -5,24 +5,24 @@
                 <table class="tableVue">
                     <thead>
                     <tr align="left">
-                        <th width="120">名称</th>
-                        <th width=" ">状态</th>
+                        <th width="120">{yun:}t key='member_com_00021'{/yun}</th>
+                        <th width=" ">{yun:}t key='member_user_00181'{/yun}</th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr>
                         <td>
-                            <div class="TableTite">职位名称</div>
+                            <div class="TableTite">{yun:}t key='wap_com_00288'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input v-model="curr_job.name" placeholder="请输入职位名称"></el-input>
+                                <el-input v-model="curr_job.name" placeholder="{yun:}t key='admin_user_weipin_00014'{/yun}"></el-input>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">职位类别</div>
+                            <div class="TableTite">{yun:}t key='wap_user_00018'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
@@ -32,16 +32,16 @@
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">薪水待遇</div>
+                            <div class="TableTite">{yun:}t key='admin_user_company_00027'{/yun}</div>
                         </td>
                         <td>
                             <div style="display: flex;">
                                 <div class="TableInpt">
-                                    <el-input v-model="curr_job.minsalary" :disabled="mychecked" placeholder="最低薪资"></el-input>
+                                    <el-input v-model="curr_job.minsalary" :disabled="mychecked" placeholder="{yun:}t key='wap_user_00013'{/yun}"></el-input>
                                 </div>
                                 <div class="TableInptline">-</div>
                                 <div class="TableInpt">
-                                    <el-input v-model="curr_job.maxsalary" :disabled="mychecked" placeholder="最高薪资"></el-input>
+                                    <el-input v-model="curr_job.maxsalary" :disabled="mychecked" placeholder="{yun:}t key='wap_user_00014'{/yun}"></el-input>
                                 </div>
                                 <el-checkbox style="margin-left:10px;" v-model="mychecked" label="面议" size="medium" border></el-checkbox>
                             </div>
@@ -49,24 +49,24 @@
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">招聘人数</div>
+                            <div class="TableTite">{yun:}t key='wap_com_00333'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input v-model="curr_job.zp_num" placeholder="请输入招聘人数"></el-input>
+                                <el-input v-model="curr_job.zp_num" placeholder="{yun:}t key='admin_00579'{/yun}"></el-input>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">招聘要求</div>
+                            <div class="TableTite">{yun:}t key='wap_00353'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-select v-model="curr_job.exp" placeholder="请选择经验要求">
+                                <el-select v-model="curr_job.exp" placeholder="{yun:}t key='admin_00580'{/yun}">
                                     <el-option v-for="item in cacheData.comdata.job_exp" :key="'exp_'+item" :label="item == 0 ? '经验'+cacheData.comclass_name[item] : cacheData.comclass_name[item]" :value="item"></el-option>
                                 </el-select>
-                                <el-select style="margin-left:10px;" v-model="curr_job.edu" placeholder="请选择学历要求">
+                                <el-select style="margin-left:10px;" v-model="curr_job.edu" placeholder="{yun:}t key='member_user_00494'{/yun}">
                                     <el-option v-for="item in cacheData.comdata.job_edu" :key="'edu_'+item" :label="item == 0 ? '经验'+cacheData.comclass_name[item] : cacheData.comclass_name[item]" :value="item"></el-option>
                                 </el-select>
                                 <el-checkbox style="margin-left:10px;" v-model="curr_job.is_graduate" label="可接受应届生" size="medium" border></el-checkbox>
@@ -75,7 +75,7 @@
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">描述职位</div>
+                            <div class="TableTite">{yun:}t key='admin_00575'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
@@ -88,25 +88,25 @@
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">工作地点</div>
+                            <div class="TableTite">{yun:}t key='member_user_00198'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-select v-model="curr_job.link_id" placeholder="请选择" style="width: 480px;">
+                                <el-select v-model="curr_job.link_id" placeholder="{yun:}t key='wap_user_00100'{/yun}" style="width: 480px;">
                                     <el-option key="-1" :label="jobCompany.linkmsg + '【企业默认】'" value="-1"></el-option>
                                     <el-option v-for="(item, index) in jobAddressList" :key="index" :label="item.linkmsg" :value="item.id"></el-option>
                                 </el-select>
-                                <el-button style="margin-left: 10px;" size="small" type="primary" @click="addAddr" round>新增</el-button>
+                                <el-button style="margin-left: 10px;" size="small" type="primary" @click="addAddr" round>{yun:}t key='admin_user_company_00028'{/yun}</el-button>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">从事行业</div>
+                            <div class="TableTite">{yun:}t key='wap_user_00010'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableSelect">
-                                <el-select v-model="curr_job.hy" placeholder="请选择">
+                                <el-select v-model="curr_job.hy" placeholder="{yun:}t key='wap_user_00100'{/yun}">
                                     <el-option v-for="(item, index) in cacheData.industry_index" :key="index" :label="cacheData.industry_name[item]" :value="item"></el-option>
                                 </el-select>
                             </div>
@@ -114,11 +114,11 @@
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">性别要求</div>
+                            <div class="TableTite">{yun:}t key='wap_com_00332'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableSelect">
-                                <el-select v-model="curr_job.sex" placeholder="请选择">
+                                <el-select v-model="curr_job.sex" placeholder="{yun:}t key='wap_user_00100'{/yun}">
                                     <el-option v-for="(item, index) in cacheData.com_sex" :key="index" :label="index == 3 ? '性别' + item : item" :value="index"></el-option>
                                 </el-select>
                             </div>
@@ -126,11 +126,11 @@
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">婚姻要求</div>
+                            <div class="TableTite">{yun:}t key='admin_user_company_00026'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableSelect">
-                                <el-select v-model="curr_job.marriage" placeholder="请选择">
+                                <el-select v-model="curr_job.marriage" placeholder="{yun:}t key='wap_user_00100'{/yun}">
                                     <el-option v-for="item in cacheData.comdata.job_marriage" :key="item" :label="item == 0 ? '婚姻' + cacheData.comclass_name[item] : cacheData.comclass_name[item]" :value="item"></el-option>
                                 </el-select>
                             </div>
@@ -138,11 +138,11 @@
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">到岗位时间</div>
+                            <div class="TableTite">{yun:}t key='admin_user_company_00024'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableSelect">
-                                <el-select v-model="curr_job.report" placeholder="请选择">
+                                <el-select v-model="curr_job.report" placeholder="{yun:}t key='wap_user_00100'{/yun}">
                                     <el-option v-for="item in cacheData.comdata.job_report" :key="item" :label="item == 0 ? '到岗时间' + cacheData.comclass_name[item] : cacheData.comclass_name[item]" :value="item"></el-option>
                                 </el-select>
                             </div>
@@ -150,19 +150,19 @@
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">年龄要求</div>
+                            <div class="TableTite">{yun:}t key='wap_com_00284'{/yun}</div>
                         </td>
                         <td>
                             <div style="display: flex;">
                                 <div class="TableInpt">
-                                    <el-input type="number" v-model="curr_job.zp_minage" placeholder="请输入最小年龄">
-                                        <template slot="append">岁</template>
+                                    <el-input type="number" v-model="curr_job.zp_minage" placeholder="{yun:}t key='admin_00581'{/yun}">
+                                        <template slot="append">{yun:}t key='home.age_suffix'{/yun}</template>
                                     </el-input>
                                 </div>
                                 <div style="padding:10px;" class="">-</div>
                                 <div class="TableInpt">
-                                    <el-input type="number" v-model="curr_job.zp_maxage" placeholder="请输入最大年龄">
-                                        <template slot="append">岁</template>
+                                    <el-input type="number" v-model="curr_job.zp_maxage" placeholder="{yun:}t key='admin_00582'{/yun}">
+                                        <template slot="append">{yun:}t key='home.age_suffix'{/yun}</template>
                                     </el-input>
                                 </div>
                             </div>
@@ -170,19 +170,19 @@
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">福利待遇</div>
+                            <div class="TableTite">{yun:}t key='wap_com_00173'{/yun}</div>
                         </td>
                         <td>
                             <el-checkbox-group v-model="checkedwelfare">
                                 <el-checkbox v-for="(item, index) in curr_job.all_welfare" :label="item" :key="index">{{item}}</el-checkbox>
                             </el-checkbox-group>
                             <el-input style="margin-left: 0px;" class="input-new-tag" v-if="inputVisible" v-model="inputValue" ref="saveTagInput" size="small" @keyup.enter.native="welfareInputConfirm" @blur="welfareInputConfirm"></el-input>
-                            <el-button v-else style="margin-left: 0px;" class="button-new-tag" size="small" @click="showInput">+ 新增</el-button>
+                            <el-button v-else style="margin-left: 0px;" class="button-new-tag" size="small" @click="showInput">{yun:}t key='admin_00474'{/yun}</el-button>
                         </td>
                     </tr>
                     <tr v-if="cacheData.comdata.job_lang && cacheData.comdata.job_lang.length > 0">
                         <td>
-                            <div class="TableTite">语言要求</div>
+                            <div class="TableTite">{yun:}t key='wap_com_00292'{/yun}</div>
                         </td>
                         <td>
                             <el-checkbox-group v-model="checkedlang">
@@ -192,57 +192,57 @@
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">联系方式设置</div>
+                            <div class="TableTite">{yun:}t key='wap_com_00275'{/yun}</div>
                         </td>
                         <td>
-                            <div class="job_set_list">短信通知：
-                                <el-radio v-model="curr_job.is_message" label="1">开启</el-radio>
-                                <el-radio v-model="curr_job.is_message" label="2">关闭</el-radio>
+                            <div class="job_set_list">{yun:}t key='admin_00576'{/yun}
+                                <el-radio v-model="curr_job.is_message" label="1">{yun:}t key='member_com_00287'{/yun}</el-radio>
+                                <el-radio v-model="curr_job.is_message" label="2">{yun:}t key='common.close'{/yun}</el-radio>
                             </div>
-                            <div class="job_set_list">邮件通知：
-                                <el-radio v-model="curr_job.is_email" label="1">开启</el-radio>
-                                <el-radio v-model="curr_job.is_email" label="2">关闭</el-radio>
+                            <div class="job_set_list">{yun:}t key='admin_00577'{/yun}
+                                <el-radio v-model="curr_job.is_email" label="1">{yun:}t key='member_com_00287'{/yun}</el-radio>
+                                <el-radio v-model="curr_job.is_email" label="2">{yun:}t key='common.close'{/yun}</el-radio>
                             </div>
-                            <div class="job_set_list">联系方式：
-                                <el-radio v-model="curr_job.is_link" label="1">公开</el-radio>
-                                <el-radio v-model="curr_job.is_link" label="3">隐藏</el-radio>
+                            <div class="job_set_list">{yun:}t key='admin_00578'{/yun}
+                                <el-radio v-model="curr_job.is_link" label="1">{yun:}t key='wap_js_00005'{/yun}</el-radio>
+                                <el-radio v-model="curr_job.is_link" label="3">{yun:}t key='admin_user_00259'{/yun}</el-radio>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">投递要求设置</div>
+                            <div class="TableTite">{yun:}t key='member_com_00242'{/yun}</div>
                         </td>
                         <td>
-                            <div class="job_set_list">经验要求：
-                                <el-select v-model="curr_job.exp_req" placeholder="请选择">
+                            <div class="job_set_list">{yun:}t key='admin_user_company_00025'{/yun}
+                                <el-select v-model="curr_job.exp_req" placeholder="{yun:}t key='wap_user_00100'{/yun}">
                                     <el-option label="不限" :value="0"></el-option>
                                     <el-option v-for="item in cacheData.userdata.user_word" :key="item" :label="cacheData.userclass_name[item]" :value="item"></el-option>
                                 </el-select>
                             </div>
-                            <div class="job_set_list">学历要求：
-                                <el-select v-model="curr_job.edu_req" placeholder="请选择">
+                            <div class="job_set_list">{yun:}t key='member_user_00111'{/yun}
+                                <el-select v-model="curr_job.edu_req" placeholder="{yun:}t key='wap_user_00100'{/yun}">
                                     <el-option label="不限" :value="0"></el-option>
                                     <el-option v-for="item in cacheData.userdata.user_edu" :key="item" :label="cacheData.userclass_name[item]" :value="item"></el-option>
                                 </el-select>
                             </div>
-                            <div class="job_set_list">性别要求：
-                                <el-select v-model="curr_job.sex_req" placeholder="请选择">
+                            <div class="job_set_list">{yun:}t key='wap_00372'{/yun}
+                                <el-select v-model="curr_job.sex_req" placeholder="{yun:}t key='wap_user_00100'{/yun}">
                                     <el-option v-for="(item,index) in cacheData.com_sexreq" :key="index" :label="item" :value="index"></el-option>
                                 </el-select>
                             </div>
                             <div class="job_set_list" style="display: flex; align-items: center;">
-                                <div>年龄要求：</div>
+                                <div>{yun:}t key='ajax_00013'{/yun}</div>
                                 <div style="display: flex; align-items: center; position: relative; width: calc(100% - 120px);">
                                     <div class="TableInpt">
-                                        <el-input v-model="curr_job.minage_req" placeholder="请输入内容">
-                                            <template slot="append">岁</template>
+                                        <el-input v-model="curr_job.minage_req" placeholder="{yun:}t key='wap_user_00076'{/yun}">
+                                            <template slot="append">{yun:}t key='home.age_suffix'{/yun}</template>
                                         </el-input>
                                     </div>
                                     <div class="TableInptline">-</div>
                                     <div class="TableInpt">
-                                        <el-input v-model="curr_job.maxage_req" placeholder="请输入内容">
-                                            <template slot="append">岁</template>
+                                        <el-input v-model="curr_job.maxage_req" placeholder="{yun:}t key='wap_user_00076'{/yun}">
+                                            <template slot="append">{yun:}t key='home.age_suffix'{/yun}</template>
                                         </el-input>
                                     </div>
                                 </div>
@@ -251,42 +251,42 @@
                     </tr>
                     <tr v-if="curr_job.id">
                         <td>
-                            <div class="TableTite">职位状态</div>
+                            <div class="TableTite">{yun:}t key='member_user_00107'{/yun}</div>
                         </td>
                         <td>
-                            <el-radio v-model="curr_job.status" label="0">招聘中</el-radio>
-                            <el-radio v-model="curr_job.status" label="1">已下架</el-radio>
+                            <el-radio v-model="curr_job.status" label="0">{yun:}t key='wap_com_00243'{/yun}</el-radio>
+                            <el-radio v-model="curr_job.status" label="1">{yun:}t key='wap_com_00242'{/yun}</el-radio>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">浏览量</div>
+                            <div class="TableTite">{yun:}t key='wap_com_00112'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input v-model="curr_job.jobhits" placeholder="请输入浏览量"></el-input>
+                                <el-input v-model="curr_job.jobhits" placeholder="{yun:}t key='admin_00583'{/yun}"></el-input>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">曝光量</div>
+                            <div class="TableTite">{yun:}t key='wap_com_00111'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input v-model="curr_job.jobexpoure" placeholder="请输入曝光量"></el-input>
+                                <el-input v-model="curr_job.jobexpoure" placeholder="{yun:}t key='admin_00584'{/yun}"></el-input>
                             </div>
                         </td>
                     </tr>
                     <tr v-if="curr_job.id">
                         <td>
-                            <div class="TableTite">审核状态</div>
+                            <div class="TableTite">{yun:}t key='wap_com_00406'{/yun}</div>
                         </td>
                         <td>
                             <div class="job_set_list">
-                                <font v-if="curr_job.state == 1" color="blue">已审核</font>
-                                <font v-else-if="curr_job.state == 3" color="red">未通过</font>
-                                <font v-else color="red">未审核</font>
+                                <font v-if="curr_job.state == 1" color="blue">{yun:}t key='wap_user_00165'{/yun}</font>
+                                <font v-else-if="curr_job.state == 3" color="red">{yun:}t key='wap_user_00167'{/yun}</font>
+                                <font v-else color="red">{yun:}t key='wap_user_00166'{/yun}</font>
                             </div>
                         </td>
                     </tr>
@@ -294,47 +294,47 @@
                 </table>
             </div>
             <div class="setBasicButn" style="border: none; height: 80px;">
-                <el-button type="primary" size="medium" :loading="save_load" @click="jobsave">提交</el-button>
+                <el-button type="primary" size="medium" :loading="save_load" @click="jobsave">{yun:}t key='common.submit'{/yun}</el-button>
             </div>
         </div>
         <!--新增工作地址弹窗-->
-        <el-drawer title="新增工作地址" :visible.sync="addressdrawer" append-to-body :wrapper-closable="false" size="60%">
+        <el-drawer title="{yun:}t key='admin_00585'{/yun}" :visible.sync="addressdrawer" append-to-body :wrapper-closable="false" size="60%">
             <div class="yunyinDialog" style="padding-right: 20px;">
                 <div class="yunyinDiaList">
                     <div class="yunyinDiaTite">
-                        <span>联系人</span>
+                        <span>{yun:}t key='wap_01431'{/yun}</span>
                     </div>
                     <div class="yunyinDiaInpt">
-                        <el-input v-model="link_man" placeholder="请输入联系人"></el-input>
+                        <el-input v-model="link_man" placeholder="{yun:}t key='wap_com_00013'{/yun}"></el-input>
                     </div>
                 </div>
                 <div class="yunyinDiaList">
                     <div class="yunyinDiaTite">
-                        <span>手机号码</span>
+                        <span>{yun:}t key='wap_user_00241'{/yun}</span>
                     </div>
                     <div class="yunyinDiaInpt">
-                        <el-input v-model="link_moblie" placeholder="请输入手机号码"></el-input>
+                        <el-input v-model="link_moblie" placeholder="{yun:}t key='wap_user_00142'{/yun}"></el-input>
                     </div>
                 </div>
                 <div class="yunyinDiaList">
                     <div class="yunyinDiaTite">
-                        <span>固定电话</span>
+                        <span>{yun:}t key='wap_com_00014'{/yun}</span>
                     </div>
                     <div class="yunyinDiaInpt">
-                        <el-input v-model="link_phone" placeholder="请输入固定电话"></el-input>
+                        <el-input v-model="link_phone" placeholder="{yun:}t key='wap_com_00008'{/yun}"></el-input>
                     </div>
                 </div>
                 <div class="yunyinDiaList">
                     <div class="yunyinDiaTite">
-                        <span>联系邮箱</span>
+                        <span>{yun:}t key='wap_com_00016'{/yun}</span>
                     </div>
                     <div class="yunyinDiaInpt">
-                        <el-input v-model="email" placeholder="请输入联系邮箱"></el-input>
+                        <el-input v-model="email" placeholder="{yun:}t key='wap_com_00009'{/yun}"></el-input>
                     </div>
                 </div>
                 <div class="yunyinDiaList">
                     <div class="yunyinDiaTite">
-                        <span>所在区域</span>
+                        <span>{yun:}t key='wap_com_00032'{/yun}</span>
                     </div>
                     <div class="yunyinDiaInpt">
                         <el-cascader style="width: 100%;" v-model="sel_city" :options="city_types" :props="{checkStrictly: true}"  filterable collapse-tags clearable></el-cascader>
@@ -342,7 +342,7 @@
                 </div>
                 <div class="yunyinDiaList">
                     <div class="yunyinDiaTite">
-                        <span>详细地址</span>
+                        <span>{yun:}t key='wap_01362'{/yun}</span>
                     </div>
                     <div class="yunyinDiaInpt yunyinDiautoco">
 						<el-autocomplete style="width: 100%;"
@@ -350,7 +350,7 @@
 							:debounce="1000"
 							v-model="address"
 							:fetch-suggestions="addressKeyup"
-							placeholder="请输入内容"
+							placeholder="{yun:}t key='wap_user_00076'{/yun}"
 							@select="poiSearchClick">
 							<i class="el-icon-location-outline el-input__icon" slot="suffix" @click="localsearch('全国')"></i>
 							<template slot-scope="{ item }">
@@ -374,8 +374,8 @@
                 </div>
             </div>
             <div class="setBasicButn" style="border: none; height: 80px;">
-                <el-button @click="addressdrawer = false">取 消</el-button>
-                <el-button type="primary" @click="addressSubmit" :loading="save_load">确 定</el-button>
+                <el-button @click="addressdrawer = false">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
+                <el-button type="primary" @click="addressSubmit" :loading="save_load">{yun:}t key='wap_com_00019'{/yun}</el-button>
             </div>
         </el-drawer>
     </div>
@@ -633,40 +633,40 @@
 			},
             addressSubmit: function () {
                 var that = this
-                that.link_man = that.link_man.replace(/[-_ ]/g, '');// 去掉空格
-                if (that.link_man == '') {
-                    message.error('请填写联系人')
+                that.link_man = that.link_man.replace(/[-_ ]/g, '");// {yun:}t key='common_01715'{/yun}
+                if (that.link_man == "') {
+                    message.error("{yun:}t key='wap_01368'{/yun}")
                     return false
                 } else {
                     var test = that.link_man.replace(/[0-9]/g, '');
                     if (!test) {
-                        message.error('联系人不支持全数字')
+                        message.error("{yun:}t key='wap_com_00005'{/yun}")
                         return false
                     } else {
                         if (/\d/.test(that.link_man)) {
                             if (that.link_man.length > 8) {
                                 // obj.value = obj.value.substring(0,8);
-                                message.error('联系人填写字数不能超过8个')
+                                message.error("{yun:}t key='wap_com_00002'{/yun}")
                                 return false
                             }
                         }
                     }
                 }
                 if (that.link_moblie == '' && that.link_phone == '') {
-                    message.error('请填写联系电话')
+                    message.error("{yun:}t key='wap_01369'{/yun}")
                     return false
                 } else if (that.link_moblie != '' && !isjsMobile(that.link_moblie)) {
-                    message.error('手机号码格式错误')
+                    message.error("{yun:}t key='wap_user_00039'{/yun}")
                     return false
                 }
                 if (that.sel_city[0] && that.cacheData['city_type'][that.sel_city[0]]) {
                     if (!that.sel_city[1] > 0) {
-                        message.error('请选择所在区域二级城市')
+                        message.error("{yun:}t key='member_com_00625'{/yun}")
                         return false
                     }
                 }
                 if (that.address == '') {
-                    message.error('请选择填写详细地址')
+                    message.error("{yun:}t key='member_com_00626'{/yun}")
                     return false
                 }
                 var params = {
@@ -897,7 +897,7 @@
             jobsave: function () {
                 var that = this
                 if (that.curr_job.name == '') {
-                    message.error('职位名称不能为空！')
+                    message.error("{yun:}t key='member_com_00585'{/yun}")
                     return false;
                 }
                 that.curr_job.job1 = that.sel_jobtype[0] ? that.sel_jobtype[0] : '0'
@@ -906,26 +906,26 @@
 				
 				if (that.jionly == '1') {
 					if (that.curr_job.job1 == '0') {
-						message.error('请选择职位类别！')
+						message.error("{yun:}t key='admin_user_company_00023'{/yun}")
 						return false;
 					}
 				} else {
 					if (that.curr_job.job1_son == '0') {
-						message.error('请选择职位类别！')
+						message.error("{yun:}t key='admin_user_company_00023'{/yun}")
 						return false;
 					}
 				}
                 if (that.mychecked == 0) {// 非薪资面议
                     if (that.curr_job.minsalary == '' || that.curr_job.minsalary == '0') {
-                        message.error('请填写工资！')
+                        message.error("{yun:}t key='wap_01706'{/yun}")
                         return false;
                     }
                     if (that.curr_job.maxsalary) {
                         if (parseInt(that.curr_job.maxsalary) < parseInt(that.curr_job.minsalary)) {
-                            message.error('最高工资必须大于最低工资！')
+                            message.error("{yun:}t key='wap_com_00264'{/yun}")
                             return false;
                         } else if (parseInt(that.curr_job.maxsalary) == parseInt(that.curr_job.minsalary)) {
-                            message.error('最高工资必须大于最低工资，如是固定工资只需填写最低工资！')
+                            message.error("{yun:}t key='wap_com_00255'{/yun}")
                             return false;
                         }
                     }
@@ -934,7 +934,7 @@
                     that.curr_job.maxsalary = 0;
                 }
                 if (that.curr_job.zp_num == '') {
-                    message.error('请填写招聘人数！')
+                    message.error("{yun:}t key='wap_00888'{/yun}")
                     return false;
                 }
                 // 去除html标签后判断内容是否为空
@@ -942,29 +942,29 @@
                 var content = jobeditor.getHtml().replace(regex, "")
 				
                 if (content == "") {
-                    message.error('职位描述不能为空！')
+                    message.error("{yun:}t key='member_com_00587'{/yun}")
                     return false;
                 } else {
                     that.curr_job.content = jobeditor.getHtml()
                 }
                 if (that.curr_job.link_id == '') {
-                    message.error('请选择工作地点！')
+                    message.error("{yun:}t key='wap_01676'{/yun}")
                     return false;
                 }
                 if (that.curr_job.zp_minage != '' && that.curr_job.zp_minage < 16) {
-                    message.error('法律规定：禁止招收未满16周岁未成年人！')
+                    message.error("{yun:}t key='wap_com_00257'{/yun}")
                     return false;
                 }
                 if (that.curr_job.zp_maxage != '' && (that.curr_job.zp_maxage < 16 || that.curr_job.zp_maxage > 99)) {
-                    message.error('请设置合理的年龄区间！')
+                    message.error("{yun:}t key='wap_com_00269'{/yun}")
                     return false;
                 }
                 if (that.curr_job.minage_req != '' && that.curr_job.minage_req < 16) {
-                    message.error('法律规定：禁止招收未满16周岁未成年人！')
+                    message.error("{yun:}t key='wap_com_00257'{/yun}")
                     return false;
                 }
                 if (that.curr_job.maxage_req != '' && (that.curr_job.maxage_req < 16 || that.curr_job.maxage_req > 99)) {
-                    message.error('请设置合理的年龄区间！')
+                    message.error("{yun:}t key='wap_com_00269'{/yun}")
                     return false;
                 }
                 if (parseInt(that.curr_job.jobexpoure) < parseInt(that.curr_job.jobhits)) {

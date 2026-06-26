@@ -104,7 +104,7 @@ class evaluate_controller extends adminCommon
             $info['pj_arr'] = json_decode(stripslashes($info['pj_arr']), 1);
             $info['ask_arr'] = json_decode(stripslashes($info['ask_arr']), 1);
             if (!$info['name']) {
-                $this->render_json(1, '请填写测评名称！');
+                $this->render_json(1, yun_at('admin_01325'));
             }
             // 新上传图片文件处理
             foreach ($_FILES['pic'] as $nk => $nv) {
@@ -179,7 +179,7 @@ class evaluate_controller extends adminCommon
                 }
             }
             $EvaluateM->delEvaQuestion($ids, intval($nid), 'notin');// 删除多余的试题
-            $scale ? $this->admin_json(0, "操作成功！", array('nid' => $nid)) : $this->render_json(1, "操作失败！");
+            $scale ? $this->admin_json(0, 'wap_js_00159', array('nid' => $nid)) : $this->render_json(1, yun_at('model_00003'));
         }
    }
 
@@ -212,7 +212,7 @@ class evaluate_controller extends adminCommon
             }
         }
         $EvaluateM->delEvaQuestion($ids, intval($_POST['examid']), 'notin');// 删除多余的试题
-        $this->render_json(0, '操作成功');
+        $this->render_json(0, yun_at('wap_user_00264'));
     }
 
     //删除测评试卷
@@ -221,14 +221,14 @@ class evaluate_controller extends adminCommon
         if($_POST['del']){
             $del = $_POST['del'];
             if (!$del) {
-                $this->render_json(1, '请选择您要删除的测评试卷！');
+                $this->render_json(1, yun_at('admin_neirong_00001'));
             }
             if(is_array($del)){
                 $this->delevagroup($del);
                 $this->admin_json(0, '测评试卷(ID:'.@implode(',',$del).')删除成功！');
             } else {
                 $result	= $EvaluateM->delevaluate($del);
-                isset($result) ? $this->admin_json(0, '测评试卷(ID:' . $del . ')删除成功！') : $this->render_json(1,'删除失败！');
+                isset($result) ? $this->admin_json(0, '测评试卷(ID:' . $del . ')删除成功！') : $this->render_json(1,'admin_user_00186');
             }
         }
     }
@@ -239,7 +239,7 @@ class evaluate_controller extends adminCommon
         if($_POST['qid']){
             $qid = $_POST['qid'];
             $scale = $EvaluateM->delEvaQuestion($qid);
-            isset($scale) ? $this->admin_json(0, '测评问题(ID:'.$qid.')删除成功！') : $this->render_json(1, '删除失败！');
+            isset($scale) ? $this->admin_json(0, '测评问题(ID:'.$qid.')删除成功！') : $this->render_json(1, 'admin_user_00186');
         }
     }
 
@@ -289,18 +289,18 @@ class evaluate_controller extends adminCommon
     function addgroup_action(){
         $EvaluateM = $this->MODEL('evaluate');
         if ($_POST['classname'] == "") {
-            $this->render_json(1, "请正确填写你的类别！");
+            $this->render_json(1, yun_at('admin_neirong_00002'));
         }
         $where['name'] = $_POST['classname'];
         $row = $EvaluateM->getInfo($where);
         if ($row) {
-            $this->render_json(1, "已经存在此类别！");
+            $this->render_json(1, yun_at('admin_neirong_00003'));
         }
         $nid = $EvaluateM->addEvaluateGroupInfo($_POST);
         if ($nid) {
-            $this->admin_json(0, "测评类别添加成功！");
+            $this->admin_json(0, 'admin_01326');
         } else {
-            $this->render_json(1, "测评类别添加失败！");
+            $this->render_json(1, yun_at('admin_01327'));
         }
     }
 
@@ -311,7 +311,7 @@ class evaluate_controller extends adminCommon
         $_POST['name'] && $addData['name'] = $_POST['name'];
         $_POST['sort'] && $addData['sort'] = $_POST['sort'];
         $EvaluateM->upEvaluateGroupInfo($addData,$whereData);
-        $this->render_json(0, '操作成功');
+        $this->render_json(0, yun_at('wap_user_00264'));
     }
 
     //删除测评类别
@@ -321,7 +321,7 @@ class evaluate_controller extends adminCommon
         // 该分组下所有的试卷的id
         $id	= intval($_POST['del']);
         if (!$id) {
-            $this->render_json(1, '请选择要删除的数据');
+            $this->render_json(1, yun_at('admin_user_weipin_00005'));
         }
         $titleid = $EvaluateM->getList(array('keyid' => $id));
         $ids = array();
@@ -330,7 +330,7 @@ class evaluate_controller extends adminCommon
         }
         $this->delevagroup($ids);
         $result	= $EvaluateM->delEvaluateGroup($id);
-        isset($result) ? $this->admin_json(0, '测评类别(ID:'.$_GET['id'].')删除成功！') : $this->render_json(1,'删除失败！');
+        isset($result) ? $this->admin_json(0, '测评类别(ID:'.$_GET['id'].')删除成功！') : $this->render_json(1,'admin_user_00186');
     }
 
     //测评留言管理列表

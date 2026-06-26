@@ -3,15 +3,15 @@
         <div class="modulemoreSeachs">
             <div class="moduleSeachleft">
                 <div class="moduleInptList" style="margin-bottom: 8px;">
-                    <el-input size="small" placeholder="请输入搜索内容" v-model="keyword" class="input-with-select" clearable>
-                        <el-select v-model="type" slot="prepend" placeholder="标题">
+                    <el-input size="small" placeholder="{yun:}t key='admin_00340'{/yun}" v-model="keyword" class="input-with-select" clearable>
+                        <el-select v-model="type" slot="prepend" placeholder="{yun:}t key='wap_user_00103'{/yun}">
                             <el-option label="标题" value="1"></el-option>
                             <el-option label="作者" value="2"></el-option>
                         </el-select>
                     </el-input>
                 </div>
                 <div class="tableSeachInpt tableSeachInptsmall">
-                    <el-select size="small" style="margin-right: 0;" v-model="publish" slot="prepend" placeholder="发布时间" clearable @change="search">
+                    <el-select size="small" style="margin-right: 0;" v-model="publish" slot="prepend" placeholder="{yun:}t key='admin_user_weipin_00030'{/yun}" clearable @change="search">
                         <el-option label="今天" value="1"></el-option>
                         <el-option label="最近三天" value="3"></el-option>
                         <el-option label="最近七天" value="7"></el-option>
@@ -21,17 +21,17 @@
                 </div>
                 <div class="tableSeachInpt tableSeachInpElect">
                     <el-cascader size="small" v-model="cate" :options="class_cascader" :props="{ checkStrictly: true }"
-                        :show-all-levels="false" placeholder="新闻类别" clearable>
+                        :show-all-levels="false" placeholder="{yun:}t key='admin_00170'{/yun}" clearable>
                     </el-cascader>
                 </div>
                 <div class="tableSeachInpt">
-                    <el-button type="primary" icon="el-icon-search" size="mini" @click="search">查询</el-button>
+                    <el-button type="primary" icon="el-icon-search" size="mini" @click="search">{yun:}t key='admin_user_weipin_00049'{/yun}</el-button>
                 </div>
             </div>
             <div class="moduleSeachButn">
                 <div class="tableSeachInpt">
                     <div class="new_bth" style="height: 28px; line-height: 28px;">
-                        <el-link :underline="false" icon="el-icon-document-add" @click="add({id: ''})">新增新闻</el-link>
+                        <el-link :underline="false" icon="el-icon-document-add" @click="add({id: ''})">{yun:}t key='admin_00794'{/yun}</el-link>
                     </div>
                 </div>
             </div>
@@ -58,8 +58,8 @@
                 </el-table-column>
                 <el-table-column prop="showtime" label="显示时间" width="130">
                     <template slot-scope="props">
-                        {{props.row.starttime_n}} 开始
-                        <div style="padding-top:5px;color:#999;">{{props.row.endtime == '0' ? '永久显示' : props.row.endtime_n + ' 结束'}}</div>
+                        {yun:}t key='admin_00795'{/yun}
+                        <div style="padding-top:5px;color:#999;">{yun:}t key='admin_00153'{/yun}</div>
                     </template>
                 </el-table-column>
                 <el-table-column prop="datetime_n" label="发布时间" sortable="custom" width="135">
@@ -71,14 +71,14 @@
                 <el-table-column prop="zd" label="站点" width="75">
                     <template slot-scope="scope">
                         <span>{{ dnamearr[scope.row.did] }}</span>
-                        <el-link type="primary" @click="fp(scope.row)">分配</el-link>
+                        <el-link type="primary" @click="fp(scope.row)">{yun:}t key='admin_user_weipin_00048'{/yun}</el-link>
                     </template>
                 </el-table-column>
                 <el-table-column label="操作" width="140" fixed="right">
                     <template slot-scope="scope">
                         <div class="cz_button">
-                            <el-button size="small " type=" " @click="add(scope.row)">修改</el-button>
-                            <el-button type="danger" size="small " @click="delrow(scope.row.id)">删除
+                            <el-button size="small " type=" " @click="add(scope.row)">{yun:}t key='wap_js_00073'{/yun}</el-button>
+                            <el-button type="danger" size="small " @click="delrow(scope.row.id)">{yun:}t key='common.delete'{/yun}
                             </el-button>
                         </div>
                     </template>
@@ -88,18 +88,18 @@
         <div class="modulePaging">
             <div class="bottomButnBull">
                 <div class="bottomButnBlak">
-                    <el-checkbox v-model="checkedAll" @change="selectAllBottom">全选</el-checkbox>
-                    <el-button size="mini" @click="delAllBottom">批量删除</el-button>
+                    <el-checkbox v-model="checkedAll" @change="selectAllBottom">{yun:}t key='wap_js_00074'{/yun}</el-checkbox>
+                    <el-button size="mini" @click="delAllBottom">{yun:}t key='member_com_00055'{/yun}</el-button>
                 </div>
                 <div class="bottomButnNone">
                     <el-popover placement="top-start" width="460" trigger="hover">
                         <div class="bottomButnGend">
-                            <el-button size="mini" @click="setsx(1)">设置属性</el-button>
-                            <el-button size="mini" @click="setsx(2)">取消属性</el-button>
-                            <el-button size="mini" @click="fpAllBottom">批量选择分站</el-button>
-                            <el-button size="mini" @click="fpClassAllBottom">批量转移分类</el-button>
+                            <el-button size="mini" @click="setsx(1)">{yun:}t key='admin_00796'{/yun}</el-button>
+                            <el-button size="mini" @click="setsx(2)">{yun:}t key='admin_00797'{/yun}</el-button>
+                            <el-button size="mini" @click="fpAllBottom">{yun:}t key='admin_user_00279'{/yun}</el-button>
+                            <el-button size="mini" @click="fpClassAllBottom">{yun:}t key='admin_00164'{/yun}</el-button>
                         </div>
-                        <div class="bottomButnMore" slot="reference">更多</div>
+                        <div class="bottomButnMore" slot="reference">{yun:}t key='common.more'{/yun}</div>
                     </el-popover>
                 </div>
             </div>
@@ -110,11 +110,11 @@
         </div>
         <!--分配站点弹窗-->
         <div class="modluDrawer">
-            <el-dialog title="分配站点" width="350px" :visible.sync="drawerfp" :modal-append-to-body="false">
+            <el-dialog title="{yun:}t key='admin_user_weipin_00029'{/yun}" width="350px" :visible.sync="drawerfp" :modal-append-to-body="false">
                 <div class="toolClasDia fenpeizhand">
                     <div class="toolClasList">
                         <div class="toolClasTite">
-                            <span>新闻标题：</span>
+                            <span>{yun:}t key='admin_00798'{/yun}</span>
                         </div>
                         <div class="toolClasCont">
                             <span>{{curr_data.title}}</span>
@@ -122,10 +122,10 @@
                     </div>
                     <div class="toolClasList">
                         <div class="toolClasTite">
-                            <span>切换站点：</span>
+                            <span>{yun:}t key='admin_user_weipin_00020'{/yun}</span>
                         </div>
                         <div class="toolClasCont">
-                            <el-select v-model="curr_data.did" placeholder="请选择" filterable>
+                            <el-select v-model="curr_data.did" placeholder="{yun:}t key='wap_user_00100'{/yun}" filterable>
                                 <el-option v-for="(item,index) in dnamearr" :key="index" :label="item" :value="index">
                                 </el-option>
                             </el-select>
@@ -133,21 +133,21 @@
                     </div>
                 </div>
                 <span slot="footer" class="dialog-footer">
-                    <el-button @click="drawerfp = false">取 消</el-button>
-                    <el-button type="primary" @click="fpSave(1)" :disabled="submitLoading">确 定</el-button>
+                    <el-button @click="drawerfp = false">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
+                    <el-button type="primary" @click="fpSave(1)" :disabled="submitLoading">{yun:}t key='wap_com_00019'{/yun}</el-button>
                 </span>
             </el-dialog>
         </div>
         <!--批量分配站点-->
         <div class="modluDrawer">
-            <el-dialog title="批量分配站点" width="300px" :visible.sync="drawerfpmultiple" :modal-append-to-body="false">
+            <el-dialog title="{yun:}t key='admin_00162'{/yun}" width="300px" :visible.sync="drawerfpmultiple" :modal-append-to-body="false">
                 <div class="toolClasDia fenpeizhand">
                     <div class="toolClasList">
                         <div class="toolClasTite">
-                            <span>切换站点：</span>
+                            <span>{yun:}t key='admin_user_weipin_00020'{/yun}</span>
                         </div>
                         <div class="toolClasCont">
-                            <el-select v-model="multipledid" placeholder="请选择" filterable>
+                            <el-select v-model="multipledid" placeholder="{yun:}t key='wap_user_00100'{/yun}" filterable>
                                 <el-option v-for="(item,index) in dnamearr" :key="index" :label="item" :value="index">
                                 </el-option>
                             </el-select>
@@ -155,21 +155,21 @@
                     </div>
                 </div>
                 <span slot="footer" class="dialog-footer">
-                    <el-button @click="drawerfpmultiple = false">取 消</el-button>
-                    <el-button type="primary" @click="fpSave(2)" :disabled="submitLoading">确 定</el-button>
+                    <el-button @click="drawerfpmultiple = false">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
+                    <el-button type="primary" @click="fpSave(2)" :disabled="submitLoading">{yun:}t key='wap_com_00019'{/yun}</el-button>
                 </span>
             </el-dialog>
         </div>
         <!--批量转移分类-->
         <div class="modluDrawer">
-            <el-dialog title="批量转移分类" width="400px" :visible.sync="drawerClassMultiple" :modal-append-to-body="false">
+            <el-dialog title="{yun:}t key='admin_00164'{/yun}" width="400px" :visible.sync="drawerClassMultiple" :modal-append-to-body="false">
                 <div class="toolClasDia fenpeizhand">
                     <div class="toolClasList">
                         <div class="toolClasTite">
-                            <span>新闻类别：</span>
+                            <span>{yun:}t key='admin_00799'{/yun}</span>
                         </div>
                         <div class="toolClasCont">
-                            <el-select v-model="classid" filterable placeholder="请选择新闻所属分类">
+                            <el-select v-model="classid" filterable placeholder="{yun:}t key='admin_00159'{/yun}">
                                 <el-option v-for="item in classarr" :key="item.id" :label="item.name" :value="item.id">
                                 </el-option>
                             </el-select>
@@ -180,13 +180,13 @@
                             <span></span>
                         </div>
                         <div class="toolClasCont">
-                            <span style="color:red;">说明：新闻类别转移可转移到任意类别</span>
+                            <span style="color:red;">{yun:}t key='admin_00157'{/yun}</span>
                         </div>
                     </div>
                 </div>
                 <span slot="footer" class="dialog-footer">
-                    <el-button @click="drawerClassMultiple = false">取 消</el-button>
-                    <el-button type="primary" @click="saveClass" :disabled="submitLoading">确 定</el-button>
+                    <el-button @click="drawerClassMultiple = false">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
+                    <el-button type="primary" @click="saveClass" :disabled="submitLoading">{yun:}t key='wap_com_00019'{/yun}</el-button>
                 </span>
             </el-dialog>
         </div>
@@ -196,7 +196,7 @@
                 <div class="toolClasDia fenpeizhand">
                     <div class="toolClasList">
                         <div class="toolClasTite">
-                            <span>属性：</span>
+                            <span>{yun:}t key='admin_00800'{/yun}</span>
                         </div>
                         <div class="toolClasCont">
                             <el-checkbox-group v-model="sx_arr">
@@ -206,7 +206,7 @@
                     </div>
                     <div class="toolClasList">
                         <div class="toolClasTite">
-                            <span>新闻ID：</span>
+                            <span>{yun:}t key='admin_00801'{/yun}</span>
                         </div>
                         <div class="toolClasCont">
                             <el-input :value="selectedItem.join(',')" readonly></el-input>
@@ -214,8 +214,8 @@
                     </div>
                 </div>
                 <span slot="footer" class="dialog-footer">
-                    <el-button @click="drawersxmultiple = false">取 消</el-button>
-                    <el-button type="primary" @click="savesx" :disabled="submitLoading">确 定</el-button>
+                    <el-button @click="drawersxmultiple = false">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
+                    <el-button type="primary" @click="savesx" :disabled="submitLoading">{yun:}t key='wap_com_00019'{/yun}</el-button>
                 </span>
             </el-dialog>
         </div>
@@ -225,26 +225,26 @@
                 <div class="drawerModlue">
                     <div class="tableDome_tip tableDoAlert">
                         <div class="shiTopAllTips">
-                            <span>添加新闻内容（针对新闻的标题、关健词和简短描述）进行SEO角度去设置！可以提升搜索引擎对网站收录友好度。新闻内容中如提供文档、表格等附件供下载，请从编辑器上传附件，不要从其他地方直接复制。</span>
+                            <span>{yun:}t key='admin_00152'{/yun}</span>
                         </div>
                     </div>
                     <div class="moduleTable" style="margin-top:10px;">
                         <table class="tableVue">
                             <thead>
                                 <tr align="left">
-                                    <th width="100">名称</th>
-                                    <th width="500">内容</th>
-                                    <th width=" ">说明</th>
+                                    <th width="100">{yun:}t key='member_com_00021'{/yun}</th>
+                                    <th width="500">{yun:}t key='wap_user_00102'{/yun}</th>
+                                    <th width=" ">{yun:}t key='member_com_00207'{/yun}</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
                                     <td>
-                                        <div class="TableTite">所属分类</div>
+                                        <div class="TableTite">{yun:}t key='admin_00167'{/yun}</div>
                                     </td>
                                     <td>
                                         <div class="TableSelect">
-                                            <el-select v-model="curr_data.nid" filterable placeholder="请选择新闻所属分类">
+                                            <el-select v-model="curr_data.nid" filterable placeholder="{yun:}t key='admin_00159'{/yun}">
                                                 <el-option v-for="item in classarr" :key="item.id" :label="item.name" :value="item.id">
                                                 </el-option>
                                             </el-select>
@@ -258,11 +258,11 @@
                                 </tr>
                                 <tr>
                                     <td>
-                                        <div class="TableTite">新闻标题</div>
+                                        <div class="TableTite">{yun:}t key='member_com_00043'{/yun}</div>
                                     </td>
                                     <td>
                                         <div class="TableInpt">
-                                            <el-input v-model="curr_data.title_all" placeholder="请输入新闻标题"></el-input>
+                                            <el-input v-model="curr_data.title_all" placeholder="{yun:}t key='admin_00809'{/yun}"></el-input>
                                         </div>
                                     </td>
                                     <td>
@@ -273,11 +273,11 @@
                                 </tr>
                                 <tr>
                                     <td>
-                                        <div class="TableTite">使用范围</div>
+                                        <div class="TableTite">{yun:}t key='admin_user_00126'{/yun}</div>
                                     </td>
                                     <td>
                                         <div class="TableSelect">
-                                            <el-select v-model="curr_data.did" placeholder="请选择" filterable>
+                                            <el-select v-model="curr_data.did" placeholder="{yun:}t key='wap_user_00100'{/yun}" filterable>
                                                 <el-option v-for="(item,index) in dnamearr" :key="index" :label="item" :value="index">
                                                 </el-option>
                                             </el-select>
@@ -291,33 +291,33 @@
                                 </tr>
                                 <tr>
                                     <td>
-                                        <div class="TableTite">时间设置</div>
+                                        <div class="TableTite">{yun:}t key='admin_00171'{/yun}</div>
                                     </td>
                                     <td>
                                         <div class="" style=" display:flex">
                                             <div class="" style=" margin-right:20px;">
-                                                <el-date-picker v-model="curr_data.starttime_n" type="date" value-format="yyyy-MM-dd" placeholder="开始时间">
+                                                <el-date-picker v-model="curr_data.starttime_n" type="date" value-format="yyyy-MM-dd" placeholder="{yun:}t key='wap_user_00087'{/yun}">
                                                 </el-date-picker>
                                             </div>
                                             <div class="">
-                                                <el-date-picker v-model="curr_data.endtime_n" type="date" value-format="yyyy-MM-dd" placeholder="结束时间">
+                                                <el-date-picker v-model="curr_data.endtime_n" type="date" value-format="yyyy-MM-dd" placeholder="{yun:}t key='wap_user_00096'{/yun}">
                                                 </el-date-picker>
                                             </div>
                                         </div>
                                     </td>
                                     <td>
                                         <div class="TableShuom">
-                                            <span>时间可选填，开始时间默认当前时间，结束时间不填则永久展示 </span>
+                                            <span>{yun:}t key='admin_00154'{/yun} </span>
                                         </div>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>
-                                        <div class="TableTite">文章作者</div>
+                                        <div class="TableTite">{yun:}t key='admin_00168'{/yun}</div>
                                     </td>
                                     <td>
                                         <div class="TableInpt">
-                                            <el-input v-model="curr_data.author" placeholder="请输入文章作者"></el-input>
+                                            <el-input v-model="curr_data.author" placeholder="{yun:}t key='admin_00161'{/yun}"></el-input>
                                         </div>
                                     </td>
                                     <td>
@@ -328,11 +328,11 @@
                                 </tr>
                                 <tr>
                                     <td>
-                                        <div class="TableTite">文章来源</div>
+                                        <div class="TableTite">{yun:}t key='admin_00802'{/yun}</div>
                                     </td>
                                     <td>
                                         <div class="TableInpt">
-                                            <el-input v-model="curr_data.source" placeholder="请输入文章来源"></el-input>
+                                            <el-input v-model="curr_data.source" placeholder="{yun:}t key='admin_00810'{/yun}"></el-input>
                                         </div>
                                     </td>
                                     <td>
@@ -343,26 +343,26 @@
                                 </tr>
                                 <tr>
                                     <td>
-                                        <div class="TableTite">新闻关键词</div>
+                                        <div class="TableTite">{yun:}t key='admin_00803'{/yun}</div>
                                     </td>
                                     <td>
                                         <div class="TableInpt">
-                                            <el-input v-model="curr_data.keyword" placeholder="请输入新闻关键词"></el-input>
+                                            <el-input v-model="curr_data.keyword" placeholder="{yun:}t key='admin_00811'{/yun}"></el-input>
                                         </div>
                                     </td>
                                     <td>
                                         <div class="TableShuom">
-                                            <span> 多个关键字，请用,隔开 </span>
+                                            <span> {yun:}t key='admin_00158'{/yun} </span>
                                         </div>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>
-                                        <div class="TableTite">新闻简述</div>
+                                        <div class="TableTite">{yun:}t key='admin_00169'{/yun}</div>
                                     </td>
                                     <td>
                                         <div class="TableInpt">
-                                            <el-input type="textarea" :rows="2" placeholder="请输入内容" v-model="curr_data.description">
+                                            <el-input type="textarea" :rows="2" placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="curr_data.description">
                                             </el-input>
                                         </div>
                                     </td>
@@ -374,7 +374,7 @@
                                 </tr>
                                 <tr>
                                     <td>
-                                        <div class="TableTite">新闻内容</div>
+                                        <div class="TableTite">{yun:}t key='admin_00804'{/yun}</div>
                                     </td>
                                     <td colspan="2">
                                         <div class="TableInpt">
@@ -385,24 +385,24 @@
                                 </tr>
                                 <tr>
                                     <td>
-                                        <div class="TableTite">缩 略 图</div>
+                                        <div class="TableTite">{yun:}t key='admin_00165'{/yun}</div>
                                     </td>
                                     <td class="drawerModInpt" style="display: flex">
                                         <el-upload class="upload-demo" style="display: flex" :action="''" :auto-upload="false" :accept="pic_accept" :show-file-list="false" :on-change="picChange">
-                                            <el-button size="small" type="primary" plain icon="el-icon-plus">上传图片
+                                            <el-button size="small" type="primary" plain icon="el-icon-plus">{yun:}t key='wap_00540'{/yun}
                                             </el-button>
                                         </el-upload>
                                         <img style="width: 208px; height: 167px;padding-left: 5px;" v-if="curr_data.picurl" :src="curr_data.picurl">
                                     </td>
                                     <td>
                                         <div class="TableShuom">
-                                            <span> 只能上传jpg/png文件，且不超过500kb</span>
+                                            <span> {yun:}t key='admin_user_company_00029'{/yun}</span>
                                         </div>
                                     </td>
                                 </tr>
                                 <tr v-if="propertys_cnt">
                                     <td>
-                                        <div class="TableTite">新闻类型</div>
+                                        <div class="TableTite">{yun:}t key='admin_00805'{/yun}</div>
                                     </td>
                                     <td>
                                         <div class=" ">
@@ -420,11 +420,11 @@
                                 </tr>
                                 <tr>
                                     <td>
-                                        <div class="TableTite">新闻排序</div>
+                                        <div class="TableTite">{yun:}t key='admin_00806'{/yun}</div>
                                     </td>
                                     <td>
                                         <div class="TableInpt">
-                                            <el-input v-model="curr_data.sort" placeholder="请输入内容" onkeyup="this.value=this.value.replace(/[^0-9]/g,'')"></el-input>
+                                            <el-input v-model="curr_data.sort" placeholder="{yun:}t key='wap_user_00076'{/yun}" onkeyup="this.value=this.value.replace(/[^0-9]/g,'')"></el-input>
                                         </div>
                                     </td>
                                     <td>
@@ -437,7 +437,7 @@
                         </table>
                     </div>
                     <div class="setBasicButn" style="border: none;">
-                        <el-button type="primary" size="medium" @click="save" :disabled="submitLoading">提交</el-button>
+                        <el-button type="primary" size="medium" @click="save" :disabled="submitLoading">{yun:}t key='common.submit'{/yun}</el-button>
                     </div>
                 </div>
             </el-drawer>
@@ -452,7 +452,7 @@ module.exports = {
             pic_accept: localStorage.getItem("pic_accept"),
             loading: false,
             pagerCount: 5,
-            emptytext: '暂无数据',
+            emptytext: "{yun:}t key='wap_js_00113'{/yun}",
             keyword: '',
             checkedAll: false,
             selectedItem: [],
@@ -515,7 +515,7 @@ module.exports = {
     methods: {
         fpClassAllBottom() {
             if (!this.selectedItem.length) {
-                message.error('请选择要操作的数据项');
+                message.error("{yun:}t key='admin_user_weipin_00001'{/yun}");
                 return false;
             }
             this.drawerClassMultiple = true
@@ -523,7 +523,7 @@ module.exports = {
         saveClass() {
             let that = this;
             if (this.classid == '') {
-                message.error('请选择新闻类别!');
+                message.error("{yun:}t key='admin_01333'{/yun}");
                 return false;
             }
             let params = {
@@ -548,7 +548,7 @@ module.exports = {
         },
         setsx(sx_tp) {
             if (!this.selectedItem.length) {
-                message.error('请选择要操作的数据项');
+                message.error("{yun:}t key='admin_user_weipin_00001'{/yun}");
                 return false;
             }
             this.sx_type = sx_tp
@@ -580,11 +580,11 @@ module.exports = {
         },
         picChange(file) {
             if (file.raw.type != 'image/png' && file.raw.type != 'image/jpeg') {
-                message.error('上传图片只能是 JPG、PNG 格式!');
+                message.error("{yun:}t key='admin_00155'{/yun}");
                 return false
             }
             if (file.raw.size / 1024 > 500) {
-                message.error('上传图片大小不能超过 500Kb!');
+                message.error("{yun:}t key='admin_00156'{/yun}");
                 return false
             }
             var tmp = deepClone(this.curr_data)
@@ -600,25 +600,25 @@ module.exports = {
         },
         fpAllBottom() {
             if (!this.selectedItem.length) {
-                message.error('请选择要操作的数据项');
+                message.error("{yun:}t key='admin_user_weipin_00001'{/yun}");
                 return false;
             }
-            this.multipledid = ''
+            this.multipledid = '"
             this.drawerfpmultiple = true
         },
         fpSave(tp) {
             var that = this
             let params = {}
-            if (tp == 1) { // 分配站点
+            if (tp == 1) { // {yun:}t key='admin_user_weipin_00029'{/yun}
                 params.uid = that.curr_data.id
                 params.did = that.curr_data.did
-            } else { // 批量分配站点
+            } else { // {yun:}t key='admin_00162'{/yun}
                 if (!that.selectedItem.length) {
-                    message.error('请选择要分配的数据');
+                    message.error("请选择要分配的数据');
                     return false;
                 }
                 if (that.multipledid == '') {
-                    message.error('请选择分站');
+                    message.error("{yun:}t key='admin_00166'{/yun}");
                     return false;
                 }
                 params.uid = that.selectedItem.join(',')
@@ -646,12 +646,12 @@ module.exports = {
         },
         initEditor() {
             var that = this;
-            ue = UE.getEditor('projectBasis', {
+            ue = UE.getEditor('projectBasis", {
                 wordCount: false,           // 关闭字数统计
-                elementPathEnabled: false,  //关闭elementPath 元素路径
+                elementPathEnabled: false,  //{yun:}t key='common.close'{/yun}elementPath {yun:}t key='common_05704'{/yun}
                 autoHeightEnabled: false,   //关闭自适应高度，超出部分以滚动条形式展示
                 initialFrameHeight: 480,    //默认的编辑区域高度
-                initialFrameWidth: 600,     //初始化编辑器宽度,默认1000
+                initialFrameWidth: 600,     //初始化编辑器宽度,{yun:}t key='wap_js_00098'{/yun}1000
                 zIndex: 2000
             });
 
@@ -659,7 +659,7 @@ module.exports = {
                 if (that.curr_data.content) {
                     ue.setContent(that.curr_data.content);
                 } else {
-                    ue.setContent('');
+                    ue.setContent("');
                 }
             });
 
@@ -778,7 +778,7 @@ module.exports = {
                 params.t = that.sort_col
             }
             that.loading = true;
-            that.emptytext = "数据加载中";
+            that.emptytext = "{yun:}t key='admin_user_weipin_00026'{/yun}";
             httpPost('m=neirong&c=news&a=index', params, { hideloading: true }).then(function(result) {
                 var res = result.data
                 if (res.error == 0) {
@@ -792,7 +792,7 @@ module.exports = {
                     }
                     that.loading = false;
                     if (that.tableData.length === 0) {
-                        that.emptytext = "暂无数据";
+                        that.emptytext = "{yun:}t key='wap_js_00113'{/yun}";
                     }
                 }
             }).catch(function(e) {
@@ -821,11 +821,11 @@ module.exports = {
         save() {
             var that = this;
             if (!that.curr_data.nid) {
-                message.error('请选择新闻类别');
+                message.error("{yun:}t key='admin_01333'{/yun}");
                 return false;
             }
             if (!that.curr_data.title_all) {
-                message.error('请输入新闻标题');
+                message.error("{yun:}t key='admin_00809'{/yun}");
                 return false;
             }
             that.curr_data.content = ue.getContent();
@@ -877,7 +877,7 @@ module.exports = {
         },
         delAllBottom() {
             if (!this.selectedItem.length) {
-                message.error('请选择要删除的数据项');
+                message.error("{yun:}t key='admin_00136'{/yun}");
                 return false;
             }
             delConfirm(this, this.selectedItem, this.delete);

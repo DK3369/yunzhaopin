@@ -44,32 +44,32 @@ table,table tr th, table tr td { border:1px solid #666; }
               <img src="{yun:}url m=ajax c=pubqrcode toc=article toa=show toid=$Info.id{/yun}" width="150" height="150">
               
           </div>
-          <div class="zx_ewm_p">微信扫一扫分享资讯</div>
+          <div class="zx_ewm_p">{yun:}t key='wap_01473'{/yun}</div>
           </div>
           <!--div style="padding:20px 0;">
            <span class="sour_share fl"><em class="fl" style="line-height:28px;">{yun:}t key='wap_js_00040'{/yun}：</em>
          
 		
 			<div class="pyshare bdsharebuttonbox bdshare-button-style0-16" data-tag="share_1">
-				<a class="li s1 bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+				<a class="li s1 bds_tsina" data-cmd="tsina" title="{yun:}t key='common_02250'{/yun}"></a>
 				<a class="li s3 bds_qzone" data-cmd="qzone" title="{yun:}t key='wap_js_00040'{/yun}QQ空间"></a>
 				<a class="li s5 bds_sqq" data-cmd="sqq" title="{yun:}t key='wap_js_00040'{/yun}QQ好友"></a>
-				<a class="li s6 bds_weixin" data-cmd="weixin" title="分享到微信"></a>
+				<a class="li s6 bds_weixin" data-cmd="weixin" title="{yun:}t key='common_02251'{/yun}"></a>
 				<div class="clear"></div>
 			</div></span>
 			</div-->
 		  
 				
             <div class="zx_well_flip"> 
-			{yun:}if !empty($Info.next){/yun} <span>上一篇： <a title="{yun:}$Info.next.title{/yun}" href="{yun:}$Info.next.url{/yun}">{yun:}$Info.next.title|mb_substr:0:18:'utf-8'{/yun}</a> </span> {yun:}/if{/yun}
+			{yun:}if !empty($Info.next){/yun} <span>{yun:}t key='common_02301'{/yun} <a title="{yun:}$Info.next.title{/yun}" href="{yun:}$Info.next.url{/yun}">{yun:}$Info.next.title|mb_substr:0:18:'utf-8'{/yun}</a> </span> {yun:}/if{/yun}
 			
-			{yun:}if !empty($Info.last){/yun} <span>下一篇： <a title="{yun:}$Info.last.title{/yun}" href="{yun:}$Info.last.url{/yun}">{yun:}$Info.last.title|mb_substr:0:18:'utf-8'{/yun}</a></span> {yun:}/if{/yun}
+			{yun:}if !empty($Info.last){/yun} <span>{yun:}t key='common_02302'{/yun} <a title="{yun:}$Info.last.title{/yun}" href="{yun:}$Info.last.url{/yun}">{yun:}$Info.last.title|mb_substr:0:18:'utf-8'{/yun}</a></span> {yun:}/if{/yun}
               
               <div class="clear"></div>
               
             </div>
             <div class="zx_well_with">
-              <div class="zx_with_recom">相关推荐</div>
+              <div class="zx_with_recom">{yun:}t key='wap_01474'{/yun}</div>
               <div class="zx_with_list">
               {yun:}if $Info.like{/yun}
                 <ul style="width:100%">
@@ -77,7 +77,7 @@ table,table tr th, table tr td { border:1px solid #666; }
                   <li><a title="{yun:}$about.title{/yun}" href="{yun:}$about.url{/yun}" title="yun:}$about.title|mb_substr:0:16:'utf-8'{/yun}">{yun:}$about.title{/yun}</a></li>
                   {yun:}/foreach{/yun}
                 </ul>
-                {yun:}else{/yun} <div class="news_tip_no">暂无相关推荐</div> {yun:}/if{/yun}
+                {yun:}else{/yun} <div class="news_tip_no">{yun:}t key='wap_01475'{/yun}</div> {yun:}/if{/yun}
                 <div class="clear"></div>
               </div>
             </div>
@@ -87,7 +87,7 @@ table,table tr th, table tr td { border:1px solid #666; }
 
 <div class="news_index_box_right">
     <div class="clear"></div>
-            <div class="news_index_today_h1" style="margin-top:0px;"> <span class="news_index_today_hot_s">热门话题</span></div>
+            <div class="news_index_today_h1" style="margin-top:0px;"> <span class="news_index_today_hot_s">{yun:}t key='common_02482'{/yun}</span></div>
     <div class="n_list_box_left"id="news_nav" style="margin-top:35px;">
  {yun:}articleclass r_list=1 item=v{/yun}
             <div class="zx_fl_list">

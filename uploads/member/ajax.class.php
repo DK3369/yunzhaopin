@@ -39,7 +39,7 @@ class ajax_controller extends common
             $nid    =   $orderM->upInfo($oid, array('order_type' => $_POST['paytype'], 'port' => '1'), $this->uid);
             if ($nid) {
 
-                $this->MODEL('log')->addMemberLog($this->uid, $this->usertype, "财务订单：修改订单（ID".$oid."）付款类型", 88, 2);
+                $this->MODEL('log')->addMemberLog($this->uid, $this->usertype, "财务订单：修改订单（ID".$oid.'member_com_00729', 88, 2);
             }
             
             echo $nid ? 1 : 2;
@@ -97,14 +97,14 @@ class ajax_controller extends common
 
         if (!$this->uid || !$this->username) {
 
-            $this->layer_msg('请先登录', 9, 0, '', 2, 110);
+            $this->layer_msg('wap_00376', 9, 0, '', 2, 110);
         } else {
 
             $shell  =   $this->GET_user_shell($this->uid, $_COOKIE['shell']);
 
             if (!is_array($shell)) {
 
-                $this->layer_msg('登录有误', 9, 0, '', 2, 111);
+                $this->layer_msg('wap_00127', 9, 0, '', 2, 111);
             }
 
             $moblie =   $_POST['str'];
@@ -117,8 +117,8 @@ class ajax_controller extends common
             $result =   $noticeM->sendCode($moblie, 'cert', 1, $user);
 
             $logM       =   $this->MODEL('log');
-            $logContent =   '账号认证：发送手机认证验证码';
-            $logDetail  =   '手机认证，发送短信验证码；认证手机号码：'.$moblie;
+            $logContent =   'wap_00117';
+            $logDetail  =   'wap_00114'.$moblie;
             $logM->addMemberLog($user['uid'], $user['usertype'], $logContent, 12, 1, $logDetail);
 
             echo yun_json_encode($result);
@@ -178,7 +178,7 @@ class ajax_controller extends common
             $arr['sid']     =   $spaces[$com['sid']];
         } else {
 
-            $arr['sid']     =   '无';
+            $arr['sid']     =   yun_at('common_02082');
         }
         $arr['bid']         =   $spaces[$com['bid']];
         $arr['cid']         =   $spaces[$com['cid']];
@@ -277,12 +277,12 @@ class ajax_controller extends common
                 }
 
                 $signday        =   $member['signday'] + 1;
-                $msg            =   '连续签到' . $signday . "天";
+                $msg            =   'wap_00128' . $signday . "天";
             } else {
 
                 $signday        =   '1';
                 $integral       =   $this->config['integral_signin'];
-                $msg            =   '第一次签到';
+                $msg            =   'wap_00125';
             }
 
             $arr                =   array();

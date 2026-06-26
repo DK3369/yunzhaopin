@@ -28,8 +28,8 @@ class gongzhao_model extends model
                     $List[$key]['datetime_n'] = date('Y-m-d', $va['datetime']);
                     $List[$key]['isRec']      = $va['rec'] == 1 ? true : false;
                     $List[$key]['pic_n']      = checkpic($va['pic'],$this->config['sy_gongzhaologo']);
-                    $List[$key]['endtime_n']  = $va['endtime'] == 0 ? '永久显示' : date('Y-m-d', $va['endtime']);
-                    $List[$key]['startime_n']  = $va['startime'] == 0 ? '永久显示' : date('Y-m-d', $va['startime']);
+                    $List[$key]['endtime_n']  = $va['endtime'] == 0 ? 'admin_00147' : date('Y-m-d', $va['endtime']);
+                    $List[$key]['startime_n']  = $va['startime'] == 0 ? 'admin_00147' : date('Y-m-d', $va['startime']);
                 }
             }
             $Listgongzhao ['list'] = $List;
@@ -158,7 +158,7 @@ class gongzhao_model extends model
         if (empty($delId)) {
             return array(
                 'errcode' => 8,
-                'msg'     => '请选择要删除的数据！',
+                'msg'     => yun_at('member_com_00084'),
             );
         } else {
             if (is_array($delId)) {
@@ -170,9 +170,9 @@ class gongzhao_model extends model
 
             $nid = $this->delete_all('gongzhao', array('id' => array('in', $delId)), '');
             if ($nid) {
-                $return['msg']     = '公告';
+                $return['msg']     = yun_at('wap_00221');
                 $return['errcode'] = $nid ? '9' : '8';
-                $return['msg']     = $nid ? $return['msg'] . '删除成功！' : $return['msg'] . '删除失败！';
+                $return['msg']     = $nid ? $return['msg'] . 'admin_user_00187' : $return['msg'] . 'admin_user_00186';
             }
         }
 

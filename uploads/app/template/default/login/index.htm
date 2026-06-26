@@ -44,8 +44,8 @@
                                 {yun:}/if{/yun}
                             </ul>
                             {yun:}if $config.wx_author=='1'{/yun}
-                            <div class="wxcode_login" title="微信扫一扫登录" style="display:block;"></div>
-                            <div class="normal_login none" title="普通登录"></div>
+                            <div class="wxcode_login" title="{yun:}t key='common_02485'{/yun}" style="display:block;"></div>
+                            <div class="normal_login none" title="{yun:}t key='common_02486'{/yun}"></div>
                             {yun:}/if{/yun}
                         </div>
                         <!--扫码登录页面-->
@@ -60,7 +60,7 @@
 							</div>
                         </div>
 
-                        <!--普通登录-->
+                        <!--{yun:}t key='common_02486'{/yun}-->
                         <div class="login_t_box">
                             <div class="login_box_cot" id="login_normal">
                                 <!--{yun:}t key='default_00062'{/yun}-->
@@ -138,10 +138,10 @@
                                         <i class="login_box_line"></i>
                                         <input name="password" type="text" class="login_m_text" id="dynamiccode" value="{yun:}t key='default_00050'{/yun}" />
                                         <div class="logoin_msg none" id="show_dynamiccode">
-                                            <div class="logoin_msg_tx">请填写短信动态码</div>
+                                            <div class="logoin_msg_tx">{yun:}t key='common_02229'{/yun}</div>
                                             <div class="logoin_msg_icon"></div>
                                         </div>
-                                        <a href="javascript:void(0);" class="send_yzm" id="send_msg_tip" onclick="send_msg2('{yun:}url m=login c=sendmsg{/yun}');">发送动态码</a>
+                                        <a href="javascript:void(0);" class="send_yzm" id="send_msg_tip" onclick="send_msg2('{yun:}url m=login c=sendmsg{/yun}');">{yun:}t key='common_02230'{/yun}</a>
                                     </div>
                                 </div>
                                 {yun:}/if{/yun}
@@ -151,17 +151,17 @@
                                 <input type="hidden" id="referurl" name="referurl" value="{yun:}$referurl{/yun}">
                                 <div class="clear"></div>
                                 <div class="login_box_cz">
-                                    <input type="button" value="登 录" id='sublogin' class="login_box_bth2" onclick="check_login('{yun:}url m=login c=loginsave{/yun}','vcode_imgs',2);" />
+                                    <input type="button" value="{yun:}t key='common_02234'{/yun}" id='sublogin' class="login_box_bth2" onclick="check_login('{yun:}url m=login c=loginsave{/yun}','vcode_imgs',2);" />
                                 </div>
                                 <div class="login_box_fw">
-                                   <span class="fl">没有账号？ <a href="{yun:}url m=register{/yun}" class="">{yun:}t key='default_00260'{/yun}</a></span>
-                                    <a href="{yun:}url m=forgetpw{/yun}" class="fr">忘记密码？</a>
+                                   <span class="fl">{yun:}t key='common_02231'{/yun} <a href="{yun:}url m=register{/yun}" class="">{yun:}t key='default_00260'{/yun}</a></span>
+                                    <a href="{yun:}url m=forgetpw{/yun}" class="fr">{yun:}t key='wap_00680'{/yun}？</a>
                                 </div>
                             </div>
                             <!--其他登录方式-->
                             {yun:}if $config.sy_qqlogin==1 || $config.sy_sinalogin==1 || $config.wx_author==1{/yun}
                             <div class="login_other">
-                                <div class="login_other_left"><span class="login_other_left_s">其他方式登录</span></div>
+                                <div class="login_other_left"><span class="login_other_left_s">{yun:}t key='common_02233'{/yun}</span></div>
                                 <div class="login_other_p">
 									{yun:}if $config.wx_author==1{/yun}
                                     <a href="{yun:}url m=wxconnect{/yun}" class=""><i class="l-icon login_weixin-icon"></i></a>
@@ -195,7 +195,7 @@
             <div class="clear"></div>
 
              <div class="clear"></div>
-        <div class="reg_footer">如果您有任何疑问或在登录过程中遇到任何困难，您都可以通过以下方式与我们联系
+        <div class="reg_footer">{yun:}t key='common_02484'{/yun}
            <div class="">{yun:}t key='common.phone'{/yun}： {yun:}$config.sy_freewebtel{/yun} <span class="reg_footer_yz">客服QQ：{yun:}$config.sy_qq{/yun}</span> </div>
                      </div>
         </div>

@@ -12,7 +12,7 @@ class tongji_controller extends company{
     
 		$this->public_action();
     
-		$tjtype	=	array("1"=>"区域","2"=>"学历","3"=>"薪资","4"=>"工作经验");
+		$tjtype	=	array("1"=>'common_02110',"2"=>'wap_com_00301',"3"=>'member_user_00106',"4"=>'wap_user_00240');
     
 		$this->yunset("tjtype",$tjtype);
 		
@@ -183,7 +183,7 @@ class tongji_controller extends company{
         
 			}
       
-			$this->yunset("piename","区域简历投递统计");
+			$this->yunset("piename",yun_at('member_com_00707'));
       
 		}elseif($_GET['type']=="2"){
       
@@ -211,7 +211,7 @@ class tongji_controller extends company{
 				}
         
 			}
-			$this->yunset("piename","学历简历投递统计");
+			$this->yunset("piename",yun_at('member_com_00708'));
       
 		}elseif($_GET['type']=="3"){
       
@@ -233,7 +233,7 @@ class tongji_controller extends company{
         
 			}
       
-			$this->yunset("piename","薪资简历投递统计");
+			$this->yunset("piename",yun_at('member_com_00709'));
 
 		}elseif($_GET['type']=="4"){
       
@@ -260,7 +260,7 @@ class tongji_controller extends company{
 				}
         
 			}
-			$this->yunset("piename","工作经验简历投递统计");
+			$this->yunset("piename",yun_at('member_com_00710'));
       
 		}
 		$this->yunset("pielist",$list);

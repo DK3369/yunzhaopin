@@ -110,7 +110,7 @@ function regUserNameComplex($name)
         //长度
         if ($namelen < $reg_nameminlen || $namelen > $reg_namemaxlen) {
 
-            $msg    = '用户名应在' . $reg_nameminlen . '-' . $reg_namemaxlen . '位字符之间！';
+            $msg    = 'common_01626' . $reg_nameminlen . '-' . $reg_namemaxlen . 'common_01462';
         } else {
 
             $smsg   =   $zmsg   =   $nmsg   =   $douhao =   '';
@@ -119,7 +119,7 @@ function regUserNameComplex($name)
             if ($reg_name_num == 1) {
                 if (!preg_match("/[0-9]+/u", $name)) {
 
-                    $nmsg   =   '数字';
+                    $nmsg   =   'common_01997';
                     $douhao =   '，';
                 }
             }
@@ -127,7 +127,7 @@ function regUserNameComplex($name)
             if ($reg_name_zm == 1) {
                 if (!preg_match('/[a-zA-Z]+/u', $name)) {
 
-                    $zmsg   =   $douhao . '字母';
+                    $zmsg   =   $douhao . 'common_01973';
                     $douhao =   '，';
                 }
             }
@@ -141,7 +141,7 @@ function regUserNameComplex($name)
 
             if ($nmsg || $zmsg || $smsg) {
 
-                $msg        =   '用户名必须包含' . $nmsg . $zmsg . $smsg;
+                $msg        =   'common_06170' . $nmsg . $zmsg . $smsg;
             }
         }
     }
@@ -171,7 +171,7 @@ function regPassWordComplex($name)
         if ($reg_pw_num == 1) {
             if (!preg_match("/[0-9]+/u", $name)) {
 
-                $nmsg   =   '数字';
+                $nmsg   =   'common_01997';
                 $douhao =   '，';
             }
         }
@@ -179,7 +179,7 @@ function regPassWordComplex($name)
         if ($reg_pw_zm == 1) {
             if (!preg_match('/[a-zA-Z]+/u', $name)) {
 
-                $zmsg   =   $douhao . '字母';
+                $zmsg   =   $douhao . 'common_01973';
                 $douhao =   '，';
             }
         }
@@ -192,7 +192,7 @@ function regPassWordComplex($name)
         }
         if ($nmsg || $zmsg || $smsg) {
 
-            $msg        =   '密码必须包含' . $nmsg . $zmsg . $smsg;
+            $msg        =   'default_00345' . $nmsg . $zmsg . $smsg;
         }
     }
     return $msg;
@@ -1062,7 +1062,7 @@ function curlMappic($data=array()){
 
         if(empty($data['lng']) || empty($data['lat'])){
             $return['error'] = -1;
-            $return['msg'] = '坐标异常请重试';
+            $return['msg'] = yun_at('common_01352');
             return $return;
         }
         $center = $data['lng'] . ',' . $data['lat'];  // lng,lat
@@ -1127,7 +1127,7 @@ function curlMappic($data=array()){
         }
     }else {
         $return['error'] = -1;
-        $return['msg'] = '地图key未配置';
+        $return['msg'] = yun_at('common_01243');
     }
     return $return;
 }
@@ -1145,7 +1145,7 @@ function bd_reverse_geocoding($data=array()){
 
         if(empty($data['lng']) || empty($data['lat'])){
             $return['error'] = -1;
-            $return['msg'] = '坐标异常请重试';
+            $return['msg'] = yun_at('common_01352');
             return $return;
         }
 
@@ -1173,7 +1173,7 @@ function bd_reverse_geocoding($data=array()){
             $return['error'] = 1;
             $return['data'] = $res['regeocode'];
         }else{
-            $return['msg'] = '高德接口错误码：'.$res['status'];
+            $return['msg'] = yun_at('common_01316').$res['status'];
         }
     }
 
@@ -1420,16 +1420,16 @@ function verifytoken($config)
     } else {
         switch ($config['code_kind']) {
             case '3' :
-                $msg = '请滑动滑块进行验证！';
+                $msg = 'common_01057';
                 break;
             case '4' :
-                $msg = '请拖动滑块进行验证';
+                $msg = 'common_01155';
                 break;
             case '5' :
-                $msg = '请绘制图中手势按钮进行验证';
+                $msg = 'common_00739';
                 break;
 			case '6' :
-                $msg = '验证失败，请重新验证！';
+                $msg = 'common_00944';
                 break;
         }
 
@@ -1876,13 +1876,13 @@ function format_datetime($date_time, $type = 1, $before = 1, $format = '')
 
         if ($timestamp > $today) {
 
-            return '今天';
+            return 'common_01940';
         } elseif ($timestamp > ($today - 86400)) {
 
-            return '昨天';
+            return 'common_02000';
         } else {
 
-            return ceil($difference / 86400) . '天前';
+            return ceil($difference / 86400) . 'admin_tool_00594';
         }
     } else if ($before == 2) {
 
@@ -1890,38 +1890,38 @@ function format_datetime($date_time, $type = 1, $before = 1, $format = '')
 
         if ($timestamp < $tomorrow) {
 
-            return '今天';
+            return 'common_01940';
         } elseif ($timestamp < ($tomorrow + 86400)) {
 
-            return '明天';
+            return 'wap_js_00144';
         } elseif ($timestamp < ($tomorrow + 172800)) {
 
-            return '后天';
+            return 'common_01962';
         } elseif ($timestamp < ($tomorrow + 604800)) {
 
-            return '一周后';
+            return 'common_01874';
         } elseif ($timestamp < ($tomorrow + 2952000)) {
 
-            return '一月后';
+            return 'common_01876';
         } else {
 
             $difference = $timestamp - time();
-            return ceil($difference / 86400) . '天后';
+            return ceil($difference / 86400) . 'wap_js_00143';
         }
     } else if ($before == 3) {
 
         $difference =   $timestamp - $today;
         if (ceil($difference / 86400) > 0){
 
-            return '剩余 '. ceil($difference / 86400) . ' 天';
+            return 'member_com_00285'. ceil($difference / 86400) . 'common_02067';
         }else{
 
-            return '今日到期';
+            return 'common_06171';
         }
     } else if ($before == 4) {
 
         $difference = $today - $timestamp;
-        return '过期 '.ceil($difference / 86400).' 天';
+        return 'common_02037'.ceil($difference / 86400).'common_02067';
     }
 }
 
@@ -1945,10 +1945,10 @@ function lastupdateStyle($date_time)
         } elseif ($type == 2) {
             if ($updateTime >= 1) {
 
-                return $updateTime . '小时前';
+                return $updateTime . 'admin_system_00652';
             } else {
 
-                return ceil((time() - $date_time) / 60) . '分钟前';
+                return ceil((time() - $date_time) / 60) . 'common_01895';
             }
         }
     } else {
@@ -1963,11 +1963,11 @@ function timeForYear($time){
     
     if($time > strtotime('today')){
         
-        $str  =  '今天 '.date('H:i', $time);
+        $str  =  'common_01940'.date('H:i', $time);
         
     }else if($time > mktime(0,0,0,1,1,date('Y'))){
         
-        $str  =  date('m月d日', $time);
+        $str  =  date('common_01656', $time);
         
     }else{
         
@@ -2028,13 +2028,13 @@ function salaryUnit($minsalary = 0, $maxsalary = 0)
         
         if ($config['resume_salarytype'] == 1) {
             if($maxsalary<2000){
-                $salary = '2000'.$unit.'以下';
+                $salary = '2000'.$unit.'common_01943';
             }else{
                 $salary = $minsalary.'-'.$maxsalary.$unit;
             }
         }else{
             if($maxsalary<2000){
-                $salary = 2 . $unit . '以下';
+                $salary = 2 . $unit . 'common_01943';
             }else{
                 $salary = floor($minsalary / 1000 * 10) / 10 . '-'. floor($maxsalary / 1000 * 10) / 10 . $unit;
             }
@@ -2046,7 +2046,7 @@ function salaryUnit($minsalary = 0, $maxsalary = 0)
             $salary = floor($minsalary / 1000 * 10) / 10 . $unit;
         }
     }else{
-        $salary = '面议';
+        $salary = 'common_02045';
     }
     return $salary;
 }
@@ -2091,7 +2091,7 @@ function formatTime($time){
         $time_n =   date('H.i', $time);
     } else if ($time > mktime(0, 0, 0, 1, 1, date('Y'))) {
 
-        $time_n =   date('m月d日', $time);
+        $time_n =   date('common_01656', $time);
     } else {
 
         $time_n =   date('Y-m-d', $time);

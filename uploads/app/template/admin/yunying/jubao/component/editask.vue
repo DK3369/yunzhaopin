@@ -4,40 +4,40 @@
             <table class="tableVue">
                 <thead>
                     <tr align="left">
-                        <th width="20%">名称</th>
-                        <th>状态</th>
-                        <th width="20%">说明</th>
+                        <th width="20%">{yun:}t key='member_com_00021'{/yun}</th>
+                        <th>{yun:}t key='member_user_00181'{/yun}</th>
+                        <th width="20%">{yun:}t key='member_com_00207'{/yun}</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td>
-                            <div class="TableTite">问答标题</div>
+                            <div class="TableTite">{yun:}t key='admin_00787'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input placeholder="请输入内容" v-model="info.title">
+                                <el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="info.title">
                                 </el-input>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>问答标题</span>
+                                <span>{yun:}t key='admin_00787'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">问答类别</div>
+                            <div class="TableTite">{yun:}t key='admin_00233'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableSelect" style="display: flex;align-items: center;">
-                                <el-select v-model="info.pid" placeholder="请选择" style="width: 50%;" @change="classchange">
+                                <el-select v-model="info.pid" placeholder="{yun:}t key='wap_user_00100'{/yun}" style="width: 50%;" @change="classchange">
                                     <el-option v-for="item in positionOne" :key="item.id" :label="item.name"
                                         :value="item.id">
                                     </el-option>
                                 </el-select>
-                                <el-select v-model="info.cid" placeholder="请选择" style="width: 50%;" >
+                                <el-select v-model="info.cid" placeholder="{yun:}t key='wap_user_00100'{/yun}" style="width: 50%;" >
                                     <el-option v-for="item in positionTwo" :key="item.id" :label="item.name"
                                         :value="item.id">
                                     </el-option>
@@ -46,29 +46,29 @@
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>问答类别</span>
+                                <span>{yun:}t key='admin_00233'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">访问次数</div>
+                            <div class="TableTite">{yun:}t key='admin_00232'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input placeholder="请输入内容" v-model="info.visit">
+                                <el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="info.visit">
                                 </el-input>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>访问次数</span>
+                                <span>{yun:}t key='admin_00232'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">是否推荐</div>
+                            <div class="TableTite">{yun:}t key='admin_00231'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
@@ -78,13 +78,13 @@
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>是否推荐</span>
+                                <span>{yun:}t key='admin_00231'{/yun}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">问答内容</div>
+                            <div class="TableTite">{yun:}t key='admin_00788'{/yun}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
@@ -96,7 +96,7 @@
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>问答内容</span>
+                                <span>{yun:}t key='admin_00788'{/yun}</span>
                             </div>
                         </td>
                     </tr>
@@ -105,7 +105,7 @@
         </div>
 
         <div class="setBasicButn" style="border: none;">
-            <el-button type="primary" size="medium" @click="save" :disabled="submitLoading">更新</el-button>
+            <el-button type="primary" size="medium" @click="save" :disabled="submitLoading">{yun:}t key='wap_00225'{/yun}</el-button>
         </div>
     </div>
 </template>

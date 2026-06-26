@@ -4,8 +4,8 @@
         <div class="moduleElSearchInf" v-if="cansearch">
             <div class="moduleElTabInpt" style="flex-wrap: wrap;">
                 <div class="moduleInptList">
-                    <el-input placeholder="输入你要搜索的关键字" @keyup.enter.native="handleSearch" size="small" v-model="searchForm.keyword" class="input-with-select" clearable>
-                        <el-select v-model="searchForm.type" slot="prepend" placeholder="姓名">
+                    <el-input placeholder="{yun:}t key='admin_user_weipin_00003'{/yun}" @keyup.enter.native="handleSearch" size="small" v-model="searchForm.keyword" class="input-with-select" clearable>
+                        <el-select v-model="searchForm.type" slot="prepend" placeholder="{yun:}t key='wap_00529'{/yun}">
                             <el-option label="姓名" value="1"></el-option>
                             <el-option label="邀约企业" value="2"></el-option>
                             <el-option label="邀请内容" value="4"></el-option>
@@ -13,7 +13,7 @@
                     </el-input>
                 </div>
                 <div class="moduleInptList">
-                    <el-select v-model="searchForm.browse" size="small" slot="prepend" placeholder="是否查看" clearable @change="handleSearch">
+                    <el-select v-model="searchForm.browse" size="small" slot="prepend" placeholder="{yun:}t key='admin_user_00250'{/yun}" clearable @change="handleSearch">
                         <el-option label="未查看" value="1"></el-option>
                         <el-option label="已查看" value="2"></el-option>
                         <el-option label="已同意" value="3"></el-option>
@@ -21,10 +21,10 @@
                     </el-select>
                 </div>
                 <div class="tableSeachInpt tableSeachInptsmalltwo">
-                    <el-date-picker v-model="searchForm.times" type="daterange" align="right" unlink-panels range-separator="至" start-placeholder="邀约开始日期" end-placeholder="邀约结束日期" :picker-options="timeOptions" value-format="yyyy-MM-dd" size="small" @change="handleTimeChange"></el-date-picker>
+                    <el-date-picker v-model="searchForm.times" type="daterange" align="right" unlink-panels range-separator="至" start-placeholder="{yun:}t key='admin_00599'{/yun}" end-placeholder="{yun:}t key='admin_00600'{/yun}" :picker-options="timeOptions" value-format="yyyy-MM-dd" size="small" @change="handleTimeChange"></el-date-picker>
                 </div>
                 <div class="tableSeachInpt">
-                    <el-button type="primary" icon="el-icon-search" size="mini" @click="handleSearch">查询</el-button>
+                    <el-button type="primary" icon="el-icon-search" size="mini" @click="handleSearch">{yun:}t key='admin_user_weipin_00049'{/yun}</el-button>
                 </div>
             </div>
         </div>
@@ -59,10 +59,10 @@
                 <el-table-column prop="is_browse" label="是否查看" width="100">
                     <template slot-scope="scope">
                         <div class="admin_state">
-                            <span v-if="scope.row.is_browse == 1" class="admin_state2">未查看</span>
-                            <span v-else-if="scope.row.is_browse == 2" class="admin_state1">已查看</span>
-                            <span v-else-if="scope.row.is_browse == 3" class="admin_state5">已同意</span>
-                            <span v-else-if="scope.row.is_browse == 4" class="admin_state4">已拒绝</span>
+                            <span v-if="scope.row.is_browse == 1" class="admin_state2">{yun:}t key='wap_user_00260'{/yun}</span>
+                            <span v-else-if="scope.row.is_browse == 2" class="admin_state1">{yun:}t key='wap_user_00258'{/yun}</span>
+                            <span v-else-if="scope.row.is_browse == 3" class="admin_state5">{yun:}t key='wap_com_00190'{/yun}</span>
+                            <span v-else-if="scope.row.is_browse == 4" class="admin_state4">{yun:}t key='wap_user_00257'{/yun}</span>
                         </div>
                     </template>
                 </el-table-column>
@@ -70,7 +70,7 @@
                 <el-table-column label="操作" width="80" fixed="right">
                     <template slot-scope="scope">
                         <div class="cz_button">
-                            <el-button type="danger" size="mini" @click="deleteRow(scope)">删除</el-button>
+                            <el-button type="danger" size="mini" @click="deleteRow(scope)">{yun:}t key='common.delete'{/yun}</el-button>
                         </div>
                     </template>
                 </el-table-column>
@@ -78,8 +78,8 @@
         </div>
         <div class="modulePaging">
             <div>
-                <el-checkbox :indeterminate="isIndeterminate" v-model="checked" @change="selectAllBottom" style="margin-right: 8px">全选</el-checkbox>
-                <el-button @click="deleteRow(null, true)" size="mini">批量删除</el-button>
+                <el-checkbox :indeterminate="isIndeterminate" v-model="checked" @change="selectAllBottom" style="margin-right: 8px">{yun:}t key='wap_js_00074'{/yun}</el-checkbox>
+                <el-button @click="deleteRow(null, true)" size="mini">{yun:}t key='member_com_00055'{/yun}</el-button>
             </div>
             <div class="modulePagNum">
                 <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
@@ -89,7 +89,7 @@
             </div>
         </div>
         <div class="modluDrawer">
-            <el-drawer title="简历预览" :append-to-body="true" :visible.sync="resumePreviewVisible" :destroy-on-close="true" size="530px">
+            <el-drawer title="{yun:}t key='member_user_00037'{/yun}" :append-to-body="true" :visible.sync="resumePreviewVisible" :destroy-on-close="true" size="530px">
                 <resume_preview :id="info.eid" :uid="info.uid"></resume_preview>
             </el-drawer>
         </div>
@@ -137,7 +137,7 @@ module.exports = {
     data: function () {
         return {
             loading: true,
-            dataText: '数据加载中',
+            dataText: "{yun:}t key='admin_user_weipin_00026'{/yun}",
             searchClass: '',
             searchForm: {
                 page: 1,
@@ -151,7 +151,7 @@ module.exports = {
             },
             timeOptions: {
                 shortcuts: [{
-                    text: '昨天',
+                    text: "{yun:}t key='common_02000'{/yun}",
                     onClick(picker) {
                         const end = new Date();
                         const start = new Date();
@@ -160,39 +160,39 @@ module.exports = {
                         picker.$emit('pick', [start, end]);
                     }
                 }, {
-                    text: '今天',
+                    text: "{yun:}t key='common_01940'{/yun}",
                     onClick(picker) {
                         const end = new Date();
                         const start = new Date();
                         picker.$emit('pick', [start, end]);
                     }
                 }, {
-                    text: '本周',
+                    text: "{yun:}t key='admin_user_00146'{/yun}",
                     onClick(picker) {
                         const start = new Date(new Date().setHours(0, 0, 0) - (new Date().getDay() - 1) * 24 * 60 * 60 * 1000);
                         const end = new Date();
                         picker.$emit('pick', [start, end]);
                     }
                 }, {
-                    text: '上周',
+                    text: "{yun:}t key='admin_user_00142'{/yun}",
                     onClick(picker) {
                         const start = new Date(new Date().setHours(0, 0, 0) - (new Date().getDay() + 6) * 24 * 60 * 60 * 1000);
                         const end = new Date(new Date().setHours(0, 0, 0) + (0 - new Date().getDay()) *24 * 60 * 60 *1000);
                         picker.$emit('pick', [start, end]);
                     }
                 }, {
-                    text: '本月',
+                    text: "{yun:}t key='admin_user_00147'{/yun}",
                     onClick(picker) {
                         const end = new Date();
                         const start = new Date(new Date(new Date().getFullYear(), new Date().getMonth(), 1).setHours(0, 0, 0));
                         picker.$emit('pick', [start, end]);
                     }
                 }, {
-                    text: '上月',
+                    text: "{yun:}t key='admin_user_00143'{/yun}",
                     onClick(picker) {
                         const end = new Date(new Date(new Date().getFullYear(), new Date().getMonth(), 0).setHours(23, 59, 59, 59));
                         const start = new Date(new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1).setHours(0, 0, 0));
-                        picker.$emit('pick', [start, end]);
+                        picker.$emit('pick", [start, end]);
                     }
                 }]
             },
@@ -200,7 +200,7 @@ module.exports = {
             tableData: [],
             pageSizes: [],
             tableHig: true,
-            checked: false,//全选
+            checked: false,//{yun:}t key='wap_js_00074'{/yun}
             isIndeterminate: false,// checkbox 的不确定状态
             selectedItem: [],
             info: {},
@@ -229,7 +229,7 @@ module.exports = {
         },
         searchtype: {
             handler(val) {
-                this.searchForm.type = val? val : '1';
+                this.searchForm.type = val? val : "1';
             },
             immediate: true,
             deep: true,
@@ -355,7 +355,7 @@ module.exports = {
                         _this.$refs.multipleTable.bodyWrapper.scrollTop = 0;
                     }
                     if (_this.tableData.length === 0) {
-                        _this.dataText = "暂无数据";
+                        _this.dataText = "{yun:}t key='wap_js_00113'{/yun}";
                     }
                 }
             }).catch(function (error) {
@@ -366,7 +366,7 @@ module.exports = {
             let params = {};
             if (isMore) {
                 if (!this.selectedItem.length) {
-                    message.error('请选择要删除的数据');
+                    message.error("{yun:}t key='admin_user_weipin_00005'{/yun}");
                     return false;
                 }
                 let list = [];
@@ -387,10 +387,10 @@ module.exports = {
             httpPost('m=user&c=company_comlog&a=deluseridmsg', params).then(function (response) {
                 let res = response.data;
                 if (res.error === 0) {
-                    message.success('删除成功！');
+                    message.success("{yun:}t key='admin_user_00187'{/yun}");
                     _this.getList();
                 } else {
-                    message.error('删除失败！');
+                    message.error("{yun:}t key='admin_user_00186'{/yun}");
                 }
             }).catch(function (error) {
                 console.log(error);

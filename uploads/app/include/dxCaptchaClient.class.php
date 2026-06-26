@@ -54,7 +54,7 @@ class CaptchaClient
         $captchaResponse = new CaptchaResponse(false, "");
 
         if (is_null($this->appId) || is_null($this->appSecret) || is_null($token) || strlen($token) > 1024) {
-            $captchaResponse->setServerStatus("参数错误");
+            $captchaResponse->setServerStatus('wap_com_00228');
             return $captchaResponse;
         }
 

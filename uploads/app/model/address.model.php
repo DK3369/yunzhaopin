@@ -151,20 +151,20 @@ class address_model extends model
             }
             if (!isset($eData['utype']) && isset($data['uid'])){
 
-                $logContent =   '基本信息：新增工作地址';
-                $logDetail  =   '详细信息：';
-                $logDetail  .=  '联系人：'.$data['link_man'];
+                $logContent =   'common_00872';
+                $logDetail  =   'common_06354';
+                $logDetail  .=  'member_com_00310'.$data['link_man'];
                 if (isset($data['link_moblie']) && !empty($data['link_moblie'])) {
-                    $logDetail  .=  '，手机号码：'.$data['link_moblie'];
+                    $logDetail  .=  'common_01561'.$data['link_moblie'];
                 }
                 if (isset($data['link_phone']) && !empty($data['link_phone'])) {
-                    $logDetail  .=  '，固定电话：'.$data['link_phone'];
+                    $logDetail  .=  'common_06355'.$data['link_phone'];
                 }
                 if (isset($data['email']) && !empty($data['email'])) {
-                    $logDetail  .=  '，电子邮箱：'.$data['email'];
+                    $logDetail  .=  'common_01562'.$data['email'];
                 }
                 if (isset($data['link_address']) && !empty($data['link_address'])) {
-                    $logDetail  .=  '，工作地址：'.$data['link_address'];
+                    $logDetail  .=  'common_06356'.$data['link_address'];
                 }
                 $this->addMemberLog($data['uid'], 2, $logContent, 7, 1, $logDetail);
             }
@@ -206,25 +206,25 @@ class address_model extends model
                     }
                 }
 
-                $logContent =   '基本信息：更新工作地址；';
-                $logDetail  =   '详细信息：';
+                $logContent =   'common_00788';
+                $logDetail  =   'common_06354';
 
                 if (isset($data['link_man']) && !empty($data['link_man']) && $data['link_man'] != $addressInfo['link_man']) {
-                    $logDetail  .=  '联系人：'.$addressInfo['link_man'].' → '.$data['link_man'];
+                    $logDetail  .=  'member_com_00310'.$addressInfo['link_man'].' → '.$data['link_man'];
                 }
                 if (isset($data['link_moblie']) && !empty($data['link_moblie'])&& $data['link_moblie'] != $addressInfo['link_moblie']) {
-                    $logDetail  .= '，手机号码：'.$addressInfo['link_moblie'].' → '.$data['link_moblie'];
+                    $logDetail  .= 'common_01561'.$addressInfo['link_moblie'].' → '.$data['link_moblie'];
                 }
                 if (isset($data['link_phone']) && !empty($data['link_phone'])&& $data['link_phone'] != $addressInfo['link_phone']) {
-                    $logDetail  .= '，固定电话：'.$addressInfo['link_phone'].' → '.$data['link_phone'];
+                    $logDetail  .= 'common_06355'.$addressInfo['link_phone'].' → '.$data['link_phone'];
                 }
                 if (isset($data['email']) && !empty($data['email'])&& $data['email'] != $addressInfo['email']) {
-                    $logDetail  .= '，电子邮箱：'.$addressInfo['email'].' → '.$data['email'];
+                    $logDetail  .= 'common_01562'.$addressInfo['email'].' → '.$data['email'];
                 }
                 if (isset($data['link_address']) && !empty($data['link_address'])&& $data['link_address'] != $addressInfo['link_address']) {
-                    $logDetail  .= '，工作地址：'.$addressInfo['link_address'].' → '.$data['link_address'];
+                    $logDetail  .= 'common_06356'.$addressInfo['link_address'].' → '.$data['link_address'];
                 }
-                if ($logDetail != '详细信息：'){
+                if ($logDetail != 'common_06354'){
 
                     $this->addMemberLog($data['uid'], 2, $logContent, 7, 2, $logDetail);
                 }else{
@@ -251,7 +251,7 @@ class address_model extends model
     public function delAddress($where = array())
     {
 
-        $return     =   array('errcode' => 8, 'msg' => '系统错误');
+        $return     =   array('errcode' => 8, 'msg' => yun_at('common_01832'));
 
         if (!empty($where)){
 
@@ -270,7 +270,7 @@ class address_model extends model
                     $linkId =   $where['id'];
                 }
 
-                $logContent =   '职位更新：删除职位联系方式';
+                $logContent =   'common_06353';
                 $logDetail  =   '删除职位联系方式（ID：'.$linkId.'）';
                 $this->addMemberLog($where['uid'], 2, $logContent, 1, 3, $logDetail);
             }
@@ -278,7 +278,7 @@ class address_model extends model
             $return =   array(
 
                 'errcode'   =>  $result ? 9 : 8,
-                'msg'       =>  $result ? '工作地址删除成功' : '工作地址删除失败'
+                'msg'       =>  $result ? yun_at('common_01248') : yun_at('common_01247')
             );
         }
 

@@ -17,7 +17,7 @@
         <div class="com_body">
        
                    <div class="com_new_tip  "> 
-                             <span class="com_new_tip_h">{yun:}t key='member_com_00040'{/yun}</span>根据您所选的模板上传合适的横幅图片，选择合适的图片，点击上传按钮即可上传图片</div>
+                             <span class="com_new_tip_h">{yun:}t key='member_com_00040'{/yun}</span>{yun:}t key='member_com_00534'{/yun}</div>
 
          
 
@@ -31,8 +31,8 @@
                                 <img id="imgicon" src="{yun:}if $banner.pic{/yun}{yun:}$banner.pic{/yun}{yun:}else{/yun}{yun:}$syspic{/yun}{yun:}/if{/yun}" width="300" />
                             </div>
                             {yun:}if is_array($banner){/yun}
-                            <div class="combanner_box_tip">如需修改请选择新图片</div>
-                            <button type="button" class="yun_bth_pic layui-btn-normal noupload"  lay-data="{imgid: 'imgicon',parentid: 'imgparent'}" style="background-color:#f8F8F8">选择新图片</button>
+                            <div class="combanner_box_tip">{yun:}t key='member_com_00535'{/yun}</div>
+                            <button type="button" class="yun_bth_pic layui-btn-normal noupload"  lay-data="{imgid: 'imgicon',parentid: 'imgparent'}" style="background-color:#f8F8F8">{yun:}t key='member_com_00536'{/yun}</button>
                             <input type="hidden" id="laynoupload" value="1" />
 
                             <div class="combanner_box_b"> <input name="update" type="hidden" value="{yun:}t key='wap_js_00073'{/yun}">
@@ -64,7 +64,7 @@
 
     function checkbanner() {
         if($("input[name=file]").val() == "") {
-            layer.msg('请先选择新图片！！', 2, 8);
+            layer.msg("{yun:}t key='member_com_00537'{/yun}", 2, 8);
             return false;
         }
         setTimeout(function() {

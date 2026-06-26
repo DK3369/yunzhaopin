@@ -11,7 +11,7 @@ class tpl_model extends model{
 		$list	=	$this	->	select_all('company_tpl',$whereData,$data['field']);
 		foreach ($list as $k=>$v){
             $list[$k]['pic_n'] = checkpic($v['pic']);
-            $list[$k]['status_n'] = $v['status'] == 1 ? '已开启' : '已关闭';
+            $list[$k]['status_n'] = $v['status'] == 1 ? yun_at('admin_user_company_00172') : yun_at('admin_yunying_00048');
         }
 		return	$list;
 	}
@@ -38,11 +38,11 @@ class tpl_model extends model{
 
             $return['id']       =   $this->insert_into('company_tpl', $addData);
 
-            $return['msg']      =   '企业模板(ID:' . $return['id'] . ')';
+            $return['msg']      =   yun_auto_t('企业模板(ID:') . $return['id'] . ')';
 
             $return['errcode']  =   $return['id'] ? '9' : '8';
 
-            $return['msg']      =   $return['id'] ? $return['msg'] . '添加成功！' : $return['msg'] . '添加失败！';
+            $return['msg']      =   $return['id'] ? $return['msg'] . 'admin_system_00138' : $return['msg'] . 'admin_system_00137';
 
             return $return;
         }
@@ -57,11 +57,11 @@ class tpl_model extends model{
 					
 			$return['id']		=	$this	->	update_once('company_tpl',$addData,$whereData);
 		
-			$return['msg']		=	'企业模板(ID:'.$whereData['id'].')';
+			$return['msg']		=	yun_auto_t('企业模板(ID:').$whereData['id'].')';
 			
 			$return['errcode']	=	$return['id'] ? '9' :'8';
 			
-			$return['msg']		=	$return['id'] ? $return['msg'].'更新成功！' : $return['msg'].'更新失败！';
+			$return['msg']		=	$return['id'] ? $return['msg'].'admin_system_00064' : $return['msg'].'api_wxapp_00009';
 			
 			return	$return;
 		}
@@ -84,9 +84,9 @@ class tpl_model extends model{
 
 			$return['id']		=	$this	->	delete_all('company_tpl',array('id'=>array('in',$delId)),'');
 		
-			$return['msg']		=	'企业模板(ID:'.$delId.')';
+			$return['msg']		=	yun_auto_t('企业模板(ID:').$delId.')';
 			$return['errcode']	=	$return['id'] ? '9' :'8';
-			$return['msg']		=	$return['id'] ? $return['msg'].'删除成功！' : $return['msg'].'删除失败！';
+			$return['msg']		=	$return['id'] ? $return['msg'].'admin_user_00187' : $return['msg'].'admin_user_00186';
 		}
 		return	$return;
 	}
@@ -137,7 +137,7 @@ class tpl_model extends model{
 					$list[$k]['pic']	=	checkpic($v['pic']);
                     $list[$k]['pic_n']	=	checkpic($v['pic']);
 				}
-                $list[$k]['status_n'] = $v['status'] == 1 ? '已开启' : '已关闭';
+                $list[$k]['status_n'] = $v['status'] == 1 ? yun_at('admin_user_company_00172') : yun_at('admin_yunying_00048');
 			}
 		}
 		
@@ -170,11 +170,11 @@ class tpl_model extends model{
 			
 			$return['id']		=	$this	->	insert_into('resumetpl',$addData);
 		
-			$return['msg']		=	'模板(ID:'.$return['id'].')';
+			$return['msg']		=	yun_auto_t('模板(ID:').$return['id'].')';
             
             $return['errcode']	=	$return['id'] ? '9' :'8';
             
-            $return['msg']		=	$return['id'] ? $return['msg'].'添加成功！' : $return['msg'].'添加失败！';
+            $return['msg']		=	$return['id'] ? $return['msg'].'admin_system_00138' : $return['msg'].'admin_system_00137';
 			
 			return	$return;
 		}
@@ -189,11 +189,11 @@ class tpl_model extends model{
 			
 			$return['id']		=	$this	->	update_once('resumetpl',$addData,$whereData);
 			
-			$return['msg']		=	'模板(ID:'.$return['id'].')';
+			$return['msg']		=	yun_auto_t('模板(ID:').$return['id'].')';
             
             $return['errcode']	=	$return['id'] ? '9' :'8';
             
-            $return['msg']		=	$return['id'] ? $return['msg'].'更新成功！' : $return['msg'].'更新失败！';
+            $return['msg']		=	$return['id'] ? $return['msg'].'admin_system_00064' : $return['msg'].'api_wxapp_00009';
 		
 			return	$return;
 		}
@@ -216,9 +216,9 @@ class tpl_model extends model{
 			 
 			$return['id']		=	$this	->	delete_all('resumetpl',array('id'=>array('in',$delId)),'');
 		
-			$return['msg']		=	'模板(ID:'.$delId.')';
+			$return['msg']		=	yun_auto_t('模板(ID:').$delId.')';
 			$return['errcode']	=	$return['id'] ? '9' :'8';
-			$return['msg']		=	$return['id'] ? $return['msg'].'删除成功！' : $return['msg'].'删除失败！';
+			$return['msg']		=	$return['id'] ? $return['msg'].'admin_user_00187' : $return['msg'].'admin_user_00186';
 		}
 		return	$return;
 	}
@@ -250,23 +250,23 @@ class tpl_model extends model{
                 $paytpls    =   @explode(',', $statis['paytpls']);
 
                 if (in_array($id, $paytpls)) {
-                    return array('msg' => '请勿重复购买！', 'errcode' => 8);
+                    return array('msg' => yun_at('ajax_00009'), 'errcode' => 8);
                 }
             }
             if ($info['price'] > $statis['integral']) {
 
-                return array('msg' => $this->config['integral_pricename'] . '不足，请先充值！', 'errcode' => 8);
+                return array('msg' => $this->config['integral_pricename'] . 'model_00104', 'errcode' => 8);
             } else {
 
-                $nid    =   $integralM->company_invtal($data['uid'], 1, $info['price'], false, "购买简历模板", true, 2, 'integral', 15);
+                $nid    =   $integralM->company_invtal($data['uid'], 1, $info['price'], false, 'ajax_00011', true, 2, 'integral', 15);
 
                 if ($nid) {
 
                     $paytpls[]  =   $id;
                     $statisM->upInfo(array('paytpls' => pylode(',', $paytpls)), array('uid' => $data['uid'], 'usertype' => 1));
-                    return array('msg' => '购买成功！', 'errcode' => 9);
+                    return array('msg' => yun_at('model_00063'), 'errcode' => 9);
                 } else {
-                    return array('msg' => '购买失败！', 'errcode' => 8);
+                    return array('msg' => yun_at('model_00064'), 'errcode' => 8);
                 }
             }
         }
@@ -293,10 +293,10 @@ class tpl_model extends model{
 				$paytpls	=	@explode(',',$statis['paytpls']);  
 			}
 			if(in_array($id,$paytpls)==false && $id>0){
-				return array('msg'=>'请先购买！','errcode'=>8);
+				return array('msg'=>yun_at('model_00065'),'errcode'=>8);
 			}
 			$statisM -> upInfo(array('tpl'=>$id),array('uid'=>$data['uid'],'usertype'=>1));
-			return array('msg'=>'操作成功！','errcode'=>9);
+			return array('msg'=>yun_at('wap_js_00159'),'errcode'=>9);
 		}
 	}
 	/*
@@ -312,7 +312,7 @@ class tpl_model extends model{
 				if($value['pic']){
 					$list[$key]['pic_n']	=	checkpic($value['pic']);
 				}
-				$list[$key]['status_n'] = $value['status'] == 1? '已开启':'已关闭';
+				$list[$key]['status_n'] = $value['status'] == 1? yun_at('admin_user_company_00172'):yun_at('admin_yunying_00048');
 				$temp = array(date("Y-m-d",$value['stime']),date("Y-m-d",$value['etime']));
 				$list[$key]['strtimes'] = $temp;
 			}
@@ -342,11 +342,11 @@ class tpl_model extends model{
 			
 			$return['id']	=	$this	->	insert_into('tplindex',$addData);
 			
-			$return['msg']		=	'主题模板(ID:'.$return['id'].')';
+			$return['msg']		=	yun_auto_t('主题模板(ID:').$return['id'].')';
             
             $return['errcode']	=	$return['id'] ? '9' :'8';
             
-            $return['msg']		=	$return['id'] ? $return['msg'].'添加成功！' : $return['msg'].'添加失败！';
+            $return['msg']		=	$return['id'] ? $return['msg'].'admin_system_00138' : $return['msg'].'admin_system_00137';
 			
 			return	$return;
 		}
@@ -361,11 +361,11 @@ class tpl_model extends model{
 			
 			$return['id']	=	$this	->	update_once('tplindex',$addData,$whereData);
 			
-			$return['msg']		=	'主题模板(ID:'.$return['id'].')';
+			$return['msg']		=	yun_auto_t('主题模板(ID:').$return['id'].')';
             
             $return['errcode']	=	$return['id'] ? '9' :'8';
             
-            $return['msg']		=	$return['id'] ? $return['msg'].'更新成功！' : $return['msg'].'更新失败！';
+            $return['msg']		=	$return['id'] ? $return['msg'].'admin_system_00064' : $return['msg'].'api_wxapp_00009';
 			
 			return	$return;
 		}
@@ -388,9 +388,9 @@ class tpl_model extends model{
 			 
 			$return['id']		=	$this	->	delete_all('tplindex',array('id'=>array('in',$delId)),'');
 		
-			$return['msg']		=	'主题模板(ID:'.$delId.')';
+			$return['msg']		=	yun_auto_t('主题模板(ID:').$delId.')';
 			$return['errcode']	=	$return['id'] ? '9' :'8';
-			$return['msg']		=	$return['id'] ? $return['msg'].'删除成功！' : $return['msg'].'删除失败！';
+			$return['msg']		=	$return['id'] ? $return['msg'].'admin_user_00187' : $return['msg'].'admin_user_00186';
 		}
 		return	$return;
 	}

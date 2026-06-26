@@ -26,10 +26,10 @@ class finance_recharge_controller extends adminCommon
     function jifenSave_action(){
 
         if (!$_POST['userarr']){
-            $this->render_json(1,'参数错误');
+            $this->render_json(1,yun_at('wap_com_00228'));
         }
         if ($_POST['integral']<1){
-            $this->render_json(1,'输入的积分不能为0');
+            $this->render_json(1,yun_at('admin_yunying_00006'));
         }
         $OrderM     =   $this->MODEL('companyorder');
         $userarr    =   str_replace('，', ',', trim($_POST['userarr']));
@@ -65,7 +65,7 @@ class finance_recharge_controller extends adminCommon
             'leijia'    =>  intval($_POST['leijia']),
             'remark'    =>  $_POST['remark'],
             'uid'       =>  intval($_POST['uid']),
-            'vipetime'       =>  $_POST['vipetime']?$_POST['vipetime']:'不限',
+            'vipetime'       =>  $_POST['vipetime']?$_POST['vipetime']: WapDbEnum::UNLIMITED,
         );
         $return =   $OrderM->ComVip($post);
         if ($return['errcode']== 9){
@@ -100,7 +100,7 @@ class finance_recharge_controller extends adminCommon
         if ($info){
             $this->render_json(0,'',$info);
         }else{
-            $this->render_json(1,'参数错误,请重试');
+            $this->render_json(1,yun_at('common_01237'));
         }
 
     }

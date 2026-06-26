@@ -54,34 +54,34 @@ class finance_controller extends com_controller
 
 				if(empty($order)){
 					$error	=	2;
-					$msg	=	yun_auto_t('订单不存在'); 
+					$msg	=	yun_at('api_wxapp_00010'); 
 				}elseif($order['order_state']!='1'){
 					$error	=	3;
-					$msg	=	yun_auto_t('请检查订单状态,本订单无需付款');
+					$msg	=	yun_at('wap_01285');
 				}else{
 					$ordertype	=	array(
-						'1'	=>	yun_auto_t('购买会员'),
-						'2'	=>	$this->config['integral_pricename']. yun_auto_t('充值'),
-						'3'	=>	yun_auto_t('银行转帐'),
-						'5'	=>	yun_auto_t('购买增值包'),
+						'1'	=>	yun_at('default_00090'),
+						'2'	=>	$this->config['integral_pricename']. yun_at('common_01946'),
+						'3'	=>	yun_at('admin_system_00529'),
+						'5'	=>	yun_at('wap_01233'),
 
-						'8'	=>	yun_auto_t('分享红包推广'),
+						'8'	=>	yun_at('wap_01821'),
 
-						'10'=>	yun_auto_t('职位置顶'),
-						'11'=>	yun_auto_t('职位紧急'), 
-	            		'12'=>	yun_auto_t('职位推荐'),
-	            		'13'=>	yun_auto_t('自动刷新'), 
-	            		'16'=>	yun_auto_t('刷新职位'),
-	            		'17'=>	yun_auto_t('刷新兼职'), 
+						'10'=>	yun_at('wap_com_00238'),
+						'11'=>	yun_at('member_com_00247'), 
+	            		'12'=>	yun_at('wap_com_00237'),
+	            		'13'=>	yun_at('wap_com_00239'), 
+	            		'16'=>	yun_at('wap_com_00029'),
+	            		'17'=>	yun_at('wap_01231'), 
 
-	            		'19'=>	yun_auto_t('下载简历'), 
-	            		'20'=>	yun_auto_t('上架职位'),
-	            		'21'=>	yun_auto_t('上架兼职'),
+	            		'19'=>	yun_at('wap_00451'), 
+	            		'20'=>	yun_at('wap_com_00028'),
+	            		'21'=>	yun_at('wap_01234'),
 
-	            		'23'=>	yun_auto_t('面试邀请'), 
-	            		'24'=> 	yun_auto_t('兼职推荐'),
+	            		'23'=>	yun_at('wap_com_00046'), 
+	            		'24'=> 	yun_at('default_00030'),
 
-	            		'28'=>	yun_auto_t('购买招聘会报名次数')
+	            		'28'=>	yun_at('wap_01236')
 					);
 					$order['type_n']	=	$ordertype[$order['type']];
 					$error	=	1;
@@ -93,7 +93,7 @@ class finance_controller extends com_controller
 			$data['webtel']	 =	$this->config['sy_comwebtel']?$this->config['sy_comwebtel']:$this->config['sy_freewebtel'];
 		}else{
 			$error	=	2;
-			$msg	=	yun_auto_t('暂未开通手机支付，请移步至电脑端充值！'); 
+			$msg	=	yun_at('wap_01286'); 
 		}
 
 	    $this->render_json($error,$msg,$data);
@@ -149,7 +149,7 @@ class finance_controller extends com_controller
 				
 	            $statis 	= 	$statisM->getInfo(array('uid'=>$uid),array('usertype'=>2,'field'=>'`rating`,`vip_etime`'));
 	            if(!isVip($statis['vip_etime'])){
-	                $data['errmsg']	=	yun_auto_t('会员已过期，请先购买会员');
+	                $data['errmsg']	=	yun_at('wap_01822');
 	                return $data;
 	            }
 	        }
@@ -192,7 +192,7 @@ class finance_controller extends com_controller
           $return = $jobM->setJobPromote(intval($_POST['id']), $_POST);
           $this->render_json(0, $return['msg'], $return);
       }else{
-          $this->render_json(8, yun_auto_t('已超出套餐剩余数量'));
+          $this->render_json(8, yun_at('wap_01289'));
       }
     }
 	
@@ -304,10 +304,10 @@ class finance_controller extends com_controller
 		
 		if(!empty($oid[0])){
 			$comorderM	->	del($oid[0]['id'],array('uid'=>$this->member['uid']));
-			$msg	=	yun_auto_t('取消成功！');
+			$msg	=	yun_at('wap_01290');
 			$error	=	1;
 		}else{
-			$msg	=	yun_auto_t('订单不存在！');
+			$msg	=	yun_at('wap_01291');
 			$error	=	2;
 		}
 		$this->render_json($error, $msg);
@@ -379,7 +379,7 @@ class finance_controller extends com_controller
 		$where['pay_time'][] = array('>',strtotime('today'));
 		$where['pay_time'][] = array('<',strtotime('tomorrow'));
 		if($statis['vip_etime']==0){
-			$statis['vip_fwtime']		=	yun_auto_t('永久');
+			$statis['vip_fwtime']		=	yun_at('api_wxapp_00019');
 		}else{
 			$statis['vip_fwtime']		=	$statis['vip_stime_n'].'-'.$statis['vip_etime_n'];
 		}
@@ -408,7 +408,7 @@ class finance_controller extends com_controller
 
             $data['shareData']  =   array(
                 'url'       =>  Url('wap').'index.php?c=register&uid='.$this->member['uid'],
-                'title'     =>  yun_auto_t('邀请注册'),
+                'title'     =>  yun_at('wap_01590'),
                 'summary'   =>  yun_auto_t('我在').$this->config['sy_webname'].'上找工作；真的很不错，忍不住推荐给你',
                 'imageUrl'  =>  checkpic($this->config['sy_wx_sharelogo'])
             );
@@ -424,7 +424,7 @@ class finance_controller extends com_controller
 		$statis   	=  	$statisM -> vipOver($suid, 2);
 		if($statis['vip_etime']==0){
 
-    		$statis['vip_fwtime']	=	yun_auto_t('永久');
+    		$statis['vip_fwtime']	=	yun_at('api_wxapp_00019');
 
 		}else{
 
@@ -491,7 +491,7 @@ class finance_controller extends com_controller
 
             $data['shareData']  =   array(
                 'url'       =>  Url('wap').'index.php?c=register&uid='.$this->member['uid'],
-                'title'     =>  yun_auto_t('邀请注册'),
+                'title'     =>  yun_at('wap_01590'),
                 'summary'   =>  yun_auto_t('我在').$this->config['sy_webname'].'上找工作；真的很不错，忍不住推荐给你',
                 'imageUrl'  =>  checkpic($this->config['sy_wx_sharelogo'])
             );

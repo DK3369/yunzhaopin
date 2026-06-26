@@ -126,7 +126,7 @@ class right_controller extends company
         $statis = $this->company_satic();
 
         if ($statis['rating_type'] == 2) {
-            $this->ACT_msg("index.php?c=right", "时间会员无需购买增值服务！");
+            $this->ACT_msg("index.php?c=right", yun_at('member_com_00705'));
         }
         $this->public_action();
         $id = intval($_GET['id']);

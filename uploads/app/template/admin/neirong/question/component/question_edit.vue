@@ -3,15 +3,15 @@
         <div class="drawerModInfo" style="max-height: calc(100% - 80px); overflow-y: auto; border: none;">
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>问答标题</span>
+                    <span>{yun:}t key='admin_00787'{/yun}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input v-model="ruleForm.title" placeholder="请输入问答标题"></el-input>
+                    <el-input v-model="ruleForm.title" placeholder="{yun:}t key='admin_00789'{/yun}"></el-input>
                 </div>
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>问答类别</span>
+                    <span>{yun:}t key='admin_00233'{/yun}</span>
                 </div>
                 <div class="drawerModInpt">
                     <el-cascader v-model="ruleForm.cid" :options="classList" :show-all-levels="false"
@@ -21,16 +21,16 @@
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>访问次数</span>
+                    <span>{yun:}t key='admin_00232'{/yun}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input v-model="ruleForm.visit" placeholder="请输入访问次数"
+                    <el-input v-model="ruleForm.visit" placeholder="{yun:}t key='admin_00786'{/yun}"
                               @input="inputIntNumber($event, 'ruleForm', 'visit')"></el-input>
                 </div>
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>是否推荐</span>
+                    <span>{yun:}t key='admin_00231'{/yun}</span>
                 </div>
                 <div class="drawerModInpt">
                     <el-switch v-model="ruleForm.is_recom" active-value="1" inactive-value="0">
@@ -39,7 +39,7 @@
             </div>
             <div class="drawerModLis" style="align-items: initial;">
                 <div class="drawerModTite">
-                    <span>问答内容</span>
+                    <span>{yun:}t key='admin_00788'{/yun}</span>
                 </div>
                 <div class="drawerModInpt">
                     <div id="editor—wrapper" style="border: 1px solid #ccc;">
@@ -50,7 +50,7 @@
             </div>
         </div>
         <div class="setBasicButn" style="border-top: 0px solid #E4E7ED;">
-            <el-button type="primary" size="medium" @click="save" :disabled="saveLoading">提交</el-button>
+            <el-button type="primary" size="medium" @click="save" :disabled="saveLoading">{yun:}t key='common.submit'{/yun}</el-button>
         </div>
     </div>
 </template>
@@ -165,7 +165,7 @@ module.exports = {
                 content = editor.getHtml();
 
             if (typeof params.title == 'undefined' || params.title == '') {
-                message.warning('请输入问答标题');
+                message.warning("{yun:}t key='admin_00789'{/yun}");
                 return;
             }
             if (typeof params.cid == 'undefined' || params.cid == '') {

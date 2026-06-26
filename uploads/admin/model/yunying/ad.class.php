@@ -135,10 +135,10 @@ class ad_controller extends adminCommon
     {
         $_POST = $this->post_trim($_POST);
         if (strlen($_POST['ad_name']) < 1) {
-            $this->render_json(1, '广告类别名称不能为空！');
+            $this->render_json(1, yun_at('admin_01413'));
         }
         if (!is_array($_POST['ad_time']) || count($_POST['ad_time']) < 1) {
-            $this->render_json(2, '请填写广告有效期！');
+            $this->render_json(2, yun_at('admin_01414'));
         } else {
             $_POST['ad_time_start'] = $_POST['ad_time'][0];
             $_POST['ad_time_end'] = $_POST['ad_time'][1];
@@ -205,12 +205,12 @@ class ad_controller extends adminCommon
             $data['type'] = 'one';
         }
         if (!$delid) {
-            $this->render_json(1, '请选择要删除的内容！');
+            $this->render_json(1, yun_at('common_01066'));
         }
 
         $del = $adM->delAd($where, $data);
         $adM->model_ad_arr();
-        $del ? $this->admin_json(0, '广告(ID:' . $delid . ')删除成功！') : $this->render_json(2, '删除失败！');
+        $del ? $this->admin_json(0, '广告(ID:' . $delid . ')删除成功！') : $this->render_json(2, 'admin_user_00186');
     }
 
     /**
@@ -222,7 +222,7 @@ class ad_controller extends adminCommon
 
         $ad = $adM->getInfo(array('id' => (int)$_POST['id']));
         if (!$ad) {
-            $this->render_json(1, '暂无数据');
+            $this->render_json(1, yun_at('wap_js_00113'));
         }
         if ($ad['ad_type'] == 'word') {
             $ad['html'] = '<a href="' . $ad['word_url'] . '">' . $ad['word_info'] . '</a>';
@@ -276,7 +276,7 @@ class ad_controller extends adminCommon
     {
         $adM = $this->MODEL('ad');
         $adM->model_ad_arr();
-        $this->admin_json(0, '广告更新成功！');
+        $this->admin_json(0, 'admin_01172');
     }
 
     /**
@@ -287,14 +287,14 @@ class ad_controller extends adminCommon
         if ($_POST) {
             if (empty($_POST['endtime']) || intval($_POST['endtime']) < 1
                 || empty($_POST['jobid'])) {
-                $this->render_json(2, '参数有误');
+                $this->render_json(2, yun_at('common_01716'));
             }
             $adM = $this->MODEL('ad');
             $upData['time_end'] = array('DATE_ADD', $_POST['endtime']);
             $upWhere['id'] = array('in', $_POST['jobid']);
             $id = $adM->upInfo($upWhere, $upData);
             $adM->model_ad_arr();
-            $id ? $this->admin_json(0, '广告批量延期(ID:' . $_POST['jobid'] . ')设置成功！') : $this->render_json(1, '设置失败！');
+            $id ? $this->admin_json(0, '广告批量延期(ID:' . $_POST['jobid'] . ')设置成功！') : $this->render_json(1, 'wap_01715');
         }
     }
 
@@ -305,7 +305,7 @@ class ad_controller extends adminCommon
     {
         if ($_POST) {
             if (empty($_POST['id']) || intval($_POST['id']) <= 0) {
-                $this->render_json(1, '参数有误');
+                $this->render_json(1, yun_at('common_01716'));
             }
 
             $adM = $this->MODEL('ad');

@@ -104,7 +104,7 @@ class gsdConfig_controller extends adminCommon
             $configM->setConfig($config);
             $this->web_config();
 
-            $this->admin_json(0, '手机号归属地配置设置成功');
+            $this->admin_json(0, 'admin_01468');
         }
     }
 }

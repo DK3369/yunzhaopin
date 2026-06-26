@@ -107,16 +107,16 @@ class userEntrust_model extends model{
             $nid      =  $this->delete_all('user_entrust_record',$delWhere,$limit);
             
             if ($nid){
-                $this -> addMemberLog($data['uid'],$data['usertype'],"悬赏推荐：删除推送的人才",25,3);
+                $this -> addMemberLog($data['uid'],$data['usertype'],'common_06616',25,3);
 				
-                $return['msg']      =  '简历推送(ID:'.$id.')删除成功';
+                $return['msg']      =  yun_auto_t('简历推送(ID:').$id.')删除成功';
                 $return['errcode']  =  '9';
             }else{
-                $return['msg']      =  '简历推送(ID:'.$id.')删除成功';
+                $return['msg']      =  yun_auto_t('简历推送(ID:').$id.')删除成功';
                 $return['errcode']  =  '8';
             }
         }else{
-            $return['msg']      =  '请选择您要删除的简历推送';
+            $return['msg']      =  yun_at('common_06617');
             $return['errcode']  =  '8';
         }
         return $return;

@@ -1,7 +1,7 @@
 <template>
     <div class="moduleElHight">
         <div class="tableDome_tip">
-            <el-alert title="手动清理数据表碎片，定期清理数据表碎片可以提升数据库的查询速度。" type="success" :closable="false"></el-alert>
+            <el-alert title="{yun:}t key='admin_tool_00215'{/yun}" type="success" :closable="false"></el-alert>
         </div>
         <div class="moduleElTable">
             <el-table :data="tableData" border style="width: 100%" :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" height="100%" v-loading="loading" :empty-text="emptytext">
@@ -13,8 +13,8 @@
                 <el-table-column prop="charset" label="字符集"></el-table-column>
                 <el-table-column label="操作" width="180">
                     <template slot-scope="scope">
-                        <el-button size="mini" plain @click="optimizeDB(scope,2)">修复</el-button>
-                        <el-button size="mini" plain @click="optimizeDB(scope,3)">优化</el-button>
+                        <el-button size="mini" plain @click="optimizeDB(scope,2)">{yun:}t key='admin_tool_00220'{/yun}</el-button>
+                        <el-button size="mini" plain @click="optimizeDB(scope,3)">{yun:}t key='admin_tool_00221'{/yun}</el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -41,7 +41,7 @@
         data: function () {
             return {
                 loading: false,
-                emptytext: window.yunAdminT('暂无数据'),
+                emptytext: window.yunAdminT("{yun:}t key='wap_js_00113'{/yun}"),
                 tableData: []
             }
         },
@@ -51,14 +51,14 @@
         methods: {
             async getOptTable() {
                 this.loading = true;
-                this.emptytext = window.yunAdminT('数据加载中');
+                this.emptytext = window.yunAdminT("{yun:}t key='admin_user_weipin_00026'{/yun}");
                 let res = await httpPost('m=tool&c=database&a=getOptTable',{},{hideloading: true});
                 if (res.data.error == 0) {
 
                     this.tableData = res.data.data;
                     this.loading = false;
                     if (this.tableData.length === 0){
-                        this.emptytext = window.yunAdminT('暂无数据');
+                        this.emptytext = window.yunAdminT("{yun:}t key='wap_js_00113'{/yun}");
                     }
                 }
             },

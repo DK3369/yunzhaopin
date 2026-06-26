@@ -53,7 +53,7 @@ class set_payset_controller extends adminCommon{
                 }
             }
             $this->web_config();
-            $this->render_json(0, '修改成功');
+            $this->render_json(0, yun_at('admin_user_company_00208'));
         }
     }
     /**
@@ -84,7 +84,7 @@ class set_payset_controller extends adminCommon{
             }
             $this->web_config();
             made_web(APP_PATH . "data/api/" . $dir . "/alipay_data.php", ArrayToString($alipaya), "alipaydata");
-            $this->admin_json(0, "支付宝配置成功！");
+            $this->admin_json(0, 'admin_01397');
         }
     }
     
@@ -98,7 +98,7 @@ class set_payset_controller extends adminCommon{
             $tenpay['sy_tenpayid'] = trim($_POST['sy_tenpayid']);
             $tenpay['sy_tenpaycode'] = trim($_POST['sy_tenpaycode']);
             made_web(APP_PATH . "data/api/tenpay/tenpay_data.php", ArrayToString($tenpay), "tenpaydata");
-            $this->admin_json(0, "财付通配置成功！");
+            $this->admin_json(0, 'admin_01398');
         }
     }
     /*
@@ -116,15 +116,15 @@ class set_payset_controller extends adminCommon{
             );
             $bankInfo = $ConfigM->getBankInfo(array('bank_number' => $_POST['bank_number']), array('field'=>'id,bank_number'));
             if ((!empty($_POST['id']) && $bankInfo && $bankInfo['id'] != $_POST['id']) || (empty($_POST['id']) && $bankInfo)) {
-                $this->render_json(1, '银行卡已存在');
+                $this->render_json(1, yun_at('admin_system_00054'));
             }
             
             if (!$_POST['id']) {
                 $bank = $ConfigM->addBank($postData);
-                $this->admin_json(0, "银行卡(ID:" . $bank . ")添加成功！");
+                $this->admin_json(0, 'admin_system_00053' . $bank . ")添加成功！");
             } else {
                 $ConfigM->upBank(array('id' => $_POST['id']), $postData);
-                $this->admin_json(0, "银行卡(ID:" . $_POST['id'] . ")修改成功！");
+                $this->admin_json(0, 'admin_system_00053' . $_POST['id'] . ")修改成功！");
             }
         }
     }
@@ -133,7 +133,7 @@ class set_payset_controller extends adminCommon{
     {
         $ConfigM = $this->MODEL('config');
         $ConfigM->delBank(array('id' => $_POST['del']));
-        $this->admin_json(0, "银行卡(ID:" . $_POST['del'] . ")删除成功！");
+        $this->admin_json(0, 'admin_system_00053' . $_POST['del'] . ")删除成功！");
     }
 }
 ?>

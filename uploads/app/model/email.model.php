@@ -153,7 +153,7 @@ class email_model extends model{
 
             foreach($List as $lk => $lv){
 
-				$List[$lk]['fname']		=	$lv['cuid'] ? $names[$lv['cuid']] : '系统';
+				$List[$lk]['fname']		=	$lv['cuid'] ? $names[$lv['cuid']] : 'common_02020';
 				
 				if($lv['uid']>0){
 
@@ -161,7 +161,7 @@ class email_model extends model{
 
 				}elseif($lv['uid']<0){
 
-					$List[$lk]['sname'] =	'管理员';
+					$List[$lk]['sname'] =	yun_at('wap_user_00361');
 
 				}else{
 
@@ -262,7 +262,7 @@ class email_model extends model{
 			$ststrsql=($page-1)*$limit;
 			if($emailtype=='2'){
 				if($this->config['sy_email_vipmr']!='1'){
-					$data['msg']	=	'请先开启会员服务到期提醒！'; 
+					$data['msg']	=	yun_at('common_00737'); 
 					$data['stype']	=	2;  
 				}else{
 					$allnum	=	$this->select_num('company_statis',array('vip_etime'=>array('<',$time)),'`uid`');
@@ -277,13 +277,13 @@ class email_model extends model{
 							$member=$this->select_all('member',array('usertype'=>'2','email'=>array('<>',''),'uid'=>array('in',pylode(',',$uids))),'`uid`,`email`,`login_date`');
 						} 
 					}else{
-						$data['msg']	=	'发送成功！'; 
+						$data['msg']	=	yun_at('model_00029'); 
 						$data['stype']	=	2;  
 					}
 				} 
 			}else if($emailtype=='1'){ 
 				if($this->config['sy_email_comwdl']!='1'){
-					$data['msg']	=	'请先开启未登录提醒！'; 
+					$data['msg']	=	yun_at('common_01054'); 
 					$data['stype']	=	2;  
 				}else{
 					$allnum=$this->select_num('member',array('usertype'=>'2','email'=>array('<>',''),'login_date'=>array('<',$time)),'`uid`');
@@ -292,7 +292,7 @@ class email_model extends model{
 					if($allpage>$page){
 						$member=$this->select_all('member',array('usertype'=>'2','email'=>array('<>',''),'login_date'=>array('<',$time),'limit'=>$ststrsql.','.$limit),'`uid`,`email`'); 
 					}else{
-						$data['msg']	=	'发送成功！'; 
+						$data['msg']	=	yun_at('model_00029'); 
 						$data['stype']	=	2;
 					}
 				}  
@@ -322,15 +322,15 @@ class email_model extends model{
 							$notice->sendEmailType(array("email"=>$v['email'],"uid"=>$v['uid'],"name"=>$com[$v['uid']],"ratingname"=>$ratinginfo[$v['uid']],'date'=>$ratingdate[$v['uid']],"type"=>"vipmr"));
 						}
 					}  
-					$data['msg']	=	'正在发送第'.$ststrsql.'至'.($ststrsql+$limit).'封邮件！'; 
+					$data['msg']	=	yun_at('common_01622').$ststrsql.'至'.($ststrsql+$limit).'common_06478'; 
 					$data['stype']	=	1;  
 				}else{
-					$data['msg']	=	'未找到合适企业！'; 
+					$data['msg']	=	yun_at('common_01279'); 
 					$data['stype']	=	2; 
 				}
 			}
 		}else{
-			$data['msg']	=	'非法操作！'; 
+			$data['msg']	=	yun_at('model_00001'); 
 			$data['stype']	=	2;
 		}
 		$data['page']	=	$page+1;
@@ -354,7 +354,7 @@ class email_model extends model{
 			$ststrsql=($page-1)*$limit;
 			if($emailtype=='2'){
 				if($this->config['sy_email_userup']!='1'){
-					$data['msg']	=	'请先开启未更新提醒！';  
+					$data['msg']	=	yun_at('common_01053');  
 					$data['stype']	=	2;
 				}else{ 
 					
@@ -373,13 +373,13 @@ class email_model extends model{
 							$member=$this->select_all('member',array('usertype'=>'1','email'=>array('<>',''),'uid'=>array('in',pylode(',',$uids))),"`uid`,`email`,`username`");
 						} 
 					}else{
-						$data['msg']='发送成功！'; 
+						$data['msg']=yun_at('model_00029'); 
 						$data['stype']=2;  
 					}
 				}
 			}else if($emailtype=='1'){
 				if($this->config['sy_email_userwdl']!='1'){
-					$data['msg']='请先开启未登录提醒！';  
+					$data['msg']=yun_at('common_01054');  
 					$data['stype']=2; 
 				}else{ 
 					$allnum=$this->select_num('member',array('usertype'=>'1','email'=>array('<>',''),'login_date'=>array('<',$time)),'`uid`');
@@ -388,7 +388,7 @@ class email_model extends model{
 					if($allpage>$page){ 
 						$member=$this->select_all('member',array('usertype'=>'1','email'=>array('<>',''),'login_date'=>array('<',$time),'limit'=>$ststrsql.','.$limit),'`uid`,`email`');
 					}else{
-						$data['msg']='发送成功！'; 
+						$data['msg']=yun_at('model_00029'); 
 						$data['stype']=2;  
 					}
 				} 
@@ -407,15 +407,15 @@ class email_model extends model{
 							$notice->sendEmailType(array("email"=>$v['email'],"uid"=>$v['uid'],"name"=>$v['username'],'date'=>$lasttime[$v['uid']],"type"=>"userup"));
 						}
 					} 
-					$data['msg']='正在发送第'.$ststrsql.'至'.($ststrsql+$limit).'封邮件！'; 
+					$data['msg']=yun_at('common_01622').$ststrsql.'至'.($ststrsql+$limit).'common_06478'; 
 					$data['stype']=1;  
 				}else{
-					$data['msg']='未找到合适用户！';
+					$data['msg']=yun_at('common_01280');
 					$data['stype']=2;		
 				}
 			}
 		}else{
-			$data['msg']='非法操作！';
+			$data['msg']=yun_at('model_00001');
 			$data['stype']=2;			
 		}
 		$data['page']=$page+1;
@@ -476,12 +476,12 @@ class email_model extends model{
 
                 $this->update_once('email_msg', array('state' => '1'), array('id' => array('in', implode(',', $successid))));
             }
-            $msg = '本次邮件重发成功：' . count($successid) . '条';
+            $msg = 'common_01132' . count($successid) . '条';
             if (!empty($nosuccessid)) {
                 $msg .= ',失败：' . count($nosuccessid) . '条';
             }
         } else {
-            $msg = '没有需要重发的邮件！';
+            $msg = 'common_01031';
         }
 
 

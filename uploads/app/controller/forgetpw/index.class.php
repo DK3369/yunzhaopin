@@ -37,19 +37,19 @@ class index_controller extends common{
 			$codeTime       =   $noticeM -> checkTime($cert['ctime']);
 			
 			if($uid != $cert['uid']){
-				$res['msg']		=	"参数错误，请重试！";
+				$res['msg']		=	yun_at('wap_00203');
 			    $res['error']	=	'8';
 			    echo yun_json_encode($res);die;
 			
 			}elseif (!$codeTime) {
 			    
-			    $res['msg']		=	"短信验证码验证超时，请重新验证！";
+			    $res['msg']		=	yun_at('wap_00201');
 			    $res['error']	=	'8';
 			    echo yun_json_encode($res);die;
 			    
 			}else if(($code!=$cert['check2'])||(!$cert)){
 				
-				$res['msg']		=	"验证码错误";
+				$res['msg']		=	yun_at('wap_00211');
 				$res['error']	=	'8';
 				echo yun_json_encode($res);die;
 				
@@ -73,15 +73,15 @@ class index_controller extends common{
 					}
 					$userinfoM->upInfo(array("uid"=>$uid),array("password"=>$password));
 					
-					$res['msg']		=	'密码修改成功！';
+					$res['msg']		=	yun_at('wap_01786');
 					$res['error']	=	0;
 					echo yun_json_encode($res);die;
 				}else{
-					$res['msg']		=	'没有该用户';
+					$res['msg']		=	yun_at('wap_00209');
 				}
 			}
         }else{
-            $res['msg']				=	'对不起,没有该用户';
+            $res['msg']				=	yun_at('wap_00204');
         }
         echo yun_json_encode($res);die;
     }
@@ -90,7 +90,7 @@ class index_controller extends common{
     {
         $sendtype   =   $_POST['sendtype'];
         $noticeM    =   $this->MODEL('notice');
-        $result     =   $noticeM->jycheck($_POST['code'], '找回密码');
+        $result     =   $noticeM->jycheck($_POST['code'], 'wap_js_00123');
         if (!empty($result)) {
             echo yun_json_encode(array('msg' => $result['msg'], 'error' => $result['error']));
             return;
@@ -133,16 +133,16 @@ class index_controller extends common{
 		
 		if (!$codeTime) {
 		    
-		    $res['msg']		=	"短信验证码验证超时，请重新验证！";
+		    $res['msg']		=	yun_at('wap_00201');
 		    $res['error']	=	'8';
 		    echo yun_json_encode($res);die;
 		    
 		}else  if(($_POST['code']!=$cert['check2'])||(!$cert)){
-		    $res['msg']		=	"验证码错误";
+		    $res['msg']		=	yun_at('wap_00211');
 		    $res['error']	=	'8';
 		    echo yun_json_encode($res);die;
 		}
-		$res['msg']			=	"验证码正确！";
+		$res['msg']			=	yun_at('wap_01784');
 		$res['error']		=	0;
 		$res['uid']			=	$info['uid'];
 		$res['username']	=	$info['username'];
@@ -155,7 +155,7 @@ class index_controller extends common{
 		$userinfoM	=	$this->MODEL("userinfo");
 
 		if(CheckRegUser($username)==false && CheckRegEmail($username)==false){
-	        $data['msg']	=	"用户名包含特殊字符！";
+	        $data['msg']	=	yun_at('wap_00202');
 	        $data['error']	=	'8';
 	        echo yun_json_encode($data);die;
 	    }
@@ -163,7 +163,7 @@ class index_controller extends common{
 		$member 	= 	$userinfoM->getInfo(array('username'=>$_POST['username']), array('field' => '`uid`, `username`, `pid`'));
 		
 	    if(empty($member)){
-			$data['msg']	=	"用户名不存在！";
+			$data['msg']	=	yun_at('wap_01785');
 			$data['error']	=	'8';
 	        echo yun_json_encode($data);die;
 		}

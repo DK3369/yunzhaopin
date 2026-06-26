@@ -104,7 +104,7 @@ class messageset_controller extends adminCommon{
         
         $this->web_config();
         
-        $this->render_json(0,'短信配置设置成功！');
+        $this->render_json(0,yun_at('admin_01461'));
     }
 
     function tplswitch_action(){
@@ -112,9 +112,9 @@ class messageset_controller extends adminCommon{
         include(CONFIG_PATH."db.tpl.php");
 
         $data = array(
-            'public'=>array('name'=>'公共设置','configarr'=>array()),
-            'user'=>array('name'=>'个人短信设置','configarr'=>array()),
-            'com'=>array('name'=>'企业短信设置','configarr'=>array()),
+            'public'=>array('name'=>'admin_tool_00029','configarr'=>array()),
+            'user'=>array('name'=>'admin_01469','configarr'=>array()),
+            'com'=>array('name'=>'admin_01470','configarr'=>array()),
         );
         
         foreach ($arr_tpl as $k => $v) {
@@ -168,7 +168,7 @@ class messageset_controller extends adminCommon{
         
         }
 
-        $this->render_json(0,'短信模板配置成功');
+        $this->render_json(0,yun_at('admin_01471'));
     }
     
 }

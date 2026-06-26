@@ -4,70 +4,70 @@
             <table class="tableVue">
                 <thead>
                 <tr align="left">
-                    <th width="200">名称</th>
-                    <th width="500">状态</th>
-                    <th>说明</th>
+                    <th width="200">{yun:}t key='member_com_00021'{/yun}</th>
+                    <th width="500">{yun:}t key='member_user_00181'{/yun}</th>
+                    <th>{yun:}t key='member_com_00207'{/yun}</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr>
                     <td>
-                        <div class="TableTite">类别名称</div>
+                        <div class="TableTite">{yun:}t key='admin_00219'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-input placeholder="请输入内容" v-model="ruleForm.position">
+                            <el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="ruleForm.position">
                                 <!-- <span slot="suffix" class="slotspan">天</span> -->
                             </el-input>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>类别名称</span>
+                            <span>{yun:}t key='admin_00219'{/yun}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">英文名称/拼音</div>
+                        <div class="TableTite">{yun:}t key='admin_system_00104'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-input placeholder="请输入内容" v-model="ruleForm.e_name">
+                            <el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="ruleForm.e_name">
                                 <!-- <span slot="suffix" class="slotspan">天</span> -->
                             </el-input>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>英文名称/拼音</span>
+                            <span>{yun:}t key='admin_system_00104'{/yun}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">一级分类</div>
+                        <div class="TableTite">{yun:}t key='admin_00290'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableSelect" style="display: flex;align-items: center;">
-                            <el-select v-model="ruleForm.nid" placeholder="请选择" @change="getClass(ruleForm.nid)" clearable>
+                            <el-select v-model="ruleForm.nid" placeholder="{yun:}t key='wap_user_00100'{/yun}" @change="getClass(ruleForm.nid)" clearable>
                                 <el-option v-for="item in position" :key="item.id" :label="item.name" :value="item.id"></el-option>
                             </el-select>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>一级分类</span>
+                            <span>{yun:}t key='admin_00290'{/yun}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">二级分类</div>
+                        <div class="TableTite">{yun:}t key='admin_00291'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableSelect" style="display: flex;align-items: center;">
-                            <el-select v-model="ruleForm.keyid" placeholder="请选择" clearable>
+                            <el-select v-model="ruleForm.keyid" placeholder="{yun:}t key='wap_user_00100'{/yun}" clearable>
                                 <el-option v-for="item in positionTwo" :key="item.id" :label="item.name"
                                     :value="item.id">
                                 </el-option>
@@ -76,39 +76,39 @@
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>二级分类</span>
+                            <span>{yun:}t key='admin_00291'{/yun}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">职位样本描述</div>
+                        <div class="TableTite">{yun:}t key='admin_system_00106'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-input type="textarea" placeholder="请输入内容" v-model="ruleForm.content">
+                            <el-input type="textarea" placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="ruleForm.content">
                                 <!-- <span slot="suffix" class="slotspan">天</span> -->
                             </el-input>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>职位样本描述</span>
+                            <span>{yun:}t key='admin_system_00106'{/yun}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">排　　序</div>
+                        <div class="TableTite">{yun:}t key='admin_system_00105'{/yun}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-input v-model="ruleForm.sort" placeholder="请输入数字" @input="inputIntNumber($event, 'ruleForm', 'sort')"></el-input>
+                            <el-input v-model="ruleForm.sort" placeholder="{yun:}t key='admin_user_00342'{/yun}" @input="inputIntNumber($event, 'ruleForm', 'sort')"></el-input>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>越小越在前</span>
+                            <span>{yun:}t key='admin_00218'{/yun}</span>
                         </div>
                     </td>
                 </tr>
@@ -116,7 +116,7 @@
             </table>
         </div>
         <div class="setBasicButn" style="border: none;">
-            <el-button type="primary" size="medium" @click="submitForm('ruleForm')" :disabled="submitLoading">提交</el-button>
+            <el-button type="primary" size="medium" @click="submitForm('ruleForm')" :disabled="submitLoading">{yun:}t key='common.submit'{/yun}</el-button>
         </div>
     </div>
 </template>
@@ -130,25 +130,25 @@ module.exports = {
         return {
             ruleForm: {
                 id: 0,//提交时的id
-                position: '',//类别名称
-                e_name: '',//英文名称/拼音
-                nid: null,//一级分类
-                keyid: null,//二级分类
-                content: null,//职位样本描述
-                sort: '',//排序
+                position: '",//{yun:}t key='admin_00219'{/yun}
+                e_name: "",//英文名称/拼音
+                nid: null,//{yun:}t key='admin_00290'{/yun}
+                keyid: null,//{yun:}t key='admin_00291'{/yun}
+                content: null,//{yun:}t key='admin_system_00106'{/yun}
+                sort: "",//{yun:}t key='member_com_00022'{/yun}
             },
-            position: [],//一级分类
+            position: [],//{yun:}t key='admin_00290'{/yun}
             positionTwo: [],//第二级分类
             submitLoading: false,
         }
     },
     mounted() {
         if (this.tid > 0 || this.id > 0) {
-            //修改
+            // Update
             this.ruleForm.id = this.tid > 0 ? (this.tid) : (this.id > 0 ? this.id : 0);
             this.getInfo();
         } else {
-            //添加
+            // Add
             this.ruleForm.id = 0;
             this.getPosition();
         }
@@ -163,7 +163,7 @@ module.exports = {
             if (this.tid) {
                 params.tid = this.tid;
             }
-            httpPost('m=system&c=category_job_class&a=classadd', params).then(function (response) {
+            httpPost("m=system&c=category_job_class&a=classadd', params).then(function (response) {
                 let res = response.data;
                 if (res.data.info) {
                     _this.ruleForm.position = res.data.info.name;
@@ -216,7 +216,7 @@ module.exports = {
             let params = JSON.parse(JSON.stringify(this.ruleForm));
             params.submit = 'submit';
             if (params.position == '') {
-                message.error(window.yunAdminT('类别名称不能为空！'));
+                message.error(window.yunAdminT("{yun:}t key='admin_00208'{/yun}"));
                 return;
             }
             _this.submitLoading = true;
