@@ -10,18 +10,18 @@
                 </div>
                 <div class="tableSeachInpt tableSeachInptsmall">
                     <el-select v-model="searchForm.status" size="small" slot="prepend" placeholder="{yun:}t key='wap_com_00406'{/yun}" clearable @change="handleSearch">
-                        <el-option label="未审核" value="3"></el-option>
-                        <el-option label="已审核" value="1"></el-option>
-                        <el-option label="未通过" value="2"></el-option>
+                        <el-option label="{yun:}t key='wap_user_00166'{/yun}" value="3"></el-option>
+                        <el-option label="{yun:}t key='wap_user_00165'{/yun}" value="1"></el-option>
+                        <el-option label="{yun:}t key='wap_user_00167'{/yun}" value="2"></el-option>
                     </el-select>
                 </div>
                 <div class="tableSeachInpt tableSeachInptsmall">
                     <el-select v-model="searchForm.end" size="small" slot="prepend" placeholder="{yun:}t key='wap_com_00342'{/yun}" clearable @change="handleSearch">
-                        <el-option label="今天" value="1"></el-option>
-                        <el-option label="最近三天" value="3"></el-option>
-                        <el-option label="最近七天" value="7"></el-option>
-                        <el-option label="最近半月" value="15"></el-option>
-                        <el-option label="最近一个月" value="30"></el-option>
+                        <el-option label="{yun:}t key='common_01940'{/yun}" value="1"></el-option>
+                        <el-option label="{yun:}t key='admin_user_00179'{/yun}" value="3"></el-option>
+                        <el-option label="{yun:}t key='admin_user_00178'{/yun}" value="7"></el-option>
+                        <el-option label="{yun:}t key='admin_user_00180'{/yun}" value="15"></el-option>
+                        <el-option label="{yun:}t key='admin_user_00175'{/yun}" value="30"></el-option>
                     </el-select>
                 </div>
                 <div class="tableSeachInpt">
@@ -43,9 +43,9 @@
                     <p>{{dataText}}</p>
                 </template>
                 <el-table-column type="selection" width="55"></el-table-column>
-                <el-table-column prop="uid" label="用户ID" sortable="custom" width="90"></el-table-column>
-                <el-table-column prop="name" label="公司名称"></el-table-column>
-                <el-table-column label="认证资料">
+                <el-table-column prop="uid" label="{yun:}t key='admin_user_00130'{/yun}" sortable="custom" width="90"></el-table-column>
+                <el-table-column prop="name" label="{yun:}t key='wap_user_00080'{/yun}"></el-table-column>
+                <el-table-column label="{yun:}t key='admin_user_00188'{/yun}">
                     <template slot-scope="scope">
                         <template v-if="scope.row.check">
                             <el-button type="primary" size="mini" plain @click="handleStatus(scope)">{yun:}t key='member_com_00325'{/yun}</el-button>
@@ -55,10 +55,10 @@
                         </template>
                     </template>
                 </el-table-column>
-                <el-table-column prop="ctime" label="申请时间" sortable="custom">
+                <el-table-column prop="ctime" label="{yun:}t key='wap_com_00342'{/yun}" sortable="custom">
                     <template slot-scope="scope">{{ scope.row.ctime_n }}</template>
                 </el-table-column>
-                <el-table-column prop="status" label="状态" width="100">
+                <el-table-column prop="status" label="{yun:}t key='member_user_00181'{/yun}" width="100">
                     <template slot-scope="scope">
                         <div class="admin_state">
                             <span v-if="scope.row.status == 1" class="admin_state1">{yun:}t key='wap_user_00165'{/yun}</span>
@@ -73,7 +73,7 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="操作" width="140">
+                <el-table-column label="{yun:}t key='member_user_00048'{/yun}" width="140">
                     <template slot-scope="scope">
                         <div class="cz_button">
                             <el-button size="mini" plain @click="handleStatus(scope)">{yun:}t key='member_user_00152'{/yun}</el-button>
