@@ -5,11 +5,11 @@
                 <el-input v-model="searchForm.keyword" @keyup.enter.native="search" placeholder="{yun:}t key='admin_user_00158'{/yun}" size="small"
                     clearable>
                     <el-select v-model="searchForm.type" size="small" slot="prepend" placeholder="{yun:}t key='admin_user_00140'{/yun}" style="padding-left:20px;">
-                        <el-option label="用户名" :value="1"></el-option>
-                        <el-option label="姓名" :value="2"></el-option>
-                        <el-option label="手机号" :value="3"></el-option>
+                        <el-option label="{yun:}t key='admin_user_00140'{/yun}" :value="1"></el-option>
+                        <el-option label="{yun:}t key='wap_00529'{/yun}" :value="2"></el-option>
+                        <el-option label="{yun:}t key='wap_01619'{/yun}" :value="3"></el-option>
                         <el-option label="EMAIL" :value="4"></el-option>
-                        <el-option label="用户ID" :value="5"></el-option>
+                        <el-option label="{yun:}t key='admin_user_00130'{/yun}" :value="5"></el-option>
                         <el-option label="IP" :value="6"></el-option>
                     </el-select>
                 </el-input>
@@ -17,12 +17,12 @@
             <!--收起部分-->
             <div class="tableSeachInpt tableSeachInptsmall" :class="{ 'searchbutnOnff': seachbutn }">
                 <el-select v-model="searchForm.time_type" size="small" slot="prepend" placeholder="{yun:}t key='admin_user_00135'{/yun}" clearable @change="handleTimeChange">
-                    <el-option label="注册时间" value="adtime"></el-option>
-                    <el-option label="登录时间" value="lotime"></el-option>
+                    <el-option label="{yun:}t key='admin_user_00129'{/yun}" value="adtime"></el-option>
+                    <el-option label="{yun:}t key='admin_user_00134'{/yun}" value="lotime"></el-option>
                 </el-select>
             </div>
             <div class="tableSeachInpt tableSeachInptsmalltwo" :class="{ 'searchbutnOnff': seachbutn }">
-                <el-date-picker v-model="searchForm.times" type="daterange" align="right" unlink-panels range-separator="至" start-placeholder="{yun:}t key='admin_00343'{/yun}" end-placeholder="{yun:}t key='admin_00344'{/yun}" :picker-options="timeOptions" value-format="yyyy-MM-dd" size="small" @change="handleTimeChange"></el-date-picker>
+                <el-date-picker v-model="searchForm.times" type="daterange" align="right" unlink-panels range-separator="{yun:}t key='admin_company_00019'{/yun}" start-placeholder="{yun:}t key='admin_00343'{/yun}" end-placeholder="{yun:}t key='admin_00344'{/yun}" :picker-options="timeOptions" value-format="yyyy-MM-dd" size="small" @change="handleTimeChange"></el-date-picker>
             </div>
             <div v-for="(searchItem, searchIndex) in searchList" :key="searchIndex"
                 class="tableSeachInpt tableSeachInptsmall" :class="{ 'searchbutnOnff': seachbutn }">
@@ -67,8 +67,8 @@
                     <p>{{ dataText }}</p>
                 </template>
                 <el-table-column type="selection" width="50"> </el-table-column>
-                <el-table-column prop="uid" label="用户ID" width="100" sortable="custom"></el-table-column>
-                <el-table-column label="姓名/用户名" min-width="110" show-overflow-tooltip>
+                <el-table-column prop="uid" label="{yun:}t key='admin_user_00130'{/yun}" width="100" sortable="custom"></el-table-column>
+                <el-table-column label="{yun:}t key='admin_00545'{/yun}" min-width="110" show-overflow-tooltip>
                     <template slot-scope="scope">
                         <div class="moduleProps">
                             <div class="username">{{ scope.row.username_n }}</div>
@@ -78,14 +78,14 @@
                                 scope.row.username
                             }}
                             </el-link>
-                            <el-tooltip v-if="scope.row.r_status == '2'" class="item" effect="dark" content="已锁定"
+                            <el-tooltip v-if="scope.row.r_status == '2'" class="item" effect="dark" content="{yun:}t key='admin_user_00138'{/yun}"
                                 placement="top-start">
                                 <i class="el-icon-lock" style="color: orange"></i>
                             </el-tooltip>
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="手机号/归属地" min-width="130">
+                <el-table-column label="{yun:}t key='admin_user_00117'{/yun}" min-width="130">
                     <template slot-scope="scope">
                         <div class="moduleProps" v-if="scope.row.telphone">
                             <span>{{ scope.row.telphone }}</span>
@@ -97,53 +97,53 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="个人认证" min-width="110" show-overflow-tooltip>
+                <el-table-column label="{yun:}t key='admin_user_00287'{/yun}" min-width="110" show-overflow-tooltip>
                     <template slot-scope="scope">
                         <div class="rz_box">
-                            <el-tooltip v-if="scope.row.idcard_status == 1" class="item" effect="dark" content="身份已认证"
+                            <el-tooltip v-if="scope.row.idcard_status == 1" class="item" effect="dark" content="{yun:}t key='resume_00008'{/yun}"
                                 placement="top-start">
                                 <el-button type="text" @click="idcardRz(scope.row)">
                                     <i class="rzicon rzicon_zzyrz"></i>
                                 </el-button>
                             </el-tooltip>
-                            <el-tooltip v-else class="item" effect="dark" content="身份未认证" placement="top-start">
+                            <el-tooltip v-else class="item" effect="dark" content="{yun:}t key='member_user_00502'{/yun}" placement="top-start">
                                 <el-button type="text" @click="idcardRz(scope.row)">
                                     <i class="rzicon rzicon_zzwrz"></i>
                                 </el-button>
                             </el-tooltip>
-                            <el-tooltip v-if="scope.row.moblie_status == 1" class="item" effect="dark" content="手机已认证"
+                            <el-tooltip v-if="scope.row.moblie_status == 1" class="item" effect="dark" content="{yun:}t key='member_user_00117'{/yun}"
                                 placement="top-start">
                                 <el-button type="text" @click="moblieRz(scope.row)">
                                     <i class="rzicon rzicon_sjyrz"></i>
                                 </el-button>
                             </el-tooltip>
-                            <el-tooltip v-else class="item" effect="dark" content="手机未认证" placement="top-start">
+                            <el-tooltip v-else class="item" effect="dark" content="{yun:}t key='wap_01245'{/yun}" placement="top-start">
                                 <el-button type="text" @click="moblieRz(scope.row)">
                                     <i class="rzicon rzicon_sjwrz"></i>
                                 </el-button>
                             </el-tooltip>
                         </div>
                         <div class="rz_box">
-                            <el-tooltip v-if="scope.row.email_status_n == 1" class="item" effect="dark" content="邮箱已认证"
+                            <el-tooltip v-if="scope.row.email_status_n == 1" class="item" effect="dark" content="{yun:}t key='admin_user_00286'{/yun}"
                                 placement="top-start">
                                 <el-button type="text" @click="emailRz(scope.row)">
                                     <i class="rzicon rzicon_yxyrz"></i>
                                 </el-button>
                             </el-tooltip>
-                            <el-tooltip v-else class="item" effect="dark" content="邮箱未认证" placement="top-start">
+                            <el-tooltip v-else class="item" effect="dark" content="{yun:}t key='wap_01246'{/yun}" placement="top-start">
                                 <el-button type="text" @click="emailRz(scope.row)">
                                     <i class="rzicon rzicon_yxwrz"></i>
                                 </el-button>
                             </el-tooltip>
                             <el-tooltip v-if="scope.row.wxid != '' || scope.row.wxopenid != ''"
                                 class="item" effect="dark" placement="top-start">
-                                <div slot="content" v-html="'微信已认证<br/>' + scope.row.wxBindmsg"></div>
+                                <div slot="content" v-html="lc('admin_user_company_00129') + '<br/>' + scope.row.wxBindmsg"></div>
                                 <el-button type="text">
                                     <i class="rzicon rzicon_wxyrz"></i>
                                 </el-button>
                             </el-tooltip>
                             <el-tooltip v-else class="item" effect="dark" placement="top-start">
-                                <div slot="content" v-html="'微信未认证<br/>' + scope.row.wxBindmsg"></div>
+                                <div slot="content" v-html="lc('member_user_00504') + '<br/>' + scope.row.wxBindmsg"></div>
                                 <el-button type="text">
                                     <i class="rzicon rzicon_wxwrz"></i>
                                 </el-button>
@@ -151,7 +151,7 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="投递岗位" min-width="130" align="center">
+                <el-table-column label="{yun:}t key='admin_00510'{/yun}" min-width="130" align="center">
                     <template slot-scope="scope">
                         <div class="moduleProps">
                             <div class="username">{{ scope.row.sq_num > 0 ? scope.row.sq_num : 0 }}</div>
@@ -160,7 +160,7 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column prop="login_date" label="注册/登录" min-width="150" sortable="custom">
+                <el-table-column prop="login_date" label="{yun:}t key='admin_user_00121'{/yun}" min-width="150" sortable="custom">
                     <template slot-scope="scope">
                         <div class="moduleProps">
                             <span class="gsd">{{ scope.row.reg_date_n }}</span>
@@ -169,7 +169,7 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="简历/来源" min-width="150">
+                <el-table-column label="{yun:}t key='admin_00546'{/yun}" min-width="150">
                     <template slot-scope="scope">
                         <div class="moduleProps" v-if="scope.row.def_job != '0'">
                             <el-link type="primary" :underline="false"
@@ -181,7 +181,7 @@
                         <span class="gsd">{{ source[scope.row.source] }}</span>
                     </template>
                 </el-table-column>
-                <el-table-column label=" IP/归属地" min-width="130">
+                <el-table-column label="{yun:}t key='admin_vue_00026'{/yun}" min-width="130">
                     <template slot-scope="scope">
                         <div class="moduleProps">
 
@@ -194,7 +194,7 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="状态" fixed="right" width="60">
+                <el-table-column label="{yun:}t key='member_user_00181'{/yun}" fixed="right" width="60">
                     <template slot-scope="scope">
                         <div class="admin_state">
                             <span v-if="scope.row.r_status == '2'" class="admin_state3">{yun:}t key='admin_user_00138'{/yun}</span>
@@ -202,7 +202,7 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="操作" width="80" fixed="right" align="center">
+                <el-table-column label="{yun:}t key='member_user_00048'{/yun}" width="80" fixed="right" align="center">
                     <template slot-scope="scope">
                         <div class="cz_button">
                             <el-button size="mini" plain @click="openDetail(scope.$index, scope.row)">{yun:}t key='member_com_00380'{/yun}</el-button>
@@ -495,7 +495,7 @@
                     </div>
                     <!--个人详情详情切换-->
                     <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
-                        <el-tab-pane label="用户简历" name="resume">
+                        <el-tab-pane label="{yun:}t key='admin_00550'{/yun}" name="resume">
                             <div v-loading="expectLoading">
                                 <div class="shshow_tit">
                                     <i class="el-icon-office-building"></i> {yun:}t key='wap_user_00341'{/yun}
@@ -756,7 +756,7 @@
                                 </div>
                             </div>
                         </el-tab-pane>
-                        <el-tab-pane label="投递记录" name="sqlog">
+                        <el-tab-pane label="{yun:}t key='admin_00551'{/yun}" name="sqlog">
                             <div class="moduleElHight">
                                 <div class="moduleElTable"
                                     style="border: 1px solid #ebeef5; width: calc(100% - 2px); height: calc(100% - 45px);">
@@ -766,7 +766,7 @@
                                         <template slot="empty">
                                             <p>{{ dataText }}</p>
                                         </template>
-                                        <el-table-column prop="job_name" label="投递职位">
+                                        <el-table-column prop="job_name" label="{yun:}t key='wap_01596'{/yun}">
                                             <template slot-scope="scope">
                                                 <div class="moduleProps">
                                                     <el-link type="primary" :underline="false"
@@ -775,7 +775,7 @@
                                                 </div>
                                             </template>
                                         </el-table-column>
-                                        <el-table-column prop="com_name" label="所属企业">
+                                        <el-table-column prop="com_name" label="{yun:}t key='admin_user_00247'{/yun}">
                                             <template slot-scope="scope">
                                                 <div class="moduleProps">
                                                     <el-link type="primary" :underline="false"
@@ -784,8 +784,8 @@
                                                 </div>
                                             </template>
                                         </el-table-column>
-                                        <el-table-column prop="datetime_n_n" label="投递时间"></el-table-column>
-                                        <el-table-column label="是否查看">
+                                        <el-table-column prop="datetime_n_n" label="{yun:}t key='member_user_00431'{/yun}"></el-table-column>
+                                        <el-table-column label="{yun:}t key='admin_user_00250'{/yun}">
                                             <template slot-scope="scope">
                                                 <div class="admin_state">
                                                     <span class="admin_state1" v-if="scope.row.is_browse == 2">{yun:}t key='wap_user_00258'{/yun}</span>
@@ -799,7 +799,7 @@
                                                 </div>
                                             </template>
                                         </el-table-column>
-                                        <el-table-column prop="isdel_n" label="状态"></el-table-column>
+                                        <el-table-column prop="isdel_n" label="{yun:}t key='member_user_00181'{/yun}"></el-table-column>
                                     </el-table>
                                 </div>
                                 <div class="modulePaging">
@@ -815,7 +815,7 @@
                                 </div>
                             </div>
                         </el-tab-pane>
-                        <el-tab-pane label="面试邀请" name="yqms">
+                        <el-tab-pane label="{yun:}t key='wap_com_00046'{/yun}" name="yqms">
                             <div class="moduleElHight">
                                 <div class="moduleElTable"
                                     style="border: 1px solid #ebeef5; width: calc(100% - 2px); height: calc(100% - 55px);">
@@ -824,7 +824,7 @@
                                         <template slot="empty">
                                             <p>{{ dataText }}</p>
                                         </template>
-                                        <el-table-column prop="fname" label="公司名称" min-width="200">
+                                        <el-table-column prop="fname" label="{yun:}t key='wap_01403'{/yun}" min-width="200">
                                             <template slot-scope="scope">
                                                 <div class="moduleProps">
                                                     <el-link type="primary" :underline="false"
@@ -833,7 +833,7 @@
                                                 </div>
                                             </template>
                                         </el-table-column>
-                                        <el-table-column prop="jobname" label="面试岗位" min-width="200">
+                                        <el-table-column prop="jobname" label="{yun:}t key='admin_00552'{/yun}" min-width="200">
                                             <template slot-scope="scope">
                                                 <div class="moduleProps">
                                                     <el-link type="primary" :underline="false"
@@ -842,10 +842,10 @@
                                                 </div>
                                             </template>
                                         </el-table-column>
-                                        <el-table-column prop="title" label="邀请标题" width="150"></el-table-column>
-                                        <el-table-column prop="content" label="邀请内容" min-width="170"></el-table-column>
-                                        <el-table-column prop="datetime_n" label="邀请时间" width="170"></el-table-column>
-                                        <el-table-column label="是否查看" width="150">
+                                        <el-table-column prop="title" label="{yun:}t key='admin_00553'{/yun}" width="150"></el-table-column>
+                                        <el-table-column prop="content" label="{yun:}t key='admin_00554'{/yun}" min-width="170"></el-table-column>
+                                        <el-table-column prop="datetime_n" label="{yun:}t key='member_user_00170'{/yun}" width="170"></el-table-column>
+                                        <el-table-column label="{yun:}t key='admin_user_00250'{/yun}" width="150">
                                             <template slot-scope="scope">
                                                 <div class="admin_state">
                                                     <span class="admin_state1" v-if="scope.row.is_browse == 2">{yun:}t key='wap_user_00258'{/yun}</span>
@@ -857,7 +857,7 @@
                                                 </div>
                                             </template>
                                         </el-table-column>
-                                        <el-table-column prop="isdel_n" label="状态" width="100"></el-table-column>
+                                        <el-table-column prop="isdel_n" label="{yun:}t key='member_user_00181'{/yun}" width="100"></el-table-column>
                                     </el-table>
                                 </div>
                                 <div class="modulePaging">
@@ -874,7 +874,7 @@
                             </div>
                         </el-tab-pane>
                         
-                        <el-tab-pane label="个人动态" name="log">
+                        <el-tab-pane label="{yun:}t key='admin_00555'{/yun}" name="log">
                             <div v-if="userLog.list">
                                 <template v-for="(ulogitem, ulogkey) in userLog.list">
                                     <el-divider content-position="left">{{ ulogitem.week }} {{ ulogkey }}</el-divider>
@@ -904,7 +904,7 @@
                                 </div>
                             </div>
                         </el-tab-pane>
-                        <el-tab-pane label="积分管理" name="pay">
+                        <el-tab-pane label="{yun:}t key='admin_00556'{/yun}" name="pay">
                             <!--<div class="admin_datatip">-->
                             <!--	<i class="el-icon-document"></i> {{ lc("admin_data_stats") }}目前拥有积分 3526-->
                             <!--	<span class="admin_datatip_n">共消费积分：13625 </span>-->
@@ -918,11 +918,11 @@
                                         <template slot="empty">
                                             <p>{{ dataText }}</p>
                                         </template>
-                                        <el-table-column prop="order_id" label="消费单号"></el-table-column>
-                                        <el-table-column prop="consume_price_n" label="金额"></el-table-column>
-                                        <el-table-column prop="consume_remark" label="备注说明"></el-table-column>
-                                        <el-table-column prop="pay_time_n" label="消费时间"></el-table-column>
-                                        <el-table-column prop="consume_state_n" label="状态"></el-table-column>
+                                        <el-table-column prop="order_id" label="{yun:}t key='admin_user_00295'{/yun}"></el-table-column>
+                                        <el-table-column prop="consume_price_n" label="{yun:}t key='member_user_00254'{/yun}"></el-table-column>
+                                        <el-table-column prop="consume_remark" label="{yun:}t key='admin_user_00290'{/yun}"></el-table-column>
+                                        <el-table-column prop="pay_time_n" label="{yun:}t key='wap_com_00344'{/yun}"></el-table-column>
+                                        <el-table-column prop="consume_state_n" label="{yun:}t key='member_user_00181'{/yun}"></el-table-column>
                                     </el-table>
                                 </div>
                                 <div class="modulePaging">
@@ -1328,7 +1328,7 @@
                     </div>
                     <div class="wxsettip_small ">{yun:}t key='wap_00463'{/yun}</div>
                     <el-input type="textarea"
-                        :placeholder="'用一两句话总结一下自己的优势，突出亮点。\n示例：\n2年销售管理经验，在担任区域负责人期间，带领区域同事做到移动业务量全省第一。口齿伶俐、思维灵敏，管理组织能力强，精通各种营销手段。'"
+                        :placeholder="{yun:}t key='admin_vue_00011'{/yun}"
                         v-model="ruleFormTag.description" :autosize="{ minRows: 3, maxRows: 6 }">
                     </el-input>
                 </div>
@@ -1362,7 +1362,7 @@
                     </div>
                     <div class="wxsettip_small ">{yun:}t key='wap_user_00086'{/yun}</div>
                     <el-input type="textarea"
-                        :placeholder="'请简短介绍公司与自己负责的任务，分条罗列在什么项目中，通过某些动作或技能达到可量化的结果。\n示例：\n1、主要负责新员工入职培训；\n2、分析制定员工每月个人销售业绩；\n3、帮助员工提高每日客单价，整体店面管理工作等；'"
+                        :placeholder="{yun:}t key='admin_vue_00012'{/yun}"
                         v-model="ruleFormWork.content" :autosize="{ minRows: 3, maxRows: 6 }">
                     </el-input>
                 </div>
@@ -1383,7 +1383,7 @@
                     </div>
                     <div class="wxsettip_small ">{yun:}t key='admin_user_00220'{/yun}</div>
                     <div class="wxsettip_Sealect">
-                        <el-date-picker v-model="daterangeEdu" type="monthrange" range-separator="至"
+                        <el-date-picker v-model="daterangeEdu" type="monthrange" range-separator="{yun:}t key='admin_company_00019'{/yun}"
                             start-placeholder="{yun:}t key='admin_00343'{/yun}" end-placeholder="{yun:}t key='admin_00344'{/yun}">
                         </el-date-picker>
                     </div>
@@ -1421,7 +1421,7 @@
                     </div>
                     <div class="wxsettip_small ">{yun:}t key='admin_user_00222'{/yun}</div>
                     <div class="wxsettip_Sealect">
-                        <el-date-picker v-model="daterangeTraining" type="monthrange" range-separator="至"
+                        <el-date-picker v-model="daterangeTraining" type="monthrange" range-separator="{yun:}t key='admin_company_00019'{/yun}"
                             start-placeholder="{yun:}t key='admin_00343'{/yun}" end-placeholder="{yun:}t key='admin_00344'{/yun}">
                         </el-date-picker>
                     </div>
@@ -1450,16 +1450,12 @@
                     </div>
                     <div class="wxsettip_small ">{yun:}t key='admin_user_00229'{/yun}</div>
                     <div class="wxsettip_Sealect">
-                        <el-date-picker v-model="daterangeProject" type="monthrange" range-separator="至"
+                        <el-date-picker v-model="daterangeProject" type="monthrange" range-separator="{yun:}t key='admin_company_00019'{/yun}"
                             start-placeholder="{yun:}t key='admin_00343'{/yun}" end-placeholder="{yun:}t key='admin_00344'{/yun}">
                         </el-date-picker>
                     </div>
                     <div class="wxsettip_small ">{yun:}t key='admin_user_00228'{/yun}</div>
-                    <el-input type="textarea" placeholder="请简短介绍公司与自己负责的任务，分条罗列在什么项目中，通过某些动作或技能达到可量化的结果。
-示例：
-1、主要负责新员工入职培训；
-2、分析制定员工每月个人销售业绩；
-3、帮助员工提高每日客单价，整体店面管理工作等；" v-model="ruleFormProject.content" :autosize="{ minRows: 3, maxRows: 6 }"></el-input>
+                    <el-input type="textarea" :placeholder="{yun:}t key='admin_vue_00012'{/yun}" v-model="ruleFormProject.content" :autosize="{ minRows: 3, maxRows: 6 }"></el-input>
                 </div>
                 <span slot="footer" class="dialog-footer">
                     <el-button @click="dialogProject = false">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
@@ -2249,7 +2245,7 @@ module.exports = {
                 ruleForm = this.ruleFormEmailRz;
 
             if (!ruleForm.email) {
-                message.error('请输入邮箱');
+                message.error(lc('wap_00697'));
                 return false;
             }
 
@@ -2977,15 +2973,15 @@ module.exports = {
                 return false;
             }
             if (ruleForm.job_classid == "") {
-                message.error('请选择从事职位');
+                message.error(lc('admin_vue_00013'));
                 return false;
             }
             if (ruleForm.city_classid == '') {
-                message.error('请选择期望地点');
+                message.error(lc('admin_vue_00014'));
                 return false;
             }
             if (ruleForm.minsalary == "" || ruleForm.minsalary == "0") {
-                message.error('请选择期望薪资');
+                message.error(lc('admin_vue_00015'));
                 return false;
             }
             if (ruleForm.maxsalary && parseInt(ruleForm.maxsalary) <= parseInt(ruleForm.minsalary)) {
@@ -3199,7 +3195,7 @@ module.exports = {
                 return false;
             }
             if (daterangeEdu.length == 0) {
-                message.error('请选择在校时间');
+                message.error(lc('admin_vue_00016'));
                 return false
             }
             if (ruleForm.education == "") {

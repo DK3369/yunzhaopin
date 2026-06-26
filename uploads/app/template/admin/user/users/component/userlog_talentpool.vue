@@ -5,13 +5,13 @@
                 <div class="moduleInptList">
                     <el-input placeholder="{yun:}t key='admin_user_weipin_00003'{/yun}" @keyup.enter.native="handleSearch" size="small" v-model="searchForm.keyword" class="input-with-select" clearable>
                         <el-select v-model="searchForm.type" slot="prepend" placeholder="{yun:}t key='wap_user_00100'{/yun}">
-                            <el-option label="被收藏人才" value="1"></el-option>
-                            <el-option label="公司名称" value="2"></el-option>
+                            <el-option label="{yun:}t key='admin_user_00266'{/yun}" value="1"></el-option>
+                            <el-option label="{yun:}t key='wap_01403'{/yun}" value="2"></el-option>
                         </el-select>
                     </el-input>
                 </div>
                 <div class="tableSeachInpt tableSeachInptsmalltwo">
-                    <el-date-picker v-model="searchForm.times" type="daterange" align="right" unlink-panels range-separator="至" start-placeholder="{yun:}t key='admin_00528'{/yun}" end-placeholder="{yun:}t key='admin_00529'{/yun}" :picker-options="timeOptions" value-format="yyyy-MM-dd" size="small" @change="handleTimeChange"></el-date-picker>
+                    <el-date-picker v-model="searchForm.times" type="daterange" align="right" unlink-panels range-separator="{yun:}t key='admin_company_00019'{/yun}" start-placeholder="{yun:}t key='admin_00528'{/yun}" end-placeholder="{yun:}t key='admin_00529'{/yun}" :picker-options="timeOptions" value-format="yyyy-MM-dd" size="small" @change="handleTimeChange"></el-date-picker>
                 </div>
                 <div class="tableSeachInpt">
                     <el-button type="primary" icon="el-icon-search" size="mini" @click="handleSearch">{yun:}t key='admin_user_weipin_00049'{/yun}</el-button>
@@ -26,22 +26,22 @@
                     <p>{{dataText}}</p>
                 </template>
                 <el-table-column type="selection" width="55"></el-table-column>
-                <el-table-column prop="id" label="编号" width="80" sortable="custom"></el-table-column>
-                <el-table-column prop="com_name" label="公司名称" min-width="150" show-overflow-tooltip>
+                <el-table-column prop="id" label="{yun:}t key='member_com_00345'{/yun}" width="80" sortable="custom"></el-table-column>
+                <el-table-column prop="com_name" label="{yun:}t key='wap_01403'{/yun}" min-width="150" show-overflow-tooltip>
                     <template slot-scope="scope">
                         <el-link :href="scope.row.com_url" target="_blank" type="primary">{{ scope.row.com_name }}</el-link>
                     </template>
                 </el-table-column>
-                <el-table-column prop="username" label="被收藏人才" width="150">
+                <el-table-column prop="username" label="{yun:}t key='admin_user_00266'{/yun}" width="150">
                     <template slot-scope="scope">
                         <el-button type="text" @click="handlePreview(scope)" style="padding: 0">{{ scope.row.username }}</el-button>
                     </template>
                 </el-table-column>
-                <el-table-column prop="jobname" label="求职意向" min-width="180"></el-table-column>
-                <el-table-column prop="exp" label="工作经验" width="150"></el-table-column>
-                <el-table-column prop="salary" label="期望薪资" width="150"></el-table-column>
-                <el-table-column prop="ctime_n_n" label="收藏时间" width="160"></el-table-column>
-                <el-table-column label="操作" width="80" fixed="right">
+                <el-table-column prop="jobname" label="{yun:}t key='wap_00460'{/yun}" min-width="180"></el-table-column>
+                <el-table-column prop="exp" label="{yun:}t key='wap_user_00240'{/yun}" width="150"></el-table-column>
+                <el-table-column prop="salary" label="{yun:}t key='wap_user_00016'{/yun}" width="150"></el-table-column>
+                <el-table-column prop="ctime_n_n" label="{yun:}t key='member_user_00104'{/yun}" width="160"></el-table-column>
+                <el-table-column label="{yun:}t key='member_user_00048'{/yun}" width="80" fixed="right">
                     <template slot-scope="scope">
                         <div class="cz_button">
                             <el-button type="danger" size="small" @click="deleteRow(scope)">{yun:}t key='common.delete'{/yun}</el-button>

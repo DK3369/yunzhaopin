@@ -6,15 +6,15 @@
                 <div class="moduleInptList">
                     <el-input placeholder="{yun:}t key='admin_user_weipin_00003'{/yun}" @keyup.enter.native="handleSearch" v-model="searchForm.keyword" class="input-with-select" clearable>
                         <el-select v-model="searchForm.type" slot="prepend" placeholder="{yun:}t key='wap_user_00100'{/yun}">
-                            <el-option label="个人姓名" value="1"></el-option>
-                            <el-option label="用户ID" value="2"></el-option>
+                            <el-option label="{yun:}t key='admin_user_00185'{/yun}" value="1"></el-option>
+                            <el-option label="{yun:}t key='admin_user_00130'{/yun}" value="2"></el-option>
                         </el-select>
                     </el-input>
                 </div>
                 <div class="tableSeachInpt tableSeachInptsmall">
                     <el-select v-model="searchForm.status" size="small" slot="prepend" placeholder="{yun:}t key='wap_com_00406'{/yun}" clearable @change="handleSearch">
-                        <el-option label="已审核" value="0"></el-option>
-                        <el-option label="未审核" value="1"></el-option>
+                        <el-option label="{yun:}t key='wap_user_00165'{/yun}" value="0"></el-option>
+                        <el-option label="{yun:}t key='wap_user_00166'{/yun}" value="1"></el-option>
                     </el-select>
                 </div>
                 <div class="tableSeachInpt">
@@ -37,12 +37,12 @@
                     <p>{{dataText}}</p>
                 </template>
                 <el-table-column type="selection" width="55"></el-table-column>
-                <el-table-column prop="uid" label="用户ID" width="120" sortable="custom"></el-table-column>
-                <el-table-column prop="name" label="姓名">
+                <el-table-column prop="uid" label="{yun:}t key='admin_user_00130'{/yun}" width="120" sortable="custom"></el-table-column>
+                <el-table-column prop="name" label="{yun:}t key='wap_00529'{/yun}">
                 </el-table-column>
-                <el-table-column prop="username" label="用户名">
+                <el-table-column prop="username" label="{yun:}t key='admin_user_00140'{/yun}">
                 </el-table-column>
-                <el-table-column prop="wenjian" label="作品">
+                <el-table-column prop="wenjian" label="{yun:}t key='admin_user_00190'{/yun}">
                     <template slot-scope="scope">
                         <div style="display: flex;">
                             <div class="demo-image__preview">
@@ -52,7 +52,7 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column prop="status" label="状态" width="100">
+                <el-table-column prop="status" label="{yun:}t key='member_user_00181'{/yun}" width="100">
                     <template slot-scope="scope">
                         <div class="admin_state">
                             <span v-if="scope.row.status == 0" class="admin_state1">{yun:}t key='wap_user_00165'{/yun}</span>
@@ -67,7 +67,7 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="操作" width="200" fixed="right">
+                <el-table-column label="{yun:}t key='member_user_00048'{/yun}" width="200" fixed="right">
                     <template slot-scope="scope">
                         <div class="cz_button">
                             <el-button size="mini" plain @click="handleStatus(scope)">{yun:}t key='member_user_00152'{/yun}</el-button>

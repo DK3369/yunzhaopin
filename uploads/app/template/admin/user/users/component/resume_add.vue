@@ -244,40 +244,40 @@
                 var myreg = /^([a-zA-Z0-9\-]+[_|\_|\.]?)*[a-zA-Z0-9\-]+@([a-zA-Z0-9\-]+[_|\_|\.]?)*[a-zA-Z0-9]+\.[a-zA-Z]{2,3}$/;
                 if (isEmpty(this.uid)) {
                     if (isEmpty(params.username)) {
-                        message.warning("登录账户不能为空");
+                        message.warning(lc('admin_vue_00001'));
                         return false;
                     }
                     if (isEmpty(params.password)) {
-                        message.warning("密码不能为空");
+                        message.warning(lc('admin_vue_00002'));
                         return false;
                     }
                     if (params.password.length < 6) {
-                        message.warning("密码长度不能小6位字符");
+                        message.warning(lc('admin_vue_00003'));
                         return false;
                     }
                     if (isEmpty(params.passconfirm)) {
-                        message.warning("请再次输入密码");
+                        message.warning(lc('admin_vue_00004'));
                         return false;
                     }
                     if (params.password != params.passconfirm) {
-                        message.warning("两次密码不一致");
+                        message.warning(lc('admin_vue_00005'));
                         return false;
                     }
                 }
                 if (isEmpty(params.resume_name)) {
-                    message.warning("用户姓名不能为空");
+                    message.warning(lc('admin_vue_00006'));
                     return false;
                 }
                 if (isEmpty(params.sex)) {
-                    message.warning("性别不能为空");
+                    message.warning(lc('admin_vue_00007'));
                     return false;
                 }
                 if (isEmpty(params.living)) {
-                    message.warning("现居住地不能为空");
+                    message.warning(lc('admin_vue_00008'));
                     return false;
                 }
                 if (isEmpty(params.birthday)) {
-                    message.warning("出生年月不能为空");
+                    message.warning(lc('admin_vue_00009'));
                     return false;
                 }
                 if (isEmpty(params.moblie)) {
@@ -292,7 +292,7 @@
                     return false;
                 }
                 if (isEmpty(params.description)) {
-                    message.warning("自我评价不能为空");
+                    message.warning(lc('admin_vue_00010'));
                     return false;
                 }
 

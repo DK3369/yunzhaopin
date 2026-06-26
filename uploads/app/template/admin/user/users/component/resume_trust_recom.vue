@@ -6,8 +6,8 @@
 				<el-input v-model="searchForm.keyword" placeholder="{yun:}t key='admin_user_weipin_00003'{/yun}" size="small"
 						  prefix-icon="el-icon-search" clearable>
 					<el-select v-model="searchForm.type" size="small" slot="prepend" placeholder="{yun:}t key='admin_00490'{/yun}">
-						<el-option label="公司名" :value="1"></el-option>
-						<el-option label="职位名" :value="2"></el-option>
+						<el-option label="{yun:}t key='admin_00490'{/yun}" :value="1"></el-option>
+						<el-option label="{yun:}t key='admin_00491'{/yun}" :value="2"></el-option>
 					</el-select>
 				</el-input>
 			</div>
@@ -24,31 +24,31 @@
 					<p>{{dataText}}</p>
 				</template>
 				<el-table-column type="selection" width="55"> </el-table-column>
-				<el-table-column prop="id" label="职位编号" width="100" sortable="custom"> </el-table-column>
-				<el-table-column prop="com_name" label="公司名称"> </el-table-column>
-				<el-table-column label="职位名称">
+				<el-table-column prop="id" label="{yun:}t key='admin_00492'{/yun}" width="100" sortable="custom"> </el-table-column>
+				<el-table-column prop="com_name" label="{yun:}t key='wap_01403'{/yun}"> </el-table-column>
+				<el-table-column label="{yun:}t key='wap_com_00288'{/yun}">
 					<template slot-scope="scope">
 						<div>
 							<el-link type="primary" :underline="false" @click="openPage(scope.row.job_comapply)">{{scope.row.name}}</el-link>
 						</div>
 					</template>
 				</el-table-column>
-				<el-table-column label="工作地区">
+				<el-table-column label="{yun:}t key='wap_00349'{/yun}">
 					<template slot-scope="scope">
 						<div>
 							{{scope.row.job_city_one}} - {{scope.row.job_city_two}}
 						</div>
 					</template>
 				</el-table-column>
-				<el-table-column label="职位类别">
+				<el-table-column label="{yun:}t key='wap_user_00018'{/yun}">
 					<template slot-scope="scope">
 						<div>
 							{{scope.row.job_three_n}}
 						</div>
 					</template>
 				</el-table-column>
-				<el-table-column prop="job_salary" label="待遇"></el-table-column>
-				<el-table-column label="操作" width="80" align="center">
+				<el-table-column prop="job_salary" label="{yun:}t key='admin_00493'{/yun}"></el-table-column>
+				<el-table-column label="{yun:}t key='member_user_00048'{/yun}" width="80" align="center">
 					<template slot-scope="scope">
 						<div class="cz_button">
 							<el-button plain @click="rec(scope.$index)">{yun:}t key='common.recommended'{/yun}</el-button>
@@ -247,7 +247,7 @@
 				delConfirm(this, {}, function (params) {
 				    that.saveLoading = true;
 					that.sendHandle(idx)
-				}, '确定要推荐吗？')
+				}, lc('admin_vue_00018'))
 			},
 			async sendHandle(idx) {
 				let that = this,
@@ -281,7 +281,7 @@
 						that.sendNum = 0;
 						that.sendPercentage = 0;
 					}, 1500);
-					return '发送完成';
+					return lc('admin_system_00018');
 				} else {
 					return "{yun:}t key='admin_00872'{/yun}" + that.sendNum + '/' + that.idArr.length;
 				}

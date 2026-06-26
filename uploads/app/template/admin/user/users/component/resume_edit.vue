@@ -637,7 +637,7 @@
                     </div>
                     <div class="wxsettip_small ">{yun:}t key='wap_00463'{/yun}</div>
                     <el-input type="textarea"
-                              :placeholder="'用一两句话总结一下自己的优势，突出亮点。\n示例：\n2年销售管理经验，在担任区域负责人期间，带领区域同事做到移动业务量全省第一。口齿伶俐、思维灵敏，管理组织能力强，精通各种营销手段。'"
+                              :placeholder="{yun:}t key='admin_vue_00011'{/yun}"
                               v-model="ruleFormTag.description" :autosize="{ minRows: 3, maxRows: 6 }">
                     </el-input>
                 </div>
@@ -666,7 +666,7 @@
                         <el-checkbox v-model="todayCheck" @change="todayChange($event, 'work')">{yun:}t key='wap_js_00170'{/yun}</el-checkbox>
                     </div>
                     <div class="wxsettip_small ">{yun:}t key='wap_user_00086'{/yun}</div>
-                    <el-input type="textarea" :placeholder="'请简短介绍公司与自己负责的任务，分条罗列在什么项目中，通过某些动作或技能达到可量化的结果。\n示例：\n1、主要负责新员工入职培训；\n2、分析制定员工每月个人销售业绩；\n3、帮助员工提高每日客单价，整体店面管理工作等；'"
+                    <el-input type="textarea" :placeholder="{yun:}t key='admin_vue_00012'{/yun}"
                               v-model="ruleFormWork.content" :autosize="{ minRows: 3, maxRows: 6 }">
                     </el-input>
                 </div>
@@ -686,7 +686,7 @@
                     <div class=""><el-input v-model="ruleFormEdu.name" placeholder="{yun:}t key='wap_user_00044'{/yun}"></el-input> </div>
                     <div class="wxsettip_small ">{yun:}t key='admin_user_00220'{/yun}</div>
                     <div class="wxsettip_Sealect">
-                        <el-date-picker v-model="daterangeEdu" type="monthrange" range-separator="至"
+                        <el-date-picker v-model="daterangeEdu" type="monthrange" range-separator="{yun:}t key='admin_company_00019'{/yun}"
                                         start-placeholder="{yun:}t key='admin_00343'{/yun}" end-placeholder="{yun:}t key='admin_00344'{/yun}">
                         </el-date-picker>
                     </div>
@@ -719,7 +719,7 @@
                     <div class=""><el-input v-model="ruleFormTraining.title" placeholder="{yun:}t key='admin_user_00209'{/yun}"></el-input> </div>
                     <div class="wxsettip_small ">{yun:}t key='admin_user_00222'{/yun}</div>
                     <div class="wxsettip_Sealect">
-                        <el-date-picker v-model="daterangeTraining" type="monthrange" range-separator="至"
+                        <el-date-picker v-model="daterangeTraining" type="monthrange" range-separator="{yun:}t key='admin_company_00019'{/yun}"
                                         start-placeholder="{yun:}t key='admin_00343'{/yun}" end-placeholder="{yun:}t key='admin_00344'{/yun}">
                         </el-date-picker>
                     </div>
@@ -744,16 +744,12 @@
                     <div class=""><el-input v-model="ruleFormProject.title" placeholder="{yun:}t key='admin_00486'{/yun}"></el-input> </div>
                     <div class="wxsettip_small ">{yun:}t key='admin_user_00229'{/yun}</div>
                     <div class="wxsettip_Sealect">
-                        <el-date-picker v-model="daterangeProject" type="monthrange" range-separator="至"
+                        <el-date-picker v-model="daterangeProject" type="monthrange" range-separator="{yun:}t key='admin_company_00019'{/yun}"
                                         start-placeholder="{yun:}t key='admin_00343'{/yun}" end-placeholder="{yun:}t key='admin_00344'{/yun}">
                         </el-date-picker>
                     </div>
                     <div class="wxsettip_small ">{yun:}t key='admin_user_00228'{/yun}</div>
-                    <el-input type="textarea" placeholder="请简短介绍公司与自己负责的任务，分条罗列在什么项目中，通过某些动作或技能达到可量化的结果。
-示例：
-1、主要负责新员工入职培训；
-2、分析制定员工每月个人销售业绩；
-3、帮助员工提高每日客单价，整体店面管理工作等；" v-model="ruleFormProject.content" :autosize="{ minRows: 3, maxRows: 6 }"></el-input>
+                    <el-input type="textarea" :placeholder="{yun:}t key='admin_vue_00012'{/yun}" v-model="ruleFormProject.content" :autosize="{ minRows: 3, maxRows: 6 }"></el-input>
                 </div>
                 <span slot="footer" class="dialog-footer">
 					<el-button @click="dialogProject = false">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
@@ -1187,15 +1183,15 @@
                     return false;
                 }
                 if (typeof ruleForm.job_classid === 'undefined' || ruleForm.job_classid == "") {
-                    message.warning('请选择从事职位');
+                    message.warning(lc('admin_vue_00013'));
                     return false;
                 }
                 if (typeof ruleForm.city_classid === 'undefined' || ruleForm.city_classid == '') {
-                    message.warning('请选择期望地点');
+                    message.warning(lc('admin_vue_00014'));
                     return false;
                 }
                 if (ruleForm.minsalary == "" || ruleForm.minsalary == "0") {
-                    message.warning('请输入期望薪资');
+                    message.warning(lc('admin_vue_00015'));
                     return false;
                 }
                 if (ruleForm.maxsalary && parseInt(ruleForm.maxsalary) <= parseInt(ruleForm.minsalary)) {
@@ -1409,7 +1405,7 @@
                     return false;
                 }
                 if (daterangeEdu.length == 0) {
-                    message.warning('请选择在校时间');
+                    message.warning(lc('admin_vue_00016'));
                     return false
                 }
                 if (ruleForm.education == "") {

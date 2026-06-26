@@ -17,22 +17,22 @@
                     </td>
                     <td>
                         <div class="tc_checkbox">
-                            <el-checkbox v-model="ruleForm.user_height_resume" label="优质简历"></el-checkbox>
+                            <el-checkbox v-model="ruleForm.user_height_resume" label="{yun:}t key='wap_com_00375'{/yun}"></el-checkbox>
                         </div>
                         <div class="tc_checkbox">
-                            <el-checkbox v-model="ruleForm.user_idcard_status" label="身份认证"></el-checkbox>
+                            <el-checkbox v-model="ruleForm.user_idcard_status" label="{yun:}t key='wap_01030'{/yun}"></el-checkbox>
                         </div>
                         <div class="tc_checkbox">
-                            <el-checkbox v-model="ruleForm.user_msg_status" label="求职咨询"></el-checkbox>
+                            <el-checkbox v-model="ruleForm.user_msg_status" label="{yun:}t key='wap_com_00408'{/yun}"></el-checkbox>
                         </div>
                         <div class="tc_checkbox">
-                            <el-checkbox v-model="ruleForm.user_photo_status" label="头像"></el-checkbox>
+                            <el-checkbox v-model="ruleForm.user_photo_status" label="{yun:}t key='member_user_00161'{/yun}"></el-checkbox>
                         </div>
                         <div class="tc_checkbox">
-                            <el-checkbox v-model="ruleForm.rshow_photo_status" label="作品"></el-checkbox>
+                            <el-checkbox v-model="ruleForm.rshow_photo_status" label="{yun:}t key='admin_user_00190'{/yun}"></el-checkbox>
                         </div>
                         <div class="tc_checkbox">
-                            <el-checkbox v-model="ruleForm.user_trust_status" label="委托简历"></el-checkbox>
+                            <el-checkbox v-model="ruleForm.user_trust_status" label="{yun:}t key='member_user_00276'{/yun}"></el-checkbox>
                         </div>
                     
                     </td>
@@ -48,10 +48,10 @@
                     </td>
                     <td>
                         <div class="tc_checkbox">
-                            <el-checkbox v-model="ruleForm.resume_status" label="创建简历"></el-checkbox>
+                            <el-checkbox v-model="ruleForm.resume_status" label="{yun:}t key='wap_user_00197'{/yun}"></el-checkbox>
                         </div>
                         <div class="tc_checkbox">
-                            <el-checkbox v-model="ruleForm.user_revise_state" label="修改简历"></el-checkbox>
+                            <el-checkbox v-model="ruleForm.user_revise_state" label="{yun:}t key='wap_00269'{/yun}"></el-checkbox>
                         </div>
                         <div v-if="ruleForm.resume_status == true || ruleForm.user_revise_state == true"
                              class="content-sub">
@@ -77,10 +77,10 @@
                     </td>
                     <td>
                         <div class="tc_checkbox">
-                            <el-checkbox v-model="ruleForm.user_resume_status" label="创建简历"></el-checkbox>
+                            <el-checkbox v-model="ruleForm.user_resume_status" label="{yun:}t key='wap_user_00197'{/yun}"></el-checkbox>
                         </div>
                         <div class="tc_checkbox">
-                            <el-checkbox v-model="ruleForm.user_gzgzh" label="关注公众号"></el-checkbox>
+                            <el-checkbox v-model="ruleForm.user_gzgzh" label="{yun:}t key='wap_user_00191'{/yun}"></el-checkbox>
                         </div>
                     </td>
                     <td>
@@ -111,13 +111,13 @@
                     </td>
                     <td>
                         <div class="tc_checkbox">
-                            <el-checkbox v-model="ruleForm.resume_create_exp" label="工作经历"></el-checkbox>
+                            <el-checkbox v-model="ruleForm.resume_create_exp" label="{yun:}t key='wap_00457'{/yun}"></el-checkbox>
                         </div>
                         <div class="tc_checkbox">
-                            <el-checkbox v-model="ruleForm.resume_create_edu" label="教育经历"></el-checkbox>
+                            <el-checkbox v-model="ruleForm.resume_create_edu" label="{yun:}t key='wap_00459'{/yun}"></el-checkbox>
                         </div>
                         <div class="tc_checkbox">
-                            <el-checkbox v-model="ruleForm.resume_create_project" label="项目经历"></el-checkbox>
+                            <el-checkbox v-model="ruleForm.resume_create_project" label="{yun:}t key='wap_00465'{/yun}"></el-checkbox>
                         </div>
                         <div class="content-sub"
                              v-if="ruleForm.resume_create_exp == true && cache.hasOwnProperty('userdata')">
@@ -209,13 +209,13 @@
                     </td>
                     <td>
                         <div class="tc_checkbox">
-                            <el-checkbox v-model="ruleForm.user_work_regiser" label="工作经历"></el-checkbox>
+                            <el-checkbox v-model="ruleForm.user_work_regiser" label="{yun:}t key='wap_00457'{/yun}"></el-checkbox>
                         </div>
                         <div class="tc_checkbox">
-                            <el-checkbox v-model="ruleForm.user_edu_regiser" label="教育经历"></el-checkbox>
+                            <el-checkbox v-model="ruleForm.user_edu_regiser" label="{yun:}t key='wap_00459'{/yun}"></el-checkbox>
                         </div>
                         <div class="tc_checkbox">
-                            <el-checkbox v-model="ruleForm.user_project_regiser" label="项目经历"></el-checkbox>
+                            <el-checkbox v-model="ruleForm.user_project_regiser" label="{yun:}t key='wap_00465'{/yun}"></el-checkbox>
                         </div>
                     </td>
                     <td>

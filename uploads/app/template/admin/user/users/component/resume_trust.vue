@@ -6,8 +6,8 @@
 				<el-input v-model="searchForm.keyword" @keyup.enter.native="search" placeholder="{yun:}t key='admin_user_weipin_00003'{/yun}" size="small"
 						  prefix-icon="el-icon-search" clearable>
 					<el-select v-model="searchForm.type" size="small" slot="prepend" placeholder="{yun:}t key='wap_00529'{/yun}">
-						<el-option label="姓名" :value="1"></el-option>
-						<el-option label="期望职位" :value="2"></el-option>
+						<el-option label="{yun:}t key='wap_00529'{/yun}" :value="1"></el-option>
+						<el-option label="{yun:}t key='wap_user_00015'{/yun}" :value="2"></el-option>
 					</el-select>
 				</el-input>
 			</div>
@@ -36,9 +36,9 @@
 					<p>{{dataText}}</p>
 				</template>
 				<el-table-column type="selection" width="55"> </el-table-column>
-				<el-table-column prop="uid" label="编号" width="80" sortable="custom"> </el-table-column>
-				<el-table-column prop="uname" label="姓名" width="100"> </el-table-column>
-				<el-table-column label="期望职位 " width=" ">
+				<el-table-column prop="uid" label="{yun:}t key='member_com_00345'{/yun}" width="80" sortable="custom"> </el-table-column>
+				<el-table-column prop="uname" label="{yun:}t key='wap_00529'{/yun}" width="100"> </el-table-column>
+				<el-table-column label="{yun:}t key='admin_vue_00017'{/yun}" width=" ">
 					<template slot-scope="scope">
 						<div>
 							<span v-if="scope.row.name">{{scope.row.name}}</span>
@@ -46,13 +46,13 @@
 						</div>
 					</template>
 				</el-table-column>
-				<el-table-column prop="price" label="价格"> </el-table-column>
-				<el-table-column prop="add_time" label="申请时间" width="150" sortable="custom">
+				<el-table-column prop="price" label="{yun:}t key='wap_00563'{/yun}"> </el-table-column>
+				<el-table-column prop="add_time" label="{yun:}t key='wap_com_00342'{/yun}" width="150" sortable="custom">
 					<template slot-scope="scope">
 						<div>{{scope.row.add_time_n}}</div>
 					</template>
 				</el-table-column>
-				<el-table-column prop="" label="匹配岗位" width="150" align="center">
+				<el-table-column prop="" label="{yun:}t key='admin_00488'{/yun}" width="150" align="center">
 					<template slot-scope="scope">
 						<el-button v-if="scope.row.name && scope.row.status == 1" type="text" size="small" plain
 								   @click="openRecom(scope.row)">
@@ -61,7 +61,7 @@
 						<div v-else>-</div>
 					</template>
 				</el-table-column>
-				<el-table-column label="状态" width="60" fixed="right">
+				<el-table-column label="{yun:}t key='member_user_00181'{/yun}" width="60" fixed="right">
 					<template slot-scope="scope">
 						<div class="admin_state">
 							<span v-if="scope.row.status == 1" class="admin_state1">{yun:}t key='wap_com_00191'{/yun}</span>
@@ -70,7 +70,7 @@
 						</div>
 					</template>
 				</el-table-column>
-				<el-table-column label="操作" width="190" fixed="right" align="center">
+				<el-table-column label="{yun:}t key='member_user_00048'{/yun}" width="190" fixed="right" align="center">
 					<template slot-scope="scope">
 						<div class="cz_button">
 							<template v-if="scope.row.name">
@@ -359,12 +359,12 @@
 					params = {},
 					msg = '';
 
-				if (typeof idx == 'undefined") { // {yun:}t key='member_com_00055'{/yun}
+				if (typeof idx == 'undefined') { // {yun:}t key='member_com_00055'{/yun}
 					params.del = this.idArr;
-					msg = "你确定要删除选中项吗？";
+					msg = lc('common_00853');
 				}  else {// {yun:}t key='common_01711'{/yun}
 					params.del = that.list[idx].id;
-					msg = "你确定要删除当前项吗？';
+					msg = lc('admin_00333');
 				}
 
 				delConfirm(this, params, function (params) {

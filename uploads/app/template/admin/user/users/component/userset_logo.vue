@@ -133,7 +133,7 @@ module.exports = {
             let numMax = 6;
             if (fileList.length > numMax) {
                 fileList.splice(numMax, fileList.length - numMax);
-                message.error("{yun:}t key='common_06678'{/yun}6个默认头像！");
+                message.error(lc('common_06678') + '6' + lc('admin_vue_00027'));
                 return false;
             }
             this.fileListMan = fileList;//新元素有raw
@@ -146,7 +146,7 @@ module.exports = {
             let numMax = 6;
             if (fileList.length > numMax) {
                 fileList.splice(numMax, fileList.length - numMax);
-                message.error("{yun:}t key='common_06678'{/yun}6个默认头像！");
+                message.error(lc('common_06678') + '6' + lc('admin_vue_00027'));
                 return false;
             }
             this.fileListWoman = fileList;//新元素有raw
