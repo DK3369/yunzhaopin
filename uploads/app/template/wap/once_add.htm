@@ -6,10 +6,10 @@
     [v-cloak] {display: none;}
 </style>
 
-<!--页面主结构结束-->
-<!--单页面开始-->
+<!-- Page structure end -->
+<!-- Single page start -->
 <div id="main">
-    <!--页面主内容区开始-->
+    <!-- Main content start -->
     <ul class="yun_newwap_box">
         <li class="yun_newwap_text"><span class="yun_newwap_text_name">{yun:}t key='wap_01356'{/yun}</span>
             <span class="yun_newwap_text_box"> 
@@ -186,7 +186,7 @@
 		</div>
 	{yun:}/if{/yun}
 {yun:}/if{/yun}
-<!--单页面结束-->
+<!-- Single page end -->
 <van-popup v-model="requireShow" position="right" :style="{ height: '100%',width:'100%'}"@background-color: @gray-1;>
     <header>
         <div class="header">
@@ -335,11 +335,11 @@
 
 
     var Timer;
-    var smsTimer_time = 120; //倒数 120
-    var smsTimer_flag = 120; //倒数 120
-    var smsTime_speed = 1000; //速度 1秒钟
+    var smsTimer_time = 120; // Countdown seconds
+    var smsTimer_flag = 120; // Countdown flag
+    var smsTime_speed = 1000; // Interval 1 second
 
-    //发送手机短信
+    // Send SMS code
     function send_msg(url) {
         var moblie = $('#phone').val();
         var code;
@@ -411,7 +411,7 @@
         }
     }
     
-    //倒计时
+    // Countdown timer
     function smsTimer(obj) {
         if(smsTimer_flag > 0) {
             $(obj).html('{yun:}t key=\'wap_01388\'{/yun}' + smsTimer_flag + 's)');

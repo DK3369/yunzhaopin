@@ -14,7 +14,7 @@
     }
 </style>
 
-<!-- {yun:}t key='common_02103'{/yun}面{yun:}t key='common_02068'{/yun}部{yun:}t key='wap_00042'{/yun}栏 -->
+<!-- Page header bar -->
 <div class="companyheader">
     <div class="scwheader">
         <div class="company_top">
@@ -83,7 +83,7 @@
             <img src="{yun:}$row.logo{/yun}" alt="" width="100%" onerror="showImgDelay(this,'{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_unit_icon{/yun}',2);">
         </div>
     </div>
-    <!-- {yun:}t key='wap_com_00167'{/yun} -->
+    <!-- Company header -->
     {yun:}if $row.welfare_n{/yun}
     <div class="scw_comfl">
         <ul>
@@ -120,7 +120,7 @@
         </div>
     </div>
 
-    <!-- {yun:}t key='wap_00041'{/yun} -->
+    <!-- Business info -->
     <div class="scw_comcont none" id="businessInfo">
         <div class="scw_comcont_tit">{yun:}t key='wap_00041'{/yun}</div>
         <div id="com_business" class="scw_comcont_p">
@@ -141,7 +141,7 @@
         <div class="on-off"><a href="javascript:void(0);" onclick="showbb()"></a></div>
     </div>
 
-    <!-- {yun:}t key='wap_com_00401'{/yun} -->
+    <!-- Company environment -->
     {yun:}if $show{/yun}
     <div class="scw_comcont">
         <div class="scw_comcont_tit">{yun:}t key='wap_com_00401'{/yun}</div>
@@ -159,7 +159,7 @@
 
 
     
-    <!-- 卡片视{yun:}t key='common_02064'{/yun} -->
+    <!-- Card section -->
     <div class="scw_job">
         <div class="scw_job_c">
             <div class="scw_job_tit"> {yun:}t key='wap_01577'{/yun}<span class="tm_job_m">{yun:}$row.zpNum{/yun}</span></div>
@@ -174,11 +174,11 @@
                 {yun:}/if{/yun}
 
                 {yun:}assign var=uid value=$row.uid{/yun}
-                <!-- 卡片主{yun:}t key='common_02054'{/yun} -->
+                <!-- Card main -->
                 <div id="company_job_list">
                     {yun:}joblist namelen=8 comlen=12 ispage=0 com_id='auto.id' islt=4 item=job_list name=joblist1 depower='all'{/yun}
                     <div class="recommend_post_card_box">
-                        <!-- 卡片视{yun:}t key='common_02064'{/yun}主{yun:}t key='common_02054'{/yun}部{yun:}t key='common_02058'{/yun} -->
+                        <!-- Card main body -->
                         <a href="{yun:}url m=wap c=job a=comapply id=$job_list.id{/yun}"
                            title="{yun:}$job_list.name{/yun}">
                             <div class="recommend_post_card">
@@ -224,7 +224,7 @@
 </div>
 
 <div id="app" style="display: none;">
-    <!-- {yun:}t key='wap_com_00235'{/yun}弹出框 -->
+    <!-- Contact QR popup -->
     <van-dialog v-model="telQrcodeBoxShow" title="{yun:}t key='wap_00462'{/yun}" :show-confirm-button="false" close-on-click-overlay>
         <div class="">
             <div class="">
@@ -233,7 +233,7 @@
             </div>
         </div>
     </van-dialog>
-    <!--{yun:}t key='wap_com_00246'{/yun}面板-->
+    <!-- Share sheet -->
     <van-share-sheet v-model="shareShow" title="{yun:}t key='wap_js_00040'{/yun}" :options="shareoptions" @select="shareSelect"></van-share-sheet>
     {yun:}if $config.sy_h5_share==1{/yun}
     <div class="none" data-url='{yun:}url m=wap c=company a=share id=$row.id{/yun}' id="shareClick"></div>
@@ -506,7 +506,7 @@
                         $("#map_y").val(map_y);
                         var p1 = [x, y];
                         var p2 = [map_x, map_y];
-                        // {yun:}t key='common.back'{/yun} p1 到 p2 间的地面距离，单位：米
+                        // Ground distance from p1 to p2 in meters
                         var dis = AMap.GeometryUtil.distance(p1, p2);
                         var mapdistance = '(' + (dis / 1000).toFixed(1) + 'km)';
                         $("#distance").html(mapdistance);
@@ -516,7 +516,7 @@
         } else if (map_x > 0 && map_y > 0) {
             var p1 = [x, y];
             var p2 = [map_x, map_y];
-            // {yun:}t key='common.back'{/yun} p1 到 p2 间的地面距离，单位：米
+            // Ground distance from p1 to p2 in meters
             var dis = AMap.GeometryUtil.distance(p1, p2);
             var mapdistance = '(' + (dis / 1000).toFixed(1) + 'km)';
             $("#distance").html(mapdistance);

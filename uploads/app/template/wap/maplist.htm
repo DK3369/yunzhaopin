@@ -104,8 +104,8 @@
             var point = new AMap.LngLat(116.39131928, 39.90793074);
         }
     }
-    var map_zoom = 15; //3---18                           //设置地图初始缩放级别
-    map.setZoomAndCenter(map_zoom, point); //设置中心点和地图缩放级别
+    var map_zoom = 15; // Initial map zoom level (3-18)
+    map.setZoomAndCenter(map_zoom, point); // Set center and zoom
     var company_list_index = 0; //1-10
     var company_list_index_max = 9;
     var res;
@@ -156,11 +156,11 @@
     function get_current_loaction(page) {
 		AMap.plugin('AMap.Geolocation', function() {
 		   var geolocation = new AMap.Geolocation({
-			  enableHighAccuracy: true, // 是否使用高精度定位，默认：true
-			  timeout: 10000, // 设置定位超时时间，默认：无穷大
-			  offset: [10, 20],  // 定位按钮的停靠位置的偏移量
-			  zoomToAccuracy: true,  //  定位成功后调整地图视野范围使定位位置及精度范围视野内可见，默认：false
-			  position: 'RB' //  定位按钮的排放位置,  RB表示右下
+			  enableHighAccuracy: true, // Use high-accuracy geolocation
+			  timeout: 10000, // Geolocation timeout in ms
+			  offset: [10, 20],  // Offset for geolocation button
+			  zoomToAccuracy: true,  // Fit map to accuracy circle after locate
+			  position: 'RB' // Geolocation button position (bottom-right)
 			})
 		
 		  geolocation.getCurrentPosition(function(status,result){
@@ -183,10 +183,10 @@
     function get_com_list(page, x, y) {
         var map = new AMap.Map("allmap");
         map.setZoomAndCenter(13, new AMap.LngLat(x, y));
-		AMap.plugin('AMap.ToolBar',function(){ // 异步加载插件
+		AMap.plugin('AMap.ToolBar',function(){ // Load toolbar plugin
 		  toolbar = new AMap.ToolBar({
 			position: 'RT'
-		  }); // 缩放工具条实例化
+		  }); // Toolbar instance
 		  map.addControl(toolbar);
 		});
         var localcenter = null;

@@ -32,10 +32,10 @@
                             link: regurl,
                             imgUrl: '{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_wx_sharelogo{/yun}',
                             success: function () {
-                                // 用户确认分享后执行的回调函数
+                                // Callback after user confirms share
                             },
                             cancel: function () {
-                                // 用户取消分享后执行的回调函数
+                                // Callback after user cancels share
                             }
                         };
                         wx.updateAppMessageShareData(shareData);
@@ -109,14 +109,14 @@
 
         var shares = null;
 
-        // 监听plusready事件
+        // Listen for plusready event
         document.addEventListener("plusready", function () {
             document.getElementById("shareClick").addEventListener("click", function () {
                 var message = {
                     title: '{yun:}$title{/yun}',
                     content: '{yun:}$title{/yun}',
                     href: '{yun:}$shareurl{/yun}',
-                    thumbs: ["{yun:}if $job.com_logo{/yun}{yun:}$config.sy_ossurl{/yun}/{yun:}$job.com_logo{/yun}{yun:}else if $Info.photo{/yun}{yun:}$Info.photo{/yun}{yun:}else if $row.logo{/yun}{yun:}$row.logo{/yun}{yun:}else{/yun}{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_wx_sharelogo{/yun}{yun:}/if{/yun}"] //分享缩略图
+                    thumbs: ["{yun:}if $job.com_logo{/yun}{yun:}$config.sy_ossurl{/yun}/{yun:}$job.com_logo{/yun}{yun:}else if $Info.photo{/yun}{yun:}$Info.photo{/yun}{yun:}else if $row.logo{/yun}{yun:}$row.logo{/yun}{yun:}else{/yun}{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_wx_sharelogo{/yun}{yun:}/if{/yun}"] // Share thumbnail
                 }
                 plusShare(message, function (res) {
                     if (res) {

@@ -42,7 +42,7 @@
         {yun:}/if{/yun} 
     {yun:}/if{/yun}
     {yun:}if $config.sy_msg_isopen==1 && $config.sy_msg_cert==1 && $config.sy_advice_mobilecode==1{/yun}
-	    <!--手机验证码输入框-->
+	    <!-- SMS code input -->
 		<div class="advice_list advice_list_hq">
 			<span class="advice_list_s">{yun:}t key='wap_01456'{/yun}</span>
 			<div class="advice_list_yz">
@@ -74,9 +74,9 @@
 		code_web = '{yun:}$config.code_web{/yun}',
         code_kind = '{yun:}$config.code_kind{/yun}';
 	var Timer;
-	var smsTimer_time = 90; //倒数 90
-	var smsTimer_flag = 90; //倒数 90
-	var smsTime_speed = 1000; //速度 1秒钟
+	var smsTimer_time = 90; // Countdown seconds
+	var smsTimer_flag = 90; // Countdown flag
+	var smsTime_speed = 1000; // Interval 1 second
 
 	// SendmobileSMS
 	function send_advice_msg(url) {
@@ -220,7 +220,7 @@
 				return false;
 			}
 		}
-		//验证码验证
+		// Verify captcha
 		var verify_token = '',verify_str = '';
 		var authcode = '';
 		if(sy_advice_mobilecode!='1'){
