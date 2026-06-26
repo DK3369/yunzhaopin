@@ -18,31 +18,31 @@
                     </td>
                     <td>
                         <div class="tc_checkbox">
-                            <el-checkbox label="企业会员" v-model="ruleForm.com_status"></el-checkbox>
+                            <el-checkbox label="{yun:}t key='admin_user_company_00281'{/yun}" v-model="ruleForm.com_status"></el-checkbox>
                         </div>
                         <div class="tc_checkbox">
-                            <el-checkbox label="发布岗位" v-model="ruleForm.com_job_status"></el-checkbox>
+                            <el-checkbox label="{yun:}t key='wap_01717'{/yun}" v-model="ruleForm.com_job_status"></el-checkbox>
                         </div>
                         <div class="tc_checkbox">
-                            <el-checkbox label="发布兼职" v-model="ruleForm.com_partjob_status"></el-checkbox>
+                            <el-checkbox label="{yun:}t key='wap_00321'{/yun}" v-model="ruleForm.com_partjob_status"></el-checkbox>
                         </div>
                         <div class="tc_checkbox">
-                            <el-checkbox label="企业资质" v-model="ruleForm.com_cert_status"></el-checkbox>
+                            <el-checkbox label="{yun:}t key='wap_com_00075'{/yun}" v-model="ruleForm.com_cert_status"></el-checkbox>
                         </div>
                         <div class="tc_checkbox">
-                            <el-checkbox label="企业logo" v-model="ruleForm.com_logo_status"></el-checkbox>
+                            <el-checkbox label="{yun:}t key='wap_com_00149'{/yun}" v-model="ruleForm.com_logo_status"></el-checkbox>
                         </div>
                         <div class="tc_checkbox">
-                            <el-checkbox label="企业环境" v-model="ruleForm.com_show_status"></el-checkbox>
+                            <el-checkbox label="{yun:}t key='wap_user_00157'{/yun}" v-model="ruleForm.com_show_status"></el-checkbox>
                         </div>
                         <div class="tc_checkbox">
-                            <el-checkbox label="企业横幅" v-model="ruleForm.com_banner_status"></el-checkbox>
+                            <el-checkbox label="{yun:}t key='admin_user_company_00283'{/yun}" v-model="ruleForm.com_banner_status"></el-checkbox>
                         </div>
                         <div class="tc_checkbox">
-                            <el-checkbox label="企业修改" v-model="ruleForm.com_revise_status"></el-checkbox>
+                            <el-checkbox label="{yun:}t key='admin_user_company_00282'{/yun}" v-model="ruleForm.com_revise_status"></el-checkbox>
                         </div>
                         <div class="tc_checkbox">
-                            <el-checkbox label="邀请面试模板" v-model="ruleForm.com_yqmb_status"></el-checkbox>
+                            <el-checkbox label="{yun:}t key='admin_00709'{/yun}" v-model="ruleForm.com_yqmb_status"></el-checkbox>
                         </div>
                     </td>
                     <td>
@@ -58,22 +58,22 @@
                     </td>
                     <td>
                         <div class="tc_checkbox">
-                            <el-checkbox label="完善信息" v-model="ruleForm.com_enforce_info"></el-checkbox>
+                            <el-checkbox label="{yun:}t key='member_user_00447'{/yun}" v-model="ruleForm.com_enforce_info"></el-checkbox>
                         </div>
                         <div class="tc_checkbox">
-                            <el-checkbox label="手机认证" v-model="ruleForm.com_enforce_mobilecert"></el-checkbox>
+                            <el-checkbox label="{yun:}t key='member_com_00071'{/yun}" v-model="ruleForm.com_enforce_mobilecert"></el-checkbox>
                         </div>
                         <div class="tc_checkbox">
-                            <el-checkbox label="邮箱认证" v-model="ruleForm.com_enforce_emailcert"></el-checkbox>
+                            <el-checkbox label="{yun:}t key='wap_com_00186'{/yun}" v-model="ruleForm.com_enforce_emailcert"></el-checkbox>
                         </div>
                         <div class="tc_checkbox">
-                            <el-checkbox label="企业资质" v-model="ruleForm.com_enforce_licensecert"></el-checkbox>
+                            <el-checkbox label="{yun:}t key='wap_com_00075'{/yun}" v-model="ruleForm.com_enforce_licensecert"></el-checkbox>
                         </div>
                         <div class="tc_checkbox">
-                            <el-checkbox label="地理位置" v-model="ruleForm.com_enforce_setposition"></el-checkbox>
+                            <el-checkbox label="{yun:}t key='admin_user_company_00289'{/yun}" v-model="ruleForm.com_enforce_setposition"></el-checkbox>
                         </div>
                         <div class="tc_checkbox">
-                            <el-checkbox label="关注微信公众号" v-model="ruleForm.com_gzgzh"></el-checkbox>
+                            <el-checkbox label="{yun:}t key='admin_user_company_00260'{/yun}" v-model="ruleForm.com_gzgzh"></el-checkbox>
                         </div>
                     </td>
                     <td>
@@ -89,16 +89,16 @@
                     </td>
                     <td>
                         <div class="tc_checkbox">
-                            <el-checkbox label="统一社会信用代码" v-model="ruleForm.com_social_credit"></el-checkbox>
+                            <el-checkbox label="{yun:}t key='admin_user_company_00063'{/yun}" v-model="ruleForm.com_social_credit"></el-checkbox>
                         </div>
                         <div class="tc_checkbox">
-                            <el-checkbox label="经办人身份证件" v-model="ruleForm.com_cert_owner"></el-checkbox>
+                            <el-checkbox label="{yun:}t key='admin_user_company_00261'{/yun}" v-model="ruleForm.com_cert_owner"></el-checkbox>
                         </div>
                         <div class="tc_checkbox">
-                            <el-checkbox label="承诺函" v-model="ruleForm.com_cert_wt"></el-checkbox>
+                            <el-checkbox label="{yun:}t key='admin_user_company_00302'{/yun}" v-model="ruleForm.com_cert_wt"></el-checkbox>
                         </div>
                         <div class="tc_checkbox">
-                            <el-checkbox label="其他资料" v-model="ruleForm.com_cert_other"></el-checkbox>
+                            <el-checkbox label="{yun:}t key='admin_user_company_00286'{/yun}" v-model="ruleForm.com_cert_other"></el-checkbox>
                         </div>
                     </td>
                     <td>
@@ -137,19 +137,19 @@
                     </td>
                     <td>
                         <div class="tc_checkbox">
-                            <el-checkbox label="求职咨询" v-model="ruleForm.com_message"></el-checkbox>
+                            <el-checkbox label="{yun:}t key='wap_com_00408'{/yun}" v-model="ruleForm.com_message"></el-checkbox>
                         </div>
                         <div class="tc_checkbox">
-                            <el-checkbox label="薪资面议" v-model="ruleForm.com_job_myswitch"></el-checkbox>
+                            <el-checkbox label="{yun:}t key='wap_com_00291'{/yun}" v-model="ruleForm.com_job_myswitch"></el-checkbox>
                         </div>
                         <div class="tc_checkbox">
-                            <el-checkbox label="性别选项" v-model="ruleForm.com_job_sexswitch"></el-checkbox>
+                            <el-checkbox label="{yun:}t key='admin_user_company_00293'{/yun}" v-model="ruleForm.com_job_sexswitch"></el-checkbox>
                         </div>
                         <div class="tc_checkbox">
-                            <el-checkbox label="认证企业职位免审核" v-model="ruleForm.com_free_status"></el-checkbox>
+                            <el-checkbox label="{yun:}t key='admin_user_company_00250'{/yun}" v-model="ruleForm.com_free_status"></el-checkbox>
                         </div>
                         <div class="tc_checkbox">
-                            <el-checkbox label="招聘数据" v-model="ruleForm.com_zpdata"></el-checkbox>
+                            <el-checkbox label="{yun:}t key='wap_com_00103'{/yun}" v-model="ruleForm.com_zpdata"></el-checkbox>
                         </div>
                     </td>
                     <td>
@@ -240,11 +240,11 @@
                     </td>
                     <td>
                         <div class="tc_checkbox">
-                            <el-checkbox label="已登录会员" v-model="ruleForm.com_search"
+                            <el-checkbox label="{yun:}t key='admin_user_company_00275'{/yun}" v-model="ruleForm.com_search"
                                          @change="handleComSearch"></el-checkbox>
                         </div>
                         <div class="tc_checkbox">
-                            <el-checkbox label="已审核会员" v-model="ruleForm.com_status_search"
+                            <el-checkbox label="{yun:}t key='admin_user_company_00274'{/yun}" v-model="ruleForm.com_status_search"
                                          @change="handleComStatusSearch"></el-checkbox>
                         </div>
                     </td>
@@ -261,7 +261,7 @@
                     </td>
                     <td>
                         <div class="tc_checkbox">
-                            <el-checkbox label="在招职位" v-model="ruleForm.com_lietou_job"></el-checkbox>
+                            <el-checkbox label="{yun:}t key='wap_00190'{/yun}" v-model="ruleForm.com_lietou_job"></el-checkbox>
                         </div>
                     </td>
                     <td>
@@ -512,7 +512,7 @@
                     <td>
                         <div class="TableButn w_500">
                             <el-select v-model="ruleForm.com_link_no" multiple placeholder="{yun:}t key='wap_user_00100'{/yun}">
-                                <el-option label="过期会员" value="0"></el-option>
+                                <el-option label="{yun:}t key='admin_user_company_00297'{/yun}" value="0"></el-option>
                                 <el-option v-for="item in qy_rows" :key="item.id" :label="item.name" :value="item.id"></el-option>
                             </el-select>
                         </div>
@@ -889,7 +889,7 @@ module.exports = {
                     newValue = newValue.replace(/[^0-9]/g, '');
                     this.ruleForm.sy_reserve_refresh_interval = newValue;
                     if (newValue.length && newValue == 0) {
-                        message.error('请填写时间间隔！');
+                        message.error("{yun:}t key='admin_company_00022'{/yun}");
                         this.ruleForm.sy_reserve_refresh_interval = 20;
                     }
                 }

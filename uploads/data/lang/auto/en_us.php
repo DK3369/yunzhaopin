@@ -15877,4 +15877,5 @@ return array (
   'admin_company_00019' => 'to',
   'admin_company_00020' => 'Refresh',
   'admin_company_00021' => 'Please select company logs to delete!',
+  'admin_company_00022' => 'Please enter time interval!',
 );

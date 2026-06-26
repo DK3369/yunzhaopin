@@ -15877,4 +15877,5 @@ return array (
   'admin_company_00019' => '至',
   'admin_company_00020' => '刷新',
   'admin_company_00021' => '请选择需要删除的企业日志!',
+  'admin_company_00022' => '请填写时间间隔！',
 );
