@@ -10,7 +10,7 @@
         <div class="qqconnect_box_p" style="padding-top:5px;">尊敬的微信用户</div>
     </div>
 	<!--非实名并且是先注册的，有快速创建账号-->
-    <div class="qqconnect_box_p">{yun:}t key='default_wxconnect_index_00001'{/yun}{yun:}if $config.reg_real_name_check != 1 && $config.sy_reg_type==1{/yun}，{yun:}t key='common_01917'{/yun}<a href="javascript:void(0);" onclick="creatacount();" style="color: #276bf2">{yun:}t key='wap_qqbind_00003'{/yun}</a>{yun:}else{/yun}，<a href="{yun:}url m=wap c=register bind=1{/yun}" style="color: #276bf2">{yun:}t key='wap_qqbind_00001'{/yun}</a>{yun:}/if{/yun}</div>
+    <div class="qqconnect_box_p">{yun:}t key='default_00333'{/yun}{yun:}if $config.reg_real_name_check != 1 && $config.sy_reg_type==1{/yun}，{yun:}t key='common_01917'{/yun}<a href="javascript:void(0);" onclick="creatacount();" style="color: #276bf2">{yun:}t key='wap_00388'{/yun}</a>{yun:}else{/yun}，<a href="{yun:}url m=wap c=register bind=1{/yun}" style="color: #276bf2">{yun:}t key='wap_00386'{/yun}</a>{yun:}/if{/yun}</div>
 
     <form method="post" action="{yun:}$config_wapdomain{/yun}/index.php?c=wxconnect&a=wxbind" onsubmit="return checkwxbind(this);">
         <input type="hidden" id="provider" value="weixin"/>
@@ -18,7 +18,7 @@
         <div id="login_normal_box">
             <div class="forminputitem">
                 <div class="wxbind_text">
-                    <input name="username" type="text" id="username" value="{yun:}$smarty.get.username{/yun}" placeholder="{yun:}t key='member_user_resumeout_00004'{/yun}/{yun:}t key='wap_user_ident_00004'{/yun}/{yun:}t key='admin_user_member_component_alluser_00026'{/yun}" class="wxbind_text_input "/>
+                    <input name="username" type="text" id="username" value="{yun:}$smarty.get.username{/yun}" placeholder="{yun:}t key='member_user_00282'{/yun}/{yun:}t key='wap_user_00180'{/yun}/{yun:}t key='admin_user_00140'{/yun}" class="wxbind_text_input "/>
                 </div>
             </div>
             <div>
@@ -31,11 +31,11 @@
         {yun:}if $config.sy_msg_login==1{/yun}
             <div id="login_sj_box" style="display: none;">
                 <div class="wxbind_text">
-                    <input name="moblie" id="moblie" type="number" class="wxbind_text_input" value="" placeholder="{yun:}t key='wap_user_ident_00004'{/yun}" data-input-clear="3" onkeyup="this.value=this.value.replace(/[^0-9]/g,'')" />
+                    <input name="moblie" id="moblie" type="number" class="wxbind_text_input" value="" placeholder="{yun:}t key='wap_user_00180'{/yun}" data-input-clear="3" onkeyup="this.value=this.value.replace(/[^0-9]/g,'')" />
                     <span class="mui-icon mui-icon-clear mui-hidden"></span>
                 </div>
                 <div class="logoin_msg none" id="show_mobile">
-                    <div class="logoin_msg_tx">{yun:}t key='wap_user_bindingbox_00001'{/yun}</div>
+                    <div class="logoin_msg_tx">{yun:}t key='wap_user_00140'{/yun}</div>
                 </div>
             </div>
         {yun:}/if{/yun}
@@ -54,7 +54,7 @@
             </div>
             {yun:}else{/yun}
                 <div class="wxbind_text wxbind_textpd">
-                    <input class="wxbind_text_input" placeholder="{yun:}t key='wap_advice_00007'{/yun}" name="authcode" id="checkcode" type="text" maxlength="6">
+                    <input class="wxbind_text_input" placeholder="{yun:}t key='wap_00110'{/yun}" name="authcode" id="checkcode" type="text" maxlength="6">
                     <div class="wxbind_img">
                         <img id="vcode_img" class=" " src="{yun:}$config.sy_wapdomain{/yun}/authcode.inc.php" onclick="checkCode('vcode_img');">
                     </div>
@@ -65,29 +65,29 @@
         {yun:}if $config.sy_msg_login==1{/yun}
         <div id="login_sjyz_box" style="display: none;">
             <div class="wxbind_text wxbind_textpd">
-                <input name="moblie_code" type="text" maxlength="6" class="wxbind_text_input" id="moblie_code" value="" placeholder="{yun:}t key='wap_com_bindingbox_00002'{/yun}">
+                <input name="moblie_code" type="text" maxlength="6" class="wxbind_text_input" id="moblie_code" value="" placeholder="{yun:}t key='wap_com_00036'{/yun}">
                 <div class="logoin_msg none" id="show_dynamiccode">
                     <div class="logoin_msg_tx">请填写发送的验证码</div>
                     <div class="logoin_msg_icon"></div>
                 </div>
-                <a href="javascript:void(0);" class="wxbind_text_send" id="send_msg_tip" onclick="send_msg('{yun:}$config_wapdomain{/yun}/index.php?c=wxconnect&a=sendmsg');"><span id="time">{yun:}t key='wap_user_bindingbox_00005'{/yun}</span></a>
+                <a href="javascript:void(0);" class="wxbind_text_send" id="send_msg_tip" onclick="send_msg('{yun:}$config_wapdomain{/yun}/index.php?c=wxconnect&a=sendmsg');"><span id="time">{yun:}t key='wap_user_00144'{/yun}</span></a>
             </div>
         </div>
         {yun:}/if{/yun}
 
         <div class="wxbind_login_bthbox">
-            <a href="javascript:void(0);" class="wxbind_login_bth" id="sublogin" onclick="bindacount();">{yun:}t key='wap_qqbind_00004'{/yun}</a>
-            <input class="wxbind_login_bth" id="submlogin" value="{yun:}t key='wap_qqbind_00004'{/yun}" type="submit" style="display: none;" />
+            <a href="javascript:void(0);" class="wxbind_login_bth" id="sublogin" onclick="bindacount();">{yun:}t key='wap_00389'{/yun}</a>
+            <input class="wxbind_login_bth" id="submlogin" value="{yun:}t key='wap_00389'{/yun}" type="submit" style="display: none;" />
         </div>
 
     </form>
 
-    <!-- {yun:}t key='wap_advice_00007'{/yun} -->
+    <!-- {yun:}t key='wap_00110'{/yun} -->
     <div class="login_otherfs">
         {yun:}if $config.sy_msg_isopen==1 && $config.sy_msg_login==1{/yun}
         <div class="verification_code_word" id="mobile_login">短信登录</div>
         {yun:}/if{/yun}
-        <div class="verification_code_word" id="acount_login" style="display: none"> {yun:}t key='wap_login_00009'{/yun}</div>
+        <div class="verification_code_word" id="acount_login" style="display: none"> {yun:}t key='wap_00308'{/yun}</div>
     </div>
 </div>
 
@@ -108,7 +108,7 @@
         code_kind = '{yun:}$config.code_kind{/yun}";
 
     $(document).ready(function () {
-        //账号登录和手机登录tab{yun:}t key='wap_js_umeditor_dialogs_emotion_emotion_00001'{/yun}
+        //账号登录和手机登录tab{yun:}t key='wap_js_00067'{/yun}
         $("#acount_login').click(function (data) {
             $('#acount_login').css("display", "none");
             $('#mobile_login').css("display", "block");
@@ -144,22 +144,22 @@
         var code;
 
         var verify_token, verify_str;
-        if (moblie == "" || moblie == "{yun:}t key='wap_user_bindingbox_00003'{/yun}") {
+        if (moblie == "" || moblie == "{yun:}t key='wap_user_00142'{/yun}") {
 
-            showToast("{yun:}t key='wap_user_bindingbox_00003'{/yun}");
+            showToast("{yun:}t key='wap_user_00142'{/yun}");
             return false;
         } else {
             if (!isjsMobile(moblie)) {
-                showToast("{yun:}t key='wap_login_00007'{/yun}");
+                showToast("{yun:}t key='wap_00306'{/yun}");
                 return false;
             }
         }
-        var codesear = new RegExp("{yun:}t key='wap_js_reg_ajax_00022'{/yun}");
+        var codesear = new RegExp("{yun:}t key='wap_js_00062'{/yun}");
         if (codesear.test(code_web)) {
             if (code_kind == 1) {
                 code = $.trim($("#checkcode").val());
                 if (!code) {
-                    showToast("{yun:}t key='wap_js_forgetpw_00001'{/yun}");
+                    showToast("{yun:}t key='wap_js_00116'{/yun}");
                     return false;
                 }
             } else if (code_kind > 2) {
@@ -211,7 +211,7 @@
                 }
             })
         } else {
-            showToast("{yun:}t key='wap_js_forgetpw_00003'{/yun}", 2);
+            showToast("{yun:}t key='wap_js_00118'{/yun}", 2);
             return false;
         }
     }
@@ -219,13 +219,13 @@
     // Countdown
     function smsTimer(obj) {
         if (smsTimer_flag > 0) {
-            $(obj).html("{yun:}t key='wap_js_forgetpw_00007'{/yun}" + smsTimer_flag + 's)');
+            $(obj).html("{yun:}t key='wap_js_00122'{/yun}" + smsTimer_flag + 's)');
             $(obj).attr({
                 'style': 'background: ;'
             });
             smsTimer_flag--;
         } else {
-            $(obj).html("{yun:}t key='wap_js_forgetpw_00009'{/yun}");
+            $(obj).html("{yun:}t key='wap_js_00124'{/yun}");
             $(obj).attr({
                 'style': 'background: ;"
             });
@@ -240,7 +240,7 @@
         $('#bind-captcha').attr('data-type', 'click");
     }
 
-    // 判断安卓物理返回键,从wxoauth来的,{yun:}t key='member_user_headnav_00006'{/yun};其他的正常返回
+    // 判断安卓物理返回键,从wxoauth来的,{yun:}t key='member_user_00119'{/yun};其他的正常返回
     var u = navigator.userAgent;
     var isAndroid = u.indexOf("Android') > -1 || u.indexOf('Adr') > -1; //android终端
     if (isAndroid) {

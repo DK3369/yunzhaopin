@@ -1,5 +1,5 @@
 {yun:}include file="$wapstyle/member/cheader.htm"{/yun}
-<!--{yun:}t key='member_user_binding_00013'{/yun}-->
+<!--{yun:}t key='member_user_00059'{/yun}-->
 <div class="none" id="yunvue">
     <!-- 页面整体部分 -->
     <div class="issue_post_body">
@@ -7,12 +7,12 @@
             <div onclick="navigateTo('index.php?c=idcard')" class="post_body_card_job">
                 <div class="body_card_job_box">
                     <div class="card_job_box_post">身份认证</div>
-                    <div class="Binding_state" v-if="info.idcard_status==1">{yun:}t key='wap_user_alltask_00024'{/yun}</div>
+                    <div class="Binding_state" v-if="info.idcard_status==1">{yun:}t key='wap_user_00128'{/yun}</div>
                     <div v-else-if="info.idcard_pic">
-                        <span class="Binding_state_no" v-if="info.idcard_status==2">{yun:}t key='wap_user_commsg_00007'{/yun}</span>
-                        <span class="Binding_state_no" v-else-if="info.idcard_status==0">{yun:}t key='wap_user_ident_00002'{/yun}</span>
+                        <span class="Binding_state_no" v-if="info.idcard_status==2">{yun:}t key='wap_user_00167'{/yun}</span>
+                        <span class="Binding_state_no" v-else-if="info.idcard_status==0">{yun:}t key='wap_user_00178'{/yun}</span>
                     </div>
-                    <span class="Binding_state_no" v-else>{yun:}t key='wap_user_idcard_00003'{/yun}</span>
+                    <span class="Binding_state_no" v-else>{yun:}t key='wap_user_00175'{/yun}</span>
                 </div>
                 <div class="body_card_job_icon">
                     <img src="{yun:}$wap_style{/yun}/images/issue_add.png" alt="">
@@ -20,12 +20,12 @@
             </div>
             <div onclick="navigateTo('index.php?c=bindingbox&type=moblie')" class="post_body_card_job">
                 <div class="body_card_job_box">
-                    <div class="card_job_box_post">{yun:}t key='wap_user_ident_00004'{/yun}</div>
+                    <div class="card_job_box_post">{yun:}t key='wap_user_00180'{/yun}</div>
                     <div class="card_job_box_name_require">
                         <div class="card_job_box_name" v-if="info.telphone"> {{info.telphone}}</div>
                         <div class="card_job_box_name" v-else> 登录和找回密码</div>
-                        <div class="Binding_state" v-if="info.moblie_status==1">{yun:}t key='wap_user_alltask_00023'{/yun}</div>
-                        <div class="Binding_state_no" v-else>{yun:}t key='wap_user_ident_00006'{/yun}</div>
+                        <div class="Binding_state" v-if="info.moblie_status==1">{yun:}t key='wap_user_00127'{/yun}</div>
+                        <div class="Binding_state_no" v-else>{yun:}t key='wap_user_00182'{/yun}</div>
                     </div>
                 </div>
                 <div class="body_card_job_icon">
@@ -34,12 +34,12 @@
             </div>
             <div onclick="navigateTo('index.php?c=bindingbox&type=email')" class="post_body_card_job">
                 <div class="body_card_job_box">
-                    <div class="card_job_box_post">{yun:}t key='wap_user_ident_00003'{/yun}</div>
+                    <div class="card_job_box_post">{yun:}t key='wap_user_00179'{/yun}</div>
                     <div class="card_job_box_name_require">
                         <div class="card_job_box_name" v-if="info.email">{{info.email}}</div>
-                        <div class="card_job_box_name" v-else>{yun:}t key='wap_user_ident_00001'{/yun}</div>
-                        <div class="Binding_state" v-if="info.email_status==1">{yun:}t key='wap_user_alltask_00023'{/yun}</div>
-                        <div class="Binding_state_no" v-else>{yun:}t key='wap_user_ident_00005'{/yun}</div>
+                        <div class="card_job_box_name" v-else>{yun:}t key='wap_user_00177'{/yun}</div>
+                        <div class="Binding_state" v-if="info.email_status==1">{yun:}t key='wap_user_00127'{/yun}</div>
+                        <div class="Binding_state_no" v-else>{yun:}t key='wap_user_00181'{/yun}</div>
                     </div>
                 </div>
                 <div class="body_card_job_icon">
@@ -51,15 +51,15 @@
                     {yun:}if $config.wx_rz=='1'{/yun}
                     <li>
                         <div class="bingding_box_iconbg" :class="bind.wxbind ? 'bingding_yx_g':''"><i class="bingding_box_iconwx"></i></div>
-                        <div class="bingding_box_name">{yun:}t key='wap_user_alltask_00011'{/yun}</div>
+                        <div class="bingding_box_name">{yun:}t key='wap_user_00115'{/yun}</div>
                         <template v-if="bind.wxbind == 1">
-                            <div class="bingding_box_p">{yun:}t key='wap_user_binding_00004'{/yun}</div>
-                            <span @click="bindClear('weixin')" class="bingding_box_bth_jc">{yun:}t key='wap_user_binding_00009'{/yun}</span>
+                            <div class="bingding_box_p">{yun:}t key='wap_user_00133'{/yun}</div>
+                            <span @click="bindClear('weixin')" class="bingding_box_bth_jc">{yun:}t key='wap_user_00138'{/yun}</span>
                         </template>
                         <template v-else>
-                            <span v-if="bind.wxbind == 2" class="bingding_box_bth" onclick="tobind('{yun:}url m=wap c=wxconnect login=1{/yun}')">{yun:}t key='wap_user_binding_00010'{/yun}</span>
-                            <span v-else class="bingding_box_bth" onclick="tobind('{yun:}url m=wap c=wxconnect login=1{/yun}')">{yun:}t key='wap_user_alltask_00015'{/yun}</span>
-                            <div class="bingding_box_p">{yun:}t key='member_user_binding_00010'{/yun}，下次你可以直接使用微信快捷登录</div>
+                            <span v-if="bind.wxbind == 2" class="bingding_box_bth" onclick="tobind('{yun:}url m=wap c=wxconnect login=1{/yun}')">{yun:}t key='wap_user_00139'{/yun}</span>
+                            <span v-else class="bingding_box_bth" onclick="tobind('{yun:}url m=wap c=wxconnect login=1{/yun}')">{yun:}t key='wap_user_00119'{/yun}</span>
+                            <div class="bingding_box_p">{yun:}t key='member_user_00056'{/yun}，下次你可以直接使用微信快捷登录</div>
                         </template>
                     </li>
                     {yun:}/if{/yun}
@@ -67,28 +67,28 @@
                     {yun:}if $config.sy_qqlogin=='1'{/yun}
                     <li>
                         <div class="bingding_box_iconbg" :class="bind.qqbind ? 'bingding_yx_qq':''"><i class="bingding_box_iconqq"></i></div>
-                        <div class="bingding_box_name">QQ{yun:}t key='member_user_passwd_00036'{/yun}</div>
+                        <div class="bingding_box_name">QQ{yun:}t key='member_user_00234'{/yun}</div>
                         <template v-if="bind.qqbind == 1">
                             <div class="bingding_box_p">你已绑定QQ号，下次你可以直接使用QQ{yun:}t key='common_01767'{/yun}</div>
-                            <span @click="bindClear('qq')" class="bingding_box_bth_jc">{yun:}t key='wap_user_binding_00009'{/yun}</span>
+                            <span @click="bindClear('qq')" class="bingding_box_bth_jc">{yun:}t key='wap_user_00138'{/yun}</span>
                         </template>
                         <template v-else>
-                            <span class="bingding_box_bth" onclick="tobind('{yun:}url m=qqconnect login=1{/yun}')">{yun:}t key='wap_user_alltask_00015'{/yun}</span>
-                            <div class="bingding_box_p">{yun:}t key='member_user_passwd_00036'{/yun}QQ号，下次你可以直接使用QQ{yun:}t key='common_01767'{/yun}</div>
+                            <span class="bingding_box_bth" onclick="tobind('{yun:}url m=qqconnect login=1{/yun}')">{yun:}t key='wap_user_00119'{/yun}</span>
+                            <div class="bingding_box_p">{yun:}t key='member_user_00234'{/yun}QQ号，下次你可以直接使用QQ{yun:}t key='common_01767'{/yun}</div>
                         </template>
                     </li>
                     {yun:}/if{/yun}
                     {yun:}if $config.sy_sinalogin=='1'{/yun}
                     <li>
                         <div class="bingding_box_iconbg" :class="bind.sinabind ? 'bingding_yx_xl':''"><i class="bingding_box_iconxl"></i></div>
-                        <div class="bingding_box_name">{yun:}t key='wap_user_binding_00007'{/yun}</div>
+                        <div class="bingding_box_name">{yun:}t key='wap_user_00136'{/yun}</div>
                         <template v-if="bind.sinabind == 1">
-                            <div class="bingding_box_p">{yun:}t key='wap_user_binding_00001'{/yun}</div>
-                            <span @click="bindClear('sina')" class="bingding_box_bth_jc">{yun:}t key='wap_user_binding_00009'{/yun}</span>
+                            <div class="bingding_box_p">{yun:}t key='wap_user_00130'{/yun}</div>
+                            <span @click="bindClear('sina')" class="bingding_box_bth_jc">{yun:}t key='wap_user_00138'{/yun}</span>
                         </template>
                         <template v-else>
-                            <span class="bingding_box_bth" onclick="tobind('{yun:}url m=wap c=sinaconnect login=1{/yun}')">{yun:}t key='wap_user_alltask_00015'{/yun}</span>
-                            <div class="bingding_box_p">{yun:}t key='wap_user_binding_00002'{/yun}</div>
+                            <span class="bingding_box_bth" onclick="tobind('{yun:}url m=wap c=sinaconnect login=1{/yun}')">{yun:}t key='wap_user_00119'{/yun}</span>
+                            <div class="bingding_box_p">{yun:}t key='wap_user_00131'{/yun}</div>
                         </template>
                     </li>
                     {yun:}/if{/yun}

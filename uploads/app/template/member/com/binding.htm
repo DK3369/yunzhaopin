@@ -7,8 +7,8 @@
         <div class=right_box>
                 <div class="newmember_tit">
                                 <ul>
-                                    <li class="newmember_titcur"><a href="index.php?c=binding">{yun:}t key='wap_user_set_00001'{/yun}</a></li>
-                                    <li><a href="index.php?c=vs">{yun:}t key='member_com_binding_00011'{/yun}</a></li>
+                                    <li class="newmember_titcur"><a href="index.php?c=binding">{yun:}t key='wap_user_00340'{/yun}</a></li>
+                                    <li><a href="index.php?c=vs">{yun:}t key='member_com_00070'{/yun}</a></li>
                                     <li><a href="index.php?c=logout">账号注销</a></li>
                                      
                                          
@@ -18,8 +18,8 @@
                              <div class=admincont_box>
                              <div class="com_body" style="padding-top:15px;">  
              <div class="com_new_tip">
-             <span class="com_new_tip_h">{yun:}t key='member_com_added_00002'{/yun}</span>{yun:}t key='admin_system_role_myaccount_00004'{/yun}：{yun:}$member.login_date|date_format:"%Y-%m-%d %H:%M:%S"{/yun} ,
-                        若非本人操作可&nbsp;&nbsp;<a href="index.php?c=vs" class="cblue">{yun:}t key='member_user_passwd_00027'{/yun}</a>
+             <span class="com_new_tip_h">{yun:}t key='member_com_00040'{/yun}</span>{yun:}t key='admin_system_00222'{/yun}：{yun:}$member.login_date|date_format:"%Y-%m-%d %H:%M:%S"{/yun} ,
+                        若非本人操作可&nbsp;&nbsp;<a href="index.php?c=vs" class="cblue">{yun:}t key='member_user_00226'{/yun}</a>
              </div>
                      
                     <div class="vip_box" style="padding:15px 15px">
@@ -32,13 +32,13 @@
                                         <div class="bingding_yx "><i class="binding_xg_icon"></i></div>
                                     </div>
                                     <div class="Binding_list_cont">
-                                        <div class="Binding_list_name"> {yun:}t key='member_user_passwd_00021'{/yun}</div>
-                                        <span class="Binding_list_no"><i class="Binding_list_no_icon"></i>{yun:}t key='member_com_binding_00014'{/yun}</span>
+                                        <div class="Binding_list_name"> {yun:}t key='member_user_00220'{/yun}</div>
+                                        <span class="Binding_list_no"><i class="Binding_list_no_icon"></i>{yun:}t key='member_com_00073'{/yun}</span>
                                         <div class="Binding_list_text">
                                             您有一次修改用户名的机会（仅限一次哦~）
                                         </div>
                                         <div class="Binding_oper">
-                                            <a href="index.php?c=setname" class="Binding_submit">{yun:}t key='member_com_binding_00013'{/yun}</a>
+                                            <a href="index.php?c=setname" class="Binding_submit">{yun:}t key='member_com_00072'{/yun}</a>
                                         </div>
                                     </div>
                                 </div>
@@ -48,33 +48,33 @@
                                         <div class="bingding_yx {yun:}if $company.yyzz_status==1{/yun}bingding_yx_cur{yun:}/if{/yun}"><i class="binding_sf_icon"></i></div>
                                     </div>
                                     <div class="Binding_list_cont">
-                                        <div class="Binding_list_name">{yun:}t key='wap_com_ident_00002'{/yun}</div>
+                                        <div class="Binding_list_name">{yun:}t key='wap_com_00075'{/yun}</div>
                                         {yun:}if $company.yyzz_status==1{/yun}
                                         <div class="Binding_list_text mt10">当前企业资质已验证 {yun:}if $cert.check{/yun} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                             <a href="javascript:;" data_url="{yun:}$cert.old_check{/yun}"
                                                data_ourl="{yun:}$cert.old_owner_cert{/yun}"
                                                data_wurl="{yun:}$cert.old_wt_cert{/yun}"
                                                data_otherurl="{yun:}$cert.old_other_cert{/yun}" onclick="showpic(this)"
-                                               class="Binding_pop_box_msg_cont_pic_p">{yun:}t key='member_com_binding_00006'{/yun}</a>
+                                               class="Binding_pop_box_msg_cont_pic_p">{yun:}t key='member_com_00065'{/yun}</a>
                                             {yun:}/if{/yun}
                                         </div>
                                         <div class="Binding_oper">
-                                            <a href="index.php?c=binding&act=comcert" class="Binding_submit_qx">{yun:}t key='member_com_binding_00009'{/yun}
+                                            <a href="index.php?c=binding&act=comcert" class="Binding_submit_qx">{yun:}t key='member_com_00068'{/yun}
 </a>
                                         </div>
                                         {yun:}else{/yun} {yun:}if !empty($cert){/yun} {yun:}if $cert.status==2{/yun}
-                                        <div class="Binding_list_text" style="color: #F00">{yun:}t key='wap_user_resume_00003'{/yun} {yun:}if
-                                            $cert.statusbody{/yun}{yun:}t key='admin_system_category_reason_00005'{/yun}{yun:}$cert.statusbody{/yun} {yun:}/if{/yun}
+                                        <div class="Binding_list_text" style="color: #F00">{yun:}t key='wap_user_00325'{/yun} {yun:}if
+                                            $cert.statusbody{/yun}{yun:}t key='admin_system_00134'{/yun}{yun:}$cert.statusbody{/yun} {yun:}/if{/yun}
                                             {yun:}if $cert.check{/yun} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                             <a href="javascript:;" data_url="{yun:}$cert.old_check{/yun}"
                                                data_ourl="{yun:}$cert.old_owner_cert{/yun}"
                                                data_wurl="{yun:}$cert.old_wt_cert{/yun}"
                                                data_otherurl="{yun:}$cert.old_other_cert{/yun}" onclick="showpic(this)"
-                                               class="Binding_pop_box_msg_cont_pic_p">{yun:}t key='member_com_binding_00006'{/yun}</a>
+                                               class="Binding_pop_box_msg_cont_pic_p">{yun:}t key='member_com_00065'{/yun}</a>
                                             {yun:}/if{/yun}
                                         </div>
                                         <div class="Binding_oper">
-                                            <a href="index.php?c=binding&act=comcert" class="Binding_submit_rz">{yun:}t key='wap_user_addresumeson_00039'{/yun}</a>
+                                            <a href="index.php?c=binding&act=comcert" class="Binding_submit_rz">{yun:}t key='wap_user_00097'{/yun}</a>
                                         </div>
                                         {yun:}else{/yun}
                                         <div class="Binding_list_text mt10">企业资质已上传，请等待管理员审核 {yun:}if $cert.check{/yun}
@@ -83,15 +83,15 @@
                                                data_ourl="{yun:}$cert.old_owner_cert{/yun}"
                                                data_wurl="{yun:}$cert.old_wt_cert{/yun}"
                                                data_otherurl="{yun:}$cert.old_other_cert{/yun}" onclick="showpic(this)"
-                                               class="Binding_pop_box_msg_cont_pic_p">{yun:}t key='member_com_binding_00006'{/yun}</a>
+                                               class="Binding_pop_box_msg_cont_pic_p">{yun:}t key='member_com_00065'{/yun}</a>
                                             {yun:}/if{/yun}
                                         </div>
                                         <div class="Binding_oper">
-                                            <a href="index.php?c=binding&act=comcert" class="Binding_submit_rz" style="background:#ff5050">{yun:}t key='wap_user_addresumeson_00039'{/yun}</a>
+                                            <a href="index.php?c=binding&act=comcert" class="Binding_submit_rz" style="background:#ff5050">{yun:}t key='wap_user_00097'{/yun}</a>
                                         </div>
                                         {yun:}/if{/yun} {yun:}else{/yun}
-                                        <span class="Binding_list_no"><i class="Binding_list_no_icon"></i>{yun:}t key='wap_user_idcard_00003'{/yun}</span>
-                                        <div class="Binding_list_text">{yun:}t key='member_com_binding_00001'{/yun}</div>
+                                        <span class="Binding_list_no"><i class="Binding_list_no_icon"></i>{yun:}t key='wap_user_00175'{/yun}</span>
+                                        <div class="Binding_list_text">{yun:}t key='member_com_00060'{/yun}</div>
                                         <div class="Binding_oper">
                                             <a href="index.php?c=binding&act=comcert" class="Binding_submit">立即验证</a>
                                         </div>
@@ -103,20 +103,20 @@
                                         <div class="bingding_yx {yun:}if $company.moblie_status==1{/yun}bingding_yx_cur{yun:}/if{/yun}"><i class="binding_sj_icon"></i></div>
                                     </div>
                                     <div class="Binding_list_cont">
-                                        <div class="Binding_list_name"> {yun:}t key='member_com_binding_00012'{/yun}</div>
+                                        <div class="Binding_list_name"> {yun:}t key='member_com_00071'{/yun}</div>
                                         {yun:}if $company.moblie_status==1{/yun}
                                         <div class="Binding_list_text mt10">当前手机已认证： <b class="Binding_list_b">{yun:}$company.linktel{/yun}</b>
                                         </div>
                                         <div class="Binding_oper">
-                                            <a href="javascript:getshow('moblie','{yun:}t key='member_user_passwd_00016'{/yun}');" class="Binding_submit_qx">更换手机</a>
+                                            <a href="javascript:getshow('moblie','{yun:}t key='member_user_00215'{/yun}');" class="Binding_submit_qx">更换手机</a>
                                         </div>
                                         {yun:}else{/yun}
-                                        <span class="Binding_list_no"><i class="Binding_list_no_icon"></i>{yun:}t key='wap_user_idcard_00003'{/yun}</span>
+                                        <span class="Binding_list_no"><i class="Binding_list_no_icon"></i>{yun:}t key='wap_user_00175'{/yun}</span>
                                         <div class="Binding_list_text">当前手机未认证： <b class="Binding_list_b">{yun:}$company.linktel{/yun}</b>
                                             <br>验证后，可用于直接登录账户，快速找回登录密码，接收账户变动提醒,接受求职者简历投递信息
                                         </div>
                                         <div class="Binding_oper">
-                                            <a href="javascript:getshow('moblie','{yun:}t key='member_user_passwd_00020'{/yun}');" class="Binding_submit">{yun:}t key='wap_user_alltask_00016'{/yun}</a>
+                                            <a href="javascript:getshow('moblie','{yun:}t key='member_user_00219'{/yun}');" class="Binding_submit">{yun:}t key='wap_user_00120'{/yun}</a>
                                         </div>
                                         {yun:}/if{/yun}
                                     </div>
@@ -125,7 +125,7 @@
                                     <div class="Binding_list_left">
                                         <div class="bingding_yx {yun:}if $company.email_status==1{/yun}bingding_yx_cur{yun:}/if{/yun}"><i class="binding_yx_icon"></i></div>
                                     </div>
-                                    <div class="Binding_list_name"> {yun:}t key='wap_com_integral_00007'{/yun}</div>
+                                    <div class="Binding_list_name"> {yun:}t key='wap_com_00186'{/yun}</div>
                                     <div class="Binding_list_cont">
 
                                         {yun:}if $company.email_status==1{/yun}
@@ -133,16 +133,16 @@
                                         </div>
                                         <div class="Binding_oper">
                                             <a href="javascript:void(0)"
-                                               onClick="layer_del("{yun:}t key='member_user_binding_00005'{/yun}",'index.php?c=binding&act=del&type=email');"
+                                               onClick="layer_del("{yun:}t key='member_user_00051'{/yun}",'index.php?c=binding&act=del&type=email');"
                                                class="Binding_submit_qx">取消认证</a>
                                         </div>
                                         {yun:}else{/yun}
-                                        <span class="Binding_list_no"><i class="Binding_list_no_icon"></i>{yun:}t key='wap_user_idcard_00003'{/yun}</span>
+                                        <span class="Binding_list_no"><i class="Binding_list_no_icon"></i>{yun:}t key='wap_user_00175'{/yun}</span>
                                         <div class="Binding_list_text">当前邮箱未认证：<b class="Binding_list_b">{yun:}$company.linkmail{/yun}</b>
                                             <br>邮箱验证后，可用于直接登录账户，快速找回登录密码，接收账户变动提醒,接受求职者简历投递信息
                                         </div>
                                         <div class="Binding_oper">
-                                            <a href="javascript:getshow('email','{yun:}t key='member_user_passwd_00033'{/yun}');" class="Binding_submit">立即验证</a>
+                                            <a href="javascript:getshow('email','{yun:}t key='member_user_00231'{/yun}');" class="Binding_submit">立即验证</a>
                                         </div>
                                         {yun:}/if{/yun}
                                     </div>
@@ -153,22 +153,22 @@
                                         <div class="bingding_yx {yun:}if $member.qqid!=''{/yun}bingding_yx_cur{yun:}/if{/yun}"><i class="binding_qq_icon"></i></div>
                                     </div>
                                     <div class="Binding_list_cont">
-                                        <div class="Binding_list_name">{yun:}t key='member_user_passwd_00036'{/yun}QQ</div>
+                                        <div class="Binding_list_name">{yun:}t key='member_user_00234'{/yun}QQ</div>
                                         {yun:}if $member.qqid!=""{/yun}
-                                        <div class="Binding_list_text">{yun:}t key='wap_user_alltask_00023'{/yun}QQ号</div>
+                                        <div class="Binding_list_text">{yun:}t key='wap_user_00127'{/yun}QQ号</div>
                                         <div class="Binding_oper ">
-                                            <a href="javascript:void(0)" onClick="layer_del("{yun:}t key='member_user_binding_00005'{/yun}",'index.php?c=binding&act=del&type=qqid');" class="Binding_submit_qx">{yun:}t key='member_user_binding_00008'{/yun}</a>
+                                            <a href="javascript:void(0)" onClick="layer_del("{yun:}t key='member_user_00051'{/yun}",'index.php?c=binding&act=del&type=qqid');" class="Binding_submit_qx">{yun:}t key='member_user_00054'{/yun}</a>
                                         </div>
                                         {yun:}else{/yun}
-                                        <span class="Binding_list_no"><i class="Binding_list_no_icon"></i>{yun:}t key='wap_user_ident_00005'{/yun}</span>
-                                        <div class="Binding_list_text">{yun:}t key='wap_user_ident_00005'{/yun}QQ号</div>
+                                        <span class="Binding_list_no"><i class="Binding_list_no_icon"></i>{yun:}t key='wap_user_00181'{/yun}</span>
+                                        <div class="Binding_list_text">{yun:}t key='wap_user_00181'{/yun}QQ号</div>
                                         {yun:}if $config.sy_qqlogin!='1'{/yun}
                                         <div class="Binding_oper">
-                                            <a href="javascript:void(0)" onclick="layer.msg("{yun:}t key='member_user_binding_00002'{/yun}", 2, 8);return false;" class="Binding_submit">{yun:}t key='wap_user_alltask_00015'{/yun}</a>
+                                            <a href="javascript:void(0)" onclick="layer.msg("{yun:}t key='wap_00101'{/yun}", 2, 8);return false;" class="Binding_submit">{yun:}t key='wap_user_00119'{/yun}</a>
                                         </div>
                                         {yun:}else{/yun}
                                         <div class="Binding_oper">
-                                            <a href="{yun:}url m=qqconnect login=1{/yun}" class="Binding_submit">{yun:}t key='wap_user_alltask_00015'{/yun}</a>
+                                            <a href="{yun:}url m=qqconnect login=1{/yun}" class="Binding_submit">{yun:}t key='wap_user_00119'{/yun}</a>
                                         </div>
                                         {yun:}/if{/yun} {yun:}/if{/yun}
                                     </div>
@@ -182,23 +182,23 @@
                                     <div class="Binding_list_cont">
                                         <div class="Binding_list_name"> 绑定新浪微博</div>
                                         {yun:}if $member.sinaid!=""{/yun}
-                                        <div class="Binding_list_text">{yun:}t key='wap_user_alltask_00023'{/yun}，可使用新浪微博快速登录</div>
+                                        <div class="Binding_list_text">{yun:}t key='wap_user_00127'{/yun}，可使用新浪微博快速登录</div>
                                         <div class="Binding_oper">
                                             <a href="javascript:void(0)"
-                                               onClick="layer_del("{yun:}t key='member_user_binding_00005'{/yun}",'index.php?c=binding&act=del&type=sinaid');"
-                                               class="Binding_submit_qx">{yun:}t key='member_user_binding_00008'{/yun}</a>
+                                               onClick="layer_del("{yun:}t key='member_user_00051'{/yun}",'index.php?c=binding&act=del&type=sinaid');"
+                                               class="Binding_submit_qx">{yun:}t key='member_user_00054'{/yun}</a>
                                         </div>
                                         {yun:}else{/yun}
-                                        <span class="Binding_list_no"><i class="Binding_list_no_icon"></i>{yun:}t key='wap_user_ident_00005'{/yun}</span>
+                                        <span class="Binding_list_no"><i class="Binding_list_no_icon"></i>{yun:}t key='wap_user_00181'{/yun}</span>
                                         <div class="Binding_list_text">授权绑定后，可使用新浪微博快速登录</div>
                                         {yun:}if $config.sy_sinalogin!='1'{/yun}
                                         <div class="Binding_oper">
                                             <a href="javascript:void(0)" onclick="layer.msg('对不起，新浪绑定已关闭！', 2, 8);return false;"
-                                               class="Binding_submit">{yun:}t key='wap_user_alltask_00015'{/yun}</a>
+                                               class="Binding_submit">{yun:}t key='wap_user_00119'{/yun}</a>
                                         </div>
                                         {yun:}else{/yun}
                                         <div class="Binding_oper">
-                                            <a href="{yun:}url m=sinaconnect login=1{/yun}" class="Binding_submit">{yun:}t key='wap_user_alltask_00015'{/yun}</a>
+                                            <a href="{yun:}url m=sinaconnect login=1{/yun}" class="Binding_submit">{yun:}t key='wap_user_00119'{/yun}</a>
                                         </div>
                                         {yun:}/if{/yun} {yun:}/if{/yun}
                                     </div>
@@ -211,21 +211,21 @@
                                         <div class="bingding_yx {yun:}if $member.unionid!='' || $member.wxid!=''{/yun}bingding_yx_cur{yun:}/if{/yun}"><i class="binding_wx_icon"></i></div>
                                     </div>
                                     <div class="Binding_list_cont">
-                                        <div class="Binding_list_name">{yun:}t key='member_user_binding_00010'{/yun}</div>
+                                        <div class="Binding_list_name">{yun:}t key='member_user_00056'{/yun}</div>
                                         {yun:}if $member.unionid!="" || $member.wxid!=''{/yun}
-                                            <div class="Binding_list_text">{yun:}t key='wap_user_alltask_00023'{/yun}，可使用微信扫描登录</div>
+                                            <div class="Binding_list_text">{yun:}t key='wap_user_00127'{/yun}，可使用微信扫描登录</div>
                                             <div class="Binding_oper">
-                                                <a href="javascript:void(0)" onClick="layer_del("{yun:}t key='member_user_binding_00005'{/yun}",'index.php?c=binding&act=del&type=wxid');" class="Binding_submit_qx">{yun:}t key='member_user_binding_00008'{/yun}</a>
+                                                <a href="javascript:void(0)" onClick="layer_del("{yun:}t key='member_user_00051'{/yun}",'index.php?c=binding&act=del&type=wxid');" class="Binding_submit_qx">{yun:}t key='member_user_00054'{/yun}</a>
                                             </div>
                                         {yun:}else{/yun}
-                                        <span class="Binding_list_no"><i class="Binding_list_no_icon"></i>{yun:}t key='wap_user_ident_00005'{/yun}</span>
+                                        <span class="Binding_list_no"><i class="Binding_list_no_icon"></i>{yun:}t key='wap_user_00181'{/yun}</span>
                                         <div class="Binding_list_text">授权绑定后，可使用微信扫描登录</div>
                                         {yun:}if $config.wx_author!='1'{/yun}
                                         <div class="Binding_oper">
-                                            <a href="javascript:void(0)" onclick="layer.msg("{yun:}t key='member_user_binding_00003'{/yun}", 2, 8); return false;" class="Binding_submit">{yun:}t key='wap_user_alltask_00015'{/yun}</a>
+                                            <a href="javascript:void(0)" onclick="layer.msg("{yun:}t key='wap_00102'{/yun}", 2, 8); return false;" class="Binding_submit">{yun:}t key='wap_user_00119'{/yun}</a>
                                         </div>
                                         {yun:}else{/yun}
-                                        <div class="Binding_oper"><a href="javascript:void(0)" onclick="wxshow();" class="Binding_submit">{yun:}t key='wap_user_alltask_00015'{/yun}</a></div>
+                                        <div class="Binding_oper"><a href="javascript:void(0)" onclick="wxshow();" class="Binding_submit">{yun:}t key='wap_user_00119'{/yun}</a></div>
                                         {yun:}/if{/yun} {yun:}/if{/yun}
                                     </div>
                                 </div>
@@ -246,15 +246,15 @@
                     <input type="text" name="email" value="{yun:}$company.linkmail{/yun}" class="Binding_pop_box_list_text Binding_pop_box_list_textw200">
                 </div>
                 <div class="Binding_pop_box_list">
-                    <span class="Binding_pop_box_list_left"><i class="Binding_pop_box_list_left_i">*</i>{yun:}t key='wap_advice_00007'{/yun}：</span>
+                    <span class="Binding_pop_box_list_left"><i class="Binding_pop_box_list_left_i">*</i>{yun:}t key='wap_00110'{/yun}：</span>
                     <input type="text" name="email_code" maxlength="6" class="Binding_pop_box_list_text"/>
                     <img id="vcode_img" src="{yun:}$config.sy_weburl{/yun}/app/include/authcode.inc.php" style=" margin:0 5px 5px 5px; vertical-align:middle;">
-                    <a href="javascript:void(0);" onclick="checkCode('vcode_img');">{yun:}t key='member_com_binding_00015'{/yun}</a>
+                    <a href="javascript:void(0);" onclick="checkCode('vcode_img');">{yun:}t key='member_com_00074'{/yun}</a>
                 </div>
                 <div class="Binding_pop_box_list">
                     <input class=" Binding_pop_bth" type="button" onclick="sendbemail('vcode_img');" value="发送验证邮件" />
                 </div>
-                <div class="Binding_pop_tip">{yun:}t key='member_com_binding_00007'{/yun}</div>
+                <div class="Binding_pop_tip">{yun:}t key='member_com_00066'{/yun}</div>
                 <div class="Binding_pop_tip_p">
                     1. 请检查您的垃圾箱或者广告箱，邮件有可能被误认为垃圾或者广告邮件；<br/> 2.验证邮件24小时内有效，请尽快登录您的邮箱点击验证链接完成验证
                 </div>
@@ -268,28 +268,28 @@
         <div class="Binding_pop_box" style="padding:10px;width:480px;background:#fff;">
 
             <div class="Binding_pop_box_list" style=" display:block">
-                <span class="Binding_pop_box_list_left"><i class="Binding_pop_box_list_left_i">*</i>{yun:}t key='wap_user_info_00018'{/yun}：</span>
+                <span class="Binding_pop_box_list_left"><i class="Binding_pop_box_list_left_i">*</i>{yun:}t key='wap_user_00241'{/yun}：</span>
                 <input type="text" name="moblie" class="Binding_pop_box_list_text" value="{yun:}$company.linktel{/yun}">
             </div>
             <div class="Binding_pop_box_list">
-                <span class="Binding_pop_box_list_left"><i class="Binding_pop_box_list_left_i">*</i>{yun:}t key='wap_advice_00007'{/yun}：</span>
+                <span class="Binding_pop_box_list_left"><i class="Binding_pop_box_list_left_i">*</i>{yun:}t key='wap_00110'{/yun}：</span>
                 <input type="text" name="phoneimg_code" maxlength="6" class="Binding_pop_box_list_text"/>
                 <img id="pcode_img" src="{yun:}$config.sy_weburl{/yun}/app/include/authcode.inc.php" style=" margin:0 5px 5px 5px; vertical-align:middle;">
-                <a href="javascript:void(0);" onclick="checkCode('pcode_img');">{yun:}t key='member_com_binding_00015'{/yun}</a>
+                <a href="javascript:void(0);" onclick="checkCode('pcode_img');">{yun:}t key='member_com_00074'{/yun}</a>
             </div>
             <div class="Binding_pop_box_list">
-                <span class="Binding_pop_box_list_left"><i class="Binding_pop_box_list_left_i">*</i>{yun:}t key='member_com_binding_00005'{/yun}</span>
+                <span class="Binding_pop_box_list_left"><i class="Binding_pop_box_list_left_i">*</i>{yun:}t key='member_com_00064'{/yun}</span>
                 <div class="Binding_pop_right">
                     <input type="text" id="moblie_code" class="Binding_pop_box_list_text">
-                    <a href="javascript:;" onclick="sendmoblie('pcode_img');" class="Binding_pop_box_magbth" id="time">{yun:}t key='member_com_binding_00004'{/yun}</a>
+                    <a href="javascript:;" onclick="sendmoblie('pcode_img');" class="Binding_pop_box_magbth" id="time">{yun:}t key='member_com_00063'{/yun}</a>
                 </div>
             </div>
             <div class="Binding_pop_box_list">
                 <input class="Binding_pop_bth" onclick="check_moblie();" type="button" value="{yun:}t key='common.submit'{/yun}"/>
             </div>
-            <div class="Binding_pop_tip">{yun:}t key='member_com_binding_00002'{/yun}</div>
+            <div class="Binding_pop_tip">{yun:}t key='member_com_00061'{/yun}</div>
             <div class="Binding_pop_tip_p">
-                1.短信验证码有效时效为{yun:}$config.moblie_codetime{/yun}{yun:}t key='wap_com_job_00056'{/yun}，超过{yun:}$config.moblie_codetime{/yun}分钟请点击重新发送；<br>
+                1.短信验证码有效时效为{yun:}$config.moblie_codetime{/yun}{yun:}t key='wap_com_00247'{/yun}，超过{yun:}$config.moblie_codetime{/yun}分钟请点击重新发送；<br>
                 2.如您手机无法收取短信或者收取延迟，请关机重启或者联系运营商处理；<br/>
                 3.如以上措施还无法解决，请确认用户名，手机号以及邮箱联系我司客服
             </div>
@@ -304,15 +304,15 @@
         <div class="yun_wxbd_box">
             <div class="yun_wxbd_img_c">
                 <div id="wx_login_qrcode" class="yun_wxbd_img" style="border:1px solid #eee; line-height:180px;">
-                    {yun:}t key='wap_company_show_dark_00006'{/yun}
+                    {yun:}t key='wap_00031'{/yun}
                 </div>
                 <div id="wx_sx" class="none">
                     <div class="wx_login_show_sxbox">
-                        <a href="javascript:void(0);" onclick="getwxbindcode()" class="wx_login_show_sxicon"></a>{yun:}t key='member_user_binding_00004'{/yun}
+                        <a href="javascript:void(0);" onclick="getwxbindcode()" class="wx_login_show_sxicon"></a>{yun:}t key='member_user_00050'{/yun}
                     </div>
                 </div>
             </div>
-            <div class="yun_wxbd_p"> {yun:}t key='member_user_binding_00001'{/yun}</div>
+            <div class="yun_wxbd_p"> {yun:}t key='member_user_00049'{/yun}</div>
         </div>
     </div>
 </div>
@@ -324,7 +324,7 @@
 <script>
     $('#uploadimg_btn').on('mouseover', function () {
         var that = this;
-        layer.tips('<img src="{yun:}url m=upload c=qrcode type=1{/yun}" alt="{yun:}t key='member_user_passwd_00014'{/yun}" />', that);
+        layer.tips('<img src="{yun:}url m=upload c=qrcode type=1{/yun}" alt="{yun:}t key='member_user_00213'{/yun}" />', that);
         return false;
     });
 
@@ -381,7 +381,7 @@
     function wxshow() {
         $.layer({
             type: 1,
-            title: "{yun:}t key='member_user_binding_00010'{/yun}",
+            title: "{yun:}t key='member_user_00056'{/yun}",
             border: [10, 0.3, '#000', true],
             area: ['400px', 'auto'],
             page: {dom: "#wxcontent"},
@@ -408,16 +408,16 @@
             "data": []
         }
         if (url) {
-            picjson.data.push({"title": "{yun:}t key='wap_user_index_00030'{/yun}", "src": url, "thumb": url});
+            picjson.data.push({"title": "{yun:}t key='wap_user_00212'{/yun}", "src": url, "thumb": url});
         }
         if (ourl) {
-            picjson.data.push({"title": "{yun:}t key='member_com_binding_00008'{/yun}", "src": ourl, "thumb": ourl});
+            picjson.data.push({"title": "{yun:}t key='member_com_00067'{/yun}", "src": ourl, "thumb": ourl});
         }
         if (wurl) {
-            picjson.data.push({"title": "{yun:}t key='member_com_binding_00003'{/yun}", "src": wurl, "thumb": wurl});
+            picjson.data.push({"title": "{yun:}t key='member_com_00062'{/yun}", "src": wurl, "thumb": wurl});
         }
         if (otherurl) {
-            picjson.data.push({"title": "{yun:}t key='member_com_binding_00010'{/yun}", "src": otherurl, "thumb": otherurl});
+            picjson.data.push({"title": "{yun:}t key='member_com_00069'{/yun}", "src": otherurl, "thumb": otherurl});
         }
         layer.photos({
             photos: picjson

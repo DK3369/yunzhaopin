@@ -3,9 +3,9 @@
     {yun:}include file="$userstyle/left.htm"{/yun}
     <div class="yun_m_rightbox fltR mt20 re">
     
-            <div class="member_right_index_h1 fltL"> <span class="member_right_h1_span fltL">{yun:}t key='wap_com_sysnews_00002'{/yun}</span> <i class="member_right_h1_icon user_bg"></i></div>
+            <div class="member_right_index_h1 fltL"> <span class="member_right_h1_span fltL">{yun:}t key='wap_com_00408'{/yun}</span> <i class="member_right_h1_icon user_bg"></i></div>
         <div  class="resume_Prompt_box">
-        <div  class="resume_Prompt"><i class="resume_Prompt_icon"></i>{yun:}t key='wap_com_sysnews_00002'{/yun},请耐心等待企业回复！</div></div>
+        <div  class="resume_Prompt"><i class="resume_Prompt_icon"></i>{yun:}t key='wap_com_00408'{/yun},请耐心等待企业回复！</div></div>
        
        
        
@@ -15,11 +15,11 @@
         <div id="" class="resume_box_list">
         {yun:}if !empty($rows){/yun}
             <div class="job_Consulting_tit">
-                <span class="job_Consulting_span job_Consulting_jobname">{yun:}t key='wap_com_jobadd_00034'{/yun}</span>
-                <span class="job_Consulting_span job_Consulting_comname">{yun:}t key='wap_com_info_00040'{/yun}</span>
-                <span class="job_Consulting_span job_Consulting_jobtime">{yun:}t key='member_user_commsg_00001'{/yun}</span>
-                <span class="job_Consulting_span job_Consulting_jobtime">{yun:}t key='wap_com_special_00001'{/yun}</span>
-                <span class="job_Consulting_span job_Consulting_jobcz">{yun:}t key='member_user_atn_00003'{/yun}</span>
+                <span class="job_Consulting_span job_Consulting_jobname">{yun:}t key='wap_com_00288'{/yun}</span>
+                <span class="job_Consulting_span job_Consulting_comname">{yun:}t key='wap_com_00157'{/yun}</span>
+                <span class="job_Consulting_span job_Consulting_jobtime">{yun:}t key='member_user_00061'{/yun}</span>
+                <span class="job_Consulting_span job_Consulting_jobtime">{yun:}t key='wap_com_00406'{/yun}</span>
+                <span class="job_Consulting_span job_Consulting_jobcz">{yun:}t key='member_user_00048'{/yun}</span>
             </div>
             {yun:}/if{/yun}
             {yun:}foreach item=log from=$rows{/yun}
@@ -46,20 +46,20 @@
 
                   <div class="job_Consulting_span job_Consulting_jobtime">
                     {yun:}if $log.status=='1'{/yun}
-                    {yun:}t key='wap_user_commsg_00005'{/yun}
+                    {yun:}t key='wap_user_00165'{/yun}
                     {yun:}else if $log.status=='2'{/yun}
-                    <font color=red>{yun:}t key='wap_user_commsg_00007'{/yun}</font>
+                    <font color=red>{yun:}t key='wap_user_00167'{/yun}</font>
                       {yun:}if $log.statusbody{/yun}
                       <span class="com_m_line">|</span>
-                      <a href="javascript:;" onclick="show_msg('{yun:}$log.statusbody{/yun}')">{yun:}t key='wap_user_reward_list_00003'{/yun}</a>
+                      <a href="javascript:;" onclick="show_msg('{yun:}$log.statusbody{/yun}')">{yun:}t key='wap_user_00004'{/yun}</a>
                       {yun:}/if{/yun}
                     {yun:}else{/yun}
-                    <font color=red>{yun:}t key='wap_user_commsg_00006'{/yun}</font>
+                    <font color=red>{yun:}t key='wap_user_00166'{/yun}</font>
                     {yun:}/if{/yun}
                   </div>
 
                  <div class="job_Consulting_span job_Consulting_jobcz">
-                    <a href="javascript:void(0)" onclick="layer_del("{yun:}t key='wap_user_look_job_00001'{/yun}", 'index.php?c=commsg&act=del&id={yun:}$log.id{/yun}');" class="List_dete cblue">{yun:}t key='common.delete'{/yun}</a>
+                    <a href="javascript:void(0)" onclick="layer_del("{yun:}t key='wap_user_00001'{/yun}", 'index.php?c=commsg&act=del&id={yun:}$log.id{/yun}');" class="List_dete cblue">{yun:}t key='common.delete'{/yun}</a>
                 </div>
                 <div class="job_Consulting_box">
                     <i class="List_Title_span_zx_icon"></i>
@@ -81,8 +81,8 @@
                      <div class="job_Consulting_com">
                         <i class="job_Consulting_icon"></i>
                     <div class="" id="msg{yun:}$log.id{/yun}">
-                    {yun:}t key='wap_user_comment_00001'{/yun}：{yun:}$log.reply{/yun}
-                       <div class="job_Consulting_hftime">  {yun:}t key='admin_user_users_zixun_00007'{/yun}：{yun:}$log.reply_time|date_format:'%Y-%m-%d'{/yun}</div>
+                    {yun:}t key='wap_user_00155'{/yun}：{yun:}$log.reply{/yun}
+                       <div class="job_Consulting_hftime">  {yun:}t key='admin_user_00369'{/yun}：{yun:}$log.reply_time|date_format:'%Y-%m-%d'{/yun}</div>
                         
                     </div> </div>
                     </div>
@@ -102,7 +102,7 @@
         $("#msgs").html(msg);
         var layindex = $.layer({
             type: 1,
-            title: "{yun:}t key='member_user_commsg_00002'{/yun}",
+            title: "{yun:}t key='member_user_00062'{/yun}",
             closeBtn: [0, true],
             border: [10, 0.3, '#000', true],
             area: ['400px', '210px'],
@@ -121,7 +121,7 @@
                     <div style="height:80px;overflow:auto;" id="msgs"></div>
                 </div>
                 <div class="admin_Operating_sub" style="margin-top:10px;"> &nbsp;&nbsp;
-                    <input type="button" onClick="layer.close($('#layindex').val());" class="cancel_btn" value='{yun:}t key='wap_js_umeditor_lang_zh_cn_zh_cn_00026'{/yun}'>
+                    <input type="button" onClick="layer.close($('#layindex').val());" class="cancel_btn" value='{yun:}t key='wap_js_00094'{/yun}'>
                 </div>
             </div>
         </div>

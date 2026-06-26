@@ -1,6 +1,6 @@
 {yun:}include file="$askstyle/header.htm"{/yun}
 <div class="content ">
-    <div class="ask_navcur">{yun:}t key='default_part_show_00003'{/yun}：{yun:}t key='common.home'{/yun} > {yun:}t key='wap_ask_00004'{/yun}</div>
+    <div class="ask_navcur">{yun:}t key='common_02137'{/yun}：{yun:}t key='common.home'{/yun} > {yun:}t key='wap_00153'{/yun}</div>
     <div class="ask_index_left">
         <div class="ask_content_box">
             <div class="ask_content_tit">{yun:}$show.title{/yun}</div>
@@ -9,14 +9,14 @@
                 <a href="{yun:}url m=ask c=friend a=myquestion uid=$show.uid{/yun}"><span class="ask_content_username">{yun:}$show.nickname{/yun}</span></a>
                 <span class="ask_content_usertime">{yun:}$show.add_time|date_format:"%Y-%m-%d"{/yun}</span>
                 <div class="ask_content_cz q{yun:}$show.id{/yun}">
-                    <span class="ask_content_cz_jb"><i class="ask_content_cz_jb_icon"></i>	<a class=""{yun:}if $show.uid==$uid{/yun} onclick="layer.msg('不能举报自己提出的问题！',2,8);"{yun:}else{/yun} {yun:}if $uid{/yun}onclick="get_show('{yun:}$show.id{/yun}');"{yun:}else{/yun}onclick="showlogin('');"{yun:}/if{/yun}{yun:}/if{/yun} href="javascript:void(0)">{yun:}t key='wap_com_reportlist_00003'{/yun}</a></span>
+                    <span class="ask_content_cz_jb"><i class="ask_content_cz_jb_icon"></i>	<a class=""{yun:}if $show.uid==$uid{/yun} onclick="layer.msg('不能举报自己提出的问题！',2,8);"{yun:}else{/yun} {yun:}if $uid{/yun}onclick="get_show('{yun:}$show.id{/yun}');"{yun:}else{/yun}onclick="showlogin('');"{yun:}/if{/yun}{yun:}/if{/yun} href="javascript:void(0)">{yun:}t key='wap_com_00350'{/yun}</a></span>
 
                     <span class="ask_content_cz_gz  num{yun:}$show.id{/yun}">{yun:}$show.atnnum{/yun}人关注</span>&nbsp; {yun:}if $show.qatn!='2'{/yun} {yun:}if $show.qatn=='1'{/yun}
-                    <a href="javascript:void(0)" onclick="attention('{yun:}$show.id{/yun}','1','{yun:}url m=ask c=friend a=attention{/yun}');" class="ask_content_cz_bth">{yun:}t key='wap_js_public_00003'{/yun}</a>
+                    <a href="javascript:void(0)" onclick="attention('{yun:}$show.id{/yun}','1','{yun:}url m=ask c=friend a=attention{/yun}');" class="ask_content_cz_bth">{yun:}t key='wap_js_00140'{/yun}</a>
                     {yun:}else{/yun} {yun:}if $uid{/yun}
-                    <a href="javascript:void(0)" onclick="attention('{yun:}$show.id{/yun}','1','{yun:}url m=ask c=friend a=attention{/yun}');" class='ask_content_cz_bth'>{yun:}t key='wap_askcontent_00003'{/yun}</a>
+                    <a href="javascript:void(0)" onclick="attention('{yun:}$show.id{/yun}','1','{yun:}url m=ask c=friend a=attention{/yun}');" class='ask_content_cz_bth'>{yun:}t key='wap_00164'{/yun}</a>
                     {yun:}else{/yun}
-                    <a href="javascript:void(0);" onclick="showlogin('');" class="ask_content_cz_bth">{yun:}t key='wap_askcontent_00003'{/yun}</a>
+                    <a href="javascript:void(0);" onclick="showlogin('');" class="ask_content_cz_bth">{yun:}t key='wap_00164'{/yun}</a>
                     {yun:}/if{/yun} {yun:}/if{/yun} {yun:}/if{/yun}
                 </div>
             </div>
@@ -30,7 +30,7 @@
                     <textarea name="content" id="content" class="dis_txt" placeholder="这里输入您的回答" onblur="if(this.value==''){this.value='这里输入您的回答'}" onclick="if(this.value=='这里输入您的回答'){this.value=''}" value="这里输入您的回答"></textarea>
                     <div class="dis_put">
                         <input name='id' type='hidden' value='{yun:}$show.id{/yun}' />
-                        <input name="add" type="submit" value="{yun:}t key='ask_content_00005'{/yun}" />
+                        <input name="add" type="submit" value="{yun:}t key='ask_00010'{/yun}" />
                     </div>
                 </form>
                 <div class="clear"></div>
@@ -40,7 +40,7 @@
         <div class="clear"></div>
         <div class="ask_content_box mt20">
             <div class="ans_tit">
-                <span>{yun:}$total{/yun}{yun:}t key='ask_attenquestion_00002'{/yun}</span>
+                <span>{yun:}$total{/yun}{yun:}t key='ask_00005'{/yun}</span>
                 <div class="ans_disc">
                     <a href="{yun:}url m=ask c=content id='`$show.id`'{/yun}" {yun:}if $smarty.get.orderby!='support' {/yun}class="cur" {yun:}/if{/yun}>按评论时间</a>
                     <a href="{yun:}url m=ask c=content id='`$show.id`'  orderby=support{/yun}" {yun:}if $smarty.get.orderby=='support' {/yun}class="cur" {yun:}/if{/yun}>按赞同数</a>
@@ -62,7 +62,7 @@
                                 <span class="praise_time">{yun:}$list.add_time|date_format:"%Y-%m-%d %H:%M"{/yun}</span>
                                 <div class="criticism">
                                     <a href="javascript:void(0)" onclick="support('{yun:}$list.id{/yun}','{yun:}url m=ask c=forsupport{/yun}')" class="crit_dz png"><span id="support_num_{yun:}$list.id{/yun}">{yun:}$list.support{/yun}</span></a>
-                                    <a class="crit_pl" href="javascript:void(0)" onclick="get_comment('{yun:}$list.id{/yun}','0','{yun:}url m=ask c=getcomment{/yun}');"><span id="com_num_{yun:}$list.id{/yun}">{yun:}$list.comment{/yun}</span>{yun:}t key='default_evaluate_gradeshare_00011'{/yun}</a>
+                                    <a class="crit_pl" href="javascript:void(0)" onclick="get_comment('{yun:}$list.id{/yun}','0','{yun:}url m=ask c=getcomment{/yun}');"><span id="com_num_{yun:}$list.id{/yun}">{yun:}$list.comment{/yun}</span>{yun:}t key='default_00125'{/yun}</a>
                                 </div>
                             </div>
                         </dd>
@@ -98,13 +98,13 @@
 
     <div class="ask_index_right">
         <div class="ask_tw" style="margin-top:0px">
-            <div class="ask_tw_t">{yun:}t key='wap_com_jobcolumn_00004'{/yun}</div>
-            <div class="ask_tw_p">{yun:}t key='ask_content_00001'{/yun}</div>
+            <div class="ask_tw_t">{yun:}t key='wap_com_00312'{/yun}</div>
+            <div class="ask_tw_p">{yun:}t key='ask_00006'{/yun}</div>
 
             {yun:}if $uid{/yun}
-            <a href="{yun:}url m=ask c=addquestion{/yun}" target="_blank" class="ask_tw_btn">+ {yun:}t key='wap_job_show_00035'{/yun}</a>
+            <a href="{yun:}url m=ask c=addquestion{/yun}" target="_blank" class="ask_tw_btn">+ {yun:}t key='wap_00278'{/yun}</a>
             {yun:}else{/yun}
-            <a href="javascript:void(0);" onclick="showlogin('');" class="ask_tw_btn">+ {yun:}t key='wap_job_show_00035'{/yun}</a>
+            <a href="javascript:void(0);" onclick="showlogin('');" class="ask_tw_btn">+ {yun:}t key='wap_00278'{/yun}</a>
             {yun:}/if{/yun}
 
         </div>
@@ -125,7 +125,7 @@
             {yun:}if $aboutlist.id==''{/yun}
             <div class="friend_right_no fl">
                 <dl class="friend_right_no_img"><dt></dt>
-                    <dd>{yun:}t key='wap_js_cmc_00003'{/yun}</dd>
+                    <dd>{yun:}t key='wap_js_00113'{/yun}</dd>
                 </dl>
             </div>
             {yun:}/if{/yun}
@@ -139,7 +139,7 @@
 <div id="TB_window" style=" display: none;" class="ask_report">
     <div id="TB_ajaxContent" class="ask_report_cont">
         <div class="ask_jb_box_cont" style="padding:10px;">
-            <div class="ask_jb_tit">{yun:}t key='wap_reportlist_00001'{/yun}</div>
+            <div class="ask_jb_tit">{yun:}t key='wap_00418'{/yun}</div>
             <div class="ask_jb_box">
                 {yun:}foreach from=$reason item=rlist{/yun}
                 <label><div class="ask_jb_box_list" style="margin-top:5px;">

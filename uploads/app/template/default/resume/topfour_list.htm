@@ -10,13 +10,13 @@
 				<a href="{yun:}$user3.user_url{/yun}" target="_blank" class="resume_newlist_job">{yun:}$user3.name{/yun}</a>
 			{yun:}/if{/yun}
 
-			{yun:}if $user3.idcard_status=='1'{/yun}<img src="{yun:}$style{/yun}/images/sf.png" title="{yun:}t key='resume_jianli3_index_00008'{/yun}" class="user_rz_img png fl" />{yun:}/if{/yun}
+			{yun:}if $user3.idcard_status=='1'{/yun}<img src="{yun:}$style{/yun}/images/sf.png" title="{yun:}t key='resume_00008'{/yun}" class="user_rz_img png fl" />{yun:}/if{/yun}
 			{yun:}if $user3.ispic{/yun}<img src="{yun:}$style{/yun}/images/profile.png" title="有形象照" class="user_rz_img png fl" />{yun:}/if{/yun}
 
-			{yun:}if in_array($user3.id,$talentpool){/yun}<span class="co_fav">{yun:}t key='wap_part_show_00011'{/yun}</span>{yun:}/if{/yun}
-			{yun:}if in_array($user3.uid,$useridmsg){/yun}<span class="co_fav">{yun:}t key='wap_job_show_00048'{/yun}</span>{yun:}/if{/yun}
+			{yun:}if in_array($user3.id,$talentpool){/yun}<span class="co_fav">{yun:}t key='wap_00378'{/yun}</span>{yun:}/if{/yun}
+			{yun:}if in_array($user3.uid,$useridmsg){/yun}<span class="co_fav">{yun:}t key='wap_00291'{/yun}</span>{yun:}/if{/yun}
 			{yun:}if $user3.rec_resume{/yun}
-				<img  src="{yun:}$style{/yun}/images/jobtj.png" title="{yun:}t key='default_resume_normal_list_00001'{/yun}" class="user_rz_img png fl" width="16"/>
+				<img  src="{yun:}$style{/yun}/images/jobtj.png" title="{yun:}t key='default_00095'{/yun}" class="user_rz_img png fl" width="16"/>
 			{yun:}/if{/yun}&nbsp;
 		</div>
 		<div class="resume_newlist_user">
@@ -26,7 +26,7 @@
 				<a href="{yun:}$user3.user_url{/yun}" target="_blank" class="resume_newlist_username">{yun:}if in_array($user3.id,$eid){/yun}{yun:}$user3.uname{/yun}{yun:}else{/yun}{yun:}$user3.username_n{/yun}{yun:}/if{/yun}</a>
 			{yun:}/if{/yun}
 			<span class="user_listinfo">
-				{yun:}if $user3.age==0{/yun}{yun:}t key='wap_user_resume_00011'{/yun}{yun:}else{/yun}{yun:}$user3.age{/yun}{yun:}t key='home.age_suffix'{/yun}{yun:}/if{/yun}
+				{yun:}if $user3.age==0{/yun}{yun:}t key='wap_user_00333'{/yun}{yun:}else{/yun}{yun:}$user3.age{/yun}{yun:}t key='home.age_suffix'{/yun}{yun:}/if{/yun}
 				 · 
 				{yun:}$user3.exp_n{/yun}{yun:}t key='home.experience_suffix'{/yun}
 				 · 
@@ -56,7 +56,7 @@
 		</div>
 		{yun:}/if{/yun}
 		
-		<a href="javascript:;" pid="{yun:}$user3.id{/yun}" class="yunjoblist_new_icon {yun:}if $smarty.get.rtype!='1'{/yun}yunjoblist_new_icon_cur{yun:}/if{/yun}" title="{yun:}if $smarty.get.rtype!='1'{/yun}{yun:}t key='wap_article_00005'{/yun}{yun:}else{/yun}{yun:}t key='admin_user_member_component_alluser_00031'{/yun}{yun:}/if{/yun}"></a>
+		<a href="javascript:;" pid="{yun:}$user3.id{/yun}" class="yunjoblist_new_icon {yun:}if $smarty.get.rtype!='1'{/yun}yunjoblist_new_icon_cur{yun:}/if{/yun}" title="{yun:}if $smarty.get.rtype!='1'{/yun}{yun:}t key='wap_00146'{/yun}{yun:}else{/yun}{yun:}t key='admin_user_00145'{/yun}{yun:}/if{/yun}"></a>
 	</div>
 
 	<div class="resumeshow {yun:}if $smarty.get.rtype=='1'{/yun}none{yun:}/if{/yun}" id="resumeshow{yun:}$user3.id{/yun}">
@@ -73,7 +73,7 @@
 
 		<div class="usersearch_job_left_siaber">
 
-			<div class="user_listinfo_job">{yun:}t key='wap_user_addresume_00037'{/yun}：
+			<div class="user_listinfo_job">{yun:}t key='wap_user_00055'{/yun}：
 				{yun:}if $user3.expectjob{/yun}
 					{yun:}foreach from=$user3.expectjob item=v key=key{/yun}
 					{yun:}if $key < 5{/yun}
@@ -104,16 +104,16 @@
 					<div class="user_undergo">{yun:}$user3.work_content{/yun}  </div>
 				{yun:}/if{/yun}
 			{yun:}else{/yun}
-				<div class="user_undergo">{yun:}t key='wap_com_jobadd_00025'{/yun}：{yun:}$user3.report_n{/yun}</div>
-				<div class=" user_undergo">{yun:}t key='wap_user_addexpect_00008'{/yun}：{yun:}$user3.salary_n{/yun}</div>
+				<div class="user_undergo">{yun:}t key='wap_com_00279'{/yun}：{yun:}$user3.report_n{/yun}</div>
+				<div class=" user_undergo">{yun:}t key='wap_user_00016'{/yun}：{yun:}$user3.salary_n{/yun}</div>
 			{yun:}/if{/yun}
 			<!--填的情况 end-->
 		</div>
 		<div class="yun_look_right">
 			{yun:}if $config.com_search==1 && !$uid{/yun}
-				<a href="javascript:void(0);" onclick="showlogin('2');" class="yun_look_bth">{yun:}t key='wap_com_zhaopinzhou_00002'{/yun}</a>
+				<a href="javascript:void(0);" onclick="showlogin('2');" class="yun_look_bth">{yun:}t key='wap_com_00427'{/yun}</a>
 			{yun:}else{/yun}
-				<a href="{yun:}$user3.user_url{/yun}" target="_blank" class="yun_look_bth">{yun:}t key='wap_com_zhaopinzhou_00002'{/yun}</a>
+				<a href="{yun:}$user3.user_url{/yun}" target="_blank" class="yun_look_bth">{yun:}t key='wap_com_00427'{/yun}</a>
 			{yun:}/if{/yun}
 		</div>
 	</div>

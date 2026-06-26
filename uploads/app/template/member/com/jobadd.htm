@@ -113,7 +113,7 @@
             <div class="newmember_screenbox">
                 <div class="newmember_screen">
                     <div class="newmember_screenname"><a href="index.php?c=job&w=1" class="newcom_fh">{yun:}t key='common.back'{/yun} </a><span
-                            class="newcom_fh_line">|</span>{yun:}t key='member_com_jobadd_00028'{/yun}</div>
+                            class="newcom_fh_line">|</span>{yun:}t key='member_com_00250'{/yun}</div>
                 </div>
             </div>
             
@@ -121,17 +121,17 @@
             <div class=admincont_box>
                 <div class="com_body">
                     <div class="com_new_tip">
-                        <span class="com_new_tip_h">{yun:}t key='member_com_added_00002'{/yun}</span>
+                        <span class="com_new_tip_h">{yun:}t key='member_com_00040'{/yun}</span>
                         {yun:}if $statis.vip_etime > $todayStart || $statis.vip_etime=="0"{/yun}
                             {yun:}if $statis.rating_type==2{/yun}
                                 您当前是 <span class="com_new_tip_v">{yun:}$statis.rating_name{/yun}</span>，到期时间是{yun:}if $statis.vip_etime!="0"{/yun}{yun:}$statis.vip_etime|date_format:'%Y-%m-%d'{/yun}{yun:}else{/yun}{yun:}t key='api_wxapp_00019'{/yun}{yun:}/if{/yun}，在此之前您可以任意发布职位&nbsp;&nbsp;&nbsp;
                             {yun:}else{/yun}
-                                您当前是 <span class="com_new_tip_v">{yun:}$statis.rating_name{/yun} </span>{yun:}if $jobnum{/yun}，现已上架 {yun:}$jobnum{/yun} {yun:}t key='wap_user_collect_00001'{/yun}{yun:}/if{/yun}， 您共可上架：{yun:}$statis.job_num{/yun}{yun:}t key='wap_user_collect_00001'{/yun}。超出后发布的职位需要手动上架&nbsp;&nbsp;&nbsp;
+                                您当前是 <span class="com_new_tip_v">{yun:}$statis.rating_name{/yun} </span>{yun:}if $jobnum{/yun}，现已上架 {yun:}$jobnum{/yun} {yun:}t key='wap_user_00151'{/yun}{yun:}/if{/yun}， 您共可上架：{yun:}$statis.job_num{/yun}{yun:}t key='wap_user_00151'{/yun}。超出后发布的职位需要手动上架&nbsp;&nbsp;&nbsp;
                             {yun:}/if{/yun}
                         {yun:}else{/yun}
-                            您的会员已到期，为了更好的招聘人才，请先<a href="index.php?c=right" class="cblue"> {yun:}t key='member_com_partadd_00004'{/yun}</a>！&nbsp;&nbsp;&nbsp;
+                            您的会员已到期，为了更好的招聘人才，请先<a href="index.php?c=right" class="cblue"> {yun:}t key='member_com_00308'{/yun}</a>！&nbsp;&nbsp;&nbsp;
                         {yun:}/if{/yun}
-                        <span class="add_tit_bz">（注 带 <i class="ff0">*</i> {yun:}t key='member_com_partadd_00002'{/yun}</span>
+                        <span class="add_tit_bz">（注 带 <i class="ff0">*</i> {yun:}t key='member_com_00306'{/yun}</span>
                     </div>
                     <iframe id="supportiframejob" name="supportiframejob" onload="returnmessagejob('supportiframejob');" style="display:none"></iframe>
                     <form name="MyForm" id="myform" target="supportiframejob" method="post" action="index.php?c=jobadd&act=save" class="layui-form">
@@ -139,7 +139,7 @@
                         <div class="com_release_box" id="comjob">
                             <ul>
                                 <li>
-                                    <div class="com_release_name"><i class="ff0">*</i> {yun:}t key='wap_com_jobadd_00034'{/yun}：</div>
+                                    <div class="com_release_name"><i class="ff0">*</i> {yun:}t key='wap_com_00288'{/yun}：</div>
                                     <div class="com_release_cont">
                                         {yun:}if $smarty.get.id && $config.joblock==1{/yun}
                                         <label>
@@ -148,38 +148,38 @@
                                         <input type="hidden" id="name" name="name" value="{yun:}$row.name{/yun}">
                                         {yun:}else{/yun}
                                         <div class="com_release_cont_text">
-                                            <input type="text" size="45" lay-verify="required" name="name" id='name' value="{yun:}$row.name{/yun}" class="layui-input" placeholder="{yun:}t key='member_com_jobadd_00003'{/yun}">
+                                            <input type="text" size="45" lay-verify="required" name="name" id='name' value="{yun:}$row.name{/yun}" class="layui-input" placeholder="{yun:}t key='member_com_00227'{/yun}">
                                         </div>
                                         {yun:}/if{/yun}
-                                        <span id="by_name" class="errordisplay">{yun:}t key='member_com_jobadd_00015'{/yun}</span>
+                                        <span id="by_name" class="errordisplay">{yun:}t key='member_com_00239'{/yun}</span>
                                     </div>
                                     {yun:}if $config.joblock==1{/yun}
-                                    <div class="" style="color:#f00; padding-top:10px;font-size:12px;">{yun:}t key='wap_js_forgetpw_00010'{/yun}：职位名称确认发布后将无法修改</div>
+                                    <div class="" style="color:#f00; padding-top:10px;font-size:12px;">{yun:}t key='wap_js_00125'{/yun}：职位名称确认发布后将无法修改</div>
                                     {yun:}/if{/yun}
                                 </li>
                                 <li>
-                                    <div class="com_release_name"><i class="ff0">*</i> {yun:}t key='wap_user_addexpect_00010'{/yun}：</div>
+                                    <div class="com_release_name"><i class="ff0">*</i> {yun:}t key='wap_user_00018'{/yun}：</div>
                                     <div class="com_release_cont com_release_cont_xlyc">
                                         <div class="com_release_cont_text" style="position:relative">
                                             <input type="hidden" name="job_post" id="job_post" value="{yun:}if $row.job_post{/yun}{yun:}$row.job_post{/yun}{yun:}else if $row.job1_son{/yun}{yun:}$row.job1_son{/yun}{yun:}else if $row.job1{/yun}{yun:}$row.job1{/yun}{yun:}/if{/yun}"/>
                                             <select id="jobclass_search" name="jobclass_search" xm-select-type="jobclass" xm-select="jobclass_search" xm-select-search="" xm-select-radio="" xm-select-skin="default" xm-select-direction="down">
-                                                <option value="">{yun:}t key='member_com_jobadd_00019'{/yun}</option>
+                                                <option value="">{yun:}t key='member_com_00243'{/yun}</option>
                                             </select>
                                             {yun:}if $jionly!='1'{/yun}
-                                            <div onclick="index_job_new(1,'#workadds_job','#job_post','left:100px;top:100px; position:absolute;','1');" class="news_expect_text_new_sxzw" title="{yun:}t key='member_user_expectq_00006'{/yun}">{yun:}t key='member_com_jobadd_00023'{/yun}</div>
+                                            <div onclick="index_job_new(1,'#workadds_job','#job_post','left:100px;top:100px; position:absolute;','1');" class="news_expect_text_new_sxzw" title="{yun:}t key='member_user_00100'{/yun}">{yun:}t key='member_com_00246'{/yun}</div>
                                             {yun:}/if{/yun}
                                         </div>
                                     </div>
                                 </li>
                                 <li>
-                                    <div class="com_release_name"><i class="ff0">*</i> {yun:}t key='wap_com_jobadd_00036'{/yun}：</div>
+                                    <div class="com_release_name"><i class="ff0">*</i> {yun:}t key='wap_com_00290'{/yun}：</div>
                                     <div class="com_release_cont">
                                         <div class="layui-input-inline com_release_selectw145">
-                                            <input type="text" size="5" id="minsalary" name="minsalary" {yun:}if $row.minsalary{/yun}value="{yun:}$row.minsalary{/yun}"{yun:}/if{/yun} onkeyup="this.value=this.value.replace(/[^0-9]/g,'')" class="layui-input" placeholder="{yun:}t key='wap_user_addexpect_00005'{/yun}"{yun:}if !$row.minsalary&&!$row.maxsalary&&$row.id&&$config.com_job_myswitch=="1"{/yun} disabled="disabled"{yun:}/if{/yun}>
+                                            <input type="text" size="5" id="minsalary" name="minsalary" {yun:}if $row.minsalary{/yun}value="{yun:}$row.minsalary{/yun}"{yun:}/if{/yun} onkeyup="this.value=this.value.replace(/[^0-9]/g,'')" class="layui-input" placeholder="{yun:}t key='wap_user_00013'{/yun}"{yun:}if !$row.minsalary&&!$row.maxsalary&&$row.id&&$config.com_job_myswitch=="1"{/yun} disabled="disabled"{yun:}/if{/yun}>
                                             <span class="com_release_cont_dw">{yun:}t key='common_02056'{/yun}/{yun:}t key='common_02086'{/yun}</span>
                                         </div>
                                         <div class="layui-input-inline com_release_selectw145">
-                                            <input type="text" size="5" id="maxsalary" name="maxsalary" {yun:}if $row.maxsalary{/yun}value="{yun:}$row.maxsalary{/yun}"{yun:}/if{/yun} onkeyup="this.value=this.value.replace(/[^0-9]/g,'')" class="layui-input" placeholder="{yun:}t key='wap_user_addexpect_00006'{/yun}"{yun:}if !$row.minsalary&&!$row.maxsalary&&$row.id&&$config.com_job_myswitch=="1"{/yun} disabled="disabled"{yun:}/if{/yun}>
+                                            <input type="text" size="5" id="maxsalary" name="maxsalary" {yun:}if $row.maxsalary{/yun}value="{yun:}$row.maxsalary{/yun}"{yun:}/if{/yun} onkeyup="this.value=this.value.replace(/[^0-9]/g,'')" class="layui-input" placeholder="{yun:}t key='wap_user_00014'{/yun}"{yun:}if !$row.minsalary&&!$row.maxsalary&&$row.id&&$config.com_job_myswitch=="1"{/yun} disabled="disabled"{yun:}/if{/yun}>
                                             <span class="com_release_cont_dw">{yun:}t key='common_02056'{/yun}/{yun:}t key='common_02086'{/yun}</span>
                                         </div>
                                         {yun:}if $config.com_job_myswitch=="1"{/yun}
@@ -188,7 +188,7 @@
                                     </div>
                                 </li>
                                 <li>
-                                    <div class="com_release_name"><i class="ff0">*</i> {yun:}t key='wap_com_partadd_00013'{/yun}：</div>
+                                    <div class="com_release_name"><i class="ff0">*</i> {yun:}t key='wap_com_00333'{/yun}：</div>
                                     <div class="com_release_cont">
                                         <div class="layui-input-inline com_release_selectw145">
                                             <input name="zp_num" id="zp_num" type="text" {yun:}if $row.zp_num{/yun}value="{yun:}$row.zp_num{/yun}"{yun:}/if{/yun} onkeyup="this.value=this.value.replace(/[^0-9]/g,'')" class="layui-input" />
@@ -197,7 +197,7 @@
                                     </div>
                                 </li>
                                 <li>
-                                    <div class="com_release_name"> {yun:}t key='wap_once_add_00008'{/yun}：</div>
+                                    <div class="com_release_name"> {yun:}t key='wap_00353'{/yun}：</div>
                                     <div class="com_release_cont">
                                         <div class="layui-input-inline com_release_selectw145">
                                             <select name="edu" lay-filter="edu">
@@ -214,11 +214,11 @@
                                             </select>
                                         </div>
                                         &nbsp;&nbsp;
-                                        <input name="is_graduate" type="checkbox" value="1" title="{yun:}t key='member_com_jobadd_00017'{/yun}" {yun:}if $row.is_graduate{/yun}checked{yun:}/if{/yun} lay-skin="primary" />
+                                        <input name="is_graduate" type="checkbox" value="1" title="{yun:}t key='member_com_00241'{/yun}" {yun:}if $row.is_graduate{/yun}checked{yun:}/if{/yun} lay-skin="primary" />
                                     </div>
                                 </li>
                                 <li>
-                                    <div class="com_release_name"><i class="ff0">*</i> {yun:}t key='wap_com_jobadd_00035'{/yun}：</div>
+                                    <div class="com_release_name"><i class="ff0">*</i> {yun:}t key='wap_com_00289'{/yun}：</div>
                                     <div class="com_release_cont">
                                         <div class="Description" style="display:none;">
                                             <div class="Description_icon">
@@ -233,11 +233,11 @@
                                         </div>
                                         <div class="clear"></div>
                                         <script id="description" name="description" type="text/plain" style="width:500px; height:100px;"> {yun:}$row.description{/yun}</script>
-                                        <span id="by_description" class="errordisplay">{yun:}t key='member_com_addproduct_00001'{/yun}</span>
+                                        <span id="by_description" class="errordisplay">{yun:}t key='member_com_00044'{/yun}</span>
                                     </div>
                                 </li>
                                 <li>
-                                    <div class="com_release_name"><i class="ff0">*</i> {yun:}t key='wap_com_partadd_00011'{/yun}：</div>
+                                    <div class="com_release_name"><i class="ff0">*</i> {yun:}t key='wap_com_00331'{/yun}：</div>
                                     <div class="com_release_cont" style="height:38px;">
                                         <div class="layui-input-inline" style="width:675px; float: left;">
                                             <select name="link_id" lay-filter="link_id" id="link_id">
@@ -251,22 +251,22 @@
                                             </select>
                                         </div>
                                         {yun:}if $row.is_link && $row.is_link!=1{/yun}
-                                        <a id="editAddr" href="javascript:;" data-id="{yun:}$addressList[$linkid].id{/yun}" class="add_icon   newAddressBtn"   data-link="2" data-provinceid="{yun:}$addressList[$linkid].provinceid{/yun}" data-cityid="{yun:}$addressList[$linkid].cityid{/yun}" data-three_cityid="{yun:}$addressList[$linkid].three_cityid{/yun}" data-address="{yun:}$addressList[$linkid].link_address{/yun}" data-x="{yun:}$addressList[$linkid].x{/yun}" data-y="{yun:}$addressList[$linkid].y{/yun}" data-link_man="{yun:}$addressList[$linkid].link_man{/yun}" data-link_moblie="{yun:}$addressList[$linkid].link_moblie{/yun}" data-link_phone="{yun:}$addressList[$linkid].link_phone{/yun}" data-email="{yun:}$addressList[$linkid].email{/yun}"><span class="add_xg"></span>{yun:}t key='wap_js_umeditor_lang_zh_cn_zh_cn_00005'{/yun} </a>
+                                        <a id="editAddr" href="javascript:;" data-id="{yun:}$addressList[$linkid].id{/yun}" class="add_icon   newAddressBtn"   data-link="2" data-provinceid="{yun:}$addressList[$linkid].provinceid{/yun}" data-cityid="{yun:}$addressList[$linkid].cityid{/yun}" data-three_cityid="{yun:}$addressList[$linkid].three_cityid{/yun}" data-address="{yun:}$addressList[$linkid].link_address{/yun}" data-x="{yun:}$addressList[$linkid].x{/yun}" data-y="{yun:}$addressList[$linkid].y{/yun}" data-link_man="{yun:}$addressList[$linkid].link_man{/yun}" data-link_moblie="{yun:}$addressList[$linkid].link_moblie{/yun}" data-link_phone="{yun:}$addressList[$linkid].link_phone{/yun}" data-email="{yun:}$addressList[$linkid].email{/yun}"><span class="add_xg"></span>{yun:}t key='wap_js_00073'{/yun} </a>
                                         {yun:}else{/yun}
-                                        <a id="editAddr" href="javascript:;" data-id="-1" class="add_icon   newAddressBtn"   data-link="2" data-provinceid="{yun:}$defLink.provinceid{/yun}" data-cityid="{yun:}$defLink.cityid{/yun}" data-three_cityid="{yun:}$defLink.three_cityid{/yun}" data-address="{yun:}$defLink.address{/yun}" data-x="{yun:}$defLink.x{/yun}" data-y="{yun:}$defLink.y{/yun}" data-link_man="{yun:}$defLink.link_man{/yun}" data-link_moblie="{yun:}$defLink.link_moblie{/yun}" data-link_phone="{yun:}$defLink.link_phone{/yun}" data-email="{yun:}$defLink.email{/yun}"><span class="add_xg"></span>{yun:}t key='wap_js_umeditor_lang_zh_cn_zh_cn_00005'{/yun} </a>
+                                        <a id="editAddr" href="javascript:;" data-id="-1" class="add_icon   newAddressBtn"   data-link="2" data-provinceid="{yun:}$defLink.provinceid{/yun}" data-cityid="{yun:}$defLink.cityid{/yun}" data-three_cityid="{yun:}$defLink.three_cityid{/yun}" data-address="{yun:}$defLink.address{/yun}" data-x="{yun:}$defLink.x{/yun}" data-y="{yun:}$defLink.y{/yun}" data-link_man="{yun:}$defLink.link_man{/yun}" data-link_moblie="{yun:}$defLink.link_moblie{/yun}" data-link_phone="{yun:}$defLink.link_phone{/yun}" data-email="{yun:}$defLink.email{/yun}"><span class="add_xg"></span>{yun:}t key='wap_js_00073'{/yun} </a>
                                         {yun:}/if{/yun}
                                        
-                                        <a href="javascript:;" class="add_icon add_xj  newAddressBtn"  data-link="2" data-provinceid="{yun:}$defLink.provinceid{/yun}" data-cityid="{yun:}$defLink.cityid{/yun}" data-three_cityid="{yun:}$defLink.three_cityid{/yun}" data-address="{yun:}$defLink.address{/yun}" data-x="{yun:}$defLink.x{/yun}" data-y="{yun:}$defLink.y{/yun}"><span class="add_xg"></span>{yun:}t key='member_com_jobadd_00027'{/yun} </a>
+                                        <a href="javascript:;" class="add_icon add_xj  newAddressBtn"  data-link="2" data-provinceid="{yun:}$defLink.provinceid{/yun}" data-cityid="{yun:}$defLink.cityid{/yun}" data-three_cityid="{yun:}$defLink.three_cityid{/yun}" data-address="{yun:}$defLink.address{/yun}" data-x="{yun:}$defLink.x{/yun}" data-y="{yun:}$defLink.y{/yun}"><span class="add_xg"></span>{yun:}t key='member_com_00249'{/yun} </a>
                                     </div>
                                 </li>
                                 <li>
-                                    <div class="com_release_name">{yun:}t key='member_com_jobadd_00020'{/yun}</div>
+                                    <div class="com_release_name">{yun:}t key='member_com_00244'{/yun}</div>
                                     <div class="com_release_cont">
                                         {yun:}if $config.com_job_sexswitch==1{/yun}
                                         <div class="layui-input-inline com_release_selectw145">
                                             <select name="sex" lay-filter="sex">
                                                 {yun:}foreach from=$com_sex key=j item=v{/yun}
-                                                <option value="{yun:}$j{/yun}" {yun:}if $row.sex== $j{/yun} selected{yun:}/if{/yun}>{yun:}if $j == 3{/yun}{yun:}t key='wap_com_jobadd_00049'{/yun}{yun:}/if{/yun}{yun:}$v{/yun}</option>
+                                                <option value="{yun:}$j{/yun}" {yun:}if $row.sex== $j{/yun} selected{yun:}/if{/yun}>{yun:}if $j == 3{/yun}{yun:}t key='wap_com_00303'{/yun}{yun:}/if{/yun}{yun:}$v{/yun}</option>
                                                 {yun:}/foreach{/yun}
                                             </select>
                                         </div>
@@ -274,34 +274,34 @@
                                         <div class="layui-input-inline com_release_selectw145">
                                             <select name="marriage" lay-filter="marriage">
                                                 {yun:}foreach from=$comdata.job_marriage key=j item=v{/yun}
-                                                <option value="{yun:}$v{/yun}" {yun:}if $row.marriage== $v{/yun} selected{yun:}/if{/yun}>{yun:}if $j == 0{/yun}{yun:}t key='default_job_comapply_00044'{/yun}{yun:}/if{/yun}{yun:}$comclass_name[$v]{/yun}</option>
+                                                <option value="{yun:}$v{/yun}" {yun:}if $row.marriage== $v{/yun} selected{yun:}/if{/yun}>{yun:}if $j == 0{/yun}{yun:}t key='default_00241'{/yun}{yun:}/if{/yun}{yun:}$comclass_name[$v]{/yun}</option>
                                                 {yun:}/foreach{/yun}
                                             </select>
                                         </div>
                                         <div class="layui-input-inline com_release_selectw145">
                                             <select name="report" lay-filter="report">
                                                 {yun:}foreach from=$comdata.job_report key=j item=v{/yun}
-                                                <option value="{yun:}$v{/yun}" {yun:}if $row.report== $v{/yun} selected{yun:}/if{/yun}>{yun:}if $j == 0{/yun}{yun:}t key='wap_com_jobadd_00025'{/yun}{yun:}/if{/yun}{yun:}$comclass_name[$v]{/yun}</option>
+                                                <option value="{yun:}$v{/yun}" {yun:}if $row.report== $v{/yun} selected{yun:}/if{/yun}>{yun:}if $j == 0{/yun}{yun:}t key='wap_com_00279'{/yun}{yun:}/if{/yun}{yun:}$comclass_name[$v]{/yun}</option>
                                                 {yun:}/foreach{/yun}
                                             </select>
                                         </div>
                                         <div class="layui-input-inline com_release_selectw145">
-                                            <input type="text" size="2" id="zp_minage" name="zp_minage" placeholder="{yun:}t key='wap_com_jobadd_00031'{/yun}" {yun:}if $row.zp_minage{/yun}value="{yun:}$row.zp_minage{/yun}"{yun:}/if{/yun} onkeyup="this.value=this.value.replace(/[^0-9]/g,'')" maxlength="2" class="layui-input" />
+                                            <input type="text" size="2" id="zp_minage" name="zp_minage" placeholder="{yun:}t key='wap_com_00285'{/yun}" {yun:}if $row.zp_minage{/yun}value="{yun:}$row.zp_minage{/yun}"{yun:}/if{/yun} onkeyup="this.value=this.value.replace(/[^0-9]/g,'')" maxlength="2" class="layui-input" />
                                             <span class="com_release_cont_dw">{yun:}t key='home.age_suffix'{/yun}</span>
                                         </div>
                                         <div class="layui-input-inline com_release_selectw145">
-                                            <input type="text" size="2" id="zp_maxage" name="zp_maxage" placeholder="{yun:}t key='wap_com_jobadd_00054'{/yun}" {yun:}if $row.zp_maxage{/yun}value="{yun:}$row.zp_maxage{/yun}"{yun:}/if{/yun} onkeyup="this.value=this.value.replace(/[^0-9]/g,'')" maxlength="2" class="layui-input" />
+                                            <input type="text" size="2" id="zp_maxage" name="zp_maxage" placeholder="{yun:}t key='wap_com_00308'{/yun}" {yun:}if $row.zp_maxage{/yun}value="{yun:}$row.zp_maxage{/yun}"{yun:}/if{/yun} onkeyup="this.value=this.value.replace(/[^0-9]/g,'')" maxlength="2" class="layui-input" />
                                             <span class="com_release_cont_dw">{yun:}t key='home.age_suffix'{/yun}</span>
                                         </div>
                                     </div>
                                 </li>
 
                                 <li>
-                                    <div class="com_release_name">{yun:}t key='wap_user_addexpect_00002'{/yun}：</div>
+                                    <div class="com_release_name">{yun:}t key='wap_user_00010'{/yun}：</div>
                                     <div class="com_release_cont">
                                         <div class="layui-input-inline" style="width:500px;">
                                             <select name="hy" lay-filter="hy">
-                                                <option value="">{yun:}t key='wap_user_addresumeson_00042'{/yun}</option>
+                                                <option value="">{yun:}t key='wap_user_00100'{/yun}</option>
                                                 {yun:}foreach from=$industry_index key=j item=v{/yun}
                                                 <option value="{yun:}$v{/yun}" {yun:}if $row.hy== $v{/yun} selected{yun:}/if{/yun}>{yun:}$industry_name[$v]{/yun}</option>
                                                 {yun:}/foreach{/yun}
@@ -310,7 +310,7 @@
                                     </div>
                                 </li>
                                 <li class="jobadd_list_fl">
-                                    <div class="com_release_name">{yun:}t key='wap_com_info_00056'{/yun}：</div>
+                                    <div class="com_release_name">{yun:}t key='wap_com_00173'{/yun}：</div>
                                     <div class="layui-form-item" style=" margin-bottom: 0px;;">
                                         <div class="layui-input-block">
                                             <span class="" id="addwelfarelist">
@@ -325,7 +325,7 @@
                                             {yun:}/foreach{/yun}
                                             <div class="">
                                                 <div class="addwelfare_b">
-                                                    <input class="addwelfare_text" type="text" tabindex="1000" placeholder="{yun:}t key='wap_user_pay_00003'{/yun}" id="addwelfare"><a class="addwelfarebox">{yun:}t key='member_com_info_00048'{/yun}</a>
+                                                    <input class="addwelfare_text" type="text" tabindex="1000" placeholder="{yun:}t key='wap_user_00309'{/yun}" id="addwelfare"><a class="addwelfarebox">{yun:}t key='member_com_00202'{/yun}</a>
                                                 </div>
                                             </div>
                                         </div>
@@ -333,7 +333,7 @@
                                 </li>
                                 {yun:}if $comdata.job_lang!='' && count($comdata.job_lang)>0{/yun}
                                 <li>
-                                    <div class="com_release_name">{yun:}t key='wap_com_jobadd_00038'{/yun}：</div>
+                                    <div class="com_release_name">{yun:}t key='wap_com_00292'{/yun}：</div>
                                     <div class="layui-form-item" style=" margin-bottom: 0px;;">
                                         <div class="layui-input-block">
                                             {yun:}foreach key=j item=v from=$comdata.job_lang{/yun}
@@ -344,39 +344,39 @@
                                 </li>
                                 {yun:}/if{/yun}
                                 <li>
-                                    <div class="com_release_name">{yun:}t key='member_com_jobadd_00022'{/yun}：</div>
+                                    <div class="com_release_name">{yun:}t key='common_02154'{/yun}：</div>
                                     <div class="jobadd_set">
                                         <div class="jobadd_set_tit">
-                                            <a href="javascript:void(0)" data-id="spshow_xx1" class="jobadd_set_a spshow_yq_div_a_curr"><i></i>{yun:}t key='wap_com_jobadd_00021'{/yun}</a>
+                                            <a href="javascript:void(0)" data-id="spshow_xx1" class="jobadd_set_a spshow_yq_div_a_curr"><i></i>{yun:}t key='wap_com_00275'{/yun}</a>
                                             {yun:}if $config.sqjob_req!=2{/yun}
-                                            <a href="javascript:void(0)" data-id="spshow_xx2" class="jobadd_set_a"><i></i>{yun:}t key='member_com_jobadd_00018'{/yun}</a>
+                                            <a href="javascript:void(0)" data-id="spshow_xx2" class="jobadd_set_a"><i></i>{yun:}t key='member_com_00242'{/yun}</a>
                                             {yun:}/if{/yun}
                                         </div>
                                     </div>
                                     <div class="jobadd_setbox" id="spshow_xx1">
                                         <div class="jobadd_setlist jobadd_setlist_line ">
                                             <div class="jobadd_setname">同步联系方式</div>
-                                            <div class="jobadd_set_p">{yun:}t key='wap_com_jobadd_00006'{/yun}</div>
+                                            <div class="jobadd_set_p">{yun:}t key='wap_com_00260'{/yun}</div>
                                             <span class="jobadd_set_kg" onclick="setLink('tblink');" id="istblink"><i class="jobadd_set_kgicon"></i></span>
                                             <input type="hidden" name="is_tblink" id="is_tblink" value="0"/>
                                         </div>
                                         <div class="jobadd_setlist jobadd_setlist_line jobadd_setlist_linepv">
                                             <i class="jobadd_setlist_line_l"></i>
                                             <div class="jobadd_setname">投递短信通知</div>
-                                            <div class="jobadd_set_p">{yun:}t key='wap_com_jobadd_00007'{/yun}</div>
+                                            <div class="jobadd_set_p">{yun:}t key='wap_com_00261'{/yun}</div>
                                             <span class="jobadd_set_kg {yun:}if $row.is_message==1 || $row.is_message == ''{/yun}com_job_tel_setlist_zt_cur{yun:}/if{/yun}" onclick="setLink('message');" id="ismessage"><i class="jobadd_set_kgicon "></i></span>
                                             <input type="hidden" name="is_message" id="is_message" value="{yun:}if $row.is_message{/yun}{yun:}$row.is_message{/yun}{yun:}else{/yun}1{yun:}/if{/yun}"/>
                                         </div>
                                         <div class="jobadd_setlist">
-                                            <div class="jobadd_setname">{yun:}t key='wap_com_jobadd_00022'{/yun}</div>
-                                            <div class="jobadd_set_p">{yun:}t key='member_com_jobadd_00013'{/yun}</div>
+                                            <div class="jobadd_setname">{yun:}t key='wap_com_00276'{/yun}</div>
+                                            <div class="jobadd_set_p">{yun:}t key='member_com_00237'{/yun}</div>
                                             <span class="jobadd_set_kg {yun:}if $row.is_link==3{/yun}com_job_tel_setlist_zt_cur{yun:}/if{/yun}" onclick="setLink('link');" id="islink"><i class="jobadd_set_kgicon "></i></span>
                                             <input id="is_link" name="is_link" value="{yun:}if $row.is_link{/yun}{yun:}$row.is_link{/yun}{yun:}else{/yun}1{yun:}/if{/yun}" type="hidden"/>
                                         </div>
                                         <div class="jobadd_setlist jobadd_setlist_linepv">
                                             <i class="jobadd_setlist_line_l"></i>
-                                            <div class="jobadd_setname">{yun:}t key='wap_com_jobadd_00039'{/yun}</div>
-                                            <div class="jobadd_set_p">{yun:}t key='wap_com_jobadd_00008'{/yun}</div>
+                                            <div class="jobadd_setname">{yun:}t key='wap_com_00293'{/yun}</div>
+                                            <div class="jobadd_set_p">{yun:}t key='wap_com_00262'{/yun}</div>
                                             <span class="jobadd_set_kg {yun:}if $row.is_email==1 || $row.is_email == ''{/yun}com_job_tel_setlist_zt_cur{yun:}/if{/yun}" onclick="setLink('email');" id="isemail"><i class="jobadd_set_kgicon"></i></span>
                                             <input type="hidden" name="is_email" id="is_email" value="{yun:}if $row.is_email{/yun}{yun:}$row.is_email{/yun}{yun:}else{/yun}1{yun:}/if{/yun}"/>
                                         </div>
@@ -384,12 +384,12 @@
                                     {yun:}if $config.sqjob_req!=2{/yun}
                                     <div class="jobadd_setbox none " id="spshow_xx2">
                                         {yun:}if $config.sqjob_req==0{/yun}
-                                        <div class="jobadd_settip">{yun:}t key='member_com_jobadd_00002'{/yun}</div>
+                                        <div class="jobadd_settip">{yun:}t key='member_com_00226'{/yun}</div>
                                         {yun:}else{/yun}
-                                        <div class="jobadd_settip">{yun:}t key='member_com_jobadd_00005'{/yun}</div>
+                                        <div class="jobadd_settip">{yun:}t key='member_com_00229'{/yun}</div>
                                         {yun:}/if{/yun}
                                         <div class="jobadd_settd_list">
-                                            <div class="jobadd_settd_list_name">{yun:}t key='wap_user_info_00017'{/yun}</div>
+                                            <div class="jobadd_settd_list_name">{yun:}t key='wap_user_00240'{/yun}</div>
                                             <div class="layui-input-inline jobadd_settd_listw160">
                                                 <select name="exp_req" lay-filter="exp_req">
                                                     <option value="0" {yun:}if $row.exp_req == 0{/yun}selected{yun:}/if{/yun}>{yun:}t key='common_01936'{/yun}</option>
@@ -403,7 +403,7 @@
                                         </div>
                                         {yun:}if $config.com_job_sexswitch==1{/yun}
                                         <div class="jobadd_settd_list">
-                                            <div class="jobadd_settd_list_name">{yun:}t key='wap_com_partadd_00012'{/yun}</div>
+                                            <div class="jobadd_settd_list_name">{yun:}t key='wap_com_00332'{/yun}</div>
                                             <div class="layui-input-block">
                                                 <input type="radio" name="sex_req" value="3" {yun:}if $row.sex_req==3{/yun}checked="checked"{yun:}/if{/yun} title="{yun:}t key='common_01936'{/yun}"/>
                                                 <input type="radio" name="sex_req" value="2" {yun:}if $row.sex_req==2{/yun}checked="checked"{yun:}/if{/yun} title="{yun:}t key='common_02069'{/yun}"/>
@@ -411,7 +411,7 @@
                                         </div>
                                         {yun:}/if{/yun}
                                         <div class="jobadd_settd_list">
-                                            <div class="jobadd_settd_list_name">{yun:}t key='wap_com_jobadd_00029'{/yun}</div>
+                                            <div class="jobadd_settd_list_name">{yun:}t key='wap_com_00283'{/yun}</div>
                                             <div class="layui-input-inline jobadd_settd_listw160">
                                                 <select name="edu_req" lay-filter="edu_req">
                                                     <option value="0" {yun:}if $row.edu_req == 0{/yun}selected{yun:}/if{/yun}>{yun:}t key='common_01936'{/yun}</option>
@@ -425,14 +425,14 @@
                                         </div>
 
                                         <div class="jobadd_settd_list">
-                                            <div class="jobadd_settd_list_name">{yun:}t key='wap_com_jobadd_00030'{/yun}</div>
+                                            <div class="jobadd_settd_list_name">{yun:}t key='wap_com_00284'{/yun}</div>
                                             <div class="layui-input-block">
                                                 <div class="layui-input-inline com_release_selectw145">
-                                                    <input type="text" size="2" id="minage_req" name="minage_req" placeholder="{yun:}t key='wap_com_jobadd_00031'{/yun}" {yun:}if $row.minage_req{/yun}value="{yun:}$row.minage_req{/yun}"{yun:}/if{/yun} onkeyup="this.value=this.value.replace(/[^0-9]/g,'')" maxlength="2" class="layui-input" />
+                                                    <input type="text" size="2" id="minage_req" name="minage_req" placeholder="{yun:}t key='wap_com_00285'{/yun}" {yun:}if $row.minage_req{/yun}value="{yun:}$row.minage_req{/yun}"{yun:}/if{/yun} onkeyup="this.value=this.value.replace(/[^0-9]/g,'')" maxlength="2" class="layui-input" />
                                                     <span class="com_release_cont_dw">{yun:}t key='home.age_suffix'{/yun}</span>
                                                 </div>
                                                 <div class="layui-input-inline com_release_selectw145">
-                                                    <input type="text" size="2" id="maxage_req" name="maxage_req" placeholder="{yun:}t key='wap_com_jobadd_00054'{/yun}" {yun:}if $row.maxage_req{/yun}value="{yun:}$row.maxage_req{/yun}"{yun:}/if{/yun} onkeyup="this.value=this.value.replace(/[^0-9]/g,'')" maxlength="2" class="layui-input" />
+                                                    <input type="text" size="2" id="maxage_req" name="maxage_req" placeholder="{yun:}t key='wap_com_00308'{/yun}" {yun:}if $row.maxage_req{/yun}value="{yun:}$row.maxage_req{/yun}"{yun:}/if{/yun} onkeyup="this.value=this.value.replace(/[^0-9]/g,'')" maxlength="2" class="layui-input" />
                                                     <span class="com_release_cont_dw">{yun:}t key='home.age_suffix'{/yun}</span>
                                                 </div>
                                             </div>
@@ -447,7 +447,7 @@
                             <div class="admin_job_js_list_ft  fl"><span style="width:100%;">&nbsp;</span></div>
                             <div class=sub_btn>
                                 <input type="hidden" id="r_status" name="r_status" value="{yun:}$company.r_status{/yun}">
-                                <input class="btn_01" id="submitBtn" type="button" name="submitBtn" value=" {yun:}t key='member_com_jobadd_00026'{/yun} ">
+                                <input class="btn_01" id="submitBtn" type="button" name="submitBtn" value=" {yun:}t key='member_com_00248'{/yun} ">
                                 {yun:}if $smarty.get.id{/yun}
                                 <input id="id" name="id" value="{yun:}$row.id{/yun}" type="hidden"/>
                                 {yun:}/if{/yun}
@@ -467,12 +467,12 @@
         <div class="yun_prompt_writingicon"><i class="yun_prompt_writingicon_right"></i></div>
         <div class="yun_prompt_writing">职位发布成功！</div>
         {yun:}if $jobState == 1{/yun}
-            <div class="yun_prompt_writing_tip">{yun:}t key='member_com_jobadd_00008'{/yun}</div>
+            <div class="yun_prompt_writing_tip">{yun:}t key='member_com_00232'{/yun}</div>
         {yun:}else{/yun}
-            <div class="yun_prompt_writing_tip">{yun:}t key='member_com_jobadd_00004'{/yun}</div>
+            <div class="yun_prompt_writing_tip">{yun:}t key='member_com_00228'{/yun}</div>
         {yun:}/if{/yun}
         <div class="yun_prompt_writing_operation">
-            <a href="javascript:void(0)" onclick="addjob_continue('{yun:}$uid{/yun}');return false;" class="yun_prompt_jobtgbth">{yun:}t key='member_com_jobadd_00021'{/yun}</a>
+            <a href="javascript:void(0)" onclick="addjob_continue('{yun:}$uid{/yun}');return false;" class="yun_prompt_jobtgbth">{yun:}t key='member_com_00245'{/yun}</a>
             <a id="jobshow" href="javascript:;" s class="yun_prompt_jobtgbth">查看信息</a>
             <a href="index.php?c=job&w=5" class="yun_prompt_jobtgbth">管理我的信息</a>
             {yun:}if $jobState == 1{/yun}
@@ -482,36 +482,36 @@
                     <div class="yun_prompt_jobtgbth_smboxpic">
                         <img id="sharecode" src="" width="60" height="60">
                     </div>
-                    使用微信、{yun:}t key='member_user_info_00011'{/yun}QQ{yun:}t key='member_user_passwd_00023'{/yun}，
-                    <div>{yun:}t key='member_com_jobadd_00010'{/yun}</div>
+                    使用微信、{yun:}t key='member_user_00163'{/yun}QQ{yun:}t key='member_user_00222'{/yun}，
+                    <div>{yun:}t key='member_com_00234'{/yun}</div>
                 </div>
             </a>
             {yun:}/if{/yun}
         </div>
         
         <div class="yun_prompt_jobtg_box">
-            <div class="yun_prompt_jobtg">{yun:}t key='member_com_jobadd_00012'{/yun}</div>
+            <div class="yun_prompt_jobtg">{yun:}t key='member_com_00236'{/yun}</div>
             <ul class="yun_prompt_jobtglist">
                 <li>
-                    <span class="">{yun:}t key='wap_com_job_00046'{/yun}</span>
-                    <em class="">{yun:}t key='member_com_joblist_00002'{/yun}</em>
-                    <a id="jobrec" href="javascript:void(0);" onclick="jobPromote('{yun:}$row.id{/yun}','{yun:}$row.rec_time|date_format:'%Y-%m-%d'{/yun}', 2)">{yun:}t key='member_com_jobserver_00017'{/yun}</a>
+                    <span class="">{yun:}t key='wap_com_00237'{/yun}</span>
+                    <em class="">{yun:}t key='member_com_00252'{/yun}</em>
+                    <a id="jobrec" href="javascript:void(0);" onclick="jobPromote('{yun:}$row.id{/yun}','{yun:}$row.rec_time|date_format:'%Y-%m-%d'{/yun}', 2)">{yun:}t key='member_com_00287'{/yun}</a>
                 </li>
                 <li>
-                    <span class="">{yun:}t key='member_com_jobadd_00024'{/yun}</span>
-                    <em class="">{yun:}t key='member_com_joblist_00005'{/yun}</em>
-                    <a id="joburgent" href="javascript:void(0)" onclick="jobPromote('{yun:}$row.id{/yun}','{yun:}$row.urgent_time|date_format:'%Y-%m-%d'{/yun}', 3)">{yun:}t key='member_com_jobserver_00017'{/yun}</a>
+                    <span class="">{yun:}t key='member_com_00247'{/yun}</span>
+                    <em class="">{yun:}t key='member_com_00255'{/yun}</em>
+                    <a id="joburgent" href="javascript:void(0)" onclick="jobPromote('{yun:}$row.id{/yun}','{yun:}$row.urgent_time|date_format:'%Y-%m-%d'{/yun}', 3)">{yun:}t key='member_com_00287'{/yun}</a>
                 </li>
                 <li>
-                    <span class="">{yun:}t key='wap_com_job_00047'{/yun}</span>
-                    <em class="">{yun:}t key='member_com_joblist_00001'{/yun}</em>
-                    <a id="jobtop" href="javascript:void(0)" onclick="jobPromote('{yun:}$row.id{/yun}','{yun:}$row.xsdate|date_format:'%Y-%m-%d'{/yun}', 1);">{yun:}t key='member_com_jobserver_00017'{/yun}</a>
+                    <span class="">{yun:}t key='wap_com_00238'{/yun}</span>
+                    <em class="">{yun:}t key='member_com_00251'{/yun}</em>
+                    <a id="jobtop" href="javascript:void(0)" onclick="jobPromote('{yun:}$row.id{/yun}','{yun:}$row.xsdate|date_format:'%Y-%m-%d'{/yun}', 1);">{yun:}t key='member_com_00287'{/yun}</a>
                 </li>
                 {yun:}if $config.com_job_reserve==0{/yun}
                 <li>
-                    <span class="">{yun:}t key='wap_com_job_00048'{/yun}</span>
-                    <em class="">{yun:}t key='wap_com_job_00048'{/yun}， 职位管理轻松更高效</em>
-                    <a id="jobauto" href="javascript:void(0)" onclick="jobPromote('{yun:}$row.id{/yun}','{yun:}$row.autodate|date_format:'%Y-%m-%d'{/yun}', 5);">{yun:}t key='member_com_jobserver_00017'{/yun}</a>
+                    <span class="">{yun:}t key='wap_com_00239'{/yun}</span>
+                    <em class="">{yun:}t key='wap_com_00239'{/yun}， 职位管理轻松更高效</em>
+                    <a id="jobauto" href="javascript:void(0)" onclick="jobPromote('{yun:}$row.id{/yun}','{yun:}$row.autodate|date_format:'%Y-%m-%d'{/yun}', 5);">{yun:}t key='member_com_00287'{/yun}</a>
                 </li>
 				{yun:}/if{/yun}
             </ul>
@@ -519,7 +519,7 @@
                 <div class="yun_prompt_jobgzh_img">
                     <img src='{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_wx_qcode{/yun}' width='130' height='130'>
                 </div>
-                {yun:}t key='wap_user_index_00009'{/yun}<br>随时接受简历投递
+                {yun:}t key='wap_user_00191'{/yun}<br>随时接受简历投递
             </div>
         </div>
         
@@ -667,15 +667,15 @@
             var maxsalary = $.trim($("#maxsalary").val());
             if ($("#salary_type").attr("checked") != 'checked') {
                 if (minsalary == '' || minsalary == '0') {
-                    layer.msg("{yun:}t key='member_com_jobadd_00014'{/yun}", 2, 8);
+                    layer.msg("{yun:}t key='member_com_00238'{/yun}", 2, 8);
                     return false;
                 }
                 if (maxsalary) {
                     if (parseInt(maxsalary) < parseInt(minsalary)) {
-                        layer.msg("{yun:}t key='wap_com_jobadd_00010'{/yun}", 2, 8);
+                        layer.msg("{yun:}t key='wap_com_00264'{/yun}", 2, 8);
                         return false;
                     }else if (parseInt(maxsalary) == parseInt(minsalary)) {
-                        layer.msg("{yun:}t key='wap_com_jobadd_00001'{/yun}", 2, 8);
+                        layer.msg("{yun:}t key='wap_com_00255'{/yun}", 2, 8);
                         return false;
                     }
                 }
@@ -689,14 +689,14 @@
             var zp_maxage = $.trim($("#zp_maxage").val());
             if (zp_minage != '' ) {
                 if (zp_minage < 16) {
-                    layer.msg("{yun:}t key='wap_com_jobadd_00003'{/yun}", 2, 8);
+                    layer.msg("{yun:}t key='wap_com_00257'{/yun}", 2, 8);
                     return false;
                 } 
                 
             }
             if (zp_maxage != '') {
                 if (zp_maxage<16 || zp_maxage > 99) {
-                    layer.msg("{yun:}t key='wap_com_jobadd_00015'{/yun}", 2, 8);
+                    layer.msg("{yun:}t key='wap_com_00269'{/yun}", 2, 8);
                     return false;
                 }
             }
@@ -704,14 +704,14 @@
             var maxage_req = $.trim($("#maxage_req").val());
             if (minage_req != '') {
                 if (minage_req < 16) {
-                    layer.msg("{yun:}t key='wap_com_jobadd_00003'{/yun}", 2, 8);
+                    layer.msg("{yun:}t key='wap_com_00257'{/yun}", 2, 8);
                     return false;
                 } 
                 
             }
             if ( maxage_req != '') {
                 if (maxage_req<16 || maxage_req > 99) {
-                    layer.msg("{yun:}t key='wap_com_jobadd_00015'{/yun}", 2, 8);
+                    layer.msg("{yun:}t key='wap_com_00269'{/yun}", 2, 8);
                     return false;
                 }
             }
@@ -733,8 +733,8 @@
                 $('#myform').submit();
             } else {
 
-                var i = layer.confirm("{yun:}t key='member_com_jobadd_00006'{/yun}",
-                    {btn: ["{yun:}t key='wap_once_add_00010'{/yun}", "{yun:}t key='common.cancel'{/yun}"]},
+                var i = layer.confirm("{yun:}t key='member_com_00230'{/yun}",
+                    {btn: ["{yun:}t key='wap_00355'{/yun}", "{yun:}t key='common.cancel'{/yun}"]},
                     function () {
                         setTimeout(function () {
                             loadlayer();
@@ -751,7 +751,7 @@
             }
 
         })
-        //{yun:}t key='member_com_info_00048'{/yun}
+        //{yun:}t key='member_com_00202'{/yun}
         $(".addwelfarebox').click(function () {
             var welfare = $.trim($('#addwelfare').val());
             var error = 0;
@@ -761,7 +761,7 @@
                 $('.changewelfare').each(function () {
                     var otag = $(this).attr('data-tag');
                     if (welfare == otag) {
-                        layer.msg("{yun:}t key='wap_js_publicselect_00001'{/yun}", 2, 8);
+                        layer.msg("{yun:}t key='wap_js_00146'{/yun}", 2, 8);
                         error = 1;
                     }
                 });
@@ -776,7 +776,7 @@
                 }
                 $('#addwelfare').val('');
             } else {
-                layer.msg("{yun:}t key='wap_com_info_00007'{/yun}", 2, 8);
+                layer.msg("{yun:}t key='wap_com_00124'{/yun}", 2, 8);
             }
         });
 
@@ -823,13 +823,13 @@
                         window.event.returnValue = false;
                         return false;
                     } else if (data1 == 2) {
-                        layer.confirm("{yun:}t key='member_com_jobadd_00001'{/yun}", function () {
+                        layer.confirm("{yun:}t key='member_com_00225'{/yun}", function () {
                             window.location.href = gourl;
                             window.event.returnValue = false;
                             return false;
                         });
                     } else if (data1 == 0) {
-                        var msg = '会员已到期，您可以<a href="index.php?c=right" style="color:red">{yun:}t key='default_public_search_public_tips_00029'{/yun}</a>，{yun:}t key='common_01784'{/yun}？';
+                        var msg = '会员已到期，您可以<a href="index.php?c=right" style="color:red">{yun:}t key='default_00090'{/yun}</a>，{yun:}t key='common_01784'{/yun}？';
 
                         layer.confirm(msg, function () {
                             window.location.href = "index.php?c=right";

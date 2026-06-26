@@ -1,7 +1,7 @@
 <div class="firm_search_box">
 	<div class="firm_search_boxbor">
 		<form method="get" name="myform" onsubmit="return search_keyword(this,'请输入关键字');" action="{yun:}if !$config.sy_companydir{/yun}index.php{yun:}else{/yun}{yun:}url m=company{/yun}{yun:}/if{/yun}"> 
-			<input class="firm_search_text" id="ipt" type="text" placeholder='{yun:}t key='admin_system_info_feedback_00001'{/yun}' value="{yun:}if $getinfo.keyword!=" ="{/yun}{yun:}$getinfo.keyword{/yun}{yun:}else{/yun}{yun:}t key='admin_system_info_feedback_00001'{/yun}{yun:}/if{/yun}" name="keyword" onclick="if(this.value=='{yun:}t key='admin_system_info_feedback_00001'{/yun}'){this.value=''}" onblur="if(this.value==''){this.value='{yun:}t key='admin_system_info_feedback_00001'{/yun}'}" />
+			<input class="firm_search_text" id="ipt" type="text" placeholder='{yun:}t key='admin_system_00198'{/yun}' value="{yun:}if $getinfo.keyword!=" ="{/yun}{yun:}$getinfo.keyword{/yun}{yun:}else{/yun}{yun:}t key='admin_system_00198'{/yun}{yun:}/if{/yun}" name="keyword" onclick="if(this.value=='{yun:}t key='admin_system_00198'{/yun}'){this.value=''}" onblur="if(this.value==''){this.value='{yun:}t key='admin_system_00198'{/yun}'}" />
 			<input type="hidden" name="cityid" id="cityid" value="{yun:}if $smarty.get.cityid{/yun}{yun:}$smarty.get.cityid{/yun}{yun:}/if{/yun}"/>
 			<input class="firm_search_submit yun_bg_color" type="submit" value="{yun:}t key='common.search'{/yun} " />
 			{yun:}if  !$config.sy_companydir || $config.sy_seo_rewrite!='1'{/yun}
@@ -12,7 +12,7 @@
 	
 	{yun:}if $comkeyword{/yun}
 		<div class="firm_hot_tags">
-			{yun:}t key='wap_publichtm_search_00004'{/yun}：	{yun:}key limit=12 type=4 recom=1 item=keylist{/yun} 
+			{yun:}t key='wap_00385'{/yun}：	{yun:}key limit=12 type=4 recom=1 item=keylist{/yun} 
 		       		<a href="{yun:}listurl m=company type=keyword v=$keylist.key_title{/yun}">{yun:}$keylist.key_name{/yun}</a> 
 		       		{yun:}/key{/yun}
 		</div>
@@ -25,7 +25,7 @@
 <div class="fiem_seach_chlose">
 	{yun:}if $config.sy_web_site==1 && $config.cityname && $config.cityname!=$config.sy_indexcity{/yun}
 		<div class="fiem_seach_chlose_list">
-			<div class="Search_cityboxname"> {yun:}t key='default_part_show_00005'{/yun}：</div>
+			<div class="Search_cityboxname"> {yun:}t key='default_00280'{/yun}：</div>
 			<div class="Search_citybox_right">
 				<div class="Search_cityboxright">
 					<div class="search_secondcity_list">
@@ -60,7 +60,7 @@
 		</div>
 	{yun:}else if $config.sy_web_city_one {/yun}
 		<div class="fiem_seach_chlose_list">
-			<div class="Search_cityboxname"> {yun:}t key='default_part_show_00005'{/yun}：</div>
+			<div class="Search_cityboxname"> {yun:}t key='default_00280'{/yun}：</div>
 			<div class="Search_citybox_right">
 				<div class="Search_cityboxright">
 					<div class="search_secondcity_list">
@@ -95,7 +95,7 @@
 		</div>
 	{yun:}else{/yun}
 		<div class="Search_citybox">
-          	<div class="Search_cityboxname"> {yun:}t key='member_com_zhaopinhui_00002'{/yun}：</div>
+          	<div class="Search_cityboxname"> {yun:}t key='member_com_00378'{/yun}：</div>
           	<div class="Search_citybox_right">
             	<div class="Search_cityall none"> 
             		<a href="{yun:}listurl m=company type=provinceid v=0{/yun}" class="city_name">{yun:}t key='common.all'{/yun}</a> 
@@ -144,7 +144,7 @@
 	{yun:}/if{/yun} 
 
 	<div class="fiem_seach_chlose_list">
-		<div class="fiem_seach_chlosename">{yun:}t key='admin_user_company_component_joball_00045'{/yun}：</div>
+		<div class="fiem_seach_chlosename">{yun:}t key='admin_user_company_00373'{/yun}：</div>
 		<div class="fiem_seach_chlose_list_r" style="width:1010px; float:left">
 			<a href="{yun:}listurl m=company type=hy v=0{/yun}" class="fiem_seach_chlose_list_a {yun:}if !$smarty.get.hy{/yun}fiem_seach_chlose_list_cur{yun:}/if{/yun}">{yun:}t key='common.all'{/yun}</a>
 			{yun:}foreach from=$industry_index key=j item=v{/yun}
@@ -156,7 +156,7 @@
 		</div>
 	</div>
 	
-	<div class="fiem_seach_chlose_list"><div class="fiem_seach_chlosename">{yun:}t key='default_part_show_00006'{/yun}：</div>
+	<div class="fiem_seach_chlose_list"><div class="fiem_seach_chlosename">{yun:}t key='default_00281'{/yun}：</div>
 		<div class="fiem_seach_chlose_list_r">
 			<a href="{yun:}listurl m=company type=pr v=0{/yun}" class="fiem_seach_chlose_list_a {yun:}if !$smarty.get.pr{/yun}fiem_seach_chlose_list_cur{yun:}/if{/yun}">{yun:}t key='common.all'{/yun}</a>
 			{yun:}foreach from=$comdata.job_pr key=j item=v{/yun}
@@ -165,7 +165,7 @@
 		</div>
 	</div>
 
-	<div class="fiem_seach_chlose_list"><div class="fiem_seach_chlosename">{yun:}t key='company_green_index_00014'{/yun}：</div>
+	<div class="fiem_seach_chlose_list"><div class="fiem_seach_chlosename">{yun:}t key='company_00024'{/yun}：</div>
 		<div class="fiem_seach_chlose_list_r">
 			<a href="{yun:}listurl m=company type=mun v=0{/yun}" class="fiem_seach_chlose_list_a {yun:}if !$smarty.get.mun{/yun}fiem_seach_chlose_list_cur{yun:}/if{/yun}">{yun:}t key='common.all'{/yun}</a>
 			{yun:}foreach from=$comdata.job_mun key=j item=v{/yun}
@@ -187,19 +187,19 @@
 		<div class="Search_close_box">
 			
 			<div>
-				<div class="Search_clear"> <a href="{yun:}url m=company{/yun}"> {yun:}t key='default_public_search_firm_search_00002'{/yun}</a></div>
-				<span class="Search_close_box_s">{yun:}t key='default_public_search_firm_search_00001'{/yun}</span>
+				<div class="Search_clear"> <a href="{yun:}url m=company{/yun}"> {yun:}t key='default_00059'{/yun}</a></div>
+				<span class="Search_close_box_s">{yun:}t key='default_00058'{/yun}</span>
 			</div>
 			
 			{yun:}if $config.cityid=='' &&  $config.three_cityid==''{/yun} 
-				{yun:}if $smarty.get.provinceid && !$config.sy_web_city_one{/yun}<a href="{yun:}listurl m=company untype='provinceid'{/yun}" class="Search_jobs_c_a disc_fac">{yun:}t key='member_user_partcollect_00001'{/yun}：{yun:}$city_name[$smarty.get.provinceid]{/yun}</a> {yun:}/if{/yun} 
+				{yun:}if $smarty.get.provinceid && !$config.sy_web_city_one{/yun}<a href="{yun:}listurl m=company untype='provinceid'{/yun}" class="Search_jobs_c_a disc_fac">{yun:}t key='member_user_00198'{/yun}：{yun:}$city_name[$smarty.get.provinceid]{/yun}</a> {yun:}/if{/yun} 
 				{yun:}if $smarty.get.cityid && !$config.sy_web_city_two{/yun} <a href="{yun:}listurl m=company untype='cityid'{/yun}" class="Search_jobs_c_a disc_fac">{yun:}$city_name[$smarty.get.cityid]{/yun}</a> {yun:}/if{/yun} 
 			{yun:}/if{/yun}
 			
 			{yun:}if $smarty.get.three_cityid{/yun} <a href="{yun:}listurl m=company untype='three_cityid'{/yun}" class="Search_jobs_c_a disc_fac">{yun:}$city_name[$smarty.get.three_cityid]{/yun}</a> {yun:}/if{/yun}
-			{yun:}if $industry_name[$smarty.get.hy]{/yun} <a href="{yun:}listurl m=company untype='hy'{/yun}" class="Search_jobs_c_a disc_fac">{yun:}t key='admin_user_company_component_joball_00045'{/yun}：{yun:}$industry_name[$smarty.get.hy]{/yun}</a> {yun:}/if{/yun}
-			{yun:}if $smarty.get.pr{/yun} <a href="{yun:}listurl m=company untype='pr'{/yun}" class="Search_jobs_c_a disc_fac">{yun:}t key='default_part_show_00006'{/yun}：{yun:}$comclass_name[$smarty.get.pr]{/yun}</a> {yun:}/if{/yun}
-			{yun:}if $smarty.get.mun{/yun} <a href="{yun:}listurl m=company untype='mun'{/yun}" class="Search_jobs_c_a disc_fac">{yun:}t key='company_green_index_00014'{/yun}：{yun:}$comclass_name[$smarty.get.mun]{/yun}</a> {yun:}/if{/yun}
+			{yun:}if $industry_name[$smarty.get.hy]{/yun} <a href="{yun:}listurl m=company untype='hy'{/yun}" class="Search_jobs_c_a disc_fac">{yun:}t key='admin_user_company_00373'{/yun}：{yun:}$industry_name[$smarty.get.hy]{/yun}</a> {yun:}/if{/yun}
+			{yun:}if $smarty.get.pr{/yun} <a href="{yun:}listurl m=company untype='pr'{/yun}" class="Search_jobs_c_a disc_fac">{yun:}t key='default_00281'{/yun}：{yun:}$comclass_name[$smarty.get.pr]{/yun}</a> {yun:}/if{/yun}
+			{yun:}if $smarty.get.mun{/yun} <a href="{yun:}listurl m=company untype='mun'{/yun}" class="Search_jobs_c_a disc_fac">{yun:}t key='company_00024'{/yun}：{yun:}$comclass_name[$smarty.get.mun]{/yun}</a> {yun:}/if{/yun}
 			{yun:}if $smarty.get.welfare{/yun} <a href="{yun:}listurl m=company untype='welfare'{/yun}" class="Search_jobs_c_a disc_fac">{yun:}t key='common_02017'{/yun}：{yun:}$comclass_name[$smarty.get.welfare]{/yun}</a> {yun:}/if{/yun}
 			{yun:}if $smarty.get.keyword{/yun} <a href="{yun:}listurl m=company untype='keyword'{/yun}" class="Search_jobs_c_a disc_fac">{yun:}$smarty.get.keyword{/yun}</a> {yun:}/if{/yun}
 			

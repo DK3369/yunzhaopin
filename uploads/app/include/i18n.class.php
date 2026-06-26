@@ -123,7 +123,10 @@ class Yun_I18n
 
     function isAutoKey($key)
     {
-        return is_string($key) && preg_match('/^[a-z][a-z0-9_]*_[0-9]{5}$/', $key);
+        if (!is_string($key) || !preg_match('/^([a-z][a-z0-9_]*)_([0-9]{5})$/', $key, $m)) {
+            return false;
+        }
+        return count(explode('_', $m[1])) <= 3;
     }
 
     function t($key, $params = array(), $default = '')

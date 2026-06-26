@@ -18,13 +18,13 @@
 <div class="clear"></div>
 
 <div class="yun_content">
-<div class="current_Location  png" style=" display:none"> {yun:}t key='common_01498'{/yun}：<a href="{yun:}$config.sy_weburl{/yun}">{yun:}t key='common.home'{/yun}</a> > <a href="{yun:}url m=company{/yun}">{yun:}t key='default_company_index_00005'{/yun}</a> </div>
+<div class="current_Location  png" style=" display:none"> {yun:}t key='common_01498'{/yun}：<a href="{yun:}$config.sy_weburl{/yun}">{yun:}t key='common.home'{/yun}</a> > <a href="{yun:}url m=company{/yun}">{yun:}t key='default_00114'{/yun}</a> </div>
 <div class="clear"></div>
 	{yun:}include file="$tplstyle/public_search/firm_search.htm"{/yun}
     <div class="firmsearch_h1_box_title">
 		<ul class="firmsearch_h1_box_list">
 			<li {yun:}if !$smarty.get.rec{/yun}class="firmsearch_h1_box_cur"{yun:}/if{/yun}>
-				<a href="{yun:}url m=company{/yun}">{yun:}t key='default_company_index_00004'{/yun}</a>
+				<a href="{yun:}url m=company{/yun}">{yun:}t key='default_00113'{/yun}</a>
 				<i class="firmsearch_h1_box_list_icon"></i>
 			</li>            		
 			<li {yun:}if $smarty.get.rec=='1'{/yun}class="firmsearch_h1_box_cur"{yun:}/if{/yun}>
@@ -43,8 +43,8 @@
 	<div class="firm_list {yun:}if $key%2==0{/yun}firm_list_02{yun:}/if{/yun}" id="company{yun:}$lists.uid{/yun}" aid="{yun:}$lists.uid{/yun}">
 	{yun:}if $lists.fact_status=='1'{/yun}
 		<div class="job_sdhybox"><span class="job_sdhy">
-	<img src="{yun:}$style{/yun}/images/ptyz.png" alt="{yun:}t key='admin_user_company_component_companyuser_00062'{/yun}" class="png" width="16">
-	{yun:}t key='wap_job_show_00031'{/yun}
+	<img src="{yun:}$style{/yun}/images/ptyz.png" alt="{yun:}t key='admin_user_company_00127'{/yun}" class="png" width="16">
+	{yun:}t key='wap_00274'{/yun}
 	</span></div>{yun:}/if{/yun}
 	<div class="firm_det">
 		<div class="firm_list_leftsidebar">
@@ -61,7 +61,7 @@
  					{yun:}if $lists.rec=='1' && $lists.hottime > time(){/yun}<img src="{yun:}$style{/yun}/images/firm_icon.png"/>{yun:}/if{/yun}
 					{yun:}if $lists.ratlogo!="0" && $lists.ratlogo{/yun}<img src="{yun:}$lists.ratlogo{/yun}" alt="{yun:}$lists.ratname{/yun}" alt="{yun:}$lists.ratname{/yun}" width="16" height="16"  />{yun:}/if{/yun}
 					
-                    {yun:}if $lists.yyzz_status=='1'{/yun}<img src="{yun:}$style{/yun}/images/disc_icon10.png" alt="{yun:}t key='default_job_search_00001'{/yun}" class="png"width="16" height="16" /> {yun:}/if{/yun}
+                    {yun:}if $lists.yyzz_status=='1'{/yun}<img src="{yun:}$style{/yun}/images/disc_icon10.png" alt="{yun:}t key='default_00248'{/yun}" class="png"width="16" height="16" /> {yun:}/if{/yun}
                   
 				</span>
 			</div>   
@@ -93,7 +93,7 @@
 			</div>
 		                                 
 			<div class="firm_qy_job_list">
-				<div class="firm_qy_job_list_name">{yun:}t key='wap_company_index_00001'{/yun}：</div>
+				<div class="firm_qy_job_list_name">{yun:}t key='wap_00185'{/yun}：</div>
 				<div class="firm_qy_job_list_r">
 					{yun:}if $lists.jobnum>0{/yun}
 					    {yun:}foreach item=job from=$lists.joblist key=v{/yun}
@@ -101,7 +101,7 @@
 								<a href="{yun:}url m=job c=comapply id=$job.id{/yun}" target="_blank" class="firm_qy_job_tag">{yun:}$job.name{/yun}</a>
 							{yun:}/if{/yun}
 						{yun:}/foreach{/yun} 
-					<!--<a  href='{yun:}$lists.com_url{/yun}' target="_blank" class="firm_list_cur_right_p_r yun_text_color">{yun:}t key='default_job_index_00001'{/yun}>></a>-->  
+					<!--<a  href='{yun:}$lists.com_url{/yun}' target="_blank" class="firm_list_cur_right_p_r yun_text_color">{yun:}t key='default_00245'{/yun}>></a>-->  
 					{yun:}else{/yun}
 						<div class="firm_qy_job_no">{yun:}t key='home.no_recruiting_jobs'{/yun}</div>
 					{yun:}/if{/yun}
@@ -120,9 +120,9 @@
 			{yun:}else{/yun}
 		    	{yun:}if $uid{/yun}
           {yun:}if $config.sy_user_change==1{/yun}
-           <a href="javascript:void(0);" onclick="layer.msg('{yun:}t key='default_company_index_00001'{/yun}', 2, 8)" class="crop-add-yb">+ {yun:}t key='common_01949'{/yun}</a> 
+           <a href="javascript:void(0);" onclick="layer.msg('{yun:}t key='default_00110'{/yun}', 2, 8)" class="crop-add-yb">+ {yun:}t key='common_01949'{/yun}</a> 
           {yun:}else{/yun} 
-            <a href="javascript:void(0);" onclick="layer.msg('{yun:}t key='wap_company_show_dark_00005'{/yun}', 2, 8)" class="crop-add-yb">+ {yun:}t key='common_01949'{/yun}</a> 
+            <a href="javascript:void(0);" onclick="layer.msg('{yun:}t key='wap_00030'{/yun}', 2, 8)" class="crop-add-yb">+ {yun:}t key='common_01949'{/yun}</a> 
          {yun:}/if{/yun}
 		        	
 		    	{yun:}else{/yun}
@@ -130,7 +130,7 @@
 		    	{yun:}/if{/yun}
 		 	{yun:}/if{/yun}   
 			<span class="crop-add-yb_span">
-				<label><i id="antnum{yun:}$lists.uid{/yun}"  class="crop-add-yb_i">{yun:}$lists.ant_num{/yun}</i>{yun:}t key='default_company_index_00003'{/yun} </label>
+				<label><i id="antnum{yun:}$lists.uid{/yun}"  class="crop-add-yb_i">{yun:}$lists.ant_num{/yun}</i>{yun:}t key='default_00112'{/yun} </label>
 			</span>
 		</div>
 	</div>
@@ -150,7 +150,7 @@
 		2、适当删减或更改搜索关键字<br />
 	</span> 
 	<span>
-                                {yun:}t key='admin_system_set_guanjianci_00011'{/yun}：<br />
+                                {yun:}t key='admin_system_00443'{/yun}：<br />
                                 {yun:}key limit=6 recom=1 type=4 item=top_key{/yun} <a href="{yun:}listurl m=company type=keyword v=$top_key.key_title{/yun}">{yun:}$top_key.key_name{/yun}</a> {yun:}/key{/yun}
                             </span>
                         </div>

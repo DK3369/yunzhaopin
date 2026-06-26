@@ -23,15 +23,15 @@
     </div>    </div>
     {yun:}if $paytype.alipay{/yun}
     <div class="once_pay_bth mt10 ">
-        <input type="submit" value="{yun:}t key='wap_user_pay_00001'{/yun}" name="submit" class=" ">
+        <input type="submit" value="{yun:}t key='wap_user_00307'{/yun}" name="submit" class=" ">
     </div>
     {yun:}else{/yun}
      <div class="pay_zfgb_tip">
-        <span>网站已关闭支付功能，{yun:}t key='wap_spe_gl_00002'{/yun}！</span>
+        <span>网站已关闭支付功能，{yun:}t key='wap_00509'{/yun}！</span>
     </div>
     {yun:}/if{/yun} {yun:}if $config.sy_freewebtel{/yun}
     <div class="once_pay_tel">
-        <a href="tel:{yun:}$config.sy_freewebtel{/yun}">{yun:}t key='wap_com_index_00027'{/yun}：{yun:}$config.sy_freewebtel{/yun}</a>
+        <a href="tel:{yun:}$config.sy_freewebtel{/yun}">{yun:}t key='wap_com_00102'{/yun}：{yun:}$config.sy_freewebtel{/yun}</a>
     </div>
     {yun:}/if{/yun}
     <input type="hidden" value="" id="paytype" name="paytype" />

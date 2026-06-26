@@ -43,25 +43,23 @@ $commentCache = is_file(__DIR__ . '/comment_translation_cache.json')
 function pathPrefixHints($rel)
 {
     $hints = array();
-    if (preg_match('#^app/template/wap/member/([^/]+)/(.+)\.htm$#', $rel, $m)) {
-        $hints[] = 'wap_' . $m[1] . '_' . str_replace('/', '_', $m[2]) . '_';
-    } elseif (preg_match('#^app/template/(default|wap)/(.+)\.htm$#', $rel, $m)) {
-        $hints[] = $m[1] . '_' . str_replace('/', '_', $m[2]) . '_';
-    } elseif (preg_match('#^app/template/member/([^/]+)/(.+)\.htm$#', $rel, $m)) {
-        $hints[] = 'member_' . $m[1] . '_' . str_replace('/', '_', $m[2]) . '_';
-    } elseif (preg_match('#^app/template/admin/(.+)\.(html|htm)$#', $rel, $m)) {
-        $hints[] = 'admin_' . str_replace('/', '_', $m[1]) . '_';
+    if (preg_match('#^app/template/admin/user/company/#', $rel)) {
+        $hints[] = 'admin_user_company_';
     }
-    if (strpos($rel, 'app/template/wap/member/user/') === 0) return array_merge($hints, array('wap_user_', 'member_user_', 'wap_', 'common_'));
-    if (strpos($rel, 'app/template/wap/member/com/') === 0) return array_merge($hints, array('wap_com_', 'member_com_', 'wap_', 'common_'));
-    if (strpos($rel, 'app/template/wap/') === 0) return array_merge($hints, array('wap_', 'common_'));
-    if (strpos($rel, 'app/template/member/com/') === 0) return array_merge($hints, array('member_com_', 'common_'));
-    if (strpos($rel, 'app/template/member/user/') === 0) return array_merge($hints, array('member_user_', 'wap_user_', 'common_'));
-    if (strpos($rel, 'app/template/resume/') === 0) return array_merge($hints, array('resume_', 'common_', 'wap_'));
-    if (strpos($rel, 'app/template/default/') === 0) return array_merge($hints, array('default_', 'common_', 'wap_'));
-    if (strpos($rel, 'app/template/admin/') === 0) return array_merge($hints, array('admin_', 'common_'));
-    if (strpos($rel, 'app/template/company/') === 0) return array_merge($hints, array('company_', 'common_', 'wap_'));
-    return array_merge($hints, array('common_', 'wap_'));
+    if (preg_match('#^app/template/wap/member/com/#', $rel)) {
+        $hints[] = 'wap_com_';
+    } elseif (preg_match('#^app/template/wap/member/user/#', $rel)) {
+        $hints[] = 'wap_user_';
+    } elseif (preg_match('#^app/template/wap/#', $rel)) {
+        $hints[] = 'wap_';
+    } elseif (preg_match('#^app/template/member/com/#', $rel)) {
+        $hints[] = 'member_com_';
+    } elseif (preg_match('#^app/template/member/user/#', $rel)) {
+        $hints[] = 'member_user_';
+    } elseif (preg_match('#^app/template/admin/#', $rel)) {
+        $hints[] = 'admin_';
+    }
+    return array_merge($hints, array('common_', 'default_', 'ajax_', 'model_'));
 }
 
 function pickKey($text, $entries, $rel)

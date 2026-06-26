@@ -17,7 +17,7 @@
 	<div class="yun_content">
 		<div class="current_Location png"> {yun:}t key='common_01498'{/yun}：
 			<a href="{yun:}$config.sy_weburl{/yun}">{yun:}t key='common.home'{/yun}</a> >
-			<a href="{yun:}url m=once{/yun}">{yun:}t key='wap_js_onceadd_00002'{/yun}</a> > {yun:}$o_info.title{/yun}
+			<a href="{yun:}url m=once{/yun}">{yun:}t key='wap_js_00130'{/yun}</a> > {yun:}$o_info.title{/yun}
 		</div>
         
 		<div class="tiny_show_left">
@@ -26,7 +26,7 @@
 				
 				<div class="once_show_comname">{yun:}$o_info.companyname{/yun}</div>
 				<div class="tiny_show_left_r">
-					{yun:}t key='member_com_joblist_00018'{/yun} {yun:}$o_info.hits{/yun} {yun:}t key='common_02089'{/yun} 
+					{yun:}t key='member_com_00268'{/yun} {yun:}$o_info.hits{/yun} {yun:}t key='common_02089'{/yun} 
 					<span class="tiny_show_left_r_n">更新于{yun:}$o_info.ctime_n{/yun} </span>
 				</div>
 
@@ -36,7 +36,7 @@
 						<img src="{yun:}url m=ajax c=pubqrcode toc=once toa=show toid=$o_info.id{/yun}" width="150" height="150">
 						
 					</div>
-					<div class="tiny_show_left_fx_box_p">{yun:}t key='wap_evaluategradeshow_00001'{/yun}</div>
+					<div class="tiny_show_left_fx_box_p">{yun:}t key='wap_00195'{/yun}</div>
 				</div>
 
 				<div class="tiny_show_left_info">
@@ -48,7 +48,7 @@
 						</div>
 						<div class="tiny_show_left_info_p">
 							<i class="tiny_show_left_info_icon tiny_show_left_info_icon4"></i>
-							{yun:}if $o_info.phone {/yun} {yun:}t key='wap_user_invitecont_00004'{/yun}：<span class="tiny_show_left_info_tel">{yun:}$o_info.phone{/yun}</span> {yun:}/if{/yun} 
+							{yun:}if $o_info.phone {/yun} {yun:}t key='wap_user_00265'{/yun}：<span class="tiny_show_left_info_tel">{yun:}$o_info.phone{/yun}</span> {yun:}/if{/yun} 
 						</div>
 					{yun:}/if{/yun} 
 					
@@ -63,22 +63,22 @@
 					</div>
           {yun:}if $o_info.provinceid{/yun}
 					<div class="tiny_show_left_info_p">
-						<i class="tiny_show_left_info_icon tiny_show_left_info_icon5"></i>{yun:}t key='wap_once_add_00004'{/yun}：{yun:}$city_name[$o_info.provinceid]{/yun}{yun:}if $o_info.cityid{/yun}-{yun:}$city_name[$o_info.cityid]{/yun}{yun:}/if{/yun}
+						<i class="tiny_show_left_info_icon tiny_show_left_info_icon5"></i>{yun:}t key='wap_00349'{/yun}：{yun:}$city_name[$o_info.provinceid]{/yun}{yun:}if $o_info.cityid{/yun}-{yun:}$city_name[$o_info.cityid]{/yun}{yun:}/if{/yun}
 					</div>
           {yun:}/if{/yun}
 					<div class="tiny_show_left_info_p">
-						<i class="tiny_show_left_info_icon tiny_show_left_info_icon6"></i> {yun:}t key='wap_com_job_00043'{/yun}：{yun:}$o_info.edate_n{/yun}
+						<i class="tiny_show_left_info_icon tiny_show_left_info_icon6"></i> {yun:}t key='wap_com_00234'{/yun}：{yun:}$o_info.edate_n{/yun}
 					</div>
 
 					<div class="tiny_show_left_info_js">
-						<div class="tiny_show_left_info_js_h1">{yun:}t key='wap_part_show_00007'{/yun}</div>
+						<div class="tiny_show_left_info_js_h1">{yun:}t key='wap_00374'{/yun}</div>
 						<div class="tiny_show_left_info_js_p">{yun:}$o_info.require_n{/yun}</div>
 					</div>
 
 				</div>
 				{yun:}if $o_info.pic{/yun}
 					<div class="clear"></div>
-					<div class="tiny_show_tit mt20">{yun:}t key='wap_once_show_00003'{/yun}</div>
+					<div class="tiny_show_tit mt20">{yun:}t key='wap_00362'{/yun}</div>
 					<div class="fast_show_com_name_p"><img src="{yun:}$o_info.pic_n{/yun}" style="max-width:860px;" /></div>
                 {yun:}/if{/yun}
 			</div>
@@ -101,7 +101,7 @@
 												<span style="color:red;">{yun:}$list.ctime{/yun}</span>
 											{yun:}else{/yun} 
 												{yun:}$list.ctime{/yun} 
-											{yun:}/if{/yun}{yun:}t key='wap_invite_00002'{/yun}
+											{yun:}/if{/yun}{yun:}t key='wap_00225'{/yun}
 										</span> 
 									</div>
 
@@ -113,10 +113,10 @@
 											</div>
 										{yun:}else{/yun} 
 											{yun:}if $list.phone{/yun}
-												<div class="once_tel_p">{yun:}t key='wap_user_invitecont_00004'{/yun}：{yun:}$list.phone{/yun}（{yun:}$list.linkman{/yun}）</div>
+												<div class="once_tel_p">{yun:}t key='wap_user_00265'{/yun}：{yun:}$list.phone{/yun}（{yun:}$list.linkman{/yun}）</div>
 											{yun:}/if{/yun} 
 											{yun:}if $list.address{/yun}
-												<div class="once_tel_add">{yun:}t key='default_once_index_00001'{/yun}：{yun:}$list.address{/yun}</div>
+												<div class="once_tel_add">{yun:}t key='admin_system_00690'{/yun}：{yun:}$list.address{/yun}</div>
 											{yun:}/if{/yun} 
 										{yun:}/if{/yun}
 									</div>
@@ -135,10 +135,10 @@
 
 			<div class="tiny_show_right_box">
 				<div class="tiny_show_right_h1">招聘发布者操作</div>
-				<div class="tiny_show_right_p">{yun:}t key='member_com_info_00053'{/yun}：{yun:}t key='wap_user_resume_00012'{/yun}，{yun:}t key='wap_js_umeditor_lang_zh_cn_zh_cn_00005'{/yun}，删除只有信息发布者可以操作，每刷新一次招聘信息就会自动排在最前面</div>
+				<div class="tiny_show_right_p">{yun:}t key='member_com_00207'{/yun}：{yun:}t key='wap_user_00334'{/yun}，{yun:}t key='wap_js_00073'{/yun}，删除只有信息发布者可以操作，每刷新一次招聘信息就会自动排在最前面</div>
 				<div class="tiny_show_right_cz">
-					<a href="javascript:;" onclick="showdd('1', '{yun:}$o_info.id{/yun}','vcode_imgs');" class="tiny_show_right_cz_sz">{yun:}t key='wap_user_resume_00012'{/yun}</a>
-                    <a href="javascript:;" onclick="showdd('2', '{yun:}$o_info.id{/yun}','vcode_imgs')" class="tiny_show_right_cz_xg">{yun:}t key='wap_js_umeditor_lang_zh_cn_zh_cn_00005'{/yun}</a>
+					<a href="javascript:;" onclick="showdd('1', '{yun:}$o_info.id{/yun}','vcode_imgs');" class="tiny_show_right_cz_sz">{yun:}t key='wap_user_00334'{/yun}</a>
+                    <a href="javascript:;" onclick="showdd('2', '{yun:}$o_info.id{/yun}','vcode_imgs')" class="tiny_show_right_cz_xg">{yun:}t key='wap_js_00073'{/yun}</a>
                     <a href="javascript:;" onclick="showdd('3', '{yun:}$o_info.id{/yun}','vcode_imgs');" class="tiny_show_right_cz_xg">{yun:}t key='common.delete'{/yun}</a>
 				</div>
 			</div>
@@ -165,12 +165,12 @@
 		<div>
 			<ul class="micro_resume_release_list">
 				<li> 
-					<span class="micro_resume_release_s fl"><font color="#FF3300">*</font> {yun:}t key='wap_user_transfer_00006'{/yun}：</span>
+					<span class="micro_resume_release_s fl"><font color="#FF3300">*</font> {yun:}t key='wap_user_00371'{/yun}：</span>
 					<input id="pw" type='password' class="micro_resume_release_text" style='width:100px' />
 					<em style="line-height:28px; display:inline-block; margin-left:5px;">请输入添加时的密码。</em> 
 				</li>
 				<li> 
-					<span class="micro_resume_release_s fl"><font color="#FF3300">*</font> {yun:}t key='wap_advice_00007'{/yun}：</span>
+					<span class="micro_resume_release_s fl"><font color="#FF3300">*</font> {yun:}t key='wap_00110'{/yun}：</span>
 					<input type="text" id="code" class="micro_resume_release_text micro_resume_release_text2" style='width:100px' maxlength="6" />
 					<a><img id="vcode_imgs" onclick="checkCode('vcode_imgs');" src="{yun:}$config.sy_weburl{/yun}/app/include/authcode.inc.php" /></a>
 				</li>

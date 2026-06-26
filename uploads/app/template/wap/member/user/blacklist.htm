@@ -85,16 +85,16 @@
 				};
 
 				showConfirm('确定删除？', function(){
-					showLoading("{yun:}t key='wap_js_user_00007'{/yun}");
+					showLoading("{yun:}t key='wap_js_00166'{/yun}");
 					$.post('{yun:}url d=wxapp h=user m=privacy c=del{/yun}', paramer, function(data){
 						hideLoading();					
 						let k = key;
 						if (data.error == 1) {
-							showToast("{yun:}t key='wap_user_blacklist_00002'{/yun}",2, function() {
+							showToast("{yun:}t key='wap_user_00147'{/yun}",2, function() {
 								that.blinfo.splice(k, 1);
 							});
 						} else {
-							showToast("{yun:}t key='wap_user_blacklist_00001'{/yun}");
+							showToast("{yun:}t key='wap_user_00146'{/yun}");
 						}
 					},'json');
 				});
@@ -106,7 +106,7 @@
 					$.post('{yun:}url d=wxapp h=user m=privacy c=delall{/yun}', {rand:Math.random()}, function(data){
 						hideLoading();					
 						if (data.error == 1) {
-							showToast("{yun:}t key='wap_user_blacklist_00003'{/yun}",2, function() {
+							showToast("{yun:}t key='wap_user_00148'{/yun}",2, function() {
 								that.blinfo = [];
 								that.showview = false;
 							});

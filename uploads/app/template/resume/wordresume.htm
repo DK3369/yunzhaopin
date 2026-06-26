@@ -108,33 +108,33 @@
                 <tr>
                     <td align="center" width="84"><b>{yun:}t key='common_02070'{/yun}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{yun:}t key='common_02061'{/yun} :</b></td>
                     <td width="200">{yun:}$Info.name{/yun}
-                        {yun:}if $UserMember.source==6 && $UserMember.claim==0 && $UserMember.email!=""{/yun} <a class="resume_rz " href="javascript:void(0);" onClick="claim('{yun:}url m=ajax c=claim uid=$Info.uid{/yun}')">{yun:}t key='resume_jianli3_index_00014'{/yun}</a> {yun:}/if{/yun}&nbsp;
+                        {yun:}if $UserMember.source==6 && $UserMember.claim==0 && $UserMember.email!=""{/yun} <a class="resume_rz " href="javascript:void(0);" onClick="claim('{yun:}url m=ajax c=claim uid=$Info.uid{/yun}')">{yun:}t key='resume_00011'{/yun}</a> {yun:}/if{/yun}&nbsp;
                     </td>
                     <td align="center" width="84"><b>{yun:}t key='common_02078'{/yun}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{yun:}t key='common_02059'{/yun} :</b></td>
                     <td width="200">{yun:}$Info.job_sex{/yun}&nbsp;</td>
                 </tr>
                 <tr>
-                    <td align="center"><b>{yun:}t key='wap_user_info_00018'{/yun} :</b></td>
+                    <td align="center"><b>{yun:}t key='wap_user_00241'{/yun} :</b></td>
                     <td>{yun:}if $Info.privacy_status == 1{/yun}为保护隐私，请到网站查看{yun:}else{/yun}{yun:}$Info.telphone{/yun}{yun:}/if{/yun}&nbsp;</td>
                     <td align="center"><b>{yun:}t key='common_02077'{/yun}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;龄 :</b></td>
                     <td>{yun:}$Info.age{/yun}{yun:}t key='home.age_suffix'{/yun}</td>
                 </tr>
                 <tr>
-                    <td align="center"><b>{yun:}t key='resume_wordresume_00011'{/yun}</b></td>
+                    <td align="center"><b>{yun:}t key='resume_00054'{/yun}</b></td>
                     <td>{yun:}$Info.email{/yun}&nbsp;</td>
-                    <td align="center"><b>{yun:}t key='member_com_com_resume_xls_00004'{/yun} :</b></td>
+                    <td align="center"><b>{yun:}t key='member_com_00011'{/yun} :</b></td>
                     <td>{yun:}$Info.useredu{/yun}&nbsp;</td>
                 </tr>
                 <tr>
-                    <td align="center"><b>{yun:}t key='wap_tiny_add_00001'{/yun} :</b></td>
+                    <td align="center"><b>{yun:}t key='wap_00526'{/yun} :</b></td>
                     <td>{yun:}$Info.user_exp{/yun}&nbsp;</td>
-                    <td align="center"><b>{yun:}t key='wap_com_jobadd_00028'{/yun} :</b></td>
+                    <td align="center"><b>{yun:}t key='wap_com_00282'{/yun} :</b></td>
                     <td>{yun:}$Info.user_marriage{/yun}&nbsp;</td>
                 </tr>
                 <tr>
-                    <td align="center"><b>{yun:}t key='wap_user_info_00028'{/yun}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;贯 :</b></td>
+                    <td align="center"><b>{yun:}t key='wap_user_00251'{/yun}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;贯 :</b></td>
                     <td>{yun:}$Info.domicile{/yun}&nbsp;</td>
-                    <td align="center"><b>{yun:}t key='resume_wordresume_00010'{/yun}</b></td>
+                    <td align="center"><b>{yun:}t key='resume_00053'{/yun}</b></td>
                     <td>{yun:}$Info.living{/yun}&nbsp;</td>
                 </tr>
             </table>
@@ -144,7 +144,7 @@
 <br>
 <table width="100%" align="center" class="jl-tit">
     <tr>
-        <th width="125" height="30" align="center" style="background:#3fb2a4; font-size:15px; color:#fff;">{yun:}t key='resume_wordresume_00005'{/yun}</th>
+        <th width="125" height="30" align="center" style="background:#3fb2a4; font-size:15px; color:#fff;">{yun:}t key='resume_00048'{/yun}</th>
         <th height="30">
             <hr style="width:100%;height:1px; color:#3fb2a4; vertical-align:middle">
         </th>
@@ -159,15 +159,15 @@
         <td width="100%">
             <table  width="100%"  align="center" class="jl-li">
                 <tr>
-                    <td width="70"><b>{yun:}t key='wap_user_addexpect_00007'{/yun}：</b></td>
+                    <td width="70"><b>{yun:}t key='wap_user_00015'{/yun}：</b></td>
                     <td>{yun:}$Info.customjob{/yun}&nbsp;</td>
                 </tr>
                 <tr>
-                    <td><b>{yun:}t key='admin_tool_database_component_classstat_00048'{/yun}：</b></td>
+                    <td><b>{yun:}t key='admin_tool_00129'{/yun}：</b></td>
                     <td>{yun:}$Info.hy{/yun}&nbsp;</td>
                 </tr>
                 <tr>
-                    <td><b>{yun:}t key='member_user_partcollect_00001'{/yun}：</b></td>
+                    <td><b>{yun:}t key='member_user_00198'{/yun}：</b></td>
                     <td>{yun:}foreach from=$Info.expectcity key=key item=v{/yun}
                         {yun:}if $key< 5{/yun}
                         {yun:}$v{/yun}&nbsp;
@@ -176,23 +176,23 @@
                     </td>
                 </tr>
                 <tr>
-                    <td><b>{yun:}t key='wap_user_addexpect_00008'{/yun}：</b></td>
+                    <td><b>{yun:}t key='wap_user_00016'{/yun}：</b></td>
                     <td>{yun:}$Info.salary{/yun}&nbsp;</td>
                 </tr>
                 <tr>
-                    <td><b>{yun:}t key='wap_com_jobadd_00025'{/yun}：</b></td>
+                    <td><b>{yun:}t key='wap_com_00279'{/yun}：</b></td>
                     <td>{yun:}$Info.report{/yun}&nbsp;</td>
                 </tr>
                 <tr>
-                    <td><b>{yun:}t key='wap_user_addexpect_00009'{/yun}：</b></td>
+                    <td><b>{yun:}t key='wap_user_00017'{/yun}：</b></td>
                     <td>{yun:}$Info.jobstatus{/yun}&nbsp;</td>
                 </tr>
                 <tr>
-                    <td><b>{yun:}t key='wap_user_addexpect_00004'{/yun}：</b></td>
+                    <td><b>{yun:}t key='wap_user_00012'{/yun}：</b></td>
                     <td>{yun:}$Info.type{/yun}&nbsp;</td>
                 </tr>
                 <tr>
-                    <td><b>{yun:}t key='wap_user_addresume_00037'{/yun}：</b></td>
+                    <td><b>{yun:}t key='wap_user_00055'{/yun}：</b></td>
                     <td>{yun:}$Info.jobname{/yun}&nbsp;</td>
                 </tr>
             </table>
@@ -202,13 +202,13 @@
 </table>
 
 {yun:}if is_array($Info.user_work) && !empty($Info.user_work){/yun}
-<!--{yun:}t key='wap_resume_index_00017'{/yun}-->
+<!--{yun:}t key='wap_00457'{/yun}-->
 <table width="100%" align="center" class="jl-tit">
     <tr>
         <td height="15" colspan="2"></td>
     </tr>
     <tr>
-        <th width="125" height="30" align="center" style="background:#3fb2a4; font-size:15px; color:#fff;">{yun:}t key='resume_wordresume_00002'{/yun}</th>
+        <th width="125" height="30" align="center" style="background:#3fb2a4; font-size:15px; color:#fff;">{yun:}t key='resume_00045'{/yun}</th>
         <th width="575">
             <hr style="color:#3fb2a4" width="100%" size="1" noshade="" align="center">
         </th>
@@ -223,10 +223,10 @@
                 <tr>
                     <td style=" padding-top:15px">
                         <div><b>{yun:}$one.sdate|date_format:"%Y.%m"{/yun}-{yun:}if
-                            $one.edate{/yun}{yun:}$one.edate|date_format:"%Y.%m"{/yun}{yun:}else{/yun}{yun:}t key='wap_js_userpicker_00004'{/yun}{yun:}/if{/yun}</b>&nbsp;&nbsp;&nbsp;&nbsp;<b>{yun:}$one.name{/yun}</b>&nbsp;&nbsp;&nbsp;&nbsp;<span
+                            $one.edate{/yun}{yun:}$one.edate|date_format:"%Y.%m"{/yun}{yun:}else{/yun}{yun:}t key='wap_js_00170'{/yun}{yun:}/if{/yun}</b>&nbsp;&nbsp;&nbsp;&nbsp;<b>{yun:}$one.name{/yun}</b>&nbsp;&nbsp;&nbsp;&nbsp;<span
                                 class="yun_resume_exp_name_job"><b>{yun:}$one.title{/yun}</b></span></div>
                         {yun:}if $one.content{/yun}
-                        <div><b>{yun:}t key='resume_wordresume_00012'{/yun}</b> {yun:}$one.content{/yun}</div>
+                        <div><b>{yun:}t key='resume_00055'{/yun}</b> {yun:}$one.content{/yun}</div>
                         {yun:}/if{/yun}
                     </td>
                 </tr>
@@ -239,13 +239,13 @@
 {yun:}/if{/yun}
 
 {yun:}if is_array($Info.user_edu) && !empty($Info.user_edu){/yun}
-<!--{yun:}t key='wap_resume_index_00019'{/yun}-->
+<!--{yun:}t key='wap_00459'{/yun}-->
 <table  width="100%"  align="center" class="jl-tit">
     <tr>
         <td height="15" colspan="2"></td>
     </tr>
     <tr>
-        <th width="125" height="30" align="center" style="background:#3fb2a4; font-size:15px; color:#fff;">{yun:}t key='resume_wordresume_00004'{/yun}</th>
+        <th width="125" height="30" align="center" style="background:#3fb2a4; font-size:15px; color:#fff;">{yun:}t key='resume_00047'{/yun}</th>
         <th width="575">
             <hr style="color:#3fb2a4" width="100%" size="1" noshade="" align="center">
         </th>
@@ -272,13 +272,13 @@
 {yun:}/if{/yun}
 
 {yun:}if is_array($Info.user_tra) && !empty($Info.user_tra){/yun}
-<!--{yun:}t key='wap_resume_index_00015'{/yun}-->
+<!--{yun:}t key='wap_00455'{/yun}-->
 <table  width="100%"  align="center" class="jl-tit">
     <tr>
         <td height="15" colspan="2"></td>
     </tr>
     <tr>
-        <th width="125" height="30" align="center" style="background:#3fb2a4; font-size:15px; color:#fff;">{yun:}t key='resume_wordresume_00001'{/yun}</th>
+        <th width="125" height="30" align="center" style="background:#3fb2a4; font-size:15px; color:#fff;">{yun:}t key='resume_00044'{/yun}</th>
         <th width="575">
             <hr style="color:#3fb2a4" width="100%" size="1" noshade="" align="center">
         </th>
@@ -294,7 +294,7 @@
                     <td style="padding-top:15px;">
                         <div><b>{yun:}$one.sdate|date_format:"%Y.%m"{/yun} - {yun:}$one.edate|date_format:"%Y.%m"{/yun}</b>&nbsp;&nbsp;&nbsp;&nbsp;{yun:}$one.name{/yun}&nbsp;&nbsp;&nbsp;&nbsp;{yun:}$one.title{/yun}</div>
                         {yun:}if $one.content{/yun}
-                        <div><b>{yun:}t key='admin_user_users_component_resume_edit_00038'{/yun}：</b>{yun:}$one.content{/yun}</div>
+                        <div><b>{yun:}t key='admin_user_00231'{/yun}：</b>{yun:}$one.content{/yun}</div>
                         {yun:}/if{/yun}
                     </td>
                 </tr>
@@ -307,13 +307,13 @@
 {yun:}/if{/yun}
 
 {yun:}if is_array($Info.user_skill) && !empty($Info.user_skill){/yun}
-<!--{yun:}t key='wap_resume_index_00021'{/yun}-->
+<!--{yun:}t key='wap_00461'{/yun}-->
 <table  width="100%"  align="center" class="jl-tit">
     <tr>
         <td height="15" colspan="2"></td>
     </tr>
     <tr>
-        <th width="125" height="30" align="center" style="background:#3fb2a4; font-size:15px; color:#fff;">{yun:}t key='resume_wordresume_00006'{/yun}</th>
+        <th width="125" height="30" align="center" style="background:#3fb2a4; font-size:15px; color:#fff;">{yun:}t key='resume_00049'{/yun}</th>
         <th width="575">
             <hr style="color:#3fb2a4" width="100%" size="1" noshade="" align="center">
         </th>
@@ -327,10 +327,10 @@
                 {yun:}foreach item=one from=$Info.user_skill{/yun}
                 <tr>
                     <td style="padding-top:15px;">
-                        <div><b>{yun:}t key='wap_user_addresumeson_00031'{/yun}：{yun:}$one.name{/yun}{yun:}if $one.longtime{/yun}</b>&nbsp;&nbsp;&nbsp;&nbsp;{yun:}t key='wap_resume_index_00018'{/yun}：{yun:}$one.longtime{/yun}{yun:}t key='common_02077'{/yun}{yun:}/if{/yun}</div>
+                        <div><b>{yun:}t key='wap_user_00089'{/yun}：{yun:}$one.name{/yun}{yun:}if $one.longtime{/yun}</b>&nbsp;&nbsp;&nbsp;&nbsp;{yun:}t key='wap_00458'{/yun}：{yun:}$one.longtime{/yun}{yun:}t key='common_02077'{/yun}{yun:}/if{/yun}</div>
                         {yun:}if $one.picurl{/yun}
                         <div class=" zs_imgbox">
-                            {yun:}t key='wap_user_addresumeson_00032'{/yun}：<img src="{yun:}$one.picurl{/yun}" width="95" height="70" style="vertical-align:middle">
+                            {yun:}t key='wap_user_00090'{/yun}：<img src="{yun:}$one.picurl{/yun}" width="95" height="70" style="vertical-align:middle">
                         </div>
                         {yun:}/if{/yun}
                     </td>
@@ -344,7 +344,7 @@
 {yun:}/if{/yun}
 
 {yun:}if is_array($Info.user_xm) && !empty($Info.user_xm){/yun}
-<!--{yun:}t key='wap_resume_index_00025'{/yun}-->
+<!--{yun:}t key='wap_00465'{/yun}-->
 <table  width="100%"  align="center" class="jl-tit">
     <tr>
         <td height="15" colspan="2"></td>
@@ -365,7 +365,7 @@
                 <tr>
                     <td style="padding-top:15px;">
                         <div><b>{yun:}$one.sdate|date_format:"%Y.%m"{/yun} - {yun:}$one.edate|date_format:"%Y.%m"{/yun}&nbsp;&nbsp;&nbsp;&nbsp;{yun:}$one.name{/yun}&nbsp;&nbsp;&nbsp;&nbsp;{yun:}$one.title{/yun}</b></div>
-                        <div><b>{yun:}t key='admin_user_users_component_resume_edit_00035'{/yun}：</b> {yun:}$one.content{/yun}</div>
+                        <div><b>{yun:}t key='admin_user_00228'{/yun}：</b> {yun:}$one.content{/yun}</div>
                     </td>
                 </tr>
                 {yun:}/foreach{/yun}
@@ -383,7 +383,7 @@
         <td height="15" colspan="2"></td>
     </tr>
     <tr>
-        <th width="125" height="30" align="center" style="background:#3fb2a4; font-size:15px; color:#fff;">{yun:}t key='resume_wordresume_00008'{/yun}</th>
+        <th width="125" height="30" align="center" style="background:#3fb2a4; font-size:15px; color:#fff;">{yun:}t key='resume_00051'{/yun}</th>
         <th width="575">
             <hr style="color:#3fb2a4" width="100%" size="1" noshade="" align="center">
         </th>
@@ -397,9 +397,9 @@
                 {yun:}foreach item=one from=$Info.user_other{/yun}
                 <tr>
                     <td style="padding-top:15px;">
-                        <div>{yun:}t key='wap_user_addresumeson_00045'{/yun}：<b>{yun:}$one.name{/yun}</b></div>
+                        <div>{yun:}t key='wap_user_00103'{/yun}：<b>{yun:}$one.name{/yun}</b></div>
                         {yun:}if $one.content{/yun}
-                        <div class="yun_resume_exp_p">{yun:}t key='wap_user_addresumeson_00044'{/yun}：{yun:}$one.content{/yun}</div>
+                        <div class="yun_resume_exp_p">{yun:}t key='wap_user_00102'{/yun}：{yun:}$one.content{/yun}</div>
                         {yun:}/if{/yun}
                     </td>
                 </tr>
@@ -418,7 +418,7 @@
         <td height="15" colspan="2"></td>
     </tr>
     <tr>
-        <th width="125" height="30" align="center" style="background:#3fb2a4; font-size:15px; color:#fff;">{yun:}t key='resume_wordresume_00003'{/yun}</th>
+        <th width="125" height="30" align="center" style="background:#3fb2a4; font-size:15px; color:#fff;">{yun:}t key='resume_00046'{/yun}</th>
         <th width="575">
             <hr style="color:#3fb2a4" width="100%" size="1" noshade="" align="center">
         </th>
@@ -448,13 +448,13 @@
 {yun:}/if{/yun}
 
 {yun:}if !empty($Info.description){/yun}
-<!--{yun:}t key='wap_resume_index_00023'{/yun}-->
+<!--{yun:}t key='wap_00463'{/yun}-->
 <table  width="100%"  align="center" class="jl-tit">
     <tr>
         <td height="15" colspan="2"></td>
     </tr>
     <tr>
-        <th width="125" height="30" align="center" style="background:#3fb2a4; font-size:15px; color:#fff;">{yun:}t key='resume_wordresume_00007'{/yun}</th>
+        <th width="125" height="30" align="center" style="background:#3fb2a4; font-size:15px; color:#fff;">{yun:}t key='resume_00050'{/yun}</th>
         <th width="575">
             <hr style="color:#3fb2a4" width="100%" size="1" noshade="" align="center">
         </th>

@@ -5,14 +5,14 @@
 <div class="yun_w1200">
     {yun:}include file="$userstyle/left.htm"{/yun}
     <div class="yun_m_rightbox fltR mt20 re">
-		<div class="member_right_index_h1 fltL"> <span class="member_right_h1_span fltL">{yun:}t key='member_user_left_00008'{/yun}</span> <i class="member_right_h1_icon user_bg"></i></div> 
+		<div class="member_right_index_h1 fltL"> <span class="member_right_h1_span fltL">{yun:}t key='member_user_00189'{/yun}</span> <i class="member_right_h1_icon user_bg"></i></div> 
 			
 			<div class="resume_template_box"> 
 				<dl class="resume_template">
 					<dt> <img src="{yun:}$user_style{/yun}/images/mr.png"width="238" height="315"> </dt>
 					<dd>
 					<div class="resume_template_pd">
-					<div class="resume_template_name">	{yun:}t key='member_user_resumetpl_00001'{/yun} </div>
+					<div class="resume_template_name">	{yun:}t key='member_user_00283'{/yun} </div>
 						<div class="resume_template_p">
 							模板价格：<b class="comtpl_b">免费</b>
 						</div>
@@ -22,9 +22,9 @@
 							<span class=" resume_template_bth_sy">使用中</span>
 							<i class="resume_template_cz_icon"></i>
 							{yun:}else{/yun}  
-								<a href="javascript:void(0);" onclick="layer_del('确定试用该模板？', 'index.php?c=resumetpl&act=settpl&id=0');" class="resume_template_bth">{yun:}t key='member_user_resumetpl_00002'{/yun}</a> 
+								<a href="javascript:void(0);" onclick="layer_del('确定试用该模板？', 'index.php?c=resumetpl&act=settpl&id=0');" class="resume_template_bth">{yun:}t key='member_user_00284'{/yun}</a> 
 							{yun:}/if{/yun}
-								<a href="{yun:}url m=resume c=show id=$resume.def_job tmp=2{/yun}" target="_blank" class="resume_template_ylbth">{yun:}t key='wap_hb_admin_whb_00002'{/yun}</a>
+								<a href="{yun:}url m=resume c=show id=$resume.def_job tmp=2{/yun}" target="_blank" class="resume_template_ylbth">{yun:}t key='wap_00071'{/yun}</a>
 
 						</div>
 					</dd>
@@ -51,12 +51,12 @@
 								<i class="resume_template_cz_icon"></i>
 							{yun:}else{/yun} 
 								{yun:}if in_array($style.id,$paytpls){/yun}
-									<a href="javascript:void(0);" onclick="layer_del('确定试用该模板？', 'index.php?c=resumetpl&act=settpl&id={yun:}$style.id{/yun}');" class="resume_template_bth">{yun:}t key='member_user_resumetpl_00002'{/yun}</a>
+									<a href="javascript:void(0);" onclick="layer_del('确定试用该模板？', 'index.php?c=resumetpl&act=settpl&id={yun:}$style.id{/yun}');" class="resume_template_bth">{yun:}t key='member_user_00284'{/yun}</a>
 								{yun:}else{/yun}
-									<a href="javascript:void(0);" onclick="layer_del('购买模板将花费{yun:}$style.price{/yun}{yun:}$config.integral_pricename{/yun}，{yun:}t key='common_01784'{/yun}？', 'index.php?c=resumetpl&act=pay&id={yun:}$style.id{/yun}');" class="resume_template_bth">{yun:}t key='member_user_resumetpl_00003'{/yun}</a>
+									<a href="javascript:void(0);" onclick="layer_del('购买模板将花费{yun:}$style.price{/yun}{yun:}$config.integral_pricename{/yun}，{yun:}t key='common_01784'{/yun}？', 'index.php?c=resumetpl&act=pay&id={yun:}$style.id{/yun}');" class="resume_template_bth">{yun:}t key='member_user_00285'{/yun}</a>
 								{yun:}/if{/yun} 
 							{yun:}/if{/yun}
-							<a href="{yun:}url m=resume c=show id=$resume.def_job tmp=$style.id{/yun}" target="_blank" class="resume_template_ylbth">{yun:}t key='wap_hb_admin_whb_00002'{/yun}</a>
+							<a href="{yun:}url m=resume c=show id=$resume.def_job tmp=$style.id{/yun}" target="_blank" class="resume_template_ylbth">{yun:}t key='wap_00071'{/yun}</a>
 
 						</div>
 					</dd>

@@ -17,7 +17,7 @@
     <div class="special_body_content">
       <div class="special_p_cont">
         <div class="special_title">
-          <div class="special_title_span"><span class="special_title_span_s">{yun:}t key='default_special_senior_00001'{/yun}</span><em class="special_title_span_em"> Projects Introduction </em></div>
+          <div class="special_title_span"><span class="special_title_span_s">{yun:}t key='default_00328'{/yun}</span><em class="special_title_span_em"> Projects Introduction </em></div>
           <div><i class="special_title_left"></i><i class="special_title_right"></i></div>
         {yun:}if $info.com_bm==1{/yun}
           {yun:}if !$isapply{/yun}
@@ -25,26 +25,26 @@
 				我是企业,我想参加招聘
 				{yun:}if $uid{/yun}
         {yun:}if $usertype=='2'{/yun}
-    <input type='button' value="{yun:}t key='wap_part_show_00008'{/yun}" onclick="comapply('{yun:}$info.id{/yun}','{yun:}$info.integral{/yun}','{yun:}url m=special c=apply{/yun}')" class="fourbth" />
+    <input type='button' value="{yun:}t key='wap_00375'{/yun}" onclick="comapply('{yun:}$info.id{/yun}','{yun:}$info.integral{/yun}','{yun:}url m=special c=apply{/yun}')" class="fourbth" />
         {yun:}else{/yun}
           {yun:}if $config.sy_user_change==1{/yun}
-                 <input type='button' value="{yun:}t key='wap_part_show_00008'{/yun}" onclick="layer.msg('请先申请企业用户才能报名！',2, 8)" class="fourbth" />
+                 <input type='button' value="{yun:}t key='wap_00375'{/yun}" onclick="layer.msg('请先申请企业用户才能报名！',2, 8)" class="fourbth" />
            {yun:}else{/yun} 
-                <input type='button' value="{yun:}t key='wap_part_show_00008'{/yun}" onclick="layer.msg('只有企业用户才能报名！',2, 8)" class="fourbth" />
+                <input type='button' value="{yun:}t key='wap_00375'{/yun}" onclick="layer.msg('只有企业用户才能报名！',2, 8)" class="fourbth" />
            {yun:}/if{/yun}
         {yun:}/if{/yun}
         {yun:}else{/yun}
-        <input type='button' value="{yun:}t key='wap_part_show_00008'{/yun}" onclick="showlogin('2')" class="fourbth" />
+        <input type='button' value="{yun:}t key='wap_00375'{/yun}" onclick="showlogin('2')" class="fourbth" />
         {yun:}/if{/yun}
 			</div>
 		  {yun:}else{/yun}
 				<div class="fourbth_bm" style=" margin-top:2px;">
 					{yun:}if $isapply.status=="0"{/yun}
-					<div class="special_btn" style="text-align:center;">{yun:}t key='wap_spe_gl_00004'{/yun}</div>
+					<div class="special_btn" style="text-align:center;">{yun:}t key='wap_00511'{/yun}</div>
 					{yun:}elseif $isapply.status=="1"{/yun}
-					<div class="special_btn" style="text-align:center;">{yun:}t key='wap_part_show_00010'{/yun}</div>
+					<div class="special_btn" style="text-align:center;">{yun:}t key='wap_00377'{/yun}</div>
 					{yun:}else{/yun}
-					<div class="special_btn" style="text-align:center;">{yun:}t key='wap_spe_gl_00002'{/yun}</div>
+					<div class="special_btn" style="text-align:center;">{yun:}t key='wap_00509'{/yun}</div>
 					{yun:}/if{/yun}
 				</div>
 		  {yun:}/if{/yun}
@@ -75,7 +75,7 @@
                   {yun:}/foreach{/yun} </div>
               </div>
                </div>
-              <div class="z_nr_more01"><a href="{yun:}url m=company c=show id='`$clist.uid`'{/yun}#job" target="_blank">{yun:}t key='wap_spe_show_00001'{/yun} >></a></div>
+              <div class="z_nr_more01"><a href="{yun:}url m=company c=show id='`$clist.uid`'{/yun}#job" target="_blank">{yun:}t key='wap_00518'{/yun} >></a></div>
             </li>
 			{yun:}/if{/yun}
             {yun:}/specialcom{/yun}

@@ -1,5 +1,5 @@
 <div id="sq_resume_vue">
-	<van-dialog v-model="ajaxShow" title="{yun:}t key='wap_user_index_00023'{/yun}" :show-cancel-button="true" :show-confirm-button="false">
+	<van-dialog v-model="ajaxShow" title="{yun:}t key='wap_user_00205'{/yun}" :show-cancel-button="true" :show-confirm-button="false">
         <div v-html="ajaxHtml"></div>
 	</van-dialog>
 </div>
@@ -67,10 +67,10 @@ function sq_resume(obj){
 						
 						if(data.login == 1){
 							
-							pleaselogin("{yun:}t key='wap_js_zph_00001'{/yun}",wapurl+'/index.php?c=login')
+							pleaselogin("{yun:}t key='wap_js_00171'{/yun}",wapurl+'/index.php?c=login')
 						}else{
 							
-							showModal(data.msg,null,"{yun:}t key='wap_publichtm_sq_resume_00001'{/yun}");
+							showModal(data.msg,null,"{yun:}t key='wap_00095'{/yun}");
 							return false;
 						}
 						

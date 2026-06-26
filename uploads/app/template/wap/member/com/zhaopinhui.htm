@@ -5,19 +5,19 @@
 			<div class="com_cardlist" @click="toPage(item.wapurl)">
 				<div class="com_cardlist_tit">{{item.zphname}}</div>
 				
-				<div class="com_cardlist_p"><span class="com_cardlist_p_name">{yun:}t key='wap_com_zhaopinhui_00002'{/yun}</span>
+				<div class="com_cardlist_p"><span class="com_cardlist_p_name">{yun:}t key='wap_com_00425'{/yun}</span>
 					{{item.sidname ? item.sidname : ''}}-{{item.cidname ? item.cidname : ''}}-{{item.bidname ? item.bidname : ''}}
 				</div>
-				<div class="com_cardlist_p"><span class="com_cardlist_p_name">{yun:}t key='wap_com_zhaopinhui_00001'{/yun}</span>{{item.address}}</div>
-				<div class="com_cardlist_p"><span class="com_cardlist_p_name">{yun:}t key='wap_user_addresumeson_00029'{/yun}</span>{{item.starttime}}</div>
-			    <div class="com_cardlist_p"><span class="com_cardlist_p_name">{yun:}t key='wap_user_addresumeson_00038'{/yun}</span>{{item.endtime}}</div>
-				<div class="com_cardlist_p"><span class="com_cardlist_p_name">{yun:}t key='wap_com_special_00001'{/yun}</span>
-					<span v-if="item.status==1">{yun:}t key='wap_user_commsg_00005'{/yun}</span>
-					<span v-else-if="item.status==2" class="wap_member_wtg">{yun:}t key='wap_user_commsg_00007'{/yun}</span>
-					<span v-else>{yun:}t key='wap_user_commsg_00006'{/yun}</span>
+				<div class="com_cardlist_p"><span class="com_cardlist_p_name">{yun:}t key='wap_com_00424'{/yun}</span>{{item.address}}</div>
+				<div class="com_cardlist_p"><span class="com_cardlist_p_name">{yun:}t key='wap_user_00087'{/yun}</span>{{item.starttime}}</div>
+			    <div class="com_cardlist_p"><span class="com_cardlist_p_name">{yun:}t key='wap_user_00096'{/yun}</span>{{item.endtime}}</div>
+				<div class="com_cardlist_p"><span class="com_cardlist_p_name">{yun:}t key='wap_com_00406'{/yun}</span>
+					<span v-if="item.status==1">{yun:}t key='wap_user_00165'{/yun}</span>
+					<span v-else-if="item.status==2" class="wap_member_wtg">{yun:}t key='wap_user_00167'{/yun}</span>
+					<span v-else>{yun:}t key='wap_user_00166'{/yun}</span>
 				</div>
 				<div class="com_cardlist_p" v-if="item.status == 2">
-					<span class="com_cardlist_p_name">{yun:}t key='wap_user_commsg_00004'{/yun}</span>{{item.statusbody}}
+					<span class="com_cardlist_p_name">{yun:}t key='wap_user_00164'{/yun}</span>{{item.statusbody}}
 				</div>
 				<div class="com_card_cz" v-if="item.notstart==1">
 					<span class="com_card_delete" @click.stop="delzph(item.id, zk)"></span>
@@ -82,7 +82,7 @@
 					var paramer = {ids: id};
 					var url = '{yun:}url d=wxapp h=com m=zph c=delzph{/yun}';
 					showConfirm('确定取消报名？', function() {
-						showLoading("{yun:}t key='wap_user_collect_00002'{/yun}");
+						showLoading("{yun:}t key='wap_user_00152'{/yun}");
 						$.post(url , paramer, function(data){
 							if (data.error == 1) {
 								that.list.splice(key, 1);

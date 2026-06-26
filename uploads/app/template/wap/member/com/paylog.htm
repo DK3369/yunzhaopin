@@ -4,7 +4,7 @@
 <ul>
         {yun:}if $config.sy_withdraw==1{/yun}
         <li  :class="type == 'paylog' ? 'm_payactive' : ''" @click="pageTo('index.php?c=paylog&type=paylog')">
-            <a href="javascript:void(0)">{yun:}t key='wap_user_paylog_00006'{/yun}</a>
+            <a href="javascript:void(0)">{yun:}t key='wap_user_00315'{/yun}</a>
         </li>
         <li :class="type == 'consume' ? 'm_payactive' : ''" @click="pageTo('index.php?c=paylog&type=consume')">
             <a href="javascript:void(0)">消费明细</a>
@@ -12,7 +12,7 @@
         
         {yun:}else{/yun}
         <li  :class="type == 'paylog' ? 'm_payactive' : ''" @click="pageTo('index.php?c=paylog&type=paylog')">
-            <a href="javascript:void(0)">{yun:}t key='wap_user_paylog_00006'{/yun}</a>
+            <a href="javascript:void(0)">{yun:}t key='wap_user_00315'{/yun}</a>
         </li>
         <li :class="type == 'consume' ? 'm_payactive' : ''" @click="pageTo('index.php?c=paylog&type=consume')">
             <a href="javascript:void(0)">消费明细</a>
@@ -35,19 +35,19 @@
             <span class="paylog_tit_zt" v-else-if="item.order_state==6">{{item.dingdan_state_n}}</span>        
             </div>
                 <div class="pay_mx_box" >
-                    <div class="pay_mx_list"><span class="member_c9">{yun:}t key='wap_user_paylog_00002'{/yun}</span>{{item.dingdan_id}}</div>
+                    <div class="pay_mx_list"><span class="member_c9">{yun:}t key='wap_user_00311'{/yun}</span>{{item.dingdan_id}}</div>
                  
                     <div class="pay_mx_list"><span class="member_c9">支付形式</span>{{item.dingdan_type_n}}</div>
-                    <div class="pay_mx_list"><span class="member_c9">{yun:}t key='wap_user_paylog_00003'{/yun}</span>{{item.dingdan_price}}</div>
+                    <div class="pay_mx_list"><span class="member_c9">{yun:}t key='wap_user_00312'{/yun}</span>{{item.dingdan_price}}</div>
              
-                    <div class="pay_mx_list"><span class="member_c9">{yun:}t key='wap_user_paylog_00005'{/yun}</span>{{item.dingdan_time_n}}</div>
-                    <div class="pay_mx_list" v-if="item.order_remark"><span class="member_c9">{yun:}t key='wap_com_paylog_00002'{/yun}</span>{{item.order_remark}}</div>
+                    <div class="pay_mx_list"><span class="member_c9">{yun:}t key='wap_user_00314'{/yun}</span>{{item.dingdan_time_n}}</div>
+                    <div class="pay_mx_list" v-if="item.order_remark"><span class="member_c9">{yun:}t key='wap_com_00345'{/yun}</span>{{item.order_remark}}</div>
                    
                 </div>            
                 <div class="com_member_hr_cz" v-if="item.order_state==1">
                     
                     <a href="javascript:void(0)" @click="delpaylog(item.id,logkey)" class="yun_member_hr_bth">取消充值</a>
-					<a @click="pageTo('index.php?c=payment&id='+item.id)" href="javascript:void(0)" class="pay_mx_fk">{yun:}t key='wap_user_pay_00002'{/yun}</a>
+					<a @click="pageTo('index.php?c=payment&id='+item.id)" href="javascript:void(0)" class="pay_mx_fk">{yun:}t key='wap_user_00308'{/yun}</a>
                 </div>            
             </div>
             <div class="wap_member_nobg" v-if="count==0">  <div class="wap_member_no">暂无相关信息</div></div>
@@ -62,7 +62,7 @@
        
         <div class="pay_mx_box">
           
-            <div class="pay_mx_list"><span class="member_c9">{yun:}t key='wap_com_paylog_00001'{/yun}</span>{{item.consume_time_n}}</div>
+            <div class="pay_mx_list"><span class="member_c9">{yun:}t key='wap_com_00344'{/yun}</span>{{item.consume_time_n}}</div>
            <div class="pay_mx_list"><span class="member_c9">消费形式</span>{{item.consume_price_n}}</div>
        
         </div>
@@ -229,7 +229,7 @@
               };
              
              showConfirm('确定要取消该订单吗？', () => {
-                showLoading("{yun:}t key='wap_user_paylog_00001'{/yun}")
+                showLoading("{yun:}t key='wap_user_00310'{/yun}")
                 $.post('{yun:}url d=wxapp h=com m=finance c=delfklog{/yun}', param, function(data){
                   hideLoading();
                   if (data.error == 1) {

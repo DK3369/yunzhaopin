@@ -14,23 +14,23 @@
     <div class="com_details_top">
 	<div class="w1200">
 	
-<div class="com_details_current">{yun:}t key='common_01498'{/yun}：<a href="{yun:}$config.sy_weburl{/yun}">{yun:}t key='common.home'{/yun}</a> > <a href="{yun:}url m=company{/yun}">{yun:}t key='default_company_index_00004'{/yun}</a> > <span><a href="{yun:}url m=company c=show id=$com.uid{/yun}">{yun:}t key='wap_company_show_00004'{/yun}</a> </span></div>
+<div class="com_details_current">{yun:}t key='common_01498'{/yun}：<a href="{yun:}$config.sy_weburl{/yun}">{yun:}t key='common.home'{/yun}</a> > <a href="{yun:}url m=company{/yun}">{yun:}t key='default_00113'{/yun}</a> > <span><a href="{yun:}url m=company c=show id=$com.uid{/yun}">{yun:}t key='wap_00188'{/yun}</a> </span></div>
 	<div class="com_details_top_c">
 	{yun:}if $com.hotlogo==1 {/yun}
-			<span class="com_details_name_mq" title="{yun:}t key='wap_joblist_vue_00001'{/yun}"> </span>
+			<span class="com_details_name_mq" title="{yun:}t key='wap_00299'{/yun}"> </span>
 		{yun:}/if{/yun}
 	<div class="com_details_info_box">
 	<div class="com_details_logo"><a href="{yun:}url m=company c=show id=$com.uid{/yun}"><img src="{yun:}$com.logo{/yun}" width="140" height="140" onerror="showImgDelay(this,'{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_unit_icon{/yun}',2);" alt="{yun:}$com.name{/yun}" /></a></div>
 
 	<h1 class="com_details_name"><a href="{yun:}url m=company c=show id=$com.uid{/yun}">{yun:}$com.name|mb_substr:0:30:'utf-8'{/yun}  </a>
 		{yun:}if $comrat.com_pic!="0" && $comrat.com_pic!=""{/yun}
-			<img src="{yun:}$comrat.com_pic{/yun}" width="18" height="18" title="{yun:}t key='admin_user_company_component_addhotjob_00003'{/yun}" /> 
+			<img src="{yun:}$comrat.com_pic{/yun}" width="18" height="18" title="{yun:}t key='admin_user_company_00018'{/yun}" /> 
 		{yun:}/if{/yun}    
         
        
         {yun:}if $com.yyzz_status==1{/yun}<i class="job_details_cominfo_rz job_details_cominfo_rz_zz" title="执照认证"></i> {yun:}/if{/yun}
-        {yun:}if $com.moblie_status==1{/yun}<i class="job_details_cominfo_rz job_details_cominfo_rz_sj" title="{yun:}t key='member_com_binding_00012'{/yun}"></i>{yun:}/if{/yun}
-        {yun:}if $com.email_status==1{/yun}<i class="job_details_cominfo_rz job_details_cominfo_rz_yx" title="{yun:}t key='wap_com_integral_00007'{/yun}"></i>{yun:}/if{/yun}
+        {yun:}if $com.moblie_status==1{/yun}<i class="job_details_cominfo_rz job_details_cominfo_rz_sj" title="{yun:}t key='member_com_00071'{/yun}"></i>{yun:}/if{/yun}
+        {yun:}if $com.email_status==1{/yun}<i class="job_details_cominfo_rz job_details_cominfo_rz_yx" title="{yun:}t key='wap_com_00186'{/yun}"></i>{yun:}/if{/yun}
                 
 	</h1>
 	<div class="com_details_info">
@@ -53,24 +53,24 @@
 		{yun:}/if{/yun} 
 		
 		{yun:}if $com.money{/yun}
-			<span class="com_details_line">|</span>{yun:}t key='company_green_index_00013'{/yun}{yun:}$com.money{/yun}
-				{yun:}if $com.moneytype==1{/yun}{yun:}t key='wap_js_member_caregory_00004'{/yun}{yun:}else{/yun}{yun:}t key='wap_js_member_caregory_00002'{/yun}{yun:}/if{/yun} 
+			<span class="com_details_line">|</span>{yun:}t key='company_00023'{/yun}{yun:}$com.money{/yun}
+				{yun:}if $com.moneytype==1{/yun}{yun:}t key='wap_js_00004'{/yun}{yun:}else{/yun}{yun:}t key='wap_js_00002'{/yun}{yun:}/if{/yun} 
 		{yun:}/if{/yun} 
 		
 		{yun:}if $com.sdate{/yun}
-			<span class="com_details_line">|</span>{yun:}$com.sdate{/yun}{yun:}t key='company_green_index_00011'{/yun}
+			<span class="com_details_line">|</span>{yun:}$com.sdate{/yun}{yun:}t key='company_00021'{/yun}
 		{yun:}/if{/yun}</div> 
 
 		<div class="com_details_data_box" >
 		<div class="com_details_data_box_c" >
-		<div class="com_details_data"><div class="com_details_data_n">{yun:}$num{/yun}</div><div class="com_details_dataname">{yun:}t key='wap_company_show_00006'{/yun}</div><i class="com_details_data_line"></i></div>
-		<div class="com_details_data"><div class="com_details_data_n">{yun:}$invite_resume{/yun}</div><div class="com_details_dataname">{yun:}t key='company_default_index_00007'{/yun}</div><i class="com_details_data_line"></i></div>
-		<div class="com_details_data"><div class="com_details_data_n">{yun:}$pre{/yun}%</div><div class="com_details_dataname"> {yun:}t key='company_default_index_00004'{/yun}</div><i class="com_details_data_line"></i></div>
+		<div class="com_details_data"><div class="com_details_data_n">{yun:}$num{/yun}</div><div class="com_details_dataname">{yun:}t key='wap_00190'{/yun}</div><i class="com_details_data_line"></i></div>
+		<div class="com_details_data"><div class="com_details_data_n">{yun:}$invite_resume{/yun}</div><div class="com_details_dataname">{yun:}t key='company_00009'{/yun}</div><i class="com_details_data_line"></i></div>
+		<div class="com_details_data"><div class="com_details_data_n">{yun:}$pre{/yun}%</div><div class="com_details_dataname"> {yun:}t key='company_00006'{/yun}</div><i class="com_details_data_line"></i></div>
 
 		<div class="com_details_data"><div class="com_details_data_n">{yun:}if $com.login_date{/yun}
 									{yun:}$com.login_date|date_format:"%Y-%m-%d"{/yun}
 								{yun:}else{/yun}
-									{yun:}t key='admin_user_member_component_alluser_00025'{/yun} 
+									{yun:}t key='admin_user_00139'{/yun} 
 								{yun:}/if{/yun}</div><div class="com_details_dataname"> 最近登录时间</div></div>
 
 		</div>
@@ -80,25 +80,25 @@
 		<div class="com_details_opt_fxbox">
 			{yun:}if $usertype=='1'{/yun} 
 						{yun:}if $isatn.id{/yun}
-							<a href="javascript:void(0)" onclick="atn('{yun:}$com.uid{/yun}','{yun:}url m=ajax c=atncompany{/yun}')" id='atn_{yun:}$com.uid{/yun}' class="com_details_opt_gz company_att">{yun:}t key='wap_js_public_00003'{/yun}</a>
+							<a href="javascript:void(0)" onclick="atn('{yun:}$com.uid{/yun}','{yun:}url m=ajax c=atncompany{/yun}')" id='atn_{yun:}$com.uid{/yun}' class="com_details_opt_gz company_att">{yun:}t key='wap_js_00140'{/yun}</a>
 						{yun:}else{/yun}
 							<a href="javascript:void(0)" onclick="atn('{yun:}$com.uid{/yun}','{yun:}url m=ajax c=atncompany{/yun}')" id='atn_{yun:}$com.uid{/yun}' class="com_details_opt_gz">{yun:}t key='common_01949'{/yun}</a>
 						{yun:}/if{/yun} 
 					{yun:}else{/yun} 
 						{yun:}if $uid{/yun}
-							<a href="javascript:void(0)" onclick="layer.msg('{yun:}t key='wap_company_show_dark_00005'{/yun}', 2, 8)" class="com_details_opt_gz">+ {yun:}t key='common_01949'{/yun}</a>
+							<a href="javascript:void(0)" onclick="layer.msg('{yun:}t key='wap_00030'{/yun}', 2, 8)" class="com_details_opt_gz">+ {yun:}t key='common_01949'{/yun}</a>
                         {yun:}else{/yun}
 							<a href="javascript:void(0)" onclick="showlogin('1');" class="com_details_opt_gz">+ {yun:}t key='common_01949'{/yun}</a>
                         {yun:}/if{/yun}
 					{yun:}/if{/yun} 
                     </div>
 			
-			<div class="com_details_opt_fxbox"><a href="javascript:void(0);" onmousemove="$('#getwapurl').show();" onmouseout="$('#getwapurl').hide();" rel="nofollow"  class="com_details_opt_fx">{yun:}t key='wap_evaluategradeshow_00001'{/yun}</a>     <div class="comapply_sq_r_cy none" id="getwapurl">
+			<div class="com_details_opt_fxbox"><a href="javascript:void(0);" onmousemove="$('#getwapurl').show();" onmouseout="$('#getwapurl').hide();" rel="nofollow"  class="com_details_opt_fx">{yun:}t key='wap_00195'{/yun}</a>     <div class="comapply_sq_r_cy none" id="getwapurl">
 				<div class="comapply_sq_r_cont">
-					<div class="comapply_sq_r_tipa"> {yun:}t key='default_job_search_00003'{/yun}：{yun:}t key='wap_com_job_00055'{/yun}</div>
+					<div class="comapply_sq_r_tipa"> {yun:}t key='default_00250'{/yun}：{yun:}t key='wap_com_00246'{/yun}</div>
 					<img src="{yun:}url m=ajax c=pubqrcode toc=company toa=show toid=$com.uid{/yun}" width="130" height="130" />
-					<div class="comapply_sq_r_tipsm"> ↑{yun:}t key='default_job_comapply_00021'{/yun}↑<br>
-						{yun:}t key='company_default_index_00001'{/yun}</div>
+					<div class="comapply_sq_r_tipsm"> ↑{yun:}t key='common_02135'{/yun}↑<br>
+						{yun:}t key='company_00003'{/yun}</div>
 				</div>
 			</div>
 			</div>
@@ -132,11 +132,11 @@
     </div>
       <div class="com_details_right">
       <div class="com_details_rightbox">
-      <div class="com_details_tit"><span class="com_details_tit_s">{yun:}t key='wap_company_show_dark_00015'{/yun}</span><i class="com_details_tit_line yun_bg_color"></i></div>
+      <div class="com_details_tit"><span class="com_details_tit_s">{yun:}t key='wap_00040'{/yun}</span><i class="com_details_tit_line yun_bg_color"></i></div>
 
 						{yun:}if $com.address{/yun}
 						<div class="com_details_tel_me">
-							<div class="">{yun:}t key='wap_js_umeditor_lang_zh_cn_zh_cn_00014'{/yun}：{yun:}$com.address{/yun}</div>
+							<div class="">{yun:}t key='wap_js_00082'{/yun}：{yun:}$com.address{/yun}</div>
 						</div>
 						{yun:}/if{/yun}
 
@@ -158,7 +158,7 @@
                             <input type="hidden" id="map_y" value="{yun:}$com.y{/yun}" />
                         </div>
                         <div class="frc_map_look">
-                            <a href="javascript:showmap('map_show','{yun:}$com.x{/yun}', '{yun:}$com.y{/yun}', '{yun:}$com.name{/yun}', '{yun:}$com.address{/yun}');">{yun:}t key='company_default_index_00003'{/yun}</a>
+                            <a href="javascript:showmap('map_show','{yun:}$com.x{/yun}', '{yun:}$com.y{/yun}', '{yun:}$com.name{/yun}', '{yun:}$com.address{/yun}');">{yun:}t key='company_00005'{/yun}</a>
                         </div>
                     </div>
               
@@ -168,7 +168,7 @@
             
 {yun:}if !empty($NewsList){/yun}
  <div class="com_details_rightbox">
- <div class="com_details_tit"><span class="com_details_tit_s">{yun:}t key='company_green_index_00009'{/yun}</span><i class="com_details_tit_line yun_bg_color"></i></div>
+ <div class="com_details_tit"><span class="com_details_tit_s">{yun:}t key='company_00019'{/yun}</span><i class="com_details_tit_line yun_bg_color"></i></div>
 
                
 
@@ -192,20 +192,20 @@
     <div id="map_container" style="width:1100px;height:450px;"></div>
    
  <div class="map_query"  id="map_search">
-     <div class="map_query_tit">{yun:}t key='default_job_comapply_00038'{/yun} <span class="map_query_tit_s">{yun:}t key='default_job_comapply_00007'{/yun}</span></div>
-   <div class="map_query_list"><span class="map_query_list_s">{yun:}t key='default_job_comapply_00046'{/yun}</span><i class="map_query_list_line"></i> <input type="text"  class="map_startlist map_query_text" placeholder="{yun:}t key='default_job_comapply_00041'{/yun}" id="map_start" name="map_start"/></div>
+     <div class="map_query_tit">{yun:}t key='default_00235'{/yun} <span class="map_query_tit_s">{yun:}t key='default_00207'{/yun}</span></div>
+   <div class="map_query_list"><span class="map_query_list_s">{yun:}t key='default_00243'{/yun}</span><i class="map_query_list_line"></i> <input type="text"  class="map_startlist map_query_text" placeholder="{yun:}t key='default_00238'{/yun}" id="map_start" name="map_start"/></div>
    <div class="map_query_list">
-        <span class="map_query_list_s">{yun:}t key='default_job_comapply_00045'{/yun}</span><i class="map_query_list_line"></i>
+        <span class="map_query_list_s">{yun:}t key='default_00242'{/yun}</span><i class="map_query_list_line"></i>
         {yun:}if $com.x{/yun}
      <input type="text"   id="map_end" class="map_startend map_query_text" name="map_end"/>
     {yun:}else{/yun}
-   <input type="text"  placeholder="{yun:}t key='default_job_comapply_00040'{/yun}" class="map_startend map_query_text" value="" id="map_end" name="map_end"/>
+   <input type="text"  placeholder="{yun:}t key='default_00237'{/yun}" class="map_startend map_query_text" value="" id="map_end" name="map_end"/>
     {yun:}/if{/yun}
     
      </div>
     <div class="map_query_bth_box">
-    <input type="submit" class="mapsubmit map_query_bth "value="{yun:}t key='default_job_comapply_00032'{/yun}"  name="submit" onclick="bus_query('map_container', '{yun:}$com.x{/yun}', '{yun:}$com.y{/yun}');"/></span>
-    <span><input type="submit" class="mapsubmit map_query_bth map_query_bth_car"  value="{yun:}t key='default_job_comapply_00042'{/yun}"  name="submit" onclick="map_drving('map_container', '{yun:}$com.x{/yun}', '{yun:}$com.y{/yun}');"/></span>
+    <input type="submit" class="mapsubmit map_query_bth "value="{yun:}t key='default_00230'{/yun}"  name="submit" onclick="bus_query('map_container', '{yun:}$com.x{/yun}', '{yun:}$com.y{/yun}');"/></span>
+    <span><input type="submit" class="mapsubmit map_query_bth map_query_bth_car"  value="{yun:}t key='default_00239'{/yun}"  name="submit" onclick="map_drving('map_container', '{yun:}$com.x{/yun}', '{yun:}$com.y{/yun}');"/></span>
     </div>    </div>
       <div class="map_query_result"><div id="panel"></div>  </div>
   </div>
@@ -227,7 +227,7 @@ layui.use(['form', 'layer'], function() {
 		layer = layui.layer;
 	layer.photos({
 	  photos: '#product_photos",
-	  anim: 5 //0-6的选择，指定弹出图片动画类型，默认随机（请注意，3.0之前的版本用shift{yun:}t key='admin_neirong_announcement_component_announcement_add_00002'{/yun}）
+	  anim: 5 //0-6的选择，指定弹出图片动画类型，默认随机（请注意，3.0之前的版本用shift{yun:}t key='admin_00103'{/yun}）
 	}); 
 });
 $(function () {

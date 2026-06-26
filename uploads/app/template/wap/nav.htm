@@ -25,7 +25,7 @@
 			</a>
 			<span class="ask_home_nav_line">|</span>
 			<a href="{yun:}if $uid{/yun}{yun:}url m=wap c=ask a=myanswer  uid=$uid{/yun}{yun:}else{/yun}{yun:}url m=wap c=login{/yun}{yun:}/if{/yun}">
-			<span class="ask_home_nav_n">{yun:}$a_num{/yun}</span>{yun:}t key='wap_nav_00004'{/yun}
+			<span class="ask_home_nav_n">{yun:}$a_num{/yun}</span>{yun:}t key='wap_00332'{/yun}
 			</a>
 			<span class="ask_home_nav_line">|</span>
 			<a href="{yun:}if $uid{/yun}{yun:}url m=wap c=ask a=attenquestion uid=$uid{/yun}{yun:}else{/yun}{yun:}url m=wap c=login{/yun}{yun:}/if{/yun}">
@@ -41,7 +41,7 @@
 			</a>
 			<span class="ask_home_nav_line">|</span>
 			<a href="{yun:}if $uid{/yun}{yun:}url m=wap c=ask a=myanswer  uid=$smarty.get.uid{/yun}{yun:}else{/yun}{yun:}url m=wap c=login{/yun}{yun:}/if{/yun}">
-			<span class="ask_home_nav_n">{yun:}$a_num{/yun}</span>{yun:}t key='wap_nav_00004'{/yun}	</a>
+			<span class="ask_home_nav_n">{yun:}$a_num{/yun}</span>{yun:}t key='wap_00332'{/yun}	</a>
 			<span class="ask_home_nav_line">|</span>
 			<a href="{yun:}if $uid{/yun}{yun:}url m=wap c=ask a=attenquestion uid=$smarty.get.uid{/yun}{yun:}else{/yun}{yun:}url m=wap c=login{/yun}{yun:}/if{/yun}">
 			<span class="ask_home_nav_n">{yun:}$g_num{/yun}</span>{yun:}t key='common_01949'{/yun}
@@ -54,13 +54,13 @@
 <div class="askfriend_nav mt10">
   <ul>
   	{yun:}if $uid && ($smarty.get.uid=='' || $smarty.get.uid==$uid){/yun} 
-    	<li {yun:}if $smarty.get.a=='myquestion'{/yun}class="askfriend_cur"{yun:}/if{/yun}><a href="{yun:}if $uid{/yun}{yun:}url m=wap c=ask a=myquestion uid=$uid{/yun}{yun:}else{/yun}{yun:}url m=wap c=login{/yun}{yun:}/if{/yun}"><span>{yun:}t key='wap_nav_00003'{/yun}</span></a></li>
+    	<li {yun:}if $smarty.get.a=='myquestion'{/yun}class="askfriend_cur"{yun:}/if{/yun}><a href="{yun:}if $uid{/yun}{yun:}url m=wap c=ask a=myquestion uid=$uid{/yun}{yun:}else{/yun}{yun:}url m=wap c=login{/yun}{yun:}/if{/yun}"><span>{yun:}t key='wap_00331'{/yun}</span></a></li>
     	<li {yun:}if $smarty.get.a=='myanswer'{/yun}class="askfriend_cur"{yun:}/if{/yun}><a href="{yun:}if $uid{/yun}{yun:}url m=wap c=ask a=myanswer  uid=$uid{/yun}{yun:}else{/yun}{yun:}url m=wap c=login{/yun}{yun:}/if{/yun}"><span>我的回答</span></a></li>
     	<li {yun:}if $smarty.get.a=='attenquestion'{/yun}class="askfriend_cur"{yun:}/if{/yun}><a href="{yun:}if $uid{/yun}{yun:}url m=wap c=ask a=attenquestion  uid=$uid{/yun}{yun:}else{/yun}{yun:}url m=wap c=login{/yun}{yun:}/if{/yun}"><span>我的关注</span></a></li>
     {yun:}elseif $smarty.get.uid{/yun}
      	<li {yun:}if $smarty.get.a=='myquestion'{/yun}class="askfriend_cur"{yun:}/if{/yun}><a href="{yun:}if $uid{/yun}{yun:}url m=wap c=ask a=myquestion uid=$smarty.get.uid{/yun}{yun:}else{/yun}{yun:}url m=wap c=login{/yun}{yun:}/if{/yun}"><span>他的提问</span></a></li>
-    	<li {yun:}if $smarty.get.a=='myanswer'{/yun}class="askfriend_cur"{yun:}/if{/yun}><a href="{yun:}if $uid{/yun}{yun:}url m=wap c=ask a=myanswer  uid=$smarty.get.uid{/yun}{yun:}else{/yun}{yun:}url m=wap c=login{/yun}{yun:}/if{/yun}"><span>{yun:}t key='wap_nav_00002'{/yun}</span></a></li>
-    	<li {yun:}if $smarty.get.a=='attenquestion'{/yun}class="askfriend_cur"{yun:}/if{/yun}><a href="{yun:}if $uid{/yun}{yun:}url m=wap c=ask a=attenquestion  uid=$smarty.get.uid{/yun}{yun:}else{/yun}{yun:}url m=wap c=login{/yun}{yun:}/if{/yun}"><span>{yun:}t key='wap_nav_00001'{/yun}</span></a></li>
+    	<li {yun:}if $smarty.get.a=='myanswer'{/yun}class="askfriend_cur"{yun:}/if{/yun}><a href="{yun:}if $uid{/yun}{yun:}url m=wap c=ask a=myanswer  uid=$smarty.get.uid{/yun}{yun:}else{/yun}{yun:}url m=wap c=login{/yun}{yun:}/if{/yun}"><span>{yun:}t key='wap_00330'{/yun}</span></a></li>
+    	<li {yun:}if $smarty.get.a=='attenquestion'{/yun}class="askfriend_cur"{yun:}/if{/yun}><a href="{yun:}if $uid{/yun}{yun:}url m=wap c=ask a=attenquestion  uid=$smarty.get.uid{/yun}{yun:}else{/yun}{yun:}url m=wap c=login{/yun}{yun:}/if{/yun}"><span>{yun:}t key='wap_00329'{/yun}</span></a></li>
     {yun:}/if{/yun}
   </ul>
 </div>

@@ -15,7 +15,7 @@
 
 		<div class="current_Location png"> {yun:}t key='common_01498'{/yun}：
 			<a href="{yun:}$config.sy_weburl{/yun}">{yun:}t key='common.home'{/yun}</a> >
-			<a href="{yun:}url m=once{/yun}">{yun:}t key='wap_js_onceadd_00002'{/yun}</a> > 发布店铺招聘
+			<a href="{yun:}url m=once{/yun}">{yun:}t key='wap_js_00130'{/yun}</a> > 发布店铺招聘
 		</div>
 
 		<form id="subform" action="{yun:}url m=once c=save{/yun}" target="supportiframefast" method="post" onSubmit="return check_once_job()" enctype="multipart/form-data" autocomplete="off" class="layui-form">
@@ -23,7 +23,7 @@
 		<div class="once_add_box">
 			<div class="once_title">快速发布招聘信息</div>
 			<div class="once_add_cont">
-				<div class="once_title_p"><i class="once_title_p_icon once_title_p_icon_zw"></i>{yun:}t key='wap_job_index_00003'{/yun}</div>
+				<div class="once_title_p"><i class="once_title_p_icon once_title_p_icon_zw"></i>{yun:}t key='wap_00241'{/yun}</div>
 
 				<div class="once_add_list">
 					<span class="once_add_list_name"><i class="once_add_list_name_bt">*</i>我想招聘</span>
@@ -32,21 +32,21 @@
 					</div>
 				</div>
 				<div class="once_add_list">
-					<span class="once_add_list_name"><i class="once_add_list_name_bt">*</i>{yun:}t key='default_once_add_00003'{/yun}</span>
+					<span class="once_add_list_name"><i class="once_add_list_name_bt">*</i>{yun:}t key='default_00265'{/yun}</span>
 					<div class="once_add_list_text">
 						<input class="once_add_list_input" type="text" id="salary" maxlength="15" name="salary" value="{yun:}$info.salary{/yun}"/>
 					</div>
 				</div>
 				{yun:}if $info.id{/yun}
 				<div class="once_add_list onceAddListAll">
-					<span class="once_add_list_name"><i class="once_add_list_name_bt">*</i>{yun:}t key='wap_once_add_00007'{/yun}</span>
+					<span class="once_add_list_name"><i class="once_add_list_name_bt">*</i>{yun:}t key='wap_00352'{/yun}</span>
 					<div class="once_add_list_text onceAddListOne">
 						<span class="once_add_list_text_dw">{yun:}$info.day_n{/yun} {yun:}t key='common_02067'{/yun}</span>
 					</div>
 				</div>
 				{yun:}else{/yun}
 				<div class="once_add_list onceAddListAll">
-					<span class="once_add_list_name"><i class="once_add_list_name_bt">*</i>{yun:}t key='wap_once_add_00007'{/yun}</span>
+					<span class="once_add_list_name"><i class="once_add_list_name_bt">*</i>{yun:}t key='wap_00352'{/yun}</span>
 					<div class="once_add_list_text onceAddListOne">
 						{yun:}foreach from=$oncepricegear_name key=opgkey item=opgval{/yun}
 						<div class="oncepricegear" data-id="{yun:}$opgkey{/yun}" data-price="{yun:}$oncepricegear_price[$opgkey]{/yun}">
@@ -64,11 +64,11 @@
 				</div>
 				{yun:}/if{/yun}
 				<div class="once_add_list">
-					<span class="once_add_list_name"><i class="once_add_list_name_bt">*</i>{yun:}t key='wap_once_add_00004'{/yun}</span>
+					<span class="once_add_list_name"><i class="once_add_list_name_bt">*</i>{yun:}t key='wap_00349'{/yun}</span>
 					<div class="once_add_list_text">
 						<div class="layui-input-inline">
 						<select id="provinceid" lay-filter="citys" name="provinceid">
-						<option value=''>{yun:}t key='wap_user_addresumeson_00042'{/yun}</option>
+						<option value=''>{yun:}t key='wap_user_00100'{/yun}</option>
 						{yun:}foreach from=$city_index item=v{/yun}
 						<option value="{yun:}$v{/yun}" {yun:}if $info.provinceid==$v{/yun}selected{yun:}/if{/yun}>{yun:}$city_name[$v]{/yun}</option>
 						{yun:}/foreach{/yun}
@@ -76,14 +76,14 @@
 						</div>
 						<div class="layui-input-inline">
 						<select id="cityid" lay-filter="citys" name="cityid">
-						<option value=''>{yun:}t key='wap_user_addresumeson_00042'{/yun}</option>
+						<option value=''>{yun:}t key='wap_user_00100'{/yun}</option>
 						{yun:}foreach from=$city_type[$info.provinceid] item=v{/yun}
 						<option value="{yun:}$v{/yun}" {yun:}if $info.cityid==$v{/yun}selected{yun:}/if{/yun}>{yun:}$city_name[$v]{/yun}</option>
 						{yun:}/foreach{/yun}
 						</select></div>
 						<div class="layui-input-inline">
 						<select id="three_cityid" name="three_cityid">
-						<option value=''>{yun:}t key='wap_user_addresumeson_00042'{/yun}</option>
+						<option value=''>{yun:}t key='wap_user_00100'{/yun}</option>
 						{yun:}foreach from=$city_type[$info.cityid] item=v{/yun}
 						<option value="{yun:}$v{/yun}" {yun:}if $info.three_cityid==$v{/yun}selected{yun:}/if{/yun}>{yun:}$city_name[$v]{/yun}</option>
 						{yun:}/foreach{/yun}
@@ -91,28 +91,28 @@
 					</div>
 				</div>
 				<div class="once_add_list">
-					<span class="once_add_list_name"><i class="once_add_list_name_bt">*</i>{yun:}t key='member_user_partcollect_00001'{/yun}</span>
+					<span class="once_add_list_name"><i class="once_add_list_name_bt">*</i>{yun:}t key='member_user_00198'{/yun}</span>
 					<div class="once_add_list_text">
 						<input class="once_add_list_input" type="text" id="address" maxlength="15" name="address" value="{yun:}$info.address{/yun}" />
 					</div>
 				</div>
 				<div class="once_add_list">
-					<span class="once_add_list_name"><i class="once_add_list_name_bt">*</i>{yun:}t key='wap_once_add_00008'{/yun}</span>
+					<span class="once_add_list_name"><i class="once_add_list_name_bt">*</i>{yun:}t key='wap_00353'{/yun}</span>
 					<div class="once_add_list_text">
-						<textarea rows='6' class="once_tck_box_job_simplew_textarea" id="require" onfocus="if(this.value=='请填写招聘的具体要求，如：{yun:}t key='wap_com_jobadd_00049'{/yun}，{yun:}t key='home.education_suffix'{/yun}，{yun:}t key='wap_com_jobadd_00048'{/yun}，{yun:}t key='wap_user_info_00017'{/yun}，工资待遇等相关信息') this.value=''" onblur="this.value=this.value==''?'请填写招聘的具体要求，如：{yun:}t key='wap_com_jobadd_00049'{/yun}，{yun:}t key='home.education_suffix'{/yun}，{yun:}t key='wap_com_jobadd_00048'{/yun}，{yun:}t key='wap_user_info_00017'{/yun}，工资待遇等相关信息':this.value" name="require"> {yun:}$info.require{/yun}</textarea>
+						<textarea rows='6' class="once_tck_box_job_simplew_textarea" id="require" onfocus="if(this.value=='请填写招聘的具体要求，如：{yun:}t key='wap_com_00303'{/yun}，{yun:}t key='home.education_suffix'{/yun}，{yun:}t key='wap_com_00302'{/yun}，{yun:}t key='wap_user_00240'{/yun}，工资待遇等相关信息') this.value=''" onblur="this.value=this.value==''?'请填写招聘的具体要求，如：{yun:}t key='wap_com_00303'{/yun}，{yun:}t key='home.education_suffix'{/yun}，{yun:}t key='wap_com_00302'{/yun}，{yun:}t key='wap_user_00240'{/yun}，工资待遇等相关信息':this.value" name="require"> {yun:}$info.require{/yun}</textarea>
 					</div>
 				</div>
 
 				<div class="once_title_p"><i class="once_title_p_icon once_title_p_icon_dp"></i>店铺信息</div>
 
 				<div class="once_add_list">
-					<span class="once_add_list_name"><i class="once_add_list_name_bt">*</i>{yun:}t key='admin_user_weipin_component_once_00034'{/yun}</span>
+					<span class="once_add_list_name"><i class="once_add_list_name_bt">*</i>{yun:}t key='admin_user_weipin_00034'{/yun}</span>
 					<div class="once_add_list_text">
 						<input class="once_add_list_input" type="text" id="companyname" maxlength="15" name="companyname"  value="{yun:}$info.companyname{/yun}"  />
 					</div>
 				</div>
 				<div class="once_add_list">
-					<span class="once_add_list_name"><i class="once_add_list_name_bt">*</i>{yun:}t key='wap_user_invitecont_00004'{/yun}</span>
+					<span class="once_add_list_name"><i class="once_add_list_name_bt">*</i>{yun:}t key='wap_user_00265'{/yun}</span>
 					<div class="once_add_list_text">
 						<input class="once_add_list_input" type="phone" id="phone" onkeyup="this.value=this.value.replace(/[^0-9-]/g,'')" maxlength="13" name="phone" value="{yun:}$info.phone{/yun}"  />
 					</div>
@@ -132,7 +132,7 @@
 						</div>
 					{yun:}else{/yun}
 						<div class="once_add_list">
-							<span class="once_add_list_name"><i class="once_add_list_name_bt">*</i>{yun:}t key='wap_advice_00007'{/yun} </span>
+							<span class="once_add_list_name"><i class="once_add_list_name_bt">*</i>{yun:}t key='wap_00110'{/yun} </span>
 							<input id="authcode" class="once_add_list_input" type="text" maxlength="6" name="authcode" />
 							<a class="fl">
 								<img id="vcodeimgs" onclick="checkCode('vcodeimgs');" src="{yun:}$config.sy_weburl{/yun}/app/include/authcode.inc.php" style="margin-left:10px;border:1px solid #eee" />
@@ -145,9 +145,9 @@
 				{yun:}/if{/yun}
 				{yun:}if $config.sy_msg_isopen==1{/yun}
 				<div class="once_add_list">
-					<span class="once_add_list_name"><i class="once_add_list_name_bt">*</i>{yun:}t key='wap_com_bindingbox_00002'{/yun}</span>
+					<span class="once_add_list_name"><i class="once_add_list_name_bt">*</i>{yun:}t key='wap_com_00036'{/yun}</span>
 					<div class="once_add_list_text">
-						<input style="width:135px" class="once_add_list_input" type="text" onkeyup="this.value=this.value.replace(/[^0-9-]/g,'')" id="moblie_code" maxlength="6" name="moblie_code" /><a href="javascript:;" id="send_msg_tip" onclick="sendmsg('{yun:}$config.sy_weburl{/yun}/once/?c=sendmsg');" class="msgbtn">{yun:}t key='member_com_binding_00004'{/yun}</a>
+						<input style="width:135px" class="once_add_list_input" type="text" onkeyup="this.value=this.value.replace(/[^0-9-]/g,'')" id="moblie_code" maxlength="6" name="moblie_code" /><a href="javascript:;" id="send_msg_tip" onclick="sendmsg('{yun:}$config.sy_weburl{/yun}/once/?c=sendmsg');" class="msgbtn">{yun:}t key='member_com_00063'{/yun}</a>
 					</div>
 				</div>
 				{yun:}/if{/yun}
@@ -159,11 +159,11 @@
 					// Countdown
 					function smsTimer(obj){
 						if (smsTimer_flag > 0) {
-							$(obj).html("{yun:}t key='wap_js_forgetpw_00007'{/yun}"+smsTimer_flag+'s)');
+							$(obj).html("{yun:}t key='wap_js_00122'{/yun}"+smsTimer_flag+'s)');
 							$(obj).attr({'style':'color:#f00;font-weight: bold;'});
 							smsTimer_flag--;
 						}else{
-							$(obj).html("{yun:}t key='wap_js_forgetpw_00009'{/yun}");
+							$(obj).html("{yun:}t key='wap_js_00124'{/yun}");
 							$(obj).attr({'style':'color:#f00;font-weight: bold;'});
 							smsTimer_flag = smsTimer_time;
 							clearInterval(Timer);
@@ -172,18 +172,18 @@
 					function sendmsg(url){
 						var moblie = $('#phone').val();
 						if(!isjsMobile(moblie)){
-							layer.msg("{yun:}t key='default_public_search_login_00002'{/yun}", 2, 8);
+							layer.msg("{yun:}t key='default_00061'{/yun}", 2, 8);
 							return false;
 						}
 
 						var verify_token = '',verify_str = '';
 						var code = '';
-						var codesear = new RegExp("{yun:}t key='wap_js_onceadd_00002'{/yun}");
+						var codesear = new RegExp("{yun:}t key='wap_js_00130'{/yun}");
 						if(codesear.test(code_web) && exitsid("moblie_code")) {
 							if(code_kind == 1) {
 								var authcode = $("#authcode").val();
 								if(!authcode) {
-									layer.msg("{yun:}t key='wap_user_bindingbox_00004'{/yun}", 2, 8);
+									layer.msg("{yun:}t key='wap_user_00143'{/yun}", 2, 8);
 									return false;
 								}
 							} else if(code_kind > 2) {
@@ -204,7 +204,7 @@
 
 						if(smsTimer_time==smsTimer_flag){
 							Timer = setInterval("smsTimer($('#send_msg_tip'))", smsTime_speed);
-							layer.load("{yun:}t key='wap_js_publicselect_00003'{/yun}",0);
+							layer.load("{yun:}t key='wap_js_00148'{/yun}",0);
 							$.post(url,{moblie:moblie,code:authcode,verify_token:verify_token,verify_str:verify_str},function(data){
 
 								layer.closeAll('loading');
@@ -229,13 +229,13 @@
 								}
 							})
 						}else {
-							layer.msg("{yun:}t key='wap_js_forgetpw_00003'{/yun}", 2, 8);return false;
+							layer.msg("{yun:}t key='wap_js_00118'{/yun}", 2, 8);return false;
 						}
 					}
 
 				</script>
 				<div class="once_add_list">
-					<span class="once_add_list_name"><i class="once_add_list_name_bt">*</i>{yun:}t key='wap_user_invitecont_00006'{/yun}</span>
+					<span class="once_add_list_name"><i class="once_add_list_name_bt">*</i>{yun:}t key='wap_user_00267'{/yun}</span>
 					<div class="once_add_list_text">
 						<input class="once_add_list_input"type="text" id="linkman" maxlength="15" name="linkman"  value="{yun:}$info.linkman{/yun}" />
 					</div>
@@ -243,9 +243,9 @@
 
 				{yun:}if $config.sy_once_yyzz == 1{/yun}
 				<div class="once_add_list" style="margin-bottom: 10px;">
-					<span class="once_add_list_name"><i class="once_add_list_name_bt">*</i>{yun:}t key='admin_user_weipin_component_once_00017'{/yun}</span>
+					<span class="once_add_list_name"><i class="once_add_list_name_bt">*</i>{yun:}t key='admin_user_weipin_00017'{/yun}</span>
 					<div class="once_add_list_text" style="position:relative">
-						<button type="button" class="yun_bth_pic lay-uploads upload-yyzz" data-file="yyzz" data-filetype="1" lay-data="{imgid: 'once_yyzz'}">{yun:}t key='wap_uploadimg_00001'{/yun}</button>
+						<button type="button" class="yun_bth_pic lay-uploads upload-yyzz" data-file="yyzz" data-filetype="1" lay-data="{imgid: 'once_yyzz'}">{yun:}t key='wap_00540'{/yun}</button>
 						<input type="hidden" name="yyzz" value="{yun:}$info.yyzz{/yun}"/>
 
 						<div style="width:100px; position:absolute;left:130px;top:-10px;">
@@ -257,9 +257,9 @@
 				{yun:}/if{/yun}
 
 				<div class="once_add_list">
-					<span class="once_add_list_name"><i class="once_add_list_name_bt">&nbsp;</i>{yun:}t key='wap_once_show_00003'{/yun}</span>
+					<span class="once_add_list_name"><i class="once_add_list_name_bt">&nbsp;</i>{yun:}t key='wap_00362'{/yun}</span>
 					<div class="once_add_list_text" style="position:relative">
-						<button type="button" class="yun_bth_pic lay-uploads upload-file" data-file="file" data-filetype="1" lay-data="{imgid: 'imgicon'}">{yun:}t key='wap_uploadimg_00001'{/yun}</button>
+						<button type="button" class="yun_bth_pic lay-uploads upload-file" data-file="file" data-filetype="1" lay-data="{imgid: 'imgicon'}">{yun:}t key='wap_00540'{/yun}</button>
 						<input type="hidden" id="laynoupload" value="1"/>
 						<input type="hidden" name="pic" value="{yun:}$info.pic{/yun}"/>
 
@@ -271,18 +271,18 @@
 				</div>
 
 
-				<div class="once_title_p"><i class="once_title_p_icon once_title_p_icon_zh"></i>{yun:}t key='admin_user_users_component_resume_add_00001'{/yun}</div>
+				<div class="once_title_p"><i class="once_title_p_icon once_title_p_icon_zh"></i>{yun:}t key='admin_user_00191'{/yun}</div>
 
 				<div class="once_add_list">
-					<span class="once_add_list_name"><i class="once_add_list_name_bt">*</i>{yun:}t key='wap_once_add_00011'{/yun}：</span>
+					<span class="once_add_list_name"><i class="once_add_list_name_bt">*</i>{yun:}t key='wap_00356'{/yun}：</span>
 					<div class="once_add_list_text">
 						<input class="once_add_list_input" type="password" id="password" name="password" onkeyup="this.value=this.value.replace(/^ +| +$/g,'')" />
-						<span class="once_add_list_text_dw">用于刷新/{yun:}t key='wap_js_umeditor_lang_zh_cn_zh_cn_00005'{/yun}/删除招聘信息，请牢记！</span>
+						<span class="once_add_list_text_dw">用于刷新/{yun:}t key='wap_js_00073'{/yun}/删除招聘信息，请牢记！</span>
 					</div>
 				</div>
 				<div class="once_add_list"><span class="once_add_list_name">&nbsp;</span>
 					<input type="hidden" id="id" name="id"  value="{yun:}$info.id{/yun}" />
-					<input id="botton" class="once_add_list_bth" type="submit" value="{yun:}t key='default_once_add_00002'{/yun}"/>
+					<input id="botton" class="once_add_list_bth" type="submit" value="{yun:}t key='default_00264'{/yun}"/>
 					<input type="hidden" id="cionly" name="cionly" value="{yun:}if empty($city_type){/yun}1{yun:}/if{/yun}">
 				</div>
 			</div>
@@ -340,7 +340,7 @@ function returnmessagefast(frame_id){
 					move:false,
 					fix: true,
 					zIndex:666,
-					title : "{yun:}t key='default_once_add_00001'{/yun}",
+					title : "{yun:}t key='default_00263'{/yun}",
 					border : [10 , 0.3 , '#000', true],
 					area : ['480px','330px'],
 					page : {dom : '#fastjob'},

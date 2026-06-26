@@ -25,7 +25,7 @@ function yun_is_auto_key($key)
     if ($i18n && method_exists($i18n, 'isAutoKey')) {
         return $i18n->isAutoKey($key);
     }
-    return is_string($key) && preg_match('/^[a-z][a-z0-9_]*_[0-9]{5}$/', $key);
+    return is_string($key) && preg_match('/^([a-z][a-z0-9_]*)_([0-9]{5})$/', $key, $m) && count(explode('_', $m[1])) <= 3;
 }
 
 function yun_t($key, $params = array(), $default = '')

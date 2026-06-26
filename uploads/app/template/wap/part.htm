@@ -20,10 +20,10 @@
             </li>
 
             <li onclick="partTypeShow()">
-                <a href="javascript:void(0);" class="searchOptions_list_a">{yun:}if $partclass_name[$smarty.get.type]{/yun}{yun:}$partclass_name[$smarty.get.type]{/yun}{yun:}else{/yun}{yun:}t key='member_com_partadd_00003'{/yun}{yun:}/if{/yun}<i class="searchOptions_icon"></i></a>
+                <a href="javascript:void(0);" class="searchOptions_list_a">{yun:}if $partclass_name[$smarty.get.type]{/yun}{yun:}$partclass_name[$smarty.get.type]{/yun}{yun:}else{/yun}{yun:}t key='member_com_00307'{/yun}{yun:}/if{/yun}<i class="searchOptions_icon"></i></a>
             </li>
             <li onclick="partBillingCycleShow()">
-                <a href="javascript:void(0);" class="searchOptions_list_a">{yun:}if $partclass_name[$smarty.get.cycle]{/yun}{yun:}$partclass_name[$smarty.get.cycle]{/yun}{yun:}else{/yun}{yun:}t key='member_user_partcollect_00002'{/yun}{yun:}/if{/yun}<i class="searchOptions_icon"></i></a>
+                <a href="javascript:void(0);" class="searchOptions_list_a">{yun:}if $partclass_name[$smarty.get.cycle]{/yun}{yun:}$partclass_name[$smarty.get.cycle]{/yun}{yun:}else{/yun}{yun:}t key='member_user_00199'{/yun}{yun:}/if{/yun}<i class="searchOptions_icon"></i></a>
             </li>
             <input type="hidden" id="searchurl" value="{yun:}$searchurl{/yun}" />
             <input type="hidden" id="waptype" value="1" />
@@ -57,7 +57,7 @@
                             	{yun:}if $partlist.job_billing_cycle{/yun}
                                 	<div class="Part_jsfs">{yun:}$partlist.job_billing_cycle{/yun}</div>
                                 {yun:}/if{/yun}
-                                 <span class="part_box_ztt">{yun:}if $partlist.edate{/yun}短期{yun:}else{/yun}{yun:}t key='wap_com_partadd_00021'{/yun}{yun:}/if{/yun}</span>
+                                 <span class="part_box_ztt">{yun:}if $partlist.edate{/yun}短期{yun:}else{/yun}{yun:}t key='wap_com_00341'{/yun}{yun:}/if{/yun}</span>
                                  <span class="part_box_jobdate">
                                     {yun:}if $partlist.time=='今天' || $partlist.time=='昨天'{/yun}
                                         {yun:}$partlist.time{/yun}
@@ -94,13 +94,13 @@
             	{yun:}if $smarty.get.keyword!="" {/yun} 
 	            	<div class="wap_member_no">没有搜索到兼职
 		                <div>
-		                    <a class="wap_mb_no_sr" href="{yun:}url m=wap c='part'{/yun}">{yun:}t key='wap_announcement_00002'{/yun}</a>
+		                    <a class="wap_mb_no_sr" href="{yun:}url m=wap c='part'{/yun}">{yun:}t key='wap_00130'{/yun}</a>
 		                </div>
 		        	</div>
 		        {yun:}else{/yun}
 			        <div class="wap_member_no">暂无兼职
 			            <div>
-			                <a class="wap_mb_no_sr" href="{yun:}url m=wap c='part'{/yun}">{yun:}t key='wap_announcement_00002'{/yun}</a>
+			                <a class="wap_mb_no_sr" href="{yun:}url m=wap c='part'{/yun}">{yun:}t key='wap_00130'{/yun}</a>
 			            </div>
 			        </div>
 		        {yun:}/if{/yun} 

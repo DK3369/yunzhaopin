@@ -28,30 +28,30 @@
 						<form id="productform" name="MyForm" method="post" target="supportiframe" action="index.php?c=product&act=save" enctype="multipart/form-data">
 							<ul>
 								<li>
-									<div class="com_release_name"><i class="ff0">*</i> {yun:}t key='member_com_addproduct_00004'{/yun}</div>
+									<div class="com_release_name"><i class="ff0">*</i> {yun:}t key='member_com_00047'{/yun}</div>
 									<input type="text"  name="title" value="{yun:}$editrow.title{/yun}"class="com_info_text" >
-									<span id="by_name"  class="errordisplay">{yun:}t key='member_com_addproduct_00001'{/yun}</span>
+									<span id="by_name"  class="errordisplay">{yun:}t key='member_com_00044'{/yun}</span>
 								</li>
 
 								<li>
-									<div class="com_release_name"><i class="ff0">*</i> {yun:}t key='member_com_addproduct_00002'{/yun}</div>
+									<div class="com_release_name"><i class="ff0">*</i> {yun:}t key='member_com_00045'{/yun}</div>
 									<div class="add_product_text">
-										<button type="button" class="yun_bth_pic noupload" lay-data="{imgid: 'imgicon',parentid: 'imgparent'}">{yun:}t key='wap_uploadimg_00001'{/yun}</button>最佳尺寸：宽/{yun:}t key='common_02105'{/yun}=270像素/180像素<span id="by_name" class="errordisplay">{yun:}t key='member_com_addproduct_00001'{/yun}</span>
+										<button type="button" class="yun_bth_pic noupload" lay-data="{imgid: 'imgicon',parentid: 'imgparent'}">{yun:}t key='wap_00540'{/yun}</button>最佳尺寸：宽/{yun:}t key='common_02105'{/yun}=270像素/180像素<span id="by_name" class="errordisplay">{yun:}t key='member_com_00044'{/yun}</span>
 										<input type="hidden" id="laynoupload" value="1"/>
 									</div>
 								</li>
 								<li id="imgparent" {yun:}if !$editrow.pic{/yun}class="none"{yun:}/if{/yun}>
-									<div class="com_release_name"><i class="ff0">*</i> {yun:}t key='member_com_addproduct_00005'{/yun}</div>
+									<div class="com_release_name"><i class="ff0">*</i> {yun:}t key='member_com_00048'{/yun}</div>
 									<img id="imgicon" src="{yun:}$editrow.pic{/yun}" width="100" height="60"/>
 								</li>
 								<li>
-									<div class="com_release_name"><i class="ff0">*</i> {yun:}t key='member_com_addproduct_00003'{/yun}</div>
+									<div class="com_release_name"><i class="ff0">*</i> {yun:}t key='member_com_00046'{/yun}</div>
  									<script id="description" name="body" type="text/plain" style="width:560px; height:200px;"> {yun:}$editrow.body{/yun} </script>
-									<span id="by_description" class="errordisplay">{yun:}t key='member_com_addproduct_00001'{/yun}</span>
+									<span id="by_description" class="errordisplay">{yun:}t key='member_com_00044'{/yun}</span>
 								</li>   
 								<li>
 									<input name="id" value="{yun:}$smarty.get.id{/yun}" type="hidden"/>
-									<input class="btn_01" type="button" onclick="CheckPost()" value="{yun:}t key='wap_once_add_00009'{/yun}">  
+									<input class="btn_01" type="button" onclick="CheckPost()" value="{yun:}t key='wap_00354'{/yun}">  
 								</li> 
 							</ul>
 						</form>
@@ -78,7 +78,7 @@ function CheckPost(){
 		layer.msg('产品描述不能为空！', 2, 8);return false;
 	}  
 	$("#productform").submit();
-	layer.load("{yun:}t key='wap_js_publicselect_00003'{/yun}",0);
+	layer.load("{yun:}t key='wap_js_00148'{/yun}",0);
 }
 </script> 
 {yun:}include file="$comstyle/footer.htm"{/yun}

@@ -6,7 +6,7 @@
   <div class=right_box>
           <div class="newmember_screenbox">
           <div class="newmember_screen">  
-            <div class="newmember_screenname"><a  href="index.php?c=finder" class="newcom_fh">{yun:}t key='common.back'{/yun} </a><span class="newcom_fh_line">|</span>{yun:}t key='member_com_finderinfo_00003'{/yun}</div>
+            <div class="newmember_screenname"><a  href="index.php?c=finder" class="newcom_fh">{yun:}t key='common.back'{/yun} </a><span class="newcom_fh_line">|</span>{yun:}t key='member_com_00090'{/yun}</div>
                   </div>
                 </div>
           <div class=admincont_box>
@@ -19,14 +19,14 @@
           <form action="index.php?c=finder&act=save" method="post" target="supportiframe" name="MyForm" class="layui-form">
             <ul class="Finder_box">
               <li>
-                <div class="com_release_name"><i class="ff0">*</i> {yun:}t key='member_com_finderinfo_00002'{/yun}</div>
+                <div class="com_release_name"><i class="ff0">*</i> {yun:}t key='member_com_00089'{/yun}</div>
                <div class="com_release_cont">  <input name="name" style="width:250px" type='text' value="{yun:}$info.name{/yun}" class="layui-input"></div>
               </li>
-              <li> <div class="com_release_name"><i class="ff0">*</i>{yun:}t key='member_com_finderinfo_00001'{/yun}</div>
+              <li> <div class="com_release_name"><i class="ff0">*</i>{yun:}t key='member_com_00088'{/yun}</div>
                 <div class="com_release_cont"> <input name="keyword" style="width:250px" type='text' value="{yun:}$parav.keyword{/yun}" class="layui-input"></div>
               </li>
               <li>
-                   <div class="com_release_name"><i class="ff0">*</i> {yun:}t key='member_com_finderinfo_00004'{/yun}</div>
+                   <div class="com_release_name"><i class="ff0">*</i> {yun:}t key='member_com_00091'{/yun}</div>
                     <div class="com_release_cont">
                 <div class="layui-input-inline">
                   <select name="hy" lay-filter="hy">
@@ -39,10 +39,10 @@
               </li>
               <li>
                 <input type="hidden" name="jionly" value='{yun:}if empty($job_type){/yun}1{yun:}/if{/yun}'>
-                   <div class="com_release_name"><i class="ff0">*</i> {yun:}t key='wap_user_addexpect_00010'{/yun}</div>
+                   <div class="com_release_name"><i class="ff0">*</i> {yun:}t key='wap_user_00018'{/yun}</div>
                     <div class="com_release_cont">  <div class="layui-input-inline">
                     <select name="job1" id="job1" lay-filter="jobclass">
-                      <option value="">{yun:}t key='wap_user_addresumeson_00042'{/yun}</option>{yun:}foreach from=$job_index key=j item=v{/yun}
+                      <option value="">{yun:}t key='wap_user_00100'{/yun}</option>{yun:}foreach from=$job_index key=j item=v{/yun}
               <option value="{yun:}$v{/yun}" {yun:}if $parav.job1 == $v{/yun} selected{yun:}/if{/yun}>{yun:}$job_name[$v]{/yun}</option>{yun:}/foreach{/yun}
             
                     </select>
@@ -50,14 +50,14 @@
                   {yun:}if !empty($job_type){/yun}
                   <div class="layui-input-inline">
                     <select name="job1_son" lay-filter="jobclass" id="job1_son">
-                      <option value="">{yun:}t key='wap_user_addresumeson_00042'{/yun}</option>{yun:}foreach from=$job_type[$parav.job1] key=j item=v{/yun}<option value="{yun:}$v{/yun}" {yun:}if $parav.job1_son==$v{/yun} selected{yun:}/if{/yun}>{yun:}$job_name[$v]{/yun} </option>
+                      <option value="">{yun:}t key='wap_user_00100'{/yun}</option>{yun:}foreach from=$job_type[$parav.job1] key=j item=v{/yun}<option value="{yun:}$v{/yun}" {yun:}if $parav.job1_son==$v{/yun} selected{yun:}/if{/yun}>{yun:}$job_name[$v]{/yun} </option>
                   {yun:}/foreach{/yun}
             
                     </select>
                   </div>
                   <div class="layui-input-inline">
                     <select name="job_post" lay-filter="jobclass" id="job_post">
-                <option value="">{yun:}t key='wap_user_addresumeson_00042'{/yun}</option>{yun:}foreach from=$job_type[$parav.job1_son] key=j item=v{/yun}
+                <option value="">{yun:}t key='wap_user_00100'{/yun}</option>{yun:}foreach from=$job_type[$parav.job1_son] key=j item=v{/yun}
           <option value="{yun:}$v{/yun}" {yun:}if $parav.job_post==$v{/yun} selected{yun:}/if{/yun}>{yun:}$job_name[$v]{/yun} </option>{yun:}/foreach{/yun}
             
                     </select>
@@ -66,22 +66,22 @@
                 </div>
               </li>
               <li>
-                  <div class="com_release_name"><i class="ff0">*</i> {yun:}t key='wap_once_add_00004'{/yun}</div>
+                  <div class="com_release_name"><i class="ff0">*</i> {yun:}t key='wap_00349'{/yun}</div>
                   <div class="layui-input-inline">
                     <select name="provinceid" lay-filter="citys" id="provinceid">
-                      <option value="">{yun:}t key='wap_user_addresumeson_00042'{/yun}</option>{yun:}foreach from=$city_index key=j item=v{/yun}
+                      <option value="">{yun:}t key='wap_user_00100'{/yun}</option>{yun:}foreach from=$city_index key=j item=v{/yun}
           <option value="{yun:}$v{/yun}" {yun:}if $parav.provinceid == $v{/yun} selected{yun:}/if{/yun}>{yun:}$city_name[$v]{/yun} </option>{yun:}/foreach{/yun} </select>
                   </div>
                   <div class="layui-input-inline">
                     <select name="cityid" lay-filter="citys" id="cityid">
-                      <option value="">{yun:}t key='wap_user_addresumeson_00042'{/yun}</option>
+                      <option value="">{yun:}t key='wap_user_00100'{/yun}</option>
                       {yun:}foreach from=$city_type[$parav.provinceid] key=j item=v{/yun}
             <option value="{yun:}$v{/yun}" {yun:}if $parav.cityid==$v{/yun} selected{yun:}/if{/yun}>{yun:}$city_name[$v]{/yun}</option>{yun:}/foreach{/yun}
            </select>
                   </div>
                   <div class="layui-input-inline" id="cityshowth" {yun:}if $parav.three_cityid<1{/yun}style="display:none"{yun:}/if{/yun}>
                   <select name="three_cityid" id="three_cityid">
-                    <option value="">{yun:}t key='wap_user_addresumeson_00042'{/yun}</option>{yun:}foreach from=$city_type[$parav.cityid] key=j item=v{/yun}
+                    <option value="">{yun:}t key='wap_user_00100'{/yun}</option>{yun:}foreach from=$city_type[$parav.cityid] key=j item=v{/yun}
           <option value="{yun:}$v{/yun}" {yun:}if $parav.three_cityid==$v{/yun} selected{yun:}/if{/yun}>{yun:}$city_name[$v]{/yun}</option>
                     
                 {yun:}/foreach{/yun}
@@ -91,7 +91,7 @@
               
               </li>
               <li>  
-               <div class="com_release_name"><i class="ff0">*</i> {yun:}t key='wap_com_jobadd_00036'{/yun}</div>
+               <div class="com_release_name"><i class="ff0">*</i> {yun:}t key='wap_com_00290'{/yun}</div>
                 <div class="com_release_cont"> 
                 <div class="com_release_cont_textw130">
                     <input id="minsalary" name="minsalary" type="text" size="5" value="{yun:}$parav.minsalary{/yun}" onkeyup="this.value=this.value.replace(/[^0-9]/g,'')" class="layui-input">
@@ -104,7 +104,7 @@
               </li>
               <li>
               
-               <div class="com_release_name"><i class="ff0">*</i> {yun:}t key='wap_com_jobadd_00029'{/yun}</div>
+               <div class="com_release_name"><i class="ff0">*</i> {yun:}t key='wap_com_00283'{/yun}</div>
                 <div class="layui-input-inline">
                   <select name="edu" lay-filter="edu">
                     <option value="">请选择学历要求</option>
@@ -116,7 +116,7 @@
               </li>
               <li>
              
-             <div class="com_release_name"><i class="ff0">*</i> {yun:}t key='wap_user_info_00017'{/yun}</div>
+             <div class="com_release_name"><i class="ff0">*</i> {yun:}t key='wap_user_00240'{/yun}</div>
                 <div class="layui-input-inline">
                   <select name="exp" lay-filter="exp">
                     <option value="">请选择工作经验</option>
@@ -130,10 +130,10 @@
               </li>
               <li>
                
-    <div class="com_release_name"><i class="ff0">*</i> {yun:}t key='wap_com_partadd_00012'{/yun}</div>
+    <div class="com_release_name"><i class="ff0">*</i> {yun:}t key='wap_com_00332'{/yun}</div>
                 <div class="layui-input-inline">
                   <select name="sex" lay-filter="sex">
-                    <option value="">{yun:}t key='wap_js_partpicker_00001'{/yun}</option>
+                    <option value="">{yun:}t key='wap_js_00134'{/yun}</option>
                {yun:}foreach from=$user_sex key=j item=v{/yun}
       <option value="{yun:}$j{/yun}" {yun:}if $parav.sex == $j{/yun} selected{yun:}/if{/yun}>{yun:}$v{/yun}</option>
                     
@@ -144,7 +144,7 @@
               </li>
               <li>
                
-            <div class="com_release_name"><i class="ff0">*</i> {yun:}t key='wap_com_jobadd_00025'{/yun}</div>
+            <div class="com_release_name"><i class="ff0">*</i> {yun:}t key='wap_com_00279'{/yun}</div>
                 <div class="layui-input-inline">
                   <select name="report" lay-filter="report">
                     <option value="">请选择到岗时间</option>
@@ -158,10 +158,10 @@
               </li>
               <li>
                
-                 <div class="com_release_name"><i class="ff0">*</i> {yun:}t key='wap_member_publictwo_00004'{/yun}</div>
+                 <div class="com_release_name"><i class="ff0">*</i> {yun:}t key='wap_00326'{/yun}</div>
                 <div class="layui-input-inline">
                   <select name="uptime" lay-filter="uptime">
-                    <option value="">{yun:}t key='member_user_finderinfo_00002'{/yun}</option>
+                    <option value="">{yun:}t key='member_user_00110'{/yun}</option>
                  {yun:}foreach from=$uptime key=j item=v{/yun}
         <option value="{yun:}$j{/yun}" {yun:}if $parav.uptime == $j{/yun} selected{yun:}/if{/yun}>{yun:}$v{/yun}</option>
                     
@@ -172,7 +172,7 @@
               </li>
               <li><span class="Finder_span"></span>
                 <input name="id" value="{yun:}$info.id{/yun}" type="hidden"/>
-                <input class="btn_01" type="submit" value="{yun:}t key='member_user_finderinfo_00006'{/yun}" name="submitBtn">
+                <input class="btn_01" type="submit" value="{yun:}t key='member_user_00114'{/yun}" name="submitBtn">
               </li>
             </ul>
           </form>
@@ -190,10 +190,10 @@ function getjoblist(id,type,name,son){
   $("#"+type+"id").val(id);
   if(son){ 
     $.post(weburl+"/member/index.php?m=ajax&c=getjoblist",{id:id,type:type},function(data){
-    $("#"+son).val("{yun:}t key='wap_com_jobadd_00018'{/yun}");
+    $("#"+son).val("{yun:}t key='wap_com_00272'{/yun}");
     $("#"+son+'id').val('');
     if(son=='job1_son'){
-      $("#job_post").val("{yun:}t key='wap_com_jobadd_00018'{/yun}");
+      $("#job_post").val("{yun:}t key='wap_com_00272'{/yun}");
       $("#job1_postid").val('');
     }
     $("#job_"+son+" ul").html(data);
@@ -207,7 +207,7 @@ function getcitylist(id,type,name,son){
   
   if(son){
     $.post(weburl+"/member/index.php?m=ajax&c=getcitylist",{id:id,type:type},function(data){
-    $("#"+son).val("{yun:}t key='member_user_finderinfo_00001'{/yun}");
+    $("#"+son).val("{yun:}t key='member_user_00109'{/yun}");
     $("#"+son+'id').val('');
       
       
@@ -219,7 +219,7 @@ function getcitylist(id,type,name,son){
       if(son=='three_cityid'){
         
         if(data){
-          $("#three_cityid").val("{yun:}t key='member_user_finderinfo_00001'{/yun}");
+          $("#three_cityid").val("{yun:}t key='member_user_00109'{/yun}");
           $('#cityshowth').show();
         }
       }
@@ -232,7 +232,7 @@ function CheckPost(){
   var maxsalary=$.trim($("#maxsalary").val());
   if(maxsalary){
     if(parseInt(maxsalary)<=parseInt(minsalary)){
-      layer.msg("{yun:}t key='wap_com_jobadd_00010'{/yun}", 2, 8);return false;
+      layer.msg("{yun:}t key='wap_com_00264'{/yun}", 2, 8);return false;
     }
   }
 }
@@ -249,7 +249,7 @@ layui.use(['form'], function(){
         $.post(job_url,{job1_son : data.value},function(html){
           if(data.elem.name=="job1"){
             $("#job1_son").html(html);
-            $("#job_post").html('<option value="">{yun:}t key='wap_user_addresumeson_00042'{/yun}</option>');
+            $("#job_post").html('<option value="">{yun:}t key='wap_user_00100'{/yun}</option>');
           }else if (data.elem.name=="job1_son"){
             $("#job_post").html(html);
           }
@@ -264,7 +264,7 @@ layui.use(['form'], function(){
       $.post(city_url, {cityid : data.value},function(htm){
         if(data.elem.name=='provinceid'){
           $("#cityid").html(htm);
-          $("#three_cityid").html("<option value=''>{yun:}t key='wap_user_addresumeson_00042'{/yun}</option>");
+          $("#three_cityid").html("<option value=''>{yun:}t key='wap_user_00100'{/yun}</option>");
         }else if(data.elem.name=='cityid'){
           $("#cityshowth").show();
           $("#three_cityid").html(htm);

@@ -12,7 +12,7 @@
                 <div class="login_pop_up_box_title_b">
 					<input type="hidden" name="act" id="act_login" value="0" />
 					<ul>
-                       <li id="acount_login" class="login_pop_up_cur">{yun:}t key='default_public_search_login_00003'{/yun}<i class="login_pop_up_curline"></i></li>
+                       <li id="acount_login" class="login_pop_up_cur">{yun:}t key='default_00062'{/yun}<i class="login_pop_up_curline"></i></li>
                         {yun:}if $config.sy_msg_isopen==1 && $config.sy_msg_login==1{/yun}
 						<li id="mobile_login">短信登录<i class="login_pop_up_curline"></i></li>
 						{yun:}/if{/yun}
@@ -24,27 +24,27 @@
 				<!---------------扫码登录页面---------------------->
 				<div class="wx_login_show none">
 				<div class="fast_login_box">
-					<div id="wx_login_qrcode" class="wxlogintext">{yun:}t key='wap_company_show_dark_00006'{/yun}</div>
-					<div class="wxlogintxt">{yun:}t key='default_public_search_login_00001'{/yun}</div>
+					<div id="wx_login_qrcode" class="wxlogintext">{yun:}t key='wap_00031'{/yun}</div>
+					<div class="wxlogintxt">{yun:}t key='default_00060'{/yun}</div>
 					<div id="wx_sx" class="none">
-						<div class="fast_login_show_sxbox"><a href="javascript:void(0);" onclick="getwxlogincode()" class="fast_login_show_sxicon"></a>{yun:}t key='member_user_binding_00004'{/yun}</div>
+						<div class="fast_login_show_sxbox"><a href="javascript:void(0);" onclick="getwxlogincode()" class="fast_login_show_sxicon"></a>{yun:}t key='member_user_00050'{/yun}</div>
 					</div>
                   </div>
 				</div>
 			<!------------------扫码登录页面end-->
 				<div id="login_normal_box">
 					<div class="login_pop_up_box_text"><i class="login_pop_up_box_icon login_pop_up_box_icon_zh"></i>
-						<input type="text" id="username" placeholder="{yun:}t key='member_user_info_00011'{/yun}/会员名/{yun:}t key='member_user_resumeout_00004'{/yun}" name="username" class="login_pop_up_box_t" autocomplete="off" />
-						<!--{yun:}t key='wap_js_forgetpw_00010'{/yun}-->
+						<input type="text" id="username" placeholder="{yun:}t key='member_user_00163'{/yun}/会员名/{yun:}t key='member_user_00282'{/yun}" name="username" class="login_pop_up_box_t" autocomplete="off" />
+						<!--{yun:}t key='wap_js_00125'{/yun}-->
 						<div class="login_pop_up_msg none" id="show_name">
-							<div class="login_pop_up_msg_tx">{yun:}t key='wap_js_reg_ajax_00016'{/yun}</div>
+							<div class="login_pop_up_msg_tx">{yun:}t key='wap_js_00056'{/yun}</div>
 							<div class="login_pop_up_msg_icon"></div>
 						</div>
 					</div>
 					<div class="login_pop_up_box_text"><i class="login_pop_up_box_icon login_pop_up_box_icon_mm"></i>
-						<input type="password" id="password" name="password" placeholder="{yun:}t key='wap_js_public_00002'{/yun}" class="login_pop_up_box_t" autocomplete="off" />
+						<input type="password" id="password" name="password" placeholder="{yun:}t key='wap_js_00139'{/yun}" class="login_pop_up_box_t" autocomplete="off" />
 						<div class="login_pop_up_msg none" id="show_pass">
-							<div class="login_pop_up_msg_tx">{yun:}t key='wap_js_reg_ajax_00021'{/yun}</div>
+							<div class="login_pop_up_msg_tx">{yun:}t key='wap_js_00061'{/yun}</div>
 							<div class="login_pop_up_msg_icon"></div>
 						</div>
 					</div>
@@ -53,9 +53,9 @@
 				{yun:}if $config.sy_msg_isopen==1 && $config.sy_msg_login==1{/yun}
 				<div class="none" id="login_sj_box">
 					<div class="login_pop_up_box_text"><i class="login_pop_up_box_icon login_pop_up_box_icon_sj"></i>
-						<input type="text" id="usermoblie" placeholder="{yun:}t key='wap_user_bindingbox_00003'{/yun}" name="username" class="login_pop_up_box_t" autocomplete="off" />
+						<input type="text" id="usermoblie" placeholder="{yun:}t key='wap_user_00142'{/yun}" name="username" class="login_pop_up_box_t" autocomplete="off" />
 						<div class="login_pop_up_msg none" id="show_mobile">
-							<div class="login_pop_up_msg_tx">{yun:}t key='default_public_search_login_00002'{/yun}</div>
+							<div class="login_pop_up_msg_tx">{yun:}t key='default_00061'{/yun}</div>
 							<div class="login_pop_up_msg_icon"></div>
 						</div>
 					</div>
@@ -77,7 +77,7 @@
 		
 				{yun:}else{/yun}
 				<div class="login_pop_up_box_yztext"><i class="login_pop_up_box_icon login_pop_up_box_icon_yz"></i>
-					<input id="txt_CheckCode" type="text" maxlength="6" name="authcode" autocomplete="off" placeholder="{yun:}t key='wap_user_bindingbox_00004'{/yun}" class="login_pop_up_box_t">
+					<input id="txt_CheckCode" type="text" maxlength="6" name="authcode" autocomplete="off" placeholder="{yun:}t key='wap_user_00143'{/yun}" class="login_pop_up_box_t">
 					<div class="login_pop_up_box_yzimg">
 						<img id="vcode_img" src="{yun:}$config.sy_weburl{/yun}/app/include/authcode.inc.php" onclick="checkCode('vcode_img');" style="margin-right:5px; margin-left:5px;cursor:pointer;" />
 					</div>
@@ -107,7 +107,7 @@
 				<input id="sublogin" class="login_pop_up_box_bth" type="button" onclick="check_login('{yun:}url m=login c=loginsave{/yun}','vcode_img',1);" value="登 录">
 				
 				<div class="login_pop_up_box_fot">
-                	没有账号？<a href="###" id="onregister" target="_blank">{yun:}t key='wap_job_show_00041'{/yun}</a>
+                	没有账号？<a href="###" id="onregister" target="_blank">{yun:}t key='wap_00284'{/yun}</a>
 					<a href="{yun:}url m=forgetpw{/yun}" class="login_pop_up_box_rightreg">忘记密码？</a>
 					
 				</div>
@@ -162,7 +162,7 @@
 		});
 	}
 	$(document).ready(function() {
-		//账号登录和手机登录tab{yun:}t key='wap_js_umeditor_dialogs_emotion_emotion_00001'{/yun}
+		//账号登录和手机登录tab{yun:}t key='wap_js_00067'{/yun}
 		$("#acount_login').click(function(data) {
 			$('#acount_login').removeClass().addClass('login_pop_up_cur');
 			$('#mobile_login').removeClass();

@@ -22,18 +22,18 @@
     <div class="clear"></div>
 
     <div class="wapper">
-        <div class="current_Location icon">{yun:}t key='default_part_show_00003'{/yun}：<a href="{yun:}$config.sy_weburl{/yun}">{yun:}t key='common.home'{/yun}</a>><a href="{yun:}url m=part{/yun}">{yun:}t key='wap_user_index_00038'{/yun}</a>><em>{yun:}$job.name{/yun}</em></div>
+        <div class="current_Location icon">{yun:}t key='common_02137'{/yun}：<a href="{yun:}$config.sy_weburl{/yun}">{yun:}t key='common.home'{/yun}</a>><a href="{yun:}url m=part{/yun}">{yun:}t key='wap_user_00220'{/yun}</a>><em>{yun:}$job.name{/yun}</em></div>
 
         <div class="clear"></div>
 
         <div class="yun_part_left">
-            <div class="partjob_tip">{yun:}t key='wap_js_forgetpw_00010'{/yun}：刷信誉、淘宝刷钻、YY网络兼职、加YY联系的职位都是骗子！收取费用或押金都可能有欺诈嫌疑，请警惕！</div>
+            <div class="partjob_tip">{yun:}t key='wap_js_00125'{/yun}：刷信誉、淘宝刷钻、YY网络兼职、加YY联系的职位都是骗子！收取费用或押金都可能有欺诈嫌疑，请警惕！</div>
             <div class="yun_part_show_jobbox">
                 <div class="yun_part_show_jobname"><h1>{yun:}$job.name{/yun}</h1></div>
                 <div class="yun_part_show_jobxz"><span class="yun_part_show_jobxz_n">{yun:}$job.salary{/yun}</span>{yun:}$job.salary_type_n{/yun}</div>
                 <div class="yun_part_show_jobxx">
                     {yun:}$job.cityname{/yun}
-                    <span class="yun_part_show_jobxx_yl">{yun:}$job.lastupdate|date_format:"%Y-%m-%d"{/yun} {yun:}t key='wap_invite_00002'{/yun}</span>
+                    <span class="yun_part_show_jobxx_yl">{yun:}$job.lastupdate|date_format:"%Y-%m-%d"{/yun} {yun:}t key='wap_00225'{/yun}</span>
                     <span class="yun_part_show_jobxx_yl">{yun:}$job.hits{/yun} 次浏览</span>
                 </div>
 
@@ -43,43 +43,43 @@
                         <img src="{yun:}url m=ajax c=pubqrcode toc=part toa=show toid=$job.id{/yun}" width="110" height="110"/>
                         
                     </div>
-                    <div class="wx_share_fx_p">{yun:}t key='wap_evaluategradeshow_00001'{/yun}</div>
+                    <div class="wx_share_fx_p">{yun:}t key='wap_00195'{/yun}</div>
                 </div>
 
                 {yun:}if $job.edate < time() && $job.edate!=0{/yun}
                 <div class="part_exceed">
-                    <img src="{yun:}$style{/yun}/images/stamp_gq.png" title="{yun:}t key='member_com_part_00003'{/yun}" width="140" height="120">
+                    <img src="{yun:}$style{/yun}/images/stamp_gq.png" title="{yun:}t key='member_com_00304'{/yun}" width="140" height="120">
                 </div>
                 {yun:}/if{/yun}
                 <div class="yun_part_show_jobinfo">
                     <div class="yun_part_show_jobinfo_p">
-                        <span class="yun_part_show_jobinfo_p_s">{yun:}t key='member_com_partlist_00002'{/yun}：</span>
+                        <span class="yun_part_show_jobinfo_p_s">{yun:}t key='member_com_00313'{/yun}：</span>
                         <span class="con_require_con">{yun:}$job.type_n{/yun}</span>
                     </div>
                     <div class="yun_part_show_jobinfo_p">
-                        <span class="yun_part_show_jobinfo_p_s">{yun:}t key='wap_com_partadd_00013'{/yun}：</span>
+                        <span class="yun_part_show_jobinfo_p_s">{yun:}t key='wap_com_00333'{/yun}：</span>
                         <span class="con_require_con">{yun:}$job.number{/yun} {yun:}t key='common_02051'{/yun}</span>
                     </div>
                     {yun:}if $job.sex{/yun}
                     <div class="yun_part_show_jobinfo_p">
-                        <span class="yun_part_show_jobinfo_p_s">{yun:}t key='wap_com_partadd_00012'{/yun}：</span>
+                        <span class="yun_part_show_jobinfo_p_s">{yun:}t key='wap_com_00332'{/yun}：</span>
                         <span class="con_require_con">{yun:}$job.sex_n{/yun}</span>
                     </div>
                     {yun:}/if{/yun}
                     <div class="yun_part_show_jobinfo_p">
-                        <span class="yun_part_show_jobinfo_p_s">{yun:}t key='member_user_partcollect_00002'{/yun}：</span>
+                        <span class="yun_part_show_jobinfo_p_s">{yun:}t key='member_user_00199'{/yun}：</span>
                         <span class="con_require_con">{yun:}$job.billing_cycle_n{/yun}</span>
                     </div>
                     <div class="yun_part_show_jobinfo_p">
                         <span class="yun_part_show_jobinfo_p_s">有效期至：</span>
-                        <span class="con_require_con">{yun:}if $job.edate{/yun}{yun:}$job.edate|date_format:'%Y-%m-%d'{/yun}{yun:}else{/yun}{yun:}t key='wap_js_partpicker_00002'{/yun}{yun:}/if{/yun}</span>
+                        <span class="con_require_con">{yun:}if $job.edate{/yun}{yun:}$job.edate|date_format:'%Y-%m-%d'{/yun}{yun:}else{/yun}{yun:}t key='wap_js_00135'{/yun}{yun:}/if{/yun}</span>
                     </div>
                     <div class="yun_part_show_jobinfo_p">
                         <span class="yun_part_show_jobinfo_p_s">联&nbsp;系&nbsp; {yun:}t key='common_02051'{/yun}：</span>{yun:}$job.linkman{/yun}
                     </div>
                     {yun:}if $config.com_link_look ==2{/yun}
                     <div class="yun_part_show_jobinfo_p">
-                        <span class="yun_part_show_jobinfo_p_s">{yun:}t key='wap_user_invitecont_00004'{/yun}：</span>
+                        <span class="yun_part_show_jobinfo_p_s">{yun:}t key='wap_user_00265'{/yun}：</span>
                         <span class="con_require_con">
                             {yun:}$job.linktel_n{/yun}
                             <a href="javascript:void(0);" onclick="wxScanShowTel('{yun:}$job.id{/yun}')" class="job_details_touch_tel_bth" style="width:80px">微信扫码查看</a>
@@ -87,13 +87,13 @@
                     </div>
                     {yun:}else{/yun}
                         <div class="yun_part_show_jobinfo_p">
-                            <span class="yun_part_show_jobinfo_p_s">{yun:}t key='wap_user_invitecont_00004'{/yun}：</span>
+                            <span class="yun_part_show_jobinfo_p_s">{yun:}t key='wap_user_00265'{/yun}：</span>
                             <span class="con_require_con">
                                 {yun:}if $job.link_tip==1 || $job.link_tip==2 || $job.link_tip==3{/yun}暂未开放联系方式
-                                {yun:}else if $job.link_tip==4{/yun}{yun:}t key='wap_part_show_00002'{/yun}
-                                {yun:}else if $job.link_tip==5{/yun}{yun:}t key='wap_part_show_00003'{/yun}
-                                {yun:}else if $job.link_tip==6{/yun}{yun:}t key='wap_part_show_00004'{/yun}
-                                {yun:}else if $job.link_tip==7{/yun}{yun:}t key='wap_part_show_00001'{/yun}
+                                {yun:}else if $job.link_tip==4{/yun}{yun:}t key='wap_00369'{/yun}
+                                {yun:}else if $job.link_tip==5{/yun}{yun:}t key='wap_00370'{/yun}
+                                {yun:}else if $job.link_tip==6{/yun}{yun:}t key='wap_00371'{/yun}
+                                {yun:}else if $job.link_tip==7{/yun}{yun:}t key='wap_00368'{/yun}
                                 {yun:}else{/yun}{yun:}$job.linktel_n{/yun}
                                 {yun:}/if{/yun}
                             </span>
@@ -102,7 +102,7 @@
 
 
                     <div class="yun_part_show_jobinfo_p">
-                        <span class="yun_part_show_jobinfo_p_s">{yun:}t key='wap_com_partadd_00011'{/yun}：</span>
+                        <span class="yun_part_show_jobinfo_p_s">{yun:}t key='wap_com_00331'{/yun}：</span>
                         <span class="con_require_con">{yun:}$job.address{/yun}</span>
                     </div>
                     {yun:}if $config.map_key{/yun}
@@ -113,43 +113,43 @@
                 </div>
                 {yun:}if $job.status=='1'{/yun}
                 <div class="partjob_cz">
-                    <img src="{yun:}$style{/yun}/images/stamp.png" alt="{yun:}t key='wap_com_job_00051'{/yun}">
+                    <img src="{yun:}$style{/yun}/images/stamp.png" alt="{yun:}t key='wap_com_00242'{/yun}">
                 </div>
                 {yun:}else{/yun}
                 <div class="partjob_cz">
                     {yun:}if is_array($apply){/yun}
-                        <a class="partjob_ybmbth" href="javascript:void(0);">{yun:}t key='wap_part_show_00010'{/yun}</a>
+                        <a class="partjob_ybmbth" href="javascript:void(0);">{yun:}t key='wap_00377'{/yun}</a>
                     {yun:}else{/yun}
                         {yun:}if $usertype==1{/yun}
-                            <a class="partjob_bmbth" href="javascript:PartApply('{yun:}$job.id{/yun}');">{yun:}t key='default_part_show_00004'{/yun}</a>
+                            <a class="partjob_bmbth" href="javascript:PartApply('{yun:}$job.id{/yun}');">{yun:}t key='default_00279'{/yun}</a>
                         {yun:}else{/yun}
                             {yun:}if $uid{/yun}
                                 {yun:}if $config.sy_user_change==1{/yun}
-                                    <a class="partjob_bmbth" onclick="layer.msg('请先申请个人用户才能申请报名', 2, 8);" href="javascript:;">{yun:}t key='default_part_show_00004'{/yun}</a>
+                                    <a class="partjob_bmbth" onclick="layer.msg('请先申请个人用户才能申请报名', 2, 8);" href="javascript:;">{yun:}t key='default_00279'{/yun}</a>
                                 {yun:}else{/yun}
-                                    <a class="partjob_bmbth" onclick="layer.msg('只有个人用户才能申请报名', 2, 8);" href="javascript:;">{yun:}t key='default_part_show_00004'{/yun}</a>
+                                    <a class="partjob_bmbth" onclick="layer.msg('只有个人用户才能申请报名', 2, 8);" href="javascript:;">{yun:}t key='default_00279'{/yun}</a>
                                 {yun:}/if{/yun}
                             {yun:}else{/yun}
-                                <a class="partjob_bmbth" onclick="showlogin('1');" href="javascript:;">{yun:}t key='default_part_show_00004'{/yun}</a>
+                                <a class="partjob_bmbth" onclick="showlogin('1');" href="javascript:;">{yun:}t key='default_00279'{/yun}</a>
                             {yun:}/if{/yun}
                         {yun:}/if{/yun}
                     {yun:}/if{/yun}
 
                     <div class="con_apply_share fl">
                         {yun:}if is_array($collect){/yun}
-                        <a href="javascript:CancelCollect('{yun:}$collect.id{/yun}');"><img src="{yun:}$style{/yun}/images/shou.png" width="15" height="15">{yun:}t key='wap_part_show_00011'{/yun}</a>
+                        <a href="javascript:CancelCollect('{yun:}$collect.id{/yun}');"><img src="{yun:}$style{/yun}/images/shou.png" width="15" height="15">{yun:}t key='wap_00378'{/yun}</a>
                         {yun:}else{/yun}
                         {yun:}if $usertype==1{/yun}
-                        <a href="javascript:PartCollect('{yun:}$job.id{/yun}','{yun:}$job.uid{/yun}');"><img src="{yun:}$style{/yun}/images/shou.png" width="15" height="15"><span id="Collect"> {yun:}t key='wap_part_show_00012'{/yun}</span></a>
+                        <a href="javascript:PartCollect('{yun:}$job.id{/yun}','{yun:}$job.uid{/yun}');"><img src="{yun:}$style{/yun}/images/shou.png" width="15" height="15"><span id="Collect"> {yun:}t key='wap_00379'{/yun}</span></a>
                         {yun:}else{/yun}
                         {yun:}if $uid{/yun}
                         {yun:}if $config.sy_user_change==1{/yun}
-                        <a onclick="layer.msg('请先申请个人用户才能收藏', 2, 8);" href="javascript:;"><img src="{yun:}$style{/yun}/images/shou.png" width="15" height="15"> {yun:}t key='wap_part_show_00012'{/yun}</a>
+                        <a onclick="layer.msg('请先申请个人用户才能收藏', 2, 8);" href="javascript:;"><img src="{yun:}$style{/yun}/images/shou.png" width="15" height="15"> {yun:}t key='wap_00379'{/yun}</a>
                         {yun:}else{/yun}
-                        <a onclick="layer.msg('{yun:}t key='wap_job_show_00014'{/yun}', 2, 8);" href="javascript:;"><img src="{yun:}$style{/yun}/images/shou.png" width="15" height="15"> {yun:}t key='wap_part_show_00012'{/yun}</a>
+                        <a onclick="layer.msg('{yun:}t key='wap_00257'{/yun}', 2, 8);" href="javascript:;"><img src="{yun:}$style{/yun}/images/shou.png" width="15" height="15"> {yun:}t key='wap_00379'{/yun}</a>
                         {yun:}/if{/yun}
                         {yun:}else{/yun}
-                        <a onclick="showlogin('1');" href="javascript:;"><img src="{yun:}$style{/yun}/images/shou.png" width="15" height="15"> {yun:}t key='wap_part_show_00012'{/yun}</a>
+                        <a onclick="showlogin('1');" href="javascript:;"><img src="{yun:}$style{/yun}/images/shou.png" width="15" height="15"> {yun:}t key='wap_00379'{/yun}</a>
                         {yun:}/if{/yun}
                         {yun:}/if{/yun}
                         {yun:}/if{/yun}
@@ -158,35 +158,35 @@
                 {yun:}/if{/yun}
             </div>
             <div class="yun_part_show_jobbox mt20">
-                <div class="yun_part_show_tit">{yun:}t key='default_part_show_00002'{/yun}</div>
-                <div class="partjob_content_tit">{yun:}t key='admin_user_users_component_resume_edit_00030'{/yun}</div>
+                <div class="yun_part_show_tit">{yun:}t key='default_00278'{/yun}</div>
+                <div class="partjob_content_tit">{yun:}t key='admin_user_00223'{/yun}</div>
                 <div class="partjob_content_time">
                     <table class="det-tab" width="560" border="0" cellspacing="1" cellpadding="0" style="border-collapse: separate;border-spacing: 1px;">
                         <tbody>
                         <tr>
                             <th height="28" align="center" valign="middle" class="fre-tab01">TIME</th>
-                            <th height="28" align="center" valign="middle" class="fre-tab02">{yun:}t key='wap_com_partadd_00018'{/yun}</th>
-                            <th height="28" align="center" valign="middle" class="fre-tab03">{yun:}t key='wap_com_partadd_00019'{/yun}</th>
-                            <th height="28" align="center" valign="middle" class="fre-tab04">{yun:}t key='wap_js_mobiscroll_mobiscroll_003_00024'{/yun}</th>
-                            <th height="28" align="center" valign="middle" class="fre-tab05">{yun:}t key='wap_js_mobiscroll_mobiscroll_003_00027'{/yun}</th>
-                            <th height="28" align="center" valign="middle" class="fre-tab06">{yun:}t key='wap_js_mobiscroll_mobiscroll_003_00025'{/yun}</th>
-                            <th height="28" align="center" valign="middle" class="fre-tab07">{yun:}t key='wap_js_mobiscroll_mobiscroll_003_00026'{/yun}</th>
-                            <th height="28" align="center" valign="middle" class="fre-tab08">{yun:}t key='wap_js_mobiscroll_mobiscroll_003_00028'{/yun}</th>
+                            <th height="28" align="center" valign="middle" class="fre-tab02">{yun:}t key='wap_com_00338'{/yun}</th>
+                            <th height="28" align="center" valign="middle" class="fre-tab03">{yun:}t key='wap_com_00339'{/yun}</th>
+                            <th height="28" align="center" valign="middle" class="fre-tab04">{yun:}t key='wap_js_00029'{/yun}</th>
+                            <th height="28" align="center" valign="middle" class="fre-tab05">{yun:}t key='wap_js_00032'{/yun}</th>
+                            <th height="28" align="center" valign="middle" class="fre-tab06">{yun:}t key='wap_js_00030'{/yun}</th>
+                            <th height="28" align="center" valign="middle" class="fre-tab07">{yun:}t key='wap_js_00031'{/yun}</th>
+                            <th height="28" align="center" valign="middle" class="fre-tab08">{yun:}t key='wap_js_00033'{/yun}</th>
                         </tr>
                         <tr>
-                            <td height="28" align="center" valign="middle" class="fre-tab09">{yun:}t key='wap_com_partadd_00016'{/yun}</td>
+                            <td height="28" align="center" valign="middle" class="fre-tab09">{yun:}t key='wap_com_00336'{/yun}</td>
                             {yun:}foreach from=$part_morning item=v{/yun}
                             <td height="28" align="center" valign="middle" {yun:}if in_array($v,$job.worktime_n){/yun}class="cut"{yun:}/if{/yun}><i></i></td>
                             {yun:}/foreach{/yun}
                         </tr>
                         <tr>
-                            <td height="28" align="center" valign="middle" class="fre-tab10">{yun:}t key='wap_com_partadd_00017'{/yun}</td>
+                            <td height="28" align="center" valign="middle" class="fre-tab10">{yun:}t key='wap_com_00337'{/yun}</td>
                             {yun:}foreach from=$part_noon item=v{/yun}
                             <td height="28" align="center" valign="middle" {yun:}if in_array($v,$job.worktime_n){/yun}class="cut"{yun:}/if{/yun}><i></i></td>
                             {yun:}/foreach{/yun}
                         </tr>
                         <tr>
-                            <td height="28" align="center" valign="middle" class="fre-tab11">{yun:}t key='wap_com_partadd_00020'{/yun}</td>
+                            <td height="28" align="center" valign="middle" class="fre-tab11">{yun:}t key='wap_com_00340'{/yun}</td>
                             {yun:}foreach from=$part_afternoon item=v{/yun}
                             <td height="28" align="center" valign="middle" {yun:}if in_array($v,$job.worktime_n){/yun}class="cut"{yun:}/if{/yun}><i></i></td>
                             {yun:}/foreach{/yun}
@@ -195,7 +195,7 @@
                     </table>
                 </div>
 
-                <div class="partjob_content_tit">{yun:}t key='wap_com_jobadd_00035'{/yun}</div>
+                <div class="partjob_content_tit">{yun:}t key='wap_com_00289'{/yun}</div>
                 <div class="partjob_content_p"> {yun:}$job.content{/yun}</div>
 
             </div>
@@ -216,7 +216,7 @@
                                         {yun:}$partlist.job_salary_type{/yun}
                                     </span>
                                     <em class="">{yun:}$partlist.job_city_two{/yun}-{yun:}$partlist.job_city_three{/yun}</em>
-                                    <span class="yun_part_tjbox_jobtime">{yun:}$partlist.lastupdate|date_format:"%Y-%m-%d"{/yun} {yun:}t key='wap_invite_00002'{/yun}</span>
+                                    <span class="yun_part_tjbox_jobtime">{yun:}$partlist.lastupdate|date_format:"%Y-%m-%d"{/yun} {yun:}t key='wap_00225'{/yun}</span>
                                 </div>
                                 <div class="yun_part_tjbox_comname">{yun:}$partlist.com_name{/yun}</div>
                             </li>
@@ -246,24 +246,24 @@
                 </div>
                 {yun:}if $ComInfo.yyzz_status=='1'{/yun}
                     <span class="yun_partshow_comrz">
-                        <img src="{yun:}$style{/yun}/images/disc_icon10.png" title="{yun:}t key='default_job_search_00001'{/yun}" class="png"/> {yun:}t key='wap_com_ident_00001'{/yun}
+                        <img src="{yun:}$style{/yun}/images/disc_icon10.png" title="{yun:}t key='default_00248'{/yun}" class="png"/> {yun:}t key='wap_com_00074'{/yun}
                     </span>
                 {yun:}/if{/yun}
                 <ul class="yun_partshow_cominfo">
                     {yun:}if $ComInfo.hy_n{/yun}
-                        <li><span class="yun_partshow_cominfo_s">{yun:}t key='admin_user_company_component_joball_00045'{/yun}</span> {yun:}$ComInfo.hy_n{/yun}</li>
+                        <li><span class="yun_partshow_cominfo_s">{yun:}t key='admin_user_company_00373'{/yun}</span> {yun:}$ComInfo.hy_n{/yun}</li>
                     {yun:}/if{/yun}
                     {yun:}if $ComInfo.pr_n{/yun}
-                        <li><span class="yun_partshow_cominfo_s">{yun:}t key='default_part_show_00006'{/yun}</span> {yun:}$ComInfo.pr_n{/yun}</li>
+                        <li><span class="yun_partshow_cominfo_s">{yun:}t key='default_00281'{/yun}</span> {yun:}$ComInfo.pr_n{/yun}</li>
                     {yun:}/if{/yun}
                     {yun:}if $ComInfo.job_city_one{/yun}
-                        <li><span class="yun_partshow_cominfo_s">{yun:}t key='default_part_show_00005'{/yun}</span> {yun:}$ComInfo.job_city_one{/yun}</li>
+                        <li><span class="yun_partshow_cominfo_s">{yun:}t key='default_00280'{/yun}</span> {yun:}$ComInfo.job_city_one{/yun}</li>
                     {yun:}/if{/yun}
                 </ul>
             </div>
 
             <div class="yun_part_tjbox">
-                <div class="yun_part_tjbox_h1"><i class="yun_part_tjbox_h1_n"></i><span class="yun_part_tjbox_h1_s">{yun:}t key='default_part_index_00008'{/yun}</span></div>
+                <div class="yun_part_tjbox_h1"><i class="yun_part_tjbox_h1_n"></i><span class="yun_part_tjbox_h1_s">{yun:}t key='default_00274'{/yun}</span></div>
                 <div class="yun_part_tjbox_list">
                     <ul>
                         {yun:}partlist item=partlist namelen=10 rec=1 limit=10{/yun}
@@ -277,7 +277,7 @@
                             </div>
                             <div class="yun_part_tjbox_jobinfo">
                                 <em class="">{yun:}$partlist.job_city_one{/yun}-{yun:}$partlist.job_city_two{/yun}</em>
-                                <span class="yun_part_tjbox_jobtime">{yun:}$partlist.lastupdate|date_format:"%Y-%m-%d"{/yun}{yun:}t key='wap_invite_00002'{/yun}</span>
+                                <span class="yun_part_tjbox_jobtime">{yun:}$partlist.lastupdate|date_format:"%Y-%m-%d"{/yun}{yun:}t key='wap_00225'{/yun}</span>
                             </div>
                         </li>
                         {yun:}/partlist{/yun}
@@ -288,8 +288,8 @@
 
         <div id="telQrcodeBox" class="none">
             <div class="job_tel_wx_box">
-                <div id="tel_wxqrcode" class="job_tel_wx_zs">{yun:}t key='wap_company_show_dark_00006'{/yun}</div>
-                <div class="job_tel_wx_p"><span class="job_tel_wx_bth">{yun:}t key='default_job_comapply_00022'{/yun}</span></div>
+                <div id="tel_wxqrcode" class="job_tel_wx_zs">{yun:}t key='wap_00031'{/yun}</div>
+                <div class="job_tel_wx_p"><span class="job_tel_wx_bth">{yun:}t key='default_00220'{/yun}</span></div>
             </div>
         </div>
     </div>

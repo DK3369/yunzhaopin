@@ -1,9 +1,9 @@
 <div id="promote_div" style="display: none;">
     <div class="set_tips">
-        <div class="set_tips_hello">{yun:}t key='wap_advice_00002'{/yun}</div>
+        <div class="set_tips_hello">{yun:}t key='common_02173'{/yun}</div>
         <div class="set_tips_p" id="peomote_etime_div" style="display: none"> 目前置顶职位的到期时间为：<span id="promote_etime"></span></div>
         <div class="set_tips_p" id='promote_tc'> 您的套餐内置顶职位余量为：<span class="set_tips_n">{yun:}$statis.top_num{/yun}</span>{yun:}t key='common_02067'{/yun}</div>
-        <div class="set_tips_textbox"> {yun:}t key='member_com_jobserver_00012'{/yun}
+        <div class="set_tips_textbox"> {yun:}t key='member_com_00282'{/yun}
             <input type="text" value="" class="set_tips_text" id="promote_day" name="promote_day" maxlength='3' onkeyup="checkPromoteDay();" oninput="myFunction(this)">{yun:}t key='common_02067'{/yun}
         </div>
         <input type="hidden" name="promote_jobid" id="promote_jobid" value=""/>
@@ -16,7 +16,7 @@
 
 <div id="close_promote_div" style="display: none;">
     <div class="set_tips">
-        <div class="set_tips_hello">{yun:}t key='wap_advice_00002'{/yun}：</div>
+        <div class="set_tips_hello">{yun:}t key='common_02173'{/yun}：</div>
         <div class="set_tips_p" id="close_peomote_etime_div" style="display: none"> 目前置顶职位的到期时间为：<span id="close_promote_etime"></span></div>
         <div class="set_tips_p" id='close_promote_tc'> 您的职位置顶剩余：<span class="set_tips_n">0</span>{yun:}t key='common_02067'{/yun}</div>
         <div class="set_tips_p" style="font-weight: bold;"> 您确定要<span id="close_promote_title">关闭职位置顶</span>{yun:}t key='common_02062'{/yun}？</div>
@@ -29,40 +29,40 @@
     </div>
 </div>
 
-<!--{yun:}t key='wap_com_job_00048'{/yun}-->
+<!--{yun:}t key='wap_com_00239'{/yun}-->
 <div id="auto_promote_div" style="display: none;">
     <div class="set_tips">
-        <div class="set_tips_hello">{yun:}t key='wap_advice_00002'{/yun}：</div>
+        <div class="set_tips_hello">{yun:}t key='common_02173'{/yun}：</div>
         <div class="set_tips_p"> 当前职位自动刷新的到期时间为：<span id="auto_promote_etime" class="set_tips_n"></span></div>
-        <div class="set_tips_p"> {yun:}t key='member_com_jobserver_00015'{/yun} <span class="set_tips_n" id="auto_promote_day">0</span>{yun:}t key='common_02067'{/yun}</div>
-        <div class="set_tips_p" style="font-weight: bold;"> {yun:}t key='member_com_jobserver_00007'{/yun}</div>
+        <div class="set_tips_p"> {yun:}t key='member_com_00285'{/yun} <span class="set_tips_n" id="auto_promote_day">0</span>{yun:}t key='common_02067'{/yun}</div>
+        <div class="set_tips_p" style="font-weight: bold;"> {yun:}t key='member_com_00277'{/yun}</div>
         <div class="set_tips_bthbox" style="padding-left: 72px; margin: 10px 0;" id="auto_btn"></div>
     </div>
 </div>
 
-<!--{yun:}t key='member_com_joblist_00017'{/yun}-->
+<!--{yun:}t key='member_com_00267'{/yun}-->
 <div id="reserve_box" style="display:none;">
     <form class="layui-form">
         <div class="aisx_job_left">
             <div class="aisx_job_list"><span class="aisx_job_name">刷新状态：</span>
                 <div class="layui-input-block">
-                    <input type="radio" name="status" value="1" title="{yun:}t key='member_com_jobserver_00017'{/yun}">
+                    <input type="radio" name="status" value="1" title="{yun:}t key='member_com_00287'{/yun}">
                     <input type="radio" name="status" value="2" title="{yun:}t key='common.close'{/yun}">
                 </div>
             </div>
             <div class="aisx_job_list">
-                <span class="aisx_job_name">{yun:}t key='wap_com_job_00036'{/yun}：</span>
+                <span class="aisx_job_name">{yun:}t key='wap_com_00227'{/yun}：</span>
                 <div class="layui-input-inline" style="width: 152px;height: 35px;position: relative;border-radius: 3px;margin-left: 20px;">
                     <select name="intervalId" id="intervalId" lay-filter="intervalId">
                         <option value="">请选择刷新间隔</option>
-                        <option value="60" selected>{yun:}t key='wap_com_job_00061'{/yun}1小时刷新</option>
-                        <option value="120">{yun:}t key='wap_com_job_00061'{/yun}2小时刷新</option>
-                        <option value="180">{yun:}t key='wap_com_job_00061'{/yun}3小时刷新</option>
-                        <option value="240">{yun:}t key='wap_com_job_00061'{/yun}4小时刷新</option>
-                        <option value="300">{yun:}t key='wap_com_job_00061'{/yun}5小时刷新</option>
-                        <option value="360">{yun:}t key='wap_com_job_00061'{/yun}6小时刷新</option>
-                        <option value="420">{yun:}t key='wap_com_job_00061'{/yun}7小时刷新</option>
-                        <option value="480">{yun:}t key='wap_com_job_00061'{/yun}8小时刷新</option>
+                        <option value="60" selected>{yun:}t key='wap_com_00252'{/yun}1小时刷新</option>
+                        <option value="120">{yun:}t key='wap_com_00252'{/yun}2小时刷新</option>
+                        <option value="180">{yun:}t key='wap_com_00252'{/yun}3小时刷新</option>
+                        <option value="240">{yun:}t key='wap_com_00252'{/yun}4小时刷新</option>
+                        <option value="300">{yun:}t key='wap_com_00252'{/yun}5小时刷新</option>
+                        <option value="360">{yun:}t key='wap_com_00252'{/yun}6小时刷新</option>
+                        <option value="420">{yun:}t key='wap_com_00252'{/yun}7小时刷新</option>
+                        <option value="480">{yun:}t key='wap_com_00252'{/yun}8小时刷新</option>
                         <option value="1">自定义刷新间隔</option>
                     </select>
                 </div>
@@ -70,37 +70,37 @@
             <div class="aisx_job_list" style="display: none;" id="intervalDiv">
                 <span class="aisx_job_name"></span>
                 <div class="sx_controls">
-                    <input type="text" id="interval" onblur="checkInterval(this);" placeholder="{yun:}t key='wap_user_pay_00003'{/yun}" maxlength="4" onKeyUp="this.value=this.value.replace(/[^0-9]/g,'')" class="sx_text" />
-                    <span class="sx_controls_dw">{yun:}t key='wap_com_job_00056'{/yun}</span>
+                    <input type="text" id="interval" onblur="checkInterval(this);" placeholder="{yun:}t key='wap_user_00309'{/yun}" maxlength="4" onKeyUp="this.value=this.value.replace(/[^0-9]/g,'')" class="sx_text" />
+                    <span class="sx_controls_dw">{yun:}t key='wap_com_00247'{/yun}</span>
                 </div>
             </div>
-            <div class="aisx_job_list"><span class="aisx_job_name">{yun:}t key='wap_com_job_00043'{/yun}：</span>
+            <div class="aisx_job_list"><span class="aisx_job_name">{yun:}t key='wap_com_00234'{/yun}：</span>
                 <div class="sx_controls">
                     <input type="text" id="end_time" class="sx_text" placeholder="{yun:}t key='common_01936'{/yun}" readonly>
                 </div>
             </div>
             <div class="aisx_job_list" style="display: flex;">
-                <span class="aisx_job_name">{yun:}t key='wap_com_job_00029'{/yun}：</span>
+                <span class="aisx_job_name">{yun:}t key='wap_com_00220'{/yun}：</span>
                 <div class="sx_controls_s">
-                    <input type="text" id="s_time" class="sx_text" placeholder="{yun:}t key='member_com_jobserver_00018'{/yun}">
+                    <input type="text" id="s_time" class="sx_text" placeholder="{yun:}t key='member_com_00288'{/yun}">
                 </div>
                 <div class="sx_controls_s">
-                    <input type="text" id="e_time" class="sx_text" placeholder="{yun:}t key='member_com_jobserver_00019'{/yun}">
+                    <input type="text" id="e_time" class="sx_text" placeholder="{yun:}t key='member_com_00289'{/yun}">
                 </div>
             </div>
         </div>
         <div class="aisx_job_right">
-            <div class="">{yun:}t key='member_com_jobserver_00010'{/yun}</div>
-            <div class="">{yun:}t key='wap_com_job_00021'{/yun}，超过截止日期</div>
-            <div class="">{yun:}t key='member_com_jobserver_00008'{/yun}</div>
-            <div class="">{yun:}t key='member_com_jobserver_00011'{/yun}，将会自动停止，购买后</div>
-            <div class="">{yun:}t key='member_com_jobserver_00013'{/yun}</div>
+            <div class="">{yun:}t key='member_com_00280'{/yun}</div>
+            <div class="">{yun:}t key='wap_com_00212'{/yun}，超过截止日期</div>
+            <div class="">{yun:}t key='member_com_00278'{/yun}</div>
+            <div class="">{yun:}t key='member_com_00281'{/yun}，将会自动停止，购买后</div>
+            <div class="">{yun:}t key='member_com_00283'{/yun}</div>
         </div>
         <div class="clear"></div>
         <div class="aisx_zy">
-            {yun:}t key='wap_com_job_00026'{/yun} <span class="aisx_zy_n">{yun:}$statis.upJobNum{/yun}</span> {yun:}t key='common_02052'{/yun}
-            单个职位可预约 <span class="aisx_zy_n">{yun:}intval($statis.upJobNum/$config.sy_reserve_refresh_price){/yun}</span> {yun:}t key='wap_com_job_00031'{/yun}
-            {yun:}if $statis.rating_type == 1{/yun}<a href="index.php?c=right&act=added&id={yun:}$config.sy_reserve_service_id{/yun}" target="_blank" class="aisx_zy_buy">{yun:}t key='member_com_jobserver_00014'{/yun}</a>{yun:}/if{/yun}
+            {yun:}t key='wap_com_00217'{/yun} <span class="aisx_zy_n">{yun:}$statis.upJobNum{/yun}</span> {yun:}t key='common_02052'{/yun}
+            单个职位可预约 <span class="aisx_zy_n">{yun:}intval($statis.upJobNum/$config.sy_reserve_refresh_price){/yun}</span> {yun:}t key='wap_com_00222'{/yun}
+            {yun:}if $statis.rating_type == 1{/yun}<a href="index.php?c=right&act=added&id={yun:}$config.sy_reserve_service_id{/yun}" target="_blank" class="aisx_zy_buy">{yun:}t key='member_com_00284'{/yun}</a>{yun:}/if{/yun}
         </div>
         <div class="aisx_job_fot"><a href="javascript:;" onclick="setReserveRefreshJob();" class="aisx_job_bth">确定设置</a></div>
         <input type="hidden" id="reserve_id" value=""/>
@@ -185,15 +185,15 @@
         var num =   '{yun:}$statis.upJobNum/$config.sy_reserve_refresh_price{/yun}';
 
         if (status == 1 && parseInt(num) == 0){
-            layer.msg("{yun:}t key='member_com_jobserver_00011'{/yun}", 2, 8);
+            layer.msg("{yun:}t key='member_com_00281'{/yun}", 2, 8);
             return false;
         }
 
         if (job_id == '') {
-            layer.msg("{yun:}t key='wap_com_job_00037'{/yun}", 2, 8);
+            layer.msg("{yun:}t key='wap_com_00228'{/yun}", 2, 8);
             return false;
         } else if (status == '' || status == 0 || status == undefined) {
-            layer.msg("{yun:}t key='member_com_jobserver_00009'{/yun}", 2, 8);
+            layer.msg("{yun:}t key='member_com_00279'{/yun}", 2, 8);
             return false;
         } else if (status == 1) {
             if (interval == '') {
@@ -205,13 +205,13 @@
                 var stime = s_time.split(':');
                 var etime = e_time.split(':');
                 if (parseInt(stime[0]) > parseInt(etime[0]) || (parseInt(stime[0]) == parseInt(etime[0]) && parseInt(stime[1]) >= parseInt(etime[1])) ){
-                    layer.msg("{yun:}t key='wap_com_job_00022'{/yun}", 2, 8);
+                    layer.msg("{yun:}t key='wap_com_00213'{/yun}", 2, 8);
                     return false;
                 }
             }
         }
 
-        var index = layer.load("{yun:}t key='wap_js_publicselect_00003'{/yun}", 0);
+        var index = layer.load("{yun:}t key='wap_js_00148'{/yun}", 0);
 
         $.ajax({
             async: false,

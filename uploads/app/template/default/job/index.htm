@@ -18,11 +18,11 @@
     <div class="yun_content">
         <div class="current_Location icon" style="display:none;"> {yun:}t key='common_01498'{/yun}：
             <a href="{yun:}$config.sy_weburl{/yun}">{yun:}t key='common.home'{/yun}</a> >
-            <a href="{yun:}url m=job{/yun}">{yun:}t key='default_job_index_00002'{/yun}</a>
+            <a href="{yun:}url m=job{/yun}">{yun:}t key='default_00246'{/yun}</a>
         </div>
         <div class="clear"></div>
 
-        <!-- {yun:}t key='wap_user_addexpect_00010'{/yun}-->
+        <!-- {yun:}t key='wap_user_00018'{/yun}-->
 
         <div class="yunsearch_leftsidebar fl">
             <div class="yunsearch_nav">
@@ -121,25 +121,25 @@
             </div>
 
             <div class="yunsearch_menu_more">
-                <a target="_blank" href="{yun:}listurl type=tp v=0{/yun}">{yun:}t key='default_job_index_00001'{/yun}</a>
+                <a target="_blank" href="{yun:}listurl type=tp v=0{/yun}">{yun:}t key='default_00245'{/yun}</a>
             </div>
         </div>
-        <!-- {yun:}t key='wap_user_addexpect_00010'{/yun} end-->
+        <!-- {yun:}t key='wap_user_00018'{/yun} end-->
 
         <!--  右侧广告-->
         <div class="yun_search_right">
             <div class="yun_search_search">
-                <form method="get" action='{yun:}if !$config.sy_jobdir{/yun}index.php{yun:}else{/yun}{yun:}url m=job{/yun}{yun:}/if{/yun}' onsubmit="return search_keyword(this,'{yun:}t key='default_part_index_00005'{/yun}：例如会计');">
+                <form method="get" action='{yun:}if !$config.sy_jobdir{/yun}index.php{yun:}else{/yun}{yun:}url m=job{/yun}{yun:}/if{/yun}' onsubmit="return search_keyword(this,'{yun:}t key='default_00271'{/yun}：例如会计');">
                     {yun:}if !$config.sy_jobdir || $config.sy_seo_rewrite!='1'{/yun}
                     <input type="hidden" name="m" value="job"/> {yun:}/if{/yun}
                     <input type="hidden" name="c" value="search"/>
                     <div class="yun_search_box">
-                        <input type="text" id="jobkeyword" name="keyword" value="{yun:}t key='default_part_index_00005'{/yun}：例如会计" onclick="if(this.value=='{yun:}t key='default_part_index_00005'{/yun}：例如会计'){this.value=''}" onblur="if(this.value==''){this.value='{yun:}t key='default_part_index_00005'{/yun}：例如会计'}" class="yun_search_box_text">
+                        <input type="text" id="jobkeyword" name="keyword" value="{yun:}t key='default_00271'{/yun}：例如会计" onclick="if(this.value=='{yun:}t key='default_00271'{/yun}：例如会计'){this.value=''}" onblur="if(this.value==''){this.value='{yun:}t key='default_00271'{/yun}：例如会计'}" class="yun_search_box_text">
                         <input type="submit" value="{yun:}t key='common.search'{/yun}" class="yun_search_box_bth"></div>
                 </form>
             </div>
             <div class="yun_search_tag">
-                {yun:}t key='wap_publichtm_search_00004'{/yun}： {yun:}key limit=8 recom=1 type=3 item=top_key{/yun}<a href="{yun:}$top_key.url{/yun}" target="_blank">{yun:}$top_key.key_name{/yun}</a> {yun:}/key{/yun}
+                {yun:}t key='wap_00385'{/yun}： {yun:}key limit=8 recom=1 type=3 item=top_key{/yun}<a href="{yun:}$top_key.url{/yun}" target="_blank">{yun:}$top_key.key_name{/yun}</a> {yun:}/key{/yun}
             </div>
 
             <!--<div class="yun_search_rightbanner"></div>-->
@@ -161,7 +161,7 @@
                             <a href="{yun:}$hotjoblist.url{/yun}" title="{yun:}$hotjoblist.username{/yun}">{yun:}$hotjoblist.username{/yun}</a>
                         </div>
                         <div class="yun_search_mq_job">
-                            {yun:}$hotjoblist.num{/yun}{yun:}t key='wap_user_collect_00001'{/yun} <span class="yun_search_mq_line">|</span>{yun:}$hotjoblist.hy{/yun}
+                            {yun:}$hotjoblist.num{/yun}{yun:}t key='wap_user_00151'{/yun} <span class="yun_search_mq_line">|</span>{yun:}$hotjoblist.hy{/yun}
                         </div>
                     </div>
                     {yun:}/hotjob{/yun}
@@ -255,13 +255,13 @@
 
         function showtype(id) {
             $("#job" + id).addClass('current');
-            $("#job_" + id).html("[{yun:}t key='wap_article_00005'{/yun}]");
+            $("#job_" + id).html("[{yun:}t key='wap_00146'{/yun}]");
             $("#job_" + id).attr('href', 'javascript:hidetype(\'' + id + '\');');
         }
 
         function hidetype(id) {
             $("#job" + id).removeClass('current');
-            $("#job_" + id).html("[{yun:}t key='admin_user_member_component_alluser_00031'{/yun}]");
+            $("#job_" + id).html("[{yun:}t key='admin_user_00145'{/yun}]");
             $("#job_" + id).attr('href', 'javascript:showtype(\'' + id + '\');');
         }
     </script>

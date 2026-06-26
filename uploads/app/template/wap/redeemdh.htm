@@ -10,7 +10,7 @@
                         <em id="dhlinktel" >{{linktel}}</em>
                     </span>
                 </div>
-                <div class="">{yun:}t key='wap_js_redeem_00002'{/yun}<em id="dhbody">{{city}}{{address}}</em></div>
+                <div class="">{yun:}t key='wap_js_00155'{/yun}<em id="dhbody">{{city}}{{address}}</em></div>
             </template>
         </van-cell>
     </van-cell-group>
@@ -38,7 +38,7 @@
         <input id='id' value='{yun:}$row.id{/yun}' type='hidden'>
         <input id='num' value='{yun:}$smarty.get.num{/yun}' type='hidden'>
         <div class="">
-            <a class="redeemd_commodity_bth" href="javascript:void(0)" @click="redeem_dh">{yun:}t key='wap_redeemdh_00003'{/yun}</a>
+            <a class="redeemd_commodity_bth" href="javascript:void(0)" @click="redeem_dh">{yun:}t key='wap_00401'{/yun}</a>
         </div>
     <!-- </van-cell-group> -->
 
@@ -47,14 +47,14 @@
             <!-- 第一种 -->
             <div style="margin-top: 15%">
                 <van-field v-model="linkman" name="linkman" label="收货人" placeholder="收货人" ></van-field>
-                <van-field v-model="linktel" name="linktel" label="{yun:}t key='wap_user_info_00018'{/yun}" placeholder="收货人" ></van-field>
+                <van-field v-model="linktel" name="linktel" label="{yun:}t key='wap_user_00241'{/yun}" placeholder="收货人" ></van-field>
                 <van-field v-model="city" name="city" label="配送城市" placeholder="请选择配送地址"  @click="showArea=true"></van-field>
-                <van-field v-model="address" name="address" label="{yun:}t key='wap_user_info_00020'{/yun}" placeholder="请输入收货人地址" ></van-field>
-				<van-field v-model="password" name="password" label="{yun:}t key='wap_redeemdh_00004'{/yun}" placeholder="{yun:}t key='wap_redeemdh_00002'{/yun}" type="password"></van-field>
+                <van-field v-model="address" name="address" label="{yun:}t key='wap_user_00243'{/yun}" placeholder="请输入收货人地址" ></van-field>
+				<van-field v-model="password" name="password" label="{yun:}t key='wap_00402'{/yun}" placeholder="{yun:}t key='wap_00400'{/yun}" type="password"></van-field>
                 <van-popup v-model="showArea" round position="bottom">
                    <van-cascader
                     v-model="areaValue"
-                    title="{yun:}t key='wap_publichtm_publictwo_00001'{/yun}"
+                    title="{yun:}t key='wap_00380'{/yun}"
                     :options="areaList"
                     @close="showArea = false"
                     @finish="onAreaFinish"
@@ -108,10 +108,10 @@
                     showToast('收件人不能为空！');
                     return false;
                 } else if(!value.linktel) {
-                    showToast("{yun:}t key='wap_redeemdh_00001'{/yun}");
+                    showToast("{yun:}t key='wap_00399'{/yun}");
                     return false;
                 } else if(value.linktel && !isjsMobile(value.linktel)) {
-                    showToast("{yun:}t key='wap_user_addresume_00021'{/yun}");
+                    showToast("{yun:}t key='wap_user_00039'{/yun}");
                     return false;
                 } else if(!value.city) {
                     showToast('请选择配送地址！');
@@ -150,7 +150,7 @@
 					return false;
 				}
                 if(this.dhbody!=''){
-                    this.body="{yun:}t key='wap_js_redeem_00002'{/yun}"+this.dhbody;
+                    this.body="{yun:}t key='wap_js_00155'{/yun}"+this.dhbody;
                 }
              
                 if(this.other!=''){

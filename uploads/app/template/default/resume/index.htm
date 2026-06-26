@@ -15,7 +15,7 @@
 <div class="yun_body">
     <div class="yun_content">
         <div class="current_Location icon">
-            {yun:}t key='common_01498'{/yun}：<a href="{yun:}$config.sy_weburl{/yun}">{yun:}t key='common.home'{/yun}</a> > <a href="{yun:}url m=resume{/yun}">{yun:}t key='default_resume_index_00003'{/yun}</a>
+            {yun:}t key='common_01498'{/yun}：<a href="{yun:}$config.sy_weburl{/yun}">{yun:}t key='common.home'{/yun}</a> > <a href="{yun:}url m=resume{/yun}">{yun:}t key='default_00312'{/yun}</a>
         </div>
 
         <div class="clear"></div>
@@ -33,22 +33,22 @@
             </form>
         </div>
 
-        <div class="search_Look_tag"> {yun:}t key='admin_tool_weixin_component_reply_00017'{/yun}：
+        <div class="search_Look_tag"> {yun:}t key='admin_tool_00574'{/yun}：
             {yun:}key limit=8 recom=1 type=5 item=key{/yun}
             <a href="{yun:}$key.url{/yun}">{yun:}$key.key_name{/yun}</a>
             {yun:}/key{/yun}
         </div>
 
         <div class="clear"></div>
-        <!--{yun:}t key='member_com_finderinfo_00004'{/yun}-->
+        <!--{yun:}t key='member_com_00091'{/yun}-->
         <div class="maincenter">
             <div id="sortBox">
 
                 <div class="search_menuBox">
                     <ul>
-                        <li class="search_cur" id="typejob" onmousemove="searchtype('job');">{yun:}t key='member_com_job_00009'{/yun}</li>
+                        <li class="search_cur" id="typejob" onmousemove="searchtype('job');">{yun:}t key='member_com_00223'{/yun}</li>
                         <li id="typehy" onmousemove="searchtype('hy');">行业招聘</li>
-                        <li id="typecity" onmousemove="searchtype('city');" style="border-right:none;">{yun:}t key='default_resume_index_00001'{/yun}</li>
+                        <li id="typecity" onmousemove="searchtype('city');" style="border-right:none;">{yun:}t key='default_00310'{/yun}</li>
                     </ul>
                 </div>
 
@@ -63,7 +63,7 @@
                     </div>
                     <!-- 行业招聘 end-->
 
-                    <!-- {yun:}t key='member_com_job_00009'{/yun} start-->
+                    <!-- {yun:}t key='member_com_00223'{/yun} start-->
                     <div class="contentBox_cont" id="type_job" style="display:block">
                         {yun:}foreach item=v from=$job_index{/yun}
                         <div class="Category_tit">
@@ -74,7 +74,7 @@
                             <dl>
                                 <dt>
                                     <a href="{yun:}listurl m=resume t=index type=job1_son job1=$v job1_son=$val{/yun}">{yun:}$job_name[$val]{/yun}</a>
-                                    <a href="javascript:showtype('{yun:}$val{/yun}');" class="spread " id="job_{yun:}$val{/yun}">[{yun:}t key='admin_user_member_component_alluser_00031'{/yun}]</a>
+                                    <a href="javascript:showtype('{yun:}$val{/yun}');" class="spread " id="job_{yun:}$val{/yun}">[{yun:}t key='admin_user_00145'{/yun}]</a>
                                 </dt>
                                 <dd id="job{yun:}$val{/yun}">
                                     {yun:}foreach item=value from=$job_type[$val]{/yun}
@@ -86,9 +86,9 @@
                         </div>
                         {yun:}/foreach{/yun}
                     </div>
-                    <!-- {yun:}t key='member_com_job_00009'{/yun} end-->
+                    <!-- {yun:}t key='member_com_00223'{/yun} end-->
 
-                    <!-- {yun:}t key='default_resume_index_00001'{/yun} start-->
+                    <!-- {yun:}t key='default_00310'{/yun} start-->
                     {yun:}if $config.sy_web_city_one{/yun}
                         {yun:}if $config.sy_web_city_one{/yun}
                             <div class="contentBox_cont none" id="type_city">
@@ -127,11 +127,11 @@
                             {yun:}/foreach{/yun}
                         </div>
                     {yun:}/if{/yun}
-                    <!-- {yun:}t key='default_resume_index_00001'{/yun} end-->
+                    <!-- {yun:}t key='default_00310'{/yun} end-->
                 </div>
             </div>
         </div>
-        <!--{yun:}t key='member_com_finderinfo_00004'{/yun} end-->
+        <!--{yun:}t key='member_com_00091'{/yun} end-->
         <div class="search_post_jj">
             <div class="search_post_jj_h1"><span>{yun:}t key='home.latest_talents'{/yun}</span></div>
             <div class="hp_people">
@@ -185,13 +185,13 @@
 
         function showtype(id) {
             $("#job" + id).addClass('current');
-            $("#job_" + id).html("[{yun:}t key='wap_article_00005'{/yun}]");
+            $("#job_" + id).html("[{yun:}t key='wap_00146'{/yun}]");
             $("#job_" + id).attr('href', 'javascript:hidetype(\'' + id + '\');');
         }
 
         function hidetype(id) {
             $("#job" + id).removeClass('current');
-            $("#job_" + id).html("[{yun:}t key='admin_user_member_component_alluser_00031'{/yun}]");
+            $("#job_" + id).html("[{yun:}t key='admin_user_00145'{/yun}]");
             $("#job_" + id).attr('href', 'javascript:showtype(\'' + id + '\');');
         }
     </script>

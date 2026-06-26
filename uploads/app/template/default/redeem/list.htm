@@ -14,7 +14,7 @@
 	<div class="yun_Integral">
 		<div class="yun_Integral_list_content">
 			<div class="yun_Integral_search">
-				<span class="yun_Integral_search_name">{yun:}t key='admin_yunying_shop_shopclass_00001'{/yun}：</span>
+				<span class="yun_Integral_search_name">{yun:}t key='admin_yunying_00114'{/yun}：</span>
 				<div class="yun_Integral_search_right"> 
 					<a href="{yun:}listurl m=redeem c=list untype=nid{/yun}" {yun:}if $smarty.get.nid==''{/yun} class="yun_Integral_cur" {yun:}/if{/yun}">{yun:}t key='common.all'{/yun}</a>      
 					{yun:}foreach from=$redeem_index item=v{/yun}
@@ -24,7 +24,7 @@
 			</div>
 			{yun:}if $smarty.get.nid!=""&&$redeem_type[$smarty.get.nid]{/yun}
 			<div class="yun_Integral_search">
-				<span class="yun_Integral_search_name">{yun:}t key='default_redeem_list_00001'{/yun}：</span>
+				<span class="yun_Integral_search_name">{yun:}t key='common_02139'{/yun}：</span>
 				<div class="yun_Integral_search_right"> 
 					<a href="{yun:}listurl m=redeem c=list type=tnid v=0{/yun}" {yun:}if $smarty.get.tnid==''{/yun} class="yun_Integral_cur" {yun:}/if{/yun}">{yun:}t key='common.all'{/yun}</a>      
 					{yun:}foreach from=$redeem_type[$smarty.get.nid] item=v{/yun}
@@ -35,7 +35,7 @@
 			
 			{yun:}/if{/yun}
 			<div class="yun_Integral_search">
-				<span class="yun_Integral_search_name">{yun:}$config.integral_pricename{/yun}{yun:}t key='admin_yunying_ad_ad_00004'{/yun}：</span>
+				<span class="yun_Integral_search_name">{yun:}$config.integral_pricename{/yun}{yun:}t key='admin_yunying_00050'{/yun}：</span>
 				<div class="yun_Integral_search_right">
 					<a href="{yun:}listurl m=redeem c=list untype=intinfo{/yun}" {yun:}if $intinfo==''{/yun}class="yun_Integral_cur"{yun:}/if{/yun}>{yun:}t key='common.all'{/yun}</a>
 					{yun:}foreach from=$integlist item=v key=key{/yun}

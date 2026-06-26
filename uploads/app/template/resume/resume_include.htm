@@ -1,6 +1,6 @@
 <div id='job_box' class="none" style="float:left">
     <div class="r_Interview" style="z-index:11">
-        <span class="Interview_span">{yun:}t key='wap_user_invite_00003'{/yun}</span>
+        <span class="Interview_span">{yun:}t key='wap_user_00256'{/yun}</span>
         <div class="Interview_text_box">
             <input type="button" value="请选择面试职位" class="Interview_text_box_t" id="name" onClick="search_show('job_name');" />
             <input type="hidden" id="nameid" name="name" value='' />
@@ -34,11 +34,11 @@
         </div>
     </div>
     {yun:}/if{/yun}
-    <div class="r_Interview" style="z-index:9"><span class="Interview_span">{yun:}t key='wap_user_invitecont_00006'{/yun}</span><input size='5' id='linkman' value='' class="Interview_text" /></div>
-    <div class="r_Interview"><span class="Interview_span">{yun:}t key='wap_user_invitecont_00004'{/yun}</span><input size='19' id='linktel' value='' class="Interview_text" /></div>
-    <div class="r_Interview"><span class="Interview_span">{yun:}t key='wap_user_invite_00002'{/yun}</span><input size='40' id='intertime' value='' class="Interview_text" placeholder="请选择面试时间"  autocomplete="off" /></div>
+    <div class="r_Interview" style="z-index:9"><span class="Interview_span">{yun:}t key='wap_user_00267'{/yun}</span><input size='5' id='linkman' value='' class="Interview_text" /></div>
+    <div class="r_Interview"><span class="Interview_span">{yun:}t key='wap_user_00265'{/yun}</span><input size='19' id='linktel' value='' class="Interview_text" /></div>
+    <div class="r_Interview"><span class="Interview_span">{yun:}t key='wap_user_00255'{/yun}</span><input size='40' id='intertime' value='' class="Interview_text" placeholder="请选择面试时间"  autocomplete="off" /></div>
     <div class="r_Interview"><span class="Interview_span">面试地址</span><input size='40' id='address' value='' class="Interview_text" /></div>
-    <div class="r_Interview"><span class="Interview_span">{yun:}t key='member_com_yqmb_00002'{/yun}</span><textarea id="content" cols="40" rows="5" class="Interview_textarea_text"></textarea></div>
+    <div class="r_Interview"><span class="Interview_span">{yun:}t key='member_com_00353'{/yun}</span><textarea id="content" cols="40" rows="5" class="Interview_textarea_text"></textarea></div>
     
     <div id="ymctrl" class="r_Interview {yun:}if !$ymcan{/yun}none{yun:}/if{/yun}">
         <form  method="post" action=""  class="layui-form">
@@ -51,7 +51,7 @@
 		{yun:}if $uid{/yun}
         <input type="hidden" id="username" value="{yun:}$Info.name{/yun}" />
 		{yun:}/if{/yun}
-        <input class="resume_sub_yq" id="click_invite" type="button" value="{yun:}t key='resume_resume_00015'{/yun}" />
+        <input class="resume_sub_yq" id="click_invite" type="button" value="{yun:}t key='resume_00029'{/yun}" />
     </div>
     <script>
         $(function(){
@@ -148,7 +148,7 @@
     function onResume_invite() {
         $.layer({
             type: 1,
-            title: "{yun:}t key='resume_resume_00015'{/yun}",
+            title: "{yun:}t key='resume_00029'{/yun}",
             closeBtn: [0, true],
             border: [10, 0.3, '#000', true],
             area: ['480px', height],

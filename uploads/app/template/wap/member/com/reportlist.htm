@@ -1,13 +1,13 @@
 {yun:}include file="$wapstyle/member/cheader.htm"{/yun}  
 <section class="wap_member">
-  <div class="wap_member_comp_h1" style="position:relative"><span>{yun:}t key='wap_com_reportlist_00002'{/yun}</span></div>
+  <div class="wap_member_comp_h1" style="position:relative"><span>{yun:}t key='wap_com_00349'{/yun}</span></div>
 <div class="wap_reportlist_box">
 <form action="" method="post" >
-<div class="wap_reportlist_tit"> {yun:}t key='wap_com_reportlist_00001'{/yun}  </div>
+<div class="wap_reportlist_tit"> {yun:}t key='wap_com_00348'{/yun}  </div>
 {yun:}foreach from=$userdata.user_reporting item=uesrv{/yun}
 <label><div class="jb_infochlose">{yun:}$userclass_name.$uesrv{/yun}<span class="jb_info_r"><input type="checkbox" name="reason[]" id="reason_{yun:}$uesrv{/yun}"  title="{yun:}$userclass_name.$uesrv{/yun}" value="{yun:}$userclass_name.$uesrv{/yun}"></span></div></label> 
 {yun:}/foreach{/yun}
-<div class="jb_infochlose_pd"><input type="submit" name="submit" value="{yun:}t key='wap_com_reportlist_00003'{/yun}" class="wap_reportlist_tit_bth"></div>
+<div class="jb_infochlose_pd"><input type="submit" name="submit" value="{yun:}t key='wap_com_00350'{/yun}" class="wap_reportlist_tit_bth"></div>
 </form>
   </div>
 </section>

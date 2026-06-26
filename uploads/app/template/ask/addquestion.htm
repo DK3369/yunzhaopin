@@ -7,17 +7,17 @@
 <div class="content ">
 	<div class="quiz">
 		<div class="quiz_con">
-			<div class="ask_tit_que">{yun:}t key='wap_job_show_00035'{/yun}</div>
+			<div class="ask_tit_que">{yun:}t key='wap_00278'{/yun}</div>
 			<div class="clear"></div>
 			
 			<form id='myform' name="myform" target="supportiframe" action="{yun:}url m=ask c=save{/yun}" method="post" onSubmit="return checkform();">
 				<div class="quiz_fl">
-					<input name="title" type="text" placeholder="{yun:}t key='ask_addquestion_00002'{/yun}" id="title" class="quix_txt"  onblur="if(this.value==''){this.value='{yun:}t key='ask_addquestion_00002'{/yun}'}" onclick="if(this.value=='{yun:}t key='ask_addquestion_00002'{/yun}'){this.value=''}" value="{yun:}t key='ask_addquestion_00002'{/yun}"/>
+					<input name="title" type="text" placeholder="{yun:}t key='ask_00004'{/yun}" id="title" class="quix_txt"  onblur="if(this.value==''){this.value='{yun:}t key='ask_00004'{/yun}'}" onclick="if(this.value=='{yun:}t key='ask_00004'{/yun}'){this.value=''}" value="{yun:}t key='ask_00004'{/yun}"/>
 					<div class="quiz_chi">
 						<span>选择问题种类</span> 
 						<div class="quiz_box">
 							<div class="quiz_box_first">
-								<div class="quiz_box_title">{yun:}t key='ask_addquestion_00001'{/yun}：</div>
+								<div class="quiz_box_title">{yun:}t key='admin_yunying_00221'{/yun}：</div>
 								<ul class="quiz_select">
 									{yun:}qcache  item=qclist{/yun}
 										<li class="qc{yun:}$qclist.id{/yun}">
@@ -54,8 +54,8 @@
 					</div>
 					{yun:}else{/yun}
 						<div class="affirm" style="padding-top:10px;width:100%; float:left">
-							<span  class=" fl" style="line-height:35px;"> {yun:}t key='wap_advice_00007'{/yun}：</span>
-							<input class="quix_input fl" id="ask_CheckCode" type="text"  placeholder="{yun:}t key='wap_user_bindingbox_00004'{/yun}" onblur="if(this.value==''){this.value='{yun:}t key='wap_user_bindingbox_00004'{/yun}'}" onclick="if(this.value=='{yun:}t key='wap_user_bindingbox_00004'{/yun}'){this.value=''}" value="{yun:}t key='wap_user_bindingbox_00004'{/yun}" maxlength="6" name="authcode" style="width:150px;height:35px; text-indent:10px;color:#666" >
+							<span  class=" fl" style="line-height:35px;"> {yun:}t key='wap_00110'{/yun}：</span>
+							<input class="quix_input fl" id="ask_CheckCode" type="text"  placeholder="{yun:}t key='wap_user_00143'{/yun}" onblur="if(this.value==''){this.value='{yun:}t key='wap_user_00143'{/yun}'}" onclick="if(this.value=='{yun:}t key='wap_user_00143'{/yun}'){this.value=''}" value="{yun:}t key='wap_user_00143'{/yun}" maxlength="6" name="authcode" style="width:150px;height:35px; text-indent:10px;color:#666" >
 							<img  class="fl" id="vcode_imgs" src="{yun:}$config.sy_weburl{/yun}/app/include/authcode.inc.php" onclick="checkCode('vcode_imgs');">
 						</div>
 					{yun:}/if{/yun}

@@ -17,7 +17,7 @@
         <div class="yun_content">
             <div class="current_Location com_current_Location png none">
                 <div class="fl">{yun:}t key='common_01498'{/yun}：
-                    <a href="{yun:}$config.sy_weburl{/yun}">{yun:}t key='common.home'{/yun}</a> > <span>{yun:}t key='default_resume_index_00003'{/yun}</span>
+                    <a href="{yun:}$config.sy_weburl{/yun}">{yun:}t key='common.home'{/yun}</a> > <span>{yun:}t key='default_00312'{/yun}</span>
                 </div>
             </div>
 
@@ -31,7 +31,7 @@
 
             <div class="clear"></div>
 
-            <form method="get" id="form" action="{yun:}if !$config.sy_resumedir{/yun}index.php{yun:}else{/yun}{yun:}url m=resume{/yun}{yun:}/if{/yun}" onsubmit="return search_keyword(this,'{yun:}t key='admin_system_info_feedback_00001'{/yun}');">
+            <form method="get" id="form" action="{yun:}if !$config.sy_resumedir{/yun}index.php{yun:}else{/yun}{yun:}url m=resume{/yun}{yun:}/if{/yun}" onsubmit="return search_keyword(this,'{yun:}t key='admin_system_00198'{/yun}');">
                 <div class="jobsearch_newbox">
 
                     {yun:}if !$config.sy_resumedir || $config.sy_seo_rewrite!='1'{/yun}<input type="hidden" name="m" value="resume" /> {yun:}/if{/yun}
@@ -42,14 +42,14 @@
                     <div class="yun_job_search">
                         <div class="yun_job_search_cont">
                             <div class="yun_job_search_textcont">
-                                <input type="text" name="keyword" value="{yun:}if $smarty.get.keyword!=""{/yun}{yun:}$smarty.get.keyword{/yun}{yun:}else{/yun}{yun:}t key='admin_system_info_feedback_00001'{/yun}{yun:}/if{/yun}" onclick="if(this.value=='{yun:}t key='admin_system_info_feedback_00001'{/yun}'){this.value=''}" onblur="if(this.value==''){this.value='{yun:}t key='admin_system_info_feedback_00001'{/yun}'}" class="Search_jobs_text" />
+                                <input type="text" name="keyword" value="{yun:}if $smarty.get.keyword!=""{/yun}{yun:}$smarty.get.keyword{/yun}{yun:}else{/yun}{yun:}t key='admin_system_00198'{/yun}{yun:}/if{/yun}" onclick="if(this.value=='{yun:}t key='admin_system_00198'{/yun}'){this.value=''}" onblur="if(this.value==''){this.value='{yun:}t key='admin_system_00198'{/yun}'}" class="Search_jobs_text" />
                             </div>
                             <input type="submit" value="{yun:}t key='common.search'{/yun}" class="Search_jobs_submit yun_bg_color" />
                         </div>
 
                         {yun:}if $resumekeyword{/yun}
                         <div class="jobs_tag">
-                            {yun:}t key='wap_publichtm_search_00004'{/yun}： {yun:}key limit=14 recom=1 type=5 item=keylist{/yun}
+                            {yun:}t key='wap_00385'{/yun}： {yun:}key limit=14 recom=1 type=5 item=keylist{/yun}
                             <a href="{yun:}listurl m=resume type=keyword v=$keylist.key_title{/yun}" title="{yun:}$keylist.key_title{/yun}" class="jos_tag_a">{yun:}$keylist.key_name{/yun}</a>
                             {yun:}/key{/yun}
                         </div>
@@ -80,7 +80,7 @@
                     </div>
                     {yun:}/if{/yun} {yun:}if $smarty.get.job1_son{/yun}
                     <div class="Search_jobs_form_list">
-                        <div class="Search_jobs_name"> {yun:}t key='admin_neirong_question_component_class_manage_00003'{/yun}：</div>
+                        <div class="Search_jobs_name"> {yun:}t key='admin_00223'{/yun}：</div>
                         <div class="Search_jobs_sub ">
                             <a href="{yun:}listurl m=resume type=job1_son v=$smarty.get.job1_son{/yun}" class="Search_jobs_sub_a {yun:}if $smarty.get.job_post==''{/yun}Search_jobs_sub_cur{yun:}/if{/yun}">{yun:}t key='common.all'{/yun}</a>
                             {yun:}foreach from=$job_type[$smarty.get.job1_son] item=v key=key{/yun}
@@ -92,7 +92,7 @@
 
                     {yun:}if $config.sy_web_site==1 && $config.cityname && $config.cityname!=$config.sy_indexcity && $smarty.get.provinceid{/yun}
                     <div class="Search_citybox">
-                        <div class="Search_cityboxname"> {yun:}t key='member_com_zhaopinhui_00002'{/yun}：</div>
+                        <div class="Search_cityboxname"> {yun:}t key='member_com_00378'{/yun}：</div>
                         <div class="Search_citybox_right">
                             <div class="Search_cityboxright">
                                 <div class="search_city_list search_city_listw1100">
@@ -118,7 +118,7 @@
                     </div>
                     {yun:}else if $config.sy_web_city_one{/yun}
                     <div class="Search_citybox">
-                        <div class="Search_cityboxname"> {yun:}t key='member_com_zhaopinhui_00002'{/yun}：</div>
+                        <div class="Search_cityboxname"> {yun:}t key='member_com_00378'{/yun}：</div>
                         <div class="Search_citybox_right">
                             <div class="Search_cityboxright">
                                 <div class="search_city_list search_city_listw1100">
@@ -144,7 +144,7 @@
                     </div>
                     {yun:}else{/yun}
                     <div class="Search_citybox">
-                        <div class="Search_cityboxname"> {yun:}t key='member_com_zhaopinhui_00002'{/yun}：</div>
+                        <div class="Search_cityboxname"> {yun:}t key='member_com_00378'{/yun}：</div>
                         <div class="Search_citybox_right">
                             <div class="Search_cityall none">
                                 <a href="{yun:}listurl m=resume type=provinceid v=0{/yun}" class="city_name">{yun:}t key='common.all'{/yun}</a>
@@ -181,7 +181,7 @@
 
                     {yun:}if $userdata.user_tag{/yun}
                     <div class="Search_jobs_form_list search_more">
-                        <div class="Search_jobs_name"> {yun:}t key='admin_user_company_component_companyuser_00094'{/yun}：</div>
+                        <div class="Search_jobs_name"> {yun:}t key='admin_user_company_00159'{/yun}：</div>
                         <div class="Search_jobs_sub">
                             <a href="{yun:}listurl m=resume type=tag v=0{/yun}" class="Search_jobs_sub_a {yun:}if !$smarty.get.tag{/yun}Search_jobs_sub_cur{yun:}/if{/yun}">{yun:}t key='common.all'{/yun}</a>
                             {yun:}foreach from=$userdata.user_tag item=v key=key{/yun}
@@ -197,7 +197,7 @@
                     {yun:}/if{/yun}
                     <div class="searchmorelist none">
                         <div class="Search_jobs_form_list search_more">
-                            <div class="Search_jobs_name"> {yun:}t key='member_user_favorite_00005'{/yun}：</div>
+                            <div class="Search_jobs_name"> {yun:}t key='member_user_00106'{/yun}：</div>
                             <div>
                                 <a href="{yun:}listurl m=resume type=salary v=0{/yun}" class="Search_jobs_sub_a {yun:}if $smarty.get.minsalary==''&&$smarty.get.maxsalary==''{/yun}Search_jobs_sub_cur{yun:}/if{/yun}">{yun:}t key='common.all'{/yun}</a>
                                 <a href="{yun:}listurl m=resume type=salary v='2000_4000'{/yun}" class="Search_jobs_cxz {yun:}if $smarty.get.minsalary==2000&&$smarty.get.maxsalary==4000{/yun}Search_jobs_sub_cur{yun:}/if{/yun}">2000-4000</a>
@@ -214,14 +214,14 @@
                             </div>
                         </div>
                         <div class="Search_jobs_form_list search_more">
-                            <div class="Search_jobs_name"> {yun:}t key='wap_com_jobadd_00048'{/yun}：</div>
+                            <div class="Search_jobs_name"> {yun:}t key='wap_com_00302'{/yun}：</div>
                             <div class=" ">
                                 <a href="{yun:}listurl m=resume type=age v=0{/yun}" class="Search_jobs_sub_a {yun:}if $smarty.get.minage==''&&$smarty.get.maxage==''{/yun}Search_jobs_sub_cur{yun:}/if{/yun}">{yun:}t key='common.all'{/yun}</a>
                                 <a href="{yun:}listurl m=resume type=age v='16_20'{/yun}" class="Search_jobs_sub_a {yun:}if $smarty.get.minage==16&&$smarty.get.maxage==20{/yun}Search_jobs_sub_cur{yun:}/if{/yun}">16-20{yun:}t key='home.age_suffix'{/yun}</a>
                                 <a href="{yun:}listurl m=resume type=age v='21_30'{/yun}" class="Search_jobs_sub_a {yun:}if $smarty.get.minage==21&&$smarty.get.maxage==30{/yun}Search_jobs_sub_cur{yun:}/if{/yun}">21-30{yun:}t key='home.age_suffix'{/yun}</a>
                                 <a href="{yun:}listurl m=resume type=age v='31_40'{/yun}" class="Search_jobs_sub_a {yun:}if $smarty.get.minage==31&&$smarty.get.maxage==40{/yun}Search_jobs_sub_cur{yun:}/if{/yun}">31-40{yun:}t key='home.age_suffix'{/yun}</a>
                                 <a href="{yun:}listurl m=resume type=age v='41_50'{/yun}" class="Search_jobs_sub_a {yun:}if $smarty.get.minage==41&&$smarty.get.maxage==50{/yun}Search_jobs_sub_cur{yun:}/if{/yun}">41-50{yun:}t key='home.age_suffix'{/yun}</a>
-                                <a href="{yun:}listurl m=resume type=age v='50'{/yun}" class="Search_jobs_sub_a {yun:}if $smarty.get.minage==50{/yun}Search_jobs_sub_cur{yun:}/if{/yun}">50{yun:}t key='wap_com_jobadd_00042'{/yun}</a>
+                                <a href="{yun:}listurl m=resume type=age v='50'{/yun}" class="Search_jobs_sub_a {yun:}if $smarty.get.minage==50{/yun}Search_jobs_sub_cur{yun:}/if{/yun}">50{yun:}t key='wap_com_00296'{/yun}</a>
                             </div>
                             <div>
                                 <input type="text" name="minage" id="mina" value="{yun:}if $smarty.get.minage{/yun}{yun:}$smarty.get.minage{/yun}{yun:}/if{/yun}" onkeyup="this.value=this.value.replace(/[^0-9]/g,'')" class="job_xz_text" />
@@ -231,7 +231,7 @@
                             </div>
                         </div>
                         <div class="Search_jobs_form_list search_more">
-                            <div class="Search_jobs_name"> {yun:}t key='member_user_index_00032'{/yun}：</div>
+                            <div class="Search_jobs_name"> {yun:}t key='member_user_00151'{/yun}：</div>
                             <div class="Search_jobs_sub">
                                 <a href="{yun:}listurl m=resume type=integrity v=0{/yun}" class="Search_jobs_sub_a {yun:}if !$smarty.get.integrity{/yun}Search_jobs_sub_cur{yun:}/if{/yun}">{yun:}t key='common.all'{/yun}</a>
                                 {yun:}foreach from=$integrity_name key=k item=v{/yun}
@@ -261,7 +261,7 @@
                                     </div>
                                 </div>
 
-                                <div class="Search_jobs_more_chlose"><span class="Search_jobs_more_chlose_s">{yun:}if $smarty.get.edu{/yun}{yun:}$userclass_name[$smarty.get.edu]{/yun}{yun:}else{/yun}{yun:}t key='wap_com_jobadd_00029'{/yun}{yun:}/if{/yun}</span><i class=""></i>
+                                <div class="Search_jobs_more_chlose"><span class="Search_jobs_more_chlose_s">{yun:}if $smarty.get.edu{/yun}{yun:}$userclass_name[$smarty.get.edu]{/yun}{yun:}else{/yun}{yun:}t key='wap_com_00283'{/yun}{yun:}/if{/yun}</span><i class=""></i>
                                     <div class="Search_jobs_more_chlose_list none">
                                         <ul>
                                             {yun:}foreach from=$userdata.user_edu item=v key=key{/yun}
@@ -273,7 +273,7 @@
                                     </div>
                                 </div>
 
-                                <div class="Search_jobs_more_chlose"><span class="Search_jobs_more_chlose_s">{yun:}if $smarty.get.exp{/yun}{yun:}$userclass_name[$smarty.get.exp]{/yun}{yun:}else{/yun}{yun:}t key='wap_user_info_00017'{/yun}{yun:}/if{/yun}</span><i class=""></i>
+                                <div class="Search_jobs_more_chlose"><span class="Search_jobs_more_chlose_s">{yun:}if $smarty.get.exp{/yun}{yun:}$userclass_name[$smarty.get.exp]{/yun}{yun:}else{/yun}{yun:}t key='wap_user_00240'{/yun}{yun:}/if{/yun}</span><i class=""></i>
                                     <div class="Search_jobs_more_chlose_list none">
                                         <ul>
                                             {yun:}foreach from=$userdata.user_word item=v key=key{/yun}
@@ -285,7 +285,7 @@
                                     </div>
                                 </div>
 
-                                <div class="Search_jobs_more_chlose"><span class="Search_jobs_more_chlose_s">{yun:}if $smarty.get.sex{/yun}{yun:}$user_sex[$smarty.get.sex]{/yun}{yun:}else{/yun}{yun:}t key='wap_com_partadd_00012'{/yun}{yun:}/if{/yun}</span><i class=""></i>
+                                <div class="Search_jobs_more_chlose"><span class="Search_jobs_more_chlose_s">{yun:}if $smarty.get.sex{/yun}{yun:}$user_sex[$smarty.get.sex]{/yun}{yun:}else{/yun}{yun:}t key='wap_com_00332'{/yun}{yun:}/if{/yun}</span><i class=""></i>
                                     <div class="Search_jobs_more_chlose_list none">
                                         <ul>
                                             {yun:}foreach from=$user_sex key=j item=v{/yun}
@@ -298,7 +298,7 @@
                                     </div>
                                 </div>
 
-                                <div class="Search_jobs_more_chlose"><span class="Search_jobs_more_chlose_s">{yun:}if $smarty.get.report{/yun}{yun:}$userclass_name[$smarty.get.report]{/yun}{yun:}else{/yun}{yun:}t key='wap_com_jobadd_00025'{/yun}{yun:}/if{/yun}</span><i class=""></i>
+                                <div class="Search_jobs_more_chlose"><span class="Search_jobs_more_chlose_s">{yun:}if $smarty.get.report{/yun}{yun:}$userclass_name[$smarty.get.report]{/yun}{yun:}else{/yun}{yun:}t key='wap_com_00279'{/yun}{yun:}/if{/yun}</span><i class=""></i>
                                     <div class="Search_jobs_more_chlose_list none">
                                         <ul>
                                             {yun:}foreach from=$userdata.user_report item=v key=key{/yun}
@@ -310,7 +310,7 @@
                                     </div>
                                 </div>
 
-                                <div class="Search_jobs_more_chlose"><span class="Search_jobs_more_chlose_s">{yun:}if $uptime[$smarty.get.uptime]{/yun}{yun:}$uptime[$smarty.get.uptime]{/yun}{yun:}else{/yun}{yun:}t key='wap_member_publictwo_00004'{/yun}{yun:}/if{/yun}</span><i class=""></i>
+                                <div class="Search_jobs_more_chlose"><span class="Search_jobs_more_chlose_s">{yun:}if $uptime[$smarty.get.uptime]{/yun}{yun:}$uptime[$smarty.get.uptime]{/yun}{yun:}else{/yun}{yun:}t key='wap_00326'{/yun}{yun:}/if{/yun}</span><i class=""></i>
                                     <div class="Search_jobs_more_chlose_list none">
                                         <ul>
                                             {yun:}foreach from=$uptime item=v key=key{/yun}
@@ -322,7 +322,7 @@
                                     </div>
                                 </div>
 
-                                <div class="Search_jobs_more_chlose"><span class="Search_jobs_more_chlose_s">{yun:}if $smarty.get.type{/yun}{yun:}$userclass_name[$smarty.get.type]{/yun}{yun:}else{/yun}{yun:}t key='wap_user_addexpect_00004'{/yun}{yun:}/if{/yun}</span><i class=""></i>
+                                <div class="Search_jobs_more_chlose"><span class="Search_jobs_more_chlose_s">{yun:}if $smarty.get.type{/yun}{yun:}$userclass_name[$smarty.get.type]{/yun}{yun:}else{/yun}{yun:}t key='wap_user_00012'{/yun}{yun:}/if{/yun}</span><i class=""></i>
                                     <div class="Search_jobs_more_chlose_list none">
                                         <ul>
                                             {yun:}foreach from=$userdata.user_type item=v key=key{/yun}
@@ -343,15 +343,15 @@
                         <div>
                             <div class="Search_clear">
                                 {yun:}if $config.sy_default_userclass==1{/yun}
-                                <a href="{yun:}url m=resume c=search{/yun}"> {yun:}t key='default_public_search_firm_search_00002'{/yun}</a>
+                                <a href="{yun:}url m=resume c=search{/yun}"> {yun:}t key='default_00059'{/yun}</a>
                                 {yun:}else{/yun}
-                                <a href="{yun:}url m=resume{/yun}"> {yun:}t key='default_public_search_firm_search_00002'{/yun}</a>
+                                <a href="{yun:}url m=resume{/yun}"> {yun:}t key='default_00059'{/yun}</a>
                                 {yun:}/if{/yun}
                             </div>
-                            <span class="Search_close_box_s">{yun:}t key='default_public_search_firm_search_00001'{/yun}</span>
+                            <span class="Search_close_box_s">{yun:}t key='default_00058'{/yun}</span>
                         </div>
                         {yun:}if $smarty.get.job1{/yun}
-                        <a href="{yun:}listurl m=resume untype='job1'{/yun}" class="Search_jobs_c_a disc_fac">{yun:}t key='admin_user_company_component_match_resume_00003'{/yun}：{yun:}$job_name[$smarty.get.job1]{/yun}</a>
+                        <a href="{yun:}listurl m=resume untype='job1'{/yun}" class="Search_jobs_c_a disc_fac">{yun:}t key='admin_user_company_00377'{/yun}：{yun:}$job_name[$smarty.get.job1]{/yun}</a>
                         {yun:}/if{/yun}
                         {yun:}if $smarty.get.job1_son{/yun}
                         <a href="{yun:}listurl m=resume untype='job1_son'{/yun}" class="Search_jobs_c_a disc_fac">{yun:}$job_name[$smarty.get.job1_son]{/yun}</a>
@@ -361,7 +361,7 @@
                         {yun:}/if{/yun}
                         {yun:}if $config.cityid=='' && $config.three_cityid==''{/yun}
                             {yun:}if $smarty.get.provinceid && !$config.sy_web_city_one{/yun}
-                            <a href="{yun:}listurl m=resume untype='provinceid'{/yun}" class="Search_jobs_c_a disc_fac">{yun:}t key='member_user_partcollect_00001'{/yun}：{yun:}$city_name[$smarty.get.provinceid]{/yun}</a>
+                            <a href="{yun:}listurl m=resume untype='provinceid'{/yun}" class="Search_jobs_c_a disc_fac">{yun:}t key='member_user_00198'{/yun}：{yun:}$city_name[$smarty.get.provinceid]{/yun}</a>
                             {yun:}/if{/yun}
                             {yun:}if $smarty.get.cityid && !$config.sy_web_city_two{/yun}
                             <a href="{yun:}listurl m=resume untype='cityid'{/yun}" class="Search_jobs_c_a disc_fac">{yun:}$city_name[$smarty.get.cityid]{/yun}</a>
@@ -371,56 +371,56 @@
                             {yun:}/if{/yun}
                         {yun:}/if{/yun}
                         {yun:}if $industry_name[$smarty.get.hy]{/yun}
-                        <a href="{yun:}listurl m=resume untype='hy'{/yun}" class="Search_jobs_c_a disc_fac">{yun:}t key='admin_user_company_component_joball_00045'{/yun}：{yun:}$industry_name[$smarty.get.hy]{/yun}</a>
+                        <a href="{yun:}listurl m=resume untype='hy'{/yun}" class="Search_jobs_c_a disc_fac">{yun:}t key='admin_user_company_00373'{/yun}：{yun:}$industry_name[$smarty.get.hy]{/yun}</a>
                         {yun:}/if{/yun}
 
                         {yun:}if $smarty.get.minsalary && $smarty.get.maxsalary{/yun}
-                        <a href="{yun:}listurl m=resume untype='salary'{/yun}" class="Search_jobs_c_a disc_fac">{yun:}t key='member_user_favorite_00005'{/yun}：{yun:}$smarty.get.minsalary{/yun}-{yun:}$smarty.get.maxsalary{/yun}</a>
+                        <a href="{yun:}listurl m=resume untype='salary'{/yun}" class="Search_jobs_c_a disc_fac">{yun:}t key='member_user_00106'{/yun}：{yun:}$smarty.get.minsalary{/yun}-{yun:}$smarty.get.maxsalary{/yun}</a>
                         {yun:}elseif $smarty.get.minsalary && !$smarty.get.maxsalary{/yun}
-                        <a href="{yun:}listurl m=resume untype='salary'{/yun}" class="Search_jobs_c_a disc_fac">{yun:}t key='member_user_favorite_00005'{/yun}：{yun:}$smarty.get.minsalary{/yun}及以上</a>
+                        <a href="{yun:}listurl m=resume untype='salary'{/yun}" class="Search_jobs_c_a disc_fac">{yun:}t key='member_user_00106'{/yun}：{yun:}$smarty.get.minsalary{/yun}及以上</a>
                         {yun:}elseif !$smarty.get.minsalary && $smarty.get.maxsalary{/yun}
-                        <a href="{yun:}listurl m=resume untype='salary'{/yun}" class="Search_jobs_c_a disc_fac">{yun:}t key='member_user_favorite_00005'{/yun}：{yun:}$smarty.get.maxsalary{/yun}及以下</a>
+                        <a href="{yun:}listurl m=resume untype='salary'{/yun}" class="Search_jobs_c_a disc_fac">{yun:}t key='member_user_00106'{/yun}：{yun:}$smarty.get.maxsalary{/yun}及以下</a>
                         {yun:}/if{/yun}
 
                         {yun:}if $smarty.get.minage && $smarty.get.maxage{/yun}
-                        <a href="{yun:}listurl m=resume untype='age'{/yun}" class="Search_jobs_c_a disc_fac">{yun:}t key='wap_com_jobadd_00048'{/yun}：{yun:}$smarty.get.minage{/yun}-{yun:}$smarty.get.maxage{/yun}</a>
+                        <a href="{yun:}listurl m=resume untype='age'{/yun}" class="Search_jobs_c_a disc_fac">{yun:}t key='wap_com_00302'{/yun}：{yun:}$smarty.get.minage{/yun}-{yun:}$smarty.get.maxage{/yun}</a>
                         {yun:}elseif $smarty.get.minage && !$smarty.get.maxage{/yun}
-                        <a href="{yun:}listurl m=resume untype='age'{/yun}" class="Search_jobs_c_a disc_fac">{yun:}t key='wap_com_jobadd_00048'{/yun}：{yun:}$smarty.get.minage{/yun}及以上</a>
+                        <a href="{yun:}listurl m=resume untype='age'{/yun}" class="Search_jobs_c_a disc_fac">{yun:}t key='wap_com_00302'{/yun}：{yun:}$smarty.get.minage{/yun}及以上</a>
                         {yun:}/if{/yun}
 
                         {yun:}if $smarty.get.integrity{/yun}
-                        <a href="{yun:}listurl m=resume untype='integrity'{/yun}" class="Search_jobs_c_a disc_fac">{yun:}t key='wap_member_publictwo_00006'{/yun}：{yun:}$integrity_name[$smarty.get.integrity]{/yun}</a>
+                        <a href="{yun:}listurl m=resume untype='integrity'{/yun}" class="Search_jobs_c_a disc_fac">{yun:}t key='wap_00328'{/yun}：{yun:}$integrity_name[$smarty.get.integrity]{/yun}</a>
                         {yun:}/if{/yun}
 
                         {yun:}if $smarty.get.edu{/yun}
                         <a href="{yun:}listurl m=resume untype='edu'{/yun}" class="Search_jobs_c_a disc_fac">{yun:}t key='home.education_suffix'{/yun}：{yun:}$userclass_name[$smarty.get.edu]{/yun}</a>
                         {yun:}/if{/yun}
                          {yun:}if $smarty.get.exp{/yun}
-                        <a href="{yun:}listurl m=resume untype='exp'{/yun}" class="Search_jobs_c_a disc_fac">{yun:}t key='wap_user_info_00017'{/yun}：{yun:}$userclass_name[$smarty.get.exp]{/yun}</a>
+                        <a href="{yun:}listurl m=resume untype='exp'{/yun}" class="Search_jobs_c_a disc_fac">{yun:}t key='wap_user_00240'{/yun}：{yun:}$userclass_name[$smarty.get.exp]{/yun}</a>
                         {yun:}/if{/yun}
                         {yun:}if $smarty.get.tag{/yun}
-                        <a href="{yun:}listurl m=resume untype='tag'{/yun}" class="Search_jobs_c_a disc_fac">{yun:}t key='wap_member_publictwo_00001'{/yun}：{yun:}$userclass_name[$smarty.get.tag]{/yun}</a>
+                        <a href="{yun:}listurl m=resume untype='tag'{/yun}" class="Search_jobs_c_a disc_fac">{yun:}t key='wap_00323'{/yun}：{yun:}$userclass_name[$smarty.get.tag]{/yun}</a>
                         {yun:}/if{/yun}
                         {yun:}if $smarty.get.sex{/yun}
-                        <a href="{yun:}listurl m=resume untype='sex'{/yun}" class="Search_jobs_c_a disc_fac">{yun:}t key='wap_com_jobadd_00049'{/yun}：{yun:}$user_sex[$smarty.get.sex]{/yun}</a>
+                        <a href="{yun:}listurl m=resume untype='sex'{/yun}" class="Search_jobs_c_a disc_fac">{yun:}t key='wap_com_00303'{/yun}：{yun:}$user_sex[$smarty.get.sex]{/yun}</a>
                         {yun:}/if{/yun}
                         {yun:}if $smarty.get.type{/yun}
-                        <a href="{yun:}listurl m=resume untype='type'{/yun}" class="Search_jobs_c_a disc_fac">{yun:}t key='member_com_partlist_00002'{/yun}：{yun:}$userclass_name[$smarty.get.type]{/yun}</a>
+                        <a href="{yun:}listurl m=resume untype='type'{/yun}" class="Search_jobs_c_a disc_fac">{yun:}t key='member_com_00313'{/yun}：{yun:}$userclass_name[$smarty.get.type]{/yun}</a>
                         {yun:}/if{/yun}
                         {yun:}if $smarty.get.report{/yun}
-                        <a href="{yun:}listurl m=resume untype='report'{/yun}" class="Search_jobs_c_a disc_fac">{yun:}t key='wap_com_jobadd_00025'{/yun}：{yun:}$userclass_name[$smarty.get.report]{/yun}</a>
+                        <a href="{yun:}listurl m=resume untype='report'{/yun}" class="Search_jobs_c_a disc_fac">{yun:}t key='wap_com_00279'{/yun}：{yun:}$userclass_name[$smarty.get.report]{/yun}</a>
                         {yun:}/if{/yun}
                         {yun:}if $smarty.get.uptime{/yun}
-                        <a href="{yun:}listurl m=resume untype='uptime'{/yun}" class="Search_jobs_c_a disc_fac">{yun:}t key='wap_member_publictwo_00004'{/yun}：{yun:}$uptime[$smarty.get.uptime]{/yun}</a>
+                        <a href="{yun:}listurl m=resume untype='uptime'{/yun}" class="Search_jobs_c_a disc_fac">{yun:}t key='wap_00326'{/yun}：{yun:}$uptime[$smarty.get.uptime]{/yun}</a>
                         {yun:}/if{/yun}
                         {yun:}if $smarty.get.keyword{/yun}
                         <a href="{yun:}listurl m=resume untype='keyword'{/yun}" class="Search_jobs_c_a disc_fac">{yun:}$smarty.get.keyword{/yun}</a>
                         {yun:}/if{/yun}
                         {yun:}if $smarty.get.idcard{/yun}
-                        <a href="{yun:}listurl m=resume untype='idcard'{/yun}" class="Search_jobs_c_a disc_fac">{yun:}t key='default_resume_search_00011'{/yun}</a>
+                        <a href="{yun:}listurl m=resume untype='idcard'{/yun}" class="Search_jobs_c_a disc_fac">{yun:}t key='default_00318'{/yun}</a>
                         {yun:}/if{/yun}
                         {yun:}if $smarty.get.work{/yun}
-                        <a href="{yun:}listurl m=resume untype='work'{/yun}" class="Search_jobs_c_a disc_fac">{yun:}t key='member_com_resume_00007'{/yun}</a>
+                        <a href="{yun:}listurl m=resume untype='work'{/yun}" class="Search_jobs_c_a disc_fac">{yun:}t key='member_com_00340'{/yun}</a>
                         {yun:}/if{/yun} &nbsp;
                     </div>
                     {yun:}/if{/yun}
@@ -436,19 +436,19 @@
                             <a href="{yun:}url m=resume c=search{/yun}">所有人才</a><i class="search_h1_box_list_icon"></i>
                         </li>
                         <li {yun:}if $smarty.get.order=='lastdate' {/yun}class="search_Filter_current" {yun:}/if{/yun}>
-                            <a href="{yun:}listurl m=resume type=order v=lastdate{/yun}"><span>{yun:}t key='wap_member_publictwo_00004'{/yun}</span><i class="search_Filter_icon"></i></a>
+                            <a href="{yun:}listurl m=resume type=order v=lastdate{/yun}"><span>{yun:}t key='wap_00326'{/yun}</span><i class="search_Filter_icon"></i></a>
                         </li>
                         <li {yun:}if $smarty.get.order=='ctime' {/yun}class="search_Filter_current" {yun:}/if{/yun}>
-                            <a href="{yun:}listurl m=resume type=order v=ctime{/yun}"><span>{yun:}t key='admin_user_weipin_component_once_00030'{/yun}</span><i class="search_Filter_icon"></i></a>
+                            <a href="{yun:}listurl m=resume type=order v=ctime{/yun}"><span>{yun:}t key='admin_user_weipin_00030'{/yun}</span><i class="search_Filter_icon"></i></a>
                         </li>
                         <li class="{yun:}if $smarty.get.pic{/yun}search_h1_box_cur{yun:}/if{/yun} job_tj_t">
                             <a href="{yun:}if $smarty.get.pic{/yun}{yun:}listurl m=resume type=tp v=0{/yun}{yun:}else{/yun}{yun:}listurl m=resume type=tp v=1{/yun}{yun:}/if{/yun}" class="job_zt">有照片<i class="job_tj_chk"></i></a>
                         </li>
                          <li class="{yun:}if $smarty.get.idcard{/yun}search_h1_box_cur{yun:}/if{/yun}">
-                            <a href="{yun:}if $smarty.get.idcard{/yun}{yun:}listurl m=resume type=idcard v=0{/yun}{yun:}else{/yun}{yun:}listurl m=resume type=idcard v=1{/yun}{yun:}/if{/yun}" class="job_zt">{yun:}t key='member_com_hr_resume_00003'{/yun}<i class="job_tj_chk"></i></a>
+                            <a href="{yun:}if $smarty.get.idcard{/yun}{yun:}listurl m=resume type=idcard v=0{/yun}{yun:}else{/yun}{yun:}listurl m=resume type=idcard v=1{/yun}{yun:}/if{/yun}" class="job_zt">{yun:}t key='member_com_00026'{/yun}<i class="job_tj_chk"></i></a>
                         </li>
                         <li class="{yun:}if $smarty.get.work{/yun}search_h1_box_cur{yun:}/if{/yun}">
-                            <a href="{yun:}if $smarty.get.work{/yun}{yun:}listurl m=resume type=work v=0{/yun}{yun:}else{/yun}{yun:}listurl m=resume type=work v=1{/yun}{yun:}/if{/yun}" class="job_zt">{yun:}t key='member_com_resume_00007'{/yun}<i class="job_tj_chk"></i></a>
+                            <a href="{yun:}if $smarty.get.work{/yun}{yun:}listurl m=resume type=work v=0{/yun}{yun:}else{/yun}{yun:}listurl m=resume type=work v=1{/yun}{yun:}/if{/yun}" class="job_zt">{yun:}t key='member_com_00340'{/yun}<i class="job_tj_chk"></i></a>
                         </li>
                     </ul>
 
@@ -458,23 +458,23 @@
             </div>
 
             <div class="user_left_sidebar">              
-                <!-- {yun:}t key='admin_tool_weixin_component_wxfbtool_00028'{/yun} -->
+                <!-- {yun:}t key='admin_tool_00631'{/yun} -->
                 <!-- 判断后台配置是否公开简历 -->
                 {yun:}if $config.com_search == 1{/yun}
                     {yun:}if !$uid{/yun}
                         {yun:}include file="$tplstyle/resume/topfour_list.htm"{/yun}
                         <div class=" search_nologin_user_bg">
-                            <div class="search_nologin_tip_t">{yun:}t key='wap_resume_00003'{/yun}</div>
-                            <div class="search_nologin_tip_p"> {yun:}t key='default_resume_search_00003'{/yun}</div>
+                            <div class="search_nologin_tip_t">{yun:}t key='wap_00421'{/yun}</div>
+                            <div class="search_nologin_tip_p"> {yun:}t key='default_00314'{/yun}</div>
                             <dl class="search_nologin_tip_wx">
                                 <dt><img src="{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_wx_qcode{/yun}"  width="130" height="130"></dt>
-                                <dd>{yun:}t key='wap_resume_00008'{/yun}</dd>
+                                <dd>{yun:}t key='wap_00426'{/yun}</dd>
                             </dl>
                             <div class="search_nologin_tip_bth">
-                                <a href="{yun:}url m=register{/yun}">{yun:}t key='wap_js_reg_ajax_00024'{/yun}</a>
-                                <a href="javascript:void(0);" onclick="showlogin('2');" class="search_nologin_tip_bth_have">{yun:}t key='default_resume_search_00012'{/yun}</a>
+                                <a href="{yun:}url m=register{/yun}">{yun:}t key='wap_js_00064'{/yun}</a>
+                                <a href="javascript:void(0);" onclick="showlogin('2');" class="search_nologin_tip_bth_have">{yun:}t key='default_00319'{/yun}</a>
                             </div>
-                            <div class="search_nologin_tip_tel">{yun:}t key='wap_resume_00018'{/yun}<span class="search_nologin_tip_tel_n">{yun:}$config.sy_comwebtel{/yun}</span></div>
+                            <div class="search_nologin_tip_tel">{yun:}t key='wap_00435'{/yun}<span class="search_nologin_tip_tel_n">{yun:}$config.sy_comwebtel{/yun}</span></div>
                         </div>
                     {yun:}else{/yun}
                         <!-- 判断是否个人登录 -->
@@ -485,18 +485,18 @@
                             {yun:}else{/yun}
                                 {yun:}include file="$tplstyle/resume/topfour_list.htm"{/yun}
                                 <div class=" search_nologin_user_bg">
-                                    <div class="search_nologin_tip_t">{yun:}t key='wap_resume_00003'{/yun}</div>
+                                    <div class="search_nologin_tip_t">{yun:}t key='wap_00421'{/yun}</div>
                                     <div class="search_nologin_tip_p"></div>
                                     <dl class="search_nologin_tip_wx">
                                         <dt><img src="{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_wx_qcode{/yun}"  width="130" height="130"></dt>
-                                        <dd>{yun:}t key='wap_resume_00008'{/yun}</dd>
+                                        <dd>{yun:}t key='wap_00426'{/yun}</dd>
                                     </dl>
                                     <div class="search_nologin_tip_bth">
                                         
-                                        <a href="javascript:void(0)" onclick="logoutUser('{yun:}$config.sy_weburl{/yun}/index.php?c=logout', '{yun:}$config.sy_weburl{/yun}/login')">{yun:}t key='wap_resume_00020'{/yun}</a>
+                                        <a href="javascript:void(0)" onclick="logoutUser('{yun:}$config.sy_weburl{/yun}/index.php?c=logout', '{yun:}$config.sy_weburl{/yun}/login')">{yun:}t key='wap_00437'{/yun}</a>
                                         
                                     </div>
-                                    <div class="search_nologin_tip_tel">{yun:}t key='wap_resume_00018'{/yun}<span class="search_nologin_tip_tel_n">{yun:}$config.sy_comwebtel{/yun}</span></div>
+                                    <div class="search_nologin_tip_tel">{yun:}t key='wap_00435'{/yun}<span class="search_nologin_tip_tel_n">{yun:}$config.sy_comwebtel{/yun}</span></div>
                                 </div>
                             {yun:}/if{/yun}
                         {yun:}else{/yun}
@@ -504,13 +504,13 @@
                             {yun:}if $config.com_status_search == 1 && $userInfo.r_status != 1{/yun}
                                 {yun:}include file="$tplstyle/resume/topfour_list.htm"{/yun}
                                 <div class=" search_nologin_user_bg">
-                                    <div class="search_nologin_tip_t">{yun:}t key='default_resume_search_00004'{/yun}</div>
+                                    <div class="search_nologin_tip_t">{yun:}t key='default_00315'{/yun}</div>
                                     <div class="search_nologin_tip_p"></div>
                                     <dl class="search_nologin_tip_wx">
                                         <dt><img src="{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_wx_qcode{/yun}"  width="130" height="130"></dt>
-                                        <dd>{yun:}t key='wap_resume_00008'{/yun}</dd>
+                                        <dd>{yun:}t key='wap_00426'{/yun}</dd>
                                     </dl>
-                                    <div class="search_nologin_tip_p">{yun:}t key='wap_com_server_00032'{/yun}，加快审核，高效挑选人才</div>
+                                    <div class="search_nologin_tip_p">{yun:}t key='wap_com_00389'{/yun}，加快审核，高效挑选人才</div>
                                     <div class="search_nologin_tip_tel">贴心服务热线：<span class="search_nologin_tip_tel_n">{yun:}$config.sy_comwebtel{/yun}</span></div>
                                 </div>
                             {yun:}else{/yun}
@@ -530,7 +530,7 @@
             </div>
             <div class="user_recommendation">
 
-                <div class="job_recommendation_title"><span class="job_recommendation_span"><i class="job_recommendation_span_line"></i>{yun:}t key='default_resume_search_00013'{/yun}</span></div>
+                <div class="job_recommendation_title"><span class="job_recommendation_span"><i class="job_recommendation_span_line"></i>{yun:}t key='default_00320'{/yun}</span></div>
                 <div class="userresume_recommendation">
                     <ul>
                         {yun:}userlist limit=18 post_len=18 recg=1 item=userrec{/yun}
@@ -609,13 +609,13 @@
             });
             $('.yunjoblist_new_icon').click(function(){
                 var pid=$(this).attr('pid');
-                if($(this).attr('title')=="{yun:}t key='admin_user_member_component_alluser_00031'{/yun}"){
+                if($(this).attr('title')=="{yun:}t key='admin_user_00145'{/yun}"){
                     $(this).addClass('yunjoblist_new_icon_cur');
-                    $(this).attr('title',"{yun:}t key='wap_article_00005'{/yun}");
+                    $(this).attr('title',"{yun:}t key='wap_00146'{/yun}");
                     $('#resumeshow'+pid).show();
                 }else{
                     $(this).removeClass('yunjoblist_new_icon_cur');
-                    $(this).attr('title',"{yun:}t key='admin_user_member_component_alluser_00031'{/yun}");
+                    $(this).attr('title',"{yun:}t key='admin_user_00145'{/yun}");
                     $('#resumeshow'+pid).hide();
                 }
             });

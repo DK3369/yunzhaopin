@@ -27,10 +27,10 @@
 						<a href="{yun:}$config.sy_weburl{/yun}"><img src="{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_logo{/yun}" class="png" style=" border:none;"></a>
 					</div>
 					<div class="yun_resume_logo_zt">
-						{yun:}t key='member_com_sysnews_00002'{/yun}：<span class="yun_resume_logo_zt_n">{yun:}$Info.id{/yun}</span>
+						{yun:}t key='member_com_00345'{/yun}：<span class="yun_resume_logo_zt_n">{yun:}$Info.id{/yun}</span>
 						<em class="yun_resume_logo_zt_list"> {yun:}t key='api_wxapp_00014'{/yun}：<span class="yun_resume_logo_zt_n">{yun:}$Info.lastupdate{/yun}  </span>  </em> 
-						{yun:}t key='wap_user_index_00039'{/yun}：<span class="yun_resume_logo_zt_n"><script language="javascript" src="{yun:}url m=resume c=show a=GetHits id='`$Info.id`'{/yun}"></script> {yun:}t key='common_02089'{/yun} </span> 
-						<em class="yun_resume_logo_zt_list">{yun:}t key='resume_jianli3_index_00001'{/yun}<span class="yun_resume_logo_zt_n">{yun:}$pre{/yun}%</span></em>
+						{yun:}t key='wap_user_00221'{/yun}：<span class="yun_resume_logo_zt_n"><script language="javascript" src="{yun:}url m=resume c=show a=GetHits id='`$Info.id`'{/yun}"></script> {yun:}t key='common_02089'{/yun} </span> 
+						<em class="yun_resume_logo_zt_list">{yun:}t key='resume_00001'{/yun}<span class="yun_resume_logo_zt_n">{yun:}$pre{/yun}%</span></em>
 					</div>
 				</div>
 				<!--header end-->
@@ -41,7 +41,7 @@
 						<ul>
 							<li>投递职位：{yun:}$Info.sqInfo.sq_job_name{/yun}</li>
 							<li>投递时间：{yun:}$Info.sqInfo.sq_job_time{/yun}</li>
-							<li>{yun:}t key='admin_yunying_special_component_special_view_company_00009'{/yun}：{yun:}$Info.login_date_n{/yun}</li>
+							<li>{yun:}t key='admin_yunying_00131'{/yun}：{yun:}$Info.login_date_n{/yun}</li>
 						</ul>
 					</div>
 					{yun:}/if{/yun}
@@ -53,9 +53,9 @@
 								<i class="one_vita_Basic_info_bg"></i>
 								<div class="one_vita_name">
 									{yun:}if $Info.m_status=="1"{/yun}{yun:}$Info.name{/yun}{yun:}else{/yun}{yun:}$Info.username_n{/yun}{yun:}/if{/yun} 
-									{yun:}if $Info.idcard_status==1 && $Info.idcard{/yun}<span class="one_vita_name_yrz"><img src="{yun:}$config.sy_weburl{/yun}/app/template/resume/images/three_sf.png" title="{yun:}t key='resume_jianli3_index_00008'{/yun}"> {yun:}t key='wap_user_alltask_00024'{/yun}</span>{yun:}/if{/yun} 
+									{yun:}if $Info.idcard_status==1 && $Info.idcard{/yun}<span class="one_vita_name_yrz"><img src="{yun:}$config.sy_weburl{/yun}/app/template/resume/images/three_sf.png" title="{yun:}t key='resume_00008'{/yun}"> {yun:}t key='wap_user_00128'{/yun}</span>{yun:}/if{/yun} 
 									{yun:}if $UserMember.source==6 && $UserMember.claim==0 && $UserMember.email!=""{/yun}
-									<a class="resume_rz " href="javascript:void(0);" onClick="claim('{yun:}url m=ajax c=claim uid=$Info.uid{/yun}')">{yun:}t key='resume_jianli3_index_00014'{/yun}</a>
+									<a class="resume_rz " href="javascript:void(0);" onClick="claim('{yun:}url m=ajax c=claim uid=$Info.uid{/yun}')">{yun:}t key='resume_00011'{/yun}</a>
 									{yun:}/if{/yun}
 									
 	       		<!-- 优质人才标识   ------------------------------------------------------------------>
@@ -94,12 +94,12 @@
 
 						<div class="one_vita_list_cont">
 							<div class="one_vita_list">
-								<div class="one_vita_list_h1"><span class="one_vita_list_h1_span">{yun:}t key='wap_resume_index_00020'{/yun}</span></div>
+								<div class="one_vita_list_h1"><span class="one_vita_list_h1_span">{yun:}t key='wap_00460'{/yun}</span></div>
 								<i class="one_vita_list_h1_iconbg"></i>
 								<i class="one_vita_list_h1_icon reaume_iconyx"></i>
 								<div class="one_vita_list_line">
 									<div class="one_vita_Intention "><i class="one_vita_Intention_i one_vita_red"></i>意向岗位：{yun:}$Info.customjob{/yun} </div>
-									<div class="one_vita_Intention"><i class="one_vita_Intention_i one_vita_red"></i>{yun:}t key='member_user_partcollect_00001'{/yun}： 
+									<div class="one_vita_Intention"><i class="one_vita_Intention_i one_vita_red"></i>{yun:}t key='member_user_00198'{/yun}： 
 										{yun:}foreach from=$Info.expectcity key=key item=v{/yun} 
 											{yun:}if $key<5{/yun} 
 												{yun:}$v{/yun}&nbsp; 
@@ -107,13 +107,13 @@
 										{yun:}/foreach{/yun} 
 									</div>
 
-									<div class="one_vita_Intention "><i class="one_vita_Intention_i one_vita_red"></i>{yun:}t key='admin_tool_database_component_classstat_00048'{/yun}：{yun:}$Info.hy{/yun} </div>
+									<div class="one_vita_Intention "><i class="one_vita_Intention_i one_vita_red"></i>{yun:}t key='admin_tool_00129'{/yun}：{yun:}$Info.hy{/yun} </div>
 									<div class="one_vita_Intention"><i class="one_vita_Intention_i one_vita_red"></i>待遇要求：{yun:}$Info.salary{/yun}</div>
 									{yun:}if $Info.report{/yun}<div class="one_vita_Intention "><i class="one_vita_Intention_i one_vita_red"></i>{yun:}t key='common_01705'{/yun}：{yun:}$Info.report{/yun}</div>{yun:}/if{/yun} 
 									{yun:}if $Info.type{/yun}<div class="one_vita_Intention "><i class="one_vita_Intention_i one_vita_red"></i>{yun:}t key='common_01837'{/yun}：{yun:}$Info.type{/yun}</div>{yun:}/if{/yun} 
-									{yun:}if $Info.jobstatus{/yun}<div class="one_vita_Intention "><i class="one_vita_Intention_i one_vita_red"></i>{yun:}t key='wap_user_addexpect_00009'{/yun}：{yun:}$Info.jobstatus{/yun}</div> {yun:}/if{/yun}
+									{yun:}if $Info.jobstatus{/yun}<div class="one_vita_Intention "><i class="one_vita_Intention_i one_vita_red"></i>{yun:}t key='wap_user_00017'{/yun}：{yun:}$Info.jobstatus{/yun}</div> {yun:}/if{/yun}
 									<div class="one_vita_Intention" style="width:600px;">
-										<i class="one_vita_Intention_i one_vita_red" style="top:18"></i>{yun:}t key='wap_user_addresume_00037'{/yun}： 
+										<i class="one_vita_Intention_i one_vita_red" style="top:18"></i>{yun:}t key='wap_user_00055'{/yun}： 
 										{yun:}foreach from=$Info.expectjob key=key item=v{/yun} 
 											{yun:}if $key<5{/yun}<span class="">{yun:}$v{/yun}</span>{yun:}/if{/yun} 
 										{yun:}/foreach{/yun}
@@ -124,13 +124,13 @@
 								{yun:}if !empty($Info.description){/yun}
 								<div class="one_vita_list">
 
-									<div class="one_vita_list_h1"><span class="one_vita_list_h1_span">{yun:}t key='wap_resume_index_00023'{/yun}</span></div>
+									<div class="one_vita_list_h1"><span class="one_vita_list_h1_span">{yun:}t key='wap_00463'{/yun}</span></div>
 									<i class="one_vita_list_h1_iconbg"></i>
 									<i class="one_vita_list_h1_icon reaume_iconpj"></i>
 
 									<div class="one_vita_list_line">
 										<div class="one_vita_skill">
-											<div class="one_vita_skill_Intention"><i class="one_vita_Intention_i one_vita_red"></i>{yun:}t key='wap_resume_index_00023'{/yun}：{yun:}$Info.description{/yun} </div>
+											<div class="one_vita_skill_Intention"><i class="one_vita_Intention_i one_vita_red"></i>{yun:}t key='wap_00463'{/yun}：{yun:}$Info.description{/yun} </div>
 											{yun:}if $Info.arrayTag{/yun}
 											<div class="one_vita_skill_Intention" style="padding-top:15px;">
 												{yun:}foreach from=$Info.arrayTag item=v{/yun}
@@ -146,17 +146,17 @@
 								
 								{yun:}if is_array($Info.user_work) && !empty($Info.user_work){/yun}
 								<div class="one_vita_list" id="m3">
-									<div class="one_vita_list_h1"><span class="one_vita_list_h1_span">{yun:}t key='wap_resume_index_00017'{/yun}</span>
+									<div class="one_vita_list_h1"><span class="one_vita_list_h1_span">{yun:}t key='wap_00457'{/yun}</span>
 									</div>
 									<i class="one_vita_list_h1_iconbg"></i>
 									<i class="one_vita_list_h1_icon reaume_iconjl"></i>
 									
 									<div class="one_vita_list_line">
-										{yun:}if $Info.avghour>0{/yun}<span class="yun_resume_jobtime">{yun:}t key='wap_resume_index_00006'{/yun}：{yun:}$Info.avghourInfo{/yun}</span>{yun:}/if{/yun}
+										{yun:}if $Info.avghour>0{/yun}<span class="yun_resume_jobtime">{yun:}t key='wap_00446'{/yun}：{yun:}$Info.avghourInfo{/yun}</span>{yun:}/if{/yun}
 										{yun:}foreach item=one from=$Info.user_work{/yun}
 										<div class="one_vita_skill">
 											<div class="one_vita_skill_Intention">
-												{yun:}if $one.sdate!=0{/yun}<div class="one_vita_introduction_a one_vita_date"><i class="one_vita_Intention_i one_vita_red"></i>{yun:}$one.sdate|date_format:"%Y年%m月"{/yun} - {yun:}if $one.edate{/yun}{yun:}$one.edate|date_format:"%Y年%m月"{/yun}{yun:}else{/yun}{yun:}t key='wap_js_userpicker_00004'{/yun}{yun:}/if{/yun} </div><span style="color: red;">【{yun:}$one.time_n{/yun}】</span>{yun:}/if{/yun}
+												{yun:}if $one.sdate!=0{/yun}<div class="one_vita_introduction_a one_vita_date"><i class="one_vita_Intention_i one_vita_red"></i>{yun:}$one.sdate|date_format:"%Y年%m月"{/yun} - {yun:}if $one.edate{/yun}{yun:}$one.edate|date_format:"%Y年%m月"{/yun}{yun:}else{/yun}{yun:}t key='wap_js_00170'{/yun}{yun:}/if{/yun} </div><span style="color: red;">【{yun:}$one.time_n{/yun}】</span>{yun:}/if{/yun}
 												<div class="one_vita_introduction_a one_vita_dw_name bold">{yun:}$one.name{/yun}</div>
 												{yun:}if $one.title{/yun}
 												<div class="one_vita_introduction_a one_vita_dw_zw bold">担任：{yun:}$one.title{/yun}</div>
@@ -172,7 +172,7 @@
 								{yun:}/if{/yun} 
 								{yun:}if is_array($Info.user_edu) && !empty($Info.user_edu){/yun}
 								<div class="one_vita_list" id="m0">
-									<div class="one_vita_list_h1"><span class="one_vita_list_h1_span">{yun:}t key='wap_resume_index_00019'{/yun}</span></div>
+									<div class="one_vita_list_h1"><span class="one_vita_list_h1_span">{yun:}t key='wap_00459'{/yun}</span></div>
 									<i class="one_vita_list_h1_iconbg"></i>
 									<i class="one_vita_list_h1_icon reaume_iconjy"></i>
 									
@@ -183,7 +183,7 @@
 												{yun:}if $one.sdate>0{/yun}<div class="one_vita_introduction_a one_vita_date"><i class="one_vita_Intention_i one_vita_red"></i>{yun:}$one.sdate|date_format:"%Y年%m月"{/yun} - {yun:}$one.edate|date_format:"%Y年%m月"{/yun} </div>{yun:}/if{/yun}
 												<div class="one_vita_introduction_a one_vita_jy_x bold">{yun:}$one.name{/yun} </div>
 												{yun:}if $one.education_n{/yun}<div class="one_vita_introduction_a one_vita_dw_jydr ">{yun:}t key='home.education_suffix'{/yun}：{yun:}$one.education_n{/yun}</div>{yun:}/if{/yun}
-												{yun:}if $one.title{/yun}<div class="one_vita_introduction_a one_vita_dw_jydr ">{yun:}t key='wap_resume_index_00035'{/yun}：{yun:}$one.title{/yun}</div>{yun:}/if{/yun}
+												{yun:}if $one.title{/yun}<div class="one_vita_introduction_a one_vita_dw_jydr ">{yun:}t key='wap_00475'{/yun}：{yun:}$one.title{/yun}</div>{yun:}/if{/yun}
 												{yun:}if $one.specialty{/yun}<div class="one_vita_introduction_a one_vita_dw_jydr ">主修专业：{yun:}$one.specialty{/yun}</div>{yun:}/if{/yun}
 											</div>
 										</div>
@@ -193,18 +193,18 @@
 								{yun:}/if{/yun}
 								{yun:}if $Info.m_status=="1"{/yun} {yun:}if is_array($Info.user_skill) && !empty($Info.user_skill){/yun}
 								<div class="one_vita_list" id="m2">
-									<div class="one_vita_list_h1"><span class="one_vita_list_h1_span">{yun:}t key='wap_resume_index_00021'{/yun}</span></div>
+									<div class="one_vita_list_h1"><span class="one_vita_list_h1_span">{yun:}t key='wap_00461'{/yun}</span></div>
 									<i class="one_vita_list_h1_iconbg"></i>
 									<i class="one_vita_list_h1_icon reaume_iconjn"></i>
 									<div class="one_vita_list_line" id="skill_photos">
 										{yun:}foreach item=one from=$Info.user_skill{/yun}
 										<div class="one_vita_skill">
 											<div class="one_vita_skill_Intention"> <i class="one_vita_Intention_i one_vita_red"></i>
-												<div class=" ">{yun:}t key='wap_user_addresumeson_00031'{/yun}：{yun:}$one.name{/yun}</div>
-												<div class=" ">{yun:}t key='wap_user_addresumeson_00036'{/yun}：{yun:}$one.ing_n{/yun}</div>
-												{yun:}if $one.longtime{/yun}<div class=" ">{yun:}t key='wap_resume_index_00018'{/yun}：{yun:}$one.longtime{/yun}{yun:}t key='common_02077'{/yun} </div>{yun:}/if{/yun}
+												<div class=" ">{yun:}t key='wap_user_00089'{/yun}：{yun:}$one.name{/yun}</div>
+												<div class=" ">{yun:}t key='wap_user_00094'{/yun}：{yun:}$one.ing_n{/yun}</div>
+												{yun:}if $one.longtime{/yun}<div class=" ">{yun:}t key='wap_00458'{/yun}：{yun:}$one.longtime{/yun}{yun:}t key='common_02077'{/yun} </div>{yun:}/if{/yun}
 												{yun:}if $one.picurl{/yun}
-												<div class="zs_imgbox ">{yun:}t key='wap_user_addresumeson_00032'{/yun}：
+												<div class="zs_imgbox ">{yun:}t key='wap_user_00090'{/yun}：
 												{yun:}if $one.picurl{/yun}
 													<img src="{yun:}$one.picurl{/yun}" lay-src="{yun:}$one.picurl{/yun}" width="210" height="153" />
 												{yun:}/if{/yun} 
@@ -219,7 +219,7 @@
 								{yun:}/if{/yun}
 								{yun:}/if{/yun} {yun:}if is_array($Info.user_xm) && !empty($Info.user_xm){/yun}
 								<div class="one_vita_list" id="m4">
-									<div class="one_vita_list_h1"><span class="one_vita_list_h1_span">{yun:}t key='wap_resume_index_00025'{/yun}</span></div>
+									<div class="one_vita_list_h1"><span class="one_vita_list_h1_span">{yun:}t key='wap_00465'{/yun}</span></div>
 									<i class="one_vita_list_h1_iconbg"></i>
 									<i class="one_vita_list_h1_icon reaume_iconxm"></i>
 									
@@ -230,7 +230,7 @@
 												{yun:}if $one.sdate>0{/yun}<div class="one_vita_introduction_a one_vita_date">{yun:}$one.sdate|date_format:"%Y年%m月"{/yun} - {yun:}$one.edate|date_format:"%Y年%m月"{/yun} </div>{yun:}/if{/yun}
 												<div class="one_vita_introduction_a one_vita_dw_name bold">{yun:}$one.name{/yun}</div>
 												{yun:}if $one.title{/yun}<div class="one_vita_introduction_a one_vita_dw_zw  bold">担任：{yun:}$one.title{/yun}</div>{yun:}/if{/yun}
-												{yun:}if $one.content{/yun}<div class="vita_skill_Intention_xmms">{yun:}t key='admin_user_users_component_resume_edit_00035'{/yun}：{yun:}$one.content{/yun} </div>{yun:}/if{/yun}
+												{yun:}if $one.content{/yun}<div class="vita_skill_Intention_xmms">{yun:}t key='admin_user_00228'{/yun}：{yun:}$one.content{/yun} </div>{yun:}/if{/yun}
 											</div>
 										</div>
 										{yun:}/foreach{/yun}
@@ -240,7 +240,7 @@
 								{yun:}/if{/yun}
 								{yun:}if is_array($Info.user_tra) && !empty($Info.user_tra){/yun}
 								<div class="one_vita_list" id="m1">
-									<div class="one_vita_list_h1"><span class="one_vita_list_h1_span">{yun:}t key='wap_resume_index_00015'{/yun}</span></div>
+									<div class="one_vita_list_h1"><span class="one_vita_list_h1_span">{yun:}t key='wap_00455'{/yun}</span></div>
 									<i class="one_vita_list_h1_iconbg"></i>
 									<i class="one_vita_list_h1_icon reaume_iconpx"></i>
 									<div class="one_vita_list_line">
@@ -249,8 +249,8 @@
 											<div class="one_vita_skill_Intention"><i class="one_vita_Intention_i one_vita_red"></i>
 												{yun:}if $one.sdate>0{/yun}<div class="one_vita_introduction_a one_vita_date">{yun:}$one.sdate|date_format:"%Y年%m月"{/yun} - {yun:}$one.edate|date_format:"%Y年%m月"{/yun} </div>{yun:}/if{/yun}
 												<div class="one_vita_introduction_a one_vita_dw_name bold">{yun:}$one.name{/yun} </div>
-												{yun:}if $one.title{/yun}<div class="one_vita_introduction_a one_vita_dw_bm bold">{yun:}t key='wap_user_addresumeson_00025'{/yun}：{yun:}$one.title{/yun}</div>{yun:}/if{/yun}
-												{yun:}if $one.content{/yun}<div class="vita_skill_Intention_xmms">{yun:}t key='wap_user_addresumeson_00023'{/yun}：{yun:}$one.content{/yun} </div>{yun:}/if{/yun}
+												{yun:}if $one.title{/yun}<div class="one_vita_introduction_a one_vita_dw_bm bold">{yun:}t key='wap_user_00083'{/yun}：{yun:}$one.title{/yun}</div>{yun:}/if{/yun}
+												{yun:}if $one.content{/yun}<div class="vita_skill_Intention_xmms">{yun:}t key='wap_user_00081'{/yun}：{yun:}$one.content{/yun} </div>{yun:}/if{/yun}
 											</div>
 										</div>
 										{yun:}/foreach{/yun}
@@ -260,16 +260,16 @@
 								
 								{yun:}if is_array($Info.user_other) && !empty($Info.user_other){/yun}
 								<div class="one_vita_list" id="m6">
-									<div class="one_vita_list_h1"><span class="one_vita_list_h1_span">{yun:}t key='wap_resume_show_00017'{/yun}</span></div>
+									<div class="one_vita_list_h1"><span class="one_vita_list_h1_span">{yun:}t key='wap_00493'{/yun}</span></div>
 									<i class="one_vita_list_h1_iconbg"></i>
 									<i class="one_vita_list_h1_icon reaume_iconqt"></i>
 									<div class="one_vita_list_line">
 										{yun:}foreach item=one from=$Info.user_other{/yun}
 										<div class="one_vita_skill">
 											<div class="one_vita_skill_Intention"><i class="one_vita_Intention_i one_vita_red"></i>
-												<div class="vita_skill_Intention_xmms">{yun:}t key='resume_jianli2_index_00001'{/yun}：{yun:}$one.name{/yun} </div>
+												<div class="vita_skill_Intention_xmms">{yun:}t key='common_02166'{/yun}：{yun:}$one.name{/yun} </div>
 												{yun:}if $one.content{/yun}
-												<div class="vita_skill_Intention_xmms">{yun:}t key='admin_component_resume_preview_00001'{/yun}：{yun:}$one.content{/yun} </div>{yun:}/if{/yun}
+												<div class="vita_skill_Intention_xmms">{yun:}t key='admin_00068'{/yun}：{yun:}$one.content{/yun} </div>{yun:}/if{/yun}
 											</div>
 										</div>
 										{yun:}/foreach{/yun}
@@ -301,9 +301,9 @@
 								
 
 								{yun:}if $Info.doc && $Info.user_doc.doc{/yun}
-								<!--{yun:}t key='member_user_expectq_00007'{/yun}-->
+								<!--{yun:}t key='member_user_00101'{/yun}-->
 								<div class="one_vita_list">
-									<div class="one_vita_list_h1"><span class="one_vita_list_h1_span">{yun:}t key='wap_resume_show_00019'{/yun}</span></div>
+									<div class="one_vita_list_h1"><span class="one_vita_list_h1_span">{yun:}t key='wap_00495'{/yun}</span></div>
 									<i class="one_vita_list_h1_iconbg"></i>
 									<i class="one_vita_list_h1_icon reaume_iconzt"></i>
 									<div class="one_vita_skill">
@@ -313,41 +313,41 @@
 								{yun:}/if{/yun}
 
 								<div class="one_vita_list">
-									<div class="one_vita_list_h1"><span class="one_vita_list_h1_span">{yun:}t key='wap_resume_index_00022'{/yun}</span></div>
+									<div class="one_vita_list_h1"><span class="one_vita_list_h1_span">{yun:}t key='wap_00462'{/yun}</span></div>
 									<i class="one_vita_list_h1_iconbg"></i>
 									<i class="one_vita_list_h1_icon reaume_iconlx"></i>
 									<div class="one_vita_list_line" style="position:relative; min-height:200px">
 										{yun:}if $Info.m_status=="1"{/yun}
 											{yun:}if $Info.telphone{/yun}
-											<div class="one_vita_Intention"><i class="one_vita_Intention_i one_vita_red"></i>{yun:}t key='wap_advice_00006'{/yun}：{yun:}$Info.telphone{/yun}</div>
+											<div class="one_vita_Intention"><i class="one_vita_Intention_i one_vita_red"></i>{yun:}t key='wap_00109'{/yun}：{yun:}$Info.telphone{/yun}</div>
 											{yun:}/if{/yun}
 											{yun:}if $Info.telhome{/yun}
 											<div class="one_vita_Intention"><i class="one_vita_Intention_i one_vita_red"></i>联系座机：{yun:}$Info.telhome{/yun} </div>
 											{yun:}/if{/yun}
 											{yun:}if $Info.email{/yun}
-											<div class="one_vita_Intention"><i class="one_vita_Intention_i one_vita_red"></i>{yun:}t key='wap_user_ident_00003'{/yun}：{yun:}$Info.email{/yun} </div>
+											<div class="one_vita_Intention"><i class="one_vita_Intention_i one_vita_red"></i>{yun:}t key='wap_user_00179'{/yun}：{yun:}$Info.email{/yun} </div>
 											{yun:}/if{/yun}
 											{yun:}if $Info.qq{/yun}
 											<div class="one_vita_Intention"><i class="one_vita_Intention_i one_vita_red"></i> 联系Q Q：{yun:}$Info.qq{/yun}</div>
 											{yun:}/if{/yun}
 											{yun:}if $Info.address{/yun}
-											<div class="one_vita_Intention"><i class="one_vita_Intention_i one_vita_red"></i>{yun:}t key='wap_user_info_00020'{/yun}：{yun:}$Info.address|mb_substr:0:16:'utf-8'{/yun}</div>
+											<div class="one_vita_Intention"><i class="one_vita_Intention_i one_vita_red"></i>{yun:}t key='wap_user_00243'{/yun}：{yun:}$Info.address|mb_substr:0:16:'utf-8'{/yun}</div>
 											{yun:}/if{/yun}
 											{yun:}if $Info.homepage{/yun}
 		
-											<div class="one_vita_Intention"><i class="one_vita_Intention_i one_vita_red"></i>{yun:}t key='member_com_com_resume_xls_00001'{/yun}：{yun:}$Info.homepage{/yun}</div>
+											<div class="one_vita_Intention"><i class="one_vita_Intention_i one_vita_red"></i>{yun:}t key='member_com_00008'{/yun}：{yun:}$Info.homepage{/yun}</div>
 											{yun:}/if{/yun} 
 											{yun:}if $Info.idcard{/yun}
-											<div class="one_vita_Intention"><i class="one_vita_Intention_i one_vita_red"></i><span>{yun:}t key='wap_user_idcard_00001'{/yun}：</span>
+											<div class="one_vita_Intention"><i class="one_vita_Intention_i one_vita_red"></i><span>{yun:}t key='wap_user_00173'{/yun}：</span>
 												<span class="one_vita_Identity">
 												{yun:}$Info.idcard{/yun}
-												{yun:}if $Info.idcard_status==1 && $Info.idcard{/yun}{yun:}t key='wap_user_alltask_00024'{/yun}{yun:}/if{/yun}
+												{yun:}if $Info.idcard_status==1 && $Info.idcard{/yun}{yun:}t key='wap_user_00128'{/yun}{yun:}/if{/yun}
 												</span> 
 											</div>
 											{yun:}/if{/yun}
 											{yun:}if $Info.wxewm{/yun}
 											<div class="" style="position:absolute;right:20px;top:20px;width:120px;"><img src="{yun:}$Info.wxewm{/yun}" width="120" height="120">
-												<div class="one_vita_ewm_box_p">{yun:}t key='resume_jianli3_index_00003'{/yun}</div>
+												<div class="one_vita_ewm_box_p">{yun:}t key='resume_00003'{/yun}</div>
 											</div>
 											{yun:}/if{/yun}
 										{yun:}else{/yun}
@@ -357,39 +357,39 @@
 								</div>
 							{yun:}else{/yun}
 								<div class="one_vita_list" >
-									<div class="one_vita_list_h1"><span class="one_vita_list_h1_span">{yun:}t key='wap_resume_index_00014'{/yun}</span></div>	<div class="resume_bg">
+									<div class="one_vita_list_h1"><span class="one_vita_list_h1_span">{yun:}t key='wap_00454'{/yun}</span></div>	<div class="resume_bg">
 									<i class="one_vita_list_h1_iconbg"></i>
 									<i class="one_vita_list_h1_icon reaume_iconjy"></i>
 									<div class="one_vita_list_line">
                                     	
 										{yun:}if $tj.education{/yun}
 										<div class="yun_newedition_resume_nologin_list">
-											{yun:}$tj.edumin{/yun}-{yun:}$tj.edumax{/yun} {yun:}t key='wap_resume_index_00029'{/yun}{yun:}$tj.education{/yun}{yun:}t key='wap_resume_index_00031'{/yun}
+											{yun:}$tj.edumin{/yun}-{yun:}$tj.edumax{/yun} {yun:}t key='wap_00469'{/yun}{yun:}$tj.education{/yun}{yun:}t key='wap_00471'{/yun}
 										</div>
 										{yun:}/if{/yun}
 										{yun:}if $tj.worknum>0{/yun}
                                          <div class="yun_newedition_resume_nologin_list">
-											{yun:}$tj.workmin{/yun}-{yun:}$tj.workmax{/yun} {yun:}t key='wap_resume_index_00027'{/yun}{yun:}$tj.worknum{/yun}{yun:}t key='common_01887'{/yun}，{yun:}t key='wap_resume_index_00006'{/yun}{yun:}$tj.workavg{/yun}{yun:}t key='wap_resume_index_00034'{/yun}，{yun:}t key='common_02009'{/yun}{yun:}$tj.worktit{/yun}{yun:}t key='wap_resume_index_00032'{/yun}
+											{yun:}$tj.workmin{/yun}-{yun:}$tj.workmax{/yun} {yun:}t key='wap_00467'{/yun}{yun:}$tj.worknum{/yun}{yun:}t key='common_01887'{/yun}，{yun:}t key='wap_00446'{/yun}{yun:}$tj.workavg{/yun}{yun:}t key='wap_00474'{/yun}，{yun:}t key='common_02009'{/yun}{yun:}$tj.worktit{/yun}{yun:}t key='wap_00472'{/yun}
 										</div>
 										{yun:}/if{/yun}
 										{yun:}if $tj.xmnum>0{/yun}
                                          <div class="yun_newedition_resume_nologin_list">
-											{yun:}$tj.xmmin{/yun}-{yun:}$tj.xmmax{/yun} {yun:}t key='wap_resume_index_00003'{/yun}{yun:}$tj.xmnum{/yun}{yun:}t key='wap_resume_index_00026'{/yun}，{yun:}t key='wap_resume_index_00004'{/yun}{yun:}$tj.xmtit{/yun}{yun:}t key='wap_resume_index_00033'{/yun}
+											{yun:}$tj.xmmin{/yun}-{yun:}$tj.xmmax{/yun} {yun:}t key='wap_00443'{/yun}{yun:}$tj.xmnum{/yun}{yun:}t key='wap_00466'{/yun}，{yun:}t key='wap_00444'{/yun}{yun:}$tj.xmtit{/yun}{yun:}t key='wap_00473'{/yun}
 										</div>
 										{yun:}/if{/yun}
 										{yun:}if $tj.trainnum>0{/yun}
                                          <div class="yun_newedition_resume_nologin_list">
-											{yun:}$tj.trainmin{/yun}-{yun:}$tj.trainmax{/yun} {yun:}t key='wap_resume_index_00027'{/yun}{yun:}$tj.trainnum{/yun}次培训，进行自我充电，能力提升
+											{yun:}$tj.trainmin{/yun}-{yun:}$tj.trainmax{/yun} {yun:}t key='wap_00467'{/yun}{yun:}$tj.trainnum{/yun}次培训，进行自我充电，能力提升
 										</div>
 										{yun:}/if{/yun}
 										{yun:}if $tj.skillnum>0{/yun}
 										<div class="yun_newedition_resume_nologin_list">
-											{yun:}t key='wap_resume_index_00010'{/yun}{yun:}$tj.skillnum{/yun}{yun:}t key='wap_resume_index_00008'{/yun}{yun:}$tj.skillpic{/yun}{yun:}t key='wap_resume_index_00005'{/yun}
+											{yun:}t key='wap_00450'{/yun}{yun:}$tj.skillnum{/yun}{yun:}t key='wap_00448'{/yun}{yun:}$tj.skillpic{/yun}{yun:}t key='wap_00445'{/yun}
 										</div>
 										{yun:}/if{/yun}
 										{yun:}if $tj.shownum>0{/yun}
 										 <div class="yun_newedition_resume_nologin_list">
-											{yun:}t key='wap_user_alltask_00019'{/yun}{yun:}$tj.shownum{/yun}{yun:}t key='wap_resume_index_00002'{/yun}
+											{yun:}t key='wap_user_00123'{/yun}{yun:}$tj.shownum{/yun}{yun:}t key='wap_00442'{/yun}
 										</div>
 										{yun:}/if{/yun}
 										<div class="yun_newedition_resume_nologin_tip">
@@ -412,26 +412,26 @@
 			{yun:}if $Info.m_status== 1{/yun}
 			<div class="tcktouch_box_username">{yun:}$Info.name{/yun}</div>
 			
-			<div class="tcktouch_box_tip">{yun:}t key='member_com_hr_resume_00001'{/yun}{yun:}$config.sy_webname{/yun}{yun:}t key='wap_job_index_00002'{/yun}</div>
-			<div class="tcktouch_box_p">{yun:}t key='member_user_info_00011'{/yun}：<span class="tcktouch_box_p_sj">{yun:}$Info.telphone{/yun}</span></div>
-			{yun:}if $Info.email{/yun} <div class="tcktouch_box_p">{yun:}t key='member_user_resumeout_00004'{/yun}：{yun:}$Info.email{/yun} </div>{yun:}/if{/yun} 
+			<div class="tcktouch_box_tip">{yun:}t key='member_com_00024'{/yun}{yun:}$config.sy_webname{/yun}{yun:}t key='wap_00240'{/yun}</div>
+			<div class="tcktouch_box_p">{yun:}t key='member_user_00163'{/yun}：<span class="tcktouch_box_p_sj">{yun:}$Info.telphone{/yun}</span></div>
+			{yun:}if $Info.email{/yun} <div class="tcktouch_box_p">{yun:}t key='member_user_00282'{/yun}：{yun:}$Info.email{/yun} </div>{yun:}/if{/yun} 
 			{yun:}if $Info.qq{/yun}<div class="tcktouch_box_p">Q Q：{yun:}$Info.qq{/yun}</div> {yun:}/if{/yun} 
-			{yun:}if $Info.homepage{/yun} <div class="tcktouch_box_p">{yun:}t key='wap_ask_00012'{/yun}：{yun:}$Info.homepage{/yun}</div> {yun:}/if{/yun} 
-			{yun:}if $Info.wxewm{/yun} <div class="tcktouch_box_ewm"><img src="{yun:}$Info.wxewm{/yun}" width="100" height="100"><div class="tcktouch_box_ewm_p">{yun:}t key='resume_jianli3_index_00003'{/yun}</div></div> {yun:}/if{/yun}
+			{yun:}if $Info.homepage{/yun} <div class="tcktouch_box_p">{yun:}t key='wap_00161'{/yun}：{yun:}$Info.homepage{/yun}</div> {yun:}/if{/yun} 
+			{yun:}if $Info.wxewm{/yun} <div class="tcktouch_box_ewm"><img src="{yun:}$Info.wxewm{/yun}" width="100" height="100"><div class="tcktouch_box_ewm_p">{yun:}t key='resume_00003'{/yun}</div></div> {yun:}/if{/yun}
 			{yun:}/if{/yun}
 		</div>
 	</div>
 	<!-- 联系方式弹出框 end -->
 			<!--  企业查看简历 end----------------------------------------------------------------------------------------->
 			{yun:}if $smarty.get.see=='member'{/yun}
-			<!--{yun:}t key='resume_jianli3_index_00004'{/yun} 预览时隐藏  -->
+			<!--{yun:}t key='resume_00004'{/yun} 预览时隐藏  -->
 			<div class="expext_yl_box_bth">
 				{yun:}if in_array($tplurl.id,$paytpls){/yun}
-				<a href="javascript:;" onClick="settemplate('确定使用该模板？', '{yun:}url m=ajax c=settpl id=$tplurl.id eid=$Info.id{/yun}');" class="expext_yl_box_sub">{yun:}t key='resume_jianli3_index_00004'{/yun}</a>				
+				<a href="javascript:;" onClick="settemplate('确定使用该模板？', '{yun:}url m=ajax c=settpl id=$tplurl.id eid=$Info.id{/yun}');" class="expext_yl_box_sub">{yun:}t key='resume_00004'{/yun}</a>				
 				{yun:}else{/yun}
-				<a href="javascript:void(0);" onClick="settemplate('购买模版将花费{yun:}$tplurl.price{/yun}{yun:}$config.integral_priceunit{/yun}{yun:}$config.integral_pricename{/yun}，{yun:}t key='common_01784'{/yun}？', '{yun:}url m=ajax c=pay id=$tplurl.id  eid=$Info.id{/yun}');" class="expext_yl_box_sub">{yun:}t key='resume_jianli3_index_00002'{/yun}</a>
+				<a href="javascript:void(0);" onClick="settemplate('购买模版将花费{yun:}$tplurl.price{/yun}{yun:}$config.integral_priceunit{/yun}{yun:}$config.integral_pricename{/yun}，{yun:}t key='common_01784'{/yun}？', '{yun:}url m=ajax c=pay id=$tplurl.id  eid=$Info.id{/yun}');" class="expext_yl_box_sub">{yun:}t key='resume_00002'{/yun}</a>
 				{yun:}/if{/yun}
-				<a href="{yun:}url m=resume c=show id=$eid tmp=$tplurl.id{/yun}" target="_blank" class="expext_yl_box_sub">{yun:}t key='wap_hb_admin_whb_00002'{/yun}</a>
+				<a href="{yun:}url m=resume c=show id=$eid tmp=$tplurl.id{/yun}" target="_blank" class="expext_yl_box_sub">{yun:}t key='wap_00071'{/yun}</a>
 			</div>
 			{yun:}/if{/yun} 
 			
@@ -460,11 +460,11 @@
 						layer = layui.layer;
 					layer.photos({
 						photos: '#rolling_img1",
-						anim: 5 //0-6的选择，指定弹出图片动画类型，默认随机（请注意，3.0之前的版本用shift{yun:}t key='admin_neirong_announcement_component_announcement_add_00002'{/yun}）
+						anim: 5 //0-6的选择，指定弹出图片动画类型，默认随机（请注意，3.0之前的版本用shift{yun:}t key='admin_00103'{/yun}）
 					});
 					layer.photos({
 					  photos: "#skill_photos",
-					  anim: 5 //0-6的选择，指定弹出图片动画类型，默认随机（请注意，3.0之前的版本用shift{yun:}t key='admin_neirong_announcement_component_announcement_add_00002'{/yun}）
+					  anim: 5 //0-6的选择，指定弹出图片动画类型，默认随机（请注意，3.0之前的版本用shift{yun:}t key='admin_00103'{/yun}）
 					}); 
 				});
 				var integral_pricename = "{yun:}$config.integral_pricename{/yun}';

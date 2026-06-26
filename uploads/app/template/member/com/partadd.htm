@@ -6,17 +6,17 @@
 			
 			<div class="com_body">
             <div class="com_new_tip">
-				<span class="com_new_tip_h">{yun:}t key='member_com_added_00002'{/yun}</span>
+				<span class="com_new_tip_h">{yun:}t key='member_com_00040'{/yun}</span>
 				{yun:}if $statis.vip_etime > $todayStart || $statis.vip_etime=="0"{/yun}
 					{yun:}if $statis.rating_type==2{/yun}
 						您当前是 <span class="com_new_tip_v">{yun:}$statis.rating_name{/yun}</span>，到期时间是{yun:}if $statis.vip_etime!="0"{/yun}{yun:}$statis.vip_etime|date_format:'%Y-%m-%d'{/yun}{yun:}else{/yun}{yun:}t key='api_wxapp_00019'{/yun}{yun:}/if{/yun}，在此之前您可以任意发布职位&nbsp;&nbsp;&nbsp;
 					{yun:}else{/yun}
-						您当前是 <span class="com_new_tip_v">{yun:}$statis.rating_name{/yun} </span>{yun:}if $jobnum{/yun}，现已上架 {yun:}$jobnum{/yun} {yun:}t key='wap_user_collect_00001'{/yun}{yun:}/if{/yun}， 您共可上架：{yun:}$statis.job_num{/yun}{yun:}t key='wap_user_collect_00001'{/yun}。超出后发布的职位需要手动上架&nbsp;&nbsp;&nbsp;
+						您当前是 <span class="com_new_tip_v">{yun:}$statis.rating_name{/yun} </span>{yun:}if $jobnum{/yun}，现已上架 {yun:}$jobnum{/yun} {yun:}t key='wap_user_00151'{/yun}{yun:}/if{/yun}， 您共可上架：{yun:}$statis.job_num{/yun}{yun:}t key='wap_user_00151'{/yun}。超出后发布的职位需要手动上架&nbsp;&nbsp;&nbsp;
 					{yun:}/if{/yun}
 				{yun:}else{/yun}
-					您的会员已到期，为了更好的招聘人才，请先<a href="index.php?c=right" class="cblue"> {yun:}t key='member_com_partadd_00004'{/yun}</a>！&nbsp;&nbsp;&nbsp;
+					您的会员已到期，为了更好的招聘人才，请先<a href="index.php?c=right" class="cblue"> {yun:}t key='member_com_00308'{/yun}</a>！&nbsp;&nbsp;&nbsp;
 				{yun:}/if{/yun}
-				<span class="add_tit_bz">（注 带 <i class="ff0">*</i> {yun:}t key='member_com_partadd_00002'{/yun}</span>
+				<span class="add_tit_bz">（注 带 <i class="ff0">*</i> {yun:}t key='member_com_00306'{/yun}</span>
 			</div>
 				<div class="com_release_box">
 				<iframe id="supportiframe"  name="supportiframe" onload="returnmessage('supportiframe');" style="display:none"></iframe>
@@ -24,63 +24,63 @@
               <input type="hidden" id="cionly" name="cionly" value="{yun:}if empty($city_type){/yun}1{yun:}/if{/yun}">
               <ul>
                 <li>
-                  <div class="com_release_name"><i class="ff0">*</i> {yun:}t key='wap_com_partadd_00006'{/yun}</div>
+                  <div class="com_release_name"><i class="ff0">*</i> {yun:}t key='wap_com_00326'{/yun}</div>
                   <div class="com_release_cont_text">
-                    <input type="text" placeholder="{yun:}t key='wap_com_partadd_00006'{/yun}" size="45" id='name' name="name" value="{yun:}$row.name{/yun}" class="layui-input" >
+                    <input type="text" placeholder="{yun:}t key='wap_com_00326'{/yun}" size="45" id='name' name="name" value="{yun:}$row.name{/yun}" class="layui-input" >
                   </div>
                 </li>
                 <li>
-                  <div class="com_release_name"><i class="ff0">*</i> {yun:}t key='member_com_partadd_00003'{/yun}</div>
+                  <div class="com_release_name"><i class="ff0">*</i> {yun:}t key='member_com_00307'{/yun}</div>
                   <div class="com_release_cont">
                     <div class="com_release_selectbox">
                   <div class="layui-input-inline">
                     <select name="type" lay-filter="type" id="type">
-                    <option value=''>{yun:}t key='wap_user_addresumeson_00042'{/yun}</option>
+                    <option value=''>{yun:}t key='wap_user_00100'{/yun}</option>
                     {yun:}foreach from=$partdata.part_type key=j item=v{/yun}<option value="{yun:}$v{/yun}" {yun:}if $row.type == $v{/yun} selected{yun:}/if{/yun}>{yun:}$partclass_name[$v]{/yun}</option>{yun:}/foreach{/yun}</select>
                   </div>
                   </div>
                 </li>
                 <li>
-                  <div class="com_release_name"><i class="ff0">*</i> {yun:}t key='wap_com_partadd_00013'{/yun} </div>
+                  <div class="com_release_name"><i class="ff0">*</i> {yun:}t key='wap_com_00333'{/yun} </div>
                   <div class="com_release_cont">
                     <div class="layui-input-inline inline">
-                      <input type="text" size="10" name="number" id="number" value="{yun:}$row.number{/yun}" onkeyup="this.value=this.value.replace(/[^0-9]/g,'')" placeholder="{yun:}t key='wap_com_partadd_00013'{/yun}" class="layui-input">
+                      <input type="text" size="10" name="number" id="number" value="{yun:}$row.number{/yun}" onkeyup="this.value=this.value.replace(/[^0-9]/g,'')" placeholder="{yun:}t key='wap_com_00333'{/yun}" class="layui-input">
                     </div>
                     <div class="inline">{yun:}t key='common_02051'{/yun}</div>
                   </div>
                 </li>
                 <li>
-                  <div class="com_release_name"><i class="ff0">*</i> {yun:}t key='wap_com_partadd_00008'{/yun}</div>
+                  <div class="com_release_name"><i class="ff0">*</i> {yun:}t key='wap_com_00328'{/yun}</div>
                   <div class="com_release_cont">
                     <table class="tjob_timetable" cellpadding="0" cellspacing="1" >
                       <tr>
                         <th>&nbsp;</th>
-                        <th>{yun:}t key='wap_com_partadd_00018'{/yun}</th>
-                        <th>{yun:}t key='wap_com_partadd_00019'{/yun}</th>
-                        <th>{yun:}t key='wap_js_mobiscroll_mobiscroll_003_00024'{/yun}</th>
-                        <th>{yun:}t key='wap_js_mobiscroll_mobiscroll_003_00027'{/yun}</th>
-                        <th>{yun:}t key='wap_js_mobiscroll_mobiscroll_003_00025'{/yun}</th>
-                        <th>{yun:}t key='wap_js_mobiscroll_mobiscroll_003_00026'{/yun}</th>
-                        <th>{yun:}t key='wap_js_mobiscroll_mobiscroll_003_00028'{/yun}</th>
+                        <th>{yun:}t key='wap_com_00338'{/yun}</th>
+                        <th>{yun:}t key='wap_com_00339'{/yun}</th>
+                        <th>{yun:}t key='wap_js_00029'{/yun}</th>
+                        <th>{yun:}t key='wap_js_00032'{/yun}</th>
+                        <th>{yun:}t key='wap_js_00030'{/yun}</th>
+                        <th>{yun:}t key='wap_js_00031'{/yun}</th>
+                        <th>{yun:}t key='wap_js_00033'{/yun}</th>
                       </tr>
                       <tr>
-                        <th>{yun:}t key='wap_com_partadd_00016'{/yun}</th>
+                        <th>{yun:}t key='wap_com_00336'{/yun}</th>
                         {yun:}foreach from=$part_morning item=v{/yun}
                         <td><input data-mark='isneed' name='worktime[]' class="check_all" id='worktime{yun:}$v{/yun}' type="checkbox" lay-filter="partAll" {yun:}if in_array($v,$row.worktime_n){/yun}checked="checked"{yun:}/if{/yun}value='{yun:}$v{/yun}' lay-skin="primary" /></td>
                         {yun:}/foreach{/yun} </tr>
                       <tr>
-                        <th>{yun:}t key='wap_com_partadd_00017'{/yun}</th>
+                        <th>{yun:}t key='wap_com_00337'{/yun}</th>
                         {yun:}foreach from=$part_noon item=v{/yun}
                         <td><input data-mark='isneed' name='worktime[]' class="check_all" id='worktime{yun:}$v{/yun}' type="checkbox" lay-filter="partAll" {yun:}if in_array($v,$row.worktime_n){/yun}checked="checked"{yun:}/if{/yun} value='{yun:}$v{/yun}' lay-skin="primary" /></td>
                         {yun:}/foreach{/yun} </tr>
                       <tr>
-                        <th>{yun:}t key='wap_com_partadd_00020'{/yun}</th>
+                        <th>{yun:}t key='wap_com_00340'{/yun}</th>
                         {yun:}foreach from=$part_afternoon item=v{/yun}
                         <td><input data-mark='isneed' name='worktime[]' class="check_all" id='worktime{yun:}$v{/yun}' type="checkbox" lay-filter="partAll" {yun:}if in_array($v,$row.worktime_n){/yun}checked="checked"{yun:}/if{/yun} value='{yun:}$v{/yun}' lay-skin="primary" /></td>
                         {yun:}/foreach{/yun} </tr>
                       <tr>
                         <td colspan="8"><input id='ckAll' name='ckAll' value="1" type="checkbox" lay-filter="ckAll"  lay-skin="primary">
-                          {yun:}t key='wap_js_umeditor_lang_zh_cn_zh_cn_00006'{/yun}</td>
+                          {yun:}t key='wap_js_00074'{/yun}</td>
                       </tr>
                     </table>
                     <span class="com_Release_job_qx"> </span> </div>
@@ -93,7 +93,7 @@
                     
 					<input id="edate" class="input-text com_info_text com_info_text_time com_info_textw158 item_date" type="text" readonly="" size="15" value="{yun:}if $row.edate{/yun}{yun:}$row.edate|date_format:'%Y-%m-%d'{/yun}{yun:}/if{/yun}" name="edate" placeholder="兼职结束日期" {yun:}if $row.edate==0{/yun}style="display:none"{yun:}/if{/yun}/>
 
-                    <input type="checkbox" value='1' id="timetype" name="timetype" class="input-text" {yun:}if $row.edate==0{/yun}checked="checked"{yun:}/if{/yun} onclick="change()" lay-filter="timetype" title="{yun:}t key='wap_js_partpicker_00002'{/yun}" lay-skin="primary"/>
+                    <input type="checkbox" value='1' id="timetype" name="timetype" class="input-text" {yun:}if $row.edate==0{/yun}checked="checked"{yun:}/if{/yun} onclick="change()" lay-filter="timetype" title="{yun:}t key='wap_js_00135'{/yun}" lay-skin="primary"/>
                   </div>
                   <span id="by_edate" class="errordisplay">截止日期要大于当前日期</span> </li>
                 
@@ -112,7 +112,7 @@
                   </div>
                 </li>
                 <li class="job_add_bc">
-                  <div class="com_release_name"><i class="ff0">*</i> {yun:}t key='admin_user_company_component_partjob_00011'{/yun}：</div>
+                  <div class="com_release_name"><i class="ff0">*</i> {yun:}t key='admin_user_company_00390'{/yun}：</div>
            
                     <div class="com_release_selectbox">
                  <div class="layui-input-inline">
@@ -121,13 +121,13 @@
                     </div>
                 </li>
                 <li>
-                  <div class="com_release_name"><i class="ff0">*</i> {yun:}t key='wap_com_partadd_00005'{/yun}：</div>
+                  <div class="com_release_name"><i class="ff0">*</i> {yun:}t key='wap_com_00325'{/yun}：</div>
                   <div class=textbox>
  					<script id="content" name="content" type="text/plain" style="width:600px; height:200px;"> {yun:}$row.content{/yun} </script>
                   </div>
                 </li>
                 <li class="job_add_bc">
-                  <div class="com_release_name">{yun:}t key='wap_com_partadd_00012'{/yun}：</div>
+                  <div class="com_release_name">{yun:}t key='wap_com_00332'{/yun}：</div>
                   <div class="com_release_cont">
                   
                       <div class="layui-input-inline">
@@ -135,26 +135,26 @@
                   </select>
                       </div>
                   
-                    <span id="by_ltsexid" class="errordisplay">{yun:}t key='wap_js_partpicker_00001'{/yun}</span> </div>
+                    <span id="by_ltsexid" class="errordisplay">{yun:}t key='wap_js_00134'{/yun}</span> </div>
                 </li>
                 <li>
-                  <div class="com_release_name"><i class="ff0">*</i> {yun:}t key='member_user_partcollect_00001'{/yun}：</div>
+                  <div class="com_release_name"><i class="ff0">*</i> {yun:}t key='member_user_00198'{/yun}：</div>
                   <div class="com_release_cont">
                    <div class="layui-input-inline">
                         <select name="provinceid" id="provinceid" lay-filter="citys">
-                          <option value="">{yun:}t key='wap_user_addresumeson_00042'{/yun}</option>{yun:}foreach from=$city_index key=j item=v{/yun}<option value="{yun:}$v{/yun}" {yun:}if $row.provinceid == $v{/yun} selected{yun:}/if{/yun}>{yun:}$city_name[$v]{/yun}</option>{yun:}/foreach{/yun}</select>
+                          <option value="">{yun:}t key='wap_user_00100'{/yun}</option>{yun:}foreach from=$city_index key=j item=v{/yun}<option value="{yun:}$v{/yun}" {yun:}if $row.provinceid == $v{/yun} selected{yun:}/if{/yun}>{yun:}$city_name[$v]{/yun}</option>{yun:}/foreach{/yun}</select>
                       </div>
                       <div class="layui-input-inline">
-                        <select name="cityid" lay-filter="citys" id="cityid"><option value="">{yun:}t key='wap_user_addresumeson_00042'{/yun}</option>{yun:}foreach from=$city_type[$row.provinceid] key=j item=v{/yun}<option value="{yun:}$v{/yun}" {yun:}if $row.cityid==$v{/yun} selected{yun:}/if{/yun}>{yun:}$city_name[$v]{/yun} </option>{yun:}/foreach{/yun} </select></div>
+                        <select name="cityid" lay-filter="citys" id="cityid"><option value="">{yun:}t key='wap_user_00100'{/yun}</option>{yun:}foreach from=$city_type[$row.provinceid] key=j item=v{/yun}<option value="{yun:}$v{/yun}" {yun:}if $row.cityid==$v{/yun} selected{yun:}/if{/yun}>{yun:}$city_name[$v]{/yun} </option>{yun:}/foreach{/yun} </select></div>
                       <div class="layui-input-inline">
-                     <select name="three_cityid" lay-filter="three_cityid" id="three_cityid"><option value="">{yun:}t key='wap_user_addresumeson_00042'{/yun}</option>{yun:}foreach from=$city_type[$row.cityid] key=j item=v{/yun}<option value="{yun:}$v{/yun}" {yun:}if $row.three_cityid==$v{/yun} selected{yun:}/if{/yun}>{yun:}$city_name[$v]{/yun} </option>{yun:}/foreach{/yun}</select>
+                     <select name="three_cityid" lay-filter="three_cityid" id="three_cityid"><option value="">{yun:}t key='wap_user_00100'{/yun}</option>{yun:}foreach from=$city_type[$row.cityid] key=j item=v{/yun}<option value="{yun:}$v{/yun}" {yun:}if $row.three_cityid==$v{/yun} selected{yun:}/if{/yun}>{yun:}$city_name[$v]{/yun} </option>{yun:}/foreach{/yun}</select>
                       </div>
                   </div>
                 </li>
                 <li>
-                  <div class="com_release_name"><i class="ff0">*</i> {yun:}t key='wap_user_info_00020'{/yun}：</div>
+                  <div class="com_release_name"><i class="ff0">*</i> {yun:}t key='wap_user_00243'{/yun}：</div>
                   <div class="com_release_cont_text com_info_tip" style="width:640px">
-                      <input type="text" size="45" id='address' name="address" value="{yun:}$row.address{/yun}" class="com_info_text" style="width:400px;" placeholder="建议格式：XX{yun:}t key='common_02076'{/yun}XX{yun:}t key='wap_com_info_00062'{/yun}XX路"  onkeyup="addressKeyup();">
+                      <input type="text" size="45" id='address' name="address" value="{yun:}$row.address{/yun}" class="com_info_text" style="width:400px;" placeholder="建议格式：XX{yun:}t key='common_02076'{/yun}XX{yun:}t key='wap_com_00179'{/yun}XX路"  onkeyup="addressKeyup();">
                       <div class="comEleaseMaps" id="poiSearch" style="display: none;"></div>
                           </div>
                   <div class="clear"></div>
@@ -165,15 +165,15 @@
                   <input name="y" id="map_y" type="hidden" value="{yun:}$row.y{/yun}">
                 </li>
                 <li>
-                  <div class="com_release_name"><i class="ff0">*</i> {yun:}t key='wap_user_invitecont_00006'{/yun}：</div>
+                  <div class="com_release_name"><i class="ff0">*</i> {yun:}t key='wap_user_00267'{/yun}：</div>
                   <div class="com_release_cont">
-                    <input type="text" placeholder="{yun:}t key='wap_user_invitecont_00006'{/yun}" size="45" id='linkman' name="linkman" value="{yun:}if $row.linkman{/yun}{yun:}$row.linkman{/yun}{yun:}else{/yun}{yun:}$company.linkman{/yun}{yun:}/if{/yun}" class="com_info_text" maxlength="12">
+                    <input type="text" placeholder="{yun:}t key='wap_user_00267'{/yun}" size="45" id='linkman' name="linkman" value="{yun:}if $row.linkman{/yun}{yun:}$row.linkman{/yun}{yun:}else{/yun}{yun:}$company.linkman{/yun}{yun:}/if{/yun}" class="com_info_text" maxlength="12">
                   </div>
                 </li>
                 <li>
-                  <div class="com_release_name"><i class="ff0">*</i> {yun:}t key='wap_advice_00006'{/yun}：</div>
+                  <div class="com_release_name"><i class="ff0">*</i> {yun:}t key='wap_00109'{/yun}：</div>
                   <div class="com_release_cont">
-                    <input type="text" size="45" id='linktel' name="linktel" value="{yun:}if $row.linktel{/yun}{yun:}$row.linktel{/yun}{yun:}else{/yun}{yun:}$company.linktel{/yun}{yun:}/if{/yun}" onkeyup="this.value=this.value.replace(/[^0-9-]/g,'')" class="com_info_text" maxlength="12" placeholder="{yun:}t key='wap_advice_00006'{/yun}">
+                    <input type="text" size="45" id='linktel' name="linktel" value="{yun:}if $row.linktel{/yun}{yun:}$row.linktel{/yun}{yun:}else{/yun}{yun:}$company.linktel{/yun}{yun:}/if{/yun}" onkeyup="this.value=this.value.replace(/[^0-9-]/g,'')" class="com_info_text" maxlength="12" placeholder="{yun:}t key='wap_00109'{/yun}">
                   </div>
                 </li>
                 <li> 
@@ -199,7 +199,7 @@ layui.use(['form', 'laydate'], function(){
 		$ = layui.$,
 		url = weburl+"/index.php?m=ajax&c=get_city_option";  
 
-	 //{yun:}t key='wap_js_umeditor_lang_zh_cn_zh_cn_00006'{/yun}  
+	 //{yun:}t key='wap_js_00074'{/yun}  
       form.on('checkbox(ckAll)', function(data){  
         var child = $(data.elem).parents('table').find('tbody input[type="checkbox"]');  
         child.each(function(index, item){  
@@ -276,7 +276,7 @@ layui.use(['form', 'laydate'], function(){
 	var map = new AMap.Map("map_container");
 	$(document).ready(function() {
 		{yun:}if ($row.x=="" || $row.y=="") && $row.address!=""{/yun}
-			localsearch('{yun:}t key='member_com_info_00052'{/yun}');
+			localsearch('{yun:}t key='member_com_00206'{/yun}');
 		{yun:}elseif $row.x!="" && $row.y!=""{/yun}
 			setLocation('map_container',{yun:}$row.x{/yun},{yun:}$row.y{/yun},"map_x","map_y");
 		{yun:}else{/yun}
@@ -318,11 +318,11 @@ layui.use(['form', 'laydate'], function(){
                     for(var i in e.tips){
                         html +=  '<li data-id="' + i + '">';
                         html += 	  '<div class="comEleaseMapTite">';
-                        html +=			  "<span>{yun:}t key='member_com_customize_nav_00003'{/yun}:</span>";
+                        html +=			  "<span>{yun:}t key='member_com_00021'{/yun}:</span>";
                         html +=  		  '<b>' + e.tips[i].name + '</b>';
                         html +=  	  '</div>';
                         html +=  	  '<div class="comEleaseMapTipst">';
-                        html +=  		   "<span>{yun:}t key='wap_js_umeditor_lang_zh_cn_zh_cn_00014'{/yun}:" + e.tips[i].address + '</span>';
+                        html +=  		   "<span>{yun:}t key='wap_js_00082'{/yun}:" + e.tips[i].address + '</span>';
                         html +=  	   '</div>';
                         html +=  '</li>';
                     }
@@ -339,7 +339,7 @@ layui.use(['form', 'laydate'], function(){
                             var c = location.split(',');
                             document.getElementById("map_x").value = c[0];
                             document.getElementById("map_y").value = c[1];
-                            // {yun:}t key='wap_com_jobadd_00053'{/yun}marker
+                            // {yun:}t key='wap_com_00307'{/yun}marker
                             var lngLat = new AMap.LngLat(c[0],c[1]);
                             map.setZoomAndCenter(17,lngLat);
                             var marker = new AMap.Marker({

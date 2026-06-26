@@ -16,7 +16,7 @@
 						<span id="wkyqnum_n" style="background: #f30; padding: 0.03rem 0.15rem;border-radius: 20px; color: #fff;"></span>
 					</div>
 				</div>
-				<i class="card_word">{yun:}t key='wap_user_index_00034'{/yun}</i>
+				<i class="card_word">{yun:}t key='wap_user_00216'{/yun}</i>
 			</li>
 			<li data-url="sq" class="navigetali">
 				<div class="card_logo">
@@ -32,7 +32,7 @@
 						<span id="commsgnum_n" style="background: #f30; padding: 0.03rem 0.15rem;border-radius: 20px; color: #fff;"></span>
 					</div>
 				</div>
-				<i class="card_word">{yun:}t key='wap_user_sysnews_00003'{/yun}</i>
+				<i class="card_word">{yun:}t key='wap_user_00364'{/yun}</i>
 			</li>
 			{yun:}/if{/yun}
 			<li data-url="sxnews" class="navigetali">
@@ -42,7 +42,7 @@
 						<span id="sxnum_n" style="background: #f30; padding: 0.03rem 0.15rem;border-radius: 20px; color: #fff;"></span>
 					</div>
 				</div>
-				<i class="card_word">{yun:}t key='wap_user_sysnews_00002'{/yun}</i>
+				<i class="card_word">{yun:}t key='wap_user_00363'{/yun}</i>
 			</li>
 		</ul>
 	</div>
@@ -54,11 +54,11 @@
 		<i class="chatnewtipicon"></i>
 		<div class="chatnewcard_gzhtip"> 
 			<span> 开启微信通知，重要信息不错过</span>
-			<span onclick="toSubscribe();" class="chatnewcard_gzhtip_set">  {yun:}t key='wap_publichtm_yun_cert_00005'{/yun}></span>
+			<span onclick="toSubscribe();" class="chatnewcard_gzhtip_set">  {yun:}t key='wap_00100'{/yun}></span>
 		</div>	
 	</div>
 </div>
-<!--  {yun:}t key='wap_js_forgetpw_00010'{/yun} -->
+<!--  {yun:}t key='wap_js_00125'{/yun} -->
  
  <div class="chatnewcard_bgpd  ">
      
@@ -69,10 +69,10 @@
 		<!-- 关注公众号弹框 -->
 		<van-popup v-model="gzhShow" close-on-click-overlay="true" closeable="true" @close="closeGzhShow" round >
 			<div class="gzh_gzbox">
-				<div class="gzh_gzbox_n">{yun:}t key='wap_user_index_00009'{/yun}</div>
+				<div class="gzh_gzbox_n">{yun:}t key='wap_user_00191'{/yun}</div>
 				<img :src="gzhUrl" />
-				<div class="gzh_gzbox_p">{yun:}t key='wap_user_index_00006'{/yun}</div>
-				<div class="gzh_gzbox_p">{yun:}t key='wap_user_index_00003'{/yun}</div>
+				<div class="gzh_gzbox_p">{yun:}t key='wap_user_00188'{/yun}</div>
+				<div class="gzh_gzbox_p">{yun:}t key='wap_user_00185'{/yun}</div>
 			</div>
 		</van-popup>
 	</div>
@@ -149,7 +149,7 @@
 				} else {
 					gzhConfirm = true;
 					sysapp.$data.gzhShow = false;
-					showConfirm("{yun:}t key='wap_user_sysnews_00001'{/yun}", function () {
+					showConfirm("{yun:}t key='wap_user_00362'{/yun}", function () {
 						wxBindChange();
 					}, "{yun:}t key='common.no'{/yun}", "{yun:}t key='common.yes'{/yun}");
 				}

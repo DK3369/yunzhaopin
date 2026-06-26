@@ -4,7 +4,7 @@
 {yun:}if $uid==$myuid{/yun}
 {yun:}qlist item=list uid='auto.uid' state=1 ispage=1 t_len=20  limit=10{/yun}
 <div class="home_question">
-  <div class="home_question_name"><a href="{yun:}url m=wap c=ask a=content id='`$list.id`'{/yun}">{yun:}$list.title|mb_substr:0:88:'utf-8'{/yun}</a>{yun:}if $list.state==0{/yun}<span class="answer_zt">{yun:}t key='wap_user_idcard_00002'{/yun}..</span>{yun:}elseif $list.state==1{/yun}{yun:}else{/yun}<span class="answer_zt answer_wtg">{yun:}t key='wap_user_resume_00003'{/yun}</span>{yun:}/if{/yun}</div>
+  <div class="home_question_name"><a href="{yun:}url m=wap c=ask a=content id='`$list.id`'{/yun}">{yun:}$list.title|mb_substr:0:88:'utf-8'{/yun}</a>{yun:}if $list.state==0{/yun}<span class="answer_zt">{yun:}t key='wap_user_00174'{/yun}..</span>{yun:}elseif $list.state==1{/yun}{yun:}else{/yun}<span class="answer_zt answer_wtg">{yun:}t key='wap_user_00325'{/yun}</span>{yun:}/if{/yun}</div>
   <div class="home_question_info">
    {yun:}$list.add_time|date_format:"%Y-%m-%d %H:%M"{/yun}
    <span class="home_question_info_s ask_jx_data_hd">{yun:}$list.answer_num{/yun}</span>
@@ -44,7 +44,7 @@
 <div class="noresult">
 {yun:}if $uid==$myuid{/yun}
 您还没有发起任何话题，抓紧提问吧！
-<a href="{yun:}url m=wap c=ask a=addquestion {/yun}"  class="wap_mb_no_sr" style="color:#fff;">{yun:}t key='wap_job_show_00035'{/yun}</a>
+<a href="{yun:}url m=wap c=ask a=addquestion {/yun}"  class="wap_mb_no_sr" style="color:#fff;">{yun:}t key='wap_00278'{/yun}</a>
 {yun:}else{/yun}
 他还没有发起话题！
 {yun:}/if{/yun}</div>

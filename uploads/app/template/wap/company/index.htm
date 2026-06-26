@@ -28,16 +28,16 @@
 	 	<div class="company_tit">
 	 		<div class="company_tit_icon iconfont"></div>
 	 		<div class="company_tit_e"> Essential Information</div>
-	 		<div class="company_tit_p">{yun:}t key='wap_resume_index_00016'{/yun}</div>
+	 		<div class="company_tit_p">{yun:}t key='wap_00456'{/yun}</div>
 	 	</div>
 	  	<div class="section_img"></div>
 	    <div class="section_bor"></div>
 	   	<div class="section_ears"></div>
-		<div class="company_one_p1"><span class="company_one_p1_s">{yun:}t key='default_part_show_00005'{/yun}：{yun:}$city_name[$row.provinceid]{/yun}</span></div>
-		<div class="company_one_p2"><span class="company_one_p2_s">{yun:}t key='company_green_index_00014'{/yun}：{yun:}$comclass_name[$row.mun]{/yun}</span></div>
-		<div class="company_one_p3"><span class="company_one_p3_s">{yun:}t key='default_part_show_00006'{/yun}：{yun:}$comclass_name[$row.pr]{/yun}</span></div>
-		<div class="company_one_p4"><span class="company_one_p4_s"style="font-size:14px;">{yun:}t key='company_green_index_00011'{/yun}：{yun:}$row.sdate{/yun}</span></div>
-	  	<div class="company_one_p5"><span class="company_one_p5_s">{yun:}t key='admin_user_company_component_joball_00045'{/yun}：{yun:}$industry_name[$row.hy]{/yun}</span></div>
+		<div class="company_one_p1"><span class="company_one_p1_s">{yun:}t key='default_00280'{/yun}：{yun:}$city_name[$row.provinceid]{/yun}</span></div>
+		<div class="company_one_p2"><span class="company_one_p2_s">{yun:}t key='company_00024'{/yun}：{yun:}$comclass_name[$row.mun]{/yun}</span></div>
+		<div class="company_one_p3"><span class="company_one_p3_s">{yun:}t key='default_00281'{/yun}：{yun:}$comclass_name[$row.pr]{/yun}</span></div>
+		<div class="company_one_p4"><span class="company_one_p4_s"style="font-size:14px;">{yun:}t key='company_00021'{/yun}：{yun:}$row.sdate{/yun}</span></div>
+	  	<div class="company_one_p5"><span class="company_one_p5_s">{yun:}t key='admin_user_company_00373'{/yun}：{yun:}$industry_name[$row.hy]{/yun}</span></div>
 	  	<div class="company_end"><i class="company_end_icon iconfont"></i></div>
   	</section>
  
@@ -45,10 +45,10 @@
  		<div class="company_tit">
 		  	<div class="company_tit_icon iconfont"></div>
 		 	<div class="company_tit_e">Enterprise Profile</div>
-		 	<div class="company_tit_p">{yun:}t key='wap_com_info_00043'{/yun}</div>
+		 	<div class="company_tit_p">{yun:}t key='wap_com_00160'{/yun}</div>
 		</div> 
 	  	<div class="company_about"><div class="company_about_cont">{yun:}$row.content|mb_substr:0:200:'utf-8'{/yun}{yun:}if strlen($row.content) gt 200{/yun}...{yun:}/if{/yun}</div> </div>
-   		<div class="company_job_more"><a href="{yun:}url m=wap c=company a=show id=$row.uid{/yun}#content">{yun:}t key='wap_company_index_00002'{/yun}>> </a></div>
+   		<div class="company_job_more"><a href="{yun:}url m=wap c=company a=show id=$row.uid{/yun}#content">{yun:}t key='common_02174'{/yun}>> </a></div>
  		<div class="company_end"><i class="company_end_icon iconfont"></i></div>
  	</section>
  	
@@ -57,7 +57,7 @@
 		<div class="company_tit">
 	  		<div class="company_tit_icon iconfont"></div>
 			<div class="company_tit_e">Corporate Environment</div>
-			<div class="company_tit_p">{yun:}t key='wap_user_comment_00003'{/yun}</div>
+			<div class="company_tit_p">{yun:}t key='wap_user_00157'{/yun}</div>
 	 	</div>
 	  	{yun:}foreach item=v key=key from=$show{/yun}
 	   	<div class="slide">
@@ -76,7 +76,7 @@
 	   <div class="company_tit">
 	 <div class="company_tit_icon iconfont"></div>
 	 <div class="company_tit_e">Welfare Treatment</div>
-	 <div class="company_tit_p">{yun:}t key='wap_com_info_00056'{/yun}</div>
+	 <div class="company_tit_p">{yun:}t key='wap_com_00173'{/yun}</div>
 	 </div>
 	  <div class="company_about">
 	    {yun:}foreach from=$row.welfare item=wlist key=j{/yun}
@@ -90,7 +90,7 @@
 		<div class="company_tit">
 		 	<div class="company_tit_icon iconfont"></div>
 		 	<div class="company_tit_e">Recruitment Post</div>
-		 	<div class="company_tit_p">{yun:}t key='wap_company_index_00001'{/yun}</div>
+		 	<div class="company_tit_p">{yun:}t key='wap_00185'{/yun}</div>
 		</div>
 		<div class="section_job_con">
 			<div class="company_job_box">
@@ -98,13 +98,13 @@
 				<div class="company_job">
 				 	<a href="{yun:}url m=wap c=job a=comapply id=$jlist.id{/yun}">
 						<div class="company_job_name">{yun:}$jlist.name{/yun}  {yun:}$jlist.job_city_one{/yun} {yun:}$jlist.job_city_two{/yun} {yun:}$jlist.job_city_three{/yun}</div>
-						<div class="company_job_salary"><span class="company_job_xz">{yun:}t key='member_user_favorite_00005'{/yun}：{yun:}if $jlist.job_salary==''||$jlist.job_salary=='不限'||$jlist.job_salary=='面议'{/yun}{yun:}else{/yun}￥{yun:}/if{/yun}{yun:}$jlist.job_salary{/yun}</span>{yun:}t key='home.experience_suffix'{/yun}：{yun:}$jlist.job_exp{/yun} </div>
+						<div class="company_job_salary"><span class="company_job_xz">{yun:}t key='member_user_00106'{/yun}：{yun:}if $jlist.job_salary==''||$jlist.job_salary=='不限'||$jlist.job_salary=='面议'{/yun}{yun:}else{/yun}￥{yun:}/if{/yun}{yun:}$jlist.job_salary{/yun}</span>{yun:}t key='home.experience_suffix'{/yun}：{yun:}$jlist.job_exp{/yun} </div>
 						<i class="company_job_icon iconfont"></i>
 					</a>
 				</div> 
 		 	{yun:}/joblist{/yun} 
 		  	</div>  
-		 	<div class="company_job_more"><a href="{yun:}url m=wap c=company a=show id=$row.uid{/yun}#job">{yun:}t key='wap_spe_show_00001'{/yun}>> </a></div>
+		 	<div class="company_job_more"><a href="{yun:}url m=wap c=company a=show id=$row.uid{/yun}#job">{yun:}t key='wap_00518'{/yun}>> </a></div>
 		</div>  
   		<div class="company_end"><i class="company_end_icon iconfont"></i></div>
   	</section> 
@@ -114,14 +114,14 @@
    		<div class="company_tit">
  			<div class="company_tit_icon iconfont"></div>
  			<div class="company_tit_e">Contact Information</div>
- 			<div class="company_tit_p">{yun:}t key='wap_company_show_dark_00015'{/yun}</div>
+ 			<div class="company_tit_p">{yun:}t key='wap_00040'{/yun}</div>
  		</div>
 
 		<div class="company_tit_p_touch_cont">
 			<div class="company_tit_p_touch_l_p">{yun:}$row.address{/yun}</div>
 			<div class="company_tit_p_touch_l_c">
-				<a href="{yun:}url m=wap c=login{/yun}" class="company_tit_p_touch_log">{yun:}t key='wap_job_show_00042'{/yun}</a>
-				<a href="{yun:}url m=wap c=register usrtype=1 type=1{/yun}" class="company_tit_p_touch_reg">{yun:}t key='wap_job_show_00041'{/yun}</a>
+				<a href="{yun:}url m=wap c=login{/yun}" class="company_tit_p_touch_log">{yun:}t key='wap_00285'{/yun}</a>
+				<a href="{yun:}url m=wap c=register usrtype=1 type=1{/yun}" class="company_tit_p_touch_reg">{yun:}t key='wap_00284'{/yun}</a>
 			</div>
 		</div>
       	<div class="company_end"><i class="company_end_icon iconfont"></i></div>
@@ -138,7 +138,7 @@
 		<ul class="section_touch_ul">
 			<li><a href="{yun:}url m=wap c=company a=show id=$row.uid{/yun}#tel"><i class="section_touch_icon iconfont"></i>查看详细信息</a></li>
 			<li><a href="{yun:}url m=wap c=company a=show id=$row.uid{/yun}#job"><i class="section_touch_icon  iconfont"></i>查看招聘职位</a></li>
-			<li><a href="{yun:}$config.sy_wapdomain{/yun}"><i class="section_touch_icon  iconfont"></i>{yun:}t key='wap_com_zhaopinzhou_00002'{/yun}{yun:}$config.sy_webname{/yun}</a></li>
+			<li><a href="{yun:}$config.sy_wapdomain{/yun}"><i class="section_touch_icon  iconfont"></i>{yun:}t key='wap_com_00427'{/yun}{yun:}$config.sy_webname{/yun}</a></li>
 		</ul>
 	  	<div class="section_nav">
 	      	<div class="section_nav_line"></div>

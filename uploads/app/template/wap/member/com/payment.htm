@@ -5,33 +5,33 @@
 <div class="pay_choice_box">
 	<form action="" method="post" onsubmit="return order_form();" id="paymentform">
 		<div class="pay_xymoney">
-			<span class="pay_xymoney_name">{yun:}t key='wap_user_payment_00004'{/yun}</span>
+			<span class="pay_xymoney_name">{yun:}t key='wap_user_00320'{/yun}</span>
 			<div class="pay_xymoney_t"><em class="">{yun:}$order.order_id{/yun}</em></div>
 		</div>
 		<div class="pay_xymoney">
-			<span class="pay_xymoney_name">{yun:}t key='wap_user_payment_00001'{/yun}</span>
+			<span class="pay_xymoney_name">{yun:}t key='wap_user_00317'{/yun}</span>
 			<div class="pay_xymoney_t"><em class="pay_xymoney_t_n"><span id="price">{yun:}$order.order_price{/yun}</span></em> {yun:}t key='common_02056'{/yun}</div>
 		</div>
 		<div class="pay_xymoney">
-			<span class="pay_xymoney_name">{yun:}t key='wap_user_payment_00002'{/yun}</span>
+			<span class="pay_xymoney_name">{yun:}t key='wap_user_00318'{/yun}</span>
 			<div class="pay_xymoney_t">
 				<em class="">
-					{yun:}if $order.type==1{/yun}{yun:}t key='default_public_search_public_tips_00029'{/yun}
+					{yun:}if $order.type==1{/yun}{yun:}t key='default_00090'{/yun}
 					{yun:}elseif $order.type==2{/yun}{yun:}$config.integral_pricename{/yun}{yun:}t key='common_01946'{/yun}
-					{yun:}elseif $order.type==3{/yun}{yun:}t key='admin_system_set_payset_00056'{/yun}
+					{yun:}elseif $order.type==3{/yun}{yun:}t key='admin_system_00529'{/yun}
 					{yun:}elseif $order.type==5{/yun}购买增值包
-					{yun:}elseif $order.type==10{/yun}{yun:}t key='wap_com_job_00047'{/yun} 
-					{yun:}elseif $order.type==11{/yun}{yun:}t key='member_com_jobadd_00024'{/yun} 
-					{yun:}elseif $order.type==12{/yun}{yun:}t key='wap_com_job_00046'{/yun}
-					{yun:}elseif $order.type==13{/yun}{yun:}t key='wap_com_job_00048'{/yun} 
-					{yun:}elseif $order.type==16{/yun}{yun:}t key='wap_com_integral_reduce_00008'{/yun}
+					{yun:}elseif $order.type==10{/yun}{yun:}t key='wap_com_00238'{/yun} 
+					{yun:}elseif $order.type==11{/yun}{yun:}t key='member_com_00247'{/yun} 
+					{yun:}elseif $order.type==12{/yun}{yun:}t key='wap_com_00237'{/yun}
+					{yun:}elseif $order.type==13{/yun}{yun:}t key='wap_com_00239'{/yun} 
+					{yun:}elseif $order.type==16{/yun}{yun:}t key='wap_com_00029'{/yun}
 					{yun:}elseif $order.type==17{/yun}刷新兼职 
-					{yun:}elseif $order.type==19{/yun}{yun:}t key='wap_resume_index_00011'{/yun} 
-					{yun:}elseif $order.type==20{/yun}{yun:}t key='wap_com_integral_reduce_00007'{/yun}
+					{yun:}elseif $order.type==19{/yun}{yun:}t key='wap_00451'{/yun} 
+					{yun:}elseif $order.type==20{/yun}{yun:}t key='wap_com_00028'{/yun}
 					{yun:}elseif $order.type==21{/yun}上架兼职
 					{yun:}elseif $order.type==22{/yun}上架猎头职位
-					{yun:}elseif $order.type==23{/yun}{yun:}t key='wap_com_com_00009'{/yun} 
-					{yun:}elseif $order.type==24{/yun} {yun:}t key='app_template_default_js_comtc_00018'{/yun}
+					{yun:}elseif $order.type==23{/yun}{yun:}t key='wap_com_00046'{/yun} 
+					{yun:}elseif $order.type==24{/yun} {yun:}t key='default_00030'{/yun}
 					{yun:}elseif $order.type==28{/yun}购买招聘会报名次数
 					{yun:}/if{/yun}
 				</em>
@@ -41,7 +41,7 @@
 		<div id="pay_style" class="member_set_meal_fk_fbox mt10">
 			{yun:}if $config.alipay==1 && $isweixin!=1{/yun}
 			<div class="member_set_meal_fk_fs member_set_meal_fk_fs_zfb" onclick="paycheck('alipay');">
-				<i class="alipay member_set_meal_fk_xz"></i>{yun:}t key='wap_user_payment_00003'{/yun}
+				<i class="alipay member_set_meal_fk_xz"></i>{yun:}t key='wap_user_00319'{/yun}
 			</div>
 			{yun:}/if{/yun}
 		</div>
@@ -49,11 +49,11 @@
 		
 		<input type="hidden" value="{yun:}$order.order_price{/yun}" id="order_price" name="price" /> {yun:}if $config.alipay==1{/yun}
 		<div class="member_set_meal_fk_zf">
-			<input type="submit" class="member_set_meal_fk_zf_bth" value="{yun:}t key='wap_user_pay_00001'{/yun}">
+			<input type="submit" class="member_set_meal_fk_zf_bth" value="{yun:}t key='wap_user_00307'{/yun}">
 		</div>
 		{yun:}else{/yun}
 	   <div class="pay_zfgb_tip">
-			<span>网站已关闭支付功能，{yun:}t key='wap_spe_gl_00002'{/yun}！</span>
+			<span>网站已关闭支付功能，{yun:}t key='wap_00509'{/yun}！</span>
 		</div>
 		{yun:}/if{/yun}
 

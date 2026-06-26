@@ -2,7 +2,7 @@
 <div class="yun_w1200">
     {yun:}include file="$userstyle/left.htm"{/yun}
 	<div class="yun_m_rightsidebar">
-		<div class="user_new_tit"><span class="user_new_tit_n">{yun:}t key='wap_com_sysnews_00001'{/yun}</span><span class="user_new_tit_r">{yun:}t key='member_user_favorite_00001'{/yun}</span></div>
+		<div class="user_new_tit"><span class="user_new_tit_n">{yun:}t key='wap_com_00407'{/yun}</span><span class="user_new_tit_r">{yun:}t key='member_user_00102'{/yun}</span></div>
      <div class="yun_m_rightbox fltR mt20 re">
 
        
@@ -20,8 +20,8 @@
 						<div class="user_new_listtit">
 								<div class=" user_new_job">{yun:}t key='common.company'{/yun}</div>
 							<div class=" user_new_job" style="width:280px;">招聘岗位</div>
-							<div class=" user_new_zt">{yun:}t key='member_user_look_00002'{/yun}</div>
-							<div class=" user_new_cz">{yun:}t key='member_user_atn_00003'{/yun}</div>
+							<div class=" user_new_zt">{yun:}t key='member_user_00197'{/yun}</div>
+							<div class=" user_new_cz">{yun:}t key='member_user_00048'{/yun}</div>
 						</div>
 						
                         {yun:}/if{/yun}
@@ -35,20 +35,20 @@
 									    </a>
 										<div class="look_myresume_comxz">{yun:}if $log.pr_n{/yun}{yun:}$log.pr_n{/yun} <span class="look_myresume_comline">|</span>{yun:}/if{/yun} {yun:}$log.mun_n{/yun} {yun:}if $log.sdate{/yun} <span class="look_myresume_comline">|</span> {yun:}$log.sdate{/yun}{yun:}t key='common_02077'{/yun}{yun:}/if{/yun}</div>
 									    {yun:}/if{/yun}
-									{yun:}else{/yun}{yun:}t key='member_user_look_00001'{/yun}！ <div class="look_myresume_comxz">该企业还未没有完善公司信息</div>{yun:}/if{/yun}
+									{yun:}else{/yun}{yun:}t key='common_02163'{/yun}！ <div class="look_myresume_comxz">该企业还未没有完善公司信息</div>{yun:}/if{/yun}
 									&nbsp
 									<div class=""></div>
 								</div>
 							<div class=" user_new_job" style="width:280px;">
 							{yun:}if $log.com_job{/yun}
 							<div class="user_new_joball">{yun:}$log.com_job{/yun}</div>
-							<span class="user_new_joball_n">{yun:}$log.com_job_num{/yun}</span> {yun:}t key='wap_com_index_00019'{/yun} <a href="{yun:}url m=job{/yun}?keyword={yun:}$log.com_name{/yun}" class="user_new_joball_more">{yun:}t key='common.more'{/yun}></a>
-							{yun:}else{/yun}{yun:}t key='app_template_default_js_map_00001'{/yun}{yun:}/if{/yun}&nbsp
+							<span class="user_new_joball_n">{yun:}$log.com_job_num{/yun}</span> {yun:}t key='wap_com_00094'{/yun} <a href="{yun:}url m=job{/yun}?keyword={yun:}$log.com_name{/yun}" class="user_new_joball_more">{yun:}t key='common.more'{/yun}></a>
+							{yun:}else{/yun}{yun:}t key='default_00033'{/yun}{yun:}/if{/yun}&nbsp
 							
 							
 							</div>
 							<div class=" user_new_zt">{yun:}$log.datetime|date_format:'%Y-%m-%d'{/yun}</div>
-							<div class=" user_new_cz"><a href="javascript:void(0)" onclick="layer_del("{yun:}t key='wap_user_look_job_00001'{/yun}", 'index.php?c=look&act=del&id={yun:}$log.id{/yun}');" class="user_new_yqh_sc">
+							<div class=" user_new_cz"><a href="javascript:void(0)" onclick="layer_del("{yun:}t key='wap_user_00001'{/yun}", 'index.php?c=look&act=del&id={yun:}$log.id{/yun}');" class="user_new_yqh_sc">
                                 {yun:}t key='common.delete'{/yun}
                                 </a></div>
 						</div>

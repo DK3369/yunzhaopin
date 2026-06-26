@@ -29,7 +29,7 @@
 	<div {yun:}if $smarty.get.see!='member'{/yun} class="yun_newedition_resume_top" {yun:}/if{/yun}>
    		<div class="w1200" style="{yun:}if $smarty.get.see=='member'{/yun}width:850px;margin:0{yun:}/if{/yun}"> 
 			{yun:}if $smarty.get.see!='member'{/yun}
-    		<div class="yun_newedition_resume_current"> {yun:}t key='common.home'{/yun}  > {yun:}t key='default_resume_index_00003'{/yun} > 简历详细</div>
+    		<div class="yun_newedition_resume_current"> {yun:}t key='common.home'{/yun}  > {yun:}t key='default_00312'{/yun} > 简历详细</div>
 			{yun:}/if{/yun}
 			{yun:}if $uid!=$Info.uid && $usertype != 1 && $smarty.get.see!='member'{/yun}
 			<!-- 浮动 -->
@@ -41,18 +41,18 @@
 							<div class="yun_newedition_resume_ceil_usertx"><img src="{yun:}$Info.photo{/yun}" width="50" height="50" /></div>
 							<div class="yun_newedition_resume_ceil_userxx">
 			   					<div class="yun_newedition_resume_ceil_username">  {yun:}if $Info.m_status=="1"{/yun} {yun:}$Info.name{/yun} {yun:}else{/yun} {yun:}$Info.username_n{/yun} {yun:}/if{/yun}</div>
-			    				<div class="yun_newedition_resume_ceil_wantjob">{yun:}t key='wap_user_addresume_00037'{/yun}： {yun:}foreach from=$Info.expectjob key=key item=v{/yun} {yun:}if $key< 5{/yun} <span class="">{yun:}$v{/yun}</span> {yun:}/if{/yun} {yun:}/foreach{/yun} </div>
+			    				<div class="yun_newedition_resume_ceil_wantjob">{yun:}t key='wap_user_00055'{/yun}： {yun:}foreach from=$Info.expectjob key=key item=v{/yun} {yun:}if $key< 5{/yun} <span class="">{yun:}$v{/yun}</span> {yun:}/if{/yun} {yun:}/foreach{/yun} </div>
 			     			</div>
 			     			<div class="yun_newedition_resume_ceil_tel">
 							{yun:}if $usertype == 2 && $usermsgnum{/yun}
 						 
-									<span class="user_yqms user_yqmsy">{yun:}t key='resume_resume_00012'{/yun}</span>
+									<span class="user_yqms user_yqmsy">{yun:}t key='resume_00026'{/yun}</span>
 								 
 							{yun:}else{/yun}
 							{yun:}if $Info.sqInfo{/yun}
-							<a  href="javascript:void(0);" onclick="sq_resume(this)"  class="user_yqms"  name="submit" username="{yun:}$Info.name{/yun}" eid="{yun:}$Info.eid{/yun}" uid="{yun:}$Info.uid{/yun}">{yun:}t key='resume_resume_00015'{/yun}</a>
+							<a  href="javascript:void(0);" onclick="sq_resume(this)"  class="user_yqms"  name="submit" username="{yun:}$Info.name{/yun}" eid="{yun:}$Info.eid{/yun}" uid="{yun:}$Info.uid{/yun}">{yun:}t key='resume_00029'{/yun}</a>
 							{yun:}else{/yun}
-							<a  href="javascript:void(0);" onclick="issq_resume(this)"  class="user_yqms"  name="submit" username="{yun:}$Info.name{/yun}" eid="{yun:}$Info.eid{/yun}" uid="{yun:}$Info.uid{/yun}">{yun:}t key='resume_resume_00015'{/yun}</a>
+							<a  href="javascript:void(0);" onclick="issq_resume(this)"  class="user_yqms"  name="submit" username="{yun:}$Info.name{/yun}" eid="{yun:}$Info.eid{/yun}" uid="{yun:}$Info.uid{/yun}">{yun:}t key='resume_00029'{/yun}</a>
 							{yun:}/if{/yun}
 							{yun:}/if{/yun}
 							{yun:}$Info.link_topmsg{/yun}
@@ -69,7 +69,7 @@
 				<div class="td_tip">
                 该简历投递过贵公司的职位  <span class="td_job">投递职位：<em class="td_job_n">【{yun:}$Info.sqInfo.sq_job_name{/yun}】</em></span>
 						<span class="td_job">投递时间：{yun:}$Info.sqInfo.sq_job_time{/yun}</span>
-						<span class="td_job">{yun:}t key='admin_yunying_special_component_special_view_company_00009'{/yun}：{yun:}$Info.login_date_n{/yun}</span>
+						<span class="td_job">{yun:}t key='admin_yunying_00131'{/yun}：{yun:}$Info.login_date_n{/yun}</span>
 					
 				</div>
 				{yun:}/if{/yun}
@@ -88,15 +88,15 @@
         						{yun:}$Info.username_n{/yun} 
         					{yun:}/if{/yun}
         				</span>
-	                  	{yun:}if $UserMember.source==6 && $UserMember.claim==0 && $UserMember.email!=""{/yun} <a class=" " href="javascript:void(0);" onClick="claim('{yun:}url m=ajax c=claim uid=$Info.uid{/yun}')">{yun:}t key='resume_jianli3_index_00014'{/yun}</a> {yun:}/if{/yun}
-	                  	{yun:}if $Info.idcard_status==1 && $Info.idcard{/yun} <span class="yun_newedition_resume_rz yun_newedition_resume_rz_sm">{yun:}t key='member_com_hr_resume_00003'{/yun}</span> {yun:}/if{/yun}
+	                  	{yun:}if $UserMember.source==6 && $UserMember.claim==0 && $UserMember.email!=""{/yun} <a class=" " href="javascript:void(0);" onClick="claim('{yun:}url m=ajax c=claim uid=$Info.uid{/yun}')">{yun:}t key='resume_00011'{/yun}</a> {yun:}/if{/yun}
+	                  	{yun:}if $Info.idcard_status==1 && $Info.idcard{/yun} <span class="yun_newedition_resume_rz yun_newedition_resume_rz_sm">{yun:}t key='member_com_00026'{/yun}</span> {yun:}/if{/yun}
                   		
-                  		{yun:}if $Info.moblie_status=="1"&&$Info.telphone{/yun}<span class="yun_newedition_resume_rz yun_newedition_resume_rz_sj">{yun:}t key='member_com_binding_00012'{/yun}</span>{yun:}/if{/yun}
-                  		{yun:}if $Info.email_status=='1'{/yun} <span class="yun_newedition_resume_rz yun_newedition_resume_rz_yx">{yun:}t key='wap_com_integral_00007'{/yun}</span>{yun:}/if{/yun}
+                  		{yun:}if $Info.moblie_status=="1"&&$Info.telphone{/yun}<span class="yun_newedition_resume_rz yun_newedition_resume_rz_sj">{yun:}t key='member_com_00071'{/yun}</span>{yun:}/if{/yun}
+                  		{yun:}if $Info.email_status=='1'{/yun} <span class="yun_newedition_resume_rz yun_newedition_resume_rz_yx">{yun:}t key='wap_com_00186'{/yun}</span>{yun:}/if{/yun}
                   	</div>
                   	<div class="yun_newedition_resume_basic"> 
                   		{yun:}$Info.job_sex{/yun}<span class="yun_newedition_resume_line">|</span>
-                  		{yun:}if $Info.age==0{/yun}{yun:}t key='wap_user_resume_00011'{/yun} ,{yun:}else{/yun}{yun:}$Info.age{/yun}{yun:}t key='home.age_suffix'{/yun}<span class="yun_newedition_resume_line">|</span>{yun:}/if{/yun}
+                  		{yun:}if $Info.age==0{/yun}{yun:}t key='wap_user_00333'{/yun} ,{yun:}else{/yun}{yun:}$Info.age{/yun}{yun:}t key='home.age_suffix'{/yun}<span class="yun_newedition_resume_line">|</span>{yun:}/if{/yun}
                   		{yun:}if $Info.height{/yun} {yun:}$Info.height{/yun}cm {yun:}/if{/yun}
                   		{yun:}if $Info.weight&&$Info.height{/yun} / {yun:}/if{/yun}
                   		{yun:}if $Info.weight{/yun} {yun:}$Info.weight{/yun}kg <span class="yun_newedition_resume_line">|</span>{yun:}/if{/yun}
@@ -110,8 +110,8 @@
 			        	<div class="yun_newedition_resume_fl"> {yun:}foreach from=$Info.arrayTag item=v{/yun} <span>{yun:}$v{/yun}</span> {yun:}/foreach{/yun} </div>
 			        {yun:}/if{/yun}
         			<div class="yun_newedition_resume_data">
-        				<span class="yun_newedition_resume_data_time">{yun:}t key='wap_invite_00002'{/yun}：{yun:}$Info.lastupdate{/yun}</span>
-        				{yun:}t key='member_com_joblist_00018'{/yun}：<script language="javascript" src="{yun:}url m=resume c=show a=GetHits id='`$Info.id`'{/yun}"></script> {yun:}t key='common_02089'{/yun}
+        				<span class="yun_newedition_resume_data_time">{yun:}t key='wap_00225'{/yun}：{yun:}$Info.lastupdate{/yun}</span>
+        				{yun:}t key='member_com_00268'{/yun}：<script language="javascript" src="{yun:}url m=resume c=show a=GetHits id='`$Info.id`'{/yun}"></script> {yun:}t key='common_02089'{/yun}
         			</div>
         		</div>
           	</div>
@@ -121,29 +121,29 @@
 	<div class="w1200" style="{yun:}if $smarty.get.see=='member'{/yun}width:850px;margin:0{yun:}/if{/yun}"> 
     	<div class="yun_newedition_resume_cont" style="{yun:}if $smarty.get.see=='member'{/yun}width:750px{yun:}/if{/yun}"> 
     		<div class="yun_newedition_resume_left" style="{yun:}if $smarty.get.see=='member'{/yun}width:750px;padding:0{yun:}/if{/yun}"> 
-    			<div class="yun_newedition_tit"><span class="yun_newedition_tit_s">{yun:}t key='wap_resume_index_00020'{/yun}</span><i class="yun_newedition_tit_line"></i></div>
+    			<div class="yun_newedition_tit"><span class="yun_newedition_tit_s">{yun:}t key='wap_00460'{/yun}</span><i class="yun_newedition_tit_line"></i></div>
               	
               	<div class="">
         			<ul class="yun_newedition_yx_list">
 		            	<li style="width:100%"> 
-		            		<span class="yun_newedition_yx_name"> {yun:}t key='wap_user_addresume_00037'{/yun}：</span> 
+		            		<span class="yun_newedition_yx_name"> {yun:}t key='wap_user_00055'{/yun}：</span> 
 		            		{yun:}foreach from=$Info.expectjob key=key item=v{/yun} 
 		            			{yun:}if $key < 5{/yun} <span class="yun_newedition_yx_job">{yun:}$v{/yun}</span> {yun:}/if{/yun} 
 		            		{yun:}/foreach{/yun} 
 		            	</li>
-		               	<li><span class="yun_newedition_yx_name"> {yun:}t key='resume_jianli3_index_00006'{/yun}</span>{yun:}$Info.customjob{/yun}</li>
-						<li><span class="yun_newedition_yx_name"> {yun:}t key='wap_user_addexpect_00002'{/yun}：</span>{yun:}$Info.hy{/yun}</li>
-		               	<li><span class="yun_newedition_yx_name"> {yun:}t key='wap_user_addexpect_00008'{/yun}：</span>{yun:}$Info.salary{/yun} </li>
+		               	<li><span class="yun_newedition_yx_name"> {yun:}t key='resume_00006'{/yun}</span>{yun:}$Info.customjob{/yun}</li>
+						<li><span class="yun_newedition_yx_name"> {yun:}t key='wap_user_00010'{/yun}：</span>{yun:}$Info.hy{/yun}</li>
+		               	<li><span class="yun_newedition_yx_name"> {yun:}t key='wap_user_00016'{/yun}：</span>{yun:}$Info.salary{/yun} </li>
 		              	{yun:}if $Info.report{/yun}
-		                  	<li><span class="yun_newedition_yx_name"> {yun:}t key='wap_com_jobadd_00025'{/yun}：</span>{yun:}$Info.report{/yun}</li>
+		                  	<li><span class="yun_newedition_yx_name"> {yun:}t key='wap_com_00279'{/yun}：</span>{yun:}$Info.report{/yun}</li>
 		           		{yun:}/if{/yun} 
 		           		{yun:}if $Info.jobstatus{/yun}
-		           			<li><span class="yun_newedition_yx_name"> {yun:}t key='wap_user_addexpect_00009'{/yun}：</span>{yun:}$Info.jobstatus{/yun}</li>
+		           			<li><span class="yun_newedition_yx_name"> {yun:}t key='wap_user_00017'{/yun}：</span>{yun:}$Info.jobstatus{/yun}</li>
 		               	{yun:}/if{/yun} 
 		               	{yun:}if $Info.type{/yun}
-		               		<li><span class="yun_newedition_yx_name"> {yun:}t key='wap_user_addexpect_00004'{/yun}：</span>{yun:}$Info.type{/yun}</li>
+		               		<li><span class="yun_newedition_yx_name"> {yun:}t key='wap_user_00012'{/yun}：</span>{yun:}$Info.type{/yun}</li>
 		               	{yun:}/if{/yun}
-		             	<li style="width:100%"><span class="yun_newedition_yx_name"> {yun:}t key='member_user_partcollect_00001'{/yun}：</span>{yun:}foreach from=$Info.expectcity key=key item=v{/yun}{yun:}if $key< 5{/yun} {yun:}$v{/yun}&nbsp; {yun:}/if{/yun} {yun:}/foreach{/yun} </li>
+		             	<li style="width:100%"><span class="yun_newedition_yx_name"> {yun:}t key='member_user_00198'{/yun}：</span>{yun:}foreach from=$Info.expectcity key=key item=v{/yun}{yun:}if $key< 5{/yun} {yun:}$v{/yun}&nbsp; {yun:}/if{/yun} {yun:}/foreach{/yun} </li>
 		         	</ul>
 		 		</div>
 
@@ -151,35 +151,35 @@
 		 		<div class="yun_newedition_exhibition">
 						
 					<div class="yun_newedition_tit">
-						<span class="yun_newedition_tit_s">{yun:}t key='wap_resume_index_00022'{/yun}</span>
+						<span class="yun_newedition_tit_s">{yun:}t key='wap_00462'{/yun}</span>
 						<i class="yun_newedition_tit_line"></i>
 					</div>
 					
-					<div class="tcktouch_box_tip">{yun:}t key='member_com_hr_resume_00001'{/yun}{yun:}$config.sy_webname{/yun}{yun:}t key='wap_job_index_00002'{/yun}</div>
-					<div class="tcktouch_box_p">{yun:}t key='member_user_info_00011'{/yun}：<span class="tcktouch_box_p_sj">{yun:}$Info.telphone{/yun}</span></div>
-					{yun:}if $Info.email{/yun} <div class="tcktouch_box_p">{yun:}t key='member_user_resumeout_00004'{/yun}：{yun:}$Info.email{/yun} </div>{yun:}/if{/yun} 
+					<div class="tcktouch_box_tip">{yun:}t key='member_com_00024'{/yun}{yun:}$config.sy_webname{/yun}{yun:}t key='wap_00240'{/yun}</div>
+					<div class="tcktouch_box_p">{yun:}t key='member_user_00163'{/yun}：<span class="tcktouch_box_p_sj">{yun:}$Info.telphone{/yun}</span></div>
+					{yun:}if $Info.email{/yun} <div class="tcktouch_box_p">{yun:}t key='member_user_00282'{/yun}：{yun:}$Info.email{/yun} </div>{yun:}/if{/yun} 
 					{yun:}if $Info.qq{/yun}<div class="tcktouch_box_p">Q Q：{yun:}$Info.qq{/yun}</div> {yun:}/if{/yun} 
-					{yun:}if $Info.homepage{/yun} <div class="tcktouch_box_p">{yun:}t key='wap_ask_00012'{/yun}：{yun:}$Info.homepage{/yun}</div> {yun:}/if{/yun} 
-					{yun:}if $Info.wxewm{/yun}<div class="tcktouch_box_p">{yun:}t key='resume_jianli3_index_00003'{/yun}：</div> <img src="{yun:}$Info.wxewm{/yun}" width="100" height="100"/>{yun:}/if{/yun}
+					{yun:}if $Info.homepage{/yun} <div class="tcktouch_box_p">{yun:}t key='wap_00161'{/yun}：{yun:}$Info.homepage{/yun}</div> {yun:}/if{/yun} 
+					{yun:}if $Info.wxewm{/yun}<div class="tcktouch_box_p">{yun:}t key='resume_00003'{/yun}：</div> <img src="{yun:}$Info.wxewm{/yun}" width="100" height="100"/>{yun:}/if{/yun}
 				</div>
 				{yun:}/if{/yun}
 
               	{yun:}if $resumeCkeck==1{/yun} 
-					<!--{yun:}t key='wap_resume_index_00017'{/yun}--> 
+					<!--{yun:}t key='wap_00457'{/yun}--> 
 					{yun:}if is_array($Info.user_work) && !empty($Info.user_work){/yun}
 					<div class="yun_newedition_exhibition">
 						
 						<div class="yun_newedition_tit">
-							<span class="yun_newedition_tit_s">{yun:}t key='wap_resume_index_00017'{/yun}</span>
+							<span class="yun_newedition_tit_s">{yun:}t key='wap_00457'{/yun}</span>
 							<i class="yun_newedition_tit_line"></i>
-							{yun:}if $Info.avghour>0{/yun}<span class="yun_resume_jobtime" style="margin-left:20px;">{yun:}t key='wap_resume_index_00006'{/yun}：{yun:}$Info.avghourInfo{/yun}</span>{yun:}/if{/yun}
+							{yun:}if $Info.avghour>0{/yun}<span class="yun_resume_jobtime" style="margin-left:20px;">{yun:}t key='wap_00446'{/yun}：{yun:}$Info.avghourInfo{/yun}</span>{yun:}/if{/yun}
 						</div>
 						
 						<ul class="yun_newedition_joblist">
 							{yun:}foreach item=one from=$Info.user_work{/yun}
 							<li> <i class="yun_newedition_icon"></i>
-								<div class="yun_newedition_jobname">{yun:}$one.name{/yun}{yun:}if $one.title{/yun}<span class="yun_newedition_job_zw">{yun:}t key='wap_user_addresumeson_00033'{/yun}：{yun:}$one.title{/yun}</span>{yun:}/if{/yun}</div>
-								{yun:}if $one.sdate>0{/yun}<div class="">{yun:}t key='admin_user_users_component_resume_edit_00030'{/yun}：{yun:}$one.sdate|date_format:"%Y.%m"{/yun}- {yun:}if $one.edate{/yun}{yun:}$one.edate|date_format:"%Y.%m"{/yun}{yun:}else{/yun}{yun:}t key='wap_js_userpicker_00004'{/yun}{yun:}/if{/yun} <span style="color: red;">【{yun:}$one.time_n{/yun}】</span></div>{yun:}/if{/yun}
+								<div class="yun_newedition_jobname">{yun:}$one.name{/yun}{yun:}if $one.title{/yun}<span class="yun_newedition_job_zw">{yun:}t key='wap_user_00091'{/yun}：{yun:}$one.title{/yun}</span>{yun:}/if{/yun}</div>
+								{yun:}if $one.sdate>0{/yun}<div class="">{yun:}t key='admin_user_00223'{/yun}：{yun:}$one.sdate|date_format:"%Y.%m"{/yun}- {yun:}if $one.edate{/yun}{yun:}$one.edate|date_format:"%Y.%m"{/yun}{yun:}else{/yun}{yun:}t key='wap_js_00170'{/yun}{yun:}/if{/yun} <span style="color: red;">【{yun:}$one.time_n{/yun}】</span></div>{yun:}/if{/yun}
 								
 								{yun:}if $one.content{/yun}<div class="cont_hh">工作职责：{yun:}$one.content{/yun}</div>{yun:}/if{/yun}
 							</li>
@@ -188,12 +188,12 @@
 					</div>
 					{yun:}/if{/yun} 
               
-					<!--{yun:}t key='wap_resume_index_00019'{/yun}--> 
+					<!--{yun:}t key='wap_00459'{/yun}--> 
 					{yun:}if is_array($Info.user_edu) && !empty($Info.user_edu){/yun}
 					<div class="yun_newedition_exhibition">
 						
 						<div class="yun_newedition_tit">
-							<span class="yun_newedition_tit_s">{yun:}t key='wap_resume_index_00019'{/yun}</span>
+							<span class="yun_newedition_tit_s">{yun:}t key='wap_00459'{/yun}</span>
 							<i class="yun_newedition_tit_line"></i>
 						</div>
 						<ul class="yun_newedition_joblist">
@@ -204,7 +204,7 @@
 									 <span class="yun_newedition_job_zw">学历学位：{yun:}$one.education_n{/yun}</span>
 									
 								{yun:}/if{/yun}</div>
-								{yun:}if $one.sdate>0{/yun}<div class="">{yun:}t key='admin_user_users_component_resume_edit_00027'{/yun}：{yun:}$one.sdate|date_format:"%Y.%m"{/yun}-{yun:}$one.edate|date_format:"%Y.%m"{/yun}</div>{yun:}/if{/yun}
+								{yun:}if $one.sdate>0{/yun}<div class="">{yun:}t key='admin_user_00220'{/yun}：{yun:}$one.sdate|date_format:"%Y.%m"{/yun}-{yun:}$one.edate|date_format:"%Y.%m"{/yun}</div>{yun:}/if{/yun}
 								{yun:}if $one.specialty{/yun}<div class="">主修专业：{yun:}$one.specialty{/yun}</div>{yun:}/if{/yun}
 							</li>
 							{yun:}/foreach{/yun}
@@ -212,32 +212,32 @@
 					</div>
 					{yun:}/if{/yun} 
               
-					<!--{yun:}t key='wap_resume_index_00015'{/yun}--> 
+					<!--{yun:}t key='wap_00455'{/yun}--> 
 					{yun:}if is_array($Info.user_tra) && !empty($Info.user_tra){/yun}
 					<div class="yun_newedition_exhibition">
 						<div class="yun_newedition_tit">
-							<span class="yun_newedition_tit_s">{yun:}t key='wap_resume_index_00015'{/yun}</span>
+							<span class="yun_newedition_tit_s">{yun:}t key='wap_00455'{/yun}</span>
 							<i class="yun_newedition_tit_line"></i>
 						</div>
 						<ul class="yun_newedition_joblist">
 							{yun:}foreach item=one from=$Info.user_tra{/yun}
 							<li> <i class="yun_newedition_icon"></i>
 								<div class="yun_newedition_jobname">{yun:}$one.name{/yun}</div>
-								{yun:}if $one.sdate>0{/yun}<div class="">{yun:}t key='admin_user_users_component_resume_edit_00029'{/yun}：{yun:}$one.sdate|date_format:"%Y.%m"{/yun} - {yun:}$one.edate|date_format:"%Y.%m"{/yun}</div>{yun:}/if{/yun}
-								{yun:}if $one.title{/yun}<div class="">{yun:}t key='member_com_hr_resume_00002'{/yun}：{yun:}$one.title{/yun}</div>{yun:}/if{/yun}
-								{yun:}if $one.content{/yun}<div class="cont_hh">{yun:}t key='wap_user_addresumeson_00023'{/yun}：{yun:}$one.content{/yun}</div>{yun:}/if{/yun}
+								{yun:}if $one.sdate>0{/yun}<div class="">{yun:}t key='admin_user_00222'{/yun}：{yun:}$one.sdate|date_format:"%Y.%m"{/yun} - {yun:}$one.edate|date_format:"%Y.%m"{/yun}</div>{yun:}/if{/yun}
+								{yun:}if $one.title{/yun}<div class="">{yun:}t key='member_com_00025'{/yun}：{yun:}$one.title{/yun}</div>{yun:}/if{/yun}
+								{yun:}if $one.content{/yun}<div class="cont_hh">{yun:}t key='wap_user_00081'{/yun}：{yun:}$one.content{/yun}</div>{yun:}/if{/yun}
 							</li>
 							{yun:}/foreach{/yun}
 						</ul>
 					</div>
 					{yun:}/if{/yun} 
               
-					<!--{yun:}t key='wap_resume_index_00021'{/yun}-->
+					<!--{yun:}t key='wap_00461'{/yun}-->
 					{yun:}if $Info.m_status=="1"{/yun} 
 						{yun:}if is_array($Info.user_skill) && !empty($Info.user_skill){/yun}
 						<div class="yun_newedition_exhibition">
 							<div class="yun_newedition_tit">
-								<span class="yun_newedition_tit_s">{yun:}t key='member_com_hr_resume_00004'{/yun}</span>
+								<span class="yun_newedition_tit_s">{yun:}t key='member_com_00027'{/yun}</span>
 								<i class="yun_newedition_tit_line"></i>
 							</div>
 							<div class="yun_newedition_skill">
@@ -264,18 +264,18 @@
 						{yun:}/if{/yun}
 					{yun:}/if{/yun} 
 				  
-					<!--{yun:}t key='wap_resume_index_00025'{/yun}--> 
+					<!--{yun:}t key='wap_00465'{/yun}--> 
 					{yun:}if is_array($Info.user_xm) && !empty($Info.user_xm){/yun}
 					<div class="yun_newedition_exhibition">
 						<div class="yun_newedition_tit">
-							<span class="yun_newedition_tit_s">{yun:}t key='wap_resume_index_00025'{/yun}</span>
+							<span class="yun_newedition_tit_s">{yun:}t key='wap_00465'{/yun}</span>
 							<i class="yun_newedition_tit_line"></i>
 						</div>
 						<ul class="yun_newedition_joblist">
 							{yun:}foreach item=one from=$Info.user_xm{/yun}
 								<li> <i class="yun_newedition_icon"></i>
-									<div class="yun_newedition_jobname">{yun:}$one.name{/yun}  {yun:}if $one.title{/yun} <span class="yun_newedition_job_zw">{yun:}t key='wap_user_addresumeson_00033'{/yun}：{yun:}$one.title{/yun}</span>{yun:}/if{/yun}</div>
-									{yun:}if $one.sdate>0{/yun}<div class="">{yun:}t key='admin_user_users_component_resume_edit_00036'{/yun}：{yun:}$one.sdate|date_format:"%Y.%m"{/yun} - {yun:}$one.edate|date_format:"%Y.%m"{/yun}</div>{yun:}/if{/yun}
+									<div class="yun_newedition_jobname">{yun:}$one.name{/yun}  {yun:}if $one.title{/yun} <span class="yun_newedition_job_zw">{yun:}t key='wap_user_00091'{/yun}：{yun:}$one.title{/yun}</span>{yun:}/if{/yun}</div>
+									{yun:}if $one.sdate>0{/yun}<div class="">{yun:}t key='admin_user_00229'{/yun}：{yun:}$one.sdate|date_format:"%Y.%m"{/yun} - {yun:}$one.edate|date_format:"%Y.%m"{/yun}</div>{yun:}/if{/yun}
 								 
 								   {yun:}if $one.content{/yun} <div class="cont_hh">项目职责：{yun:}$one.content{/yun}</div>{yun:}/if{/yun}
 								</li>
@@ -307,25 +307,25 @@
 					{yun:}if is_array($Info.user_other) && !empty($Info.user_other){/yun}
 					<div class="yun_newedition_exhibition">
 						<div class="yun_newedition_tit">
-							<span class="yun_newedition_tit_s">{yun:}t key='wap_resume_show_00017'{/yun}</span>
+							<span class="yun_newedition_tit_s">{yun:}t key='wap_00493'{/yun}</span>
 							<i class="yun_newedition_tit_line"></i>
 						</div>
 						<ul class="yun_newedition_joblist">
 							{yun:}foreach item=one from=$Info.user_other{/yun}
 							<li> <i class="yun_newedition_icon"></i>
 								<div class="yun_newedition_jobname">{yun:}$one.name{/yun}</div>
-								{yun:}if $one.content{/yun} <div class="cont_hh">{yun:}t key='wap_user_addresumeson_00044'{/yun}：{yun:}$one.content{/yun}</div>{yun:}/if{/yun}
+								{yun:}if $one.content{/yun} <div class="cont_hh">{yun:}t key='wap_user_00102'{/yun}：{yun:}$one.content{/yun}</div>{yun:}/if{/yun}
 							</li>
 							{yun:}/foreach{/yun}
 						</ul>
 					</div>
 					{yun:}/if{/yun} 
               
-					<!--{yun:}t key='wap_resume_index_00023'{/yun}--> 
+					<!--{yun:}t key='wap_00463'{/yun}--> 
 					{yun:}if !empty($Info.description){/yun}
 					<div class="yun_newedition_exhibition">
 						<div class="yun_newedition_tit">
-							<span class="yun_newedition_tit_s">{yun:}t key='wap_resume_index_00023'{/yun}</span>
+							<span class="yun_newedition_tit_s">{yun:}t key='wap_00463'{/yun}</span>
 							<i class="yun_newedition_tit_line"></i>
 						</div>
 						<div class="yun_newedition_js cont_hh">{yun:}$Info.description{/yun}</div>
@@ -333,11 +333,11 @@
 					{yun:}/if{/yun} 
               
               
-					<!--{yun:}t key='member_user_expectq_00007'{/yun}--> 
+					<!--{yun:}t key='member_user_00101'{/yun}--> 
 					{yun:}if $Info.doc && $Info.user_doc.doc{/yun}
 					<div class="yun_newedition_exhibition">
 						<div class="yun_newedition_tit">
-							<span class="yun_newedition_tit_s">{yun:}t key='wap_resume_show_00019'{/yun}</span>
+							<span class="yun_newedition_tit_s">{yun:}t key='wap_00495'{/yun}</span>
 							<i class="yun_newedition_tit_line"></i>
 						</div>
 						<div class="yun_newedition_js">{yun:}$Info.user_doc.doc{/yun}</div>
@@ -349,40 +349,40 @@
 					  
 						{yun:}if $tj.education{/yun}
 						<div class="yun_newedition_resume_nologin_list">
-							  <div class="resume_bg_tit"><i class="resume_bg_icon resume_bg_icon_jy"></i>{yun:}t key='wap_resume_index_00019'{/yun}</div>
-							  <div class="resume_bg_r">  {yun:}$tj.edumin{/yun}-{yun:}$tj.edumax{/yun} {yun:}t key='wap_resume_index_00029'{/yun}{yun:}$tj.education{/yun}{yun:}t key='wap_resume_index_00031'{/yun}</div>
+							  <div class="resume_bg_tit"><i class="resume_bg_icon resume_bg_icon_jy"></i>{yun:}t key='wap_00459'{/yun}</div>
+							  <div class="resume_bg_r">  {yun:}$tj.edumin{/yun}-{yun:}$tj.edumax{/yun} {yun:}t key='wap_00469'{/yun}{yun:}$tj.education{/yun}{yun:}t key='wap_00471'{/yun}</div>
 						</div>
 						{yun:}/if{/yun} 
 						{yun:}if $tj.worknum>0{/yun}
 						<div class="yun_newedition_resume_nologin_list">
 							  <div class="resume_bg_tit"><i
-										  class="resume_bg_icon resume_bg_icon_jl"></i>{yun:}t key='wap_resume_index_00017'{/yun}</div>
-							  <div class="resume_bg_r"> {yun:}$tj.workmin{/yun}-{yun:}$tj.workmax{/yun} {yun:}t key='wap_resume_index_00027'{/yun}{yun:}$tj.worknum{/yun}{yun:}t key='common_01887'{/yun}，{yun:}t key='wap_resume_index_00006'{/yun}{yun:}$tj.workavg{/yun}{yun:}t key='wap_resume_index_00034'{/yun}，{yun:}t key='common_02009'{/yun}{yun:}$tj.worktit{/yun}{yun:}t key='wap_resume_index_00032'{/yun} </div>
+										  class="resume_bg_icon resume_bg_icon_jl"></i>{yun:}t key='wap_00457'{/yun}</div>
+							  <div class="resume_bg_r"> {yun:}$tj.workmin{/yun}-{yun:}$tj.workmax{/yun} {yun:}t key='wap_00467'{/yun}{yun:}$tj.worknum{/yun}{yun:}t key='common_01887'{/yun}，{yun:}t key='wap_00446'{/yun}{yun:}$tj.workavg{/yun}{yun:}t key='wap_00474'{/yun}，{yun:}t key='common_02009'{/yun}{yun:}$tj.worktit{/yun}{yun:}t key='wap_00472'{/yun} </div>
 						</div>
 						{yun:}/if{/yun} 
 						{yun:}if $tj.xmnum>0{/yun}
 						<div class="yun_newedition_resume_nologin_list">
-							  <div class="resume_bg_tit"><i class="resume_bg_icon resume_bg_icon_xm"></i>{yun:}t key='wap_resume_index_00025'{/yun}</div>
-							  <div class="resume_bg_r"> {yun:}$tj.xmmin{/yun}-{yun:}$tj.xmmax{/yun} {yun:}t key='wap_resume_index_00003'{/yun}{yun:}$tj.xmnum{/yun}{yun:}t key='wap_resume_index_00026'{/yun}，{yun:}t key='wap_resume_index_00004'{/yun}{yun:}$tj.xmtit{/yun}{yun:}t key='wap_resume_index_00033'{/yun} </div>
+							  <div class="resume_bg_tit"><i class="resume_bg_icon resume_bg_icon_xm"></i>{yun:}t key='wap_00465'{/yun}</div>
+							  <div class="resume_bg_r"> {yun:}$tj.xmmin{/yun}-{yun:}$tj.xmmax{/yun} {yun:}t key='wap_00443'{/yun}{yun:}$tj.xmnum{/yun}{yun:}t key='wap_00466'{/yun}，{yun:}t key='wap_00444'{/yun}{yun:}$tj.xmtit{/yun}{yun:}t key='wap_00473'{/yun} </div>
 						</div>
 						{yun:}/if{/yun}
 						{yun:}if $tj.trainnum>0{/yun}
 						<div class="yun_newedition_resume_nologin_list">
-							  <div class="resume_bg_tit"><i class="resume_bg_icon resume_bg_icon_px"></i>{yun:}t key='wap_resume_index_00015'{/yun}</div>
-							  <div class="resume_bg_r"> {yun:}$tj.trainmin{/yun}-{yun:}$tj.trainmax{/yun} {yun:}t key='wap_resume_index_00027'{/yun}{yun:}$tj.trainnum{/yun}次培训，进行自我充电，能力提升</div>
+							  <div class="resume_bg_tit"><i class="resume_bg_icon resume_bg_icon_px"></i>{yun:}t key='wap_00455'{/yun}</div>
+							  <div class="resume_bg_r"> {yun:}$tj.trainmin{/yun}-{yun:}$tj.trainmax{/yun} {yun:}t key='wap_00467'{/yun}{yun:}$tj.trainnum{/yun}次培训，进行自我充电，能力提升</div>
 						</div>
 						{yun:}/if{/yun} 
 						{yun:}if $tj.skillnum>0{/yun}
 						<div class="yun_newedition_resume_nologin_list">
-							  <div class="resume_bg_tit"><i class="resume_bg_icon resume_bg_icon_jn"></i>{yun:}t key='wap_resume_index_00021'{/yun}</div>
-							  <div class="resume_bg_r">{yun:}t key='wap_resume_index_00010'{/yun}{yun:}$tj.skillnum{/yun}项技能{yun:}if $tj.skillpic > 0{/yun}，其中{yun:}$tj.skillpic{/yun}{yun:}t key='wap_resume_index_00005'{/yun}{yun:}/if{/yun}
+							  <div class="resume_bg_tit"><i class="resume_bg_icon resume_bg_icon_jn"></i>{yun:}t key='wap_00461'{/yun}</div>
+							  <div class="resume_bg_r">{yun:}t key='wap_00450'{/yun}{yun:}$tj.skillnum{/yun}项技能{yun:}if $tj.skillpic > 0{/yun}，其中{yun:}$tj.skillpic{/yun}{yun:}t key='wap_00445'{/yun}{yun:}/if{/yun}
 							  </div>
 						</div>
 						{yun:}/if{/yun}
 						{yun:}if $tj.shownum>0{/yun}
 						<div class="yun_newedition_resume_nologin_list">
-							  <div class="resume_bg_tit"><i class="resume_bg_icon resume_bg_icon_iconry"></i>{yun:}t key='wap_resume_show_00016'{/yun}</div>
-							  <div class="resume_bg_r">{yun:}t key='wap_user_alltask_00019'{/yun}{yun:}$tj.shownum{/yun}{yun:}t key='wap_resume_index_00002'{/yun}
+							  <div class="resume_bg_tit"><i class="resume_bg_icon resume_bg_icon_iconry"></i>{yun:}t key='wap_00492'{/yun}</div>
+							  <div class="resume_bg_r">{yun:}t key='wap_user_00123'{/yun}{yun:}$tj.shownum{/yun}{yun:}t key='wap_00442'{/yun}
 							  </div>
 						</div>
 						{yun:}/if{/yun}
@@ -402,62 +402,62 @@
 				<div class="">
 					{yun:}if $usertype == 2 && $usermsgnum{/yun}
 						<div class="">
-							<span class="yun_newedition_resume_yqok">{yun:}t key='resume_resume_00012'{/yun}</span>
+							<span class="yun_newedition_resume_yqok">{yun:}t key='resume_00026'{/yun}</span>
 						</div>
 					{yun:}else{/yun}
 						{yun:}if $Info.sqInfo{/yun}
 						<div class="">
-							<a href="javascript:void(0);" onclick="sq_resume(this)" class="yun_newedition_resume_yq" username="{yun:}$Info.name{/yun}" eid="" uid="{yun:}$Info.uid{/yun}">{yun:}t key='resume_resume_00015'{/yun}</a>
+							<a href="javascript:void(0);" onclick="sq_resume(this)" class="yun_newedition_resume_yq" username="{yun:}$Info.name{/yun}" eid="" uid="{yun:}$Info.uid{/yun}">{yun:}t key='resume_00029'{/yun}</a>
 						</div>
 						{yun:}else{/yun}
 						<div class="">
-							<a href="javascript:void(0);" onclick="issq_resume(this)" class="yun_newedition_resume_yq" username="{yun:}$Info.name{/yun}" eid="" uid="{yun:}$Info.uid{/yun}">{yun:}t key='resume_resume_00015'{/yun}</a>
+							<a href="javascript:void(0);" onclick="issq_resume(this)" class="yun_newedition_resume_yq" username="{yun:}$Info.name{/yun}" eid="" uid="{yun:}$Info.uid{/yun}">{yun:}t key='resume_00029'{/yun}</a>
 						</div>
 						{yun:}/if{/yun}
 					{yun:}/if{/yun}
 					
 					<div class="">{yun:}$Info.link_msg{/yun}</div>
 					
-					<div class="yun_newedition_resume_right_cz"> <span class="yun_newedition_resume_right_cz_n">{yun:}t key='resume_resume_00013'{/yun}</span></div>
+					<div class="yun_newedition_resume_right_cz"> <span class="yun_newedition_resume_right_cz_n">{yun:}t key='resume_00027'{/yun}</span></div>
 					
 					<div class="clear"></div>
 					<div class="r_cz">
                    
 					{yun:}if $talent_pool{/yun}
 					
-						<input class="yun_newedition_resume_right_bth "type="button" onclick="layer.msg("{yun:}t key='resume_resume_00007'{/yun}",2,8);" value="{yun:}t key='wap_part_show_00011'{/yun}" />
+						<input class="yun_newedition_resume_right_bth "type="button" onclick="layer.msg("{yun:}t key='resume_00021'{/yun}",2,8);" value="{yun:}t key='wap_00378'{/yun}" />
 					{yun:}else{/yun}
 					
-						<input class="yun_newedition_resume_right_bth" type="button" onclick="add_user_talent('{yun:}$Info.id{/yun}','{yun:}$usertype{/yun}')" value="{yun:}t key='wap_com_resumecolumn_00004'{/yun}" />
+						<input class="yun_newedition_resume_right_bth" type="button" onclick="add_user_talent('{yun:}$Info.id{/yun}','{yun:}$usertype{/yun}')" value="{yun:}t key='wap_com_00354'{/yun}" />
 					{yun:}/if{/yun}
 					
 					{yun:}if $usertype==2{/yun}
 					
 						{yun:}if $Info.downresume==1{/yun}
-							<a href="{yun:}url m=ajax c=resume_word id=$Info.id{/yun}" class="yun_newedition_resume_right_fxbth">{yun:}t key='wap_resume_index_00011'{/yun}</a>
+							<a href="{yun:}url m=ajax c=resume_word id=$Info.id{/yun}" class="yun_newedition_resume_right_fxbth">{yun:}t key='wap_00451'{/yun}</a>
 						{yun:}else{/yun}
-							<input class="yun_newedition_resume_right_fxbth" onClick="for_link('{yun:}$Info.id{/yun}','{yun:}url m=ajax c=for_link{/yun}','{yun:}url m=ajax c=resume_word id=$Info.id{/yun}');" type="button" name="submit" value="{yun:}t key='wap_resume_index_00011'{/yun} ">
+							<input class="yun_newedition_resume_right_fxbth" onClick="for_link('{yun:}$Info.id{/yun}','{yun:}url m=ajax c=for_link{/yun}','{yun:}url m=ajax c=resume_word id=$Info.id{/yun}');" type="button" name="submit" value="{yun:}t key='wap_00451'{/yun} ">
 						{yun:}/if{/yun}
 						 
 					{yun:}else{/yun}
 						{yun:}if $uid{/yun}
-							<input class="yun_newedition_resume_right_fxbth" onClick="layer.msg("{yun:}t key='resume_resume_00005'{/yun}",2,8);" type="button" name="submit" value="{yun:}t key='wap_resume_index_00011'{/yun} ">
+							<input class="yun_newedition_resume_right_fxbth" onClick="layer.msg("{yun:}t key='resume_00019'{/yun}",2,8);" type="button" name="submit" value="{yun:}t key='wap_00451'{/yun} ">
 						{yun:}else{/yun}
-							<input class="yun_newedition_resume_right_fxbth" onClick="showlogin('2');" type="button" name="submit" value="{yun:}t key='wap_resume_index_00011'{/yun} ">
+							<input class="yun_newedition_resume_right_fxbth" onClick="showlogin('2');" type="button" name="submit" value="{yun:}t key='wap_00451'{/yun} ">
 						{yun:}/if{/yun}
 					{yun:}/if{/yun}
 					
                     {yun:}if !$uid && !$username{/yun}
 						
 						{yun:}if $Info.height_status==2{/yun}
-							<input class=" yun_newedition_resume_right_dybth" type="button" onclick="showlogin('3');" value="{yun:}t key='resume_resume_00014'{/yun}" name="submit" />
+							<input class=" yun_newedition_resume_right_dybth" type="button" onclick="showlogin('3');" value="{yun:}t key='resume_00028'{/yun}" name="submit" />
 						{yun:}else{/yun}
-							<input class=" yun_newedition_resume_right_dybth" type="button" onclick="showlogin('2');" value="{yun:}t key='resume_resume_00014'{/yun}" name="submit" />
+							<input class=" yun_newedition_resume_right_dybth" type="button" onclick="showlogin('2');" value="{yun:}t key='resume_00028'{/yun}" name="submit" />
 						{yun:}/if{/yun}
 						
 					{yun:}else{/yun}
 						
-						<input class=" yun_newedition_resume_right_dybth" type="button" onclick="recommendInterval('{yun:}$uid{/yun}','{yun:}url m=resume c=resumeshare id='`$Info.id`'{/yun}');" value="{yun:}t key='resume_resume_00014'{/yun}" name="submit" />
+						<input class=" yun_newedition_resume_right_dybth" type="button" onclick="recommendInterval('{yun:}$uid{/yun}','{yun:}url m=resume c=resumeshare id='`$Info.id`'{/yun}');" value="{yun:}t key='resume_00028'{/yun}" name="submit" />
 						
 					{yun:}/if{/yun}
 
@@ -467,7 +467,7 @@
 
 					<div class="yun_newedition_resume_right_jb">
 						<div class="yun_newedition_tit">
-							<span class="yun_newedition_tit_s">{yun:}t key='wap_com_reportlist_00002'{/yun}</span>
+							<span class="yun_newedition_tit_s">{yun:}t key='wap_com_00349'{/yun}</span>
 							<i class="yun_newedition_tit_line"></i>
 						</div>
 						
@@ -491,11 +491,11 @@
 							
 							<div class="yun_resume_cz_dt"> 
 								{yun:}if !$uid && !$username{/yun}
-									<input type="button" name="submit" value="{yun:}t key='wap_com_reportlist_00003'{/yun}" onclick="showlogin('2');" class="yun_resume_cz_jb_a" />
+									<input type="button" name="submit" value="{yun:}t key='wap_com_00350'{/yun}" onclick="showlogin('2');" class="yun_resume_cz_jb_a" />
 								{yun:}else if $usertype!=2 {/yun}
-									<input class="yun_resume_cz_jb_a" onclick="layer.msg("{yun:}t key='resume_resume_00006'{/yun}",2,8);" type="button" name="submit" value="{yun:}t key='wap_com_reportlist_00003'{/yun} " />
+									<input class="yun_resume_cz_jb_a" onclick="layer.msg("{yun:}t key='resume_00020'{/yun}",2,8);" type="button" name="submit" value="{yun:}t key='wap_com_00350'{/yun} " />
 								{yun:}else{/yun}
-									<input type="submit" name="submit" value="{yun:}t key='wap_com_reportlist_00003'{/yun}" class="yun_resume_cz_jb_a" />
+									<input type="submit" name="submit" value="{yun:}t key='wap_com_00350'{/yun}" class="yun_resume_cz_jb_a" />
 								{yun:}/if{/yun} 
 							</div>
 						</form>
@@ -504,9 +504,9 @@
 				<div class="clear"></div>
 				<div class=" noprint" style="text-align: center;margin-bottom:10px; margin-top:15px;" >
 					<div class="yun_resume_czewm">
-						<div style="padding:10px 0">{yun:}t key='default_job_search_00003'{/yun}</div>
+						<div style="padding:10px 0">{yun:}t key='default_00250'{/yun}</div>
 						<img src="{yun:}url m=ajax c=pubqrcode toc=resume toa=show toid=$Info.id{/yun}" width="140" height="140">
-						<div class="yun_resume_cz_tit" style="color:red;">↑{yun:}t key='default_job_comapply_00021'{/yun}↑</br>{yun:}t key='resume_resume_00004'{/yun}</div>
+						<div class="yun_resume_cz_tit" style="color:red;">↑{yun:}t key='common_02135'{/yun}↑</br>{yun:}t key='resume_00018'{/yun}</div>
 					</div>
 				</div>
       			{yun:}/if{/yun}
@@ -515,10 +515,10 @@
 				<div class=" noprint">
 					{yun:}if $usertype==1{/yun}
 						<div class="yun_resume_cz " style="padding:0px;border:none; background:none">
-							<a href="{yun:}url m=member c=expect e=$Info.id{/yun}" class="yun_resume_cz_xg">{yun:}t key='wap_job_show_00026'{/yun}</a>
-							<input class="yun_resume_cz_bc yun_resume_cz_bth_xz fl " onclick="for_link('{yun:}$Info.id{/yun}','{yun:}url m=ajax c=for_link{/yun}','{yun:}url m=ajax c=resume_word id=$Info.id{/yun}');" type="submit" name="submit" value="{yun:}t key='resume_resume_00009'{/yun} " /> 
+							<a href="{yun:}url m=member c=expect e=$Info.id{/yun}" class="yun_resume_cz_xg">{yun:}t key='wap_00269'{/yun}</a>
+							<input class="yun_resume_cz_bc yun_resume_cz_bth_xz fl " onclick="for_link('{yun:}$Info.id{/yun}','{yun:}url m=ajax c=for_link{/yun}','{yun:}url m=ajax c=resume_word id=$Info.id{/yun}');" type="submit" name="submit" value="{yun:}t key='resume_00023'{/yun} " /> 
 							<div class="mt10">
-								<div class="yun_resume_cz_gz">{yun:}t key='resume_resume_00001'{/yun}</div>
+								<div class="yun_resume_cz_gz">{yun:}t key='resume_00015'{/yun}</div>
 							</div>
 						</div>	
 					{yun:}/if{/yun}
@@ -526,7 +526,7 @@
 				 
 					<div class="yun_resume_czewm">
 						<div class="yun_resume_czewmpic"><img src="{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_wx_qcode{/yun}" width="150" height="150"></div>
-						<div class="yun_resume_cz_tit">{yun:}t key='resume_resume_00002'{/yun}</div>
+						<div class="yun_resume_cz_tit">{yun:}t key='resume_00016'{/yun}</div>
 					</div>
 				</div>
 				{yun:}/if{/yun}
@@ -538,9 +538,9 @@
 			{yun:}if $uid != $Info.uid  && $usertype != 1{/yun}
 			<div class="yun_newedition_resume_other">
 				<div class="yun_newedition_tit">
-					<span class="yun_newedition_tit_s">{yun:}t key='resume_resume_00003'{/yun}</span>
+					<span class="yun_newedition_tit_s">{yun:}t key='resume_00017'{/yun}</span>
 					<i class="yun_newedition_tit_line"></i>
-					<a href="{yun:}url m=resume{/yun}" class="yun_newedition_tit_more" style="right:50px;top:5px;">{yun:}t key='resume_resume_00008'{/yun}</a>
+					<a href="{yun:}url m=resume{/yun}" class="yun_newedition_tit_more" style="right:50px;top:5px;">{yun:}t key='resume_00022'{/yun}</a>
 				</div>
 
 				<ul class="yun_newedition_resume_otherlist">
@@ -548,7 +548,7 @@
 						<li style="height:80px;">
 							<div class="yun_newedition_resume_other_usertx"><a href="{yun:}$look.user_url{/yun}"><img src="{yun:}$look.photo{/yun}" width="70" height="70" onerror="showImgDelay(this,'{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_member_icon{/yun}',2);"></a></div>
 							
-							<div class="yun_newedition_resume_other_username"><a href="{yun:}$look.user_url{/yun}">{yun:}if in_array($look.id,$eid){/yun}{yun:}$look.uname{/yun}{yun:}else{/yun}{yun:}$look.username_n{/yun}{yun:}/if{/yun}</a> <span class="yun_newedition_resume_other_username_i">{yun:}$look.sex{/yun},{yun:}if $look.age==0{/yun}{yun:}t key='wap_user_resume_00011'{/yun}{yun:}else{/yun}{yun:}$look.age{/yun}{yun:}t key='home.age_suffix'{/yun}{yun:}/if{/yun}</span></div>
+							<div class="yun_newedition_resume_other_username"><a href="{yun:}$look.user_url{/yun}">{yun:}if in_array($look.id,$eid){/yun}{yun:}$look.uname{/yun}{yun:}else{/yun}{yun:}$look.username_n{/yun}{yun:}/if{/yun}</a> <span class="yun_newedition_resume_other_username_i">{yun:}$look.sex{/yun},{yun:}if $look.age==0{/yun}{yun:}t key='wap_user_00333'{/yun}{yun:}else{/yun}{yun:}$look.age{/yun}{yun:}t key='home.age_suffix'{/yun}{yun:}/if{/yun}</span></div>
 							
 							<div class="yun_newedition_resume_other_userinfo">{yun:}$look.exp_n{/yun}{yun:}t key='home.experience_suffix'{/yun}<span class="yun_newedition_resume_line">|</span>{yun:}$look.edu_n{/yun}{yun:}t key='home.education_suffix'{/yun}</div>
 
@@ -569,12 +569,12 @@
 			{yun:}if $Info.m_status == 1{/yun}
 			<div class="tcktouch_box_username">{yun:}$Info.name{/yun}</div>
 			
-			<div class="tcktouch_box_tip">{yun:}t key='member_com_hr_resume_00001'{/yun}{yun:}$config.sy_webname{/yun}{yun:}t key='wap_job_index_00002'{/yun}</div>
-			<div class="tcktouch_box_p">{yun:}t key='member_user_info_00011'{/yun}：<span class="tcktouch_box_p_sj">{yun:}$Info.telphone{/yun}</span></div>
-			{yun:}if $Info.email{/yun} <div class="tcktouch_box_p">{yun:}t key='member_user_resumeout_00004'{/yun}：{yun:}$Info.email{/yun} </div>{yun:}/if{/yun} 
+			<div class="tcktouch_box_tip">{yun:}t key='member_com_00024'{/yun}{yun:}$config.sy_webname{/yun}{yun:}t key='wap_00240'{/yun}</div>
+			<div class="tcktouch_box_p">{yun:}t key='member_user_00163'{/yun}：<span class="tcktouch_box_p_sj">{yun:}$Info.telphone{/yun}</span></div>
+			{yun:}if $Info.email{/yun} <div class="tcktouch_box_p">{yun:}t key='member_user_00282'{/yun}：{yun:}$Info.email{/yun} </div>{yun:}/if{/yun} 
 			{yun:}if $Info.qq{/yun}<div class="tcktouch_box_p">Q Q：{yun:}$Info.qq{/yun}</div> {yun:}/if{/yun} 
-			{yun:}if $Info.homepage{/yun} <div class="tcktouch_box_p">{yun:}t key='wap_ask_00012'{/yun}：{yun:}$Info.homepage{/yun}</div> {yun:}/if{/yun} 
-			{yun:}if $Info.wxewm{/yun} <div class="tcktouch_box_ewm"><img src="{yun:}$Info.wxewm{/yun}" width="100" height="100"><div class="tcktouch_box_ewm_p">{yun:}t key='resume_jianli3_index_00003'{/yun}</div></div> {yun:}/if{/yun}
+			{yun:}if $Info.homepage{/yun} <div class="tcktouch_box_p">{yun:}t key='wap_00161'{/yun}：{yun:}$Info.homepage{/yun}</div> {yun:}/if{/yun} 
+			{yun:}if $Info.wxewm{/yun} <div class="tcktouch_box_ewm"><img src="{yun:}$Info.wxewm{/yun}" width="100" height="100"><div class="tcktouch_box_ewm_p">{yun:}t key='resume_00003'{/yun}</div></div> {yun:}/if{/yun}
 			{yun:}/if{/yun}
 		</div>
 	</div>
@@ -583,10 +583,10 @@
 
 	<div id="uclogin" class="none"></div>
 	{yun:}if $smarty.get.see=='member'{/yun} 
-	<!--{yun:}t key='resume_jianli3_index_00004'{/yun} 预览时隐藏  -->
+	<!--{yun:}t key='resume_00004'{/yun} 预览时隐藏  -->
 	<div class="expext_yl_box_bth"> 
-		<a href="javascript:;" onClick="settemplate('确定使用该模板？', '{yun:}url m=ajax c=settpl id=2 eid=$Info.id{/yun}');" class="expext_yl_box_sub">{yun:}t key='resume_jianli3_index_00004'{/yun}</a> 
-		<a href="{yun:}url m=resume c=show id=$eid tmp=$tplurl.id{/yun}" target="_blank" class="expext_yl_box_sub">{yun:}t key='wap_hb_admin_whb_00002'{/yun}</a>
+		<a href="javascript:;" onClick="settemplate('确定使用该模板？', '{yun:}url m=ajax c=settpl id=2 eid=$Info.id{/yun}');" class="expext_yl_box_sub">{yun:}t key='resume_00004'{/yun}</a> 
+		<a href="{yun:}url m=resume c=show id=$eid tmp=$tplurl.id{/yun}" target="_blank" class="expext_yl_box_sub">{yun:}t key='wap_00071'{/yun}</a>
 	</div>
 	{yun:}/if{/yun}
 	{yun:}include file="$tplstyle/jquery/jquery_js.htm"{/yun} 
@@ -629,7 +629,7 @@
                 chk_value.push($(this).val());
             });
             if((chk_value.length) == 0){
-                parent.layer.msg("{yun:}t key='wap_reportlist_00001'{/yun}",2,8);
+                parent.layer.msg("{yun:}t key='wap_00418'{/yun}",2,8);
                 return false;
             }
             layer.load();
@@ -640,11 +640,11 @@
 				layer = layui.layer;
 			layer.photos({
 				photos: '#rolling_img1",
-				anim: 5 //0-6的选择，指定弹出图片动画类型，默认随机（请注意，3.0之前的版本用shift{yun:}t key='admin_neirong_announcement_component_announcement_add_00002'{/yun}）
+				anim: 5 //0-6的选择，指定弹出图片动画类型，默认随机（请注意，3.0之前的版本用shift{yun:}t key='admin_00103'{/yun}）
 			});
 			layer.photos({
 			  photos: "#skill_photos",
-			  anim: 5 //0-6的选择，指定弹出图片动画类型，默认随机（请注意，3.0之前的版本用shift{yun:}t key='admin_neirong_announcement_component_announcement_add_00002'{/yun}）
+			  anim: 5 //0-6的选择，指定弹出图片动画类型，默认随机（请注意，3.0之前的版本用shift{yun:}t key='admin_00103'{/yun}）
 			}); 
 		});
 

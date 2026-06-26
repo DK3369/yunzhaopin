@@ -8,10 +8,10 @@
           
             <div class="newmember_tit">
 				<ul>
-					<li class="newmember_titcur"> <a href="index.php?c=right">{yun:}t key='wap_com_index_00022'{/yun}</a></li>
-					<li> <a  href="index.php?c=pay" >{yun:}t key='member_com_added_00003'{/yun}</a></li>
-					<li> <a  href="index.php?c=paylogtc" class=" ">{yun:}t key='wap_com_finance_00001'{/yun}</a></li>
-					<li><a  href="index.php?c=integral">{yun:}$config.integral_pricename{/yun}{yun:}t key='wap_com_jobadd_00050'{/yun}</a></li>
+					<li class="newmember_titcur"> <a href="index.php?c=right">{yun:}t key='wap_com_00097'{/yun}</a></li>
+					<li> <a  href="index.php?c=pay" >{yun:}t key='member_com_00041'{/yun}</a></li>
+					<li> <a  href="index.php?c=paylogtc" class=" ">{yun:}t key='wap_com_00064'{/yun}</a></li>
+					<li><a  href="index.php?c=integral">{yun:}$config.integral_pricename{/yun}{yun:}t key='wap_com_00304'{/yun}</a></li>
 				</ul>
 			</div>
 			<div class="clear"></div> 
@@ -20,20 +20,20 @@
                 <div class="newmember_screen">
 					<ul>
 						{yun:}if $config.com_vip_type==2{/yun}
-							<li><a href="index.php?c=right" >{yun:}t key='wap_com_server_00023'{/yun}</a></li>
+							<li><a href="index.php?c=right" >{yun:}t key='wap_com_00380'{/yun}</a></li>
 						{yun:}/if{/yun}
 					
 						{yun:}if $config.com_vip_type==1{/yun}
-							<li class="job_list_tit_cur"><a href="index.php?c=right&act=time" >{yun:}t key='wap_com_server_00027'{/yun}</a></li>
+							<li class="job_list_tit_cur"><a href="index.php?c=right&act=time" >{yun:}t key='wap_com_00384'{/yun}</a></li>
 						{yun:}/if{/yun}
 					
 						{yun:}if $config.com_vip_type==0{/yun}
-							<li><a href="index.php?c=right" >{yun:}t key='wap_com_server_00023'{/yun}</a></li>
-							<li class="job_list_tit_cur"><a href="index.php?c=right&act=time" >{yun:}t key='wap_com_server_00027'{/yun}</a></li>
+							<li><a href="index.php?c=right" >{yun:}t key='wap_com_00380'{/yun}</a></li>
+							<li class="job_list_tit_cur"><a href="index.php?c=right&act=time" >{yun:}t key='wap_com_00384'{/yun}</a></li>
 						{yun:}/if{/yun}
 					
 						{yun:}if $statis.rating_type != 2 && !$vipIsDown && $config.com_integral_online != 4 {/yun}
-						<li><a href="index.php?c=right&act=added" >{yun:}t key='wap_com_server_00036'{/yun}</a></li>
+						<li><a href="index.php?c=right&act=added" >{yun:}t key='wap_com_00393'{/yun}</a></li>
 						{yun:}/if{/yun}
 						</ul>
 				</div> 
@@ -48,7 +48,7 @@
                             <div class="com_body">  
                     <div class="com_new_tip">
                             
-                                            <span class="com_new_tip_h">{yun:}t key='member_com_added_00002'{/yun}</span>{yun:}$statis.rating_name{/yun}
+                                            <span class="com_new_tip_h">{yun:}t key='member_com_00040'{/yun}</span>{yun:}$statis.rating_name{/yun}
                             服务到期为：
                             {yun:}if $statis.vip_etime > $todayStart{/yun}
                             {yun:}$statis.vip_stime|date_format:'%Y-%m-%d'{/yun} -
@@ -58,7 +58,7 @@
                             {yun:}else{/yun}
                             {yun:}$statis.vip_stime|date_format:'%Y-%m-%d'{/yun} -
                             <span class="comindex_money_pd_s">{yun:}$statis.vip_etime|date_format:'%Y-%m-%d'{/yun}</span>
-                            <a href="index.php?c=right" class="cblue">{yun:}t key='wap_com_finance_00003'{/yun}</a>
+                            <a href="index.php?c=right" class="cblue">{yun:}t key='wap_com_00066'{/yun}</a>
                             {yun:}/if{/yun}      <!-- 开通企业套餐，尊享招聘特权-->
                         </div>
                         <div class="vip_box">
@@ -66,7 +66,7 @@
                             {yun:}include file="$temstyle/default/public_search/vipTips.htm"{/yun}
                             {yun:}else{/yun}
                             <div class="vip_box_db">套餐权益对比</div>
-                            <!--{yun:}t key='admin_user_company_component_comrating_index_edit_00026'{/yun}-->
+                            <!--{yun:}t key='admin_user_company_00199'{/yun}-->
                             <div class="vip_timebox">
                                 <ul class="">
                                     {yun:}foreach from=$times item=v{/yun}
@@ -94,35 +94,35 @@
                                                     </span>
                                                 {yun:}/if{/yun}
                                             </div>
-                                            <div class="vip_box_left_money_yj">{yun:}t key='admin_user_weipin_component_once_00041'{/yun} {yun:}if $v.service_time>0{/yun}{yun:}$v.service_time{/yun}{yun:}t key='common_02067'{/yun}{yun:}else{/yun}{yun:}t key='api_wxapp_00019'{/yun}{yun:}/if{/yun}</div>
-                                            <div class="vip_time_leftbth"><a href="javascript:buyVip('{yun:}$v.id{/yun}');" class="vip_time_vipbuy">{yun:}t key='wap_user_index_00024'{/yun}</a></div>
+                                            <div class="vip_box_left_money_yj">{yun:}t key='admin_user_weipin_00041'{/yun} {yun:}if $v.service_time>0{/yun}{yun:}$v.service_time{/yun}{yun:}t key='common_02067'{/yun}{yun:}else{/yun}{yun:}t key='api_wxapp_00019'{/yun}{yun:}/if{/yun}</div>
+                                            <div class="vip_time_leftbth"><a href="javascript:buyVip('{yun:}$v.id{/yun}');" class="vip_time_vipbuy">{yun:}t key='wap_user_00206'{/yun}</a></div>
                                         </div>
                                         <div class="vip_box_c_box">
                                             <div class="vip_box_timetable">
                                                 <table cellpadding="0" cellspacing="0">
                                                     <tr>
                                                         <td>
-                                                            <span class="vip_box_timename">{yun:}t key='member_com_member_right_00001'{/yun}</span>
+                                                            <span class="vip_box_timename">{yun:}t key='member_com_00033'{/yun}</span>
                                                             <span class="vip_box_time">
                                                                 <span class="vip_box_time_n">{yun:}$v.job_num{/yun}</span>{yun:}t key='common_02050'{/yun}
                                                             </span>
                                                         </td>
                                                         <td>
-                                                            <span class="vip_box_timename">{yun:}t key='wap_com_integral_reduce_00008'{/yun}</span>
+                                                            <span class="vip_box_timename">{yun:}t key='wap_com_00029'{/yun}</span>
                                                             <span class="vip_box_time">
-                                                                {yun:}if $v.breakjob_num > 0{/yun}每日最多<span class="vip_box_time_n">{yun:}$v.breakjob_num{/yun}</span>{yun:}t key='common_02089'{/yun}/{yun:}t key='member_com_member_time_00001'{/yun}{yun:}else{/yun}-{yun:}/if{/yun}
+                                                                {yun:}if $v.breakjob_num > 0{/yun}每日最多<span class="vip_box_time_n">{yun:}$v.breakjob_num{/yun}</span>{yun:}t key='common_02089'{/yun}/{yun:}t key='common_02114'{/yun}{yun:}else{/yun}-{yun:}/if{/yun}
                                                             </span>
                                                         </td>
                                                         <td>
-                                                            <span class="vip_box_timename">{yun:}t key='wap_resume_index_00011'{/yun}</span>
+                                                            <span class="vip_box_timename">{yun:}t key='wap_00451'{/yun}</span>
                                                             <span class="vip_box_time">
-                                                                {yun:}if $v.resume > 0{/yun}每日最多<span class="vip_box_time_n">{yun:}$v.resume{/yun}</span>{yun:}t key='common_02089'{/yun}/{yun:}t key='member_com_member_time_00001'{/yun}{yun:}else{/yun}-{yun:}/if{/yun}
+                                                                {yun:}if $v.resume > 0{/yun}每日最多<span class="vip_box_time_n">{yun:}$v.resume{/yun}</span>{yun:}t key='common_02089'{/yun}/{yun:}t key='common_02114'{/yun}{yun:}else{/yun}-{yun:}/if{/yun}
                                                             </span>
                                                         </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="">
-                                                            <span class="vip_box_timename"> {yun:}t key='wap_com_job_00047'{/yun}</span>
+                                                            <span class="vip_box_timename"> {yun:}t key='wap_com_00238'{/yun}</span>
                                                             <span class="vip_box_time"><span class="vip_box_time_n">{yun:}$v.top_num{/yun}</span>{yun:}if $v.top_num > 0{/yun}{yun:}t key='common_02067'{/yun}{yun:}/if{/yun}</span>
                                                         </td>
                                                         <td class="">
@@ -130,21 +130,21 @@
                                                             <span class="vip_box_time"><span class="vip_box_time_n">{yun:}$v.urgent_num{/yun}</span>{yun:}if $v.urgent_num > 0{/yun}{yun:}t key='common_02067'{/yun}{yun:}/if{/yun}</span>
                                                         </td>
                                                         <td class="">
-                                                            <span class="vip_box_timename">{yun:}t key='wap_com_job_00046'{/yun}</span>
+                                                            <span class="vip_box_timename">{yun:}t key='wap_com_00237'{/yun}</span>
                                                             <span class="vip_box_time"><span class="vip_box_time_n">{yun:}$v.rec_num{/yun}</span>{yun:}if $v.rec_num > 0{/yun}{yun:}t key='common_02067'{/yun}{yun:}/if{/yun}</span>
                                                         </td>
                                                     </tr>
                                                     <tr>
                                                         <td>
-                                                            <span class="vip_box_timename">{yun:}t key='resume_resume_00015'{/yun}</span>
+                                                            <span class="vip_box_timename">{yun:}t key='resume_00029'{/yun}</span>
                                                             <span class="vip_box_time">
-                                                                {yun:}if $v.interview > 0{/yun}每日最多<span class="vip_box_time_n">{yun:}$v.interview{/yun}</span>{yun:}t key='common_02089'{/yun}/{yun:}t key='member_com_member_time_00001'{/yun}{yun:}else{/yun}-{yun:}/if{/yun}
+                                                                {yun:}if $v.interview > 0{/yun}每日最多<span class="vip_box_time_n">{yun:}$v.interview{/yun}</span>{yun:}t key='common_02089'{/yun}/{yun:}t key='common_02114'{/yun}{yun:}else{/yun}-{yun:}/if{/yun}
                                                             </span>
                                                         </td>
                                                         <td>
-                                                            <span class="vip_box_timename">{yun:}t key='member_com_left_00005'{/yun}</span>
+                                                            <span class="vip_box_timename">{yun:}t key='member_com_00293'{/yun}</span>
                                                             <span class="vip_box_time">
-                                                                {yun:}if $v.zph_num > 0{/yun}每日最多<span class="vip_box_time_n">{yun:}$v.zph_num{/yun}</span>{yun:}t key='common_02089'{/yun}/{yun:}t key='member_com_member_time_00001'{/yun}{yun:}else{/yun}-{yun:}/if{/yun}
+                                                                {yun:}if $v.zph_num > 0{/yun}每日最多<span class="vip_box_time_n">{yun:}$v.zph_num{/yun}</span>{yun:}t key='common_02089'{/yun}/{yun:}t key='common_02114'{/yun}{yun:}else{/yun}-{yun:}/if{/yun}
                                                             </span>
                                                         </td>
                                                         
@@ -153,7 +153,7 @@
                                                 </table>
                                             </div>
                                             <div class="vip_time_sm" style="padding-left:15px;;">
-                                                {yun:}t key='wap_com_server_00024'{/yun} {yun:}if $v.explains{/yun}{yun:}$v.explains{/yun}{yun:}else{/yun}{yun:}$v.name{/yun}{yun:}/if{/yun}
+                                                {yun:}t key='wap_com_00381'{/yun} {yun:}if $v.explains{/yun}{yun:}$v.explains{/yun}{yun:}else{/yun}{yun:}$v.name{/yun}{yun:}/if{/yun}
                                                 {yun:}if $v.integral_buy>0{/yun}赠送{yun:}$v.integral_buy{/yun}{yun:}$config.integral_pricename{/yun}{yun:}/if{/yun}
                                             </div>
                                         </div>

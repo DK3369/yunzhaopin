@@ -4,10 +4,10 @@
 <div class="redeemshow_spinfo">
   <div class="redeemshow_spinfo_box">  
     <div class="redeemshow_spinfo_list">
-      <span class="redeemshow_spinfo_list_s">{yun:}t key='wap_redeemshow_00003'{/yun}</span> {yun:}$row.stock{/yun} 件 
+      <span class="redeemshow_spinfo_list_s">{yun:}t key='wap_00405'{/yun}</span> {yun:}$row.stock{/yun} 件 
     </div>
     <div class="redeemshow_spinfo_list">
-      <span class="redeemshow_spinfo_list_s">{yun:}t key='wap_redeemshow_00005'{/yun}</span>  {yun:}if $row.restriction=="0"{/yun}{yun:}t key='common_01936'{/yun}{yun:}else{/yun}{yun:}$row.restriction{/yun} 件{yun:}/if{/yun}
+      <span class="redeemshow_spinfo_list_s">{yun:}t key='wap_00406'{/yun}</span>  {yun:}if $row.restriction=="0"{/yun}{yun:}t key='common_01936'{/yun}{yun:}else{/yun}{yun:}$row.restriction{/yun} 件{yun:}/if{/yun}
     </div>
     <span class="redeemshow_jf">{yun:}$row.integral{/yun} {yun:}$config.integral_pricename{/yun}</span>
   </div>
@@ -23,7 +23,7 @@
       <input type="hidden" id="stock" value="{yun:}$row.stock{/yun}"/>
       <input type="hidden" id="restriction" value="{yun:}$row.restriction{/yun}"/>
       <div class="intro_nb_wr">
-        <span class="infor_nb_sh">{yun:}t key='wap_redeemshow_00002'{/yun}</span>
+        <span class="infor_nb_sh">{yun:}t key='wap_00404'{/yun}</span>
 		    <div class="intro_bt" id="numApp">
           <input type="hidden" id="num" name="num" :value="num">
           <van-stepper v-model="num" integer min="1" {yun:}if $row.restriction!="0"{/yun}max='{yun:}$row.restriction{/yun}' {yun:}/if{/yun}/>   
@@ -39,7 +39,7 @@
       </div>
     </form>
     {yun:}else{/yun}
-      {yun:}t key='wap_redeemshow_00004'{/yun}
+      {yun:}t key='common_02181'{/yun}
     {yun:}/if{/yun}
 </div>
 
@@ -49,7 +49,7 @@
     {yun:}if $row.content{/yun}
       <div class="rem_show_c">{yun:}$row.content{/yun}</div>
     {yun:}else{/yun} 
-      <div class="wap_member_no">{yun:}t key='wap_redeemshow_00001'{/yun}</div> 
+      <div class="wap_member_no">{yun:}t key='wap_00403'{/yun}</div> 
     {yun:}/if{/yun} 
   </div>
 </div> 

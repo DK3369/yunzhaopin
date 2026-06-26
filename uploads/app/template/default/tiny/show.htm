@@ -14,7 +14,7 @@
 	<div class="yun_content">
 		
 		<div class="current_Location png"> 
-			{yun:}t key='common_01498'{/yun}：<a href="{yun:}$config.sy_weburl{/yun}">{yun:}t key='common.home'{/yun}</a> > <a href="{yun:}url m=tiny{/yun}">{yun:}t key='wap_js_tiny_add_00001'{/yun}</a> > {yun:}$t_info.job{/yun}
+			{yun:}t key='common_01498'{/yun}：<a href="{yun:}$config.sy_weburl{/yun}">{yun:}t key='common.home'{/yun}</a> > <a href="{yun:}url m=tiny{/yun}">{yun:}t key='wap_js_00066'{/yun}</a> > {yun:}$t_info.job{/yun}
 		</div>
 
 		<!--left-->
@@ -23,7 +23,7 @@
 				<h1 class="tiny_show_left_jobname">{yun:}$t_info.job{/yun}</h1> 
 				
 				<div class="tiny_show_left_r">
-					{yun:}t key='member_com_joblist_00018'{/yun} {yun:}$t_info.hits{/yun} {yun:}t key='common_02089'{/yun} 
+					{yun:}t key='member_com_00268'{/yun} {yun:}$t_info.hits{/yun} {yun:}t key='common_02089'{/yun} 
 					<span class="tiny_show_left_r_n">更新于 {yun:}$t_info.lastupdate|date_format:"%Y-%m-%d"{/yun} </span>
 				</div>
 
@@ -33,32 +33,32 @@
 						<img src="{yun:}url m=ajax c=pubqrcode toc=tiny toa=show toid=$t_info.id{/yun}" width="150" height="150"/>
 					
 					</div>
-					<div class="tiny_show_left_fx_box_p">{yun:}t key='wap_evaluategradeshow_00001'{/yun}</div>
+					<div class="tiny_show_left_fx_box_p">{yun:}t key='wap_00195'{/yun}</div>
 				</div>
 				
 				<div class="tiny_show_left_info">
 					<div class="tiny_show_left_info_p">
-						<i class="tiny_show_left_info_icon tiny_show_left_info_icon1" ></i>{yun:}t key='wap_tiny_add_00004'{/yun}：{yun:}$t_info.username{/yun} 
+						<i class="tiny_show_left_info_icon tiny_show_left_info_icon1" ></i>{yun:}t key='wap_00529'{/yun}：{yun:}$t_info.username{/yun} 
 					</div>
 					<div class="tiny_show_left_info_p">
-						<i class="tiny_show_left_info_icon tiny_show_left_info_icon2"></i>{yun:}t key='wap_com_jobadd_00049'{/yun}：{yun:}$t_info.sex_n{/yun}
+						<i class="tiny_show_left_info_icon tiny_show_left_info_icon2"></i>{yun:}t key='wap_com_00303'{/yun}：{yun:}$t_info.sex_n{/yun}
 					</div>
 					<div class="tiny_show_left_info_p">
 						<i class="tiny_show_left_info_icon tiny_show_left_info_icon3"></i>{yun:}t key='home.experience_suffix'{/yun}：{yun:}$t_info.exp_n{/yun}
 					</div>
 					<div class="tiny_show_left_info_p">
-						<i class="tiny_show_left_info_icon tiny_show_left_info_icon5"></i>{yun:}t key='default_part_show_00005'{/yun}：{yun:}$t_info.city_n{/yun}
+						<i class="tiny_show_left_info_icon tiny_show_left_info_icon5"></i>{yun:}t key='default_00280'{/yun}：{yun:}$t_info.city_n{/yun}
 					</div>
 					{yun:}if $config.user_wjl_link=="1" && $uid<=0{/yun}
 						<div class="once_no_show">{yun:}t key='common_01912'{/yun},<a href="javascript:void(0);" onclick="showlogin('');">【{yun:}t key='common.login'{/yun}】</a>后才可以查看联系方式</div>
 					{yun:}else{/yun}
 						<div class="tiny_show_left_info_p">
 							<i class="tiny_show_left_info_icon tiny_show_left_info_icon4"></i>
-							{yun:}t key='wap_user_invitecont_00004'{/yun}：<span class="tiny_show_left_info_tel">{yun:}$t_info.mobile{/yun}</span>
+							{yun:}t key='wap_user_00265'{/yun}：<span class="tiny_show_left_info_tel">{yun:}$t_info.mobile{/yun}</span>
 						</div>
 					{yun:}/if{/yun}
 					<div class="tiny_show_left_info_js">
-						<div class="tiny_show_left_info_js_h1">{yun:}t key='wap_tiny_add_00002'{/yun}</div>
+						<div class="tiny_show_left_info_js_h1">{yun:}t key='wap_00527'{/yun}</div>
 						<div class="tiny_show_left_info_js_p">
 							{yun:}$t_info.production{/yun}</div>
 						</div>
@@ -83,7 +83,7 @@
 													<span style="color:red;">{yun:}$list.lastupdate{/yun}</span> 
 												{yun:}else{/yun}
 													{yun:}$list.lastupdate{/yun}
-												{yun:}/if{/yun} {yun:}t key='wap_invite_00002'{/yun}
+												{yun:}/if{/yun} {yun:}t key='wap_00225'{/yun}
 											</span> 
 										</div>
 										<div class="tiny_show_qxbox_jobinfo_tel">
@@ -93,7 +93,7 @@
 													<a href="javascript:void(0);" onclick="showlogin('');" class="tiny_login">{yun:}t key='common.login'{/yun}</a>
 												</span> 
 											{yun:}else{/yun}
-												<span class="tiny_tel">{yun:}t key='wap_user_invitecont_00004'{/yun}：{yun:}$list.mobile{/yun}</span>
+												<span class="tiny_tel">{yun:}t key='wap_user_00265'{/yun}：{yun:}$list.mobile{/yun}</span>
 											{yun:}/if{/yun}
 									   </div>
 									</li>
@@ -107,11 +107,11 @@
 			<div class="tiny_show_right">
 				<div class="tiny_show_right_box">
 					<div class="tiny_show_right_h1">简历发布者操作</div>
-					<div class="tiny_show_right_p">{yun:}t key='member_com_info_00053'{/yun}：{yun:}t key='wap_user_resume_00012'{/yun}，{yun:}t key='wap_js_umeditor_lang_zh_cn_zh_cn_00005'{/yun}，删除只有信息发布者可以操作，每刷新一次求职信息就会自动排在最前面</div>
+					<div class="tiny_show_right_p">{yun:}t key='member_com_00207'{/yun}：{yun:}t key='wap_user_00334'{/yun}，{yun:}t key='wap_js_00073'{/yun}，删除只有信息发布者可以操作，每刷新一次求职信息就会自动排在最前面</div>
 					
 					<div class="tiny_show_right_cz">
-						<a href="javascript:;" onclick="showdd('1', '{yun:}$t_info.id{/yun}','vcode_imgs');" class=" tiny_show_right_cz_sz">{yun:}t key='wap_user_resume_00012'{/yun}</a>
-						<a href="javascript:;" onclick="showdd('2', '{yun:}$t_info.id{/yun}','vcode_imgs')" class="tiny_show_right_cz_xg">{yun:}t key='wap_js_umeditor_lang_zh_cn_zh_cn_00005'{/yun}</a>
+						<a href="javascript:;" onclick="showdd('1', '{yun:}$t_info.id{/yun}','vcode_imgs');" class=" tiny_show_right_cz_sz">{yun:}t key='wap_user_00334'{/yun}</a>
+						<a href="javascript:;" onclick="showdd('2', '{yun:}$t_info.id{/yun}','vcode_imgs')" class="tiny_show_right_cz_xg">{yun:}t key='wap_js_00073'{/yun}</a>
 						<a href="javascript:;" onclick="showdd('3', '{yun:}$t_info.id{/yun}','vcode_imgs');" class="tiny_show_right_cz_xg">{yun:}t key='common.delete'{/yun}</a>
 					</div>
 				</div>
@@ -121,9 +121,9 @@
 					
 					<div class="tiny_show_right_cz">
 					{yun:}if $num>0 || $config.sy_tiny==0{/yun}
-			<a href='{yun:}url m=tiny c=add{/yun}' title="{yun:}t key='wap_tiny_00002'{/yun}" class="tiny_show_right_cz_sz tiny_show_right_cz_pg">{yun:}t key='wap_tiny_00002'{/yun}</a> 
+			<a href='{yun:}url m=tiny c=add{/yun}' title="{yun:}t key='wap_00523'{/yun}" class="tiny_show_right_cz_sz tiny_show_right_cz_pg">{yun:}t key='wap_00523'{/yun}</a> 
 			{yun:}else{/yun}
-			<a href='javascript:void(0);' onclick="layer.msg('每个IP每天最多可发布{yun:}$config.sy_tiny{/yun}份普工简历！',2,8)" title="{yun:}t key='wap_tiny_00002'{/yun}" class="tiny_show_right_cz_sz tiny_show_right_cz_pg">{yun:}t key='wap_tiny_00002'{/yun}</a> 
+			<a href='javascript:void(0);' onclick="layer.msg('每个IP每天最多可发布{yun:}$config.sy_tiny{/yun}份普工简历！',2,8)" title="{yun:}t key='wap_00523'{/yun}" class="tiny_show_right_cz_sz tiny_show_right_cz_pg">{yun:}t key='wap_00523'{/yun}</a> 
 			{yun:}/if{/yun}
 						
 					</div>
@@ -135,12 +135,12 @@
 		<div>
 			<ul class="micro_resume_release_list micro_resume_release_list_xg">
 				<li>
-					<span class="micro_resume_release_s fl"><font color="#FF3300">*</font> {yun:}t key='wap_user_transfer_00006'{/yun}：</span>
+					<span class="micro_resume_release_s fl"><font color="#FF3300">*</font> {yun:}t key='wap_user_00371'{/yun}：</span>
 					<input id="pw" type="password" value="" class="micro_resume_release_text" style='width:100px'/>
 					<em style="line-height:28px; display:inline-block; margin-left:5px;">请输入添加时的密码。</em> 
 				</li>
 				<li>
-					<span class="micro_resume_release_s fl"><font color="#FF3300">*</font> {yun:}t key='wap_advice_00007'{/yun}：</span>
+					<span class="micro_resume_release_s fl"><font color="#FF3300">*</font> {yun:}t key='wap_00110'{/yun}：</span>
 					<input type="text" id="code" class="micro_resume_release_text micro_resume_release_text2" style='width:100px' maxlength="6"/>
 					<a><img id="vcode_imgs" onclick="checkCode('vcode_imgs');" src="{yun:}$config.sy_weburl{/yun}/app/include/authcode.inc.php"/></a> 
 				</li>

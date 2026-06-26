@@ -19,7 +19,7 @@
 		<div class="tiny_banner_cont">
 			<div class="tiny_banner_cur">{yun:}t key='common_01498'{/yun}：
 				<a href="{yun:}$config.sy_weburl{/yun}">{yun:}t key='common.home'{/yun}</a> >
-				<a href="{yun:}url m=once{/yun}">{yun:}t key='wap_js_onceadd_00002'{/yun}</a>
+				<a href="{yun:}url m=once{/yun}">{yun:}t key='wap_js_00130'{/yun}</a>
 			</div>
 			<div class="once_banner_cont_b"><img src="{yun:}$style{/yun}/images/once_bg.jpg" width="1200" height="220" /></div>
 			<div class="tiny_banner_bg"></div>
@@ -35,13 +35,13 @@
 							{yun:}if $ordernum{/yun}
 								<a href='javascript:;' onclick="showOrder('{yun:}$ordernum{/yun}')"  class="recruit_user_public">发布店铺招聘</a>
 							{yun:}else{/yun}
-								<a href='javascript:;' onclick="addoncemsg('{yun:}t key='wap_once_00005'{/yun}{yun:}$config.sy_once{/yun}{yun:}t key='common_02089'{/yun}，剩余可发布{yun:}$num{/yun}{yun:}t key='common_02089'{/yun}','{yun:}url m=once c=add{/yun}')" class="recruit_user_public">发布店铺招聘</a>
+								<a href='javascript:;' onclick="addoncemsg('{yun:}t key='common_02178'{/yun}{yun:}$config.sy_once{/yun}{yun:}t key='common_02089'{/yun}，剩余可发布{yun:}$num{/yun}{yun:}t key='common_02089'{/yun}','{yun:}url m=once c=add{/yun}')" class="recruit_user_public">发布店铺招聘</a>
 							{yun:}/if{/yun}
 						{yun:}else{/yun}
 							<a href="javascript:;" onclick="layer.msg('每天最多可发布{yun:}$config.sy_once{/yun}份店铺招聘！',2,8)" class="">发布店铺招聘</a>
 						{yun:}/if{/yun}	
 					{yun:}else{/yun}
-						<a href="javascript:;" onclick="layer.msg("{yun:}t key='wap_once_00001'{/yun}",2,8)" class="">发布店铺招聘</a>
+						<a href="javascript:;" onclick="layer.msg("{yun:}t key='wap_00333'{/yun}",2,8)" class="">发布店铺招聘</a>
 					{yun:}/if{/yun}   
 								   
            </div>
@@ -50,7 +50,7 @@
         </div>    </div>    </div>
         <div class="yun_content">
         <div class="tiny_search">
-         <form action="{yun:}if !$config.sy_oncedir{/yun}index.php{yun:}else{/yun}{yun:}url m=once{/yun}{yun:}/if{/yun}" method="get" onsubmit="return search_keyword(this,'{yun:}t key='admin_system_info_feedback_00001'{/yun}');">
+         <form action="{yun:}if !$config.sy_oncedir{/yun}index.php{yun:}else{/yun}{yun:}url m=once{/yun}{yun:}/if{/yun}" method="get" onsubmit="return search_keyword(this,'{yun:}t key='admin_system_00198'{/yun}');">
          {yun:}if !$config.sy_oncedir || $config.sy_seo_rewrite!='1'{/yun}<input type="hidden" name="m" value="tiny" id="m" />{yun:}/if{/yun}
          {yun:}foreach from=$finder item=v key=key{/yun}
          <input type="hidden" name="{yun:}$key{/yun}" value="{yun:}$v{/yun}" /> 
@@ -70,7 +70,7 @@
  
   
   <div class="tiny_search_text">
-   <input id="key_word" class="tiny_search_t" type="text" value="{yun:}if $smarty.get.keyword{/yun}{yun:}$smarty.get.keyword{/yun}{yun:}else{/yun}{yun:}t key='admin_system_info_feedback_00001'{/yun}{yun:}/if{/yun}" name="keyword" onclick="if(this.value=='{yun:}t key='admin_system_info_feedback_00001'{/yun}'){this.value=''}" placeholder="{yun:}t key='admin_system_info_feedback_00001'{/yun}" onblur="if(this.value==''){this.value='{yun:}t key='admin_system_info_feedback_00001'{/yun}'}" /></div>
+   <input id="key_word" class="tiny_search_t" type="text" value="{yun:}if $smarty.get.keyword{/yun}{yun:}$smarty.get.keyword{/yun}{yun:}else{/yun}{yun:}t key='admin_system_00198'{/yun}{yun:}/if{/yun}" name="keyword" onclick="if(this.value=='{yun:}t key='admin_system_00198'{/yun}'){this.value=''}" placeholder="{yun:}t key='admin_system_00198'{/yun}" onblur="if(this.value==''){this.value='{yun:}t key='admin_system_00198'{/yun}'}" /></div>
     <input type="submit" value="{yun:}t key='common.search'{/yun}" id="search_button" class="tiny_search_bth yun_bg_color" />
   </div>
   <!--   city--> 
@@ -178,10 +178,10 @@
         <div class="once_list_pic"><img src="{yun:}$once.pic{/yun}" width="200" height="130" alt="{yun:}$once.title{/yun}"/></div>
 		<div class="once_list_info">
 			<div class="once_list_name">
-				<a href="{yun:}url m=once c=show id='`$once.id`'{/yun}" target="_blank"  class="once_list_name_a" title="{yun:}$once.title{/yun}">{yun:}$once.title|mb_substr:0:8:'utf-8'{/yun}</a>  <span class="once_list_gx"> {yun:}if $once.redtime==1 || $once.ctime<60{/yun} <span style="color:red;">{yun:}$once.ctime{/yun}</span> {yun:}else{/yun} {yun:}$once.ctime{/yun} {yun:}/if{/yun}{yun:}t key='wap_invite_00002'{/yun}</span>
+				<a href="{yun:}url m=once c=show id='`$once.id`'{/yun}" target="_blank"  class="once_list_name_a" title="{yun:}$once.title{/yun}">{yun:}$once.title|mb_substr:0:8:'utf-8'{/yun}</a>  <span class="once_list_gx"> {yun:}if $once.redtime==1 || $once.ctime<60{/yun} <span style="color:red;">{yun:}$once.ctime{/yun}</span> {yun:}else{/yun} {yun:}$once.ctime{/yun} {yun:}/if{/yun}{yun:}t key='wap_00225'{/yun}</span>
 			</div>
-			<div class="once_list_dpname">{yun:}$once.companyname{/yun} {yun:}if $once.once_job_one{/yun} {yun:}t key='default_part_show_00005'{/yun}{yun:}$once.once_job_one{/yun}{yun:}if $once.once_job_two{/yun}-{yun:}$once.once_job_two{/yun}{yun:}/if{/yun}{yun:}/if{/yun}</div>
-			<div class="once_list_p">要求：{yun:}$once.require|mb_substr:0:38:'utf-8'{/yun}<a href="{yun:}url m=once c=show id='`$once.id`'{/yun}" class="once_list_p_a">{yun:}t key='member_com_zhaopinhui_00004'{/yun}</a></div>
+			<div class="once_list_dpname">{yun:}$once.companyname{/yun} {yun:}if $once.once_job_one{/yun} {yun:}t key='default_00280'{/yun}{yun:}$once.once_job_one{/yun}{yun:}if $once.once_job_two{/yun}-{yun:}$once.once_job_two{/yun}{yun:}/if{/yun}{yun:}/if{/yun}</div>
+			<div class="once_list_p">要求：{yun:}$once.require|mb_substr:0:38:'utf-8'{/yun}<a href="{yun:}url m=once c=show id='`$once.id`'{/yun}" class="once_list_p_a">{yun:}t key='member_com_00380'{/yun}</a></div>
 			<span class="once_list_xz">{yun:}if $once.salary{/yun}￥{yun:}$once.salary{/yun}{yun:}else{/yun}{yun:}t key='common.negotiable'{/yun}{yun:}/if{/yun}</span>
 			{yun:}if $config.user_wzp_link==1 && $uid<=0{/yun}
 				<div class="once_list_login"><a href="javascript:void(0);" onclick="showlogin('');" style="color:#1c99ef">[{yun:}t key='common.login'{/yun}]</a> 后才可以查看联系方式</div>
@@ -191,7 +191,7 @@
 					<div class="once_list_tel_bg"></div>
 				{yun:}/if{/yun}
 				{yun:}if $once.address{/yun}
-					<div class="once_list_add">{yun:}t key='default_once_index_00001'{/yun}：{yun:}$once.address{/yun}</div>
+					<div class="once_list_add">{yun:}t key='admin_system_00690'{/yun}：{yun:}$once.address{/yun}</div>
 				{yun:}else{/yun}
 				{yun:}/if{/yun} 
 			{yun:}/if{/yun}                
@@ -209,7 +209,7 @@
 		<span> {yun:}t key='common_01910'{/yun}：<br/>
   1、适当减少已选择的条件<br/>
   2、适当删减或更改搜索关键字<br/>
-  </span> <span> {yun:}t key='admin_system_set_guanjianci_00011'{/yun}：<br/>
+  </span> <span> {yun:}t key='admin_system_00443'{/yun}：<br/>
   {yun:}key limit=6 recom=1 type=1 item=top_key{/yun} <a href="{yun:}$top_key.url{/yun}">{yun:}$top_key.key_name{/yun}</a> {yun:}/key{/yun} </span> </div>
 			</div>
 			{yun:}/if{/yun} 

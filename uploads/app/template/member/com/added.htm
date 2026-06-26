@@ -8,10 +8,10 @@
 	<div id="grow_freedom" class="grow_mod_wrap my_freedom" style="padding:0px;border:none;">
 	<div class="newmember_tit">
 		<ul>
-			<li class="newmember_titcur"> <a href="index.php?c=right">{yun:}t key='wap_com_index_00022'{/yun}</a></li>
-			<li> <a  href="index.php?c=pay" >{yun:}t key='member_com_added_00003'{/yun}</a></li>
-			<li> <a  href="index.php?c=paylogtc" class=" ">{yun:}t key='wap_com_finance_00001'{/yun}</a></li>
-			<li><a  href="index.php?c=integral">{yun:}$config.integral_pricename{/yun}{yun:}t key='wap_com_jobadd_00050'{/yun}</a></li>
+			<li class="newmember_titcur"> <a href="index.php?c=right">{yun:}t key='wap_com_00097'{/yun}</a></li>
+			<li> <a  href="index.php?c=pay" >{yun:}t key='member_com_00041'{/yun}</a></li>
+			<li> <a  href="index.php?c=paylogtc" class=" ">{yun:}t key='wap_com_00064'{/yun}</a></li>
+			<li><a  href="index.php?c=integral">{yun:}$config.integral_pricename{/yun}{yun:}t key='wap_com_00304'{/yun}</a></li>
 		</ul>
 	</div>
 	<div class="clear"></div> 
@@ -20,20 +20,20 @@
 		<div class="newmember_screen">
 			<ul>
 				{yun:}if $config.com_vip_type==2{/yun}
-					<li><a href="index.php?c=right" >{yun:}t key='wap_com_server_00023'{/yun}</a></li>
+					<li><a href="index.php?c=right" >{yun:}t key='wap_com_00380'{/yun}</a></li>
 				{yun:}/if{/yun}
 			
 				{yun:}if $config.com_vip_type==1{/yun}
-					<li><a href="index.php?c=right&act=time" >{yun:}t key='wap_com_server_00027'{/yun}</a></li>
+					<li><a href="index.php?c=right&act=time" >{yun:}t key='wap_com_00384'{/yun}</a></li>
 				{yun:}/if{/yun}
 			
 				{yun:}if $config.com_vip_type==0{/yun}
-					<li ><a href="index.php?c=right" >{yun:}t key='wap_com_server_00023'{/yun}</a></li>
-					<li><a href="index.php?c=right&act=time" >{yun:}t key='wap_com_server_00027'{/yun}</a></li>
+					<li ><a href="index.php?c=right" >{yun:}t key='wap_com_00380'{/yun}</a></li>
+					<li><a href="index.php?c=right&act=time" >{yun:}t key='wap_com_00384'{/yun}</a></li>
 				{yun:}/if{/yun}
 			
 				{yun:}if $statis.rating_type != 2 && !$vipIsDown && $config.com_integral_online != 4 {/yun}
-				<li class="job_list_tit_cur"><a href="index.php?c=right&act=added" >{yun:}t key='wap_com_server_00036'{/yun}</a></li>
+				<li class="job_list_tit_cur"><a href="index.php?c=right&act=added" >{yun:}t key='wap_com_00393'{/yun}</a></li>
 				{yun:}/if{/yun}
 			</ul>
 		</div> 
@@ -52,7 +52,7 @@
 			
 		
 	<div class="com_new_tip ">
-	<span class="com_new_tip_h">{yun:}t key='member_com_added_00002'{/yun}</span>您当前是：{yun:}$statis.rating_name{/yun}
+	<span class="com_new_tip_h">{yun:}t key='member_com_00040'{/yun}</span>您当前是：{yun:}$statis.rating_name{/yun}
 					服务到期为：
 					{yun:}if $statis.vip_etime > $todayStart{/yun}
 						{yun:}$statis.vip_stime|date_format:'%Y-%m-%d'{/yun} - {yun:}$statis.vip_etime|date_format:'%Y-%m-%d'{/yun}
@@ -61,7 +61,7 @@
 					{yun:}else{/yun}
 						{yun:}$statis.vip_stime|date_format:'%Y-%m-%d'{/yun} - 
 						<span class="comindex_money_pd_s">{yun:}$statis.vip_etime|date_format:'%Y-%m-%d'{/yun}</span> 
-						<a href="index.php?c=right" class="cblue">{yun:}t key='wap_com_finance_00003'{/yun}</a> 
+						<a href="index.php?c=right" class="cblue">{yun:}t key='wap_com_00066'{/yun}</a> 
 					{yun:}/if{/yun}      <!-- 开通企业套餐，尊享招聘特权--></div>
 	
         <div class="clear"></div>
@@ -80,7 +80,7 @@
         	<table class="added_de_box_table" cellpadding="0" cellspacing="0">
            		<tbody>
 	           		<tr>
-	           			<th>{yun:}t key='default_ajax_payrating_00001'{/yun}</th><th  align="center"><div style="width:65px">套餐价</div></th><th align="center"><div style="width:85px">会员价格</div></th>
+	           			<th>{yun:}t key='default_00103'{/yun}</th><th  align="center"><div style="width:65px">套餐价</div></th><th align="center"><div style="width:85px">会员价格</div></th>
 	           		</tr>
 	           		{yun:}foreach from=$info item=v{/yun}
 	                <tr>
@@ -89,21 +89,21 @@
 	           				<label>
                             <div class="added_cont_b">
 	                    	<input type="radio" name="service_package" value="{yun:}$v.id{/yun}" onclick="toChange()" class="added_cont_radio" autocomplete="off" />
-	                    	{yun:}if $v.resume{/yun}<span class="added_cont_s">{yun:}t key='wap_resume_index_00011'{/yun}：<i class="com_dt_rage">{yun:}$v.resume{/yun}{yun:}t key='common_02052'{/yun}</i>，</span>{yun:}/if{/yun}
-	                    	{yun:}if $v.interview{/yun}<span class="added_cont_s">{yun:}t key='resume_resume_00015'{/yun}：<i class="com_dt_rage">{yun:}$v.interview{/yun}{yun:}t key='common_02052'{/yun}</i>，</span>{yun:}/if{/yun}
-	                    	{yun:}if $v.job_num{/yun}<span class="added_cont_s">{yun:}t key='wap_com_integral_reduce_00007'{/yun}：<i class="com_dt_rage">{yun:}$v.job_num{/yun}{yun:}t key='common_02052'{/yun}</i>，</span>{yun:}/if{/yun}
-	                    	{yun:}if $v.breakjob_num{/yun}<span class="added_cont_s">{yun:}t key='wap_com_integral_reduce_00008'{/yun}：<i class="com_dt_rage">{yun:}$v.breakjob_num{/yun}{yun:}t key='common_02052'{/yun}</i>，</span>{yun:}/if{/yun} 
-	                    	{yun:}if $v.top_num{/yun}<span class="added_cont_s">{yun:}t key='wap_com_job_00047'{/yun}：<i class="com_dt_rage">{yun:}$v.top_num{/yun}{yun:}t key='common_02067'{/yun}</i>，</span>{yun:}/if{/yun} 
-	                    	{yun:}if $v.rec_num{/yun}<span class="added_cont_s">{yun:}t key='wap_com_job_00046'{/yun}：<i class="com_dt_rage">{yun:}$v.rec_num{/yun}{yun:}t key='common_02067'{/yun}</i>，</span>{yun:}/if{/yun} 
+	                    	{yun:}if $v.resume{/yun}<span class="added_cont_s">{yun:}t key='wap_00451'{/yun}：<i class="com_dt_rage">{yun:}$v.resume{/yun}{yun:}t key='common_02052'{/yun}</i>，</span>{yun:}/if{/yun}
+	                    	{yun:}if $v.interview{/yun}<span class="added_cont_s">{yun:}t key='resume_00029'{/yun}：<i class="com_dt_rage">{yun:}$v.interview{/yun}{yun:}t key='common_02052'{/yun}</i>，</span>{yun:}/if{/yun}
+	                    	{yun:}if $v.job_num{/yun}<span class="added_cont_s">{yun:}t key='wap_com_00028'{/yun}：<i class="com_dt_rage">{yun:}$v.job_num{/yun}{yun:}t key='common_02052'{/yun}</i>，</span>{yun:}/if{/yun}
+	                    	{yun:}if $v.breakjob_num{/yun}<span class="added_cont_s">{yun:}t key='wap_com_00029'{/yun}：<i class="com_dt_rage">{yun:}$v.breakjob_num{/yun}{yun:}t key='common_02052'{/yun}</i>，</span>{yun:}/if{/yun} 
+	                    	{yun:}if $v.top_num{/yun}<span class="added_cont_s">{yun:}t key='wap_com_00238'{/yun}：<i class="com_dt_rage">{yun:}$v.top_num{/yun}{yun:}t key='common_02067'{/yun}</i>，</span>{yun:}/if{/yun} 
+	                    	{yun:}if $v.rec_num{/yun}<span class="added_cont_s">{yun:}t key='wap_com_00237'{/yun}：<i class="com_dt_rage">{yun:}$v.rec_num{/yun}{yun:}t key='common_02067'{/yun}</i>，</span>{yun:}/if{/yun} 
 	                    	{yun:}if $v.urgent_num{/yun}<span class="added_cont_s">紧急招聘：<i class="com_dt_rage">{yun:}$v.urgent_num{/yun}{yun:}t key='common_02067'{/yun}</i>，</span>{yun:}/if{/yun} 
-	                    	{yun:}if $v.zph_num{/yun}<span class="added_cont_s">{yun:}t key='admin_user_company_component_comrating_server_detail_00002'{/yun}：<i class="com_dt_rage">{yun:}$v.zph_num{/yun}{yun:}t key='common_02089'{/yun}</i>，</span>{yun:}/if{/yun} 
+	                    	{yun:}if $v.zph_num{/yun}<span class="added_cont_s">{yun:}t key='admin_user_company_00210'{/yun}：<i class="com_dt_rage">{yun:}$v.zph_num{/yun}{yun:}t key='common_02089'{/yun}</i>，</span>{yun:}/if{/yun} 
 	                    	</div>
 	                    	</label>
 	                    </td>
 	           			<td align="center"><span class="">{yun:}$v.service_price{/yun}</span>{yun:}t key='common_02056'{/yun}</td>
 	           			<td align="center">
 	           				<span class="added_de_box_table_jg">{yun:}if $discount.service_discount{/yun}{yun:}$v.service_price*$discount.service_discount*0.01{/yun}{yun:}else{/yun}{yun:}$v.service_price{/yun}{yun:}/if{/yun}</span> {yun:}t key='common_02056'{/yun} 
-	           				<div class="added_de_box_table_jgyh">{yun:}if $discount.service_discount{/yun}{yun:}t key='wap_com_finance_00004'{/yun}{yun:}0.1*$discount.service_discount{/yun}折优惠{yun:}/if{/yun} </div> 
+	           				<div class="added_de_box_table_jgyh">{yun:}if $discount.service_discount{/yun}{yun:}t key='wap_com_00067'{/yun}{yun:}0.1*$discount.service_discount{/yun}折优惠{yun:}/if{/yun} </div> 
 	           			</td>
                      
 	         		</tr>  
@@ -123,7 +123,7 @@
 				{yun:}if $config.com_integral_online==3 && !$meal{/yun}
 					{yun:}$config.integral_pricename{/yun}：<span id="price" class="added_de_box_fk_je">0</span> {yun:}$config.integral_pricename{/yun}
 				{yun:}else{/yun}
-					{yun:}t key='member_user_payment_00012'{/yun}：<span id="price" class="added_de_box_fk_je">0</span> {yun:}t key='common_02056'{/yun}
+					{yun:}t key='member_user_00254'{/yun}：<span id="price" class="added_de_box_fk_je">0</span> {yun:}t key='common_02056'{/yun}
 				{yun:}/if{/yun}
 			</div>
 
@@ -145,10 +145,10 @@
 					<input type="hidden" value="" id="dkjf2" name="dkjf"/>
 					<input type="hidden" value="" id="dkprice" name="dkprice"/>
 					<div id="zf_div" {yun:}if $config.com_integral_online ==3 && !$meal{/yun} style="display:none"{yun:}/if{/yun}>
-						<a href="javascript:buyPackSubmit('{yun:}$statis.vip_etime{/yun}','{yun:}$todayStart{/yun}');" class="added_de_box_bth">{yun:}t key='wap_user_index_00024'{/yun}</a>
+						<a href="javascript:buyPackSubmit('{yun:}$statis.vip_etime{/yun}','{yun:}$todayStart{/yun}');" class="added_de_box_bth">{yun:}t key='wap_user_00206'{/yun}</a>
 					</div>
 					<div id="zf_div2" {yun:}if $config.com_integral_online !=3 || $meal==1{/yun} style="display:none"{yun:}/if{/yun}>
-						<a href="javascript:qrzf();" class="added_de_box_bth">{yun:}t key='wap_user_index_00024'{/yun}</a>
+						<a href="javascript:qrzf();" class="added_de_box_bth">{yun:}t key='wap_user_00206'{/yun}</a>
 					</div>
 				</form>
             </div>
@@ -240,7 +240,7 @@ function checkNum(integral,integral_pro){
 }
 
 function qrzf(){
-	var index = layer.load("{yun:}t key='wap_js_publicselect_00003'{/yun}",0);
+	var index = layer.load("{yun:}t key='wap_js_00148'{/yun}",0);
 	var tcid = $("#comserviceid").val();
 	if(tcid==''){
 		layer.closeAll();
@@ -285,7 +285,7 @@ function buyPackSubmit(etime,time){
 	var date = ((etime - time) / ( 60 * 60 * 24));
 
 	if(date < 7 && date >=0){
-		layer.confirm("{yun:}t key='member_com_added_00001'{/yun}"+date+"{yun:}t key='wap_com_server_00010'{/yun}",function(){
+		layer.confirm("{yun:}t key='member_com_00039'{/yun}"+date+"{yun:}t key='wap_com_00367'{/yun}",function(){
 			$('#myform1').submit();
 		});
 	}else{

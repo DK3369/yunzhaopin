@@ -28,7 +28,9 @@
     }
 
     function isAutoKey(key) {
-        return typeof key === 'string' && AUTO_KEY_RE.test(key);
+        var m = typeof key === 'string' && key.match(AUTO_KEY_RE);
+        if (!m) return false;
+        return m[1].split('_').length <= 3;
     }
 
     function buildAutoKeys(store) {

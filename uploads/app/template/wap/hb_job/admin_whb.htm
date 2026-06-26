@@ -9,8 +9,8 @@
                     <div class="poster_pic"><img src="{yun:}$v.pic_n{/yun}"></div>
                     <div class="hb_listbox_name" style="background:#fff;">
                         <div class="hb_cz">
-                            <a href="javascript:;" onclick="showHbDiv('{yun:}$v.id{/yun}')">{yun:}t key='wap_hb_admin_whb_00002'{/yun}</a>
-                            <a href="javascript:;" onclick="downWhb('{yun:}$v.id{/yun}');">{yun:}t key='wap_hb_admin_whb_00001'{/yun}</a>
+                            <a href="javascript:;" onclick="showHbDiv('{yun:}$v.id{/yun}')">{yun:}t key='wap_00071'{/yun}</a>
+                            <a href="javascript:;" onclick="downWhb('{yun:}$v.id{/yun}');">{yun:}t key='wap_00070'{/yun}</a>
                         </div>
                     </div>
                 </div>
@@ -52,7 +52,7 @@
 
         const url = weburl+'/index.php?m=ajax&c=getJobHb&id=' + id + '&hb=' + hb;
 
-        const loading = layer.load("{yun:}t key='wap_hb_gongzhao_whb_00002'{/yun}");
+        const loading = layer.load("{yun:}t key='wap_00073'{/yun}");
 
         layer.open({
             type: 1,
@@ -66,14 +66,14 @@
 
         layer.close(loading);
 
-        const loading2 = layer.load("{yun:}t key='wap_hb_gongzhao_whb_00001'{/yun}");
+        const loading2 = layer.load("{yun:}t key='wap_00072'{/yun}");
 
         setTimeout(function () {
 
             layer.close(loading2);
 
             const a = document.createElement('a');          // 创建一个a节点插入的document
-            const event = new MouseEvent('click");           // 模拟鼠标click{yun:}t key='admin_tool_weixin_component_wxmenu_00012'{/yun}
+            const event = new MouseEvent('click");           // 模拟鼠标click{yun:}t key='admin_tool_00652'{/yun}
             a.download = "jobHb'+'_'+ id+'_'+hb;		   // 设置a节点的download属性值
             a.href = url;                                 // 将图片的src赋值给a节点的href
             a.dispatchEvent(event);

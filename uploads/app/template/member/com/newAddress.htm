@@ -60,34 +60,34 @@
 
             <div class="layuiFromFlex">
                 <div class="layui-form-item">
-                    <label class="layui-form-label">{yun:}t key='wap_user_invitecont_00006'{/yun}</label>
+                    <label class="layui-form-label">{yun:}t key='wap_user_00267'{/yun}</label>
                     <div class="layui-input-inline">
-                        <input type="text" name="link_man" id="link_man" lay-verify="required" placeholder="{yun:}t key='wap_com_address_new_00013'{/yun}" autocomplete="off" class="layui-input" onblur="notNumber(this)">
+                        <input type="text" name="link_man" id="link_man" lay-verify="required" placeholder="{yun:}t key='wap_com_00013'{/yun}" autocomplete="off" class="layui-input" onblur="notNumber(this)">
                     </div>
                 </div>
                 <div class="layui-form-item">
-                    <label class="layui-form-label">{yun:}t key='wap_com_address_new_00014'{/yun}</label>
+                    <label class="layui-form-label">{yun:}t key='wap_com_00014'{/yun}</label>
                     <div class="layui-input-inline">
-                        <input type="text" name="link_phone" id="link_phone" lay-verify="required" placeholder="{yun:}t key='wap_com_address_new_00008'{/yun}" autocomplete="off" class="layui-input">
+                        <input type="text" name="link_phone" id="link_phone" lay-verify="required" placeholder="{yun:}t key='wap_com_00008'{/yun}" autocomplete="off" class="layui-input">
                     </div>
                 </div>
                 <div class="layui-form-item">
-                    <label class="layui-form-label">{yun:}t key='wap_user_info_00018'{/yun}</label>
+                    <label class="layui-form-label">{yun:}t key='wap_user_00241'{/yun}</label>
                     <div class="layui-input-inline">
-                        <input type="text" name="link_moblie" id="link_moblie" lay-verify="required" placeholder="{yun:}t key='wap_user_bindingbox_00003'{/yun}" autocomplete="off" class="layui-input">
+                        <input type="text" name="link_moblie" id="link_moblie" lay-verify="required" placeholder="{yun:}t key='wap_user_00142'{/yun}" autocomplete="off" class="layui-input">
                     </div>
                 </div>
                 
                 <div class="layui-form-item">
-                    <label class="layui-form-label">{yun:}t key='wap_com_address_new_00016'{/yun}</label>
+                    <label class="layui-form-label">{yun:}t key='wap_com_00016'{/yun}</label>
                     <div class="layui-input-inline">
-                        <input type="text" name="email" id="email" lay-verify="required" placeholder="{yun:}t key='wap_com_address_new_00009'{/yun}" autocomplete="off" class="layui-input">
+                        <input type="text" name="email" id="email" lay-verify="required" placeholder="{yun:}t key='wap_com_00009'{/yun}" autocomplete="off" class="layui-input">
                     </div>
                 </div>
             </div>
             
             <div class="layui-form-item">
-                <label class="layui-form-label">{yun:}t key='wap_com_address_00002'{/yun}</label>
+                <label class="layui-form-label">{yun:}t key='wap_com_00032'{/yun}</label>
                 <div class="layui-input-inline">
                     <select name="provinceid" id="provinceid" lay-filter="citys">
                         <option value="">请选择省</option>
@@ -108,9 +108,9 @@
                 </div>
             </div>
             <div class="layui-form-item">
-                <label class="layui-form-label">{yun:}t key='wap_user_info_00020'{/yun}</label>
+                <label class="layui-form-label">{yun:}t key='wap_user_00243'{/yun}</label>
                 <div class="layui-input-inline" style="width: 588px;">
-                    <input type="text" name="link_address" id="link_address" lay-verify="required" placeholder="建议格式：XX{yun:}t key='common_02076'{/yun}XX{yun:}t key='wap_com_info_00062'{/yun}XX路" autocomplete="off" class="layui-input" onkeyup="addressKeyup();">
+                    <input type="text" name="link_address" id="link_address" lay-verify="required" placeholder="建议格式：XX{yun:}t key='common_02076'{/yun}XX{yun:}t key='wap_com_00179'{/yun}XX路" autocomplete="off" class="layui-input" onkeyup="addressKeyup();">
                     {yun:}if $config.map_key{/yun}
                     <i class="com_release_mapicon" onclick="localsearch();"></i>
                     {yun:}/if{/yun}
@@ -152,7 +152,7 @@
         }
         var  test = obj.value.replace(/[0-9]/g,"');
         if (!test){
-            layer.msg("{yun:}t key='wap_com_address_new_00005'{/yun}", 2, 8);
+            layer.msg("{yun:}t key='wap_com_00005'{/yun}", 2, 8);
             obj.value = ''
             $('#link_man').focus()
             return false;
@@ -160,7 +160,7 @@
             if(/\d/.test(obj.value)){
                 if(obj.value.length>8){
                     // obj.value = obj.value.substring(0,8);
-                    layer.msg("{yun:}t key='wap_com_address_new_00002'{/yun}", 2, 8);
+                    layer.msg("{yun:}t key='wap_com_00002'{/yun}", 2, 8);
                     obj.value = ''
                     $('#link_man').focus()
                     return false;
@@ -198,7 +198,7 @@
             if (data.elem.name == 'provinceid') {
 
                 $("#cityid").html(html);
-                $("#three_cityid").html('<option value="">请选择区/{yun:}t key='wap_com_info_00062'{/yun}</option>');
+                $("#three_cityid").html('<option value="">请选择区/{yun:}t key='wap_com_00179'{/yun}</option>');
             }
             if (data.elem.name == 'cityid') {
 
@@ -312,11 +312,11 @@
                     for(var i in e.tips){
                         html +=  '<li data-id="' + i + '">';
                         html += 	  '<div class="comEleaseMapTite">';
-                        html +=			  "<span>{yun:}t key='member_com_customize_nav_00003'{/yun}:</span>";
+                        html +=			  "<span>{yun:}t key='member_com_00021'{/yun}:</span>";
                         html +=  		  '<b>' + e.tips[i].name + '</b>';
                         html +=  	  '</div>';
                         html +=  	  '<div class="comEleaseMapTipst">';
-                        html +=  		   "<span>{yun:}t key='wap_js_umeditor_lang_zh_cn_zh_cn_00014'{/yun}:" + e.tips[i].address + '</span>';
+                        html +=  		   "<span>{yun:}t key='wap_js_00082'{/yun}:" + e.tips[i].address + '</span>';
                         html +=  	   '</div>';
                         html +=  '</li>';
                     }
@@ -333,7 +333,7 @@
                             var c = location.split(',');
                             document.getElementById("map_x").value = c[0];
                             document.getElementById("map_y").value = c[1];
-                            // {yun:}t key='wap_com_jobadd_00053'{/yun}marker
+                            // {yun:}t key='wap_com_00307'{/yun}marker
                             var lngLat = new AMap.LngLat(c[0],c[1]);
                             map.setZoomAndCenter(17,lngLat);
                             var marker = new AMap.Marker({
@@ -395,7 +395,7 @@
         var y = $.trim($('#map_y').val());
 
         if (link_man == ''){
-            layer.msg("{yun:}t key='wap_com_address_new_00012'{/yun}", 2, 8);
+            layer.msg("{yun:}t key='wap_com_00012'{/yun}", 2, 8);
             return false;
         }else {
             link_man = link_man.replace(/[-_ ]/g,'");// {yun:}t key='common_01715'{/yun}
@@ -404,13 +404,13 @@
             }
             var  test = link_man.replace(/[0-9]/g,"');
             if (!test){
-                layer.msg("{yun:}t key='wap_com_address_new_00005'{/yun}", 2, 8);
+                layer.msg("{yun:}t key='wap_com_00005'{/yun}", 2, 8);
                 return false;
             }else{
                 if(/\d/.test(link_man)){
                     if(link_man.length>8){
                         // obj.value = obj.value.substring(0,8);
-                        layer.msg("{yun:}t key='wap_com_address_new_00002'{/yun}", 2, 8);
+                        layer.msg("{yun:}t key='wap_com_00002'{/yun}", 2, 8);
                         return false;
                     }
                 }
@@ -418,11 +418,11 @@
         }
         if (link_moblie == '' && link_phone == ''){
 
-            layer.msg("{yun:}t key='wap_com_address_new_00007'{/yun}", 2, 8);
+            layer.msg("{yun:}t key='wap_com_00007'{/yun}", 2, 8);
             return false;
         }else if (link_moblie !='' && !isjsMobile(link_moblie)){
 
-            layer.msg("{yun:}t key='wap_user_addresume_00021'{/yun}", 2, 8);
+            layer.msg("{yun:}t key='wap_user_00039'{/yun}", 2, 8);
             return false;
         }
 

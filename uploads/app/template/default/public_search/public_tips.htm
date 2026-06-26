@@ -6,27 +6,27 @@
 			{yun:}if $noPermission == 1 || $isPaused == 1{/yun}
 			{yun:}include file="$temstyle/default/public_search/vipTips.htm"{/yun}
 			{yun:}/if{/yun}
-			<div class="yun_tipsboxbox_hello">{yun:}t key='member_com_index_00018'{/yun}！</div>
+			<div class="yun_tipsboxbox_hello">{yun:}t key='member_com_00128'{/yun}！</div>
 			<div class="yun_tipsboxbox_level">
-				您当前是<span class="yun_tipsboxbox_level_name">{yun:}$statis.rating_name{/yun}</span>，{yun:}t key='wap_js_redeem_00004'{/yun}{yun:}if $statis.vip_etime < strtotime('today') && $statis.vip_etime!=0{/yun}会员已到期{yun:}else{/yun}套餐已用完{yun:}/if{/yun}，升级会员享受更多特权，选择适合您的企业VIP{yun:}t key='common_01970'{/yun}
+				您当前是<span class="yun_tipsboxbox_level_name">{yun:}$statis.rating_name{/yun}</span>，{yun:}t key='wap_js_00157'{/yun}{yun:}if $statis.vip_etime < strtotime('today') && $statis.vip_etime!=0{/yun}会员已到期{yun:}else{/yun}套餐已用完{yun:}/if{/yun}，升级会员享受更多特权，选择适合您的企业VIP{yun:}t key='common_01970'{/yun}
 			</div>
 			<ul class="buymeal_tit" id='rating_type'>
 
 				{yun:}if !$vipIsDown{/yun}
-					<li id="singleTab" rating='4' ishide='0'><a><span class="buymeal_tit_name">{yun:}t key='default_public_search_public_tips_00023'{/yun}</span><em class="buymeal_p">{yun:}t key='default_public_search_public_tips_00011'{/yun}</em></a></li>
+					<li id="singleTab" rating='4' ishide='0'><a><span class="buymeal_tit_name">{yun:}t key='default_00085'{/yun}</span><em class="buymeal_p">{yun:}t key='default_00073'{/yun}</em></a></li>
 				{yun:}/if{/yun}
 
 				{yun:}if $noPermission == 1 || $isPaused == 1{/yun}
 				{yun:}if ($config.com_vip_type == '2' || $config.com_vip_type == '0') && !empty($rating_1){/yun} 
-					<li class="buymeal_tit_cur" rating='1' ishide='0'><a><span class="buymeal_tit_name">{yun:}t key='wap_com_server_00023'{/yun}</span><em class="buymeal_p">购买套餐会员更划算</em></a><span class="buymeal_tit_tj">{yun:}t key='common.recommended'{/yun}</span></li>
+					<li class="buymeal_tit_cur" rating='1' ishide='0'><a><span class="buymeal_tit_name">{yun:}t key='wap_com_00380'{/yun}</span><em class="buymeal_p">购买套餐会员更划算</em></a><span class="buymeal_tit_tj">{yun:}t key='common.recommended'{/yun}</span></li>
 				{yun:}/if{/yun} 
 				
 				{yun:}if ($config.com_vip_type == '1' || $config.com_vip_type == '0') && !empty($rating_2){/yun} 
-					<li rating='2' ishide='0'><a><span class="buymeal_tit_name">{yun:}t key='wap_com_server_00027'{/yun}</span><em class="buymeal_p">{yun:}t key='default_public_search_public_tips_00016'{/yun}</em></a></li>
+					<li rating='2' ishide='0'><a><span class="buymeal_tit_name">{yun:}t key='wap_com_00384'{/yun}</span><em class="buymeal_p">{yun:}t key='default_00078'{/yun}</em></a></li>
 				{yun:}/if{/yun} 
 				
 				{yun:}if !$vipIsDown && $config.com_integral_online != 4 && $statis.rating_type != 2 && !empty($add){/yun}
-					<li rating='3' ishide='0'><a><span class="buymeal_tit_name">{yun:}t key='wap_com_server_00036'{/yun}</span><em class="buymeal_p">{yun:}t key='default_public_search_public_tips_00006'{/yun}</em></a></li>
+					<li rating='3' ishide='0'><a><span class="buymeal_tit_name">{yun:}t key='wap_com_00393'{/yun}</span><em class="buymeal_p">{yun:}t key='default_00068'{/yun}</em></a></li>
 				{yun:}/if{/yun}
 				{yun:}/if{/yun}
 				
@@ -45,7 +45,7 @@
 								
 									{yun:}if $v.time_start < time() && $v.time_end > time(){/yun}
 										<div class="buymeal_price"><span class="buymeal_price_n">{yun:}$v.yh_price * $config.integral_proportion{/yun}</span>{yun:}$config.integral_pricename{/yun}</div>
-										<div class="buymeal_original_price">{yun:}t key='default_public_search_public_tips_00034'{/yun} <i class="buymeal_original_price_delete">{yun:}$v.service_price * $config.integral_proportion{/yun}</i> <span class="">{yun:}if $v.service_time>0{/yun}{yun:}$v.service_time{/yun}{yun:}t key='common_02067'{/yun}{yun:}else{/yun}{yun:}t key='api_wxapp_00019'{/yun}{yun:}/if{/yun}</span></div>
+										<div class="buymeal_original_price">{yun:}t key='default_00093'{/yun} <i class="buymeal_original_price_delete">{yun:}$v.service_price * $config.integral_proportion{/yun}</i> <span class="">{yun:}if $v.service_time>0{/yun}{yun:}$v.service_time{/yun}{yun:}t key='common_02067'{/yun}{yun:}else{/yun}{yun:}t key='api_wxapp_00019'{/yun}{yun:}/if{/yun}</span></div>
 									{yun:}else{/yun}
 										<div class="buymeal_price"><span class="buymeal_price_n">{yun:}$v.service_price * $config.integral_proportion{/yun}</span>{yun:}$config.integral_pricename{/yun}</div>
 										<div class="buymeal_original_price"><span class="">{yun:}if $v.service_time >0{/yun}{yun:}$v.service_time{/yun}{yun:}t key='common_02067'{/yun}{yun:}else{/yun}{yun:}t key='api_wxapp_00019'{/yun}{yun:}/if{/yun}</span></div>
@@ -55,7 +55,7 @@
 								
 									{yun:}if $v.time_start < time() && $v.time_end > time(){/yun}
 										<div class="buymeal_price"><span class="buymeal_price_n">{yun:}$v.yh_price{/yun}</span>{yun:}t key='common_02056'{/yun}</div>
-										<div class="buymeal_original_price">{yun:}t key='default_public_search_public_tips_00034'{/yun} <i class="buymeal_original_price_delete">{yun:}$v.service_price{/yun}</i> <span class="">{yun:}if $v.service_time>0{/yun}{yun:}$v.service_time{/yun}{yun:}t key='common_02067'{/yun}{yun:}else{/yun}{yun:}t key='api_wxapp_00019'{/yun}{yun:}/if{/yun}</span></div>
+										<div class="buymeal_original_price">{yun:}t key='default_00093'{/yun} <i class="buymeal_original_price_delete">{yun:}$v.service_price{/yun}</i> <span class="">{yun:}if $v.service_time>0{/yun}{yun:}$v.service_time{/yun}{yun:}t key='common_02067'{/yun}{yun:}else{/yun}{yun:}t key='api_wxapp_00019'{/yun}{yun:}/if{/yun}</span></div>
 									{yun:}else{/yun}
 										<div class="buymeal_price"><span class="buymeal_price_n">{yun:}$v.service_price{/yun}</span>{yun:}t key='common_02056'{/yun}</div>
 										<div class="buymeal_original_price"><span class="">{yun:}if $v.service_time>0{/yun}{yun:}$v.service_time{/yun}{yun:}t key='common_02067'{/yun}{yun:}else{/yun}{yun:}t key='api_wxapp_00019'{/yun}{yun:}/if{/yun}</span></div>
@@ -63,44 +63,44 @@
 								
 								{yun:}/if{/yun}  
 								
-								<div class="buymeal_purchase"><a href="javascript:void(0);" onclick='buyVip({yun:}$v.id{/yun})' class="buymeal_purchase_bth">{yun:}t key='member_user_resumetpl_00003'{/yun}</a></div>
+								<div class="buymeal_purchase"><a href="javascript:void(0);" onclick='buyVip({yun:}$v.id{/yun})' class="buymeal_purchase_bth">{yun:}t key='member_user_00285'{/yun}</a></div>
 								
 							</div>
 							
 							<div class="buymeal_resources_cont">
-								<!--{yun:}t key='wap_com_server_00029'{/yun}-->
+								<!--{yun:}t key='wap_com_00386'{/yun}-->
 								<div class="buymeal_resources_list">
-									<div class="buymeal_resources_name">{yun:}t key='wap_com_server_00029'{/yun}</div>
+									<div class="buymeal_resources_name">{yun:}t key='wap_com_00386'{/yun}</div>
 									{yun:}if $usertype == 2{/yun}
-									<div class="buymeal_resources_detailed"><span class="buymeal_resources_detailedname">{yun:}t key='wap_com_com_00009'{/yun}</span><span class="buymeal_resources_detailed_n">{yun:}if $v.interview>0{/yun}{yun:}$v.interview{/yun}</span>{yun:}t key='common_02089'{/yun}{yun:}else{/yun}-{yun:}/if{/yun}</div>
-									<div class="buymeal_resources_detailed"><span class="buymeal_resources_detailedname">{yun:}t key='wap_com_com_00005'{/yun}</span><span class="buymeal_resources_detailed_n">{yun:}if $v.resume>0{/yun}{yun:}$v.resume{/yun}</span>{yun:}t key='common_02052'{/yun}{yun:}else{/yun}-{yun:}/if{/yun}</div>
+									<div class="buymeal_resources_detailed"><span class="buymeal_resources_detailedname">{yun:}t key='wap_com_00046'{/yun}</span><span class="buymeal_resources_detailed_n">{yun:}if $v.interview>0{/yun}{yun:}$v.interview{/yun}</span>{yun:}t key='common_02089'{/yun}{yun:}else{/yun}-{yun:}/if{/yun}</div>
+									<div class="buymeal_resources_detailed"><span class="buymeal_resources_detailedname">{yun:}t key='wap_com_00042'{/yun}</span><span class="buymeal_resources_detailed_n">{yun:}if $v.resume>0{/yun}{yun:}$v.resume{/yun}</span>{yun:}t key='common_02052'{/yun}{yun:}else{/yun}-{yun:}/if{/yun}</div>
 									{yun:}else{/yun}
-									<div class="buymeal_resources_detailed"><span class="buymeal_resources_detailedname">{yun:}t key='wap_com_com_00005'{/yun}</span><span class="buymeal_resources_detailed_n">{yun:}$v.lt_resume{/yun}</span>{yun:}t key='common_02052'{/yun}</div>
+									<div class="buymeal_resources_detailed"><span class="buymeal_resources_detailedname">{yun:}t key='wap_com_00042'{/yun}</span><span class="buymeal_resources_detailed_n">{yun:}$v.lt_resume{/yun}</span>{yun:}t key='common_02052'{/yun}</div>
 									{yun:}/if{/yun}
 								</div>
-								<!--{yun:}t key='wap_com_server_00031'{/yun}-->
+								<!--{yun:}t key='wap_com_00388'{/yun}-->
 								<div class="buymeal_resources_list">
-									<div class="buymeal_resources_name">{yun:}t key='wap_com_server_00031'{/yun}</div>
+									<div class="buymeal_resources_name">{yun:}t key='wap_com_00388'{/yun}</div>
 									{yun:}if $usertype == 2{/yun}
-									<div class="buymeal_resources_detailed"><span class="buymeal_resources_detailedname">{yun:}t key='wap_com_com_00007'{/yun}</span>{yun:}if $v.job_num>0{/yun}<span class="buymeal_resources_detailed_n">{yun:}$v.job_num{/yun}</span>{yun:}t key='common_02052'{/yun}{yun:}else{/yun}-{yun:}/if{/yun}</div>
-									<div class="buymeal_resources_detailed"><span class="buymeal_resources_detailedname">{yun:}t key='wap_com_job_00046'{/yun}</span>{yun:}if $v.rec_num>0{/yun}<span class="buymeal_resources_detailed_n">{yun:}$v.rec_num{/yun}</span>{yun:}t key='common_02067'{/yun}{yun:}else{/yun}-{yun:}/if{/yun}</div>
-									<div class="buymeal_resources_detailed"><span class="buymeal_resources_detailedname">{yun:}t key='wap_com_com_00008'{/yun}</span>{yun:}if $v.breakjob_num>0{/yun}<span class="buymeal_resources_detailed_n">{yun:}$v.breakjob_num{/yun}</span>{yun:}t key='common_02089'{/yun}{yun:}else{/yun}-{yun:}/if{/yun}</div>
-									<div class="buymeal_resources_detailed"><span class="buymeal_resources_detailedname">{yun:}t key='wap_com_job_00047'{/yun}</span>{yun:}if $v.top_num>0{/yun}<span class="buymeal_resources_detailed_n">{yun:}$v.top_num{/yun}</span>{yun:}t key='common_02067'{/yun}{yun:}else{/yun}-{yun:}/if{/yun}</div>
-									<div class="buymeal_resources_detailed"><span class="buymeal_resources_detailedname">{yun:}t key='member_com_jobadd_00024'{/yun}</span>{yun:}if $v.urgent_num>0{/yun}<span class="buymeal_resources_detailed_n">{yun:}$v.urgent_num{/yun}</span>{yun:}t key='common_02067'{/yun}{yun:}else{/yun}-{yun:}/if{/yun}</div>
+									<div class="buymeal_resources_detailed"><span class="buymeal_resources_detailedname">{yun:}t key='wap_com_00044'{/yun}</span>{yun:}if $v.job_num>0{/yun}<span class="buymeal_resources_detailed_n">{yun:}$v.job_num{/yun}</span>{yun:}t key='common_02052'{/yun}{yun:}else{/yun}-{yun:}/if{/yun}</div>
+									<div class="buymeal_resources_detailed"><span class="buymeal_resources_detailedname">{yun:}t key='wap_com_00237'{/yun}</span>{yun:}if $v.rec_num>0{/yun}<span class="buymeal_resources_detailed_n">{yun:}$v.rec_num{/yun}</span>{yun:}t key='common_02067'{/yun}{yun:}else{/yun}-{yun:}/if{/yun}</div>
+									<div class="buymeal_resources_detailed"><span class="buymeal_resources_detailedname">{yun:}t key='wap_com_00045'{/yun}</span>{yun:}if $v.breakjob_num>0{/yun}<span class="buymeal_resources_detailed_n">{yun:}$v.breakjob_num{/yun}</span>{yun:}t key='common_02089'{/yun}{yun:}else{/yun}-{yun:}/if{/yun}</div>
+									<div class="buymeal_resources_detailed"><span class="buymeal_resources_detailedname">{yun:}t key='wap_com_00238'{/yun}</span>{yun:}if $v.top_num>0{/yun}<span class="buymeal_resources_detailed_n">{yun:}$v.top_num{/yun}</span>{yun:}t key='common_02067'{/yun}{yun:}else{/yun}-{yun:}/if{/yun}</div>
+									<div class="buymeal_resources_detailed"><span class="buymeal_resources_detailedname">{yun:}t key='member_com_00247'{/yun}</span>{yun:}if $v.urgent_num>0{/yun}<span class="buymeal_resources_detailed_n">{yun:}$v.urgent_num{/yun}</span>{yun:}t key='common_02067'{/yun}{yun:}else{/yun}-{yun:}/if{/yun}</div>
 									{yun:}else{/yun}
-									<div class="buymeal_resources_detailed"><span class="buymeal_resources_detailedname">{yun:}t key='wap_com_com_00007'{/yun}</span><span class="buymeal_resources_detailed_n">{yun:}$v.lt_job_num{/yun}</span>{yun:}t key='common_02052'{/yun}</div>
-									<div class="buymeal_resources_detailed"><span class="buymeal_resources_detailedname">{yun:}t key='wap_com_com_00008'{/yun}</span><span class="buymeal_resources_detailed_n">{yun:}$v.lt_breakjob_num{/yun}</span>{yun:}t key='common_02089'{/yun}</div>
+									<div class="buymeal_resources_detailed"><span class="buymeal_resources_detailedname">{yun:}t key='wap_com_00044'{/yun}</span><span class="buymeal_resources_detailed_n">{yun:}$v.lt_job_num{/yun}</span>{yun:}t key='common_02052'{/yun}</div>
+									<div class="buymeal_resources_detailed"><span class="buymeal_resources_detailedname">{yun:}t key='wap_com_00045'{/yun}</span><span class="buymeal_resources_detailed_n">{yun:}$v.lt_breakjob_num{/yun}</span>{yun:}t key='common_02089'{/yun}</div>
 									{yun:}/if{/yun}
 								</div>
 								{yun:}if $usertype == 2{/yun}
-								<!--{yun:}t key='wap_com_server_00019'{/yun}-->
+								<!--{yun:}t key='wap_com_00376'{/yun}-->
 								<div class="buymeal_resources_list">
-									<div class="buymeal_resources_name">{yun:}t key='wap_com_server_00019'{/yun}</div>
-									<div class="buymeal_resources_detailed"><span class="buymeal_resources_detailedname">{yun:}t key='default_public_search_public_tips_00019'{/yun}</span>{yun:}if $v.zph_num>0{/yun}<span class="buymeal_resources_detailed_n">{yun:}$v.zph_num{/yun}</span>{yun:}t key='common_02089'{/yun}{yun:}else{/yun}-{yun:}/if{/yun}</div>
+									<div class="buymeal_resources_name">{yun:}t key='wap_com_00376'{/yun}</div>
+									<div class="buymeal_resources_detailed"><span class="buymeal_resources_detailedname">{yun:}t key='default_00081'{/yun}</span>{yun:}if $v.zph_num>0{/yun}<span class="buymeal_resources_detailed_n">{yun:}$v.zph_num{/yun}</span>{yun:}t key='common_02089'{/yun}{yun:}else{/yun}-{yun:}/if{/yun}</div>
 								</div>
 								{yun:}/if{/yun}
-								<!--{yun:}t key='wap_com_server_00024'{/yun}-->
-								{yun:}if $v.explains{/yun}<div class="buymeal_resources_explain">{yun:}t key='wap_com_server_00024'{/yun}：{yun:}$v.explains{/yun}</div>{yun:}/if{/yun}
+								<!--{yun:}t key='wap_com_00381'{/yun}-->
+								{yun:}if $v.explains{/yun}<div class="buymeal_resources_explain">{yun:}t key='wap_com_00381'{/yun}：{yun:}$v.explains{/yun}</div>{yun:}/if{/yun}
 								<i class="buymeal_resources_line"></i>
 							</div>
 						</div>
@@ -122,7 +122,7 @@
 								
 									{yun:}if $v.time_start < time() && $v.time_end > time(){/yun}
 										<div class="buymeal_price"><span class="buymeal_price_n">{yun:}$v.yh_price * $config.integral_proportion{/yun}</span>{yun:}$config.integral_pricename{/yun}</div>
-										<div class="buymeal_original_price">{yun:}t key='default_public_search_public_tips_00034'{/yun} <i class="buymeal_original_price_delete">{yun:}$v.service_price * $config.integral_proportion{/yun}</i> <span class="">{yun:}if $v.service_time>0{/yun}{yun:}$v.service_time{/yun}{yun:}t key='common_02067'{/yun}{yun:}else{/yun}{yun:}t key='api_wxapp_00019'{/yun}{yun:}/if{/yun}</span></div>
+										<div class="buymeal_original_price">{yun:}t key='default_00093'{/yun} <i class="buymeal_original_price_delete">{yun:}$v.service_price * $config.integral_proportion{/yun}</i> <span class="">{yun:}if $v.service_time>0{/yun}{yun:}$v.service_time{/yun}{yun:}t key='common_02067'{/yun}{yun:}else{/yun}{yun:}t key='api_wxapp_00019'{/yun}{yun:}/if{/yun}</span></div>
 									{yun:}else{/yun}
 										<div class="buymeal_price"><span class="buymeal_price_n">{yun:}$v.service_price * $config.integral_proportion{/yun}</span>{yun:}$config.integral_pricename{/yun}</div>
 										<div class="buymeal_original_price"><span class="">{yun:}if $v.service_time >0{/yun}{yun:}$v.service_time{/yun}{yun:}t key='common_02067'{/yun}{yun:}else{/yun}{yun:}t key='api_wxapp_00019'{/yun}{yun:}/if{/yun}</span></div>
@@ -132,81 +132,81 @@
 								
 									{yun:}if $v.time_start < time() && $v.time_end > time(){/yun}
 										<div class="buymeal_price"><span class="buymeal_price_n">{yun:}$v.yh_price{/yun}</span>{yun:}t key='common_02056'{/yun}</div>
-										<div class="buymeal_original_price">{yun:}t key='default_public_search_public_tips_00034'{/yun} <i class="buymeal_original_price_delete">{yun:}$v.service_price{/yun}</i> <span class="">{yun:}if $v.service_time>0{/yun}{yun:}$v.service_time{/yun}{yun:}t key='common_02067'{/yun}{yun:}else{/yun}{yun:}t key='api_wxapp_00019'{/yun}{yun:}/if{/yun}</span></div>
+										<div class="buymeal_original_price">{yun:}t key='default_00093'{/yun} <i class="buymeal_original_price_delete">{yun:}$v.service_price{/yun}</i> <span class="">{yun:}if $v.service_time>0{/yun}{yun:}$v.service_time{/yun}{yun:}t key='common_02067'{/yun}{yun:}else{/yun}{yun:}t key='api_wxapp_00019'{/yun}{yun:}/if{/yun}</span></div>
 									{yun:}else{/yun}
 										<div class="buymeal_price"><span class="buymeal_price_n">{yun:}$v.service_price{/yun}</span>{yun:}t key='common_02056'{/yun}</div>
 										<div class="buymeal_original_price"><span class="">{yun:}if $v.service_time>0{/yun}{yun:}$v.service_time{/yun}{yun:}t key='common_02067'{/yun}{yun:}else{/yun}{yun:}t key='api_wxapp_00019'{/yun}{yun:}/if{/yun}</span></div>
 									{yun:}/if{/yun}
 								
 								{yun:}/if{/yun}  
-								<div class="buymeal_purchase"><a href="javascript:void(0);" onclick='buyVip({yun:}$v.id{/yun})' class="buymeal_purchase_bth">{yun:}t key='member_user_resumetpl_00003'{/yun}</a></div>
+								<div class="buymeal_purchase"><a href="javascript:void(0);" onclick='buyVip({yun:}$v.id{/yun})' class="buymeal_purchase_bth">{yun:}t key='member_user_00285'{/yun}</a></div>
 							</div>
 							
 							<div class="buymeal_resources_cont">
-								<!--{yun:}t key='wap_com_server_00029'{/yun}-->
+								<!--{yun:}t key='wap_com_00386'{/yun}-->
 								<div class="buymeal_resources_list">
-									<div class="buymeal_resources_name">{yun:}t key='wap_com_server_00029'{/yun}</div>
+									<div class="buymeal_resources_name">{yun:}t key='wap_com_00386'{/yun}</div>
 									{yun:}if $usertype == 2{/yun}
 									<div class="buymeal_resources_detailed">
-										<span class="buymeal_resources_detailedname">{yun:}t key='wap_com_com_00009'{/yun}</span>
+										<span class="buymeal_resources_detailedname">{yun:}t key='wap_com_00046'{/yun}</span>
 										{yun:}if $v.interview > 0{/yun}<span class="buymeal_resources_detailed_n">{yun:}$v.interview{/yun}</span>{yun:}t key='common_02089'{/yun}/{yun:}t key='common_02083'{/yun}
 										{yun:}else{/yun}<span class="buymeal_resources_detailed_n">-</span>{yun:}/if{/yun}
 									</div>
 									<div class="buymeal_resources_detailed">
-										<span class="buymeal_resources_detailedname">{yun:}t key='wap_com_com_00005'{/yun}</span>
+										<span class="buymeal_resources_detailedname">{yun:}t key='wap_com_00042'{/yun}</span>
 										{yun:}if $v.resume > 0{/yun}<span class="buymeal_resources_detailed_n">{yun:}$v.resume{/yun}</span>{yun:}t key='common_02089'{/yun}/{yun:}t key='common_02083'{/yun}
 										{yun:}else{/yun}<span class="buymeal_resources_detailed_n">-</span>{yun:}/if{/yun}
 									</div>
 									{yun:}else{/yun}
 									<div class="buymeal_resources_detailed">
-										<span class="buymeal_resources_detailedname">{yun:}t key='wap_com_com_00005'{/yun}</span>
+										<span class="buymeal_resources_detailedname">{yun:}t key='wap_com_00042'{/yun}</span>
 										{yun:}if $v.lt_resume > 0{/yun}<span class="buymeal_resources_detailed_n">{yun:}$v.lt_resume{/yun}</span>{yun:}t key='common_02089'{/yun}/{yun:}t key='common_02083'{/yun}
 										{yun:}else{/yun}<span class="buymeal_resources_detailed_n">-</span>{yun:}/if{/yun}
 									</div>
 									{yun:}/if{/yun}
 								</div>
 								
-								<!--{yun:}t key='wap_com_server_00031'{/yun}-->
+								<!--{yun:}t key='wap_com_00388'{/yun}-->
 								<div class="buymeal_resources_list">
-									<div class="buymeal_resources_name">{yun:}t key='wap_com_server_00031'{/yun}</div>
+									<div class="buymeal_resources_name">{yun:}t key='wap_com_00388'{/yun}</div>
 									{yun:}if $usertype == 2{/yun}
 									<div class="buymeal_resources_detailed">
-										<span class="buymeal_resources_detailedname">{yun:}t key='wap_com_com_00007'{/yun}</span>
+										<span class="buymeal_resources_detailedname">{yun:}t key='wap_com_00044'{/yun}</span>
 										<span class="buymeal_resources_detailed_n">{yun:}$v.job_num{/yun}</span>{yun:}t key='common_02052'{/yun}
 									</div>
-									<div class="buymeal_resources_detailed"><span class="buymeal_resources_detailedname">{yun:}t key='wap_com_job_00046'{/yun}</span><span class="buymeal_resources_detailed_n">{yun:}$v.rec_num{/yun}</span>{yun:}if $v.rec_num>0{/yun}{yun:}t key='common_02067'{/yun}{yun:}/if{/yun}</div>
+									<div class="buymeal_resources_detailed"><span class="buymeal_resources_detailedname">{yun:}t key='wap_com_00237'{/yun}</span><span class="buymeal_resources_detailed_n">{yun:}$v.rec_num{/yun}</span>{yun:}if $v.rec_num>0{/yun}{yun:}t key='common_02067'{/yun}{yun:}/if{/yun}</div>
 									<div class="buymeal_resources_detailed">
-										<span class="buymeal_resources_detailedname">{yun:}t key='wap_com_com_00008'{/yun}</span>
+										<span class="buymeal_resources_detailedname">{yun:}t key='wap_com_00045'{/yun}</span>
 										{yun:}if $v.breakjob_num > 0{/yun}<span class="buymeal_resources_detailed_n">{yun:}$v.breakjob_num{/yun}</span>{yun:}t key='common_02089'{/yun}/{yun:}t key='common_02083'{/yun}
 										{yun:}else{/yun}<span class="buymeal_resources_detailed_n">-</span>{yun:}/if{/yun}
 									</div>
-									<div class="buymeal_resources_detailed"><span class="buymeal_resources_detailedname">{yun:}t key='wap_com_job_00047'{/yun}</span><span class="buymeal_resources_detailed_n">{yun:}$v.top_num{/yun}</span>{yun:}if $v.top_num>0{/yun}{yun:}t key='common_02067'{/yun}{yun:}/if{/yun}</div>
-									<div class="buymeal_resources_detailed"><span class="buymeal_resources_detailedname">{yun:}t key='member_com_jobadd_00024'{/yun}</span><span class="buymeal_resources_detailed_n">{yun:}$v.urgent_num{/yun}</span>{yun:}if $v.urgent_num>0{/yun}{yun:}t key='common_02067'{/yun}{yun:}/if{/yun}</div>
+									<div class="buymeal_resources_detailed"><span class="buymeal_resources_detailedname">{yun:}t key='wap_com_00238'{/yun}</span><span class="buymeal_resources_detailed_n">{yun:}$v.top_num{/yun}</span>{yun:}if $v.top_num>0{/yun}{yun:}t key='common_02067'{/yun}{yun:}/if{/yun}</div>
+									<div class="buymeal_resources_detailed"><span class="buymeal_resources_detailedname">{yun:}t key='member_com_00247'{/yun}</span><span class="buymeal_resources_detailed_n">{yun:}$v.urgent_num{/yun}</span>{yun:}if $v.urgent_num>0{/yun}{yun:}t key='common_02067'{/yun}{yun:}/if{/yun}</div>
 									{yun:}else{/yun}
 									<div class="buymeal_resources_detailed">
-										<span class="buymeal_resources_detailedname">{yun:}t key='wap_com_com_00007'{/yun}</span>
+										<span class="buymeal_resources_detailedname">{yun:}t key='wap_com_00044'{/yun}</span>
 										<span class="buymeal_resources_detailed_n">{yun:}$v.lt_job_num{/yun}</span>{yun:}t key='common_02052'{/yun}
 									</div>
 									<div class="buymeal_resources_detailed">
-										<span class="buymeal_resources_detailedname">{yun:}t key='wap_com_com_00008'{/yun}</span>
+										<span class="buymeal_resources_detailedname">{yun:}t key='wap_com_00045'{/yun}</span>
 										{yun:}if $v.lt_breakjob_num > 0{/yun}<span class="buymeal_resources_detailed_n">{yun:}$v.lt_breakjob_num{/yun}</span>{yun:}t key='common_02052'{/yun}/{yun:}t key='common_02083'{/yun}
 										{yun:}else{/yun}<span class="buymeal_resources_detailed_n">-</span>{yun:}/if{/yun}
 									</div>
 									{yun:}/if{/yun}
 								</div>
 								{yun:}if $usertype == 2{/yun}
-								<!--{yun:}t key='wap_com_server_00019'{/yun}-->
+								<!--{yun:}t key='wap_com_00376'{/yun}-->
 								<div class="buymeal_resources_list">
-									<div class="buymeal_resources_name">{yun:}t key='wap_com_server_00019'{/yun}</div>
+									<div class="buymeal_resources_name">{yun:}t key='wap_com_00376'{/yun}</div>
 									<div class="buymeal_resources_detailed">
-										<span class="buymeal_resources_detailedname">{yun:}t key='default_public_search_public_tips_00019'{/yun}</span>
+										<span class="buymeal_resources_detailedname">{yun:}t key='default_00081'{/yun}</span>
 										{yun:}if $v.zph_num > 0{/yun}<span class="buymeal_resources_detailed_n">{yun:}$v.zph_num{/yun}</span>{yun:}t key='common_02089'{/yun}/{yun:}t key='common_02083'{/yun}
 										{yun:}else{/yun}<span class="buymeal_resources_detailed_n">-</span>{yun:}/if{/yun}
 									</div>
 								</div>
 								{yun:}/if{/yun}
-								<!--{yun:}t key='member_com_info_00053'{/yun}-->
-								{yun:}if $v.explains{/yun}<div class="buymeal_resources_explain">{yun:}t key='wap_com_server_00024'{/yun}：{yun:}$v.explains{/yun}</div>{yun:}/if{/yun}
+								<!--{yun:}t key='member_com_00207'{/yun}-->
+								{yun:}if $v.explains{/yun}<div class="buymeal_resources_explain">{yun:}t key='wap_com_00381'{/yun}：{yun:}$v.explains{/yun}</div>{yun:}/if{/yun}
 								<i class="buymeal_resources_line"></i>
 							</div>
 						</div>
@@ -221,31 +221,31 @@
 				<div class="buymeal_incrementbox">
 					<table class="buymeal_increment" cellpadding="0" cellspacing="0">
 						<tr>
-							<th align="left" width="150">{yun:}t key='default_public_search_public_tips_00024'{/yun}</th>
-							<th align="left">{yun:}t key='default_public_search_public_tips_00025'{/yun}</th>
-							<th width="80">{yun:}t key='default_public_search_public_tips_00020'{/yun}</th>
-							<th width="100">{yun:}t key='default_public_search_public_tips_00015'{/yun}</th>
-							<th>{yun:}t key='member_user_atn_00003'{/yun}</th>
+							<th align="left" width="150">{yun:}t key='default_00086'{/yun}</th>
+							<th align="left">{yun:}t key='default_00087'{/yun}</th>
+							<th width="80">{yun:}t key='default_00082'{/yun}</th>
+							<th width="100">{yun:}t key='default_00077'{/yun}</th>
+							<th>{yun:}t key='member_user_00048'{/yun}</th>
 						</tr>
 						{yun:}foreach from=$add item=v{/yun}
 							<tr>
 								<td align="left">{yun:}$v.name{/yun}</td>
 								{yun:}if $usertype == 2{/yun}
 								<td align="left">
-									{yun:}if $v.interview{/yun}<div class="buymeal_increment_detailed"><span class="buymeal_increment_detailed_name">{yun:}t key='wap_com_com_00009'{/yun} </span><span class="buymeal_increment_detailed_n">{yun:}$v.interview{/yun}</span>{yun:}t key='common_02052'{/yun}</div>{yun:}/if{/yun}
-									{yun:}if $v.resume{/yun}<div class="buymeal_increment_detailed"><span class="buymeal_increment_detailed_name">{yun:}t key='wap_com_com_00005'{/yun}</span><span class="buymeal_increment_detailed_n">{yun:}$v.resume{/yun}</span>{yun:}t key='common_02052'{/yun}</div>{yun:}/if{/yun}
-									{yun:}if $v.job_num{/yun}<div class="buymeal_increment_detailed"><span class="buymeal_increment_detailed_name">{yun:}t key='wap_com_com_00007'{/yun} </span><span class="buymeal_increment_detailed_n">{yun:}$v.job_num{/yun}</span>{yun:}t key='common_02052'{/yun}</div>{yun:}/if{/yun}
-									{yun:}if $v.breakjob_num{/yun}<div class="buymeal_increment_detailed"><span class="buymeal_increment_detailed_name">{yun:}t key='wap_com_integral_reduce_00008'{/yun} </span><span class="buymeal_increment_detailed_n">{yun:}$v.breakjob_num{/yun}</span>{yun:}t key='common_02052'{/yun}</div>{yun:}/if{/yun}
-									{yun:}if $v.top_num{/yun}<div class="buymeal_increment_detailed"><span class="buymeal_increment_detailed_name">{yun:}t key='wap_com_job_00047'{/yun} </span><span class="buymeal_increment_detailed_n">{yun:}$v.top_num{/yun}</span>{yun:}t key='common_02067'{/yun}</div>{yun:}/if{/yun}
-									{yun:}if $v.rec_num{/yun}<div class="buymeal_increment_detailed"><span class="buymeal_increment_detailed_name">{yun:}t key='wap_com_job_00046'{/yun} </span><span class="buymeal_increment_detailed_n">{yun:}$v.rec_num{/yun}</span>{yun:}t key='common_02067'{/yun}</div>{yun:}/if{/yun}
+									{yun:}if $v.interview{/yun}<div class="buymeal_increment_detailed"><span class="buymeal_increment_detailed_name">{yun:}t key='wap_com_00046'{/yun} </span><span class="buymeal_increment_detailed_n">{yun:}$v.interview{/yun}</span>{yun:}t key='common_02052'{/yun}</div>{yun:}/if{/yun}
+									{yun:}if $v.resume{/yun}<div class="buymeal_increment_detailed"><span class="buymeal_increment_detailed_name">{yun:}t key='wap_com_00042'{/yun}</span><span class="buymeal_increment_detailed_n">{yun:}$v.resume{/yun}</span>{yun:}t key='common_02052'{/yun}</div>{yun:}/if{/yun}
+									{yun:}if $v.job_num{/yun}<div class="buymeal_increment_detailed"><span class="buymeal_increment_detailed_name">{yun:}t key='wap_com_00044'{/yun} </span><span class="buymeal_increment_detailed_n">{yun:}$v.job_num{/yun}</span>{yun:}t key='common_02052'{/yun}</div>{yun:}/if{/yun}
+									{yun:}if $v.breakjob_num{/yun}<div class="buymeal_increment_detailed"><span class="buymeal_increment_detailed_name">{yun:}t key='wap_com_00029'{/yun} </span><span class="buymeal_increment_detailed_n">{yun:}$v.breakjob_num{/yun}</span>{yun:}t key='common_02052'{/yun}</div>{yun:}/if{/yun}
+									{yun:}if $v.top_num{/yun}<div class="buymeal_increment_detailed"><span class="buymeal_increment_detailed_name">{yun:}t key='wap_com_00238'{/yun} </span><span class="buymeal_increment_detailed_n">{yun:}$v.top_num{/yun}</span>{yun:}t key='common_02067'{/yun}</div>{yun:}/if{/yun}
+									{yun:}if $v.rec_num{/yun}<div class="buymeal_increment_detailed"><span class="buymeal_increment_detailed_name">{yun:}t key='wap_com_00237'{/yun} </span><span class="buymeal_increment_detailed_n">{yun:}$v.rec_num{/yun}</span>{yun:}t key='common_02067'{/yun}</div>{yun:}/if{/yun}
 									{yun:}if $v.urgent_num{/yun}<div class="buymeal_increment_detailed"><span class="buymeal_increment_detailed_name">紧急招聘 </span><span class="buymeal_increment_detailed_n">{yun:}$v.urgent_num{/yun}</span>{yun:}t key='common_02067'{/yun}</div>{yun:}/if{/yun}
-									{yun:}if $v.zph_num{/yun}<div class="buymeal_increment_detailed"><span class="buymeal_increment_detailed_name">{yun:}t key='admin_user_company_component_comrating_server_detail_00002'{/yun} </span><span class="buymeal_increment_detailed_n">{yun:}$v.zph_num{/yun}</span>{yun:}t key='common_02089'{/yun}</div>{yun:}/if{/yun}
+									{yun:}if $v.zph_num{/yun}<div class="buymeal_increment_detailed"><span class="buymeal_increment_detailed_name">{yun:}t key='admin_user_company_00210'{/yun} </span><span class="buymeal_increment_detailed_n">{yun:}$v.zph_num{/yun}</span>{yun:}t key='common_02089'{/yun}</div>{yun:}/if{/yun}
 								</td>
 								{yun:}else{/yun}
 								<td align="left">
-									{yun:}if $v.resume{/yun}<div class="buymeal_increment_detailed"><span class="buymeal_increment_detailed_name">{yun:}t key='wap_com_com_00005'{/yun}</span><span class="buymeal_increment_detailed_n">{yun:}$v.resume{/yun}</span>{yun:}t key='common_02052'{/yun}</div>{yun:}/if{/yun}
-									{yun:}if $v.lt_job_num{/yun}<div class="buymeal_increment_detailed"><span class="buymeal_increment_detailed_name">{yun:}t key='wap_com_com_00007'{/yun} </span><span class="buymeal_increment_detailed_n">{yun:}$v.lt_job_num{/yun}</span>{yun:}t key='common_02052'{/yun}</div>{yun:}/if{/yun}
-									{yun:}if $v.lt_breakjob_num{/yun}<div class="buymeal_increment_detailed"><span class="buymeal_increment_detailed_name">{yun:}t key='wap_com_integral_reduce_00008'{/yun} </span><span class="buymeal_increment_detailed_n">{yun:}$v.lt_breakjob_num{/yun}</span>{yun:}t key='common_02052'{/yun}</div>{yun:}/if{/yun}
+									{yun:}if $v.resume{/yun}<div class="buymeal_increment_detailed"><span class="buymeal_increment_detailed_name">{yun:}t key='wap_com_00042'{/yun}</span><span class="buymeal_increment_detailed_n">{yun:}$v.resume{/yun}</span>{yun:}t key='common_02052'{/yun}</div>{yun:}/if{/yun}
+									{yun:}if $v.lt_job_num{/yun}<div class="buymeal_increment_detailed"><span class="buymeal_increment_detailed_name">{yun:}t key='wap_com_00044'{/yun} </span><span class="buymeal_increment_detailed_n">{yun:}$v.lt_job_num{/yun}</span>{yun:}t key='common_02052'{/yun}</div>{yun:}/if{/yun}
+									{yun:}if $v.lt_breakjob_num{/yun}<div class="buymeal_increment_detailed"><span class="buymeal_increment_detailed_name">{yun:}t key='wap_com_00029'{/yun} </span><span class="buymeal_increment_detailed_n">{yun:}$v.lt_breakjob_num{/yun}</span>{yun:}t key='common_02052'{/yun}</div>{yun:}/if{/yun}
 								</td>
 								{yun:}/if{/yun}
 								{yun:}if $config.com_integral_online==3 && !in_array(pack, $sy_only_price){/yun}
@@ -253,10 +253,10 @@
 									<td align="center">
 										{yun:}if $discount.service_discount{/yun}
 											<span class="buymeal_resources_price">{yun:}$v.service_price * $config.integral_proportion * $discount.service_discount * 0.01{/yun}{yun:}$config.integral_pricename{/yun}</span>
-											<div class="buymeal_resources_detailed_zk">{yun:}t key='wap_com_finance_00004'{/yun}{yun:}$discount.service_discount{/yun}折优惠</div>
+											<div class="buymeal_resources_detailed_zk">{yun:}t key='wap_com_00067'{/yun}{yun:}$discount.service_discount{/yun}折优惠</div>
 										{yun:}else{/yun}
-											<span class="buymeal_resources_price"> {yun:}t key='member_com_partadd_00004'{/yun}</span>
-											<div class="buymeal_resources_detailed_zk">{yun:}t key='default_public_search_public_tips_00022'{/yun}</div>
+											<span class="buymeal_resources_price"> {yun:}t key='member_com_00308'{/yun}</span>
+											<div class="buymeal_resources_detailed_zk">{yun:}t key='default_00084'{/yun}</div>
 										{yun:}/if{/yun}
 									</td>
 								{yun:}else{/yun}
@@ -264,15 +264,15 @@
 									<td align="center">
 										{yun:}if $discount.service_discount{/yun}
 											<span class="buymeal_resources_price">{yun:}$v.service_price * $discount.service_discount * 0.01{/yun}{yun:}t key='common_02056'{/yun}</span>
-											<div class="buymeal_resources_detailed_zk">{yun:}t key='wap_com_finance_00004'{/yun}{yun:}$discount.service_discount{/yun}折优惠</div>
+											<div class="buymeal_resources_detailed_zk">{yun:}t key='wap_com_00067'{/yun}{yun:}$discount.service_discount{/yun}折优惠</div>
 										{yun:}else{/yun}
-											<span class="buymeal_resources_price"> {yun:}t key='member_com_partadd_00004'{/yun}</span>
-											<div class="buymeal_resources_detailed_zk">{yun:}t key='default_public_search_public_tips_00022'{/yun}</div>
+											<span class="buymeal_resources_price"> {yun:}t key='member_com_00308'{/yun}</span>
+											<div class="buymeal_resources_detailed_zk">{yun:}t key='default_00084'{/yun}</div>
 										{yun:}/if{/yun}
 									</td>
 								{yun:}/if{/yun} 
 								
-								<td align="center"><a href="javascript:void(0);" onclick='buyPack({yun:}$v.id{/yun},{yun:}$statis.vip_etime{/yun},{yun:}$todayStart{/yun})' class="buymeal_resources_bth">{yun:}t key='member_user_resumetpl_00003'{/yun}</a></td>
+								<td align="center"><a href="javascript:void(0);" onclick='buyPack({yun:}$v.id{/yun},{yun:}$statis.vip_etime{/yun},{yun:}$todayStart{/yun})' class="buymeal_resources_bth">{yun:}t key='member_user_00285'{/yun}</a></td>
 							</tr>
 						{yun:}/foreach{/yun}
 					</table>
@@ -287,36 +287,36 @@
 				<!--情况三，强制使用金额消费模式-->
 				<div class="new_pattern_paybox" style="padding-top:5px;">
 					<div id="dayslist" class="new_pattern_paylist none">
-						<span id="promote_name" class="new_pattern_paylist_name">{yun:}t key='default_public_search_public_tips_00021'{/yun}</span>
+						<span id="promote_name" class="new_pattern_paylist_name">{yun:}t key='default_00083'{/yun}</span>
 						<label class="new_pattern_paylist_choice"><input type="radio" name='days' value="1" onclick="checkRadio(this.value,'radio')" checked="true" />1{yun:}t key='common_02067'{/yun}</label>
 						<label class="new_pattern_paylist_choice"><input type="radio" name='days' value="3" onclick="checkRadio(this.value,'radio')" />3{yun:}t key='common_02067'{/yun}</label>
 						<label class="new_pattern_paylist_choice"><input type="radio" name='days' value="7" onclick="checkRadio(this.value,'radio')" />7{yun:}t key='common_02067'{/yun}</label>
 						<label class="new_pattern_paylist_choice"><input type="radio" name='days' value="15" onclick="checkRadio(this.value,'radio')" />15{yun:}t key='common_02067'{/yun}</label>
 						<label class="new_pattern_paylist_choice"><input type="radio" name='days' value="30" onclick="checkRadio(this.value,'radio')" />30{yun:}t key='common_02067'{/yun}</label>
-						<input type="text" id='xdays' name='xdays' onclick="radioClean(this.value)" onkeyup="checkRadio(this.value,'input')" maxlength="3" oninput="myFunction(this)"  value="" placeholder="{yun:}t key='default_public_search_public_tips_00012'{/yun}" class="new_pattern_paylist_choice_text" />
+						<input type="text" id='xdays' name='xdays' onclick="radioClean(this.value)" onkeyup="checkRadio(this.value,'input')" maxlength="3" oninput="myFunction(this)"  value="" placeholder="{yun:}t key='default_00074'{/yun}" class="new_pattern_paylist_choice_text" />
 					</div>
 					<div class="new_pattern_paylist">
-						<span class="new_pattern_paylist_name">{yun:}t key='default_public_search_public_tips_00018'{/yun}</span>  
-						<div class="new_pattern_paylist_tip">{yun:}t key='default_public_search_public_tips_00010'{/yun}<span class="single_box_price" id='price_int'></span>{yun:}t key='common_02056'{/yun}</div>
+						<span class="new_pattern_paylist_name">{yun:}t key='default_00080'{/yun}</span>  
+						<div class="new_pattern_paylist_tip">{yun:}t key='default_00072'{/yun}<span class="single_box_price" id='price_int'></span>{yun:}t key='common_02056'{/yun}</div>
 					</div>
 					 
 					
 					<div class='price_single_member'>
 					 
 						<div class="single_list">
-							<span class="single_left">{yun:}t key='default_public_search_public_tips_00030'{/yun}</span>
+							<span class="single_left">{yun:}t key='default_00091'{/yun}</span>
 							<span class="single_payprice"><em class="single_payprice_n" id="single_order_price"></em> {yun:}t key='common_02056'{/yun}</span>
 						</div>
 						
 						<form name="alipayment" id="payform_server" action="../api/alipay/alipayto.php" method="post" target="_blank" onsubmit="return payforms('single');">
 							<div class="single_list">
 								{yun:}if $config.alipay=='1'{/yun}
-									<span class="single_left">{yun:}t key='default_public_search_public_tips_00014'{/yun}</span>
+									<span class="single_left">{yun:}t key='default_00076'{/yun}</span>
 									{yun:}if $config.alipay=='1'{/yun}
-										<a href="javascript:void(0);" onclick="payVip('alipay','payform_server','single')" class="single_paybth single_paybthzfb">{yun:}t key='default_public_search_public_tips_00009'{/yun}</a>
+										<a href="javascript:void(0);" onclick="payVip('alipay','payform_server','single')" class="single_paybth single_paybthzfb">{yun:}t key='default_00071'{/yun}</a>
 									{yun:}/if{/yun}
 									{yun:}if $config.bank=='1'{/yun}
-										<a href="javascript:void(0);" onclick="payVip('bank','payform_vip','all')" class="single_paybth single_paybthyl">{yun:}t key='member_user_payment_00001'{/yun}</a>
+										<a href="javascript:void(0);" onclick="payVip('bank','payform_vip','all')" class="single_paybth single_paybthyl">{yun:}t key='member_user_00243'{/yun}</a>
 									{yun:}/if{/yun}
 								{yun:}/if{/yun} 
 							</div>
@@ -331,13 +331,13 @@
 				{yun:}elseif $config.com_integral_online == 3 {/yun}
 				<div class="new_pattern_paybox">
 					<div id="dayslist" class="new_pattern_paylist none">
-						<span id="promote_name" class="new_pattern_paylist_name">{yun:}t key='default_public_search_public_tips_00021'{/yun}</span>
+						<span id="promote_name" class="new_pattern_paylist_name">{yun:}t key='default_00083'{/yun}</span>
 						<label class="new_pattern_paylist_choice"><input type="radio" name='days' value="1" onclick="checkRadio(this.value,'radio')" checked="checked" />1{yun:}t key='common_02067'{/yun}</label>
 						<label class="new_pattern_paylist_choice"><input type="radio" name='days' value="3" onclick="checkRadio(this.value,'radio')" />3{yun:}t key='common_02067'{/yun}</label>
 						<label class="new_pattern_paylist_choice"><input type="radio" name='days' value="7" onclick="checkRadio(this.value,'radio')" />7{yun:}t key='common_02067'{/yun}</label>
 						<label class="new_pattern_paylist_choice"><input type="radio" name='days' value="15" onclick="checkRadio(this.value,'radio')" />15{yun:}t key='common_02067'{/yun}</label>
 						<label class="new_pattern_paylist_choice"><input type="radio" name='days' value="30" onclick="checkRadio(this.value,'radio')" />30{yun:}t key='common_02067'{/yun}</label>
-						<input type="text" id='xdays' name='xdays' onclick="radioClean(this.value)" onkeyup="checkRadio(this.value,'input')" maxlength="3" oninput="myFunction(this)" value="" placeholder="{yun:}t key='default_public_search_public_tips_00012'{/yun}" class="new_pattern_paylist_choice_text" />
+						<input type="text" id='xdays' name='xdays' onclick="radioClean(this.value)" onkeyup="checkRadio(this.value,'input')" maxlength="3" oninput="myFunction(this)" value="" placeholder="{yun:}t key='default_00074'{/yun}" class="new_pattern_paylist_choice_text" />
 					</div>
 
 	          		<div class="new_pattern_paylist cI3_server">
@@ -347,28 +347,28 @@
 							<span class="single_box_price" id="single_integral"></span>{yun:}$config.integral_pricename{/yun}
 						</div>
 	           		</div>
-	           		<!--{yun:}t key='member_user_job_00011'{/yun}1： 积分不足情况积分购买-->
+	           		<!--{yun:}t key='member_user_00181'{/yun}1： 积分不足情况积分购买-->
 	           		<div id='pay_integral_buy'>
 		           		
 		           		<div class="new_pattern_paylist cI3_server">
 		           			<span class="new_pattern_paylist_name">{yun:}t key='common_01946'{/yun}{yun:}$config.integral_pricename{/yun}：</span>
-		           			<input type="text" value="" id="integral_int" maxlength='6' onkeyup="checkIntegralPaySingle({yun:}$statis.integral{/yun}, {yun:}$config.integral_min_recharge{/yun}, {yun:}$config.integral_proportion{/yun});" oninput="myFunction(this)" placeholder="请输入充值{yun:}$config.integral_pricename{/yun}{yun:}t key='admin_tool_database_component_dboptimize_00002'{/yun}" class="single_text" />
-							<div style="width:400px; float: left; padding-left:10px;color:#999;line-height: 33px;">{yun:}t key='default_public_search_public_tips_00027'{/yun}<font color="red"> {yun:}$config.integral_min_recharge{/yun}</font> {yun:}$config.integral_pricename{/yun} ,兑换比为1{yun:}t key='common_02056'{/yun}={yun:}$config.integral_proportion{/yun}{yun:}$config.integral_priceunit{/yun}{yun:}$config.integral_pricename{/yun}</div>
+		           			<input type="text" value="" id="integral_int" maxlength='6' onkeyup="checkIntegralPaySingle({yun:}$statis.integral{/yun}, {yun:}$config.integral_min_recharge{/yun}, {yun:}$config.integral_proportion{/yun});" oninput="myFunction(this)" placeholder="请输入充值{yun:}$config.integral_pricename{/yun}{yun:}t key='admin_tool_00214'{/yun}" class="single_text" />
+							<div style="width:400px; float: left; padding-left:10px;color:#999;line-height: 33px;">{yun:}t key='default_00088'{/yun}<font color="red"> {yun:}$config.integral_min_recharge{/yun}</font> {yun:}$config.integral_pricename{/yun} ,兑换比为1{yun:}t key='common_02056'{/yun}={yun:}$config.integral_proportion{/yun}{yun:}$config.integral_priceunit{/yun}{yun:}$config.integral_pricename{/yun}</div>
 		           		</div>
 		           		<div class="new_pattern_paylist">
-		           			<span class="new_pattern_paylist_name">{yun:}t key='default_public_search_public_tips_00030'{/yun}</span>
+		           			<span class="new_pattern_paylist_name">{yun:}t key='default_00091'{/yun}</span>
 		           			<span class="single_payprice"><em class="single_payprice_n" id="price_int"></em> {yun:}t key='common_02056'{/yun}</span>
 		           		</div>
 		           		
 		            	<form name="alipayment" id="payform_server" action="../api/alipay/alipayto.php" method="post" target="_blank" onsubmit="return payforms('single');">
 			            	<div class="new_pattern_paylist">
 			            		{yun:}if $config.alipay=='1'{/yun}
-				            		<span class="new_pattern_paylist_name">{yun:}t key='default_public_search_public_tips_00014'{/yun}</span>
+				            		<span class="new_pattern_paylist_name">{yun:}t key='default_00076'{/yun}</span>
 							 		{yun:}if $config.alipay=='1'{/yun}
-				            			<a href="javascript:void(0);" onclick="payVip('alipay','payform_server','single')" class="single_paybth single_paybthzfb">{yun:}t key='default_public_search_public_tips_00009'{/yun}</a>
+				            			<a href="javascript:void(0);" onclick="payVip('alipay','payform_server','single')" class="single_paybth single_paybthzfb">{yun:}t key='default_00071'{/yun}</a>
 				            		{yun:}/if{/yun}
 									{yun:}if $config.bank=='1'{/yun}
-										<a href="javascript:void(0);" onclick="payVip('bank','payform_vip','all')" class="single_paybth single_paybthyl">{yun:}t key='member_user_payment_00001'{/yun}</a>
+										<a href="javascript:void(0);" onclick="payVip('bank','payform_vip','all')" class="single_paybth single_paybthyl">{yun:}t key='member_user_00243'{/yun}</a>
 									{yun:}/if{/yun}
 				            	{yun:}/if{/yun}
 			            	</div>
@@ -380,15 +380,15 @@
 		            	</form>
 	            	</div>
 	            	
-	            	<!--{yun:}t key='member_user_job_00011'{/yun}2： 积分充足-->
+	            	<!--{yun:}t key='member_user_00181'{/yun}2： 积分充足-->
 	            	<div id='integral_buy'>
 		            	<div class="new_pattern_paylist cI3_server">
 	            			<span class="new_pattern_paylist_name">&nbsp;</span>
-	            			<a href="javascript:void(0);" onclick="integralBuy();" class="new_pattern_paylist_bth">{yun:}t key='wap_user_pay_00001'{/yun}</a> 
+	            			<a href="javascript:void(0);" onclick="integralBuy();" class="new_pattern_paylist_bth">{yun:}t key='wap_user_00307'{/yun}</a> 
 	            		</div>
 	              		<div class="new_pattern_paylist cI3_server">
 	              			<span class="new_pattern_paylist_name">&nbsp;</span>  
-	              			<div class="new_pattern_paylist_tip_b">{yun:}t key='wap_com_server_00005'{/yun}</div>
+	              			<div class="new_pattern_paylist_tip_b">{yun:}t key='wap_com_00362'{/yun}</div>
 	              		</div>
 	            	</div>
 					
@@ -399,36 +399,36 @@
 				<!--情况三，强制使用金额消费模式-->
 				<div class="new_pattern_paybox" style="padding-top:5px;">
 					<div id="dayslist" class="new_pattern_paylist none">
-						<span id="promote_name" class="new_pattern_paylist_name">{yun:}t key='default_public_search_public_tips_00021'{/yun}</span>
+						<span id="promote_name" class="new_pattern_paylist_name">{yun:}t key='default_00083'{/yun}</span>
 						<label class="new_pattern_paylist_choice"><input type="radio" name='days' value="1" onclick="checkRadio(this.value,'radio')" checked="true" />1{yun:}t key='common_02067'{/yun}</label>
 						<label class="new_pattern_paylist_choice"><input type="radio" name='days' value="3" onclick="checkRadio(this.value,'radio')" />3{yun:}t key='common_02067'{/yun}</label>
 						<label class="new_pattern_paylist_choice"><input type="radio" name='days' value="7" onclick="checkRadio(this.value,'radio')" />7{yun:}t key='common_02067'{/yun}</label>
 						<label class="new_pattern_paylist_choice"><input type="radio" name='days' value="15" onclick="checkRadio(this.value,'radio')" />15{yun:}t key='common_02067'{/yun}</label>
 						<label class="new_pattern_paylist_choice"><input type="radio" name='days' value="30" onclick="checkRadio(this.value,'radio')" />30{yun:}t key='common_02067'{/yun}</label>
-						<input type="text" id='xdays' name='xdays' onclick="radioClean(this.value)" onkeyup="checkRadio(this.value,'input')" maxlength="3" oninput="myFunction(this)"  value="" placeholder="{yun:}t key='default_public_search_public_tips_00012'{/yun}" class="new_pattern_paylist_choice_text" />
+						<input type="text" id='xdays' name='xdays' onclick="radioClean(this.value)" onkeyup="checkRadio(this.value,'input')" maxlength="3" oninput="myFunction(this)"  value="" placeholder="{yun:}t key='default_00074'{/yun}" class="new_pattern_paylist_choice_text" />
 					</div>
 					<div class="new_pattern_paylist">
-						<span class="new_pattern_paylist_name">{yun:}t key='default_public_search_public_tips_00018'{/yun}</span>  
-						<div class="new_pattern_paylist_tip">{yun:}t key='default_public_search_public_tips_00010'{/yun}<span class="single_box_price" id='price_int'></span>{yun:}t key='common_02056'{/yun}</div>
+						<span class="new_pattern_paylist_name">{yun:}t key='default_00080'{/yun}</span>  
+						<div class="new_pattern_paylist_tip">{yun:}t key='default_00072'{/yun}<span class="single_box_price" id='price_int'></span>{yun:}t key='common_02056'{/yun}</div>
 					</div>
 					 
 	    
 					<div class='price_single_member'>
 					 
 						<div class="single_list">
-							<span class="single_left">{yun:}t key='default_public_search_public_tips_00030'{/yun}</span>
+							<span class="single_left">{yun:}t key='default_00091'{/yun}</span>
 							<span class="single_payprice"><em class="single_payprice_n" id="single_order_price"></em> {yun:}t key='common_02056'{/yun}</span>
 						</div>
 						
 						<form name="alipayment" id="payform_server" action="../api/alipay/alipayto.php" method="post" target="_blank" onsubmit="return payforms('single');">
 							<div class="single_list">
 								{yun:}if $config.alipay=='1'{/yun}
-									<span class="single_left">{yun:}t key='default_public_search_public_tips_00014'{/yun}</span>
+									<span class="single_left">{yun:}t key='default_00076'{/yun}</span>
 									{yun:}if $config.alipay=='1'{/yun}
-										<a href="javascript:void(0);" onclick="payVip('alipay','payform_server','single')" class="single_paybth single_paybthzfb">{yun:}t key='default_public_search_public_tips_00009'{/yun}</a>
+										<a href="javascript:void(0);" onclick="payVip('alipay','payform_server','single')" class="single_paybth single_paybthzfb">{yun:}t key='default_00071'{/yun}</a>
 									{yun:}/if{/yun}
 									{yun:}if $config.bank=='1'{/yun}
-										<a href="javascript:void(0);" onclick="payVip('bank','payform_vip','all')" class="single_paybth single_paybthyl">{yun:}t key='member_user_payment_00001'{/yun}</a>
+										<a href="javascript:void(0);" onclick="payVip('bank','payform_vip','all')" class="single_paybth single_paybthyl">{yun:}t key='member_user_00243'{/yun}</a>
 									{yun:}/if{/yun}
 								{yun:}/if{/yun} 
 							</div>
@@ -446,17 +446,17 @@
 				<!--情况四，金额抵扣消费模式-->
 				<div class="new_pattern_paybox"  style="padding-top:5px;">
 					<div id="dayslist" class="new_pattern_paylist none">
-						<span id="promote_name" class="new_pattern_paylist_name">{yun:}t key='default_public_search_public_tips_00021'{/yun}</span>
+						<span id="promote_name" class="new_pattern_paylist_name">{yun:}t key='default_00083'{/yun}</span>
 						<label class="new_pattern_paylist_choice"><input type="radio" name='days' value="1" onclick="checkRadio(this.value,'radio')" checked="true" />1{yun:}t key='common_02067'{/yun}</label>
 						<label class="new_pattern_paylist_choice"><input type="radio" name='days' value="3" onclick="checkRadio(this.value,'radio')" />3{yun:}t key='common_02067'{/yun}</label>
 						<label class="new_pattern_paylist_choice"><input type="radio" name='days' value="7" onclick="checkRadio(this.value,'radio')" />7{yun:}t key='common_02067'{/yun}</label>
 						<label class="new_pattern_paylist_choice"><input type="radio" name='days' value="15" onclick="checkRadio(this.value,'radio')" />15{yun:}t key='common_02067'{/yun}</label>
 						<label class="new_pattern_paylist_choice"><input type="radio" name='days' value="30" onclick="checkRadio(this.value,'radio')" />30{yun:}t key='common_02067'{/yun}</label>
-						<input type="text" id='xdays' name='xdays' onclick="radioClean(this.value)" onkeyup="checkRadio(this.value,'input')" maxlength="3" oninput="myFunction(this)"  value="" placeholder="{yun:}t key='default_public_search_public_tips_00012'{/yun}" class="new_pattern_paylist_choice_text" />
+						<input type="text" id='xdays' name='xdays' onclick="radioClean(this.value)" onkeyup="checkRadio(this.value,'input')" maxlength="3" oninput="myFunction(this)"  value="" placeholder="{yun:}t key='default_00074'{/yun}" class="new_pattern_paylist_choice_text" />
 					</div>
 					<div class="new_pattern_paylist">
-						<span class="new_pattern_paylist_name">{yun:}t key='default_public_search_public_tips_00018'{/yun}</span>  
-						<div class="new_pattern_paylist_tip">{yun:}t key='default_public_search_public_tips_00010'{/yun}<span class="single_box_price" id='price_int'></span>{yun:}t key='common_02056'{/yun}</div>
+						<span class="new_pattern_paylist_name">{yun:}t key='default_00080'{/yun}</span>  
+						<div class="new_pattern_paylist_tip">{yun:}t key='default_00072'{/yun}<span class="single_box_price" id='price_int'></span>{yun:}t key='common_02056'{/yun}</div>
 					</div>
 					
 	    
@@ -472,18 +472,18 @@
 					<div class='price_single_member'>
 					
 						<div class="single_list">
-							<span class="single_left">{yun:}t key='default_public_search_public_tips_00030'{/yun}</span>
+							<span class="single_left">{yun:}t key='default_00091'{/yun}</span>
 							<span class="single_payprice"><em class="single_payprice_n" id='single_order_price'></em> {yun:}t key='common_02056'{/yun}</span>
 						</div>
 						<form name="alipayment" id="payform_server" action="../api/alipay/alipayto.php" method="post" target="_blank" onsubmit="return payforms('single');">
 							<div class="single_list" id='server_pay_div'>
 								{yun:}if $config.alipay=='1'{/yun}
-									<span class="single_left">{yun:}t key='default_public_search_public_tips_00014'{/yun}</span>
+									<span class="single_left">{yun:}t key='default_00076'{/yun}</span>
 									{yun:}if $config.alipay=='1'{/yun}
-										<a href="javascript:void(0);" onclick="payVip('alipay','payform_server','single')" class="single_paybth single_paybthzfb">{yun:}t key='default_public_search_public_tips_00009'{/yun}</a>
+										<a href="javascript:void(0);" onclick="payVip('alipay','payform_server','single')" class="single_paybth single_paybthzfb">{yun:}t key='default_00071'{/yun}</a>
 									{yun:}/if{/yun}
 									{yun:}if $config.bank=='1'{/yun}
-										<a href="javascript:void(0);" onclick="payVip('bank','payform_vip','all')" class="single_paybth single_paybthyl">{yun:}t key='member_user_payment_00001'{/yun}</a>
+										<a href="javascript:void(0);" onclick="payVip('bank','payform_vip','all')" class="single_paybth single_paybthyl">{yun:}t key='member_user_00243'{/yun}</a>
 									{yun:}/if{/yun}
 								{yun:}/if{/yun} 
 							</div>
@@ -495,7 +495,7 @@
 	                		
 	                		<div class="single_list none" id='server_integral_div'>
 	                         	<span class="single_left">&nbsp;</span>
-								<a href="javascript:void(0);" onclick="integralBuy();" class="single_bth">{yun:}t key='default_public_search_public_tips_00028'{/yun}</a>
+								<a href="javascript:void(0);" onclick="integralBuy();" class="single_bth">{yun:}t key='default_00089'{/yun}</a>
 							</div>
 						</form>
 					</div>
@@ -529,7 +529,7 @@
 <!-- 服务价格显示参数begin -->
 <!-- 服务 -->
 <input type="hidden" id="pay_server" value="" />
-<!-- {yun:}t key='wap_zph_reserve_00002'{/yun} -->
+<!-- {yun:}t key='wap_00563'{/yun} -->
 <input type="hidden" id="server_intrgral_name" value="{yun:}$config.integral_name{/yun}" />
 <input type="hidden" id="server_integral_job" value="{yun:}$config.integral_job{/yun}" />
 <input type="hidden" id="server_integral_jobefresh" value="{yun:}$config.integral_jobefresh{/yun}" />
@@ -549,63 +549,63 @@
 <!--方式二.积分购买-->
 <div class="yun_purchase_payment mt20 none" style="margin-left:20px;" id='buyVipDiv_2'>
 	<div class="yun_purchase_payment_tit">
-		<span class="yun_purchase_payment_titname">{yun:}t key='member_user_resumetpl_00003'{/yun}<span class="" id='service_name_2'></span></span>
+		<span class="yun_purchase_payment_titname">{yun:}t key='member_user_00285'{/yun}<span class="" id='service_name_2'></span></span>
 	</div>
 	<div class="yun_purchase_payment_tip">
 		您当前拥有<span class="single_box_price">{yun:}$statis.integral{/yun}</span>{yun:}$config.integral_pricename{/yun} , 本次购买需扣除<span class="single_box_price" id='vip_order_price_2'></span>{yun:}$config.integral_pricename{/yun}
 	</div>
 	<div class="single_bthbox">
-		<a href="javascript:void(0);" onclick="integralBuy();" class="single_bth">{yun:}t key='default_public_search_public_tips_00028'{/yun}</a>
+		<a href="javascript:void(0);" onclick="integralBuy();" class="single_bth">{yun:}t key='default_00089'{/yun}</a>
 	</div>
-	<div class="single_tip">{yun:}t key='wap_com_server_00005'{/yun}</div>
+	<div class="single_tip">{yun:}t key='wap_com_00362'{/yun}</div>
 </div>
 
 <!--方式三.积分购买但余额不足-->
 <div class="yun_purchase_payment mt20 none" style="margin-left:20px;" id='buyVipDiv_3'>
 	<div class="yun_purchase_payment_tittwo">
-		<span class="yun_purchase_payment_titname">{yun:}t key='member_user_resumetpl_00003'{/yun}<span id='service_name_3'></span></span>
+		<span class="yun_purchase_payment_titname">{yun:}t key='member_user_00285'{/yun}<span id='service_name_3'></span></span>
 	</div>
 	
 	<div class="yun_purchase_payment_list">
 		<span class="yun_purchase_payment_listname">产品价格：</span>
 		<div class="yun_purchase_payment_price">
 			<span class="yun_purchase_payment_price_n" id='service_price_3'></span> {yun:}$config.integral_pricename{/yun} 
-			<span class="yun_purchase_payment_price_yj" id='origin_tag_3'>{yun:}t key='default_public_search_public_tips_00034'{/yun}：<i class="buymeal_original_price_delete" id='service_origin_price_3'></i></span>
+			<span class="yun_purchase_payment_price_yj" id='origin_tag_3'>{yun:}t key='default_00093'{/yun}：<i class="buymeal_original_price_delete" id='service_origin_price_3'></i></span>
 		</div>
 	</div>
 	
 	<div class="yun_purchase_payment_list">
 		<span class="yun_purchase_payment_listname">{yun:}$config.integral_pricename{/yun}{yun:}t key='common_01946'{/yun}：</span>
-		<input type="text" value="" id='integral_int_vip' name='integral_int_vip' maxlength='6' onkeyup="checkIntegralPay({yun:}$statis.integral{/yun}, {yun:}$config.integral_min_recharge{/yun}, {yun:}$config.integral_proportion{/yun});" oninput="myFunction(this)" placeholder="{yun:}t key='default_public_search_public_tips_00013'{/yun}"  class="yun_purchase_text" >
+		<input type="text" value="" id='integral_int_vip' name='integral_int_vip' maxlength='6' onkeyup="checkIntegralPay({yun:}$statis.integral{/yun}, {yun:}$config.integral_min_recharge{/yun}, {yun:}$config.integral_proportion{/yun});" oninput="myFunction(this)" placeholder="{yun:}t key='default_00075'{/yun}"  class="yun_purchase_text" >
 		<span class="single_dq">您当前拥有<span class="single_box_price">{yun:}$statis.integral{/yun}</span>{yun:}$config.integral_pricename{/yun}</span>
 		
 	</div>
-	<div class="new_pattern_paylist_tip" style="padding-left:130px;color:#999">{yun:}t key='default_public_search_public_tips_00027'{/yun} <font color="red">{yun:}$config.integral_min_recharge{/yun}</font> {yun:}$config.integral_pricename{/yun},兑换比为1{yun:}t key='common_02056'{/yun}={yun:}$config.integral_proportion{/yun}{yun:}$config.integral_priceunit{/yun}{yun:}$config.integral_pricename{/yun}</div>
+	<div class="new_pattern_paylist_tip" style="padding-left:130px;color:#999">{yun:}t key='default_00088'{/yun} <font color="red">{yun:}$config.integral_min_recharge{/yun}</font> {yun:}$config.integral_pricename{/yun},兑换比为1{yun:}t key='common_02056'{/yun}={yun:}$config.integral_proportion{/yun}{yun:}$config.integral_priceunit{/yun}{yun:}$config.integral_pricename{/yun}</div>
 	<div class="yun_purchase_payment_list">
-		<span class="yun_purchase_payment_listname">{yun:}t key='default_public_search_public_tips_00030'{/yun}</span>
+		<span class="yun_purchase_payment_listname">{yun:}t key='default_00091'{/yun}</span>
 		<span class="single_payprice"><em class="single_payprice_n" id='vip_order_price_3'>0</em> {yun:}t key='common_02056'{/yun}</span>
 	</div>
 	
 	<form name="alipayment" id="payform_vip" action="../api/alipay/alipayto.php" method="post" target="_blank" onsubmit="return payforms('vip');">
 		<div class="yun_purchase_payment_list" style="padding-bottom:20px;">
 			{yun:}if $config.alipay=='1'|| $config.bank=='1'{/yun}
-				<span class="yun_purchase_payment_listname">{yun:}t key='default_public_search_public_tips_00014'{/yun}</span>
+				<span class="yun_purchase_payment_listname">{yun:}t key='default_00076'{/yun}</span>
 				
 			 	{yun:}if $config.alipay=='1'{/yun}
-					<a href="javascript:void(0);" onclick="payVip('alipay','payform_vip','all')" class="single_paybth single_paybthzfb">{yun:}t key='default_public_search_public_tips_00009'{/yun}</a>
+					<a href="javascript:void(0);" onclick="payVip('alipay','payform_vip','all')" class="single_paybth single_paybthzfb">{yun:}t key='default_00071'{/yun}</a>
 				{yun:}/if{/yun} 
 				
 				{yun:}if $config.bank=='1'{/yun}
-					<a href="javascript:void(0);" onclick="payVip('bank','payform_vip','all')" class="single_paybth single_paybthyl">{yun:}t key='member_user_payment_00001'{/yun}</a>
+					<a href="javascript:void(0);" onclick="payVip('bank','payform_vip','all')" class="single_paybth single_paybthyl">{yun:}t key='member_user_00243'{/yun}</a>
 				{yun:}/if{/yun}
 			{yun:}else{/yun}
-			<span style="color:red; margin-left: 120px;">网站已关闭支付接口，{yun:}t key='wap_spe_gl_00002'{/yun}</span>
+			<span style="color:red; margin-left: 120px;">网站已关闭支付接口，{yun:}t key='wap_00509'{/yun}</span>
 			{yun:}/if{/yun}
  		</div>
  		
 		<input type="hidden" id="pay_type_vip" name="pay_type" value="" />
 		<input type="hidden" id="order_vip_id" name="dingdan" value="" />
-		<input type="hidden" id="subject_3" name="subject" value="{yun:}t key='common_01946'{/yun}{yun:}$config.integral_pricename{/yun}{yun:}t key='default_public_search_public_tips_00029'{/yun}" />
+		<input type="hidden" id="subject_3" name="subject" value="{yun:}t key='common_01946'{/yun}{yun:}$config.integral_pricename{/yun}{yun:}t key='default_00090'{/yun}" />
 		<input type="hidden" name="pay_bank" value="directPay" />
 	</form>
 </div>
@@ -614,14 +614,14 @@
 <div class="yun_purchase_payment mt20 none" style="margin-left:20px;" id='buyVipDiv_1'>
 
 	<div class="yun_purchase_payment_tit">
-		<span class="yun_purchase_payment_titname">{yun:}t key='member_user_resumetpl_00003'{/yun}<span id='service_name_1'></span></span>
+		<span class="yun_purchase_payment_titname">{yun:}t key='member_user_00285'{/yun}<span id='service_name_1'></span></span>
  	</div>
 	
 	<div class="yun_purchase_payment_list">
 		<span class="yun_purchase_payment_listname">产品价格：</span>
 		<div class="yun_purchase_payment_price">
 			<span class="yun_purchase_payment_price_n" id='service_price_1'></span> {yun:}t key='common_02056'{/yun} 
-			<span class="yun_purchase_payment_price_yj" id='origin_tag_1'>{yun:}t key='default_public_search_public_tips_00034'{/yun}：<i class="buymeal_original_price_delete" id='service_origin_price_1'></i></span>
+			<span class="yun_purchase_payment_price_yj" id='origin_tag_1'>{yun:}t key='default_00093'{/yun}：<i class="buymeal_original_price_delete" id='service_origin_price_1'></i></span>
 		</div>
 	</div>
 
@@ -643,30 +643,30 @@
 	
 	<div class='price_1'>
 		<div class="yun_purchase_payment_list">
-			<span class="yun_purchase_payment_listname">{yun:}t key='default_public_search_public_tips_00030'{/yun}</span>
+			<span class="yun_purchase_payment_listname">{yun:}t key='default_00091'{/yun}</span>
 			<span class="single_payprice"><em class="single_payprice_n" id='vip_order_price_1'>0</em> {yun:}t key='common_02056'{/yun}</span>
 		</div>
 		
 		<form name="alipayment" id="payform_vip" action="../api/alipay/alipayto.php" method="post" target="_blank" onsubmit="return payforms('vip');">
 			<div class="yun_purchase_payment_list" id='vip_pay_div'>
 			 	{yun:}if $config.alipay=='1' || $config.bank=='1'{/yun}
-			 		<span class="yun_purchase_payment_listname">{yun:}t key='default_public_search_public_tips_00014'{/yun}</span>
+			 		<span class="yun_purchase_payment_listname">{yun:}t key='default_00076'{/yun}</span>
 			 	 	{yun:}if $config.alipay=='1'{/yun}
-			 			<a href="javascript:void(0);" onclick="payVip('alipay','payform_vip','all')" class="single_paybth single_paybthzfb">{yun:}t key='default_public_search_public_tips_00009'{/yun}</a>
+			 			<a href="javascript:void(0);" onclick="payVip('alipay','payform_vip','all')" class="single_paybth single_paybthzfb">{yun:}t key='default_00071'{/yun}</a>
 			 		{yun:}/if{/yun} 
 			 		{yun:}if $config.bank=='1'{/yun}
-			 			<a href="javascript:void(0);" onclick="payVip('bank','payform_vip','all')" class="single_paybth single_paybthyl">{yun:}t key='member_user_payment_00001'{/yun}</a>
+			 			<a href="javascript:void(0);" onclick="payVip('bank','payform_vip','all')" class="single_paybth single_paybthyl">{yun:}t key='member_user_00243'{/yun}</a>
 			 		{yun:}/if{/yun}
 				{yun:}else{/yun}
-				<span style="color: red; margin-left: 120px;">网站已关闭支付接口，{yun:}t key='wap_spe_gl_00002'{/yun}</span>
+				<span style="color: red; margin-left: 120px;">网站已关闭支付接口，{yun:}t key='wap_00509'{/yun}</span>
 			 	{yun:}/if{/yun}
 			</div>
 			<input type="hidden" id="pay_type_vip" name="pay_type" value="" />
 			<input type="hidden" id="order_vip_id" name="dingdan" value="" />
-			<input type="hidden" id="subject_1" name="subject" value="{yun:}t key='default_public_search_public_tips_00029'{/yun}" />
+			<input type="hidden" id="subject_1" name="subject" value="{yun:}t key='default_00090'{/yun}" />
 			<input type="hidden" name="pay_bank" value="directPay" />
 			<div class="single_bthbox none" id='vip_integral_div'>
-				<a href="javascript:void(0);" onclick='integralBuy();' class="single_bth">{yun:}t key='default_public_search_public_tips_00028'{/yun}</a>
+				<a href="javascript:void(0);" onclick='integralBuy();' class="single_bth">{yun:}t key='default_00089'{/yun}</a>
 			</div>
 		</form>
 	</div>
@@ -681,14 +681,14 @@
     </div>
     <div class="payment_bottom">
 		{yun:}if $is_member{/yun}
-        <a href="index.php?c=paylog" class="payment_bottombutt">{yun:}t key='member_user_payment_00002'{/yun}</a>
+        <a href="index.php?c=paylog" class="payment_bottombutt">{yun:}t key='member_user_00244'{/yun}</a>
 		{yun:}if $order.id{/yun}
-		<a href="index.php?c=payment&id={yun:}$order.id{/yun}" class="payment_bottom_bth2">{yun:}t key='member_user_payment_00005'{/yun}</a>
+		<a href="index.php?c=payment&id={yun:}$order.id{/yun}" class="payment_bottom_bth2">{yun:}t key='member_user_00247'{/yun}</a>
 		{yun:}else{/yun}
-        <a id="repaya" href="javascript:location.reload();" class="payment_bottom_bth2">{yun:}t key='member_user_payment_00005'{/yun}</a>
+        <a id="repaya" href="javascript:location.reload();" class="payment_bottom_bth2">{yun:}t key='member_user_00247'{/yun}</a>
 		{yun:}/if{/yun}
 		{yun:}else{/yun}
-		<a href="javascript:location.reload();" class="payment_bottombutt">{yun:}t key='member_user_payment_00002'{/yun}</a>
+		<a href="javascript:location.reload();" class="payment_bottombutt">{yun:}t key='member_user_00244'{/yun}</a>
 		{yun:}/if{/yun}
     </div>
 </div>
@@ -696,16 +696,16 @@
 <div class="yun_prompt_box" style="margin-top:20px;display:none;" id="jobcheck" >
 	<!--提示部分 start-->
 	<div class="yun_prompt_release">
-		<div class="yun_prompt_release_hi">{yun:}t key='wap_advice_00002'{/yun}！</div>
+		<div class="yun_prompt_release_hi">{yun:}t key='common_02173'{/yun}！</div>
 		<div id='tips_way'>
-			<div class="yun_prompt_release_tip">{yun:}t key='default_public_search_public_tips_00002'{/yun}</div>
+			<div class="yun_prompt_release_tip">{yun:}t key='default_00064'{/yun}</div>
 		</div>
 		<div id='msgList'></div>
 		<div class="yun_prompt_writing_operation" id='gourl'>
 			{yun:}if $is_member{/yun}
-			<a href="index.php?c=jobadd" class="yun_prompt_writing_operation_bth" {yun:}if $smarty.get.act=='resumeInfo'{/yun}target="_parent"{yun:}/if{/yun}>{yun:}t key='default_public_search_public_tips_00005'{/yun}</a>
+			<a href="index.php?c=jobadd" class="yun_prompt_writing_operation_bth" {yun:}if $smarty.get.act=='resumeInfo'{/yun}target="_parent"{yun:}/if{/yun}>{yun:}t key='default_00067'{/yun}</a>
 			{yun:}else{/yun}
-			<a href="javascript:location.reload();" class="yun_prompt_writing_operation_bth">{yun:}t key='default_public_search_public_tips_00005'{/yun}</a>
+			<a href="javascript:location.reload();" class="yun_prompt_writing_operation_bth">{yun:}t key='default_00067'{/yun}</a>
 			{yun:}/if{/yun}
 		</div>
 	</div>
@@ -713,7 +713,7 @@
 </div>
 
 <div id="wxbd" style="display: none;">
-	<div id="wxbdtitle" class="yun_wxbd_tit">{yun:}t key='admin_user_company_component_comset_index_00039'{/yun}，手机轻松招人</div>
+	<div id="wxbdtitle" class="yun_wxbd_tit">{yun:}t key='admin_user_company_00260'{/yun}，手机轻松招人</div>
 	<div class="yun_wxbd_box">
 		<div class="yun_wxbd_img_c">
 			<div class="yun_wxbd_img" id="wx_bind_qrcode">
@@ -721,11 +721,11 @@
 			</div>
 		</div>
 		<div id="gzwx_sx" class="none">
-			<div class="wx_login_show_sxbox"><a href="javascript:void(0);" onclick="getwxlogincode()" class="wx_login_show_sxicon"></a>{yun:}t key='member_user_binding_00004'{/yun}</div>
+			<div class="wx_login_show_sxbox"><a href="javascript:void(0);" onclick="getwxlogincode()" class="wx_login_show_sxicon"></a>{yun:}t key='member_user_00050'{/yun}</div>
 		</div>
-		<div class="yun_wxbd_p"> {yun:}t key='default_public_search_public_tips_00008'{/yun}</div>
+		<div class="yun_wxbd_p"> {yun:}t key='default_00070'{/yun}</div>
 		<div class="yun_wxbd_ok">
-			<a class="sx_bot_qx" href="javascript:void(0)" >好，{yun:}t key='member_com_invite_00004'{/yun}</a>
+			<a class="sx_bot_qx" href="javascript:void(0)" >好，{yun:}t key='member_com_00214'{/yun}</a>
 		</div>
 	</div>
 </div>
@@ -737,7 +737,7 @@
 				<img src="{yun:}$consultant.wechat{/yun}" width="180" height="180" />
 			</div>
 		</div>
-		<div class="yun_wxbd_p"> {yun:}t key='default_public_search_public_tips_00007'{/yun}</div>
+		<div class="yun_wxbd_p"> {yun:}t key='default_00069'{/yun}</div>
 	</div>
 </div>
 <style>
@@ -757,7 +757,7 @@
 	var only_price = '{yun:}$config.sy_only_price{/yun}';
 	var only_price_arr = only_price.split(',');
 	
-	/* 选择不同会员/{yun:}t key='wap_com_server_00036'{/yun}/单次购买  */
+	/* 选择不同会员/{yun:}t key='wap_com_00393'{/yun}/单次购买  */
 	$(function(){
 		$("ul#rating_type").on("click", "li", function() {
 	        $(this).addClass("buymeal_tit_cur");

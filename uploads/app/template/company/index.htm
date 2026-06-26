@@ -13,15 +13,15 @@
 {yun:}include file="$tplstyle/header.htm"{/yun}
 <!--content  start-->
 <div class="yun_content">
-  <div class="current_Location icon png"> {yun:}t key='common_01498'{/yun}：<a href="{yun:}$config.sy_weburl{/yun}">{yun:}t key='common.home'{/yun}</a> > <span>{yun:}t key='company_index_00007'{/yun}</span> </div>
+  <div class="current_Location icon png"> {yun:}t key='common_01498'{/yun}：<a href="{yun:}$config.sy_weburl{/yun}">{yun:}t key='common.home'{/yun}</a> > <span>{yun:}t key='company_00031'{/yun}</span> </div>
   <div class="clear"></div>
  {yun:}include file="$tplstyle/public_search/firm_search.htm"{/yun}
     <div class="firm_right">
       <div class="firm_right_seach">
         <div class="firm_seach_r">
-          <form method="get" name="myform" onsubmit="return search_keyword(this,'{yun:}t key='admin_system_info_feedback_00001'{/yun}');" action="index.php">
+          <form method="get" name="myform" onsubmit="return search_keyword(this,'{yun:}t key='admin_system_00198'{/yun}');" action="index.php">
 			{yun:}if  !$config.sy_firmdir || $config.sy_seo_rewrite!='1'{/yun}<input type="hidden" value="firm" name="m" />{yun:}/if{/yun}  
-            <input class="tykeywords placeholder" id="ipt" type="text" value="{yun:}if $getinfo.keyword!=""{/yun}{yun:}$getinfo.keyword{/yun}{yun:}else{/yun}{yun:}t key='admin_system_info_feedback_00001'{/yun}{yun:}/if{/yun}" name="keyword" onclick="if(this.value=='{yun:}t key='admin_system_info_feedback_00001'{/yun}'){this.value=''}" onblur="if(this.value==''){this.value='{yun:}t key='admin_system_info_feedback_00001'{/yun}'}">
+            <input class="tykeywords placeholder" id="ipt" type="text" value="{yun:}if $getinfo.keyword!=""{/yun}{yun:}$getinfo.keyword{/yun}{yun:}else{/yun}{yun:}t key='admin_system_00198'{/yun}{yun:}/if{/yun}" name="keyword" onclick="if(this.value=='{yun:}t key='admin_system_00198'{/yun}'){this.value=''}" onblur="if(this.value==''){this.value='{yun:}t key='admin_system_00198'{/yun}'}">
             <input class="ty_button placeholder" type="button" id="city" placeholder='请选择城市' value="请选择城市" onclick="index_city();">
             <input type="hidden" name="cityid" id="cityid" />
             <input class="tysubmit" type="submit" value="{yun:}t key='common.search'{/yun} ">
@@ -29,17 +29,17 @@
         </div>
          <div class="clear"></div>
         {yun:}include file="$tplstyle/public_search/index_search.htm"{/yun}
-        <div class="firm_hot-tags"> {yun:}t key='wap_publichtm_search_00004'{/yun}：{yun:}key limit=12 type=4 recom=1 item=keylist{/yun} <a href="{yun:}$keylist.url{/yun}">{yun:}$keylist.key_name{/yun}</a> {yun:}/key{/yun} </div>
+        <div class="firm_hot-tags"> {yun:}t key='wap_00385'{/yun}：{yun:}key limit=12 type=4 recom=1 item=keylist{/yun} <a href="{yun:}$keylist.url{/yun}">{yun:}$keylist.key_name{/yun}</a> {yun:}/key{/yun} </div>
       </div>
       <div class="clear"></div>
-      <div class='firm_list_h1'>{yun:}t key='company_index_00008'{/yun}</div>
+      <div class='firm_list_h1'>{yun:}t key='company_00032'{/yun}</div>
       {yun:}comlist  ispage=1 isjob=1 firm=1 isnews=1 isshow=1 hy='auto.hy' pr='auto.pr' mun='auto.mun' provinceid='auto.provinceid' cityid='auto.cityid' three_cityid='auto.three_cityid' keyword='auto.keyword' order=rec limit=10 item=list{/yun}
       <div class='firm_list ' id="company{yun:}$list.uid{/yun}" aid="{yun:}$list.uid{/yun}">
         <div class='firm_list_logo'><a href='{yun:}$list.com_url{/yun}'><img src="{yun:}$list.logo{/yun}" width="158" height="65"alt="{yun:}$list.name{/yun}" onerror="showImgDelay(this,'{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_unit_icon{/yun}',2);"/></a></div>
         <div class='firm_post_cont'>
           <div class="firm_qy_name"><a href='{yun:}$list.com_url{/yun}'>{yun:}$list.name|mb_substr:0:16:'utf-8'{/yun}</a></div>
-          <div class="firm_qy_list"> <span >{yun:}t key='admin_user_company_component_joball_00045'{/yun}：{yun:}$list.job_hy|mb_substr:0:12:'utf-8'{/yun}</span> <span >{yun:}t key='default_part_show_00006'{/yun}：{yun:}$list.job_pr{/yun}</span> <span>{yun:}t key='wap_com_address_new_00015'{/yun}：{yun:}$list.job_city_one{/yun} {yun:}$list.job_city_two{/yun}</span> </div>
-          <div class="firm_qy_list"> <span >{yun:}t key='company_green_index_00014'{/yun}：<em>{yun:}$list.job_mun{/yun}</em></span><span >{yun:}t key='wap_com_info_00054'{/yun}：<em>{yun:}$list.money{/yun}</em>{yun:}if $list.moneytype==1{/yun}{yun:}t key='wap_js_member_caregory_00004'{/yun}{yun:}else{/yun}{yun:}t key='wap_js_member_caregory_00002'{/yun}{yun:}/if{/yun}</span> <span >{yun:}t key='member_com_news_00002'{/yun}：<em>{yun:}$list.lastupdate|date_format:'%Y-%m-%d'{/yun}</em></span></div>
+          <div class="firm_qy_list"> <span >{yun:}t key='admin_user_company_00373'{/yun}：{yun:}$list.job_hy|mb_substr:0:12:'utf-8'{/yun}</span> <span >{yun:}t key='default_00281'{/yun}：{yun:}$list.job_pr{/yun}</span> <span>{yun:}t key='wap_com_00015'{/yun}：{yun:}$list.job_city_one{/yun} {yun:}$list.job_city_two{/yun}</span> </div>
+          <div class="firm_qy_list"> <span >{yun:}t key='company_00024'{/yun}：<em>{yun:}$list.job_mun{/yun}</em></span><span >{yun:}t key='wap_com_00171'{/yun}：<em>{yun:}$list.money{/yun}</em>{yun:}if $list.moneytype==1{/yun}{yun:}t key='wap_js_00004'{/yun}{yun:}else{/yun}{yun:}t key='wap_js_00002'{/yun}{yun:}/if{/yun}</span> <span >{yun:}t key='member_com_00300'{/yun}：<em>{yun:}$list.lastupdate|date_format:'%Y-%m-%d'{/yun}</em></span></div>
                     <div class="firm_qy_list" style="font-weight:bold"> <span >招聘职位数：<em>{yun:}$list.jobnum{/yun}</em></span> <span >公司资讯数：<em>{yun:}$list.newsnum{/yun}</em></span> <span >公司环境数：<em>{yun:}$list.shownum{/yun}</em></span></div>
         </div>
         <div class='firm_list_right'> <a href="javascript:void(0);" id="atn_{yun:}$list.uid{/yun}" onclick="atn('{yun:}$list.uid{/yun}');" class="crop-add-yb">{yun:}$list.atn{/yun}</a> <span><label><font id="antnum{yun:}$list.uid{/yun}">{yun:}$list.ant_num{/yun}</font>人关注 </label></span> </div>
@@ -49,7 +49,7 @@
    
       <div class="firm_list_cur_left">
       <div class="firm_list_post" id="job"> 
-      <p class="firm_list_cur_p">{yun:}t key='wap_company_index_00001'{/yun}：</p>
+      <p class="firm_list_cur_p">{yun:}t key='wap_00185'{/yun}：</p>
       {yun:}if $list.jobnum>0{/yun}
       {yun:}foreach item=job from=$list.joblist{/yun}
       <a href="{yun:}url m=com c=comapply id='`$job.id`'{/yun}">{yun:}$job.name{/yun}</a>
@@ -59,18 +59,18 @@
       {yun:}/if{/yun}
       </div>
       <div class="firm_list_cur_news">
-      <p class="firm_list_cur_p">{yun:}t key='member_com_address_00006'{/yun}：</p>
+      <p class="firm_list_cur_p">{yun:}t key='member_com_00054'{/yun}：</p>
       {yun:}if $list.newsnum>0{/yun}
       {yun:}foreach item=news from=$list.newslist{/yun}
       <div class="firm_list_cur_news_list"><a href="{yun:}url m=company id='`$list.uid`' c=newsshow nid='`$news.id`'{/yun}" title="{yun:}$news.title{/yun}">{yun:}$news.title{/yun}</a></div>
       {yun:}/foreach{/yun}
       {yun:}else{/yun}
-      <div class="firm_list_cur_right_l">{yun:}t key='company_index_00004'{/yun}</div>
+      <div class="firm_list_cur_right_l">{yun:}t key='company_00028'{/yun}</div>
       {yun:}/if{/yun}
       </div>
       </div>
       <div class="firm_list_cur_right">
-      <p class="firm_list_cur_p">{yun:}t key='company_default_index_00006'{/yun}：</p>
+      <p class="firm_list_cur_p">{yun:}t key='company_00008'{/yun}：</p>
       {yun:}if $list.shownum>0{/yun}
       {yun:}foreach item=show from=$list.showlist{/yun}
       <div class="firm_list_cur_right_l">
@@ -78,7 +78,7 @@
        </div>
       {yun:}/foreach{/yun}
       {yun:}else{/yun}
-      <div class="firm_list_cur_right_l">{yun:}t key='company_index_00003'{/yun}</div>
+      <div class="firm_list_cur_right_l">{yun:}t key='company_00027'{/yun}</div>
       {yun:}/if{/yun}
       </div>
         </div>  </div>
@@ -95,7 +95,7 @@
           <span> {yun:}t key='common_01910'{/yun}：<br>
           1、适当减少已选择的条件<br>
           2、适当删减或更改搜索关键字<br>
-          </span> <span> {yun:}t key='admin_system_set_guanjianci_00011'{/yun}：<br>
+          </span> <span> {yun:}t key='admin_system_00443'{/yun}：<br>
           {yun:}key limit=6 recom=1 type=4 item=top_key{/yun} <a href="{yun:}$top_key.url{/yun}">{yun:}$top_key.key_name{/yun}</a> {yun:}/key{/yun} </span> </div>
       </div>
       {yun:}/if{/yun} </div>

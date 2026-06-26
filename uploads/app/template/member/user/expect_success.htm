@@ -10,22 +10,22 @@
 
 <div class="news_expect_ok">恭喜您，简历创建成功</div>
 {yun:}if $expectnum<=1{/yun}
-<div class="news_expect_ok_jf">成功创建简历获得<span class="news_expect_ok_jf_n">+{yun:}$config.integral_add_resume{/yun}</span>{yun:}$config.integral_pricename{/yun} <a href="{yun:}url m=resume c=show id='`$id`'{/yun}" target="_blank" class="news_expect_ok_yl">{yun:}t key='member_user_expect_success_00005'{/yun} </a></div>
+<div class="news_expect_ok_jf">成功创建简历获得<span class="news_expect_ok_jf_n">+{yun:}$config.integral_add_resume{/yun}</span>{yun:}$config.integral_pricename{/yun} <a href="{yun:}url m=resume c=show id='`$id`'{/yun}" target="_blank" class="news_expect_ok_yl">{yun:}t key='member_user_00037'{/yun} </a></div>
 {yun:}/if{/yun}
 <div class="news_expect_ok_p">完善简历可以获得更好的工作机会哦~</div>
 <div class="news_expect_ok_bth">
 {yun:}if !$resume.work{/yun}
-<a href="index.php?c=expect&e={yun:}$id{/yun}#work_upbox" class="news_expect_ok_a">{yun:}t key='member_user_expect_success_00002'{/yun}   </a>
+<a href="index.php?c=expect&e={yun:}$id{/yun}#work_upbox" class="news_expect_ok_a">{yun:}t key='member_user_00034'{/yun}   </a>
 {yun:}/if{/yun}
-{yun:}if !$resume.edu{/yun}<a href="index.php?c=expect&e={yun:}$id{/yun}#edu_upbox"  class="news_expect_ok_a">{yun:}t key='member_user_expect_success_00003'{/yun}  </a>{yun:}/if{/yun}
-{yun:}if !$resume.training{/yun}<a href="index.php?c=expect&e={yun:}$id{/yun}#training_upbox" class="news_expect_ok_a">{yun:}t key='member_user_expect_success_00001'{/yun}  </a>{yun:}/if{/yun}
+{yun:}if !$resume.edu{/yun}<a href="index.php?c=expect&e={yun:}$id{/yun}#edu_upbox"  class="news_expect_ok_a">{yun:}t key='member_user_00035'{/yun}  </a>{yun:}/if{/yun}
+{yun:}if !$resume.training{/yun}<a href="index.php?c=expect&e={yun:}$id{/yun}#training_upbox" class="news_expect_ok_a">{yun:}t key='member_user_00033'{/yun}  </a>{yun:}/if{/yun}
 {yun:}if !$resume.skill{/yun}<a href="index.php?c=expect&e={yun:}$id{/yun}#skill_upbox"  class="news_expect_ok_a">完善职业技能 </a>{yun:}/if{/yun}
-{yun:}if !$resume.project{/yun}<a href="index.php?c=expect&e={yun:}$id{/yun}#project_upbox"  class="news_expect_ok_a">{yun:}t key='member_user_expect_success_00004'{/yun} </a>{yun:}/if{/yun}
-{yun:}if !$resume.other{/yun}<a href="index.php?c=expect&e={yun:}$id{/yun}#other_upbox"  class="news_expect_ok_a">{yun:}t key='wap_resume_show_00017'{/yun}  </a>{yun:}/if{/yun}
-<a href="index.php?c=expect&e={yun:}$id{/yun}#description_upbox" class="news_expect_ok_a">{yun:}t key='wap_resume_index_00023'{/yun}  </a>
+{yun:}if !$resume.project{/yun}<a href="index.php?c=expect&e={yun:}$id{/yun}#project_upbox"  class="news_expect_ok_a">{yun:}t key='member_user_00036'{/yun} </a>{yun:}/if{/yun}
+{yun:}if !$resume.other{/yun}<a href="index.php?c=expect&e={yun:}$id{/yun}#other_upbox"  class="news_expect_ok_a">{yun:}t key='wap_00493'{/yun}  </a>{yun:}/if{/yun}
+<a href="index.php?c=expect&e={yun:}$id{/yun}#description_upbox" class="news_expect_ok_a">{yun:}t key='wap_00463'{/yun}  </a>
 
 {yun:}if $info.photo==""{/yun}
-<a href="index.php?c=uppic" class="news_expect_ok_a">{yun:}t key='wap_user_alltask_00006'{/yun}  </a>
+<a href="index.php?c=uppic" class="news_expect_ok_a">{yun:}t key='wap_user_00110'{/yun}  </a>
 {yun:}/if{/yun}
 
 </div>
@@ -33,7 +33,7 @@
 <div class="news_expect_ok_likejob_box">
 <div style="padding-left:40px; padding-right:45px; position:relative">
 <div class="news_expect_ok_likejob">你可能感兴趣的职位</div>
-<a href="{yun:}url m=job{/yun}" style="position:absolute;right:45px;top:30px;color:#09F">都不满意？{yun:}t key='wap_spe_show_00001'{/yun}></a>
+<a href="{yun:}url m=job{/yun}" style="position:absolute;right:45px;top:30px;color:#09F">都不满意？{yun:}t key='wap_00518'{/yun}></a>
 </div>
 <div class="news_expect_ok_like">
 <ul>
@@ -43,7 +43,7 @@
 	<div class="news_expect_ok_likejobname"><a href="{yun:}$job_list.job_url{/yun}">{yun:}$job_list.name_n{/yun} </a></div>
 	<div class="news_expect_ok_likejobxz"><span class="news_expect_ok_likejobxz_n">{yun:}$job_list.job_salary{/yun}</span> {yun:}if $job_list.job_exp{/yun}<span class="news_expect_ok_likejobline">|</span> {yun:}$job_list.job_exp{/yun}{yun:}t key='home.experience_suffix'{/yun}{yun:}/if{/yun}{yun:}if $job_list.job_edu{/yun}<span class="news_expect_ok_likejobline">|</span> {yun:}$job_list.job_edu{/yun}{yun:}t key='home.education_suffix'{/yun}{yun:}/if{/yun}</div> 
 	<div class="news_expect_ok_likecomname">{yun:}$job_list.com_n{/yun} </div> 
-	<a href="{yun:}$job_list.job_url{/yun}" class="news_expect_ok_likesq">{yun:}t key='wap_zph_show_00011'{/yun}</a>
+	<a href="{yun:}$job_list.job_url{/yun}" class="news_expect_ok_likesq">{yun:}t key='wap_00574'{/yun}</a>
 	</li>
 	{yun:}/joblist{/yun}
 {yun:}else{/yun}
@@ -52,7 +52,7 @@
 	<div class="news_expect_ok_likejobname"><a href="{yun:}$job_list.job_url{/yun}">{yun:}$job_list.name_n{/yun} </a></div>
 	<div class="news_expect_ok_likejobxz"><span class="news_expect_ok_likejobxz_n">{yun:}$job_list.job_salary{/yun}</span> {yun:}if $job_list.job_exp{/yun}<span class="news_expect_ok_likejobline">|</span> {yun:}$job_list.job_exp{/yun}{yun:}t key='home.experience_suffix'{/yun}{yun:}/if{/yun}{yun:}if $job_list.job_edu{/yun}<span class="news_expect_ok_likejobline">|</span> {yun:}$job_list.job_edu{/yun}{yun:}t key='home.education_suffix'{/yun}{yun:}/if{/yun}</div> 
 	<div class="news_expect_ok_likecomname">{yun:}$job_list.com_n{/yun} </div> 
-	<a href="{yun:}$job_list.job_url{/yun}" class="news_expect_ok_likesq">{yun:}t key='wap_zph_show_00011'{/yun}</a>
+	<a href="{yun:}$job_list.job_url{/yun}" class="news_expect_ok_likesq">{yun:}t key='wap_00574'{/yun}</a>
 	</li>
 	{yun:}/joblist{/yun}
 {yun:}/if{/yun}

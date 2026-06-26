@@ -3,13 +3,13 @@
     {yun:}include file="$userstyle/left.htm"{/yun}
     <div class="yun_m_rightbox fltR mt20 re">
     
-    <div class="member_right_index_h1 fltL"> <span class="member_right_h1_span fltL">{yun:}t key='member_user_left_00004'{/yun}</span> <i class="member_right_h1_icon user_bg"></i></div>
+    <div class="member_right_index_h1 fltL"> <span class="member_right_h1_span fltL">{yun:}t key='member_user_00185'{/yun}</span> <i class="member_right_h1_icon user_bg"></i></div>
     
         <div id="gms_showclew"></div>
       <div class="job_list_tit">
          <ul class="">
-         <li {yun:}if $smarty.get.c=='partapply'{/yun}class="job_list_tit_cur"{yun:}/if{/yun}> <a href="index.php?c=partapply">{yun:}t key='wap_user_partapply_00003'{/yun}</a></li>
-        <li {yun:}if $smarty.get.c=='partcollect'{/yun}class="job_list_tit_cur"{yun:}/if{/yun}><a href="index.php?c=partcollect">{yun:}t key='wap_user_partapply_00004'{/yun}</a></li>
+         <li {yun:}if $smarty.get.c=='partapply'{/yun}class="job_list_tit_cur"{yun:}/if{/yun}> <a href="index.php?c=partapply">{yun:}t key='wap_user_00302'{/yun}</a></li>
+        <li {yun:}if $smarty.get.c=='partcollect'{/yun}class="job_list_tit_cur"{yun:}/if{/yun}><a href="index.php?c=partcollect">{yun:}t key='wap_user_00303'{/yun}</a></li>
          </ul>
          </div>  <div class="resume_box_list mt20">  
             {yun:}if empty($rows){/yun}
@@ -20,12 +20,12 @@
             {yun:}else{/yun}
 
             <div class="part_time_job_tit">
-      <div class="part_time_job_span part_time_jobname">{yun:}t key='wap_com_partadd_00006'{/yun}</div> 
-        <div class="part_time_job_span part_time_jobname">{yun:}t key='wap_com_info_00040'{/yun}</div> 
-      <div class="part_time_job_span part_time_jobzt">{yun:}t key='wap_com_jobadd_00036'{/yun}</div> 
-      <div class="part_time_job_span part_time_jobxz">{yun:}t key='member_user_partcollect_00002'{/yun}</div>
-       <div class="part_time_job_span part_time_jobtime">{yun:}t key='member_user_partcollect_00001'{/yun}</div> 
-       <div class="part_time_job_span part_time_jobcz">{yun:}t key='member_user_atn_00003'{/yun}</div> 
+      <div class="part_time_job_span part_time_jobname">{yun:}t key='wap_com_00326'{/yun}</div> 
+        <div class="part_time_job_span part_time_jobname">{yun:}t key='wap_com_00157'{/yun}</div> 
+      <div class="part_time_job_span part_time_jobzt">{yun:}t key='wap_com_00290'{/yun}</div> 
+      <div class="part_time_job_span part_time_jobxz">{yun:}t key='member_user_00199'{/yun}</div>
+       <div class="part_time_job_span part_time_jobtime">{yun:}t key='member_user_00198'{/yun}</div> 
+       <div class="part_time_job_span part_time_jobcz">{yun:}t key='member_user_00048'{/yun}</div> 
 	   </div>
 
             {yun:}foreach item=job from=$rows{/yun}
@@ -39,7 +39,7 @@
                 <div class="part_time_job_span part_time_jobxz ">&nbsp;{yun:}$job.billing_cycle{/yun}</div>
                 <div class="part_time_job_span part_time_jobtime ">&nbsp;{yun:}$job.cityname{/yun}</div>
                 <div class="part_time_job_span part_time_jobcz ">
-                    <a href="javascript:void(0)" onclick="layer_del("{yun:}t key='wap_user_look_job_00001'{/yun}", 'index.php?c=partcollect&act=del&id={yun:}$job.id{/yun}');" class="re_sc cblue">{yun:}t key='common.delete'{/yun}</a>
+                    <a href="javascript:void(0)" onclick="layer_del("{yun:}t key='wap_user_00001'{/yun}", 'index.php?c=partcollect&act=del&id={yun:}$job.id{/yun}');" class="re_sc cblue">{yun:}t key='common.delete'{/yun}</a>
                 </div>
             </div>
             {yun:}/foreach{/yun}

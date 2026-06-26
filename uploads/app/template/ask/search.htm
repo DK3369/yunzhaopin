@@ -21,8 +21,8 @@
 				<div class="clear"></div>
                 <div class="ask_tit mt15"><span class="ask_tit_icon_s"><i class="ask_tit_icon"></i>{yun:}if $getinfo.keyword{/yun}关于“{yun:}$getinfo.keyword{/yun}”的问题{yun:}else{/yun}所有问题{yun:}/if{/yun}</span>
                 <div class="ans_disc">
-						<a {yun:}if $getinfo.order!='answernum'{/yun}class='cur'{yun:}/if{/yun} href="{yun:}url m=ask c=search keyword='`$getinfo.keyword`' cid='`$getinfo.cid`'{/yun}" >{yun:}t key='ask_search_00002'{/yun}</a> 
-						<a {yun:}if $getinfo.order=='answernum'{/yun}class='cur'{yun:}/if{/yun} href="{yun:}url m=ask c=search keyword='`$getinfo.keyword`' cid='`$getinfo.cid`' order=answernum{/yun}">{yun:}t key='ask_search_00001'{/yun}</a>
+						<a {yun:}if $getinfo.order!='answernum'{/yun}class='cur'{yun:}/if{/yun} href="{yun:}url m=ask c=search keyword='`$getinfo.keyword`' cid='`$getinfo.cid`'{/yun}" >{yun:}t key='ask_00019'{/yun}</a> 
+						<a {yun:}if $getinfo.order=='answernum'{/yun}class='cur'{yun:}/if{/yun} href="{yun:}url m=ask c=search keyword='`$getinfo.keyword`' cid='`$getinfo.cid`' order=answernum{/yun}">{yun:}t key='ask_00018'{/yun}</a>
 					</div>
                 </div>
                 
@@ -42,9 +42,9 @@
                         <span class="attention q{yun:}$list.id{/yun}">
 								{yun:}if $list.isatn!='2'&&$list.uid!=$uid{/yun}
 									{yun:}if in_array($list.id,$my_atten){/yun}
-									<a href="javascript:void(0);"  onclick="attention('{yun:}$list.id{/yun}','1','{yun:}url m=ask c=friend a=attention{/yun}');" class="watch_qxgz">{yun:}t key='wap_js_public_00003'{/yun}</a>
+									<a href="javascript:void(0);"  onclick="attention('{yun:}$list.id{/yun}','1','{yun:}url m=ask c=friend a=attention{/yun}');" class="watch_qxgz">{yun:}t key='wap_js_00140'{/yun}</a>
 									{yun:}else{/yun}
-									<a href="javascript:void(0);" onclick="attention('{yun:}$list.id{/yun}','1','{yun:}url m=ask c=friend a=attention{/yun}');" class="watch_gz" title="{yun:}t key='wap_askcontent_00003'{/yun}">{yun:}t key='wap_askcontent_00003'{/yun}</a>
+									<a href="javascript:void(0);" onclick="attention('{yun:}$list.id{/yun}','1','{yun:}url m=ask c=friend a=attention{/yun}');" class="watch_gz" title="{yun:}t key='wap_00164'{/yun}">{yun:}t key='wap_00164'{/yun}</a>
 									{yun:}/if{/yun} 
 								{yun:}/if{/yun}
 							</span>
@@ -56,7 +56,7 @@
 								<div class="answer_on">
 									<span><font><a href="{yun:}url m=ask c=friend a=myquestion uid='`$list.uid`'{/yun}" TARGET="_blank">{yun:}$list.nickname{/yun}</a></font>发起了话题 </span>&middot;
 									<span><font class="index_num{yun:}$list.id{/yun}">{yun:}$list.atnnum{/yun}</font>人关注 </span>&middot;
-									<span><font>{yun:}$list.answer_num{/yun}</font>{yun:}t key='ask_attenquestion_00002'{/yun} </span>&middot;
+									<span><font>{yun:}$list.answer_num{/yun}</font>{yun:}t key='ask_00005'{/yun} </span>&middot;
 									<span><font>{yun:}$list.visit{/yun}</font>次浏览 </span>&middot;
 									<span>{yun:}$list.add_time|date_format:"%Y-%m-%d %H:%M"{/yun}</span>
 								</div>
@@ -84,7 +84,7 @@
         
        <div class="ask_index_right">
         <div class="ask_index_right_box" >
-        <div class="ask_index_ask_rtit"><span class="ask_index_ask_rtit_s">{yun:}t key='wap_job_show_00038'{/yun}</span></div>
+        <div class="ask_index_ask_rtit"><span class="ask_index_ask_rtit_s">{yun:}t key='wap_00281'{/yun}</span></div>
 		
 		<div class="hotask">
 				<ul class="">
@@ -104,7 +104,7 @@
 			</div></div>
 			
               <div class="ask_index_right_box" >
-        <div class="ask_index_ask_rtit"><span class="ask_index_ask_rtit_s">{yun:}t key='ask_index_00005'{/yun}</span></div>
+        <div class="ask_index_ask_rtit"><span class="ask_index_ask_rtit_s">{yun:}t key='ask_00016'{/yun}</span></div>
         
 			
 				<div class="hot_tag_con">
@@ -126,7 +126,7 @@
 							</div>
 							<div class="user_name">
 								<p><a href="{yun:}url m=ask c=friend a=myquestion uid='`$hulist.uid`'{/yun}" TARGET="_blank">{yun:}$hulist.nickname{/yun}</a></p>
-								<span><font>{yun:}$hulist.num{/yun}</font>{yun:}t key='ask_attenquestion_00002'{/yun}，<font>{yun:}$hulist.support{/yun}</font>次赞同</span>
+								<span><font>{yun:}$hulist.num{/yun}</font>{yun:}t key='ask_00005'{/yun}，<font>{yun:}$hulist.support{/yun}</font>次赞同</span>
 							</div>
 						</div>
 						{yun:}if $hulist.description{/yun}<div class="user_tag">签名：{yun:}$hulist.description{/yun}</div>{yun:}/if{/yun}

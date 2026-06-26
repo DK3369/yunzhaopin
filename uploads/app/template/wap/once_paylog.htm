@@ -7,22 +7,22 @@
         {yun:}foreach item=log from=$rows{/yun}
         <div class="once_paylog">
             <div class="user_member_box">
-                <div class="once_paylog_p"><span class="member_c9">{yun:}t key='wap_user_paylog_00002'{/yun}：</span>{yun:}$log.order_id{/yun}</div>
-                <div class="once_paylog_p"><span class="member_c9">{yun:}t key='wap_user_payment_00002'{/yun}：</span> {yun:}t key='wap_js_onceadd_00002'{/yun} </div>
+                <div class="once_paylog_p"><span class="member_c9">{yun:}t key='wap_user_00311'{/yun}：</span>{yun:}$log.order_id{/yun}</div>
+                <div class="once_paylog_p"><span class="member_c9">{yun:}t key='wap_user_00318'{/yun}：</span> {yun:}t key='wap_js_00130'{/yun} </div>
                 <div class="once_paylog_p">
-                    <span class="member_c9">支付形式：</span> {yun:}if $log.order_type=='alipay'{/yun}支付宝支付{yun:}else{/yun}{yun:}t key='wap_user_paylog_00007'{/yun}{yun:}/if{/yun}</div>
-                <div class="once_paylog_p"><span class="member_c9">{yun:}t key='wap_user_paylog_00003'{/yun}：</span>{yun:}$log.order_price{/yun}</div>
-                <div class="once_paylog_p"><span class="member_c9">{yun:}t key='member_com_paylog_00002'{/yun}：</span>{yun:}t key='wap_once_paylog_00002'{/yun}</div>
-                <div class="once_paylog_p"><span class="member_c9">{yun:}t key='wap_js_umeditor_lang_zh_cn_zh_cn_00020'{/yun}：</span>{yun:}$log.order_time|date_format:"%Y-%m-%d %H:%M:%S"{/yun}</div>
+                    <span class="member_c9">支付形式：</span> {yun:}if $log.order_type=='alipay'{/yun}支付宝支付{yun:}else{/yun}{yun:}t key='wap_user_00316'{/yun}{yun:}/if{/yun}</div>
+                <div class="once_paylog_p"><span class="member_c9">{yun:}t key='wap_user_00312'{/yun}：</span>{yun:}$log.order_price{/yun}</div>
+                <div class="once_paylog_p"><span class="member_c9">{yun:}t key='member_com_00319'{/yun}：</span>{yun:}t key='wap_00359'{/yun}</div>
+                <div class="once_paylog_p"><span class="member_c9">{yun:}t key='wap_js_00088'{/yun}：</span>{yun:}$log.order_time|date_format:"%Y-%m-%d %H:%M:%S"{/yun}</div>
                 {yun:}if $log.order_remark{/yun}
-                	<div class="once_paylog_p"><span class="member_c9">{yun:}t key='member_user_paylog_00002'{/yun}：</span>{yun:}$log.order_remark{/yun}</div>
+                	<div class="once_paylog_p"><span class="member_c9">{yun:}t key='member_user_00242'{/yun}：</span>{yun:}$log.order_remark{/yun}</div>
                 {yun:}/if{/yun}
              </div>
             {yun:}if $log.order_state=='1' && $log.order_type!='bank'{/yun}
             <div class="once_paylog_cz">
-                <a href="{yun:}url m=wap{/yun}index.php?c=once&a=show&id={yun:}$log.once_id{/yun}&pay=1" class="once_paylog_czbth">{yun:}t key='wap_once_paylog_00001'{/yun}</a>
+                <a href="{yun:}url m=wap{/yun}index.php?c=once&a=show&id={yun:}$log.once_id{/yun}&pay=1" class="once_paylog_czbth">{yun:}t key='wap_00358'{/yun}</a>
                
-                <a href="javascript:void(0)" onclick="vant_del('确定要取消该订单吗？','{yun:}url m=wap{/yun}index.php?c=once&a=delpaylog&id={yun:}$log.id{/yun}')" class="once_paylog_czbth">取消充值</a> <a href="index.php?c=once&a=pay&id={yun:}$log.once_id{/yun}&price={yun:}$log.order_price{/yun}" class="once_paylog_czbth once_paylog_czbthcur">{yun:}t key='wap_user_pay_00002'{/yun}</a>
+                <a href="javascript:void(0)" onclick="vant_del('确定要取消该订单吗？','{yun:}url m=wap{/yun}index.php?c=once&a=delpaylog&id={yun:}$log.id{/yun}')" class="once_paylog_czbth">取消充值</a> <a href="index.php?c=once&a=pay&id={yun:}$log.once_id{/yun}&price={yun:}$log.order_price{/yun}" class="once_paylog_czbth once_paylog_czbthcur">{yun:}t key='wap_user_00308'{/yun}</a>
             </div>{yun:}/if{/yun}
         </div>
 

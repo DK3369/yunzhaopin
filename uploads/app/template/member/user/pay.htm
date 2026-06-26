@@ -16,7 +16,7 @@
                 "{yun:}if $nopayorder{/yun}"
                 $.layer({
                     type: 1,
-                    title: "{yun:}t key='member_user_pay_00001'{/yun}",
+                    title: "{yun:}t key='member_user_00237'{/yun}",
                     closeBtn: [0, true],
                     border: [10, 0.3, '#000', true],
                     area: ['320px', '240px'],
@@ -51,7 +51,7 @@
                         $(".payment_list_text").removeClass('payment_list_cur');
                         $(this).addClass('payment_list_cur');
                     } else {
-                        layer.msg("{yun:}t key='default_public_search_public_tips_00027'{/yun}" + min_integral + jifen, 2);
+                        layer.msg("{yun:}t key='default_00088'{/yun}" + min_integral + jifen, 2);
                         return false;
                     }
                     $("#autointegral").val('');
@@ -150,7 +150,7 @@
                 var integral = $("#integral").val();
                 var min_recharge = '{yun:}$config.integral_min_recharge{/yun}';
                 if (parseInt(min_recharge) > parseInt(integral)) {
-                    layer.msg("{yun:}t key='default_public_search_public_tips_00027'{/yun}" + min_recharge + '{yun:}$config.integral_pricename{/yun}', 2);
+                    layer.msg("{yun:}t key='default_00088'{/yun}" + min_recharge + '{yun:}$config.integral_pricename{/yun}', 2);
                     return false;
                 }
                 if (Number(integral) < 1) {
@@ -185,7 +185,7 @@
                     <input type="hidden" id="integralid" name="integralid" value="{yun:}$first{/yun}" data-discount="{yun:}$integralclass_discount[$first]{/yun}" />
 
                     <div class="payment_list">
-                        <div class="payment_list_s mt10">{yun:}t key='member_com_pay_00001'{/yun}：</div>
+                        <div class="payment_list_s mt10">{yun:}t key='member_com_00316'{/yun}：</div>
 
                         <div class="payment_list_r">
                             {yun:}foreach from=$integralclass_index item=v key=k{/yun}
@@ -202,18 +202,18 @@
                             {yun:}/foreach{/yun}
 
                             <div class="payment_list_zdy">
-                                <input type="text" onBlur="userautointegral()" id="autointegral" class="payment_list_input" placeholder="{yun:}t key='wap_user_pay_00003'{/yun}" onkeyup="this.value=this.value.replace(/[^0-9]/g,'')" maxlength='6'/>{yun:}$config.integral_pricename{/yun}
+                                <input type="text" onBlur="userautointegral()" id="autointegral" class="payment_list_input" placeholder="{yun:}t key='wap_user_00309'{/yun}" onkeyup="this.value=this.value.replace(/[^0-9]/g,'')" maxlength='6'/>{yun:}$config.integral_pricename{/yun}
                             </div>
                         </div>
                         <div class="payment_list">
-                            <div class="payment_list_s mt10">{yun:}t key='wap_user_payment_00001'{/yun}：</div>
+                            <div class="payment_list_s mt10">{yun:}t key='wap_user_00317'{/yun}：</div>
                             <div class="payment_list_r">
                                 <span class="payintegral" id="payintegral">0</span>{yun:}t key='common_02056'{/yun}
                                 <input type="hidden" name="price" size="10" id="user_vip_price">
                             </div>
                         </div>
                         <div class="payment_list">
-                            <div class="payment_list_s">{yun:}t key='member_com_pay_00002'{/yun}：</div>
+                            <div class="payment_list_s">{yun:}t key='member_com_00317'{/yun}：</div>
                             <div class="payment_list_r">
                                 <textarea name="remark" id="remark" cols="40" class="payment_list_textarea"></textarea>
                             </div>
@@ -221,17 +221,17 @@
                         <div class="payment_list">
                             <div class="payment_list_s">&nbsp;</div>
                             <div class="payment_list_r">
-                                <input type="submit" name="submit" class="payment_list_other" value="{yun:}t key='member_user_pay_00002'{/yun}">
+                                <input type="submit" name="submit" class="payment_list_other" value="{yun:}t key='member_user_00238'{/yun}">
                             </div>
                         </div>
                     </div>
                 </form>
                 <div class="wxts_box">
-                    <div class="wxts">{yun:}t key='wap_user_index_00023'{/yun}：</div>
+                    <div class="wxts">{yun:}t key='wap_user_00205'{/yun}：</div>
                     1. 银行付款界面尽量使用ie浏览器<br>
                     2. 过程中请勿按浏览器“后退”键<br>
                     3. 提交支付后，将转入银行的网站，请根据页面提示操作<br>
-                    4. 如果提交后在银行页面打不开，可以尝试过3分钟后再刷新页面,清理IE{yun:}t key='common_02022'{/yun},{yun:}t key='admin_system_set_payset_00062'{/yun}3721或google工具条,换个浏览器或换个上网环境
+                    4. 如果提交后在银行页面打不开，可以尝试过3分钟后再刷新页面,清理IE{yun:}t key='common_02022'{/yun},{yun:}t key='admin_system_00535'{/yun}3721或google工具条,换个浏览器或换个上网环境
                 </div>
             </div>
         </div>
@@ -240,11 +240,11 @@
     <div id="remind_order" style="display:none; width:320px;">
         <div class="pay_tip_box">
             <div class="pay_tip_top">
-                <div class="pay_tip_box_ts">{yun:}t key='wap_user_index_00023'{/yun}</div>
+                <div class="pay_tip_box_ts">{yun:}t key='wap_user_00205'{/yun}</div>
                 您有 <font color="#FF3300">{yun:}$nopayorder{/yun}</font> {yun:}t key='common_01445'{/yun}，是否继续充值！
             </div>
             <div class="">
-                <a class="pay_tip_box_bth" href="index.php?c=paylist">{yun:}t key='wap_user_pay_00002'{/yun}</a>
+                <a class="pay_tip_box_bth" href="index.php?c=paylist">{yun:}t key='wap_user_00308'{/yun}</a>
                 <a class="pay_tip_box_bth_jx" href="javascript:void(0);" onclick="layer.closeAll()">继续充值</a>
             </div>
         </div>

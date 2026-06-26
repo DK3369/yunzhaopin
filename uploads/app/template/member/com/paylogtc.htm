@@ -2,7 +2,7 @@
 <div class="w1000">
     <div class="admin_mainbody"> {yun:}include file="$comstyle/left.htm"{/yun}
         <div class="right_box">
-            <div class="com_tit"><span class="com_tit_span"> {yun:}t key='wap_com_index_00022'{/yun}</span></div>
+            <div class="com_tit"><span class="com_tit_span"> {yun:}t key='wap_com_00097'{/yun}</span></div>
             <div class="vip_boxshow">
                 <div class="vip_boxshow_c">
                     <div class="report_uaer_list ">
@@ -10,22 +10,22 @@
                         <div class="report_uaer_list_p">为企业提供多样化的套餐服务</div>
                         <ul>
                             {yun:}if $config.com_vip_type==2{/yun}
-                            <li><a href="index.php?c=right">{yun:}t key='wap_com_server_00023'{/yun}</a></li>
+                            <li><a href="index.php?c=right">{yun:}t key='wap_com_00380'{/yun}</a></li>
                             {yun:}/if{/yun}
                             {yun:}if $config.com_vip_type==1{/yun}
-                            <li><a href="index.php?c=right&act=time">{yun:}t key='wap_com_server_00027'{/yun}</a></li>
+                            <li><a href="index.php?c=right&act=time">{yun:}t key='wap_com_00384'{/yun}</a></li>
                             {yun:}/if{/yun}
                             {yun:}if $config.com_vip_type==0{/yun}
-                            <li><a href="index.php?c=right">{yun:}t key='wap_com_server_00023'{/yun}</a></li>
-                            <li><a href="index.php?c=right&act=time">{yun:}t key='wap_com_server_00027'{/yun}</a></li>
+                            <li><a href="index.php?c=right">{yun:}t key='wap_com_00380'{/yun}</a></li>
+                            <li><a href="index.php?c=right&act=time">{yun:}t key='wap_com_00384'{/yun}</a></li>
                             {yun:}/if{/yun}
                             {yun:}if $statis.rating_type != 2 && !$vipIsDown && $config.com_integral_online != 4 {/yun}
-                            <li><a href="index.php?c=right&act=added">{yun:}t key='wap_com_server_00036'{/yun}</a></li>
+                            <li><a href="index.php?c=right&act=added">{yun:}t key='wap_com_00393'{/yun}</a></li>
                             {yun:}/if{/yun}
-                            <li><a href="index.php?c=pay">{yun:}t key='member_com_added_00003'{/yun}</a></li>
-                            <li class="report_uaer_list_cur"><a href="index.php?c=paylogtc">{yun:}t key='wap_com_finance_00001'{/yun}</a></li>
-                            <li><a href="index.php?c=paylog&consume=ok">{yun:}t key='wap_user_paylog_00006'{/yun}</a></li>
-                            <li><a href="index.php?c=integral">{yun:}$config.integral_pricename{/yun}{yun:}t key='wap_com_jobadd_00050'{/yun}</a></li>
+                            <li><a href="index.php?c=pay">{yun:}t key='member_com_00041'{/yun}</a></li>
+                            <li class="report_uaer_list_cur"><a href="index.php?c=paylogtc">{yun:}t key='wap_com_00064'{/yun}</a></li>
+                            <li><a href="index.php?c=paylog&consume=ok">{yun:}t key='wap_user_00315'{/yun}</a></li>
+                            <li><a href="index.php?c=integral">{yun:}$config.integral_pricename{/yun}{yun:}t key='wap_com_00304'{/yun}</a></li>
                         </ul>
                     </div>
                     <div class="vip_box_dq">您当前是：{yun:}$statis.rating_name{/yun}
@@ -35,7 +35,7 @@
                         {yun:}else if $statis.vip_etime==0{/yun}
                             {yun:}$statis.vip_stime|date_format:'%Y-%m-%d'{/yun} - {yun:}t key='api_wxapp_00019'{/yun}
                         {yun:}else{/yun}
-                            {yun:}$statis.vip_stime|date_format:'%Y-%m-%d'{/yun} - <span class="comindex_money_pd_s">{yun:}$statis.vip_etime|date_format:'%Y-%m-%d'{/yun}</span><a href="index.php?c=right" class="cblue">{yun:}t key='wap_com_finance_00003'{/yun}</a>
+                            {yun:}$statis.vip_stime|date_format:'%Y-%m-%d'{/yun} - <span class="comindex_money_pd_s">{yun:}$statis.vip_etime|date_format:'%Y-%m-%d'{/yun}</span><a href="index.php?c=right" class="cblue">{yun:}t key='wap_com_00066'{/yun}</a>
                         {yun:}/if{/yun}
                     </div>
                     <div class="vip_box">
@@ -49,8 +49,8 @@
                                         <div class="com_pay_balance_m">
                                             <div class="com_pay_balance_n">{yun:}$statis.job_num{/yun}</div>
                                         </div>
-                                        <div class="com_pay_balance_list_h1">{yun:}t key='wap_com_integral_reduce_00007'{/yun}</div>
-                                        <div class="com_pay_balance_list_h1">{yun:}t key='member_com_paylogtc_00002'{/yun}： {yun:}$rating.job_num{/yun}</div>
+                                        <div class="com_pay_balance_list_h1">{yun:}t key='wap_com_00028'{/yun}</div>
+                                        <div class="com_pay_balance_list_h1">{yun:}t key='common_02159'{/yun}： {yun:}$rating.job_num{/yun}</div>
                                         <div class="com_pay_balance_data_bth">
                                             <a href="javascript:void(0);" onclick="jobadd_url('{yun:}$addjobnum{/yun}');return false;" class="com_pay_balance_data_btha">{yun:}t key='common.publish_job'{/yun}</a>
                                         </div>
@@ -69,8 +69,8 @@
                                                 <div class="com_pay_balance_n">{yun:}$statis.down_resume{/yun}</div>
                                             {yun:}/if{/yun}
                                         </div>
-                                        <div class="com_pay_balance_list_h1">{yun:}t key='wap_resume_index_00011'{/yun}</div>
-                                        <div class="com_pay_balance_list_h1">{yun:}t key='member_com_paylogtc_00002'{/yun}：
+                                        <div class="com_pay_balance_list_h1">{yun:}t key='wap_00451'{/yun}</div>
+                                        <div class="com_pay_balance_list_h1">{yun:}t key='common_02159'{/yun}：
                                             {yun:}if $statis.rating_type=='2' && $rating.resume==0{/yun}
                                             -
                                             {yun:}else{/yun}
@@ -78,7 +78,7 @@
                                             {yun:}/if{/yun}
                                         </div>
                                         <div class="com_pay_balance_data_bth">
-                                            <a href="index.php?c=down" class="com_pay_balance_data_btha">{yun:}t key='wap_com_zhaopinzhou_00002'{/yun}</a>
+                                            <a href="index.php?c=down" class="com_pay_balance_data_btha">{yun:}t key='wap_com_00427'{/yun}</a>
                                         </div>
                                     </div>
                                 </li>
@@ -95,8 +95,8 @@
                                                 <div class="com_pay_balance_n">{yun:}$statis.invite_resume{/yun}</div>
                                             {yun:}/if{/yun}
                                         </div>
-                                        <div class="com_pay_balance_list_h1">{yun:}t key='resume_resume_00015'{/yun}</div>
-                                        <div class="com_pay_balance_list_h1">{yun:}t key='member_com_paylogtc_00002'{/yun}：
+                                        <div class="com_pay_balance_list_h1">{yun:}t key='resume_00029'{/yun}</div>
+                                        <div class="com_pay_balance_list_h1">{yun:}t key='common_02159'{/yun}：
                                             {yun:}if $statis.rating_type=='2' && $rating.interview==0{/yun}
                                             -
                                             {yun:}else{/yun}
@@ -121,8 +121,8 @@
                                                 <div class="com_pay_balance_n">{yun:}$statis.breakjob_num{/yun}</div>
                                             {yun:}/if{/yun}
                                         </div>
-                                        <div class="com_pay_balance_list_h1">{yun:}t key='wap_com_integral_reduce_00008'{/yun}</div>
-                                        <div class="com_pay_balance_list_h1">{yun:}t key='member_com_paylogtc_00002'{/yun}：
+                                        <div class="com_pay_balance_list_h1">{yun:}t key='wap_com_00029'{/yun}</div>
+                                        <div class="com_pay_balance_list_h1">{yun:}t key='common_02159'{/yun}：
                                             {yun:}if $statis.rating_type=='2' && $rating.breakjob_num{/yun}
                                             -
                                             {yun:}else{/yun}
@@ -130,7 +130,7 @@
                                             {yun:}/if{/yun}
                                         </div>
                                         <div class="com_pay_balance_data_bth">
-                                            <a href="index.php?c=job&w=1" class="com_pay_balance_data_btha">{yun:}t key='wap_com_integral_reduce_00008'{/yun}</a>
+                                            <a href="index.php?c=job&w=1" class="com_pay_balance_data_btha">{yun:}t key='wap_com_00029'{/yun}</a>
                                         </div>
                                     </div>
                                 </li>
@@ -147,8 +147,8 @@
                                                 <div class="com_pay_balance_n">{yun:}$statis.zph_num{/yun}</div>
                                             {yun:}/if{/yun}
                                         </div>
-                                        <div class="com_pay_balance_list_h1">{yun:}t key='member_com_paylogtc_00001'{/yun}</div>
-                                        <div class="com_pay_balance_list_h1">{yun:}t key='member_com_paylogtc_00002'{/yun}：
+                                        <div class="com_pay_balance_list_h1">{yun:}t key='member_com_00323'{/yun}</div>
+                                        <div class="com_pay_balance_list_h1">{yun:}t key='common_02159'{/yun}：
                                             {yun:}if $statis.rating_type=='2' && $rating.zph_num==0{/yun}
                                             -
                                             {yun:}else{/yun}
@@ -173,12 +173,12 @@
                                                 <div class="com_pay_balance_n" style="font-size:21px;">{yun:}$statis.top_num{/yun}{yun:}t key='common_02067'{/yun}</div>
                                             {yun:}/if{/yun}
                                         </div>
-                                        <div class="com_pay_balance_list_h1">{yun:}t key='wap_user_index_00027'{/yun}</div>
-                                        <div class="com_pay_balance_list_h1">{yun:}t key='member_com_paylogtc_00002'{/yun}：
+                                        <div class="com_pay_balance_list_h1">{yun:}t key='wap_user_00209'{/yun}</div>
+                                        <div class="com_pay_balance_list_h1">{yun:}t key='common_02159'{/yun}：
                                             {yun:}if $statis.rating_type=='2' && $rating.top_num == 0{/yun}-{yun:}else{/yun}{yun:}$rating.top_num{/yun}{yun:}/if{/yun}
                                         </div>
                                         <div class="com_pay_balance_data_bth">
-                                            <a href="index.php?c=job&w=1" class="com_pay_balance_data_btha">{yun:}t key='member_com_paylogtc_00006'{/yun}</a>
+                                            <a href="index.php?c=job&w=1" class="com_pay_balance_data_btha">{yun:}t key='member_com_00327'{/yun}</a>
                                         </div>
                                     </div>
                                 </li>
@@ -199,13 +199,13 @@
                                             </div>
                                             {yun:}/if{/yun}
                                         </div>
-                                        <div class="com_pay_balance_list_h1">{yun:}t key='wap_com_com_00006'{/yun}</div>
-                                        <div class="com_pay_balance_list_h1">{yun:}t key='member_com_paylogtc_00002'{/yun}：{yun:}if $statis.rating_type=='2' &&
+                                        <div class="com_pay_balance_list_h1">{yun:}t key='wap_com_00043'{/yun}</div>
+                                        <div class="com_pay_balance_list_h1">{yun:}t key='common_02159'{/yun}：{yun:}if $statis.rating_type=='2' &&
                                             $rating.urgent_num ==
                                             0{/yun}-{yun:}else{/yun}{yun:}$rating.urgent_num{/yun}{yun:}/if{/yun}
                                         </div>
                                         <div class="com_pay_balance_data_bth">
-                                            <a href="index.php?c=job&w=1" class="com_pay_balance_data_btha">{yun:}t key='member_com_paylogtc_00005'{/yun}</a>
+                                            <a href="index.php?c=job&w=1" class="com_pay_balance_data_btha">{yun:}t key='member_com_00326'{/yun}</a>
                                         </div>
                                     </div>
                                 </li>
@@ -226,8 +226,8 @@
                                             </div>
                                             {yun:}/if{/yun}
                                         </div>
-                                        <div class="com_pay_balance_list_h1">{yun:}t key='wap_com_com_00004'{/yun}</div>
-                                        <div class="com_pay_balance_list_h1">{yun:}t key='member_com_paylogtc_00002'{/yun}：{yun:}if $statis.rating_type=='2' &&
+                                        <div class="com_pay_balance_list_h1">{yun:}t key='wap_com_00041'{/yun}</div>
+                                        <div class="com_pay_balance_list_h1">{yun:}t key='common_02159'{/yun}：{yun:}if $statis.rating_type=='2' &&
                                             $rating.rec_num ==
                                             0{/yun}-{yun:}else{/yun}{yun:}$rating.rec_num{/yun}{yun:}/if{/yun}
                                         </div>
@@ -239,7 +239,7 @@
                                 <li>
                                     <div class="com_pay_balance_list">
                                         <div class="com_pay_balance_look_tq_box">
-                                            <a href="index.php?c=right" class="com_pay_balance_look_tq"> {yun:}t key='member_com_paylogtc_00004'{/yun}
+                                            <a href="index.php?c=right" class="com_pay_balance_look_tq"> {yun:}t key='member_com_00325'{/yun}
                                                 <div class="">会员套餐特权</div>
                                                 <i class="com_pay_balance_look_tq_box_icon"></i>
                                             </a>

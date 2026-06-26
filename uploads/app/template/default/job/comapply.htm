@@ -28,39 +28,39 @@
                         {yun:}if $stop!='1'{/yun}
                         {yun:}if $usertype==1{/yun}
                         {yun:}if $favJobNum{/yun}
-                        <a href="javascript:void(0);" onclick="cancelFavJob('{yun:}$Info.id{/yun}', 2);" class="job_ceil_jobsc">{yun:}t key='wap_part_show_00011'{/yun}</a>
+                        <a href="javascript:void(0);" onclick="cancelFavJob('{yun:}$Info.id{/yun}', 2);" class="job_ceil_jobsc">{yun:}t key='wap_00378'{/yun}</a>
                         {yun:}else{/yun}
-                        <a href="javascript:void(0);" onclick="fav_job('{yun:}$Info.id{/yun}','2');" id="favjobid{yun:}$Info.id{/yun}" class="job_ceil_jobsc">{yun:}t key='wap_part_show_00012'{/yun}</a>
+                        <a href="javascript:void(0);" onclick="fav_job('{yun:}$Info.id{/yun}','2');" id="favjobid{yun:}$Info.id{/yun}" class="job_ceil_jobsc">{yun:}t key='wap_00379'{/yun}</a>
                         {yun:}/if{/yun}
                         {yun:}else{/yun}
                         {yun:}if $uid{/yun}
                         {yun:}if $config.sy_user_change==1{/yun}
-                        <a href="javascript:void(0);" onclick="layer.msg('{yun:}t key='default_job_comapply_00010'{/yun}', 2, 8)" class="job_ceil_jobsc" rel="nofollow">{yun:}t key='wap_part_show_00012'{/yun}</a>
+                        <a href="javascript:void(0);" onclick="layer.msg('{yun:}t key='default_00210'{/yun}', 2, 8)" class="job_ceil_jobsc" rel="nofollow">{yun:}t key='wap_00379'{/yun}</a>
                         {yun:}else{/yun}
-                        <a href="javascript:void(0);" onclick="layer.msg('{yun:}t key='wap_job_show_00014'{/yun}', 2, 8)" class="job_ceil_jobsc" rel="nofollow">{yun:}t key='wap_part_show_00012'{/yun}</a>
+                        <a href="javascript:void(0);" onclick="layer.msg('{yun:}t key='wap_00257'{/yun}', 2, 8)" class="job_ceil_jobsc" rel="nofollow">{yun:}t key='wap_00379'{/yun}</a>
                         {yun:}/if{/yun}
                         {yun:}else{/yun}
-                        <a href="javascript:void(0);" onclick="showlogin('1');" class="job_ceil_jobsc" rel="nofollow">{yun:}t key='wap_part_show_00012'{/yun}</a>
+                        <a href="javascript:void(0);" onclick="showlogin('1');" class="job_ceil_jobsc" rel="nofollow">{yun:}t key='wap_00379'{/yun}</a>
                         {yun:}/if{/yun}
                         {yun:}/if{/yun}
                         {yun:}if $usertype==1{/yun}
                         {yun:}if $userIdJobNum{/yun}
-                        <a class="job_ceil_jobtd_ysq">{yun:}t key='wap_user_sq_00012'{/yun}</a>
+                        <a class="job_ceil_jobtd_ysq">{yun:}t key='wap_user_00357'{/yun}</a>
                         {yun:}else{/yun}
-                        <a href="javascript:;" class="sq_job job_ceil_jobtd">{yun:}t key='wap_com_job_00044'{/yun}</a>
+                        <a href="javascript:;" class="sq_job job_ceil_jobtd">{yun:}t key='wap_com_00235'{/yun}</a>
                         {yun:}/if{/yun}
                         {yun:}else{/yun}
                         {yun:}if $uid{/yun}
                         {yun:}if $config.sy_user_change==1{/yun}
-                        <a onclick="layer.msg('{yun:}t key='default_job_comapply_00009'{/yun}', 2, 8)" href="javascript:;" class="job_ceil_jobtd">{yun:}t key='wap_com_job_00044'{/yun}</a>
+                        <a onclick="layer.msg('{yun:}t key='default_00209'{/yun}', 2, 8)" href="javascript:;" class="job_ceil_jobtd">{yun:}t key='wap_com_00235'{/yun}</a>
                         {yun:}else{/yun}
-                        <a onclick="layer.msg('{yun:}t key='default_job_comapply_00011'{/yun}', 2, 8)" href="javascript:;" class="job_ceil_jobtd">{yun:}t key='wap_com_job_00044'{/yun}</a>
+                        <a onclick="layer.msg('{yun:}t key='default_00211'{/yun}', 2, 8)" href="javascript:;" class="job_ceil_jobtd">{yun:}t key='wap_com_00235'{/yun}</a>
                         {yun:}/if{/yun}
                         {yun:}else{/yun}
                         {yun:}if $config.resume_kstd != 2{/yun}
-                        <a onclick="applyjobuid('{yun:}$smarty.get.id{/yun}');" href="javascript:;" class="job_ceil_jobtd">{yun:}t key='wap_com_job_00044'{/yun}</a>
+                        <a onclick="applyjobuid('{yun:}$smarty.get.id{/yun}');" href="javascript:;" class="job_ceil_jobtd">{yun:}t key='wap_com_00235'{/yun}</a>
                         {yun:}else{/yun}
-                        <a onclick="showlogin('1');" href="javascript:;" class="job_ceil_jobtd">{yun:}t key='wap_com_job_00044'{/yun}</a>
+                        <a onclick="showlogin('1');" href="javascript:;" class="job_ceil_jobtd">{yun:}t key='wap_com_00235'{/yun}</a>
                         {yun:}/if{/yun}
                         {yun:}/if{/yun}
                         {yun:}/if{/yun}
@@ -74,7 +74,7 @@
     <!--新职位详细-->
     <div class="job_details_top">
         <div class="w1200">
-            <div class="job_details_current">{yun:}t key='common_01498'{/yun}{yun:}$stop{/yun}： <a href="{yun:}$config.sy_weburl{/yun}">{yun:}t key='common.home'{/yun}</a> > <a href="{yun:}url m=job{/yun}">{yun:}t key='default_job_comapply_00039'{/yun}</a> > {yun:}t key='wap_job_show_00044'{/yun} </div>
+            <div class="job_details_current">{yun:}t key='common_01498'{/yun}{yun:}$stop{/yun}： <a href="{yun:}$config.sy_weburl{/yun}">{yun:}t key='common.home'{/yun}</a> > <a href="{yun:}url m=job{/yun}">{yun:}t key='default_00236'{/yun}</a> > {yun:}t key='wap_00287'{/yun} </div>
             <div class="job_details_topbox">
                 <div class="job_details_topleft">
                     <h1 class="job_details_name">{yun:}$Info.jobname{/yun}</h1><span class="job_details_salary_n">{yun:}$Info.job_salary{/yun}</span>{yun:}if $Info.urgent_time>time(){/yun}
@@ -101,7 +101,7 @@
                         {yun:}/if{/yun}
                         {yun:}if $Info.is_graduate{/yun}
                         <span class="job_details_line">|</span>
-                        {yun:}t key='member_com_jobadd_00017'{/yun}
+                        {yun:}t key='member_com_00241'{/yun}
                         {yun:}/if{/yun}
                     </div>
                     {yun:}if $Info.job_welfare{/yun}
@@ -112,50 +112,50 @@
                     </div>
                     {yun:}/if{/yun}
                     <div class="job_details_topright_data">
-                        <span class="job_details_topright_data_time">{yun:}$Info.lastupdate{/yun} {yun:}t key='wap_invite_00002'{/yun}</span>
-                        {yun:}t key='member_com_joblist_00018'{/yun}：<script src="{yun:}url m=job c=comapply a=GetHits id=$Info.id{/yun}"></script> {yun:}t key='common_02089'{/yun}
+                        <span class="job_details_topright_data_time">{yun:}$Info.lastupdate{/yun} {yun:}t key='wap_00225'{/yun}</span>
+                        {yun:}t key='member_com_00268'{/yun}：<script src="{yun:}url m=job c=comapply a=GetHits id=$Info.id{/yun}"></script> {yun:}t key='common_02089'{/yun}
                     </div>
                 </div>
                 <div class="job_details_topright">
                     {yun:}if $stop=='1'{/yun}
-                    <img src="{yun:}$style{/yun}/images/stamp.png" alt="{yun:}t key='wap_com_job_00051'{/yun}">
+                    <img src="{yun:}$style{/yun}/images/stamp.png" alt="{yun:}t key='wap_com_00242'{/yun}">
                     {yun:}else{/yun}
                     <div class="job_details_top_operation">
                         {yun:}if $usertype==1{/yun}
                         {yun:}if $favJobNum{/yun}
-                        <a href="javascript:void(0);" onclick="cancelFavJob('{yun:}$Info.id{/yun}', 2);" class="job_details_top_operation_sc">{yun:}t key='wap_part_show_00011'{/yun}</a>
+                        <a href="javascript:void(0);" onclick="cancelFavJob('{yun:}$Info.id{/yun}', 2);" class="job_details_top_operation_sc">{yun:}t key='wap_00378'{/yun}</a>
                         {yun:}else{/yun}
-                        <a href="javascript:void(0);" onclick="fav_job('{yun:}$Info.id{/yun}','2');" id="favjobid{yun:}$Info.id{/yun}" class="job_details_top_operation_sc">{yun:}t key='wap_part_show_00012'{/yun}</a>
+                        <a href="javascript:void(0);" onclick="fav_job('{yun:}$Info.id{/yun}','2');" id="favjobid{yun:}$Info.id{/yun}" class="job_details_top_operation_sc">{yun:}t key='wap_00379'{/yun}</a>
                         {yun:}/if{/yun}
                         {yun:}else{/yun}
                         {yun:}if $uid{/yun}
                         {yun:}if $config.sy_user_change==1{/yun}
-                        <a href="javascript:void(0);" onclick="layer.msg('{yun:}t key='default_job_comapply_00010'{/yun}', 2, 8)" class="job_details_top_operation_sc" rel="nofollow">{yun:}t key='wap_part_show_00012'{/yun}</a>
+                        <a href="javascript:void(0);" onclick="layer.msg('{yun:}t key='default_00210'{/yun}', 2, 8)" class="job_details_top_operation_sc" rel="nofollow">{yun:}t key='wap_00379'{/yun}</a>
                         {yun:}else{/yun}
-                        <a href="javascript:void(0);" onclick="layer.msg('{yun:}t key='wap_job_show_00014'{/yun}', 2, 8)" class="job_details_top_operation_sc" rel="nofollow">{yun:}t key='wap_part_show_00012'{/yun}</a>
+                        <a href="javascript:void(0);" onclick="layer.msg('{yun:}t key='wap_00257'{/yun}', 2, 8)" class="job_details_top_operation_sc" rel="nofollow">{yun:}t key='wap_00379'{/yun}</a>
                         {yun:}/if{/yun}
                         {yun:}else{/yun}
-                        <a href="javascript:void(0);" onclick="showlogin('1');" class="job_details_top_operation_sc" rel="nofollow">{yun:}t key='wap_part_show_00012'{/yun}</a>
+                        <a href="javascript:void(0);" onclick="showlogin('1');" class="job_details_top_operation_sc" rel="nofollow">{yun:}t key='wap_00379'{/yun}</a>
                         {yun:}/if{/yun}
                         {yun:}/if{/yun}
                         {yun:}if $usertype==1{/yun}
                         {yun:}if $userIdJobNum{/yun}
-                        <a class="job_details_top_operation_ysq">{yun:}t key='default_job_comapply_00028'{/yun}</a>
+                        <a class="job_details_top_operation_ysq">{yun:}t key='default_00226'{/yun}</a>
                         {yun:}else{/yun}
-                        <a class="sq_job job_details_top_operation_sq">{yun:}t key='wap_com_job_00044'{/yun}</a>
+                        <a class="sq_job job_details_top_operation_sq">{yun:}t key='wap_com_00235'{/yun}</a>
                         {yun:}/if{/yun}
                         {yun:}else{/yun}
                         {yun:}if $uid{/yun}
                         {yun:}if $config.sy_user_change==1{/yun}
-                        <a onclick="layer.msg('{yun:}t key='default_job_comapply_00009'{/yun}', 2, 8)" href="javascript:;" class="job_details_top_operation_sq">{yun:}t key='wap_com_job_00044'{/yun}</a>
+                        <a onclick="layer.msg('{yun:}t key='default_00209'{/yun}', 2, 8)" href="javascript:;" class="job_details_top_operation_sq">{yun:}t key='wap_com_00235'{/yun}</a>
                         {yun:}else{/yun}
-                        <a onclick="layer.msg('{yun:}t key='default_job_comapply_00011'{/yun}', 2, 8)" href="javascript:;" class="job_details_top_operation_sq">{yun:}t key='wap_com_job_00044'{/yun}</a>
+                        <a onclick="layer.msg('{yun:}t key='default_00211'{/yun}', 2, 8)" href="javascript:;" class="job_details_top_operation_sq">{yun:}t key='wap_com_00235'{/yun}</a>
                         {yun:}/if{/yun}
                         {yun:}else{/yun}
                         {yun:}if $config.resume_kstd != 2{/yun}
-                        <a onclick="applyjobuid('{yun:}$smarty.get.id{/yun}');" href="javascript:;" class="job_details_top_operation_sq">{yun:}t key='wap_com_job_00044'{/yun}</a>
+                        <a onclick="applyjobuid('{yun:}$smarty.get.id{/yun}');" href="javascript:;" class="job_details_top_operation_sq">{yun:}t key='wap_com_00235'{/yun}</a>
                         {yun:}else{/yun}
-                        <a onclick="showlogin('1');" href="javascript:;" class="job_details_top_operation_sq">{yun:}t key='wap_com_job_00044'{/yun}</a>
+                        <a onclick="showlogin('1');" href="javascript:;" class="job_details_top_operation_sq">{yun:}t key='wap_com_00235'{/yun}</a>
                         {yun:}/if{/yun}
                         {yun:}/if{/yun}
                         {yun:}/if{/yun}
@@ -167,9 +167,9 @@
                             {yun:}else{/yun}
                             {yun:}if $uid{/yun}
                             {yun:}if $Info.r_status!=1{/yun}
-                            <a href="javascript:void(0);" onclick="layer.msg('{yun:}t key='default_job_comapply_00018'{/yun}',2,8)" class="job_details_top_extension_tj" rel="nofollow">{yun:}t key='common.recommended'{/yun}</a>
+                            <a href="javascript:void(0);" onclick="layer.msg('{yun:}t key='default_00217'{/yun}',2,8)" class="job_details_top_extension_tj" rel="nofollow">{yun:}t key='common.recommended'{/yun}</a>
                             {yun:}elseif $Info.state!=1{/yun}
-                            <a href="javascript:void(0);" onclick="layer.msg('{yun:}t key='default_job_comapply_00020'{/yun}',2,8)" class="job_details_top_extension_tj" rel="nofollow">{yun:}t key='common.recommended'{/yun}</a>
+                            <a href="javascript:void(0);" onclick="layer.msg('{yun:}t key='default_00219'{/yun}',2,8)" class="job_details_top_extension_tj" rel="nofollow">{yun:}t key='common.recommended'{/yun}</a>
                             {yun:}else{/yun}
                             <a href="javascript:void(0);" onclick="recommendInterval('{yun:}$uid{/yun}','{yun:}url m=job c=recommend id=$Info.id{/yun}','{yun:}$recommendInterval{/yun}');" class="job_details_top_extension_tj" rel="nofollow">{yun:}t key='common.recommended'{/yun}</a>
                             {yun:}/if{/yun}
@@ -180,15 +180,15 @@
                         </div>
                         <div class="job_details_top_extension_zl ">
                             {yun:}if $usertype=='1'{/yun}
-                            <a href="javascript:void(0)" class="job_details_top_extension_jb" onclick="report_com();" rel="nofollow">{yun:}t key='wap_com_reportlist_00003'{/yun}</a>
+                            <a href="javascript:void(0)" class="job_details_top_extension_jb" onclick="report_com();" rel="nofollow">{yun:}t key='wap_com_00350'{/yun}</a>
                             {yun:}elseif $uid{/yun}
                             {yun:}if $config.sy_user_change==1{/yun}
-                            <a onclick="layer.msg('{yun:}t key='default_job_comapply_00008'{/yun}', 2, 8)" href="javascript:;" class="job_details_top_extension_jb">{yun:}t key='wap_com_reportlist_00003'{/yun}</a>
+                            <a onclick="layer.msg('{yun:}t key='default_00208'{/yun}', 2, 8)" href="javascript:;" class="job_details_top_extension_jb">{yun:}t key='wap_com_00350'{/yun}</a>
                             {yun:}else{/yun}
-                            <a onclick="layer.msg('{yun:}t key='wap_job_show_00011'{/yun}', 2, 8)" href="javascript:;" class="job_details_top_extension_jb">{yun:}t key='wap_com_reportlist_00003'{/yun}</a>
+                            <a onclick="layer.msg('{yun:}t key='wap_00254'{/yun}', 2, 8)" href="javascript:;" class="job_details_top_extension_jb">{yun:}t key='wap_com_00350'{/yun}</a>
                             {yun:}/if{/yun}
                             {yun:}else{/yun}
-                            <a href="javascript:void(0)" class="job_details_top_extension_jb" onclick="showlogin('1');" rel="nofollow">{yun:}t key='wap_com_reportlist_00003'{/yun}</a>
+                            <a href="javascript:void(0)" class="job_details_top_extension_jb" onclick="showlogin('1');" rel="nofollow">{yun:}t key='wap_com_00350'{/yun}</a>
                             {yun:}/if{/yun}
                         </div>
                     </div>
@@ -219,9 +219,9 @@
                         {yun:}/if{/yun}
                         {yun:}if $Info.snum!=0 && $Info.snum > $config.sy_sq_job_num{/yun}
                         <div class="job_details_touch_userdata">
-                            <div class="job_details_touch_userdata_list"><span class="job_details_touch_userdata_n">{yun:}$Info.snum{/yun}{yun:}t key='common_02052'{/yun}</span>{yun:}t key='member_com_index_00045'{/yun}</div>
-                            <div class="job_details_touch_userdata_list"><i class=" job_details_touch_userdata_list_line"></i><span class="job_details_touch_userdata_n">{yun:}$Info.pre{/yun}%</span>{yun:}t key='default_job_comapply_00029'{/yun}</div>
-                            <div class="job_details_touch_userdata_list"><i class=" job_details_touch_userdata_list_line"></i><span class="job_details_touch_userdata_n">{yun:}$Info.operatime{/yun}</span>{yun:}t key='default_job_comapply_00026'{/yun}</div>
+                            <div class="job_details_touch_userdata_list"><span class="job_details_touch_userdata_n">{yun:}$Info.snum{/yun}{yun:}t key='common_02052'{/yun}</span>{yun:}t key='member_com_00152'{/yun}</div>
+                            <div class="job_details_touch_userdata_list"><i class=" job_details_touch_userdata_list_line"></i><span class="job_details_touch_userdata_n">{yun:}$Info.pre{/yun}%</span>{yun:}t key='default_00227'{/yun}</div>
+                            <div class="job_details_touch_userdata_list"><i class=" job_details_touch_userdata_list_line"></i><span class="job_details_touch_userdata_n">{yun:}$Info.operatime{/yun}</span>{yun:}t key='default_00224'{/yun}</div>
                         </div>
                         {yun:}/if{/yun}
                     </div>
@@ -230,22 +230,22 @@
                         {yun:}if $Info.linkopen>1{/yun}
                         <div class="job_details_touch_tel" id="rtelbox">
                             {yun:}t key='common.phone'{/yun}：<span class="job_details_touch_tel_n">{yun:}if $link.linkData.linktel_n{/yun}{yun:}$link.linkData.linktel_n{/yun}{yun:}else{/yun}{yun:}$link.linkData.linkphone_n{/yun}{yun:}/if{/yun}</span>
-                            <a href="javascript:void(0)" onclick="rgetTel('{yun:}$Info.id{/yun}');" class="job_details_touch_tel_bth">{yun:}t key='default_job_comapply_00035'{/yun}</a>
+                            <a href="javascript:void(0)" onclick="rgetTel('{yun:}$Info.id{/yun}');" class="job_details_touch_tel_bth">{yun:}t key='default_00233'{/yun}</a>
                         </div>
                         {yun:}else if $link.linkCode > 1 && $link.linkCode < 6{/yun} <div class="job_details_touch_tel">
                             <em class="job_details_touch_tel_tip">{yun:}$link.linkMsg{/yun}{yun:}if !$userIdJobNum{/yun}，请直接投递简历{yun:}/if{/yun}</em>
                             {yun:}if !$userIdJobNum{/yun}
                             {yun:}if !$uid{/yun}
                             {yun:}if $config.resume_kstd != 2{/yun}
-                            <a href="javascript:;" onclick="applyjobuid('1');" class="job_details_touch_tel_bth">{yun:}t key='wap_com_job_00044'{/yun}</a>
+                            <a href="javascript:;" onclick="applyjobuid('1');" class="job_details_touch_tel_bth">{yun:}t key='wap_com_00235'{/yun}</a>
                             {yun:}else{/yun}
-                            <a href="javascript:;" onclick="showlogin('1');" class="job_details_touch_tel_bth">{yun:}t key='wap_com_job_00044'{/yun}</a>
+                            <a href="javascript:;" onclick="showlogin('1');" class="job_details_touch_tel_bth">{yun:}t key='wap_com_00235'{/yun}</a>
                             {yun:}/if{/yun}
                             {yun:}else{/yun}
                             {yun:}if $usertype==1{/yun}
-                            <a href="javascript:;" class="job_details_touch_tel_bth sq_job">{yun:}t key='wap_com_job_00044'{/yun}</a>
+                            <a href="javascript:;" class="job_details_touch_tel_bth sq_job">{yun:}t key='wap_com_00235'{/yun}</a>
                             {yun:}else{/yun}
-                            <a onclick="layer.msg('{yun:}t key='default_job_comapply_00011'{/yun}', 2, 8)" href="javascript:;" class="job_details_touch_tel_bth">{yun:}t key='wap_com_job_00044'{/yun}</a>
+                            <a onclick="layer.msg('{yun:}t key='default_00211'{/yun}', 2, 8)" href="javascript:;" class="job_details_touch_tel_bth">{yun:}t key='wap_com_00235'{/yun}</a>
                             {yun:}/if{/yun}
                             {yun:}/if{/yun}
                             {yun:}/if{/yun}
@@ -255,24 +255,24 @@
                         {yun:}t key='common.phone'{/yun}：<span class="job_details_touch_tel_n">{yun:}if $link.linkData.linktel_n{/yun}{yun:}$link.linkData.linktel_n{/yun}{yun:}else{/yun}{yun:}$link.linkData.linkphone_n{/yun}{yun:}/if{/yun}</span>
                         {yun:}if $link.linkCode == 6{/yun}
                         {yun:}if !$uid{/yun}
-                        <em class="job_details_touch_tel_tip">{yun:}$link.linkMsg{/yun}{yun:}t key='wap_job_show_00021'{/yun}</em>
-                        <a href="javascript:;" onclick="showlogin(2);" class="job_details_touch_tel_bth">{yun:}t key='default_job_comapply_00037'{/yun}</a>
+                        <em class="job_details_touch_tel_tip">{yun:}$link.linkMsg{/yun}{yun:}t key='wap_00264'{/yun}</em>
+                        <a href="javascript:;" onclick="showlogin(2);" class="job_details_touch_tel_bth">{yun:}t key='default_00234'{/yun}</a>
                         {yun:}else{/yun}
-                        <a href="javascript:;" onclick="layer.msg('{yun:}t key='default_job_comapply_00012'{/yun}', 2, 8);" class="job_details_touch_tel_bth">{yun:}t key='default_job_comapply_00037'{/yun}</a>
+                        <a href="javascript:;" onclick="layer.msg('{yun:}t key='default_00212'{/yun}', 2, 8);" class="job_details_touch_tel_bth">{yun:}t key='default_00234'{/yun}</a>
                         {yun:}/if{/yun}
                         {yun:}else if $link.linkCode == 7{/yun}
                         {yun:}if $link.linkSub == 1{/yun}
                         <em class="job_details_touch_tel_tip">{yun:}$link.linkMsg{/yun}</em>
                         {yun:}else{/yun}
-                        <em class="job_details_touch_tel_tip">{yun:}t key='default_job_comapply_00003'{/yun}</em>
-                        <a href="{yun:}url m=member c=expect act=add{/yun}" class="job_details_touch_tel_bth">{yun:}t key='wap_user_index_00015'{/yun}</a>
+                        <em class="job_details_touch_tel_tip">{yun:}t key='default_00203'{/yun}</em>
+                        <a href="{yun:}url m=member c=expect act=add{/yun}" class="job_details_touch_tel_bth">{yun:}t key='wap_user_00197'{/yun}</a>
                         {yun:}/if{/yun}
                         {yun:}else if $link.linkCode == 8{/yun}
-                        <em class="job_details_touch_tel_tip">{yun:}t key='default_job_comapply_00004'{/yun}</em>
-                        <a href="javascript:;" class="job_details_touch_tel_bth sq_job">{yun:}t key='wap_com_job_00044'{/yun}</a>
+                        <em class="job_details_touch_tel_tip">{yun:}t key='default_00204'{/yun}</em>
+                        <a href="javascript:;" class="job_details_touch_tel_bth sq_job">{yun:}t key='wap_com_00235'{/yun}</a>
                         {yun:}else{/yun}
-                        <a href="javascript:void(0)" onclick="showtel('{yun:}$smarty.get.id{/yun}');" class="job_details_touch_tel_bth">{yun:}t key='default_job_comapply_00035'{/yun}</a>
-                        <span class="job_details_touch_tel_say">联系我时就说是在{yun:}$config.sy_webname{/yun}{yun:}t key='wap_job_index_00002'{/yun}</span>
+                        <a href="javascript:void(0)" onclick="showtel('{yun:}$smarty.get.id{/yun}');" class="job_details_touch_tel_bth">{yun:}t key='default_00233'{/yun}</a>
+                        <span class="job_details_touch_tel_say">联系我时就说是在{yun:}$config.sy_webname{/yun}{yun:}t key='wap_00240'{/yun}</span>
                         {yun:}/if{/yun}
                     </div>
                     {yun:}else{/yun}
@@ -284,33 +284,33 @@
                     {yun:}/if{/yun}
                     {yun:}/if{/yun}
                     {yun:}if $link.linkData.address{/yun}
-                    <span class="job_details_touch_add">{yun:}t key='wap_js_umeditor_lang_zh_cn_zh_cn_00014'{/yun}：{yun:}$link.linkData.address{/yun}{yun:}if $Info.y!='' && $Info.x!='' && $config.map_key{/yun} <a href="javascript:showmap('map_show','{yun:}$Info.x{/yun}','{yun:}$Info.y{/yun}','{yun:}$Info.com_name{/yun}','{yun:}$link.linkData.address{/yun}');" class="job_details_touch_add_a" rel="nofollow">{yun:}t key='default_job_comapply_00027'{/yun}</a>{yun:}/if{/yun}</span>
+                    <span class="job_details_touch_add">{yun:}t key='wap_js_00082'{/yun}：{yun:}$link.linkData.address{/yun}{yun:}if $Info.y!='' && $Info.x!='' && $config.map_key{/yun} <a href="javascript:showmap('map_show','{yun:}$Info.x{/yun}','{yun:}$Info.y{/yun}','{yun:}$Info.com_name{/yun}','{yun:}$link.linkData.address{/yun}');" class="job_details_touch_add_a" rel="nofollow">{yun:}t key='default_00225'{/yun}</a>{yun:}/if{/yun}</span>
                     {yun:}/if{/yun}
                 </div>
                 {yun:}/if{/yun}
             </div>
-            <div class="job_details_tit " style="margin-top: 20px;"><span class="job_details_tit_s">{yun:}t key='wap_com_jobadd_00035'{/yun}</span><i class="job_details_tit_line"></i></div>
+            <div class="job_details_tit " style="margin-top: 20px;"><span class="job_details_tit_s">{yun:}t key='wap_com_00289'{/yun}</span><i class="job_details_tit_line"></i></div>
             <div class="job_details_describe">
                 {yun:}if $department{/yun}
                 <span class="job_details_describe_yq">招聘部门：{yun:}$department{/yun}</span>
                 {yun:}/if{/yun}
                 {yun:}if $Info.job_number{/yun}
-                <span class="job_details_describe_yq">{yun:}t key='wap_com_partadd_00013'{/yun}：{yun:}$Info.job_number{/yun}</span>
+                <span class="job_details_describe_yq">{yun:}t key='wap_com_00333'{/yun}：{yun:}$Info.job_number{/yun}</span>
                 {yun:}/if{/yun}
                 {yun:}if $Info.job_report{/yun}
-                <span class="job_details_describe_yq">{yun:}t key='wap_com_jobadd_00025'{/yun}：{yun:}$Info.job_report{/yun}</span>
+                <span class="job_details_describe_yq">{yun:}t key='wap_com_00279'{/yun}：{yun:}$Info.job_report{/yun}</span>
                 {yun:}/if{/yun}
                 {yun:}if $Info.job_age{/yun}
-                <span class="job_details_describe_yq">{yun:}t key='wap_com_jobadd_00030'{/yun}：{yun:}$Info.job_age{/yun}</span>
+                <span class="job_details_describe_yq">{yun:}t key='wap_com_00284'{/yun}：{yun:}$Info.job_age{/yun}</span>
                 {yun:}/if{/yun}
                 {yun:}if $Info.job_sex && $config.com_job_sexswitch==1{/yun}
-                <span class="job_details_describe_yq">{yun:}t key='wap_com_partadd_00012'{/yun}：{yun:}$Info.job_sex{/yun}</span>
+                <span class="job_details_describe_yq">{yun:}t key='wap_com_00332'{/yun}：{yun:}$Info.job_sex{/yun}</span>
                 {yun:}/if{/yun}
                 {yun:}if $Info.job_marriage{/yun}
                 <span class="job_details_describe_yq">婚况要求：{yun:}$Info.job_marriage{/yun}</span>
                 {yun:}/if{/yun}
                 {yun:}if $Info.lang_info{/yun}
-                <div class="">{yun:}t key='wap_com_jobadd_00038'{/yun}：
+                <div class="">{yun:}t key='wap_com_00292'{/yun}：
                     {yun:}foreach from=$Info.lang item=langlist{/yun}
                     <span>{yun:}$comclass_name[$langlist]{/yun}</span>
                     {yun:}/foreach{/yun}
@@ -319,7 +319,7 @@
                 {yun:}$Info.description{/yun}
                 <div class="clear"></div>
                 <div class="job_details_tip">
-                    {yun:}t key='default_job_comapply_00036'{/yun}：{yun:}$config.sy_shenming{/yun}
+                    {yun:}t key='common_02136'{/yun}：{yun:}$config.sy_shenming{/yun}
                 </div>
                 <div class="clear"></div>
             </div>
@@ -346,12 +346,12 @@
                                 {yun:}$job.time{/yun}
                                 {yun:}/if{/yun}
                             </div>
-                            <a href="{yun:}$job.job_url{/yun}" target="_blank" class="job_details_com_otherjob_sq">{yun:}t key='wap_zph_show_00011'{/yun}</a>
+                            <a href="{yun:}$job.job_url{/yun}" target="_blank" class="job_details_com_otherjob_sq">{yun:}t key='wap_00574'{/yun}</a>
                         </div>
                     </li>
                     {yun:}/joblist{/yun}
                     {yun:}if !$job{/yun}
-                    <div class="evaluate_pj_no">{yun:}t key='default_job_comapply_00017'{/yun}</div>
+                    <div class="evaluate_pj_no">{yun:}t key='default_00216'{/yun}</div>
                     {yun:}/if{/yun}
                 </ul>
             </div>
@@ -359,7 +359,7 @@
         {yun:}if !$usertype || $usertype == '1'{/yun}
         <div class="job_details_left_box">
             <div class="job_details_tit">
-                <span class="job_details_tit_s">{yun:}t key='default_job_comapply_00019'{/yun}</span>
+                <span class="job_details_tit_s">{yun:}t key='default_00218'{/yun}</span>
                 <i class="job_details_tit_line"></i>
                 <a href="{yun:}url m=job{/yun}" class="job_details_more">搜索更多相似职位 ></a>
             </div>
@@ -370,7 +370,7 @@
                         <div class="job_details_likejobname"><a href="{yun:}$job_jiaa.job_url{/yun}" title="{yun:}$job_jiaa.name{/yun}">{yun:}$job_jiaa.name{/yun}</a></div>
                         <div class="job_details_likejobxz">{yun:}$job_jiaa.job_salary{/yun}</div>
                         <div class="job_details_likecomname"><a href="{yun:}$job_jiaa.com_url{/yun}" title="{yun:}$job_jiaa.com_name{/yun}">{yun:}$job_jiaa.com_name|mb_substr:0:13:'utf-8'{/yun}</a></div>
-                        <a href="{yun:}$job_jiaa.job_url{/yun}" class="job_details_likesq">{yun:}t key='wap_zph_show_00011'{/yun}</a>
+                        <a href="{yun:}$job_jiaa.job_url{/yun}" class="job_details_likesq">{yun:}t key='wap_00574'{/yun}</a>
                     </li>
                     {yun:}/joblist{/yun}
                 </ul>
@@ -382,13 +382,13 @@
                 <div id="sortBoxs">
                     <div class="search_menuBoxs">
                         <ul>
-                            <li class="search_curs" id="typezb" onmousemove="searchtype('zb');">{yun:}t key='default_job_comapply_00033'{/yun}<i class="search_curs_line"></i></li>
-                            <li id="typezp" onmousemove="searchtype('zp');">{yun:}t key='default_job_comapply_00034'{/yun}<i class="search_curs_line"></i></li>
-                            <li id="typerm" onmousemove="searchtype('rm');">{yun:}t key='wap_publichtm_search_00004'{/yun}<i class="search_curs_line"></i></li>
+                            <li class="search_curs" id="typezb" onmousemove="searchtype('zb');">{yun:}t key='default_00231'{/yun}<i class="search_curs_line"></i></li>
+                            <li id="typezp" onmousemove="searchtype('zp');">{yun:}t key='default_00232'{/yun}<i class="search_curs_line"></i></li>
+                            <li id="typerm" onmousemove="searchtype('rm');">{yun:}t key='wap_00385'{/yun}<i class="search_curs_line"></i></li>
                         </ul>
                     </div>
                     <div class="contentBoxs">
-                        <!-- {yun:}t key='default_job_comapply_00033'{/yun} start-->
+                        <!-- {yun:}t key='default_00231'{/yun} start-->
                         <div class="contentBox_conts " id="type_zb">
                             <div class="Industry_lists">
                                 {yun:}if $Info.three_cityid{/yun}
@@ -406,8 +406,8 @@
                                 {yun:}/if{/yun}
                             </div>
                         </div>
-                        <!-- {yun:}t key='default_job_comapply_00033'{/yun} end-->
-                        <!-- {yun:}t key='default_job_comapply_00034'{/yun} start-->
+                        <!-- {yun:}t key='default_00231'{/yun} end-->
+                        <!-- {yun:}t key='default_00232'{/yun} start-->
                         <div class="contentBox_conts none" id="type_zp">
                             <div class="Industry_lists">
                                 {yun:}if $Info.job_post{/yun}
@@ -425,8 +425,8 @@
                                 {yun:}/if{/yun}
                             </div>
                         </div>
-                        <!--  {yun:}t key='default_job_comapply_00034'{/yun} end-->
-                        <!-- {yun:}t key='wap_publichtm_search_00004'{/yun} start-->
+                        <!--  {yun:}t key='default_00232'{/yun} end-->
+                        <!-- {yun:}t key='wap_00385'{/yun} start-->
                         <div class="contentBox_conts none" id="type_rm">
                             <div class="Industry_lists">
                                 {yun:}key limit=20 recom=1 type=3 item=keylist{/yun}
@@ -434,7 +434,7 @@
                                 {yun:}/key{/yun}
                             </div>
                         </div>
-                        <!-- {yun:}t key='wap_publichtm_search_00004'{/yun} end-->
+                        <!-- {yun:}t key='wap_00385'{/yun} end-->
                     </div>
                 </div>
             </div>
@@ -446,12 +446,12 @@
             <a href="javascript:void(0)" onclick="factShow();">
                 <div class="yunnew_hybox">
                     <i class="yunnew_hyboxicon"></i>
-                    <span class="yunnew_hyboxname">{yun:}t key='wap_job_show_00032'{/yun}</span>
+                    <span class="yunnew_hyboxname">{yun:}t key='wap_00275'{/yun}</span>
                 </div>
                 <div class="yunnew_hyzzsm">
-                    {yun:}if $Info.yyzz_status==1{/yun}<span class="yunnew_hymini"><i class="yunnew_minicon"></i>{yun:}t key='wap_job_show_00045'{/yun}</span>{yun:}/if{/yun}
-                    {yun:}if $Info.moblie_status==1{/yun}<span class="yunnew_hymini"><i class="yunnew_minicon"></i>{yun:}t key='wap_job_show_00030'{/yun}</span>{yun:}/if{/yun}
-                    <span class="yunnew_hymini"><i class="yunnew_minicon"></i>{yun:}t key='wap_job_show_00031'{/yun}</span>
+                    {yun:}if $Info.yyzz_status==1{/yun}<span class="yunnew_hymini"><i class="yunnew_minicon"></i>{yun:}t key='wap_00288'{/yun}</span>{yun:}/if{/yun}
+                    {yun:}if $Info.moblie_status==1{/yun}<span class="yunnew_hymini"><i class="yunnew_minicon"></i>{yun:}t key='wap_00273'{/yun}</span>{yun:}/if{/yun}
+                    <span class="yunnew_hymini"><i class="yunnew_minicon"></i>{yun:}t key='wap_00274'{/yun}</span>
                 </div>
                 <i class="yunnew_hyboxricon">查看详细 ></i>
             </a>
@@ -471,18 +471,18 @@
             <div class="Compply_right_name_all">{yun:}$Info.all_name{/yun}</div>
             {yun:}/if{/yun}
             <div class="job_details_cominfo_tb">
-                {yun:}if $Info.hotlogo==1{/yun}<span class="Compply_mqicon" title="{yun:}t key='wap_joblist_vue_00001'{/yun}"></span>{yun:}/if{/yun}
+                {yun:}if $Info.hotlogo==1{/yun}<span class="Compply_mqicon" title="{yun:}t key='wap_00299'{/yun}"></span>{yun:}/if{/yun}
                 {yun:}if $comrat.com_pic!="0" && $comrat.com_pic!=""{/yun}
-                <img src="{yun:}$comrat.com_pic{/yun}" width="18" height="18" alt="{yun:}t key='admin_user_company_component_addhotjob_00003'{/yun}" />
+                <img src="{yun:}$comrat.com_pic{/yun}" width="18" height="18" alt="{yun:}t key='admin_user_company_00018'{/yun}" />
                 {yun:}/if{/yun}
                 {yun:}if $Info.yyzz_status=='1'{/yun}
                 <i class="job_details_cominfo_rz job_details_cominfo_rz_zz" title="执照认证"></i>
                 {yun:}/if{/yun}
                 {yun:}if $Info.moblie_status=='1'{/yun}
-                <i class="job_details_cominfo_rz job_details_cominfo_rz_sj" title="{yun:}t key='member_com_binding_00012'{/yun}"></i>
+                <i class="job_details_cominfo_rz job_details_cominfo_rz_sj" title="{yun:}t key='member_com_00071'{/yun}"></i>
                 {yun:}/if{/yun}
                 {yun:}if $Info.email_status=='1'{/yun}
-                <i class="job_details_cominfo_rz job_details_cominfo_rz_yx" title="{yun:}t key='wap_com_integral_00007'{/yun}"></i>
+                <i class="job_details_cominfo_rz job_details_cominfo_rz_yx" title="{yun:}t key='wap_com_00186'{/yun}"></i>
                 {yun:}/if{/yun}
             </div>
             <div class="clear"></div>
@@ -519,20 +519,20 @@
             </div>
         </div>
         <div class="job_details_right_box">
-            <div class="job_details_tit"><span class="job_details_tit_s">{yun:}t key='wap_evaluategradeshow_00001'{/yun}</span><i class="job_details_tit_line"></i></div>
+            <div class="job_details_tit"><span class="job_details_tit_s">{yun:}t key='wap_00195'{/yun}</span><i class="job_details_tit_line"></i></div>
             <div class="job_details_ewm">{yun:}if $config.sy_h5_share==1{/yun}
                 <img src="{yun:}url m=ajax c=pubqrcode toc=job toa=share toid=$Info.id{/yun}" width="140" height="140" />
                 {yun:}else{/yun}
                 <img src="{yun:}url m=ajax c=pubqrcode toc=job toa=view toid=$Info.id{/yun}" width="140" height="140" />
                 {yun:}/if{/yun}</div>
-            <div class="job_details_ewm_p">{yun:}t key='default_job_comapply_00025'{/yun}</div>
-            <div class="job_details_ewm_s">↑{yun:}t key='default_job_comapply_00021'{/yun}↑</div>
+            <div class="job_details_ewm_p">{yun:}t key='default_00223'{/yun}</div>
+            <div class="job_details_ewm_s">↑{yun:}t key='common_02135'{/yun}↑</div>
         </div>
         {yun:}if $config.sy_haibao_isopen == 1 && $hbNum > 0{/yun}
         <a href="javascript:void(0);" onclick="selectHb('1', '1')" class="new_com_haibao">
             <div class="new_com_haibao_c">
                 <div class="new_com_haibao_name">生成职位海报</div>
-                <div class="new_com_haibao_p">{yun:}t key='wap_evaluategradeshow_00001'{/yun}</div>
+                <div class="new_com_haibao_p">{yun:}t key='wap_00195'{/yun}</div>
             </div>
         </a>
         {yun:}/if{/yun}
@@ -541,21 +541,21 @@
             <div class="job_details_tit"><span class="job_details_tit_s">问公司</span><i class="job_details_tit_line"></i></div>
             <!--有提问前-->
             {yun:}if !$msgList{/yun}
-            <div class="job_details_comask_p">{yun:}t key='default_job_comapply_00013'{/yun}</div>
+            <div class="job_details_comask_p">{yun:}t key='default_00213'{/yun}</div>
             {yun:}if $uid{/yun}
             {yun:}if $usertype == 1{/yun}
-            <div class="job_details_comask_bth"><a href="javascript:;" onclick="showmessage('{yun:}$uid{/yun}','{yun:}$usertype{/yun}')" class="job_details_comask_bth_a">{yun:}t key='wap_job_show_00035'{/yun}</a></div>
+            <div class="job_details_comask_bth"><a href="javascript:;" onclick="showmessage('{yun:}$uid{/yun}','{yun:}$usertype{/yun}')" class="job_details_comask_bth_a">{yun:}t key='wap_00278'{/yun}</a></div>
             {yun:}else{/yun}
             <div class="job_details_comask_bth">
                 {yun:}if $config.sy_user_change==1{/yun}
-                <a onclick="layer.msg('{yun:}t key='default_job_comapply_00015'{/yun}', 2, 8)" href="javascript:;" class="job_details_comask_bth_a">{yun:}t key='wap_job_show_00035'{/yun}</a>
+                <a onclick="layer.msg('{yun:}t key='default_00214'{/yun}', 2, 8)" href="javascript:;" class="job_details_comask_bth_a">{yun:}t key='wap_00278'{/yun}</a>
                 {yun:}else{/yun}
-                <a onclick="layer.msg('{yun:}t key='wap_job_show_00013'{/yun}', 2, 8)" href="javascript:;" class="job_details_comask_bth_a">{yun:}t key='wap_job_show_00035'{/yun}</a>
+                <a onclick="layer.msg('{yun:}t key='wap_00256'{/yun}', 2, 8)" href="javascript:;" class="job_details_comask_bth_a">{yun:}t key='wap_00278'{/yun}</a>
                 {yun:}/if{/yun}
             </div>
             {yun:}/if{/yun}
             {yun:}else{/yun}
-            <div class="job_details_comask_bth"><a href="javascript:;" onclick="showlogin();" class="job_details_comask_bth_a">{yun:}t key='wap_job_show_00035'{/yun}</a></div>
+            <div class="job_details_comask_bth"><a href="javascript:;" onclick="showlogin();" class="job_details_comask_bth_a">{yun:}t key='wap_00278'{/yun}</a></div>
             {yun:}/if{/yun}
             <!--提问 end-->
             {yun:}else{/yun}
@@ -563,16 +563,16 @@
             <div class="yun_newedition_askbox">
                 {yun:}if $uid{/yun}
                 {yun:}if $usertype == 1{/yun}
-                <a href="javascript:;" onclick="showmessage('{yun:}$uid{/yun}','{yun:}$usertype{/yun}')" class="job_details_tw">{yun:}t key='wap_job_show_00035'{/yun}</a>
+                <a href="javascript:;" onclick="showmessage('{yun:}$uid{/yun}','{yun:}$usertype{/yun}')" class="job_details_tw">{yun:}t key='wap_00278'{/yun}</a>
                 {yun:}else{/yun}
                 {yun:}if $config.sy_user_change==1{/yun}
-                <a onclick="layer.msg('{yun:}t key='default_job_comapply_00015'{/yun}', 2, 8)" href="javascript:;" class="job_details_tw">{yun:}t key='wap_job_show_00035'{/yun}</a>
+                <a onclick="layer.msg('{yun:}t key='default_00214'{/yun}', 2, 8)" href="javascript:;" class="job_details_tw">{yun:}t key='wap_00278'{/yun}</a>
                 {yun:}else{/yun}
-                <a onclick="layer.msg('{yun:}t key='wap_job_show_00013'{/yun}', 2, 8)" href="javascript:;" class="job_details_tw">{yun:}t key='wap_job_show_00035'{/yun}</a>
+                <a onclick="layer.msg('{yun:}t key='wap_00256'{/yun}', 2, 8)" href="javascript:;" class="job_details_tw">{yun:}t key='wap_00278'{/yun}</a>
                 {yun:}/if{/yun}
                 {yun:}/if{/yun}
                 {yun:}else{/yun}
-                <div class="job_details_comask_bth"><a href="javascript:;" onclick="showlogin();" class="job_details_tw">{yun:}t key='wap_job_show_00035'{/yun}</a></div>
+                <div class="job_details_comask_bth"><a href="javascript:;" onclick="showlogin();" class="job_details_tw">{yun:}t key='wap_00278'{/yun}</a></div>
                 {yun:}/if{/yun}
                 {yun:}foreach from=$msgList item=msglist{/yun}
                 <div class="yun_newedition_asklist">
@@ -590,13 +590,13 @@
                 <div class="job_hr_ly_box" style="padding-top:10px;">
                     <form action="{yun:}url m=job c=comapply a=msg{/yun}" method="post" target="supportiframe" onsubmit="return com_msg();">
                         <div>
-                            <textarea class="comapply_Leave_fb_text" name="content" id='msg_content' placeholder='{yun:}t key='default_job_comapply_00001'{/yun}'></textarea>
+                            <textarea class="comapply_Leave_fb_text" name="content" id='msg_content' placeholder='{yun:}t key='default_00201'{/yun}'></textarea>
                             <input type="hidden" name="jobid" value="{yun:}$Info.id{/yun}" />
                         </div>
                         <div class="affirm affirm_yz">
-                            <input class="zx_yx_input fl" id="msg_CheckCode" type="text" placeholder="{yun:}t key='wap_user_bindingbox_00004'{/yun}" value="" maxlength="4" name="authcode" />
+                            <input class="zx_yx_input fl" id="msg_CheckCode" type="text" placeholder="{yun:}t key='wap_user_00143'{/yun}" value="" maxlength="4" name="authcode" />
                             <img class="zx_yx_input_img fl" id="vcode_imgs" src="{yun:}$config.sy_weburl{/yun}/app/include/authcode.inc.php" onclick="checkCode('vcode_imgs');" />
-                            <input type="submit" value="{yun:}t key='wap_job_show_00037'{/yun}" name="submit" class="comapply_Leave_fb_sub " />
+                            <input type="submit" value="{yun:}t key='wap_00280'{/yun}" name="submit" class="comapply_Leave_fb_sub " />
                         </div>
                     </form>
                     <div class="comapply_Leave_fb_s"> <a class="comapply_lea_a" href="{yun:}$config.sy_weburl{/yun}/member/index.php?c=commsg" target="_blank"> 查看我的咨询>> </a></div>
@@ -611,8 +611,8 @@
                     <img src="{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_wx_qcode{/yun}" width="90" height="90" />
                 </div>
                 <div class="job_details_right_wxpic_p">
-                    <div class="">{yun:}t key='default_job_comapply_00030'{/yun}</div>
-                    <div class="">{yun:}t key='default_job_comapply_00024'{/yun}</div>
+                    <div class="">{yun:}t key='default_00228'{/yun}</div>
+                    <div class="">{yun:}t key='default_00222'{/yun}</div>
                 </div>
             </div>
         </div>
@@ -625,8 +625,8 @@
         <div class="job_prompt_box">
             <div class="job_prompt_box_pic"><i class="job_prompt_box_pic_icon"></i></div>
             <div class="job_prompt_box_writing"> 职位收藏成功</div>
-            <div class="job_prompt_box_p"> 您可以在<a href="{yun:}url m=member c=favorite{/yun}" class="job_prompt_box_look">{yun:}t key='default_job_comapply_00031'{/yun}</a>{yun:}t key='default_job_comapply_00043'{/yun}</div>
-            <div class="job_prompt_box_ok"> <a href="javascript:void(0)" onclick="window.location.reload();" class="job_prompt_box_ok_bth">{yun:}t key='member_com_invite_00004'{/yun}</a></div>
+            <div class="job_prompt_box_p"> 您可以在<a href="{yun:}url m=member c=favorite{/yun}" class="job_prompt_box_look">{yun:}t key='default_00229'{/yun}</a>{yun:}t key='default_00240'{/yun}</div>
+            <div class="job_prompt_box_ok"> <a href="javascript:void(0)" onclick="window.location.reload();" class="job_prompt_box_ok_bth">{yun:}t key='member_com_00214'{/yun}</a></div>
         </div>
     </div>
     <!------职位申请成功----->
@@ -634,9 +634,9 @@
         <div class="job_prompt_box">
             <div class="job_prompt_box_pic"><i class="job_prompt_box_pic_icon"></i></div>
             <div class="job_prompt_box_writing"> 投递成功</div>
-            <div class="job_prompt_box_p"> {yun:}t key='default_job_comapply_00002'{/yun}</div>
+            <div class="job_prompt_box_p"> {yun:}t key='default_00202'{/yun}</div>
             {yun:}if $recjobnum>0{/yun}
-            <div class="job_prompt_box_maylike">{yun:}t key='default_job_comapply_00019'{/yun}：</div>
+            <div class="job_prompt_box_maylike">{yun:}t key='default_00218'{/yun}：</div>
             {yun:}/if{/yun}
             <div class="clear"></div>
             <ul class="job_prompt_box_maylike_list">
@@ -649,12 +649,12 @@
                     <div class="job_prompt_box_maylike_xz">{yun:}$job_jia.job_salary{/yun}</div>
                     {yun:}/if{/yun}
                     <div class="job_prompt_box_maylike_comname">{yun:}$job_jia.com_name|mb_substr:0:13:'utf-8'{/yun}</div>
-                    <a href="{yun:}$job_jia.job_url{/yun}" class="job_prompt_box_maylike_sq">{yun:}t key='wap_zph_show_00011'{/yun}</a>
+                    <a href="{yun:}$job_jia.job_url{/yun}" class="job_prompt_box_maylike_sq">{yun:}t key='wap_00574'{/yun}</a>
                 </li>
                 {yun:}/joblist{/yun}
             </ul>
             <div class="clear"></div>
-            <div class="job_prompt_box_ok"> <a href="{yun:}url m=job{/yun}" class="job_prompt_box_ok_bth job_prompt_box_ok_bthw170">{yun:}t key='wap_spe_show_00001'{/yun}</a></div>
+            <div class="job_prompt_box_ok"> <a href="{yun:}url m=job{/yun}" class="job_prompt_box_ok_bth job_prompt_box_ok_bthw170">{yun:}t key='wap_00518'{/yun}</a></div>
         </div>
     </div>
     <!--举报弹出框-->
@@ -664,18 +664,18 @@
             {yun:}foreach from=$comdata.job_jobreport key=j item=v{/yun}
             <span class="report_job_ly" id="r{yun:}$j{/yun}" onclick="add_reason({yun:}$j{/yun});" value="{yun:}$v{/yun}">{yun:}$comclass_name[$v]{/yun}</span>
             {yun:}/foreach{/yun}
-            <div class="report_job_ly_tip mt10">{yun:}t key='admin_user_users_component_usersall_00024'{/yun}</div>
+            <div class="report_job_ly_tip mt10">{yun:}t key='admin_user_00290'{/yun}</div>
             <div class="report_job_textarea_box">
                 <input id="r_uid" value="{yun:}$Info.uid{/yun}" type="hidden" />
                 <input id="id" value="{yun:}$Info.id{/yun}" type="hidden" />
                 <input id="r_name" value="{yun:}$Info.com_name{/yun}" type="hidden" />
-                <textarea placeholder="{yun:}t key='wap_job_show_00002'{/yun}" rows="2" cols="38" id="r_reason" class="report_job_textarea"></textarea>
+                <textarea placeholder="{yun:}t key='wap_00245'{/yun}" rows="2" cols="38" id="r_reason" class="report_job_textarea"></textarea>
             </div>
             <div class="report_job_yz"> 验 证 {yun:}t key='common_02093'{/yun}：
-                <input type="text" class="report_job_text" id="report_authcode" maxlength="6" placeholder="{yun:}t key='wap_user_bindingbox_00002'{/yun}" autocomplete="off" />
-                <img id="vcodeimg" src="{yun:}$config.sy_weburl{/yun}/app/include/authcode.inc.php" /> <a href="javascript:void(0);" onclick="checkCode('vcodeimg');">{yun:}t key='member_com_binding_00015'{/yun}?</a> </div>
+                <input type="text" class="report_job_text" id="report_authcode" maxlength="6" placeholder="{yun:}t key='wap_user_00141'{/yun}" autocomplete="off" />
+                <img id="vcodeimg" src="{yun:}$config.sy_weburl{/yun}/app/include/authcode.inc.php" /> <a href="javascript:void(0);" onclick="checkCode('vcodeimg');">{yun:}t key='member_com_00074'{/yun}?</a> </div>
             <div class="report_job_bth_box">
-                <input class="report_job_bth" type="button" value="{yun:}t key='wap_job_show_00047'{/yun}" onclick="reportSub('vcodeimg');" />
+                <input class="report_job_bth" type="button" value="{yun:}t key='wap_00290'{/yun}" onclick="reportSub('vcodeimg');" />
             </div>
         </div>
     </div>
@@ -685,10 +685,10 @@
         <div class="job_prompt_box">
             <div class="job_prompt_box_pic"><i class="job_prompt_box_pic_icon"></i></div>
             <div class="job_prompt_box_writing"> 简历投递成功</div>
-            <div class="job_prompt_box_p"> 您可以在 {yun:}t key='member_user_left_00002'{/yun} - {yun:}t key='wap_com_index_00030'{/yun} -
-                <a href="{yun:}url m=member c=resume{/yun}" class="job_prompt_box_look">{yun:}t key='wap_user_index_00022'{/yun}</a> 中查看您创建的简历
+            <div class="job_prompt_box_p"> 您可以在 {yun:}t key='member_user_00183'{/yun} - {yun:}t key='wap_com_00105'{/yun} -
+                <a href="{yun:}url m=member c=resume{/yun}" class="job_prompt_box_look">{yun:}t key='wap_user_00204'{/yun}</a> 中查看您创建的简历
             </div>
-            <div class="job_prompt_box_maylike">{yun:}t key='default_job_comapply_00019'{/yun}：</div>
+            <div class="job_prompt_box_maylike">{yun:}t key='default_00218'{/yun}：</div>
             <div class="clear"></div>
             <ul class="job_prompt_box_maylike_list">
                 {yun:}joblist limit=2 noid='@Info.id' jobids='@Info.job1' namelen=6 item=job_fast key=key{/yun}
@@ -700,13 +700,13 @@
                     <div class="job_prompt_box_maylike_comname">
                         {yun:}$job_fast.com_name|mb_substr:0:13:'utf-8'{/yun}
                     </div>
-                    <a href="{yun:}$job_fast.job_url{/yun}" class="job_prompt_box_maylike_sq">{yun:}t key='wap_zph_show_00011'{/yun}</a>
+                    <a href="{yun:}$job_fast.job_url{/yun}" class="job_prompt_box_maylike_sq">{yun:}t key='wap_00574'{/yun}</a>
                 </li>
                 {yun:}/joblist{/yun}
             </ul>
             <div class="clear"></div>
             <div class="job_prompt_box_ok">
-                <a href="{yun:}url m=job{/yun}" class="job_prompt_box_ok_bth job_prompt_box_ok_bthw170">{yun:}t key='wap_spe_show_00001'{/yun}</a>
+                <a href="{yun:}url m=job{/yun}" class="job_prompt_box_ok_bth job_prompt_box_ok_bthw170">{yun:}t key='wap_00518'{/yun}</a>
             </div>
         </div>
     </div>
@@ -714,21 +714,21 @@
         <div class="map_query_box">
             <div id="map_container" style="width:1100px;height:450px;"></div>
             <div class="map_query" id="map_search">
-                <div class="map_query_tit">{yun:}t key='default_job_comapply_00038'{/yun} <span class="map_query_tit_s">{yun:}t key='default_job_comapply_00007'{/yun}</span></div>
-                <div class="map_query_list"><span class="map_query_list_s">{yun:}t key='default_job_comapply_00046'{/yun}</span><i class="map_query_list_line"></i>
-                    <input type="text" class="map_startlist map_query_text" placeholder="{yun:}t key='default_job_comapply_00041'{/yun}" id="map_start" name="map_start" />
+                <div class="map_query_tit">{yun:}t key='default_00235'{/yun} <span class="map_query_tit_s">{yun:}t key='default_00207'{/yun}</span></div>
+                <div class="map_query_list"><span class="map_query_list_s">{yun:}t key='default_00243'{/yun}</span><i class="map_query_list_line"></i>
+                    <input type="text" class="map_startlist map_query_text" placeholder="{yun:}t key='default_00238'{/yun}" id="map_start" name="map_start" />
                 </div>
-                <div class="map_query_list"> <span class="map_query_list_s">{yun:}t key='default_job_comapply_00045'{/yun}</span><i class="map_query_list_line"></i>
+                <div class="map_query_list"> <span class="map_query_list_s">{yun:}t key='default_00242'{/yun}</span><i class="map_query_list_line"></i>
                     {yun:}if $link.linkData.address{/yun}
-                    <input type="text" class="map_startend map_query_text" placeholder="{yun:}t key='default_job_comapply_00040'{/yun}" value="{yun:}$link.linkData.address{/yun}" id="map_end" name="map_end" />
+                    <input type="text" class="map_startend map_query_text" placeholder="{yun:}t key='default_00237'{/yun}" value="{yun:}$link.linkData.address{/yun}" id="map_end" name="map_end" />
                     {yun:}else{/yun}
                     <input type="text" class="map_startend map_query_text" id="map_end" name="map_end" />
                     {yun:}/if{/yun}
                 </div>
                 <div class="map_query_bth_box">
-                    <input type="button" class="mapsubmit map_query_bth " value="{yun:}t key='default_job_comapply_00032'{/yun}" name="submit" onclick="bus_query('map_container', '{yun:}$Info.x{/yun}', '{yun:}$Info.y{/yun}');" />
+                    <input type="button" class="mapsubmit map_query_bth " value="{yun:}t key='default_00230'{/yun}" name="submit" onclick="bus_query('map_container', '{yun:}$Info.x{/yun}', '{yun:}$Info.y{/yun}');" />
                     <span>
-                        <input type="button" class="mapsubmit map_query_bth map_query_bth_car" value="{yun:}t key='default_job_comapply_00042'{/yun}" name="submit" onclick="map_drving('map_container', '{yun:}$Info.x{/yun}', '{yun:}$Info.y{/yun}');" />
+                        <input type="button" class="mapsubmit map_query_bth map_query_bth_car" value="{yun:}t key='default_00239'{/yun}" name="submit" onclick="map_drving('map_container', '{yun:}$Info.x{/yun}', '{yun:}$Info.y{/yun}');" />
                     </span></div>
             </div>
             <div class="map_query_result">
@@ -741,17 +741,17 @@
             <div class="tel_show_left">
                 <div class="qr_code">
                     <img src="{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_wx_qcode{/yun}" width="100" height="100">
-                    <div class="tel_qrcode_tit">{yun:}t key='admin_user_company_component_comset_index_00039'{/yun}</div>
-                    <div class="tel_qrcode_tip">{yun:}t key='default_job_comapply_00023'{/yun}</div>
+                    <div class="tel_qrcode_tit">{yun:}t key='admin_user_company_00260'{/yun}</div>
+                    <div class="tel_qrcode_tip">{yun:}t key='default_00221'{/yun}</div>
                 </div>
             </div>
             <div class="tel_show_right">
                 <div class="tel_show_top">
                     <div class="tel_show_top_tit">
-                        {yun:}t key='wap_resume_index_00022'{/yun}
+                        {yun:}t key='wap_00462'{/yun}
                     </div>
                     <div class="tel_show_top_tip">
-                        联系我时，请说是在<span class="tel_show_top_tip_link">{yun:}$config.sy_webname{/yun}</span>{yun:}t key='wap_job_index_00002'{/yun}
+                        联系我时，请说是在<span class="tel_show_top_tip_link">{yun:}$config.sy_webname{/yun}</span>{yun:}t key='wap_00240'{/yun}
                     </div>
                     <div class="tel_show_peo">
                         <i class="jobtel_box_t_box_icon"></i>
@@ -769,11 +769,11 @@
                     {yun:}if $Info.linkopen>1 && !$uid && $config.sy_msg_isopen=="1" && $config.sy_msg_login=="1"{/yun}
                     <div class="trainPopFrom">
                         <form method="post" action="" onsubmit="return false;">
-                            <div class="tel_yl">{yun:}t key='wap_job_show_00006'{/yun}</div>
+                            <div class="tel_yl">{yun:}t key='wap_00249'{/yun}</div>
                             <div class=" trainPopFromInt">
                                 <span class="tel_show_right_must">*</span>
-                                <div class="input_tit">{yun:}t key='wap_tiny_add_00004'{/yun}</div>
-                                <input type="text" name="rname" id="rname" class=" " style="width:128px;" placeholder="{yun:}t key='wap_user_info_00011'{/yun}" />
+                                <div class="input_tit">{yun:}t key='wap_00529'{/yun}</div>
+                                <input type="text" name="rname" id="rname" class=" " style="width:128px;" placeholder="{yun:}t key='wap_user_00234'{/yun}" />
                                 <div class="yun_reg_BasicInfo_sex">
                                     <input type="hidden" id="sex" name="sex" value="1" />
                                     {yun:}foreach from=$user_sex key=j item=v{/yun}
@@ -785,15 +785,15 @@
                             </div>
                             <div class="trainPopFromInt">
                                 <span class="tel_show_right_must">*</span>
-                                <div class="input_tit">{yun:}t key='wap_user_ident_00004'{/yun}</div>
-                                <input type="text" id="rtel" name="rtel" autocomplete="off" onkeyup="this.value=this.value.replace(/[^0-9-]/g,'')" placeholder="{yun:}t key='wap_js_forgetpw_00004'{/yun}">
+                                <div class="input_tit">{yun:}t key='wap_user_00180'{/yun}</div>
+                                <input type="text" id="rtel" name="rtel" autocomplete="off" onkeyup="this.value=this.value.replace(/[^0-9-]/g,'')" placeholder="{yun:}t key='wap_js_00119'{/yun}">
                             </div>
                             {yun:}if strpos($config.code_web,"前台登录")!==false{/yun}
                             {yun:}if $config.code_kind == 1{/yun}
                             <div class="trainPopFromInt">
                                 <span class="tel_show_right_must">*</span>
-                                <div class="input_tit">{yun:}t key='wap_advice_00007'{/yun}</div>
-                                <input id="CheckCode" type="text" class="logoin_text huoquyzm" maxlength="6" placeholder="{yun:}t key='wap_user_bindingbox_00002'{/yun}" autocomplete="off" />
+                                <div class="input_tit">{yun:}t key='wap_00110'{/yun}</div>
+                                <input id="CheckCode" type="text" class="logoin_text huoquyzm" maxlength="6" placeholder="{yun:}t key='wap_user_00141'{/yun}" autocomplete="off" />
                                 <a href="javascript:void(0);" onclick="checkCode('vcode_img');" class="registe_yzm"> <img id="vcode_img" class="authcode" src="{yun:}$config.sy_weburl{/yun}/app/include/authcode.inc.php" /></a>
                             </div>
                             {yun:}/if{/yun}
@@ -804,14 +804,14 @@
                                 <div class="input_tit">短信验证</div>
                                 <div style="display: flex;justify-content: space-between;flex: 1;">
                                     <input type="text" id="rmoblie_code" style="text-indent:0;" class="logoin_text huoquyzm" autocomplete="off" onkeyup="this.value=this.value.replace(/[^0-9-]/g,'')" placeholder="请输入短信验证码" />
-                                    <a class="reg_dxyz" href="javascript:void(0);" id="rsubreg" onclick="rsendmsg('vcode_img');"><span id="rtime">{yun:}t key='default_wxconnect_index_00002'{/yun}</span></a>
+                                    <a class="reg_dxyz" href="javascript:void(0);" id="rsubreg" onclick="rsendmsg('vcode_img');"><span id="rtime">{yun:}t key='default_00334'{/yun}</span></a>
                                 </div>
                             </div>
                             {yun:}/if{/yun}
                             <div class="trainPopFromInt">
                                 <span class="tel_show_right_must">*</span>
-                                <div class="input_tit">{yun:}t key='wap_com_jobadd_00048'{/yun}</div>
-                                <input type="text" id="rage" name="rage" autocomplete="off" onkeyup="this.value=this.value.replace(/[^0-9-]/g,'')" placeholder="{yun:}t key='wap_job_show_00025'{/yun}">
+                                <div class="input_tit">{yun:}t key='wap_com_00302'{/yun}</div>
+                                <input type="text" id="rage" name="rage" autocomplete="off" onkeyup="this.value=this.value.replace(/[^0-9-]/g,'')" placeholder="{yun:}t key='wap_00268'{/yun}">
                             </div>
                             <div class="trainPopFromBut">
                                 <input type="hidden" id="rsend" name="rsend" value="0" />
@@ -827,28 +827,28 @@
     <div id="fact_show" class="none">
         <!--平台核验弹出框-->
         <div class="yunNewhyFlexs">
-        	<div class="yun_newhy_h1"><i class="yun_newhy_icon"></i>{yun:}$config.sy_webname{/yun}{yun:}t key='wap_job_show_00032'{/yun}</div>
+        	<div class="yun_newhy_h1"><i class="yun_newhy_icon"></i>{yun:}$config.sy_webname{/yun}{yun:}t key='wap_00275'{/yun}</div>
             <div class=" yun_newhy_box">
                 
                 <div class="yun_newhy_ztbox">
                     {yun:}if $Info.yyzz_status==1{/yun}
                     <div class="yun_newhy_zt">
                         <i class="yun_newhy_zticon yun_newhy_zticon1"></i>
-                        <div class="yun_newhy_zttit">{yun:}t key='wap_job_show_00045'{/yun}</div>
-                        <div class="yun_newhy_zt_p">{yun:}t key='wap_job_show_00008'{/yun}</div>
+                        <div class="yun_newhy_zttit">{yun:}t key='wap_00288'{/yun}</div>
+                        <div class="yun_newhy_zt_p">{yun:}t key='wap_00251'{/yun}</div>
                     </div>
                     {yun:}/if{/yun}
                     {yun:}if $Info.moblie_status==1{/yun}
                     <div class="yun_newhy_zt ">
                         <i class="yun_newhy_zticon yun_newhy_zticon2"></i>
-                        <div class="yun_newhy_zttit">{yun:}t key='wap_job_show_00030'{/yun}</div>
-                        <div class="yun_newhy_zt_p">{yun:}t key='wap_job_show_00007'{/yun}</div>
+                        <div class="yun_newhy_zttit">{yun:}t key='wap_00273'{/yun}</div>
+                        <div class="yun_newhy_zt_p">{yun:}t key='wap_00250'{/yun}</div>
                     </div>
                     {yun:}/if{/yun}
                     <div class="yun_newhy_zt">
                         <i class="yun_newhy_zticon yun_newhy_zticon3"></i>
-                        <div class="yun_newhy_zttit">{yun:}t key='wap_job_show_00031'{/yun}</div>
-                        <div class="yun_newhy_zt_p">{yun:}t key='wap_job_show_00004'{/yun}</div>
+                        <div class="yun_newhy_zttit">{yun:}t key='wap_00274'{/yun}</div>
+                        <div class="yun_newhy_zt_p">{yun:}t key='wap_00247'{/yun}</div>
                     </div>
                 </div>
                 <div class="yun_newhy_hj">
@@ -864,33 +864,33 @@
                 </div>
                 <div class="yun_newhy_tip ">
                     <div class="yun_newhy_tip_h1"><i class="yun_newhy_tip_h1icon"></i>{yun:}$config.sy_webname{/yun}平台核验服务</div>
-                    <div class="yun_newhy_tip_p">{yun:}t key='wap_job_show_00001'{/yun}</div>
+                    <div class="yun_newhy_tip_p">{yun:}t key='wap_00244'{/yun}</div>
                 </div>
                 <div class="yunNewhyBthbox" onclick="layer.closeAll();">
-                    <span>{yun:}t key='member_com_invite_00004'{/yun}</span>
+                    <span>{yun:}t key='member_com_00214'{/yun}</span>
                 </div>
             </div>
         </div>
-        <!--{yun:}t key='wap_job_show_00032'{/yun}-->
+        <!--{yun:}t key='wap_00275'{/yun}-->
     </div>
     </div>
     <div id="telQrcodeBox" class="none">
         <div class="job_tel_wx_box">
-            <div id="tel_wxqrcode" class="job_tel_wx_zs">{yun:}t key='wap_company_show_dark_00006'{/yun}</div>
-            <div class="job_tel_wx_p"><span class="job_tel_wx_bth">{yun:}t key='default_job_comapply_00022'{/yun}</span></div>
+            <div id="tel_wxqrcode" class="job_tel_wx_zs">{yun:}t key='wap_00031'{/yun}</div>
+            <div class="job_tel_wx_p"><span class="job_tel_wx_bth">{yun:}t key='default_00220'{/yun}</span></div>
         </div>
     </div>
     <!-- 电话弹窗开始 -->
     <div class="phonePop-up" style="display: none;">
         <div class="popupSubject">
             <div class="popupTop">
-                <p>{yun:}t key='default_job_comapply_00005'{/yun}</p>
+                <p>{yun:}t key='default_00205'{/yun}</p>
                 <h3 id="prvlinktel"></h3>
                 <span id="prvtime"></span>
             </div>
             <div class="popupButton">
-                <a href="javascript:;" id="dial">{yun:}t key='app_template_default_js_comapply_00008'{/yun}</a>
-                <p id="dialpend">{yun:}t key='wap_resume_show_00014'{/yun} <span id="prvusertel"></span> {yun:}t key='wap_job_show_00036'{/yun}</p>
+                <a href="javascript:;" id="dial">{yun:}t key='default_00008'{/yun}</a>
+                <p id="dialpend">{yun:}t key='wap_00490'{/yun} <span id="prvusertel"></span> {yun:}t key='wap_00279'{/yun}</p>
             </div>
             <img class="popupClose" src="{yun:}$style{/yun}/images/yuncloseicon.png?v={yun:}$config.cachecode{/yun}" alt="" />
         </div>
@@ -951,7 +951,7 @@ DD_belatedPNG.fix('.png');
             layer = layui.layer;
         layer.photos({
             photos: '#fact_img1",
-            anim: 5 //0-6的选择，指定弹出图片动画类型，默认随机（请注意，3.0之前的版本用shift{yun:}t key='admin_neirong_announcement_component_announcement_add_00002'{/yun}）
+            anim: 5 //0-6的选择，指定弹出图片动画类型，默认随机（请注意，3.0之前的版本用shift{yun:}t key='admin_00103'{/yun}）
         });
 
     });
@@ -1001,7 +1001,7 @@ DD_belatedPNG.fix('.png');
             return false;
         }
         if (rage < 16 || rage > 100) {
-            layer.msg("{yun:}t key='wap_job_show_00005'{/yun}", 2, 8);
+            layer.msg("{yun:}t key='wap_00248'{/yun}", 2, 8);
             return false;
         }
         if (!rname) {
@@ -1040,7 +1040,7 @@ DD_belatedPNG.fix('.png');
     function rsendmsg(img) {
         var rsend = $("#rsend").val();
         var rmoblie = $("#rtel").val();
-        var rcodesear = new RegExp("{yun:}t key='wap_js_reg_ajax_00022'{/yun}");
+        var rcodesear = new RegExp("{yun:}t key='wap_js_00062'{/yun}");
         if (!rmoblie) {
             layer.msg('手机不能为空！', 2, 8);
             return false;
@@ -1072,7 +1072,7 @@ DD_belatedPNG.fix('.png');
             verify_str = $('input[name="verify_str"]').val();
         }
         if (rsend > 0) {
-            layer.msg("{yun:}t key='wap_js_reg_ajax_00012'{/yun}", 2, 8);
+            layer.msg("{yun:}t key='wap_js_00052'{/yun}", 2, 8);
             return false;
         }
         if (rsend == 0) {
@@ -1108,7 +1108,7 @@ DD_belatedPNG.fix('.png');
     function rsendtime(i) {
         i--;
         if (i == -1) {
-            $("#rtime").html("{yun:}t key='wap_js_binding_00005'{/yun}");
+            $("#rtime").html("{yun:}t key='wap_js_00110'{/yun}");
             $("#rsend").val(0)
         } else {
             $("#rsend").val(1)

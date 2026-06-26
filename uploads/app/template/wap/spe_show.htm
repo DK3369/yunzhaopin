@@ -10,14 +10,14 @@
                 <div class="title-bd">
                     <i class="blue md start" style="margin-right: 20px;"></i>
                     <i class="yellow sm end" style="margin-right: 20px;"></i>
-                    <h1>{yun:}t key='wap_spe_show_00003'{/yun}</h1>
+                    <h1>{yun:}t key='wap_00519'{/yun}</h1>
                     <i class="orange md end" style="margin-left: 20px;"></i>
                     <i class="green sm start" style="margin-left: 20px;"></i>
                 </div>
             </div>
         </div>
         <div class="special_rules_c">{yun:}$info.intro{/yun}</div>
-        <div class="special_rules_time">{yun:}t key='wap_spe_show_00002'{/yun}：{yun:}$info.ctime|date_format: "%Y年%m月%d日"{/yun} ~{yun:}$info.etime|date_format: "%Y年%m月%d日"{/yun} </div>
+        <div class="special_rules_time">{yun:}t key='common_02182'{/yun}：{yun:}$info.ctime|date_format: "%Y年%m月%d日"{/yun} ~{yun:}$info.etime|date_format: "%Y年%m月%d日"{/yun} </div>
     </div>
 </div>
 <div class="special_rules_combox">
@@ -48,7 +48,7 @@
         </div>
         {yun:}/if{/yun}
         {yun:}/foreach{/yun}
-        <div class="zt_morebox"><a href="{yun:}url m=wap c=company a=show id=$clist.uid{/yun}" class="zt_more">{yun:}t key='wap_spe_show_00001'{/yun}</a> </div>
+        <div class="zt_morebox"><a href="{yun:}url m=wap c=company a=show id=$clist.uid{/yun}" class="zt_more">{yun:}t key='wap_00518'{/yun}</a> </div>
     </div>
 </div>
 {yun:}/if{/yun}
@@ -61,7 +61,7 @@
 <div class="special_seniorpd_box">
     <div class="special_seniorpd_cont">
         <div class="special_box_bth_c">
-            <input type='button' value="我是企业，{yun:}t key='wap_part_show_00008'{/yun}" onclick="{yun:}if $uid{/yun}{yun:}if $usertype!='2'{/yun} showToast('只有企业用户才能参加报名');{yun:}else{/yun}comapply('{yun:}$info.id{/yun}','{yun:}$info.integral{/yun}','{yun:}url m=wap c=special a=apply{/yun}');{yun:}/if{/yun}{yun:}else{/yun}pleaselogin("{yun:}t key='wap_ask_00001'{/yun}",'{yun:}url m=wap c=login{/yun}'){yun:}/if{/yun}" class="special_box_bth" />
+            <input type='button' value="我是企业，{yun:}t key='wap_00375'{/yun}" onclick="{yun:}if $uid{/yun}{yun:}if $usertype!='2'{/yun} showToast('只有企业用户才能参加报名');{yun:}else{/yun}comapply('{yun:}$info.id{/yun}','{yun:}$info.integral{/yun}','{yun:}url m=wap c=special a=apply{/yun}');{yun:}/if{/yun}{yun:}else{/yun}pleaselogin("{yun:}t key='wap_00150'{/yun}",'{yun:}url m=wap c=login{/yun}'){yun:}/if{/yun}" class="special_box_bth" />
         </div>
     </div>
 </div>
@@ -71,11 +71,11 @@
     <div class="special_seniorpd_cont">
         <div class="special_box_bth_c">
             {yun:}if $isapply.status=="0"{/yun}
-            <div class="zt_ybm">{yun:}t key='wap_spe_gl_00004'{/yun}</div>
+            <div class="zt_ybm">{yun:}t key='wap_00511'{/yun}</div>
             {yun:}elseif $isapply.status=="1"{/yun}
-            <div class="zt_ybm">{yun:}t key='wap_part_show_00010'{/yun}</div>
+            <div class="zt_ybm">{yun:}t key='wap_00377'{/yun}</div>
             {yun:}else{/yun}
-            <div class="zt_ybm">{yun:}t key='wap_spe_gl_00002'{/yun}</div>
+            <div class="zt_ybm">{yun:}t key='wap_00509'{/yun}</div>
             {yun:}/if{/yun}
         </div>
     </div>
@@ -107,7 +107,7 @@ function comapply(id, integral, url) {
                     showModal(data.msg, function() { location.href = data.url; });
                 }
             });
-        }, "{yun:}t key='common.cancel'{/yun}", "{yun:}t key='wap_com_jobadd_00052'{/yun}");
+        }, "{yun:}t key='common.cancel'{/yun}", "{yun:}t key='wap_com_00306'{/yun}");
 
     }else{
 		showLoading();
@@ -124,7 +124,7 @@ function comapply(id, integral, url) {
 }
 $(function() {
     if (isover != '' && isover == 0) {
-        showModal("{yun:}t key='wap_spe_gl_00001'{/yun}", function() {});
+        showModal("{yun:}t key='wap_00508'{/yun}", function() {});
     }
 });
 </script>

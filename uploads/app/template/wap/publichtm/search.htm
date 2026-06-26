@@ -6,7 +6,7 @@
             <form method="get" action="{yun:}$config_wapdomain{/yun}/index.php">
                 <input type="hidden" id="type" name="c" value="{yun:}if $smarty.get.c{/yun}{yun:}$smarty.get.c{/yun}{yun:}else{/yun}job{yun:}/if{/yun}"/>
                 <div class="wap_search_text">
-                    <input type="text" value="" onkeyup="this.value = this.value.replace(/[,]/g,'');" id="input_search" name="keyword" class="" placeholder="{yun:}t key='admin_neirong_question_config_00010'{/yun}{yun:}if $smarty.get.c=='job' || !$smarty.get.c{/yun}职位名/公司名{yun:}elseif $smarty.get.c=='resume'{/yun}{yun:}t key='admin_tool_weixin_component_reply_00017'{/yun}{yun:}/if{/yun}">
+                    <input type="text" value="" onkeyup="this.value = this.value.replace(/[,]/g,'');" id="input_search" name="keyword" class="" placeholder="{yun:}t key='admin_00245'{/yun}{yun:}if $smarty.get.c=='job' || !$smarty.get.c{/yun}职位名/公司名{yun:}elseif $smarty.get.c=='resume'{/yun}{yun:}t key='admin_tool_00574'{/yun}{yun:}/if{/yun}">
                     
                 </div><div class="wap_search_hbth"><input type="submit" value="{yun:}t key='common.search'{/yun}" class=""></div>
             </form>
@@ -16,17 +16,17 @@
     <!-- 主体 -->
     <div class="Search_jobs_body" id="historyBox" style="display:none">
         <div class="search_history_tit">
-            <span class=" ">{yun:}t key='wap_publichtm_search_00003'{/yun}</span>
+            <span class=" ">{yun:}t key='wap_00384'{/yun}</span>
             <span class="search_history_qc" id="clearhistory"></span>
         </div>
         <div class="" id="historylist">
             <div class="search_history_no">
-                {yun:}t key='wap_publichtm_search_00002'{/yun}~
+                {yun:}t key='common_02180'{/yun}~
             </div>
         </div>
     </div>
     <div class="Search_jobs_body">
-        <div class="search_history_tit">{yun:}t key='wap_publichtm_search_00004'{/yun}</div>
+        <div class="search_history_tit">{yun:}t key='wap_00385'{/yun}</div>
         <div class="search_history_tag_box">
 
             {yun:}if $smarty.get.c=='job' || !$smarty.get.c{/yun}
@@ -47,12 +47,12 @@
             type: type
         }, function (data) {
             if (data) {
-                showToast("{yun:}t key='wap_publichtm_search_00001'{/yun}", 2, function () {
+                showToast("{yun:}t key='wap_00383'{/yun}", 2, function () {
                     window.location.href = data;
                 })
                 return false;
             } else {
-                showToast("{yun:}t key='wap_js_public_00004'{/yun}");
+                showToast("{yun:}t key='wap_js_00141'{/yun}");
                 return false;
             }
         });

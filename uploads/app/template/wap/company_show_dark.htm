@@ -34,19 +34,19 @@
                     {yun:}/if{/yun}
                 {yun:}else{/yun}
                     {yun:}if $usertype{/yun}
-                        <a href="javascript:void(0)" class="com_topgzicon " title="{yun:}t key='common_01949'{/yun}" {yun:}if $config.sy_user_change==1{/yun}onclick="showToast('{yun:}t key='wap_company_show_dark_00007'{/yun}');" {yun:}else{/yun}onclick="showToast('{yun:}t key='wap_company_show_dark_00005'{/yun}');"{yun:}/if{/yun}> </a>
+                        <a href="javascript:void(0)" class="com_topgzicon " title="{yun:}t key='common_01949'{/yun}" {yun:}if $config.sy_user_change==1{/yun}onclick="showToast('{yun:}t key='wap_00032'{/yun}');" {yun:}else{/yun}onclick="showToast('{yun:}t key='wap_00030'{/yun}');"{yun:}/if{/yun}> </a>
                     {yun:}else{/yun}
-                        <a href="javascript:void(0)" class=" com_topgzicon" title="{yun:}t key='common_01949'{/yun}" onclick="pleaselogin("{yun:}t key='wap_company_show_dark_00001'{/yun}",'{yun:}url m=wap c=login{/yun}')"></a>
+                        <a href="javascript:void(0)" class=" com_topgzicon" title="{yun:}t key='common_01949'{/yun}" onclick="pleaselogin("{yun:}t key='wap_00026'{/yun}",'{yun:}url m=wap c=login{/yun}')"></a>
                     {yun:}/if{/yun}
                 {yun:}/if{/yun}
 
                 {yun:}if $hbNum > 0{/yun}
-                    <a href="javascript:void(0);" onclick="shareShow();" title="{yun:}t key='wap_com_job_00055'{/yun}" class="com_topfxicon"></a>
+                    <a href="javascript:void(0);" onclick="shareShow();" title="{yun:}t key='wap_com_00246'{/yun}" class="com_topfxicon"></a>
                 {yun:}else{/yun}
                     {yun:}if $config.sy_h5_share==1{/yun}
-                        <a href="javascript:void(0);" data-url='{yun:}url m=wap c=company a=share id=$row.uid{/yun}' id="shareClick" class="com_topfxicon" title="{yun:}t key='wap_com_job_00055'{/yun}"></a>
+                        <a href="javascript:void(0);" data-url='{yun:}url m=wap c=company a=share id=$row.uid{/yun}' id="shareClick" class="com_topfxicon" title="{yun:}t key='wap_com_00246'{/yun}"></a>
                     {yun:}else{/yun}
-                        <a href="javascript:void(0);" class="com_topfxicon" id="shareClick" title="{yun:}t key='wap_com_job_00055'{/yun}"></a>
+                        <a href="javascript:void(0);" class="com_topfxicon" id="shareClick" title="{yun:}t key='wap_com_00246'{/yun}"></a>
                     {yun:}/if{/yun}
                 {yun:}/if{/yun}
             </div>
@@ -83,7 +83,7 @@
             <img src="{yun:}$row.logo{/yun}" alt="" width="100%" onerror="showImgDelay(this,'{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_unit_icon{/yun}',2);">
         </div>
     </div>
-    <!-- {yun:}t key='wap_com_info_00050'{/yun} -->
+    <!-- {yun:}t key='wap_com_00167'{/yun} -->
     {yun:}if $row.welfare_n{/yun}
     <div class="scw_comfl">
         <ul>
@@ -96,55 +96,55 @@
 
     {yun:}if $row.address{/yun}
     <div class="scw_comadd" {yun:}if $config.map_key{/yun}  onclick="navigateTo('{yun:}url m=wap c=job a=jobmap uid=$row.uid{/yun}')"{yun:}/if{/yun}>
-        <div class="scw_comadd_tit">{yun:}t key='wap_company_show_dark_00015'{/yun}</div>
+        <div class="scw_comadd_tit">{yun:}t key='wap_00040'{/yun}</div>
         <div class="scw_comadd_add">{yun:}$row.address{/yun}
             {yun:}if $row.x && $row.y && $config.map_key{/yun}
             <span class=" ">距离<em id="distance"></em></span>
             <input type="hidden" id="map_x" value="{yun:}$mapx{/yun}"/>
             <input type="hidden" id="map_y" value="{yun:}$mapy{/yun}"/>
-            <span class="scw_comadd_dh">{yun:}t key='wap_company_show_dark_00017'{/yun}</span>
+            <span class="scw_comadd_dh">{yun:}t key='wap_00042'{/yun}</span>
             {yun:}/if{/yun}
         </div>
     </div>
     {yun:}/if{/yun}
 
     <div class="scw_comcont">
-        <div class="scw_comcont_tit">{yun:}t key='wap_com_info_00051'{/yun}</div>
+        <div class="scw_comcont_tit">{yun:}t key='wap_com_00168'{/yun}</div>
         <div class="scw_comcont_p">
             {yun:}if $row.content{/yun}
             <p id="com_content" class="About_Us_body attention_to_new">{yun:}$row.content{/yun}</p>
             <div class="com_show_cont none"><a href="javascript:;" onclick="showcc()"></a></div>
             {yun:}else{/yun}
-            <div class="wap_member_no">{yun:}t key='wap_company_show_dark_00003'{/yun}</div>
+            <div class="wap_member_no">{yun:}t key='wap_00028'{/yun}</div>
             {yun:}/if{/yun}
         </div>
     </div>
 
-    <!-- {yun:}t key='wap_company_show_dark_00016'{/yun} -->
+    <!-- {yun:}t key='wap_00041'{/yun} -->
     <div class="scw_comcont none" id="businessInfo">
-        <div class="scw_comcont_tit">{yun:}t key='wap_company_show_dark_00016'{/yun}</div>
+        <div class="scw_comcont_tit">{yun:}t key='wap_00041'{/yun}</div>
         <div id="com_business" class="scw_comcont_p">
-            <p class=""> {yun:}t key='wap_company_show_dark_00009'{/yun}<em id="estiblishTime"></em></p>
-            <p class=""> {yun:}t key='wap_company_show_dark_00008'{/yun}<em id="orgNumber"></em></p>
-            <p class=""> {yun:}t key='wap_company_show_dark_00012'{/yun}<em id="Time"></em></p>
-            <p class=""> {yun:}t key='wap_publichtm_search_new_00010'{/yun}：<em id="companyOrgType"></em></p>
-            <p class=""> {yun:}t key='wap_company_show_dark_00011'{/yun}<em id="regInstitute"></em></p>
-            <p class=""> {yun:}t key='wap_company_show_dark_00013'{/yun}<em id="regStatus"></em></p>
-            <p class=""> {yun:}t key='wap_company_show_dark_00010'{/yun}<em id="regCapital"></em></p>
+            <p class=""> {yun:}t key='wap_00034'{/yun}<em id="estiblishTime"></em></p>
+            <p class=""> {yun:}t key='wap_00033'{/yun}<em id="orgNumber"></em></p>
+            <p class=""> {yun:}t key='wap_00037'{/yun}<em id="Time"></em></p>
+            <p class=""> {yun:}t key='wap_00087'{/yun}：<em id="companyOrgType"></em></p>
+            <p class=""> {yun:}t key='wap_00036'{/yun}<em id="regInstitute"></em></p>
+            <p class=""> {yun:}t key='wap_00038'{/yun}<em id="regStatus"></em></p>
+            <p class=""> {yun:}t key='wap_00035'{/yun}<em id="regCapital"></em></p>
             <p class=""> 注册地址：<em id="regLocation"></em></p>
-            <p class=""> {yun:}t key='admin_user_company_component_companyrz_renzheng_00002'{/yun}：<em id="creditCode"></em></p>
-            <p class=""> {yun:}t key='wap_company_show_dark_00014'{/yun}<em id="businessScope"></em></p>
+            <p class=""> {yun:}t key='admin_user_company_00063'{/yun}：<em id="creditCode"></em></p>
+            <p class=""> {yun:}t key='wap_00039'{/yun}<em id="businessScope"></em></p>
             <div class="scw_comcont_tyc">
-                {yun:}t key='admin_yunying_special_component_special_view_company_00017'{/yun}： <a href="" class="tianyancha" id="tianyancha" target='_blank'> <img src="{yun:}$wap_style{/yun}/images/logo@2x.png" alt="" width="100%"> </a>
+                {yun:}t key='admin_yunying_00139'{/yun}： <a href="" class="tianyancha" id="tianyancha" target='_blank'> <img src="{yun:}$wap_style{/yun}/images/logo@2x.png" alt="" width="100%"> </a>
             </div>
         </div>
         <div class="on-off"><a href="javascript:void(0);" onclick="showbb()"></a></div>
     </div>
 
-    <!-- {yun:}t key='wap_com_set_00002'{/yun} -->
+    <!-- {yun:}t key='wap_com_00401'{/yun} -->
     {yun:}if $show{/yun}
     <div class="scw_comcont">
-        <div class="scw_comcont_tit">{yun:}t key='wap_com_set_00002'{/yun}</div>
+        <div class="scw_comcont_tit">{yun:}t key='wap_com_00401'{/yun}</div>
         <div class="business_album">
             <div class="business_album_phone swiper-container nessAlbumPhone" id="imgswiper">
                 <ul class="swiper-wrapper">
@@ -214,7 +214,7 @@
                         </a>
                     </div>
                     {yun:}joblistelse{/yun}
-                    <div class="wap_member_no">{yun:}t key='wap_company_show_dark_00002'{/yun}</div>
+                    <div class="wap_member_no">{yun:}t key='wap_00027'{/yun}</div>
                     {yun:}/joblist{/yun}
                 </div>
             </div>
@@ -225,16 +225,16 @@
 
 <div id="app" style="display: none;">
     <!-- 投递简历弹出框 -->
-    <van-dialog v-model="telQrcodeBoxShow" title="{yun:}t key='wap_resume_index_00022'{/yun}" :show-confirm-button="false" close-on-click-overlay>
+    <van-dialog v-model="telQrcodeBoxShow" title="{yun:}t key='wap_00462'{/yun}" :show-confirm-button="false" close-on-click-overlay>
         <div class="">
             <div class="">
                 <div id="tel_wxqrcode" class="" v-html="telQrcode"></div>
-                <div class="">{yun:}t key='wap_company_show_dark_00004'{/yun}</div>
+                <div class="">{yun:}t key='wap_00029'{/yun}</div>
             </div>
         </div>
     </van-dialog>
     <!--分享面板-->
-    <van-share-sheet v-model="shareShow" title="{yun:}t key='wap_js_nativeshare_nativeshare_00006'{/yun}" :options="shareoptions" @select="shareSelect"></van-share-sheet>
+    <van-share-sheet v-model="shareShow" title="{yun:}t key='wap_js_00040'{/yun}" :options="shareoptions" @select="shareSelect"></van-share-sheet>
     {yun:}if $config.sy_h5_share==1{/yun}
     <div class="none" data-url='{yun:}url m=wap c=company a=share id=$row.id{/yun}' id="shareClick"></div>
     {yun:}else{/yun}
@@ -280,7 +280,7 @@
 
     var shareoptions = [
         {
-            name: "{yun:}t key='wap_com_job_00058'{/yun}",
+            name: "{yun:}t key='wap_com_00249'{/yun}",
             icon: 'wechat',
             className: 'wechat'
         }
@@ -298,7 +298,7 @@
         el: '#app',
         data: {
             telQrcodeBoxShow: false,
-            telQrcode: "{yun:}t key='wap_company_show_dark_00006'{/yun}",
+            telQrcode: "{yun:}t key='wap_00031'{/yun}",
             comid: uid,
             // share
             shareShow: false,

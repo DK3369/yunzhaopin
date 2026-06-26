@@ -22,7 +22,7 @@
                 <img src="{yun:}$wxpic{/yun}" alt="" width="100%" height="100%">
             </div>
             <div class="login_title_info">
-                {yun:}t key='wap_reg_create_00001'{/yun}，<i>登录绑定已有账户</i>
+                {yun:}t key='wap_00407'{/yun}，<i>登录绑定已有账户</i>
             </div>
         </div>
     {yun:}/if{/yun}
@@ -41,10 +41,10 @@
         <div class="The_login_subject">
             <div id="login_normal_box">
                 <div class="login_textbox">
-                    <input type="text" name="username" placeholder="{yun:}t key='wap_forgetpw_00008'{/yun}/{yun:}t key='member_user_resumeout_00004'{/yun}/{yun:}t key='wap_user_ident_00004'{/yun}" class="account_number">
+                    <input type="text" name="username" placeholder="{yun:}t key='wap_00208'{/yun}/{yun:}t key='member_user_00282'{/yun}/{yun:}t key='wap_user_00180'{/yun}" class="account_number">
                 </div>
                 <div class="login_textbox">
-                    <input type="password" id="password" value="" name="password" placeholder="{yun:}t key='wap_js_public_00002'{/yun}"/>
+                    <input type="password" id="password" value="" name="password" placeholder="{yun:}t key='wap_js_00139'{/yun}"/>
                     <input type="text" id="login_password" style="display: none"/>
                     <div class="close_open"><img src="{yun:}$wap_style{/yun}/images/conceal.png" alt="" width="100%" height="100%" id="close"></div>
                 </div>
@@ -52,7 +52,7 @@
             <!--手机动态码登录-->
             {yun:}if $config.sy_msg_login==1{/yun}
             <div id="login_sj_box" class="login_textbox" style="display:none;">
-                <input type="tel" value="" onkeyup="this.value=this.value.replace(/[^0-9]/g,'')" placeholder="{yun:}t key='wap_js_forgetpw_00004'{/yun}" name="moblie" id="usermoblie" class="account_number">
+                <input type="tel" value="" onkeyup="this.value=this.value.replace(/[^0-9]/g,'')" placeholder="{yun:}t key='wap_js_00119'{/yun}" name="moblie" id="usermoblie" class="account_number">
             </div>
             {yun:}/if{/yun}
 
@@ -85,7 +85,7 @@
                     <div class="login_textbox">
                         <input name="dynamiccode" type="text" maxlength='6' class="inputitemtxt" value="" placeholder="输入短信验证码" onblur="changeCaptcha()"/>
                         <input type="password" id="login_code" style="display: none"/>
-                        <div class="dx_yz_hq" id="send_msg_tip" onclick="send_msg('{yun:}$config_wapdomain{/yun}/index.php?c=login&a=sendmsg');"> {yun:}t key='wap_user_bindingbox_00005'{/yun}</div>
+                        <div class="dx_yz_hq" id="send_msg_tip" onclick="send_msg('{yun:}$config_wapdomain{/yun}/index.php?c=login&a=sendmsg');"> {yun:}t key='wap_user_00144'{/yun}</div>
                     </div>
                 </div>
             {yun:}/if{/yun}
@@ -94,10 +94,10 @@
                     <input type="checkbox" id="xieyicheck" name="xieyicheck" value="1" checked onclick="choosexie(this)"/>
                 </div>
                 <div>
-                    <i class="policy">{yun:}t key='wap_login_00010'{/yun}</i>
+                    <i class="policy">{yun:}t key='wap_00309'{/yun}</i>
                     <a href="{yun:}url m=wap c=protocol{/yun}" class="Privacy">《用户协议》</a>
                     <i class="policy">和</i>
-                    <a href="{yun:}url m=wap c=privacy{/yun}" class="Privacy">《{yun:}t key='wap_login_00014'{/yun}》</a>
+                    <a href="{yun:}url m=wap c=privacy{/yun}" class="Privacy">《{yun:}t key='wap_00313'{/yun}》</a>
                 </div>
             </div>
             <div id="login_bth" class="login_bth" onclick="login()">{yun:}t key='common.login'{/yun}</div>
@@ -107,12 +107,12 @@
         <input type="hidden" name="checkurl" value="{yun:}$checkurl{/yun}"/>
         {yun:}/if{/yun}
     </form>
-    <!-- {yun:}t key='wap_advice_00007'{/yun} -->
+    <!-- {yun:}t key='wap_00110'{/yun} -->
     <div class="login_otherfs">
         {yun:}if $config.sy_msg_isopen==1 && $config.sy_msg_login==1{/yun}
         <div class="verification_code_word" id="mobile_login">短信登录</div>
         {yun:}/if{/yun}
-        <div class="verification_code_word" id="acount_login" style="display: none"> {yun:}t key='wap_login_00009'{/yun}</div>
+        <div class="verification_code_word" id="acount_login" style="display: none"> {yun:}t key='wap_00308'{/yun}</div>
         <a href="{yun:}url m=wap c=forgetpw{/yun}" class="login_wjmm">忘记密码</a>
     </div>
 </div>
@@ -166,7 +166,7 @@
         }).blur(function () {
             var txAreaVal = $(this).val();
             if (txAreaVal == this.defaultValue || $(this).val() == "") {
-                $(this).attr("placeholder", "{yun:}t key='wap_login_00003'{/yun}");
+                $(this).attr("placeholder", "{yun:}t key='wap_00302'{/yun}");
             }
         })
         $("#password").focus(function () {
@@ -188,7 +188,7 @@
         }).blur(function () {
             var txAreaVal = $(this).val();
             if (txAreaVal == this.defaultValue || $(this).val() == "") {
-                $(this).attr("placeholder", "{yun:}t key='wap_js_forgetpw_00004'{/yun}");
+                $(this).attr("placeholder", "{yun:}t key='wap_js_00119'{/yun}");
             }
         })
         $(".inputitemtxt").focus(function () {
@@ -239,23 +239,23 @@
         var code;
 
         var verify_token,verify_str;
-        if (moblie == "" || moblie == "{yun:}t key='wap_user_bindingbox_00003'{/yun}") {
+        if (moblie == "" || moblie == "{yun:}t key='wap_user_00142'{/yun}") {
 
-            showToast("{yun:}t key='wap_user_bindingbox_00003'{/yun}");
+            showToast("{yun:}t key='wap_user_00142'{/yun}");
             return false;
         } else {
 
             if (!isjsMobile(moblie)) {
-                showToast("{yun:}t key='wap_login_00007'{/yun}");
+                showToast("{yun:}t key='wap_00306'{/yun}");
                 return false;
             }
         }
-        var codesear = new RegExp("{yun:}t key='wap_js_reg_ajax_00022'{/yun}");
+        var codesear = new RegExp("{yun:}t key='wap_js_00062'{/yun}");
         if (codesear.test(code_web)) {
             if (code_kind == 1) {
                 code = $.trim($("#checkcode").val());
                 if (!code) {
-                    showToast("{yun:}t key='wap_js_forgetpw_00001'{/yun}");
+                    showToast("{yun:}t key='wap_js_00116'{/yun}");
                     return false;
                 }
             } else if (code_kind > 2) {
@@ -300,14 +300,14 @@
                                 location.href = res.url;
                             }
                         }
-                        if (res.msg == "{yun:}t key='wap_login_00008'{/yun}") {
+                        if (res.msg == "{yun:}t key='wap_00307'{/yun}") {
                             location.href = wapRegUrl;
                         }
                     });
                 }
             })
         } else {
-            showToast("{yun:}t key='wap_js_forgetpw_00003'{/yun}", 2);
+            showToast("{yun:}t key='wap_js_00118'{/yun}", 2);
             return false;
         }
     }
@@ -315,13 +315,13 @@
     // Countdown
     function smsTimer(obj) {
         if (smsTimer_flag > 0) {
-            $(obj).html("{yun:}t key='wap_js_forgetpw_00007'{/yun}" + smsTimer_flag + 's)');
+            $(obj).html("{yun:}t key='wap_js_00122'{/yun}" + smsTimer_flag + 's)');
             $(obj).attr({
                 'style': 'background: ;'
             });
             smsTimer_flag--;
         } else {
-            $(obj).html("{yun:}t key='wap_js_forgetpw_00009'{/yun}");
+            $(obj).html("{yun:}t key='wap_js_00124'{/yun}");
             $(obj).attr({
                 'style': 'background: ;"
             });

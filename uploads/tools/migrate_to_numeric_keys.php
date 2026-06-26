@@ -1,12 +1,11 @@
 <?php
 /**
- * 语言包 key 迁移：页面前缀 + 五位编号
- * 例：wap/resume.htm → wap_resume_00001；全站通用 → common_00001
- *
- * 对照 scan report 里的 files 字段定位页面，不用 report 里的 common_XXXXX key。
+ * 语言包 key：短模块前缀 + 五位编号（昨天规则）
+ * 例：common_00001、wap_00421、admin_user_company_00012
+ * 模块名最多 3 段（如 admin_user_company），禁止整页路径。
  *
  * Usage:
- *   php tools/migrate_to_numeric_keys.php [--dry-run]
+ *   php tools/migrate_to_numeric_keys.php [--dry-run] [--skip-templates]
  */
 if (php_sapi_name() !== 'cli' || !isset($argv[0]) || realpath($argv[0]) !== realpath(__FILE__)) {
     return;
@@ -14,6 +13,7 @@ if (php_sapi_name() !== 'cli' || !isset($argv[0]) || realpath($argv[0]) !== real
 
 define('ROOT', dirname(__DIR__) . '/');
 $dryRun = in_array('--dry-run', $argv ?? array(), true);
+$skipTemplates = in_array('--skip-templates', $argv ?? array(), true);
 
 function isUserFacingPath($file)
 {
@@ -63,12 +63,38 @@ $keyMapFile = ROOT . 'tools/key_map.json';
 $zh = include $zhFile;
 $en = include $enFile;
 
+function modulePartCount($prefix)
+{
+    return count(explode('_', $prefix));
+}
+
+function isAllowedModule($prefix)
+{
+    static $allowed = array(
+        'common', 'wap', 'wap_com', 'wap_user', 'wap_js',
+        'member_com', 'member_user',
+        'admin', 'admin_user', 'admin_user_company', 'admin_user_weipin', 'admin_user_partuser',
+        'admin_system', 'admin_tool', 'admin_yunying', 'admin_index',
+        'default', 'company', 'resume', 'ask', 'ajax',
+    );
+    if (in_array($prefix, $allowed, true)) {
+        return true;
+    }
+    if (preg_match('/^(model|api)_[a-z0-9_]+$/', $prefix) && modulePartCount($prefix) <= 2) {
+        return true;
+    }
+    if (preg_match('/^admin_[a-z0-9_]+$/', $prefix) && modulePartCount($prefix) <= 3) {
+        return in_array($prefix, $allowed, true);
+    }
+    return false;
+}
+
 function isPageNumericKey($key)
 {
-    if (!is_string($key) || !preg_match('/^[a-z][a-z0-9_]*_[0-9]{5}$/', $key)) {
+    if (!is_string($key) || !preg_match('/^([a-z][a-z0-9_]*)_([0-9]{5})$/', $key, $m)) {
         return false;
     }
-    return substr_count($key, '_') >= 2;
+    return isAllowedModule($m[1]);
 }
 
 function isChineseKey($key)
@@ -76,58 +102,88 @@ function isChineseKey($key)
     return is_string($key) && preg_match('/[\x{4e00}-\x{9fff}]/u', $key);
 }
 
-function slugPage($text)
+/** 文件路径 → 短模块名（最多 3 段） */
+function shortModuleFromPath($file, $root)
 {
-    $text = strtolower($text);
-    $text = preg_replace('/\.(html|htm|js|php|vue)$/', '', $text);
-    $text = str_replace(array('-', '.', ' '), '_', $text);
-    $text = preg_replace('/[^a-z0-9_]/', '', $text);
-    $text = preg_replace('/_+/', '_', $text);
-    return trim($text, '_');
-}
+    $rel = ltrim(str_replace('\\', '/', str_replace($root, '', $file)), '/');
 
-function extractPagePrefix($file, $root)
-{
-    $file = str_replace('\\', '/', $file);
-    $rel = ltrim(str_replace($root, '', $file), '/');
+    if (preg_match('#^app/template/admin/user/company/#', $rel)) {
+        return 'admin_user_company';
+    }
+    if (preg_match('#^app/template/admin/user/partuser/#', $rel)) {
+        return 'admin_user_partuser';
+    }
+    if (preg_match('#^app/template/admin/user/weipin/#', $rel)) {
+        return 'admin_user_weipin';
+    }
+    if (preg_match('#^app/template/admin/user/#', $rel)) {
+        return 'admin_user';
+    }
+    if (preg_match('#^app/template/admin/system/#', $rel)) {
+        return 'admin_system';
+    }
+    if (preg_match('#^app/template/admin/tool/#', $rel)) {
+        return 'admin_tool';
+    }
+    if (preg_match('#^app/template/admin/yunying/#', $rel)) {
+        return 'admin_yunying';
+    }
+    if (preg_match('#^app/template/admin/#', $rel)) {
+        return 'admin';
+    }
+    if (preg_match('#^app/template/wap/member/com/#', $rel)) {
+        return 'wap_com';
+    }
+    if (preg_match('#^app/template/wap/member/user/#', $rel)) {
+        return 'wap_user';
+    }
+    if (preg_match('#^app/template/wap/js/#', $rel)) {
+        return 'wap_js';
+    }
+    if (preg_match('#^app/template/wap/#', $rel)) {
+        return 'wap';
+    }
+    if (preg_match('#^app/template/member/com/#', $rel)) {
+        return 'member_com';
+    }
+    if (preg_match('#^app/template/member/user/#', $rel)) {
+        return 'member_user';
+    }
+    if (preg_match('#^app/template/default/#', $rel)) {
+        return 'default';
+    }
+    if (preg_match('#^app/template/company/#', $rel)) {
+        return 'company';
+    }
+    if (preg_match('#^app/template/resume/#', $rel)) {
+        return 'resume';
+    }
+    if (preg_match('#^app/template/ask/#', $rel)) {
+        return 'ask';
+    }
+    if (preg_match('#^app/controller/wap/#', $rel)) {
+        return 'wap';
+    }
+    if (preg_match('#^app/controller/ajax/#', $rel)) {
+        return 'ajax';
+    }
+    if (preg_match('#^app/controller/([^/]+)/#', $rel, $m)) {
+        return $m[1];
+    }
+    if (preg_match('#^admin/model/([^/]+)#', $rel, $m)) {
+        return 'admin_' . $m[1];
+    }
+    if (preg_match('#^app/model/([^/]+)#', $rel, $m)) {
+        return 'model_' . $m[1];
+    }
+    if (preg_match('#^api/wxapp/#', $rel)) {
+        return 'api_wxapp';
+    }
+    if (preg_match('#^api/([^/]+)#', $rel, $m)) {
+        return 'api_' . $m[1];
+    }
 
-    if (preg_match('#^app/template/admin/(.+)\.(html|htm|js|vue)$#', $rel, $m)) {
-        return slugPage('admin_' . str_replace('/', '_', $m[1]));
-    }
-    if (preg_match('#^app/template/member/([^/]+)/(.+)\.(html|htm)$#', $rel, $m)) {
-        return slugPage('member_' . $m[1] . '_' . str_replace('/', '_', $m[2]));
-    }
-    if (preg_match('#^app/template/wap/member/([^/]+)/(.+)\.(html|htm)$#', $rel, $m)) {
-        return slugPage('wap_' . $m[1] . '_' . str_replace('/', '_', $m[2]));
-    }
-    if (preg_match('#^app/template/(default|wap)/(.+)\.(html|htm)$#', $rel, $m)) {
-        return slugPage($m[1] . '_' . str_replace('/', '_', $m[2]));
-    }
-    if (preg_match('#^app/template/wap/js/(.+)\.js$#', $rel, $m)) {
-        return slugPage('wap_js_' . str_replace('/', '_', $m[1]));
-    }
-    if (preg_match('#^app/template/admin/js/(.+)\.js$#', $rel, $m)) {
-        return slugPage('admin_js_' . str_replace('/', '_', $m[1]));
-    }
-    if (preg_match('#^app/template/([^/]+)/(.+)\.(html|htm)$#', $rel, $m)) {
-        return slugPage($m[1] . '_' . str_replace('/', '_', $m[2]));
-    }
-    if (preg_match('#^app/controller/([^/]+)/([^/]+)\.class\.php$#', $rel, $m)) {
-        return slugPage($m[1] . '_' . preg_replace('/\.class$/', '', $m[2]));
-    }
-    if (preg_match('#^admin/model/([^/]+)\.class\.php$#', $rel, $m)) {
-        return slugPage('admin_' . preg_replace('/\.class$/', '', $m[1]));
-    }
-    if (preg_match('#^app/model/([^/]+)\.model\.php$#', $rel, $m)) {
-        return slugPage('model_' . preg_replace('/\.model$/', '', $m[1]));
-    }
-    if (preg_match('#^api/([^/]+)/#', $rel, $m)) {
-        return slugPage('api_' . $m[1]);
-    }
-
-    $base = basename($rel, '.' . pathinfo($rel, PATHINFO_EXTENSION));
-    $dir = dirname($rel);
-    return slugPage(str_replace('/', '_', $dir . '_' . $base));
+    return 'common';
 }
 
 function nextPageKey(array &$counters, $prefix)
@@ -146,22 +202,22 @@ function pathPriority($file)
 {
     $file = str_replace('\\', '/', $file);
     if (strpos($file, 'app/template/wap/') === 0) {
-        return 1;
+        return 0;
     }
     if (strpos($file, 'app/template/default/') === 0) {
-        return 2;
+        return 1;
     }
     if (strpos($file, 'app/template/member/') === 0) {
-        return 3;
+        return 2;
     }
     if (strpos($file, 'app/template/company/') === 0) {
-        return 4;
+        return 3;
     }
     if (strpos($file, 'app/controller/') === 0 || strpos($file, 'api/') === 0) {
-        return 5;
+        return 4;
     }
-    if (strpos($file, 'admin/') === 0) {
-        return 6;
+    if (strpos($file, 'app/template/admin/') === 0 || strpos($file, 'admin/') === 0) {
+        return 10;
     }
     return 9;
 }
@@ -213,7 +269,7 @@ function resolvePagePrefix($text, array $textToFiles, array $fileContents, $root
             continue;
         }
         $full = ROOT . ltrim($file, '/');
-        $prefix = extractPagePrefix(is_file($full) ? $full : ROOT . $file, ROOT);
+        $prefix = shortModuleFromPath(is_file($full) ? $full : ROOT . $file, ROOT);
         $prefixHits[$prefix] = isset($prefixHits[$prefix]) ? $prefixHits[$prefix] + 1 : 1;
     }
 
@@ -240,6 +296,50 @@ function exportPhpArray($data, $headerComment = '')
     }
     $out .= ");\n";
     return $out;
+}
+
+function remapKeysInTemplates(array $keyMap)
+{
+    if (empty($keyMap)) {
+        return 0;
+    }
+    uksort($keyMap, function ($a, $b) {
+        return strlen($b) - strlen($a);
+    });
+    $dirs = array(ROOT . 'app/template', ROOT . 'app/controller', ROOT . 'admin', ROOT . 'api');
+    $changed = 0;
+    foreach ($dirs as $dir) {
+        if (!is_dir($dir)) {
+            continue;
+        }
+        $it = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir, FilesystemIterator::SKIP_DOTS));
+        foreach ($it as $file) {
+            if (!$file->isFile()) {
+                continue;
+            }
+            $ext = strtolower($file->getExtension());
+            if (!in_array($ext, array('htm', 'html', 'php', 'js', 'vue'), true)) {
+                continue;
+            }
+            $path = $file->getPathname();
+            $content = file_get_contents($path);
+            $orig = $content;
+            foreach ($keyMap as $old => $new) {
+                if ($old === $new) {
+                    continue;
+                }
+                $content = str_replace("key='" . $old . "'", "key='" . $new . "'", $content);
+                $content = str_replace('key="' . $old . '"', 'key="' . $new . '"', $content);
+                $content = str_replace("yun_at('" . $old . "')", "yun_at('" . $new . "')", $content);
+                $content = str_replace('yun_at("' . $old . '")', 'yun_at("' . $new . '")', $content);
+            }
+            if ($content !== $orig) {
+                file_put_contents($path, $content);
+                $changed++;
+            }
+        }
+    }
+    return $changed;
 }
 
 echo "Indexing source files...\n";
@@ -387,3 +487,14 @@ file_put_contents($keyMapFile, json_encode($keyMap, JSON_UNESCAPED_UNICODE | JSO
 
 echo "\nWritten lang pack + aliases + index.json\n";
 echo "Backup: *.bak.$ts\n";
+
+if (!$skipTemplates && !empty($keyMap)) {
+    $n = remapKeysInTemplates($keyMap);
+    echo "Remapped keys in $n template/controller files\n";
+}
+
+$maxLen = 0;
+foreach ($newZh as $k => $v) {
+    $maxLen = max($maxLen, strlen($k));
+}
+echo "Max key length: $maxLen\n";

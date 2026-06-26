@@ -1,9 +1,9 @@
 {yun:}if $smarty.get.see != 'member'{/yun} 
 	<div class="yun_resume_ylcz noprint" style="text-align: center;margin-bottom:10px;" >
 		<div class="yun_resume_czewm">
-		<div>{yun:}t key='default_job_search_00003'{/yun}：{yun:}t key='wap_com_job_00055'{/yun}</div>
+		<div>{yun:}t key='default_00250'{/yun}：{yun:}t key='wap_com_00246'{/yun}</div>
 		<img src="{yun:}url m=ajax c=pubqrcode toc=resume toa=show toid=$Info.id{/yun}" width="160" height="160">
-		<div class="yun_resume_cz_tit" style="color:red;">↑{yun:}t key='default_job_comapply_00021'{/yun}↑</br>{yun:}t key='resume_resume_00004'{/yun}</div>
+		<div class="yun_resume_cz_tit" style="color:red;">↑{yun:}t key='common_02135'{/yun}↑</br>{yun:}t key='resume_00018'{/yun}</div>
 		</div>
 	</div>
 	<!-- 企业查看简历 -->
@@ -13,12 +13,12 @@
 		
 		{yun:}if $usertype == 2 {/yun} 
 			{yun:}if $usermsgnum{/yun} 
-				<input class="yun_resume_cz_a" type="button" value="{yun:}t key='resume_resume_00012'{/yun} ">
+				<input class="yun_resume_cz_a" type="button" value="{yun:}t key='resume_00026'{/yun} ">
 			{yun:}else{/yun}
 				{yun:}if $Info.sqInfo{/yun}
-				<input class="yun_resume_cz_a" onclick="sq_resume(this)" type="button" value="{yun:}t key='resume_resume_00015'{/yun} " username="{yun:}$Info.name{/yun}"  uid="{yun:}$Info.uid{/yun}">
+				<input class="yun_resume_cz_a" onclick="sq_resume(this)" type="button" value="{yun:}t key='resume_00029'{/yun} " username="{yun:}$Info.name{/yun}"  uid="{yun:}$Info.uid{/yun}">
 				{yun:}else{/yun}
-				<input class="yun_resume_cz_a" onclick="issq_resume(this)" type="button" value="{yun:}t key='resume_resume_00015'{/yun} " username="{yun:}$Info.name{/yun}"  uid="{yun:}$Info.uid{/yun}">
+				<input class="yun_resume_cz_a" onclick="issq_resume(this)" type="button" value="{yun:}t key='resume_00029'{/yun} " username="{yun:}$Info.name{/yun}"  uid="{yun:}$Info.uid{/yun}">
 				{yun:}/if{/yun}
 			{yun:}/if{/yun}
 		{yun:}/if{/yun}
@@ -26,9 +26,9 @@
 		<div>
 	
 			{yun:}if $talent_pool{/yun} 
-				<input class="yun_resume_cz_bth fl" type="button" onClick="layer.msg("{yun:}t key='resume_resume_00007'{/yun}",2,8);" value="{yun:}t key='wap_part_show_00011'{/yun}">
+				<input class="yun_resume_cz_bth fl" type="button" onClick="layer.msg("{yun:}t key='resume_00021'{/yun}",2,8);" value="{yun:}t key='wap_00378'{/yun}">
 			{yun:}else{/yun} 
-				<input class="yun_resume_cz_bth fl" type="button" onClick="add_user_talent('{yun:}$Info.id{/yun}','{yun:}$usertype{/yun}')" value="{yun:}t key='wap_part_show_00012'{/yun}"> 
+				<input class="yun_resume_cz_bth fl" type="button" onClick="add_user_talent('{yun:}$Info.id{/yun}','{yun:}$usertype{/yun}')" value="{yun:}t key='wap_00379'{/yun}"> 
 			{yun:}/if{/yun}
 	
 			<div class="yun_resume_cz_bth_xz_box"> {yun:}$Info.link_msg_right{/yun} </div>
@@ -39,15 +39,15 @@
 				
 				{yun:}if $Info.height_status==2{/yun} 
 				
-					<input class="yun_resume_cz_bth yun_resume_cz_bth_fx fr" type="button" onClick="showlogin('3');" value="{yun:}t key='wap_com_job_00055'{/yun}" name="submit">
+					<input class="yun_resume_cz_bth yun_resume_cz_bth_fx fr" type="button" onClick="showlogin('3');" value="{yun:}t key='wap_com_00246'{/yun}" name="submit">
 				{yun:}else{/yun} 
 					
-					<input class="yun_resume_cz_bth yun_resume_cz_bth_fx fr" type="button" onClick="showlogin('2');" value="{yun:}t key='wap_com_job_00055'{/yun}" name="submit">
+					<input class="yun_resume_cz_bth yun_resume_cz_bth_fx fr" type="button" onClick="showlogin('2');" value="{yun:}t key='wap_com_00246'{/yun}" name="submit">
 				{yun:}/if{/yun}
 				
 			{yun:}else{/yun} 
 			
-				<input class="yun_resume_cz_bth yun_resume_cz_bth_fx fr" type="button" onClick="recommendInterval('{yun:}$uid{/yun}','{yun:}url m=resume c=resumeshare id='`$Info.id`'{/yun}');" value="{yun:}t key='wap_com_job_00055'{/yun}" name="submit"> 
+				<input class="yun_resume_cz_bth yun_resume_cz_bth_fx fr" type="button" onClick="recommendInterval('{yun:}$uid{/yun}','{yun:}url m=resume c=resumeshare id='`$Info.id`'{/yun}');" value="{yun:}t key='wap_com_00246'{/yun}" name="submit"> 
 			{yun:}/if{/yun} 
 			
 			<input type="hidden" value="{yun:}$Info.id{/yun}" id="eid">
@@ -59,7 +59,7 @@
 			<input type="hidden" name="r_eid" value="{yun:}$Info.id{/yun}">
 			<input type="hidden" name="r_name" value="{yun:}$Info.name{/yun}">
 			
-			<div class="yun_resume_ts_tit">{yun:}t key='resume_resume_right_00001'{/yun}</div>
+			<div class="yun_resume_ts_tit">{yun:}t key='resume_00031'{/yun}</div>
 			
 			<div class="yun_resume_cz_dt">若该简历为无效简历，您可以在此举报：</div>
 			
@@ -74,13 +74,13 @@
 				
 				{yun:}if !$uid && !$username{/yun} 
 				
-					<input type="button" name="submit" value="{yun:}t key='wap_com_reportlist_00003'{/yun}" onClick="showlogin('2');" class="yun_resume_cz_jb_a">
+					<input type="button" name="submit" value="{yun:}t key='wap_com_00350'{/yun}" onClick="showlogin('2');" class="yun_resume_cz_jb_a">
 				{yun:}else if $usertype!=2 {/yun} 
 					
-					<input class="yun_resume_cz_jb_a" onClick="layer.msg("{yun:}t key='resume_resume_00006'{/yun}",2,8);" type="button" name="submit" value="{yun:}t key='wap_com_reportlist_00003'{/yun} "> 
+					<input class="yun_resume_cz_jb_a" onClick="layer.msg("{yun:}t key='resume_00020'{/yun}",2,8);" type="button" name="submit" value="{yun:}t key='wap_com_00350'{/yun} "> 
 				{yun:}else{/yun}
 				
-				 	<input type="submit" name="submit" value="{yun:}t key='wap_com_reportlist_00003'{/yun}" class="yun_resume_cz_jb_a">
+				 	<input type="submit" name="submit" value="{yun:}t key='wap_com_00350'{/yun}" class="yun_resume_cz_jb_a">
 				{yun:}/if{/yun}
 			</div>
 		</form>
@@ -93,10 +93,10 @@
 		<div class="yun_resume_ylcz noprint">
 			{yun:}if $usertype ==1{/yun}
 				<div class="yun_resume_cz ">
-					<a href="{yun:}url m=member c=expect e=$Info.id{/yun}" class="yun_resume_cz_xg">{yun:}t key='wap_job_show_00026'{/yun}</a>
+					<a href="{yun:}url m=member c=expect e=$Info.id{/yun}" class="yun_resume_cz_xg">{yun:}t key='wap_00269'{/yun}</a>
 					<div class="">
-						<input class="yun_resume_cz_bc yun_resume_cz_bth_xz fl " onClick="for_link('{yun:}$Info.id{/yun}','{yun:}url m=ajax c=for_link{/yun}','{yun:}url m=ajax c=resume_word id=$Info.id{/yun}');" type="submit" name="submit" value="{yun:}t key='resume_resume_00009'{/yun} "> 
-						<div class="yun_resume_cz_gz">{yun:}t key='resume_resume_00001'{/yun}</div>
+						<input class="yun_resume_cz_bc yun_resume_cz_bth_xz fl " onClick="for_link('{yun:}$Info.id{/yun}','{yun:}url m=ajax c=for_link{/yun}','{yun:}url m=ajax c=resume_word id=$Info.id{/yun}');" type="submit" name="submit" value="{yun:}t key='resume_00023'{/yun} "> 
+						<div class="yun_resume_cz_gz">{yun:}t key='resume_00015'{/yun}</div>
 					</div>
 				</div>
 			{yun:}/if{/yun}
@@ -105,7 +105,7 @@
 				<div class="yun_resume_czewmpic">
 					<img src="{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_wx_qcode{/yun}" width="150" height="150">
 				</div>
-				<div class="yun_resume_cz_tit">{yun:}t key='resume_resume_00002'{/yun}</div>
+				<div class="yun_resume_cz_tit">{yun:}t key='resume_00016'{/yun}</div>
 			</div>
 		</div>
 	{yun:}/if{/yun} 

@@ -13,23 +13,23 @@
 
     <div class="yun_m_rightbox fltR mt20 re">
 
-		<div class="member_right_index_h1 fltL"> <span class="member_right_h1_span fltL">{yun:}t key='member_user_binding_00013'{/yun}</span> <i class="member_right_h1_icon user_bg"></i></div>
+		<div class="member_right_index_h1 fltL"> <span class="member_right_h1_span fltL">{yun:}t key='member_user_00059'{/yun}</span> <i class="member_right_h1_icon user_bg"></i></div>
 
         <div class="clear"></div>
 
         <div class="job_list_tit">
             <ul>
                 <li>
-                    <a href="index.php?c=info">{yun:}t key='wap_resume_index_00016'{/yun}</a><i class="left_sidebar_leftmune_icon"></i>
+                    <a href="index.php?c=info">{yun:}t key='wap_00456'{/yun}</a><i class="left_sidebar_leftmune_icon"></i>
                	</li>
                 <li class="job_list_tit_cur">
-                    <a href="index.php?c=passwd">{yun:}t key='member_user_binding_00012'{/yun}</a>
+                    <a href="index.php?c=passwd">{yun:}t key='member_user_00058'{/yun}</a>
                 </li>
                 <li>
-                    <a href="index.php?c=binding">{yun:}t key='member_user_binding_00011'{/yun}</a>
+                    <a href="index.php?c=binding">{yun:}t key='member_user_00057'{/yun}</a>
                 </li>
                 <li>
-                    <a href="index.php?c=uppic">{yun:}t key='member_user_binding_00007'{/yun} </a>
+                    <a href="index.php?c=uppic">{yun:}t key='member_user_00053'{/yun} </a>
                 </li>
 
             </ul>
@@ -41,14 +41,14 @@
             
                 <div class="account_settings_list_left">
                     <i class="account_settings_list_left_icon account_settings_list_left_icon_user"></i>
-                    <div class="account_settings_tit">{yun:}t key='wap_user_safe_00001'{/yun}</div>
+                    <div class="account_settings_tit">{yun:}t key='wap_user_00336'{/yun}</div>
                    	您有一次修改用户名机会（仅限一次）
                 </div>
                 
                 {yun:}if $member.setname==1{/yun}
-                	<a href="javascript:void(0);" onclick="showEditUsername();" class="account_settings_bth_hv">{yun:}t key='wap_js_umeditor_lang_zh_cn_zh_cn_00005'{/yun}</a>
+                	<a href="javascript:void(0);" onclick="showEditUsername();" class="account_settings_bth_hv">{yun:}t key='wap_js_00073'{/yun}</a>
                 {yun:}else{/yun}
-                	<div class="account_settings_bth">{yun:}t key='member_user_passwd_00035'{/yun}</div>
+                	<div class="account_settings_bth">{yun:}t key='member_user_00233'{/yun}</div>
                 {yun:}/if{/yun}
                 
             </div>
@@ -59,7 +59,7 @@
                     <div class="account_settings_tit">用户密码</div>
                  	用于保护用户信息和登录安全
                 </div>
-                <a href="javascript:void(0);" onclick="showEditPass();" class="account_settings_bth_hv">{yun:}t key='wap_js_umeditor_lang_zh_cn_zh_cn_00005'{/yun}</a>
+                <a href="javascript:void(0);" onclick="showEditPass();" class="account_settings_bth_hv">{yun:}t key='wap_js_00073'{/yun}</a>
             </div>
 
             {yun:}if $resume.email_status==1{/yun}
@@ -68,9 +68,9 @@
 	                <div class="account_settings_list_left">
 	                    <i class="account_settings_list_left_icon account_settings_list_left_icon_yx"></i>
 	                    <div class="account_settings_tit">安全邮箱{yun:}$resume.email{/yun}</div>
-	                   	{yun:}t key='member_user_passwd_00004'{/yun}
+	                   	{yun:}t key='member_user_00203'{/yun}
 	                </div>
-	                <a href="javascript:void(0)" onclick="layer_del("{yun:}t key='member_user_binding_00005'{/yun}",'index.php?c=binding&act=del&type=email');" class="account_settings_bth">{yun:}t key='member_user_binding_00008'{/yun}</a>
+	                <a href="javascript:void(0)" onclick="layer_del("{yun:}t key='member_user_00051'{/yun}",'index.php?c=binding&act=del&type=email');" class="account_settings_bth">{yun:}t key='member_user_00054'{/yun}</a>
 	            </div>
 	            
             {yun:}else{/yun}
@@ -78,10 +78,10 @@
 	            <div class="account_settings_list">
 	                <div class="account_settings_list_left">
 	                    <i class="account_settings_list_left_icon account_settings_list_left_icon_yx"></i>
-	                    <div class="account_settings_tit">安全邮箱{yun:}$resume.email{/yun}<span class="account_settings_tit_zt"><i class="account_settings_tit_icon"></i>{yun:}t key='wap_user_ident_00005'{/yun}</span></div>
-	                    <div class="account_settings_tip"> {yun:}t key='member_user_passwd_00004'{/yun}</div>
+	                    <div class="account_settings_tit">安全邮箱{yun:}$resume.email{/yun}<span class="account_settings_tit_zt"><i class="account_settings_tit_icon"></i>{yun:}t key='wap_user_00181'{/yun}</span></div>
+	                    <div class="account_settings_tip"> {yun:}t key='member_user_00203'{/yun}</div>
 	                </div>
-	                <a href="javascript:getshow('email','{yun:}t key='member_user_passwd_00033'{/yun}');" class="account_settings_bth_hv">{yun:}t key='member_user_passwd_00036'{/yun}</a>
+	                <a href="javascript:getshow('email','{yun:}t key='member_user_00231'{/yun}');" class="account_settings_bth_hv">{yun:}t key='member_user_00234'{/yun}</a>
 	            </div>
 	            
             {yun:}/if{/yun} 
@@ -92,9 +92,9 @@
 	                <div class="account_settings_list_left">
 	                    <i class="account_settings_list_left_icon account_settings_list_left_icon_sj"></i>
 	                    <div class="account_settings_tit">安全手机{yun:}$resume.telphone{/yun}</div>
-	                  	{yun:}t key='member_user_passwd_00003'{/yun}
+	                  	{yun:}t key='member_user_00202'{/yun}
 	                </div>
-	                <a href="javascript:getshow('moblie','{yun:}t key='member_user_passwd_00016'{/yun}');" class="account_settings_bth">{yun:}t key='member_user_passwd_00030'{/yun}</a>
+	                <a href="javascript:getshow('moblie','{yun:}t key='member_user_00215'{/yun}');" class="account_settings_bth">{yun:}t key='member_user_00228'{/yun}</a>
 	            </div>
 	            
             {yun:}else{/yun}
@@ -102,10 +102,10 @@
 	            <div class="account_settings_list">
 	                <div class="account_settings_list_left">
 	                    <i class="account_settings_list_left_icon account_settings_list_left_icon_sj"></i>
-	                    <div class="account_settings_tit">安全手机{yun:}$resume.telphone{/yun}<span class="account_settings_tit_zt"><i class="account_settings_tit_icon"></i>{yun:}t key='wap_user_ident_00006'{/yun}</span></div>
-	                    <div class="account_settings_tip"> {yun:}t key='member_user_passwd_00003'{/yun}</div>
+	                    <div class="account_settings_tit">安全手机{yun:}$resume.telphone{/yun}<span class="account_settings_tit_zt"><i class="account_settings_tit_icon"></i>{yun:}t key='wap_user_00182'{/yun}</span></div>
+	                    <div class="account_settings_tip"> {yun:}t key='member_user_00202'{/yun}</div>
 	                </div>
-	                <a href="javascript:getshow('moblie','{yun:}t key='member_user_passwd_00020'{/yun}');" class="account_settings_bth_hv">{yun:}t key='member_user_passwd_00038'{/yun}</a>
+	                <a href="javascript:getshow('moblie','{yun:}t key='member_user_00219'{/yun}');" class="account_settings_bth_hv">{yun:}t key='member_user_00236'{/yun}</a>
 	            </div>
 	            
             {yun:}/if{/yun}
@@ -113,13 +113,13 @@
             <div class="account_settings_list">
                 <div class="account_settings_list_left">
                     <i class="account_settings_list_left_icon account_settings_list_left_icon_sf"></i>
-                    <div class="account_settings_tit">身份认证{yun:}if $resume.idcard_status lt 1&& !$resume.idcard_pic{/yun}<span class="account_settings_tit_zt"><i class="account_settings_tit_icon"></i>{yun:}t key='wap_user_ident_00006'{/yun}</span>{yun:}/if{/yun}</div>
-                    <div class="account_settings_tip"> {yun:}t key='member_user_passwd_00011'{/yun}</div>
-                    {yun:}if $resume.idcard_status==2&& $resume.statusbody{/yun}{yun:}t key='member_user_commsg_00002'{/yun}{yun:}$resume.statusbody{/yun}{yun:}/if{/yun}
+                    <div class="account_settings_tit">身份认证{yun:}if $resume.idcard_status lt 1&& !$resume.idcard_pic{/yun}<span class="account_settings_tit_zt"><i class="account_settings_tit_icon"></i>{yun:}t key='wap_user_00182'{/yun}</span>{yun:}/if{/yun}</div>
+                    <div class="account_settings_tip"> {yun:}t key='member_user_00210'{/yun}</div>
+                    {yun:}if $resume.idcard_status==2&& $resume.statusbody{/yun}{yun:}t key='member_user_00062'{/yun}{yun:}$resume.statusbody{/yun}{yun:}/if{/yun}
                 </div>
                 {yun:}if $resume.idcard_status==1{/yun}
                 	
-                	<a href="javascript:getshow2('yyzz','身份认证');" class="account_settings_bth">{yun:}t key='wap_user_alltask_00024'{/yun}</a>
+                	<a href="javascript:getshow2('yyzz','身份认证');" class="account_settings_bth">{yun:}t key='wap_user_00128'{/yun}</a>
                 	
                 {yun:}else{/yun} 
                 
@@ -131,13 +131,13 @@
 				
 						{yun:}else{/yun}
 				
-							<a href="javascript:getshow2('yyzz','身份认证');" class="account_settings_bth">{yun:}t key='wap_user_ident_00002'{/yun}</a>
+							<a href="javascript:getshow2('yyzz','身份认证');" class="account_settings_bth">{yun:}t key='wap_user_00178'{/yun}</a>
 				
 						{yun:}/if{/yun} 
 						
 					{yun:}else{/yun}
 
-						<a href="javascript:getshow2('yyzz','身份认证');" class="account_settings_bth">{yun:}t key='member_user_passwd_00037'{/yun}</a>
+						<a href="javascript:getshow2('yyzz','身份认证');" class="account_settings_bth">{yun:}t key='member_user_00235'{/yun}</a>
 
 					{yun:}/if{/yun} 
 					
@@ -155,8 +155,8 @@
             <div class="Binding_pop_box_msg">
                 用户名要求长度{yun:}$config.sy_reg_nameminlen{/yun}-{yun:}$config.sy_reg_namemaxlen{/yun}{yun:}t key='common_02053'{/yun}
                 {yun:}if $config.reg_name_han=='1' || $config.reg_name_sp=='1' || $config.reg_name_num=='1' || $config.reg_name_zm=='1'{/yun}
-                    ,{yun:}t key='wap_com_password_00002'{/yun}
-                    {yun:}if $config.reg_name_han=='1'{/yun}{yun:}t key='wap_user_setname_00003'{/yun} {yun:}/if{/yun}
+                    ,{yun:}t key='default_00346'{/yun}
+                    {yun:}if $config.reg_name_han=='1'{/yun}{yun:}t key='wap_user_00345'{/yun} {yun:}/if{/yun}
                     {yun:}if $config.reg_name_num=='1'{/yun}{yun:}t key='common_01997'{/yun} {yun:}/if{/yun}
                     {yun:}if $config.reg_name_zm=='1'{/yun}{yun:}t key='common_01973'{/yun} {yun:}/if{/yun}
                     {yun:}if $config.reg_name_sp=='1'{/yun}{yun:}t key='common_01697'{/yun}@!#.$-_{yun:}/if{/yun}
@@ -164,12 +164,12 @@
             </div>
             <div>
                 <div class="Binding_pop_box_list">
-                    <span class="Binding_pop_box_list_left"><i class="Binding_pop_box_list_left_i">*</i>{yun:}t key='wap_claim_00005'{/yun}</span>
+                    <span class="Binding_pop_box_list_left"><i class="Binding_pop_box_list_left_i">*</i>{yun:}t key='wap_00172'{/yun}</span>
                     <input type="text" name="username" id="username" value="" class="Binding_pop_box_list_text Binding_pop_box_list_textw200" />
                 </div>
 
                 <div class="Binding_pop_box_list">
-                    <span class="Binding_pop_box_list_left"><i class="Binding_pop_box_list_left_i">*</i>{yun:}t key='wap_user_transfer_00006'{/yun}：</span>
+                    <span class="Binding_pop_box_list_left"><i class="Binding_pop_box_list_left_i">*</i>{yun:}t key='wap_user_00371'{/yun}：</span>
                     <input type="password" name="password" id="password" value="" class="Binding_pop_box_list_text Binding_pop_box_list_textw200" />
                 </div>
 
@@ -186,20 +186,20 @@
 <div id="showEditPass" style="display:none;">
     <form name='MyForm' action='' target="supportiframe" method="post" onsubmit="return Showsub();">
         <div class="Binding_pop_box" style="padding:10px;width:430px;height:200px; background:#fff">
-            <div class="Binding_pop_box_msg">密码长度8~16{yun:}t key='common_02053'{/yun}{yun:}if $config.reg_pw_sp=='1' || $config.reg_pw_num=='1' || $config.reg_pw_zm=='1'{/yun}，{yun:}t key='wap_com_password_00002'{/yun}{yun:}if $config.reg_pw_num=='1'{/yun}{yun:}t key='common_01997'{/yun} {yun:}/if{/yun}{yun:}if $config.reg_pw_zm=='1'{/yun}{yun:}t key='common_01973'{/yun} {yun:}/if{/yun}{yun:}if $config.reg_pw_sp=='1'{/yun}{yun:}t key='common_01697'{/yun}@!#.$-_{yun:}/if{/yun}{yun:}/if{/yun}！</div>
+            <div class="Binding_pop_box_msg">密码长度8~16{yun:}t key='common_02053'{/yun}{yun:}if $config.reg_pw_sp=='1' || $config.reg_pw_num=='1' || $config.reg_pw_zm=='1'{/yun}，{yun:}t key='default_00346'{/yun}{yun:}if $config.reg_pw_num=='1'{/yun}{yun:}t key='common_01997'{/yun} {yun:}/if{/yun}{yun:}if $config.reg_pw_zm=='1'{/yun}{yun:}t key='common_01973'{/yun} {yun:}/if{/yun}{yun:}if $config.reg_pw_sp=='1'{/yun}{yun:}t key='common_01697'{/yun}@!#.$-_{yun:}/if{/yun}{yun:}/if{/yun}！</div>
             <div>
                 <div class="Binding_pop_box_list">
-                    <span class="Binding_pop_box_list_left"><i class="Binding_pop_box_list_left_i">*</i>{yun:}t key='member_user_passwd_00029'{/yun}</span>
+                    <span class="Binding_pop_box_list_left"><i class="Binding_pop_box_list_left_i">*</i>{yun:}t key='member_user_00227'{/yun}</span>
                     <input type="password" name="oldpassword" id="oldpassword" value="" class="Binding_pop_box_list_text Binding_pop_box_list_textw200" />
                 </div>
 
                 <div class="Binding_pop_box_list">
-                    <span class="Binding_pop_box_list_left"><i class="Binding_pop_box_list_left_i">*</i>{yun:}t key='wap_user_password_00001'{/yun}：</span>
+                    <span class="Binding_pop_box_list_left"><i class="Binding_pop_box_list_left_i">*</i>{yun:}t key='wap_user_00305'{/yun}：</span>
                     <input type="password" name="password" id="newpassword" value="" class="Binding_pop_box_list_text Binding_pop_box_list_textw200" />
                 </div>
 
                 <div class="Binding_pop_box_list">
-                    <span class="Binding_pop_box_list_left"><i class="Binding_pop_box_list_left_i">*</i>{yun:}t key='wap_com_password_00003'{/yun}：</span>
+                    <span class="Binding_pop_box_list_left"><i class="Binding_pop_box_list_left_i">*</i>{yun:}t key='wap_com_00343'{/yun}：</span>
                     <input type="password" name="repassword" id="repassword" value="" class="Binding_pop_box_list_text Binding_pop_box_list_textw200" />
                 </div>
 
@@ -216,14 +216,14 @@
 <!--绑定邮箱弹出框-->
 <div id="email" style="display:none;">
     <div class="Binding_pop_box" style="padding:10px;width:430px;height:260px; background:#fff">
-        <div class="Binding_pop_box_msg">{yun:}t key='member_user_passwd_00010'{/yun}</div>
+        <div class="Binding_pop_box_msg">{yun:}t key='member_user_00209'{/yun}</div>
         <div>
             <div class="Binding_pop_box_list">
-                <span class="Binding_pop_box_list_left"><i class="Binding_pop_box_list_left_i">*</i>{yun:}t key='member_user_passwd_00024'{/yun}</span>
+                <span class="Binding_pop_box_list_left"><i class="Binding_pop_box_list_left_i">*</i>{yun:}t key='member_user_00223'{/yun}</span>
                 <input type="text" name="email" value="{yun:}$resume.email{/yun}" class="Binding_pop_box_list_text Binding_pop_box_list_textw200">
             </div>
             <div class="Binding_pop_box_list">
-                <span class="Binding_pop_box_list_left"><i class="Binding_pop_box_list_left_i">*</i>{yun:}t key='wap_advice_00007'{/yun}：</span>
+                <span class="Binding_pop_box_list_left"><i class="Binding_pop_box_list_left_i">*</i>{yun:}t key='wap_00110'{/yun}：</span>
 
                 <input type="text" name="email_code" maxlength="6" class="Binding_pop_box_tpyz_text">
                 <a href="javascript:void(0);" onclick="checkCode('vcode_img');" class="Binding_pop_box_yz_pic"> <img id="vcode_img" src="{yun:}$config.sy_weburl{/yun}/app/include/authcode.inc.php">
@@ -232,7 +232,7 @@
             </div>
             <div class="Binding_pop_sub" style="margin-top:10px;">
                 <span class="Binding_pop_box_list_left">&nbsp;</span>
-                <input class="layui-btn layui-btn-normal" type="button" onclick="sendbemail('vcode_img');" value="{yun:}t key='member_user_passwd_00018'{/yun}">
+                <input class="layui-btn layui-btn-normal" type="button" onclick="sendbemail('vcode_img');" value="{yun:}t key='member_user_00217'{/yun}">
                 <input class="layui-btn layui-btn-primary" type="button" value="{yun:}t key='common.cancel'{/yun}" onclick="layer.close($('#layindex').val());">
             </div>
         </div>
@@ -243,15 +243,15 @@
 <!--绑定手机弹出框-->
 <div id="moblie" style=" display:none;">
     <div class="Binding_pop_box" style="padding:10px;width:430px;height:280px; background:#fff;">
-        <div class="Binding_pop_box_msg">绑定完成后，您可以使用该手机号码登录账号、{yun:}t key='wap_js_forgetpw_00008'{/yun}</div>
+        <div class="Binding_pop_box_msg">绑定完成后，您可以使用该手机号码登录账号、{yun:}t key='wap_js_00123'{/yun}</div>
         <div>
             <div class="Binding_pop_box_list">
-                <span class="Binding_pop_box_list_left"><i class="Binding_pop_box_list_left_i">*</i>{yun:}t key='wap_user_info_00018'{/yun}：</span>
+                <span class="Binding_pop_box_list_left"><i class="Binding_pop_box_list_left_i">*</i>{yun:}t key='wap_user_00241'{/yun}：</span>
                 <input type="text" name="moblie" value="{yun:}$resume.telphone{/yun}" class="Binding_pop_box_list_text Binding_pop_box_list_textw200">
 
             </div>
 			<div class="Binding_pop_box_list">
-				<span class="Binding_pop_box_list_left"><i class="Binding_pop_box_list_left_i">*</i>{yun:}t key='wap_advice_00007'{/yun}：</span>
+				<span class="Binding_pop_box_list_left"><i class="Binding_pop_box_list_left_i">*</i>{yun:}t key='wap_00110'{/yun}：</span>
 
 				<input type="text" name="phoneimg_code" maxlength="6" class="Binding_pop_box_tpyz_text">
 				<a href="javascript:void(0);" onclick="checkCode('pcode_img');" class="Binding_pop_box_yz_pic"> <img id="pcode_img" src="{yun:}$config.sy_weburl{/yun}/app/include/authcode.inc.php">
@@ -259,9 +259,9 @@
 
 			</div>
             <div class="Binding_pop_box_list">
-                <span class="Binding_pop_box_list_left"><i class="Binding_pop_box_list_left_i">*</i>{yun:}t key='wap_com_bindingbox_00002'{/yun}：</span>
+                <span class="Binding_pop_box_list_left"><i class="Binding_pop_box_list_left_i">*</i>{yun:}t key='wap_com_00036'{/yun}：</span>
                 <div class="Binding_pop_box_r"> <input type="text" id="moblie_code" class="Binding_pop_box_yz_text" style="width:90px;">
-                    <a href="javascript:;" onclick="sendmoblie('pcode_img');" id="time" class="Binding_pop_box_yz_send">{yun:}t key='member_user_passwd_00017'{/yun}</a>
+                    <a href="javascript:;" onclick="sendmoblie('pcode_img');" id="time" class="Binding_pop_box_yz_send">{yun:}t key='member_user_00216'{/yun}</a>
                 </div>
             </div>
             <div class="Binding_pop_sub" style="margin-top:20px;">
@@ -278,30 +278,30 @@
 <div id="yyzz" style=" display:none;">
 	<div style="width:630px;">
 		<div class="license_box">
-            <div class="license_tip">{yun:}t key='wap_js_forgetpw_00010'{/yun}：身份证中的照片与账号的真实姓名保持一致，扫描件中的身份证号,姓名需清晰可辨，否则不能通过认证</div>
+            <div class="license_tip">{yun:}t key='wap_js_00125'{/yun}：身份证中的照片与账号的真实姓名保持一致，扫描件中的身份证号,姓名需清晰可辨，否则不能通过认证</div>
 
             <form id="certform" name="MyForm" target="supportiframe" method="post" action="index.php?c=binding&act=savecert" enctype="multipart/form-data">
                 <div class="license_left" style="width: 380px;">
-                    <div class="license_tit">{yun:}t key='member_user_passwd_00015'{/yun}</div>
+                    <div class="license_tit">{yun:}t key='member_user_00214'{/yun}</div>
                     
-                    <div class="license_list"><span class="license_list_name"><i class="Binding_pop_box_list_left_i">*</i>{yun:}t key='member_user_passwd_00032'{/yun}</span>
+                    <div class="license_list"><span class="license_list_name"><i class="Binding_pop_box_list_left_i">*</i>{yun:}t key='member_user_00230'{/yun}</span>
                         <input type="text" name="name" id="name" value='{yun:}$resume.name{/yun}' class="Binding_pop_box_list_text license_left_text">
                     </div>
 
-					<div class="license_list"><span class="license_list_name"><i class="Binding_pop_box_list_left_i">*</i>{yun:}t key='wap_uploadimg_00004'{/yun}</span>
+					<div class="license_list"><span class="license_list_name"><i class="Binding_pop_box_list_left_i">*</i>{yun:}t key='wap_00543'{/yun}</span>
                         <input type="text" name="idcard" id="idcard" value='{yun:}$resume.idcard{/yun}' class="Binding_pop_box_list_text license_left_text">
                     </div>
                     
                     <div class="license_list">
-                    	<span class="license_list_name"><i class="Binding_pop_box_list_left_i">*</i>{yun:}t key='member_user_passwd_00026'{/yun}</span>
-                        <button type="button" class="yun_bth_pic noupload" lay-data="{imgid: 'imgicon',parentid: 'imgparent'}">{yun:}t key='wap_uploadimg_00001'{/yun}</button>
+                    	<span class="license_list_name"><i class="Binding_pop_box_list_left_i">*</i>{yun:}t key='member_user_00225'{/yun}</span>
+                        <button type="button" class="yun_bth_pic noupload" lay-data="{imgid: 'imgicon',parentid: 'imgparent'}">{yun:}t key='wap_00540'{/yun}</button>
                         <input type="hidden" id="laynoupload" value="1"/>
 						<input type="hidden" id="old_cert" value="{yun:}$resume.idcard_pic{/yun}" />
 						
                         <div id="imgparent" class="licensefile_box_img {yun:}if !$resume.idcard_pic{/yun}none{yun:}/if{/yun}">
                             <img id="imgicon" src="{yun:}$resume.idcard_pic{/yun}" width="40" height="40" />
 							<div id="newbind" class="Binding_pop_box_msg_cont_new none">{yun:}t key='common_02081'{/yun}</div>
-                            <a id="checka" href="javascript:;" data_url="{yun:}$resume.idcard_pic{/yun}" onclick="showpic(this)" class="Binding_pop_box_msg_cont_pic_p">{yun:}t key='member_user_passwd_00031'{/yun}</a>
+                            <a id="checka" href="javascript:;" data_url="{yun:}$resume.idcard_pic{/yun}" onclick="showpic(this)" class="Binding_pop_box_msg_cont_pic_p">{yun:}t key='member_user_00229'{/yun}</a>
                         </div>
 
                         <div class="licensefile_box_tip">{yun:}t key='common_02002'{/yun}{yun:}$config.file_maxsize{/yun}M,{yun:}t key='common_01996'{/yun}{yun:}$config.pic_type{/yun}{yun:}t key='common_02005'{/yun}</div>
@@ -316,14 +316,14 @@
             </form>
             
             <div class="license_right" style="width: 220px; right:10px;">
-                <div class="license_tit">{yun:}t key='member_user_passwd_00012'{/yun}</div>
+                <div class="license_tit">{yun:}t key='member_user_00211'{/yun}</div>
             
                 <div class="license_ewm">
-                    <img src="{yun:}url m=upload c=qrcode type=2{/yun}" alt="{yun:}t key='member_user_passwd_00014'{/yun}" width="130" height="130" />
+                    <img src="{yun:}url m=upload c=qrcode type=2{/yun}" alt="{yun:}t key='member_user_00213'{/yun}" width="130" height="130" />
                 </div>
             
-                <div class="license_right_p"> {yun:}t key='member_user_passwd_00023'{/yun} </div>
-                <div class=""> {yun:}t key='member_user_passwd_00009'{/yun} </div>
+                <div class="license_right_p"> {yun:}t key='member_user_00222'{/yun} </div>
+                <div class=""> {yun:}t key='member_user_00208'{/yun} </div>
                 
             </div>
 		</div>
@@ -347,7 +347,7 @@
 		}
 		layer.photos({
 			photos: picjson
-			,anim: 5 //0-6的选择，指定弹出图片动画类型，默认随机（请注意，3.0之前的版本用shift{yun:}t key='admin_neirong_announcement_component_announcement_add_00002'{/yun}）
+			,anim: 5 //0-6的选择，指定弹出图片动画类型，默认随机（请注意，3.0之前的版本用shift{yun:}t key='admin_00103'{/yun}）
 		});
 	}
 
@@ -360,42 +360,42 @@
         repass = $.trim(repass);
 
         if(oldpass == "") {
-            layer.msg("{yun:}t key='admin_system_role_myaccount_00008'{/yun}", 2, 8);
+            layer.msg("{yun:}t key='admin_system_00226'{/yun}", 2, 8);
             // $("#oldpassword").focus();
             return false;
         } else if(oldpass.length < 6 || oldpass.length > 20) {
-            layer.msg("{yun:}t key='member_user_passwd_00008'{/yun}", 2, 8);
+            layer.msg("{yun:}t key='member_user_00207'{/yun}", 2, 8);
             // $("#oldpassword").focus();
             return false;
         }
 
         if(pass == "") {
-            layer.msg("{yun:}t key='admin_system_role_myaccount_00009'{/yun}", 2, 8);
+            layer.msg("{yun:}t key='admin_system_00227'{/yun}", 2, 8);
             // $("#newpassword").focus();
             return false;
         } else if(pass.length < 6 || pass.length > 20) {
-            layer.msg("{yun:}t key='member_user_passwd_00007'{/yun}", 2, 8);
+            layer.msg("{yun:}t key='member_user_00206'{/yun}", 2, 8);
             // $("#newpassword").focus();
             return false;
         }
 
         if(repass == "") {
-            layer.msg("{yun:}t key='member_user_passwd_00013'{/yun}", 2, 8);
+            layer.msg("{yun:}t key='member_user_00212'{/yun}", 2, 8);
             // $("#repassword").focus();
             return false;
         } else if(repass.length < 6 || repass.length > 20) {
-            layer.msg("{yun:}t key='member_user_passwd_00007'{/yun}", 2, 8);
+            layer.msg("{yun:}t key='member_user_00206'{/yun}", 2, 8);
             // $("#repassword").focus();
             return false;
         }
         if(repass != pass) {
-            layer.msg("{yun:}t key='member_user_passwd_00006'{/yun}", 2, 8);
+            layer.msg("{yun:}t key='member_user_00205'{/yun}", 2, 8);
             // $("#repassword").focus();
             return false;
         }
 
         if(oldpass != "" && oldpass == pass) {
-            layer.msg("{yun:}t key='member_user_passwd_00005'{/yun}", 2, 8);
+            layer.msg("{yun:}t key='member_user_00204'{/yun}", 2, 8);
             return false;
         }
 
@@ -405,7 +405,7 @@
     function showEditPass() {
         var layindex = $.layer({
             type: 1,
-            title: "{yun:}t key='member_user_passwd_00027'{/yun}",
+            title: "{yun:}t key='member_user_00226'{/yun}",
             closeBtn: [0, true],
             border: [10, 0.3, '#000', true],
             area: ['450px', 'auto'],
@@ -419,7 +419,7 @@
     function showEditUsername() {
         var layindex = $.layer({
             type: 1,
-            title: "{yun:}t key='member_user_passwd_00021'{/yun}",
+            title: "{yun:}t key='member_user_00220'{/yun}",
             closeBtn: [0, true],
             border: [10, 0.3, '#000', true],
             area: ['450px', 'auto'],

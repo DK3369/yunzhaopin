@@ -15,10 +15,10 @@
         <div class="resume_box_list mt20">
             {yun:}if !empty($rows){/yun}
             <div class="attention_enterprises_tit">
-                <div style="width:300px;" class="attention_enterprises_span attention_enterprises_name"><em class="List_Title_span_name">{yun:}t key='wap_com_info_00040'{/yun}</em></div>
-                <div style="width:300px;" class="attention_enterprises_span attention_enterprises_job">{yun:}t key='member_user_atn_00002'{/yun}</div>
-                <div style="width:150px;" class="attention_enterprises_span attention_enterprises_time">{yun:}t key='member_user_atn_00001'{/yun}</div>
-                <div style="width:150px;" class="attention_enterprises_span attention_enterprises_cz">{yun:}t key='member_user_atn_00003'{/yun}</div>
+                <div style="width:300px;" class="attention_enterprises_span attention_enterprises_name"><em class="List_Title_span_name">{yun:}t key='wap_com_00157'{/yun}</em></div>
+                <div style="width:300px;" class="attention_enterprises_span attention_enterprises_job">{yun:}t key='member_user_00047'{/yun}</div>
+                <div style="width:150px;" class="attention_enterprises_span attention_enterprises_time">{yun:}t key='member_user_00046'{/yun}</div>
+                <div style="width:150px;" class="attention_enterprises_span attention_enterprises_cz">{yun:}t key='member_user_00048'{/yun}</div>
             </div>
             {yun:}/if{/yun}
             {yun:}foreach item=log from=$rows{/yun}
@@ -31,14 +31,14 @@
                 <div style="width:300px;" class="attention_enterprises_span attention_enterprises_job mt15">
                     {yun:}if $log.jobnum>0{/yun}
                     {yun:}$log.jobname{/yun} 
-                    <a href="{yun:}url m=company c=show id='`$log.sc_uid`'{/yun}#job" target="_blank" class="attention_enterprises_job_n">{yun:}t key='common_02057'{/yun}{yun:}$log.jobnum{/yun}{yun:}t key='wap_user_collect_00001'{/yun}>></a>
+                    <a href="{yun:}url m=company c=show id='`$log.sc_uid`'{/yun}#job" target="_blank" class="attention_enterprises_job_n">{yun:}t key='common_02057'{/yun}{yun:}$log.jobnum{/yun}{yun:}t key='wap_user_00151'{/yun}>></a>
                     {yun:}else{/yun}
-                    {yun:}t key='app_template_default_js_map_00001'{/yun}
+                    {yun:}t key='default_00033'{/yun}
                     {yun:}/if{/yun}
                     &nbsp;
                 </div>
                 <div style="width:150px;" class="attention_enterprises_span attention_enterprises_time mt15">{yun:}$log.time|date_format:'%Y-%m-%d'{/yun}</div>
-                <div style="width:150px;" class="attention_enterprises_span attention_enterprises_cz mt15"><a href="javascript:void(0)" onclick="layer_del('您确定要取消关注？', '{yun:}$config.sy_weburl{/yun}/member/index.php?c=atn&act=del&id={yun:}$log.id{/yun}&uid={yun:}$log.sc_uid{/yun}');" class="cblue">{yun:}t key='wap_js_public_00003'{/yun}</a>
+                <div style="width:150px;" class="attention_enterprises_span attention_enterprises_cz mt15"><a href="javascript:void(0)" onclick="layer_del('您确定要取消关注？', '{yun:}$config.sy_weburl{/yun}/member/index.php?c=atn&act=del&id={yun:}$log.id{/yun}&uid={yun:}$log.sc_uid{/yun}');" class="cblue">{yun:}t key='wap_js_00140'{/yun}</a>
                 </div>
             </div>
             {yun:}foreachelse{/yun}

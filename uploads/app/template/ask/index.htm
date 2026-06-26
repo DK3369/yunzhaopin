@@ -2,8 +2,8 @@
 <div class="ask_index_banner">
 <div class="content">
 <div class="ask_index_slogan">
-<div class="ask_index_slogan_tit">{yun:}t key='wap_com_jobcolumn_00004'{/yun}</div>
-{yun:}t key='ask_content_00001'{/yun}
+<div class="ask_index_slogan_tit">{yun:}t key='wap_com_00312'{/yun}</div>
+{yun:}t key='ask_00006'{/yun}
 </div>
 <div class="search">
 		<div class="search_con">
@@ -25,9 +25,9 @@
 						<li class="option">{yun:}t key='common.search'{/yun}：<a href="#" target="_blank"></a></li>
 						<li class="me_quiz"><span>
 						{yun:}if $uid{/yun}
-							<a href="{yun:}url m=ask c=addquestion{/yun}" target="_blank">+ {yun:}t key='wap_job_show_00035'{/yun}</a>
+							<a href="{yun:}url m=ask c=addquestion{/yun}" target="_blank">+ {yun:}t key='wap_00278'{/yun}</a>
 						{yun:}else{/yun}
-							<a href="javascript:void(0);" onclick="showlogin('');">+ {yun:}t key='wap_job_show_00035'{/yun}</a>
+							<a href="javascript:void(0);" onclick="showlogin('');">+ {yun:}t key='wap_00278'{/yun}</a>
 						{yun:}/if{/yun}</span>
 						</li>
 					</ul>
@@ -35,9 +35,9 @@
 			</div>
             <div class="header_ask_ask">
         {yun:}if $uid{/yun}
-				<a href="{yun:}url m=ask c=addquestion{/yun}" target="_blank">+ {yun:}t key='wap_job_show_00035'{/yun}</a>
+				<a href="{yun:}url m=ask c=addquestion{/yun}" target="_blank">+ {yun:}t key='wap_00278'{/yun}</a>
 			{yun:}else{/yun}
-				<a href="javascript:void(0);" onclick="showlogin('');">+ {yun:}t key='wap_job_show_00035'{/yun}</a>
+				<a href="javascript:void(0);" onclick="showlogin('');">+ {yun:}t key='wap_00278'{/yun}</a>
 			{yun:}/if{/yun}
 	</div></div></div>
 </div>
@@ -45,25 +45,25 @@
 </div>
 <div class="content">
 <div class="ask_index_left">
-<div class="ask_index_left_tit"><span class="ask_index_left_tit_s">{yun:}t key='ask_index_00006'{/yun}</span><span class="ask_index_left_titr">已有<i class="ask_index_left_titr_n">{yun:}$answer{/yun}</i> {yun:}t key='ask_index_00002'{/yun}</span></div>
+<div class="ask_index_left_tit"><span class="ask_index_left_tit_s">{yun:}t key='ask_00017'{/yun}</span><span class="ask_index_left_titr">已有<i class="ask_index_left_titr_n">{yun:}$answer{/yun}</i> {yun:}t key='ask_00014'{/yun}</span></div>
 <div class="ask_index_leftbox">
 <ul class="ask_hotbox">
 {yun:}qlist is_recom=1   name=list ispage=1 t_len=30  limit=5 item=rlist{/yun}
 <li>
-<div class="ask_hot_hd"><div class="ask_index_n">{yun:}$rlist.answer_num{/yun}</div> {yun:}t key='wap_nav_00004'{/yun}</div>
+<div class="ask_hot_hd"><div class="ask_index_n">{yun:}$rlist.answer_num{/yun}</div> {yun:}t key='wap_00332'{/yun}</div>
 <div class="ask_hotaskname"><a href="{yun:}$rlist.url{/yun}">{yun:}$rlist.title{/yun}</a></div>
 <div class="ask_hotuser"><a href="{yun:}$rlist.userurl{/yun}">{yun:}$rlist.nickname|mb_substr:0:8:'utf-8'{/yun}</a> <span class="ask_index_pop_time">{yun:}$rlist.add_time|date_format:"%Y-%m-%d %H:%M"{/yun}</span></div>
 <div class="ask_hoteye">{yun:}$rlist.visit{/yun}</div>
 </li>
  {yun:}qlistelse{/yun}
- <div class="">{yun:}t key='ask_index_00001'{/yun}！</div>
+ <div class="">{yun:}t key='common_02127'{/yun}！</div>
  {yun:}/qlist{/yun}
 </ul>
 
 </div>
 <div class="" name="answer" id="answer">
 <div class="ask_index_left_tit">
-<span class="ask_index_left_tit_s ask_index_left_tit_newask" id="last-question">{yun:}t key='wap_ask_00007'{/yun}</span>
+<span class="ask_index_left_tit_s ask_index_left_tit_newask" id="last-question">{yun:}t key='wap_00156'{/yun}</span>
 <span class="ask_index_left_titr"><a href="{yun:}url m=ask yesnum=1{/yun}">有回答的问题</a> <i class="ask_tit_c">|</i> <a href="{yun:}url m=ask nonum=1{/yun}">零回答的问题</a></span></div>
 
 <div class="ask_index_leftbox">
@@ -72,7 +72,7 @@
                   
          
 <li>
-<div class="ask_new_hd"><div class="ask_index_n">{yun:}$list.answer_num{/yun}</div> {yun:}t key='wap_nav_00004'{/yun}</div>
+<div class="ask_new_hd"><div class="ask_index_n">{yun:}$list.answer_num{/yun}</div> {yun:}t key='wap_00332'{/yun}</div>
 <div class="ask_hotaskname"><a  href="{yun:}$list.url{/yun}" target="_blank" title="{yun:}$list.title{/yun}">{yun:}$list.title{/yun}</a></div>
 <div class="ask_hotuser"><a href="{yun:}$list.userurl{/yun}" target="_blank" class="ask_index_answer_user_a">{yun:}$list.nickname|mb_substr:0:8:'utf-8'{/yun}</a> <span class="ask_index_pop_time">{yun:}$list.add_time|date_format:"%Y-%m-%d %H:%M"{/yun}</span></div>
 <div class="ask_hoteye">{yun:}$list.visit{/yun}</div>
@@ -97,7 +97,7 @@
 </div>
 <div class="ask_index_right">
 <div class="ask_index_right_box" style="margin-top:65px; padding-bottom:0px;">
-<div class="ask_index_ask_rtit"><span class="ask_index_ask_rtit_s">{yun:}t key='ask_index_00004'{/yun}</span></div>
+<div class="ask_index_ask_rtit"><span class="ask_index_ask_rtit_s">{yun:}t key='ask_00015'{/yun}</span></div>
 <div class="ask_index_fllist_box">
 {yun:}qcache limit=6 son=1 item=qindex{/yun}
 <dl class="ask_index_fllist">
@@ -117,7 +117,7 @@
 {yun:}/qcache{/yun} 
 </div></div>
 <div class="ask_index_right_box" >
-<div class="ask_index_ask_rtit"><span class="ask_index_ask_rtit_s">{yun:}t key='ask_index_00005'{/yun}</span></div>
+<div class="ask_index_ask_rtit"><span class="ask_index_ask_rtit_s">{yun:}t key='ask_00016'{/yun}</span></div>
 
 	<div class="hot_tag_con">
 					{yun:}foreach from=$hotclass key=key item=hclist{/yun}
@@ -139,7 +139,7 @@
 							</div>
 							<div class="user_name">
 								<p><a href="{yun:}url m=ask c=friend a=myquestion uid='`$hulist.uid`'{/yun}" target="_blank">{yun:}$hulist.nickname{/yun}</a></p>
-								<span>{yun:}t key='ask_index_00003'{/yun}：<font>{yun:}$hulist.num{/yun}</font> 被赞同总数：<font>{yun:}$hulist.support{/yun}</font></span>
+								<span>{yun:}t key='common_02128'{/yun}：<font>{yun:}$hulist.num{/yun}</font> 被赞同总数：<font>{yun:}$hulist.support{/yun}</font></span>
                      
 							</div>
 						</div>
@@ -147,7 +147,7 @@
 					</div> 
 				</div> 
 				{yun:}foreachelse{/yun} 
-					<div class="ask_r_no fl">{yun:}t key='wap_js_cmc_00003'{/yun}！</div>
+					<div class="ask_r_no fl">{yun:}t key='wap_js_00113'{/yun}！</div>
 				{yun:}/foreach{/yun} 
        	</div>          
 </div>

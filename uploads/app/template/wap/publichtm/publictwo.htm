@@ -3,7 +3,7 @@
 	<van-popup v-model="areaShow" round position="bottom">
 	  <van-cascader
 	    v-model="areaValue"
-	    title="{yun:}t key='wap_publichtm_publictwo_00001'{/yun}"
+	    title="{yun:}t key='wap_00380'{/yun}"
 	    :options="areaOptions"
 	    @close="areaShow = false"
 	    @finish="onAreaFinish"
@@ -13,7 +13,7 @@
 	<van-popup v-model="jobShow" round position="bottom">
 	  <van-cascader
 	    v-model="jobValue"
-	    title="{yun:}t key='wap_publichtm_publictwo_00002'{/yun}"
+	    title="{yun:}t key='wap_00381'{/yun}"
 	    :options="jobOptions"
 	    @close="jobShow = false"
 	    @finish="onJobFinish"
@@ -27,7 +27,7 @@
 				{yun:}if $smarty.get.a{/yun}<input type="hidden" name="a" value="{yun:}$smarty.get.a{/yun}" />{yun:}/if{/yun}
 				
 		        <div class="conditional_screening_box">
-		        <div class="conditional_screening_pv">	<div class="conditional_screening_alltit">{yun:}t key='wap_publichtm_publictwo_00003'{/yun}</div>
+		        <div class="conditional_screening_pv">	<div class="conditional_screening_alltit">{yun:}t key='wap_00382'{/yun}</div>
 		        <div class="conditional_screening_all">
 				<div class="conditional_screening_cont">
 				
@@ -43,7 +43,7 @@
 				<div class="conditional_screening_cont">
 				
 					<div class="conditional_screening_tit">
-						<span class="conditional_screening_tit_n">{yun:}t key='wap_com_info_00056'{/yun}</span>
+						<span class="conditional_screening_tit_n">{yun:}t key='wap_com_00173'{/yun}</span>
 					</div>
 					<ul class="conditional_screening_list">
 						<li id="welfare" {yun:}if $smarty.get.welfare==''{/yun}class="conditional_screening_cur"{yun:}/if{/yun}  onclick="check_welfare_li('','welfare')"><a href="javascript:void(0)">{yun:}t key='common.all'{/yun}</a></li>
@@ -53,7 +53,7 @@
 					</ul>	
 				</div>
 		        <div class="conditional_screening_cont">
-					<div class="conditional_screening_tit"><span class="conditional_screening_tit_n">{yun:}t key='wap_com_jobadd_00029'{/yun}</span></div>
+					<div class="conditional_screening_tit"><span class="conditional_screening_tit_n">{yun:}t key='wap_com_00283'{/yun}</span></div>
 					<ul class="conditional_screening_list">
 					{yun:}foreach from=$comdata.job_edu item=v{/yun}
 					<li id="edu{yun:}$v{/yun}" class="{yun:}if $smarty.get.edu==$v || ($comclass_name[$v]=='不限' && !$smarty.get.edu){/yun}conditional_screening_cur{yun:}/if{/yun} eduCtrl" onclick="check_edu_li('{yun:}$v{/yun}','edu')"><a href="javascript:void(0)">{yun:}$comclass_name[$v]{/yun}</a></li>
@@ -61,7 +61,7 @@
 					</ul>
 		        </div>
 			    <div class="conditional_screening_cont">
-					<div class="conditional_screening_tit"><span class="conditional_screening_tit_n">{yun:}t key='wap_com_jobadd_00033'{/yun}</span></div>
+					<div class="conditional_screening_tit"><span class="conditional_screening_tit_n">{yun:}t key='wap_com_00287'{/yun}</span></div>
 					<ul class="conditional_screening_list">
 					{yun:}foreach from=$comdata.job_exp item=v{/yun}
 					<li id="exp{yun:}$v{/yun}" class="{yun:}if $smarty.get.exp==$v || ($comclass_name[$v]=='不限' && !$smarty.get.exp){/yun}conditional_screening_cur{yun:}/if{/yun} expCtrl" onclick="check_exp_li('{yun:}$v{/yun}','exp')"><a href="javascript:void(0)">{yun:}$comclass_name[$v]{/yun}</a></li>
@@ -70,7 +70,7 @@
 		         </div>
 				{yun:}if $config.com_job_sexswitch{/yun} 
 				<div class="conditional_screening_cont">
-					<div class="conditional_screening_tit"><span class="conditional_screening_tit_n">{yun:}t key='wap_com_partadd_00012'{/yun}</span></div>
+					<div class="conditional_screening_tit"><span class="conditional_screening_tit_n">{yun:}t key='wap_com_00332'{/yun}</span></div>
 					<ul class="conditional_screening_list">
 					{yun:}foreach from=$com_sex key=key item=v{/yun}
 					<li id="sex{yun:}$key{/yun}" class="{yun:}if $smarty.get.sex==$key || ($v=='不限' && !$smarty.get.sex){/yun}conditional_screening_cur{yun:}/if{/yun} sexCtrl" onclick="check_sex_li('{yun:}$key{/yun}','sex')"><a href="javascript:void(0)">{yun:}$v{/yun}</a></li>
@@ -79,7 +79,7 @@
 		        </div>
 		        {yun:}/if{/yun}
 		        <div class="conditional_screening_cont">
-		        <div class="conditional_screening_tit"><span class="conditional_screening_tit_n">{yun:}t key='wap_member_publictwo_00004'{/yun}</span></div>
+		        <div class="conditional_screening_tit"><span class="conditional_screening_tit_n">{yun:}t key='wap_00326'{/yun}</span></div>
 					<ul class="conditional_screening_list">
 					<li id="uptime" {yun:}if $smarty.get.uptime==''{/yun}class="conditional_screening_cur"{yun:}/if{/yun} onclick="check_uptime_li('','uptime')"><a href="javascript:void(0)">{yun:}t key='common.all'{/yun}</a></li>
 					{yun:}foreach from=$uptime key=key item=v{/yun}
@@ -89,7 +89,7 @@
 		        </div>
 		      
 		        <div class="conditional_screening_cont">
-					<div class="conditional_screening_tit"><span class="conditional_screening_tit_n">{yun:}t key='wap_member_publictwo_00002'{/yun}</span></div>
+					<div class="conditional_screening_tit"><span class="conditional_screening_tit_n">{yun:}t key='wap_00324'{/yun}</span></div>
 					<ul class="conditional_screening_list">
 					<li  id="pr" {yun:}if $smarty.get.pr==''{/yun}class="conditional_screening_cur"{yun:}/if{/yun} onclick="check_pr_li('','pr')"><a href="javascript:void(0)">{yun:}t key='common.all'{/yun}</a></li>
 					{yun:}foreach from=$comdata.job_pr item=v{/yun}
@@ -98,7 +98,7 @@
 					</ul>
 		        </div>
 		        <div class="conditional_screening_cont">
-					<div class="conditional_screening_tit"><span class="conditional_screening_tit_n">{yun:}t key='wap_member_publictwo_00003'{/yun}</span></div>
+					<div class="conditional_screening_tit"><span class="conditional_screening_tit_n">{yun:}t key='wap_00325'{/yun}</span></div>
 					<ul class="conditional_screening_list">
 					<li id="mun" {yun:}if $smarty.get.mun==''{/yun}class="conditional_screening_cur"{yun:}/if{/yun} onclick="check_mun_li('','mun')"><a href="javascript:void(0)">{yun:}t key='common.all'{/yun}</a></li>
 					{yun:}foreach from=$comdata.job_mun item=v{/yun}
@@ -108,7 +108,7 @@
 		        </div> 
 		        </div>
 		         <div class="conditional_screening_operation">
-		          <div class="conditional_screening_operation_left"><a href="{yun:}if $smarty.get.a{/yun}{yun:}url m=wap c=$smarty.get.c a=$smarty.get.a{/yun}{yun:}else{/yun}{yun:}url m=wap c=$smarty.get.c{/yun}{yun:}/if{/yun}" class="conditional_screening_operation_cz">{yun:}t key='wap_member_publictwo_00005'{/yun}</a></div>
+		          <div class="conditional_screening_operation_left"><a href="{yun:}if $smarty.get.a{/yun}{yun:}url m=wap c=$smarty.get.c a=$smarty.get.a{/yun}{yun:}else{/yun}{yun:}url m=wap c=$smarty.get.c{/yun}{yun:}/if{/yun}" class="conditional_screening_operation_cz">{yun:}t key='wap_00327'{/yun}</a></div>
 		          <div class="conditional_screening_operation_right"><a href="javascript:void(0)" onclick="$('#job').submit();" class="conditional_screening_operation_ok">{yun:}t key='common.confirm'{/yun}</a></div></div>
 		        </div>
 		        {yun:}if $smarty.get.provinceid{/yun}<input type="hidden" name="provinceid" value="{yun:}$smarty.get.provinceid{/yun}"/>{yun:}/if{/yun}
@@ -137,10 +137,10 @@
 				<input type="hidden" name="c" value="{yun:}if $smarty.get.c{/yun}{yun:}$smarty.get.c{/yun}{yun:}else{/yun}resume{yun:}/if{/yun}" />
 				<div class="conditional_screening_box">
 					<div class="conditional_screening_pv">
-						  <div class="conditional_screening_pv">	<div class="conditional_screening_alltit">{yun:}t key='wap_publichtm_publictwo_00003'{/yun}</div>
+						  <div class="conditional_screening_pv">	<div class="conditional_screening_alltit">{yun:}t key='wap_00382'{/yun}</div>
 						<div class="conditional_screening_all">
 						<div class="conditional_screening_cont">
-								<div class="conditional_screening_tit"><span class="conditional_screening_tit_n">{yun:}t key='wap_com_jobadd_00033'{/yun}</span></div>
+								<div class="conditional_screening_tit"><span class="conditional_screening_tit_n">{yun:}t key='wap_com_00287'{/yun}</span></div>
 								<ul class="conditional_screening_list" id="Sortexp-Sortexp">
 									{yun:}foreach from=$userdata.user_word item=v{/yun}
 									<li id="uexp{yun:}$v{/yun}" {yun:}if $smarty.get.exp==$v{/yun}class="conditional_screening_cur"{yun:}/if{/yun} onclick="check_userexp_li('{yun:}$v{/yun}','exp')"><a href="javascript:void(0)">{yun:}$userclass_name[$v]{/yun}</a>
@@ -150,7 +150,7 @@
 						</div>
 						
 							<div class="conditional_screening_cont">
-								<div class="conditional_screening_tit"><span class="conditional_screening_tit_n">{yun:}t key='wap_member_publictwo_00006'{/yun}</span></div>
+								<div class="conditional_screening_tit"><span class="conditional_screening_tit_n">{yun:}t key='wap_00328'{/yun}</span></div>
 								<ul class="conditional_screening_list">
 								{yun:}foreach from=$integrity_name key=k item=v{/yun}
 								<li id="integrity{yun:}$k{/yun}" {yun:}if $smarty.get.integrity==$k{/yun}class="conditional_screening_cur"{yun:}/if{/yun} onclick="check_integrity_li('{yun:}$k{/yun}','integrity')"><a href="javascript:void(0)">{yun:}$v{/yun}</a></li>
@@ -158,7 +158,7 @@
 								</ul>
 							</div>
 							<div class="conditional_screening_cont">
-								<div class="conditional_screening_tit"><span class="conditional_screening_tit_n">{yun:}t key='wap_com_partadd_00012'{/yun}</span></div>
+								<div class="conditional_screening_tit"><span class="conditional_screening_tit_n">{yun:}t key='wap_com_00332'{/yun}</span></div>
 								<ul class="conditional_screening_list">
 								{yun:}foreach from=$user_sex key=key item=v{/yun}
 								<li id="sex{yun:}$key{/yun}" class="{yun:}if $smarty.get.sex==$key || ($v=='不限' && !$smarty.get.sex){/yun}conditional_screening_cur{yun:}/if{/yun} sexCtrl" onclick="check_usex_li('{yun:}$key{/yun}','sex')"><a href="javascript:void(0)">{yun:}$v{/yun}</a></li>
@@ -166,7 +166,7 @@
 								</ul>
 					        </div>
 							<div class="conditional_screening_cont">
-								<div class="conditional_screening_tit"><span class="conditional_screening_tit_n">{yun:}t key='wap_com_jobadd_00029'{/yun}</span></div>
+								<div class="conditional_screening_tit"><span class="conditional_screening_tit_n">{yun:}t key='wap_com_00283'{/yun}</span></div>
 								<ul class="conditional_screening_list">
 								{yun:}foreach from=$userdata.user_edu item=v{/yun}
 								<li id="uedu{yun:}$v{/yun}" {yun:}if $smarty.get.edu==$v{/yun}class="conditional_screening_cur"{yun:}/if{/yun} onclick="check_uedu_li('{yun:}$v{/yun}','edu')"><a href="javascript:void(0)">{yun:}$userclass_name[$v]{/yun}</a></li>
@@ -174,7 +174,7 @@
 								</ul>
 							</div>
 							<div class="conditional_screening_cont">
-								<div class="conditional_screening_tit"><span class="conditional_screening_tit_n">{yun:}t key='wap_com_jobadd_00025'{/yun}</span></div>
+								<div class="conditional_screening_tit"><span class="conditional_screening_tit_n">{yun:}t key='wap_com_00279'{/yun}</span></div>
 								<ul class="conditional_screening_list">
 								{yun:}foreach from=$userdata.user_report item=v{/yun}
 								<li id="report{yun:}$v{/yun}" {yun:}if $smarty.get.report==$v{/yun}class="conditional_screening_cur"{yun:}/if{/yun} onclick="check_report_li('{yun:}$v{/yun}','report')"><a href="javascript:void(0)">{yun:}$userclass_name[$v]{/yun}</a></li>
@@ -182,7 +182,7 @@
 								</ul>
 							</div>
 							<div class="conditional_screening_cont">
-								<div class="conditional_screening_tit"><span class="conditional_screening_tit_n">{yun:}t key='wap_member_publictwo_00004'{/yun}</span></div>
+								<div class="conditional_screening_tit"><span class="conditional_screening_tit_n">{yun:}t key='wap_00326'{/yun}</span></div>
 								<ul class="conditional_screening_list">
 								<li id="uuptime" {yun:}if $smarty.get.uptime==''{/yun}class="conditional_screening_cur"{yun:}/if{/yun} onclick="check_useruptime_li('','uptime')"><a href="javascript:void(0)">{yun:}t key='common.all'{/yun}</a></li>
 								{yun:}foreach from=$uptime key=key item=v{/yun}
@@ -191,7 +191,7 @@
 								</ul>
 							</div>
 							<div class="conditional_screening_cont">
-								<div class="conditional_screening_tit"><span class="conditional_screening_tit_n">{yun:}t key='wap_member_publictwo_00001'{/yun}</span></div>
+								<div class="conditional_screening_tit"><span class="conditional_screening_tit_n">{yun:}t key='wap_00323'{/yun}</span></div>
 								<ul class="conditional_screening_list">
 								<li id="tag" {yun:}if $smarty.get.tag==''{/yun}class="conditional_screening_cur"{yun:}/if{/yun} onclick="check_tag_li('','tag')"><a href="javascript:void(0)">{yun:}t key='common.all'{/yun}</a></li>
 								{yun:}foreach from=$userdata.user_tag item=v{/yun}
@@ -201,7 +201,7 @@
 							</div>
 
 							<div class="conditional_screening_cont">
-								<div class="conditional_screening_tit"><span class="conditional_screening_tit_n">{yun:}t key='wap_user_addexpect_00004'{/yun}</span></div>
+								<div class="conditional_screening_tit"><span class="conditional_screening_tit_n">{yun:}t key='wap_user_00012'{/yun}</span></div>
 								<ul class="conditional_screening_list">
 								<li id="rtype" {yun:}if $smarty.get.type==''{/yun}class="conditional_screening_cur"{yun:}/if{/yun} onclick="check_rtype_li('','rtype')"><a href="javascript:void(0)">{yun:}t key='common.all'{/yun}</a></li>
 								{yun:}foreach from=$userdata.user_type item=v{/yun}
@@ -212,7 +212,7 @@
 		                    
 						</div>
 						<div class="conditional_screening_operation">
-						<div class="conditional_screening_operation_left"><a href="{yun:}if $smarty.get.a{/yun}{yun:}url m=wap c=$smarty.get.c a=$smarty.get.a{/yun}{yun:}else{/yun}{yun:}url m=wap c=$smarty.get.c{/yun}{yun:}/if{/yun}" class="conditional_screening_operation_cz">{yun:}t key='wap_member_publictwo_00005'{/yun}</a></div>
+						<div class="conditional_screening_operation_left"><a href="{yun:}if $smarty.get.a{/yun}{yun:}url m=wap c=$smarty.get.c a=$smarty.get.a{/yun}{yun:}else{/yun}{yun:}url m=wap c=$smarty.get.c{/yun}{yun:}/if{/yun}" class="conditional_screening_operation_cz">{yun:}t key='wap_00327'{/yun}</a></div>
 						<div class="conditional_screening_operation_right"><a href="javascript:void(0)" onclick="$('#resume').submit();" class="conditional_screening_operation_ok">{yun:}t key='common.confirm'{/yun}</a></div>
 						</div>
 					</div>
@@ -274,7 +274,7 @@
 				@confirm="partTypeConfirm"
 		/>
 	</van-popup>
-	<!--{yun:}t key='wap_user_index_00038'{/yun}-结算周期选择器-->
+	<!--{yun:}t key='wap_user_00220'{/yun}-结算周期选择器-->
 	<van-popup v-model="partBillingCycleShow" round position="bottom">
 		<van-picker
 				show-toolbar
@@ -318,11 +318,11 @@ var prData = [];
 var mun	=	parseInt('{yun:}$smarty.get.mun{/yun}');
 var munChoosed = 0;
 var munData = [];
-// {yun:}t key='member_com_partadd_00003'{/yun}
+// {yun:}t key='member_com_00307'{/yun}
 var partType = parseInt('{yun:}$smarty.get.type{/yun}');
 var partTypeChoosed = 0;
 var partTypeData = [];
-// {yun:}t key='wap_user_index_00038'{/yun}-{yun:}t key='member_user_partcollect_00002'{/yun}
+// {yun:}t key='wap_user_00220'{/yun}-{yun:}t key='member_user_00199'{/yun}
 var partBillingCycle = parseInt('{yun:}$smarty.get.cycle{/yun}');
 var partBillingCycleChoosed = 0;
 var partBillingCycleData = [];
@@ -347,25 +347,25 @@ var publictwo_vue =  new Vue({
 		    hyShow:false,
 		    hyData:hyData,
 		    hyChoosed:hyChoosed,
-		    //{yun:}t key='wap_com_info_00042'{/yun}
+		    //{yun:}t key='wap_com_00159'{/yun}
 		    prShow:false,
 		    prData:prData,
 		    prChoosed:prChoosed,
-		    //{yun:}t key='wap_com_info_00046'{/yun}
+		    //{yun:}t key='wap_com_00163'{/yun}
 		    munShow:false,
 		    munData:munData,
 		    munChoosed:munChoosed,
-			//{yun:}t key='member_com_partadd_00003'{/yun}
+			//{yun:}t key='member_com_00307'{/yun}
 			partTypeShow: false,
 			partTypeData: partTypeData,
 			partTypeChoosed: partTypeData,
-			//{yun:}t key='wap_user_index_00038'{/yun}-{yun:}t key='member_user_partcollect_00002'{/yun}
+			//{yun:}t key='wap_user_00220'{/yun}-{yun:}t key='member_user_00199'{/yun}
 			partBillingCycleShow: false,
 			partBillingCycleData: partBillingCycleData,
 			partBillingCycleChoosed: partBillingCycleData,
 	    },
 	    methods:{
-	    	//{yun:}t key='wap_job_00013'{/yun}-{yun:}t key='default_part_show_00005'{/yun}
+	    	//{yun:}t key='wap_00238'{/yun}-{yun:}t key='default_00280'{/yun}
 	    	onAreaFinish({selectedOptions}) {
 
 		      	searchUrlObj.provinceid = searchUrlObj.cityid = searchUrlObj.threecityid = "";
@@ -381,7 +381,7 @@ var publictwo_vue =  new Vue({
 		      	}
 		      	this.searchUrl();
 		    },
-		    //{yun:}t key='wap_job_00013'{/yun}-职能
+		    //{yun:}t key='wap_00238'{/yun}-职能
 	    	onJobFinish({selectedOptions}) {
 		      	
 		      	searchUrlObj.job1 = searchUrlObj.job1son = searchUrlObj.jobpost = "';

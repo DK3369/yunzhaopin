@@ -1,11 +1,11 @@
 {yun:}include file="$askstyle/header.htm"{/yun}
 <div class="content">
-    <div class="ask_navcur">{yun:}t key='default_part_show_00003'{/yun}：{yun:}t key='common.home'{/yun} > {yun:}t key='ask_header_00002'{/yun}</div>
+    <div class="ask_navcur">{yun:}t key='common_02137'{/yun}：{yun:}t key='common.home'{/yun} > {yun:}t key='ask_00012'{/yun}</div>
 
     <div class="left_cen">
         <div class="ask_tit mt15" style="padding-bottom:0px;"><span class="ask_tit_icon_s"><i class="ask_tit_icon"></i>话题广场</span></div>
         <div class="hot_tagfl_con" style="padding-bottom:0px;">
-            <a href="{yun:}url m=ask c=topic{/yun}" {yun:}if ($smarty.get.pid<1){/yun}class="cur" {yun:}/if{/yun}>{yun:}t key='ask_topic_00001'{/yun}</a>
+            <a href="{yun:}url m=ask c=topic{/yun}" {yun:}if ($smarty.get.pid<1){/yun}class="cur" {yun:}/if{/yun}>{yun:}t key='ask_00020'{/yun}</a>
             {yun:}qcache key=key item=qclasslist name=qcache{/yun}
             <a href="{yun:}url m=ask c=topic pid='`$qclasslist.id`'{/yun}" {yun:}if ($smarty.get.pid==$qclasslist.id){/yun}class="cur" {yun:}/if{/yun}>{yun:}$qclasslist.name{/yun}</a>
             {yun:}/qcache{/yun}
@@ -27,13 +27,13 @@
     <div class="ask_index_right">
 
         <div class="ask_tw" style="margin-top:0px;">
-            <div class="ask_tw_t">{yun:}t key='wap_com_jobcolumn_00004'{/yun}</div>
-            <div class="ask_tw_p">{yun:}t key='ask_content_00001'{/yun}</div>
+            <div class="ask_tw_t">{yun:}t key='wap_com_00312'{/yun}</div>
+            <div class="ask_tw_p">{yun:}t key='ask_00006'{/yun}</div>
 
             {yun:}if $uid{/yun}
-            <a href="{yun:}url m=ask c=addquestion{/yun}" target="_blank" class="ask_tw_btn">+ {yun:}t key='wap_job_show_00035'{/yun}</a>
+            <a href="{yun:}url m=ask c=addquestion{/yun}" target="_blank" class="ask_tw_btn">+ {yun:}t key='wap_00278'{/yun}</a>
             {yun:}else{/yun}
-            <a href="javascript:void(0);" onclick="showlogin('');" class="ask_tw_btn">+ {yun:}t key='wap_job_show_00035'{/yun}</a>
+            <a href="javascript:void(0);" onclick="showlogin('');" class="ask_tw_btn">+ {yun:}t key='wap_00278'{/yun}</a>
             {yun:}/if{/yun}
 
         </div>
@@ -52,7 +52,7 @@
                                 <p>
                                     <a href="{yun:}url m=ask c=friend a=myquestion uid='`$rlist.uid`'{/yun}" target="_blank">{yun:}$rlist.nickname{/yun}</a>
                                 </p>
-                                <span>{yun:}t key='ask_index_00003'{/yun}：<font>{yun:}$rlist.num{/yun}</font> 被赞同总数：<font>{yun:}$rlist.support{/yun}</font></span>
+                                <span>{yun:}t key='common_02128'{/yun}：<font>{yun:}$rlist.num{/yun}</font> 被赞同总数：<font>{yun:}$rlist.support{/yun}</font></span>
 
                             </div>
                         </div>
@@ -60,7 +60,7 @@
                     </div>
                 </div>
                 {yun:}foreachelse{/yun}
-                <div class="ask_r_no fl">{yun:}t key='wap_js_cmc_00003'{/yun}！</div>
+                <div class="ask_r_no fl">{yun:}t key='wap_js_00113'{/yun}！</div>
                 {yun:}/foreach{/yun}
             </div>
 

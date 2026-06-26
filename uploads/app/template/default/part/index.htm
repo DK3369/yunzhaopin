@@ -12,10 +12,10 @@
 {yun:}include file="$tplstyle/header.htm"{/yun}
 <div class="clear"></div >
 <div class="wapper">
-  <div class="current_Location icon"> {yun:}t key='common_01498'{/yun}：<a href="{yun:}$config.sy_weburl{/yun}">{yun:}t key='common.home'{/yun}</a> > <span>{yun:}t key='wap_user_index_00038'{/yun}</span> </div>
+  <div class="current_Location icon"> {yun:}t key='common_01498'{/yun}：<a href="{yun:}$config.sy_weburl{/yun}">{yun:}t key='common.home'{/yun}</a> > <span>{yun:}t key='wap_user_00220'{/yun}</span> </div>
   <div class="yun_part_left">
     <div class="yun_part_left_box">
-      <form action="{yun:}if !$config.sy_partdir{/yun}index.php{yun:}else{/yun}{yun:}url m=part{/yun}{yun:}/if{/yun}" method="get" onsubmit="return search_keyword(this,'{yun:}t key='default_part_index_00005'{/yun}');">
+      <form action="{yun:}if !$config.sy_partdir{/yun}index.php{yun:}else{/yun}{yun:}url m=part{/yun}{yun:}/if{/yun}" method="get" onsubmit="return search_keyword(this,'{yun:}t key='default_00271'{/yun}');">
         {yun:}if !$config.sy_partdir || $config.sy_seo_rewrite!='1'{/yun}
         <input type="hidden" name="m" value="part" id="m" />
         {yun:}/if{/yun} 
@@ -23,7 +23,7 @@
         <!--   city--> 
         {yun:}if $config.sy_web_site==1 && $config.cityname && $config.cityname!=$config.sy_indexcity{/yun}
 			<div class="Search_citybox">
-				<div class="Search_cityboxname"> {yun:}t key='default_part_index_00009'{/yun}</div>
+				<div class="Search_cityboxname"> {yun:}t key='default_00275'{/yun}</div>
 				<div class="Search_citybox_right">
 					<div class="Search_cityboxright">
 						<div class="search_secondcity_list">
@@ -70,7 +70,7 @@
 		{yun:}else{/yun}
 
 			<div class="Search_citybox">
-				<div class="Search_cityboxname"> {yun:}t key='default_part_index_00009'{/yun}</div>
+				<div class="Search_cityboxname"> {yun:}t key='default_00275'{/yun}</div>
 				<div class="Search_citybox_right">
 					<div class="Search_cityall none"> 
 						<a href="{yun:}listurl m=part type=provinceid v=0{/yun}" class="city_name">{yun:}t key='common.all'{/yun}</a> 
@@ -128,32 +128,32 @@
 
         <!--   city end-->
         <div class="Search_jobs_form_list">
-          <div class="Search_cityboxname"> {yun:}t key='default_part_index_00010'{/yun}</div>
-          <div class="Search_cityboxright "> <!--点击 {yun:}t key='common.more'{/yun} {yun:}t key='admin_user_member_component_comlog_00006'{/yun} Search_jobs_sub_nore --> 
+          <div class="Search_cityboxname"> {yun:}t key='default_00276'{/yun}</div>
+          <div class="Search_cityboxright "> <!--点击 {yun:}t key='common.more'{/yun} {yun:}t key='admin_user_00156'{/yun} Search_jobs_sub_nore --> 
             <a href="{yun:}listurl m=part type=part_type v=0{/yun}" class="Search_jobs_sub_a {yun:}if $smarty.get.part_type<1{/yun}Search_jobs_sub_cur{yun:}/if{/yun}">{yun:}t key='common.all'{/yun}</a> {yun:}foreach from=$partdata.part_type item=v key=key{/yun} <a href="{yun:}listurl m=part type=part_type v=$v{/yun}" class="Search_jobs_sub_a {yun:}if $smarty.get.part_type==$v{/yun}Search_jobs_sub_cur{yun:}/if{/yun}">{yun:}$partclass_name[$v]{/yun}</a> {yun:}/foreach{/yun} </div>
         </div>
         <div class="Search_jobs_form_list">
-          <div class="Search_cityboxname"> {yun:}t key='admin_tool_weixin_component_reply_00017'{/yun}：</div>
-          <input type="text" name="keyword" value="{yun:}if $smarty.get.keyword{/yun}{yun:}$smarty.get.keyword{/yun}{yun:}else{/yun}{yun:}t key='default_part_index_00005'{/yun}{yun:}/if{/yun}" onclick="if(this.value=='{yun:}t key='default_part_index_00005'{/yun}'){this.value=''}" onblur="if(this.value==''){this.value='{yun:}t key='default_part_index_00005'{/yun}'}" class="Search_jobs_text ">
+          <div class="Search_cityboxname"> {yun:}t key='admin_tool_00574'{/yun}：</div>
+          <input type="text" name="keyword" value="{yun:}if $smarty.get.keyword{/yun}{yun:}$smarty.get.keyword{/yun}{yun:}else{/yun}{yun:}t key='default_00271'{/yun}{yun:}/if{/yun}" onclick="if(this.value=='{yun:}t key='default_00271'{/yun}'){this.value=''}" onblur="if(this.value==''){this.value='{yun:}t key='default_00271'{/yun}'}" class="Search_jobs_text ">
           <input type="submit" value="{yun:}t key='common.search'{/yun}" class="Search_jobs_submit yun_bg_color">
         </div>
       </form>
       {yun:}if $smarty.get.keyword||$smarty.get.provinceid||$smarty.get.cityid||$smarty.get.three_cityid||$smarty.get.part_type||$smarty.get.cycle{/yun}
       <div class="Search_close_box">
         <div>
-          <div class="Search_clear"> <a href="{yun:}url m=part{/yun}"> {yun:}t key='default_public_search_firm_search_00002'{/yun}</a></div>
-          <span class="Search_close_box_s">{yun:}t key='default_public_search_firm_search_00001'{/yun}</span> </div>
+          <div class="Search_clear"> <a href="{yun:}url m=part{/yun}"> {yun:}t key='default_00059'{/yun}</a></div>
+          <span class="Search_close_box_s">{yun:}t key='default_00058'{/yun}</span> </div>
         {yun:}if $config.cityid=='' &&  $config.three_cityid==''{/yun} 
-        {yun:}if $smarty.get.provinceid{/yun} <a href="{yun:}listurl m=part untype='provinceid'{/yun}" class="Search_jobs_c_a disc_fac">{yun:}t key='member_user_partcollect_00001'{/yun}：{yun:}$city_name[$smarty.get.provinceid]{/yun}</a> {yun:}/if{/yun} 
+        {yun:}if $smarty.get.provinceid{/yun} <a href="{yun:}listurl m=part untype='provinceid'{/yun}" class="Search_jobs_c_a disc_fac">{yun:}t key='member_user_00198'{/yun}：{yun:}$city_name[$smarty.get.provinceid]{/yun}</a> {yun:}/if{/yun} 
         {yun:}if $smarty.get.cityid{/yun} <a href="{yun:}listurl m=part untype='cityid'{/yun}" class="Search_jobs_c_a disc_fac">{yun:}$city_name[$smarty.get.cityid]{/yun}</a> {yun:}/if{/yun} 
         {yun:}/if{/yun}
         
         {yun:}if $smarty.get.three_cityid{/yun} <a href="{yun:}listurl m=part untype='three_cityid'{/yun}" class="Search_jobs_c_a disc_fac">{yun:}$city_name[$smarty.get.three_cityid]{/yun}</a> {yun:}/if{/yun} 
-        {yun:}if $partclass_name[$smarty.get.part_type]{/yun} <a href="{yun:}listurl m=part untype='part_type'{/yun}" class="Search_jobs_c_a disc_fac">{yun:}t key='admin_system_single_singlepage_00006'{/yun}：{yun:}$partclass_name[$smarty.get.part_type]{/yun}</a> {yun:}/if{/yun}
+        {yun:}if $partclass_name[$smarty.get.part_type]{/yun} <a href="{yun:}listurl m=part untype='part_type'{/yun}" class="Search_jobs_c_a disc_fac">{yun:}t key='admin_system_00689'{/yun}：{yun:}$partclass_name[$smarty.get.part_type]{/yun}</a> {yun:}/if{/yun}
         {yun:}if $partclass_name[$smarty.get.cycle]{/yun} <a href="{yun:}listurl m=part untype='cycle'{/yun}" class="Search_jobs_c_a disc_fac">周期：{yun:}$partclass_name[$smarty.get.cycle]{/yun}</a> {yun:}/if{/yun}&nbsp; 
         {yun:}if $smarty.get.keyword{/yun} <a href="{yun:}listurl m=part untype='keyword'{/yun}" class="Search_jobs_c_a disc_fac">{yun:}$smarty.get.keyword{/yun}</a> {yun:}/if{/yun} </div>
       {yun:}/if{/yun} </div>
-    <div class="yun_part_left_tit"> <span class="yun_part_left_tit_s"><i class="yun_part_left_tit_line"></i>{yun:}t key='wap_com_jobcolumn_00003'{/yun}</span>
+    <div class="yun_part_left_tit"> <span class="yun_part_left_tit_s"><i class="yun_part_left_tit_line"></i>{yun:}t key='wap_com_00311'{/yun}</span>
       <div class="job_list_selct fr">
         <div class="part_job_js_box">
           <input class="job_select" id="BillingCycleButton" type="button" value="{yun:}if $smarty.get.cycle{/yun}{yun:}$partclass_name[$smarty.get.cycle]{/yun}{yun:}else{/yun}结算方式{yun:}/if{/yun}" onclick="ShowPartDiv('BillingCycle');"/>
@@ -164,10 +164,10 @@
           </ul>
         </div>
         <ul class="search_Filter_list">
-          <li {yun:}if $smarty.get.order=='lastdate'{/yun}class="search_Filter_current"{yun:}/if{/yun}> <a href="{yun:}listurl m=part type=order v=lastdate{/yun}"><span>{yun:}t key='wap_member_publictwo_00004'{/yun}</span><i class="search_Filter_icon"></i></a> </li>
-          <li {yun:}if $smarty.get.order=='addtime'{/yun}class="search_Filter_current"{yun:}/if{/yun}> <a href="{yun:}listurl m=part type=order v=addtime{/yun}"><span>{yun:}t key='admin_user_weipin_component_once_00030'{/yun}</span><i class="search_Filter_icon"></i></a> </li>
+          <li {yun:}if $smarty.get.order=='lastdate'{/yun}class="search_Filter_current"{yun:}/if{/yun}> <a href="{yun:}listurl m=part type=order v=lastdate{/yun}"><span>{yun:}t key='wap_00326'{/yun}</span><i class="search_Filter_icon"></i></a> </li>
+          <li {yun:}if $smarty.get.order=='addtime'{/yun}class="search_Filter_current"{yun:}/if{/yun}> <a href="{yun:}listurl m=part type=order v=addtime{/yun}"><span>{yun:}t key='admin_user_weipin_00030'{/yun}</span><i class="search_Filter_icon"></i></a> </li>
           {yun:}if $smarty.get.cycle{/yun}
-          <li {yun:}if $smarty.get.order=='salary'{/yun}class="search_Filter_current"{yun:}/if{/yun}> <a href="{yun:}listurl m=part type=order v=salary{/yun}"><span>{yun:}t key='member_com_com_resume_xls_00010'{/yun}</span><i class="search_Filter_icon"></i></a> </li>
+          <li {yun:}if $smarty.get.order=='salary'{/yun}class="search_Filter_current"{yun:}/if{/yun}> <a href="{yun:}listurl m=part type=order v=salary{/yun}"><span>{yun:}t key='member_com_00017'{/yun}</span><i class="search_Filter_icon"></i></a> </li>
           {yun:}/if{/yun}
           <li {yun:}if $smarty.get.order=='hits'{/yun}class="search_Filter_current"{yun:}/if{/yun}> <a href="{yun:}listurl m=part type=order v=hits{/yun}"><span>热度</span><i class="search_Filter_icon"></i></a> </li>
         </ul>
@@ -178,16 +178,16 @@
     
     {yun:}partlist item=pl ispage=1 limit=10 cycle='auto.cycle' provinceid='auto.provinceid' cityid='auto.cityid' three_cityid='auto.three_cityid' order='auto.order' type='auto.part_type' keyword='auto.keyword'{/yun}
     <div class="yun_part_joblist">
-    {yun:}if $pl.rec_time gt time(){/yun} <div class="yun_part_jobtj"><span class="yun_part_jobtj_n">{yun:}t key='default_part_index_00007'{/yun}</span></div>  {yun:}/if{/yun}
+    {yun:}if $pl.rec_time gt time(){/yun} <div class="yun_part_jobtj"><span class="yun_part_jobtj_n">{yun:}t key='default_00273'{/yun}</span></div>  {yun:}/if{/yun}
      <div class="yun_part_jobname"><a href="{yun:}$pl.job_url{/yun}" target="_blank" title="{yun:}$pl.name{/yun}">{yun:}$pl.name{/yun}</a></div>
       <div class="yun_part_jobinfo"> 
 		
-			<span class="yun_part_jobinfo_add">{yun:}t key='member_user_partcollect_00001'{/yun}：{yun:}if $pl.job_city_two{/yun}{yun:}if $pl.job_city_three{/yun}
+			<span class="yun_part_jobinfo_add">{yun:}t key='member_user_00198'{/yun}：{yun:}if $pl.job_city_two{/yun}{yun:}if $pl.job_city_three{/yun}
 			{yun:}$pl.job_city_two{/yun}-{yun:}$pl.job_city_three{/yun}
 			{yun:}elseif $pl.job_city_two{/yun}
 			{yun:}$pl.job_city_one{/yun}-{yun:}$pl.job_city_two{/yun}
-			{yun:}/if{/yun}{yun:}else{/yun}{yun:}t key='admin_neirong_question_index_00009'{/yun} {yun:}/if{/yun}</span> 
-		<span class="yun_part_jobinfo_s">{yun:}t key='wap_com_partadd_00013'{/yun}：{yun:}$pl.number{/yun}{yun:}t key='common_02051'{/yun}</span> <span class="yun_part_jobinfo_s">所属类型：{yun:}$partclass_name[$pl.type]{/yun}</span> <span class="yun_part_jobinfo_s">更新日期： {yun:}if $pl.time=='今天' || $pl.time=='昨天'{/yun} <span style="color:red;">{yun:}$pl.time{/yun}</span> {yun:}else{/yun}
+			{yun:}/if{/yun}{yun:}else{/yun}{yun:}t key='admin_00254'{/yun} {yun:}/if{/yun}</span> 
+		<span class="yun_part_jobinfo_s">{yun:}t key='wap_com_00333'{/yun}：{yun:}$pl.number{/yun}{yun:}t key='common_02051'{/yun}</span> <span class="yun_part_jobinfo_s">所属类型：{yun:}$partclass_name[$pl.type]{/yun}</span> <span class="yun_part_jobinfo_s">更新日期： {yun:}if $pl.time=='今天' || $pl.time=='昨天'{/yun} <span style="color:red;">{yun:}$pl.time{/yun}</span> {yun:}else{/yun}
         {yun:}$pl.time{/yun}
         {yun:}/if{/yun}</span></div>
       <span class="yun_part_jobxz"><em class="yun_part_jobxz_n">{yun:}$pl.salary{/yun}</em> {yun:}$pl.job_salary_type{/yun} </span> <span class="yun_part_jobjs">{yun:}$pl.job_billing_cycle{/yun}</span> </div>
@@ -210,31 +210,31 @@
     <div class="job_right_one fl">
       <div class="job_part_img">{yun:}ad cid=68 id=226{/yun}</div>
       <div class="job_part">
-        <div class="job_part_h fl">{yun:}t key='default_part_index_00006'{/yun}</div>
-        <div class="job_state fl"> {yun:}t key='member_com_part_00001'{/yun}，让优质的求职者投身于你们的工作之中 </div>
+        <div class="job_part_h fl">{yun:}t key='default_00272'{/yun}</div>
+        <div class="job_state fl"> {yun:}t key='member_com_00302'{/yun}，让优质的求职者投身于你们的工作之中 </div>
         {yun:}if $usertype==2{/yun} 
-			<a class="job_bth" href="{yun:}$config.sy_weburl{/yun}/member/index.php?c=partadd">{yun:}t key='wap_member_cheader_00003'{/yun}</a> 
+			<a class="job_bth" href="{yun:}$config.sy_weburl{/yun}/member/index.php?c=partadd">{yun:}t key='wap_00321'{/yun}</a> 
 		{yun:}else{/yun}
 			{yun:}if $uid{/yun} 
         {yun:}if $config.sy_user_change==1{/yun}
-          <a href="javascript:void(0);" onclick="layer.msg('{yun:}t key='default_part_index_00003'{/yun}', 2, 8)" class="job_bth" rel="nofollow">{yun:}t key='wap_member_cheader_00003'{/yun}</a> 
+          <a href="javascript:void(0);" onclick="layer.msg('{yun:}t key='default_00269'{/yun}', 2, 8)" class="job_bth" rel="nofollow">{yun:}t key='wap_00321'{/yun}</a> 
         {yun:}else{/yun} 
-          <a href="javascript:void(0);" onclick="layer.msg('{yun:}t key='default_part_index_00004'{/yun}', 2, 8)" class="job_bth" rel="nofollow">{yun:}t key='wap_member_cheader_00003'{/yun}</a> 
+          <a href="javascript:void(0);" onclick="layer.msg('{yun:}t key='default_00270'{/yun}', 2, 8)" class="job_bth" rel="nofollow">{yun:}t key='wap_00321'{/yun}</a> 
         {yun:}/if{/yun}
 			{yun:}else{/yun} 
-				<a class="job_bth" onclick="showlogin('2');"  href="javascript:void(0);">{yun:}t key='wap_member_cheader_00003'{/yun}</a> 
+				<a class="job_bth" onclick="showlogin('2');"  href="javascript:void(0);">{yun:}t key='wap_00321'{/yun}</a> 
 			{yun:}/if{/yun}
         {yun:}/if{/yun} </div>
     </div>
     <div class="yun_part_tjbox">
-      <div class="yun_part_tjbox_h1"><i class="yun_part_tjbox_h1_n"></i><span class="yun_part_tjbox_h1_s">{yun:}t key='default_part_index_00008'{/yun}</span></div>
+      <div class="yun_part_tjbox_h1"><i class="yun_part_tjbox_h1_n"></i><span class="yun_part_tjbox_h1_s">{yun:}t key='default_00274'{/yun}</span></div>
       <div class="yun_part_tjbox_list">
         <ul>
           {yun:}partlist item=partlist namelen=10 rec=1 limit=10{/yun}
           <li>
             <div class="yun_part_tjbox_jobname"><a href="{yun:}$partlist.job_url{/yun}" title="{yun:}$partlist.name_n{/yun}">{yun:}$partlist.name_n{/yun}</a></div>
             <div class="yun_part_tjbox_jobxz"><em class="yun_part_tjbox_jobxz_n">{yun:}$partlist.salary{/yun}</em>{yun:}$partlist.job_salary_type{/yun}</div>
-            <div class="yun_part_tjbox_jobinfo"> <em class="">{yun:}$partlist.job_city_two{/yun}-{yun:}$partlist.job_city_three{/yun}</em> <span class="yun_part_tjbox_jobtime">{yun:}$partlist.lastupdate|date_format:"%Y-%m-%d"{/yun}{yun:}t key='wap_invite_00002'{/yun}</span> </div>
+            <div class="yun_part_tjbox_jobinfo"> <em class="">{yun:}$partlist.job_city_two{/yun}-{yun:}$partlist.job_city_three{/yun}</em> <span class="yun_part_tjbox_jobtime">{yun:}$partlist.lastupdate|date_format:"%Y-%m-%d"{/yun}{yun:}t key='wap_00225'{/yun}</span> </div>
           </li>
           {yun:}/partlist{/yun}
         </ul>

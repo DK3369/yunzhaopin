@@ -16,12 +16,12 @@
 <!--content内容部分-->
 <div class="cp_content">
 <div class="wrap">
-<div class="current_Location  png">{yun:}t key='common_01498'{/yun}：<a href="{yun:}$config.sy_weburl{/yun}">{yun:}t key='common.home'{/yun}</a>  >  <span>{yun:}t key='default_evaluate_gradeshare_00012'{/yun}</span></div>
+<div class="current_Location  png">{yun:}t key='common_01498'{/yun}：<a href="{yun:}$config.sy_weburl{/yun}">{yun:}t key='common.home'{/yun}</a>  >  <span>{yun:}t key='default_00126'{/yun}</span></div>
 <div class="clear"></div>
 <div class="evaluate_left">
 <div class="evaluation_results">
     	<h1 class="evaluation_results_tit">{yun:}$exambase.name{/yun}</h1>
-      <div class="evaluation_results_tit_p">{yun:}t key='default_evaluate_gradeshare_00010'{/yun} <em>{yun:}$exambase.num{/yun}</em> {yun:}t key='default_evaluate_gradeshare_00013'{/yun}<em>{yun:}$exambase.visits{/yun}</em> {yun:}t key='default_evaluate_gradeshare_00006'{/yun}<em>{yun:}$exambase.comnum{/yun}</em> {yun:}t key='default_evaluate_gradeshare_00011'{/yun}</div>
+      <div class="evaluation_results_tit_p">{yun:}t key='default_00124'{/yun} <em>{yun:}$exambase.num{/yun}</em> {yun:}t key='default_00127'{/yun}<em>{yun:}$exambase.visits{/yun}</em> {yun:}t key='default_00120'{/yun}<em>{yun:}$exambase.comnum{/yun}</em> {yun:}t key='default_00125'{/yun}</div>
        
         
         <div class="evaluation_results_df">  
@@ -36,7 +36,7 @@
           <div class="evaluation_results_fx_p">  {yun:}$info.comment_n{/yun}    </div>
              </div>
                 <div class="evaluation_results_fx">
-          <div class="evaluation_results_fx_tit"><i class="evaluation_results_fx_tit_icon"></i><span class="evaluation_results_fx_tit_s">{yun:}t key='default_evaluate_gradeshare_00004'{/yun}</span></div>
+          <div class="evaluation_results_fx_tit"><i class="evaluation_results_fx_tit_icon"></i><span class="evaluation_results_fx_tit_s">{yun:}t key='default_00118'{/yun}</span></div>
           <div class="evaluation_results_fx_p">   
           {yun:}foreach from=$exambase.result item=v key=key{/yun}
 		<div class="evaluation_results_fx_list">
@@ -46,12 +46,12 @@
             
              </div>
              
-   <div class="evaluation_results_share">    {yun:}t key='default_evaluate_gradeshare_00001'{/yun}</div>
+   <div class="evaluation_results_share">    {yun:}t key='default_00115'{/yun}</div>
      <div class="complay_h1_share">
               <span >
                   <div class="bdsharebuttonbox" style="margin:0 auto;width:195px;">
                       <a href="#" class="bds_more" data-cmd="more"></a>
-                      <a title="{yun:}t key='wap_js_nativeshare_nativeshare_00006'{/yun}QQ空间" href="#" class="bds_qzone" data-cmd="qzone"></a>
+                      <a title="{yun:}t key='wap_js_00040'{/yun}QQ空间" href="#" class="bds_qzone" data-cmd="qzone"></a>
                       <a title="分享到新浪微博" href="#" class="bds_tsina" data-cmd="tsina"></a>
                       <a title="分享到微信" href="#" class="bds_weixin" data-cmd="weixin"></a>
                   </div>
@@ -60,13 +60,13 @@
 
  
  <div class="evaluation_results_fx">
-          <div class="evaluation_results_fx_tit"><i class="evaluation_results_fx_tit_icon"></i><span class="evaluation_results_fx_tit_s">{yun:}t key='wap_evaluategradeshow_00004'{/yun}</span></div>
+          <div class="evaluation_results_fx_tit"><i class="evaluation_results_fx_tit_icon"></i><span class="evaluation_results_fx_tit_s">{yun:}t key='wap_00198'{/yun}</span></div>
           <form name="myform" target="supportiframe"  action="{yun:}url m=evaluate c=exampaper a=message{/yun}" method="post" onsubmit="return gradely();">
-		<div class="evaluation_results_ly"><textarea id="grademessage" name="message" class="evaluation_results_lytextarea" placeholder="{yun:}t key='wap_evaluategradeshow_00003'{/yun}"  onblur="if(this.value==''){this.value='{yun:}t key='wap_evaluategradeshow_00003'{/yun}'}" onclick="if(this.value=='{yun:}t key='wap_evaluategradeshow_00003'{/yun}'){this.value=''}" value="{yun:}t key='wap_evaluategradeshow_00003'{/yun}"></textarea></div>
+		<div class="evaluation_results_ly"><textarea id="grademessage" name="message" class="evaluation_results_lytextarea" placeholder="{yun:}t key='wap_00197'{/yun}"  onblur="if(this.value==''){this.value='{yun:}t key='wap_00197'{/yun}'}" onclick="if(this.value=='{yun:}t key='wap_00197'{/yun}'){this.value=''}" value="{yun:}t key='wap_00197'{/yun}"></textarea></div>
 		<div class="evaluation_results_ly_bth">
 			<!--span>还有500{yun:}t key='common_02073'{/yun}</span-->
 			<input name='examid' type="hidden" value='{yun:}$exambase.id{/yun}'/>
-			<input name="submit" class="evaluation_results_ly_bth_a" type="submit" value="{yun:}t key='wap_evaluategradeshow_00004'{/yun}"/>
+			<input name="submit" class="evaluation_results_ly_bth_a" type="submit" value="{yun:}t key='wap_00198'{/yun}"/>
 		</div>
 		</form>
         
@@ -85,7 +85,7 @@
 					{yun:}if $rlist.name&&$rlist.usertype{/yun}
 					<a href="{yun:}url m=ask c=friend a=myquestion uid=$rlist.uid{/yun}" target="_blank">{yun:}$rlist.name{/yun}</a>
 					{yun:}else{/yun}
-					{yun:}t key='wap_evaluategradeshow_00006'{/yun}
+					{yun:}t key='common_02177'{/yun}
 					{yun:}/if{/yun}
 				</div>
 				<div class="evaluation_results_ly_list_info_p">{yun:}$rlist.message{/yun}</div>
@@ -93,7 +93,7 @@
 			</div>
 		</div>   
 		{yun:}foreachelse{/yun} 
-        <div class="evaluation_results_ly_sofa">{yun:}t key='wap_evaluategradeshow_00002'{/yun}</div>
+        <div class="evaluation_results_ly_sofa">{yun:}t key='wap_00196'{/yun}</div>
 		{yun:}/foreach{/yun} 
 	</div>
     
@@ -106,7 +106,7 @@
 
 </div>
 <div class="evaluate_right">
-<div class="evaluate_right_box"><div class="evaluate_right_box_h1"><i class="evaluate_right_box_h1_n"></i><span class="evaluate_right_box_h1_s">{yun:}t key='default_evaluate_gradeshare_00009'{/yun}</span></div>
+<div class="evaluate_right_box"><div class="evaluate_right_box_h1"><i class="evaluate_right_box_h1_n"></i><span class="evaluate_right_box_h1_s">{yun:}t key='default_00123'{/yun}</span></div>
 <div class="evaluate_right_hot">
       <ul>
              {yun:}foreach from=$recom item=item key=key{/yun}
@@ -117,7 +117,7 @@
             </ul>
 </div>
 </div>
-<div class="evaluate_right_box mt20"><div class="evaluate_right_box_h1"><i class="evaluate_right_box_h1_n"></i><span class="evaluate_right_box_h1_s">{yun:}t key='default_evaluate_gradeshare_00008'{/yun}</span></div>
+<div class="evaluate_right_box mt20"><div class="evaluate_right_box_h1"><i class="evaluate_right_box_h1_n"></i><span class="evaluate_right_box_h1_s">{yun:}t key='default_00122'{/yun}</span></div>
 <div class="evaluate_right_hot">
   <ul>
               {yun:}foreach from=$list item=item key=key{/yun}
@@ -127,7 +127,7 @@
 </div>
 </div>
 
-<div class="evaluate_right_box mt20"><div class="evaluate_right_box_h1"><i class="evaluate_right_box_h1_n"></i><span class="evaluate_right_box_h1_s">{yun:}t key='default_evaluate_gradeshare_00003'{/yun}</span></div>
+<div class="evaluate_right_box mt20"><div class="evaluate_right_box_h1"><i class="evaluate_right_box_h1_n"></i><span class="evaluate_right_box_h1_s">{yun:}t key='default_00117'{/yun}</span></div>
 <div class="evaluate_right_user">
   <ul>
           {yun:}foreach from=$examinee item=elist{/yun}
@@ -137,7 +137,7 @@
 
 </div>
 </div>
-  <div class="evaluation_results_more"><a href="{yun:}url m=evaluate c=morelist{/yun}" class="evaluation_results_more_a" >{yun:}t key='default_evaluate_gradeshare_00007'{/yun}</a></div>
+  <div class="evaluation_results_more"><a href="{yun:}url m=evaluate c=morelist{/yun}" class="evaluation_results_more_a" >{yun:}t key='default_00121'{/yun}</a></div>
 </div>
 
 
@@ -162,7 +162,7 @@ DD_belatedPNG.fix('.png');
   window._bd_share_config={
 	  "common":{
 		  "bdSnsKey":{},
-		  "bdText":"我在 {yun:}$config.sy_webname{/yun} {yun:}t key='admin_tool_email_component_emailfwq_00018'{/yun}《{yun:}$exambase.name{/yun}》得到了{yun:}$info.grade{/yun}{yun:}t key='common_02058'{/yun}，评语：{yun:}$comment{/yun}",
+		  "bdText":"我在 {yun:}$config.sy_webname{/yun} {yun:}t key='admin_tool_00371'{/yun}《{yun:}$exambase.name{/yun}》得到了{yun:}$info.grade{/yun}{yun:}t key='common_02058'{/yun}，评语：{yun:}$comment{/yun}",
 		  "bdMini":"2",
 		  "bdUrl":'{yun:}$config.sy_weburl{/yun}',
 		  "bdPic":"{yun:}$config.sy_weburl{/yun}/{yun:}$config.sy_logo{/yun}",

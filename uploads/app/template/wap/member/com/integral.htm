@@ -12,14 +12,14 @@
                         <img src="{yun:}$wap_style{/yun}/images/vip_sign_in.png" alt="">
                     </div>
                     <div class="task_subject_init">
-                        <div class="subject_init_top">{yun:}t key='wap_user_alltask_00010'{/yun}</div>
+                        <div class="subject_init_top">{yun:}t key='wap_user_00114'{/yun}</div>
                         <div class="subject_init_bom">
                             +{{integral_signin}}{{integral_pricename}}
                         </div>
                     </div>
                 </div>
                 <div class="task_subject_box_btn_accomplish" v-if="tasklist.signin">已签到</div>
-                <div class="task_subject_box_btn" v-else @click="sign">{yun:}t key='wap_user_alltask_00014'{/yun}</div>                
+                <div class="task_subject_box_btn" v-else @click="sign">{yun:}t key='wap_user_00118'{/yun}</div>                
             </li>
             <li>
                 <div class="task_subject_box">
@@ -27,13 +27,13 @@
                         <img src="{yun:}$wap_style{/yun}/images/vip_register.png" alt="">
                     </div>
                     <div class="task_subject_init">
-                        <div class="subject_init_top">{yun:}t key='wap_user_alltask_00004'{/yun}</div>
+                        <div class="subject_init_top">{yun:}t key='wap_user_00108'{/yun}</div>
                         <div class="subject_init_bom">
                             +{{integral_invite_reg}}{{integral_pricename}}
                         </div>
                     </div>
                 </div>
-                <div class="task_subject_box_btn" @click="getInviteRegHb()">{yun:}t key='wap_user_alltask_00017'{/yun}</div>
+                <div class="task_subject_box_btn" @click="getInviteRegHb()">{yun:}t key='wap_user_00121'{/yun}</div>
             </li>
             <li>
                 <div class="task_subject_box">
@@ -41,14 +41,14 @@
                         <img src="{yun:}$wap_style{/yun}/images/task_uploading.png" alt="">
                     </div>
                     <div class="task_subject_init">
-                        <div class="subject_init_top">{yun:}t key='wap_com_integral_00001'{/yun}</div>
+                        <div class="subject_init_top">{yun:}t key='wap_com_00180'{/yun}</div>
                         <div class="subject_init_bom">
                             +{{integral_avatar}}{{integral_pricename}}
                         </div>
                     </div>
                 </div>               
-                <div class="task_subject_box_btn_accomplish" v-if="tasklist.logo">{yun:}t key='wap_user_alltask_00019'{/yun}</div>
-                <div class="task_subject_box_btn" v-else onclick="navigateTo('index.php?c=photo&type=1')">{yun:}t key='wap_user_alltask_00012'{/yun}</div>                
+                <div class="task_subject_box_btn_accomplish" v-if="tasklist.logo">{yun:}t key='wap_user_00123'{/yun}</div>
+                <div class="task_subject_box_btn" v-else onclick="navigateTo('index.php?c=photo&type=1')">{yun:}t key='wap_user_00116'{/yun}</div>                
             </li>
             <li>
                 <div class="task_subject_box">
@@ -56,14 +56,14 @@
                         <img src="{yun:}$wap_style{/yun}/images/task_iphpne.png" alt="">
                     </div>
                     <div class="task_subject_init">
-                        <div class="subject_init_top">{yun:}t key='wap_user_alltask_00005'{/yun}</div>
+                        <div class="subject_init_top">{yun:}t key='wap_user_00109'{/yun}</div>
                         <div class="subject_init_bom">
                             +{{integral_mobliecert}}{{integral_pricename}}
                         </div>
                     </div>
                 </div>
-                <div class="task_subject_box_btn_accomplish" v-if="tasklist.phoneChecked">{yun:}t key='wap_user_alltask_00024'{/yun}</div>
-                <div class="task_subject_box_btn" v-else onclick="navigateTo('index.php?c=bindingbox&type=moblie')">{yun:}t key='wap_user_alltask_00016'{/yun}</div>                
+                <div class="task_subject_box_btn_accomplish" v-if="tasklist.phoneChecked">{yun:}t key='wap_user_00128'{/yun}</div>
+                <div class="task_subject_box_btn" v-else onclick="navigateTo('index.php?c=bindingbox&type=moblie')">{yun:}t key='wap_user_00120'{/yun}</div>                
             </li>
 			<li>
                 <div class="task_subject_box">
@@ -71,14 +71,14 @@
                         <img src="{yun:}$wap_style{/yun}/images/task_wx.png" alt="">
                     </div>
                     <div class="task_subject_init">
-                        <div class="subject_init_top">{yun:}t key='wap_user_alltask_00011'{/yun}</div>
+                        <div class="subject_init_top">{yun:}t key='wap_user_00115'{/yun}</div>
                         <div class="subject_init_bom">
                             +{{integral_bind_wx}}{{integral_pricename}}
                         </div>
                     </div>
                 </div>
-                <div class="task_subject_box_btn_accomplish" v-if="tasklist.weixinBind">{yun:}t key='wap_user_alltask_00023'{/yun}</div>
-                <div class="task_subject_box_btn" v-else onclick="navigateTo('index.php?c=binding')">{yun:}t key='wap_user_alltask_00015'{/yun}</div>                
+                <div class="task_subject_box_btn_accomplish" v-if="tasklist.weixinBind">{yun:}t key='wap_user_00127'{/yun}</div>
+                <div class="task_subject_box_btn" v-else onclick="navigateTo('index.php?c=binding')">{yun:}t key='wap_user_00119'{/yun}</div>                
             </li>
             <li>
                 <div class="task_subject_box">
@@ -86,14 +86,14 @@
                         <img src="{yun:}$wap_style{/yun}/images/task_map.png" alt="">
                     </div>
                     <div class="task_subject_init">
-                        <div class="subject_init_top">{yun:}t key='wap_com_integral_00003'{/yun}</div>
+                        <div class="subject_init_top">{yun:}t key='wap_com_00182'{/yun}</div>
                         <div class="subject_init_bom">
                             +{{integral_map}}{{integral_pricename}}
                         </div>
                     </div>
                 </div>
-                <div class="task_subject_box_btn_accomplish" v-if="tasklist.map">{yun:}t key='wap_com_integral_00010'{/yun}</div>
-                <div class="task_subject_box_btn" v-else onclick="navigateTo('index.php?c=map')" >{yun:}t key='wap_com_integral_00006'{/yun}</div>               
+                <div class="task_subject_box_btn_accomplish" v-if="tasklist.map">{yun:}t key='wap_com_00189'{/yun}</div>
+                <div class="task_subject_box_btn" v-else onclick="navigateTo('index.php?c=map')" >{yun:}t key='wap_com_00185'{/yun}</div>               
             </li>
             <li>
                 <div class="task_subject_box">
@@ -101,14 +101,14 @@
                         <img src="{yun:}$wap_style{/yun}/images/task_authentication.png" alt="">
                     </div>
                     <div class="task_subject_init">
-                        <div class="subject_init_top">{yun:}t key='wap_com_integral_00002'{/yun}</div>
+                        <div class="subject_init_top">{yun:}t key='wap_com_00181'{/yun}</div>
                         <div class="subject_init_bom">
                             +{{integral_comcert}}{{integral_pricename}}
                         </div>
                     </div>
                 </div>
-                <div class="task_subject_box_btn_accomplish" v-if="tasklist.yyzz">{yun:}t key='wap_user_alltask_00024'{/yun}</div>
-                <div class="task_subject_box_btn" v-else onclick="navigateTo('index.php?c=comcert')">{yun:}t key='wap_user_alltask_00016'{/yun}</div>                
+                <div class="task_subject_box_btn_accomplish" v-if="tasklist.yyzz">{yun:}t key='wap_user_00128'{/yun}</div>
+                <div class="task_subject_box_btn" v-else onclick="navigateTo('index.php?c=comcert')">{yun:}t key='wap_user_00120'{/yun}</div>                
             </li>
             <li>
                 <div class="task_subject_box">
@@ -116,13 +116,13 @@
                         <img src="{yun:}$wap_style{/yun}/images/task_issue .png" alt="">
                     </div>
                     <div class="task_subject_init">
-                        <div class="subject_init_top">{yun:}t key='wap_user_alltask_00008'{/yun}</div>
+                        <div class="subject_init_top">{yun:}t key='wap_user_00112'{/yun}</div>
                         <div class="subject_init_bom">
                             +{{integral_question}}{{integral_pricename}}
                         </div>
                     </div>
                 </div>                
-                <div class="task_subject_box_btn" v-if="tasklist.question" onclick="navigateTo('{yun:}url m=wap c=ask a=addquestion{/yun}')">{yun:}t key='wap_com_integral_00005'{/yun}</div> 
+                <div class="task_subject_box_btn" v-if="tasklist.question" onclick="navigateTo('{yun:}url m=wap c=ask a=addquestion{/yun}')">{yun:}t key='wap_com_00184'{/yun}</div> 
                 <div class="task_subject_box_btn_accomplish" v-else>今日已发布</div>               
             </li>
             <li>
@@ -137,8 +137,8 @@
                         </div>
                     </div>
                 </div>               
-                <div class="task_subject_box_btn_accomplish" v-if="tasklist.baseInfo">{yun:}t key='wap_user_alltask_00021'{/yun}</div>
-                <div class="task_subject_box_btn" v-else onclick="navigateTo('index.php?c=info')">{yun:}t key='wap_user_alltask_00013'{/yun}</div>
+                <div class="task_subject_box_btn_accomplish" v-if="tasklist.baseInfo">{yun:}t key='wap_user_00125'{/yun}</div>
+                <div class="task_subject_box_btn" v-else onclick="navigateTo('index.php?c=info')">{yun:}t key='wap_user_00117'{/yun}</div>
                
             </li>
             <li>
@@ -153,7 +153,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="task_subject_box_btn_accomplish">{yun:}t key='wap_user_alltask_00022'{/yun}</div>
+                <div class="task_subject_box_btn_accomplish">{yun:}t key='wap_user_00126'{/yun}</div>
             </li>
             <li>
                 <div class="task_subject_box">
@@ -161,14 +161,14 @@
                         <img src="{yun:}$wap_style{/yun}/images/task_ mailbox .png" alt="">
                     </div>
                     <div class="task_subject_init">
-                        <div class="subject_init_top">{yun:}t key='wap_user_alltask_00018'{/yun}</div>
+                        <div class="subject_init_top">{yun:}t key='wap_user_00122'{/yun}</div>
                         <div class="subject_init_bom">
                             +{{integral_emailcert}}{{integral_pricename}}
                         </div>
                     </div>
                 </div>
-                <div class="task_subject_box_btn_accomplish" v-if="tasklist.emailChecked">{yun:}t key='wap_user_alltask_00024'{/yun}</div>
-                <div class="task_subject_box_btn" v-else onclick="navigateTo('index.php?c=bindingbox&type=email')">{yun:}t key='wap_com_integral_00007'{/yun}</div>               
+                <div class="task_subject_box_btn_accomplish" v-if="tasklist.emailChecked">{yun:}t key='wap_user_00128'{/yun}</div>
+                <div class="task_subject_box_btn" v-else onclick="navigateTo('index.php?c=bindingbox&type=email')">{yun:}t key='wap_com_00186'{/yun}</div>               
             </li>
             <li>
                 <div class="task_subject_box">
@@ -176,14 +176,14 @@
                         <img src="{yun:}$wap_style{/yun}/images/task_streamer.png" alt="">
                     </div>
                     <div class="task_subject_init">
-                        <div class="subject_init_top">{yun:}t key='wap_com_banner_00001'{/yun}</div>
+                        <div class="subject_init_top">{yun:}t key='wap_com_00033'{/yun}</div>
                         <div class="subject_init_bom">
                             +{{integral_banner}}{{integral_pricename}}
                         </div>
                     </div>
                 </div>                
-                <div class="task_subject_box_btn_accomplish" v-if="tasklist.banner">{yun:}t key='wap_user_alltask_00019'{/yun}</div>
-                <div class="task_subject_box_btn" v-else onclick="navigateTo('index.php?c=banner')">{yun:}t key='wap_com_integral_00004'{/yun}</div>                
+                <div class="task_subject_box_btn_accomplish" v-if="tasklist.banner">{yun:}t key='wap_user_00123'{/yun}</div>
+                <div class="task_subject_box_btn" v-else onclick="navigateTo('index.php?c=banner')">{yun:}t key='wap_com_00183'{/yun}</div>                
             </li>
             <li>
                 <div class="task_subject_box">
@@ -191,14 +191,14 @@
                         <img src="{yun:}$wap_style{/yun}/images/task_answer.png" alt="">
                     </div>
                     <div class="task_subject_init">
-                        <div class="subject_init_top">{yun:}t key='wap_user_alltask_00009'{/yun}</div>
+                        <div class="subject_init_top">{yun:}t key='wap_user_00113'{/yun}</div>
                         <div class="subject_init_bom">
                             +{{integral_answer}}{{integral_pricename}}
                         </div>
                     </div>
                 </div>
-                <div class="task_subject_box_btn" v-if="tasklist.answer" onclick="navigateTo('{yun:}url m=wap c=ask{/yun}')">{yun:}t key='wap_user_alltask_00009'{/yun}</div>
-                <div class="task_subject_box_btn_accomplish" v-else>{yun:}t key='wap_com_integral_00009'{/yun}</div>                
+                <div class="task_subject_box_btn" v-if="tasklist.answer" onclick="navigateTo('{yun:}url m=wap c=ask{/yun}')">{yun:}t key='wap_user_00113'{/yun}</div>
+                <div class="task_subject_box_btn_accomplish" v-else>{yun:}t key='wap_com_00188'{/yun}</div>                
             </li>
             <li>
                 <div class="task_subject_box">
@@ -213,7 +213,7 @@
                     </div>
                 </div>
                 <div class="task_subject_box_btn" v-if="tasklist.answerpl" onclick="navigateTo('{yun:}url m=wap c=ask{/yun}')">评论回复</div>
-                <div class="task_subject_box_btn_accomplish" v-else>{yun:}t key='wap_com_integral_00008'{/yun}</div>                
+                <div class="task_subject_box_btn_accomplish" v-else>{yun:}t key='wap_com_00187'{/yun}</div>                
             </li>
         </ul>
     </div>
@@ -223,8 +223,8 @@
         <div class="hb_tc">
             <img :src="inviteRegHb" style="max-width: 100%;">
             <div class="hb_tc_bth">
-                <div @click="getInviteRegHb()" class="hb_tc_hyz">{yun:}t key='wap_user_alltask_00025'{/yun}</div>
-                <div class="hb_tc_bchb"> <span class="hb_tc_bchb_c" @click="inviteRegHbTipShow=!inviteRegHbTipShow" v-if="inviteRegHbTipShow"> <i class="hb_tc_bchbicon"></i>{yun:}t key='wap_hb_whb_00001'{/yun} </span></div>
+                <div @click="getInviteRegHb()" class="hb_tc_hyz">{yun:}t key='wap_user_00129'{/yun}</div>
+                <div class="hb_tc_bchb"> <span class="hb_tc_bchb_c" @click="inviteRegHbTipShow=!inviteRegHbTipShow" v-if="inviteRegHbTipShow"> <i class="hb_tc_bchbicon"></i>{yun:}t key='wap_00214'{/yun} </span></div>
             </div>
         </div>
     </van-popup>
@@ -296,7 +296,7 @@
             },'json');
           },     
           sign:function(){
-            showLoading("{yun:}t key='wap_user_alltask_00003'{/yun}");
+            showLoading("{yun:}t key='wap_user_00107'{/yun}");
             var that = this;
             var paramer = {rand: Math.random()};
             $.post('{yun:}url d=wxapp h=com m=index c=sign{/yun}',paramer,function(data){
@@ -339,13 +339,13 @@
                 if(hbNum == 0){
                     var lr = that.getInviteRegHbList();
                     if(!lr){
-                        showToast("{yun:}t key='wap_user_alltask_00001'{/yun}", 2);
+                        showToast("{yun:}t key='wap_user_00105'{/yun}", 2);
                         return false;
                     }
                     hbNum = invite_reg_hbids.length; // 重新分配海报数量
                 }
 
-                showLoading("{yun:}t key='wap_hb_gongzhao_whb_00002'{/yun}");
+                showLoading("{yun:}t key='wap_00073'{/yun}");
                 const src = wapurl + '?c=ajax&a=getInviteRegHb&hb=' + invite_reg_hbids[hb];
                 if (hb < (parseInt(hbNum) - 1)) {
                     var next = hb + 1;

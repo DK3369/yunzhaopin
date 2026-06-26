@@ -36,17 +36,17 @@
 <div class="yun_map_tit">
     <ul>
         <li class="yun_map_cur">
-            <a href="{yun:}url m=wap c=map x=$smarty.get.x y=$smarty.get.y{/yun}">{yun:}t key='wap_map_00002'{/yun}</a>
+            <a href="{yun:}url m=wap c=map x=$smarty.get.x y=$smarty.get.y{/yun}">{yun:}t key='wap_00316'{/yun}</a>
         </li>
         {yun:}if $config.map_key{/yun}
         <li>
-            <a href="{yun:}url m=wap c=map a=maplist x=$smarty.get.x y=$smarty.get.y{/yun}" class="tcq_mune_msgnews_box">{yun:}t key='wap_map_00003'{/yun}</a>
+            <a href="{yun:}url m=wap c=map a=maplist x=$smarty.get.x y=$smarty.get.y{/yun}" class="tcq_mune_msgnews_box">{yun:}t key='wap_00317'{/yun}</a>
         </li>
         {yun:}/if{/yun}
     </ul>
 </div>
 
-<!--{yun:}t key='default_map_index_00001'{/yun}-->
+<!--{yun:}t key='default_00262'{/yun}-->
 <div class="" id="com">
 </div>
 <div id="pageVue" class="none">
@@ -128,7 +128,7 @@
                         joblist_html += '<div class="map_job_info"></div>';
                         joblist_html += '<div class="map_job_com"><a href="' + res.list[i].comurl + '">' + res.list[i].com_name + '</a></div>';
                         if (res.list[i].lastupdate) {
-                            joblist_html += '<div class="map_job_com">{yun:}t key='wap_member_publictwo_00004'{/yun}：<span class="">' + res.list[i].lastupdate + '</span></div>';
+                            joblist_html += '<div class="map_job_com">{yun:}t key='wap_00326'{/yun}：<span class="">' + res.list[i].lastupdate + '</span></div>';
                         }
                         if (res.list[i].welfare) {
                             joblist_html += '<div class="map_job_fl">';
@@ -139,7 +139,7 @@
                         }
                         joblist_html += '</div>';
                         joblist_html += '</div>';
-                        joblist_html += '<div class="com_map"><a href="' + res.list[i].addressurl + '"><span class="com_map_name">{yun:}t key='wap_js_umeditor_lang_zh_cn_zh_cn_00014'{/yun}</span>' + res.list[i].address + '<em>' + res.list[i].dis + '</em><i class="com_map_name_icon"></i></a></div>';
+                        joblist_html += '<div class="com_map"><a href="' + res.list[i].addressurl + '"><span class="com_map_name">{yun:}t key='wap_js_00082'{/yun}</span>' + res.list[i].address + '<em>' + res.list[i].dis + '</em><i class="com_map_name_icon"></i></a></div>';
                         joblist_html += '</div>';
                     }
                     $('#com').html(joblist_html);

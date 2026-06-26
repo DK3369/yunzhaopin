@@ -6,8 +6,8 @@
        <div class=right_box>
                 <div class="newmember_tit">
                                 <ul>
-                                    <li><a href="index.php?c=binding">{yun:}t key='wap_user_set_00001'{/yun}</a></li>
-                                    <li><a href="index.php?c=vs">{yun:}t key='member_com_binding_00011'{/yun}</a></li>
+                                    <li><a href="index.php?c=binding">{yun:}t key='wap_user_00340'{/yun}</a></li>
+                                    <li><a href="index.php?c=vs">{yun:}t key='member_com_00070'{/yun}</a></li>
                                     <li class="newmember_titcur"><a href="index.php?c=logout">账号注销</a></li>
                                      
                                          
@@ -19,8 +19,8 @@
                       
                             {yun:}if $step == 1{/yun}
                             <div class="wxts_box wxts_box_mt30">
-                                <div class="wxts">{yun:}t key='wap_user_index_00023'{/yun}：注销账号后将放弃以下资产和权益</div>
-                                1. 身份信息，{yun:}t key='admin_user_users_component_resume_add_00001'{/yun}，会员权益将清空且无法恢复<br>
+                                <div class="wxts">{yun:}t key='wap_user_00205'{/yun}：注销账号后将放弃以下资产和权益</div>
+                                1. 身份信息，{yun:}t key='admin_user_00191'{/yun}，会员权益将清空且无法恢复<br>
                                 2. 交易记录将被清空<br>
                                 3. 账号绑定的手机邮箱QQ等相关信息将被释放，账号将无法登陆<br>
                             </div>
@@ -36,13 +36,13 @@
                                 </div>
                                 <div  id="pw_type">
                                     <div class="Binding_pop_box_list">
-                                        <input type="password" name="password" id="password" value="" class="Binding_pop_box_list_text Binding_pop_box_list_textw200" placeholder="{yun:}t key='wap_js_public_00002'{/yun}"/>
+                                        <input type="password" name="password" id="password" value="" class="Binding_pop_box_list_text Binding_pop_box_list_textw200" placeholder="{yun:}t key='wap_js_00139'{/yun}"/>
                                     </div>
                                     <a href="javascript:;" onclick="logoutApply();" class="msg_no_sq uesr_submit" style="">申请注销</a>
                                 </div>
                                 <div style="display:none" id="mobile_type" >
                                     <div class="Binding_pop_box_list">
-                                        <input class="Binding_pop_box_list_text Binding_pop_box_list_textw200" style="padding-left:10px;" name="mobile" id="mobile" type="text" placeholder="{yun:}t key='wap_js_forgetpw_00004'{/yun}" value="{yun:}$tel.moblie{/yun}" onblur="isChecked('mobile')">
+                                        <input class="Binding_pop_box_list_text Binding_pop_box_list_textw200" style="padding-left:10px;" name="mobile" id="mobile" type="text" placeholder="{yun:}t key='wap_js_00119'{/yun}" value="{yun:}$tel.moblie{/yun}" onblur="isChecked('mobile')">
                                     </div>
                                     <div class="account_td1">
                                         {yun:}if strpos($config.code_web,"找回密码")!==false{/yun}
@@ -60,7 +60,7 @@
                                         {yun:}else{/yun}
                                         <div class="account_td1" style="display:inline-block;margin-top: 20px;">
                                             <div class="code_all">
-                                                <input name="authcode" id="authcode" type="text" style="width:251px;" class="Binding_pop_box_list_text Binding_pop_box_list_textw200" placeholder="{yun:}t key='wap_user_bindingbox_00002'{/yun}">
+                                                <input name="authcode" id="authcode" type="text" style="width:251px;" class="Binding_pop_box_list_text Binding_pop_box_list_textw200" placeholder="{yun:}t key='wap_user_00141'{/yun}">
                                                 <img id="vcodeimgs" onclick="checkCode('vcodeimgs');" src="{yun:}$config.sy_weburl{/yun}/app/include/authcode.inc.php" style="width: 100px; height: 38px;border:1px solid #eee" />
                                             </div>
                                         </div>
@@ -68,7 +68,7 @@
                                         {yun:}/if{/yun}
                                         <div class="code_all">
                                             <input name="mobile_vcode" style="padding-left:10px;margin-top: 20px;" id="mobile_vcode" type="text" class="Binding_pop_box_list_text Binding_pop_box_list_textw200" placeholder="请输入短信验证码" >
-                                            <input type="button" class="btn_yell J_hoverbut msg_tip logout_yzm" id="send_msg_tip" onclick="send_msg()" value="{yun:}t key='wap_user_bindingbox_00005'{/yun}">
+                                            <input type="button" class="btn_yell J_hoverbut msg_tip logout_yzm" id="send_msg_tip" onclick="send_msg()" value="{yun:}t key='wap_user_00144'{/yun}">
                                         </div>
                                         <a href="javascript:;" onclick="logoutmsg();" class="msg_no_sq uesr_submit" style="">申请注销</a>
                                     </div>
@@ -138,7 +138,7 @@
             layer.msg('请填写账户密码',2,8);
             return false;
         }
-        layer.load("{yun:}t key='wap_js_publicselect_00003'{/yun}",0);
+        layer.load("{yun:}t key='wap_js_00148'{/yun}",0);
         $.post('index.php?c=logout&act=logoutApply', {password: password}, function (data) {
             if (data) {
                 layer.closeAll();
@@ -164,7 +164,7 @@
             layer.msg('请填写验证码',2,8);
             return false;
         }
-        layer.load("{yun:}t key='wap_js_publicselect_00003'{/yun}",0);
+        layer.load("{yun:}t key='wap_js_00148'{/yun}",0);
         $.post('index.php?c=logout&act=logoutmsg', {moblie: mobile}, function (data) {
             if (data) {
                 layer.closeAll();

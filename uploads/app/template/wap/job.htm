@@ -6,7 +6,7 @@
             <img src="{yun:}$wap_style{/yun}/images/nav_icon_return.png" alt="" style="width: 100%;" onclick="">
         </a>
         <div class="job_header_center">
-            <input type="text" readonly class="searchnew" value="{yun:}if $smarty.get.keyword{/yun}{yun:}$smarty.get.keyword{/yun}{yun:}/if{/yun}" placeholder="{yun:}if $smarty.get.keyword{/yun}{yun:}$smarty.get.keyword{/yun}{yun:}else{/yun}{yun:}t key='wap_user_invite_00001'{/yun}/{yun:}t key='default_map_index_00001'{/yun}{yun:}/if{/yun}">
+            <input type="text" readonly class="searchnew" value="{yun:}if $smarty.get.keyword{/yun}{yun:}$smarty.get.keyword{/yun}{yun:}/if{/yun}" placeholder="{yun:}if $smarty.get.keyword{/yun}{yun:}$smarty.get.keyword{/yun}{yun:}else{/yun}{yun:}t key='wap_user_00254'{/yun}/{yun:}t key='default_00262'{/yun}{yun:}/if{/yun}">
         </div>
         <input type="hidden" id="searchurl" value="{yun:}$searchurl{/yun}" />
     </div>
@@ -17,10 +17,10 @@
                     <a href="{yun:}searchurl m=wap c=job untype='urgent,mapjob'{/yun}">{yun:}t key='common.latest'{/yun}</a>
                 </li>
                 <li class="{yun:}if $smarty.get.urgent{/yun}active{yun:}/if{/yun}">
-                    <a href="{yun:}searchurl m=wap c=job urgent=1 untype='mapjob'{/yun}">{yun:}t key='wap_com_job_00059'{/yun}</a>
+                    <a href="{yun:}searchurl m=wap c=job urgent=1 untype='mapjob'{/yun}">{yun:}t key='wap_com_00250'{/yun}</a>
                 </li>
                 <li class="{yun:}if $smarty.get.mapjob{/yun}active{yun:}/if{/yun}">
-                    <a href="{yun:}searchurl m=wap c=job mapjob=1 untype='urgent'{/yun}">{yun:}t key='wap_index_00007'{/yun}</a>
+                    <a href="{yun:}searchurl m=wap c=job mapjob=1 untype='urgent'{/yun}">{yun:}t key='wap_00223'{/yun}</a>
                 </li>
             </ul>
         </div>
@@ -45,7 +45,7 @@
                 <li onclick="jobshow();">{yun:}if $smarty.get.job1{/yun}{yun:}$job_name[$smarty.get.job1]{/yun}{yun:}elseif $smarty.get.job1son{/yun}{yun:}$job_name[$smarty.get.job1son]{/yun}{yun:}elseif $smarty.get.jobpost{/yun}{yun:}$job_name[$smarty.get.jobpost]{/yun}{yun:}else{/yun}职能{yun:}/if{/yun}
                     <i class="nav_right_open"></i>
                 </li>
-                <li onclick="jobmoreShow();">{yun:}t key='wap_job_00013'{/yun}
+                <li onclick="jobmoreShow();">{yun:}t key='wap_00238'{/yun}
                     <i class="nav_right_open"></i>
                 </li>
             </ul>
@@ -60,18 +60,18 @@
         {yun:}if ($isweixin && $config.sy_wxwap_list==2) || $smarty.get.mapjob{/yun}
         <div id="listdiv" class="cont active"></div>
         <div id="pageLoading" class="lodbox none"><span class="lodbox_p"><i class="lodbox_iocn"></i>正在加载...</span></div>
-        <div id="pageNoMore" class="lodbox none"> -{yun:}t key='admin_user_users_component_usersall_00017'{/yun}-</div>
+        <div id="pageNoMore" class="lodbox none"> -{yun:}t key='admin_user_00283'{/yun}-</div>
         {yun:}else{/yun}
         <div id="listdiv" class="cont active">
             {yun:}if $smarty.get.page < 2{/yun} 
 			{yun:}joblist namelen=10 comlen=30 welfare='auto.welfare' job1='auto.job1' job1son='auto.job1son' jobpost='auto.jobpost' report='auto.report' hy='auto.hy' jobids='auto.jobids' pr='auto.pr' mun='auto.mun' provinceid='auto.provinceid' cityid='auto.cityid' threecityid='auto.threecityid' type='auto.type' edu='auto.edu' exp='auto.exp' sex='auto.sex' minsalary='auto.minsalary' maxsalary='auto.maxsalary' keyword='auto.keyword' cert='auto.cert' urgent='auto.urgent' rec='auto.rec' bid=1 uptime='auto.uptime' key=key item=zd_list name=zdlist1{/yun} <a href="{yun:}url m=wap c=job a=comapply id=$zd_list.id{/yun}" title="{yun:}$zd_list.name{/yun}">
                 <div class="tab_card">
-                    <!--{yun:}t key='admin_user_company_component_companyuser_00062'{/yun}-->
+                    <!--{yun:}t key='admin_user_company_00127'{/yun}-->
                      {yun:}if $zd_list.fact_status=='1'{/yun}
                      <div class="ptyhybox">
                      <div class="ptyhy">
-                     <i class="ptyhy_icon"></i>{yun:}t key='wap_job_show_00031'{/yun}</div></div> 
-                     {yun:}/if{/yun}<!--{yun:}t key='admin_user_company_component_companyuser_00062'{/yun}-->
+                     <i class="ptyhy_icon"></i>{yun:}t key='wap_00274'{/yun}</div></div> 
+                     {yun:}/if{/yun}<!--{yun:}t key='admin_user_company_00127'{/yun}-->
                     <div class="tab_card_top">
                         <div class="tab_card_job">
                             <i class="tab_card_job_name">{yun:}$zd_list.name_n{/yun}</i>
@@ -114,11 +114,11 @@
                             <img src="{yun:}$zd_list.logo{/yun}" alt="" style="width: 100%;">
                         </div>
                         <i class="card_bottom_word">{yun:}$zd_list.com_name|strip_tags|mb_substr:0:14:'utf-8'{/yun}</i>
-						{yun:}if $zd_list.ratlogo!="" && $zd_list.ratlogo!="0"{/yun}{yun:}if $zd_list.hotlogo==1{/yun} <img src="{yun:}$config.sy_weburl{/yun}/app/template/wap/images/mq.png" alt="{yun:}t key='wap_joblist_vue_00001'{/yun}" class="png" width="14" style="vertical-align:middle">{yun:}/if{/yun}<img src="{yun:}$zd_list.ratlogo{/yun}" style="vertical-align:middle; margin-left:3px;" width="14" height="14" /> {yun:}/if{/yun} {yun:}if $zd_list.yyzz_status=='1'{/yun}
+						{yun:}if $zd_list.ratlogo!="" && $zd_list.ratlogo!="0"{/yun}{yun:}if $zd_list.hotlogo==1{/yun} <img src="{yun:}$config.sy_weburl{/yun}/app/template/wap/images/mq.png" alt="{yun:}t key='wap_00299'{/yun}" class="png" width="14" style="vertical-align:middle">{yun:}/if{/yun}<img src="{yun:}$zd_list.ratlogo{/yun}" style="vertical-align:middle; margin-left:3px;" width="14" height="14" /> {yun:}/if{/yun} {yun:}if $zd_list.yyzz_status=='1'{/yun}
 						<i class="job_qy_rz_icon"></i> {yun:}/if{/yun}
                         <div>
                             <i class="zdnow">
-                                {yun:}t key='wap_user_resume_00013'{/yun}
+                                {yun:}t key='wap_user_00335'{/yun}
                             </i>
                         </div>
                     </div>
@@ -131,7 +131,7 @@
                     <a href="{yun:}url m=wap c=job a=comapply id=$job_list.id{/yun}" title="{yun:}$job_list.name{/yun}">
                         {yun:}if $job_list.fact_status=='1'{/yun} <div class="ptyhybox">
                             <div class="ptyhy">
-                            <i class="ptyhy_icon"></i>{yun:}t key='wap_job_show_00031'{/yun}</div></div>  {yun:}/if{/yun}<!--{yun:}t key='admin_user_company_component_companyuser_00062'{/yun}-->
+                            <i class="ptyhy_icon"></i>{yun:}t key='wap_00274'{/yun}</div></div>  {yun:}/if{/yun}<!--{yun:}t key='admin_user_company_00127'{/yun}-->
                         <div class="tab_card">
                             <div class="tab_card_top">
                                 <div class="tab_card_job">
@@ -175,7 +175,7 @@
                                     <img src="{yun:}$job_list.logo{/yun}" alt="" style="width: 100%;">
                                 </div>
                                 <div class="card_bottom_word">{yun:}$job_list.com_name|strip_tags|mb_substr:0:14:'utf-8'{/yun}</div>
-                                {yun:}if $job_list.ratlogo!="" && $job_list.ratlogo!="0"{/yun}{yun:}if $job_list.hotlogo==1{/yun} <img src="{yun:}$config.sy_weburl{/yun}/app/template/wap/images/mq.png" alt="{yun:}t key='wap_joblist_vue_00001'{/yun}" class="png" width="14" style="vertical-align:middle">{yun:}/if{/yun}<img src="{yun:}$job_list.ratlogo{/yun}" style="vertical-align:middle; margin-left:3px;" width="14" height="14" /> {yun:}/if{/yun} {yun:}if $job_list.yyzz_status=='1'{/yun}
+                                {yun:}if $job_list.ratlogo!="" && $job_list.ratlogo!="0"{/yun}{yun:}if $job_list.hotlogo==1{/yun} <img src="{yun:}$config.sy_weburl{/yun}/app/template/wap/images/mq.png" alt="{yun:}t key='wap_00299'{/yun}" class="png" width="14" style="vertical-align:middle">{yun:}/if{/yun}<img src="{yun:}$job_list.ratlogo{/yun}" style="vertical-align:middle; margin-left:3px;" width="14" height="14" /> {yun:}/if{/yun} {yun:}if $job_list.yyzz_status=='1'{/yun}
                                 <i class="job_qy_rz_icon"></i> {yun:}/if{/yun}
                                 <i class="card_bottom_logo_word">
                                     {yun:}if $job_list.time=='今天' || $job_list.time=='昨天'||$job_list.redtime=='1'{/yun}
@@ -197,14 +197,14 @@
 			<div class="wap_member_no">{yun:}t key='common_01912'{/yun},这个星球没有职位呢！</div>
 			{yun:}/if{/yun}
 			<div class="wap_member_no_submit">
-				<a class="wap_mb_no_sr" href="{yun:}url m=wap c='job'{/yun}">{yun:}t key='wap_announcement_00002'{/yun}</a>
+				<a class="wap_mb_no_sr" href="{yun:}url m=wap c='job'{/yun}">{yun:}t key='wap_00130'{/yun}</a>
 			</div>
 		{yun:}else{/yun}
             {yun:}if $total>20{/yun}
     		<van-pagination v-model="currentPage" :total-items="total" :items-per-page="perpage" force-ellipses @change="pageChange" show-page-size="3" />
     		{yun:}/if{/yun}
 		{yun:}/if{/yun}
-        <!--{yun:}t key='wap_com_zhaopin_00005'{/yun} 样式需要添加-->
+        <!--{yun:}t key='wap_com_00418'{/yun} 样式需要添加-->
         {yun:}if $total<=0 && !$smarty.get.rec{/yun} <section id="muirecjob" class=" ">
             <div class="newjob_tj ">
                 <span class=" ">- 为你推荐职位 -</span>
@@ -215,7 +215,7 @@
                     {yun:}if $blist.fact_status=='1'{/yun}
             <div class="ptyhybox">
             <div class="ptyhy">
-                    <i class="ptyhy_icon"></i>{yun:}t key='wap_job_show_00031'{/yun} </div> </div> {yun:}/if{/yun}<!--{yun:}t key='admin_user_company_component_companyuser_00062'{/yun}-->
+                    <i class="ptyhy_icon"></i>{yun:}t key='wap_00274'{/yun} </div> </div> {yun:}/if{/yun}<!--{yun:}t key='admin_user_company_00127'{/yun}-->
                     <div class="tab_card_top">
                         <div class="tab_card_job"><i class="tab_card_job_name">{yun:}$blist.name_n{/yun} </i></div>
                         <i class="tab_card_pay">{yun:}if $blist.job_salary!='面议'{/yun}{yun:}/if{/yun}{yun:}$blist.job_salary{/yun}</i>

@@ -29,7 +29,7 @@
 							{yun:}elseif $city_name[$smarty.get.three_cityid]{/yun}
 								{yun:}$city_name[$smarty.get.three_cityid]{/yun}
 							{yun:}else{/yun}
-								{yun:}t key='wap_com_address_00002'{/yun}
+								{yun:}t key='wap_com_00032'{/yun}
 							{yun:}/if{/yun}
 						</span>
                 </a>
@@ -72,9 +72,9 @@
 </section>
 {yun:}if $total<=0{/yun}
   {yun:}if $smarty.get.keyword!="" {/yun}
-  <div class="wap_member_no">没有搜索到普工简历<div><a class="wap_mb_no_sr" href="{yun:}url m=wap c='tiny'{/yun}">{yun:}t key='wap_announcement_00002'{/yun}</a></div></div>
+  <div class="wap_member_no">没有搜索到普工简历<div><a class="wap_mb_no_sr" href="{yun:}url m=wap c='tiny'{/yun}">{yun:}t key='wap_00130'{/yun}</a></div></div>
 {yun:}else{/yun}
-<div class="wap_member_no">{yun:}t key='wap_tiny_00003'{/yun}<div><a class="wap_mb_no_sr" href="{yun:}url m=wap c='tiny'{/yun}">{yun:}t key='wap_announcement_00002'{/yun}</a></div></div>
+<div class="wap_member_no">{yun:}t key='wap_00524'{/yun}<div><a class="wap_mb_no_sr" href="{yun:}url m=wap c='tiny'{/yun}">{yun:}t key='wap_00130'{/yun}</a></div></div>
 {yun:}/if{/yun}
   {yun:}else{/yun}
   <div class="t_tip">
@@ -89,14 +89,14 @@
 		       <div class="once_search_list_fb_box">
 			{yun:}if $isFb{/yun}						
 				{yun:}if $config.sy_tiny == 0{/yun}
-				<a href="{yun:}url m=wap c=tiny a=add{/yun}"  class="once_search_list_fb">{yun:}t key='wap_tiny_00002'{/yun}</a>
+				<a href="{yun:}url m=wap c=tiny a=add{/yun}"  class="once_search_list_fb">{yun:}t key='wap_00523'{/yun}</a>
 				{yun:}else if $num > 0{/yun}
-				<a href="javascript:void(0);" onclick="tinyadd('{yun:}t key='wap_once_00005'{/yun}{yun:}$config.sy_tiny{/yun}{yun:}t key='common_02089'{/yun}，剩余可发布{yun:}$num{/yun}{yun:}t key='common_02089'{/yun}','{yun:}url m=wap c=tiny a=add{/yun}')"  class="once_search_list_fb">{yun:}t key='wap_tiny_00002'{/yun}</a>
+				<a href="javascript:void(0);" onclick="tinyadd('{yun:}t key='common_02178'{/yun}{yun:}$config.sy_tiny{/yun}{yun:}t key='common_02089'{/yun}，剩余可发布{yun:}$num{/yun}{yun:}t key='common_02089'{/yun}','{yun:}url m=wap c=tiny a=add{/yun}')"  class="once_search_list_fb">{yun:}t key='wap_00523'{/yun}</a>
 				{yun:}else{/yun}
-				<a href="javascript:void(0);" onclick="showToast('{yun:}t key='wap_once_00005'{/yun}{yun:}$config.sy_tiny{/yun}{yun:}t key='common_02089'{/yun}！')"  class="once_search_list_fb">{yun:}t key='wap_tiny_00002'{/yun}</a>
+				<a href="javascript:void(0);" onclick="showToast('{yun:}t key='common_02178'{/yun}{yun:}$config.sy_tiny{/yun}{yun:}t key='common_02089'{/yun}！')"  class="once_search_list_fb">{yun:}t key='wap_00523'{/yun}</a>
 				{yun:}/if{/yun}
 			{yun:}else{/yun}
-				<a href="javascript:void(0);" onclick="showToast('网站发布普工简历本日已到上限，如有急需，请联系网站客服！')"  class="once_search_list_fb">{yun:}t key='wap_tiny_00002'{/yun}</a>
+				<a href="javascript:void(0);" onclick="showToast('网站发布普工简历本日已到上限，如有急需，请联系网站客服！')"  class="once_search_list_fb">{yun:}t key='wap_00523'{/yun}</a>
 			{yun:}/if{/yun}   
 </div></div>
 {yun:}include file="$wapstyle/publichtm/public_js.htm"{/yun}

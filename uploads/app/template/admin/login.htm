@@ -7,7 +7,7 @@
 		type="text/css" />
 	<link href="../app/template/admin/images/admin.css?v={yun:}$config.cachecode{/yun}" rel="stylesheet"
 		type="text/css" />
-	<title>{yun:}$config.sy_webname{/yun} - {yun:}t key='admin_login_00001'{/yun}</title>
+	<title>{yun:}$config.sy_webname{/yun} - {yun:}t key='common_02125'{/yun}</title>
 </head>
 
 <body>
@@ -60,12 +60,12 @@
 							<div class="loginTabse" v-if="showDiv1">
 								<ul class="logoinList">
 									<li>
-										<div class="adminLogins"><input type="text" class="ipt" placeholder="{yun:}t key='wap_forgetpw_00008'{/yun}"
+										<div class="adminLogins"><input type="text" class="ipt" placeholder="{yun:}t key='wap_00208'{/yun}"
 												v-model="username" />
 									</li>
 									<li>
 										<div class="adminLogins adminLoginTwo"><input type="password" class="ipt"
-												placeholder="{yun:}t key='wap_js_public_00002'{/yun}" v-model="password" /></div>
+												placeholder="{yun:}t key='wap_js_00139'{/yun}" v-model="password" /></div>
 									</li>
 									{yun:}if strpos($config.code_web,"后台登录")!==false{/yun}
 
@@ -81,7 +81,7 @@
 									{yun:}else{/yun}
 									<li>
 										<div class="loginMessage">
-											<input type="text" placeholder="{yun:}t key='admin_login_00002'{/yun}" class="ipt" style="width:125px;"
+											<input type="text" placeholder="{yun:}t key='admin_00381'{/yun}" class="ipt" style="width:125px;"
 												v-model="authcode" />
 											<img src="{yun:}$config.sy_weburl{/yun}/app/include/authcode.inc.php"
 												align="absmiddle" id='vcode_imgs' @click="checkCode('vcode_imgs');">
@@ -115,7 +115,7 @@
 										<img :src="code_img" alt="">
 									</div>
 									<div class="weixinsapTxte">
-										<span>{yun:}t key='default_public_search_login_00001'{/yun}</span>
+										<span>{yun:}t key='default_00060'{/yun}</span>
 									</div>
 								</div>
 								<div class="loginIptText" style="color: #999; font-size: 13px; text-align:center;">
@@ -183,7 +183,7 @@
 						if (res.error == 0) {
 							clearInterval(that.codesetval);
 						    message.success(res.msg, function () {
-						        // {yun:}t key='member_user_privacy_00005'{/yun}localStorage
+						        // {yun:}t key='member_user_00259'{/yun}localStorage
 								localStorage.clear();
 								
 								// window.location.reload();
@@ -222,14 +222,14 @@
 						return false;
 					}
 					if (this.username == '') {
-						this.$message.error("{yun:}t key='wap_js_reg_ajax_00016'{/yun}");
+						this.$message.error("{yun:}t key='wap_js_00056'{/yun}");
 						return false;
 					}
 					if (this.password == '') {
-						this.$message.error("{yun:}t key='wap_js_reg_ajax_00021'{/yun}");
+						this.$message.error("{yun:}t key='wap_js_00061'{/yun}");
 						return false;
 					}
-					var codesear = new RegExp("{yun:}t key='admin_system_set_component_yanzhenm_00010'{/yun}");
+					var codesear = new RegExp("{yun:}t key='admin_system_00423'{/yun}");
 					if (codesear.test(code_web)) {
 						if (code_kind == 1) {
 							if (this.authcode == '') {
@@ -265,7 +265,7 @@
 					axios.post('index.php?c=login", param).then(function (response) {
 						var res = response.data;
 						if (res.error == 0) {
-							// {yun:}t key='member_user_privacy_00005'{/yun}localStorage
+							// {yun:}t key='member_user_00259'{/yun}localStorage
 							localStorage.clear();
 
 							// window.location.reload();

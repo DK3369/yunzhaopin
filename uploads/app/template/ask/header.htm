@@ -46,17 +46,17 @@ var weburl="{yun:}$config.sy_weburl{/yun}",integral_pricename='{yun:}$config.int
 <div class="ask_header">
 <div class="ask_header_cont">
 <div class="logo fl"><a href="{yun:}$config.sy_weburl{/yun}"><img class="png" src="{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_logo{/yun}" /></a></div>
-<span class="ask_by">{yun:}t key='wap_com_jobcolumn_00004'{/yun}</span>
+<span class="ask_by">{yun:}t key='wap_com_00312'{/yun}</span>
 
 <div class="ask_header_nav_cont"> 
 		<ul> 
 			<li {yun:}if $navtype==''{/yun}class="cur"{yun:}/if{/yun}><a href="{yun:}url m=ask{/yun}">{yun:}t key='common.home'{/yun}</a></li>
-			<li {yun:}if $navtype=='topic'{/yun}class="cur"{yun:}/if{/yun}><a href="{yun:}url m=ask c=topic{/yun}">{yun:}t key='ask_header_00002'{/yun}</a></li>
-			<li {yun:}if $navtype=='hotweek'{/yun}class="cur"{yun:}/if{/yun}><a href="{yun:}url m=ask c=hotweek{/yun}">{yun:}t key='wap_ask_00004'{/yun}</a></li>	 
+			<li {yun:}if $navtype=='topic'{/yun}class="cur"{yun:}/if{/yun}><a href="{yun:}url m=ask c=topic{/yun}">{yun:}t key='ask_00012'{/yun}</a></li>
+			<li {yun:}if $navtype=='hotweek'{/yun}class="cur"{yun:}/if{/yun}><a href="{yun:}url m=ask c=hotweek{/yun}">{yun:}t key='wap_00153'{/yun}</a></li>	 
 			{yun:}if $uid && ($smarty.get.uid=='' || $smarty.get.uid==$uid){/yun} 
 			<li {yun:}if $smarty.get.c=='friend'{/yun}class="cur"{yun:}/if{/yun}><a href="{yun:}url m=ask c=friend a=myquestion type='types' uid=$uid{/yun}">我的主页</a></li> 
 			{yun:}elseif $smarty.get.uid{/yun}
-			<li {yun:}if $smarty.get.c=='friend'{/yun}class="cur"{yun:}/if{/yun}><a href="{yun:}url m=ask c=friend a=myquestion uid=$smarty.get.uid{/yun}">{yun:}t key='ask_header_00001'{/yun}</a></li>
+			<li {yun:}if $smarty.get.c=='friend'{/yun}class="cur"{yun:}/if{/yun}><a href="{yun:}url m=ask c=friend a=myquestion uid=$smarty.get.uid{/yun}">{yun:}t key='ask_00011'{/yun}</a></li>
 			{yun:}/if{/yun}
 			<li><a href="{yun:}$config.sy_weburl{/yun}">进入人才网首页</a></li>
 		</ul> 
@@ -82,9 +82,9 @@ var weburl="{yun:}$config.sy_weburl{/yun}",integral_pricename='{yun:}$config.int
 						<li class="option">{yun:}t key='common.search'{/yun}：<a href="#" target="_blank"></a></li>
 						<li class="me_quiz"><span>
 						{yun:}if $uid{/yun}
-							<a href="{yun:}url m=ask c=addquestion{/yun}" target="_blank">{yun:}t key='wap_job_show_00035'{/yun}</a>
+							<a href="{yun:}url m=ask c=addquestion{/yun}" target="_blank">{yun:}t key='wap_00278'{/yun}</a>
 						{yun:}else{/yun}
-							<a href="javascript:void(0);" onclick="showlogin('');">{yun:}t key='wap_job_show_00035'{/yun}</a>
+							<a href="javascript:void(0);" onclick="showlogin('');">{yun:}t key='wap_00278'{/yun}</a>
 						{yun:}/if{/yun}</span>
 						</li>
 					</ul>
@@ -92,9 +92,9 @@ var weburl="{yun:}$config.sy_weburl{/yun}",integral_pricename='{yun:}$config.int
 			</div>
             <div class="header_ask_ask">
         {yun:}if $uid{/yun}
-				<a href="{yun:}url m=ask c=addquestion{/yun}" target="_blank">{yun:}t key='wap_job_show_00035'{/yun}</a>
+				<a href="{yun:}url m=ask c=addquestion{/yun}" target="_blank">{yun:}t key='wap_00278'{/yun}</a>
 			{yun:}else{/yun}
-				<a href="javascript:void(0);" onclick="showlogin('');">{yun:}t key='wap_job_show_00035'{/yun}</a>
+				<a href="javascript:void(0);" onclick="showlogin('');">{yun:}t key='wap_00278'{/yun}</a>
 			{yun:}/if{/yun}
 	</div>-->
 		</div>

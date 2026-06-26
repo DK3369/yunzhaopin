@@ -20,20 +20,20 @@
 						：{yun:}$config.sy_freewebtel{/yun} </div>
 					<div class="suggest_list_group">
 						<div class="suggest_list_cell">
-							<div class="list_cell_left">{yun:}t key='admin_system_info_feedback_00006'{/yun}</div>
+							<div class="list_cell_left">{yun:}t key='admin_system_00203'{/yun}</div>
 							<div class="list_cell_right">
 								<div class="suggest_type_cell">
 									<div class="suggest_type" data-code="1"><input type="hidden" name="infotype" id="ctime" value="" class="suggest_type"
 										 data-code="1" />{yun:}t key='common_01983'{/yun}</div>
 								</div>
 								<div class="suggest_type_cell">
-									<div class="suggest_type" id="suggest_type" data-code="2">{yun:}t key='wap_advice_00008'{/yun}</div>
+									<div class="suggest_type" id="suggest_type" data-code="2">{yun:}t key='wap_00111'{/yun}</div>
 								</div>
 								<div class="suggest_type_cell">
-									<div class="suggest_type" data-code="3">{yun:}t key='wap_advice_00010'{/yun}</div>
+									<div class="suggest_type" data-code="3">{yun:}t key='wap_00113'{/yun}</div>
 								</div>
 								<div class="suggest_type_cell">
-									<div class="suggest_type" data-code="4">{yun:}t key='wap_advice_00009'{/yun}</div>
+									<div class="suggest_type" data-code="4">{yun:}t key='wap_00112'{/yun}</div>
 								</div>
 								<div class="clear"></div>
 								<input type="hidden" name="infotype" value="" />
@@ -41,13 +41,13 @@
 							<div class="clear"></div>
 						</div>
 						<div class="suggest_list_cell">
-							<div class="list_cell_left">{yun:}t key='wap_user_invitecont_00006'{/yun}</div>
-							<div class="list_cell_right"><input type="text" class="suggest_input" name="username" id="username" placeholder="{yun:}t key='wap_advice_00003'{/yun}！" value="{yun:}$advice_name{/yun}" /></div>
+							<div class="list_cell_left">{yun:}t key='wap_user_00267'{/yun}</div>
+							<div class="list_cell_right"><input type="text" class="suggest_input" name="username" id="username" placeholder="{yun:}t key='wap_00106'{/yun}！" value="{yun:}$advice_name{/yun}" /></div>
 							<div class="clear"></div>
 						</div>
 						<input type="hidden" name="ctime" id="ctime" value="" />
 						<div class="suggest_list_cell">
-							<div class="list_cell_left">{yun:}t key='wap_advice_00006'{/yun}</div>
+							<div class="list_cell_left">{yun:}t key='wap_00109'{/yun}</div>
 							<div class="list_cell_right"><input type="text" class="suggest_input" name="telphone" id="telphone" placeholder="请输入您的手机号码以便和您沟通，您的信息仅工作人员可见！" value="{yun:}$advice_mobile{/yun}"></div>
 							<div class="clear"></div>
 						</div>
@@ -65,9 +65,9 @@
                                 </div>
 							{yun:}else{/yun}
 							<div class="suggest_list_cell">
-                                <div class="list_cell_left">{yun:}t key='wap_advice_00007'{/yun}</div>
+                                <div class="list_cell_left">{yun:}t key='wap_00110'{/yun}</div>
 								<div class="" style="float:left">
-									<input class="suggest_input"style="width:200px" type="text" name="authcode" maxlength="6" id="txt_CheckCode" value="{yun:}t key='wap_advice_00007'{/yun}" />
+									<input class="suggest_input"style="width:200px" type="text" name="authcode" maxlength="6" id="txt_CheckCode" value="{yun:}t key='wap_00110'{/yun}" />
 								</div>
 								<div class="list_yzm" style="float:left;left:70%;margin-left:10px;">
 									<img id="vcode_imgs" src="{yun:}$config.sy_weburl{/yun}/app/include/authcode.inc.php" onclick="checkCode('vcode_imgs');" />
@@ -88,7 +88,7 @@
 						</div>
 						{yun:}/if{/yun}
 						<div class="suggest_list_cell">
-							<div class="list_cell_left">{yun:}t key='admin_system_info_feedback_00002'{/yun}</div>
+							<div class="list_cell_left">{yun:}t key='admin_system_00199'{/yun}</div>
 							<div class="list_cell_right">
 								<textarea class="suggest_area" id="content" name="content" placeholder="请详细描述您遇到的问题，有助于我们快速定位并解决问题"></textarea>
 							</div>
@@ -100,7 +100,7 @@
 						<div class="suggest_list_cell" style="margin-top:20px;">
 							<div class="list_cell_left">&nbsp;</div>
 							<div class="list_cell_right">
-								<input type="submit" class="btn_yellow suggest_btn" id="J_suggest_submit" value="{yun:}t key='member_com_jobadd_00026'{/yun}" />
+								<input type="submit" class="btn_yellow suggest_btn" id="J_suggest_submit" value="{yun:}t key='member_com_00248'{/yun}" />
 							</div>
 						</div>
 					</div>
@@ -140,7 +140,7 @@
 					$(obj).attr({'style':'color:#fff;font-weight: bold;'});
 					smsTimer_flag--;
 				}else{
-					$(obj).html("{yun:}t key='wap_js_forgetpw_00009'{/yun}");
+					$(obj).html("{yun:}t key='wap_js_00124'{/yun}");
 					$(obj).attr({'style':'color:#fff;font-weight: bold;'});
 					smsTimer_flag = smsTimer_time;
 					clearInterval(Timer);
@@ -154,20 +154,20 @@
 				if(moblie==''){
 					layer.msg('请填写手机号！', 2, 8);return false;
 				}else if(!isjsMobile(moblie)){ 
-					layer.msg("{yun:}t key='wap_js_forgetpw_00002'{/yun}", 2, 8);return false;
+					layer.msg("{yun:}t key='wap_js_00117'{/yun}", 2, 8);return false;
 				}
 
 				var verify_token	='';
 				var code = '';
 
 
-				var showCodeCheck = code_web.indexOf("{yun:}t key='wap_user_index_00021'{/yun}");
+				var showCodeCheck = code_web.indexOf("{yun:}t key='wap_user_00203'{/yun}");
 				if(showCodeCheck >= 0){		
 					if(code_kind==1){
 						if($("#txt_CheckCode").length>0){
 
 							code=$.trim($("#txt_CheckCode").val());  
-							if(!code || code == "{yun:}t key='wap_advice_00007'{/yun}"){
+							if(!code || code == "{yun:}t key='wap_00110'{/yun}"){
 								layer.msg('图片验证码不能为空！', 2, 8);return false;
 							}	
 				    	} 
@@ -191,7 +191,7 @@
 				
 				if(smsTimer_time==smsTimer_flag){
 					Timer = setInterval("smsTimer($('#send_advice_msg'))", smsTime_speed);
-					layer.load("{yun:}t key='wap_js_publicselect_00003'{/yun}",0);
+					layer.load("{yun:}t key='wap_js_00148'{/yun}",0);
 					$.post(url,{moblie:moblie,code:code,verify_token:verify_token,verify_str:verify_str},function(data){
 						layer.closeAll('loading');
 						if(data){
@@ -213,7 +213,7 @@
 						}
 					})
 				}else {
-					layer.msg("{yun:}t key='wap_js_forgetpw_00003'{/yun}", 2, 8);return false;
+					layer.msg("{yun:}t key='wap_js_00118'{/yun}", 2, 8);return false;
 				}
 			}
 
@@ -233,17 +233,17 @@
 					return false;
 				}
 				if (telphone == '') {
-					layer.msg("{yun:}t key='wap_redeemdh_00001'{/yun}", 2, 8);
+					layer.msg("{yun:}t key='wap_00399'{/yun}", 2, 8);
 					return false;
 				} else if (!isjsMobile(telphone)) {
-					layer.msg("{yun:}t key='wap_user_addresume_00021'{/yun}", 2, 8);
+					layer.msg("{yun:}t key='wap_user_00039'{/yun}", 2, 8);
 					return false;
 				}
 
 				if(sy_advice_mobilecode=='1'){
 					var advice_code = $('#advice_code').val();
 					if(advice_code==''){
-						layer.msg("{yun:}t key='wap_advice_00001'{/yun}", 2, 8);
+						layer.msg("{yun:}t key='common_02172'{/yun}", 2, 8);
 						return false;
 					}
 				}
@@ -256,12 +256,12 @@
 				var verify_token = '';
 				var authcode = '';
 				if(sy_advice_mobilecode!='1'){
-					var codesear=new RegExp("{yun:}t key='wap_user_index_00021'{/yun}");
+					var codesear=new RegExp("{yun:}t key='wap_user_00203'{/yun}");
 					if(codesear.test(code_web)){
 						if(code_kind==1){//数字验证
 							if(exitsid("txt_CheckCode")){
 								authcode=$("#txt_CheckCode").val();
-								if(authcode==""||authcode=="{yun:}t key='wap_advice_00007'{/yun}"){
+								if(authcode==""||authcode=="{yun:}t key='wap_00110'{/yun}"){
 									$("#show_code").show();
 									$("#txt_CheckCode").focus(
 										function(){

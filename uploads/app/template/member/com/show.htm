@@ -5,39 +5,39 @@
     <div class=right_box>
       <div class="newmember_tit">
         <ul>
-          <li><a href="index.php?c=info">{yun:}t key='wap_resume_index_00016'{/yun}</a></li>
-          <li><a href="index.php?c=info&act=side">{yun:}t key='wap_com_info_00058'{/yun}</a></li>
-          <li><a href="index.php?c=address">{yun:}t key='wap_com_set_00003'{/yun}</a></li>
-          <li class="newmember_titcur"><a href="index.php?c=show"> {yun:}t key='wap_com_set_00002'{/yun}</a></li>
-          <li><a href="index.php?c=uppic"> {yun:}t key='default_map_index_00001'{/yun}LOGO</a></li>
-          <li><a href="index.php?c=product">{yun:}t key='member_com_address_00004'{/yun}</a></li>
-          <li><a href="index.php?c=news">{yun:}t key='member_com_address_00006'{/yun}</a></li>
+          <li><a href="index.php?c=info">{yun:}t key='wap_00456'{/yun}</a></li>
+          <li><a href="index.php?c=info&act=side">{yun:}t key='wap_com_00175'{/yun}</a></li>
+          <li><a href="index.php?c=address">{yun:}t key='wap_com_00402'{/yun}</a></li>
+          <li class="newmember_titcur"><a href="index.php?c=show"> {yun:}t key='wap_com_00401'{/yun}</a></li>
+          <li><a href="index.php?c=uppic"> {yun:}t key='default_00262'{/yun}LOGO</a></li>
+          <li><a href="index.php?c=product">{yun:}t key='member_com_00052'{/yun}</a></li>
+          <li><a href="index.php?c=news">{yun:}t key='member_com_00054'{/yun}</a></li>
           {yun:}if $config.map_key{/yun}
-          <li><a href="index.php?c=map">{yun:}t key='member_com_address_00005'{/yun}</a></li>
+          <li><a href="index.php?c=map">{yun:}t key='member_com_00053'{/yun}</a></li>
           {yun:}/if{/yun}
-          <li><a href="index.php?c=comtpl">{yun:}t key='member_com_address_00002'{/yun}</a></li>
+          <li><a href="index.php?c=comtpl">{yun:}t key='member_com_00050'{/yun}</a></li>
         </ul>
       </div>
       
       <div class="newmember_screenbox">
       <div class="newmember_screen">  
       <div class="com_topbth_box">
-        <input  class="com_topbth_input"type="button" value="{yun:}t key='wap_com_set_00002'{/yun}" onclick="location.href='index.php?c=show&act=addshow'" />
+        <input  class="com_topbth_input"type="button" value="{yun:}t key='wap_com_00401'{/yun}" onclick="location.href='index.php?c=show&act=addshow'" />
          </div>
           </div>  </div><div class="clear"></div>
       <div class=admincont_box>
         <div class="com_body"  >
           <div class="com_new_tip">
-                       <span class="com_new_tip_h">{yun:}t key='member_com_added_00002'{/yun}</span>公司相册方便求职者了解贵公司的直观呈现，横版拍摄上传效果最佳
+                       <span class="com_new_tip_h">{yun:}t key='member_com_00040'{/yun}</span>公司相册方便求职者了解贵公司的直观呈现，横版拍摄上传效果最佳
                     </div>
           <div id="trlisttwo">
             <table class="com_table">
 
               {yun:}if !empty($rows){/yun}
               <tr>
-                <th>{yun:}t key='wap_js_umeditor_lang_zh_cn_zh_cn_00013'{/yun}</th>
-                <th>{yun:}t key='member_com_comtpl_00001'{/yun}</th>
-                <th width="260">{yun:}t key='member_user_atn_00003'{/yun}</th>
+                <th>{yun:}t key='wap_js_00081'{/yun}</th>
+                <th>{yun:}t key='member_com_00076'{/yun}</th>
+                <th width="260">{yun:}t key='member_user_00048'{/yun}</th>
               </tr>
               {yun:}/if{/yun}
               {yun:}foreach item=show from=$rows{/yun}
@@ -51,11 +51,11 @@
                 <td width="160">
                   <div class="show_pic_list_opt">
                     <a href="javascript:void(0)" onclick="showpic(this)"
-                      data_url="{yun:}$show.picurl{/yun}" class="com_bth cblue">{yun:}t key='wap_com_zhaopinzhou_00002'{/yun}</a>
+                      data_url="{yun:}$show.picurl{/yun}" class="com_bth cblue">{yun:}t key='wap_com_00427'{/yun}</a>
                     <a href="index.php?c=show&act=showpic&id={yun:}$show.id{/yun}"
-                      class=" com_bth cblue">{yun:}t key='wap_js_umeditor_lang_zh_cn_zh_cn_00005'{/yun}</a>
+                      class=" com_bth cblue">{yun:}t key='wap_js_00073'{/yun}</a>
                     <a href="javascript:void(0)"
-                      onclick="layer_del("{yun:}t key='wap_user_look_job_00001'{/yun}", 'index.php?c=show&&act=del&id={yun:}$show.id{/yun}'); "
+                      onclick="layer_del("{yun:}t key='wap_user_00001'{/yun}", 'index.php?c=show&&act=del&id={yun:}$show.id{/yun}'); "
                       class=" com_bth cblue">{yun:}t key='common.delete'{/yun}</a>
                   </div>
                 </td>
@@ -64,9 +64,9 @@
               <tr>
                 <td>
                   <div class="com_msg_no">
-                    <p class="com_msg_no_name">{yun:}t key='member_com_show_00001'{/yun}</p>
+                    <p class="com_msg_no_name">{yun:}t key='member_com_00341'{/yun}</p>
                     <p>公司照片建议选择近景前台或者其他办公环境，远景门口或者大楼</p>
-                    <input class="com_msg_no_bth com_submit" type="button" value="{yun:}t key='member_com_show_00002'{/yun}"
+                    <input class="com_msg_no_bth com_submit" type="button" value="{yun:}t key='member_com_00342'{/yun}"
                       onclick="location.href='index.php?c=show&act=addshow'" />
 
                   </div>
@@ -95,7 +95,7 @@
         layer = layui.layer;
       layer.photos({
         photos: '#trlisttwo",
-        anim: 5 //0-6的选择，指定弹出图片动画类型，默认随机（请注意，3.0之前的版本用shift{yun:}t key='admin_neirong_announcement_component_announcement_add_00002'{/yun}）
+        anim: 5 //0-6的选择，指定弹出图片动画类型，默认随机（请注意，3.0之前的版本用shift{yun:}t key='admin_00103'{/yun}）
       });
     });
 

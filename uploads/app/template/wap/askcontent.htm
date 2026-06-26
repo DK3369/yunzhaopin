@@ -19,7 +19,7 @@
 
 		<div class="askct_iss_tm">
 			<div class="askct_iss_tm_ft">
-				<span class="askct_iss_tm_ft_time">{yun:}$show.add_time|date_format:"%Y-%m-%d"{/yun}</span><span class="ask_jx_data ask_jx_data_hd">{yun:}$show.answer_num{/yun} {yun:}t key='wap_nav_00004'{/yun}</span><span class="ask_jx_data ask_jx_data_yl">{yun:}$show.visit{/yun} 阅读</span><span class="ask_jx_data ask_jx_data_gz">{yun:}$show.atnnum{/yun} {yun:}t key='common_01949'{/yun}</span></div>
+				<span class="askct_iss_tm_ft_time">{yun:}$show.add_time|date_format:"%Y-%m-%d"{/yun}</span><span class="ask_jx_data ask_jx_data_hd">{yun:}$show.answer_num{/yun} {yun:}t key='wap_00332'{/yun}</span><span class="ask_jx_data ask_jx_data_yl">{yun:}$show.visit{/yun} 阅读</span><span class="ask_jx_data ask_jx_data_gz">{yun:}$show.atnnum{/yun} {yun:}t key='common_01949'{/yun}</span></div>
 
 			<div class="ask_user_tw" id="main">
 				来自<a href="{yun:}url m=wap c=ask a=myquestion uid='`$show.uid`'{/yun}" class="ask_jx_username">{yun:}$show.nickname|mb_substr:0:18:'utf-8'{/yun}</a> 的提问
@@ -28,12 +28,12 @@
 				<div class="askct_iss_tm_rt">
 					{yun:}if $uid{/yun} 
 						{yun:}if $show.uid==$uid{/yun}
-							<a class="askct_iss_tm_rt_b" onclick="showToast('不能举报自己提出的问题！');" href="javascript:void(0)">{yun:}t key='wap_com_reportlist_00003'{/yun}</a>
+							<a class="askct_iss_tm_rt_b" onclick="showToast('不能举报自己提出的问题！');" href="javascript:void(0)">{yun:}t key='wap_com_00350'{/yun}</a>
 						{yun:}else{/yun}
-							<a class="askct_iss_tm_rt_b" id='reportPicker' class="mui-btn mui-btn-block" href="javascript:void(0)" @click="jubao">{yun:}t key='wap_com_reportlist_00003'{/yun}</a>
+							<a class="askct_iss_tm_rt_b" id='reportPicker' class="mui-btn mui-btn-block" href="javascript:void(0)" @click="jubao">{yun:}t key='wap_com_00350'{/yun}</a>
 						{yun:}/if{/yun}
 					{yun:}else{/yun}
-						<a class="askct_iss_tm_rt_b" onclick="pleaselogin("{yun:}t key='wap_ask_00001'{/yun}",'{yun:}url m=wap c=login{/yun}')" href="javascript:void(0)">{yun:}t key='wap_com_reportlist_00003'{/yun}</a>
+						<a class="askct_iss_tm_rt_b" onclick="pleaselogin("{yun:}t key='wap_00150'{/yun}",'{yun:}url m=wap c=login{/yun}')" href="javascript:void(0)">{yun:}t key='wap_com_00350'{/yun}</a>
 					{yun:}/if{/yun}
 				</div>
 			</div>
@@ -41,19 +41,19 @@
 			<div class="ask_content_cz">
 				{yun:}if $show.qatn!='2'{/yun}
 					{yun:}if $show.qatn=='1'{/yun}
-						<a href="javascript:void(0)" onclick="attention('{yun:}$show.id{/yun}','1','{yun:}url m=wap c=ask a=attention{/yun}');" class="ask_content_cz_a">{yun:}t key='wap_js_public_00003'{/yun}</a> 
+						<a href="javascript:void(0)" onclick="attention('{yun:}$show.id{/yun}','1','{yun:}url m=wap c=ask a=attention{/yun}');" class="ask_content_cz_a">{yun:}t key='wap_js_00140'{/yun}</a> 
 					{yun:}else{/yun} 
 						{yun:}if $uid{/yun}
-							<a href="javascript:void(0)" onclick="attention('{yun:}$show.id{/yun}','1','{yun:}url m=wap c=ask a=attention{/yun}');" class='ask_content_cz_a'>{yun:}t key='wap_askcontent_00003'{/yun}</a> 
+							<a href="javascript:void(0)" onclick="attention('{yun:}$show.id{/yun}','1','{yun:}url m=wap c=ask a=attention{/yun}');" class='ask_content_cz_a'>{yun:}t key='wap_00164'{/yun}</a> 
 						{yun:}else{/yun}
-							<a href="javascript:void(0)" onclick="pleaselogin("{yun:}t key='wap_ask_00001'{/yun}",'{yun:}url m=wap c=login{/yun}')" class="ask_content_cz_a">{yun:}t key='wap_askcontent_00003'{/yun}</a> 
+							<a href="javascript:void(0)" onclick="pleaselogin("{yun:}t key='wap_00150'{/yun}",'{yun:}url m=wap c=login{/yun}')" class="ask_content_cz_a">{yun:}t key='wap_00164'{/yun}</a> 
 						{yun:}/if{/yun} 
 					{yun:}/if{/yun}
 				{yun:}/if{/yun}
 				{yun:}if $uid{/yun} 
 					<a id="addanswershow" class="ask_content_cz_a ask_content_cz_a_cur">我来回答</a>
 				{yun:}else{/yun}
-					<a href="javascript:void(0)" onclick="pleaselogin("{yun:}t key='wap_ask_00001'{/yun}",'{yun:}url m=wap c=login{/yun}')" class="ask_content_cz_a ask_content_cz_a_cur">我来回答</a> 
+					<a href="javascript:void(0)" onclick="pleaselogin("{yun:}t key='wap_00150'{/yun}",'{yun:}url m=wap c=login{/yun}')" class="ask_content_cz_a ask_content_cz_a_cur">我来回答</a> 
 				{yun:}/if{/yun}
 			</div>
 		</div>
@@ -64,7 +64,7 @@
 					<textarea name="content" id="content" class="com_area" placeholder="请输入你的回答，好内容帮助更多人..." style="height:80px;"></textarea>
  					 <div class="ask_yz_box">
 				<span class="ask_yz_box_name">图片验证码：</span>
-						<input type="text" name="authcode" id="authcode" class="ask_yz_box_text" placeholder="{yun:}t key='wap_job_show_00019'{/yun}" >
+						<input type="text" name="authcode" id="authcode" class="ask_yz_box_text" placeholder="{yun:}t key='wap_00262'{/yun}" >
 						<img id="vcode_img" src="{yun:}$config.sy_wapdomain{/yun}/authcode.inc.php" class="ask_yz_box_img" onclick="checkCode('vcode_img');">
                         </div>
 						    <div class="ask_yz_box_bth" ><input name='id' type='hidden' value='{yun:}$show.id{/yun}' />
@@ -80,7 +80,7 @@
 <!--评论内容-->
 <div class="ask_c_pl mt10">
 	<div class="ask_c_pl_titbox">
-		<span class="ask_c_pl_titbox_all">{yun:}t key='wap_askcontent_00002'{/yun}</span>
+		<span class="ask_c_pl_titbox_all">{yun:}t key='wap_00163'{/yun}</span>
 		<a href="{yun:}url m=wap c=ask a=content id='`$show.id`'{/yun}" {yun:}if $smarty.get.orderby!='support' {/yun} class="ask_c_pl_cur" {yun:}/if{/yun}>按回答时间</a>
 		<a href="{yun:}url m=wap c=ask a=content id='`$show.id`' orderby=support{/yun}" {yun:}if $smarty.get.orderby=='support' {/yun}class="ask_c_pl_cur" {yun:}/if{/yun}>按赞同数</a>
 	</div>
@@ -104,7 +104,7 @@
 				</div>
 				<div class="ask_c_pl_bot">
 					<a href="javascript:void(0)" onclick="support('{yun:}$list.id{/yun}','{yun:}url m=wap c=ask a=forsupport{/yun}')" class="ask_c_pl_cz ask_c_pl_cz_z"><span id="support_num_{yun:}$list.id{/yun}">{yun:}$list.support{/yun}</span> 赞</a>
-					<a class="ask_c_pl_cz" href="javascript:void(0)" onclick="get_comment('{yun:}$list.id{/yun}','0','{yun:}url m=wap c=ask a=getcomment{/yun}');"><span id="com_num_{yun:}$list.id{/yun}">{yun:}$list.comment{/yun}</span> {yun:}t key='wap_askcontent_00006'{/yun}</a>
+					<a class="ask_c_pl_cz" href="javascript:void(0)" onclick="get_comment('{yun:}$list.id{/yun}','0','{yun:}url m=wap c=ask a=getcomment{/yun}');"><span id="com_num_{yun:}$list.id{/yun}">{yun:}$list.comment{/yun}</span> {yun:}t key='wap_00167'{/yun}</a>
 
 				</div>
 
@@ -151,7 +151,7 @@
 	var vm = new Vue({
         el: '#app",
         data: {
-			//{yun:}t key='wap_com_reportlist_00003'{/yun}
+			//{yun:}t key='wap_com_00350'{/yun}
 	        reportShow:false,
 	        report_reasons:reportData,
 	        reportChoosed:"',
@@ -171,7 +171,7 @@
 				}, function(data) {
 					hideLoading();
 					if(data == '0') {
-						showToast("{yun:}t key='wap_askcontent_00001'{/yun}");
+						showToast("{yun:}t key='wap_00162'{/yun}");
 						return false;
 					} else if(data == '1') {
 						showToast('举报成功！');
@@ -183,7 +183,7 @@
 						showToast('该问题已被他人举报！');
 						return false;
 					} else if(data == 'no_login') {
-						pleaselogin("{yun:}t key='wap_ask_00001'{/yun}", '{yun:}url m=wap c=login{/yun}');
+						pleaselogin("{yun:}t key='wap_00150'{/yun}", '{yun:}url m=wap c=login{/yun}');
 						return false;
 					}
 				});
@@ -210,7 +210,7 @@
 		$.post(url,{aid:aid},function(msg){
 			hideLoading();
 			if(msg=='0'){
-				showToast("{yun:}t key='wap_askcontent_00004'{/yun}");return false; 
+				showToast("{yun:}t key='wap_00165'{/yun}");return false; 
 			}else if(msg=='1'){
 				var num=$("#support_num_"+aid).html(); 
 				$("#support_num_"+aid).html(parseInt(num)+parseInt(1)); 
@@ -231,7 +231,7 @@
 			showToast('回答内容不能为空！'); return false;
 		}
 		if($.trim($("#authcode").val())==""){
-			showToast("{yun:}t key='wap_js_binding_00002'{/yun}"); return false;
+			showToast("{yun:}t key='wap_js_00107'{/yun}"); return false;
 		}
 		showLoading()
 		$.post(wapurl+"/index.php?c=ask&a=answer",{id:id,content:content,authcode:authcode},function(data){

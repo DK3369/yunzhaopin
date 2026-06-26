@@ -28,10 +28,10 @@ table,table tr th, table tr td { border:1px solid #666; }
         <div class="zx_cont_main">
           <h1 class="zx_show_cont_h1" {yun:}if $Info.color{/yun}style="color:{yun:}$Info.color{/yun}"{yun:}/if{/yun}>{yun:}$Info.title{/yun}</h1>
           <div class="zx_main_source">
-			<span class="zx_main_source_r"><em>{yun:}t key='admin_user_member_component_alluser_00034'{/yun}：</em>{yun:}if $Info.source{/yun}{yun:}$Info.source|mb_substr:0:16:'utf-8'{/yun}{yun:}else{/yun}{yun:}$config.sy_webname{/yun}{yun:}/if{/yun}</span>
-			<span class="zx_main_source_r"><em>{yun:}t key='wap_js_umeditor_lang_zh_cn_zh_cn_00020'{/yun}：</em>{yun:}$Info.starttime|date_format:"%Y-%m-%d"{/yun}</span>
-			<span class="zx_main_source_r"><em>{yun:}t key='admin_neirong_news_component_news_00021'{/yun}：</em>{yun:}if $Info.author{/yun}{yun:}$Info.author|mb_substr:0:16:'utf-8'{/yun}{yun:}else{/yun}{yun:}$config.sy_webname{/yun}{yun:}/if{/yun}</span>              
-			<span class="zx_main_source_r"><em>{yun:}t key='wap_com_index_00037'{/yun}：</em>
+			<span class="zx_main_source_r"><em>{yun:}t key='admin_user_00148'{/yun}：</em>{yun:}if $Info.source{/yun}{yun:}$Info.source|mb_substr:0:16:'utf-8'{/yun}{yun:}else{/yun}{yun:}$config.sy_webname{/yun}{yun:}/if{/yun}</span>
+			<span class="zx_main_source_r"><em>{yun:}t key='wap_js_00088'{/yun}：</em>{yun:}$Info.starttime|date_format:"%Y-%m-%d"{/yun}</span>
+			<span class="zx_main_source_r"><em>{yun:}t key='admin_00172'{/yun}：</em>{yun:}if $Info.author{/yun}{yun:}$Info.author|mb_substr:0:16:'utf-8'{/yun}{yun:}else{/yun}{yun:}$config.sy_webname{/yun}{yun:}/if{/yun}</span>              
+			<span class="zx_main_source_r"><em>{yun:}t key='wap_com_00112'{/yun}：</em>
 				<script language="javascript" src="{yun:}$config.sy_weburl{/yun}/index.php?m=index&c=GetHits&id={yun:}$Info.id{/yun}">
 				</script>
 			</span>
@@ -47,13 +47,13 @@ table,table tr th, table tr td { border:1px solid #666; }
           <div class="zx_ewm_p">微信扫一扫分享资讯</div>
           </div>
           <!--div style="padding:20px 0;">
-           <span class="sour_share fl"><em class="fl" style="line-height:28px;">{yun:}t key='wap_js_nativeshare_nativeshare_00006'{/yun}：</em>
+           <span class="sour_share fl"><em class="fl" style="line-height:28px;">{yun:}t key='wap_js_00040'{/yun}：</em>
          
 		
 			<div class="pyshare bdsharebuttonbox bdshare-button-style0-16" data-tag="share_1">
 				<a class="li s1 bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
-				<a class="li s3 bds_qzone" data-cmd="qzone" title="{yun:}t key='wap_js_nativeshare_nativeshare_00006'{/yun}QQ空间"></a>
-				<a class="li s5 bds_sqq" data-cmd="sqq" title="{yun:}t key='wap_js_nativeshare_nativeshare_00006'{/yun}QQ好友"></a>
+				<a class="li s3 bds_qzone" data-cmd="qzone" title="{yun:}t key='wap_js_00040'{/yun}QQ空间"></a>
+				<a class="li s5 bds_sqq" data-cmd="sqq" title="{yun:}t key='wap_js_00040'{/yun}QQ好友"></a>
 				<a class="li s6 bds_weixin" data-cmd="weixin" title="分享到微信"></a>
 				<div class="clear"></div>
 			</div></span>
@@ -105,7 +105,7 @@ table,table tr th, table tr td { border:1px solid #666; }
 
 </div>
 
- <div class="news_index_today_h1"> <span class="news_index_today_tj_s">{yun:}t key='default_article_list_00001'{/yun}</span></div>
+ <div class="news_index_today_h1"> <span class="news_index_today_tj_s">{yun:}t key='default_00106'{/yun}</span></div>
   <div class="clear"></div>
  
  
@@ -133,7 +133,7 @@ table,table tr th, table tr td { border:1px solid #666; }
               <ul>
                 {yun:}article limit=6 order=hits t_len=17 urlstatic=1 key=key item=news_hits{/yun}
                 {yun:}if $key=='0'&& empty($news_hits){/yun}
-                <li>{yun:}t key='default_article_show_00001'{/yun}</li>
+                <li>{yun:}t key='default_00109'{/yun}</li>
                 {yun:}else{/yun}
                 <li><a href="{yun:}$news_hits.url{/yun}" title="{yun:}$news_hits.title{/yun}">{yun:}$news_hits.title{/yun}</a></li>
                 {yun:}/if{/yun} 
@@ -142,7 +142,7 @@ table,table tr th, table tr td { border:1px solid #666; }
             </div>
             <div class="clear"></div>
           </div>
-                 <div class="news_index_today_h1"> <span class="news_index_today_news_s">{yun:}t key='default_article_list_00003'{/yun}</span></div>
+                 <div class="news_index_today_h1"> <span class="news_index_today_news_s">{yun:}t key='default_00108'{/yun}</span></div>
                         <div class="clear"></div>
           <div class="zx_article mt20">
    
@@ -186,7 +186,7 @@ DD_belatedPNG.fix('.png');
 <![endif]-->
 <script type="text/javascript"> 
 $(function() {
-	//{yun:}t key='wap_article_show_00001'{/yun}
+	//{yun:}t key='wap_00149'{/yun}
 	 var sfEls = $("#news_nav").find("div");
 	 for (var i=0; i<sfEls.length; i++) {
 		  sfEls[i].onmouseover=function() {

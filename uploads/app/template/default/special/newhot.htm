@@ -52,26 +52,26 @@
   			<div class="newhot_jsbox_my">我是企业，我要参加报名</div>
   			{yun:}if $uid{/yun}
         {yun:}if $usertype=='2'{/yun}
-  <input type='button' value="{yun:}t key='wap_part_show_00008'{/yun}" onclick="comapply('{yun:}$info.id{/yun}','{yun:}$info.integral{/yun}','{yun:}url m=special c=apply{/yun}')" class="special_one_bm_bth" />
+  <input type='button' value="{yun:}t key='wap_00375'{/yun}" onclick="comapply('{yun:}$info.id{/yun}','{yun:}$info.integral{/yun}','{yun:}url m=special c=apply{/yun}')" class="special_one_bm_bth" />
         {yun:}else{/yun}
              {yun:}if $config.sy_user_change==1{/yun}
-                   <input type='button' value="{yun:}t key='wap_part_show_00008'{/yun}" onclick="layer.msg('请先申请企业用户才能报名！',2, 8)" class="special_one_bm_bth" />
+                   <input type='button' value="{yun:}t key='wap_00375'{/yun}" onclick="layer.msg('请先申请企业用户才能报名！',2, 8)" class="special_one_bm_bth" />
              {yun:}else{/yun} 
-                  <input type='button' value="{yun:}t key='wap_part_show_00008'{/yun}" onclick="layer.msg('只有企业用户才能报名！',2, 8)" class="special_one_bm_bth" />
+                  <input type='button' value="{yun:}t key='wap_00375'{/yun}" onclick="layer.msg('只有企业用户才能报名！',2, 8)" class="special_one_bm_bth" />
              {yun:}/if{/yun}
         {yun:}/if{/yun}
         {yun:}else{/yun}
-        <input type='button' value="{yun:}t key='wap_part_show_00008'{/yun}" onclick="showlogin('2')" class="special_one_bm_bth" />
+        <input type='button' value="{yun:}t key='wap_00375'{/yun}" onclick="showlogin('2')" class="special_one_bm_bth" />
         {yun:}/if{/yun}
          
   	{yun:}else{/yun}
   	
   			{yun:}if $isapply.status=="0"{/yun}
-  			<div class="newhot_jsbox_my_bth" style="background:#ccc">{yun:}t key='wap_spe_gl_00004'{/yun}</div>
+  			<div class="newhot_jsbox_my_bth" style="background:#ccc">{yun:}t key='wap_00511'{/yun}</div>
   			{yun:}elseif $isapply.status=="1"{/yun}
-  			<div class="newhot_jsbox_my_bth" style="background:#ccc">{yun:}t key='wap_part_show_00010'{/yun}</div>
+  			<div class="newhot_jsbox_my_bth" style="background:#ccc">{yun:}t key='wap_00377'{/yun}</div>
   			{yun:}else{/yun}
-  			<div class="newhot_jsbox_my_bth" style="background:#ccc">{yun:}t key='wap_spe_gl_00002'{/yun}</div>
+  			<div class="newhot_jsbox_my_bth" style="background:#ccc">{yun:}t key='wap_00509'{/yun}</div>
   			{yun:}/if{/yun}
         
   	{yun:}/if{/yun}

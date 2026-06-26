@@ -27,7 +27,7 @@
                 </li>
 
                 <li data-id="0" @click="setClass" :class="choose_id==0?'discount_opt_for':'body_card_bumber'">
-                    <i :class="choose_id==0?'currcolor':''" class="body_card_bumber">{yun:}t key='wap_user_pay_00003'{/yun}</i>
+                    <i :class="choose_id==0?'currcolor':''" class="body_card_bumber">{yun:}t key='wap_user_00309'{/yun}</i>
                     <i :class="choose_id==0?'currcolor':''">{{cache.name}}</i>
                 </li>
             </ul>
@@ -63,12 +63,12 @@
                 </div>
                 </div>
                 <div class="gb_tip" v-else>
-                    网站已关闭支付接口，{yun:}t key='wap_spe_gl_00002'{/yun}
+                    网站已关闭支付接口，{yun:}t key='wap_00509'{/yun}
                 </div>
             </div>
         </div>
         <!-- 确认按钮 -->
-        <div class="integral_body_btn" @click="dingdan" v-if="config.fkal">{yun:}t key='wap_user_pay_00001'{/yun}</div>
+        <div class="integral_body_btn" @click="dingdan" v-if="config.fkal">{yun:}t key='wap_user_00307'{/yun}</div>
     </div>
 
 </div></div>
@@ -165,7 +165,7 @@
                         that.zdyjf = that.class_name[choosed];
                     } else {
 
-                        showToast("{yun:}t key='default_public_search_public_tips_00027'{/yun}" + that.cache.min_recharge + that.cache.name);
+                        showToast("{yun:}t key='default_00088'{/yun}" + that.cache.min_recharge + that.cache.name);
                     }
                 }
             },
@@ -200,7 +200,7 @@
                         if (parseInt(res.nopayorder) > 0) {
                             showConfirm('您还有' + res.nopayorder + "{yun:}t key='common_01445'{/yun}，是否继续充值！", function () {
                                 that.pageTo("index.php?c=paylog");
-                            }, '继续充值', "{yun:}t key='wap_user_pay_00002'{/yun}");
+                            }, '继续充值', "{yun:}t key='wap_user_00308'{/yun}");
                         }
                     }
                 }, 'json');
@@ -214,7 +214,7 @@
                     return showToast('请填写充值数量');
                 }
                 if (that.fktype == '') {
-                    return showToast("{yun:}t key='wap_user_index_00005'{/yun}");
+                    return showToast("{yun:}t key='wap_user_00187'{/yun}");
                 }
                 var paramer = {
                     integralid: that.choosed,
