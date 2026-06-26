@@ -10253,7 +10253,7 @@ return array (
   'common_06107' => 'Please enter Password！',
   'common_06108' => 'BackPersonal Center？?',
   'common_06109' => 'Browse Continue',
-  'common_06110' => 'Redeem',
+  'common_06110' => ' insufficient, cannot redeem!',
   'common_06111' => 'Not provided',
   'common_06112' => 'Enter',
   'common_06113' => 'Subsite',

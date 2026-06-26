@@ -548,7 +548,7 @@ function addJobIndex(num,integral_job,online,pro){
 				
  				if(data.msgList && data.msgList.length > 0 ){
  					
- 					layer.msg('完成相关认证才能发布职位！', 2,8, function(){
+ 					layer.msg(yunAt('common_06097'), 2,8, function(){
  						
  						window.location.href = bindurl;
  						window.event.returnValue = false;
@@ -562,7 +562,7 @@ function addJobIndex(num,integral_job,online,pro){
 						window.event.returnValue = false;
 						
 					}else{
-						layer.msg('套餐不足，请先购买会员！', 2,8, function(){
+						layer.msg(yunAt('common_06098'), 2,8, function(){
 							window.location.href = righturl;
 							window.event.returnValue = false; 
 						});
@@ -750,11 +750,11 @@ function checkmore(type,div,size,msg){
 }
 function check_pl(){//企业评论
 	if($.trim($("#content").val())==""){
-		layer.msg('评论留言内容不能为空！', 2,8);return false;
+		layer.msg(yunAt('common_06100'), 2,8);return false;
 	}
 	var authcode=$("#msg_CheckCode").val();
 	if(authcode==''){
-		layer.msg('验证码不能为空！', 2, 8);return false;
+		layer.msg(yunAt('wap_js_00107'), 2, 8);return false;
 	} 
 }
 
@@ -842,12 +842,12 @@ function com_msg(){
 	noplaceholder('msg_content');
 	var msg_content=$.trim($("#msg_content").val());
 	if(msg_content==''){
-		layer.msg('咨询内容不能为空！', 2,8);return false;
+		layer.msg(yunAt('common_06101'), 2,8);return false;
 	}
 	noplaceholder('msg_CheckCode');
 	var authcode=$("#msg_CheckCode").val();
 	if(authcode==''){
-		layer.msg('验证码不能为空！', 2, 8);return false;
+		layer.msg(yunAt('wap_js_00107'), 2, 8);return false;
 	} 
 }
 
@@ -871,7 +871,7 @@ function job_class(id,type,grade){
 		var check_length = $("input[type='checkbox'][name='job_class'][checked]").length;
 		if($("#job_"+id).attr("checked")=="checked"){
 			if(check_length>=5){
-				layer.msg('您最多只能选择五项！', 2,8,function(){$("#job_"+id).attr("checked",false);}); 
+				layer.msg(yunAt('common_06012'), 2,8,function(){$("#job_"+id).attr("checked",false);}); 
 			}else{
 				var value=$("#job_"+id).val();
 				$("#job_choosed").append("<span id='span_job_"+id+"'><input id='ck_job_"+id+"'  value='"+id+"' onclick=\"del_ck('job_"+id+"')\" name='job_class' checked='checked' type='checkbox' target='"+value+"'>"+value+"</span>");
@@ -898,7 +898,7 @@ function job_city(id,type,grade){
 		var check_length = $("input[type='checkbox'][name='select_city'][checked]").length;
 		if($("#"+id).attr("checked")=="checked"){
 			if(check_length>=5){
-				layer.msg('您最多只能选择五个城市！', 2,8,function(){$("#"+id).attr("checked",false);}); 
+				layer.msg(yunAt('common_06102'), 2,8,function(){$("#"+id).attr("checked",false);}); 
 			}else{
 				var value=$("#"+id).val();
 				$("#choosed").append("<span id='span_"+id+"'><input id='ck_"+id+"'  value='"+id+"' onclick=\"del_ck('"+id+"')\" name='select_city' checked='checked' type='checkbox' target='"+value+"'>"+value+"</span>");
@@ -916,7 +916,7 @@ function select_prop(name,id,div){
 		chk_ids.push($(this).val());
 	});
 	if(chk_value.length==0){
-		layer.msg('请选择职位类别！', 2,8);return false;
+		layer.msg(yunAt('admin_user_company_00023'), 2,8);return false;
 	}else{
 		$("#"+id+" dt").removeClass("cur");
 		$("#"+id+" dd").hide();
@@ -960,7 +960,7 @@ function atn(id,url,tid){//关注企业
 function jsmsg(id){
 	var myuid = $("#myuid").val();
 	if(myuid==""){
-		layer.msg('你还没有登录！', 2, 8);
+		layer.msg(yunAt('common_06103'), 2, 8);
 	}
 	$("#msg"+id).show();
 }
@@ -1017,7 +1017,7 @@ function reportSub(img){
 	
 	
 	if($.trim(reason)=="理由："){
-		layer.msg('请选择举报理由！', 2, 8);
+		layer.msg(yunAt('wap_01562'), 2, 8);
 		return false;
 	}
 	
@@ -1028,14 +1028,14 @@ function reportSub(img){
 	$.post(weburl+"/job/index.php?c=report",{authcode:authcode,r_reason:r_reason,id:id,r_name:r_name,r_uid:r_uid},function(data){
 		layer.close(i);
 		if(data==1){
-			layer.msg('验证码不正确！', 2, 8,function(){checkCode(img);});
+			layer.msg(yunAt('wap_js_00109'), 2, 8,function(){checkCode(img);});
 		}else if(data==2){
-			layer.msg('您已经举报过该用户！', 2, 8,function(){checkCode(img);});
+			layer.msg(yunAt('job_00004'), 2, 8,function(){checkCode(img);});
 		}else if(data==3){
 			layer.closeAll();
-			layer.msg('举报成功！', 2,9);
+			layer.msg(yunAt('wap_01310'), 2,9);
 		}else if(data==4){
-			layer.msg('举报失败！', 2, 8,function(){checkCode(img);});
+			layer.msg(yunAt('model_00052'), 2, 8,function(){checkCode(img);});
 		}
 	})
 }
@@ -1062,26 +1062,26 @@ function checkform_redeem_show(){
 	var redeemintegral=$("#redeemintegral").val();
 	var restriction=$("#restriction").val();
 	if(!uid){
-		layer.msg('您还没有登录，请先登录！', 2, 8,function(){
+		layer.msg(yunAt('wap_js_00154'), 2, 8,function(){
 			location.href=weburl+"/index.php?m=login";
 		});
 		return false;
 	}
 	if(num==0){
-		layer.msg('请正确填写兑换数量！', 2, 8);
+		layer.msg(yunAt('wap_01646'), 2, 8);
 		return false;
 	}
 	if(Number(num)>Number(restriction) && restriction!="0"){
-		layer.msg('超出限购数量,请正确填写！', 2, 8);
+		layer.msg(yunAt('wap_01639'), 2, 8);
 		return false;
 	}
 	if(Number(num)>Number(stock)){
-		layer.msg('超出库存数量,请正确填写！', 2, 8);
+		layer.msg(yunAt('wap_01638'), 2, 8);
 		return false;
 	}
 	var integral=Number(num)*Number(redeemintegral);
 	if(Number(myintegral)<Number(integral)){
-		layer.msg(pricename+'不足，不能兑换！', 2, 8,function(){
+		layer.msg(pricename+yunAt('common_06110'), 2, 8,function(){
 			location.href=weburl+"/member/index.php?c=pay";
 		});
  		return false;
@@ -1101,21 +1101,21 @@ function redeem_dh(){
 	
 	var address	=$("input[name=address]").val();
 	if(!linkman || !linktel){
-		layer.msg('联系人或联系电话不能为空！', 2, 8);
+		layer.msg(yunAt('common_06104'), 2, 8);
 		return false;
 	}
 	var reg_linktel= (/^[1][3456789]\d{9}$|^([0-9]{3,4}\-)?[0-9]{7,8}$/);
 	if(linktel){
 		if(!reg_linktel.test(linktel)){
-			layer.msg('联系电话格式不正确请正确填写！', 2, 8);return false; 
+			layer.msg(yunAt('common_06105'), 2, 8);return false; 
 		} 
 	}
 	if(!cityid || !address){
-		layer.msg('请填写收货地址信息！', 2, 8);
+		layer.msg(yunAt('common_06106'), 2, 8);
 		return false;
 	}
 	if(!password){
-		layer.msg('请输入密码！', 2, 8);
+		layer.msg(yunAt('common_06107'), 2, 8);
 		return false;
 	}
 	return true;
