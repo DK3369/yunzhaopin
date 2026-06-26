@@ -36,5 +36,5 @@ alwaysApply: true
 
 ## 与 i18n / 批量脚本
 
-- 禁止未经用户同意对全站做批量替换或批量回滚。
+- 详见 `.cursor/rules/agent-workflow.mdc`：**禁止使用任何批量工具修改**。
 - 语言包、模板等改动优先小步提交，便于恢复。
