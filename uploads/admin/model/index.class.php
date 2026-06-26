@@ -342,13 +342,13 @@ class index_controller extends adminCommon{
     }
     function langpack_action()
     {
-        global $i18n;
+        $keys = null;
+        if (!empty($_GET['keys'])) {
+            $keys = array_filter(array_map('trim', explode(',', $_GET['keys'])));
+        }
 
-        $data = array(
-            "lang" => is_object($i18n) && method_exists($i18n, "getLang") ? $i18n->getLang() : "zh_cn",
-            "messages" => is_object($i18n) && isset($i18n->autoMessages) && is_array($i18n->autoMessages) ? $i18n->autoMessages : array(),
-            "lc" => is_object($i18n) && isset($i18n->messages["lc"]) && is_array($i18n->messages["lc"]) ? $i18n->messages["lc"] : array()
-        );
+        $data = yun_i18n_langpack($keys);
+        $data['messages'] = $data['auto'];
 
         header("content-type:application/json; charset=utf-8");
         echo json_encode($data, defined("JSON_UNESCAPED_UNICODE") ? JSON_UNESCAPED_UNICODE : 0);

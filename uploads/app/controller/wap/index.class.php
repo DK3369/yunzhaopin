@@ -75,6 +75,21 @@ class index_controller extends common
         $this->wapheader('');
     }
 
+    /**
+     * 前端语言包（yun-i18n.js 使用）
+     */
+    function langpack_action()
+    {
+        $keys = null;
+        if (!empty($_GET['keys'])) {
+            $keys = array_filter(array_map('trim', explode(',', $_GET['keys'])));
+        }
+
+        header('Content-Type: application/json; charset=utf-8');
+        echo yun_i18n_langpack_json($keys);
+        exit;
+    }
+
     // 关于我们
     function about_action()
     {
