@@ -56,7 +56,7 @@ class msg_controller extends com_controller{
             if ($return['errcode'] == 9) {
 
                 $LogM       =   $this->MODEL('log');
-                $logContent =   yun_auto_t('消息处理：删除求职咨询（ID：').$_POST['id'].'）';
+                $logContent =   yun_at('api_wxapp_00001').$_POST['id'].yun_at('api_wxapp_00030');
                 $LogM->addMemberLog($this->member['uid'], $this->member['usertype'], $logContent, 18, 3);
 
                 $data['error']  =   0;
@@ -201,7 +201,7 @@ class msg_controller extends com_controller{
             if($return['errcode']==9){
 
                 $LogM       =   $this -> MODEL('log');
-                $logContent =   yun_auto_t('消息处理：删除系统消息（ID：').$_POST['id'].'）';
+                $logContent =   yun_at('api_wxapp_00029').$_POST['id'].yun_at('api_wxapp_00030');
                 $LogM->addMemberLog($this->member['uid'], $this->member['usertype'], $logContent, 18, 3);
 
                 $data['error']	=	0;

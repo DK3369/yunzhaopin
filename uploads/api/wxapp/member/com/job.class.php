@@ -934,7 +934,7 @@ class job_controller extends com_controller
 
 			    $logM       =   $this->MODEL('log');
                 $logContent =   yun_at('member_com_00713');
-                $logDetail  =   $_POST['status'] == 0 ? '调整职位《'.$jobInfo['name']. yun_auto_t('》招聘状态：下架->上架') : '调整职位('.$jobInfo['name']. yun_auto_t(')招聘状态：上架->下架');
+                $logDetail  =   $_POST['status'] == 0 ? yun_at('api_wxapp_00025').$jobInfo['name'].yun_at('api_wxapp_00023') : yun_at('api_wxapp_00026').$jobInfo['name'].yun_at('api_wxapp_00024');
                 $logM->addMemberLog($this->member['uid'], $this->member['usertype'], $logContent, 1, 2, $logDetail);
 
 				$this->render_json(0, 'ok');

@@ -484,7 +484,7 @@ class part_controller extends com_controller
 
                 $logM       =   $this->MODEL('log');
                 $logContent =   yun_at('wap_01843');
-                $logDetail  =   $_POST['status'] == 0 ? '调整兼职《'.$part['name']. yun_auto_t('》招聘状态：下架->上架') : '调整兼职('.$part['name']. yun_auto_t(')招聘状态：上架->下架');
+                $logDetail  =   $_POST['status'] == 0 ? yun_at('api_wxapp_00027').$part['name'].yun_at('api_wxapp_00023') : yun_at('api_wxapp_00028').$part['name'].yun_at('api_wxapp_00024');
                 $logM->addMemberLog($this->member['uid'], $this->member['usertype'], $logContent, 9, 2, $logDetail);
 
                 $this->render_json(0, 'ok');

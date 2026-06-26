@@ -69,7 +69,7 @@ class msg_controller extends user_controller{
         $return     =   $SysmsgM->delSysmsg((int)$_POST['id'], array('fa_uid' => $this->member['uid']));
 
         $LogM       =   $this->MODEL('log');
-        $logContent =   yun_auto_t('消息处理：删除系统消息（ID：').$_POST['id'].'）';
+        $logContent =   yun_at('api_wxapp_00029').$_POST['id'].yun_at('api_wxapp_00030');
         $LogM->addMemberLog($this->member['uid'], $this->member['usertype'], $logContent, 18, 3);
 
         $data['error']  =   $return['errcode'] == 9 ? 1 : 2;

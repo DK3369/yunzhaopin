@@ -374,7 +374,7 @@ class finance_controller extends com_controller
 		$where		=	array(
 			'com_id'		=>	$this->member['uid'],
 			'usertype'		=>	2,
-			'pay_remark'	=>	array('like',yun_auto_t('转换').$this->config['integral_pricename'])
+			'pay_remark'	=>	array('like',yun_at('api_wxapp_00035').$this->config['integral_pricename'])
 		);
 		$where['pay_time'][] = array('>',strtotime('today'));
 		$where['pay_time'][] = array('<',strtotime('tomorrow'));
@@ -409,7 +409,7 @@ class finance_controller extends com_controller
             $data['shareData']  =   array(
                 'url'       =>  Url('wap').'index.php?c=register&uid='.$this->member['uid'],
                 'title'     =>  yun_at('wap_01590'),
-                'summary'   =>  yun_auto_t('我在').$this->config['sy_webname'].'上找工作；真的很不错，忍不住推荐给你',
+                'summary'   =>  yun_at('api_wxapp_00036').$this->config['sy_webname'].yun_at('api_wxapp_00037'),
                 'imageUrl'  =>  checkpic($this->config['sy_wx_sharelogo'])
             );
         }
@@ -492,7 +492,7 @@ class finance_controller extends com_controller
             $data['shareData']  =   array(
                 'url'       =>  Url('wap').'index.php?c=register&uid='.$this->member['uid'],
                 'title'     =>  yun_at('wap_01590'),
-                'summary'   =>  yun_auto_t('我在').$this->config['sy_webname'].'上找工作；真的很不错，忍不住推荐给你',
+                'summary'   =>  yun_at('api_wxapp_00036').$this->config['sy_webname'].yun_at('api_wxapp_00037'),
                 'imageUrl'  =>  checkpic($this->config['sy_wx_sharelogo'])
             );
         }

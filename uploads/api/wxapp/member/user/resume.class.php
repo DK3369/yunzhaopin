@@ -50,7 +50,7 @@ class resume_controller extends user_controller{
 		foreach($rows as $key=>$val){
 		    $r['id']  =  $val['id'];
 			if($val['defaults']){
-			    $r['name']	=  $val['name']. yun_auto_t('(默认)');
+			    $r['name']	=  $val['name']. yun_at('api_wxapp_00039');
 			}else{
 			    $r['name']	=  $val['name'];
 			}

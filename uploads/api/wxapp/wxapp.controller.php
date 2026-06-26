@@ -197,7 +197,7 @@ class wxapp_controller extends common
                     $logindata  =  array(
                         'uid'      => $user['uid'],
                         'usertype' => $user['usertype'],
-                        'content'  => yun_auto_t('wap端口延续登录')
+                        'content'  => yun_at('api_wxapp_00021')
                     );
                     $logM = $this -> MODEL('log');
                     $logM->addLoginlog($logindata, array('continue' => 1));
@@ -250,7 +250,7 @@ class wxapp_controller extends common
             $user['appid']  =  $appKey;
             return $user;
         }else{
-            $this->render_json(1005, yun_auto_t('不支持curl'));
+            $this->render_json(1005, yun_at('api_wxapp_00022'));
         }
     }
 

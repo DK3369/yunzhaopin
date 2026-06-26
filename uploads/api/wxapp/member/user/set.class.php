@@ -343,7 +343,7 @@ class set_controller extends user_controller
 	        $uni = 'wxapp';
 	        if (isset($_POST['provider'])){
 	            if ($_POST['provider'] == 'h5'){
-	                $uni = yun_auto_t('H5/微信');
+	                $uni = yun_at('api_wxapp_00038');
 	            }
 	        }
 	        if ($_POST['type'] == 'qq'){

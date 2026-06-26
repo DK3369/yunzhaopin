@@ -67,18 +67,18 @@ class fk_controller extends com_controller{
                         if ($ratingV['interview'] > 0 || $ratingV['resume'] > 0){
                             $ratingV['interview_resume']	=	'';
                             if($ratingV['interview'] > 0){
-                                $ratingV['interview_resume'].=yun_at('wap_00911').$ratingV['interview']. yun_auto_t('次；');
+                                $ratingV['interview_resume'].=yun_at('wap_00911').$ratingV['interview']. yun_at('api_wxapp_00031');
                             }
                             if($ratingV['resume'] > 0){
-                                $ratingV['interview_resume'].=yun_at('wap_00912').$ratingV['resume']. yun_auto_t('次；');
+                                $ratingV['interview_resume'].=yun_at('wap_00912').$ratingV['resume']. yun_at('api_wxapp_00031');
                             }
                         }
                         if ($ratingV['breakjob_num'] > 0){
                             $ratingV['job_breakjob']    =   '';
-                            $ratingV['job_breakjob'].=yun_auto_t('刷新职位: ').$ratingV['breakjob_num']. yun_auto_t('份；');
+                            $ratingV['job_breakjob'].=yun_at('api_wxapp_00033').$ratingV['breakjob_num']. yun_at('api_wxapp_00032');
                         }
                         if($ratingV['zph_num'] > 0){
-                            $ratingV['zph'].=yun_auto_t('招聘会报名 : ').$ratingV['zph_num']. yun_at('wap_01543');
+                            $ratingV['zph'].=yun_at('api_wxapp_00034').$ratingV['zph_num']. yun_at('wap_01543');
                         }
                         // 
                         
