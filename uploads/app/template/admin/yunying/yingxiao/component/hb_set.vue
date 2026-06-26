@@ -122,7 +122,7 @@ module.exports = {
                 }
             } else if (ruleForm.sy_haibao_web_type == '2') {
                 if (!ruleForm.sy_haibao_web_logo_n) {
-                    message.error("请上传LOGO{yun:}t key='wap_js_00081'{/yun}");
+                    message.error(lc('admin_vue_00130') + lc('wap_js_00081'));
                     return false;
                 }
             }

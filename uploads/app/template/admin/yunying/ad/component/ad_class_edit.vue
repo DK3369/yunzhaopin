@@ -200,7 +200,7 @@ module.exports = {
                     return false;
                 } else {
                     if (params.btype == '1' && params.integral_buy == '') {
-                        message.error('请输入购买' + this.integral_pricename + '！');
+                        message.error(lc('admin_vue_00129') + this.integral_pricename + '！');
                         return false;
                     } else if (params.btype == '2' && params.integral_buy == '') {
                         message.error(lc('admin_vue_00091'));

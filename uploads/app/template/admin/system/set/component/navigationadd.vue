@@ -249,13 +249,13 @@
                     }
                 });
                 if (!isImage) {
-                    message.error('上传头像图片只能是 （' + this.picType + "） {yun:}t key='common_02005'{/yun}!");
+                    message.error(lc('admin_vue_00126') + this.picType + lc('common_02005') + '!');
                     return false;
                 }
                 //  判断图片大小
                 let isLtNumM = file.size / 1024 / 1024 < this.picMaxSize;
                 if (!isLtNumM) {
-                    message.error('上传头像图片大小不能超过 ' + this.picMaxSize + 'MB!');
+                    message.error(lc('admin_vue_00127') + this.picMaxSize + 'MB!');
                     return false;
                 }
 

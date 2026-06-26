@@ -182,7 +182,7 @@ module.exports = {
                 name = '（' + scope.row.group_name + '）';
                 params.id = scope.row.id;
             }
-            delConfirm(this, params, this.delete, "{yun:}t key='admin_system_00172'{/yun}" + name + '管理员权限组信息吗？');
+            delConfirm(this, params, this.delete, lc('admin_system_00172') + name + lc('admin_vue_00131'));
         },
         delGroupSel() {
             var that = this;

@@ -16012,4 +16012,10 @@ return array(
   'admin_vue_00123' => 'Please complete review management!',
   'admin_vue_00124' => 'Message',
   'admin_vue_00125' => 'Select at most ',
+  'admin_vue_00126' => 'Avatar image must be (',
+  'admin_vue_00127' => 'Avatar image size cannot exceed ',
+  'admin_vue_00128' => 'Please enter redemption ',
+  'admin_vue_00129' => 'Please enter purchase ',
+  'admin_vue_00130' => 'Please upload LOGO',
+  'admin_vue_00131' => ' admin group info?',
 );

@@ -267,7 +267,7 @@ module.exports = {
                 return false;
             }
             if (that.info.integral == '' || that.info.integral == undefined) {
-                message.error('请填写兑换' + that.integral_pricename);
+                message.error(lc('admin_vue_00128') + that.integral_pricename);
                 return false;
             }
             if (that.info.restriction == '' || that.info.restriction == undefined) {
