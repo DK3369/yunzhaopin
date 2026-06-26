@@ -5,8 +5,8 @@
                 :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" ref="multipleTable"
                 @selection-change="handleSelectionChange" v-loading="loading" :empty-text="emptytext">
                 <el-table-column type="selection" width="55"></el-table-column>
-                <el-table-column prop="id" label="编号" width="80"></el-table-column>
-                <el-table-column label="职位名称(点击修改)" property="name">
+                <el-table-column prop="id" label="{yun:}t key='member_com_00345'{/yun}" width="80"></el-table-column>
+                <el-table-column label="{yun:}t key='admin_system_00109'{/yun}" property="name">
                     <template slot-scope="scope">
                         <el-input v-if="scope.row[scope.column.property + 'isShow']"
                             :ref="scope.column.property + scope.$index" :id="scope.column.property + scope.$index"
@@ -23,7 +23,7 @@
                         </span>
                     </template>
                 </el-table-column>
-                <el-table-column label="英文名称/拼音(点击修改)" property="e_name">
+                <el-table-column label="{yun:}t key='admin_system_00108'{/yun}" property="e_name">
                     <template slot-scope="scope">
                         <el-input v-if="scope.row[scope.column.property + 'isShow']"
                             :ref="scope.column.property + scope.$index" :id="scope.column.property + scope.$index"
@@ -34,7 +34,7 @@
                         </span>
                     </template>
                 </el-table-column>
-                <el-table-column label="就业分类映射" property="s_name">
+                <el-table-column label="{yun:}t key='admin_system_00110'{/yun}" property="s_name">
                     <template slot-scope="scope">
                         <el-input v-if="scope.row[scope.column.property + 'isShow']"
                             :ref="scope.column.property + scope.$index" :id="scope.column.property + scope.$index"
@@ -46,12 +46,12 @@
                         </span>
                     </template>
                 </el-table-column>
-                <el-table-column label="首页推荐" property="rec" width="80">
+                <el-table-column label="{yun:}t key='admin_system_00114'{/yun}" property="rec" width="80">
                     <template slot-scope="scope">
                         <el-switch v-model="scope.row.rec_n" @change="changeRec(scope)"></el-switch>
                     </template>
                 </el-table-column>
-                <el-table-column label="职位排序" property="sort" width="80">
+                <el-table-column label="{yun:}t key='admin_system_00113'{/yun}" property="sort" width="80">
                     <template slot-scope="scope">
                         <el-input v-if="scope.row[scope.column.property + 'isShow']"
                             :ref="scope.column.property + scope.$index" :id="scope.column.property + scope.$index"
@@ -63,12 +63,12 @@
                         </span>
                     </template>
                 </el-table-column>
-                <el-table-column label="职位描述样本" width="110">
+                <el-table-column label="{yun:}t key='admin_system_00118'{/yun}" width="110">
                     <template slot-scope="scope">
                         <el-link v-if="scope.row.level != 'one'" :underline="false" type="primary" @click="editRow(scope)">{yun:}t key='admin_system_00119'{/yun}</el-link>
                     </template>
                 </el-table-column>
-                <el-table-column header-align="center" align="right" label="操作" :width="210">
+                <el-table-column header-align="center" align="right" label="{yun:}t key='member_user_00048'{/yun}" :width="210">
                     <template slot-scope="scope">
                         <div class="cz_button">
                             <el-button v-if="scope.row.level == 'two'" size="mini" @click="moveRow(1, scope)">{yun:}t key='admin_system_00115'{/yun}</el-button>

@@ -21,8 +21,8 @@
                         <td>
                             <div class="TableSelect">
                                 <el-select v-model="infoData.linktype" placeholder="{yun:}t key='wap_user_00100'{/yun}">
-                                    <el-option label="文字链接" value="1"></el-option>
-                                    <el-option label="图片链接" value="2"></el-option>
+                                    <el-option label="{yun:}t key='admin_01013'{/yun}" value="1"></el-option>
+                                    <el-option label="{yun:}t key='admin_00100'{/yun}" value="2"></el-option>
                                 </el-select>
                             </div>
                         </td>
@@ -78,8 +78,8 @@
                         <td>
                             <div class="TableSelect">
                                 <el-select v-model="infoData.didtype" placeholder="{yun:}t key='wap_user_00100'{/yun}">
-                                    <el-option label="全站使用" value="1"></el-option>
-                                    <el-option label="仅在首页使用" value="2"></el-option>
+                                    <el-option label="{yun:}t key='admin_system_00290'{/yun}" value="1"></el-option>
+                                    <el-option label="{yun:}t key='admin_system_00288'{/yun}" value="2"></el-option>
                                 </el-select>
                             </div>
                         </td>
@@ -255,7 +255,7 @@ module.exports = {
                 return false;
             }
             if (that.infoData.linkname == '') {
-                message.error('请填写链接标题');
+                message.error(lc('admin_vue_00051'));
                 return false;
             }
             if (that.infoData.linkurl == '') {
@@ -263,7 +263,7 @@ module.exports = {
                 return false;
             }
             if (that.infoData.didtype == '') {
-                message.error('请选择站点下使用范围');
+                message.error(lc('admin_vue_00052'));
                 return false;
             }
             formData.append('type', that.infoData.linktype);

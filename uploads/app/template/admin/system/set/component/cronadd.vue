@@ -169,7 +169,7 @@
 					</td>
 					<td>
 						<div class="setBasicIput">
-							<el-switch v-model="info.display" active-text="开启">
+							<el-switch v-model="info.display" active-text="{yun:}t key='member_com_00287'{/yun}">
 							</el-switch>
 						</div>
 					</td>

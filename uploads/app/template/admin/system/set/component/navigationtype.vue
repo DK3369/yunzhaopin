@@ -10,9 +10,9 @@
         <div class="moduleElTable">
             <el-table :data="list" border style="width: 100%"
                       :header-cell-style="{background:'#f5f7fa',color:'#606266'}" height="100%" v-loading="loading" :empty-text="emptytext">
-                <el-table-column prop="id" label="分类编号" width="100">
+                <el-table-column prop="id" label="{yun:}t key='admin_system_00098'{/yun}" width="100">
                 </el-table-column>
-                <el-table-column prop="typename" label="分类名称">
+                <el-table-column prop="typename" label="{yun:}t key='admin_system_00357'{/yun}">
                     <template slot-scope="scope">
                         <div class="moduleProps moduleTrButn" v-if="scope.row[scope.column.property + 'isShow']">
                             <el-input :ref="scope.column.property + scope.$index" :id="scope.column.property + scope.$index"
@@ -24,7 +24,7 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column fixed="right" label="操作" width="110">
+                <el-table-column fixed="right" label="{yun:}t key='member_user_00048'{/yun}" width="110">
                     <template slot-scope="scope">
                         <div class="cz_button">
                             <el-button type="danger" size="small" @click="delanv(scope.$index)">{yun:}t key='common.delete'{/yun}</el-button>
@@ -38,7 +38,7 @@
             <el-dialog title="{yun:}t key='admin_00197'{/yun}" :visible.sync="dialogAdd" :with-header="true" :append-to-body="false"
                        :show-close="true" width="30%" :modal="false">
                 <el-form :model="ruleForm" ref="ruleForm" label-width="100px" class="demo-ruleForm">
-                    <el-form-item label="分类名称" prop="name">
+                    <el-form-item label="{yun:}t key='admin_system_00357'{/yun}" prop="name">
                         <el-input v-model="ruleForm.typename"></el-input>
                     </el-form-item>
                 </el-form>
@@ -197,7 +197,7 @@
                 let params = {
                     id: this.list[idx].id
                 }
-                delConfirm(this, params, this.del, '确定要删除该类别？');
+                delConfirm(this, params, this.del, lc('admin_vue_00057'));
             }
         },
     };

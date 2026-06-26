@@ -12,8 +12,8 @@
                 :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" ref="multipleTable"
                 @selection-change="handleSelectionChange" height="calc(100% - 60px)" v-loading="loading" :empty-text="emptytext">
                 <el-table-column type="selection" width="55"></el-table-column>
-                <el-table-column prop="id" label="分类编号" width="100"></el-table-column>
-                <el-table-column label="分类名称(点击修改)" property="name">
+                <el-table-column prop="id" label="{yun:}t key='admin_system_00098'{/yun}" width="100"></el-table-column>
+                <el-table-column label="{yun:}t key='admin_system_00097'{/yun}" property="name">
                     <template slot-scope="scope">
                         <el-input v-if="scope.row[scope.column.property + 'isShow']" :ref="scope.column.property + scope.$index"
                             :id="scope.column.property + scope.$index" v-model="scope.row.name" @blur="alterData(scope)"></el-input>
@@ -23,8 +23,8 @@
                         </span>
                     </template>
                 </el-table-column>
-                <el-table-column prop="variable" label="分类变量名"></el-table-column>
-                <el-table-column label="操作" width="140">
+                <el-table-column prop="variable" label="{yun:}t key='admin_system_00123'{/yun}"></el-table-column>
+                <el-table-column label="{yun:}t key='member_user_00048'{/yun}" width="140">
                     <template slot-scope="scope">
                         <div class="moduleElTaCaoz">
                             <el-button size="mini" @click="openManage(scope)">{yun:}t key='wap_com_00304'{/yun}</el-button>

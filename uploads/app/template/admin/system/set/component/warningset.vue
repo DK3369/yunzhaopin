@@ -28,7 +28,7 @@
                             </td>
                             <td>
                                 <div class="TableButn">
-                                    <el-switch v-model="config.warning_addjob_type" active-text="开启" inactive-text="关闭"
+                                    <el-switch v-model="config.warning_addjob_type" active-text="{yun:}t key='member_com_00287'{/yun}" inactive-text="{yun:}t key='resume_00030'{/yun}"
                                         active-value="1"></el-switch>
                                 </div>
                             </td>
@@ -51,7 +51,7 @@
                             </td>
                             <td>
                                 <div class="TableButn">
-                                    <el-switch v-model="config.warning_downresume_type" active-text="开启" inactive-text="关闭"
+                                    <el-switch v-model="config.warning_downresume_type" active-text="{yun:}t key='member_com_00287'{/yun}" inactive-text="{yun:}t key='resume_00030'{/yun}"
                                         active-value="1"></el-switch>
                                 </div>
                             </td>
@@ -74,7 +74,7 @@
                             </td>
                             <td>
                                 <div class="TableButn">
-                                    <el-switch v-model="config.warning_addresume_type" active-text="开启" inactive-text="关闭"
+                                    <el-switch v-model="config.warning_addresume_type" active-text="{yun:}t key='member_com_00287'{/yun}" inactive-text="{yun:}t key='resume_00030'{/yun}"
                                         active-value="1"></el-switch>
                                 </div>
                             </td>
@@ -97,7 +97,7 @@
                             </td>
                             <td>
                                 <div class="TableButn">
-                                    <el-switch v-model="config.warning_recharge_type" active-text="开启" inactive-text="关闭"
+                                    <el-switch v-model="config.warning_recharge_type" active-text="{yun:}t key='member_com_00287'{/yun}" inactive-text="{yun:}t key='resume_00030'{/yun}"
                                         active-value="1"></el-switch>
                                 </div>
                             </td>
@@ -120,7 +120,7 @@
                             </td>
                             <td>
                                 <div class="TableButn">
-                                    <el-switch v-model="config.warning_closemsg_type" active-text="开启" inactive-text="关闭"
+                                    <el-switch v-model="config.warning_closemsg_type" active-text="{yun:}t key='member_com_00287'{/yun}" inactive-text="{yun:}t key='resume_00030'{/yun}"
                                         active-value="1"></el-switch>
                                 </div>
                             </td>
@@ -143,7 +143,7 @@
                             </td>
                             <td>
                                 <div class="TableButn">
-                                    <el-switch v-model="config.warning_lookresume_type" active-text="开启" inactive-text="关闭"
+                                    <el-switch v-model="config.warning_lookresume_type" active-text="{yun:}t key='member_com_00287'{/yun}" inactive-text="{yun:}t key='resume_00030'{/yun}"
                                         active-value="1"></el-switch>
                                 </div>
                             </td>
@@ -166,7 +166,7 @@
                             </td>
                             <td>
                                 <div class="TableButn">
-                                    <el-switch v-model="config.warning_lookjob_type" active-text="开启" inactive-text="关闭"
+                                    <el-switch v-model="config.warning_lookjob_type" active-text="{yun:}t key='member_com_00287'{/yun}" inactive-text="{yun:}t key='resume_00030'{/yun}"
                                         active-value="1"></el-switch>
                                 </div>
                             </td>
@@ -189,7 +189,7 @@
                             </td>
                             <td>
                                 <div class="TableButn">
-                                    <el-switch v-model="config.warning_teljob_type" active-text="开启" inactive-text="关闭"
+                                    <el-switch v-model="config.warning_teljob_type" active-text="{yun:}t key='member_com_00287'{/yun}" inactive-text="{yun:}t key='resume_00030'{/yun}"
                                         active-value="1"></el-switch>
                                 </div>
                             </td>
@@ -212,7 +212,7 @@
                             </td>
                             <td>
                                 <div class="TableButn">
-                                    <el-switch v-model="config.warning_reg_ip_type" active-text="开启" inactive-text="关闭"
+                                    <el-switch v-model="config.warning_reg_ip_type" active-text="{yun:}t key='member_com_00287'{/yun}" inactive-text="{yun:}t key='resume_00030'{/yun}"
                                         active-value="1"></el-switch>
                                 </div>
                             </td>
@@ -236,8 +236,8 @@
                             </td>
                             <td>
                                 <div class="TableButn">
-                                    <el-switch v-model="config.warning_exchange_link_type" active-text="开启"
-                                        inactive-text="关闭" active-value="1"></el-switch>
+                                    <el-switch v-model="config.warning_exchange_link_type" active-text="{yun:}t key='member_com_00287'{/yun}"
+                                        inactive-text="{yun:}t key='resume_00030'{/yun}" active-value="1"></el-switch>
                                 </div>
                             </td>
                             <td>

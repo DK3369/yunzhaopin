@@ -9,16 +9,16 @@
             :height="tableHeight" v-loading="loading" :empty-text="emptytext" height="calc(100% - 40px)">
             <el-table-column type="selection" width="55">
             </el-table-column>
-            <el-table-column prop="seoname" label="名称" width="160">
+            <el-table-column prop="seoname" label="{yun:}t key='member_com_00021'{/yun}" width="160">
             </el-table-column>
-            <el-table-column prop="ident" label="SEO标识符">
+            <el-table-column prop="ident" label="{yun:}t key='admin_system_00371'{/yun}">
             </el-table-column>
-            <el-table-column prop="title" label="网页标题">
+            <el-table-column prop="title" label="{yun:}t key='admin_00980'{/yun}">
             </el-table-column>
-            <el-table-column prop="time_n" label="更新时间">
+            <el-table-column prop="time_n" label="{yun:}t key='wap_00326'{/yun}">
             </el-table-column>
 
-            <el-table-column fixed="right" label="操作" width="140">
+            <el-table-column fixed="right" label="{yun:}t key='member_user_00048'{/yun}" width="140">
                 <template slot-scope="scope">
                     <div class="cz_button">
                         <el-button size="mini" @click="openSeo(scope.row)">{yun:}t key='wap_js_00073'{/yun}</el-button>

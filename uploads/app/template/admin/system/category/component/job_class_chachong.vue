@@ -4,8 +4,8 @@
       <el-table :data="tableData" stripe border style="width: 100%;" height="100%"
         :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" v-loading="loading" :empty-text="emptytext">
         <el-table-column prop="id" label="ID" width="55"></el-table-column>
-        <el-table-column prop="name" label="类别名称"></el-table-column>
-        <el-table-column label="英文/拼音(点击修改)" property="e_name">
+        <el-table-column prop="name" label="{yun:}t key='admin_00219'{/yun}"></el-table-column>
+        <el-table-column label="{yun:}t key='admin_system_00090'{/yun}" property="e_name">
           <template slot-scope="scope">
             <el-input v-if="scope.row[scope.column.property + 'isShow']" :ref="scope.column.property + scope.$index" :id="scope.column.property + scope.$index"
               v-model="scope.row.e_name" @blur="alterData(scope)"></el-input>

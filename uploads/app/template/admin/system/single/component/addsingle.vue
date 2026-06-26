@@ -128,7 +128,7 @@
                     <span>{yun:}t key='admin_system_00668'{/yun}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-switch v-model="info.is_nav" active-text="显示" inactive-text="不显示" active-value="1" inactive-value="0">
+                    <el-switch v-model="info.is_nav" active-text="{yun:}t key='member_com_00023'{/yun}" inactive-text="{yun:}t key='admin_user_00340'{/yun}" active-value="1" inactive-value="0">
                     </el-switch>
                 </div>
             </div>

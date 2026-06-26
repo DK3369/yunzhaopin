@@ -7,7 +7,7 @@
                     </el-input>
                 </div>
                 <div class="tableSeachInpt" style="margin-bottom: 0px;">
-                    <el-date-picker v-model="time" size="small" type="daterange" range-separator="至"
+                    <el-date-picker v-model="time" size="small" type="daterange" range-separator="{yun:}t key='admin_company_00019'{/yun}"
                         start-placeholder="{yun:}t key='admin_00343'{/yun}" end-placeholder="{yun:}t key='admin_00344'{/yun}" value-format="yyyy-MM-dd"
                         style="margin-right: 10px; text-align: left;" @change="search">
                     </el-date-picker>
@@ -24,13 +24,13 @@
                 :default-sort="{ prop: 'id', order: 'descending' }" @sort-change='sortChange' v-loading="loading" :empty-text="emptytext">
                 <el-table-column type="selection" width="55">
                 </el-table-column>
-                <el-table-column prop="id" sortable="custom" label="编号" width="140">
+                <el-table-column prop="id" sortable="custom" label="{yun:}t key='member_com_00345'{/yun}" width="140">
                 </el-table-column>
-                <el-table-column prop="cron_name" label="执行任务">
+                <el-table-column prop="cron_name" label="{yun:}t key='admin_00981'{/yun}">
                 </el-table-column>
-                <el-table-column prop="ctime_n" label="执行时间" width="220">
+                <el-table-column prop="ctime_n" label="{yun:}t key='admin_00982'{/yun}" width="220">
                 </el-table-column>
-                <el-table-column fixed="right" label="操作" width="80">
+                <el-table-column fixed="right" label="{yun:}t key='member_user_00048'{/yun}" width="80">
                     <template slot-scope="scope">
                         <div class="cz_button">
                             <el-button size="mini" type="danger" @click="delrow(scope.row)">{yun:}t key='common.delete'{/yun}</el-button>

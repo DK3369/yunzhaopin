@@ -11,7 +11,7 @@
 			<div class="moduleElTable" style="height: calc(100% - 105px);">
 				<el-table :data="tableData" border style="width: 100%"
 					:header-cell-style="{ background: '#f5f7fa', color: '#606266' }" height="100%" v-loading="loading" :empty-text="emptytext">
-					<el-table-column prop="wenjian" label="图片" width="150">
+					<el-table-column prop="wenjian" label="{yun:}t key='wap_js_00081'{/yun}" width="150">
 						<template slot-scope="scope">
 							<div class="demo-image__preview">
 								<el-image style="width: 100px; height: 60px" :src="scope.row.pic_n"
@@ -20,11 +20,11 @@
 							</div>
 						</template>
 					</el-table-column>
-					<el-table-column prop="name" label="模板名称">
+					<el-table-column prop="name" label="{yun:}t key='wap_com_00413'{/yun}">
 					</el-table-column>
-					<el-table-column prop="status_n" label="状态">
+					<el-table-column prop="status_n" label="{yun:}t key='member_user_00181'{/yun}">
 					</el-table-column>
-					<el-table-column fixed="right" label="操作" width="140">
+					<el-table-column fixed="right" label="{yun:}t key='member_user_00048'{/yun}" width="140">
 						<template slot-scope="scope">
 							<div class="moduleElTaCaoz">
 								<el-button size="mini" @click="editTpl(scope.row)">{yun:}t key='wap_js_00073'{/yun}</el-button>
@@ -96,7 +96,7 @@
 									<span>{yun:}t key='admin_system_00343'{/yun}</span>
 								</div>
 								<div class="drawerModInpt">
-									<el-date-picker v-model="indexTplInfo.strtimes" type="daterange" range-separator="至"
+									<el-date-picker v-model="indexTplInfo.strtimes" type="daterange" range-separator="{yun:}t key='admin_company_00019'{/yun}"
 										start-placeholder="{yun:}t key='admin_00343'{/yun}" end-placeholder="{yun:}t key='admin_00344'{/yun}" value-format="yyyy-MM-dd">
 									</el-date-picker>
 								</div>

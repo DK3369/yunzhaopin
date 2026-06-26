@@ -160,7 +160,7 @@ module.exports = {
 				this.dituShow = true;
                 this.openMap();
             }else{
-				message.error('请先设置Web端Key');
+				message.error(lc('admin_vue_00050'));
 			}
         },
         openMap:function (){

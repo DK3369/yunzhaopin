@@ -84,8 +84,8 @@
                     <td>
                         <div class="TableSelect" style="display: flex;align-items: center;">
                             <el-select v-model="ruleForm.type" placeholder="{yun:}t key='wap_user_00100'{/yun}">
-                                <el-option key="1" label="站内链接" value="1"></el-option>
-                                <el-option key="2" label="外部链接" value="2"></el-option>
+                                <el-option key="1" label="{yun:}t key='admin_00198'{/yun}" value="1"></el-option>
+                                <el-option key="2" label="{yun:}t key='admin_system_00663'{/yun}" value="2"></el-option>
                             </el-select>
                         </div>
                     </td>

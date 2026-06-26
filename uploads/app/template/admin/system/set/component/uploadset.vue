@@ -263,7 +263,7 @@ module.exports = {
         upLogoChange(file) {
             // 预览文件处理
             this.weblogo = URL.createObjectURL(file.raw);
-            console.log('LOGO预览地址：' + this.weblogo);
+            console.log(lc('admin_vue_00046') + this.weblogo);
             // 复刻文件信息
             this.files = file.raw;
         },

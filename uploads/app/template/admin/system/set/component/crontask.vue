@@ -11,24 +11,24 @@
                 :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" height="100%" v-loading="loading" :empty-text="emptytext">
                 <el-table-column prop="id" label="ID" width="80">
                 </el-table-column>
-                <el-table-column prop="name" label="任务名称" min-width="220">
+                <el-table-column prop="name" label="{yun:}t key='admin_00892'{/yun}" min-width="220">
                 </el-table-column>
-                <el-table-column prop="dir" label="执行文件" width="220">
+                <el-table-column prop="dir" label="{yun:}t key='admin_system_00262'{/yun}" width="220">
                 </el-table-column>
-                <el-table-column prop="type_n" label="执行类型" width="160">
+                <el-table-column prop="type_n" label="{yun:}t key='admin_system_00272'{/yun}" width="160">
                 </el-table-column>
-                <el-table-column prop="display_n" label="是否启用" width="100">
+                <el-table-column prop="display_n" label="{yun:}t key='admin_system_00263'{/yun}" width="100">
                 </el-table-column>
-                <el-table-column prop="nowtime_n" label="上次执行时间" width="160">
+                <el-table-column prop="nowtime_n" label="{yun:}t key='admin_00901'{/yun}" width="160">
                 </el-table-column>
-                <el-table-column prop="nexttime_n" label="下次执行时间" width="160">
+                <el-table-column prop="nexttime_n" label="{yun:}t key='admin_00902'{/yun}" width="160">
                 </el-table-column>
-                <el-table-column prop="waibu" label="外部调用" width="100">
+                <el-table-column prop="waibu" label="{yun:}t key='admin_system_00271'{/yun}" width="100">
                     <template slot-scope="scope">
                         <el-link type="primary" @click="copyurl(scope.row.src)">{yun:}t key='admin_system_00275'{/yun}</el-link>
                     </template>
                 </el-table-column>
-                <el-table-column fixed="right" label="操作" width="200">
+                <el-table-column fixed="right" label="{yun:}t key='member_user_00048'{/yun}" width="200">
                     <template slot-scope="scope">
                         <div class="cz_button">
                             <el-button size="mini"
@@ -125,7 +125,7 @@ module.exports = {
         // 点击执行
         exec_ctl(display, id) {
             var that = this
-            delConfirm(that, id, that.exec_cron, '确定现在执行该任务？');
+            delConfirm(that, id, that.exec_cron, lc('admin_vue_00049'));
         },
         copyurl(url) {
             this.curr_url = url

@@ -12,7 +12,7 @@
 			<div class="moduleElTable">
 				<el-table :data="tableData" border style="width: 100%"
 					:header-cell-style="{ background: '#f5f7fa', color: '#606266' }" height="640" v-loading="loading" :empty-text="emptytext">
-					<el-table-column prop="wenjian" label="图片" width="150">
+					<el-table-column prop="wenjian" label="{yun:}t key='wap_js_00081'{/yun}" width="150">
 						<template slot-scope="scope">
 							<div class="demo-image__preview">
 								<el-image style="width: 80px; height: 100px" :src="scope.row.pic"
@@ -21,13 +21,13 @@
 							</div>
 						</template>
 					</el-table-column>
-					<el-table-column prop="name" label="模板名称">
+					<el-table-column prop="name" label="{yun:}t key='wap_com_00413'{/yun}">
 					</el-table-column>
-					<el-table-column prop="url" label="风格目录名称">
+					<el-table-column prop="url" label="{yun:}t key='admin_00944'{/yun}">
 					</el-table-column>
-					<el-table-column prop="status_n" label="状态">
+					<el-table-column prop="status_n" label="{yun:}t key='member_user_00181'{/yun}">
 					</el-table-column>
-					<el-table-column label="操作" width="140">
+					<el-table-column label="{yun:}t key='member_user_00048'{/yun}" width="140">
 						<template slot-scope="scope">
 							<div class="moduleElTaCaoz">
 								<el-button size="mini" @click="editTpl(scope.row)">{yun:}t key='wap_js_00073'{/yun}</el-button>
@@ -201,7 +201,7 @@ module.exports = {
 			let that = this;
 			let formData = new FormData();
 			if (that.resumeTplInfo.dir == '') {
-				message.error('请填写模板路径');
+				message.error(lc('admin_vue_00056'));
 				return false;
 			}
 			if (that.resumeTplInfo.picurl == '' && that.resumeTplInfo.pic == '') {

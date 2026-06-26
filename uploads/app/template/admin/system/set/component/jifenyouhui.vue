@@ -5,9 +5,9 @@
                 :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" height="100%" v-loading="loading" :empty-text="emptytext">
                 <el-table-column type="selection" width="55">
                 </el-table-column>
-                <el-table-column prop="id" label="编号" width="220">
+                <el-table-column prop="id" label="{yun:}t key='member_com_00345'{/yun}" width="220">
                 </el-table-column>
-                <el-table-column label="积分 (点击修改)" width="300">
+                <el-table-column label="{yun:}t key='admin_00922'{/yun}" width="300">
                     <template slot-scope="scope">
                         <div class="moduleElTaPax">
                             <template v-if="scope.row.isEditjifen">
@@ -21,7 +21,7 @@
 
                     </template>
                 </el-table-column>
-                <el-table-column label="折扣">
+                <el-table-column label="{yun:}t key='admin_system_00333'{/yun}">
                     <template slot-scope="scope">
                         <div class="moduleElTaPax">
                             <template v-if="scope.row.isEditdiscount">
@@ -36,14 +36,14 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="是否开启" width="220">
+                <el-table-column label="{yun:}t key='admin_system_00332'{/yun}" width="220">
                     <template slot-scope="scope">
                         <el-switch v-model="scope.row.status" active-color="#1890FF" inactive-color="#B8BDC9"
                             @change="isOpen(scope)">
                         </el-switch>
                     </template>
                 </el-table-column>
-                <el-table-column fixed="right" label="操作" width="80">
+                <el-table-column fixed="right" label="{yun:}t key='member_user_00048'{/yun}" width="80">
                     <template slot-scope="scope">
                         <div class="moduleElTaCaoz">
                             <el-button size="mini" type="danger" @click="deljf(scope.row)">{yun:}t key='common.delete'{/yun}</el-button>
@@ -94,7 +94,7 @@ module.exports = {
         list() {
             let _this = this;
             _this.loading = true;
-            _this.emptytext = "数据加载中";
+            _this.emptytext = "{yun:}t key='admin_user_weipin_00026'{/yun}";
             let url = _this.uri + 'set_integral&a=class';
             httpPost(url, {}).then(function (response) {
                 let res = response.data;
@@ -136,7 +136,7 @@ module.exports = {
 						_this.tableData[index][isEditFieldName] = false;return;
 					}
 				}else{
-					message.warning('积分不能为空');
+					message.warning(lc('admin_vue_00053'));
 					_this.tableData[index][isEditFieldName] = false;return;
 					
 				}
@@ -149,7 +149,7 @@ module.exports = {
 						_this.tableData[index][isEditFieldName] = false;return;
 					}
 				}else{
-					message.warning('折扣不能为空');
+					message.warning(lc('admin_vue_00054'));
 					_this.tableData[index][isEditFieldName] = false;return;
 				}
 			}
@@ -188,7 +188,7 @@ module.exports = {
             });
         },
         deljf(row){
-            delConfirm(this, {delid:row.id}, this.del, '你确定要删除该条数据？');
+            delConfirm(this, {delid:row.id}, this.del, lc('admin_vue_00055'));
         },
         del: function (sendData) {
             let _this = this;

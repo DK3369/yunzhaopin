@@ -8,7 +8,7 @@
 		<div class="moduleElTable" style="height: calc(100% - 105px);">
 			<el-table :data="tableData" border style="width: 100%"
 				:header-cell-style="{ background: '#f5f7fa', color: '#606266' }" v-loading="loading" :empty-text="emptytext" height="100%">
-				<el-table-column prop="wenjian" label="图片" width="150">
+				<el-table-column prop="wenjian" label="{yun:}t key='wap_js_00081'{/yun}" width="150">
 					<template slot-scope="scope">
 						<div class="demo-image__preview">
 							<el-image style="width: 100px; height: 60px" :src="scope.row.img"
@@ -17,17 +17,17 @@
 						</div>
 					</template>
 				</el-table-column>
-				<el-table-column prop="name" label="模板名称">
+				<el-table-column prop="name" label="{yun:}t key='wap_com_00413'{/yun}">
 				</el-table-column>
-				<el-table-column prop="dir" label="风格目录名称">
+				<el-table-column prop="dir" label="{yun:}t key='admin_00944'{/yun}">
 				</el-table-column>
-				<el-table-column prop="dir" label="状态">
+				<el-table-column prop="dir" label="{yun:}t key='member_user_00181'{/yun}">
 					<template slot-scope="scope">
 						<span v-if="scope.row.dir == sy_style">{yun:}t key='admin_system_00347'{/yun}</span>
 						<span v-else></span>
 					</template>
 				</el-table-column>
-				<el-table-column fixed="right" label="操作" width="140">
+				<el-table-column fixed="right" label="{yun:}t key='member_user_00048'{/yun}" width="140">
 					<template slot-scope="scope">
 						<div class="moduleElTaCaoz">
 							<el-button size="mini" @click="editTpl(scope.row)">{yun:}t key='wap_js_00073'{/yun}</el-button>

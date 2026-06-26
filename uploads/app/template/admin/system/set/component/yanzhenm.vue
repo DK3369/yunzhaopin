@@ -17,14 +17,14 @@
                         <td>
                             <div class="TableButn">
                                 <el-checkbox-group v-model='code_web_list'>
-                                    <el-checkbox label="注册会员"></el-checkbox>
-                                    <el-checkbox label="前台登录"></el-checkbox>
-                                    <el-checkbox label="店铺招聘"></el-checkbox>
-                                    <el-checkbox label="普工简历"></el-checkbox>
-                                    <el-checkbox label="后台登录"></el-checkbox>
-                                    <el-checkbox label="职场提问"></el-checkbox>
-                                    <el-checkbox label="意见反馈"></el-checkbox>
-                                    <el-checkbox label="找回密码"></el-checkbox>
+                                    <el-checkbox label="{yun:}t key='wap_js_00064'{/yun}"></el-checkbox>
+                                    <el-checkbox label="{yun:}t key='wap_js_00062'{/yun}"></el-checkbox>
+                                    <el-checkbox label="{yun:}t key='wap_js_00130'{/yun}"></el-checkbox>
+                                    <el-checkbox label="{yun:}t key='wap_js_00066'{/yun}"></el-checkbox>
+                                    <el-checkbox label="{yun:}t key='admin_system_00423'{/yun}"></el-checkbox>
+                                    <el-checkbox label="{yun:}t key='wap_00105'{/yun}"></el-checkbox>
+                                    <el-checkbox label="{yun:}t key='wap_user_00203'{/yun}"></el-checkbox>
+                                    <el-checkbox label="{yun:}t key='wap_js_00123'{/yun}"></el-checkbox>
                                 </el-checkbox-group>
                             </div>
                         </td>

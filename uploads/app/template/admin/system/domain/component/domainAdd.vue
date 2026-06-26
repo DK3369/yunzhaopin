@@ -186,7 +186,7 @@
                         </td>
                         <td>
                             <div class="setBasicIput">
-                                <el-switch v-model="isType" active-text="开启"></el-switch>
+                                <el-switch v-model="isType" active-text="{yun:}t key='member_com_00287'{/yun}"></el-switch>
                             </div>
                         </td>
                         <td>
@@ -469,7 +469,7 @@ module.exports = {
 
             // 预览文件处理
             this.domainInfo.weblogo = URL.createObjectURL(file.raw);
-            console.log('LOGO预览地址：' + that.domainInfo.weblogo);
+            console.log(lc('admin_vue_00046') + that.domainInfo.weblogo);
 
             // 复刻文件信息
             this.files = file.raw;
@@ -479,7 +479,7 @@ module.exports = {
             var self = this;
             let formData = new FormData();
             if (self.domainInfo.title == '') {
-                message.error('请填写域名备注');
+                message.error(lc('admin_vue_00047'));
                 return false;
             } else {
                 formData.append('title', self.domainInfo.title);

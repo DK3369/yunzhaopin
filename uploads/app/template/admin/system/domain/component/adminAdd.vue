@@ -126,7 +126,7 @@ module.exports = {
             var params = {};
 
             if (!self.userInfo.username) {
-                message.error('请填写登录用户名');
+                message.error(lc('admin_vue_00045'));
                 return false;
             }
             if (!self.userInfo.name) {

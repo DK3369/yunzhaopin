@@ -73,7 +73,7 @@
                     <el-input v-model="ruleForm.php_url" placeholder="{yun:}t key='wap_user_00076'{/yun}"></el-input>
                 </div>
                 <div class="drawerModTips">
-                    <el-alert title="如：/job/index.php?c=comapply （只需模块链接 无需参数 与上对应）" type="info" show-icon :closable="false">
+                    <el-alert title="{yun:}t key='admin_vue_00058'{/yun}" type="info" show-icon :closable="false">
                     </el-alert>
                 </div>
             </div>
@@ -163,9 +163,9 @@
                         <el-table ref="multipleTable" :data="scitem.tableData" tooltip-effect="dark" style="width: 100%" @selection-change="handleSelectionChange" v-loading="loading" :empty-text="emptytext">
                             <el-table-column type="selection" width="55">
                             </el-table-column>
-                            <el-table-column label="说明" prop="title" width="150">
+                            <el-table-column label="{yun:}t key='member_com_00207'{/yun}" prop="title" width="150">
                             </el-table-column>
-                            <el-table-column label="代码">
+                            <el-table-column label="{yun:}t key='admin_system_00379'{/yun}">
                                 <template slot-scope="scope">{{ '{' + scope.row.code + '}' }}</template>
                             </el-table-column>
                         </el-table>
@@ -178,19 +178,19 @@
             </el-drawer>
         </div>
         <!-- <div class="modluDialog">
-            <el-dialog title="可选择参数" :visible.sync="centerDialogVisible" :append-to-body="true" :modal="false" width="30%" center>
+            <el-dialog title="{yun:}t key='admin_system_00374'{/yun}" :visible.sync="centerDialogVisible" :append-to-body="true" :modal="false" width="30%" center>
                 <div>
                     <div class="tableDome_tip">
-                        <el-alert title="提示：下面的标识符请根据页面对应添加，否则无法正常显示！" type="warning">
+                        <el-alert title="{yun:}t key='admin_system_00358'{/yun}" type="warning">
                         </el-alert>
                     </div>
                     <div v-for="(scitem, scindex) in seoconfigList" :key="scindex" v-if="checkSeoconfig(scitem.seomodel)">
                         <el-table ref="multipleTable" :data="scitem.tableData" tooltip-effect="dark" style="width: 100%" @selection-change="handleSelectionChange" v-loading="loading">
                             <el-table-column type="selection" width="55">
                             </el-table-column>
-                            <el-table-column label="说明" prop="title" width="150">
+                            <el-table-column label="{yun:}t key='member_com_00207'{/yun}" prop="title" width="150">
                             </el-table-column>
-                            <el-table-column label="代码">
+                            <el-table-column label="{yun:}t key='admin_system_00379'{/yun}">
                                 <template slot-scope="scope">{{ '{' + scope.row.code + '}' }}</template>
                             </el-table-column>
                         </el-table>

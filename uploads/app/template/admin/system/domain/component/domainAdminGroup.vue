@@ -19,11 +19,11 @@
                 :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" height="calc(100% - 50px)"
                 @selection-change="handleSelectionChange" ref="multipleTable" v-loading="loading" :empty-text="emptytext">
                 <el-table-column type="selection" width="55"></el-table-column>
-                <el-table-column prop="id" label="	编号" width="80"></el-table-column>
-                <el-table-column prop="group_name" label="用户组名称"></el-table-column>
-                <el-table-column prop="domain_name" label="所属分站"></el-table-column>
-                <el-table-column prop="num" label="管理员人数"></el-table-column>
-                <el-table-column label="操作" width="140">
+                <el-table-column prop="id" label="{yun:}t key='common_02108'{/yun}" width="80"></el-table-column>
+                <el-table-column prop="group_name" label="{yun:}t key='admin_system_00212'{/yun}"></el-table-column>
+                <el-table-column prop="domain_name" label="{yun:}t key='admin_system_00174'{/yun}"></el-table-column>
+                <el-table-column prop="num" label="{yun:}t key='admin_system_00173'{/yun}"></el-table-column>
+                <el-table-column label="{yun:}t key='member_user_00048'{/yun}" width="140">
                     <template slot-scope="scope">
                         <div class="moduleElTaCaoz">
                             <!-- <a href="javascript:;" @click="editGroup(scope);">
@@ -187,7 +187,7 @@ module.exports = {
         delGroupSel() {
             var that = this;
             if (!that.selectedItem.length) {
-                message.error('请选择要删除的管理员权限组');
+                message.error(lc('admin_vue_00048'));
                 return;
             }
             this.delAdmin(null, true);
