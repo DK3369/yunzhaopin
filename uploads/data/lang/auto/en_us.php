@@ -15875,4 +15875,6 @@ return array (
   'admin_company_00017' => 'Closed successfully',
   'admin_company_00018' => 'Please enter custom refresh interval',
   'admin_company_00019' => 'to',
+  'admin_company_00020' => 'Refresh',
+  'admin_company_00021' => 'Please select company logs to delete!',
 );

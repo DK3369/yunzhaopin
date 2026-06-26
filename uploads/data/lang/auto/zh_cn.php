@@ -15875,4 +15875,6 @@ return array (
   'admin_company_00017' => '关闭成功',
   'admin_company_00018' => '请填写自定义刷新间隔',
   'admin_company_00019' => '至',
+  'admin_company_00020' => '刷新',
+  'admin_company_00021' => '请选择需要删除的企业日志!',
 );
