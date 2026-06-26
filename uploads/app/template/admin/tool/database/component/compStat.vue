@@ -10,7 +10,7 @@
                 <span :class="search.days == 5 ? 'spanDay': ''" @click="handleSearch(5)">{yun:}t key='admin_tool_00145'{/yun}</span>
             </div>
             <div class="dataEchFromInpt">
-                <el-date-picker v-model="search.time" type="daterange" range-separator="至" :picker-options="pickerOptions" start-placeholder="{yun:}t key='admin_00343'{/yun}" end-placeholder="{yun:}t key='admin_00344'{/yun}" value-format="timestamp" @change="handleSearch(0)"></el-date-picker>
+                <el-date-picker v-model="search.time" type="daterange" range-separator="{yun:}t key='admin_company_00019'{/yun}" :picker-options="pickerOptions" start-placeholder="{yun:}t key='admin_00343'{/yun}" end-placeholder="{yun:}t key='admin_00344'{/yun}" value-format="timestamp" @change="handleSearch(0)"></el-date-picker>
                 <el-button type="primary" icon="el-icon-search" size="mini" @click="handleSearch(0)">{yun:}t key='admin_user_weipin_00049'{/yun}</el-button>
             </div>
         </div>

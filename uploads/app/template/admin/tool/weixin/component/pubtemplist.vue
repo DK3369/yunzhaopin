@@ -12,18 +12,18 @@
 				style="width: 100%" :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" height="100%" :empty-text="emptytext">
 				<el-table-column type="selection" width="55">
 				</el-table-column>
-				<el-table-column prop="id" label="编号" width="80">
+				<el-table-column prop="id" label="{yun:}t key='member_com_00345'{/yun}" width="80">
 				</el-table-column>
-				<el-table-column prop="title" label="模板名称">
+				<el-table-column prop="title" label="{yun:}t key='wap_com_00413'{/yun}">
 				</el-table-column>
-				<el-table-column prop="keyword" label="模板类型">
+				<el-table-column prop="keyword" label="{yun:}t key='admin_tool_00541'{/yun}">
 					<template slot-scope="scope">
 						<span v-if="scope.row.type == 'onejob' || scope.row.type == 'job'">{yun:}t key='admin_tool_00557'{/yun}</span>
 						<span v-else-if="scope.row.type == 'resume'">{yun:}t key='member_user_00189'{/yun}</span>
 						<span v-else-if="scope.row.type == 'company'">{yun:}t key='admin_user_company_00135'{/yun}</span>
 					</template>
 				</el-table-column>
-				<el-table-column label="操作" width="150">
+				<el-table-column label="{yun:}t key='member_user_00048'{/yun}" width="150">
 					<template slot-scope="scope">
 						<div class="cz_button">
 							<el-button size="mini" @click="addinfo(scope.row.id)">{yun:}t key='common.edit'{/yun}</el-button>

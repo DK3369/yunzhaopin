@@ -27,7 +27,7 @@
 						</td>
 						<td>
 							<div class="TableButn">
-								<el-switch v-model="config.sy_uc_type" active-text="开启" inactive-text="关闭" active-value="uc_center" inactive-value=""></el-switch>
+								<el-switch v-model="config.sy_uc_type" active-text="{yun:}t key='member_com_00287'{/yun}" inactive-text="{yun:}t key='resume_00030'{/yun}" active-value="uc_center" inactive-value=""></el-switch>
 							</div>
 						</td>
 						<td>

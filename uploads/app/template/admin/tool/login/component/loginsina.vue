@@ -16,7 +16,7 @@
                         </td>
                         <td>
                             <div class="TableButn">
-                                <el-switch v-model="configdata.sy_sinalogin" active-text="开启" inactive-text="关闭" active-value="1" inactive-value="0"></el-switch>
+                                <el-switch v-model="configdata.sy_sinalogin" active-text="{yun:}t key='member_com_00287'{/yun}" inactive-text="{yun:}t key='resume_00030'{/yun}" active-value="1" inactive-value="0"></el-switch>
                             </div>
                         </td>
                         <td>

@@ -29,13 +29,13 @@
                       :empty-text="emptytext">
                 <el-table-column type="selection" width="55">
                 </el-table-column>
-                <el-table-column prop="id" label="编号" width="80">
+                <el-table-column prop="id" label="{yun:}t key='member_com_00345'{/yun}" width="80">
                 </el-table-column>
-                <el-table-column prop="title" label="规则名">
+                <el-table-column prop="title" label="{yun:}t key='admin_tool_00575'{/yun}">
                 </el-table-column>
-                <el-table-column prop="keyword" label="关键字">
+                <el-table-column prop="keyword" label="{yun:}t key='admin_tool_00574'{/yun}">
                 </el-table-column>
-                <el-table-column label="操作" width="130" fixed="right" header-align="center">
+                <el-table-column label="{yun:}t key='member_user_00048'{/yun}" width="130" fixed="right" header-align="center">
                     <template slot-scope="scope">
                         <div class="cz_button">
                             <el-button size="mini" @click="editinfo(scope.row.id)">{yun:}t key='wap_js_00073'{/yun}</el-button>
@@ -62,7 +62,7 @@
 
         <!--添加规则-->
         <div>
-            <el-drawer :title="row.id==''?'添加规则':'修改规则'" :visible.sync="editshow" v-loading="info_loading"
+            <el-drawer :title="row.id=='' ? lc('admin_tool_00573') : lc('admin_tool_00570')" :visible.sync="editshow" v-loading="info_loading"
                        :modal-append-to-body="false"
                        :show-close="true" size="50%">
                 <div class="drawerReply">
@@ -84,7 +84,7 @@
                                       placeholder="{yun:}t key='admin_system_00198'{/yun}"></el-input>
                         </div>
                         <div class="drawerModTips">
-                            <el-alert title="设置多个关键字请按英文','分隔" type="info" show-icon :closable="false">
+                            <el-alert title="{yun:}t key='admin_tool_00582'{/yun}" type="info" show-icon :closable="false">
                             </el-alert>
                         </div>
                     </div>
@@ -97,7 +97,7 @@
                                 <el-tabs v-model="conkey" type="card" @tab-remove="removeTab" @tab-add="tabcon('')"
                                          :closable="true" :addable="addable">
                                     <el-tab-pane v-for="(item, index) in conarr" :key="item.id" :name="'' + index"
-                                                 :label="'消息' + (index + 1) + ' ' + item.msgtype_n">
+                                                 :label="lc('admin_vue_00124') + (index + 1) + ' ' + item.msgtype_n">
                                         <div class="drawerModLis">
                                             <div class="drawerModTite">
                                                 <span>{yun:}t key='admin_tool_00581'{/yun}</span>

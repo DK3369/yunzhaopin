@@ -22,7 +22,7 @@
 						</td>
 						<td>
 							<div class="TableButn">
-								<el-switch v-model="sy_msg_isopen" active-text="开启" inactive-text="关闭" active-value="1"></el-switch>
+								<el-switch v-model="sy_msg_isopen" active-text="{yun:}t key='member_com_00287'{/yun}" inactive-text="{yun:}t key='resume_00030'{/yun}" active-value="1"></el-switch>
 							</div>
 						</td>
 						<td>
@@ -178,7 +178,7 @@
 						</td>
 						<td>
 							<div class="TableButn">
-								<el-switch v-model="sy_kh_isopen" active-text="开启" inactive-text="关闭" active-value="1"></el-switch>
+								<el-switch v-model="sy_kh_isopen" active-text="{yun:}t key='member_com_00287'{/yun}" inactive-text="{yun:}t key='resume_00030'{/yun}" active-value="1"></el-switch>
 							</div>
 						</td>
 						<td>

@@ -1,7 +1,7 @@
 <template>
     <div class="yejiClassDome">
         <el-tabs v-model="activeName" :tab-position="tabPosition" @tab-click="handleTabClick">
-            <el-tab-pane label="会员注册/登录统计" name="first">
+            <el-tab-pane label="{yun:}t key='admin_tool_00147'{/yun}" name="first">
                 <div class="yejiTabCont">
                     <div class="yejiTabHead">
                         <div class="yejiTabHeaButn">
@@ -14,7 +14,7 @@
                         </div>
                         <div class="yejiTabHeaIput">
                             <el-date-picker v-model="search.time" type="daterange" :picker-options="pickerOptions"
-                                range-separator="至" start-placeholder="{yun:}t key='admin_00343'{/yun}" end-placeholder="{yun:}t key='admin_00344'{/yun}"
+                                range-separator="{yun:}t key='admin_company_00019'{/yun}" start-placeholder="{yun:}t key='admin_00343'{/yun}" end-placeholder="{yun:}t key='admin_00344'{/yun}"
                                 value-format="timestamp" @change="handleSearch(0)"></el-date-picker>
                         </div>
                         <div style="margin-left: 5px;">
@@ -109,7 +109,7 @@
                     </div>
                 </div>
             </el-tab-pane>
-            <el-tab-pane label="职位/简历浏览统计" name="second">
+            <el-tab-pane label="{yun:}t key='admin_tool_00148'{/yun}" name="second">
                 <div class="yejiTabCont">
                     <div class="yejiTabHead">
                         <div class="yejiTabHeaButn">
@@ -122,7 +122,7 @@
                         </div>
                         <div class="yejiTabHeaIput">
                             <el-date-picker v-model="search.time" size="small" type="daterange"
-                                :picker-options="pickerOptions" range-separator="至" start-placeholder="{yun:}t key='admin_00343'{/yun}"
+                                :picker-options="pickerOptions" range-separator="{yun:}t key='admin_company_00019'{/yun}" start-placeholder="{yun:}t key='admin_00343'{/yun}"
                                 end-placeholder="{yun:}t key='admin_00344'{/yun}" value-format="timestamp" @change="handleSearch(0)"></el-date-picker>
                             <el-button type="primary" icon="el-icon-search" @click="handleSearch(0)">{yun:}t key='admin_user_weipin_00049'{/yun}</el-button>
                         </div>
@@ -151,10 +151,10 @@
                                     <span>{yun:}t key='admin_tool_00100'{/yun}</span>
                                 </div>
                                 <div class="tabEchatDome">
-                                    <el-table :data="topList.jobList" height="300" border style="width: 100%" v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
-                                        <el-table-column prop="name" label="岗位名称"></el-table-column>
-                                        <el-table-column prop="count" label="浏览量" width="80"></el-table-column>
-                                        <el-table-column label="操作" width="80">
+                                    <el-table :data="topList.jobList" height="300" border style="width: 100%" v-loading="loading" element-loading-text="{yun:}t key='admin_tool_00117'{/yun}" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
+                                        <el-table-column prop="name" label="{yun:}t key='admin_tool_00165'{/yun}"></el-table-column>
+                                        <el-table-column prop="count" label="{yun:}t key='wap_com_00112'{/yun}" width="80"></el-table-column>
+                                        <el-table-column label="{yun:}t key='member_user_00048'{/yun}" width="80">
                                             <template slot-scope="scope">
                                                 <div class="cz_button">
                                                     <el-button size="small" type="primary"
@@ -171,10 +171,10 @@
                                     <span>{yun:}t key='admin_tool_00102'{/yun}</span>
                                 </div>
                                 <div class="tabEchatDome">
-                                    <el-table :data="topList.jobComList" height="300" border style="width: 100%" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
-                                        <el-table-column prop="name" label="企业名称"></el-table-column>
-                                        <el-table-column prop="count" label="浏览量" width="80"></el-table-column>
-                                        <el-table-column label="操作" width="80">
+                                    <el-table :data="topList.jobComList" height="300" border style="width: 100%" element-loading-text="{yun:}t key='admin_tool_00117'{/yun}" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
+                                        <el-table-column prop="name" label="{yun:}t key='wap_com_00157'{/yun}"></el-table-column>
+                                        <el-table-column prop="count" label="{yun:}t key='wap_com_00112'{/yun}" width="80"></el-table-column>
+                                        <el-table-column label="{yun:}t key='member_user_00048'{/yun}" width="80">
                                             <template slot-scope="scope">
                                                 <div class="cz_button">
                                                     <el-button size="small" type="primary"
@@ -210,9 +210,9 @@
                                     <span>{yun:}t key='admin_tool_00101'{/yun}</span>
                                 </div>
                                 <div class="tabEchatDome">
-                                    <el-table :data="topList.resumeList" height="300" border style="width: 100%" v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
-                                        <el-table-column prop="uname" label="个人姓名" width="100"></el-table-column>
-                                        <el-table-column label="简历信息">
+                                    <el-table :data="topList.resumeList" height="300" border style="width: 100%" v-loading="loading" element-loading-text="{yun:}t key='admin_tool_00117'{/yun}" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
+                                        <el-table-column prop="uname" label="{yun:}t key='admin_user_00185'{/yun}" width="100"></el-table-column>
+                                        <el-table-column label="{yun:}t key='admin_tool_00134'{/yun}">
                                             <template slot-scope="scope">
                                                 <span>{{ lc('admin_job_intention_value', [scope.row.jobclassname]) }}</span>
                                                 <span>{{ lc('admin_intended_area_value', [scope.row.cityclassname]) }}</span>
@@ -220,8 +220,8 @@
                                                 <span>{{ lc('admin_experience_value', [scope.row.expname]) }}</span>
                                             </template>
                                         </el-table-column>
-                                        <el-table-column prop="count" label="浏览量" width="80"></el-table-column>
-                                        <el-table-column label="操作" width="80">
+                                        <el-table-column prop="count" label="{yun:}t key='wap_com_00112'{/yun}" width="80"></el-table-column>
+                                        <el-table-column label="{yun:}t key='member_user_00048'{/yun}" width="80">
                                             <template slot-scope="scope">
                                                 <div class="cz_button">
                                                     <el-button size="small" type="primary"
@@ -238,10 +238,10 @@
                                     <span>{yun:}t key='admin_tool_00118'{/yun}</span>
                                 </div>
                                 <div class="tabEchatDome">
-                                    <el-table :data="topList.resumeComList" height="300" border style="width: 100%" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
-                                        <el-table-column prop="name" label="企业名称"></el-table-column>
-                                        <el-table-column prop="count" label="浏览量" width="80"></el-table-column>
-                                        <el-table-column label="操作" width="80">
+                                    <el-table :data="topList.resumeComList" height="300" border style="width: 100%" element-loading-text="{yun:}t key='admin_tool_00117'{/yun}" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
+                                        <el-table-column prop="name" label="{yun:}t key='wap_com_00157'{/yun}"></el-table-column>
+                                        <el-table-column prop="count" label="{yun:}t key='wap_com_00112'{/yun}" width="80"></el-table-column>
+                                        <el-table-column label="{yun:}t key='member_user_00048'{/yun}" width="80">
                                             <template slot-scope="scope">
                                                 <div class="cz_button">
                                                     <el-button size="small" type="primary"
@@ -257,7 +257,7 @@
                     </div>
                 </div>
             </el-tab-pane>
-            <el-tab-pane label="邀请面试/简历下载" name="third">
+            <el-tab-pane label="{yun:}t key='admin_tool_00149'{/yun}" name="third">
                 <div class="yejiTabCont">
                     <div class="yejiTabHead">
                         <div class="yejiTabHeaButn">
@@ -270,7 +270,7 @@
                         </div>
                         <div class="yejiTabHeaIput">
                             <el-date-picker v-model="search.time" size="small" type="daterange"
-                                :picker-options="pickerOptions" range-separator="至" start-placeholder="{yun:}t key='admin_00343'{/yun}"
+                                :picker-options="pickerOptions" range-separator="{yun:}t key='admin_company_00019'{/yun}" start-placeholder="{yun:}t key='admin_00343'{/yun}"
                                 end-placeholder="{yun:}t key='admin_00344'{/yun}" value-format="timestamp" @change="handleSearch(0)"></el-date-picker>
                             <el-button type="primary" icon="el-icon-search" @click="handleSearch(0)">{yun:}t key='admin_user_weipin_00049'{/yun}</el-button>
                         </div>
@@ -299,10 +299,10 @@
                                     <span>{yun:}t key='admin_tool_00093'{/yun}</span>
                                 </div>
                                 <div class="tabEchatDome">
-                                    <el-table :data="topList.inviteResume" height="300" border style="width: 100%" v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
-                                        <el-table-column prop="name" label="个人名称"></el-table-column>
-                                        <el-table-column prop="count" label="被邀请数" width="80"></el-table-column>
-                                        <el-table-column label="操作" width="80">
+                                    <el-table :data="topList.inviteResume" height="300" border style="width: 100%" v-loading="loading" element-loading-text="{yun:}t key='admin_tool_00117'{/yun}" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
+                                        <el-table-column prop="name" label="{yun:}t key='admin_tool_00166'{/yun}"></el-table-column>
+                                        <el-table-column prop="count" label="{yun:}t key='admin_tool_00137'{/yun}" width="80"></el-table-column>
+                                        <el-table-column label="{yun:}t key='member_user_00048'{/yun}" width="80">
                                             <template slot-scope="scope">
                                                 <div class="cz_button">
                                                     <el-button size="small" type="primary"
@@ -319,10 +319,10 @@
                                     <span>{yun:}t key='admin_tool_00089'{/yun}</span>
                                 </div>
                                 <div class="tabEchatDome">
-                                    <el-table :data="topList.inviteCom" height="300" border style="width: 100%" v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
-                                        <el-table-column prop="name" label="企业名称"></el-table-column>
-                                        <el-table-column prop="count" label="邀请数" width="80"></el-table-column>
-                                        <el-table-column label="操作" width="80">
+                                    <el-table :data="topList.inviteCom" height="300" border style="width: 100%" v-loading="loading" element-loading-text="{yun:}t key='admin_tool_00117'{/yun}" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
+                                        <el-table-column prop="name" label="{yun:}t key='wap_com_00157'{/yun}"></el-table-column>
+                                        <el-table-column prop="count" label="{yun:}t key='admin_tool_00144'{/yun}" width="80"></el-table-column>
+                                        <el-table-column label="{yun:}t key='member_user_00048'{/yun}" width="80">
                                             <template slot-scope="scope">
                                                 <div class="cz_button">
                                                     <el-button size="small" type="primary"
@@ -388,10 +388,10 @@
                                     <span>{yun:}t key='admin_tool_00085'{/yun}</span>
                                 </div>
                                 <div class="tabEchatDome">
-                                    <el-table :data="topList.downResume" height="300" border style="width: 100%" v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
-                                        <el-table-column prop="name" label="个人姓名"></el-table-column>
-                                        <el-table-column prop="count" label="下载次数" width="80"></el-table-column>
-                                        <el-table-column label="操作" width="80">
+                                    <el-table :data="topList.downResume" height="300" border style="width: 100%" v-loading="loading" element-loading-text="{yun:}t key='admin_tool_00117'{/yun}" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
+                                        <el-table-column prop="name" label="{yun:}t key='admin_user_00185'{/yun}"></el-table-column>
+                                        <el-table-column prop="count" label="{yun:}t key='admin_tool_00120'{/yun}" width="80"></el-table-column>
+                                        <el-table-column label="{yun:}t key='member_user_00048'{/yun}" width="80">
                                             <template slot-scope="scope">
                                                 <div class="cz_button">
                                                     <el-button size="small" type="primary"
@@ -408,10 +408,10 @@
                                     <span>{yun:}t key='admin_tool_00084'{/yun}</span>
                                 </div>
                                 <div class="tabEchatDome">
-                                    <el-table :data="topList.downCom" height="300" border style="width: 100%" v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
-                                        <el-table-column prop="name" label="企业名称"></el-table-column>
-                                        <el-table-column prop="count" label="下载次数" width="80"></el-table-column>
-                                        <el-table-column label="操作" width="80">
+                                    <el-table :data="topList.downCom" height="300" border style="width: 100%" v-loading="loading" element-loading-text="{yun:}t key='admin_tool_00117'{/yun}" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
+                                        <el-table-column prop="name" label="{yun:}t key='wap_com_00157'{/yun}"></el-table-column>
+                                        <el-table-column prop="count" label="{yun:}t key='admin_tool_00120'{/yun}" width="80"></el-table-column>
+                                        <el-table-column label="{yun:}t key='member_user_00048'{/yun}" width="80">
                                             <template slot-scope="scope">
                                                 <div class="cz_button">
                                                     <el-button size="small" type="primary"
@@ -463,7 +463,7 @@
                     </div>
                 </div>
             </el-tab-pane>
-            <el-tab-pane label="财务统计/广告统计" name="fourth">
+            <el-tab-pane label="{yun:}t key='admin_tool_00150'{/yun}" name="fourth">
                 <div class="yejiTabCont">
                     <div class="yejiTabHead">
                         <div class="yejiTabHeaButn">
@@ -476,7 +476,7 @@
                         </div>
                         <div class="yejiTabHeaIput">
                             <el-date-picker v-model="search.time" size="small" type="daterange"
-                                :picker-options="pickerOptions" range-separator="至" start-placeholder="{yun:}t key='admin_00343'{/yun}"
+                                :picker-options="pickerOptions" range-separator="{yun:}t key='admin_company_00019'{/yun}" start-placeholder="{yun:}t key='admin_00343'{/yun}"
                                 end-placeholder="{yun:}t key='admin_00344'{/yun}" value-format="timestamp" @change="handleSearch(0)"></el-date-picker>
                             <el-button type="primary" icon="el-icon-search" @click="handleSearch(0)">{yun:}t key='admin_user_weipin_00049'{/yun}</el-button>
                         </div>
@@ -505,9 +505,9 @@
                                     <span>{yun:}t key='admin_tool_00096'{/yun}</span>
                                 </div>
                                 <div class="tabEchatDome">
-                                    <el-table :data="topList.orderCom" height="300" border style="width: 100%" v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
-                                        <el-table-column prop="username" label="用户名"></el-table-column>
-                                        <el-table-column prop="count" label="充值金额" width="120"></el-table-column>
+                                    <el-table :data="topList.orderCom" height="300" border style="width: 100%" v-loading="loading" element-loading-text="{yun:}t key='admin_tool_00117'{/yun}" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
+                                        <el-table-column prop="username" label="{yun:}t key='admin_user_00140'{/yun}"></el-table-column>
+                                        <el-table-column prop="count" label="{yun:}t key='wap_user_00312'{/yun}" width="120"></el-table-column>
                                     </el-table>
                                 </div>
                             </div>
@@ -547,9 +547,9 @@
                                     <span>{yun:}t key='admin_tool_00119'{/yun}</span>
                                 </div>
                                 <div class="tabEchatDome">
-                                    <el-table :data="topList.adClick" height="300" border style="width: 100%" v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
-                                        <el-table-column prop="name" label="广告类别"></el-table-column>
-                                        <el-table-column prop="count" label="点击次数" width="80"></el-table-column>
+                                    <el-table :data="topList.adClick" height="300" border style="width: 100%" v-loading="loading" element-loading-text="{yun:}t key='admin_tool_00117'{/yun}" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
+                                        <el-table-column prop="name" label="{yun:}t key='admin_yunying_00047'{/yun}"></el-table-column>
+                                        <el-table-column prop="count" label="{yun:}t key='admin_tool_00130'{/yun}" width="80"></el-table-column>
                                     </el-table>
                                 </div>
                             </div>
@@ -557,7 +557,7 @@
                     </div>
                 </div>
             </el-tab-pane>
-            <el-tab-pane label="职位/简历数据统计" name="fifth">
+            <el-tab-pane label="{yun:}t key='admin_tool_00086'{/yun}" name="fifth">
                 <div class="yejiTabCont">
                     <div class="yejiTabHead">
                         <div class="yejiTabHeaButn">
@@ -570,7 +570,7 @@
                         </div>
                         <div class="yejiTabHeaIput">
                             <el-date-picker v-model="search.time" type="daterange" :picker-options="pickerOptions"
-                                range-separator="至" start-placeholder="{yun:}t key='admin_00343'{/yun}" end-placeholder="{yun:}t key='admin_00344'{/yun}"
+                                range-separator="{yun:}t key='admin_company_00019'{/yun}" start-placeholder="{yun:}t key='admin_00343'{/yun}" end-placeholder="{yun:}t key='admin_00344'{/yun}"
                                 value-format="timestamp" @change="handleSearch(0)"></el-date-picker>
                             <el-button type="primary" icon="el-icon-search" @click="handleSearch(0)">{yun:}t key='admin_user_weipin_00049'{/yun}</el-button>
                         </div>
@@ -608,10 +608,10 @@
                                     <span>{yun:}t key='admin_tool_00103'{/yun}</span>
                                 </div>
                                 <div class="tabEchatDome">
-                                    <el-table :data="topList.addJobCom" height="300" border style="width: 100%" v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
-                                        <el-table-column prop="name" label="企业名称"></el-table-column>
-                                        <el-table-column prop="count" label="发布数量" width="80"></el-table-column>
-                                        <el-table-column label="操作" width="80">
+                                    <el-table :data="topList.addJobCom" height="300" border style="width: 100%" v-loading="loading" element-loading-text="{yun:}t key='admin_tool_00117'{/yun}" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
+                                        <el-table-column prop="name" label="{yun:}t key='wap_com_00157'{/yun}"></el-table-column>
+                                        <el-table-column prop="count" label="{yun:}t key='admin_tool_00167'{/yun}" width="80"></el-table-column>
+                                        <el-table-column label="{yun:}t key='member_user_00048'{/yun}" width="80">
                                             <template slot-scope="scope">
                                                 <div class="cz_button">
                                                     <el-button size="small" type="primary"
@@ -727,7 +727,7 @@
                     </div>
                 </div>
             </el-tab-pane>
-            <el-tab-pane label="企业统计/简历投递" name="sixth">
+            <el-tab-pane label="{yun:}t key='admin_tool_00151'{/yun}" name="sixth">
                 <div class="yejiTabCont">
                     <div class="yejiTabHead">
                         <div class="yejiTabHeaButn">
@@ -740,7 +740,7 @@
                         </div>
                         <div class="yejiTabHeaIput">
                             <el-date-picker v-model="search.time" type="daterange" :picker-options="pickerOptions"
-                                range-separator="至" start-placeholder="{yun:}t key='admin_00343'{/yun}" end-placeholder="{yun:}t key='admin_00344'{/yun}"
+                                range-separator="{yun:}t key='admin_company_00019'{/yun}" start-placeholder="{yun:}t key='admin_00343'{/yun}" end-placeholder="{yun:}t key='admin_00344'{/yun}"
                                 value-format="timestamp" @change="handleSearch(0)"></el-date-picker>
                             <el-button type="primary" icon="el-icon-search" @click="handleSearch(0)">{yun:}t key='admin_user_weipin_00049'{/yun}</el-button>
                         </div>
@@ -806,10 +806,10 @@
                                     <span>{yun:}t key='admin_tool_00087'{/yun}</span>
                                 </div>
                                 <div class="tabEchatDome">
-                                    <el-table :data="topList.applyResume" height="300" border style="width: 100%" v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
-                                        <el-table-column prop="uname" label="个人名称"></el-table-column>
-                                        <el-table-column prop="count" label="投递次数" width="100"></el-table-column>
-                                        <el-table-column label="操作" width="80">
+                                    <el-table :data="topList.applyResume" height="300" border style="width: 100%" v-loading="loading" element-loading-text="{yun:}t key='admin_tool_00117'{/yun}" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
+                                        <el-table-column prop="uname" label="{yun:}t key='admin_tool_00166'{/yun}"></el-table-column>
+                                        <el-table-column prop="count" label="{yun:}t key='admin_tool_00128'{/yun}" width="100"></el-table-column>
+                                        <el-table-column label="{yun:}t key='member_user_00048'{/yun}" width="80">
                                             <template slot-scope="scope">
                                                 <div class="cz_button">
                                                     <el-button size="small" type="primary"
@@ -826,10 +826,10 @@
                                     <span>{yun:}t key='admin_tool_00088'{/yun}</span>
                                 </div>
                                 <div class="tabEchatDome">
-                                    <el-table :data="topList.applyCom" height="300" border style="width: 100%" v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
-                                        <el-table-column prop="name" label="个人名称"></el-table-column>
-                                        <el-table-column prop="count" label="收到简历数" width="100"></el-table-column>
-                                        <el-table-column label="操作" width="80">
+                                    <el-table :data="topList.applyCom" height="300" border style="width: 100%" v-loading="loading" element-loading-text="{yun:}t key='admin_tool_00117'{/yun}" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
+                                        <el-table-column prop="name" label="{yun:}t key='admin_tool_00166'{/yun}"></el-table-column>
+                                        <el-table-column prop="count" label="{yun:}t key='admin_yunying_00166'{/yun}" width="100"></el-table-column>
+                                        <el-table-column label="{yun:}t key='member_user_00048'{/yun}" width="80">
                                             <template slot-scope="scope">
                                                 <div class="cz_button">
                                                     <el-button size="small" type="primary"

@@ -25,13 +25,13 @@
                       :empty-text="emptytext">
                 <el-table-column type="selection" width="55">
                 </el-table-column>
-                <el-table-column prop="id" label="编号" width="80">
+                <el-table-column prop="id" label="{yun:}t key='member_com_00345'{/yun}" width="80">
                 </el-table-column>
-                <el-table-column prop="key_name" label="关键字">
+                <el-table-column prop="key_name" label="{yun:}t key='admin_tool_00574'{/yun}">
                 </el-table-column>
-                <el-table-column prop="num" label="搜索次数">
+                <el-table-column prop="num" label="{yun:}t key='admin_system_00446'{/yun}">
                 </el-table-column>
-                <el-table-column prop="wxtime_n" label="搜索时间" width="180">
+                <el-table-column prop="wxtime_n" label="{yun:}t key='admin_tool_00602'{/yun}" width="180">
                 </el-table-column>
             </el-table>
 

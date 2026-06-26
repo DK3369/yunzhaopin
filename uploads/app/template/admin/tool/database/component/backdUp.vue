@@ -6,10 +6,10 @@
         <div style="padding: 0px;margin: 0px;height: calc(100% - 90px);width: 100%;">
             <el-table :data="tableData" border style="width: 100%" :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" height="100%" @selection-change="handleSelectionChange" ref="backTable" v-loading="loading" :empty-text="emptytext">
                 <el-table-column type="selection" width="80"></el-table-column>
-                <el-table-column prop="name" label="文件名"></el-table-column>
-                <el-table-column prop="time" label="时间"></el-table-column>
-                <el-table-column prop="dbname" label="数据库名称"></el-table-column>
-                <el-table-column label="操作" width="150">
+                <el-table-column prop="name" label="{yun:}t key='admin_tool_00067'{/yun}"></el-table-column>
+                <el-table-column prop="time" label="{yun:}t key='wap_js_00088'{/yun}"></el-table-column>
+                <el-table-column prop="dbname" label="{yun:}t key='admin_tool_00069'{/yun}"></el-table-column>
+                <el-table-column label="{yun:}t key='member_user_00048'{/yun}" width="150">
                     <template slot-scope="scope">
                         <div class="moduleElTaCaoz">
                             <a href="javascript:;" @click="backIn(scope)">

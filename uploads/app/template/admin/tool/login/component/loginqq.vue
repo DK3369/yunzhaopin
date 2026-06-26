@@ -16,7 +16,7 @@
                         </td>
                         <td>
                             <div class="TableButn">
-                                <el-switch v-model="configdata.sy_qqlogin" active-text="开启" inactive-text="关闭" active-value="1" inactive-value="0"></el-switch>
+                                <el-switch v-model="configdata.sy_qqlogin" active-text="{yun:}t key='member_com_00287'{/yun}" inactive-text="{yun:}t key='resume_00030'{/yun}" active-value="1" inactive-value="0"></el-switch>
                             </div>
                         </td>
                         <td>
@@ -63,7 +63,7 @@
                         </td>
                         <td>
                             <div class="TableButn">
-                                <el-switch v-model="configdata.sy_qqdt" active-text="是" inactive-text="否" active-value="1" inactive-value="0"></el-switch>
+                                <el-switch v-model="configdata.sy_qqdt" active-text="{yun:}t key='common_02085'{/yun}" inactive-text="{yun:}t key='common_02063'{/yun}" active-value="1" inactive-value="0"></el-switch>
                             </div>
                         </td>
                         <td>

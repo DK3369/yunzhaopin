@@ -23,7 +23,7 @@
 								</td>
 								<td>
 									<div class="TableButn">
-										<el-switch v-model="item.config_val" active-text="通知" inactive-text="不通知"
+										<el-switch v-model="item.config_val" active-text="{yun:}t key='admin_tool_00468'{/yun}" inactive-text="{yun:}t key='admin_tool_00469'{/yun}"
 											active-value="1"></el-switch>
 
 									</div>

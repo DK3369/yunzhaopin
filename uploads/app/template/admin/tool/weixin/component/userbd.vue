@@ -26,13 +26,13 @@
                 </el-table-column>
                 <el-table-column prop="uid" label="	uid" width="80">
                 </el-table-column>
-                <el-table-column prop="username" label="	绑定用户"  >
+                <el-table-column prop="username" label="{yun:}t key='admin_vue_00042'{/yun}"  >
                 </el-table-column>
-                <el-table-column prop="wxid" label="绑定ID（OpenId）" >
+                <el-table-column prop="wxid" label="{yun:}t key='admin_tool_00588'{/yun}" >
                 </el-table-column>
 				 
                 
-                <el-table-column prop="wxbindtime_n" label="	绑定时间" width="180">
+                <el-table-column prop="wxbindtime_n" label="{yun:}t key='admin_vue_00043'{/yun}" width="180">
                 </el-table-column>
               
             </el-table>

@@ -118,9 +118,9 @@
 
                 <div class="tableSeachInpt" style="margin-bottom: 0px;;">
                     <el-select v-model="status" size="small" slot="prepend" placeholder="{yun:}t key='member_user_00181'{/yun}" @change="search" clearable>
-                        <el-option label="全部" value="3"></el-option>
-                        <el-option label="未推送" value="2"></el-option>
-                        <el-option label="已推送" value="1"></el-option>
+                        <el-option label="{yun:}t key='wap_js_00075'{/yun}" value="3"></el-option>
+                        <el-option label="{yun:}t key='admin_tool_00539'{/yun}" value="2"></el-option>
+                        <el-option label="{yun:}t key='admin_tool_00532'{/yun}" value="1"></el-option>
                     </el-select>
                 </div>
                 <div class="tableSeachInpt tableSeachkidusye" style="margin-bottom: 0px;">
@@ -141,31 +141,31 @@
                 :default-sort="{ prop: 'id', order: 'descending' }" @sort-change="sortChange" border style="width: 100%"
                 :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" :empty-text="emptytext">
 				<el-table-column type="selection" width="55"></el-table-column>
-                <el-table-column prop="id" label="编号" width="80" sortable="custom"> </el-table-column>
-                <el-table-column label="标签">
+                <el-table-column prop="id" label="{yun:}t key='member_com_00345'{/yun}" width="80" sortable="custom"> </el-table-column>
+                <el-table-column label="{yun:}t key='admin_user_company_00159'{/yun}">
                     <template slot-scope="scope">
                         <span :class="scope.row.urgent == '1' ? 'twtask_xz' : 'twtask_xz_w'"> </span>
                         <span :class="scope.row.wcmoments == '1' ? 'twtask_pyqxz' : 'twtask_pyqxzw'"> </span>
                         <span :class="scope.row.gzh == '1' ? 'twtask_gzhxz' : 'twtask_gzhxzw'"> </span>
                     </template>
                 </el-table-column>
-                <el-table-column label="企业名称">
+                <el-table-column label="{yun:}t key='wap_com_00157'{/yun}">
                     <template slot-scope="scope">
                         <el-link type="primary" :href="scope.row.comurl" target="_blank">{{ scope.row.comname }}</el-link>
                     </template>
                 </el-table-column>
 
-                <el-table-column prop="jobsdate_n" label="企业更新时间"></el-table-column>
-                <el-table-column label="状态">
+                <el-table-column prop="jobsdate_n" label="{yun:}t key='admin_tool_00530'{/yun}"></el-table-column>
+                <el-table-column label="{yun:}t key='member_user_00181'{/yun}">
                     <template slot-scope="scope">
                         <span v-if="scope.row.status == '1'">{yun:}t key='admin_tool_00532'{/yun}</span>
                         <span v-else>{yun:}t key='admin_tool_00539'{/yun}</span>
                     </template>
                 </el-table-column>
-                <el-table-column prop="admin_username" label="创建人"> </el-table-column>
-                <el-table-column prop="ctime_n" label="添加时间" width="180" sortable="custom"></el-table-column>
-                <el-table-column prop="content" label=" 备注" width="200"></el-table-column>
-                <el-table-column label="操作" width="300" fixed="right">
+                <el-table-column prop="admin_username" label="{yun:}t key='admin_tool_00531'{/yun}"> </el-table-column>
+                <el-table-column prop="ctime_n" label="{yun:}t key='member_com_00300'{/yun}" width="180" sortable="custom"></el-table-column>
+                <el-table-column prop="content" label="{yun:}t key='admin_vue_00040'{/yun}" width="200"></el-table-column>
+                <el-table-column label="{yun:}t key='member_user_00048'{/yun}" width="300" fixed="right">
                     <template slot-scope="scope">
                         <el-button type="success" size="mini" @click="addcom(scope.row.id, scope.row.cuid, scope.row.comname)"
                             :disabled="scope.row.comstatus == '2' || com_uids.indexOf(scope.row.cuid) != -1">{yun:}t key='wap_00215'{/yun}</el-button>

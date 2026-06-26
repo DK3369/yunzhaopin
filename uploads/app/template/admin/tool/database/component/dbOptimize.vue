@@ -5,13 +5,13 @@
         </div>
         <div class="moduleElTable">
             <el-table :data="tableData" border style="width: 100%" :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" height="100%" v-loading="loading" :empty-text="emptytext">
-                <el-table-column prop="name" label="数据表"></el-table-column>
-                <el-table-column prop="type" label="数据表类型" ></el-table-column>
-                <el-table-column prop="num" label="数量"></el-table-column>
-                <el-table-column prop="size" label="数据"></el-table-column>
-                <el-table-column prop="chip" label="碎片"></el-table-column>
-                <el-table-column prop="charset" label="字符集"></el-table-column>
-                <el-table-column label="操作" width="180">
+                <el-table-column prop="name" label="{yun:}t key='admin_tool_00216'{/yun}"></el-table-column>
+                <el-table-column prop="type" label="{yun:}t key='admin_tool_00217'{/yun}" ></el-table-column>
+                <el-table-column prop="num" label="{yun:}t key='admin_tool_00214'{/yun}"></el-table-column>
+                <el-table-column prop="size" label="{yun:}t key='admin_tool_00213'{/yun}"></el-table-column>
+                <el-table-column prop="chip" label="{yun:}t key='admin_tool_00218'{/yun}"></el-table-column>
+                <el-table-column prop="charset" label="{yun:}t key='admin_tool_00219'{/yun}"></el-table-column>
+                <el-table-column label="{yun:}t key='member_user_00048'{/yun}" width="180">
                     <template slot-scope="scope">
                         <el-button size="mini" plain @click="optimizeDB(scope,2)">{yun:}t key='admin_tool_00220'{/yun}</el-button>
                         <el-button size="mini" plain @click="optimizeDB(scope,3)">{yun:}t key='admin_tool_00221'{/yun}</el-button>

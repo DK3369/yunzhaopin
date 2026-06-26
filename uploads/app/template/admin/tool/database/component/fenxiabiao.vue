@@ -31,30 +31,30 @@
             <div class="fenxiabConTable">
                 <el-table :data="tableData" border stripe :header-cell-style="{ background: '#f5f7fa', color: '#606266' }"
                     style="width: 100%">
-                    <el-table-column prop="years" label="时间周期">
+                    <el-table-column prop="years" label="{yun:}t key='admin_tool_00228'{/yun}">
                     </el-table-column>
-                    <el-table-column prop="gerezce" label="个人注册"></el-table-column>
-                    <el-table-column prop="login_log" label="个人登录"></el-table-column>
-                    <el-table-column prop="jilizce" label="简历注册">
+                    <el-table-column prop="gerezce" label="{yun:}t key='admin_00073'{/yun}"></el-table-column>
+                    <el-table-column prop="login_log" label="{yun:}t key='admin_tool_00223'{/yun}"></el-table-column>
+                    <el-table-column prop="jilizce" label="{yun:}t key='admin_tool_00229'{/yun}">
                     </el-table-column>
-                    <el-table-column prop="comzce" label="企业注册"></el-table-column>
-                    <el-table-column prop="company_login_log" label="企业登录"></el-table-column>
-                    <el-table-column prop="fabuzhw" label="发布职位">
+                    <el-table-column prop="comzce" label="{yun:}t key='admin_00074'{/yun}"></el-table-column>
+                    <el-table-column prop="company_login_log" label="{yun:}t key='admin_user_00335'{/yun}"></el-table-column>
+                    <el-table-column prop="fabuzhw" label="{yun:}t key='wap_00322'{/yun}">
                     </el-table-column>
-                    <el-table-column prop="jilitod" label="简历投递">
+                    <el-table-column prop="jilitod" label="{yun:}t key='member_com_00152'{/yun}">
                     </el-table-column>
-                    <el-table-column prop="yaoqms" label="邀请面试">
+                    <el-table-column prop="yaoqms" label="{yun:}t key='resume_00029'{/yun}">
                     </el-table-column>
-                    <el-table-column prop="jilixza" label="简历下载">
+                    <el-table-column prop="jilixza" label="{yun:}t key='wap_com_00042'{/yun}">
                     </el-table-column>
                 </el-table>
             </div>
             <div class="fenxiabConTable">
                 <el-table :data="tableData2" border stripe :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" :cell-style="addClass" >
                     style="width: 100%">
-                    <el-table-column prop="years" label="时间周期">
+                    <el-table-column prop="years" label="{yun:}t key='admin_tool_00228'{/yun}">
                     </el-table-column>
-                    <el-table-column label="个人注册">
+                    <el-table-column label="{yun:}t key='admin_00073'{/yun}">
                         <template slot-scope="scope">
                             <div class="moduleFenxias">
                                 <div class="moduleFenxText">
@@ -74,7 +74,7 @@
                             </div>
                         </template>
                     </el-table-column>
-                    <el-table-column label="个人登录">
+                    <el-table-column label="{yun:}t key='admin_tool_00223'{/yun}">
                         <template slot-scope="scope">
                             <div class="moduleFenxias">
                                 <div class="moduleFenxText">
@@ -94,7 +94,7 @@
                             </div>
                         </template>
                     </el-table-column>
-                    <el-table-column label="简历注册">
+                    <el-table-column label="{yun:}t key='admin_tool_00229'{/yun}">
                         <template slot-scope="scope">
                             <div class="moduleFenxias">
                                 <div class="moduleFenxText">
@@ -114,7 +114,7 @@
                             </div>
                         </template>
                     </el-table-column>
-                    <el-table-column label="企业注册">
+                    <el-table-column label="{yun:}t key='admin_00074'{/yun}">
                         <template slot-scope="scope">
                             <div class="moduleFenxias">
                                 <div class="moduleFenxText">
@@ -134,7 +134,7 @@
                             </div>
                         </template>
                     </el-table-column>
-                    <el-table-column label="企业登录">
+                    <el-table-column label="{yun:}t key='admin_user_00335'{/yun}">
                         <template slot-scope="scope">
                             <div class="moduleFenxias">
                                 <div class="moduleFenxText">
@@ -154,7 +154,7 @@
                             </div>
                         </template>
                     </el-table-column>
-                    <el-table-column label="发布职位">
+                    <el-table-column label="{yun:}t key='wap_00322'{/yun}">
                         <template slot-scope="scope">
                             <div class="moduleFenxias">
                                 <div class="moduleFenxText">
@@ -175,7 +175,7 @@
                             </div>
                         </template>
                     </el-table-column>
-                    <el-table-column label="简历投递">
+                    <el-table-column label="{yun:}t key='member_com_00152'{/yun}">
                         <template slot-scope="scope">
                             <div class="moduleFenxias">
                                 <div class="moduleFenxText">
@@ -196,7 +196,7 @@
                             </div>
                         </template>
                     </el-table-column>
-                    <el-table-column label="邀请面试">
+                    <el-table-column label="{yun:}t key='resume_00029'{/yun}">
                         <template slot-scope="scope">
                             <div class="moduleFenxias">
                                 <div class="moduleFenxText">
@@ -216,7 +216,7 @@
                             </div>
                         </template>
                     </el-table-column>
-                    <el-table-column label="简历下载">
+                    <el-table-column label="{yun:}t key='wap_com_00042'{/yun}">
                         <template slot-scope="scope">
                             <div class="moduleFenxias">
                                 <div class="moduleFenxText">

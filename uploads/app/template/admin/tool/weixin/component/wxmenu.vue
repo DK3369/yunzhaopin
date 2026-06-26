@@ -22,7 +22,7 @@
                       :empty-text="emptytext">
                 <el-table-column type="selection" width="55">
                 </el-table-column>
-                <el-table-column prop="name" label="菜单标题">
+                <el-table-column prop="name" label="{yun:}t key='admin_tool_00654'{/yun}">
                     <template slot-scope="scope">
 				        <span v-if="editname_id==scope.row.id">
                             <el-input id="inputref" placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="editname" :data-preval="scope.row.name"
@@ -35,13 +35,13 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column prop="type" label="菜单类型" width="180">
+                <el-table-column prop="type" label="{yun:}t key='admin_tool_00655'{/yun}" width="180">
                 </el-table-column>
-                <el-table-column prop="key" label="菜单关键字">
+                <el-table-column prop="key" label="{yun:}t key='admin_tool_00650'{/yun}">
                 </el-table-column>
-                <el-table-column prop="url" label="菜单链接">
+                <el-table-column prop="url" label="{yun:}t key='admin_tool_00656'{/yun}">
                 </el-table-column>
-                <el-table-column label="	排序	" width="180">
+                <el-table-column label="{yun:}t key='admin_vue_00044'{/yun}" width="180">
                     <template slot-scope="scope">
                         <div class="moduleElTaPax" v-if="editsort_id==scope.row.id">
                             <el-input id="inputref" placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="editsort" :data-preval="scope.row.sort"
@@ -55,7 +55,7 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="操作" width="130" fixed="right" header-align="center">
+                <el-table-column label="{yun:}t key='member_user_00048'{/yun}" width="130" fixed="right" header-align="center">
                     <template slot-scope="scope">
                         <div class="cz_button">
                             <el-button size="mini" @click="editinfo(scope.row)">{yun:}t key='wap_js_00073'{/yun}</el-button>
@@ -84,7 +84,7 @@
                     <div class="wxsettip_small ">{yun:}t key='admin_tool_00653'{/yun}</div>
                     <div class="wxsettip_smallselect ">
                         <el-select v-model="einfo.keyid">
-                            <el-option key="0" label="一级菜单" value="0"></el-option>
+                            <el-option key="0" label="{yun:}t key='admin_tool_00651'{/yun}" value="0"></el-option>
                             <el-option v-for="item in tableData" :key="item.id" :label="item.name"
                                        :value="item.id"></el-option>
                         </el-select>
@@ -92,9 +92,9 @@
                     <div class="wxsettip_small ">{yun:}t key='admin_tool_00655'{/yun}</div>
                     <div class="wxsettip_smallselect ">
                         <el-select v-model="einfo.type" placeholder="{yun:}t key='wap_user_00100'{/yun}">
-                            <el-option label="点击事件" value="click"></el-option>
-                            <el-option label="链接事件" value="view"></el-option>
-                            <el-option label="小程序" value="miniprogram"></el-option>
+                            <el-option label="{yun:}t key='admin_tool_00652'{/yun}" value="click"></el-option>
+                            <el-option label="{yun:}t key='admin_tool_00657'{/yun}" value="view"></el-option>
+                            <el-option label="{yun:}t key='admin_tool_00658'{/yun}" value="miniprogram"></el-option>
                         </el-select>
                     </div>
                     <div v-show="einfo.type=='click'">
