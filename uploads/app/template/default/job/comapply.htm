@@ -215,7 +215,7 @@
                             {yun:}if $Info.linkjob{/yun}<span class="job_details_touch_userjob">{yun:}$Info.linkjob{/yun}</span>{yun:}/if{/yun}
                         </div>
                         {yun:}if $Info.login_date{/yun}
-                        <div class="job_details_touch_userlogintime">最近在线时间：{yun:}$Info.login_date|date_format:"%Y-%m-%d %H:%m"{/yun}</div>
+                        <div class="job_details_touch_userlogintime">{yun:}t key='default_00364'{/yun}{yun:}$Info.login_date|date_format:"%Y-%m-%d %H:%m"{/yun}</div>
                         {yun:}/if{/yun}
                         {yun:}if $Info.snum!=0 && $Info.snum > $config.sy_sq_job_num{/yun}
                         <div class="job_details_touch_userdata">
@@ -233,7 +233,7 @@
                             <a href="javascript:void(0)" onclick="rgetTel('{yun:}$Info.id{/yun}');" class="job_details_touch_tel_bth">{yun:}t key='default_00233'{/yun}</a>
                         </div>
                         {yun:}else if $link.linkCode > 1 && $link.linkCode < 6{/yun} <div class="job_details_touch_tel">
-                            <em class="job_details_touch_tel_tip">{yun:}$link.linkMsg{/yun}{yun:}if !$userIdJobNum{/yun}，请直接投递简历{yun:}/if{/yun}</em>
+                            <em class="job_details_touch_tel_tip">{yun:}$link.linkMsg{/yun}{yun:}if !$userIdJobNum{/yun}{yun:}t key='wap_01560'{/yun}{yun:}/if{/yun}</em>
                             {yun:}if !$userIdJobNum{/yun}
                             {yun:}if !$uid{/yun}
                             {yun:}if $config.resume_kstd != 2{/yun}
@@ -272,14 +272,14 @@
                         <a href="javascript:;" class="job_details_touch_tel_bth sq_job">{yun:}t key='wap_com_00235'{/yun}</a>
                         {yun:}else{/yun}
                         <a href="javascript:void(0)" onclick="showtel('{yun:}$smarty.get.id{/yun}');" class="job_details_touch_tel_bth">{yun:}t key='default_00233'{/yun}</a>
-                        <span class="job_details_touch_tel_say">联系我时就说是在{yun:}$config.sy_webname{/yun}{yun:}t key='wap_00240'{/yun}</span>
+                        <span class="job_details_touch_tel_say">{yun:}t key='member_com_00024'{/yun}{yun:}$config.sy_webname{/yun}{yun:}t key='wap_00240'{/yun}</span>
                         {yun:}/if{/yun}
                     </div>
                     {yun:}else{/yun}
                     {yun:}if $link.linkData.linktel_n || $link.linkData.linkphone_n{/yun}
                     <div class="job_details_touch_tel">
                         {yun:}t key='common.phone'{/yun}：<span class="job_details_touch_tel_n">{yun:}if $link.linkData.linktel_n{/yun}{yun:}$link.linkData.linktel_n{/yun}{yun:}else{/yun}{yun:}$link.linkData.linkphone_n{/yun}{yun:}/if{/yun}</span>
-                        <a href="javascript:void(0);" onclick="wxscanshowtel('{yun:}$Info.id{/yun}')" class="job_details_touch_tel_bth" style="width:80px">微信扫码查看</a>
+                        <a href="javascript:void(0);" onclick="wxscanshowtel('{yun:}$Info.id{/yun}')" class="job_details_touch_tel_bth" style="width:80px">{yun:}t key='common_02372'{/yun}</a>
                     </div>
                     {yun:}/if{/yun}
                     {yun:}/if{/yun}
@@ -292,7 +292,7 @@
             <div class="job_details_tit " style="margin-top: 20px;"><span class="job_details_tit_s">{yun:}t key='wap_com_00289'{/yun}</span><i class="job_details_tit_line"></i></div>
             <div class="job_details_describe">
                 {yun:}if $department{/yun}
-                <span class="job_details_describe_yq">招聘部门：{yun:}$department{/yun}</span>
+                <span class="job_details_describe_yq">{yun:}t key='default_00365'{/yun}{yun:}$department{/yun}</span>
                 {yun:}/if{/yun}
                 {yun:}if $Info.job_number{/yun}
                 <span class="job_details_describe_yq">{yun:}t key='wap_com_00333'{/yun}：{yun:}$Info.job_number{/yun}</span>
@@ -307,7 +307,7 @@
                 <span class="job_details_describe_yq">{yun:}t key='wap_com_00332'{/yun}：{yun:}$Info.job_sex{/yun}</span>
                 {yun:}/if{/yun}
                 {yun:}if $Info.job_marriage{/yun}
-                <span class="job_details_describe_yq">婚况要求：{yun:}$Info.job_marriage{/yun}</span>
+                <span class="job_details_describe_yq">{yun:}t key='default_00366'{/yun}{yun:}$Info.job_marriage{/yun}</span>
                 {yun:}/if{/yun}
                 {yun:}if $Info.lang_info{/yun}
                 <div class="">{yun:}t key='wap_com_00292'{/yun}：
@@ -325,7 +325,7 @@
             </div>
         </div>
         <div class="job_details_left_box">
-            <div class="job_details_tit"><span class="job_details_tit_s">该公司的其他职位</span><i class="job_details_tit_line"></i></div>
+            <div class="job_details_tit"><span class="job_details_tit_s">{yun:}t key='common_02373'{/yun}</span><i class="job_details_tit_line"></i></div>
             <div class="job_details_com_otherjob">
                 <ul>
                     {yun:}joblist com_id='@Info.uid' noid='@Info.id' namelen=9 limit=10 item=job depower='all'{/yun}
@@ -335,7 +335,7 @@
                             <div class="job_details_com_otherjob_info">{yun:}$job.job_exp{/yun}{yun:}t key='home.experience_suffix'{/yun}<span class="job_details_line">|</span>{yun:}$job.job_edu{/yun}{yun:}t key='home.education_suffix'{/yun} </div>
                         </div>
                         <div class="job_details_com_otherjob_c">
-                            <div class="job_details_com_otherjob_xz">{yun:}$job.job_salary{/yun}{yun:}if $job.job_salary!='面议'{/yun}{yun:}/if{/yun}</div>
+                            <div class="job_details_com_otherjob_xz">{yun:}$job.job_salary{/yun}{yun:}if $job.job_salary!='{yun:}t key='common_02045'{/yun}'{/yun}{yun:}/if{/yun}</div>
                             <div class="job_details_com_otherjob_city">{yun:}$job.job_city_one{/yun} - {yun:}$job.job_city_two{/yun}</div>
                         </div>
                         <div class="job_details_com_otherjob_r">
@@ -361,7 +361,7 @@
             <div class="job_details_tit">
                 <span class="job_details_tit_s">{yun:}t key='default_00218'{/yun}</span>
                 <i class="job_details_tit_line"></i>
-                <a href="{yun:}url m=job{/yun}" class="job_details_more">搜索更多相似职位 ></a>
+                <a href="{yun:}url m=job{/yun}" class="job_details_more">{yun:}t key='default_00367'{/yun}</a>
             </div>
             <div class="job_details_like">
                 <ul>
@@ -453,7 +453,7 @@
                     {yun:}if $Info.moblie_status==1{/yun}<span class="yunnew_hymini"><i class="yunnew_minicon"></i>{yun:}t key='wap_00273'{/yun}</span>{yun:}/if{/yun}
                     <span class="yunnew_hymini"><i class="yunnew_minicon"></i>{yun:}t key='wap_00274'{/yun}</span>
                 </div>
-                <i class="yunnew_hyboxricon">查看详细 ></i>
+                <i class="yunnew_hyboxricon">{yun:}t key='default_00368'{/yun}</i>
             </a>
         </div>
         {yun:}/if{/yun}
@@ -476,7 +476,7 @@
                 <img src="{yun:}$comrat.com_pic{/yun}" width="18" height="18" alt="{yun:}t key='admin_user_company_00018'{/yun}" />
                 {yun:}/if{/yun}
                 {yun:}if $Info.yyzz_status=='1'{/yun}
-                <i class="job_details_cominfo_rz job_details_cominfo_rz_zz" title="执照认证"></i>
+                <i class="job_details_cominfo_rz job_details_cominfo_rz_zz" title="{yun:}t key='common_02381'{/yun}"></i>
                 {yun:}/if{/yun}
                 {yun:}if $Info.moblie_status=='1'{/yun}
                 <i class="job_details_cominfo_rz job_details_cominfo_rz_sj" title="{yun:}t key='member_com_00071'{/yun}"></i>
@@ -501,7 +501,7 @@
                     <li><span class="Compply_right_span_c"><i class="Compply_right_icon Compply_right_icon_rs"></i>{yun:}$Info.job_mun{/yun}</span></li>
                     {yun:}/if{/yun}
                     {yun:}if $Info.money{/yun}
-                    <li><span class="Compply_right_span_c"><i class="Compply_right_icon Compply_right_icon_zj"></i>{yun:}$Info.money{/yun}万</span></li>
+                    <li><span class="Compply_right_span_c"><i class="Compply_right_icon Compply_right_icon_zj"></i>{yun:}$Info.money{/yun}{yun:}t key='wap_js_00004'{/yun}</span></li>
                     {yun:}/if{/yun}
                 </ul>
             </div>
@@ -531,14 +531,14 @@
         {yun:}if $config.sy_haibao_isopen == 1 && $hbNum > 0{/yun}
         <a href="javascript:void(0);" onclick="selectHb('1', '1')" class="new_com_haibao">
             <div class="new_com_haibao_c">
-                <div class="new_com_haibao_name">生成职位海报</div>
+                <div class="new_com_haibao_name">{yun:}t key='common_02374'{/yun}</div>
                 <div class="new_com_haibao_p">{yun:}t key='wap_00195'{/yun}</div>
             </div>
         </a>
         {yun:}/if{/yun}
         {yun:}if $config.com_message == 1{/yun}
         <div class="job_details_right_box">
-            <div class="job_details_tit"><span class="job_details_tit_s">问公司</span><i class="job_details_tit_line"></i></div>
+            <div class="job_details_tit"><span class="job_details_tit_s">{yun:}t key='common_02375'{/yun}</span><i class="job_details_tit_line"></i></div>
             <!--有提问前-->
             {yun:}if !$msgList{/yun}
             <div class="job_details_comask_p">{yun:}t key='default_00213'{/yun}</div>
@@ -577,7 +577,7 @@
                 {yun:}foreach from=$msgList item=msglist{/yun}
                 <div class="yun_newedition_asklist">
                     <div class="yun_newedition_showask"><i class="yun_newedition_showask_icon">{yun:}t key='common_02102'{/yun}</i>{yun:}$msglist.content{/yun}</div>
-                    <div class="yun_newedition_showand"><i class="yun_newedition_showand_icon">{yun:}t key='common_02096'{/yun}</i>{yun:}if $msglist.reply{/yun}{yun:}$msglist.reply{/yun}{yun:}else{/yun}企业尚未回复{yun:}/if{/yun}
+                    <div class="yun_newedition_showand"><i class="yun_newedition_showand_icon">{yun:}t key='common_02096'{/yun}</i>{yun:}if $msglist.reply{/yun}{yun:}$msglist.reply{/yun}{yun:}else{/yun}{yun:}t key='wap_01553'{/yun}{yun:}/if{/yun}
                         <div class="yun_newedition_showand_time"> {yun:}$msglist.datetime|date_format:"%Y-%m-%d"{/yun}</div>
                     </div>
                 </div>
@@ -599,7 +599,7 @@
                             <input type="submit" value="{yun:}t key='wap_00280'{/yun}" name="submit" class="comapply_Leave_fb_sub " />
                         </div>
                     </form>
-                    <div class="comapply_Leave_fb_s"> <a class="comapply_lea_a" href="{yun:}$config.sy_weburl{/yun}/member/index.php?c=commsg" target="_blank"> 查看我的咨询>> </a></div>
+                    <div class="comapply_Leave_fb_s"> <a class="comapply_lea_a" href="{yun:}$config.sy_weburl{/yun}/member/index.php?c=commsg" target="_blank">{yun:}t key='default_00369'{/yun}</a></div>
                 </div>
             </div>
             {yun:}/if{/yun}
@@ -624,8 +624,8 @@
     <div id="favjob" style="display:none  ">
         <div class="job_prompt_box">
             <div class="job_prompt_box_pic"><i class="job_prompt_box_pic_icon"></i></div>
-            <div class="job_prompt_box_writing"> 职位收藏成功</div>
-            <div class="job_prompt_box_p"> 您可以在<a href="{yun:}url m=member c=favorite{/yun}" class="job_prompt_box_look">{yun:}t key='default_00229'{/yun}</a>{yun:}t key='default_00240'{/yun}</div>
+            <div class="job_prompt_box_writing">{yun:}t key='common_02376'{/yun}</div>
+            <div class="job_prompt_box_p">{yun:}t key='common_02377'{/yun}<a href="{yun:}url m=member c=favorite{/yun}" class="job_prompt_box_look">{yun:}t key='default_00229'{/yun}</a>{yun:}t key='default_00240'{/yun}</div>
             <div class="job_prompt_box_ok"> <a href="javascript:void(0)" onclick="window.location.reload();" class="job_prompt_box_ok_bth">{yun:}t key='member_com_00214'{/yun}</a></div>
         </div>
     </div>
@@ -633,7 +633,7 @@
     <div id="suc_job" style="display:none ">
         <div class="job_prompt_box">
             <div class="job_prompt_box_pic"><i class="job_prompt_box_pic_icon"></i></div>
-            <div class="job_prompt_box_writing"> 投递成功</div>
+            <div class="job_prompt_box_writing">{yun:}t key='model_00010'{/yun}</div>
             <div class="job_prompt_box_p"> {yun:}t key='default_00202'{/yun}</div>
             {yun:}if $recjobnum>0{/yun}
             <div class="job_prompt_box_maylike">{yun:}t key='default_00218'{/yun}：</div>
@@ -660,7 +660,7 @@
     <!--举报弹出框-->
     <div class="none" id="jobreport">
         <div class="report_jobbox">
-            <div class="report_job_ly_tip">请选择您的举报理由</div>
+            <div class="report_job_ly_tip">{yun:}t key='common_02378'{/yun}</div>
             {yun:}foreach from=$comdata.job_jobreport key=j item=v{/yun}
             <span class="report_job_ly" id="r{yun:}$j{/yun}" onclick="add_reason({yun:}$j{/yun});" value="{yun:}$v{/yun}">{yun:}$comclass_name[$v]{/yun}</span>
             {yun:}/foreach{/yun}
@@ -671,7 +671,7 @@
                 <input id="r_name" value="{yun:}$Info.com_name{/yun}" type="hidden" />
                 <textarea placeholder="{yun:}t key='wap_00245'{/yun}" rows="2" cols="38" id="r_reason" class="report_job_textarea"></textarea>
             </div>
-            <div class="report_job_yz"> 验 证 {yun:}t key='common_02093'{/yun}：
+            <div class="report_job_yz">{yun:}t key='default_00370'{/yun} {yun:}t key='common_02093'{/yun}：
                 <input type="text" class="report_job_text" id="report_authcode" maxlength="6" placeholder="{yun:}t key='wap_user_00141'{/yun}" autocomplete="off" />
                 <img id="vcodeimg" src="{yun:}$config.sy_weburl{/yun}/app/include/authcode.inc.php" /> <a href="javascript:void(0);" onclick="checkCode('vcodeimg');">{yun:}t key='member_com_00074'{/yun}?</a> </div>
             <div class="report_job_bth_box">
@@ -684,9 +684,9 @@
     <div id="fastsuccess" class="none">
         <div class="job_prompt_box">
             <div class="job_prompt_box_pic"><i class="job_prompt_box_pic_icon"></i></div>
-            <div class="job_prompt_box_writing"> 简历投递成功</div>
-            <div class="job_prompt_box_p"> 您可以在 {yun:}t key='member_user_00183'{/yun} - {yun:}t key='wap_com_00105'{/yun} -
-                <a href="{yun:}url m=member c=resume{/yun}" class="job_prompt_box_look">{yun:}t key='wap_user_00204'{/yun}</a> 中查看您创建的简历
+            <div class="job_prompt_box_writing">{yun:}t key='common_02379'{/yun}</div>
+            <div class="job_prompt_box_p">{yun:}t key='member_user_00183'{/yun} - {yun:}t key='wap_com_00105'{/yun} -
+                <a href="{yun:}url m=member c=resume{/yun}" class="job_prompt_box_look">{yun:}t key='wap_user_00204'{/yun}</a>{yun:}t key='default_00371'{/yun}
             </div>
             <div class="job_prompt_box_maylike">{yun:}t key='default_00218'{/yun}：</div>
             <div class="clear"></div>
@@ -751,7 +751,7 @@
                         {yun:}t key='wap_00462'{/yun}
                     </div>
                     <div class="tel_show_top_tip">
-                        联系我时，请说是在<span class="tel_show_top_tip_link">{yun:}$config.sy_webname{/yun}</span>{yun:}t key='wap_00240'{/yun}
+                        {yun:}t key='wap_01559'{/yun}<span class="tel_show_top_tip_link">{yun:}$config.sy_webname{/yun}</span>{yun:}t key='wap_00240'{/yun}
                     </div>
                     <div class="tel_show_peo">
                         <i class="jobtel_box_t_box_icon"></i>
@@ -801,9 +801,9 @@
                             {yun:}if $config.sy_msg_login=="1"{/yun}
                             <div class="trainPopFromInt">
                                 <span class="tel_show_right_must">*</span>
-                                <div class="input_tit">短信验证</div>
+                                <div class="input_tit">{yun:}t key='wap_01456'{/yun}</div>
                                 <div style="display: flex;justify-content: space-between;flex: 1;">
-                                    <input type="text" id="rmoblie_code" style="text-indent:0;" class="logoin_text huoquyzm" autocomplete="off" onkeyup="this.value=this.value.replace(/[^0-9-]/g,'')" placeholder="请输入短信验证码" />
+                                    <input type="text" id="rmoblie_code" style="text-indent:0;" class="logoin_text huoquyzm" autocomplete="off" onkeyup="this.value=this.value.replace(/[^0-9-]/g,'')" placeholder="{yun:}t key='wap_00690'{/yun}" />
                                     <a class="reg_dxyz" href="javascript:void(0);" id="rsubreg" onclick="rsendmsg('vcode_img');"><span id="rtime">{yun:}t key='default_00334'{/yun}</span></a>
                                 </div>
                             </div>
@@ -863,7 +863,7 @@
                     </div>
                 </div>
                 <div class="yun_newhy_tip ">
-                    <div class="yun_newhy_tip_h1"><i class="yun_newhy_tip_h1icon"></i>{yun:}$config.sy_webname{/yun}平台核验服务</div>
+                    <div class="yun_newhy_tip_h1"><i class="yun_newhy_tip_h1icon"></i>{yun:}$config.sy_webname{/yun}{yun:}t key='wap_01556'{/yun}</div>
                     <div class="yun_newhy_tip_p">{yun:}t key='wap_00244'{/yun}</div>
                 </div>
                 <div class="yunNewhyBthbox" onclick="layer.closeAll();">
@@ -957,7 +957,7 @@ DD_belatedPNG.fix('.png');
     });
 
     function rgetTel(id) {
-        var loadi = layer.load("获取中，请稍候...', 0);
+        var loadi = layer.load("{yun:}t key='default_00215'{/yun}", 0);
         $.post(weburl + "/job/index.php?c=comapply&a=getJobLink", {
             id: id
         }, function(data) {
@@ -989,15 +989,15 @@ DD_belatedPNG.fix('.png');
         var rmoblie_code = $("#rmoblie_code").val();
         var rage = $("#rage").val();
         if (!rmoblie) {
-            layer.msg('手机号不能为空！', 2, 8);
+            layer.msg('{yun:}t key='wap_01566'{/yun}', 2, 8);
             return false;
         }
         if (rmoblie_code == '') {
-            layer.msg('短信验证不能为空！', 2, 8);
+            layer.msg('{yun:}t key='wap_01567'{/yun}', 2, 8);
             return false;
         }
         if (!rage) {
-            layer.msg('年龄不能为空！', 2, 8);
+            layer.msg('{yun:}t key='wap_01568'{/yun}', 2, 8);
             return false;
         }
         if (rage < 16 || rage > 100) {
@@ -1005,7 +1005,7 @@ DD_belatedPNG.fix('.png');
             return false;
         }
         if (!rname) {
-            layer.msg('姓名不能为空！', 2, 8);
+            layer.msg('{yun:}t key='common_02382'{/yun}', 2, 8);
             return false;
         }
         var param = {
@@ -1042,7 +1042,7 @@ DD_belatedPNG.fix('.png');
         var rmoblie = $("#rtel").val();
         var rcodesear = new RegExp("{yun:}t key='wap_js_00062'{/yun}");
         if (!rmoblie) {
-            layer.msg('手机不能为空！', 2, 8);
+            layer.msg('{yun:}t key='wap_01276'{/yun}', 2, 8);
             return false;
         }
 
@@ -1053,7 +1053,7 @@ DD_belatedPNG.fix('.png');
             if ($("#CheckCode").length > 0) {
                 code = $.trim($("#CheckCode").val());
                 if (!code) {
-                    layer.msg('图片验证码不能为空！', 2, 8);
+                    layer.msg('{yun:}t key='wap_01275'{/yun}', 2, 8);
                     return false;
                 }
             }
