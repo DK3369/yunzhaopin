@@ -10,10 +10,10 @@
     <div id="jihuaapp" class="moduleElenAl">
         <div class="setDomeAll">
             <el-tabs v-model="activeName" @tab-click="handleClick">
-                <el-tab-pane label="计划任务" name="cron">
+                <el-tab-pane :label="lc('admin_system_00273')" name="cron">
                     <crontask ref="cron"></crontask>
                 </el-tab-pane>
-                <el-tab-pane label="任务日志" name="log">
+                <el-tab-pane :label="lc('admin_system_00426')" name="log">
                     <tasklog ref="log"></tasklog>
                 </el-tab-pane>
             </el-tabs>

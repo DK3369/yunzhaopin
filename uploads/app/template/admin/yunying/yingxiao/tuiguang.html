@@ -12,22 +12,22 @@
     <div id="moduapp" class="moduleDome">
         <div class="setDomeAll setDomeInte">
             <el-tabs v-model="activeName" @tab-click="handleClick">
-                <el-tab-pane label="邮件推广" name="email">
+                <el-tab-pane :label="lc('admin_01125')" name="email">
                     <email ref="email"></email>
                 </el-tab-pane>
-                <el-tab-pane label="短信推广" name="msg" lazy>
+                <el-tab-pane :label="lc('admin_01126')" name="msg" lazy>
                     <msg ref="msg"></msg>
                 </el-tab-pane>
-                <el-tab-pane label="简历推广" name="resume" lazy>
+                <el-tab-pane :label="lc('admin_01127')" name="resume" lazy>
                     <resume ref="resume"></resume>
                 </el-tab-pane>
-                <el-tab-pane label="职位推广" name="job" lazy>
+                <el-tab-pane :label="lc('wap_com_00236')" name="job" lazy>
                     <job ref="job"></job>
                 </el-tab-pane>
-                <el-tab-pane label="自定义邮件" name="custom_email" lazy>
+                <el-tab-pane :label="lc('admin_01128')" name="custom_email" lazy>
                     <custom_email ref="custom_email"></custom_email>
                 </el-tab-pane>
-                <el-tab-pane label="自定义短信" name="custom_msg" lazy>
+                <el-tab-pane :label="lc('admin_01129')" name="custom_msg" lazy>
                     <custom_msg ref="custom_msg"></custom_msg>
                 </el-tab-pane>
             </el-tabs>

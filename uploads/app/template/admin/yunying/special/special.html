@@ -12,11 +12,11 @@
     <div id="daohaapp" class="moduleElenAl">
         <div class="moduleSeachs">
             <div class="moduleSeachInpt">
-                <el-input v-model="searchForm.keyword" size="small" placeholder="请输入内容" clearable></el-input>
-                <el-button type="primary" icon="el-icon-search" size="mini" @click="handleSearch">查询</el-button>
+                <el-input v-model="searchForm.keyword" size="small" :placeholder="lc('wap_user_00076')" clearable></el-input>
+                <el-button type="primary" icon="el-icon-search" size="mini" @click="handleSearch">{{ lc('admin_user_weipin_00049') }}</el-button>
             </div>
             <div class="moduleSeachButn">
-                <el-button type="primary" icon="el-icon-document-add" size="mini" @click="handleAdd">添加专题</el-button>
+                <el-button type="primary" icon="el-icon-document-add" size="mini" @click="handleAdd">{{ lc('admin_01235') }}</el-button>
             </div>
         </div>
         <div class="moduleElTable">
@@ -28,26 +28,26 @@
                 </template>
                 <el-table-column type="selection" width="55">
                 </el-table-column>
-                <el-table-column prop="id" label="编号" width="100">
+                <el-table-column prop="id" :label="lc('member_com_00345')" width="100">
                 </el-table-column>
-                <el-table-column prop="title" label="专题名称" min-width="220">
+                <el-table-column prop="title" :label="lc('member_com_00343')" min-width="220">
                     <template slot-scope="scope">
                         <el-link type="primary" :href="scope.row.title_href"
                             target="_blank">{{scope.row.title}}</el-link>
                     </template>
                 </el-table-column>
-                <el-table-column prop="limit" label="企业报名上限" width="150">
+                <el-table-column prop="limit" :label="lc('admin_yunying_00122')" width="150">
                 </el-table-column>
-                <el-table-column prop="tpl" label="模板" width="140">
+                <el-table-column prop="tpl" :label="lc('wap_js_00090')" width="140">
                 </el-table-column>
-                <el-table-column label="状态" width="120" align="center">
+                <el-table-column :label="lc('member_user_00181')" width="120" align="center">
                     <template slot-scope="scope">
                         <el-switch v-model="scope.row.display_switch" active-color="#1890FF" inactive-color="#B8BDC9"
                             @change="changeDisplay(scope)">
                         </el-switch>
                     </template>
                 </el-table-column>
-                <el-table-column prop="sort" label="排序" sortable="custom" width="120">
+                <el-table-column prop="sort" :label="lc('admin_vue_00044')" sortable="custom" width="120">
                     <template slot-scope="scope">
                         <el-input v-if="scope.row[scope.column.property + 'isShow']"
                             :ref="scope.column.property + scope.$index" :id="scope.column.property + scope.$index"
@@ -59,19 +59,19 @@
                         </span>
                     </template>
                 </el-table-column>
-                <el-table-column prop="comnum" label="企业参与数量" width="120">
+                <el-table-column prop="comnum" :label="lc('admin_yunying_00142')" width="120">
                 </el-table-column>
-                <el-table-column prop="booking" label="待审核企业" width="120">
+                <el-table-column prop="booking" :label="lc('admin_00316')" width="120">
                     <template slot-scope="scope">
                         {{scope.row.booking ? scope.row.booking : 0}}
                     </template>
                 </el-table-column>
-                <el-table-column fixed="right" label="操作" width="210" align="center">
+                <el-table-column fixed="right" :label="lc('member_user_00048')" width="210" align="center">
                     <template slot-scope="scope">
                         <div class="cz_button">
-                            <el-button size="mini" @click="handleViewCompany(scope)" type=" ">查看</el-button>
-                            <el-button size="mini" @click="editRow(scope)">编辑</el-button>
-                            <el-button type="danger" size="mini " @click="deleteRow(scope)">删除</el-button>
+                            <el-button size="mini" @click="handleViewCompany(scope)" type=" ">{{ lc('wap_com_00427') }}</el-button>
+                            <el-button size="mini" @click="editRow(scope)">{{ lc('wap_00148') }}</el-button>
+                            <el-button type="danger" size="mini " @click="deleteRow(scope)">{{ lc('wap_js_00077') }}</el-button>
                         </div>
                     </template>
                 </el-table-column>
@@ -79,9 +79,9 @@
         </div>
         <div class="modulePaging">
             <div class="modulecz modulePagButn">
-                <el-checkbox :indeterminate="isIndeterminate" v-model="checked" @change="selectAllBottom">全选</el-checkbox>
+                <el-checkbox :indeterminate="isIndeterminate" v-model="checked" @change="selectAllBottom">{{ lc('wap_js_00074') }}</el-checkbox>
 
-                <el-button @click="deleteRow(null, true)" size="mini">批量删除</el-button>
+                <el-button @click="deleteRow(null, true)" size="mini">{{ lc('member_com_00055') }}</el-button>
 
             </div>
             <div class="modulePagNum">
@@ -114,7 +114,7 @@
             data: function () {
                 return {
                     loading: false,
-                    dataText: '数据加载中',
+                    dataText: lc('admin_user_weipin_00026'),
                     searchForm: {
                         page: 1,
                         limit: null,
@@ -129,14 +129,14 @@
                     isIndeterminate: false,// checkbox 的不确定状态
                     selectedItem: [],
                     addVisible: false,
-                    titleAddEdit: '添加专题招聘',
+                    titleAddEdit: lc('admin_01236'),
                     oldData: null,
                     //添加 编辑
                     id: 0,
                     fileData: [],//专题模板
                     qyData: [],//企业等级
                     //查看
-                    titleViewCompany: '参会企业',
+                    titleViewCompany: lc('wap_00559'),
                     viewCompanyVisible: false,
                     prevPage:0
                 }
@@ -207,7 +207,7 @@
                             }
                             _this.loading = false;
                             if (_this.tableData.length === 0) {
-                                _this.dataText = "暂无数据";
+                                _this.dataText = lc('wap_js_00113');
                             }
                         }
                     }).catch(function (error) {
@@ -232,7 +232,7 @@
                     httpPost('m=yunying&c=special_special&a=add', {add:1}, { hideloading: true }).then(function (response) {
                         let res = response.data;
                         if (res.error === 0) {
-                            _this.titleAddEdit = '添加专题招聘';
+                            _this.titleAddEdit = lc('admin_01236');
                             _this.id = 0;
                             _this.addVisible = true;
                         }
@@ -249,7 +249,7 @@
                     httpPost('m=yunying&c=special_special&a=add', {add:1}, { hideloading: true }).then(function (response) {
                         let res = response.data;
                         if (res.error === 0) {
-                            _this.titleAddEdit = '修改专题招聘';
+                            _this.titleAddEdit = lc('admin_01237');
                             _this.id = parseInt(scope.row.id);
                             _this.addVisible = true;
                         }
@@ -261,7 +261,7 @@
                     let params = {};
                     if (isMore) {
                         if (!this.selectedItem.length) {
-                            message.error('请选择要删除的数据');
+                            message.error(lc('admin_user_weipin_00005'));
                             return false;
                         }
                         let list = [];
@@ -282,10 +282,10 @@
                     httpPost('m=yunying&c=special_special&a=del', params).then(function (response) {
                         let res = response.data;
                         if (res.error === 0) {
-                            message.success('删除成功！');
+                            message.success(lc('admin_user_00187'));
                             _this.getList();
                         } else {
-                            message.error('删除失败！');
+                            message.error(lc('admin_user_00186'));
                         }
                     }).catch(function (error) {
                         console.log(error);
@@ -326,9 +326,9 @@
                     httpPost('m=yunying&c=special_special&a=setOrder', params, { hideloading: true }).then(function (response) {
                         let res = response.data;
                         if (res.error === 0) {
-                            message.success('修改成功');
+                            message.success(lc('admin_user_company_00208'));
                         } else {
-                            message.error('修改失败');
+                            message.error(lc('admin_00187'));
                         }
                         _this.oldData = null;
                         _this.getList();
@@ -346,9 +346,9 @@
                         let res = response.data;
                         if (res.error === 0) {
                             _this.getList();
-                            message.success('修改成功');
+                            message.success(lc('admin_user_company_00208'));
                         } else {
-                            message.error('修改失败');
+                            message.error(lc('admin_00187'));
                         }
                     }).catch(function (error) {
                         console.log(error);

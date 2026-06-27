@@ -9,7 +9,7 @@
 <body>
     <div id="adminnav" class="moduleDome">
         <div class="moduleHeadr">
-            <el-page-header @back="goBack" :content="id ? '修改' : '添加'">
+            <el-page-header @back="goBack" :content="lc('admin_html_00003')">
             </el-page-header>
         </div>
         <el-form :model="ruleForm" ref="ruleForm" label-width="130px" class="create-ruleForm">
@@ -17,32 +17,32 @@
                 <table class="tableVue">
                     <thead>
                         <tr align="left">
-                            <th width="200">名称</th>
-                            <th width="400">状态</th>
-                            <th>说明</th>
+                            <th width="200">{{ lc('member_com_00021') }}</th>
+                            <th width="400">{{ lc('member_user_00181') }}</th>
+                            <th>{{ lc('member_com_00207') }}</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
                             <td>
-                                <div class="TableTite">导航类别</div>
+                                <div class="TableTite">{{ lc('admin_00192') }}</div>
                             </td>
                             <td>
                                 <div class="TableSelect" style="display: flex;align-items: center;">
-                                    <el-cascader v-model="ruleForm.keyid" placeholder="请选择" :options="navList"
+                                    <el-cascader v-model="ruleForm.keyid" :placeholder="lc('wap_user_00100')" :options="navList"
                                         :props="navProps" filterable>
                                     </el-cascader>
                                 </div>
                             </td>
                             <td>
                                 <div class="TableShuom">
-                                    <span>选择导航的上级类别</span>
+                                    <span>{{ lc('admin_system_00253') }}</span>
                                 </div>
                             </td>
                         </tr>
                         <tr>
                             <td>
-                                <div class="TableTite">导航名称</div>
+                                <div class="TableTite">{{ lc('admin_00191') }}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
@@ -51,13 +51,13 @@
                             </td>
                             <td>
                                 <div class="TableShuom">
-                                    <span>导航名称</span>
+                                    <span>{{ lc('admin_00191') }}</span>
                                 </div>
                             </td>
                         </tr>
                         <tr>
                             <td>
-                                <div class="TableTite">后端路由</div>
+                                <div class="TableTite">{{ lc('admin_system_00245') }}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
@@ -66,13 +66,13 @@
                             </td>
                             <td>
                                 <div class="TableShuom">
-                                    <span>接口地址，如：index.php?m=admin_nav</span>
+                                    <span>{{ lc('admin_system_00250') }}</span>
                                 </div>
                             </td>
                         </tr>
                         <tr>
                             <td>
-                                <div class="TableTite">前端路由</div>
+                                <div class="TableTite">{{ lc('admin_system_00244') }}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
@@ -81,13 +81,13 @@
                             </td>
                             <td>
                                 <div class="TableShuom">
-                                    <span>前端页面地址，取router.js中的path，如：/admin_nav</span>
+                                    <span>{{ lc('admin_system_00249') }}</span>
                                 </div>
                             </td>
                         </tr>
                         <tr>
                             <td>
-                                <div class="TableTite">图标类名</div>
+                                <div class="TableTite">{{ lc('admin_system_00246') }}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
@@ -96,13 +96,13 @@
                             </td>
                             <td>
                                 <div class="TableShuom">
-                                    <span>菜单对应的CLASS类名</span>
+                                    <span>{{ lc('admin_system_00251') }}</span>
                                 </div>
                             </td>
                         </tr>
                         <tr>
                             <td>
-                                <div class="TableTite">排　　序</div>
+                                <div class="TableTite">{{ lc('admin_system_00105') }}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
@@ -111,7 +111,7 @@
                             </td>
                             <td>
                                 <div class="TableShuom">
-                                    <span>数字越小，权重越高</span>
+                                    <span>{{ lc('admin_system_00252') }}</span>
                                 </div>
                             </td>
                         </tr>
@@ -138,7 +138,7 @@
                         <!--</tr>-->
                         <tr>
                             <td>
-                                <div class="TableTite">显　　示</div>
+                                <div class="TableTite">{{ lc('admin_system_00356') }}</div>
                             </td>
                             <td>
                                 <div class="TableButn">
@@ -149,13 +149,13 @@
                             </td>
                             <td>
                                 <div class="TableShuom">
-                                    <span>是否显示</span>
+                                    <span>{{ lc('admin_system_00355') }}</span>
                                 </div>
                             </td>
                         </tr>
                         <tr>
                             <td>
-                                <div class="TableTite">分站显示</div>
+                                <div class="TableTite">{{ lc('admin_system_00243') }}</div>
                             </td>
                             <td>
                                 <div class="TableButn">
@@ -166,7 +166,7 @@
                             </td>
                             <td>
                                 <div class="TableShuom">
-                                    <span>是否显示</span>
+                                    <span>{{ lc('admin_system_00355') }}</span>
                                 </div>
                             </td>
                         </tr>
@@ -175,7 +175,7 @@
             </div>
 
             <div class="setBasicButn" style="border: none;">
-                <el-button type="primary" size="medium" @click="submitForm('ruleForm')">提交</el-button>
+                <el-button type="primary" size="medium" @click="submitForm('ruleForm')">{{ lc('wap_user_00176') }}</el-button>
             </div>
         </el-form>
     </div>

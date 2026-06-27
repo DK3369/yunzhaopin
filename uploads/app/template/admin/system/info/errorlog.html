@@ -10,34 +10,34 @@
     <div id="daohaapp" class="moduleElenAl">
         <div class="moduleSeachs">
             <div class="moduleSeachInpt">
-				<el-input placeholder="请输入搜索内容" v-model="searchOption.keyword" style="margin-right: 8px;" clearable size="small">
-					<el-select v-model="searchOption.type" size="small" slot="prepend" @clear="search" placeholder="用户ID">
-					    <el-option label="用户ID" value="1"></el-option>
-					    <el-option label="内容" value="2"></el-option>
+				<el-input :placeholder="lc('admin_00340')" v-model="searchOption.keyword" style="margin-right: 8px;" clearable size="small">
+					<el-select v-model="searchOption.type" size="small" slot="prepend" @clear="search" :placeholder="lc('admin_user_00130')">
+					    <el-option :label="lc('admin_user_00130')" value="1"></el-option>
+					    <el-option :label="lc('wap_user_00102')" value="2"></el-option>
 					</el-select>
 				</el-input>
 
-                <el-select v-model="searchOption.ctime" size="small" style="margin-right: 8px;" clearable @change="search" placeholder="发布时间">
-                    <el-option label="今天" value="1"></el-option>
-                    <el-option label="最近三天" value="3"></el-option>
-                    <el-option label="最近七天" value="7"></el-option>
-                    <el-option label="最近半月" value="15"></el-option>
-                    <el-option label="最近一个月" value="30"></el-option>
+                <el-select v-model="searchOption.ctime" size="small" style="margin-right: 8px;" clearable @change="search" :placeholder="lc('admin_user_weipin_00030')">
+                    <el-option :label="lc('common_01940')" value="1"></el-option>
+                    <el-option :label="lc('admin_user_00179')" value="3"></el-option>
+                    <el-option :label="lc('admin_user_00178')" value="7"></el-option>
+                    <el-option :label="lc('admin_user_00180')" value="15"></el-option>
+                    <el-option :label="lc('admin_user_00175')" value="30"></el-option>
                 </el-select>
-                <el-select v-model="searchOption.logtype" size="small" style="margin-right: 8px;" clearable @change="search" slot="prepend" placeholder="类型">
-                    <el-option label="注册" value="1"></el-option>
-                    <el-option label="添加简历" value="2"></el-option>
-                    <el-option label="投递简历" value="3"></el-option>
-                    <el-option label="发布职位" value="4"></el-option>
-                    <el-option label="刷新职位" value="5"></el-option>
-                    <el-option label="下载简历" value="6"></el-option>
-                    <el-option label="邀请面试" value="7"></el-option>
-                    <el-option label="发送短信" value="8"></el-option>
-                    <el-option label="发送邮件" value="9"></el-option>
+                <el-select v-model="searchOption.logtype" size="small" style="margin-right: 8px;" clearable @change="search" slot="prepend" :placeholder="lc('admin_system_00689')">
+                    <el-option :label="lc('wap_00242')" value="1"></el-option>
+                    <el-option :label="lc('admin_user_00296')" value="2"></el-option>
+                    <el-option :label="lc('wap_com_00235')" value="3"></el-option>
+                    <el-option :label="lc('wap_00322')" value="4"></el-option>
+                    <el-option :label="lc('wap_com_00029')" value="5"></el-option>
+                    <el-option :label="lc('wap_00451')" value="6"></el-option>
+                    <el-option :label="lc('resume_00029')" value="7"></el-option>
+                    <el-option :label="lc('admin_user_00166')" value="8"></el-option>
+                    <el-option :label="lc('admin_user_00167')" value="9"></el-option>
                     
                     
                 </el-select>
-                <el-button type="primary" size="mini" icon="el-icon-search" @click="search">查询</el-button>
+                <el-button type="primary" size="mini" icon="el-icon-search" @click="search">{{ lc('admin_user_weipin_00049') }}</el-button>
             </div>
         </div>
         <div class="moduleElTable">
@@ -46,27 +46,27 @@
                 @selection-change="handleSelectionChange" ref="multipleTable" v-loading="loading" :empty-text="emptytext">
                 <el-table-column type="selection" width="55">
                 </el-table-column>
-                <el-table-column prop="id" label="	编号" width="80" sortable="custom">
+                <el-table-column prop="id" :label="lc('common_02108')" width="80" sortable="custom">
                 </el-table-column>
-                <el-table-column prop="uid" label="用户ID" width="100">
+                <el-table-column prop="uid" :label="lc('admin_user_00130')" width="100">
                 </el-table-column>
 
-                <el-table-column prop="type_n" label=" 类型" width="130">
+                <el-table-column prop="type_n" :label="lc('admin_system_00689')" width="130">
                 </el-table-column>
-                <el-table-column prop="content" label="内容">
+                <el-table-column prop="content" :label="lc('wap_user_00102')">
                 </el-table-column>
-                <el-table-column prop="ctime_n" label="时间" width="180">
+                <el-table-column prop="ctime_n" :label="lc('wap_js_00088')" width="180">
                 </el-table-column>
-                <el-table-column label="状态" width="100">
+                <el-table-column :label="lc('member_user_00181')" width="100">
                     <template slot-scope="scope">
-                        <el-tag type="success" size="small" v-if="scope.row.isread==1">已读</el-tag>
-                        <el-tag type="danger" size="small" v-else>未读</el-tag>
+                        <el-tag type="success" size="small" v-if="scope.row.isread==1">{{ lc('admin_system_00197') }}</el-tag>
+                        <el-tag type="danger" size="small" v-else>{{ lc('member_user_00289') }}</el-tag>
                     </template>
                 </el-table-column>
-                <el-table-column fixed="right" label="操作" width="80">
+                <el-table-column fixed="right" :label="lc('member_user_00048')" width="80">
                     <template slot-scope="scope">
                         <div class="cz_button">
-                            <el-button size="mini" @click="delrow(scope.row)" type="danger">删除</el-button>
+                            <el-button size="mini" @click="delrow(scope.row)" type="danger">{{ lc('wap_js_00077') }}</el-button>
                         </div>
                     </template>
                 </el-table-column>
@@ -74,8 +74,8 @@
         </div>
         <div class="modulePaging">
             <div class="modulecz modulePagButn">
-                <el-checkbox v-model="checkedAll" @change="selectAllBottom">全选</el-checkbox>
-                <el-button size="mini" @click="delAllBottom">批量删除</el-button>
+                <el-checkbox v-model="checkedAll" @change="selectAllBottom">{{ lc('wap_js_00074') }}</el-checkbox>
+                <el-button size="mini" @click="delAllBottom">{{ lc('member_com_00055') }}</el-button>
             </div>
             <div class="modulePagNum">
                 <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
@@ -91,7 +91,7 @@
             el: '#daohaapp',
             data: function () {
                 return {
-                    emptytext: window.yunAdminT('暂无数据'),
+                    emptytext: window.lc('wap_js_00113'),
                     loading: false,
                     tableData: [],
                     searchOption: {
@@ -132,7 +132,7 @@
                         pageSize: that.limit,
                     };
                     that.loading = true;
-                    that.emptytext = window.yunAdminT('数据加载中');
+                    that.emptytext = window.lc('admin_user_weipin_00026');
                     httpPost('m=system&c=info_errorlog&a=index',  {...params, ...searchOption}, {hideloading: true}).then(function (data) {
                         let res = data.data;
                         if (res.error == 0) {
@@ -149,7 +149,7 @@
                                 that.page = parseInt(res.data.page); // 最后一页被删除后，取最新的页数
                             }
                             if (that.tableData.length === 0){
-                                that.emptytext = window.yunAdminT('暂无数据');
+                                that.emptytext = window.lc('wap_js_00113');
                             }
                         }
                     }).catch(function (error) {
@@ -190,7 +190,7 @@
                 },
                 delAllBottom() {
                     if (!this.selectedItem.length) {
-                        this.$message({ showClose: true, message: '请选择要删除的数据', type: 'warning' });
+                        this.$message({ showClose: true, message: lc('admin_user_weipin_00005'), type: 'warning' });
                         return false;
                     }
                     delConfirm(this, this.selectedItem, this.delete);
@@ -202,7 +202,7 @@
                     };
                     httpPost('m=system&c=info_errorlog&a=del', params).then(function (response) {
                         if (response.data.error == 0) {
-                            message.success(window.yunAdminT('操作成功'));
+                            message.success(window.lc('wap_user_00264'));
                             _this.getList();
                         } else {
                             message.error(response.data.msg);

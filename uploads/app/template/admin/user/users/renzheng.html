@@ -10,13 +10,13 @@
     <div id="moduapp" class="moduleDome">
         <div class="setDomeAll setDomeInte">
             <el-tabs v-model="activeName" @tab-click="handleClick">
-                <el-tab-pane label="身份认证审核" name="first" :lazy="true">
+                <el-tab-pane :label="lc('admin_user_00352')" name="first" :lazy="true">
                     <renzheng_renzheng :status="status.first"></renzheng_renzheng>
                 </el-tab-pane>
-                <el-tab-pane label="个人头像审核" name="second" :lazy="true">
+                <el-tab-pane :label="lc('admin_user_00351')" name="second" :lazy="true">
                     <renzheng_logo :status="status.second"></renzheng_logo>
                 </el-tab-pane>
-                <el-tab-pane label="作品案例 " name="third" :lazy="true">
+                <el-tab-pane :label="lc('wap_00492')" name="third" :lazy="true">
                     <renzheng_show :status="status.third"></renzheng_show>
                 </el-tab-pane>
             </el-tabs>

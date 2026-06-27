@@ -13,12 +13,10 @@
 <body>
     <div id="hyfl" class="moduleElenAl">
         <div class="moduleSeachs">
-            <div class="">
-                举报分类
-            </div>
+            <div class="">{{ lc('admin_system_00132') }}</div>
             <div class="nrtopbtn">
                 <el-button class="add_fl" size="mini" type="primary" icon="el-icon-document-add"
-                    @click="addVisible = true">添加举报原因</el-button>
+                    @click="addVisible = true">{{ lc('admin_system_00131') }}</el-button>
             </div>
         </div>
         <div class="moduleElTable">
@@ -26,9 +24,9 @@
                 :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" ref="multipleTable"
                 @selection-change="handleSelectionChange" v-loading="loading" :empty-text="emptytext">
                 <el-table-column type="selection" width="55"> </el-table-column>
-                <el-table-column prop="id" label="编号" width="180">
+                <el-table-column prop="id" :label="lc('member_com_00345')" width="180">
                 </el-table-column>
-                <el-table-column prop="name" label="标题(点击修改)">
+                <el-table-column prop="name" :label="lc('admin_system_00135')">
                     <template slot-scope="scope">
                         <el-input v-if="scope.row[scope.column.property + 'isShow']"
                             :ref="scope.column.property + scope.$index" :id="scope.column.property + scope.$index"
@@ -39,10 +37,10 @@
                         </span>
                     </template>
                 </el-table-column>
-                <el-table-column fixed="right" label="操作" width="80">
+                <el-table-column fixed="right" :label="lc('member_user_00048')" width="80">
                     <template slot-scope="scope">
                         <div class="cz_button">
-                            <el-button type="danger" size="mini" @click="deleteRow(scope)">删除</el-button>
+                            <el-button type="danger" size="mini" @click="deleteRow(scope)">{{ lc('wap_js_00077') }}</el-button>
                           </div>
                     </template>
                 </el-table-column>
@@ -51,18 +49,18 @@
         <div class="modulePaging">
             <div class="">
                 <div class="modulecz modulePagButn">
-                    <el-checkbox :indeterminate="isIndeterminate" v-model="checked" @change="selectAllBottom">全选</el-checkbox>
-                    <el-button @click="deleteRow(null, true)" size="mini">批量删除</el-button>
+                    <el-checkbox :indeterminate="isIndeterminate" v-model="checked" @change="selectAllBottom">{{ lc('wap_js_00074') }}</el-checkbox>
+                    <el-button @click="deleteRow(null, true)" size="mini">{{ lc('member_com_00055') }}</el-button>
                 </div>
             </div>
         </div>
-        <el-dialog title="举报原因" width="30%" :visible.sync="addVisible" :modal-append-to-body="false">
+        <el-dialog :title="lc('admin_system_00133')" width="30%" :visible.sync="addVisible" :modal-append-to-body="false">
             <div class="hydialog_item">
-                <span>原因：</span>
+                <span>{{ lc('admin_system_00134') }}</span>
                 <el-input type="text" v-model="ruleForm.name" style="flex: 1;"></el-input>
             </div>
             <div slot="footer" class="dialog-footer">
-                <el-button type="primary" @click="submitForm('ruleForm')" :disabled="submitLoading">添加</el-button>
+                <el-button type="primary" @click="submitForm('ruleForm')" :disabled="submitLoading">{{ lc('wap_js_00091') }}</el-button>
             </div>
         </el-dialog>
     </div>
@@ -72,7 +70,7 @@
         el: '#hyfl',
         data: function () {
             return {
-                emptytext: window.yunAdminT('暂无数据'),
+                emptytext: window.lc('wap_js_00113'),
                 loading: false,
                 tableData: [], //表格数据
                 checked: false,
@@ -112,13 +110,13 @@
             getList() {
                 let _this = this;
                 _this.loading = true;
-                _this.emptytext = window.yunAdminT('数据加载中');
+                _this.emptytext = window.lc('admin_user_weipin_00026');
                 httpPost('m=system&c=category_reason&a=index').then(function (response) {
                     let res = response.data;
                     _this.tableData = res.data;
                     _this.loading = false;
                     if (_this.tableData.length === 0){
-                        _this.emptytext = window.yunAdminT('暂无数据');
+                        _this.emptytext = window.lc('wap_js_00113');
                     }
                 }).catch(function (error) {
                     console.log(error);
@@ -130,21 +128,21 @@
                 params.name = params.name.split("\n").join("-");
 
                 if (params.name == '') {
-                    message.error(window.yunAdminT('举报原因不能为空！'));
+                    message.error(window.lc('admin_system_00136'));
                     return;
                 }
                 _this.submitLoading = true;
                 httpPost('m=system&c=category_reason&a=save', params).then(function (response) {
                     let res = response.data;
                     if (res.error === 0) {
-                        message.success(window.yunAdminT('添加成功！'));
+                        message.success(window.lc('admin_system_00138'));
                         _this.getList();
                         _this.clearForm();
                         _this.addVisible = false;
                     } else if (res.error === 1) {
-                        message.error(window.yunAdminT('添加失败！'));
+                        message.error(window.lc('admin_system_00137'));
                     } else if (res.error === 2) {
-                        message.error(window.yunAdminT('已有此类别，请重新输入！'));
+                        message.error(window.lc('admin_system_00130'));
                     } else {
                         message.error(res.msg);
                     }
@@ -161,7 +159,7 @@
                 let params = {};
                 if (isMore) {
                     if (!this.selectedItem.length) {
-                        message.error(window.yunAdminT('请选择要删除的数据'));
+                        message.error(window.lc('admin_user_weipin_00005'));
                         return false;
                     }
                     let list = [];
@@ -184,10 +182,10 @@
                 httpPost('m=system&c=category_reason&a=del', params).then(function (response) {
                     let res = response.data;
                     if (res.error === 0) {
-                        message.success(window.yunAdminT('删除成功！'));
+                        message.success(window.lc('admin_user_00187'));
                         _this.getList();
                     } else {
-                        message.error(window.yunAdminT('删除失败！'));
+                        message.error(window.lc('admin_user_00186'));
                     }
                 }).catch(function (error) {
                     console.log(error);
@@ -225,9 +223,9 @@
                 httpPost('m=system&c=category_reason&a=save', sendData, { hideloading: true }).then(function (response) {
                     let res = response.data;
                     if (res.error === 0) {
-                        message.success(window.yunAdminT('修改成功'));
+                        message.success(window.lc('admin_user_company_00208'));
                     } else {
-                        message.error(window.yunAdminT('修改失败'));
+                        message.error(window.lc('admin_00187'));
                     }
                     _this.oldData = null;
                     _this.getList();

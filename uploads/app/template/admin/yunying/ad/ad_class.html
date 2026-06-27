@@ -12,19 +12,19 @@
     <div class="moduleSeachs">
         <div class="moduleSeachleft">
             <div class="moduleInptList">
-                <el-input placeholder="输入你要搜索的关键字" v-model="searchForm.keyword" size="small" class="input-with-select" clearable>
-                    <el-select v-model="searchForm.type" size="small" slot="prepend" placeholder="编号">
-                        <el-option label="编号" value="1"></el-option>
-                        <el-option label="名称" value="2"></el-option>
+                <el-input :placeholder="lc('admin_user_weipin_00003')" v-model="searchForm.keyword" size="small" class="input-with-select" clearable>
+                    <el-select v-model="searchForm.type" size="small" slot="prepend" :placeholder="lc('member_com_00345')">
+                        <el-option :label="lc('member_com_00345')" value="1"></el-option>
+                        <el-option :label="lc('member_com_00021')" value="2"></el-option>
                     </el-select>
                 </el-input>
             </div>
             <div class="newsbtnbox">
-                <el-button type="primary" icon="el-icon-search" size="mini" @click="handleSearch">查询</el-button>
+                <el-button type="primary" icon="el-icon-search" size="mini" @click="handleSearch">{{ lc('admin_user_weipin_00049') }}</el-button>
             </div>
         </div>
         <div class="moduleSeachButn">
-            <el-button type="primary" icon="el-icon-document-add" size="mini" @click="handleAdd">添加类别</el-button>
+            <el-button type="primary" icon="el-icon-document-add" size="mini" @click="handleAdd">{{ lc('admin_00222') }}</el-button>
         </div>
     </div>
     <div class="moduleElTable">
@@ -33,43 +33,43 @@
                 <p>{{dataText}}</p>
             </template>
             <el-table-column type="selection" width="55"></el-table-column>
-            <el-table-column prop="id" label="编号" width="90"></el-table-column>
-            <el-table-column prop="class_name" label="分类名称"></el-table-column>
-            <el-table-column prop="place_n" label="广告位置" width="200"></el-table-column>
-            <el-table-column label="演示图片" width="100">
+            <el-table-column prop="id" :label="lc('member_com_00345')" width="90"></el-table-column>
+            <el-table-column prop="class_name" :label="lc('admin_system_00357')"></el-table-column>
+            <el-table-column prop="place_n" :label="lc('admin_01174')" width="200"></el-table-column>
+            <el-table-column :label="lc('admin_yunying_00054')" width="100">
                 <template slot-scope="scope">
                     <div v-if="scope.row.hrefn" class="moduleElImage">
                         <el-image :src="scope.row.hrefn ? scope.row.hrefn : ''" :preview-src-list="scope.row.hrefn ? [scope.row.hrefn] : []"></el-image>
                     </div>
-                    <span v-else>无</span>
+                    <span v-else>{{ lc('common_02082') }}</span>
                 </template>
             </el-table-column>
-            <el-table-column prop="orders" label="排序" sortable="custom" width="100">
+            <el-table-column prop="orders" :label="lc('admin_vue_00044')" sortable="custom" width="100">
                 <template slot-scope="scope">
                     <el-input type="number" v-if="scope.row[scope.column.property + 'isShow']" :ref="scope.column.property + scope.$index" :id="scope.column.property + scope.$index" v-model="scope.row.orders" @blur="alterData(scope)"></el-input>
                     <span v-else>{{ scope.row.orders }}<img @click="editData(scope)" class="editIcon" src="../../../admin/images/bine.png" alt="" style="margin-left: 4px;" width="14" height="14"></span>
                 </template>
             </el-table-column>
-            <el-table-column label="调用代码" width="120">
+            <el-table-column :label="lc('admin_yunying_00056')" width="120">
                 <template slot-scope="scope">
-                    <el-link type="primary" :underline="false" @click="handleCopy(scope)">内部调用</el-link>
+                    <el-link type="primary" :underline="false" @click="handleCopy(scope)">{{ lc('admin_yunying_00053') }}</el-link>
                 </template>
             </el-table-column>
-            <el-table-column prop="type" label="设为购买" width="130">
+            <el-table-column prop="type" :label="lc('admin_yunying_00055')" width="130">
                 <template slot-scope="scope">
                     <template v-if="scope.row.type == 1">
-                        <el-link type="primary" :underline="false" @click="handleDelbuy(scope)">取消</el-link>
+                        <el-link type="primary" :underline="false" @click="handleDelbuy(scope)">{{ lc('wap_js_00080') }}</el-link>
                     </template>
                     <template v-else>
-                        <el-link type="primary" :underline="false" @click="handleBuy(scope)">设为购买</el-link>
+                        <el-link type="primary" :underline="false" @click="handleBuy(scope)">{{ lc('admin_yunying_00055') }}</el-link>
                     </template>
                 </template>
             </el-table-column>
-            <el-table-column fixed="right" label="操作" width="130" align="center">
+            <el-table-column fixed="right" :label="lc('member_user_00048')" width="130" align="center">
                 <template slot-scope="scope">
                     <div class="cz_button">
-                        <el-button size="small" @click="editRow(scope)" type=" ">修改</el-button>
-                        <el-button type="danger" size="small " @click="deleteRow(scope)">删除</el-button>
+                        <el-button size="small" @click="editRow(scope)" type=" ">{{ lc('wap_js_00073') }}</el-button>
+                        <el-button type="danger" size="small " @click="deleteRow(scope)">{{ lc('wap_js_00077') }}</el-button>
                     </div>
                 </template>
             </el-table-column>
@@ -77,8 +77,8 @@
     </div>
     <div class="modulePaging">
         <div class="modulecz modulePagButn">
-            <el-checkbox :indeterminate="isIndeterminate" v-model="checked" @change="selectAllBottom">全选</el-checkbox>
-            <el-button @click="deleteRow(null, true)">批量删除</el-button>
+            <el-checkbox :indeterminate="isIndeterminate" v-model="checked" @change="selectAllBottom">{{ lc('wap_js_00074') }}</el-checkbox>
+            <el-button @click="deleteRow(null, true)">{{ lc('member_com_00055') }}</el-button>
         </div>
         <div class="modulePagNum">
             <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page.sync="searchForm.page" :page-size="searchForm.limit" :page-sizes="pageSizes" layout="total, sizes, prev, pager, next, jumper" :total="total"></el-pagination>
@@ -91,14 +91,14 @@
         </el-drawer>
     </div>
     <!--内部调用-->
-    <el-dialog title="内部调用" width="40%" :visible.sync="copyVisible" :modal-append-to-body="false">
+    <el-dialog :title="lc('admin_yunying_00053')" width="40%" :visible.sync="copyVisible" :modal-append-to-body="false">
         <div>
             <el-input id="elementCode" type="textarea" rows="5" v-model="code"></el-input>
-            <i class="el-icon-info" style="margin-top: 10px;">复制内容并添加到模板中</i>
-            <i class="el-icon-info" style="margin-top: 10px;">limit=5 为调用数量，可自行修改，如调用6条，为limit=6</i>
+            <i class="el-icon-info" style="margin-top: 10px;">{{ lc('admin_yunying_00052') }}</i>
+            <i class="el-icon-info" style="margin-top: 10px;">{{ lc('admin_yunying_00051') }}</i>
         </div>
         <div slot="footer" class="dialog-footer">
-            <el-button id="copyBtn" type="primary" data-clipboard-action="copy" data-clipboard-target="#elementCode" @click="handleCopyValue">复制代码</el-button>
+            <el-button id="copyBtn" type="primary" data-clipboard-action="copy" data-clipboard-target="#elementCode" @click="handleCopyValue">{{ lc('admin_yunying_00073') }}</el-button>
         </div>
     </el-dialog>
 </div>
@@ -109,7 +109,7 @@
         data: function () {
             return {
                 loading: false,
-                dataText: '数据加载中',
+                dataText: lc('admin_user_weipin_00026'),
                 searchForm: {
                     type: '1',
                     page: 1,
@@ -122,7 +122,7 @@
                 isIndeterminate: false,// checkbox 的不确定状态
                 selectedItem: [],
                 addVisible: false,
-                titleAddEdit: '添加广告类别',
+                titleAddEdit: lc('admin_01175'),
                 info: {},
                 integral_pricename: '',
                 pic_maxsize: '',
@@ -200,7 +200,7 @@
                         }
                         _this.loading = false;
                         if (_this.tableData.length === 0) {
-                            _this.dataText = "暂无数据";
+                            _this.dataText = lc('wap_js_00113');
                         }
                     }
                 }).catch(function (error) {
@@ -231,7 +231,7 @@
                 let params = {};
                 if (isMore) {
                     if (!this.selectedItem.length) {
-                        message.error('请选择要删除的数据');
+                        message.error(lc('admin_user_weipin_00005'));
                         return false;
                     }
                     let list = [];
@@ -254,7 +254,7 @@
                 httpPost('m=yunying&c=ad_class&a=del', params).then(function (response) {
                     let res = response.data;
                     if (res.error === 0) {
-                        message.success('删除成功！');
+                        message.success(lc('admin_user_00187'));
                         _this.getList();
                     } else {
                         message.error(res.msg);
@@ -296,9 +296,9 @@
                 httpPost('m=yunying&c=ad_class&a=upsort', sendData).then(function (response) {
                     let res = response.data;
                     if (res.error === 0) {
-                        message.success('修改成功');
+                        message.success(lc('admin_user_company_00208'));
                     } else {
-                        message.error('修改失败');
+                        message.error(lc('admin_00187'));
                     }
                     _this.oldData = null;
                     _this.getList();
@@ -324,13 +324,13 @@
                     e.clearSelection();
                     // 释放内存
                     clipboard.destroy();
-                    message.success('复制成功');
+                    message.success(lc('admin_user_company_00368'));
                 });
                 // 复制失败
                 clipboard.on('error', (e) => {
                     // 释放内存
                     clipboard.destroy();
-                    message.error('该浏览器不支持自动复制');
+                    message.error(lc('admin_user_company_00339'));
                 });
             },
             /**

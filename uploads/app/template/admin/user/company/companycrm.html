@@ -13,19 +13,19 @@
     <div id="moduapp" class="moduleDome">
         <div class="setDomeAll setDomeInte" style="height: initial;">
             <el-tabs v-model="activeName" @tab-click="handleClick">
-                <el-tab-pane label="企业用户" name="comuser" lazy>
+                <el-tab-pane :label="lc('admin_user_00124')" name="comuser" lazy>
                     <companyuser ref="comuser" :status="status"></companyuser>
                 </el-tab-pane>
-                <el-tab-pane label="名企管理" name="commq" :lazy="true">
+                <el-tab-pane :label="lc('admin_user_company_00001')" name="commq" :lazy="true">
                     <companymq ref="commq"></companymq>
                 </el-tab-pane>
-                <el-tab-pane label="过期用户" name="comexp" :lazy="true">
+                <el-tab-pane :label="lc('admin_user_company_00002')" name="comexp" :lazy="true">
                     <expire ref="comexp"></expire>
                 </el-tab-pane>
-                <el-tab-pane label="解绑记录" name="unbind" :lazy="true">
+                <el-tab-pane :label="lc('admin_user_00353')" name="unbind" :lazy="true">
                     <unbinding ref="unbind"></unbinding>
                 </el-tab-pane>
-                <el-tab-pane label="企业日志" name="comlog" :lazy="true">
+                <el-tab-pane :label="lc('admin_user_00177')" name="comlog" :lazy="true">
                     <comlog ref="comlog" :typelist="typeArr" :time="time" :scrolltop="true"></comlog>
                 </el-tab-pane>
             </el-tabs>
@@ -40,26 +40,26 @@
                 activeName: 'comuser',
                 typeArr: [{
                     value: 1,
-                    label: "用户名"
+                    label: lc('admin_user_00140')
                 }, {
                     value: 3,
-                    label: "用户ID"
+                    label: lc('admin_user_00130')
                 }],
                 time: [{
                     value: 1,
-                    label: "今天"
+                    label: lc('common_01940')
                 }, {
                     value: 3,
-                    label: "最近三天"
+                    label: lc('admin_user_00179')
                 }, {
                     value: 7,
-                    label: "最近七天"
+                    label: lc('admin_user_00178')
                 }, {
                     value: 15,
-                    label: "最近半月"
+                    label: lc('admin_user_00180')
                 }, {
                     value: 30,
-                    label: "最近一个月"
+                    label: lc('admin_user_00175')
                 }],
                 status: '',
             }

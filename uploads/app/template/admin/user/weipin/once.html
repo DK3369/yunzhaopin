@@ -10,13 +10,13 @@
     <div id="moduapp" class="moduleDome">
         <div class="setDomeAll setDomeInte">
             <el-tabs v-model="activeName" @tab-click="handleClick">
-                <el-tab-pane label="店铺招聘" name="once">
+                <el-tab-pane :label="lc('wap_js_00130')" name="once">
                     <once ref="once" :status="status"></once>
                 </el-tab-pane>
-                <el-tab-pane label="店铺设置" name="set" lazy>
+                <el-tab-pane :label="lc('admin_user_weipin_00070')" name="set" lazy>
                     <set ref="set"></set>
                 </el-tab-pane>
-                <el-tab-pane label="招聘时长" name="price_gear" lazy>
+                <el-tab-pane :label="lc('wap_00352')" name="price_gear" lazy>
                     <price_gear ref="price_gear"></price_gear>
                 </el-tab-pane>
             </el-tabs>

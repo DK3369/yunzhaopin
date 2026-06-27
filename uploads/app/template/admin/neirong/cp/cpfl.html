@@ -11,21 +11,18 @@
 <body>
 <div id="hyfl" class="moduleElenAl">
     <div class="moduleSeachs">
-        <div class="">
-            测评类别
-        </div>
+        <div class="">{{ lc('admin_00121') }}</div>
         <div class="nrtopbtn">
             <el-button type="primary" icon="el-icon-document-add" @click="dialogVisible = true"
-                       size="mini">添加类别
-            </el-button>
+                       size="mini">{{ lc('admin_00222') }}</el-button>
         </div>
     </div>
     <div class="moduleElTable" style="padding: 12px; height: calc(100% - (60px + 6px + 12px + 12px));">
         <el-table :data="tableData" stripe border style="width: 100%;height: 100%;" :empty-text="emptytext"
                   :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" height="100%" v-loading="loading">
-            <el-table-column prop="id" label="编号" width="180">
+            <el-table-column prop="id" :label="lc('member_com_00345')" width="180">
             </el-table-column>
-            <el-table-column label="类别名称" property="name">
+            <el-table-column :label="lc('admin_00219')" property="name">
                 <template slot-scope="scope">
                     <el-input v-if="scope.row[scope.column.property + 'isShow']"
                               :ref="scope.column.property + scope.$index" :id="scope.column.property + scope.$index"
@@ -36,12 +33,12 @@
 					</span>
                 </template>
             </el-table-column>
-            <el-table-column label="记录数" property="number">
+            <el-table-column :label="lc('admin_00206')" property="number">
                 <template slot-scope="scope">
                     {{ lc("admin_paper_count", [scope.row.count ? scope.row.count : 0]) }}
                 </template>
             </el-table-column>
-            <el-table-column label="排序" property="sort">
+            <el-table-column :label="lc('admin_vue_00044')" property="sort">
                 <template slot-scope="scope">
                     <el-input v-if="scope.row[scope.column.property + 'isShow']"
                               :ref="scope.column.property + scope.$index" :id="scope.column.property + scope.$index"
@@ -53,22 +50,22 @@
                     </span>
                 </template>
             </el-table-column>
-            <el-table-column label="操作" width="80" fixed="right">
+            <el-table-column :label="lc('member_user_00048')" width="80" fixed="right">
                 <template slot-scope="scope">
                     <div class="cz_button">
-                        <el-button type="danger" size="mini" @click="delrow(scope.row.id)">删除</el-button>
+                        <el-button type="danger" size="mini" @click="delrow(scope.row.id)">{{ lc('wap_js_00077') }}</el-button>
                     </div>
                 </template>
             </el-table-column>
         </el-table>
     </div>
-    <el-dialog title="添加类别" width="500px" :visible.sync="dialogVisible" :modal-append-to-body="false">
+    <el-dialog :title="lc('admin_00222')" width="500px" :visible.sync="dialogVisible" :modal-append-to-body="false">
         <div class="hydialog_item">
-            <span>类别名称：</span>
+            <span>{{ lc('admin_00260') }}</span>
             <el-input v-model="lbname" style="flex: 1;"></el-input>
         </div>
         <div slot="footer" class="dialog-footer">
-            <el-button type="primary" @click="saveClass" :disabled="submitLoading">添加</el-button>
+            <el-button type="primary" @click="saveClass" :disabled="submitLoading">{{ lc('wap_js_00091') }}</el-button>
         </div>
     </el-dialog>
 </div>
@@ -78,7 +75,7 @@
         el: '#hyfl',
         data: function () {
             return {
-                emptytext: '暂无数据',
+                emptytext: lc('wap_js_00113'),
                 loading: false,
                 tableData: [], //表格数据
                 dialogVisible: false,
@@ -123,9 +120,9 @@
                 httpPost('m=neirong&c=evaluate&a=ajax', sendData, {hideloading: true}).then(function (response) {
                     let res = response.data;
                     if (res.error === 0) {
-                        message.success('修改成功');
+                        message.success(lc('admin_user_company_00208'));
                     } else {
-                        message.error('修改失败');
+                        message.error(lc('admin_00187'));
                     }
                     _this.oldData = null;
                     _this.getList();
@@ -175,7 +172,7 @@
             saveClass(){
                 var that = this
                 if(that.lbname == ''){
-                    message.error('类别名称不能为空！');
+                    message.error(lc('admin_00208'));
                     return false;
                 }
 				that.submitLoading = true;

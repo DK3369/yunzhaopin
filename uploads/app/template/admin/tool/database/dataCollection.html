@@ -8,28 +8,28 @@
 <div id="dataCollectionApp" class="moduleDome">
     <div class="setDomeAll setDomeInte">
         <el-tabs v-model="activeName" @tab-click="handleClick">
-            <el-tab-pane label="采集设置" name="first">
+            <el-tab-pane :label="lc('admin_tool_00326')" name="first">
                 <collection_set v-bind:locoy_config="locoyConfig"></collection_set>
             </el-tab-pane>
-            <el-tab-pane label="新闻设置" name="second">
+            <el-tab-pane :label="lc('admin_tool_00327')" name="second">
                 <news_set v-bind:locoy_config="locoyConfig"></news_set>
             </el-tab-pane>
-            <el-tab-pane label="职位设置" name="third">
+            <el-tab-pane :label="lc('admin_tool_00325')" name="third">
                 <job_set v-bind:locoy_config="locoyConfig" v-bind:job_set="jobSet"></job_set>
             </el-tab-pane>
-            <el-tab-pane label="公司设置" name="fourth">
+            <el-tab-pane :label="lc('admin_tool_00323')" name="fourth">
                 <com_set v-bind:locoy_config="locoyConfig" v-bind:com_set="comSet"></com_set>
             </el-tab-pane>
-            <el-tab-pane label="个人设置" name="fifth">
+            <el-tab-pane :label="lc('admin_user_00354')" name="fifth">
                 <user_set v-bind:locoy_config="locoyConfig" v-bind:user_set="userSet"></user_set>
             </el-tab-pane>
-            <el-tab-pane label="简历设置" name="sixth">
+            <el-tab-pane :label="lc('admin_tool_00324')" name="sixth">
                 <resume_set v-bind:locoy_config="locoyConfig" v-bind:resume_set="resumeSet"></resume_set>
             </el-tab-pane>
-            <el-tab-pane label="账号设置" name="seventh">
+            <el-tab-pane :label="lc('member_user_00059')" name="seventh">
                 <account_set v-bind:locoy_config="locoyConfig" v-bind:account_set="accountSet"></account_set>
             </el-tab-pane>
-            <el-tab-pane label="兼职设置" name="eighth">
+            <el-tab-pane :label="lc('admin_tool_00328')" name="eighth">
                 <part_set v-bind:locoy_config="locoyConfig" v-bind:part_set="partSet"></part_set>
             </el-tab-pane>
         </el-tabs>

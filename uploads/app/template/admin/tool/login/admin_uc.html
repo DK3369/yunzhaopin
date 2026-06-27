@@ -10,10 +10,10 @@
     <div id="moduapp" class="moduleDome">
         <div class="setDomeAll setDomeInte">
             <el-tabs v-model="activeName">
-                <el-tab-pane label="整合UCenter" name="first">
+                <el-tab-pane :label="lc('admin_tool_00441')" name="first">
                     <ucucenter :configdata="config" :ucinfodata="ucinfo" @ucenter-post="ucenterPost"></ucucenter>
                 </el-tab-pane>
-                <el-tab-pane label="整合PHPWIND" name="second">
+                <el-tab-pane :label="lc('admin_tool_00435')" name="second">
                     <ucwind :configdata="config" :ucinfodata="pw_ucinfo" @pw-post="pwPost"></ucwind>
                 </el-tab-pane>
             </el-tabs>
@@ -113,7 +113,7 @@
                     endLoading();
                     var res = result.data;
 
-                    message.success(window.yunAdminT('保存成功'), () => {
+                    message.success(window.lc('wap_user_00104'), () => {
                         that.pw_ucinfo = ucinfo_v;
                         that.config.sy_pw_type = param.sy_pw_type
                     });

@@ -11,39 +11,39 @@
 
     <div class="moduleSeachs">
         <div class="moduleSeachInpt">
-            <el-input placeholder="请输入域名备注" v-model="search.keyword" class="input-with-select" size="small" clearable></el-input>
-            <el-button type="primary" icon="el-icon-search" size="mini" @click="handelSearch">查询</el-button>
+            <el-input :placeholder="lc('admin_01053')" v-model="search.keyword" class="input-with-select" size="small" clearable></el-input>
+            <el-button type="primary" icon="el-icon-search" size="mini" @click="handelSearch">{{ lc('admin_user_weipin_00049') }}</el-button>
         </div>
         <div class="">
             <a href="javascript:;" @click="addDomain">
-                <el-button type="primary" icon="el-icon-document-add" size="mini">添加分站</el-button>
+                <el-button type="primary" icon="el-icon-document-add" size="mini">{{ lc('admin_system_00196') }}</el-button>
             </a>
             <a href="javascript:;" @click="domainConfigShow = true">
-                <el-button type="primary" icon="el-icon-document-add" size="mini" plain>分站设置</el-button>
+                <el-button type="primary" icon="el-icon-document-add" size="mini" plain>{{ lc('admin_system_00195') }}</el-button>
             </a>
         </div>
     </div>
 
     <div class="moduleElTable oduleEldujegh">
         <div class="tableDome_tip">
-            <el-alert title="管理员通过分站列表轻松查询到网站开通多少家分站，同时根据运营情况进行实时调整。" type="info" :closable="false"></el-alert>
+            <el-alert :title="lc('admin_system_00189')" type="info" :closable="false"></el-alert>
         </div>
 
         <el-table :data="tableData" border style="width: 100%;" :header-cell-style="{background:'#f5f7fa',color:'#606266'}" height="calc(100% - 48px)" @selection-change="handleSelectionChange" ref="multipleTable" v-loading="loading" :empty-text="emptytext">
             <el-table-column type="selection" width="55"></el-table-column>
-            <el-table-column prop="title" label="域名备注" width="220"></el-table-column>
-            <el-table-column prop="name" label="域名/目录"></el-table-column>
-            <el-table-column prop="city" label="城市"></el-table-column>
-            <el-table-column prop="hy_n" label="行业"></el-table-column>
-            <el-table-column prop="style" label="风格目录"></el-table-column>
-            <el-table-column label="是否启用">
+            <el-table-column prop="title" :label="lc('admin_system_00166')" width="220"></el-table-column>
+            <el-table-column prop="name" :label="lc('admin_system_00193')"></el-table-column>
+            <el-table-column prop="city" :label="lc('wap_js_00083')"></el-table-column>
+            <el-table-column prop="hy_n" :label="lc('admin_user_company_00373')"></el-table-column>
+            <el-table-column prop="style" :label="lc('admin_system_00350')"></el-table-column>
+            <el-table-column :label="lc('admin_system_00263')">
                 <el-switch slot-scope="scope" v-model="scope.row.typeStatus" active-color="#1890FF" inactive-color="#B8BDC9" @change="changeType(scope)"></el-switch>
             </el-table-column>
-            <el-table-column fixed="right" label="操作" width="140">
+            <el-table-column fixed="right" :label="lc('member_user_00048')" width="140">
                 <template slot-scope="scope">
                     <div class="cz_button">
-                        <el-button size="mini" @click="editDomain(scope)">修改</el-button>
-                        <el-button size="mini" @click="delDomain(scope)" type="danger">删除</el-button>
+                        <el-button size="mini" @click="editDomain(scope)">{{ lc('wap_js_00073') }}</el-button>
+                        <el-button size="mini" @click="delDomain(scope)" type="danger">{{ lc('wap_js_00077') }}</el-button>
                     </div>
                 </template>
             </el-table-column>
@@ -51,8 +51,8 @@
     </div>
     <div class="modulePaging">
         <div class="modulecz modulePagButn" style="margin-left: 10px;">
-            <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">全选</el-checkbox>
-            <el-button size="mini" @click="delDomainSel">批量删除</el-button>
+            <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">{{ lc('wap_js_00074') }}</el-checkbox>
+            <el-button size="mini" @click="delDomainSel">{{ lc('member_com_00055') }}</el-button>
         </div>
         <div class="modulePagNum">
             <div class="modulePagNum" style="margin: 0 auto;">
@@ -62,7 +62,7 @@
     </div>
     <!-- 分站设置弹窗 -->
     <div class="modluDrawer">
-        <el-drawer title="分站设置" :visible.sync="domainConfigShow" :modal-append-to-body="false" size="85%">
+        <el-drawer :title="lc('admin_system_00195')" :visible.sync="domainConfigShow" :modal-append-to-body="false" size="85%">
             <domain-config @child-event="closeDomainConfig"></domain-config>
         </el-drawer>
     </div>
@@ -78,7 +78,7 @@
         el: '#domainListApp',
         data: function () {
             return {
-                emptytext: '暂无数据',
+                emptytext: lc('wap_js_00113'),
                 loading: false,
                 search: {
                     keyword: null
@@ -213,7 +213,7 @@
             delDomainSel() {
                 var that = this;
                 if (!that.selectedItem.length) {
-                    message.error('请选择要删除的分站数据');
+                    message.error(lc('admin_system_00190'));
                     return;
                 }
                 this.delDomain(null, true);

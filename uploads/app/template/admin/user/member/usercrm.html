@@ -10,13 +10,13 @@
     <div id="moduapp" class="moduleDome">
         <div class="setDomeAll setDomeInte">
             <el-tabs v-model="activeName" @tab-click="handleClick">
-                <el-tab-pane label="全部用户" name="first" :lazy="true">
+                <el-tab-pane :label="lc('admin_user_00174')" name="first" :lazy="true">
                     <alluser ref="first"></alluser>
                 </el-tab-pane>
-                <el-tab-pane label="会员注销记录" name="three" :lazy="true">
+                <el-tab-pane :label="lc('admin_user_00172')" name="three" :lazy="true">
                     <logoff ref="three" :status="status.three"></logoff>
                 </el-tab-pane>
-                <el-tab-pane label="账号申诉记录" name="four" :lazy="true">
+                <el-tab-pane :label="lc('admin_user_00173')" name="four" :lazy="true">
                     <shensu ref="four" :status="status.four"></shensu>
                 </el-tab-pane>
 

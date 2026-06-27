@@ -10,16 +10,16 @@
     <div id="moduapp" class="moduleElenAl">
         <div class="setDomeAll">
             <el-tabs v-model="activeName" @tab-click="handleClick">
-                <el-tab-pane label="网站模板" name="first" :lazy="true">
+                <el-tab-pane :label="lc('admin_system_00349')" name="first" :lazy="true">
                     <mobanone ref="first" ></mobanone>
                 </el-tab-pane>
-                <el-tab-pane label="企业模板" name="second" :lazy="true">
+                <el-tab-pane :label="lc('admin_user_company_00135')" name="second" :lazy="true">
                     <mobantwo ref="second" ></mobantwo>
                 </el-tab-pane>
-                <el-tab-pane label="简历模板" name="three" :lazy="true">
+                <el-tab-pane :label="lc('member_user_00189')" name="three" :lazy="true">
                     <mobanthree ref="three"></mobanthree>
                 </el-tab-pane>
-                <el-tab-pane label="首页主题" name="fourth" :lazy="true">
+                <el-tab-pane :label="lc('admin_system_00577')" name="fourth" :lazy="true">
                     <mobanfour ref="fourth" ></mobanfour>
                 </el-tab-pane>
 

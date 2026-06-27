@@ -10,19 +10,19 @@
     <div id="moduapp" class="moduleDome">
         <div class="setDomeAll setDomeInte">
             <el-tabs v-model="activeName" @tab-click="handleClick">
-                <el-tab-pane label="公众号设置" name="first" :lazy='true'>
+                <el-tab-pane :label="lc('admin_tool_00681')" name="first" :lazy='true'>
                     <wxgzh :config="config" @post-set="postset"></wxgzh>
                 </el-tab-pane>
-                <el-tab-pane label="开发者凭据" name="forud" :lazy='true'>
+                <el-tab-pane :label="lc('admin_tool_00682')" name="forud" :lazy='true'>
                     <wxkfz :config="config" @post-set="postset"></wxkfz>
                 </el-tab-pane>
-                <el-tab-pane label="体验设置" name="fived" :lazy='true'>
+                <el-tab-pane :label="lc('admin_tool_00683')" name="fived" :lazy='true'>
                    <wxtyset :config="config" @post-set="postset"></wxtyset>
                 </el-tab-pane>
-                <el-tab-pane label="微信菜单" name="second" :lazy='true'>
+                <el-tab-pane :label="lc('admin_tool_00684')" name="second" :lazy='true'>
                     <wxmenu ref="second"></wxmenu>
                 </el-tab-pane>
-                <el-tab-pane label="自动回复" name="third" :lazy='true'>
+                <el-tab-pane :label="lc('admin_tool_00685')" name="third" :lazy='true'>
                     <reply ref="third"></reply>
                 </el-tab-pane> 
             </el-tabs>

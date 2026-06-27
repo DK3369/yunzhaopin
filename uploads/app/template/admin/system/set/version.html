@@ -12,9 +12,9 @@
             <el-table :data="list" border style="width: 100%" row-key="id" :default-expand-all="false" lazy 
                 ref="tableref" :header-cell-style="{background:'#f5f7fa',color:'#606266'}" height="100%"
                 :tree-props="{children: 'children', hasChildren: 'hasChildren'}" v-loading="loading" :empty-text="emptytext">
-                <el-table-column prop="version" label="版本号" width="200">
+                <el-table-column prop="version" :label="lc('admin_system_00579')" width="200">
                 </el-table-column>
-                <el-table-column prop="ctime_n" label="升级时间" width="200">
+                <el-table-column prop="ctime_n" :label="lc('admin_system_00578')" width="200">
                 </el-table-column>
             </el-table>
         </div>
@@ -28,7 +28,7 @@
                    
                     list: [],
                     
-                    emptytext: '数据加载中',
+                    emptytext: lc('admin_user_weipin_00026'),
                     loading: true,
                 }
             },

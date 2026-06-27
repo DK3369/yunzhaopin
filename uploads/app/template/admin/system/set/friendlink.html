@@ -10,44 +10,44 @@
 	<div id="daohaapp" class="moduleElenAl">
 		<div class="moduleSeachmore">
 			<div class="tableSeachInpt tableSeachInptsmall">
-				<el-select v-model="searchOption.ctime" size="small" clearable @change="search" placeholder="发布时间">
-					<el-option label="今天" value="1"></el-option>
-					<el-option label="最近三天" value="3"></el-option>
-					<el-option label="最近七天" value="7"></el-option>
-					<el-option label="最近半月" value="15"></el-option>
-					<el-option label="最近一个月" value="30"></el-option>
+				<el-select v-model="searchOption.ctime" size="small" clearable @change="search" :placeholder="lc('admin_user_weipin_00030')">
+					<el-option :label="lc('common_01940')" value="1"></el-option>
+					<el-option :label="lc('admin_user_00179')" value="3"></el-option>
+					<el-option :label="lc('admin_user_00178')" value="7"></el-option>
+					<el-option :label="lc('admin_user_00180')" value="15"></el-option>
+					<el-option :label="lc('admin_user_00175')" value="30"></el-option>
 				</el-select>
 			</div>
 			<div class="tableSeachInpt tableSeachInptsmall">
 				<el-select v-model="searchOption.type" size="small" clearable @change="search" slot="prepend"
-					placeholder="类型">
-					<el-option label="文字" value="1"></el-option>
-					<el-option label="图片" value="2"></el-option>
+					:placeholder="lc('admin_system_00689')">
+					<el-option :label="lc('admin_system_00432')" value="1"></el-option>
+					<el-option :label="lc('wap_js_00081')" value="2"></el-option>
 				</el-select>
 			</div>
 			<div class="tableSeachInpt tableSeachInptsmall">
 				<el-select v-model="searchOption.did" size="small" clearable @change="search" slot="prepend"
-					placeholder="站点">
+					:placeholder="lc('admin_user_weipin_00050')">
 					<el-option v-for="item in domainData" :key="item.value" :label="item.label" :value="item.value"></el-option>
 				</el-select>
 			</div>
 			<div class="tableSeachInpt tableSeachInptsmall">
 				<el-select v-model="searchOption.state" size="small" clearable @change="search" slot="prepend"
-					placeholder="审核状态">
-					<el-option label="已审核" value="1"></el-option>
-					<el-option label="未审核" value="2"></el-option>
+					:placeholder="lc('wap_com_00406')">
+					<el-option :label="lc('wap_user_00165')" value="1"></el-option>
+					<el-option :label="lc('wap_user_00166')" value="2"></el-option>
 				</el-select>
 			</div>
 			<div class="tableSeachInpt">
-				<el-input placeholder="请输入搜索内容" size="small" v-model="searchOption.keyword" clearable
+				<el-input :placeholder="lc('admin_00340')" size="small" v-model="searchOption.keyword" clearable
 					prefix-icon="el-icon-search">
 				</el-input>
 			</div>
 			<div class="tableSeachInpt tableSeachbutton">
-				<el-button type="primary" size="mini" icon="el-icon-search" @click="search">查询</el-button>
+				<el-button type="primary" size="mini" icon="el-icon-search" @click="search">{{ lc('admin_user_weipin_00049') }}</el-button>
 			</div>
 			<div class="tableSeachInpt tableSeachbutton" style="margin-left: auto;">
-				<el-button type="primary" icon="el-icon-document-add" size="mini" @click="addlink">添加友情链接</el-button>
+				<el-button type="primary" icon="el-icon-document-add" size="mini" @click="addlink">{{ lc('admin_system_00430') }}</el-button>
 			</div>
 		</div>
 
@@ -57,35 +57,35 @@
 				@selection-change="handleSelectionChange" ref="multipleTable" v-loading="loading" :empty-text="emptytext">
 				<el-table-column type="selection" width="55">
 				</el-table-column>
-				<el-table-column prop="id" label="	编号" width="80" sortable="custom">
+				<el-table-column prop="id" :label="lc('common_02108')" width="80" sortable="custom">
 				</el-table-column>
-				<el-table-column prop="link_name" label="链接标题" width="180">
+				<el-table-column prop="link_name" :label="lc('admin_system_00292')" width="180">
 				</el-table-column>
-				<el-table-column prop="link_url" label="链接地址">
+				<el-table-column prop="link_url" :label="lc('admin_00101')">
 					<template slot-scope="scope">
 						<a target="_blank" :href="scope.row.link_url">{{scope.row.link_url}}</a>
 					</template>
 				</el-table-column>
-				<el-table-column prop="did_n" label="显示站点" width="110">
+				<el-table-column prop="did_n" :label="lc('admin_system_00291')" width="110">
 				</el-table-column>
-				<el-table-column prop="ctime_n" label="发布时间" width="110">
+				<el-table-column prop="ctime_n" :label="lc('admin_user_weipin_00030')" width="110">
 				</el-table-column>
-				<el-table-column prop="link_type_n" label="类型" width="110">
+				<el-table-column prop="link_type_n" :label="lc('admin_system_00689')" width="110">
 				</el-table-column>
-				<el-table-column prop="link_sorting" label="排序" width="60">
+				<el-table-column prop="link_sorting" :label="lc('admin_vue_00044')" width="60">
 				</el-table-column>
-				<el-table-column label="状态" width="100">
+				<el-table-column :label="lc('member_user_00181')" width="100">
 					<template slot-scope="scope">
-						<el-tag type="success" size="small" v-if="scope.row.link_state==1">已审核</el-tag>
-						<el-tag type="danger" size="small" v-else>未审核</el-tag>
+						<el-tag type="success" size="small" v-if="scope.row.link_state==1">{{ lc('wap_user_00165') }}</el-tag>
+						<el-tag type="danger" size="small" v-else>{{ lc('wap_user_00166') }}</el-tag>
 					</template>
 				</el-table-column>
-				<el-table-column fixed="right" label="操作" width="200">
+				<el-table-column fixed="right" :label="lc('member_user_00048')" width="200">
 					<template slot-scope="scope">
 						<div class="cz_button">
-							<el-button size="mini" @click="status(scope.row)">审核</el-button>
-							<el-button size="mini" @click="eidtlink(scope.row)">修改</el-button>
-							<el-button size="mini" type="danger" @click="delrow(scope.row)">删除</el-button>
+							<el-button size="mini" @click="status(scope.row)">{{ lc('member_user_00152') }}</el-button>
+							<el-button size="mini" @click="eidtlink(scope.row)">{{ lc('wap_js_00073') }}</el-button>
+							<el-button size="mini" type="danger" @click="delrow(scope.row)">{{ lc('wap_js_00077') }}</el-button>
 						</div>
 					</template>
 				</el-table-column>
@@ -93,9 +93,9 @@
 		</div>
 		<div class="modulePaging">
 			<div class="modulecz modulePagButn">
-				<el-checkbox v-model="checkedAll" @change="selectAllBottom">全选</el-checkbox>
-				<el-button size="mini" @click="delAllBottom">批量删除</el-button>
-				<el-button size="mini" @click="setDidAllBottom">批量选择分站</el-button>
+				<el-checkbox v-model="checkedAll" @change="selectAllBottom">{{ lc('wap_js_00074') }}</el-checkbox>
+				<el-button size="mini" @click="delAllBottom">{{ lc('member_com_00055') }}</el-button>
+				<el-button size="mini" @click="setDidAllBottom">{{ lc('admin_user_00279') }}</el-button>
 			</div>
 			<div class="modulePagNum">
 				<el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
@@ -107,37 +107,37 @@
 		</div>
 		<!-- 处理弹窗 -->
 		<div class="modluDrawer">
-			<el-dialog title="友情链接审核" :visible.sync="statusBox" :with-header="true" :modal-append-to-body="false"
+			<el-dialog :title="lc('admin_system_00429')" :visible.sync="statusBox" :with-header="true" :modal-append-to-body="false"
 				:show-close="true" width="400px">
 				<el-form :model="ruleFormStatus" ref="ruleFormStatus" label-width="90px">
-					<el-form-item label="审核状态">
+					<el-form-item :label="lc('wap_com_00406')">
 						<el-radio-group v-model="ruleFormStatus.status">
-							<el-radio label="1">已审核</el-radio>
+							<el-radio label="1">{{ lc('wap_user_00165') }}</el-radio>
 						</el-radio-group>
 					</el-form-item>
-					<el-form-item label="审核说明" prop="content">
+					<el-form-item :label="lc('member_user_00062')" prop="content">
 						<el-input type="textarea" :rows="2" v-model="ruleFormStatus.content"></el-input>
 					</el-form-item>
 				</el-form>
 				<span slot="footer" class="dialog-footer">
-					<el-button @click="statusBox = false">取 消</el-button>
-					<el-button type="primary" @click="submitForm">确 定</el-button>
+					<el-button @click="statusBox = false">{{ lc('admin_user_weipin_00043') }}</el-button>
+					<el-button type="primary" @click="submitForm">{{ lc('wap_com_00019') }}</el-button>
 				</span>
 			</el-dialog>
 		</div>
 		<div class="modluDrawer">
-			<el-dialog title="分配站点" :visible.sync="setDidBox" :with-header="true" :modal-append-to-body="false"
+			<el-dialog :title="lc('admin_user_weipin_00029')" :visible.sync="setDidBox" :with-header="true" :modal-append-to-body="false"
 				:show-close="true" width="400px">
 				<el-form ref="ruleFormDid" label-width="90px">
-					<el-form-item label="切换站点" prop="content">
+					<el-form-item :label="lc('admin_user_company_00137')" prop="content">
 						<el-select v-model="setdid" filterable>
 							<el-option v-for="item in domainData" :key="item.value" :label="item.label" :value="item.value"></el-option>
 						</el-select>
 					</el-form-item>
 				</el-form>
 				<span slot="footer" class="dialog-footer">
-					<el-button @click="setDidBox = false">取 消</el-button>
-					<el-button type="primary" @click="submitFormDid">分 配</el-button>
+					<el-button @click="setDidBox = false">{{ lc('admin_user_weipin_00043') }}</el-button>
+					<el-button type="primary" @click="submitFormDid">{{ lc('admin_system_00431') }}</el-button>
 				</span>
 			</el-dialog>
 		</div>
@@ -154,13 +154,13 @@
 			el: '#daohaapp',
 			data: function () {
 				return {
-					emptytext: '暂无数据',
+					emptytext: lc('wap_js_00113'),
 					searchForm: [],
 					setdid: 0,
 					setDidBox: false,
 					statusBox: false,
 					link_id: 0,
-					title: '添加友情链接',
+					title: lc('admin_system_00430'),
 					showLinkBox: false,
 					drawer: false,
 					tableData: [],
@@ -231,7 +231,7 @@
 				},
 				setDidAllBottom() {
 					if (!this.selectedItem.length) {
-						this.$message.error('请选择要分配的数据');
+						this.$message.error(lc('admin_system_00427'));
 						return false;
 					}
 					this.setdid = 0;
@@ -343,7 +343,7 @@
 				},
 				delAllBottom() {
 					if (!this.selectedItem.length) {
-						this.$message.error('请选择要删除的数据');
+						this.$message.error(lc('admin_user_weipin_00005'));
 						return false;
 					}
 					delConfirm(this, this.selectedItem, this.delete);

@@ -10,10 +10,10 @@
     <div id="moduapp" class="moduleDome">
         <div class="setDomeAll setDomeInte">
             <el-tabs v-model="activeName" @tab-click="handleClick">
-                <el-tab-pane label="普工简历" name="tiny">
+                <el-tab-pane :label="lc('wap_js_00066')" name="tiny">
                     <tiny ref="tiny" :status="status"></tiny>
                 </el-tab-pane>
-                <el-tab-pane label="普工设置" name="tinyset" lazy>
+                <el-tab-pane :label="lc('admin_user_weipin_00071')" name="tinyset" lazy>
                     <tinyset ref="tinyset"></tinyset>
                 </el-tab-pane>
             </el-tabs>

@@ -13,7 +13,7 @@
             </div>
             <div class="moduleSeachButn">
                 <a href="admin_nav_add.html">
-                    <el-button type="primary" icon="el-icon-document-add" size="mini">添加导航</el-button>
+                    <el-button type="primary" icon="el-icon-document-add" size="mini">{{ lc('admin_system_00248') }}</el-button>
                 </a>
 
             </div>
@@ -31,20 +31,20 @@
             <el-table :data="list" border style="width: 100%" row-key="id" :default-expand-all="false" lazy :load="load"
                 ref="tableref" :header-cell-style="{background:'#f5f7fa',color:'#606266'}" height="100%"
                 :tree-props="{children: 'children', hasChildren: 'hasChildren'}" v-loading="loading" :empty-text="emptytext">
-                <el-table-column prop="name" label="导航名称" width="200">
+                <el-table-column prop="name" :label="lc('admin_00191')" width="200">
                 </el-table-column>
-                <el-table-column label="图标类名" width="150">
+                <el-table-column :label="lc('admin_system_00246')" width="150">
                     <template slot-scope="scope">
                         {{ scope.row.classname != '0' && scope.row.classname != '' ? scope.row.classname : '' }}
                     </template>
                 </el-table-column>
                 <!--<el-table-column prop="menu" label="导航类型" width="120">-->
                 <!--</el-table-column>-->
-                <el-table-column prop="url" label="后端路由">
+                <el-table-column prop="url" :label="lc('admin_system_00245')">
                 </el-table-column>
-                <el-table-column prop="path" label="前端路由">
+                <el-table-column prop="path" :label="lc('admin_system_00244')">
                 </el-table-column>
-                <el-table-column prop="sort" label="排序" width="80">
+                <el-table-column prop="sort" :label="lc('admin_vue_00044')" width="80">
                 </el-table-column>
                 <!--<el-table-column label="是否快捷" width="80">-->
                 <!--    <template slot-scope="scope">-->
@@ -58,7 +58,7 @@
                 <!--        </el-switch>-->
                 <!--    </template>-->
                 <!--</el-table-column>-->
-                <el-table-column label="显示" width="100">
+                <el-table-column :label="lc('member_com_00023')" width="100">
                     <template slot-scope="scope">
                         <el-switch v-model="scope.row.display"
                             @change="changeDisplay(scope.$index,scope.row, 'display')" active-color="#1890FF"
@@ -66,19 +66,19 @@
                         </el-switch>
                     </template>
                 </el-table-column>
-                <el-table-column label="分站显示" width="100">
+                <el-table-column :label="lc('admin_system_00243')" width="100">
                     <template slot-scope="scope">
                         <el-switch v-model="scope.row.dids" @change="changeDisplay(scope.$index,scope.row, 'dids')"
                             active-color="#1890FF" inactive-color="#B8BDC9" active-value="1" inactive-value="0">
                         </el-switch>
                     </template>
                 </el-table-column>
-                <el-table-column fixed="right" label="操作" width="140">
+                <el-table-column fixed="right" :label="lc('member_user_00048')" width="140">
                     <template slot-scope="scope">
                         <div class="moduleElTaCaoz">
-                            <el-button size="mini" @click.native.prevent="edit(scope.row)">修改</el-button>
+                            <el-button size="mini" @click.native.prevent="edit(scope.row)">{{ lc('wap_js_00073') }}</el-button>
                             <el-button size="mini"
-                                @click.native.prevent="deleteRow(scope.row)">删除</el-button>
+                                @click.native.prevent="deleteRow(scope.row)">{{ lc('wap_js_00077') }}</el-button>
                         </div>
                     </template>
                 </el-table-column>
@@ -95,7 +95,7 @@
                     list: [],
                     maps: new Map(),
 
-                    emptytext: '数据加载中',
+                    emptytext: lc('admin_user_weipin_00026'),
                     loading: true,
                 }
             },
@@ -135,7 +135,7 @@
                     if (res.data.error == 0) {
                     } else {
                         this.list[idx].display = data.display == 1 ? 0 : 1;
-                        this.$message.error('导航状态修改失败');
+                        this.$message.error(lc('admin_system_00241'));
                     }
                 },
                 edit(data) {
@@ -155,7 +155,7 @@
                     let that = this;
 
                     if (data.hasChildren) {
-                        that.$message.warning('请先删除下级导航');
+                        that.$message.warning(lc('admin_system_00242'));
                         return false;
                     }
 

@@ -13,12 +13,9 @@
 <body>
     <div id="hyfl" class="moduleElenAl">
         <div class="moduleSeachs">
-            <div class="">
-                行业分类
-            </div>
+            <div class="">{{ lc('admin_system_00126') }}</div>
             <div class="nrtopbtn">
-                <el-button type="primary" icon="el-icon-document-add" @click="addVisible = true" size="mini">添加分类
-                </el-button>
+                <el-button type="primary" icon="el-icon-document-add" @click="addVisible = true" size="mini">{{ lc('admin_00197') }}</el-button>
             </div>
         </div>
         <div class="moduleElTable">
@@ -26,9 +23,9 @@
                 :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" ref="multipleTable"
                 @selection-change="handleSelectionChange" v-loading="loading" :empty-text="emptytext">
                 <el-table-column type="selection" width="55"></el-table-column>
-                <el-table-column prop="id" label="行业编号" width="180">
+                <el-table-column prop="id" :label="lc('admin_system_00127')" width="180">
                 </el-table-column>
-                <el-table-column label="行业名称(点击修改)" property="name">
+                <el-table-column :label="lc('admin_00323')" property="name">
                     <template slot-scope="scope">
                         <el-input v-if="scope.row[scope.column.property + 'isShow']"
                             :ref="scope.column.property + scope.$index" :id="scope.column.property + scope.$index"
@@ -39,7 +36,7 @@
                         </span>
                     </template>
                 </el-table-column>
-                <el-table-column label="排序(越大越在前)" property="sort">
+                <el-table-column :label="lc('admin_00324')" property="sort">
                     <template slot-scope="scope">
                         <el-input v-if="scope.row[scope.column.property + 'isShow']"
                             :ref="scope.column.property + scope.$index" :id="scope.column.property + scope.$index"
@@ -51,13 +48,13 @@
                         </span>
                     </template>
                 </el-table-column>
-                <el-table-column fixed="right" label="操作" width="80">
+                <el-table-column fixed="right" :label="lc('member_user_00048')" width="80">
                     <template slot-scope="scope">
                         <!-- <div class="TableLink">
                             <el-link :underline="false" type="primary" @click="deleteRow(scope)">删除</el-link>
                         </div> -->
                         <div class="cz_button">
-                            <el-button size="mini" type="danger" @click="deleteRow(scope)">删除</el-button>
+                            <el-button size="mini" type="danger" @click="deleteRow(scope)">{{ lc('wap_js_00077') }}</el-button>
                           </div>
                     </template>
                 </el-table-column>
@@ -66,22 +63,22 @@
         <div class="modulePaging">
             <div class="">
                 <div class="modulecz modulePagButn">
-                    <el-checkbox :indeterminate="isIndeterminate" v-model="checked" @change="selectAllBottom">全选</el-checkbox>
-                    <el-button @click="deleteRow(null, true)" size="mini">批量删除</el-button>
+                    <el-checkbox :indeterminate="isIndeterminate" v-model="checked" @change="selectAllBottom">{{ lc('wap_js_00074') }}</el-checkbox>
+                    <el-button @click="deleteRow(null, true)" size="mini">{{ lc('member_com_00055') }}</el-button>
                 </div>
             </div>
         </div>
-        <el-dialog title="添加类别" width="580px" :visible.sync="addVisible" :modal-append-to-body="false">
+        <el-dialog :title="lc('admin_00222')" width="580px" :visible.sync="addVisible" :modal-append-to-body="false">
             <div class="hydialog_item">
-                <span>类别名称：</span>
+                <span>{{ lc('admin_00260') }}</span>
                 <el-input type="textarea" v-model="ruleForm.name" style="flex: 1;"></el-input>
             </div>
             <div style="overflow: hidden;position: relative;padding-left: 74px;">
-                <i class="el-icon-info" style="margin-top: 10px;">说明：可以添加多条分类（请按回车Enter键换行，一行一个)</i>
+                <i class="el-icon-info" style="margin-top: 10px;">{{ lc('admin_system_00091') }}</i>
             </div>
             
             <div slot="footer" class="dialog-footer">
-                <el-button type="primary" @click="submitForm('ruleForm')" :disabled="submitLoading">添加</el-button>
+                <el-button type="primary" @click="submitForm('ruleForm')" :disabled="submitLoading">{{ lc('wap_js_00091') }}</el-button>
             </div>
         </el-dialog>
     </div>
@@ -91,7 +88,7 @@
         el: '#hyfl',
         data: function () {
             return {
-                emptytext: window.yunAdminT('暂无数据'),
+                emptytext: window.lc('wap_js_00113'),
                 loading: false,
                 tableData: [], //表格数据
                 checked: false,
@@ -132,13 +129,13 @@
                 this.addVisible = false;
                 let _this = this;
                 _this.loading = true;
-                _this.emptytext = window.yunAdminT('数据加载中');
+                _this.emptytext = window.lc('admin_user_weipin_00026');
                 httpPost('m=system&c=category_industry&a=index').then(function (response) {
                     let res = response.data;
                     _this.tableData = res.data;
                     _this.loading = false;
                     if (_this.tableData.length === 0){
-                        _this.emptytext = window.yunAdminT('暂无数据');
+                        _this.emptytext = window.lc('wap_js_00113');
                     }
                 }).catch(function (error) {
                     console.log(error);
@@ -150,7 +147,7 @@
                 params.name = params.name.split("\n").join("-");
 
                 if (params.name == '') {
-                    message.error(window.yunAdminT('类别名称不能为空！'));
+                    message.error(window.lc('admin_00208'));
                     return;
                 }
                 _this.submitLoading = true;
@@ -179,7 +176,7 @@
                 let params = {};
                 if (isMore) {
                     if (!this.selectedItem.length) {
-                        message.error(window.yunAdminT('请选择要删除的数据'));
+                        message.error(window.lc('admin_user_weipin_00005'));
                         return false;
                     }
                     let list = [];
@@ -202,10 +199,10 @@
                 httpPost('m=system&c=category_industry&a=del', params).then(function (response) {
                     let res = response.data;
                     if (res.error === 0) {
-                        message.success(window.yunAdminT('删除成功！'));
+                        message.success(window.lc('admin_user_00187'));
                         _this.getList();
                     } else {
-                        message.error(window.yunAdminT('删除失败！'));
+                        message.error(window.lc('admin_user_00186'));
                     }
                 }).catch(function (error) {
                     console.log(error);
@@ -246,9 +243,9 @@
                 httpPost('m=system&c=category_industry&a=ajax', sendData, { hideloading: true }).then(function (response) {
                     let res = response.data;
                     if (res.error === 0) {
-                        message.success(window.yunAdminT('修改成功'));
+                        message.success(window.lc('admin_user_company_00208'));
                     } else {
-                        message.error(window.yunAdminT('修改失败'));
+                        message.error(window.lc('admin_00187'));
                     }
                     _this.oldData = null;
                     _this.getList();

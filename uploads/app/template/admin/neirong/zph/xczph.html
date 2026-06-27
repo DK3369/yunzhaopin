@@ -13,13 +13,13 @@
     <div id="moduapp" class="moduleDome">
         <div class="setDomeAll setDomeInte">
             <el-tabs v-model="activeName" @tab-click="handleClick">
-                <el-tab-pane label="现场招聘会" name="zph">
+                <el-tab-pane :label="lc('wap_00558')" name="zph">
                     <xczphlist ref="zph"></xczphlist>
                 </el-tab-pane>
-                <el-tab-pane label="参会企业" name="com">
+                <el-tab-pane :label="lc('wap_00559')" name="com">
                     <xczphcom ref="com" :shstatus="status"></xczphcom>
                 </el-tab-pane>
-                <el-tab-pane label="招聘会场地" name="cd">
+                <el-tab-pane :label="lc('admin_00322')" name="cd">
                     <xczphcd ref="cd"></xczphcd>
                 </el-tab-pane>
             </el-tabs>

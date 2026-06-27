@@ -13,40 +13,37 @@
 <body>
     <div id="hyfl" class="moduleElenAl">
         <div class="moduleSeachs">
-            <div class="">
-                招聘会场地
-            </div>
+            <div class="">{{ lc('admin_00322') }}</div>
             <div class="nrtopbtn">
-                <el-button type="primary" icon="el-icon-document-add" @click="dialogVisible = true" size="mini">添加区域
-                </el-button>
+                <el-button type="primary" icon="el-icon-document-add" @click="dialogVisible = true" size="mini">{{ lc('admin_00326') }}</el-button>
             </div>
         </div>
         <div class="moduleElTable">
             <el-table :data="tableData" stripe border style="width: 100%;height: 100%;"
                 :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" v-loading="loading" :empty-text="emptytext">
                 <el-table-column type="selection" width="55"> </el-table-column>
-                <el-table-column prop="id" label="编号" width="180">
+                <el-table-column prop="id" :label="lc('member_com_00345')" width="180">
                 </el-table-column>
-                <el-table-column label="行业名称(点击修改)" property="name">
+                <el-table-column :label="lc('admin_00323')" property="name">
                     <template slot-scope="scope">
                         <span>{{ scope.row.name }}<img src="../../../admin/images/bine.png" alt=""
                                 style="margin-left: 4px;" width="14" height="14"></span>
                     </template>
                 </el-table-column>
-                <el-table-column label="排序(越大越在前)" property="px">
+                <el-table-column :label="lc('admin_00324')" property="px">
                     <template slot-scope="scope">
                         <span>{{ scope.row.px }}<img src="../../../admin/images/bine.png" alt=""
                                 style="margin-left: 4px;" width="14" height="14"></span>
                     </template>
                 </el-table-column>
-                <el-table-column fixed="right" label="操作" width="120">
+                <el-table-column fixed="right" :label="lc('member_user_00048')" width="120">
                     <div class="TableLink">
-                        <el-link type="primary">预览</el-link>
-                        <el-link type="primary">修改</el-link>
+                        <el-link type="primary">{{ lc('wap_00071') }}</el-link>
+                        <el-link type="primary">{{ lc('wap_js_00073') }}</el-link>
                     </div>
                     <div class="TableLink">
-                        <el-link type="primary">位置</el-link>
-                        <el-link type="primary" @click="deldialog = true">删除</el-link>
+                        <el-link type="primary">{{ lc('admin_00306') }}</el-link>
+                        <el-link type="primary" @click="deldialog = true">{{ lc('wap_js_00077') }}</el-link>
                     </div>
                 </el-table-column>
             </el-table>
@@ -54,26 +51,26 @@
         <div class="modulePaging">
             <div class="">
                 <div class="">
-                    <el-checkbox v-model="checked" style="margin-right: 8px">全选</el-checkbox>
-                    <el-button>批量删除</el-button>
+                    <el-checkbox v-model="checked" style="margin-right: 8px">{{ lc('wap_js_00074') }}</el-checkbox>
+                    <el-button>{{ lc('member_com_00055') }}</el-button>
                 </div>
             </div>
         </div>
-        <el-dialog title="添加类别" width="30%" :visible.sync="dialogVisible" :modal-append-to-body="false">
+        <el-dialog :title="lc('admin_00222')" width="30%" :visible.sync="dialogVisible" :modal-append-to-body="false">
             <div class="hydialog_item">
-                <span>类别名称：</span>
+                <span>{{ lc('admin_00260') }}</span>
                 <el-input type="textarea" v-model="lbname" style="flex: 1;"></el-input>
             </div>
             <div slot="footer" class="dialog-footer">
-                <el-button type="primary" @click="dialogVisible = false">添加</el-button>
+                <el-button type="primary" @click="dialogVisible = false">{{ lc('wap_js_00091') }}</el-button>
             </div>
         </el-dialog>
         <!-- 删除弹窗 -->
-        <el-dialog title="信息" :visible.sync="deldialog" width="20%" :modal-append-to-body="false">
-            <span>确定要删除？</span>
+        <el-dialog :title="lc('admin_00308')" :visible.sync="deldialog" width="20%" :modal-append-to-body="false">
+            <span>{{ lc('wap_user_00001') }}</span>
             <span slot="footer" class="dialog-footer">
-                <el-button @click="deldialog = false">取 消</el-button>
-                <el-button type="primary" @click="deldialog = false">确 定</el-button>
+                <el-button @click="deldialog = false">{{ lc('admin_user_weipin_00043') }}</el-button>
+                <el-button type="primary" @click="deldialog = false">{{ lc('wap_com_00019') }}</el-button>
             </span>
         </el-dialog>
     </div>
@@ -84,7 +81,7 @@
         el: '#hyfl',
         data: function () {
             return {
-                emptytext: '暂无数据',
+                emptytext: lc('wap_js_00113'),
                 loading: false,
                 tableData: [
                     {
@@ -123,27 +120,27 @@
                 zmselect: '',
                 options: [{
                     value: '选项1',
-                    label: '黄金糕'
+                    label: lc('admin_00327')
                 }, {
                     value: '选项2',
-                    label: '双皮奶'
+                    label: lc('admin_00328')
                 }, {
                     value: '选项3',
-                    label: '蚵仔煎'
+                    label: lc('admin_00329')
                 }, {
                     value: '选项4',
-                    label: '龙须面'
+                    label: lc('admin_00330')
                 }, {
                     value: '选项5',
-                    label: '北京烤鸭'
+                    label: lc('admin_00331')
                 }],
                 sfoptions: [
                     {
                         value: '选项1',
-                        label: '是'
+                        label: lc('common_02085')
                     }, {
                         value: '选项2',
-                        label: '否'
+                        label: lc('common_02063')
                     }],
                 dialogVisible: false,
                 lbname: '',

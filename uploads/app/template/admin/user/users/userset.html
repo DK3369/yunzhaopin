@@ -12,13 +12,13 @@
     <div id="moduapp" class="moduleDome">
         <div class="setDomeAll setDomeInte">
             <el-tabs v-model="activeName" @tab-click="handleClick">
-                <el-tab-pane label="个人设置" name="first" :lazy="true">
+                <el-tab-pane :label="lc('admin_user_00354')" name="first" :lazy="true">
                     <userset_index></userset_index>
                 </el-tab-pane>
-                <el-tab-pane label="头像设置" name="second" :lazy="true">
+                <el-tab-pane :label="lc('admin_user_00355')" name="second" :lazy="true">
                     <userset_logo></userset_logo>
                 </el-tab-pane>
-               <el-tab-pane label="消费设置" name="third" :lazy="true">
+               <el-tab-pane :label="lc('admin_user_00356')" name="third" :lazy="true">
                    <userset_userspend></userset_userspend>
                </el-tab-pane>
             </el-tabs>

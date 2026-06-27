@@ -10,19 +10,19 @@
     <div id="moduapp" class="moduleDome">
         <div class="setDomeAll setDomeInte">
             <el-tabs v-model="activeName" @tab-click="handleClick">
-                <el-tab-pane label="海报设置" name="set">
+                <el-tab-pane :label="lc('admin_yunying_00219')" name="set">
                     <hb_set ref="set"></hb_set>
                 </el-tab-pane>
-                <el-tab-pane label="职位海报" name="job" lazy>
+                <el-tab-pane :label="lc('admin_01122')" name="job" lazy>
                     <hb_job ref="job"></hb_job>
                 </el-tab-pane>
-                <el-tab-pane label="企业海报" name="com" lazy>
+                <el-tab-pane :label="lc('admin_01123')" name="com" lazy>
                     <hb_com ref="com"></hb_com>
                 </el-tab-pane>
-                <el-tab-pane label="邀请注册" name="invite_reg" lazy>
+                <el-tab-pane :label="lc('wap_01590')" name="invite_reg" lazy>
                     <hb_invite_reg ref="invite_reg"></hb_invite_reg>
                 </el-tab-pane>
-                <el-tab-pane label="公招海报" name="gongzhao" lazy>
+                <el-tab-pane :label="lc('admin_yunying_00218')" name="gongzhao" lazy>
                     <hb_gongzhao ref="gongzhao"></hb_gongzhao>
                 </el-tab-pane>
             </el-tabs>

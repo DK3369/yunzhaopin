@@ -12,49 +12,49 @@
         <div class="moduleElSearchInf">
             <div class="moduleElTabInpt" style="flex-wrap: wrap;">
                 <div class="moduleInptList" style="margin-bottom: 8px;">
-                    <el-input placeholder="输入你要搜索的关键字" @keyup.enter.native="handleSearch" size="small" v-model="searchForm.keyword" class="input-with-select" clearable>
-                        <el-select v-model="searchForm.type" slot="prepend" placeholder="请选择">
-                            <el-option label="咨询人" value="1"></el-option>
-                            <el-option label="咨询职位" value="2"></el-option>
-                            <el-option label="咨询公司" value="3"></el-option>
-                            <el-option label="咨询内容" value="4"></el-option>
-                            <el-option label="回复内容" value="5"></el-option>
+                    <el-input :placeholder="lc('admin_user_weipin_00003')" @keyup.enter.native="handleSearch" size="small" v-model="searchForm.keyword" class="input-with-select" clearable>
+                        <el-select v-model="searchForm.type" slot="prepend" :placeholder="lc('wap_user_00100')">
+                            <el-option :label="lc('member_com_00299')" value="1"></el-option>
+                            <el-option :label="lc('wap_user_00163')" value="2"></el-option>
+                            <el-option :label="lc('admin_user_00367')" value="3"></el-option>
+                            <el-option :label="lc('wap_user_00162')" value="4"></el-option>
+                            <el-option :label="lc('wap_com_00313')" value="5"></el-option>
                         </el-select>
                     </el-input>
                 </div>
                 <div class="tableSeachInpt tableSeachInptsmall">
-                    <el-select v-model="searchForm.status" size="small" slot="prepend" placeholder="审核状态" clearable @change="handleSearch">
-                        <el-option label="未审核" value="0"></el-option>
-                        <el-option label="已审核" value="1"></el-option>
-                        <el-option label="未通过" value="2"></el-option>
+                    <el-select v-model="searchForm.status" size="small" slot="prepend" :placeholder="lc('wap_com_00406')" clearable @change="handleSearch">
+                        <el-option :label="lc('wap_user_00166')" value="0"></el-option>
+                        <el-option :label="lc('wap_user_00165')" value="1"></el-option>
+                        <el-option :label="lc('wap_user_00167')" value="2"></el-option>
                     </el-select>
                 </div>
                 <div class="tableSeachInpt tableSeachInptsmall">
-                    <el-select v-model="searchForm.job" size="small" slot="prepend" placeholder="职位类型" clearable @change="handleSearch">
-                        <el-option label="普通" value="1"></el-option>
-                        <el-option label="高级" value="2"></el-option>
+                    <el-select v-model="searchForm.job" size="small" slot="prepend" :placeholder="lc('wap_00516')" clearable @change="handleSearch">
+                        <el-option :label="lc('admin_user_00372')" value="1"></el-option>
+                        <el-option :label="lc('admin_user_00373')" value="2"></el-option>
                     </el-select>
                 </div>
                 <div class="tableSeachInpt tableSeachInptsmall">
-                    <el-select v-model="searchForm.zx" size="small" slot="prepend" placeholder="咨询时间" clearable @change="handleSearch">
-                        <el-option label="今天" value="1"></el-option>
-                        <el-option label="最近三天" value="3"></el-option>
-                        <el-option label="最近七天" value="7"></el-option>
-                        <el-option label="最近半月" value="15"></el-option>
-                        <el-option label="最近一个月" value="30"></el-option>
+                    <el-select v-model="searchForm.zx" size="small" slot="prepend" :placeholder="lc('member_user_00061')" clearable @change="handleSearch">
+                        <el-option :label="lc('common_01940')" value="1"></el-option>
+                        <el-option :label="lc('admin_user_00179')" value="3"></el-option>
+                        <el-option :label="lc('admin_user_00178')" value="7"></el-option>
+                        <el-option :label="lc('admin_user_00180')" value="15"></el-option>
+                        <el-option :label="lc('admin_user_00175')" value="30"></el-option>
                     </el-select>
                 </div>
                 <div class="tableSeachInpt tableSeachInptsmall">
-                    <el-select v-model="searchForm.hf" size="small" slot="prepend" placeholder="回复时间" clearable @change="handleSearch">
-                        <el-option label="今天" value="1"></el-option>
-                        <el-option label="最近三天" value="3"></el-option>
-                        <el-option label="最近七天" value="7"></el-option>
-                        <el-option label="最近半月" value="15"></el-option>
-                        <el-option label="最近一个月" value="30"></el-option>
+                    <el-select v-model="searchForm.hf" size="small" slot="prepend" :placeholder="lc('admin_user_00369')" clearable @change="handleSearch">
+                        <el-option :label="lc('common_01940')" value="1"></el-option>
+                        <el-option :label="lc('admin_user_00179')" value="3"></el-option>
+                        <el-option :label="lc('admin_user_00178')" value="7"></el-option>
+                        <el-option :label="lc('admin_user_00180')" value="15"></el-option>
+                        <el-option :label="lc('admin_user_00175')" value="30"></el-option>
                     </el-select>
                 </div>
                 <div class="tableSeachInpt">
-                    <el-button type="primary" icon="el-icon-search" size="mini" @click="handleSearch">查询</el-button>
+                    <el-button type="primary" icon="el-icon-search" size="mini" @click="handleSearch">{{ lc('admin_user_weipin_00049') }}</el-button>
                 </div>
             </div>
         </div>
@@ -74,32 +74,32 @@
                 <p>{{dataText}}</p>
             </template>
             <el-table-column type="selection" width="55"></el-table-column>
-            <el-table-column prop="id" label="编号" width="80" sortable="custom"></el-table-column>
-            <el-table-column prop="username" label="咨询人" width="100"></el-table-column>
-            <el-table-column prop="content" label="咨询内容" min-width="200" show-overflow-tooltip></el-table-column>
-            <el-table-column prop="job_name" label="咨询职位" min-width="200" show-overflow-tooltip>
+            <el-table-column prop="id" :label="lc('member_com_00345')" width="80" sortable="custom"></el-table-column>
+            <el-table-column prop="username" :label="lc('member_com_00299')" width="100"></el-table-column>
+            <el-table-column prop="content" :label="lc('wap_user_00162')" min-width="200" show-overflow-tooltip></el-table-column>
+            <el-table-column prop="job_name" :label="lc('wap_user_00163')" min-width="200" show-overflow-tooltip>
             </el-table-column>
-            <el-table-column prop="com_name" label="咨询公司" min-width="220" show-overflow-tooltip>
+            <el-table-column prop="com_name" :label="lc('admin_user_00367')" min-width="220" show-overflow-tooltip>
                 <template slot-scope="scope">
                     <el-link :href="scope.row.com_url" target="_blank" type="primary">{{ scope.row.com_name }}</el-link>
                 </template>
             </el-table-column>
-            <el-table-column prop="datetime" label="咨询时间" width="150">
+            <el-table-column prop="datetime" :label="lc('member_user_00061')" width="150">
                 <template slot-scope="scope">{{ scope.row.datetime_n }}</template>
             </el-table-column>
-            <el-table-column prop="reply" label="回复内容" min-width="200" show-overflow-tooltip></el-table-column>
-            <el-table-column prop="reply_time" label="回复时间" width="150">
+            <el-table-column prop="reply" :label="lc('wap_com_00313')" min-width="200" show-overflow-tooltip></el-table-column>
+            <el-table-column prop="reply_time" :label="lc('admin_user_00369')" width="150">
                 <template slot-scope="scope">
                     <template v-if="scope.row.reply_time">{{ scope.row.reply_time_n }}</template>
-                    <template v-else>未回复</template>
+                    <template v-else>{{ lc('admin_user_00371') }}</template>
                 </template>
             </el-table-column>
-            <el-table-column prop="status" label="状态" width="100" fixed="right">
+            <el-table-column prop="status" :label="lc('member_user_00181')" width="100" fixed="right">
                 <template slot-scope="scope">
                     <div class="admin_state">
-                        <span v-if="scope.row.status == 1" class="admin_state1">已审核</span>
-                        <span v-else-if="scope.row.status == 0" class="admin_state4">未审核</span>
-                        <span v-else-if="scope.row.status == 2" class="admin_state2">未通过</span>
+                        <span v-if="scope.row.status == 1" class="admin_state1">{{ lc('wap_user_00165') }}</span>
+                        <span v-else-if="scope.row.status == 0" class="admin_state4">{{ lc('wap_user_00166') }}</span>
+                        <span v-else-if="scope.row.status == 2" class="admin_state2">{{ lc('wap_user_00167') }}</span>
                         <template v-else="">--</template>
                         <!--<span class="admin_state1">已审核</span>-->
                         <!--<span class="admin_state2">未通过</span>-->
@@ -109,12 +109,12 @@
                     </div>
                 </template>
             </el-table-column>
-            <el-table-column label="操作" width="210" fixed="right">
+            <el-table-column :label="lc('member_user_00048')" width="210" fixed="right">
                 <template slot-scope="scope">
                     <div class="cz_button">
-                        <el-button size="mini" plain @click="handleStatus(scope)">审核</el-button>
-                        <el-button size="mini" plain @click="handleView(scope)">查看</el-button>
-                        <el-button type="danger" size="mini" @click="deleteRow(scope)">删除</el-button>
+                        <el-button size="mini" plain @click="handleStatus(scope)">{{ lc('member_user_00152') }}</el-button>
+                        <el-button size="mini" plain @click="handleView(scope)">{{ lc('wap_com_00427') }}</el-button>
+                        <el-button type="danger" size="mini" @click="deleteRow(scope)">{{ lc('wap_js_00077') }}</el-button>
                     </div>
                 </template>
             </el-table-column>
@@ -122,9 +122,9 @@
     </div>
     <div class="modulePaging">
         <div class="modulecz">
-            <el-checkbox :indeterminate="isIndeterminate" v-model="checked" @change="selectAllBottom">全选</el-checkbox>
-            <el-button @click="deleteRow(null, true)" size="mini">批量删除</el-button>
-            <el-button @click="handleStatus(null, true)" size="mini">批量审核</el-button>
+            <el-checkbox :indeterminate="isIndeterminate" v-model="checked" @change="selectAllBottom">{{ lc('wap_js_00074') }}</el-checkbox>
+            <el-button @click="deleteRow(null, true)" size="mini">{{ lc('member_com_00055') }}</el-button>
+            <el-button @click="handleStatus(null, true)" size="mini">{{ lc('admin_user_weipin_00037') }}</el-button>
         </div>
         <div class="modulePagNum">
             <div class="modulePagNum" style="margin: 0 auto;">
@@ -137,35 +137,35 @@
     </div>
     <!-- 审核弹窗 -->
     <div class="modluDrawer">
-        <el-dialog title="求职咨询审核" :visible.sync="statusVisible" :with-header="true" :modal-append-to-body="false"
+        <el-dialog :title="lc('admin_user_00366')" :visible.sync="statusVisible" :with-header="true" :modal-append-to-body="false"
             :show-close="true" width="400px">
-            <div class="wxsettip_small ">咨询审核</div>
+            <div class="wxsettip_small ">{{ lc('admin_user_00368') }}</div>
             <template>
-                <el-radio v-model="ruleFormStatus.status" label="1">正常</el-radio>
-                <el-radio v-model="ruleFormStatus.status" label="2">未通过</el-radio>
+                <el-radio v-model="ruleFormStatus.status" label="1">{{ lc('admin_user_00149') }}</el-radio>
+                <el-radio v-model="ruleFormStatus.status" label="2">{{ lc('wap_user_00167') }}</el-radio>
             </template>
-            <div class="wxsettip_small ">审核状态说明</div>
-            <el-input type="textarea" :rows="2" placeholder="请输入内容" v-model="ruleFormStatus.statusbody">
+            <div class="wxsettip_small ">{{ lc('admin_user_00365') }}</div>
+            <el-input type="textarea" :rows="2" :placeholder="lc('wap_user_00076')" v-model="ruleFormStatus.statusbody">
             </el-input>
             <span slot="footer" class="dialog-footer">
-                <el-button @click="resetFormStatus('ruleFormStatus')">取 消</el-button>
-                <el-button type="primary" @click="submitFormStatus('ruleFormStatus')" :disabled="submitLoading">确 定</el-button>
+                <el-button @click="resetFormStatus('ruleFormStatus')">{{ lc('admin_user_weipin_00043') }}</el-button>
+                <el-button type="primary" @click="submitFormStatus('ruleFormStatus')" :disabled="submitLoading">{{ lc('wap_com_00019') }}</el-button>
             </span>
         </el-dialog>
     </div>
     <!-- 查看弹窗 -->
     <div class="modluDrawer">
-        <el-dialog title="回复评论" :visible.sync="viewVisible" :with-header="true" :modal-append-to-body="false"
+        <el-dialog :title="lc('admin_user_00370')" :visible.sync="viewVisible" :with-header="true" :modal-append-to-body="false"
             :show-close="true" width="400px">
-            <div class="wxsettip_small ">咨询内容</div>
-            <el-input type="textarea" :rows="2" placeholder="请输入内容" v-model="ruleFormView.content">
+            <div class="wxsettip_small ">{{ lc('wap_user_00162') }}</div>
+            <el-input type="textarea" :rows="2" :placeholder="lc('wap_user_00076')" v-model="ruleFormView.content">
             </el-input>
-            <div class="wxsettip_small ">回复内容</div>
-            <el-input type="textarea" :rows="2" placeholder="请输入内容" v-model="ruleFormView.reply">
+            <div class="wxsettip_small ">{{ lc('wap_com_00313') }}</div>
+            <el-input type="textarea" :rows="2" :placeholder="lc('wap_user_00076')" v-model="ruleFormView.reply">
             </el-input>
             <span slot="footer" class="dialog-footer">
-                <el-button @click="resetFormView('ruleFormStatus')">取 消</el-button>
-                <el-button type="primary" @click="submitFormView('ruleFormStatus')" :disabled="submitLoading">确 定</el-button>
+                <el-button @click="resetFormView('ruleFormStatus')">{{ lc('admin_user_weipin_00043') }}</el-button>
+                <el-button type="primary" @click="submitFormView('ruleFormStatus')" :disabled="submitLoading">{{ lc('wap_com_00019') }}</el-button>
             </span>
         </el-dialog>
     </div>
@@ -177,7 +177,7 @@
         data: function () {
             return {
                 loading: false,
-                dataText: '数据加载中',
+                dataText: lc('admin_user_weipin_00026'),
                 searchForm: {
                     page: 1,
                     limit: null,
@@ -303,7 +303,7 @@
                             _this.$refs.multipleTable.bodyWrapper.scrollTop = 0;
                         }
                         if (_this.tableData.length === 0) {
-                            _this.dataText = "暂无数据";
+                            _this.dataText = lc('wap_js_00113');
                         }
                     }
                 }).catch(function (error) {
@@ -314,7 +314,7 @@
                 let params = {};
                 if (isMore) {
                     if (!this.selectedItem.length) {
-                        message.error('请选择要删除的数据');
+                        message.error(lc('admin_user_weipin_00005'));
                         return false;
                     }
                     let list = [];
@@ -334,10 +334,10 @@
                 httpPost('m=user&c=users_msg&a=del', params).then(function (response) {
                     let res = response.data;
                     if (res.error === 0) {
-                        message.success('删除成功！');
+                        message.success(lc('admin_user_00187'));
                         _this.getList();
                     } else {
-                        message.error('删除失败！');
+                        message.error(lc('admin_user_00186'));
                     }
                 }).catch(function (error) {
                     console.log(error);
@@ -346,7 +346,7 @@
             handleStatus(scope, isMore) {
                 if (isMore) {
                     if (!this.selectedItem.length) {
-                        message.error('您还未选择任何信息！');
+                        message.error(lc('admin_00572'));
                         return false;
                     }
                     let list = [];
@@ -378,7 +378,7 @@
                 let _this = this;
                 let params = JSON.parse(JSON.stringify(this.ruleFormStatus));
                 if (params.status == null) {
-                    message.error('请选择审核状态');
+                    message.error(lc('admin_user_weipin_00015'));
                     return false;
                 }
                 _this.submitLoading = true;

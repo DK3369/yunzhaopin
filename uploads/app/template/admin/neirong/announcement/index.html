@@ -24,7 +24,7 @@
         <div class="moduleSeachs">
             <div class="moduleSeachleft">
                 <div class="tableSeachInpt newsinput" style="margin-bottom: 0px;;">
-                    <el-input v-model="searchForm.keyword" placeholder="请输入搜索内容" size="small"
+                    <el-input v-model="searchForm.keyword" :placeholder="lc('admin_00340')" size="small"
                               clearable prefix-icon="el-icon-search">
                     </el-input>
                 </div>
@@ -36,12 +36,12 @@
                 </div>
 
                 <div class="newsbtnbox" style="margin-bottom: 0px;;">
-                    <el-button type="primary" icon="el-icon-search" size="mini" @click="search">查询</el-button>
+                    <el-button type="primary" icon="el-icon-search" size="mini" @click="search">{{ lc('admin_user_weipin_00049') }}</el-button>
                 </div>
             </div>
             <div class="nrtopbtn" style="padding: 6px 12px;">
                 <el-button type="primary" icon="el-icon-document-add" size="mini"
-                    @click="openAdd('')">添加公告</el-button>
+                    @click="openAdd('')">{{ lc('admin_00106') }}</el-button>
             </div>
         </div>
 
@@ -50,26 +50,26 @@
                       ref="multipleTable" @selection-change="handleSelectionChange" @sort-change="sortChange"
                 style="width: 100%;" :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" height="100%" v-loading="loading">
                 <el-table-column type="selection" width="55"> </el-table-column>
-                <el-table-column prop="id" label="编号" width="90" sortable="custom">
+                <el-table-column prop="id" :label="lc('member_com_00345')" width="90" sortable="custom">
                 </el-table-column>
-                <el-table-column prop="title" label="公告标题">
+                <el-table-column prop="title" :label="lc('admin_00102')">
                 </el-table-column>
-                <el-table-column prop="datetime" label="发布时间" sortable="custom" :formatter="formatter">
+                <el-table-column prop="datetime" :label="lc('admin_user_weipin_00030')" sortable="custom" :formatter="formatter">
                 </el-table-column>
-                <el-table-column prop="view_num" label="浏览量" sortable="custom">
+                <el-table-column prop="view_num" :label="lc('wap_com_00112')" sortable="custom">
                 </el-table-column>
-                <el-table-column prop="startime" label="开始时间" sortable="custom" :formatter="formatter">
+                <el-table-column prop="startime" :label="lc('admin_company_00005')" sortable="custom" :formatter="formatter">
                 </el-table-column>
-                <el-table-column prop="endtime" label="结束时间" sortable="custom" :formatter="formatter">
+                <el-table-column prop="endtime" :label="lc('admin_company_00006')" sortable="custom" :formatter="formatter">
                 </el-table-column>
-                <el-table-column prop="did" label="分站" :formatter="formatter">
+                <el-table-column prop="did" :label="lc('admin_00151')" :formatter="formatter">
                 </el-table-column>
-                <el-table-column label="操作" width="200" fixed="right">
+                <el-table-column :label="lc('member_user_00048')" width="200" fixed="right">
                     <template slot-scope="scope">
                         <div class="cz_button">
-                            <el-button size="small " plain @click="openDomain(scope.row)">站点</el-button>
-                            <el-button size="small " plain @click="openAdd(scope.row)">修改</el-button>
-                            <el-button type="danger" size="mini" @click="del(scope.$index)">删除</el-button>
+                            <el-button size="small " plain @click="openDomain(scope.row)">{{ lc('admin_user_weipin_00050') }}</el-button>
+                            <el-button size="small " plain @click="openAdd(scope.row)">{{ lc('wap_js_00073') }}</el-button>
+                            <el-button type="danger" size="mini" @click="del(scope.$index)">{{ lc('wap_js_00077') }}</el-button>
                         </div>
                     </template>
                 </el-table-column>
@@ -78,9 +78,9 @@
         </div>
         <div class="modulePaging">
             <div class="">
-                <el-checkbox v-model="checkedAll" :indeterminate="checkedAllIndeterminate" @change="checkAll">全选</el-checkbox>
-                <el-button @click="batch('del')" size="mini">批量删除</el-button>
-                <el-button @click="batch('domain')" size="mini">批量选择分站</el-button>
+                <el-checkbox v-model="checkedAll" :indeterminate="checkedAllIndeterminate" @change="checkAll">{{ lc('wap_js_00074') }}</el-checkbox>
+                <el-button @click="batch('del')" size="mini">{{ lc('member_com_00055') }}</el-button>
+                <el-button @click="batch('domain')" size="mini">{{ lc('admin_user_00279') }}</el-button>
             </div>
             <div class="modulePagNum">
                 <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
@@ -91,11 +91,11 @@
         </div>
 
         <div class="modluDrawer">
-            <el-dialog title="分配站点" width="500px" :visible.sync="dialogDomain" :modal-append-to-body="false">
+            <el-dialog :title="lc('admin_user_weipin_00029')" width="500px" :visible.sync="dialogDomain" :modal-append-to-body="false">
                 <div class="toolClasDia fenpeizhand">
                     <div v-if="detail.id" class="toolClasList">
                         <div class="toolClasTite">
-                            <span>公告标题：</span>
+                            <span>{{ lc('admin_00104') }}</span>
                         </div>
                         <div class="toolClasCont">
                             <span>{{detail.title}}</span>
@@ -103,10 +103,10 @@
                     </div>
                     <div class="toolClasList">
                         <div class="toolClasTite">
-                            <span>切换站点：</span>
+                            <span>{{ lc('admin_user_weipin_00020') }}</span>
                         </div>
                         <div class="toolClasCont">
-                            <el-select v-model="ruleFormDomain.did" filterable placeholder="请选择">
+                            <el-select v-model="ruleFormDomain.did" filterable :placeholder="lc('wap_user_00100')">
                                 <el-option v-for="(item, key) in domainList" :key="key" :label="item" :value="key">
                                 </el-option>
                             </el-select>
@@ -115,11 +115,11 @@
 
                 </div>
                 <div slot="footer" class="dialog-footer">
-                    <el-button type="primary" @click="saveDomain">确认</el-button>
+                    <el-button type="primary" @click="saveDomain">{{ lc('wap_js_00094') }}</el-button>
                 </div>
             </el-dialog>
 
-            <el-drawer :title="detail.id ? '修改公告' : '添加公告'" :visible.sync="drawerAdd" :modal-append-to-body="false" :show-close="true" :with-header="true" size="900px">
+            <el-drawer :title="lc('admin_html_00016')" :visible.sync="drawerAdd" :modal-append-to-body="false" :show-close="true" :with-header="true" size="900px">
                 <add :id="detail.id ? detail.id : ''" @child-event="closeAdd"></add>
             </el-drawer>
         </div>
@@ -130,7 +130,7 @@
         el: '#cityfl',
         data: function () {
             return {
-                emptytext: '暂无数据',
+                emptytext: lc('wap_js_00113'),
                 loading: false,
                 // 搜索筛选项
                 searchList: [],
@@ -351,7 +351,7 @@
                     ruleForm = that.ruleFormDomain;
 
                 if (!ruleForm.did) {
-                    message.warning('请选择需要切换的站点');
+                    message.warning(lc('admin_user_weipin_00002'));
                     return false;
                 }
 

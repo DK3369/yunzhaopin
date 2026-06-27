@@ -10,16 +10,16 @@
 <div id="moduapp" class="moduleDome">
     <div class="setDomeAll setDomeInte">
         <el-tabs v-model="activeName" @tab-click="handleClick">
-            <el-tab-pane label="企业设置" name="first" :lazy="true">
+            <el-tab-pane :label="lc('admin_user_company_00014')" name="first" :lazy="true">
                 <comset_index></comset_index>
             </el-tab-pane>
-            <el-tab-pane label="头像设置" name="logo" :lazy="true">
+            <el-tab-pane :label="lc('admin_user_00355')" name="logo" :lazy="true">
                 <comset_logo></comset_logo>
             </el-tab-pane>
-            <el-tab-pane label="消费设置" name="comspend" :lazy="true">
+            <el-tab-pane :label="lc('admin_user_00356')" name="comspend" :lazy="true">
                 <comset_comspend></comset_comspend>
             </el-tab-pane>
-            <el-tab-pane label="套餐设置" name="rating" :lazy="true">
+            <el-tab-pane :label="lc('admin_user_company_00015')" name="rating" :lazy="true">
                 <comset_rating></comset_rating>
             </el-tab-pane>
         </el-tabs>

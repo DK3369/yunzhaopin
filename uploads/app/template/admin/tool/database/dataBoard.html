@@ -11,13 +11,13 @@
 <div id="toolDataBoardApp" class="moduleDome">
     <div class="setDomeAll setDomeInte">
         <el-tabs v-model="activeName" @tab-click="handleClick">
-            <el-tab-pane label="综合统计" name="first">
+            <el-tab-pane :label="lc('admin_tool_00281')" name="first">
                 <comp_stat></comp_stat>
             </el-tab-pane>
-            <el-tab-pane label="分类统计" name="second" :lazy="true">
+            <el-tab-pane :label="lc('admin_tool_00280')" name="second" :lazy="true">
                 <class_stat></class_stat>
             </el-tab-pane>
-            <el-tab-pane v-if="show" label="数据风向标" name="three" :lazy="true">
+            <el-tab-pane v-if="show" :label="lc('admin_tool_00279')" name="three" :lazy="true">
                 <fenxiabiao></fenxiabiao>
             </el-tab-pane>
         </el-tabs>

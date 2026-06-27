@@ -9,16 +9,16 @@
 <div id="databaseApp" class="moduleDome">
     <div class="setDomeAll setDomeInte">
         <el-tabs v-model="activeName" @tab-click="handleClick">
-            <el-tab-pane label="备份数据" name="first" :lazy="true">
+            <el-tab-pane :label="lc('admin_tool_00277')" name="first" :lazy="true">
                 <back_up></back_up>
             </el-tab-pane>
-            <el-tab-pane label="已备份数据" name="second" :lazy="true">
+            <el-tab-pane :label="lc('admin_tool_00275')" name="second" :lazy="true">
                 <backd_up :need="need"></backd_up>
             </el-tab-pane>
-            <el-tab-pane label="优化数据" name="three" :lazy="true">
+            <el-tab-pane :label="lc('admin_tool_00276')" name="three" :lazy="true">
                 <db_optimize :optimize="optimize"></db_optimize>
             </el-tab-pane>
-            <el-tab-pane label="数据清理" name="four" :lazy="true">
+            <el-tab-pane :label="lc('admin_tool_00278')" name="four" :lazy="true">
                 <db_clear></db_clear>
             </el-tab-pane>
         </el-tabs>

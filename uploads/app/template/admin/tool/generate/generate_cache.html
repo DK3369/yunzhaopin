@@ -10,7 +10,7 @@
 <div id="daohaapp" class="moduleElenAl">
     <div class="tableDome">
         <div class="tableDome_tip">
-            <el-alert title="生成请确保/plus,/cache目录有可写权限，否则无法生成。生成所有的类别，时间较长，建议分批更新" type="success"
+            <el-alert :title="lc('admin_tool_00381')" type="success"
                 :closable="false">
             </el-alert>
         </div>
@@ -21,7 +21,7 @@
                 <thead>
                 <tr align="left">
                     <th width="100" colspan="5">
-                        <div class="tool_hc_tit"> 生成缓存</div>
+                        <div class="tool_hc_tit"> {{ lc('admin_tool_00384') }}</div>
                     </th>
                 </tr>
                 </thead>
@@ -42,19 +42,19 @@
         </div>
         <div class="modulePaging">
             <div class="modulecz modulePagButn">
-                <el-checkbox :indeterminate="isIndeterminate" v-model="checked" @change="selectAllBottom">全选</el-checkbox>
+                <el-checkbox :indeterminate="isIndeterminate" v-model="checked" @change="selectAllBottom">{{ lc('wap_js_00074') }}</el-checkbox>
             </div>
             <div class="modulePagNum">
             </div>
         </div>
         <div class="setBasicButn" style="border: none;">
-            <el-button type="primary" size="medium" @click="submitForm">生成缓存</el-button>
+            <el-button type="primary" size="medium" @click="submitForm">{{ lc('admin_tool_00384') }}</el-button>
         </div>
         <div class="tool_hc_sm">
-            <div class=""><i class="el-icon-question"></i> 生成缓存说明</div>
-            <div> 1.能够大幅度减少数据的获取时间，特别是对于 sql 慢查询来讲，缓存机制可以明显的优化用户体验。</div>
-            <div> 2.减少获得数据的计算资源消耗，给其他服务腾出计算资源，对于计算过程比较漫长的所得出的结果来说，缓存也可以明显减少二次加载时间。</div>
-            <div> 3.可以降低服务器的性能要求，能够降低网站运行成本。</div>
+            <div class=""><i class="el-icon-question"></i> {{ lc('admin_tool_00385') }}</div>
+            <div> {{ lc('admin_tool_00382') }}</div>
+            <div> {{ lc('admin_tool_00380') }}</div>
+            <div> {{ lc('admin_tool_00383') }}</div>
         </div>
     </div>
 </div>
@@ -69,7 +69,7 @@
                 isIndeterminate: false, // checkbox 的不确定状态
                 submitLoading: false,
                 ruleForm: {
-                    madeall: '更新',
+                    madeall: '1',
                     cache: [],
                 },
             }
@@ -122,7 +122,7 @@
                 let _this = this;
                 let params = JSON.parse(JSON.stringify(this.ruleForm));
                 if (!params.cache.length) {
-                    message.error(window.yunAdminT('至少选择一项'));
+                    message.error(lc('admin_tool_00386'));
                     return false;
                 }
                 if (_this.submitLoading) {

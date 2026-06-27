@@ -9,8 +9,8 @@
 <body>
     <div id="daohaapp" class="moduleDome">
         <div class="moduleHeadr">
-            <h3>默认商城图片</h3>
-            <span>设置商品的默认展示图片，用于未上传商品图片的情况展示</span>
+            <h3>{{ lc('admin_01204') }}</h3>
+            <span>{{ lc('admin_yunying_00119') }}</span>
         </div>
         <div class="scImgbox">
             <el-upload
@@ -26,17 +26,17 @@
             </div>
             <div class="scImgboxInfo">
                 <div class="scImgboxTxt">
-                    <span>上传尺寸为 260*210px、文件大小小于5M</span>
-                    <span>支持JPG、PNG、GIF、等常规格式的图片文件</span>
+                    <span>{{ lc('admin_yunying_00120') }}</span>
+                    <span>{{ lc('admin_yunying_00121') }}</span>
                 </div>
                 <div class="scImgboxburn">
-                    <el-button type="primary" plain>选择图片</el-button>
+                    <el-button type="primary" plain>{{ lc('member_com_00059') }}</el-button>
                 </div>
             </div>
             </el-upload>
         </div>
         <div class="scImgboxAnNiu">
-            <el-button type="primary" :loading="save_load" @click="save">提交</el-button>
+            <el-button type="primary" :loading="save_load" @click="save">{{ lc('wap_user_00176') }}</el-button>
         </div>
     </div>
     <!-- script -->

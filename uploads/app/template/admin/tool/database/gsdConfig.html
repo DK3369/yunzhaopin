@@ -8,10 +8,10 @@
 <div id="gsdConfigApp" class="moduleDome">
     <div class="setDomeAll setDomeInte">
         <el-tabs v-model="activeName" @tab-click="handleClick">
-            <el-tab-pane label="IP归属地配置" name="first">
+            <el-tab-pane :label="lc('admin_tool_00351')" name="first">
                 <ip_address v-bind:gsd_config="gsdConfig" v-bind:ip_num="ipNum"></ip_address>
             </el-tab-pane>
-            <el-tab-pane label="手机号归属地配置" name="second">
+            <el-tab-pane :label="lc('admin_tool_00352')" name="second">
                 <phone_address v-bind:gsd_config="gsdConfig" v-bind:phone_num="phoneNum"></phone_address>
             </el-tab-pane>
         </el-tabs>

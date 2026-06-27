@@ -12,13 +12,13 @@
 <div id="moduapp" class="moduleDome">
     <div class="setDomeAll setDomeInte" style="height: initial;">
         <el-tabs v-model="activeName" @tab-click="handleClick">
-            <el-tab-pane label="全职职位" name="joball" :lazy="true">
+            <el-tab-pane :label="lc('admin_user_company_00004')" name="joball" :lazy="true">
                 <joball ref="joball" :state="state.joball" :crmindex="fromCrmIndex" :adtime="adtime" :uid="uid" :status="status" :keyword="keyword" :type="type" :scrolltop="true"></joball>
             </el-tab-pane>
-            <el-tab-pane label="兼职职位" name="partjob" :lazy="true">
+            <el-tab-pane :label="lc('admin_user_company_00005')" name="partjob" :lazy="true">
                 <partjob ref="partjob" :state="state.partjob"></partjob>
             </el-tab-pane>
-            <el-tab-pane label="预约刷新职位" name="refresh" :lazy="true">
+            <el-tab-pane :label="lc('admin_user_company_00003')" name="refresh" :lazy="true">
                 <refresh ref="refresh"></refresh>
             </el-tab-pane>
         </el-tabs>

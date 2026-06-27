@@ -10,10 +10,10 @@
     <div id="moduapp" class="moduleDome">
         <div class="setDomeAll setDomeInte">
             <el-tabs v-model="activeName" @tab-click="handleClick">
-                <el-tab-pane label="个人日志" name="first" :lazy="true">
+                <el-tab-pane :label="lc('admin_user_00176')" name="first" :lazy="true">
                     <userslog :typelist="typeArr" :time="time"></userslog>
                 </el-tab-pane>
-                <el-tab-pane label="企业日志" name="second" :lazy="true">
+                <el-tab-pane :label="lc('admin_user_00177')" name="second" :lazy="true">
                     <comlog :typelist="typeArr" :time="time"></comlog>
                 </el-tab-pane>
             </el-tabs>
@@ -28,26 +28,26 @@
                 activeName: 'first',
                 typeArr: [{
                     value: 1,
-                    label: "用户名"
+                    label: lc('admin_user_00140')
                 }, {
                     value: 3,
-                    label: "用户ID"
+                    label: lc('admin_user_00130')
                 }],
                 time: [{
                     value: 1,
-                    label: "今天"
+                    label: lc('common_01940')
                 }, {
                     value: 3,
-                    label: "最近三天"
+                    label: lc('admin_user_00179')
                 }, {
                     value: 7,
-                    label: "最近七天"
+                    label: lc('admin_user_00178')
                 }, {
                     value: 15,
-                    label: "最近半月"
+                    label: lc('admin_user_00180')
                 }, {
                     value: 30,
-                    label: "最近一个月"
+                    label: lc('admin_user_00175')
                 }],
                 uid: ''
             }

@@ -14,11 +14,11 @@
         <div v-if="islook" style="position: relative;overflow: hidden; width: 100%; height: 100%;">
             <div class="drawerModElink">
                 <!-- <el-link @click="back" type="primary">返回</el-link> -->
-                <el-page-header @back="goBack" :content="id==''?'添加模板':'修改模板'">
+                <el-page-header @back="goBack" :content="lc('admin_html_00002')">
                 </el-page-header>
-                <el-alert title="社群推文模板，点击模板参数自动复制粘贴至光标处。" type="success" :closable="false"
+                <el-alert :title="lc('admin_tool_00511')" type="success" :closable="false"
                     v-if="temptype == 1"></el-alert>
-                <el-alert title="微信公众号文章模板，点击模板参数自动复制粘贴，编辑器在源码模式下，需要手动粘贴。" type="success" :closable="false"
+                <el-alert :title="lc('admin_tool_00509')" type="success" :closable="false"
                     v-else></el-alert>
             </div>
 
@@ -26,40 +26,40 @@
                 <div class="drawerModInfo">
                     <div class="drawerModLis" v-if="id == ''">
                         <div class="drawerModTite">
-                            <span>模板类型：</span>
+                            <span>{{ lc('admin_tool_00518') }}</span>
                         </div>
                         <div class="drawerModInpt">
                             <el-radio-group v-model="type" @input="typeFun">
-                                <el-radio label="job">职位模板</el-radio>
-                                <el-radio label="resume">简历模板</el-radio>
-                                <el-radio label="company">企业模板</el-radio>
+                                <el-radio label="job">{{ lc('admin_tool_00557') }}</el-radio>
+                                <el-radio label="resume">{{ lc('member_user_00189') }}</el-radio>
+                                <el-radio label="company">{{ lc('admin_user_company_00135') }}</el-radio>
                             </el-radio-group>
                         </div>
                     </div>
                     <div class="drawerModLis">
                         <div class="drawerModTite">
-                            <span>模板名称：</span>
+                            <span>{{ lc('member_com_00356') }}</span>
                         </div>
                         <div class="drawerModInpt">
-                            <el-input v-model="info.title" placeholder="请输入模板名称"></el-input>
+                            <el-input v-model="info.title" :placeholder="lc('wap_com_00411')"></el-input>
                         </div>
                     </div>
 
                     <div class="drawerModLis" style="align-items: initial;">
                         <div class="drawerModTite" style="line-height: 36px;">
-                            <span>头部模板：</span>
+                            <span>{{ lc('admin_system_00660') }}</span>
                         </div>
 
                         <div class="drawerModConts">
                             <div class="drawerModAler">
-                                <el-alert title="公共参数，全局都可调用" :closable="false" type="warning" show-icon></el-alert>
-                                <el-button @click="header_column = !header_column">模板参数</el-button>
+                                <el-alert :title="lc('admin_tool_00512')" :closable="false" type="warning" show-icon></el-alert>
+                                <el-button @click="header_column = !header_column">{{ lc('admin_tool_00517') }}</el-button>
                             </div>
 
                             <div v-show="header_column">
                                 <div class="canshuFlwx">
-                                    <span @click="header_column = false" class="canshu">模板参数</span>
-                                    <span>复制参数插入到编辑区</span>
+                                    <span @click="header_column = false" class="canshu">{{ lc('admin_tool_00517') }}</span>
+                                    <span>{{ lc('admin_tool_00513') }}</span>
                                 </div>
                                 <div class="csnhuTips">
                                     <div v-for="item in totalcolumn" :key="item.key">
@@ -80,22 +80,22 @@
                     </div>
                     <div class="drawerModLis" style="align-items: initial;">
                         <div class="drawerModTite" style="line-height: 36px;">
-                            <span v-if="info.type == 'resume'">简历模板：</span>
-                            <span v-else-if="info.type == 'company'">企业模板：</span>
-                            <span v-else>职位模板：</span>
+                            <span v-if="info.type == 'resume'">{{ lc('admin_tool_00519') }}</span>
+                            <span v-else-if="info.type == 'company'">{{ lc('admin_tool_00516') }}</span>
+                            <span v-else>{{ lc('admin_tool_00520') }}</span>
                         </div>
 
                         <div class="drawerModConts">
                             <div class="drawerModAler">
-                                <el-alert :closable="false" title="只需要添加一条样式即可；具体显示的数量可到发布工具区选择" type="warning"
+                                <el-alert :closable="false" :title="lc('admin_tool_00510')" type="warning"
                                     show-icon></el-alert>
-                                <el-button plain @click="body_column = !body_column">模板参数</el-button>
+                                <el-button plain @click="body_column = !body_column">{{ lc('admin_tool_00517') }}</el-button>
                             </div>
 
                             <div v-show="body_column">
                                 <div class="canshuFlwx">
-                                    <span @click="body_column = false" class="canshu">模板参数</span>
-                                    <span>复制参数插入到编辑区</span>
+                                    <span @click="body_column = false" class="canshu">{{ lc('admin_tool_00517') }}</span>
+                                    <span>{{ lc('admin_tool_00513') }}</span>
                                 </div>
                                 <div class="csnhuTips">
                             		<template v-for="item in typecolumn" :key="item.key">
@@ -116,19 +116,19 @@
                     </div>
                     <div class="drawerModLis" style="align-items: initial;">
                         <div class="drawerModTite" style="line-height: 36px;">
-                            <span>尾部模板：</span>
+                            <span>{{ lc('admin_tool_00514') }}</span>
                         </div>
 
                         <div class="drawerModConts">
                             <div class="drawerModAler">
-                                <el-alert :closable="false" title="公共参数，全局都可调用" type="warning" show-icon></el-alert>
-                                <el-button @click="footer_column = !footer_column">模板参数</el-button>
+                                <el-alert :closable="false" :title="lc('admin_tool_00512')" type="warning" show-icon></el-alert>
+                                <el-button @click="footer_column = !footer_column">{{ lc('admin_tool_00517') }}</el-button>
                             </div>
 
                             <div v-show="footer_column">
                                 <div class="canshuFlwx">
-                                    <span @click="footer_column = false" class="canshu">模板参数</span>
-                                    <span>复制参数插入到编辑区</span>
+                                    <span @click="footer_column = false" class="canshu">{{ lc('admin_tool_00517') }}</span>
+                                    <span>{{ lc('admin_tool_00513') }}</span>
                                 </div>
                                 <div class="csnhuTips">
                                     <div v-for="item in totalcolumn" :key="item.key">
@@ -148,7 +148,7 @@
                         </div>
                     </div>
                     <div class="setBasicButn" style="border: none;">
-                        <el-button type="primary" size="medium" @click="saveinfo" :loading="saveloading">提交</el-button>
+                        <el-button type="primary" size="medium" @click="saveinfo" :loading="saveloading">{{ lc('wap_user_00176') }}</el-button>
                         <!-- <el-button type="primary" size="medium" @click="previewTemp">预览</el-button> -->
                     </div>
                 </div>
@@ -169,7 +169,7 @@
                             </div>
 
                             <div class="wxpubtool_CZ">
-                                <el-button type="primary" size="medium" @click="previewTemp">预览</el-button>
+                                <el-button type="primary" size="medium" @click="previewTemp">{{ lc('wap_00071') }}</el-button>
                             </div>
                         </div>
 
@@ -181,6 +181,7 @@
     </div>
 
 
+    <!-- script -->
     <script>
         var tem_header = tem_body = tem_footer = null;
         const custoapp = new Vue({
@@ -269,10 +270,10 @@
 
                 },
                 editorInit: function () {
-                    var msg = window.yunAdminT('点击模板参数自动复制粘贴至光标处');
+                    var msg = window.lc('admin_tool_00521');
                     if (this.temptype != '1') {
 
-                        msg = window.yunAdminT('点击模板参数自动复制粘贴，编辑器在源码模式下，需要手动粘贴');
+                        msg = window.lc('admin_tool_00522');
                         if (tem_header) {
                             tem_header.setContent(this.info.header);
                         } else {
@@ -329,7 +330,7 @@
                     }
 
                     this.$notify.info({
-                        title: window.yunAdminT('提示'),
+                        title: window.lc('wap_js_00125'),
                         message: msg,
                         duration: 3000
                     });
@@ -533,7 +534,7 @@
 
                         var msg_arr = msg.split('_');
 
-                        msg = '<a data-miniprogram-type="text"  data-miniprogram-appid="' + msg_arr[0] + '" data-miniprogram-path="' + msg_arr[1] + '">' + window.yunAdminT('查看详情') + '</a>';
+                        msg = '<a data-miniprogram-type="text"  data-miniprogram-appid="' + msg_arr[0] + '" data-miniprogram-path="' + msg_arr[1] + '">' + window.lc('wap_00561') + '</a>';
                     }
 
                     oInput.value = msg;
@@ -606,11 +607,11 @@
                     }
 
                     if (tem_title == '') {
-                        message.error(window.yunAdminT('请填写模板名称！'));
+                        message.error(window.lc('member_com_00357'));
                         return false
                     }
                     if (tem_body_v == '') {
-                        message.error(window.yunAdminT('请填写模板正文！'));
+                        message.error(window.lc('admin_tool_00523'));
                         return false
                     }
 

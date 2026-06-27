@@ -12,32 +12,32 @@
 		<div class="moduleSeachs">
 			<div class="moduleSeachleft">
 				<div class="tableSeachcascader  ">
-					<el-cascader v-model="searchForm.class_id" :options="classData" :props="{ emitPath: false }" :show-all-levels="false" size="small" placeholder="广告分类" clearable @change="handleSearch"></el-cascader>
+					<el-cascader v-model="searchForm.class_id" :options="classData" :props="{ emitPath: false }" :show-all-levels="false" size="small" :placeholder="lc('admin_01167')" clearable @change="handleSearch"></el-cascader>
 				</div>
 				<div class="tableSeachInptsmall newsinput">
-					<el-select v-model="searchForm.is_check" size="small" slot="prepend" placeholder="审核状态" clearable @change="handleSearch">
-						<el-option label="未审核" value="-1"></el-option>
-						<el-option label="已审核" value="1"></el-option>
-						<el-option label="已过期" value="2"></el-option>
+					<el-select v-model="searchForm.is_check" size="small" slot="prepend" :placeholder="lc('wap_com_00406')" clearable @change="handleSearch">
+						<el-option :label="lc('wap_user_00166')" value="-1"></el-option>
+						<el-option :label="lc('wap_user_00165')" value="1"></el-option>
+						<el-option :label="lc('member_com_00304')" value="2"></el-option>
 					</el-select>
 				</div>
 				<div class="tableSeachInptsmall newsinput">
-					<el-select v-model="searchForm.ad" size="small" slot="prepend" placeholder="广告类型" clearable @change="handleSearch">
-						<el-option label="文字广告" value="1"></el-option>
-						<el-option label="图片广告" value="2"></el-option>
-						<el-option label="FLASH广告" value="3"></el-option>
+					<el-select v-model="searchForm.ad" size="small" slot="prepend" :placeholder="lc('admin_01168')" clearable @change="handleSearch">
+						<el-option :label="lc('admin_01140')" value="1"></el-option>
+						<el-option :label="lc('admin_01141')" value="2"></el-option>
+						<el-option :label="lc('admin_01169')" value="3"></el-option>
 					</el-select>
 				</div>
 				<div class="newsinput">
-					<el-input v-model="searchForm.name" placeholder="输入你要搜索的关键字" size="small" prefix-icon="el-icon-search" clearable></el-input>
+					<el-input v-model="searchForm.name" :placeholder="lc('admin_user_weipin_00003')" size="small" prefix-icon="el-icon-search" clearable></el-input>
 				</div>
 				<div class="newsbtnbox">
-					<el-button type="primary" icon="el-icon-search" size="mini" @click="handleSearch">查询</el-button>
+					<el-button type="primary" icon="el-icon-search" size="mini" @click="handleSearch">{{ lc('admin_user_weipin_00049') }}</el-button>
 				</div>
 			</div>
 			<div class="moduleSeachButn">
-				<el-button type="primary" icon="el-icon-document-add" size="mini" @click="handleAdd">添加广告</el-button>
-				<el-button type=" " icon="el-icon-folder-checked" size="mini" @click="handleCache">更新缓存</el-button>
+				<el-button type="primary" icon="el-icon-document-add" size="mini" @click="handleAdd">{{ lc('admin_01166') }}</el-button>
+				<el-button type=" " icon="el-icon-folder-checked" size="mini" @click="handleCache">{{ lc('admin_00196') }}</el-button>
 			</div>
 		</div>
 
@@ -50,45 +50,45 @@
 					<p>{{dataText}}</p>
 				</template>
 				<el-table-column type="selection" width="55"></el-table-column>
-				<el-table-column prop="id" label="编号" sortable="custom" width="80"></el-table-column>
-				<el-table-column prop="ad_name" label="广告名称"></el-table-column>
-				<el-table-column prop="class_name" label="广告类别" width="220"></el-table-column>
-				<el-table-column prop="hits" align="right" header-align="center" label="点击量" width="80"></el-table-column>
-				<el-table-column label="图片" width="100">
+				<el-table-column prop="id" :label="lc('member_com_00345')" sortable="custom" width="80"></el-table-column>
+				<el-table-column prop="ad_name" :label="lc('admin_01170')"></el-table-column>
+				<el-table-column prop="class_name" :label="lc('admin_yunying_00047')" width="220"></el-table-column>
+				<el-table-column prop="hits" align="right" header-align="center" :label="lc('admin_yunying_00049')" width="80"></el-table-column>
+				<el-table-column :label="lc('wap_js_00081')" width="100">
 					<template slot-scope="scope">
 						<template v-if="scope.row.ad_type == 'pic'">
 							<div v-if="scope.row.pic_url_list" class="moduleElImage">
 								<el-image :src="scope.row.pic_url_list ? scope.row.pic_url_list[0] : ''" :preview-src-list="scope.row.pic_url_list ? scope.row.pic_url_list : []"></el-image>
 							</div>
-							<span v-else>无</span>
+							<span v-else>{{ lc('common_02082') }}</span>
 						</template>
 						<template v-else>
 							{{scope.row.ad_typename}}
 						</template>
 					</template>
 				</el-table-column>
-				<el-table-column prop="time_end" label="结束时间" width="100"></el-table-column>
-				<el-table-column prop="d_title" label="范围" width="100"></el-table-column>
-				<el-table-column prop="sort" label="排序" sortable="custom" width="110">
+				<el-table-column prop="time_end" :label="lc('admin_company_00006')" width="100"></el-table-column>
+				<el-table-column prop="d_title" :label="lc('admin_yunying_00050')" width="100"></el-table-column>
+				<el-table-column prop="sort" :label="lc('admin_vue_00044')" sortable="custom" width="110">
 					<template slot-scope="scope">
 						<el-input type="number" v-if="scope.row[scope.column.property + 'isShow']" :ref="scope.column.property + scope.$index" :id="scope.column.property + scope.$index" v-model="scope.row.sort" @blur="alterData(scope)"></el-input>
 						<div v-else>{{ scope.row.sort }}  <el-button type="text" icon="el-icon-edit" @click="editData(scope)"></el-button></div>
 					</template>
 				</el-table-column>
-				<el-table-column label="状态" width="100">
+				<el-table-column :label="lc('member_user_00181')" width="100">
 					<template slot-scope="scope">
-						<el-tag type="warning" size="mini" v-if="scope.row.is_open=='0'">已关闭</el-tag>
-						<el-tag type="danger" size="mini" v-else-if="scope.row.is_end == '1'">已过期</el-tag>
-						<el-tag type="success" size="mini" v-else-if="scope.row.is_check == '1'">已审核</el-tag>
-						<el-button type="text" size="mini" v-else @click="handleCheck(scope)">未审核<icon class="el-icon-edit el-icon--right"></icon></el-button>
+						<el-tag type="warning" size="mini" v-if="scope.row.is_open=='0'">{{ lc('admin_yunying_00048') }}</el-tag>
+						<el-tag type="danger" size="mini" v-else-if="scope.row.is_end == '1'">{{ lc('member_com_00304') }}</el-tag>
+						<el-tag type="success" size="mini" v-else-if="scope.row.is_check == '1'">{{ lc('wap_user_00165') }}</el-tag>
+						<el-button type="text" size="mini" v-else @click="handleCheck(scope)">{{ lc('wap_user_00166') }}<icon class="el-icon-edit el-icon--right"></icon></el-button>
 					</template>
 				</el-table-column>
-				<el-table-column fixed="right" label="操作" width="210" align="center">
+				<el-table-column fixed="right" :label="lc('member_user_00048')" width="210" align="center">
 					<template slot-scope="scope">
 						<div class="cz_button">
-							<el-button size="small" @click="handlePreview(scope)">调用</el-button>
-							<el-button size="small" @click="editRow(scope)">修改</el-button>
-							<el-button type="danger" size="small" @click="deleteRow(scope)">删除</el-button>
+							<el-button size="small" @click="handlePreview(scope)">{{ lc('admin_system_00275') }}</el-button>
+							<el-button size="small" @click="editRow(scope)">{{ lc('wap_js_00073') }}</el-button>
+							<el-button type="danger" size="small" @click="deleteRow(scope)">{{ lc('wap_js_00077') }}</el-button>
 						</div>
 					</template>
 				</el-table-column>
@@ -97,9 +97,9 @@
 		<div class="modulePaging">
 			<div class="modulecz modulePagButn">
 				<el-checkbox :indeterminate="isIndeterminate" v-model="checked"
-					@change="selectAllBottom">全选</el-checkbox>
-				<el-button @click="deleteRow(null, true)" size="mini">批量删除</el-button>
-				<el-button @click="handleCtime(null, true)" size="mini">延期</el-button>
+					@change="selectAllBottom">{{ lc('wap_js_00074') }}</el-checkbox>
+				<el-button @click="deleteRow(null, true)" size="mini">{{ lc('member_com_00055') }}</el-button>
+				<el-button @click="handleCtime(null, true)" size="mini">{{ lc('admin_user_company_00391') }}</el-button>
 			</div>
 			<div class="modulePagNum">
 				<el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
@@ -117,12 +117,12 @@
 			</el-drawer>
 		</div>
 		<!--预览弹出框-->
-		<el-dialog title="信息" :visible.sync="previewVisible" :with-header="true" :modal-append-to-body="false"
+		<el-dialog :title="lc('admin_00308')" :visible.sync="previewVisible" :with-header="true" :modal-append-to-body="false"
 			:destroy-on-close="true" :show-close="true" width="400px">
 			<ad_preview :id="id" @child-event="handlePreviewClose"></ad_preview>
 		</el-dialog>
 		<!--批量延期-->
-		<el-dialog title="批量延期" width="30%" :visible.sync="ctimeVisible" :modal-append-to-body="false"
+		<el-dialog :title="lc('admin_user_weipin_00038')" width="30%" :visible.sync="ctimeVisible" :modal-append-to-body="false"
 			:destroy-on-close="true">
 			<ad_ctime :jobid="jobid" @child-event="handleCtimeClose"></ad_ctime>
 		</el-dialog>
@@ -134,7 +134,7 @@
 			data: function () {
 				return {
 					loading: false,
-					dataText: '数据加载中',
+					dataText: lc('admin_user_weipin_00026'),
 					searchForm: {
 						page: 1,
 						limit: null,
@@ -152,7 +152,7 @@
 					isIndeterminate: false, // checkbox 的不确定状态
 					selectedItem: [],
 					addVisible: false,
-					titleAddEdit: '添加广告',
+					titleAddEdit: lc('admin_01166'),
 					id: 0,
 					oldData: null,
 					//批量延期
@@ -234,7 +234,7 @@
 							}
 							_this.loading = false;
 							if (_this.tableData.length === 0) {
-								_this.dataText = "暂无数据";
+								_this.dataText = lc('wap_js_00113');
 							}
 						}
 					}).catch(function (error) {
@@ -271,7 +271,7 @@
 					let params = {};
 					if (isMore) {
 						if (!this.selectedItem.length) {
-							message.error('请选择要删除的数据');
+							message.error(lc('admin_user_weipin_00005'));
 							return false;
 						}
 						let list = [];
@@ -294,10 +294,10 @@
 					httpPost('m=yunying&c=ad&a=del', params).then(function (response) {
 						let res = response.data;
 						if (res.error === 0) {
-							message.success('删除成功！');
+							message.success(lc('admin_user_00187'));
 							_this.getList();
 						} else {
-							message.error('删除失败！');
+							message.error(lc('admin_user_00186'));
 						}
 					}).catch(function (error) {
 						console.log(error);
@@ -307,7 +307,7 @@
 					let params = {};
 					if (isMore) {
 						if (!this.selectedItem.length) {
-							message.error('您还未选择任何信息！');
+							message.error(lc('admin_00572'));
 							return false;
 						}
 						let list = [];
@@ -363,9 +363,9 @@
 					httpPost('m=yunying&c=ad&a=upsort', sendData).then(function (response) {
 						let res = response.data;
 						if (res.error === 0) {
-							message.success('修改成功');
+							message.success(lc('admin_user_company_00208'));
 						} else {
-							message.error('修改失败');
+							message.error(lc('admin_00187'));
 						}
 						_this.oldData = null;
 						_this.getList();
@@ -385,9 +385,9 @@
 					httpPost('m=yunying&c=ad&a=check', params).then(function (response) {
 						let res = response.data;
 						if (res.error === 0) {
-							message.success('修改成功');
+							message.success(lc('admin_user_company_00208'));
 						} else {
-							message.error('修改失败');
+							message.error(lc('admin_00187'));
 						}
 						_this.getList();
 					}).catch(function (error) {
@@ -398,9 +398,9 @@
 					httpPost('m=yunying&c=ad&a=cache_ad', {}).then(function (response) {
 						let res = response.data;
 						if (res.error === 0) {
-							message.success('广告更新成功！');
+							message.success(lc('admin_01172'));
 						} else {
-							message.error('广告更新失败！');
+							message.error(lc('admin_01173'));
 						}
 					}).catch(function (error) {
 						console.log(error);

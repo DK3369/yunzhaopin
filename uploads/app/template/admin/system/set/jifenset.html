@@ -10,18 +10,18 @@
     <div id="moduapp" class="moduleDome">
         <div class="setDomeAll setDomeInte">
             <el-tabs v-model="activeName" @tab-click="handleClick">
-                <el-tab-pane label="积分设置" name="first">
+                <el-tab-pane :label="lc('admin_system_00458')" name="first">
                     <integset  :list="data" @get-list="getList" v-if="activeName == 'first'"></integset>
                 </el-tab-pane>
-                <el-tab-pane label="个人积分" name="second">
+                <el-tab-pane :label="lc('admin_system_00455')" name="second">
                     <gerenjifen :list="data" @get-list="getList" v-if="activeName == 'second'"></gerenjifen>
                 </el-tab-pane>
-                <el-tab-pane label="企业积分" name="third">
+                <el-tab-pane :label="lc('admin_system_00456')" name="third">
                     <comjifen :list="data" @get-list="getList"
                               v-if="activeName == 'third'"></comjifen>
                 </el-tab-pane>
                 
-                <el-tab-pane label="积分优惠" name="sixth">
+                <el-tab-pane :label="lc('admin_system_00457')" name="sixth">
                     <jifenyouhui v-if="activeName == 'sixth'"></jifenyouhui>
                 </el-tab-pane>
             </el-tabs>

@@ -9,37 +9,35 @@
 <body>
     <div id="daohaapp" class="moduleElenAl">
         <div class="moduleSeachs">
-            <div class="">
-                管理员类型
-            </div>
+            <div class="">{{ lc('admin_system_00232') }}</div>
             <div class="moduleSeachButn">
-                <el-button type="primary" icon="el-icon-document-add" size="mini" @click="addgroup">添加类型</el-button>
+                <el-button type="primary" icon="el-icon-document-add" size="mini" @click="addgroup">{{ lc('admin_system_00234') }}</el-button>
             </div>
         </div>
         <div class="moduleElTable">
             <div class="tableDome_tip">
-                <el-alert title="管理员添加某个网站管理员、分站和CRM用户组后显示在“管理员类型”列表中" type="success" :closable="false">
+                <el-alert :title="lc('admin_system_00231')" type="success" :closable="false">
                 </el-alert>
             </div>
             <el-table :data="tableData" border style="width: 100%"
                 :header-cell-style="{background:'#f5f7fa',color:'#606266'}" height="calc(100% - 48px)" v-loading="loading" :empty-text="emptytext">
-                <el-table-column prop="id" label="编号" width="80">
+                <el-table-column prop="id" :label="lc('member_com_00345')" width="80">
                 </el-table-column>
-                <el-table-column prop="group_name" label="类型名称"> </el-table-column>
-                <el-table-column prop="group_type_n" label="分站属性"> </el-table-column>
-                <el-table-column prop="num" label="管理员数"> </el-table-column>
-                <el-table-column fixed="right" label="操作" width="140">
+                <el-table-column prop="group_name" :label="lc('admin_system_00236')"> </el-table-column>
+                <el-table-column prop="group_type_n" :label="lc('admin_system_00233')"> </el-table-column>
+                <el-table-column prop="num" :label="lc('admin_system_00235')"> </el-table-column>
+                <el-table-column fixed="right" :label="lc('member_user_00048')" width="140">
                     <template slot-scope="scope">
                         <div class="cz_button">
-                            <el-button size="mini" @click="addgroup(scope.row.id)">修改</el-button>
-                            <el-button size="mini" @click="rowdel(scope.row)" type="danger">删除</el-button>
+                            <el-button size="mini" @click="addgroup(scope.row.id)">{{ lc('wap_js_00073') }}</el-button>
+                            <el-button size="mini" @click="rowdel(scope.row)" type="danger">{{ lc('wap_js_00077') }}</el-button>
                         </div>
                     </template>
                 </el-table-column>
             </el-table>
         </div>
         <div class="modulePaging">
-            <el-drawer title="管理员类型" :visible.sync="group_drawer" :modal-append-to-body="false" :show-close="true" :with-header="true" size="85%">
+            <el-drawer :title="lc('admin_system_00232')" :visible.sync="group_drawer" :modal-append-to-body="false" :show-close="true" :with-header="true" size="85%">
 				<groupadd :id_v="id" @child-event="closeGroupAdd"></groupadd>
 			</el-drawer>
         </div>
@@ -50,7 +48,7 @@
             el: '#daohaapp',
             data: function () {
                 return {
-                    emptytext: window.yunAdminT('暂无数据'),
+                    emptytext: window.lc('wap_js_00113'),
                     loading: false,
                     currentPage: 1,
                     perPage: 0,
@@ -88,7 +86,7 @@
                 async getList() {
                     let that = this;
                     that.loading = true;
-                    that.emptytext = window.yunAdminT('数据加载中');
+                    that.emptytext = window.lc('admin_user_weipin_00026');
                     httpPost('m=system&c=role_ugroup&a=index', { page: that.currentPage, pageSize: that.perPage }).then(function (result) {
                         var res = result.data
                         if (res.error == 0) {
@@ -98,7 +96,7 @@
                             that.total = parseInt(res.data.total);
                             that.loading = false;
                             if (that.tableData.length === 0){
-                                that.emptytext = window.yunAdminT('暂无数据');
+                                that.emptytext = window.lc('wap_js_00113');
                             }
                         }
                     }).catch(function (e) {
@@ -107,7 +105,7 @@
                 },
                 rowdel(row) {
                     if (!row.id) {
-                        this.$message({ showClose: true, message: window.yunAdminT('请选择要删除的数据'), type: 'warning' });
+                        this.$message({ showClose: true, message: window.lc('admin_user_weipin_00005'), type: 'warning' });
                         return false;
                     }
                     delConfirm(this, row.id, this.delete);
@@ -119,7 +117,7 @@
                     };
                     httpPost('m=system&c=role_ugroup&a=del', params).then(function (response) {
                         if (response.data.error == 0) {
-                            _this.$message.success(window.yunAdminT('操作成功'));
+                            _this.$message.success(window.lc('wap_user_00264'));
                             _this.getList();
                         }
                     }).catch(function (error) {

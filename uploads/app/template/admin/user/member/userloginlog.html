@@ -10,10 +10,10 @@
     <div id="moduapp" class="moduleDome">
         <div class="setDomeAll setDomeInte">
             <el-tabs v-model="activeName" @tab-click="handleClick">
-                <el-tab-pane label="个人登录日志" name="first" :lazy="true">
+                <el-tab-pane :label="lc('admin_user_00181')" name="first" :lazy="true">
                     <grlogin :typelist="typeArr"></grlogin>
                 </el-tab-pane>
-                <el-tab-pane label="企业登录日志" name="second" :lazy="true">
+                <el-tab-pane :label="lc('admin_user_00182')" name="second" :lazy="true">
                     <qylogin :typelist="typeArr"></qylogin>
                 </el-tab-pane>
             </el-tabs>
@@ -28,13 +28,13 @@
                 activeName: 'first',
                 typeArr: [{
                     value: '1',
-                    label: "用户名"
+                    label: lc('admin_user_00140')
                 }, {
                     value: '2',
-                    label: "内容"
+                    label: lc('wap_user_00102')
                 }, {
                     value: '3',
-                    label: "用户ID"
+                    label: lc('admin_user_00130')
                 }],
             }
         },

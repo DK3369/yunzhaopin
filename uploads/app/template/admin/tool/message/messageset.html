@@ -10,10 +10,10 @@
     <div id="moduapp" class="moduleDome">
         <div class="setDomeAll setDomeInte">
             <el-tabs v-model="activeName">
-                <el-tab-pane label="短信设置" name="first">
+                <el-tab-pane :label="lc('admin_tool_00508')" name="first">
                     <messageshow></messageshow>
                 </el-tab-pane>
-                <el-tab-pane label="短信模板设置" name="second">
+                <el-tab-pane :label="lc('admin_tool_00471')" name="second">
                     <messagemb></messagemb>
                 </el-tab-pane>
                

@@ -9,7 +9,7 @@
 <body>
     <div id="yemanapp" class="moduleDome">
         <div class="moduleHeadr">
-            <el-page-header @back="goBack" content="修改">
+            <el-page-header @back="goBack" :content="lc('wap_js_00073')">
             </el-page-header>
             <!-- <span>设置前台导航菜单，可以修改增加排序导航，点击此处</span> -->
         </div>
@@ -17,60 +17,60 @@
             <table class="tableVue">
                 <thead>
                     <tr align="left">
-                        <th width="200">名称</th>
-                        <th width="400">状态</th>
-                        <th>说明</th>
+                        <th width="200">{{ lc('member_com_00021') }}</th>
+                        <th width="400">{{ lc('member_user_00181') }}</th>
+                        <th>{{ lc('member_com_00207') }}</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td>
-                            <div class="TableTite">类别名称</div>
+                            <div class="TableTite">{{ lc('admin_00219') }}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input placeholder="请输入内容" v-model="input3">
+                                <el-input :placeholder="lc('wap_user_00076')" v-model="input3">
                                     <!-- <span slot="suffix" class="slotspan">天</span> -->
                                 </el-input>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>类别名称</span>
+                                <span>{{ lc('admin_00219') }}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">自定义描述</div>
+                            <div class="TableTite">{{ lc('admin_system_00140') }}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input type="textarea" placeholder="请输入内容" v-model="input3">
+                                <el-input type="textarea" :placeholder="lc('wap_user_00076')" v-model="input3">
                                     <!-- <span slot="suffix" class="slotspan">天</span> -->
                                 </el-input>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>自定义描述</span>
+                                <span>{{ lc('admin_system_00140') }}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">排　　序</div>
+                            <div class="TableTite">{{ lc('admin_system_00105') }}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input placeholder="请输入内容" v-model="input3">
+                                <el-input :placeholder="lc('wap_user_00076')" v-model="input3">
                                     <!-- <span slot="suffix" class="slotspan">天</span> -->
                                 </el-input>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>越小越在前</span>
+                                <span>{{ lc('admin_00218') }}</span>
                             </div>
                         </td>
                     </tr>
@@ -79,7 +79,7 @@
         </div>
 
         <div class="setBasicButn" style="border: none;">
-            <el-button type="primary" size="medium">提交</el-button>
+            <el-button type="primary" size="medium">{{ lc('wap_user_00176') }}</el-button>
         </div>
     </div>
     <!-- script -->
@@ -91,19 +91,19 @@
                     radio: '1',
                     options: [{
                         value: '选项1',
-                        label: window.yunAdminT('黄金糕')
+                        label: window.lc('admin_00327')
                     }, {
                         value: '选项2',
-                        label: window.yunAdminT('双皮奶')
+                        label: window.lc('admin_00328')
                     }, {
                         value: '选项3',
-                        label: window.yunAdminT('蚵仔煎')
+                        label: window.lc('admin_00329')
                     }, {
                         value: '选项4',
-                        label: window.yunAdminT('龙须面')
+                        label: window.lc('admin_00330')
                     }, {
                         value: '选项5',
-                        label: window.yunAdminT('北京烤鸭')
+                        label: window.lc('admin_00331')
                     }],
                     value: '',
                     input3: '',

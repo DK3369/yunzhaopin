@@ -9,7 +9,7 @@
 <body>
     <div id="moduapp" class="tableDome">
         <div class="tableDome_tip">
-            <el-alert title="该页面展示了缓存模块" type="success" show-icon>
+            <el-alert :title="lc('admin_system_00298')" type="success" show-icon>
             </el-alert>
         </div>
         <div class="moduleTable">
@@ -17,12 +17,12 @@
                 <ul>
                     <li>
                         <div class="moduleHcTite">
-                            <span>首页</span>
+                            <span>{{ lc('wap_00191') }}</span>
                         </div>
                         <div class="moduleHcKg">
                             <el-radio-group v-model="sy_index_cache">
-                                <el-radio label="1">开启</el-radio>
-                                <el-radio label="2">关闭</el-radio>
+                                <el-radio label="1">{{ lc('member_com_00287') }}</el-radio>
+                                <el-radio label="2">{{ lc('resume_00030') }}</el-radio>
                             </el-radio-group>
                         </div>
                     </li>
@@ -32,8 +32,8 @@
                         </div>
                         <div class="moduleHcKg">
                             <el-radio-group v-model="item.cache">
-                                <el-radio v-model="radio" label="1">开启</el-radio>
-                                <el-radio v-model="radio" label="2">关闭</el-radio>
+                                <el-radio v-model="radio" label="1">{{ lc('member_com_00287') }}</el-radio>
+                                <el-radio v-model="radio" label="2">{{ lc('resume_00030') }}</el-radio>
                             </el-radio-group>
                         </div>
                     </li>
@@ -42,7 +42,7 @@
         </div>
 
         <div class="setBasicButn" style="border: none;">
-            <el-button type="primary" size="medium" @click="save">保存</el-button>
+            <el-button type="primary" size="medium" @click="save">{{ lc('wap_user_00101') }}</el-button>
         </div>
 
     </div>

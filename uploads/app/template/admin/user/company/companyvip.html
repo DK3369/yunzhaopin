@@ -10,10 +10,10 @@
     <div id="moduapp" class="moduleDome">
         <div class="setDomeAll setDomeInte">
             <el-tabs v-model="activeName" @tab-click="handleClick">
-                <el-tab-pane label="套餐设置" name="first" :lazy="true">
+                <el-tab-pane :label="lc('admin_user_company_00015')" name="first" :lazy="true">
                     <comrating_index ref="first"></comrating_index>
                 </el-tab-pane>
-                <el-tab-pane label="增值服务" name="second" :lazy="true">
+                <el-tab-pane :label="lc('admin_user_company_00290')" name="second" :lazy="true">
                     <comrating_server ref="second"></comrating_server>
                 </el-tab-pane>
             </el-tabs>

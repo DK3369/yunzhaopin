@@ -73,8 +73,9 @@
 
     window.lc = function (key, params, fallback) {
         var lookupKey = key && key.indexOf(".") === -1 ? "lc." + key : key;
-        var messages = window.yunAdminI18n.lc || {};
-        var text = messages[lookupKey] || messages[key] || fallback || key;
+        var lcMessages = window.yunAdminI18n.lc || {};
+        var autoMessages = window.yunAdminI18n.messages || {};
+        var text = lcMessages[lookupKey] || lcMessages[key] || autoMessages[key] || fallback || key;
 
         return replaceParams(text, params || []);
     };
@@ -143,9 +144,6 @@
     };
 
     function loadLangPack() {
-        if (lang === "zh_cn") {
-            return;
-        }
         var baseUrl = localStorage.getItem("baseUrl") || "/admin/index.php";
         var xhr = new XMLHttpRequest();
         xhr.open("GET", baseUrl + "?m=index&c=langpack&lang=" + encodeURIComponent(lang), false);

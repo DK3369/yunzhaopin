@@ -10,10 +10,10 @@
     <div id="moduapp" class="moduleDome">
         <div class="setDomeAll setDomeInte">
             <el-tabs v-model="activeName">
-                <el-tab-pane label="QQ登录配置" name="first">
+                <el-tab-pane :label="lc('admin_tool_00466')" name="first">
                     <loginqq :config="config" @post-set="postset"></loginqq>
                 </el-tab-pane>
-                <el-tab-pane label="新浪微博登录配置" name="second">
+                <el-tab-pane :label="lc('admin_tool_00465')" name="second">
                     <loginsina :config="config" @post-set="postset"></loginsina>
                 </el-tab-pane>
             </el-tabs>

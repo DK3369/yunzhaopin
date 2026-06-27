@@ -10,10 +10,10 @@
     <div id="moduapp" class="moduleDome">
         <div class="setDomeAll setDomeInte">
             <el-tabs v-model="activeName" @tab-click="handleClick">
-                <el-tab-pane label="HR报告" name="loglist">
+                <el-tab-pane :label="lc('admin_01124')" name="loglist">
                     <loglist ref="loglist"></loglist>
                 </el-tab-pane>
-                <el-tab-pane label="区域报告" name="dataset" lazy>
+                <el-tab-pane :label="lc('admin_yunying_00220')" name="dataset" lazy>
                     <dataset ref="dataset"></dataset>
                 </el-tab-pane>
             </el-tabs>

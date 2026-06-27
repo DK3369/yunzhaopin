@@ -12,53 +12,53 @@
         <table class="tableVue">
             <thead>
             <tr align="left">
-                <th width="180">名称</th>
-                <th width="560">状态</th>
-                <th>说明</th>
+                <th width="180">{{ lc('member_com_00021') }}</th>
+                <th width="560">{{ lc('member_user_00181') }}</th>
+                <th>{{ lc('member_com_00207') }}</th>
             </tr>
             </thead>
             <tbody>
             <tr>
                 <td>
-                    <div class="TableTite">网站开启注册</div>
+                    <div class="TableTite">{{ lc('admin_system_00566') }}</div>
                 </td>
                 <td>
                     <div class="TableButn">
-                        <el-radio v-model="config.reg_user_stop" label="1">开启</el-radio>
-                        <el-radio v-model="config.reg_user_stop" label="2">关闭</el-radio>
+                        <el-radio v-model="config.reg_user_stop" label="1">{{ lc('member_com_00287') }}</el-radio>
+                        <el-radio v-model="config.reg_user_stop" label="2">{{ lc('resume_00030') }}</el-radio>
                     </div>
                 </td>
                 <td>
                     <div class="TableShuom">
-                        <span>手机浏览器访问网址跳转到WAP端显示</span>
+                        <span>{{ lc('admin_system_00543') }}</span>
                     </div>
                 </td>
             </tr>
             <tr>
                 <td>
-                    <div class="TableTite">注册方式</div>
+                    <div class="TableTite">{{ lc('admin_system_00572') }}</div>
                 </td>
                 <td>
                     <div class="TableButn">
-                        <el-radio v-model="config.sy_reg_type" label="1">先注册，后选身份</el-radio>
-                        <el-radio v-model="config.sy_reg_type" label="2">先选身份，后注册</el-radio>
+                        <el-radio v-model="config.sy_reg_type" label="1">{{ lc('admin_system_00556') }}</el-radio>
+                        <el-radio v-model="config.sy_reg_type" label="2">{{ lc('admin_system_00557') }}</el-radio>
                     </div>
                 </td>
                 <td>
                     <div class="TableShuom">
-                        <span>默认保持原有注册方式</span>
+                        <span>{{ lc('admin_system_00554') }}</span>
                     </div>
                 </td>
             </tr>
             <tr>
                 <td>
-                    <div class="TableTite">注册类型</div>
+                    <div class="TableTite">{{ lc('admin_system_00573') }}</div>
                 </td>
                 <td>
                     <div class="TableButn">
-                        <el-checkbox v-model="config.reg_moblie">手机注册</el-checkbox>
-                        <el-checkbox v-model="config.reg_email">邮箱注册</el-checkbox>
-                        <el-checkbox v-model="config.reg_user">用户名注册</el-checkbox>
+                        <el-checkbox v-model="config.reg_moblie">{{ lc('default_00293') }}</el-checkbox>
+                        <el-checkbox v-model="config.reg_email">{{ lc('wap_00411') }}</el-checkbox>
+                        <el-checkbox v-model="config.reg_user">{{ lc('wap_00409') }}</el-checkbox>
                     </div>
                 </td>
                 <td>
@@ -69,12 +69,12 @@
             </tr>
             <tr>
                 <td>
-                    <div class="TableTite">注册设置</div>
+                    <div class="TableTite">{{ lc('admin_system_00574') }}</div>
                 </td>
                 <td>
                     <div class="TableButn">
-                        <el-checkbox v-model="config.reg_passconfirm">密码确认</el-checkbox>
-                        <el-checkbox v-model="config.reg_real_name_check">实名认证</el-checkbox>
+                        <el-checkbox v-model="config.reg_passconfirm">{{ lc('admin_system_00571') }}</el-checkbox>
+                        <el-checkbox v-model="config.reg_real_name_check">{{ lc('member_com_00026') }}</el-checkbox>
                     </div>
                 </td>
                 <td>
@@ -85,7 +85,7 @@
             </tr>
             <tr v-if="config.reg_user==1">
                 <td>
-                    <div class="TableTite">用户名长度</div>
+                    <div class="TableTite">{{ lc('wap_user_00366') }}</div>
                 </td>
                 <td>
                     <div class="youdandawei">
@@ -98,7 +98,7 @@
                                 <el-input type="number" v-model="config.sy_reg_namemaxlen" max="100"></el-input>
                             </div>
                         </div>
-                        <div class="danwei">位</div>
+                        <div class="danwei">{{ lc('common_02053') }}</div>
                     </div>
                 </td>
                 <td>
@@ -109,152 +109,152 @@
             </tr>
             <tr v-if="config.reg_user==1">
                 <td>
-                    <div class="TableTite">用户名复杂度</div>
+                    <div class="TableTite">{{ lc('admin_system_00564') }}</div>
                 </td>
                 <td>
                     <div class="TableButn">
-                        <el-checkbox v-model="config.reg_name_num">数字</el-checkbox>
-                        <el-checkbox v-model="config.reg_name_zm">字母</el-checkbox>
-                        <el-checkbox v-model="config.reg_name_sp">其它符号@!#￥-_</el-checkbox>
+                        <el-checkbox v-model="config.reg_name_num">{{ lc('common_01997') }}</el-checkbox>
+                        <el-checkbox v-model="config.reg_name_zm">{{ lc('common_01973') }}</el-checkbox>
+                        <el-checkbox v-model="config.reg_name_sp">{{ lc('admin_01025') }}</el-checkbox>
                     </div>
                 </td>
                 <td>
                     <div class="TableShuom">
-                        <span>提示：设置必须包含的项。</span>
+                        <span>{{ lc('admin_system_00550') }}</span>
                     </div>
                 </td>
             </tr>
             <tr>
                 <td>
-                    <div class="TableTite">密码复杂度</div>
+                    <div class="TableTite">{{ lc('admin_system_00569') }}</div>
                 </td>
                 <td>
                     <div class="TableButn">
-                        <el-checkbox v-model="config.reg_pw_num">数字</el-checkbox>
-                        <el-checkbox v-model="config.reg_pw_zm">字母</el-checkbox>
-                        <el-checkbox v-model="config.reg_pw_sp">其它符号@!#￥-_</el-checkbox>
+                        <el-checkbox v-model="config.reg_pw_num">{{ lc('common_01997') }}</el-checkbox>
+                        <el-checkbox v-model="config.reg_pw_zm">{{ lc('common_01973') }}</el-checkbox>
+                        <el-checkbox v-model="config.reg_pw_sp">{{ lc('admin_01025') }}</el-checkbox>
                     </div>
                 </td>
                 <td>
                     <div class="TableShuom">
-                        <span>提示：设置必须包含的项。</span>
+                        <span>{{ lc('admin_system_00550') }}</span>
                     </div>
                 </td>
             </tr>
             <tr>
                 <td>
-                    <div class="TableTite">邮件默认后缀</div>
+                    <div class="TableTite">{{ lc('admin_system_00568') }}</div>
                 </td>
                 <td>
                     <div class="TableInpt">
-                        <el-input placeholder="请输入内容" type="textarea" :rows="4" v-model="config.sy_def_email"></el-input>
+                        <el-input :placeholder="lc('wap_user_00076')" type="textarea" :rows="4" v-model="config.sy_def_email"></el-input>
                     </div>
                 </td>
                 <td>
                     <div class="TableShuom">
-                        <span>多个用|(竖线)隔开,例：@qq.com|@163.com</span>
+                        <span>{{ lc('admin_system_00539') }}</span>
                     </div>
                 </td>
             </tr>
             <tr>
                 <td>
-                    <div class="TableTite">同一IP注册间隔</div>
+                    <div class="TableTite">{{ lc('admin_system_00558') }}</div>
                 </td>
                 <td>
                     <div class="TableInpt">
                         <el-input v-model="config.sy_reg_interval" type="number" min="0">
-                            <span slot="suffix" class="slotspan">小时</span>
+                            <span slot="suffix" class="slotspan">{{ lc('wap_js_00128') }}</span>
                         </el-input>
                     </div>
                 </td>
                 <td>
                     <div class="TableShuom">
-                        <span>提示：0为不限，其他数字为间隔时间。</span>
+                        <span>{{ lc('admin_system_00544') }}</span>
                     </div>
                 </td>
             </tr>
             <tr>
                 <td>
-                    <div class="TableTite">邀请注册限制</div>
+                    <div class="TableTite">{{ lc('admin_system_00567') }}</div>
                 </td>
                 <td>
                     <div class="TableInpt">
                         <el-input v-model="config.sy_reg_invite" type="number" min="0">
-                            <span slot="suffix" class="slotspan">次</span>
+                            <span slot="suffix" class="slotspan">{{ lc('common_02089') }}</span>
                         </el-input>
                     </div>
                 </td>
                 <td>
                     <div class="TableShuom">
-                        <span>提示：每个账户每天邀请注册上限，0为不限，仅限制邮件邀请，防止恶意利用。</span>
+                        <span>{{ lc('admin_system_00538') }}</span>
                     </div>
                 </td>
             </tr>
             <tr>
                 <td>
-                    <div class="TableTite">限制注册用户名</div>
+                    <div class="TableTite">{{ lc('admin_system_00561') }}</div>
                 </td>
                 <td>
                     <div class="TableItags">
                         <el-tag :key="tag" v-for="tag in regconfig.regname" closable :disable-transitions="false" @close="handleClose(tag,'regname')">{{tag}}</el-tag>
                         <el-input class="input-new-tag" v-if="regnameinput" v-model="inputValue" ref="saveTagregname" size="small" @keyup.enter.native="$event.target.blur()" @blur="handleInputConfirm('regname')"></el-input>
-                        <el-button v-else class="button-new-tag" size="small" @click="showInput('regname')">添加</el-button>
+                        <el-button v-else class="button-new-tag" size="small" @click="showInput('regname')">{{ lc('wap_js_00091') }}</el-button>
                     </div>
                 </td>
                 <td>
                     <div class="TableShuom">
-                        <span>回车确定输入内容，点击下方保存按钮后生效。<br>被创建的用户名，不允许注册。</span>
+                        <span>{{ lc('admin_system_00540') }}<br>{{ lc('admin_system_00547') }}</span>
                     </div>
                 </td>
             </tr>
             <tr>
                 <td>
-                    <div class="TableTite">禁止手机号段</div>
+                    <div class="TableTite">{{ lc('admin_system_00565') }}</div>
                 </td>
                 <td>
                     <div class="TableItags">
                         <el-tag :key="tag" v-for="tag in regconfig.mobile_number" closable :disable-transitions="false" @close="handleClose(tag,'mobile_number')">{{tag}}</el-tag>
                         <el-input type="number" class="input-new-tag" v-if="mobile_numberinput" v-model="inputValue" ref="saveTagmobile_number" size="small" @keyup.enter.native="$event.target.blur()" @blur="handleInputConfirm('mobile_number')"></el-input>
-                        <el-button v-else class="button-new-tag" size="small" @click="showInput('mobile_number')">添加</el-button>
+                        <el-button v-else class="button-new-tag" size="small" @click="showInput('mobile_number')">{{ lc('wap_js_00091') }}</el-button>
                     </div>
                 </td>
                 <td>
                     <div class="TableShuom">
-                        <span>回车确定输入内容，点击下方保存按钮后生效。<br>被禁止的手机号段，不允许手机注册:如: 170/171/165/167，此四个号段为虚拟号段，建议禁止。</span>
+                        <span>{{ lc('admin_system_00540') }}<br>{{ lc('admin_system_00536') }}</span>
                     </div>
                 </td>
             </tr>
             <tr>
                 <td>
-                    <div class="TableTite">手机号白名单</div>
+                    <div class="TableTite">{{ lc('admin_system_00562') }}</div>
                 </td>
                 <td>
                     <div class="TableItags">
                         <el-tag :key="tag" v-for="tag in regconfig.mobile_white" closable :disable-transitions="false" @close="handleClose(tag,'mobile_white')">{{tag}}</el-tag>
                         <el-input class="input-new-tag" v-if="mobile_whiteinput" v-model="inputValue" ref="saveTagmobile_white" size="small" @keyup.enter.native="$event.target.blur()" @blur="handleInputConfirm('mobile_white')"></el-input>
-                        <el-button v-else class="button-new-tag" size="small" @click="showInput('mobile_white')">添加</el-button>
+                        <el-button v-else class="button-new-tag" size="small" @click="showInput('mobile_white')">{{ lc('wap_js_00091') }}</el-button>
                     </div>
                 </td>
                 <td>
                     <div class="TableShuom">
-                        <span>回车确定输入内容。<br>手机号白名单不受【禁止的手机号段】限制。</span>
+                        <span>{{ lc('admin_system_00555') }}<br>{{ lc('admin_system_00541') }}</span>
                     </div>
                 </td>
             </tr>
             <tr>
                 <td>
-                    <div class="TableTite">手机号黑名单</div>
+                    <div class="TableTite">{{ lc('admin_system_00563') }}</div>
                 </td>
                 <td>
                     <div class="TableItags">
                         <el-tag :key="tag" v-for="tag in regconfig.mobile_black" closable :disable-transitions="false" @close="handleClose(tag,'mobile_black')">{{tag}}</el-tag>
                         <el-input class="input-new-tag" v-if="mobile_blackinput" v-model="inputValue" ref="saveTagmobile_black" size="small" @keyup.enter.native="$event.target.blur()" @blur="handleInputConfirm('mobile_black')"></el-input>
-                        <el-button v-else class="button-new-tag" size="small" @click="showInput('mobile_black')">添加</el-button>
+                        <el-button v-else class="button-new-tag" size="small" @click="showInput('mobile_black')">{{ lc('wap_js_00091') }}</el-button>
                     </div>
                 </td>
                 <td>
                     <div class="TableShuom">
-                        <span>回车确定输入内容。<br>被创建的黑名单手机号，不允许注册。</span>
+                        <span>{{ lc('admin_system_00555') }}<br>{{ lc('admin_system_00545') }}</span>
                     </div>
                 </td>
             </tr>
@@ -262,7 +262,7 @@
         </table>
     </div>
     <div class="setBasicButn" style="border: none;">
-        <el-button type="primary" size="medium" @click="submitForm" :disabled="saveLoading">提交</el-button>
+        <el-button type="primary" size="medium" @click="submitForm" :disabled="saveLoading">{{ lc('wap_user_00176') }}</el-button>
     </div>
 </div>
 <script>
@@ -301,27 +301,27 @@
                 formData['sy_reg_nameminlen'] = parseInt(that.config.sy_reg_nameminlen);
                 formData['sy_reg_namemaxlen'] = parseInt(that.config.sy_reg_namemaxlen);
                 if (formData.reg_moblie == 1 && (that.config.sy_msg_appkey == '' || that.config.sy_msg_appsecret == '' || that.config.sy_msg_isopen != 1)) {
-                    message.error('还没有配置短信，请先配置！', function () {
+                    message.error(lc('admin_system_00548'), function () {
                         location.reload();
                     });
                     return false;
                 }
                 if (formData.reg_email == 1 && that.config.sy_email_set != 1) {
-                    message.error('还没有配置邮箱，请先配置！', function () {
+                    message.error(lc('admin_system_00549'), function () {
                         location.reload();
                     });
                     return false;
                 }
                 if (formData.reg_user_stop == 1 && formData.reg_user == 0 && formData.reg_mobile == 0 && formData.reg_email == 0) {
-                    message.error('开启网站注册时，‘手机注册’、‘email注册’、‘用户名注册’最少应开启一项!');
+                    message.error(lc('admin_system_00537'));
                     return false;
                 }
                 if (formData.reg_user == 1) {
                     if (formData.sy_reg_nameminlen == 0 || formData.sy_reg_namemaxlen == 0 || formData.sy_reg_nameminlen == '' || formData.sy_reg_namemaxlen == '') {
-                        message.error('用户名长度需大于0!');
+                        message.error(lc('admin_system_00551'));
                         return false;
                     } else if (formData.sy_reg_namemaxlen <= formData.sy_reg_nameminlen) {
-                        message.error('用户名长度最大值应大于最小值!');
+                        message.error(lc('admin_system_00546'));
                         return false;
                     }
                 }
@@ -429,7 +429,7 @@
                     this.regnameinput = false;
                     if (inputValue) {
                         if (this.regconfig.regname.indexOf(inputValue) != -1) {
-                            message.warning('该用户名已存在');
+                            message.warning(lc('admin_system_00560'));
                         } else {
                             this.regconfig.regname.push(inputValue);
                         }
@@ -438,7 +438,7 @@
                     this.mobile_numberinput = false;
                     if (inputValue) {
                         if (this.regconfig.mobile_number.indexOf(inputValue) != -1) {
-                            message.warning('该号码段已存在');
+                            message.warning(lc('admin_system_00559'));
                         } else {
                             this.regconfig.mobile_number.push(inputValue);
                         }
@@ -447,11 +447,11 @@
                     this.mobile_whiteinput = false;
                     if (inputValue) {
                         if (!isjsMobile(inputValue)){
-                            message.warning('请填写正确的手机号码');
+                            message.warning(lc('admin_system_00553'));
                         }else if (this.regconfig.mobile_white.indexOf(inputValue) != -1) {
-                            message.warning('该手机已经在白名单中');
+                            message.warning(lc('admin_system_00552'));
                         } else if (this.regconfig.mobile_black.indexOf(inputValue) != -1) {
-                            message.warning('该手机已经在黑名单中,不能添加到白名单');
+                            message.warning(lc('admin_system_00542'));
                         } else {
                             this.regconfig.mobile_white.push(inputValue);
                         }
@@ -460,11 +460,11 @@
                     this.mobile_blackinput = false;
                     if (inputValue) {
                         if (!isjsMobile(inputValue)){
-                            message.warning('请填写正确的手机号码');
+                            message.warning(lc('admin_system_00553'));
                         }else if (this.regconfig.mobile_black.indexOf(inputValue) != -1) {
-                            message.warning('该手机已经在黑名单中');
+                            message.warning(lc('admin_01026'));
                         } else if (this.regconfig.mobile_white.indexOf(inputValue) != -1) {
-                            message.warning('该手机已经在白名单中,不能添加到黑名单');
+                            message.warning(lc('admin_html_00022'));
                         } else {
                             this.regconfig.mobile_black.push(inputValue);
                         }

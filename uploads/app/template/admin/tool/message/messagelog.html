@@ -11,42 +11,42 @@
 			<div class="moduleSeachmore">
 				<div class="tableSeachInpt  tableSeachInptsmall">
                
-                    <el-select v-model="time" clearable @change="dateSelectChange" size="small" slot="prepend" placeholder="时间" >
-                        <el-option label="今天" value="1"></el-option>
-                        <el-option label="最近三天" value="3"></el-option>
-                        <el-option label="最近七天" value="7"></el-option>
-                        <el-option label="最近半月" value="15"></el-option>
-                        <el-option label="最近一月" value="30"></el-option>
+                    <el-select v-model="time" clearable @change="dateSelectChange" size="small" slot="prepend" :placeholder="lc('wap_js_00088')" >
+                        <el-option :label="lc('common_01940')" value="1"></el-option>
+                        <el-option :label="lc('admin_user_00179')" value="3"></el-option>
+                        <el-option :label="lc('admin_user_00178')" value="7"></el-option>
+                        <el-option :label="lc('admin_user_00180')" value="15"></el-option>
+                        <el-option :label="lc('admin_tool_00499')" value="30"></el-option>
                     </el-select>
                 </div>
                 <div class="tableSeachInpt tableSeachInptsmalltwo"> 
-                    <el-date-picker v-model="daterange" type="daterange" @change="changedate" range-separator="至"
-                            start-placeholder="开始日期" end-placeholder="结束日期" size="samll">
+                    <el-date-picker v-model="daterange" type="daterange" @change="changedate" :range-separator="lc('admin_company_00019')"
+                            start-:placeholder="lc('admin_00343')" end-:placeholder="lc('admin_00344')" size="samll">
                     </el-date-picker> 
                 </div>
 				<div class="tableSeachInpt tableSeachInptsmall">
-					<el-select v-model="state" clearable size="small" slot="prepend" placeholder="发送状态" @change="search">
-						<el-option label="发送成功" value="1"></el-option>
-						<el-option label="发送失败" value="2"></el-option>
+					<el-select v-model="state" clearable size="small" slot="prepend" :placeholder="lc('admin_tool_00496')" @change="search">
+						<el-option :label="lc('admin_tool_00495')" value="1"></el-option>
+						<el-option :label="lc('admin_tool_00494')" value="2"></el-option>
 					</el-select>
 				</div>
                 <div class="tableSeachInpt tableSeachInptsmall">
-                    <el-select v-model="port" clearable size="small" slot="prepend" placeholder="发送端口" @change="search">
+                    <el-select v-model="port" clearable size="small" slot="prepend" :placeholder="lc('admin_tool_00497')" @change="search">
                         <el-option :label="name" :value="val" v-for="(name,val) in ports" :key="val"></el-option>
                     </el-select>
                 </div>
 				<div class="tableSeackellsd" style="padding: 2px 0; margin-bottom: 8px;">
-					<el-input v-model="keyword" placeholder="请输入关键字" size="small" prefix-icon="el-icon-search" clearable>
-                        <el-select  v-model="type" size="small" slot="prepend" placeholder="搜索类型">
-                            <el-option label="手机号" value="1"></el-option>
-                            <el-option label="发送人" value="2"></el-option>
-                            <el-option label="接收人" value="3"></el-option>
-                            <el-option label="内容"   value="4"></el-option>
+					<el-input v-model="keyword" :placeholder="lc('admin_system_00198')" size="small" prefix-icon="el-icon-search" clearable>
+                        <el-select  v-model="type" size="small" slot="prepend" :placeholder="lc('admin_tool_00503')">
+                            <el-option :label="lc('wap_01619')" value="1"></el-option>
+                            <el-option :label="lc('admin_tool_00500')" value="2"></el-option>
+                            <el-option :label="lc('member_user_00281')" value="3"></el-option>
+                            <el-option :label="lc('wap_user_00102')"   value="4"></el-option>
                         </el-select>
 					</el-input>
 				</div>
 				<div class="tableSeachInpt">
-					<el-button type="primary" size="mini" icon="el-icon-search" @click="search">查询</el-button>
+					<el-button type="primary" size="mini" icon="el-icon-search" @click="search">{{ lc('admin_user_weipin_00049') }}</el-button>
 				</div>
 			</div>
 			<div class="moduleElTable">
@@ -55,46 +55,46 @@
 					:header-cell-style="{background:'#f5f7fa',color:'#606266'}" height="100%" :empty-text="emptytext">
 					<el-table-column type="selection" width="55">
 					</el-table-column>
-					<el-table-column prop="id" label="	编号" width="80" sortable="custom">
+					<el-table-column prop="id" :label="lc('common_02108')" width="80" sortable="custom">
 					</el-table-column>
-					<el-table-column prop="moblie" label="手机号"  width="110">
+					<el-table-column prop="moblie" :label="lc('wap_01619')"  width="110">
 					</el-table-column>
 
-					<el-table-column label="发送人/接收人"  width="200">
+					<el-table-column :label="lc('admin_tool_00493')"  width="200">
                         <template slot-scope="scope">
                             <div style="color:#009688">{{scope.row.fname}}</div>
                             <div>{{scope.row.sname}}</div>
                         </template>
 					</el-table-column>
-					<el-table-column prop="content" label="内容" min-width="300">
+					<el-table-column prop="content" :label="lc('wap_user_00102')" min-width="300">
 					</el-table-column>
-					<el-table-column prop="ctime_n" label="IP/发送时间" sortable="custom" width="200">
+					<el-table-column prop="ctime_n" :label="lc('admin_tool_00504')" sortable="custom" width="200">
 						<template slot-scope="scope">
 							<div>{{scope.row.ip}}</div>
 							<div>{{scope.row.ctime_n}}</div>
 						</template>
 					</el-table-column>
-					<el-table-column label="状态" width="110">
+					<el-table-column :label="lc('member_user_00181')" width="110">
 						<template slot-scope="scope">
-							<span v-if="scope.row.state==0" class="admin_state1">成功</span>
+							<span v-if="scope.row.state==0" class="admin_state1">{{ lc('admin_tool_00502') }}</span>
                             <el-tooltip placement="top" v-else>
                                <div slot="content">{{scope.row.result}}</div>
-                               <el-button  size="mini" type="danger" plain>失败<i class="el-icon-info el-icon--right"></i></el-button>
+                               <el-button  size="mini" type="danger" plain>{{ lc('admin_tool_00501') }}<i class="el-icon-info el-icon--right"></i></el-button>
                             </el-tooltip>
                             
 						</template>
 					</el-table-column>
-                    <el-table-column label="端口/归属地"  width="110">
+                    <el-table-column :label="lc('admin_tool_00505')"  width="110">
                         <template slot-scope="scope">
                             {{scope.row.port_n}}<br/>{{scope.row.location}}
                         </template>
                         
                     </el-table-column>
-					<el-table-column label="操作" width="80" fixed="right" header-align="center">
+					<el-table-column :label="lc('member_user_00048')" width="80" fixed="right" header-align="center">
 						<template slot-scope="scope">
 							<div class="cz_button">
 
-								<el-button type="danger" size=" "  @click="deleteinfo(scope.row.id)">删除</el-button>
+								<el-button type="danger" size=" "  @click="deleteinfo(scope.row.id)">{{ lc('wap_js_00077') }}</el-button>
 							</div>
 
 						</template>
@@ -104,9 +104,9 @@
 			</div>
 			<div class="modulePaging">
                	<div class="modulecz">
-                    <el-checkbox v-model="allchecked" @change="allcheckChange">全选</el-checkbox>
-                    <el-button  size="mini" @click="deleteAll">批量删除</el-button>
-                    <el-button   size="mini" @click="repeatSend">失败重发</el-button>
+                    <el-checkbox v-model="allchecked" @change="allcheckChange">{{ lc('wap_js_00074') }}</el-checkbox>
+                    <el-button  size="mini" @click="deleteAll">{{ lc('member_com_00055') }}</el-button>
+                    <el-button   size="mini" @click="repeatSend">{{ lc('admin_tool_00498') }}</el-button>
                 </div>
                 <div class="modulePagNum">
                     <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
@@ -122,7 +122,7 @@
 				el: '#daohaapp',
 				data: function() {
 					return {
-                        emptytext: window.yunAdminT('暂无数据'),
+                        emptytext: window.lc('wap_js_00113'),
                         type:'1',
                         keyword:'',
                         time:'',
@@ -170,7 +170,7 @@
                             params['date2'] = this.daterange[1].getTime()/1000;
                         }
                         this.list_loading = true;
-                        that.emptytext = window.yunAdminT('数据加载中');
+                        that.emptytext = window.lc('admin_user_weipin_00026');
                         httpPost('m=tool&c=messagelog&a=index', params, {hideloading: true}).then((result) => {
                             this.list_loading = false;
                             var res = result.data
@@ -185,7 +185,7 @@
 									that.$refs.table.bodyWrapper.scrollTop = 0;
 								}
                                 if (that.tableData.length === 0){
-                                    that.emptytext = window.yunAdminT('暂无数据');
+                                    that.emptytext = window.lc('wap_js_00113');
                                 }
                             }
                         }).catch(function (e) {
@@ -263,7 +263,7 @@
                                 idarr.push(this.choosedata[i].id);
                             }
                         } else {
-                            message.error(window.yunAdminT('请选择要删除的数据')); return;
+                            message.error(window.lc('admin_user_weipin_00005')); return;
                         }
                         var params = {
                             del: idarr
@@ -279,14 +279,14 @@
                                 idarr.push(this.choosedata[i].id);
                             }
                         } else {
-                            message.error(window.yunAdminT('请选择要重发的短信')); return;
+                            message.error(window.lc('admin_tool_00506')); return;
                         }
                         var params = {
                             id: idarr
                         };
-                        _this.$confirm(window.yunAdminT('确定重新发送短信吗？'), window.yunAdminT('温馨提示'), {
-                            confirmButtonText: window.yunAdminT('确定'),
-                            cancelButtonText: window.yunAdminT('取消'),
+                        _this.$confirm(window.lc('admin_tool_00507'), window.lc('wap_user_00205'), {
+                            confirmButtonText: window.lc('common_02016'),
+                            cancelButtonText: window.lc('wap_js_00080'),
                             type: 'warning'
                         }).then(() => {
                             _this.repeatSendPost(params);

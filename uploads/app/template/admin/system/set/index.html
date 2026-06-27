@@ -10,25 +10,25 @@
     <div id="setapp" class="moduleElenAl">
         <div class="setDomeAll">
             <el-tabs v-model="activeName" @tab-click="handleClick">
-                <el-tab-pane label="基本设置" name="first">
+                <el-tab-pane :label="lc('admin_system_00452')" name="first">
                     <jibenset :list="list" @get-list="getList" v-if="activeName == 'first'"></jibenset>
                 </el-tab-pane>
-                <el-tab-pane label="安全设置" name="second">
+                <el-tab-pane :label="lc('admin_system_00453')" name="second">
                     <anquanset :list="list" @get-list="getList" v-if="activeName == 'second'"></anquanset>
                 </el-tab-pane>
-                <el-tab-pane label="验证码设置" name="third">
+                <el-tab-pane :label="lc('admin_system_00450')" name="third">
                     <yanzhenm :list="list" @get-list="getList" v-if="activeName == 'third'"></yanzhenm>
                 </el-tab-pane>
-                <el-tab-pane label="网站LOGO" name="fourth">
+                <el-tab-pane :label="lc('admin_system_00449')" name="fourth">
                     <logopeiz :list="list" @get-list="getList" v-if="activeName == 'fourth'"></logopeiz>
                 </el-tab-pane>
-                <el-tab-pane label="地图设置" name="fifth">
+                <el-tab-pane :label="lc('admin_user_00153')" name="fifth">
                     <ditu :list="list" @get-list="getList" v-if="activeName == 'fifth'"></ditu>
                 </el-tab-pane>
-                <el-tab-pane label="缓存设置" name="sixth">
+                <el-tab-pane :label="lc('admin_system_00454')" name="sixth">
                     <huancun :list="list" @get-list="getList" v-if="activeName == 'sixth'"></huancun>
                 </el-tab-pane>
-                <el-tab-pane label="上传设置" name="seventh">
+                <el-tab-pane :label="lc('admin_system_00451')" name="seventh">
                     <uploadset :list="list" @get-list="getList" v-if="activeName == 'seventh'"></uploadset>
                 </el-tab-pane>
             </el-tabs>

@@ -13,11 +13,9 @@
 <body>
     <div id="schollfl" class="moduleElenAl">
         <div class="moduleSeachs">
-            <div class="">
-                工具箱类别
-            </div>
+            <div class="">{{ lc('admin_00259') }}</div>
             <div class="nrtopbtn">
-                <el-button size="mini" type="primary" icon="el-icon-document-add" @click="openAdd('')">添加类别</el-button>
+                <el-button size="mini" type="primary" icon="el-icon-document-add" @click="openAdd('')">{{ lc('admin_00222') }}</el-button>
             </div>
         </div>
         <div class="moduleElTable">
@@ -25,20 +23,20 @@
                 @selection-change="handleSelectionChange"
                 :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" height="100%" v-loading="loading" :empty-text="emptytext">
                 <el-table-column type="selection" width="55"> </el-table-column>
-                <el-table-column prop="id" label="编号" width="180">
+                <el-table-column prop="id" :label="lc('member_com_00345')" width="180">
                 </el-table-column>
-                <el-table-column label="名称" prop="name">
+                <el-table-column :label="lc('member_com_00021')" prop="name">
                 </el-table-column>
-                <el-table-column label="略缩图" prop="img">
+                <el-table-column :label="lc('admin_00150')" prop="img">
                     <template slot-scope="scope">
                         <img :src="scope.row.pic" width="40" height="40" />
                     </template>
                 </el-table-column>
-                <el-table-column label="操作" width="140" fixed="right">
+                <el-table-column :label="lc('member_user_00048')" width="140" fixed="right">
                     <template slot-scope="scope">
                         <div class="cz_button">
-                            <el-button size="mini" plain @click="openAdd(scope.row)">修改</el-button>
-                            <el-button type="danger" size="mini"  @click="del(scope.$index)">删除</el-button>
+                            <el-button size="mini" plain @click="openAdd(scope.row)">{{ lc('wap_js_00073') }}</el-button>
+                            <el-button type="danger" size="mini"  @click="del(scope.$index)">{{ lc('wap_js_00077') }}</el-button>
                         </div>
                     </template>
                 </el-table-column>
@@ -48,36 +46,36 @@
             <div class="">
                 <div class="">
                     <el-checkbox v-model="checkedAll" :indeterminate="checkedAllIndeterminate"
-                        @change="checkAll">全选</el-checkbox>
-                    <el-button @click="batch('del')" size="mini">批量删除</el-button>
+                        @change="checkAll">{{ lc('wap_js_00074') }}</el-checkbox>
+                    <el-button @click="batch('del')" size="mini">{{ lc('member_com_00055') }}</el-button>
                 </div>
             </div>
         </div>
 
         <div class="modluDrawer">
-            <el-dialog :title="ruleForm.id ? '修改工具箱类别' : '添加工具箱类别'" width="500px" :visible.sync="dialogAdd"
+            <el-dialog :title="lc('admin_html_00014')" width="500px" :visible.sync="dialogAdd"
                 :modal-append-to-body="false">
                 <div class="toolClasDia">
                     <div class="toolClasList">
                         <div class="toolClasTite">
-                            <span>类别名称：</span>
+                            <span>{{ lc('admin_00260') }}</span>
                         </div>
                         <div class="toolClasCont">
-                            <el-input v-model="ruleForm.name" placeholder="请输入类别名称"></el-input>
+                            <el-input v-model="ruleForm.name" :placeholder="lc('admin_00217')"></el-input>
                         </div>
                     </div>
                     <div class="toolClasList">
                         <div class="toolClasTite">
-                            <span>类别简介：</span>
+                            <span>{{ lc('admin_00261') }}</span>
                         </div>
                         <div class="toolClasCont">
-                            <el-input type="textarea" :rows="2" placeholder="请输入类别简介" v-model="ruleForm.content">
+                            <el-input type="textarea" :rows="2" :placeholder="lc('admin_00257')" v-model="ruleForm.content">
                             </el-input>
                         </div>
                     </div>
                     <div class="toolClasList">
                         <div class="toolClasTite">
-                            <span>缩 略 图：</span>
+                            <span>{{ lc('default_00254') }}</span>
                         </div>
                         <div class="toolClasCont">
                             <el-upload class="avatar-uploader" list-type="picture" action="" :auto-upload="false"
@@ -101,7 +99,7 @@
         data: function () {
             return {
                 pic_accept: localStorage.getItem("pic_accept"),
-                emptytext: '暂无数据',
+                emptytext: lc('wap_js_00113'),
                 loading: false,
                 // 列表
                 list: [],
@@ -158,7 +156,7 @@
             },
             batch(type) {
                 if (this.multipleSelection.length == 0) {
-                    message.error('请选择要删除的数据项');
+                    message.error(lc('admin_00136'));
                     return false;
                 }
 
@@ -235,17 +233,17 @@
                     formData = new FormData();
 
                 if (!ruleForm.name) {
-                    message.warning('请输入类别名称');
+                    message.warning(lc('admin_00217'));
                     return false;
                 }
 
                 if (!ruleForm.content) {
-                    message.warning('请输入类别简介');
+                    message.warning(lc('admin_00257'));
                     return false;
                 }
 
                 if (!ruleForm.pic_n) {
-                    message.warning('请上传缩略图');
+                    message.warning(lc('admin_00258'));
                     return false;
                 }
 

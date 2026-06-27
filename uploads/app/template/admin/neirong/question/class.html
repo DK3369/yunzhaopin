@@ -17,20 +17,20 @@
     <div class="moduleSeachs">
         <div class="moduleSeachleft">
             <div class="  newsinput">
-                <el-input placeholder="请输入搜索内容" size="small" prefix-icon="el-icon-search"
+                <el-input :placeholder="lc('admin_00340')" size="small" prefix-icon="el-icon-search"
                           v-model="searchForm.keyword" clearable>
                 </el-input>
             </div>
 
             <div class="newsbtnbox">
-                <el-button type="primary" icon="el-icon-search" size="mini" @click="search">查询</el-button>
+                <el-button type="primary" icon="el-icon-search" size="mini" @click="search">{{ lc('admin_user_weipin_00049') }}</el-button>
 
             </div>
         </div>
         <div class="nrtopbtn">
             <el-button type="primary" icon="el-icon-document-add" size="mini"
-                       @click="openAdd('')">添加类别</el-button>
-            <el-button type="" size="mini" v-if="pid > 0" @click="childClass(0)">返回</el-button>
+                       @click="openAdd('')">{{ lc('admin_00222') }}</el-button>
+            <el-button type="" size="mini" v-if="pid >{{ lc('admin_html_00013') }}</el-button>
         </div>
     </div>
 
@@ -39,18 +39,18 @@
                   ref="multipleTable" @selection-change="handleSelectionChange" @sort-change="sortChange" :empty-text="emptytext"
                   style="width: 100%;" :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" height="100%" v-loading="loading">
             <el-table-column type="selection" width="55"> </el-table-column>
-            <el-table-column prop="id" label="编号" width="90" sortable="custom">
+            <el-table-column prop="id" :label="lc('member_com_00345')" width="90" sortable="custom">
             </el-table-column>
-            <el-table-column prop="name" label="类别">
+            <el-table-column prop="name" :label="lc('admin_00223')">
             </el-table-column>
-            <el-table-column prop="add_time_n" label="发布时间">
+            <el-table-column prop="add_time_n" :label="lc('admin_user_weipin_00030')">
             </el-table-column>
-            <el-table-column label="操作" width="200" fixed="right">
+            <el-table-column :label="lc('member_user_00048')" width="200" fixed="right">
                 <template slot-scope="scope">
                     <div class="cz_button">
-                        <el-button size="mini" plain @click="openManage(scope.row)">管理</el-button>
-                        <el-button size="mini" plain @click="openAdd(scope.row)">修改</el-button>
-                        <el-button type="danger" size="mini" @click="del(scope.$index)">删除</el-button>
+                        <el-button size="mini" plain @click="openManage(scope.row)">{{ lc('wap_com_00304') }}</el-button>
+                        <el-button size="mini" plain @click="openAdd(scope.row)">{{ lc('wap_js_00073') }}</el-button>
+                        <el-button type="danger" size="mini" @click="del(scope.$index)">{{ lc('wap_js_00077') }}</el-button>
                     </div>
                 </template>
             </el-table-column>
@@ -60,8 +60,8 @@
     </div>
     <div class="modulePaging">
         <div class="">
-            <el-checkbox v-model="checkedAll" :indeterminate="checkedAllIndeterminate" @change="checkAll">全选</el-checkbox>
-            <el-button @click="batch('del')" size="mini">批量删除</el-button>
+            <el-checkbox v-model="checkedAll" :indeterminate="checkedAllIndeterminate" @change="checkAll">{{ lc('wap_js_00074') }}</el-checkbox>
+            <el-button @click="batch('del')" size="mini">{{ lc('member_com_00055') }}</el-button>
         </div>
         <div class="modulePagNum">
             <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
@@ -72,11 +72,11 @@
     </div>
 
     <div class="modluDrawer">
-        <el-drawer :title="detail.id ? '修改类别' : '添加类别'" :visible.sync="drawerAdd" append-to-body :show-close="true"
+        <el-drawer :title="lc('admin_html_00012')" :visible.sync="drawerAdd" append-to-body :show-close="true"
                    :with-header="true" size="45%">
             <add :refresh="random" :id="detail.id ? detail.id : ''" @child-event="closeAdd"></add>
         </el-drawer>
-        <el-drawer title="管理子类" :visible.sync="drawerManage" append-to-body :show-close="true"
+        <el-drawer :title="lc('admin_00216')" :visible.sync="drawerManage" append-to-body :show-close="true"
                    :with-header="true" @closed="closedManage" size="70%">
             <manage :pid="detail.id"></manage>
         </el-drawer>
@@ -88,7 +88,7 @@
         el: '#cityfl',
         data: function () {
             return {
-                emptytext: '暂无数据',
+                emptytext: lc('wap_js_00113'),
                 loading: false,
                 // 搜索筛选项
                 searchForm: {},

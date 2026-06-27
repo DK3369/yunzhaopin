@@ -7,23 +7,21 @@
 <body>
     <div id="daohaapp" class="moduleElenAl">
     	<div class="moduleSeachs">
-    	    <div class="">
-    	       单页面分类 
-    	    </div>
+    	    <div class="">{{ lc('admin_system_00681') }}</div>
     	    <div class="moduleSeachButn">
     	       
-    	        <el-button type="primary" icon="el-icon-document-add" size="mini" @click="addShow = true">添加单页面类别</el-button>
+    	        <el-button type="primary" icon="el-icon-document-add" size="mini" @click="addShow = true">{{ lc('admin_system_00680') }}</el-button>
     	    </div>
     	</div>
 
         <div class="moduleElTable">
             <el-table ref="multipleTable" :data="tableData" border style="width: 100%" :header-cell-style="{background:'#f5f7fa',color:'#606266'}" height="100%" @selection-change="selectionChange" v-loading="loading" :empty-text="emptytext">
                 <el-table-column type="selection" width="55"></el-table-column>
-                <el-table-column prop="id" label="	序号" width="80"></el-table-column>
-				<el-table-column label="类别名称"  >
+                <el-table-column prop="id" :label="lc('admin_system_00682')" width="80"></el-table-column>
+				<el-table-column :label="lc('admin_00219')"  >
 				    <template slot-scope="scope">
 				        <div class="moduleElTaPax" v-if="editname_id==scope.row.id">
-                            <el-input id="inputref" placeholder="请输入内容" v-model="editname" :data-preval="scope.row.name" data-type="name" @blur="editChange" clearable></el-input>
+                            <el-input id="inputref" :placeholder="lc('wap_user_00076')" v-model="editname" :data-preval="scope.row.name" data-type="name" @blur="editChange" clearable></el-input>
 				        </div>
                         <div class="moduleElTaPax" v-else>
                             <span>{{scope.row.name}}</span>
@@ -31,10 +29,10 @@
                         </div>
 				    </template>
 				</el-table-column>
-				<el-table-column label="排序" >
+				<el-table-column :label="lc('admin_vue_00044')" >
 				    <template slot-scope="scope">
                         <div class="moduleElTaPax" v-if="editsort_id==scope.row.id">
-                            <el-input id="inputref" placeholder="请输入内容" v-model="editsort" @input="inputIntNumber($event, 'editsort', '')" :data-preval="scope.row.sort" data-type="sort" @blur="editChange" clearable></el-input>
+                            <el-input id="inputref" :placeholder="lc('wap_user_00076')" v-model="editsort" @input="inputIntNumber($event, 'editsort', '')" :data-preval="scope.row.sort" data-type="sort" @blur="editChange" clearable></el-input>
                         </div>
 				        <div class="moduleElTaPax" v-else>
 				            <span>{{scope.row.sort}}</span>
@@ -42,10 +40,10 @@
 				        </div>
 				    </template>
 				</el-table-column>
-                <el-table-column fixed="right" label="操作" width="80">
+                <el-table-column fixed="right" :label="lc('member_user_00048')" width="80">
                     <template slot-scope="scope">
                         <div class="cz_button">
-						  <el-button size="mini" @click="deleteClass(scope.row.id)" type="danger">删除</el-button>
+						  <el-button size="mini" @click="deleteClass(scope.row.id)" type="danger">{{ lc('wap_js_00077') }}</el-button>
                         </div>
                     </template>
                 </el-table-column>
@@ -53,8 +51,8 @@
         </div>
         <div class="modulePaging">
             <div class="modulecz modulePagButn">
-                <el-checkbox v-model="allchecked" @change="allcheckChange">全选</el-checkbox> 
-                <el-button @click="deleteClassAll" size="mini">批量删除</el-button>
+                <el-checkbox v-model="allchecked" @change="allcheckChange">{{ lc('wap_js_00074') }}</el-checkbox> 
+                <el-button @click="deleteClassAll" size="mini">{{ lc('member_com_00055') }}</el-button>
             </div>
             <div class="modulePagNum">
                 <el-pagination background 
@@ -67,14 +65,14 @@
                 </el-pagination>
             </div>
         </div>
-        <el-dialog title="添加类型"  width="30%" :visible.sync="addShow" :modal-append-to-body="false" @close="addclose">
+        <el-dialog :title="lc('admin_system_00234')"  width="30%" :visible.sync="addShow" :modal-append-to-body="false" @close="addclose">
             <div class="hydialog_item">
-                <span>类型名称：</span>
+                <span>{{ lc('admin_system_00683') }}</span>
                 <el-input type="textarea"  v-model="classname" style="flex: 1;"></el-input>
             </div>
-            <i class="el-icon-info" style="margin-top: 10px;">说明：可以添加多条分类（请按回车Enter键换行，一行一个)</i>
+            <i class="el-icon-info" style="margin-top: 10px;">{{ lc('admin_system_00091') }}</i>
             <div slot="footer" class="dialog-footer">
-                <el-button type="primary" @click="addclass">添加</el-button>
+                <el-button type="primary" @click="addclass">{{ lc('wap_js_00091') }}</el-button>
             </div>
         </el-dialog>
     </div>
@@ -102,7 +100,7 @@
                     choosedata:[],
 
                     loading: true,
-					emptytext: window.yunAdminT('暂无数据'),
+					emptytext: window.lc('wap_js_00113'),
                 }
             },
             components: {},
@@ -119,7 +117,7 @@
                         page: that.currentPage,
                     }
                     that.loading = true;
-                    that.emptytext = window.yunAdminT('数据加载中');
+                    that.emptytext = window.lc('admin_user_weipin_00026');
                     httpPost('m=system&c=singleclass&a=index', params).then(function(result){
                         var res = result.data
                         if (res.error == 0) {
@@ -132,7 +130,7 @@
                             }
                             that.loading = false;
 							if (that.tableData.length === 0){
-                                that.emptytext = window.yunAdminT('暂无数据');
+                                that.emptytext = window.lc('wap_js_00113');
                             }
                         }
                     }).catch(function(e){
@@ -176,7 +174,7 @@
                     }else{
                         if(type=='name' && val==''){
                             this[`edit${type}_id`] = '';
-                            message.error(window.yunAdminT('类别名称不能为空！'));return;
+                            message.error(window.lc('admin_00208'));return;
                         }
                         var param = {id:id};
                         param[`${type}`] = val;
@@ -191,7 +189,7 @@
 
                             that[`edit${type}_id`] = '';
                             that[`edit${type}`] = '';
-                            message.success(window.yunAdminT('修改成功'),function(){
+                            message.success(window.lc('admin_user_company_00208'),function(){
                                 that.getList()
                             });
                         }).catch(function(e){
@@ -207,7 +205,7 @@
                     var name=position.join("-");
 
                     if(name==''){
-                        message.error(window.yunAdminT('类别名称不能为空！'));return;
+                        message.error(window.lc('admin_00208'));return;
                     }
                     let params = {
                         name: name,
@@ -217,11 +215,11 @@
                         
                         var res = result.data;
                         if(res.error==1){
-                            message.error(window.yunAdminT('已有此类别，请重新输入！'));return;
+                            message.error(window.lc('admin_system_00130'));return;
                         }else if(res.error==2){
-                            message.success(window.yunAdminT('添加成功！'),function(){location.reload();});return;
+                            message.success(window.lc('admin_system_00138'),function(){location.reload();});return;
                         }else if(res.error==3){
-                            message.error(window.yunAdminT('添加失败！'),function(){location.reload();});return;
+                            message.error(window.lc('admin_system_00137'),function(){location.reload();});return;
                         }
                     }).catch(function(e){
                         console.log(e)
@@ -259,7 +257,7 @@
                             idarr.push(this.choosedata[i].id);
                         }
                     }else{
-                        message.error(window.yunAdminT('请选择要删除的数据！'));return;
+                        message.error(window.lc('member_com_00084'));return;
                     }
                     var params = {
                         del:idarr

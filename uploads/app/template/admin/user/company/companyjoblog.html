@@ -10,22 +10,22 @@
 <div id="moduapp" class="moduleDome">
     <div class="setDomeAll setDomeInte">
         <el-tabs v-model="activeName" @tab-click="handleClick">
-            <el-tab-pane label="职位申请记录" name="first" :lazy="true">
+            <el-tab-pane :label="lc('admin_user_company_00352')" name="first" :lazy="true">
                 <comlog_index ref="first" v-bind:apply_tab="applyTab" :searchjobid="searchJobId"></comlog_index>
             </el-tab-pane>
-            <el-tab-pane label="邀请面试记录" name="useridmsg" :lazy="true">
+            <el-tab-pane :label="lc('admin_user_company_00008')" name="useridmsg" :lazy="true">
                 <comlog_useridmsg ref="useridmsg"></comlog_useridmsg>
             </el-tab-pane>
-            <el-tab-pane label=" 职位浏览记录" name="lookjob" :lazy="true">
+            <el-tab-pane :label="lc('wap_user_00268')" name="lookjob" :lazy="true">
                 <comlog_lookjob ref="lookjob"></comlog_lookjob>
             </el-tab-pane>
-            <el-tab-pane label="职位收藏记录" name="favjob" :lazy="true">
+            <el-tab-pane :label="lc('admin_user_company_00007')" name="favjob" :lazy="true">
                 <comlog_favjob ref="favjob"></comlog_favjob>
             </el-tab-pane>
-            <el-tab-pane label="拨号记录" name="jobtellog" :lazy="true">
+            <el-tab-pane :label="lc('admin_user_company_00009')" name="jobtellog" :lazy="true">
                 <comlog_jobtellog ref="jobtellog"></comlog_jobtellog>
             </el-tab-pane>
-            <el-tab-pane label="兼职报名记录" name="partapply" :lazy="true">
+            <el-tab-pane :label="lc('admin_user_company_00006')" name="partapply" :lazy="true">
                 <comlog_partapply ref="partapply"></comlog_partapply>
             </el-tab-pane>
         </el-tabs>

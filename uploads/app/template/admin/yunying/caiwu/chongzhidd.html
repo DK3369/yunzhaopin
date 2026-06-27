@@ -11,16 +11,16 @@
         <div class="moduleSeachs">
             <div class="moduleSeachleft" style="width: calc(100% - 105px);">
                 <div class="moduleInptList">
-                    <el-input placeholder="输入你要搜索的关键字" v-model="search.keyword" size="small" class="input-with-select" clearable>
-                        <el-select v-model="search.typeca" slot="prepend" placeholder="请选择">
-                            <el-option label="充值单号" value="1"></el-option>
-                            <el-option label="用户名" value="2"></el-option>
-                            <el-option label="企业名称/姓名" value="3"></el-option>
+                    <el-input :placeholder="lc('admin_user_weipin_00003')" v-model="search.keyword" size="small" class="input-with-select" clearable>
+                        <el-select v-model="search.typeca" slot="prepend" :placeholder="lc('wap_user_00100')">
+                            <el-option :label="lc('wap_user_00311')" value="1"></el-option>
+                            <el-option :label="lc('admin_user_00140')" value="2"></el-option>
+                            <el-option :label="lc('admin_user_company_00041')" value="3"></el-option>
                         </el-select>
                     </el-input>
                 </div>
                 <div class=" tableSeachInptsmall newsinput">
-                    <el-select v-model="search.typezf" size="small" style="margin-right: 0;" slot="prepend" placeholder="支付类型" clearable @change="doUserQuery">
+                    <el-select v-model="search.typezf" size="small" style="margin-right: 0;" slot="prepend" :placeholder="lc('member_user_00240')" clearable @change="doUserQuery">
                         <el-option v-for="(val,key) in pay" :key="key" :label="val" :value="key"></el-option>
                     </el-select>
                 </div>
@@ -28,7 +28,7 @@
                     <el-cascader size="small"
                         v-model="type_v"
                         size="medium"
-                        placeholder="订单类型"
+                        :placeholder="lc('wap_user_00318')"
                         :options="type_cascader"
                         :props="{expandTrigger:'hover'}"
                         @change="typeChange"
@@ -36,19 +36,19 @@
                     </el-cascader>
                 </div>
                 <div class=" tableSeachInptsmall newsinput">
-                    <el-select v-model="search.order_state" style="margin-right: 0;" size="small" slot="prepend" placeholder="订单状态" clearable @change="doUserQuery">
+                    <el-select v-model="search.order_state" style="margin-right: 0;" size="small" slot="prepend" :placeholder="lc('admin_yunying_00087')" clearable @change="doUserQuery">
                         <el-option v-for="item in payArr" :key="item.value" :label="item.label" :value="item.value"></el-option>
                     </el-select>
                 </div>
                 <div class="tableSeachInptsmalltwo">
-                    <el-date-picker v-model="search.times" type="daterange" align="right" unlink-panels range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" :picker-options="timeOptions" value-format="yyyy-MM-dd" size="small" @change="doUserQuery"></el-date-picker>
+                    <el-date-picker v-model="search.times" type="daterange" align="right" unlink-panels :range-separator="lc('admin_company_00019')" start-:placeholder="lc('admin_00343')" end-:placeholder="lc('admin_00344')" :picker-options="timeOptions" value-format="yyyy-MM-dd" size="small" @change="doUserQuery"></el-date-picker>
                 </div>
                 <div class="newsbtnbox">
-                    <el-button type="primary" icon="el-icon-search" size="mini" @click="doUserQuery">查询</el-button>
+                    <el-button type="primary" icon="el-icon-search" size="mini" @click="doUserQuery">{{ lc('admin_user_weipin_00049') }}</el-button>
                 </div>
             </div>
             <div class="moduleSeachButn">
-                <el-button type="primary" icon="el-icon-folder-checked" size="mini" @click="exportOrder">导出订单</el-button>
+                <el-button type="primary" icon="el-icon-folder-checked" size="mini" @click="exportOrder">{{ lc('admin_yunying_00082') }}</el-button>
             </div>
         </div>
 
@@ -65,15 +65,15 @@
                 :header-cell-style="{background:'#f5f7fa',color:'#606266'}" height="calc(100% - 43px)"
                 v-loading="loading" :empty-text="emptytext">
                 <el-table-column type="selection" width="55"></el-table-column>
-                <el-table-column prop="id" label="编号" width="80" sortable="custom"></el-table-column>
-                <el-table-column label="公司名称（姓名）/用户名" min-width="150" show-overflow-tooltip>
+                <el-table-column prop="id" :label="lc('member_com_00345')" width="80" sortable="custom"></el-table-column>
+                <el-table-column :label="lc('admin_01263')" min-width="150" show-overflow-tooltip>
                     <template slot-scope="scope">
                         <div class="cz_button">
                             {{scope.row.comname}}<br />{{scope.row.username}}
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column prop="chongzhi" label="充值单号/支付类型/订单类型" min-width="150">
+                <el-table-column prop="chongzhi" :label="lc('admin_yunying_00075')" min-width="150">
                     <template slot-scope="scope">
                         <div class="cz_button">
                             {{scope.row.order_id}}<br />{{scope.row.order_type_n}}<br />
@@ -81,28 +81,28 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column prop="order_price" label="付款金额" width="120" sortable="custom">
+                <el-table-column prop="order_price" :label="lc('admin_user_company_00044')" width="120" sortable="custom">
                     <template slot-scope="scope">
                         <span style="color: red;">{{scope.row.order_price}}</span>
                     </template>
                 </el-table-column>
-                <el-table-column prop="order_time" label="订单时间" width="180" sortable="custom"></el-table-column>
-                <el-table-column prop="zt" label="状态" width="150" align="center">
+                <el-table-column prop="order_time" :label="lc('wap_user_00314')" width="180" sortable="custom"></el-table-column>
+                <el-table-column prop="zt" :label="lc('member_user_00181')" width="150" align="center">
                     <template slot-scope="scope">
                         <div v-html="scope.row.order_state_n"></div>
                     </template>
                 </el-table-column>
-                <el-table-column prop="yewuyuan" label="业务员" width="130" align="center">
+                <el-table-column prop="yewuyuan" :label="lc('admin_user_company_00049')" width="130" align="center">
                     <template slot-scope="scope">
                         <div v-if="scope.row.crm_name">{{scope.row.crm_name}}</div>
-                        <div v-else><span style="color: red;">未绑定</span></div>
+                        <div v-else><span style="color: red;">{{ lc('wap_user_00181') }}</span></div>
                     </template>
                 </el-table-column>
-                <el-table-column fixed="right" label="操作" width="130" align="center">
+                <el-table-column fixed="right" :label="lc('member_user_00048')" width="130" align="center">
                     <template slot-scope="scope">
                         <div class="cz_button">
-                            <el-button size="small" @click="detailFun(scope.row)" type="primary">查看</el-button>
-                            <el-button type="danger" size="small " @click="delRow(scope.row)">删除</el-button>
+                            <el-button size="small" @click="detailFun(scope.row)" type="primary">{{ lc('wap_com_00427') }}</el-button>
+                            <el-button type="danger" size="small " @click="delRow(scope.row)">{{ lc('wap_js_00077') }}</el-button>
                         </div>
                     </template>
                 </el-table-column>
@@ -111,8 +111,8 @@
         </div>
         <div class="modulePaging">
             <div class="modulecz modulePagButn">
-                <el-checkbox v-model="checkedAll" @change="selectAllBottom">全选</el-checkbox>
-                <el-button @click="batchDel" size="mini">批量删除</el-button>
+                <el-checkbox v-model="checkedAll" @change="selectAllBottom">{{ lc('wap_js_00074') }}</el-checkbox>
+                <el-button @click="batchDel" size="mini">{{ lc('member_com_00055') }}</el-button>
             </div>
             <div class="modulePagNum">
                 <el-pagination :total="total" @current-change="userPageChange" @size-change="userPageSizeChange"
@@ -123,32 +123,32 @@
         </div>
         <!-- 查看更多 -->
 
-        <el-drawer title="订单详情" :visible.sync="drawer3" :direction="direction" append-to-body size="540px"
+        <el-drawer :title="lc('admin_user_company_00048')" :visible.sync="drawer3" :direction="direction" append-to-body size="540px"
             :modal-append-to-body="false">
             <div class="dd_xqbox ddanQboxcont">
                 <div class="ddanQboxBorder">
                     <div class="dd_list">
-                        <span class="dd_name">名称</span>
+                        <span class="dd_name">{{ lc('member_com_00021') }}</span>
                         <span class="dd_texts">{{detail.comname}}</span>
                     </div>
                     <div class="dd_list">
-                        <span class="dd_name">订单号</span>
+                        <span class="dd_name">{{ lc('wap_user_00320') }}</span>
                         <span>{{detail.order_id}}</span>
                     </div>
                     <div class="dd_list">
-                        <span class="dd_name">交易时间</span>
+                        <span class="dd_name">{{ lc('admin_yunying_00079') }}</span>
                         <span>{{detail.order_time_ymd}}</span>
                     </div>
                     <div class="dd_list">
-                        <span class="dd_name">用户名</span>
+                        <span class="dd_name">{{ lc('admin_user_00140') }}</span>
                         <div class="yun_admin_divh" v-if="detail.type==3 || detail.order_type =='bank'">
                             {{detail.comname}}+
                         </div>
                         {{detail.username}}
                     </div>
                     <div class="dd_list">
-                        <span class="dd_name" v-if="detail.order_state==1">待付金额</span>
-                        <span class="dd_name" v-else>付款金额</span>
+                        <span class="dd_name" v-if="detail.order_state==1">{{ lc('admin_yunying_00083') }}</span>
+                        <span class="dd_name" v-else>{{ lc('admin_user_company_00044') }}</span>
                         {{ lc("admin_currency_yuan", [detail.order_price]) }}
                     </div>
                     <template v-if="detail.type =='3' || detail.order_type =='bank'">
@@ -170,14 +170,12 @@
 
                     <div class="dd_list">{{ lc("admin_order_type_value", [detail.type_n]) }}</div>
                     <div class="dd_list">{{ lc("admin_payment_status_value", [detail.order_state_n]) }}</div>
-                    <div class="dd_list">{{ lc("admin_contract_status_value", [htpics.length > 0 ? '已上传' : '未上传']) }}</div>
+                    <div class="dd_list">{{ lc("admin_contract_status_value", [htpics.length > {{ lc('admin_01262') }}</div>
                     <template v-if="detail.type==3 || detail.order_type =='bank'">
-                        <div class="dd_list"><span class="dd_name">上传汇款单</span>
-                            <template v-if="detail.order_state ==1 || !detail.order_pic">
-                                未上传汇款单
-                            </template>
+                        <div class="dd_list"><span class="dd_name">{{ lc('admin_user_company_00043') }}</span>
+                            <template v-if="detail.order_state ==1 || !detail.order_pic">{{ lc('admin_yunying_00076') }}</template>
                             <template v-else>
-                                <img :src="detail.order_pic" alt="汇款单" width="160px" height="60px">
+                                <img :src="detail.order_pic" :alt="lc('admin_yunying_00089')" width="160px" height="60px">
                             </template>
                         </div>
                     </template>
@@ -185,11 +183,11 @@
                         <div class="dd_list" v-if="detail.crm_name">{{ lc("admin_salesperson_value", [detail.crm_name]) }}
                         </div>
                     </template>
-                    <div class="dd_list"><span class="dd_name">备注</span>
+                    <div class="dd_list"><span class="dd_name">{{ lc('admin_vue_00040') }}</span>
                         {{detail.order_remark}}
                     </div>
                     <div class="dd_list" v-if="htpics">
-                        <span class="dd_name" style="float: left">合同图片</span>
+                        <span class="dd_name" style="float: left">{{ lc('admin_user_company_00030') }}</span>
                         <el-image v-for="item in htpics" :preview-src-list="yySrcList" style="margin-right: 10px;width: 100px; height: 100px" :src="item.pic_n" :id="item.id"></el-image>
                     </div>
                     <!-- <div class="dd_listbth">
@@ -199,31 +197,31 @@
                     </div> -->
                 </div>
                 <div class="dd_listbth">
-                    <el-button type="success" plain @click="uploadHeTong">上传合同</el-button>
-                    <el-button v-if="detail.order_state ==1 || detail.order_state == 3" type="primary" plain @click="drawer6 = true" style="margin: 0 12px;">修改订单</el-button>
-                    <el-button v-if="detail.order_state ==1 || detail.order_state == 3" type="primary" @click="confirmOrder">确认订单</el-button>
+                    <el-button type="success" plain @click="uploadHeTong">{{ lc('admin_yunying_00077') }}</el-button>
+                    <el-button v-if="detail.order_state ==1 || detail.order_state == 3" type="primary" plain @click="drawer6 = true" style="margin: 0 12px;">{{ lc('admin_yunying_00080') }}</el-button>
+                    <el-button v-if="detail.order_state ==1 || detail.order_state == 3" type="primary" @click="confirmOrder">{{ lc('admin_yunying_00084') }}</el-button>
                 </div>
             </div>
 
             <!-- 修改订单 -->
             <div class="modluDrawer">
-                <el-dialog title="修改订单" :visible.sync="drawer6" :with-header="true" append-to-body
+                <el-dialog :title="lc('admin_yunying_00080')" :visible.sync="drawer6" :with-header="true" append-to-body
                     :modal-append-to-body="false" :show-close="true" width="450px">
-                    <div class="wxsettip_small ">修改金额</div>
+                    <div class="wxsettip_small ">{{ lc('admin_yunying_00081') }}</div>
                     <el-input placeholder="" v-model="detail.order_price"></el-input>
-                    <div class="wxsettip_small ">备注</div>
-                    <el-input type="textarea" :rows="2" placeholder="请输入内容" v-model="detail.order_remark">
+                    <div class="wxsettip_small ">{{ lc('admin_vue_00040') }}</div>
+                    <el-input type="textarea" :rows="2" :placeholder="lc('wap_user_00076')" v-model="detail.order_remark">
                     </el-input>
                     <span slot="footer" class="dialog-footer">
-                        <el-button @click="drawer6 = false">取 消</el-button>
-                        <el-button type="primary" @click="editOrder" :disabled="submitLoading">确 定</el-button>
+                        <el-button @click="drawer6 = false">{{ lc('admin_user_weipin_00043') }}</el-button>
+                        <el-button type="primary" @click="editOrder" :disabled="submitLoading">{{ lc('wap_com_00019') }}</el-button>
                     </span>
                 </el-dialog>
             </div>
 
             <!-- 上传合同 -->
             <div class="modluDrawer">
-                <el-dialog title="上传合同" :visible.sync="drawer5" :with-header="true" append-to-body
+                <el-dialog :title="lc('admin_yunying_00077')" :visible.sync="drawer5" :with-header="true" append-to-body
                     :modal-append-to-body="false" :show-close="true" width="30%">
                     <el-upload :action="uploadAction" multiple :limit="3" list-type="picture-card" :accept="pic_accept"
                         :on-success="handleAvatarSuccess" :file-list="fileList" ref="files" :on-exceed="exceedFun"
@@ -240,7 +238,7 @@
                     </el-upload>
                     <div style="font-size: 12px;color: #8c939d">
                         <i class="el-icon-warning-outline"></i>
-                        <span>只能上传jpg/png文件，且不超过500kb</span>
+                        <span>{{ lc('admin_user_company_00029') }}</span>
                     </div>
                     <!--            <el-upload-->
                     <!--                    class="upload-demo"-->
@@ -256,8 +254,8 @@
                     <!--                <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>-->
                     <!--            </el-upload>-->
                     <span slot="footer" class="dialog-footer">
-                        <el-button @click="drawer5 = false">取 消</el-button>
-                        <el-button type="primary" @click="saveImg" :disabled="submitLoading">确 定</el-button>
+                        <el-button @click="drawer5 = false">{{ lc('admin_user_weipin_00043') }}</el-button>
+                        <el-button type="primary" @click="saveImg" :disabled="submitLoading">{{ lc('wap_com_00019') }}</el-button>
                     </span>
                 </el-dialog>
             </div>
@@ -273,7 +271,7 @@
                 return {
                     pic_accept: localStorage.getItem("pic_accept"),
                     loading: false,
-                    emptytext: '暂无数据',
+                    emptytext: lc('wap_js_00113'),
 
                     checkedAll: false,
                     drawer: false,
@@ -301,7 +299,7 @@
                     searchTypedd : '',
                     timeOptions: {
                         shortcuts: [{
-                            text: '昨天',
+                            text: lc('common_02000'),
                             onClick(picker) {
                                 const end = new Date();
                                 const start = new Date();
@@ -310,35 +308,35 @@
                                 picker.$emit('pick', [start, end]);
                             }
                         }, {
-                            text: '今天',
+                            text: lc('common_01940'),
                             onClick(picker) {
                                 const end = new Date();
                                 const start = new Date();
                                 picker.$emit('pick', [start, end]);
                             }
                         }, {
-                            text: '本周',
+                            text: lc('admin_user_00146'),
                             onClick(picker) {
                                 const start = new Date(new Date().setHours(0, 0, 0) - (new Date().getDay() - 1) * 24 * 60 * 60 * 1000);
                                 const end = new Date();
                                 picker.$emit('pick', [start, end]);
                             }
                         }, {
-                            text: '上周',
+                            text: lc('admin_user_00142'),
                             onClick(picker) {
                                 const start = new Date(new Date().setHours(0, 0, 0) - (new Date().getDay() + 6) * 24 * 60 * 60 * 1000);
                                 const end = new Date(new Date().setHours(0, 0, 0) + (0 - new Date().getDay()) *24 * 60 * 60 *1000);
                                 picker.$emit('pick', [start, end]);
                             }
                         }, {
-                            text: '本月',
+                            text: lc('admin_user_00147'),
                             onClick(picker) {
                                 const end = new Date();
                                 const start = new Date(new Date(new Date().getFullYear(), new Date().getMonth(), 1).setHours(0, 0, 0));
                                 picker.$emit('pick', [start, end]);
                             }
                         }, {
-                            text: '上月',
+                            text: lc('admin_user_00143'),
                             onClick(picker) {
                                 const end = new Date(new Date(new Date().getFullYear(), new Date().getMonth(), 0).setHours(23, 59, 59, 59));
                                 const start = new Date(new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1).setHours(0, 0, 0));
@@ -351,20 +349,20 @@
                     currentPage4: 4,
                     payArr: [{
                         value: '0',
-                        label: "支付失败"
+                        label: lc('admin_01264')
                     }, {
                         value: '1',
-                        label: "等待付款"
+                        label: lc('admin_yunying_00085')
                     }, {
                         value: '2',
-                        label: "支付成功"
+                        label: lc('admin_01265')
                     }, {
                         value: '3',
-                        label: "等待确认"
+                        label: lc('admin_yunying_00086')
                     },
                     {
                         value: '4',
-                        label: "交易关闭"
+                        label: lc('admin_yunying_00078')
                     }],
                     total: 0,
                     page: 1,
@@ -568,7 +566,7 @@
                             _this.ordertype = res.data.ordertype;
                             _this.ratingarr = res.data.ratingarr;
 							if(res.data.ratingarr.length>0){
-								res.data.ratingarr.unshift({value:0,label:'全部'});
+								res.data.ratingarr.unshift({value:0,label:lc('wap_js_00075')});
 							}
                             var type_cascader = [];
                             var one = {};
@@ -624,7 +622,7 @@
                         sendData.typedd = this.searchTypedd;
                     }
                     _this.loading = true;
-                    _this.emptytext = "数据加载中";
+                    _this.emptytext = lc('admin_user_weipin_00026');
                     httpPost(url, sendData, {hideloading: true}).then(function (response) {
                         let res = response.data;
                         if (res.error == 0) {
@@ -642,7 +640,7 @@
                             _this.loading = false;
                             _this.pageSizes = res.data.pageSizes;
                             if (_this.tableData.length === 0) {
-                                _this.emptytext = "暂无数据";
+                                _this.emptytext = lc('wap_js_00113');
                             }
                         }
                     })
@@ -651,9 +649,9 @@
                     let _this = this;
                     let url = _this.uri + 'finance_company_order&a=htpic_del';
                     let orderid = this.detail.id;
-                    this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
-                        confirmButtonText: '确定',
-                        cancelButtonText: '取消',
+                    this.$confirm(lc('admin_html_00023'), lc('wap_js_00125'), {
+                        confirmButtonText: lc('common_02016'),
+                        cancelButtonText: lc('wap_js_00080'),
                         type: 'warning'
                     }).then(() => {
                         if (file.id) {
@@ -682,10 +680,10 @@
                         file.type === 'image/jpg' || file.type === 'image/png' || file.type === 'image/jpeg' || file.type === 'image/gif';
                     const isLt2M = file.size / 1024 / 1024 < 5;
                     if (!isJPG) {
-                        this.$message.error('上传身份证图片只能是 JPG, PNG, JPEG, GIF 格式!');
+                        this.$message.error(lc('admin_html_00020'));
                     }
                     if (!isLt2M) {
-                        this.$message.error('上传身份证图片大小不能超过 2MB!');
+                        this.$message.error(lc('admin_html_00021'));
                     }
                     return isJPG && isLt2M;
                 },
@@ -705,7 +703,7 @@
                     }
                 },
                 exceedFun(files, fileList) {
-                    this.$message.error('超过上传图片最大限制!');
+                    this.$message.error(lc('admin_company_00015'));
                 },
                 saveImg: function () {
                     let _this = this;
@@ -738,7 +736,7 @@
                 batchDel: function () {
                     let ids = this.idsArr;
                     if (!ids.length) {
-                        message.error('请选择需要删除的消费记录');
+                        message.error(lc('admin_01267'));
                         return
                     }
                     let _this = this;
@@ -775,9 +773,9 @@
                     let _this = this;
                     let ids = this.idsArr;
                     let url = this.uri + 'finance_company_order&a=xls'
-                    _this.$confirm('确定导出充值记录吗？', '温馨提示', {
-                        confirmButtonText: '确定',
-                        cancelButtonText: '取消',
+                    _this.$confirm(lc('admin_01268'), lc('wap_user_00205'), {
+                        confirmButtonText: lc('common_02016'),
+                        cancelButtonText: lc('wap_js_00080'),
                         type: 'warning'
                     }).then(() => {
                         httpPost(url, { uid: ids, time: this.search.times }).then(function (response) {

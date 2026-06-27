@@ -15,23 +15,19 @@
 <body>
     <div id="hyfl" class="moduleElenAl">
         <div class="moduleSeachs">
-            <div class="">
-                新闻类别
-            </div>
+            <div class="">{{ lc('admin_00170') }}</div>
             <div class="nrtopbtn">
-                <el-button size="mini" @click="makeCache" :disabled="submitLoading">更新缓存</el-button>
-                <el-button type="primary" icon="el-icon-document-add" @click="addclass" size="mini">添加分类
-                </el-button>
+                <el-button size="mini" @click="makeCache" :disabled="submitLoading">{{ lc('admin_00196') }}</el-button>
+                <el-button type="primary" icon="el-icon-document-add" @click="addclass" size="mini">{{ lc('admin_00197') }}</el-button>
             </div>
         </div>
         <div class="moduleElTable">
-            <div class="admin_datatip"><i class="el-icon-document"></i>添加大类时，不用选择类别。 添加二级分类时，要选择类别。 分类转移只能转移二级分类。
-                点击类别名称/排序旁边的图标，可进行修改。</div>
+            <div class="admin_datatip"><i class="el-icon-document"></i>{{ lc('admin_00173') }}</div>
             <el-table :data="list" stripe border style="width: 100%;" :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" height="calc(100% - 44px)" @selection-change="handleSelectionChange" ref="multipleTable" v-loading="loading" :empty-text="emptytext">
                 <el-table-column type="selection" width="55"></el-table-column>
-                <el-table-column prop="id" label="编号" width="90">
+                <el-table-column prop="id" :label="lc('member_com_00345')" width="90">
                 </el-table-column>
-                <el-table-column label="类别名称" property="name">
+                <el-table-column :label="lc('admin_00219')" property="name">
                     <template slot-scope="scope">
                         <el-input v-if="scope.row[scope.column.property + 'isShow']" :ref="scope.column.property + scope.$index" :id="scope.column.property + scope.$index" v-model="scope.row.name" @blur="alterData(scope, 1)"></el-input>
                         <span v-else>{{ scope.row.name }}
@@ -39,15 +35,14 @@
                         </span>
                     </template>
                 </el-table-column>
-                <el-table-column label="记录数" property="number">
+                <el-table-column :label="lc('admin_00206')" property="number">
                     <template slot-scope="scope">
-                        共有文章 <font color="#0033FF">
+                        {{ lc('admin_00189') }}<font color="#0033FF">
                             <el-link @click="newslist(scope.row.id)">{{scope.row.count != 0 ? scope.row.count :
                                 0}}</el-link>
-                        </font> 篇，子类别 <font color="#0033FF">{{scope.row.roots != 0 ? scope.row.roots : 0}}</font> 个
-                    </template>
+                        </font> {{ lc('admin_00186') }}<font color="#0033FF">{{scope.row.roots != 0 ? scope.row.roots : 0}}</font> {{ lc('common_02050') }}</template>
                 </el-table-column>
-                <el-table-column label="排序" property="sort" width="80">
+                <el-table-column :label="lc('admin_vue_00044')" property="sort" width="80">
                     <template slot-scope="scope">
                         <el-input v-if="scope.row[scope.column.property + 'isShow']" :ref="scope.column.property + scope.$index" :id="scope.column.property + scope.$index" v-model="scope.row.sort" @blur="alterData(scope, 1)"></el-input>
                         <span v-else>
@@ -56,32 +51,32 @@
                         </span>
                     </template>
                 </el-table-column>
-                <el-table-column label="新闻首页" property="newsindex" width="90">
+                <el-table-column :label="lc('admin_00195')" property="newsindex" width="90">
                     <template slot-scope="scope">
                         <el-switch v-model="scope.row.rec_news" @change="recNewsChange($event,scope.row, 1)">
                         </el-switch>
                     </template>
                 </el-table-column>
-                <el-table-column label="是否首页推荐" property="rec" width="110">
+                <el-table-column :label="lc('admin_00183')" property="rec" width="110">
                     <template slot-scope="scope">
                         <el-switch v-model="scope.row.rec" @change="recNewsChange($event,scope.row, 2)">
                         </el-switch>
                     </template>
                 </el-table-column>
-                <el-table-column label="设为导航" width="90">
+                <el-table-column :label="lc('admin_00200')" width="90">
                     <template slot-scope="scope">
                         <div class="TableLink">
-                            <el-link type="primary" v-if="scope.row.is_menu == 0" @click="setmenu(scope.row.id)">设为导航</el-link>
-                            <el-link type="primary" v-if="scope.row.is_menu != 0" @click="setmenu(scope.row.id)">修改导航</el-link>
-                            <el-link type="primary" v-if="scope.row.is_menu != 0" @click="delmenu(scope.row.id)">取消导航</el-link>
+                            <el-link type="primary" v-if="scope.row.is_menu == 0" @click="setmenu(scope.row.id)">{{ lc('admin_00200') }}</el-link>
+                            <el-link type="primary" v-if="scope.row.is_menu != 0" @click="setmenu(scope.row.id)">{{ lc('admin_00188') }}</el-link>
+                            <el-link type="primary" v-if="scope.row.is_menu != 0" @click="delmenu(scope.row.id)">{{ lc('admin_00190') }}</el-link>
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="操作" width="140" fixed="right">
+                <el-table-column :label="lc('member_user_00048')" width="140" fixed="right">
                     <template slot-scope="scope">
                         <div class="cz_button">
-                            <el-button size="small " plain @click="editClass(scope.$index)">管理</el-button>
-                            <el-button type="danger" size="mini" @click="delrow(scope.row.id)">删除</el-button>
+                            <el-button size="small " plain @click="editClass(scope.$index)">{{ lc('wap_com_00304') }}</el-button>
+                            <el-button type="danger" size="mini" @click="delrow(scope.row.id)">{{ lc('wap_js_00077') }}</el-button>
                         </div>
                     </template>
                 </el-table-column>
@@ -90,29 +85,27 @@
         <div class="modulePaging">
             <div class="">
                 <div class="">
-                    <el-checkbox v-model="checkedAll" @change="selectAllBottom">全选</el-checkbox>
-                    <el-button @click="delAllBottom" size="mini">批量删除</el-button>
-                    <el-button @click="fpClassAllBottom" size="mini">批量转移分类</el-button>
+                    <el-checkbox v-model="checkedAll" @change="selectAllBottom">{{ lc('wap_js_00074') }}</el-checkbox>
+                    <el-button @click="delAllBottom" size="mini">{{ lc('member_com_00055') }}</el-button>
+                    <el-button @click="fpClassAllBottom" size="mini">{{ lc('admin_00164') }}</el-button>
                 </div>
             </div>
         </div>
         <!-- 类别管理弹窗 -->
-        <el-drawer title="类别管理" :close-on-press-escape="false" :wrapper-closable="false" :visible.sync="draweredit" append-to-body :modal-append-to-body="false" size="80%">
+        <el-drawer :title="lc('admin_00199')" :close-on-press-escape="false" :wrapper-closable="false" :visible.sync="draweredit" append-to-body :modal-append-to-body="false" size="80%">
             <div class="tctable_cont">
                 <div class="moduleSeachs" style="padding: 0; width: 100%;flex-wrap: wrap;">
-                    <div class="admin_datatip" style="margin-bottom: 0;"><i class="el-icon-document"></i>添加大类时，不用选择类别。
-                        添加二级分类时，要选择类别。 分类转移只能转移二级分类。 点击类别名称/排序旁边的图标，可进行修改。</div>
+                    <div class="admin_datatip" style="margin-bottom: 0;"><i class="el-icon-document"></i>{{ lc('admin_00173') }}</div>
                     <div class="nrtopbtn" style="padding: 8px 0;">
-                        <el-button size="mini" @click="makeCache">更新缓存</el-button>
-                        <el-button type="primary" icon="el-icon-document-add" @click="addclass" size="mini">添加分类
-                        </el-button>
+                        <el-button size="mini" @click="makeCache">{{ lc('admin_00196') }}</el-button>
+                        <el-button type="primary" icon="el-icon-document-add" @click="addclass" size="mini">{{ lc('admin_00197') }}</el-button>
                     </div>
                 </div>
                 <el-table :data="subTableData" style="width: 100%;margin-bottom: 6px;" row-key="id" border default-expand-all :tree-props="{children: 'children', hasChildren: 'hasChildren'}" :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" height="85%" @selection-change="handleSubTblSelectionChange" ref="multipleSubTable" v-loading="loading" :empty-text="emptytext">
                     <el-table-column type="selection" width="55"></el-table-column>
-                    <el-table-column prop="id" label="编号" width="90">
+                    <el-table-column prop="id" :label="lc('member_com_00345')" width="90">
                     </el-table-column>
-                    <el-table-column label="类别名称" property="name">
+                    <el-table-column :label="lc('admin_00219')" property="name">
                         <template slot-scope="scope">
                             <el-input v-if="scope.row[scope.column.property + 'isShow']" :ref="'edit_' + scope.column.property + scope.$index" :id="'edit_' + scope.column.property + scope.$index" v-model="scope.row.name" @blur="alterData(scope, 2)"></el-input>
                             <span v-else>{{ scope.row.name }}
@@ -120,18 +113,16 @@
                             </span>
                         </template>
                     </el-table-column>
-                    <el-table-column label="记录数" property="number">
+                    <el-table-column :label="lc('admin_00206')" property="number">
                         <template slot-scope="scope">
-                            共有文章 <font color="#0033FF">
+                            {{ lc('admin_00189') }}<font color="#0033FF">
                                 <el-link @click="newslist(scope.row.id)">{{scope.row.count != 0 && scope.row.count ?
                                     scope.row.count : 0}}</el-link>
-                            </font> 篇
-                            <span v-if="scope.row.children">
-                                ，子类别 <font color="#0033FF">{{scope.row.roots != 0 ? scope.row.roots : 0}}</font> 个
-                            </span>
+                            </font> {{ lc('common_02097') }}<span v-if="scope.row.children">
+                                {{ lc('admin_00202') }}<font color="#0033FF">{{scope.row.roots != 0 ? scope.row.roots : 0}}</font> {{ lc('common_02050') }}</span>
                         </template>
                     </el-table-column>
-                    <el-table-column label="排序" property="sort">
+                    <el-table-column :label="lc('admin_vue_00044')" property="sort">
                         <template slot-scope="scope">
                             <el-input v-if="scope.row[scope.column.property + 'isShow']" :ref="scope.column.property + scope.$index" :id="scope.column.property + scope.$index" v-model="scope.row.sort" @blur="alterData(scope, 2)"></el-input>
                             <span v-else>
@@ -140,11 +131,10 @@
                             </span>
                         </template>
                     </el-table-column>
-                    <el-table-column label="操作" width="140" fixed="right">
+                    <el-table-column :label="lc('member_user_00048')" width="140" fixed="right">
                         <template slot-scope="scope">
                             <div class="cz_button">
-                                <el-button type="danger" size="small " @click="delrow(scope.row.id)">删除
-                                </el-button>
+                                <el-button type="danger" size="small " @click="delrow(scope.row.id)">{{ lc('wap_js_00077') }}</el-button>
                             </div>
                         </template>
                     </el-table-column>
@@ -152,9 +142,9 @@
                 <div style="padding-bottom: 12px;">
                     <div class="">
                         <div class="">
-                            <el-checkbox v-model="checkedSubTblAll" @change="selectSubTblAllBottom">全选</el-checkbox>
-                            <el-button size="mini" @click="delAllBottom">批量删除</el-button>
-                            <el-button size="mini" @click="fpClassAllBottom">批量转移分类</el-button>
+                            <el-checkbox v-model="checkedSubTblAll" @change="selectSubTblAllBottom">{{ lc('wap_js_00074') }}</el-checkbox>
+                            <el-button size="mini" @click="delAllBottom">{{ lc('member_com_00055') }}</el-button>
+                            <el-button size="mini" @click="fpClassAllBottom">{{ lc('admin_00164') }}</el-button>
                         </div>
                     </div>
                 </div>
@@ -162,14 +152,14 @@
         </el-drawer>
         <!--批量转移分类-->
         <div class="modluDrawer">
-            <el-dialog title="批量转移分类" width="400px" :visible.sync="drawerClassMultiple" append-to-body :modal-append-to-body="false">
+            <el-dialog :title="lc('admin_00164')" width="400px" :visible.sync="drawerClassMultiple" append-to-body :modal-append-to-body="false">
                 <div class="toolClasDia fenpeizhand">
                     <div class="toolClasList">
                         <div class="toolClasTite">
-                            <span>新闻类别：</span>
+                            <span>{{ lc('admin_00799') }}</span>
                         </div>
                         <div class="toolClasCont">
-                            <el-select v-model="classid" filterable placeholder="请选择新闻所属分类" clearable>
+                            <el-select v-model="classid" filterable :placeholder="lc('admin_00159')" clearable>
                                 <el-option v-for="item in tableData" :key="item.id" :label="item.name" :value="item.id">
                                 </el-option>
                             </el-select>
@@ -180,68 +170,67 @@
                             <span></span>
                         </div>
                         <div class="toolClasCont">
-                            <span style="color:red;">说明：不选择新闻类别，则转移为一级类别; 选择了新闻类别，则将需要转移的类别转移到选择的类别下</span>
+                            <span style="color:red;">{{ lc('admin_00174') }}</span>
                         </div>
                     </div>
                 </div>
                 <span slot="footer" class="dialog-footer">
-                    <el-button @click="drawerClassMultiple = false">取 消</el-button>
-                    <el-button type="primary" @click="saveClass" :disabled="submitLoading">确 定</el-button>
+                    <el-button @click="drawerClassMultiple = false">{{ lc('admin_user_weipin_00043') }}</el-button>
+                    <el-button type="primary" @click="saveClass" :disabled="submitLoading">{{ lc('wap_com_00019') }}</el-button>
                 </span>
             </el-dialog>
         </div>
         <!--新闻管理-->
-        <el-drawer title="新闻管理" :close-on-press-escape="false" :wrapper-closable="false" :visible.sync="shownewslist" append-to-body :modal-append-to-body="false" size="80%">
+        <el-drawer :title="lc('admin_00194')" :close-on-press-escape="false" :wrapper-closable="false" :visible.sync="shownewslist" append-to-body :modal-append-to-body="false" size="80%">
             <news ref="newsmanage"></news>
         </el-drawer>
         <!-- 添加类别弹窗 -->
         <div class="modluDrawer">
-            <el-dialog title="添加类别" :visible.sync="draweraddclass" width="500px" append-to-body :modal-append-to-body="false">
-                <div class="wxsettip_small ">一级类别名称</div>
+            <el-dialog :title="lc('admin_00222')" :visible.sync="draweraddclass" width="500px" append-to-body :modal-append-to-body="false">
+                <div class="wxsettip_small ">{{ lc('admin_00182') }}</div>
                  <div class="wxsettip_Sealect">
-				<el-select v-model="classid" filterable placeholder="请选择新闻所属分类" clearable>
+				<el-select v-model="classid" filterable :placeholder="lc('admin_00159')" clearable>
                     <el-option v-for="item in tableData" :key="item.id" :label="item.name" :value="item.id">
                     </el-option>
                 </el-select>
 				</div>
-                <div class="wxsettip_small ">类别名称
-                    <el-tooltip class="item" effect="dark" content="可以添加多条分类（请按回车键换行，一行一个）。" placement="right-start"><i class="el-icon-warning-outline"></i>
-                        <el-button>右上</el-button>
+                <div class="wxsettip_small ">{{ lc('admin_00219') }}<el-tooltip class="item" effect="dark" :content="lc('admin_00177')" placement="right-start"><i class="el-icon-warning-outline"></i>
+                        <el-button>{{ lc('admin_00207') }}</el-button>
                     </el-tooltip>
                 </div>
-                <el-input type="textarea" :rows="2" placeholder="请输入内容" v-model="classname">
+                <el-input type="textarea" :rows="2" :placeholder="lc('wap_user_00076')" v-model="classname">
                 </el-input>
-                <div class="wxsettip_small ">首页是否推荐</div>
+                <div class="wxsettip_small ">{{ lc('admin_00184') }}</div>
                 <template>
-                    <el-radio v-model="rec" label="1">是</el-radio>
-                    <el-radio v-model="rec" label="0">否</el-radio>
+                    <el-radio v-model="rec" label="1">{{ lc('common_02085') }}</el-radio>
+                    <el-radio v-model="rec" label="0">{{ lc('common_02063') }}</el-radio>
                 </template>
                 <span slot="footer" class="dialog-footer">
-                    <el-button @click="draweraddclass = false">取 消</el-button>
-                    <el-button type="primary" @click="saveAddClass" :disabled="submitLoading">确 定</el-button>
+                    <el-button @click="draweraddclass = false">{{ lc('admin_user_weipin_00043') }}</el-button>
+                    <el-button type="primary" @click="saveAddClass" :disabled="submitLoading">{{ lc('wap_com_00019') }}</el-button>
                 </span>
             </el-dialog>
         </div>
         <!-- 设为导航、修改导航弹窗 -->
         <div class="modluDrawer">
-            <el-drawer title="设置导航" :close-on-press-escape="false" :wrapper-closable="false" :visible.sync="drawersetmenu" size="800px" top="0" append-to-body :modal-append-to-body="false">
+            <el-drawer :title="lc('admin_00201')" :close-on-press-escape="false" :wrapper-closable="false" :visible.sync="drawersetmenu" size="800px" top="0" append-to-body :modal-append-to-body="false">
                 <div class="moduleTable" style="margin: 0 20px; width: calc(100% - 40px);">
                     <table class="tableVue">
                         <thead>
                             <tr align="left">
-                                <th width="140">名称</th>
-                                <th width="340">状态</th>
-                                <th>说明</th>
+                                <th width="140">{{ lc('member_com_00021') }}</th>
+                                <th width="340">{{ lc('member_user_00181') }}</th>
+                                <th>{{ lc('member_com_00207') }}</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
                                 <td>
-                                    <div class="TableTite">导航类别</div>
+                                    <div class="TableTite">{{ lc('admin_00192') }}</div>
                                 </td>
                                 <td>
                                     <div class="TableSelect" style="display: flex;align-items: center;">
-                                        <el-select v-model="menu.nid" filterable placeholder="请选择导航类别">
+                                        <el-select v-model="menu.nid" filterable :placeholder="lc('admin_00181')">
                                             <el-option v-for="item in typearr" :key="item.id" :label="item.typename" :value="item.id">
                                             </el-option>
                                         </el-select>
@@ -255,11 +244,11 @@
                             </tr>
                             <tr>
                                 <td>
-                                    <div class="TableTite">导航名称</div>
+                                    <div class="TableTite">{{ lc('admin_00191') }}</div>
                                 </td>
                                 <td>
                                     <div class="TableSelect" style="display: flex;align-items: center;">
-                                        <el-input placeholder="请输入导航名称" v-model="menu.name">
+                                        <el-input :placeholder="lc('admin_00180')" v-model="menu.name">
                                         </el-input>
                                     </div>
                                 </td>
@@ -271,11 +260,11 @@
                             </tr>
                             <tr>
                                 <td>
-                                    <div class="TableTite">链接地址</div>
+                                    <div class="TableTite">{{ lc('admin_00101') }}</div>
                                 </td>
                                 <td>
                                     <div class="TableSelect" style="display: flex;align-items: center;">
-                                        <el-input placeholder="请输入链接地址" v-model="menu.url">
+                                        <el-input :placeholder="lc('admin_00812')" v-model="menu.url">
                                         </el-input>
                                     </div>
                                 </td>
@@ -287,11 +276,11 @@
                             </tr>
                             <tr>
                                 <td>
-                                    <div class="TableTite">伪静态地址</div>
+                                    <div class="TableTite">{{ lc('admin_00185') }}</div>
                                 </td>
                                 <td>
                                     <div class="TableSelect" style="display: flex;align-items: center;">
-                                        <el-input placeholder="请输入伪静态地址" v-model="menu.furl">
+                                        <el-input :placeholder="lc('admin_00813')" v-model="menu.furl">
                                         </el-input>
                                     </div>
                                 </td>
@@ -303,27 +292,27 @@
                             </tr>
                             <tr>
                                 <td>
-                                    <div class="TableTite">导航类型</div>
+                                    <div class="TableTite">{{ lc('admin_00193') }}</div>
                                 </td>
                                 <td>
                                     <div class="TableSelect" style="display: flex;align-items: center;">
-                                        <el-radio v-model="menu.type" label="1">站内链接</el-radio>
-                                        <el-radio v-model="menu.type" label="2">原链接</el-radio>
+                                        <el-radio v-model="menu.type" label="1">{{ lc('admin_00198') }}</el-radio>
+                                        <el-radio v-model="menu.type" label="2">{{ lc('admin_00204') }}</el-radio>
                                     </div>
                                 </td>
                                 <td>
                                     <div class="TableShuom">
-                                        <span>站内链接如：http://www.ov6.com 原链接如：index.php?m=com</span>
+                                        <span>{{ lc('admin_00175') }}</span>
                                     </div>
                                 </td>
                             </tr>
                             <tr>
                                 <td>
-                                    <div class="TableTite">排序</div>
+                                    <div class="TableTite">{{ lc('admin_vue_00044') }}</div>
                                 </td>
                                 <td>
                                     <div class="TableSelect" style="display: flex;align-items: center;">
-                                        <el-input placeholder="请输入排序" v-model="menu.sort">
+                                        <el-input :placeholder="lc('admin_00814')" v-model="menu.sort">
                                         </el-input>
                                     </div>
                                 </td>
@@ -335,12 +324,12 @@
                             </tr>
                             <tr>
                                 <td>
-                                    <div class="TableTite">弹出窗口</div>
+                                    <div class="TableTite">{{ lc('member_com_00020') }}</div>
                                 </td>
                                 <td>
                                     <div class="TableSelect" style="display: flex;align-items: center;">
-                                        <el-radio v-model="menu.eject" label="1">新窗口</el-radio>
-                                        <el-radio v-model="menu.eject" label="0">原窗口</el-radio>
+                                        <el-radio v-model="menu.eject" label="1">{{ lc('admin_00205') }}</el-radio>
+                                        <el-radio v-model="menu.eject" label="0">{{ lc('admin_00203') }}</el-radio>
                                     </div>
                                 </td>
                                 <td>
@@ -351,13 +340,13 @@
                             </tr>
                             <tr>
                                 <td>
-                                    <div class="TableTite">状态</div>
+                                    <div class="TableTite">{{ lc('member_user_00181') }}</div>
                                 </td>
                                 <td>
                                     <div class="TableSelect" style="display: flex;align-items: center;">
-                                        <el-radio v-model="menu.model" label="hot">热</el-radio>
-                                        <el-radio v-model="menu.model" label="new">新</el-radio>
-                                        <el-radio v-model="menu.model" label="">无</el-radio>
+                                        <el-radio v-model="menu.model" label="hot">{{ lc('common_02091') }}</el-radio>
+                                        <el-radio v-model="menu.model" label="new">{{ lc('common_02081') }}</el-radio>
+                                        <el-radio v-model="menu.model" label="">{{ lc('common_02082') }}</el-radio>
                                     </div>
                                 </td>
                                 <td>
@@ -368,12 +357,12 @@
                             </tr>
                             <tr>
                                 <td>
-                                    <div class="TableTite">加粗</div>
+                                    <div class="TableTite">{{ lc('wap_js_00078') }}</div>
                                 </td>
                                 <td>
                                     <div class="TableSelect" style="display: flex;align-items: center;">
-                                        <el-radio v-model="menu.bold" label="1">是</el-radio>
-                                        <el-radio v-model="menu.bold" label="0">否</el-radio>
+                                        <el-radio v-model="menu.bold" label="1">{{ lc('common_02085') }}</el-radio>
+                                        <el-radio v-model="menu.bold" label="0">{{ lc('common_02063') }}</el-radio>
                                     </div>
                                 </td>
                                 <td>
@@ -384,12 +373,12 @@
                             </tr>
                             <tr>
                                 <td>
-                                    <div class="TableTite">显示</div>
+                                    <div class="TableTite">{{ lc('member_com_00023') }}</div>
                                 </td>
                                 <td>
                                     <div class="TableSelect" style="display: flex;align-items: center;">
-                                        <el-radio v-model="menu.display" label="1">是</el-radio>
-                                        <el-radio v-model="menu.display" label="0">否</el-radio>
+                                        <el-radio v-model="menu.display" label="1">{{ lc('common_02085') }}</el-radio>
+                                        <el-radio v-model="menu.display" label="0">{{ lc('common_02063') }}</el-radio>
                                     </div>
                                 </td>
                                 <td>
@@ -404,7 +393,7 @@
                 <div class="setBasicButn" style="border: none;">
                     <!-- <el-button type="primary" size="medium" @click="save">提交</el-button> -->
                     <!-- <el-button @click="drawersetmenu = false">取 消</el-button> -->
-                    <el-button type="primary" @click="saveMenu" :disabled="submitLoading">确 定</el-button>
+                    <el-button type="primary" @click="saveMenu" :disabled="submitLoading">{{ lc('wap_com_00019') }}</el-button>
                 </div>
                 <!-- <div class="setdaohanNvas">
                     <div class="wxsettip_small ">导航类别</div>
@@ -465,7 +454,7 @@ const custoapp = new Vue({
     el: '#hyfl',
     data: function() {
         return {
-            emptytext: '暂无数据',
+            emptytext: lc('wap_js_00113'),
             loading: false,
             newsindex: false,
             draweraddclass: false,
@@ -576,7 +565,7 @@ const custoapp = new Vue({
         saveAddClass() {
             var that = this
             if (that.classname == '') {
-                message.error('类别名称不能为空！');
+                message.error(lc('admin_00208'));
                 return false;
             }
             that.submitLoading = true;
@@ -597,7 +586,7 @@ const custoapp = new Vue({
         },
         fpClassAllBottom() {
             if (!this.selectedItem.length) {
-                message.error('请选择要转移的数据项');
+                message.error(lc('admin_00815'));
                 return false;
             }
             this.drawerClassMultiple = true
@@ -649,9 +638,9 @@ const custoapp = new Vue({
             httpPost('m=neirong&c=news&a=recommend', params, { hideloading: true }).then(function(response) {
                 let res = response.data;
                 if (res.error === 0) {
-                    message.success('修改成功');
+                    message.success(lc('admin_user_company_00208'));
                 } else {
-                    message.error('修改失败');
+                    message.error(lc('admin_00187'));
                 }
             }).catch(function(error) {
                 console.log(error);
@@ -722,9 +711,9 @@ const custoapp = new Vue({
             httpPost('m=neirong&c=news&a=ajax', sendData, { hideloading: true }).then(function(response) {
                 let res = response.data;
                 if (res.error === 0) {
-                    message.success('修改成功');
+                    message.success(lc('admin_user_company_00208'));
                 } else {
-                    message.error('修改失败');
+                    message.error(lc('admin_00187'));
                 }
                 _this.oldData = null;
                 // if (type == 1) {
@@ -865,7 +854,7 @@ const custoapp = new Vue({
         },
         delAllBottom() {
             if (!this.selectedItem.length) {
-                message.error('请选择要删除的数据项');
+                message.error(lc('admin_00136'));
                 return false;
             }
             delConfirm(this, this.selectedItem, this.delete);

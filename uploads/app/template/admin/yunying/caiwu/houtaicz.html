@@ -10,13 +10,13 @@
     <div id="moduapp" class="moduleDome">
         <div class="setDomeAll setDomeInte">
             <el-tabs v-model="activeName" @tab-click="handleClick">
-                <el-tab-pane label="积分充值" name="first">
+                <el-tab-pane :label="lc('admin_yunying_00095')" name="first">
                     <jifencz :pricename="integral_pricename"></jifencz>
                 </el-tab-pane>
-                <el-tab-pane label="企业会员开通套餐" name="second">
+                <el-tab-pane :label="lc('admin_yunying_00094')" name="second">
                     <comhytc :ratinglist="rating_list" :ratingid="ratingid"></comhytc>
                 </el-tab-pane> 
-                <el-tab-pane label="企业会员开通增值包" name="three">
+                <el-tab-pane :label="lc('admin_yunying_00093')" name="three">
                     <comhyzzb :service-list="service_list"></comhyzzb>
                 </el-tab-pane> 
             </el-tabs>

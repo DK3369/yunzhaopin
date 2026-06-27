@@ -24,19 +24,19 @@
     <div id="moduapp" class="moduleDome">
         <div class="setDomeAll setDomeInte">
             <el-tabs v-model="activeName">
-                <el-tab-pane label="发布工具" name="first" :lazy="true">
+                <el-tab-pane :label="lc('admin_tool_00678')" name="first" :lazy="true">
                     <wxfbtool></wxfbtool>
                 </el-tab-pane>
-                <el-tab-pane label="公众号文章模板" name="second" :lazy="true">
+                <el-tab-pane :label="lc('admin_tool_00524')" name="second" :lazy="true">
                     <pubtemplist :temptype="0" :secondpage="secondpage" :thirdpage="thirdpage"></pubtemplist>
                 </el-tab-pane>
-                <el-tab-pane label="社群推文模板" name="third" :lazy="true">
+                <el-tab-pane :label="lc('admin_tool_00525')" name="third" :lazy="true">
                     <pubtemplist :temptype="1" :secondpage="secondpage" :thirdpage="thirdpage"></pubtemplist>
                 </el-tab-pane>
-                <el-tab-pane label="职位推文任务" name="fourth" :lazy="true">
+                <el-tab-pane :label="lc('admin_tool_00680')" name="fourth" :lazy="true">
                     <jobtw></jobtw>
                 </el-tab-pane>
-                <el-tab-pane label="企业推文任务" name="fiveth" :lazy="true">
+                <el-tab-pane :label="lc('admin_tool_00679')" name="fiveth" :lazy="true">
                     <comtw></comtw>
                 </el-tab-pane>
 

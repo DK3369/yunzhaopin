@@ -12,10 +12,10 @@
     <div id="moduapp" class="moduleDome">
         <div class="setDomeAll setDomeInte">
             <el-tabs v-model="activeName">
-                <el-tab-pane label="邮件服务器设置" name="first">
+                <el-tab-pane :label="lc('admin_tool_00379')" name="first">
                     <emailfwq></emailfwq>
                 </el-tab-pane>
-                <el-tab-pane label="邮件模板设置" name="second">
+                <el-tab-pane :label="lc('admin_tool_00374')" name="second">
                     <emailmb></emailmb>
                 </el-tab-pane>
             </el-tabs>

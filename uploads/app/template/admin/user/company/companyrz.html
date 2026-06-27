@@ -10,22 +10,22 @@
 <div id="moduapp" class="moduleDome">
     <div class="setDomeAll setDomeInte">
         <el-tabs v-model="activeName" @tab-click="handleClick">
-            <el-tab-pane label="企业认证审核" name="renzheng" :lazy="true">
+            <el-tab-pane :label="lc('admin_user_company_00064')" name="renzheng" :lazy="true">
                 <companyrz_renzheng :status="status.renzheng"></companyrz_renzheng>
             </el-tab-pane>
-            <el-tab-pane label="企业LOGO审核" name="logo" :lazy="true">
+            <el-tab-pane :label="lc('admin_user_company_00059')" name="logo" :lazy="true">
                 <companyrz_pic_logo :status="status.logo"></companyrz_pic_logo>
             </el-tab-pane>
-            <el-tab-pane label="企业环境审核" name="show" :lazy="true">
+            <el-tab-pane :label="lc('admin_user_company_00060')" name="show" :lazy="true">
                 <companyrz_pic_show :status="status.show"></companyrz_pic_show>
             </el-tab-pane>
-            <el-tab-pane label="企业横幅审核" name="banner" :lazy="true">
+            <el-tab-pane :label="lc('admin_user_company_00058')" name="banner" :lazy="true">
                 <companyrz_pic_banner :status="status.banner"></companyrz_pic_banner>
             </el-tab-pane>
-            <el-tab-pane label="企业产品审核" name="product" :lazy="true">
+            <el-tab-pane :label="lc('admin_user_company_00061')" name="product" :lazy="true">
                 <companyrz_product :status="status.product"></companyrz_product>
             </el-tab-pane>
-            <el-tab-pane label="企业新闻审核" name="news" :lazy="true">
+            <el-tab-pane :label="lc('admin_user_company_00057')" name="news" :lazy="true">
                 <companyrz_news :status="status.news"></companyrz_news>
             </el-tab-pane>
         </el-tabs>

@@ -10,32 +10,32 @@
 <div id="domainAdminApp" class="moduleElenAl">
     <div class="moduleSeachs">
         <div class="moduleSeachInpt">
-            <el-input placeholder="请输入用户名或真实姓名" v-model="search.keyword" class="input-with-select" size="small" clearable></el-input>
-            <el-button type="primary" icon="el-icon-search" size="mini" @click="handelSearch">查询</el-button>
+            <el-input :placeholder="lc('admin_system_00181')" v-model="search.keyword" class="input-with-select" size="small" clearable></el-input>
+            <el-button type="primary" icon="el-icon-search" size="mini" @click="handelSearch">{{ lc('admin_user_weipin_00049') }}</el-button>
         </div>
         <div class="">
-            <el-button type="primary" icon="el-icon-setting" size="mini" plain @click="openGroupList">管理员权限</el-button>
-            <el-button type="primary" icon="el-icon-document-add" size="mini" @click="addAdmin">添加管理员</el-button>
+            <el-button type="primary" icon="el-icon-setting" size="mini" plain @click="openGroupList">{{ lc('admin_system_00188') }}</el-button>
+            <el-button type="primary" icon="el-icon-document-add" size="mini" @click="addAdmin">{{ lc('admin_system_00238') }}</el-button>
         </div>
     </div>
     <div class="moduleElTable">
         <div class="tableDome_tip">
-            <el-alert title="分站管理员列表展示所有分站管理员信息，超级管理员可以实时调整分站管理员所属分站以及所在权限组！" type="info" :closable="false"></el-alert>
+            <el-alert :title="lc('admin_system_00179')" type="info" :closable="false"></el-alert>
         </div>
         <el-table :data="tableData" border style="width: 100%" :header-cell-style="{background:'#f5f7fa',color:'#606266'}" height="calc(100% - 48px)" @selection-change="handleSelectionChange" ref="multipleTable" v-loading="loading" :empty-text="emptytext">
             <el-table-column type="selection" width="55"></el-table-column>
-            <el-table-column prop="uid" label="	编号" width="80"></el-table-column>
-            <el-table-column prop="username" label="用户名"></el-table-column>
-            <el-table-column prop="name" label="真实姓名"></el-table-column>
-            <el-table-column prop="domain_name" label="所属分站"></el-table-column>
-            <el-table-column prop="group_name" label="权限用户组"></el-table-column>
-            <el-table-column fixed="right" label="操作" width="140">
+            <el-table-column prop="uid" :label="lc('common_02108')" width="80"></el-table-column>
+            <el-table-column prop="username" :label="lc('admin_user_00140')"></el-table-column>
+            <el-table-column prop="name" :label="lc('member_user_00230')"></el-table-column>
+            <el-table-column prop="domain_name" :label="lc('admin_system_00174')"></el-table-column>
+            <el-table-column prop="group_name" :label="lc('admin_system_00187')"></el-table-column>
+            <el-table-column fixed="right" :label="lc('member_user_00048')" width="140">
                 <template slot-scope="scope">
                     <div class="cz_button">
                         <a href="javascript:;" @click="editAdmin(scope);">
-                            <el-button size="mini">修改</el-button>
+                            <el-button size="mini">{{ lc('wap_js_00073') }}</el-button>
                         </a>
-                        <el-button size="mini" @click="delAdmin(scope)" type="danger">删除</el-button>
+                        <el-button size="mini" @click="delAdmin(scope)" type="danger">{{ lc('wap_js_00077') }}</el-button>
                     </div>
                 </template>
             </el-table-column>
@@ -43,8 +43,8 @@
     </div>
     <div class="modulePaging">
         <div class="modulecz modulePagButn" style="margin-left: 10px;">
-            <el-checkbox v-model="checkAll" @change="handleCheckAllChange">全选</el-checkbox>
-            <el-button size="mini" @click="delAdminSel">批量删除</el-button>
+            <el-checkbox v-model="checkAll" @change="handleCheckAllChange">{{ lc('wap_js_00074') }}</el-checkbox>
+            <el-button size="mini" @click="delAdminSel">{{ lc('member_com_00055') }}</el-button>
         </div>
         <div class="modulePagNum">
             <div class="modulePagNum" style="margin: 0 auto;">
@@ -58,7 +58,7 @@
         <el-dialog :title="addAdminTitle" :visible.sync="addAdminShow" :with-header="true" :modal-append-to-body="false" :show-close="true" width="550px">
             <admin-add :admin_uid="adminUid" @child-event="closeAdminAdd"></admin-add>
         </el-dialog>
-        <el-drawer title="分站管理员权限" :visible.sync="setshow" :with-header="true" :append-to-body="true" :show-close="true" size="80%">
+        <el-drawer :title="lc('admin_system_00185')" :visible.sync="setshow" :with-header="true" :append-to-body="true" :show-close="true" size="80%">
             <group-list :setshow.sync="setshow" @child-event="closeGroupList"></group-list>
         </el-drawer>
     </div>
@@ -68,7 +68,7 @@
         el: '#domainAdminApp',
         data: function () {
             return {
-                emptytext: '暂无数据',
+                emptytext: lc('wap_js_00113'),
                 search: {
                     keyword: null
                 },
@@ -179,7 +179,7 @@
             delAdminSel() {
                 var that = this;
                 if (!that.selectedItem.length) {
-                    message.error('请选择要删除的分站管理员');
+                    message.error(lc('admin_system_00180'));
                     return;
                 }
                 this.delAdmin(null, true);

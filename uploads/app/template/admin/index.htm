@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <title>{yun:}$config.sy_webname{/yun} - 管理后台</title>
+    <title>{yun:}$config.sy_webname{/yun} - {yun:}t key='admin_index_00072'{/yun}</title>
     <script src="../app/template/admin/home_header.js?v={yun:}$config.cachecode{/yun}"></script>
     <script src="../app/template/admin/js/vue-router.js?v={yun:}$config.cachecode{/yun}"></script>
     <link rel="stylesheet" href="../app/template/admin/adstyle/allcss/index.css?v={yun:}$config.cachecode{/yun}">
@@ -18,7 +18,7 @@
                     </div>
                     <!-- 导航开关按钮预留 -->
                     <div class="widthButn" @click="subWidth = !subWidth" :class="{'widthButnCur': subWidth}">
-                        <el-tooltip class="item" effect="dark" content="收起导航" placement="right">
+                        <el-tooltip class="item" effect="dark" :content="lc('admin_index_00070')" placement="right">
                             <i class="el-icon-s-fold iconone"></i>
                         </el-tooltip>
                         <i class="el-icon-s-unfold icontwo"></i>
@@ -27,7 +27,7 @@
                 <div class="subContNavTite">
                     <div class="subNavTite">
                         <i></i>
-                        <span>功能导航</span>
+                        <span>{{ lc('admin_index_00065') }}</span>
                         <i></i>
                     </div>
                     <div class="subNavLogo">
@@ -40,7 +40,7 @@
                         <li :class="{'subContLinkCur': cur_menu_one == 0}">
                             <div class="subNavLinkTite" @click="MenuOpenChange(0)">
                                 <div class="subNavLinkImg kjcz">
-                                    <span>快捷操作</span>
+                                    <span>{{ lc('admin_index_00068') }}</span>
                                 </div>
                                 <div class="subNavLinkIcon" :class="{'subNavLinkIconCur': checkMenuOpen(0)}">
                                     <i class="el-icon-arrow-up iconup"></i>
@@ -100,7 +100,7 @@
                                 <!--请不要删除我-->
                                 <li :class="{'subHeadNavCue': cur_menu == 0}">
                                     <a href="javascript:void(0)"  @click="checkMenu(0)">
-                                        首页
+                                        {{ lc('wap_00191') }}
                                     </a>
                                 </li>
                                 {yun:}foreach from=$navigation key=nkey item=nval{/yun}
@@ -114,7 +114,7 @@
                             <el-popover placement="bottom" width="450" trigger="hover" @show="getMsgNum">
                                 <div class="subHeaNumerDomes" v-loading="msgNumLoad">
                                     <div class="subHeaNumerName">
-                                        <span>待处理事项</span>
+                                        <span>{{ lc('admin_00093') }}</span>
                                     </div>
                                     <!-- 有提示时显示 -->
                                     <div class="subHeaNumLibos" v-if="msgNumData.length>0">
@@ -133,7 +133,7 @@
                                     </div>
                                     <!-- 无提示时显示 -->
                                     <div class="subHeaNumNones" v-else>
-                                        <el-empty description="暂无待处理事项"></el-empty>
+                                        <el-empty :description="lc('admin_00092')"></el-empty>
                                     </div>
                                 </div>
                                 <el-button slot="reference">
@@ -149,7 +149,7 @@
                         </div>
                         <div class="subHeadRigList" @click="openPage('{yun:}$config.sy_weburl{/yun}')">
                             <div class="subHeadRigIcon">
-                                <el-tooltip class="item" effect="dark" content="网站首页" placement="bottom-end">
+                                <el-tooltip class="item" effect="dark" :content="lc('admin_index_00073')" placement="bottom-end">
                                     <img src="../app/template/admin/images/head3.png" alt="">
                                 </el-tooltip>
                             </div>
@@ -157,7 +157,7 @@
                         {yun:}if in_array('161',$power){/yun}
                         <div class="subHeadRigList" @click="openMap">
                             <div class="subHeadRigIcon">
-                                <el-tooltip class="item" effect="dark" content="后台地图" placement="bottom-end">
+                                <el-tooltip class="item" effect="dark" :content="lc('admin_index_00066')" placement="bottom-end">
                                     <img src="../app/template/admin/images/head4.png" alt="">
                                 </el-tooltip>
                             </div>
@@ -165,7 +165,7 @@
                         {yun:}/if{/yun}
                         <div class="subHeadRigList" @click="clearCache">
                             <div class="subHeadRigIcon">
-                                <el-tooltip class="item" effect="dark" content="清除缓存" placement="bottom-end">
+                                <el-tooltip class="item" effect="dark" :content="lc('admin_01274')" placement="bottom-end">
                                     <img src="../app/template/admin/images/head5.png" alt="">
                                 </el-tooltip>
                             </div>
@@ -174,27 +174,27 @@
                             <el-popover placement="top-start" width="140" trigger="hover">
                                 <div class="subHeadlogout">
                                     <div class="subjeHeadDenl">
-                                        <h3>最近登录</h3>
+                                        <h3>{{ lc('admin_yunying_00131') }}</h3>
                                         <span>{yun:}$admin_lasttime|date_format:"%Y-%m-%d %H:%M:%S"{/yun}</span>
                                     </div>
                                     <div class="subjeHeadFlex" @click="openShortcutMenu">
                                         <img src="../app/template/admin/images/index_topright4.png" alt="">
-                                        <span>快捷菜单管理</span>
+                                        <span>{{ lc('admin_index_00050') }}</span>
                                     </div>
                                     <div class="subjeHeadTuichus">
                                         <div @click="openLanguageSetting">
                                             <img src="../app/template/admin/images/index_topright7.png" alt="">
-                                            <span>设置语言</span>
+                                            <span>{{ lc('admin_index_00075') }}</span>
                                         </div>
                                         {yun:}if in_array('809',$power){/yun}
                                         <div @click="checkMenuTwo(5, 102, 104, '我的帐号', '/myaccount', {ly: 'pass'})">
                                             <img src="../app/template/admin/images/index_topright7.png" alt="">
-                                            <span>修改密码</span>
+                                            <span>{{ lc('member_user_00226') }}</span>
                                         </div>
                                         {yun:}/if{/yun}
                                         <div @click="logout">
                                             <img src="../app/template/admin/images/admin_navicon7.png" alt="">
-                                            <span>退出登录</span>
+                                            <span>{{ lc('wap_user_00177') }}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -220,13 +220,13 @@
                         <el-popover placement="bottom" width="100" trigger="hover">
                             <div class="subPageBurt">
                                 <div>
-                                    <el-button type="text" @click="refresh" icon="el-icon-refresh">刷新</el-button>
+                                    <el-button type="text" @click="refresh" icon="el-icon-refresh">{{ lc('admin_00194') }}</el-button>
                                 </div>
                                 <div>
-                                    <el-button type="text" icon="el-icon-close" @click="closeTabOther">关闭其他</el-button>
+                                    <el-button type="text" icon="el-icon-close" @click="closeTabOther">{{ lc('admin_index_00064') }}</el-button>
                                 </div>
                                 <div>
-                                    <el-button type="text" icon="el-icon-close" @click="closeTabAll">关闭全部</el-button>
+                                    <el-button type="text" icon="el-icon-close" @click="closeTabAll">{{ lc('admin_index_00063') }}</el-button>
                                 </div>
                             </div>
                             <el-button slot="reference" icon="el-icon-menu"></el-button>
@@ -243,7 +243,7 @@
         </div>
         <!-- 弹窗 -->
         <div class="homeelDialog">
-            <el-dialog title="快捷菜单管理" width="680px" :visible.sync="dialogShortcutMenu" :with-header="true" :modal-append-to-body="false">
+            <el-dialog :title="lc('admin_index_00050')" width="680px" :visible.sync="dialogShortcutMenu" :with-header="true" :modal-append-to-body="false">
                 <div class="homeDiaCaidan" style="height: 420px;">
                     <el-checkbox-group v-model="formShortcutMenu">
                         <div class="homeDiaCaiConts" v-for="(oneSMItem, oneSMIndex) in navigation" :key="oneSMIndex">
@@ -264,19 +264,19 @@
                     </el-checkbox-group>
                 </div>
                 <div slot="footer" class="dialog-footer">
-                    <el-button @click="dialogShortcutMenu = false">取 消</el-button>
-                    <el-button type="primary" @click="saveShortcutMenu">确 定</el-button>
+                    <el-button @click="dialogShortcutMenu = false">{{ lc('admin_user_weipin_00043') }}</el-button>
+                    <el-button type="primary" @click="saveShortcutMenu">{{ lc('wap_com_00019') }}</el-button>
                 </div>
             </el-dialog>
         </div>
         <div class="homeelDialog">
-            <el-dialog title="后台地图" width="680px" :visible.sync="dialogMap" :with-header="true" :modal-append-to-body="false">
+            <el-dialog :title="lc('admin_index_00066')" width="680px" :visible.sync="dialogMap" :with-header="true" :modal-append-to-body="false">
                 <div class="homeDiaCaiSouse">
                     <div class="homeDiaCaiFrom">
-                        <el-input v-model="searchFormMap.keyword" placeholder="请输入你要搜索的关键字"></el-input>
+                        <el-input v-model="searchFormMap.keyword" :placeholder="lc('admin_user_00158')"></el-input>
                     </div>
                     <div class="homeDiaCaiFrom">
-                        <el-button type="primary" size="small" icon="el-icon-search" @click="searchMap">搜索</el-button>
+                        <el-button type="primary" size="small" icon="el-icon-search" @click="searchMap">{{ lc('wap_js_00086') }}</el-button>
                     </div>
                 </div>
                 <div class="homeDiaCaidan" style="height: 420px;">
@@ -299,14 +299,14 @@
             </el-dialog>
         </div>
         <div class="homeelDialog">
-            <el-dialog title="设置语言" width="360px" :visible.sync="dialogLanguage" :with-header="true" :modal-append-to-body="false">
+            <el-dialog :title="lc('admin_index_00075')" width="360px" :visible.sync="dialogLanguage" :with-header="true" :modal-append-to-body="false">
                 <el-radio-group v-model="languageForm.lang">
                     <el-radio label="en_us">English</el-radio>
-                    <el-radio label="zh_cn">简体中文</el-radio>
+                    <el-radio label="zh_cn">{{ lc('admin_index_00071') }}</el-radio>
                 </el-radio-group>
                 <div slot="footer" class="dialog-footer">
-                    <el-button @click="dialogLanguage = false">取 消</el-button>
-                    <el-button type="primary" @click="saveLanguage">确 定</el-button>
+                    <el-button @click="dialogLanguage = false">{{ lc('admin_user_weipin_00043') }}</el-button>
+                    <el-button type="primary" @click="saveLanguage">{{ lc('wap_com_00019') }}</el-button>
                 </div>
             </el-dialog>
         </div>

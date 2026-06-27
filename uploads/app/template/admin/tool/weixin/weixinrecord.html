@@ -10,13 +10,13 @@
     <div id="moduapp" class="moduleDome">
         <div class="setDomeAll setDomeInte">
             <el-tabs v-model="activeName" @tab-click="handleClick">
-                <el-tab-pane label="用户登录日志" name="first" :lazy="true">
+                <el-tab-pane :label="lc('admin_tool_00687')" name="first" :lazy="true">
                     <userrecord ref="first"></userrecord>
                 </el-tab-pane>
-                <el-tab-pane label="用户绑定记录" name="second" :lazy="true">
+                <el-tab-pane :label="lc('admin_tool_00688')" name="second" :lazy="true">
                     <userbd ref="second"></userbd>
                 </el-tab-pane>
-                <el-tab-pane label="用户搜索关键词" name="third" :lazy="true">
+                <el-tab-pane :label="lc('admin_tool_00686')" name="third" :lazy="true">
                     <usertag ref="third"></usertag>
                 </el-tab-pane>
                 

@@ -10,16 +10,16 @@
     <div id="daohaapp" class="moduleElenAl">
         <div class="moduleSeachs">
             <div class="moduleSeachInpt moduleSeachwapsju">
-                <el-input placeholder="请输入你要搜索的关键字" v-model="keyword" class="input-with-select" size="small" clearable>
-                    <el-select v-model="nid" slot="prepend" :clearable="true" placeholder="请选择">
+                <el-input :placeholder="lc('admin_user_00158')" v-model="keyword" class="input-with-select" size="small" clearable>
+                    <el-select v-model="nid" slot="prepend" :clearable="true" :placeholder="lc('wap_user_00100')">
                         <el-option v-for="(citem, ckey) in nclass" :label="citem" :value="ckey" :key="ckey"></el-option>
                     </el-select>
                 </el-input>
-                <el-button type="primary" icon="el-icon-search" size="mini" @click="search">查询</el-button>
+                <el-button type="primary" icon="el-icon-search" size="mini" @click="search">{{ lc('admin_user_weipin_00049') }}</el-button>
             </div>
             <div class="moduleSeachButn">
-                <el-button type="primary" icon="el-icon-document-add" size="mini" @click="openAdd('')">添加导航</el-button>
-				<el-button type="primary" icon="el-icon-document-add" size="mini" @click="drawerType=true">添加分类</el-button>
+                <el-button type="primary" icon="el-icon-document-add" size="mini" @click="openAdd('')">{{ lc('admin_system_00248') }}</el-button>
+				<el-button type="primary" icon="el-icon-document-add" size="mini" @click="drawerType=true">{{ lc('admin_00197') }}</el-button>
             </div>
         </div>
         <div class="moduleElTable">
@@ -28,17 +28,17 @@
                 height="100%" @sort-change="sortChange" v-loading="loading" :empty-text="emptytext">
                 <el-table-column type="selection" width="55">
                 </el-table-column>
-                <el-table-column prop="id" label="导航编号" width="80">
+                <el-table-column prop="id" :label="lc('admin_system_00470')" width="80">
                 </el-table-column>
-                <el-table-column prop="name" label="导航名称" width="100">
+                <el-table-column prop="name" :label="lc('admin_00191')" width="100">
                 </el-table-column>
-                <el-table-column prop="typename" label="导航类别" width="120">
+                <el-table-column prop="typename" :label="lc('admin_00192')" width="120">
                 </el-table-column>
-                <el-table-column prop="url" label="导航链接">
+                <el-table-column prop="url" :label="lc('admin_system_00354')">
                 </el-table-column>
-                <el-table-column prop="type_n" label="导航类型" width="120">
+                <el-table-column prop="type_n" :label="lc('admin_00193')" width="120">
                 </el-table-column>
-                <el-table-column prop="sort" sortable="custom" label="排序" width="80">
+                <el-table-column prop="sort" sortable="custom" :label="lc('admin_vue_00044')" width="80">
                     <template slot-scope="scope">
                         <div class="moduleProps moduleTrButn" v-if="scope.row[scope.column.property + 'isShow']">
                             <el-input :ref="scope.column.property + scope.$index" :id="scope.column.property + scope.$index"
@@ -50,7 +50,7 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="弹出窗口" width="170">
+                <el-table-column :label="lc('member_com_00020')" width="170">
                     <template slot-scope="scope">
                         <el-switch v-model="scope.row.eject" active-color="#1890FF" inactive-color="#B8BDC9"
                             @change="ejectChange($event, scope.$index)" active-text="新窗口" active-value="1"
@@ -58,18 +58,18 @@
                         </el-switch>
                     </template>
                 </el-table-column>
-                <el-table-column label="显示" width="70">
+                <el-table-column :label="lc('member_com_00023')" width="70">
                     <template slot-scope="scope">
                         <el-switch v-model="scope.row.display" active-color="#1890FF" inactive-color="#B8BDC9"
                             @change="displayChange($event, scope.$index)" active-value="1" inactive-value="0">
                         </el-switch>
                     </template>
                 </el-table-column>
-                <el-table-column fixed="right" label="操作" width="140">
+                <el-table-column fixed="right" :label="lc('member_user_00048')" width="140">
                     <template slot-scope="scope">
                         <div class="cz_button">
-                            <el-button size="mini" @click="openAdd(scope.row)">修改</el-button>
-                            <el-button size="mini" @click="del(scope.$index)" type="danger">删除</el-button>
+                            <el-button size="mini" @click="openAdd(scope.row)">{{ lc('wap_js_00073') }}</el-button>
+                            <el-button size="mini" @click="del(scope.$index)" type="danger">{{ lc('wap_js_00077') }}</el-button>
                         </div>
 
                     </template>
@@ -78,8 +78,8 @@
         </div>
         <div class="modulePaging">
             <div class="modulePagButn">
-				<el-checkbox v-model="allchecked" @change="allcheckChange">全选</el-checkbox>
-                <el-button size="mini" @click="batch('del')">批量删除</el-button>
+				<el-checkbox v-model="allchecked" @change="allcheckChange">{{ lc('wap_js_00074') }}</el-checkbox>
+                <el-button size="mini" @click="batch('del')">{{ lc('member_com_00055') }}</el-button>
             </div>
             <div class="modulePagNum">
                 <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
@@ -90,11 +90,11 @@
         </div>
 
         <div class="modluDrawer">
-            <el-drawer :title="id ? '修改导航' : '添加导航'" :visible.sync="drawerAdd" :modal-append-to-body="false"
+            <el-drawer :title="lc('admin_html_00004')" :visible.sync="drawerAdd" :modal-append-to-body="false"
                 :show-close="true" :with-header="true" size="45%">
                 <navigationadd :id="id" @child-event="closeAdd" v-if="drawerAdd"></navigationadd>
             </el-drawer>
-            <el-drawer title="导航类别" :visible.sync="drawerType" :append-to-body="true" :show-close="true"
+            <el-drawer :title="lc('admin_00192')" :visible.sync="drawerType" :append-to-body="true" :show-close="true"
                 :with-header="true" size="45%">
                 <navigationtype @child-event="closeType" v-if="drawerType"></navigationtype>
             </el-drawer>
@@ -106,7 +106,7 @@
             el: '#daohaapp',
             data: function () {
                 return {
-                    emptytext: '暂无数据',
+                    emptytext: lc('wap_js_00113'),
                     loading: false,
                     // 列表
                     page: 1,
@@ -329,7 +329,7 @@
 				},
                 batch(type) {
                     if (this.multipleSelection.length == 0) {
-                        message.warning('请选择要操作的数据项');
+                        message.warning(lc('admin_user_weipin_00001'));
                         return false;
                     }
 

@@ -9,7 +9,7 @@
 <body>
 <div id="moduapp" class="tableDome">
     <div class="tableDome_tip">
-        <el-alert title="生成请确保目录有可写权限，否则无法生成，添加数量时，请勿填写太大数值" type="success"
+        <el-alert :title="lc('admin_tool_00417')" type="success"
             :closable="false">
         </el-alert>
     </div>
@@ -17,25 +17,25 @@
         <table class="tableVue">
             <thead>
             <tr align="left">
-                <th width="100">名称</th>
-                <th width="260">指向目录</th>
-                <th width=" ">说明</th>
+                <th width="100">{{ lc('member_com_00021') }}</th>
+                <th width="260">{{ lc('admin_system_00465') }}</th>
+                <th width=" ">{{ lc('member_com_00207') }}</th>
             </tr>
             </thead>
             <tbody>
             <tr>
                 <td>
-                    <div class="TableTite">数据类型</div>
+                    <div class="TableTite">{{ lc('admin_tool_00430') }}</div>
                 </td>
                 <td>
                     <div class="TableSelect">
-                        <el-select v-model="ruleForm.type" placeholder="请选择">
-                            <el-option value="sitemap" label="全部"></el-option>
-                            <el-option value="company" label="企业"></el-option>
-                            <el-option value="job" label="职位"></el-option>
-                            <el-option value="resume" label="简历"></el-option>
-                            <el-option value="ask" label="问答"></el-option>
-                            <el-option value="news" label="新闻"></el-option>
+                        <el-select v-model="ruleForm.type" :placeholder="lc('wap_user_00100')">
+                            <el-option value="sitemap" :label="lc('wap_js_00075')"></el-option>
+                            <el-option value="company" :label="lc('wap_user_00153')"></el-option>
+                            <el-option value="job" :label="lc('wap_user_00154')"></el-option>
+                            <el-option value="resume" :label="lc('wap_com_00428')"></el-option>
+                            <el-option value="ask" :label="lc('wap_user_00223')"></el-option>
+                            <el-option value="news" :label="lc('admin_tool_00428')"></el-option>
                         </el-select>
                     </div>
                 </td>
@@ -47,13 +47,13 @@
             </tr>
             <tr>
                 <td>
-                    <div class="TableTite">数据排序</div>
+                    <div class="TableTite">{{ lc('admin_tool_00431') }}</div>
                 </td>
                 <td>
                     <div class="TableSelect">
-                        <el-select v-model="ruleForm.order" placeholder="请选择">
-                            <el-option value="uptime" label="更新时间"></el-option>
-                            <el-option value="addtime" label="添加时间"></el-option>
+                        <el-select v-model="ruleForm.order" :placeholder="lc('wap_user_00100')">
+                            <el-option value="uptime" :label="lc('wap_00326')"></el-option>
+                            <el-option value="addtime" :label="lc('member_com_00300')"></el-option>
                         </el-select>
                     </div>
                 </td>
@@ -65,18 +65,18 @@
             </tr>
             <tr>
                 <td>
-                    <div class="TableTite">更新频率</div>
+                    <div class="TableTite">{{ lc('admin_tool_00423') }}</div>
                 </td>
                 <td>
                     <div class="TableSelect">
-                        <el-select v-model="ruleForm.frequency" placeholder="请选择">
-                            <el-option value="always" label="总是"></el-option>
-                            <el-option value="hourly" label="每小时"></el-option>
-                            <el-option value="daily" label="每天"></el-option>
-                            <el-option value="weekly" label="每周"></el-option>
-                            <el-option value="monthly" label="每月"></el-option>
-                            <el-option value="yearly" label="每年"></el-option>
-                            <el-option value="never" label="从不"></el-option>
+                        <el-select v-model="ruleForm.frequency" :placeholder="lc('wap_user_00100')">
+                            <el-option value="always" :label="lc('admin_tool_00427')"></el-option>
+                            <el-option value="hourly" :label="lc('admin_tool_00425')"></el-option>
+                            <el-option value="daily" :label="lc('admin_system_00269')"></el-option>
+                            <el-option value="weekly" :label="lc('admin_system_00268')"></el-option>
+                            <el-option value="monthly" :label="lc('admin_system_00270')"></el-option>
+                            <el-option value="yearly" :label="lc('admin_tool_00429')"></el-option>
+                            <el-option value="never" :label="lc('admin_tool_00426')"></el-option>
                         </el-select>
                     </div>
                 </td>
@@ -88,31 +88,31 @@
             </tr>
             <tr>
                 <td>
-                    <div class="TableTite">获取数量</div>
+                    <div class="TableTite">{{ lc('admin_tool_00424') }}</div>
                 </td>
                 <td>
                     <div class="TableInpt">
-                        <el-input v-model="ruleForm.limit" @input="inputIntNumber($event, 'ruleForm', 'limit')" placeholder="请输入数字"></el-input>
+                        <el-input v-model="ruleForm.limit" @input="inputIntNumber($event, 'ruleForm', 'limit')" :placeholder="lc('admin_user_00342')"></el-input>
                     </div>
                 </td>
                 <td>
                     <div class="TableShuom">
-                        <span>请谨慎填写数量 </span>
+                        <span>{{ lc('admin_tool_00419') }}</span>
                     </div>
                 </td>
             </tr>
             <tr>
                 <td>
-                    <div class="TableTite">文件名称</div>
+                    <div class="TableTite">{{ lc('admin_tool_00422') }}</div>
                 </td>
                 <td>
                     <div class="TableInpt">
-                        <el-input v-model="ruleForm.name" placeholder="请输入文件名称"></el-input>
+                        <el-input v-model="ruleForm.name" :placeholder="lc('admin_tool_00433')"></el-input>
                     </div>
                 </td>
                 <td>
                     <div class="TableShuom">
-                        <span>如：sitemap，请勿带后缀</span>
+                        <span>{{ lc('admin_tool_00418') }}</span>
                     </div>
                 </td>
             </tr>
@@ -120,7 +120,7 @@
         </table>
     </div>
     <div class="setBasicButn" style="border: none;">
-        <el-button type="primary" size="medium" @click="submitForm">提交</el-button>
+        <el-button type="primary" size="medium" @click="submitForm">{{ lc('wap_user_00176') }}</el-button>
     </div>
 </div>
 <!-- script -->
@@ -149,18 +149,18 @@
                 let _this = this;
                 let params = JSON.parse(JSON.stringify(this.ruleForm));
                 if (params.limit < 1 || params.limit == '') {
-                    message.error(window.yunAdminT('请输入获取数量'));
+                    message.error(lc('admin_tool_00420'));
                     return false;
                 }
                 if (!params.name.length) {
-                    message.error(window.yunAdminT('请输入文件名称'));
+                    message.error(lc('admin_tool_00433'));
                     return false;
                 }
                 if (_this.submitLoading) {
                     return false;
                 }
                 _this.submitLoading = true;
-                message.success(window.yunAdminT('正在生成文件……'));
+                message.success(lc('admin_tool_00434'));
                 httpPost('m=tool&c=generate_xml&a=archive', params).then(function (response) {
                     let res = response.data;
                     if (res.error == 0) {

@@ -9,134 +9,126 @@
 <div id="moduapp" class="moduleDome">
     <div class="moduleElTable">
         <template>
-            <el-descriptions title="我的账户 " direction="vertical" :column="4" border>
+            <el-descriptions :title="lc('admin_system_00224')" direction="vertical" :column="4" border>
                 <el-descriptions-item>
                     <template slot="label">
                         <i class="el-icon-user"></i>
-                        用户名
-                    </template>
+                        {{ lc('admin_user_00140') }}</template>
                     {{user.username}}
                 </el-descriptions-item>
                 <el-descriptions-item>
                     <template slot="label">
                         <i class="el-icon-mobile-phone"></i>
-                        手机号
-                    </template>
+                        {{ lc('wap_01619') }}</template>
                     {{user.mobile}}
                 </el-descriptions-item>
                 <el-descriptions-item>
                     <template slot="label">
                         <i class="el-icon-postcard"></i>
-                        真实姓名
-                    </template>
+                        {{ lc('member_user_00230') }}</template>
                     {{user.real_name}}
                 </el-descriptions-item>
                 <el-descriptions-item>
                     <template slot="label">
                         <i class="el-icon-alarm-clock"></i>
-                        上次登录时间
-                    </template>
+                        {{ lc('admin_system_00222') }}</template>
                     {{user.last_login}}
                 </el-descriptions-item>
                 <el-descriptions-item>
                     <template slot="label">
                         <i class="el-icon-tickets"></i>
-                        权限
-                    </template>
+                        {{ lc('admin_user_company_00372') }}</template>
                     <el-tag size="small" type="warning">{{user.group_name}}</el-tag>
                 </el-descriptions-item>
                 <el-descriptions-item>
                     <template slot="label">
                         <i class="el-icon-alarm-clock"></i>
-                        密码
-                    </template>
+                        {{ lc('wap_user_00371') }}</template>
                     <div class="admin_item">
                         <div class=""> *********</div>
-                        <el-button type="text" size="small" icon="el-icon-edit" @click="drawer = true">修改</el-button>
+                        <el-button type="text" size="small" icon="el-icon-edit" @click="drawer = true">{{ lc('wap_js_00073') }}</el-button>
                     </div>
                 </el-descriptions-item>
                 <el-descriptions-item>
                     <template slot="label">
                         <i class="el-icon-link"></i>
-                        微信绑定
-                    </template>
+                        {{ lc('wap_user_00115') }}</template>
                     <div class="admin_item" v-if="user.wxid == ''">
-                        <div class="">暂未绑定</div>
-                        <el-button type="text" size="small" icon="el-icon-edit" @click="getcode()">绑定</el-button>
+                        <div class="">{{ lc('admin_system_00225') }}</div>
+                        <el-button type="text" size="small" icon="el-icon-edit" @click="getcode()">{{ lc('member_user_00234') }}</el-button>
                     </div>
                     <div class="admin_item" v-else>
-                        <div class="">已绑定</div>
-                        <el-button type="text" size="small" icon="el-icon-edit" @click="delwxid()">取消</el-button>
+                        <div class="">{{ lc('wap_user_00127') }}</div>
+                        <el-button type="text" size="small" icon="el-icon-edit" @click="delwxid()">{{ lc('wap_js_00080') }}</el-button>
                     </div>
                 </el-descriptions-item>
                 <el-descriptions-item>
                     <template slot="label">
                         <i class="el-icon-link"></i>
-                        企微绑定
-                    </template>
+                        {{ lc('admin_system_00223') }}</template>
                     <div class="admin_item" v-if="user.qy_wxid == ''">
-                        <div class="">暂未绑定</div>
-                        <el-button type="text" size="small" icon="el-icon-edit" @click="getQycode()">绑定</el-button>
+                        <div class="">{{ lc('admin_system_00225') }}</div>
+                        <el-button type="text" size="small" icon="el-icon-edit" @click="getQycode()">{{ lc('member_user_00234') }}</el-button>
                     </div>
                     <div class="admin_item" v-else>
-                        <div class="">已绑定</div>
-                        <el-button type="text" size="small" icon="el-icon-edit" @click="delQyuserid()">取消</el-button>
+                        <div class="">{{ lc('wap_user_00127') }}</div>
+                        <el-button type="text" size="small" icon="el-icon-edit" @click="delQyuserid()">{{ lc('wap_js_00080') }}</el-button>
                     </div>
                 </el-descriptions-item>
             </el-descriptions>
         </template>
     </div>
     <div class="modluDrawer">
-        <el-dialog title="扫描二维码" :visible.sync="code" :with-header="true" :modal-append-to-body="false"
+        <el-dialog :title="lc('member_user_00222')" :visible.sync="code" :with-header="true" :modal-append-to-body="false"
                    :show-close="true" width="300px">
             <div class="codeFldex">
                 <div>
                     <div class="code_img">
                         <img :src="code_img" width="200" height="200">
                     </div>
-                    <div class="code_p">请使用微信扫描二维码绑定</div>
+                    <div class="code_p">{{ lc('member_user_00049') }}</div>
                 </div>
             </div>
 
         </el-dialog>
     </div>
     <div class="modluDrawer" v-if="qycode">
-        <el-dialog title="扫描企微二维码" :visible.sync="qycode" :with-header="true" :modal-append-to-body="false"
+        <el-dialog :title="lc('admin_system_00220')" :visible.sync="qycode" :with-header="true" :modal-append-to-body="false"
                    :show-close="true" width="350px" :append-to-body="true">
             <div id="qyQrCode" class="code_img"></div>
-            <div class="code_p">请使用企业微信扫描二维码绑定</div>
+            <div class="code_p">{{ lc('admin_system_00219') }}</div>
         </el-dialog>
     </div>
     <div class="modluDrawer">
-        <el-dialog title="修改密码" :visible.sync="drawer" :with-header="true" :modal-append-to-body="false"
+        <el-dialog :title="lc('member_user_00226')" :visible.sync="drawer" :with-header="true" :modal-append-to-body="false"
                    :show-close="true" width="30%">
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>原始密码：</span>
+                    <span>{{ lc('member_com_00351') }}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input v-model="old_pwd" placeholder="请输入原始密码" show-password></el-input>
+                    <el-input v-model="old_pwd" :placeholder="lc('admin_system_00221')" show-password></el-input>
                 </div>
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>新密码：</span>
+                    <span>{{ lc('wap_00173') }}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input v-model="new_pwd" placeholder="请输入新密码" show-password></el-input>
+                    <el-input v-model="new_pwd" :placeholder="lc('wap_00207')" show-password></el-input>
                 </div>
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>确认密码：</span>
+                    <span>{{ lc('member_user_00224') }}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input v-model="re_pwd" placeholder="请确认密码" show-password></el-input>
+                    <el-input v-model="re_pwd" :placeholder="lc('wap_00410')" show-password></el-input>
                 </div>
             </div>
             <span slot="footer" class="dialog-footer">
-				<el-button @click="drawer = false">取 消</el-button>
-				<el-button type="primary" @click="submitPwd" :disabled="saveLoading">确 定</el-button>
+				<el-button @click="drawer = false">{{ lc('admin_user_weipin_00043') }}</el-button>
+				<el-button type="primary" @click="submitPwd" :disabled="saveLoading">{{ lc('wap_com_00019') }}</el-button>
 			</span>
         </el-dialog>
     </div>
@@ -217,23 +209,23 @@
             async submitPwd() {
                 let that = this;
                 if (!that.old_pwd) {
-                    message.error(window.yunAdminT('原始密码不能为空'));
+                    message.error(window.lc('admin_system_00226'));
                     return false;
                 }
                 if (!that.new_pwd) {
-                    message.error(window.yunAdminT('新密码不能为空'));
+                    message.error(window.lc('admin_system_00227'));
                     return false;
                 }
                 if (!that.re_pwd) {
-                    message.error(window.yunAdminT('确认密码不能为空'));
+                    message.error(window.lc('admin_system_00228'));
                     return false;
                 }
                 if (that.new_pwd == that.old_pwd) {
-                    message.error(window.yunAdminT('新密码不能与旧密码相同'));
+                    message.error(window.lc('admin_system_00229'));
                     return false;
                 }
                 if (that.new_pwd != that.re_pwd) {
-                    message.error(window.yunAdminT('确认密码与新密码不一致'));
+                    message.error(window.lc('admin_system_00230'));
                     return false;
                 }
                 that.drawer = false;
@@ -263,7 +255,7 @@
                 httpPost('m=index&c=getwxbindstatus', {}).then(function (result) {
                     var res = result.data;
                     if (res.error == 0) {
-                        message.success(window.yunAdminT('绑定成功'), function () {
+                        message.success(window.lc('wap_user_00145'), function () {
                             clearInterval(that.codesetval);
                             that.user.wxid = res.data.wxid;
                             that.code = false

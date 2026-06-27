@@ -11,22 +11,22 @@
         <div class="moduleSeachs">
             <div class="moduleSeachleft">
                 <div class="moduleInptList">
-                    <el-input placeholder="输入你要搜索的关键字" v-model="searchForm.keyword" size="small" class="input-with-select" clearable>
-                        <el-select v-model="searchForm.ftype" slot="prepend" placeholder="期望职位">
-                            <el-option label="期望职位" value="1"></el-option>
-                            <el-option label="个人姓名" value="2"></el-option>
-                            <el-option label="举报企业" value="3"></el-option>
+                    <el-input :placeholder="lc('admin_user_weipin_00003')" v-model="searchForm.keyword" size="small" class="input-with-select" clearable>
+                        <el-select v-model="searchForm.ftype" slot="prepend" :placeholder="lc('admin_vue_00017')">
+                            <el-option :label="lc('admin_vue_00017')" value="1"></el-option>
+                            <el-option :label="lc('admin_user_00185')" value="2"></el-option>
+                            <el-option :label="lc('admin_01190')" value="3"></el-option>
                         </el-select>
                     </el-input>
                 </div>
                 <div class="moduleInptList">
-                    <el-select v-model="searchForm.status" size="small" clearable placeholder="处理状态" @change="search">
-                        <el-option label="未处理" value="0"></el-option>
-                        <el-option label="已处理" value="1"></el-option>
+                    <el-select v-model="searchForm.status" size="small" clearable :placeholder="lc('admin_user_00161')" @change="search">
+                        <el-option :label="lc('admin_user_00164')" value="0"></el-option>
+                        <el-option :label="lc('admin_user_00163')" value="1"></el-option>
                     </el-select>
                 </div>
                 <div class="newsbtnbox"  >
-                  <el-button type="primary" icon="el-icon-search" size="mini" @click="search">查询</el-button>
+                  <el-button type="primary" icon="el-icon-search" size="mini" @click="search">{{ lc('admin_user_weipin_00049') }}</el-button>
                 </div>
             </div>
         </div>
@@ -40,14 +40,14 @@
                 </el-table-column>
                 <el-table-column prop="id" label="ID" width="80" sortable="custom">
                 </el-table-column>
-                <el-table-column label="期望职位" width="230">
+                <el-table-column :label="lc('admin_vue_00017')" width="230">
                     <template slot-scope="scope">
                         <el-button type="text" @click="handlePreview(scope)" style="padding: 0">{{ scope.row.name }}
                         </el-button>
-                        <div>简历编号：{{ scope.row.eid }}</div>
+                        <div>{{ lc('admin_01189') }}</div>
                     </template>
                 </el-table-column>
-                <el-table-column label="被举报人" width="230">
+                <el-table-column :label="lc('admin_yunying_00109')" width="230">
                     <template slot-scope="scope">
                         <div class="moduleProps">
                             <span>{{ scope.row.c_mobile }}</span>
@@ -56,7 +56,7 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="举报企业" width="260">
+                <el-table-column :label="lc('admin_01190')" width="260">
                     <template slot-scope="scope">
                         <div class="moduleProps">
                             <span>{{ scope.row.p_mobile }}</span>
@@ -65,32 +65,32 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column prop="inputtime" label="举报时间" width="160" sortable="custom">
+                <el-table-column prop="inputtime" :label="lc('admin_01184')" width="160" sortable="custom">
                     <template slot-scope="scope">
                         <span>{{scope.row.inputtime_n}}</span>
                     </template>
                 </el-table-column>
-                <el-table-column prop="r_reason" label="举报理由" min-width="220">
+                <el-table-column prop="r_reason" :label="lc('admin_yunying_00102')" min-width="220">
                 </el-table-column>
-               <el-table-column prop="zt" label=" 状态" width="100">
+               <el-table-column prop="zt" :label="lc('member_user_00181')" width="100">
                    <template slot-scope="scope">
                        <div class="admin_state">
-                           <span class="admin_state1" v-if="scope.row.status==1">已处理</span>
-                           <span class="admin_state2" v-else>未处理</span>
+                           <span class="admin_state1" v-if="scope.row.status==1">{{ lc('admin_user_00163') }}</span>
+                           <span class="admin_state2" v-else>{{ lc('admin_user_00164') }}</span>
                        </div>
                    </template>
                </el-table-column>
-                <el-table-column fixed="right" label="操作" width="138">
+                <el-table-column fixed="right" :label="lc('member_user_00048')" width="138">
                     <template slot-scope="scope">
                         <div class="cz_button">
-                            <el-button size="mini" @click="resultReport(scope.row)" style="margin-right: 10px;">处理</el-button>
+                            <el-button size="mini" @click="resultReport(scope.row)" style="margin-right: 10px;">{{ lc('admin_user_00165') }}</el-button>
                             <el-popover placement="bottom" width="90" trigger="hover">
                                 <div class="moduleMores">
-                                    <el-button type="text" @click="del(scope.$index)">删除记录</el-button>
-                                    <el-button type="text" @click="delResume(scope.row)">简历删除</el-button>
-                                    <el-button type="text" @click="del(scope.$index,'pldel')">批量操作</el-button>
+                                    <el-button type="text" @click="del(scope.$index)">{{ lc('admin_01181') }}</el-button>
+                                    <el-button type="text" @click="delResume(scope.row)">{{ lc('admin_yunying_00108') }}</el-button>
+                                    <el-button type="text" @click="del(scope.$index,'pldel')">{{ lc('admin_yunying_00106') }}</el-button>
                                 </div>
-                                <el-button size="mini" slot="reference">更多</el-button>
+                                <el-button size="mini" slot="reference">{{ lc('admin_company_00025') }}</el-button>
                             </el-popover>
                         </div>
                     </template>
@@ -99,10 +99,10 @@
         </div>
         <div class="modulePaging">
             <div class="modulecz modulePagButn">
-                <el-checkbox v-model="checkedAll" :indeterminate="checkedAllIndeterminate" @change="checkAll">全选</el-checkbox>
-                <el-button @click="batch('del')">批量删除</el-button>
-                <el-button @click="batchDel">批量处理</el-button>
-                <el-button @click="batchResume">批量简历</el-button>
+                <el-checkbox v-model="checkedAll" :indeterminate="checkedAllIndeterminate" @change="checkAll">{{ lc('wap_js_00074') }}</el-checkbox>
+                <el-button @click="batch('del')">{{ lc('member_com_00055') }}</el-button>
+                <el-button @click="batchDel">{{ lc('admin_yunying_00105') }}</el-button>
+                <el-button @click="batchResume">{{ lc('admin_yunying_00107') }}</el-button>
             </div>
             <div class="modulePagNum">
                 <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
@@ -113,50 +113,50 @@
         </div>
         <!--处理举报-->
         <div class="modluDrawer">
-            <el-dialog title="处理举报信息" :visible.sync="statusBox" :with-header="true" :modal-append-to-body="false"
+            <el-dialog :title="lc('admin_01180')" :visible.sync="statusBox" :with-header="true" :modal-append-to-body="false"
                 :show-close="true" width="500px">
                 <el-form label-width="110px">
-                    <el-form-item :label="'返还'+integral_pricename">
-                        <el-radio v-model="datafh" label="1">是</el-radio>
-                        <el-radio v-model="datafh" label="2">否</el-radio>
+                    <el-form-item :label="lc('admin_html_00017')">
+                        <el-radio v-model="datafh" label="1">{{ lc('common_02085') }}</el-radio>
+                        <el-radio v-model="datafh" label="2">{{ lc('common_02063') }}</el-radio>
                     </el-form-item>
-                    <el-form-item label="批量处理">
-                        <el-radio v-model="tongbu" label="1">是</el-radio>
-                        <el-radio v-model="tongbu" label="2">否</el-radio>
-                        <div>批量处理将同时处理该简历的其他举报信息</div>
+                    <el-form-item :label="lc('admin_yunying_00105')">
+                        <el-radio v-model="tongbu" label="1">{{ lc('common_02085') }}</el-radio>
+                        <el-radio v-model="tongbu" label="2">{{ lc('common_02063') }}</el-radio>
+                        <div>{{ lc('admin_yunying_00104') }}</div>
                     </el-form-item>
-                    <el-form-item label="处理结果">
-                        <el-input type="textarea" :rows="2" placeholder="处理结果" v-model="result">
+                    <el-form-item :label="lc('admin_yunying_00098')">
+                        <el-input type="textarea" :rows="2" :placeholder="lc('admin_yunying_00098')" v-model="result">
                         </el-input>
                     </el-form-item>
                 </el-form>
                 <span slot="footer" class="dialog-footer">
-                    <el-button @click="statusBox = false">取 消</el-button>
-                    <el-button type="primary" @click="submitStatus" :disabled="submitLoading">确 定</el-button>
+                    <el-button @click="statusBox = false">{{ lc('admin_user_weipin_00043') }}</el-button>
+                    <el-button type="primary" @click="submitStatus" :disabled="submitLoading">{{ lc('wap_com_00019') }}</el-button>
                 </span>
             </el-dialog>
         </div>
 		<div class="modluDrawer">
-		    <el-dialog title="批量处理" :visible.sync="statusAllBox" :with-header="true" :modal-append-to-body="false"
+		    <el-dialog :title="lc('admin_yunying_00105')" :visible.sync="statusAllBox" :with-header="true" :modal-append-to-body="false"
 		        :show-close="true" width="30%">
 		        <el-form label-width="130px">
-					<el-form-item :label="'返还'+integral_pricename">
-						<el-radio v-model="datafh" label="1">是</el-radio>
-						<el-radio v-model="datafh" label="2">否</el-radio>
+					<el-form-item :label="lc('admin_html_00017')">
+						<el-radio v-model="datafh" label="1">{{ lc('common_02085') }}</el-radio>
+						<el-radio v-model="datafh" label="2">{{ lc('common_02063') }}</el-radio>
 					</el-form-item>
-				   <el-form-item label="处理结果">
-					   <el-input type="textarea" :rows="2" placeholder="处理结果" v-model="result">
+				   <el-form-item :label="lc('admin_yunying_00098')">
+					   <el-input type="textarea" :rows="2" :placeholder="lc('admin_yunying_00098')" v-model="result">
 					   </el-input>
 				   </el-form-item>
 				</el-form>
 				<span slot="footer" class="dialog-footer">
-					<el-button @click="statusAllBox = false">取 消</el-button>
-					<el-button type="primary" @click="submitAllStatus" :disabled="submitLoading">确 定</el-button>
+					<el-button @click="statusAllBox = false">{{ lc('admin_user_weipin_00043') }}</el-button>
+					<el-button type="primary" @click="submitAllStatus" :disabled="submitLoading">{{ lc('wap_com_00019') }}</el-button>
 				</span>
 		    </el-dialog>
 		</div>
 		<div class="modluDrawer">
-		    <el-drawer title="简历预览" :append-to-body="true" :visible.sync="resumePreviewVisible" :destroy-on-close="true" size="530px">
+		    <el-drawer :title="lc('member_user_00037')" :append-to-body="true" :visible.sync="resumePreviewVisible" :destroy-on-close="true" size="530px">
 		        <resume_preview :id="info.eid" :uid="info.uid"></resume_preview>
 		    </el-drawer>
 		</div>
@@ -169,7 +169,7 @@
                 return {
                     loading: false,
 					pagerCount: 5,
-                    dataText: '数据加载中',
+                    dataText: lc('admin_user_weipin_00026'),
                     // 搜索筛选项
                     searchForm: {
                         ftype: '1',
@@ -219,7 +219,7 @@
             methods: {
 				batchResume(){
 					if (this.multipleSelection.length == 0) {
-					    message.error('请选择要操作的数据项');
+					    message.error(lc('admin_user_weipin_00001'));
 					    return false;
 					}
 					let idArr = [];
@@ -248,7 +248,7 @@
 				submitAllStatus(){
 				    let that = this;
 				    if (that.datafh == '') {
-				        message.error('请选择是否返还积分')
+				        message.error(lc('admin_01192'))
                         return false
                     }
 				    let params = {
@@ -275,7 +275,7 @@
 				},
 				batchDel(){
 					if (this.multipleSelection.length == 0) {
-					    message.error('请选择要操作的数据项');
+					    message.error(lc('admin_user_weipin_00001'));
 					    return false;
 					}
 					let idArr = [];
@@ -302,7 +302,7 @@
                 submitStatus(){
                     let that = this;
                     if (that.datafh == '') {
-                        message.error('请选择是否返还积分')
+                        message.error(lc('admin_01192'))
                         return false
                     }
                     let params = {
@@ -399,7 +399,7 @@
 
                 batch(type) {
                     if (this.multipleSelection.length == 0) {
-                        message.error('请选择要删除的数据');
+                        message.error(lc('admin_user_weipin_00005'));
                         return false;
                     }
 

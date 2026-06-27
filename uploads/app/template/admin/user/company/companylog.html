@@ -10,13 +10,13 @@
     <div id="moduapp" class="moduleDome">
         <div class="setDomeAll setDomeInte">
             <el-tabs v-model="activeName" @tab-click="handleClick">
-                <el-tab-pane label="全职刷新日志" name="first" :lazy="true">
+                <el-tab-pane :label="lc('admin_user_company_00011')" name="first" :lazy="true">
                     <company_job_refresh_log :type="1"></company_job_refresh_log>
                 </el-tab-pane>
-                <el-tab-pane label="兼职刷新日志" name="second" :lazy="true">
+                <el-tab-pane :label="lc('admin_user_company_00012')" name="second" :lazy="true">
                     <company_job_refresh_log :type="2"></company_job_refresh_log>
                 </el-tab-pane>
-                <el-tab-pane label="高级职位刷新日志" name="third" :lazy="true">
+                <el-tab-pane :label="lc('admin_user_company_00010')" name="third" :lazy="true">
                     <company_job_refresh_log :type="3"></company_job_refresh_log>
                 </el-tab-pane>
             </el-tabs>

@@ -11,10 +11,10 @@
         <div class="setDomeAll setDomehuiyuan">
             <!--会员分类-->
             <el-tabs v-model="activeName" @tab-click="handleClick">
-                <el-tab-pane label="个人会员" name="userclass" :lazy="true">
+                <el-tab-pane :label="lc('admin_system_00129')" name="userclass" :lazy="true">
                     <member_userclass></member_userclass>
                 </el-tab-pane>
-                <el-tab-pane label="企业会员" name="comclass" :lazy="true">
+                <el-tab-pane :label="lc('admin_user_company_00281')" name="comclass" :lazy="true">
                     <member_comclass></member_comclass>
                 </el-tab-pane>
             </el-tabs>

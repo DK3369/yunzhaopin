@@ -10,7 +10,7 @@
     <div id="moduapp" class="tableDome">
         <div class="seosetSubject">
             <div class="tableDome_tip">
-                <el-alert title="SEO设置标题，关键词，网站描述的设置可以使您的网页更容易被搜索到哦~" type="success" :closable="false">
+                <el-alert :title="lc('admin_system_00576')" type="success" :closable="false">
                 </el-alert>
             </div>
             <template>
@@ -22,7 +22,7 @@
             </template>
         </div>
         <div class="modluDrawer">
-            <el-drawer :title="detail.id ? 'SEO修改' : 'SEO添加'" :visible.sync="drawerSeoshezhi" :append-to-body="true" :show-close="true" :with-header="true" size="45%">
+            <el-drawer :title="lc('admin_html_00007')" :visible.sync="drawerSeoshezhi" :append-to-body="true" :show-close="true" :with-header="true" size="45%">
                 <seoshezhi @child-event="closeSeoshezhi" call="seo" :seoid="detail.id" :detail="detail"></seoshezhi>
             </el-drawer>
         </div>

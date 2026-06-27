@@ -8,40 +8,40 @@
 <body>
 <div id="ossConfigApp" class="moduleDome">
     <div class="tableDome_tip" style="margin-top: 12px;">
-        <el-alert title="关闭时文件上传到网站服务器，开启后网站文件将上传到阿里云OSS" type="success" :closable="false"></el-alert>
+        <el-alert :title="lc('admin_tool_00330')" type="success" :closable="false"></el-alert>
     </div>
     <div class=" moduleTable">
 
         <table class="tableVue">
             <thead>
             <tr align="left">
-                <th width="200">名称</th>
-                <th width="400">状态</th>
-                <th>说明</th>
+                <th width="200">{{ lc('member_com_00021') }}</th>
+                <th width="400">{{ lc('member_user_00181') }}</th>
+                <th>{{ lc('member_com_00207') }}</th>
             </tr>
             </thead>
             <tbody>
             <tr>
                 <td>
-                    <div class="TableTite">阿里云OSS存储</div>
+                    <div class="TableTite">{{ lc('admin_tool_00331') }}</div>
                 </td>
                 <td>
                     <div class="TableButn">
                         <el-radio-group v-model="ossConfig.sy_oss">
-                            <el-radio :label="1">开启</el-radio>
-                            <el-radio :label="2">关闭</el-radio>
+                            <el-radio :label="1">{{ lc('member_com_00287') }}</el-radio>
+                            <el-radio :label="2">{{ lc('resume_00030') }}</el-radio>
                         </el-radio-group>
                     </div>
                 </td>
                 <td>
                     <div class="TableShuom">
-                        <span>关闭时文件上传到网站服务器，开启后网站文件将上传到阿里云OSS</span>
+                        <span>{{ lc('admin_tool_00330') }}</span>
                     </div>
                 </td>
             </tr>
             <tr>
                 <td>
-                    <div class="TableTite">OSS存储地址</div>
+                    <div class="TableTite">{{ lc('admin_tool_00332') }}</div>
                 </td>
                 <td>
                     <div class="TableInpt">
@@ -50,7 +50,7 @@
                 </td>
                 <td>
                     <div class="TableShuom">
-                        <span>阿里云OSS远程存储地址, 如https://img.hr135.com</span>
+                        <span>{{ lc('admin_tool_00329') }}</span>
                     </div>
                 </td>
             </tr>
@@ -110,14 +110,14 @@
                 </td>
                 <td>
                     <div class="TableShuom">
-                        <span>存储空间名称</span>
+                        <span>{{ lc('admin_tool_00333') }}</span>
                     </div>
                 </td>
             </tr>
             </tbody>
         </table>
         <div class="setBasicButn" style="border: none;">
-            <el-button type="primary" size="medium" @click="setOssConfig" :disabled="saveLoading">提交</el-button>
+            <el-button type="primary" size="medium" @click="setOssConfig" :disabled="saveLoading">{{ lc('wap_user_00176') }}</el-button>
         </div>
     </div>
 </div>

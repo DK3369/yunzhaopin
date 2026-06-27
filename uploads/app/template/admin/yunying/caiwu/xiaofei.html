@@ -11,28 +11,28 @@
 		<div class="moduleSeachs">
 			<div class="moduleSeachleft">
 				<div class="moduleInptList">
-					<el-input placeholder="输入你要搜索的关键字" v-model="search.keyword" size="small" class="input-with-select" clearable>
-						<el-select v-model="search.type" slot="prepend" placeholder="请选择" >
-							<el-option label="消费单号" value="1"></el-option>
-							<el-option label="用户名" value="2"></el-option>
-							<el-option label="备注说明" value="3"></el-option>
+					<el-input :placeholder="lc('admin_user_weipin_00003')" v-model="search.keyword" size="small" class="input-with-select" clearable>
+						<el-select v-model="search.type" slot="prepend" :placeholder="lc('wap_user_00100')" >
+							<el-option :label="lc('admin_user_00295')" value="1"></el-option>
+							<el-option :label="lc('admin_user_00140')" value="2"></el-option>
+							<el-option :label="lc('admin_user_00290')" value="3"></el-option>
 						</el-select>
 					</el-input>
 				</div>
 				<div class=" tableSeachInptsmall newsinput">
-					<el-select v-model="search.pay_state" size="small" slot="prepend" placeholder="消费状态" clearable
+					<el-select v-model="search.pay_state" size="small" slot="prepend" :placeholder="lc('admin_yunying_00097')" clearable
 						@change="doUserQuery">
 						<el-option v-for="item in payArr" :key="item.value" :label="item.label" :value="item.value"></el-option>
 					</el-select>
 				</div>
 				<div class=" tableSeachInptsmall newsinput">
-					<el-select v-model="search.end" size="small" slot="prepend" placeholder="消费时间" clearable
+					<el-select v-model="search.end" size="small" slot="prepend" :placeholder="lc('wap_com_00344')" clearable
 						@change="doUserQuery">
 						<el-option v-for="item in time" :key="item.value" :label="item.label" :value="item.value"></el-option>
 					</el-select>
 				</div>
 				<div class="newsbtnbox">
-					<el-button type="primary" icon="el-icon-search" size="mini" @click="doUserQuery">查询</el-button>
+					<el-button type="primary" icon="el-icon-search" size="mini" @click="doUserQuery">{{ lc('admin_user_weipin_00049') }}</el-button>
 				</div>
 			</div>
 		</div>
@@ -45,26 +45,26 @@
 				:header-cell-style="{background:'#f5f7fa',color:'#606266'}" height="100%" v-loading="loading" :empty-text="emptytext">
 				<el-table-column type="selection" width="55">
 				</el-table-column>
-				<el-table-column prop="id" label="编号" width="80" sortable="custom">
+				<el-table-column prop="id" :label="lc('member_com_00345')" width="80" sortable="custom">
 				</el-table-column>
-				<el-table-column prop="order_id" label="消费单号" width="160">
+				<el-table-column prop="order_id" :label="lc('admin_user_00295')" width="160">
 				</el-table-column>
-				<el-table-column prop="username" label="用户名" min-width="160"></el-table-column>
-				<el-table-column prop="comname" label="企业名称(姓名)" min-width="160"></el-table-column>
-				<el-table-column prop="price_str" label="金额" width="150"></el-table-column>
-				<el-table-column prop="pay_remark" label="备注说明">
+				<el-table-column prop="username" :label="lc('admin_user_00140')" min-width="160"></el-table-column>
+				<el-table-column prop="comname" :label="lc('admin_yunying_00096')" min-width="160"></el-table-column>
+				<el-table-column prop="price_str" :label="lc('member_user_00254')" width="150"></el-table-column>
+				<el-table-column prop="pay_remark" :label="lc('admin_user_00290')">
 				</el-table-column>
-				<el-table-column prop="pay_time" label="消费时间" width="180" align="center" sortable="custom">
+				<el-table-column prop="pay_time" :label="lc('wap_com_00344')" width="180" align="center" sortable="custom">
 				</el-table-column>
-				<el-table-column prop="pay_state_n" label="状态" width="150" align="center">
+				<el-table-column prop="pay_state_n" :label="lc('member_user_00181')" width="150" align="center">
 					<template slot-scope="scope">
 						<div v-html="scope.row.pay_state_n"></div>
 					</template>
 				</el-table-column>
-				<el-table-column fixed="right" label="操作" width="80" align="center">
+				<el-table-column fixed="right" :label="lc('member_user_00048')" width="80" align="center">
 					<template slot-scope="scope">
 						<div class="cz_button">
-							<el-button type="danger" size="small " @click="del(scope.row)">删除</el-button>
+							<el-button type="danger" size="small " @click="del(scope.row)">{{ lc('wap_js_00077') }}</el-button>
 						</div>
 					</template>
 				</el-table-column>
@@ -72,8 +72,8 @@
 		</div>
 		<div class="modulePaging">
 			<div class="modulecz modulePagButn">
-				<el-checkbox v-model="checkedAll" @change="selectAllBottom">全选</el-checkbox>
-				<el-button @click="batchDel" size="mini">批量删除</el-button>
+				<el-checkbox v-model="checkedAll" @change="selectAllBottom">{{ lc('wap_js_00074') }}</el-checkbox>
+				<el-button @click="batchDel" size="mini">{{ lc('member_com_00055') }}</el-button>
 			</div>
 			<div class="modulePagNum">
 				<el-pagination :total="total" @current-change="userPageChange"
@@ -91,7 +91,7 @@
 			data: function () {
 				return {
 					loading: false,
-					emptytext: '暂无数据',
+					emptytext: lc('wap_js_00113'),
 					checkedAll:false,
 					search: {
 						pay_state: '',
@@ -103,32 +103,32 @@
 					value: true,
 					time: [{
 						value: 1,
-						label: "今天"
+						label: lc('common_01940')
 					}, {
 						value: 3,
-						label: "最近三天"
+						label: lc('admin_user_00179')
 					}, {
 						value: 7,
-						label: "最近七天"
+						label: lc('admin_user_00178')
 					}, {
 						value: 15,
-						label: "最近半月"
+						label: lc('admin_user_00180')
 					}, {
 						value: 30,
-						label: "最近一个月"
+						label: lc('admin_user_00175')
 					}],
 					payArr: [{
 						value: 0,
-						label: "支付失败"
+						label: lc('admin_01264')
 					}, {
 						value: 1,
-						label: "等待付款"
+						label: lc('admin_yunying_00085')
 					}, {
 						value: 2,
-						label: "支付成功"
+						label: lc('admin_01265')
 					}, {
 						value: 3,
-						label: "等待确认"
+						label: lc('admin_yunying_00086')
 					}],
 					tableData: [],
 					total: 0,
@@ -183,7 +183,7 @@
 					this.search.page = this.page;
 					this.search.pageSize = this.pageSize;
 					_this.loading = true;
-					_this.emptytext = "数据加载中";
+					_this.emptytext = lc('admin_user_weipin_00026');
 					httpPost(url, _this.search, {hideloading: true}).then(function (response) {
 						let res = response.data;
 						if (res.error == 0) {
@@ -196,7 +196,7 @@
 							_this.loading = false;
 							_this.pageSizes =res.data.pageSizes;
 							if (_this.tableData.length === 0){
-	                            _this.emptytext = "暂无数据";
+	                            _this.emptytext = lc('wap_js_00113');
 	                        }
 						}
 					})
@@ -225,7 +225,7 @@
 				batchDel: function () {
 					let ids = this.idsArr;
 					if (!ids.length) {
-						message.error('请选择需要删除的消费记录');
+						message.error(lc('admin_01267'));
 						return
 					}
 					let _this = this;

@@ -10,7 +10,7 @@
     <div id="moduapp" class="moduleDome">
         <div class="setDomeAll setDomeInte">
             <el-tabs v-model="activeName" @tab-click="handleClick">
-                <el-tab-pane label="面试模板" name="first" :lazy="true">
+                <el-tab-pane :label="lc('wap_com_00404')" name="first" :lazy="true">
                     <companyms_interview :status="status.first"></companyms_interview>
                 </el-tab-pane>
             </el-tabs>

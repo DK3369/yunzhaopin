@@ -9,18 +9,18 @@
 <body>
     <div id="moduapp" class="tableDome">
         <div class="tableDome_tip">
-            <el-alert title="如果是想关闭功能模块，请进入系统 > 导航管理里面设置" type="success" show-icon>
+            <el-alert :title="lc('admin_system_00459')" type="success" show-icon>
             </el-alert>
         </div>
         <div class="moduleTable">
             <table class="tableVue">
                 <thead>
                     <tr align="left">
-                        <th width="100">模块名称</th>
-                        <th width="100">状态</th>
-                        <th>二级域名（默认HTTP，未绑定则留空）</th>
-                        <th width="220">指向目录</th>
-                        <th width="160">综合设置</th>
+                        <th width="100">{{ lc('admin_system_00466') }}</th>
+                        <th width="100">{{ lc('member_user_00181') }}</th>
+                        <th>{{ lc('admin_system_00460') }}</th>
+                        <th width="220">{{ lc('admin_system_00465') }}</th>
+                        <th width="160">{{ lc('admin_system_00467') }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -45,13 +45,13 @@
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input v-model="item.dir" disabled placeholder="目录名"></el-input>
+                                <el-input v-model="item.dir" disabled :placeholder="lc('admin_system_00469')"></el-input>
                             </div>
                         </td>
                         <td>
                             <div class="TableLink seolinksGai" v-if="index != 'error'">
-                                <el-link type="primary" @click="openNavset(index, item.value)">导航设置</el-link>
-                                <el-link type="primary" @click="openSeoshezhi(index, item.value)">SEO设置</el-link>
+                                <el-link type="primary" @click="openNavset(index, item.value)">{{ lc('admin_system_00464') }}</el-link>
+                                <el-link type="primary" @click="openSeoshezhi(index, item.value)">{{ lc('admin_system_00463') }}</el-link>
                             </div>
                         </td>
                     </tr>
@@ -59,16 +59,16 @@
             </table>
         </div>
         <div class="setBasicButn" style="border: none;">
-            <el-button type="primary" size="medium" @click="save" :disabled="saveLoading">保存</el-button>
+            <el-button type="primary" size="medium" @click="save" :disabled="saveLoading">{{ lc('wap_user_00101') }}</el-button>
         </div>
         <!-- 抽屉弹窗 -->
         <div class="modluDrawer">
-            <el-drawer title="设置导航" :visible.sync="drawer1" :modal-append-to-body="false" :show-close="true" :with-header="true" size="35%">
+            <el-drawer :title="lc('admin_00201')" :visible.sync="drawer1" :modal-append-to-body="false" :show-close="true" :with-header="true" size="35%">
                 <navset @child-event="closeNavset" :config="detail.config" :name="detail.name"></navset>
             </el-drawer>
         </div>
         <div class="modluDrawer">
-            <el-drawer title="SEO设置" :visible.sync="drawer2" :append-to-body="true" :show-close="true" :with-header="true" size="50%">
+            <el-drawer :title="lc('admin_system_00463')" :visible.sync="drawer2" :append-to-body="true" :show-close="true" :with-header="true" size="50%">
                 <seoshezhi @child-event="closeSeoshezhi" call="module" :config="detail.config"></seoshezhi>
             </el-drawer>
         </div>
