@@ -14,7 +14,7 @@
         <div v-if="islook" style="position: relative;overflow: hidden; width: 100%; height: 100%;">
             <div class="drawerModElink">
                 <!-- <el-link @click="back" type="primary">返回</el-link> -->
-                <el-page-header @back="goBack" :content="lc('admin_html_00002')">
+                <el-page-header @back="goBack" :content="id=='' ? lc('member_com_00354') : lc('member_com_00355')">
                 </el-page-header>
                 <el-alert :title="lc('admin_tool_00511')" type="success" :closable="false"
                     v-if="temptype == 1"></el-alert>

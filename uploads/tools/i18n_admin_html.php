@@ -450,18 +450,20 @@ function appendLangKeys($newKeys)
         file_put_contents($path, $content);
     }
     $aliasPath = ROOT . 'data/lang/auto/aliases.php';
-    $aliases = include $aliasPath;
+    if (!is_file($aliasPath)) {
+        return;
+    }
+    $content = file_get_contents($aliasPath);
+    $content = rtrim($content);
+    $content = preg_replace('/\);\s*$/', '', $content);
     foreach ($newKeys as $text => $k) {
-        if (!isset($aliases[$text])) {
-            $aliases[$text] = $k;
+        if (!is_string($text) || $text === '' || strpos($content, var_export($text, true)) !== false) {
+            continue;
         }
+        $content .= "\n  " . var_export($text, true) . ' => ' . var_export($k, true) . ',';
     }
-    $out = "<?php\nreturn array(\n";
-    foreach ($aliases as $k => $v) {
-        $out .= "  '" . addslashes($k) . "' => '" . addslashes($v) . "',\n";
-    }
-    $out .= ");\n";
-    file_put_contents($aliasPath, $out);
+    $content .= "\n);\n";
+    file_put_contents($aliasPath, $content);
 }
 
 function iterFiles($singleFile, $singleDir)

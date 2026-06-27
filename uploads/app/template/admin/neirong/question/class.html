@@ -30,7 +30,7 @@
         <div class="nrtopbtn">
             <el-button type="primary" icon="el-icon-document-add" size="mini"
                        @click="openAdd('')">{{ lc('admin_00222') }}</el-button>
-            <el-button type="" size="mini" v-if="pid >{{ lc('admin_html_00013') }}</el-button>
+            <el-button type="" size="mini" v-if="pid > 0" @click="childClass(0)">{{ lc('common_02039') }}</el-button>
         </div>
     </div>
 
