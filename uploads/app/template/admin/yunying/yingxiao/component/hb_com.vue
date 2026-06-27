@@ -15,8 +15,7 @@
                 <div class="playbillHeaText" style="width: 100%;">
                     <span class="span1" style="display: block;">{yun:}t key='admin_01065'{/yun}</span>
                     <span style="overflow: hidden; display: block; width: calc(100% - 75px);">
-                        海报大小（1080 * 1920）；白色文案区域：高度（1{yun:}t key='wap_user_00151'{/yun}：633，2{yun:}t key='wap_user_00151'{/yun}：663，3{yun:}t key='wap_user_00151'{/yun}：775，4{yun:}t key='wap_user_00151'{/yun}：849，5{yun:}t key='wap_user_00151'{/yun}：964，6{yun:}t key='wap_user_00151'{/yun}：1070） ，距离左右 83，距离底部
-                        132
+                        {yun:}t key='admin_vue_00133'{/yun}
                     </span>
                 </div>
             </div>

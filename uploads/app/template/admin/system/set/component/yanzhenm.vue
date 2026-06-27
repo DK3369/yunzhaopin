@@ -100,7 +100,7 @@
                                 <div class="TableInpt TableInptCoor" style="justify-content: initial;">
                                     <div class="TableInCooLis">
                                         <el-input v-model='list.code_width' class="input-text" type="text" size="10" maxlength="255" onkeyup="this.value=this.value.replace(/[^0-9.]/g,'')">
-                                            <template slot="prepend">宽</template>
+                                            <template slot="prepend">{yun:}t key='admin_vue_00135'{/yun}</template>
                                             <span slot="suffix" class="slotspan">px</span>
                                         </el-input>
                                     </div>
@@ -245,7 +245,7 @@
                             <td>
                                 <div class="TableShuom">
                                     <span>{yun:}t key='admin_01005'{/yun}<el-link target="_blank" type="info" href="https://cloud.tencent.com">https://cloud.tencent.com</el-link><span
-                                            style="color:red;padding-left: 5px;">(使用此功能需php版本>=7.0)</span></span>
+                                            style="color:red;padding-left: 5px;">{yun:}t key='admin_vue_00134'{/yun}</span></span>
                                 </div>
                             </td>
                         </tr>

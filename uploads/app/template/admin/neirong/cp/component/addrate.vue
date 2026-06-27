@@ -16,7 +16,7 @@
 						</div>
 						<div class="pinyuFroms">
 							<el-input v-model="item.from" placeholder="{yun:}t key='admin_00866'{/yun}"></el-input>
-							<span class="spantite">到</span>
+							<span class="spantite">{yun:}t key='admin_vue_00136'{/yun}</span>
 							<el-input v-model="item.to" placeholder="{yun:}t key='admin_00866'{/yun}"></el-input>
 						</div>
 					</div>

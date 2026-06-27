@@ -224,7 +224,6 @@ module.exports = {
             multipleSelection: [],
 
             seomodel: {},
-            headTip: '提示：如果您不是程序员或不清楚用法，请不要随意修改SEO标识符！网站的SEO部分是网站重要部分，请不要经常修改！<br/>{yun:}t key='admin_00972'{/yun}<a href="https://ziyuan.baidu.com/college/documentinfo?id=1576&amp;qq-pf-to=pcqq.c2c" target="_blank" style="color:#00F">{yun:}t key='admin_00973'{/yun}</a>{yun:}t key='admin_00975'{/yun}<a href="https://ziyuan.baidu.com/college/documentinfo?id=1576&amp;qq-pf-to=pcqq.c2c" target="_blank" style="color:#00F">{yun:}t key='admin_00973'{/yun}</a>。',
             saveLoading: false
         }
     },
@@ -241,11 +240,11 @@ module.exports = {
                 call = that.call,
                 url = '',
                 params = {};
-            if (call == 'seo") { // SEO{yun:}t key='wap_com_00307'{/yun}
-                url = "m=system&c=set_seo&a=seoadd';
+            if (call == 'seo') {
+                url = "m=system&c=set_seo&a=seoadd";
                 params = { id: that.seoid };
-            } else if (call == 'module") { // {yun:}t key='admin_system_00047'{/yun}
-                url = "m=system&c=set_module&a=seoshezhi';
+            } else if (call == 'module') {
+                url = "m=system&c=set_module&a=seoshezhi";
                 params = { config: that.config };
             }
             that.loading = true;
@@ -400,11 +399,11 @@ module.exports = {
                 return false;
             }
 
-            if (call == 'seo") { // SEO{yun:}t key='wap_com_00307'{/yun}
-                url = "m=system&c=set_seo&a=save';
-            } else if (call == 'module") { // {yun:}t key='admin_system_00047'{/yun}
+            if (call == 'seo') {
+                url = "m=system&c=set_seo&a=save";
+            } else if (call == 'module') {
                 ruleForm.id = ruleForm.seoid;
-                url = "m=system&c=set_module&a=seoshezhi';
+                url = "m=system&c=set_module&a=seoshezhi";
             }
             that.saveLoading = true;
             httpPost(url, ruleForm).then(function(response) {
@@ -415,8 +414,8 @@ module.exports = {
                 } else {
                     message.success(res.msg, function() {
                         that.$emit("child-event");
-                        if (call == 'seo") { // SEO{yun:}t key='wap_com_00307'{/yun}
-                            if (custoapp.curTab == ruleForm.seomodel) { // tab标签相等
+                        if (call == 'seo') {
+                            if (custoapp.curTab == ruleForm.seomodel) {
                                 custoapp.seotabRefresh(); // {yun:}t key='wap_user_00334'{/yun}TAB{yun:}t key='wap_00316'{/yun}
                             }
                         }

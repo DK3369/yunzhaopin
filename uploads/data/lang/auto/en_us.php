@@ -16019,4 +16019,8 @@ return array(
   'admin_vue_00130' => 'Please upload LOGO',
   'admin_vue_00131' => ' admin group info?',
   'admin_vue_00132' => 'score values cannot be empty',
+  'admin_vue_00133' => 'Poster size (1080 * 1920); white text area height (line 1: 633, line 2: 663, line 3: 775, line 4: 849, line 5: 964, line 6: 1070), 83 from left/right, 132 from bottom',
+  'admin_vue_00134' => '(Requires PHP >= 7.0)',
+  'admin_vue_00135' => 'Width',
+  'admin_vue_00136' => 'to',
 );
