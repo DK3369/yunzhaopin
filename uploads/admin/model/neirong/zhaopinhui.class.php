@@ -355,12 +355,12 @@ class zhaopinhui_controller extends adminCommon
         foreach ($info['job_list'] as $k => $v) {
             if (!empty($info['jobid_arr'])) {
                 if (in_array($v['id'], $info['jobid_arr'])) {
-                    $info['job_list'][$k]['ch_n'] = yun_at('admin_00302');
+                    $info['job_list'][$k]['ch_n'] = 'admin_00302';
                 } else {
-                    $info['job_list'][$k]['ch_n'] = yun_at('admin_neirong_00032');
+                    $info['job_list'][$k]['ch_n'] = 'admin_neirong_00032';
                 }
             } else {
-                $info['job_list'][$k]['ch_n'] = yun_at('admin_00302');
+                $info['job_list'][$k]['ch_n'] = 'admin_00302';
             }
         }
         $info['zph'] = $zphCom;

@@ -85,7 +85,7 @@
                 </el-table-column>
                 <el-table-column prop="time_end" label="{yun:}t key='admin_company_00006'{/yun}" width="150">
                     <template slot-scope="props">
-                        <span v-if="props.row.time_end_n == '已到期'" style="color: red">{yun:}t key='wap_com_00319'{/yun}</span>
+                        <span v-if="props.row.time_end_n == 'wap_com_00319'" style="color: red">{yun:}t key='wap_com_00319'{/yun}</span>
                         <span v-else>{{props.row.time_end_n}}</span>
                     </template>
                 </el-table-column>

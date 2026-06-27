@@ -328,8 +328,8 @@
                                         <span class="shshow_line" v-if="!item.exp_req">{yun:}t key='admin_00852'{/yun}</span>
                                         <span class="shshow_line" v-if="!item.edu_req">{yun:}t key='admin_00853'{/yun}</span>
                                     </div>
-                                    <span class="shshow_zt" v-if="item.ch_n == '已参会'">{{item.ch_n}}</span>
-                                    <span class="shshow_zt shshow_ztno" v-else>{{item.ch_n}}</span>
+                                    <span class="shshow_zt" v-if="item.ch_n == 'admin_00302'">{{ lc(item.ch_n) }}</span>
+                                    <span class="shshow_zt shshow_ztno" v-else>{{ lc(item.ch_n) }}</span>
                                 </li>
                             </ul>
                         </div>
