@@ -11,7 +11,7 @@
                 </el-input>
 
             </div>
-            <!--收起部分-->
+            <!-- Collapsed section -->
             <div class="tableSeachInpt tableSeachInptsmall" v-for="(searchitem, searchidx) in searchlist" :key="searchidx"
                 :class="{ 'searchbutnOnff': seachbutn }">
                 <el-select v-model="search_params[searchidx]" size="small" slot="prepend" :placeholder="searchitem.name"
@@ -90,7 +90,7 @@
                 <el-table-column prop="logintime" :label="lc('member_com_00303')" width="150">
                     <template slot-scope="props">
                         <!--<a href="index.php?m=admin_comlog&c=partapply&jobid={yun:}$v.id{/yun}" class="admin_cz_sc">-->
-                        <!--{yun:}$v.applynum{/yun}人<div class="admin_mb5">查看</div>-->
+                        
                         <!--</a>-->
                         <div class="moduleProps" v-if="props.row.applynum > 0">
                             <span>{{ lc("admin_applicants_count", [props.row.applynum]) }}</span>
@@ -180,14 +180,14 @@
                 </el-pagination>
             </div>
         </div>
-        <!--兼职报名记录弹窗-->
+        <!-- Part-time application records dialog -->
         <div class="modluDrawer" v-if="curr_job">
             <el-drawer :title="lc('member_com_00296')" :visible.sync="drawerapplylog" :modal-append-to-body="false" append-to-body
                 :show-close="true" :with-header="true" size="95%">
                 <comlog_partapply style="margin-left: 10px;" ref="partapplylog" :job="curr_job"></comlog_partapply>
             </el-drawer>
         </div>
-        <!--职位推广弹窗-->
+        <!-- Job promotion dialog -->
         <div class="modluDrawer">
             <el-dialog :title="jobtgtit" :visible.sync="jobtgdrawer" :with-header="true" append-to-body :show-close="true"
                 width="400px">
@@ -210,7 +210,7 @@
                 </span>
             </el-dialog>
         </div>
-        <!--批量延期弹窗-->
+        <!-- Batch extension dialog -->
         <div class="modluDrawer">
             <el-dialog :title="lc('admin_user_weipin_00038')" :visible.sync="yqdrawer" :with-header="true" append-to-body :show-close="true"
                 width="400px">
@@ -224,7 +224,7 @@
                 </span>
             </el-dialog>
         </div>
-        <!--批量审核职位-->
+        <!-- Batch job review -->
         <div class="modluDrawer">
             <el-dialog :title="lc('admin_user_company_00350')" width="300px" :visible.sync="drawerauditmultiple" append-to-body
                 :modal-append-to-body="false">
@@ -254,7 +254,7 @@
                 </span>
             </el-dialog>
         </div>
-        <!--职位详情审核 ---------------------------------------------------------------------->
+        <!-- Job detail review ---------------------------------------------------------------------->
         <el-drawer :title="lc('admin_00773')" :visible.sync="jobdrawersh" :modal-append-to-body="false" size="80%">
             <div class="shbox" v-if="auditInfo">
                 <div class="shinfo">
@@ -267,10 +267,10 @@
                             v-if="auditInfo.linktel">{{ lc("admin_contact_phone_value", [auditInfo.linktel]) }} </span>
                         <span v-if="auditInfo.crm_salesman">{{ lc("admin_salesperson_value", [auditInfo.crm_salesman]) }}</span>
                     </div>
-                    <!--<div class="shcomtel">注册时间：{{auditInfo.reg_date_n}}-->
-                    <!--<span class="shcomtel_n">最近登录时间：{{auditInfo.login_date_n}} </span>-->
+                    
+                    -->
                     <!--<span v-if="auditInfo.add_ip">IP：{{auditInfo.add_ip}}</span>-->
-                    <!--<span v-if="auditInfo.add_ip" class="shcomtel_n">IP归属地：{{ip_address}}</span>-->
+                    -->
                     <!--</div>-->
                     <div class="shshowall">
                         <div class="shshow">
@@ -364,7 +364,7 @@
                 </div>
             </div>
         </el-drawer>
-        <!--修改职位提示-->
+        <!-- Edit job notice -->
         <el-drawer :title="lc('admin_00754')" :visible.sync="drawerEditJob" append-to-body :wrapper-closable="false" size="60%">
             <div class="uploadTable" style="padding:0px 20px;" v-if="curr_job">
                 <table class="tableVue">
@@ -524,8 +524,8 @@
                             <td>
                                 <div class="TableInpt">
                                     <div id="partjobeditor—wrapper" style="border: 1px solid #ccc;">
-                                        <div id="partjobtoolbar-container"><!-- 工具栏 --></div>
-                                        <div id="partjobeditor-container" style="height: 300px;"><!-- 编辑器 --></div>
+                                        <div id="partjobtoolbar-container"><!-- Toolbar --></div>
+                                        <div id="partjobeditor-container" style="height: 300px;"><!-- Editor --></div>
                                     </div>
                                 </div>
                             </td>
@@ -662,15 +662,15 @@ module.exports = {
             isIndeterminate: true,
             checkedworktime: [],
             worktimeCheckAll: false,
-            pickerOptions: {//el-date-picker 时间限定
+            pickerOptions: {// el-date-picker date limits
                 disabledDate(time) {
-                    // 今天及今天之前的日期
+                    // Today and earlier dates
                     // return time.getTime() > Date.now();
-                    // 今天及今天之后的日期
+                    // Today and later dates
                     return time.getTime() < Date.now() - 8.64e7;
                 }
             },
-            iscq: false,// 是否长期招聘
+            iscq: false,// Whether recruitment is long-term
             sel_city: [],
             mapkey: '',
             mapurl: '',
@@ -714,10 +714,10 @@ module.exports = {
             this.mouseFlag = false;
         },
         mouseMoveHandler(e) {
-            // 这里面需要注意，{{ lc('admin_user_company_00161') }}ref需要那个那个包含table元素的父元素
+            // The ref must point to the parent element that contains the table element
             let divData = this.$refs.multipleTable.bodyWrapper;
             if (this.mouseFlag) {
-                // 设置水平方向的元素的位置
+                // Set horizontal scroll position
                 divData.scrollLeft -= (- this.mouseOffset + (this.mouseOffset = e.clientX));
             }
         },
@@ -734,20 +734,20 @@ module.exports = {
         },
         writeJs: function (url, secret) {
             return new Promise((resolve, reject) => {
-                // 如果已加载直接返回
+                // Return directly if already loaded
                 if (typeof window.AMap !== 'undefined') {
                     resolve(window.AMap);
                     return true;
                 }
-                // 地图异步加载回调处理
+                // Handle async map loading callback
                 window.onAMapCallback = function () {
                     resolve(AMap);
                 };
-                // 设置安全密钥
+                // Set security key
                 window._AMapSecurityConfig = {
                     securityJsCode: secret,
                 }
-                // 插入script脚本
+                // Insert script tag
                 let scriptNode = document.createElement('script');
                 scriptNode.setAttribute('type', 'text/javascript');
                 scriptNode.setAttribute('src', url);
@@ -796,7 +796,7 @@ module.exports = {
             if (that.curr_job.billing_cycle == "") {
                 message.error(lc('wap_01695')); return false;
             }
-            // 去除html标签后判断内容是否为空
+            // Check whether content is empty after removing HTML tags
             var regex = /(<([^>]+)>)/ig
             var content = jobeditor.getHtml().replace(regex, "")
             if (content == "") {
@@ -857,7 +857,7 @@ module.exports = {
                 }, 2000);
             });
         },
-        // 职位修改兼职时间全选checkbox
+        // Edit job part-time schedule select-all checkbox
         handleColCheckAllChange(val) {
             var that = this
             if (val) {
@@ -876,7 +876,7 @@ module.exports = {
             }
             this.isIndeterminate = false;
         },
-        // 职位修改兼职时间checkbox
+        // Edit job part-time schedule checkbox
         worktimeChange(value) {
             var idx = this.checkedworktime.findIndex(item => item === value)
             if (idx !== -1) {
@@ -889,7 +889,7 @@ module.exports = {
             this.worktimeCheckAll = this.checkedworktime.length === totallen;
             this.isIndeterminate = this.checkedworktime.length > 0 && this.checkedworktime.length < totallen;
         },
-        // 职位修改
+        // Edit job
         edit: function (row) {
             var that = this
             httpPost('m=user&c=partjob&a=show', { id: row.id }).then(function (result) {
@@ -1049,7 +1049,7 @@ module.exports = {
                 console.log(e)
             })
         },
-        // 职位审核弹窗
+        // Job review dialog
         jobAudit: function (row) {
             var that = this
             httpPost('m=user&c=partjob&a=partAudit', { id: row.id }).then(function (result) {
@@ -1066,7 +1066,7 @@ module.exports = {
                 console.log(e)
             })
         },
-        // 批量推荐
+        // Batch recommendation
         multitg: function () {
             this.jobtgetime = ''
             if (this.selectedItem.length == 0) {
@@ -1087,7 +1087,7 @@ module.exports = {
             that.yqdrawer = true
             that.yqdays = ''
         },
-        // 批量延期保存
+        // Save batch extension
         yqSubmit() {
             var that = this
             if (!that.selectedItem.length) {
@@ -1122,7 +1122,7 @@ module.exports = {
             }
             that.drawerauditmultiple = true
         },
-        // 批量审核保存
+        // Save batch review
         multipleStatusSave() {
             var that = this
             if (!that.selectedItem.length) {
@@ -1151,7 +1151,7 @@ module.exports = {
                 console.log(e)
             })
         },
-        // 批量刷新
+        // Batch refresh
         refresh: function () {
             var that = this
             if (this.selectedItem.length == 0) {
@@ -1173,16 +1173,16 @@ module.exports = {
                 console.log(e)
             })
         },
-        // 职位推荐设置
+        // Job recommendation settings
         tgchange: function (val, data) {
             this.curr_job = data
             this.tgjid = data.id
-            this.curr_job.isrec = !this.curr_job.isrec// 防止switch状态直接改变
+            this.curr_job.isrec = !this.curr_job.isrec// Prevent switch state from changing before request result
             this.jobtgetime = data.rec_time_n != undefined ? data.rec_time_n : ''
             this.jobtgtit = lc('wap_com_00237')
             this.jobtgdrawer = true
         },
-        // 职位推广提交
+        // Submit job promotion
         jobTgSubmit: function () {
             var that = this
             var url = 'm=user&c=partjob&a=recommend'
@@ -1213,25 +1213,25 @@ module.exports = {
                 console.log(e)
             })
         },
-        // 职位招聘状态修改
+        // Change job recruitment status
         zpstatuschange: function (val, row) {
             var that = this
             that.curr_job = row
-            that.curr_job.iszp = !that.curr_job.iszp// 提交请求前禁止switch状态改变
+            that.curr_job.iszp = !that.curr_job.iszp// Prevent switch state changes before submitting request
             httpPost('m=user&c=partjob&a=checkstate', {
                 id: that.curr_job.id,
                 state: val ? 2 : 1
             }).then(function (result) {
                 var res = result.data
                 if (res.error == 0) {
-                    that.curr_job.iszp = !that.curr_job.iszp// 操作成功改变switch 选中状态
+                    that.curr_job.iszp = !that.curr_job.iszp// Change switch selected state after successful operation
                     that.getList()
                 }
             }).catch(function (e) {
                 console.log(e)
             })
         },
-        // 兼职申请记录
+        // Part-time application records
         applylog: function (row) {
             var that = this
             this.curr_job = row
@@ -1240,7 +1240,7 @@ module.exports = {
                 that.$refs.partapplylog.getList()
             })
         },
-        // 获取职位数量统计
+        // Get job count statistics
         getTjNum: function () {
             var that = this;
             httpPost('m=user&c=partjob&a=partNum', {}, { hideloading: true }).then(function (result) {

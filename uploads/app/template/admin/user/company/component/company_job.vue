@@ -162,7 +162,7 @@ module.exports = {
             tableData: [],
             tableHig: true,
             checked: false,//{{ lc('wap_js_00074') }}
-            isIndeterminate: false,// checkbox 的不确定状态
+            isIndeterminate: false,// Checkbox indeterminate state
             selectedItem: [],
             info: {},
             resumePreviewVisible: false,
@@ -254,7 +254,7 @@ module.exports = {
                 }
             })
         },
-        // 职位招聘状态修改
+        // Change job recruitment status
         zpstatuschange: function (val, id) {
             var that = this
             httpPost('m=user&c=company_job&a=checkstate', { id: id, state: val ? 2 : 1 }).then(function (result) {
@@ -274,27 +274,27 @@ module.exports = {
                 that.$refs.jobedit.edit()
             })
         },
-        // 职位推广设置
+        // Job promotion settings
         tgchange: function (val, data, type) {
             this.jobtgtype = type
             this.curr_job = data
             this.tgjid = data.id
             if (type == 1) { // {{ lc('wap_user_00335') }}
-                this.curr_job.istop = !this.curr_job.istop // 防止switch状态直接改变
+                this.curr_job.istop = !this.curr_job.istop // Prevent switch state from changing before request result
                 this.jobtgetime = data.top_time_n ? data.top_time_n : ''
                 this.jobtgtit = lc('wap_com_00238')
-            } else if (type == 2) { // 推荐
-                this.curr_job.isrec = !this.curr_job.isrec // 防止switch状态直接改变
+            } else if (type == 2) { // Recommendation
+                this.curr_job.isrec = !this.curr_job.isrec // Prevent switch state from changing before request result
                 this.jobtgetime = data.rec_time_n != undefined ? data.rec_time_n : ''
                 this.jobtgtit = lc('wap_com_00237')
-            } else if (type == 3) { // 紧急
-                this.curr_job.isurgent = !this.curr_job.isurgent // 防止switch状态直接改变
+            } else if (type == 3) { // Urgent promotion
+                this.curr_job.isurgent = !this.curr_job.isurgent // Prevent switch state from changing before request result
                 this.jobtgetime = data.urgent_time_n ? data.urgent_time_n : ''
                 this.jobtgtit = lc('member_com_00613')
             }
             this.jobtgdrawer = true
         },
-        // 职位推广提交
+        // Submit job promotion
         jobTgSubmit: function () {
             var that = this
             var url = 'm=user&c=company_job&a='

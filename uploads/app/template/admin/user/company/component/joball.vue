@@ -12,7 +12,7 @@
                     </el-select>
                 </el-input>
             </div>
-            <!--收起部分-->
+            <!-- Collapsed section -->
             <div class="tableSeachInpt tableSeachInptsmall" :class="{ 'searchbutnOnff': seachbutn }">
                 <el-select v-model="search_params.time_type" size="small" slot="prepend" :placeholder="lc('admin_user_00135')" clearable @change="handleTimeChange">
                     <el-option :label="lc('admin_user_weipin_00030')" value="sdate"></el-option>
@@ -34,13 +34,13 @@
             </div>
             <div class="tableSeachInpt" :class="{ 'searchbutnOnff': seachbutn }">
                 <div class="block">
-                    <!--7.0 统一类别选择-->
+                    <!-- 7.0 unified category selector -->
                     <job_class @confirm="confirmJobSearch"></job_class>
                 </div>
             </div>
             <div class=" tableSeachInpt" :class="{ 'searchbutnOnff': seachbutn }">
                 <div class="block">
-                    <!--7.0 统一城市选择-->
+                    <!-- 7.0 unified city selector -->
                     <city_class @confirm="confirmCitySearch"></city_class>
                 </div>
             </div>
@@ -164,7 +164,7 @@
                     			<span class="admin_state1">{{ lc('wap_user_00165') }}</span>
                     		</template>
                             <template v-else-if="props.row.state == 0">
-                    			<!--职位未审核的要显示企业审核状态，企业锁定的前面有单独处理-->
+                    			<!-- For unreviewed jobs, show company review status; locked companies are handled separately above -->
                     			<div v-if="props.row.r_status != '2'">
                     				<div>
                     					<span class="admin_state4" v-if="props.row.r_status == '0'">{{ lc('admin_user_company_00355') }}</span>
@@ -181,7 +181,7 @@
                     			</div>
                     		</template>
                             <template v-else-if="props.row.state == 3">
-                    			<!--职位未通过的要显示企业审核状态，企业锁定的前面有单独处理-->
+                    			<!-- For rejected jobs, show company review status; locked companies are handled separately above -->
                     			<div v-if="props.row.r_status != '2'">
                     				<div>
                     					<span class="admin_state4" v-if="props.row.r_status == '0'">{{ lc('admin_user_company_00355') }}</span>
@@ -259,15 +259,15 @@
                 <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="pageSizes" :page-size="perPage" layout="total, sizes, prev, pager, next, jumper" :total="total"></el-pagination>
             </div>
         </div>
-        <!--申请记录弹出框-->
+        <!-- Application records dialog -->
         <el-drawer :title="applyJobBoxTitle" :visible.sync="drawerCompanyJobLog" append-to-body size="80%">
             <companyjoblog ref="companyjoblog" :searchjobid="jobid" :searchbrowse="sqJobBrowse" searchclass="drawer" v-if="drawerCompanyJobLog"></companyjoblog>
         </el-drawer>
-        <!--面试记录弹出框-->
+        <!-- Interview records dialog -->
         <el-drawer :title="interviewBoxTitle" :visible.sync="drawerCompanyUserIdMsg" append-to-body size="80%">
             <companyuseridmsg ref="companyuseridmsg" :searchjobid="jobid" v-if="drawerCompanyUserIdMsg" searchclass="drawer"></companyuseridmsg>
         </el-drawer>
-        <!--曝光量弹出-->
+        <!-- Exposure dialog -->
         <div class="modluDrawer" v-if="curr_job">
             <el-dialog :title="lc('admin_00753')" :visible.sync="bgdrawer" :modal-append-to-body="false" append-to-body width="390px">
                 <div>
@@ -284,7 +284,7 @@
                 </span>
             </el-dialog>
         </div>
-        <!--企业发送至推文弹窗-->
+        <!-- Company post-to-feed dialog -->
         <div class="modluDrawer">
             <el-dialog :title="lc('admin_user_company_00345')" :visible.sync="twdrawer" :modal-append-to-body="false" append-to-body width="450px">
                 <div v-if="curr_job || multitw">
@@ -306,7 +306,7 @@
                 </span>
             </el-dialog>
         </div>
-        <!--联系方式选择性开放弹窗-->
+        <!-- Selective contact visibility dialog -->
         <div class="modluDrawer">
             <el-dialog :title="lc('admin_user_company_00341')" :visible.sync="drawerlinkopen" :modal-append-to-body="false" append-to-body width="350px">
                 <div v-if="curr_job">
@@ -327,11 +327,11 @@
                 </span>
             </el-dialog>
         </div>
-        <!--职位详情审核 ---------------------------------------------------------------------->
+        <!-- Job detail review ---------------------------------------------------------------------->
         <el-drawer :title="lc('admin_user_company_00326')" :visible.sync="jobdrawersh" :modal-append-to-body="false" append-to-body size="80%">
             <job_review :id="statusId" :comclass_name="jobcomclassnamecache" :job_audit="job_audit" @confirm="jobdrawersh=false;getList()"   ></job_review>
         </el-drawer>
-        <!--职位推广弹窗-->
+        <!-- Job promotion dialog -->
         <div class="modluDrawer">
             <el-dialog :title="jobtgtit" :visible.sync="jobtgdrawer" append-to-body width="400px">
                 <div class="wxsettip_small" v-if="jobtgtype == 1">{{ lc('wap_user_00209') }}</div>
@@ -358,7 +358,7 @@
                 </span>
             </el-dialog>
         </div>
-        <!--复制文本弹窗-->
+        <!-- Copy text dialog -->
         <div class="modluDrawer">
             <el-dialog :title="lc('wap_com_00232')" :visible.sync="drawercopy" append-to-body width="290px">
                 <div id="to_copy" v-html="htmlcont"></div>
@@ -368,7 +368,7 @@
                 </span>
             </el-dialog>
         </div>
-        <!--生成海报弹窗-->
+        <!-- Generate poster dialog -->
         <div class="modluDrawer">
             <el-drawer :title="lc('wap_01572')" :visible.sync="drawerhb" :modal-append-to-body="false" append-to-body size="95%">
                 <div class="waixunHaib">
@@ -388,7 +388,7 @@
                 </div>
             </el-drawer>
         </div>
-        <!-- 海报预览弹窗 -->
+        <!-- Poster preview dialog -->
         <div class="tck_setbox" v-if="hburl != ''">
             <el-dialog :title="lc('admin_user_company_00142')" :visible.sync="showhb" append-to-body width="300px">
                 <div class="code_img" style="display:flex;justify-content: center;margin-bottom: 20px;">
@@ -396,13 +396,13 @@
                 </div>
             </el-dialog>
         </div>
-        <!--匹配简历弹窗-->
+        <!-- Matching resumes dialog -->
         <div class="modluDrawer">
             <el-drawer :title="lc('member_com_00296')" :visible.sync="drawermatchresume" :modal-append-to-body="false" append-to-body size="95%">
                 <matchresume ref="matchresume" :job="curr_job" :jobtypes="job_types" :citytypes="city_types"></matchresume>
             </el-drawer>
         </div>
-        <!--批量审核职位-->
+        <!-- Batch job review -->
         <div class="modluDrawer">
             <el-dialog :title="lc('admin_user_company_00350')" width="300px" :visible.sync="drawerauditmultiple" append-to-body :modal-append-to-body="false">
                 <div class="toolClasDia fenpeizhand">
@@ -431,7 +431,7 @@
                 </span>
             </el-dialog>
         </div>
-        <!--导出字段弹窗-->
+        <!-- Export fields dialog -->
         <div class="modluDrawer">
             <el-dialog :title="lc('admin_user_00246')" :visible.sync="exportdrawer" append-to-body width="740px">
                 <div style="">
@@ -449,7 +449,7 @@
                 </span>
             </el-dialog>
         </div>
-        <!--批量转移类别-->
+        <!-- Batch category transfer -->
         <div class="modluDrawer">
             <el-dialog :title="lc('admin_user_company_00348')" :visible.sync="drawermulticate" append-to-body width="300px">
                 <div class="wxsettip_small">{{ lc('member_com_00091') }}</div>
@@ -468,12 +468,12 @@
                 </span>
             </el-dialog>
         </div>
-        <!--修改职位提示-->
+        <!-- Edit job notice -->
         <el-drawer :title="lc('admin_00754')" :visible.sync="drawerEditJob" append-to-body :wrapper-closable="false" size="880px">
             <addjob ref="jobedit" :jid="jobid" :jtypes="job_types" :ctypes="city_types" v-if="drawerEditJob"></addjob>
         </el-drawer>
     </div>
-    <!--        预约刷新职位-->
+    <!--        Reserved job refresh -->
     <div class="modluDrawer">
         <el-dialog :title="lc('admin_00755')" :visible.sync="drawertz" :with-header="true" append-to-body :show-close="true"
                    width="400px">
@@ -527,15 +527,15 @@ module.exports = {
         adtime: { type: String, default: '' },
         keyword: { type: String, default: '' },
         type: { type: String, default: '1' },
-        simple: { // 简化职位管理，CRM模块调用
+        simple: { // Simplified job management used by the CRM module
             type: Boolean,
             default: false
         },
-        tsjl: { // 简化职位管理，CRM模块调用
+        tsjl: { // Simplified job management used by the CRM module
             type: Boolean,
             default: false
         },
-        scrolltop: { // 会员职位管理切换分页信息滚动回顶部
+        scrolltop: { // Scroll to top when member job management changes pages
             type: Boolean,
             default: false
         },
@@ -554,7 +554,7 @@ module.exports = {
             drawermulticate: false,
             multihy: '',
             multijobtype: [],
-            multitw: false, // 是否是批量推文任务
+            multitw: false, // Whether this is a batch feed-post task
             drawermatchresume: false,
             drawercopy: false,
             htmlcont: '',
@@ -708,11 +708,11 @@ module.exports = {
                 {label: lc('admin_00764'), value: '480'},
                 {label: lc('wap_00852'), value: '1'},
             ],
-            pickerOptions: {//el-date-picker 时间限定
+            pickerOptions: {// el-date-picker date limits
                 disabledDate(time) {
-                    // 今天及今天之前的日期
+                    // Today and earlier dates
                     // return time.getTime() > Date.now();
-                    // 今天及今天之后的日期
+                    // Today and later dates
                     return time.getTime() < Date.now() - 8.64e7;
                 }
             },
@@ -807,15 +807,15 @@ module.exports = {
             this.mouseFlag = false;
         },
         mouseMoveHandler(e) {
-            // 这里面需要注意，{{ lc('admin_user_company_00161') }}ref需要那个那个包含table元素的父元素
+            // The ref must point to the parent element that contains the table element
             let divData = this.$refs.multipleTable.bodyWrapper;
             if (this.mouseFlag) {
-                // 设置水平方向的元素的位置
+                // Set horizontal scroll position
                 divData.scrollLeft -= (- this.mouseOffset + (this.mouseOffset = e.clientX));
             }
         },
 
-        // 职位修改
+        // Edit job
         edit: function (row) {
             var that = this
             that.jobid = row.id
@@ -826,7 +826,7 @@ module.exports = {
                 })
             }, 500);
         },
-        // 获取职位数量统计
+        // Get job count statistics
         getTjNum: function () {
             var that = this;
             httpPost('m=user&c=company_job&a=jobNum', {}, { hideloading: true }).then(function (result) {
@@ -842,7 +842,7 @@ module.exports = {
             })
         },
 
-        // 批量修改职位类别
+        // Batch edit job category
         multicate: function () {
             if (this.selectedItem.length == 0) {
                 message.error(lc('admin_user_weipin_00001'))
@@ -851,7 +851,7 @@ module.exports = {
             this.multijobtype = ['', '', '']
             this.drawermulticate = true
         },
-        // 批量修改职位类别提交
+        // Submit batch job category edit
         submitMulticate: function () {
             var that = this
             if (that.selectedItem.length == 0) {
@@ -935,7 +935,7 @@ module.exports = {
             }
             that.drawerauditmultiple = true
         },
-        // 批量审核保存
+        // Save batch review
         multipleStatusSave() {
             var that = this
             if (!that.selectedItem.length) {
@@ -964,7 +964,7 @@ module.exports = {
                 console.log(e)
             })
         },
-        // 批量刷新
+        // Batch refresh
         refresh: function () {
             var that = this
             if (this.selectedItem.length == 0) {
@@ -986,7 +986,7 @@ module.exports = {
                 console.log(e)
             })
         },
-        // 降权、取消降权
+        // Apply or cancel demotion
         depower: function (type, id) {
             var msg = '',
                 that = this;
@@ -1030,7 +1030,7 @@ module.exports = {
                 that.$refs.matchresume.getList()
             })
         },
-        // 生成海报弹窗
+        // Generate poster dialog
         createhb: function (row) {
             var that = this
             that.curr_job = row
@@ -1048,7 +1048,7 @@ module.exports = {
 
             })
         },
-        // 下载海报
+        // Download poster
         downHb(style) {
             var that = this
             let image = new Image()
@@ -1064,7 +1064,7 @@ module.exports = {
                 canvas.toBlob((blob) => {
                     let url = URL.createObjectURL(blob)
                     download(url, 'whb' + style)
-                    // 用完释放URL对象
+                    // Release URL object after use
                     URL.revokeObjectURL(url)
                 })
             }
@@ -1077,13 +1077,13 @@ module.exports = {
                 eleLink.remove()
             }
         },
-        // 预览海报
+        // Preview poster
         showHb(style) {
             this.hburl = this.basehburl + '&id=' + this.curr_job.id + '&hb=' + style
             this.hbkey = Math.random()
             this.showhb = true
         },
-        // 复制文本弹窗
+        // Copy text dialog
         getJobHtml: function (id) {
             var that = this
             httpPost('m=user&c=company_job&a=getJobHtml', { id: id }).then(function (result) {
@@ -1105,14 +1105,14 @@ module.exports = {
                 clipboard.destroy();
                 message.success(lc('admin_user_company_00368'));
             });
-            // 复制失败
+            // Copy failed
             clipboard.on('error', (e) => {
                 clipboard.destroy();
                 message.error(lc('admin_user_company_00339'));
             });
         },
         
-        // 权限、开放权限
+        // Permission and visibility permission
         linkopen: function (row) {
             this.curr_job = row
             this.drawerlinkopen = true
@@ -1132,12 +1132,12 @@ module.exports = {
                 console.log(e)
             })
         },
-        // 消息提示
+        // Message prompt
         msg: function (msg) {
             message.error(msg)
             return false
         },
-        // 批量推文任务
+        // Batch feed-post task
         twtaskall: function () {
             var that = this
             var nowTime = parseInt(new Date().getTime() / 1000);
@@ -1198,7 +1198,7 @@ module.exports = {
                 that.twdrawer = true
             }
         },
-        // 推文
+        // Feed post
         tw: function (row) {
             var that = this
             this.curr_job = row
@@ -1219,7 +1219,7 @@ module.exports = {
             }
             this.twdrawer = true
         },
-        // 添加推文任务
+        // Add feed-post task
         addTwTask: function () {
             var that = this
             var params = {
@@ -1228,7 +1228,7 @@ module.exports = {
                 twtask_wcmoments: that.twtask_wcmoments ? 1 : 0,
                 twtask_gzh: that.twtask_gzh ? 1 : 0,
             };
-            if (that.multitw) { // 批量推文任务
+            if (that.multitw) { // Batch feed-post task
                 params.twtask_jobid = that.selectedItem.join(',')
             } else {
                 params.twtask_jobid = that.curr_job.id
@@ -1254,18 +1254,18 @@ module.exports = {
                 console.log(e)
             })
         },
-        // 职位审核审核模板选择
+        // Select job review template
         auditTplChange: function (data) {
             this.auditInfo.statusbody = this.cacheData.comclass_name[data]
         },
-        // 职位审核弹窗
+        // Job review dialog
         jobAudit: function (row) {
 
             let that = this;
             this.statusId= row.id;
             that.jobdrawersh = true;
         },
-        // 批量推广
+        // Batch promotion
         multitg: function (type) {
             this.jobtgtype = type
             this.jobtgetime = ''
@@ -1273,37 +1273,37 @@ module.exports = {
                 message.error(lc('admin_user_weipin_00001'))
                 return false
             }
-            if (type == 1) { // 置顶
+            if (type == 1) { // Top placement
                 this.jobtgtit = lc('admin_user_company_00351')
-            } else if (type == 2) { // 推荐
+            } else if (type == 2) { // Recommendation
                 this.jobtgtit = lc('admin_company_00044')
-            } else if (type == 3) { // 紧急
+            } else if (type == 3) { // Urgent promotion
                 this.jobtgtit = lc('admin_user_company_00349')
             }
             this.tgjid = this.selectedItem.join(',')
             this.jobtgdrawer = true
         },
-        // 职位推广设置
+        // Job promotion settings
         tgchange: function (val, data, type) {
             this.jobtgtype = type
             this.curr_job = data
             this.tgjid = data.id
             if (type == 1) { // {{ lc('wap_user_00335') }}
-                this.curr_job.istop = !this.curr_job.istop // 防止switch状态直接改变
+                this.curr_job.istop = !this.curr_job.istop // Prevent switch state from changing before request result
                 this.jobtgetime = data.top_time_n ? data.top_time_n : ''
                 this.jobtgtit = lc('wap_com_00238')
-            } else if (type == 2) { // 推荐
-                this.curr_job.isrec = !this.curr_job.isrec // 防止switch状态直接改变
+            } else if (type == 2) { // Recommendation
+                this.curr_job.isrec = !this.curr_job.isrec // Prevent switch state from changing before request result
                 this.jobtgetime = data.rec_time_n != undefined ? data.rec_time_n : ''
                 this.jobtgtit = lc('wap_com_00237')
-            } else if (type == 3) { // 紧急
-                this.curr_job.isurgent = !this.curr_job.isurgent // 防止switch状态直接改变
+            } else if (type == 3) { // Urgent promotion
+                this.curr_job.isurgent = !this.curr_job.isurgent // Prevent switch state from changing before request result
                 this.jobtgetime = data.urgent_time_n ? data.urgent_time_n : ''
                 this.jobtgtit = lc('member_com_00613')
             }
             this.jobtgdrawer = true
         },
-        // 职位推广提交
+        // Submit job promotion
         jobTgSubmit: function () {
             var that = this
             var url = 'm=user&c=company_job&a='
@@ -1349,22 +1349,22 @@ module.exports = {
                 console.log(e)
             })
         },
-        // 职位招聘状态修改
+        // Change job recruitment status
         zpstatuschange: function (val, row) {
             var that = this
             that.curr_job = row
-            that.curr_job.iszp = !that.curr_job.iszp // 提交请求前禁止switch状态改变
+            that.curr_job.iszp = !that.curr_job.iszp // Prevent switch state changes before submitting request
             httpPost('m=user&c=company_job&a=checkstate', { id: that.curr_job.id, state: val ? 2 : 1 }).then(function (result) {
                 var res = result.data
                 if (res.error == 0) {
-                    that.curr_job.iszp = !that.curr_job.iszp // 操作成功改变switch 选中状态
+                    that.curr_job.iszp = !that.curr_job.iszp // Change switch selected state after successful operation
                     that.getList()
                 }
             }).catch(function (e) {
                 console.log(e)
             })
         },
-        // 浏览量修改
+        // Edit view count
         jobhitedit: function (row) {
             var that = this
             that.curr_job = deepClone(row);
@@ -1620,15 +1620,15 @@ module.exports = {
                 console.log(error);
             })
         },
-        // 搜索职位选择
+        // Search job selector
         confirmJobSearch(data) {
             this.search_params.job_class = data.jobId.join(',');
         },
-        // 搜索城市选择
+        // Search city selector
         confirmCitySearch(data) {
             this.search_params.city_class = data.cityId.join(',');
         },
-        //  查看职位申请记录
+        // View job application records
         showComJobLogBox: function (e, browse) {
             let _this = this;
             _this.jobid = e.id;
@@ -1636,7 +1636,7 @@ module.exports = {
             _this.sqJobBrowse = browse == 1 ? '1' : '';
             _this.drawerCompanyJobLog = true;
         },
-        //  查看职位面试记录
+        // View job interview records
         showComUserIdMsgBox: function (e) {
             let _this = this;
             _this.jobid = e.id;

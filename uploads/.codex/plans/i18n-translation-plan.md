@@ -340,6 +340,8 @@ php tools/scan_wap_zero_zh.php
 
 Batch 2 执行范围：后台壳页 `app/template/admin/index.htm`、共享组件 `app/template/admin/component/*_class.vue` / `admin_add.vue` / `audioyy.vue`、以及 `app/template/admin/js/api.js`、`app/template/admin/js/router.js`。本批优先处理中文注释英文化和可见中文复核；已 `lc()` 的文案不重复迁移。
 
+Batch 3 执行范围：职位相关高频文件 `app/template/admin/user/company/component/company_job.vue`、`joball.vue`、`partjob.vue`。本批先处理中文注释英文化和裸默认文案复核，保持 API 字段、状态值、路由和业务逻辑不变。
+
 ## 11. 推荐执行顺序
 
 1. 修复语言包损坏项和扫描脚本误报规则。
