@@ -1,0 +1,44 @@
+# Project safety rules for Codex command execution.
+# These rules are active only when the project .codex layer is trusted.
+
+prefix_rule(
+    pattern = ["git", "reset", "--hard"],
+    decision = "forbidden",
+    justification = "Do not discard repository changes. Ask the user and use targeted patches instead.",
+    match = ["git reset --hard"],
+)
+
+prefix_rule(
+    pattern = ["git", "checkout", "--"],
+    decision = "forbidden",
+    justification = "Do not revert files implicitly; preserve user changes unless explicitly requested.",
+    match = ["git checkout -- app/template/admin/index.htm"],
+)
+
+prefix_rule(
+    pattern = ["git", "clean"],
+    decision = "prompt",
+    justification = "Cleaning untracked files may delete generated reports or user work.",
+    match = ["git clean -fd"],
+)
+
+prefix_rule(
+    pattern = ["rm", "-rf"],
+    decision = "prompt",
+    justification = "Recursive deletion requires explicit review in this legacy PHP repository.",
+    match = ["rm -rf data/templates_c"],
+)
+
+prefix_rule(
+    pattern = ["php", "tools/i18n_admin_html.php"],
+    decision = "forbidden",
+    justification = "This migration script is disabled; use manual per-file lc() binding instead.",
+    match = ["php tools/i18n_admin_html.php --dir=app/template/admin"],
+)
+
+prefix_rule(
+    pattern = ["php", "tools/migrate_admin_vue.php"],
+    decision = "prompt",
+    justification = "Admin Vue migration can rewrite many files; dry-run and inspect diffs first.",
+    match = ["php tools/migrate_admin_vue.php --dir=app/template/admin"],
+)

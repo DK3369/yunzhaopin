@@ -1,0 +1,7 @@
+# Project-scoped Codex configuration.
+# Loaded only after this repository is trusted by Codex.
+
+project_doc_max_bytes = 65536
+
+[features]
+hooks = true
