@@ -188,7 +188,7 @@ module.exports = {
             let newlist = [];
             _this.loading = true;
             _this.emptytext = window.yunAdminT(lc('admin_user_weipin_00026'));
-            httpPost('m=system&c=category_job_class&a=up", {id: this.id}).then(function (response) {
+            httpPost('m=system&c=category_job_class&a=up', {id: this.id}).then(function (response) {
                 let res = response.data;
                 _this.position = res.data.position;
                 //{{ lc('admin_yunying_00145') }}
@@ -204,7 +204,7 @@ module.exports = {
                         let threeList = res.data.threejob[tow_class_id];
                         if (Array.isArray(threeList)) {
                             for (let threeitem of threeList) {
-                                threeitem.level = "three';
+                                threeitem.level = 'three';
                                 newlist.push(threeitem);
                             }
                         }
@@ -331,7 +331,7 @@ module.exports = {
                 return false;
             }
             this.moveForm.keyid = null;
-            httpPost('m=system&c=category_job_class&a=get_class", {nid: nid}).then(function (response) {
+            httpPost('m=system&c=category_job_class&a=get_class', {nid: nid}).then(function (response) {
                 let res = response.data;
                 if (res.error === 0) {
                     _this.positionTwo = res.data;
@@ -362,7 +362,7 @@ module.exports = {
                 if (params.type == 1) {
                     params.keyid = null;
                 }
-                httpPost("m=system&c=category_job_class&a=move', params).then(function (response) {
+                httpPost('m=system&c=category_job_class&a=move', params).then(function (response) {
                     let res = response.data;
                     if (res.error === 0) {
                         message.success(window.yunAdminT(lc('admin_system_00122')))

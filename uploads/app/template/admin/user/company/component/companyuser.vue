@@ -2046,7 +2046,7 @@ module.exports = {
             inputValue: '',
             sort_type: '',
             sort_col: '',
-            jobid: '",
+            jobid: '',
             edit_loading: false,
 
             saveLoading: false,
@@ -2063,7 +2063,7 @@ module.exports = {
 
             prevPage: 0,
             factshow:false,
-            factuploadAction: baseUrl + "m=user&c=company&a=upfactpic',
+            factuploadAction: baseUrl + 'm=user&c=company&a=upfactpic',
             factfileList: [],
             fact_picurl:[],
             fact_delid:[],
@@ -2131,7 +2131,7 @@ module.exports = {
                     this.search_params.reg_time = '';
                     this.search_params.login_days = '';
                     this.search_params.login_time = '';
-                    this.searchClass = '";
+                    this.searchClass = '';
                 }
             },
             deep: true,
@@ -2202,12 +2202,12 @@ module.exports = {
 
 
         inputIntNumber(val, form, key) {
-            this.$data[form] = val.replace(/[^0-9]/g,"');
+            this.$data[form] = val.replace(/[^0-9]/g,'');
         },
         getParams: function (params = {}, search = false) {
             var that = this;
             for (let i in params) {
-                if(typeof that.search_params[i]!='undefined"){
+                if(typeof that.search_params[i]!='undefined'){
                 	that.search_params[i] = params[i];
                 }
             }
@@ -2257,7 +2257,7 @@ module.exports = {
             if (this.yyzz_rz) {
                 params.comname_yyzz = 'on'
             }
-            httpPost('m=user&c=company&a=comcert", params).then(function (result) {
+            httpPost('m=user&c=company&a=comcert', params).then(function (result) {
                 var res = result.data;
                 if (res.error == 0) {
                     message.success(res.msg, function () {
@@ -2273,7 +2273,7 @@ module.exports = {
             })
         },
         // {{ lc('admin_user_company_00118') }}
-        fpgw: function (type, cuname, crm_uid = "',uid = '') {
+        fpgw: function (type, cuname, crm_uid = '',uid = '') {
             this.gwid = ''
             if (type == 2) {
                 if (this.selectedItem.length == 0) {
@@ -2308,7 +2308,7 @@ module.exports = {
                 }
                 params.comid = that.selectedItem.join(',')
             }
-            httpPost('m=user&c=company&a=checkguwen", params).then(function (result) {
+            httpPost('m=user&c=company&a=checkguwen', params).then(function (result) {
                 var res = result.data;
                 if (res.error == 0) {
                     message.success(res.msg, function () {
@@ -2347,7 +2347,7 @@ module.exports = {
                 if (res.error > 0) {
                     message.error(res.msg);
                 } else {
-                    httpPost('m=user&c=company&a=xls", {}).then(function (response2) {
+                    httpPost('m=user&c=company&a=xls', {}).then(function (response2) {
                         let res2 = response2.data;
                         if (res2.error > 0) {
                             message.error(res2.msg);
@@ -2439,7 +2439,7 @@ module.exports = {
                     message.success(res.msg, function () {
                         that.getComJobList()
                         that.jobtgdrawer = false
-                        that.jobtgdays = '"
+                        that.jobtgdays = ''
                         that.qxtgchecked = false
                     })
                 } else {
@@ -2456,7 +2456,7 @@ module.exports = {
             this.tgjid = data.id
             if (type == 1) { // {{ lc('wap_user_00335') }}
                 this.curr_job.istop = !this.curr_job.istop // 防止switch状态直接改变
-                this.jobtgetime = data.top_time_n ? data.top_time_n : "'
+                this.jobtgetime = data.top_time_n ? data.top_time_n : ''
                 this.jobtgtit = lc('wap_com_00238')
             } else if (type == 2) { // 推荐
                 this.curr_job.isrec = !this.curr_job.isrec // 防止switch状态直接改变
@@ -2744,14 +2744,14 @@ module.exports = {
         },
         // 预览海报
         showHb(style) {
-            this.hburl = this.basehburl + '&uid=' + this.curr_com.uid + '&style=" + style
+            this.hburl = this.basehburl + '&uid=' + this.curr_com.uid + '&style=' + style
             this.hbkey = Math.random()
             this.showhb = true
         },
         // {{ lc('wap_01572') }}
         createhb: function () {
             var that = this
-            httpPost("m=user&c=company&a=mwhb', {}).then(function (result) {
+            httpPost('m=user&c=company&a=mwhb', {}).then(function (result) {
                 var res = result.data;
                 if (res.error == 0) {
                     that.hbarr = res.data.comHb
@@ -2837,11 +2837,11 @@ module.exports = {
             }
             var linkman = that.curr_editcom.linkman;
             if (linkman) {
-                linkman = linkman.replace(/[-_ ]/g, '"); // {{ lc('common_01715') }}
+                linkman = linkman.replace(/[-_ ]/g, ''); // {{ lc('common_01715') }}
                 if (!linkman) {
                     return;
                 }
-                var test = linkman.replace(/[0-9]/g, "');
+                var test = linkman.replace(/[0-9]/g, '');
                 if (!test) {
                     message.error(lc('wap_com_00005'));
                     return false;
@@ -3199,7 +3199,7 @@ module.exports = {
 		    let that = this,
 		        ruleForm = that.ruleFormAccount;
 		    that.saveLoading = true;
-		    httpPost('m=user&c=company&a=saveUser", ruleForm).then(function(response) {
+		    httpPost('m=user&c=company&a=saveUser', ruleForm).then(function(response) {
 		        let res = response.data;
 
 		        if (res.error > 0) {
@@ -3223,7 +3223,7 @@ module.exports = {
             this.qyrz = true
         },
         handleLogoTabClick(tab) {
-            if (tab.name == "uplogo') {
+            if (tab.name == 'uplogo') {
                 this.logodata = {
                     path: 'company',
                     imgid: 'logo',
@@ -3489,7 +3489,7 @@ module.exports = {
         // 查询手机归属地
         getmobileaddress: function (uid, moblie) {
             var that = this
-            httpPost('m=index&c=getMobileAddress", { uid: uid, moblie: moblie }).then(function (result) {
+            httpPost('m=index&c=getMobileAddress', { uid: uid, moblie: moblie }).then(function (result) {
                 var res = result.data;
                 if (res.error == 0) {
                     message.success(res.msg, function () {
@@ -3505,7 +3505,7 @@ module.exports = {
         // {{ lc('admin_user_weipin_00049') }}ip{{ lc('common_01911') }}
         getipaddress: function (uid, ip) {
             var that = this
-            httpPost("m=index&c=getIpAddress', { uid: uid, ip: ip }).then(function (result) {
+            httpPost('m=index&c=getIpAddress', { uid: uid, ip: ip }).then(function (result) {
                 var res = result.data;
                 if (res.error == 0) {
                     message.success(res.msg, function () {
@@ -4108,7 +4108,7 @@ module.exports = {
 
         // Delete
         openDel(idx) {
-            if (typeof idx == 'undefined") { // {{ lc('member_com_00055') }}
+            if (typeof idx == 'undefined') { // {{ lc('member_com_00055') }}
                 if (!this.selectedItem.length) {
                     message.error(lc('admin_user_weipin_00005'));
                     return false;
@@ -4128,7 +4128,7 @@ module.exports = {
         delSubmit() {
             let that = this,
                 ruleForm = this.ruleFormDel;
-            httpPost("m=user&c=company&a=del', ruleForm).then(function (response) {
+            httpPost('m=user&c=company&a=del', ruleForm).then(function (response) {
                 let res = response.data;
                 if (res.error > 0) {
                     message.error(res.msg);

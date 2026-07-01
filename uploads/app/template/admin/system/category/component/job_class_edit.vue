@@ -130,7 +130,7 @@ module.exports = {
         return {
             ruleForm: {
                 id: 0,//提交时的id
-                position: '",//{{ lc('admin_00219') }}
+                position: '',//{{ lc('admin_00219') }}
                 e_name: "",//英文名称/拼音
                 nid: null,//{{ lc('admin_00290') }}
                 keyid: null,//{{ lc('admin_00291') }}
@@ -163,7 +163,7 @@ module.exports = {
             if (this.tid) {
                 params.tid = this.tid;
             }
-            httpPost("m=system&c=category_job_class&a=classadd', params).then(function (response) {
+            httpPost('m=system&c=category_job_class&a=classadd', params).then(function (response) {
                 let res = response.data;
                 if (res.data.info) {
                     _this.ruleForm.position = res.data.info.name;

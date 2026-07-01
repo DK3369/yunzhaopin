@@ -609,7 +609,7 @@ module.exports = {
                 com_cert_wt: false,//承诺函
                 com_cert_other: false,//其他材料
                 //委托书/承诺函范本
-                exa_cert_wt: '",
+                exa_cert_wt: '',
                 //{{ lc('admin_user_company_00287') }}
                 com_message: false,//{{ lc('wap_com_00408') }}
                 
@@ -660,7 +660,7 @@ module.exports = {
                 job_full_text_search:null
             },
             file: [],//暂存文件
-            fileName: "',
+            fileName: '',
             serverVisible: false,
             submitLoading: false,
             uploadAction: baseUrl + 'm=common&c=common_upload'
@@ -689,7 +689,7 @@ module.exports = {
                     _this.com_servers = res.data.com_servers;
                     let config = res.data.config ? res.data.config : {};
                     // AuditInfo
-                    _this.ruleForm.com_status = config.com_status == '0" ? true : false;//{{ lc('admin_user_company_00281') }}
+                    _this.ruleForm.com_status = config.com_status == '0' ? true : false;//{{ lc('admin_user_company_00281') }}
                     _this.ruleForm.com_job_status = config.com_job_status == "0" ? true : false;//{{ lc('common.publish_job') }}
                     _this.ruleForm.com_partjob_status = config.com_partjob_status == "0" ? true : false;//{{ lc('wap_00321') }}
                     _this.ruleForm.com_cert_status = config.com_cert_status == "1" ? true : false;//{{ lc('wap_com_00075') }}
@@ -721,7 +721,7 @@ module.exports = {
                     _this.ruleForm.com_free_status = config.com_free_status == "1" ? true : false;//{{ lc('admin_user_company_00250') }}
                     _this.ruleForm.com_zpdata = config.com_zpdata == "1" ? true : false;//{{ lc('admin_user_company_00250') }}
                     // Jobrefresh
-                    _this.ruleForm.com_job_reserve = config.com_job_reserve == "1' ? '1' : '0";//{{ lc('wap_com_00045') }}
+                    _this.ruleForm.com_job_reserve = config.com_job_reserve == '1' ? '1' : '0';//{{ lc('wap_com_00045') }}
                     _this.ruleForm.sy_reserve_refresh_interval = config.sy_reserve_refresh_interval !== undefined ? config.sy_reserve_refresh_interval : "";//{{ lc('admin_user_company_00257') }}
                     _this.ruleForm.sy_reserve_refresh_price = config.sy_reserve_refresh_price !== undefined ? config.sy_reserve_refresh_price : "";//{{ lc('admin_user_company_00258') }}
                     _this.ruleForm.sy_reserve_service_id = config.sy_reserve_service_id !== undefined ? config.sy_reserve_service_id : "";//{{ lc('admin_user_company_00252') }}
@@ -743,13 +743,13 @@ module.exports = {
                     // JobListtop/sticky
                     _this.ruleForm.joblist_top = config.joblist_top !== undefined ? config.joblist_top : null;
                     //{{ lc('admin_user_company_00271') }}
-                    _this.ruleForm.joblock = config.joblock == "1' ? '1' : '0";
+                    _this.ruleForm.joblock = config.joblock == '1' ? '1' : '0';
                     //{{ lc('admin_user_company_00256') }}
                     _this.ruleForm.sqjob_req = config.sqjob_req !== undefined ? config.sqjob_req : null;
                     //{{ lc('admin_user_company_00288') }}
                     _this.ruleForm.hotcom_top = config.hotcom_top !== undefined ? config.hotcom_top : null;
                     //{{ lc('admin_user_company_00251') }}
-                    _this.ruleForm.jobunder = config.jobunder == "1' || config.jobunder == '0" ? config.jobunder : null;
+                    _this.ruleForm.jobunder = config.jobunder == '1' || config.jobunder == '0' ? config.jobunder : null;
                     //{{ lc('admin_user_company_00255') }}
                     _this.ruleForm.job_under_delay = config.job_under_delay !== undefined ? config.job_under_delay : null;
                     //{{ lc('admin_user_company_00254') }}
@@ -781,9 +781,9 @@ module.exports = {
             let _this = this;
             let params = JSON.parse(JSON.stringify(this.ruleForm));
             let formData = new FormData();
-            formData.append("config', lc('common.submit'));
+            formData.append('config', lc('common.submit'));
             // AuditInfo
-            formData.append('com_status", params.com_status ? 0 : 1);//{{ lc('admin_user_company_00281') }}
+            formData.append('com_status', params.com_status ? 0 : 1);//{{ lc('admin_user_company_00281') }}
             formData.append("com_job_status", params.com_job_status ? 0 : 1);//{{ lc('common.publish_job') }}
             formData.append("com_partjob_status", params.com_partjob_status ? 0 : 1);//{{ lc('wap_00321') }}
             formData.append("com_cert_status", params.com_cert_status ? 1 : 0);//{{ lc('wap_com_00075') }}
@@ -835,9 +835,9 @@ module.exports = {
             //{{ lc('admin_user_company_00249') }}
             formData.append("sy_sq_job_num", params.sy_sq_job_num ? params.sy_sq_job_num : 0);
             // {{ lc('wap_com_00238') }}（移动端首页）
-            formData.append("joblist_top_index', params.joblist_top_index);
+            formData.append('joblist_top_index', params.joblist_top_index);
             // JobListtop/sticky
-            formData.append('joblist_top", params.joblist_top);
+            formData.append('joblist_top', params.joblist_top);
             //{{ lc('admin_user_company_00271') }}
             formData.append("joblock", params.joblock);
             //{{ lc('admin_user_company_00256') }}
@@ -849,14 +849,14 @@ module.exports = {
             //{{ lc('admin_user_company_00255') }}
             formData.append("job_under_delay", params.job_under_delay);
             //{{ lc('admin_user_company_00254') }}
-            formData.append("com_link_look', params.com_link_look);
-            formData.append('com_login_link", params.com_login_link);
+            formData.append('com_link_look', params.com_link_look);
+            formData.append('com_login_link', params.com_login_link);
             //{{ lc('admin_user_company_00253') }}
-            formData.append("com_link_no', params.com_link_no.join(',"));
+            formData.append('com_link_no', params.com_link_no.join(','));
             //{{ lc('admin_user_company_00262') }}
             formData.append("sy_link_tips", params.sy_link_tips);
 			//{{ lc('admin_user_company_00270') }}
-            formData.append("job_full_text_search', params.job_full_text_search);
+            formData.append('job_full_text_search', params.job_full_text_search);
             _this.submitLoading = true;
             httpPost('m=user&c=company_comset&a=save', formData).then(function (response) {
                 let res = response.data;

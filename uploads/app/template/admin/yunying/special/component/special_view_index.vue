@@ -134,7 +134,7 @@ module.exports = {
             jobsNum: 0,//参会企业的职位数量
             special: {},//专题的部分信息
             statuscomVisible: false,//批量审核
-            statuscomPids: '",
+            statuscomPids: '',
             auditVisible: false,//{{ lc('admin_yunying_00138') }}
             info: {},
             companyVisible: false,//{{ lc('admin_00850') }}
@@ -165,7 +165,7 @@ module.exports = {
             value ? this.$refs.multipleTable.toggleAllSelection() : this.$refs.multipleTable.clearSelection();
         },
         shortChange(e) {
-            let orderMap = {ascending: "asc', descending: 'desc'}
+            let orderMap = {ascending: 'asc', descending: 'desc'}
             this.searchForm.t = e.order ? e.prop : null;
             this.searchForm.order = orderMap[e.order];
             this.searchForm.page = 1;

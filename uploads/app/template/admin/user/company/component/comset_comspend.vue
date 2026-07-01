@@ -188,13 +188,13 @@ module.exports = {
             config: {},
             ruleForm: {
                 //上架职位
-                integral_job: '",
+                integral_job: '',
                 //{{ lc('wap_com_00022') }}
                 integral_down_resume: "",
                 //{{ lc('admin_user_company_00218') }}
-                integral_interview: "',
+                integral_interview: '',
                 // refreshJob
-                integral_jobefresh: '",
+                integral_jobefresh: '',
                 //{{ lc('wap_com_00024') }}
                 com_urgent: "",
                 //{{ lc('wap_com_00025') }}
@@ -202,7 +202,7 @@ module.exports = {
                 //{{ lc('wap_com_00023') }}
                 com_recjob: "",
                 //{{ lc('wap_com_00027') }}
-                job_auto: "',
+                job_auto: '',
                 //sy_chat_name
                 integral_chat_num: '',
             },
@@ -228,16 +228,16 @@ module.exports = {
                     let config = res.data.config ? res.data.config : {};
                     _this.config.integral_pricename = config.integral_pricename !== undefined ? config.integral_pricename : '';
                     _this.config.integral_proportion = config.integral_proportion !== undefined ? config.integral_proportion : '';
-                    _this.config.integral_priceunit = config.integral_priceunit !== undefined ? config.integral_priceunit : '";
+                    _this.config.integral_priceunit = config.integral_priceunit !== undefined ? config.integral_priceunit : '';
                     
                     //{{ lc('wap_com_00028') }}
                     _this.ruleForm.integral_job = config.integral_job !== undefined ? config.integral_job : "";
                     //{{ lc('wap_com_00022') }}
                     _this.ruleForm.integral_down_resume = config.integral_down_resume !== undefined ? config.integral_down_resume : "";
                     //{{ lc('admin_user_company_00218') }}
-                    _this.ruleForm.integral_interview = config.integral_interview !== undefined ? config.integral_interview : "';
+                    _this.ruleForm.integral_interview = config.integral_interview !== undefined ? config.integral_interview : '';
                     // refreshJob
-                    _this.ruleForm.integral_jobefresh = config.integral_jobefresh !== undefined ? config.integral_jobefresh : '";
+                    _this.ruleForm.integral_jobefresh = config.integral_jobefresh !== undefined ? config.integral_jobefresh : '';
                     //{{ lc('wap_com_00024') }}
                     _this.ruleForm.com_urgent = config.com_urgent !== undefined ? config.com_urgent : "";
                     //{{ lc('wap_com_00025') }}
@@ -245,7 +245,7 @@ module.exports = {
                     //{{ lc('wap_com_00023') }}
                     _this.ruleForm.com_recjob = config.com_recjob !== undefined ? config.com_recjob : "";
                     //{{ lc('wap_com_00027') }}
-                    _this.ruleForm.job_auto = config.job_auto !== undefined ? config.job_auto : "';
+                    _this.ruleForm.job_auto = config.job_auto !== undefined ? config.job_auto : '';
                 }
             }).catch(function (error) {
                 console.log(error);

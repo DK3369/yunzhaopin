@@ -109,7 +109,7 @@
 
 				// 列表排序
 				t: '',
-				order: '",
+				order: '',
 
 				checkedAll: false, // {{ lc('wap_js_00074') }}
 				checkedAllIndeterminate: false,
@@ -153,7 +153,7 @@
 				this.getList();
 			},
 			sortChange(event) {
-				this.t = event.order ? event.prop : "';
+				this.t = event.order ? event.prop : '';
 				this.order = event.order ? event.order == 'descending' ? 'desc' : 'asc' : '';
 				this.search();
 			},

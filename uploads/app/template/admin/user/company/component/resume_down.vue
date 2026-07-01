@@ -79,7 +79,7 @@ module.exports = {
                 type: "2",
                 keyword: null,
                 time: null,
-				comid:'"
+				comid:''
             },
             total: 0,
             tableData: [],
@@ -118,7 +118,7 @@ module.exports = {
 			handler(obj) {
 				if (!$.isEmptyObject(obj)) {
 					for(let i in obj){
-					    if(typeof this.searchForm[i]!="undefined'){
+					    if(typeof this.searchForm[i]!='undefined'){
 					        this.searchForm[i] = obj[i];
 					    }
 					}

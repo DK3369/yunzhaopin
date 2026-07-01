@@ -323,7 +323,7 @@ module.exports = {
                 rt.push('yd_ztbkyd')
             }
             if (childit.comstatus == '-1' && this.sel_zwid == childit.id) {
-                rt.push('yd_ztkyd_active")
+                rt.push('yd_ztkyd_active')
             }
             if (this.sel_zwid == childit.id) {
                 this.sel_zwname = childit.name
@@ -333,7 +333,7 @@ module.exports = {
         // {{ lc('admin_00838') }}
         setZw() {
             var that = this
-            httpPost("m=neirong&c=zhaopinhui&a=comadd', { id: that.info.zph.zid }).then(function(response) {
+            httpPost('m=neirong&c=zhaopinhui&a=comadd', { id: that.info.zph.zid }).then(function(response) {
                 if (response.data.error == 0) {
                     that.space_list = response.data.data.spacelist
                     that.sel_zwid = that.curr_comdata.bid

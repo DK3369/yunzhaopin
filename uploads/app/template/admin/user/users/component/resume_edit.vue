@@ -846,7 +846,7 @@
                 ruleFormTag: {},
                 userTag: [],
                 inputTag: false,
-                tagval: '",
+                tagval: '',
                 // Job intention
                 drawerJob: false,
                 ruleFormJob: {},
@@ -887,7 +887,7 @@
             }
         },
         components: {
-            "job_class': httpVueLoader('../../../component/job_class.vue'),
+            'job_class': httpVueLoader('../../../component/job_class.vue'),
             'city_class': httpVueLoader('../../../component/city_class.vue'),
         },
         created() {
@@ -926,7 +926,7 @@
                 this.$data[form][key] = val.replace(/[^0-9]/g,'');
             },
             inputFloatNumber(val, form, key) {
-                this.$data[form][key] = val.replace(/[^0-9.]/g, '");
+                this.$data[form][key] = val.replace(/[^0-9.]/g, '');
             },
 
             // {{ lc('admin_user_00227') }}
@@ -936,7 +936,7 @@
                     uid: resume.uid,
                     name: resume.name,
                     sex: resume.sex,
-                    birthday: resume.birthday ? new Date(resume.birthday) : "',
+                    birthday: resume.birthday ? new Date(resume.birthday) : '',
                     edu: resume.edu && resume.edu > 0 ? resume.edu : '',
                     exp: resume.exp && resume.exp > 0 ? resume.exp : '',
                     telphone: resume.telphone,
@@ -1140,11 +1140,11 @@
 
                 this.ruleFormJob = {
                     uid: resume.uid,
-                    eid: typeof expect.id !== 'undefined' ? expect.id : '",
+                    eid: typeof expect.id !== 'undefined' ? expect.id : '',
                     job_classid: expect.job_classid, // TODO {{ lc('admin_00300') }}
                     city_classid: expect.city_classid, // TODO {{ lc('member_user_00362') }}
                     name: expect.name,
-                    minsalary: expect.minsalary && expect.minsalary > 0 ? parseInt(expect.minsalary) : "',
+                    minsalary: expect.minsalary && expect.minsalary > 0 ? parseInt(expect.minsalary) : '',
                     maxsalary: expect.maxsalary && expect.maxsalary > 0 ? parseInt(expect.maxsalary) : '',
                     hy: expect.hy && expect.hy > 0 ? expect.hy : '',
                     report: expect.report && expect.report > 0 ? expect.report : '',
@@ -1734,7 +1734,7 @@
                         that.refreshList = true;
 
                         // 拼接工作经历数据 - 减少请求服务器
-                        if (ruleForm.id == '") {
+                        if (ruleForm.id == '') {
                             let project = deepClone(ruleForm);
                             project.id = res.data.id;
                             project.sdate_n = ruleForm.sdate;
@@ -1763,7 +1763,7 @@
                     expect = expectData.expect,
                     otherList = expectData.other;
 
-                if (index !== "') {
+                if (index !== '') {
                     let other = deepClone(otherList[index])
                     this.ruleFormOther = {
                         uid: expectData.uid,

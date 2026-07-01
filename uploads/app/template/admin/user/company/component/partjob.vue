@@ -626,7 +626,7 @@ module.exports = {
             pageSizes: [],
             total: 0,
             sort_type: '',
-            sort_col: '",
+            sort_col: '',
             partAllNum: 0,
             status1Num: 0,
             status2Num: 0,
@@ -638,18 +638,18 @@ module.exports = {
             curr_job: null,
             drawerapplylog: false,
             // {{ lc('wap_com_00237') }}
-            jobtgtit: "',
+            jobtgtit: '',
             jobtgdays: '',
             jobtgetime: '',
-            qxtgchecked: '0",
+            qxtgchecked: '0',
             jobtgdrawer: false,
             // {{ lc('admin_user_weipin_00038') }}
-            yqdays: "',
+            yqdays: '',
             yqdrawer: false,
             // BatchAudit
             drawerauditmultiple: false,
             multiStatus: '',
-            multiStatusBody: '",
+            multiStatusBody: '',
             // {{ lc('admin_user_company_00326') }}
             jobdrawersh: false,
             auditInfo: null,
@@ -672,7 +672,7 @@ module.exports = {
             },
             iscq: false,// 是否长期招聘
             sel_city: [],
-            mapkey: "',
+            mapkey: '',
             mapurl: '',
             mapsecret: '',
             today: '',
@@ -700,7 +700,7 @@ module.exports = {
         editorInterval = null;
     },
     components: {
-        'comlog_partapply': httpVueLoader('./comlog_partapply.vue"),
+        'comlog_partapply': httpVueLoader('./comlog_partapply.vue'),
     },
     methods: {
 
@@ -727,7 +727,7 @@ module.exports = {
         getParams: function (params = {}) {
             var that = this;
             for (let i in params) {
-                if (i != "page' && typeof that.search_params[i] != 'undefined') {
+                if (i != 'page' && typeof that.search_params[i] != 'undefined') {
                     that.search_params[i] = params[i];
                 }
             }
@@ -1074,7 +1074,7 @@ module.exports = {
                 return false
             }
             this.jobtgtit = lc('admin_company_00044')
-            this.tgjid = this.selectedItem.join(',")
+            this.tgjid = this.selectedItem.join(',')
             this.jobtgdrawer = true
         },
         // {{ lc('admin_user_weipin_00038') }}

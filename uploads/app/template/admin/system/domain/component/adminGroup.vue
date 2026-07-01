@@ -140,7 +140,7 @@ module.exports = {
         },
         getGroupInfo: function () {
             var self = this;
-            httpPost('m=system&c=domain_group&a=groupInfo", { id: this.group_id }).then(function (res) {
+            httpPost('m=system&c=domain_group&a=groupInfo', { id: this.group_id }).then(function (res) {
                 if (res.data.error == 0) {
                     let data = res.data.data;
 
@@ -237,7 +237,7 @@ module.exports = {
                 params.groupid = that.group_id;
             }
             that.saveLoading = true;
-            httpPost("m=system&c=domain_group&a=saveGroup', params).then(function (res) {
+            httpPost('m=system&c=domain_group&a=saveGroup', params).then(function (res) {
                 if (res.data.error == 0) {
                     message.success(res.data.msg, function () {
                         that.$emit("child-event");

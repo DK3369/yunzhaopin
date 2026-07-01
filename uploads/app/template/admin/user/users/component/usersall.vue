@@ -1647,7 +1647,7 @@ module.exports = {
                     onClick(picker) {
                         const end = new Date(new Date(new Date().getFullYear(), new Date().getMonth(), 0).setHours(23, 59, 59, 59));
                         const start = new Date(new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1).setHours(0, 0, 0));
-                        picker.$emit('pick", [start, end]);
+                        picker.$emit('pick', [start, end]);
                     }
                 }]
             },
@@ -1662,8 +1662,8 @@ module.exports = {
             pageSizes: [],
 
             // {{ lc('admin_00959') }}
-            t: "',
-            order: '",
+            t: '',
+            order: '',
 
             checkedAll: false, // {{ lc('wap_js_00074') }}
             checkedAllIndeterminate: false,
@@ -1793,7 +1793,7 @@ module.exports = {
             // 行为分析
             behavior: {
                 reverseone: true,
-                daterange: "',
+                daterange: '',
                 times: '',
                 activeClass: '',
                 fenxiDetail: {},
@@ -1859,7 +1859,7 @@ module.exports = {
                     this.searchParams.reg_time = '';
                     this.searchParams.login_days = '';
                     this.searchParams.login_time = '';
-                    this.searchClass = '";
+                    this.searchClass = '';
                 }
             },
             deep: true,
@@ -1928,7 +1928,7 @@ module.exports = {
         // 跳转会员中心前检测
         memberCheck: function (uid, usertype) {
             var that = this
-            var tip = "'
+            var tip = ''
             if (usertype != '1') {
                 if (usertype == '0') {
                     tip = lc('admin_user_00267')
@@ -2117,7 +2117,7 @@ module.exports = {
 
         // Delete
         openDel(idx) {
-            if (typeof idx == 'undefined") { // {{ lc('member_com_00055') }}
+            if (typeof idx == 'undefined') { // {{ lc('member_com_00055') }}
                 this.ruleFormDel = {
                     del: this.idArr,
                     delAccount: 0
@@ -2137,7 +2137,7 @@ module.exports = {
 
             that.saveLoading = true;
 
-            httpPost("m=user&c=users_member&a=del', ruleForm).then(function (response) {
+            httpPost('m=user&c=users_member&a=del', ruleForm).then(function (response) {
                 let res = response.data;
 
                 that.saveLoading = false;
@@ -2321,9 +2321,9 @@ module.exports = {
         },
 
         openDomain(row) {
-            if (typeof row == 'undefined") { // {{ lc('admin_yunying_00106') }}
+            if (typeof row == 'undefined') { // {{ lc('admin_yunying_00106') }}
                 this.detail = {};
-                this.$set(this.ruleFormDomain, "uid', this.idArr);
+                this.$set(this.ruleFormDomain, 'uid', this.idArr);
                 this.$set(this.ruleFormDomain, 'did', '');
             } else { // 单个操作
                 this.detail = row;
@@ -2352,7 +2352,7 @@ module.exports = {
                     message.error(res.msg);
                 } else {
                     that.dialogDomain = false;
-                    if (typeof ruleForm.uid == 'object") { // {{ lc('member_com_00055') }}
+                    if (typeof ruleForm.uid == 'object') { // {{ lc('member_com_00055') }}
                         that.getList();
                     } else { // {{ lc('common_01711') }}
                         that.refreshList = true;
@@ -2370,7 +2370,7 @@ module.exports = {
                 batchfirm: true,
                 uid: this.idArr,
                 type: [],
-                status: "'
+                status: ''
             };
         },
         authSubmit() {
@@ -2392,7 +2392,7 @@ module.exports = {
             }
             that.saveLoading = true;
 
-            httpPost('m=user&c=users_member&a=usercert", ruleForm).then(function (response) {
+            httpPost('m=user&c=users_member&a=usercert', ruleForm).then(function (response) {
                 let res = response.data;
 
                 that.saveLoading = false;
@@ -2409,7 +2409,7 @@ module.exports = {
 
         // {{ lc('admin_00551') }}
         openSqLog(index, row) {
-            this.activeName = "sqlog';
+            this.activeName = 'sqlog';
             this.openDetail(index, row);
         },
 
@@ -2449,9 +2449,9 @@ module.exports = {
         },
         // 重置详情加载的数据
         resetDetail() {
-            this.activeName = 'resume";
+            this.activeName = 'resume';
             // {{ lc('admin_00551') }}
-            this.$set(this.$data, "jobSqLog', {
+            this.$set(this.$data, 'jobSqLog', {
                 page: 1,
                 limit: 0,
                 total: 0
@@ -2472,7 +2472,7 @@ module.exports = {
                 dataCount: {},
                 logList: [],
                 pagenav: 0,
-                pageCode: '",
+                pageCode: '',
                 xialaStatus: true
             };
             // {{ lc('admin_00555') }}
@@ -2482,7 +2482,7 @@ module.exports = {
                 list: null
             };
             // {{ lc('admin_00556') }}
-            this.$set(this.$data, "payLog', {
+            this.$set(this.$data, 'payLog', {
                 page: 1,
                 limit: 0,
                 total: 0
@@ -2604,7 +2604,7 @@ module.exports = {
                 if (!this.userLog.list) {
                     this.getUserLog();
                 }
-            } else if (tab.name == 'pay") {
+            } else if (tab.name == 'pay') {
                 if (!this.payLog.list) {
                     this.getPayLog();
                 }
@@ -2617,7 +2617,7 @@ module.exports = {
             this.ruleFormAccount = {
                 uid: member.uid,
                 username: member.username,
-                password: "',
+                password: '',
                 status: member.status,
                 lock_info: member.lock_info
             };
@@ -2627,7 +2627,7 @@ module.exports = {
             let that = this,
                 ruleForm = that.ruleFormAccount;
             that.saveLoading = true;
-            httpPost('m=user&c=users_member&a=saveUser", ruleForm).then(function (response) {
+            httpPost('m=user&c=users_member&a=saveUser', ruleForm).then(function (response) {
                 let res = response.data;
 
                 if (res.error > 0) {
@@ -2649,7 +2649,7 @@ module.exports = {
         // {{ lc('admin_00542') }}
         openAccountMerge() {
             let member = this.member;
-            this.AccountMergeComname = "';
+            this.AccountMergeComname = '';
             this.ruleFormAccountMerge = {
                 uid: member.uid,
                 com_uid: '',
@@ -2886,7 +2886,7 @@ module.exports = {
             }
             that.saveLoading = true;
 
-            httpPost('m=user&c=users_resume&a=saveTag", ruleForm).then(function (response) {
+            httpPost('m=user&c=users_resume&a=saveTag', ruleForm).then(function (response) {
                 let res = response.data;
 
                 if (res.error > 0) {
@@ -2934,7 +2934,7 @@ module.exports = {
                 job_classid: expect.job_classid, // TODO {{ lc('admin_00300') }}
                 city_classid: expect.city_classid, // TODO {{ lc('member_user_00362') }}
                 name: expect.name,
-                minsalary: expect.minsalary && expect.minsalary > 0 ? parseInt(expect.minsalary) : "',
+                minsalary: expect.minsalary && expect.minsalary > 0 ? parseInt(expect.minsalary) : '',
                 maxsalary: expect.maxsalary && expect.maxsalary > 0 ? parseInt(expect.maxsalary) : '',
                 hy: expect.hy && expect.hy > 0 ? expect.hy : '',
                 report: expect.report && expect.report > 0 ? expect.report : '',
@@ -3524,7 +3524,7 @@ module.exports = {
                     that.refreshList = true;
 
                     // 拼接工作经历数据 - 减少请求服务器
-                    if (ruleForm.id == '") {
+                    if (ruleForm.id == '') {
                         let project = deepClone(ruleForm);
                         project.id = res.data.id;
                         project.sdate_n = ruleForm.sdate;
@@ -3553,7 +3553,7 @@ module.exports = {
                 expect = expectData.expect,
                 otherList = expectData.other;
 
-            if (index !== "') {
+            if (index !== '') {
                 let other = deepClone(otherList[index])
                 this.ruleFormOther = {
                     uid: expectData.uid,
@@ -3752,7 +3752,7 @@ module.exports = {
                     list = userLog.list ? userLog.list : {};
 
                 data.list.forEach(function (item) {
-                    if (typeof list[item.date_n] === 'undefined") {
+                    if (typeof list[item.date_n] === 'undefined') {
                         list[item.date_n] = {
                             week: item.week,
                             list: [item]
@@ -3803,7 +3803,7 @@ module.exports = {
                     uid: that.resume.uid
                 };
             that.loading = true;
-            httpPost("m=user&c=users_member&a=payLog', params).then(function (response) {
+            httpPost('m=user&c=users_member&a=payLog', params).then(function (response) {
                 let res = response.data,
                     data = res.data;
 

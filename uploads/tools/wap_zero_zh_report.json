@@ -1,15 +1,44 @@
 {
-    "generated": "2026-06-27T12:20:08+08:00",
+    "generated": "2026-07-01T17:58:02+08:00",
     "summary": {
         "enum_hub": 25,
-        "comment": 6,
-        "i18n_wrapped": 25
+        "comment": 463,
+        "ui": 326,
+        "enum": 1,
+        "i18n_wrapped": 19
     },
     "files": {
         "app\/template\/wap\/publichtm\/wap_api_enum.htm": 25,
-        "api\/wxapp\/member\/user\/resume.class.php": 1,
-        "api\/wxapp\/member\/com\/part.class.php": 1,
-        "api\/wxapp\/member\/com\/zpdata.class.php": 6,
+        "api\/wxapp\/member\/user\/atn.class.php": 3,
+        "api\/wxapp\/member\/user\/finance.class.php": 31,
+        "api\/wxapp\/member\/user\/index.class.php": 16,
+        "api\/wxapp\/member\/user\/info.class.php": 4,
+        "api\/wxapp\/member\/user\/job.class.php": 22,
+        "api\/wxapp\/member\/user\/msg.class.php": 9,
+        "api\/wxapp\/member\/user\/part.class.php": 4,
+        "api\/wxapp\/member\/user\/privacy.class.php": 12,
+        "api\/wxapp\/member\/user\/resume.class.php": 52,
+        "api\/wxapp\/member\/user\/reward.class.php": 2,
+        "api\/wxapp\/member\/user\/set.class.php": 35,
+        "api\/wxapp\/member\/com\/finance.class.php": 40,
+        "api\/wxapp\/member\/com\/fk.class.php": 37,
+        "api\/wxapp\/member\/com\/index.class.php": 17,
+        "api\/wxapp\/member\/com\/info.class.php": 14,
+        "api\/wxapp\/member\/com\/job.class.php": 55,
+        "api\/wxapp\/member\/com\/msg.class.php": 26,
+        "api\/wxapp\/member\/com\/part.class.php": 30,
+        "api\/wxapp\/member\/com\/resume.class.php": 38,
+        "api\/wxapp\/member\/com\/reward.class.php": 1,
+        "api\/wxapp\/member\/com\/set.class.php": 44,
+        "api\/wxapp\/member\/com\/zpdata.class.php": 78,
+        "api\/wxapp\/member\/com.class.php": 3,
+        "api\/wxapp\/model\/gongzhao.class.php": 6,
+        "api\/wxapp\/model\/public.class.php": 52,
+        "api\/wxapp\/model\/register.class.php": 17,
+        "api\/wxapp\/model\/resume.class.php": 44,
+        "api\/wxapp\/model\/tiny.class.php": 22,
+        "api\/wxapp\/index.php": 2,
+        "api\/wxapp\/wxapp.controller.php": 70,
         "app\/controller\/wap\/ajax.class.php": 10,
         "app\/controller\/wap\/ask.class.php": 1,
         "app\/controller\/wap\/company.class.php": 3,
@@ -170,52 +199,4720 @@
             "text": "{yun:}assign var=\"wap_db_sq_other\" value=\"其它原因\"{\/yun}"
         },
         {
+            "file": "api\/wxapp\/member\/user\/atn.class.php",
+            "line": 4,
+            "category": "comment",
+            "text": "    \/\/关注的企业列表"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/atn.class.php",
+            "line": 34,
+            "category": "comment",
+            "text": "\t\/\/保存关注企业"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/atn.class.php",
+            "line": 55,
+            "category": "comment",
+            "text": "\t\/\/取消关注企业"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/finance.class.php",
+            "line": 14,
+            "category": "ui",
+            "text": "\t\t\t$info['topdate']\t=\t'未设置';"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/finance.class.php",
+            "line": 23,
+            "category": "comment",
+            "text": "\t\/\/设置简历置顶简历"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/finance.class.php",
+            "line": 67,
+            "category": "comment",
+            "text": "\t\t$statis\t\t=\t$StatisM\t->\tgetInfo($this->member['uid'],array('usertype'=>'1'));\/\/查询会员信息"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/finance.class.php",
+            "line": 89,
+            "category": "comment",
+            "text": "        \/\/ app用分享数据"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/finance.class.php",
+            "line": 94,
+            "category": "ui",
+            "text": "                'title'     =>  '邀请注册',"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/finance.class.php",
+            "line": 95,
+            "category": "ui",
+            "text": "                'summary'   =>  '我在'.$this->config['sy_webname'].'上找工作；真的很不错，忍不住推荐给你',"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/finance.class.php",
+            "line": 103,
+            "category": "comment",
+            "text": "    \/\/消费明细"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/finance.class.php",
+            "line": 115,
+            "category": "comment",
+            "text": "\t\tif($page){\/\/分页"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/finance.class.php",
+            "line": 141,
+            "category": "comment",
+            "text": "    \/\/订单列表"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/finance.class.php",
+            "line": 152,
+            "category": "comment",
+            "text": "\t\tif($page){\/\/分页"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/finance.class.php",
+            "line": 170,
+            "category": "ui",
+            "text": "\t\t    \t$List[$lk]['type_n']\t\t=\t'购买会员';"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/finance.class.php",
+            "line": 172,
+            "category": "ui",
+            "text": "\t\t    \t$List[$lk]['type_n']\t\t=\t$this->config['integral_pricename'].'充值';"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/finance.class.php",
+            "line": 174,
+            "category": "ui",
+            "text": "\t\t    \t$List[$lk]['type_n']\t\t=\t'银行转账';"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/finance.class.php",
+            "line": 176,
+            "category": "ui",
+            "text": "\t\t    \t$List[$lk]['type_n']\t\t=\t'金额充值';"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/finance.class.php",
+            "line": 178,
+            "category": "ui",
+            "text": "\t\t    \t$List[$lk]['type_n']\t\t=\t'简历置顶';"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/finance.class.php",
+            "line": 186,
+            "category": "comment",
+            "text": "\t\/\/删除订单"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/finance.class.php",
+            "line": 194,
+            "category": "comment",
+            "text": "\t\/\/订单付款页面"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/finance.class.php",
+            "line": 207,
+            "category": "comment",
+            "text": "\t\t\tif($id){\/\/订单"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/finance.class.php",
+            "line": 214,
+            "category": "ui",
+            "text": "\t\t\t\t\t$msg\t=\t'订单不存在';"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/finance.class.php",
+            "line": 217,
+            "category": "ui",
+            "text": "\t\t\t\t    $msg\t=\t'请检查订单状态,本订单无需付款';"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/finance.class.php",
+            "line": 220,
+            "category": "ui",
+            "text": "\t\t\t\t\t\t'2'\t=>\t$this->config['integral_pricename'].'充值',"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/finance.class.php",
+            "line": 221,
+            "category": "ui",
+            "text": "\t\t\t\t\t\t'3'\t=>\t'银行转帐',"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/finance.class.php",
+            "line": 222,
+            "category": "ui",
+            "text": "\t\t\t\t\t\t'4'\t=>\t'金额充值',"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/finance.class.php",
+            "line": 223,
+            "category": "ui",
+            "text": "\t\t\t\t\t\t'14'=>\t'简历置顶'"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/finance.class.php",
+            "line": 234,
+            "category": "ui",
+            "text": "\t\t\t$msg\t=  '暂未开通支付';"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/finance.class.php",
+            "line": 240,
+            "category": "comment",
+            "text": "\t\/\/生成订单"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/finance.class.php",
+            "line": 271,
+            "category": "comment",
+            "text": "  \t * 充值页面"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/finance.class.php",
+            "line": 332,
+            "category": "comment",
+            "text": "    \/\/任务中心"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/finance.class.php",
+            "line": 358,
+            "category": "comment",
+            "text": "        \/\/ app用分享数据"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/finance.class.php",
+            "line": 363,
+            "category": "ui",
+            "text": "                'title'     =>  '邀请注册',"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/finance.class.php",
+            "line": 364,
+            "category": "ui",
+            "text": "                'summary'   =>  '我在'.$this->config['sy_webname'].'上找工作；真的很不错，忍不住推荐给你',"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/index.class.php",
+            "line": 43,
+            "category": "comment",
+            "text": "            \/\/ 根据简历完成情况，提示完善简历"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/index.class.php",
+            "line": 47,
+            "category": "ui",
+            "text": "                    $resume['wstitle'] = '求职意向';"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/index.class.php",
+            "line": 52,
+            "category": "ui",
+            "text": "                    $resume['wstitle'] ='工作经历';"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/index.class.php",
+            "line": 57,
+            "category": "ui",
+            "text": "                    $resume['wstitle'] ='教育经历';"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/index.class.php",
+            "line": 62,
+            "category": "ui",
+            "text": "                    $resume['wstitle'] ='项目经历';"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/index.class.php",
+            "line": 67,
+            "category": "ui",
+            "text": "                    $resume['wstitle'] ='培训经历';"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/index.class.php",
+            "line": 72,
+            "category": "ui",
+            "text": "                    $resume['wstitle'] ='职业技能';"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/index.class.php",
+            "line": 79,
+            "category": "ui",
+            "text": "\t\t\t\t$resume['wstitle'] ='隐私设置';"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/index.class.php",
+            "line": 99,
+            "category": "comment",
+            "text": "\t\t\/\/对我感兴趣 总数"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/index.class.php",
+            "line": 121,
+            "category": "comment",
+            "text": "\t\t\/\/ 强制关注公众号"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/index.class.php",
+            "line": 144,
+            "category": "comment",
+            "text": "\t\/\/签到，TODO:会员中心"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/index.class.php",
+            "line": 169,
+            "category": "ui",
+            "text": "\t\t\t\t$msg\t\t=\t'连续签到'.$signday.\"天\";"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/index.class.php",
+            "line": 173,
+            "category": "ui",
+            "text": "\t\t\t\t$msg\t\t=\t'第一次签到';"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/index.class.php",
+            "line": 185,
+            "category": "ui",
+            "text": "\t\t\t\t$data['msg']\t=\t'签到成功！+'.$integral.$this->config['integral_pricename'];"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/index.class.php",
+            "line": 189,
+            "category": "ui",
+            "text": "\t\t\t\t$data['msg']\t=\t'今天已签到';"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/index.class.php",
+            "line": 193,
+            "category": "ui",
+            "text": "\t\t\t$data['msg']\t=\t'签到失败！';"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/info.class.php",
+            "line": 5,
+            "category": "comment",
+            "text": "\t\/*wxapp基本信息页面显示、创建简历页面显示*\/"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/info.class.php",
+            "line": 15,
+            "category": "comment",
+            "text": "\t\/*wxapp保存基本信息*\/"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/info.class.php",
+            "line": 45,
+            "category": "comment",
+            "text": "\t\t\t'ewmFromWx' \t=> \t$_FILES['photos'],\/\/二维码"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/info.class.php",
+            "line": 69,
+            "category": "comment",
+            "text": "\t\/*wxapp保存头像*\/"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/job.class.php",
+            "line": 5,
+            "category": "comment",
+            "text": "\/*wxapp申请记录*\/"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/job.class.php",
+            "line": 45,
+            "category": "comment",
+            "text": "\t\/*wxapp申请记录删除*\/"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/job.class.php",
+            "line": 46,
+            "category": "comment",
+            "text": "\tfunction delsqjob_action()\/\/删除申请的职位"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/job.class.php",
+            "line": 55,
+            "category": "comment",
+            "text": "    \/*wxapp取消申请*\/"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/job.class.php",
+            "line": 65,
+            "category": "comment",
+            "text": "\t\/*wxapp收藏记录*\/"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/job.class.php",
+            "line": 97,
+            "category": "comment",
+            "text": "\t\/*wxapp收藏记录删除*\/"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/job.class.php",
+            "line": 98,
+            "category": "comment",
+            "text": "\tfunction delfavjob_action()\/\/删除收藏的职位"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/job.class.php",
+            "line": 109,
+            "category": "comment",
+            "text": "\t\/*wxapp面试通知记录*\/"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/job.class.php",
+            "line": 141,
+            "category": "comment",
+            "text": "\t\/*wxapp面试邀请页面-面试通知详情页*\/"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/job.class.php",
+            "line": 158,
+            "category": "comment",
+            "text": "\t\/*wxapp面试通知记录删除*\/"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/job.class.php",
+            "line": 174,
+            "category": "comment",
+            "text": "     * wxapp 面试通知-同意、拒绝"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/job.class.php",
+            "line": 195,
+            "category": "comment",
+            "text": "\t\/*wxapp浏览记录*\/"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/job.class.php",
+            "line": 224,
+            "category": "comment",
+            "text": "\t\/*wxapp浏览记录删除*\/"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/job.class.php",
+            "line": 225,
+            "category": "comment",
+            "text": "\tfunction look_job_del_action()\/\/删除职位浏览记录"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/job.class.php",
+            "line": 234,
+            "category": "comment",
+            "text": "\t\/*wxapp相似职位*\/"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/job.class.php",
+            "line": 248,
+            "category": "comment",
+            "text": "\t * 职位管理"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/job.class.php",
+            "line": 257,
+            "category": "comment",
+            "text": "\t\t\/\/面试通知"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/job.class.php",
+            "line": 260,
+            "category": "comment",
+            "text": "\t\t\/\/申请的职位"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/job.class.php",
+            "line": 263,
+            "category": "comment",
+            "text": "\t\t\/\/收藏的职位"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/job.class.php",
+            "line": 273,
+            "category": "comment",
+            "text": "\t\t\/\/职位浏览记录"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/job.class.php",
+            "line": 277,
+            "category": "comment",
+            "text": "\t\t\/\/谁看过我的简历"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/job.class.php",
+            "line": 286,
+            "category": "comment",
+            "text": "\t\t\/\/兼职管理"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/msg.class.php",
+            "line": 5,
+            "category": "comment",
+            "text": "     * 消息"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/msg.class.php",
+            "line": 10,
+            "category": "comment",
+            "text": "\t    \/\/面试通知"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/msg.class.php",
+            "line": 14,
+            "category": "comment",
+            "text": "\t\t\/\/私信"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/msg.class.php",
+            "line": 18,
+            "category": "comment",
+            "text": "\t\t\/\/职位咨询回复"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/msg.class.php",
+            "line": 35,
+            "category": "comment",
+            "text": "\t\/\/系统消息"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/msg.class.php",
+            "line": 67,
+            "category": "comment",
+            "text": "\t * 删除系统消息"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/msg.class.php",
+            "line": 76,
+            "category": "ui",
+            "text": "        $logContent =   '消息处理：删除系统消息（ID：'.$_POST['id'].'）';"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/msg.class.php",
+            "line": 82,
+            "category": "comment",
+            "text": "\t\/\/职位咨询消息"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/msg.class.php",
+            "line": 109,
+            "category": "comment",
+            "text": "    \/\/删除职位咨询消息"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/part.class.php",
+            "line": 9,
+            "category": "comment",
+            "text": "     * wxapp个人会员兼职收藏列表"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/part.class.php",
+            "line": 63,
+            "category": "comment",
+            "text": "     * 删除兼职收藏列表"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/part.class.php",
+            "line": 83,
+            "category": "comment",
+            "text": "     * 删除兼职报名"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/part.class.php",
+            "line": 103,
+            "category": "comment",
+            "text": "     * 个人兼职报名管理"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/privacy.class.php",
+            "line": 4,
+            "category": "comment",
+            "text": "    \/\/隐私设置列表"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/privacy.class.php",
+            "line": 14,
+            "category": "comment",
+            "text": "\t\/\/屏蔽企业列表"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/privacy.class.php",
+            "line": 44,
+            "category": "comment",
+            "text": "    \/\/隐私设置保存"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/privacy.class.php",
+            "line": 55,
+            "category": "ui",
+            "text": "        $logContent =   '简历更新：设置隐私状态';"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/privacy.class.php",
+            "line": 60,
+            "category": "ui",
+            "text": "            $stext  =   '隐藏';"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/privacy.class.php",
+            "line": 62,
+            "category": "ui",
+            "text": "            $stext  =   '公开';"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/privacy.class.php",
+            "line": 64,
+            "category": "ui",
+            "text": "            $stext  =   '仅投递企业可见';"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/privacy.class.php",
+            "line": 67,
+            "category": "ui",
+            "text": "        $logDetail  =   '更新简历隐私状态：'.$stext;"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/privacy.class.php",
+            "line": 77,
+            "category": "comment",
+            "text": "    \/\/删除屏蔽企业"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/privacy.class.php",
+            "line": 91,
+            "category": "comment",
+            "text": "    \/\/清空屏蔽企业"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/privacy.class.php",
+            "line": 104,
+            "category": "comment",
+            "text": "    \/\/搜索要屏蔽的企业"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/privacy.class.php",
+            "line": 141,
+            "category": "comment",
+            "text": "    \/\/保存要屏蔽的企业"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/resume.class.php",
+            "line": 4,
+            "category": "comment",
+            "text": "    \/\/添加简历页面，判断是否满足条件并返回基本信息"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/resume.class.php",
+            "line": 27,
+            "category": "comment",
+            "text": "\t\/\/简历管理"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/resume.class.php",
+            "line": 53,
+            "category": "ui",
+            "text": "\t\t\t    $r['name']\t=  $val['name'].'(默认)';"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/resume.class.php",
+            "line": 59,
+            "category": "comment",
+            "text": "        \/\/判断简历最大数量"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/resume.class.php",
+            "line": 88,
+            "category": "comment",
+            "text": "    \/\/添加简历前检查"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/resume.class.php",
+            "line": 95,
+            "category": "comment",
+            "text": "\t\/*wxapp意向职位修改页面显示*\/"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/resume.class.php",
+            "line": 128,
+            "category": "comment",
+            "text": "\t\/*wxapp工作经历、培训经历。。。修改页面*\/"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/resume.class.php",
+            "line": 149,
+            "category": "comment",
+            "text": "\t\t\t\/\/系统的标签"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/resume.class.php",
+            "line": 195,
+            "category": "comment",
+            "text": "    \/*wxapp保创建简历保存*\/"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/resume.class.php",
+            "line": 239,
+            "category": "comment",
+            "text": "        \/**************************简历是否必填工作经历*************************************************\/"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/resume.class.php",
+            "line": 253,
+            "category": "comment",
+            "text": "                \/\/ 第一步预创建简历"
+        },
+        {
             "file": "api\/wxapp\/member\/user\/resume.class.php",
             "line": 254,
             "category": "comment",
-            "text": "                $eData['content']   =   yun_at('member_user_00596');     \/\/ 简历备注为未完善"
+            "text": "                $eData['content']   =   '简历创建未完成，中途退出，信息不完整';     \/\/ 简历备注为未完善"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/resume.class.php",
+            "line": 255,
+            "category": "comment",
+            "text": "                $eData['state']     =   0;              \/\/ 简历状态为未审核"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/resume.class.php",
+            "line": 258,
+            "category": "comment",
+            "text": "                $eData['content']   =   '';             \/\/ 取消 简历未备注"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/resume.class.php",
+            "line": 277,
+            "category": "comment",
+            "text": "        \/**************************简历是否必填教育经历*************************************************\/"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/resume.class.php",
+            "line": 293,
+            "category": "comment",
+            "text": "        \/**************************简历是否必填项目经历*************************************************\/"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/resume.class.php",
+            "line": 369,
+            "category": "comment",
+            "text": "\t\/\/意向职位保存"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/resume.class.php",
+            "line": 381,
+            "category": "ui",
+            "text": "                $this->render_json(2, '求职意向最多'.$this->config['sy_rname_num'].'个字');"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/resume.class.php",
+            "line": 398,
+            "category": "ui",
+            "text": "\t\t\t\t\t$data['msg']='请完善信息！！';"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/resume.class.php",
+            "line": 413,
+            "category": "comment",
+            "text": "\t\/\/保存简历分表 skill,work,project,edu,training,other，desc分表的保存统一使用saveresumeson"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/resume.class.php",
+            "line": 453,
+            "category": "ui",
+            "text": "\t\t\t$data['msg']\t=\t$return['errcode']==9 ?\"保存成功！\":\"保存失败！\";"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/resume.class.php",
+            "line": 462,
+            "category": "ui",
+            "text": "\t\t\t\t$data['msg']\t=\t\"参数错误\";"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/resume.class.php",
+            "line": 485,
+            "category": "comment",
+            "text": "\t\t\t\t\/\/查询修改"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/resume.class.php",
+            "line": 611,
+            "category": "comment",
+            "text": "\t\t\t\t\/\/计算"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/resume.class.php",
+            "line": 617,
+            "category": "comment",
+            "text": "\t\t\t\t\t\/\/计算每份工作时长(按月)"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/resume.class.php",
+            "line": 627,
+            "category": "comment",
+            "text": "\t\t\t\t\/\/更新当前简历时长字段"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/resume.class.php",
+            "line": 633,
+            "category": "ui",
+            "text": "\t\t\t$nid?$data['msg']\t=\t'保存成功！':$data['msg']='保存失败！';"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/resume.class.php",
+            "line": 638,
+            "category": "comment",
+            "text": "\t\/*wxapp简历管理页面刷新*\/"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/resume.class.php",
+            "line": 651,
+            "category": "ui",
+            "text": "\t\t$data['msg']\t\t\t=\t$nid? '刷新成功！' : '刷新失败！';"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/resume.class.php",
+            "line": 654,
+            "category": "comment",
+            "text": "\t\/*wxapp简历管理页面设置默认*\/"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/resume.class.php",
+            "line": 666,
+            "category": "comment",
+            "text": "\t\/*wxapp简历管理页面设置是否公开*\/"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/resume.class.php",
+            "line": 678,
+            "category": "ui",
+            "text": "            $logContent =   '简历更新：设置隐私状态';"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/resume.class.php",
+            "line": 679,
+            "category": "ui",
+            "text": "            $logDetail  =   '更新简历隐私状态：公开';"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/resume.class.php",
+            "line": 683,
+            "category": "ui",
+            "text": "        $data['msg']    =   $return['errcode'] == 9 ? '设置成功！' : '设置失败！';"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/resume.class.php",
+            "line": 686,
+            "category": "comment",
+            "text": "\t\/*wxapp简历管理页面删除*\/"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/resume.class.php",
+            "line": 687,
+            "category": "comment",
+            "text": "\t\/\/原本的del_resume既可以删除整个简历也可以删除简历附表，现参照wap分开，删除附表为delResumeFb"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/resume.class.php",
+            "line": 699,
+            "category": "comment",
+            "text": "\t\/\/ 删除简历附表,小程序内需要修改为此方法"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/resume.class.php",
+            "line": 714,
+            "category": "comment",
+            "text": "\t\/*wxapp谁看过我记录*\/"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/resume.class.php",
+            "line": 715,
+            "category": "comment",
+            "text": "\tfunction look_resume_action()\/\/简历浏览记录"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/resume.class.php",
+            "line": 742,
+            "category": "comment",
+            "text": "\t\/*wxapp谁看过我记录删除*\/"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/resume.class.php",
+            "line": 743,
+            "category": "comment",
+            "text": "\tfunction look_resume_del_action()\/\/删除简历浏览记录"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/resume.class.php",
+            "line": 753,
+            "category": "comment",
+            "text": "\t\/\/检查简历创建基本信息"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/resume.class.php",
+            "line": 769,
+            "category": "comment",
+            "text": "\t\/\/wap简历置顶"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/resume.class.php",
+            "line": 781,
+            "category": "comment",
+            "text": "\t\/\/个人评价看看别人怎么写"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/resume.class.php",
+            "line": 818,
+            "category": "ui",
+            "text": "\t\t\t$data['content']\t=\t'暂无示例';"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/resume.class.php",
+            "line": 825,
+            "category": "comment",
+            "text": "\t\/\/简历发布成功"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/resume.class.php",
+            "line": 850,
+            "category": "comment",
+            "text": "    \/\/保存个人作品"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/resume.class.php",
+            "line": 876,
+            "category": "ui",
+            "text": "                $this->render_json(2, '请上传图片');"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/resume.class.php",
+            "line": 901,
+            "category": "ui",
+            "text": "                $this->render_json(2, '请上传图片');"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/resume.class.php",
+            "line": 920,
+            "category": "ui",
+            "text": "\t\t$nid?$data['msg']\t=\t'保存成功！':$data['msg']='保存失败！';"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/resume.class.php",
+            "line": 925,
+            "category": "comment",
+            "text": "     * 处理单个图片上传"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/resume.class.php",
+            "line": 926,
+            "category": "comment",
+            "text": "     * @param file\/需上传文件; dir\/上传目录; type\/上传图片类型; base\/需上传base64; preview\/pc预览即上传"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/reward.class.php",
+            "line": 6,
+            "category": "comment",
+            "text": "     * 兑换记录列表"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/reward.class.php",
+            "line": 40,
+            "category": "comment",
+            "text": "    \/\/删除兑换记录"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/set.class.php",
+            "line": 5,
+            "category": "comment",
+            "text": "    \/\/个人设置信息页面"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/set.class.php",
+            "line": 24,
+            "category": "comment",
+            "text": "        \/\/ 第三方绑定相关参数"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/set.class.php",
+            "line": 50,
+            "category": "comment",
+            "text": "    \/\/查询用户是否有多重身份"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/set.class.php",
+            "line": 70,
+            "category": "comment",
+            "text": "    \/\/身份证审核查询"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/set.class.php",
+            "line": 86,
+            "category": "comment",
+            "text": "\t\/\/上传身份证"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/set.class.php",
+            "line": 107,
+            "category": "comment",
+            "text": "\t\/\/手机认证,发送短信；"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/set.class.php",
+            "line": 117,
+            "category": "comment",
+            "text": "\t\t$port\t =\t$this->plat == 'mini' ? '3' : '4';\t\/\/ 短信发送端口$port : 3-小程序  4-APP"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/set.class.php",
+            "line": 122,
+            "category": "ui",
+            "text": "            $logContent =   '账号认证：发送手机认证验证码';"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/set.class.php",
+            "line": 123,
+            "category": "ui",
+            "text": "            $logDetail  =   '手机认证，发送短信验证码；认证手机号码：'.$moblie;"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/set.class.php",
+            "line": 131,
+            "category": "comment",
+            "text": "\t\/\/修改密码"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/set.class.php",
+            "line": 151,
+            "category": "comment",
+            "text": "\t\/\/手机号和邮箱绑定"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/set.class.php",
+            "line": 173,
+            "category": "ui",
+            "text": "\t\t\t\t$msg    \t\t=    \t'手机号码已存在，请重新填写新号码';"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/set.class.php",
+            "line": 187,
+            "category": "comment",
+            "text": "\t\t\t\t    \/\/ 用户名和手机号重复，修改手机号会修改用户名，需要重新生成token;"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/set.class.php",
+            "line": 195,
+            "category": "ui",
+            "text": "\t\t\t\t\t$msg\t\t=\t\t'验证码时间已过期，请重新获取验证码';"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/set.class.php",
+            "line": 198,
+            "category": "ui",
+            "text": "\t\t\t\t\t$msg\t\t=\t\t'验证码错误';"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/set.class.php",
+            "line": 201,
+            "category": "ui",
+            "text": "\t\t\t\t\t$msg\t\t=\t\t'验证码不存在，请获取验证码';"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/set.class.php",
+            "line": 206,
+            "category": "ui",
+            "text": "\t\t\t\t\t$msg\t\t=\t\t'绑定失败';"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/set.class.php",
+            "line": 213,
+            "category": "comment",
+            "text": "\t\t\t\/\/判断邮箱是否存在"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/set.class.php",
+            "line": 231,
+            "category": "ui",
+            "text": "                    $this->render_json($result['error'], \"图片验证码错误\");"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/set.class.php",
+            "line": 236,
+            "category": "ui",
+            "text": "\t\t\t\t$msg    \t\t=    \t'邮箱已存在，请重新填写邮箱';"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/set.class.php",
+            "line": 250,
+            "category": "ui",
+            "text": "\t\t\t\t\t$msg    \t\t=    \t'邮件没有配置，请联系管理员！';"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/set.class.php",
+            "line": 254,
+            "category": "ui",
+            "text": "\t\t\t\t\t$msg\t\t\t=\t\t'邮件通知已关闭，请联系管理员';"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/set.class.php",
+            "line": 260,
+            "category": "ui",
+            "text": "\t\t\t\t\t$msg\t\t\t=\t\t'操作错误';"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/set.class.php",
+            "line": 270,
+            "category": "comment",
+            "text": "\t\/\/修改用户名"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/set.class.php",
+            "line": 291,
+            "category": "ui",
+            "text": "\t\t\t$msg\t=\t'修改失败';"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/set.class.php",
+            "line": 297,
+            "category": "comment",
+            "text": "    \/\/账户分离"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/set.class.php",
+            "line": 311,
+            "category": "comment",
+            "text": "    \/\/社交账号绑定页面"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/set.class.php",
+            "line": 338,
+            "category": "comment",
+            "text": "\t\/\/保存社交账号绑定"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/set.class.php",
+            "line": 346,
+            "category": "ui",
+            "text": "\t                $uni = 'H5\/微信';"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/set.class.php",
+            "line": 361,
+            "category": "ui",
+            "text": "            $logContent =   '账号认证：解除绑定';"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/set.class.php",
+            "line": 362,
+            "category": "ui",
+            "text": "            $logDetail  =   $uni.'解除绑定';"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/set.class.php",
+            "line": 370,
+            "category": "comment",
+            "text": "\t\/\/ 查询申请注销记录"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/set.class.php",
+            "line": 378,
+            "category": "ui",
+            "text": "\t        $this->render_json(1,'您已申请了注销账号');"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/set.class.php",
+            "line": 384,
+            "category": "comment",
+            "text": "\t\/\/注销账号申请"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/set.class.php",
+            "line": 404,
+            "category": "comment",
+            "text": "    \/\/手机注销账号申请"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/finance.class.php",
+            "line": 44,
+            "category": "comment",
+            "text": "    \t\/\/新订单页面"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/finance.class.php",
+            "line": 51,
+            "category": "comment",
+            "text": "\t\t\tif($id){\/\/订单"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/finance.class.php",
+            "line": 57,
+            "category": "ui",
+            "text": "\t\t\t\t\t$msg\t=\t'订单不存在';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/finance.class.php",
+            "line": 60,
+            "category": "ui",
+            "text": "\t\t\t\t\t$msg\t=\t'请检查订单状态,本订单无需付款';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/finance.class.php",
+            "line": 63,
+            "category": "ui",
+            "text": "\t\t\t\t\t\t'1'\t=>\t'购买会员',"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/finance.class.php",
+            "line": 64,
+            "category": "ui",
+            "text": "\t\t\t\t\t\t'2'\t=>\t$this->config['integral_pricename'].'充值',"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/finance.class.php",
+            "line": 65,
+            "category": "ui",
+            "text": "\t\t\t\t\t\t'3'\t=>\t'银行转帐',"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/finance.class.php",
+            "line": 66,
+            "category": "ui",
+            "text": "\t\t\t\t\t\t'5'\t=>\t'购买增值包',"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/finance.class.php",
+            "line": 68,
+            "category": "ui",
+            "text": "\t\t\t\t\t\t'8'\t=>\t'分享红包推广',"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/finance.class.php",
+            "line": 70,
+            "category": "ui",
+            "text": "\t\t\t\t\t\t'10'=>\t'职位置顶',"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/finance.class.php",
+            "line": 71,
+            "category": "ui",
+            "text": "\t\t\t\t\t\t'11'=>\t'职位紧急',"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/finance.class.php",
+            "line": 72,
+            "category": "ui",
+            "text": "\t            \t\t'12'=>\t'职位推荐',"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/finance.class.php",
+            "line": 73,
+            "category": "ui",
+            "text": "\t            \t\t'13'=>\t'自动刷新',"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/finance.class.php",
+            "line": 74,
+            "category": "ui",
+            "text": "\t            \t\t'16'=>\t'刷新职位',"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/finance.class.php",
+            "line": 75,
+            "category": "ui",
+            "text": "\t            \t\t'17'=>\t'刷新兼职',"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/finance.class.php",
+            "line": 77,
+            "category": "ui",
+            "text": "\t            \t\t'19'=>\t'下载简历',"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/finance.class.php",
+            "line": 78,
+            "category": "ui",
+            "text": "\t            \t\t'20'=>\t'上架职位',"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/finance.class.php",
+            "line": 79,
+            "category": "ui",
+            "text": "\t            \t\t'21'=>\t'上架兼职',"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/finance.class.php",
+            "line": 81,
+            "category": "ui",
+            "text": "\t            \t\t'23'=>\t'面试邀请',"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/finance.class.php",
+            "line": 82,
+            "category": "ui",
+            "text": "\t            \t\t'24'=> \t'兼职推荐',"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/finance.class.php",
+            "line": 84,
+            "category": "ui",
+            "text": "\t            \t\t'28'=>\t'购买招聘会报名次数'"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/finance.class.php",
+            "line": 96,
+            "category": "ui",
+            "text": "\t\t\t$msg\t=\t'暂未开通手机支付，请移步至电脑端充值！';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/finance.class.php",
+            "line": 152,
+            "category": "ui",
+            "text": "\t                $data['errmsg']\t=\t'会员已过期，请先购买会员';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/finance.class.php",
+            "line": 185,
+            "category": "comment",
+            "text": "          if($_POST['serverid']==1){\/\/置顶"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/finance.class.php",
+            "line": 187,
+            "category": "comment",
+            "text": "          }else if($_POST['serverid']==2){\/\/推荐"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/finance.class.php",
+            "line": 189,
+            "category": "comment",
+            "text": "          }else if($_POST['serverid']==3){\/\/紧急招聘"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/finance.class.php",
+            "line": 195,
+            "category": "ui",
+            "text": "          $this->render_json(8, '已超出套餐剩余数量');"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/finance.class.php",
+            "line": 262,
+            "category": "comment",
+            "text": "\t * 查询会员套餐名称"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/finance.class.php",
+            "line": 309,
+            "category": "ui",
+            "text": "\t\t\t$msg\t=\t'取消成功！';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/finance.class.php",
+            "line": 312,
+            "category": "ui",
+            "text": "\t\t\t$msg\t=\t'订单不存在！';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/finance.class.php",
+            "line": 375,
+            "category": "comment",
+            "text": "\t\t$statis\t\t=\t$StatisM -> getInfo($this->member['uid'],array('usertype'=>'2'));\/\/查询会员信息"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/finance.class.php",
+            "line": 379,
+            "category": "ui",
+            "text": "\t\t\t'pay_remark'\t=>\tarray('like','转换'.$this->config['integral_pricename'])"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/finance.class.php",
+            "line": 384,
+            "category": "ui",
+            "text": "\t\t\t$statis['vip_fwtime']\t\t=\t'永久';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/finance.class.php",
+            "line": 408,
+            "category": "comment",
+            "text": "        \/\/ app用分享数据"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/finance.class.php",
+            "line": 413,
+            "category": "ui",
+            "text": "                'title'     =>  '邀请注册',"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/finance.class.php",
+            "line": 414,
+            "category": "ui",
+            "text": "                'summary'   =>  '我在'.$this->config['sy_webname'].'上找工作；真的很不错，忍不住推荐给你',"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/finance.class.php",
+            "line": 429,
+            "category": "ui",
+            "text": "    \t\t$statis['vip_fwtime']\t=\t'永久';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/finance.class.php",
+            "line": 491,
+            "category": "comment",
+            "text": "        \/\/ app用分享数据"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/finance.class.php",
+            "line": 496,
+            "category": "ui",
+            "text": "                'title'     =>  '邀请注册',"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/finance.class.php",
+            "line": 497,
+            "category": "ui",
+            "text": "                'summary'   =>  '我在'.$this->config['sy_webname'].'上找工作；真的很不错，忍不住推荐给你',"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/fk.class.php",
+            "line": 5,
+            "category": "comment",
+            "text": "     * @desc 会员套餐、增值服务、单项购买页面"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/fk.class.php",
+            "line": 29,
+            "category": "comment",
+            "text": "                    \/\/有效期处理"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/fk.class.php",
+            "line": 32,
+            "category": "ui",
+            "text": "                        $ratingV['service_time']\t=\t$ratingV['service_time'].'天';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/fk.class.php",
+            "line": 35,
+            "category": "ui",
+            "text": "                        $ratingV['service_time']\t=\t'永久';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/fk.class.php",
+            "line": 37,
+            "category": "comment",
+            "text": "                    \/\/有效期处理end"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/fk.class.php",
+            "line": 39,
+            "category": "comment",
+            "text": "                    \/\/价格显示处理"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/fk.class.php",
+            "line": 57,
+            "category": "comment",
+            "text": "                    \/\/价格显示处理end"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/fk.class.php",
+            "line": 60,
+            "category": "ui",
+            "text": "                        $ratingV['explains']\t.=\t' 赠送'.$ratingV['integral_buy'].$this->config['integral_pricename'];"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/fk.class.php",
+            "line": 67,
+            "category": "comment",
+            "text": "                        \/\/套餐详细处理"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/fk.class.php",
+            "line": 71,
+            "category": "ui",
+            "text": "                                $ratingV['interview_resume'].='面试邀请: '.$ratingV['interview'].'次；';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/fk.class.php",
+            "line": 74,
+            "category": "ui",
+            "text": "                                $ratingV['interview_resume'].='简历下载: '.$ratingV['resume'].'次；';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/fk.class.php",
+            "line": 79,
+            "category": "ui",
+            "text": "                            $ratingV['job_breakjob'].='刷新职位: '.$ratingV['breakjob_num'].'份；';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/fk.class.php",
+            "line": 82,
+            "category": "ui",
+            "text": "                            $ratingV['zph'].='招聘会报名 : '.$ratingV['zph_num'].'次';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/fk.class.php",
+            "line": 84,
+            "category": "comment",
+            "text": "                        \/\/套餐详细处理"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/fk.class.php",
+            "line": 92,
+            "category": "comment",
+            "text": "            $data['noPermission']   =   1;  \/\/  无可浏览会员"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/fk.class.php",
+            "line": 95,
+            "category": "comment",
+            "text": "            $data['isPaused']       =   1;  \/\/  已暂停"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/fk.class.php",
+            "line": 103,
+            "category": "comment",
+            "text": "        $data['rating_1']\t=\tarray_values($rating_1);\/\/套餐会员"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/fk.class.php",
+            "line": 104,
+            "category": "comment",
+            "text": "        $data['rating_2']\t=\tarray_values($rating_2);\/\/时间会员"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/fk.class.php",
+            "line": 126,
+            "category": "comment",
+            "text": "            $data['statis']\t\t=\t$statis;\/\/当前已有的服务信息"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/fk.class.php",
+            "line": 136,
+            "category": "comment",
+            "text": "                    \/\/价格显示处理"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/fk.class.php",
+            "line": 160,
+            "category": "comment",
+            "text": "                    \/\/价格显示处理end"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/fk.class.php",
+            "line": 164,
+            "category": "comment",
+            "text": "        $data['add']  =  $add;\/\/增值列表"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/fk.class.php",
+            "line": 173,
+            "category": "comment",
+            "text": "        \/\/ 判断后台是否设置可以单项购买"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/fk.class.php",
+            "line": 181,
+            "category": "ui",
+            "text": "                $single_msg\t\t  =\t '本次上架职位';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/fk.class.php",
+            "line": 186,
+            "category": "ui",
+            "text": "                $single_msg\t\t  =\t '本次职位置顶';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/fk.class.php",
+            "line": 191,
+            "category": "ui",
+            "text": "                $single_msg\t\t  =\t '本次职位推荐';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/fk.class.php",
+            "line": 196,
+            "category": "ui",
+            "text": "                $single_msg\t\t  =\t '本次职位紧急招聘';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/fk.class.php",
+            "line": 212,
+            "category": "ui",
+            "text": "                $single_msg\t\t  =\t '本次刷新职位';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/fk.class.php",
+            "line": 218,
+            "category": "ui",
+            "text": "                $single_msg\t\t  =\t '本次刷新职位';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/fk.class.php",
+            "line": 228,
+            "category": "ui",
+            "text": "                $single_msg\t\t  =\t '本次下载简历';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/fk.class.php",
+            "line": 234,
+            "category": "ui",
+            "text": "                $single_msg\t\t  =\t '本次邀请面试';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/fk.class.php",
+            "line": 244,
+            "category": "ui",
+            "text": "                $single_msg\t\t  =\t'本次报名招聘会';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/fk.class.php",
+            "line": 250,
+            "category": "ui",
+            "text": "                $single_msg\t\t  =\t '本次设置自动刷新';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/fk.class.php",
+            "line": 267,
+            "category": "comment",
+            "text": "        $config['fktype']\t      =\t $this->fktype();\/\/支付方式"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/fk.class.php",
+            "line": 294,
+            "category": "comment",
+            "text": "     * 生成订单"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/fk.class.php",
+            "line": 412,
+            "category": "comment",
+            "text": "                \/\/ 生成失败 返回具体原因"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/fk.class.php",
+            "line": 417,
+            "category": "ui",
+            "text": "            $this->render_json(1,'参数错误，请重试！');"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/index.class.php",
+            "line": 4,
+            "category": "comment",
+            "text": "    \/\/ 企业会员中心首页"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/index.class.php",
+            "line": 40,
+            "category": "comment",
+            "text": "\t\t\/\/ 在招职位数量"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/index.class.php",
+            "line": 46,
+            "category": "comment",
+            "text": "\t\t\/\/ 在招职位中，今天未刷新的数量"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/index.class.php",
+            "line": 55,
+            "category": "comment",
+            "text": "\t\t\/\/ 客户服务"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/index.class.php",
+            "line": 69,
+            "category": "comment",
+            "text": "\t\t\/\/ 强制关注公众号"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/index.class.php",
+            "line": 101,
+            "category": "comment",
+            "text": "        $sjtip = 1;\/\/ 展示升级套餐提醒"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/index.class.php",
+            "line": 112,
+            "category": "comment",
+            "text": "\t\/\/签到，TODO:会员中心"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/index.class.php",
+            "line": 129,
+            "category": "ui",
+            "text": "\t\t\t\t$msg\t\t=\t'连续签到'.$signday.\"天\";"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/index.class.php",
+            "line": 133,
+            "category": "ui",
+            "text": "\t\t\t\t$msg\t\t=\t'第一次签到';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/index.class.php",
+            "line": 141,
+            "category": "ui",
+            "text": "\t\t\t\t$data['msg']\t=\t'签到成功！+'.$integral.$this->config['integral_pricename'];"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/index.class.php",
+            "line": 144,
+            "category": "ui",
+            "text": "\t\t\t\t$data['msg']\t=\t'签到失败！';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/index.class.php",
+            "line": 148,
+            "category": "ui",
+            "text": "\t\t\t$data['msg']\t=\t'签到失败！';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/index.class.php",
+            "line": 154,
+            "category": "comment",
+            "text": "\t * 检测职位发布数量"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/index.class.php",
+            "line": 160,
+            "category": "ui",
+            "text": "            $this->render_json(-1, '当前账户会员权益已暂停，请联系客服开启服务~');"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/index.class.php",
+            "line": 179,
+            "category": "ui",
+            "text": "                $return['msg']  =   '套餐已用完 , 立即升级VIP？';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/index.class.php",
+            "line": 182,
+            "category": "ui",
+            "text": "\t\t        \t$return['msg']='套餐已用完 , 立即升级VIP？';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/index.class.php",
+            "line": 184,
+            "category": "ui",
+            "text": "\t\t\t\t    $return['msg']='当前会员套餐可上架职位数已达上限，新发布职位将无法直接上架哦~';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/info.class.php",
+            "line": 6,
+            "category": "comment",
+            "text": "     * 获取企业信息"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/info.class.php",
+            "line": 23,
+            "category": "comment",
+            "text": "        \/\/ 首先根据企业表的认证状态来判断"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/info.class.php",
+            "line": 35,
+            "category": "comment",
+            "text": "        \/\/福利缓存数据"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/info.class.php",
+            "line": 70,
+            "category": "comment",
+            "text": "\t\t\/\/ 第三方绑定相关参数"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/info.class.php",
+            "line": 176,
+            "category": "ui",
+            "text": "\t\t    $msg\t=\t'参数不正确';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/info.class.php",
+            "line": 203,
+            "category": "ui",
+            "text": "            $this->render_json(3, '参数不正确');"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/info.class.php",
+            "line": 221,
+            "category": "ui",
+            "text": "            $msg\t=\t'参数不正确';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/info.class.php",
+            "line": 250,
+            "category": "ui",
+            "text": "            $msg\t=\t'参数不正确';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/info.class.php",
+            "line": 255,
+            "category": "comment",
+            "text": "                $logM->member_log(\"删除企业环境展示\",16,3, $this->member['uid'], $this->member['usertype']);\/\/会员日志"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/info.class.php",
+            "line": 258,
+            "category": "ui",
+            "text": "                $msg\t=\t'删除成功';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/info.class.php",
+            "line": 261,
+            "category": "ui",
+            "text": "                $msg\t=\t'删除失败';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/info.class.php",
+            "line": 269,
+            "category": "ui",
+            "text": "            $msg\t=\t'参数不正确';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/info.class.php",
+            "line": 275,
+            "category": "ui",
+            "text": "                $msg\t=\t'删除成功';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/info.class.php",
+            "line": 278,
+            "category": "ui",
+            "text": "                $msg\t=\t'删除失败';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/job.class.php",
+            "line": 42,
+            "category": "comment",
+            "text": "            if ($page) {\/\/分页"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/job.class.php",
+            "line": 125,
+            "category": "comment",
+            "text": "     * 职位列表tab数量统计"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/job.class.php",
+            "line": 136,
+            "category": "comment",
+            "text": "        \/\/ 招聘中"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/job.class.php",
+            "line": 139,
+            "category": "comment",
+            "text": "        \/\/ 待审"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/job.class.php",
+            "line": 144,
+            "category": "comment",
+            "text": "        \/\/ 下架"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/job.class.php",
+            "line": 166,
+            "category": "comment",
+            "text": "                \/\/ 职位海报模板列表"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/job.class.php",
+            "line": 174,
+            "category": "comment",
+            "text": "\t\t\t            \/\/ 普通分享链接"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/job.class.php",
+            "line": 177,
+            "category": "comment",
+            "text": "\t\t\t            \/\/ h5分享链接"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/job.class.php",
+            "line": 181,
+            "category": "comment",
+            "text": "\t\t\t        $data['shareDesc']   =  $this->GET_content_desc($jobsharedata['description']); \/\/ 描述"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/job.class.php",
+            "line": 211,
+            "category": "comment",
+            "text": "\t * 发布职位"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/job.class.php",
+            "line": 220,
+            "category": "ui",
+            "text": "                $this->render_json(-1, '套餐已用完，立即升级VIP');"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/job.class.php",
+            "line": 223,
+            "category": "ui",
+            "text": "\t\t\t\t$this->render_json(-2, '您的会员已到期');"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/job.class.php",
+            "line": 226,
+            "category": "ui",
+            "text": "\t\t\t    $this->render_json(-1, '请先完善基本资料');"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/job.class.php",
+            "line": 235,
+            "category": "ui",
+            "text": "\t\t\t        $msg[]='请先完成邮箱认证';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/job.class.php",
+            "line": 241,
+            "category": "ui",
+            "text": "\t\t\t        $msg[]='请先完成手机认证';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/job.class.php",
+            "line": 250,
+            "category": "ui",
+            "text": "\t\t\t        $msg[]='请先完成企业资质认证';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/job.class.php",
+            "line": 256,
+            "category": "ui",
+            "text": "\t\t\t        $msg[]='请先完成企业地图设置';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/job.class.php",
+            "line": 284,
+            "category": "ui",
+            "text": "                            $msg[] = '微信公众号未关注';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/job.class.php",
+            "line": 288,
+            "category": "ui",
+            "text": "                            $msg[] = '请先完成微信绑定';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/job.class.php",
+            "line": 345,
+            "category": "comment",
+            "text": "                \/\/ 投递要求-经验"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/job.class.php",
+            "line": 350,
+            "category": "comment",
+            "text": "\t\t        \/\/ 投递要求-学历"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/job.class.php",
+            "line": 357,
+            "category": "comment",
+            "text": "            $row['hy']        = $this->comInfo['hy']; \/\/ 添加职位，行业默认是企业行业"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/job.class.php",
+            "line": 360,
+            "category": "comment",
+            "text": "            $row['welfare']   = $this->comInfo['welfare']; \/\/ 添加职位，带企业添加的福利待遇"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/job.class.php",
+            "line": 394,
+            "category": "comment",
+            "text": "        \/\/ 默认联系方式"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/job.class.php",
+            "line": 418,
+            "category": "ui",
+            "text": "            $row['linkmsg']         =   '不向求职者展示联系方式';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/job.class.php",
+            "line": 486,
+            "category": "comment",
+            "text": "     * 工作地址"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/job.class.php",
+            "line": 499,
+            "category": "comment",
+            "text": "    \/\/ 发布、修改职位保存"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/job.class.php",
+            "line": 612,
+            "category": "ui",
+            "text": "                    $job['reserve_end']        =   $rv['end_time'] > 0 ? date('Y-m-d', $rv['end_time']) : '不限';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/job.class.php",
+            "line": 624,
+            "category": "ui",
+            "text": "                        $job['sx_time_n']      =   '不限';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/job.class.php",
+            "line": 682,
+            "category": "comment",
+            "text": "\t\/* 删除职位 *\/"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/job.class.php",
+            "line": 688,
+            "category": "ui",
+            "text": "\t\t\t$data['msg']\t=\t'参数不正确';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/job.class.php",
+            "line": 704,
+            "category": "comment",
+            "text": "                $data['error']\t=\t1;\/\/删除成功"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/job.class.php",
+            "line": 714,
+            "category": "comment",
+            "text": "    \/\/查找相关信息"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/job.class.php",
+            "line": 717,
+            "category": "comment",
+            "text": "        \/\/1：职位置顶  2：职位推荐  3：紧急招聘"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/job.class.php",
+            "line": 726,
+            "category": "comment",
+            "text": "     * 权益预警通知"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/job.class.php",
+            "line": 750,
+            "category": "comment",
+            "text": "    \/* 职位推广（置顶、推荐、紧急招聘） *\/"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/job.class.php",
+            "line": 756,
+            "category": "ui",
+            "text": "            $msg\t= '参数错误！';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/job.class.php",
+            "line": 775,
+            "category": "comment",
+            "text": "    \/* 取消职位推广（置顶、推荐、紧急招聘） *\/"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/job.class.php",
+            "line": 781,
+            "category": "ui",
+            "text": "            $msg\t= '参数错误！';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/job.class.php",
+            "line": 800,
+            "category": "comment",
+            "text": "\t * 刷新职位"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/job.class.php",
+            "line": 813,
+            "category": "comment",
+            "text": "\t        $jobs  =  $jobM -> getList(array('uid'=>$this->member['uid'],'state'=>1,'r_status'=>array('<>',2),'status'=>array('<>',1)),array('field'=>'id'));\/\/招聘中职位"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/job.class.php",
+            "line": 823,
+            "category": "ui",
+            "text": "\t        $this->render_json(1,'没有招聘中的职位');"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/job.class.php",
+            "line": 827,
+            "category": "comment",
+            "text": "\t    \/\/检查是否达到每日最大操作次数"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/job.class.php",
+            "line": 858,
+            "category": "comment",
+            "text": "\t\/*wxapp职位管理页面上架下架*\/"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/job.class.php",
+            "line": 864,
+            "category": "ui",
+            "text": "\t\t    $this->render_json(3, '参数不正确');"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/job.class.php",
+            "line": 879,
+            "category": "ui",
+            "text": "\t\t\t\t    $msg    =   '会员已到期，无法上架，请先升级会员！';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/job.class.php",
+            "line": 884,
+            "category": "ui",
+            "text": "\t\t\t\t        $msg    =   '您好，目前不支持上架职位';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/job.class.php",
+            "line": 936,
+            "category": "ui",
+            "text": "                    $payDetail  =   '上架职位，消耗上架套餐数量：1';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/job.class.php",
+            "line": 946,
+            "category": "ui",
+            "text": "                $logContent =   '职位更新：调整职位招聘状态';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/job.class.php",
+            "line": 947,
+            "category": "ui",
+            "text": "                $logDetail  =   $_POST['status'] == 0 ? '调整职位《'.$jobInfo['name'].'》招聘状态：下架->上架' : '调整职位('.$jobInfo['name'].')招聘状态：上架->下架';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/job.class.php",
+            "line": 952,
+            "category": "ui",
+            "text": "\t\t\t    $this->render_json(2, '设置失败');"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/job.class.php",
+            "line": 957,
+            "category": "comment",
+            "text": "    \/\/ 通过职位类别，查询职位描述样本"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/job.class.php",
+            "line": 980,
+            "category": "comment",
+            "text": "     * 预约刷新"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/job.class.php",
+            "line": 988,
+            "category": "ui",
+            "text": "            $msg\t= '参数错误！';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/job.class.php",
+            "line": 1019,
+            "category": "ui",
+            "text": "            $this->render_json(1, '参数错误');"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/msg.class.php",
+            "line": 5,
+            "category": "comment",
+            "text": "\t\/* 求职咨询 *\/"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/msg.class.php",
+            "line": 18,
+            "category": "comment",
+            "text": "\t\t\tif($page){\/\/分页"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/msg.class.php",
+            "line": 45,
+            "category": "comment",
+            "text": "\t * 企业咨询消息删除"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/msg.class.php",
+            "line": 52,
+            "category": "ui",
+            "text": "            $data['errmsg'] =   '参数不正确';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/msg.class.php",
+            "line": 61,
+            "category": "ui",
+            "text": "                $logContent =   '消息处理：删除求职咨询（ID：'.$_POST['id'].'）';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/msg.class.php",
+            "line": 65,
+            "category": "ui",
+            "text": "                $data['errmsg'] =   '删除成功！';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/msg.class.php",
+            "line": 69,
+            "category": "ui",
+            "text": "                $data['errmsg'] =   '删除失败！';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/msg.class.php",
+            "line": 81,
+            "category": "ui",
+            "text": "            $data['errmsg'] =   '参数不正确';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/msg.class.php",
+            "line": 96,
+            "category": "ui",
+            "text": "                $logContent =   '消息处理：回复求职咨询';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/msg.class.php",
+            "line": 97,
+            "category": "ui",
+            "text": "                $logDetail  =   '回复求职咨询：'.$_POST['reply'];"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/msg.class.php",
+            "line": 101,
+            "category": "ui",
+            "text": "                $data['errmsg'] =   '回复成功';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/msg.class.php",
+            "line": 104,
+            "category": "ui",
+            "text": "                $data['errmsg'] =   '回复失败';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/msg.class.php",
+            "line": 109,
+            "category": "comment",
+            "text": "\t\/\/消息"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/msg.class.php",
+            "line": 112,
+            "category": "comment",
+            "text": "\t    \/\/ 聊天"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/msg.class.php",
+            "line": 115,
+            "category": "comment",
+            "text": "\t\t\/\/ 对我感兴趣（查看职位）"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/msg.class.php",
+            "line": 120,
+            "category": "comment",
+            "text": "   \t\t\/\/申请职位"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/msg.class.php",
+            "line": 122,
+            "category": "comment",
+            "text": " \t\t\/\/系统消息"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/msg.class.php",
+            "line": 127,
+            "category": "comment",
+            "text": "   \t \t\/\/求职者咨询"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/msg.class.php",
+            "line": 158,
+            "category": "ui",
+            "text": "\t *系统消息查询"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/msg.class.php",
+            "line": 162,
+            "category": "comment",
+            "text": "    \t\/\/存在执行这段代码"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/msg.class.php",
+            "line": 180,
+            "category": "comment",
+            "text": "        \tif($page){\/\/分页"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/msg.class.php",
+            "line": 196,
+            "category": "comment",
+            "text": "\t * 系统消息删除"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/msg.class.php",
+            "line": 202,
+            "category": "ui",
+            "text": "            $data['errmsg']\t=\t'参数不正确';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/msg.class.php",
+            "line": 208,
+            "category": "ui",
+            "text": "                $logContent =   '消息处理：删除系统消息（ID：'.$_POST['id'].'）';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/msg.class.php",
+            "line": 212,
+            "category": "ui",
+            "text": "                $data['errmsg']\t=\t'删除成功！';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/msg.class.php",
+            "line": 215,
+            "category": "ui",
+            "text": "                $data['errmsg']\t=\t'删除失败！';"
         },
         {
             "file": "api\/wxapp\/member\/com\/part.class.php",
-            "line": 449,
+            "line": 9,
             "category": "comment",
-            "text": "                            $return['msg']      =   yun_at('wap_01294');\/\/ 苹果关闭支付功能"
+            "text": "     * 兼职报名列表"
         },
         {
-            "file": "api\/wxapp\/member\/com\/zpdata.class.php",
-            "line": 46,
-            "category": "i18n_wrapped",
-            "text": "        $list[] = array('id' => 'ksj', 'title' => $this->zpdataTitle('member_com_00134'), 'tc_num' => $rating['job_num'], 'num' => $statis['job_num'], 'unit' => $this->zpdataUnit('个'));"
+            "file": "api\/wxapp\/member\/com\/part.class.php",
+            "line": 38,
+            "category": "comment",
+            "text": "     * 删除兼职报名"
         },
         {
-            "file": "api\/wxapp\/member\/com\/zpdata.class.php",
+            "file": "api\/wxapp\/member\/com\/part.class.php",
+            "line": 55,
+            "category": "comment",
+            "text": "     * 简历列表"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/part.class.php",
+            "line": 151,
+            "category": "comment",
+            "text": "     * 兼职列表tab数量统计"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/part.class.php",
+            "line": 165,
+            "category": "comment",
+            "text": "        \/\/ 招聘中"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/part.class.php",
+            "line": 172,
+            "category": "comment",
+            "text": "        \/\/待审"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/part.class.php",
+            "line": 174,
+            "category": "comment",
+            "text": "        \/\/ 已到期"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/part.class.php",
+            "line": 179,
+            "category": "comment",
+            "text": "        \/\/ 已下架"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/part.class.php",
+            "line": 243,
+            "category": "ui",
+            "text": "            $this->render_json(3, '请完善信息');"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/part.class.php",
+            "line": 254,
+            "category": "ui",
+            "text": "                $msg[]          =   '请先完成邮箱认证';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/part.class.php",
+            "line": 261,
+            "category": "ui",
+            "text": "                $msg[]          =   '请先完成手机认证';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/part.class.php",
+            "line": 271,
+            "category": "ui",
+            "text": "                $msg[]          =   '请先完成企业资质认证';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/part.class.php",
+            "line": 277,
+            "category": "ui",
+            "text": "                $msg[]          =   '请先完成企业地图设置';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/part.class.php",
+            "line": 304,
+            "category": "ui",
+            "text": "                        $msg[] = '微信公众号未关注';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/part.class.php",
+            "line": 306,
+            "category": "ui",
+            "text": "                        $msg[] = '请先完成微信绑定';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/part.class.php",
+            "line": 325,
+            "category": "ui",
+            "text": "                $arr['msg']     =   '您的会员已到期 ';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/part.class.php",
+            "line": 347,
+            "category": "comment",
+            "text": "     * 刷新兼职职位"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/part.class.php",
+            "line": 356,
+            "category": "ui",
+            "text": "            $this->render_json(1, '没有招聘中的职位');"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/part.class.php",
+            "line": 361,
+            "category": "comment",
+            "text": "        \/\/检查是否达到每日最大操作次数"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/part.class.php",
+            "line": 397,
+            "category": "ui",
+            "text": "            $this->render_json(2, '没有该申请');"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/part.class.php",
+            "line": 406,
+            "category": "ui",
+            "text": "            $this->render_json(2, '查看失败');"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/part.class.php",
+            "line": 411,
+            "category": "comment",
+            "text": "     * 职位管理页面上架下架"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/part.class.php",
+            "line": 417,
+            "category": "ui",
+            "text": "            $this->render_json(3, '参数不正确');"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/part.class.php",
+            "line": 431,
+            "category": "ui",
+            "text": "                    $msg    =   '会员已到期，无法上架，请先升级会员！';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/part.class.php",
+            "line": 435,
+            "category": "comment",
+            "text": "                        $msg    =   '您好，目前不支持上架职位';\/\/ 苹果关闭支付功能"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/part.class.php",
+            "line": 461,
+            "category": "comment",
+            "text": "                            $return['msg']      =   '您好，目前不支持上架职位';\/\/ 苹果关闭支付功能"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/part.class.php",
+            "line": 488,
+            "category": "ui",
+            "text": "                    $payDetail  =   '上架兼职，消耗上架套餐数量：1';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/part.class.php",
+            "line": 498,
+            "category": "ui",
+            "text": "                $logContent =   '职位更新：调整兼职招聘状态';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/part.class.php",
+            "line": 499,
+            "category": "ui",
+            "text": "                $logDetail  =   $_POST['status'] == 0 ? '调整兼职《'.$part['name'].'》招聘状态：下架->上架' : '调整兼职('.$part['name'].')招聘状态：上架->下架';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/part.class.php",
+            "line": 504,
+            "category": "ui",
+            "text": "                $this->render_json(2, '设置失败');"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/resume.class.php",
+            "line": 5,
+            "category": "comment",
+            "text": "     * 申请职位的人才"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/resume.class.php",
+            "line": 34,
+            "category": "comment",
+            "text": "\t\tif($page){\/\/分页"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/resume.class.php",
+            "line": 55,
+            "category": "ui",
+            "text": "\t\t\t$data['msg']\t=\t'参数不正确';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/resume.class.php",
+            "line": 72,
+            "category": "ui",
+            "text": "\t\t\t\t$data['msg']\t=\t'设置成功';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/resume.class.php",
+            "line": 75,
+            "category": "ui",
+            "text": "\t\t\t\t$data['msg']\t=\t'设置失败';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/resume.class.php",
+            "line": 84,
+            "category": "ui",
+            "text": "\t\t\t$data['msg']='参数不正确';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/resume.class.php",
+            "line": 90,
+            "category": "ui",
+            "text": "\t\t\t\t$data['msg']\t=\t'删除成功';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/resume.class.php",
+            "line": 93,
+            "category": "ui",
+            "text": "\t\t\t\t$data['msg']\t=\t'删除失败';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/resume.class.php",
+            "line": 119,
+            "category": "comment",
+            "text": "\t * 已下载简历的人才"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/resume.class.php",
+            "line": 133,
+            "category": "comment",
+            "text": "\t\tif($order){\/\/排序"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/resume.class.php",
+            "line": 140,
+            "category": "comment",
+            "text": "\t\tif($page){\/\/分页"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/resume.class.php",
+            "line": 160,
+            "category": "ui",
+            "text": "\t\t\t$data['msg']\t=\t'参数不正确';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/resume.class.php",
+            "line": 173,
+            "category": "comment",
+            "text": "    \/\/6.1已废弃"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/resume.class.php",
+            "line": 190,
+            "category": "comment",
+            "text": "    \/\/ 查询备注"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/resume.class.php",
+            "line": 208,
+            "category": "comment",
+            "text": "        if ($page) { \/\/ 分页"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/resume.class.php",
+            "line": 237,
+            "category": "ui",
+            "text": "\t\t\t$data['msg']\t=\t'参数不正确';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/resume.class.php",
+            "line": 250,
+            "category": "comment",
+            "text": "\t\/\/6.1已废弃"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/resume.class.php",
+            "line": 268,
+            "category": "comment",
+            "text": "\t * 已邀请人才"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/resume.class.php",
+            "line": 283,
+            "category": "comment",
+            "text": "\t\tif($order){\/\/排序"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/resume.class.php",
+            "line": 289,
+            "category": "comment",
+            "text": "        if($page){\/\/分页"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/resume.class.php",
+            "line": 303,
+            "category": "comment",
+            "text": "    \/*wxapp面试邀请页面-面试通知详情页*\/"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/resume.class.php",
+            "line": 324,
+            "category": "ui",
+            "text": "\t\t\t$data['msg']\t=\t'参数不正确';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/resume.class.php",
+            "line": 338,
+            "category": "comment",
+            "text": "\t\/* wxapp浏览简历记录 *\/"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/resume.class.php",
+            "line": 348,
+            "category": "comment",
+            "text": "\t\tif($page){\/\/分页"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/resume.class.php",
+            "line": 366,
+            "category": "comment",
+            "text": "\t\/* wxapp删除浏览简历记录 *\/"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/resume.class.php",
+            "line": 371,
+            "category": "ui",
+            "text": "\t\t\t$data['msg']\t=\t'参数不正确';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/resume.class.php",
+            "line": 384,
+            "category": "comment",
+            "text": "\t\/* wxapp谁看过我记录 *\/"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/resume.class.php",
+            "line": 396,
+            "category": "comment",
+            "text": "\t\tif($page){\/\/分页"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/resume.class.php",
+            "line": 412,
+            "category": "comment",
+            "text": "\t\/* wxapp删除谁看过我记录 *\/"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/resume.class.php",
+            "line": 417,
+            "category": "ui",
+            "text": "\t\t\t$data['msg']\t=\t'参数不正确';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/resume.class.php",
+            "line": 442,
+            "category": "comment",
+            "text": "\t\t\/\/应聘简历数"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/resume.class.php",
+            "line": 451,
+            "category": "comment",
+            "text": "\t\t\/\/面试邀请数"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/resume.class.php",
+            "line": 456,
+            "category": "comment",
+            "text": "\t\t\/\/浏览简历数"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/resume.class.php",
+            "line": 461,
+            "category": "comment",
+            "text": "\t    \/\/收藏简历数"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/resume.class.php",
+            "line": 466,
+            "category": "comment",
+            "text": "\t    \/\/下载简历数"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/resume.class.php",
+            "line": 471,
+            "category": "comment",
+            "text": "\t    \/\/关注我的人才数"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/resume.class.php",
+            "line": 476,
+            "category": "comment",
+            "text": "\t    \/\/被浏览的职位数"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/resume.class.php",
+            "line": 496,
+            "category": "comment",
+            "text": "\t\tif($page){\/\/分页"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/reward.class.php",
+            "line": 6,
+            "category": "comment",
+            "text": "     * 兑换记录列表"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/set.class.php",
+            "line": 17,
+            "category": "comment",
+            "text": "        \/\/ 首先根据企业表的认证状态来判断"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/set.class.php",
+            "line": 28,
+            "category": "comment",
+            "text": "        \/\/ 小程序里面因安全域名限制，在开启oss的情况下，委托书\/承诺函范本上传时服务器也传了一份，这里直接用服务器上的"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/set.class.php",
+            "line": 49,
+            "category": "comment",
+            "text": "\t\/\/上传企业认证图片处理返回url"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/set.class.php",
+            "line": 59,
+            "category": "comment",
+            "text": "\t\t\t\t    \/\/ pc端上传"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/set.class.php",
+            "line": 78,
+            "category": "ui",
+            "text": "\t\t    $msg \t= \t'请选择图片';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/set.class.php",
+            "line": 84,
+            "category": "comment",
+            "text": "\t\/\/上传企业资质"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/set.class.php",
+            "line": 136,
+            "category": "comment",
+            "text": "\t\t\/\/判断是否上传必要资质"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/set.class.php",
+            "line": 138,
+            "category": "ui",
+            "text": "        $msg        =   '必须上传';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/set.class.php",
+            "line": 147,
+            "category": "ui",
+            "text": "            $msg        .=  '经办人身份证';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/set.class.php",
+            "line": 155,
+            "category": "ui",
+            "text": "            $msg        .=  '委托函';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/set.class.php",
+            "line": 162,
+            "category": "comment",
+            "text": "        \/\/判断是否上传必要资质end"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/set.class.php",
+            "line": 184,
+            "category": "ui",
+            "text": "                $msg    =   '更新成功！';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/set.class.php",
+            "line": 186,
+            "category": "ui",
+            "text": "\t\t\t    $msg    =   !empty($err['msg']) ? $err['msg'] : '更新失败！';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/set.class.php",
             "line": 193,
-            "category": "i18n_wrapped",
-            "text": "        $list[] = array('id' => 'wkg', 'title' => $this->zpdataTitle('member_com_00371'), 'num' => $look_resume_num, 'unit' => $this->zpdataUnit('人'), 'jzr' => $look_resume_jzr, 'wap_url' => Url('wap') . 'member\/index.php?c=resumecolumn&page=1&type=3', 'page' => 'pson\/pages\/commember\/resumecolumn\/index?type=3');"
+            "category": "comment",
+            "text": "\t\/\/手机认证,发送短信；"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/set.class.php",
+            "line": 209,
+            "category": "ui",
+            "text": "            $logContent =   '账号认证：发送手机认证验证码';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/set.class.php",
+            "line": 210,
+            "category": "ui",
+            "text": "            $logDetail  =   '手机认证，发送短信验证码；认证手机号码：'.$moblie;"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/set.class.php",
+            "line": 236,
+            "category": "ui",
+            "text": "\t\t\t\t$this\t->\trender_json(2,'手机号码已存在，请重新填写新号码','');"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/set.class.php",
+            "line": 246,
+            "category": "comment",
+            "text": "\t\t\t\t    \/\/ 用户名和手机号重复，修改手机号会修改用户名，需要重新生成token;"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/set.class.php",
+            "line": 253,
+            "category": "ui",
+            "text": "\t\t\t\t    $this\t->\trender_json(0,'手机绑定成功',$return);"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/set.class.php",
+            "line": 256,
+            "category": "ui",
+            "text": "\t\t\t\t   $this\t->\trender_json(4,'短信验证码已过期，请重新发送！');"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/set.class.php",
+            "line": 259,
+            "category": "ui",
+            "text": "\t\t\t\t\t$this\t->\trender_json(3,'短信验证码不正确！');"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/set.class.php",
+            "line": 261,
+            "category": "ui",
+            "text": "\t\t\t\t\t$this\t->\trender_json(2,'请先获取短信验证码！');"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/set.class.php",
+            "line": 263,
+            "category": "ui",
+            "text": "\t\t\t\t\t$this\t->\trender_json(2,'手机绑定失败！');"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/set.class.php",
+            "line": 274,
+            "category": "ui",
+            "text": "                    $data['errmsg']\t=\t'验证码不正确';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/set.class.php",
+            "line": 289,
+            "category": "ui",
+            "text": "\t\t\t\t$data['errmsg']\t=\t'邮箱已存在，请重新填写邮箱';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/set.class.php",
+            "line": 300,
+            "category": "ui",
+            "text": "\t\t\t\t\t$data['errmsg']\t=\t'邮箱绑定成功';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/set.class.php",
+            "line": 303,
+            "category": "ui",
+            "text": "\t\t\t\t\t$data['errmsg']    \t\t=    \t'邮件没有配置，请联系管理员！';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/set.class.php",
+            "line": 306,
+            "category": "ui",
+            "text": "\t\t\t\t\t$data['errmsg']\t\t\t=\t\t'邮件通知已关闭，请联系管理员';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/set.class.php",
+            "line": 309,
+            "category": "ui",
+            "text": "\t\t\t\t\t$data['errmsg']\t=\t'操作错误';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/set.class.php",
+            "line": 358,
+            "category": "ui",
+            "text": "\t\t\t$msg\t=\t'修改失败';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/set.class.php",
+            "line": 429,
+            "category": "ui",
+            "text": "            $logContent =   '账号认证：解除绑定';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/set.class.php",
+            "line": 430,
+            "category": "ui",
+            "text": "            $logDetail  =   $uni.'解除绑定';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/set.class.php",
+            "line": 436,
+            "category": "comment",
+            "text": "\t\/\/ 查询申请记录"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/set.class.php",
+            "line": 444,
+            "category": "ui",
+            "text": "\t        $this->render_json(1,'您已申请了注销账号');"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/set.class.php",
+            "line": 450,
+            "category": "comment",
+            "text": "\t\/\/注销账号申请"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/set.class.php",
+            "line": 469,
+            "category": "comment",
+            "text": "    \/\/手机注销账号申请"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/set.class.php",
+            "line": 499,
+            "category": "comment",
+            "text": "\t * 邀请模板列表"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/set.class.php",
+            "line": 514,
+            "category": "comment",
+            "text": "\t\tif($page){\/\/分页"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/set.class.php",
+            "line": 537,
+            "category": "comment",
+            "text": "     * 删除模板"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/set.class.php",
+            "line": 568,
+            "category": "ui",
+            "text": "\t\t\t\t$msg\t=\t'最多可以创建'.$this->config['com_yqmb_num'].'个模板';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/set.class.php",
+            "line": 574,
+            "category": "ui",
+            "text": "\t\t\t\t$msg\t=\t'模板不存在';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/set.class.php",
+            "line": 615,
+            "category": "comment",
+            "text": "     * 工作地址列表"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/set.class.php",
+            "line": 731,
+            "category": "ui",
+            "text": "            $msg            =   $result ? '工作地址更新成功' : '工作地址更新失败';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/set.class.php",
+            "line": 738,
+            "category": "ui",
+            "text": "            $msg            =   $result ? '工作地址添加成功' : '工作地址添加失败';"
         },
         {
             "file": "api\/wxapp\/member\/com\/zpdata.class.php",
-            "line": 201,
-            "category": "i18n_wrapped",
-            "text": "        $list[] = array('id' => 'kgw', 'title' => $this->zpdataTitle('member_com_00372'), 'num' => $look_job_num, 'unit' => $this->zpdataUnit('人'), 'jzr' => $look_job_jzr, 'wap_url' => Url('wap') . 'member\/index.php?c=look_job', 'page' => 'pson\/pages\/commember\/lookjob\/index');"
+            "line": 9,
+            "category": "comment",
+            "text": "     * 查询剩余权益使用量"
         },
         {
             "file": "api\/wxapp\/member\/com\/zpdata.class.php",
-            "line": 213,
-            "category": "i18n_wrapped",
-            "text": "        $list[] = array('id' => 'xzjl', 'title' => $this->zpdataTitle('wap_00451'), 'num' => $down_num_sum, 'unit' => $this->zpdataUnit('人'), 'jzr' => $down_jzr, 'wap_url' => Url('wap') . 'member\/index.php?c=resumecolumn', 'page' => 'pson\/pages\/commember\/resumecolumn\/index');"
+            "line": 37,
+            "category": "comment",
+            "text": "        \/\/ 可上架职位数"
         },
         {
             "file": "api\/wxapp\/member\/com\/zpdata.class.php",
-            "line": 220,
-            "category": "i18n_wrapped",
-            "text": "        $list[] = array('id' => 'tdjl', 'title' => $this->zpdataTitle('wap_com_00235'), 'num' => $td_num, 'unit' => $this->zpdataUnit('人'), 'jzr' => $td_jzr, 'wap_url' => Url('wap') . 'member\/index.php?c=hr', 'page' => 'pson\/pages\/commember\/hr\/index');"
+            "line": 38,
+            "category": "ui",
+            "text": "        $list[] = array('title' => '可上架职位数', 'tc_num' => $rating['job_num'], 'num' => $statis['job_num'], 'unit' => '个');"
         },
         {
             "file": "api\/wxapp\/member\/com\/zpdata.class.php",
+            "line": 53,
+            "category": "ui",
+            "text": "                $refreshUnit = '次\/天';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/zpdata.class.php",
+            "line": 61,
+            "category": "ui",
+            "text": "                $inviteUnit = '次\/天';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/zpdata.class.php",
+            "line": 69,
+            "category": "ui",
+            "text": "                $downUnit = '份\/天';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/zpdata.class.php",
+            "line": 77,
+            "category": "ui",
+            "text": "                $zphUnit = '次\/天';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/zpdata.class.php",
+            "line": 85,
+            "category": "ui",
+            "text": "                $topUnit = '天';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/zpdata.class.php",
+            "line": 93,
+            "category": "ui",
+            "text": "                $urgentUnit = '天';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/zpdata.class.php",
+            "line": 101,
+            "category": "ui",
+            "text": "                $recUnit = '天';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/zpdata.class.php",
+            "line": 106,
+            "category": "ui",
+            "text": "            $refreshUnit = '次';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/zpdata.class.php",
+            "line": 109,
+            "category": "ui",
+            "text": "            $inviteUnit = '次';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/zpdata.class.php",
+            "line": 112,
+            "category": "ui",
+            "text": "            $downUnit = '份';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/zpdata.class.php",
+            "line": 115,
+            "category": "ui",
+            "text": "            $zphUnit = '次';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/zpdata.class.php",
+            "line": 118,
+            "category": "ui",
+            "text": "            $topUnit = '天';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/zpdata.class.php",
+            "line": 121,
+            "category": "ui",
+            "text": "            $urgentUnit = '天';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/zpdata.class.php",
+            "line": 124,
+            "category": "ui",
+            "text": "            $recUnit = '天';"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/zpdata.class.php",
+            "line": 127,
+            "category": "comment",
+            "text": "        \/\/ 可刷新职位数"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/zpdata.class.php",
+            "line": 128,
+            "category": "ui",
+            "text": "        $list[] = array('title' => '可刷新职位数', 'tc_num' => $refreshTcNum, 'num' => $refreshNum, 'unit' => $refreshUnit);"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/zpdata.class.php",
+            "line": 130,
+            "category": "comment",
+            "text": "        \/\/ 可邀请面试数"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/zpdata.class.php",
+            "line": 131,
+            "category": "ui",
+            "text": "        $list[] = array('title' => '可邀请面试数', 'tc_num' => $inviteTcNum, 'num' => $inviteNum, 'unit' => $inviteUnit);"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/zpdata.class.php",
+            "line": 133,
+            "category": "comment",
+            "text": "        \/\/ 可下载简历数"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/zpdata.class.php",
+            "line": 134,
+            "category": "ui",
+            "text": "        $list[] = array('title' => '可下载简历数', 'tc_num' => $downTcNum, 'num' => $downNum, 'unit' => $downUnit);"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/zpdata.class.php",
+            "line": 136,
+            "category": "comment",
+            "text": "        \/\/ 置顶天数"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/zpdata.class.php",
+            "line": 137,
+            "category": "ui",
+            "text": "        $list[] = array('title' => '置顶天数', 'tc_num' => $topTcNum, 'num' => $topNum, 'unit' => $topUnit);"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/zpdata.class.php",
+            "line": 139,
+            "category": "comment",
+            "text": "        \/\/ 紧急天数"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/zpdata.class.php",
+            "line": 140,
+            "category": "ui",
+            "text": "        $list[] = array('title' => '紧急天数', 'tc_num' => $urgentTcNum, 'num' => $urgentNum, 'unit' => $urgentUnit);"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/zpdata.class.php",
+            "line": 142,
+            "category": "comment",
+            "text": "        \/\/ 推荐天数"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/zpdata.class.php",
+            "line": 143,
+            "category": "ui",
+            "text": "        $list[] = array('title' => '推荐天数', 'tc_num' => $recTcNum, 'num' => $recNum, 'unit' => $recUnit);"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/zpdata.class.php",
+            "line": 145,
+            "category": "comment",
+            "text": "        \/\/ 招聘会报名次数"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/zpdata.class.php",
+            "line": 146,
+            "category": "ui",
+            "text": "        $list[] = array('title' => '招聘会报名次数', 'tc_num' => $zphTcNum, 'num' => $zphNum, 'unit' => $zphUnit);"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/zpdata.class.php",
+            "line": 148,
+            "category": "comment",
+            "text": "            \/\/ 计算进度条宽度"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/zpdata.class.php",
+            "line": 150,
+            "category": "comment",
+            "text": "                $val['width'] = '100'; \/\/ 不限量"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/zpdata.class.php",
+            "line": 153,
+            "category": "comment",
+            "text": "                    $val['width'] = '0'; \/\/ 套餐数量不足"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/zpdata.class.php",
+            "line": 156,
+            "category": "comment",
+            "text": "                        $val['width'] = bcmul(bcdiv($val['num'], $val['tc_num'], 2), 100); \/\/ 100-(可用数量\/套餐数量*100) 计算剩余宽度"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/zpdata.class.php",
+            "line": 158,
+            "category": "comment",
+            "text": "                        $val['width'] = '0'; \/\/ 套餐已被使用完"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/zpdata.class.php",
+            "line": 168,
+            "category": "comment",
+            "text": "     * 获取今日数据"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/zpdata.class.php",
+            "line": 181,
+            "category": "comment",
+            "text": "        \/\/ 我看过\/比昨日"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/zpdata.class.php",
+            "line": 187,
+            "category": "ui",
+            "text": "        $list[] = array('title' => '我看过', 'num' => $look_resume_num, 'unit' => '人', 'jzr' => $look_resume_jzr, 'wap_url' => Url('wap') . 'member\/index.php?c=resumecolumn&page=1&type=3', 'page' => 'pson\/pages\/commember\/resumecolumn\/index?type=3');"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/zpdata.class.php",
+            "line": 189,
+            "category": "comment",
+            "text": "        \/\/ 看过我\/比昨日"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/zpdata.class.php",
+            "line": 195,
+            "category": "ui",
+            "text": "        $list[] = array('title' => '看过我', 'num' => $look_job_num, 'unit' => '人', 'jzr' => $look_job_jzr, 'wap_url' => Url('wap') . 'member\/index.php?c=look_job', 'page' => 'pson\/pages\/commember\/lookjob\/index');"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/zpdata.class.php",
+            "line": 197,
+            "category": "comment",
+            "text": "        \/\/ 下载简历\/比昨日"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/zpdata.class.php",
+            "line": 207,
+            "category": "ui",
+            "text": "        $list[] = array('title' => '下载简历', 'num' => $down_num_sum, 'unit' => '人', 'jzr' => $down_jzr, 'wap_url' => Url('wap') . 'member\/index.php?c=resumecolumn', 'page' => 'pson\/pages\/commember\/resumecolumn\/index');"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/zpdata.class.php",
+            "line": 209,
+            "category": "comment",
+            "text": "        \/\/ 投递简历\/比昨日"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/zpdata.class.php",
+            "line": 214,
+            "category": "ui",
+            "text": "        $list[] = array('title' => '投递简历', 'num' => $td_num, 'unit' => '人', 'jzr' => $td_jzr, 'wap_url' => Url('wap') . 'member\/index.php?c=hr', 'page' => 'pson\/pages\/commember\/hr\/index');"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/zpdata.class.php",
+            "line": 216,
+            "category": "comment",
+            "text": "        \/\/ 邀请面试\/比昨日"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/zpdata.class.php",
+            "line": 221,
+            "category": "ui",
+            "text": "        $list[] = array('title' => '邀请面试', 'num' => $invite_num, 'unit' => '人', 'jzr' => $invite_jzr, 'wap_url' => Url('wap') . 'member\/index.php?c=invite', 'page' => 'pson\/pages\/commember\/invite\/index');"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/zpdata.class.php",
+            "line": 231,
+            "category": "comment",
+            "text": "     * 较昨日百分比计算"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/zpdata.class.php",
+            "line": 232,
+            "category": "comment",
+            "text": "     * @param $tData 今日数据"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/zpdata.class.php",
+            "line": 233,
+            "category": "comment",
+            "text": "     * @param $yData 昨日数据"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/zpdata.class.php",
+            "line": 243,
+            "category": "comment",
+            "text": "        \/\/     \/\/ (今日数据-昨日数据)\/昨日数据*100"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/zpdata.class.php",
+            "line": 249,
+            "category": "comment",
+            "text": "        return $tData - $yData; \/\/ 计算差集"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/zpdata.class.php",
+            "line": 253,
+            "category": "comment",
+            "text": "     * 获取周数据"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/zpdata.class.php",
+            "line": 262,
+            "category": "comment",
+            "text": "            $start = strtotime('-1 month', $today); \/\/ 近一月"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/zpdata.class.php",
+            "line": 264,
+            "category": "comment",
+            "text": "            $days  = $times * 7 - 1; \/\/ 减少1天，包含上当天"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/zpdata.class.php",
+            "line": 265,
+            "category": "comment",
+            "text": "            $start = strtotime('-' . $days . ' day', $today); \/\/ 包含今天，共七天"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/zpdata.class.php",
+            "line": 267,
+            "category": "comment",
+            "text": "        $dates = date('Y.m.d', $start) . '-' . date('Y.m.d', $today); \/\/ 前台用来展示时间段"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/zpdata.class.php",
+            "line": 274,
+            "category": "comment",
+            "text": "        \/\/ 查看\/沟通"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/zpdata.class.php",
+            "line": 275,
+            "category": "comment",
+            "text": "        \/\/ 我看过"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/zpdata.class.php",
+            "line": 279,
+            "category": "ui",
+            "text": "        $lookData[] = array('title' => '我看过', 'num' => $look_resume_num, 'wap_url' => Url('wap') . 'member\/index.php?c=resumecolumn&page=1&type=3', 'page' => 'pson\/pages\/commember\/resumecolumn\/index?type=3');"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/zpdata.class.php",
+            "line": 280,
+            "category": "comment",
+            "text": "        \/\/ 看过我"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/zpdata.class.php",
+            "line": 284,
+            "category": "ui",
+            "text": "        $lookData[] = array('title' => '看过我', 'num' => $look_job_num, 'wap_url' => Url('wap') . 'member\/index.php?c=look_job', 'page' => 'pson\/pages\/commember\/lookjob\/index');"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/zpdata.class.php",
+            "line": 285,
+            "category": "comment",
+            "text": "        \/\/ 我登录"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/zpdata.class.php",
+            "line": 288,
+            "category": "ui",
+            "text": "        $lookData[] = array('title' => '我登录', 'num' => $login_num, 'wap_url' => '', 'page' => '');"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/zpdata.class.php",
+            "line": 290,
+            "category": "comment",
+            "text": "        \/\/ 简历及联系方式"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/zpdata.class.php",
+            "line": 291,
+            "category": "comment",
+            "text": "        \/\/ 下载简历"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/zpdata.class.php",
+            "line": 297,
+            "category": "ui",
+            "text": "        $resumeData[] = array('title' => '下载简历', 'num' => $down_num_sum, 'wap_url' => Url('wap') . 'member\/index.php?c=resumecolumn', 'page' => 'pson\/pages\/commember\/resumecolumn\/index');"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/zpdata.class.php",
+            "line": 298,
+            "category": "comment",
+            "text": "        \/\/ 投递简历"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/zpdata.class.php",
+            "line": 301,
+            "category": "ui",
+            "text": "        $resumeData[] = array('title' => '投递简历', 'num' => $td_num, 'wap_url' => Url('wap') . 'member\/index.php?c=hr', 'page' => 'pson\/pages\/commember\/hr\/index');"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/zpdata.class.php",
+            "line": 302,
+            "category": "comment",
+            "text": "        \/\/ 合计"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/zpdata.class.php",
+            "line": 303,
+            "category": "ui",
+            "text": "        array_unshift($resumeData, array('title' => '合计', 'num' => intval($td_num)));"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/zpdata.class.php",
+            "line": 305,
+            "category": "comment",
+            "text": "        \/\/ 面试"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/zpdata.class.php",
+            "line": 306,
+            "category": "comment",
+            "text": "        \/\/ 邀请面试"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/zpdata.class.php",
+            "line": 309,
+            "category": "ui",
+            "text": "        $msData[] = array('title' => '邀请面试', 'num' => $invite_num, 'wap_url' => Url('wap') . 'member\/index.php?c=invite', 'page' => 'pson\/pages\/commember\/invite\/index');"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/zpdata.class.php",
+            "line": 310,
+            "category": "comment",
+            "text": "        \/\/ 接受面试"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/zpdata.class.php",
+            "line": 313,
+            "category": "comment",
+            "text": "        \/\/ $msData[] = array('title' => '接受面试', 'num' => $accept_num, 'wap_url' => Url('wap') . 'member\/index.php?c=invite', 'page' => 'pson\/pages\/commember\/invite\/index');"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/zpdata.class.php",
+            "line": 318,
+            "category": "comment",
+            "text": "    \/\/ 判断后台企业设置-招聘数据开关是否开启"
+        },
+        {
+            "file": "api\/wxapp\/member\/com\/zpdata.class.php",
+            "line": 322,
+            "category": "ui",
+            "text": "            $this->render_json(403, '招聘数据未开放');"
+        },
+        {
+            "file": "api\/wxapp\/member\/com.class.php",
+            "line": 5,
+            "category": "comment",
+            "text": "     * 剩余套餐数量"
+        },
+        {
+            "file": "api\/wxapp\/member\/com.class.php",
+            "line": 6,
+            "category": "comment",
+            "text": "     * 会员套餐过期检测，并处理"
+        },
+        {
+            "file": "api\/wxapp\/member\/com.class.php",
+            "line": 18,
+            "category": "comment",
+            "text": "     * 时间会员每日最大操作数量检测"
+        },
+        {
+            "file": "api\/wxapp\/model\/gongzhao.class.php",
+            "line": 9,
+            "category": "comment",
+            "text": "     * 公招列表"
+        },
+        {
+            "file": "api\/wxapp\/model\/gongzhao.class.php",
+            "line": 16,
+            "category": "comment",
+            "text": "        \/\/公招开始时间条件"
+        },
+        {
+            "file": "api\/wxapp\/model\/gongzhao.class.php",
+            "line": 27,
+            "category": "comment",
+            "text": "        \/\/ 处理分站查询条件"
+        },
+        {
+            "file": "api\/wxapp\/model\/gongzhao.class.php",
+            "line": 59,
+            "category": "comment",
+            "text": "     * 公告详情"
+        },
+        {
+            "file": "api\/wxapp\/model\/gongzhao.class.php",
+            "line": 86,
+            "category": "comment",
+            "text": "                \/\/公招开始时间条件"
+        },
+        {
+            "file": "api\/wxapp\/model\/gongzhao.class.php",
+            "line": 97,
+            "category": "comment",
+            "text": "                \/\/ 处理分站查询条件"
+        },
+        {
+            "file": "api\/wxapp\/model\/public.class.php",
+            "line": 14,
+            "category": "comment",
+            "text": "\t\/\/职位多列选择器"
+        },
+        {
+            "file": "api\/wxapp\/model\/public.class.php",
+            "line": 31,
+            "category": "comment",
+            "text": "\t\t\t\t\t$jobtwoArr[$v][] \t   =  array('value'=>0,'label'=>'全部');\/\/第二列 全部"
+        },
+        {
+            "file": "api\/wxapp\/model\/public.class.php",
+            "line": 32,
+            "category": "comment",
+            "text": "\t\t\t\t\t$jobthreetwoArr[$v][]  =  array(array());\/\/用做 一级-全部-''"
+        },
+        {
+            "file": "api\/wxapp\/model\/public.class.php",
+            "line": 43,
+            "category": "comment",
+            "text": "\t\t\t\t\t\t\t    \/\/只要有一个三级， 第三列都要有全部"
+        },
+        {
+            "file": "api\/wxapp\/model\/public.class.php",
+            "line": 44,
+            "category": "ui",
+            "text": "\t\t\t\t\t\t\t    $jobthreeArr[]  =\tarray('value'=>0,'label'=>'全部');"
+        },
+        {
+            "file": "api\/wxapp\/model\/public.class.php",
+            "line": 77,
+            "category": "comment",
+            "text": "\t\/\/城市多列选择器"
+        },
+        {
+            "file": "api\/wxapp\/model\/public.class.php",
+            "line": 94,
+            "category": "comment",
+            "text": "\t\t\t\t\t$citytwoArr[$v][]       =  array('value'=>0,'label'=>'全部');\/\/第二列 全部"
+        },
+        {
+            "file": "api\/wxapp\/model\/public.class.php",
+            "line": 95,
+            "category": "comment",
+            "text": "\t\t    \t\t$citythreetwoArr[$v][]\t=  array(array());\/\/用做 一级-全部-''"
+        },
+        {
+            "file": "api\/wxapp\/model\/public.class.php",
+            "line": 104,
+            "category": "comment",
+            "text": "\t\t\t\t\t\t\t    \/\/只要有一个三级， 第三列都要有全部"
+        },
+        {
+            "file": "api\/wxapp\/model\/public.class.php",
+            "line": 105,
+            "category": "ui",
+            "text": "\t\t\t\t\t\t\t    $citythreeArr[] \t\t =\tarray('value'=>0,'label'=>'全部');"
+        },
+        {
+            "file": "api\/wxapp\/model\/public.class.php",
+            "line": 140,
+            "category": "comment",
+            "text": "\t\/\/列表页搜索取缓存"
+        },
+        {
+            "file": "api\/wxapp\/model\/public.class.php",
+            "line": 150,
+            "category": "comment",
+            "text": "\t\/\/列表页搜索取缓存"
+        },
+        {
+            "file": "api\/wxapp\/model\/public.class.php",
+            "line": 161,
+            "category": "comment",
+            "text": "\tfunction industry_action(){\/\/获取行业类别"
+        },
+        {
+            "file": "api\/wxapp\/model\/public.class.php",
+            "line": 166,
+            "category": "ui",
+            "text": "\t\t    $name[]\t=\t'不限';"
+        },
+        {
+            "file": "api\/wxapp\/model\/public.class.php",
+            "line": 184,
+            "category": "ui",
+            "text": "\t        $name[]  =\t'请选择性别';"
+        },
+        {
+            "file": "api\/wxapp\/model\/public.class.php",
+            "line": 197,
+            "category": "ui",
+            "text": "\t\t\t$typename[]\t=\t'请选择兼职类型';"
+        },
+        {
+            "file": "api\/wxapp\/model\/public.class.php",
+            "line": 210,
+            "category": "ui",
+            "text": "\t\t\t$salary_typename[]\t=\t'请选择薪水类型';"
+        },
+        {
+            "file": "api\/wxapp\/model\/public.class.php",
+            "line": 223,
+            "category": "ui",
+            "text": "\t\t\t$billing_cyclename[]\t=\t'请选择结算周期';"
+        },
+        {
+            "file": "api\/wxapp\/model\/public.class.php",
+            "line": 235,
+            "category": "ui",
+            "text": "\t\t    'name'  =>  array('短期招聘', '长期招聘')"
+        },
+        {
+            "file": "api\/wxapp\/model\/public.class.php",
+            "line": 329,
+            "category": "comment",
+            "text": "\tfunction user_action(){\/\/获取个人类别"
+        },
+        {
+            "file": "api\/wxapp\/model\/public.class.php",
+            "line": 338,
+            "category": "ui",
+            "text": "\t\t\t$expname[]\t=\t'请选择';"
+        },
+        {
+            "file": "api\/wxapp\/model\/public.class.php",
+            "line": 353,
+            "category": "ui",
+            "text": "\t\t\t$eduname[]\t=\t'请选择';"
+        },
+        {
+            "file": "api\/wxapp\/model\/public.class.php",
+            "line": 368,
+            "category": "ui",
+            "text": "\t\t\t$ingname[]\t=\t'请选择熟练程度';"
+        },
+        {
+            "file": "api\/wxapp\/model\/public.class.php",
+            "line": 421,
+            "category": "ui",
+            "text": "\t\t\t$marriagename[]  =  '请选择婚姻状况';"
+        },
+        {
+            "file": "api\/wxapp\/model\/public.class.php",
+            "line": 446,
+            "category": "ui",
+            "text": "\t\t    $name[]  =\t'请选择性别';"
+        },
+        {
+            "file": "api\/wxapp\/model\/public.class.php",
+            "line": 460,
+            "category": "ui",
+            "text": "\t\t\t$tagname[]\t=\t'请选择个人标签';"
+        },
+        {
+            "file": "api\/wxapp\/model\/public.class.php",
+            "line": 472,
+            "category": "ui",
+            "text": "\t\t$userdata['uptime']=  array('1'=>'今天','3'=>'最近三天','7'=>'最近七天','30'=>'最近一个月','90'=>'最近三个月');"
+        },
+        {
+            "file": "api\/wxapp\/model\/public.class.php",
+            "line": 477,
+            "category": "comment",
+            "text": "\t\t    \/\/addexpect页面"
+        },
+        {
+            "file": "api\/wxapp\/model\/public.class.php",
+            "line": 496,
+            "category": "comment",
+            "text": "\t\t        \/\/info页面"
+        },
+        {
+            "file": "api\/wxapp\/model\/public.class.php",
+            "line": 570,
+            "category": "comment",
+            "text": "\tfunction com_action(){\/\/获取企业类别"
+        },
+        {
+            "file": "api\/wxapp\/model\/public.class.php",
+            "line": 577,
+            "category": "ui",
+            "text": "\t\t\t$prname[]\t=\t'请选择企业性质';"
+        },
+        {
+            "file": "api\/wxapp\/model\/public.class.php",
+            "line": 592,
+            "category": "ui",
+            "text": "\t\t\t$munname[]\t=  '请选择企业规模';"
+        },
+        {
+            "file": "api\/wxapp\/model\/public.class.php",
+            "line": 607,
+            "category": "ui",
+            "text": "\t\t\t$numbername[]  =  '请选择招聘人数';"
+        },
+        {
+            "file": "api\/wxapp\/model\/public.class.php",
+            "line": 634,
+            "category": "ui",
+            "text": "\t\t\t$reportname[]  =  '请选择到岗时间';"
+        },
+        {
+            "file": "api\/wxapp\/model\/public.class.php",
+            "line": 647,
+            "category": "ui",
+            "text": "\t\t\t$agename[]\t=\t'请选择年龄要求';"
+        },
+        {
+            "file": "api\/wxapp\/model\/public.class.php",
+            "line": 674,
+            "category": "ui",
+            "text": "\t\t\t$marriagename[]  =  '请选择婚姻状况';"
+        },
+        {
+            "file": "api\/wxapp\/model\/public.class.php",
+            "line": 700,
+            "category": "enum",
+            "text": "\t\t        if($v != '男'){"
+        },
+        {
+            "file": "api\/wxapp\/model\/public.class.php",
+            "line": 710,
+            "category": "ui",
+            "text": "\t\t$comdata['uptime']\t=\tarray('1'=>'今天','3'=>'最近三天','7'=>'最近七天','30'=>'最近一个月','90'=>'最近三个月');"
+        },
+        {
+            "file": "api\/wxapp\/model\/public.class.php",
+            "line": 721,
+            "category": "ui",
+            "text": "            $remarkname[]\t=\t'请选择简历状态';"
+        },
+        {
+            "file": "api\/wxapp\/model\/public.class.php",
+            "line": 733,
+            "category": "comment",
+            "text": "\t\t\/\/投递要求"
+        },
+        {
+            "file": "api\/wxapp\/model\/public.class.php",
+            "line": 737,
+            "category": "ui",
+            "text": "\t\t\t$expreqname[]\t\t=\t'请选择工作经验';"
+        },
+        {
+            "file": "api\/wxapp\/model\/public.class.php",
+            "line": 750,
+            "category": "ui",
+            "text": "\t\t\t$edureqname[]\t\t=\t'请选择学历';"
+        },
+        {
+            "file": "api\/wxapp\/model\/public.class.php",
+            "line": 759,
+            "category": "comment",
+            "text": "\t\t\/\/ 企业福利"
+        },
+        {
+            "file": "api\/wxapp\/model\/public.class.php",
+            "line": 762,
+            "category": "ui",
+            "text": "\t\t    $arrwelfare[] = array('id'=>0,'name'=>'全部');"
+        },
+        {
+            "file": "api\/wxapp\/model\/public.class.php",
+            "line": 897,
+            "category": "comment",
+            "text": "\tfunction keyword_action(){  \/\/关键字展示"
+        },
+        {
+            "file": "api\/wxapp\/model\/public.class.php",
+            "line": 901,
+            "category": "comment",
+            "text": "                if($v['type']==$_POST['type']&&$v['tuijian']=='1' && count($key_name) < 12){\/\/ 热搜关键词最多展示12个"
+        },
+        {
+            "file": "api\/wxapp\/model\/public.class.php",
+            "line": 909,
+            "category": "comment",
+            "text": "\tfunction group_action(){  \/\/关键字类别"
+        },
+        {
+            "file": "api\/wxapp\/model\/public.class.php",
+            "line": 916,
+            "category": "comment",
+            "text": "\t * 查询分站数据"
+        },
+        {
+            "file": "api\/wxapp\/model\/public.class.php",
+            "line": 980,
+            "category": "ui",
+            "text": "\t            'letter'  =>  '行业分站',"
+        },
+        {
+            "file": "api\/wxapp\/model\/public.class.php",
+            "line": 991,
+            "category": "comment",
+            "text": "\t * 获取举报简历原因"
+        },
+        {
+            "file": "api\/wxapp\/model\/public.class.php",
+            "line": 1009,
+            "category": "comment",
+            "text": "     * 获取举报职位原因"
+        },
+        {
+            "file": "api\/wxapp\/model\/public.class.php",
+            "line": 1028,
+            "category": "comment",
+            "text": "     * 获取邀请注册模板列表"
+        },
+        {
+            "file": "api\/wxapp\/model\/register.class.php",
+            "line": 16,
+            "category": "ui",
+            "text": "\t\t\t\t$msg\t=\t'您已登录！';"
+        },
+        {
+            "file": "api\/wxapp\/model\/register.class.php",
+            "line": 21,
+            "category": "comment",
+            "text": "\t\t    \/\/ 6.1版开始对注册、登录传的相关参数进行加密，这里需要解密"
+        },
+        {
+            "file": "api\/wxapp\/model\/register.class.php",
+            "line": 25,
+            "category": "comment",
+            "text": "\t\t        \/\/ 用户名注册"
+        },
+        {
+            "file": "api\/wxapp\/model\/register.class.php",
+            "line": 30,
+            "category": "comment",
+            "text": "\t\t        \/\/ 手机号注册"
+        },
+        {
+            "file": "api\/wxapp\/model\/register.class.php",
+            "line": 34,
+            "category": "comment",
+            "text": "\t\t        \/\/ 邮箱注册"
+        },
+        {
+            "file": "api\/wxapp\/model\/register.class.php",
+            "line": 57,
+            "category": "comment",
+            "text": "        \/\/ 目前从wxlogin到注册页面，会携带第三方登录参数。微信小程序和百度小程序，都是直接使用login页面携带的openid。"
+        },
+        {
+            "file": "api\/wxapp\/model\/register.class.php",
+            "line": 78,
+            "category": "comment",
+            "text": "\t\t\/\/  小程序邀请注册"
+        },
+        {
+            "file": "api\/wxapp\/model\/register.class.php",
+            "line": 112,
+            "category": "ui",
+            "text": "            $msg    =   '参数错误！';"
+        },
+        {
+            "file": "api\/wxapp\/model\/register.class.php",
+            "line": 119,
+            "category": "ui",
+            "text": "            $msg    =   '请选择用户类型！';"
+        },
+        {
+            "file": "api\/wxapp\/model\/register.class.php",
+            "line": 167,
+            "category": "comment",
+            "text": "\t\t\/\/验证用户名、邮箱"
+        },
+        {
+            "file": "api\/wxapp\/model\/register.class.php",
+            "line": 186,
+            "category": "comment",
+            "text": "\t\/* 注册发送手机号 *\/"
+        },
+        {
+            "file": "api\/wxapp\/model\/register.class.php",
+            "line": 189,
+            "category": "comment",
+            "text": "        $this->regcode($this->plat == 'mini' ? '3' : '4');\t\/\/ 短信发送端口$port : 3-小程序  4-APP"
+        },
+        {
+            "file": "api\/wxapp\/model\/register.class.php",
+            "line": 192,
+            "category": "comment",
+            "text": "    \/* 注册发送手机号-快速投递 *\/"
+        },
+        {
+            "file": "api\/wxapp\/model\/register.class.php",
+            "line": 195,
+            "category": "comment",
+            "text": "        $this->regcode($this->plat == 'mini' ? '9' : '10');\t\/\/ 短信发送端口$port : 9-小程序快速投递,10-APP快速投递"
+        },
+        {
+            "file": "api\/wxapp\/model\/register.class.php",
             "line": 227,
-            "category": "i18n_wrapped",
-            "text": "        $list[] = array('id' => 'yqms', 'title' => $this->zpdataTitle('resume_00029'), 'num' => $invite_num, 'unit' => $this->zpdataUnit('人'), 'jzr' => $invite_jzr, 'wap_url' => Url('wap') . 'member\/index.php?c=invite', 'page' => 'pson\/pages\/commember\/invite\/index');"
+            "category": "comment",
+            "text": "\t\t\t        \/\/ 微信绑定里，已存在账号的，可以直接用手机短信绑定"
+        },
+        {
+            "file": "api\/wxapp\/model\/register.class.php",
+            "line": 238,
+            "category": "ui",
+            "text": "\t\t\t        $msg    =   '该手机号已被使用';"
+        },
+        {
+            "file": "api\/wxapp\/model\/register.class.php",
+            "line": 241,
+            "category": "ui",
+            "text": "\t\t\t\t$msg\t\t=\t'该手机号已被禁止使用';"
+        },
+        {
+            "file": "api\/wxapp\/model\/resume.class.php",
+            "line": 6,
+            "category": "comment",
+            "text": "\t\/\/简历列表"
+        },
+        {
+            "file": "api\/wxapp\/model\/resume.class.php",
+            "line": 26,
+            "category": "comment",
+            "text": "                \/\/ 不是企业登录"
+        },
+        {
+            "file": "api\/wxapp\/model\/resume.class.php",
+            "line": 30,
+            "category": "comment",
+            "text": "                \/\/ 企业登录了，但审核未通过"
+        },
+        {
+            "file": "api\/wxapp\/model\/resume.class.php",
+            "line": 35,
+            "category": "comment",
+            "text": "        \/\/ 个人允许查看简历"
+        },
+        {
+            "file": "api\/wxapp\/model\/resume.class.php",
+            "line": 41,
+            "category": "comment",
+            "text": "        \/\/ 处理分站查询条件"
+        },
+        {
+            "file": "api\/wxapp\/model\/resume.class.php",
+            "line": 51,
+            "category": "comment",
+            "text": "                    \/\/ 分站下，再次选择城市，查询按选择的来"
+        },
+        {
+            "file": "api\/wxapp\/model\/resume.class.php",
+            "line": 57,
+            "category": "comment",
+            "text": "                    \/\/ 分站下，再次选择城市，查询按选择的来"
+        },
+        {
+            "file": "api\/wxapp\/model\/resume.class.php",
+            "line": 63,
+            "category": "comment",
+            "text": "                    \/\/ 分站下，再次选择城市，查询按选择的来"
+        },
+        {
+            "file": "api\/wxapp\/model\/resume.class.php",
+            "line": 83,
+            "category": "comment",
+            "text": "            \/\/ 没有已选择的城市，按后台设置的列表页区域默认设置来（后台-页面设置-列表页区域默认设置）"
+        },
+        {
+            "file": "api\/wxapp\/model\/resume.class.php",
+            "line": 84,
+            "category": "comment",
+            "text": "            \/\/ 设置了一级城市，后面的搜索，不再展示其他一级城市"
+        },
+        {
+            "file": "api\/wxapp\/model\/resume.class.php",
+            "line": 174,
+            "category": "comment",
+            "text": "    \/\/简历内容页"
+        },
+        {
+            "file": "api\/wxapp\/model\/resume.class.php",
+            "line": 193,
+            "category": "ui",
+            "text": "                $msg    =   '账户正在审核中，无法查看！';"
+        },
+        {
+            "file": "api\/wxapp\/model\/resume.class.php",
+            "line": 196,
+            "category": "comment",
+            "text": "        if($_POST['rewardid']){\/\/来自企业会员中心-应聘悬赏简历-查看简历"
+        },
+        {
+            "file": "api\/wxapp\/model\/resume.class.php",
+            "line": 204,
+            "category": "ui",
+            "text": "                $msg    =   '未找到相关数据！';"
+        },
+        {
+            "file": "api\/wxapp\/model\/resume.class.php",
+            "line": 208,
+            "category": "ui",
+            "text": "                $msg    =   '请先支付职位赏金！';"
+        },
+        {
+            "file": "api\/wxapp\/model\/resume.class.php",
+            "line": 225,
+            "category": "ui",
+            "text": "                $msg    =   '未找到相关数据！';"
+        },
+        {
+            "file": "api\/wxapp\/model\/resume.class.php",
+            "line": 249,
+            "category": "ui",
+            "text": "                $msg        =   '没有找到该人才！';"
+        },
+        {
+            "file": "api\/wxapp\/model\/resume.class.php",
+            "line": 253,
+            "category": "ui",
+            "text": "                $msg        =   '简历正在审核中！';"
+        },
+        {
+            "file": "api\/wxapp\/model\/resume.class.php",
+            "line": 257,
+            "category": "ui",
+            "text": "                $msg        =   '简历暂被锁定，请稍后查看！';"
+        },
+        {
+            "file": "api\/wxapp\/model\/resume.class.php",
+            "line": 261,
+            "category": "ui",
+            "text": "                $msg        =   '简历审核暂未通过！';"
+        },
+        {
+            "file": "api\/wxapp\/model\/resume.class.php",
+            "line": 264,
+            "category": "ui",
+            "text": "                $msg        =   '个人用户无权限查看！';"
+        },
+        {
+            "file": "api\/wxapp\/model\/resume.class.php",
+            "line": 268,
+            "category": "comment",
+            "text": "                    \/\/ 检查简历隐私状态设置"
+        },
+        {
+            "file": "api\/wxapp\/model\/resume.class.php",
+            "line": 271,
+            "category": "comment",
+            "text": "                        \/\/ 简历关闭"
+        },
+        {
+            "file": "api\/wxapp\/model\/resume.class.php",
+            "line": 274,
+            "category": "comment",
+            "text": "                        \/\/ 简历状态是投递企业可见"
+        },
+        {
+            "file": "api\/wxapp\/model\/resume.class.php",
+            "line": 277,
+            "category": "comment",
+            "text": "                            \/\/ 已向企业投递简历，简历可以展示"
+        },
+        {
+            "file": "api\/wxapp\/model\/resume.class.php",
+            "line": 282,
+            "category": "ui",
+            "text": "                        $msg  =  '简历已设置不对外开放！';"
+        },
+        {
+            "file": "api\/wxapp\/model\/resume.class.php",
+            "line": 284,
+            "category": "comment",
+            "text": "                        \/\/ 查询黑名单"
+        },
+        {
+            "file": "api\/wxapp\/model\/resume.class.php",
+            "line": 289,
+            "category": "ui",
+            "text": "                            $msg    =   '该用户已关闭简历!';"
+        },
+        {
+            "file": "api\/wxapp\/model\/resume.class.php",
+            "line": 298,
+            "category": "comment",
+            "text": "                \/\/人才收藏库"
+        },
+        {
+            "file": "api\/wxapp\/model\/resume.class.php",
+            "line": 303,
+            "category": "comment",
+            "text": "                \/\/已邀请面试数量"
+        },
+        {
+            "file": "api\/wxapp\/model\/resume.class.php",
+            "line": 315,
+            "category": "comment",
+            "text": "            \/\/处理浏览记录"
+        },
+        {
+            "file": "api\/wxapp\/model\/resume.class.php",
+            "line": 329,
+            "category": "comment",
+            "text": "            $cData['from']      =   !empty($reward) ?   'reward' : '';\/\/是否来自企业应聘悬赏简历的查看简历"
+        },
+        {
+            "file": "api\/wxapp\/model\/resume.class.php",
+            "line": 339,
+            "category": "comment",
+            "text": "                \/\/ 没有简历查看权限，处理手机号"
+        },
+        {
+            "file": "api\/wxapp\/model\/resume.class.php",
+            "line": 347,
+            "category": "comment",
+            "text": "            \/\/判断是否是企业的个人账号简历"
+        },
+        {
+            "file": "api\/wxapp\/model\/resume.class.php",
+            "line": 356,
+            "category": "comment",
+            "text": "    \/\/邀请面试页面相关信息"
+        },
+        {
+            "file": "api\/wxapp\/model\/resume.class.php",
+            "line": 393,
+            "category": "comment",
+            "text": "        \/\/公司旗下职位信息（包含职位联系方式）"
+        },
+        {
+            "file": "api\/wxapp\/model\/resume.class.php",
+            "line": 447,
+            "category": "comment",
+            "text": "        \/\/邀请模板"
+        },
+        {
+            "file": "api\/wxapp\/model\/resume.class.php",
+            "line": 452,
+            "category": "ui",
+            "text": "        $ymData[$ykey]['name']          = '请选择';"
+        },
+        {
+            "file": "api\/wxapp\/model\/resume.class.php",
+            "line": 476,
+            "category": "comment",
+            "text": "    \/\/邀请面试判断是否满足条件"
+        },
+        {
+            "file": "api\/wxapp\/model\/resume.class.php",
+            "line": 507,
+            "category": "comment",
+            "text": "    \/\/执行邀请面试保存数据"
+        },
+        {
+            "file": "api\/wxapp\/model\/resume.class.php",
+            "line": 550,
+            "category": "comment",
+            "text": "     * 下载简历"
+        },
+        {
+            "file": "api\/wxapp\/model\/resume.class.php",
+            "line": 571,
+            "category": "comment",
+            "text": "     * 加入人才库"
+        },
+        {
+            "file": "api\/wxapp\/model\/resume.class.php",
+            "line": 592,
+            "category": "comment",
+            "text": "     * 举报信息保存"
+        },
+        {
+            "file": "api\/wxapp\/model\/resume.class.php",
+            "line": 619,
+            "category": "comment",
+            "text": "\t * 举报简历前判断"
+        },
+        {
+            "file": "api\/wxapp\/model\/tiny.class.php",
+            "line": 4,
+            "category": "comment",
+            "text": "\tfunction list_action(){\/\/微简历列表"
+        },
+        {
+            "file": "api\/wxapp\/model\/tiny.class.php",
+            "line": 18,
+            "category": "comment",
+            "text": "\t\tif($sex){\/\/类别ID"
+        },
+        {
+            "file": "api\/wxapp\/model\/tiny.class.php",
+            "line": 21,
+            "category": "comment",
+            "text": "\t\tif($edu){\/\/类别ID"
+        },
+        {
+            "file": "api\/wxapp\/model\/tiny.class.php",
+            "line": 24,
+            "category": "comment",
+            "text": "\t\tif($keyword){\/\/关键字"
+        },
+        {
+            "file": "api\/wxapp\/model\/tiny.class.php",
+            "line": 34,
+            "category": "comment",
+            "text": "\t\tif($nodata){\/\/排除没有值的字段"
+        },
+        {
+            "file": "api\/wxapp\/model\/tiny.class.php",
+            "line": 40,
+            "category": "comment",
+            "text": "\t\tif($provinceid){\/\/类别ID"
+        },
+        {
+            "file": "api\/wxapp\/model\/tiny.class.php",
+            "line": 43,
+            "category": "comment",
+            "text": "\t\tif($cityid){\/\/类别ID"
+        },
+        {
+            "file": "api\/wxapp\/model\/tiny.class.php",
+            "line": 46,
+            "category": "comment",
+            "text": "\t\tif($three_cityid){\/\/类别ID"
+        },
+        {
+            "file": "api\/wxapp\/model\/tiny.class.php",
+            "line": 49,
+            "category": "comment",
+            "text": "\t\t\/\/ 处理分站查询条件"
+        },
+        {
+            "file": "api\/wxapp\/model\/tiny.class.php",
+            "line": 59,
+            "category": "comment",
+            "text": "\t\t            \/\/ 分站下，再次选择城市，查询按选择的来"
+        },
+        {
+            "file": "api\/wxapp\/model\/tiny.class.php",
+            "line": 66,
+            "category": "comment",
+            "text": "\t\t            \/\/ 分站下，再次选择城市，查询按选择的来"
+        },
+        {
+            "file": "api\/wxapp\/model\/tiny.class.php",
+            "line": 73,
+            "category": "comment",
+            "text": "\t\t            \/\/ 分站下，再次选择城市，查询按选择的来"
+        },
+        {
+            "file": "api\/wxapp\/model\/tiny.class.php",
+            "line": 88,
+            "category": "comment",
+            "text": "\t\t    \/\/ 没有已选择的城市，按后台设置的列表页区域默认设置来（后台-页面设置-列表页区域默认设置）"
+        },
+        {
+            "file": "api\/wxapp\/model\/tiny.class.php",
+            "line": 89,
+            "category": "comment",
+            "text": "\t\t    \/\/ 设置了一级城市，后面的搜索，不再展示其他一级城市"
+        },
+        {
+            "file": "api\/wxapp\/model\/tiny.class.php",
+            "line": 116,
+            "category": "comment",
+            "text": "\t\tif($order){\/\/排序"
+        },
+        {
+            "file": "api\/wxapp\/model\/tiny.class.php",
+            "line": 121,
+            "category": "comment",
+            "text": "\t\tif($page){\/\/分页"
+        },
+        {
+            "file": "api\/wxapp\/model\/tiny.class.php",
+            "line": 138,
+            "category": "comment",
+            "text": "\tfunction show_action(){\/\/微简历内容"
+        },
+        {
+            "file": "api\/wxapp\/model\/tiny.class.php",
+            "line": 170,
+            "category": "comment",
+            "text": "        $port\t=\t$this->plat == 'mini' ? '3' : '4';\t\/\/ 短信发送端口$port : 3-小程序  4-APP"
+        },
+        {
+            "file": "api\/wxapp\/model\/tiny.class.php",
+            "line": 174,
+            "category": "ui",
+            "text": "            $msg = '发送成功';"
+        },
+        {
+            "file": "api\/wxapp\/model\/tiny.class.php",
+            "line": 188,
+            "category": "ui",
+            "text": "\t\t\t\t$data['msg']\t=\t'请完善信息！';"
+        },
+        {
+            "file": "api\/wxapp\/model\/tiny.class.php",
+            "line": 293,
+            "category": "ui",
+            "text": "\t\t\t\t\t$rdata['msg']\t=\t'修改成功！';"
+        },
+        {
+            "file": "api\/wxapp\/model\/tiny.class.php",
+            "line": 296,
+            "category": "ui",
+            "text": "\t\t\t\t\t$rdata['msg']\t=\t'修改失败！';"
+        },
+        {
+            "file": "api\/wxapp\/index.php",
+            "line": 5,
+            "category": "comment",
+            "text": "\/\/ 处理跨域（CORS）"
+        },
+        {
+            "file": "api\/wxapp\/index.php",
+            "line": 16,
+            "category": "comment",
+            "text": "\/\/ 处理 OPTIONS 预检请求"
+        },
+        {
+            "file": "api\/wxapp\/wxapp.controller.php",
+            "line": 19,
+            "category": "comment",
+            "text": "            \/\/ 请求会员中心链接"
+        },
+        {
+            "file": "api\/wxapp\/wxapp.controller.php",
+            "line": 23,
+            "category": "comment",
+            "text": "            \/\/ 前台链接"
+        },
+        {
+            "file": "api\/wxapp\/wxapp.controller.php",
+            "line": 28,
+            "category": "comment",
+            "text": "     * @desc    将接口返回数据以统一格式的JSON输出"
+        },
+        {
+            "file": "api\/wxapp\/wxapp.controller.php",
+            "line": 30,
+            "category": "comment",
+            "text": "     * @param string $error 执行结果标识码"
+        },
+        {
+            "file": "api\/wxapp\/wxapp.controller.php",
+            "line": 31,
+            "category": "comment",
+            "text": "     * @param string $msg   执行结果描述信息"
+        },
+        {
+            "file": "api\/wxapp\/wxapp.controller.php",
+            "line": 32,
+            "category": "comment",
+            "text": "     * @param array $data   执行结果输出的数据"
+        },
+        {
+            "file": "api\/wxapp\/wxapp.controller.php",
+            "line": 54,
+            "category": "comment",
+            "text": "            \/\/ 容错机制，防止传的身份ID字段不是uid"
+        },
+        {
+            "file": "api\/wxapp\/wxapp.controller.php",
+            "line": 61,
+            "category": "comment",
+            "text": "     * 验证登录状态,需要会员登录后才能操作的都需要验证"
+        },
+        {
+            "file": "api\/wxapp\/wxapp.controller.php",
+            "line": 69,
+            "category": "comment",
+            "text": "            \/\/ wap登录信息"
+        },
+        {
+            "file": "api\/wxapp\/wxapp.controller.php",
+            "line": 80,
+            "category": "comment",
+            "text": "            \/\/ 移动端登录信息"
+        },
+        {
+            "file": "api\/wxapp\/wxapp.controller.php",
+            "line": 84,
+            "category": "ui",
+            "text": "            $this -> render_json(1002, '请先登录');"
+        },
+        {
+            "file": "api\/wxapp\/wxapp.controller.php",
+            "line": 87,
+            "category": "comment",
+            "text": "    \/\/ 登录信息验证"
+        },
+        {
+            "file": "api\/wxapp\/wxapp.controller.php",
+            "line": 91,
+            "category": "comment",
+            "text": "        \/\/ 版本没有APP的，查询要排除"
+        },
+        {
+            "file": "api\/wxapp\/wxapp.controller.php",
+            "line": 122,
+            "category": "ui",
+            "text": "                    $this -> render_json(1002, '您的账号已注销');"
+        },
+        {
+            "file": "api\/wxapp\/wxapp.controller.php",
+            "line": 124,
+            "category": "ui",
+            "text": "                    $this -> render_json(1002, '您的账号已被锁定，请联系网站客服');"
+        },
+        {
+            "file": "api\/wxapp\/wxapp.controller.php",
+            "line": 127,
+            "category": "comment",
+            "text": "            \/\/ 移动端验证token。没传token的就是wap，登录信息在common中验证"
+        },
+        {
+            "file": "api\/wxapp\/wxapp.controller.php",
+            "line": 132,
+            "category": "ui",
+            "text": "                    $this -> render_json(1002, '登录信息有误，请重新登录');"
+        },
+        {
+            "file": "api\/wxapp\/wxapp.controller.php",
+            "line": 135,
+            "category": "comment",
+            "text": "            \/\/ 会员中心的请求链接，需要额外信息和判断"
+        },
+        {
+            "file": "api\/wxapp\/wxapp.controller.php",
+            "line": 169,
+            "category": "ui",
+            "text": "                    $this -> render_json(1003, '登录身份不符，请重新登录');"
+        },
+        {
+            "file": "api\/wxapp\/wxapp.controller.php",
+            "line": 172,
+            "category": "comment",
+            "text": "            \/\/今日没有登录的，记录登录日志。排除其他控制器，防止并发"
+        },
+        {
+            "file": "api\/wxapp\/wxapp.controller.php",
+            "line": 188,
+            "category": "comment",
+            "text": "                    \/\/ 有身份的，记录登录日志"
+        },
+        {
+            "file": "api\/wxapp\/wxapp.controller.php",
+            "line": 195,
+            "category": "ui",
+            "text": "                        'content'  => 'wap端口延续登录'"
+        },
+        {
+            "file": "api\/wxapp\/wxapp.controller.php",
+            "line": 208,
+            "category": "comment",
+            "text": "                    \/\/ 同步个人、企业基本信息表登录信息"
+        },
+        {
+            "file": "api\/wxapp\/wxapp.controller.php",
+            "line": 213,
+            "category": "comment",
+            "text": "                        \/\/登录自动简历刷新，根据后台配置判断"
+        },
+        {
+            "file": "api\/wxapp\/wxapp.controller.php",
+            "line": 231,
+            "category": "ui",
+            "text": "            $this -> render_json(1002, '用户信息错误，请重新登录');"
+        },
+        {
+            "file": "api\/wxapp\/wxapp.controller.php",
+            "line": 248,
+            "category": "ui",
+            "text": "            $this->render_json(1005, '不支持curl');"
+        },
+        {
+            "file": "api\/wxapp\/wxapp.controller.php",
+            "line": 256,
+            "category": "ui",
+            "text": "\t        'goumai' => '购买',"
+        },
+        {
+            "file": "api\/wxapp\/wxapp.controller.php",
+            "line": 258,
+            "category": "ui",
+            "text": "\t        'fkjg'   => '价格',"
+        },
+        {
+            "file": "api\/wxapp\/wxapp.controller.php",
+            "line": 264,
+            "category": "ui",
+            "text": "\t        $fktype['fkal']  =  '支付宝';"
+        },
+        {
+            "file": "api\/wxapp\/wxapp.controller.php",
+            "line": 276,
+            "category": "comment",
+            "text": "\t * 将undefined字段值转为空"
+        },
+        {
+            "file": "api\/wxapp\/wxapp.controller.php",
+            "line": 299,
+            "category": "comment",
+            "text": "\t * 将null字段值转为空"
+        },
+        {
+            "file": "api\/wxapp\/wxapp.controller.php",
+            "line": 322,
+            "category": "comment",
+            "text": "\t * 处理分站参数"
+        },
+        {
+            "file": "api\/wxapp\/wxapp.controller.php",
+            "line": 362,
+            "category": "comment",
+            "text": "\t            \/\/ 地区分站，处理城市类别缓存"
+        },
+        {
+            "file": "api\/wxapp\/wxapp.controller.php",
+            "line": 373,
+            "category": "comment",
+            "text": "\t                \/\/ 分站是2级类别分站"
+        },
+        {
+            "file": "api\/wxapp\/wxapp.controller.php",
+            "line": 379,
+            "category": "comment",
+            "text": "\t                \/\/ 分站是1级类别分站，要展示2级类别"
+        },
+        {
+            "file": "api\/wxapp\/wxapp.controller.php",
+            "line": 386,
+            "category": "comment",
+            "text": "\t                \/\/ 分站是3级类别分站"
+        },
+        {
+            "file": "api\/wxapp\/wxapp.controller.php",
+            "line": 392,
+            "category": "comment",
+            "text": "\t                \/\/ 分站是2级类别分站，要展示3级类别"
+        },
+        {
+            "file": "api\/wxapp\/wxapp.controller.php",
+            "line": 426,
+            "category": "comment",
+            "text": "\t * 前台职位、简历、企业列表区域默认查询,按后台设置处理（后台-页面设置-列表页区域默认设置）"
+        },
+        {
+            "file": "api\/wxapp\/wxapp.controller.php",
+            "line": 438,
+            "category": "comment",
+            "text": "\t    \/\/ 搜索条件带二级城市类别"
+        },
+        {
+            "file": "api\/wxapp\/wxapp.controller.php",
+            "line": 442,
+            "category": "comment",
+            "text": "\t    \/\/ 搜索条件带三级城市类别"
+        },
+        {
+            "file": "api\/wxapp\/wxapp.controller.php",
+            "line": 460,
+            "category": "comment",
+            "text": "\t            \/\/ 只设置了一级城市"
+        },
+        {
+            "file": "api\/wxapp\/wxapp.controller.php",
+            "line": 462,
+            "category": "comment",
+            "text": "\t            $citytwo[0][]      =  array('value'=>0,'label'=>'全部');\/\/第二列 全部"
+        },
+        {
+            "file": "api\/wxapp\/wxapp.controller.php",
+            "line": 463,
+            "category": "comment",
+            "text": "\t            $citythreetwoArr[$provinceid][]\t=  array(array());\/\/用做 一级-全部-''"
+        },
+        {
+            "file": "api\/wxapp\/wxapp.controller.php",
+            "line": 469,
+            "category": "ui",
+            "text": "\t                    $citythreeArr[] =  array('value'=>0,'label'=>'全部');"
+        },
+        {
+            "file": "api\/wxapp\/wxapp.controller.php",
+            "line": 482,
+            "category": "comment",
+            "text": "\t            \/\/ 设置了二级城市"
+        },
+        {
+            "file": "api\/wxapp\/wxapp.controller.php",
+            "line": 486,
+            "category": "comment",
+            "text": "\t                \/\/ 二级城市，要展示3级类别"
+        },
+        {
+            "file": "api\/wxapp\/wxapp.controller.php",
+            "line": 487,
+            "category": "comment",
+            "text": "\t                $citythree[0][0][]  =  array('value'=>0,'label'=>'全部');\/\/第三列 全部"
+        },
+        {
+            "file": "api\/wxapp\/wxapp.controller.php",
+            "line": 508,
+            "category": "comment",
+            "text": "\t * 发送注册验证码接口防护验证"
+        },
+        {
+            "file": "api\/wxapp\/wxapp.controller.php",
+            "line": 513,
+            "category": "ui",
+            "text": "\t        $this->render_json(-1, '缺少手机号');"
+        },
+        {
+            "file": "api\/wxapp\/wxapp.controller.php",
+            "line": 517,
+            "category": "ui",
+            "text": "\t        $this -> render_json(-1, '手机号异常');"
+        },
+        {
+            "file": "api\/wxapp\/wxapp.controller.php",
+            "line": 521,
+            "category": "comment",
+            "text": "\t            \/\/ 按客户端时区计算，获取当前时间"
+        },
+        {
+            "file": "api\/wxapp\/wxapp.controller.php",
+            "line": 542,
+            "category": "ui",
+            "text": "\t            $this -> render_json(-1, '手机号验证异常');"
+        },
+        {
+            "file": "api\/wxapp\/wxapp.controller.php",
+            "line": 547,
+            "category": "comment",
+            "text": "\t * 随机取一条数据"
+        },
+        {
+            "file": "api\/wxapp\/wxapp.controller.php",
+            "line": 568,
+            "category": "comment",
+            "text": "\t\/\/ 获取广告"
+        },
+        {
+            "file": "api\/wxapp\/wxapp.controller.php",
+            "line": 576,
+            "category": "comment",
+            "text": "\t        \/\/ 按位置获取广告类别"
+        },
+        {
+            "file": "api\/wxapp\/wxapp.controller.php",
+            "line": 595,
+            "category": "comment",
+            "text": "\t            \/\/ 图片广告、没过期、全站使用或者与分站对应、app路径不是求职机器人的"
+        },
+        {
+            "file": "api\/wxapp\/wxapp.controller.php",
+            "line": 599,
+            "category": "comment",
+            "text": "\t                    \/\/ 处理跳转链接路径，开头没有\/的，加上\/"
+        },
+        {
+            "file": "api\/wxapp\/wxapp.controller.php",
+            "line": 609,
+            "category": "comment",
+            "text": "\t        \/\/ 判断是否取随机条数"
+        },
+        {
+            "file": "api\/wxapp\/wxapp.controller.php",
+            "line": 617,
+            "category": "comment",
+            "text": "\t * 6.1版开始对注册、登录传的相关参数进行加密，这里需要解密"
+        },
+        {
+            "file": "api\/wxapp\/wxapp.controller.php",
+            "line": 623,
+            "category": "comment",
+            "text": "\t        \/\/ 按客户端时区计算，获取当前时间"
+        },
+        {
+            "file": "api\/wxapp\/wxapp.controller.php",
+            "line": 645,
+            "category": "comment",
+            "text": "\t\/\/ 生成二维码传图的密钥（放到二维码中）"
+        },
+        {
+            "file": "api\/wxapp\/wxapp.controller.php",
+            "line": 648,
+            "category": "comment",
+            "text": "\t    \/\/ 考虑到二维码承载的信息长度有限，tokenSalt和password都限定字符串长度，以得到较短的token"
+        },
+        {
+            "file": "api\/wxapp\/wxapp.controller.php",
+            "line": 656,
+            "category": "comment",
+            "text": "\t * 按客户端时区计算，获取当前时间"
+        },
+        {
+            "file": "api\/wxapp\/wxapp.controller.php",
+            "line": 659,
+            "category": "comment",
+            "text": "\t    \/\/ 按传入时区处理，防止跨时区，导致客户端与服务端获得的日期不一致。js得到的timeoffset东区为负，西区为正。"
+        },
+        {
+            "file": "api\/wxapp\/wxapp.controller.php",
+            "line": 660,
+            "category": "comment",
+            "text": "\t    \/\/ js得到的timeoffset为分（php为秒）。"
+        },
+        {
+            "file": "api\/wxapp\/wxapp.controller.php",
+            "line": 662,
+            "category": "comment",
+            "text": "\t    \/\/ 服务器时间"
+        },
+        {
+            "file": "api\/wxapp\/wxapp.controller.php",
+            "line": 666,
+            "category": "comment",
+            "text": "\t        \/\/ 客户端是东区时间"
+        },
+        {
+            "file": "api\/wxapp\/wxapp.controller.php",
+            "line": 669,
+            "category": "comment",
+            "text": "\t        \/\/ 客户端西区时间"
+        },
+        {
+            "file": "api\/wxapp\/wxapp.controller.php",
+            "line": 671,
+            "category": "comment",
+            "text": "\t            \/\/ 服务器是东区时间"
+        },
+        {
+            "file": "api\/wxapp\/wxapp.controller.php",
+            "line": 674,
+            "category": "comment",
+            "text": "\t            \/\/ 服务器是西区时间"
         },
         {
             "file": "app\/controller\/wap\/ajax.class.php",

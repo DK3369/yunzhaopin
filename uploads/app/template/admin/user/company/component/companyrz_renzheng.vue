@@ -214,7 +214,7 @@ module.exports = {
             statusVisible: false,
             ruleFormStatus: {
                 uid: null,
-                name:'",
+                name:'',
                 status: null,//操作审核
                 job_status: false,//{{ lc('admin_user_company_00325') }}
                 statusbody: null,//{{ lc('member_user_00062') }}
@@ -256,7 +256,7 @@ module.exports = {
             value ? this.$refs.multipleTable.toggleAllSelection() : this.$refs.multipleTable.clearSelection();
         },
         shortChange(e) {
-            let orderMap = {ascending: "asc', descending: 'desc'}
+            let orderMap = {ascending: 'asc', descending: 'desc'}
             this.searchForm.t = e.order ? e.prop : null;
             this.searchForm.order = orderMap[e.order];
             this.searchForm.page = 1;

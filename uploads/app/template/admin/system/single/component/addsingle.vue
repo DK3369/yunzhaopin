@@ -183,7 +183,7 @@ module.exports = {
         }
     },
     mounted() {
-        ue = UE.getEditor('projectBasis", {
+        ue = UE.getEditor('projectBasis', {
             wordCount: false,           // 关闭字数统计
             elementPathEnabled: false,  //{{ lc('common.close') }}elementPath {{ lc('common_05704') }}
             autoHeightEnabled: false,   //关闭自适应高度，超出部分以滚动条形式展示
@@ -197,7 +197,7 @@ module.exports = {
 
     methods: {
         inputIntNumber(val, form, key) {
-            this.$data[form][key] = val.replace(/[^0-9]/g,"');
+            this.$data[form][key] = val.replace(/[^0-9]/g,'');
         },
         async getInfo() {
             let that = this;
@@ -214,7 +214,7 @@ module.exports = {
                     if(that.sid!=''){
                         that.info = res.data.info;
                     }
-                    ue = UE.getEditor('projectBasis", {
+                    ue = UE.getEditor('projectBasis', {
                         wordCount: false,           // 关闭字数统计
                         elementPathEnabled: false,  //{{ lc('common.close') }}elementPath {{ lc('common_05704') }}
                         autoHeightEnabled: false,   //关闭自适应高度，超出部分以滚动条形式展示
@@ -225,7 +225,7 @@ module.exports = {
                         if (that.info.content) {
                             ue.setContent(that.info.content);
                         } else {
-                            ue.setContent("');
+                            ue.setContent('');
                         }
                     });
 

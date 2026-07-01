@@ -73,7 +73,7 @@ module.exports = {
                 limit: null,
                 type: this.type,
                 keyword: null,
-                ktype: '1",
+                ktype: '1',
             },
             total: 0,
             tableData: [],

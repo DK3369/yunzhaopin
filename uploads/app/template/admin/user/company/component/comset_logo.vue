@@ -131,10 +131,10 @@ module.exports = {
             searchForm: {},
             ruleForm: {
                 'submit': lc('common.submit'),
-                'sy_unit_icon': '",//{{ lc('wap_js_00098') }}LOGO
-                "sy_guwen': '",//{{ lc('admin_00711') }}
-                "sy_banner': '",//{{ lc('admin_00712') }}
-                "sy_member_ewm': '',//未上传二维码提示图
+                'sy_unit_icon': '',//{{ lc('wap_js_00098') }}LOGO
+                'sy_guwen': '',//{{ lc('admin_00711') }}
+                'sy_banner': '',//{{ lc('admin_00712') }}
+                'sy_member_ewm': '',//未上传二维码提示图
             },
             submitLoading: false,
         }

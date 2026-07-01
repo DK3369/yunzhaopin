@@ -141,7 +141,7 @@ module.exports = {
                 id: '0',
                 name: '',
                 display: '2',
-                sort: '",
+                sort: '',
             },
             info: {},
             submitLoading: false,

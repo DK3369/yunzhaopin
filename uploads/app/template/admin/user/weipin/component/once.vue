@@ -616,7 +616,7 @@ module.exports = {
 
             // 列表排序
             t: '',
-            order: '",
+            order: '',
 
             checkedAll: false, // {{ lc('wap_js_00074') }}
             checkedAllIndeterminate: false,
@@ -675,7 +675,7 @@ module.exports = {
         },
         getCacheFun:function(){
             let that = this;
-            httpPost("m=user&c=weipin_once&a=getCache', {},{hideloading: true}).then(function (response) {
+            httpPost('m=user&c=weipin_once&a=getCache', {},{hideloading: true}).then(function (response) {
                 let res = response.data;
                 if (res.error == 0) {
                     that.searchList = res.data.search_list;
@@ -855,7 +855,7 @@ module.exports = {
         openDomain(row) {
             if (typeof row == 'undefined') { // {{ lc('admin_yunying_00106') }}
                 this.detail = {};
-                this.$set(this.ruleFormDomain, "id', this.idArr);
+                this.$set(this.ruleFormDomain, 'id', this.idArr);
                 this.$set(this.ruleFormDomain, 'did', '');
             } else { // 单个操作
                 this.detail = row;
@@ -911,7 +911,7 @@ module.exports = {
                 that.detail = {};
                 that.ruleFormAudit = {
                     id: this.idArr,
-                    status: "',
+                    status: '',
                 };
             }
         },
@@ -956,14 +956,14 @@ module.exports = {
             this.$data[form][key] = val.replace(/[^0-9]/g, '');
         },
         inputPassword(val, form, key) {
-            this.$data[form][key] = val.replace(/^ +| +$/g, '");
+            this.$data[form][key] = val.replace(/^ +| +$/g, '');
         },
 
         // {{ lc('admin_user_weipin_00038') }}
         openExtension(row) {
             this.ruleFormExtension = {
                 id: this.idArr,
-                endtime: "',
+                endtime: '',
             };
 
             this.dialogExtension = true;

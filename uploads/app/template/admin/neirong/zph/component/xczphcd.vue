@@ -483,7 +483,7 @@
                 that.sec_id = ''
                 that.secClass = []
                 if (data) {
-                    httpPost('m=neirong&c=zph_space&a=ajaxspace", {id: data}).then(function (result) {
+                    httpPost('m=neirong&c=zph_space&a=ajaxspace', {id: data}).then(function (result) {
                         var res = result.data
                         if (res.error == 0) {
                             that.secClass = res.data
@@ -515,15 +515,15 @@
                         let editorConfig = {
                             MENU_CONF: {
                                 uploadImage: {
-                                    server: baseUrl + "m=index&c=uploadfile',
-                                    fieldName: 'file"
+                                    server: baseUrl + 'm=index&c=uploadfile',
+                                    fieldName: 'file'
                                 }
                             }
                         };
                         // {{ lc('wap_00566') }}
                         if (!editor) {
                             editor = createEditor({
-                                selector: "#editor-container',
+                                selector: '#editor-container',
                                 html: '',
                                 config: editorConfig,
                                 mode: 'simple'

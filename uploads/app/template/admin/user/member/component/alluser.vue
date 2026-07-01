@@ -374,10 +374,10 @@ module.exports = {
             memNum: {},
             lockUserArr: {
                 status: '',
-                lock_info: '"
+                lock_info: ''
             }, // {{ lc('admin_user_00150') }}
             shareZhanArr: {
-                did: "'
+                did: ''
             },
 
             weburl: '',

@@ -283,7 +283,7 @@ module.exports = {
                 //会员模式
                 type: null,
                 //会员名称
-                name: '",
+                name: '',
                 //{{ lc('admin_user_company_00190') }}
                 youhuiBool: false,
                 //优惠价格
@@ -305,17 +305,17 @@ module.exports = {
                 //{{ lc('wap_01823') }}
                 integral_buy: "0",
                 //{{ lc('admin_user_company_00196') }}
-                service_discount: "',
+                service_discount: '',
                 // Download resume
                 resume: '',
                 // Interview invitation
                 interview: '',
                 // refreshJob
-                breakjob_num: '",
+                breakjob_num: '',
                 //{{ lc('wap_com_00039') }}
-                zph_num: "',
+                zph_num: '',
                 //
-                chat_num: '",
+                chat_num: '',
                 //{{ lc('admin_00696') }}
                 job_num: "",
                 //{{ lc('wap_user_00209') }}
@@ -323,15 +323,15 @@ module.exports = {
                 //{{ lc('wap_com_00043') }}
                 urgent_num: "",
                 //{{ lc('wap_com_00041') }}
-                rec_num: "',
+                rec_num: '',
                 // refreshJob
-                freerefresh_num: '",
+                freerefresh_num: '',
                 //{{ lc('admin_user_company_00200') }}
-                freelook_num: "',
+                freelook_num: '',
                 //主动聊天
                 freeactchat_num: '',
                 //回复聊天
-                freerepchat_num: '",
+                freerepchat_num: '',
 				//{{ lc('admin_user_company_00125') }}
 				suspend_num: 0,
 				//最长有效期天数
@@ -339,7 +339,7 @@ module.exports = {
             },
             file: [],//暂存文件
             haspic:false,
-            uploadAction: baseUrl + "m=common&c=common_upload'
+            uploadAction: baseUrl + 'm=common&c=common_upload'
         }
     },
     created() {

@@ -178,7 +178,7 @@ module.exports = {
                 page: 1,
                 limit: null,
                 keyword: null,
-                type: '1",
+                type: '1',
                 status: this.status,
             },
             total: 0,
@@ -193,7 +193,7 @@ module.exports = {
             ruleFormStatus: {
                 pid: null,
                 status: null,
-                statusbody: "',
+                statusbody: '',
             },
             titleStatus: lc('admin_company_00047'),
             // edit

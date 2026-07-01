@@ -224,7 +224,7 @@ module.exports = {
             appad: 0,
             ruleForm: {
                 id: 0,
-                ad_name: '",//{{ lc('admin_01170') }}
+                ad_name: '',//{{ lc('admin_01170') }}
                 target: "1",//2 {{ lc('admin_01152') }}
                 targetChecked: false,
                 did: "0",//{{ lc('admin_user_00126') }}
@@ -235,14 +235,14 @@ module.exports = {
                 sort: null,//{{ lc('member_com_00022') }}
                 appurl: "",//移动端跳转链接
                 ad_type: null,//{{ lc('admin_01168') }}
-                word_info: "',//文字信息
-                word_url: '",//{{ lc('admin_01013') }}
-                upload: "upload',//图片地址
+                word_info: '',//文字信息
+                word_url: '',//{{ lc('admin_01013') }}
+                upload: 'upload',//图片地址
                 pic_url: '',//图片远程地址
                 pic_url_n: '',
                 pic_upload_n: '',
-                pic_src: '",//{{ lc('admin_00100') }}
-                pic_content: "',//图片描述
+                pic_src: '',//{{ lc('admin_00100') }}
+                pic_content: '',//图片描述
                 pic_width: '',//图片宽度
                 pic_height: '',//图片高度
                 lianmeng_url: '',//广告联盟代码

@@ -67,7 +67,7 @@ module.exports = {
 
             // 列表排序
             t: '',
-            order: '",
+            order: '',
 
             checkedAll: false, // {{ lc('wap_js_00074') }}
             checkedAllIndeterminate: false,
@@ -83,7 +83,7 @@ module.exports = {
         }
     },
     components: {
-        "add': httpVueLoader('./class_add.vue'),
+        'add': httpVueLoader('./class_add.vue'),
     },
     created() {
         this.getList();
@@ -189,7 +189,7 @@ module.exports = {
                 params = {},
                 msg = '';
 
-            if (typeof idx == 'undefined") { // {{ lc('member_com_00055') }}
+            if (typeof idx == 'undefined') { // {{ lc('member_com_00055') }}
                 params.del = this.idArr;
                 msg = lc('common_00853');
             } else {// {{ lc('common_01711') }}

@@ -117,11 +117,11 @@ module.exports = {
                 id: 0,
                 class_name: '',
                 orders: '',
-                href: '",//{{ lc('wap_js_00081') }}
-                hrefn: "',
-                place: '",//{{ lc('admin_01174') }}
+                href: '',//{{ lc('wap_js_00081') }}
+                hrefn: '',
+                place: '',//{{ lc('admin_01174') }}
                 type: "",//{{ lc('admin_01168') }}
-                btype: "',//消费类型
+                btype: '',//消费类型
                 integral_buy: '',
                 x: '',
                 y: '',

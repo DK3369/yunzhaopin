@@ -1,4 +1,11 @@
 {
+    "hardcoded": {
+        "请完善信息！！": "api\/wxapp\/member\/user\/resume.class.php",
+        "保存失败！": "api\/wxapp\/member\/user\/resume.class.php",
+        "套餐已用完 , 立即升级VIP？": "api\/wxapp\/member\/com\/index.class.php",
+        "当前会员套餐可上架职位数已达上限，新发布职位将无法直接上架哦~": "api\/wxapp\/member\/com\/index.class.php",
+        "参数不正确": "api\/wxapp\/member\/com\/resume.class.php"
+    },
     "echo": {
         "共执行": "app\/include\/libs\/plugins\/function.queryinfo.php",
         "此模块未开启！": "app\/include\/init.php",

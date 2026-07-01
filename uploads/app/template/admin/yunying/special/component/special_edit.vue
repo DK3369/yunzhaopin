@@ -286,18 +286,18 @@ module.exports = {
             pic_accept: localStorage.getItem("pic_accept"),
             ruleForm: {
                 id: 0,
-                title: '",//{{ lc('member_com_00343') }}
+                title: '',//{{ lc('member_com_00343') }}
                 limit: "",//{{ lc('admin_yunying_00122') }}
                 rating: [],//{{ lc('admin_01206') }}
                 tpl: "",//{{ lc('admin_01207') }}
                 display: "1",//{{ lc('admin_system_00263') }}
                 com_bm: "1",//{{ lc('admin_01209') }}
-                integral: "',//integral
-                etime: '",//{{ lc('admin_01211') }}
+                integral: '',//integral
+                etime: '',//{{ lc('admin_01211') }}
                 sort: "",//{{ lc('member_com_00022') }}
                 pic: "",//PC{{ lc('admin_00119') }}
-                background: "',//PC背景图
-                wappic: '",//{{ lc('admin_01217') }}
+                background: '',//PC背景图
+                wappic: '',//{{ lc('admin_01217') }}
                 wapback: "",//{{ lc('admin_01219') }}
                 intro: "",//{{ lc('default_00328') }}
             },
@@ -306,7 +306,7 @@ module.exports = {
             fileWappic: {},
             fileWapback: {},
             submitLoading: false,
-			uploadAction: baseUrl + "m=common&c=common_upload'
+			uploadAction: baseUrl + 'm=common&c=common_upload'
         }
     },
     mounted() {

@@ -96,7 +96,7 @@ module.exports = {
             pytoken: localStorage.getItem("pytoken"),
             sy_weburl: localStorage.getItem("sy_weburl"),
             curl:'',
-            dialogImageUrl: '",
+            dialogImageUrl: '',
             dialogVisible: false,
             ruleForm: {
                 //{{ lc('admin_user_00346') }}
@@ -104,7 +104,7 @@ module.exports = {
                 //{{ lc('admin_user_00345') }}
                 womanicon_sys: [],
             },
-            sy_member_skill: "',
+            sy_member_skill: '',
             fileListMan: [],
             fileListWoman: [],
             submitLoading: false,

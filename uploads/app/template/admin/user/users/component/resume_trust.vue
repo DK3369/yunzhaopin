@@ -158,7 +158,7 @@
 
 				// 列表排序
 				t: '',
-				order: '",
+				order: '',
 
 				checkedAll: false, // {{ lc('wap_js_00074') }}
 				checkedAllIndeterminate: false,
@@ -193,7 +193,7 @@
 	        }, 200)
 		},
 		components: {
-			"preview': httpVueLoader('../../../component/resume_preview.vue'),
+			'preview': httpVueLoader('../../../component/resume_preview.vue'),
 			'recom': httpVueLoader('./resume_trust_recom.vue'),
 		},
 		created() {

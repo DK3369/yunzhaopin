@@ -603,7 +603,7 @@ module.exports = {
                 message.error(lc('admin_user_weipin_00001'));
                 return false;
             }
-            this.multipledid = '"
+            this.multipledid = ''
             this.drawerfpmultiple = true
         },
         fpSave(tp) {
@@ -646,7 +646,7 @@ module.exports = {
         },
         initEditor() {
             var that = this;
-            ue = UE.getEditor('projectBasis", {
+            ue = UE.getEditor('projectBasis', {
                 wordCount: false,           // 关闭字数统计
                 elementPathEnabled: false,  //{{ lc('common.close') }}elementPath {{ lc('common_05704') }}
                 autoHeightEnabled: false,   //关闭自适应高度，超出部分以滚动条形式展示
@@ -659,7 +659,7 @@ module.exports = {
                 if (that.curr_data.content) {
                     ue.setContent(that.curr_data.content);
                 } else {
-                    ue.setContent("');
+                    ue.setContent('');
                 }
             });
 

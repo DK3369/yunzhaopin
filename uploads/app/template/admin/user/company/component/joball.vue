@@ -552,7 +552,7 @@ module.exports = {
             status3Num: 0,
             // {{ lc('admin_user_company_00348') }}
             drawermulticate: false,
-            multihy: "',
+            multihy: '',
             multijobtype: [],
             multitw: false, // 是否是批量推文任务
             drawermatchresume: false,
@@ -775,7 +775,7 @@ module.exports = {
         'matchresume': httpVueLoader('./match_resume.vue'),
         'addjob': httpVueLoader('./addjob.vue'),
         'job_class': httpVueLoader('../../../component/job_class.vue'),
-        'city_class': httpVueLoader('../../../component/city_class.vue"),
+        'city_class': httpVueLoader('../../../component/city_class.vue'),
     },
     mounted() {
         var that = this
@@ -829,7 +829,7 @@ module.exports = {
         // 获取职位数量统计
         getTjNum: function () {
             var that = this;
-            httpPost("m=user&c=company_job&a=jobNum', {}, { hideloading: true }).then(function (result) {
+            httpPost('m=user&c=company_job&a=jobNum', {}, { hideloading: true }).then(function (result) {
                 var res = result.data;
                 if (res.error == 0) {
                     that.allNum = res.data.jobAllNum ? res.data.jobAllNum : 0
@@ -868,7 +868,7 @@ module.exports = {
             }
             that.multicate_load = true;
             httpPost('m=user&c=company_job&a=saveclass', {
-                jobid: that.selectedItem.join(',"),
+                jobid: that.selectedItem.join(','),
                 hy: that.multihy,
                 job1: that.multijobtype[0],
                 job1_son: that.multijobtype[1],
@@ -1007,7 +1007,7 @@ module.exports = {
 
             let that = this;
 
-            httpPost('m=user&c=company_job&a=depower", params).then(function (result) {
+            httpPost('m=user&c=company_job&a=depower', params).then(function (result) {
 
                 var res = result.data
                 if (res.error == 0) {
@@ -1034,7 +1034,7 @@ module.exports = {
         createhb: function (row) {
             var that = this
             that.curr_job = row
-            httpPost("m=user&c=company_job&a=whb', {}).then(function (result) {
+            httpPost('m=user&c=company_job&a=whb', {}).then(function (result) {
                 var res = result.data;
                 if (res.error == 0) {
                     that.hbarr = res.data.comHb
@@ -1086,7 +1086,7 @@ module.exports = {
         // 复制文本弹窗
         getJobHtml: function (id) {
             var that = this
-            httpPost('m=user&c=company_job&a=getJobHtml", { id: id }).then(function (result) {
+            httpPost('m=user&c=company_job&a=getJobHtml', { id: id }).then(function (result) {
                 var res = result.data
                 if (res.error == 0) {
                     that.htmlcont = res.data
@@ -1280,7 +1280,7 @@ module.exports = {
             } else if (type == 3) { // 紧急
                 this.jobtgtit = lc('admin_user_company_00349')
             }
-            this.tgjid = this.selectedItem.join(',")
+            this.tgjid = this.selectedItem.join(',')
             this.jobtgdrawer = true
         },
         // 职位推广设置
@@ -1290,7 +1290,7 @@ module.exports = {
             this.tgjid = data.id
             if (type == 1) { // {{ lc('wap_user_00335') }}
                 this.curr_job.istop = !this.curr_job.istop // 防止switch状态直接改变
-                this.jobtgetime = data.top_time_n ? data.top_time_n : "'
+                this.jobtgetime = data.top_time_n ? data.top_time_n : ''
                 this.jobtgtit = lc('wap_com_00238')
             } else if (type == 2) { // 推荐
                 this.curr_job.isrec = !this.curr_job.isrec // 防止switch状态直接改变

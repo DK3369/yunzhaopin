@@ -118,7 +118,7 @@
             }
         },
         mounted() {
-            var ue = UE.getEditor('projectBasis", {
+            var ue = UE.getEditor('projectBasis', {
                 wordCount: false,           // 关闭字数统计
                 elementPathEnabled: false,  //{{ lc('common.close') }}elementPath {{ lc('common_05704') }}
                 autoHeightEnabled: false,   //关闭自适应高度，超出部分以滚动条形式展示
@@ -133,7 +133,7 @@
         methods: {
             getInfo() {
                 let that = this;
-                httpPost("m=neirong&c=announcement&a=add', {id: that.id ? that.id : ''}).then(function (response) {
+                httpPost('m=neirong&c=announcement&a=add', {id: that.id ? that.id : ''}).then(function (response) {
                     let res = response.data,
                         data = res.data,
                         info = data.info;

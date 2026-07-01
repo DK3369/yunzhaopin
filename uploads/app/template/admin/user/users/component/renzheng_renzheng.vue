@@ -177,7 +177,7 @@ module.exports = {
             info: {
                 username_n: '',
                 idcard: '',
-                idcard_pic: '",
+                idcard_pic: '',
             },
             // Audit
             statusVisible: false,
@@ -222,7 +222,7 @@ module.exports = {
             value ? this.$refs.multipleTable.toggleAllSelection() : this.$refs.multipleTable.clearSelection();
         },
         shortChange(e) {
-            let orderMap = {ascending: "asc', descending: 'desc'}
+            let orderMap = {ascending: 'asc', descending: 'desc'}
             this.searchForm.t = e.order ? e.prop : null;
             this.searchForm.order = orderMap[e.order];
             this.searchForm.page = 1;

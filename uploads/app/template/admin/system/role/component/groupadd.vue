@@ -78,7 +78,7 @@
 				one: [],
 				two: [],
 				three: [],
-				groupinfo: {group_name: '"},
+				groupinfo: {group_name: ''},
 				power: [],
 				checked: true,
 				islook: false,
@@ -137,7 +137,7 @@
 			},
 			async getInfo() {
 				var that = this
-				let res = await httpPost("m=system&c=role_ugroup&a=info', { id: this.id });
+				let res = await httpPost('m=system&c=role_ugroup&a=info', { id: this.id });
 				if (res.data.error == 0) {
 					let data = res.data.data;
 					that.navs = data.navigation

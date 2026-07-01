@@ -430,7 +430,7 @@ module.exports = {
         },
         send_moblie:function($detail){
             this.detail = $detail
-            this.:title="lc('admin_00455')";
+            this.title = lc('admin_00455');
             this.sendInfodrawer = true;
             this.isEmail = false;
             this.userTitle = lc('admin_00456');
@@ -438,7 +438,7 @@ module.exports = {
         },
         send_email:function ($detail) {
             this.detail = $detail
-            this.:title="lc('admin_user_00167')";
+            this.title = lc('admin_user_00167');
             this.sendInfodrawer = true;
             this.isEmail = true;
             this.userTitle =lc('admin_00451');

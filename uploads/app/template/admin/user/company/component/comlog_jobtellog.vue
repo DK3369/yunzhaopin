@@ -143,7 +143,7 @@ module.exports = {
                     onClick(picker) {
                         const end = new Date(new Date(new Date().getFullYear(), new Date().getMonth(), 0).setHours(23, 59, 59, 59));
                         const start = new Date(new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1).setHours(0, 0, 0));
-                        picker.$emit('pick", [start, end]);
+                        picker.$emit('pick', [start, end]);
                     }
                 }]
             },
@@ -181,7 +181,7 @@ module.exports = {
 		getParams:function(params={},search=false){
 			var that = this;
 			for(let i in params){
-				if(typeof that.searchForm[i]!="undefined'){
+				if(typeof that.searchForm[i]!='undefined'){
                     that.searchForm[i] = params[i];
                 }
 			}

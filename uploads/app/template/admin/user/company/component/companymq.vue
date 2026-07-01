@@ -207,7 +207,7 @@
             }, 200)
         },
         components: {
-            'addhotjob': httpVueLoader('./addhotjob.vue"),
+            'addhotjob': httpVueLoader('./addhotjob.vue'),
         },
         methods: {
             mouseDownHandler(e) {
@@ -233,7 +233,7 @@
 			getParams:function(params={},search=false){
 				var that = this;
 				for(let i in params){
-					if(typeof that.search_params[i]!="undefined'){
+					if(typeof that.search_params[i]!='undefined'){
 						that.search_params[i] = params[i];
 					}
 				}
@@ -264,7 +264,7 @@
                 this.info = data
                 this.info.hot_pic_n = this.info.hot_pic
                 this.info.time_end_n = this.info.time_end_nn
-                this.:title="lc('admin_00625')"
+                this.title = lc('admin_00625');
                 this.isedit = true
                 this.drawermq = true
             },
@@ -282,7 +282,7 @@
                     time_end_n: ''
                 }
                 this.isedit = false
-                this.:title="lc('admin_user_company_00053')"
+                this.title = lc('admin_user_company_00053');
                 this.drawermq = true
             },
             sortChange: function (column) {

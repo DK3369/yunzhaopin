@@ -114,7 +114,7 @@ module.exports = {
                 // value-addedtype
                 type: null,
                 //服务价格
-                service_price: '",
+                service_price: '',
                 //{{ lc('member_com_00033') }}
                 job_num: "",
                 //{{ lc('member_com_00035') }}
@@ -130,7 +130,7 @@ module.exports = {
                 //{{ lc('wap_com_00043') }}
                 urgent_num: "",
                 //{{ lc('wap_com_00041') }}
-                rec_num: "',
+                rec_num: '',
                 //sy_chat_name
                 chat_num: '',
                 // Sort

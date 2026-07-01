@@ -132,7 +132,7 @@ module.exports = {
     data: function () {
         return {
             loading: false,
-            stringExpEduAge: '",
+            stringExpEduAge: '',
             info: {},
             resumeinfo: {},//{{ lc('common.resume') }}
             expect: {},//{{ lc('wap_00460') }}
@@ -170,7 +170,7 @@ module.exports = {
                 params = {uid: this.uid};
             }
             this.loading = true;
-            httpPost("m=user&c=users_resume&a=resumePreview', params, {hideloading: true}).then(function (response) {
+            httpPost('m=user&c=users_resume&a=resumePreview', params, {hideloading: true}).then(function (response) {
                 let res = response.data;
                 if (res.error === 0) {
                     _this.info = Object.freeze(res.data);

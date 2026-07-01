@@ -199,7 +199,7 @@ module.exports = {
             selectedItem: [],
             info: {
                 username_n: '',
-                picurl: '",
+                picurl: '',
             },
             // Audit
             statusVisible: false,
@@ -216,7 +216,7 @@ module.exports = {
                 id: null,
                 title: null,
                 sort: null,
-                picurl: "',
+                picurl: '',
             },
             file: [],//暂存文件
             submitLoading: false,

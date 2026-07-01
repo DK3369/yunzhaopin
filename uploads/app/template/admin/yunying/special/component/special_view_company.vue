@@ -170,7 +170,7 @@ module.exports = {
       searchForm: {
         page: 1,
         limit: null,
-        type: '1",
+        type: '1',
         keyword: null,//{{ lc('admin_tool_00574') }}
         rating: null,//{{ lc('admin_user_company_00018') }}
         time: null,//{{ lc('admin_user_company_00052') }}
@@ -213,7 +213,7 @@ module.exports = {
   },
   methods: {
     selectable(row, index) {
-      if (row.jobnum <= 0 || row.r_status != "1') {
+      if (row.jobnum <= 0 || row.r_status != '1') {
         return false;
       } else {
         return true;

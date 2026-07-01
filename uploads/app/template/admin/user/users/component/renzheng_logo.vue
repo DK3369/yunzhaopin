@@ -195,7 +195,7 @@ module.exports = {
             selectedItem: [],
             info: {
                 username_n: '',
-                photo: '",
+                photo: '',
             },
             // Audit
             statusVisible: false,
@@ -210,7 +210,7 @@ module.exports = {
             editVisible: false,
             ruleForm: {
                 id: null,
-                picurl: "',
+                picurl: '',
             },
             file: [],//暂存文件
             submitLoading: false,

@@ -441,7 +441,7 @@
                     sid: val,
                     zid: that.info.id
                 };
-                httpPost('m=neirong&c=zhaopinhui&a=getzhanwei", params).then(function (response) {
+                httpPost('m=neirong&c=zhaopinhui&a=getzhanwei', params).then(function (response) {
                     if (response.data.error == 0) {
                         that.zwarr = response.data.data.space;
                         that.reserved_arr = response.data.data.reserved_arr;
@@ -495,7 +495,7 @@
                 let editorConfig = {
                     MENU_CONF: {
                         uploadImage: {
-                            server: baseUrl + "m=index&c=uploadfile',
+                            server: baseUrl + 'm=index&c=uploadfile',
                             fieldName: 'file'
                         }
                     }
@@ -508,13 +508,13 @@
                             
                             editor_desc.setHtml(that.info.body);
                         } else {
-                            editor_desc.setHtml('");
+                            editor_desc.setHtml('');
                         }
                     }else{
                         // {{ lc('wap_00566') }}
                         if (!editor_desc) {
                             editor_desc = createEditor({
-                                selector: "#editor-container-desc',
+                                selector: '#editor-container-desc',
                                 html: '',
                                 config: editorConfig,
                                 mode: 'simple'
@@ -527,7 +527,7 @@
                                 config: {
                                     excludeKeys: ['blockquote', 'header1', 'header2', 'header3', '|', 'through', 'todo', '|', 'insertVideo', 'insertTable', 'codeBlock', '|', 'undo', 'redo', '|',]
                                 },
-                                mode: 'simple"
+                                mode: 'simple'
                             });
                         }
                     }
@@ -542,7 +542,7 @@
                         if (that.info.media) {
                             editor_mt.setHtml(that.info.media);
                         } else {
-                            editor_mt.setHtml("');
+                            editor_mt.setHtml('');
                         }
                     }else{
                         if (!editor_mt) {
@@ -560,7 +560,7 @@
                                 config: {
                                     excludeKeys: ['blockquote', 'header1', 'header2', 'header3', '|', 'through', 'todo', '|', 'insertVideo', 'insertTable', 'codeBlock', '|', 'undo', 'redo', '|',]
                                 },
-                                mode: 'simple"
+                                mode: 'simple'
                             });
                         }
                         
@@ -576,7 +576,7 @@
                         if (that.info.packages) {
                             editor_fw.setHtml(that.info.packages);
                         } else {
-                            editor_fw.setHtml("');
+                            editor_fw.setHtml('');
                         }
                     }else{
                         if (!editor_fw) {
@@ -594,7 +594,7 @@
                                 config: {
                                     excludeKeys: ['blockquote', 'header1', 'header2', 'header3', '|', 'through', 'todo', '|', 'insertVideo', 'insertTable', 'codeBlock', '|', 'undo', 'redo', '|',]
                                 },
-                                mode: 'simple"
+                                mode: 'simple'
                             });
                         }
                         
@@ -609,7 +609,7 @@
                         if (that.info.booth) {
                             editor_sz.setHtml(that.info.booth);
                         } else {
-                            editor_sz.setHtml("');
+                            editor_sz.setHtml('');
                         }
                     }else{
                         if (!editor_sz) {
@@ -627,7 +627,7 @@
                                 config: {
                                     excludeKeys: ['blockquote', 'header1', 'header2', 'header3', '|', 'through', 'todo', '|', 'insertVideo', 'insertTable', 'codeBlock', '|', 'undo', 'redo', '|',]
                                 },
-                                mode: 'simple"
+                                mode: 'simple'
                             });
                         }
                         
@@ -643,7 +643,7 @@
                         if (that.info.participate) {
                             editor_cy.setHtml(that.info.participate);
                         } else {
-                            editor_cy.setHtml("');
+                            editor_cy.setHtml('');
                         }
                     }else{
                         if (!editor_cy) {

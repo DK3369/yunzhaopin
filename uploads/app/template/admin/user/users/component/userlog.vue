@@ -95,7 +95,7 @@
 				loading: false,
 				dataText: lc('admin_user_weipin_00026'),
 				// date selection
-				daterange: '",
+				daterange: '',
 
 				// 搜索筛选项
 				searchList: [],
@@ -111,8 +111,8 @@
 				pageSizes: [],
 
 				// {{ lc('admin_00959') }}
-				t: "',
-				order: '",
+				t: '',
+				order: '',
 
 				checkedAll: false, // {{ lc('wap_js_00074') }}
 				checkedAllIndeterminate: false,
@@ -127,7 +127,7 @@
 			}
 		},
         components: {
-            "preview': httpVueLoader('../../../component/resume_preview.vue")
+            'preview': httpVueLoader('../../../component/resume_preview.vue')
         },
 		mounted() {
 			var that = this
@@ -163,7 +163,7 @@
 			getParams:function(params={},search=false){
 				var that = this;
 				for(let i in params){
-					if(typeof that.searchForm[i]!="undefined'){
+					if(typeof that.searchForm[i]!='undefined'){
 						that.searchForm[i] = params[i];
 					}
 				}

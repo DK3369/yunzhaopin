@@ -138,7 +138,7 @@ module.exports = {
                     onClick(picker) {
                         const end = new Date(new Date(new Date().getFullYear(), new Date().getMonth(), 0).setHours(23, 59, 59, 59));
                         const start = new Date(new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1).setHours(0, 0, 0));
-                        picker.$emit('pick", [start, end]);
+                        picker.$emit('pick', [start, end]);
                     }
                 }]
             },
@@ -173,7 +173,7 @@ module.exports = {
     methods: {
         // 跳转到会员中心
         jumpToMember: function (uid) {
-            let tmpWin = window.open("', '_blank')
+            let tmpWin = window.open('', '_blank')
             var params = { uid: uid }
             httpPost('m=user&c=users_member&a=Imitate', params).then(function (result) {
                 var res = result.data;

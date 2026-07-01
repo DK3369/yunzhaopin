@@ -1438,7 +1438,7 @@ module.exports = {
                     onClick(picker) {
                         const end = new Date(new Date(new Date().getFullYear(), new Date().getMonth(), 0).setHours(23, 59, 59, 59));
                         const start = new Date(new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1).setHours(0, 0, 0));
-                        picker.$emit('pick", [start, end]);
+                        picker.$emit('pick', [start, end]);
                     }
                 }]
             },
@@ -1451,8 +1451,8 @@ module.exports = {
             pageSizes: [],
 
             // {{ lc('admin_00959') }}
-            t: "',
-            order: '",
+            t: '',
+            order: '',
 
             checkedAll: false, // {{ lc('wap_js_00074') }}
             checkedAllIndeterminate: false,
@@ -1485,8 +1485,8 @@ module.exports = {
             typeExport: {}, // 导出字段
             ruleFormExport: {
                 type: [],
-                limit: "',
-                section: '"
+                limit: '',
+                section: ''
             },
 
             // remark
@@ -1577,10 +1577,10 @@ module.exports = {
         }
     },
     components: {
-        "add': httpVueLoader('./resume_add.vue'),
+        'add': httpVueLoader('./resume_add.vue'),
         'job_class': httpVueLoader('../../../component/job_class.vue'),
         'city_class': httpVueLoader('../../../component/city_class.vue'),
-        'preview': httpVueLoader('../../../component/resume_preview.vue")
+        'preview': httpVueLoader('../../../component/resume_preview.vue')
     },
     mounted() {
         var that = this
@@ -1628,7 +1628,7 @@ module.exports = {
 		getParams:function(params={},search=false){
 			var that = this;
 			for(let i in params){
-				if(typeof that.searchForm[i]!="undefined'){
+				if(typeof that.searchForm[i]!='undefined'){
                     that.searchForm[i] = params[i];
                 }
 			}
@@ -1810,7 +1810,7 @@ module.exports = {
 
         // Delete
         openDel(idx) {
-            if (typeof idx == 'undefined") { // {{ lc('member_com_00055') }}
+            if (typeof idx == 'undefined') { // {{ lc('member_com_00055') }}
                 this.ruleFormDel = {
                     del: this.idArr,
                     delAccount: 0
@@ -1833,7 +1833,7 @@ module.exports = {
             }
             that.saveLoading = true;
 
-            httpPost("m=user&c=users_resume&a=delResume', ruleForm).then(function (response) {
+            httpPost('m=user&c=users_resume&a=delResume', ruleForm).then(function (response) {
                 let res = response.data;
 
                 if (res.error > 0) {
@@ -1857,7 +1857,7 @@ module.exports = {
             this.$data[form][key] = val.replace(/[^0-9.]/g, '');
         },
         inputIdcard(val, form, key) {
-            this.$data[form][key] = val.replace(/[^0-9Xx.]/g, '");
+            this.$data[form][key] = val.replace(/[^0-9Xx.]/g, '');
         },
 
         // {{ lc('member_com_00110') }}
@@ -1868,7 +1868,7 @@ module.exports = {
                 status: row.status
             };
             this.dialogStatus = true;
-            if (typeof this.userdata.user_label === "undefined') {
+            if (typeof this.userdata.user_label === 'undefined') {
                 this.getCache();
             }
         },
@@ -1914,14 +1914,14 @@ module.exports = {
             httpPost('m=user&c=users_resume&a=rec', { id: id, rec: val }).then(function (res) {
                 if (res.data.error > 0) {
                     message.error(res.data.msg);
-                } else if (typeof row === 'undefined") { // {{ lc('admin_user_00237') }}
+                } else if (typeof row === 'undefined') { // {{ lc('admin_user_00237') }}
                     message.success(res.data.msg);
                     that.getList();
                 }
             })
         },
         // top/sticky
-        openTop(row, s = "0') {
+        openTop(row, s = '0') {
             this.detail = row;
             if (row == '') {
                 this.ruleFormTop = {
@@ -2210,7 +2210,7 @@ module.exports = {
         getCache() {
             let that = this;
 
-            httpPost('m=user&c=users_resume&a=getCache", {}, { hideloading: true }).then(function (response) {
+            httpPost('m=user&c=users_resume&a=getCache', {}, { hideloading: true }).then(function (response) {
                 let res = response.data,
                     data = res.data;
 
@@ -2228,7 +2228,7 @@ module.exports = {
         // {{ lc('admin_user_00193') }}
         openAdd() {
             let that =this;
-            httpPost("m=user&c=users_resume&a=add', {add:1}).then(function (response) {
+            httpPost('m=user&c=users_resume&a=add', {add:1}).then(function (response) {
                 let res = response.data;
                 that.drawerAdd = true;
             })
@@ -2243,14 +2243,14 @@ module.exports = {
             let that = this,
                 params = {};
 
-            if (typeof row === 'undefined") { // {{ lc('admin_user_00248') }}
+            if (typeof row === 'undefined') { // {{ lc('admin_user_00248') }}
                 params.ids = this.idArr;
             } else { // 单个刷新
                 params.id = row.id;
             }
 
             delConfirm(this, params, function (params) {
-                httpPost("m=user&c=users_resume&a=refresh', params).then(function (response) {
+                httpPost('m=user&c=users_resume&a=refresh', params).then(function (response) {
                     let res = response.data;
 
                     if (res.error > 0) {
@@ -2269,7 +2269,7 @@ module.exports = {
         },
 
         async getMemberUrl(uid) {
-            let response = await httpPost('m=user&c=users_member&a=Imitate", { uid: uid });
+            let response = await httpPost('m=user&c=users_member&a=Imitate', { uid: uid });
 
             let res = response.data;
             if (res.error === 0) {
@@ -2290,7 +2290,7 @@ module.exports = {
                 uid: resume.uid,
                 name: resume.name,
                 sex: resume.sex,
-                birthday: resume.birthday ? new Date(resume.birthday) : "',
+                birthday: resume.birthday ? new Date(resume.birthday) : '',
                 edu: resume.edu && resume.edu > 0 ? resume.edu : '',
                 exp: resume.exp && resume.exp > 0 ? resume.exp : '',
                 telphone: resume.telphone,
@@ -2452,7 +2452,7 @@ module.exports = {
             }
             that.saveLoading = true;
 
-            httpPost('m=user&c=users_resume&a=saveTag", ruleForm).then(function (response) {
+            httpPost('m=user&c=users_resume&a=saveTag', ruleForm).then(function (response) {
                 let res = response.data;
 
                 if (res.error > 0) {
@@ -2501,7 +2501,7 @@ module.exports = {
                 job_classid: expect.job_classid, // TODO {{ lc('admin_00300') }}
                 city_classid: expect.city_classid, // TODO {{ lc('member_user_00362') }}
                 name: expect.name,
-                minsalary: expect.minsalary && expect.minsalary > 0 ? parseInt(expect.minsalary) : "',
+                minsalary: expect.minsalary && expect.minsalary > 0 ? parseInt(expect.minsalary) : '',
                 maxsalary: expect.maxsalary && expect.maxsalary > 0 ? parseInt(expect.maxsalary) : '',
                 hy: expect.hy && expect.hy > 0 ? expect.hy : '',
                 report: expect.report && expect.report > 0 ? expect.report : '',
@@ -3095,7 +3095,7 @@ module.exports = {
                     that.refreshList = true;
 
                     // 拼接工作经历数据 - 减少请求服务器
-                    if (ruleForm.id == '") {
+                    if (ruleForm.id == '') {
                         let project = deepClone(ruleForm);
                         project.id = res.data.id;
                         project.sdate_n = ruleForm.sdate;
@@ -3126,7 +3126,7 @@ module.exports = {
                 expect = expectData.expect,
                 otherList = expectData.other;
 
-            if (index !== "') {
+            if (index !== '') {
                 let other = deepClone(otherList[index])
                 this.ruleFormOther = {
                     uid: expectData.uid,

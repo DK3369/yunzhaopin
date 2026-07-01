@@ -305,7 +305,7 @@ module.exports = {
         return {
             searchForm: {},
             config: {
-                integral_pricename: '",
+                integral_pricename: '',
             },
             qy_rows: [],
             tcPackage: [],
@@ -352,7 +352,7 @@ module.exports = {
                 if (res.error === 0) {
                     _this.qy_rows = res.data.qy_rows;
                     _this.tcPackage = res.data.tcPackage;
-                    if (need == 'all") {
+                    if (need == 'all') {
                         _this.config.integral_pricename = res.data.config.integral_pricename;
                         
                         let config = res.data.config ? res.data.config : {};

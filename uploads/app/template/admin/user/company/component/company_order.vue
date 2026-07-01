@@ -250,7 +250,7 @@
 				is_crm:'',
 				order_state:'',
 				order_type:'',
-                integral_pricename: '",
+                integral_pricename: '',
                 islook: false,
                 dtlVisible: false,
                 curr_dtl: null,
@@ -258,7 +258,7 @@
                 previewPics: [],
                 checkedAll: false,//{{ lc('wap_js_00074') }}
                 selectedItem: [],
-                curr_id: "',
+                curr_id: '',
                 showhtpic: false,
 
                 prevPage: 0

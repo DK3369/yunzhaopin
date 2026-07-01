@@ -633,8 +633,8 @@
 			},
             addressSubmit: function () {
                 var that = this
-                that.link_man = that.link_man.replace(/[-_ ]/g, '");// {{ lc('common_01715') }}
-                if (that.link_man == "') {
+                that.link_man = that.link_man.replace(/[-_ ]/g, '');// {{ lc('common_01715') }}
+                if (that.link_man == '') {
                     message.error(lc('wap_01368'))
                     return false
                 } else {

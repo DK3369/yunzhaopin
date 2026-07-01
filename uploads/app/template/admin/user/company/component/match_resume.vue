@@ -180,7 +180,7 @@ module.exports = {
             job_types: [],
             sendnum: 0,
             showprogress: false,
-            cztype: '",
+            cztype: '',
             islook: false,
 
             prevPage: 0
@@ -264,9 +264,9 @@ module.exports = {
                 eid: eid,
                 uid: uid
             }
-            var url = '', msgtype = '"
+            var url = '', msgtype = ''
             if (cz_type == 1) {// {{ lc('admin_user_company_00379') }}
-                url = "m=user&c=company&a=directrecom'
+                url = 'm=user&c=company&a=directrecom'
                 msgtype = lc('admin_user_company_00379')
             } else if (cz_type == 2) {// 投递
                 url = 'm=user&c=company_job&a=applyJob'

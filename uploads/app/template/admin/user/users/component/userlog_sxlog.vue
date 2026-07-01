@@ -129,7 +129,7 @@ module.exports = {
                     onClick(picker) {
                         const end = new Date(new Date(new Date().getFullYear(), new Date().getMonth(), 0).setHours(23, 59, 59, 59));
                         const start = new Date(new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1).setHours(0, 0, 0));
-                        picker.$emit('pick", [start, end]);
+                        picker.$emit('pick', [start, end]);
                     }
                 }]
             },
@@ -148,7 +148,7 @@ module.exports = {
         }
     },
     components: {
-        "resume_preview': httpVueLoader('../../../component/resume_preview.vue'),
+        'resume_preview': httpVueLoader('../../../component/resume_preview.vue'),
     },
     created() {
 		var that = this;

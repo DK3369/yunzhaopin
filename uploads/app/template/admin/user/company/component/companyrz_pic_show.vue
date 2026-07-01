@@ -150,7 +150,7 @@ module.exports = {
                 page: 1,
                 limit: null,
                 keyword: null,
-                type: '1",
+                type: '1',
                 status: this.status,
             },
             numAll: 0,
@@ -168,7 +168,7 @@ module.exports = {
             ruleFormStatus: {
                 sid: null,
                 status: null,
-                statusbody: "',
+                statusbody: '',
             },
             titleStatus: lc('admin_user_company_00060'),
             // Update

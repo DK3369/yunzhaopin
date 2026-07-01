@@ -558,7 +558,7 @@
                         {
                             name: seriesArr.name,
                             data: seriesArr.data,
-                            type: 'line",
+                            type: 'line',
                             // smooth: true,
                             areaStyle: {
                                 normal: {
@@ -566,7 +566,7 @@
                                     color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
                                         {
                                             offset: 0,
-                                            color: "#1890FF'
+                                            color: '#1890FF'
                                         },
                                         {
                                             offset: 0.7,

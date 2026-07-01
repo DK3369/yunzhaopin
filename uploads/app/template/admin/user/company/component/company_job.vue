@@ -156,7 +156,7 @@ module.exports = {
                 time: null,
 				uid:'',
 				state:'',
-				status:'"
+				status:''
             },
             total: 0,
             tableData: [],
@@ -181,7 +181,7 @@ module.exports = {
             pageSizes: [],
             pagerCount: 5,
             curr_job: null,
-            jobtgtype: "',
+            jobtgtype: '',
             jobtgtit: '',
             jobtgdrawer: false,
             jobtgdays: '',
@@ -257,7 +257,7 @@ module.exports = {
         // 职位招聘状态修改
         zpstatuschange: function (val, id) {
             var that = this
-            httpPost('m=user&c=company_job&a=checkstate", { id: id, state: val ? 2 : 1 }).then(function (result) {
+            httpPost('m=user&c=company_job&a=checkstate', { id: id, state: val ? 2 : 1 }).then(function (result) {
                 var res = result.data
                 if (res.error == 0) {
                     that.getList()
@@ -281,7 +281,7 @@ module.exports = {
             this.tgjid = data.id
             if (type == 1) { // {{ lc('wap_user_00335') }}
                 this.curr_job.istop = !this.curr_job.istop // 防止switch状态直接改变
-                this.jobtgetime = data.top_time_n ? data.top_time_n : "'
+                this.jobtgetime = data.top_time_n ? data.top_time_n : ''
                 this.jobtgtit = lc('wap_com_00238')
             } else if (type == 2) { // 推荐
                 this.curr_job.isrec = !this.curr_job.isrec // 防止switch状态直接改变

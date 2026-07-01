@@ -1,13 +1,18 @@
 {
-    "generated": "2026-06-27T12:20:09+08:00",
-    "wap_actionable": 0,
+    "generated": "2026-07-01T17:58:03+08:00",
+    "wap_actionable": 327,
     "hardcoded_php": {
-        "total": 3,
-        "hardcoded": 0,
+        "total": 9,
+        "hardcoded": 5,
         "missing_pack": 0,
         "echo": 3
     },
     "hardcoded_by_dir": {
+        "api\/wxapp": {
+            "hardcoded": 5,
+            "missing_pack": 0,
+            "echo": 0
+        },
         "app\/include": {
             "hardcoded": 0,
             "missing_pack": 0,
@@ -16,12 +21,12 @@
     },
     "template_missing_pack": 27,
     "lang_pack": {
-        "zh_keys": 16046,
-        "en_keys": 16046,
+        "zh_keys": 16031,
+        "en_keys": 16031,
         "only_zh": 0,
         "only_en": 0,
-        "en_same_or_empty": 37,
-        "en_same_zh_need_fix": 23,
-        "en_contains_chinese": 23
+        "en_same_or_empty": 14,
+        "en_same_zh_need_fix": 0,
+        "en_contains_chinese": 0
     }
 }

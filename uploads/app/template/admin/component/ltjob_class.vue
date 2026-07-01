@@ -135,7 +135,7 @@
 
             // 搜索分类 - 下拉框
             remoteClassList(query) {
-                if ($.trim(query) !== '") {
+                if ($.trim(query) !== '') {
                     let that = this;
 
                     that.searchClass(query); // 本地JS{{ lc('common.search') }}
@@ -147,11 +147,11 @@
                         let newClassList = [],
                             newClassId = [];
                         classList.forEach(function (oneItem, oneIndex) {
-                            if (oneItem.name.includes(query)) { // 一级须包含关键字
+                            if (oneItem.name.includes(query)) { // First-level item must contain the keyword
                                 newClassList.push({
                                     id: oneItem.id,
                                     name: oneItem.name,
-                                    upname: "',
+                                    upname: '',
                                     childrenIds: oneItem.children && oneItem.children.length > 0 ? oneItem.children.map(row => row.id) : []
                                 })
                                 newClassId.push(oneItem.id); // 用来判断存在一级，二级不显示一级的名称
@@ -299,7 +299,7 @@
             handleSelectClass(one) {
                 let that = this,
                     classList = that.classList,
-                    twoClassList = classList[one]['children"];
+                    twoClassList = classList[one]['children'];
 
                 if (twoClassList && twoClassList.length > 0 && that.selectJobId.length > 0) { // 一级选中，清空二级已选选项
                     twoClassList.forEach(function (item, index) {
@@ -336,18 +336,18 @@
                 if (classList && classList.length > 0) {
                     classList.forEach(function(oneItem, oneKey) {
                         if (oneItem.name.includes(query)) { // 一级须包含关键字
-                            classList[oneKey].hide = false; // {{ lc('admin_00062') }}
+                            classList[oneKey].hide = false; // Show first-level category
                         } else {
-                            classList[oneKey].hide = true; // {{ lc('admin_00063') }}
+                            classList[oneKey].hide = true; // Hide first-level category
                         }
                         twoList = oneItem.children;
                         if (twoList && twoList.length > 0) {
                             twoList.forEach(function(twoItem, twoKey) {
-                                if (twoItem.name.includes(query)) { // 二级须包含关键字
-                                    classList[oneKey].hide = false; // 存在二级一级也显示
-                                    classList[oneKey]["children'][twoKey].hide = false; // 二级分类标记显示
+                                if (twoItem.name.includes(query)) { // Second-level item must contain the keyword
+                                    classList[oneKey].hide = false; // Show first-level category when a child matches
+                                    classList[oneKey]['children'][twoKey].hide = false; // Mark second-level category as visible
                                 } else {
-                                    classList[oneKey]['children'][twoKey].hide = true; // 隐藏二级分类
+                                    classList[oneKey]['children'][twoKey].hide = true; // Hide second-level category
                                 }
                             })
                         }

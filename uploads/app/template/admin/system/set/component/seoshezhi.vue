@@ -431,7 +431,7 @@ module.exports = {
     watch: {
         config: function(val, oldVal) {
             this.ruleForm = {
-                did: "0'
+                did: '0'
             };
 
             if (this.call == 'module') {

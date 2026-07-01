@@ -224,7 +224,7 @@ module.exports = {
                     onClick(picker) {
                         const end = new Date(new Date(new Date().getFullYear(), new Date().getMonth(), 0).setHours(23, 59, 59, 59));
                         const start = new Date(new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1).setHours(0, 0, 0));
-                        picker.$emit('pick", [start, end]);
+                        picker.$emit('pick', [start, end]);
                     }
                 }]
             },
@@ -267,7 +267,7 @@ module.exports = {
         },
         searchtype: {
             handler(val) {
-                this.searchForm.type = val ? val : "1';
+                this.searchForm.type = val ? val : '1';
             },
             immediate: true,
             deep: true,

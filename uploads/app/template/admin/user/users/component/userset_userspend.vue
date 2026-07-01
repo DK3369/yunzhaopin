@@ -63,9 +63,9 @@ module.exports = {
             ruleForm: {
                 integral_resume_top_type: 2,
                 //个人简历置顶费用
-                integral_resume_top: '",
+                integral_resume_top: '',
                 //{{ lc('admin_user_00347') }}
-                pay_trust_resume: "',
+                pay_trust_resume: '',
             },
             submitLoading: false,
         }

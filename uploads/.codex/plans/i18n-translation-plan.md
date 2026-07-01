@@ -316,7 +316,29 @@ php tools/scan_wap_zero_zh.php
 - SQL 批次可完整导入测试库。
 - diff 中没有第三方库、缓存、上传文件的无关改动。
 
-## 10. 推荐执行顺序
+## 10. Admin d18 大面积后台收敛批次
+
+本轮默认语言继续固定为 `en_us`，`zh_cn` 保留中文翻译。处理范围为管理后台用户可见文案和中文注释；第三方库、协议字典、接口字段、枚举值、CSS class/id、URL、localStorage key、表情编码字典和用户生成内容不纳入翻译。
+
+执行规则：
+
+- 每批必须先限定目录或文件组，先扫描，再修改；禁止跨后台全目录盲目替换。
+- Vue/后台页面用户可见文案统一使用 `lc()`；注释改英文，不新增语言包 key。
+- 新增 key 必须同时补齐 `data/lang/auto/zh_cn.php` 和 `data/lang/auto/en_us.php`。
+- 每批完成后运行 `php tools/php_lint_gate.php`、`php tools/scan_i18n_status.php`，并对目标后台文件运行 `php tools/scan_vue_remaining.php <file>` 或等价扫描。
+- 涉及 JS 或模板内脚本时，必须检查 `http://dev.test/admin/?lang=en_us` 返回 200，且不能出现 `Invalid or unexpected token`。
+- 每批单独 commit 并 push 到 `origin/dev`；门禁失败时先修复失败点，不继续扩大范围。
+
+批次顺序：
+
+1. 高风险修复：先修复后台模板/脚本中损坏的引号、括号、数组访问、模板表达式，保证迁移基线可运行。
+2. 后台壳页与共享组件：处理 `app/template/admin/index.htm`、共享分类组件、`api.js`、`router.js` 的可见文案与中文注释。
+3. 高频业务模块：优先用户、企业、简历、职位模块，每批只处理一个目录或 3-5 个强相关文件。
+4. 内容、系统、运营、工具模块：按后台菜单模块推进表格列、按钮、placeholder、弹窗、空状态、校验提示。
+5. 语言包质量收敛：修复 `en_us` 中中文残留、与 `zh_cn` 相同的错误译文、误存的模板/Vue/JS 表达式。
+6. 扫描报告收敛：更新扫描报告，并标注剩余中文属于协议数据、第三方库、表情编码或用户内容。
+
+## 11. 推荐执行顺序
 
 1. 修复语言包损坏项和扫描脚本误报规则。
 2. 建立第三方资源排除清单。

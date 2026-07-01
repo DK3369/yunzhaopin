@@ -291,7 +291,7 @@
                         params = {},
                         msg = '';
 
-                    if (typeof idx == 'undefined") { // {{ lc('member_com_00055') }}
+                    if (typeof idx == 'undefined') { // {{ lc('member_com_00055') }}
                         params.del = this.idArr;
                         msg = lc('common_00853');
                     } else {// {{ lc('common_01711') }}

@@ -386,7 +386,7 @@
                 y:'',
                 address_v:'',
                 mapurl: '',
-                mapsecret: '",
+                mapsecret: '',
             }
         },
         watch: {
@@ -437,7 +437,7 @@
             },
             getinfo: function(){
                 var that = this
-                httpPost("m=user&c=company&a=add', {}).then(function (response) {
+                httpPost('m=user&c=company&a=add', {}).then(function (response) {
                     let res = response.data;
                     if (res.error == 0) {
                         that.cache = res.data.cache
@@ -616,14 +616,14 @@
                     MENU_CONF: {
                         uploadImage: {
                             server: baseUrl + 'm=index&c=uploadfile',
-                            fieldName: 'file"
+                            fieldName: 'file'
                         }
                     }
                 };
                 // {{ lc('wap_com_00160') }}
                 if (!editor_desc) {
                     editor_desc = createEditor({
-                        selector: "#editor-container-comdesc',
+                        selector: '#editor-container-comdesc',
                         html: '',
                         config: editorConfig,
                         mode: 'simple'
@@ -684,11 +684,11 @@
                     return false;
                 } else{
                     var link_name = that.linkman;
-                    var link_man = link_name.replace(/[-_ ]/g,'");// {{ lc('common_01715') }}
+                    var link_man = link_name.replace(/[-_ ]/g,'');// {{ lc('common_01715') }}
                     if(!link_man){
                         return ;
                     }
-                    var test = link_man.replace(/[0-9]/g,"');
+                    var test = link_man.replace(/[0-9]/g,'');
                     if (!test){
                         message.error(lc('wap_com_00005'));
                         return false;

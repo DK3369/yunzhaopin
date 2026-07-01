@@ -534,7 +534,7 @@ module.exports = {
             for (let index in params) {
                 (params[index] === '') && (params[index] = null);
             }
-            httpPost('m=user&c=users_userset&a=index", params).then(function (response) {
+            httpPost('m=user&c=users_userset&a=index', params).then(function (response) {
                 let res = response.data;
                 if (res.error === 0) {
                     let config = res.data.config ? res.data.config : {};
@@ -546,18 +546,18 @@ module.exports = {
                     //{{ lc('wap_com_00408') }}
                     _this.ruleForm.user_msg_status = config.user_msg_status == "0" ? true : false;
                     //{{ lc('member_user_00161') }}
-                    _this.ruleForm.user_photo_status = config.user_photo_status == "1' ? true : false;
+                    _this.ruleForm.user_photo_status = config.user_photo_status == '1' ? true : false;
                     // work
-                    _this.ruleForm.rshow_photo_status = config.rshow_photo_status == '1" ? true : false;
+                    _this.ruleForm.rshow_photo_status = config.rshow_photo_status == '1' ? true : false;
                     //{{ lc('member_user_00276') }}
                     _this.ruleForm.user_trust_status = config.user_trust_status == "0" ? true : false;
                     // ----ResumeAudit
                     //{{ lc('wap_user_00197') }}
                     _this.ruleForm.resume_status = config.resume_status == "0" ? true : false;
                     //{{ lc('wap_00269') }}
-                    _this.ruleForm.user_revise_state = config.user_revise_state == "0' ? true : false;
+                    _this.ruleForm.user_revise_state = config.user_revise_state == '0' ? true : false;
                     _this.ruleForm.resume_statetime_start = config.resume_statetime_start !== undefined ? config.resume_statetime_start : '';
-                    _this.ruleForm.resume_statetime_end = config.resume_statetime_end !== undefined ? config.resume_statetime_end : '";
+                    _this.ruleForm.resume_statetime_end = config.resume_statetime_end !== undefined ? config.resume_statetime_end : '';
                     //----{{ lc('admin_user_00337') }}
                     //{{ lc('wap_user_00197') }}
                     _this.ruleForm.user_resume_status = config.user_resume_status == "1" ? true : false;
@@ -567,7 +567,7 @@ module.exports = {
                     _this.ruleForm.resume_kstd = config.resume_kstd !== undefined ? config.resume_kstd : null;
                     //----简历创建必填项
                     // Work experience
-                    _this.ruleForm.resume_create_exp = config.resume_create_exp == "1' ? true : false;
+                    _this.ruleForm.resume_create_exp = config.resume_create_exp == '1' ? true : false;
                     // Educational experience
                     _this.ruleForm.resume_create_edu = config.resume_create_edu == '1' ? true : false;
                     // Project experience
@@ -580,7 +580,7 @@ module.exports = {
                     }
                     //教育经历选项
                     if (config.educreate !== undefined && config.educreate.length) {
-                        _this.ruleForm.educreate = config.educreate.split(',");
+                        _this.ruleForm.educreate = config.educreate.split(',');
                     } else {
                         _this.ruleForm.educreate = [];
                     }
@@ -599,11 +599,11 @@ module.exports = {
                     _this.ruleForm.user_sqintegrity = config.user_sqintegrity !== undefined ? config.user_sqintegrity : "";
                     //----{{ lc('admin_user_00331') }}
                     // Work experience
-                    _this.ruleForm.user_work_regiser = config.user_work_regiser == "1' ? true : false;
+                    _this.ruleForm.user_work_regiser = config.user_work_regiser == '1' ? true : false;
                     // Educational experience
                     _this.ruleForm.user_edu_regiser = config.user_edu_regiser == '1' ? true : false;
                     // Project experience
-                    _this.ruleForm.user_project_regiser = config.user_project_regiser == '1" ? true : false;
+                    _this.ruleForm.user_project_regiser = config.user_project_regiser == '1' ? true : false;
                     //{{ lc('admin_user_00325') }}
                     _this.ruleForm.sy_rname_num = config.sy_rname_num !== undefined ? config.sy_rname_num : "";
                     //{{ lc('admin_user_00321') }}
@@ -629,7 +629,7 @@ module.exports = {
                     //{{ lc('admin_user_00330') }}
                     _this.ruleForm.sy_resumename_num = config.sy_resumename_num !== undefined ? config.sy_resumename_num : null;
                     //{{ lc('admin_user_00326') }}
-                    _this.ruleForm.sq_resume_interval = config.sq_resume_interval !== undefined ? config.sq_resume_interval : "';
+                    _this.ruleForm.sq_resume_interval = config.sq_resume_interval !== undefined ? config.sq_resume_interval : '';
 
                     _this.getBaseData();
                 }

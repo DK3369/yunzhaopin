@@ -268,7 +268,7 @@
             // 防止密码框内容清楚后展示用户密码清单
             pwdchange: function(val){
                 var that = this
-                if (val == '") {
+                if (val == '') {
                     this.pwdreadonly = true
                     setTimeout(function(){ that.pwdreadonly = false, 100})
                 }
@@ -294,7 +294,7 @@
                 } else {
                     this.info = {
                         uid: 0,
-                        username: "',
+                        username: '',
                         password: '',
                         name: '',
                         m_id: '',

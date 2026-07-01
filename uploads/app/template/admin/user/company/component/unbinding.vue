@@ -67,7 +67,7 @@
                 loading: false,
                 emptytext: lc('wap_js_00113'),
                 // date selection
-                daterange: '",
+                daterange: '',
 
                 // 搜索筛选项
                 searchForm: {
@@ -82,8 +82,8 @@
                 pageSizes: [],
 
                 // {{ lc('admin_00959') }}
-                t: "',
-                order: '",
+                t: '',
+                order: '',
 
                 checkedAll: false, // {{ lc('wap_js_00074') }}
                 checkedAllIndeterminate: false,
@@ -119,7 +119,7 @@
 			getParams:function(params={},search=false){
 				var that = this;
 				for(let i in params){
-					if(typeof that.searchForm[i]!="undefined'){
+					if(typeof that.searchForm[i]!='undefined'){
 						that.searchForm[i] = params[i];
 					}
 				}
@@ -241,11 +241,11 @@
                     params = {},
                     msg = '';
 
-                if (typeof idx == 'undefined") { // {{ lc('member_com_00055') }}
+                if (typeof idx == 'undefined') { // {{ lc('member_com_00055') }}
                     params.del = this.idArr;
                     msg = lc('common_00853');
-                } else if (idx == 'all") { // {{ lc('admin_user_00260') }}
-                    params.del = "all';
+                } else if (idx == 'all') { // {{ lc('admin_user_00260') }}
+                    params.del = 'all';
                     msg = lc('admin_company_00007');
                 } else {// 单个删除
                     params.del = that.list[idx].id;
