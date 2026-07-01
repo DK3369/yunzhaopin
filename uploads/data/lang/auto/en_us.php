@@ -1562,6 +1562,7 @@ return array(
   'admin_index_00078' => 'Warning Settings',
   'admin_index_00079' => 'Workbench',
   'admin_index_00080' => 'Pending View',
+  'admin_index_00081' => 'Click the menus you need to get started',
   'admin_neirong_00001' => 'Please select the assessment paper to delete!',
   'admin_neirong_00002' => 'Please correctly fill in your category!',
   'admin_neirong_00003' => 'This category already exists!',
@@ -2225,6 +2226,11 @@ return array(
   'admin_system_00627' => 'Mobile Share H5 Screen',
   'admin_system_00628' => 'Data Share QR Code Mode',
   'admin_system_00629' => 'Home Bottom Floating Tip Bar',
+  'admin_system_00630' => 'Edit SEO',
+  'admin_system_00631' => 'This mobile number is already on the whitelist and cannot be added to the blacklist',
+  'admin_system_00632' => 'This will permanently delete the file. Continue?',
+  'admin_system_00633' => 'ID card images must be JPG, PNG, JPEG, or GIF format!',
+  'admin_system_00634' => 'ID card image size cannot exceed 2MB!',
   'admin_system_00630' => 'Baidu Auto Push',
   'admin_system_00631' => 'Please select QR code mode',
   'admin_system_00632' => 'Job/Resume Click Counter',
@@ -15964,7 +15970,7 @@ return array(
   'admin_vue_00055' => 'Delete this record?',
   'admin_vue_00056' => 'Please enter template path',
   'admin_vue_00057' => 'Delete this category?',
-  'admin_vue_00058' => '如：/job/index.php?c=comapply （只需模块链接 无需参数 与上对应）',
+  'admin_vue_00058' => 'e.g. /job/index.php?c=comapply (module link only, no params, must match above)',
   'admin_vue_00061' => 'Please enter news content',
   'admin_vue_00063' => 'Please enter answer content',
   'admin_vue_00064' => 'Please select Q&A category',
@@ -16024,38 +16030,17 @@ return array(
   'admin_vue_00135' => 'Width',
   'admin_vue_00136' => 'to',
 
+  'admin_yunying_00200' => 'Batch delete will remove all reports for this resume. Continue?',
+  'admin_yunying_00201' => 'Remove {0}?',
+  'admin_neirong_zph_00001' => 'Level 1: Zone A',
+  'admin_demo_00001' => 'Option 1',
+  'admin_demo_00002' => 'Option 2',
+  'admin_demo_00003' => 'Option 3',
+  'admin_demo_00004' => 'Option 4',
+  'admin_demo_00005' => 'Option 5',
+
   "admin_html_00001" => 'Static pages are generated from dynamic data on demand so pages do not read the database on each request. Notes:
 1. Dynamic pages load slower than static pages.
 2. Static pages are easier for search engines to crawl and rank higher.
 3. Dynamic pages are more vulnerable to SQL injection; static pages are not.',
-
-  'admin_html_00002' => 'id==\'\'?\'添加模板\':\'修改模板\'',
-
-  'admin_html_00003' => 'id ? \'修改\' : \'添加\'',
-  'admin_html_00004' => 'id ? \'修改导航\' : \'添加导航\'',
-  'admin_html_00005' => '请对系统->支付设置网站轻松与支付宝、微信支付进行对接，对接后实现用户在线支付功能！可以购买广告位、会员套餐等服务。',
-  'admin_html_00006' => '注意事项：办理电汇时，请在电汇单\"汇款用途\"一栏处注明您的订单号。',
-  'admin_html_00007' => 'detail.id ? \'SEO修改\' : \'SEO添加\'',
-  'admin_html_00008' => '若选择\"否\"，则直接显示简历列表',
-  'admin_html_00009' => '若选择\"否\"，则直接显示职位列表',
-
-  'admin_html_00010' => '\'外宣海报\'',
-  'admin_html_00011' => 'info.id ? \'公招修改\' : \'公招添加\'',
-  'admin_html_00012' => 'detail.id ? \'修改类别\' : \'添加类别\'',
-  'admin_html_00013' => '0\" @click=\"childClass(0)\">返回',
-  'admin_html_00014' => 'ruleForm.id ? \'修改工具箱类别\' : \'添加工具箱类别\'',
-  'admin_html_00015' => 'detail.id ? \'修改文档\' : \'添加文档\'',
-  'admin_html_00016' => 'detail.id ? \'修改公告\' : \'添加公告\'',
-
-  'admin_html_00017' => '\'返还\'+integral_pricename',
-  'admin_html_00019' => '\'兑换\'+integral_pricename',
-
-  'admin_html_00018' => '可点击所需栏目，开启工作哟~',
-
-  'admin_html_00020' => '上传身份证图片只能是 JPG, PNG, JPEG, GIF 格式!',
-  'admin_html_00021' => '上传身份证图片大小不能超过 2MB!',
-
-  'admin_html_00022' => '该手机已经在白名单中,不能添加到黑名单',
-
-  'admin_html_00023' => '此操作将永久删除该文件, 是否继续?',
 );

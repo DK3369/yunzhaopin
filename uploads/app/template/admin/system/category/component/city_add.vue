@@ -3,7 +3,7 @@
         <div class="drawerModInfo">
             <div v-if="keyid_name" class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>{yun:}t key='admin_system_00084'{/yun}</span>
+                    <span>{{ lc('admin_system_00084') }}</span>
                 </div>
                 <div class="drawerModInpt">
                     <div class="spandiv">{{ keyid_name }}</div>
@@ -11,15 +11,15 @@
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>{yun:}t key='admin_system_00083'{/yun}</span>
+                    <span>{{ lc('admin_system_00083') }}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input v-model="ruleForm.name" placeholder="{yun:}t key='wap_user_00076'{/yun}"></el-input>
+                    <el-input v-model="ruleForm.name" :placeholder="lc('wap_user_00076')"></el-input>
                 </div>
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>{yun:}t key='admin_system_00088'{/yun}</span>
+                    <span>{{ lc('admin_system_00088') }}</span>
                 </div>
                 <div class="drawerModInpt">
                     <el-input v-model="ruleForm.e_name"></el-input>
@@ -27,10 +27,10 @@
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>{yun:}t key='admin_system_00086'{/yun}</span>
+                    <span>{{ lc('admin_system_00086') }}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-select v-model="ruleForm.letter" placeholder="{yun:}t key='wap_user_00100'{/yun}" filterable>
+                    <el-select v-model="ruleForm.letter" :placeholder="lc('wap_user_00100')" filterable>
                         <el-option v-for="item in letterOptions" :key="item" :label="item" :value="item">
                         </el-option>
                     </el-select>
@@ -38,10 +38,10 @@
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>{yun:}t key='admin_system_00087'{/yun}</span>
+                    <span>{{ lc('admin_system_00087') }}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-select v-model="ruleForm.display" placeholder="{yun:}t key='wap_user_00100'{/yun}">
+                    <el-select v-model="ruleForm.display" :placeholder="lc('wap_user_00100')">
                         <el-option v-for="item in displayOptions" :key="item.value" :label="item.label" :value="item.value">
                         </el-option>
                     </el-select>
@@ -49,7 +49,7 @@
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>{yun:}t key='admin_system_00085'{/yun}</span>
+                    <span>{{ lc('admin_system_00085') }}</span>
                 </div>
                 <div class="drawerModInpt">
                     <el-input v-model="ruleForm.code" placeholder=""></el-input>
@@ -57,7 +57,7 @@
             </div>
         </div>
         <div class="setBasicButn" style="border: none;">
-            <el-button type="primary" size="medium" @click="submitForm('ruleForm')" :disabled="submitLoading">{yun:}t key='common.save'{/yun}</el-button>
+            <el-button type="primary" size="medium" @click="submitForm('ruleForm')" :disabled="submitLoading">{{ lc('common.save') }}</el-button>
         </div>
     </div>
 </template>
@@ -97,7 +97,7 @@ module.exports = {
             this.ruleForm.keyid = this.keyid;
             let params = JSON.parse(JSON.stringify(this.ruleForm));
             if (params.name == '') {
-                message.error(window.yunAdminT("{yun:}t key='admin_system_00089'{/yun}"));
+                message.error(window.yunAdminT(lc('admin_system_00089')));
                 return;
             }
             _this.submitLoading = true;

@@ -1,7 +1,7 @@
 <template>
     <div v-loading="loading">
         <div style="overflow: hidden; position: relative; display: flex; align-items: center;">
-        <el-select v-model="hyId" multiple :multiple-limit="multiple ? max : 1" placeholder="{yun:}t key='admin_00061'{/yun}"
+        <el-select v-model="hyId" multiple :multiple-limit="multiple ? max : 1" :placeholder="lc('admin_00061')"
                    filterable remote :remote-method="remoteClassList" @change="classChange" @remove-tag="classRemove">
             <el-option v-for="opitem in classOptions" :key="opitem.id" :label="opitem.name"
                        :value="opitem.id" :disabled="opitem.disabled">
@@ -23,9 +23,9 @@
                        :show-close="true" size="60%">
                 <div class="modluDrawerContents">
                     <div class="modluDrawerTi9te">
-                        <div>{yun:}t key='admin_00060'{/yun}</div>
+                        <div>{{ lc('admin_00060') }}</div>
                         <div class="shuytans">
-                            <el-input v-model="searchHy" placeholder="{yun:}t key='admin_00061'{/yun}"
+                            <el-input v-model="searchHy" :placeholder="lc('admin_00061')"
                                       @input="handleSearchHy">
                                 <i slot="prefix" class="el-input__icon el-icon-search"></i>
                             </el-input>
@@ -65,13 +65,13 @@
                     </div>
                     <div v-else class="noneResults">
                         <div>
-                            <el-empty description="{yun:}t key='admin_00039'{/yun}"></el-empty>
+                            <el-empty :description="lc('admin_00039')"></el-empty>
                             
                         </div>
                     </div>
                     <div slot="footer" class="dialog-footer dialoFoofetee">
                         <div class="footText">
-                            <div class="mingdsc"><span>{yun:}t key='admin_00390'{/yun}</span></div>
+                            <div class="mingdsc"><span>{{ lc('admin_00390') }}</span></div>
                             <div class="mingdEltags" style="padding-top: 4px;">
                                 <el-tag v-for="(selectClass, selectIndex) in selectHyClass" :key="selectIndex"
                                         closable size="small" @close="handleCloseHy(selectClass.id)">
@@ -80,7 +80,7 @@
                             </div>
                         </div>
                         <div class="footTextburn">
-                            <el-button type="primary" size="mini" round @click="handleSubmitHy">{yun:}t key='wap_com_00019'{/yun}</el-button>
+                            <el-button type="primary" size="mini" round @click="handleSubmitHy">{{ lc('wap_com_00019') }}</el-button>
                         </div>
                     </div>
                 </div>
@@ -93,7 +93,7 @@
         props: {
             multiple: {type: Boolean, default: false}, // 选择方式 false-单选/true-多选
             max: {type: Number, default: 5}, // 多选下有效，最多选择几个
-            selected: {type: Object, default: null} // 已选中数据，数据内容如：{167: "{yun:}t key='common_01417'{/yun}", 168: "{yun:}t key='admin_00056'{/yun}"}
+            selected: {type: Object, default: null} // 已选中数据，数据内容如：{167: lc('common_01417'), 168: lc('admin_00056')}
         },
         data: function () {
             return {
@@ -138,7 +138,7 @@
                 if ($.trim(query) !== '") {
                     let that = this;
 
-                    that.searchClass(query); // 本地JS{yun:}t key='common.search'{/yun}
+                    that.searchClass(query); // 本地JS{{ lc('common.search') }}
 
                     let classList = deepClone(that.classList);
 
@@ -201,7 +201,7 @@
 
                                 let childrenIds = classOptions[i].childrenIds,
                                     index = -1;
-                                if (childrenIds && childrenIds.length > 0 && this.hyId.length > 0) { // {yun:}t key='common_01285'{/yun}
+                                if (childrenIds && childrenIds.length > 0 && this.hyId.length > 0) { // {{ lc('common_01285') }}
                                     for (var j = 0; j < childrenIds.length; j++) {
                                         index = this.hyId.indexOf(childrenIds[j]);
                                         if (index > -1) { // 检索已选中下级
@@ -305,7 +305,7 @@
                     twoClassList.forEach(function (item, index) {
                         twoIndex = that.selectHyId.indexOf(item.id);
                         if (twoIndex > -1) { // 检索已选中二级
-                            that.selectHyId.splice(twoIndex, 1); // {yun:}t key='admin_00065'{/yun}
+                            that.selectHyId.splice(twoIndex, 1); // {{ lc('admin_00065') }}
                             that.selectHyClass.splice(twoIndex, 1);
                         }
                     })
@@ -336,9 +336,9 @@
                 if (classList && classList.length > 0) {
                     classList.forEach(function(oneItem, oneKey) {
                         if (oneItem.name.includes(query)) { // 一级须包含关键字
-                            classList[oneKey].hide = false; // {yun:}t key='admin_00062'{/yun}
+                            classList[oneKey].hide = false; // {{ lc('admin_00062') }}
                         } else {
-                            classList[oneKey].hide = true; // {yun:}t key='admin_00063'{/yun}
+                            classList[oneKey].hide = true; // {{ lc('admin_00063') }}
                         }
                         twoList = oneItem.children;
                         if (twoList && twoList.length > 0) {

@@ -9,44 +9,44 @@
             <el-table :data="tableData" style="width: 100%" stripe
                 :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" height="100%" ref="multipleTable" @sort-change="shortChange" v-loading="loading" :empty-text="emptytext">
                 <el-table-column type="selection" width="55" fixed></el-table-column>
-                <el-table-column prop="name" label="{yun:}t key='wap_com_00288'{/yun}" width="180"></el-table-column>
-                <el-table-column prop="snum" label="{yun:}t key='admin_user_company_00038'{/yun}" width="80"></el-table-column>
-                <el-table-column prop="jobhits" label="{yun:}t key='wap_com_00112'{/yun}" width="80"></el-table-column>
-                <el-table-column prop="jobexpoure" label="{yun:}t key='default_00384'{/yun}" width="80"></el-table-column>
-                <el-table-column label="{yun:}t key='member_user_00181'{/yun}" width="120">
+                <el-table-column prop="name" :label="lc('wap_com_00288')" width="180"></el-table-column>
+                <el-table-column prop="snum" :label="lc('admin_user_company_00038')" width="80"></el-table-column>
+                <el-table-column prop="jobhits" :label="lc('wap_com_00112')" width="80"></el-table-column>
+                <el-table-column prop="jobexpoure" :label="lc('default_00384')" width="80"></el-table-column>
+                <el-table-column :label="lc('member_user_00181')" width="120">
                     <template slot-scope="scope">
                         <el-switch :value="scope.row.status == 0" @change="zpstatuschange($event, scope.row.id)"></el-switch>
-                        <div>{yun:}t key='admin_00612'{/yun}</div>
+                        <div>{{ lc('admin_00612') }}</div>
                     </template>
                 </el-table-column>
-                <el-table-column label="{yun:}t key='admin_user_company_00040'{/yun}">
+                <el-table-column :label="lc('admin_user_company_00040')">
                     <template slot-scope="scope">
                         <div style="margin:5px;">
-                            {yun:}t key='wap_user_00335'{/yun}
+                            {{ lc('wap_user_00335') }}
                             <el-switch v-model="scope.row.xsdate > curr_time"
                                 @change="tgchange($event, scope.row, 1)">
                             </el-switch>
                         </div>
                         <div style="margin:5px;">
-                            {yun:}t key='common.recommended'{/yun}
+                            {{ lc('common.recommended') }}
                             <el-switch v-model="scope.row.isrec" @change="tgchange($event, scope.row, 2)">
                             </el-switch>
                         </div>
                         <div style="margin:5px;">
-                            {yun:}t key='wap_00222'{/yun}
+                            {{ lc('wap_00222') }}
                             <el-switch v-model="scope.row.urgent_time > curr_time"
                                 @change="tgchange($event, scope.row, 3)">
                             </el-switch>
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column prop="sdate_n" label="{yun:}t key='admin_user_weipin_00030'{/yun}"></el-table-column>
-                <el-table-column prop="lastupdate_n_n" label="{yun:}t key='admin_user_company_00272'{/yun}"></el-table-column>
-                <el-table-column label="{yun:}t key='admin_user_00336'{/yun}" width="110">
+                <el-table-column prop="sdate_n" :label="lc('admin_user_weipin_00030')"></el-table-column>
+                <el-table-column prop="lastupdate_n_n" :label="lc('admin_user_company_00272')"></el-table-column>
+                <el-table-column :label="lc('admin_user_00336')" width="110">
                     <template slot-scope="scope">
                         <div class="admin_state">
                             <div v-if="scope.row.r_status == '2'">
-                                <span class="admin_state3">{yun:}t key='admin_user_00138'{/yun}</span>
+                                <span class="admin_state3">{{ lc('admin_user_00138') }}</span>
                                 <div style="display:inline-block">
                                     <el-popover trigger="hover" placement="right">
                                         <p>{{ scope.row.lock_info }}</p>
@@ -56,10 +56,10 @@
                                     </el-popover>
                                 </div>
                             </div>
-                            <span class="admin_state1" v-else-if="scope.row.state == '1'">{yun:}t key='wap_user_00165'{/yun}</span>
-                            <span class="admin_state1" v-else-if="scope.row.state == '0'">{yun:}t key='wap_user_00166'{/yun}</span>
+                            <span class="admin_state1" v-else-if="scope.row.state == '1'">{{ lc('wap_user_00165') }}</span>
+                            <span class="admin_state1" v-else-if="scope.row.state == '0'">{{ lc('wap_user_00166') }}</span>
                             <div v-else-if="scope.row.state == '3'">
-                                <span class="admin_state2">{yun:}t key='wap_user_00167'{/yun}</span>
+                                <span class="admin_state2">{{ lc('wap_user_00167') }}</span>
                                 <div style="display:inline-block">
                                     <el-popover trigger="hover" placement="right">
                                         <p>{{ scope.row.statusbody }}</p>
@@ -72,10 +72,10 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="{yun:}t key='member_user_00048'{/yun}" width="110">
+                <el-table-column :label="lc('member_user_00048')" width="110">
                     <template slot-scope="scope">
                         <div class="cz_button">
-                            <el-button size="mini" @click="jobedit(scope.row)">{yun:}t key='common.edit'{/yun}
+                            <el-button size="mini" @click="jobedit(scope.row)">{{ lc('common.edit') }}
                             </el-button>
                         </div>
                     </template>
@@ -95,33 +95,33 @@
         <div class="modluDrawer">
             <el-dialog :title="jobtgtit" :visible.sync="jobtgdrawer" :with-header="true" append-to-body :show-close="true"
                 width="400px">
-                <div class="wxsettip_small" v-if="jobtgtype == 1">{yun:}t key='wap_user_00209'{/yun}</div>
-                <div class="wxsettip_small" v-else-if="jobtgtype == 2">{yun:}t key='wap_com_00041'{/yun}</div>
-                <div class="wxsettip_small" v-else-if="jobtgtype == 3">{yun:}t key='wap_com_00043'{/yun}</div>
-                <el-input type="number" placeholder="{yun:}t key='admin_00614'{/yun}" v-model="jobtgdays">
-                    <template slot="append">{yun:}t key='common_02067'{/yun}</template>
+                <div class="wxsettip_small" v-if="jobtgtype == 1">{{ lc('wap_user_00209') }}</div>
+                <div class="wxsettip_small" v-else-if="jobtgtype == 2">{{ lc('wap_com_00041') }}</div>
+                <div class="wxsettip_small" v-else-if="jobtgtype == 3">{{ lc('wap_com_00043') }}</div>
+                <el-input type="number" :placeholder="lc('admin_00614')" v-model="jobtgdays">
+                    <template slot="append">{{ lc('common_02067') }}</template>
                 </el-input>
-                <div class="wxsettip_small" v-if="jobtgetime != ''">{yun:}t key='admin_00613'{/yun}</div>
+                <div class="wxsettip_small" v-if="jobtgetime != ''">{{ lc('admin_00613') }}</div>
                 <el-input v-if="jobtgetime != ''" v-model="jobtgetime" disabled>
                 </el-input>
                 <div style="margin-top:10px;">
                     <i class="el-icon-warning"></i>
-                    {yun:}t key='admin_user_company_00037'{/yun}
-                    <span v-if="jobtgtype == 1">{yun:}t key='wap_com_00238'{/yun}</span>
-                    <span v-else-if="jobtgtype == 2">{yun:}t key='home.recommended_jobs'{/yun}</span>
-                    <span v-else-if="jobtgtype == 3">{yun:}t key='member_com_00326'{/yun}</span>
-                    {yun:}t key='admin_user_company_00039'{/yun}
+                    {{ lc('admin_user_company_00037') }}
+                    <span v-if="jobtgtype == 1">{{ lc('wap_com_00238') }}</span>
+                    <span v-else-if="jobtgtype == 2">{{ lc('home.recommended_jobs') }}</span>
+                    <span v-else-if="jobtgtype == 3">{{ lc('member_com_00326') }}</span>
+                    {{ lc('admin_user_company_00039') }}
                     <el-checkbox v-model="qxtgchecked" true-label="1" false-label="0"></el-checkbox>
-                    <span>{yun:}t key='admin_user_company_00036'{/yun}</span>
+                    <span>{{ lc('admin_user_company_00036') }}</span>
                 </div>
                 <span slot="footer" class="dialog-footer">
-                    <el-button @click="jobtgdrawer = false">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
-                    <el-button type="primary" @click="jobTgSubmit">{yun:}t key='wap_com_00019'{/yun}</el-button>
+                    <el-button @click="jobtgdrawer = false">{{ lc('admin_user_weipin_00043') }}</el-button>
+                    <el-button type="primary" @click="jobTgSubmit">{{ lc('wap_com_00019') }}</el-button>
                 </span>
             </el-dialog>
         </div>
         <div class="modluDrawer">
-            <el-drawer title="{yun:}t key='admin_00615'{/yun}" :visible.sync="drawerEditJob" append-to-body :wrapper-closable="false" size="60%">
+            <el-drawer :title="lc('admin_00615')" :visible.sync="drawerEditJob" append-to-body :wrapper-closable="false" size="60%">
                 <addjob ref="jobedit" :jid="jobid" :jtypes="job_types" :ctypes="city_types"></addjob>
             </el-drawer>
         </div>
@@ -147,7 +147,7 @@ module.exports = {
     data: function () {
         return {
             loading: false,
-            emptytext: "{yun:}t key='wap_js_00113'{/yun}",
+            emptytext: lc('wap_js_00113'),
             searchForm: {
                 page: 1,
                 limit: null,
@@ -161,7 +161,7 @@ module.exports = {
             total: 0,
             tableData: [],
             tableHig: true,
-            checked: false,//{yun:}t key='wap_js_00074'{/yun}
+            checked: false,//{{ lc('wap_js_00074') }}
             isIndeterminate: false,// checkbox 的不确定状态
             selectedItem: [],
             info: {},
@@ -279,18 +279,18 @@ module.exports = {
             this.jobtgtype = type
             this.curr_job = data
             this.tgjid = data.id
-            if (type == 1) { // {yun:}t key='wap_user_00335'{/yun}
+            if (type == 1) { // {{ lc('wap_user_00335') }}
                 this.curr_job.istop = !this.curr_job.istop // 防止switch状态直接改变
                 this.jobtgetime = data.top_time_n ? data.top_time_n : "'
-                this.jobtgtit = "{yun:}t key='wap_com_00238'{/yun}"
+                this.jobtgtit = lc('wap_com_00238')
             } else if (type == 2) { // 推荐
                 this.curr_job.isrec = !this.curr_job.isrec // 防止switch状态直接改变
                 this.jobtgetime = data.rec_time_n != undefined ? data.rec_time_n : ''
-                this.jobtgtit = "{yun:}t key='wap_com_00237'{/yun}"
+                this.jobtgtit = lc('wap_com_00237')
             } else if (type == 3) { // 紧急
                 this.curr_job.isurgent = !this.curr_job.isurgent // 防止switch状态直接改变
                 this.jobtgetime = data.urgent_time_n ? data.urgent_time_n : ''
-                this.jobtgtit = "{yun:}t key='member_com_00613'{/yun}"
+                this.jobtgtit = lc('member_com_00613')
             }
             this.jobtgdrawer = true
         },
@@ -301,19 +301,19 @@ module.exports = {
             if (that.jobtgtype == 1) {
                 url += 'xuanshang'
                 if (that.qxtgchecked == 0 && that.jobtgdays == '') {
-                    message.error("{yun:}t key='common_06281'{/yun}")
+                    message.error(lc('common_06281'))
                     return false
                 }
             } else if (that.jobtgtype == 2) {
                 url += 'recommend'
                 if (that.qxtgchecked == 0 && that.jobtgdays == '') {
-                    message.error("{yun:}t key='common_06282'{/yun}")
+                    message.error(lc('common_06282'))
                     return false
                 }
             } else if (that.jobtgtype == 3) {
                 url += 'urgent'
                 if (that.qxtgchecked == 0 && that.jobtgdays == '') {
-                    message.error("{yun:}t key='admin_company_00027'{/yun}")
+                    message.error(lc('admin_company_00027'))
                     return false
                 }
             }
@@ -358,7 +358,7 @@ module.exports = {
             params.page = _this.currentPage;
             params.pageSize = _this.perPage;
             _this.loading = true;
-            _this.emptytext = "{yun:}t key='admin_user_weipin_00026'{/yun}";
+            _this.emptytext = lc('admin_user_weipin_00026');
 
 			var url = 'm=user&c=company_job&a=index';
             httpPost(url, params).then(function (response) {
@@ -390,7 +390,7 @@ module.exports = {
                         _this.$refs.multipleTable.bodyWrapper.scrollTop = 0;
                     }
                     if (_this.tableData.length === 0){
-                        _this.emptytext = "{yun:}t key='wap_js_00113'{/yun}";
+                        _this.emptytext = lc('wap_js_00113');
                     }
                 }
             }).catch(function (error) {

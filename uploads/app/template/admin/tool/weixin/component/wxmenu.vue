@@ -1,16 +1,16 @@
 <template>
     <div class="moduleElHight">
         <div class="tableDome_tip">
-            <el-alert title="{yun:}t key='admin_tool_00641'{/yun}" type="success"
+            <el-alert :title="lc('admin_tool_00641')" type="success"
                       :closable="false">
             </el-alert>
         </div>
         <div class="moduleSeachs">
             <div class="moduleSeachButn">
                 <el-button type="primary" icon="el-icon-document-add" size="mini" @click="navsync"
-                           plain>{yun:}t key='admin_tool_00659'{/yun}
+                           plain>{{ lc('admin_tool_00659') }}
                 </el-button>
-                <el-button type="primary" icon="el-icon-document-add" size="mini" @click="addinfo">{yun:}t key='admin_tool_00660'{/yun}</el-button>
+                <el-button type="primary" icon="el-icon-document-add" size="mini" @click="addinfo">{{ lc('admin_tool_00660') }}</el-button>
             </div>
         </div>
 
@@ -22,10 +22,10 @@
                       :empty-text="emptytext">
                 <el-table-column type="selection" width="55">
                 </el-table-column>
-                <el-table-column prop="name" label="{yun:}t key='admin_tool_00654'{/yun}">
+                <el-table-column prop="name" :label="lc('admin_tool_00654')">
                     <template slot-scope="scope">
 				        <span v-if="editname_id==scope.row.id">
-                            <el-input id="inputref" placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="editname" :data-preval="scope.row.name"
+                            <el-input id="inputref" :placeholder="lc('wap_user_00076')" v-model="editname" :data-preval="scope.row.name"
                                       data-type="name" @blur="editChange" clearable></el-input>
 				        </span>
                         <div class="moduleElTaPax" v-else>
@@ -35,16 +35,16 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column prop="type" label="{yun:}t key='admin_tool_00655'{/yun}" width="180">
+                <el-table-column prop="type" :label="lc('admin_tool_00655')" width="180">
                 </el-table-column>
-                <el-table-column prop="key" label="{yun:}t key='admin_tool_00650'{/yun}">
+                <el-table-column prop="key" :label="lc('admin_tool_00650')">
                 </el-table-column>
-                <el-table-column prop="url" label="{yun:}t key='admin_tool_00656'{/yun}">
+                <el-table-column prop="url" :label="lc('admin_tool_00656')">
                 </el-table-column>
-                <el-table-column label="{yun:}t key='admin_vue_00044'{/yun}" width="180">
+                <el-table-column :label="lc('admin_vue_00044')" width="180">
                     <template slot-scope="scope">
                         <div class="moduleElTaPax" v-if="editsort_id==scope.row.id">
-                            <el-input id="inputref" placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="editsort" :data-preval="scope.row.sort"
+                            <el-input id="inputref" :placeholder="lc('wap_user_00076')" v-model="editsort" :data-preval="scope.row.sort"
                                       onKeyUp="this.value=this.value.replace(/[^0-9.]/g,'')" data-type="sort"
                                       @blur="editChange" clearable></el-input>
                         </div>
@@ -55,11 +55,11 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="{yun:}t key='member_user_00048'{/yun}" width="130" fixed="right" header-align="center">
+                <el-table-column :label="lc('member_user_00048')" width="130" fixed="right" header-align="center">
                     <template slot-scope="scope">
                         <div class="cz_button">
-                            <el-button size="mini" @click="editinfo(scope.row)">{yun:}t key='wap_js_00073'{/yun}</el-button>
-                            <el-button size="mini" type="danger" @click="deleteinfo(scope.row.id)">{yun:}t key='common.delete'{/yun}</el-button>
+                            <el-button size="mini" @click="editinfo(scope.row)">{{ lc('wap_js_00073') }}</el-button>
+                            <el-button size="mini" type="danger" @click="deleteinfo(scope.row.id)">{{ lc('common.delete') }}</el-button>
                         </div>
                     </template>
                 </el-table-column>
@@ -69,57 +69,57 @@
         <div class="otherPageButn">
             <div class="modulePaging">
                 <div class="modulecz modulePagButn">
-                    <el-checkbox v-model="allchecked" @change="allcheckChange">{yun:}t key='wap_js_00074'{/yun}</el-checkbox>
-                    <el-button size="mini" @click="deleteAll">{yun:}t key='member_com_00055'{/yun}</el-button>
+                    <el-checkbox v-model="allchecked" @change="allcheckChange">{{ lc('wap_js_00074') }}</el-checkbox>
+                    <el-button size="mini" @click="deleteAll">{{ lc('member_com_00055') }}</el-button>
                 </div>
             </div>
         </div>
         <!--新增微信菜单-->
         <div class="modluDrawer">
-            <el-dialog title="{yun:}t key='admin_tool_00661'{/yun}" :visible.sync="editshow" :with-header="true" :modal-append-to-body="false"
+            <el-dialog :title="lc('admin_tool_00661')" :visible.sync="editshow" :with-header="true" :modal-append-to-body="false"
                        :show-close="true" width="440px">
                 <div>
-                    <div class="wxsettip_small ">{yun:}t key='admin_tool_00654'{/yun}</div>
+                    <div class="wxsettip_small ">{{ lc('admin_tool_00654') }}</div>
                     <el-input v-model="einfo.name"></el-input>
-                    <div class="wxsettip_small ">{yun:}t key='admin_tool_00653'{/yun}</div>
+                    <div class="wxsettip_small ">{{ lc('admin_tool_00653') }}</div>
                     <div class="wxsettip_smallselect ">
                         <el-select v-model="einfo.keyid">
-                            <el-option key="0" label="{yun:}t key='admin_tool_00651'{/yun}" value="0"></el-option>
+                            <el-option key="0" :label="lc('admin_tool_00651')" value="0"></el-option>
                             <el-option v-for="item in tableData" :key="item.id" :label="item.name"
                                        :value="item.id"></el-option>
                         </el-select>
                     </div>
-                    <div class="wxsettip_small ">{yun:}t key='admin_tool_00655'{/yun}</div>
+                    <div class="wxsettip_small ">{{ lc('admin_tool_00655') }}</div>
                     <div class="wxsettip_smallselect ">
-                        <el-select v-model="einfo.type" placeholder="{yun:}t key='wap_user_00100'{/yun}">
-                            <el-option label="{yun:}t key='admin_tool_00652'{/yun}" value="click"></el-option>
-                            <el-option label="{yun:}t key='admin_tool_00657'{/yun}" value="view"></el-option>
-                            <el-option label="{yun:}t key='admin_tool_00658'{/yun}" value="miniprogram"></el-option>
+                        <el-select v-model="einfo.type" :placeholder="lc('wap_user_00100')">
+                            <el-option :label="lc('admin_tool_00652')" value="click"></el-option>
+                            <el-option :label="lc('admin_tool_00657')" value="view"></el-option>
+                            <el-option :label="lc('admin_tool_00658')" value="miniprogram"></el-option>
                         </el-select>
                     </div>
                     <div v-show="einfo.type=='click'">
-                        <div class="wxsettip_small ">{yun:}t key='admin_tool_00650'{/yun}</div>
+                        <div class="wxsettip_small ">{{ lc('admin_tool_00650') }}</div>
                         <el-input v-model="einfo.key"></el-input>
                     </div>
                     <div v-show="einfo.type=='view'">
-                        <div class="wxsettip_small ">{yun:}t key='admin_tool_00656'{/yun}</div>
+                        <div class="wxsettip_small ">{{ lc('admin_tool_00656') }}</div>
                         <el-input v-model="einfo.url"></el-input>
                     </div>
                     <div v-show="einfo.type=='miniprogram'">
-                        <div class="wxsettip_small ">{yun:}t key='admin_tool_00656'{/yun}</div>
+                        <div class="wxsettip_small ">{{ lc('admin_tool_00656') }}</div>
                         <el-input v-model="einfo.url"></el-input>
-                        <div class="wxsettip_small ">{yun:}t key='admin_tool_00648'{/yun}</div>
+                        <div class="wxsettip_small ">{{ lc('admin_tool_00648') }}</div>
                         <el-input v-model="einfo.appid"></el-input>
-                        <div class="wxsettip_small ">{yun:}t key='admin_tool_00649'{/yun}</div>
+                        <div class="wxsettip_small ">{{ lc('admin_tool_00649') }}</div>
                         <el-input v-model="einfo.apppage"></el-input>
                     </div>
 
-                    <div class="wxsettip_small ">{yun:}t key='member_com_00022'{/yun}</div>
+                    <div class="wxsettip_small ">{{ lc('member_com_00022') }}</div>
                     <el-input v-model="einfo.sort"></el-input>
                 </div>
                 <span slot="footer" class="dialog-footer">
-					<el-button @click="editshow = false">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
-					<el-button type="primary" @click="saveinfo" :loading="post_loading">{yun:}t key='wap_com_00019'{/yun}</el-button>
+					<el-button @click="editshow = false">{{ lc('admin_user_weipin_00043') }}</el-button>
+					<el-button type="primary" @click="saveinfo" :loading="post_loading">{{ lc('wap_com_00019') }}</el-button>
 				</span>
             </el-dialog>
         </div>
@@ -131,7 +131,7 @@ var timer = null;
 module.exports = {
     data: function () {
         return {
-            emptytext: window.yunAdminT("{yun:}t key='wap_js_00113'{/yun}"),
+            emptytext: window.yunAdminT(lc('wap_js_00113')),
             tableData: [],
             list_loading: false,
             choosedata: [],
@@ -156,14 +156,14 @@ module.exports = {
             let params = {};
 
             this.list_loading = true;
-            that.emptytext = window.yunAdminT("{yun:}t key='admin_user_weipin_00026'{/yun}");
+            that.emptytext = window.yunAdminT(lc('admin_user_weipin_00026'));
             httpPost('m=tool&c=weixinmenu&a=wxnav', params).then((result) => {
                 this.list_loading = false;
                 var res = result.data
                 if (res.error == 0) {
                     that.tableData = res.data.list;
                     if (that.tableData.length === 0) {
-                        that.emptytext = window.yunAdminT("{yun:}t key='wap_js_00113'{/yun}");
+                        that.emptytext = window.yunAdminT(lc('wap_js_00113'));
                     }
                 }
             }).catch(function (e) {
@@ -195,7 +195,7 @@ module.exports = {
                     idarr.push(this.choosedata[i].id);
                 }
             } else {
-                message.error(window.yunAdminT("{yun:}t key='admin_user_weipin_00005'{/yun}"));
+                message.error(window.yunAdminT(lc('admin_user_weipin_00005')));
                 return;
             }
             var params = {
@@ -249,15 +249,15 @@ module.exports = {
             var that = this,
                 param = {};
             if (this.einfo.name == '') {
-                message.warning(window.yunAdminT("{yun:}t key='admin_tool_00646'{/yun}"));
+                message.warning(window.yunAdminT(lc('admin_tool_00646')));
                 return;
             }
             if (this.einfo.keyid != '0' && this.einfo.type == 'click' && this.einfo.key == '') {
-                message.warning(window.yunAdminT("{yun:}t key='admin_tool_00642'{/yun}"));
+                message.warning(window.yunAdminT(lc('admin_tool_00642')));
                 return;
             }
             if (this.einfo.keyid != '0' && this.einfo.type == 'view' && this.einfo.url == '') {
-                message.warning(window.yunAdminT("{yun:}t key='admin_tool_00644'{/yun}"));
+                message.warning(window.yunAdminT(lc('admin_tool_00644')));
                 return;
             }
 
@@ -281,19 +281,19 @@ module.exports = {
                 var res = result.data;
 
                 if (res.error == 1) {
-                    message.error(window.yunAdminT("{yun:}t key='admin_tool_00647'{/yun}"));
+                    message.error(window.yunAdminT(lc('admin_tool_00647')));
                     return false;
                 } else if (res.error == 2) {
-                    message.error(window.yunAdminT("{yun:}t key='admin_tool_00645'{/yun}"));
+                    message.error(window.yunAdminT(lc('admin_tool_00645')));
                     return false;
                 } else if (res.error == 3) {
-                    message.success(window.yunAdminT("{yun:}t key='wap_js_00159'{/yun}"), () => {
+                    message.success(window.yunAdminT(lc('wap_js_00159')), () => {
                         that.editshow = false;
                         that.getList();
                     });
                     return false;
                 } else if (res.error == 4) {
-                    message.success(window.yunAdminT("{yun:}t key='wap_js_00159'{/yun}"), () => {
+                    message.success(window.yunAdminT(lc('wap_js_00159')), () => {
                         that.editshow = false;
                         that.getList();
                     });
@@ -336,7 +336,7 @@ module.exports = {
             } else {
                 if (type == 'name' && val == '') {
                     this[`edit${type}_id`] = '';
-                    message.error(window.yunAdminT("{yun:}t key='admin_00208'{/yun}"));
+                    message.error(window.yunAdminT(lc('admin_00208')));
                     return;
                 }
                 var param = {id: id};
@@ -353,7 +353,7 @@ module.exports = {
 
                     that[`edit${type}_id`] = '';
                     that[`edit${type}`] = '';
-                    message.success(window.yunAdminT("{yun:}t key='admin_user_company_00208'{/yun}"), function () {
+                    message.success(window.yunAdminT(lc('admin_user_company_00208')), function () {
                         that.getList()
                     });
                 }).catch(function (e) {
@@ -376,7 +376,7 @@ module.exports = {
                         message.error(res.msg);
                     }
                 })
-            }, window.yunAdminT("{yun:}t key='admin_tool_00643'{/yun}"));
+            }, window.yunAdminT(lc('admin_tool_00643')));
         },
         doLayout(){
             if (this.$refs.table) {

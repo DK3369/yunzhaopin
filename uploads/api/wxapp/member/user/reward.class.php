@@ -2,7 +2,9 @@
 
 class reward_controller extends user_controller{
 
-	
+	/**
+     * 兑换记录列表
+	*/
 	function changeList_action(){
 	    $redeemM = $this->MODEL('redeem');
         $statisM		=	$this->MODEL('statis');
@@ -35,7 +37,7 @@ class reward_controller extends user_controller{
         $List['statis'] = $statis;
         $this -> render_json($data['error'], 'ok', $List,$total);
     }
-    // 
+    //删除兑换记录
     function delChange_action(){
         $redeemM    			=       $this->MODEL('redeem');
 

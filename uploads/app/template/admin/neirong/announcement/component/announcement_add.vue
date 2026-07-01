@@ -4,28 +4,28 @@
             <table class="tableVue">
                 <thead>
                 <tr align="left">
-                    <th width="100">{yun:}t key='admin_00103'{/yun}</th>
-                    <th>{yun:}t key='wap_user_00102'{/yun}</th>
+                    <th width="100">{{ lc('admin_00103') }}</th>
+                    <th>{{ lc('wap_user_00102') }}</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_00102'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_00102') }}</div>
                     </td>
                     <td>
                         <div class="TableInpt w_400">
-                            <el-input placeholder="{yun:}t key='admin_00869'{/yun}" v-model="ruleForm.title"></el-input>
+                            <el-input :placeholder="lc('admin_00869')" v-model="ruleForm.title"></el-input>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_user_00126'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_user_00126') }}</div>
                     </td>
                     <td>
                         <div class="TableSelect w_400" style="display: flex;align-items: center;">
-                            <el-select v-model="ruleForm.did" placeholder="{yun:}t key='wap_user_00100'{/yun}">
+                            <el-select v-model="ruleForm.did" :placeholder="lc('wap_user_00100')">
                                 <el-option v-for="(item, key) in domainList" :key="key" :label="item" :value="key"></el-option>
                             </el-select>
                         </div>
@@ -33,56 +33,56 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_00149'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_00149') }}</div>
                     </td>
                     <td style="display: flex;">
                         <div class="w_400" style="display: flex;align-items: center;">
-                            <el-input placeholder="{yun:}t key='wap_00510'{/yun}" v-model="ruleForm.keyword"></el-input>
+                            <el-input :placeholder="lc('wap_00510')" v-model="ruleForm.keyword"></el-input>
                         </div>
                         <div class="TableShuom" style="padding: 6px;">
-                            <span><i class="el-icon-warning"></i>{yun:}t key='admin_00135'{/yun}</span>
+                            <span><i class="el-icon-warning"></i>{{ lc('admin_00135') }}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='wap_user_00087'{/yun}</div>
+                        <div class="TableTite">{{ lc('wap_user_00087') }}</div>
                     </td>
                     <td style="display: flex;">
                         <div class="TableInpt w_400">
-                            <el-date-picker v-model="ruleForm.startime" type="date" :picker-options="pickerOptions" style="width: 100%;" placeholder="{yun:}t key='wap_com_00323'{/yun}"></el-date-picker>
+                            <el-date-picker v-model="ruleForm.startime" type="date" :picker-options="pickerOptions" style="width: 100%;" :placeholder="lc('wap_com_00323')"></el-date-picker>
                         </div>
                         <div class="TableShuom" style="padding: 6px;">
-                            <span><i class="el-icon-warning"></i>{yun:}t key='admin_00140'{/yun}</span>
+                            <span><i class="el-icon-warning"></i>{{ lc('admin_00140') }}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='wap_user_00096'{/yun}</div>
+                        <div class="TableTite">{{ lc('wap_user_00096') }}</div>
                     </td>
                     <td style="display: flex;">
                         <div class="TableInpt w_400">
-                            <el-date-picker v-model="ruleForm.endtime" type="date" :picker-options="pickerOptions" style="width: 100%;" placeholder="{yun:}t key='wap_com_00324'{/yun}"></el-date-picker>
+                            <el-date-picker v-model="ruleForm.endtime" type="date" :picker-options="pickerOptions" style="width: 100%;" :placeholder="lc('wap_com_00324')"></el-date-picker>
                         </div>
                         <div class="TableShuom" style="padding: 6px;">
-                            <span><i class="el-icon-warning"></i>{yun:}t key='admin_00138'{/yun}</span>
+                            <span><i class="el-icon-warning"></i>{{ lc('admin_00138') }}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_user_00231'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_user_00231') }}</div>
                     </td>
                     <td>
                         <div class="TableInpt w_400">
-                            <el-input type="textarea" placeholder="{yun:}t key='wap_00936'{/yun}" v-model="ruleForm.description"></el-input>
+                            <el-input type="textarea" :placeholder="lc('wap_00936')" v-model="ruleForm.description"></el-input>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_00868'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_00868') }}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
@@ -95,7 +95,7 @@
             </table>
         </div>
         <div class="setBasicButn" style="border: none;">
-            <el-button type="primary" size="medium" @click="save" :disabled="saveLoading">{yun:}t key='common.submit'{/yun}</el-button>
+            <el-button type="primary" size="medium" @click="save" :disabled="saveLoading">{{ lc('common.submit') }}</el-button>
         </div>
     </div>
 </template>
@@ -120,10 +120,10 @@
         mounted() {
             var ue = UE.getEditor('projectBasis", {
                 wordCount: false,           // 关闭字数统计
-                elementPathEnabled: false,  //{yun:}t key='common.close'{/yun}elementPath {yun:}t key='common_05704'{/yun}
+                elementPathEnabled: false,  //{{ lc('common.close') }}elementPath {{ lc('common_05704') }}
                 autoHeightEnabled: false,   //关闭自适应高度，超出部分以滚动条形式展示
                 initialFrameHeight: 480,    //默认的编辑区域高度
-                initialFrameWidth: 600      //初始化编辑器宽度,{yun:}t key='wap_js_00098'{/yun}1000
+                initialFrameWidth: 600      //初始化编辑器宽度,{{ lc('wap_js_00098') }}1000
             });
 
         },
@@ -167,7 +167,7 @@
                     params = that.ruleForm;
 
                 if (typeof params.title == 'undefined' || params.title == '') {
-                    message.warning("{yun:}t key='admin_00869'{/yun}");
+                    message.warning(lc('admin_00869'));
                     return;
                 }
                 if (typeof params.keyword == 'undefined' || params.keyword == '') {

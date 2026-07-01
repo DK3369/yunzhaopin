@@ -1,25 +1,25 @@
 <template>
     <div class="moduleElHight">
         <div class="tableDome_tip">
-            <el-alert title="{yun:}t key='admin_tool_00183'{/yun}" type="success" :closable="false"></el-alert>
+            <el-alert :title="lc('admin_tool_00183')" type="success" :closable="false"></el-alert>
         </div>
         <div class=" moduleTable">
             <table class="tableVue">
                 <thead>
                 <tr align="left">
-                    <th width="200">{yun:}t key='member_com_00021'{/yun}</th>
-                    <th width="400">{yun:}t key='member_user_00181'{/yun}</th>
-                    <th>{yun:}t key='member_com_00207'{/yun}</th>
+                    <th width="200">{{ lc('member_com_00021') }}</th>
+                    <th width="400">{{ lc('member_user_00181') }}</th>
+                    <th>{{ lc('member_com_00207') }}</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_tool_00184'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_tool_00184') }}</div>
                     </td>
                     <td>
                         <div class="TableSelect" style="display: flex;align-items: center;">
-                            <el-select v-model="locoy_config.locoy_com_hy" placeholder="{yun:}t key='wap_user_00100'{/yun}">
+                            <el-select v-model="locoy_config.locoy_com_hy" :placeholder="lc('wap_user_00100')">
                                 <el-option v-for="hy in hyOptions" :key="hy.value" :label="hy.label" :value="hy.value"></el-option>
                             </el-select>
 
@@ -33,11 +33,11 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_tool_00185'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_tool_00185') }}</div>
                     </td>
                     <td>
                         <div class="TableSelect" style="display: flex;align-items: center;">
-                            <el-select v-model="locoy_config.locoy_job_pr" placeholder="{yun:}t key='wap_user_00100'{/yun}">
+                            <el-select v-model="locoy_config.locoy_job_pr" :placeholder="lc('wap_user_00100')">
                                 <el-option v-for="pr in prOptions" :key="pr.value" :label="pr.label" :value="pr.value"></el-option>
                             </el-select>
                         </div>
@@ -50,17 +50,17 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_tool_00186'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_tool_00186') }}</div>
                     </td>
                     <td>
                         <div class="TableSelect" style="display: flex;align-items: center;">
-                            <el-select v-model="locoy_config.locoy_com_province" placeholder="{yun:}t key='wap_user_00100'{/yun}" @change="handelCityOneOption">
+                            <el-select v-model="locoy_config.locoy_com_province" :placeholder="lc('wap_user_00100')" @change="handelCityOneOption">
                                 <el-option v-for="city1 in cityOne" :key="city1.value" :label="city1.label" :value="city1.value"></el-option>
                             </el-select>
-                            <el-select v-model="locoy_config.locoy_com_city" placeholder="{yun:}t key='wap_user_00100'{/yun}" style="margin-left: 20px;" @change="handelCityTwoOption">
+                            <el-select v-model="locoy_config.locoy_com_city" :placeholder="lc('wap_user_00100')" style="margin-left: 20px;" @change="handelCityTwoOption">
                                 <el-option v-for="city2 in cityTwo" :key="city2.value" :label="city2.label" :value="city2.value"></el-option>
                             </el-select>
-                            <el-select v-model="locoy_config.locoy_com_town" placeholder="{yun:}t key='wap_user_00100'{/yun}" style="margin-left: 20px;" @change="handelCityThreeOption">
+                            <el-select v-model="locoy_config.locoy_com_town" :placeholder="lc('wap_user_00100')" style="margin-left: 20px;" @change="handelCityThreeOption">
                                 <el-option v-for="city3 in cityThree" :key="city3.value" :label="city3.label" :value="city3.value"></el-option>
                             </el-select>
                         </div>
@@ -73,11 +73,11 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_tool_00187'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_tool_00187') }}</div>
                     </td>
                     <td>
                         <div class="TableSelect" style="display: flex;align-items: center;">
-                            <el-select v-model="locoy_config.locoy_job_mun" placeholder="{yun:}t key='wap_user_00100'{/yun}">
+                            <el-select v-model="locoy_config.locoy_job_mun" :placeholder="lc('wap_user_00100')">
                                 <el-option v-for="mun in munOptions" :key="mun.value" :label="mun.label" :value="mun.value"></el-option>
                             </el-select>
                         </div>
@@ -90,25 +90,25 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_tool_00188'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_tool_00188') }}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
                             <el-input v-model="locoy_config.locoy_com_money" placeholder="" @input="inputIntNumber($event, 'locoy_config', 'locoy_com_money')">
-                                <template slot="append">{yun:}t key='wap_js_00004'{/yun}</template>
+                                <template slot="append">{{ lc('wap_js_00004') }}</template>
                             </el-input>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>{yun:}t key='admin_tool_00189'{/yun}</span>
+                            <span>{{ lc('admin_tool_00189') }}</span>
                         </div>
                     </td>
                 </tr>
                 </tbody>
             </table>
             <div class="setBasicButn" style="border: none;">
-                <el-button type="primary" size="medium" @click="submitLocoyConfig" :disabled="saveLoading">{yun:}t key='common.submit'{/yun}</el-button>
+                <el-button type="primary" size="medium" @click="submitLocoyConfig" :disabled="saveLoading">{{ lc('common.submit') }}</el-button>
             </div>
         </div>
     </div>

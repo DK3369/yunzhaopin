@@ -798,7 +798,7 @@ const custoapp = new Vue({
         async getList(nid = '') {
             let that = this;
             that.loading = true;
-            that.emptytext = "数据加载中";
+            that.emptytext = lc('admin_user_weipin_00026');
             httpPost('m=neirong&c=news&a=group', {}).then(function(result) {
                 var res = result.data
                 if (res.error == 0) {
@@ -822,7 +822,7 @@ const custoapp = new Vue({
                     }
                     that.loading = false;
                     if (that.tableData.length === 0) {
-                        that.emptytext = "暂无数据";
+                        that.emptytext = lc('wap_js_00113');
                     }
                 }
             }).catch(function(e) {
@@ -830,7 +830,7 @@ const custoapp = new Vue({
             })
         },
         delmenu(id) {
-            delConfirm(this, id, this.deletemenu, '确定取消该导航？');
+            delConfirm(this, id, this.deletemenu, lc('admin_00816'));
         },
         async deletemenu(id) {
             let that = this;

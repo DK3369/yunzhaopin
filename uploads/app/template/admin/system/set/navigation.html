@@ -53,8 +53,8 @@
                 <el-table-column :label="lc('member_com_00020')" width="170">
                     <template slot-scope="scope">
                         <el-switch v-model="scope.row.eject" active-color="#1890FF" inactive-color="#B8BDC9"
-                            @change="ejectChange($event, scope.$index)" active-text="新窗口" active-value="1"
-                            inactive-text="原窗口" inactive-value="0">
+                            @change="ejectChange($event, scope.$index)" :active-text="lc('admin_00205')" active-value="1"
+                            :inactive-text="lc('admin_00203')" inactive-value="0">
                         </el-switch>
                     </template>
                 </el-table-column>
@@ -90,7 +90,7 @@
         </div>
 
         <div class="modluDrawer">
-            <el-drawer :title="lc('admin_html_00004')" :visible.sync="drawerAdd" :modal-append-to-body="false"
+            <el-drawer :title="id ? lc('admin_00188') : lc('admin_system_00248')" :visible.sync="drawerAdd" :modal-append-to-body="false"
                 :show-close="true" :with-header="true" size="45%">
                 <navigationadd :id="id" @child-event="closeAdd" v-if="drawerAdd"></navigationadd>
             </el-drawer>
@@ -170,7 +170,7 @@
                             order: that.order,
                         };
                     that.loading = true;
-                    that.emptytext = "数据加载中";
+                    that.emptytext = lc('admin_user_weipin_00026');
                     httpPost('m=system&c=set_navigation', params).then(function (response) {
                         let res = response.data,
                             data = res.data;
@@ -198,7 +198,7 @@
                         }
                         that.loading = false;
                         if (that.list.length === 0){
-                            that.emptytext = "暂无数据";
+                            that.emptytext = lc('wap_js_00113');
                         }
                     })
                 },
@@ -289,10 +289,10 @@
 
                     if (typeof idx == 'undefined') { // 批量删除
                         params.del = this.idArr;
-                        msg = '你确定要删除选中项吗？';
+                        msg = lc('common_00853');
                     } else {// 单个删除
                         params.id = that.list[idx].id;
-                        msg = '你确定要删除当前项吗？';
+                        msg = lc('admin_00333');
                     }
 
                     delConfirm(this, params, function (params) {

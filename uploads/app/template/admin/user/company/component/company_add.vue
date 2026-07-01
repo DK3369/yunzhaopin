@@ -4,22 +4,22 @@
             <table class="tableVue">
                 <thead>
                 <tr align="left">
-                    <th width="200">{yun:}t key='member_com_00021'{/yun}</th>
-                    <th width="400">{yun:}t key='member_user_00181'{/yun}</th>
-                    <th>{yun:}t key='member_com_00207'{/yun}</th>
+                    <th width="200">{{ lc('member_com_00021') }}</th>
+                    <th width="400">{{ lc('member_user_00181') }}</th>
+                    <th>{{ lc('member_com_00207') }}</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr>
-                    <td colspan="3">{yun:}t key='admin_00603'{/yun}</td>
+                    <td colspan="3">{{ lc('admin_00603') }}</td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_user_00140'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_user_00140') }}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-input placeholder="{yun:}t key='wap_00208'{/yun}" v-model="username" @blur="checkuname">
+                            <el-input :placeholder="lc('wap_00208')" v-model="username" @blur="checkuname">
                             </el-input>
                         </div>
                     </td>
@@ -31,11 +31,11 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='wap_00356'{/yun}</div>
+                        <div class="TableTite">{{ lc('wap_00356') }}</div>
                     </td>
                     <td>
                         <div class="TableSelect" style="display: flex;align-items: center; ">
-                            <el-input type="password" @mousedown.native="pwdMousedown" @input="pwdchange" @focus="readonlyCtl(false)" @blur="readonlyCtl(true)" :readonly="pwdreadonly" placeholder="{yun:}t key='wap_01380'{/yun}" v-model="password">
+                            <el-input type="password" @mousedown.native="pwdMousedown" @input="pwdchange" @focus="readonlyCtl(false)" @blur="readonlyCtl(true)" :readonly="pwdreadonly" :placeholder="lc('wap_01380')" v-model="password">
                             </el-input>
                         </div>
                     </td>
@@ -46,34 +46,34 @@
                     </td>
                 </tr>
                 <tr>
-                    <td colspan="3">{yun:}t key='wap_com_00095'{/yun}</td>
+                    <td colspan="3">{{ lc('wap_com_00095') }}</td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='wap_com_00061'{/yun}</div>
+                        <div class="TableTite">{{ lc('wap_com_00061') }}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
                             <el-autocomplete style="width: 400px;" class="inline-input" v-model="name"
                                              :fetch-suggestions="querySearch"
-                                             placeholder="{yun:}t key='wap_00838'{/yun}"
+                                             :placeholder="lc('wap_00838')"
                                              :trigger-on-focus="false"
                             ></el-autocomplete>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span style="color:red;">{yun:}t key='admin_00604'{/yun}</span>
+                            <span style="color:red;">{{ lc('admin_00604') }}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_user_company_00035'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_user_company_00035') }}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-input placeholder="{yun:}t key='wap_com_00137'{/yun}" v-model="shortname">
+                            <el-input :placeholder="lc('wap_com_00137')" v-model="shortname">
                             </el-input>
                         </div>
                     </td>
@@ -85,11 +85,11 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='wap_user_00010'{/yun}</div>
+                        <div class="TableTite">{{ lc('wap_user_00010') }}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-select v-model="hy" placeholder="{yun:}t key='wap_user_00100'{/yun}">
+                            <el-select v-model="hy" :placeholder="lc('wap_user_00100')">
                                 <el-option v-for="(item, index) in cache.industry_index" :key="index"
                                            :label="cache.industry_name[item]"
                                            :value="item">
@@ -105,11 +105,11 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='wap_com_00159'{/yun}</div>
+                        <div class="TableTite">{{ lc('wap_com_00159') }}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-select v-model="pr" placeholder="{yun:}t key='wap_user_00100'{/yun}">
+                            <el-select v-model="pr" :placeholder="lc('wap_user_00100')">
                                 <el-option v-for="(item,index) in cache.comdata.job_pr" :key="index"
                                            :label="cache.comclass_name[item]"
                                            :value="item">
@@ -125,11 +125,11 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='wap_com_00163'{/yun}</div>
+                        <div class="TableTite">{{ lc('wap_com_00163') }}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-select v-model="mun" placeholder="{yun:}t key='wap_user_00100'{/yun}">
+                            <el-select v-model="mun" :placeholder="lc('wap_user_00100')">
                                 <el-option v-for="(item,index) in cache.comdata.job_mun" :key="index"
                                            :label="cache.comclass_name[item]"
                                            :value="item">
@@ -145,7 +145,7 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_00605'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_00605') }}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
@@ -161,7 +161,7 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='wap_00040'{/yun}</div>
+                        <div class="TableTite">{{ lc('wap_00040') }}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
@@ -170,9 +170,9 @@
                                              :debounce="1000"
                                              v-model="address"
                                              :fetch-suggestions="addressKeyup"
-                                             placeholder="{yun:}t key='admin_user_company_00033'{/yun}"
+                                             :placeholder="lc('admin_user_company_00033')"
                                              @select="poiSearchClick">
-                                <i class="el-icon-location-outline el-input__icon" slot="suffix" @click="localsearch("{yun:}t key='member_com_00206'{/yun}")"></i>
+                                <i class="el-icon-location-outline el-input__icon" slot="suffix" @click="localsearch(lc('member_com_00206'))"></i>
                                 <template slot-scope="{ item }">
                                     <div class="autocompLtite">
                                         <div class="name">{{ item.name }}</div>
@@ -198,11 +198,11 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='wap_01431'{/yun}</div>
+                        <div class="TableTite">{{ lc('wap_01431') }}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-input placeholder="{yun:}t key='wap_com_00013'{/yun}" v-model="linkman">
+                            <el-input :placeholder="lc('wap_com_00013')" v-model="linkman">
                             </el-input>
                         </div>
                     </td>
@@ -214,11 +214,11 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='wap_00109'{/yun}</div>
+                        <div class="TableTite">{{ lc('wap_00109') }}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-input placeholder="{yun:}t key='wap_com_00142'{/yun}" v-model="moblie">
+                            <el-input :placeholder="lc('wap_com_00142')" v-model="moblie">
                             </el-input>
                         </div>
                     </td>
@@ -230,15 +230,15 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='wap_com_00014'{/yun}</div>
+                        <div class="TableTite">{{ lc('wap_com_00014') }}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-input style="width:100px;" placeholder="{yun:}t key='admin_00609'{/yun}" v-model="areacode" maxlength="7">
+                            <el-input style="width:100px;" :placeholder="lc('admin_00609')" v-model="areacode" maxlength="7">
                             </el-input>
-                            <el-input style="width:230px;margin-left: 12px;" placeholder="{yun:}t key='wap_com_00014'{/yun}" v-model="telphone" maxlength="8">
+                            <el-input style="width:230px;margin-left: 12px;" :placeholder="lc('wap_com_00014')" v-model="telphone" maxlength="8">
                             </el-input>
-                            <el-input style="width:100px;margin-left: 12px;" placeholder="{yun:}t key='admin_00610'{/yun}" v-model="exten" maxlength="4">
+                            <el-input style="width:100px;margin-left: 12px;" :placeholder="lc('admin_00610')" v-model="exten" maxlength="4">
                             </el-input>
                         </div>
                     </td>
@@ -250,11 +250,11 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='member_user_00282'{/yun}</div>
+                        <div class="TableTite">{{ lc('member_user_00282') }}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-input placeholder="{yun:}t key='wap_00697'{/yun}" v-model="email">
+                            <el-input :placeholder="lc('wap_00697')" v-model="email">
                             </el-input>
                         </div>
                     </td>
@@ -266,7 +266,7 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='wap_com_00160'{/yun}</div>
+                        <div class="TableTite">{{ lc('wap_com_00160') }}</div>
                     </td>
                     <td colspan="2">
                         <div style="border: 1px solid #ccc;">
@@ -282,11 +282,11 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_00606'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_00606') }}</div>
                     </td>
                     <td>
-                        <el-checkbox v-model="sendmsg">{yun:}t key='admin_user_00166'{/yun}</el-checkbox>
-                        <el-checkbox v-model="sendemail">{yun:}t key='admin_user_00167'{/yun}</el-checkbox>
+                        <el-checkbox v-model="sendmsg">{{ lc('admin_user_00166') }}</el-checkbox>
+                        <el-checkbox v-model="sendemail">{{ lc('admin_user_00167') }}</el-checkbox>
                     </td>
                     <td>
                         <div class="TableShuom">
@@ -295,14 +295,14 @@
                     </td>
                 </tr>
                 <tr>
-                    <td colspan="3">{yun:}t key='admin_00607'{/yun}</td>
+                    <td colspan="3">{{ lc('admin_00607') }}</td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_00608'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_00608') }}</div>
                     </td>
                     <td>
-                        <el-input placeholder="{yun:}t key='admin_00611'{/yun}" v-model="integral">
+                        <el-input :placeholder="lc('admin_00611')" v-model="integral">
                         </el-input>
                     </td>
                     <td>
@@ -313,10 +313,10 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_user_company_00034'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_user_company_00034') }}</div>
                     </td>
                     <td>
-                        <el-select v-model="rating_name" placeholder="{yun:}t key='wap_user_00100'{/yun}">
+                        <el-select v-model="rating_name" :placeholder="lc('wap_user_00100')">
                             <el-option v-for="(item, index) in ratingarr" :key="index" :label="item"
                                        :value="index">
                             </el-option>
@@ -332,7 +332,7 @@
             </table>
         </div>
         <div class="setBasicButn" style="border: none;">
-            <el-button type="primary" size="medium" @click="save">{yun:}t key='common.submit'{/yun}</el-button>
+            <el-button type="primary" size="medium" @click="save">{{ lc('common.submit') }}</el-button>
         </div>
     </div>
 </template>
@@ -417,7 +417,7 @@
                 this.pwdreadonly = true
                 setTimeout(function(){ that.pwdreadonly = false, 100})
             },
-            // {yun:}t key='common_00444'{/yun}
+            // {{ lc('common_00444') }}
             pwdchange: function(val){
                 var that = this
                 if (val == "") {
@@ -425,7 +425,7 @@
                     setTimeout(function(){ that.pwdreadonly = false, 100})
                 }
             },
-            // 修改密码框readonly{yun:}t key='wap_js_00085'{/yun}，防止密码框展示浏览器记录的密码信息
+            // 修改密码框readonly{{ lc('wap_js_00085') }}，防止密码框展示浏览器记录的密码信息
             readonlyCtl: function(res){
                 var that = this
                 setTimeout(function(){
@@ -620,7 +620,7 @@
                         }
                     }
                 };
-                // {yun:}t key='wap_com_00160'{/yun}
+                // {{ lc('wap_com_00160') }}
                 if (!editor_desc) {
                     editor_desc = createEditor({
                         selector: "#editor-container-comdesc',
@@ -644,97 +644,97 @@
             async save() {
                 let that = this;
                 if(that.username == '') {
-                    message.error("{yun:}t key='wap_00208'{/yun}");
+                    message.error(lc('wap_00208'));
                     return false;
                 }
                 if(that.password == '') {
-                    message.error("{yun:}t key='wap_01380'{/yun}");
+                    message.error(lc('wap_01380'));
                     return false;
                 }
                 if(that.name == '') {
-                    message.error("{yun:}t key='wap_00838'{/yun}");
+                    message.error(lc('wap_00838'));
                     return false;
                 }
                 if(that.hy == '') {
-                    message.error("{yun:}t key='wap_user_00009'{/yun}");
+                    message.error(lc('wap_user_00009'));
                     return false;
                 }
                 if(that.pr == '') {
-                    message.error("{yun:}t key='wap_com_00143'{/yun}");
+                    message.error(lc('wap_com_00143'));
                     return false;
                 }
                 if(that.mun == '') {
-                    message.error("{yun:}t key='wap_com_00144'{/yun}");
+                    message.error(lc('wap_com_00144'));
                     return false;
                 }
                 if(that.cionly == '1' && (that.sel_city.length == 0 || that.sel_city[0] == '')) {
-                    message.error("{yun:}t key='member_com_00194'{/yun}");
+                    message.error(lc('member_com_00194'));
                     return false;
                 }
                 if(that.cionly == '0' && (that.sel_city.length <= 1 || that.sel_city[1] == '')) {
-                    message.error("{yun:}t key='member_com_00194'{/yun}");
+                    message.error(lc('member_com_00194'));
                     return false;
                 }
                 if(that.address == '') {
-                    message.error("{yun:}t key='common_06414'{/yun}");
+                    message.error(lc('common_06414'));
                     return false;
                 }
                 if(that.linkman == '') {
-                    message.error("{yun:}t key='wap_com_00013'{/yun}");
+                    message.error(lc('wap_com_00013'));
                     return false;
                 } else{
                     var link_name = that.linkman;
-                    var link_man = link_name.replace(/[-_ ]/g,'");// {yun:}t key='common_01715'{/yun}
+                    var link_man = link_name.replace(/[-_ ]/g,'");// {{ lc('common_01715') }}
                     if(!link_man){
                         return ;
                     }
                     var test = link_man.replace(/[0-9]/g,"');
                     if (!test){
-                        message.error("{yun:}t key='wap_com_00005'{/yun}");
+                        message.error(lc('wap_com_00005'));
                         return false;
                     }else{
                         if(/\d/.test(link_man)){
                             if(link_man.length>8){
                                 // obj.value = obj.value.substring(0,8);
-                                message.error("{yun:}t key='wap_com_00002'{/yun}");
+                                message.error(lc('wap_com_00002'));
                                 return false;
                             }
                         }
                     }
                 }
                 if(that.moblie == '') {
-                    message.error("{yun:}t key='wap_01460'{/yun}");
+                    message.error(lc('wap_01460'));
                     return false;
                 } else {
                     var obj = that.moblie;
                     if(isjsMobile(obj) == false) {
-                        message.error("{yun:}t key='wap_com_00006'{/yun}");
+                        message.error(lc('wap_com_00006'));
                         return false;
                     }
                 }
                 var obj = that.email;
                 var myreg = /^([a-zA-Z0-9\-]+[_|\_|\.]?)*[a-zA-Z0-9\-]+@([a-zA-Z0-9\-]+[_|\_|\.]?)*[a-zA-Z0-9]+\.[a-zA-Z]{2,3}$/;
                 if(obj != "" && !myreg.test(obj)) {
-                    message.error("{yun:}t key='wap_com_00131'{/yun}");
+                    message.error(lc('wap_com_00131'));
                     return false;
                 }
                 // 去除html标签后判断内容是否为空
                 var regex = /(<([^>]+)>)/ig
                 var content = editor_desc.getHtml().replace(regex, "")
                 if (content == "") {
-                    message.error("{yun:}t key='member_com_00445'{/yun}")
+                    message.error(lc('member_com_00445'))
                     return false;
                 }
                 if(that.rating_name == '') {
-                    message.error("{yun:}t key='common_00924'{/yun}")
+                    message.error(lc('common_00924'))
                     return false;
                 }
                 if(that.sendmsg == true && that.moblie == '') {
-                    message.error("{yun:}t key='wap_js_00132'{/yun}")
+                    message.error(lc('wap_js_00132'))
                     return false;
                 }
                 if(that.sendemail==true&&that.email == '') {
-                    message.error("{yun:}t key='admin_user_company_00032'{/yun}")
+                    message.error(lc('admin_user_company_00032'))
                     return false;
                 }
                 var params = {

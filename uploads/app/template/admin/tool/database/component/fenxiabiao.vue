@@ -2,28 +2,28 @@
     <div class="moduleElHight">
         <div class="fenxiabHeadr">
             <div class="fenxiabHeadTite">
-                <span>{yun:}t key='admin_tool_00225'{/yun}</span>
+                <span>{{ lc('admin_tool_00225') }}</span>
             </div>
             <div class="fenxiabHeadFrom">
                 <div class="fenxiabHeadFomList" style="padding-right: 12px;">
-                    <el-select v-model="searchType" size="small" placeholder="{yun:}t key='wap_user_00100'{/yun}" @change="changeType">
+                    <el-select v-model="searchType" size="small" :placeholder="lc('wap_user_00100')" @change="changeType">
                         <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
                         </el-option>
                     </el-select>
                 </div>
                 <div class="fenxiabHeadFomList">
-                    <el-date-picker v-model="startTime" size="small" :value-format="valueFormat" :type="type" placeholder="{yun:}t key='admin_tool_00230'{/yun}">
+                    <el-date-picker v-model="startTime" size="small" :value-format="valueFormat" :type="type" :placeholder="lc('admin_tool_00230')">
                     </el-date-picker>
                 </div>
                 <div class="fenxiabHeadTexts">
                     <span>VS</span>
                 </div>
                 <div class="fenxiabHeadFomList">
-                    <el-date-picker v-model="endTime"  size="small" :type="type" :value-format="valueFormat"  placeholder="{yun:}t key='admin_tool_00230'{/yun}">
+                    <el-date-picker v-model="endTime"  size="small" :type="type" :value-format="valueFormat"  :placeholder="lc('admin_tool_00230')">
                     </el-date-picker>
                 </div>
                 <div class="fenxiabHeadFomList" style="padding-left: 12px;">
-                    <el-button icon="el-icon-search" size="mini" type="primary" @click="search">{yun:}t key='admin_tool_00224'{/yun}</el-button>
+                    <el-button icon="el-icon-search" size="mini" type="primary" @click="search">{{ lc('admin_tool_00224') }}</el-button>
                 </div>
             </div>
         </div>
@@ -31,30 +31,30 @@
             <div class="fenxiabConTable">
                 <el-table :data="tableData" border stripe :header-cell-style="{ background: '#f5f7fa', color: '#606266' }"
                     style="width: 100%">
-                    <el-table-column prop="years" label="{yun:}t key='admin_tool_00228'{/yun}">
+                    <el-table-column prop="years" :label="lc('admin_tool_00228')">
                     </el-table-column>
-                    <el-table-column prop="gerezce" label="{yun:}t key='admin_00073'{/yun}"></el-table-column>
-                    <el-table-column prop="login_log" label="{yun:}t key='admin_tool_00223'{/yun}"></el-table-column>
-                    <el-table-column prop="jilizce" label="{yun:}t key='admin_tool_00229'{/yun}">
+                    <el-table-column prop="gerezce" :label="lc('admin_00073')"></el-table-column>
+                    <el-table-column prop="login_log" :label="lc('admin_tool_00223')"></el-table-column>
+                    <el-table-column prop="jilizce" :label="lc('admin_tool_00229')">
                     </el-table-column>
-                    <el-table-column prop="comzce" label="{yun:}t key='admin_00074'{/yun}"></el-table-column>
-                    <el-table-column prop="company_login_log" label="{yun:}t key='admin_user_00335'{/yun}"></el-table-column>
-                    <el-table-column prop="fabuzhw" label="{yun:}t key='wap_00322'{/yun}">
+                    <el-table-column prop="comzce" :label="lc('admin_00074')"></el-table-column>
+                    <el-table-column prop="company_login_log" :label="lc('admin_user_00335')"></el-table-column>
+                    <el-table-column prop="fabuzhw" :label="lc('wap_00322')">
                     </el-table-column>
-                    <el-table-column prop="jilitod" label="{yun:}t key='member_com_00152'{/yun}">
+                    <el-table-column prop="jilitod" :label="lc('member_com_00152')">
                     </el-table-column>
-                    <el-table-column prop="yaoqms" label="{yun:}t key='resume_00029'{/yun}">
+                    <el-table-column prop="yaoqms" :label="lc('resume_00029')">
                     </el-table-column>
-                    <el-table-column prop="jilixza" label="{yun:}t key='wap_com_00042'{/yun}">
+                    <el-table-column prop="jilixza" :label="lc('wap_com_00042')">
                     </el-table-column>
                 </el-table>
             </div>
             <div class="fenxiabConTable">
                 <el-table :data="tableData2" border stripe :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" :cell-style="addClass" >
                     style="width: 100%">
-                    <el-table-column prop="years" label="{yun:}t key='admin_tool_00228'{/yun}">
+                    <el-table-column prop="years" :label="lc('admin_tool_00228')">
                     </el-table-column>
-                    <el-table-column label="{yun:}t key='admin_00073'{/yun}">
+                    <el-table-column :label="lc('admin_00073')">
                         <template slot-scope="scope">
                             <div class="moduleFenxias">
                                 <div class="moduleFenxText">
@@ -74,7 +74,7 @@
                             </div>
                         </template>
                     </el-table-column>
-                    <el-table-column label="{yun:}t key='admin_tool_00223'{/yun}">
+                    <el-table-column :label="lc('admin_tool_00223')">
                         <template slot-scope="scope">
                             <div class="moduleFenxias">
                                 <div class="moduleFenxText">
@@ -94,7 +94,7 @@
                             </div>
                         </template>
                     </el-table-column>
-                    <el-table-column label="{yun:}t key='admin_tool_00229'{/yun}">
+                    <el-table-column :label="lc('admin_tool_00229')">
                         <template slot-scope="scope">
                             <div class="moduleFenxias">
                                 <div class="moduleFenxText">
@@ -114,7 +114,7 @@
                             </div>
                         </template>
                     </el-table-column>
-                    <el-table-column label="{yun:}t key='admin_00074'{/yun}">
+                    <el-table-column :label="lc('admin_00074')">
                         <template slot-scope="scope">
                             <div class="moduleFenxias">
                                 <div class="moduleFenxText">
@@ -134,7 +134,7 @@
                             </div>
                         </template>
                     </el-table-column>
-                    <el-table-column label="{yun:}t key='admin_user_00335'{/yun}">
+                    <el-table-column :label="lc('admin_user_00335')">
                         <template slot-scope="scope">
                             <div class="moduleFenxias">
                                 <div class="moduleFenxText">
@@ -154,7 +154,7 @@
                             </div>
                         </template>
                     </el-table-column>
-                    <el-table-column label="{yun:}t key='wap_00322'{/yun}">
+                    <el-table-column :label="lc('wap_00322')">
                         <template slot-scope="scope">
                             <div class="moduleFenxias">
                                 <div class="moduleFenxText">
@@ -175,7 +175,7 @@
                             </div>
                         </template>
                     </el-table-column>
-                    <el-table-column label="{yun:}t key='member_com_00152'{/yun}">
+                    <el-table-column :label="lc('member_com_00152')">
                         <template slot-scope="scope">
                             <div class="moduleFenxias">
                                 <div class="moduleFenxText">
@@ -196,7 +196,7 @@
                             </div>
                         </template>
                     </el-table-column>
-                    <el-table-column label="{yun:}t key='resume_00029'{/yun}">
+                    <el-table-column :label="lc('resume_00029')">
                         <template slot-scope="scope">
                             <div class="moduleFenxias">
                                 <div class="moduleFenxText">
@@ -216,7 +216,7 @@
                             </div>
                         </template>
                     </el-table-column>
-                    <el-table-column label="{yun:}t key='wap_com_00042'{/yun}">
+                    <el-table-column :label="lc('wap_com_00042')">
                         <template slot-scope="scope">
                             <div class="moduleFenxias">
                                 <div class="moduleFenxText">
@@ -255,10 +255,10 @@ module.exports = {
             tableData2: [],
             options: [{
                 value: '1',
-                label: window.yunAdminT("{yun:}t key='admin_tool_00227'{/yun}")
+                label: window.yunAdminT(lc('admin_tool_00227'))
             }, {
                 value: '2',
-                label: window.yunAdminT("{yun:}t key='admin_tool_00226'{/yun}")
+                label: window.yunAdminT(lc('admin_tool_00226'))
             }],
             value: '',
             statistics : ['gerezce','login_log','jilizce','comzce','company_login_log','fabuzhw', 'jilitod', 'liaotan', 'yaoqms', 'jilixza']
@@ -269,7 +269,7 @@ module.exports = {
     },
     methods: {
         addClass:function({row,rowIndex,columnIndex}){
-            if (row.years == "{yun:}t key='member_com_00348'{/yun}" && columnIndex !=0){
+            if (row.years == lc('member_com_00348') && columnIndex !=0){
                 var i = columnIndex -1;
                 let key = this.statistics[i];
                 if (row[key+"_percent"]<'0' && row[key]!='0'){
@@ -303,7 +303,7 @@ module.exports = {
                 params.type = this.searchType;
                 params.startTime = this.startTime
             if (!this.startTime || !this.endTime){
-                message.error(window.yunAdminT("{yun:}t key='admin_tool_00222'{/yun}"));return;
+                message.error(window.yunAdminT(lc('admin_tool_00222')));return;
             }
                 params.endTime = this.endTime
                 httpPost('m=tool&c=dataBoard&a=fenxiabiao', params).then(function (response) {

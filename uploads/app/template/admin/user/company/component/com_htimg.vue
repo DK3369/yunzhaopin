@@ -2,18 +2,18 @@
     <div>
         <div class="moduleElHight">
             <div class="tableDome_tip">
-                <el-alert title="{yun:}t key='admin_00587'{/yun}" type="success" :closable="false">
+                <el-alert :title="lc('admin_00587')" type="success" :closable="false">
                 </el-alert>
             </div>
             <div class="moduleHeadrButn" style=" margin-bottom: 12px;">
-                <el-button type="primary" icon="el-icon-document-add" @click="addPic">{yun:}t key='admin_00586'{/yun}</el-button>
+                <el-button type="primary" icon="el-icon-document-add" @click="addPic">{{ lc('admin_00586') }}</el-button>
             </div>
             <div class="moduleElTable">
                 <el-table :data="tableData" border style="width: 100%;" ref="multipleTable"
                           :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" v-loading="loading" :empty-text="emptytext">
-                    <el-table-column prop="id" label="{yun:}t key='admin_user_00130'{/yun}" width="150">
+                    <el-table-column prop="id" :label="lc('admin_user_00130')" width="150">
                     </el-table-column>
-                    <el-table-column prop="wenjian" label="{yun:}t key='wap_js_00081'{/yun}">
+                    <el-table-column prop="wenjian" :label="lc('wap_js_00081')">
                         <template slot-scope="scope">
                             <div class="demo-image__preview">
                                 <el-image style="width: 100px; height: 60px" :src="scope.row.pic_n"
@@ -22,10 +22,10 @@
                             </div>
                         </template>
                     </el-table-column>
-                    <el-table-column fixed="right" label="{yun:}t key='member_user_00048'{/yun}" width="120">
+                    <el-table-column fixed="right" :label="lc('member_user_00048')" width="120">
                         <template slot-scope="scope">
                             <div class="moduleElTaCaoz">
-                                <el-button type="text" size="small" @click="delrow(scope.row.id)">{yun:}t key='common.delete'{/yun}</el-button>
+                                <el-button type="text" size="small" @click="delrow(scope.row.id)">{{ lc('common.delete') }}</el-button>
                             </div>
                         </template>
                     </el-table-column>
@@ -46,13 +46,13 @@
                 </div>
             </div>
             <div class="modluDrawer">
-                <el-drawer title="{yun:}t key='admin_00586'{/yun}" :visible.sync="editBox" append-to-body :modal-append-to-body="false"
+                <el-drawer :title="lc('admin_00586')" :visible.sync="editBox" append-to-body :modal-append-to-body="false"
                            :show-close="true" :with-header="true" size="45%">
                     <div class="drawerModlue">
                         <div class="drawerModInfo">
                             <div class="drawerModLis">
                                 <div class="drawerModTite">
-                                    <span>{yun:}t key='admin_user_company_00030'{/yun}</span>
+                                    <span>{{ lc('admin_user_company_00030') }}</span>
                                 </div>
                                 <div class="drawerModInpt">
                                     <el-upload :action='uploadAction' multiple :limit="3" list-type="picture-card"
@@ -72,13 +72,13 @@
                                     </el-upload>
                                     <div style="font-size: 12px;color: #8c939d">
                                         <i class="el-icon-warning-outline"></i>
-                                        <span>{yun:}t key='admin_user_company_00029'{/yun}</span>
+                                        <span>{{ lc('admin_user_company_00029') }}</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="setBasicButn" style="border: none;">
-                            <el-button type="primary" size="medium" @click="saveImg">{yun:}t key='common.submit'{/yun}</el-button>
+                            <el-button type="primary" size="medium" @click="saveImg">{{ lc('common.submit') }}</el-button>
                         </div>
                     </div>
                 </el-drawer>
@@ -98,7 +98,7 @@
             return {
                 pic_accept: localStorage.getItem("pic_accept"),
                 loading: false,
-                emptytext: "{yun:}t key='wap_js_00113'{/yun}",
+                emptytext: lc('wap_js_00113'),
                 order_id: '',
                 tableData: [],
                 srcList: [],
@@ -162,10 +162,10 @@
                     file.type === 'image/jpg' || file.type === 'image/png' || file.type === 'image/jpeg' || file.type === 'image/gif';
                 const isLt2M = file.size / 1024 / 1024 < 5;
                 if (!isJPG) {
-                    this.$message.error("JPG, PNG, JPEG, GIF {yun:}t key='common_02005'{/yun}!");
+                    this.$message.error("JPG, PNG, JPEG, GIF {{ lc('common_02005') }}!");
                 }
                 if (!isLt2M) {
-                    this.$message.error("{yun:}t key='admin_yunying_00057'{/yun} 2MB!");
+                    this.$message.error("{{ lc('admin_yunying_00057') }} 2MB!");
                 }
                 return isJPG && isLt2M;
             },
@@ -175,12 +175,12 @@
                 }
             },
             exceedFun(files, fileList){
-                this.$message.error("{yun:}t key='admin_company_00015'{/yun}");
+                this.$message.error(lc('admin_company_00015'));
             },
             saveImg: function () {
                 let that = this;
                 if (that.picurl.length == 0) {
-                    message.error("{yun:}t key='admin_company_00016'{/yun}");
+                    message.error(lc('admin_company_00016'));
                     return false;
                 }
                 let sendData = {
@@ -204,7 +204,7 @@
                 let that = this;
                 let param = {id: that.order_id};
                 that.loading = true;
-                that.emptytext = "{yun:}t key='admin_user_weipin_00026'{/yun}";
+                that.emptytext = lc('admin_user_weipin_00026');
                 httpPost('m=user&c=company_order&a=upload', param).then(function (response) {
                     let res = response.data;
                     if (res.error == 0) {
@@ -219,7 +219,7 @@
                             that.$refs.multipleTable.bodyWrapper.scrollTop = 0;
                         }
                         if (that.tableData.length === 0){
-                            that.emptytext = "{yun:}t key='wap_js_00113'{/yun}";
+                            that.emptytext = lc('wap_js_00113');
                         }
                     }
                 }).catch(function (error) {

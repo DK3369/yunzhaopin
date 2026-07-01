@@ -5,9 +5,9 @@
                 :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" height="100%" v-loading="loading" :empty-text="emptytext">
                 <el-table-column type="selection" width="55">
                 </el-table-column>
-                <el-table-column prop="id" label="{yun:}t key='member_com_00345'{/yun}" width="220">
+                <el-table-column prop="id" :label="lc('member_com_00345')" width="220">
                 </el-table-column>
-                <el-table-column label="{yun:}t key='admin_00922'{/yun}" width="300">
+                <el-table-column :label="lc('admin_00922')" width="300">
                     <template slot-scope="scope">
                         <div class="moduleElTaPax">
                             <template v-if="scope.row.isEditjifen">
@@ -21,7 +21,7 @@
 
                     </template>
                 </el-table-column>
-                <el-table-column label="{yun:}t key='admin_system_00333'{/yun}">
+                <el-table-column :label="lc('admin_system_00333')">
                     <template slot-scope="scope">
                         <div class="moduleElTaPax">
                             <template v-if="scope.row.isEditdiscount">
@@ -30,23 +30,23 @@
                                     @blur="changeRow(scope, 'discount')" />
                             </template>
                             <template v-else>
-                                <span>{yun:}t key='admin_00921'{/yun}</span>
+                                <span>{{ lc('admin_00921') }}</span>
                             </template>
                             <img src="../../../admin/images/bine.png" @click="editRow(scope, 'discount')">
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="{yun:}t key='admin_system_00332'{/yun}" width="220">
+                <el-table-column :label="lc('admin_system_00332')" width="220">
                     <template slot-scope="scope">
                         <el-switch v-model="scope.row.status" active-color="#1890FF" inactive-color="#B8BDC9"
                             @change="isOpen(scope)">
                         </el-switch>
                     </template>
                 </el-table-column>
-                <el-table-column fixed="right" label="{yun:}t key='member_user_00048'{/yun}" width="80">
+                <el-table-column fixed="right" :label="lc('member_user_00048')" width="80">
                     <template slot-scope="scope">
                         <div class="moduleElTaCaoz">
-                            <el-button size="mini" type="danger" @click="deljf(scope.row)">{yun:}t key='common.delete'{/yun}</el-button>
+                            <el-button size="mini" type="danger" @click="deljf(scope.row)">{{ lc('common.delete') }}</el-button>
                         </div>
                     </template>
                 </el-table-column>
@@ -54,8 +54,8 @@
         </div>
         <div class="modulePaging">
             <div>
-				<el-checkbox v-model="allchecked" @change="allcheckChange">{yun:}t key='wap_js_00074'{/yun}</el-checkbox>
-                <el-button size="mini" @click="editDelBatch">{yun:}t key='common.delete'{/yun}</el-button>
+				<el-checkbox v-model="allchecked" @change="allcheckChange">{{ lc('wap_js_00074') }}</el-checkbox>
+                <el-button size="mini" @click="editDelBatch">{{ lc('common.delete') }}</el-button>
             </div>
         </div>
     </div>
@@ -65,7 +65,7 @@
 module.exports = {
     data: function () {
         return {
-            emptytext: "{yun:}t key='wap_js_00113'{/yun}",
+            emptytext: lc('wap_js_00113'),
             loading: false,
             input3: '',
             select: '',
@@ -86,7 +86,7 @@ module.exports = {
     },
     methods: {
         handleSizeChange(val) {
-            console.log(`每页 ${val} {yun:}t key='common_02088'{/yun}`);
+            console.log(`每页 ${val} {{ lc('common_02088') }}`);
         },
         handleCurrentChange(val) {
             console.log(`当前页: ${val}`);
@@ -94,7 +94,7 @@ module.exports = {
         list() {
             let _this = this;
             _this.loading = true;
-            _this.emptytext = "{yun:}t key='admin_user_weipin_00026'{/yun}";
+            _this.emptytext = lc('admin_user_weipin_00026');
             let url = _this.uri + 'set_integral&a=class';
             httpPost(url, {}).then(function (response) {
                 let res = response.data;
@@ -102,7 +102,7 @@ module.exports = {
                     _this.tableData = res.data;
                     _this.loading = false;
                     if (_this.tableData.length === 0){
-                        _this.emptytext = "{yun:}t key='wap_js_00113'{/yun}";
+                        _this.emptytext = lc('wap_js_00113');
                     }
                 }
             })
@@ -158,9 +158,9 @@ module.exports = {
             httpPost(url, sendData).then(function (response) {
                 let res = response.data;
                 if (res.error == 0) {
-                    message.success("{yun:}t key='wap_user_00264'{/yun}");
+                    message.success(lc('wap_user_00264'));
                 } else {
-                    message.error("{yun:}t key='wap_js_00141'{/yun}");
+                    message.error(lc('wap_js_00141'));
                 }
                 _this.tableData[index][isEditFieldName] = false;
                 _this.editData = null
@@ -178,9 +178,9 @@ module.exports = {
             httpPost(url, sendData).then(function (response) {
                 let res = response.data;
                 if (res.error == 0) {
-                    message.success("{yun:}t key='wap_user_00264'{/yun}");
+                    message.success(lc('wap_user_00264'));
                 } else {
-                    message.error("{yun:}t key='wap_js_00141'{/yun}");
+                    message.error(lc('wap_js_00141'));
                 }
                 _this.list();
             }).catch(function (error) {
@@ -224,7 +224,7 @@ module.exports = {
         editDelBatch: function () {
             let _this = this;
             if (!_this.idsArr.length) {
-                message.error("{yun:}t key='admin_user_weipin_00005'{/yun}");
+                message.error(lc('admin_user_weipin_00005'));
                 return;
             }
 			
@@ -233,9 +233,9 @@ module.exports = {
             let sendData = {
                 del: _this.idsArr
             };
-            _this.$confirm("{yun:}t key='admin_00333'{/yun}", "{yun:}t key='wap_user_00205'{/yun}", {
-                confirmButtonText: "{yun:}t key='common.confirm'{/yun}",
-                cancelButtonText: "{yun:}t key='common.cancel'{/yun}",
+            _this.$confirm(lc('admin_00333'), lc('wap_user_00205'), {
+                confirmButtonText: lc('common.confirm'),
+                cancelButtonText: lc('common.cancel'),
                 type: 'warning'
             }).then(() => {
                 httpPost(url, sendData).then(function (response) {

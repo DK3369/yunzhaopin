@@ -1,7 +1,7 @@
 <template>
 	<div class="moduleElHight">
 		<div class="tableDome_tip">
-			<el-alert title="{yun:}t key='admin_tool_00375'{/yun}" type="success" :closable="false">
+			<el-alert :title="lc('admin_tool_00375')" type="success" :closable="false">
 			</el-alert>
 		</div>
 		<div class="moduleTable">
@@ -11,9 +11,9 @@
 					<table class="tableVue">
 						<thead>
 							<tr align="left">
-								<th width="200">{yun:}t key='member_com_00021'{/yun}</th>
-								<th>{yun:}t key='member_user_00181'{/yun}</th>
-								<th width="100">{yun:}t key='member_user_00048'{/yun}</th>
+								<th width="200">{{ lc('member_com_00021') }}</th>
+								<th>{{ lc('member_user_00181') }}</th>
+								<th width="100">{{ lc('member_user_00048') }}</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -23,14 +23,14 @@
 								</td>
 								<td>
 									<div class="TableButn">
-										<el-switch v-model="item.config_val" active-text="{yun:}t key='admin_tool_00468'{/yun}" inactive-text="{yun:}t key='admin_tool_00469'{/yun}"
+										<el-switch v-model="item.config_val" :active-text="lc('admin_tool_00468')" :inactive-text="lc('admin_tool_00469')"
 											active-value="1"></el-switch>
 
 									</div>
 								</td>
 								<td>
 									<div class="TableLink">
-										<el-link type="primary" @click="settpl(item.tpl)">{yun:}t key='admin_tool_00470'{/yun}</el-link>
+										<el-link type="primary" @click="settpl(item.tpl)">{{ lc('admin_tool_00470') }}</el-link>
 									</div>
 								</td>
 							</tr>
@@ -40,12 +40,12 @@
 			</div>
 
 			<div class="setBasicButn" style="border: none;">
-				<el-button type="primary" :loading='post_loading' size="medium" @click="postSet">{yun:}t key='common.submit'{/yun}</el-button>
+				<el-button type="primary" :loading='post_loading' size="medium" @click="postSet">{{ lc('common.submit') }}</el-button>
 			</div>
 		</div>
 		<!-- 弹窗 -->
 		<div class="modluDrawer">
-			<el-drawer title="{yun:}t key='admin_tool_00374'{/yun}" :visible.sync="addshow" :modal-append-to-body="false" :show-close="true"
+			<el-drawer :title="lc('admin_tool_00374')" :visible.sync="addshow" :modal-append-to-body="false" :show-close="true"
 				:with-header="true" size="50%">
 				<addtpl :tpl="tpl" :key="timer" @close-update="addshow = false"></addtpl>
 			</el-drawer>

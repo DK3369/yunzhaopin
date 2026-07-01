@@ -9,7 +9,7 @@
 <body>
     <div id="adminnav" class="moduleDome">
         <div class="moduleHeadr">
-            <el-page-header @back="goBack" :content="lc('admin_html_00003')">
+            <el-page-header @back="goBack" :content="id ? lc('wap_js_00073') : lc('wap_js_00091')">
             </el-page-header>
         </div>
         <el-form :model="ruleForm" ref="ruleForm" label-width="130px" class="create-ruleForm">

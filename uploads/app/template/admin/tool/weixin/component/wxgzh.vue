@@ -4,16 +4,16 @@
             <table class="tableVue">
                 <thead>
                 <tr align="left">
-                    <th width="180">{yun:}t key='member_com_00021'{/yun}</th>
-                    <th width="400">{yun:}t key='member_user_00181'{/yun}</th>
-                    <th>{yun:}t key='member_com_00207'{/yun}</th>
+                    <th width="180">{{ lc('member_com_00021') }}</th>
+                    <th width="400">{{ lc('member_user_00181') }}</th>
+                    <th>{{ lc('member_com_00207') }}</th>
                 </tr>
                 </thead>
                 <tbody>
 
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_tool_00636'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_tool_00636') }}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
@@ -22,7 +22,7 @@
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>{yun:}t key='admin_tool_00637'{/yun}</span>
+                            <span>{{ lc('admin_tool_00637') }}</span>
                         </div>
                     </td>
                 </tr>
@@ -52,7 +52,7 @@
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>{yun:}t key='admin_tool_00638'{/yun}</span>
+                            <span>{{ lc('admin_tool_00638') }}</span>
                         </div>
                     </td>
                 </tr>
@@ -60,7 +60,7 @@
             </table>
         </div>
         <div class="setBasicButn" style="border: none; height: 80px;">
-            <el-button type="primary" size="medium" @click="post">{yun:}t key='common.submit'{/yun}</el-button>
+            <el-button type="primary" size="medium" @click="post">{{ lc('common.submit') }}</el-button>
         </div>
     </div>
 </template>

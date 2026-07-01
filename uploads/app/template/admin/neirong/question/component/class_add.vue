@@ -3,31 +3,31 @@
         <div class="drawerModInfo" style="max-height: calc(100% - 80px); overflow-y: auto; border: none;">
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>{yun:}t key='admin_00219'{/yun}</span>
+                    <span>{{ lc('admin_00219') }}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input v-model="ruleForm.name" placeholder="{yun:}t key='admin_00217'{/yun}"></el-input>
+                    <el-input v-model="ruleForm.name" :placeholder="lc('admin_00217')"></el-input>
                 </div>
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>{yun:}t key='member_com_00022'{/yun}</span>
+                    <span>{{ lc('member_com_00022') }}</span>
                 </div>
                 <div class="drawerModInpt">
                     <el-input v-model="ruleForm.sort" placeholder=""
                               @input="inputIntNumber($event, 'ruleForm', 'sort')"></el-input>
                 </div>
                 <div class="drawerModTips">
-                    <el-alert title="{yun:}t key='admin_00218'{/yun}" type="info" show-icon :closable="false">
+                    <el-alert :title="lc('admin_00218')" type="info" show-icon :closable="false">
                     </el-alert>
                 </div>
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>{yun:}t key='admin_00220'{/yun}</span>
+                    <span>{{ lc('admin_00220') }}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-select v-model="ruleForm.pid" placeholder="{yun:}t key='wap_user_00100'{/yun}" clearable>
+                    <el-select v-model="ruleForm.pid" :placeholder="lc('wap_user_00100')" clearable>
                         <el-option v-for="item in classList" :key="item.id" :label="item.name" :value="item.id">
                         </el-option>
                     </el-select>
@@ -35,7 +35,7 @@
             </div>
             <div class="drawerModLis" style="align-items: initial;">
                 <div class="drawerModTite">
-                    <span>{yun:}t key='admin_00778'{/yun}</span>
+                    <span>{{ lc('admin_00778') }}</span>
                 </div>
                 <div class="drawerModInpt">
                     <div id="editor—wrapper" style="border: 1px solid #ccc;">
@@ -46,7 +46,7 @@
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>{yun:}t key='wap_js_00081'{/yun}</span>
+                    <span>{{ lc('wap_js_00081') }}</span>
                 </div>
                 <div class="drawerModInpt">
                     <el-upload class="avatar-uploader" list-type="picture" action="" :auto-upload="false"
@@ -58,7 +58,7 @@
             </div>
         </div>
         <div class="setBasicButn" style="border-top: 0px solid #E4E7ED;">
-            <el-button type="primary" size="medium" @click="save" :disabled="saveLoading">{yun:}t key='common.submit'{/yun}</el-button>
+            <el-button type="primary" size="medium" @click="save" :disabled="saveLoading">{{ lc('common.submit') }}</el-button>
         </div>
     </div>
 </template>
@@ -175,11 +175,11 @@ module.exports = {
                 formData = new FormData();
 
             if (typeof ruleForm.name == 'undefined' || ruleForm.name == '') {
-                message.warning("{yun:}t key='admin_00217'{/yun}");
+                message.warning(lc('admin_00217'));
                 return;
             }
             if (typeof ruleForm.pic_n == 'undefined' || ruleForm.pic_n == '') {
-                message.warning("{yun:}t key='wap_01412'{/yun}");
+                message.warning(lc('wap_01412'));
                 return;
             }
 

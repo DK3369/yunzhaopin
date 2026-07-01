@@ -4,23 +4,23 @@
         <div class="drawerModInfo">
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>{yun:}t key='admin_00260'{/yun}</span>
+                    <span>{{ lc('admin_00260') }}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input v-model="ruleForm.class_name" placeholder="{yun:}t key='admin_00217'{/yun}"></el-input>
+                    <el-input v-model="ruleForm.class_name" :placeholder="lc('admin_00217')"></el-input>
                 </div>
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>{yun:}t key='member_user_00299'{/yun}</span>
+                    <span>{{ lc('member_user_00299') }}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input v-model="ruleForm.orders" placeholder="{yun:}t key='wap_user_00076'{/yun}" onkeyup="this.value=this.value.replace(/[^0-9]/g,'')"></el-input>
+                    <el-input v-model="ruleForm.orders" :placeholder="lc('wap_user_00076')" onkeyup="this.value=this.value.replace(/[^0-9]/g,'')"></el-input>
                 </div>
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>{yun:}t key='admin_01130'{/yun}</span>
+                    <span>{{ lc('admin_01130') }}</span>
                 </div>
                 <div class="drawerModInpt">
                     <el-radio v-model="ruleForm.place" label="1">PC</el-radio>
@@ -29,41 +29,41 @@
             </div>
             <div v-if="!changeToBuy" class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>{yun:}t key='admin_01131'{/yun}</span>
+                    <span>{{ lc('admin_01131') }}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-radio v-model="ruleForm.type" label="1">{yun:}t key='admin_yunying_00070'{/yun}</el-radio>
-                    <el-radio v-model="ruleForm.type" label="2">{yun:}t key='admin_yunying_00068'{/yun}</el-radio>
+                    <el-radio v-model="ruleForm.type" label="1">{{ lc('admin_yunying_00070') }}</el-radio>
+                    <el-radio v-model="ruleForm.type" label="2">{{ lc('admin_yunying_00068') }}</el-radio>
                 </div>
             </div>
             <div v-show="ruleForm.type == 1" class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>{yun:}t key='admin_01132'{/yun}</span>
+                    <span>{{ lc('admin_01132') }}</span>
                 </div>
                 <div class="drawerModInpt">
                     <el-radio v-model="ruleForm.btype" label="1">{{ this.integral_pricename }}</el-radio>
-                    <el-radio v-model="ruleForm.btype" label="2">{yun:}t key='member_user_00254'{/yun}</el-radio>
+                    <el-radio v-model="ruleForm.btype" label="2">{{ lc('member_user_00254') }}</el-radio>
                 </div>
             </div>
             <div v-show="ruleForm.type == 1" class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>{yun:}t key='admin_yunying_00067'{/yun}</span>
+                    <span>{{ lc('admin_yunying_00067') }}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input v-model="ruleForm.integral_buy" @keyup.native="handleKeyupIntegral" placeholder="{yun:}t key='admin_yunying_00062'{/yun}">
-                        <span v-if="ruleForm.btype == '1'" slot="suffix" class="slotspan">{yun:}t key='admin_yunying_00069'{/yun}</span>
-                        <span v-else-if="ruleForm.btype == '2'" slot="suffix" class="slotspan">{yun:}t key='wap_com_00295'{/yun}</span>
+                    <el-input v-model="ruleForm.integral_buy" @keyup.native="handleKeyupIntegral" :placeholder="lc('admin_yunying_00062')">
+                        <span v-if="ruleForm.btype == '1'" slot="suffix" class="slotspan">{{ lc('admin_yunying_00069') }}</span>
+                        <span v-else-if="ruleForm.btype == '2'" slot="suffix" class="slotspan">{{ lc('wap_com_00295') }}</span>
                     </el-input>
                 </div>
             </div>
             <div v-show="ruleForm.type == 1" class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>{yun:}t key='admin_yunying_00064'{/yun}</span>
+                    <span>{{ lc('admin_yunying_00064') }}</span>
                 </div>
                 <div class="drawerModInpt" style="display: flex;align-items: center;">
                     <el-upload :accept="pic_accept" :action="uploadAction" :on-change="uploadChange"
                         :show-file-list="false">
-                        <el-button size="small" type="primary">{yun:}t key='wap_00540'{/yun}</el-button>
+                        <el-button size="small" type="primary">{{ lc('wap_00540') }}</el-button>
                     </el-upload>
                     <div class="up_sy_logo_div" style="margin-left: 15px;">
                         <el-image v-if="ruleForm.hrefn" style="width:100px;" :src="ruleForm.hrefn" :preview-src-list="ruleForm.hrefn ? [ruleForm.hrefn] : []"></el-image>
@@ -72,23 +72,23 @@
             </div>
             <div v-show="ruleForm.type == 1" class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>{yun:}t key='admin_yunying_00065'{/yun}</span>
+                    <span>{{ lc('admin_yunying_00065') }}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input v-model="ruleForm.x" placeholder="{yun:}t key='admin_yunying_00061'{/yun}">{yun:}t key='admin_yunying_00063'{/yun}</el-input>
+                    <el-input v-model="ruleForm.x" :placeholder="lc('admin_yunying_00061')">{{ lc('admin_yunying_00063') }}</el-input>
                 </div>
             </div>
             <div v-show="ruleForm.type == 1" class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>{yun:}t key='admin_yunying_00066'{/yun}</span>
+                    <span>{{ lc('admin_yunying_00066') }}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input v-model="ruleForm.y" placeholder="{yun:}t key='admin_yunying_00061'{/yun}">{yun:}t key='admin_yunying_00063'{/yun}</el-input>
+                    <el-input v-model="ruleForm.y" :placeholder="lc('admin_yunying_00061')">{{ lc('admin_yunying_00063') }}</el-input>
                 </div>
             </div>
             <div v-show="ruleForm.type == 1" class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>{yun:}t key='member_com_00404'{/yun}</span>
+                    <span>{{ lc('member_com_00404') }}</span>
                 </div>
                 <div class="drawerModInpt">
                     <el-input type="textarea" :rows="2" v-model="ruleForm.remark"></el-input>
@@ -96,7 +96,7 @@
             </div>
         </div>
         <div class="setBasicButn" style="border: none;">
-            <el-button type="primary" size="medium" @click="submitForm('ruleForm')" :disabled="submitLoading">{yun:}t key='common.save'{/yun}</el-button>
+            <el-button type="primary" size="medium" @click="submitForm('ruleForm')" :disabled="submitLoading">{{ lc('common.save') }}</el-button>
         </div>
     </div>
 </template>
@@ -117,10 +117,10 @@ module.exports = {
                 id: 0,
                 class_name: '',
                 orders: '',
-                href: '",//{yun:}t key='wap_js_00081'{/yun}
+                href: '",//{{ lc('wap_js_00081') }}
                 hrefn: "',
-                place: '",//{yun:}t key='admin_01174'{/yun}
-                type: "",//{yun:}t key='admin_01168'{/yun}
+                place: '",//{{ lc('admin_01174') }}
+                type: "",//{{ lc('admin_01168') }}
                 btype: "',//消费类型
                 integral_buy: '',
                 x: '',
@@ -164,7 +164,7 @@ module.exports = {
                     }
                 });
                 if (!isImage) {
-                    message.error("{yun:}t key='admin_yunying_00058'{/yun}" + this.pic_type + "） {yun:}t key='common_02005'{/yun}!");
+                    message.error(lc('admin_yunying_00058') + this.pic_type + "） {{ lc('common_02005') }}!");
                     return false;
                 }
             }
@@ -172,7 +172,7 @@ module.exports = {
             if (this.pic_maxsize > 0) {
                 let isLtNumM = file.size / 1024 / 1024 < this.pic_maxsize;
                 if (!isLtNumM) {
-                    message.error("{yun:}t key='admin_yunying_00057'{/yun} " + this.pic_maxsize + 'MB!');
+                    message.error("{{ lc('admin_yunying_00057') }} " + this.pic_maxsize + 'MB!');
                     return false;
                 }
             }
@@ -183,7 +183,7 @@ module.exports = {
             let params = JSON.parse(JSON.stringify(this.ruleForm));
 
             if (params.class_name == '') {
-                message.error("{yun:}t key='admin_01413'{/yun}");
+                message.error(lc('admin_01413'));
                 return false;
             }
             if (params.place == '') {
@@ -208,11 +208,11 @@ module.exports = {
                     }
                 }
                 if (params.x == '') {
-                    message.error("{yun:}t key='admin_yunying_00059'{/yun}");
+                    message.error(lc('admin_yunying_00059'));
                     return false;
                 }
                 if (params.y == '') {
-                    message.error("{yun:}t key='admin_yunying_00060'{/yun}");
+                    message.error(lc('admin_yunying_00060'));
                     return false;
                 }
             }

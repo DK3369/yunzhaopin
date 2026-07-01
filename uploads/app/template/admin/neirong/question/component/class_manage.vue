@@ -3,7 +3,7 @@
         <div class="moduleSeachs categorySub">
             <div></div>
             <div class="categoryTopBtn">
-                <el-button class="" type="primary" icon="el-icon-document-add" size="mini" @click="openAdd('')">{yun:}t key='admin_00222'{/yun}</el-button>
+                <el-button class="" type="primary" icon="el-icon-document-add" size="mini" @click="openAdd('')">{{ lc('admin_00222') }}</el-button>
             </div>
         </div>
         <div class="moduleElTable moduleElTableCategoreSub">
@@ -11,17 +11,17 @@
                       ref="multipleTable" @selection-change="handleSelectionChange" @sort-change="sortChange" :empty-text="emptytext"
                       style="width: 100%;height: 100%;" :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" v-loading="loading" height="100%">
                 <el-table-column type="selection" width="55"> </el-table-column>
-                <el-table-column prop="id" label="{yun:}t key='member_com_00345'{/yun}" width="90" sortable="custom">
+                <el-table-column prop="id" :label="lc('member_com_00345')" width="90" sortable="custom">
                 </el-table-column>
-                <el-table-column prop="name" label="{yun:}t key='admin_00223'{/yun}">
+                <el-table-column prop="name" :label="lc('admin_00223')">
                 </el-table-column>
-                <el-table-column prop="add_time_n" label="{yun:}t key='admin_user_weipin_00030'{/yun}">
+                <el-table-column prop="add_time_n" :label="lc('admin_user_weipin_00030')">
                 </el-table-column>
-                <el-table-column label="{yun:}t key='member_user_00048'{/yun}" width="200" fixed="right">
+                <el-table-column :label="lc('member_user_00048')" width="200" fixed="right">
                     <template slot-scope="scope">
                         <div class="cz_button">
-                            <el-button size="small " plain @click="openAdd(scope.row)">{yun:}t key='wap_js_00073'{/yun}</el-button>
-                            <el-button type="danger" size="mini" @click="del(scope.$index)">{yun:}t key='common.delete'{/yun}</el-button>
+                            <el-button size="small " plain @click="openAdd(scope.row)">{{ lc('wap_js_00073') }}</el-button>
+                            <el-button type="danger" size="mini" @click="del(scope.$index)">{{ lc('common.delete') }}</el-button>
                         </div>
                     </template>
                 </el-table-column>
@@ -29,8 +29,8 @@
         </div>
         <div class="modulePaging">
             <div class="">
-                <el-checkbox v-model="checkedAll" :indeterminate="checkedAllIndeterminate" @change="checkAll">{yun:}t key='wap_js_00074'{/yun}</el-checkbox>
-                <el-button @click="batch('del')" size="mini">{yun:}t key='member_com_00055'{/yun}</el-button>
+                <el-checkbox v-model="checkedAll" :indeterminate="checkedAllIndeterminate" @change="checkAll">{{ lc('wap_js_00074') }}</el-checkbox>
+                <el-button @click="batch('del')" size="mini">{{ lc('member_com_00055') }}</el-button>
             </div>
             <div class="modulePagNum">
                 <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
@@ -56,7 +56,7 @@ module.exports = {
     },
     data: function () {
         return {
-            emptytext: "{yun:}t key='wap_js_00113'{/yun}",
+            emptytext: lc('wap_js_00113'),
             loading: false,
             // list
             page: 1,
@@ -69,7 +69,7 @@ module.exports = {
             t: '',
             order: '",
 
-            checkedAll: false, // {yun:}t key='wap_js_00074'{/yun}
+            checkedAll: false, // {{ lc('wap_js_00074') }}
             checkedAllIndeterminate: false,
             multipleSelection: [], // 多选值存储
             idArr: [],
@@ -116,7 +116,7 @@ module.exports = {
                     pid: that.pid,
                 };
                 that.loading = true;
-                that.emptytext = "{yun:}t key='admin_user_weipin_00026'{/yun}";
+                that.emptytext = lc('admin_user_weipin_00026');
             httpPost('m=neirong&c=question_class', params).then(function (response) {
                 let res = response.data,
                     data = res.data;
@@ -136,7 +136,7 @@ module.exports = {
                 }
                 that.loading = false;
                 if (that.list.length === 0){
-                    that.emptytext = "{yun:}t key='wap_js_00113'{/yun}";
+                    that.emptytext = lc('wap_js_00113');
                 }
             })
         },
@@ -159,9 +159,9 @@ module.exports = {
         },
         batch(type) {
             if (this.multipleSelection.length == 0) {
-                let msg = "{yun:}t key='admin_user_weipin_00001'{/yun}"
+                let msg = lc('admin_user_weipin_00001')
                 if (type == 'del') {
-                    msg = "{yun:}t key='admin_00136'{/yun}"
+                    msg = lc('admin_00136')
                 }
                 message.error(msg);
                 return false;
@@ -189,10 +189,10 @@ module.exports = {
                 params = {},
                 msg = '';
 
-            if (typeof idx == 'undefined") { // {yun:}t key='member_com_00055'{/yun}
+            if (typeof idx == 'undefined") { // {{ lc('member_com_00055') }}
                 params.del = this.idArr;
-                msg = "{yun:}t key='common_00853'{/yun}";
-            } else {// {yun:}t key='common_01711'{/yun}
+                msg = lc('common_00853');
+            } else {// {{ lc('common_01711') }}
                 params.id = that.list[idx].id;
                 msg = lc('admin_00333');
             }

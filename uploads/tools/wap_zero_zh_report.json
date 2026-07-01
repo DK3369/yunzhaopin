@@ -1,23 +1,15 @@
 {
-    "generated": "2026-06-26T22:54:36+08:00",
+    "generated": "2026-06-27T12:20:08+08:00",
     "summary": {
         "enum_hub": 25,
-        "i18n_wrapped": 43,
-        "comment": 6
+        "comment": 6,
+        "i18n_wrapped": 25
     },
     "files": {
         "app\/template\/wap\/publichtm\/wap_api_enum.htm": 25,
-        "api\/wxapp\/member\/user\/finance.class.php": 2,
-        "api\/wxapp\/member\/user\/msg.class.php": 1,
-        "api\/wxapp\/member\/user\/resume.class.php": 2,
-        "api\/wxapp\/member\/user\/set.class.php": 1,
-        "api\/wxapp\/member\/com\/finance.class.php": 3,
-        "api\/wxapp\/member\/com\/fk.class.php": 4,
-        "api\/wxapp\/member\/com\/job.class.php": 1,
-        "api\/wxapp\/member\/com\/msg.class.php": 2,
-        "api\/wxapp\/member\/com\/part.class.php": 2,
+        "api\/wxapp\/member\/user\/resume.class.php": 1,
+        "api\/wxapp\/member\/com\/part.class.php": 1,
         "api\/wxapp\/member\/com\/zpdata.class.php": 6,
-        "api\/wxapp\/wxapp.controller.php": 2,
         "app\/controller\/wap\/ajax.class.php": 10,
         "app\/controller\/wap\/ask.class.php": 1,
         "app\/controller\/wap\/company.class.php": 3,
@@ -178,112 +170,16 @@
             "text": "{yun:}assign var=\"wap_db_sq_other\" value=\"其它原因\"{\/yun}"
         },
         {
-            "file": "api\/wxapp\/member\/user\/finance.class.php",
-            "line": 95,
-            "category": "i18n_wrapped",
-            "text": "                'summary'   =>  yun_auto_t('我在').$this->config['sy_webname'].'上找工作；真的很不错，忍不住推荐给你',"
-        },
-        {
-            "file": "api\/wxapp\/member\/user\/finance.class.php",
-            "line": 362,
-            "category": "i18n_wrapped",
-            "text": "                'summary'   =>  yun_auto_t('我在').$this->config['sy_webname'].'上找工作；真的很不错，忍不住推荐给你',"
-        },
-        {
-            "file": "api\/wxapp\/member\/user\/msg.class.php",
-            "line": 72,
-            "category": "i18n_wrapped",
-            "text": "        $logContent =   yun_auto_t('消息处理：删除系统消息（ID：').$_POST['id'].'）';"
-        },
-        {
-            "file": "api\/wxapp\/member\/user\/resume.class.php",
-            "line": 53,
-            "category": "i18n_wrapped",
-            "text": "\t\t\t    $r['name']\t=  $val['name']. yun_auto_t('(默认)');"
-        },
-        {
             "file": "api\/wxapp\/member\/user\/resume.class.php",
             "line": 254,
             "category": "comment",
             "text": "                $eData['content']   =   yun_at('member_user_00596');     \/\/ 简历备注为未完善"
         },
         {
-            "file": "api\/wxapp\/member\/user\/set.class.php",
-            "line": 346,
-            "category": "i18n_wrapped",
-            "text": "\t                $uni = yun_auto_t('H5\/微信');"
-        },
-        {
-            "file": "api\/wxapp\/member\/com\/finance.class.php",
-            "line": 377,
-            "category": "i18n_wrapped",
-            "text": "\t\t\t'pay_remark'\t=>\tarray('like',yun_auto_t('转换').$this->config['integral_pricename'])"
-        },
-        {
-            "file": "api\/wxapp\/member\/com\/finance.class.php",
-            "line": 412,
-            "category": "i18n_wrapped",
-            "text": "                'summary'   =>  yun_auto_t('我在').$this->config['sy_webname'].'上找工作；真的很不错，忍不住推荐给你',"
-        },
-        {
-            "file": "api\/wxapp\/member\/com\/finance.class.php",
-            "line": 495,
-            "category": "i18n_wrapped",
-            "text": "                'summary'   =>  yun_auto_t('我在').$this->config['sy_webname'].'上找工作；真的很不错，忍不住推荐给你',"
-        },
-        {
-            "file": "api\/wxapp\/member\/com\/fk.class.php",
-            "line": 70,
-            "category": "i18n_wrapped",
-            "text": "                                $ratingV['interview_resume'].=yun_at('wap_00911').$ratingV['interview']. yun_auto_t('次；');"
-        },
-        {
-            "file": "api\/wxapp\/member\/com\/fk.class.php",
-            "line": 73,
-            "category": "i18n_wrapped",
-            "text": "                                $ratingV['interview_resume'].=yun_at('wap_00912').$ratingV['resume']. yun_auto_t('次；');"
-        },
-        {
-            "file": "api\/wxapp\/member\/com\/fk.class.php",
-            "line": 78,
-            "category": "i18n_wrapped",
-            "text": "                            $ratingV['job_breakjob'].=yun_auto_t('刷新职位: ').$ratingV['breakjob_num']. yun_auto_t('份；');"
-        },
-        {
-            "file": "api\/wxapp\/member\/com\/fk.class.php",
-            "line": 81,
-            "category": "i18n_wrapped",
-            "text": "                            $ratingV['zph'].=yun_auto_t('招聘会报名 : ').$ratingV['zph_num']. yun_at('wap_01543');"
-        },
-        {
-            "file": "api\/wxapp\/member\/com\/job.class.php",
-            "line": 937,
-            "category": "i18n_wrapped",
-            "text": "                $logDetail  =   $_POST['status'] == 0 ? '调整职位《'.$jobInfo['name']. yun_auto_t('》招聘状态：下架->上架') : '调整职位('.$jobInfo['name']. yun_auto_t(')招聘状态：上架->下架');"
-        },
-        {
-            "file": "api\/wxapp\/member\/com\/msg.class.php",
-            "line": 59,
-            "category": "i18n_wrapped",
-            "text": "                $logContent =   yun_auto_t('消息处理：删除求职咨询（ID：').$_POST['id'].'）';"
-        },
-        {
-            "file": "api\/wxapp\/member\/com\/msg.class.php",
-            "line": 204,
-            "category": "i18n_wrapped",
-            "text": "                $logContent =   yun_auto_t('消息处理：删除系统消息（ID：').$_POST['id'].'）';"
-        },
-        {
             "file": "api\/wxapp\/member\/com\/part.class.php",
             "line": 449,
             "category": "comment",
             "text": "                            $return['msg']      =   yun_at('wap_01294');\/\/ 苹果关闭支付功能"
-        },
-        {
-            "file": "api\/wxapp\/member\/com\/part.class.php",
-            "line": 487,
-            "category": "i18n_wrapped",
-            "text": "                $logDetail  =   $_POST['status'] == 0 ? '调整兼职《'.$part['name']. yun_auto_t('》招聘状态：下架->上架') : '调整兼职('.$part['name']. yun_auto_t(')招聘状态：上架->下架');"
         },
         {
             "file": "api\/wxapp\/member\/com\/zpdata.class.php",
@@ -320,18 +216,6 @@
             "line": 227,
             "category": "i18n_wrapped",
             "text": "        $list[] = array('id' => 'yqms', 'title' => $this->zpdataTitle('resume_00029'), 'num' => $invite_num, 'unit' => $this->zpdataUnit('人'), 'jzr' => $invite_jzr, 'wap_url' => Url('wap') . 'member\/index.php?c=invite', 'page' => 'pson\/pages\/commember\/invite\/index');"
-        },
-        {
-            "file": "api\/wxapp\/wxapp.controller.php",
-            "line": 200,
-            "category": "i18n_wrapped",
-            "text": "                        'content'  => yun_auto_t('wap端口延续登录')"
-        },
-        {
-            "file": "api\/wxapp\/wxapp.controller.php",
-            "line": 253,
-            "category": "i18n_wrapped",
-            "text": "            $this->render_json(1005, yun_auto_t('不支持curl'));"
         },
         {
             "file": "app\/controller\/wap\/ajax.class.php",

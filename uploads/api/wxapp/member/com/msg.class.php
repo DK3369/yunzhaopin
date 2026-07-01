@@ -2,7 +2,7 @@
 
 class msg_controller extends com_controller{
     
-	/* job inquiry */
+	/* 求职咨询 */
 	function msglist_action(){
         $MsgM			   =  $this -> MODEL('msg');
 		$where['job_uid']  =  $this->member['uid'];
@@ -15,7 +15,7 @@ class msg_controller extends com_controller{
 
 			 $limit				 =  $_POST['limit'];
 			 
-			if($page){// paginate
+			if($page){//分页
 				
 				$pagenav		 =  ($page-1)*$limit;
 				
@@ -41,13 +41,15 @@ class msg_controller extends com_controller{
 
   		$this->render_json(0,'',$data,$total);
 	}
-  	
+  	/**
+	 * 企业咨询消息删除
+	 */
 	function delsmsglist_action(){
 
         if(!$_POST['id']){
 
             $data['error']  =   3;
-            $data['errmsg'] =   yun_at('wap_01833');
+            $data['errmsg'] =   '参数不正确';
         }else{
 
             $MsgM   =   $this->MODEL('msg');
@@ -56,15 +58,15 @@ class msg_controller extends com_controller{
             if ($return['errcode'] == 9) {
 
                 $LogM       =   $this->MODEL('log');
-                $logContent =   yun_at('api_wxapp_00001').$_POST['id'].yun_at('api_wxapp_00030');
+                $logContent =   '消息处理：删除求职咨询（ID：'.$_POST['id'].'）';
                 $LogM->addMemberLog($this->member['uid'], $this->member['usertype'], $logContent, 18, 3);
 
                 $data['error']  =   0;
-                $data['errmsg'] =   yun_at('admin_user_00187');
+                $data['errmsg'] =   '删除成功！';
             } else {
 
                 $data['error']  =   1;
-                $data['errmsg'] =   yun_at('admin_user_00186');
+                $data['errmsg'] =   '删除失败！';
             }
         }
         $this->render_json($data['error'],$data['errmsg']);
@@ -76,7 +78,7 @@ class msg_controller extends com_controller{
         if (!$_POST['id']) {
 
             $data['error']  =   3;
-            $data['errmsg'] =   yun_at('wap_01833');
+            $data['errmsg'] =   '参数不正确';
         } else {
 
 
@@ -91,38 +93,38 @@ class msg_controller extends com_controller{
             if ($nid) {
 
                 $LogM       =   $this->MODEL('log');
-                $logContent =   yun_at('api_wxapp_00003');
-                $logDetail  =   yun_at('wap_01836').$_POST['reply'];
+                $logContent =   '消息处理：回复求职咨询';
+                $logDetail  =   '回复求职咨询：'.$_POST['reply'];
                 $LogM->addMemberLog($this->member['uid'], $this->member['usertype'], $logContent, 18, 2, $logDetail);
 
                 $data['error']  =    1;
-                $data['errmsg'] =   yun_at('wap_01837');
+                $data['errmsg'] =   '回复成功';
             } else {
                 $data['error']  =   2;
-                $data['errmsg'] =   yun_at('wap_01838');
+                $data['errmsg'] =   '回复失败';
             }
         }
         $this->render_json($data['error'], $data['errmsg']);
   	}
-	// 
+	//消息
 	function sysnews_action(){
     
-	    // 
+	    // 聊天
 
 		$JobM		  =  $this -> MODEL('job');
-		// （）
+		// 对我感兴趣（查看职位）
 		$looknum        =   $JobM->getLookJobNum(array('com_id'=>$this->member['uid'],'com_status'=>0));
 		$newlook        =   $JobM->getLookJobInfo(array('com_id'=>$this->member['uid'],'com_status'=>0,'orderby'=>'datetime'), array('utype'=>'user'));
 		$list['looknum']=	$looknum;
 		$list['newlook']=	!empty($newlook) ? $newlook : array();
-   		// 
+   		//申请职位
     	$userid_jobnum	=	$JobM -> getSqJobNum(array('com_id'=>$this->member['uid'],'isdel'=>9,'is_browse'=>'1','type'=>array('<>',3)));
- 		// 
+ 		//系统消息
     	$SysmsgM		=	$this -> MODEL('sysmsg');
  		$sxnum			=	$SysmsgM -> getSysmsgNum(array('fa_uid'=>$this->member['uid'],'usertype'=>$this->member['usertype'],'remind_status'=>'0'));
     	$list['sxnum']	=	$sxnum;
 		$list['userid_jobnum']	=	$userid_jobnum;
-   	 	// 
+   	 	//求职者咨询
 		$jobnum = 0;
 		if ($this->config['com_message'] == 1){
 		    
@@ -153,11 +155,11 @@ class msg_controller extends com_controller{
 	}
 	
 	/**
-	 * System messages list
+	 *系统消息查询
 	*/
 	function sysmsgnews_action(){
 		$SysmsgM	=	$this -> MODEL('sysmsg');
-    	// 
+    	//存在执行这段代码
 		$msgwhere['fa_uid']     =  $this->member['uid'];
 		$msgwhere['usertype']   =  $this->member['usertype'];
 		$msgwhere['remind_status']= array('<>',1);
@@ -175,7 +177,7 @@ class msg_controller extends com_controller{
     	$page					 =  $_POST['page'];
       	if ($_POST['limit']){
         	$limit				 =  $_POST['limit'];
-        	if($page){// paginate
+        	if($page){//分页
            		$pagenav		 =  ($page-1)*$limit;
             	$where['limit']  =  array($pagenav,$limit);
         	}else{
@@ -190,25 +192,27 @@ class msg_controller extends com_controller{
 		
     	$this->render_json(0,'',$data,$total);
   	}
-	
+	/**
+	 * 系统消息删除
+	 */
 	function delsysmsgnews_action(){
         $SysmsgM	=	$this -> MODEL('sysmsg');
         if(!$_POST['id']){
             $data['error']	=	3;
-            $data['errmsg']	=	yun_at('wap_01833');
+            $data['errmsg']	=	'参数不正确';
         }else{
             $return  =	 $SysmsgM -> delSysmsg($_POST['id'],array('fa_uid'=>$this->member['uid']));
             if($return['errcode']==9){
 
                 $LogM       =   $this -> MODEL('log');
-                $logContent =   yun_at('api_wxapp_00029').$_POST['id'].yun_at('api_wxapp_00030');
+                $logContent =   '消息处理：删除系统消息（ID：'.$_POST['id'].'）';
                 $LogM->addMemberLog($this->member['uid'], $this->member['usertype'], $logContent, 18, 3);
 
                 $data['error']	=	0;
-                $data['errmsg']	=	yun_at('admin_user_00187');
+                $data['errmsg']	=	'删除成功！';
             }else{
                 $data['error']	=	1;
-                $data['errmsg']	=	yun_at('admin_user_00186');
+                $data['errmsg']	=	'删除失败！';
             }
         }
         $this->render_json($data['error'],$data['errmsg']);

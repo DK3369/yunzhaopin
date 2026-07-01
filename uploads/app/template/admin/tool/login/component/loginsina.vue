@@ -4,19 +4,19 @@
             <table class="tableVue">
                 <thead>
                     <tr align="left">
-                        <th width="200">{yun:}t key='member_com_00021'{/yun}</th>
-                        <th width="500">{yun:}t key='member_user_00181'{/yun}</th>
-                        <th>{yun:}t key='member_com_00207'{/yun}</th>
+                        <th width="200">{{ lc('member_com_00021') }}</th>
+                        <th width="500">{{ lc('member_user_00181') }}</th>
+                        <th>{{ lc('member_com_00207') }}</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_tool_00439'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_tool_00439') }}</div>
                         </td>
                         <td>
                             <div class="TableButn">
-                                <el-switch v-model="configdata.sy_sinalogin" active-text="{yun:}t key='member_com_00287'{/yun}" inactive-text="{yun:}t key='resume_00030'{/yun}" active-value="1" inactive-value="0"></el-switch>
+                                <el-switch v-model="configdata.sy_sinalogin" :active-text="lc('member_com_00287')" :inactive-text="lc('resume_00030')" active-value="1" inactive-value="0"></el-switch>
                             </div>
                         </td>
                         <td>
@@ -31,7 +31,7 @@
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="configdata.sy_sinaappid">
+                                <el-input :placeholder="lc('wap_user_00076')" v-model="configdata.sy_sinaappid">
                                 </el-input>
                             </div>
                         </td>
@@ -47,7 +47,7 @@
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="configdata.sy_sinaappkey">
+                                <el-input :placeholder="lc('wap_user_00076')" v-model="configdata.sy_sinaappkey">
                                 </el-input>
                             </div>
                         </td>
@@ -61,7 +61,7 @@
             </table>
         </div>
         <div class="setBasicButn" style="border: none;">
-            <el-button type="primary" size="medium" @click="post">{yun:}t key='common.submit'{/yun}</el-button>
+            <el-button type="primary" size="medium" @click="post">{{ lc('common.submit') }}</el-button>
         </div>
     </div>
 </template>

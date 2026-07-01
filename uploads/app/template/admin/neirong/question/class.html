@@ -72,7 +72,7 @@
     </div>
 
     <div class="modluDrawer">
-        <el-drawer :title="lc('admin_html_00012')" :visible.sync="drawerAdd" append-to-body :show-close="true"
+        <el-drawer :title="detail.id ? lc('admin_00221') : lc('admin_00222')" :visible.sync="drawerAdd" append-to-body :show-close="true"
                    :with-header="true" size="45%">
             <add :refresh="random" :id="detail.id ? detail.id : ''" @child-event="closeAdd"></add>
         </el-drawer>
@@ -159,7 +159,7 @@
                         pid: that.pid,
                     };
                     that.loading = true;
-                    that.emptytext = "数据加载中";
+                    that.emptytext = lc('admin_user_weipin_00026');
                 httpPost('m=neirong&c=question_class', {...params, ...searchForm}, {hideloading: true}).then(function (response) {
                     let res = response.data,
                         data = res.data;
@@ -179,7 +179,7 @@
                     }
                     that.loading = false;
                     if (that.list.length === 0){
-                        that.emptytext = "暂无数据";
+                        that.emptytext = lc('wap_js_00113');
                     }
                 })
             },
@@ -211,9 +211,9 @@
             },
             batch(type) {
                 if (this.multipleSelection.length == 0) {
-                    let msg = '请选择要操作的数据项'
+                    let msg = lc('admin_user_weipin_00001')
                     if (type == 'del') {
-                        msg = '请选择要删除的数据项'
+                        msg = lc('admin_00136')
                     }
                     message.error(msg);
                     return false;
@@ -243,10 +243,10 @@
 
                 if (typeof idx == 'undefined') { // 批量删除
                     params.del = this.idArr;
-                    msg = '你确定要删除选中项吗？';
+                    msg = lc('common_00853');
                 } else {// 单个删除
                     params.id = that.list[idx].id;
-                    msg = '你确定要删除当前项吗？';
+                    msg = lc('admin_00333');
                 }
                 params.qid = that.id;
 

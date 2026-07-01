@@ -1,7 +1,7 @@
 <template>
     <div v-loading="loading">
         <div style="overflow: hidden; position: relative; display: flex; align-items: center;">
-        <el-select v-model="cityId" size="small" multiple :multiple-limit="multiple ? max : 1" placeholder="{yun:}t key='admin_00041'{/yun}"
+        <el-select v-model="cityId" size="small" multiple :multiple-limit="multiple ? max : 1" :placeholder="lc('admin_00041')"
                    filterable remote :remote-method="remoteClassList" @change="classChange" @remove-tag="classRemove">
             <el-option v-for="opitem in classOptions" :key="opitem.id" :label="opitem.name"
                        :value="opitem.id" :disabled="opitem.disabled">
@@ -23,9 +23,9 @@
                        :show-close="true" size="60%">
                 <div class="modluDrawerContents">
                     <div class="modluDrawerTi9te">
-                        <div>{yun:}t key='admin_00042'{/yun}</div>
+                        <div>{{ lc('admin_00042') }}</div>
                         <div class="shuytans">
-                            <el-input v-model="searchCity" placeholder="{yun:}t key='admin_00043'{/yun}"
+                            <el-input v-model="searchCity" :placeholder="lc('admin_00043')"
                                       @keyup.native="handleSearchCity">
                                 <i slot="prefix" class="el-input__icon el-icon-search"></i>
                             </el-input>
@@ -96,11 +96,11 @@
                         </ul>
                     </div>
                     <div v-else>
-                        <div>{yun:}t key='admin_00039'{/yun}</div>
+                        <div>{{ lc('admin_00039') }}</div>
                     </div>
                     <div slot="footer" class="dialog-footer dialoFoofetee">
                         <div class="footText">
-                            <div class="mingdsc"><span>{yun:}t key='admin_00390'{/yun}</span></div>
+                            <div class="mingdsc"><span>{{ lc('admin_00390') }}</span></div>
                             <div class="mingdEltags" style="padding-top: 4px;">
                                 <el-tag v-for="(selectClass, selectIndex) in selectCityClass" :key="selectIndex"
                                         closable type="" size="small" @close="handleCloseCity(selectClass.id)">
@@ -109,7 +109,7 @@
                             </div>
                         </div>
                         <div class="footTextburn">
-                            <el-button type="primary" size="mini" round @click="handleSubmitCity">{yun:}t key='wap_com_00019'{/yun}</el-button>
+                            <el-button type="primary" size="mini" round @click="handleSubmitCity">{{ lc('wap_com_00019') }}</el-button>
                         </div>
                     </div>
                 </div>
@@ -122,7 +122,7 @@
         props: {
             multiple: {type: Boolean, default: false}, // 选择方式 false-单选/true-多选
             max: {type: Number, default: 5}, // 多选下有效，最多选择几个
-            selected: {type: Object, default: null} // 已选中数据，数据内容如：{1911: "{yun:}t key='admin_00047'{/yun}", 1912: "{yun:}t key='admin_00048'{/yun}"}
+            selected: {type: Object, default: null} // 已选中数据，数据内容如：{1911: lc('admin_00047'), 1912: lc('admin_00048')}
         },
         data: function () {
             return {
@@ -248,7 +248,7 @@
 
                                 let childrenIds = await this.getCityChildIds(classOptions[i].id),
                                     index = -1;
-                                if (childrenIds && childrenIds.length > 0 && this.cityId.length > 0) { // {yun:}t key='common_01285'{/yun}
+                                if (childrenIds && childrenIds.length > 0 && this.cityId.length > 0) { // {{ lc('common_01285') }}
                                     for (var j = 0; j < childrenIds.length; j++) {
                                         index = this.cityId.indexOf(childrenIds[j]);
                                         if (index > -1) { // 检索已选中下级
@@ -367,7 +367,7 @@
                     }
 
                     if (selectCityId.length >= max) {
-                        message.warning("{yun:}t key='admin_00045'{/yun}" + max + "{yun:}t key='common_02104'{/yun}");
+                        message.warning(lc('admin_00045') + max + lc('common_02104'));
                         return false;
                     }
                     that.selectCityId.push(id);

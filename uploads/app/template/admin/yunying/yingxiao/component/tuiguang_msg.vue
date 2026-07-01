@@ -4,15 +4,15 @@
             <table class="tableVue">
                 <thead>
                     <tr align="left">
-                        <th width="250">{yun:}t key='member_com_00021'{/yun}</th>
-                        <th>{yun:}t key='member_user_00181'{/yun}</th>
-                        <th width="300">{yun:}t key='member_user_00048'{/yun}</th>
+                        <th width="250">{{ lc('member_com_00021') }}</th>
+                        <th>{{ lc('member_user_00181') }}</th>
+                        <th width="300">{{ lc('member_user_00048') }}</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_yunying_00178'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_yunying_00178') }}</div>
                         </td>
                         <td>
                             <div class="TableTexta">
@@ -21,15 +21,15 @@
                         </td>
                         <td>
                             <div class="TableCaozuo">
-                                <el-button :disabled="anniversary.disabled==1 || anniversary_m == 0" plain size="mini" @click="sendmsg('2','2','1','0','3','0',lc('admin_yunying_00170'),'0','0')">{yun:}t key='admin_user_00166'{/yun}</el-button>
-                                <el-button :disabled="anniversary.disabled==1 || anniversary_m == 0" plain size="mini" @click="outmobile('anniversary')">{yun:}t key='admin_01116'{/yun}</el-button>
-                                <el-button :disabled="anniversary.disabled==1 || anniversary_m == 0" plain size="mini" @click="finishmobile('anniversary')">{yun:}t key='admin_yunying_00180'{/yun}</el-button>
+                                <el-button :disabled="anniversary.disabled==1 || anniversary_m == 0" plain size="mini" @click="sendmsg('2','2','1','0','3','0',lc('admin_yunying_00170'),'0','0')">{{ lc('admin_user_00166') }}</el-button>
+                                <el-button :disabled="anniversary.disabled==1 || anniversary_m == 0" plain size="mini" @click="outmobile('anniversary')">{{ lc('admin_01116') }}</el-button>
+                                <el-button :disabled="anniversary.disabled==1 || anniversary_m == 0" plain size="mini" @click="finishmobile('anniversary')">{{ lc('admin_yunying_00180') }}</el-button>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_01113'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_01113') }}</div>
                         </td>
                         <td>
                             <div class="TableTexta">
@@ -38,15 +38,15 @@
                         </td>
                         <td>
                             <div class="TableCaozuo">
-                                <el-button :disabled="todaydue.disabled==1 || todaydue_m == 0" plain size="mini" @click="sendmsg('1','3','1','1','3','0',lc('admin_yunying_00170'),'0','0')">{yun:}t key='admin_user_00166'{/yun}</el-button>
-                                <el-button :disabled="todaydue.disabled==1 || todaydue_m == 0" plain size="mini" @click="outmobile('todaydue')">{yun:}t key='admin_01116'{/yun}</el-button>
-                                <el-button :disabled="todaydue.disabled==1 || todaydue_m == 0" plain size="mini" @click="finishmobile('todaydue')">{yun:}t key='admin_yunying_00180'{/yun}</el-button>
+                                <el-button :disabled="todaydue.disabled==1 || todaydue_m == 0" plain size="mini" @click="sendmsg('1','3','1','1','3','0',lc('admin_yunying_00170'),'0','0')">{{ lc('admin_user_00166') }}</el-button>
+                                <el-button :disabled="todaydue.disabled==1 || todaydue_m == 0" plain size="mini" @click="outmobile('todaydue')">{{ lc('admin_01116') }}</el-button>
+                                <el-button :disabled="todaydue.disabled==1 || todaydue_m == 0" plain size="mini" @click="finishmobile('todaydue')">{{ lc('admin_yunying_00180') }}</el-button>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_yunying_00175'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_yunying_00175') }}</div>
                         </td>
                         <td>
                             <div class="TableTexta">
@@ -55,15 +55,15 @@
                         </td>
                         <td>
                             <div class="TableCaozuo">
-                                <el-button :disabled="sevendue.disabled==1 || sevendue_m == 0" plain size="mini" @click="sendmsg('1','3','1','7','3','0',lc('admin_yunying_00170'),'0','0')">{yun:}t key='admin_user_00166'{/yun}</el-button>
-                                <el-button :disabled="sevendue.disabled==1 || sevendue_m == 0" plain size="mini" @click="outmobile('sevendue')">{yun:}t key='admin_01116'{/yun}</el-button>
-                                <el-button :disabled="sevendue.disabled==1 || sevendue_m == 0" plain size="mini" @click="finishmobile('sevendue')">{yun:}t key='admin_yunying_00180'{/yun}</el-button>
+                                <el-button :disabled="sevendue.disabled==1 || sevendue_m == 0" plain size="mini" @click="sendmsg('1','3','1','7','3','0',lc('admin_yunying_00170'),'0','0')">{{ lc('admin_user_00166') }}</el-button>
+                                <el-button :disabled="sevendue.disabled==1 || sevendue_m == 0" plain size="mini" @click="outmobile('sevendue')">{{ lc('admin_01116') }}</el-button>
+                                <el-button :disabled="sevendue.disabled==1 || sevendue_m == 0" plain size="mini" @click="finishmobile('sevendue')">{{ lc('admin_yunying_00180') }}</el-button>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_yunying_00173'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_yunying_00173') }}</div>
                         </td>
                         <td>
                             <div class="TableTexta">
@@ -72,15 +72,15 @@
                         </td>
                         <td>
                             <div class="TableCaozuo">
-                                <el-button :disabled="useradd.disabled==1 || useradd_m == 0" plain size="mini" @click="sendmsg('1','4','1','7','3','0',lc('admin_yunying_00170'),'0','0')">{yun:}t key='admin_user_00166'{/yun}</el-button>
-                                <el-button :disabled="useradd.disabled==1 || useradd_m == 0" plain size="mini" @click="outmobile('useradd')">{yun:}t key='admin_01116'{/yun}</el-button>
-                                <el-button :disabled="useradd.disabled==1 || useradd_m == 0" plain size="mini" @click="finishmobile('useradd')">{yun:}t key='admin_yunying_00180'{/yun}</el-button>
+                                <el-button :disabled="useradd.disabled==1 || useradd_m == 0" plain size="mini" @click="sendmsg('1','4','1','7','3','0',lc('admin_yunying_00170'),'0','0')">{{ lc('admin_user_00166') }}</el-button>
+                                <el-button :disabled="useradd.disabled==1 || useradd_m == 0" plain size="mini" @click="outmobile('useradd')">{{ lc('admin_01116') }}</el-button>
+                                <el-button :disabled="useradd.disabled==1 || useradd_m == 0" plain size="mini" @click="finishmobile('useradd')">{{ lc('admin_yunying_00180') }}</el-button>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_yunying_00176'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_yunying_00176') }}</div>
                         </td>
                         <td>
                             <div class="TableTexta">
@@ -89,15 +89,15 @@
                         </td>
                         <td>
                             <div class="TableCaozuo">
-                                <el-button :disabled="userup.disabled==1 || userup_m == 0" plain size="mini" @click="sendmsg('1','5','1','7','3','0',lc('admin_yunying_00170'),'0','0')">{yun:}t key='admin_user_00166'{/yun}</el-button>
-                                <el-button :disabled="userup.disabled==1 || userup_m == 0" plain size="mini" @click="outmobile('userup')">{yun:}t key='admin_01116'{/yun}</el-button>
-                                <el-button :disabled="userup.disabled==1 || userup_m == 0" plain size="mini" @click="finishmobile('userup')">{yun:}t key='admin_yunying_00180'{/yun}</el-button>
+                                <el-button :disabled="userup.disabled==1 || userup_m == 0" plain size="mini" @click="sendmsg('1','5','1','7','3','0',lc('admin_yunying_00170'),'0','0')">{{ lc('admin_user_00166') }}</el-button>
+                                <el-button :disabled="userup.disabled==1 || userup_m == 0" plain size="mini" @click="outmobile('userup')">{{ lc('admin_01116') }}</el-button>
+                                <el-button :disabled="userup.disabled==1 || userup_m == 0" plain size="mini" @click="finishmobile('userup')">{{ lc('admin_yunying_00180') }}</el-button>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_yunying_00174'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_yunying_00174') }}</div>
                         </td>
                         <td>
                             <div class="TableTexta">
@@ -106,15 +106,15 @@
                         </td>
                         <td>
                             <div class="TableCaozuo">
-                                <el-button :disabled="addjob.disabled==1 || addjob_m == 0" plain size="mini" @click="sendmsg('2','6','1','7','3','0',lc('admin_yunying_00170'),'0','0')">{yun:}t key='admin_user_00166'{/yun}</el-button>
-                                <el-button :disabled="addjob.disabled==1 || addjob_m == 0" plain size="mini" @click="outmobile('addjob')">{yun:}t key='admin_01116'{/yun}</el-button>
-                                <el-button :disabled="addjob.disabled==1 || addjob_m == 0" plain size="mini" @click="finishmobile('addjob')">{yun:}t key='admin_yunying_00180'{/yun}</el-button>
+                                <el-button :disabled="addjob.disabled==1 || addjob_m == 0" plain size="mini" @click="sendmsg('2','6','1','7','3','0',lc('admin_yunying_00170'),'0','0')">{{ lc('admin_user_00166') }}</el-button>
+                                <el-button :disabled="addjob.disabled==1 || addjob_m == 0" plain size="mini" @click="outmobile('addjob')">{{ lc('admin_01116') }}</el-button>
+                                <el-button :disabled="addjob.disabled==1 || addjob_m == 0" plain size="mini" @click="finishmobile('addjob')">{{ lc('admin_yunying_00180') }}</el-button>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_yunying_00177'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_yunying_00177') }}</div>
                         </td>
                         <td>
                             <div class="TableTexta">
@@ -123,9 +123,9 @@
                         </td>
                         <td>
                             <div class="TableCaozuo">
-                                <el-button :disabled="upjob.disabled==1 || upjob_m == 0" plain size="mini" @click="sendmsg('2','7','1','7','3','0',lc('admin_yunying_00170'),'0','0')">{yun:}t key='admin_user_00166'{/yun}</el-button>
-                                <el-button :disabled="upjob.disabled==1 || upjob_m == 0" plain size="mini" @click="outmobile('upjob')">{yun:}t key='admin_01116'{/yun}</el-button>
-                                <el-button :disabled="upjob.disabled==1 || upjob_m == 0" plain size="mini" @click="finishmobile('upjob')">{yun:}t key='admin_yunying_00180'{/yun}</el-button>
+                                <el-button :disabled="upjob.disabled==1 || upjob_m == 0" plain size="mini" @click="sendmsg('2','7','1','7','3','0',lc('admin_yunying_00170'),'0','0')">{{ lc('admin_user_00166') }}</el-button>
+                                <el-button :disabled="upjob.disabled==1 || upjob_m == 0" plain size="mini" @click="outmobile('upjob')">{{ lc('admin_01116') }}</el-button>
+                                <el-button :disabled="upjob.disabled==1 || upjob_m == 0" plain size="mini" @click="finishmobile('upjob')">{{ lc('admin_yunying_00180') }}</el-button>
                             </div>
                         </td>
                     </tr>
@@ -243,7 +243,7 @@ module.exports = {
         },
         outmobile(outtype) {
             let that = this;
-            message.confirm("{yun:}t key='admin_yunying_00202'{/yun}", function() {
+            message.confirm(lc('admin_yunying_00202'), function() {
                 httpPost('m=yunying&c=yingxiao_tuiguang&a=xls', {outtype: outtype, xls_type: 'mobile'}).then(function (response) {
                     let res = response.data;
 
@@ -262,9 +262,9 @@ module.exports = {
                     data = res.data;
 
                 if (res.error > 0) {
-                    message.error("{yun:}t key='admin_system_00397'{/yun}");
+                    message.error(lc('admin_system_00397'));
                 } else {
-                    message.success("{yun:}t key='wap_user_00264'{/yun}", function () {
+                    message.success(lc('wap_user_00264'), function () {
                         that.getData();
                     });
                 }

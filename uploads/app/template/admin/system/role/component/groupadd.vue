@@ -1,7 +1,7 @@
 <template>
 	<div class="tableDome" style="position: relative;">
 		<div class="tableDome_tip">
-			<el-alert title="{yun:}t key='admin_system_00216'{/yun}"
+			<el-alert :title="lc('admin_system_00216')"
 				type="success" :closable="false">
 			</el-alert>
 		</div>
@@ -9,22 +9,22 @@
 			<table class="quanxiantable" v-if="islook">
 				<tbody>
 					<tr>
-						<td bgcolor="#F5F7FA">{yun:}t key='admin_system_00212'{/yun}</td>
+						<td bgcolor="#F5F7FA">{{ lc('admin_system_00212') }}</td>
 						<td colspan="2">
 							<div class="quanxiantext">
 								<div class="quanxiantext_in">
-									<el-input v-model="groupinfo.group_name" placeholder="{yun:}t key='admin_00210'{/yun}" size="small"></el-input>
+									<el-input v-model="groupinfo.group_name" :placeholder="lc('admin_00210')" size="small"></el-input>
 								</div>
 								<div class="quanxiantip">
-									<span>{yun:}t key='admin_system_00215'{/yun}</span>
+									<span>{{ lc('admin_system_00215') }}</span>
 								</div>
 							</div>
 						</td>
 					</tr>
 					<tr align="left">
-						<th width="150" bgcolor="#F5F7FA">{yun:}t key='admin_user_company_00362'{/yun}</th>
-						<th width="150"  bgcolor="#F5F7FA">{yun:}t key='admin_user_company_00364'{/yun}</th>
-						<th  bgcolor="#F5F7FA">{yun:}t key='admin_system_00214'{/yun}</th>
+						<th width="150" bgcolor="#F5F7FA">{{ lc('admin_user_company_00362') }}</th>
+						<th width="150"  bgcolor="#F5F7FA">{{ lc('admin_user_company_00364') }}</th>
+						<th  bgcolor="#F5F7FA">{{ lc('admin_system_00214') }}</th>
 					</tr>
 					<tr>
 						<td valign="top">
@@ -59,7 +59,7 @@
 			
 		</div>
 		<div class="setBasicButn" style="border: none;">
-			<el-button type="primary" size="medium" @click="submitForm" :disabled="saveLoading">{yun:}t key='common.submit'{/yun}</el-button>
+			<el-button type="primary" size="medium" @click="submitForm" :disabled="saveLoading">{{ lc('common.submit') }}</el-button>
 		</div>
 	</div>
 </template>
@@ -117,7 +117,7 @@
 			},
 			handleCheckedThreeChange(val) {
 				var that = this
-				if (that.checked_three_ids.includes(that.curr_checked_id)) {// {yun:}t key='admin_user_company_00028'{/yun}
+				if (that.checked_three_ids.includes(that.curr_checked_id)) {// {{ lc('admin_user_company_00028') }}
 					if (that.three[that.curr_checked_id]) {
 						that.three[that.curr_checked_id].forEach(function(item, index) {
 							if (!that.checked_four_ids.includes(item.id)) {
@@ -125,7 +125,7 @@
 							}
 						})
 					}
-				} else {// {yun:}t key='common.cancel'{/yun}
+				} else {// {{ lc('common.cancel') }}
 					if (that.three[that.curr_checked_id]) {
 						that.three[that.curr_checked_id].forEach(function(id_item, index) {
 							if (that.checked_four_ids.includes(id_item.id)) {

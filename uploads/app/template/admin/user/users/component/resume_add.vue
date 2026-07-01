@@ -3,10 +3,10 @@
         <div class="moduleSchools" style="height: 100%;">
             <div style="overflow-y: auto; position: relative; height: calc(100% - 80px);">
                 <template v-if="!uid">
-                    <div>{yun:}t key='admin_user_00191'{/yun}</div>
+                    <div>{{ lc('admin_user_00191') }}</div>
                     <div class="drawerModLis">
                         <div class="drawerModTite">
-                            <span>{yun:}t key='admin_00467'{/yun}</span>
+                            <span>{{ lc('admin_00467') }}</span>
                         </div>
                         <div class="drawerModInpt">
                             <el-tooltip class="item" v-model="usernameTips" manual effect="dark" :content="usernameMsg" placement="top">
@@ -16,7 +16,7 @@
                     </div>
                     <div class="drawerModLis" style="align-items: initial;">
                         <div class="drawerModTite">
-                            <span>{yun:}t key='wap_user_00371'{/yun}</span>
+                            <span>{{ lc('wap_user_00371') }}</span>
                         </div>
                         <div class="drawerModInpt">
                             <el-input v-model="ruleForm.password" placeholder="" show-password @input="inputPassword($event, 'ruleForm', 'password')"></el-input>
@@ -24,17 +24,17 @@
                     </div>
                     <div class="drawerModLis" style="align-items: initial;">
                         <div class="drawerModTite">
-                            <span>{yun:}t key='wap_com_00343'{/yun}</span>
+                            <span>{{ lc('wap_com_00343') }}</span>
                         </div>
                         <div class="drawerModInpt">
                             <el-input v-model="ruleForm.passconfirm" placeholder="" show-password @input="inputPassword($event, 'ruleForm', 'passconfirm')"></el-input>
                         </div>
                     </div>
                 </template>
-                <div>{yun:}t key='wap_user_00341'{/yun}</div>
+                <div>{{ lc('wap_user_00341') }}</div>
                 <div class="drawerModLis">
                     <div class="drawerModTite">
-                        <span>{yun:}t key='admin_00429'{/yun}</span>
+                        <span>{{ lc('admin_00429') }}</span>
                     </div>
                     <div class="drawerModInpt">
                         <el-input v-model="ruleForm.resume_name" placeholder=""></el-input>
@@ -42,7 +42,7 @@
                 </div>
                 <div class="drawerModLis">
                     <div class="drawerModTite">
-                        <span>{yun:}t key='wap_com_00303'{/yun}</span>
+                        <span>{{ lc('wap_com_00303') }}</span>
                     </div>
                     <div class="drawerModInpt">
                         <el-radio-group v-model="ruleForm.sex">
@@ -52,17 +52,17 @@
                 </div>
                 <div class="drawerModLis">
                     <div class="drawerModTite">
-                        <span>{yun:}t key='member_com_00011'{/yun}</span>
+                        <span>{{ lc('member_com_00011') }}</span>
                     </div>
                     <div class="drawerModInpt">
-                        <el-select v-model="ruleForm.edu" placeholder="{yun:}t key='wap_user_00100'{/yun}">
+                        <el-select v-model="ruleForm.edu" :placeholder="lc('wap_user_00100')">
                             <el-option v-for="edukey in userdata.user_edu" :key="edukey" :label="userclass_name[edukey]" :value="edukey"></el-option>
                         </el-select>
                     </div>
                 </div>
                 <div class="drawerModLis">
                     <div class="drawerModTite">
-                        <span>{yun:}t key='wap_user_00242'{/yun}</span>
+                        <span>{{ lc('wap_user_00242') }}</span>
                     </div>
                     <div class="drawerModInpt">
                         <el-input v-model="ruleForm.living" placeholder=""></el-input>
@@ -70,25 +70,25 @@
                 </div>
                 <div class="drawerModLis">
                     <div class="drawerModTite">
-                        <span>{yun:}t key='wap_user_00240'{/yun}</span>
+                        <span>{{ lc('wap_user_00240') }}</span>
                     </div>
                     <div class="drawerModInpt">
-                        <el-select v-model="ruleForm.exp" placeholder="{yun:}t key='wap_user_00100'{/yun}">
+                        <el-select v-model="ruleForm.exp" :placeholder="lc('wap_user_00100')">
                             <el-option v-for="wordkey in userdata.user_word" :key="wordkey" :label="userclass_name[wordkey]" :value="wordkey"></el-option>
                         </el-select>
                     </div>
                 </div>
                 <div class="drawerModLis">
                     <div class="drawerModTite">
-                        <span>{yun:}t key='wap_user_00236'{/yun}</span>
+                        <span>{{ lc('wap_user_00236') }}</span>
                     </div>
                     <div class="drawerModInpt">
-                        <el-date-picker v-model="ruleForm.birthday" type="month" placeholder="{yun:}t key='admin_user_00192'{/yun}" :picker-options="pickerOptions"></el-date-picker>
+                        <el-date-picker v-model="ruleForm.birthday" type="month" :placeholder="lc('admin_user_00192')" :picker-options="pickerOptions"></el-date-picker>
                     </div>
                 </div>
                 <div class="drawerModLis">
                     <div class="drawerModTite">
-                        <span>{yun:}t key='member_user_00163'{/yun}</span>
+                        <span>{{ lc('member_user_00163') }}</span>
                     </div>
                     <div class="drawerModInpt">
                         <el-input v-model="ruleForm.moblie" placeholder="" @input="inputIntNumber($event, 'ruleForm', 'moblie')"></el-input>
@@ -96,7 +96,7 @@
                 </div>
                 <div class="drawerModLis">
                     <div class="drawerModTite">
-                        <span>{yun:}t key='member_user_00282'{/yun}</span>
+                        <span>{{ lc('member_user_00282') }}</span>
                     </div>
                     <div class="drawerModInpt">
                         <el-input v-model="ruleForm.email" placeholder=""></el-input>
@@ -104,7 +104,7 @@
                 </div>
                 <div class="drawerModLis">
                     <div class="drawerModTite">
-                        <span>{yun:}t key='wap_00463'{/yun}</span>
+                        <span>{{ lc('wap_00463') }}</span>
                     </div>
                     <div class="drawerModInpt">
                         <el-input type="textarea" :rows="2" v-model="ruleForm.description" placeholder=""></el-input>
@@ -112,12 +112,12 @@
                 </div>
             </div>
             <div class="setBasicButn" style="border: none;">
-                <el-button type="primary" size="medium" @click="save">{yun:}t key='common_01878'{/yun}</el-button>
+                <el-button type="primary" size="medium" @click="save">{{ lc('common_01878') }}</el-button>
             </div>
         </div>
         <div class="modluDrawer">
             <!--新增简历-->
-            <el-drawer title="{yun:}t key='admin_user_00193'{/yun}" :visible.sync="drawerEdit" append-to-body :before-close="handleClose" :wrapper-closable="false" size="70%">
+            <el-drawer :title="lc('admin_user_00193')" :visible.sync="drawerEdit" append-to-body :before-close="handleClose" :wrapper-closable="false" size="70%">
                 <edit :uid="userId"></edit>
             </el-drawer>
         </div>
@@ -281,14 +281,14 @@
                     return false;
                 }
                 if (isEmpty(params.moblie)) {
-                    message.warning("{yun:}t key='admin_01411'{/yun}");
+                    message.warning(lc('admin_01411'));
                     return false;
                 } else if (!isjsMobile(params.moblie)) {
-                    message.warning("{yun:}t key='wap_user_00039'{/yun}");
+                    message.warning(lc('wap_user_00039'));
                     return false;
                 }
                 if (!isEmpty(params.email) && !myreg.test(params.email)) {
-                    message.warning("{yun:}t key='wap_js_00120'{/yun}");
+                    message.warning(lc('wap_js_00120'));
                     return false;
                 }
                 if (isEmpty(params.description)) {
@@ -315,7 +315,7 @@
                 })
             },
 
-            // {yun:}t key='wap_js_00091'{/yun}/{yun:}t key='wap_00269'{/yun}
+            // {{ lc('wap_js_00091') }}/{{ lc('wap_00269') }}
             openEdit() {
                 this.drawerEdit = true
             },

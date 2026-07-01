@@ -5,15 +5,15 @@
             <table class="tableVue">
                 <thead>
                     <tr align="left">
-                        <th width="200">{yun:}t key='member_com_00021'{/yun}</th>
-                        <th width="440">{yun:}t key='member_user_00181'{/yun}</th>
-                        <th>{yun:}t key='member_com_00207'{/yun}</th>
+                        <th width="200">{{ lc('member_com_00021') }}</th>
+                        <th width="440">{{ lc('member_user_00181') }}</th>
+                        <th>{{ lc('member_com_00207') }}</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_01238'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_01238') }}</div>
                         </td>
                         <td>
                             <div class="TableFlexty">
@@ -21,7 +21,7 @@
                                     <el-autocomplete
                                         v-model="save.username2"
                                         :fetch-suggestions="remoteMethod"
-                                        placeholder="{yun:}t key='wap_user_00076'{/yun}"
+                                        :placeholder="lc('wap_user_00076')"
                                         :trigger-on-focus="false"
                                         @select="usernameChange"
                                         size="small"
@@ -35,13 +35,13 @@
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>{yun:}t key='admin_01239'{/yun}</span>
+                                <span>{{ lc('admin_01239') }}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_01240'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_01240') }}</div>
                         </td>
                         <td>
                             <div class="TableFlexty">
@@ -49,7 +49,7 @@
                                     <el-autocomplete
                                         v-model="save.comname2"
                                         :fetch-suggestions="remoteMethodCom"
-                                        placeholder="{yun:}t key='wap_user_00076'{/yun}"
+                                        :placeholder="lc('wap_user_00076')"
                                         :trigger-on-focus="false"
                                         @select="comnameChange"
                                         size="small"
@@ -62,18 +62,18 @@
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>{yun:}t key='admin_01240'{/yun}</span>
+                                <span>{{ lc('admin_01240') }}</span>
                             </div>
                         </td>
                     </tr>
                     
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='wap_com_00393'{/yun}</div>
+                            <div class="TableTite">{{ lc('wap_com_00393') }}</div>
                         </td>
                         <td>
                             <div class="TableSelect" style="display: flex;align-items: center;">
-                                <el-select v-model="save.serviceId" placeholder="{yun:}t key='wap_user_00100'{/yun}" @change="handleChange">
+                                <el-select v-model="save.serviceId" :placeholder="lc('wap_user_00100')" @change="handleChange">
                                     <el-option v-for="item in serviceList" :key="item.id" :label="item.name"
                                         :value="item.id">
                                     </el-option>
@@ -94,14 +94,14 @@
                                 <div class="TableButn" v-for="(item,key) in serviceDetails" :key="key">
                                     <el-radio-group v-model="save.service_package" @change="serviceChange(item)">
                                         <el-radio :label="item.id">
-                                            <span v-if="item.resume>0">{yun:}t key='wap_00451'{/yun}：{{item.resume}}{yun:}t key='common_02052'{/yun}</span>
-                                            <span v-if="item.interview>0">{yun:}t key='resume_00029'{/yun}：{{item.interview}}{yun:}t key='common_02052'{/yun}</span>
-                                            <span v-if="item.job_num>0">{yun:}t key='wap_com_00028'{/yun}：{{item.job_num}}{yun:}t key='common_02052'{/yun}</span>
-                                            <span v-if="item.breakjob_num>0">{yun:}t key='wap_com_00029'{/yun}：{{item.breakjob_num}}{yun:}t key='common_02052'{/yun}</span>
-                                            <span v-if="item.top_num>0">{yun:}t key='wap_com_00029'{/yun}：{{item.top_num}}{yun:}t key='common_02052'{/yun}</span>
-                                            <span v-if="item.rec_num>0">{yun:}t key='wap_com_00237'{/yun}：{{item.rec_num}}{yun:}t key='common_02052'{/yun}</span>
-                                            <span v-if="item.urgent_num>0">{yun:}t key='member_com_00613'{/yun}：{{item.rec_num}}{yun:}t key='common_02052'{/yun}</span>
-                                            <span v-if="item.zph_num>0">{yun:}t key='admin_user_company_00210'{/yun}：{{item.zph_num}}{yun:}t key='common_02052'{/yun}</span>
+                                            <span v-if="item.resume>0">{{ lc('wap_00451') }}：{{item.resume}}{{ lc('common_02052') }}</span>
+                                            <span v-if="item.interview>0">{{ lc('resume_00029') }}：{{item.interview}}{{ lc('common_02052') }}</span>
+                                            <span v-if="item.job_num>0">{{ lc('wap_com_00028') }}：{{item.job_num}}{{ lc('common_02052') }}</span>
+                                            <span v-if="item.breakjob_num>0">{{ lc('wap_com_00029') }}：{{item.breakjob_num}}{{ lc('common_02052') }}</span>
+                                            <span v-if="item.top_num>0">{{ lc('wap_com_00029') }}：{{item.top_num}}{{ lc('common_02052') }}</span>
+                                            <span v-if="item.rec_num>0">{{ lc('wap_com_00237') }}：{{item.rec_num}}{{ lc('common_02052') }}</span>
+                                            <span v-if="item.urgent_num>0">{{ lc('member_com_00613') }}：{{item.rec_num}}{{ lc('common_02052') }}</span>
+                                            <span v-if="item.zph_num>0">{{ lc('admin_user_company_00210') }}：{{item.zph_num}}{{ lc('common_02052') }}</span>
                                             
                                         </el-radio>
                                     </el-radio-group>
@@ -117,12 +117,12 @@
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='wap_00563'{/yun}</div>
+                            <div class="TableTite">{{ lc('wap_00563') }}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
                                 <el-input v-model="save.service_price" placeholder=" " onKeyUp="priceCk(this)">
-                                    <span slot="suffix" class="slotspan">{yun:}t key='common_02056'{/yun}</span>
+                                    <span slot="suffix" class="slotspan">{{ lc('common_02056') }}</span>
                                 </el-input>
                             </div>
                         </td>
@@ -135,7 +135,7 @@
                 </tbody>
             </table>
             <div class="setBasicButn" style="border: none;">
-                <el-button type="primary" size="medium" @click="saveFun" :disabled="submitLoading">{yun:}t key='admin_01247'{/yun}</el-button>
+                <el-button type="primary" size="medium" @click="saveFun" :disabled="submitLoading">{{ lc('admin_01247') }}</el-button>
             </div>
         </div>
     </div>

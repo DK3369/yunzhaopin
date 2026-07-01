@@ -2,17 +2,17 @@
 	<div>
 		<div class="moduleElHight">
 			<div class="tableDome_tip">
-				<el-alert title="{yun:}t key='admin_00948'{/yun}" type="success"
+				<el-alert :title="lc('admin_00948')" type="success"
 					:closable="false">
 				</el-alert>
 			</div>
 			<div class="moduleHeadrButn" style=" margin-bottom: 12px;;">
-				<el-button type="primary" icon="el-icon-document-add" @click="addTplBox">{yun:}t key='member_com_00354'{/yun}</el-button>
+				<el-button type="primary" icon="el-icon-document-add" @click="addTplBox">{{ lc('member_com_00354') }}</el-button>
 			</div>
 			<div class="moduleElTable">
 				<el-table :data="tableData" border style="width: 100%"
 					:header-cell-style="{ background: '#f5f7fa', color: '#606266' }" height="640" v-loading="loading" :empty-text="emptytext">
-					<el-table-column prop="wenjian" label="{yun:}t key='wap_js_00081'{/yun}" width="150">
+					<el-table-column prop="wenjian" :label="lc('wap_js_00081')" width="150">
 						<template slot-scope="scope">
 							<div class="demo-image__preview">
 								<el-image style="width: 80px; height: 100px" :src="scope.row.pic"
@@ -21,17 +21,17 @@
 							</div>
 						</template>
 					</el-table-column>
-					<el-table-column prop="name" label="{yun:}t key='wap_com_00413'{/yun}">
+					<el-table-column prop="name" :label="lc('wap_com_00413')">
 					</el-table-column>
-					<el-table-column prop="url" label="{yun:}t key='admin_00944'{/yun}">
+					<el-table-column prop="url" :label="lc('admin_00944')">
 					</el-table-column>
-					<el-table-column prop="status_n" label="{yun:}t key='member_user_00181'{/yun}">
+					<el-table-column prop="status_n" :label="lc('member_user_00181')">
 					</el-table-column>
-					<el-table-column label="{yun:}t key='member_user_00048'{/yun}" width="140">
+					<el-table-column :label="lc('member_user_00048')" width="140">
 						<template slot-scope="scope">
 							<div class="moduleElTaCaoz">
-								<el-button size="mini" @click="editTpl(scope.row)">{yun:}t key='wap_js_00073'{/yun}</el-button>
-								<el-button size="mini" @click="delTpl(scope.row)" type="danger">{yun:}t key='common.delete'{/yun}</el-button>
+								<el-button size="mini" @click="editTpl(scope.row)">{{ lc('wap_js_00073') }}</el-button>
+								<el-button size="mini" @click="delTpl(scope.row)" type="danger">{{ lc('common.delete') }}</el-button>
 							</div>
 						</template>
 					</el-table-column>
@@ -39,26 +39,26 @@
 			</div>
 
 			<div class="modluDrawer">
-				<el-drawer title="{yun:}t key='member_user_00189'{/yun}" :visible.sync="editTplBox" :modal-append-to-body="false" :show-close="true"
+				<el-drawer :title="lc('member_user_00189')" :visible.sync="editTplBox" :modal-append-to-body="false" :show-close="true"
 					:with-header="true" size="45%">
 					<div class="drawerModlue">
 						<div class="drawerModInfo" style="max-height: calc(100% - 80px); overflow-y: auto;">
 
 							<div class="drawerModLis">
 								<div class="drawerModTite">
-									<span>{yun:}t key='wap_com_00413'{/yun}</span>
+									<span>{{ lc('wap_com_00413') }}</span>
 								</div>
 								<div class="drawerModInpt">
 									<el-input v-model="resumeTplInfo.name"></el-input>
 								</div>
 								<div class="drawerModTips">
-									<el-alert title="{yun:}t key='admin_00949'{/yun}" type="info" show-icon :closable="false">
+									<el-alert :title="lc('admin_00949')" type="info" show-icon :closable="false">
 									</el-alert>
 								</div>
 							</div>
 							<div class="drawerModLis">
 								<div class="drawerModTite">
-									<span>{yun:}t key='member_user_00181'{/yun}</span>
+									<span>{{ lc('member_user_00181') }}</span>
 								</div>
 								<div class="drawerModInpt">
 									<el-switch v-model="resumeTplInfo.status" active-color="#13ce66" inactive-color="#ccc">
@@ -67,34 +67,34 @@
 							</div>
 							<div class="drawerModLis">
 								<div class="drawerModTite">
-									<span>{yun:}t key='admin_00946'{/yun}</span>
+									<span>{{ lc('admin_00946') }}</span>
 								</div>
 								<div class="drawerModInpt">
 									<el-input v-model="resumeTplInfo.dir"></el-input>
 
 								</div>
 								<div class="drawerModTips">
-									<el-alert title="{yun:}t key='admin_00950'{/yun}" type="info"
+									<el-alert :title="lc('admin_00950')" type="info"
 										show-icon :closable="false">
 									</el-alert>
 								</div>
 							</div>
 							<div class="drawerModLis">
 								<div class="drawerModTite">
-									<span>{yun:}t key='wap_user_00008'{/yun}</span>
+									<span>{{ lc('wap_user_00008') }}</span>
 								</div>
 								<div class="drawerModInpt">
 									<el-input v-model="resumeTplInfo.price" @input="inputIntNumber($event, 'resumeTplInfo', 'price')"></el-input>
 
 								</div>
 								<div class="drawerModTips">
-									<el-alert title="{yun:}t key='admin_00951'{/yun}" type="info" show-icon :closable="false">
+									<el-alert :title="lc('admin_00951')" type="info" show-icon :closable="false">
 									</el-alert>
 								</div>
 							</div>
 							<div class="drawerModLis">
 								<div class="drawerModTite">
-									<span>{yun:}t key='admin_00119'{/yun}</span>
+									<span>{{ lc('admin_00119') }}</span>
 								</div>
 								<div class="drawerModInpt">
 									<el-upload class="avatar-uploader" :accept="pic_accept" :action="uploadAction" :show-file-list="false"
@@ -106,19 +106,19 @@
 							</div>
 							<div class="drawerModLis">
 								<div class="drawerModTite">
-									<span>{yun:}t key='admin_00947'{/yun}</span>
+									<span>{{ lc('admin_00947') }}</span>
 								</div>
 								<div class="drawerModInpt">
 									<el-input v-model="resumeTplInfo.struid"></el-input>
 								</div>
 								<div class="drawerModTips">
-									<el-alert title="{yun:}t key='admin_00952'{/yun}" type="info" show-icon :closable="false">
+									<el-alert :title="lc('admin_00952')" type="info" show-icon :closable="false">
 									</el-alert>
 								</div>
 							</div>
 						</div>
 						<div class="setBasicButn" style="border: none;">
-							<el-button type="primary" size="medium" @click="tplSave" :disabled="saveLoading">{yun:}t key='common.submit'{/yun}</el-button>
+							<el-button type="primary" size="medium" @click="tplSave" :disabled="saveLoading">{{ lc('common.submit') }}</el-button>
 						</div>
 					</div>
 				</el-drawer>
@@ -132,7 +132,7 @@ module.exports = {
 	data: function () {
 		return {
 			pic_accept: localStorage.getItem("pic_accept"),
-			emptytext: "{yun:}t key='wap_js_00113'{/yun}",
+			emptytext: lc('wap_js_00113'),
 			loading: false,
 			tableData: [],
 			srcList: [],
@@ -175,12 +175,12 @@ module.exports = {
 		},
 		delTpl(row) {
 			this.tplid = row.id;
-			delConfirm(this, {}, this.delTplSubmit, "{yun:}t key='wap_user_00001'{/yun}");
+			delConfirm(this, {}, this.delTplSubmit, lc('wap_user_00001'));
 		},
 		async delTplSubmit() {
 			let that = this;
 			if (that.tplid == '') {
-				message.error("{yun:}t key='admin_00307'{/yun}");
+				message.error(lc('admin_00307'));
 				return false;
 			}
 			httpPost('m=system&c=set_tplset&a=resumetpldel', { id: that.tplid }).then(function (response) {
@@ -205,7 +205,7 @@ module.exports = {
 				return false;
 			}
 			if (that.resumeTplInfo.picurl == '' && that.resumeTplInfo.pic == '') {
-				message.error("{yun:}t key='admin_00258'{/yun}");
+				message.error(lc('admin_00258'));
 				return false;
 			}
 			if (that.resumeTplInfo.status) {
@@ -257,7 +257,7 @@ module.exports = {
 			let that = this;
 			let param = {};
 			that.loading = true;
-			that.emptytext = "{yun:}t key='admin_user_weipin_00026'{/yun}";
+			that.emptytext = lc('admin_user_weipin_00026');
 			httpPost('m=system&c=set_tplset&a=resumetpl', param).then(function (response) {
 				let res = response.data;
 				if (res.error == 0) {
@@ -265,7 +265,7 @@ module.exports = {
 					that.srcList = res.data.imgarr;
 					that.loading = false;
 					if (that.tableData.length === 0){
-                        that.emptytext = "{yun:}t key='wap_js_00113'{/yun}";
+                        that.emptytext = lc('wap_js_00113');
                     }
 				}
 			}).catch(function (error) {

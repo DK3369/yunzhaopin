@@ -53,7 +53,7 @@
         </div>
 
         <div class="modluDrawer">
-            <el-dialog :title="lc('admin_html_00014')" width="500px" :visible.sync="dialogAdd"
+            <el-dialog :title="ruleForm.id ? lc('admin_00255') : lc('admin_00256')" width="500px" :visible.sync="dialogAdd"
                 :modal-append-to-body="false">
                 <div class="toolClasDia">
                     <div class="toolClasList">
@@ -87,7 +87,7 @@
                     </div>
                 </div>
                 <div slot="footer" class="dialog-footer">
-                    <el-button type="primary" @click="save" :disabled="saveLoading">{{ruleForm.id ? '修改' : '添加'}}</el-button>
+                    <el-button type="primary" @click="save" :disabled="saveLoading">{{ruleForm.id ? lc('wap_js_00073') : lc('wap_js_00091')}}</el-button>
                 </div>
             </el-dialog>
         </div>
@@ -125,7 +125,7 @@
             getList() {
                 let that = this;
                 that.loading = true;
-                that.emptytext = "数据加载中";
+                that.emptytext = lc('admin_user_weipin_00026');
                 httpPost('m=neirong&c=toolbox_class',{}, {hideloading: true}).then(function (response) {
                     let res = response.data,
                         data = res.data;
@@ -133,7 +133,7 @@
                     that.list = data.list;
                     that.loading = false;
                     if (that.list.length === 0){
-                        that.emptytext = "暂无数据";
+                        that.emptytext = lc('wap_js_00113');
                     }
                 })
             },
@@ -182,10 +182,10 @@
 
                 if (typeof idx == 'undefined') { // 批量删除
                     params.del = this.idArr;
-                    msg = '你确定要删除选中项吗？';
+                    msg = lc('common_00853');
                 } else {// 单个删除
                     params.del = that.list[idx].id;
-                    msg = '你确定要删除当前项吗？';
+                    msg = lc('admin_00333');
                 }
 
                 delConfirm(this, params, function (params) {

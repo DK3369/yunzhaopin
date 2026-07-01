@@ -8,20 +8,20 @@
             <table class="tableVue">
                 <thead>
                 <tr align="left">
-                    <th width="180">{yun:}t key='member_com_00021'{/yun}</th>
-                    <th width="260">{yun:}t key='member_user_00181'{/yun}</th>
-                    <th>{yun:}t key='member_com_00207'{/yun}</th>
+                    <th width="180">{{ lc('member_com_00021') }}</th>
+                    <th width="260">{{ lc('member_user_00181') }}</th>
+                    <th>{{ lc('member_com_00207') }}</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='wap_com_00028'{/yun}</div>
+                        <div class="TableTite">{{ lc('wap_com_00028') }}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-input v-model="ruleForm.integral_job" placeholder="{yun:}t key='admin_user_00342'{/yun}">
-                                <span slot="suffix" class="slotspan">{yun:}t key='admin_user_00349'{/yun}</span></el-input>
+                            <el-input v-model="ruleForm.integral_job" :placeholder="lc('admin_user_00342')">
+                                <span slot="suffix" class="slotspan">{{ lc('admin_user_00349') }}</span></el-input>
                         </div>
                     </td>
                     <td>
@@ -32,12 +32,12 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='wap_com_00022'{/yun}</div>
+                        <div class="TableTite">{{ lc('wap_com_00022') }}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-input v-model="ruleForm.integral_down_resume" placeholder="{yun:}t key='admin_user_00342'{/yun}">
-                                <span slot="suffix" class="slotspan">{yun:}t key='admin_user_00349'{/yun}</span></el-input>
+                            <el-input v-model="ruleForm.integral_down_resume" :placeholder="lc('admin_user_00342')">
+                                <span slot="suffix" class="slotspan">{{ lc('admin_user_00349') }}</span></el-input>
                         </div>
                     </td>
                     <td>
@@ -48,12 +48,12 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_user_company_00218'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_user_company_00218') }}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-input v-model="ruleForm.integral_interview" placeholder="{yun:}t key='admin_user_00342'{/yun}">
-                                <span slot="suffix" class="slotspan">{yun:}t key='admin_user_00349'{/yun}</span></el-input>
+                            <el-input v-model="ruleForm.integral_interview" :placeholder="lc('admin_user_00342')">
+                                <span slot="suffix" class="slotspan">{{ lc('admin_user_00349') }}</span></el-input>
                         </div>
                     </td>
                     <td>
@@ -64,12 +64,12 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='wap_com_00029'{/yun}</div>
+                        <div class="TableTite">{{ lc('wap_com_00029') }}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-input v-model="ruleForm.integral_jobefresh" placeholder="{yun:}t key='admin_user_00342'{/yun}">
-                                <span slot="suffix" class="slotspan">{yun:}t key='admin_user_00349'{/yun}</span></el-input>
+                            <el-input v-model="ruleForm.integral_jobefresh" :placeholder="lc('admin_user_00342')">
+                                <span slot="suffix" class="slotspan">{{ lc('admin_user_00349') }}</span></el-input>
                         </div>
                     </td>
                     <td>
@@ -80,12 +80,12 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='wap_com_00024'{/yun}</div>
+                        <div class="TableTite">{{ lc('wap_com_00024') }}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-input v-model="ruleForm.com_urgent" placeholder="{yun:}t key='admin_user_00342'{/yun}">
-                                <span slot="suffix" class="slotspan">{yun:}t key='admin_user_00350'{/yun}</span></el-input>
+                            <el-input v-model="ruleForm.com_urgent" :placeholder="lc('admin_user_00342')">
+                                <span slot="suffix" class="slotspan">{{ lc('admin_user_00350') }}</span></el-input>
                         </div>
                     </td>
                     <td>
@@ -96,12 +96,12 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='wap_com_00025'{/yun}</div>
+                        <div class="TableTite">{{ lc('wap_com_00025') }}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-input v-model="ruleForm.integral_job_top" placeholder="{yun:}t key='admin_user_00342'{/yun}">
-                                <span slot="suffix" class="slotspan">{yun:}t key='admin_user_00350'{/yun}</span></el-input>
+                            <el-input v-model="ruleForm.integral_job_top" :placeholder="lc('admin_user_00342')">
+                                <span slot="suffix" class="slotspan">{{ lc('admin_user_00350') }}</span></el-input>
                         </div>
                     </td>
                     <td>
@@ -112,12 +112,12 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='wap_com_00023'{/yun}</div>
+                        <div class="TableTite">{{ lc('wap_com_00023') }}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-input v-model="ruleForm.com_recjob" placeholder="{yun:}t key='admin_user_00342'{/yun}">
-                                <span slot="suffix" class="slotspan">{yun:}t key='admin_user_00350'{/yun}</span></el-input>
+                            <el-input v-model="ruleForm.com_recjob" :placeholder="lc('admin_user_00342')">
+                                <span slot="suffix" class="slotspan">{{ lc('admin_user_00350') }}</span></el-input>
                         </div>
                     </td>
                     <td>
@@ -128,12 +128,12 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='wap_com_00027'{/yun}</div>
+                        <div class="TableTite">{{ lc('wap_com_00027') }}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-input v-model="ruleForm.job_auto" placeholder="{yun:}t key='admin_user_00342'{/yun}">
-                                <span slot="suffix" class="slotspan">{yun:}t key='admin_user_00350'{/yun}</span></el-input>
+                            <el-input v-model="ruleForm.job_auto" :placeholder="lc('admin_user_00342')">
+                                <span slot="suffix" class="slotspan">{{ lc('admin_user_00350') }}</span></el-input>
                         </div>
                     </td>
                     <td>
@@ -145,27 +145,27 @@
                 <!--下载人才简历定价-->
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_user_company_00217'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_user_company_00217') }}</div>
                     </td>
                     <td>
                         <div v-for="(item,index) in data" :key="index" class="TableInpt" style="padding: 2px 0;">
-                            <el-input v-model="item.days" style="width: 230px;" placeholder="{yun:}t key='admin_user_00342'{/yun}">
-                                <template slot="prepend">{yun:}t key='wap_00326'{/yun}</template>
-                                <span slot="suffix" class="slotspan">{yun:}t key='admin_user_company_00221'{/yun}</span>
+                            <el-input v-model="item.days" style="width: 230px;" :placeholder="lc('admin_user_00342')">
+                                <template slot="prepend">{{ lc('wap_00326') }}</template>
+                                <span slot="suffix" class="slotspan">{{ lc('admin_user_company_00221') }}</span>
                             </el-input>
-                            <el-input v-model="item.price" style="width: 210px;margin-left: 10px;"  placeholder="{yun:}t key='admin_user_00342'{/yun}">
-                                <template slot="prepend">{yun:}t key='admin_user_company_00220'{/yun}</template>
-                                <span slot="suffix" class="slotspan">{yun:}t key='admin_user_00349'{/yun}</span>
+                            <el-input v-model="item.price" style="width: 210px;margin-left: 10px;"  :placeholder="lc('admin_user_00342')">
+                                <template slot="prepend">{{ lc('admin_user_company_00220') }}</template>
+                                <span slot="suffix" class="slotspan">{{ lc('admin_user_00349') }}</span>
                             </el-input>
-                            <el-button type="text" style="margin-left: 10px;" @click="handleDelete(index)">{yun:}t key='common.delete'{/yun}</el-button>
+                            <el-button type="text" style="margin-left: 10px;" @click="handleDelete(index)">{{ lc('common.delete') }}</el-button>
                         </div>
                         <div>
-                            <el-button type="text" icon="el-icon-circle-plus-outline" @click="handleAdd">{yun:}t key='admin_user_company_00219'{/yun}</el-button>
+                            <el-button type="text" icon="el-icon-circle-plus-outline" @click="handleAdd">{{ lc('admin_user_company_00219') }}</el-button>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>{yun:}t key='admin_user_company_00216'{/yun}<br>{yun:}t key='admin_user_company_00215'{/yun}</span>
+                            <span>{{ lc('admin_user_company_00216') }}<br>{{ lc('admin_user_company_00215') }}</span>
                         </div>
                     </td>
                 </tr>
@@ -173,7 +173,7 @@
             </table>
         </div>
         <div class="setBasicButn" style="border: none; height: 80px;">
-            <el-button type="primary" size="medium" @click="submitForm('ruleForm')" :disabled="submitLoading">{yun:}t key='common.submit'{/yun}</el-button>
+            <el-button type="primary" size="medium" @click="submitForm('ruleForm')" :disabled="submitLoading">{{ lc('common.submit') }}</el-button>
         </div>
     </div>
 </template>
@@ -189,19 +189,19 @@ module.exports = {
             ruleForm: {
                 //上架职位
                 integral_job: '",
-                //{yun:}t key='wap_com_00022'{/yun}
+                //{{ lc('wap_com_00022') }}
                 integral_down_resume: "",
-                //{yun:}t key='admin_user_company_00218'{/yun}
+                //{{ lc('admin_user_company_00218') }}
                 integral_interview: "',
                 // refreshJob
                 integral_jobefresh: '",
-                //{yun:}t key='wap_com_00024'{/yun}
+                //{{ lc('wap_com_00024') }}
                 com_urgent: "",
-                //{yun:}t key='wap_com_00025'{/yun}
+                //{{ lc('wap_com_00025') }}
                 integral_job_top: "",
-                //{yun:}t key='wap_com_00023'{/yun}
+                //{{ lc('wap_com_00023') }}
                 com_recjob: "",
-                //{yun:}t key='wap_com_00027'{/yun}
+                //{{ lc('wap_com_00027') }}
                 job_auto: "',
                 //sy_chat_name
                 integral_chat_num: '',
@@ -230,21 +230,21 @@ module.exports = {
                     _this.config.integral_proportion = config.integral_proportion !== undefined ? config.integral_proportion : '';
                     _this.config.integral_priceunit = config.integral_priceunit !== undefined ? config.integral_priceunit : '";
                     
-                    //{yun:}t key='wap_com_00028'{/yun}
+                    //{{ lc('wap_com_00028') }}
                     _this.ruleForm.integral_job = config.integral_job !== undefined ? config.integral_job : "";
-                    //{yun:}t key='wap_com_00022'{/yun}
+                    //{{ lc('wap_com_00022') }}
                     _this.ruleForm.integral_down_resume = config.integral_down_resume !== undefined ? config.integral_down_resume : "";
-                    //{yun:}t key='admin_user_company_00218'{/yun}
+                    //{{ lc('admin_user_company_00218') }}
                     _this.ruleForm.integral_interview = config.integral_interview !== undefined ? config.integral_interview : "';
                     // refreshJob
                     _this.ruleForm.integral_jobefresh = config.integral_jobefresh !== undefined ? config.integral_jobefresh : '";
-                    //{yun:}t key='wap_com_00024'{/yun}
+                    //{{ lc('wap_com_00024') }}
                     _this.ruleForm.com_urgent = config.com_urgent !== undefined ? config.com_urgent : "";
-                    //{yun:}t key='wap_com_00025'{/yun}
+                    //{{ lc('wap_com_00025') }}
                     _this.ruleForm.integral_job_top = config.integral_job_top !== undefined ? config.integral_job_top : "";
-                    //{yun:}t key='wap_com_00023'{/yun}
+                    //{{ lc('wap_com_00023') }}
                     _this.ruleForm.com_recjob = config.com_recjob !== undefined ? config.com_recjob : "";
-                    //{yun:}t key='wap_com_00027'{/yun}
+                    //{{ lc('wap_com_00027') }}
                     _this.ruleForm.job_auto = config.job_auto !== undefined ? config.job_auto : "';
                 }
             }).catch(function (error) {
@@ -255,7 +255,7 @@ module.exports = {
             // this.$refs[formName].validate((valid) => {if (valid) {}});
             let _this = this;
             let params = JSON.parse(JSON.stringify(this.ruleForm));
-            params.config = "{yun:}t key='common.submit'{/yun}";
+            params.config = lc('common.submit');
             let arrTmp = [];
             this.data.forEach((item) => {
                 arrTmp.push(item.days + '_' + item.price);
@@ -293,7 +293,7 @@ module.exports = {
         },
         handleDelete(index) {
             if (this.data.length <= 1) {
-                message.error("{yun:}t key='admin_company_00002'{/yun}");
+                message.error(lc('admin_company_00002'));
                 return false;
             }
             this.data.splice(index, 1);

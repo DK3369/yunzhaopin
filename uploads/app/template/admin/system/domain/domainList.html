@@ -99,7 +99,7 @@
 
                 domainConfigShow: false,
                 domainAddShow: false,
-                addDomainTitle: '添加分站',
+                addDomainTitle: lc('admin_system_00196'),
             }
         },
         components: {
@@ -116,7 +116,7 @@
                 params.pageSize = that.pageSize;
                 params.page = that.currentPage;
 				that.loading = true;
-                that.emptytext = "数据加载中";
+                that.emptytext = lc('admin_user_weipin_00026');
                 httpPost('m=system&c=domain_list&a=index', params, {hideloading: true}).then(function (res) {
                     let data = res.data.data;
                     that.tableData = data.list;
@@ -129,7 +129,7 @@
                     }
 					that.loading = false;
                     if (that.tableData.length === 0){
-                        that.emptytext = "暂无数据";
+                        that.emptytext = lc('wap_js_00113');
                     }
                 }).catch(function (error) {
                     console.log(error);
@@ -180,13 +180,13 @@
             addDomain() {
                 var self = this;
                 self.domainId = 0;
-                self.addDomainTitle = '添加分站';
+                self.addDomainTitle = lc('admin_system_00196');
                 self.domainAddShow = true;
             },
             editDomain(scope) {
                 var self = this;
                 self.domainId = parseInt(scope.row.id);
-                self.addDomainTitle = '修改分站';
+                self.addDomainTitle = lc('admin_system_00194');
                 self.domainAddShow = true;
             },
             delDomain(scope, isMore) {
@@ -208,7 +208,7 @@
                     params.id = scope.row.id;
                 }
 
-                delConfirm(this, params, this.delete, '您确定要删除' + name + '分站信息吗？');
+                delConfirm(this, params, this.delete, lc('admin_system_00172') + name + lc('admin_system_00192'));
             },
             delDomainSel() {
                 var that = this;

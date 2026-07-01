@@ -4,70 +4,70 @@
             <table class="tableVue">
                 <thead>
                 <tr align="left">
-                    <th width="200">{yun:}t key='member_com_00021'{/yun}</th>
-                    <th width="500">{yun:}t key='member_user_00181'{/yun}</th>
-                    <th>{yun:}t key='member_com_00207'{/yun}</th>
+                    <th width="200">{{ lc('member_com_00021') }}</th>
+                    <th width="500">{{ lc('member_user_00181') }}</th>
+                    <th>{{ lc('member_com_00207') }}</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_00219'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_00219') }}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="ruleForm.position">
+                            <el-input :placeholder="lc('wap_user_00076')" v-model="ruleForm.position">
                                 <!-- <span slot="suffix" class="slotspan">天</span> -->
                             </el-input>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>{yun:}t key='admin_00219'{/yun}</span>
+                            <span>{{ lc('admin_00219') }}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_system_00104'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_system_00104') }}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="ruleForm.e_name">
+                            <el-input :placeholder="lc('wap_user_00076')" v-model="ruleForm.e_name">
                                 <!-- <span slot="suffix" class="slotspan">天</span> -->
                             </el-input>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>{yun:}t key='admin_system_00104'{/yun}</span>
+                            <span>{{ lc('admin_system_00104') }}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_00290'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_00290') }}</div>
                     </td>
                     <td>
                         <div class="TableSelect" style="display: flex;align-items: center;">
-                            <el-select v-model="ruleForm.nid" placeholder="{yun:}t key='wap_user_00100'{/yun}" @change="getClass(ruleForm.nid)" clearable>
+                            <el-select v-model="ruleForm.nid" :placeholder="lc('wap_user_00100')" @change="getClass(ruleForm.nid)" clearable>
                                 <el-option v-for="item in position" :key="item.id" :label="item.name" :value="item.id"></el-option>
                             </el-select>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>{yun:}t key='admin_00290'{/yun}</span>
+                            <span>{{ lc('admin_00290') }}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_00291'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_00291') }}</div>
                     </td>
                     <td>
                         <div class="TableSelect" style="display: flex;align-items: center;">
-                            <el-select v-model="ruleForm.keyid" placeholder="{yun:}t key='wap_user_00100'{/yun}" clearable>
+                            <el-select v-model="ruleForm.keyid" :placeholder="lc('wap_user_00100')" clearable>
                                 <el-option v-for="item in positionTwo" :key="item.id" :label="item.name"
                                     :value="item.id">
                                 </el-option>
@@ -76,39 +76,39 @@
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>{yun:}t key='admin_00291'{/yun}</span>
+                            <span>{{ lc('admin_00291') }}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_system_00106'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_system_00106') }}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-input type="textarea" placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="ruleForm.content">
+                            <el-input type="textarea" :placeholder="lc('wap_user_00076')" v-model="ruleForm.content">
                                 <!-- <span slot="suffix" class="slotspan">天</span> -->
                             </el-input>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>{yun:}t key='admin_system_00106'{/yun}</span>
+                            <span>{{ lc('admin_system_00106') }}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_system_00105'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_system_00105') }}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-input v-model="ruleForm.sort" placeholder="{yun:}t key='admin_user_00342'{/yun}" @input="inputIntNumber($event, 'ruleForm', 'sort')"></el-input>
+                            <el-input v-model="ruleForm.sort" :placeholder="lc('admin_user_00342')" @input="inputIntNumber($event, 'ruleForm', 'sort')"></el-input>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>{yun:}t key='admin_00218'{/yun}</span>
+                            <span>{{ lc('admin_00218') }}</span>
                         </div>
                     </td>
                 </tr>
@@ -116,7 +116,7 @@
             </table>
         </div>
         <div class="setBasicButn" style="border: none;">
-            <el-button type="primary" size="medium" @click="submitForm('ruleForm')" :disabled="submitLoading">{yun:}t key='common.submit'{/yun}</el-button>
+            <el-button type="primary" size="medium" @click="submitForm('ruleForm')" :disabled="submitLoading">{{ lc('common.submit') }}</el-button>
         </div>
     </div>
 </template>
@@ -130,14 +130,14 @@ module.exports = {
         return {
             ruleForm: {
                 id: 0,//提交时的id
-                position: '",//{yun:}t key='admin_00219'{/yun}
+                position: '",//{{ lc('admin_00219') }}
                 e_name: "",//英文名称/拼音
-                nid: null,//{yun:}t key='admin_00290'{/yun}
-                keyid: null,//{yun:}t key='admin_00291'{/yun}
-                content: null,//{yun:}t key='admin_system_00106'{/yun}
-                sort: "",//{yun:}t key='member_com_00022'{/yun}
+                nid: null,//{{ lc('admin_00290') }}
+                keyid: null,//{{ lc('admin_00291') }}
+                content: null,//{{ lc('admin_system_00106') }}
+                sort: "",//{{ lc('member_com_00022') }}
             },
-            position: [],//{yun:}t key='admin_00290'{/yun}
+            position: [],//{{ lc('admin_00290') }}
             positionTwo: [],//第二级分类
             submitLoading: false,
         }
@@ -216,7 +216,7 @@ module.exports = {
             let params = JSON.parse(JSON.stringify(this.ruleForm));
             params.submit = 'submit';
             if (params.position == '') {
-                message.error(window.yunAdminT("{yun:}t key='admin_00208'{/yun}"));
+                message.error(window.yunAdminT(lc('admin_00208')));
                 return;
             }
             _this.submitLoading = true;

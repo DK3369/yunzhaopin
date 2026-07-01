@@ -1,53 +1,53 @@
 <template>
     <div class="moduleElHight">
         <div class="tableDome_tip">
-            <el-alert title="{yun:}t key='admin_tool_00191'{/yun}" type="success" :closable="false"></el-alert>
+            <el-alert :title="lc('admin_tool_00191')" type="success" :closable="false"></el-alert>
         </div>
         <div class=" moduleTable">
 
             <table class="tableVue">
                 <thead>
                 <tr align="left">
-                    <th width="100">{yun:}t key='admin_tool_00192'{/yun}</th>
-                    <th>{yun:}t key='member_user_00181'{/yun}</th>
+                    <th width="100">{{ lc('admin_tool_00192') }}</th>
+                    <th>{{ lc('member_user_00181') }}</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_tool_00193'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_tool_00193') }}</div>
                     </td>
                     <td>
                         <div class="TableButn">
                             <el-checkbox-group v-model="clearTable">
-                                <el-checkbox label="userid_job">{yun:}t key='admin_user_company_00352'{/yun}</el-checkbox>
-                                <el-checkbox label="userid_msg">{yun:}t key='admin_tool_00195'{/yun}</el-checkbox>
-                                <el-checkbox label="down_resume">{yun:}t key='admin_tool_00196'{/yun}</el-checkbox>
-                                <el-checkbox label="talent_pool">{yun:}t key='admin_tool_00197'{/yun}</el-checkbox>
-                                <el-checkbox label="look_resume">{yun:}t key='admin_tool_00198'{/yun}</el-checkbox>
-                                <el-checkbox label="look_job">{yun:}t key='admin_tool_00199'{/yun}</el-checkbox>
-                                <el-checkbox label="email_msg">{yun:}t key='admin_tool_00200'{/yun}</el-checkbox>
-                                <el-checkbox label="moblie_msg">{yun:}t key='admin_tool_00201'{/yun}</el-checkbox>
-                                <el-checkbox label="member_log">{yun:}t key='admin_tool_00202'{/yun}</el-checkbox>
-                                <el-checkbox label="sysmsg">{yun:}t key='wap_user_00363'{/yun}</el-checkbox>
-                                <el-checkbox label="recycle">{yun:}t key='admin_tool_00190'{/yun}</el-checkbox>
+                                <el-checkbox label="userid_job">{{ lc('admin_user_company_00352') }}</el-checkbox>
+                                <el-checkbox label="userid_msg">{{ lc('admin_tool_00195') }}</el-checkbox>
+                                <el-checkbox label="down_resume">{{ lc('admin_tool_00196') }}</el-checkbox>
+                                <el-checkbox label="talent_pool">{{ lc('admin_tool_00197') }}</el-checkbox>
+                                <el-checkbox label="look_resume">{{ lc('admin_tool_00198') }}</el-checkbox>
+                                <el-checkbox label="look_job">{{ lc('admin_tool_00199') }}</el-checkbox>
+                                <el-checkbox label="email_msg">{{ lc('admin_tool_00200') }}</el-checkbox>
+                                <el-checkbox label="moblie_msg">{{ lc('admin_tool_00201') }}</el-checkbox>
+                                <el-checkbox label="member_log">{{ lc('admin_tool_00202') }}</el-checkbox>
+                                <el-checkbox label="sysmsg">{{ lc('wap_user_00363') }}</el-checkbox>
+                                <el-checkbox label="recycle">{{ lc('admin_tool_00190') }}</el-checkbox>
                             </el-checkbox-group>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_tool_00194'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_tool_00194') }}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
                             <el-radio-group v-model="clearTime">
-                                <el-radio label="730">{yun:}t key='admin_tool_00203'{/yun}</el-radio>
-                                <el-radio label="360">{yun:}t key='admin_tool_00204'{/yun}</el-radio>
-                                <el-radio label="180">{yun:}t key='admin_tool_00205'{/yun}</el-radio>
-                                <el-radio label="90">{yun:}t key='admin_tool_00206'{/yun}</el-radio>
-                                <el-radio label="60">{yun:}t key='admin_tool_00207'{/yun}</el-radio>
-                                <el-radio label="30">{yun:}t key='admin_tool_00208'{/yun}</el-radio>
+                                <el-radio label="730">{{ lc('admin_tool_00203') }}</el-radio>
+                                <el-radio label="360">{{ lc('admin_tool_00204') }}</el-radio>
+                                <el-radio label="180">{{ lc('admin_tool_00205') }}</el-radio>
+                                <el-radio label="90">{{ lc('admin_tool_00206') }}</el-radio>
+                                <el-radio label="60">{{ lc('admin_tool_00207') }}</el-radio>
+                                <el-radio label="30">{{ lc('admin_tool_00208') }}</el-radio>
                             </el-radio-group>
                         </div>
                     </td>
@@ -55,7 +55,7 @@
                 </tbody>
             </table>
             <div class="setBasicButn" style="border: none;">
-                <el-button type="primary" size="medium" @click="checkData">{yun:}t key='common.submit'{/yun}</el-button>
+                <el-button type="primary" size="medium" @click="checkData">{{ lc('common.submit') }}</el-button>
             </div>
         </div>
     </div>
@@ -77,11 +77,11 @@
                 let that = this;
                 let params = {};
                 if (that.clearTable.length == 0){
-                    message.error(window.yunAdminT("{yun:}t key='admin_tool_00209'{/yun}"));
+                    message.error(window.yunAdminT(lc('admin_tool_00209')));
                     return false;
                 }
                 if (that.clearTime == 0){
-                    message.error(window.yunAdminT("{yun:}t key='admin_tool_00210'{/yun}"));
+                    message.error(window.yunAdminT(lc('admin_tool_00210')));
                     return false;
                 }
 
@@ -91,14 +91,14 @@
 
                     that.clearTable.forEach(function (item) {
 
-                        console.log(item + window.yunAdminT("{yun:}t key='admin_tool_00211'{/yun}"));
+                        console.log(item + window.yunAdminT(lc('admin_tool_00211')));
 
                         params.clearTable = item;
                         that.clearData(params);
 
-                        console.log(item + window.yunAdminT("{yun:}t key='admin_tool_00212'{/yun}"));
+                        console.log(item + window.yunAdminT(lc('admin_tool_00212')));
                     })
-                    message.success(window.yunAdminT("{yun:}t key='admin_tool_00212'{/yun}"), function () {
+                    message.success(window.yunAdminT(lc('admin_tool_00212')), function () {
 
                         that.clearTable = [];
                         that.clearTime = 0;

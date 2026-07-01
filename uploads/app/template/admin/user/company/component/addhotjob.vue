@@ -2,10 +2,10 @@
     <div class="minqizhapin">
         <div class="minqizhaFromd minqizhaXizeng">
             <div class="xinzenLite">
-                <div class="wxsettip_small ">{yun:}t key='wap_com_00157'{/yun}</div>
+                <div class="wxsettip_small ">{{ lc('wap_com_00157') }}</div>
                 <div class="wxsetokdsu">
-                    <el-input v-if="isedit" v-model="info.username" disabled placeholder="{yun:}t key='wap_com_00157'{/yun}"></el-input>
-                    <el-select v-else v-model="info.uid" filterable remote placeholder="{yun:}t key='admin_user_company_00019'{/yun}" :remote-method="getComArr"
+                    <el-input v-if="isedit" v-model="info.username" disabled :placeholder="lc('wap_com_00157')"></el-input>
+                    <el-select v-else v-model="info.uid" filterable remote :placeholder="lc('admin_user_company_00019')" :remote-method="getComArr"
                         @change="comChange">
                         <el-option v-for="item in com_arr" :key="item.value" :label="item.label" :value="item.value">
                         </el-option>
@@ -14,40 +14,40 @@
 
             </div>
             <div class="xinzenLite">
-                <div class="wxsettip_small ">{yun:}t key='admin_user_company_00018'{/yun}</div>
+                <div class="wxsettip_small ">{{ lc('admin_user_company_00018') }}</div>
                 <div class="wxsetokdsu">
-                    <el-input v-model="info.rating" disabled placeholder="{yun:}t key='admin_user_company_00018'{/yun}"></el-input>
+                    <el-input v-model="info.rating" disabled :placeholder="lc('admin_user_company_00018')"></el-input>
                 </div>
 
             </div>
             <div class="xinzenLite">
-                <div class="wxsettip_small ">{yun:}t key='admin_user_company_00022'{/yun}</div>
+                <div class="wxsettip_small ">{{ lc('admin_user_company_00022') }}</div>
                 <div class="wxsetokdsu">
-                    <el-date-picker v-model="start" value-format="yyyy-MM-dd" placeholder="{yun:}t key='admin_00343'{/yun}">
+                    <el-date-picker v-model="start" value-format="yyyy-MM-dd" :placeholder="lc('admin_00343')">
                     </el-date-picker>
-                    <el-date-picker style="margin-left: 10px;" v-model="end" value-format="yyyy-MM-dd" placeholder="{yun:}t key='admin_00344'{/yun}">
+                    <el-date-picker style="margin-left: 10px;" v-model="end" value-format="yyyy-MM-dd" :placeholder="lc('admin_00344')">
                     </el-date-picker>
                 </div>
             </div>
             <div class="xinzenLite">
-                <div class="wxsettip_small ">{yun:}t key='admin_user_company_00021'{/yun}</div>
+                <div class="wxsettip_small ">{{ lc('admin_user_company_00021') }}</div>
                 <div class="wxsetokdsu">
-                    <el-input v-model="info.service_price" placeholder="{yun:}t key='admin_user_company_00021'{/yun}"
+                    <el-input v-model="info.service_price" :placeholder="lc('admin_user_company_00021')"
                         @input="inputIntNumber($event, 'info', 'service_price')"><template
-                            slot="append">{yun:}t key='common_02056'{/yun}</template></el-input>
+                            slot="append">{{ lc('common_02056') }}</template></el-input>
                 </div>
 
             </div>
             <div class="xinzenLite">
-                <div class="wxsettip_small ">{yun:}t key='admin_user_company_00020'{/yun}</div>
+                <div class="wxsettip_small ">{{ lc('admin_user_company_00020') }}</div>
                 <div class="wxsetokdsu">
-                    <el-input v-model="info.sort" placeholder="{yun:}t key='admin_user_company_00020'{/yun}"
+                    <el-input v-model="info.sort" :placeholder="lc('admin_user_company_00020')"
                         @input="inputIntNumber($event, 'info', 'sort')"></el-input>
                 </div>
 
             </div>
             <div class="xinzenLite">
-                <div class="wxsettip_small ">{yun:}t key='admin_user_company_00016'{/yun}</div>
+                <div class="wxsettip_small ">{{ lc('admin_user_company_00016') }}</div>
                 <div class="wxsetokdsu">
                     <el-upload class="avatar-uploader" :action="''" :show-file-list="false" :on-change="mqlogoChange"
                         :accept="pic_accept">
@@ -58,9 +58,9 @@
 
             </div>
             <div class="xinzenLite">
-                <div class="wxsettip_small ">{yun:}t key='admin_00573'{/yun}</div>
+                <div class="wxsettip_small ">{{ lc('admin_00573') }}</div>
                 <div class="wxsetokdsu">
-                    <el-input type="textarea" :rows="2" placeholder="{yun:}t key='admin_00574'{/yun}" v-model="info.beizhu"></el-input>
+                    <el-input type="textarea" :rows="2" :placeholder="lc('admin_00574')" v-model="info.beizhu"></el-input>
                 </div>
 
             </div>
@@ -68,8 +68,8 @@
         </div>
         <div slot="footer" class="xinzdialoGooter">
             <div>
-                <el-button @click="closedrawermq" size="small">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
-                <el-button type="primary" @click="mqsave" :loading="saveLoading" size="small">{yun:}t key='wap_com_00019'{/yun}</el-button>
+                <el-button @click="closedrawermq" size="small">{{ lc('admin_user_weipin_00043') }}</el-button>
+                <el-button type="primary" @click="mqsave" :loading="saveLoading" size="small">{{ lc('wap_com_00019') }}</el-button>
             </div>
             
         </div>
@@ -171,7 +171,7 @@ module.exports = {
                         if (response.data.error == 0) {
                             that.com_arr = response.data.data
                         } else {
-                            message.error("{yun:}t key='admin_user_company_00017'{/yun}");
+                            message.error(lc('admin_user_company_00017'));
                         }
                     }).catch(function (error) {
                         console.log(error);
@@ -209,23 +209,23 @@ module.exports = {
         mqsave: function () {
             var that = this
             if (that.start == "") {
-                message.error("{yun:}t key='admin_company_00037'{/yun}")
+                message.error(lc('admin_company_00037'))
                 return false
             } else {
                 that.info.time_start_n = that.start
             }
             if (that.end == "") {
-                message.error("{yun:}t key='admin_company_00038'{/yun}")
+                message.error(lc('admin_company_00038'))
                 return false
             } else {
                 that.info.time_end_n = that.end
             }
             if (that.mqlogolist.length == 0 && that.info.hot_pic_n == '') {
-                message.error("{yun:}t key='admin_company_00046'{/yun}")
+                message.error(lc('admin_company_00046'))
                 return false
             }
             if (that.info.beizhu && that.info.beizhu.length > 200) {
-                message.error("{yun:}t key='admin_company_00039'{/yun}")
+                message.error(lc('admin_company_00039'))
                 return false
             }
             var params = new FormData();

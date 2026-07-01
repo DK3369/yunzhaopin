@@ -221,5 +221,6 @@ return array (
     'admin_reply_path_required' => '消息{0}的小程序路径不能为空！',
     'admin_reply_cover_required' => '消息{0}的小程序封面图不能为空！',
     'admin_reply_text_required' => '消息{0}的文本内容不能为空！',
+    'admin_official_service_phone' => '官方服务电话：',
   ),
 );

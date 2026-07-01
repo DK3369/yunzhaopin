@@ -2,12 +2,12 @@
     <!--会员-企业-套餐服务：增值服务-->
     <div class="moduleElHight">
         <div class="tableSeachInpt">
-            <el-button type="primary" icon="el-icon-plus" size="mini" @click="handleAdd">{yun:}t key='admin_user_company_00207'{/yun}</el-button>
-            <el-button type="primary" icon="el-icon-plus" plain size="mini" @click="handleDetailAdd">{yun:}t key='admin_00697'{/yun}</el-button>
+            <el-button type="primary" icon="el-icon-plus" size="mini" @click="handleAdd">{{ lc('admin_user_company_00207') }}</el-button>
+            <el-button type="primary" icon="el-icon-plus" plain size="mini" @click="handleDetailAdd">{{ lc('admin_00697') }}</el-button>
         </div>
         <div class="admin_datatip" style="margin-bottom: 12px;">
             <i class="el-icon-document"></i>
-            <span>{yun:}t key='admin_user_company_00164'{/yun}</span>
+            <span>{{ lc('admin_user_company_00164') }}</span>
         </div>
         <div class="moduleElTable"
             style="border: 1px solid #ebeef5; width: calc(100% - 2px); height: calc(100% - 135px) !important;">
@@ -15,8 +15,8 @@
                 :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" height="100%"
                 ref="multipleTable" @selection-change="handleSelectionChange" @sort-change="shortChange" v-loading="loading" :empty-text="emptytext">
                 <el-table-column type="selection" width="55"></el-table-column>
-                <el-table-column prop="id" label="{yun:}t key='member_com_00345'{/yun}" width="80" sortable="custom"></el-table-column>
-                <el-table-column prop="name" label="{yun:}t key='admin_user_company_00206'{/yun}" width="240">
+                <el-table-column prop="id" :label="lc('member_com_00345')" width="80" sortable="custom"></el-table-column>
+                <el-table-column prop="name" :label="lc('admin_user_company_00206')" width="240">
                     <template slot-scope="scope">
                         <el-input v-if="scope.row[scope.column.property + 'isShow']"
                             :ref="scope.column.property + scope.$index" :id="scope.column.property + scope.$index"
@@ -27,18 +27,18 @@
                         </span>
                     </template>
                 </el-table-column>
-                <el-table-column prop="tcsl" label="{yun:}t key='member_user_00181'{/yun}">
+                <el-table-column prop="tcsl" :label="lc('member_user_00181')">
                     <template slot-scope="scope">
-                        <el-switch v-model="scope.row.display_n" active-text="{yun:}t key='admin_user_company_00171'{/yun}" inactive-text="{yun:}t key='wap_com_00242'{/yun}" @change="handleStatus(scope)"></el-switch>
+                        <el-switch v-model="scope.row.display_n" :active-text="lc('admin_user_company_00171')" :inactive-text="lc('wap_com_00242')" @change="handleStatus(scope)"></el-switch>
                     </template>
                 </el-table-column>
-                <el-table-column prop="sort" label="{yun:}t key='member_com_00022'{/yun}"></el-table-column>
-                <el-table-column label="{yun:}t key='member_user_00048'{/yun}" width="210" fixed="right">
+                <el-table-column prop="sort" :label="lc('member_com_00022')"></el-table-column>
+                <el-table-column :label="lc('member_user_00048')" width="210" fixed="right">
                     <template slot-scope="scope">
                         <div class="cz_button">
-                            <el-button size="mini" plain @click="editRow(scope)">{yun:}t key='wap_js_00073'{/yun}</el-button>
-                            <el-button size="mini" plain @click="handleDetail(scope)">{yun:}t key='member_com_00380'{/yun}</el-button>
-                            <el-button type="danger" size="mini" @click="deleteRow(scope)">{yun:}t key='common.delete'{/yun}</el-button>
+                            <el-button size="mini" plain @click="editRow(scope)">{{ lc('wap_js_00073') }}</el-button>
+                            <el-button size="mini" plain @click="handleDetail(scope)">{{ lc('member_com_00380') }}</el-button>
+                            <el-button type="danger" size="mini" @click="deleteRow(scope)">{{ lc('common.delete') }}</el-button>
                         </div>
                     </template>
                 </el-table-column>
@@ -46,8 +46,8 @@
         </div>
         <div class="modulePaging">
             <div>
-                <el-checkbox :indeterminate="isIndeterminate" v-model="checked" @change="selectAllBottom">{yun:}t key='wap_js_00074'{/yun}</el-checkbox>
-                <el-button @click="deleteRow(null, true)" size="mini">{yun:}t key='member_com_00055'{/yun}</el-button>
+                <el-checkbox :indeterminate="isIndeterminate" v-model="checked" @change="selectAllBottom">{{ lc('wap_js_00074') }}</el-checkbox>
+                <el-button @click="deleteRow(null, true)" size="mini">{{ lc('member_com_00055') }}</el-button>
             </div>
             <div class="modulePagNum">
             </div>
@@ -59,47 +59,47 @@
                 <div class="alogModlue">
                     <div class="alogModlList">
                         <div class="alogModlTite">
-                            <span>{yun:}t key='admin_user_company_00206'{/yun}</span>
+                            <span>{{ lc('admin_user_company_00206') }}</span>
                         </div>
                         <div class="alogModInpt">
-                            <el-input v-model="ruleForm.name" placeholder="{yun:}t key='wap_user_00076'{/yun}"></el-input>
+                            <el-input v-model="ruleForm.name" :placeholder="lc('wap_user_00076')"></el-input>
                         </div>
                         <div class="alogModlTips">
-                            <el-alert title="{yun:}t key='admin_00698'{/yun}" type="info" show-icon :closable="false">
+                            <el-alert :title="lc('admin_00698')" type="info" show-icon :closable="false">
                             </el-alert>
                         </div>
                     </div>
                     <div class="alogModlList">
                         <div class="alogModlTite">
-                            <span>{yun:}t key='member_user_00181'{/yun}</span>
+                            <span>{{ lc('member_user_00181') }}</span>
                         </div>
                         <div class="alogModInpt">
                             <el-radio-group v-model="ruleForm.display">
-                                <el-radio label="1">{yun:}t key='admin_user_company_00205'{/yun}</el-radio>
-                                <el-radio label="2">{yun:}t key='admin_user_company_00203'{/yun}</el-radio>
+                                <el-radio label="1">{{ lc('admin_user_company_00205') }}</el-radio>
+                                <el-radio label="2">{{ lc('admin_user_company_00203') }}</el-radio>
                             </el-radio-group>
                         </div>
                         <div class="alogModlTips">
-                            <el-alert title="{yun:}t key='admin_user_company_00188'{/yun}" type="info" show-icon :closable="false">
+                            <el-alert :title="lc('admin_user_company_00188')" type="info" show-icon :closable="false">
                             </el-alert>
                         </div>
                     </div>
                     <div class="alogModlList">
                         <div class="alogModlTite">
-                            <span>{yun:}t key='member_com_00022'{/yun}</span>
+                            <span>{{ lc('member_com_00022') }}</span>
                         </div>
                         <div class="alogModInpt">
-                            <el-input v-model="ruleForm.sort" placeholder="{yun:}t key='admin_user_00342'{/yun}"></el-input>
+                            <el-input v-model="ruleForm.sort" :placeholder="lc('admin_user_00342')"></el-input>
                         </div>
                         <div class="alogModlTips">
-                            <el-alert title="{yun:}t key='admin_user_company_00197'{/yun}" type="info" show-icon :closable="false">
+                            <el-alert :title="lc('admin_user_company_00197')" type="info" show-icon :closable="false">
                             </el-alert>
                         </div>
                     </div>
                 </div>
                 <span slot="footer" class="dialog-footer">
-                    <el-button @click="cancelFrom">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
-                    <el-button type="primary" @click="submitForm" :disabled="submitLoading">{yun:}t key='wap_com_00019'{/yun}</el-button>
+                    <el-button @click="cancelFrom">{{ lc('admin_user_weipin_00043') }}</el-button>
+                    <el-button type="primary" @click="submitForm" :disabled="submitLoading">{{ lc('wap_com_00019') }}</el-button>
                 </span>
             </el-dialog>
         </div>
@@ -111,7 +111,7 @@
             </el-drawer>
         </div>
         <div class="modluDrawer">
-            <el-drawer title="{yun:}t key='admin_00697'{/yun}" :visible.sync="detailAddVisible" :append-to-body="true" :modal-append-to-body="false" :wrapper-closable="false" :destroy-on-close="true" size="770px">
+            <el-drawer :title="lc('admin_00697')" :visible.sync="detailAddVisible" :append-to-body="true" :modal-append-to-body="false" :wrapper-closable="false" :destroy-on-close="true" size="770px">
                 <comrating_server_detail_edit @child-event-list="detailAddVisible=false;getList();"></comrating_server_detail_edit>
             </el-drawer>
         </div>
@@ -123,7 +123,7 @@ module.exports = {
     data: function () {
         return {
             loading: false,
-            emptytext: "{yun:}t key='wap_js_00113'{/yun}",
+            emptytext: lc('wap_js_00113'),
             searchForm: {
                 page: 1,
                 limit: null,
@@ -135,7 +135,7 @@ module.exports = {
             isIndeterminate: false,// checkbox 的不确定状态
             selectedItem: [],
             addVisible: false,
-            titleAddEdit: "{yun:}t key='admin_user_company_00207'{/yun}",
+            titleAddEdit: lc('admin_user_company_00207'),
             oldData: null,
             ruleForm: {
                 id: '0',
@@ -145,9 +145,9 @@ module.exports = {
             },
             info: {},
             submitLoading: false,
-            detailAddVisible: false,//{yun:}t key='admin_00697'{/yun}
+            detailAddVisible: false,//{{ lc('admin_00697') }}
             detailVisible: false,
-            titleDetail: "{yun:}t key='member_com_00380'{/yun}",
+            titleDetail: lc('member_com_00380'),
         }
     },
     created() {
@@ -194,14 +194,14 @@ module.exports = {
                 (params[index] === '') && (params[index] = null);
             }
             _this.loading = true;
-            _this.emptytext = "{yun:}t key='admin_user_weipin_00026'{/yun}";
+            _this.emptytext = lc('admin_user_weipin_00026');
             httpPost('m=user&c=company_comrating&a=server', params, {hideloading: true}).then(function (response) {
                 let res = response.data;
                 if (res.error === 0) {
                     _this.tableData = res.data.list;
                     _this.loading = false;
                     if (_this.tableData.length === 0){
-                        _this.emptytext = "{yun:}t key='wap_js_00113'{/yun}";
+                        _this.emptytext = lc('wap_js_00113');
                     }
                 }
             }).catch(function (error) {
@@ -209,7 +209,7 @@ module.exports = {
             });
         },
         handleAdd() {
-            this.titleAddEdit = "{yun:}t key='admin_user_company_00207'{/yun}";
+            this.titleAddEdit = lc('admin_user_company_00207');
             this.info = {};
             this.ruleForm.id = '0';
             this.ruleForm.name = '';
@@ -226,7 +226,7 @@ module.exports = {
             this.addVisible = false;
         },
         editRow(scope) {
-            this.titleAddEdit = "{yun:}t key='admin_company_00010'{/yun}";
+            this.titleAddEdit = lc('admin_company_00010');
             this.info = scope.row;
             this.ruleForm.id = scope.row.id;
             this.ruleForm.name = scope.row.name;
@@ -241,7 +241,7 @@ module.exports = {
             let params = {};
             if (isMore) {
                 if (!this.selectedItem.length) {
-                    message.error("{yun:}t key='admin_user_weipin_00005'{/yun}");
+                    message.error(lc('admin_user_weipin_00005'));
                     return false;
                 }
                 let list = [];
@@ -262,10 +262,10 @@ module.exports = {
             httpPost('m=user&c=company_comrating&a=delserver', params).then(function (response) {
                 let res = response.data;
                 if (res.error === 0) {
-                    message.success("{yun:}t key='admin_user_00187'{/yun}");
+                    message.success(lc('admin_user_00187'));
                     _this.getList();
                 } else {
-                    message.error("{yun:}t key='admin_user_00186'{/yun}");
+                    message.error(lc('admin_user_00186'));
                 }
             }).catch(function (error) {
                 console.log(error);
@@ -305,7 +305,7 @@ module.exports = {
             httpPost('m=user&c=company_comrating&a=ajax', sendData).then(function (response) {
                 let res = response.data;
                 if (res.error === 0) {
-                    message.success("{yun:}t key='admin_user_company_00208'{/yun}");
+                    message.success(lc('admin_user_company_00208'));
                 } else {
                     message.error(res.msg);
                 }
@@ -321,7 +321,7 @@ module.exports = {
         handleDetail(scope) {
             this.info = scope.row;
             this.detailVisible = true;
-            this.titleDetail = scope.row.name + " {yun:}t key='member_com_00380'{/yun}"
+            this.titleDetail = scope.row.name + " {{ lc('member_com_00380') }}"
         },
         handleStatus(scope) {
             let _this = this;
@@ -331,7 +331,7 @@ module.exports = {
             httpPost('m=user&c=company_comrating&a=opera', params).then(function (response) {
                 let res = response.data;
                 if (res.error !== 0) {
-                    message.error("{yun:}t key='wap_01715'{/yun}");
+                    message.error(lc('wap_01715'));
                     _this.getList();
                 }
             }).catch(function (error) {
@@ -345,7 +345,7 @@ module.exports = {
                 delete params.display;
             }
             if (params.name == '') {
-                message.error("{yun:}t key='admin_company_00014'{/yun}");
+                message.error(lc('admin_company_00014'));
                 return false;
             }
             _this.submitLoading = true;

@@ -11,7 +11,7 @@ class public_controller extends wxapp_controller{
 	    $data['sy_msg_regcode']			=	$this->config['sy_msg_regcode'];
 	    $this->render_json(0,'ok',$data);
 	}
-	// Multi-column job picker
+	//职位多列选择器
 	function multiJob_action(){
 	    $cacheM		=	$this->MODEL('cache');
 	    $cacheList	=	$cacheM->GetCache(array('job','jobfs'));
@@ -28,8 +28,8 @@ class public_controller extends wxapp_controller{
 	    	foreach($job_index as $k=>$v){
 	    	    
 	    	    if(!empty($job_index)){
-					$jobtwoArr[$v][] 	   =  array('value'=>0,'label'=>yun_at('wap_js_00075'));// Column 2: all
-					$jobthreetwoArr[$v][]  =  array(array());// level-1 all placeholder
+					$jobtwoArr[$v][] 	   =  array('value'=>0,'label'=>'全部');//第二列 全部
+					$jobthreetwoArr[$v][]  =  array(array());//用做 一级-全部-''
 					
 		    		if (is_array($job_type[$v])){
 						
@@ -40,8 +40,8 @@ class public_controller extends wxapp_controller{
 							$jobthreeArr		=	array();
 
 							if (!empty($job_three)){
-							    // ，
-							    $jobthreeArr[]  =	array('value'=>0,'label'=>yun_at('wap_js_00075'));
+							    //只要有一个三级， 第三列都要有全部
+							    $jobthreeArr[]  =	array('value'=>0,'label'=>'全部');
 							    if (!empty($job_type[$va])){
 							        foreach ($job_type[$va] as $key=>$val){
 							            $jobthreeArr[]	=	array('value'=>$val,'label'=>$job_name[$val]);
@@ -74,7 +74,7 @@ class public_controller extends wxapp_controller{
 	    $this->render_json(0,'ok',$data);
 	}
 	
-	// Multi-column city picker
+	//城市多列选择器
 	function multiCity_action(){
 	    $cacheM		=	$this->MODEL('cache');
 	    $cacheList	=	$cacheM->GetCache(array('city','cityfs'));
@@ -91,8 +91,8 @@ class public_controller extends wxapp_controller{
 
 	    	foreach($city_index as $k=>$v){
 	    		if(!empty($city_type)){
-					$citytwoArr[$v][]       =  array('value'=>0,'label'=>yun_at('wap_js_00075'));// Column 2: all
-		    		$citythreetwoArr[$v][]	=  array(array());// level-1 all placeholder
+					$citytwoArr[$v][]       =  array('value'=>0,'label'=>'全部');//第二列 全部
+		    		$citythreetwoArr[$v][]	=  array(array());//用做 一级-全部-''
 		    		if (is_array($city_type[$v])){
 
 	    				foreach ($city_type[$v] as $ka=>$va){
@@ -101,8 +101,8 @@ class public_controller extends wxapp_controller{
 							
 							$citythreeArr  =  array();
 							if (!empty($city_three)){
-							    // ，
-							    $citythreeArr[] 		 =	array('value'=>0,'label'=>yun_at('wap_js_00075'));
+							    //只要有一个三级， 第三列都要有全部
+							    $citythreeArr[] 		 =	array('value'=>0,'label'=>'全部');
 							    if (!empty($city_type[$va])){
 							        foreach ($city_type[$va] as $key=>$val){
 							            $citythreeArr[]  =	array('value'=>$val,'label'=>$city_name[$val]);
@@ -137,7 +137,7 @@ class public_controller extends wxapp_controller{
 	    $this->render_json(0,'ok',$data);
 	}
 	
-	// List search cache
+	//列表页搜索取缓存
 	function searchcity_action(){
 	    include(PLUS_PATH.'city.cache.php');
 	    include(PLUS_PATH.'cityparent.cache.php');
@@ -147,7 +147,7 @@ class public_controller extends wxapp_controller{
 	    $data['city_parent']=	$city_parent;
 	    $this->render_json(0,'ok',$data);
 	}
-	// List search cache
+	//列表页搜索取缓存
 	function searchjob_action(){
 	    include(PLUS_PATH.'job.cache.php');
 	    include(PLUS_PATH.'jobparent.cache.php');
@@ -158,12 +158,12 @@ class public_controller extends wxapp_controller{
 	    $this->render_json(0,'ok',$data);
 	}
 	
-	function industry_action(){// Industry categories
+	function industry_action(){//获取行业类别
 		include PLUS_PATH.'industry.cache.php';
 		$id=array();$name=array();
 		if(is_array($industry_index)){
 		    $id[]	=	'0';
-		    $name[]	=	yun_at('common_01936');
+		    $name[]	=	'不限';
 			foreach($industry_index as $k=>$v){
 				$id[]		=	$v;
 				$name[]		=	$industry_name[$v];
@@ -181,7 +181,7 @@ class public_controller extends wxapp_controller{
 		
 	    if(!empty($cache['part_sex'])){
 	        $id[]	 =	0;
-	        $name[]  =	yun_at('wap_js_00134');
+	        $name[]  =	'请选择性别';
 	        foreach($cache['part_sex'] as $k=>$v){
 	            $id[]	 =	$k;
 	            $name[]  =	$v;
@@ -194,7 +194,7 @@ class public_controller extends wxapp_controller{
 	    $part_type  =  $cache['partdata']['part_type'];
 	    if(!empty($part_type)){
 		    $typeid[]	=	'0';
-			$typename[]	=	yun_at('wap_01693');
+			$typename[]	=	'请选择兼职类型';
 			foreach($part_type as $v){
 				$typeid[]	=	$v;
 				$typename[]	=	$cache['partclass_name'][$v];
@@ -207,7 +207,7 @@ class public_controller extends wxapp_controller{
 		$part_salary_type  =  $cache['partdata']['part_salary_type'];
 		if(!empty($part_salary_type)){
 		    $salary_typeid[]	=	'0';
-			$salary_typename[]	=	yun_at('wap_01851');
+			$salary_typename[]	=	'请选择薪水类型';
 			foreach($part_salary_type as $v){
 				$salary_typeid[]	=	$v;
 				$salary_typename[]	=	$cache['partclass_name'][$v];
@@ -220,7 +220,7 @@ class public_controller extends wxapp_controller{
 		$part_billing_cycle  =  $cache['partdata']['part_billing_cycle'];
 		if(!empty($part_billing_cycle)){
 		    $billing_cycleid[]		=	'0';
-			$billing_cyclename[]	=	yun_at('wap_01695');
+			$billing_cyclename[]	=	'请选择结算周期';
 			foreach($part_billing_cycle as $v){
 				$billing_cycleid[]		=	$v;
 				$billing_cyclename[]	=	$cache['partclass_name'][$v];
@@ -232,7 +232,7 @@ class public_controller extends wxapp_controller{
 		
 		$partdata['timetype']  =  array(
 		    'id'    =>  array(1,2),
-		    'name'  =>  array(yun_at('wap_01722'), yun_at('wap_js_00135'))
+		    'name'  =>  array('短期招聘', '长期招聘')
 		);
 		
 		$data['partdata']  =  $partdata;
@@ -326,7 +326,7 @@ class public_controller extends wxapp_controller{
 		$this->render_json(0,'ok',$data);
 	}
 	
-	function user_action(){// User profile categories
+	function user_action(){//获取个人类别
 	    
 	    $cacheM  =  $this -> MODEL('cache');
 	    $cache   =  $cacheM -> GetCache('user');
@@ -335,7 +335,7 @@ class public_controller extends wxapp_controller{
 	    $user_word  =  $cache['userdata']['user_word'];
 	    if(!empty($user_word)){
 		    $expid[]	=	'0';
-			$expname[]	=	yun_at('wap_user_00100');
+			$expname[]	=	'请选择';
 			foreach($user_word as $v){
 				$expid[]	=	$v;
 				$expname[]	=	$cache['userclass_name'][$v];
@@ -350,7 +350,7 @@ class public_controller extends wxapp_controller{
 		$user_edu  =  $cache['userdata']['user_edu'];
 		if(!empty($user_edu)){
 		    $eduid[]	=	'0';
-			$eduname[]	=	yun_at('wap_user_00100');
+			$eduname[]	=	'请选择';
 			foreach($user_edu as $v){
 				$eduid[]	=	$v;
 				$eduname[]	=	$cache['userclass_name'][$v];
@@ -365,7 +365,7 @@ class public_controller extends wxapp_controller{
 		$user_ing  =  $cache['userdata']['user_ing'];
 		if(!empty($user_ing)){
 		    $ingid[]	=	'0';
-			$ingname[]	=	yun_at('wap_user_00072');
+			$ingname[]	=	'请选择熟练程度';
 			foreach($user_ing as $v){
 				$ingid[]	=	$v;
 				$ingname[]	=	$cache['userclass_name'][$v];
@@ -418,7 +418,7 @@ class public_controller extends wxapp_controller{
 		$user_marriage  =  $cache['userdata']['user_marriage'];
 		if(!empty($user_marriage)){
 			$marriageid[]    =  '0';
-			$marriagename[]  =  yun_at('member_user_00406');
+			$marriagename[]  =  '请选择婚姻状况';
 			foreach($user_marriage as $v){
 				$marriageid[]    =  $v;
 				$marriagename[]  =  $cache['userclass_name'][$v];
@@ -443,7 +443,7 @@ class public_controller extends wxapp_controller{
 		
 		if(!empty($cache['user_sex'])){
 		    $id[]	 =	0;
-		    $name[]  =	yun_at('wap_js_00134');
+		    $name[]  =	'请选择性别';
 		    foreach($cache['user_sex'] as $k=>$v){
 		        $id[]	 =	$k;
 		        $name[]  =	$v;
@@ -457,7 +457,7 @@ class public_controller extends wxapp_controller{
 		$user_tag	=	$cache['userdata']['user_tag'];
 		if(!empty($user_tag)){
 			$tagid[]	=	'0';
-			$tagname[]	=	yun_at('wap_01852');
+			$tagname[]	=	'请选择个人标签';
 			foreach($user_tag as $v){
 				$tagid[]	=	$v;
 				$tagname[]	=	$cache['userclass_name'][$v];
@@ -469,12 +469,12 @@ class public_controller extends wxapp_controller{
 		$userdata['tag']	=	$tag;
 		$userdata['tag_arr']=	$arrtag;
 		
-		$userdata['uptime']=  array('1'=>yun_at('common_01940'),'3'=>yun_at('admin_user_00179'),'7'=>yun_at('admin_user_00178'),'30'=>yun_at('admin_user_00175'),'90'=>yun_at('wap_00431'));
+		$userdata['uptime']=  array('1'=>'今天','3'=>'最近三天','7'=>'最近七天','30'=>'最近一个月','90'=>'最近三个月');
 		$data['userdata']  =  $userdata;
 		
 		if($_POST['uid']){
 		    $resumeM	=	$this -> MODEL('resume');
-		    // addexpect page
+		    //addexpect页面
 		    if ($_POST['eid'] && $_POST['expect']){
 		        $row		=	$resumeM -> getExpect(array('id'=>$_POST['eid']),array('field'=>'`jobstatus`,`report`,`type`'));
 		        foreach ($jobstatus['id'] as $k=>$v){
@@ -493,7 +493,7 @@ class public_controller extends wxapp_controller{
 		            }
 		        }
 		    }else{
-		        // info page
+		        //info页面
 		        if ($_POST['info']){
 		            $row	=	$resumeM -> getResumeInfo(array('uid'=>$_POST['uid']),array('field'=>'`sex`,`edu`,`exp`,`marriage`'));
 		            foreach ($sex['id'] as $k=>$v){
@@ -567,14 +567,14 @@ class public_controller extends wxapp_controller{
 		$data['ingIndex']		=	$ingIndex?$ingIndex:0;
 		$this->render_json(0,'ok',$data);
 	}
-	function com_action(){// Company categories
+	function com_action(){//获取企业类别
 	    
 	    $cacheM  =  $this -> MODEL('cache');
 	    $cache   =  $cacheM -> GetCache(array('com','user'));
 	    $job_pr  =  $cache['comdata']['job_pr'];
 	    if(!empty($job_pr)){
 		    $prid[]		=	'0';
-			$prname[]	=	yun_at('wap_com_00143');
+			$prname[]	=	'请选择企业性质';
 			foreach($job_pr as $v){
 				$prid[]    =  $v;
 				$prname[]  =  $cache['comclass_name'][$v];
@@ -589,7 +589,7 @@ class public_controller extends wxapp_controller{
 		$job_mun  =  $cache['comdata']['job_mun'];
 		if(!empty($job_mun)){
 		    $munid[]	=  '0';
-			$munname[]	=  yun_at('wap_com_00144');
+			$munname[]	=  '请选择企业规模';
 			foreach($job_mun as $v){
 				$munid[]	=	$v;
 				$munname[]	=	$cache['comclass_name'][$v];
@@ -604,7 +604,7 @@ class public_controller extends wxapp_controller{
 		$job_number  =  $cache['comdata']['job_number'];
 		if(!empty($job_number)){
 		    $numberid[]    =  '0';
-			$numbername[]  =  yun_at('wap_01853');
+			$numbername[]  =  '请选择招聘人数';
 			foreach($job_number as $v){
 				$numberid[]    =  $v;
 				$numbername[]  =  $cache['comclass_name'][$v];
@@ -631,7 +631,7 @@ class public_controller extends wxapp_controller{
 		$job_report  =  $cache['comdata']['job_report'];
 		if(!empty($job_report)){
 		    $reportid[]    =  '0';
-			$reportname[]  =  yun_at('wap_00980');
+			$reportname[]  =  '请选择到岗时间';
 			foreach($job_report as $v){
 				$reportid[]    =  $v;
 				$reportname[]  =  $cache['comclass_name'][$v];
@@ -644,7 +644,7 @@ class public_controller extends wxapp_controller{
 		$job_age  =  $cache['comdata']['job_age'];
 		if(!empty($job_age)){
 		    $ageid[]	=	'0';
-			$agename[]	=	yun_at('wap_01854');
+			$agename[]	=	'请选择年龄要求';
 			foreach($job_age as $v){
 				$ageid[]	=  $v;
 				$agename[]	=  $cache['comclass_name'][$v];
@@ -671,7 +671,7 @@ class public_controller extends wxapp_controller{
 		$job_marriage  =  $cache['comdata']['job_marriage'];
 		if(!empty($job_marriage)){
 			$marriageid[]    =  '0';
-			$marriagename[]  =  yun_at('member_user_00406');
+			$marriagename[]  =  '请选择婚姻状况';
 			foreach($job_marriage as $v){
 				$marriageid[]    =  $v;
 				$marriagename[]  =  $cache['comclass_name'][$v];
@@ -697,7 +697,7 @@ class public_controller extends wxapp_controller{
 		
 		if(!empty($cache['com_sex'])){
 		    foreach($cache['com_sex'] as $k=>$v){
-		        if($v != WapDbEnum::SEX_MALE){
+		        if($v != '男'){
 		            $req_sex_id[] =	$k;
 		            $req_sex_name[]  =	$v;
 		        }
@@ -707,7 +707,7 @@ class public_controller extends wxapp_controller{
 		$sexreq['name']	     =	$req_sex_name;
 		$comdata['sex_req']	 =	$sexreq;
 		
-		$comdata['uptime']	=	array('1'=>yun_at('common_01940'),'3'=>yun_at('admin_user_00179'),'7'=>yun_at('admin_user_00178'),'30'=>yun_at('admin_user_00175'),'90'=>yun_at('wap_00431'));
+		$comdata['uptime']	=	array('1'=>'今天','3'=>'最近三天','7'=>'最近七天','30'=>'最近一个月','90'=>'最近三个月');
 		$job_lang  =  $cache['comdata']['job_lang'];
 		if(!empty($job_lang)){
 			foreach($job_lang as $v){
@@ -718,7 +718,7 @@ class public_controller extends wxapp_controller{
         $job_remark  =  $cache['comdata']['job_remark'];
         if(!empty($job_remark)){
             $remarkid[]		=	'0';
-            $remarkname[]	=	yun_at('wap_00809');
+            $remarkname[]	=	'请选择简历状态';
             foreach($job_remark as $v){
                 $remarkid[]    =  $v;
                 $remarkname[]  =  $cache['comclass_name'][$v];
@@ -730,11 +730,11 @@ class public_controller extends wxapp_controller{
         $comdata['remark']		=	$remark;
         $comdata['remark_arr']	=	$arrremark;
 
-		// Application requirements
+		//投递要求
 		$user_word  =  $cache['userdata']['user_word'];
 	    if(!empty($user_word)){
 		    $expreqid[]			=	'0';
-			$expreqname[]		=	yun_at('wap_00937');
+			$expreqname[]		=	'请选择工作经验';
 			foreach($user_word as $v){
 				$expreqid[]		=	$v;
 				$expreqname[]	=	$cache['userclass_name'][$v];
@@ -747,7 +747,7 @@ class public_controller extends wxapp_controller{
 		$user_edu  =  $cache['userdata']['user_edu'];
 		if(!empty($user_edu)){
 		    $edureqid[]			=	'0';
-			$edureqname[]		=	yun_at('wap_js_00114');
+			$edureqname[]		=	'请选择学历';
 			foreach($user_edu as $v){
 				$edureqid[]		=	$v;
 				$edureqname[]	=	$cache['userclass_name'][$v];
@@ -756,10 +756,10 @@ class public_controller extends wxapp_controller{
 		$edureq['id']		=	$edureqid;
 		$edureq['name']		=	$edureqname;
 		$comdata['edu_req']	=	$edureq;
-		// 
+		// 企业福利
 		$job_welfare  =  $cache['comdata']['job_welfare'];
 		if(!empty($job_welfare)){
-		    $arrwelfare[] = array('id'=>0,'name'=>yun_at('wap_js_00075'));
+		    $arrwelfare[] = array('id'=>0,'name'=>'全部');
 		    foreach($job_welfare as $v){
 		        $arrwelfare[]	=	array('id'=>$v,'name'=>$cache['comclass_name'][$v]);
 		    }
@@ -894,11 +894,11 @@ class public_controller extends wxapp_controller{
 	}
 
 
-	function keyword_action(){  // hot keywords
+	function keyword_action(){  //关键字展示
         include PLUS_PATH."keyword.cache.php";
         if(is_array($keyword)){
             foreach($keyword as $k=>$v){
-                if($v['type']==$_POST['type']&&$v['tuijian']=='1' && count($key_name) < 12){// max 12 hot keywords
+                if($v['type']==$_POST['type']&&$v['tuijian']=='1' && count($key_name) < 12){// 热搜关键词最多展示12个
                     $key_name[]	=	$v['key_name'];
                 }
             }
@@ -906,13 +906,15 @@ class public_controller extends wxapp_controller{
         $data['keyword']    = $key_name;
         $this->render_json(0,'ok',$data['keyword']);
 	}
-	function group_action(){  // keyword groups
+	function group_action(){  //关键字类别
 	    include(PLUS_PATH.'group.cache.php');
 		$data['group_index']	=	$group_index;
 	    $data['group_name']		=	$group_name;
 	    $this->render_json(0,'ok',$data);
 	}
-	
+	/**
+	 * 查询分站数据
+	 */
 	function site_action(){
 	    
 	    include(PLUS_PATH."domain_cache.php");
@@ -975,7 +977,7 @@ class public_controller extends wxapp_controller{
 	    }
 	    if (!empty($hydomain)){
 	        $site[]  = array(
-	            'letter'  =>  yun_at('wap_00507'),
+	            'letter'  =>  '行业分站',
 	            'data'    =>  $hydomain
 	        );
 	    }
@@ -985,7 +987,9 @@ class public_controller extends wxapp_controller{
 	    
 	    $this->render_json(0, 'ok', $data);
 	}
-	
+	/**
+	 * 获取举报简历原因
+	 */
 	function getReportReason_action(){
 	    
 	    $cacheM  =  $this->MODEL('cache');
@@ -1001,7 +1005,9 @@ class public_controller extends wxapp_controller{
 	    $data['reason'] = $reason;
 	    $this->render_json(0, 'ok', $data);
 	}
-    
+    /**
+     * 获取举报职位原因
+     */
     function getjobReportReason_action(){
 
         $cacheM  =  $this->MODEL('cache');
@@ -1018,7 +1024,9 @@ class public_controller extends wxapp_controller{
         $this->render_json(0, 'ok', $data);
     }
 
-	
+	/**
+     * 获取邀请注册模板列表
+     */
     function getInviteRegHbList_action()
     {
         $whbM   =   $this->MODEL('whb');

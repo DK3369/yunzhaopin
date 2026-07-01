@@ -1,0 +1,4 @@
+interface:
+  display_name: "I18n Migration"
+  short_description: "Safe PHPYun multilingual migration."
+  default_prompt: "Use this skill to plan or implement i18n changes in the PHPYun repository."

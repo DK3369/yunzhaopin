@@ -1,28 +1,28 @@
 <template>
     <div class="tableDome" style="top: 40px;">
         <div class="tableDome_tip">
-            <el-alert title="{yun:}t key='admin_system_00284'{/yun}" type="success" :closable="false">
+            <el-alert :title="lc('admin_system_00284')" type="success" :closable="false">
             </el-alert>
         </div>
         <div class="moduleTable">
             <table class="tableVue">
                 <thead>
                 <tr align="left">
-                    <th width="140">{yun:}t key='member_com_00021'{/yun}</th>
-                    <th width="450">{yun:}t key='member_user_00181'{/yun}</th>
-                    <th width="200">{yun:}t key='member_com_00207'{/yun}</th>
+                    <th width="140">{{ lc('member_com_00021') }}</th>
+                    <th width="450">{{ lc('member_user_00181') }}</th>
+                    <th width="200">{{ lc('member_com_00207') }}</th>
                 </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_system_00688'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_system_00688') }}</div>
                         </td>
                         <td>
                             <div class="TableSelect">
-                                <el-select v-model="infoData.linktype" placeholder="{yun:}t key='wap_user_00100'{/yun}">
-                                    <el-option label="{yun:}t key='admin_01013'{/yun}" value="1"></el-option>
-                                    <el-option label="{yun:}t key='admin_00100'{/yun}" value="2"></el-option>
+                                <el-select v-model="infoData.linktype" :placeholder="lc('wap_user_00100')">
+                                    <el-option :label="lc('admin_01013')" value="1"></el-option>
+                                    <el-option :label="lc('admin_00100')" value="2"></el-option>
                                 </el-select>
                             </div>
                         </td>
@@ -30,7 +30,7 @@
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_system_00292'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_system_00292') }}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
@@ -39,13 +39,13 @@
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>{yun:}t key='admin_system_00285'{/yun}</span>
+                                <span>{{ lc('admin_system_00285') }}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_00101'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_00101') }}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
@@ -54,17 +54,17 @@
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>{yun:}t key='admin_01009'{/yun}</span>
+                                <span>{{ lc('admin_01009') }}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_system_00291'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_system_00291') }}</div>
                         </td>
                         <td>
                             <div class="TableSelect">
-                                <el-select v-model="infoData.did" size="small" slot="prepend" placeholder="{yun:}t key='wap_user_00100'{/yun}">
+                                <el-select v-model="infoData.did" size="small" slot="prepend" :placeholder="lc('wap_user_00100')">
                                     <el-option v-for="item in domainData" :key="item.value" :label="item.label" :value="item.value"></el-option>
                                 </el-select>
                             </div>
@@ -73,13 +73,13 @@
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_user_00126'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_user_00126') }}</div>
                         </td>
                         <td>
                             <div class="TableSelect">
-                                <el-select v-model="infoData.didtype" placeholder="{yun:}t key='wap_user_00100'{/yun}">
-                                    <el-option label="{yun:}t key='admin_system_00290'{/yun}" value="1"></el-option>
-                                    <el-option label="{yun:}t key='admin_system_00288'{/yun}" value="2"></el-option>
+                                <el-select v-model="infoData.didtype" :placeholder="lc('wap_user_00100')">
+                                    <el-option :label="lc('admin_system_00290')" value="1"></el-option>
+                                    <el-option :label="lc('admin_system_00288')" value="2"></el-option>
                                 </el-select>
                             </div>
                         </td>
@@ -87,19 +87,19 @@
                     </tr>
                     <tr v-show="infoData.linktype == 2">
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_00165'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_00165') }}</div>
                         </td>
                         <td>
                             <div class="TableSelect">
                                 <el-radio-group v-model="infoData.imgtype">
-                                    <el-radio label="1">{yun:}t key='wap_00540'{/yun}</el-radio>
-                                    <el-radio label="2">{yun:}t key='admin_01010'{/yun}</el-radio>
+                                    <el-radio label="1">{{ lc('wap_00540') }}</el-radio>
+                                    <el-radio label="2">{{ lc('admin_01010') }}</el-radio>
                                 </el-radio-group>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>{yun:}t key='admin_01011'{/yun}</span>
+                                <span>{{ lc('admin_01011') }}</span>
                             </div>
                         </td>
                     </tr>
@@ -116,7 +116,7 @@
                                   :on-change="uploadChange"
                                 >
                                   <img v-if="infoData.imgurl" :src="infoData.imgurl" class="avatar" width="160" height="50">
-                                  <el-button size="small" type="primary">{yun:}t key='wap_user_00097'{/yun}</el-button>
+                                  <el-button size="small" type="primary">{{ lc('wap_user_00097') }}</el-button>
                                 </el-upload>
                             </div>
                         </td>
@@ -133,13 +133,13 @@
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>{yun:}t key='admin_01012'{/yun}</span>
+                                <span>{{ lc('admin_01012') }}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='member_com_00022'{/yun}</div>
+                            <div class="TableTite">{{ lc('member_com_00022') }}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
@@ -148,7 +148,7 @@
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>{yun:}t key='admin_system_00289'{/yun}</span>
+                                <span>{{ lc('admin_system_00289') }}</span>
                             </div>
                         </td>
                     </tr>
@@ -170,10 +170,10 @@ module.exports = {
         link_id: {
             handler(newValue, oldValue) {
                 if (newValue > 0) {
-                    this.btnTis = "{yun:}t key='member_user_00288'{/yun}";
+                    this.btnTis = lc('member_user_00288');
                     this.getInfo();
                 }else{
-                    this.btnTis = "{yun:}t key='admin_00305'{/yun}";
+                    this.btnTis = lc('admin_00305');
                     this.infoData = {
                         linktype: '',
                         linkname: '',
@@ -207,7 +207,7 @@ module.exports = {
             },
             domainData: {},
             files: [],
-            btnTis: "{yun:}t key='admin_00305'{/yun}",
+            btnTis: lc('admin_00305'),
 			save_load:false,
         }
     },
@@ -251,7 +251,7 @@ module.exports = {
             let that = this;
             let formData = new FormData();
             if (that.infoData.linktype == ''){
-                message.error("{yun:}t key='admin_system_00287'{/yun}");
+                message.error(lc('admin_system_00287'));
                 return false;
             }
             if (that.infoData.linkname == '') {
@@ -259,7 +259,7 @@ module.exports = {
                 return false;
             }
             if (that.infoData.linkurl == '') {
-                message.error("{yun:}t key='admin_system_00286'{/yun}");
+                message.error(lc('admin_system_00286'));
                 return false;
             }
             if (that.infoData.didtype == '') {

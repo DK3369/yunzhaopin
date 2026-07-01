@@ -4,15 +4,15 @@
             <div class="moduleSeachInpt">
             </div>
             <div class="moduleSeachButn">
-                <el-button type="primary" icon="el-icon-document-add" size="mini" @click="dialogAdd = true">{yun:}t key='admin_00197'{/yun}</el-button>
+                <el-button type="primary" icon="el-icon-document-add" size="mini" @click="dialogAdd = true">{{ lc('admin_00197') }}</el-button>
             </div>
         </div>
         <div class="moduleElTable">
             <el-table :data="list" border style="width: 100%"
                       :header-cell-style="{background:'#f5f7fa',color:'#606266'}" height="100%" v-loading="loading" :empty-text="emptytext">
-                <el-table-column prop="id" label="{yun:}t key='admin_system_00098'{/yun}" width="100">
+                <el-table-column prop="id" :label="lc('admin_system_00098')" width="100">
                 </el-table-column>
-                <el-table-column prop="typename" label="{yun:}t key='admin_system_00357'{/yun}">
+                <el-table-column prop="typename" :label="lc('admin_system_00357')">
                     <template slot-scope="scope">
                         <div class="moduleProps moduleTrButn" v-if="scope.row[scope.column.property + 'isShow']">
                             <el-input :ref="scope.column.property + scope.$index" :id="scope.column.property + scope.$index"
@@ -24,10 +24,10 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column fixed="right" label="{yun:}t key='member_user_00048'{/yun}" width="110">
+                <el-table-column fixed="right" :label="lc('member_user_00048')" width="110">
                     <template slot-scope="scope">
                         <div class="cz_button">
-                            <el-button type="danger" size="small" @click="delanv(scope.$index)">{yun:}t key='common.delete'{/yun}</el-button>
+                            <el-button type="danger" size="small" @click="delanv(scope.$index)">{{ lc('common.delete') }}</el-button>
                         </div>
                     </template>
                 </el-table-column>
@@ -35,16 +35,16 @@
         </div>
 
         <div class="modluDrawer">
-            <el-dialog title="{yun:}t key='admin_00197'{/yun}" :visible.sync="dialogAdd" :with-header="true" :append-to-body="false"
+            <el-dialog :title="lc('admin_00197')" :visible.sync="dialogAdd" :with-header="true" :append-to-body="false"
                        :show-close="true" width="30%" :modal="false">
                 <el-form :model="ruleForm" ref="ruleForm" label-width="100px" class="demo-ruleForm">
-                    <el-form-item label="{yun:}t key='admin_system_00357'{/yun}" prop="name">
+                    <el-form-item :label="lc('admin_system_00357')" prop="name">
                         <el-input v-model="ruleForm.typename"></el-input>
                     </el-form-item>
                 </el-form>
                 <span slot="footer" class="dialog-footer">
-                    <el-button type="primary" @click="submitForm('ruleForm')" :disabled="saveLoading">{yun:}t key='wap_js_00091'{/yun}</el-button>
-                    <el-button @click="dialogAdd = false">{yun:}t key='common.cancel'{/yun}</el-button>
+                    <el-button type="primary" @click="submitForm('ruleForm')" :disabled="saveLoading">{{ lc('wap_js_00091') }}</el-button>
+                    <el-button @click="dialogAdd = false">{{ lc('common.cancel') }}</el-button>
                 </span>
             </el-dialog>
         </div>
@@ -55,7 +55,7 @@
     module.exports = {
         data: function () {
             return {
-                emptytext: "{yun:}t key='wap_js_00113'{/yun}",
+                emptytext: lc('wap_js_00113'),
                 loading: false,
                 list: [],
 
@@ -78,7 +78,7 @@
                 let that = this,
                     params = {};
                 that.loading = true;
-                that.emptytext = "{yun:}t key='admin_user_weipin_00026'{/yun}";
+                that.emptytext = lc('admin_user_weipin_00026');
                 httpPost('m=system&c=set_navigation&a=type', params).then(function (response) {
                     let res = response.data,
                         data = res.data;
@@ -92,7 +92,7 @@
                     that.list = list;
                     that.loading = false;
                     if (that.list.length === 0){
-                        that.emptytext = "{yun:}t key='wap_js_00113'{/yun}";
+                        that.emptytext = lc('wap_js_00113');
                     }
                 })
             },
@@ -127,7 +127,7 @@
                 params[column.property] = row[column.property];
 
                 if (row[column.property] == '') {
-                    message.warning("{yun:}t key='admin_01393'{/yun}");
+                    message.warning(lc('admin_01393'));
                     return false;
                 }
 
@@ -151,7 +151,7 @@
                     params = that.ruleForm;
 
                 if (typeof params.typename == 'undefined' || params.typename == '') {
-                    message.warning("{yun:}t key='admin_01393'{/yun}");
+                    message.warning(lc('admin_01393'));
                     return;
                 }
 

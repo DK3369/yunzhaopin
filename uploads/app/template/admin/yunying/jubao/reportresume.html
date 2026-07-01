@@ -116,7 +116,7 @@
             <el-dialog :title="lc('admin_01180')" :visible.sync="statusBox" :with-header="true" :modal-append-to-body="false"
                 :show-close="true" width="500px">
                 <el-form label-width="110px">
-                    <el-form-item :label="lc('admin_html_00017')">
+                    <el-form-item :label="lc('admin_yunying_00110') + integral_pricename">
                         <el-radio v-model="datafh" label="1">{{ lc('common_02085') }}</el-radio>
                         <el-radio v-model="datafh" label="2">{{ lc('common_02063') }}</el-radio>
                     </el-form-item>
@@ -140,7 +140,7 @@
 		    <el-dialog :title="lc('admin_yunying_00105')" :visible.sync="statusAllBox" :with-header="true" :modal-append-to-body="false"
 		        :show-close="true" width="30%">
 		        <el-form label-width="130px">
-					<el-form-item :label="lc('admin_html_00017')">
+					<el-form-item :label="lc('admin_yunying_00110') + integral_pricename">
 						<el-radio v-model="datafh" label="1">{{ lc('common_02085') }}</el-radio>
 						<el-radio v-model="datafh" label="2">{{ lc('common_02063') }}</el-radio>
 					</el-form-item>
@@ -231,7 +231,7 @@
 					let params = {
 				        rid: that.idArr,
 				    }
-					let msg = '删除后将返还回数据或者下载花费，确定要删除吗';
+					let msg = lc('admin_01191');
 					delConfirm(this, params, function (params) {
 					    httpPost('m=yunying&c=report_resume&a=delresumeall', params).then(function(res) {
 					        if (res.data.error > 0) {
@@ -368,7 +368,7 @@
                         }
                         that.loading = false;
                         if (that.list.length === 0) {
-                            that.dataText = "暂无数据";
+                            that.dataText = lc('wap_js_00113');
                         }
                     })
                 },
@@ -424,14 +424,14 @@
 
                     if (typeof idx == 'undefined') { // 批量删除
                         params.del = this.idArr;
-                        msg = '你确定要删除选中项吗？';
+                        msg = lc('common_00853');
                     } else {// 单个删除
                         params.del = that.list[idx].id;
-                        msg = '你确定要删除当前项吗？';
+                        msg = lc('admin_00333');
                     }
                     if (type) {
                         params.type = type;
-						msg = '批量删除将会删除该简历的所有举报 , 确定要删除吗？';
+						msg = lc('admin_yunying_00200');
                     }
                     delConfirm(this, params, function (params) {
                         httpPost('m=yunying&c=report_resume&a=del', params).then(function(res) {
@@ -452,7 +452,7 @@
                         params.id = row.id;
                         params.eid = row.eid;
                         params.uid = row.c_uid;
-					let msg = '删除后将返还回数据或者下载花费，确定要删除吗？';
+					let msg = lc('admin_01193');
                     delConfirm(this, params, function (params) {
                         httpPost('m=yunying&c=report_resume&a=delresume', params).then(function(res) {
                             if (res.data.error > 0) {

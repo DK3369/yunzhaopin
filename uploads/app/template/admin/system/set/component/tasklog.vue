@@ -3,17 +3,17 @@
         <div class="moduleSeachs">
             <div class="moduleSeachleft">
                 <div class="tableSeachInpt" style="margin-bottom: 0px;;">
-                    <el-input v-model="keyword" placeholder="{yun:}t key='admin_00340'{/yun}" size="small" prefix-icon="el-icon-search" clearable>
+                    <el-input v-model="keyword" :placeholder="lc('admin_00340')" size="small" prefix-icon="el-icon-search" clearable>
                     </el-input>
                 </div>
                 <div class="tableSeachInpt" style="margin-bottom: 0px;">
-                    <el-date-picker v-model="time" size="small" type="daterange" range-separator="{yun:}t key='admin_company_00019'{/yun}"
-                        start-placeholder="{yun:}t key='admin_00343'{/yun}" end-placeholder="{yun:}t key='admin_00344'{/yun}" value-format="yyyy-MM-dd"
+                    <el-date-picker v-model="time" size="small" type="daterange" :range-separator="lc('admin_company_00019')"
+                        :start-placeholder="lc('admin_00343')" :end-placeholder="lc('admin_00344')" value-format="yyyy-MM-dd"
                         style="margin-right: 10px; text-align: left;" @change="search">
                     </el-date-picker>
                 </div>
                 <div class="tableSeachInpt" style="margin-bottom: 0px;">
-                    <el-button type="primary" icon="el-icon-search" size="mini" @click="search">{yun:}t key='admin_user_weipin_00049'{/yun}</el-button>
+                    <el-button type="primary" icon="el-icon-search" size="mini" @click="search">{{ lc('admin_user_weipin_00049') }}</el-button>
                 </div>
             </div>
         </div>
@@ -24,16 +24,16 @@
                 :default-sort="{ prop: 'id', order: 'descending' }" @sort-change='sortChange' v-loading="loading" :empty-text="emptytext">
                 <el-table-column type="selection" width="55">
                 </el-table-column>
-                <el-table-column prop="id" sortable="custom" label="{yun:}t key='member_com_00345'{/yun}" width="140">
+                <el-table-column prop="id" sortable="custom" :label="lc('member_com_00345')" width="140">
                 </el-table-column>
-                <el-table-column prop="cron_name" label="{yun:}t key='admin_00981'{/yun}">
+                <el-table-column prop="cron_name" :label="lc('admin_00981')">
                 </el-table-column>
-                <el-table-column prop="ctime_n" label="{yun:}t key='admin_00982'{/yun}" width="220">
+                <el-table-column prop="ctime_n" :label="lc('admin_00982')" width="220">
                 </el-table-column>
-                <el-table-column fixed="right" label="{yun:}t key='member_user_00048'{/yun}" width="80">
+                <el-table-column fixed="right" :label="lc('member_user_00048')" width="80">
                     <template slot-scope="scope">
                         <div class="cz_button">
-                            <el-button size="mini" type="danger" @click="delrow(scope.row)">{yun:}t key='common.delete'{/yun}</el-button>
+                            <el-button size="mini" type="danger" @click="delrow(scope.row)">{{ lc('common.delete') }}</el-button>
                         </div>
 
                     </template>
@@ -42,8 +42,8 @@
         </div>
         <div class="modulePaging">
             <div class="modulecz modulePagButn">
-                <el-checkbox v-model="checkedAll" @change="selectAllBottom">{yun:}t key='wap_js_00074'{/yun}</el-checkbox>
-                <el-button size="mini" @click="delAllBottom">{yun:}t key='member_com_00055'{/yun}</el-button>
+                <el-checkbox v-model="checkedAll" @change="selectAllBottom">{{ lc('wap_js_00074') }}</el-checkbox>
+                <el-button size="mini" @click="delAllBottom">{{ lc('member_com_00055') }}</el-button>
             </div>
             <div class="modulePagNum">
                 <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
@@ -58,7 +58,7 @@
 module.exports = {
     data: function () {
         return {
-            emptytext: "{yun:}t key='wap_js_00113'{/yun}",
+            emptytext: lc('wap_js_00113'),
             loading: false,
             checkedAll: false,
             selectedItem: [],
@@ -139,7 +139,7 @@ module.exports = {
                 params.t = that.sort_col
             }
             that.loading = true;
-            that.emptytext = "{yun:}t key='admin_user_weipin_00026'{/yun}";
+            that.emptytext = lc('admin_user_weipin_00026');
             httpPost('m=system&c=set_cron&a=cronLog', params).then(function (result) {
                 var res = result.data
                 if (res.error == 0) {
@@ -153,7 +153,7 @@ module.exports = {
                     }
                     that.loading = false;
                     if (that.tableData.length === 0){
-                        that.emptytext = "{yun:}t key='wap_js_00113'{/yun}";
+                        that.emptytext = lc('wap_js_00113');
                     }
                 }
             }).catch(function (e) {
@@ -165,7 +165,7 @@ module.exports = {
         },
         delAllBottom() {
             if (!this.selectedItem.length) {
-                this.$message({ showClose: true, message: "{yun:}t key='admin_user_weipin_00005'{/yun}", type: 'warning' });
+                this.$message({ showClose: true, message: lc('admin_user_weipin_00005'), type: 'warning' });
                 return false;
             }
             delConfirm(this, this.selectedItem, this.delete);
@@ -177,7 +177,7 @@ module.exports = {
             };
             httpPost('m=system&c=set_cron&a=delLog', params).then(function (response) {
                 if (response.data.error == 0) {
-                    message.success("{yun:}t key='wap_user_00264'{/yun}", that.getList());
+                    message.success(lc('wap_user_00264'), that.getList());
                 } else {
                     message.error(response.data.msg);
                 }

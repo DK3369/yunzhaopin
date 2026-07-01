@@ -2,43 +2,43 @@
     <div>
         <div>
             <div class="hydialog_item" style="display: flex; align-items: center;">
-                <span class="item_span" style="margin-top: -3px;">{yun:}t key='admin_system_00092'{/yun}</span>
+                <span class="item_span" style="margin-top: -3px;">{{ lc('admin_system_00092') }}</span>
                 <el-radio-group v-model="ruleForm.ctype" @change="handleChange" style="flex: 1;">
-                    <el-radio label="1">{yun:}t key='admin_00290'{/yun}</el-radio>
-                    <el-radio label="2">{yun:}t key='admin_00291'{/yun}</el-radio>
+                    <el-radio label="1">{{ lc('admin_00290') }}</el-radio>
+                    <el-radio label="2">{{ lc('admin_00291') }}</el-radio>
                 </el-radio-group>
             </div>
             <el-tabs v-model="ruleForm.ctype">
                 <el-tab-pane label="1" name="1">
                     <div class="dialog_item">
-                        <span class="item_span">{yun:}t key='admin_00260'{/yun}</span>
+                        <span class="item_span">{{ lc('admin_00260') }}</span>
                         <el-input type="textarea" v-model="ruleForm.name" style="flex: 1;"></el-input>
                     </div>
                     <div class="dialog_item">
-                        <span class="item_span">{yun:}t key='admin_system_00093'{/yun}</span>
+                        <span class="item_span">{{ lc('admin_system_00093') }}</span>
                         <el-input type="textarea" v-model="ruleForm.str" style="flex: 1;"></el-input>
                     </div>
                 </el-tab-pane>
                 <el-tab-pane label="2" name="2">
                     <div class="dialog_item">
-                        <span class="item_span">{yun:}t key='admin_system_00094'{/yun}</span>
-                        <el-select v-model="ruleForm.nid" placeholder="{yun:}t key='wap_user_00100'{/yun}" style="flex: 1;">
+                        <span class="item_span">{{ lc('admin_system_00094') }}</span>
+                        <el-select v-model="ruleForm.nid" :placeholder="lc('wap_user_00100')" style="flex: 1;">
                             <el-option v-for="item in position" :key="item.id" :label="item.name" :value="item.id"></el-option>
                         </el-select>
                     </div>
                     <div class="dialog_item">
-                        <span class="item_span">{yun:}t key='admin_00260'{/yun}</span>
+                        <span class="item_span">{{ lc('admin_00260') }}</span>
                         <el-input type="textarea" v-model="ruleForm.name" style="flex: 1;"></el-input>
                     </div>
                 </el-tab-pane>
             </el-tabs>
             <div style="overflow: hidden;position: relative;padding-left: 74px;">
-                <i class="el-icon-info" style="margin-top: 10px;">{yun:}t key='admin_system_00091'{/yun}</i>
+                <i class="el-icon-info" style="margin-top: 10px;">{{ lc('admin_system_00091') }}</i>
             </div>
             
         </div>
         <div slot="footer" class="dialog-footer">
-            <el-button type="primary" @click="submitForm('ruleForm')" :disabled="submitLoading">{yun:}t key='wap_js_00091'{/yun}</el-button>
+            <el-button type="primary" @click="submitForm('ruleForm')" :disabled="submitLoading">{{ lc('wap_js_00091') }}</el-button>
         </div>
     </div>
 </template>
@@ -72,15 +72,15 @@ module.exports = {
             params.str = params.str.split("\n").join("-");
 
             if (params.ctype == '' || params.ctype == null) {
-                message.error(window.yunAdminT("{yun:}t key='admin_system_00095'{/yun}"));
+                message.error(window.yunAdminT(lc('admin_system_00095')));
                 return;
             }
             if (params.name == '') {
-                message.error(window.yunAdminT("{yun:}t key='admin_00208'{/yun}"));
+                message.error(window.yunAdminT(lc('admin_00208')));
                 return;
             }
             if (params.ctype == '1' && $.trim(params.str) == '') {
-                message.error(window.yunAdminT("{yun:}t key='admin_system_00096'{/yun}"));
+                message.error(window.yunAdminT(lc('admin_system_00096')));
                 return;
             }
             _this.submitLoading = true;

@@ -40,43 +40,43 @@ class index_controller extends user_controller{
 				$top_day = (int)(($expect['topdate'] - strtotime(date('Y-m-d')))/86400);
 				$resume['top_day']      =   $top_day>0?$top_day:0;
 			}
-            // ，
+            // 根据简历完成情况，提示完善简历
             if ($expect['integrity'] > 0 && $expect['integrity'] < 100){
                 $ur  =  $resumeM->getUserResumeInfo(array('uid' => $this->member['uid'],'eid'=>$expect['id']));
                 if ($ur['expect'] == 0){
-                    $resume['wstitle'] = yun_at('wap_00460');
+                    $resume['wstitle'] = '求职意向';
                     $resume['wsappurl']= '/pson/pages/usermember/addexpect/index?id='.$expect['id'];
                     $resume['wswapurl']= 'index.php?c=addexpect&eid=' .$expect['id'];
                     $resume['wsts'] = 1;
                 }elseif ($ur['work'] == 0){
-                    $resume['wstitle'] =yun_at('wap_00457');
+                    $resume['wstitle'] ='工作经历';
                     $resume['wsappurl']= '/pson/pages/usermember/addresume/addresumeson?type=work&eid=' .$expect['id'];
                     $resume['wswapurl']= 'index.php?c=addresumeson&type=work&eid=' .$expect['id'];
                     $resume['wsts'] = 1;
                 }elseif ($ur['edu'] == 0){
-                    $resume['wstitle'] =yun_at('wap_00459');
+                    $resume['wstitle'] ='教育经历';
                     $resume['wsappurl']= '/pson/pages/usermember/addresume/addresumeson?type=edu&eid=' .$expect['id'];
                     $resume['wswapurl']= 'index.php?c=addresumeson&type=edu&eid=' .$expect['id'];
                     $resume['wsts'] = 1;
                 }elseif ($ur['project'] == 0){
-                    $resume['wstitle'] =yun_at('wap_00465');
+                    $resume['wstitle'] ='项目经历';
                     $resume['wsappurl']= '/pson/pages/usermember/addresume/addresumeson?type=project&eid=' .$expect['id'];
                     $resume['wswapurl']= 'index.php?c=addresumeson&type=project&eid=' .$expect['id'];
                     $resume['wsts'] = 2;
                 }elseif ($ur['training'] == 0){
-                    $resume['wstitle'] =yun_at('wap_00455');
+                    $resume['wstitle'] ='培训经历';
                     $resume['wsappurl']= '/pson/pages/usermember/addresume/addresumeson?type=training&eid=' .$expect['id'];
                     $resume['wswapurl']= 'index.php?c=addresumeson&type=training&eid=' .$expect['id'];
                     $resume['wsts'] = 2;
                 }elseif ($ur['skill'] == 0){
-                    $resume['wstitle'] =yun_at('wap_00461');
+                    $resume['wstitle'] ='职业技能';
                     $resume['wsappurl']= '/pson/pages/usermember/addresume/addresumeson?type=skill&eid=' .$expect['id'];
                     $resume['wswapurl']= 'index.php?c=addresumeson&type=skill&eid=' .$expect['id'];
                     $resume['wsts'] = 2;
                 }
             }
 			if($expect['status']==2 || $expect['status']==3){
-				$resume['wstitle'] =yun_at('wap_user_00215');
+				$resume['wstitle'] ='隐私设置';
                 $resume['wsappurl']= '/pson/pages/usermember/privacy/index';
                 $resume['wswapurl']= 'index.php?c=privacy';
                 $resume['wsts'] = 3;
@@ -96,7 +96,7 @@ class index_controller extends user_controller{
 
 	 	$comnum		=	$companyM->getCompanyNum(array('uid'=>$this->member['uid']));
 		
-		// 
+		//对我感兴趣 总数
 
 	 	$looknum	=	$this->MODEL('lookresume')->getLookNum(array('uid'=>$this->member['uid'],'status'=> 0, 'usertype' => '2'));
 	 	$data['looknum']	=	$looknum;
@@ -118,7 +118,7 @@ class index_controller extends user_controller{
 		    'top_price'=>  $this->config['integral_resume_top'],
 		    'ask'      =>  isset($this->config['sy_ask_web']) ? $this->config['sy_ask_web'] : 2
 		);
-		// 
+		// 强制关注公众号
 		if(isset($this->config['user_gzgzh']) && $this->config['user_gzgzh'] == 1){
 		    $data['gzhurl'] = Url('wap', array('c'=>'ajax','a'=>'gzhqrcode','token'=>$this->member['gzhtoken']));
 		    $data['config']['user_gzgzh'] = 1;
@@ -141,7 +141,7 @@ class index_controller extends user_controller{
 		
 	    $this -> render_json(0, 'ok', $data);
 	}
-	// ，TODO:
+	//签到，TODO:会员中心
 	function sign_action(){
 		
 		$userinfoM	=	$this -> MODEL('userinfo');
@@ -166,11 +166,11 @@ class index_controller extends user_controller{
 					$integral	=	$this->config['integral_signin'];
 				}
 				$signday	=	$member['signday']+1;
-				$msg		=	yun_at('wap_00128').$signday.yun_at('wap_01197');
+				$msg		=	'连续签到'.$signday."天";
 			}else{
 				$signday	=	'1';
 				$integral	=	$this->config['integral_signin'];
-				$msg		=	yun_at('wap_00125');
+				$msg		=	'第一次签到';
 			}
 			$arr	=	array();
 			
@@ -182,15 +182,15 @@ class index_controller extends user_controller{
 				
 				$userinfoM -> upInfo(array('uid'=>$this->member['uid']),array('signday'=>$signday,'signdays'=>array('+','1')));
 				
-				$data['msg']	=	yun_at('wap_01296').$integral.$this->config['integral_pricename'];
+				$data['msg']	=	'签到成功！+'.$integral.$this->config['integral_pricename'];
 				$data['error']	=	1;
 				
 			}else{
-				$data['msg']	=	yun_at('wap_01297');
+				$data['msg']	=	'今天已签到';
 				$data['error']	=	2;
 			}
 		}else{
-			$data['msg']	=	yun_at('wap_01292');
+			$data['msg']	=	'签到失败！';
 			$data['error']	=	2;
 		}
 		$this->render_json($data['error'],$data['msg'],$data);

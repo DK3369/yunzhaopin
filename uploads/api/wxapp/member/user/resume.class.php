@@ -1,7 +1,7 @@
 <?php
 
 class resume_controller extends user_controller{
-    // ，
+    //添加简历页面，判断是否满足条件并返回基本信息
 	function addresume_action()
 	{
 		$resumeM	=   $this		->	MODEL('resume');
@@ -24,7 +24,7 @@ class resume_controller extends user_controller{
 		}
 		
 	}
-	// 
+	//简历管理
 	function resume_action()
 	{
 		$resumeM	=	$this->MODEL('resume');
@@ -50,13 +50,13 @@ class resume_controller extends user_controller{
 		foreach($rows as $key=>$val){
 		    $r['id']  =  $val['id'];
 			if($val['defaults']){
-			    $r['name']	=  $val['name']. yun_at('api_wxapp_00039');
+			    $r['name']	=  $val['name'].'(默认)';
 			}else{
 			    $r['name']	=  $val['name'];
 			}
 			$elist[] = $r;
 		}
-        // 
+        //判断简历最大数量
         if (!empty($this->config['user_number'])){
 
             $num     =  $resumeM->getExpectNum(array('uid'=>$this->member['uid']));
@@ -85,14 +85,14 @@ class resume_controller extends user_controller{
 
 		$this->render_json(1,'', $data);
 	}
-    // 
+    //添加简历前检查
 	function isaddresume_action()
 	{
 	    $resumeM	=	$this		->	MODEL('resume');
 	    $return		=	$resumeM	->	addResumeRequireCheck(array('uid'=>$this->member['uid']), 'wxapp');
 		$this->render_json($return['err'],$return['msg']);
 	}
-	/* wxapp: expect job edit */
+	/*wxapp意向职位修改页面显示*/
 
 	function expectedit_action()
 	{
@@ -125,7 +125,7 @@ class resume_controller extends user_controller{
 		$this->render_json(1,'',$list);
 	}
 	
-	/* wxapp: resume section edit */
+	/*wxapp工作经历、培训经历。。。修改页面*/
 	function addresumeson_action()
 	{
 		if(!in_array($_POST['table'],array('expect','desc','cert','doc','edu','other','project','show','skill','training','work'))){
@@ -146,7 +146,7 @@ class resume_controller extends user_controller{
 
 			$desc['tag']=$tag?$tag:array();
 
-			// 
+			//系统的标签
 			$cacheM		=  $this->MODEL('cache');
 		
 			$cacheList	=  $cacheM -> GetCache('user');
@@ -192,7 +192,7 @@ class resume_controller extends user_controller{
 		}
 		$this->render_json(1,'',$data);
 	}
-    /* wxapp: create resume save */
+    /*wxapp保创建简历保存*/
     function saveaddresume_action()
     {
 
@@ -236,7 +236,7 @@ class resume_controller extends user_controller{
             'source'         =>  $_POST['source'],
         );
 
-        /* resume: work exp required check */
+        /**************************简历是否必填工作经历*************************************************/
         foreach ($_POST as $pk => $pv) {
             if (strpos($pk, '_') != false) {
 
@@ -250,12 +250,12 @@ class resume_controller extends user_controller{
         }
         if ($this->config['resume_create_exp'] == '1' || $this->config['resume_create_edu'] == '1' || $this->config['resume_create_project'] == '1') {
             if (isset($_POST['presave']) && empty($_POST['eid'])){
-                // 
-                $eData['content']   =   yun_at('member_user_00596');     // 简历备注为未完善
-                $eData['state']     =   0;              // resume pending review
+                // 第一步预创建简历
+                $eData['content']   =   '简历创建未完成，中途退出，信息不完整';     // 简历备注为未完善
+                $eData['state']     =   0;              // 简历状态为未审核
             } else {
 
-                $eData['content']   =   '';             // clear resume note
+                $eData['content']   =   '';             // 取消 简历未备注
             }
         }
 
@@ -274,7 +274,7 @@ class resume_controller extends user_controller{
             }
         }
 
-        /* resume: edu exp required check */
+        /**************************简历是否必填教育经历*************************************************/
         $eduData    =   array();
         if ($this->config['resume_create_edu'] == '1' && $_POST['iscreateedu'] != '2') {
             for ($i = 0; $i < count($_POST['eduname']); $i++) {
@@ -290,7 +290,7 @@ class resume_controller extends user_controller{
             }
         }
 
-        /* resume: project exp required check */
+        /**************************简历是否必填项目经历*************************************************/
         $proData    =   array();
         if ($this->config['resume_create_project'] == '1' && $_POST['iscreatepro'] != '2') {
             for ($i = 0; $i < count($_POST['projectname']); $i++) {
@@ -366,7 +366,7 @@ class resume_controller extends user_controller{
 
         $this->render_json($data['error'],$data['msg'],$data);
     }
-	// 
+	//意向职位保存
 	function saveexpect_action()
 	{
 	    $_POST	  =  $this->post_trim($_POST);
@@ -378,7 +378,7 @@ class resume_controller extends user_controller{
 		if($eid){
 
 		    if (strlen($_POST['name']) > $this->config['sy_rname_num'] * 3 && (int)$this->config['sy_rname_num']>0){
-                $this->render_json(2, yun_at('wap_01808').$this->config['sy_rname_num'].'wap_00982');
+                $this->render_json(2, '求职意向最多'.$this->config['sy_rname_num'].'个字');
             }
 			
 			$expectDate  =  array(
@@ -395,7 +395,7 @@ class resume_controller extends user_controller{
 			foreach ($expectDate as $k=>$v){
 				if (empty($v)){
 					$data['error']=3;
-					$data['msg']=yun_at('wap_01809');
+					$data['msg']='请完善信息！！';
                     $this->render_json($data['error'],$data['msg']);
 				}
 			}
@@ -410,7 +410,7 @@ class resume_controller extends user_controller{
 		}
 		$this->render_json($data['error'],$return['msg']);
 	}
-	// skill,work,project,edu,training,other，descsaveresumeson
+	//保存简历分表 skill,work,project,edu,training,other，desc分表的保存统一使用saveresumeson
 	function saveresumeson_action()
 	{
 		$ResumeM	=	$this->MODEL('resume');
@@ -450,7 +450,7 @@ class resume_controller extends user_controller{
 			$return	=	$ResumeM->upResumeInfo(array('uid'=>$this->member['uid']),array('rData'=>$rData,'utype'=>'user','source'=>$_POST['source']));
 			
 			$data['error']	=	$return['errcode']==9 ? 1 : 2;
-			$data['msg']	=	$return['errcode']==9 ? yun_at('wap_01810') : yun_at('common_06629');
+			$data['msg']	=	$return['errcode']==9 ?"保存成功！":"保存失败！";
 			$this->render_json($data['error'],$data['msg']);
 		}
 
@@ -459,7 +459,7 @@ class resume_controller extends user_controller{
 			if(!in_array($_POST['table'],array('expect','edu','exp','other','project','skill','training','work'))){
 				
 				$data['error']	=	2;
-				$data['msg']	=	yun_at('wap_com_00228');
+				$data['msg']	=	"参数错误";
 				$this->render_json($data['error'],$data['msg']);
 			} 
 			$table	=	"resume_".$_POST['table'];
@@ -482,7 +482,7 @@ class resume_controller extends user_controller{
 			}
 			if($table=='resume_skill'){
 
-				// 
+				//查询修改
 				$resume		 =	$ResumeM->getResumeSkill(array('id'=>$id,'eid'=>$_POST['eid']),'pic');
                 if($_POST['wappic']==1){
                     if ($_POST['preview']){
@@ -608,13 +608,13 @@ class resume_controller extends user_controller{
 			}
 
 			if($table=='resume_work'){
-				// 
+				//计算
 				$workList	=	$ResumeM->getResumeWorks(array('eid'=>(int)$_POST['eid'],'uid'=>$this->member['uid']));
 
 				$whour		=	0;
 				$hour		=	array();
 				foreach($workList as $value){
-					// ()
+					//计算每份工作时长(按月)
 					if ($value['edate']){
 
 						$workTime	=	ceil(($value['edate']-$value['sdate'])/(30*86400));
@@ -624,18 +624,18 @@ class resume_controller extends user_controller{
 					$hour[]			=	$workTime;
 					$whour			+=	$workTime;
 				}
-				// 
+				//更新当前简历时长字段
 				$avghour = ceil($whour/count($hour));
 
 				$ResumeM->upInfo(array('id'=>(int)$_POST['eid'],'uid'=>$this->member['uid']),array('eData'=>array('whour'=>$whour,'avghour'=>$avghour)));
 			}
 
-			$nid?$data['msg']	=	yun_at('wap_01810'):$data['msg']=yun_at('common_06629');
+			$nid?$data['msg']	=	'保存成功！':$data['msg']='保存失败！';
 			$nid?$data['error']	=	'1' : $data['error'] = '2';
 		}
 		$this->render_json($data['error'],$data['msg']);
 	}
-	/* wxapp: refresh resume */
+	/*wxapp简历管理页面刷新*/
 	function refresh_resume_action()
 	{
 		$id						=	(int)$_POST['id'];
@@ -648,10 +648,10 @@ class resume_controller extends user_controller{
 		$ResumeM				=	$this->MODEL('resume');
 		$nid					=   $ResumeM->upInfo($upexpectWhere, array('eData' => $upexpectData, 'port' => $this->port, 'sxlog' => 1));
 		$data['error']			=	$nid? 1 : 2;
-		$data['msg']			=	$nid ? yun_at('wap_01714') : yun_at('wap_01713');
+		$data['msg']			=	$nid? '刷新成功！' : '刷新失败！';
 		$this->render_json($data['error'],$data['msg']);
 	}
-	/* wxapp: set default resume */
+	/*wxapp简历管理页面设置默认*/
 	function default_resume_action()
 	{
 		$id				=	(int)$_POST['id'];
@@ -663,7 +663,7 @@ class resume_controller extends user_controller{
 		$data['msg']	=	$return['msg'];
 		$this->render_json($data['error'],$data['msg']);
 	}
-	/* wxapp: resume privacy */
+	/*wxapp简历管理页面设置是否公开*/
 	function status_resume_action()
 	{
         $status =   $_POST['status'];
@@ -675,16 +675,16 @@ class resume_controller extends user_controller{
             $resumeM->upResumeInfo(array('uid' => $this->member['uid']), array('rData' => array('status' => $status)));
 
             $logM       =   $this->MODEL('log');
-            $logContent =   yun_at('wap_01806');
-            $logDetail  =   yun_at('wap_01811');
+            $logContent =   '简历更新：设置隐私状态';
+            $logDetail  =   '更新简历隐私状态：公开';
             $logM->addMemberLog($this->member['uid'], 1, $logContent, 2, 2, $logDetail);
         }
         $data['error']  =   $return['errcode'] == 9 ? 1 : 2;
-        $data['msg']    =   $return['errcode'] == 9 ? yun_at('model_00011') : yun_at('wap_01715');
+        $data['msg']    =   $return['errcode'] == 9 ? '设置成功！' : '设置失败！';
         $this->render_json($data['error'], $data['msg']);
 	}
-	/* wxapp: delete resume */
-	// del_resume，wap，delResumeFb
+	/*wxapp简历管理页面删除*/
+	//原本的del_resume既可以删除整个简历也可以删除简历附表，现参照wap分开，删除附表为delResumeFb
 	function del_resume_action()
 	{
 		$ResumeM  =  $this->MODEL('resume');
@@ -696,7 +696,7 @@ class resume_controller extends user_controller{
 		$this->render_json($error,$return['msg']);
 	}
 	
-	// ,
+	// 删除简历附表,小程序内需要修改为此方法
 	function delResumeFb_action()
 	{
 	    $table			=	$_POST['table'];
@@ -711,8 +711,8 @@ class resume_controller extends user_controller{
 		$error	  =  $return['errcode']==9 ? 1 : 2;
 		$this->render_json($error,$return['msg']);
 	}
-	/* wxapp: who viewed me */
-	function look_resume_action()
+	/*wxapp谁看过我记录*/
+	function look_resume_action()//简历浏览记录
 	{
 		$LookResumeM		=	$this->MODEL('lookresume');
 		$page				=	$_POST['page'];
@@ -739,8 +739,8 @@ class resume_controller extends user_controller{
 		}
 		$this -> render_json($error,'',$data,$total);
 	}
-	/* wxapp: delete who viewed me */
-	function look_resume_del_action()
+	/*wxapp谁看过我记录删除*/
+	function look_resume_del_action()//删除简历浏览记录
 	{
 		$del	      	=  $_POST['ids'];
 
@@ -750,7 +750,7 @@ class resume_controller extends user_controller{
         $data['error']	=  $return['errcode']==9 ? 1 : 2;
 		$this -> render_json($data['error'],$return['msg'],'');
 	}
-	// 
+	//检查简历创建基本信息
 	function checkMember_action(){
 		$userinfoM	=	$this->MODEL("userinfo");
 		$data	=	array(
@@ -766,7 +766,7 @@ class resume_controller extends user_controller{
 		}
 		
 	}
-	// wap
+	//wap简历置顶
 	function topCheck_action(){
 		$data	=	array(
 			'eid'	=>	$_POST['eid'],
@@ -778,7 +778,7 @@ class resume_controller extends user_controller{
 		
 		$this -> render_json('0',$return['msg']);
 	}
-	// 
+	//个人评价看看别人怎么写
 	function getIntroduceInfo_action(){
 		include PLUS_PATH."introduce.cache.php";
 		
@@ -815,14 +815,14 @@ class resume_controller extends user_controller{
 			
 			$data['id']		=	'';
 			
-			$data['content']	=	yun_at('wap_01812');
+			$data['content']	=	'暂无示例';
 
 		}
 		
 		$this -> render_json(1,'',$data);
 		
 	} 
-	// 
+	//简历发布成功
 	function rcomplete_action(){
 		$data		=	array(
 			'id'	=>	$_POST['eid'],
@@ -847,7 +847,7 @@ class resume_controller extends user_controller{
 		
 		$this -> render_json(1,'',$list);
 	}
-    // 
+    //保存个人作品
 	function showSave_action(){
 		
 		$ResumeM	=	$this->MODEL('resume');
@@ -873,7 +873,7 @@ class resume_controller extends user_controller{
 
                 }
             }else{
-                $this->render_json(2, yun_at('wap_01412'));
+                $this->render_json(2, '请上传图片');
             }
         }else {
             if ($_FILES['show']['tmp_name']) {
@@ -898,7 +898,7 @@ class resume_controller extends user_controller{
 
                 }
             } else {
-                $this->render_json(2, yun_at('wap_01412'));
+                $this->render_json(2, '请上传图片');
             }
         }
 
@@ -917,12 +917,13 @@ class resume_controller extends user_controller{
 		
 		$udata['show']	=  count($list);
 		$ResumeM->upUserResume($udata,array('eid'=>(int)$_POST['eid'],'uid'=>$this->member['uid']));
-		$nid?$data['msg']	=	yun_at('wap_01810'):$data['msg']=yun_at('common_06629');
+		$nid?$data['msg']	=	'保存成功！':$data['msg']='保存失败！';
 		$nid?$data['error']	=	'1' : $data['error'] = '2';
 		$this->render_json($data['error'],$data['msg']);
 	}
     /**
-     * @param array $data file, dir, type, base, preview
+     * 处理单个图片上传
+     * @param file/需上传文件; dir/上传目录; type/上传图片类型; base/需上传base64; preview/pc预览即上传
      */
     private function upload($data = array('file'=>null,'dir'=>null,'type'=>null,'base'=>null,'preview'=>null)){
 

@@ -3,7 +3,7 @@
         <div class="drawerModInfo">
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>{yun:}t key='admin_tool_00467'{/yun}</span>
+                    <span>{{ lc('admin_tool_00467') }}</span>
                 </div>
                 <div class="drawerModInpt">
                     {{tpl_n}}
@@ -12,22 +12,22 @@
             
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>{yun:}t key='member_user_00010'{/yun}</span>
+                    <span>{{ lc('member_user_00010') }}</span>
                 </div>
                 <div class="drawerModInpt">
-					<el-input type="textarea" rows="2" placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="info.content" show-word-limit></el-input>
+					<el-input type="textarea" rows="2" :placeholder="lc('wap_user_00076')" v-model="info.content" show-word-limit></el-input>
                 </div>
             </div>
             
         </div>
         <div class="setBasicButn" style="border: none;">
-            <el-button type="primary" size="medium" @click="saveinfo" :loading="saveloading">{yun:}t key='common.submit'{/yun}</el-button>
+            <el-button type="primary" size="medium" @click="saveinfo" :loading="saveloading">{{ lc('common.submit') }}</el-button>
         </div>
         <div>
             <table width="100%" class="table_form">
                 <tr>
                     <th colspan="2" class="admin_bold_box">
-                        <div class="admin_bold">{yun:}t key='admin_tool_00320'{/yun}</div>
+                        <div class="admin_bold">{{ lc('admin_tool_00320') }}</div>
                     </th>
                 </tr>
                 <tr v-for="(item,index) in tpl_temp" :key="index">

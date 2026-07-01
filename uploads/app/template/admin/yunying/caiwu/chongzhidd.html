@@ -41,7 +41,7 @@
                     </el-select>
                 </div>
                 <div class="tableSeachInptsmalltwo">
-                    <el-date-picker v-model="search.times" type="daterange" align="right" unlink-panels :range-separator="lc('admin_company_00019')" start-:placeholder="lc('admin_00343')" end-:placeholder="lc('admin_00344')" :picker-options="timeOptions" value-format="yyyy-MM-dd" size="small" @change="doUserQuery"></el-date-picker>
+                    <el-date-picker v-model="search.times" type="daterange" align="right" unlink-panels :range-separator="lc('admin_company_00019')" :start-placeholder="lc('admin_00343')" :end-placeholder="lc('admin_00344')" :picker-options="timeOptions" value-format="yyyy-MM-dd" size="small" @change="doUserQuery"></el-date-picker>
                 </div>
                 <div class="newsbtnbox">
                     <el-button type="primary" icon="el-icon-search" size="mini" @click="doUserQuery">{{ lc('admin_user_weipin_00049') }}</el-button>
@@ -191,9 +191,9 @@
                         <el-image v-for="item in htpics" :preview-src-list="yySrcList" style="margin-right: 10px;width: 100px; height: 100px" :src="item.pic_n" :id="item.id"></el-image>
                     </div>
                     <!-- <div class="dd_listbth">
-                        <el-button type="primary" @click="uploadHeTong">上传合同</el-button>
-                        <el-button type="primary" @click="drawer6 = true">修改订单</el-button>
-                        <el-button type="primary" @click="confirmOrder">确认订单</el-button>
+                        <el-button type="primary" @click="uploadHeTong">{{ lc('admin_yunying_00077') }}</el-button>
+                        <el-button type="primary" @click="drawer6 = true">{{ lc('admin_yunying_00080') }}</el-button>
+                        <el-button type="primary" @click="confirmOrder">{{ lc('admin_yunying_00084') }}</el-button>
                     </div> -->
                 </div>
                 <div class="dd_listbth">
@@ -494,7 +494,7 @@
                                 message.error(res.msg)
                             }
                         })
-                    }, '确认收款系统将自动为该用户开通相应服务，是否确认？');
+                    }, lc('admin_01266'));
                 },
                 editOrder() {
                     let id = this.detail.id;
@@ -649,7 +649,7 @@
                     let _this = this;
                     let url = _this.uri + 'finance_company_order&a=htpic_del';
                     let orderid = this.detail.id;
-                    this.$confirm(lc('admin_html_00023'), lc('wap_js_00125'), {
+                    this.$confirm(lc('admin_system_00632'), lc('wap_js_00125'), {
                         confirmButtonText: lc('common_02016'),
                         cancelButtonText: lc('wap_js_00080'),
                         type: 'warning'
@@ -680,15 +680,15 @@
                         file.type === 'image/jpg' || file.type === 'image/png' || file.type === 'image/jpeg' || file.type === 'image/gif';
                     const isLt2M = file.size / 1024 / 1024 < 5;
                     if (!isJPG) {
-                        this.$message.error(lc('admin_html_00020'));
+                        this.$message.error(lc('admin_system_00633'));
                     }
                     if (!isLt2M) {
-                        this.$message.error(lc('admin_html_00021'));
+                        this.$message.error(lc('admin_system_00634'));
                     }
                     return isJPG && isLt2M;
                 },
                 beforeRemove(file, fileList) {
-                    return this.$confirm(`确定移除 ${file.name}？`);
+                    return this.$confirm(lc('admin_yunying_00201', [file.name]));
                 },
                 handleSizeChange(val) {
                     this.pageSize = val;
@@ -751,7 +751,7 @@
                                 message.error(res.msg);
                             }
                         })
-                    }, '你确定要删除选择的消费记录吗？')
+                    }, lc('admin_yunying_00074'))
 
                 },
                 delRow: function (row) {
@@ -767,7 +767,7 @@
                                 message.error(res.msg);
                             }
                         })
-                    }, '你确定要删除选择的消费记录吗？')
+                    }, lc('admin_yunying_00074'))
                 },
                 exportOrder: function () {
                     let _this = this;

@@ -6,30 +6,30 @@
                 <div class="homeTopSubCoy">
                     <div class="homeTopLeList">
                         <div class="homeTopLeLTite">
-                            <div class="homeTopLeLName"><span>{yun:}t key='admin_00083'{/yun}</span></div>
+                            <div class="homeTopLeLName"><span>{{ lc('admin_00083') }}</span></div>
                             <div class="homeTopLeLButn">
-                                <span :class="ordertype=='day'?'spanxz':''" @click="ordertype='day'">{yun:}t key='admin_00091'{/yun}</span>
-                                <span :class="ordertype=='month'?'spanxz':''" @click="ordertype='month';dataChange('month', 'money')">{yun:}t key='admin_user_00147'{/yun}</span>
+                                <span :class="ordertype=='day'?'spanxz':''" @click="ordertype='day'">{{ lc('admin_00091') }}</span>
+                                <span :class="ordertype=='month'?'spanxz':''" @click="ordertype='month';dataChange('month', 'money')">{{ lc('admin_user_00147') }}</span>
                             </div>
                         </div>
                         <div class="homeTopLeMoney" @click="toOrder({order_state:'2'})">
                             <div class="homeTopMonNum"><span>￥</span>{{ordertype=='day'?numdata.moneyTotal:numdata.monthMoneyTotal}}</div>
                             <div class="homeTopMonTxt">
-                                <span>{yun:}t key='admin_01054'{/yun}</span>
+                                <span>{{ lc('admin_01054') }}</span>
                             </div>
                         </div>
                         <div class="homeTopLeTaoc">
                             <div @click="toOrder({order_state:'2',typedd:'1'})">
                                 <span>{{ordertype=='day'?numdata.moneyVip:numdata.monthMoneyVip}}</span>
-                                <b>{yun:}t key='admin_user_company_00034'{/yun}</b>
+                                <b>{{ lc('admin_user_company_00034') }}</b>
                             </div>
                             <div @click="toOrder({order_state:'2',typedd:'5'})">
                                 <span>{{ordertype=='day'?numdata.moneyService:numdata.monthMoneyService}}</span>
-                                <b>{yun:}t key='admin_user_company_00290'{/yun}</b>
+                                <b>{{ lc('admin_user_company_00290') }}</b>
                             </div>
                             <div @click="toOrder({order_state:'2'})">
                                 <span>{{ordertype=='day'?numdata.moneyIntegral:numdata.monthMoneyIntegral}}</span>
-                                <b>{yun:}t key='wap_user_00196'{/yun}</b>
+                                <b>{{ lc('wap_user_00196') }}</b>
                             </div>
                         </div>
                     </div>
@@ -37,30 +37,30 @@
                 <div class="homeTopSubCoy">
                     <div class="homeTopLeList homeTopLeLisTwo">
                         <div class="homeTopLeLTite">
-                            <div class="homeTopLeLName"><span>{yun:}t key='admin_00081'{/yun}</span></div>
+                            <div class="homeTopLeLName"><span>{{ lc('admin_00081') }}</span></div>
                             <div class="homeTopLeLButn">
-                                <span :class="memtype=='day'?'spanxz':''" @click="memtype='day'">{yun:}t key='admin_00091'{/yun}</span>
-                                <span :class="memtype=='month'?'spanxz':''" @click="memtype='month';dataChange('month', 'member')">{yun:}t key='admin_user_00147'{/yun}</span>
+                                <span :class="memtype=='day'?'spanxz':''" @click="memtype='day'">{{ lc('admin_00091') }}</span>
+                                <span :class="memtype=='month'?'spanxz':''" @click="memtype='month';dataChange('month', 'member')">{{ lc('admin_user_00147') }}</span>
                             </div>
                         </div>
                         <div class="homeTopLeMoney" @click="toMem()">
                             <div class="homeTopMonNum">{{memtype=='day'?numdata.memberNum:numdata.monthMemberNum}}</div>
                             <div class="homeTopMonTxt">
-                                <span>{yun:}t key='admin_01055'{/yun}</span>
+                                <span>{{ lc('admin_01055') }}</span>
                             </div>
                         </div>
                         <div class="homeTopLeTaoc">
                             <div @click="touserMem()">
                                 <span>{{memtype=='day'?numdata.userNum:numdata.userNumMon}}</span>
-                                <b>{yun:}t key='admin_system_00129'{/yun}</b>
+                                <b>{{ lc('admin_system_00129') }}</b>
                             </div>
                             <div @click="tocomMem()">
                                 <span>{{memtype=='day'?numdata.companyNum:numdata.companyNumMon}}</span>
-                                <b>{yun:}t key='admin_user_company_00281'{/yun}</b>
+                                <b>{{ lc('admin_user_company_00281') }}</b>
                             </div>
                             <div @click="toMem({utype:5})">
                                 <span>{{memtype=='day'?numdata.otmemberNum:numdata.ommemberNum}}</span>
-                                <b>{yun:}t key='admin_00087'{/yun}</b>
+                                <b>{{ lc('admin_00087') }}</b>
                             </div>
                         </div>
                     </div>
@@ -72,7 +72,7 @@
                                 <img src="../../images/adxinw.png" alt="">
                             </div>
                             <div class="homeTopLshu">
-                                <span>{yun:}t key='admin_00078'{/yun}</span>
+                                <span>{{ lc('admin_00078') }}</span>
                                 <b>{{numdata.resumeNum}}</b>
                             </div>
                         </div>
@@ -89,7 +89,7 @@
 					            <img src="../../images/adzhiwei.png" alt="">
 					        </div>
 					        <div class="homeTopLshu">
-					            <span>{yun:}t key='admin_00079'{/yun}</span>
+					            <span>{{ lc('admin_00079') }}</span>
 					            <b>{{numdata.jobNum}}</b>
 					        </div>
 					    </div>
@@ -109,7 +109,7 @@
                                 <img src="../../images/adjl.png" alt="">
                             </div>
                             <div class="homeTopLshu">
-                                <span>{yun:}t key='admin_00080'{/yun}</span>
+                                <span>{{ lc('admin_00080') }}</span>
                                 <b>{{numdata.useridjobNum}}</b>
                             </div>
                         </div>
@@ -126,7 +126,7 @@
                                 <img src="../../images/chatyh.png" alt="">
                             </div>
                             <div class="homeTopLshu">
-                                <span>{yun:}t key='admin_00084'{/yun}</span>
+                                <span>{{ lc('admin_00084') }}</span>
                                 <b>{{numdata.tellognum}}</b>
                             </div>
                         </div>
@@ -147,7 +147,7 @@
                                 <img src="../../images/xaizyh.png" alt="">
                             </div>
                             <div class="homeTopLshu">
-                                <span>{yun:}t key='admin_00076'{/yun}</span>
+                                <span>{{ lc('admin_00076') }}</span>
                                 <b>{{numdata.downresumeNum}}</b>
                             </div>
                         </div>
@@ -274,7 +274,7 @@ module.exports = {
                 params.times = this.monthrange;
             }
 			
-			window.parent.homeapp.checkMenuTwo(3,161,162,"{yun:}t key='admin_user_company_00136'{/yun}",'/chongzhidd',params)
+			window.parent.homeapp.checkMenuTwo(3,161,162,lc('admin_user_company_00136'),'/chongzhidd',params)
 			
         },
         toMem: function(params = {}) {
@@ -287,7 +287,7 @@ module.exports = {
 			query.tabs = 'first';
 			query.params = params;
 			
-			window.parent.homeapp.checkMenuTwo(1,401,402,"{yun:}t key='admin_00086'{/yun}",'/usercrm',query)
+			window.parent.homeapp.checkMenuTwo(1,401,402,lc('admin_00086'),'/usercrm',query)
             
         },
         touserMem: function(params = {}) {
@@ -297,7 +297,7 @@ module.exports = {
                 params.times = this.monthrange;
             }
 			
-			window.parent.homeapp.checkMenuTwo(1,7,17,"{yun:}t key='admin_user_00122'{/yun}",'/userscrm',params)
+			window.parent.homeapp.checkMenuTwo(1,7,17,lc('admin_user_00122'),'/userscrm',params)
             
         },
         tocomMem: function(params = {}) {
@@ -308,7 +308,7 @@ module.exports = {
             }
 			var query ={};
 			query.params = params;
-			window.parent.homeapp.checkMenuTwo(1,6,16,"{yun:}t key='admin_user_00124'{/yun}",'/companycrm',query)
+			window.parent.homeapp.checkMenuTwo(1,6,16,lc('admin_user_00124'),'/companycrm',query)
             
         },
         toPage: function(nval, oval, tval,name, path, query = null) {
@@ -317,7 +317,7 @@ module.exports = {
 			
         },
         toCompanyJob(params = {}) {
-            window.parent.homeapp.checkMenuTwo(1, 6, 40, "{yun:}t key='wap_com_00106'{/yun}", '/companyjob', params);
+            window.parent.homeapp.checkMenuTwo(1, 6, 40, lc('wap_com_00106'), '/companyjob', params);
         },
         tomsg: function() {
             window.open('https://u.ov6.com/');

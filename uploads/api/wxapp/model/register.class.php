@@ -13,25 +13,25 @@ class register_controller extends wxapp_controller
 			$member     =  $this->yzToken($_POST['uid'], $_POST['token']);
 			if(!empty($member['uid'])){
 				$error	=   2;
-				$msg	=	yun_at('wap_01855');
+				$msg	=	'您已登录！';
                 $this->render_json($error, $msg, '');
 			}
 		}
 		if (isset($_POST['version']) && $_POST['version']=='6.1'){
-		    // 6.1、，
+		    // 6.1版开始对注册、登录传的相关参数进行加密，这里需要解密
 		    $username   = $this->decryptRequest($_POST['username']);
 		    $password   = $this->decryptRequest($_POST['password']);
 		    if ($_POST['type'] == 1){
-		        // 
+		        // 用户名注册
 		        $data['username']       =  $username;
 		        $data['moblie']			=  $_POST['moblie'];
 		        $data['moblie_code']	=  $_POST['mobliecode'];
 		    }elseif ($_POST['type'] == 2){
-		        // 
+		        // 手机号注册
 		        $data['moblie']         =  $username;
 		        $data['moblie_code']	=  $_POST['mobliecode'];
 		    }elseif ($_POST['type'] == 3){
-		        // 
+		        // 邮箱注册
 		        $data['email']          =  $username;
 		        $data['moblie']			=  $_POST['moblie'];
 		        $data['moblie_code']	=  $_POST['mobliecode'];
@@ -54,7 +54,7 @@ class register_controller extends wxapp_controller
 		$data['deviceToken']    =   $_POST['deviceToken'];
 		$data['port']			=	$this->plat == 'mini' ? '3' : '4';
 		$data['provider']       =   $_POST['provider'];
-        // wxlogin，。，loginopenid。
+        // 目前从wxlogin到注册页面，会携带第三方登录参数。微信小程序和百度小程序，都是直接使用login页面携带的openid。
         if (!empty($_POST['loginType'])){
             if ($_POST['provider'] == 'app'){
                 if($_POST['loginType'] == 'qq'){
@@ -75,7 +75,7 @@ class register_controller extends wxapp_controller
 		if (!empty($_POST['did'])){
 		    $data['did']        =   $_POST['did'];
 		}
-		// 
+		//  小程序邀请注册
         if ((int)$_POST['fromUser'] > 0){
 
             $data['fromUser']   =   $_POST['fromUser'];
@@ -109,14 +109,14 @@ class register_controller extends wxapp_controller
         } else {
 
             $error  =   2;
-            $msg    =   yun_at('wap_01298');
+            $msg    =   '参数错误！';
             $this->render_json($error, $msg, '');
         }
 
         if (empty($_POST['usertype'])) {
 
             $error  =   2;
-            $msg    =   yun_at('wap_01856');
+            $msg    =   '请选择用户类型！';
         } else {
 
             $UserInfoM  =   $this->MODEL('userinfo');
@@ -164,7 +164,7 @@ class register_controller extends wxapp_controller
         $this -> render_json($return['errcode'],$return['msg'],'');
     }
 	function regcheck_action(){
-		// 、
+		//验证用户名、邮箱
 		$post	=	array(
 			'username'	=>	$_POST['username'],
 			'email'		=>	$_POST['email'],
@@ -183,16 +183,16 @@ class register_controller extends wxapp_controller
 		$this -> render_json($errcode,$return['msg'],'');
 	}
 
-	/* register: send mobile code */
+	/* 注册发送手机号 */
     function regcode_action()
     {
-        $this->regcode($this->plat == 'mini' ? '3' : '4');	// SMS port: 3=mini 4=app
+        $this->regcode($this->plat == 'mini' ? '3' : '4');	// 短信发送端口$port : 3-小程序  4-APP
     }
 
-    /* register: quick apply mobile code */
+    /* 注册发送手机号-快速投递 */
     function regcodeks_action()
     {
-        $this->regcode($this->plat == 'mini' ? '9' : '10');	// SMS port: 9=mini quick apply 10=app
+        $this->regcode($this->plat == 'mini' ? '9' : '10');	// 短信发送端口$port : 9-小程序快速投递,10-APP快速投递
     }
 
 	function regcode($port)
@@ -224,7 +224,7 @@ class register_controller extends wxapp_controller
 			if($return['errcode']==9){
 			    if(isset($_POST['type']) && $_POST['type'] == 'wxreg'){
 			        $arr['regtype'] = 'wxreg';
-			        // ，，
+			        // 微信绑定里，已存在账号的，可以直接用手机短信绑定
 			        if ($return['data']['usertype'] == 1 || $return['data']['usertype'] == 2){
 			            $result  =  $noticeM->sendCode($moblie, 'login', $port, $return['data'], 6, 90, 'msg');
 			            if($result['error']==1){
@@ -235,10 +235,10 @@ class register_controller extends wxapp_controller
 			            }
 			        }
 			    }else{
-			        $msg    =   yun_at('wap_01857');
+			        $msg    =   '该手机号已被使用';
 			    }
 			}else{
-				$msg		=	yun_at('wap_js_00051');
+				$msg		=	'该手机号已被禁止使用';
 			}
 		}
 		$this -> render_json($errcode,$msg,$arr);

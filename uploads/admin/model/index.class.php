@@ -74,6 +74,8 @@ class index_controller extends adminCommon{
                 in_array($navId, $this->adminPower['power']) && array_push($navIdArr, $navId);
             }
             $menu = $navM->select_all('admin_navigation',array('display'=>array('<>',1),'id'=>array('in', pylode(',', $navIdArr)),'orderby'=>'sort,ASC'),'id,keyid,name,classname,url,path');
+            $menu = $navM->translateAdminNavRows($menu);
+            $menu = $navM->translateAdminNavRows($menu);
             // 自定义菜单过滤后为空
             if (!$menu) {
                 $menu = $navList['menu'];
@@ -81,15 +83,6 @@ class index_controller extends adminCommon{
         } else {
             $menu = $navList['menu'];
         }
-
-        if (!empty($menu) && function_exists('yun_auto_t')) {
-            foreach ($menu as $mk => $mv) {
-                if (isset($mv['name'])) {
-                    $menu[$mk]['name'] = yun_auto_t($mv['name']);
-                }
-            }
-        }
-
         $setarr    =  array(
             'one_menu'        =>  $navList['one_menu'],
             'two_menu'        =>  $navList['two_menu'],
@@ -260,15 +253,6 @@ class index_controller extends adminCommon{
         } else {
             $menu = $navList['menu'];
         }
-
-        if (!empty($menu) && function_exists('yun_auto_t')) {
-            foreach ($menu as $mk => $mv) {
-                if (isset($mv['name'])) {
-                    $menu[$mk]['name'] = yun_auto_t($mv['name']);
-                }
-            }
-        }
-
         $navigation = $navList['navigation'];
         $one_menu = $navList['one_menu'];
         $two_menu = $navList['two_menu'];

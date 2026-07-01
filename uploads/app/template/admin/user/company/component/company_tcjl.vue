@@ -2,11 +2,11 @@
     <div class="moduleElHight">
         <div class="moduleSeachbig" v-if="cansearch">
             <div class="tableSeachInpt">
-                <el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" size="small" prefix-icon="el-icon-search" v-model="keyword">
+                <el-input :placeholder="lc('wap_user_00076')" size="small" prefix-icon="el-icon-search" v-model="keyword">
                 </el-input>
             </div>
             <div class="tableSeachInpt">
-                <el-button type="primary" icon="el-icon-search" size="mini" @click="search">{yun:}t key='admin_user_weipin_00049'{/yun}</el-button>
+                <el-button type="primary" icon="el-icon-search" size="mini" @click="search">{{ lc('admin_user_weipin_00049') }}</el-button>
             </div>
         </div>
         <div class="moduleElTable"
@@ -15,15 +15,15 @@
                       :header-cell-style="{ background: '#f5f7fa', color: '#606266' }"
                       @selection-change="handleSelectionChange" height="100%" v-loading="loading" :empty-text="emptytext">
                 <el-table-column type="selection" width="55"></el-table-column>
-                <el-table-column prop="type_n" label="{yun:}t key='admin_user_company_00051'{/yun}" width="150"></el-table-column>
-                <el-table-column prop="num" label="{yun:}t key='admin_00623'{/yun}" width="150"></el-table-column>
-                <el-table-column prop="detail" label="{yun:}t key='admin_user_00231'{/yun}"></el-table-column>
+                <el-table-column prop="type_n" :label="lc('admin_user_company_00051')" width="150"></el-table-column>
+                <el-table-column prop="num" :label="lc('admin_00623')" width="150"></el-table-column>
+                <el-table-column prop="detail" :label="lc('admin_user_00231')"></el-table-column>
                 <el-table-column prop="ip" label="IP" width="150"></el-table-column>
-                <el-table-column prop="time_n" label="{yun:}t key='wap_js_00088'{/yun}" width="150"></el-table-column>
-                <el-table-column label="{yun:}t key='member_user_00048'{/yun}" width="200" fixed="right">
+                <el-table-column prop="time_n" :label="lc('wap_js_00088')" width="150"></el-table-column>
+                <el-table-column :label="lc('member_user_00048')" width="200" fixed="right">
                     <template slot-scope="scope">
                         <div class="cz_button">
-                            <el-button size="small " type="danger" @click="deleteRow(scope)">{yun:}t key='common.delete'{/yun}</el-button>
+                            <el-button size="small " type="danger" @click="deleteRow(scope)">{{ lc('common.delete') }}</el-button>
                         </div>
                     </template>
                 </el-table-column>
@@ -31,8 +31,8 @@
         </div>
         <div class="modulePaging">
             <div>
-                <el-checkbox v-model="checkedAll" @change="selectAllBottom">{yun:}t key='wap_js_00074'{/yun}</el-checkbox>
-                <el-button @click="deleteRow(null, true)" size="mini">{yun:}t key='member_com_00055'{/yun}</el-button>
+                <el-checkbox v-model="checkedAll" @change="selectAllBottom">{{ lc('wap_js_00074') }}</el-checkbox>
+                <el-button @click="deleteRow(null, true)" size="mini">{{ lc('member_com_00055') }}</el-button>
             </div>
             <div class="modulePagNum">
                 <el-pagination background @size-change="handleSizeChange"
@@ -58,7 +58,7 @@
         data: function () {
             return {
                 loading: false,
-                emptytext: "{yun:}t key='wap_js_00113'{/yun}",
+                emptytext: lc('wap_js_00113'),
                 keyword: '',
                 currentPage: 1,
                 perPage: 0,
@@ -146,7 +146,7 @@
                     params.keyword = that.keyword
                 }
                 that.loading = true;
-                that.emptytext = "{yun:}t key='admin_user_weipin_00026'{/yun}";
+                that.emptytext = lc('admin_user_weipin_00026');
                 httpPost('m=user&c=company&a=statisDetail', params,{ hideloading: true }).then(function (result) {
                     var res = result.data
                     if (res.error == 0) {
@@ -161,7 +161,7 @@
                             that.$refs.multipleTable.bodyWrapper.scrollTop = 0;
                         }
                         if (that.tableData.length === 0){
-                            that.emptytext = "{yun:}t key='wap_js_00113'{/yun}";
+                            that.emptytext = lc('wap_js_00113');
                         }
                     }
                 }).catch(function (e) {
@@ -172,7 +172,7 @@
                 let params = {};
                 if (isMore) {
                     if (!this.selectedItem.length) {
-                        message.error("{yun:}t key='admin_user_weipin_00005'{/yun}");
+                        message.error(lc('admin_user_weipin_00005'));
                         return false;
                     }
                     let list = [];
@@ -190,10 +190,10 @@
                 httpPost('m=user&c=company&a=delStatisDetail', params).then(function (response) {
                     let res = response.data;
                     if (res.error === 0) {
-                        message.success("{yun:}t key='admin_user_00187'{/yun}");
+                        message.success(lc('admin_user_00187'));
                         _this.getList();
                     } else {
-                        message.error("{yun:}t key='admin_user_00186'{/yun}");
+                        message.error(lc('admin_user_00186'));
                     }
                 }).catch(function (error) {
                     console.log(error);

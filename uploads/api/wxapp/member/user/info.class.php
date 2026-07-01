@@ -2,7 +2,7 @@
 
 class info_controller extends user_controller{
     
-	/* wxapp: profile display */
+	/*wxapp基本信息页面显示、创建简历页面显示*/
 	function getinfo_action()
 	{
 		$resumeM	=	$this->MODEL('resume');
@@ -12,7 +12,7 @@ class info_controller extends user_controller{
 		$data['resumename'] = !empty($this->config['sy_resumename_num']) ? $this->config['sy_resumename_num'] : 0;
 		$this->render_json(0,'',$data);
 	}
-	/* wxapp: save profile */
+	/*wxapp保存基本信息*/
 	function saveinfo_action()
 	{
 		$resumeM  	=  	$this -> MODEL('resume'); 
@@ -42,7 +42,7 @@ class info_controller extends user_controller{
 			'phototype'     =>  $_POST['phototype'],
 			'nametype'      =>  $_POST['nametype'],
 			'wxid'			=>	$_POST['wxid'],
-			'ewmFromWx' 	=> 	$_FILES['photos'],// qrcode upload
+			'ewmFromWx' 	=> 	$_FILES['photos'],//二维码
 		    'lastupdate'	=>  time()
 		);
 		if(resumeTimeState($this->config['user_revise_state']) == '0'){
@@ -66,7 +66,7 @@ class info_controller extends user_controller{
 		$data['error']	=	$return['errcode']==9 ? 1 : 2;
 		$this -> render_json($data['error'],$return['msg'],'');
 	}
-	/* wxapp: save avatar */
+	/*wxapp保存头像*/
 	function savephoto_action()
 	{
 		

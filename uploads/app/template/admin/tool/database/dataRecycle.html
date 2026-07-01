@@ -12,7 +12,7 @@
                 <el-input :placeholder="lc('admin_system_00217')" v-model="search.username" size="small" clearable></el-input>
                 <el-input :placeholder="lc('admin_tool_00335')" v-model="search.keyword" size="small" clearable></el-input>
                 <el-input :placeholder="lc('admin_tool_00336')" v-model="search.table" size="small" clearable></el-input>
-                <el-date-picker v-model="search.time" style="width: 230px;" type="daterange" size="small" align="right" unlink-panels :range-separator="lc('admin_company_00019')" start-:placeholder="lc('admin_00343')" end-:placeholder="lc('admin_00344')" :picker-options="pickerOptions" value-format="timestamp" @change="handelSearch"></el-date-picker>
+                <el-date-picker v-model="search.time" style="width: 230px;" type="daterange" size="small" align="right" unlink-panels :range-separator="lc('admin_company_00019')" :start-placeholder="lc('admin_00343')" :end-placeholder="lc('admin_00344')" :picker-options="pickerOptions" value-format="timestamp" @change="handelSearch"></el-date-picker>
             </div>
             <div class="tableSeachInpt" style="margin-bottom: 0px;;">
                 <el-button type="primary" icon="el-icon-search" size="mini" @click="handelSearch" style="margin-left: 8px">{{ lc('admin_user_weipin_00049') }}</el-button>

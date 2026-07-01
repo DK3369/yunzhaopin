@@ -3,15 +3,15 @@
         <div class="moduleSeachs categorySub">
             <div></div>
             <div class="categoryTopBtn">
-                <el-button class="" type="primary" icon="el-icon-document-add" size="mini" @click="addVisible = true">{yun:}t key='admin_00197'{/yun}</el-button>
+                <el-button class="" type="primary" icon="el-icon-document-add" size="mini" @click="addVisible = true">{{ lc('admin_00197') }}</el-button>
             </div>
         </div>
         <div class="moduleElTable moduleElTableCategoreSub">
             <el-table :data="tableData" border style="width: 100%" ref="multipleTable" @selection-change="handleSelectionChange"
                 :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" height="100%" v-loading="loading" :empty-text="emptytext">
                 <el-table-column type="selection" width="55"></el-table-column>
-                <el-table-column prop="id" label="{yun:}t key='admin_system_00098'{/yun}" width="100"></el-table-column>
-                <el-table-column label="{yun:}t key='admin_system_00097'{/yun}" property="name">
+                <el-table-column prop="id" :label="lc('admin_system_00098')" width="100"></el-table-column>
+                <el-table-column :label="lc('admin_system_00097')" property="name">
                     <template slot-scope="scope">
                         <el-input v-if="scope.row[scope.column.property + 'isShow']" :ref="scope.column.property + scope.$index" :id="scope.column.property + scope.$index"
                             v-model="scope.row.name" @blur="alterData(scope)"></el-input>
@@ -25,7 +25,7 @@
                         </span>
                     </template>
                 </el-table-column>
-                <el-table-column label="{yun:}t key='admin_system_00100'{/yun}" property="sort">
+                <el-table-column :label="lc('admin_system_00100')" property="sort">
                     <template slot-scope="scope">
                         <el-input v-if="scope.row[scope.column.property + 'isShow']" :ref="scope.column.property + scope.$index" :id="scope.column.property + scope.$index"
                             v-model="scope.row.sort" @blur="alterData(scope, 'int')" onkeyup="this.value=this.value.replace(/[^0-9]/g,'')"></el-input>
@@ -35,10 +35,10 @@
                         </span>
                     </template>
                 </el-table-column>
-                <el-table-column fixed="right" label="{yun:}t key='member_user_00048'{/yun}" width="70">
+                <el-table-column fixed="right" :label="lc('member_user_00048')" width="70">
                     <template slot-scope="scope">
                         <div class="cz_button">
-                            <el-button type="danger" size="mini" @click="deleteRow(scope)">{yun:}t key='common.delete'{/yun}</el-button>
+                            <el-button type="danger" size="mini" @click="deleteRow(scope)">{{ lc('common.delete') }}</el-button>
                         </div>
                     </template>
                 </el-table-column>
@@ -47,12 +47,12 @@
         <div class="modulePaging">
             <div class="">
                 <div class="">
-                    <el-checkbox :indeterminate="isIndeterminate" v-model="checked" @change="selectAllBottom">{yun:}t key='wap_js_00074'{/yun}</el-checkbox>
-                    <el-button size="mini" @click="deleteRow(null, true)">{yun:}t key='member_com_00055'{/yun}</el-button>
+                    <el-checkbox :indeterminate="isIndeterminate" v-model="checked" @change="selectAllBottom">{{ lc('wap_js_00074') }}</el-checkbox>
+                    <el-button size="mini" @click="deleteRow(null, true)">{{ lc('member_com_00055') }}</el-button>
                 </div>
             </div>
         </div>
-        <el-dialog title="{yun:}t key='admin_system_00099'{/yun}" width="40%" :visible.sync="addVisible" :modal-append-to-body="false" :append-to-body="true">
+        <el-dialog :title="lc('admin_system_00099')" width="40%" :visible.sync="addVisible" :modal-append-to-body="false" :append-to-body="true">
             <comclass_add :position="position" @child-event-getlist="handleList"></comclass_add>
         </el-dialog>
     </div>
@@ -73,7 +73,7 @@ module.exports = {
             addVisible: false,
             oldData: null,
             loading: false,
-            emptytext: window.yunAdminT("{yun:}t key='wap_js_00113'{/yun}"),
+            emptytext: window.yunAdminT(lc('wap_js_00113')),
         }
     },
     created() {
@@ -116,9 +116,9 @@ module.exports = {
             httpPost('m=system&c=category_comclass&a=ajax', sendData, {hideloading: true}).then(function (response) {
                 let res = response.data;
                 if (res.error === 0) {
-                    message.success(window.yunAdminT("{yun:}t key='admin_user_company_00208'{/yun}"));
+                    message.success(window.yunAdminT(lc('admin_user_company_00208')));
                 } else {
-                    message.error(window.yunAdminT("{yun:}t key='admin_00187'{/yun}"));
+                    message.error(window.yunAdminT(lc('admin_00187')));
                 }
                 _this.oldData = null;
                 _this.getList();
@@ -149,7 +149,7 @@ module.exports = {
             let _this = this;
             let params = {id: this.id};
             _this.loading = true;
-            _this.emptytext = window.yunAdminT("{yun:}t key='admin_user_weipin_00026'{/yun}");
+            _this.emptytext = window.yunAdminT(lc('admin_user_weipin_00026'));
             httpPost('m=system&c=category_comclass&a=up', params).then(function (response) {
                 let res = response.data;
                 let list = [];
@@ -163,7 +163,7 @@ module.exports = {
                 _this.position = res.data.position;
                 _this.loading = false;
                 if (_this.tableData.length === 0){
-                    _this.emptytext = window.yunAdminT("{yun:}t key='wap_js_00113'{/yun}");
+                    _this.emptytext = window.yunAdminT(lc('wap_js_00113'));
                 }
             }).catch(function (error) {
                 console.log(error);
@@ -181,7 +181,7 @@ module.exports = {
             let params = {};
             if (isMore) {
                 if (!this.selectedItem.length) {
-                    message.error(window.yunAdminT("{yun:}t key='admin_user_weipin_00005'{/yun}"));
+                    message.error(window.yunAdminT(lc('admin_user_weipin_00005')));
                     return false;
                 }
                 let list = [];
@@ -204,10 +204,10 @@ module.exports = {
             httpPost('m=system&c=category_comclass&a=del', params).then(function (response) {
                 let res = response.data;
                 if (res.error === 0) {
-                    message.success(window.yunAdminT("{yun:}t key='admin_user_00187'{/yun}"));
+                    message.success(window.yunAdminT(lc('admin_user_00187')));
                     _this.getList();
                 } else {
-                    message.error(window.yunAdminT("{yun:}t key='admin_user_00186'{/yun}"));
+                    message.error(window.yunAdminT(lc('admin_user_00186')));
                 }
             }).catch(function (error) {
                 console.log(error);

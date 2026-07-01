@@ -103,7 +103,7 @@
         </div>
         <!--外宣海报弹窗-->
         <div class="modluDrawer">
-            <el-drawer :title="lc('admin_html_00010')" :visible.sync="drawerhb" :modal-append-to-body="false" append-to-body
+            <el-drawer :title="lc('admin_00146')" :visible.sync="drawerhb" :modal-append-to-body="false" append-to-body
                 :show-close="true" :with-header="true" size="45%">
                 <div class="waixunHaib">
                     <ul>
@@ -133,7 +133,7 @@
         </div>
         <div class="modluDrawer">
             <!-- 新增、修改弹窗 -->
-            <el-drawer :title="lc('admin_html_00011')" :visible.sync="draweradd" :modal-append-to-body="false"
+            <el-drawer :title="info.id ? lc('admin_00142') : lc('admin_00145')" :visible.sync="draweradd" :modal-append-to-body="false"
                 :show-close="true" :wrapper-closable="false" :with-header="true" size="900px">
                 <div class="drawerModlue">
                     <div class="tableDome_tip tableDoAlert">
@@ -419,10 +419,10 @@
                     that.draweradd = true
                     if (row.id) {
                         that.info = deepClone(row);
-                        if (that.info.startime_n == '永久显示') {
+                        if (that.info.startime_n == lc('admin_00147')) {
                             that.info.startime_n = '';
                         }
-                        if (that.info.endtime_n == '永久显示') {
+                        if (that.info.endtime_n == lc('admin_00147')) {
                             that.info.endtime_n = '';
                         }
                         delete that.info.rec
@@ -485,7 +485,7 @@
                 let that = this;
 
                 that.loading = true;
-                that.emptytext = "数据加载中";
+                that.emptytext = lc('admin_user_weipin_00026');
                 httpPost('m=neirong&c=gongzhao&a=getGroup', {}, {hideloading: true}).then(function (result) {
                     var res = result.data
                     if (res.error == 0) {
@@ -513,7 +513,7 @@
                     params.t = that.sort_col
                 }
                 that.loading = true;
-                that.emptytext = "数据加载中";
+                that.emptytext = lc('admin_user_weipin_00026');
                 httpPost('m=neirong&c=gongzhao&a=index', params, {hideloading: true}).then(function (result) {
                     var res = result.data
                     if (res.error == 0) {
@@ -527,7 +527,7 @@
                         }
                         that.loading = false;
                         if (that.tableData.length === 0){
-                            that.emptytext = "暂无数据";
+                            that.emptytext = lc('wap_js_00113');
                         }
                     }
                 }).catch(function (e) {

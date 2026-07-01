@@ -4,60 +4,60 @@
             <table class="tableVue">
                 <thead>
                     <tr align="left">
-                        <th width="260">{yun:}t key='member_com_00021'{/yun}</th>
-                        <th width="320">{yun:}t key='member_user_00181'{/yun}</th>
-                        <th>{yun:}t key='member_com_00207'{/yun}</th>
+                        <th width="260">{{ lc('member_com_00021') }}</th>
+                        <th width="320">{{ lc('member_user_00181') }}</th>
+                        <th>{{ lc('member_com_00207') }}</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='wap_com_00182'{/yun}</div>
+                            <div class="TableTite">{{ lc('wap_com_00182') }}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input type="number" placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="list.integral_map">
-                                    <span slot="suffix" class="slotspan">{yun:}t key='admin_00891'{/yun}</span>
+                                <el-input type="number" :placeholder="lc('wap_user_00076')" v-model="list.integral_map">
+                                    <span slot="suffix" class="slotspan">{{ lc('admin_00891') }}</span>
                                 </el-input>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>{yun:}t key='wap_com_00182'{/yun}</span>
+                                <span>{{ lc('wap_com_00182') }}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='wap_com_00033'{/yun}</div>
+                            <div class="TableTite">{{ lc('wap_com_00033') }}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input type="number" placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="list.integral_banner">
-                                    <span slot="suffix" class="slotspan">{yun:}t key='admin_00891'{/yun}</span>
+                                <el-input type="number" :placeholder="lc('wap_user_00076')" v-model="list.integral_banner">
+                                    <span slot="suffix" class="slotspan">{{ lc('admin_00891') }}</span>
                                 </el-input>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>{yun:}t key='wap_com_00033'{/yun}</span>
+                                <span>{{ lc('wap_com_00033') }}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='wap_com_00181'{/yun}</div>
+                            <div class="TableTite">{{ lc('wap_com_00181') }}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input type="number" placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="list.integral_comcert">
-                                    <span slot="suffix" class="slotspan">{yun:}t key='admin_00891'{/yun}</span>
+                                <el-input type="number" :placeholder="lc('wap_user_00076')" v-model="list.integral_comcert">
+                                    <span slot="suffix" class="slotspan">{{ lc('admin_00891') }}</span>
                                 </el-input>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>{yun:}t key='wap_com_00181'{/yun}</span>
+                                <span>{{ lc('wap_com_00181') }}</span>
                             </div>
                         </td>
                     </tr>
@@ -65,7 +65,7 @@
             </table>
         </div>
         <div class="setBasicButn" style="border: none;">
-            <el-button type="primary" size="medium" @click="save" :disabled="saveLoading">{yun:}t key='common.submit'{/yun}</el-button>
+            <el-button type="primary" size="medium" @click="save" :disabled="saveLoading">{{ lc('common.submit') }}</el-button>
         </div>
     </div>
 </template>
@@ -97,7 +97,7 @@ module.exports = {
             httpPost(url, ruleForm).then(function (response) {
                 var res = response.data;
                 if (res.error == 0) {
-                    message.success("{yun:}t key='wap_user_00264'{/yun}");
+                    message.success(lc('wap_user_00264'));
                     _this.$emit('get-list', true)
                 } else {
                     message.error(res.msg);

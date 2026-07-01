@@ -5,24 +5,24 @@
                 <table class="tableVue">
                     <thead>
                     <tr align="left">
-                        <th width="120">{yun:}t key='member_com_00021'{/yun}</th>
-                        <th width=" ">{yun:}t key='member_user_00181'{/yun}</th>
+                        <th width="120">{{ lc('member_com_00021') }}</th>
+                        <th width=" ">{{ lc('member_user_00181') }}</th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='wap_com_00288'{/yun}</div>
+                            <div class="TableTite">{{ lc('wap_com_00288') }}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input v-model="curr_job.name" placeholder="{yun:}t key='admin_user_weipin_00014'{/yun}"></el-input>
+                                <el-input v-model="curr_job.name" :placeholder="lc('admin_user_weipin_00014')"></el-input>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='wap_user_00018'{/yun}</div>
+                            <div class="TableTite">{{ lc('wap_user_00018') }}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
@@ -32,50 +32,50 @@
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_user_company_00027'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_user_company_00027') }}</div>
                         </td>
                         <td>
                             <div style="display: flex;">
                                 <div class="TableInpt">
-                                    <el-input v-model="curr_job.minsalary" :disabled="mychecked" placeholder="{yun:}t key='wap_user_00013'{/yun}"></el-input>
+                                    <el-input v-model="curr_job.minsalary" :disabled="mychecked" :placeholder="lc('wap_user_00013')"></el-input>
                                 </div>
                                 <div class="TableInptline">-</div>
                                 <div class="TableInpt">
-                                    <el-input v-model="curr_job.maxsalary" :disabled="mychecked" placeholder="{yun:}t key='wap_user_00014'{/yun}"></el-input>
+                                    <el-input v-model="curr_job.maxsalary" :disabled="mychecked" :placeholder="lc('wap_user_00014')"></el-input>
                                 </div>
-                                <el-checkbox style="margin-left:10px;" v-model="mychecked" label="{yun:}t key='common_02045'{/yun}" size="medium" border></el-checkbox>
+                                <el-checkbox style="margin-left:10px;" v-model="mychecked" :label="lc('common_02045')" size="medium" border></el-checkbox>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='wap_com_00333'{/yun}</div>
+                            <div class="TableTite">{{ lc('wap_com_00333') }}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input v-model="curr_job.zp_num" placeholder="{yun:}t key='admin_00579'{/yun}"></el-input>
+                                <el-input v-model="curr_job.zp_num" :placeholder="lc('admin_00579')"></el-input>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='wap_00353'{/yun}</div>
+                            <div class="TableTite">{{ lc('wap_00353') }}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-select v-model="curr_job.exp" placeholder="{yun:}t key='admin_00580'{/yun}">
+                                <el-select v-model="curr_job.exp" :placeholder="lc('admin_00580')">
                                     <el-option v-for="item in cacheData.comdata.job_exp" :key="'exp_'+item" :label="item == 0 ? lc('admin_company_00048', [cacheData.comclass_name[item]]) : cacheData.comclass_name[item]" :value="item"></el-option>
                                 </el-select>
-                                <el-select style="margin-left:10px;" v-model="curr_job.edu" placeholder="{yun:}t key='member_user_00494'{/yun}">
+                                <el-select style="margin-left:10px;" v-model="curr_job.edu" :placeholder="lc('member_user_00494')">
                                     <el-option v-for="item in cacheData.comdata.job_edu" :key="'edu_'+item" :label="item == 0 ? lc('admin_company_00049', [cacheData.comclass_name[item]]) : cacheData.comclass_name[item]" :value="item"></el-option>
                                 </el-select>
-                                <el-checkbox style="margin-left:10px;" v-model="curr_job.is_graduate" label="{yun:}t key='member_com_00241'{/yun}" size="medium" border></el-checkbox>
+                                <el-checkbox style="margin-left:10px;" v-model="curr_job.is_graduate" :label="lc('member_com_00241')" size="medium" border></el-checkbox>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_00575'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_00575') }}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
@@ -88,25 +88,25 @@
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='member_user_00198'{/yun}</div>
+                            <div class="TableTite">{{ lc('member_user_00198') }}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-select v-model="curr_job.link_id" placeholder="{yun:}t key='wap_user_00100'{/yun}" style="width: 480px;">
-                                    <el-option key="-1" :label="jobCompany.linkmsg + '{yun:}t key=\'admin_company_00053\'{/yun}'" value="-1"></el-option>
+                                <el-select v-model="curr_job.link_id" :placeholder="lc('wap_user_00100')" style="width: 480px;">
+                                    <el-option key="-1" :label="jobCompany.linkmsg + lc('admin_company_00053')" value="-1"></el-option>
                                     <el-option v-for="(item, index) in jobAddressList" :key="index" :label="item.linkmsg" :value="item.id"></el-option>
                                 </el-select>
-                                <el-button style="margin-left: 10px;" size="small" type="primary" @click="addAddr" round>{yun:}t key='admin_user_company_00028'{/yun}</el-button>
+                                <el-button style="margin-left: 10px;" size="small" type="primary" @click="addAddr" round>{{ lc('admin_user_company_00028') }}</el-button>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='wap_user_00010'{/yun}</div>
+                            <div class="TableTite">{{ lc('wap_user_00010') }}</div>
                         </td>
                         <td>
                             <div class="TableSelect">
-                                <el-select v-model="curr_job.hy" placeholder="{yun:}t key='wap_user_00100'{/yun}">
+                                <el-select v-model="curr_job.hy" :placeholder="lc('wap_user_00100')">
                                     <el-option v-for="(item, index) in cacheData.industry_index" :key="index" :label="cacheData.industry_name[item]" :value="item"></el-option>
                                 </el-select>
                             </div>
@@ -114,11 +114,11 @@
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='wap_com_00332'{/yun}</div>
+                            <div class="TableTite">{{ lc('wap_com_00332') }}</div>
                         </td>
                         <td>
                             <div class="TableSelect">
-                                <el-select v-model="curr_job.sex" placeholder="{yun:}t key='wap_user_00100'{/yun}">
+                                <el-select v-model="curr_job.sex" :placeholder="lc('wap_user_00100')">
                                     <el-option v-for="(item, index) in cacheData.com_sex" :key="index" :label="index == 3 ? lc('admin_company_00050', [item]) : item" :value="index"></el-option>
                                 </el-select>
                             </div>
@@ -126,11 +126,11 @@
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_user_company_00026'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_user_company_00026') }}</div>
                         </td>
                         <td>
                             <div class="TableSelect">
-                                <el-select v-model="curr_job.marriage" placeholder="{yun:}t key='wap_user_00100'{/yun}">
+                                <el-select v-model="curr_job.marriage" :placeholder="lc('wap_user_00100')">
                                     <el-option v-for="item in cacheData.comdata.job_marriage" :key="item" :label="item == 0 ? lc('admin_company_00051', [cacheData.comclass_name[item]]) : cacheData.comclass_name[item]" :value="item"></el-option>
                                 </el-select>
                             </div>
@@ -138,11 +138,11 @@
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_user_company_00024'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_user_company_00024') }}</div>
                         </td>
                         <td>
                             <div class="TableSelect">
-                                <el-select v-model="curr_job.report" placeholder="{yun:}t key='wap_user_00100'{/yun}">
+                                <el-select v-model="curr_job.report" :placeholder="lc('wap_user_00100')">
                                     <el-option v-for="item in cacheData.comdata.job_report" :key="item" :label="item == 0 ? lc('admin_company_00052', [cacheData.comclass_name[item]]) : cacheData.comclass_name[item]" :value="item"></el-option>
                                 </el-select>
                             </div>
@@ -150,19 +150,19 @@
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='wap_com_00284'{/yun}</div>
+                            <div class="TableTite">{{ lc('wap_com_00284') }}</div>
                         </td>
                         <td>
                             <div style="display: flex;">
                                 <div class="TableInpt">
-                                    <el-input type="number" v-model="curr_job.zp_minage" placeholder="{yun:}t key='admin_00581'{/yun}">
-                                        <template slot="append">{yun:}t key='home.age_suffix'{/yun}</template>
+                                    <el-input type="number" v-model="curr_job.zp_minage" :placeholder="lc('admin_00581')">
+                                        <template slot="append">{{ lc('home.age_suffix') }}</template>
                                     </el-input>
                                 </div>
                                 <div style="padding:10px;" class="">-</div>
                                 <div class="TableInpt">
-                                    <el-input type="number" v-model="curr_job.zp_maxage" placeholder="{yun:}t key='admin_00582'{/yun}">
-                                        <template slot="append">{yun:}t key='home.age_suffix'{/yun}</template>
+                                    <el-input type="number" v-model="curr_job.zp_maxage" :placeholder="lc('admin_00582')">
+                                        <template slot="append">{{ lc('home.age_suffix') }}</template>
                                     </el-input>
                                 </div>
                             </div>
@@ -170,19 +170,19 @@
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='wap_com_00173'{/yun}</div>
+                            <div class="TableTite">{{ lc('wap_com_00173') }}</div>
                         </td>
                         <td>
                             <el-checkbox-group v-model="checkedwelfare">
                                 <el-checkbox v-for="(item, index) in curr_job.all_welfare" :label="item" :key="index">{{item}}</el-checkbox>
                             </el-checkbox-group>
                             <el-input style="margin-left: 0px;" class="input-new-tag" v-if="inputVisible" v-model="inputValue" ref="saveTagInput" size="small" @keyup.enter.native="welfareInputConfirm" @blur="welfareInputConfirm"></el-input>
-                            <el-button v-else style="margin-left: 0px;" class="button-new-tag" size="small" @click="showInput">{yun:}t key='admin_00474'{/yun}</el-button>
+                            <el-button v-else style="margin-left: 0px;" class="button-new-tag" size="small" @click="showInput">{{ lc('admin_00474') }}</el-button>
                         </td>
                     </tr>
                     <tr v-if="cacheData.comdata.job_lang && cacheData.comdata.job_lang.length > 0">
                         <td>
-                            <div class="TableTite">{yun:}t key='wap_com_00292'{/yun}</div>
+                            <div class="TableTite">{{ lc('wap_com_00292') }}</div>
                         </td>
                         <td>
                             <el-checkbox-group v-model="checkedlang">
@@ -192,57 +192,57 @@
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='wap_com_00275'{/yun}</div>
+                            <div class="TableTite">{{ lc('wap_com_00275') }}</div>
                         </td>
                         <td>
-                            <div class="job_set_list">{yun:}t key='admin_00576'{/yun}
-                                <el-radio v-model="curr_job.is_message" label="1">{yun:}t key='member_com_00287'{/yun}</el-radio>
-                                <el-radio v-model="curr_job.is_message" label="2">{yun:}t key='common.close'{/yun}</el-radio>
+                            <div class="job_set_list">{{ lc('admin_00576') }}
+                                <el-radio v-model="curr_job.is_message" label="1">{{ lc('member_com_00287') }}</el-radio>
+                                <el-radio v-model="curr_job.is_message" label="2">{{ lc('common.close') }}</el-radio>
                             </div>
-                            <div class="job_set_list">{yun:}t key='admin_00577'{/yun}
-                                <el-radio v-model="curr_job.is_email" label="1">{yun:}t key='member_com_00287'{/yun}</el-radio>
-                                <el-radio v-model="curr_job.is_email" label="2">{yun:}t key='common.close'{/yun}</el-radio>
+                            <div class="job_set_list">{{ lc('admin_00577') }}
+                                <el-radio v-model="curr_job.is_email" label="1">{{ lc('member_com_00287') }}</el-radio>
+                                <el-radio v-model="curr_job.is_email" label="2">{{ lc('common.close') }}</el-radio>
                             </div>
-                            <div class="job_set_list">{yun:}t key='admin_00578'{/yun}
-                                <el-radio v-model="curr_job.is_link" label="1">{yun:}t key='wap_js_00005'{/yun}</el-radio>
-                                <el-radio v-model="curr_job.is_link" label="3">{yun:}t key='admin_user_00259'{/yun}</el-radio>
+                            <div class="job_set_list">{{ lc('admin_00578') }}
+                                <el-radio v-model="curr_job.is_link" label="1">{{ lc('wap_js_00005') }}</el-radio>
+                                <el-radio v-model="curr_job.is_link" label="3">{{ lc('admin_user_00259') }}</el-radio>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='member_com_00242'{/yun}</div>
+                            <div class="TableTite">{{ lc('member_com_00242') }}</div>
                         </td>
                         <td>
-                            <div class="job_set_list">{yun:}t key='admin_user_company_00025'{/yun}
-                                <el-select v-model="curr_job.exp_req" placeholder="{yun:}t key='wap_user_00100'{/yun}">
-                                    <el-option label="{yun:}t key='admin_company_00054'{/yun}" :value="0"></el-option>
+                            <div class="job_set_list">{{ lc('admin_user_company_00025') }}
+                                <el-select v-model="curr_job.exp_req" :placeholder="lc('wap_user_00100')">
+                                    <el-option :label="lc('admin_company_00054')" :value="0"></el-option>
                                     <el-option v-for="item in cacheData.userdata.user_word" :key="item" :label="cacheData.userclass_name[item]" :value="item"></el-option>
                                 </el-select>
                             </div>
-                            <div class="job_set_list">{yun:}t key='member_user_00111'{/yun}
-                                <el-select v-model="curr_job.edu_req" placeholder="{yun:}t key='wap_user_00100'{/yun}">
-                                    <el-option label="{yun:}t key='admin_company_00054'{/yun}" :value="0"></el-option>
+                            <div class="job_set_list">{{ lc('member_user_00111') }}
+                                <el-select v-model="curr_job.edu_req" :placeholder="lc('wap_user_00100')">
+                                    <el-option :label="lc('admin_company_00054')" :value="0"></el-option>
                                     <el-option v-for="item in cacheData.userdata.user_edu" :key="item" :label="cacheData.userclass_name[item]" :value="item"></el-option>
                                 </el-select>
                             </div>
-                            <div class="job_set_list">{yun:}t key='wap_00372'{/yun}
-                                <el-select v-model="curr_job.sex_req" placeholder="{yun:}t key='wap_user_00100'{/yun}">
+                            <div class="job_set_list">{{ lc('wap_00372') }}
+                                <el-select v-model="curr_job.sex_req" :placeholder="lc('wap_user_00100')">
                                     <el-option v-for="(item,index) in cacheData.com_sexreq" :key="index" :label="item" :value="index"></el-option>
                                 </el-select>
                             </div>
                             <div class="job_set_list" style="display: flex; align-items: center;">
-                                <div>{yun:}t key='ajax_00013'{/yun}</div>
+                                <div>{{ lc('ajax_00013') }}</div>
                                 <div style="display: flex; align-items: center; position: relative; width: calc(100% - 120px);">
                                     <div class="TableInpt">
-                                        <el-input v-model="curr_job.minage_req" placeholder="{yun:}t key='wap_user_00076'{/yun}">
-                                            <template slot="append">{yun:}t key='home.age_suffix'{/yun}</template>
+                                        <el-input v-model="curr_job.minage_req" :placeholder="lc('wap_user_00076')">
+                                            <template slot="append">{{ lc('home.age_suffix') }}</template>
                                         </el-input>
                                     </div>
                                     <div class="TableInptline">-</div>
                                     <div class="TableInpt">
-                                        <el-input v-model="curr_job.maxage_req" placeholder="{yun:}t key='wap_user_00076'{/yun}">
-                                            <template slot="append">{yun:}t key='home.age_suffix'{/yun}</template>
+                                        <el-input v-model="curr_job.maxage_req" :placeholder="lc('wap_user_00076')">
+                                            <template slot="append">{{ lc('home.age_suffix') }}</template>
                                         </el-input>
                                     </div>
                                 </div>
@@ -251,42 +251,42 @@
                     </tr>
                     <tr v-if="curr_job.id">
                         <td>
-                            <div class="TableTite">{yun:}t key='member_user_00107'{/yun}</div>
+                            <div class="TableTite">{{ lc('member_user_00107') }}</div>
                         </td>
                         <td>
-                            <el-radio v-model="curr_job.status" label="0">{yun:}t key='wap_com_00243'{/yun}</el-radio>
-                            <el-radio v-model="curr_job.status" label="1">{yun:}t key='wap_com_00242'{/yun}</el-radio>
+                            <el-radio v-model="curr_job.status" label="0">{{ lc('wap_com_00243') }}</el-radio>
+                            <el-radio v-model="curr_job.status" label="1">{{ lc('wap_com_00242') }}</el-radio>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='wap_com_00112'{/yun}</div>
+                            <div class="TableTite">{{ lc('wap_com_00112') }}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input v-model="curr_job.jobhits" placeholder="{yun:}t key='admin_00583'{/yun}"></el-input>
+                                <el-input v-model="curr_job.jobhits" :placeholder="lc('admin_00583')"></el-input>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='wap_com_00111'{/yun}</div>
+                            <div class="TableTite">{{ lc('wap_com_00111') }}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input v-model="curr_job.jobexpoure" placeholder="{yun:}t key='admin_00584'{/yun}"></el-input>
+                                <el-input v-model="curr_job.jobexpoure" :placeholder="lc('admin_00584')"></el-input>
                             </div>
                         </td>
                     </tr>
                     <tr v-if="curr_job.id">
                         <td>
-                            <div class="TableTite">{yun:}t key='wap_com_00406'{/yun}</div>
+                            <div class="TableTite">{{ lc('wap_com_00406') }}</div>
                         </td>
                         <td>
                             <div class="job_set_list">
-                                <font v-if="curr_job.state == 1" color="blue">{yun:}t key='wap_user_00165'{/yun}</font>
-                                <font v-else-if="curr_job.state == 3" color="red">{yun:}t key='wap_user_00167'{/yun}</font>
-                                <font v-else color="red">{yun:}t key='wap_user_00166'{/yun}</font>
+                                <font v-if="curr_job.state == 1" color="blue">{{ lc('wap_user_00165') }}</font>
+                                <font v-else-if="curr_job.state == 3" color="red">{{ lc('wap_user_00167') }}</font>
+                                <font v-else color="red">{{ lc('wap_user_00166') }}</font>
                             </div>
                         </td>
                     </tr>
@@ -294,47 +294,47 @@
                 </table>
             </div>
             <div class="setBasicButn" style="border: none; height: 80px;">
-                <el-button type="primary" size="medium" :loading="save_load" @click="jobsave">{yun:}t key='common.submit'{/yun}</el-button>
+                <el-button type="primary" size="medium" :loading="save_load" @click="jobsave">{{ lc('common.submit') }}</el-button>
             </div>
         </div>
         <!--新增工作地址弹窗-->
-        <el-drawer title="{yun:}t key='admin_00585'{/yun}" :visible.sync="addressdrawer" append-to-body :wrapper-closable="false" size="60%">
+        <el-drawer :title="lc('admin_00585')" :visible.sync="addressdrawer" append-to-body :wrapper-closable="false" size="60%">
             <div class="yunyinDialog" style="padding-right: 20px;">
                 <div class="yunyinDiaList">
                     <div class="yunyinDiaTite">
-                        <span>{yun:}t key='wap_01431'{/yun}</span>
+                        <span>{{ lc('wap_01431') }}</span>
                     </div>
                     <div class="yunyinDiaInpt">
-                        <el-input v-model="link_man" placeholder="{yun:}t key='wap_com_00013'{/yun}"></el-input>
+                        <el-input v-model="link_man" :placeholder="lc('wap_com_00013')"></el-input>
                     </div>
                 </div>
                 <div class="yunyinDiaList">
                     <div class="yunyinDiaTite">
-                        <span>{yun:}t key='wap_user_00241'{/yun}</span>
+                        <span>{{ lc('wap_user_00241') }}</span>
                     </div>
                     <div class="yunyinDiaInpt">
-                        <el-input v-model="link_moblie" placeholder="{yun:}t key='wap_user_00142'{/yun}"></el-input>
+                        <el-input v-model="link_moblie" :placeholder="lc('wap_user_00142')"></el-input>
                     </div>
                 </div>
                 <div class="yunyinDiaList">
                     <div class="yunyinDiaTite">
-                        <span>{yun:}t key='wap_com_00014'{/yun}</span>
+                        <span>{{ lc('wap_com_00014') }}</span>
                     </div>
                     <div class="yunyinDiaInpt">
-                        <el-input v-model="link_phone" placeholder="{yun:}t key='wap_com_00008'{/yun}"></el-input>
+                        <el-input v-model="link_phone" :placeholder="lc('wap_com_00008')"></el-input>
                     </div>
                 </div>
                 <div class="yunyinDiaList">
                     <div class="yunyinDiaTite">
-                        <span>{yun:}t key='wap_com_00016'{/yun}</span>
+                        <span>{{ lc('wap_com_00016') }}</span>
                     </div>
                     <div class="yunyinDiaInpt">
-                        <el-input v-model="email" placeholder="{yun:}t key='wap_com_00009'{/yun}"></el-input>
+                        <el-input v-model="email" :placeholder="lc('wap_com_00009')"></el-input>
                     </div>
                 </div>
                 <div class="yunyinDiaList">
                     <div class="yunyinDiaTite">
-                        <span>{yun:}t key='wap_com_00032'{/yun}</span>
+                        <span>{{ lc('wap_com_00032') }}</span>
                     </div>
                     <div class="yunyinDiaInpt">
                         <el-cascader style="width: 100%;" v-model="sel_city" :options="city_types" :props="{checkStrictly: true}"  filterable collapse-tags clearable></el-cascader>
@@ -342,7 +342,7 @@
                 </div>
                 <div class="yunyinDiaList">
                     <div class="yunyinDiaTite">
-                        <span>{yun:}t key='wap_01362'{/yun}</span>
+                        <span>{{ lc('wap_01362') }}</span>
                     </div>
                     <div class="yunyinDiaInpt yunyinDiautoco">
 						<el-autocomplete style="width: 100%;"
@@ -350,9 +350,9 @@
 							:debounce="1000"
 							v-model="address"
 							:fetch-suggestions="addressKeyup"
-							placeholder="{yun:}t key='wap_user_00076'{/yun}"
+							:placeholder="lc('wap_user_00076')"
 							@select="poiSearchClick">
-							<i class="el-icon-location-outline el-input__icon" slot="suffix" @click="localsearch("{yun:}t key='member_com_00206'{/yun}")"></i>
+							<i class="el-icon-location-outline el-input__icon" slot="suffix" @click="localsearch(lc('member_com_00206'))"></i>
 							<template slot-scope="{ item }">
 								<div class="autocompLtite">
 									<div class="name">{{ item.name }}</div>
@@ -374,8 +374,8 @@
                 </div>
             </div>
             <div class="setBasicButn" style="border: none; height: 80px;">
-                <el-button @click="addressdrawer = false">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
-                <el-button type="primary" @click="addressSubmit" :loading="save_load">{yun:}t key='wap_com_00019'{/yun}</el-button>
+                <el-button @click="addressdrawer = false">{{ lc('admin_user_weipin_00043') }}</el-button>
+                <el-button type="primary" @click="addressSubmit" :loading="save_load">{{ lc('wap_com_00019') }}</el-button>
             </div>
         </el-drawer>
     </div>
@@ -633,40 +633,40 @@
 			},
             addressSubmit: function () {
                 var that = this
-                that.link_man = that.link_man.replace(/[-_ ]/g, '");// {yun:}t key='common_01715'{/yun}
+                that.link_man = that.link_man.replace(/[-_ ]/g, '");// {{ lc('common_01715') }}
                 if (that.link_man == "') {
-                    message.error("{yun:}t key='wap_01368'{/yun}")
+                    message.error(lc('wap_01368'))
                     return false
                 } else {
                     var test = that.link_man.replace(/[0-9]/g, '');
                     if (!test) {
-                        message.error("{yun:}t key='wap_com_00005'{/yun}")
+                        message.error(lc('wap_com_00005'))
                         return false
                     } else {
                         if (/\d/.test(that.link_man)) {
                             if (that.link_man.length > 8) {
                                 // obj.value = obj.value.substring(0,8);
-                                message.error("{yun:}t key='wap_com_00002'{/yun}")
+                                message.error(lc('wap_com_00002'))
                                 return false
                             }
                         }
                     }
                 }
                 if (that.link_moblie == '' && that.link_phone == '') {
-                    message.error("{yun:}t key='wap_01369'{/yun}")
+                    message.error(lc('wap_01369'))
                     return false
                 } else if (that.link_moblie != '' && !isjsMobile(that.link_moblie)) {
-                    message.error("{yun:}t key='wap_user_00039'{/yun}")
+                    message.error(lc('wap_user_00039'))
                     return false
                 }
                 if (that.sel_city[0] && that.cacheData['city_type'][that.sel_city[0]]) {
                     if (!that.sel_city[1] > 0) {
-                        message.error("{yun:}t key='member_com_00625'{/yun}")
+                        message.error(lc('member_com_00625'))
                         return false
                     }
                 }
                 if (that.address == '') {
-                    message.error("{yun:}t key='member_com_00626'{/yun}")
+                    message.error(lc('member_com_00626'))
                     return false
                 }
                 var params = {
@@ -897,7 +897,7 @@
             jobsave: function () {
                 var that = this
                 if (that.curr_job.name == '') {
-                    message.error("{yun:}t key='member_com_00585'{/yun}")
+                    message.error(lc('member_com_00585'))
                     return false;
                 }
                 that.curr_job.job1 = that.sel_jobtype[0] ? that.sel_jobtype[0] : '0'
@@ -906,26 +906,26 @@
 				
 				if (that.jionly == '1') {
 					if (that.curr_job.job1 == '0') {
-						message.error("{yun:}t key='admin_user_company_00023'{/yun}")
+						message.error(lc('admin_user_company_00023'))
 						return false;
 					}
 				} else {
 					if (that.curr_job.job1_son == '0') {
-						message.error("{yun:}t key='admin_user_company_00023'{/yun}")
+						message.error(lc('admin_user_company_00023'))
 						return false;
 					}
 				}
                 if (that.mychecked == 0) {// 非薪资面议
                     if (that.curr_job.minsalary == '' || that.curr_job.minsalary == '0') {
-                        message.error("{yun:}t key='wap_01706'{/yun}")
+                        message.error(lc('wap_01706'))
                         return false;
                     }
                     if (that.curr_job.maxsalary) {
                         if (parseInt(that.curr_job.maxsalary) < parseInt(that.curr_job.minsalary)) {
-                            message.error("{yun:}t key='wap_com_00264'{/yun}")
+                            message.error(lc('wap_com_00264'))
                             return false;
                         } else if (parseInt(that.curr_job.maxsalary) == parseInt(that.curr_job.minsalary)) {
-                            message.error("{yun:}t key='wap_com_00255'{/yun}")
+                            message.error(lc('wap_com_00255'))
                             return false;
                         }
                     }
@@ -934,7 +934,7 @@
                     that.curr_job.maxsalary = 0;
                 }
                 if (that.curr_job.zp_num == '') {
-                    message.error("{yun:}t key='wap_00888'{/yun}")
+                    message.error(lc('wap_00888'))
                     return false;
                 }
                 // 去除html标签后判断内容是否为空
@@ -942,33 +942,33 @@
                 var content = jobeditor.getHtml().replace(regex, "")
 				
                 if (content == "") {
-                    message.error("{yun:}t key='member_com_00587'{/yun}")
+                    message.error(lc('member_com_00587'))
                     return false;
                 } else {
                     that.curr_job.content = jobeditor.getHtml()
                 }
                 if (that.curr_job.link_id == '') {
-                    message.error("{yun:}t key='wap_01676'{/yun}")
+                    message.error(lc('wap_01676'))
                     return false;
                 }
                 if (that.curr_job.zp_minage != '' && that.curr_job.zp_minage < 16) {
-                    message.error("{yun:}t key='wap_com_00257'{/yun}")
+                    message.error(lc('wap_com_00257'))
                     return false;
                 }
                 if (that.curr_job.zp_maxage != '' && (that.curr_job.zp_maxage < 16 || that.curr_job.zp_maxage > 99)) {
-                    message.error("{yun:}t key='wap_com_00269'{/yun}")
+                    message.error(lc('wap_com_00269'))
                     return false;
                 }
                 if (that.curr_job.minage_req != '' && that.curr_job.minage_req < 16) {
-                    message.error("{yun:}t key='wap_com_00257'{/yun}")
+                    message.error(lc('wap_com_00257'))
                     return false;
                 }
                 if (that.curr_job.maxage_req != '' && (that.curr_job.maxage_req < 16 || that.curr_job.maxage_req > 99)) {
-                    message.error("{yun:}t key='wap_com_00269'{/yun}")
+                    message.error(lc('wap_com_00269'))
                     return false;
                 }
                 if (parseInt(that.curr_job.jobexpoure) < parseInt(that.curr_job.jobhits)) {
-                    message.error("{yun:}t key='admin_user_company_00340'{/yun}")
+                    message.error(lc('admin_user_company_00340'))
                     return false;
                 }
                 if (!that.curr_job.id) {

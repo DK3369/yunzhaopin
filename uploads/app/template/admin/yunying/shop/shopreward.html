@@ -16,7 +16,7 @@
 				    <el-input :placeholder="lc('admin_user_weipin_00003')" size="small" v-model="searchForm.keyword" class="input-with-select" clearable>
 				        <el-select v-model="searchForm.ctype" slot="prepend" :placeholder="lc('wap_user_00100')">
 				            <el-option :label="lc('member_user_00039')" value="1"></el-option>
-				            <el-option :label="lc('admin_html_00019')" value="2"></el-option>
+				            <el-option :label="lc('admin_yunying_00117') + integral_pricename" value="2"></el-option>
 				        </el-select>
 				    </el-input>
 				</div>
@@ -50,7 +50,7 @@
                 </el-table-column>
                 <el-table-column prop="classname" :label="lc('admin_00223')" width="180">
                 </el-table-column>
-                <el-table-column prop="integral" :label="lc('admin_html_00019')" width="120">
+                <el-table-column prop="integral" :label="lc('admin_yunying_00117') + integral_pricename" width="120">
                 </el-table-column>
                 <el-table-column prop="number" :label="lc('wap_00406')" width="120">
                     <template slot-scope="scope">
@@ -165,10 +165,10 @@
                 openAdd(data) {
 					if (data != ''){
 						this.id = data.id;
-						this.infotitle = "修改商品";
+						this.infotitle = lc('admin_01203');
 					}else{
 						this.id = '';
-						this.infotitle = "添加商品";
+						this.infotitle = lc('admin_01202');
 					}
                     this.infoBox = true;
                 },
@@ -270,7 +270,7 @@
                         }
                         that.loading = false;
                         if (that.list.length === 0) {
-                            that.dataText = "暂无数据";
+                            that.dataText = lc('wap_js_00113');
                         }
                     })
                 },
@@ -335,10 +335,10 @@
 
                     if (typeof idx == 'undefined') { // 批量删除
                         params.del = this.idArr;
-                        msg = '你确定要删除选中项吗？';
+                        msg = lc('common_00853');
                     } else {// 单个删除
                         params.del = that.list[idx].id;
-                        msg = '你确定要删除当前项吗？';
+                        msg = lc('admin_00333');
                     }
 
                     delConfirm(this, params, function (params) {

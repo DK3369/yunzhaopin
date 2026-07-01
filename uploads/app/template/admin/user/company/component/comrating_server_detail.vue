@@ -5,7 +5,7 @@
         </div>
         <div class="admin_datatip">
             <i class="el-icon-document"></i>
-            {yun:}t key='admin_user_company_00209'{/yun}
+            {{ lc('admin_user_company_00209') }}
         </div>
         <div class="moduleElenAlRight">
             <div class="moduleElTable" style="height: calc(100% - 70px);">
@@ -13,40 +13,40 @@
                     :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" height="100%"
                     ref="multipleTable" @selection-change="handleSelectionChange" @sort-change="shortChange" v-loading="loading" :empty-text="emptytext">
                     <el-table-column type="selection" width="55"></el-table-column>
-                    <el-table-column prop="id" label="{yun:}t key='member_com_00345'{/yun}" width="80"></el-table-column>
-                    <el-table-column prop="service_price" label="{yun:}t key='admin_user_company_00021'{/yun}">
+                    <el-table-column prop="id" :label="lc('member_com_00345')" width="80"></el-table-column>
+                    <el-table-column prop="service_price" :label="lc('admin_user_company_00021')">
                         <template slot-scope="scope">{{ lc("admin_currency_yuan", [scope.row.service_price]) }}</template>
                     </el-table-column>
-                    <el-table-column prop="resume" label="{yun:}t key='wap_00451'{/yun}">
+                    <el-table-column prop="resume" :label="lc('wap_00451')">
                         <template slot-scope="scope">{{ lc("admin_piece_count", [scope.row.resume]) }}</template>
                     </el-table-column>
-                    <el-table-column prop="interview" label="{yun:}t key='resume_00029'{/yun}">
+                    <el-table-column prop="interview" :label="lc('resume_00029')">
                         <template slot-scope="scope">{{ lc("admin_piece_count", [scope.row.interview]) }}</template>
                     </el-table-column>
-                    <el-table-column prop="job_num" label="{yun:}t key='wap_com_00028'{/yun}">
+                    <el-table-column prop="job_num" :label="lc('wap_com_00028')">
                         <template slot-scope="scope">{{ lc("admin_piece_count", [scope.row.job_num]) }}</template>
                     </el-table-column>
-                    <el-table-column prop="breakjob_num" label="{yun:}t key='wap_com_00029'{/yun}">
+                    <el-table-column prop="breakjob_num" :label="lc('wap_com_00029')">
                         <template slot-scope="scope">{{ lc("admin_piece_count", [scope.row.breakjob_num]) }}</template>
                     </el-table-column>
-                    <el-table-column prop="top_num" label="{yun:}t key='wap_com_00238'{/yun}">
+                    <el-table-column prop="top_num" :label="lc('wap_com_00238')">
                         <template slot-scope="scope">{{ lc("admin_day_count", [scope.row.top_num]) }}</template>
                     </el-table-column>
-                    <el-table-column prop="rec_num" label="{yun:}t key='wap_com_00237'{/yun}">
+                    <el-table-column prop="rec_num" :label="lc('wap_com_00237')">
                         <template slot-scope="scope">{{ lc("admin_day_count", [scope.row.rec_num]) }}</template>
                     </el-table-column>
-                    <el-table-column prop="urgent_num" label="{yun:}t key='member_com_00247'{/yun}">
+                    <el-table-column prop="urgent_num" :label="lc('member_com_00247')">
                         <template slot-scope="scope">{{ lc("admin_day_count", [scope.row.urgent_num]) }}</template>
                     </el-table-column>
-                    <el-table-column prop="zph_num" label="{yun:}t key='admin_user_company_00210'{/yun}" width="100">
+                    <el-table-column prop="zph_num" :label="lc('admin_user_company_00210')" width="100">
                         <template slot-scope="scope">{{ lc("admin_times_count", [scope.row.zph_num]) }}</template>
                     </el-table-column>
-                    <el-table-column prop="sort" label="{yun:}t key='member_com_00022'{/yun}" width="80"></el-table-column>
-                    <el-table-column label="{yun:}t key='member_user_00048'{/yun}" width="140" fixed="right">
+                    <el-table-column prop="sort" :label="lc('member_com_00022')" width="80"></el-table-column>
+                    <el-table-column :label="lc('member_user_00048')" width="140" fixed="right">
                         <template slot-scope="scope">
                             <div class="cz_button">
-                                <el-button size="small" plain @click="editRow(scope)">{yun:}t key='wap_js_00073'{/yun}</el-button>
-                                <el-button type="danger" size="small" @click="deleteRow(scope)">{yun:}t key='common.delete'{/yun}</el-button>
+                                <el-button size="small" plain @click="editRow(scope)">{{ lc('wap_js_00073') }}</el-button>
+                                <el-button type="danger" size="small" @click="deleteRow(scope)">{{ lc('common.delete') }}</el-button>
                             </div>
                         </template>
                     </el-table-column>
@@ -54,15 +54,15 @@
             </div>
             <div class="modulePaging">
                 <div class="modulecz modulePagButn">
-                    <el-checkbox :indeterminate="isIndeterminate" v-model="checked" @change="selectAllBottom">{yun:}t key='wap_js_00074'{/yun}</el-checkbox>
-                    <el-button size="mini" @click="deleteRow('',1)">{yun:}t key='member_com_00055'{/yun}</el-button>
+                    <el-checkbox :indeterminate="isIndeterminate" v-model="checked" @change="selectAllBottom">{{ lc('wap_js_00074') }}</el-checkbox>
+                    <el-button size="mini" @click="deleteRow('',1)">{{ lc('member_com_00055') }}</el-button>
                 </div>
                 <div class="modulePagNum">
                 </div>
             </div>
         </div>
         <!--修改-->
-        <el-drawer title="{yun:}t key='admin_00697'{/yun}" :visible.sync="addVisible" :destroy-on-close="true" :modal-append-to-body="false" :append-to-body="true" :wrapper-closable="false" size="770px">
+        <el-drawer :title="lc('admin_00697')" :visible.sync="addVisible" :destroy-on-close="true" :modal-append-to-body="false" :append-to-body="true" :wrapper-closable="false" size="770px">
             <comrating_server_detail_edit :tid="info?info.id:0" @child-event-list="handleEditClose"></comrating_server_detail_edit>
         </el-drawer>
     </div>
@@ -76,7 +76,7 @@ module.exports = {
     data: function () {
         return {
             loading: false,
-            emptytext: "{yun:}t key='wap_js_00113'{/yun}",
+            emptytext: lc('wap_js_00113'),
             searchForm: {
                 page: 1,
                 limit: null,
@@ -137,7 +137,7 @@ module.exports = {
             }
             params.id = this.id;
             _this.loading = true;
-            _this.emptytext = "{yun:}t key='admin_user_weipin_00026'{/yun}";
+            _this.emptytext = lc('admin_user_weipin_00026');
             httpPost('m=user&c=company_comrating&a=list', params).then(function (response) {
                 let res = response.data;
                 if (res.error === 0) {
@@ -145,7 +145,7 @@ module.exports = {
                     _this.config = res.data.config;
                     _this.loading = false;
                     if (_this.tableData.length === 0){
-                        _this.emptytext = "{yun:}t key='wap_js_00113'{/yun}";
+                        _this.emptytext = lc('wap_js_00113');
                     }
                 }
             }).catch(function (error) {
@@ -166,7 +166,7 @@ module.exports = {
             let params = {};
             if (isMore) {
                 if (!this.selectedItem.length) {
-                    message.error("{yun:}t key='admin_user_weipin_00005'{/yun}");
+                    message.error(lc('admin_user_weipin_00005'));
                     return false;
                 }
                 let list = [];
@@ -187,10 +187,10 @@ module.exports = {
             httpPost('m=user&c=company_comrating&a=del', params).then(function (response) {
                 let res = response.data;
                 if (res.error === 0) {
-                    message.success("{yun:}t key='admin_user_00187'{/yun}");
+                    message.success(lc('admin_user_00187'));
                     _this.getList();
                 } else {
-                    message.error("{yun:}t key='admin_user_00186'{/yun}");
+                    message.error(lc('admin_user_00186'));
                 }
             }).catch(function (error) {
                 console.log(error);

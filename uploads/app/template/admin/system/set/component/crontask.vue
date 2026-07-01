@@ -3,7 +3,7 @@
         <div class="moduleSeachs">
             <div class="moduleSeachleft"></div>
             <div class="moduleSeachButn">
-                <el-button type="primary" icon="el-icon-document-add" size="mini" @click="addcron">{yun:}t key='admin_00898'{/yun}</el-button>
+                <el-button type="primary" icon="el-icon-document-add" size="mini" @click="addcron">{{ lc('admin_00898') }}</el-button>
             </div>
         </div>
         <div class="moduleElTable" style="height: calc(100% - 81px);">
@@ -11,30 +11,30 @@
                 :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" height="100%" v-loading="loading" :empty-text="emptytext">
                 <el-table-column prop="id" label="ID" width="80">
                 </el-table-column>
-                <el-table-column prop="name" label="{yun:}t key='admin_00892'{/yun}" min-width="220">
+                <el-table-column prop="name" :label="lc('admin_00892')" min-width="220">
                 </el-table-column>
-                <el-table-column prop="dir" label="{yun:}t key='admin_system_00262'{/yun}" width="220">
+                <el-table-column prop="dir" :label="lc('admin_system_00262')" width="220">
                 </el-table-column>
-                <el-table-column prop="type_n" label="{yun:}t key='admin_system_00272'{/yun}" width="160">
+                <el-table-column prop="type_n" :label="lc('admin_system_00272')" width="160">
                 </el-table-column>
-                <el-table-column prop="display_n" label="{yun:}t key='admin_system_00263'{/yun}" width="100">
+                <el-table-column prop="display_n" :label="lc('admin_system_00263')" width="100">
                 </el-table-column>
-                <el-table-column prop="nowtime_n" label="{yun:}t key='admin_00901'{/yun}" width="160">
+                <el-table-column prop="nowtime_n" :label="lc('admin_00901')" width="160">
                 </el-table-column>
-                <el-table-column prop="nexttime_n" label="{yun:}t key='admin_00902'{/yun}" width="160">
+                <el-table-column prop="nexttime_n" :label="lc('admin_00902')" width="160">
                 </el-table-column>
-                <el-table-column prop="waibu" label="{yun:}t key='admin_system_00271'{/yun}" width="100">
+                <el-table-column prop="waibu" :label="lc('admin_system_00271')" width="100">
                     <template slot-scope="scope">
-                        <el-link type="primary" @click="copyurl(scope.row.src)">{yun:}t key='admin_system_00275'{/yun}</el-link>
+                        <el-link type="primary" @click="copyurl(scope.row.src)">{{ lc('admin_system_00275') }}</el-link>
                     </template>
                 </el-table-column>
-                <el-table-column fixed="right" label="{yun:}t key='member_user_00048'{/yun}" width="200">
+                <el-table-column fixed="right" :label="lc('member_user_00048')" width="200">
                     <template slot-scope="scope">
                         <div class="cz_button">
                             <el-button size="mini"
-                                @click="exec_ctl(scope.row.display, scope.row.id)">{yun:}t key='admin_system_00274'{/yun}</el-button>
-                            <el-button size="mini" @click="addcron(scope.row.id)">{yun:}t key='wap_js_00073'{/yun}</el-button>
-                            <el-button size="mini" type="danger" @click="delrow(scope.row)">{yun:}t key='common.delete'{/yun}</el-button>
+                                @click="exec_ctl(scope.row.display, scope.row.id)">{{ lc('admin_system_00274') }}</el-button>
+                            <el-button size="mini" @click="addcron(scope.row.id)">{{ lc('wap_js_00073') }}</el-button>
+                            <el-button size="mini" type="danger" @click="delrow(scope.row)">{{ lc('common.delete') }}</el-button>
                         </div>
                     </template>
                 </el-table-column>
@@ -49,24 +49,24 @@
             </div>
         </div>
         <div class="modluDrawer">
-            <el-dialog title="{yun:}t key='admin_00308'{/yun}" :visible.sync="drawer" :with-header="true" :modal-append-to-body="false"
+            <el-dialog :title="lc('admin_00308')" :visible.sync="drawer" :with-header="true" :modal-append-to-body="false"
                 :show-close="true" width="300px">
                 <div style="overflow: hidden; position: relative; padding-bottom: 15px;">
-                    <span>{yun:}t key='admin_00899'{/yun}</span>
+                    <span>{{ lc('admin_00899') }}</span>
                 </div>
                 
             </el-dialog>
         </div>
         <div class="modluDrawer">
-            <el-dialog title="{yun:}t key='admin_00903'{/yun}" :visible.sync="dy_drawer" :with-header="true" :modal-append-to-body="false"
+            <el-dialog :title="lc('admin_00903')" :visible.sync="dy_drawer" :with-header="true" :modal-append-to-body="false"
                 :show-close="true" width="30%">
-                <span>{yun:}t key='admin_00900'{/yun}</span>
+                <span>{{ lc('admin_00900') }}</span>
                 <div style="margin:20px 5px; overflow: hidden; position: relative; padding-bottom: 20px;">
                     <el-input v-model="curr_url" size="small">
                     </el-input>
                 </div>
             </el-dialog>
-			<el-drawer title="{yun:}t key='admin_system_00273'{/yun}" :visible.sync="cron_drawer" :modal-append-to-body="false" :show-close="true" :with-header="true" size="45%">
+			<el-drawer :title="lc('admin_system_00273')" :visible.sync="cron_drawer" :modal-append-to-body="false" :show-close="true" :with-header="true" size="45%">
 				<cronadd :id_v="id" @child-event="getList"></cronadd>
 			</el-drawer>
         </div>
@@ -76,7 +76,7 @@
 module.exports = {
     data: function () {
         return {
-            emptytext: "{yun:}t key='wap_js_00113'{/yun}",
+            emptytext: lc('wap_js_00113'),
             loading: false,
             currentPage: 1,
             prevPage: 0,
@@ -147,7 +147,7 @@ module.exports = {
                 pageSize: that.perPage
             }
             that.loading = true;
-            that.emptytext = "{yun:}t key='admin_user_weipin_00026'{/yun}";
+            that.emptytext = lc('admin_user_weipin_00026');
             httpPost('m=system&c=set_cron&a=index', params).then(function (result) {
                 var res = result.data
                 if (res.error == 0) {
@@ -161,7 +161,7 @@ module.exports = {
                     }
                     that.loading = false;
                     if (that.tableData.length === 0){
-                        that.emptytext = "{yun:}t key='wap_js_00113'{/yun}";
+                        that.emptytext = lc('wap_js_00113');
                     }
                 }
             }).catch(function (e) {
@@ -178,7 +178,7 @@ module.exports = {
             };
             httpPost('m=system&c=set_cron&a=del', params).then(function (response) {
                 if (response.data.error == 0) {
-                    message.success("{yun:}t key='wap_user_00264'{/yun}", that.getList());
+                    message.success(lc('wap_user_00264'), that.getList());
                 } else {
                     message.error(response.data.msg);
                 }

@@ -4,59 +4,59 @@
             <table class="tableVue">
                 <thead>
                     <tr align="left">
-                        <th width="180">{yun:}t key='member_com_00021'{/yun}</th>
-                        <th width="500">{yun:}t key='member_user_00181'{/yun}</th>
-                        <th>{yun:}t key='member_com_00207'{/yun}</th>
+                        <th width="180">{{ lc('member_com_00021') }}</th>
+                        <th width="500">{{ lc('member_user_00181') }}</th>
+                        <th>{{ lc('member_com_00207') }}</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_01106'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_01106') }}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
                                 <el-radio-group v-model="utype" @change="utypeChange">
-                                    <el-radio label="1">{yun:}t key='admin_user_00122'{/yun}</el-radio>
-                                    <el-radio label="2">{yun:}t key='admin_user_00124'{/yun}</el-radio>
-                                    <el-radio label="5">{yun:}t key='admin_system_00206'{/yun}</el-radio>
+                                    <el-radio label="1">{{ lc('admin_user_00122') }}</el-radio>
+                                    <el-radio label="2">{{ lc('admin_user_00124') }}</el-radio>
+                                    <el-radio label="5">{{ lc('admin_system_00206') }}</el-radio>
                                 </el-radio-group>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>{yun:}t key='admin_01107'{/yun}</span>
+                                <span>{{ lc('admin_01107') }}</span>
                             </div>
                         </td>
                     </tr>
                     <tr v-if="utype == 5">
                         <td>
-                            <div class="TableTite">{yun:}t key='wap_01619'{/yun}</div>
+                            <div class="TableTite">{{ lc('wap_01619') }}</div>
                         </td>
                         <td>
                             <div class="TableButn">
-                                <el-input v-model="userarr" placeholder="{yun:}t key='wap_js_00119'{/yun}"></el-input>
+                                <el-input v-model="userarr" :placeholder="lc('wap_js_00119')"></el-input>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>{yun:}t key='admin_01110'{/yun}</span>
+                                <span>{{ lc('admin_01110') }}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_00666'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_00666') }}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input type="textarea" :rows="4" placeholder="{yun:}t key='admin_01111'{/yun}" v-model="content">
+                                <el-input type="textarea" :rows="4" :placeholder="lc('admin_01111')" v-model="content">
                                 </el-input>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>{yun:}t key='admin_00666'{/yun}</span>
+                                <span>{{ lc('admin_00666') }}</span>
                             </div>
                         </td>
                     </tr>
@@ -64,7 +64,7 @@
             </table>
         </div>
         <div class="setBasicButn" style="border: none; height: 80px;">
-            <el-button type="primary" size="medium" @click="send">{yun:}t key='resume_00033'{/yun}</el-button>
+            <el-button type="primary" size="medium" @click="send">{{ lc('resume_00033') }}</el-button>
         </div>
     </div>
 </template>
@@ -114,12 +114,12 @@ module.exports = {
             }
             if (utype == "5") {
                 if (userarr == "") {
-                    message.error("{yun:}t key='wap_js_00119'{/yun}");
+                    message.error(lc('wap_js_00119'));
                     return false;
                 }
             }
             if (content == '') {
-                message.error("{yun:}t key='admin_01111'{/yun}");
+                message.error(lc('admin_01111'));
                 return false;
             }
 
@@ -127,7 +127,7 @@ module.exports = {
                 utype: utype,
                 userarr: userarr,
                 content: content
-            }, 1, "{yun:}t key='admin_yunying_00170'{/yun}", 3);
+            }, 1, lc('admin_yunying_00170'), 3);
         },
 
         sendDivMsg(params, page, msg, status) {

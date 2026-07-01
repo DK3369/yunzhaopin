@@ -3,14 +3,14 @@
         <div class="moduleElTabSeach">
             <div class="moduleElTabInpt">
                 <div class="moduleInptList">
-                    <el-input size="small" v-model="searchForm.keyword" placeholder="{yun:}t key='admin_yunying_00157'{/yun}" clearable></el-input>
+                    <el-input size="small" v-model="searchForm.keyword" :placeholder="lc('admin_yunying_00157')" clearable></el-input>
                 </div>
                 <div class="moduleInptList">
-                    <el-button type="primary" icon="el-icon-search" size="mini" @click="search">{yun:}t key='admin_user_weipin_00049'{/yun}</el-button>
+                    <el-button type="primary" icon="el-icon-search" size="mini" @click="search">{{ lc('admin_user_weipin_00049') }}</el-button>
                 </div>
             </div>
             <div class="moduleSeachButn">
-                <el-button type="primary" icon="el-icon-document-add" size="mini" @click="openSet">{yun:}t key='wap_com_00307'{/yun}</el-button>
+                <el-button type="primary" icon="el-icon-document-add" size="mini" @click="openSet">{{ lc('wap_com_00307') }}</el-button>
             </div>
         </div>
         <div class="moduleElTable" style="height: calc(100% - 109px)">
@@ -19,48 +19,48 @@
                 <template slot="empty">
                     <p>{{dataText}}</p>
                 </template>
-                <el-table-column prop="uid" label="{yun:}t key='admin_user_00130'{/yun}" width="100">
+                <el-table-column prop="uid" :label="lc('admin_user_00130')" width="100">
                 </el-table-column>
-                <el-table-column prop="com_name" label="{yun:}t key='wap_com_00157'{/yun}" min-width="240">
+                <el-table-column prop="com_name" :label="lc('wap_com_00157')" min-width="240">
                 </el-table-column>
-                <el-table-column label="{yun:}t key='wap_user_00154'{/yun}" width="180">
+                <el-table-column :label="lc('wap_user_00154')" width="180">
                     <template slot-scope="scope">
                         <div class="moduleProps">
-                            <span>{yun:}t key='admin_01100'{/yun}</span>
-                            <span>{yun:}t key='admin_yunying_00151'{/yun}</span>
+                            <span>{{ lc('admin_01100') }}</span>
+                            <span>{{ lc('admin_yunying_00151') }}</span>
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="{yun:}t key='wap_com_00428'{/yun}" width="160">
+                <el-table-column :label="lc('wap_com_00428')" width="160">
                     <template slot-scope="scope">
                         <div class="moduleProps">
-                            <span>{yun:}t key='admin_yunying_00149'{/yun}</span>
-                            <span>{yun:}t key='admin_01101'{/yun}</span>
-                            <span>{yun:}t key='admin_01102'{/yun}</span>
+                            <span>{{ lc('admin_yunying_00149') }}</span>
+                            <span>{{ lc('admin_01101') }}</span>
+                            <span>{{ lc('admin_01102') }}</span>
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="{yun:}t key='wap_js_00145'{/yun}" width="130">
+                <el-table-column :label="lc('wap_js_00145')" width="130">
                     <template slot-scope="scope">
                         <div class="moduleProps">
-                            <span>{yun:}t key='admin_01103'{/yun}</span>
+                            <span>{{ lc('admin_01103') }}</span>
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="{yun:}t key='admin_yunying_00168'{/yun}" min-width="220">
+                <el-table-column :label="lc('admin_yunying_00168')" min-width="220">
                     <template slot-scope="scope">
                         <div class="moduleProps">
-                            <span>{yun:}t key='admin_yunying_00150'{/yun}</span>
-                            <span v-if="scope.row.lastwork">{yun:}t key='admin_yunying_00148'{/yun}</span>
+                            <span>{{ lc('admin_yunying_00150') }}</span>
+                            <span v-if="scope.row.lastwork">{{ lc('admin_yunying_00148') }}</span>
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column fixed="right" label="{yun:}t key='member_user_00048'{/yun}" width="150">
+                <el-table-column fixed="right" :label="lc('member_user_00048')" width="150">
                     <template slot-scope="scope">
                         <div class="moduleElTaCaoz">
-                            <el-button size="mini" @click="updateData(scope.row.id)">{yun:}t key='wap_00225'{/yun}</el-button>
-                            <el-button size="mini" @click="openEdit(scope.row)">{yun:}t key='wap_js_00073'{/yun}</el-button>
-                            <el-button size="mini" @click="openHb(scope.row)">{yun:}t key='member_com_00270'{/yun}</el-button>
+                            <el-button size="mini" @click="updateData(scope.row.id)">{{ lc('wap_00225') }}</el-button>
+                            <el-button size="mini" @click="openEdit(scope.row)">{{ lc('wap_js_00073') }}</el-button>
+                            <el-button size="mini" @click="openHb(scope.row)">{{ lc('member_com_00270') }}</el-button>
                         </div>
                     </template>
                 </el-table-column>
@@ -77,12 +77,12 @@
         </div>
 
         <div class="modluDrawer">
-            <el-drawer title="{yun:}t key='admin_01105'{/yun}" :visible.sync="drawerEdit" :direction="direction" :modal-append-to-body="false"
+            <el-drawer :title="lc('admin_01105')" :visible.sync="drawerEdit" :direction="direction" :modal-append-to-body="false"
                 size="500px">
                 <div class="moduleSchools">
                     <div class="drawerModLis">
                         <div class="drawerModTite">
-                            <span>{yun:}t key='wap_com_00157'{/yun}</span>
+                            <span>{{ lc('wap_com_00157') }}</span>
                         </div>
                         <div class="drawerModInpt">
                             <el-input v-model="detail.com_name" :disabled="true" placeholder=""></el-input>
@@ -90,7 +90,7 @@
                     </div>
                     <div class="drawerModLis">
                         <div class="drawerModTite">
-                            <span>{yun:}t key='admin_yunying_00165'{/yun}</span>
+                            <span>{{ lc('admin_yunying_00165') }}</span>
                         </div>
                         <div class="drawerModInpt">
                             <el-input v-model="ruleFormEdit.job" @input="inputIntNumber($event, 'ruleFormEdit', 'job')"
@@ -99,7 +99,7 @@
                     </div>
                     <div class="drawerModLis">
                         <div class="drawerModTite">
-                            <span>{yun:}t key='admin_yunying_00164'{/yun}</span>
+                            <span>{{ lc('admin_yunying_00164') }}</span>
                         </div>
                         <div class="drawerModInpt">
                             <el-input v-model="ruleFormEdit.lookjob"
@@ -108,7 +108,7 @@
                     </div>
                     <div class="drawerModLis">
                         <div class="drawerModTite">
-                            <span>{yun:}t key='admin_01104'{/yun}</span>
+                            <span>{{ lc('admin_01104') }}</span>
                         </div>
                         <div class="drawerModInpt">
                             <el-input v-model="ruleFormEdit.login" @input="inputIntNumber($event, 'ruleFormEdit', 'login')"
@@ -117,7 +117,7 @@
                     </div>
                     <div class="drawerModLis">
                         <div class="drawerModTite">
-                            <span>{yun:}t key='admin_yunying_00163'{/yun}</span>
+                            <span>{{ lc('admin_yunying_00163') }}</span>
                         </div>
                         <div class="drawerModInpt">
                             <el-input v-model="ruleFormEdit.nightwork"
@@ -126,7 +126,7 @@
                     </div>
                     <div class="drawerModLis">
                         <div class="drawerModTite">
-                            <span>{yun:}t key='member_com_00037'{/yun}</span>
+                            <span>{{ lc('member_com_00037') }}</span>
                         </div>
                         <div class="drawerModInpt">
                             <el-input v-model="ruleFormEdit.yq" @input="inputIntNumber($event, 'ruleFormEdit', 'yq')"
@@ -135,7 +135,7 @@
                     </div>
                     <div class="drawerModLis">
                         <div class="drawerModTite">
-                            <span>{yun:}t key='admin_yunying_00166'{/yun}</span>
+                            <span>{{ lc('admin_yunying_00166') }}</span>
                         </div>
                         <div class="drawerModInpt">
                             <el-input v-model="ruleFormEdit.sqjob" @input="inputIntNumber($event, 'ruleFormEdit', 'sqjob')"
@@ -144,29 +144,29 @@
                     </div>
                     <div class="drawerModLis">
                         <div class="drawerModTite">
-                            <span>{yun:}t key='admin_yunying_00161'{/yun}</span>
+                            <span>{{ lc('admin_yunying_00161') }}</span>
                         </div>
                         <div class="drawerModInpt">
-                            <el-date-picker v-model="ruleFormEdit.lastwork" type="datetime" placeholder="{yun:}t key='admin_00346'{/yun}">
+                            <el-date-picker v-model="ruleFormEdit.lastwork" type="datetime" :placeholder="lc('admin_00346')">
                             </el-date-picker>
                         </div>
                     </div>
                     <div class="setBasicButn" style="border: none;">
-                        <el-button type="primary" size="medium" @click="saveEdit">{yun:}t key='common.submit'{/yun}</el-button>
+                        <el-button type="primary" size="medium" @click="saveEdit">{{ lc('common.submit') }}</el-button>
                     </div>
                 </div>
             </el-drawer>
         </div>
         <div class="modluDrawer">
-            <el-drawer title="{yun:}t key='wap_com_00307'{/yun}" :visible.sync="drawerSet" :direction="direction" :modal-append-to-body="false" size="45%">
+            <el-drawer :title="lc('wap_com_00307')" :visible.sync="drawerSet" :direction="direction" :modal-append-to-body="false" size="45%">
                 <div class="moduleSchools">
                     <div class="drawerModTishi">
-                        <p><b>{yun:}t key='member_user_00449'{/yun}</b><span>{yun:}t key='admin_yunying_00153'{/yun}</span></p>
-                        <p><b>{yun:}t key='admin_01065'{/yun}</b><span>{yun:}t key='admin_yunying_00152'{/yun}</span></p>
+                        <p><b>{{ lc('member_user_00449') }}</b><span>{{ lc('admin_yunying_00153') }}</span></p>
+                        <p><b>{{ lc('admin_01065') }}</b><span>{{ lc('admin_yunying_00152') }}</span></p>
                     </div>
                     <div class="drawerModLis">
                         <div class="drawerModTite">
-                            <span>{yun:}t key='admin_system_00332'{/yun}</span>
+                            <span>{{ lc('admin_system_00332') }}</span>
                         </div>
                         <div class="drawerModInpt">
                             <el-switch v-model="ruleFormSet.sy_yearreport_isopen" active-color="#13ce66"
@@ -176,20 +176,20 @@
                     </div>
                     <div class="drawerModLis">
                         <div class="drawerModTite">
-                            <span>{yun:}t key='admin_yunying_00160'{/yun}</span>
+                            <span>{{ lc('admin_yunying_00160') }}</span>
                         </div>
                         <div class="drawerModInpt">
-                            <el-radio v-model="ruleFormSet.sy_yearreport_ewmtype" label="wap">{yun:}t key='wap_js_00098'{/yun}</el-radio>
-                            <el-radio v-model="ruleFormSet.sy_yearreport_ewmtype" label="weixin">{yun:}t key='admin_yunying_00158'{/yun}</el-radio>
+                            <el-radio v-model="ruleFormSet.sy_yearreport_ewmtype" label="wap">{{ lc('wap_js_00098') }}</el-radio>
+                            <el-radio v-model="ruleFormSet.sy_yearreport_ewmtype" label="weixin">{{ lc('admin_yunying_00158') }}</el-radio>
                         </div>
                         <div class="wenzirushi">
-                            <el-alert title="{yun:}t key='admin_yunying_00156'{/yun}" type="info" show-icon :closable="false"></el-alert>
-                            <el-alert title="{yun:}t key='admin_yunying_00154'{/yun}" type="info" show-icon :closable="false"></el-alert>
+                            <el-alert :title="lc('admin_yunying_00156')" type="info" show-icon :closable="false"></el-alert>
+                            <el-alert :title="lc('admin_yunying_00154')" type="info" show-icon :closable="false"></el-alert>
                         </div>
                     </div>
                     <div class="drawerModLis">
                         <div class="drawerModTite">
-                            <span>{yun:}t key='admin_yunying_00162'{/yun}</span>
+                            <span>{{ lc('admin_yunying_00162') }}</span>
                         </div>
                         <div class="drawerModInpt">
                             <el-upload class="avatar-uploader" list-type="picture" :accept="pic_accept" action="" :auto-upload="false"
@@ -200,12 +200,12 @@
                             </el-upload>
                         </div>
                         <div class="wenzirushi">
-                            <el-alert title="{yun:}t key='admin_yunying_00143'{/yun}" type="info" show-icon :closable="false"></el-alert>
+                            <el-alert :title="lc('admin_yunying_00143')" type="info" show-icon :closable="false"></el-alert>
                         </div>
                     </div>
                     <div class="drawerModLis">
                         <div class="drawerModTite">
-                            <span>{yun:}t key='admin_yunying_00159'{/yun}</span>
+                            <span>{{ lc('admin_yunying_00159') }}</span>
                         </div>
                         <div class="drawerModInpt">
                             <el-upload class="avatar-uploader" list-type="picture" :accept="pic_accept" action="" :auto-upload="false"
@@ -216,22 +216,22 @@
                             </el-upload>
                         </div>
                         <div class="wenzirushi">
-                            <el-alert title="{yun:}t key='admin_yunying_00155'{/yun}" type="info" show-icon :closable="false"></el-alert>
+                            <el-alert :title="lc('admin_yunying_00155')" type="info" show-icon :closable="false"></el-alert>
                         </div>
                     </div>
                     <div class="setBasicButn" style="border: none;">
-                        <el-button type="primary" size="medium" @click="saveSet" :disabled="saveLoading">{yun:}t key='common.submit'{/yun}</el-button>
+                        <el-button type="primary" size="medium" @click="saveSet" :disabled="saveLoading">{{ lc('common.submit') }}</el-button>
                     </div>
                 </div>
             </el-drawer>
 
-            <el-dialog title="{yun:}t key='member_com_00270'{/yun}" class="abow_dialog" :visible.sync="dialogHb" :with-header="true" :modal-append-to-body="false"
+            <el-dialog :title="lc('member_com_00270')" class="abow_dialog" :visible.sync="dialogHb" :with-header="true" :modal-append-to-body="false"
                 :show-close="true" width="400px">
                 <div class="center">
                     <img :src="hbUrl" width="360" height="640">
                 </div>
                 <div class="center">
-                    <el-button type="primary" size="mini" @click="downloadHb">{yun:}t key='common_02219'{/yun}</el-button>
+                    <el-button type="primary" size="mini" @click="downloadHb">{{ lc('common_02219') }}</el-button>
                 </div>
             </el-dialog>
         </div>
@@ -244,7 +244,7 @@ module.exports = {
         return {
             pic_accept: localStorage.getItem("pic_accept"),
             loading: false,
-            dataText: "{yun:}t key='admin_user_weipin_00026'{/yun}",
+            dataText: lc('admin_user_weipin_00026'),
             direction: 'rtl',
 
             // 搜索筛选项
@@ -333,7 +333,7 @@ module.exports = {
                 }
                 that.loading = false;
                 if (that.list.length === 0) {
-                    that.dataText = "{yun:}t key='wap_js_00113'{/yun}";
+                    that.dataText = lc('wap_js_00113');
                 }
             })
         },
@@ -483,7 +483,7 @@ module.exports = {
         downloadHb() {
             var a = document.createElement("a");
             a.href = this.hbUrl;
-            a.download = "{yun:}t key='admin_yunying_00167'{/yun}";
+            a.download = lc('admin_yunying_00167');
             a.click();
         },
     },

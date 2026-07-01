@@ -49,7 +49,7 @@
                 <el-table-column prop="ctime_n" :label="lc('member_com_00300')"></el-table-column>
                 <el-table-column :label="lc('admin_system_00687')">
                     <template slot-scope="scope">
-                        <el-tag>{{scope.row.is_nav==1?'显示':'不显示'}}</el-tag>
+                        <el-tag>{{scope.row.is_nav==1?lc('member_com_00023'):lc('admin_user_00340')}}</el-tag>
                     </template>
                 </el-table-column>
                 <el-table-column :label="lc('admin_vue_00044')" width="80">

@@ -4,35 +4,35 @@
             <table class="tableVue">
                 <thead>
                 <tr align="left">
-                    <th width="200">{yun:}t key='member_com_00021'{/yun}</th>
-                    <th width="400">{yun:}t key='member_user_00181'{/yun}</th>
-                    <th>{yun:}t key='member_com_00207'{/yun}</th>
+                    <th width="200">{{ lc('member_com_00021') }}</th>
+                    <th width="400">{{ lc('member_user_00181') }}</th>
+                    <th>{{ lc('member_com_00207') }}</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_00821'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_00821') }}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-input placeholder="{yun:}t key='admin_00822'{/yun}" v-model="info.title">
+                            <el-input :placeholder="lc('admin_00822')" v-model="info.title">
                             </el-input>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>{yun:}t key='admin_00822'{/yun}</span>
+                            <span>{{ lc('admin_00822') }}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_00283'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_00283') }}</div>
                     </td>
                     <td>
                         <div class="TableSelect" style="display: flex;align-items: center;">
-                            <el-select v-model="info.sid" placeholder="{yun:}t key='wap_user_00100'{/yun}" @change="cdChange">
+                            <el-select v-model="info.sid" :placeholder="lc('wap_user_00100')" @change="cdChange">
                                 <el-option v-for="item in spaces" :key="item.id" :label="item.name" :value="item.id">
                                 </el-option>
                             </el-select>
@@ -40,30 +40,30 @@
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>{yun:}t key='admin_00283'{/yun}</span>
+                            <span>{{ lc('admin_00283') }}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_00286'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_00286') }}</div>
                     </td>
                     <td>
-                        <el-cascader v-model="reserved_arr" placeholder="{yun:}t key='admin_00825'{/yun}" :options="zwarr" :props="{ multiple: true }"></el-cascader>
+                        <el-cascader v-model="reserved_arr" :placeholder="lc('admin_00825')" :options="zwarr" :props="{ multiple: true }"></el-cascader>
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <el-button type="primary" icon="el-icon-document-add" @click="addLocal">{yun:}t key='admin_00823'{/yun}</el-button>
+                            <el-button type="primary" icon="el-icon-document-add" @click="addLocal">{{ lc('admin_00823') }}</el-button>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_user_00126'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_user_00126') }}</div>
                     </td>
                     <td>
                         <div class="TableSelect" style="display: flex;align-items: center;">
-                            <el-select v-model="info.did" placeholder="{yun:}t key='wap_user_00100'{/yun}">
+                            <el-select v-model="info.did" :placeholder="lc('wap_user_00100')">
                                 <el-option v-for="(item,index) in dnames" :key="index" :label="item" :value="index"></el-option>
                             </el-select>
                         </div>
@@ -76,7 +76,7 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='wap_user_00087'{/yun}</div>
+                        <div class="TableTite">{{ lc('wap_user_00087') }}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
@@ -85,7 +85,7 @@
                                     type="datetime"
                                     style="width: 100%;"
                                     value-format="yyyy-MM-dd HH:mm:ss"
-                                    placeholder="{yun:}t key='admin_user_company_00055'{/yun}">
+                                    :placeholder="lc('admin_user_company_00055')">
                             </el-date-picker>
                         </div>
                     </td>
@@ -97,7 +97,7 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='wap_user_00096'{/yun}</div>
+                        <div class="TableTite">{{ lc('wap_user_00096') }}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
@@ -106,7 +106,7 @@
                                     type="datetime"
                                     style="width: 100%;"
                                     value-format="yyyy-MM-dd HH:mm:ss"
-                                    placeholder="{yun:}t key='admin_user_company_00055'{/yun}">
+                                    :placeholder="lc('admin_user_company_00055')">
                             </el-date-picker>
                         </div>
                     </td>
@@ -118,11 +118,11 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_00282'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_00282') }}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-input placeholder="{yun:}t key='admin_00826'{/yun}" v-model="info.address">
+                            <el-input :placeholder="lc('admin_00826')" v-model="info.address">
                             </el-input>
                         </div>
                     </td>
@@ -134,11 +134,11 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_00284'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_00284') }}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-input type="textarea" placeholder="{yun:}t key='admin_00827'{/yun}" v-model="info.traffic">
+                            <el-input type="textarea" :placeholder="lc('admin_00827')" v-model="info.traffic">
                             </el-input>
                         </div>
                     </td>
@@ -150,11 +150,11 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='wap_user_00265'{/yun}</div>
+                        <div class="TableTite">{{ lc('wap_user_00265') }}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-input placeholder="{yun:}t key='wap_com_00322'{/yun}" v-model="info.phone">
+                            <el-input :placeholder="lc('wap_com_00322')" v-model="info.phone">
                             </el-input>
                         </div>
                     </td>
@@ -166,11 +166,11 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_00287'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_00287') }}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-input placeholder="{yun:}t key='admin_00828'{/yun}" v-model="info.organizers">
+                            <el-input :placeholder="lc('admin_00828')" v-model="info.organizers">
                             </el-input>
                         </div>
                     </td>
@@ -182,11 +182,11 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='wap_01431'{/yun}</div>
+                        <div class="TableTite">{{ lc('wap_01431') }}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-input placeholder="{yun:}t key='wap_com_00013'{/yun}" v-model="info.user">
+                            <el-input :placeholder="lc('wap_com_00013')" v-model="info.user">
                             </el-input>
                         </div>
                     </td>
@@ -198,12 +198,12 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_00285'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_00285') }}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-radio v-model="info.is_open" label="1">{yun:}t key='member_com_00287'{/yun}</el-radio>
-                            <el-radio v-model="info.is_open" label="0">{yun:}t key='admin_user_00259'{/yun}</el-radio>
+                            <el-radio v-model="info.is_open" label="1">{{ lc('member_com_00287') }}</el-radio>
+                            <el-radio v-model="info.is_open" label="0">{{ lc('admin_user_00259') }}</el-radio>
                         </div>
                     </td>
                     <td>
@@ -214,62 +214,62 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_00280'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_00280') }}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
                             <el-upload class="avatar-uploader" :action="uploadAction" :show-file-list="false" :on-change="thumbChange"
                                        :accept="pic_accept">
                                 <img style="width:200px;" v-if="info.is_themb_n" :src="info.is_themb_n" class="avatar">
-                                <el-button v-else type="primary" icon="el-icon-document-add">{yun:}t key='wap_00540'{/yun}</el-button>
+                                <el-button v-else type="primary" icon="el-icon-document-add">{{ lc('wap_00540') }}</el-button>
                             </el-upload>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span><i class="el-icon-warning"></i>{yun:}t key='admin_00276'{/yun}</span>
+                            <span><i class="el-icon-warning"></i>{{ lc('admin_00276') }}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_00824'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_00824') }}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
                             <el-upload class="avatar-uploader" :action="uploadAction" :show-file-list="false" :accept="pic_accept" :on-change="bannerChange">
                                 <img style="width:200px;" v-if="info.banner_n" :src="info.banner_n" class="avatar">
-                                <el-button v-else type="primary" icon="el-icon-document-add">{yun:}t key='wap_00540'{/yun}</el-button>
+                                <el-button v-else type="primary" icon="el-icon-document-add">{{ lc('wap_00540') }}</el-button>
                             </el-upload>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span><i class="el-icon-warning"></i>{yun:}t key='admin_00275'{/yun}</span>
+                            <span><i class="el-icon-warning"></i>{{ lc('admin_00275') }}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_00279'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_00279') }}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
                             <el-upload class="avatar-uploader" :action="uploadAction" :show-file-list="false" :accept="pic_accept" :on-change="thembwapChange">
                                 <img style="width:200px;" v-if="info.is_themb_wap_n" :src="info.is_themb_wap_n" class="avatar">
-                                <el-button v-else type="primary" icon="el-icon-document-add">{yun:}t key='wap_00540'{/yun}</el-button>
+                                <el-button v-else type="primary" icon="el-icon-document-add">{{ lc('wap_00540') }}</el-button>
                             </el-upload>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span><i class="el-icon-warning"></i>{yun:}t key='admin_00277'{/yun}</span>
+                            <span><i class="el-icon-warning"></i>{{ lc('admin_00277') }}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_00281'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_00281') }}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
@@ -277,19 +277,19 @@
                                        :accept="pic_accept"
                                        :show-file-list="false" :on-change="bannerwapChange">
                                 <img style="width:200px;" v-if="info.banner_wap_n" :src="info.banner_wap_n" class="avatar">
-                                <el-button v-else type="primary" icon="el-icon-document-add">{yun:}t key='wap_00540'{/yun}</el-button>
+                                <el-button v-else type="primary" icon="el-icon-document-add">{{ lc('wap_00540') }}</el-button>
                             </el-upload>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span><i class="el-icon-warning"></i>{yun:}t key='admin_00278'{/yun}</span>
+                            <span><i class="el-icon-warning"></i>{{ lc('admin_00278') }}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='wap_00566'{/yun}</div>
+                        <div class="TableTite">{{ lc('wap_00566') }}</div>
                     </td>
                     <td colspan="2">
                         <div style="border: 1px solid #ccc;">
@@ -305,7 +305,7 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='wap_00569'{/yun}</div>
+                        <div class="TableTite">{{ lc('wap_00569') }}</div>
                     </td>
                     <td colspan="2">
                         <div style="border: 1px solid #ccc;">
@@ -321,7 +321,7 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='default_00344'{/yun}</div>
+                        <div class="TableTite">{{ lc('default_00344') }}</div>
                     </td>
                     <td colspan="2">
                         <div style="border: 1px solid #ccc;">
@@ -337,7 +337,7 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='wap_00564'{/yun}</div>
+                        <div class="TableTite">{{ lc('wap_00564') }}</div>
                     </td>
                     <td colspan="2">
                         <div style="border: 1px solid #ccc;">
@@ -348,7 +348,7 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='wap_00568'{/yun}</div>
+                        <div class="TableTite">{{ lc('wap_00568') }}</div>
                     </td>
                     <td colspan="2">
                         <div id="editor—wrapper" style="border: 1px solid #ccc;">
@@ -361,7 +361,7 @@
             </table>
         </div>
         <div class="setBasicButn" style="border: none;">
-            <el-button type="primary" size="medium" @click="save" :disabled="submitLoading">{yun:}t key='common.submit'{/yun}</el-button>
+            <el-button type="primary" size="medium" @click="save" :disabled="submitLoading">{{ lc('common.submit') }}</el-button>
         </div>
     </div>
 </template>
@@ -452,7 +452,7 @@
                     console.log(error);
                 })
             },
-            // pc{yun:}t key='admin_00119'{/yun}
+            // pc{{ lc('admin_00119') }}
             thumbChange(file) {
                 var tmp = deepClone(this.info)
                 // 预览文件处理
@@ -461,7 +461,7 @@
                 this.thumblist[0] = file.raw;
                 this.info = tmp
             },
-            //PC{yun:}t key='member_com_00077'{/yun}
+            //PC{{ lc('member_com_00077') }}
             bannerChange(file){
                 var tmp = deepClone(this.info)
                 // 预览文件处理
@@ -470,7 +470,7 @@
                 this.bannerlist[0] = file.raw;
                 this.info = tmp
             },
-            // wap{yun:}t key='admin_00119'{/yun}
+            // wap{{ lc('admin_00119') }}
             thembwapChange(file) {
                 var tmp = deepClone(this.info)
                 // 预览文件处理
@@ -479,7 +479,7 @@
                 this.wapthumblist[0] = file.raw;
                 this.info = tmp
             },
-            // wap{yun:}t key='member_com_00077'{/yun}
+            // wap{{ lc('member_com_00077') }}
             bannerwapChange(file){
                 var tmp = deepClone(this.info)
                 // 预览文件处理
@@ -511,7 +511,7 @@
                             editor_desc.setHtml('");
                         }
                     }else{
-                        // {yun:}t key='wap_00566'{/yun}
+                        // {{ lc('wap_00566') }}
                         if (!editor_desc) {
                             editor_desc = createEditor({
                                 selector: "#editor-container-desc',
@@ -534,7 +534,7 @@
                 },300);
                 
                 
-                // {yun:}t key='wap_00569'{/yun}
+                // {{ lc('wap_00569') }}
                 clearInterval(editorInterval_mt);
                 editorInterval_mt = setInterval(()=>{
                     if (editor_mt !== null){
@@ -568,7 +568,7 @@
                 },300);
                 
                 
-                // {yun:}t key='default_00344'{/yun}
+                // {{ lc('default_00344') }}
                 clearInterval(editorInterval_fw);
                 editorInterval_fw = setInterval(()=>{
                     if (editor_fw !== null){
@@ -601,7 +601,7 @@
                     }
                 },300);
                 
-                // {yun:}t key='wap_00564'{/yun}
+                // {{ lc('wap_00564') }}
                 clearInterval(editorInterval_sz);
                 editorInterval_sz = setInterval(()=>{
                     if (editor_sz !== null){
@@ -635,7 +635,7 @@
                 },300);
                 
                 
-                // {yun:}t key='wap_00568'{/yun}
+                // {{ lc('wap_00568') }}
                 clearInterval(editorInterval_cy);
                 editorInterval_cy = setInterval(()=>{
                     if (editor_cy !== null){

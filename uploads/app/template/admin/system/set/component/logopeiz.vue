@@ -4,15 +4,15 @@
             <table class="tableVue">
                 <thead>
                     <tr align="left">
-                        <th width="180">{yun:}t key='member_com_00021'{/yun}</th>
-                        <th width="360">{yun:}t key='member_user_00181'{/yun}</th>
-                        <th>{yun:}t key='member_com_00207'{/yun}</th>
+                        <th width="180">{{ lc('member_com_00021') }}</th>
+                        <th width="360">{{ lc('member_user_00181') }}</th>
+                        <th>{{ lc('member_com_00207') }}</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_00924'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_00924') }}</div>
                         </td>
                         <td>
                             <div class="TableUpload">
@@ -20,20 +20,20 @@
                                     :data="{ name: 'sy_logo', imgid: 'imglogo', path: 'logo', source: 'back',pytoken: pytoken }"
                                            :on-success="(response, file, fileList) =>onSuccess(response,file,fileList,'sy_logo_list')"
                                            :file-list="sy_logo_list" list-type="picture">
-                                    <el-button size="small" type="primary">{yun:}t key='wap_js_00071'{/yun}</el-button>
+                                    <el-button size="small" type="primary">{{ lc('wap_js_00071') }}</el-button>
                                     <!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
                                 </el-upload>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>{yun:}t key='admin_00925'{/yun}</span>
+                                <span>{{ lc('admin_00925') }}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_00926'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_00926') }}</div>
                         </td>
                         <td>
                             <div class="TableUpload">
@@ -41,20 +41,20 @@
                                     :data="{ name: 'sy_member_logo', imgid: 'imgmember', path: 'logo', path: 'logo', source: 'back',pytoken: pytoken }"
                                            :on-success="(response, file, fileList) =>onSuccess(response,file,fileList,'sy_member_logo_list')"
                                            list-type="picture">
-                                    <el-button size="small" type="primary">{yun:}t key='wap_js_00071'{/yun}</el-button>
+                                    <el-button size="small" type="primary">{{ lc('wap_js_00071') }}</el-button>
                                     <!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
                                 </el-upload>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>{yun:}t key='admin_00927'{/yun}</span>
+                                <span>{{ lc('admin_00927') }}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_00928'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_00928') }}</div>
                         </td>
                         <td>
                             <div class="TableUpload">
@@ -62,19 +62,19 @@
                                     :data="{ name: 'sy_unit_logo', imgid: 'imgunit', path: 'logo', source: 'back',pytoken: pytoken }"
                                     :on-success="(response, file, fileList) =>onSuccess(response,file,fileList,'sy_unit_logo_list')"
                                            list-type="picture">
-                                    <el-button size="small" type="primary">{yun:}t key='wap_js_00071'{/yun}</el-button>
+                                    <el-button size="small" type="primary">{{ lc('wap_js_00071') }}</el-button>
                                 </el-upload>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>{yun:}t key='admin_00927'{/yun}</span>
+                                <span>{{ lc('admin_00927') }}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_system_00334'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_system_00334') }}</div>
                         </td>
                         <td>
                             <div class="TableUpload">
@@ -82,20 +82,20 @@
                                     :data="{ name: 'sy_wap_logo', imgid: 'imgwaplogo', path: 'logo', source: 'back',pytoken: pytoken }"
                                            :on-success="(response, file, fileList) =>onSuccess(response,file,fileList,'sy_wap_logo_list')"
                                            :file-list="sy_wap_logo_list" list-type="picture">
-                                    <el-button size="small" type="primary">{yun:}t key='wap_js_00071'{/yun}</el-button>
+                                    <el-button size="small" type="primary">{{ lc('wap_js_00071') }}</el-button>
                                     <!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
                                 </el-upload>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>{yun:}t key='admin_00927'{/yun}</span>
+                                <span>{{ lc('admin_00927') }}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_00929'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_00929') }}</div>
                         </td>
                         <td>
                             <div class="TableUpload">
@@ -103,20 +103,20 @@
                                     :data="{ name: 'sy_wap_qcode', imgid: 'imgwapqcode', path: 'logo', source: 'back',pytoken: pytoken }"
                                            :on-success="(response, file, fileList) =>onSuccess(response,file,fileList,'sy_wap_qcode_list')"
                                            list-type="picture">
-                                    <el-button size="small" type="primary">{yun:}t key='wap_js_00071'{/yun}</el-button>
+                                    <el-button size="small" type="primary">{{ lc('wap_js_00071') }}</el-button>
                                     <!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
                                 </el-upload>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>{yun:}t key='admin_00927'{/yun}</span>
+                                <span>{{ lc('admin_00927') }}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_00930'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_00930') }}</div>
                         </td>
                         <td>
                             <div class="TableUpload">
@@ -124,20 +124,20 @@
                                     :data="{ name: 'sy_androidu_qcode', imgid: 'imgandroid', path: 'logo', source: 'back',pytoken: pytoken }"
                                            :on-success="(response, file, fileList) =>onSuccess(response,file,fileList,'sy_androidu_qcode_list')"
                                            :file-list="sy_androidu_qcode_list" list-type="picture">
-                                    <el-button size="small" type="primary">{yun:}t key='wap_js_00071'{/yun}</el-button>
+                                    <el-button size="small" type="primary">{{ lc('wap_js_00071') }}</el-button>
                                     <!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
                                 </el-upload>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>{yun:}t key='admin_00927'{/yun}</span>
+                                <span>{{ lc('admin_00927') }}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_00931'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_00931') }}</div>
                         </td>
                         <td>
                             <div class="TableUpload">
@@ -145,20 +145,20 @@
                                            :on-success="(response, file, fileList) =>onSuccess(response,file,fileList,'sy_iosu_qcode_list')"
                                            :data="{ name: 'sy_iosu_qcode', imgid: 'imgios', path: 'logo', source: 'back',pytoken: pytoken }"
                                     list-type="picture">
-                                    <el-button size="small" type="primary">{yun:}t key='wap_js_00071'{/yun}</el-button>
+                                    <el-button size="small" type="primary">{{ lc('wap_js_00071') }}</el-button>
                                     <!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
                                 </el-upload>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>{yun:}t key='admin_00927'{/yun}</span>
+                                <span>{{ lc('admin_00927') }}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_00932'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_00932') }}</div>
                         </td>
                         <td>
                             <div class="TableUpload">
@@ -166,20 +166,20 @@
                                     :data="{ name: 'sy_zph_icon', imgid: 'imgzph', path: 'logo', source: 'back',pytoken: pytoken }"
                                            :on-success="(response, file, fileList) =>onSuccess(response,file,fileList,'sy_zph_icon_list')"
                                            :file-list="sy_zph_icon_list" list-type="picture">
-                                    <el-button size="small" type="primary">{yun:}t key='wap_js_00071'{/yun}</el-button>
+                                    <el-button size="small" type="primary">{{ lc('wap_js_00071') }}</el-button>
                                     <!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
                                 </el-upload>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>{yun:}t key='admin_00927'{/yun}</span>
+                                <span>{{ lc('admin_00927') }}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_00933'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_00933') }}</div>
                         </td>
                         <td>
                             <div class="TableUpload">
@@ -187,20 +187,20 @@
                                     :data="{ name: 'sy_zphbanner_icon', imgid: 'imgzphbanner', path: 'logo', source: 'back',pytoken: pytoken }"
                                            :on-success="(response, file, fileList) =>onSuccess(response,file,fileList,'sy_zphbanner_icon_list')"
                                            :file-list="sy_zphbanner_icon_list" list-type="picture">
-                                    <el-button size="small" type="primary">{yun:}t key='wap_js_00071'{/yun}</el-button>
+                                    <el-button size="small" type="primary">{{ lc('wap_js_00071') }}</el-button>
                                     <!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
                                 </el-upload>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>{yun:}t key='admin_00934'{/yun}</span>
+                                <span>{{ lc('admin_00934') }}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_00935'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_00935') }}</div>
                         </td>
                         <td>
                             <div class="TableUpload">
@@ -208,20 +208,20 @@
                                     :data="{ name: 'sy_cplogo', imgid: 'cpimglogo', path: 'logo', source: 'back',pytoken: pytoken }"
                                     :on-success="(response, file, fileList) =>onSuccess(response,file,fileList,'sy_cplogo_list')"
                                     :file-list="sy_cplogo_list" list-type="picture">
-                                    <el-button size="small" type="primary">{yun:}t key='wap_js_00071'{/yun}</el-button>
+                                    <el-button size="small" type="primary">{{ lc('wap_js_00071') }}</el-button>
                                     <!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
                                 </el-upload>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>{yun:}t key='admin_00936'{/yun}</span>
+                                <span>{{ lc('admin_00936') }}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_00937'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_00937') }}</div>
                         </td>
                         <td>
                             <div class="TableUpload">
@@ -229,14 +229,14 @@
                                     :data="{ name: 'sy_gongzhaologo', imgid: 'gongzhaologo', path: 'logo', source: 'back',pytoken: pytoken }"
                                     :on-success="(response, file, fileList) =>onSuccess(response,file,fileList,'sy_gongzhaologo_list')"
                                     :file-list="sy_gongzhaologo_list" list-type="picture">
-                                    <el-button size="small" type="primary">{yun:}t key='wap_js_00071'{/yun}</el-button>
+                                    <el-button size="small" type="primary">{{ lc('wap_js_00071') }}</el-button>
                                     <!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
                                 </el-upload>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>{yun:}t key='admin_00938'{/yun}</span>
+                                <span>{{ lc('admin_00938') }}</span>
                             </div>
                         </td>
                     </tr>
@@ -245,7 +245,7 @@
             </table>
         </div>
         <div class="setBasicButn" style="border: none; height: 80px;">
-            <el-button type="primary" size="medium" @click="save" :disabled="saveLoading">{yun:}t key='common.submit'{/yun}</el-button>
+            <el-button type="primary" size="medium" @click="save" :disabled="saveLoading">{{ lc('common.submit') }}</el-button>
         </div>
     </div>
 </template>
@@ -311,7 +311,7 @@ module.exports = {
             httpPost(url, ruleForm).then(function (response) {
                 var res = response.data;
                 if (res.error == 0) {
-                    message.success("{yun:}t key='wap_user_00264'{/yun}");
+                    message.success(lc('wap_user_00264'));
                     _this.$emit('get-list', true)
                 } else {
                     message.error(res.msg);

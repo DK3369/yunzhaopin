@@ -4,48 +4,48 @@
             <table class="tableVue">
                 <thead>
                 <tr align="left">
-                    <th width="200">{yun:}t key='member_com_00021'{/yun}</th>
-                    <th width="460">{yun:}t key='member_user_00181'{/yun}</th>
-                    <th>{yun:}t key='member_com_00207'{/yun}</th>
+                    <th width="200">{{ lc('member_com_00021') }}</th>
+                    <th width="460">{{ lc('member_user_00181') }}</th>
+                    <th>{{ lc('member_com_00207') }}</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='member_com_00343'{/yun}</div>
+                        <div class="TableTite">{{ lc('member_com_00343') }}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="ruleForm.title">
+                            <el-input :placeholder="lc('wap_user_00076')" v-model="ruleForm.title">
                                 <!-- <span slot="suffix" class="slotspan">天</span> -->
                             </el-input>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>{yun:}t key='member_com_00343'{/yun}</span>
+                            <span>{{ lc('member_com_00343') }}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_yunying_00122'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_yunying_00122') }}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
 
-                            <el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="ruleForm.limit" onkeyup="this.value=this.value.replace(/[^0-9]/g,'')"></el-input>
+                            <el-input :placeholder="lc('wap_user_00076')" v-model="ruleForm.limit" onkeyup="this.value=this.value.replace(/[^0-9]/g,'')"></el-input>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>{yun:}t key='admin_01205'{/yun}</span>
+                            <span>{{ lc('admin_01205') }}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_01206'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_01206') }}</div>
                     </td>
                     <td>
                         <div class="TableButn">
@@ -62,11 +62,11 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_01207'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_01207') }}</div>
                     </td>
                     <td>
                         <div class="TableSelect">
-                            <el-select v-model="ruleForm.tpl" placeholder="{yun:}t key='wap_user_00100'{/yun}">
+                            <el-select v-model="ruleForm.tpl" :placeholder="lc('wap_user_00100')">
                                 <el-option v-for="(item, index) in fileData" :key="index" :label="item"
                                     :value="item">
                                 </el-option>
@@ -75,18 +75,18 @@
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>{yun:}t key='admin_01208'{/yun}</span>
+                            <span>{{ lc('admin_01208') }}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_system_00263'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_system_00263') }}</div>
                     </td>
                     <td>
                         <div class="TableButn">
-                            <el-radio v-model="ruleForm.display" label="1">{yun:}t key='member_com_00287'{/yun}</el-radio>
-                            <el-radio v-model="ruleForm.display" label="0">{yun:}t key='common.close'{/yun}</el-radio>
+                            <el-radio v-model="ruleForm.display" label="1">{{ lc('member_com_00287') }}</el-radio>
+                            <el-radio v-model="ruleForm.display" label="0">{{ lc('common.close') }}</el-radio>
                         </div>
                     </td>
                     <td>
@@ -97,12 +97,12 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_01209'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_01209') }}</div>
                     </td>
                     <td>
                         <div class="TableButn">
-                            <el-radio v-model="ruleForm.com_bm" label="1">{yun:}t key='member_com_00287'{/yun}</el-radio>
-                            <el-radio v-model="ruleForm.com_bm" label="0">{yun:}t key='common.close'{/yun}</el-radio>
+                            <el-radio v-model="ruleForm.com_bm" label="1">{{ lc('member_com_00287') }}</el-radio>
+                            <el-radio v-model="ruleForm.com_bm" label="0">{{ lc('common.close') }}</el-radio>
                         </div>
                     </td>
                     <td>
@@ -113,28 +113,28 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_01210'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_01210') }}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
 
-                            <el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="ruleForm.integral" onkeyup="this.value=this.value.replace(/[^0-9]/g,'')"></el-input>
+                            <el-input :placeholder="lc('wap_user_00076')" v-model="ruleForm.integral" onkeyup="this.value=this.value.replace(/[^0-9]/g,'')"></el-input>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>{yun:}t key='admin_01210'{/yun}</span>
+                            <span>{{ lc('admin_01210') }}</span>
                         </div>
                     </td>
                 </tr>
 
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_01211'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_01211') }}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-date-picker v-model="ruleForm.etime" type="date" value-format="yyyy-MM-dd" placeholder="{yun:}t key='admin_00346'{/yun}">
+                            <el-date-picker v-model="ruleForm.etime" type="date" value-format="yyyy-MM-dd" :placeholder="lc('admin_00346')">
                             </el-date-picker>
                         </div>
                     </td>
@@ -147,29 +147,29 @@
 
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='member_com_00022'{/yun}</div>
+                        <div class="TableTite">{{ lc('member_com_00022') }}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
 
-                            <el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="ruleForm.sort" onkeyup="this.value=this.value.replace(/[^0-9]/g,'')"></el-input>
+                            <el-input :placeholder="lc('wap_user_00076')" v-model="ruleForm.sort" onkeyup="this.value=this.value.replace(/[^0-9]/g,'')"></el-input>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>{yun:}t key='admin_01212'{/yun}</span>
+                            <span>{{ lc('admin_01212') }}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_01213'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_01213') }}</div>
                     </td>
                     <td>
                         <div class="TableUpload" style="display: flex;align-items: center;">
                             <el-upload :accept="pic_accept" :action="uploadAction" :on-change="uploadChangePic"
                                 :show-file-list="false">
-                                <el-button size="small" type="primary">{yun:}t key='wap_00540'{/yun}</el-button>
+                                <el-button size="small" type="primary">{{ lc('wap_00540') }}</el-button>
                             </el-upload>
                             <div class="up_sy_logo_div" style="margin-left: 15px;">
                                 <el-image v-if="ruleForm.pic" style="width:100px;" :src="ruleForm.pic" :preview-src-list="ruleForm.pic ? [ruleForm.pic] : []"></el-image>
@@ -178,19 +178,19 @@
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>{yun:}t key='admin_01214'{/yun}</span>
+                            <span>{{ lc('admin_01214') }}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_01215'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_01215') }}</div>
                     </td>
                     <td>
                         <div class="TableUpload" style="display: flex;align-items: center;">
                             <el-upload :accept="pic_accept" :action="uploadAction" :on-change="uploadChangeBackground"
                                 :show-file-list="false">
-                                <el-button size="small" type="primary">{yun:}t key='wap_00540'{/yun}</el-button>
+                                <el-button size="small" type="primary">{{ lc('wap_00540') }}</el-button>
                             </el-upload>
                             <div class="up_sy_logo_div" style="margin-left: 15px;">
                                 <el-image v-if="ruleForm.background" style="width:100px;" :src="ruleForm.background" :preview-src-list="ruleForm.background ? [ruleForm.background] : []"></el-image>
@@ -199,19 +199,19 @@
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>{yun:}t key='admin_01216'{/yun}</span>
+                            <span>{{ lc('admin_01216') }}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_01217'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_01217') }}</div>
                     </td>
                     <td>
                         <div class="TableUpload" style="display: flex;align-items: center;">
                             <el-upload :accept="pic_accept" :action="uploadAction" :on-change="uploadChangeWappic"
                                 :show-file-list="false">
-                                <el-button size="small" type="primary">{yun:}t key='wap_00540'{/yun}</el-button>
+                                <el-button size="small" type="primary">{{ lc('wap_00540') }}</el-button>
                             </el-upload>
                             <div class="up_sy_logo_div" style="margin-left: 15px;">
                                 <el-image v-if="ruleForm.wappic" style="width:100px;" :src="ruleForm.wappic" :preview-src-list="ruleForm.wappic ? [ruleForm.wappic] : []"></el-image>
@@ -220,19 +220,19 @@
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>{yun:}t key='admin_01218'{/yun}</span>
+                            <span>{{ lc('admin_01218') }}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_01219'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_01219') }}</div>
                     </td>
                     <td>
                         <div class="TableUpload" style="display: flex;align-items: center;">
                             <el-upload :accept="pic_accept" :action="uploadAction" :on-change="uploadChangeWapback"
                                 :show-file-list="false">
-                                <el-button size="small" type="primary">{yun:}t key='wap_00540'{/yun}</el-button>
+                                <el-button size="small" type="primary">{{ lc('wap_00540') }}</el-button>
                             </el-upload>
                             <div class="up_sy_logo_div" style="margin-left: 15px;">
                                 <el-image v-if="ruleForm.wapback" style="width:100px;" :src="ruleForm.wapback" :preview-src-list="ruleForm.wapback ? [ruleForm.wapback] : []"></el-image>
@@ -241,13 +241,13 @@
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>{yun:}t key='admin_01220'{/yun}</span>
+                            <span>{{ lc('admin_01220') }}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='default_00328'{/yun}</div>
+                        <div class="TableTite">{{ lc('default_00328') }}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
@@ -268,7 +268,7 @@
             </table>
         </div>
         <div class="setBasicButn" style="border: none;">
-            <el-button type="primary" size="medium" @click="submitForm('ruleForm')" :disabled="submitLoading">{yun:}t key='common.submit'{/yun}</el-button>
+            <el-button type="primary" size="medium" @click="submitForm('ruleForm')" :disabled="submitLoading">{{ lc('common.submit') }}</el-button>
         </div>
     </div>
 </template>
@@ -286,20 +286,20 @@ module.exports = {
             pic_accept: localStorage.getItem("pic_accept"),
             ruleForm: {
                 id: 0,
-                title: '",//{yun:}t key='member_com_00343'{/yun}
-                limit: "",//{yun:}t key='admin_yunying_00122'{/yun}
-                rating: [],//{yun:}t key='admin_01206'{/yun}
-                tpl: "",//{yun:}t key='admin_01207'{/yun}
-                display: "1",//{yun:}t key='admin_system_00263'{/yun}
-                com_bm: "1",//{yun:}t key='admin_01209'{/yun}
+                title: '",//{{ lc('member_com_00343') }}
+                limit: "",//{{ lc('admin_yunying_00122') }}
+                rating: [],//{{ lc('admin_01206') }}
+                tpl: "",//{{ lc('admin_01207') }}
+                display: "1",//{{ lc('admin_system_00263') }}
+                com_bm: "1",//{{ lc('admin_01209') }}
                 integral: "',//integral
-                etime: '",//{yun:}t key='admin_01211'{/yun}
-                sort: "",//{yun:}t key='member_com_00022'{/yun}
-                pic: "",//PC{yun:}t key='admin_00119'{/yun}
+                etime: '",//{{ lc('admin_01211') }}
+                sort: "",//{{ lc('member_com_00022') }}
+                pic: "",//PC{{ lc('admin_00119') }}
                 background: "',//PC背景图
-                wappic: '",//{yun:}t key='admin_01217'{/yun}
-                wapback: "",//{yun:}t key='admin_01219'{/yun}
-                intro: "",//{yun:}t key='default_00328'{/yun}
+                wappic: '",//{{ lc('admin_01217') }}
+                wapback: "",//{{ lc('admin_01219') }}
+                intro: "",//{{ lc('default_00328') }}
             },
             filePic: {},
             fileBackground: {},
@@ -391,7 +391,7 @@ module.exports = {
                     }
                     _this.initEditor(_this.ruleForm.intro);
                 } else {
-                    message.error("{yun:}t key='wap_js_00113'{/yun}");
+                    message.error(lc('wap_js_00113'));
                 }
             }).catch(function (error) {
                 console.log(error);
@@ -402,11 +402,11 @@ module.exports = {
             this.ruleForm.intro = editor.getHtml();
             let params = JSON.parse(JSON.stringify(this.ruleForm));
             if (params.title == '') {
-                message.error("{yun:}t key='admin_01439'{/yun}");
+                message.error(lc('admin_01439'));
                 return false;
             }
             if (params.tpl == '') {
-                message.error("{yun:}t key='admin_01440'{/yun}");
+                message.error(lc('admin_01440'));
                 return false;
             }
             delete params.pic;

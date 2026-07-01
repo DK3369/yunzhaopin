@@ -119,7 +119,7 @@
                 </div>
             </el-dialog>
 
-            <el-drawer :title="lc('admin_html_00016')" :visible.sync="drawerAdd" :modal-append-to-body="false" :show-close="true" :with-header="true" size="900px">
+            <el-drawer :title="detail.id ? lc('admin_00105') : lc('admin_00106')" :visible.sync="drawerAdd" :modal-append-to-body="false" :show-close="true" :with-header="true" size="900px">
                 <add :id="detail.id ? detail.id : ''" @child-event="closeAdd"></add>
             </el-drawer>
         </div>
@@ -213,7 +213,7 @@
                         order: that.order,
                     };
                     that.loading = true;
-                    that.emptytext = "数据加载中";
+                    that.emptytext = lc('admin_user_weipin_00026');
                 httpPost('m=neirong&c=announcement', {...params, ...searchForm}, {hideloading: true}).then(function (response) {
                     let res = response.data,
                         data = res.data;
@@ -232,7 +232,7 @@
                     }
                     that.loading = false;
                     if (that.list.length === 0){
-                        that.emptytext = "暂无数据";
+                        that.emptytext = lc('wap_js_00113');
                     }
                 })
             },
@@ -255,9 +255,9 @@
             },
             batch(type) {
                 if (this.multipleSelection.length == 0) {
-                    let msg = '请选择要操作的数据项'
+                    let msg = lc('admin_user_weipin_00001')
                     if (type == 'del') {
-                        msg = '请选择要删除的数据项'
+                        msg = lc('admin_00136')
                     }
                     message.error(msg);
                     return false;
@@ -287,10 +287,10 @@
 
                 if (typeof idx == 'undefined') { // 批量删除
                     params.del = this.idArr;
-                    msg = '你确定要删除选中项吗？';
+                    msg = lc('common_00853');
                 } else {// 单个删除
                     params.id = that.list[idx].id;
-                    msg = '你确定要删除当前项吗？';
+                    msg = lc('admin_00333');
                 }
 
                 delConfirm(this, params, function (params) {
@@ -310,9 +310,9 @@
                 if (column.property == 'datetime') {
                     return row.datetime_n;
                 } else if (column.property == 'startime') {
-                    return row.startime == '0' ? '永久显示' : row.startime_n;
+                    return row.startime == '0' ? lc('admin_00147') : row.startime_n;
                 } else if (column.property == 'endtime') {
-                    return row.endtime == '0' ? '永久显示' : row.endtime_n;
+                    return row.endtime == '0' ? lc('admin_00147') : row.endtime_n;
                 } else if (column.property == 'did') {
                     return row.dname;
                 }

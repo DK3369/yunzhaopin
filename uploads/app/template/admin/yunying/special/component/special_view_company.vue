@@ -5,78 +5,78 @@
       <div class="moduleSeachbig">
         <!--关键字搜索和查询在一起-------------------------------------------------------------------->
         <div class="tableSeakusydsg" style="padding: 2px 0;">
-          <el-input v-model="searchForm.keyword" placeholder="{yun:}t key='admin_00340'{/yun}" class="input-with-select" size="small"
+          <el-input v-model="searchForm.keyword" :placeholder="lc('admin_00340')" class="input-with-select" size="small"
             prefix-icon="el-icon-search" clearable>
-            <el-select slot="prepend" v-model="searchForm.type" size="small" placeholder="{yun:}t key='wap_com_00288'{/yun}">
-              <el-option label="{yun:}t key='admin_yunying_00125'{/yun}" value="1"></el-option>
-              <el-option label="{yun:}t key='admin_user_company_00144'{/yun}" value="2"></el-option>
-              <el-option label="{yun:}t key='wap_01431'{/yun}" value="3"></el-option>
-              <el-option label="{yun:}t key='admin_company_00023'{/yun}" value="4"></el-option>
-              <el-option label="{yun:}t key='admin_00673'{/yun}" value="5"></el-option>
-              <el-option label="{yun:}t key='admin_user_00130'{/yun}" value="6"></el-option>
+            <el-select slot="prepend" v-model="searchForm.type" size="small" :placeholder="lc('wap_com_00288')">
+              <el-option :label="lc('admin_yunying_00125')" value="1"></el-option>
+              <el-option :label="lc('admin_user_company_00144')" value="2"></el-option>
+              <el-option :label="lc('wap_01431')" value="3"></el-option>
+              <el-option :label="lc('admin_company_00023')" value="4"></el-option>
+              <el-option :label="lc('admin_00673')" value="5"></el-option>
+              <el-option :label="lc('admin_user_00130')" value="6"></el-option>
             </el-select>
           </el-input>
         </div>
         <!--收起部分-->
         <div class="tableSeachInpt tableSeachInptsmall" :class="{ 'searchbutnOnff': seachbutn }">
-          <el-select v-model="searchForm.rating" size="small" slot="prepend" placeholder="{yun:}t key='admin_user_company_00018'{/yun}" clearable @change="handleSearch">
+          <el-select v-model="searchForm.rating" size="small" slot="prepend" :placeholder="lc('admin_user_company_00018')" clearable @change="handleSearch">
             <el-option v-for="(item, index) in ratingList" :label="item.label" :value="item.value"
               :key="index"></el-option>
           </el-select>
         </div>
         <div class="tableSeachInpt tableSeachInptsmall" :class="{ 'searchbutnOnff': seachbutn }">
-          <el-select v-model="searchForm.time" size="small" slot="prepend" placeholder="{yun:}t key='admin_user_company_00052'{/yun}" clearable @change="handleSearch">
+          <el-select v-model="searchForm.time" size="small" slot="prepend" :placeholder="lc('admin_user_company_00052')" clearable @change="handleSearch">
             <el-option v-for="(item, index) in timeList" :label="item.label" :value="item.value" :key="index"></el-option>
           </el-select>
         </div>
         <div class="tableSeachInpt tableSeachInptsmall" :class="{ 'searchbutnOnff': seachbutn }">
-          <el-select v-model="searchForm.status" size="small" slot="prepend" placeholder="{yun:}t key='wap_com_00406'{/yun}" clearable @change="handleSearch">
+          <el-select v-model="searchForm.status" size="small" slot="prepend" :placeholder="lc('wap_com_00406')" clearable @change="handleSearch">
             <el-option v-for="(item, index) in statusList" :label="item.label" :value="item.value"
               :key="index"></el-option>
           </el-select>
         </div>
         <div class="tableSeachInpt tableSeachInptsmall" :class="{ 'searchbutnOnff': seachbutn }">
-          <el-select v-model="searchForm.source" size="small" slot="prepend" placeholder="{yun:}t key='admin_yunying_00139'{/yun}" clearable @change="handleSearch">
+          <el-select v-model="searchForm.source" size="small" slot="prepend" :placeholder="lc('admin_yunying_00139')" clearable @change="handleSearch">
             <el-option v-for="(item, index) in sourceList" :label="item.label" :value="item.value"
               :key="index"></el-option>
           </el-select>
         </div>
         <div class="tableSeachInpt tableSeachInptsmall" :class="{ 'searchbutnOnff': seachbutn }">
-          <el-select v-model="searchForm.rec" size="small" slot="prepend" placeholder="{yun:}t key='admin_user_company_00145'{/yun}" clearable @change="handleSearch">
+          <el-select v-model="searchForm.rec" size="small" slot="prepend" :placeholder="lc('admin_user_company_00145')" clearable @change="handleSearch">
             <el-option v-for="(item, index) in recList" :label="item.label" :value="item.value" :key="index"></el-option>
           </el-select>
         </div>
         <div class="tableSeachInpt tableSeachInptsmall" :class="{ 'searchbutnOnff': seachbutn }">
-          <el-select v-model="searchForm.gw" size="small" slot="prepend" placeholder="{yun:}t key='admin_01231'{/yun}" clearable @change="handleSearch">
+          <el-select v-model="searchForm.gw" size="small" slot="prepend" :placeholder="lc('admin_01231')" clearable @change="handleSearch">
             <el-option v-for="(item, index) in gwList" :label="item.label" :value="item.value" :key="index"></el-option>
           </el-select>
         </div>
         <div class="tableSeachInpt tableSeachInptsmall" :class="{ 'searchbutnOnff': seachbutn }">
-          <el-select v-model="searchForm.lotime" size="small" slot="prepend" placeholder="{yun:}t key='admin_yunying_00131'{/yun}" clearable @change="handleSearch">
+          <el-select v-model="searchForm.lotime" size="small" slot="prepend" :placeholder="lc('admin_yunying_00131')" clearable @change="handleSearch">
             <el-option v-for="(item, index) in lotimeList" :label="item.label" :value="item.value"
               :key="index"></el-option>
           </el-select>
         </div>
         <div class="tableSeachInpt tableSeachInptsmall" :class="{ 'searchbutnOnff': seachbutn }">
-          <el-select v-model="searchForm.adtime" size="small" slot="prepend" placeholder="{yun:}t key='admin_yunying_00130'{/yun}" clearable @change="handleSearch">
+          <el-select v-model="searchForm.adtime" size="small" slot="prepend" :placeholder="lc('admin_yunying_00130')" clearable @change="handleSearch">
             <el-option v-for="(item, index) in adtimeList" :label="item.label" :value="item.value"
               :key="index"></el-option>
           </el-select>
         </div>
         <div class="tableSeachInpt tableSeachInptsmall" :class="{ 'searchbutnOnff': seachbutn }">
-          <el-select v-model="searchForm.job" size="small" slot="prepend" placeholder="{yun:}t key='admin_yunying_00132'{/yun}" clearable @change="handleSearch">
-            <el-option label="{yun:}t key='admin_yunying_00135'{/yun}" value="1"></el-option>
-            <el-option label="{yun:}t key='admin_yunying_00134'{/yun}" value="2"></el-option>
+          <el-select v-model="searchForm.job" size="small" slot="prepend" :placeholder="lc('admin_yunying_00132')" clearable @change="handleSearch">
+            <el-option :label="lc('admin_yunying_00135')" value="1"></el-option>
+            <el-option :label="lc('admin_yunying_00134')" value="2"></el-option>
           </el-select>
         </div>
         <div class="tableSeachInpt">
-          <el-button type="primary" icon="el-icon-search" size="mini" @click="handleSearch">{yun:}t key='admin_user_weipin_00049'{/yun}</el-button>
+          <el-button type="primary" icon="el-icon-search" size="mini" @click="handleSearch">{{ lc('admin_user_weipin_00049') }}</el-button>
         </div>
         <div class="tableSeachzk" :class="{ 'searchbutnKai': seachbutn }" style="margin-bottom: 12px;">
           <el-button type="info" class="zhankai" @click="seachbutn = !seachbutn, tableHig = !tableHig"
-            aria-disabled="false" size="mini" plain>{yun:}t key='admin_user_00145'{/yun}<i class="el-icon-arrow-down el-icon--right"></i></el-button>
+            aria-disabled="false" size="mini" plain>{{ lc('admin_user_00145') }}<i class="el-icon-arrow-down el-icon--right"></i></el-button>
           <el-button type="info" class="shouqi" @click="seachbutn = !seachbutn, tableHig = !tableHig"
-            aria-disabled="false" size="mini" plain>{yun:}t key='admin_user_00144'{/yun}<i class="el-icon-arrow-up el-icon--right"></i></el-button>
+            aria-disabled="false" size="mini" plain>{{ lc('admin_user_00144') }}<i class="el-icon-arrow-up el-icon--right"></i></el-button>
         </div>
       </div>
 
@@ -94,44 +94,44 @@
               <p>{{ dataText }}</p>
             </template>
             <el-table-column type="selection" width="55" :selectable="selectable"></el-table-column>
-            <el-table-column label="{yun:}t key='wap_com_00157'{/yun}" min-width="180">
+            <el-table-column :label="lc('wap_com_00157')" min-width="180">
               <template slot-scope="scope">
                 <el-popover trigger="hover" placement="top">
-                  <p>{{ scope.row.name }}<span v-if="scope.row.shortname">{yun:}t key='admin_01230'{/yun}</span></p>
+                  <p>{{ scope.row.name }}<span v-if="scope.row.shortname">{{ lc('admin_01230') }}</span></p>
                   <span slot="reference" class="name-wrapper">
                     <el-link type="primary" :href="scope.row.comUrl" target="_blank">{{ scope.row.name }}</el-link>
                   </span>
                 </el-popover>
               </template>
             </el-table-column>
-            <el-table-column prop="rating_name" label="{yun:}t key='admin_user_company_00018'{/yun}"></el-table-column>
-            <el-table-column label="{yun:}t key='admin_company_00023'{/yun}">
+            <el-table-column prop="rating_name" :label="lc('admin_user_company_00018')"></el-table-column>
+            <el-table-column :label="lc('admin_company_00023')">
               <template slot-scope="scope">
                 <template v-if="scope.row.linktel">{{ scope.row.linktel }}</template>
                 <template v-else-if="scope.row.linkphone">{{ scope.row.linkphone }}</template>
               </template>
             </el-table-column>
-            <el-table-column label="{yun:}t key='admin_user_company_00049'{/yun}">
+            <el-table-column :label="lc('admin_user_company_00049')">
               <template slot-scope="scope">
                 <span v-if="scope.row.crm_uid <= 0" style="color:#c1c1c1;">{{ scope.row.crm_uid_n }}</span>
                 <span v-else-if="scope.row.crm_uid > 0">{{ scope.row.crm_uid_n }}</span>
               </template>
             </el-table-column>
-            <el-table-column prop="zz_jobnum" label="{yun:}t key='admin_yunying_00127'{/yun}" width="150"></el-table-column>
-            <el-table-column label="{yun:}t key='admin_yunying_00128'{/yun}">
+            <el-table-column prop="zz_jobnum" :label="lc('admin_yunying_00127')" width="150"></el-table-column>
+            <el-table-column :label="lc('admin_yunying_00128')">
               <template slot-scope="scope">
-                <span v-if="scope.row.join == '1'">{yun:}t key='admin_yunying_00133'{/yun}</span>
-                <span v-else style="color: #c1c1c1;">{yun:}t key='admin_yunying_00136'{/yun}</span>
+                <span v-if="scope.row.join == '1'">{{ lc('admin_yunying_00133') }}</span>
+                <span v-else style="color: #c1c1c1;">{{ lc('admin_yunying_00136') }}</span>
               </template>
             </el-table-column>
-            <el-table-column fixed="right" label="{yun:}t key='member_user_00048'{/yun}" width="210" align="center">
+            <el-table-column fixed="right" :label="lc('member_user_00048')" width="210" align="center">
               <template slot-scope="scope">
                 <div class="cz_button">
                   <template v-if="scope.row.jobnum > 0 && scope.row.r_status == 1">
-                    <el-button size="mini" @click="handleInsert(scope)">{yun:}t key='admin_yunying_00138'{/yun}</el-button>
+                    <el-button size="mini" @click="handleInsert(scope)">{{ lc('admin_yunying_00138') }}</el-button>
                   </template>
                   <template v-else>
-                    <template v-if="scope.row.r_status != 1">{yun:}t key='admin_yunying_00126'{/yun}</template>
+                    <template v-if="scope.row.r_status != 1">{{ lc('admin_yunying_00126') }}</template>
                     <template v-if="scope.row.jobnum <= 0">-</template>
                   </template>
                 </div>
@@ -141,8 +141,8 @@
         </div>
         <div class="modulePaging">
           <div>
-            <el-checkbox :indeterminate="isIndeterminate" v-model="checked" @change="selectAllBottom">{yun:}t key='wap_js_00074'{/yun}</el-checkbox>
-            <el-button @click="handleInsert(null, true)" size="mini">{yun:}t key='admin_yunying_00129'{/yun}</el-button>
+            <el-checkbox :indeterminate="isIndeterminate" v-model="checked" @change="selectAllBottom">{{ lc('wap_js_00074') }}</el-checkbox>
+            <el-button @click="handleInsert(null, true)" size="mini">{{ lc('admin_yunying_00129') }}</el-button>
           </div>
           <div class="modulePagNum">
             <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
@@ -165,42 +165,42 @@ module.exports = {
   data: function () {
     return {
       loading: false,
-      dataText: "{yun:}t key='admin_user_weipin_00026'{/yun}",
+      dataText: lc('admin_user_weipin_00026'),
       pytoken: localStorage.getItem("pytoken"),
       searchForm: {
         page: 1,
         limit: null,
         type: '1",
-        keyword: null,//{yun:}t key='admin_tool_00574'{/yun}
-        rating: null,//{yun:}t key='admin_user_company_00018'{/yun}
-        time: null,//{yun:}t key='admin_user_company_00052'{/yun}
-        status: null,//{yun:}t key='wap_com_00406'{/yun}
-        source: null,//{yun:}t key='admin_yunying_00139'{/yun}
-        rec: null,//{yun:}t key='admin_user_company_00145'{/yun}
-        gw: null,//{yun:}t key='admin_01231'{/yun}
-        lotime: null,//{yun:}t key='admin_yunying_00131'{/yun}
-        adtime: null,//{yun:}t key='admin_yunying_00130'{/yun}
-        job: null,//{yun:}t key='admin_yunying_00132'{/yun}
+        keyword: null,//{{ lc('admin_tool_00574') }}
+        rating: null,//{{ lc('admin_user_company_00018') }}
+        time: null,//{{ lc('admin_user_company_00052') }}
+        status: null,//{{ lc('wap_com_00406') }}
+        source: null,//{{ lc('admin_yunying_00139') }}
+        rec: null,//{{ lc('admin_user_company_00145') }}
+        gw: null,//{{ lc('admin_01231') }}
+        lotime: null,//{{ lc('admin_yunying_00131') }}
+        adtime: null,//{{ lc('admin_yunying_00130') }}
+        job: null,//{{ lc('admin_yunying_00132') }}
       },
       total: 0,
       tableData: [],
       pageSizes: [],
-      checked: false,//{yun:}t key='wap_js_00074'{/yun}
+      checked: false,//{{ lc('wap_js_00074') }}
       isIndeterminate: false,// checkbox 的不确定状态
       selectedItem: [],
       //搜索条件的基本数据
-      ratingList: [],//{yun:}t key='admin_user_company_00018'{/yun}
-      timeList: [],//{yun:}t key='admin_user_company_00052'{/yun}
-      statusList: [],//{yun:}t key='wap_com_00406'{/yun}
-      sourceList: [],//{yun:}t key='admin_yunying_00139'{/yun}
-      recList: [],//{yun:}t key='admin_user_company_00145'{/yun}
-      gwList: [],//{yun:}t key='admin_01231'{/yun}
-      lotimeList: [],//{yun:}t key='admin_yunying_00131'{/yun}
-      adtimeList: [],//{yun:}t key='admin_yunying_00130'{/yun}
+      ratingList: [],//{{ lc('admin_user_company_00018') }}
+      timeList: [],//{{ lc('admin_user_company_00052') }}
+      statusList: [],//{{ lc('wap_com_00406') }}
+      sourceList: [],//{{ lc('admin_yunying_00139') }}
+      recList: [],//{{ lc('admin_user_company_00145') }}
+      gwList: [],//{{ lc('admin_01231') }}
+      lotimeList: [],//{{ lc('admin_yunying_00131') }}
+      adtimeList: [],//{{ lc('admin_yunying_00130') }}
       totalNum: 0,
       applyNum: 0,//参会企业的数量
       noNum: 0,//未加入
-      statuscomVisible: false,//{yun:}t key='admin_user_weipin_00037'{/yun}
+      statuscomVisible: false,//{{ lc('admin_user_weipin_00037') }}
 
       tableHig: 100,
       seachbutn: false,
@@ -273,7 +273,7 @@ module.exports = {
           }
           _this.loading = false;
           if (_this.tableData.length === 0) {
-            _this.dataText = "{yun:}t key='wap_js_00113'{/yun}";
+            _this.dataText = lc('wap_js_00113');
           }
         }
       }).catch(function (error) {
@@ -302,7 +302,7 @@ module.exports = {
       let params = {};
       if (isMore) {
         if (!this.selectedItem.length) {
-          message.error("{yun:}t key='admin_yunying_00123'{/yun}");
+          message.error(lc('admin_yunying_00123'));
           return false;
         }
         let list = [];
@@ -320,7 +320,7 @@ module.exports = {
         params.type = 'one';
       }
 
-      delConfirm(this, params, this.insert, "{yun:}t key='admin_yunying_00124'{/yun}");
+      delConfirm(this, params, this.insert, lc('admin_yunying_00124'));
     },
     insert(params) {
       let _this = this;

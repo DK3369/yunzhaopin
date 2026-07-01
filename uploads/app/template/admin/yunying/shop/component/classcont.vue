@@ -8,12 +8,12 @@
                 </template>
                 <el-table-column type="selection" width="55">
                 </el-table-column>
-                <el-table-column prop="id" label="{yun:}t key='member_com_00345'{/yun}" width="160">
+                <el-table-column prop="id" :label="lc('member_com_00345')" width="160">
                 </el-table-column>
-                <el-table-column label="{yun:}t key='admin_01197'{/yun}">
+                <el-table-column :label="lc('admin_01197')">
                     <template slot-scope="scope">
                         <div class="moduleElTaPax" v-if="scope.row.keyid ==0">
-                            <span>{yun:}t key='admin_system_00111'{/yun}</span>
+                            <span>{{ lc('admin_system_00111') }}</span>
                             <span :id="'pname'+scope.row.id">{{scope.row.name}}</span>
                             <input type="text" :value="scope.row.name" :id="'cname'+scope.row.id" @blur="subname" class="input-text hidden">
                             <img src="../../../admin/images/bine.png" alt="" style="cursor:pointer;" @click="checkname(scope.row.id)">
@@ -26,7 +26,7 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="{yun:}t key='admin_01198'{/yun}" width="">
+                <el-table-column :label="lc('admin_01198')" width="">
                     <template slot-scope="scope">
                         <div class="moduleElTaPax">
                             <span :id="'psort'+scope.row.id">{{scope.row.sort}}</span>
@@ -35,10 +35,10 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="{yun:}t key='member_user_00048'{/yun}">
+                <el-table-column :label="lc('member_user_00048')">
                     <template slot-scope="scope">
                         <div class="cz_button">
-                            <el-button type="danger" size="mini" @click="del(scope.$index)">{yun:}t key='common.delete'{/yun}</el-button>
+                            <el-button type="danger" size="mini" @click="del(scope.$index)">{{ lc('common.delete') }}</el-button>
                         </div>
                     </template>
                 </el-table-column>
@@ -46,49 +46,49 @@
         </div>
         <div class="modulePaging">
             <div>
-                <el-checkbox v-model="checkedAll" :indeterminate="checkedAllIndeterminate" @change="checkAll">{yun:}t key='wap_js_00074'{/yun}</el-checkbox>
+                <el-checkbox v-model="checkedAll" :indeterminate="checkedAllIndeterminate" @change="checkAll">{{ lc('wap_js_00074') }}</el-checkbox>
 
-                <el-button @click="batch('del')" size="mini">{yun:}t key='member_com_00055'{/yun}</el-button>
+                <el-button @click="batch('del')" size="mini">{{ lc('member_com_00055') }}</el-button>
 
             </div>
         </div>
         <div class="modluDrawer">
-            <el-dialog title="{yun:}t key='admin_yunying_00111'{/yun}" :visible.sync="classbox" :with-header="true" :modal-append-to-body="false"
+            <el-dialog :title="lc('admin_yunying_00111')" :visible.sync="classbox" :with-header="true" :modal-append-to-body="false"
                 :show-close="true" width="500px">
                 <div class="yunyinDialog">
                     
                     <div class="yunyinDiaList">
                         <div class="yunyinDiaTite">
-                            <span>{yun:}t key='admin_yunying_00113'{/yun}</span>
+                            <span>{{ lc('admin_yunying_00113') }}</span>
                         </div>
                         <div class="yunyinDiaInpt">
-                            <el-radio v-model="btype" label="1" @input="radioLevel">{yun:}t key='admin_00290'{/yun}</el-radio>
-                            <el-radio v-model="btype" label="2" @input="radioLevel">{yun:}t key='admin_00291'{/yun}</el-radio>
+                            <el-radio v-model="btype" label="1" @input="radioLevel">{{ lc('admin_00290') }}</el-radio>
+                            <el-radio v-model="btype" label="2" @input="radioLevel">{{ lc('admin_00291') }}</el-radio>
                         </div>
                     </div>
                     <div class="yunyinDiaList" v-if="isShow == true">
                         <div class="yunyinDiaTite">
-                            <span>{yun:}t key='admin_00290'{/yun}</span>
+                            <span>{{ lc('admin_00290') }}</span>
                         </div>
                         <div class="yunyinDiaInpt">
-                            <el-select v-model="nid" placeholder="{yun:}t key='wap_user_00100'{/yun}">
+                            <el-select v-model="nid" :placeholder="lc('wap_user_00100')">
                                 <el-option v-for="(item, index) in list" :key="index" :label="item.name" :value="item.id"></el-option>
                             </el-select>
                         </div>
                     </div>
                     <div class="yunyinDiaList">
                         <div class="yunyinDiaTite">
-                            <span>{yun:}t key='admin_00219'{/yun}</span>
+                            <span>{{ lc('admin_00219') }}</span>
                         </div>
                         <div class="yunyinDiaInpt">
-                            <el-input type="textarea" :rows="2" placeholder="{yun:}t key='admin_yunying_00112'{/yun}" v-model="classname">
+                            <el-input type="textarea" :rows="2" :placeholder="lc('admin_yunying_00112')" v-model="classname">
                             </el-input>
                         </div>
                     </div>
                 </div>
                 <span slot="footer" class="dialog-footer">
-                    <el-button @click="classbox = false">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
-                    <el-button type="primary" @click="save">{yun:}t key='wap_com_00019'{/yun}</el-button>
+                    <el-button @click="classbox = false">{{ lc('admin_user_weipin_00043') }}</el-button>
+                    <el-button type="primary" @click="save">{{ lc('wap_com_00019') }}</el-button>
                 </span>
             </el-dialog>
         </div>
@@ -106,7 +106,7 @@
             data: function () {
                 return {
                     loading: false,
-                    dataText: "{yun:}t key='admin_user_weipin_00026'{/yun}",
+                    dataText: lc('admin_user_weipin_00026'),
                     list: [],
 
                     checkedAll: false, // 全选
@@ -144,7 +144,7 @@
                     let that = this;
                     var sort = $("#csort"+that.id).val();
                     if (sort == '') {
-                        message.error("{yun:}t key='admin_01199'{/yun}");
+                        message.error(lc('admin_01199'));
                         return false;
                     }
                     let params= {
@@ -169,7 +169,7 @@
                     let that = this;
                     var name = $("#cname"+that.id).val();
                     if (name == '') {
-                        message.error("{yun:}t key='admin_01200'{/yun}");
+                        message.error(lc('admin_01200'));
                         return false;
                     }
                     let params= {
@@ -199,7 +199,7 @@
                     var position = that.classname.split("\n");
                     var name=position.join("-");
                     if (position == '') {
-                        message.error("{yun:}t key='admin_01200'{/yun}");
+                        message.error(lc('admin_01200'));
                     }
                     params['name'] = name;
                     httpPost('m=yunying&c=shop_class&a=save', params).then(function (res) {
@@ -247,7 +247,7 @@
                         that.list = data.list;
                         that.loading = false;
                         if (that.list.length === 0) {
-                            that.dataText = "{yun:}t key='wap_js_00113'{/yun}";
+                            that.dataText = lc('wap_js_00113');
                         }
                     })
                 },
@@ -268,7 +268,7 @@
                 },
                 batch(type) {
                     if (this.multipleSelection.length == 0) {
-                        message.error("{yun:}t key='admin_00136'{/yun}");
+                        message.error(lc('admin_00136'));
                         return false;
                     }
 
@@ -291,10 +291,10 @@
                         params = {},
                         msg = '';
 
-                    if (typeof idx == 'undefined") { // {yun:}t key='member_com_00055'{/yun}
+                    if (typeof idx == 'undefined") { // {{ lc('member_com_00055') }}
                         params.del = this.idArr;
-                        msg = "{yun:}t key='common_00853'{/yun}";
-                    } else {// {yun:}t key='common_01711'{/yun}
+                        msg = lc('common_00853');
+                    } else {// {{ lc('common_01711') }}
                         params.del = that.list[idx].id;
                         msg = lc('admin_00333');
                     }

@@ -4,7 +4,7 @@
         <div class="moduleElTable" style="border: 1px solid #ebeef5; width: calc(100% - 2px); height: calc(100% - 50px) !important;">
             <el-table :data="tableData" style="width: 100%" stripe
                 :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" height="100%" ref="multipleTable" @sort-change="shortChange" v-loading="loading" :empty-text="emptytext">
-                <el-table-column label="{yun:}t key='wap_00529'{/yun}" width="230">
+                <el-table-column :label="lc('wap_00529')" width="230">
                     <template slot-scope="scope">
                         <div class=" ">
                             <div class="username">
@@ -13,22 +13,22 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="{yun:}t key='wap_user_00180'{/yun}">
+                <el-table-column :label="lc('wap_user_00180')">
                     <template slot-scope="scope">
                         <div class=" ">
                             <div class=" ">{{ scope.row.telMob }}</div>
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column prop="resume" label="{yun:}t key='admin_user_00263'{/yun}">
+                <el-table-column prop="resume" :label="lc('admin_user_00263')">
                     <template slot-scope="scope">
                         <el-button type="text" @click="handlePreview(scope)" style="padding: 0">{{ scope.row.resume }}</el-button>
                     </template>
                 </el-table-column>
-                <el-table-column prop="downtime" label="{yun:}t key='wap_com_00352'{/yun}" sortable="custom">
+                <el-table-column prop="downtime" :label="lc('wap_com_00352')" sortable="custom">
                     <template slot-scope="scope">{{ scope.row.downtime_n }}</template>
                 </el-table-column>
-                <el-table-column prop="isdel_n" label="{yun:}t key='member_user_00181'{/yun}" width="110"></el-table-column>
+                <el-table-column prop="isdel_n" :label="lc('member_user_00181')" width="110"></el-table-column>
             </el-table>
         </div>
         <div class="modulePaging">
@@ -43,7 +43,7 @@
             </div>
         </div>
         <div class="modluDrawer">
-            <el-drawer title="{yun:}t key='member_user_00037'{/yun}" :append-to-body="true" :visible.sync="resumePreviewVisible" :destroy-on-close="true" size="530px">
+            <el-drawer :title="lc('member_user_00037')" :append-to-body="true" :visible.sync="resumePreviewVisible" :destroy-on-close="true" size="530px">
                 <resume_preview :id="info.resume_id" :uid="info.uid"></resume_preview>
             </el-drawer>
         </div>
@@ -72,7 +72,7 @@ module.exports = {
     data: function () {
         return {
             loading: false,
-            emptytext: "{yun:}t key='wap_js_00113'{/yun}",
+            emptytext: lc('wap_js_00113'),
             searchForm: {
                 page: 1,
                 limit: null,
@@ -84,7 +84,7 @@ module.exports = {
             total: 0,
             tableData: [],
             tableHig: true,
-            checked: false,//{yun:}t key='wap_js_00074'{/yun}
+            checked: false,//{{ lc('wap_js_00074') }}
             isIndeterminate: false,// checkbox 的不确定状态
             selectedItem: [],
             info: {},
@@ -155,7 +155,7 @@ module.exports = {
                 (params[index] === '') && (params[index] = null);
             }
             _this.loading = true;
-            _this.emptytext = "{yun:}t key='admin_user_weipin_00026'{/yun}";
+            _this.emptytext = lc('admin_user_weipin_00026');
 			var url = 'm=user&c=users_userlog&a=down';
             httpPost(url, params).then(function (response) {
                 let res = response.data;
@@ -170,7 +170,7 @@ module.exports = {
                         _this.$refs.multipleTable.bodyWrapper.scrollTop = 0;
                     }
                     if (_this.tableData.length === 0){
-                        _this.emptytext = "{yun:}t key='wap_js_00113'{/yun}";
+                        _this.emptytext = lc('wap_js_00113');
                     }
                 }
             }).catch(function (error) {

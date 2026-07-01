@@ -4,7 +4,7 @@
             <div class="moduleElTabInpt">
             </div>
             <div class="moduleSeachButn moduleSeachMart">
-                <el-button type="primary" icon="el-icon-document-add" size="mini" @click="openAdd">{yun:}t key='admin_user_weipin_00051'{/yun}</el-button>
+                <el-button type="primary" icon="el-icon-document-add" size="mini" @click="openAdd">{{ lc('admin_user_weipin_00051') }}</el-button>
             </div>
         </div>
         <div class="moduleElTable modulElTableOnes" style="border: 1px solid #ebeef5; width: calc(100% - 2px);">
@@ -15,9 +15,9 @@
                 </template>
                 <el-table-column type="selection" width="60">
                 </el-table-column>
-                <el-table-column prop="id" label="{yun:}t key='member_com_00345'{/yun}" width="120">
+                <el-table-column prop="id" :label="lc('member_com_00345')" width="120">
                 </el-table-column>
-                <el-table-column prop="days" label="{yun:}t key='admin_user_weipin_00053'{/yun}">
+                <el-table-column prop="days" :label="lc('admin_user_weipin_00053')">
                     <template slot-scope="scope">
                         <div class="moduleProps moduleTrButn" v-if="scope.row[scope.column.property + 'isShow']">
                             <el-input :ref="scope.column.property + scope.$index" :id="scope.column.property + scope.$index"
@@ -29,7 +29,7 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column prop="price" label="{yun:}t key='wap_00563'{/yun}">
+                <el-table-column prop="price" :label="lc('wap_00563')">
                     <template slot-scope="scope">
                         <div class="moduleProps moduleTrButn" v-if="scope.row[scope.column.property + 'isShow']">
                             <el-input :ref="scope.column.property + scope.$index" :id="scope.column.property + scope.$index"
@@ -41,10 +41,10 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="{yun:}t key='member_user_00048'{/yun}" width="80">
+                <el-table-column :label="lc('member_user_00048')" width="80">
                     <template slot-scope="scope">
                         <div class="moduleElTaCaoz">
-                            <el-button type="danger" size="mini" @click="del(scope.$index)">{yun:}t key='common.delete'{/yun}</el-button>
+                            <el-button type="danger" size="mini" @click="del(scope.$index)">{{ lc('common.delete') }}</el-button>
                         </div>
                     </template>
                 </el-table-column>
@@ -53,43 +53,43 @@
         <div class="modulePaging">
             <div>
                 <el-checkbox v-model="checkedAll" :indeterminate="checkedAllIndeterminate"
-                             @change="checkAll">{yun:}t key='wap_js_00074'{/yun}</el-checkbox>
-                <el-button @click="batch('del')" size="mini">{yun:}t key='member_com_00055'{/yun}</el-button>
+                             @change="checkAll">{{ lc('wap_js_00074') }}</el-checkbox>
+                <el-button @click="batch('del')" size="mini">{{ lc('member_com_00055') }}</el-button>
             </div>
             <div class="modulePagNum">
             </div>
         </div>
         <!-- 弹窗 -->
         <div class="modluDrawer">
-            <el-dialog title="{yun:}t key='admin_user_weipin_00051'{/yun}" :visible.sync="dialogAdd" :with-header="true" :modal-append-to-body="false"
+            <el-dialog :title="lc('admin_user_weipin_00051')" :visible.sync="dialogAdd" :with-header="true" :modal-append-to-body="false"
                 :show-close="true" width="350px">
                 <div class="toolClasDia fenpeizhand">
                     <div class="toolClasList">
                         <div class="toolClasTite">
-                            <span>{yun:}t key='admin_00413'{/yun}</span>
+                            <span>{{ lc('admin_00413') }}</span>
                         </div>
                         <div class="toolClasCont">
                             <el-input v-model="ruleFormAdd.days" placeholder=""
                                       @input="inputIntNumber($event, 'ruleFormAdd', 'days')">
-                                <template slot="append">{yun:}t key='common_02067'{/yun}</template>
+                                <template slot="append">{{ lc('common_02067') }}</template>
                             </el-input>
                         </div>
                     </div>
                     <div class="toolClasList">
                         <div class="toolClasTite">
-                            <span>{yun:}t key='admin_user_weipin_00052'{/yun}</span>
+                            <span>{{ lc('admin_user_weipin_00052') }}</span>
                         </div>
                         <div class="toolClasCont">
                             <el-input v-model="ruleFormAdd.price" placeholder=""
                                       @input="inputIntNumber($event, 'ruleFormAdd', 'price')">
-                                <template slot="append">{yun:}t key='common_02056'{/yun}</template>
+                                <template slot="append">{{ lc('common_02056') }}</template>
                             </el-input>
                         </div>
                     </div>
                 </div>
                 <span slot="footer" class="dialog-footer">
-                    <el-button @click="dialogAdd = false">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
-                    <el-button type="primary" @click="saveAdd" :disabled="saveLoading">{yun:}t key='wap_com_00019'{/yun}</el-button>
+                    <el-button @click="dialogAdd = false">{{ lc('admin_user_weipin_00043') }}</el-button>
+                    <el-button type="primary" @click="saveAdd" :disabled="saveLoading">{{ lc('wap_com_00019') }}</el-button>
                 </span>
             </el-dialog>
         </div>
@@ -101,7 +101,7 @@ module.exports = {
     data: function () {
         return {
             loading: false,
-            dataText: "{yun:}t key='admin_user_weipin_00026'{/yun}",
+            dataText: lc('admin_user_weipin_00026'),
             // list
             list: [],
 
@@ -144,7 +144,7 @@ module.exports = {
                 that.list = data.list;
                 that.loading = false;
                 if (that.list.length === 0) {
-                    that.dataText = "{yun:}t key='wap_js_00113'{/yun}";
+                    that.dataText = lc('wap_js_00113');
                 }
             })
         },
@@ -168,10 +168,10 @@ module.exports = {
         batch(type) {
             let that = this;
             if (this.multipleSelection.length == 0 && type == 'del') {
-                message.error("{yun:}t key='admin_user_weipin_00005'{/yun}");
+                message.error(lc('admin_user_weipin_00005'));
                 return false;
             }else if (this.multipleSelection.length == 0){
-                message.error("{yun:}t key='admin_user_weipin_00001'{/yun}");
+                message.error(lc('admin_user_weipin_00001'));
                 return false;
             }
 
@@ -195,10 +195,10 @@ module.exports = {
                 params = {},
                 msg = '';
 
-            if (typeof idx == 'undefined') { // {yun:}t key='member_com_00055'{/yun}
+            if (typeof idx == 'undefined') { // {{ lc('member_com_00055') }}
                 params.del = this.idArr;
                 msg = lc('common_00853');
-            } else {// {yun:}t key='common_01711'{/yun}
+            } else {// {{ lc('common_01711') }}
                 params.del = that.list[idx].id;
                 msg = lc('admin_00333');
             }
@@ -230,7 +230,7 @@ module.exports = {
                 ruleForm = that.ruleFormAdd;
 
             if (typeof ruleForm.days === 'undefined' || $.trim(ruleForm.days) == "" || $.trim(ruleForm.days) == 0) {
-                message.error("{yun:}t key='admin_00614'{/yun}");
+                message.error(lc('admin_00614'));
                 return false;
             }
 

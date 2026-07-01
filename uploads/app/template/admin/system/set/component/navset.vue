@@ -3,10 +3,10 @@
         <div class="drawerModInfo" style="max-height: calc(100% - 80px); overflow-y: auto;">
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>{yun:}t key='admin_00966'{/yun}</span>
+                    <span>{{ lc('admin_00966') }}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-select v-model="ruleForm.nid" placeholder="{yun:}t key='wap_user_00100'{/yun}">
+                    <el-select v-model="ruleForm.nid" :placeholder="lc('wap_user_00100')">
                         <el-option v-for="item in type" :key="item.id" :label="item.typename" :value="item.id">
                         </el-option>
                     </el-select>
@@ -14,60 +14,60 @@
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>{yun:}t key='admin_00967'{/yun}</span>
+                    <span>{{ lc('admin_00967') }}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input v-model="ruleForm.name" placeholder="{yun:}t key='wap_user_00076'{/yun}"></el-input>
+                    <el-input v-model="ruleForm.name" :placeholder="lc('wap_user_00076')"></el-input>
                 </div>
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>{yun:}t key='member_user_00299'{/yun}</span>
+                    <span>{{ lc('member_user_00299') }}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input v-model="ruleForm.sort" @input="inputIntNumber($event, 'ruleForm', 'sort')" placeholder="{yun:}t key='wap_user_00076'{/yun}"></el-input>
+                    <el-input v-model="ruleForm.sort" @input="inputIntNumber($event, 'ruleForm', 'sort')" :placeholder="lc('wap_user_00076')"></el-input>
                 </div>
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>{yun:}t key='admin_00968'{/yun}</span>
+                    <span>{{ lc('admin_00968') }}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-radio v-model="ruleForm.eject" label="1">{yun:}t key='admin_00205'{/yun}</el-radio>
-                    <el-radio v-model="ruleForm.eject" label="0">{yun:}t key='admin_00203'{/yun}</el-radio>
+                    <el-radio v-model="ruleForm.eject" label="1">{{ lc('admin_00205') }}</el-radio>
+                    <el-radio v-model="ruleForm.eject" label="0">{{ lc('admin_00203') }}</el-radio>
                 </div>
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>{yun:}t key='admin_00969'{/yun}</span>
+                    <span>{{ lc('admin_00969') }}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-radio v-model="ruleForm.model" label="hot">{yun:}t key='common_02091'{/yun}</el-radio>
-                    <el-radio v-model="ruleForm.model" label="new">{yun:}t key='common_02081'{/yun}</el-radio>
-                    <el-radio v-model="ruleForm.model" label="">{yun:}t key='common_02082'{/yun}</el-radio>
+                    <el-radio v-model="ruleForm.model" label="hot">{{ lc('common_02091') }}</el-radio>
+                    <el-radio v-model="ruleForm.model" label="new">{{ lc('common_02081') }}</el-radio>
+                    <el-radio v-model="ruleForm.model" label="">{{ lc('common_02082') }}</el-radio>
                 </div>
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>{yun:}t key='admin_00970'{/yun}</span>
+                    <span>{{ lc('admin_00970') }}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-radio v-model="ruleForm.bold" label="1">{yun:}t key='common.yes'{/yun}</el-radio>
-                    <el-radio v-model="ruleForm.bold" label="0">{yun:}t key='common.no'{/yun}</el-radio>
+                    <el-radio v-model="ruleForm.bold" label="1">{{ lc('common.yes') }}</el-radio>
+                    <el-radio v-model="ruleForm.bold" label="0">{{ lc('common.no') }}</el-radio>
                 </div>
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>{yun:}t key='admin_system_00087'{/yun}</span>
+                    <span>{{ lc('admin_system_00087') }}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-radio v-model="ruleForm.display" label="1">{yun:}t key='common.yes'{/yun}</el-radio>
-                    <el-radio v-model="ruleForm.display" label="0">{yun:}t key='common.no'{/yun}</el-radio>
+                    <el-radio v-model="ruleForm.display" label="1">{{ lc('common.yes') }}</el-radio>
+                    <el-radio v-model="ruleForm.display" label="0">{{ lc('common.no') }}</el-radio>
                 </div>
             </div>
         </div>
         <div class="setBasicButn" style="border: none;">
-            <el-button type="primary" size="medium" @click="save" :disabled="saveLoading">{yun:}t key='common.save'{/yun}</el-button>
+            <el-button type="primary" size="medium" @click="save" :disabled="saveLoading">{{ lc('common.save') }}</el-button>
         </div>
     </div>
 </template>

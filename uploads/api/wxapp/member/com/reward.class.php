@@ -2,7 +2,9 @@
 
 class reward_controller extends com_controller{
     
-	
+	/**
+     * 兑换记录列表
+	*/
 	function changeList_action(){
 	    $redeemM = $this->MODEL('redeem');
         $statisM		=	$this->MODEL('statis');

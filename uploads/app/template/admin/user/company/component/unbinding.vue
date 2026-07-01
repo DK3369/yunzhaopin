@@ -3,18 +3,18 @@
 		<div class="moduleElSearchInf">
 			<div class="moduleElTabInpt" style="flex-wrap: wrap;">
 				<div class="moduleInptList moduleInptWidt">
-					<el-input placeholder="{yun:}t key='admin_user_weipin_00003'{/yun}" size="small" @keyup.enter.native="search" v-model="searchForm.keyword" class="input-with-select" clearable>
-						<el-select v-model="searchForm.type" slot="prepend" placeholder="{yun:}t key='wap_user_00100'{/yun}">
-							<el-option label="{yun:}t key='admin_user_00140'{/yun}" :value="1"></el-option>
-							<el-option label="{yun:}t key='wap_user_00102'{/yun}" :value="2"></el-option>
+					<el-input :placeholder="lc('admin_user_weipin_00003')" size="small" @keyup.enter.native="search" v-model="searchForm.keyword" class="input-with-select" clearable>
+						<el-select v-model="searchForm.type" slot="prepend" :placeholder="lc('wap_user_00100')">
+							<el-option :label="lc('admin_user_00140')" :value="1"></el-option>
+							<el-option :label="lc('wap_user_00102')" :value="2"></el-option>
 						</el-select>
 					</el-input>
 				</div>
 				<div class="moduleInptList">
-					<el-date-picker size="small" v-model="daterange" type="daterange" range-separator="{yun:}t key='admin_company_00019'{/yun}" start-placeholder="{yun:}t key='admin_00343'{/yun}" end-placeholder="{yun:}t key='admin_00344'{/yun}" style="width: 280px;" @change="search"></el-date-picker>
+					<el-date-picker size="small" v-model="daterange" type="daterange" :range-separator="lc('admin_company_00019')" :start-placeholder="lc('admin_00343')" :end-placeholder="lc('admin_00344')" style="width: 280px;" @change="search"></el-date-picker>
 				</div>
 				<div class="moduleInptList">
-					<el-button type="primary" icon="el-icon-search" size="mini" @click="search">{yun:}t key='admin_user_weipin_00049'{/yun}</el-button>
+					<el-button type="primary" icon="el-icon-search" size="mini" @click="search">{{ lc('admin_user_weipin_00049') }}</el-button>
 				</div>
 			</div>
 		</div>
@@ -24,20 +24,20 @@
 					  :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" v-loading="loading" :empty-text="emptytext">
 				<el-table-column type="selection" width="55">
 				</el-table-column>
-				<el-table-column prop="id" label="{yun:}t key='member_com_00345'{/yun}" width="120" sortable="custom">
+				<el-table-column prop="id" :label="lc('member_com_00345')" width="120" sortable="custom">
 				</el-table-column>
-				<el-table-column prop="username" label="{yun:}t key='admin_user_00140'{/yun}">
+				<el-table-column prop="username" :label="lc('admin_user_00140')">
 				</el-table-column>
-				<el-table-column prop="content" label="{yun:}t key='wap_user_00102'{/yun}" min-width="220">
+				<el-table-column prop="content" :label="lc('wap_user_00102')" min-width="220">
 				</el-table-column>
 				<el-table-column prop="ip" label="IP">
 				</el-table-column>
-				<el-table-column prop="ctime_n" label="{yun:}t key='wap_js_00088'{/yun}">
+				<el-table-column prop="ctime_n" :label="lc('wap_js_00088')">
 				</el-table-column>
-				<el-table-column fixed="right" label="{yun:}t key='member_user_00048'{/yun}" width="90">
+				<el-table-column fixed="right" :label="lc('member_user_00048')" width="90">
 					<template slot-scope="scope">
 						<div class="moduleElTaCaoz">
-							<el-button type="danger" size="mini" @click="del(scope.$index)">{yun:}t key='common.delete'{/yun}</el-button>
+							<el-button type="danger" size="mini" @click="del(scope.$index)">{{ lc('common.delete') }}</el-button>
 						</div>
 					</template>
 				</el-table-column>
@@ -46,9 +46,9 @@
 		<div class="modulePaging">
 			<div>
 				<el-checkbox v-model="checkedAll" :indeterminate="checkedAllIndeterminate"
-							 @change="checkAll">{yun:}t key='wap_js_00074'{/yun}</el-checkbox>
-				<el-button @click="batch('del')" size="mini">{yun:}t key='member_com_00055'{/yun}</el-button>
-				<el-button @click="del('all')" size="mini">{yun:}t key='admin_user_00260'{/yun}</el-button>
+							 @change="checkAll">{{ lc('wap_js_00074') }}</el-checkbox>
+				<el-button @click="batch('del')" size="mini">{{ lc('member_com_00055') }}</el-button>
+				<el-button @click="del('all')" size="mini">{{ lc('admin_user_00260') }}</el-button>
 			</div>
 			<div class="modulePagNum">
 				<el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
@@ -65,7 +65,7 @@
         data: function () {
             return {
                 loading: false,
-                emptytext: "{yun:}t key='wap_js_00113'{/yun}",
+                emptytext: lc('wap_js_00113'),
                 // date selection
                 daterange: '",
 
@@ -81,11 +81,11 @@
                 total: 0,
                 pageSizes: [],
 
-                // {yun:}t key='admin_00959'{/yun}
+                // {{ lc('admin_00959') }}
                 t: "',
                 order: '",
 
-                checkedAll: false, // {yun:}t key='wap_js_00074'{/yun}
+                checkedAll: false, // {{ lc('wap_js_00074') }}
                 checkedAllIndeterminate: false,
                 multipleSelection: [], // 多选值存储
                 idArr: [],
@@ -170,7 +170,7 @@
                         order: that.order,
                     };
 				that.loading = true;
-				that.emptytext = "{yun:}t key='admin_user_weipin_00026'{/yun}";
+				that.emptytext = lc('admin_user_weipin_00026');
                 // 分页切换清空表格数据重新加载数据后回调页面顶部
                 if(that.prevPage != that.page){
                     that.list = []
@@ -194,7 +194,7 @@
                         that.$refs.multipleTable.bodyWrapper.scrollTop = 0;
                     }
                     if (that.list.length === 0){
-                        that.emptytext = "{yun:}t key='wap_js_00113'{/yun}";
+                        that.emptytext = lc('wap_js_00113');
                     }
                 })
             },
@@ -217,7 +217,7 @@
             },
             batch(type) {
                 if (this.multipleSelection.length == 0) {
-                    message.error("{yun:}t key='admin_user_weipin_00001'{/yun}");
+                    message.error(lc('admin_user_weipin_00001'));
                     return false;
                 }
 
@@ -241,15 +241,15 @@
                     params = {},
                     msg = '';
 
-                if (typeof idx == 'undefined") { // {yun:}t key='member_com_00055'{/yun}
+                if (typeof idx == 'undefined") { // {{ lc('member_com_00055') }}
                     params.del = this.idArr;
-                    msg = "{yun:}t key='common_00853'{/yun}";
-                } else if (idx == 'all") { // {yun:}t key='admin_user_00260'{/yun}
+                    msg = lc('common_00853');
+                } else if (idx == 'all") { // {{ lc('admin_user_00260') }}
                     params.del = "all';
-                    msg = "{yun:}t key='admin_company_00007'{/yun}";
+                    msg = lc('admin_company_00007');
                 } else {// 单个删除
                     params.del = that.list[idx].id;
-                    msg = "{yun:}t key='admin_00333'{/yun}";
+                    msg = lc('admin_00333');
                 }
 
                 delConfirm(this, params, function (params) {

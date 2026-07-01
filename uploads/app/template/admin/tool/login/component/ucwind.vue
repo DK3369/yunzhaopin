@@ -4,26 +4,26 @@
 		<div class="moduleTable" style="max-height: calc(100% - (60px + 25px));">
 			<div class="tableDome_tip">
 				<el-alert
-					title="{yun:}t key='admin_tool_00442'{/yun}"
+					:title="lc('admin_tool_00442')"
 					:closable="false">
 				</el-alert>
 			</div>
 			<table class="tableVue">
 				<thead>
 					<tr align="left">
-						<th width="200">{yun:}t key='member_com_00021'{/yun}</th>
-						<th width="500">{yun:}t key='member_user_00181'{/yun}</th>
-						<th>{yun:}t key='member_com_00207'{/yun}</th>
+						<th width="200">{{ lc('member_com_00021') }}</th>
+						<th width="500">{{ lc('member_user_00181') }}</th>
+						<th>{{ lc('member_com_00207') }}</th>
 					</tr>
 				</thead>
 				<tbody>
 					<tr>
 						<td>
-							<div class="TableTite">{yun:}t key='admin_tool_00441'{/yun} </div>
+							<div class="TableTite">{{ lc('admin_tool_00441') }} </div>
 						</td>
 						<td>
 							<div class="TableButn">
-								<el-switch v-model="config.sy_pw_type" active-text="{yun:}t key='member_com_00287'{/yun}" inactive-text="{yun:}t key='resume_00030'{/yun}" active-value="pw_center" inactive-value=""></el-switch>
+								<el-switch v-model="config.sy_pw_type" :active-text="lc('member_com_00287')" :inactive-text="lc('resume_00030')" active-value="pw_center" inactive-value=""></el-switch>
 							</div>
 						</td>
 						<td>
@@ -34,80 +34,80 @@
 					</tr>
 					<tr>
 						<td>
-							<div class="TableTite">{yun:}t key='admin_tool_00445'{/yun}</div>
+							<div class="TableTite">{{ lc('admin_tool_00445') }}</div>
 						</td>
 						<td>
 							<div class="TableInpt">
-								<el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="ucinfo.UC_DBHOST">
+								<el-input :placeholder="lc('wap_user_00076')" v-model="ucinfo.UC_DBHOST">
 
 								</el-input>
 							</div>
 						</td>
 						<td>
 							<div class="TableShuom">
-								<span>{yun:}t key='admin_tool_00457'{/yun}</span>
+								<span>{{ lc('admin_tool_00457') }}</span>
 							</div>
 						</td>
 					</tr>
 
 					<tr>
 						<td>
-							<div class="TableTite">{yun:}t key='admin_tool_00446'{/yun}</div>
+							<div class="TableTite">{{ lc('admin_tool_00446') }}</div>
 						</td>
 						<td>
 							<div class="TableInpt">
-								<el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="ucinfo.UC_DBUSER">
-
-								</el-input>
-							</div>
-						</td>
-						<td>
-							<div class="TableShuom">
-								<span>{yun:}t key='admin_tool_00447'{/yun}</span>
-							</div>
-						</td>
-					</tr>
-					<tr>
-						<td>
-							<div class="TableTite">{yun:}t key='admin_tool_00448'{/yun}</div>
-						</td>
-						<td>
-							<div class="TableInpt">
-								<el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="ucinfo.UC_DBPW">
+								<el-input :placeholder="lc('wap_user_00076')" v-model="ucinfo.UC_DBUSER">
 
 								</el-input>
 							</div>
 						</td>
 						<td>
 							<div class="TableShuom">
-								<span>{yun:}t key='admin_tool_00449'{/yun}</span>
+								<span>{{ lc('admin_tool_00447') }}</span>
 							</div>
 						</td>
 					</tr>
 					<tr>
 						<td>
-							<div class="TableTite">{yun:}t key='admin_tool_00450'{/yun}</div>
+							<div class="TableTite">{{ lc('admin_tool_00448') }}</div>
 						</td>
 						<td>
 							<div class="TableInpt">
-								<el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="ucinfo.UC_DBNAME">
+								<el-input :placeholder="lc('wap_user_00076')" v-model="ucinfo.UC_DBPW">
 
 								</el-input>
 							</div>
 						</td>
 						<td>
 							<div class="TableShuom">
-								<span>{yun:}t key='admin_tool_00458'{/yun}</span>
+								<span>{{ lc('admin_tool_00449') }}</span>
 							</div>
 						</td>
 					</tr>
 					<tr>
 						<td>
-							<div class="TableTite">{yun:}t key='admin_tool_00451'{/yun}</div>
+							<div class="TableTite">{{ lc('admin_tool_00450') }}</div>
 						</td>
 						<td>
 							<div class="TableInpt">
-								<el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="ucinfo.UC_DBTABLEPRE">
+								<el-input :placeholder="lc('wap_user_00076')" v-model="ucinfo.UC_DBNAME">
+
+								</el-input>
+							</div>
+						</td>
+						<td>
+							<div class="TableShuom">
+								<span>{{ lc('admin_tool_00458') }}</span>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<div class="TableTite">{{ lc('admin_tool_00451') }}</div>
+						</td>
+						<td>
+							<div class="TableInpt">
+								<el-input :placeholder="lc('wap_user_00076')" v-model="ucinfo.UC_DBTABLEPRE">
 
 								</el-input>
 							</div>
@@ -120,42 +120,42 @@
 					</tr>
 					<tr>
 						<td>
-							<div class="TableTite">{yun:}t key='admin_tool_00452'{/yun}</div>
+							<div class="TableTite">{{ lc('admin_tool_00452') }}</div>
 						</td>
 						<td>
 							<div class="TableInpt">
-								<el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="ucinfo.UC_KEY">
+								<el-input :placeholder="lc('wap_user_00076')" v-model="ucinfo.UC_KEY">
 
 								</el-input>
 							</div>
 						</td>
 						<td>
 							<div class="TableShuom">
-								<span>{yun:}t key='admin_tool_00459'{/yun}</span>
+								<span>{{ lc('admin_tool_00459') }}</span>
 							</div>
 						</td>
 					</tr>
 					<tr>
 						<td>
-							<div class="TableTite">{yun:}t key='admin_tool_00463'{/yun}</div>
+							<div class="TableTite">{{ lc('admin_tool_00463') }}</div>
 						</td>
 						<td>
 							<div class="TableInpt">
-								<el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="ucinfo.UC_API">
+								<el-input :placeholder="lc('wap_user_00076')" v-model="ucinfo.UC_API">
 
 								</el-input>
 							</div>
 						</td>
 						<td>
 							<div class="TableShuom">
-								<span>{yun:}t key='admin_tool_00460'{/yun}</span>
+								<span>{{ lc('admin_tool_00460') }}</span>
 							</div>
 						</td>
 					</tr>
 
 					<tr>
 						<td>
-							<div class="TableTite">{yun:}t key='admin_tool_00464'{/yun}</div>
+							<div class="TableTite">{{ lc('admin_tool_00464') }}</div>
 						</td>
 						<td>
 							<div class="TableButn">
@@ -171,18 +171,18 @@
 					</tr>
 					<tr>
 						<td>
-							<div class="TableTite">{yun:}t key='admin_tool_00455'{/yun}</div>
+							<div class="TableTite">{{ lc('admin_tool_00455') }}</div>
 						</td>
 						<td>
 							<div class="TableInpt">
-								<el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="ucinfo.UC_APPID">
+								<el-input :placeholder="lc('wap_user_00076')" v-model="ucinfo.UC_APPID">
 
 								</el-input>
 							</div>
 						</td>
 						<td>
 							<div class="TableShuom">
-								<span>{yun:}t key='admin_tool_00461'{/yun}</span>
+								<span>{{ lc('admin_tool_00461') }}</span>
 							</div>
 						</td>
 					</tr>
@@ -192,14 +192,14 @@
 						</td>
 						<td>
 							<div class="TableInpt">
-								<el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="ucinfo.UC_APP">
+								<el-input :placeholder="lc('wap_user_00076')" v-model="ucinfo.UC_APP">
 
 								</el-input>
 							</div>
 						</td>
 						<td>
 							<div class="TableShuom">
-								<span>{yun:}t key='admin_tool_00462'{/yun}</span>
+								<span>{{ lc('admin_tool_00462') }}</span>
 							</div>
 						</td>
 					</tr>
@@ -209,7 +209,7 @@
 			</table>
 		</div>
 		<div class="setBasicButn" style="border: none;">
-			<el-button type="primary" size="medium" @click="post">{yun:}t key='common.submit'{/yun}</el-button>
+			<el-button type="primary" size="medium" @click="post">{{ lc('common.submit') }}</el-button>
 		</div>
 
 	</div>

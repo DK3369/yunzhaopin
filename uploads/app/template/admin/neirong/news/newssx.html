@@ -101,7 +101,7 @@
                 sort_col: '',
                 islook: false,
 				submitLoading: false,
-				btntitle:'添加',
+				btntitle: lc('wap_js_00091'),
                 prevPage:0
             }
         },
@@ -112,10 +112,10 @@
             edit(data){
                 if (data.id) {
                     this.curr_data = deepClone(data);
-					this.btntitle = '确定';
+					this.btntitle = lc('wap_01384');
                 } else {
                     this.curr_data = {id: '', name: '', value: ''};
-					this.btntitle = '添加';
+					this.btntitle = lc('wap_js_00091');
                 }
 
                 this.dialogVisible = true
@@ -208,7 +208,7 @@
                     params.t = that.sort_col
                 }
                 that.loading = true;
-                that.emptytext = "数据加载中";
+                that.emptytext = lc('admin_user_weipin_00026');
                 httpPost('m=neirong&c=news&a=type', params).then(function (result) {
                     var res = result.data
                     if (res.error == 0) {
@@ -222,7 +222,7 @@
                         }
                         that.loading = false;
                         if (that.tableData.length === 0){
-                            that.emptytext = "暂无数据";
+                            that.emptytext = lc('wap_js_00113');
                         }
                     }
                 }).catch(function (e) {

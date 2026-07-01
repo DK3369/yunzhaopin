@@ -3,11 +3,11 @@
 		<div class="moduleSeachbig">
 			<!--关键字搜索和查询在一起-->
 			<div class="tableSeachInpt tableSeachInptsmall">
-				<el-input v-model="searchForm.keyword" @keyup.enter.native="search" placeholder="{yun:}t key='admin_user_weipin_00003'{/yun}" size="small"
+				<el-input v-model="searchForm.keyword" @keyup.enter.native="search" :placeholder="lc('admin_user_weipin_00003')" size="small"
 						  prefix-icon="el-icon-search" clearable>
-					<el-select v-model="searchForm.type" size="small" slot="prepend" placeholder="{yun:}t key='wap_00529'{/yun}">
-						<el-option label="{yun:}t key='wap_00529'{/yun}" :value="1"></el-option>
-						<el-option label="{yun:}t key='wap_user_00015'{/yun}" :value="2"></el-option>
+					<el-select v-model="searchForm.type" size="small" slot="prepend" :placeholder="lc('wap_00529')">
+						<el-option :label="lc('wap_00529')" :value="1"></el-option>
+						<el-option :label="lc('wap_user_00015')" :value="2"></el-option>
 					</el-select>
 				</el-input>
 			</div>
@@ -17,7 +17,7 @@
 				</el-select>
 			</div>
 			<div class="tableSeachInpt">
-				<el-button type="primary" icon="el-icon-search" size="mini" @click="search">{yun:}t key='admin_user_weipin_00049'{/yun}</el-button>
+				<el-button type="primary" icon="el-icon-search" size="mini" @click="search">{{ lc('admin_user_weipin_00049') }}</el-button>
 			</div>
 
 		</div>
@@ -25,7 +25,7 @@
 		<div class="admin_datatip">
 			<i class="el-icon-document"></i> {{ lc("admin_data_stats") }} <span @click="init">{{ lc("admin_total_count", [resumeAllNum]) }}</span>
 			<span class="admin_datatip_n"><span @click="statusSearch('3')">{{ lc("admin_pending_review_count", [resumeStatusNum1 ? resumeStatusNum1 : 0]) }}</span></span>
-			<span class="admin_datatip_n">{yun:}t key='admin_user_00233'{/yun}<span @click="statusSearch('2')">{{resumeStatusNum2 ? resumeStatusNum2 : 0}}</span> {yun:}t key='common_02088'{/yun}</span>
+			<span class="admin_datatip_n">{{ lc('admin_user_00233') }}<span @click="statusSearch('2')">{{resumeStatusNum2 ? resumeStatusNum2 : 0}}</span> {{ lc('common_02088') }}</span>
 			<span class="admin_datatip_n">{{ lc("admin_search_results_count", [total]) }}</span>
 		</div>
 		<div class="moduleElTable" :class="{ 'modulElTableGai': tableHig }"
@@ -36,48 +36,48 @@
 					<p>{{dataText}}</p>
 				</template>
 				<el-table-column type="selection" width="55"> </el-table-column>
-				<el-table-column prop="uid" label="{yun:}t key='member_com_00345'{/yun}" width="80" sortable="custom"> </el-table-column>
-				<el-table-column prop="uname" label="{yun:}t key='wap_00529'{/yun}" width="100"> </el-table-column>
-				<el-table-column label="{yun:}t key='admin_vue_00017'{/yun}" width=" ">
+				<el-table-column prop="uid" :label="lc('member_com_00345')" width="80" sortable="custom"> </el-table-column>
+				<el-table-column prop="uname" :label="lc('wap_00529')" width="100"> </el-table-column>
+				<el-table-column :label="lc('admin_vue_00017')" width=" ">
 					<template slot-scope="scope">
 						<div>
 							<span v-if="scope.row.name">{{scope.row.name}}</span>
-							<span v-else style="color: #FF0000;">{yun:}t key='member_com_00211'{/yun}</span>
+							<span v-else style="color: #FF0000;">{{ lc('member_com_00211') }}</span>
 						</div>
 					</template>
 				</el-table-column>
-				<el-table-column prop="price" label="{yun:}t key='wap_00563'{/yun}"> </el-table-column>
-				<el-table-column prop="add_time" label="{yun:}t key='wap_com_00342'{/yun}" width="150" sortable="custom">
+				<el-table-column prop="price" :label="lc('wap_00563')"> </el-table-column>
+				<el-table-column prop="add_time" :label="lc('wap_com_00342')" width="150" sortable="custom">
 					<template slot-scope="scope">
 						<div>{{scope.row.add_time_n}}</div>
 					</template>
 				</el-table-column>
-				<el-table-column prop="" label="{yun:}t key='admin_00488'{/yun}" width="150" align="center">
+				<el-table-column prop="" :label="lc('admin_00488')" width="150" align="center">
 					<template slot-scope="scope">
 						<el-button v-if="scope.row.name && scope.row.status == 1" type="text" size="small" plain
 								   @click="openRecom(scope.row)">
-							<i class="el-icon-search"></i> {yun:}t key='admin_00488'{/yun}
+							<i class="el-icon-search"></i> {{ lc('admin_00488') }}
 						</el-button>
 						<div v-else>-</div>
 					</template>
 				</el-table-column>
-				<el-table-column label="{yun:}t key='member_user_00181'{/yun}" width="60" fixed="right">
+				<el-table-column :label="lc('member_user_00181')" width="60" fixed="right">
 					<template slot-scope="scope">
 						<div class="admin_state">
-							<span v-if="scope.row.status == 1" class="admin_state1">{yun:}t key='wap_com_00191'{/yun}</span>
-					        <span v-else-if="scope.row.status == 2" class="admin_state2">{yun:}t key='admin_user_00234'{/yun}</span>
-							<span v-else class="admin_state5">{yun:}t key='wap_user_00166'{/yun}</span>
+							<span v-if="scope.row.status == 1" class="admin_state1">{{ lc('wap_com_00191') }}</span>
+					        <span v-else-if="scope.row.status == 2" class="admin_state2">{{ lc('admin_user_00234') }}</span>
+							<span v-else class="admin_state5">{{ lc('wap_user_00166') }}</span>
 						</div>
 					</template>
 				</el-table-column>
-				<el-table-column label="{yun:}t key='member_user_00048'{/yun}" width="190" fixed="right" align="center">
+				<el-table-column :label="lc('member_user_00048')" width="190" fixed="right" align="center">
 					<template slot-scope="scope">
 						<div class="cz_button">
 							<template v-if="scope.row.name">
-								<el-button plain @click="openPreview(scope.row)">{yun:}t key='wap_00071'{/yun}</el-button>
-								<el-button v-if="scope.row.status == 0" size="mini" plain @click="openAudit(scope.row)">{yun:}t key='member_user_00152'{/yun}</el-button>
+								<el-button plain @click="openPreview(scope.row)">{{ lc('wap_00071') }}</el-button>
+								<el-button v-if="scope.row.status == 0" size="mini" plain @click="openAudit(scope.row)">{{ lc('member_user_00152') }}</el-button>
 							</template>
-							<el-button v-if="scope.row.status != 0" type="danger" size="mini" @click="del(scope.$index)">{yun:}t key='common.delete'{/yun}</el-button>
+							<el-button v-if="scope.row.status != 0" type="danger" size="mini" @click="del(scope.$index)">{{ lc('common.delete') }}</el-button>
 						</div>
 					</template>
 				</el-table-column>
@@ -86,8 +86,8 @@
        	<div class="modulePaging">
 			<div>
 				<el-checkbox v-model="checkedAll" :indeterminate="checkedAllIndeterminate"
-							 @change="checkAll">{yun:}t key='wap_js_00074'{/yun}</el-checkbox>
-				<el-button @click="batch('del')" size="mini">{yun:}t key='member_com_00055'{/yun}</el-button>
+							 @change="checkAll">{{ lc('wap_js_00074') }}</el-checkbox>
+				<el-button @click="batch('del')" size="mini">{{ lc('member_com_00055') }}</el-button>
 			</div>
 			<div class="modulePagNum">
 				<el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
@@ -98,31 +98,31 @@
 		</div>
 		 <!--审核-->
 		<div class="modluDrawer">
-			<el-dialog title="{yun:}t key='admin_00489'{/yun}" :visible.sync="dialogAudit" :with-header="true" :modal-append-to-body="false"
+			<el-dialog :title="lc('admin_00489')" :visible.sync="dialogAudit" :with-header="true" :modal-append-to-body="false"
 				:show-close="true" width="450px">
 				<div>
-					<div class="wxsettip_small ">{yun:}t key='admin_user_weipin_00032'{/yun} </div>
+					<div class="wxsettip_small ">{{ lc('admin_user_weipin_00032') }} </div>
 					<template>
-						<el-radio v-model="ruleFormAudit.status" label="1">{yun:}t key='admin_user_00236'{/yun}</el-radio>
-						<el-radio v-model="ruleFormAudit.status" label="2">{yun:}t key='admin_user_00234'{/yun}</el-radio>
+						<el-radio v-model="ruleFormAudit.status" label="1">{{ lc('admin_user_00236') }}</el-radio>
+						<el-radio v-model="ruleFormAudit.status" label="2">{{ lc('admin_user_00234') }}</el-radio>
 					</template>
-					<div class="wxsettip_small ">{yun:}t key='member_user_00062'{/yun} </div>
-					<div class="wxsettip">{yun:}t key='admin_user_00232'{/yun} </div>
+					<div class="wxsettip_small ">{{ lc('member_user_00062') }} </div>
+					<div class="wxsettip">{{ lc('admin_user_00232') }} </div>
 				</div>
 				<span slot="footer" class="dialog-footer">
-					<el-button @click="dialogAudit = false">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
-					<el-button type="primary" @click="submitAudit">{yun:}t key='wap_com_00019'{/yun}</el-button>
+					<el-button @click="dialogAudit = false">{{ lc('admin_user_weipin_00043') }}</el-button>
+					<el-button type="primary" @click="submitAudit">{{ lc('wap_com_00019') }}</el-button>
 				</span>
 			</el-dialog>
 		</div>
 
 		<div class="modluDrawer">
 			<!--预览简历-->
-			<el-drawer title="{yun:}t key='wap_user_00217'{/yun}" :visible.sync="drawerPreview" append-to-body size="60%">
+			<el-drawer :title="lc('wap_user_00217')" :visible.sync="drawerPreview" append-to-body size="60%">
 				<preview :id="detail.eid"></preview>
 			</el-drawer>
 			<!--匹配岗位-->
-			<el-drawer title="{yun:}t key='admin_00488'{/yun}" :append-to-body="true" :visible.sync="drawerRecom" :show-close="true"
+			<el-drawer :title="lc('admin_00488')" :append-to-body="true" :visible.sync="drawerRecom" :show-close="true"
 					   :with-header="true" size="80%">
 				<recom :id="detail.id" :eid="detail.eid"></recom>
 			</el-drawer>
@@ -138,7 +138,7 @@
 		data: function() {
 			return {
 				loading: false,
-				dataText: "{yun:}t key='admin_user_weipin_00026'{/yun}",
+				dataText: lc('admin_user_weipin_00026'),
 				tableHig: true,
 				saveLoading: false,
 
@@ -160,7 +160,7 @@
 				t: '',
 				order: '",
 
-				checkedAll: false, // {yun:}t key='wap_js_00074'{/yun}
+				checkedAll: false, // {{ lc('wap_js_00074') }}
 				checkedAllIndeterminate: false,
 				multipleSelection: [], // 多选值存储
 				idArr: [],
@@ -176,10 +176,10 @@
 				dialogAudit: false,
 				ruleFormAudit: {},
 
-				// {yun:}t key='wap_user_00217'{/yun}
+				// {{ lc('wap_user_00217') }}
 				drawerPreview: false,
 
-				// {yun:}t key='admin_00488'{/yun}
+				// {{ lc('admin_00488') }}
 				drawerRecom: false,
 
 				prevPage: 0
@@ -312,7 +312,7 @@
 	                    scrollToTop()
 	                }
 					if (that.list.length === 0) {
-	                    that.dataText = "{yun:}t key='wap_js_00113'{/yun}";
+	                    that.dataText = lc('wap_js_00113');
 	                }
 				})
 			},
@@ -335,7 +335,7 @@
 			},
 			batch(type) {
 				if (this.multipleSelection.length == 0) {
-					message.warning("{yun:}t key='admin_user_weipin_00001'{/yun}");
+					message.warning(lc('admin_user_weipin_00001'));
 					return false;
 				}
 
@@ -359,10 +359,10 @@
 					params = {},
 					msg = '';
 
-				if (typeof idx == 'undefined') { // {yun:}t key='member_com_00055'{/yun}
+				if (typeof idx == 'undefined') { // {{ lc('member_com_00055') }}
 					params.del = this.idArr;
 					msg = lc('common_00853');
-				}  else {// {yun:}t key='common_01711'{/yun}
+				}  else {// {{ lc('common_01711') }}
 					params.del = that.list[idx].id;
 					msg = lc('admin_00333');
 				}
@@ -393,7 +393,7 @@
 					params = that.ruleFormAudit;
 
 				if (params.status === '0') {
-					message.warning("{yun:}t key='admin_user_weipin_00015'{/yun}");
+					message.warning(lc('admin_user_weipin_00015'));
 					return false;
 				}
 

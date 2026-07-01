@@ -1,10 +1,10 @@
 <template>
     <div class="shbox" v-loading="loading" style="overflow-y: auto;">
         <div class="shshow_tit">
-            <i class="el-icon-office-building"></i> {yun:}t key='wap_user_00341'{/yun}
+            <i class="el-icon-office-building"></i> {{ lc('wap_user_00341') }}
             <span class="shshow_cz">
                 <el-button type="text" @click="openBasic">
-                    <i class="el-icon-edit"></i>{yun:}t key='admin_user_00227'{/yun}
+                    <i class="el-icon-edit"></i>{{ lc('admin_user_00227') }}
                 </el-button>
             </span>
         </div>
@@ -14,16 +14,16 @@
                 <div class="userinfo_name">{{resume.name}}</div>
                 <div class="userinfo">
                     {{ resume.sex_n }}
-                    <span v-if="resume.age">{yun:}t key='admin_user_00198'{/yun}</span>
+                    <span v-if="resume.age">{{ lc('admin_user_00198') }}</span>
                     <span v-if="resume.height">，{{ resume.height }}cm</span>
                     <span v-if="resume.weight">，{{ resume.weight }}kg</span>
                     <span v-if="resume.marriage_n">，{{ resume.marriage_n }}</span>
-                    <span v-if="resume.living">{yun:}t key='admin_00468'{/yun}</span>
+                    <span v-if="resume.living">{{ lc('admin_00468') }}</span>
                 </div>
                 <div class="userinfo" v-if="resume.edu_n || resume.exp_n">
-                    <span v-if="resume.edu_n">{yun:}t key='admin_00469'{/yun} </span>
+                    <span v-if="resume.edu_n">{{ lc('admin_00469') }} </span>
                     <span class="userline" v-if="resume.edu_n && resume.exp_n">|</span>
-                    <span v-if="resume.exp_n">{yun:}t key='admin_00470'{/yun}</span>
+                    <span v-if="resume.exp_n">{{ lc('admin_00470') }}</span>
                 </div>
             </div>
         </div>
@@ -43,25 +43,25 @@
         <!--个人优势-->
         <div class="user_resume_list">
             <div class="shshow_tit">
-                <i class="el-icon-medal-1"></i> {yun:}t key='wap_user_00326'{/yun}
+                <i class="el-icon-medal-1"></i> {{ lc('wap_user_00326') }}
             </div>
             <div class="shshow_p">
                 <el-tag size="mini" v-for="(tagItem,key) in resume.arrayTag" :key="key">{{tagItem}}</el-tag>
                 <div class="cominfo">{{resume.description}}</div>
             </div>
             <div class="user_resume_add">
-                <div class="">{yun:}t key='admin_user_00196'{/yun}</div>
+                <div class="">{{ lc('admin_user_00196') }}</div>
                 <div class="user_resume_addbth">
                     <el-button type="text" @click="openTag">
                         <i class="el-icon-circle-plus-outline"></i> {{ (resume.arrayTag &&
-                        resume.arrayTag.length > 0) || resume.description ? '{yun:}t key='common.edit'{/yun}' : '{yun:}t key='wap_js_00091'{/yun}' }}
+                        resume.arrayTag.length > 0) || resume.description ? lc('common.edit') : lc('wap_js_00091') }}
                     </el-button>
                 </div>
             </div>
         </div>
         <!--求职意向-->
         <div class="user_resume_list">
-            <div class="shshow_tit"><i class="el-icon-notebook-2"></i> {yun:}t key='wap_00460'{/yun}</div>
+            <div class="shshow_tit"><i class="el-icon-notebook-2"></i> {{ lc('wap_00460') }}</div>
             <div class="shshow_p" v-if="expectData.expect">
                 <div class="cominfo">{{ lc("admin_expected_position_value", [expectData.expect.name]) }} </div>
                 <div class="cominfo">{{ lc("admin_current_position_value", [expectData.expect.job_classname]) }}</div>
@@ -75,10 +75,10 @@
 
 
             <div class="user_resume_add">
-                <div class="">{yun:}t key='admin_user_00205'{/yun}</div>
+                <div class="">{{ lc('admin_user_00205') }}</div>
                 <div class="user_resume_addbth">
                     <el-button type="text" @click="openJob">
-                        <i class="el-icon-circle-plus-outline"></i> {yun:}t key='admin_00472'{/yun}
+                        <i class="el-icon-circle-plus-outline"></i> {{ lc('admin_00472') }}
                     </el-button>
                 </div>
             </div>
@@ -86,15 +86,15 @@
 
         <!--工作经历-->
         <div class="user_resume_list">
-            <div class="shshow_tit"><i class="el-icon-suitcase-1"></i> {yun:}t key='wap_00457'{/yun}</div>
+            <div class="shshow_tit"><i class="el-icon-suitcase-1"></i> {{ lc('wap_00457') }}</div>
             <!--循环-->
             <div class="user_resume_show" v-for="(work, workkey) in expectData.work" :key="workkey">
                 <div class="user_resume_addname ">{{work.name}}
                     <el-button type="text" @click="openWork(workkey)">
-                        <i class="el-icon-edit"></i> {yun:}t key='wap_js_00073'{/yun}
+                        <i class="el-icon-edit"></i> {{ lc('wap_js_00073') }}
                     </el-button>
                     <el-button type="text" @click="delResumeFb('work', workkey, work.id)">
-                        <i class="el-icon-delete"></i> {yun:}t key='common.delete'{/yun}
+                        <i class="el-icon-delete"></i> {{ lc('common.delete') }}
                     </el-button>
                 </div>
                 <div class="user_resume_addjy">
@@ -105,25 +105,25 @@
             </div>
             <!--循环-->
             <div class="user_resume_add">
-                <div class="">{yun:}t key='admin_user_00195'{/yun}</div>
+                <div class="">{{ lc('admin_user_00195') }}</div>
                 <div class="user_resume_addbth">
                     <el-button type="text" @click="openWork('')">
-                        <i class="el-icon-circle-plus-outline"></i> {yun:}t key='wap_js_00091'{/yun}
+                        <i class="el-icon-circle-plus-outline"></i> {{ lc('wap_js_00091') }}
                     </el-button>
                 </div>
             </div>
         </div>
         <!--教育经历-->
         <div class="user_resume_list">
-            <div class="shshow_tit"><i class="el-icon-school"></i> {yun:}t key='wap_00459'{/yun}</div>
+            <div class="shshow_tit"><i class="el-icon-school"></i> {{ lc('wap_00459') }}</div>
             <!--循环-->
             <div class="user_resume_show" v-for="(edu, edukey) in expectData.edu" :key="edukey">
                 <div class="user_resume_addname ">{{edu.name}}
                     <el-button type="text" @click="openEdu(edukey)">
-                        <i class="el-icon-edit"></i> {yun:}t key='wap_js_00073'{/yun}
+                        <i class="el-icon-edit"></i> {{ lc('wap_js_00073') }}
                     </el-button>
                     <el-button type="text" @click="delResumeFb('edu', edukey, edu.id)">
-                        <i class="el-icon-delete"></i> {yun:}t key='common.delete'{/yun}
+                        <i class="el-icon-delete"></i> {{ lc('common.delete') }}
                     </el-button>
                 </div>
                 <div class="user_resume_addjy">
@@ -134,25 +134,25 @@
             </div>
             <!--循环-->
             <div class="user_resume_add">
-                <div class="">{yun:}t key='admin_user_00202'{/yun}</div>
+                <div class="">{{ lc('admin_user_00202') }}</div>
                 <div class="user_resume_addbth">
                     <el-button type="text" @click="openEdu('')">
-                        <i class="el-icon-circle-plus-outline"></i> {yun:}t key='wap_js_00091'{/yun}
+                        <i class="el-icon-circle-plus-outline"></i> {{ lc('wap_js_00091') }}
                     </el-button>
                 </div>
             </div>
         </div>
         <!--培训经历-->
         <div class="user_resume_list">
-            <div class="shshow_tit"><i class="el-icon-data-analysis"></i> {yun:}t key='wap_00455'{/yun}</div>
+            <div class="shshow_tit"><i class="el-icon-data-analysis"></i> {{ lc('wap_00455') }}</div>
             <!--循环-->
             <div class="user_resume_show" v-for="(training, trainingKey) in expectData.training" :key="trainingKey">
                 <div class="user_resume_addname ">{{training.name}}
                     <el-button type="text" @click="openTraining(trainingKey)">
-                        <i class="el-icon-edit"></i> {yun:}t key='wap_js_00073'{/yun}
+                        <i class="el-icon-edit"></i> {{ lc('wap_js_00073') }}
                     </el-button>
                     <el-button type="text" @click="delResumeFb('training', trainingKey, training.id)">
-                        <i class="el-icon-delete"></i> {yun:}t key='common.delete'{/yun}
+                        <i class="el-icon-delete"></i> {{ lc('common.delete') }}
                     </el-button>
                 </div>
                 <div class="user_resume_addjy">
@@ -164,30 +164,30 @@
             <!--循环-->
 
             <div class="user_resume_add">
-                <div class="">{yun:}t key='admin_user_00197'{/yun}</div>
+                <div class="">{{ lc('admin_user_00197') }}</div>
                 <div class="user_resume_addbth">
                     <el-button type="text" @click="openTraining('')">
-                        <i class="el-icon-circle-plus-outline"></i> {yun:}t key='wap_js_00091'{/yun}
+                        <i class="el-icon-circle-plus-outline"></i> {{ lc('wap_js_00091') }}
                     </el-button>
                 </div>
             </div>
         </div>
         <!--职业技能-->
         <div class="user_resume_list">
-            <div class="shshow_tit"><i class="el-icon-reading"></i> {yun:}t key='wap_00461'{/yun}</div>
+            <div class="shshow_tit"><i class="el-icon-reading"></i> {{ lc('wap_00461') }}</div>
             <!--循环-->
             <div class="user_resume_show" v-for="(skill, skillkey) in expectData.skill" :key="skillkey">
                 <div class="user_resume_addname ">{{skill.name}}
                     <el-button type="text" @click="openSkill(skillkey)">
-                        <i class="el-icon-edit"></i> {yun:}t key='wap_js_00073'{/yun}
+                        <i class="el-icon-edit"></i> {{ lc('wap_js_00073') }}
                     </el-button>
                     <el-button type="text" @click="delResumeFb('skill', skillkey, skill.id)">
-                        <i class="el-icon-delete"></i> {yun:}t key='common.delete'{/yun}
+                        <i class="el-icon-delete"></i> {{ lc('common.delete') }}
                     </el-button>
                 </div>
                 <div class="user_resume_addjy">
                     <div class=" ">{{skill.ing_n}} </div>
-                    <div class="user_resume_time">{yun:}t key='admin_00473'{/yun}</div>
+                    <div class="user_resume_time">{{ lc('admin_00473') }}</div>
                 </div>
                 <div class="user_resume_ms" v-if="skill.pic">
                     <img :src="skill.pic" width="95" height="70" :preview-src-list="skill.pic">
@@ -196,25 +196,25 @@
             <!--循环-->
 
             <div class="user_resume_add">
-                <div class="">{yun:}t key='admin_user_00199'{/yun}</div>
+                <div class="">{{ lc('admin_user_00199') }}</div>
                 <div class="user_resume_addbth">
                     <el-button type="text" @click="openSkill('')">
-                        <i class="el-icon-circle-plus-outline"></i> {yun:}t key='wap_js_00091'{/yun}
+                        <i class="el-icon-circle-plus-outline"></i> {{ lc('wap_js_00091') }}
                     </el-button>
                 </div>
             </div>
         </div>
         <!--项目经历-->
         <div class="user_resume_list">
-            <div class="shshow_tit"><i class="el-icon-wallet"></i> {yun:}t key='wap_00465'{/yun}</div>
+            <div class="shshow_tit"><i class="el-icon-wallet"></i> {{ lc('wap_00465') }}</div>
             <!--循环-->
             <div class="user_resume_show" v-for="(project, projectkey) in expectData.project" :key="projectkey">
                 <div class="user_resume_addname ">{{project.name}}
                     <el-button type="text" @click="openProject(projectkey)">
-                        <i class="el-icon-edit"></i> {yun:}t key='wap_js_00073'{/yun}
+                        <i class="el-icon-edit"></i> {{ lc('wap_js_00073') }}
                     </el-button>
                     <el-button type="text" @click="delResumeFb('project', projectkey, project.id)">
-                        <i class="el-icon-delete"></i> {yun:}t key='common.delete'{/yun}
+                        <i class="el-icon-delete"></i> {{ lc('common.delete') }}
                     </el-button>
                 </div>
                 <div class="user_resume_addjy">
@@ -226,63 +226,63 @@
             <!--循环-->
 
             <div class="user_resume_add">
-                <div class="">{yun:}t key='admin_user_00194'{/yun}</div>
+                <div class="">{{ lc('admin_user_00194') }}</div>
                 <div class="user_resume_addbth">
                     <el-button type="text" @click="openProject('')">
-                        <i class="el-icon-circle-plus-outline"></i> {yun:}t key='wap_js_00091'{/yun}
+                        <i class="el-icon-circle-plus-outline"></i> {{ lc('wap_js_00091') }}
                     </el-button>
                 </div>
             </div>
         </div>
         <!--其他描述-->
         <div class="user_resume_list" style="padding-bottom:80px; ;">
-            <div class="shshow_tit"><i class="el-icon-mic"></i> {yun:}t key='admin_00068'{/yun}</div>
+            <div class="shshow_tit"><i class="el-icon-mic"></i> {{ lc('admin_00068') }}</div>
             <!--循环-->
             <div class="user_resume_show" v-for="(other, otherkey) in expectData.other" :key="otherkey">
                 <div class="user_resume_addname ">{{other.name}}
                     <el-button type="text" @click="openOther(otherkey)">
-                        <i class="el-icon-edit"></i> {yun:}t key='wap_js_00073'{/yun}
+                        <i class="el-icon-edit"></i> {{ lc('wap_js_00073') }}
                     </el-button>
                     <el-button type="text" @click="delResumeFb('other', otherkey, other.id)">
-                        <i class="el-icon-delete"></i> {yun:}t key='common.delete'{/yun}
+                        <i class="el-icon-delete"></i> {{ lc('common.delete') }}
                     </el-button>
                 </div>
                 <div class="user_resume_ms">{{other.content}}</div>
             </div>
             <!--循环-->
             <div class="user_resume_add">
-                <div class="">{yun:}t key='admin_user_00215'{/yun}</div>
+                <div class="">{{ lc('admin_user_00215') }}</div>
                 <div class="user_resume_addbth">
                     <el-button type="text" @click="openOther('')">
-                        <i class="el-icon-circle-plus-outline"></i> {yun:}t key='wap_js_00091'{/yun}
+                        <i class="el-icon-circle-plus-outline"></i> {{ lc('wap_js_00091') }}
                     </el-button>
                 </div>
             </div>
         </div>
         <!---编辑简历 基本资料-->
-        <el-drawer title="{yun:}t key='admin_00475'{/yun}" :append-to-body="true" :visible.sync="drawerBasic" :wrapper-closable="false" size="60%">
+        <el-drawer :title="lc('admin_00475')" :append-to-body="true" :visible.sync="drawerBasic" :wrapper-closable="false" size="60%">
             <div class="uploadTable" style="padding:0px 20px;">
                 <table class="tableVue">
                     <thead>
                     <tr align="left">
-                        <th width="120">{yun:}t key='member_com_00021'{/yun}</th>
-                        <th width=" ">{yun:}t key='member_user_00181'{/yun}</th>
+                        <th width="120">{{ lc('member_com_00021') }}</th>
+                        <th width=" ">{{ lc('member_user_00181') }}</th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='wap_00529'{/yun}</div>
+                            <div class="TableTite">{{ lc('wap_00529') }}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input v-model="ruleFormBasic.name" placeholder="{yun:}t key='wap_user_00234'{/yun}"> </el-input>
+                                <el-input v-model="ruleFormBasic.name" :placeholder="lc('wap_user_00234')"> </el-input>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='wap_com_00303'{/yun}</div>
+                            <div class="TableTite">{{ lc('wap_com_00303') }}</div>
                         </td>
                         <td>
                             <div class="job_set_list">
@@ -294,22 +294,22 @@
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='wap_user_00236'{/yun}</div>
+                            <div class="TableTite">{{ lc('wap_user_00236') }}</div>
                         </td>
                         <td>
                             <div class="TableSelect">
-                                <el-date-picker v-model="ruleFormBasic.birthday" type="month" placeholder="{yun:}t key='admin_user_00192'{/yun}">
+                                <el-date-picker v-model="ruleFormBasic.birthday" type="month" :placeholder="lc('admin_user_00192')">
                                 </el-date-picker>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='wap_user_00092'{/yun}</div>
+                            <div class="TableTite">{{ lc('wap_user_00092') }}</div>
                         </td>
                         <td>
                             <div class="TableSelect">
-                                <el-select v-model="ruleFormBasic.edu" placeholder="{yun:}t key='wap_user_00100'{/yun}">
+                                <el-select v-model="ruleFormBasic.edu" :placeholder="lc('wap_user_00100')">
                                     <el-option v-for="edukey in userdata.user_edu" :key="edukey"
                                                :label="userclass_name[edukey]" :value="edukey">
                                     </el-option>
@@ -319,11 +319,11 @@
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='wap_user_00240'{/yun}</div>
+                            <div class="TableTite">{{ lc('wap_user_00240') }}</div>
                         </td>
                         <td>
                             <div class="TableSelect">
-                                <el-select v-model="ruleFormBasic.exp" placeholder="{yun:}t key='wap_user_00100'{/yun}">
+                                <el-select v-model="ruleFormBasic.exp" :placeholder="lc('wap_user_00100')">
                                     <el-option v-for="wordkey in userdata.user_word" :key="wordkey"
                                                :label="userclass_name[wordkey]" :value="wordkey">
                                     </el-option>
@@ -333,94 +333,94 @@
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='wap_user_00265'{/yun}</div>
+                            <div class="TableTite">{{ lc('wap_user_00265') }}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input v-model="ruleFormBasic.telphone" placeholder="{yun:}t key='wap_com_00322'{/yun}"> </el-input>
+                                <el-input v-model="ruleFormBasic.telphone" :placeholder="lc('wap_com_00322')"> </el-input>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='wap_com_00016'{/yun}</div>
+                            <div class="TableTite">{{ lc('wap_com_00016') }}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input v-model="ruleFormBasic.email" placeholder="{yun:}t key='wap_com_00009'{/yun}"> </el-input>
+                                <el-input v-model="ruleFormBasic.email" :placeholder="lc('wap_com_00009')"> </el-input>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='wap_user_00173'{/yun}</div>
+                            <div class="TableTite">{{ lc('wap_user_00173') }}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input v-model="ruleFormBasic.idcard" placeholder="{yun:}t key='admin_00476'{/yun}"
+                                <el-input v-model="ruleFormBasic.idcard" :placeholder="lc('admin_00476')"
                                           @input="inputIdcard($event, 'ruleFormBasic', 'idcard')"> </el-input>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='member_user_00158'{/yun}</div>
+                            <div class="TableTite">{{ lc('member_user_00158') }}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input v-model="ruleFormBasic.domicile" placeholder="{yun:}t key='admin_00477'{/yun}"> </el-input>
+                                <el-input v-model="ruleFormBasic.domicile" :placeholder="lc('admin_00477')"> </el-input>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_user_00230'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_user_00230') }}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input v-model="ruleFormBasic.living" placeholder="{yun:}t key='admin_00478'{/yun}"> </el-input>
+                                <el-input v-model="ruleFormBasic.living" :placeholder="lc('admin_00478')"> </el-input>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='wap_01362'{/yun}</div>
+                            <div class="TableTite">{{ lc('wap_01362') }}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input v-model="ruleFormBasic.address" placeholder="{yun:}t key='wap_00905'{/yun}"></el-input>
+                                <el-input v-model="ruleFormBasic.address" :placeholder="lc('wap_00905')"></el-input>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='member_user_00165'{/yun}</div>
+                            <div class="TableTite">{{ lc('member_user_00165') }}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input v-model="ruleFormBasic.height" placeholder="{yun:}t key='admin_00479'{/yun}"
+                                <el-input v-model="ruleFormBasic.height" :placeholder="lc('admin_00479')"
                                           @input="inputFloatNumber($event, 'ruleFormBasic', 'height')"> </el-input>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='member_user_00160'{/yun}</div>
+                            <div class="TableTite">{{ lc('member_user_00160') }}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input v-model="ruleFormBasic.weight" placeholder="{yun:}t key='admin_00480'{/yun}"
+                                <el-input v-model="ruleFormBasic.weight" :placeholder="lc('admin_00480')"
                                           @input="inputFloatNumber($event, 'ruleFormBasic', 'weight')"> </el-input>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='wap_com_00282'{/yun}</div>
+                            <div class="TableTite">{{ lc('wap_com_00282') }}</div>
                         </td>
                         <td>
                             <div class="TableSelect">
-                                <el-select v-model="ruleFormBasic.marriage" placeholder="{yun:}t key='wap_user_00100'{/yun}">
+                                <el-select v-model="ruleFormBasic.marriage" :placeholder="lc('wap_user_00100')">
                                     <el-option v-for="marriagekey in userdata.user_marriage" :key="marriagekey"
                                                :label="userclass_name[marriagekey]" :value="marriagekey">
                                     </el-option>
@@ -430,21 +430,21 @@
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='member_user_00164'{/yun}</div>
+                            <div class="TableTite">{{ lc('member_user_00164') }}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input v-model="ruleFormBasic.nationality" placeholder="{yun:}t key='admin_00481'{/yun}"> </el-input>
+                                <el-input v-model="ruleFormBasic.nationality" :placeholder="lc('admin_00481')"> </el-input>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='member_user_00155'{/yun}</div>
+                            <div class="TableTite">{{ lc('member_user_00155') }}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input v-model="ruleFormBasic.homepage" placeholder="{yun:}t key='admin_00482'{/yun}"> </el-input>
+                                <el-input v-model="ruleFormBasic.homepage" :placeholder="lc('admin_00482')"> </el-input>
                             </div>
                         </td>
                     </tr>
@@ -454,13 +454,13 @@
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input v-model="ruleFormBasic.qq" placeholder="{yun:}t key='admin_user_00217'{/yun}"> </el-input>
+                                <el-input v-model="ruleFormBasic.qq" :placeholder="lc('admin_user_00217')"> </el-input>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='resume_00003'{/yun}</div>
+                            <div class="TableTite">{{ lc('resume_00003') }}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
@@ -474,11 +474,11 @@
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='wap_00527'{/yun}</div>
+                            <div class="TableTite">{{ lc('wap_00527') }}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input type="textarea" :rows="2" placeholder="{yun:}t key='admin_user_00208'{/yun}"
+                                <el-input type="textarea" :rows="2" :placeholder="lc('admin_user_00208')"
                                           v-model="ruleFormBasic.description">
                                 </el-input>
                             </div>
@@ -488,36 +488,36 @@
                 </table>
             </div>
             <div class="setBasicButn" style="border: none; height: 80px;">
-                <el-button type="primary" size="medium" @click="submitBasic">{yun:}t key='common.submit'{/yun}</el-button>
+                <el-button type="primary" size="medium" @click="submitBasic">{{ lc('common.submit') }}</el-button>
             </div>
 
 
         </el-drawer>
         <!---编辑求职意向-->
-        <el-drawer title="{yun:}t key='admin_00483'{/yun}" :append-to-body="true" :visible.sync="drawerJob" :wrapper-closable="false" size="60%">
+        <el-drawer :title="lc('admin_00483')" :append-to-body="true" :visible.sync="drawerJob" :wrapper-closable="false" size="60%">
             <div class="uploadTable" style="padding:0px 20px;">
                 <table class="tableVue">
                     <thead>
                     <tr align="left">
-                        <th width="120">{yun:}t key='member_com_00021'{/yun}</th>
-                        <th width=" ">{yun:}t key='member_user_00181'{/yun}</th>
+                        <th width="120">{{ lc('member_com_00021') }}</th>
+                        <th width=" ">{{ lc('member_user_00181') }}</th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='wap_user_00015'{/yun}</div>
+                            <div class="TableTite">{{ lc('wap_user_00015') }}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input v-model="ruleFormJob.name" placeholder="{yun:}t key='admin_00484'{/yun}">
+                                <el-input v-model="ruleFormJob.name" :placeholder="lc('admin_00484')">
                                 </el-input>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_user_00218'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_user_00218') }}</div>
                         </td>
                         <td>
                             <div class="TableSelect">
@@ -528,7 +528,7 @@
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_user_00226'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_user_00226') }}</div>
                         </td>
                         <td>
                             <div class="TableSelect">
@@ -539,15 +539,15 @@
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='wap_user_00016'{/yun}</div>
+                            <div class="TableTite">{{ lc('wap_user_00016') }}</div>
                         </td>
                         <td>
                             <div class="TableInpt" style="max-width: 700px;">
-                                <el-select v-model="ruleFormJob.minsalary" placeholder="{yun:}t key='wap_user_00100'{/yun}" @change="salaryChange" style="margin-right:8px;">
+                                <el-select v-model="ruleFormJob.minsalary" :placeholder="lc('wap_user_00100')" @change="salaryChange" style="margin-right:8px;">
                                     <el-option v-for="maxsalary1Val in minsalaryList" :key="maxsalary1Val" :label="maxsalary1Val" :value="maxsalary1Val">
                                     </el-option>
                                 </el-select>
-                                <el-select v-model="ruleFormJob.maxsalary" placeholder="{yun:}t key='wap_user_00100'{/yun}">
+                                <el-select v-model="ruleFormJob.maxsalary" :placeholder="lc('wap_user_00100')">
                                     <el-option v-for="maxsalary2Val in maxsalaryList" :key="maxsalary2Val" :label="maxsalary2Val" :value="maxsalary2Val">
                                     </el-option>
                                 </el-select>
@@ -556,11 +556,11 @@
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='wap_user_00010'{/yun}</div>
+                            <div class="TableTite">{{ lc('wap_user_00010') }}</div>
                         </td>
                         <td>
                             <div class="TableSelect">
-                                <el-select v-model="ruleFormJob.hy" placeholder="{yun:}t key='wap_user_00100'{/yun}">
+                                <el-select v-model="ruleFormJob.hy" :placeholder="lc('wap_user_00100')">
                                     <el-option v-for="industrykey in industry_index" :key="industrykey"
                                                :label="industry_name[industrykey]" :value="industrykey">
                                     </el-option>
@@ -570,11 +570,11 @@
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='wap_com_00279'{/yun}</div>
+                            <div class="TableTite">{{ lc('wap_com_00279') }}</div>
                         </td>
                         <td>
                             <div class="TableSelect">
-                                <el-select v-model="ruleFormJob.report" placeholder="{yun:}t key='wap_user_00100'{/yun}">
+                                <el-select v-model="ruleFormJob.report" :placeholder="lc('wap_user_00100')">
                                     <el-option v-for="reportkey in userdata.user_report" :key="reportkey"
                                                :label="userclass_name[reportkey]" :value="reportkey">
                                     </el-option>
@@ -584,11 +584,11 @@
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='wap_user_00012'{/yun}</div>
+                            <div class="TableTite">{{ lc('wap_user_00012') }}</div>
                         </td>
                         <td>
                             <div class="TableSelect">
-                                <el-select v-model="ruleFormJob.type" placeholder="{yun:}t key='wap_user_00100'{/yun}">
+                                <el-select v-model="ruleFormJob.type" :placeholder="lc('wap_user_00100')">
                                     <el-option v-for="typekey in userdata.user_type" :key="typekey"
                                                :label="userclass_name[typekey]" :value="typekey">
                                     </el-option>
@@ -598,11 +598,11 @@
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='wap_user_00017'{/yun}</div>
+                            <div class="TableTite">{{ lc('wap_user_00017') }}</div>
                         </td>
                         <td>
                             <div class="TableSelect">
-                                <el-select v-model="ruleFormJob.jobstatus" placeholder="{yun:}t key='wap_user_00100'{/yun}">
+                                <el-select v-model="ruleFormJob.jobstatus" :placeholder="lc('wap_user_00100')">
                                     <el-option v-for="jobstatuskey in userdata.user_jobstatus" :key="jobstatuskey"
                                                :label="userclass_name[jobstatuskey]" :value="jobstatuskey">
                                     </el-option>
@@ -614,16 +614,16 @@
                 </table>
             </div>
             <div class="setBasicButn" style="border: none; height: 80px;">
-                <el-button type="primary" size="medium" @click="submitJob">{yun:}t key='common.submit'{/yun}</el-button>
+                <el-button type="primary" size="medium" @click="submitJob">{{ lc('common.submit') }}</el-button>
             </div>
         </el-drawer>
 
         <!---编辑个人优势-->
         <div class="modluDrawer">
-            <el-dialog title="{yun:}t key='wap_user_00326'{/yun}" :visible.sync="dialogTag" :with-header="true" :modal-append-to-body="false"
+            <el-dialog :title="lc('wap_user_00326')" :visible.sync="dialogTag" :with-header="true" :modal-append-to-body="false"
                        :show-close="true" width="450px" append-to-body>
                 <div>
-                    <div class="wxsettip_small ">{yun:}t key='admin_user_00219'{/yun}</div>
+                    <div class="wxsettip_small ">{{ lc('admin_user_00219') }}</div>
                     <div class="wxsettipBiaoqin">
                         <el-tag :key="tagkey" v-for="(tag, tagkey) in userTag" :disable-transitions="false"
                                 @click="checkTag(tag)" :effect="ruleFormTag.tag.indexOf(tag) > -1 ? 'dark' : 'light'">
@@ -632,170 +632,170 @@
                         <el-input class="input-new-tag" v-if="inputTag" v-model="tagval" autofoucs size="small"
                                   @keyup.enter.native="confirmTag">
                         </el-input>
-                        <el-button v-else class="button-new-tag" size="small" @click="showTag">{yun:}t key='admin_00474'{/yun}
+                        <el-button v-else class="button-new-tag" size="small" @click="showTag">{{ lc('admin_00474') }}
                         </el-button>
                     </div>
-                    <div class="wxsettip_small ">{yun:}t key='wap_00463'{/yun}</div>
+                    <div class="wxsettip_small ">{{ lc('wap_00463') }}</div>
                     <el-input type="textarea"
-                              :placeholder="{yun:}t key='admin_vue_00011'{/yun}"
+                              :placeholder=lc('admin_vue_00011')
                               v-model="ruleFormTag.description" :autosize="{ minRows: 3, maxRows: 6 }">
                     </el-input>
                 </div>
                 <span slot="footer" class="dialog-footer">
-					<el-button @click="dialogTag = false">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
-					<el-button type="primary" @click="submitTag">{yun:}t key='wap_com_00019'{/yun}</el-button>
+					<el-button @click="dialogTag = false">{{ lc('admin_user_weipin_00043') }}</el-button>
+					<el-button type="primary" @click="submitTag">{{ lc('wap_com_00019') }}</el-button>
                 </span>
             </el-dialog>
         </div>
         <!---编辑工作经历-->
         <div class="modluDrawer">
-            <el-dialog title="{yun:}t key='wap_00457'{/yun}" :visible.sync="dialogWork" :with-header="true" :modal-append-to-body="false"
+            <el-dialog :title="lc('wap_00457')" :visible.sync="dialogWork" :with-header="true" :modal-append-to-body="false"
                        :show-close="true" width="450px" append-to-body>
                 <div>
-                    <div class="wxsettip_small ">{yun:}t key='wap_01403'{/yun}</div>
-                    <div class=""><el-input v-model="ruleFormWork.name" placeholder="{yun:}t key='wap_00137'{/yun}"></el-input> </div>
-                    <div class="wxsettip_small ">{yun:}t key='wap_user_00091'{/yun}</div>
-                    <div class=""><el-input v-model="ruleFormWork.title" placeholder="{yun:}t key='wap_user_00045'{/yun}"></el-input> </div>
-                    <div class="wxsettip_small ">{yun:}t key='admin_user_00223'{/yun}</div>
+                    <div class="wxsettip_small ">{{ lc('wap_01403') }}</div>
+                    <div class=""><el-input v-model="ruleFormWork.name" :placeholder="lc('wap_00137')"></el-input> </div>
+                    <div class="wxsettip_small ">{{ lc('wap_user_00091') }}</div>
+                    <div class=""><el-input v-model="ruleFormWork.title" :placeholder="lc('wap_user_00045')"></el-input> </div>
+                    <div class="wxsettip_small ">{{ lc('admin_user_00223') }}</div>
                     <div class="wxsettip_Sealect" style="display: flex; align-items: center;">
-                        <el-date-picker v-model="ruleFormWork.sdate" type="month" placeholder="{yun:}t key='wap_com_00323'{/yun}">
+                        <el-date-picker v-model="ruleFormWork.sdate" type="month" :placeholder="lc('wap_com_00323')">
                         </el-date-picker>
                         <el-date-picker style="margin: 0 8px;" :disabled="todayCheck" v-model="ruleFormWork.edate" type="month"
-                                        placeholder="{yun:}t key='wap_com_00324'{/yun}">
+                                        :placeholder="lc('wap_com_00324')">
                         </el-date-picker>
-                        <el-checkbox v-model="todayCheck" @change="todayChange($event, 'work')">{yun:}t key='wap_js_00170'{/yun}</el-checkbox>
+                        <el-checkbox v-model="todayCheck" @change="todayChange($event, 'work')">{{ lc('wap_js_00170') }}</el-checkbox>
                     </div>
-                    <div class="wxsettip_small ">{yun:}t key='wap_user_00086'{/yun}</div>
-                    <el-input type="textarea" :placeholder="{yun:}t key='admin_vue_00012'{/yun}"
+                    <div class="wxsettip_small ">{{ lc('wap_user_00086') }}</div>
+                    <el-input type="textarea" :placeholder=lc('admin_vue_00012')
                               v-model="ruleFormWork.content" :autosize="{ minRows: 3, maxRows: 6 }">
                     </el-input>
                 </div>
 
                 <span slot="footer" class="dialog-footer">
-					<el-button @click="dialogWork = false">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
-					<el-button type="primary" @click="submitWork">{yun:}t key='wap_com_00019'{/yun}</el-button>
+					<el-button @click="dialogWork = false">{{ lc('admin_user_weipin_00043') }}</el-button>
+					<el-button type="primary" @click="submitWork">{{ lc('wap_com_00019') }}</el-button>
                 </span>
             </el-dialog>
         </div>
         <!---编辑学历-->
         <div class="modluDrawer">
-            <el-dialog title="{yun:}t key='wap_00459'{/yun}" :visible.sync="dialogEdu" :with-header="true" :modal-append-to-body="false"
+            <el-dialog :title="lc('wap_00459')" :visible.sync="dialogEdu" :with-header="true" :modal-append-to-body="false"
                        :show-close="true" width="450px" append-to-body>
                 <div>
-                    <div class="wxsettip_small ">{yun:}t key='wap_user_00085'{/yun}</div>
-                    <div class=""><el-input v-model="ruleFormEdu.name" placeholder="{yun:}t key='wap_user_00044'{/yun}"></el-input> </div>
-                    <div class="wxsettip_small ">{yun:}t key='admin_user_00220'{/yun}</div>
+                    <div class="wxsettip_small ">{{ lc('wap_user_00085') }}</div>
+                    <div class=""><el-input v-model="ruleFormEdu.name" :placeholder="lc('wap_user_00044')"></el-input> </div>
+                    <div class="wxsettip_small ">{{ lc('admin_user_00220') }}</div>
                     <div class="wxsettip_Sealect">
-                        <el-date-picker v-model="daterangeEdu" type="monthrange" range-separator="{yun:}t key='admin_company_00019'{/yun}"
-                                        start-placeholder="{yun:}t key='admin_00343'{/yun}" end-placeholder="{yun:}t key='admin_00344'{/yun}">
+                        <el-date-picker v-model="daterangeEdu" type="monthrange" :range-separator="lc('admin_company_00019')"
+                                        :start-placeholder="lc('admin_00343')" :end-placeholder="lc('admin_00344')">
                         </el-date-picker>
                     </div>
-                    <div class="wxsettip_small ">{yun:}t key='wap_user_00092'{/yun}</div>
+                    <div class="wxsettip_small ">{{ lc('wap_user_00092') }}</div>
                     <div class="wxsettip_Sealect">
-                        <el-select v-model="ruleFormEdu.education" placeholder="{yun:}t key='wap_user_00100'{/yun}">
+                        <el-select v-model="ruleFormEdu.education" :placeholder="lc('wap_user_00100')">
                             <el-option v-for="edukey in userdata.user_edu" :key="edukey" :label="userclass_name[edukey]"
                                        :value="edukey">
                             </el-option>
                         </el-select>
                     </div>
-                    <div class="wxsettip_small ">{yun:}t key='admin_user_00224'{/yun}</div>
-                    <div class=""><el-input v-model="ruleFormEdu.specialty" placeholder="{yun:}t key='wap_user_00042'{/yun}"></el-input> </div>
+                    <div class="wxsettip_small ">{{ lc('admin_user_00224') }}</div>
+                    <div class=""><el-input v-model="ruleFormEdu.specialty" :placeholder="lc('wap_user_00042')"></el-input> </div>
                 </div>
                 <span slot="footer" class="dialog-footer">
-					<el-button @click="dialogEdu = false">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
-					<el-button type="primary" @click="submitEdu">{yun:}t key='wap_com_00019'{/yun}</el-button>
+					<el-button @click="dialogEdu = false">{{ lc('admin_user_weipin_00043') }}</el-button>
+					<el-button type="primary" @click="submitEdu">{{ lc('wap_com_00019') }}</el-button>
                 </span>
             </el-dialog>
         </div>
 
         <!---编辑培训经历-->
         <div class="modluDrawer">
-            <el-dialog title="{yun:}t key='wap_00455'{/yun}" :visible.sync="dialogTraining" :with-header="true" :modal-append-to-body="false"
+            <el-dialog :title="lc('wap_00455')" :visible.sync="dialogTraining" :with-header="true" :modal-append-to-body="false"
                        :show-close="true" width="450px" append-to-body>
                 <div>
-                    <div class="wxsettip_small ">{yun:}t key='admin_user_00221'{/yun}</div>
-                    <div class=""><el-input v-model="ruleFormTraining.name" placeholder="{yun:}t key='admin_00485'{/yun}"></el-input> </div>
-                    <div class="wxsettip_small ">{yun:}t key='wap_user_00083'{/yun}</div>
-                    <div class=""><el-input v-model="ruleFormTraining.title" placeholder="{yun:}t key='admin_user_00209'{/yun}"></el-input> </div>
-                    <div class="wxsettip_small ">{yun:}t key='admin_user_00222'{/yun}</div>
+                    <div class="wxsettip_small ">{{ lc('admin_user_00221') }}</div>
+                    <div class=""><el-input v-model="ruleFormTraining.name" :placeholder="lc('admin_00485')"></el-input> </div>
+                    <div class="wxsettip_small ">{{ lc('wap_user_00083') }}</div>
+                    <div class=""><el-input v-model="ruleFormTraining.title" :placeholder="lc('admin_user_00209')"></el-input> </div>
+                    <div class="wxsettip_small ">{{ lc('admin_user_00222') }}</div>
                     <div class="wxsettip_Sealect">
-                        <el-date-picker v-model="daterangeTraining" type="monthrange" range-separator="{yun:}t key='admin_company_00019'{/yun}"
-                                        start-placeholder="{yun:}t key='admin_00343'{/yun}" end-placeholder="{yun:}t key='admin_00344'{/yun}">
+                        <el-date-picker v-model="daterangeTraining" type="monthrange" :range-separator="lc('admin_company_00019')"
+                                        :start-placeholder="lc('admin_00343')" :end-placeholder="lc('admin_00344')">
                         </el-date-picker>
                     </div>
-                    <div class="wxsettip_small ">{yun:}t key='wap_user_00082'{/yun}</div>
-                    <el-input type="textarea" placeholder="{yun:}t key='admin_user_00200'{/yun}" v-model="ruleFormTraining.content"
+                    <div class="wxsettip_small ">{{ lc('wap_user_00082') }}</div>
+                    <el-input type="textarea" :placeholder="lc('admin_user_00200')" v-model="ruleFormTraining.content"
                               :autosize="{ minRows: 3, maxRows: 6 }"></el-input>
                 </div>
                 <span slot="footer" class="dialog-footer">
-					<el-button @click="dialogTraining = false">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
-					<el-button type="primary" @click="submitTraining">{yun:}t key='wap_com_00019'{/yun}</el-button>
+					<el-button @click="dialogTraining = false">{{ lc('admin_user_weipin_00043') }}</el-button>
+					<el-button type="primary" @click="submitTraining">{{ lc('wap_com_00019') }}</el-button>
                 </span>
             </el-dialog>
         </div>
         <!---编辑项目经历-->
         <div class="modluDrawer">
-            <el-dialog title="{yun:}t key='wap_00465'{/yun}" :visible.sync="dialogProject" :with-header="true" :modal-append-to-body="false"
+            <el-dialog :title="lc('wap_00465')" :visible.sync="dialogProject" :with-header="true" :modal-append-to-body="false"
                        :show-close="true" width="450px" append-to-body>
                 <div>
-                    <div class="wxsettip_small ">{yun:}t key='wap_user_00099'{/yun}</div>
-                    <div class=""><el-input v-model="ruleFormProject.name" placeholder="{yun:}t key='wap_user_00046'{/yun}"></el-input> </div>
-                    <div class="wxsettip_small ">{yun:}t key='admin_user_00225'{/yun}</div>
-                    <div class=""><el-input v-model="ruleFormProject.title" placeholder="{yun:}t key='admin_00486'{/yun}"></el-input> </div>
-                    <div class="wxsettip_small ">{yun:}t key='admin_user_00229'{/yun}</div>
+                    <div class="wxsettip_small ">{{ lc('wap_user_00099') }}</div>
+                    <div class=""><el-input v-model="ruleFormProject.name" :placeholder="lc('wap_user_00046')"></el-input> </div>
+                    <div class="wxsettip_small ">{{ lc('admin_user_00225') }}</div>
+                    <div class=""><el-input v-model="ruleFormProject.title" :placeholder="lc('admin_00486')"></el-input> </div>
+                    <div class="wxsettip_small ">{{ lc('admin_user_00229') }}</div>
                     <div class="wxsettip_Sealect">
-                        <el-date-picker v-model="daterangeProject" type="monthrange" range-separator="{yun:}t key='admin_company_00019'{/yun}"
-                                        start-placeholder="{yun:}t key='admin_00343'{/yun}" end-placeholder="{yun:}t key='admin_00344'{/yun}">
+                        <el-date-picker v-model="daterangeProject" type="monthrange" :range-separator="lc('admin_company_00019')"
+                                        :start-placeholder="lc('admin_00343')" :end-placeholder="lc('admin_00344')">
                         </el-date-picker>
                     </div>
-                    <div class="wxsettip_small ">{yun:}t key='admin_user_00228'{/yun}</div>
-                    <el-input type="textarea" :placeholder="{yun:}t key='admin_vue_00012'{/yun}" v-model="ruleFormProject.content" :autosize="{ minRows: 3, maxRows: 6 }"></el-input>
+                    <div class="wxsettip_small ">{{ lc('admin_user_00228') }}</div>
+                    <el-input type="textarea" :placeholder=lc('admin_vue_00012') v-model="ruleFormProject.content" :autosize="{ minRows: 3, maxRows: 6 }"></el-input>
                 </div>
                 <span slot="footer" class="dialog-footer">
-					<el-button @click="dialogProject = false">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
-					<el-button type="primary" @click="submitProject">{yun:}t key='wap_com_00019'{/yun}</el-button>
+					<el-button @click="dialogProject = false">{{ lc('admin_user_weipin_00043') }}</el-button>
+					<el-button type="primary" @click="submitProject">{{ lc('wap_com_00019') }}</el-button>
                 </span>
             </el-dialog>
         </div>
         <!---编辑其他-->
         <div class="modluDrawer">
-            <el-dialog title="{yun:}t key='admin_user_00216'{/yun}" :visible.sync="dialogOther" :with-header="true" :modal-append-to-body="false"
+            <el-dialog :title="lc('admin_user_00216')" :visible.sync="dialogOther" :with-header="true" :modal-append-to-body="false"
                        :show-close="true" width="450px" append-to-body>
                 <div>
-                    <div class="wxsettip_small ">{yun:}t key='wap_user_00103'{/yun}</div>
-                    <div class=""><el-input v-model="ruleFormOther.name" placeholder="{yun:}t key='admin_00487'{/yun}"></el-input> </div>
-                    <div class="wxsettip_small ">{yun:}t key='admin_user_00231'{/yun}</div>
-                    <el-input type="textarea" v-model="ruleFormOther.content" placeholder="{yun:}t key='admin_user_00203'{/yun}"
+                    <div class="wxsettip_small ">{{ lc('wap_user_00103') }}</div>
+                    <div class=""><el-input v-model="ruleFormOther.name" :placeholder="lc('admin_00487')"></el-input> </div>
+                    <div class="wxsettip_small ">{{ lc('admin_user_00231') }}</div>
+                    <el-input type="textarea" v-model="ruleFormOther.content" :placeholder="lc('admin_user_00203')"
                               :autosize="{ minRows: 3, maxRows: 6 }"></el-input>
                 </div>
                 <span slot="footer" class="dialog-footer">
-					<el-button @click="dialogOther = false">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
-					<el-button type="primary" @click="submitOther">{yun:}t key='wap_com_00019'{/yun}</el-button>
+					<el-button @click="dialogOther = false">{{ lc('admin_user_weipin_00043') }}</el-button>
+					<el-button type="primary" @click="submitOther">{{ lc('wap_com_00019') }}</el-button>
                 </span>
             </el-dialog>
         </div>
         <!---编辑技能-->
         <div class="modluDrawer">
-            <el-dialog title="{yun:}t key='wap_00461'{/yun}" :visible.sync="dialogSkill" :with-header="true" :modal-append-to-body="false"
+            <el-dialog :title="lc('wap_00461')" :visible.sync="dialogSkill" :with-header="true" :modal-append-to-body="false"
                        :show-close="true" width="450px" append-to-body>
                 <div>
-                    <div class="wxsettip_small ">{yun:}t key='wap_user_00089'{/yun}</div>
-                    <div class=""><el-input v-model="ruleFormSkill.name" placeholder="{yun:}t key='admin_user_00210'{/yun}"></el-input> </div>
-                    <div class="wxsettip_small ">{yun:}t key='wap_00458'{/yun}</div>
+                    <div class="wxsettip_small ">{{ lc('wap_user_00089') }}</div>
+                    <div class=""><el-input v-model="ruleFormSkill.name" :placeholder="lc('admin_user_00210')"></el-input> </div>
+                    <div class="wxsettip_small ">{{ lc('wap_00458') }}</div>
                     <div class="wxsettip_Sealect">
-                        <el-input v-model="ruleFormSkill.longtime" placeholder="{yun:}t key='admin_user_00211'{/yun}">
-                            <template slot="append">{yun:}t key='common_02077'{/yun}</template>
+                        <el-input v-model="ruleFormSkill.longtime" :placeholder="lc('admin_user_00211')">
+                            <template slot="append">{{ lc('common_02077') }}</template>
                         </el-input>
                     </div>
-                    <div class="wxsettip_small ">{yun:}t key='wap_user_00094'{/yun}</div>
+                    <div class="wxsettip_small ">{{ lc('wap_user_00094') }}</div>
                     <div class="wxsettip_Sealect">
-                        <el-select v-model="ruleFormSkill.ing" placeholder="{yun:}t key='wap_user_00100'{/yun}">
+                        <el-select v-model="ruleFormSkill.ing" :placeholder="lc('wap_user_00100')">
                             <el-option v-for="ingkey in userdata.user_ing" :key="ingkey" :label="userclass_name[ingkey]"
                                        :value="ingkey">
                             </el-option>
                         </el-select>
                     </div>
-                    <div class="wxsettip_small ">{yun:}t key='wap_user_00090'{/yun}</div>
+                    <div class="wxsettip_small ">{{ lc('wap_user_00090') }}</div>
                     <div>
                         <el-upload class="avatar-uploader" list-type="picture" :accept="pic_accept" action="" :auto-upload="false"
                                    :on-change="handleChangeSkillPic" :show-file-list="false">
@@ -805,8 +805,8 @@
                     </div>
                 </div>
                 <span slot="footer" class="dialog-footer">
-					<el-button @click="dialogSkill = false">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
-					<el-button type="primary" @click="submitSkill">{yun:}t key='wap_com_00019'{/yun}</el-button>
+					<el-button @click="dialogSkill = false">{{ lc('admin_user_weipin_00043') }}</el-button>
+					<el-button type="primary" @click="submitSkill">{{ lc('wap_com_00019') }}</el-button>
                 </span>
             </el-dialog>
         </div>
@@ -880,7 +880,7 @@
                 indexProject: -1,
                 daterangeProject: [],
                 ruleFormProject: {},
-                // {yun:}t key='admin_00068'{/yun}
+                // {{ lc('admin_00068') }}
                 dialogOther: false,
                 indexOther: -1,
                 ruleFormOther: {},
@@ -929,7 +929,7 @@
                 this.$data[form][key] = val.replace(/[^0-9.]/g, '");
             },
 
-            // {yun:}t key='admin_user_00227'{/yun}
+            // {{ lc('admin_user_00227') }}
             openBasic() {
                 let resume = this.resume;
                 this.ruleFormBasic = {
@@ -1040,15 +1040,15 @@
 
                 if (len > 0) {
                     if (len < 2 || len > 8) {
-                        message.warning("{yun:}t key='wap_user_00060'{/yun}");
+                        message.warning(lc('wap_user_00060'));
                         return false;
                     }
                     if (tag.length >= 5) {
-                        message.warning("{yun:}t key='admin_user_00206'{/yun}");
+                        message.warning(lc('admin_user_00206'));
                         return false;
                     }
                     if (userTag.indexOf(tagval) > -1) {
-                        message.warning("{yun:}t key='wap_user_00074'{/yun}");
+                        message.warning(lc('wap_user_00074'));
                         return false;
                     }
                     tag.push(tagval);
@@ -1066,7 +1066,7 @@
                     tag.splice(index, 1);
                 } else { // 首次点击选中
                     if (tag.length >= 5) {
-                        message.warning("{yun:}t key='admin_user_00206'{/yun}");
+                        message.warning(lc('admin_user_00206'));
                         return false;
                     }
                     tag.push(val);
@@ -1079,15 +1079,15 @@
                     ruleForm = that.ruleFormTag;
 
                 if (ruleForm.eid == '') {
-                    message.warning("{yun:}t key='admin_user_00207'{/yun}");
+                    message.warning(lc('admin_user_00207'));
                     return false;
                 }
                 if (ruleForm.tag.length > 5) {
-                    message.warning("{yun:}t key='admin_user_00206'{/yun}");
+                    message.warning(lc('admin_user_00206'));
                     return false;
                 }
                 if (ruleForm.description == '' || ruleForm.description == null) {
-                    message.warning("{yun:}t key='admin_01319'{/yun}");
+                    message.warning(lc('admin_01319'));
                     return false;
                 }
 
@@ -1141,8 +1141,8 @@
                 this.ruleFormJob = {
                     uid: resume.uid,
                     eid: typeof expect.id !== 'undefined' ? expect.id : '",
-                    job_classid: expect.job_classid, // TODO {yun:}t key='admin_00300'{/yun}
-                    city_classid: expect.city_classid, // TODO {yun:}t key='member_user_00362'{/yun}
+                    job_classid: expect.job_classid, // TODO {{ lc('admin_00300') }}
+                    city_classid: expect.city_classid, // TODO {{ lc('member_user_00362') }}
                     name: expect.name,
                     minsalary: expect.minsalary && expect.minsalary > 0 ? parseInt(expect.minsalary) : "',
                     maxsalary: expect.maxsalary && expect.maxsalary > 0 ? parseInt(expect.maxsalary) : '',
@@ -1179,7 +1179,7 @@
                     ruleForm = that.ruleFormJob;
 
                 if (typeof ruleForm.name === 'undefined' || ruleForm.name == "") {
-                    message.warning("{yun:}t key='admin_00484'{/yun}");
+                    message.warning(lc('admin_00484'));
                     return false;
                 }
                 if (typeof ruleForm.job_classid === 'undefined' || ruleForm.job_classid == "") {
@@ -1195,19 +1195,19 @@
                     return false;
                 }
                 if (ruleForm.maxsalary && parseInt(ruleForm.maxsalary) <= parseInt(ruleForm.minsalary)) {
-                    message.warning("{yun:}t key='member_user_00095'{/yun}");
+                    message.warning(lc('member_user_00095'));
                     return false;
                 }
                 if (ruleForm.report == "") {
-                    message.warning("{yun:}t key='wap_00980'{/yun}");
+                    message.warning(lc('wap_00980'));
                     return false;
                 }
                 if (ruleForm.type == "") {
-                    message.warning("{yun:}t key='wap_js_00163'{/yun}");
+                    message.warning(lc('wap_js_00163'));
                     return false;
                 }
                 if (ruleForm.jobstatus == "") {
-                    message.warning("{yun:}t key='wap_00934'{/yun}");
+                    message.warning(lc('wap_00934'));
                     return false;
                 }
 
@@ -1287,21 +1287,21 @@
                     ruleForm = that.ruleFormWork;
 
                 if (ruleForm.eid == "") {
-                    message.warning("{yun:}t key='admin_user_00207'{/yun}");
+                    message.warning(lc('admin_user_00207'));
                     return false;
                 }
                 if (ruleForm.name == "") {
-                    message.warning("{yun:}t key='wap_00137'{/yun}");
+                    message.warning(lc('wap_00137'));
                     return false;
                 }
                 if (ruleForm.sdate == "") {
-                    message.warning("{yun:}t key='admin_user_00213'{/yun}");
+                    message.warning(lc('admin_user_00213'));
                     return false
                 }
                 ruleForm.sdate = formatMonth(ruleForm.sdate);
                 if (ruleForm.edate != '') {
                     if (ruleForm.sdate >= ruleForm.edate) {
-                        message.warning("{yun:}t key='admin_user_00201'{/yun}");
+                        message.warning(lc('admin_user_00201'));
                         return false
                     }
                     ruleForm.edate = formatMonth(ruleForm.edate);
@@ -1329,7 +1329,7 @@
                             work.sdate = 1;
                             work.sdate_n = ruleForm.sdate;
                             work.edate = ruleForm.edate != '' ? 2 : 0;
-                            work.edate_n = ruleForm.edate != '' ? ruleForm.edate : "{yun:}t key='wap_js_00170'{/yun}";
+                            work.edate_n = ruleForm.edate != '' ? ruleForm.edate : lc('wap_js_00170');
                             that.expectData.work.unshift(work);
                         } else {
                             let work = that.expectData.work[indexWork];
@@ -1338,7 +1338,7 @@
                             work.sdate = 1;
                             work.sdate_n = ruleForm.sdate;
                             work.edate = ruleForm.edate != '' ? 2 : 0;
-                            work.edate_n = ruleForm.edate != '' ? ruleForm.edate : "{yun:}t key='wap_js_00170'{/yun}";
+                            work.edate_n = ruleForm.edate != '' ? ruleForm.edate : lc('wap_js_00170');
                             work.content = ruleForm.content;
                             that.expectData.work[indexWork] = deepClone(work);
                         }
@@ -1397,11 +1397,11 @@
                     ruleForm = that.ruleFormEdu;
 
                 if (ruleForm.eid == "") {
-                    message.warning("{yun:}t key='admin_user_00207'{/yun}");
+                    message.warning(lc('admin_user_00207'));
                     return false;
                 }
                 if (ruleForm.name == "") {
-                    message.warning("{yun:}t key='wap_user_00044'{/yun}");
+                    message.warning(lc('wap_user_00044'));
                     return false;
                 }
                 if (daterangeEdu.length == 0) {
@@ -1409,7 +1409,7 @@
                     return false
                 }
                 if (ruleForm.education == "") {
-                    message.warning("{yun:}t key='wap_user_00049'{/yun}");
+                    message.warning(lc('wap_user_00049'));
                     return false
                 }
 
@@ -1503,15 +1503,15 @@
                     ruleForm = that.ruleFormTraining;
 
                 if (ruleForm.eid == "") {
-                    message.warning("{yun:}t key='admin_user_00207'{/yun}");
+                    message.warning(lc('admin_user_00207'));
                     return false;
                 }
                 if (ruleForm.name == "") {
-                    message.warning("{yun:}t key='admin_00485'{/yun}");
+                    message.warning(lc('admin_00485'));
                     return false;
                 }
                 if (daterangeTraining.length == 0) {
-                    message.warning("{yun:}t key='admin_user_00212'{/yun}");
+                    message.warning(lc('admin_user_00212'));
                     return false
                 }
 
@@ -1602,15 +1602,15 @@
                     formData = new FormData();
 
                 if (ruleForm.eid == "") {
-                    message.warning("{yun:}t key='admin_user_00207'{/yun}");
+                    message.warning(lc('admin_user_00207'));
                     return false;
                 }
                 if (ruleForm.name == "") {
-                    message.warning("{yun:}t key='admin_user_00210'{/yun}");
+                    message.warning(lc('admin_user_00210'));
                     return false;
                 }
                 if (ruleForm.ing == "") {
-                    message.warning("{yun:}t key='wap_user_00072'{/yun}");
+                    message.warning(lc('wap_user_00072'));
                     return false;
                 }
 
@@ -1703,15 +1703,15 @@
                     ruleForm = that.ruleFormProject;
 
                 if (ruleForm.eid == "") {
-                    message.warning("{yun:}t key='admin_user_00207'{/yun}");
+                    message.warning(lc('admin_user_00207'));
                     return false;
                 }
                 if (ruleForm.name == "") {
-                    message.warning("{yun:}t key='wap_user_00046'{/yun}");
+                    message.warning(lc('wap_user_00046'));
                     return false;
                 }
                 if (daterangeProject.length == 0) {
-                    message.warning("{yun:}t key='admin_user_00214'{/yun}");
+                    message.warning(lc('admin_user_00214'));
                     return false
                 }
 
@@ -1757,7 +1757,7 @@
                 })
             },
 
-            // {yun:}t key='admin_00068'{/yun}
+            // {{ lc('admin_00068') }}
             openOther(index) {
                 let expectData = this.expectData,
                     expect = expectData.expect,
@@ -1792,11 +1792,11 @@
                     ruleForm = that.ruleFormOther;
 
                 if (ruleForm.eid == "") {
-                    message.warning("{yun:}t key='admin_user_00207'{/yun}");
+                    message.warning(lc('admin_user_00207'));
                     return false;
                 }
                 if (ruleForm.name == "") {
-                    message.warning("{yun:}t key='admin_00487'{/yun}");
+                    message.warning(lc('admin_00487'));
                     return false;
                 }
 
@@ -1856,7 +1856,7 @@
                             message.success(res.msg);
                         }
                     })
-                }, "{yun:}t key='admin_user_00204'{/yun}");
+                }, lc('admin_user_00204'));
             },
         },
         watch: {

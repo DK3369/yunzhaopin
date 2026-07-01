@@ -3,6 +3,7 @@
 
 <head>
     <title>{yun:}$config.sy_webname{/yun} - {yun:}t key='admin_index_00072'{/yun}</title>
+    <script>localStorage.setItem("lang", '{yun:}$lang_code{/yun}');</script>
     <script src="../app/template/admin/home_header.js?v={yun:}$config.cachecode{/yun}"></script>
     <script src="../app/template/admin/js/vue-router.js?v={yun:}$config.cachecode{/yun}"></script>
     <link rel="stylesheet" href="../app/template/admin/adstyle/allcss/index.css?v={yun:}$config.cachecode{/yun}">
@@ -51,7 +52,7 @@
                             <el-collapse-transition>
                                 <div class="subNavLinkText" v-show="checkMenuOpen(0)">
                                     {yun:}foreach from=$menu key=mkey item=mval{/yun}
-                                    <a href="javascript:void(0);" @click="checkMenuTwo(0, 0, {yun:}$mval.id{/yun}, '{yun:}$mval.name{/yun}', '{yun:}$mval.path{/yun}')">
+                                    <a href="javascript:void(0);" @click="checkMenuTwo(0, 0, {yun:}$mval.id{/yun}, '{yun:}if $mval.name_key{/yun}{yun:}$mval.name_key{/yun}{yun:}else{/yun}{yun:}$mval.name{/yun}{yun:}/if{/yun}', '{yun:}$mval.path{/yun}')">
                                         <span :class="{'curspan': cur_menu_two == {yun:}$mval.id{/yun}}">{yun:}$mval.name{/yun}</span>
                                     </a>
                                     {yun:}/foreach{/yun}
@@ -78,7 +79,7 @@
                             <el-collapse-transition>
                                 <div class="subNavLinkText" v-show="checkMenuOpen({yun:}$oval.id{/yun})">
                                     {yun:}foreach from=$two_menu[$oval.id] key=tkey item=tval{/yun}
-                                    <a href="javascript:void(0);" @click="checkMenuTwo({yun:}$nval.id{/yun}, {yun:}$oval.id{/yun}, {yun:}$tval.id{/yun}, '{yun:}$tval.name{/yun}', '{yun:}$tval.path{/yun}')">
+                                    <a href="javascript:void(0);" @click="checkMenuTwo({yun:}$nval.id{/yun}, {yun:}$oval.id{/yun}, {yun:}$tval.id{/yun}, '{yun:}if $tval.name_key{/yun}{yun:}$tval.name_key{/yun}{yun:}else{/yun}{yun:}$tval.name{/yun}{yun:}/if{/yun}', '{yun:}$tval.path{/yun}')">
                                         <span :class="{'curspan': cur_menu_two == {yun:}$tval.id{/yun}}">{yun:}$tval.name{/yun}</span>
                                     </a>
                                     {yun:}/foreach{/yun}
@@ -187,7 +188,7 @@
                                             <span>{{ lc('admin_index_00075') }}</span>
                                         </div>
                                         {yun:}if in_array('809',$power){/yun}
-                                        <div @click="checkMenuTwo(5, 102, 104, '我的帐号', '/myaccount', {ly: 'pass'})">
+                                        <div @click="checkMenuTwo(5, 102, 104, lc('weixin_00009'), '/myaccount', {ly: 'pass'})">
                                             <img src="../app/template/admin/images/index_topright7.png" alt="">
                                             <span>{{ lc('member_user_00226') }}</span>
                                         </div>
@@ -210,7 +211,7 @@
                         <ul>
                             <li @click="checkTab(tabIndex)" :class="{'subContTipsCur': cur_menu_two == tabItem.two_menu_id}" v-for="(tabItem, tabIndex) in tabList" :key="tabIndex">
                                 <div class="spana">
-                                    <span class="curspan"><template>{{tabItem.name}}</template></span>
+                                    <span class="curspan"><template>{{ tabLabel(tabItem.name) }}</template></span>
                                     <i v-if="tabItem.isdel" class="el-icon-close" @click.stop="closeTab(tabIndex)"></i>
                                 </div>
                             </li>
@@ -290,7 +291,7 @@
                             </div>
                             <div class="homeCaiTwoNeir" v-if="twoMItem.children">
                                 <div class="homeCaiTwocheck" v-for="(threeMItem, threeMIndex) in twoMItem.children" :key="threeMIndex" v-if="!threeMItem.hide">
-                                    <a href="javascript:void(0);" @click="checkMenuTwo(oneMItem.id, twoMItem.id, threeMItem.id, threeMItem.name, threeMItem.path);dialogMap = false;">{{threeMItem.name}}</a>
+                                    <a href="javascript:void(0);" @click="checkMenuTwo(oneMItem.id, twoMItem.id, threeMItem.id, threeMItem.name_key || threeMItem.name, threeMItem.path);dialogMap = false;">{{threeMItem.name}}</a>
                                 </div>
                             </div>
                         </div>
@@ -325,41 +326,41 @@
     localStorage.setItem("file_accept", file_accept ? file_accept.split(',').join(',.') : '.doc,.docx,.xls,.pdf');
 
 	var msgNumDef = {
-		company_job:{name:'待审核职位',num:0,menudata:{nval:1,oval:6,tval:40,name:'职位管理',path:'/companyjob',query:{state: '4'}}},
-		partjob:{name:'待审核兼职',num:0,menudata:{nval:1,oval:6,tval:40,name:'职位管理',path:'/companyjob',query:{state: '4', tabs: 'partjob'}}},
-		company:{name:'待审核企业',num:0,menudata:{nval:1,oval:6,tval:16,name:'企业用户',path:'/companycrm',query:{status: '4'}}},
-		company_cert:{name:'待审核企业资质',num:0,menudata:{nval:1,oval:6,tval:47,name:'认证&审核',path:'/companyrz',query:{status: '3'}}},
-		comlogo:{name:'待审核企业LOGO',num:0,menudata:{nval:1,oval:6,tval:47,name:'认证&审核',path:'/companyrz',query:{status: '1', tabs: 'logo'}}},
-		comshow:{name:'待审核企业环境',num:0,menudata:{nval:1,oval:6,tval:47,name:'认证&审核',path:'/companyrz',query:{status: '1', tabs: 'show'}}},
-		combanner:{name:'待审核企业横幅',num:0,menudata:{nval:1,oval:6,tval:47,name:'认证&审核',path:'/companyrz',query:{status: '1', tabs: 'banner'}}},
-		company_product:{name:'待审核企业产品',num:0,menudata:{nval:1,oval:6,tval:47,name:'认证&审核',path:'/companyrz',query:{status: '3', tabs: 'product'}}},
-		company_news:{name:'待审核企业新闻',num:0,menudata:{nval:1,oval:6,tval:47,name:'认证&审核',path:'/companyrz',query:{status: '3', tabs: 'news'}}},
-		once_job:{name:'待审核店铺招聘',num:0,menudata:{nval:1,oval:6,tval:48,name:'店铺招聘',path:'/weipin_once',query:{status: '3'}}},
-		resume_expect:{name:'待审核简历',num:0,menudata:{nval:1,oval:7,tval:33,name:'简历管理',path:'/resume',query:{status: '4'}}},
-		resumetrust:{name:'待审核委托简历',num:0,menudata:{nval:1,oval:7,tval:33,name:'简历管理',path:'/resume',query:{status: '3', tabs: 'trust'}}},
-		appealnum:{name:'会员申诉',num:0,menudata:{nval:1,oval:401,tval:402,name:'会员列表',path:'/usercrm',query:{tabs: 'four',params:{appealstate:'1'}}}},
-		logout:{name:'待处理注销账号',num:0,menudata:{nval:1,oval:401,tval:402,name:'会员列表',path:'/usercrm',query:{status: '1', tabs: 'three'}}},
-		usercertNum:{name:'待审核个人认证',num:0,menudata:{nval:1,oval:7,tval:34,name:'认证&审核',path:'/renzheng',query:{status: '2'}}},
-		userpic:{name:'待审核个人头像',num:0,menudata:{nval:1,oval:7,tval:34,name:'认证&审核',path:'/renzheng',query:{status: '1', tabs: 'second'}}},
-		usershow:{name:'待审核作品案例',num:0,menudata:{nval:1,oval:7,tval:34,name:'认证&审核',path:'/renzheng',query:{status: '1', tabs: 'third'}}},
-		linkNum:{name:'待审核友情链接',num:0,menudata:{nval:5,oval:121,tval:194,name:'友情链接',path:'/friendlink',query:{state: '2'}}},
-		tiny:{name:'待审核普工简历',num:0,menudata:{nval:1,oval:156,tval:36,name:'普工简历',path:'/weipin_tiny',query:{status: '2'}}},
-		zphcom:{name:'待审核参会企业',num:0,menudata:{nval:2,oval:12,tval:61,name:'现场招聘会',path:'/xczph',query:{status: '3', tabs: 'com'}}},
-		ask:{name:'待审核问答',num:0,menudata:{nval:2,oval:15,tval:66,name:'问答管理',path:'/question',query:{status: '0'}}},
-		answer_msg:{name:'待审核问答回复',num:0,menudata:{nval:2,oval:15,tval:66,name:'问答管理',path:'/question',query:{status: '0', drawer: 'answer'}}},
-		answerreview_msg:{name:'待审核问答评论',num:0,menudata:{nval:2,oval:15,tval:66,name:'问答管理',path:'/question',query:{status: '0', drawer: 'comment'}}},
-		redeem:{name:'待审核商品兑换',num:0,menudata:{nval:3,oval:74,tval:77,name:'兑换记录',path:'/shoplist',query:{status: '-1'}}},
-		order:{name:'待处理充值订单',num:0,menudata:{nval:3,oval:161,tval:162,name:'充值订单',path:'/chongzhidd',query:{order_state: '1'}}},
-		specialcom:{name:'待审核企业专题',num:0,menudata:{nval:3,oval:343,tval:49,name:'招聘专题',path:'/special',query:null}},
-		reportjob:{name:'待处理举报职位',num:0,menudata:{nval:3,oval:176,tval:178,name:'举报职位',path:'/reportjob',query:{status: '0'}}},
-		reportresume:{name:'待处理举报简历',num:0,menudata:{nval:3,oval:176,tval:179,name:'举报简历',path:'/reportresume',query:{status: '0'}}},
-		reportask:{name:'待处理举报问答',num:0,menudata:{nval:3,oval:176,tval:180,name:'举报问答',path:'/reportask',query:{status: '0'}}},
-		reportgw:{name:'待处理投诉顾问',num:0,menudata:{nval:3,oval:176,tval:181,name:'举报顾问',path:'/reportadvise',query:{status: '0'}}},
-		handlenum:{name:'待处理意见反馈',num:0,menudata:{nval:5,oval:198,tval:65,name:'意见反馈',path:'/feedback',query:{status: '1'}}},
-		errlog:{name:'错误日志',num:0,menudata:{nval:5,oval:198,tval:814,name:'错误日志',path:'/errorlog',query:null}},
-		yqmb_msg:{name:'待审核面试模板',num:0,menudata:{nval:1,oval:6,tval:46,name:'面试管理',path:'/companyms',query:{status: '0', tabs: 'first'}}},
-		usermsg_msg:{name:'待审核求职咨询',num:0,menudata:{nval:1,oval:7,tval:37,name:'求职咨询',path:'/zixun',query:{status: '0'}}},
-		warning:{name:'待查看预警',num:0,menudata:{nval:5,oval:121,tval:175,name:'预警设置',path:'/warning',query:{status: '2'}}},
+		company_job:{name:lc('admin_index_00055'),num:0,menudata:{nval:1,oval:6,tval:40,name:lc('wap_com_00106'),path:'/companyjob',query:{state: '4'}}},
+		partjob:{name:lc('admin_index_00053'),num:0,menudata:{nval:1,oval:6,tval:40,name:lc('wap_com_00106'),path:'/companyjob',query:{state: '4', tabs: 'partjob'}}},
+		company:{name:lc('admin_00316'),num:0,menudata:{nval:1,oval:6,tval:16,name:lc('admin_user_00124'),path:'/companycrm',query:{status: '4'}}},
+		company_cert:{name:lc('admin_index_00027'),num:0,menudata:{nval:1,oval:6,tval:47,name:lc('admin_index_00058'),path:'/companyrz',query:{status: '3'}}},
+		comlogo:{name:lc('admin_index_00003'),num:0,menudata:{nval:1,oval:6,tval:47,name:lc('admin_index_00058'),path:'/companyrz',query:{status: '1', tabs: 'logo'}}},
+		comshow:{name:lc('admin_index_00026'),num:0,menudata:{nval:1,oval:6,tval:47,name:lc('admin_index_00058'),path:'/companyrz',query:{status: '1', tabs: 'show'}}},
+		combanner:{name:lc('admin_index_00025'),num:0,menudata:{nval:1,oval:6,tval:47,name:lc('admin_index_00058'),path:'/companyrz',query:{status: '1', tabs: 'banner'}}},
+		company_product:{name:lc('admin_index_00023'),num:0,menudata:{nval:1,oval:6,tval:47,name:lc('admin_index_00058'),path:'/companyrz',query:{status: '3', tabs: 'product'}}},
+		company_news:{name:lc('admin_index_00024'),num:0,menudata:{nval:1,oval:6,tval:47,name:lc('admin_index_00058'),path:'/companyrz',query:{status: '3', tabs: 'news'}}},
+		once_job:{name:lc('admin_index_00033'),num:0,menudata:{nval:1,oval:6,tval:48,name:lc('wap_js_00130'),path:'/weipin_once',query:{status: '3'}}},
+		resume_expect:{name:lc('admin_index_00054'),num:0,menudata:{nval:1,oval:7,tval:33,name:lc('wap_com_00105'),path:'/resume',query:{status: '4'}}},
+		resumetrust:{name:lc('admin_index_00032'),num:0,menudata:{nval:1,oval:7,tval:33,name:lc('wap_com_00105'),path:'/resume',query:{status: '3', tabs: 'trust'}}},
+		appealnum:{name:lc('admin_index_00062'),num:0,menudata:{nval:1,oval:401,tval:402,name:lc('admin_00086'),path:'/usercrm',query:{tabs: 'four',params:{appealstate:'1'}}}},
+		logout:{name:lc('admin_index_00019'),num:0,menudata:{nval:1,oval:401,tval:402,name:lc('admin_00086'),path:'/usercrm',query:{status: '1', tabs: 'three'}}},
+		usercertNum:{name:lc('admin_index_00021'),num:0,menudata:{nval:1,oval:7,tval:34,name:lc('admin_index_00058'),path:'/renzheng',query:{status: '2'}}},
+		userpic:{name:lc('admin_index_00020'),num:0,menudata:{nval:1,oval:7,tval:34,name:lc('admin_index_00058'),path:'/renzheng',query:{status: '1', tabs: 'second'}}},
+		usershow:{name:lc('admin_index_00028'),num:0,menudata:{nval:1,oval:7,tval:34,name:lc('admin_index_00058'),path:'/renzheng',query:{status: '1', tabs: 'third'}}},
+		linkNum:{name:lc('admin_index_00030'),num:0,menudata:{nval:5,oval:121,tval:194,name:lc('default_00256'),path:'/friendlink',query:{state: '2'}}},
+		tiny:{name:lc('admin_index_00034'),num:0,menudata:{nval:1,oval:156,tval:36,name:lc('wap_js_00066'),path:'/weipin_tiny',query:{status: '2'}}},
+		zphcom:{name:lc('admin_index_00029'),num:0,menudata:{nval:2,oval:12,tval:61,name:lc('wap_00558'),path:'/xczph',query:{status: '3', tabs: 'com'}}},
+		ask:{name:lc('admin_index_00056'),num:0,menudata:{nval:2,oval:15,tval:66,name:lc('admin_index_00077'),path:'/question',query:{status: '0'}}},
+		answer_msg:{name:lc('admin_index_00036'),num:0,menudata:{nval:2,oval:15,tval:66,name:lc('admin_index_00077'),path:'/question',query:{status: '0', drawer: 'answer'}}},
+		answerreview_msg:{name:lc('admin_index_00037'),num:0,menudata:{nval:2,oval:15,tval:66,name:lc('admin_index_00077'),path:'/question',query:{status: '0', drawer: 'comment'}}},
+		redeem:{name:lc('admin_index_00031'),num:0,menudata:{nval:3,oval:74,tval:77,name:lc('wap_user_00170'),path:'/shoplist',query:{status: '-1'}}},
+		order:{name:lc('admin_index_00016'),num:0,menudata:{nval:3,oval:161,tval:162,name:lc('admin_user_company_00136'),path:'/chongzhidd',query:{order_state: '1'}}},
+		specialcom:{name:lc('admin_index_00022'),num:0,menudata:{nval:3,oval:343,tval:49,name:lc('admin_index_00069'),path:'/special',query:null}},
+		reportjob:{name:lc('admin_index_00014'),num:0,menudata:{nval:3,oval:176,tval:178,name:lc('admin_index_00059'),path:'/reportjob',query:{status: '0'}}},
+		reportresume:{name:lc('admin_index_00013'),num:0,menudata:{nval:3,oval:176,tval:179,name:lc('wap_com_00349'),path:'/reportresume',query:{status: '0'}}},
+		reportask:{name:lc('admin_index_00015'),num:0,menudata:{nval:3,oval:176,tval:180,name:lc('ask_00002'),path:'/reportask',query:{status: '0'}}},
+		reportgw:{name:lc('admin_index_00018'),num:0,menudata:{nval:3,oval:176,tval:181,name:lc('admin_index_00060'),path:'/reportadvise',query:{status: '0'}}},
+		handlenum:{name:lc('admin_index_00017'),num:0,menudata:{nval:5,oval:198,tval:65,name:lc('wap_user_00203'),path:'/feedback',query:{status: '1'}}},
+		errlog:{name:lc('admin_index_00076'),num:0,menudata:{nval:5,oval:198,tval:814,name:lc('admin_index_00076'),path:'/errorlog',query:null}},
+		yqmb_msg:{name:lc('admin_index_00038'),num:0,menudata:{nval:1,oval:6,tval:46,name:lc('member_com_00213'),path:'/companyms',query:{status: '0', tabs: 'first'}}},
+		usermsg_msg:{name:lc('admin_index_00035'),num:0,menudata:{nval:1,oval:7,tval:37,name:lc('wap_com_00408'),path:'/zixun',query:{status: '0'}}},
+		warning:{name:lc('admin_index_00057'),num:0,menudata:{nval:5,oval:121,tval:175,name:lc('admin_index_00078'),path:'/warning',query:{status: '2'}}},
 	};
 
     const homeapp = new Vue({
@@ -441,7 +442,9 @@
 
             saveLanguage() {
                 var lang = this.languageForm.lang || "en_us";
+                localStorage.setItem("lang", lang);
                 document.cookie = "admin_lang=" + lang + "; path=/; max-age=31536000";
+                localStorage.removeItem("tabList");
                 var url = new URL(window.location.href);
                 url.searchParams.set("lang", lang);
                 window.location.href = url.toString();
@@ -481,6 +484,16 @@
                 } else {
                     this.MenuOpen.push(val)
                 }
+            },
+
+            tabLabel(name) {
+                if (!name) {
+                    return '';
+                }
+                if (typeof lc === 'function' && /^[a-z][a-z0-9_]*_[0-9]{5}$/.test(name)) {
+                    return lc(name);
+                }
+                return name;
             },
             checkMenuOpen(val) {
                 let idx = this.MenuOpen.indexOf(val);
@@ -648,9 +661,9 @@
                     let res = response.data;
 
                     if (res.error > 0) {
-                        message.error('清除缓存失败');
+                        message.error(lc('admin_index_00051'));
                     } else {
-                        message.success('清除缓存成功');
+                        message.success(lc('admin_index_00052'));
                     }
                 })
             },
@@ -741,7 +754,7 @@
                     };
 
                 if (that.formShortcutMenu.length == 0) {
-                    message.error('请至少选择一个');
+                    message.error(lc('admin_index_00039'));
                     return false;
                 }
 

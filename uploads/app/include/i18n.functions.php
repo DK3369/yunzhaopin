@@ -2,9 +2,9 @@
 /**
  * i18n 全局翻译函数（PHP）
  *
- * 结构化 key：yun_t('home.search_placeholder')
- * 编号 key：  yun_at('wap_00703') 或 yun_t('common_09190')
- * 中文兜底：  yun_at('wap_00421')
+ * 推荐入口：yun_t('home.search_placeholder')、lc('save')、yun_auto_t('存量中文')、lcCoin(...)
+ * 兼容入口：yun_at('wap_00703') 是 yun_t() 的历史别名，保留旧代码兼容；新增代码优先 yun_t()。
+ * 内部工具：yun_auto_array() 主要供 yun_json_encode() 等数组输出流程使用。
  */
 
 function yun_i18n()
@@ -39,13 +39,24 @@ function yun_t($key, $params = array(), $default = '')
 
 function yun_at($key, $params = array(), $default = '')
 {
+    // Historical alias kept for existing numbered keys; new code should prefer yun_t().
     return yun_t($key, $params, $default);
 }
 
 function lc($key, $params = array(), $default = '')
 {
     $lookupKey = strpos($key, '.') === false ? 'lc.' . $key : $key;
-    return yun_t($lookupKey, $params, $default);
+    $text = yun_t($lookupKey, $params, '');
+    if ($text !== '' && $text !== $lookupKey) {
+        return $text;
+    }
+    if (strpos($key, '.') === false) {
+        $autoText = yun_t($key, $params, '');
+        if ($autoText !== '' && $autoText !== $key) {
+            return $autoText;
+        }
+    }
+    return $default !== '' ? $default : $key;
 }
 
 function yun_auto_t($text)
@@ -59,6 +70,7 @@ function yun_auto_t($text)
 
 function yun_auto_array($value)
 {
+    // Internal helper for translating arrays before JSON/API output.
     $i18n = yun_i18n();
     if ($i18n && method_exists($i18n, 'autoArray')) {
         return $i18n->autoArray($value);

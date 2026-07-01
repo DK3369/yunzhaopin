@@ -3,140 +3,140 @@
         <div style="overflow-y: auto;position: relative;height: calc(100% - 80px);">
             <div class="drawerModInfo drawerModInfoOne">
                 <div class="drawerModTites">
-                    <el-divider content-position="left">{yun:}t key='admin_00027'{/yun}</el-divider>
+                    <el-divider content-position="left">{{ lc('admin_00027') }}</el-divider>
                 </div>
                 <div class="drawerModLis">
                     <div class="drawerModTite">
-                        <span>{yun:}t key='default_00319'{/yun}</span>
+                        <span>{{ lc('default_00319') }}</span>
                     </div>
                     <div class="drawerModInpt">
-                        <el-input v-model="info.username" placeholder="{yun:}t key='admin_00010'{/yun}"></el-input>
+                        <el-input v-model="info.username" :placeholder="lc('admin_00010')"></el-input>
                     </div>
                 </div>
                 <div class="drawerModLis">
                     <div class="drawerModTite">
-                        <span>{yun:}t key='wap_00402'{/yun}</span>
+                        <span>{{ lc('wap_00402') }}</span>
                     </div>
                     <div class="drawerModInpt">
-                        <el-input @mousedown.native="pwdMousedown" @input="pwdchange" @focus="readonlyCtl(false)" @blur="readonlyCtl(true)" type="password" v-model="info.password" placeholder="{yun:}t key='wap_00400'{/yun}" :readonly="pwdreadonly"></el-input>
+                        <el-input @mousedown.native="pwdMousedown" @input="pwdchange" @focus="readonlyCtl(false)" @blur="readonlyCtl(true)" type="password" v-model="info.password" :placeholder="lc('wap_00400')" :readonly="pwdreadonly"></el-input>
                     </div>
                     <div class="drawerModTips">
-                        <el-alert title="{yun:}t key='admin_00003'{/yun}" type="info" show-icon :closable="false"></el-alert>
+                        <el-alert :title="lc('admin_00003')" type="info" show-icon :closable="false"></el-alert>
                     </div>
                 </div>
                 <div class="drawerModLis">
                     <div class="drawerModTite">
-                        <span>{yun:}t key='member_user_00230'{/yun}</span>
+                        <span>{{ lc('member_user_00230') }}</span>
                     </div>
                     <div class="drawerModInpt">
-                        <el-input v-model="info.name" placeholder="{yun:}t key='admin_00011'{/yun}"></el-input>
+                        <el-input v-model="info.name" :placeholder="lc('admin_00011')"></el-input>
                     </div>
                 </div>
                 <div class="drawerModLis">
                     <div class="drawerModTite">
-                        <span>{yun:}t key='admin_00021'{/yun}</span>
+                        <span>{{ lc('admin_00021') }}</span>
                     </div>
                     <div class="drawerModInpt">
-                        <el-select v-model="info.m_id" placeholder="{yun:}t key='admin_00014'{/yun}">
+                        <el-select v-model="info.m_id" :placeholder="lc('admin_00014')">
                             <el-option v-for="item in group" :key="item.id" :label="item.group_name" :value="item.id"></el-option>
                         </el-select>
                     </div>
                 </div>
                 <div class="drawerModLis">
                     <div class="drawerModTite">
-                        <span>{yun:}t key='admin_00025'{/yun}</span>
+                        <span>{{ lc('admin_00025') }}</span>
                     </div>
                     <div class="drawerModInpt">
                         <template>
-                            <el-time-select style="width: 120px;"placeholder="{yun:}t key='admin_00028'{/yun}" v-model="info.login_start" :picker-options="{start: '06:00', step: '00:10',end: '22:00'}"></el-time-select>
-                            <el-time-select style="margin-left:10px; width: 120px;" placeholder="{yun:}t key='wap_user_00096'{/yun}" v-model="info.login_end" :picker-options="{start: '06:00',step: '00:10',end: '22:00', minTime: info.login_start}"></el-time-select>
+                            <el-time-select style="width: 120px;":placeholder="lc('admin_00028')" v-model="info.login_start" :picker-options="{start: '06:00', step: '00:10',end: '22:00'}"></el-time-select>
+                            <el-time-select style="margin-left:10px; width: 120px;" :placeholder="lc('wap_user_00096')" v-model="info.login_end" :picker-options="{start: '06:00',step: '00:10',end: '22:00', minTime: info.login_start}"></el-time-select>
                         </template>
                     </div>
                     <div class="drawerModTips">
-                        <el-alert title="{yun:}t key='admin_00002'{/yun}" type="info" show-icon :closable="false"></el-alert>
+                        <el-alert :title="lc('admin_00002')" type="info" show-icon :closable="false"></el-alert>
                     </div>
                 </div>
                 <div class="drawerModLis">
                     <div class="drawerModTite">
-                        <span>{yun:}t key='admin_00024'{/yun}</span>
+                        <span>{{ lc('admin_00024') }}</span>
                     </div>
                     <div class="drawerModInpt">
-                        <el-radio v-model="info.isdid" label="1">{yun:}t key='admin_00037'{/yun}</el-radio>
-                        <el-radio v-model="info.isdid" label="2">{yun:}t key='admin_00038'{/yun}</el-radio>
+                        <el-radio v-model="info.isdid" label="1">{{ lc('admin_00037') }}</el-radio>
+                        <el-radio v-model="info.isdid" label="2">{{ lc('admin_00038') }}</el-radio>
                     </div>
                 </div>
                 <div class="drawerModLis">
                     <div class="drawerModTite">
-                        <span>{yun:}t key='admin_00031'{/yun}</span>
+                        <span>{{ lc('admin_00031') }}</span>
                     </div>
                     <div class="drawerModInpt">
-                        <el-radio v-model="info.index_lookstatistc" label="2">{yun:}t key='member_com_00287'{/yun}</el-radio>
-                        <el-radio v-model="info.index_lookstatistc" label="1">{yun:}t key='common.close'{/yun}</el-radio>
+                        <el-radio v-model="info.index_lookstatistc" label="2">{{ lc('member_com_00287') }}</el-radio>
+                        <el-radio v-model="info.index_lookstatistc" label="1">{{ lc('common.close') }}</el-radio>
                     </div>
                     <div class="drawerModTips">
-                        <el-alert title="{yun:}t key='admin_00004'{/yun}" type="info" show-icon :closable="false"></el-alert>
+                        <el-alert :title="lc('admin_00004')" type="info" show-icon :closable="false"></el-alert>
                     </div>
                 </div>
                 <div class="drawerModLis">
                     <div class="drawerModTite">
-                        <span>{yun:}t key='admin_00019'{/yun}</span>
+                        <span>{{ lc('admin_00019') }}</span>
                     </div>
                     <div class="drawerModInpt">
-                        <el-radio v-model="info.is_crm" label="1">{yun:}t key='member_com_00287'{/yun}</el-radio>
-                        <el-radio v-model="info.is_crm" label="0">{yun:}t key='common.close'{/yun}</el-radio>
+                        <el-radio v-model="info.is_crm" label="1">{{ lc('member_com_00287') }}</el-radio>
+                        <el-radio v-model="info.is_crm" label="0">{{ lc('common.close') }}</el-radio>
                     </div>
                 </div>
             </div>
             <div class="drawerModInfo drawerModInfoOne" v-show="info.is_crm == 1">
                 <div class="drawerModTites">
-                    <el-divider content-position="left">{yun:}t key='admin_00018'{/yun}</el-divider>
+                    <el-divider content-position="left">{{ lc('admin_00018') }}</el-divider>
                 </div>
                 <div class="drawerModLis">
                     <div class="drawerModTite">
-                        <span>{yun:}t key='admin_00032'{/yun}</span>
+                        <span>{{ lc('admin_00032') }}</span>
                     </div>
                     <div class="drawerModInpt">
-                        <el-input v-model="info.weixin" placeholder="{yun:}t key='admin_00012'{/yun}"></el-input>
-                    </div>
-                </div>
-                <div class="drawerModLis">
-                    <div class="drawerModTite">
-                        <span>{yun:}t key='wap_01619'{/yun}</span>
-                    </div>
-                    <div class="drawerModInpt">
-                        <el-input v-model="info.mobile" placeholder="{yun:}t key='wap_js_00119'{/yun}"></el-input>
+                        <el-input v-model="info.weixin" :placeholder="lc('admin_00012')"></el-input>
                     </div>
                 </div>
                 <div class="drawerModLis">
                     <div class="drawerModTite">
-                        <span>{yun:}t key='wap_com_00174'{/yun}</span>
+                        <span>{{ lc('wap_01619') }}</span>
                     </div>
                     <div class="drawerModInpt">
-                        <el-input v-model="info.qq" placeholder="{yun:}t key='wap_com_00141'{/yun}"></el-input>
+                        <el-input v-model="info.mobile" :placeholder="lc('wap_js_00119')"></el-input>
                     </div>
                 </div>
                 <div class="drawerModLis">
                     <div class="drawerModTite">
-                        <span>{yun:}t key='admin_00020'{/yun}</span>
+                        <span>{{ lc('wap_com_00174') }}</span>
                     </div>
                     <div class="drawerModInpt">
-                        <el-input type="number" v-model="info.num" placeholder="{yun:}t key='admin_00009'{/yun}"></el-input>
+                        <el-input v-model="info.qq" :placeholder="lc('wap_com_00141')"></el-input>
+                    </div>
+                </div>
+                <div class="drawerModLis">
+                    <div class="drawerModTite">
+                        <span>{{ lc('admin_00020') }}</span>
+                    </div>
+                    <div class="drawerModInpt">
+                        <el-input type="number" v-model="info.num" :placeholder="lc('admin_00009')"></el-input>
                     </div>
                     <div class="drawerModTips">
-                        <el-alert title="{yun:}t key='admin_00389'{/yun}" type="info" show-icon :closable="false"></el-alert>
+                        <el-alert :title="lc('admin_00389')" type="info" show-icon :closable="false"></el-alert>
                     </div>
                 </div>
 
                 <div class="drawerModLis">
                     <div class="drawerModTite">
-                        <span>{yun:}t key='admin_00023'{/yun}</span>
+                        <span>{{ lc('admin_00023') }}</span>
                     </div>
                     <div class="drawerModInpt">
-                        <el-input type="number" v-model="info.call_num" placeholder="{yun:}t key='admin_00013'{/yun}" style="width: 194px;">
-                            <template slot="prepend">{yun:}t key='admin_00036'{/yun}</template>
+                        <el-input type="number" v-model="info.call_num" :placeholder="lc('admin_00013')" style="width: 194px;">
+                            <template slot="prepend">{{ lc('admin_00036') }}</template>
                         </el-input>
-                        <el-input type="number" v-model="info.tuoxin_num" placeholder="{yun:}t key='admin_00013'{/yun}" style="width: 194px; margin-left: 16px;">
-                            <template slot="prepend">{yun:}t key='admin_00034'{/yun}</template>
+                        <el-input type="number" v-model="info.tuoxin_num" :placeholder="lc('admin_00013')" style="width: 194px; margin-left: 16px;">
+                            <template slot="prepend">{{ lc('admin_00034') }}</template>
                         </el-input>
                     </div>
                 </div>
@@ -145,40 +145,40 @@
                         <span> </span>
                     </div>
                     <div class="drawerModInpt">
-                        <el-input type="number" v-model="info.follow_num" placeholder="{yun:}t key='admin_00013'{/yun}" style="width: 194px;">
-                            <template slot="prepend">{yun:}t key='admin_00035'{/yun}</template>
+                        <el-input type="number" v-model="info.follow_num" :placeholder="lc('admin_00013')" style="width: 194px;">
+                            <template slot="prepend">{{ lc('admin_00035') }}</template>
                         </el-input>
-                        <el-input type="number" v-model="info.deal_num" placeholder="{yun:}t key='admin_00013'{/yun}" style="width: 194px; margin-left: 16px;">
-                            <template slot="prepend">{yun:}t key='admin_00033'{/yun}</template>
+                        <el-input type="number" v-model="info.deal_num" :placeholder="lc('admin_00013')" style="width: 194px; margin-left: 16px;">
+                            <template slot="prepend">{{ lc('admin_00033') }}</template>
                         </el-input>
                     </div>
                 </div>
 
                 <div class="drawerModLis">
                     <div class="drawerModTite">
-                        <span>{yun:}t key='admin_00023'{/yun}</span>
+                        <span>{{ lc('admin_00023') }}</span>
                     </div>
                     <div class="drawerModInpt">
-                        <el-input type="number" v-model="info.month_deal_num" placeholder="{yun:}t key='admin_00013'{/yun}">
-                            <template slot="prepend">{yun:}t key='admin_00033'{/yun}</template>
+                        <el-input type="number" v-model="info.month_deal_num" :placeholder="lc('admin_00013')">
+                            <template slot="prepend">{{ lc('admin_00033') }}</template>
                         </el-input>
                     </div>
                 </div>
                 <div class="drawerModLis">
                     <div class="drawerModTite">
-                        <span>{yun:}t key='admin_00022'{/yun}</span>
+                        <span>{{ lc('admin_00022') }}</span>
                     </div>
                     <div class="drawerModInpt">
-                        <el-radio v-model="info.jobtai_ranking" label="1">{yun:}t key='member_com_00287'{/yun}</el-radio>
-                        <el-radio v-model="info.jobtai_ranking" label="2">{yun:}t key='common.close'{/yun}</el-radio>
+                        <el-radio v-model="info.jobtai_ranking" label="1">{{ lc('member_com_00287') }}</el-radio>
+                        <el-radio v-model="info.jobtai_ranking" label="2">{{ lc('common.close') }}</el-radio>
                     </div>
                     <div class="drawerModTips">
-                        <el-alert title="{yun:}t key='admin_00005'{/yun}" type="info" show-icon :closable="false"></el-alert>
+                        <el-alert :title="lc('admin_00005')" type="info" show-icon :closable="false"></el-alert>
                     </div>
                 </div>
                 <div class="drawerModLis">
                     <div class="drawerModTite">
-                        <span>{yun:}t key='admin_00030'{/yun}</span>
+                        <span>{{ lc('admin_00030') }}</span>
                     </div>
                     <div class="drawerModInpt">
                         <el-checkbox-group v-model="info.crm_duty">
@@ -188,43 +188,43 @@
                 </div>
                 <div class="drawerModLis">
                     <div class="drawerModTite">
-                        <span>{yun:}t key='admin_00029'{/yun}</span>
+                        <span>{{ lc('admin_00029') }}</span>
                     </div>
                     <div class="drawerModInpt">
-                        <el-select v-model="info.crm_city" multiple filterable remote reserve-keyword placeholder="{yun:}t key='wap_00510'{/yun}" :filter-method="getCity">
+                        <el-select v-model="info.crm_city" multiple filterable remote reserve-keyword :placeholder="lc('wap_00510')" :filter-method="getCity">
                             <el-option v-for="item in cities" :key="item.id" :label="item.label" :value="item.id"></el-option>
                         </el-select>
                     </div>
                     <div class="drawerModTips">
-                        <el-alert title="{yun:}t key='admin_00001'{/yun}" type="info" show-icon :closable="false"></el-alert>
+                        <el-alert :title="lc('admin_00001')" type="info" show-icon :closable="false"></el-alert>
                     </div>
                 </div>
                 <div class="drawerModLis">
                     <div class="drawerModTite">
-                        <span>{yun:}t key='admin_00017'{/yun}</span>
+                        <span>{{ lc('admin_00017') }}</span>
                     </div>
                     <div class="drawerModInpt">
                         <el-upload class="upload-demo" :accept="pic_accept" action="" :auto-upload="false" :show-file-list="false" :on-change="upPhotoChange">
-                            <el-button slot="trigger" size="small" type="primary">{yun:}t key='admin_00015'{/yun}</el-button>
-                            <img class="el-upload-list__item-thumbnail" width="36" height="36" v-if="info.photo" :src="info.photo" alt="{yun:}t key='admin_00017'{/yun}"/>
+                            <el-button slot="trigger" size="small" type="primary">{{ lc('admin_00015') }}</el-button>
+                            <img class="el-upload-list__item-thumbnail" width="36" height="36" v-if="info.photo" :src="info.photo" alt=lc('admin_00017')/>
                         </el-upload>
                     </div>
                 </div>
                 <div class="drawerModLis">
                     <div class="drawerModTite">
-                        <span>{yun:}t key='admin_00016'{/yun}</span>
+                        <span>{{ lc('admin_00016') }}</span>
                     </div>
                     <div class="drawerModInpt">
                         <el-upload class="upload-demo" :accept="pic_accept" action="" :auto-upload="false" :show-file-list="false" :on-change="upEwmChange">
-                            <el-button slot="trigger" size="small" type="primary">{yun:}t key='member_user_00157'{/yun}</el-button>
-                            <img class="el-upload-list__item-thumbnail" width="36" height="36" v-if="info.ewm" :src="info.ewm" alt="{yun:}t key='admin_00016'{/yun}"/>
+                            <el-button slot="trigger" size="small" type="primary">{{ lc('member_user_00157') }}</el-button>
+                            <img class="el-upload-list__item-thumbnail" width="36" height="36" v-if="info.ewm" :src="info.ewm" alt=lc('admin_00016')/>
                         </el-upload>
                     </div>
                 </div>
             </div>
         </div>
         <div class="setBasicButn" style="border: none;">
-            <el-button type="primary" size="medium" :loading="save_load" @click="submitForm">{yun:}t key='common.submit'{/yun}</el-button>
+            <el-button type="primary" size="medium" :loading="save_load" @click="submitForm">{{ lc('common.submit') }}</el-button>
         </div>
     </div>
 </template>
@@ -273,14 +273,14 @@
                     setTimeout(function(){ that.pwdreadonly = false, 100})
                 }
             },
-            // 修改密码框readonly{yun:}t key='wap_js_00085'{/yun}，防止密码框展示浏览器记录的密码信息
+            // 修改密码框readonly{{ lc('wap_js_00085') }}，防止密码框展示浏览器记录的密码信息
             readonlyCtl: function(res){
                 var that = this
                 setTimeout(function(){
                     that.pwdreadonly = res
                 }, 200)
             },
-            // {yun:}t key='admin_00007'{/yun}
+            // {{ lc('admin_00007') }}
             initData() {
                 var that = this
                 if (that.info && that.info.uid) {
@@ -358,15 +358,15 @@
                     return false;
                 }
                 if (!that.info.uid && !that.info.password) {
-                    message.error("{yun:}t key='wap_js_00061'{/yun}");
+                    message.error(lc('wap_js_00061'));
                     return false;
                 }
                 if (!that.info.name) {
-                    message.error("{yun:}t key='admin_00008'{/yun}");
+                    message.error(lc('admin_00008'));
                     return false;
                 }
                 if (!that.info.m_id) {
-                    message.error("{yun:}t key='admin_00014'{/yun}");
+                    message.error(lc('admin_00014'));
                     return false;
                 }
                 for (i in that.info) {
@@ -388,7 +388,7 @@
                     formData.append('crmAdd', 1);
                     url = 'm=crm&c=salesman&a=saveCrm';
                 } else {
-                    message.error("source {yun:}t key='upgrade_00015'{/yun}");
+                    message.error("source {{ lc('upgrade_00015') }}");
                     return false;
                 }
 

@@ -2,41 +2,41 @@
     <div class="moduleElHight">
         <div class="moduleSeachbig">
             <div class="tableSeachInpt tableSeachInptsmall tableSeacFromer" style="padding: 2px 0;">
-				<el-input v-model="search_params.keyword" @keyup.enter.native="search" placeholder="{yun:}t key='admin_00340'{/yun}" size="small" clearable>
-					<el-select v-model="search_params.ctype" size="small" slot="prepend" placeholder="{yun:}t key='admin_user_00140'{/yun}">
-					    <el-option label="{yun:}t key='wap_com_00157'{/yun}" value="1"></el-option>
-					    <el-option label="{yun:}t key='member_user_00242'{/yun}" value="2"></el-option>
+				<el-input v-model="search_params.keyword" @keyup.enter.native="search" :placeholder="lc('admin_00340')" size="small" clearable>
+					<el-select v-model="search_params.ctype" size="small" slot="prepend" :placeholder="lc('admin_user_00140')">
+					    <el-option :label="lc('wap_com_00157')" value="1"></el-option>
+					    <el-option :label="lc('member_user_00242')" value="2"></el-option>
 					</el-select>
 				</el-input>
             </div>
             <!--收起部分-->
             <div class="tableSeachInpt tableSeachInptsmall" :class="{ 'searchbutnOnff': seachbutn }">
-                <el-select v-if="searchlist" v-model="search_params.rating" size="small" slot="prepend" placeholder="{yun:}t key='admin_user_company_00018'{/yun}" clearable @change="search">
+                <el-select v-if="searchlist" v-model="search_params.rating" size="small" slot="prepend" :placeholder="lc('admin_user_company_00018')" clearable @change="search">
                     <el-option v-for="(item, index) in searchlist.rating.value" :key="index" :label="item"
                                :value="index">
                     </el-option>
                 </el-select>
             </div>
             <div class="tableSeachInpt tableSeachInptsmall" :class="{ 'searchbutnOnff': seachbutn }">
-                <el-select v-if="searchlist" v-model="search_params.time" size="small" slot="prepend" placeholder="{yun:}t key='admin_user_company_00052'{/yun}" clearable @change="search">
+                <el-select v-if="searchlist" v-model="search_params.time" size="small" slot="prepend" :placeholder="lc('admin_user_company_00052')" clearable @change="search">
                     <el-option v-for="(item, index) in searchlist.time.value" :key="index" :label="item"
                                :value="index">
                     </el-option>
                 </el-select>
             </div>
             <div class="tableSeachInpt">
-                <el-button type="primary" icon="el-icon-search" size="mini" @click="search">{yun:}t key='admin_user_weipin_00049'{/yun}</el-button>
+                <el-button type="primary" icon="el-icon-search" size="mini" @click="search">{{ lc('admin_user_weipin_00049') }}</el-button>
             </div>
             <div class="tableSeachInpt">
-                <el-button type="primary" plain icon="el-icon-plus" size="mini" @click="add">{yun:}t key='admin_user_company_00053'{/yun}
+                <el-button type="primary" plain icon="el-icon-plus" size="mini" @click="add">{{ lc('admin_user_company_00053') }}
                 </el-button>
             </div>
             <div class="tableSeachzk" :class="{ 'searchbutnKai': seachbutn }" style="margin-bottom: 8px;">
                 <el-button type="info" class="zhankai" @click="seachbutn = !seachbutn, tableHig = !tableHig"
-                           aria-disabled="false" size="mini" plain>{yun:}t key='admin_user_00145'{/yun}<i class="el-icon-arrow-down el-icon--right"></i>
+                           aria-disabled="false" size="mini" plain>{{ lc('admin_user_00145') }}<i class="el-icon-arrow-down el-icon--right"></i>
                 </el-button>
                 <el-button type="info" class="shouqi" @click="seachbutn = !seachbutn, tableHig = !tableHig"
-                           aria-disabled="false" size="mini" plain>{yun:}t key='admin_user_00144'{/yun}<i class="el-icon-arrow-up el-icon--right"></i>
+                           aria-disabled="false" size="mini" plain>{{ lc('admin_user_00144') }}<i class="el-icon-arrow-up el-icon--right"></i>
                 </el-button>
             </div>
         </div>
@@ -56,51 +56,51 @@
                     <p>{{dataText}}</p>
                 </template>
                 <el-table-column type="selection" width="55"></el-table-column>
-                <el-table-column prop="uid" label="{yun:}t key='admin_user_00130'{/yun}" width="120" sortable="custom"></el-table-column>
-                <el-table-column prop="name" label="{yun:}t key='wap_com_00157'{/yun}" min-width="180" show-overflow-tooltip>
+                <el-table-column prop="uid" :label="lc('admin_user_00130')" width="120" sortable="custom"></el-table-column>
+                <el-table-column prop="name" :label="lc('wap_com_00157')" min-width="180" show-overflow-tooltip>
                     <template slot-scope="props">
                         <div class="layuiSmallImg">
                             <a href="javascript:;" class="layuiSmallImgUp" @click="jumpToMember(props.row.uid);">{{props.row.username}}</a>
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="{yun:}t key='admin_user_company_00018'{/yun}" prop="rating" width="130"></el-table-column>
-                <el-table-column prop=" " label="{yun:}t key='admin_00624'{/yun}" width="150">
+                <el-table-column :label="lc('admin_user_company_00018')" prop="rating" width="130"></el-table-column>
+                <el-table-column prop=" " :label="lc('admin_00624')" width="150">
                     <template slot-scope="props">
                         <div class="layuiSmallImg">
                             <el-image v-if="props.row.hot_pic" :src="props.row.hot_pic" :preview-src-list="[props.row.hot_pic]"  style="width:48px;height:48px"></el-image>
-                            <span v-else>{yun:}t key='common_02082'{/yun}</span>
+                            <span v-else>{{ lc('common_02082') }}</span>
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column prop="" label="{yun:}t key='admin_user_company_00021'{/yun}">
+                <el-table-column prop="" :label="lc('admin_user_company_00021')">
                     <template slot-scope="props">
                         {{ lc("admin_currency_yuan", [props.row.service_price]) }}
                     </template>
                 </el-table-column>
-                <el-table-column prop="time_start" label="{yun:}t key='admin_company_00005'{/yun}" width="150">
+                <el-table-column prop="time_start" :label="lc('admin_company_00005')" width="150">
                     <template slot-scope="props">
                         {{props.row.time_start_n}}
                     </template>
                 </el-table-column>
-                <el-table-column prop="time_end" label="{yun:}t key='admin_company_00006'{/yun}" width="150">
+                <el-table-column prop="time_end" :label="lc('admin_company_00006')" width="150">
                     <template slot-scope="props">
-                        <span v-if="props.row.time_end_n == 'wap_com_00319'" style="color: red">{yun:}t key='wap_com_00319'{/yun}</span>
+                        <span v-if="props.row.time_end_n == 'wap_com_00319'" style="color: red">{{ lc('wap_com_00319') }}</span>
                         <span v-else>{{props.row.time_end_n}}</span>
                     </template>
                 </el-table-column>
-                <el-table-column prop="beizhu" label="{yun:}t key='member_user_00242'{/yun}" width="150">
+                <el-table-column prop="beizhu" :label="lc('member_user_00242')" width="150">
                     <template slot-scope="props">
                         <span v-if="props.row.beizhu">{{props.row.beizhu}}</span>
-                        <span v-else>{yun:}t key='admin_user_company_00054'{/yun}</span>
+                        <span v-else>{{ lc('admin_user_company_00054') }}</span>
                     </template>
                 </el-table-column>
-                <el-table-column prop="sort" label="{yun:}t key='member_com_00022'{/yun}" width="150" sortable="custom"></el-table-column>
-                <el-table-column label="{yun:}t key='member_user_00048'{/yun}" width="140" fixed="right">
+                <el-table-column prop="sort" :label="lc('member_com_00022')" width="150" sortable="custom"></el-table-column>
+                <el-table-column :label="lc('member_user_00048')" width="140" fixed="right">
                     <template slot-scope="scope">
                         <div class="cz_button">
-                            <el-button size="mini" plain @click="edit(scope.row)">{yun:}t key='wap_js_00073'{/yun}</el-button>
-                            <el-button type="danger" size="mini"  @click="delrow(scope.row.uid)">{yun:}t key='common.delete'{/yun}</el-button>
+                            <el-button size="mini" plain @click="edit(scope.row)">{{ lc('wap_js_00073') }}</el-button>
+                            <el-button type="danger" size="mini"  @click="delrow(scope.row.uid)">{{ lc('common.delete') }}</el-button>
                         </div>
                     </template>
                 </el-table-column>
@@ -108,8 +108,8 @@
         </div>
         <div class="modulePaging">
             <div>
-                <el-checkbox v-model="checkedAll" @change="selectAllBottom">{yun:}t key='wap_js_00074'{/yun}</el-checkbox>
-                <el-button @click="delAllBottom" size="mini">{yun:}t key='member_com_00055'{/yun}</el-button>
+                <el-checkbox v-model="checkedAll" @change="selectAllBottom">{{ lc('wap_js_00074') }}</el-checkbox>
+                <el-button @click="delAllBottom" size="mini">{{ lc('member_com_00055') }}</el-button>
             </div>
             <div class="modulePagNum">
                 <el-pagination background @size-change="handleSizeChange"
@@ -136,7 +136,7 @@
                 mouseFlag: false,
                 mouseOffset: 0,
                 loading: false,
-                dataText: "{yun:}t key='admin_user_weipin_00026'{/yun}",
+                dataText: lc('admin_user_weipin_00026'),
                 input3: '',
                 input: '',
                 select: '',
@@ -218,7 +218,7 @@
                 this.mouseFlag = false;
             },
             mouseMoveHandler(e) {
-                // 这里面需要注意，{yun:}t key='admin_user_company_00161'{/yun}ref需要那个那个包含table元素的父元素
+                // 这里面需要注意，{{ lc('admin_user_company_00161') }}ref需要那个那个包含table元素的父元素
                 let divData = this.$refs.multipleTable.bodyWrapper;
                 if (this.mouseFlag) {
                     // 设置水平方向的元素的位置
@@ -250,7 +250,7 @@
                             if (response.data.error == 0) {
                                 that.com_arr = response.data.data
                             } else {
-                                message.error("{yun:}t key='admin_user_company_00017'{/yun}");
+                                message.error(lc('admin_user_company_00017'));
                             }
                         }).catch(function (error) {
                             console.log(error);
@@ -264,7 +264,7 @@
                 this.info = data
                 this.info.hot_pic_n = this.info.hot_pic
                 this.info.time_end_n = this.info.time_end_nn
-                this.title = "{yun:}t key='admin_00625'{/yun}"
+                this.:title="lc('admin_00625')"
                 this.isedit = true
                 this.drawermq = true
             },
@@ -282,7 +282,7 @@
                     time_end_n: ''
                 }
                 this.isedit = false
-                this.title = "{yun:}t key='admin_user_company_00053'{/yun}"
+                this.:title="lc('admin_user_company_00053')"
                 this.drawermq = true
             },
             sortChange: function (column) {
@@ -405,7 +405,7 @@
                             scrollToTop()
                         }
                         if (that.tableData.length === 0) {
-                            that.dataText = "{yun:}t key='wap_js_00113'{/yun}";
+                            that.dataText = lc('wap_js_00113');
                         }
                     }
                 }).catch(function (e) {
@@ -417,7 +417,7 @@
             },
             delAllBottom() {
                 if (!this.selectedItem.length) {
-                    message.error("{yun:}t key='admin_user_weipin_00005'{/yun}");
+                    message.error(lc('admin_user_weipin_00005'));
                     return false;
                 }
                 delConfirm(this, this.selectedItem, this.delete);

@@ -1,96 +1,96 @@
 <template>
     <div class="tableDome" style="top: 40px;">
         <div class="tableDome_tip">
-            <el-alert title="{yun:}t key='admin_01051'{/yun}" type="info" :closable="false"></el-alert>
+            <el-alert :title="lc('admin_01051')" type="info" :closable="false"></el-alert>
         </div>
         <div class="moduleTable">
             <table class="tableVue">
                 <thead>
                     <tr align="left">
-                        <th width="200">{yun:}t key='member_com_00021'{/yun}</th>
-                        <th width="500">{yun:}t key='member_user_00181'{/yun}</th>
-                        <th>{yun:}t key='member_com_00207'{/yun}</th>
+                        <th width="200">{{ lc('member_com_00021') }}</th>
+                        <th width="500">{{ lc('member_user_00181') }}</th>
+                        <th>{{ lc('member_com_00207') }}</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_01045'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_01045') }}</div>
                         </td>
                         <td>
                             <div class="TableButn">
                                 <el-radio-group v-model="domainConfig.sy_web_site">
-                                    <el-radio :label="1">{yun:}t key='member_com_00287'{/yun}</el-radio>
-                                    <el-radio :label="2">{yun:}t key='common.close'{/yun}</el-radio>
+                                    <el-radio :label="1">{{ lc('member_com_00287') }}</el-radio>
+                                    <el-radio :label="2">{{ lc('common.close') }}</el-radio>
                                 </el-radio-group>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>{yun:}t key='admin_system_00175'{/yun}</span>
+                                <span>{{ lc('admin_system_00175') }}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_01046'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_01046') }}</div>
                         </td>
                         <td>
                             <div class="TableButn">
                                 <el-radio-group v-model="domainConfig.sy_gotocity">
-                                    <el-radio :label="1">{yun:}t key='member_com_00287'{/yun}</el-radio>
-                                    <el-radio :label="2">{yun:}t key='common.close'{/yun}</el-radio>
+                                    <el-radio :label="1">{{ lc('member_com_00287') }}</el-radio>
+                                    <el-radio :label="2">{{ lc('common.close') }}</el-radio>
                                 </el-radio-group>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>{yun:}t key='admin_01047'{/yun}</span>
+                                <span>{{ lc('admin_01047') }}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_01048'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_01048') }}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="domainConfig.sy_indexcity"></el-input>
+                                <el-input :placeholder="lc('wap_user_00076')" v-model="domainConfig.sy_indexcity"></el-input>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>{yun:}t key='admin_01049'{/yun}</span>
+                                <span>{{ lc('admin_01049') }}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_system_00178'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_system_00178') }}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="domainConfig.sy_indexdomain"></el-input>
+                                <el-input :placeholder="lc('wap_user_00076')" v-model="domainConfig.sy_indexdomain"></el-input>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>{yun:}t key='admin_01050'{/yun}</span>
+                                <span>{{ lc('admin_01050') }}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_system_00177'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_system_00177') }}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="domainConfig.sy_onedomain"></el-input>
+                                <el-input :placeholder="lc('wap_user_00076')" v-model="domainConfig.sy_onedomain"></el-input>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>{yun:}t key='admin_system_00176'{/yun}</span>
+                                <span>{{ lc('admin_system_00176') }}</span>
                             </div>
                         </td>
                     </tr>
@@ -99,7 +99,7 @@
         </div>
 
         <div class="setBasicButn" style="border: none;">
-            <el-button type="primary" size="medium" @click="setDomainConfig" :disabled="saveLoading">{yun:}t key='common.submit'{/yun}</el-button>
+            <el-button type="primary" size="medium" @click="setDomainConfig" :disabled="saveLoading">{{ lc('common.submit') }}</el-button>
         </div>
     </div>
 </template>

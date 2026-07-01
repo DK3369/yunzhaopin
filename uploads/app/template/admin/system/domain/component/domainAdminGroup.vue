@@ -2,35 +2,35 @@
     <div class="moduleElenAl">
         <div class="moduleSeachs">
             <div class="moduleSeachInpt">
-                <el-input placeholder="{yun:}t key='admin_01036'{/yun}" v-model="search.keyword" class="input-with-select" size="small"
+                <el-input :placeholder="lc('admin_01036')" v-model="search.keyword" class="input-with-select" size="small"
                     clearable></el-input>
-                <el-button type="primary" icon="el-icon-search" size="mini" @click="handelSearch">{yun:}t key='admin_user_weipin_00049'{/yun}</el-button>
+                <el-button type="primary" icon="el-icon-search" size="mini" @click="handelSearch">{{ lc('admin_user_weipin_00049') }}</el-button>
             </div>
             <div class="">
-                <el-button type="primary" icon="el-icon-document-add" size="mini" @click="addGroup">{yun:}t key='admin_01035'{/yun}</el-button>
+                <el-button type="primary" icon="el-icon-document-add" size="mini" @click="addGroup">{{ lc('admin_01035') }}</el-button>
             </div>
         </div>
         <div class="moduleElTable" style="height: calc(100% - 110px); padding: 0 12px; margin-top: 0;">
             <div class="tableDome_tip">
-                <el-alert title="{yun:}t key='admin_01037'{/yun}" type="info"
+                <el-alert :title="lc('admin_01037')" type="info"
                     :closable="false"></el-alert>
             </div>
             <el-table :data="tableData" border style="width: 100%"
                 :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" height="calc(100% - 50px)"
                 @selection-change="handleSelectionChange" ref="multipleTable" v-loading="loading" :empty-text="emptytext">
                 <el-table-column type="selection" width="55"></el-table-column>
-                <el-table-column prop="id" label="{yun:}t key='common_02108'{/yun}" width="80"></el-table-column>
-                <el-table-column prop="group_name" label="{yun:}t key='admin_system_00212'{/yun}"></el-table-column>
-                <el-table-column prop="domain_name" label="{yun:}t key='admin_system_00174'{/yun}"></el-table-column>
-                <el-table-column prop="num" label="{yun:}t key='admin_system_00173'{/yun}"></el-table-column>
-                <el-table-column label="{yun:}t key='member_user_00048'{/yun}" width="140">
+                <el-table-column prop="id" :label="lc('common_02108')" width="80"></el-table-column>
+                <el-table-column prop="group_name" :label="lc('admin_system_00212')"></el-table-column>
+                <el-table-column prop="domain_name" :label="lc('admin_system_00174')"></el-table-column>
+                <el-table-column prop="num" :label="lc('admin_system_00173')"></el-table-column>
+                <el-table-column :label="lc('member_user_00048')" width="140">
                     <template slot-scope="scope">
                         <div class="moduleElTaCaoz">
                             <!-- <a href="javascript:;" @click="editGroup(scope);">
                                 <el-button @click="editGroup(scope);" size="small">修改</el-button>
                             </a> -->
-                            <el-button @click="editGroup(scope);" size="mini">{yun:}t key='wap_js_00073'{/yun}</el-button>
-                            <el-button size="mini" @click="delGroup(scope)" type="danger">{yun:}t key='common.delete'{/yun}</el-button>
+                            <el-button @click="editGroup(scope);" size="mini">{{ lc('wap_js_00073') }}</el-button>
+                            <el-button size="mini" @click="delGroup(scope)" type="danger">{{ lc('common.delete') }}</el-button>
                         </div>
                     </template>
                 </el-table-column>
@@ -38,8 +38,8 @@
         </div>
         <div class="modulePaging">
             <div class="modulecz" style="margin-left: 10px;">
-                <el-checkbox v-model="checkAll" @change="handleCheckAllChange">{yun:}t key='wap_js_00074'{/yun}</el-checkbox>
-                <el-button size="mini" @click="delGroupSel">{yun:}t key='member_com_00055'{/yun}</el-button>
+                <el-checkbox v-model="checkAll" @change="handleCheckAllChange">{{ lc('wap_js_00074') }}</el-checkbox>
+                <el-button size="mini" @click="delGroupSel">{{ lc('member_com_00055') }}</el-button>
             </div>
             <div class="modulePagNum">
                 <div class="modulePagNum" style="margin: 0 auto;">
@@ -62,7 +62,7 @@ module.exports = {
     },
     data: function () {
         return {
-            emptytext: "{yun:}t key='wap_js_00113'{/yun}",
+            emptytext: lc('wap_js_00113'),
             search: {
                 keyword: null
             },
@@ -107,7 +107,7 @@ module.exports = {
             params.pageSize = that.pageSize;
             params.page = that.currentPage;
             that.loading = true;
-            that.emptytext = "{yun:}t key='admin_user_weipin_00026'{/yun}";
+            that.emptytext = lc('admin_user_weipin_00026');
             httpPost('m=system&c=domain_group&a=groupList', params).then(function (res) {
                 let data = res.data.data;
                 that.tableData = data.list;
@@ -120,7 +120,7 @@ module.exports = {
                 }
                 that.loading = false;
                 if (that.tableData.length === 0){
-                    that.emptytext = "{yun:}t key='wap_js_00113'{/yun}";
+                    that.emptytext = lc('wap_js_00113');
                 }
             }).catch(function (error) {
                 console.log(error);
@@ -133,13 +133,13 @@ module.exports = {
         addGroup: function () {
             var self = this;
             self.groupId = 0;
-            self.addGroupTitle = "{yun:}t key='admin_01038'{/yun}";
+            self.addGroupTitle = lc('admin_01038');
             self.addGroupShow = true;
         },
         editGroup(scope) {
             var self = this;
             self.groupId = parseInt(scope.row.id);
-            self.addGroupTitle = "{yun:}t key='admin_01039'{/yun}";
+            self.addGroupTitle = lc('admin_01039');
             self.addGroupShow = true;
         },
         closeGroupAdd: function () {

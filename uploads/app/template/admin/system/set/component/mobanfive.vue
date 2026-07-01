@@ -1,6 +1,6 @@
 <template>
     <div>
-        {yun:}t key='admin_00939'{/yun}
+        {{ lc('admin_00939') }}
     </div>
 </template>
     

@@ -6,72 +6,72 @@
                 <table class="tableVue">
                     <thead>
                         <tr align="left">
-                            <th width="200">{yun:}t key='member_com_00021'{/yun}</th>
-                            <th width="440">{yun:}t key='member_user_00181'{/yun}</th>
-                            <th>{yun:}t key='member_com_00207'{/yun}</th>
+                            <th width="200">{{ lc('member_com_00021') }}</th>
+                            <th width="440">{{ lc('member_user_00181') }}</th>
+                            <th>{{ lc('member_com_00207') }}</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
                             <td>
-                                <div class="TableTite">{yun:}t key='admin_01238'{/yun}</div>
+                                <div class="TableTite">{{ lc('admin_01238') }}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
                                     <el-autocomplete v-model="save.username" :fetch-suggestions="remoteMethod"
-                                        placeholder="{yun:}t key='wap_user_00076'{/yun}" :trigger-on-focus="false" @select="usernameChange"
+                                        :placeholder="lc('wap_user_00076')" :trigger-on-focus="false" @select="usernameChange"
                                         size="small"></el-autocomplete>
                                 </div>
                             </td>
                             <td>
                                 <div class="TableShuom">
-                                    <span>{yun:}t key='admin_01239'{/yun}</span>
+                                    <span>{{ lc('admin_01239') }}</span>
                                 </div>
                             </td>
                         </tr>
                         <tr>
                             <td>
-                                <div class="TableTite">{yun:}t key='admin_01240'{/yun}</div>
+                                <div class="TableTite">{{ lc('admin_01240') }}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
                                     <el-autocomplete v-model="save.comname" :fetch-suggestions="remoteMethodCom"
-                                        placeholder="{yun:}t key='wap_user_00076'{/yun}" :trigger-on-focus="false" @select="comnameChange"
+                                        :placeholder="lc('wap_user_00076')" :trigger-on-focus="false" @select="comnameChange"
                                         size="small"></el-autocomplete>
                                 </div>
                             </td>
                             <td>
                                 <div class="TableShuom">
-                                    <span>{yun:}t key='admin_01240'{/yun}</span>
+                                    <span>{{ lc('admin_01240') }}</span>
                                 </div>
                             </td>
                         </tr>
                         <tr>
                             <td>
-                                <div class="TableTite">{yun:}t key='admin_01241'{/yun}</div>
+                                <div class="TableTite">{{ lc('admin_01241') }}</div>
                             </td>
                             <td>
                                 <div class="TableButn">
                                     <el-radio-group v-model="save.leijia" @change="leijiaFun">
-                                        <el-radio label="1">{yun:}t key='common.yes'{/yun} </el-radio>
-                                        <el-radio label="2">{yun:}t key='common.no'{/yun}</el-radio>
+                                        <el-radio label="1">{{ lc('common.yes') }} </el-radio>
+                                        <el-radio label="2">{{ lc('common.no') }}</el-radio>
                                     </el-radio-group>
                                 </div>
                             </td>
                             <td>
                                 <div class="TableShuom">
-                                    <span>{yun:}t key='admin_01241'{/yun}</span>
+                                    <span>{{ lc('admin_01241') }}</span>
                                 </div>
                             </td>
                         </tr>
                         <tr v-if="leijiaStatus">
                             <td>
-                                <div class="TableTite">{yun:}t key='admin_01242'{/yun}</div>
+                                <div class="TableTite">{{ lc('admin_01242') }}</div>
                             </td>
                             <td>
                                 <div class="TableButn">
                                     <span style="margin-right: 10px;">{{ lc("admin_package_name_value", [package_data.rating_name]) }}</span>
-                                    <span style="margin-right: 10px;">{yun:}t key='admin_01243'{/yun}
+                                    <span style="margin-right: 10px;">{{ lc('admin_01243') }}
                                         <span v-if="expireTimeStatus" style="color: red">{{ package_data.time_ymd }}</span>
                                         <span v-else>{{ package_data.time_ymd }}</span>
                                     </span>
@@ -82,11 +82,11 @@
                         </tr>
                         <tr>
                             <td>
-                                <div class="TableTite">{yun:}t key='admin_01244'{/yun}</div>
+                                <div class="TableTite">{{ lc('admin_01244') }}</div>
                             </td>
                             <td>
                                 <div class="TableSelect" style="display: flex;align-items: center;">
-                                    <el-select v-model="save.ratingid" placeholder="{yun:}t key='wap_user_00100'{/yun}" @change="ratingFun">
+                                    <el-select v-model="save.ratingid" :placeholder="lc('wap_user_00100')" @change="ratingFun">
                                         <el-option v-for="item in ratinglist" :key="item.id" :label="item.name"
                                             :value="item.id">
                                         </el-option>
@@ -102,12 +102,12 @@
                         </tr>
                         <tr>
                             <td>
-                                <div class="TableTite">{yun:}t key='admin_01245'{/yun}</div>
+                                <div class="TableTite">{{ lc('admin_01245') }}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
                                     <el-input v-model="save.taocanshijian" placeholder=" " disabled>
-                                        <span slot="suffix" class="slotspan">{yun:}t key='common_02067'{/yun}</span>
+                                        <span slot="suffix" class="slotspan">{{ lc('common_02067') }}</span>
                                     </el-input>
                                 </div>
                             </td>
@@ -119,12 +119,12 @@
                         </tr>
                         <tr>
                             <td>
-                                <div class="TableTite">{yun:}t key='wap_00563'{/yun}</div>
+                                <div class="TableTite">{{ lc('wap_00563') }}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
                                     <el-input v-model="save.vipprice" placeholder=" ">
-                                        <span slot="suffix" class="slotspan">{yun:}t key='common_02056'{/yun}</span>
+                                        <span slot="suffix" class="slotspan">{{ lc('common_02056') }}</span>
                                     </el-input>
                                 </div>
                             </td>
@@ -136,11 +136,11 @@
                         </tr>
                         <tr>
                             <td>
-                                <div class="TableTite">{yun:}t key='admin_user_company_00052'{/yun}</div>
+                                <div class="TableTite">{{ lc('admin_user_company_00052') }}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
-                                    <el-date-picker v-model="save.vipetime" type="date" placeholder="{yun:}t key='admin_00346'{/yun}"
+                                    <el-date-picker v-model="save.vipetime" type="date" :placeholder="lc('admin_00346')"
                                         @change="changeDate" :picker-options="pickerOptions">
                                     </el-date-picker>
                                 </div>
@@ -153,11 +153,11 @@
                         </tr>
                         <tr>
                             <td>
-                                <div class="TableTite">{yun:}t key='admin_01246'{/yun}</div>
+                                <div class="TableTite">{{ lc('admin_01246') }}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
-                                    <el-input type="textarea" :rows="2" placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="save.remark">
+                                    <el-input type="textarea" :rows="2" :placeholder="lc('wap_user_00076')" v-model="save.remark">
                                     </el-input>
                                 </div>
                             </td>
@@ -171,7 +171,7 @@
                 </table>
             </div>
             <div class="setBasicButn" style="border: none;">
-                <el-button type="primary" size="medium" @click="saveFun" :disabled="submitLoading">{yun:}t key='admin_01247'{/yun}</el-button>
+                <el-button type="primary" size="medium" @click="saveFun" :disabled="submitLoading">{{ lc('admin_01247') }}</el-button>
             </div>
         </div>
     </div>
@@ -274,7 +274,7 @@ module.exports = {
             let vipetime = item.vipetime;
             let vipetime_ymd = item.vipetime_ymd;
             let $time = parseInt(Date.now() / 1000);
-            if (vipetime_ymd == '{yun:}t key='common_01936'{/yun}' || vipetime > $time) {
+            if (vipetime_ymd == lc('common_01936') || vipetime > $time) {
                 this.expireTimeStatus = false;
             } else {
                 this.expireTimeStatus = true;
@@ -324,7 +324,7 @@ module.exports = {
             let vipetime = item.vipetime;
             let vipetime_ymd = item.vipetime_ymd;
             let $time = parseInt(Date.now() / 1000);
-            if (vipetime_ymd == '{yun:}t key='common_01936'{/yun}' || vipetime > $time) {
+            if (vipetime_ymd == lc('common_01936') || vipetime > $time) {
                 this.expireTimeStatus = false;
             } else {
                 this.expireTimeStatus = true;
@@ -355,7 +355,7 @@ module.exports = {
         leijiaFun: function () {
             let leijia = this.save.leijia;
             if (!this.save.comname) {
-                message.error("{yun:}t key='admin_yunying_00090'{/yun}");
+                message.error(lc('admin_yunying_00090'));
                 return;
             }
             if (!this.save.username) {
@@ -383,7 +383,7 @@ module.exports = {
                 }
             } else {
                 if (!this.save.comname) {
-                    message.error("{yun:}t key='admin_yunying_00090'{/yun}");
+                    message.error(lc('admin_yunying_00090'));
                     return;
                 }
                 if (!this.save.username) {
@@ -399,7 +399,7 @@ module.exports = {
         saveFun: function () {
 
             if (!this.save.comname) {
-                message.error("{yun:}t key='admin_yunying_00090'{/yun}");
+                message.error(lc('admin_yunying_00090'));
                 return;
             }
             if (!this.save.username) {
@@ -408,7 +408,7 @@ module.exports = {
             }
 
             if (!this.save.ratingid) {
-                message.error("{yun:}t key='admin_yunying_00091'{/yun}");
+                message.error(lc('admin_yunying_00091'));
                 return;
             }
             let url = this.uri + "finance_recharge&a=comvip";

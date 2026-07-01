@@ -2,24 +2,24 @@
     <div class="moduleElHight" style="margin-left:10px;">
         <div class="moduleSeachbig">
             <div class="tableSeachInpt">
-                <el-input placeholder="{yun:}t key='admin_user_00158'{/yun}" size="small" v-model="search_params.keyword"
+                <el-input :placeholder="lc('admin_user_00158')" size="small" v-model="search_params.keyword"
                           clearable prefix-icon="el-icon-search">
                 </el-input>
             </div>
             <div class="tableSeachInpt">
                 <div class="block">
                     <el-cascader  v-model="sel_jobtype" :options="joboptions" :props="{ checkStrictly: true }"
-                                 clearable placeholder="{yun:}t key='admin_user_company_00377'{/yun}" size="small" filterable></el-cascader>
+                                 clearable :placeholder="lc('admin_user_company_00377')" size="small" filterable></el-cascader>
                 </div>
             </div>
             <div class=" tableSeachInpt">
                 <div class="block">
                     <el-cascader  v-model="sel_city" :options="cityoptions" :props="{ checkStrictly: true }"
-                                 clearable placeholder="{yun:}t key='member_user_00198'{/yun}" size="small" filterable></el-cascader>
+                                 clearable :placeholder="lc('member_user_00198')" size="small" filterable></el-cascader>
                 </div>
             </div>
             <div class="tableSeachInpt">
-                <el-button type="primary" icon="el-icon-search" size="mini" @click="search">{yun:}t key='admin_user_weipin_00049'{/yun}</el-button>
+                <el-button type="primary" icon="el-icon-search" size="mini" @click="search">{{ lc('admin_user_weipin_00049') }}</el-button>
             </div>
         </div>
         <div class="moduleElTable"
@@ -28,8 +28,8 @@
                       :header-cell-style="{ background: '#f5f7fa', color: '#606266' }"
                       @selection-change="handleSelectionChange" ref="multipleTable" height="100%" v-loading="loading" :empty-text="emptytext">
                 <el-table-column type="selection" width="55"></el-table-column>
-                <el-table-column prop="id" label="{yun:}t key='member_com_00012'{/yun}" width="90"></el-table-column>
-                <el-table-column label="{yun:}t key='admin_00766'{/yun}" width="210">
+                <el-table-column prop="id" :label="lc('member_com_00012')" width="90"></el-table-column>
+                <el-table-column :label="lc('admin_00766')" width="210">
                     <template slot-scope="scope">
                         <div class=" ">
                             <div class="username">
@@ -45,17 +45,17 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="{yun:}t key='wap_00456'{/yun}" >
+                <el-table-column :label="lc('wap_00456')" >
                     <template slot-scope="scope">
                         <div class=" ">
                             <div class="user_resumejob">
                                 <span @click="openPreview(scope.row)">{{ scope.row.name }}</span>
-                                <span v-if="scope.row.defaults == 1" class="user_resumrmr">{yun:}t key='wap_js_00098'{/yun}</span>
+                                <span v-if="scope.row.defaults == 1" class="user_resumrmr">{{ lc('wap_js_00098') }}</span>
                             </div>
                             <div class="">
-                                {yun:}t key='admin_00496'{/yun}
-                                <span v-if="scope.row.edu_n">{yun:}t key='admin_00497'{/yun}</span>
-                                <span v-if="scope.row.exp_n">{yun:}t key='admin_00498'{/yun}</span>
+                                {{ lc('admin_00496') }}
+                                <span v-if="scope.row.edu_n">{{ lc('admin_00497') }}</span>
+                                <span v-if="scope.row.exp_n">{{ lc('admin_00498') }}</span>
                             </div>
                             <div class="">
                                 <span class="gsd">
@@ -71,30 +71,30 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="{yun:}t key='admin_00509'{/yun}" width="130" align="center">
+                <el-table-column :label="lc('admin_00509')" width="130" align="center">
                     <template slot-scope="scope">
                         <div class=" ">
                             <el-progress type="circle" :percentage="parseInt(scope.row.integrity)" :width="45"></el-progress>
                         </div>
                         <div v-if="scope.row.status == 1" class="jlzt">
-                            <i class="el-icon-unlock"></i> {yun:}t key='wap_js_00005'{/yun}
+                            <i class="el-icon-unlock"></i> {{ lc('wap_js_00005') }}
                         </div>
                         <div v-else-if="scope.row.status == 3" class="jlzt">
-                            <i class="el-icon-unlock"></i> {yun:}t key='admin_user_00249'{/yun}
+                            <i class="el-icon-unlock"></i> {{ lc('admin_user_00249') }}
                         </div>
                         <div v-else class="jlwgk jlzt">
-                            <i class="el-icon-lock"></i> {yun:}t key='admin_user_00253'{/yun}
+                            <i class="el-icon-lock"></i> {{ lc('admin_user_00253') }}
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="{yun:}t key='admin_00510'{/yun}" width="80" align="center">
+                <el-table-column :label="lc('admin_00510')" width="80" align="center">
                     <template slot-scope="scope">
                         <div class="moduleProps">
                             {{ scope.row.sq_num ? scope.row.sq_num : 0 }}
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column prop="logintime" label="{yun:}t key='admin_00767'{/yun}" width="150">
+                <el-table-column prop="logintime" :label="lc('admin_00767')" width="150">
                     <template slot-scope="scope">
                         <div class="moduleProps">
                             <span>{{ scope.row.ctime_n }}</span>
@@ -102,11 +102,11 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="{yun:}t key='member_user_00048'{/yun}" width="140" fixed="right">
+                <el-table-column :label="lc('member_user_00048')" width="140" fixed="right">
                     <template slot-scope="scope">
                         <div class="cz_button">
-                            <el-button type="small  " size=" " plain @click="sendOrToudi(scope.row.id,scope.row.uid,'0', 1)">{yun:}t key='admin_user_company_00379'{/yun}</el-button>
-                            <el-button type="small  " size=" " plain @click="sendOrToudi(scope.row.id,scope.row.uid,'0', 2)">{yun:}t key='admin_user_company_00378'{/yun}</el-button>
+                            <el-button type="small  " size=" " plain @click="sendOrToudi(scope.row.id,scope.row.uid,'0', 1)">{{ lc('admin_user_company_00379') }}</el-button>
+                            <el-button type="small  " size=" " plain @click="sendOrToudi(scope.row.id,scope.row.uid,'0', 2)">{{ lc('admin_user_company_00378') }}</el-button>
                         </div>
                     </template>
                 </el-table-column>
@@ -114,9 +114,9 @@
         </div>
         <div class="modulePaging">
             <div>
-                <el-checkbox v-model="checkedAll" @change="selectAllBottom">{yun:}t key='wap_js_00074'{/yun}</el-checkbox>
-                <el-button @click="directs(1)" size="mini">{yun:}t key='admin_user_company_00376'{/yun}</el-button>
-                <el-button  @click="directs(2)" size="mini">{yun:}t key='admin_user_company_00375'{/yun}</el-button>
+                <el-checkbox v-model="checkedAll" @change="selectAllBottom">{{ lc('wap_js_00074') }}</el-checkbox>
+                <el-button @click="directs(1)" size="mini">{{ lc('admin_user_company_00376') }}</el-button>
+                <el-button  @click="directs(2)" size="mini">{{ lc('admin_user_company_00375') }}</el-button>
             </div>
             <div class="modulePagNum">
                 <el-pagination background @size-change="handleSizeChange"
@@ -129,10 +129,10 @@
         </div>
         <!-- 批量推荐进度弹窗 -->
         <div class="tck_setbox">
-            <el-dialog :title="cztype+'{yun:}t key=\'admin_company_00042\'{/yun}'" :visible.sync="showprogress" :with-header="true" append-to-body
+            <el-dialog :title="cztype + lc('admin_company_00042')" :visible.sync="showprogress" :with-header="true" append-to-body
                        :modal-append-to-body="false" :show-close="true" width="200px">
                 <div class="code_img" style="display:flex;justify-content: center;margin-bottom: 20px;">
-                    <span style="margin-bottom: 10px;">{yun:}t key='admin_00765'{/yun}</span>
+                    <span style="margin-bottom: 10px;">{{ lc('admin_00765') }}</span>
                 </div>
             </el-dialog>
         </div>
@@ -158,7 +158,7 @@ module.exports = {
     data: function () {
         return {
             loading: false,
-            emptytext: "{yun:}t key='wap_js_00113'{/yun}",
+            emptytext: lc('wap_js_00113'),
             checkedAllIndeterminate: false,
             seachbutn: true,
             tableHig: true,
@@ -234,13 +234,13 @@ module.exports = {
 
     },
     methods: {
-        // {yun:}t key='admin_user_company_00376'{/yun}、{yun:}t key='admin_user_company_00378'{/yun}
+        // {{ lc('admin_user_company_00376') }}、{{ lc('admin_user_company_00378') }}
         directs:function (cz_type) {
             var that= this
             if (cz_type == 1) {
-                that.cztype = "{yun:}t key='admin_user_company_00379'{/yun}"
+                that.cztype = lc('admin_user_company_00379')
             } else if (cz_type == 2) {
-                that.cztype = "{yun:}t key='admin_user_company_00378'{/yun}"
+                that.cztype = lc('admin_user_company_00378')
             }
             if (!this.selectedItem.length) {
                 message.error(lc("admin_company_00043", [that.cztype]));
@@ -254,7 +254,7 @@ module.exports = {
                         that.sendOrToudi(item.id, item.uid, that.selectedItem.length, cz_type)
                     }
                 })
-            }, "{yun:}t key='common.confirm'{/yun}" + that.cztype + "{yun:}t key='member_com_00286'{/yun}")
+            }, lc('common.confirm') + that.cztype + lc('member_com_00286'))
         },
         async sendOrToudi(eid, uid, type, cz_type) {//type=0单条发送，其他数组为批量发送总数量
             var that = this
@@ -265,15 +265,15 @@ module.exports = {
                 uid: uid
             }
             var url = '', msgtype = '"
-            if (cz_type == 1) {// {yun:}t key='admin_user_company_00379'{/yun}
+            if (cz_type == 1) {// {{ lc('admin_user_company_00379') }}
                 url = "m=user&c=company&a=directrecom'
-                msgtype = "{yun:}t key='admin_user_company_00379'{/yun}"
+                msgtype = lc('admin_user_company_00379')
             } else if (cz_type == 2) {// 投递
                 url = 'm=user&c=company_job&a=applyJob'
-                msgtype = "{yun:}t key='admin_user_company_00378'{/yun}"
+                msgtype = lc('admin_user_company_00378')
             }
             if (url == '') {
-                message.error("{yun:}t key='model_00001'{/yun}")
+                message.error(lc('model_00001'))
                 return false
             }
             if (type == 0) {
@@ -295,7 +295,7 @@ module.exports = {
                     if (res.error == 0) {
                         that.sendnum++
                         if (that.sendnum == that.selectedItem.length) {
-                            message.success(msgtype + "{yun:}t key='wap_js_00104'{/yun}", function(){
+                            message.success(msgtype + lc('wap_js_00104'), function(){
                                 that.getList()
                                 that.showprogress = false
                             })
@@ -366,7 +366,7 @@ module.exports = {
                 params.id = that.jobinfo.id
             }
             that.loading = true;
-            that.emptytext = "{yun:}t key='admin_user_weipin_00026'{/yun}";
+            that.emptytext = lc('admin_user_weipin_00026');
             httpPost('m=user&c=company_job&a=matching', params, {hideloading: true}).then(function (result) {
                 var res = result.data
                 if (res.error == 0) {
@@ -380,7 +380,7 @@ module.exports = {
                     }
                     that.loading = false;
                     if (that.tableData.length === 0){
-                        that.emptytext = "{yun:}t key='wap_js_00113'{/yun}";
+                        that.emptytext = lc('wap_js_00113');
                     }
                 }
             }).catch(function (e) {

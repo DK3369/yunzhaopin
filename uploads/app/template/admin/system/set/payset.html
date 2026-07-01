@@ -8,7 +8,7 @@
     <div id="moduapp" class="moduleDome">
         <div class="moduleHeadr">
             <h3>{{ lc('admin_system_00527') }}</h3>
-            <span>{{ lc('admin_html_00005') }}</span>
+            <span>{{ lc('admin_system_00475') }}</span>
         </div>
         <div class="playModule">
             <div class="playModuleList">
@@ -63,7 +63,7 @@
                 </div>
                 <div class="playModuLay">
                     <span>{{ lc('admin_system_00499') }}<br>
-                        {{ lc('admin_html_00006') }}</span>
+                        {{ lc('admin_system_00480') }}</span>
                 </div>
                 <!--<div class="playModuLink">-->
                     <!--<a href="">立即在线申请</a>-->
@@ -387,7 +387,7 @@
                 async getInfo() {
                     var that = this
                     that.loading = true;
-                    that.emptytext = "数据加载中";
+                    that.emptytext = lc('admin_user_weipin_00026');
                     let res = await httpPost('m=system&c=set_payset&a=index', {});
                     if (res.data.error == 0) {
                         let data = res.data.data;
@@ -397,7 +397,7 @@
                         that.bankrows = data.bankrows;
                         that.loading = false;
                         if (that.bankrows.length === 0){
-                            that.emptytext = "暂无数据";
+                            that.emptytext = lc('wap_js_00113');
                         }
                     }
                 },

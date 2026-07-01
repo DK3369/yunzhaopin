@@ -4,27 +4,27 @@
         <div class="moduleElSearchInf" v-if="cansearch">
             <div class="moduleElTabInpt" style="flex-wrap: wrap;">
                 <div class="moduleInptList">
-                    <el-input placeholder="{yun:}t key='admin_user_weipin_00003'{/yun}" @keyup.enter.native="handleSearch" size="small" v-model="searchForm.keyword" class="input-with-select" clearable>
-                        <el-select v-model="searchForm.type" slot="prepend" placeholder="{yun:}t key='wap_00529'{/yun}">
-                            <el-option label="{yun:}t key='wap_00529'{/yun}" value="1"></el-option>
-                            <el-option label="{yun:}t key='admin_00598'{/yun}" value="2"></el-option>
-                            <el-option label="{yun:}t key='admin_00554'{/yun}" value="4"></el-option>
+                    <el-input :placeholder="lc('admin_user_weipin_00003')" @keyup.enter.native="handleSearch" size="small" v-model="searchForm.keyword" class="input-with-select" clearable>
+                        <el-select v-model="searchForm.type" slot="prepend" :placeholder="lc('wap_00529')">
+                            <el-option :label="lc('wap_00529')" value="1"></el-option>
+                            <el-option :label="lc('admin_00598')" value="2"></el-option>
+                            <el-option :label="lc('admin_00554')" value="4"></el-option>
                         </el-select>
                     </el-input>
                 </div>
                 <div class="moduleInptList">
-                    <el-select v-model="searchForm.browse" size="small" slot="prepend" placeholder="{yun:}t key='admin_user_00250'{/yun}" clearable @change="handleSearch">
-                        <el-option label="{yun:}t key='wap_user_00260'{/yun}" value="1"></el-option>
-                        <el-option label="{yun:}t key='wap_user_00258'{/yun}" value="2"></el-option>
-                        <el-option label="{yun:}t key='wap_com_00190'{/yun}" value="3"></el-option>
-                        <el-option label="{yun:}t key='wap_user_00257'{/yun}" value="4"></el-option>
+                    <el-select v-model="searchForm.browse" size="small" slot="prepend" :placeholder="lc('admin_user_00250')" clearable @change="handleSearch">
+                        <el-option :label="lc('wap_user_00260')" value="1"></el-option>
+                        <el-option :label="lc('wap_user_00258')" value="2"></el-option>
+                        <el-option :label="lc('wap_com_00190')" value="3"></el-option>
+                        <el-option :label="lc('wap_user_00257')" value="4"></el-option>
                     </el-select>
                 </div>
                 <div class="tableSeachInpt tableSeachInptsmalltwo">
-                    <el-date-picker v-model="searchForm.times" type="daterange" align="right" unlink-panels range-separator="{yun:}t key='admin_company_00019'{/yun}" start-placeholder="{yun:}t key='admin_00599'{/yun}" end-placeholder="{yun:}t key='admin_00600'{/yun}" :picker-options="timeOptions" value-format="yyyy-MM-dd" size="small" @change="handleTimeChange"></el-date-picker>
+                    <el-date-picker v-model="searchForm.times" type="daterange" align="right" unlink-panels :range-separator="lc('admin_company_00019')" :start-placeholder="lc('admin_00599')" :end-placeholder="lc('admin_00600')" :picker-options="timeOptions" value-format="yyyy-MM-dd" size="small" @change="handleTimeChange"></el-date-picker>
                 </div>
                 <div class="tableSeachInpt">
-                    <el-button type="primary" icon="el-icon-search" size="mini" @click="handleSearch">{yun:}t key='admin_user_weipin_00049'{/yun}</el-button>
+                    <el-button type="primary" icon="el-icon-search" size="mini" @click="handleSearch">{{ lc('admin_user_weipin_00049') }}</el-button>
                 </div>
             </div>
         </div>
@@ -36,41 +36,41 @@
                     <p>{{dataText}}</p>
                 </template>
                 <el-table-column type="selection" width="55"></el-table-column>
-                <el-table-column prop="id" label="{yun:}t key='member_com_00345'{/yun}" sortable="custom" width="80"></el-table-column>
-                <el-table-column prop="realname" label="{yun:}t key='wap_00529'{/yun}">
+                <el-table-column prop="id" :label="lc('member_com_00345')" sortable="custom" width="80"></el-table-column>
+                <el-table-column prop="realname" :label="lc('wap_00529')">
                     <template slot-scope="scope">
                         <el-link type="primary" :underline="false" @click="handlePreview(scope)">{{ scope.row.realname }}</el-link>
                     </template>
                 </el-table-column>
-                <el-table-column prop="jobname" label="{yun:}t key='admin_00552'{/yun}" min-width="150" show-overflow-tooltip>
+                <el-table-column prop="jobname" :label="lc('admin_00552')" min-width="150" show-overflow-tooltip>
                     <template slot-scope="scope">
                         <el-link :href="scope.row.job_url" target="_blank" type="primary">{{ scope.row.jobname }}</el-link>
                     </template>
                 </el-table-column>
-                <el-table-column prop="fname" label="{yun:}t key='admin_00598'{/yun}" min-width="100" show-overflow-tooltip>
+                <el-table-column prop="fname" :label="lc('admin_00598')" min-width="100" show-overflow-tooltip>
                     <template slot-scope="scope">
                         <el-link :href="scope.row.com_url" target="_blank" type="primary">{{ scope.row.fname }}</el-link>
                     </template>
                 </el-table-column>
-                <el-table-column prop="content" label="{yun:}t key='admin_00601'{/yun}" min-width="150" show-overflow-tooltip></el-table-column>
-                <el-table-column prop="datetime" sortable="custom" label="{yun:}t key='admin_00602'{/yun}" width="170">
+                <el-table-column prop="content" :label="lc('admin_00601')" min-width="150" show-overflow-tooltip></el-table-column>
+                <el-table-column prop="datetime" sortable="custom" :label="lc('admin_00602')" width="170">
                     <template slot-scope="scope">{{ scope.row.datetime_n }}</template>
                 </el-table-column>
-                <el-table-column prop="is_browse" label="{yun:}t key='admin_user_00250'{/yun}" width="100">
+                <el-table-column prop="is_browse" :label="lc('admin_user_00250')" width="100">
                     <template slot-scope="scope">
                         <div class="admin_state">
-                            <span v-if="scope.row.is_browse == 1" class="admin_state2">{yun:}t key='wap_user_00260'{/yun}</span>
-                            <span v-else-if="scope.row.is_browse == 2" class="admin_state1">{yun:}t key='wap_user_00258'{/yun}</span>
-                            <span v-else-if="scope.row.is_browse == 3" class="admin_state5">{yun:}t key='wap_com_00190'{/yun}</span>
-                            <span v-else-if="scope.row.is_browse == 4" class="admin_state4">{yun:}t key='wap_user_00257'{/yun}</span>
+                            <span v-if="scope.row.is_browse == 1" class="admin_state2">{{ lc('wap_user_00260') }}</span>
+                            <span v-else-if="scope.row.is_browse == 2" class="admin_state1">{{ lc('wap_user_00258') }}</span>
+                            <span v-else-if="scope.row.is_browse == 3" class="admin_state5">{{ lc('wap_com_00190') }}</span>
+                            <span v-else-if="scope.row.is_browse == 4" class="admin_state4">{{ lc('wap_user_00257') }}</span>
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column prop="isdel_n" label="{yun:}t key='member_user_00181'{/yun}" width="130"></el-table-column>
-                <el-table-column label="{yun:}t key='member_user_00048'{/yun}" width="80" fixed="right">
+                <el-table-column prop="isdel_n" :label="lc('member_user_00181')" width="130"></el-table-column>
+                <el-table-column :label="lc('member_user_00048')" width="80" fixed="right">
                     <template slot-scope="scope">
                         <div class="cz_button">
-                            <el-button type="danger" size="mini" @click="deleteRow(scope)">{yun:}t key='common.delete'{/yun}</el-button>
+                            <el-button type="danger" size="mini" @click="deleteRow(scope)">{{ lc('common.delete') }}</el-button>
                         </div>
                     </template>
                 </el-table-column>
@@ -78,8 +78,8 @@
         </div>
         <div class="modulePaging">
             <div>
-                <el-checkbox :indeterminate="isIndeterminate" v-model="checked" @change="selectAllBottom" style="margin-right: 8px">{yun:}t key='wap_js_00074'{/yun}</el-checkbox>
-                <el-button @click="deleteRow(null, true)" size="mini">{yun:}t key='member_com_00055'{/yun}</el-button>
+                <el-checkbox :indeterminate="isIndeterminate" v-model="checked" @change="selectAllBottom" style="margin-right: 8px">{{ lc('wap_js_00074') }}</el-checkbox>
+                <el-button @click="deleteRow(null, true)" size="mini">{{ lc('member_com_00055') }}</el-button>
             </div>
             <div class="modulePagNum">
                 <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
@@ -89,7 +89,7 @@
             </div>
         </div>
         <div class="modluDrawer">
-            <el-drawer title="{yun:}t key='member_user_00037'{/yun}" :append-to-body="true" :visible.sync="resumePreviewVisible" :destroy-on-close="true" size="530px">
+            <el-drawer :title="lc('member_user_00037')" :append-to-body="true" :visible.sync="resumePreviewVisible" :destroy-on-close="true" size="530px">
                 <resume_preview :id="info.eid" :uid="info.uid"></resume_preview>
             </el-drawer>
         </div>
@@ -137,7 +137,7 @@ module.exports = {
     data: function () {
         return {
             loading: true,
-            dataText: "{yun:}t key='admin_user_weipin_00026'{/yun}",
+            dataText: lc('admin_user_weipin_00026'),
             searchClass: '',
             searchForm: {
                 page: 1,
@@ -151,7 +151,7 @@ module.exports = {
             },
             timeOptions: {
                 shortcuts: [{
-                    text: "{yun:}t key='common_02000'{/yun}",
+                    text: lc('common_02000'),
                     onClick(picker) {
                         const end = new Date();
                         const start = new Date();
@@ -160,35 +160,35 @@ module.exports = {
                         picker.$emit('pick', [start, end]);
                     }
                 }, {
-                    text: "{yun:}t key='common_01940'{/yun}",
+                    text: lc('common_01940'),
                     onClick(picker) {
                         const end = new Date();
                         const start = new Date();
                         picker.$emit('pick', [start, end]);
                     }
                 }, {
-                    text: "{yun:}t key='admin_user_00146'{/yun}",
+                    text: lc('admin_user_00146'),
                     onClick(picker) {
                         const start = new Date(new Date().setHours(0, 0, 0) - (new Date().getDay() - 1) * 24 * 60 * 60 * 1000);
                         const end = new Date();
                         picker.$emit('pick', [start, end]);
                     }
                 }, {
-                    text: "{yun:}t key='admin_user_00142'{/yun}",
+                    text: lc('admin_user_00142'),
                     onClick(picker) {
                         const start = new Date(new Date().setHours(0, 0, 0) - (new Date().getDay() + 6) * 24 * 60 * 60 * 1000);
                         const end = new Date(new Date().setHours(0, 0, 0) + (0 - new Date().getDay()) *24 * 60 * 60 *1000);
                         picker.$emit('pick', [start, end]);
                     }
                 }, {
-                    text: "{yun:}t key='admin_user_00147'{/yun}",
+                    text: lc('admin_user_00147'),
                     onClick(picker) {
                         const end = new Date();
                         const start = new Date(new Date(new Date().getFullYear(), new Date().getMonth(), 1).setHours(0, 0, 0));
                         picker.$emit('pick', [start, end]);
                     }
                 }, {
-                    text: "{yun:}t key='admin_user_00143'{/yun}",
+                    text: lc('admin_user_00143'),
                     onClick(picker) {
                         const end = new Date(new Date(new Date().getFullYear(), new Date().getMonth(), 0).setHours(23, 59, 59, 59));
                         const start = new Date(new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1).setHours(0, 0, 0));
@@ -200,7 +200,7 @@ module.exports = {
             tableData: [],
             pageSizes: [],
             tableHig: true,
-            checked: false,//{yun:}t key='wap_js_00074'{/yun}
+            checked: false,//{{ lc('wap_js_00074') }}
             isIndeterminate: false,// checkbox 的不确定状态
             selectedItem: [],
             info: {},
@@ -355,7 +355,7 @@ module.exports = {
                         _this.$refs.multipleTable.bodyWrapper.scrollTop = 0;
                     }
                     if (_this.tableData.length === 0) {
-                        _this.dataText = "{yun:}t key='wap_js_00113'{/yun}";
+                        _this.dataText = lc('wap_js_00113');
                     }
                 }
             }).catch(function (error) {
@@ -366,7 +366,7 @@ module.exports = {
             let params = {};
             if (isMore) {
                 if (!this.selectedItem.length) {
-                    message.error("{yun:}t key='admin_user_weipin_00005'{/yun}");
+                    message.error(lc('admin_user_weipin_00005'));
                     return false;
                 }
                 let list = [];
@@ -387,10 +387,10 @@ module.exports = {
             httpPost('m=user&c=company_comlog&a=deluseridmsg', params).then(function (response) {
                 let res = response.data;
                 if (res.error === 0) {
-                    message.success("{yun:}t key='admin_user_00187'{/yun}");
+                    message.success(lc('admin_user_00187'));
                     _this.getList();
                 } else {
-                    message.error("{yun:}t key='admin_user_00186'{/yun}");
+                    message.error(lc('admin_user_00186'));
                 }
             }).catch(function (error) {
                 console.log(error);

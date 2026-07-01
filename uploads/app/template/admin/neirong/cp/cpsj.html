@@ -216,7 +216,7 @@
                     params.t = that.sort_col
                 }
                 that.loading  = true;
-                that.emptytext = "数据加载中";
+                that.emptytext = lc('admin_user_weipin_00026');
                 httpPost('m=neirong&c=evaluate&a=index', params, {hideloading: true}).then(function (result) {
                     var res = result.data
                     if (res.error == 0) {
@@ -230,7 +230,7 @@
                         }
                         that.loading = false;
                         if (that.tableData.length === 0){
-                            that.emptytext = "暂无数据";
+                            that.emptytext = lc('wap_js_00113');
                         }
                     }
                 }).catch(function (e) {

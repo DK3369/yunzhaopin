@@ -1,19 +1,19 @@
 <template>
     <div class="moduleElHight">
         <div class="tableDome_tip">
-            <el-alert title="{yun:}t key='admin_tool_00603'{/yun}" type="success" :closable="false">
+            <el-alert :title="lc('admin_tool_00603')" type="success" :closable="false">
             </el-alert>
         </div>
         <div class="moduleSeachs">
             <div class="moduleSeachleft">
 
                 <div class="tableSeachInpt" style="margin-bottom: 0px;;">
-                    <el-input placeholder="{yun:}t key='admin_00340'{/yun}" v-model="keyword" size="small" prefix-icon="el-icon-search"
+                    <el-input :placeholder="lc('admin_00340')" v-model="keyword" size="small" prefix-icon="el-icon-search"
                               clearable>
                     </el-input>
                 </div>
                 <div class="tableSeachInpt" style="margin-bottom: 0px;;">
-                    <el-button type="primary" icon="el-icon-search" size="mini" @click="search">{yun:}t key='admin_user_weipin_00049'{/yun}</el-button>
+                    <el-button type="primary" icon="el-icon-search" size="mini" @click="search">{{ lc('admin_user_weipin_00049') }}</el-button>
                 </div>
             </div>
         </div>
@@ -25,13 +25,13 @@
                       :empty-text="emptytext">
                 <el-table-column type="selection" width="55">
                 </el-table-column>
-                <el-table-column prop="id" label="{yun:}t key='member_com_00345'{/yun}" width="80">
+                <el-table-column prop="id" :label="lc('member_com_00345')" width="80">
                 </el-table-column>
-                <el-table-column prop="key_name" label="{yun:}t key='admin_tool_00574'{/yun}">
+                <el-table-column prop="key_name" :label="lc('admin_tool_00574')">
                 </el-table-column>
-                <el-table-column prop="num" label="{yun:}t key='admin_system_00446'{/yun}">
+                <el-table-column prop="num" :label="lc('admin_system_00446')">
                 </el-table-column>
-                <el-table-column prop="wxtime_n" label="{yun:}t key='admin_tool_00602'{/yun}" width="180">
+                <el-table-column prop="wxtime_n" :label="lc('admin_tool_00602')" width="180">
                 </el-table-column>
             </el-table>
 
@@ -40,8 +40,8 @@
 
         <div class="modulePaging">
             <div class="modulecz">
-                <el-checkbox v-model="allchecked" @change="allcheckChange">{yun:}t key='wap_js_00074'{/yun}</el-checkbox>
-                <el-button size="mini" @click="deleteAll">{yun:}t key='member_com_00055'{/yun}</el-button>
+                <el-checkbox v-model="allchecked" @change="allcheckChange">{{ lc('wap_js_00074') }}</el-checkbox>
+                <el-button size="mini" @click="deleteAll">{{ lc('member_com_00055') }}</el-button>
             </div>
             <div class="modulePagNum">
                 <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
@@ -57,7 +57,7 @@
 module.exports = {
     data: function () {
         return {
-            emptytext: window.yunAdminT("{yun:}t key='wap_js_00113'{/yun}"),
+            emptytext: window.yunAdminT(lc('wap_js_00113')),
             tableData: [],
             total: 0,
             limit: 0,
@@ -95,7 +95,7 @@ module.exports = {
             }
 
             this.list_loading = true;
-            that.emptytext = window.yunAdminT("{yun:}t key='admin_user_weipin_00026'{/yun}");
+            that.emptytext = window.yunAdminT(lc('admin_user_weipin_00026'));
             httpPost('m=tool&c=weixinrecord&a=keyword', params, {hideloading: true}).then((result) => {
                 this.list_loading = false;
                 var res = result.data;
@@ -111,7 +111,7 @@ module.exports = {
 						that.$refs.table.bodyWrapper.scrollTop = 0;
 					}
                     if (that.tableData.length === 0) {
-                        that.emptytext = window.yunAdminT("{yun:}t key='wap_js_00113'{/yun}");
+                        that.emptytext = window.yunAdminT(lc('wap_js_00113'));
                     }
                 }
             }).catch(function (e) {
@@ -154,7 +154,7 @@ module.exports = {
                     idarr.push(this.choosedata[i].id);
                 }
             } else {
-                message.error(window.yunAdminT("{yun:}t key='admin_user_weipin_00005'{/yun}"));
+                message.error(window.yunAdminT(lc('admin_user_weipin_00005')));
                 return;
             }
             var params = {

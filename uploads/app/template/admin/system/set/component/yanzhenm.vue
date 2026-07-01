@@ -4,75 +4,75 @@
             <table class="tableVue">
                 <thead>
                     <tr align="left">
-                        <th width="180">{yun:}t key='member_com_00021'{/yun}</th>
-                        <th>{yun:}t key='member_user_00181'{/yun}</th>
-                        <th width="520">{yun:}t key='member_com_00207'{/yun}</th>
+                        <th width="180">{{ lc('member_com_00021') }}</th>
+                        <th>{{ lc('member_user_00181') }}</th>
+                        <th width="520">{{ lc('member_com_00207') }}</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_system_00417'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_system_00417') }}</div>
                         </td>
                         <td>
                             <div class="TableButn">
                                 <el-checkbox-group v-model='code_web_list'>
-                                    <el-checkbox label="{yun:}t key='wap_js_00064'{/yun}"></el-checkbox>
-                                    <el-checkbox label="{yun:}t key='wap_js_00062'{/yun}"></el-checkbox>
-                                    <el-checkbox label="{yun:}t key='wap_js_00130'{/yun}"></el-checkbox>
-                                    <el-checkbox label="{yun:}t key='wap_js_00066'{/yun}"></el-checkbox>
-                                    <el-checkbox label="{yun:}t key='admin_system_00423'{/yun}"></el-checkbox>
-                                    <el-checkbox label="{yun:}t key='wap_00105'{/yun}"></el-checkbox>
-                                    <el-checkbox label="{yun:}t key='wap_user_00203'{/yun}"></el-checkbox>
-                                    <el-checkbox label="{yun:}t key='wap_js_00123'{/yun}"></el-checkbox>
+                                    <el-checkbox :label="lc('wap_js_00064')"></el-checkbox>
+                                    <el-checkbox :label="lc('wap_js_00062')"></el-checkbox>
+                                    <el-checkbox :label="lc('wap_js_00130')"></el-checkbox>
+                                    <el-checkbox :label="lc('wap_js_00066')"></el-checkbox>
+                                    <el-checkbox :label="lc('admin_system_00423')"></el-checkbox>
+                                    <el-checkbox :label="lc('wap_00105')"></el-checkbox>
+                                    <el-checkbox :label="lc('wap_user_00203')"></el-checkbox>
+                                    <el-checkbox :label="lc('wap_js_00123')"></el-checkbox>
                                 </el-checkbox-group>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>{yun:}t key='admin_system_00417'{/yun}</span>
+                                <span>{{ lc('admin_system_00417') }}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_system_00422'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_system_00422') }}</div>
                         </td>
                         <td>
                             <div class="TableButn">
                                 <el-radio-group v-model="list.code_kind">
-                                    <el-radio label="1">{yun:}t key='admin_system_00421'{/yun}</el-radio>
-                                    <el-radio label="4">{yun:}t key='admin_system_00416'{/yun}</el-radio>
-                                    <el-radio label="5">{yun:}t key='admin_00997'{/yun}</el-radio>
-                                    <el-radio label="3">{yun:}t key='admin_system_00418'{/yun}</el-radio>
-                                    <el-radio label="6">{yun:}t key='admin_system_00420'{/yun}</el-radio>
+                                    <el-radio label="1">{{ lc('admin_system_00421') }}</el-radio>
+                                    <el-radio label="4">{{ lc('admin_system_00416') }}</el-radio>
+                                    <el-radio label="5">{{ lc('admin_00997') }}</el-radio>
+                                    <el-radio label="3">{{ lc('admin_system_00418') }}</el-radio>
+                                    <el-radio label="6">{{ lc('admin_system_00420') }}</el-radio>
                                 </el-radio-group>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>{yun:}t key='admin_system_00422'{/yun}</span>
+                                <span>{{ lc('admin_system_00422') }}</span>
                             </div>
                         </td>
                     </tr>
                     <template v-if="list.code_kind == 1">
                         <tr>
                             <td>
-                                <div class="TableTite">{yun:}t key='admin_00998'{/yun}</div>
+                                <div class="TableTite">{{ lc('admin_00998') }}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
                                     <el-radio-group v-model="list.code_type">
-                                        <el-radio label="1">{yun:}t key='common_01997'{/yun}</el-radio>
-                                        <el-radio label="2">{yun:}t key='admin_system_00425'{/yun}</el-radio>
-                                        <el-radio label="3">{yun:}t key='admin_00999'{/yun}</el-radio>
+                                        <el-radio label="1">{{ lc('common_01997') }}</el-radio>
+                                        <el-radio label="2">{{ lc('admin_system_00425') }}</el-radio>
+                                        <el-radio label="3">{{ lc('admin_00999') }}</el-radio>
                                     </el-radio-group>
                                 </div>
                             </td>
                         </tr>
                         <tr>
                             <td>
-                                <div class="TableTite">{yun:}t key='admin_01000'{/yun}</div>
+                                <div class="TableTite">{{ lc('admin_01000') }}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
@@ -87,11 +87,11 @@
                         </tr>
                         <tr>
                             <td>
-                                <div class="TableTite">{yun:}t key='admin_system_00419'{/yun}</div>
+                                <div class="TableTite">{{ lc('admin_system_00419') }}</div>
                             </td>
                             <td>
                                 <!-- <div class="TableInpt">
-                                    <span>宽：</span>
+                                    <span>{{ lc('admin_vue_00135') }}：</span>
                                     <el-input class="input-text" type="text" v-model='list.code_width' size="10"
                                         maxlength="255" />px&nbsp;&nbsp;
                                 </div> -->
@@ -100,13 +100,13 @@
                                 <div class="TableInpt TableInptCoor" style="justify-content: initial;">
                                     <div class="TableInCooLis">
                                         <el-input v-model='list.code_width' class="input-text" type="text" size="10" maxlength="255" onkeyup="this.value=this.value.replace(/[^0-9.]/g,'')">
-                                            <template slot="prepend">{yun:}t key='admin_vue_00135'{/yun}</template>
+                                            <template slot="prepend">{{ lc('admin_vue_00135') }}</template>
                                             <span slot="suffix" class="slotspan">px</span>
                                         </el-input>
                                     </div>
                                     <div class="TableInCooLis">
                                         <el-input v-model="list.code_height" type="text" class="input-text" size="10" maxlength="255" onkeyup="this.value=this.value.replace(/[^0-9.]/g,'')">
-                                            <template slot="prepend">{yun:}t key='common_02105'{/yun}</template>
+                                            <template slot="prepend">{{ lc('common_02105') }}</template>
                                             <span slot="suffix" class="slotspan">px</span>
                                         </el-input>
                                     </div>
@@ -114,24 +114,24 @@
                             </td>
                             <td>
                                 <div class="TableShuom">
-                                    <span>{yun:}t key='admin_system_00419'{/yun}</span>
+                                    <span>{{ lc('admin_system_00419') }}</span>
                                 </div>
                             </td>
                         </tr>
                         <tr>
                             <td>
-                                <div class="TableTite">{yun:}t key='admin_01002'{/yun}</div>
+                                <div class="TableTite">{{ lc('admin_01002') }}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
                                     <el-input v-model="list.code_strlength" maxlength="1"
                                         onKeyUp="this.value=this.value.replace(/[^0-9]/g,'')"
-                                        placeholder="{yun:}t key='wap_user_00076'{/yun}"></el-input>
+                                        :placeholder="lc('wap_user_00076')"></el-input>
                                 </div>
                             </td>
                             <td>
                                 <div class="TableShuom">
-                                    <span>{yun:}t key='admin_01003'{/yun}</span>
+                                    <span>{{ lc('admin_01003') }}</span>
                                 </div>
                             </td>
                         </tr>
@@ -139,31 +139,31 @@
                     <template v-if="list.code_kind == 4">
                         <tr>
                             <td>
-                                <div class="TableTite">{yun:}t key='admin_01004'{/yun}</div>
+                                <div class="TableTite">{{ lc('admin_01004') }}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
-                                    <el-input v-model="list.sy_dxappid" placeholder="{yun:}t key='wap_user_00076'{/yun}"></el-input>
+                                    <el-input v-model="list.sy_dxappid" :placeholder="lc('wap_user_00076')"></el-input>
                                 </div>
                             </td>
                             <td>
                                 <div class="TableShuom">
-                                    <span>{yun:}t key='admin_01005'{/yun}<el-link target="_blank" type="info" href="https://www.dingxiang-inc.com">https://www.dingxiang-inc.com</el-link></span>
+                                    <span>{{ lc('admin_01005') }}<el-link target="_blank" type="info" href="https://www.dingxiang-inc.com">https://www.dingxiang-inc.com</el-link></span>
                                 </div>
                             </td>
                         </tr>
                         <tr>
                             <td>
-                                <div class="TableTite">{yun:}t key='admin_01006'{/yun}</div>
+                                <div class="TableTite">{{ lc('admin_01006') }}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
-                                    <el-input v-model="list.sy_dxappsecret" placeholder="{yun:}t key='wap_user_00076'{/yun}"></el-input>
+                                    <el-input v-model="list.sy_dxappsecret" :placeholder="lc('wap_user_00076')"></el-input>
                                 </div>
                             </td>
                             <td>
                                 <div class="TableShuom">
-                                    <span>{yun:}t key='admin_01005'{/yun}<el-link target="_blank" type="info" href="https://www.dingxiang-inc.com">https://www.dingxiang-inc.com</el-link></span>
+                                    <span>{{ lc('admin_01005') }}<el-link target="_blank" type="info" href="https://www.dingxiang-inc.com">https://www.dingxiang-inc.com</el-link></span>
                                 </div>
                             </td>
                         </tr>
@@ -175,12 +175,12 @@
                             </td>
                             <td>
                                 <div class="TableInpt">
-                                    <el-input v-model="list.sy_vaptcha_vid" placeholder="{yun:}t key='wap_user_00076'{/yun}"></el-input>
+                                    <el-input v-model="list.sy_vaptcha_vid" :placeholder="lc('wap_user_00076')"></el-input>
                                 </div>
                             </td>
                             <td>
                                 <div class="TableShuom">
-                                    <span>{yun:}t key='admin_01005'{/yun}<el-link target="_blank" type="info" href="https://www.vaptcha.com">https://www.vaptcha.com</el-link></span>
+                                    <span>{{ lc('admin_01005') }}<el-link target="_blank" type="info" href="https://www.vaptcha.com">https://www.vaptcha.com</el-link></span>
                                 </div>
                             </td>
                         </tr>
@@ -190,7 +190,7 @@
                             </td>
                             <td>
                                 <div class="TableInpt">
-                                    <el-input v-model="list.sy_vaptcha_key" placeholder="{yun:}t key='wap_user_00076'{/yun}"></el-input>
+                                    <el-input v-model="list.sy_vaptcha_key" :placeholder="lc('wap_user_00076')"></el-input>
                                 </div>
                             </td>
                             <td>
@@ -203,31 +203,31 @@
                     <template v-if="list.code_kind == 3">
                         <tr>
                             <td>
-                                <div class="TableTite">{yun:}t key='admin_01007'{/yun}</div>
+                                <div class="TableTite">{{ lc('admin_01007') }}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
-                                    <el-input v-model="list.sy_geetestid" placeholder="{yun:}t key='wap_user_00076'{/yun}"></el-input>
+                                    <el-input v-model="list.sy_geetestid" :placeholder="lc('wap_user_00076')"></el-input>
                                 </div>
                             </td>
                             <td>
                                 <div class="TableShuom">
-                                    <span>{yun:}t key='admin_01005'{/yun}<el-link target="_blank" type="info" href="http://www.geetest.com">http://www.geetest.com</el-link></span>
+                                    <span>{{ lc('admin_01005') }}<el-link target="_blank" type="info" href="http://www.geetest.com">http://www.geetest.com</el-link></span>
                                 </div>
                             </td>
                         </tr>
                         <tr>
                             <td>
-                                <div class="TableTite">{yun:}t key='admin_01008'{/yun}</div>
+                                <div class="TableTite">{{ lc('admin_01008') }}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
-                                    <el-input v-model="list.sy_geetestkey" placeholder="{yun:}t key='wap_user_00076'{/yun}"></el-input>
+                                    <el-input v-model="list.sy_geetestkey" :placeholder="lc('wap_user_00076')"></el-input>
                                 </div>
                             </td>
                             <td>
                                 <div class="TableShuom">
-                                    <span>{yun:}t key='admin_01005'{/yun}<el-link target="_blank" type="info" href="http://www.geetest.com">http://www.geetest.com</el-link></span>
+                                    <span>{{ lc('admin_01005') }}<el-link target="_blank" type="info" href="http://www.geetest.com">http://www.geetest.com</el-link></span>
                                 </div>
                             </td>
                         </tr>
@@ -239,13 +239,13 @@
                             </td>
                             <td>
                                 <div class="TableInpt">
-                                    <el-input v-model="list.sy_tecentappid" placeholder="{yun:}t key='wap_user_00076'{/yun}"></el-input>
+                                    <el-input v-model="list.sy_tecentappid" :placeholder="lc('wap_user_00076')"></el-input>
                                 </div>
                             </td>
                             <td>
                                 <div class="TableShuom">
-                                    <span>{yun:}t key='admin_01005'{/yun}<el-link target="_blank" type="info" href="https://cloud.tencent.com">https://cloud.tencent.com</el-link><span
-                                            style="color:red;padding-left: 5px;">{yun:}t key='admin_vue_00134'{/yun}</span></span>
+                                    <span>{{ lc('admin_01005') }}<el-link target="_blank" type="info" href="https://cloud.tencent.com">https://cloud.tencent.com</el-link><span
+                                            style="color:red;padding-left: 5px;">{{ lc('admin_vue_00134') }}</span></span>
                                 </div>
                             </td>
                         </tr>
@@ -255,12 +255,12 @@
                             </td>
                             <td>
                                 <div class="TableInpt">
-                                    <el-input v-model="list.sy_tecentappsecret" placeholder="{yun:}t key='wap_user_00076'{/yun}"></el-input>
+                                    <el-input v-model="list.sy_tecentappsecret" :placeholder="lc('wap_user_00076')"></el-input>
                                 </div>
                             </td>
                             <td>
                                 <div class="TableShuom">
-                                    <span>{yun:}t key='admin_01005'{/yun} <el-link target="_blank" type="info" href="https://cloud.tencent.com">https://cloud.tencent.com</el-link></span>
+                                    <span>{{ lc('admin_01005') }} <el-link target="_blank" type="info" href="https://cloud.tencent.com">https://cloud.tencent.com</el-link></span>
                                 </div>
                             </td>
                         </tr>
@@ -270,12 +270,12 @@
                             </td>
                             <td>
                                 <div class="TableInpt">
-                                    <el-input v-model="list.sy_tecentsecretid" placeholder="{yun:}t key='wap_user_00076'{/yun}"></el-input>
+                                    <el-input v-model="list.sy_tecentsecretid" :placeholder="lc('wap_user_00076')"></el-input>
                                 </div>
                             </td>
                             <td>
                                 <div class="TableShuom">
-                                    <span>{yun:}t key='admin_01005'{/yun} <el-link target="_blank" type="info" href="https://cloud.tencent.com">https://cloud.tencent.com</el-link></span>
+                                    <span>{{ lc('admin_01005') }} <el-link target="_blank" type="info" href="https://cloud.tencent.com">https://cloud.tencent.com</el-link></span>
                                 </div>
                             </td>
                         </tr>
@@ -285,12 +285,12 @@
                             </td>
                             <td>
                                 <div class="TableInpt">
-                                    <el-input v-model="list.sy_tecentsecretkey" placeholder="{yun:}t key='wap_user_00076'{/yun}"></el-input>
+                                    <el-input v-model="list.sy_tecentsecretkey" :placeholder="lc('wap_user_00076')"></el-input>
                                 </div>
                             </td>
                             <td>
                                 <div class="TableShuom">
-                                    <span>{yun:}t key='admin_01005'{/yun} <el-link target="_blank" type="info" href="https://cloud.tencent.com">https://cloud.tencent.com</el-link></span>
+                                    <span>{{ lc('admin_01005') }} <el-link target="_blank" type="info" href="https://cloud.tencent.com">https://cloud.tencent.com</el-link></span>
                                 </div>
                             </td>
                         </tr>
@@ -299,7 +299,7 @@
             </table>
         </div>
         <div class="setBasicButn" style="border: none; height: 80px;">
-            <el-button type="primary" size="medium" @click="save" :disabled="saveLoading">{yun:}t key='common.submit'{/yun}</el-button>
+            <el-button type="primary" size="medium" @click="save" :disabled="saveLoading">{{ lc('common.submit') }}</el-button>
         </div>
     </div>
 </template>
@@ -352,7 +352,7 @@ module.exports = {
             httpPost(url, ruleForm).then(function (response) {
                 var res = response.data;
                 if (res.error == 0) {
-                    message.success("{yun:}t key='wap_user_00264'{/yun}");
+                    message.success(lc('wap_user_00264'));
                     _this.$emit('get-list', true)
                 } else {
                     message.error(res.msg);

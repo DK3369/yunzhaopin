@@ -15,39 +15,39 @@
                             <span>{{ lc("admin_question_number", [index + 1]) }}</span>
                         </div>
                         <div class="pinyuFroms">
-                            <el-input type="textarea" :rows="2" placeholder="{yun:}t key='admin_00862'{/yun}" v-model="item.question">
+                            <el-input type="textarea" :rows="2" :placeholder="lc('admin_00862')" v-model="item.question">
                             </el-input>
                         </div>
                     </div>
                     <div class="pinyuFromfkieu" v-for="(op, k) in item.option" :key="k">
                         <div class="pinyuFromsList">
                             <div class="pinyuName">
-                                <span>{yun:}t key='admin_00858'{/yun}</span>
+                                <span>{{ lc('admin_00858') }}</span>
                             </div>
                             <div class="pinyuFroms">
-                                <el-input placeholder="{yun:}t key='admin_00858'{/yun}" v-model="item.option[k]">
+                                <el-input :placeholder="lc('admin_00858')" v-model="item.option[k]">
                                 </el-input>
-                                <span class="spanfez">{yun:}t key='admin_00859'{/yun}</span>
-                                <el-input placeholder="{yun:}t key='admin_00859'{/yun}" v-model="item.score[k]">
+                                <span class="spanfez">{{ lc('admin_00859') }}</span>
+                                <el-input :placeholder="lc('admin_00859')" v-model="item.score[k]">
                                 </el-input>
-                                <el-button type="text" @click="delopt(index, k)">{yun:}t key='common.delete'{/yun}</el-button>
+                                <el-button type="text" @click="delopt(index, k)">{{ lc('common.delete') }}</el-button>
                             </div>
                         </div>
                     </div>
-                    <el-button type="text" @click="addopt(index)">{yun:}t key='admin_00860'{/yun}</el-button>
+                    <el-button type="text" @click="addopt(index)">{{ lc('admin_00860') }}</el-button>
                 </div>
                 <div class="pinyuClose">
-                    <el-button type="text" @click="delrow(index)">{yun:}t key='common.delete'{/yun}</el-button>
+                    <el-button type="text" @click="delrow(index)">{{ lc('common.delete') }}</el-button>
                 </div>
             </div>
             <div class="drawerModLis" style="align-items: initial;">
                 <div class="drawerModInpt">
-                    <el-button type="primary" icon="el-icon-plus" plain size="medium" @click="addrow">{yun:}t key='admin_00861'{/yun}</el-button>
+                    <el-button type="primary" icon="el-icon-plus" plain size="medium" @click="addrow">{{ lc('admin_00861') }}</el-button>
                 </div>
             </div>
         </div>
         <div class="setBasicButn" style="border: none;">
-            <el-button type="primary" size="medium" @click="save">{yun:}t key='common.confirm'{/yun}</el-button>
+            <el-button type="primary" size="medium" @click="save">{{ lc('common.confirm') }}</el-button>
         </div>
     </div>
 </template>

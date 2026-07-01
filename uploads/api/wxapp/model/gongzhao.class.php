@@ -5,13 +5,15 @@
 class gongzhao_controller extends wxapp_controller
 {
 
-    
+    /**
+     * 公招列表
+     */
     function getgongzhao_action()
     {
         $gongzhaoM = $this->MODEL('gongzhao');
 
         $time = time();
-        // 
+        //公招开始时间条件
         $where['PHPYUNBTWSTART_A'] = array();
         $where['startime'][]       = array('<=', $time, 'OR');
         $where['startime'][]       = array('=', 0, 'OR');
@@ -22,7 +24,7 @@ class gongzhao_controller extends wxapp_controller
         $where['endtime'][]        = array('=', 0, 'OR');
         $where['endtime'][]        = array('isnull', '', 'OR');
         $where['PHPYUNBTWEND_B']   = array();
-        // 
+        // 处理分站查询条件
         if (!empty($_POST['did'])) {
             $where['PHPYUNBTWSTART_C'] = array();
             $where['did'][] = array('=', $_POST['did'], '');
@@ -53,7 +55,9 @@ class gongzhao_controller extends wxapp_controller
     }
 
 
-    
+    /**
+     * 公告详情
+     */
     function gongzhaoshow_action()
     {
         $id = (int)$_POST['id'];
@@ -79,7 +83,7 @@ class gongzhao_controller extends wxapp_controller
                 $data['list']  = $info;
                 
                 $time = time();
-                // 
+                //公招开始时间条件
                 $where['PHPYUNBTWSTART_A'] = array();
                 $where['startime'][]       = array('<=', $time, 'OR');
                 $where['startime'][]       = array('=', 0, 'OR');
@@ -90,7 +94,7 @@ class gongzhao_controller extends wxapp_controller
                 $where['endtime'][]        = array('=', 0, 'OR');
                 $where['endtime'][]        = array('isnull', '', 'OR');
                 $where['PHPYUNBTWEND_B']   = array();
-                // 
+                // 处理分站查询条件
                 if (!empty($_POST['did'])) {
                     $where['did'] = $_POST['did'];
                 }

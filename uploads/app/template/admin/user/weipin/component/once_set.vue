@@ -4,67 +4,67 @@
             <table class="tableVue">
                 <thead>
                     <tr align="left">
-                        <th width="260">{yun:}t key='member_com_00021'{/yun}</th>
-                        <th width="320">{yun:}t key='member_user_00181'{/yun}</th>
-                        <th>{yun:}t key='member_com_00207'{/yun}</th>
+                        <th width="260">{{ lc('member_com_00021') }}</th>
+                        <th width="320">{{ lc('member_user_00181') }}</th>
+                        <th>{{ lc('member_com_00207') }}</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_00414'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_00414') }}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
                                 <el-input v-model="ruleForm.sy_once" placeholder=""
                                           @input="inputIntNumber($event, 'ruleForm', 'sy_once')">
-                                    <span slot="suffix" class="slotspan">{yun:}t key='wap_com_00049'{/yun}</span>
+                                    <span slot="suffix" class="slotspan">{{ lc('wap_com_00049') }}</span>
                                 </el-input>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>{yun:}t key='admin_user_weipin_00055'{/yun}</span>
+                                <span>{{ lc('admin_user_weipin_00055') }}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_00415'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_00415') }}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
                                 <el-input v-model="ruleForm.sy_once_totalnum" placeholder=""
                                           @input="inputIntNumber($event, 'ruleForm', 'sy_once_totalnum')">
-                                    <span slot="suffix" class="slotspan">{yun:}t key='wap_com_00049'{/yun}</span>
+                                    <span slot="suffix" class="slotspan">{{ lc('wap_com_00049') }}</span>
                                 </el-input>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>{yun:}t key='admin_user_weipin_00054'{/yun}</span>
+                                <span>{{ lc('admin_user_weipin_00054') }}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_00416'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_00416') }}</div>
                         </td>
                         <td>
                             <div class="TableButn">
-                                <el-radio v-model="ruleForm.user_wzp_link" label="0">{yun:}t key='wap_js_00005'{/yun}</el-radio>
-                                <el-radio v-model="ruleForm.user_wzp_link" label="1">{yun:}t key='admin_00417'{/yun}</el-radio>
+                                <el-radio v-model="ruleForm.user_wzp_link" label="0">{{ lc('wap_js_00005') }}</el-radio>
+                                <el-radio v-model="ruleForm.user_wzp_link" label="1">{{ lc('admin_00417') }}</el-radio>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>{yun:}t key='admin_00416'{/yun}</span>
+                                <span>{{ lc('admin_00416') }}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_user_weipin_00057'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_user_weipin_00057') }}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
@@ -74,13 +74,13 @@
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>{yun:}t key='admin_user_weipin_00057'{/yun}</span>
+                                <span>{{ lc('admin_user_weipin_00057') }}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_user_weipin_00056'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_user_weipin_00056') }}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
@@ -90,31 +90,31 @@
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>{yun:}t key='admin_user_weipin_00056'{/yun}</span>
+                                <span>{{ lc('admin_user_weipin_00056') }}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_00418'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_00418') }}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
                                 <el-input v-model="ruleForm.com_xin" placeholder=""
                                           @input="inputIntNumber($event, 'ruleForm', 'com_xin')">
-                                    <span slot="suffix" class="slotspan">{yun:}t key='common_02089'{/yun}</span>
+                                    <span slot="suffix" class="slotspan">{{ lc('common_02089') }}</span>
                                 </el-input>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>{yun:}t key='admin_00418'{/yun}</span>
+                                <span>{{ lc('admin_00418') }}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_00419'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_00419') }}</div>
                         </td>
                         <td>
                             <div class="TableUpload">
@@ -124,7 +124,7 @@
                                            :auto-upload="false"
                                            :on-change="handleChangeLogo"
                                            :show-file-list="false">
-                                    <el-button slot="trigger" size="small" type="primary">{yun:}t key='wap_js_00071'{/yun}</el-button>
+                                    <el-button slot="trigger" size="small" type="primary">{{ lc('wap_js_00071') }}</el-button>
                                     <img class="el-upload-list__item-thumbnail" width="200" height="130" style="padding-left: 5px;"
                                          v-if="ruleForm.sy_once_icon_n" :src="ruleForm.sy_once_icon_n"/>
                                 </el-upload>
@@ -132,7 +132,7 @@
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>{yun:}t key='admin_00420'{/yun}</span>
+                                <span>{{ lc('admin_00420') }}</span>
                             </div>
                         </td>
                     </tr>
@@ -140,7 +140,7 @@
             </table>
         </div>
         <div class="setBasicButn" style="border: none;">
-            <el-button type="primary" size="medium" @click="submit" :disabled="saveLoading">{yun:}t key='common.submit'{/yun}</el-button>
+            <el-button type="primary" size="medium" @click="submit" :disabled="saveLoading">{{ lc('common.submit') }}</el-button>
         </div>
     </div>
 </template>

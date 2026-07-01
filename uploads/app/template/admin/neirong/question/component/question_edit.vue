@@ -3,15 +3,15 @@
         <div class="drawerModInfo" style="max-height: calc(100% - 80px); overflow-y: auto; border: none;">
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>{yun:}t key='admin_00787'{/yun}</span>
+                    <span>{{ lc('admin_00787') }}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input v-model="ruleForm.title" placeholder="{yun:}t key='admin_00789'{/yun}"></el-input>
+                    <el-input v-model="ruleForm.title" :placeholder="lc('admin_00789')"></el-input>
                 </div>
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>{yun:}t key='admin_00233'{/yun}</span>
+                    <span>{{ lc('admin_00233') }}</span>
                 </div>
                 <div class="drawerModInpt">
                     <el-cascader v-model="ruleForm.cid" :options="classList" :show-all-levels="false"
@@ -21,16 +21,16 @@
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>{yun:}t key='admin_00232'{/yun}</span>
+                    <span>{{ lc('admin_00232') }}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input v-model="ruleForm.visit" placeholder="{yun:}t key='admin_00786'{/yun}"
+                    <el-input v-model="ruleForm.visit" :placeholder="lc('admin_00786')"
                               @input="inputIntNumber($event, 'ruleForm', 'visit')"></el-input>
                 </div>
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>{yun:}t key='admin_00231'{/yun}</span>
+                    <span>{{ lc('admin_00231') }}</span>
                 </div>
                 <div class="drawerModInpt">
                     <el-switch v-model="ruleForm.is_recom" active-value="1" inactive-value="0">
@@ -39,7 +39,7 @@
             </div>
             <div class="drawerModLis" style="align-items: initial;">
                 <div class="drawerModTite">
-                    <span>{yun:}t key='admin_00788'{/yun}</span>
+                    <span>{{ lc('admin_00788') }}</span>
                 </div>
                 <div class="drawerModInpt">
                     <div id="editor—wrapper" style="border: 1px solid #ccc;">
@@ -50,7 +50,7 @@
             </div>
         </div>
         <div class="setBasicButn" style="border-top: 0px solid #E4E7ED;">
-            <el-button type="primary" size="medium" @click="save" :disabled="saveLoading">{yun:}t key='common.submit'{/yun}</el-button>
+            <el-button type="primary" size="medium" @click="save" :disabled="saveLoading">{{ lc('common.submit') }}</el-button>
         </div>
     </div>
 </template>
@@ -165,7 +165,7 @@ module.exports = {
                 content = editor.getHtml();
 
             if (typeof params.title == 'undefined' || params.title == '') {
-                message.warning("{yun:}t key='admin_00789'{/yun}");
+                message.warning(lc('admin_00789'));
                 return;
             }
             if (typeof params.cid == 'undefined' || params.cid == '') {

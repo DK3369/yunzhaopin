@@ -245,7 +245,7 @@
                         }
                         that.loading = false;
                         if (that.list.length === 0) {
-                            that.dataText = "暂无数据";
+                            that.dataText = lc('wap_js_00113');
                         }
                     })
                 },
@@ -291,10 +291,10 @@
 
                     if (typeof idx == 'undefined') { // 批量删除
                         params.del = this.idArr;
-                        msg = '你确定要删除选中项吗？';
+                        msg = lc('common_00853');
                     } else {// 单个删除
                         params.del = that.list[idx].id;
-                        msg = '确定要删除记录吗？';
+                        msg = lc('admin_01185');
                     }
 
                     delConfirm(this, params, function (params) {
@@ -315,7 +315,7 @@
                         params = {},
                         msg = '';
                         params.del = that.list[idx].eid;
-                        msg = '确定要删除问答吗？';
+                        msg = lc('admin_01186');
                     delConfirm(this, params, function (params) {
                         httpPost('m=yunying&c=report_ask&a=delquestion', params).then(function(res) {
                             if (res.data.error > 0) {

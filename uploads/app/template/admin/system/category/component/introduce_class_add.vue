@@ -3,31 +3,31 @@
         <div class="drawerModInfo">
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>{yun:}t key='admin_system_00102'{/yun}</span>
+                    <span>{{ lc('admin_system_00102') }}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input v-model="ruleForm.name" placeholder="{yun:}t key='wap_user_00076'{/yun}"></el-input>
+                    <el-input v-model="ruleForm.name" :placeholder="lc('wap_user_00076')"></el-input>
                 </div>
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>{yun:}t key='admin_system_00101'{/yun}</span>
+                    <span>{{ lc('admin_system_00101') }}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input type="textarea" :rows="10" placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="ruleForm.content"></el-input>
+                    <el-input type="textarea" :rows="10" :placeholder="lc('wap_user_00076')" v-model="ruleForm.content"></el-input>
                 </div>
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>{yun:}t key='admin_system_00103'{/yun}</span>
+                    <span>{{ lc('admin_system_00103') }}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input v-model="ruleForm.sort" placeholder="{yun:}t key='wap_user_00076'{/yun}" onkeyup="this.value=this.value.replace(/[^0-9]/g,'')"></el-input>
+                    <el-input v-model="ruleForm.sort" :placeholder="lc('wap_user_00076')" onkeyup="this.value=this.value.replace(/[^0-9]/g,'')"></el-input>
                 </div>
             </div>
         </div>
         <div class="setBasicButn" style="border: none;">
-            <el-button type="primary" size="medium" @click="submitForm" :disabled="submitLoading">{yun:}t key='common.submit'{/yun}</el-button>
+            <el-button type="primary" size="medium" @click="submitForm" :disabled="submitLoading">{{ lc('common.submit') }}</el-button>
         </div>
     </div>
 </template>
@@ -75,7 +75,7 @@ module.exports = {
             let params = JSON.parse(JSON.stringify(this.ruleForm));
 
             if (params.name == '') {
-                message.error(window.yunAdminT("{yun:}t key='admin_00208'{/yun}"));
+                message.error(window.yunAdminT(lc('admin_00208')));
                 return;
             }
             params.id = this.id;

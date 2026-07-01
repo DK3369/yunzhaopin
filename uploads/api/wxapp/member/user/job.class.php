@@ -2,7 +2,7 @@
 
 class job_controller extends user_controller{
     
-/* wxapp: applications */
+/*wxapp申请记录*/
 	function sqjoblist_action()
 	{
 		$JobM				=	$this -> MODEL('job');
@@ -42,8 +42,8 @@ class job_controller extends user_controller{
 		}
 		$this->render_json($error,'',$list,$total);
 	}
-	/* wxapp: delete application */
-	function delsqjob_action()
+	/*wxapp申请记录删除*/
+	function delsqjob_action()//删除申请的职位
 	{
 		$JobM	=	$this -> MODEL('job');
 		$id		=	intval($_POST['ids']);
@@ -52,7 +52,7 @@ class job_controller extends user_controller{
 		$this->render_json($error,$arr['msg']);
 	}
 
-    /* wxapp: cancel application */
+    /*wxapp取消申请*/
     function qxSqJob_action()
     {
         $JobM	=	$this -> MODEL('job');
@@ -62,7 +62,7 @@ class job_controller extends user_controller{
         $this->render_json($error,$arr['msg']);
     }
 	
-	/* wxapp: favorites */
+	/*wxapp收藏记录*/
 	function favlist_action()
 	{	
 		$JobM				=	$this -> MODEL('job');
@@ -94,8 +94,8 @@ class job_controller extends user_controller{
 		$this->render_json(0,'',$list,$total);
 	}
 	
-	/* wxapp: delete favorite */
-	function delfavjob_action()
+	/*wxapp收藏记录删除*/
+	function delfavjob_action()//删除收藏的职位
 	{
 		$id		 		=	$_POST['ids'];
             
@@ -106,7 +106,7 @@ class job_controller extends user_controller{
         $data['msg']	=	$return['msg'];
 		$this->render_json($data['error'],$return['msg'],'');
 	}
-	/* wxapp: interview notices */
+	/*wxapp面试通知记录*/
 	function invitelist_action()
 	{
         $JobM				=	$this -> MODEL('job');
@@ -138,7 +138,7 @@ class job_controller extends user_controller{
 		$this->render_json(1,'',$data);
 	}
 	
-	/* wxapp: interview invite detail */
+	/*wxapp面试邀请页面-面试通知详情页*/
 	function inviteshow_action()
 	{
 		$id	   =  (int)$_POST['id'];
@@ -155,7 +155,7 @@ class job_controller extends user_controller{
         $data['list']		=	$info;
 		$this->render_json(1,'',$data['list']);
 	}
-	/* wxapp: delete interview notice */
+	/*wxapp面试通知记录删除*/
 	function invitedel_action()
 	{
 		$id				=	(int)$_POST['id'];
@@ -170,7 +170,9 @@ class job_controller extends user_controller{
 		$error	=	$return['errcode']==9 ? 1 : 2;
 		$this->render_json($error,$return['msg']);
 	}
-	
+	/**
+     * wxapp 面试通知-同意、拒绝
+     */
     function inviteset_action()
     {
         $id         =   (int)$_POST['id'];
@@ -190,7 +192,7 @@ class job_controller extends user_controller{
         $this->render_json($data['error'], $return['msg'], '');
     }
 
-	/* wxapp: browse history */
+	/*wxapp浏览记录*/
 	function look_job_action()
 	{
 		$JobM				=   $this -> MODEL('job');
@@ -219,8 +221,8 @@ class job_controller extends user_controller{
 		}
 		$this -> render_json($error,'',$data,$total);
 	}
-	/* wxapp: delete browse history */
-	function look_job_del_action()
+	/*wxapp浏览记录删除*/
+	function look_job_del_action()//删除职位浏览记录
 	{
 		$JobM   		=   $this -> MODEL('job');
 		$id 			=	(int)$_POST['ids'];
@@ -229,7 +231,7 @@ class job_controller extends user_controller{
 		$data['msg']	=	$return['msg'];
 		$this -> render_json($data['error'],$return['msg'],'');
 	}
-	/* wxapp: similar jobs */
+	/*wxapp相似职位*/
 	function like_job_action()
 	{
 		$data			=	array(
@@ -242,7 +244,9 @@ class job_controller extends user_controller{
 		$data			=	count($list) ? $list : array();
 		$this -> render_json(1,'',$data);
 	}
-	
+	/**
+	 * 职位管理
+	 */
 	function jobcolumn_action()
 	{
 	    
@@ -250,13 +254,13 @@ class job_controller extends user_controller{
 		$AtnM			=	$this -> MODEL('atn');
 		$LookresumeM	=	$this -> MODEL('lookresume');
 		$PartM	=	$this -> MODEL('part');
-		// 
+		//面试通知
 		$invitenum		=	$JobM -> getYqmsNum(array('uid'=>$this->member['uid'],'isdel'=>9));
 		$show['invitenum']	=	$invitenum?$invitenum:0;
-		// 
+		//申请的职位
 		$sqnum			=	$JobM -> getSqJobNum(array('uid'=>$this->member['uid'],'isdel'=>9));
 		$show['sqnum']	=	$sqnum?$sqnum:0; 
-		// 
+		//收藏的职位
 		$collectnum		=	$JobM -> getFavJobNum(array('uid'=>$this->member['uid'],'type'=>1));
 		$show['collectnum']			=	$collectnum?$collectnum:0;
 		$where['uid']				=	$this->member['uid'];
@@ -266,11 +270,11 @@ class job_controller extends user_controller{
 		$atnnum			=	$atncomnum;
 		$show['atnnum']	=	$atnnum?$atnnum:0;
 		
-		// 
+		//职位浏览记录
 		$lookjobnum		=	$JobM -> getLookJobNum(array('uid'=>$this->member['uid'],'status'=>'0'));
 		$show['lookjobnum']	=	$lookjobnum?$lookjobnum:0;
 		
-		// 
+		//谁看过我的简历
 		$looknum		=	$LookresumeM -> getLookNum(array('uid'=>$this->member['uid'],'usertype'=>'2','status'=>'0'));
 		$show['looknum']=	$looknum?$looknum:0;
 		
@@ -279,7 +283,7 @@ class job_controller extends user_controller{
 		$show['wkyqnum']=	$wkyqnum?$wkyqnum:0;
 		$wlooknum		=	$JobM -> getLookJobNum(array('uid'=>$this->member['uid'],'status'=>'0','datetime'=>array('<',time())));
 		$show['wlooknum']	=	$wlooknum?$wlooknum:0;
-		// 
+		//兼职管理
 		$partapplynum		=	$PartM->getPartSqNum(array('uid'=>$this->member['uid']));
 		$partcollectnum		=	$PartM->getPartcollectNum(array('uid'=>$this->member['uid']));
 		$allpartnum			=	$partapplynum + $partcollectnum;

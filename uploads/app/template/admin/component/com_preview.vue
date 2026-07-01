@@ -7,10 +7,10 @@
                 </div>
                 <div class="jiliTanJinCont">
                     <span>IP：{{Info.login_ip}}</span>
-                    <span v-if="Info.login_address">{yun:}t key='admin_00391'{/yun}</span>
+                    <span v-if="Info.login_address">{{ lc('admin_00391') }}</span>
                 </div>
 				<div class="jiliTanJinCont" v-if="Info.shortname">
-				    <span>{yun:}t key='admin_00392'{/yun}</span>
+				    <span>{{ lc('admin_00392') }}</span>
 				</div>
 				<div class="jiliTanJinCont" v-if="Info.hy">
 				    <span>{{ lc("admin_industry_value", [Info.hy_n]) }}</span>
@@ -22,42 +22,42 @@
 				    <span>{{ lc("admin_company_size_value", [Info.mun_n]) }}</span>
 				</div>
 				<div class="jiliTanJinCont" v-if="Info.money">
-				    <span>{yun:}t key='admin_00393'{/yun}</span>
+				    <span>{{ lc('admin_00393') }}</span>
 				</div>
 			</div>
 			<div class="jiliTanJinli" v-if="Info.content">
 			    <div class="jiliTanJinTite">
-			        <span>{yun:}t key='wap_com_00160'{/yun}</span>
+			        <span>{{ lc('wap_com_00160') }}</span>
 			    </div>
 				<div class="jiliTanJinCont" v-html="Info.content"></div>
 			</div>
 			<div class="jiliTanJinli">
 			    <div class="jiliTanJinTite">
-			        <span>{yun:}t key='wap_00462'{/yun}</span>
+			        <span>{{ lc('wap_00462') }}</span>
 			    </div>
 				<div class="jiliTanJinCont" v-if="Info.linkman">
 				    <span>{{ lc("admin_contact_person_value", [Info.linkman]) }} <span v-if="Info.linkjob">（{{Info.linkjob}})</span></span>
 				</div>
 				<div class="jiliTanJinCont" v-if="Info.linktel">
-				    <span>{yun:}t key='admin_00394'{/yun}</span>
+				    <span>{{ lc('admin_00394') }}</span>
 				</div>
 				<div class="jiliTanJinCont" v-if="Info.linkphone">
-				    <span>{yun:}t key='admin_00395'{/yun}</span>
+				    <span>{{ lc('admin_00395') }}</span>
 				</div>
 				<div class="jiliTanJinCont" v-if="Info.linkmail">
 				    <span>{{ lc("admin_email_value", [Info.linkmail]) }}</span>
 				</div>
 				<div class="jiliTanJinCont" v-if="Info.linkqq">
-				    <span>{yun:}t key='admin_00396'{/yun}</span>
+				    <span>{{ lc('admin_00396') }}</span>
 				</div>
 				<div class="jiliTanJinCont" v-if="Info.website">
-				    <span>{yun:}t key='admin_00397'{/yun}</span>
+				    <span>{{ lc('admin_00397') }}</span>
 				</div>
 				<div class="jiliTanJinCont" v-if="Info.provinceid">
-				    <span>{yun:}t key='admin_00398'{/yun}</span>
+				    <span>{{ lc('admin_00398') }}</span>
 				</div>
 				<div class="jiliTanJinCont" v-if="Info.comqcode">
-				    <span>{yun:}t key='admin_00049'{/yun}<el-image :src="Info.comqcode" width="150" height="150"></el-image></span>
+				    <span>{{ lc('admin_00049') }}<el-image :src="Info.comqcode" width="150" height="150"></el-image></span>
 				</div>
 				<div class="jiliTanJinCont" v-if="Info.busstops">
 				    <span>{{ lc("admin_bus_stop_value", [Info.busstops]) }}</span>

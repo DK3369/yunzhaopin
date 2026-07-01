@@ -254,7 +254,7 @@
 					});
 				},
 				handleAdd() {
-					this.titleAddEdit = '添加广告';
+					this.titleAddEdit = lc('admin_01166');
 					this.id = 0;
 					this.addVisible = true;
 				},
@@ -263,7 +263,7 @@
 					this.getList();
 				},
 				editRow(scope) {
-					this.titleAddEdit = '修改广告';
+					this.titleAddEdit = lc('admin_01171');
 					this.id = parseInt(scope.row.id);
 					this.addVisible = true;
 				},

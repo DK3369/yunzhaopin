@@ -4,74 +4,74 @@
             <table class="tableVue">
                 <thead>
                     <tr align="left">
-                        <th width="180">{yun:}t key='member_com_00021'{/yun}</th>
-                        <th width="460">{yun:}t key='member_user_00181'{/yun}</th>
-                        <th>{yun:}t key='member_com_00207'{/yun}</th>
+                        <th width="180">{{ lc('member_com_00021') }}</th>
+                        <th width="460">{{ lc('member_user_00181') }}</th>
+                        <th>{{ lc('member_com_00207') }}</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_yunying_00200'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_yunying_00200') }}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
                                 <el-radio-group v-model="stype" @change="stypeChange">
-                                    <el-radio :label="1">{yun:}t key='member_com_00018'{/yun}</el-radio>
-                                    <el-radio :label="2">{yun:}t key='admin_yunying_00201'{/yun}</el-radio>
+                                    <el-radio :label="1">{{ lc('member_com_00018') }}</el-radio>
+                                    <el-radio :label="2">{{ lc('admin_yunying_00201') }}</el-radio>
                                 </el-radio-group>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>{yun:}t key='admin_yunying_00200'{/yun}</span>
+                                <span>{{ lc('admin_yunying_00200') }}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_yunying_00216'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_yunying_00216') }}</div>
                         </td>
                         <td>
                             <div class="TableButn">
                                 <el-radio-group v-model="com" @change="getcom">
-                                    <el-radio :label="1">{yun:}t key='admin_01117'{/yun}</el-radio>
-                                    <el-radio :label="2">{yun:}t key='admin_01118'{/yun}</el-radio>
-                                    <el-radio :label="3">{yun:}t key='admin_01119'{/yun}</el-radio>
+                                    <el-radio :label="1">{{ lc('admin_01117') }}</el-radio>
+                                    <el-radio :label="2">{{ lc('admin_01118') }}</el-radio>
+                                    <el-radio :label="3">{{ lc('admin_01119') }}</el-radio>
                                 </el-radio-group>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>{yun:}t key='admin_yunying_00203'{/yun}</span>
+                                <span>{{ lc('admin_yunying_00203') }}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_yunying_00199'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_yunying_00199') }}</div>
                         </td>
                         <td>
                             <div class="TableButn">
-                                <el-input v-model="sendnum" placeholder="{yun:}t key='admin_yunying_00198'{/yun}"></el-input>
+                                <el-input v-model="sendnum" :placeholder="lc('admin_yunying_00198')"></el-input>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>{yun:}t key='admin_yunying_00182'{/yun}</span>
+                                <span>{{ lc('admin_yunying_00182') }}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_yunying_00217'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_yunying_00217') }}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
                                 <el-radio-group v-model="resume" @change="resumeChange">
-                                    <el-radio :label="1">{yun:}t key='admin_yunying_00215'{/yun}</el-radio>
-                                    <el-radio :label="2">{yun:}t key='home.latest_talents'{/yun}</el-radio>
-                                    <el-radio :label="3">{yun:}t key='admin_yunying_00213'{/yun}</el-radio>
+                                    <el-radio :label="1">{{ lc('admin_yunying_00215') }}</el-radio>
+                                    <el-radio :label="2">{{ lc('home.latest_talents') }}</el-radio>
+                                    <el-radio :label="3">{{ lc('admin_yunying_00213') }}</el-radio>
                                 </el-radio-group>
                             </div>
                         </td>
@@ -83,46 +83,46 @@
                     </tr>
                     <tr v-if="stype == 1">
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_01120'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_01120') }}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input v-model="num" placeholder="{yun:}t key='admin_01121'{/yun}"></el-input>
+                                <el-input v-model="num" :placeholder="lc('admin_01121')"></el-input>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>{yun:}t key='admin_yunying_00204'{/yun}</span>
+                                <span>{{ lc('admin_yunying_00204') }}</span>
                             </div>
                         </td>
                     </tr>
                     <tr v-if="stype == 1">
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_yunying_00172'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_yunying_00172') }}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input v-model="email_title" placeholder="{yun:}t key='wap_user_00076'{/yun}"></el-input>
+                                <el-input v-model="email_title" :placeholder="lc('wap_user_00076')"></el-input>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>{yun:}t key='admin_yunying_00172'{/yun}</span>
+                                <span>{{ lc('admin_yunying_00172') }}</span>
                             </div>
                         </td>
                     </tr>
                     <tr v-if="stype == 2">
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_00666'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_00666') }}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input v-model="content" type="textarea" placeholder="{yun:}t key='wap_user_00076'{/yun}"></el-input>
+                                <el-input v-model="content" type="textarea" :placeholder="lc('wap_user_00076')"></el-input>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>{yun:}t key='admin_00666'{/yun}</span>
+                                <span>{{ lc('admin_00666') }}</span>
                             </div>
                         </td>
                     </tr>
@@ -130,7 +130,7 @@
             </table>
         </div>
         <div class="setBasicButn" style="border: none; height: 80px;">
-            <el-button type="primary" size="medium" @click="send">{yun:}t key='resume_00033'{/yun}</el-button>
+            <el-button type="primary" size="medium" @click="send">{{ lc('resume_00033') }}</el-button>
         </div>
     </div>
 </template>
@@ -217,19 +217,19 @@ module.exports = {
                 sy_weburl = this.sy_weburl;
             if (this.stype == 1) {
                 if (val == 1) {
-                    this.email_title = sy_webname + "{yun:}t key='admin_yunying_00211'{/yun}";
+                    this.email_title = sy_webname + lc('admin_yunying_00211');
                 } else if (val == 2) {
-                    this.email_title = sy_webname + "{yun:}t key='admin_yunying_00212'{/yun}";
+                    this.email_title = sy_webname + lc('admin_yunying_00212');
                 } else if (val == 3) {
-                    this.email_title = sy_webname + "{yun:}t key='admin_yunying_00208'{/yun}";
+                    this.email_title = sy_webname + lc('admin_yunying_00208');
                 }
             } else {
                 if (val == 1) {
-                    this.content = sy_webname + "{yun:}t key='admin_yunying_00206'{/yun}" + sy_weburl + "！{yun:}t key='wap_00561'{/yun}";
+                    this.content = sy_webname + lc('admin_yunying_00206') + sy_weburl + "！{{ lc('wap_00561') }}";
                 } else if (val == 2) {
-                    this.content = sy_webname + "{yun:}t key='admin_yunying_00207'{/yun}" + sy_weburl + "！{yun:}t key='wap_00561'{/yun}";
+                    this.content = sy_webname + lc('admin_yunying_00207') + sy_weburl + "！{{ lc('wap_00561') }}";
                 } else if (val == 3) {
-                    this.content = sy_webname + "{yun:}t key='admin_yunying_00205'{/yun}" + sy_weburl + "！{yun:}t key='wap_00561'{/yun}";
+                    this.content = sy_webname + lc('admin_yunying_00205') + sy_weburl + "！{{ lc('wap_00561') }}";
                 }
             }
         },
@@ -245,37 +245,37 @@ module.exports = {
                 content = that.content;
 
             if (!com) {
-                message.error("{yun:}t key='admin_yunying_00214'{/yun}");
+                message.error(lc('admin_yunying_00214'));
                 return false;
             }
             if (sendnum < 1) {
-                message.error("{yun:}t key='admin_yunying_00191'{/yun}");
+                message.error(lc('admin_yunying_00191'));
                 return false;
             } else if (sendnum > 500) {
-                message.error("{yun:}t key='admin_yunying_00181'{/yun}");
+                message.error(lc('admin_yunying_00181'));
                 return false;
             }
             if (!resume) {
-                message.error("{yun:}t key='admin_yunying_00210'{/yun}");
+                message.error(lc('admin_yunying_00210'));
                 return false;
             }
             if (stype == 1) {
                 if (num === '' || num < 1) {
-                    message.error("{yun:}t key='admin_yunying_00209'{/yun}");
+                    message.error(lc('admin_yunying_00209'));
                     return false;
                 }
                 if (title == '') {
-                    message.error("{yun:}t key='admin_yunying_00171'{/yun}");
+                    message.error(lc('admin_yunying_00171'));
                     return false;
                 }
             } else {
                 if (content == '') {
-                    message.error("{yun:}t key='admin_01111'{/yun}");
+                    message.error(lc('admin_01111'));
                     return false;
                 }
             }
 
-            that.sendMsg(stype, com, sendnum, resume, num, title, content, 3, 0, 0, 0, 0, "{yun:}t key='admin_yunying_00170'{/yun}");
+            that.sendMsg(stype, com, sendnum, resume, num, title, content, 3, 0, 0, 0, 0, lc('admin_yunying_00170'));
         },
 
         sendMsg(stype, com, sendnum, resume, num, title, content, status, pagelimit, value, sendok, sendno, msg) {

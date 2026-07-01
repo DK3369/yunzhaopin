@@ -10,17 +10,17 @@
                     <span>{{ stringExpEduAge }}</span>
                     <span v-if="!info.hasOwnProperty('matching')" class="moreInOne">
                         <span v-if="resumeinfo.telphone">{{ lc("admin_mobile_value", [resumeinfo.telphone]) }}</span>
-                        <span v-if="resumeinfo.email">&nbsp;· {yun:}t key='member_user_00282'{/yun}：{{ resumeinfo.email }}</span>
+                        <span v-if="resumeinfo.email">&nbsp;· {{ lc('member_user_00282') }}：{{ resumeinfo.email }}</span>
                     </span>
                     <span v-if="expect.add_ip" class="moreInOne">
                         <span>IP：{{ expect.add_ip }}</span>
-                        <span style="padding-left: 15px;">{yun:}t key='admin_00400'{/yun}</span>
+                        <span style="padding-left: 15px;">{{ lc('admin_00400') }}</span>
                     </span>
                 </div>
             </div>
             <div class="jiliTanJinli">
                 <div class="jiliTanJinTite">
-                    <span>{yun:}t key='wap_00460'{/yun}</span>
+                    <span>{{ lc('wap_00460') }}</span>
                 </div>
                 <div class="jiliTanJinCont">
                     <span>{{ expect.name }} · {{ expect.city_classname }} · {{ expect.report_n }} · {{ expect.type_n }} · {{ expect.jobstatus_n }}</span>
@@ -28,12 +28,12 @@
                         <template v-for="item in expect.expectjob">
                             {{ item }}&nbsp;
                         </template>· {{ expect.hy_n }}</span>
-                    <span>{yun:}t key='admin_00401'{/yun}</span>
+                    <span>{{ lc('admin_00401') }}</span>
                 </div>
             </div>
             <div v-if="work.length" class="jiliTanJinli">
                 <div class="jiliTanJinTite">
-                    <span>{yun:}t key='wap_00457'{/yun}</span>
+                    <span>{{ lc('wap_00457') }}</span>
                 </div>
                 <div v-for="(item, index) in work" :key="index" class="jiliTanJinCont" :class="index > 0 ? 'moreTop' : ''">
                     <span class="moreInOne">
@@ -46,25 +46,25 @@
             </div>
             <div v-if="edu.length" class="jiliTanJinli">
                 <div class="jiliTanJinTite">
-                    <span>{yun:}t key='wap_00459'{/yun}</span>
+                    <span>{{ lc('wap_00459') }}</span>
                 </div>
                 <div v-for="(item, index) in edu" :key="index" class="jiliTanJinCont" :class="index > 0 ? 'moreTop' : ''">
                     <span class="fw">{{item.name}}</span>
                     <span>{{ item.sdate_n }} ~ {{ item.edate_n }}</span>
                     <span class="moreInOne">
-                        <span>{yun:}t key='admin_00402'{/yun}</span>
-                        <span v-if="item.specialty" class="titleTwoSpace">{yun:}t key='admin_00403'{/yun}</span>
+                        <span>{{ lc('admin_00402') }}</span>
+                        <span v-if="item.specialty" class="titleTwoSpace">{{ lc('admin_00403') }}</span>
                     </span>
                 </div>
             </div>
             <div v-if="training.length" class="jiliTanJinli">
                 <div class="jiliTanJinTite">
-                    <span>{yun:}t key='wap_00455'{/yun}</span>
+                    <span>{{ lc('wap_00455') }}</span>
                 </div>
                 <div v-for="(item, index) in training" :key="index" class="jiliTanJinCont" :class="index > 0 ? 'moreTop' : ''">
                     <span class="moreInOne">
                         <span class="fw">{{ item.name }}</span>
-                        <span class="titleTwoSpace">{yun:}t key='member_user_00008'{/yun}</span>
+                        <span class="titleTwoSpace">{{ lc('member_user_00008') }}</span>
                         <span class="fw">{{ item.title }}</span>
                     </span>
                     <span>{{ item.sdate_n }} ~ {{ item.edate_n }}</span>
@@ -73,26 +73,26 @@
             </div>
             <div v-if="skill.length" class="jiliTanJinli">
                 <div class="jiliTanJinTite">
-                    <span>{yun:}t key='wap_00461'{/yun}</span>
+                    <span>{{ lc('wap_00461') }}</span>
                 </div>
                 <div v-for="(item, index) in skill" :key="index" class="jiliTanJinCont" :class="index > 0 ? 'moreTop' : ''">
                     <span class="moreInOne">
                         <span class="fw">{{ item.name }}</span>
                         <template v-if="item.longtime">
-                            <span class="titleTwoSpace">{yun:}t key='member_user_00083'{/yun}</span>
-                            <span class="fw">{yun:}t key='admin_00404'{/yun}</span>
+                            <span class="titleTwoSpace">{{ lc('member_user_00083') }}</span>
+                            <span class="fw">{{ lc('admin_00404') }}</span>
                         </template>
                     </span>
-                    <span>{yun:}t key='admin_00405'{/yun}</span>
+                    <span>{{ lc('admin_00405') }}</span>
                     <span v-if="item.pic" class="moreInOne">
-                        <span>{yun:}t key='resume_00012'{/yun}</span>
+                        <span>{{ lc('resume_00012') }}</span>
                         <el-image style="width: 100px;" :src="item.pic" :preview-src-list="[item.pic]"></el-image>
                     </span>
                 </div>
             </div>
             <div v-if="project.length" class="jiliTanJinli">
                 <div class="jiliTanJinTite">
-                    <span>{yun:}t key='wap_00465'{/yun}</span>
+                    <span>{{ lc('wap_00465') }}</span>
                 </div>
                 <div v-for="(item, index) in project" :key="index" class="jiliTanJinCont" :class="index > 0 ? 'moreTop' : ''">
                     <span class="moreInOne">
@@ -105,7 +105,7 @@
             </div>
             <div v-if="other.length" class="jiliTanJinli">
                 <div class="jiliTanJinTite">
-                    <span>{yun:}t key='admin_00068'{/yun}</span>
+                    <span>{{ lc('admin_00068') }}</span>
                 </div>
                 <div v-for="(item, index) in other" :key="index" class="jiliTanJinCont" :class="index > 0 ? 'moreTop' : ''">
                     <span class="moreInOne fw">{{ item.name }}</span>
@@ -114,7 +114,7 @@
             </div>
             <div class="jiliTanJinli">
                 <div class="jiliTanJinTite">
-                    <span>{yun:}t key='wap_00527'{/yun}</span>
+                    <span>{{ lc('wap_00527') }}</span>
                 </div>
                 <div class="jiliTanJinCont">
                     <span>{{ resumeinfo.description }}</span>
@@ -134,14 +134,14 @@ module.exports = {
             loading: false,
             stringExpEduAge: '",
             info: {},
-            resumeinfo: {},//{yun:}t key='common.resume'{/yun}
-            expect: {},//{yun:}t key='wap_00460'{/yun}
-            work: [],//{yun:}t key='wap_00457'{/yun}
-            edu: [],//{yun:}t key='wap_00459'{/yun}
-            training: [],//{yun:}t key='wap_00455'{/yun}
-            skill: [],//{yun:}t key='wap_00461'{/yun}
-            project: [],//{yun:}t key='wap_00465'{/yun}
-            other: [],//{yun:}t key='admin_00068'{/yun}
+            resumeinfo: {},//{{ lc('common.resume') }}
+            expect: {},//{{ lc('wap_00460') }}
+            work: [],//{{ lc('wap_00457') }}
+            edu: [],//{{ lc('wap_00459') }}
+            training: [],//{{ lc('wap_00455') }}
+            skill: [],//{{ lc('wap_00461') }}
+            project: [],//{{ lc('wap_00465') }}
+            other: [],//{{ lc('admin_00068') }}
         }
     },
 	watch: {
@@ -192,10 +192,10 @@ module.exports = {
         },
         handleExpEduAge() {
             let arrTmp = [];
-            this.resumeinfo.exp_n && (arrTmp.push(this.resumeinfo.exp_n + "{yun:}t key='home.experience_suffix'{/yun}"));
-            this.resumeinfo.edu_n && (arrTmp.push(this.resumeinfo.edu_n + "{yun:}t key='home.education_suffix'{/yun}"));
-            this.resumeinfo.age == 0 && (arrTmp.push("{yun:}t key='wap_user_00333'{/yun}"));
-            this.resumeinfo.age > 0 && (arrTmp.push(this.resumeinfo.age + "{yun:}t key='home.age_suffix'{/yun}"));
+            this.resumeinfo.exp_n && (arrTmp.push(this.resumeinfo.exp_n + lc('home.experience_suffix')));
+            this.resumeinfo.edu_n && (arrTmp.push(this.resumeinfo.edu_n + lc('home.education_suffix')));
+            this.resumeinfo.age == 0 && (arrTmp.push(lc('wap_user_00333')));
+            this.resumeinfo.age > 0 && (arrTmp.push(this.resumeinfo.age + lc('home.age_suffix')));
             arrTmp.length && (this.stringExpEduAge = arrTmp.join(' · '));
         }
     }

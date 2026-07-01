@@ -6,41 +6,41 @@
                 <table class="tableVue" style="overflow-y: auto; height: 100%;">
                     <thead>
                         <tr align="left">
-                            <th width="150">{yun:}t key='member_com_00021'{/yun}</th>
-                            <th>{yun:}t key='member_user_00181'{/yun}</th>
+                            <th width="150">{{ lc('member_com_00021') }}</th>
+                            <th>{{ lc('member_user_00181') }}</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
                             <td>
-                                <div class="TableTite">{yun:}t key='admin_tool_00624'{/yun}</div>
+                                <div class="TableTite">{{ lc('admin_tool_00624') }}</div>
                             </td>
                             <td>
                                 <div class="TableButn">
                                     <el-radio-group v-model="temptype" @input="temptypeFun">
-                                        <el-radio label="0">{yun:}t key='admin_tool_00630'{/yun}</el-radio>
-                                        <el-radio label="1">{yun:}t key='admin_tool_00612'{/yun}</el-radio>
+                                        <el-radio label="0">{{ lc('admin_tool_00630') }}</el-radio>
+                                        <el-radio label="1">{{ lc('admin_tool_00612') }}</el-radio>
                                     </el-radio-group>
                                 </div>
                             </td>
                         </tr>
                         <tr>
                             <td>
-                                <div class="TableTite">{yun:}t key='admin_tool_00629'{/yun}</div>
+                                <div class="TableTite">{{ lc('admin_tool_00629') }}</div>
                             </td>
                             <td>
                                 <div class="TableButn">
                                     <el-radio-group v-model="type" @input="typeFun">
-                                        <el-radio label="job">{yun:}t key='default_00236'{/yun}</el-radio>
-                                        <el-radio label="resume">{yun:}t key='admin_tool_00631'{/yun}</el-radio>
-                                        <el-radio label="company">{yun:}t key='default_00113'{/yun}</el-radio>
+                                        <el-radio label="job">{{ lc('default_00236') }}</el-radio>
+                                        <el-radio label="resume">{{ lc('admin_tool_00631') }}</el-radio>
+                                        <el-radio label="company">{{ lc('default_00113') }}</el-radio>
                                     </el-radio-group>
                                 </div>
                             </td>
                         </tr>
                         <tr v-show="type=='job' || type=='company'">
                             <td>
-                                <div class="TableTite">{yun:}t key='admin_user_company_00018'{/yun}</div>
+                                <div class="TableTite">{{ lc('admin_user_company_00018') }}</div>
                             </td>
                             <td>
                                 <div class="TableButn">
@@ -52,101 +52,101 @@
                         </tr>
                         <tr v-show="type=='job'">
                             <td>
-                                <div class="TableTite">{yun:}t key='wap_com_00236'{/yun}</div>
+                                <div class="TableTite">{{ lc('wap_com_00236') }}</div>
                             </td>
                             <td>
                                 <div class="TableButn">
                                     <el-checkbox-group v-model="jobtg">
-                                        <el-checkbox label="0">{yun:}t key='member_com_00327'{/yun}</el-checkbox>
-                                        <el-checkbox label="1">{yun:}t key='member_com_00326'{/yun}</el-checkbox>
-                                        <el-checkbox label="2">{yun:}t key='home.recommended_jobs'{/yun}</el-checkbox>
+                                        <el-checkbox label="0">{{ lc('member_com_00327') }}</el-checkbox>
+                                        <el-checkbox label="1">{{ lc('member_com_00326') }}</el-checkbox>
+                                        <el-checkbox label="2">{{ lc('home.recommended_jobs') }}</el-checkbox>
                                     </el-checkbox-group>
                                 </div>
                             </td>
                         </tr>
                         <tr v-show="type=='job'">
                             <td>
-                                <div class="TableTite">{yun:}t key='admin_user_company_00272'{/yun}</div>
+                                <div class="TableTite">{{ lc('admin_user_company_00272') }}</div>
                             </td>
                             <td>
                                 <div class="TableButn">
                                     <el-radio-group v-model="times">
-                                        <el-radio label="0">{yun:}t key='common_01936'{/yun}</el-radio>
-                                        <el-radio label="1">{yun:}t key='admin_tool_00616'{/yun}</el-radio>
-                                        <el-radio label="3">{yun:}t key='admin_tool_00619'{/yun}</el-radio>
-                                        <el-radio label="7">{yun:}t key='admin_tool_00622'{/yun}</el-radio>
-                                        <el-radio label="15">{yun:}t key='admin_tool_00609'{/yun}</el-radio>
-                                        <el-radio label="30">{yun:}t key='admin_tool_00610'{/yun}</el-radio>
+                                        <el-radio label="0">{{ lc('common_01936') }}</el-radio>
+                                        <el-radio label="1">{{ lc('admin_tool_00616') }}</el-radio>
+                                        <el-radio label="3">{{ lc('admin_tool_00619') }}</el-radio>
+                                        <el-radio label="7">{{ lc('admin_tool_00622') }}</el-radio>
+                                        <el-radio label="15">{{ lc('admin_tool_00609') }}</el-radio>
+                                        <el-radio label="30">{{ lc('admin_tool_00610') }}</el-radio>
                                     </el-radio-group>
                                 </div>
                             </td>
                         </tr>
                         <tr v-show="type=='job'">
                             <td>
-                                <div class="TableTite">{yun:}t key='admin_tool_00634'{/yun}</div>
+                                <div class="TableTite">{{ lc('admin_tool_00634') }}</div>
                             </td>
                             <td>
                                 <div class="TableButn">
                                     <el-radio-group v-model="ftimes">
-                                        <el-radio label="0">{yun:}t key='common_01936'{/yun}</el-radio>
-                                        <el-radio label="1">{yun:}t key='admin_tool_00616'{/yun}</el-radio>
-                                        <el-radio label="3">{yun:}t key='admin_tool_00619'{/yun}</el-radio>
-                                        <el-radio label="7">{yun:}t key='admin_tool_00622'{/yun}</el-radio>
-                                        <el-radio label="15">{yun:}t key='admin_tool_00609'{/yun}</el-radio>
-                                        <el-radio label="30">{yun:}t key='admin_tool_00610'{/yun}</el-radio>
+                                        <el-radio label="0">{{ lc('common_01936') }}</el-radio>
+                                        <el-radio label="1">{{ lc('admin_tool_00616') }}</el-radio>
+                                        <el-radio label="3">{{ lc('admin_tool_00619') }}</el-radio>
+                                        <el-radio label="7">{{ lc('admin_tool_00622') }}</el-radio>
+                                        <el-radio label="15">{{ lc('admin_tool_00609') }}</el-radio>
+                                        <el-radio label="30">{{ lc('admin_tool_00610') }}</el-radio>
                                     </el-radio-group>
                                 </div>
                             </td>
                         </tr>
                         <tr v-show="type=='company'">
                             <td>
-                                <div class="TableTite">{yun:}t key='admin_tool_00607'{/yun}</div>
+                                <div class="TableTite">{{ lc('admin_tool_00607') }}</div>
                             </td>
                             <td>
                                 <div class="TableButn">
                                     <el-radio-group v-model="vtimes">
-                                        <el-radio label="0">{yun:}t key='common_01936'{/yun}</el-radio>
-                                        <el-radio label="1">{yun:}t key='admin_tool_00616'{/yun}</el-radio>
-                                        <el-radio label="7">{yun:}t key='admin_tool_00615'{/yun}</el-radio>
-                                        <el-radio label="30">{yun:}t key='admin_tool_00617'{/yun}</el-radio>
+                                        <el-radio label="0">{{ lc('common_01936') }}</el-radio>
+                                        <el-radio label="1">{{ lc('admin_tool_00616') }}</el-radio>
+                                        <el-radio label="7">{{ lc('admin_tool_00615') }}</el-radio>
+                                        <el-radio label="30">{{ lc('admin_tool_00617') }}</el-radio>
                                     </el-radio-group>
                                 </div>
                             </td>
                         </tr>
                         <tr v-show="type=='job'">
                             <td>
-                                <div class="TableTite">{yun:}t key='admin_tool_00550'{/yun}</div>
+                                <div class="TableTite">{{ lc('admin_tool_00550') }}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
-                                    <el-select v-model="jobcopos" multiple filterable remote reserve-keyword placeholder="{yun:}t key='wap_00510'{/yun}" :remote-method="job_search" :loading="job_searchloading">
+                                    <el-select v-model="jobcopos" multiple filterable remote reserve-keyword :placeholder="lc('wap_00510')" :remote-method="job_search" :loading="job_searchloading">
                                         <el-option v-for="item in job_search_list" :key="item.value" :label="item.name" :value="item.value">
                                             <span style="float: left; color: #333; font-size: 14px;font-weight:bold;">{{item.name}}</span>
                                             <span style="float: right; color: #a5a5a5; font-size: x-small;">{{item.upname}}</span>
                                         </el-option>
                                     </el-select>
                                 </div>
-                                <div class="tool_inputips"><i class="el-icon-question"></i> {yun:}t key='admin_tool_00604'{/yun}</div>
+                                <div class="tool_inputips"><i class="el-icon-question"></i> {{ lc('admin_tool_00604') }}</div>
                             </td>
                         </tr>
                         <tr v-show="type=='company'">
                             <td>
-                                <div class="TableTite">{yun:}t key='admin_tool_00527'{/yun}</div>
+                                <div class="TableTite">{{ lc('admin_tool_00527') }}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
-                                    <el-select v-model="copos" multiple filterable remote reserve-keyword placeholder="{yun:}t key='admin_tool_00635'{/yun}" :remote-method="company_search" :loading="company_searchloading">
+                                    <el-select v-model="copos" multiple filterable remote reserve-keyword :placeholder="lc('admin_tool_00635')" :remote-method="company_search" :loading="company_searchloading">
                                         <el-option v-for="item in company_search_list" :key="item.value" :label="item.name" :value="item.value">
                                             <span style="float: left; color: #333; font-size: 14px;font-weight:bold;">{{item.name}}</span>
                                         </el-option>
                                     </el-select>
                                 </div>
-                                <div class="tool_inputips"><i class="el-icon-question"></i>{yun:}t key='admin_tool_00605'{/yun}</div>
+                                <div class="tool_inputips"><i class="el-icon-question"></i>{{ lc('admin_tool_00605') }}</div>
                             </td>
                         </tr>
                         <tr v-show="type=='job' || type=='company'">
                             <td>
-                                <div class="TableTite">{yun:}t key='member_user_00198'{/yun}</div>
+                                <div class="TableTite">{{ lc('member_user_00198') }}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
@@ -156,7 +156,7 @@
                         </tr>
                         <tr v-show="type=='job'">
                             <td>
-                                <div class="TableTite">{yun:}t key='wap_user_00018'{/yun}</div>
+                                <div class="TableTite">{{ lc('wap_user_00018') }}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
@@ -166,11 +166,11 @@
                         </tr>
                         <tr v-show="type=='company'">
                             <td>
-                                <div class="TableTite">{yun:}t key='admin_user_company_00373'{/yun}</div>
+                                <div class="TableTite">{{ lc('admin_user_company_00373') }}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
-                                    <el-select v-model="hy" placeholder="{yun:}t key='wap_user_00100'{/yun}">
+                                    <el-select v-model="hy" :placeholder="lc('wap_user_00100')">
                                         <el-option v-for="item in hi" :key="item" :label="hyname[item]" :value="item"></el-option>
                                     </el-select>
                                 </div>
@@ -178,19 +178,19 @@
                         </tr>
                         <tr v-show="type=='job'">
                             <td>
-                                <div class="TableTite">{yun:}t key='wap_com_00290'{/yun}</div>
+                                <div class="TableTite">{{ lc('wap_com_00290') }}</div>
                             </td>
                             <td>
                                 <div class="jianlidian">
                                     <div class="TableInpt">
-                                        <el-input type="number" placeholder="{yun:}t key='wap_user_00013'{/yun}" v-model="minsalary">
-                                            <span slot="suffix" class="slotspan">{yun:}t key='common_02056'{/yun}</span>
+                                        <el-input type="number" :placeholder="lc('wap_user_00013')" v-model="minsalary">
+                                            <span slot="suffix" class="slotspan">{{ lc('common_02056') }}</span>
                                         </el-input>
                                     </div>
                                     <div class="hxian"></div>
                                     <div class="TableInpt">
-                                        <el-input type="number" placeholder="{yun:}t key='wap_user_00014'{/yun}" v-model="maxsalary">
-                                            <span slot="suffix" class="slotspan">{yun:}t key='common_02056'{/yun}</span>
+                                        <el-input type="number" :placeholder="lc('wap_user_00014')" v-model="maxsalary">
+                                            <span slot="suffix" class="slotspan">{{ lc('common_02056') }}</span>
                                         </el-input>
                                     </div>
                                 </div>
@@ -198,38 +198,38 @@
                         </tr>
                         <tr v-show="type=='job'">
                             <td>
-                                <div class="TableTite">{yun:}t key='wap_com_00173'{/yun}</div>
+                                <div class="TableTite">{{ lc('wap_com_00173') }}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
-                                    <el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="welfare"></el-input>
+                                    <el-input :placeholder="lc('wap_user_00076')" v-model="welfare"></el-input>
                                 </div>
-                                <div class="tool_inputips"><i class="el-icon-question"></i> {yun:}t key='admin_tool_00625'{/yun}</div>
+                                <div class="tool_inputips"><i class="el-icon-question"></i> {{ lc('admin_tool_00625') }}</div>
                             </td>
                         </tr>
                         <tr v-show="type=='job'">
                             <td>
-                                <div class="TableTite">{yun:}t key='admin_00149'{/yun}</div>
+                                <div class="TableTite">{{ lc('admin_00149') }}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
-                                    <el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="keyword"></el-input>
+                                    <el-input :placeholder="lc('wap_user_00076')" v-model="keyword"></el-input>
                                 </div>
                             </td>
                         </tr>
                         <tr v-show="type=='resume'">
                             <td>
-                                <div class="TableTite">{yun:}t key='member_com_00107'{/yun}</div>
+                                <div class="TableTite">{{ lc('member_com_00107') }}</div>
                             </td>
                             <td>
                                 <div class="TableButn">
-                                    <el-checkbox :true-label='1' v-model="cvkind">{yun:}t key='wap_user_00210'{/yun}</el-checkbox>
+                                    <el-checkbox :true-label='1' v-model="cvkind">{{ lc('wap_user_00210') }}</el-checkbox>
                                 </div>
                             </td>
                         </tr>
                         <tr v-show="type=='resume'">
                             <td>
-                                <div class="TableTite">{yun:}t key='wap_com_00353'{/yun}</div>
+                                <div class="TableTite">{{ lc('wap_com_00353') }}</div>
                             </td>
                             <td>
                                 <div class="TableButn">
@@ -242,7 +242,7 @@
                         </tr>
                         <tr v-show="type=='resume'">
                             <td>
-                                <div class="TableTite">{yun:}t key='admin_tool_00127'{/yun}</div>
+                                <div class="TableTite">{{ lc('admin_tool_00127') }}</div>
                             </td>
                             <td>
                                 <div class="TableButn">
@@ -255,41 +255,41 @@
                         </tr>
                         <tr v-show="type=='resume'">
                             <td>
-                                <div class="TableTite">{yun:}t key='admin_tool_00633'{/yun}</div>
+                                <div class="TableTite">{{ lc('admin_tool_00633') }}</div>
                             </td>
                             <td>
                                 <div class="TableButn">
                                     <el-radio-group v-model="rtimes">
-                                        <el-radio label="0">{yun:}t key='common_01936'{/yun}</el-radio>
-                                        <el-radio label="1">{yun:}t key='admin_tool_00616'{/yun}</el-radio>
-                                        <el-radio label="3">{yun:}t key='admin_tool_00619'{/yun}</el-radio>
-                                        <el-radio label="7">{yun:}t key='admin_tool_00622'{/yun}</el-radio>
-                                        <el-radio label="15">{yun:}t key='admin_tool_00609'{/yun}</el-radio>
-                                        <el-radio label="30">{yun:}t key='admin_tool_00610'{/yun}</el-radio>
+                                        <el-radio label="0">{{ lc('common_01936') }}</el-radio>
+                                        <el-radio label="1">{{ lc('admin_tool_00616') }}</el-radio>
+                                        <el-radio label="3">{{ lc('admin_tool_00619') }}</el-radio>
+                                        <el-radio label="7">{{ lc('admin_tool_00622') }}</el-radio>
+                                        <el-radio label="15">{{ lc('admin_tool_00609') }}</el-radio>
+                                        <el-radio label="30">{{ lc('admin_tool_00610') }}</el-radio>
                                     </el-radio-group>
                                 </div>
                             </td>
                         </tr>
                         <tr v-show="type=='resume'">
                             <td>
-                                <div class="TableTite">{yun:}t key='admin_tool_00632'{/yun}</div>
+                                <div class="TableTite">{{ lc('admin_tool_00632') }}</div>
                             </td>
                             <td>
                                 <div class="TableButn">
                                     <el-radio-group v-model="rltimes">
-                                        <el-radio label="0">{yun:}t key='common_01936'{/yun}</el-radio>
-                                        <el-radio label="1">{yun:}t key='admin_tool_00616'{/yun}</el-radio>
-                                        <el-radio label="3">{yun:}t key='admin_tool_00619'{/yun}</el-radio>
-                                        <el-radio label="7">{yun:}t key='admin_tool_00622'{/yun}</el-radio>
-                                        <el-radio label="15">{yun:}t key='admin_tool_00609'{/yun}</el-radio>
-                                        <el-radio label="30">{yun:}t key='admin_tool_00610'{/yun}</el-radio>
+                                        <el-radio label="0">{{ lc('common_01936') }}</el-radio>
+                                        <el-radio label="1">{{ lc('admin_tool_00616') }}</el-radio>
+                                        <el-radio label="3">{{ lc('admin_tool_00619') }}</el-radio>
+                                        <el-radio label="7">{{ lc('admin_tool_00622') }}</el-radio>
+                                        <el-radio label="15">{{ lc('admin_tool_00609') }}</el-radio>
+                                        <el-radio label="30">{{ lc('admin_tool_00610') }}</el-radio>
                                     </el-radio-group>
                                 </div>
                             </td>
                         </tr>
                         <tr v-show="type=='resume'">
                             <td>
-                                <div class="TableTite">{yun:}t key='wap_com_00283'{/yun}</div>
+                                <div class="TableTite">{{ lc('wap_com_00283') }}</div>
                             </td>
                             <td>
                                 <div class="TableButn">
@@ -301,7 +301,7 @@
                         </tr>
                         <tr v-show="type=='resume'">
                             <td>
-                                <div class="TableTite">{yun:}t key='wap_com_00287'{/yun}</div>
+                                <div class="TableTite">{{ lc('wap_com_00287') }}</div>
                             </td>
                             <td>
                                 <div class="TableButn">
@@ -313,26 +313,26 @@
                         </tr>
                         <tr v-show="type=='resume'">
                             <td>
-                                <div class="TableTite">{yun:}t key='wap_00328'{/yun}</div>
+                                <div class="TableTite">{{ lc('wap_00328') }}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
                                     <el-radio-group v-model="whole">
-                                        <el-radio label="55">{yun:}t key='admin_tool_00626'{/yun}</el-radio>
-                                        <el-radio label="75">{yun:}t key='admin_tool_00627'{/yun}</el-radio>
-                                        <el-radio label="95">{yun:}t key='admin_tool_00628'{/yun}</el-radio>
+                                        <el-radio label="55">{{ lc('admin_tool_00626') }}</el-radio>
+                                        <el-radio label="75">{{ lc('admin_tool_00627') }}</el-radio>
+                                        <el-radio label="95">{{ lc('admin_tool_00628') }}</el-radio>
                                     </el-radio-group>
                                 </div>
                             </td>
                         </tr>
                         <tr v-show="type=='company'">
                             <td>
-                                <div class="TableTite">{yun:}t key='admin_tool_00608'{/yun}</div>
+                                <div class="TableTite">{{ lc('admin_tool_00608') }}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
-                                    <el-select v-model="did" placeholder="{yun:}t key='wap_user_00100'{/yun}">
-                                        <el-option value="">{yun:}t key='common.all'{/yun}</el-option>
+                                    <el-select v-model="did" :placeholder="lc('wap_user_00100')">
+                                        <el-option value="">{{ lc('common.all') }}</el-option>
                                         <el-option v-for="(item,key) in domain" :key="key" :label="item" :value="key"></el-option>
                                     </el-select>
                                 </div>
@@ -340,33 +340,33 @@
                         </tr>
                         <tr v-show="type=='company'">
                             <td>
-                                <div class="TableTite">{yun:}t key='wap_00087'{/yun}</div>
+                                <div class="TableTite">{{ lc('wap_00087') }}</div>
                             </td>
                             <td>
                                 <div class="TableButn">
-                                    <el-checkbox :true-label='1' v-model="bekind">{yun:}t key='wap_00299'{/yun}</el-checkbox>
+                                    <el-checkbox :true-label='1' v-model="bekind">{{ lc('wap_00299') }}</el-checkbox>
                                 </div>
                             </td>
                         </tr>
                         <tr v-show="type=='company'">
                             <td>
-                                <div class="TableTite">{yun:}t key='admin_tool_00613'{/yun}</div>
+                                <div class="TableTite">{{ lc('admin_tool_00613') }}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
                                     <el-radio-group v-model="rule">
-                                        <el-radio label="0">{yun:}t key='common_01936'{/yun}</el-radio>
-                                        <el-radio label="1">{yun:}t key='admin_user_00256'{/yun}</el-radio>
-                                        <el-radio label="2">{yun:}t key='admin_tool_00623'{/yun}</el-radio>
-                                        <el-radio label="3">{yun:}t key='admin_tool_00576'{/yun}</el-radio>
+                                        <el-radio label="0">{{ lc('common_01936') }}</el-radio>
+                                        <el-radio label="1">{{ lc('admin_user_00256') }}</el-radio>
+                                        <el-radio label="2">{{ lc('admin_tool_00623') }}</el-radio>
+                                        <el-radio label="3">{{ lc('admin_tool_00576') }}</el-radio>
                                     </el-radio-group>
                                 </div>
-                                <div class="tool_inputips"><i class="el-icon-question"></i>{yun:}t key='admin_tool_00606'{/yun}</div>
+                                <div class="tool_inputips"><i class="el-icon-question"></i>{{ lc('admin_tool_00606') }}</div>
                             </td>
                         </tr>
                         <tr>
                             <td>
-                                <div class="TableTite">{yun:}t key='admin_tool_00614'{/yun}</div>
+                                <div class="TableTite">{{ lc('admin_tool_00614') }}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
@@ -375,22 +375,22 @@
                                     </el-radio-group>
                                 </div>
                                 <div class="TableInpt">
-                                    <el-button @click="urlchange">{yun:}t key='member_com_00354'{/yun}</el-button>
+                                    <el-button @click="urlchange">{{ lc('member_com_00354') }}</el-button>
                                 </div>
                             </td>
                         </tr>
                         <tr>
                             <td>
-                                <div class="TableTite">{yun:}t key='admin_tool_00611'{/yun}</div>
+                                <div class="TableTite">{{ lc('admin_tool_00611') }}</div>
                             </td>
                             <td>
                                 <div class="TableButn">
                                     <el-radio-group v-model="num">
-                                        <el-radio label="10">{yun:}t key='api_alipay_00001'{/yun}</el-radio>
-                                        <el-radio label="20">{yun:}t key='admin_user_company_00299'{/yun}</el-radio>
-                                        <el-radio label="30">{yun:}t key='admin_tool_00618'{/yun}</el-radio>
-                                        <el-radio label="40">{yun:}t key='admin_tool_00620'{/yun}</el-radio>
-                                        <el-radio label="50">{yun:}t key='admin_tool_00621'{/yun}</el-radio>
+                                        <el-radio label="10">{{ lc('api_alipay_00001') }}</el-radio>
+                                        <el-radio label="20">{{ lc('admin_user_company_00299') }}</el-radio>
+                                        <el-radio label="30">{{ lc('admin_tool_00618') }}</el-radio>
+                                        <el-radio label="40">{{ lc('admin_tool_00620') }}</el-radio>
+                                        <el-radio label="50">{{ lc('admin_tool_00621') }}</el-radio>
                                     </el-radio-group>
                                 </div>
                             </td>
@@ -404,12 +404,12 @@
                     <div id="content" v-html="htmlcon" :class="temptype=='1'?'wxpubtool_gj_con':'wxpubtool_gj_con_1'"></div>
                 </div>
                 <div class="wxfbtoolfuzhis">
-                    <input type="button" class="wxpubtool_CZbth" id="copy" data-clipboard-action="copy" data-clipboard-target="#content" value="{yun:}t key='admin_tool_00526'{/yun}" />
+                    <input type="button" class="wxpubtool_CZbth" id="copy" data-clipboard-action="copy" data-clipboard-target="#content" value=lc('admin_tool_00526') />
                 </div>
             </div>
         </div>
         <div class="setBasicButn" style="border: none;">
-            <el-button type="primary" size="medium" :loading='post_loading' @click="save(false)">{yun:}t key='common.submit'{/yun}</el-button>
+            <el-button type="primary" size="medium" :loading='post_loading' @click="save(false)">{{ lc('common.submit') }}</el-button>
         </div>
     </div>
 </template>
@@ -500,7 +500,7 @@ module.exports = {
 
             const clipboard = new ClipboardJS("#copy");
             clipboard.on('success', function(e) {
-                message.success(window.yunAdminT("{yun:}t key='wap_com_00254'{/yun}"));
+                message.success(window.yunAdminT(lc('wap_com_00254')));
                 e.clearSelection();
             });
             clipboard.on('error', function(e) {});

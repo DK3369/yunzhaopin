@@ -1,20 +1,20 @@
 <template>
     <div class="moduleElHight">
         <div class="tableDome_tip">
-            <el-alert title="{yun:}t key='admin_tool_00215'{/yun}" type="success" :closable="false"></el-alert>
+            <el-alert :title="lc('admin_tool_00215')" type="success" :closable="false"></el-alert>
         </div>
         <div class="moduleElTable">
             <el-table :data="tableData" border style="width: 100%" :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" height="100%" v-loading="loading" :empty-text="emptytext">
-                <el-table-column prop="name" label="{yun:}t key='admin_tool_00216'{/yun}"></el-table-column>
-                <el-table-column prop="type" label="{yun:}t key='admin_tool_00217'{/yun}" ></el-table-column>
-                <el-table-column prop="num" label="{yun:}t key='admin_tool_00214'{/yun}"></el-table-column>
-                <el-table-column prop="size" label="{yun:}t key='admin_tool_00213'{/yun}"></el-table-column>
-                <el-table-column prop="chip" label="{yun:}t key='admin_tool_00218'{/yun}"></el-table-column>
-                <el-table-column prop="charset" label="{yun:}t key='admin_tool_00219'{/yun}"></el-table-column>
-                <el-table-column label="{yun:}t key='member_user_00048'{/yun}" width="180">
+                <el-table-column prop="name" :label="lc('admin_tool_00216')"></el-table-column>
+                <el-table-column prop="type" :label="lc('admin_tool_00217')" ></el-table-column>
+                <el-table-column prop="num" :label="lc('admin_tool_00214')"></el-table-column>
+                <el-table-column prop="size" :label="lc('admin_tool_00213')"></el-table-column>
+                <el-table-column prop="chip" :label="lc('admin_tool_00218')"></el-table-column>
+                <el-table-column prop="charset" :label="lc('admin_tool_00219')"></el-table-column>
+                <el-table-column :label="lc('member_user_00048')" width="180">
                     <template slot-scope="scope">
-                        <el-button size="mini" plain @click="optimizeDB(scope,2)">{yun:}t key='admin_tool_00220'{/yun}</el-button>
-                        <el-button size="mini" plain @click="optimizeDB(scope,3)">{yun:}t key='admin_tool_00221'{/yun}</el-button>
+                        <el-button size="mini" plain @click="optimizeDB(scope,2)">{{ lc('admin_tool_00220') }}</el-button>
+                        <el-button size="mini" plain @click="optimizeDB(scope,3)">{{ lc('admin_tool_00221') }}</el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -41,7 +41,7 @@
         data: function () {
             return {
                 loading: false,
-                emptytext: window.yunAdminT("{yun:}t key='wap_js_00113'{/yun}"),
+                emptytext: window.yunAdminT(lc('wap_js_00113')),
                 tableData: []
             }
         },
@@ -51,14 +51,14 @@
         methods: {
             async getOptTable() {
                 this.loading = true;
-                this.emptytext = window.yunAdminT("{yun:}t key='admin_user_weipin_00026'{/yun}");
+                this.emptytext = window.yunAdminT(lc('admin_user_weipin_00026'));
                 let res = await httpPost('m=tool&c=database&a=getOptTable',{},{hideloading: true});
                 if (res.data.error == 0) {
 
                     this.tableData = res.data.data;
                     this.loading = false;
                     if (this.tableData.length === 0){
-                        this.emptytext = window.yunAdminT("{yun:}t key='wap_js_00113'{/yun}");
+                        this.emptytext = window.yunAdminT(lc('wap_js_00113'));
                     }
                 }
             },

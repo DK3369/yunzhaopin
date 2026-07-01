@@ -3,18 +3,18 @@
         <div class="drawerModInfo">
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>{yun:}t key='wap_00468'{/yun}</span>
+                    <span>{{ lc('wap_00468') }}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input v-model="info.name" placeholder="{yun:}t key='wap_user_00076'{/yun}"></el-input>
+                    <el-input v-model="info.name" :placeholder="lc('wap_user_00076')"></el-input>
                 </div>
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>{yun:}t key='default_00321'{/yun}</span>
+                    <span>{{ lc('default_00321') }}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-select v-model="info.nid" placeholder="{yun:}t key='wap_user_00100'{/yun}">
+                    <el-select v-model="info.nid" :placeholder="lc('wap_user_00100')">
                         <el-option v-for="item in class_arr" :key="item.id" :label="item.name" :value="item.id">
                         </el-option>
                     </el-select>
@@ -22,7 +22,7 @@
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>{yun:}t key='admin_system_00671'{/yun}</span>
+                    <span>{{ lc('admin_system_00671') }}</span>
                 </div>
                 <div class="drawerModInpt">
                     <el-radio-group v-model="info.is_type">
@@ -32,81 +32,81 @@
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>{yun:}t key='admin_system_00666'{/yun}</span>
+                    <span>{{ lc('admin_system_00666') }}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input v-model="info.url" placeholder="{yun:}t key='wap_user_00076'{/yun}"></el-input>
+                    <el-input v-model="info.url" :placeholder="lc('wap_user_00076')"></el-input>
                 </div>
                 <div class="drawerModTips">
-                    <el-alert title="{yun:}t key='admin_system_00664'{/yun}" type="info" show-icon :closable="false">
+                    <el-alert :title="lc('admin_system_00664')" type="info" show-icon :closable="false">
                     </el-alert>
                 </div>
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>{yun:}t key='wap_js_00099'{/yun}</span>
+                    <span>{{ lc('wap_js_00099') }}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input v-model="info.title" placeholder="{yun:}t key='wap_user_00076'{/yun}"></el-input>
+                    <el-input v-model="info.title" :placeholder="lc('wap_user_00076')"></el-input>
                 </div>
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>{yun:}t key='admin_system_00662'{/yun}</span>
+                    <span>{{ lc('admin_system_00662') }}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input v-model="info.keyword" placeholder="{yun:}t key='wap_user_00076'{/yun}"></el-input>
+                    <el-input v-model="info.keyword" :placeholder="lc('wap_user_00076')"></el-input>
                 </div>
                 <div class="drawerModTips">
-                    <el-alert title="{yun:}t key='admin_system_00665'{/yun}" type="info" show-icon :closable="false">
+                    <el-alert :title="lc('admin_system_00665')" type="info" show-icon :closable="false">
                     </el-alert>
                 </div>
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>{yun:}t key='wap_00476'{/yun}</span>
+                    <span>{{ lc('wap_00476') }}</span>
                 </div>
                 <div class="drawerModInpt">
-					<el-input type="textarea" rows="2" placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="info.descs"></el-input>
+					<el-input type="textarea" rows="2" :placeholder="lc('wap_user_00076')" v-model="info.descs"></el-input>
                 </div>
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>{yun:}t key='admin_system_00660'{/yun}</span>
+                    <span>{{ lc('admin_system_00660') }}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-select v-model="info.top_tpl" placeholder="{yun:}t key='wap_user_00100'{/yun}">
+                    <el-select v-model="info.top_tpl" :placeholder="lc('wap_user_00100')">
                         <el-option v-for="item in tpl_arr" :key="item.value" :label="item.label" :value="item.value"></el-option>
                     </el-select>
                 </div>
                 <div class="drawerModTips">
-                    <el-alert v-if="info.top_tpl==1" title="{yun:}t key='admin_system_00667'{/yun}" type="info" show-icon :closable="false"></el-alert>
+                    <el-alert v-if="info.top_tpl==1" :title="lc('admin_system_00667')" type="info" show-icon :closable="false"></el-alert>
                     <div v-if="info.top_tpl==3" style="overflow: hidden; position: relative; margin-top: 10px;">
-                        <el-input v-model="info.top_tpl_dir" placeholder="{yun:}t key='admin_system_00672'{/yun}"></el-input>
-                        <el-alert title="{yun:}t key='admin_system_00659'{/yun}" type="info" show-icon :closable="false"></el-alert>
+                        <el-input v-model="info.top_tpl_dir" :placeholder="lc('admin_system_00672')"></el-input>
+                        <el-alert :title="lc('admin_system_00659')" type="info" show-icon :closable="false"></el-alert>
                     </div>
                 </div>
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>{yun:}t key='admin_system_00669'{/yun}</span>
+                    <span>{{ lc('admin_system_00669') }}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-select v-model="info.footer_tpl" placeholder="{yun:}t key='wap_user_00100'{/yun}">
+                    <el-select v-model="info.footer_tpl" :placeholder="lc('wap_user_00100')">
                         <el-option v-for="item in tpl_arr" :key="item.value" :label="item.label" :value="item.value"></el-option>
                     </el-select>
                 </div>
                 <div class="drawerModTips">
-                    <el-alert v-if="info.footer_tpl==1" title="{yun:}t key='admin_system_00670'{/yun}" type="info" show-icon :closable="false"></el-alert>
+                    <el-alert v-if="info.footer_tpl==1" :title="lc('admin_system_00670')" type="info" show-icon :closable="false"></el-alert>
                     <div v-if="info.footer_tpl==3" style="overflow: hidden; position: relative; margin-top: 10px;">
-                        <el-input v-model="info.footer_tpl_dir" placeholder="{yun:}t key='admin_system_00672'{/yun}"></el-input>
-                        <el-alert title="{yun:}t key='admin_system_00658'{/yun}" type="info" show-icon :closable="false"></el-alert>
+                        <el-input v-model="info.footer_tpl_dir" :placeholder="lc('admin_system_00672')"></el-input>
+                        <el-alert :title="lc('admin_system_00658')" type="info" show-icon :closable="false"></el-alert>
                     </div>
                 </div>
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>{yun:}t key='admin_system_00673'{/yun}</span>
+                    <span>{{ lc('admin_system_00673') }}</span>
                 </div>
                 <div class="drawerModInpt">
                     <textarea type="textarea" id="projectBasis" class="editor" name="projectBasis" cols="150" rows="30">
@@ -117,7 +117,7 @@
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>{yun:}t key='admin_system_00103'{/yun}</span>
+                    <span>{{ lc('admin_system_00103') }}</span>
                 </div>
                 <div class="drawerModInpt">
                     <el-input v-model="info.sort" @input="inputIntNumber($event, 'info', 'sort')"></el-input>
@@ -125,16 +125,16 @@
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>{yun:}t key='admin_system_00668'{/yun}</span>
+                    <span>{{ lc('admin_system_00668') }}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-switch v-model="info.is_nav" active-text="{yun:}t key='member_com_00023'{/yun}" inactive-text="{yun:}t key='admin_user_00340'{/yun}" active-value="1" inactive-value="0">
+                    <el-switch v-model="info.is_nav" :active-text="lc('member_com_00023')" :inactive-text="lc('admin_user_00340')" active-value="1" inactive-value="0">
                     </el-switch>
                 </div>
             </div>
         </div>
         <div class="setBasicButn" style="border: none;">
-            <el-button type="primary" size="medium" @click="saveinfo" :loading="saveloading">{yun:}t key='common.submit'{/yun}</el-button>
+            <el-button type="primary" size="medium" @click="saveinfo" :loading="saveloading">{{ lc('common.submit') }}</el-button>
         </div>
     </div>
 </template>
@@ -169,14 +169,14 @@ module.exports = {
             },
             class_arr:[],
             tpl_arr:[
-                {label:window.yunAdminT("{yun:}t key='member_user_00283'{/yun}"),value:'1'},
-                {label:window.yunAdminT("{yun:}t key='admin_system_00674'{/yun}"),value:'2'},
-                {label:window.yunAdminT("{yun:}t key='admin_system_00675'{/yun}"),value:'3'}
+                {label:window.yunAdminT(lc('member_user_00283')),value:'1'},
+                {label:window.yunAdminT(lc('admin_system_00674')),value:'2'},
+                {label:window.yunAdminT(lc('admin_system_00675')),value:'3'}
             ],
             type_arr:[
-                {label:'1',name:window.yunAdminT("{yun:}t key='admin_system_00661'{/yun}")},
-                {label:'0',name:window.yunAdminT("{yun:}t key='admin_system_00663'{/yun}")},
-                {label:'2',name:window.yunAdminT("{yun:}t key='admin_00198'{/yun}")}
+                {label:'1',name:window.yunAdminT(lc('admin_system_00661'))},
+                {label:'0',name:window.yunAdminT(lc('admin_system_00663'))},
+                {label:'2',name:window.yunAdminT(lc('admin_00198'))}
             ],
             addloading:false,
             saveloading:false,
@@ -185,10 +185,10 @@ module.exports = {
     mounted() {
         ue = UE.getEditor('projectBasis", {
             wordCount: false,           // 关闭字数统计
-            elementPathEnabled: false,  //{yun:}t key='common.close'{/yun}elementPath {yun:}t key='common_05704'{/yun}
+            elementPathEnabled: false,  //{{ lc('common.close') }}elementPath {{ lc('common_05704') }}
             autoHeightEnabled: false,   //关闭自适应高度，超出部分以滚动条形式展示
             initialFrameHeight: 480,    //默认的编辑区域高度
-            initialFrameWidth: 600      //初始化编辑器宽度,{yun:}t key='wap_js_00098'{/yun}1000
+            initialFrameWidth: 600      //初始化编辑器宽度,{{ lc('wap_js_00098') }}1000
         });
     },
     created:function(){
@@ -216,10 +216,10 @@ module.exports = {
                     }
                     ue = UE.getEditor('projectBasis", {
                         wordCount: false,           // 关闭字数统计
-                        elementPathEnabled: false,  //{yun:}t key='common.close'{/yun}elementPath {yun:}t key='common_05704'{/yun}
+                        elementPathEnabled: false,  //{{ lc('common.close') }}elementPath {{ lc('common_05704') }}
                         autoHeightEnabled: false,   //关闭自适应高度，超出部分以滚动条形式展示
                         initialFrameHeight: 480,    //默认的编辑区域高度
-                        initialFrameWidth: 600      //初始化编辑器宽度,{yun:}t key='wap_js_00098'{/yun}1000
+                        initialFrameWidth: 600      //初始化编辑器宽度,{{ lc('wap_js_00098') }}1000
                     });
                     ue.ready(function () {
                         if (that.info.content) {
@@ -238,15 +238,15 @@ module.exports = {
             var that = this;
 
             if (that.info.name == '') {
-                message.error(window.yunAdminT("{yun:}t key='admin_system_00676'{/yun}"));
+                message.error(window.yunAdminT(lc('admin_system_00676')));
                 return false;
             }
             if (that.info.url == '') {
-                message.error(window.yunAdminT("{yun:}t key='admin_system_00677'{/yun}"));
+                message.error(window.yunAdminT(lc('admin_system_00677')));
                 return false;
             }
             if (that.info.title == '') {
-                message.error(window.yunAdminT("{yun:}t key='wap_user_00075'{/yun}"));
+                message.error(window.yunAdminT(lc('wap_user_00075')));
                 return false;
             }
 
@@ -272,11 +272,11 @@ module.exports = {
 
             httpPost('m=system&c=singlepage&a=save', param).then(function(res) {
                 if (res.data.error == 0) {
-                    message.success(window.yunAdminT("{yun:}t key='admin_system_00678'{/yun}"),function(){
+                    message.success(window.yunAdminT(lc('admin_system_00678')),function(){
                         that.$emit("close-update");
                     });
                 } else {
-                    message.error(window.yunAdminT("{yun:}t key='admin_system_00679'{/yun}"));
+                    message.error(window.yunAdminT(lc('admin_system_00679')));
                 }
             }).finally(function () {
                 setTimeout(function () {

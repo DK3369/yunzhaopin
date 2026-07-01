@@ -1,19 +1,21 @@
 <?php
 
 class msg_controller extends user_controller{
-    
+    /**
+     * 消息
+     */
 	function sysnews_action()
 	{
 
-	    // 
+	    //面试通知
 	    $JobM				=	$this		-> MODEL('job');
 		$wkyqnum			=	$JobM		-> getYqmsNum(array('uid'=>$this->member['uid'],'isdel'=>9,'is_browse'=>'1'));
 		$list['wkyqnum']	=	$wkyqnum;
-		// 
+		//私信
 		$SysmsgM			=	$this 		-> MODEL('sysmsg');
 		$sxnum			    =	$SysmsgM	-> getSysmsgNum(array('fa_uid'=>$this->member['uid'],'usertype'=>'1','remind_status'=>'0'));
 		$list['sxnum']	    =	$sxnum;
-		// 
+		//职位咨询回复
 		$MsgM		=	$this -> MODEL('msg');
 		$commsgnum	=	$MsgM -> getMsgNum(array('uid'=>$this->member['uid'],'reply'=>array('<>',''),'user_remind_status'=>'0'));
 		$list['commsgnum']  =	$commsgnum;
@@ -30,7 +32,7 @@ class msg_controller extends user_controller{
         $list['subscribe']  =   $this->member['subscribe'];
 		$this->render_json(0,'ok',$list);
 	}
-	// 
+	//系统消息
 	function sxnews_action()
 	{
 	    $SysmsgM			=	$this -> MODEL('sysmsg');
@@ -61,7 +63,9 @@ class msg_controller extends user_controller{
 		}
 		$this->render_json($error,'',$list,$total);
 	}
-	
+	/**
+	 * 删除系统消息
+	 */
 	function delsxnews_action()
 	{
 
@@ -69,13 +73,13 @@ class msg_controller extends user_controller{
         $return     =   $SysmsgM->delSysmsg((int)$_POST['id'], array('fa_uid' => $this->member['uid']));
 
         $LogM       =   $this->MODEL('log');
-        $logContent =   yun_at('api_wxapp_00029').$_POST['id'].yun_at('api_wxapp_00030');
+        $logContent =   '消息处理：删除系统消息（ID：'.$_POST['id'].'）';
         $LogM->addMemberLog($this->member['uid'], $this->member['usertype'], $logContent, 18, 3);
 
         $data['error']  =   $return['errcode'] == 9 ? 1 : 2;
         $this->render_json($data['error'], $return['msg'], '');
 	}
-	// 
+	//职位咨询消息
 	function zxmsg_action(){
 		$msgM	=	$this -> MODEL('msg');
 		$msgM -> upInfo(array('uid'=>$this->member['uid']),array('user_remind_status'=>1,'usertype'=>$this->member['usertype']));
@@ -102,7 +106,7 @@ class msg_controller extends user_controller{
 		}
 		$this->render_json($error,'',$list,$total);
 	}
-    // 
+    //删除职位咨询消息
 	function delzxmsg_action(){
 	    $msgM		=  $this->MODEL('msg');
 	    $return		=  $msgM -> delInfo($_POST['id'], ['uid' => $this->member['uid']]);

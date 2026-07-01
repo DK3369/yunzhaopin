@@ -220,7 +220,7 @@
 								message.error(res.msg);
 							}
 						})
-					}, '你确定要删除该消费记录吗？')
+					}, lc('admin_01269'))
 				},
 				batchDel: function () {
 					let ids = this.idsArr;
@@ -239,7 +239,7 @@
 								message.error(res.msg);
 							}
 						})
-					}, '你确定要删除选择的消费记录吗？')
+					}, lc('admin_yunying_00074'))
 				},
 				selectAllBottom:function (value) {
 					value ? this.$refs.multipleTable.toggleAllSelection() : this.$refs.multipleTable.clearSelection();

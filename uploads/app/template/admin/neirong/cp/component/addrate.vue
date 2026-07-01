@@ -12,37 +12,37 @@
 				<div class="pinyuGuanli">
 					<div class="pinyuGuFensu">
 						<div class="pinyuName">
-							<span>{yun:}t key='admin_00863'{/yun}</span>
+							<span>{{ lc('admin_00863') }}</span>
 						</div>
 						<div class="pinyuFroms">
-							<el-input v-model="item.from" placeholder="{yun:}t key='admin_00866'{/yun}"></el-input>
-							<span class="spantite">{yun:}t key='admin_vue_00136'{/yun}</span>
-							<el-input v-model="item.to" placeholder="{yun:}t key='admin_00866'{/yun}"></el-input>
+							<el-input v-model="item.from" :placeholder="lc('admin_00866')"></el-input>
+							<span class="spantite">{{ lc('admin_vue_00136') }}</span>
+							<el-input v-model="item.to" :placeholder="lc('admin_00866')"></el-input>
 						</div>
 					</div>
 					<div class="pinyuGuFensu">
 						<div class="pinyuName">
-							<span>{yun:}t key='admin_00864'{/yun}</span>
+							<span>{{ lc('admin_00864') }}</span>
 						</div>
 						<div class="pinyuFroms">
-							<el-input type="textarea" :rows="2" placeholder="{yun:}t key='admin_00867'{/yun}" v-model="item.content">
+							<el-input type="textarea" :rows="2" :placeholder="lc('admin_00867')" v-model="item.content">
 							</el-input>
 						</div>
 					</div>
 				</div>
 				<div class="pinyuClose">
-					<el-button type="text" @click="delrow(index)">{yun:}t key='common.delete'{/yun}</el-button>
+					<el-button type="text" @click="delrow(index)">{{ lc('common.delete') }}</el-button>
 				</div>
 			
 			</div>
             <div class="drawerModLis" style="align-items: initial;">
                 <div class="drawerModInpt">
-                    <el-button type="primary" icon="el-icon-plus" plain size="medium" @click="addrow">{yun:}t key='admin_00865'{/yun}</el-button>
+                    <el-button type="primary" icon="el-icon-plus" plain size="medium" @click="addrow">{{ lc('admin_00865') }}</el-button>
                 </div>
             </div>
         </div>
         <div class="setBasicButn" style="border: none;">
-            <el-button type="primary" size="medium" @click="save">{yun:}t key='common.confirm'{/yun}</el-button>
+            <el-button type="primary" size="medium" @click="save">{{ lc('common.confirm') }}</el-button>
         </div>
     </div>
 </template>

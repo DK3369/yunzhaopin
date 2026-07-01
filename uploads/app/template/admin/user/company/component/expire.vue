@@ -2,10 +2,10 @@
     <div class="moduleElHight">
         <div class="moduleSeachbig">
             <div class="tableSeachInpt tableSeachInptsmall tableSeacFromer">
-				<el-input v-model="search_params.keyword" @keyup.enter.native="search" placeholder="{yun:}t key='admin_00340'{/yun}" size="small" clearable>
-					<el-select v-model="search_params.type" size="small" slot="prepend" placeholder="{yun:}t key='wap_com_00157'{/yun}">
-					    <el-option label="{yun:}t key='wap_com_00157'{/yun}" value="1"></el-option>
-					    <el-option label="{yun:}t key='admin_user_00140'{/yun}" value="2"></el-option>
+				<el-input v-model="search_params.keyword" @keyup.enter.native="search" :placeholder="lc('admin_00340')" size="small" clearable>
+					<el-select v-model="search_params.type" size="small" slot="prepend" :placeholder="lc('wap_com_00157')">
+					    <el-option :label="lc('wap_com_00157')" value="1"></el-option>
+					    <el-option :label="lc('admin_user_00140')" value="2"></el-option>
 					</el-select>
 				</el-input>
             </div>
@@ -18,7 +18,7 @@
 
             </div>
             <div class="tableSeachInpt">
-                <el-button type="primary" icon="el-icon-search" size="mini" @click="search">{yun:}t key='admin_user_weipin_00049'{/yun}</el-button>
+                <el-button type="primary" icon="el-icon-search" size="mini" @click="search">{{ lc('admin_user_weipin_00049') }}</el-button>
             </div>
         </div>
         <div class="moduleElTable" :class="{ 'moduleElTableHig': tableHig }"
@@ -28,20 +28,20 @@
                       :header-cell-style="{ background: '#f5f7fa', color: '#606266' }"
                       @selection-change="handleSelectionChange" ref="multipleTable" v-loading="loading" :empty-text="emptytext">
                 <el-table-column type="selection" width="55"></el-table-column>
-                <el-table-column prop="uid" label="{yun:}t key='admin_user_00130'{/yun}" width="120" sortable="custom"></el-table-column>
-                <el-table-column prop="name" label="{yun:}t key='wap_com_00157'{/yun}"></el-table-column>
-                <el-table-column prop="username" label="{yun:}t key='admin_user_00140'{/yun}"></el-table-column>
-                <el-table-column prop="rating_name" label="{yun:}t key='admin_user_company_00018'{/yun}"></el-table-column>
-                <el-table-column prop="vip_etime_n" label="{yun:}t key='admin_00733'{/yun}"></el-table-column>
-                <el-table-column prop="ywy" label="{yun:}t key='admin_user_company_00049'{/yun}">
+                <el-table-column prop="uid" :label="lc('admin_user_00130')" width="120" sortable="custom"></el-table-column>
+                <el-table-column prop="name" :label="lc('wap_com_00157')"></el-table-column>
+                <el-table-column prop="username" :label="lc('admin_user_00140')"></el-table-column>
+                <el-table-column prop="rating_name" :label="lc('admin_user_company_00018')"></el-table-column>
+                <el-table-column prop="vip_etime_n" :label="lc('admin_00733')"></el-table-column>
+                <el-table-column prop="ywy" :label="lc('admin_user_company_00049')">
                     <template slot-scope="props">
-                        {yun:}t key='admin_00732'{/yun}
+                        {{ lc('admin_00732') }}
                     </template>
                 </el-table-column>
-                <el-table-column label="{yun:}t key='member_user_00048'{/yun}" width="80" fixed="right">
+                <el-table-column :label="lc('member_user_00048')" width="80" fixed="right">
                     <template slot-scope="scope">
                         <div class="cz_button">
-                            <el-button type="danger" size="mini" @click="delrow(scope.row.uid)">{yun:}t key='common.delete'{/yun}</el-button>
+                            <el-button type="danger" size="mini" @click="delrow(scope.row.uid)">{{ lc('common.delete') }}</el-button>
                         </div>
                     </template>
                 </el-table-column>
@@ -49,8 +49,8 @@
         </div>
         <div class="modulePaging">
             <div>
-                <el-checkbox v-model="checkedAll" @change="selectAllBottom">{yun:}t key='wap_js_00074'{/yun}</el-checkbox>
-                <el-button @click="delAllBottom" size="mini">{yun:}t key='member_com_00055'{/yun}</el-button>
+                <el-checkbox v-model="checkedAll" @change="selectAllBottom">{{ lc('wap_js_00074') }}</el-checkbox>
+                <el-button @click="delAllBottom" size="mini">{{ lc('member_com_00055') }}</el-button>
             </div>
             <div class="modulePagNum">
                 <el-pagination background @size-change="handleSizeChange"
@@ -68,7 +68,7 @@
         data: function () {
             return {
                 loading: false,
-                emptytext: "{yun:}t key='wap_js_00113'{/yun}",
+                emptytext: lc('wap_js_00113'),
                 search_params:{
                     type: '1',
                     keyword: '',
@@ -83,7 +83,7 @@
                 pageSizes: [],
                 total: 0,
                 items: [
-                    {type: '', label: "{yun:}t key='admin_user_00149'{/yun}"},
+                    {type: '', label: lc('admin_user_00149')},
                 ],
                 islook: false,
                 sort_type: '',
@@ -183,7 +183,7 @@
                     params.t = that.sort_col
                 }
                 that.loading = true;
-                that.emptytext = "{yun:}t key='admin_user_weipin_00026'{/yun}";
+                that.emptytext = lc('admin_user_weipin_00026');
                 httpPost('m=user&c=company_expire&a=index', params, {hideloading: true}).then(function (result) {
                     var res = result.data
                     if (res.error == 0) {
@@ -198,7 +198,7 @@
                             scrollToTop()
                         }
                         if (that.tableData.length === 0){
-                            that.emptytext = "{yun:}t key='wap_js_00113'{/yun}";
+                            that.emptytext = lc('wap_js_00113');
                         }
                     }
                 }).catch(function (e) {
@@ -210,7 +210,7 @@
             },
             delAllBottom() {
                 if (!this.selectedItem.length) {
-                    message.error("{yun:}t key='admin_user_weipin_00005'{/yun}");
+                    message.error(lc('admin_user_weipin_00005'));
                     return false;
                 }
                 delConfirm(this, this.selectedItem, this.delete);

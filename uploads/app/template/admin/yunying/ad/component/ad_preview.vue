@@ -2,27 +2,27 @@
   <div>
     <!--广告管理 调用-->
     <div style="margin-top: -20px;">
-      <div class="wxsettip_small">{yun:}t key='admin_01157'{/yun}</div>
+      <div class="wxsettip_small">{{ lc('admin_01157') }}</div>
       <div class="">
         <template v-if="info.is_end == '1'">
-          {yun:}t key='admin_01158'{/yun}
+          {{ lc('admin_01158') }}
         </template>
         <template v-else-if="info.is_open == '0'">
-          {yun:}t key='admin_01159'{/yun}
+          {{ lc('admin_01159') }}
         </template>
         <template v-else>
-          <el-radio v-model="type" label="1" @input="handleType">{yun:}t key='admin_01160'{/yun}</el-radio>
-          <el-radio v-model="type" label="2" @input="handleType">{yun:}t key='admin_01161'{/yun}</el-radio>
+          <el-radio v-model="type" label="1" @input="handleType">{{ lc('admin_01160') }}</el-radio>
+          <el-radio v-model="type" label="2" @input="handleType">{{ lc('admin_01161') }}</el-radio>
         </template>
       </div>
       <div v-if="type != null">
-        <div class="wxsettip_small">{yun:}t key='admin_01162'{/yun}
-          <el-tooltip class="item" effect="dark" content="{yun:}t key='admin_01165'{/yun}" placement="right-start"><i class="el-icon-warning-outline"></i>
-            <el-button>{yun:}t key='admin_00207'{/yun}</el-button>
+        <div class="wxsettip_small">{{ lc('admin_01162') }}
+          <el-tooltip class="item" effect="dark" :content="lc('admin_01165')" placement="right-start"><i class="el-icon-warning-outline"></i>
+            <el-button>{{ lc('admin_00207') }}</el-button>
           </el-tooltip>
         </div>
         <el-input id="elementCode" v-model="code" placeholder=""></el-input>
-        <div class="wxsettip">{yun:}t key='admin_01163'{/yun}</div>
+        <div class="wxsettip">{{ lc('admin_01163') }}</div>
     <!--    <div class="wxsettip"> 可以在-->
     <!--      <el-link href="https://work.weixin.qq.com" target="_blank">后台模板管理中修改</el-link>-->
     <!--    </div>-->
@@ -30,7 +30,7 @@
           <el-button id="copyBtn" type="primary"
                      data-clipboard-action="copy"
                      data-clipboard-target="#elementCode"
-                     @click="handleCopyValue">{yun:}t key='admin_yunying_00073'{/yun}</el-button>
+                     @click="handleCopyValue">{{ lc('admin_yunying_00073') }}</el-button>
         </div>
       </div>
     </div>
@@ -61,7 +61,7 @@ module.exports = {
         if (res.error === 0) {
           _this.info = res.data;
         } else {
-          message.error("{yun:}t key='wap_js_00113'{/yun}");
+          message.error(lc('wap_js_00113'));
         }
       }).catch(function (error) {
         console.log(error);
@@ -77,7 +77,7 @@ module.exports = {
       }
     },
     /**
-     * {yun:}t key='admin_yunying_00073'{/yun}
+     * {{ lc('admin_yunying_00073') }}
      */
     handleCopyValue() {
       let clipboard = new ClipboardJS('#copyBtn'); // 获取点击按钮的元素
@@ -86,7 +86,7 @@ module.exports = {
         e.clearSelection();
         // 释放内存
         clipboard.destroy();
-        message.success('{yun:}t key='admin_user_company_00368'{/yun}');
+        message.success(lc('admin_user_company_00368'));
       });
       // 复制失败
       clipboard.on('error', (e) => {

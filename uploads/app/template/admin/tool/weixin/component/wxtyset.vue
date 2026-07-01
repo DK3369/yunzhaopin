@@ -4,16 +4,16 @@
             <table class="tableVue">
                 <thead>
                 <tr align="left">
-                    <th width="180">{yun:}t key='member_com_00021'{/yun}</th>
-                    <th width="400">{yun:}t key='member_user_00181'{/yun}</th>
-                    <th>{yun:}t key='member_com_00207'{/yun}</th>
+                    <th width="180">{{ lc('member_com_00021') }}</th>
+                    <th width="400">{{ lc('member_user_00181') }}</th>
+                    <th>{{ lc('member_com_00207') }}</th>
                 </tr>
                 </thead>
                 <tbody>
 
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_tool_00674'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_tool_00674') }}</div>
                     </td>
                     <td>
                         <div class="moduleHcKg">
@@ -22,13 +22,13 @@
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>{yun:}t key='admin_tool_00675'{/yun}</span>
+                            <span>{{ lc('admin_tool_00675') }}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_tool_00671'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_tool_00671') }}</div>
                     </td>
                     <td>
                         <div class="moduleHcKg">
@@ -37,13 +37,13 @@
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>{yun:}t key='admin_tool_00675'{/yun}</span>
+                            <span>{{ lc('admin_tool_00675') }}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_tool_00667'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_tool_00667') }}</div>
                     </td>
                     <td>
                         <div class="moduleHcKg">
@@ -52,13 +52,13 @@
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>{yun:}t key='admin_tool_00675'{/yun}</span>
+                            <span>{{ lc('admin_tool_00675') }}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_tool_00664'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_tool_00664') }}</div>
                     </td>
                     <td>
                         <div class="moduleHcKg">
@@ -67,19 +67,19 @@
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>{yun:}t key='admin_tool_00675'{/yun}</span>
+                            <span>{{ lc('admin_tool_00675') }}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_tool_00670'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_tool_00670') }}</div>
                     </td>
                     <td>
                         <div class="moduleHcKg">
                             <el-radio-group v-model="configdata.wx_welcom_type">
-                                <el-radio label="nowxcom">{yun:}t key='admin_tool_00663'{/yun}</el-radio>
-                                <el-radio label="wxcompic">{yun:}t key='wap_js_00081'{/yun}</el-radio>
+                                <el-radio label="nowxcom">{{ lc('admin_tool_00663') }}</el-radio>
+                                <el-radio label="wxcompic">{{ lc('wap_js_00081') }}</el-radio>
                             </el-radio-group>
                         </div>
                         <div v-show="configdata.wx_welcom_type == 'wxcompic'">
@@ -90,12 +90,12 @@
                                            list-type="picture">
                                     <div v-if="configdata.sy_wxcom_pic">
                                         <img :src="configdata.sy_wxcom_pic" width="120px" height="120px" class="avatar">
-                                        <div slot="tip" class="el-upload__tip">{yun:}t key='admin_tool_00677'{/yun}</div>
+                                        <div slot="tip" class="el-upload__tip">{{ lc('admin_tool_00677') }}</div>
                                     </div>
                                     <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                                 </el-upload>
                             </div>
-                            <el-alert title="{yun:}t key='admin_tool_00669'{/yun}" type="info" show-icon></el-alert>
+                            <el-alert :title="lc('admin_tool_00669')" type="info" show-icon></el-alert>
 
                         </div>
                     </td>
@@ -107,7 +107,7 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_tool_00666'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_tool_00666') }}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
@@ -117,13 +117,13 @@
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>{yun:}t key='admin_tool_00637'{/yun}</span>
+                            <span>{{ lc('admin_tool_00637') }}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_tool_00662'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_tool_00662') }}</div>
                     </td>
                     <td>
                         <el-input type="textarea" :rows="10" :maxlength="255" v-model="configdata.wx_search">
@@ -131,13 +131,13 @@
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>{yun:}t key='admin_tool_00638'{/yun}</span>
+                            <span>{{ lc('admin_tool_00638') }}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_tool_00676'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_tool_00676') }}</div>
                     </td>
                     <td>
                         <el-input type="textarea" :rows="10" :maxlength="255" v-model="configdata.wx_search_no">
@@ -151,7 +151,7 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_tool_00665'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_tool_00665') }}</div>
                     </td>
                     <td>
                         <div class="TableUpload">
@@ -161,7 +161,7 @@
                                        list-type="picture">
                                 <div v-if="configdata.sy_wx_qcode">
                                     <img :src="configdata.sy_wx_qcode" width="110px" height="110px" class="avatar">
-                                    <div slot="tip" class="el-upload__tip">{yun:}t key='admin_tool_00677'{/yun}</div>
+                                    <div slot="tip" class="el-upload__tip">{{ lc('admin_tool_00677') }}</div>
                                 </div>
                                 <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                             </el-upload>
@@ -175,7 +175,7 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_tool_00673'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_tool_00673') }}</div>
                     </td>
                     <td>
                         <div class="TableUpload">
@@ -185,7 +185,7 @@
                                        list-type="picture">
                                 <div v-if="configdata.sy_wx_logo">
                                     <img :src="configdata.sy_wx_logo" width="110px" height="auto" class="avatar">
-                                    <div slot="tip" class="el-upload__tip">{yun:}t key='admin_tool_00677'{/yun}</div>
+                                    <div slot="tip" class="el-upload__tip">{{ lc('admin_tool_00677') }}</div>
                                 </div>
                                 <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                             </el-upload>
@@ -193,13 +193,13 @@
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>{yun:}t key='admin_tool_00669'{/yun}</span>
+                            <span>{{ lc('admin_tool_00669') }}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_tool_00672'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_tool_00672') }}</div>
                     </td>
                     <td>
                         <div class="TableUpload">
@@ -209,7 +209,7 @@
                                        list-type="picture">
                                 <div v-if="configdata.sy_wx_sharelogo">
                                     <img :src="configdata.sy_wx_sharelogo" class="avatar">
-                                    <div slot="tip" class="el-upload__tip">{yun:}t key='admin_tool_00677'{/yun}</div>
+                                    <div slot="tip" class="el-upload__tip">{{ lc('admin_tool_00677') }}</div>
                                 </div>
                                 <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                             </el-upload>
@@ -217,7 +217,7 @@
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>{yun:}t key='admin_tool_00668'{/yun}</span>
+                            <span>{{ lc('admin_tool_00668') }}</span>
                         </div>
                     </td>
                 </tr>
@@ -226,7 +226,7 @@
             </table>
         </div>
         <div class="setBasicButn" style="border: none; height: 80px;">
-            <el-button type="primary" size="medium" @click="post">{yun:}t key='common.submit'{/yun}</el-button>
+            <el-button type="primary" size="medium" @click="post">{{ lc('common.submit') }}</el-button>
         </div>
     </div>
 </template>

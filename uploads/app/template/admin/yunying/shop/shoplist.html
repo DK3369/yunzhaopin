@@ -45,7 +45,7 @@
                 </el-table-column>
                 <el-table-column prop="num" :label="lc('wap_00404')" width="100">
                 </el-table-column>
-                <el-table-column prop="integral" :label="lc('admin_html_00018')" width="100">
+                <el-table-column prop="integral" :label="lc('admin_yunying_00117') + integral_pricename" width="100">
                 </el-table-column>
                 <el-table-column prop="ctime_n" :label="lc('wap_user_00002')" width="160">
                 </el-table-column>
@@ -311,7 +311,7 @@
                         }
                         that.loading = false;
                         if (that.list.length === 0) {
-                            that.dataText = "暂无数据";
+                            that.dataText = lc('wap_js_00113');
                         }
                     })
                 },
@@ -368,10 +368,10 @@
 
                     if (typeof idx == 'undefined') { // 批量删除
                         params.del = this.idArr;
-                        msg = '你确定要删除选中项吗？';
+                        msg = lc('common_00853');
                     } else {// 单个删除
                         params.del = that.list[idx].id;
-                        msg = '你确定要删除当前项吗？';
+                        msg = lc('admin_00333');
                     }
 
                     delConfirm(this, params, function (params) {

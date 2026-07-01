@@ -1,7 +1,7 @@
 <?php
 
 class index_controller extends com_controller{
-    // 
+    // 企业会员中心首页
     function index_action()
     {
         $info      	=  $this->comInfo;
@@ -37,13 +37,13 @@ class index_controller extends com_controller{
 		$return['signstate']=  $signstate;
 		
 		$return['nofkorder']	=  $orderM	->	getCompanyOrderNum(array('uid'=>$this->member['uid'],'usertype' =>$this->member['usertype'],'order_state'=>'1'));
-		// 
+		// 在招职位数量
 		$jobwhere['uid']		=   $this->member['uid'];
 		$jobwhere['state']		=	1;
 		$jobwhere['status']		=	0;
         $normal_job_num         =   $jobM -> getJobNum($jobwhere);;
 		$return['jobnums']		=	$normal_job_num;
-		// ，
+		// 在招职位中，今天未刷新的数量
 		$jobwhere['lastupdate'] =   array('<', strtotime('today'));
 		$return['noRefreshNum'] =   $jobM -> getJobNum($jobwhere);
 		
@@ -52,7 +52,7 @@ class index_controller extends com_controller{
 		$return['iosfk']		=	$this->config['sy_iospay'] ;
 		$return['webtel']		=	$webtel;
 		$return['worktime']		=	!empty($this->config['sy_worktime']) ? $this->config['sy_worktime'] : '';
-		// 
+		// 客户服务
 		$adminM            		=   $this -> MODEL('admin');
 		$guweninfo          	=   $adminM -> getAdminUser(array('uid' => $info['crm_uid']));
 	    $guweninfo['photo_n']	 =  checkpic($guweninfo['photo'], $this->config['sy_guwen']);
@@ -66,7 +66,7 @@ class index_controller extends com_controller{
 		    'zph'      =>  isset($this->config['sy_zph_web']) ? $this->config['sy_zph_web'] : 2,
 		    'special'  =>  isset($this->config['sy_special_web']) ? $this->config['sy_special_web'] : 2
 		);
-		// 
+		// 强制关注公众号
 		if(isset($this->config['com_gzgzh']) && $this->config['com_gzgzh'] == 1){
 		    $return['gzhurl'] = Url('wap', array('c'=>'ajax','a'=>'gzhqrcode','token'=>$this->member['gzhtoken']));
 		    $return['config']['com_gzgzh'] = 1;
@@ -98,7 +98,7 @@ class index_controller extends com_controller{
         $return['paused']   =   $this->comInfo['r_status'] == '4' ? 1 : 2;
         $comM = $this -> MODEL('company');
         $ratinginfo = $comM->getRatingInfo(array('rating' => $statis['rating'], 'field' => 'service_price'));
-        $sjtip = 1;// show upgrade tip
+        $sjtip = 1;// 展示升级套餐提醒
         if ($statis['rating'] > 0){
             $comM = $this -> MODEL('company');
             $ratinginfo = $comM->getRatingInfo(array('rating' => $statis['rating'], 'field' => 'service_price'));
@@ -109,7 +109,7 @@ class index_controller extends com_controller{
         $return['sjtip'] = $sjtip;
         $this->render_json(0, 'ok', $return);
     }
-	// ，TODO:
+	//签到，TODO:会员中心
 	function sign_action(){
 		
 		$userinfoM		=	$this -> MODEL('userinfo');
@@ -126,11 +126,11 @@ class index_controller extends com_controller{
 					$integral	=	$this->config['integral_signin'];
 				}
 				$signday	=	$member['signday']+1;
-				$msg		=	yun_at('wap_00128').$signday.yun_at('wap_01197');
+				$msg		=	'连续签到'.$signday."天";
 			}else{
 				$signday	=	'1';
 				$integral	=	$this->config['integral_signin'];
-				$msg		=	yun_at('wap_00125');
+				$msg		=	'第一次签到';
 			}
 			$arr	=	array();
 			$nid	=	$userinfoM -> addMemberreg(array('uid'=>$this->member['uid'],'usertype'=>$this->member['usertype'],'date'=>$date,"ctime"=>time(),'ip'=>fun_ip_get()));
@@ -138,24 +138,26 @@ class index_controller extends com_controller{
 			    $IntegralM		=	$this -> MODEL('integral');
 				$IntegralM->company_invtal($this->member['uid'],$this->member['usertype'],$integral,true,$msg,true,2,'integral',19);		
 				$userinfoM -> upInfo(array('uid'=>$this->member['uid']),array('signday'=>$signday,'signdays'=>array('+','1')));			
-				$data['msg']	=	yun_at('wap_01296').$integral.$this->config['integral_pricename'];
+				$data['msg']	=	'签到成功！+'.$integral.$this->config['integral_pricename'];
 				$data['error']	=	1;				
 			}else{
-				$data['msg']	=	yun_at('wap_01292');
+				$data['msg']	=	'签到失败！';
 				$data['error']	=	2;
 			}
 		}else{
-			$data['msg']	=	yun_at('wap_01292');
+			$data['msg']	=	'签到失败！';
 			$data['error']	=	2;
 		}
 		$this->render_json($data['error'],$data['msg'],$data);
 	}
-	
+	/**
+	 * 检测职位发布数量
+	 */
 	function addCheck_action()
 	{
 
 	    if ($this->comInfo['r_status'] == '4'){
-            $this->render_json(-1, yun_at('wap_com_00081'));
+            $this->render_json(-1, '当前账户会员权益已暂停，请联系客服开启服务~');
         }
 
 	    $jobM    =  $this->MODEL('job');
@@ -174,12 +176,12 @@ class index_controller extends com_controller{
 	        $statis  =  $this -> company_statis($suid);
 
 	        if ($statis['job_num'] == 0) {
-                $return['msg']  =   yun_at('wap_01300');
+                $return['msg']  =   '套餐已用完 , 立即升级VIP？';
             }else{
 				if($statis['addjobnum']==0){
-		        	$return['msg']=yun_at('wap_01300');
+		        	$return['msg']='套餐已用完 , 立即升级VIP？';
 				}elseif($statis['addjobnum']==2){
-				    $return['msg']=yun_at('member_com_00225');
+				    $return['msg']='当前会员套餐可上架职位数已达上限，新发布职位将无法直接上架哦~';
 				}
             }
 	        

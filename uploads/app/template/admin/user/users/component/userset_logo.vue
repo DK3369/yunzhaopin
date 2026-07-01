@@ -5,53 +5,53 @@
             <table class="tableVue">
                 <thead>
                 <tr align="left">
-                    <th width="180">{yun:}t key='member_com_00021'{/yun}</th>
-                    <th>{yun:}t key='member_user_00181'{/yun}</th>
-                    <th>{yun:}t key='member_com_00207'{/yun}</th>
+                    <th width="180">{{ lc('member_com_00021') }}</th>
+                    <th>{{ lc('member_user_00181') }}</th>
+                    <th>{{ lc('member_com_00207') }}</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_user_00346'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_user_00346') }}</div>
                     </td>
                     <td>
                         <div class="TableUpload">
                             <el-upload class="upload-demo" :accept="pic_accept" :action="uploadAction" :on-change="uploadChangeMan"
                                 :on-remove="handleRemoveMan" :file-list="fileListMan"
                                 list-type="picture">
-                                <el-button size="small" type="primary">{yun:}t key='wap_js_00071'{/yun}</el-button>
+                                <el-button size="small" type="primary">{{ lc('wap_js_00071') }}</el-button>
                             </el-upload>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>{yun:}t key='admin_user_00343'{/yun}</span>
+                            <span>{{ lc('admin_user_00343') }}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_user_00345'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_user_00345') }}</div>
                     </td>
                     <td>
                         <div class="TableUpload">
                             <el-upload class="upload-demo" :accept="pic_accept" :action="uploadAction" :on-change="uploadChangeWoman"
                                 :on-remove="handleRemoveWoman" :file-list="fileListWoman"
                                 list-type="picture">
-                                <el-button size="small" type="primary">{yun:}t key='wap_js_00071'{/yun}</el-button>
+                                <el-button size="small" type="primary">{{ lc('wap_js_00071') }}</el-button>
                             </el-upload>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>{yun:}t key='admin_user_00343'{/yun}</span>
+                            <span>{{ lc('admin_user_00343') }}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_user_00344'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_user_00344') }}</div>
                     </td>
                     <td>
                         <div class="TableUpload" style="display: flex;align-items: center;">
@@ -60,7 +60,7 @@
                                 :on-success="(response, file, fileList) =>onSuccess(response,file,fileList,'fileList')"
                                 :accept="pic_accept"
                                 :show-file-list="false">
-                                <el-button size="small" type="primary">{yun:}t key='wap_js_00071'{/yun}</el-button>
+                                <el-button size="small" type="primary">{{ lc('wap_js_00071') }}</el-button>
                             </el-upload>
                             <div class="up_sy_logo_div" style="margin-left: 15px;">
                                 <el-image v-if="sy_member_skill" style="width:100px;" :src="sy_member_skill"
@@ -70,7 +70,7 @@
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>{yun:}t key='admin_user_00343'{/yun}</span>
+                            <span>{{ lc('admin_user_00343') }}</span>
                         </div>
                     </td>
                 </tr>
@@ -78,7 +78,7 @@
             </table>
         </div>
         <div class="setBasicButn" style="border: none; height: 80px;">
-            <el-button type="primary" size="medium" @click="submitForm('ruleForm')" :disabled="submitLoading">{yun:}t key='common.submit'{/yun}</el-button>
+            <el-button type="primary" size="medium" @click="submitForm('ruleForm')" :disabled="submitLoading">{{ lc('common.submit') }}</el-button>
         </div>
 
         <el-dialog :visible.sync="dialogVisible">
@@ -99,9 +99,9 @@ module.exports = {
             dialogImageUrl: '",
             dialogVisible: false,
             ruleForm: {
-                //{yun:}t key='admin_user_00346'{/yun}
+                //{{ lc('admin_user_00346') }}
                 manicon_sys: [],
-                //{yun:}t key='admin_user_00345'{/yun}
+                //{{ lc('admin_user_00345') }}
                 womanicon_sys: [],
             },
             sy_member_skill: "',
@@ -177,7 +177,7 @@ module.exports = {
             // this.$refs[formName].validate((valid) => {if (valid) {}});
             let _this = this;
             let formData = new FormData();
-            formData.append('submit', "{yun:}t key='common.submit'{/yun}");
+            formData.append('submit', lc('common.submit'));
             _this.fileListMan.forEach((item) => {
                 if (item.hasOwnProperty('raw')) {
                     formData.append('man_files[]', item.raw);

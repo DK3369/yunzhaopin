@@ -2,18 +2,18 @@
     <div class="moduleElHight">
         <div class="moduleSeachbig" v-if="cansearch">
             <div class="tableSeachInpt">
-                <el-select v-model="type" size="small" slot="prepend" placeholder="{yun:}t key='wap_com_00030'{/yun}">
-                    <el-option label="{yun:}t key='admin_user_00295'{/yun}" value="1"></el-option>
-                    <el-option label="{yun:}t key='admin_user_00140'{/yun}" value="2"></el-option>
-                    <el-option label="{yun:}t key='admin_user_00290'{/yun}" value="3"></el-option>
+                <el-select v-model="type" size="small" slot="prepend" :placeholder="lc('wap_com_00030')">
+                    <el-option :label="lc('admin_user_00295')" value="1"></el-option>
+                    <el-option :label="lc('admin_user_00140')" value="2"></el-option>
+                    <el-option :label="lc('admin_user_00290')" value="3"></el-option>
                 </el-select>
             </div>
             <div class="tableSeachInpt">
-                <el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" size="small" prefix-icon="el-icon-search" v-model="keyword">
+                <el-input :placeholder="lc('wap_user_00076')" size="small" prefix-icon="el-icon-search" v-model="keyword">
                 </el-input>
             </div>
             <div class="tableSeachInpt">
-                <el-button type="primary" icon="el-icon-search" size="mini" @click="search">{yun:}t key='admin_user_weipin_00049'{/yun}</el-button>
+                <el-button type="primary" icon="el-icon-search" size="mini" @click="search">{{ lc('admin_user_weipin_00049') }}</el-button>
             </div>
         </div>
         <div class="moduleElTable"
@@ -21,24 +21,24 @@
             <el-table :data="tableData" style="width: 100%" stripe ref="multipleTable"
                       :header-cell-style="{ background: '#f5f7fa', color: '#606266' }"
                       :default-sort="{ prop: 'id', order: 'descending' }" @sort-change='sortChange' height="100%" v-loading="loading" @sort-change="shortChange" v-loading="loading" :empty-text="emptytext">>
-                <el-table-column prop="order_id" label="{yun:}t key='admin_user_00295'{/yun}" width="150"></el-table-column>
-                <el-table-column prop="uname" label="{yun:}t key='admin_01418'{/yun}" width="150">
+                <el-table-column prop="order_id" :label="lc('admin_user_00295')" width="150"></el-table-column>
+                <el-table-column prop="uname" :label="lc('admin_01418')" width="150">
                     <template slot-scope="scope">
                         {{ scope.row.type == 1 ? scope.row.order_price + integral_pricename : lc("admin_currency_yuan", [scope.row.order_price]) }}
                     </template>
                 </el-table-column>
-                <el-table-column prop="pay_remark" label="{yun:}t key='admin_user_00290'{/yun}">
+                <el-table-column prop="pay_remark" :label="lc('admin_user_00290')">
                 </el-table-column>
-                <el-table-column prop="pay_time_n" label="{yun:}t key='wap_com_00344'{/yun}" width="150"></el-table-column>
-                <el-table-column prop="pay_state_n" label="{yun:}t key='member_user_00181'{/yun}" width="150">
+                <el-table-column prop="pay_time_n" :label="lc('wap_com_00344')" width="150"></el-table-column>
+                <el-table-column prop="pay_state_n" :label="lc('member_user_00181')" width="150">
 					<template slot-scope="scope">
 						<div v-html="scope.row.pay_state_n"></div>
 					</template>
                 </el-table-column>
-                <el-table-column label="{yun:}t key='member_user_00048'{/yun}" width="80" fixed="right">
+                <el-table-column :label="lc('member_user_00048')" width="80" fixed="right">
                     <template slot-scope="scope">
                         <div class="cz_button">
-                            <el-button type="danger" size="small " @click="del(scope.row.id)">{yun:}t key='common.delete'{/yun}</el-button>
+                            <el-button type="danger" size="small " @click="del(scope.row.id)">{{ lc('common.delete') }}</el-button>
                         </div>
                     </template>
                 </el-table-column>
@@ -74,7 +74,7 @@
         data: function () {
             return {
                 loading: false,
-                emptytext: "{yun:}t key='wap_js_00113'{/yun}",
+                emptytext: lc('wap_js_00113'),
                 type: '1',
                 keyword: '',
                 currentPage: 1,
@@ -174,7 +174,7 @@
                     params.t = that.sort_col
                 }
                 that.loading = true;
-                that.emptytext = "{yun:}t key='admin_user_weipin_00026'{/yun}";
+                that.emptytext = lc('admin_user_weipin_00026');
                 httpPost('m=user&c=company_pay&a=index', params).then(function (result) {
                     var res = result.data
                     if (res.error == 0) {
@@ -189,7 +189,7 @@
                             that.$refs.multipleTable.bodyWrapper.scrollTop = 0;
                         }
                         if (that.tableData.length === 0){
-                            that.emptytext = "{yun:}t key='wap_js_00113'{/yun}";
+                            that.emptytext = lc('wap_js_00113');
                         }
                     }
                 }).catch(function (e) {
@@ -198,9 +198,9 @@
             },
             del: function (id) {
                 let _this = this;
-                _this.$confirm("{yun:}t key='wap_user_00001'{/yun}", "{yun:}t key='wap_user_00205'{/yun}", {
-                    confirmButtonText: "{yun:}t key='common.confirm'{/yun}",
-                    cancelButtonText: "{yun:}t key='common.cancel'{/yun}",
+                _this.$confirm(lc('wap_user_00001'), lc('wap_user_00205'), {
+                    confirmButtonText: lc('common.confirm'),
+                    cancelButtonText: lc('common.cancel'),
                     type: 'warning'
                 }).then(() => {
                     httpPost('m=user&c=company_pay&a=del', {id: id}).then(function (response) {

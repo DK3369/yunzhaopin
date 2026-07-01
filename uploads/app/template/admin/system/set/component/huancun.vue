@@ -4,143 +4,143 @@
             <table class="tableVue">
                 <thead>
                 <tr align="left">
-                    <th width="180">{yun:}t key='member_com_00021'{/yun}</th>
-                    <th width="360">{yun:}t key='member_user_00181'{/yun}</th>
-                    <th>{yun:}t key='member_com_00207'{/yun}</th>
+                    <th width="180">{{ lc('member_com_00021') }}</th>
+                    <th width="360">{{ lc('member_user_00181') }}</th>
+                    <th>{{ lc('member_com_00207') }}</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_system_00297'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_system_00297') }}</div>
                     </td>
                     <td>
                         <div class="TableButn">
                             <el-radio-group v-model="list.ismemcache">
-                                <el-radio label="1">{yun:}t key='member_com_00287'{/yun}</el-radio>
-                                <el-radio label="2">{yun:}t key='common.close'{/yun}</el-radio>
+                                <el-radio label="1">{{ lc('member_com_00287') }}</el-radio>
+                                <el-radio label="2">{{ lc('common.close') }}</el-radio>
                             </el-radio-group>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>{yun:}t key='admin_00908'{/yun}</span>
+                            <span>{{ lc('admin_00908') }}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_system_00295'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_system_00295') }}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-input v-model="list.memcachehost" placeholder="{yun:}t key='wap_user_00076'{/yun}"></el-input>
+                            <el-input v-model="list.memcachehost" :placeholder="lc('wap_user_00076')"></el-input>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>{yun:}t key='admin_system_00293'{/yun}</span>
+                            <span>{{ lc('admin_system_00293') }}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_system_00296'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_system_00296') }}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-input v-model="list.memcacheport" @input="inputIntNumber($event, 'list', 'memcacheport')" placeholder="{yun:}t key='wap_user_00076'{/yun}"></el-input>
+                            <el-input v-model="list.memcacheport" @input="inputIntNumber($event, 'list', 'memcacheport')" :placeholder="lc('wap_user_00076')"></el-input>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>{yun:}t key='admin_00909'{/yun}</span>
+                            <span>{{ lc('admin_00909') }}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_system_00294'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_system_00294') }}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-input v-model="list.memcachetime" @input="inputIntNumber($event, 'list', 'memcachetime')" placeholder="{yun:}t key='wap_user_00076'{/yun}"></el-input>
+                            <el-input v-model="list.memcachetime" @input="inputIntNumber($event, 'list', 'memcachetime')" :placeholder="lc('wap_user_00076')"></el-input>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>{yun:}t key='admin_00910'{/yun}</span>
+                            <span>{{ lc('admin_00910') }}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_system_00301'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_system_00301') }}</div>
                     </td>
                     <td>
                         <div class="TableButn" style="display: flex;align-items: center;">
                             <div>
                                 <el-radio-group v-model="list.webcache">
-                                    <el-radio label="1">{yun:}t key='member_com_00287'{/yun}</el-radio>
-                                    <el-radio label="2">{yun:}t key='common.close'{/yun}</el-radio>
+                                    <el-radio label="1">{{ lc('member_com_00287') }}</el-radio>
+                                    <el-radio label="2">{{ lc('common.close') }}</el-radio>
                                 </el-radio-group>
                             </div>
                             <div class="huncmokuai">
-                                <a href="#" @click="setCache">{yun:}t key='admin_system_00299'{/yun}</a>
+                                <a href="#" @click="setCache">{{ lc('admin_system_00299') }}</a>
                             </div>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>{yun:}t key='admin_00911'{/yun}</span>{yun:}t key='admin_system_00299'{/yun}
+                            <span>{{ lc('admin_00911') }}</span>{{ lc('admin_system_00299') }}
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_system_00300'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_system_00300') }}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-input v-model="list.webcachetime" @input="inputIntNumber($event, 'list', 'webcachetime')" placeholder="{yun:}t key='wap_user_00076'{/yun}"></el-input>
+                            <el-input v-model="list.webcachetime" @input="inputIntNumber($event, 'list', 'webcachetime')" :placeholder="lc('wap_user_00076')"></el-input>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>{yun:}t key='admin_00910'{/yun}</span>
+                            <span>{{ lc('admin_00910') }}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_00912'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_00912') }}</div>
                     </td>
                     <td>
                         <div class="TableButn">
                             <el-radio-group v-model="list.issmartycache">
-                                <el-radio label="1">{yun:}t key='member_com_00287'{/yun}</el-radio>
-                                <el-radio label="2">{yun:}t key='common.close'{/yun}</el-radio>
+                                <el-radio label="1">{{ lc('member_com_00287') }}</el-radio>
+                                <el-radio label="2">{{ lc('common.close') }}</el-radio>
                             </el-radio-group>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>{yun:}t key='admin_00912'{/yun}</span>
+                            <span>{{ lc('admin_00912') }}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_00913'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_00913') }}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-input v-model="list.smartycachetime" @input="inputIntNumber($event, 'list', 'smartycachetime')" placeholder="{yun:}t key='wap_user_00076'{/yun}"></el-input>
+                            <el-input v-model="list.smartycachetime" @input="inputIntNumber($event, 'list', 'smartycachetime')" :placeholder="lc('wap_user_00076')"></el-input>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>{yun:}t key='admin_00910'{/yun}</span>
+                            <span>{{ lc('admin_00910') }}</span>
                         </div>
                     </td>
                 </tr>
@@ -149,12 +149,12 @@
             </table>
         </div>
         <div class="setBasicButn" style="border: none; height: 80px;">
-            <el-button type="primary" size="medium" @click="save" :disabled="saveLoading">{yun:}t key='common.submit'{/yun}</el-button>
+            <el-button type="primary" size="medium" @click="save" :disabled="saveLoading">{{ lc('common.submit') }}</el-button>
         </div>
-        <el-drawer title="{yun:}t key='admin_00914'{/yun}" :visible.sync="cacheDrawer" :modal-append-to-body="false" :show-close="true"
+        <el-drawer :title="lc('admin_00914')" :visible.sync="cacheDrawer" :modal-append-to-body="false" :show-close="true"
                    :with-header="true" size="70%">
             <div class="tableDome_tip">
-                <el-alert title="{yun:}t key='admin_system_00298'{/yun}" type="success" show-icon>
+                <el-alert :title="lc('admin_system_00298')" type="success" show-icon>
                 </el-alert>
             </div>
             <div class="moduleTable">
@@ -162,12 +162,12 @@
                     <ul>
                         <li>
                             <div class="moduleHcTite">
-                                <span>{yun:}t key='common.home'{/yun}</span>
+                                <span>{{ lc('common.home') }}</span>
                             </div>
                             <div class="moduleHcKg">
                                 <el-radio-group v-model="sy_index_cache">
-                                    <el-radio label="1">{yun:}t key='member_com_00287'{/yun}</el-radio>
-                                    <el-radio label="2">{yun:}t key='common.close'{/yun}</el-radio>
+                                    <el-radio label="1">{{ lc('member_com_00287') }}</el-radio>
+                                    <el-radio label="2">{{ lc('common.close') }}</el-radio>
                                 </el-radio-group>
                             </div>
                         </li>
@@ -177,8 +177,8 @@
                             </div>
                             <div class="moduleHcKg">
                                 <el-radio-group v-model="item.cache">
-                                    <el-radio label="1">{yun:}t key='member_com_00287'{/yun}</el-radio>
-                                    <el-radio label="2">{yun:}t key='common.close'{/yun}</el-radio>
+                                    <el-radio label="1">{{ lc('member_com_00287') }}</el-radio>
+                                    <el-radio label="2">{{ lc('common.close') }}</el-radio>
                                 </el-radio-group>
                             </div>
                         </li>
@@ -186,7 +186,7 @@
                 </div>
             </div>
             <div class="setBasicButn" style="border: none;">
-                <el-button type="primary" size="medium" @click="saveCache" :disabled="saveLoading">{yun:}t key='common.save'{/yun}</el-button>
+                <el-button type="primary" size="medium" @click="saveCache" :disabled="saveLoading">{{ lc('common.save') }}</el-button>
             </div>
         </el-drawer>
     </div>
@@ -206,7 +206,7 @@ module.exports = {
             textarea: '',
             radio: '1',
             uri: "m=system&c=",
-            title: "{yun:}t key='admin_00914'{/yun}",
+            title: lc('admin_00914'),
             cacheDrawer: false,
             newModel:[],
             sy_index_cache:'',
@@ -236,7 +236,7 @@ module.exports = {
             httpPost(url, ruleForm).then(function (response) {
                 var res = response.data;
                 if (res.error == 0) {
-                    message.success("{yun:}t key='wap_user_00264'{/yun}");
+                    message.success(lc('wap_user_00264'));
                     _this.$emit('get-list', true)
                 } else {
                     message.error(res.msg);

@@ -3,246 +3,246 @@
         <div class="zhuceTable" style="max-height: calc(100% - 80px);">
             <div class="yujinTablCont">
                 <div class="yujinTablContTlte">
-                    <span>{yun:}t key='admin_system_00411'{/yun}</span>
+                    <span>{{ lc('admin_system_00411') }}</span>
                 </div>
                 <table class="tableVue">
                     <thead>
                         <tr align="left">
-                            <th width="180">{yun:}t key='member_com_00021'{/yun}</th>
-                            <th width="220">{yun:}t key='admin_00993'{/yun}</th>
-                            <th width="140">{yun:}t key='member_user_00181'{/yun}</th>
-                            <th>{yun:}t key='member_com_00207'{/yun}</th>
+                            <th width="180">{{ lc('member_com_00021') }}</th>
+                            <th width="220">{{ lc('admin_00993') }}</th>
+                            <th width="140">{{ lc('member_user_00181') }}</th>
+                            <th>{{ lc('member_com_00207') }}</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
                             <td>
-                                <div class="TableTite">{yun:}t key='admin_system_00402'{/yun}</div>
+                                <div class="TableTite">{{ lc('admin_system_00402') }}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
                                     <el-input placeholder="0" v-model="config.warning_addjob" @input="inputIntNumber($event, 'config', 'warning_addjob')">
-                                        <span slot="suffix" class="slotspan">{yun:}t key='admin_system_00408'{/yun}</span>
+                                        <span slot="suffix" class="slotspan">{{ lc('admin_system_00408') }}</span>
                                     </el-input>
                                 </div>
                             </td>
                             <td>
                                 <div class="TableButn">
-                                    <el-switch v-model="config.warning_addjob_type" active-text="{yun:}t key='member_com_00287'{/yun}" inactive-text="{yun:}t key='resume_00030'{/yun}"
+                                    <el-switch v-model="config.warning_addjob_type" :active-text="lc('member_com_00287')" :inactive-text="lc('resume_00030')"
                                         active-value="1"></el-switch>
                                 </div>
                             </td>
                             <td>
                                 <div class="TableShuom">
-                                    <span>{yun:}t key='admin_system_00398'{/yun}</span>
+                                    <span>{{ lc('admin_system_00398') }}</span>
                                 </div>
                             </td>
                         </tr>
                         <tr>
                             <td>
-                                <div class="TableTite">{yun:}t key='admin_system_00399'{/yun}</div>
+                                <div class="TableTite">{{ lc('admin_system_00399') }}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
                                     <el-input placeholder="0" v-model="config.warning_downresume" @input="inputIntNumber($event, 'config', 'warning_downresume')">
-                                        <span slot="suffix" class="slotspan">{yun:}t key='admin_system_00408'{/yun}</span>
+                                        <span slot="suffix" class="slotspan">{{ lc('admin_system_00408') }}</span>
                                     </el-input>
                                 </div>
                             </td>
                             <td>
                                 <div class="TableButn">
-                                    <el-switch v-model="config.warning_downresume_type" active-text="{yun:}t key='member_com_00287'{/yun}" inactive-text="{yun:}t key='resume_00030'{/yun}"
+                                    <el-switch v-model="config.warning_downresume_type" :active-text="lc('member_com_00287')" :inactive-text="lc('resume_00030')"
                                         active-value="1"></el-switch>
                                 </div>
                             </td>
                             <td>
                                 <div class="TableShuom">
-                                    <span>{yun:}t key='admin_system_00398'{/yun}</span>
+                                    <span>{{ lc('admin_system_00398') }}</span>
                                 </div>
                             </td>
                         </tr>
                         <tr>
                             <td>
-                                <div class="TableTite">{yun:}t key='admin_system_00401'{/yun}</div>
+                                <div class="TableTite">{{ lc('admin_system_00401') }}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
                                     <el-input placeholder="0" v-model="config.warning_addresume" @input="inputIntNumber($event, 'config', 'warning_addresume')">
-                                        <span slot="suffix" class="slotspan">{yun:}t key='admin_system_00408'{/yun}</span>
+                                        <span slot="suffix" class="slotspan">{{ lc('admin_system_00408') }}</span>
                                     </el-input>
                                 </div>
                             </td>
                             <td>
                                 <div class="TableButn">
-                                    <el-switch v-model="config.warning_addresume_type" active-text="{yun:}t key='member_com_00287'{/yun}" inactive-text="{yun:}t key='resume_00030'{/yun}"
+                                    <el-switch v-model="config.warning_addresume_type" :active-text="lc('member_com_00287')" :inactive-text="lc('resume_00030')"
                                         active-value="1"></el-switch>
                                 </div>
                             </td>
                             <td>
                                 <div class="TableShuom">
-                                    <span>{yun:}t key='admin_system_00398'{/yun}</span>
+                                    <span>{{ lc('admin_system_00398') }}</span>
                                 </div>
                             </td>
                         </tr>
                         <tr>
                             <td>
-                                <div class="TableTite">{yun:}t key='admin_system_00400'{/yun}</div>
+                                <div class="TableTite">{{ lc('admin_system_00400') }}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
                                     <el-input placeholder="0" v-model="config.warning_recharge" @input="inputIntNumber($event, 'config', 'warning_recharge')">
-                                        <span slot="suffix" class="slotspan">{yun:}t key='admin_user_00350'{/yun}</span>
+                                        <span slot="suffix" class="slotspan">{{ lc('admin_user_00350') }}</span>
                                     </el-input>
                                 </div>
                             </td>
                             <td>
                                 <div class="TableButn">
-                                    <el-switch v-model="config.warning_recharge_type" active-text="{yun:}t key='member_com_00287'{/yun}" inactive-text="{yun:}t key='resume_00030'{/yun}"
+                                    <el-switch v-model="config.warning_recharge_type" :active-text="lc('member_com_00287')" :inactive-text="lc('resume_00030')"
                                         active-value="1"></el-switch>
                                 </div>
                             </td>
                             <td>
                                 <div class="TableShuom">
-                                    <span>{yun:}t key='admin_system_00398'{/yun}</span>
+                                    <span>{{ lc('admin_system_00398') }}</span>
                                 </div>
                             </td>
                         </tr>
                         <tr>
                             <td>
-                                <div class="TableTite">{yun:}t key='admin_system_00403'{/yun}</div>
+                                <div class="TableTite">{{ lc('admin_system_00403') }}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
                                     <el-input placeholder="0" v-model="config.sy_hour_msgnum" @input="inputIntNumber($event, 'config', 'sy_hour_msgnum')">
-                                        <span slot="suffix" class="slotspan">{yun:}t key='admin_system_00409'{/yun}</span>
+                                        <span slot="suffix" class="slotspan">{{ lc('admin_system_00409') }}</span>
                                     </el-input>
                                 </div>
                             </td>
                             <td>
                                 <div class="TableButn">
-                                    <el-switch v-model="config.warning_closemsg_type" active-text="{yun:}t key='member_com_00287'{/yun}" inactive-text="{yun:}t key='resume_00030'{/yun}"
+                                    <el-switch v-model="config.warning_closemsg_type" :active-text="lc('member_com_00287')" :inactive-text="lc('resume_00030')"
                                         active-value="1"></el-switch>
                                 </div>
                             </td>
                             <td>
                                 <div class="TableShuom">
-                                    <span>{yun:}t key='admin_system_00398'{/yun}</span>
+                                    <span>{{ lc('admin_system_00398') }}</span>
                                 </div>
                             </td>
                         </tr>
                         <tr>
                             <td>
-                                <div class="TableTite">{yun:}t key='admin_system_00405'{/yun}</div>
+                                <div class="TableTite">{{ lc('admin_system_00405') }}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
                                     <el-input placeholder="0" v-model="config.warning_lookresume" @input="inputIntNumber($event, 'config', 'warning_lookresume')">
-                                        <span slot="suffix" class="slotspan">{yun:}t key='admin_system_00408'{/yun}</span>
+                                        <span slot="suffix" class="slotspan">{{ lc('admin_system_00408') }}</span>
                                     </el-input>
                                 </div>
                             </td>
                             <td>
                                 <div class="TableButn">
-                                    <el-switch v-model="config.warning_lookresume_type" active-text="{yun:}t key='member_com_00287'{/yun}" inactive-text="{yun:}t key='resume_00030'{/yun}"
+                                    <el-switch v-model="config.warning_lookresume_type" :active-text="lc('member_com_00287')" :inactive-text="lc('resume_00030')"
                                         active-value="1"></el-switch>
                                 </div>
                             </td>
                             <td>
                                 <div class="TableShuom">
-                                    <span>{yun:}t key='admin_system_00398'{/yun}</span>
+                                    <span>{{ lc('admin_system_00398') }}</span>
                                 </div>
                             </td>
                         </tr>
                         <tr>
                             <td>
-                                <div class="TableTite">{yun:}t key='admin_system_00406'{/yun}</div>
+                                <div class="TableTite">{{ lc('admin_system_00406') }}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
                                     <el-input placeholder="0" v-model="config.warning_lookjob" @input="inputIntNumber($event, 'config', 'warning_lookjob')">
-                                        <span slot="suffix" class="slotspan">{yun:}t key='admin_system_00408'{/yun}</span>
+                                        <span slot="suffix" class="slotspan">{{ lc('admin_system_00408') }}</span>
                                     </el-input>
                                 </div>
                             </td>
                             <td>
                                 <div class="TableButn">
-                                    <el-switch v-model="config.warning_lookjob_type" active-text="{yun:}t key='member_com_00287'{/yun}" inactive-text="{yun:}t key='resume_00030'{/yun}"
+                                    <el-switch v-model="config.warning_lookjob_type" :active-text="lc('member_com_00287')" :inactive-text="lc('resume_00030')"
                                         active-value="1"></el-switch>
                                 </div>
                             </td>
                             <td>
                                 <div class="TableShuom">
-                                    <span>{yun:}t key='admin_system_00398'{/yun}</span>
+                                    <span>{{ lc('admin_system_00398') }}</span>
                                 </div>
                             </td>
                         </tr>
                         <tr>
                             <td>
-                                <div class="TableTite">{yun:}t key='admin_system_00404'{/yun}</div>
+                                <div class="TableTite">{{ lc('admin_system_00404') }}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
                                     <el-input placeholder="0" v-model="config.warning_teljob" @input="inputIntNumber($event, 'config', 'warning_teljob')">
-                                        <span slot="suffix" class="slotspan">{yun:}t key='wap_com_00049'{/yun}</span>
+                                        <span slot="suffix" class="slotspan">{{ lc('wap_com_00049') }}</span>
                                     </el-input>
                                 </div>
                             </td>
                             <td>
                                 <div class="TableButn">
-                                    <el-switch v-model="config.warning_teljob_type" active-text="{yun:}t key='member_com_00287'{/yun}" inactive-text="{yun:}t key='resume_00030'{/yun}"
+                                    <el-switch v-model="config.warning_teljob_type" :active-text="lc('member_com_00287')" :inactive-text="lc('resume_00030')"
                                         active-value="1"></el-switch>
                                 </div>
                             </td>
                             <td>
                                 <div class="TableShuom">
-                                    <span>{yun:}t key='admin_system_00398'{/yun}</span>
+                                    <span>{{ lc('admin_system_00398') }}</span>
                                 </div>
                             </td>
                         </tr>
                         <tr>
                             <td>
-                                <div class="TableTite">{yun:}t key='admin_system_00394'{/yun}</div>
+                                <div class="TableTite">{{ lc('admin_system_00394') }}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
                                     <el-input placeholder="0" v-model="config.warning_reg_ip" @input="inputIntNumber($event, 'config', 'warning_reg_ip')">
-                                        <span slot="suffix" class="slotspan">{yun:}t key='wap_com_00049'{/yun}</span>
+                                        <span slot="suffix" class="slotspan">{{ lc('wap_com_00049') }}</span>
                                     </el-input>
                                 </div>
                             </td>
                             <td>
                                 <div class="TableButn">
-                                    <el-switch v-model="config.warning_reg_ip_type" active-text="{yun:}t key='member_com_00287'{/yun}" inactive-text="{yun:}t key='resume_00030'{/yun}"
+                                    <el-switch v-model="config.warning_reg_ip_type" :active-text="lc('member_com_00287')" :inactive-text="lc('resume_00030')"
                                         active-value="1"></el-switch>
                                 </div>
                             </td>
                             <td>
                                 <div class="TableShuom">
-                                    <span>{yun:}t key='admin_system_00398'{/yun}</span>
+                                    <span>{{ lc('admin_system_00398') }}</span>
                                 </div>
                             </td>
                         </tr>
                         
                         <tr>
                             <td>
-                                <div class="TableTite">{yun:}t key='admin_system_00395'{/yun}</div>
+                                <div class="TableTite">{{ lc('admin_system_00395') }}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
                                     <el-input placeholder="0" v-model="config.warning_exchange_link" @input="inputIntNumber($event, 'config', 'warning_exchange_link')">
-                                        <span slot="suffix" class="slotspan">{yun:}t key='wap_com_00049'{/yun}</span>
+                                        <span slot="suffix" class="slotspan">{{ lc('wap_com_00049') }}</span>
                                     </el-input>
                                 </div>
                             </td>
                             <td>
                                 <div class="TableButn">
-                                    <el-switch v-model="config.warning_exchange_link_type" active-text="{yun:}t key='member_com_00287'{/yun}"
-                                        inactive-text="{yun:}t key='resume_00030'{/yun}" active-value="1"></el-switch>
+                                    <el-switch v-model="config.warning_exchange_link_type" :active-text="lc('member_com_00287')"
+                                        :inactive-text="lc('resume_00030')" active-value="1"></el-switch>
                                 </div>
                             </td>
                             <td>
                                 <div class="TableShuom">
-                                    <span>{yun:}t key='admin_system_00398'{/yun}</span>
+                                    <span>{{ lc('admin_system_00398') }}</span>
                                 </div>
                             </td>
                         </tr>
@@ -251,42 +251,42 @@
             </div>
             <div class="yujinTablCont">
                 <div class="yujinTablContTlte">
-                    <span>{yun:}t key='admin_system_00413'{/yun}</span>
+                    <span>{{ lc('admin_system_00413') }}</span>
                 </div>
                 <table class="tableVue">
                     <thead>
                         <tr align="left">
-                            <th width="180">{yun:}t key='member_com_00021'{/yun}</th>
-                            <th width="220">{yun:}t key='admin_00993'{/yun}</th>
-                            <th width="300">{yun:}t key='member_user_00181'{/yun}</th>
-                            <th>{yun:}t key='member_com_00207'{/yun}</th>
+                            <th width="180">{{ lc('member_com_00021') }}</th>
+                            <th width="220">{{ lc('admin_00993') }}</th>
+                            <th width="300">{{ lc('member_user_00181') }}</th>
+                            <th>{{ lc('member_com_00207') }}</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
                             <td>
-                                <div class="TableTite">{yun:}t key='admin_system_00407'{/yun}</div>
+                                <div class="TableTite">{{ lc('admin_system_00407') }}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
                                     <el-input placeholder="0" v-model="config.warning_sendresume"  @input="inputIntNumber($event, 'config', 'warning_sendresume')">
-                                        <span slot="suffix" class="slotspan">{yun:}t key='admin_system_00408'{/yun}</span>
+                                        <span slot="suffix" class="slotspan">{{ lc('admin_system_00408') }}</span>
                                     </el-input>
                                 </div>
                             </td>
                             <td>
                                 <div class="TableButn">
-                                    <el-radio v-model="config.warning_sendresume_type" label="1">{yun:}t key='common_02082'{/yun}</el-radio>
-                                    <el-radio v-model="config.warning_sendresume_type" label="2">{yun:}t key='admin_00994'{/yun}</el-radio>
-                                    <el-radio v-model="config.warning_sendresume_type" label="3">{yun:}t key='admin_00995'{/yun}</el-radio>
+                                    <el-radio v-model="config.warning_sendresume_type" label="1">{{ lc('common_02082') }}</el-radio>
+                                    <el-radio v-model="config.warning_sendresume_type" label="2">{{ lc('admin_00994') }}</el-radio>
+                                    <el-radio v-model="config.warning_sendresume_type" label="3">{{ lc('admin_00995') }}</el-radio>
                                 </div>
                                 <div class="TableInpt" style="padding-top: 12px;" v-if="config.warning_sendresume_type == 2">
-                                    <el-input placeholder="{yun:}t key='admin_00996'{/yun}" v-model="config.warning_sendresume_tips"></el-input>
+                                    <el-input :placeholder="lc('admin_00996')" v-model="config.warning_sendresume_tips"></el-input>
                                 </div>
                             </td>
                             <td>
                                 <div class="TableShuom">
-                                    <span>{yun:}t key='admin_system_00396'{/yun}</span>
+                                    <span>{{ lc('admin_system_00396') }}</span>
                                 </div>
                             </td>
                         </tr>
@@ -296,42 +296,42 @@
             </div>
             <div class="yujinTablCont">
                 <div class="yujinTablContTlte">
-                    <span>{yun:}t key='admin_system_00412'{/yun}</span>
+                    <span>{{ lc('admin_system_00412') }}</span>
                 </div>
                 <table class="tableVue">
                     <thead>
                         <tr align="left">
-                            <th width="180">{yun:}t key='member_com_00021'{/yun}</th>
-                            <th width="220">{yun:}t key='admin_00993'{/yun}</th>
-                            <th width="300">{yun:}t key='member_user_00181'{/yun}</th>
-                            <th>{yun:}t key='member_com_00207'{/yun}</th>
+                            <th width="180">{{ lc('member_com_00021') }}</th>
+                            <th width="220">{{ lc('admin_00993') }}</th>
+                            <th width="300">{{ lc('member_user_00181') }}</th>
+                            <th>{{ lc('member_com_00207') }}</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
                             <td>
-                                <div class="TableTite">{yun:}t key='admin_system_00407'{/yun}</div>
+                                <div class="TableTite">{{ lc('admin_system_00407') }}</div>
                             </td>
                             <td>
                                 <div class="TableInpt">
                                     <el-input placeholder="0" v-model="config.warning_sqjob" @input="inputIntNumber($event, 'config', 'warning_sqjob')">
-                                        <span slot="suffix" class="slotspan">{yun:}t key='admin_system_00410'{/yun}</span>
+                                        <span slot="suffix" class="slotspan">{{ lc('admin_system_00410') }}</span>
                                     </el-input>
                                 </div>
                             </td>
                             <td>
                                 <div class="TableButn">
-                                    <el-radio v-model="config.warning_sqjob_type" label="1">{yun:}t key='common_02082'{/yun}</el-radio>
-                                    <el-radio v-model="config.warning_sqjob_type" label="2">{yun:}t key='admin_00994'{/yun}</el-radio>
-                                    <el-radio v-model="config.warning_sqjob_type" label="3">{yun:}t key='admin_00995'{/yun}</el-radio>
+                                    <el-radio v-model="config.warning_sqjob_type" label="1">{{ lc('common_02082') }}</el-radio>
+                                    <el-radio v-model="config.warning_sqjob_type" label="2">{{ lc('admin_00994') }}</el-radio>
+                                    <el-radio v-model="config.warning_sqjob_type" label="3">{{ lc('admin_00995') }}</el-radio>
                                 </div>
                                 <div class="TableInpt" style="padding-top: 12px;" v-if="config.warning_sqjob_type == 2">
-                                    <el-input placeholder="{yun:}t key='admin_00996'{/yun}" v-model="config.warning_sqjob_tips"></el-input>
+                                    <el-input :placeholder="lc('admin_00996')" v-model="config.warning_sqjob_tips"></el-input>
                                 </div>
                             </td>
                             <td>
                                 <div class="TableShuom">
-                                    <span>{yun:}t key='admin_system_00393'{/yun}</span>
+                                    <span>{{ lc('admin_system_00393') }}</span>
                                 </div>
                             </td>
                         </tr>
@@ -342,7 +342,7 @@
         </div>
 
         <div class="setBasicButn" style="border: none;">
-            <el-button type="primary" size="medium" @click="save" :disabled="saveLoading">{yun:}t key='common.submit'{/yun}</el-button>
+            <el-button type="primary" size="medium" @click="save" :disabled="saveLoading">{{ lc('common.submit') }}</el-button>
         </div>
     </div>
 </template>
@@ -441,10 +441,10 @@ module.exports = {
             httpPost('m=system&c=warning&a=config', params).then((response) => {
                 var res = response.data;
                 if (res.error == 0) {
-                    message.success("{yun:}t key='wap_user_00264'{/yun}");
+                    message.success(lc('wap_user_00264'));
                     this.$emit('update:setshow', false);
                 } else {
-                    message.error("{yun:}t key='admin_system_00397'{/yun}");
+                    message.error(lc('admin_system_00397'));
                 }
             }).finally(function () {
                 setTimeout(function () {

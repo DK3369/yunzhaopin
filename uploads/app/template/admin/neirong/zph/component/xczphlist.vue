@@ -2,33 +2,33 @@
     <div class="moduleElHight">
         <div class="moduleSeachs">
             <div class="moduleSeachInpt">
-                <el-input placeholder="{yun:}t key='admin_00340'{/yun}" size="small" style="margin-right: 8px;" v-model="keyword" class="input-with-select" clearable>
-                    <el-select v-model="type" slot="prepend" placeholder="{yun:}t key='wap_user_00100'{/yun}">
-                        <el-option label="{yun:}t key='member_com_00377'{/yun}" value="1"></el-option>
-                        <el-option label="{yun:}t key='admin_00321'{/yun}" value="2"></el-option>
+                <el-input :placeholder="lc('admin_00340')" size="small" style="margin-right: 8px;" v-model="keyword" class="input-with-select" clearable>
+                    <el-select v-model="type" slot="prepend" :placeholder="lc('wap_user_00100')">
+                        <el-option :label="lc('member_com_00377')" value="1"></el-option>
+                        <el-option :label="lc('admin_00321')" value="2"></el-option>
                     </el-select>
                 </el-input>
-                <el-select v-model="status" size="small" slot="prepend" placeholder="{yun:}t key='wap_com_00406'{/yun}" clearable style="margin-right: 10px; text-align: left;" @change="search">
-                    <el-option label="{yun:}t key='admin_00319'{/yun}" value="1"></el-option>
-                    <el-option label="{yun:}t key='admin_00320'{/yun}" value="3"></el-option>
-                    <el-option label="{yun:}t key='wap_user_00259'{/yun}" value="2"></el-option>
+                <el-select v-model="status" size="small" slot="prepend" :placeholder="lc('wap_com_00406')" clearable style="margin-right: 10px; text-align: left;" @change="search">
+                    <el-option :label="lc('admin_00319')" value="1"></el-option>
+                    <el-option :label="lc('admin_00320')" value="3"></el-option>
+                    <el-option :label="lc('wap_user_00259')" value="2"></el-option>
                 </el-select>
-                <el-button type="primary" icon="el-icon-search" size="mini" @click="search">{yun:}t key='admin_user_weipin_00049'{/yun}</el-button>
+                <el-button type="primary" icon="el-icon-search" size="mini" @click="search">{{ lc('admin_user_weipin_00049') }}</el-button>
             </div>
             <div class="moduleSeachButn">
                 <div class="tableSeachInpt" style="margin-bottom: 0;">
-                    <el-button type="primary" icon="el-icon-document-add" size="mini" @click="addzph({id: ''})">{yun:}t key='admin_00848'{/yun}</el-button>
+                    <el-button type="primary" icon="el-icon-document-add" size="mini" @click="addzph({id: ''})">{{ lc('admin_00848') }}</el-button>
                 </div>
             </div>
         </div>
         <div class="admin_datatip">
-            <i class="el-icon-document"></i> {yun:}t key='admin_00830'{/yun}
+            <i class="el-icon-document"></i> {{ lc('admin_00830') }}
         </div>
         <div class="moduleElTable moduleElMoreLive" style="border: 1px solid #ebeef5; width: calc(100% - 2px);">
             <el-table :data="tableData" style="width: 100%" stripe :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" height="100%" @selection-change="handleSelectionChange" ref="multipleTable" :default-sort="{ prop: 'id', order: 'descending' }" @sort-change='sortChange' v-loading="loading" :empty-text="emptytext">
                 <el-table-column type="selection" width="55"></el-table-column>
-                <el-table-column prop="id" label="{yun:}t key='member_com_00345'{/yun}" width="80" sortable="custom"></el-table-column>
-                <el-table-column label="{yun:}t key='member_com_00377'{/yun}" min-width="180" show-overflow-tooltip>
+                <el-table-column prop="id" :label="lc('member_com_00345')" width="80" sortable="custom"></el-table-column>
+                <el-table-column :label="lc('member_com_00377')" min-width="180" show-overflow-tooltip>
                     <template slot-scope="scope">
                         <div class="">
                             <el-link type="primary" :href="scope.row.url" target="_blank"> {{ scope.row.title }}</el-link>
@@ -36,16 +36,16 @@
                         <div class="">{{ lc("admin_venue_value", [scope.row.address]) }}</div>
                     </template>
                 </el-table-column>
-                <el-table-column prop="starttime" label="{yun:}t key='admin_company_00005'{/yun}" width="180" sortable="custom"></el-table-column>
-                <el-table-column prop="endtime" label="{yun:}t key='admin_company_00006'{/yun}" width="180" sortable="custom"></el-table-column>
-                <el-table-column label="{yun:}t key='wap_00559'{/yun}" min-width="80" show-overflow-tooltip>
+                <el-table-column prop="starttime" :label="lc('admin_company_00005')" width="180" sortable="custom"></el-table-column>
+                <el-table-column prop="endtime" :label="lc('admin_company_00006')" width="180" sortable="custom"></el-table-column>
+                <el-table-column :label="lc('wap_00559')" min-width="80" show-overflow-tooltip>
                     <template slot-scope="scope">
                         <div style="padding-top: 10px;">
                             <el-button @click="showComList(scope.row)" type="text">
                                 <span>{{scope.row.comnum}}</span><br />
-                                <span>{yun:}t key='wap_com_00427'{/yun}</span>
+                                <span>{{ lc('wap_com_00427') }}</span>
                             </el-button>
-                            <el-tooltip v-if="scope.row.booking > 0" content="{yun:}t key='admin_00316'{/yun}" placement="top-end">
+                            <el-tooltip v-if="scope.row.booking > 0" :content="lc('admin_00316')" placement="top-end">
                                 <el-button @click.native="showComList(scope.row, 3)" type="text">
                                     <el-badge :value="scope.row.booking" :max="99" class="item"></el-badge>
                                 </el-button>
@@ -53,36 +53,36 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column prop="zd" label="{yun:}t key='admin_user_weipin_00050'{/yun}" width="75">
+                <el-table-column prop="zd" :label="lc('admin_user_weipin_00050')" width="75">
                     <template slot-scope="scope">
                         <span>{{ dnamearr[scope.row.did] }}</span>
-                        <el-link type="primary" @click="fp(scope.row)">{yun:}t key='admin_user_weipin_00048'{/yun}</el-link>
+                        <el-link type="primary" @click="fp(scope.row)">{{ lc('admin_user_weipin_00048') }}</el-link>
                     </template>
                 </el-table-column>
-                <el-table-column prop="id" label="{yun:}t key='admin_00846'{/yun}" width="180">
+                <el-table-column prop="id" :label="lc('admin_00846')" width="180">
                     <template slot-scope="scope">
-                        <el-link type="primary" @click="piclist(scope.row)">{yun:}t key='admin_00586'{/yun}</el-link>
+                        <el-link type="primary" @click="piclist(scope.row)">{{ lc('admin_00586') }}</el-link>
                     </template>
                 </el-table-column>
-                <el-table-column prop="zt" label="{yun:}t key='admin_00285'{/yun}">
+                <el-table-column prop="zt" :label="lc('admin_00285')">
                     <template slot-scope="scope">
                         <div class="admin_state">
-                            <span class="admin_state1">{yun:}t key='admin_00849'{/yun}</span>
+                            <span class="admin_state1">{{ lc('admin_00849') }}</span>
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="{yun:}t key='member_user_00048'{/yun}" fixed="right" width="140">
+                <el-table-column :label="lc('member_user_00048')" fixed="right" width="140">
                     <template slot-scope="scope">
                         <div class="cz_button">
                             <el-button size="mini">
-                                <el-link style="font-size: 12px;" :href="scope.row.url" target="_blank">{yun:}t key='wap_00071'{/yun}
+                                <el-link style="font-size: 12px;" :href="scope.row.url" target="_blank">{{ lc('wap_00071') }}
                                 </el-link>
                             </el-button>
-                            <el-button size="mini" @click="statusSet(scope.row)">{yun:}t key='member_user_00181'{/yun}</el-button>
+                            <el-button size="mini" @click="statusSet(scope.row)">{{ lc('member_user_00181') }}</el-button>
                         </div>
                         <div class="cz_button" style="margin-top: 10px;">
-                            <el-button size="mini" @click="addzph(scope.row)">{yun:}t key='wap_js_00073'{/yun}</el-button>
-                            <el-button type="danger" size="mini" @click="delrow(scope.row.id)">{yun:}t key='common.delete'{/yun}</el-button>
+                            <el-button size="mini" @click="addzph(scope.row)">{{ lc('wap_js_00073') }}</el-button>
+                            <el-button type="danger" size="mini" @click="delrow(scope.row.id)">{{ lc('common.delete') }}</el-button>
                         </div>
                     </template>
                 </el-table-column>
@@ -90,9 +90,9 @@
         </div>
         <div class="modulePaging">
             <div>
-                <el-checkbox v-model="checkedAll" @change="selectAllBottom">{yun:}t key='wap_js_00074'{/yun}</el-checkbox>
-                <el-button @click="delAllBottom" size="mini">{yun:}t key='member_com_00055'{/yun}</el-button>
-                <el-button @click="fpAllBottom" size="mini">{yun:}t key='admin_user_00279'{/yun}</el-button>
+                <el-checkbox v-model="checkedAll" @change="selectAllBottom">{{ lc('wap_js_00074') }}</el-checkbox>
+                <el-button @click="delAllBottom" size="mini">{{ lc('member_com_00055') }}</el-button>
+                <el-button @click="fpAllBottom" size="mini">{{ lc('admin_user_00279') }}</el-button>
             </div>
             <div class="modulePagNum">
                 <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="pageSizes" :page-size="perPage" layout="total, sizes, prev, pager, next, jumper" :total="total" :pager-count="pagerCount">
@@ -100,23 +100,23 @@
             </div>
         </div>
         <!--添加招聘会-->
-        <el-drawer title="{yun:}t key='admin_00317'{/yun}" :visible.sync="editdrawer" :modal-append-to-body="false" :show-close="true" :with-header="true" size="60%">
+        <el-drawer :title="lc('admin_00317')" :visible.sync="editdrawer" :modal-append-to-body="false" :show-close="true" :with-header="true" size="60%">
             <xczphadd ref="zphadd" :cdata="curr_data" :spacearr="spacearr" :dnamearr="dnamearr" @change="addPlace" @child-event-list="handleCloseList"></xczphadd>
         </el-drawer>
         <!--招聘会状态-->
         <div class="modluDrawer">
-            <el-dialog title="{yun:}t key='admin_00855'{/yun}" :visible.sync="drawerstatus" :with-header="true" :modal-append-to-body="false" :show-close="true" width="450px">
-                <div class="wxsettip_small ">{yun:}t key='member_com_00377'{/yun}</div>
+            <el-dialog :title="lc('admin_00855')" :visible.sync="drawerstatus" :with-header="true" :modal-append-to-body="false" :show-close="true" width="450px">
+                <div class="wxsettip_small ">{{ lc('member_com_00377') }}</div>
                 <el-input v-model="curr_data.title" :disabled="true">
                 </el-input>
-                <div class="wxsettip_small ">{yun:}t key='admin_00315'{/yun}</div>
+                <div class="wxsettip_small ">{{ lc('admin_00315') }}</div>
                 <template>
-                    <el-radio v-model="curr_data.is_open" label="1">{yun:}t key='member_com_00023'{/yun}</el-radio>
-                    <el-radio v-model="curr_data.is_open" label="0">{yun:}t key='common.close'{/yun}</el-radio>
+                    <el-radio v-model="curr_data.is_open" label="1">{{ lc('member_com_00023') }}</el-radio>
+                    <el-radio v-model="curr_data.is_open" label="0">{{ lc('common.close') }}</el-radio>
                 </template>
                 <span slot="footer" class="dialog-footer">
-                    <el-button @click="drawerstatus = false">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
-                    <el-button type="primary" @click="statusSave" :disabled="submitLoading">{yun:}t key='wap_com_00019'{/yun}</el-button>
+                    <el-button @click="drawerstatus = false">{{ lc('admin_user_weipin_00043') }}</el-button>
+                    <el-button type="primary" @click="statusSave" :disabled="submitLoading">{{ lc('wap_com_00019') }}</el-button>
                 </span>
             </el-dialog>
         </div>
@@ -126,23 +126,23 @@
                 <div class="modulemoreSeach">
                     <div class="moduleSeachbig">
                         <div class="tableSeachInpt tableSeachInptsmall newsinput">
-                            <el-select v-model="com_status" size="small" slot="prepend" placeholder="{yun:}t key='wap_com_00406'{/yun}" clearable @change="comSearch">
-                                <el-option label="{yun:}t key='member_user_00042'{/yun}" value="1"></el-option>
-                                <el-option label="{yun:}t key='wap_user_00166'{/yun}" value="3"></el-option>
-                                <el-option label="{yun:}t key='wap_user_00167'{/yun}" value="2"></el-option>
+                            <el-select v-model="com_status" size="small" slot="prepend" :placeholder="lc('wap_com_00406')" clearable @change="comSearch">
+                                <el-option :label="lc('member_user_00042')" value="1"></el-option>
+                                <el-option :label="lc('wap_user_00166')" value="3"></el-option>
+                                <el-option :label="lc('wap_user_00167')" value="2"></el-option>
                             </el-select>
                         </div>
                         <div class="tableSeachInpt">
-                            <el-input v-model="comkeyword" placeholder="{yun:}t key='wap_user_00149'{/yun}" clearable size="small" prefix-icon="el-icon-search">
+                            <el-input v-model="comkeyword" :placeholder="lc('wap_user_00149')" clearable size="small" prefix-icon="el-icon-search">
                             </el-input>
                         </div>
                         <div class="tableSeachInpt">
-                            <el-button type="primary" icon="el-icon-search" size="mini" @click="comSearch">{yun:}t key='admin_user_weipin_00049'{/yun}</el-button>
+                            <el-button type="primary" icon="el-icon-search" size="mini" @click="comSearch">{{ lc('admin_user_weipin_00049') }}</el-button>
                         </div>
                     </div>
                     <div class="moduleSeachButn">
                         <div class="tableSeachInpt" style="padding-right:10px; ">
-                            <el-button type="primary" icon="el-icon-document-add" size="mini" @click="comadd">{yun:}t key='admin_00850'{/yun}
+                            <el-button type="primary" icon="el-icon-document-add" size="mini" @click="comadd">{{ lc('admin_00850') }}
                             </el-button>
                             <!--<el-button type="primary" plain icon="el-icon-plus" size="mini">导出参会企业</el-button>-->
                         </div>
@@ -152,11 +152,11 @@
                 <div class="moduleElTable" style="border: 1px solid #ebeef5; width: calc(100% - 2px); height: calc(100% - 100px);">
                     <el-table :data="comTableData" style="width: 100%" stripe :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" height="100%" @selection-change="handleComSelectionChange" ref="comMultipleTable" :default-sort="{ prop: 'id', order: 'descending' }" @sort-change='comSortChange' :key="comTblKey" v-loading="loading" :empty-text="emptytext">
                         <el-table-column type="selection" width="55"></el-table-column>
-                        <el-table-column prop="id" label="{yun:}t key='member_com_00345'{/yun}" sortable="custom"></el-table-column>
-                        <el-table-column prop="comname" label="{yun:}t key='admin_00299'{/yun}" min-width="180" show-overflow-tooltip></el-table-column>
-                        <el-table-column prop="jobname" label="{yun:}t key='wap_user_00154'{/yun}" min-width="180" show-overflow-tooltip></el-table-column>
-                        <el-table-column prop="space_n" label="{yun:}t key='admin_00306'{/yun}" sortable="custom"></el-table-column>
-                        <el-table-column prop="sort" label="{yun:}t key='member_com_00022'{/yun}" sortable="custom">
+                        <el-table-column prop="id" :label="lc('member_com_00345')" sortable="custom"></el-table-column>
+                        <el-table-column prop="comname" :label="lc('admin_00299')" min-width="180" show-overflow-tooltip></el-table-column>
+                        <el-table-column prop="jobname" :label="lc('wap_user_00154')" min-width="180" show-overflow-tooltip></el-table-column>
+                        <el-table-column prop="space_n" :label="lc('admin_00306')" sortable="custom"></el-table-column>
+                        <el-table-column prop="sort" :label="lc('member_com_00022')" sortable="custom">
                             <template slot-scope="scope">
                                 <el-input v-if="scope.row[scope.column.property + 'isShow']" :ref="scope.column.property + scope.$index" :id="scope.column.property + scope.$index" v-model="scope.row.sort" @blur="alterData(scope, 1)"></el-input>
                                 <span v-else>
@@ -165,20 +165,20 @@
                                 </span>
                             </template>
                         </el-table-column>
-                        <el-table-column prop="zt" label="{yun:}t key='member_user_00181'{/yun}">
+                        <el-table-column prop="zt" :label="lc('member_user_00181')">
                             <template slot-scope="props">
                                 <div class="admin_state">
-                                    <span v-if="props.row.status == '1'" class="admin_state1"> {yun:}t key='admin_user_00149'{/yun}</span>
-                                    <span v-else-if="props.row.status == '0'" class="admin_state2"> {yun:}t key='wap_user_00166'{/yun}</span>
-                                    <span v-else-if="props.row.status == '2'" class="admin_state2"> {yun:}t key='wap_user_00167'{/yun}</span>
+                                    <span v-if="props.row.status == '1'" class="admin_state1"> {{ lc('admin_user_00149') }}</span>
+                                    <span v-else-if="props.row.status == '0'" class="admin_state2"> {{ lc('wap_user_00166') }}</span>
+                                    <span v-else-if="props.row.status == '2'" class="admin_state2"> {{ lc('wap_user_00167') }}</span>
                                 </div>
                             </template>
                         </el-table-column>
-                        <el-table-column label="{yun:}t key='member_user_00048'{/yun}" fixed="right" width="150" align="center">
+                        <el-table-column :label="lc('member_user_00048')" fixed="right" width="150" align="center">
                             <template slot-scope="scope">
                                 <div class="cz_button">
-                                    <el-button size="" plain @click="cominfo(scope.row)">{yun:}t key='member_com_00380'{/yun}</el-button>
-                                    <el-button type="danger" size="small" @click="comdelrow(scope.row.id)">{yun:}t key='common.delete'{/yun}
+                                    <el-button size="" plain @click="cominfo(scope.row)">{{ lc('member_com_00380') }}</el-button>
+                                    <el-button type="danger" size="small" @click="comdelrow(scope.row.id)">{{ lc('common.delete') }}
                                     </el-button>
                                 </div>
                             </template>
@@ -188,16 +188,16 @@
                 <div class="modulePaging" style="padding-top: 5px">
                     <div class="bottomButnBull">
                         <div class="bottomButnBlak">
-                            <el-checkbox v-model="comCheckedAll" @change="comSelectAllBottom">{yun:}t key='wap_js_00074'{/yun}</el-checkbox>
-                            <el-button type="mini" @click="comDelAllBottom">{yun:}t key='member_com_00055'{/yun}</el-button>
+                            <el-checkbox v-model="comCheckedAll" @change="comSelectAllBottom">{{ lc('wap_js_00074') }}</el-checkbox>
+                            <el-button type="mini" @click="comDelAllBottom">{{ lc('member_com_00055') }}</el-button>
                         </div>
                         <div class="bottomButnNone">
                             <el-popover placement="top-start" width="200" trigger="hover">
                                 <div class="bottomButnGend">
-                                    <el-button type="mini" @click="multipleComStatus">{yun:}t key='admin_user_weipin_00037'{/yun}</el-button>
-                                    <el-button type="mini" @click="exportExcel">{yun:}t key='admin_00314'{/yun}</el-button>
+                                    <el-button type="mini" @click="multipleComStatus">{{ lc('admin_user_weipin_00037') }}</el-button>
+                                    <el-button type="mini" @click="exportExcel">{{ lc('admin_00314') }}</el-button>
                                 </div>
-                                <div class="bottomButnMore" slot="reference">{yun:}t key='common.more'{/yun}</div>
+                                <div class="bottomButnMore" slot="reference">{{ lc('common.more') }}</div>
                             </el-popover>
                         </div>
                     </div>
@@ -209,17 +209,17 @@
             </div>
         </el-drawer>
         <!--参会企业添加-->
-        <el-drawer title="{yun:}t key='admin_00850'{/yun}" :visible.sync="drawercomadd" append-to-body :modal-append-to-body="false" size="80%">
+        <el-drawer :title="lc('admin_00850')" :visible.sync="drawercomadd" append-to-body :modal-append-to-body="false" size="80%">
             <div class="shbox shboxTianCompay">
 
 
                 <div class="shboxTianHrigh">
                     <div class="shboxAddCompany" style="text-align: center;">
                         <div class="shboxAddComTite">
-                            <span>{yun:}t key='admin_00318'{/yun}</span>
+                            <span>{{ lc('admin_00318') }}</span>
                         </div>
                         <div class="shboxAddComInt">
-                            <el-select v-model="comid" filterable remote placeholder="{yun:}t key='admin_user_company_00019'{/yun}" :remote-method="getComArr" @change="comChange">
+                            <el-select v-model="comid" filterable remote :placeholder="lc('admin_user_company_00019')" :remote-method="getComArr" @change="comChange">
                                 <el-option v-for="item in com_arr" :key="item.value" :label="item.label" :value="item.value">
                                 </el-option>
                             </el-select>
@@ -227,27 +227,27 @@
                     </div>
                     <div class="shboxAddCompany" style="text-align: center;margin-top: 10px;">
                         <div class="shboxAddComTite">
-                            <span>{yun:}t key='admin_00297'{/yun}</span>
+                            <span>{{ lc('admin_00297') }}</span>
                         </div>
                         <div class="shboxAddComInt">
-                            <el-select v-model="jobids" filterable remote placeholder="{yun:}t key='admin_00300'{/yun}" multiple>
+                            <el-select v-model="jobids" filterable remote :placeholder="lc('admin_00300')" multiple>
                                 <el-option v-for="item in job_arr" :key="item.value" :label="item.label" :value="item.value">
                                 </el-option>
                             </el-select>
                         </div>
                     </div>
                     <div class="" style="text-align: center;">
-                        <span class="admin_web_tip">{yun:}t key='admin_00309'{/yun}</span>
+                        <span class="admin_web_tip">{{ lc('admin_00309') }}</span>
                     </div>
                     <div class="yd_qy">{{ lc("admin_booth_selection_title", [curr_data.title]) }}</div>
                     <div class="yd_qylist" v-for="(item,index) in space_list" :key="index">
                         <el-divider content-position="center">{{item.name}}</el-divider>
                         <div class="yd_ztbox">
                             <div @click="changezw(childit, item, $event)" :class="ydCls(item, childit)" v-for="(childit,index) in item.list" :key="item.id + index + ''">
-                                <span v-if="childit.comstatus == '-1'" class="yd_zt_n">{yun:}t key='admin_00301'{/yun}</span>
-                                <span v-if="childit.comstatus == '1'" class="yd_zt_n">{yun:}t key='admin_00303'{/yun}</span>
-                                <span v-if="childit.comstatus == '0'" class="yd_zt_n">{yun:}t key='wap_user_00174'{/yun}</span>
-                                <span v-if="childit.comstatus == '2' || childit.comstatus == '3'" class="yd_zt_n">{yun:}t key='admin_00298'{/yun}</span>
+                                <span v-if="childit.comstatus == '-1'" class="yd_zt_n">{{ lc('admin_00301') }}</span>
+                                <span v-if="childit.comstatus == '1'" class="yd_zt_n">{{ lc('admin_00303') }}</span>
+                                <span v-if="childit.comstatus == '0'" class="yd_zt_n">{{ lc('wap_user_00174') }}</span>
+                                <span v-if="childit.comstatus == '2' || childit.comstatus == '3'" class="yd_zt_n">{{ lc('admin_00298') }}</span>
                                 <span class="yd_zt_zw">{{childit.name}}</span>
                             </div>
                         </div>
@@ -262,17 +262,17 @@
                             <div class="yd_zt_bthzwbox">{{ lc("admin_booth_value", [sel_zwname]) }}</div>
                         </div>
                         <div class="yd_zt_bthbot">
-                            <el-button type="primary" @click="saveAddCom" :disabled="submitLoading">{yun:}t key='admin_00305'{/yun}</el-button>
+                            <el-button type="primary" @click="saveAddCom" :disabled="submitLoading">{{ lc('admin_00305') }}</el-button>
                         </div>
                     </div>
                 </div>
             </div>
         </el-drawer>
-        <el-drawer title="{yun:}t key='admin_00856'{/yun}" :visible.sync="zphdrawerimg" :modal-append-to-body="false" append-to-body size="80%">
+        <el-drawer :title="lc('admin_00856')" :visible.sync="zphdrawerimg" :modal-append-to-body="false" append-to-body size="80%">
             <xczphimg ref="zphimg" :zphid="curr_data.id"></xczphimg>
         </el-drawer>
         <!--参会企业详情-->
-        <el-drawer title="{yun:}t key='admin_00843'{/yun}" v-if="dtlislook" :visible.sync="comdrawersh" :modal-append-to-body="false" append-to-body size="80%">
+        <el-drawer :title="lc('admin_00843')" v-if="dtlislook" :visible.sync="comdrawersh" :modal-append-to-body="false" append-to-body size="80%">
             <div class="shbox">
                 <div class="shinfo">
                     <div class="shcomname">{{info.name}}
@@ -280,9 +280,9 @@
                     </div>
                     <div class="sh_zwsz_add">{{ lc("admin_company_booth_value", [curr_comdata.zphname, curr_comdata.space_n]) }}</div>
                     <div class="sh_zwsz">
-                        <el-button type="primary" size="mini" plain @click="setZw"><i class="el-icon-edit"></i> {yun:}t key='admin_00838'{/yun}
+                        <el-button type="primary" size="mini" plain @click="setZw"><i class="el-icon-edit"></i> {{ lc('admin_00838') }}
                         </el-button>
-                        <el-button type="primary" size="mini" @click="showComJob"><i class="el-icon-suitcase-1"></i> {yun:}t key='wap_00560'{/yun}</el-button>
+                        <el-button type="primary" size="mini" @click="showComJob"><i class="el-icon-suitcase-1"></i> {{ lc('wap_00560') }}</el-button>
                     </div>
                     <div class="shcomtel">
                         <span v-if="info.linkman">
@@ -297,9 +297,9 @@
                     </div>
                     <div class="shshowall">
                         <div class="shshow">
-                            <div class="shshow_tit"><i class="el-icon-office-building"></i> {yun:}t key='wap_user_00341'{/yun}</div>
+                            <div class="shshow_tit"><i class="el-icon-office-building"></i> {{ lc('wap_user_00341') }}</div>
                             <div class="shshow_p">
-                                <div class="" v-if="info.welfare">{yun:}t key='admin_00644'{/yun}
+                                <div class="" v-if="info.welfare">{{ lc('admin_00644') }}
                                     <el-tag style="margin-right: 5px;" v-for="(item,index) in info.welfare_n" size="mini" :key="index">
                                         {{item}}
                                     </el-tag>
@@ -307,12 +307,12 @@
                                 <div class="" v-if="info.hy">{{ lc("admin_industry_value", [info.hy_n]) }}</div>
                                 <div class="" v-if="info.pr">{{ lc("admin_company_nature_value", [info.pr_n]) }}</div>
                                 <div class="" v-if="info.mun">{{ lc("admin_company_size_value", [info.mun_n]) }}</div>
-                                <div class="" v-if="info.provinceid">{yun:}t key='admin_00839'{/yun}
+                                <div class="" v-if="info.provinceid">{{ lc('admin_00839') }}
                                 </div>
                                 <div class="" v-if="info.content" v-html="info.content"></div>
                             </div>
                             <div class="shshow_tit" v-if="info.job_list.length > 0"><i class="el-icon-suitcase-1"></i>
-                                {yun:}t key='wap_01536'{/yun}
+                                {{ lc('wap_01536') }}
                             </div>
                             <ul class="shshow_joblist">
                                 <li v-for="(item,index) in info.job_list" :key="index">
@@ -325,8 +325,8 @@
                                             <span v-if="item.minsalary != '0' && item.maxsalary != '0'">-</span>
                                             <span v-if="item.maxsalary != '0'">{{item.maxsalary}}</span>
                                         </span>
-                                        <span class="shshow_line" v-if="!item.exp_req">{yun:}t key='admin_00852'{/yun}</span>
-                                        <span class="shshow_line" v-if="!item.edu_req">{yun:}t key='admin_00853'{/yun}</span>
+                                        <span class="shshow_line" v-if="!item.exp_req">{{ lc('admin_00852') }}</span>
+                                        <span class="shshow_line" v-if="!item.edu_req">{{ lc('admin_00853') }}</span>
                                     </div>
                                     <span class="shshow_zt" v-if="item.ch_n == 'admin_00302'">{{ lc(item.ch_n) }}</span>
                                     <span class="shshow_zt shshow_ztno" v-else>{{ lc(item.ch_n) }}</span>
@@ -334,16 +334,16 @@
                             </ul>
                         </div>
                         <div class="shcz">
-                            <div class="wxsettip_small ">{yun:}t key='admin_00842'{/yun}</div>
+                            <div class="wxsettip_small ">{{ lc('admin_00842') }}</div>
                             <template>
-                                <el-radio v-model="info.zph.status" label="1">{yun:}t key='admin_user_00149'{/yun}</el-radio>
-                                <el-radio v-model="info.zph.status" label="2">{yun:}t key='wap_user_00167'{/yun}</el-radio>
+                                <el-radio v-model="info.zph.status" label="1">{{ lc('admin_user_00149') }}</el-radio>
+                                <el-radio v-model="info.zph.status" label="2">{{ lc('wap_user_00167') }}</el-radio>
                             </template>
-                            <div class="wxsettip_small ">{yun:}t key='admin_user_00365'{/yun}</div>
-                            <el-input type="textarea" v-model="info.zph.statusbody" :rows="2" placeholder="{yun:}t key='wap_user_00076'{/yun}">
+                            <div class="wxsettip_small ">{{ lc('admin_user_00365') }}</div>
+                            <el-input type="textarea" v-model="info.zph.statusbody" :rows="2" :placeholder="lc('wap_user_00076')">
                             </el-input>
                             <div class=" shczbth">
-                                <el-button type="primary" @click="comStatusSave(info.zph.id)" :disabled="submitLoading">{yun:}t key='member_com_00248'{/yun}</el-button>
+                                <el-button type="primary" @click="comStatusSave(info.zph.id)" :disabled="submitLoading">{{ lc('member_com_00248') }}</el-button>
                             </div>
                         </div>
                     </div>
@@ -352,11 +352,11 @@
         </el-drawer>
         <!--分配站点弹窗-->
         <div class="modluDrawer">
-            <el-dialog title="{yun:}t key='admin_user_weipin_00029'{/yun}" width="300px" :visible.sync="drawerfp" :modal-append-to-body="false">
+            <el-dialog :title="lc('admin_user_weipin_00029')" width="300px" :visible.sync="drawerfp" :modal-append-to-body="false">
                 <div class="toolClasDia fenpeizhand">
                     <div class="toolClasList">
                         <div class="toolClasTite" style="width: 90px;">
-                            <span>{yun:}t key='admin_00854'{/yun}</span>
+                            <span>{{ lc('admin_00854') }}</span>
                         </div>
                         <div class="toolClasCont">
                             <span>{{curr_data.title}}</span>
@@ -364,10 +364,10 @@
                     </div>
                     <div class="toolClasList">
                         <div class="toolClasTite">
-                            <span>{yun:}t key='admin_user_weipin_00020'{/yun}</span>
+                            <span>{{ lc('admin_user_weipin_00020') }}</span>
                         </div>
                         <div class="toolClasCont">
-                            <el-select v-model="curr_data.did" placeholder="{yun:}t key='wap_user_00100'{/yun}" filterable>
+                            <el-select v-model="curr_data.did" :placeholder="lc('wap_user_00100')" filterable>
                                 <el-option v-for="(item,index) in dnamearr" :key="index" :label="item" :value="index">
                                 </el-option>
                             </el-select>
@@ -375,21 +375,21 @@
                     </div>
                 </div>
                 <span slot="footer" class="dialog-footer">
-                    <el-button @click="drawerfp = false">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
-                    <el-button type="primary" @click="fpSave(1)" :disabled="submitLoading">{yun:}t key='wap_com_00019'{/yun}</el-button>
+                    <el-button @click="drawerfp = false">{{ lc('admin_user_weipin_00043') }}</el-button>
+                    <el-button type="primary" @click="fpSave(1)" :disabled="submitLoading">{{ lc('wap_com_00019') }}</el-button>
                 </span>
             </el-dialog>
         </div>
         <!--批量分配站点-->
         <div class="modluDrawer">
-            <el-dialog title="{yun:}t key='admin_00162'{/yun}" width="300px" :visible.sync="drawerfpmultiple" :modal-append-to-body="false">
+            <el-dialog :title="lc('admin_00162')" width="300px" :visible.sync="drawerfpmultiple" :modal-append-to-body="false">
                 <div class="toolClasDia fenpeizhand">
                     <div class="toolClasList">
                         <div class="toolClasTite">
-                            <span>{yun:}t key='admin_user_weipin_00020'{/yun}</span>
+                            <span>{{ lc('admin_user_weipin_00020') }}</span>
                         </div>
                         <div class="toolClasCont">
-                            <el-select v-model="multipledid" placeholder="{yun:}t key='wap_user_00100'{/yun}" filterable>
+                            <el-select v-model="multipledid" :placeholder="lc('wap_user_00100')" filterable>
                                 <el-option v-if="dnamearr.length>0" v-for="(item,index) in dnamearr" :key="index" :label="item" :value="index">
                                 </el-option>
                             </el-select>
@@ -397,51 +397,51 @@
                     </div>
                 </div>
                 <span slot="footer" class="dialog-footer">
-                    <el-button @click="drawerfpmultiple = false">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
-                    <el-button type="primary" @click="fpSave(2)" :disabled="submitLoading">{yun:}t key='wap_com_00019'{/yun}</el-button>
+                    <el-button @click="drawerfpmultiple = false">{{ lc('admin_user_weipin_00043') }}</el-button>
+                    <el-button type="primary" @click="fpSave(2)" :disabled="submitLoading">{{ lc('wap_com_00019') }}</el-button>
                 </span>
             </el-dialog>
         </div>
         <!--批量审核参会企业-->
         <div class="modluDrawer">
-            <el-dialog title="{yun:}t key='admin_00842'{/yun}" width="300px" :visible.sync="drawercomstatusmultiple" append-to-body :modal-append-to-body="false">
+            <el-dialog :title="lc('admin_00842')" width="300px" :visible.sync="drawercomstatusmultiple" append-to-body :modal-append-to-body="false">
                 <div class="toolClasDia fenpeizhand">
                     <div class="toolClasList">
                         <div class="toolClasTite">
-                            <span>{yun:}t key='admin_user_weipin_00065'{/yun}</span>
+                            <span>{{ lc('admin_user_weipin_00065') }}</span>
                         </div>
                         <div class="toolClasCont">
-                            <el-radio v-model="multiComStatus" label="1">{yun:}t key='admin_user_00149'{/yun}</el-radio>
-                            <el-radio v-model="multiComStatus" label="2">{yun:}t key='wap_user_00167'{/yun}</el-radio>
+                            <el-radio v-model="multiComStatus" label="1">{{ lc('admin_user_00149') }}</el-radio>
+                            <el-radio v-model="multiComStatus" label="2">{{ lc('wap_user_00167') }}</el-radio>
                         </div>
                     </div>
                     <div class="toolClasList">
                         <div class="toolClasTite">
-                            <span>{yun:}t key='member_user_00450'{/yun}</span>
+                            <span>{{ lc('member_user_00450') }}</span>
                         </div>
                         <div class="toolClasCont">
-                            <el-input type="textarea" v-model="multiComStatusBody" :rows="2" placeholder="{yun:}t key='wap_user_00076'{/yun}">
+                            <el-input type="textarea" v-model="multiComStatusBody" :rows="2" :placeholder="lc('wap_user_00076')">
                             </el-input>
                         </div>
                     </div>
                 </div>
                 <span slot="footer" class="dialog-footer">
-                    <el-button @click="drawercomstatusmultiple = false">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
-                    <el-button type="primary" @click="multipleComStatusSave">{yun:}t key='wap_com_00019'{/yun}</el-button>
+                    <el-button @click="drawercomstatusmultiple = false">{{ lc('admin_user_weipin_00043') }}</el-button>
+                    <el-button type="primary" @click="multipleComStatusSave">{{ lc('wap_com_00019') }}</el-button>
                 </span>
             </el-dialog>
         </div>
         <!--参会企业详情 设置展位-->
-        <el-drawer title="{yun:}t key='admin_00838'{/yun}" :visible.sync="drawersetzw" :modal-append-to-body="false" append-to-body size="80%">
+        <el-drawer :title="lc('admin_00838')" :visible.sync="drawersetzw" :modal-append-to-body="false" append-to-body size="80%">
             <div class="yd_qy">{{ lc("admin_booth_selection_title", [curr_data.title]) }}</div>
             <div class="yd_qylist" v-for="(item,index) in space_list" style="margin-left: 20px;" :key="index">
                 <el-divider content-position="center">{{item.name}}</el-divider>
                 <div class="yd_ztbox">
                     <div :class="ydCls(item, childit)" @click="changezw(childit, item, $event)" v-for="(childit,index) in item.list" :key="item.id + index + ''">
-                        <span v-if="childit.comstatus == '-1'" class="yd_zt_n">{yun:}t key='admin_00301'{/yun}</span>
-                        <span v-if="childit.comstatus == '1'" class="yd_zt_n">{yun:}t key='admin_00303'{/yun}</span>
-                        <span v-if="childit.comstatus == '0'" class="yd_zt_n">{yun:}t key='wap_user_00174'{/yun}</span>
-                        <span v-if="childit.comstatus == '2' || childit.comstatus == '3'" class="yd_zt_n">{yun:}t key='admin_00298'{/yun}</span>
+                        <span v-if="childit.comstatus == '-1'" class="yd_zt_n">{{ lc('admin_00301') }}</span>
+                        <span v-if="childit.comstatus == '1'" class="yd_zt_n">{{ lc('admin_00303') }}</span>
+                        <span v-if="childit.comstatus == '0'" class="yd_zt_n">{{ lc('wap_user_00174') }}</span>
+                        <span v-if="childit.comstatus == '2' || childit.comstatus == '3'" class="yd_zt_n">{{ lc('admin_00298') }}</span>
                         <span class="yd_zt_zw">{{childit.name}}</span>
                     </div>
                 </div>
@@ -452,21 +452,21 @@
                         <div class="yd_zt_bthzwbox">{{ lc("admin_booth_value", [sel_zwname]) }}</div>
                     </div>
                     <div class="yd_zt_bthbot">
-                        <el-button type="primary" @click="saveChangeZw">{yun:}t key='admin_00305'{/yun}</el-button>
+                        <el-button type="primary" @click="saveChangeZw">{{ lc('admin_00305') }}</el-button>
                     </div>
                 </div>
             </div>
         </el-drawer>
         <!--参会职位-->
         <div class="modluDrawer">
-            <el-dialog title="{yun:}t key='wap_00560'{/yun}" width="300px" :visible.sync="drawercomjob" append-to-body :modal-append-to-body="false">
+            <el-dialog :title="lc('wap_00560')" width="300px" :visible.sync="drawercomjob" append-to-body :modal-append-to-body="false">
                 <div class="toolClasDia fenpeizhand">
                     <div class="toolClasList">
                         <div class="toolClasTite">
-                            <span>{yun:}t key='admin_00297'{/yun}</span>
+                            <span>{{ lc('admin_00297') }}</span>
                         </div>
                         <div class="toolClasCont">
-                            <el-select v-model="jobids" filterable remote placeholder="{yun:}t key='admin_00300'{/yun}" multiple>
+                            <el-select v-model="jobids" filterable remote :placeholder="lc('admin_00300')" multiple>
                                 <el-option v-for="item in job_arr" :key="item.value" :label="item.label" :value="item.value">
                                 </el-option>
                             </el-select>
@@ -474,8 +474,8 @@
                     </div>
                 </div>
                 <span slot="footer" class="dialog-footer">
-                    <el-button @click="drawercomjob = false">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
-                    <el-button type="primary" @click="saveComJob">{yun:}t key='wap_com_00019'{/yun}</el-button>
+                    <el-button @click="drawercomjob = false">{{ lc('admin_user_weipin_00043') }}</el-button>
+                    <el-button type="primary" @click="saveComJob">{{ lc('wap_com_00019') }}</el-button>
                 </span>
             </el-dialog>
         </div>
@@ -487,7 +487,7 @@ module.exports = {
         return {
             loading: false,
             pagerCount: 5,
-            emptytext: "{yun:}t key='wap_js_00113'{/yun}",
+            emptytext: lc('wap_js_00113'),
             submitLoading: false,
             type: '1',
             keyword: '',
@@ -536,7 +536,7 @@ module.exports = {
             sel_comname: '',
             sel_zwid: '',
             sel_cdid: '',
-            sel_zwname: "{yun:}t key='admin_00304'{/yun}",
+            sel_zwname: lc('admin_00304'),
             job_arr: [],
             jobids: [],
             comdrawer: false,
@@ -571,10 +571,10 @@ module.exports = {
                         that.job_arr = response.data.data
                         that.drawercomjob = true
                     } else {
-                        message.error("{yun:}t key='admin_00295'{/yun}");
+                        message.error(lc('admin_00295'));
                     }
                 } else {
-                    message.error("{yun:}t key='admin_00295'{/yun}");
+                    message.error(lc('admin_00295'));
                 }
             }).catch(function(error) {
                 console.log(error);
@@ -618,7 +618,7 @@ module.exports = {
             }
             return rt
         },
-        // {yun:}t key='admin_00838'{/yun}
+        // {{ lc('admin_00838') }}
         setZw() {
             var that = this
             httpPost("m=neirong&c=zhaopinhui&a=comadd', { id: that.curr_data.id }).then(function(response) {
@@ -628,7 +628,7 @@ module.exports = {
                     that.sel_cdid = that.curr_comdata.cid
                     that.drawersetzw = true
                 } else {
-                    message.error("{yun:}t key='admin_user_company_00017'{/yun}");
+                    message.error(lc('admin_user_company_00017'));
                 }
             }).catch(function(error) {
                 console.log(error);
@@ -680,7 +680,7 @@ module.exports = {
                         that.getList()
                     });
                 } else {
-                    message.error("{yun:}t key='admin_00295'{/yun}");
+                    message.error(lc('admin_00295'));
                 }
             }).catch(function(error) {
                 console.log(error);
@@ -691,7 +691,7 @@ module.exports = {
         // 选择展位
         changezw(childit, item, event) {
             if (childit.comstatus != '-1') {
-                message.error("{yun:}t key='admin_00296'{/yun}");
+                message.error(lc('admin_00296'));
                 return false
             }
             this.sel_zwid = childit.id
@@ -715,10 +715,10 @@ module.exports = {
                     if (response.data.data.length > 0) {
                         that.job_arr = response.data.data
                     } else {
-                        message.error("{yun:}t key='admin_00295'{/yun}");
+                        message.error(lc('admin_00295'));
                     }
                 } else {
-                    message.error("{yun:}t key='admin_00295'{/yun}");
+                    message.error(lc('admin_00295'));
                 }
             }).catch(function(error) {
                 console.log(error);
@@ -733,7 +733,7 @@ module.exports = {
             that.sel_comname = ''
             that.sel_zwid = ''
             that.sel_cdid = ''
-            that.sel_zwname = "{yun:}t key='admin_00304'{/yun}"
+            that.sel_zwname = lc('admin_00304')
             that.job_arr = []
             that.jobids = []
             httpPost('m=neirong&c=zhaopinhui&a=comadd', { id: that.curr_data.id }).then(function(response) {
@@ -741,7 +741,7 @@ module.exports = {
                     that.space_list = response.data.data.spacelist
                     that.drawercomadd = true
                 } else {
-                    message.error("{yun:}t key='admin_user_company_00017'{/yun}");
+                    message.error(lc('admin_user_company_00017'));
                 }
             }).catch(function(error) {
                 console.log(error);
@@ -756,7 +756,7 @@ module.exports = {
                         if (response.data.error == 0) {
                             that.com_arr = response.data.data
                         } else {
-                            message.error("{yun:}t key='admin_user_company_00017'{/yun}");
+                            message.error(lc('admin_user_company_00017'));
                         }
                     }).catch(function(error) {
                         console.log(error);
@@ -769,7 +769,7 @@ module.exports = {
         // 参会企业批量审核
         multipleComStatus: function() {
             if (!this.comSelectedItem.length) {
-                message.error("{yun:}t key='admin_00246'{/yun}");
+                message.error(lc('admin_00246'));
                 return false;
             }
             this.drawercomstatusmultiple = true
@@ -778,7 +778,7 @@ module.exports = {
         multipleComStatusSave() {
             var that = this
             if (!that.comSelectedItem.length) {
-                message.error("{yun:}t key='admin_00246'{/yun}");
+                message.error(lc('admin_00246'));
                 return false;
             }
             that.comstatus({
@@ -799,7 +799,7 @@ module.exports = {
                         that.getComList()
                     });
                 } else {
-                    message.error("{yun:}t key='admin_user_company_00017'{/yun}");
+                    message.error(lc('admin_user_company_00017'));
                 }
             }).catch(function(error) {
                 console.log(error);
@@ -822,7 +822,7 @@ module.exports = {
                     that.dtlislook = true
                     that.comdrawersh = true
                 } else {
-                    message.error("{yun:}t key='admin_user_company_00017'{/yun}");
+                    message.error(lc('admin_user_company_00017'));
                 }
             }).catch(function(error) {
                 console.log(error);
@@ -907,7 +907,7 @@ module.exports = {
         },
         fpAllBottom() {
             if (!this.selectedItem.length) {
-                message.error("{yun:}t key='admin_00312'{/yun}");
+                message.error(lc('admin_00312'));
                 return false;
             }
             this.multipledid = '"
@@ -916,10 +916,10 @@ module.exports = {
         fpSave(tp) {
             var that = this
             let params = {}
-            if (tp == 1) { // {yun:}t key='admin_user_weipin_00029'{/yun}
+            if (tp == 1) { // {{ lc('admin_user_weipin_00029') }}
                 params.uid = that.curr_data.id
                 params.did = that.curr_data.did
-            } else { // {yun:}t key='admin_00162'{/yun}
+            } else { // {{ lc('admin_00162') }}
                 if (!that.selectedItem.length) {
                     message.error(lc('admin_00312'));
                     return false;
@@ -1009,7 +1009,7 @@ module.exports = {
                 params.t = that.sort_col
             }
             that.loading = true;
-            that.emptytext = "{yun:}t key='admin_user_weipin_00026'{/yun}";
+            that.emptytext = lc('admin_user_weipin_00026');
             httpPost('m=neirong&c=zhaopinhui&a=index', params, { hideloading: true }).then(function(result) {
                 var res = result.data
                 if (res.error == 0) {
@@ -1023,7 +1023,7 @@ module.exports = {
                     }
                     that.loading = false;
                     if (that.tableData.length === 0) {
-                        that.emptytext = "{yun:}t key='wap_js_00113'{/yun}";
+                        that.emptytext = lc('wap_js_00113');
                     }
                 }
             }).catch(function(e) {
@@ -1048,7 +1048,7 @@ module.exports = {
         },
         delAllBottom() {
             if (!this.selectedItem.length) {
-                message.error("{yun:}t key='admin_00136'{/yun}");
+                message.error(lc('admin_00136'));
                 return false;
             }
             delConfirm(this, this.selectedItem, this.delete);
@@ -1057,10 +1057,10 @@ module.exports = {
         exportExcel() {
             var that = this
             if (that.comTableData.length == 0) {
-                message.error("{yun:}t key='admin_00311'{/yun}");
+                message.error(lc('admin_00311'));
                 return false
             }
-            message.confirm("{yun:}t key='admin_00313'{/yun}", function() {
+            message.confirm(lc('admin_00313'), function() {
                 var params = {
                     zid: that.curr_data.id,
                     cid: that.comSelectedItem.join(',')
@@ -1168,7 +1168,7 @@ module.exports = {
                 params.t = that.sort_col
             }
             that.loading = true;
-            that.emptytext = "{yun:}t key='admin_user_weipin_00026'{/yun}";
+            that.emptytext = lc('admin_user_weipin_00026');
             httpPost('m=neirong&c=zhaopinhui&a=com', params).then(function(result) {
                 var res = result.data
                 if (res.error == 0) {
@@ -1186,7 +1186,7 @@ module.exports = {
                     }
                     that.loading = false;
                     if (that.comTableData.length === 0) {
-                        that.emptytext = "{yun:}t key='wap_js_00113'{/yun}";
+                        that.emptytext = lc('wap_js_00113');
                     }
                 }
             }).catch(function(e) {
@@ -1198,7 +1198,7 @@ module.exports = {
         },
         comDelAllBottom() {
             if (!this.comSelectedItem.length) {
-                message.error("{yun:}t key='admin_00136'{/yun}");
+                message.error(lc('admin_00136'));
                 return false;
             }
             delConfirm(this, this.comSelectedItem, this.comDelete);
@@ -1251,9 +1251,9 @@ module.exports = {
             httpPost('m=neirong&c=zhaopinhui&a=ajaxsort', sendData, { hideloading: true }).then(function(response) {
                 let res = response.data;
                 if (res.error === 0) {
-                    message.success("{yun:}t key='admin_user_company_00208'{/yun}");
+                    message.success(lc('admin_user_company_00208'));
                 } else {
-                    message.error("{yun:}t key='admin_00187'{/yun}");
+                    message.error(lc('admin_00187'));
                 }
                 _this.oldData = null;
                 _this.getList();

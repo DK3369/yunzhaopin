@@ -15,8 +15,21 @@
         return typeof text === "string" && /[一-龥]/.test(text);
     }
 
-    var lang = localStorage.getItem("lang") || getCookie("admin_lang") || "en_us";
+    function resolveLang() {
+        return getCookie("admin_lang") || localStorage.getItem("lang") || "en_us";
+    }
+
+    var lang = resolveLang();
+    if (lang) {
+        localStorage.setItem("lang", lang);
+    }
     window.yunAdminI18n = window.yunAdminI18n || { lang: lang, messages: {}, lc: {}, keys: [] };
+
+    function getLang() {
+        lang = resolveLang();
+        window.yunAdminI18n.lang = lang;
+        return lang;
+    }
 
     function buildKeys() {
         window.yunAdminI18n.keys = Object.keys(window.yunAdminI18n.messages || {}).sort(function (a, b) {
@@ -37,7 +50,7 @@
     }
 
     window.yunAdminT = function (text) {
-        if (lang === "zh_cn") {
+        if (getLang() === "zh_cn") {
             return text;
         }
         var messages = window.yunAdminI18n.messages || {};
@@ -81,7 +94,7 @@
     };
 
     window.yunAdminTransText = function (content) {
-        if (lang === "zh_cn") {
+        if (getLang() === "zh_cn") {
             return content;
         }
         var messages = window.yunAdminI18n.messages || {};
@@ -102,7 +115,7 @@
     };
 
     window.yunAdminTranslateDOM = function (root) {
-        if (lang === "zh_cn" || !root) {
+        if (getLang() === "zh_cn" || !root) {
             return;
         }
         var attrs = ["placeholder", "title", "alt", "content", "aria-label", "value"];
@@ -143,18 +156,67 @@
         }
     };
 
+
+    var elementEnLocale = {
+        el: {
+            colorpicker: { confirm: 'OK', clear: 'Clear' },
+            datepicker: {
+                now: 'Now', today: 'Today', cancel: 'Cancel', clear: 'Clear', confirm: 'OK',
+                selectDate: 'Select date', selectTime: 'Select time',
+                startDate: 'Start Date', startTime: 'Start Time',
+                endDate: 'End Date', endTime: 'End Time',
+                prevYear: 'Previous Year', nextYear: 'Next Year',
+                prevMonth: 'Previous Month', nextMonth: 'Next Month',
+                year: '', month1: 'January', month2: 'February', month3: 'March',
+                month4: 'April', month5: 'May', month6: 'June', month7: 'July',
+                month8: 'August', month9: 'September', month10: 'October',
+                month11: 'November', month12: 'December',
+                weeks: { sun: 'Sun', mon: 'Mon', tue: 'Tue', wed: 'Wed', thu: 'Thu', fri: 'Fri', sat: 'Sat' },
+                months: { jan: 'Jan', feb: 'Feb', mar: 'Mar', apr: 'Apr', may: 'May', jun: 'Jun',
+                    jul: 'Jul', aug: 'Aug', sep: 'Sep', oct: 'Oct', nov: 'Nov', dec: 'Dec' }
+            },
+            select: { loading: 'Loading', noMatch: 'No matching data', noData: 'No data', placeholder: 'Select' },
+            cascader: { noMatch: 'No matching data', loading: 'Loading', placeholder: 'Select', noData: 'No data' },
+            pagination: { goto: 'Go to', pagesize: '/page', total: 'Total {total}', pageClassifier: '' },
+            messagebox: { title: 'Message', confirm: 'OK', cancel: 'Cancel', error: 'Illegal input' },
+            upload: { deleteTip: 'press delete to remove', delete: 'Delete', preview: 'Preview', continue: 'Continue' },
+            table: { emptyText: 'No Data', confirmFilter: 'Confirm', resetFilter: 'Reset', clearFilter: 'All',
+                sumText: 'Sum' },
+            tree: { emptyText: 'No Data' },
+            transfer: { noMatch: 'No matching data', noData: 'No data', titles: ['List 1', 'List 2'],
+                filterPlaceholder: 'Enter keyword', noCheckedFormat: '{total} items',
+                hasCheckedFormat: '{checked}/{total} checked' },
+            image: { error: 'FAILED' },
+            pageHeader: { title: 'Back' },
+            popconfirm: { confirmButtonText: 'Yes', cancelButtonText: 'No' },
+            empty: { description: 'No Data' }
+        }
+    };
+
+    function applyElementLocale() {
+        if (!window.ELEMENT || typeof window.ELEMENT.locale !== 'function') {
+            return;
+        }
+        if (getLang() === 'zh_cn') {
+            return;
+        }
+        window.ELEMENT.locale(elementEnLocale);
+    }
+
     function loadLangPack() {
+        var currentLang = getLang();
         var baseUrl = localStorage.getItem("baseUrl") || "/admin/index.php";
         var xhr = new XMLHttpRequest();
-        xhr.open("GET", baseUrl + "?m=index&c=langpack&lang=" + encodeURIComponent(lang), false);
+        xhr.open("GET", baseUrl + "?m=index&c=langpack&lang=" + encodeURIComponent(currentLang), false);
         xhr.onreadystatechange = function () {
             if (xhr.readyState === 4 && xhr.status >= 200 && xhr.status < 300) {
                 try {
                     var data = JSON.parse(xhr.responseText);
-                    window.yunAdminI18n.lang = data.lang || lang;
+                    window.yunAdminI18n.lang = data.lang || currentLang;
                     window.yunAdminI18n.messages = data.messages || {};
                     window.yunAdminI18n.lc = data.lc || {};
                     buildKeys();
+                    applyElementLocale();
                 } catch (e) {}
             }
         };
@@ -164,6 +226,7 @@
     }
 
     loadLangPack();
+    applyElementLocale();
 
     if (window.Vue) {
         Vue.mixin({

@@ -4,25 +4,25 @@
 			<table class="tableVue">
 				<thead>
 					<tr align="left">
-						<th width="200">{yun:}t key='member_com_00021'{/yun}</th>
-						<th width="500">{yun:}t key='member_user_00181'{/yun}</th>
-						<th>{yun:}t key='member_com_00207'{/yun}</th>
+						<th width="200">{{ lc('member_com_00021') }}</th>
+						<th width="500">{{ lc('member_user_00181') }}</th>
+						<th>{{ lc('member_com_00207') }}</th>
 					</tr>
 				</thead>
 				<tbody>
 					<tr>
 						<td colspan="3" style="padding:0px;">
-							<el-divider content-position="left">{yun:}t key='admin_tool_00474'{/yun}</el-divider>
+							<el-divider content-position="left">{{ lc('admin_tool_00474') }}</el-divider>
 						</td>
 
 					</tr>
 					<tr>
 						<td>
-							<div class="TableTite">{yun:}t key='admin_tool_00492'{/yun}</div>
+							<div class="TableTite">{{ lc('admin_tool_00492') }}</div>
 						</td>
 						<td>
 							<div class="TableButn">
-								<el-switch v-model="sy_msg_isopen" active-text="{yun:}t key='member_com_00287'{/yun}" inactive-text="{yun:}t key='resume_00030'{/yun}" active-value="1"></el-switch>
+								<el-switch v-model="sy_msg_isopen" :active-text="lc('member_com_00287')" :inactive-text="lc('resume_00030')" active-value="1"></el-switch>
 							</div>
 						</td>
 						<td>
@@ -37,7 +37,7 @@
 						</td>
 						<td>
 							<div class="TableInpt">
-								<el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="sy_msg_appkey"></el-input>
+								<el-input :placeholder="lc('wap_user_00076')" v-model="sy_msg_appkey"></el-input>
 							</div>
 						</td>
 						<td>
@@ -53,7 +53,7 @@
 						</td>
 						<td>
 							<div class="TableInpt">
-								<el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="sy_msg_appsecret"></el-input>
+								<el-input :placeholder="lc('wap_user_00076')" v-model="sy_msg_appsecret"></el-input>
 							</div>
 						</td>
 						<td>
@@ -65,12 +65,12 @@
 
 					<tr>
 						<td>
-							<div class="TableTite">{yun:}t key='admin_tool_00481'{/yun}</div>
+							<div class="TableTite">{{ lc('admin_tool_00481') }}</div>
 						</td>
 						<td>
 							<div class="TableInpt">
-								<el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="ip_msgnum" @input="inputIntNumber($event, 'ip_msgnum')">
-									<template slot="append">{yun:}t key='common_02088'{/yun}</template>
+								<el-input :placeholder="lc('wap_user_00076')" v-model="ip_msgnum" @input="inputIntNumber($event, 'ip_msgnum')">
+									<template slot="append">{{ lc('common_02088') }}</template>
 								</el-input>
 							</div>
 						</td>
@@ -82,12 +82,12 @@
 					</tr>
 					<tr>
 						<td>
-							<div class="TableTite">{yun:}t key='admin_tool_00480'{/yun}</div>
+							<div class="TableTite">{{ lc('admin_tool_00480') }}</div>
 						</td>
 						<td>
 							<div class="TableInpt">
-								<el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="moblie_msgnum" @input="inputIntNumber($event, 'moblie_msgnum')">
-									<template slot="append">{yun:}t key='common_02088'{/yun}</template>
+								<el-input :placeholder="lc('wap_user_00076')" v-model="moblie_msgnum" @input="inputIntNumber($event, 'moblie_msgnum')">
+									<template slot="append">{{ lc('common_02088') }}</template>
 								</el-input>
 							</div>
 						</td>
@@ -99,12 +99,12 @@
 					</tr>
 					<tr>
 						<td>
-							<div class="TableTite">{yun:}t key='admin_tool_00478'{/yun}</div>
+							<div class="TableTite">{{ lc('admin_tool_00478') }}</div>
 						</td>
 						<td>
 							<div class="TableInpt">
-								<el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="cert_msgtime" @input="inputIntNumber($event, 'cert_msgtime')">
-									<template slot="append">{yun:}t key='wap_com_00247'{/yun}</template>
+								<el-input :placeholder="lc('wap_user_00076')" v-model="cert_msgtime" @input="inputIntNumber($event, 'cert_msgtime')">
+									<template slot="append">{{ lc('wap_com_00247') }}</template>
 								</el-input>
 							</div>
 						</td>
@@ -116,30 +116,30 @@
 					</tr>
 					<tr>
 						<td>
-							<div class="TableTite">{yun:}t key='admin_tool_00483'{/yun}</div>
+							<div class="TableTite">{{ lc('admin_tool_00483') }}</div>
 						</td>
 						<td>
 							<div class="TableInpt">
-								<el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="moblie_codetime" @input="inputIntNumber($event, 'moblie_codetime')">
-									<template slot="append">{yun:}t key='wap_com_00247'{/yun}</template>
+								<el-input :placeholder="lc('wap_user_00076')" v-model="moblie_codetime" @input="inputIntNumber($event, 'moblie_codetime')">
+									<template slot="append">{{ lc('wap_com_00247') }}</template>
 								</el-input>
 							</div>
 						</td>
 						<td>
 							<div class="TableShuom">
-								<span> {yun:}t key='admin_tool_00475'{/yun}</span>
+								<span> {{ lc('admin_tool_00475') }}</span>
 							</div>
 						</td>
 					</tr>
 
 					<tr>
 						<td>
-							<div class="TableTite">{yun:}t key='admin_00096'{/yun}</div>
+							<div class="TableTite">{{ lc('admin_00096') }}</div>
 						</td>
 						<td>
 							<div class="TableInpt">
-								<el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="rest_msgnum" :disabled="true">
-									<template slot="append">{yun:}t key='common_02088'{/yun}</template>
+								<el-input :placeholder="lc('wap_user_00076')" v-model="rest_msgnum" :disabled="true">
+									<template slot="append">{{ lc('common_02088') }}</template>
 								</el-input>
 							</div>
 						</td>
@@ -151,11 +151,11 @@
 					</tr>
 					<tr>
 						<td>
-							<div class="TableTite">{yun:}t key='admin_tool_00490'{/yun}</div>
+							<div class="TableTite">{{ lc('admin_tool_00490') }}</div>
 						</td>
 						<td>
 							<div class="TableInpt">
-								<el-link type="primary" href="https://u.ov6.com/" target="_blank">{yun:}t key='admin_tool_00491'{/yun}</el-link>
+								<el-link type="primary" href="https://u.ov6.com/" target="_blank">{{ lc('admin_tool_00491') }}</el-link>
 							</div>
 						</td>
 						<td>
@@ -166,7 +166,7 @@
 					</tr>
 					<tr>
 						<td colspan="3" style="padding:0px;">
-							<el-divider content-position="left">{yun:}t key='admin_tool_00487'{/yun}</el-divider>
+							<el-divider content-position="left">{{ lc('admin_tool_00487') }}</el-divider>
 						</td>
 
 					</tr>
@@ -174,16 +174,16 @@
 
 					<tr>
 						<td>
-							<div class="TableTite">{yun:}t key='admin_tool_00487'{/yun}</div>
+							<div class="TableTite">{{ lc('admin_tool_00487') }}</div>
 						</td>
 						<td>
 							<div class="TableButn">
-								<el-switch v-model="sy_kh_isopen" active-text="{yun:}t key='member_com_00287'{/yun}" inactive-text="{yun:}t key='resume_00030'{/yun}" active-value="1"></el-switch>
+								<el-switch v-model="sy_kh_isopen" :active-text="lc('member_com_00287')" :inactive-text="lc('resume_00030')" active-value="1"></el-switch>
 							</div>
 						</td>
 						<td>
 							<div class="TableShuom">
-								<span>{yun:}t key='admin_tool_00476'{/yun}</span>
+								<span>{{ lc('admin_tool_00476') }}</span>
 							</div>
 						</td>
 					</tr>
@@ -193,14 +193,14 @@
 						</td>
 						<td>
 							<div class="TableInpt">
-								<el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="sy_kh_appkey">
+								<el-input :placeholder="lc('wap_user_00076')" v-model="sy_kh_appkey">
 
 								</el-input>
 							</div>
 						</td>
 						<td>
 							<div class="TableShuom">
-								<span>{yun:}t key='admin_tool_00479'{/yun}</span>
+								<span>{{ lc('admin_tool_00479') }}</span>
 							</div>
 						</td>
 					</tr>
@@ -210,7 +210,7 @@
 						</td>
 						<td>
 							<div class="TableInpt">
-								<el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="sy_kh_appsecret">
+								<el-input :placeholder="lc('wap_user_00076')" v-model="sy_kh_appsecret">
 
 								</el-input>
 							</div>
@@ -224,29 +224,29 @@
 
 					<tr>
 						<td>
-							<div class="TableTite">{yun:}t key='admin_tool_00482'{/yun}</div>
+							<div class="TableTite">{{ lc('admin_tool_00482') }}</div>
 						</td>
 						<td>
 							<div class="TableInpt">
-								<el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="sy_kh_city">
+								<el-input :placeholder="lc('wap_user_00076')" v-model="sy_kh_city">
 
 								</el-input>
 							</div>
 						</td>
 						<td>
 							<div class="TableShuom">
-								<span>{yun:}t key='admin_tool_00473'{/yun}</span>
+								<span>{{ lc('admin_tool_00473') }}</span>
 							</div>
 						</td>
 					</tr>
 					<tr>
 						<td>
-							<div class="TableTite">{yun:}t key='admin_tool_00484'{/yun}</div>
+							<div class="TableTite">{{ lc('admin_tool_00484') }}</div>
 						</td>
 						<td>
 							<div class="TableInpt">
-								<el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="rest_khnum" :disabled="true">
-									<template slot="append">{yun:}t key='common_02088'{/yun}</template>
+								<el-input :placeholder="lc('wap_user_00076')" v-model="rest_khnum" :disabled="true">
+									<template slot="append">{{ lc('common_02088') }}</template>
 								</el-input>
 							</div>
 						</td>
@@ -258,7 +258,7 @@
 					</tr>
 					<tr>
 						<td colspan="3" style="padding:0px;">
-							<el-divider content-position="left">{yun:}t key='admin_tool_00488'{/yun}</el-divider>
+							<el-divider content-position="left">{{ lc('admin_tool_00488') }}</el-divider>
 						</td>
 
 					</tr>
@@ -268,7 +268,7 @@
 						</td>
 						<td>
 							<div class="TableInpt">
-								<el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="sy_tyc_appkey">
+								<el-input :placeholder="lc('wap_user_00076')" v-model="sy_tyc_appkey">
 
 								</el-input>
 							</div>
@@ -285,7 +285,7 @@
 						</td>
 						<td>
 							<div class="TableInpt">
-								<el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="sy_tyc_appsecret">
+								<el-input :placeholder="lc('wap_user_00076')" v-model="sy_tyc_appsecret">
 
 								</el-input>
 							</div>
@@ -298,12 +298,12 @@
 					</tr>
 					<tr>
 						<td>
-							<div class="TableTite">{yun:}t key='admin_tool_00485'{/yun}</div>
+							<div class="TableTite">{{ lc('admin_tool_00485') }}</div>
 						</td>
 						<td>
 							<div class="TableInpt">
-								<el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="rest_businessnum" :disabled="true">
-									<template slot="append">{yun:}t key='common_02088'{/yun}</template>
+								<el-input :placeholder="lc('wap_user_00076')" v-model="rest_businessnum" :disabled="true">
+									<template slot="append">{{ lc('common_02088') }}</template>
 								</el-input>
 							</div>
 						</td>
@@ -315,11 +315,11 @@
 					</tr>
 					<tr>
 						<td>
-							<div class="TableTite">{yun:}t key='admin_tool_00486'{/yun}</div>
+							<div class="TableTite">{{ lc('admin_tool_00486') }}</div>
 						</td>
 						<td>
 							<div class="TableInpt">
-								<el-link type="primary" href="https://u.ov6.com/" target="_blank">{yun:}t key='admin_tool_00491'{/yun}</el-link>
+								<el-link type="primary" href="https://u.ov6.com/" target="_blank">{{ lc('admin_tool_00491') }}</el-link>
 							</div>
 						</td>
 						<td>
@@ -334,7 +334,7 @@
 			</table>
 		</div>
 		<div class="setBasicButn" style="border: none;">
-			<el-button type="primary" :loading='post_loading' size="medium" @click="postSet">{yun:}t key='common.submit'{/yun}</el-button>
+			<el-button type="primary" :loading='post_loading' size="medium" @click="postSet">{{ lc('common.submit') }}</el-button>
 		</div>
 
 	</div>
@@ -416,7 +416,7 @@
                 
                 if (parseInt(that.moblie_codetime) < 2) {
 
-                    message.warning(window.yunAdminT("{yun:}t key='admin_tool_00477'{/yun}"));
+                    message.warning(window.yunAdminT(lc('admin_tool_00477')));
                     return false;
                     
                 }

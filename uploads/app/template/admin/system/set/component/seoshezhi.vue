@@ -5,22 +5,22 @@
             </el-alert>
         </div> -->
         <div class="tableDome_tip tableDoAlert">
-            <span>{yun:}t key='admin_00971'{/yun}<br />{yun:}t key='admin_00972'{/yun}</span>
-            <a href="https://ziyuan.baidu.com/college/documentinfo?id=1576&amp;qq-pf-to=pcqq.c2c" target="_blank" style="color:#00F">{yun:}t key='admin_00973'{/yun}</a>
+            <span>{{ lc('admin_00971') }}<br />{{ lc('admin_00972') }}</span>
+            <a href="https://ziyuan.baidu.com/college/documentinfo?id=1576&amp;qq-pf-to=pcqq.c2c" target="_blank" style="color:#00F">{{ lc('admin_00973') }}</a>
         </div>
         <div class="drawerModInfo drawerModInfoOne drawerModInguding">
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>{yun:}t key='admin_system_00372'{/yun}</span>
+                    <span>{{ lc('admin_system_00372') }}</span>
                 </div>
                 <div v-if="call == 'seo'" class="drawerModInpt">
-                    <el-select v-model="ruleForm.seomodel" placeholder="{yun:}t key='wap_user_00100'{/yun}">
+                    <el-select v-model="ruleForm.seomodel" :placeholder="lc('wap_user_00100')">
                         <el-option v-for="(smitem, smindex) in seomodel" :key="smindex" :label="smitem" :value="smindex">
                         </el-option>
                     </el-select>
                 </div>
                 <div v-if="call == 'module'" class="drawerModInpt">
-                    <el-select v-model="ruleForm.seoid" @change="changeSeoid" placeholder="{yun:}t key='wap_user_00100'{/yun}">
+                    <el-select v-model="ruleForm.seoid" @change="changeSeoid" :placeholder="lc('wap_user_00100')">
                         <el-option v-for="seoItem in seo" :key="seoItem.id" :label="seoItem.seoname" :value="seoItem.id">
                         </el-option>
                     </el-select>
@@ -28,26 +28,26 @@
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>{yun:}t key='admin_system_00377'{/yun}</span>
+                    <span>{{ lc('admin_system_00377') }}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input v-model="ruleForm.seoname" placeholder="{yun:}t key='wap_user_00076'{/yun}"></el-input>
+                    <el-input v-model="ruleForm.seoname" :placeholder="lc('wap_user_00076')"></el-input>
                 </div>
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>{yun:}t key='admin_system_00371'{/yun}</span>
+                    <span>{{ lc('admin_system_00371') }}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input v-model="ruleForm.ident" placeholder="{yun:}t key='wap_user_00076'{/yun}"></el-input>
+                    <el-input v-model="ruleForm.ident" :placeholder="lc('wap_user_00076')"></el-input>
                 </div>
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>{yun:}t key='admin_user_00126'{/yun}</span>
+                    <span>{{ lc('admin_user_00126') }}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-select v-model="ruleForm.did" placeholder="{yun:}t key='wap_user_00100'{/yun}">
+                    <el-select v-model="ruleForm.did" :placeholder="lc('wap_user_00100')">
                         <el-option v-for="(ditem, dindex) in Dname" :key="dindex" :label="ditem" :value="dindex">
                         </el-option>
                     </el-select>
@@ -55,60 +55,60 @@
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>{yun:}t key='admin_system_00373'{/yun}</span>
+                    <span>{{ lc('admin_system_00373') }}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input v-model="ruleForm.rewrite_url" placeholder="{yun:}t key='wap_user_00076'{/yun}"></el-input>
+                    <el-input v-model="ruleForm.rewrite_url" :placeholder="lc('wap_user_00076')"></el-input>
                 </div>
                 <div class="drawerModTips">
-                    <el-alert title="{yun:}t key='admin_00976'{/yun}" type="info" show-icon :closable="false">
+                    <el-alert :title="lc('admin_00976')" type="info" show-icon :closable="false">
                     </el-alert>
                 </div>
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>{yun:}t key='admin_system_00375'{/yun}</span>
+                    <span>{{ lc('admin_system_00375') }}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input v-model="ruleForm.php_url" placeholder="{yun:}t key='wap_user_00076'{/yun}"></el-input>
+                    <el-input v-model="ruleForm.php_url" :placeholder="lc('wap_user_00076')"></el-input>
                 </div>
                 <div class="drawerModTips">
-                    <el-alert title="{yun:}t key='admin_vue_00058'{/yun}" type="info" show-icon :closable="false">
+                    <el-alert :title="lc('admin_vue_00058')" type="info" show-icon :closable="false">
                     </el-alert>
                 </div>
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>{yun:}t key='admin_system_00364'{/yun}</span>
+                    <span>{{ lc('admin_system_00364') }}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input v-model="ruleForm.rewrite_wap_url" placeholder="{yun:}t key='wap_user_00076'{/yun}"></el-input>
+                    <el-input v-model="ruleForm.rewrite_wap_url" :placeholder="lc('wap_user_00076')"></el-input>
                 </div>
                 <div class="drawerModTips">
-                    <el-alert title="{yun:}t key='admin_00976'{/yun}" type="info" show-icon :closable="false">
+                    <el-alert :title="lc('admin_00976')" type="info" show-icon :closable="false">
                     </el-alert>
                 </div>
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>{yun:}t key='admin_system_00370'{/yun}</span>
+                    <span>{{ lc('admin_system_00370') }}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input v-model="ruleForm.php_wap_url" placeholder="{yun:}t key='wap_user_00076'{/yun}"></el-input>
+                    <el-input v-model="ruleForm.php_wap_url" :placeholder="lc('wap_user_00076')"></el-input>
                 </div>
                 <div class="drawerModTips">
-                    <el-alert title="{yun:}t key='admin_00977'{/yun}" type="info" show-icon :closable="false">
+                    <el-alert :title="lc('admin_00977')" type="info" show-icon :closable="false">
                     </el-alert>
                 </div>
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>{yun:}t key='admin_system_00362'{/yun}</span>
+                    <span>{{ lc('admin_system_00362') }}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input type="textarea" :rows="2" placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="ruleForm.title" @blur="textareaBlur($event, 'title')">
+                    <el-input type="textarea" :rows="2" :placeholder="lc('wap_user_00076')" v-model="ruleForm.title" @blur="textareaBlur($event, 'title')">
                     </el-input>
-                    <el-button type="info" @click="openCenterDialog('title')">{yun:}t key='admin_system_00376'{/yun}</el-button>
+                    <el-button type="info" @click="openCenterDialog('title')">{{ lc('admin_system_00376') }}</el-button>
                 </div>
                 <!-- <div class="drawerModTips drawerMoAlert">
                     <el-alert :title="titleTip" type="info" show-icon :closable="false">
@@ -116,89 +116,89 @@
                 </div> -->
                 <div class="drawerModTips drawerMoAlert">
                     <i class="el-icon-info"></i>
-                    <span>{yun:}t key='admin_00974'{/yun}</span>
-                    <a href="https://ziyuan.baidu.com/college/documentinfo?id=1576&amp;qq-pf-to=pcqq.c2c" target="_blank" style="color:#00F">{yun:}t key='admin_00973'{/yun}</a>
+                    <span>{{ lc('admin_00974') }}</span>
+                    <a href="https://ziyuan.baidu.com/college/documentinfo?id=1576&amp;qq-pf-to=pcqq.c2c" target="_blank" style="color:#00F">{{ lc('admin_00973') }}</a>
                 </div>
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>{yun:}t key='admin_system_00360'{/yun}</span>
+                    <span>{{ lc('admin_system_00360') }}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input type="textarea" :rows="2" placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="ruleForm.keywords" @blur="textareaBlur($event, 'keywords')">
+                    <el-input type="textarea" :rows="2" :placeholder="lc('wap_user_00076')" v-model="ruleForm.keywords" @blur="textareaBlur($event, 'keywords')">
                     </el-input>
-                    <el-button type="info" @click="openCenterDialog('keywords')">{yun:}t key='admin_system_00376'{/yun}</el-button>
+                    <el-button type="info" @click="openCenterDialog('keywords')">{{ lc('admin_system_00376') }}</el-button>
                 </div>
                 <div class="drawerModTips">
-                    <el-alert title="{yun:}t key='admin_00978'{/yun}" type="info" show-icon :closable="false">
+                    <el-alert :title="lc('admin_00978')" type="info" show-icon :closable="false">
                     </el-alert>
                 </div>
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>{yun:}t key='admin_system_00359'{/yun}</span>
+                    <span>{{ lc('admin_system_00359') }}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input type="textarea" :rows="2" placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="ruleForm.description" @blur="textareaBlur($event, 'description')">
+                    <el-input type="textarea" :rows="2" :placeholder="lc('wap_user_00076')" v-model="ruleForm.description" @blur="textareaBlur($event, 'description')">
                     </el-input>
-                    <el-button type="info" @click="openCenterDialog('description')">{yun:}t key='admin_system_00376'{/yun}</el-button>
+                    <el-button type="info" @click="openCenterDialog('description')">{{ lc('admin_system_00376') }}</el-button>
                 </div>
                 <div class="drawerModTips">
-                    <el-alert title="{yun:}t key='admin_00979'{/yun}" type="info" show-icon :closable="false">
+                    <el-alert :title="lc('admin_00979')" type="info" show-icon :closable="false">
                     </el-alert>
                 </div>
             </div>
         </div>
         <div class="setBasicButn" style="border: none;">
-            <el-button type="primary" size="medium" @click="save" :disabled="saveLoading">{yun:}t key='common.submit'{/yun}</el-button>
+            <el-button type="primary" size="medium" @click="save" :disabled="saveLoading">{{ lc('common.submit') }}</el-button>
         </div>
         <div class="modluDialog">
-            <el-drawer title="{yun:}t key='admin_system_00374'{/yun}" :visible.sync="centerDialogVisible" :append-to-body="true" :show-close="true" :with-header="true" size="40%">
+            <el-drawer :title="lc('admin_system_00374')" :visible.sync="centerDialogVisible" :append-to-body="true" :show-close="true" :with-header="true" size="40%">
                 <div style="overflow-y: auto; position: relative; width: 100%; height: calc(100% - 70px); padding: 0 20px;">
                     <div class="tableDome_tip">
-                        <el-alert title="{yun:}t key='admin_system_00358'{/yun}" type="warning">
+                        <el-alert :title="lc('admin_system_00358')" type="warning">
                         </el-alert>
                     </div>
                     <div v-for="(scitem, scindex) in seoconfigList" :key="scindex" v-if="checkSeoconfig(scitem.seomodel)">
                         <el-table ref="multipleTable" :data="scitem.tableData" tooltip-effect="dark" style="width: 100%" @selection-change="handleSelectionChange" v-loading="loading" :empty-text="emptytext">
                             <el-table-column type="selection" width="55">
                             </el-table-column>
-                            <el-table-column label="{yun:}t key='member_com_00207'{/yun}" prop="title" width="150">
+                            <el-table-column :label="lc('member_com_00207')" prop="title" width="150">
                             </el-table-column>
-                            <el-table-column label="{yun:}t key='admin_system_00379'{/yun}">
+                            <el-table-column :label="lc('admin_system_00379')">
                                 <template slot-scope="scope">{{ '{' + scope.row.code + '}' }}</template>
                             </el-table-column>
                         </el-table>
                     </div>
                 </div>
                 <div class="dialofhooter">
-                    <el-button type="primary" @click="confirmSelection">{yun:}t key='wap_com_00019'{/yun}</el-button>
-                    <el-button @click="centerDialogVisible = false">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
+                    <el-button type="primary" @click="confirmSelection">{{ lc('wap_com_00019') }}</el-button>
+                    <el-button @click="centerDialogVisible = false">{{ lc('admin_user_weipin_00043') }}</el-button>
                 </div>
             </el-drawer>
         </div>
         <!-- <div class="modluDialog">
-            <el-dialog title="{yun:}t key='admin_system_00374'{/yun}" :visible.sync="centerDialogVisible" :append-to-body="true" :modal="false" width="30%" center>
+            <el-dialog :title="lc('admin_system_00374')" :visible.sync="centerDialogVisible" :append-to-body="true" :modal="false" width="30%" center>
                 <div>
                     <div class="tableDome_tip">
-                        <el-alert title="{yun:}t key='admin_system_00358'{/yun}" type="warning">
+                        <el-alert :title="lc('admin_system_00358')" type="warning">
                         </el-alert>
                     </div>
                     <div v-for="(scitem, scindex) in seoconfigList" :key="scindex" v-if="checkSeoconfig(scitem.seomodel)">
                         <el-table ref="multipleTable" :data="scitem.tableData" tooltip-effect="dark" style="width: 100%" @selection-change="handleSelectionChange" v-loading="loading">
                             <el-table-column type="selection" width="55">
                             </el-table-column>
-                            <el-table-column label="{yun:}t key='member_com_00207'{/yun}" prop="title" width="150">
+                            <el-table-column :label="lc('member_com_00207')" prop="title" width="150">
                             </el-table-column>
-                            <el-table-column label="{yun:}t key='admin_system_00379'{/yun}">
+                            <el-table-column :label="lc('admin_system_00379')">
                                 <template slot-scope="scope">{{ '{' + scope.row.code + '}' }}</template>
                             </el-table-column>
                         </el-table>
                     </div>
                 </div>
                 <div slot="footer" class="dialog-footer">
-                    <el-button type="primary" @click="confirmSelection" :disabled="saveLoading">确 定</el-button>
-                    <el-button @click="centerDialogVisible = false">取 消</el-button>
+                    <el-button type="primary" @click="confirmSelection" :disabled="saveLoading">{{ lc('common_02016') }}</el-button>
+                    <el-button @click="centerDialogVisible = false">{{ lc('wap_js_00080') }}</el-button>
                 </div>
             </el-dialog>
         </div> -->
@@ -209,7 +209,7 @@ module.exports = {
     props: ['call', 'config', 'seoid', 'detail'],
     data: function() {
         return {
-            emptytext: "{yun:}t key='wap_js_00113'{/yun}",
+            emptytext: lc('wap_js_00113'),
             loading: false,
             Dname: {},
             seo: [],
@@ -248,7 +248,7 @@ module.exports = {
                 params = { config: that.config };
             }
             that.loading = true;
-            that.emptytext = "{yun:}t key='admin_user_weipin_00026'{/yun}";
+            that.emptytext = lc('admin_user_weipin_00026');
             httpPost(url, params).then(function(response) {
                 let data = response.data.data;
 
@@ -290,7 +290,7 @@ module.exports = {
                 that.seoconfigList = seoconfigList;
                 that.loading = false;
                 if (that.seoconfigList.length === 0){
-                    that.emptytext = "{yun:}t key='wap_js_00113'{/yun}";
+                    that.emptytext = lc('wap_js_00113');
                 }
             })
         },
@@ -371,31 +371,31 @@ module.exports = {
                 url = '';
 
             if (call == 'seo' && !ruleForm.seomodel) {
-                message.warning("{yun:}t key='admin_system_00369'{/yun}");
+                message.warning(lc('admin_system_00369'));
                 return false;
             }
             if (call == 'module' && !ruleForm.seoid) {
-                message.warning("{yun:}t key='admin_system_00361'{/yun}");
+                message.warning(lc('admin_system_00361'));
                 return false;
             }
             if (!ruleForm.seoname || ruleForm.seoname == "") {
-                message.warning("{yun:}t key='admin_system_00365'{/yun}");
+                message.warning(lc('admin_system_00365'));
                 return false;
             }
             if (!ruleForm.ident || ruleForm.ident == "") {
-                message.warning("{yun:}t key='admin_system_00367'{/yun}");
+                message.warning(lc('admin_system_00367'));
                 return false;
             }
             if (!ruleForm.title || ruleForm.title == "") {
-                message.warning("{yun:}t key='admin_system_00368'{/yun}");
+                message.warning(lc('admin_system_00368'));
                 return false;
             }
             if (!ruleForm.keywords || ruleForm.keywords == "") {
-                message.warning("{yun:}t key='admin_system_00363'{/yun}");
+                message.warning(lc('admin_system_00363'));
                 return false;
             }
             if (!ruleForm.description || ruleForm.description == "") {
-                message.warning("{yun:}t key='admin_system_00366'{/yun}");
+                message.warning(lc('admin_system_00366'));
                 return false;
             }
 
@@ -416,7 +416,7 @@ module.exports = {
                         that.$emit("child-event");
                         if (call == 'seo') {
                             if (custoapp.curTab == ruleForm.seomodel) {
-                                custoapp.seotabRefresh(); // {yun:}t key='wap_user_00334'{/yun}TAB{yun:}t key='wap_00316'{/yun}
+                                custoapp.seotabRefresh(); // {{ lc('wap_user_00334') }}TAB{{ lc('wap_00316') }}
                             }
                         }
                     })

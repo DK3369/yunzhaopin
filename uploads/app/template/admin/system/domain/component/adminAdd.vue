@@ -3,34 +3,34 @@
         <div class="drawerModInfo">
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>{yun:}t key='admin_00534'{/yun}</span>
+                    <span>{{ lc('admin_00534') }}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input v-model="userInfo.username" placeholder="{yun:}t key='admin_01030'{/yun}"></el-input>
+                    <el-input v-model="userInfo.username" :placeholder="lc('admin_01030')"></el-input>
                 </div>
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>{yun:}t key='member_user_00232'{/yun}</span>
+                    <span>{{ lc('member_user_00232') }}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input v-model="userInfo.password" placeholder="{yun:}t key='wap_00703'{/yun}" show-password></el-input>
+                    <el-input v-model="userInfo.password" :placeholder="lc('wap_00703')" show-password></el-input>
                 </div>
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>{yun:}t key='admin_system_00141'{/yun}</span>
+                    <span>{{ lc('admin_system_00141') }}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input v-model="userInfo.name" placeholder="{yun:}t key='admin_00011'{/yun}"></el-input>
+                    <el-input v-model="userInfo.name" :placeholder="lc('admin_00011')"></el-input>
                 </div>
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>{yun:}t key='admin_system_00142'{/yun}</span>
+                    <span>{{ lc('admin_system_00142') }}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-select v-model="userInfo.did" placeholder="{yun:}t key='admin_01031'{/yun}">
+                    <el-select v-model="userInfo.did" :placeholder="lc('admin_01031')">
                         <el-option v-for="item in domainOptionS" :key="item.value" :label="item.label"
                             :value="item.value"></el-option>
                     </el-select>
@@ -38,18 +38,18 @@
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>{yun:}t key='admin_01029'{/yun}</span>
+                    <span>{{ lc('admin_01029') }}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-select v-model="userInfo.m_id" placeholder="{yun:}t key='admin_01032'{/yun}">
+                    <el-select v-model="userInfo.m_id" :placeholder="lc('admin_01032')">
                         <el-option v-for="item in groupOptionS" :key="item.value" :label="item.label"
                             :value="item.value"></el-option>
                     </el-select>
                 </div>
             </div>
             <div slot="footer" class="dialog-footer">
-                <el-button @click="closeAdminBox">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
-                <el-button type="primary" @click="saveAdmin" :disabled="saveLoading">{yun:}t key='wap_com_00019'{/yun}</el-button>
+                <el-button @click="closeAdminBox">{{ lc('admin_user_weipin_00043') }}</el-button>
+                <el-button type="primary" @click="saveAdmin" :disabled="saveLoading">{{ lc('wap_com_00019') }}</el-button>
             </div>
         </div>
 
@@ -130,7 +130,7 @@ module.exports = {
                 return false;
             }
             if (!self.userInfo.name) {
-                message.error("{yun:}t key='admin_00008'{/yun}");
+                message.error(lc('admin_00008'));
                 return false;
             }
             params = self.userInfo;

@@ -4,8 +4,8 @@
             <el-table :data="tableData" stripe border style="width: 100%;" height="100%"
                 :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" v-loading="loading" :empty-text="emptytext">
                 <el-table-column prop="id" label="ID" width="55"></el-table-column>
-                <el-table-column prop="name" label="{yun:}t key='admin_00219'{/yun}"></el-table-column>
-                <el-table-column label="{yun:}t key='admin_system_00090'{/yun}" property="e_name">
+                <el-table-column prop="name" :label="lc('admin_00219')"></el-table-column>
+                <el-table-column :label="lc('admin_system_00090')" property="e_name">
                     <template slot-scope="scope">
                         <el-input v-if="scope.row[scope.column.property + 'isShow']" :ref="scope.column.property + scope.$index" :id="scope.column.property + scope.$index"
                             v-model="scope.row.e_name" @blur="alterData(scope)"></el-input>
@@ -18,7 +18,7 @@
             </el-table>
         </div>
         <div class="setBasicButn" style="border: none;">
-            <el-button type="primary" size="medium" @click="getList">{yun:}t key='wap_00318'{/yun}</el-button>
+            <el-button type="primary" size="medium" @click="getList">{{ lc('wap_00318') }}</el-button>
         </div>
     </div>
 </template>
@@ -28,7 +28,7 @@ module.exports = {
     data: function () {
         return {
             loading: false,
-            emptytext: window.yunAdminT("{yun:}t key='wap_js_00113'{/yun}"),
+            emptytext: window.yunAdminT(lc('wap_js_00113')),
             page: 0,
             tableData: [], //表格数据
         }
@@ -70,9 +70,9 @@ module.exports = {
             httpPost('m=system&c=category_city&a=ajax', sendData).then(function (response) {
                 let res = response.data;
                 if (res.error === 0) {
-                    message.success(window.yunAdminT("{yun:}t key='admin_user_company_00208'{/yun}"));
+                    message.success(window.yunAdminT(lc('admin_user_company_00208')));
                 } else {
-                    message.error(window.yunAdminT("{yun:}t key='admin_00187'{/yun}"));
+                    message.error(window.yunAdminT(lc('admin_00187')));
                 }
                 _this.oldData = null;
             }).catch(function (error) {
@@ -83,14 +83,14 @@ module.exports = {
             let _this = this;
             _this.loading = true;
             let params = {"page": this.page};
-            _this.emptytext = window.yunAdminT("{yun:}t key='admin_user_weipin_00026'{/yun}");
+            _this.emptytext = window.yunAdminT(lc('admin_user_weipin_00026'));
             httpPost('m=system&c=category_city&a=ajaxchachong', params).then(function (response) {
                 let res = response.data;
                 if (res.error === 0) {
                     _this.tableData = res.data.list;
                     _this.page = res.data.page;
                     if (_this.tableData.length === 0){
-                        _this.emptytext = window.yunAdminT("{yun:}t key='wap_js_00113'{/yun}");
+                        _this.emptytext = window.yunAdminT(lc('wap_js_00113'));
                     }
                 }
                 _this.loading = false;

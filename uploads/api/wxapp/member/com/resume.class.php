@@ -1,7 +1,9 @@
 <?php
 
 class resume_controller extends com_controller{
-    
+    /**
+     * 申请职位的人才
+     */
     function hrlist_action()
     {
     	$uid		=	$this->member['uid'];
@@ -29,7 +31,7 @@ class resume_controller extends com_controller{
         $where['orderby']		=	array('datetime,desc', 'is_browse,asc');
 
 		$limit					=	$_POST['limit'] ? $_POST['limit'] : 10;
-		if($page){// paginate
+		if($page){//分页
 			$pagenav			=	($page-1)*$limit;
 			$where['limit']		=	array($pagenav,$limit);
 		}else{
@@ -50,7 +52,7 @@ class resume_controller extends com_controller{
 	{
 		if(!$_POST['id']||!$_POST['browse']){
 			$data['error']	=	3;
-			$data['msg']	=	yun_at('wap_01833');
+			$data['msg']	=	'参数不正确';
 		}else{
 			$id		=	(int)$_POST['id'];
 			$browse	=	(int)$_POST['browse'];
@@ -67,10 +69,10 @@ class resume_controller extends com_controller{
 			$nid    =   $JobM -> BrowseSqJob($id,$data);
 			if($nid){
 				$data['error']	=	1;
-				$data['msg']	=	yun_at('wap_com_00240');
+				$data['msg']	=	'设置成功';
 			}else{
 				$data['error']	=	2;
-				$data['msg']	=	yun_at('api_wxapp_00016');
+				$data['msg']	=	'设置失败';
 			}
 		}
 		$this->render_json($data['error'],$data['msg']);
@@ -79,16 +81,16 @@ class resume_controller extends com_controller{
 	{
 		if(!$_POST['ids']){
 			$data['error']=3;
-			$data['msg']=yun_at('wap_01833');
+			$data['msg']='参数不正确';
 		}else{
 			$JobM   =   $this -> MODEL('job');
 			$arr    =   $JobM -> delSqJob($_POST['ids'],array('utype'=>'com','uid'=>$this->member['uid'],'usertype'=>$this->member['usertype']));
 			if($arr){
 				$data['error']	=	1;
-				$data['msg']	=	yun_at('wap_user_00147');
+				$data['msg']	=	'删除成功';
 			}else{
 				$data['error']	=	2;
-				$data['msg']	=	yun_at('wap_user_00146');
+				$data['msg']	=	'删除失败';
 			}
 		}
 
@@ -113,7 +115,9 @@ class resume_controller extends com_controller{
         $this->render_json($data['error'],$return['msg']);
         
     }
-	
+	/**
+	 * 已下载简历的人才
+	 */
 	function downlist_action()
 	{
 		$downM  	=	$this -> MODEL('downresume');
@@ -126,14 +130,14 @@ class resume_controller extends com_controller{
 		
 		$data['total']          =   $downM->getDownNum($where);
 		
-		if($order){// sort
+		if($order){//排序
 			$where['orderby']	=	$order.',desc';
 		}else{
 			$where['orderby']	=	'id,desc';
 		}
 
 		$limit					=	$_POST['limit'] ? $_POST['limit'] : 10;
-		if($page){// paginate
+		if($page){//分页
 			$pagenav			=	($page-1)*$limit;
 			$where['limit']		=	array($pagenav,$limit);
 		}else{
@@ -153,7 +157,7 @@ class resume_controller extends com_controller{
 	{
 		if(!$_POST['ids']){
 			$data['error']	=	3;
-			$data['msg']	=	yun_at('wap_01833');
+			$data['msg']	=	'参数不正确';
 		}else{
 			$downM    =  $this	->	MODEL('downresume');
 			$return   =  $downM -> delInfo( intval($_POST['ids']),array('uid'=>$this->member['uid'],'usertype'=>$_POST['usertype']));
@@ -166,7 +170,7 @@ class resume_controller extends com_controller{
 		}
 		echo json_encode($data);die;
 	}
-    // 6.1
+    //6.1已废弃
     function dRemark_action(){
 
         $ResumeM    =   $this->MODEL('downresume');
@@ -183,7 +187,7 @@ class resume_controller extends com_controller{
 
         $this->render_json($data['error'],$return['msg']);
     }
-    // 
+    // 查询备注
     function remark_action()
     {
 
@@ -201,7 +205,7 @@ class resume_controller extends com_controller{
     {
         $page  = $_POST['page'];
         $limit = $_POST['limit'] ? $_POST['limit'] : 10;
-        if ($page) { // paginate
+        if ($page) { // 分页
             $pagenav = ($page - 1) * $limit;
             $where['limit'] = array(
                 $pagenav,
@@ -230,7 +234,7 @@ class resume_controller extends com_controller{
 	{
 		if(!$_POST['ids']){
 			$data['error']	=	3;
-			$data['msg']	=	yun_at('wap_01833');
+			$data['msg']	=	'参数不正确';
 		}else{
 			$ResumeM    =	$this->MODEL('resume');
 			$return   	=	$ResumeM -> delTalentPool($_POST['ids'],array('uid'=>$this->member['uid'],'usertype'=>$_POST['usertype']));
@@ -243,7 +247,7 @@ class resume_controller extends com_controller{
 		}
 		echo json_encode($data);die;
 	}
-	// 6.1
+	//6.1已废弃
     function tRemark_action(){
 
         $ResumeM    =   $this->MODEL('resume');
@@ -260,7 +264,9 @@ class resume_controller extends com_controller{
 
         $this->render_json($data['error'],$return['msg']);
     }
-	
+	/**
+	 * 已邀请人才
+	 */
 	function invitelist_action()
 	{
 		$JobM		=   $this -> MODEL('job');
@@ -274,13 +280,13 @@ class resume_controller extends com_controller{
 		$where['isdel']	=  	9;
 		$data['total']  =   $JobM->getYqmsNum($where);
 		
-		if($order){// sort
+		if($order){//排序
 			$where['orderby']	=	$order.',desc';
 		}else{
 			$where['orderby']	=	'id,desc';
 		}
 
-        if($page){// paginate
+        if($page){//分页
             $pagenav			=	($page-1)*$limit;
             $where['limit']		=	array($pagenav,$limit);
         }else{
@@ -294,7 +300,7 @@ class resume_controller extends com_controller{
 		$this->render_json(0,'',$data);
 		
 	}
-    /* wxapp: interview invite detail */
+    /*wxapp面试邀请页面-面试通知详情页*/
     function inviteshow_action()
     {
         $id	   =  (int)$_POST['id'];
@@ -315,7 +321,7 @@ class resume_controller extends com_controller{
 	{
 		if(!$_POST['ids']){
 			$data['error']	=	3;
-			$data['msg']	=	yun_at('wap_01833');
+			$data['msg']	=	'参数不正确';
 		}else{
 			$id 		=  intval($_POST['ids']);
 			$JobM		=  $this -> MODEL('job');
@@ -329,7 +335,7 @@ class resume_controller extends com_controller{
 			echo json_encode($data);die;
 		}
 	}
-	/* wxapp: resume browse log */
+	/* wxapp浏览简历记录 */
 	function look_resume_action()
 	{
 		$lookresumeM  			=   $this -> MODEL('lookresume');
@@ -339,7 +345,7 @@ class resume_controller extends com_controller{
 		$where['orderby']		=	'datetime,desc';
 		$page					=	$_POST['page'];
 		$limit					=	$_POST['limit'] ? $_POST['limit'] : 10;
-		if($page){// paginate
+		if($page){//分页
 			$pagenav			=	($page-1)*$limit;
 			$where['limit']		=	array($pagenav,$limit);
 		}else{
@@ -357,12 +363,12 @@ class resume_controller extends com_controller{
 		$this->render_json(0,'',$data);
 		
 	}
-	/* wxapp: delete resume browse log */
+	/* wxapp删除浏览简历记录 */
 	function look_resume_del_action()
 	{
 		if(!$_POST['ids']){
 			$data['error']	=	3;
-			$data['msg']	=	yun_at('wap_01833');
+			$data['msg']	=	'参数不正确';
 		}else{
 			$lookresumeM    =  $this->MODEL('lookresume');
 			$return         =  $lookresumeM -> delInfo(array('id'=>$_POST['ids'],'uid'=>$this->member['uid'],'usertype'=>$this->member['usertype']));
@@ -375,7 +381,7 @@ class resume_controller extends com_controller{
 		}
 		echo json_encode($data);die;
 	}
-	/* wxapp: who viewed company */
+	/* wxapp谁看过我记录 */
 	function look_job_action()
 	{
 		$JobM					=	$this -> MODEL("job");
@@ -387,7 +393,7 @@ class resume_controller extends com_controller{
 		$where['orderby']		=	'datetime,desc';
 		$page					=	$_POST['page'];
 		$limit					=	$_POST['limit'] ? $_POST['limit'] : 10;
-		if($page){// paginate
+		if($page){//分页
 			$pagenav			=	($page-1)*$limit;
 			$where['limit']		=	array($pagenav,$limit);
 		}else{
@@ -403,12 +409,12 @@ class resume_controller extends com_controller{
 		$this->render_json(0,'',$data);
 		
 	}
-	/* wxapp: delete who viewed company */
+	/* wxapp删除谁看过我记录 */
 	function look_job_del_action()
 	{
 		if(!$_POST['ids']){
 			$data['error']	=	3;
-			$data['msg']	=	yun_at('wap_01833');
+			$data['msg']	=	'参数不正确';
 		}else{
 			$jobM	=	$this -> MODEL('job');
 			$return	=	$jobM -> delLookJob($_POST['ids'],array('uid'=>$this->member['uid'],'usertype'=>$this->member['usertype']));
@@ -433,7 +439,7 @@ class resume_controller extends com_controller{
 		$lookresumeM	=	$this -> MODEL('lookresume');
 		
 		$downresumeM	=	$this -> MODEL('downresume');
-		// 	
+		//应聘简历数	
 		$sqnum			=	$jobM -> getSqJobNum(array('com_id'=>$this->member['uid'],'isdel'=>9,'type'=>array('<>',3)));
 		
 		$list['sqnum']	=	$sqnum;
@@ -442,32 +448,32 @@ class resume_controller extends com_controller{
 		
 		$list['userid_jobnum']	=	$userid_jobnum;
 		
-		// 
+		//面试邀请数
 		$userid_msgnum	=	$jobM -> getYqmsNum(array('fid'=>$this->member['uid'],'isdel'=>9));
 		
 		$list['userid_msgnum']	=	$userid_msgnum;
 		
-		// 
+		//浏览简历数
 		$looknum		=	$lookresumeM -> getLookNum(array('com_id'=>$this->member['uid'],'usertype'=>2,'com_status'=>'0'));
 		
 		$list['looknum']=	$looknum;
 		
-	    // 
+	    //收藏简历数
 		$talentnum		=	$resumeM -> getTalentNum(array('cuid'=>$this->member['uid']));
 		
 		$list['talentnum']		=	$talentnum;
 	    
-	    // 
+	    //下载简历数
 		$downnum		=	$downresumeM -> getDownNum(array('comid'=>$this->member['uid'],'usertype'=>2,'isdel'=>9));
 		
 		$list['downnum']		=	$downnum;
 	    
-	    // 
+	    //关注我的人才数
 		$atnnum			=	$atnM -> getAtnNum(array('sc_uid'=>$this->member['uid']));
 		
 		$list['atnnum']			=	$atnnum;
 	    
-	    // 
+	    //被浏览的职位数
 		$lookjobnum		=	$jobM -> getLookJobNum(array('com_id'=>$this->member['uid'],'com_status'=>'0'), array('usertype' => $this->member['usertype']));
 		
 		$list['lookjobnum']		=	$lookjobnum	;
@@ -487,7 +493,7 @@ class resume_controller extends com_controller{
 		$where['orderby']	=	'id';
         $page				=	$_POST['page'];
 		$limit				=	$_POST['limit'] ? $_POST['limit'] : 10;
-		if($page){// paginate
+		if($page){//分页
 			$pagenav		=	($page-1)*$limit;
 			$where['limit']	=	array($pagenav,$limit);
 		}else{

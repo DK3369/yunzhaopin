@@ -1,24 +1,24 @@
 <template>
     <div class="yejiClassDome">
         <el-tabs v-model="activeName" :tab-position="tabPosition" @tab-click="handleTabClick">
-            <el-tab-pane label="{yun:}t key='admin_tool_00147'{/yun}" name="first">
+            <el-tab-pane :label="lc('admin_tool_00147')" name="first">
                 <div class="yejiTabCont">
                     <div class="yejiTabHead">
                         <div class="yejiTabHeaButn">
-                            <span :class="search.days == -1 ? 'dayCur' : ''" @click="handleSearch(-1)">{yun:}t key='common_02000'{/yun}</span>
-                            <span :class="search.days == 1 ? 'dayCur' : ''" @click="handleSearch(1)">{yun:}t key='common_01940'{/yun}</span>
-                            <span :class="search.days == 2 ? 'dayCur' : ''" @click="handleSearch(2)">{yun:}t key='admin_tool_00142'{/yun}</span>
-                            <span :class="search.days == 3 ? 'dayCur' : ''" @click="handleSearch(3)">{yun:}t key='admin_tool_00143'{/yun}</span>
-                            <span :class="search.days == 4 ? 'dayCur' : ''" @click="handleSearch(4)">{yun:}t key='admin_tool_00146'{/yun}</span>
-                            <span :class="search.days == 5 ? 'dayCur' : ''" @click="handleSearch(5)">{yun:}t key='admin_tool_00145'{/yun}</span>
+                            <span :class="search.days == -1 ? 'dayCur' : ''" @click="handleSearch(-1)">{{ lc('common_02000') }}</span>
+                            <span :class="search.days == 1 ? 'dayCur' : ''" @click="handleSearch(1)">{{ lc('common_01940') }}</span>
+                            <span :class="search.days == 2 ? 'dayCur' : ''" @click="handleSearch(2)">{{ lc('admin_tool_00142') }}</span>
+                            <span :class="search.days == 3 ? 'dayCur' : ''" @click="handleSearch(3)">{{ lc('admin_tool_00143') }}</span>
+                            <span :class="search.days == 4 ? 'dayCur' : ''" @click="handleSearch(4)">{{ lc('admin_tool_00146') }}</span>
+                            <span :class="search.days == 5 ? 'dayCur' : ''" @click="handleSearch(5)">{{ lc('admin_tool_00145') }}</span>
                         </div>
                         <div class="yejiTabHeaIput">
                             <el-date-picker v-model="search.time" type="daterange" :picker-options="pickerOptions"
-                                range-separator="{yun:}t key='admin_company_00019'{/yun}" start-placeholder="{yun:}t key='admin_00343'{/yun}" end-placeholder="{yun:}t key='admin_00344'{/yun}"
+                                :range-separator="lc('admin_company_00019')" :start-placeholder="lc('admin_00343')" :end-placeholder="lc('admin_00344')"
                                 value-format="timestamp" @change="handleSearch(0)"></el-date-picker>
                         </div>
                         <div style="margin-left: 5px;">
-                            <el-button type="primary" size="mini" icon="el-icon-search" @click="handleSearch(0)">{yun:}t key='admin_user_weipin_00049'{/yun}</el-button>
+                            <el-button type="primary" size="mini" icon="el-icon-search" @click="handleSearch(0)">{{ lc('admin_user_weipin_00049') }}</el-button>
                         </div>
                     </div>
                     <div class="yejiTabChats">
@@ -27,7 +27,7 @@
                                 <div class="yejiTabDatLis">
                                     <div class="yejiTabDatTite">
                                         <img src="../../images/number1.png" alt="">
-                                        <span class="spannum">{yun:}t key='admin_tool_00105'{/yun}</span>
+                                        <span class="spannum">{{ lc('admin_tool_00105') }}</span>
                                     </div>
                                     <div class="yejiTabDatNum">
                                         <span>{{ AllNum.allReg }}</span>
@@ -36,8 +36,8 @@
                                 <div class="yejiTabDatLis">
                                     <div class="yejiTabDatTite">
                                         <img src="../../images/number2.png" alt="">
-                                        <span class="spannum">{yun:}t key='admin_user_company_00281'{/yun}</span>
-                                        <el-button type="primary" plain @click="showComBox(1)">{yun:}t key='member_com_00325'{/yun}</el-button>
+                                        <span class="spannum">{{ lc('admin_user_company_00281') }}</span>
+                                        <el-button type="primary" plain @click="showComBox(1)">{{ lc('member_com_00325') }}</el-button>
                                     </div>
                                     <div class="yejiTabDatNum">
                                         <span>{{ AllNum.comReg }}</span>
@@ -46,8 +46,8 @@
                                 <div class="yejiTabDatLis">
                                     <div class="yejiTabDatTite">
                                         <img src="../../images/number3.png" alt="">
-                                        <span class="spannum">{yun:}t key='admin_system_00129'{/yun}</span>
-                                        <el-button type="primary" plain @click="showUserBox(1)">{yun:}t key='member_com_00325'{/yun}</el-button>
+                                        <span class="spannum">{{ lc('admin_system_00129') }}</span>
+                                        <el-button type="primary" plain @click="showUserBox(1)">{{ lc('member_com_00325') }}</el-button>
                                     </div>
                                     <div class="yejiTabDatNum">
                                         <span>{{ AllNum.userReg }}</span>
@@ -56,13 +56,13 @@
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>{yun:}t key='admin_tool_00168'{/yun}</span>
+                                    <span>{{ lc('admin_tool_00168') }}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main11"></div>
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>{yun:}t key='admin_tool_00154'{/yun}</span>
+                                    <span>{{ lc('admin_tool_00154') }}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main11_1"></div>
                             </div>
@@ -72,7 +72,7 @@
                                 <div class="yejiTabDatLis">
                                     <div class="yejiTabDatTite">
                                         <img src="../../images/number1.png" alt="">
-                                        <span class="spannum">{yun:}t key='admin_tool_00106'{/yun}</span>
+                                        <span class="spannum">{{ lc('admin_tool_00106') }}</span>
                                     </div>
                                     <div class="yejiTabDatNum">
                                         <span>{{ AllNum.allLogin }}</span>
@@ -81,8 +81,8 @@
                                 <div class="yejiTabDatLis">
                                     <div class="yejiTabDatTite">
                                         <img src="../../images/number2.png" alt="">
-                                        <span class="spannum">{yun:}t key='admin_user_company_00281'{/yun}</span>
-                                        <el-button type="primary" plain @click="showComBox(2)">{yun:}t key='member_com_00325'{/yun}</el-button>
+                                        <span class="spannum">{{ lc('admin_user_company_00281') }}</span>
+                                        <el-button type="primary" plain @click="showComBox(2)">{{ lc('member_com_00325') }}</el-button>
                                     </div>
                                     <div class="yejiTabDatNum">
                                         <span>{{ AllNum.comLogin }}</span>
@@ -91,8 +91,8 @@
                                 <div class="yejiTabDatLis">
                                     <div class="yejiTabDatTite">
                                         <img src="../../images/number3.png" alt="">
-                                        <span class="spannum">{yun:}t key='admin_system_00129'{/yun}</span>
-                                        <el-button type="primary" plain @click="showUserBox(2)">{yun:}t key='member_com_00325'{/yun}</el-button>
+                                        <span class="spannum">{{ lc('admin_system_00129') }}</span>
+                                        <el-button type="primary" plain @click="showUserBox(2)">{{ lc('member_com_00325') }}</el-button>
                                     </div>
                                     <div class="yejiTabDatNum">
                                         <span>{{ AllNum.userLogin }}</span>
@@ -101,7 +101,7 @@
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>{yun:}t key='admin_tool_00169'{/yun}</span>
+                                    <span>{{ lc('admin_tool_00169') }}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main12"></div>
                             </div>
@@ -109,22 +109,22 @@
                     </div>
                 </div>
             </el-tab-pane>
-            <el-tab-pane label="{yun:}t key='admin_tool_00148'{/yun}" name="second">
+            <el-tab-pane :label="lc('admin_tool_00148')" name="second">
                 <div class="yejiTabCont">
                     <div class="yejiTabHead">
                         <div class="yejiTabHeaButn">
-                            <span :class="search.days == -1 ? 'dayCur' : ''" @click="handleSearch(-1)">{yun:}t key='common_02000'{/yun}</span>
-                            <span :class="search.days == 1 ? 'dayCur' : ''" @click="handleSearch(1)">{yun:}t key='common_01940'{/yun}</span>
-                            <span :class="search.days == 2 ? 'dayCur' : ''" @click="handleSearch(2)">{yun:}t key='admin_tool_00142'{/yun}</span>
-                            <span :class="search.days == 3 ? 'dayCur' : ''" @click="handleSearch(3)">{yun:}t key='admin_tool_00143'{/yun}</span>
-                            <span :class="search.days == 4 ? 'dayCur' : ''" @click="handleSearch(4)">{yun:}t key='admin_tool_00146'{/yun}</span>
-                            <span :class="search.days == 5 ? 'dayCur' : ''" @click="handleSearch(5)">{yun:}t key='admin_tool_00145'{/yun}</span>
+                            <span :class="search.days == -1 ? 'dayCur' : ''" @click="handleSearch(-1)">{{ lc('common_02000') }}</span>
+                            <span :class="search.days == 1 ? 'dayCur' : ''" @click="handleSearch(1)">{{ lc('common_01940') }}</span>
+                            <span :class="search.days == 2 ? 'dayCur' : ''" @click="handleSearch(2)">{{ lc('admin_tool_00142') }}</span>
+                            <span :class="search.days == 3 ? 'dayCur' : ''" @click="handleSearch(3)">{{ lc('admin_tool_00143') }}</span>
+                            <span :class="search.days == 4 ? 'dayCur' : ''" @click="handleSearch(4)">{{ lc('admin_tool_00146') }}</span>
+                            <span :class="search.days == 5 ? 'dayCur' : ''" @click="handleSearch(5)">{{ lc('admin_tool_00145') }}</span>
                         </div>
                         <div class="yejiTabHeaIput">
                             <el-date-picker v-model="search.time" size="small" type="daterange"
-                                :picker-options="pickerOptions" range-separator="{yun:}t key='admin_company_00019'{/yun}" start-placeholder="{yun:}t key='admin_00343'{/yun}"
-                                end-placeholder="{yun:}t key='admin_00344'{/yun}" value-format="timestamp" @change="handleSearch(0)"></el-date-picker>
-                            <el-button type="primary" icon="el-icon-search" @click="handleSearch(0)">{yun:}t key='admin_user_weipin_00049'{/yun}</el-button>
+                                :picker-options="pickerOptions" :range-separator="lc('admin_company_00019')" :start-placeholder="lc('admin_00343')"
+                                :end-placeholder="lc('admin_00344')" value-format="timestamp" @change="handleSearch(0)"></el-date-picker>
+                            <el-button type="primary" icon="el-icon-search" @click="handleSearch(0)">{{ lc('admin_user_weipin_00049') }}</el-button>
                         </div>
                     </div>
                     <div class="yejiTabChats">
@@ -133,7 +133,7 @@
                                 <div class="yejiTabDatLis">
                                     <div class="yejiTabDatTite">
                                         <img src="../../images/dataim4.png" alt="">
-                                        <span class="spannum">{yun:}t key='admin_tool_00112'{/yun}</span>
+                                        <span class="spannum">{{ lc('admin_tool_00112') }}</span>
                                     </div>
                                     <div class="yejiTabDatNum">
                                         <span>{{ AllNum.job }}</span>
@@ -142,23 +142,23 @@
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>{yun:}t key='admin_tool_00171'{/yun}</span>
+                                    <span>{{ lc('admin_tool_00171') }}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main13"></div>
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>{yun:}t key='admin_tool_00100'{/yun}</span>
+                                    <span>{{ lc('admin_tool_00100') }}</span>
                                 </div>
                                 <div class="tabEchatDome">
-                                    <el-table :data="topList.jobList" height="300" border style="width: 100%" v-loading="loading" element-loading-text="{yun:}t key='admin_tool_00117'{/yun}" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
-                                        <el-table-column prop="name" label="{yun:}t key='admin_tool_00165'{/yun}"></el-table-column>
-                                        <el-table-column prop="count" label="{yun:}t key='wap_com_00112'{/yun}" width="80"></el-table-column>
-                                        <el-table-column label="{yun:}t key='member_user_00048'{/yun}" width="80">
+                                    <el-table :data="topList.jobList" height="300" border style="width: 100%" v-loading="loading" element-loading-text=lc('admin_tool_00117') element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
+                                        <el-table-column prop="name" :label="lc('admin_tool_00165')"></el-table-column>
+                                        <el-table-column prop="count" :label="lc('wap_com_00112')" width="80"></el-table-column>
+                                        <el-table-column :label="lc('member_user_00048')" width="80">
                                             <template slot-scope="scope">
                                                 <div class="cz_button">
                                                     <el-button size="small" type="primary"
-                                                        @click="openPage(scope.row.id, 'job')">{yun:}t key='wap_com_00427'{/yun}
+                                                        @click="openPage(scope.row.id, 'job')">{{ lc('wap_com_00427') }}
                                                     </el-button>
                                                 </div>
                                             </template>
@@ -168,17 +168,17 @@
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>{yun:}t key='admin_tool_00102'{/yun}</span>
+                                    <span>{{ lc('admin_tool_00102') }}</span>
                                 </div>
                                 <div class="tabEchatDome">
-                                    <el-table :data="topList.jobComList" height="300" border style="width: 100%" element-loading-text="{yun:}t key='admin_tool_00117'{/yun}" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
-                                        <el-table-column prop="name" label="{yun:}t key='wap_com_00157'{/yun}"></el-table-column>
-                                        <el-table-column prop="count" label="{yun:}t key='wap_com_00112'{/yun}" width="80"></el-table-column>
-                                        <el-table-column label="{yun:}t key='member_user_00048'{/yun}" width="80">
+                                    <el-table :data="topList.jobComList" height="300" border style="width: 100%" element-loading-text=lc('admin_tool_00117') element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
+                                        <el-table-column prop="name" :label="lc('wap_com_00157')"></el-table-column>
+                                        <el-table-column prop="count" :label="lc('wap_com_00112')" width="80"></el-table-column>
+                                        <el-table-column :label="lc('member_user_00048')" width="80">
                                             <template slot-scope="scope">
                                                 <div class="cz_button">
                                                     <el-button size="small" type="primary"
-                                                        @click="openPage(scope.row.uid, 'company')">{yun:}t key='wap_com_00427'{/yun}
+                                                        @click="openPage(scope.row.uid, 'company')">{{ lc('wap_com_00427') }}
                                                     </el-button>
                                                 </div>
                                             </template>
@@ -192,7 +192,7 @@
                                 <div class="yejiTabDatLis">
                                     <div class="yejiTabDatTite">
                                         <img src="../../images/dataim5.png" alt="">
-                                        <span class="spannum">{yun:}t key='admin_tool_00110'{/yun}</span>
+                                        <span class="spannum">{{ lc('admin_tool_00110') }}</span>
                                     </div>
                                     <div class="yejiTabDatNum">
                                         <span>{{ AllNum.resume }}</span>
@@ -201,18 +201,18 @@
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>{yun:}t key='admin_tool_00170'{/yun}</span>
+                                    <span>{{ lc('admin_tool_00170') }}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main14"></div>
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>{yun:}t key='admin_tool_00101'{/yun}</span>
+                                    <span>{{ lc('admin_tool_00101') }}</span>
                                 </div>
                                 <div class="tabEchatDome">
-                                    <el-table :data="topList.resumeList" height="300" border style="width: 100%" v-loading="loading" element-loading-text="{yun:}t key='admin_tool_00117'{/yun}" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
-                                        <el-table-column prop="uname" label="{yun:}t key='admin_user_00185'{/yun}" width="100"></el-table-column>
-                                        <el-table-column label="{yun:}t key='admin_tool_00134'{/yun}">
+                                    <el-table :data="topList.resumeList" height="300" border style="width: 100%" v-loading="loading" element-loading-text=lc('admin_tool_00117') element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
+                                        <el-table-column prop="uname" :label="lc('admin_user_00185')" width="100"></el-table-column>
+                                        <el-table-column :label="lc('admin_tool_00134')">
                                             <template slot-scope="scope">
                                                 <span>{{ lc('admin_job_intention_value', [scope.row.jobclassname]) }}</span>
                                                 <span>{{ lc('admin_intended_area_value', [scope.row.cityclassname]) }}</span>
@@ -220,12 +220,12 @@
                                                 <span>{{ lc('admin_experience_value', [scope.row.expname]) }}</span>
                                             </template>
                                         </el-table-column>
-                                        <el-table-column prop="count" label="{yun:}t key='wap_com_00112'{/yun}" width="80"></el-table-column>
-                                        <el-table-column label="{yun:}t key='member_user_00048'{/yun}" width="80">
+                                        <el-table-column prop="count" :label="lc('wap_com_00112')" width="80"></el-table-column>
+                                        <el-table-column :label="lc('member_user_00048')" width="80">
                                             <template slot-scope="scope">
                                                 <div class="cz_button">
                                                     <el-button size="small" type="primary"
-                                                        @click="openPage(scope.row.id, 'resume')">{yun:}t key='wap_com_00427'{/yun}
+                                                        @click="openPage(scope.row.id, 'resume')">{{ lc('wap_com_00427') }}
                                                     </el-button>
                                                 </div>
                                             </template>
@@ -235,17 +235,17 @@
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>{yun:}t key='admin_tool_00118'{/yun}</span>
+                                    <span>{{ lc('admin_tool_00118') }}</span>
                                 </div>
                                 <div class="tabEchatDome">
-                                    <el-table :data="topList.resumeComList" height="300" border style="width: 100%" element-loading-text="{yun:}t key='admin_tool_00117'{/yun}" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
-                                        <el-table-column prop="name" label="{yun:}t key='wap_com_00157'{/yun}"></el-table-column>
-                                        <el-table-column prop="count" label="{yun:}t key='wap_com_00112'{/yun}" width="80"></el-table-column>
-                                        <el-table-column label="{yun:}t key='member_user_00048'{/yun}" width="80">
+                                    <el-table :data="topList.resumeComList" height="300" border style="width: 100%" element-loading-text=lc('admin_tool_00117') element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
+                                        <el-table-column prop="name" :label="lc('wap_com_00157')"></el-table-column>
+                                        <el-table-column prop="count" :label="lc('wap_com_00112')" width="80"></el-table-column>
+                                        <el-table-column :label="lc('member_user_00048')" width="80">
                                             <template slot-scope="scope">
                                                 <div class="cz_button">
                                                     <el-button size="small" type="primary"
-                                                        @click="openPage(scope.row.uid, 'company')">{yun:}t key='wap_com_00427'{/yun}
+                                                        @click="openPage(scope.row.uid, 'company')">{{ lc('wap_com_00427') }}
                                                     </el-button>
                                                 </div>
                                             </template>
@@ -257,22 +257,22 @@
                     </div>
                 </div>
             </el-tab-pane>
-            <el-tab-pane label="{yun:}t key='admin_tool_00149'{/yun}" name="third">
+            <el-tab-pane :label="lc('admin_tool_00149')" name="third">
                 <div class="yejiTabCont">
                     <div class="yejiTabHead">
                         <div class="yejiTabHeaButn">
-                            <span :class="search.days == -1 ? 'dayCur' : ''" @click="handleSearch(-1)">{yun:}t key='common_02000'{/yun}</span>
-                            <span :class="search.days == 1 ? 'dayCur' : ''" @click="handleSearch(1)">{yun:}t key='common_01940'{/yun}</span>
-                            <span :class="search.days == 2 ? 'dayCur' : ''" @click="handleSearch(2)">{yun:}t key='admin_tool_00142'{/yun}</span>
-                            <span :class="search.days == 3 ? 'dayCur' : ''" @click="handleSearch(3)">{yun:}t key='admin_tool_00143'{/yun}</span>
-                            <span :class="search.days == 4 ? 'dayCur' : ''" @click="handleSearch(4)">{yun:}t key='admin_tool_00146'{/yun}</span>
-                            <span :class="search.days == 5 ? 'dayCur' : ''" @click="handleSearch(5)">{yun:}t key='admin_tool_00145'{/yun}</span>
+                            <span :class="search.days == -1 ? 'dayCur' : ''" @click="handleSearch(-1)">{{ lc('common_02000') }}</span>
+                            <span :class="search.days == 1 ? 'dayCur' : ''" @click="handleSearch(1)">{{ lc('common_01940') }}</span>
+                            <span :class="search.days == 2 ? 'dayCur' : ''" @click="handleSearch(2)">{{ lc('admin_tool_00142') }}</span>
+                            <span :class="search.days == 3 ? 'dayCur' : ''" @click="handleSearch(3)">{{ lc('admin_tool_00143') }}</span>
+                            <span :class="search.days == 4 ? 'dayCur' : ''" @click="handleSearch(4)">{{ lc('admin_tool_00146') }}</span>
+                            <span :class="search.days == 5 ? 'dayCur' : ''" @click="handleSearch(5)">{{ lc('admin_tool_00145') }}</span>
                         </div>
                         <div class="yejiTabHeaIput">
                             <el-date-picker v-model="search.time" size="small" type="daterange"
-                                :picker-options="pickerOptions" range-separator="{yun:}t key='admin_company_00019'{/yun}" start-placeholder="{yun:}t key='admin_00343'{/yun}"
-                                end-placeholder="{yun:}t key='admin_00344'{/yun}" value-format="timestamp" @change="handleSearch(0)"></el-date-picker>
-                            <el-button type="primary" icon="el-icon-search" @click="handleSearch(0)">{yun:}t key='admin_user_weipin_00049'{/yun}</el-button>
+                                :picker-options="pickerOptions" :range-separator="lc('admin_company_00019')" :start-placeholder="lc('admin_00343')"
+                                :end-placeholder="lc('admin_00344')" value-format="timestamp" @change="handleSearch(0)"></el-date-picker>
+                            <el-button type="primary" icon="el-icon-search" @click="handleSearch(0)">{{ lc('admin_user_weipin_00049') }}</el-button>
                         </div>
                     </div>
                     <div class="yejiTabChats">
@@ -281,7 +281,7 @@
                                 <div class="yejiTabDatLis">
                                     <div class="yejiTabDatTite">
                                         <img src="../../images/dataim7.png" alt="">
-                                        <span class="spannum">{yun:}t key='admin_tool_00113'{/yun}</span>
+                                        <span class="spannum">{{ lc('admin_tool_00113') }}</span>
                                     </div>
                                     <div class="yejiTabDatNum">
                                         <span>{{ AllNum.invite }}</span>
@@ -290,23 +290,23 @@
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>{yun:}t key='admin_tool_00114'{/yun}</span>
+                                    <span>{{ lc('admin_tool_00114') }}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main15"></div>
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>{yun:}t key='admin_tool_00093'{/yun}</span>
+                                    <span>{{ lc('admin_tool_00093') }}</span>
                                 </div>
                                 <div class="tabEchatDome">
-                                    <el-table :data="topList.inviteResume" height="300" border style="width: 100%" v-loading="loading" element-loading-text="{yun:}t key='admin_tool_00117'{/yun}" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
-                                        <el-table-column prop="name" label="{yun:}t key='admin_tool_00166'{/yun}"></el-table-column>
-                                        <el-table-column prop="count" label="{yun:}t key='admin_tool_00137'{/yun}" width="80"></el-table-column>
-                                        <el-table-column label="{yun:}t key='member_user_00048'{/yun}" width="80">
+                                    <el-table :data="topList.inviteResume" height="300" border style="width: 100%" v-loading="loading" element-loading-text=lc('admin_tool_00117') element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
+                                        <el-table-column prop="name" :label="lc('admin_tool_00166')"></el-table-column>
+                                        <el-table-column prop="count" :label="lc('admin_tool_00137')" width="80"></el-table-column>
+                                        <el-table-column :label="lc('member_user_00048')" width="80">
                                             <template slot-scope="scope">
                                                 <div class="cz_button">
                                                     <el-button size="small" type="primary"
-                                                        @click="openPage(scope.row.eid, 'resume')">{yun:}t key='wap_com_00427'{/yun}
+                                                        @click="openPage(scope.row.eid, 'resume')">{{ lc('wap_com_00427') }}
                                                     </el-button>
                                                 </div>
                                             </template>
@@ -316,17 +316,17 @@
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>{yun:}t key='admin_tool_00089'{/yun}</span>
+                                    <span>{{ lc('admin_tool_00089') }}</span>
                                 </div>
                                 <div class="tabEchatDome">
-                                    <el-table :data="topList.inviteCom" height="300" border style="width: 100%" v-loading="loading" element-loading-text="{yun:}t key='admin_tool_00117'{/yun}" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
-                                        <el-table-column prop="name" label="{yun:}t key='wap_com_00157'{/yun}"></el-table-column>
-                                        <el-table-column prop="count" label="{yun:}t key='admin_tool_00144'{/yun}" width="80"></el-table-column>
-                                        <el-table-column label="{yun:}t key='member_user_00048'{/yun}" width="80">
+                                    <el-table :data="topList.inviteCom" height="300" border style="width: 100%" v-loading="loading" element-loading-text=lc('admin_tool_00117') element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
+                                        <el-table-column prop="name" :label="lc('wap_com_00157')"></el-table-column>
+                                        <el-table-column prop="count" :label="lc('admin_tool_00144')" width="80"></el-table-column>
+                                        <el-table-column :label="lc('member_user_00048')" width="80">
                                             <template slot-scope="scope">
                                                 <div class="cz_button">
                                                     <el-button size="small" type="primary"
-                                                        @click="openPage(scope.row.uid, 'company')">{yun:}t key='wap_com_00427'{/yun}
+                                                        @click="openPage(scope.row.uid, 'company')">{{ lc('wap_com_00427') }}
                                                     </el-button>
                                                 </div>
                                             </template>
@@ -336,31 +336,31 @@
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>{yun:}t key='admin_tool_00083'{/yun}</span>
+                                    <span>{{ lc('admin_tool_00083') }}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main15_1"></div>
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>{yun:}t key='admin_tool_00090'{/yun}</span>
+                                    <span>{{ lc('admin_tool_00090') }}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main15_2"></div>
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>{yun:}t key='admin_tool_00092'{/yun}</span>
+                                    <span>{{ lc('admin_tool_00092') }}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main15_3"></div>
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>{yun:}t key='admin_tool_00091'{/yun}</span>
+                                    <span>{{ lc('admin_tool_00091') }}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main15_4"></div>
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>{yun:}t key='admin_tool_00082'{/yun}</span>
+                                    <span>{{ lc('admin_tool_00082') }}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main15_5"></div>
                             </div>
@@ -370,7 +370,7 @@
                                 <div class="yejiTabDatLis">
                                     <div class="yejiTabDatTite">
                                         <img src="../../images/dataim6.png" alt="">
-                                        <span class="spannum">{yun:}t key='admin_tool_00107'{/yun}</span>
+                                        <span class="spannum">{{ lc('admin_tool_00107') }}</span>
                                     </div>
                                     <div class="yejiTabDatNum">
                                         <span>{{ AllNum.down }}</span>
@@ -379,23 +379,23 @@
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>{yun:}t key='admin_tool_00108'{/yun}</span>
+                                    <span>{{ lc('admin_tool_00108') }}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main16"></div>
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>{yun:}t key='admin_tool_00085'{/yun}</span>
+                                    <span>{{ lc('admin_tool_00085') }}</span>
                                 </div>
                                 <div class="tabEchatDome">
-                                    <el-table :data="topList.downResume" height="300" border style="width: 100%" v-loading="loading" element-loading-text="{yun:}t key='admin_tool_00117'{/yun}" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
-                                        <el-table-column prop="name" label="{yun:}t key='admin_user_00185'{/yun}"></el-table-column>
-                                        <el-table-column prop="count" label="{yun:}t key='admin_tool_00120'{/yun}" width="80"></el-table-column>
-                                        <el-table-column label="{yun:}t key='member_user_00048'{/yun}" width="80">
+                                    <el-table :data="topList.downResume" height="300" border style="width: 100%" v-loading="loading" element-loading-text=lc('admin_tool_00117') element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
+                                        <el-table-column prop="name" :label="lc('admin_user_00185')"></el-table-column>
+                                        <el-table-column prop="count" :label="lc('admin_tool_00120')" width="80"></el-table-column>
+                                        <el-table-column :label="lc('member_user_00048')" width="80">
                                             <template slot-scope="scope">
                                                 <div class="cz_button">
                                                     <el-button size="small" type="primary"
-                                                        @click="openPage(scope.row.eid, 'resume')">{yun:}t key='wap_com_00427'{/yun}
+                                                        @click="openPage(scope.row.eid, 'resume')">{{ lc('wap_com_00427') }}
                                                     </el-button>
                                                 </div>
                                             </template>
@@ -405,17 +405,17 @@
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>{yun:}t key='admin_tool_00084'{/yun}</span>
+                                    <span>{{ lc('admin_tool_00084') }}</span>
                                 </div>
                                 <div class="tabEchatDome">
-                                    <el-table :data="topList.downCom" height="300" border style="width: 100%" v-loading="loading" element-loading-text="{yun:}t key='admin_tool_00117'{/yun}" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
-                                        <el-table-column prop="name" label="{yun:}t key='wap_com_00157'{/yun}"></el-table-column>
-                                        <el-table-column prop="count" label="{yun:}t key='admin_tool_00120'{/yun}" width="80"></el-table-column>
-                                        <el-table-column label="{yun:}t key='member_user_00048'{/yun}" width="80">
+                                    <el-table :data="topList.downCom" height="300" border style="width: 100%" v-loading="loading" element-loading-text=lc('admin_tool_00117') element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
+                                        <el-table-column prop="name" :label="lc('wap_com_00157')"></el-table-column>
+                                        <el-table-column prop="count" :label="lc('admin_tool_00120')" width="80"></el-table-column>
+                                        <el-table-column :label="lc('member_user_00048')" width="80">
                                             <template slot-scope="scope">
                                                 <div class="cz_button">
                                                     <el-button size="small" type="primary"
-                                                        @click="openPage(scope.row.uid, 'company')">{yun:}t key='wap_com_00427'{/yun}
+                                                        @click="openPage(scope.row.uid, 'company')">{{ lc('wap_com_00427') }}
                                                     </el-button>
                                                 </div>
                                             </template>
@@ -425,37 +425,37 @@
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>{yun:}t key='admin_tool_00094'{/yun}</span>
+                                    <span>{{ lc('admin_tool_00094') }}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main16_1"></div>
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>{yun:}t key='admin_tool_00111'{/yun}</span>
+                                    <span>{{ lc('admin_tool_00111') }}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main16_2"></div>
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>{yun:}t key='admin_tool_00095'{/yun}</span>
+                                    <span>{{ lc('admin_tool_00095') }}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main16_3"></div>
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>{yun:}t key='admin_tool_00097'{/yun}</span>
+                                    <span>{{ lc('admin_tool_00097') }}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main16_4"></div>
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>{yun:}t key='admin_tool_00104'{/yun}</span>
+                                    <span>{{ lc('admin_tool_00104') }}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main16_5"></div>
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>{yun:}t key='admin_tool_00133'{/yun}</span>
+                                    <span>{{ lc('admin_tool_00133') }}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main16_6"></div>
                             </div>
@@ -463,22 +463,22 @@
                     </div>
                 </div>
             </el-tab-pane>
-            <el-tab-pane label="{yun:}t key='admin_tool_00150'{/yun}" name="fourth">
+            <el-tab-pane :label="lc('admin_tool_00150')" name="fourth">
                 <div class="yejiTabCont">
                     <div class="yejiTabHead">
                         <div class="yejiTabHeaButn">
-                            <span :class="search.days == -1 ? 'dayCur' : ''" @click="handleSearch(-1)">{yun:}t key='common_02000'{/yun}</span>
-                            <span :class="search.days == 1 ? 'dayCur' : ''" @click="handleSearch(1)">{yun:}t key='common_01940'{/yun}</span>
-                            <span :class="search.days == 2 ? 'dayCur' : ''" @click="handleSearch(2)">{yun:}t key='admin_tool_00142'{/yun}</span>
-                            <span :class="search.days == 3 ? 'dayCur' : ''" @click="handleSearch(3)">{yun:}t key='admin_tool_00143'{/yun}</span>
-                            <span :class="search.days == 4 ? 'dayCur' : ''" @click="handleSearch(4)">{yun:}t key='admin_tool_00146'{/yun}</span>
-                            <span :class="search.days == 5 ? 'dayCur' : ''" @click="handleSearch(5)">{yun:}t key='admin_tool_00145'{/yun}</span>
+                            <span :class="search.days == -1 ? 'dayCur' : ''" @click="handleSearch(-1)">{{ lc('common_02000') }}</span>
+                            <span :class="search.days == 1 ? 'dayCur' : ''" @click="handleSearch(1)">{{ lc('common_01940') }}</span>
+                            <span :class="search.days == 2 ? 'dayCur' : ''" @click="handleSearch(2)">{{ lc('admin_tool_00142') }}</span>
+                            <span :class="search.days == 3 ? 'dayCur' : ''" @click="handleSearch(3)">{{ lc('admin_tool_00143') }}</span>
+                            <span :class="search.days == 4 ? 'dayCur' : ''" @click="handleSearch(4)">{{ lc('admin_tool_00146') }}</span>
+                            <span :class="search.days == 5 ? 'dayCur' : ''" @click="handleSearch(5)">{{ lc('admin_tool_00145') }}</span>
                         </div>
                         <div class="yejiTabHeaIput">
                             <el-date-picker v-model="search.time" size="small" type="daterange"
-                                :picker-options="pickerOptions" range-separator="{yun:}t key='admin_company_00019'{/yun}" start-placeholder="{yun:}t key='admin_00343'{/yun}"
-                                end-placeholder="{yun:}t key='admin_00344'{/yun}" value-format="timestamp" @change="handleSearch(0)"></el-date-picker>
-                            <el-button type="primary" icon="el-icon-search" @click="handleSearch(0)">{yun:}t key='admin_user_weipin_00049'{/yun}</el-button>
+                                :picker-options="pickerOptions" :range-separator="lc('admin_company_00019')" :start-placeholder="lc('admin_00343')"
+                                :end-placeholder="lc('admin_00344')" value-format="timestamp" @change="handleSearch(0)"></el-date-picker>
+                            <el-button type="primary" icon="el-icon-search" @click="handleSearch(0)">{{ lc('admin_user_weipin_00049') }}</el-button>
                         </div>
                     </div>
                     <div class="yejiTabChats">
@@ -487,7 +487,7 @@
                                 <div class="yejiTabDatLis">
                                     <div class="yejiTabDatTite">
                                         <img src="../../images/nav_reward1.png" alt="">
-                                        <span class="spannum">{yun:}t key='admin_tool_00158'{/yun}</span>
+                                        <span class="spannum">{{ lc('admin_tool_00158') }}</span>
                                     </div>
                                     <div class="yejiTabDatNum">
                                         <span>{{ AllNum.order }}</span>
@@ -496,30 +496,30 @@
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>{yun:}t key='admin_tool_00159'{/yun}</span>
+                                    <span>{{ lc('admin_tool_00159') }}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main17"></div>
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>{yun:}t key='admin_tool_00096'{/yun}</span>
+                                    <span>{{ lc('admin_tool_00096') }}</span>
                                 </div>
                                 <div class="tabEchatDome">
-                                    <el-table :data="topList.orderCom" height="300" border style="width: 100%" v-loading="loading" element-loading-text="{yun:}t key='admin_tool_00117'{/yun}" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
-                                        <el-table-column prop="username" label="{yun:}t key='admin_user_00140'{/yun}"></el-table-column>
-                                        <el-table-column prop="count" label="{yun:}t key='wap_user_00312'{/yun}" width="120"></el-table-column>
+                                    <el-table :data="topList.orderCom" height="300" border style="width: 100%" v-loading="loading" element-loading-text=lc('admin_tool_00117') element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
+                                        <el-table-column prop="username" :label="lc('admin_user_00140')"></el-table-column>
+                                        <el-table-column prop="count" :label="lc('wap_user_00312')" width="120"></el-table-column>
                                     </el-table>
                                 </div>
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>{yun:}t key='wap_user_00318'{/yun}</span>
+                                    <span>{{ lc('wap_user_00318') }}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main17_1"></div>
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>{yun:}t key='wap_user_00313'{/yun}</span>
+                                    <span>{{ lc('wap_user_00313') }}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main17_2"></div>
                             </div>
@@ -529,7 +529,7 @@
                                 <div class="yejiTabDatLis">
                                     <div class="yejiTabDatTite">
                                         <img src="../../images/nav_data1.png" alt="">
-                                        <span class="spannum">{yun:}t key='admin_tool_00116'{/yun}</span>
+                                        <span class="spannum">{{ lc('admin_tool_00116') }}</span>
                                     </div>
                                     <div class="yejiTabDatNum">
                                         <span>{{ AllNum.ad }}</span>
@@ -538,18 +538,18 @@
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>{yun:}t key='admin_tool_00099'{/yun}</span>
+                                    <span>{{ lc('admin_tool_00099') }}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main18"></div>
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>{yun:}t key='admin_tool_00119'{/yun}</span>
+                                    <span>{{ lc('admin_tool_00119') }}</span>
                                 </div>
                                 <div class="tabEchatDome">
-                                    <el-table :data="topList.adClick" height="300" border style="width: 100%" v-loading="loading" element-loading-text="{yun:}t key='admin_tool_00117'{/yun}" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
-                                        <el-table-column prop="name" label="{yun:}t key='admin_yunying_00047'{/yun}"></el-table-column>
-                                        <el-table-column prop="count" label="{yun:}t key='admin_tool_00130'{/yun}" width="80"></el-table-column>
+                                    <el-table :data="topList.adClick" height="300" border style="width: 100%" v-loading="loading" element-loading-text=lc('admin_tool_00117') element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
+                                        <el-table-column prop="name" :label="lc('admin_yunying_00047')"></el-table-column>
+                                        <el-table-column prop="count" :label="lc('admin_tool_00130')" width="80"></el-table-column>
                                     </el-table>
                                 </div>
                             </div>
@@ -557,22 +557,22 @@
                     </div>
                 </div>
             </el-tab-pane>
-            <el-tab-pane label="{yun:}t key='admin_tool_00086'{/yun}" name="fifth">
+            <el-tab-pane :label="lc('admin_tool_00086')" name="fifth">
                 <div class="yejiTabCont">
                     <div class="yejiTabHead">
                         <div class="yejiTabHeaButn">
-                            <span :class="search.days == -1 ? 'dayCur' : ''" @click="handleSearch(-1)">{yun:}t key='common_02000'{/yun}</span>
-                            <span :class="search.days == 1 ? 'dayCur' : ''" @click="handleSearch(1)">{yun:}t key='common_01940'{/yun}</span>
-                            <span :class="search.days == 2 ? 'dayCur' : ''" @click="handleSearch(2)">{yun:}t key='admin_tool_00142'{/yun}</span>
-                            <span :class="search.days == 3 ? 'dayCur' : ''" @click="handleSearch(3)">{yun:}t key='admin_tool_00143'{/yun}</span>
-                            <span :class="search.days == 4 ? 'dayCur' : ''" @click="handleSearch(4)">{yun:}t key='admin_tool_00146'{/yun}</span>
-                            <span :class="search.days == 5 ? 'dayCur' : ''" @click="handleSearch(5)">{yun:}t key='admin_tool_00145'{/yun}</span>
+                            <span :class="search.days == -1 ? 'dayCur' : ''" @click="handleSearch(-1)">{{ lc('common_02000') }}</span>
+                            <span :class="search.days == 1 ? 'dayCur' : ''" @click="handleSearch(1)">{{ lc('common_01940') }}</span>
+                            <span :class="search.days == 2 ? 'dayCur' : ''" @click="handleSearch(2)">{{ lc('admin_tool_00142') }}</span>
+                            <span :class="search.days == 3 ? 'dayCur' : ''" @click="handleSearch(3)">{{ lc('admin_tool_00143') }}</span>
+                            <span :class="search.days == 4 ? 'dayCur' : ''" @click="handleSearch(4)">{{ lc('admin_tool_00146') }}</span>
+                            <span :class="search.days == 5 ? 'dayCur' : ''" @click="handleSearch(5)">{{ lc('admin_tool_00145') }}</span>
                         </div>
                         <div class="yejiTabHeaIput">
                             <el-date-picker v-model="search.time" type="daterange" :picker-options="pickerOptions"
-                                range-separator="{yun:}t key='admin_company_00019'{/yun}" start-placeholder="{yun:}t key='admin_00343'{/yun}" end-placeholder="{yun:}t key='admin_00344'{/yun}"
+                                :range-separator="lc('admin_company_00019')" :start-placeholder="lc('admin_00343')" :end-placeholder="lc('admin_00344')"
                                 value-format="timestamp" @change="handleSearch(0)"></el-date-picker>
-                            <el-button type="primary" icon="el-icon-search" @click="handleSearch(0)">{yun:}t key='admin_user_weipin_00049'{/yun}</el-button>
+                            <el-button type="primary" icon="el-icon-search" @click="handleSearch(0)">{{ lc('admin_user_weipin_00049') }}</el-button>
                         </div>
                     </div>
                     <div class="yejiTabChats">
@@ -581,7 +581,7 @@
                                 <div class="yejiTabDatLis">
                                     <div class="yejiTabDatTite">
                                         <img src="../../images/dataim4.png" alt="">
-                                        <span class="spannum">{yun:}t key='admin_tool_00160'{/yun}</span>
+                                        <span class="spannum">{{ lc('admin_tool_00160') }}</span>
                                     </div>
                                     <div class="yejiTabDatNum">
                                         <span>{{ AllNum.addJob }}</span>
@@ -590,7 +590,7 @@
                                 <div class="yejiTabDatLis">
                                     <div class="yejiTabDatTite">
                                         <img src="../../images/dataim5.png" alt="">
-                                        <span class="spannum">{yun:}t key='admin_tool_00098'{/yun}</span>
+                                        <span class="spannum">{{ lc('admin_tool_00098') }}</span>
                                     </div>
                                     <div class="yejiTabDatNum">
                                         <span>{{ AllNum.upJob }}</span>
@@ -599,23 +599,23 @@
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>{yun:}t key='admin_tool_00161'{/yun}</span>
+                                    <span>{{ lc('admin_tool_00161') }}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main19"></div>
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>{yun:}t key='admin_tool_00103'{/yun}</span>
+                                    <span>{{ lc('admin_tool_00103') }}</span>
                                 </div>
                                 <div class="tabEchatDome">
-                                    <el-table :data="topList.addJobCom" height="300" border style="width: 100%" v-loading="loading" element-loading-text="{yun:}t key='admin_tool_00117'{/yun}" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
-                                        <el-table-column prop="name" label="{yun:}t key='wap_com_00157'{/yun}"></el-table-column>
-                                        <el-table-column prop="count" label="{yun:}t key='admin_tool_00167'{/yun}" width="80"></el-table-column>
-                                        <el-table-column label="{yun:}t key='member_user_00048'{/yun}" width="80">
+                                    <el-table :data="topList.addJobCom" height="300" border style="width: 100%" v-loading="loading" element-loading-text=lc('admin_tool_00117') element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
+                                        <el-table-column prop="name" :label="lc('wap_com_00157')"></el-table-column>
+                                        <el-table-column prop="count" :label="lc('admin_tool_00167')" width="80"></el-table-column>
+                                        <el-table-column :label="lc('member_user_00048')" width="80">
                                             <template slot-scope="scope">
                                                 <div class="cz_button">
                                                     <el-button size="small" type="primary"
-                                                        @click="openPage(scope.row.uid, 'company')">{yun:}t key='wap_com_00427'{/yun}
+                                                        @click="openPage(scope.row.uid, 'company')">{{ lc('wap_com_00427') }}
                                                     </el-button>
                                                 </div>
                                             </template>
@@ -625,31 +625,31 @@
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>{yun:}t key='admin_tool_00131'{/yun}</span>
+                                    <span>{{ lc('admin_tool_00131') }}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main19_1"></div>
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>{yun:}t key='admin_tool_00132'{/yun}</span>
+                                    <span>{{ lc('admin_tool_00132') }}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main19_2"></div>
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>{yun:}t key='wap_com_00290'{/yun}</span>
+                                    <span>{{ lc('wap_com_00290') }}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main19_3"></div>
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>{yun:}t key='wap_com_00283'{/yun}</span>
+                                    <span>{{ lc('wap_com_00283') }}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main19_4"></div>
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>{yun:}t key='wap_user_00240'{/yun}</span>
+                                    <span>{{ lc('wap_user_00240') }}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main19_5"></div>
                             </div>
@@ -659,7 +659,7 @@
                                 <div class="yejiTabDatLis">
                                     <div class="yejiTabDatTite">
                                         <img src="../../images/dataim1.png" alt="">
-                                        <span class="spannum">{yun:}t key='admin_tool_00162'{/yun}</span>
+                                        <span class="spannum">{{ lc('admin_tool_00162') }}</span>
                                     </div>
                                     <div class="yejiTabDatNum">
                                         <span>{{ AllNum.addResume }}</span>
@@ -668,7 +668,7 @@
                                 <div class="yejiTabDatLis">
                                     <div class="yejiTabDatTite">
                                         <img src="../../images/dataim5.png" alt="">
-                                        <span class="spannum">{yun:}t key='admin_tool_00163'{/yun}</span>
+                                        <span class="spannum">{{ lc('admin_tool_00163') }}</span>
                                     </div>
                                     <div class="yejiTabDatNum">
                                         <span>{{ AllNum.upResume }}</span>
@@ -677,49 +677,49 @@
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>{yun:}t key='admin_tool_00164'{/yun}</span>
+                                    <span>{{ lc('admin_tool_00164') }}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main20"></div>
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>{yun:}t key='admin_tool_00129'{/yun}</span>
+                                    <span>{{ lc('admin_tool_00129') }}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main20_1"></div>
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>{yun:}t key='admin_tool_00126'{/yun}</span>
+                                    <span>{{ lc('admin_tool_00126') }}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main20_2"></div>
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>{yun:}t key='wap_user_00016'{/yun}</span>
+                                    <span>{{ lc('wap_user_00016') }}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main20_3"></div>
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>{yun:}t key='member_com_00011'{/yun}</span>
+                                    <span>{{ lc('member_com_00011') }}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main20_4"></div>
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>{yun:}t key='wap_user_00240'{/yun}</span>
+                                    <span>{{ lc('wap_user_00240') }}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main20_5"></div>
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>{yun:}t key='admin_tool_00133'{/yun}</span>
+                                    <span>{{ lc('admin_tool_00133') }}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main20_6"></div>
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>{yun:}t key='admin_yunying_00139'{/yun}</span>
+                                    <span>{{ lc('admin_yunying_00139') }}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main20_7"></div>
                             </div>
@@ -727,22 +727,22 @@
                     </div>
                 </div>
             </el-tab-pane>
-            <el-tab-pane label="{yun:}t key='admin_tool_00151'{/yun}" name="sixth">
+            <el-tab-pane :label="lc('admin_tool_00151')" name="sixth">
                 <div class="yejiTabCont">
                     <div class="yejiTabHead">
                         <div class="yejiTabHeaButn">
-                            <span :class="search.days == -1 ? 'dayCur' : ''" @click="handleSearch(-1)">{yun:}t key='common_02000'{/yun}</span>
-                            <span :class="search.days == 1 ? 'dayCur' : ''" @click="handleSearch(1)">{yun:}t key='common_01940'{/yun}</span>
-                            <span :class="search.days == 2 ? 'dayCur' : ''" @click="handleSearch(2)">{yun:}t key='admin_tool_00142'{/yun}</span>
-                            <span :class="search.days == 3 ? 'dayCur' : ''" @click="handleSearch(3)">{yun:}t key='admin_tool_00143'{/yun}</span>
-                            <span :class="search.days == 4 ? 'dayCur' : ''" @click="handleSearch(4)">{yun:}t key='admin_tool_00146'{/yun}</span>
-                            <span :class="search.days == 5 ? 'dayCur' : ''" @click="handleSearch(5)">{yun:}t key='admin_tool_00145'{/yun}</span>
+                            <span :class="search.days == -1 ? 'dayCur' : ''" @click="handleSearch(-1)">{{ lc('common_02000') }}</span>
+                            <span :class="search.days == 1 ? 'dayCur' : ''" @click="handleSearch(1)">{{ lc('common_01940') }}</span>
+                            <span :class="search.days == 2 ? 'dayCur' : ''" @click="handleSearch(2)">{{ lc('admin_tool_00142') }}</span>
+                            <span :class="search.days == 3 ? 'dayCur' : ''" @click="handleSearch(3)">{{ lc('admin_tool_00143') }}</span>
+                            <span :class="search.days == 4 ? 'dayCur' : ''" @click="handleSearch(4)">{{ lc('admin_tool_00146') }}</span>
+                            <span :class="search.days == 5 ? 'dayCur' : ''" @click="handleSearch(5)">{{ lc('admin_tool_00145') }}</span>
                         </div>
                         <div class="yejiTabHeaIput">
                             <el-date-picker v-model="search.time" type="daterange" :picker-options="pickerOptions"
-                                range-separator="{yun:}t key='admin_company_00019'{/yun}" start-placeholder="{yun:}t key='admin_00343'{/yun}" end-placeholder="{yun:}t key='admin_00344'{/yun}"
+                                :range-separator="lc('admin_company_00019')" :start-placeholder="lc('admin_00343')" :end-placeholder="lc('admin_00344')"
                                 value-format="timestamp" @change="handleSearch(0)"></el-date-picker>
-                            <el-button type="primary" icon="el-icon-search" @click="handleSearch(0)">{yun:}t key='admin_user_weipin_00049'{/yun}</el-button>
+                            <el-button type="primary" icon="el-icon-search" @click="handleSearch(0)">{{ lc('admin_user_weipin_00049') }}</el-button>
                         </div>
                     </div>
                     <div class="yejiTabChats">
@@ -751,7 +751,7 @@
                                 <div class="yejiTabDatLis">
                                     <div class="yejiTabDatTite">
                                         <img src="../../images/number2.png" alt="">
-                                        <span class="spannum">{yun:}t key='admin_tool_00122'{/yun}</span>
+                                        <span class="spannum">{{ lc('admin_tool_00122') }}</span>
                                     </div>
                                     <div class="yejiTabDatNum">
                                         <span>{{ AllNum.comOne }}</span>
@@ -760,25 +760,25 @@
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>{yun:}t key='admin_tool_00123'{/yun}</span>
+                                    <span>{{ lc('admin_tool_00123') }}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main21"></div>
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>{yun:}t key='admin_tool_00156'{/yun}</span>
+                                    <span>{{ lc('admin_tool_00156') }}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main21_1"></div>
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>{yun:}t key='admin_tool_00157'{/yun}</span>
+                                    <span>{{ lc('admin_tool_00157') }}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main21_2"></div>
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>{yun:}t key='admin_tool_00124'{/yun}</span>
+                                    <span>{{ lc('admin_tool_00124') }}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main21_3"></div>
                             </div>
@@ -788,7 +788,7 @@
                                 <div class="yejiTabDatLis">
                                     <div class="yejiTabDatTite">
                                         <img src="../../images/number3.png" alt="">
-                                        <span class="spannum">{yun:}t key='member_com_00152'{/yun}</span>
+                                        <span class="spannum">{{ lc('member_com_00152') }}</span>
                                     </div>
                                     <div class="yejiTabDatNum">
                                         <span>{{ AllNum.apply }}</span>
@@ -797,23 +797,23 @@
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>{yun:}t key='admin_tool_00109'{/yun}</span>
+                                    <span>{{ lc('admin_tool_00109') }}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main22"></div>
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>{yun:}t key='admin_tool_00087'{/yun}</span>
+                                    <span>{{ lc('admin_tool_00087') }}</span>
                                 </div>
                                 <div class="tabEchatDome">
-                                    <el-table :data="topList.applyResume" height="300" border style="width: 100%" v-loading="loading" element-loading-text="{yun:}t key='admin_tool_00117'{/yun}" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
-                                        <el-table-column prop="uname" label="{yun:}t key='admin_tool_00166'{/yun}"></el-table-column>
-                                        <el-table-column prop="count" label="{yun:}t key='admin_tool_00128'{/yun}" width="100"></el-table-column>
-                                        <el-table-column label="{yun:}t key='member_user_00048'{/yun}" width="80">
+                                    <el-table :data="topList.applyResume" height="300" border style="width: 100%" v-loading="loading" element-loading-text=lc('admin_tool_00117') element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
+                                        <el-table-column prop="uname" :label="lc('admin_tool_00166')"></el-table-column>
+                                        <el-table-column prop="count" :label="lc('admin_tool_00128')" width="100"></el-table-column>
+                                        <el-table-column :label="lc('member_user_00048')" width="80">
                                             <template slot-scope="scope">
                                                 <div class="cz_button">
                                                     <el-button size="small" type="primary"
-                                                        @click="openPage(scope.row.id, 'resume')">{yun:}t key='wap_com_00427'{/yun}
+                                                        @click="openPage(scope.row.id, 'resume')">{{ lc('wap_com_00427') }}
                                                     </el-button>
                                                 </div>
                                             </template>
@@ -823,17 +823,17 @@
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>{yun:}t key='admin_tool_00088'{/yun}</span>
+                                    <span>{{ lc('admin_tool_00088') }}</span>
                                 </div>
                                 <div class="tabEchatDome">
-                                    <el-table :data="topList.applyCom" height="300" border style="width: 100%" v-loading="loading" element-loading-text="{yun:}t key='admin_tool_00117'{/yun}" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
-                                        <el-table-column prop="name" label="{yun:}t key='admin_tool_00166'{/yun}"></el-table-column>
-                                        <el-table-column prop="count" label="{yun:}t key='admin_yunying_00166'{/yun}" width="100"></el-table-column>
-                                        <el-table-column label="{yun:}t key='member_user_00048'{/yun}" width="80">
+                                    <el-table :data="topList.applyCom" height="300" border style="width: 100%" v-loading="loading" element-loading-text=lc('admin_tool_00117') element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
+                                        <el-table-column prop="name" :label="lc('admin_tool_00166')"></el-table-column>
+                                        <el-table-column prop="count" :label="lc('admin_yunying_00166')" width="100"></el-table-column>
+                                        <el-table-column :label="lc('member_user_00048')" width="80">
                                             <template slot-scope="scope">
                                                 <div class="cz_button">
                                                     <el-button size="small" type="primary"
-                                                        @click="openPage(scope.row.uid, 'company')">{yun:}t key='wap_com_00427'{/yun}
+                                                        @click="openPage(scope.row.uid, 'company')">{{ lc('wap_com_00427') }}
                                                     </el-button>
                                                 </div>
                                             </template>
@@ -843,37 +843,37 @@
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>{yun:}t key='admin_tool_00156'{/yun}</span>
+                                    <span>{{ lc('admin_tool_00156') }}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main22_1"></div>
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>{yun:}t key='admin_tool_00132'{/yun}</span>
+                                    <span>{{ lc('admin_tool_00132') }}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main22_2"></div>
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>{yun:}t key='wap_user_00016'{/yun}</span>
+                                    <span>{{ lc('wap_user_00016') }}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main22_3"></div>
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>{yun:}t key='member_com_00011'{/yun}</span>
+                                    <span>{{ lc('member_com_00011') }}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main22_4"></div>
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>{yun:}t key='wap_user_00240'{/yun}</span>
+                                    <span>{{ lc('wap_user_00240') }}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main22_5"></div>
                             </div>
                             <div class="yejiTabEchaDome">
                                 <div class="yejiTabEchaName">
-                                    <span>{yun:}t key='admin_tool_00133'{/yun}</span>
+                                    <span>{{ lc('admin_tool_00133') }}</span>
                                 </div>
                                 <div class="tabEchatDome" id="main22_6"></div>
                             </div>
@@ -884,11 +884,11 @@
         </el-tabs>
 
         <!-- 企业用户信息弹出框 -->
-        <el-drawer title="{yun:}t key='admin_tool_00153'{/yun}" :visible.sync="comBoxShow" append-to-body size="85%">
+        <el-drawer :title="lc('admin_tool_00153')" :visible.sync="comBoxShow" append-to-body size="85%">
             <company-user ref="companyUser" :jump_params="jumpParams" v-if="comBoxShow"></company-user>
         </el-drawer>
         <!-- 个人用户信息弹出框 -->
-        <el-drawer title="{yun:}t key='admin_tool_00152'{/yun}" :visible.sync="userBoxShow" append-to-body size="85%">
+        <el-drawer :title="lc('admin_tool_00152')" :visible.sync="userBoxShow" append-to-body size="85%">
             <users-all ref="userBoxShow" :jump_params="jumpParams" v-if="userBoxShow"></users-all>
         </el-drawer>
     </div>
@@ -899,7 +899,7 @@ module.exports = {
     data: function () {
         return {
             loading: false,
-            emptytext: window.yunAdminT("{yun:}t key='wap_js_00113'{/yun}"),
+            emptytext: window.yunAdminT(lc('wap_js_00113')),
             webUrl: localStorage.getItem("sy_weburl"),
             activeName: 'first',
             tabPosition: 'left',
@@ -1200,7 +1200,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: window.yunAdminT("{yun:}t key='admin_tool_00154'{/yun}"),
+                        name: window.yunAdminT(lc('admin_tool_00154')),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '42%'],
@@ -1574,7 +1574,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: window.yunAdminT("{yun:}t key='admin_tool_00141'{/yun}"),
+                        name: window.yunAdminT(lc('admin_tool_00141')),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '42%'],
@@ -1620,7 +1620,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: window.yunAdminT("{yun:}t key='admin_tool_00138'{/yun}"),
+                        name: window.yunAdminT(lc('admin_tool_00138')),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -1666,7 +1666,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: window.yunAdminT("{yun:}t key='admin_tool_00140'{/yun}"),
+                        name: window.yunAdminT(lc('admin_tool_00140')),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -1712,7 +1712,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: window.yunAdminT("{yun:}t key='admin_tool_00139'{/yun}"),
+                        name: window.yunAdminT(lc('admin_tool_00139')),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -1758,7 +1758,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: window.yunAdminT("{yun:}t key='admin_tool_00115'{/yun}"),
+                        name: window.yunAdminT(lc('admin_tool_00115')),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -1879,7 +1879,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: window.yunAdminT("{yun:}t key='admin_tool_00141'{/yun}"),
+                        name: window.yunAdminT(lc('admin_tool_00141')),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '42%'],
@@ -1925,7 +1925,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: window.yunAdminT("{yun:}t key='admin_tool_00121'{/yun}"),
+                        name: window.yunAdminT(lc('admin_tool_00121')),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -1971,7 +1971,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: window.yunAdminT("{yun:}t key='admin_tool_00135'{/yun}"),
+                        name: window.yunAdminT(lc('admin_tool_00135')),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -2017,7 +2017,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: window.yunAdminT("{yun:}t key='admin_tool_00125'{/yun}"),
+                        name: window.yunAdminT(lc('admin_tool_00125')),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -2063,7 +2063,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: window.yunAdminT("{yun:}t key='wap_user_00240'{/yun}"),
+                        name: window.yunAdminT(lc('wap_user_00240')),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '38%'],
@@ -2109,7 +2109,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: window.yunAdminT("{yun:}t key='admin_tool_00133'{/yun}"),
+                        name: window.yunAdminT(lc('admin_tool_00133')),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -2230,7 +2230,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: window.yunAdminT("{yun:}t key='wap_user_00318'{/yun}"),
+                        name: window.yunAdminT(lc('wap_user_00318')),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -2276,7 +2276,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: window.yunAdminT("{yun:}t key='wap_user_00313'{/yun}"),
+                        name: window.yunAdminT(lc('wap_user_00313')),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -2508,7 +2508,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: window.yunAdminT("{yun:}t key='admin_tool_00131'{/yun}"),
+                        name: window.yunAdminT(lc('admin_tool_00131')),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '42%'],
@@ -2554,7 +2554,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: window.yunAdminT("{yun:}t key='admin_tool_00132'{/yun}"),
+                        name: window.yunAdminT(lc('admin_tool_00132')),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -2600,7 +2600,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: window.yunAdminT("{yun:}t key='wap_com_00290'{/yun}"),
+                        name: window.yunAdminT(lc('wap_com_00290')),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -2646,7 +2646,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: window.yunAdminT("{yun:}t key='wap_com_00283'{/yun}"),
+                        name: window.yunAdminT(lc('wap_com_00283')),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -2692,7 +2692,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: window.yunAdminT("{yun:}t key='wap_user_00240'{/yun}"),
+                        name: window.yunAdminT(lc('wap_user_00240')),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -2849,7 +2849,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: window.yunAdminT("{yun:}t key='admin_tool_00129'{/yun}"),
+                        name: window.yunAdminT(lc('admin_tool_00129')),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '42%'],
@@ -2895,7 +2895,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: window.yunAdminT("{yun:}t key='admin_tool_00127'{/yun}"),
+                        name: window.yunAdminT(lc('admin_tool_00127')),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -2941,7 +2941,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: window.yunAdminT("{yun:}t key='wap_user_00016'{/yun}"),
+                        name: window.yunAdminT(lc('wap_user_00016')),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -2987,7 +2987,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: window.yunAdminT("{yun:}t key='member_com_00011'{/yun}"),
+                        name: window.yunAdminT(lc('member_com_00011')),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -3033,7 +3033,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: window.yunAdminT("{yun:}t key='wap_user_00240'{/yun}"),
+                        name: window.yunAdminT(lc('wap_user_00240')),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -3079,7 +3079,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: window.yunAdminT("{yun:}t key='admin_tool_00133'{/yun}"),
+                        name: window.yunAdminT(lc('admin_tool_00133')),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -3125,7 +3125,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: window.yunAdminT("{yun:}t key='admin_yunying_00139'{/yun}"),
+                        name: window.yunAdminT(lc('admin_yunying_00139')),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '42%'],
@@ -3282,7 +3282,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: window.yunAdminT("{yun:}t key='admin_tool_00136'{/yun}"),
+                        name: window.yunAdminT(lc('admin_tool_00136')),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -3328,7 +3328,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: window.yunAdminT("{yun:}t key='admin_tool_00157'{/yun}"),
+                        name: window.yunAdminT(lc('admin_tool_00157')),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -3374,7 +3374,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: window.yunAdminT("{yun:}t key='admin_tool_00124'{/yun}"),
+                        name: window.yunAdminT(lc('admin_tool_00124')),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -3495,7 +3495,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: window.yunAdminT("{yun:}t key='admin_tool_00156'{/yun}"),
+                        name: window.yunAdminT(lc('admin_tool_00156')),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -3541,7 +3541,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: window.yunAdminT("{yun:}t key='admin_tool_00155'{/yun}"),
+                        name: window.yunAdminT(lc('admin_tool_00155')),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -3587,7 +3587,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: window.yunAdminT("{yun:}t key='wap_user_00016'{/yun}"),
+                        name: window.yunAdminT(lc('wap_user_00016')),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -3633,7 +3633,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: window.yunAdminT("{yun:}t key='member_com_00011'{/yun}"),
+                        name: window.yunAdminT(lc('member_com_00011')),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -3679,7 +3679,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: window.yunAdminT("{yun:}t key='wap_user_00240'{/yun}"),
+                        name: window.yunAdminT(lc('wap_user_00240')),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],
@@ -3725,7 +3725,7 @@ module.exports = {
                 },
                 series: [
                     {
-                        name: window.yunAdminT("{yun:}t key='admin_tool_00133'{/yun}"),
+                        name: window.yunAdminT(lc('admin_tool_00133')),
                         type: 'pie',
                         radius: ['42%', '65%'],
                         center: ['50%', '50%'],

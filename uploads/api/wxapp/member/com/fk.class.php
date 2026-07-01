@@ -2,7 +2,8 @@
 
 class fk_controller extends com_controller{
     /**
- */
+     * @desc 会员套餐、增值服务、单项购买页面
+     */
     function server_action(){
         
         include(CONFIG_PATH.'db.data.php');
@@ -25,17 +26,17 @@ class fk_controller extends com_controller{
                 $raV[$ratingV['id']]    =   $ratingV;
                 
                 if ($ratingV['category'] == 1) {
-                    // 
+                    //有效期处理
                     if($ratingV['service_time']>0){
                         
-                        $ratingV['service_time']	=	$ratingV['service_time']. yun_at('wap_01197');
+                        $ratingV['service_time']	=	$ratingV['service_time'].'天';
                         
                     }else{
-                        $ratingV['service_time']	=	yun_at('api_wxapp_00019');
+                        $ratingV['service_time']	=	'永久';
                     }
-                    // end
+                    //有效期处理end
                     
-                    // 
+                    //价格显示处理
                     if($ratingV['time_start'] < time() && $ratingV['time_end'] > time()){
                         if($this->config['com_integral_online']==3 && !in_array('vip', $sy_only_price)){
                             $ratingV['service_price_n']	=	intval($ratingV['service_price'] * $this->config['integral_proportion']);
@@ -53,34 +54,34 @@ class fk_controller extends com_controller{
                         
                         unset($ratingV['yh_price']);
                     }
-                    // end
+                    //价格显示处理end
                     $ratingV['explains']    	=   $ratingV['explains']?$ratingV['explains']:$ratingV['name'];
                     if ($ratingV['integral_buy']>0){
-                        $ratingV['explains']	.=	yun_at('wap_01823').$ratingV['integral_buy'].$this->config['integral_pricename'];
+                        $ratingV['explains']	.=	' 赠送'.$ratingV['integral_buy'].$this->config['integral_pricename'];
                     }
 
                     if ($ratingV['type'] == 1) {
                         
                         $rating_1[]     =   $ratingV;
                     } elseif ($ratingV['type'] == 2) {
-                        // 
+                        //套餐详细处理
                         if ($ratingV['interview'] > 0 || $ratingV['resume'] > 0){
                             $ratingV['interview_resume']	=	'';
                             if($ratingV['interview'] > 0){
-                                $ratingV['interview_resume'].=yun_at('wap_00911').$ratingV['interview']. yun_at('api_wxapp_00031');
+                                $ratingV['interview_resume'].='面试邀请: '.$ratingV['interview'].'次；';
                             }
                             if($ratingV['resume'] > 0){
-                                $ratingV['interview_resume'].=yun_at('wap_00912').$ratingV['resume']. yun_at('api_wxapp_00031');
+                                $ratingV['interview_resume'].='简历下载: '.$ratingV['resume'].'次；';
                             }
                         }
                         if ($ratingV['breakjob_num'] > 0){
                             $ratingV['job_breakjob']    =   '';
-                            $ratingV['job_breakjob'].=yun_at('api_wxapp_00033').$ratingV['breakjob_num']. yun_at('api_wxapp_00032');
+                            $ratingV['job_breakjob'].='刷新职位: '.$ratingV['breakjob_num'].'份；';
                         }
                         if($ratingV['zph_num'] > 0){
-                            $ratingV['zph'].=yun_at('api_wxapp_00034').$ratingV['zph_num']. yun_at('wap_01543');
+                            $ratingV['zph'].='招聘会报名 : '.$ratingV['zph_num'].'次';
                         }
-                        // 
+                        //套餐详细处理
                         
                         $rating_2[]     =   $ratingV;
                     }
@@ -88,10 +89,10 @@ class fk_controller extends com_controller{
             }
         }
         if (isset($this->comInfo['noPermission']) && $this->comInfo['noPermission'] == 1 && !empty($this->config['com_package_open'])){
-            $data['noPermission']   =   1;  // no viewable members
+            $data['noPermission']   =   1;  //  无可浏览会员
         }
         if ($this->comInfo['r_status'] == 4){
-            $data['isPaused']       =   1;  // paused
+            $data['isPaused']       =   1;  //  已暂停
         }
         if ((int)$this->comInfo['crm_uid'] > 0){
 
@@ -99,8 +100,8 @@ class fk_controller extends com_controller{
             $data['consultant'] =   array('name' => $crmInfo['name'], 'mobile' => $crmInfo['moblie'], 'wechat' => !empty($crmInfo['ewm']) ? checkpic($crmInfo['ewm']): '');
         }
 
-        $data['rating_1']	=	array_values($rating_1);// package members
-        $data['rating_2']	=	array_values($rating_2);// time-based members
+        $data['rating_1']	=	array_values($rating_1);//套餐会员
+        $data['rating_2']	=	array_values($rating_2);//时间会员
         
         $comStatis     		=   $this->company_statis($this->member['uid']);
 
@@ -122,7 +123,7 @@ class fk_controller extends com_controller{
             $statis['rating_name']  =  $comStatis['rating_name'];
             $statis['integral']     =  $comStatis['integral'];
             
-            $data['statis']		=	$statis;// current services
+            $data['statis']		=	$statis;//当前已有的服务信息
         }
 
         if ($this->member['usertype'] == 2) {
@@ -132,7 +133,7 @@ class fk_controller extends com_controller{
         if(!empty($add)){
             foreach ($add as $k => $v) {
                 foreach ($v['detail'] as $dk => $dv) {
-                    // 
+                    //价格显示处理
                     if($this->config['com_integral_online']==3 && !in_array('pack', $sy_only_price)){
                         
                         if($statis['zk']){
@@ -156,11 +157,11 @@ class fk_controller extends com_controller{
                         }
                         
                     }
-                    // end
+                    //价格显示处理end
                 }
             }
         }
-        $data['add']  =  $add;// addon list
+        $data['add']  =  $add;//增值列表
         
         $server  =  trim($_POST['server']);
         $com_single_can = explode(',', $this->config['com_single_can']);
@@ -169,7 +170,7 @@ class fk_controller extends com_controller{
         if($server=='sxpart'||$server=='sxjob'){
             $serverCheck = 'sxjob';
         }
-        // 
+        // 判断后台是否设置可以单项购买
         if($serverCheck && ($serverCheck=='autojob' || in_array($serverCheck,$com_single_can))){
             $data['sigle_show'] = 1;
         }
@@ -177,22 +178,22 @@ class fk_controller extends com_controller{
             case 'issuejob':
                 $single_price	  =	 $this->config['integral_job'];
                 $single_integral  =  $single_price * $this->config['integral_proportion'];
-                $single_msg		  =	 yun_at('wap_01824');
+                $single_msg		  =	 '本次上架职位';
                 break;
             case 'jobtop':
                 $single_price	  =	 $this->config['integral_job_top'];
                 $single_integral  =  $single_price * $this->config['integral_proportion'];
-                $single_msg		  =	 yun_at('wap_01825');
+                $single_msg		  =	 '本次职位置顶';
                 break;
             case 'jobrec':
                 $single_price	  =	 $this->config['com_recjob'];
                 $single_integral  =  $single_price * $this->config['integral_proportion'];
-                $single_msg		  =	 yun_at('wap_01826');
+                $single_msg		  =	 '本次职位推荐';
                 break;
             case 'joburgent':
                 $single_price	  =	 $this->config['com_urgent'];
                 $single_integral  =  $single_price * $this->config['integral_proportion'];
-                $single_msg		  =	 yun_at('wap_01827');
+                $single_msg		  =	 '本次职位紧急招聘';
                 break;
             case 'sxjob':
                 
@@ -208,13 +209,13 @@ class fk_controller extends com_controller{
                 $num    	      =  count($jobid) - $statis['breakjob_num'];
                 $single_price	  =	 $this->config['integral_jobefresh'] * $num;
                 $single_integral  =  $single_price * $this->config['integral_proportion'];
-                $single_msg		  =	 yun_at('wap_01828');
+                $single_msg		  =	 '本次刷新职位';
                 
                 break;
             case 'sxpart':
                 $single_price	  =	 $this->config['integral_jobefresh'];
                 $single_integral  =  $single_price * $this->config['integral_proportion'];
-                $single_msg		  =	 yun_at('wap_01828');
+                $single_msg		  =	 '本次刷新职位';
                 
                 break;
             case 'downresume':
@@ -224,13 +225,13 @@ class fk_controller extends com_controller{
                 
                 $single_price	  =	 $price;
                 $single_integral  =  $price * $this->config['integral_proportion'];
-                $single_msg		  =	 yun_at('wap_01829');
+                $single_msg		  =	 '本次下载简历';
                 
                 break;
             case 'invite':
                 $single_price	  =	 $this->config['integral_interview'];
                 $single_integral  =  $single_price * $this->config['integral_proportion'];
-                $single_msg		  =	 yun_at('wap_01830');
+                $single_msg		  =	 '本次邀请面试';
                 
                 break;
             case 'zph':
@@ -240,13 +241,13 @@ class fk_controller extends com_controller{
                 
                 $single_price	  =	 $space['price'] / $this->config['integral_proportion'];
                 $single_integral  =  $space['price'];
-                $single_msg		  =	yun_at('wap_01831');
+                $single_msg		  =	'本次报名招聘会';
                 
                 break;
             case 'autojob':
                 $single_price	  =	 $this->config['job_auto'];
                 $single_integral  =  $single_price * $this->config['integral_proportion'];
-                $single_msg		  =	 yun_at('wap_01832');
+                $single_msg		  =	 '本次设置自动刷新';
                 break;
         }
         
@@ -263,7 +264,7 @@ class fk_controller extends com_controller{
 			'sy_only_price'         =>  $this->config['sy_only_price']
         );
         
-        $config['fktype']	      =	 $this->fktype();// payment types
+        $config['fktype']	      =	 $this->fktype();//支付方式
         $data['config']			  =	 $config;
         $data['single_price']	  =	 $single_price;
         $data['single_integral']  =	 $single_integral;
@@ -289,7 +290,9 @@ class fk_controller extends com_controller{
         
     }
      
-    
+    /**
+     * 生成订单
+     */
     function getOrder_action()
     {
         $_POST  =  $this -> post_trim($_POST);
@@ -406,12 +409,12 @@ class fk_controller extends com_controller{
                 
             }else{
                 
-                // 
+                // 生成失败 返回具体原因
                 $this->render_json(1,$return['error']);
             }
         }else{
             
-            $this->render_json(1, yun_at('wap_00203'));
+            $this->render_json(1,'参数错误，请重试！');
         }
     }
 }

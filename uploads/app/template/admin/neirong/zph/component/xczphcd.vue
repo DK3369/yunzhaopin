@@ -3,27 +3,27 @@
         <div class="modulemoreSeach">
             <div class="moduleSeachleft">
                 <div class="tableSeachInpt">
-                    <el-input placeholder="{yun:}t key='admin_00340'{/yun}" clearable size="small" prefix-icon="el-icon-search" v-model="keyword">
+                    <el-input :placeholder="lc('admin_00340')" clearable size="small" prefix-icon="el-icon-search" v-model="keyword">
                     </el-input>
                 </div>
                 <div class="tableSeachInpt">
-                    <el-button type="primary" icon="el-icon-search" size="mini" @click="search">{yun:}t key='admin_user_weipin_00049'{/yun}</el-button>
+                    <el-button type="primary" icon="el-icon-search" size="mini" @click="search">{{ lc('admin_user_weipin_00049') }}</el-button>
                 </div>
             </div>
             <div class="moduleSeachButn">
                 <div class="tableSeachInpt">
-                    <el-button type="primary" icon="el-icon-document-add" size="mini" @click="toadd({id: ''})">{yun:}t key='admin_00829'{/yun}</el-button>
+                    <el-button type="primary" icon="el-icon-document-add" size="mini" @click="toadd({id: ''})">{{ lc('admin_00829') }}</el-button>
                 </div>
             </div>
         </div>
-        <div class="admin_datatip"><i class="el-icon-document"></i> {yun:}t key='admin_00830'{/yun}
+        <div class="admin_datatip"><i class="el-icon-document"></i> {{ lc('admin_00830') }}
         </div>
         <div class="moduleElTable moduleElMoreLive" style="border: 1px solid #ebeef5; width: calc(100% - 2px);">
             <el-table :data="tableData" style="width: 100%" stripe @selection-change="handleSelectionChange"
                       :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" height="100%" ref="multipleTable" v-loading="loading" :empty-text="emptytext">
                 <el-table-column type="selection" width="55"></el-table-column>
-                <el-table-column prop="id" label="{yun:}t key='member_com_00345'{/yun}" width="80" sortable="custom"></el-table-column>
-                <el-table-column prop="name" label="{yun:}t key='member_com_00021'{/yun}">
+                <el-table-column prop="id" :label="lc('member_com_00345')" width="80" sortable="custom"></el-table-column>
+                <el-table-column prop="name" :label="lc('member_com_00021')">
                     <template slot-scope="scope">
                         <el-input v-if="scope.row[scope.column.property + 'isShow']"
                                   :ref="scope.column.property + scope.$index" :id="scope.column.property + scope.$index"
@@ -34,7 +34,7 @@
                         </span>
                     </template>
                 </el-table-column>
-                <el-table-column prop="sort" label="{yun:}t key='member_com_00022'{/yun}">
+                <el-table-column prop="sort" :label="lc('member_com_00022')">
                     <template slot-scope="scope">
                         <el-input v-if="scope.row[scope.column.property + 'isShow']"
                                   :ref="scope.column.property + scope.$index" :id="scope.column.property + scope.$index"
@@ -45,7 +45,7 @@
                         </span>
                     </template>
                 </el-table-column>
-                <el-table-column prop="pic_n" label="{yun:}t key='admin_00832'{/yun}" width="180">
+                <el-table-column prop="pic_n" :label="lc('admin_00832')" width="180">
                     <template slot-scope="props">
                         <div class="demo-image__preview">
                             <el-image style="width: 20px; height: 20px" :src="props.row.pic_n" :preview-src-list="srcList">
@@ -53,12 +53,12 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="{yun:}t key='member_user_00048'{/yun}" fixed="right" width="200">
+                <el-table-column :label="lc('member_user_00048')" fixed="right" width="200">
                     <template slot-scope="scope">
                         <div class="cz_button">
-                            <el-button size="mini" plain @click="toadd(scope.row)">{yun:}t key='wap_js_00073'{/yun}</el-button>
-                            <el-button size="mini" plain @click="todtl(scope.row.id)">{yun:}t key='admin_00294'{/yun}</el-button>
-                            <el-button type="danger" size="mini" @click="delrow(scope.row.id, 1)">{yun:}t key='common.delete'{/yun}</el-button>
+                            <el-button size="mini" plain @click="toadd(scope.row)">{{ lc('wap_js_00073') }}</el-button>
+                            <el-button size="mini" plain @click="todtl(scope.row.id)">{{ lc('admin_00294') }}</el-button>
+                            <el-button type="danger" size="mini" @click="delrow(scope.row.id, 1)">{{ lc('common.delete') }}</el-button>
                         </div>
                     </template>
                 </el-table-column>
@@ -66,18 +66,18 @@
         </div>
         <div class="modulePaging">
             <div>
-                <el-checkbox v-model="checkedAll" @change="selectAllBottom">{yun:}t key='wap_js_00074'{/yun}</el-checkbox>
-                <el-button @click="delAllBottom(1)" size="mini">{yun:}t key='member_com_00055'{/yun}</el-button>
+                <el-checkbox v-model="checkedAll" @change="selectAllBottom">{{ lc('wap_js_00074') }}</el-checkbox>
+                <el-button @click="delAllBottom(1)" size="mini">{{ lc('member_com_00055') }}</el-button>
             </div>
         </div>
         <!-- 场地详细 -->
-        <el-drawer title="{yun:}t key='admin_00833'{/yun}" :visible.sync="drawerdtl" append-to-body :modal-append-to-body="false" size="80%">
+        <el-drawer :title="lc('admin_00833')" :visible.sync="drawerdtl" append-to-body :modal-append-to-body="false" size="80%">
             <div class="moduleElHight" style="padding: 0 20px;">
                 <div class="modulemoreSeach" style="width: 100%; padding-bottom: 10px;">
                     <div class="">
                     </div>
                     <div class="moduleHeadrButn" >
-                        <el-button type="primary" icon="el-icon-document-add" @click="toadd({id: ''})" size="mini">{yun:}t key='admin_00823'{/yun}
+                        <el-button type="primary" icon="el-icon-document-add" @click="toadd({id: ''})" size="mini">{{ lc('admin_00823') }}
                         </el-button>
                     </div>
                 </div>
@@ -86,9 +86,9 @@
                           default-expand-all :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
                           :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" height="100%" @selection-change="handleSubTblSelectionChange" ref="multipleSubTable" v-loading="loading" :empty-text="emptytext">
                     <el-table-column type="selection" width="55"></el-table-column>
-                    <el-table-column prop="id" label="{yun:}t key='member_com_00345'{/yun}" width="180">
+                    <el-table-column prop="id" :label="lc('member_com_00345')" width="180">
                     </el-table-column>
-                    <el-table-column label="{yun:}t key='member_com_00021'{/yun}" property="name">
+                    <el-table-column :label="lc('member_com_00021')" property="name">
                         <template slot-scope="scope">
                             <el-input v-if="scope.row[scope.column.property + 'isShow']"
                                       :ref="'edit_' + scope.column.property + scope.$index" :id="'edit_' + scope.column.property + scope.$index"
@@ -99,7 +99,7 @@
                         </span>
                         </template>
                     </el-table-column>
-                    <el-table-column label="{yun:}t key='wap_00563'{/yun}" property="price">
+                    <el-table-column :label="lc('wap_00563')" property="price">
                         <template slot-scope="scope">
                             <el-input v-if="scope.row[scope.column.property + 'isShow']"
                                       :ref="'edit_' + scope.column.property + scope.$index" :id="'edit_' + scope.column.property + scope.$index"
@@ -110,7 +110,7 @@
                             </span>
                         </template>
                     </el-table-column>
-                    <el-table-column label="{yun:}t key='member_com_00022'{/yun}" property="sort">
+                    <el-table-column :label="lc('member_com_00022')" property="sort">
                         <template slot-scope="scope">
                             <el-input v-if="scope.row[scope.column.property + 'isShow']"
                                       :ref="scope.column.property + scope.$index" :id="scope.column.property + scope.$index"
@@ -122,11 +122,11 @@
                             </span>
                         </template>
                     </el-table-column>
-                    <el-table-column label="{yun:}t key='member_user_00048'{/yun}" width="140" fixed="right">
+                    <el-table-column :label="lc('member_user_00048')" width="140" fixed="right">
                         <template slot-scope="scope">
                             <div class="cz_button">
                                 <el-button type="danger" size="small "
-                                           @click="delrow(scope.row.id, 2)">{yun:}t key='common.delete'{/yun}
+                                           @click="delrow(scope.row.id, 2)">{{ lc('common.delete') }}
                                 </el-button>
                             </div>
                         </template>
@@ -136,8 +136,8 @@
                 <div class="modulePaging" style="padding-left: 20px;">
                     <div class="">
                         <div class="">
-                            <el-checkbox v-model="checkedSubTblAll" @change="selectSubTblAllBottom">{yun:}t key='wap_js_00074'{/yun}</el-checkbox>
-                            <el-button @click="delAllBottom(2)" size="mini">{yun:}t key='member_com_00055'{/yun}</el-button>
+                            <el-checkbox v-model="checkedSubTblAll" @change="selectSubTblAllBottom">{{ lc('wap_js_00074') }}</el-checkbox>
+                            <el-button @click="delAllBottom(2)" size="mini">{{ lc('member_com_00055') }}</el-button>
                         </div>
                     </div>
                 </div>
@@ -151,92 +151,92 @@
                     <div>
                         <div class="drawerModLis">
                             <div class="drawerModTite">
-                                <span>{yun:}t key='admin_00292'{/yun}</span>
+                                <span>{{ lc('admin_00292') }}</span>
                             </div>
                             <div class="drawerModInpt">
-                                <el-input v-if="curr_data.id == ''" type="textarea" :rows="2" placeholder="{yun:}t key='admin_00288'{/yun}" v-model="curr_data.name">
+                                <el-input v-if="curr_data.id == ''" type="textarea" :rows="2" :placeholder="lc('admin_00288')" v-model="curr_data.name">
                                 </el-input>
-                                <el-input v-else placeholder="{yun:}t key='admin_00288'{/yun}" v-model="curr_data.name">
+                                <el-input v-else :placeholder="lc('admin_00288')" v-model="curr_data.name">
                                 </el-input>
                             </div>
                             <div class="drawerModTips" v-if="curr_data.id">
-                                <el-alert title="{yun:}t key='admin_00834'{/yun}" type="info" show-icon :closable="false">
+                                <el-alert :title="lc('admin_00834')" type="info" show-icon :closable="false">
                                 </el-alert>
                             </div>
                         </div>
                         <div class="drawerModLis" v-if="curr_data.id == ''">
                             <div class="drawerModTite">
-                                <span>{yun:}t key='admin_00290'{/yun}</span>
+                                <span>{{ lc('admin_00290') }}</span>
                             </div>
                             <div class="drawerModInpt">
-                                <el-select v-model="fir_id" placeholder="{yun:}t key='wap_user_00100'{/yun}" @change="firChange">
-                                    <el-option label="{yun:}t key='wap_user_00100'{/yun}" value="">
+                                <el-select v-model="fir_id" :placeholder="lc('wap_user_00100')" @change="firChange">
+                                    <el-option :label="lc('wap_user_00100')" value="">
                                     </el-option>
                                     <el-option v-for="item in tableData" :key="item.id" :label="item.name" :value="item.id">
                                     </el-option>
                                 </el-select>
                             </div>
                             <div class="drawerModTips">
-                                <el-alert title="{yun:}t key='admin_00835'{/yun}" type="info" show-icon :closable="false">
+                                <el-alert :title="lc('admin_00835')" type="info" show-icon :closable="false">
                                 </el-alert>
                             </div>
                         </div>
                         <div class="drawerModLis" v-if="curr_data.id == ''">
                             <div class="drawerModTite">
-                                <span>{yun:}t key='admin_00291'{/yun}</span>
+                                <span>{{ lc('admin_00291') }}</span>
                             </div>
                             <div class="drawerModInpt">
-                                <el-select v-model="sec_id" placeholder="{yun:}t key='wap_user_00100'{/yun}">
-                                    <el-option label="{yun:}t key='wap_user_00100'{/yun}" value="">
+                                <el-select v-model="sec_id" :placeholder="lc('wap_user_00100')">
+                                    <el-option :label="lc('wap_user_00100')" value="">
                                     </el-option>
                                     <el-option v-for="item in secClass" :key="item.id" :label="item.name" :value="item.id">
                                     </el-option>
                                 </el-select>
                             </div>
                             <div class="drawerModTips">
-                                <el-alert title="{yun:}t key='admin_00836'{/yun}" type="info" show-icon
+                                <el-alert :title="lc('admin_00836')" type="info" show-icon
                                           :closable="false">
                                 </el-alert>
                             </div>
                         </div>
                         <div class="drawerModLis" v-if="curr_data.keyid == '' || fir_id == ''">
                             <div class="drawerModTite">
-                                <span>{yun:}t key='admin_00289'{/yun}</span>
+                                <span>{{ lc('admin_00289') }}</span>
                             </div>
                             <div class="drawerModInpt">
                                 <el-upload class="avatar-uploader" :action="uploadAction" :accept="pic_accept" :show-file-list="false" :on-change="picChange">
                                     <img style="width:200px;" v-if="curr_data.pic_n" :src="curr_data.pic_n" class="avatar">
-                                    <el-button v-else type="primary" icon="el-icon-document-add">{yun:}t key='wap_00540'{/yun}</el-button>
+                                    <el-button v-else type="primary" icon="el-icon-document-add">{{ lc('wap_00540') }}</el-button>
                                 </el-upload>
                             </div>
                         </div>
                         <div class="drawerModLis" v-if="curr_data.keyid != '' || fir_id != ''">
                             <div class="drawerModTite">
-                                <span>{yun:}t key='wap_00563'{/yun}</span>
+                                <span>{{ lc('wap_00563') }}</span>
                             </div>
                             <div class="drawerModInpt">
-                                <el-input v-model="curr_data.price" placeholder="{yun:}t key='admin_00837'{/yun}"
+                                <el-input v-model="curr_data.price" :placeholder="lc('admin_00837')"
                                           @input="inputIntNumber($event, 'curr_data', 'price')">
-                                    <template slot="append">{yun:}t key='wap_user_00008'{/yun}</template>
+                                    <template slot="append">{{ lc('wap_user_00008') }}</template>
                                 </el-input>
                             </div>
                         </div>
                         <div class="drawerModLis">
                             <div class="drawerModTite">
-                                <span>{yun:}t key='member_com_00022'{/yun}</span>
+                                <span>{{ lc('member_com_00022') }}</span>
                             </div>
                             <div class="drawerModInpt">
-                                <el-input v-model="curr_data.sort" placeholder="{yun:}t key='admin_00814'{/yun}"
+                                <el-input v-model="curr_data.sort" :placeholder="lc('admin_00814')"
                                           @input="inputIntNumber($event, 'curr_data', 'sort')"></el-input>
                             </div>
                             <div class="drawerModTips">
-                                <el-alert title="{yun:}t key='admin_00218'{/yun}" type="info" show-icon :closable="false">
+                                <el-alert :title="lc('admin_00218')" type="info" show-icon :closable="false">
                                 </el-alert>
                             </div>
                         </div>
                         <div class="drawerModLis">
                             <div class="drawerModTite">
-                                <span>{yun:}t key='admin_00831'{/yun}</span>
+                                <span>{{ lc('admin_00831') }}</span>
                             </div>
                             <div class="drawerModInpt">
                                 <div style="border: 1px solid #ccc;">
@@ -247,7 +247,7 @@
                         </div>
                     </div>
                     <div class="setBasicButn" style="border: none;">
-                        <el-button type="primary" size="medium" @click="save" :disabled="submitLoading">{yun:}t key='common.submit'{/yun}</el-button>
+                        <el-button type="primary" size="medium" @click="save" :disabled="submitLoading">{{ lc('common.submit') }}</el-button>
                     </div>
                 </div>
             </el-drawer>
@@ -261,7 +261,7 @@
         data: function () {
             return {
                 pic_accept: localStorage.getItem("pic_accept"),
-                emptytext: "{yun:}t key='wap_js_00113'{/yun}",
+                emptytext: lc('wap_js_00113'),
                 loading: false,
                 submitLoading: false,
                 srcList: [],
@@ -301,7 +301,7 @@
             getdtlinfo(){
                 var that = this
                 that.loading = true;
-                that.emptytext = "{yun:}t key='admin_user_weipin_00026'{/yun}";
+                that.emptytext = lc('admin_user_weipin_00026');
                 httpPost('m=neirong&c=zph_space&a=up', {id: that.del_id}, {hideloading: true}).then(function (response) {
                     let res = response.data;
                     if (res.error === 0) {
@@ -313,10 +313,10 @@
                         }
                         that.loading = false;
                         if (that.spaceTableData.length === 0){
-                            that.emptytext = "{yun:}t key='wap_js_00113'{/yun}";
+                            that.emptytext = lc('wap_js_00113');
                         }
                     } else {
-                        message.error("{yun:}t key='admin_00187'{/yun}");
+                        message.error(lc('admin_00187'));
                     }
                 }).catch(function (error) {
                     console.log(error);
@@ -465,9 +465,9 @@
                 httpPost('m=neirong&c=zph_space&a=ajax', sendData, {hideloading: true}).then(function (response) {
                     let res = response.data;
                     if (res.error === 0) {
-                        message.success("{yun:}t key='admin_user_company_00208'{/yun}");
+                        message.success(lc('admin_user_company_00208'));
                     } else {
-                        message.error("{yun:}t key='admin_00187'{/yun}");
+                        message.error(lc('admin_00187'));
                     }
                     _this.oldData = null;
                     // if (type == 1) {
@@ -493,7 +493,7 @@
                     })
                 }
             },
-            // {yun:}t key='admin_00289'{/yun}
+            // {{ lc('admin_00289') }}
             picChange(file) {
                 var tmp = deepClone(this.curr_data)
                 // 预览文件处理
@@ -520,7 +520,7 @@
                                 }
                             }
                         };
-                        // {yun:}t key='wap_00566'{/yun}
+                        // {{ lc('wap_00566') }}
                         if (!editor) {
                             editor = createEditor({
                                 selector: "#editor-container',
@@ -601,7 +601,7 @@
                     params.keyword = that.keyword
                 }
                 that.loading = true;
-                that.emptytext = "{yun:}t key='admin_user_weipin_00026'{/yun}";
+                that.emptytext = lc('admin_user_weipin_00026');
                 httpPost('m=neirong&c=zph_space&a=index', params, {hideloading: true}).then(function (result) {
                     var res = result.data
                     if (res.error == 0) {
@@ -609,7 +609,7 @@
                         that.srcList = res.data.pics
                         that.loading = false;
                         if (that.tableData.length === 0){
-                            that.emptytext = "{yun:}t key='wap_js_00113'{/yun}";
+                            that.emptytext = lc('wap_js_00113');
                         }
                     }
                 }).catch(function (e) {
@@ -622,7 +622,7 @@
             },
             delAllBottom(type) {
                 if (!this.selectedItem.length) {
-                    message.error("{yun:}t key='admin_00136'{/yun}");
+                    message.error(lc('admin_00136'));
                     return false;
                 }
                 this.del_type = type

@@ -183,7 +183,7 @@
                             <span>{{ lc('member_com_00023') }}</span>
                         </div>
                         <div class="drawerModInpt">
-                            <el-switch v-model="info.display_n" active-text="是" inactive-text="否"></el-switch>
+                            <el-switch v-model="info.display_n" :active-text="lc('common_02085')" :inactive-text="lc('common_02063')"></el-switch>
                         </div>
                     </div>
                 </div>
@@ -299,7 +299,7 @@
                 initData(row = null) {
                     var that = this
                     if (row) {
-                        that.title = '修改网站地图'
+                        that.title = lc('admin_system_00471')
                         that.info = row
                         if (that.info.nid == '0') {
                             that.info.nid = ''
@@ -308,7 +308,7 @@
 						    that.info.type = ''
 						}
                     } else {
-                        that.title = '添加网站地图'
+                        that.title = lc('admin_system_00472')
                         this.info = {
                             id: '',
                             nid: '',
@@ -358,7 +358,7 @@
 					params.eject = that.eject;
 					params.display = that.display;
                     that.loading = true;
-                    that.emptytext = "数据加载中";
+                    that.emptytext = lc('admin_user_weipin_00026');
                     httpPost('m=system&c=set_navmap&a=index', params).then(function (result) {
                         var res = result.data
                         if (res.error == 0) {
@@ -372,7 +372,7 @@
                             }
                             that.loading = false;
                             if (that.tableData.length === 0){
-                                that.emptytext = "暂无数据";
+                                that.emptytext = lc('wap_js_00113');
                             }
                         }
                     }).catch(function (e) {

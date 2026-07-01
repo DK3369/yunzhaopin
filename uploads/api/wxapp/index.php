@@ -2,7 +2,7 @@
 
 
 include (dirname(dirname(dirname(__FILE__))) . '/global.php');
-// （CORS）
+// 处理跨域（CORS）
 $allowOrigin = '*';
 if (!empty($config['sy_wapdomain'])){
     $protocol   = isset($config['sy_wapssl']) && $config['sy_wapssl']=='1' ? 'https://' : 'http://';
@@ -13,7 +13,7 @@ header('Access-Control-Allow-Methods: POST, GET, OPTIONS');
 header('Access-Control-Allow-Credentials: true');
 header('Access-Control-Allow-Headers: Content-Type, Accept, xcxcode, codeplat, mcsdk');
 header('Access-Control-Max-Age: 86400');
-// OPTIONS
+// 处理 OPTIONS 预检请求
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
     exit();
@@ -34,7 +34,6 @@ if ($action == '')
 
 require (APP_PATH . 'app/public/common.php');
 require ('wxapp.controller.php');
-require ('wap.enum.php');
 
 if ($member == 'user') {
     require ('member/user.class.php');

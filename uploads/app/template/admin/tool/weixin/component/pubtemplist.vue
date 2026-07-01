@@ -3,7 +3,7 @@
 
 		<div class="moduleSeachs">
 			<div class="moduleSeachButn" style="margin-left: auto;">
-				<el-button type="primary" icon="el-icon-document-add" size="mini" @click="addinfo('')">{yun:}t key='member_com_00354'{/yun}</el-button>
+				<el-button type="primary" icon="el-icon-document-add" size="mini" @click="addinfo('')">{{ lc('member_com_00354') }}</el-button>
 			</div>
 		</div>
 
@@ -12,23 +12,23 @@
 				style="width: 100%" :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" height="100%" :empty-text="emptytext">
 				<el-table-column type="selection" width="55">
 				</el-table-column>
-				<el-table-column prop="id" label="{yun:}t key='member_com_00345'{/yun}" width="80">
+				<el-table-column prop="id" :label="lc('member_com_00345')" width="80">
 				</el-table-column>
-				<el-table-column prop="title" label="{yun:}t key='wap_com_00413'{/yun}">
+				<el-table-column prop="title" :label="lc('wap_com_00413')">
 				</el-table-column>
-				<el-table-column prop="keyword" label="{yun:}t key='admin_tool_00541'{/yun}">
+				<el-table-column prop="keyword" :label="lc('admin_tool_00541')">
 					<template slot-scope="scope">
-						<span v-if="scope.row.type == 'onejob' || scope.row.type == 'job'">{yun:}t key='admin_tool_00557'{/yun}</span>
-						<span v-else-if="scope.row.type == 'resume'">{yun:}t key='member_user_00189'{/yun}</span>
-						<span v-else-if="scope.row.type == 'company'">{yun:}t key='admin_user_company_00135'{/yun}</span>
+						<span v-if="scope.row.type == 'onejob' || scope.row.type == 'job'">{{ lc('admin_tool_00557') }}</span>
+						<span v-else-if="scope.row.type == 'resume'">{{ lc('member_user_00189') }}</span>
+						<span v-else-if="scope.row.type == 'company'">{{ lc('admin_user_company_00135') }}</span>
 					</template>
 				</el-table-column>
-				<el-table-column label="{yun:}t key='member_user_00048'{/yun}" width="150">
+				<el-table-column :label="lc('member_user_00048')" width="150">
 					<template slot-scope="scope">
 						<div class="cz_button">
-							<el-button size="mini" @click="addinfo(scope.row.id)">{yun:}t key='common.edit'{/yun}</el-button>
+							<el-button size="mini" @click="addinfo(scope.row.id)">{{ lc('common.edit') }}</el-button>
 							<el-button type="danger" size="small" @click="deleteinfo(scope.row.id)"
-								v-if="scope.row.type != 'onejob'">{yun:}t key='common.delete'{/yun}</el-button>
+								v-if="scope.row.type != 'onejob'">{{ lc('common.delete') }}</el-button>
 						</div>
 					</template>
 				</el-table-column>
@@ -38,8 +38,8 @@
 
 		<div class="modulePaging">
 			<div class="modulecz">
-				<el-checkbox v-model="allchecked" @change="allcheckChange">{yun:}t key='wap_js_00074'{/yun}</el-checkbox>
-				<el-button size="mini" @click="deleteAll">{yun:}t key='member_com_00055'{/yun}</el-button>
+				<el-checkbox v-model="allchecked" @change="allcheckChange">{{ lc('wap_js_00074') }}</el-checkbox>
+				<el-button size="mini" @click="deleteAll">{{ lc('member_com_00055') }}</el-button>
 			</div>
 			<div class="modulePagNum">
 				<el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
@@ -66,7 +66,7 @@ module.exports = {
 	},
 	data: function () {
 		return {
-			emptytext: window.yunAdminT("{yun:}t key='wap_js_00113'{/yun}"),
+			emptytext: window.yunAdminT(lc('wap_js_00113')),
 			tableData: [],
 			total: 0,
 			limit: 0,
@@ -104,7 +104,7 @@ module.exports = {
 			}
 
 			this.list_loading = true;
-			that.emptytext = window.yunAdminT("{yun:}t key='admin_user_weipin_00026'{/yun}");
+			that.emptytext = window.yunAdminT(lc('admin_user_weipin_00026'));
 			httpPost('m=tool&c=fabutool&a=index', params).then((result) => {
 				this.list_loading = false;
 				var res = result.data;
@@ -120,7 +120,7 @@ module.exports = {
 						that.$refs.table.bodyWrapper.scrollTop = 0;
 					}
 					if (that.tableData.length === 0){
-                        that.emptytext = window.yunAdminT("{yun:}t key='wap_js_00113'{/yun}");
+                        that.emptytext = window.yunAdminT(lc('wap_js_00113'));
                     }
 				}
 			}).catch(function (e) {
@@ -170,7 +170,7 @@ module.exports = {
 					idarr.push(this.choosedata[i].id);
 				}
 			} else {
-				message.error(window.yunAdminT("{yun:}t key='admin_user_weipin_00005'{/yun}")); return;
+				message.error(window.yunAdminT(lc('admin_user_weipin_00005'))); return;
 			}
 			var params = {
 				del: idarr

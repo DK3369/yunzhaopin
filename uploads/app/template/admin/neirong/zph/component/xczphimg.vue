@@ -1,14 +1,14 @@
 <template>
     <div class="moduleElHight" style="padding: 0 20px;">
         <!-- <div class="tableDome_tip">
-            <el-alert title="{yun:}t key='admin_00847'{/yun}" type="success" :closable="false">
+            <el-alert :title="lc('admin_00847')" type="success" :closable="false">
             </el-alert>
         </div> -->
         <div class="modulemoreSeach" style="width: 100%;">
             <div class="moduleSeachleft">
             </div>
             <div class="moduleHeadrButn" style="margin-bottom: 12px;margin-left: 10px;">
-                <el-button type="primary" icon="el-icon-document-add" size="mini" @click="addPic">{yun:}t key='admin_00586'{/yun}</el-button>
+                <el-button type="primary" icon="el-icon-document-add" size="mini" @click="addPic">{{ lc('admin_00586') }}</el-button>
             </div>
         </div>
         <div class="moduleElTable">
@@ -16,7 +16,7 @@
                 :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" v-loading="loading"
                 :empty-text="emptytext">
                 <el-table-column prop="id" label="ID"></el-table-column>
-                <el-table-column prop="wenjian" label="{yun:}t key='wap_js_00081'{/yun}" width="150">
+                <el-table-column prop="wenjian" :label="lc('wap_js_00081')" width="150">
                     <template slot-scope="scope">
                         <div class="demo-image__preview">
                             <el-image width="100%" height="60px" :src="scope.row.pic_n" :preview-src-list="srcList">
@@ -24,17 +24,17 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column prop="title" label="{yun:}t key='admin_00845'{/yun}">
+                <el-table-column prop="title" :label="lc('admin_00845')">
                 </el-table-column>
-                <el-table-column prop="sort" label="{yun:}t key='member_com_00022'{/yun}">
+                <el-table-column prop="sort" :label="lc('member_com_00022')">
                 </el-table-column>
-                <el-table-column fixed="right" label="{yun:}t key='member_user_00048'{/yun}" width="250">
+                <el-table-column fixed="right" :label="lc('member_user_00048')" width="250">
                     <template slot-scope="scope">
                         <div class="moduleElTaCaoz">
-                            <el-button size="mini" @click="editPic(scope.row)">{yun:}t key='wap_js_00073'{/yun}</el-button>
-                            <el-button type="danger" size="mini" @click="delrow(scope.row.id)">{yun:}t key='common.delete'{/yun}</el-button>
+                            <el-button size="mini" @click="editPic(scope.row)">{{ lc('wap_js_00073') }}</el-button>
+                            <el-button type="danger" size="mini" @click="delrow(scope.row.id)">{{ lc('common.delete') }}</el-button>
                             <el-button v-if="scope.row.is_themb == '0'" size="mini"
-                                @click="thumb(scope.row.id)">{yun:}t key='admin_00844'{/yun}</el-button>
+                                @click="thumb(scope.row.id)">{{ lc('admin_00844') }}</el-button>
                         </div>
                     </template>
                 </el-table-column>
@@ -47,7 +47,7 @@
                     <div class="drawerModInfo">
                         <div class="drawerModLis">
                             <div class="drawerModTite">
-                                <span>{yun:}t key='admin_00845'{/yun}</span>
+                                <span>{{ lc('admin_00845') }}</span>
                             </div>
                             <div class="drawerModInpt">
                                 <el-input v-model="info.title"></el-input>
@@ -55,7 +55,7 @@
                         </div>
                         <div class="drawerModLis">
                             <div class="drawerModTite">
-                                <span>{yun:}t key='admin_00846'{/yun}</span>
+                                <span>{{ lc('admin_00846') }}</span>
                             </div>
                             <div class="drawerModInpt">
                                 <el-upload :accept="pic_accept" class="avatar-uploader" :action="uploadAction"
@@ -67,7 +67,7 @@
                         </div>
                         <div class="drawerModLis">
                             <div class="drawerModTite">
-                                <span>{yun:}t key='member_com_00022'{/yun}</span>
+                                <span>{{ lc('member_com_00022') }}</span>
                             </div>
                             <div class="drawerModInpt">
                                 <el-input v-model="info.sort"
@@ -77,18 +77,18 @@
 
                     </div>
                     <div class="setBasicButn" style="border: none;">
-                        <el-button type="primary" size="medium" @click="save" :disabled="submitLoading">{yun:}t key='common.submit'{/yun}</el-button>
+                        <el-button type="primary" size="medium" @click="save" :disabled="submitLoading">{{ lc('common.submit') }}</el-button>
                     </div>
                 </div>
             </el-drawer>
         </div>
         <div class="modluDrawer">
-            <el-dialog title="{yun:}t key='admin_00308'{/yun}" :visible.sync="delTplBox" :with-header="true" :modal-append-to-body="false"
+            <el-dialog :title="lc('admin_00308')" :visible.sync="delTplBox" :with-header="true" :modal-append-to-body="false"
                 :show-close="true" width="30%">
-                <span>{yun:}t key='wap_user_00001'{/yun}</span>
+                <span>{{ lc('wap_user_00001') }}</span>
                 <span slot="footer" class="dialog-footer">
-                    <el-button @click="delTplBox = false">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
-                    <el-button type="primary" @click="delTplSubmit">{yun:}t key='wap_com_00019'{/yun}</el-button>
+                    <el-button @click="delTplBox = false">{{ lc('admin_user_weipin_00043') }}</el-button>
+                    <el-button type="primary" @click="delTplSubmit">{{ lc('wap_com_00019') }}</el-button>
                 </span>
             </el-dialog>
         </div>
@@ -105,7 +105,7 @@ module.exports = {
     data: function () {
         return {
             pic_accept: localStorage.getItem("pic_accept"),
-            emptytext: "{yun:}t key='wap_js_00113'{/yun}",
+            emptytext: lc('wap_js_00113'),
             loading: false,
             submitLoading: false,
             zph_id: '',
@@ -180,7 +180,7 @@ module.exports = {
         async delTplSubmit() {
             let that = this;
             if (that.tplid == '') {
-                message.error("{yun:}t key='admin_00307'{/yun}");
+                message.error(lc('admin_00307'));
                 return false;
             }
             httpPost('m=system&c=set_tplset&a=comtpldel', { id: that.tplid }).then(function (response) {
@@ -205,7 +205,7 @@ module.exports = {
                 return false;
             }
             if (that.info.pic_n == '') {
-                message.error("{yun:}t key='wap_01412'{/yun}");
+                message.error(lc('wap_01412'));
                 return false;
             }
             formData.append('title', that.info.title);
@@ -243,7 +243,7 @@ module.exports = {
             let that = this;
             let param = { id: that.zph_id };
             that.loading = true;
-            that.emptytext = "{yun:}t key='admin_user_weipin_00026'{/yun}";
+            that.emptytext = lc('admin_user_weipin_00026');
             httpPost('m=neirong&c=zhaopinhui&a=upload', param).then(function (response) {
                 let res = response.data;
                 if (res.error == 0) {
@@ -251,7 +251,7 @@ module.exports = {
                     that.srcList = res.data.pics;
                     that.loading = false;
                     if (that.tableData.length === 0) {
-                        that.emptytext = "{yun:}t key='wap_js_00113'{/yun}";
+                        that.emptytext = lc('wap_js_00113');
                     }
                 }
             }).catch(function (error) {

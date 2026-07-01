@@ -221,5 +221,6 @@ return array (
     'admin_reply_path_required' => 'Mini Program path is required for message {0}.',
     'admin_reply_cover_required' => 'Mini Program cover image is required for message {0}.',
     'admin_reply_text_required' => 'Text content is required for message {0}.',
+    'admin_official_service_phone' => 'Official Service Phone: ',
   ),
 );

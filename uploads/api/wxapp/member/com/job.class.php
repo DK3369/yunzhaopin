@@ -39,7 +39,7 @@ class job_controller extends com_controller
 
             $limit      =   $_POST['limit'];
 
-            if ($page) {// paginate
+            if ($page) {//分页
 
                 $pagenav        =   ($page - 1) * $limit;
                 $where['limit'] =   array($pagenav, $limit);
@@ -121,7 +121,9 @@ class job_controller extends com_controller
         $this->render_json(1, 'ok', $data);
     }
 
-    
+    /**
+     * 职位列表tab数量统计
+     */
     function jobnum_action()
     {
         $where['uid']   =   $this->member['uid'];
@@ -131,15 +133,15 @@ class job_controller extends com_controller
         }
 
         $xjWhere = $dsWhere = $zpWhere = $where;
-        // 
+        // 招聘中
         $zpWhere['state']     =   1;
         $zpWhere['status']    =   array('<>', 1);
-        // 
+        // 待审
         $dsWhere['PHPYUNBTWSTART_C']    =   '';
         $dsWhere['state'][]  =   array('=',  0);
         $dsWhere['state'][]  =   array('=',  3,'or');
         $dsWhere['PHPYUNBTWEND_C']      =   '';
-        // 
+        // 下架
         $xjWhere['status']    =   1;
 
         $jobM           =   $this->MODEL('job');
@@ -161,7 +163,7 @@ class job_controller extends com_controller
         if (!empty($job)) {
 
             if (isset($_POST['provider'])) {
-                // 
+                // 职位海报模板列表
                 if ($this->config['sy_haibao_isopen'] == 1) {
                     $WhbM           =   $this->MODEL('whb');
                     $syJobHb        =   $WhbM->getWhbList(array('type' => 1, 'isopen' => '1'));
@@ -169,14 +171,14 @@ class job_controller extends com_controller
                 }
 			    if ($_POST['provider'] == 'wap'){
 			        if(empty($this->config['sy_h5_share'])){
-			            // 
+			            // 普通分享链接
 			            $data['jobLink']  =  Url('wap', array('c' => 'job', 'a' => 'comapply', 'id' => $_POST['id']));
 			        }else{
-			            // h5
+			            // h5分享链接
 			            $data['jobLink']  =  Url('wap', array('c' => 'job', 'a' => 'share', 'id' => $_POST['id']));
 			        }
 			        $data['shareTitle']  =  $jobsharedata['jobname'];
-			        $data['shareDesc']   =  $this->GET_content_desc($jobsharedata['description']); // description
+			        $data['shareDesc']   =  $this->GET_content_desc($jobsharedata['description']); // 描述
 			        $data['shareLogo']   =  checkpic($job['com_logo'], $this->config['sy_unit_icon']);
                 }
             }
@@ -205,7 +207,9 @@ class job_controller extends com_controller
 		$data['config']  =  $config;
 		$this->render_json(0, 'ok', $data);
 	}
-	
+	/**
+	 * 发布职位
+	 */
 	function jobadd_action()
 	{
 		$provider = isset($_POST['provider'])?$_POST['provider']:'';
@@ -213,13 +217,13 @@ class job_controller extends com_controller
 
 		if(empty($_POST['id'])){
             if ($statics['job_num'] == 0) {
-                $this->render_json(-1, yun_at('api_wxapp_00002'));
+                $this->render_json(-1, '套餐已用完，立即升级VIP');
             }
 			if($statics['addjobnum']==0){
-				$this->render_json(-2, yun_at('wap_01287'));
+				$this->render_json(-2, '您的会员已到期');
 			}
 			if($this->comInfo['lastupdate'] < 1){
-			    $this->render_json(-1, yun_at('wap_01288'));
+			    $this->render_json(-1, '请先完善基本资料');
 			}
 			$msg  =   array();
 			
@@ -228,13 +232,13 @@ class job_controller extends com_controller
 			if($this->config['com_enforce_emailcert']=='1'){
 			    if($this->comInfo['email_status']!='1'){
 			        $isallow_addjob='0';
-			        $msg[]=yun_at('wap_01301');
+			        $msg[]='请先完成邮箱认证';
 			    }
 			}
 			if($this->config['com_enforce_mobilecert']=='1'){
 			    if($this->comInfo['moblie_status']!='1'){
 			        $isallow_addjob='0';
-			        $msg[]=yun_at('wap_01302');
+			        $msg[]='请先完成手机认证';
 			    }
 			}
 			if($this->config['com_enforce_licensecert']=='1'){
@@ -243,13 +247,13 @@ class job_controller extends com_controller
 
                 if($this->comInfo['yyzz_status']!='1' && (empty($cert) || $cert['status'] == 2)){
 			        $isallow_addjob='0';
-			        $msg[]=yun_at('wap_01303');
+			        $msg[]='请先完成企业资质认证';
 			    }
 			}
 			if($this->config['com_enforce_setposition']=='1'){
 			    if(empty($this->comInfo['x'])||empty($this->comInfo['y'])){
 			        $isallow_addjob='0';
-			        $msg[]=yun_at('wap_01304');
+			        $msg[]='请先完成企业地图设置';
 			    }
 			}
             if($this->config['com_gzgzh']=='1'){
@@ -277,11 +281,11 @@ class job_controller extends com_controller
                         if (isset($_POST['source']) && $_POST['source'] == 'wap') {
 
                             $isallow_addjob = '0';
-                            $msg[] = yun_at('wap_00096');
+                            $msg[] = '微信公众号未关注';
                         } else if ($provider == 'weixin' && empty($uInfo['wxopenid'])) {
 
                             $isallow_addjob = '0';
-                            $msg[] = yun_at('wap_01305');
+                            $msg[] = '请先完成微信绑定';
                         }
                     }
                 }
@@ -338,22 +342,22 @@ class job_controller extends com_controller
                     $row['jobArr']       =  array($row['job1_son']);
                     $row['jobnameArr']   =  array($row['job1_son']=>$row['job_two']);
                 }
-                // -
+                // 投递要求-经验
 			   	if(!empty($row['exp_req'])){
 
 			   	    $row['exp_req_n'] = $CacheArr['userclass_name'][$row['exp_req']];
 		        }
-		        // -
+		        // 投递要求-学历
 		        if(!empty($row['edu_req'])){
 
 		            $row['edu_req_n'] = $CacheArr['userclass_name'][$row['edu_req']];
 		        }
 			}
         }else{
-            $row['hy']        = $this->comInfo['hy']; // default industry from company
+            $row['hy']        = $this->comInfo['hy']; // 添加职位，行业默认是企业行业
             $row['zp_minage'] = '';
             $row['zp_maxage'] = '';
-            $row['welfare']   = $this->comInfo['welfare']; // default welfare from company
+            $row['welfare']   = $this->comInfo['welfare']; // 添加职位，带企业添加的福利待遇
         }
 		$cacheM		=  $this -> MODEL('cache');
 		$cache		=  $cacheM -> GetCache(array('com','user'));
@@ -387,7 +391,7 @@ class job_controller extends com_controller
 		}
 
         $cityDefStr                 =   $this->comInfo['job_city_one'].$this->comInfo['job_city_two'].$this->comInfo['job_city_three'];
-        // 
+        // 默认联系方式
         if (!empty($this->comInfo['linktel'])) {
 
             $row['link_default']    =   $this->comInfo['linkman'] . ' - ' . $this->comInfo['linktel'] . ' - ' . $cityDefStr . ' - ' . $this->comInfo['address'];
@@ -411,7 +415,7 @@ class job_controller extends com_controller
 
         if ($row['is_link'] == 3){
 
-            $row['linkmsg']         =   yun_at('wap_01834');
+            $row['linkmsg']         =   '不向求职者展示联系方式';
         } elseif ($row['is_link'] == 2){
 
             $cityStr            =   $job_link['city_one'] . $job_link['city_two'] . $job_link['city_three'];
@@ -478,7 +482,9 @@ class job_controller extends com_controller
         $this->render_json(0, 'ok', $row);      
 	}
 
-    
+    /**
+     * 工作地址
+     */
     function getJobAddress_action()
     {
 
@@ -490,7 +496,7 @@ class job_controller extends com_controller
     }
 
 	 
-    // 、
+    // 发布、修改职位保存
 	function saveJob_action()
 	{
 
@@ -603,7 +609,7 @@ class job_controller extends com_controller
                     $job['reserve_status']     =   $rv['status'];
                     $job['reserve_interval']   =   $rv['interval'];
                     $job['reserve_start']      =   date('Y-m-d H:i:s', $rv['start_time']);
-                    $job['reserve_end']        =   $rv['end_time'] > 0 ? date('Y-m-d', $rv['end_time']) : WapDbEnum::UNLIMITED;
+                    $job['reserve_end']        =   $rv['end_time'] > 0 ? date('Y-m-d', $rv['end_time']) : '不限';
 
                     $job['s_time']             =   $rv['s_time'];
                     $job['e_time']             =   $rv['e_time'];
@@ -615,7 +621,7 @@ class job_controller extends com_controller
                     }else if (empty($rv['s_time']) && $rv['e_time']){
                         $job['sx_time_n']      =   '00:00 - '.$rv['e_time'];
                     }else{
-                        $job['sx_time_n']      =   yun_at('common_01936');
+                        $job['sx_time_n']      =   '不限';
                     }
                 }
             }else{
@@ -673,13 +679,13 @@ class job_controller extends com_controller
         $data['job'] = $job;
         $this->render_json(9,'', $data);
     }
-	/* delete job */
+	/* 删除职位 */
 	function deljob_action()
 	{
     
 	   if(!$_POST['ids'] || !$this->member['uid']){
 			$data['error']	=	3;
-			$data['msg']	=	yun_at('wap_01833');
+			$data['msg']	=	'参数不正确';
 		}else{
 			$jobM	=	$this -> Model('job');
 			$PackM	=	$this -> Model('pack');
@@ -695,7 +701,7 @@ class job_controller extends com_controller
 				$newest = $jobM -> getInfo(array('uid'=>$this->member['uid'],'orderby'=>'lastupdate'),array('field'=>'`lastupdate`'));
 				$comM -> upInfo($this->member['uid'],'',array('jobtime'=>!empty($newest['lastupdate']) ? $newest['lastupdate'] : 0));
 				
-                $data['error']	=	1;// deleted
+                $data['error']	=	1;//删除成功
 			}else{
 				$data['error']	=	2;
 			}
@@ -705,10 +711,10 @@ class job_controller extends com_controller
         $this->render_json($data['error'], $data['msg']);
 	}
   
-    // 
+    //查找相关信息
     function jobPromote_action()
     {
-        // 1：  2：  3：
+        //1：职位置顶  2：职位推荐  3：紧急招聘
         $jobM   =   $this->MODEL('job');
     
         $type   =   intval($_POST['serverid']);
@@ -716,7 +722,9 @@ class job_controller extends com_controller
         $this->render_json(0,'',$return);
     }
 
-    
+    /**
+     * 权益预警通知
+     */
     function sendRatingNotice_action()
     {
         $_POST  =   $this->post_trim($_POST);
@@ -739,13 +747,13 @@ class job_controller extends com_controller
         $statisM->sendRatingNotice($data);
     }
 
-    /* job promotion */
+    /* 职位推广（置顶、推荐、紧急招聘） */
     function setJobPromote_action() 
     {
         $_POST  =   $this->post_trim($_POST);
 
         if (empty($_POST)) {
-            $msg	= yun_at('wap_01298');
+            $msg	= '参数错误！';
             $error	= 2;
         }else{
         	$jobM   =   $this->MODEL('job');
@@ -764,13 +772,13 @@ class job_controller extends com_controller
         $this->render_json($error,$msg);
     }
 
-    /* cancel job promotion */
+    /* 取消职位推广（置顶、推荐、紧急招聘） */
     function setJobPromoteClose_action()
     {
         $_POST  =   $this->post_trim($_POST);
 
         if (empty($_POST)) {
-            $msg	= yun_at('wap_01298');
+            $msg	= '参数错误！';
             $error	= 2;
         }else{
             $jobM   =   $this->MODEL('job');
@@ -788,7 +796,9 @@ class job_controller extends com_controller
 
         $this->render_json($error,$msg);
     }
-	
+	/**
+	 * 刷新职位
+	 */
 	function refresh_action()
 	{
 		
@@ -800,7 +810,7 @@ class job_controller extends com_controller
 	        
 	        $jobM  =  $this -> MODEL('job');
 	        
-	        $jobs  =  $jobM -> getList(array('uid'=>$this->member['uid'],'state'=>1,'r_status'=>array('<>',2),'status'=>array('<>',1)),array('field'=>'id'));// active jobs
+	        $jobs  =  $jobM -> getList(array('uid'=>$this->member['uid'],'state'=>1,'r_status'=>array('<>',2),'status'=>array('<>',1)),array('field'=>'id'));//招聘中职位
 	        if(!empty($jobs['list'])){
 	            foreach($jobs['list'] as $key=>$v){
 	                $ids[]	=  $v['id'];
@@ -810,11 +820,11 @@ class job_controller extends com_controller
 	    }
 	    if(empty($jobids)){
 	        
-	        $this->render_json(1, yun_at('wap_01247'));
+	        $this->render_json(1,'没有招聘中的职位');
 	    }
 	    
 	    $this->company_statis($this->member['uid']);
-	    // 
+	    //检查是否达到每日最大操作次数
 	    $result  =  $this->day_check($this->member['uid'],'refreshjob');
 	    if($result['status']!=1){
 	        
@@ -845,13 +855,13 @@ class job_controller extends com_controller
 	        $this->render_json(4, $return['msg']);
 	    }
 	}
-	/* wxapp: job shelf toggle */
+	/*wxapp职位管理页面上架下架*/
 	function ztjob_action()
 	{
 		
 		if(!$_POST['id']){
 
-		    $this->render_json(3, yun_at('wap_01833'));
+		    $this->render_json(3, '参数不正确');
 		}else{
 
             $jobM   =   $this->MODEL('job');
@@ -866,12 +876,12 @@ class job_controller extends com_controller
 				if(!isVip($statis['vip_etime'])){
 
                     $error  =   8;
-				    $msg    =   yun_at('wap_01293');
+				    $msg    =   '会员已到期，无法上架，请先升级会员！';
 
 				    if ($this->config['sy_iospay'] == 2){
 
                         $error  =   2;
-				        $msg    =   yun_at('wap_01294');
+				        $msg    =   '您好，目前不支持上架职位';
 				    }
 				    $this->render_json($error,$msg);
                 }
@@ -923,7 +933,7 @@ class job_controller extends com_controller
                 if ($statis['rating_type'] == 1){
 
                     $statisM = $this->MODEL('statis');
-                    $payDetail  =   yun_at('wap_01835');
+                    $payDetail  =   '上架职位，消耗上架套餐数量：1';
                     $statisM->addStatisDetail(array('uid' => $this->uid, 'type' => 1, 'num' => 1, 'detail' => $payDetail, 'uri' => $_SERVER['REQUEST_URI']));
                 }
             }
@@ -933,18 +943,18 @@ class job_controller extends com_controller
 			if($nid){
 
 			    $logM       =   $this->MODEL('log');
-                $logContent =   yun_at('member_com_00713');
-                $logDetail  =   $_POST['status'] == 0 ? yun_at('api_wxapp_00025').$jobInfo['name'].yun_at('api_wxapp_00023') : yun_at('api_wxapp_00026').$jobInfo['name'].yun_at('api_wxapp_00024');
+                $logContent =   '职位更新：调整职位招聘状态';
+                $logDetail  =   $_POST['status'] == 0 ? '调整职位《'.$jobInfo['name'].'》招聘状态：下架->上架' : '调整职位('.$jobInfo['name'].')招聘状态：上架->下架';
                 $logM->addMemberLog($this->member['uid'], $this->member['usertype'], $logContent, 1, 2, $logDetail);
 
 				$this->render_json(0, 'ok');
 			}else{
-			    $this->render_json(2, yun_at('api_wxapp_00016'));
+			    $this->render_json(2, '设置失败');
 			}
 		}
 	}
 	 
-    // ，
+    // 通过职位类别，查询职位描述样本
 	function ajaxjobclass_action(){
 		$categoryM	=	$this->MODEL('category');
 		$rows		=	$categoryM->getJobClass(array('id'=>$_POST['id'],'content'=>array('<>','')));
@@ -966,14 +976,16 @@ class job_controller extends com_controller
 		$this->render_json(1,'',$row['content']);
 	}
 
-    
+    /**
+     * 预约刷新
+     */
     function reserveUp_action()
     {
 
         $_POST  =   $this->post_trim($_POST);
 
         if (empty($_POST)) {
-            $msg	= yun_at('wap_01298');
+            $msg	= '参数错误！';
             $error	= 2;
         }else{
             $jobM   =   $this->MODEL('job');
@@ -1004,7 +1016,7 @@ class job_controller extends com_controller
     function getRefresh_action(){
         $job_id = $_POST['job_id'];
         if(!$job_id){
-            $this->render_json(1, yun_at('wap_com_00228'));
+            $this->render_json(1, '参数错误');
         }
         $jobM = $this->MODEL('job');
         $where = array();

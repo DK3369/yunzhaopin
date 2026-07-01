@@ -4,31 +4,31 @@
             <table class="tableVue">
                 <thead>
                     <tr align="left">
-                        <th width="180">{yun:}t key='member_com_00021'{/yun}</th>
-                        <th width="260">{yun:}t key='member_user_00181'{/yun}</th>
-                        <th>{yun:}t key='member_com_00207'{/yun}</th>
+                        <th width="180">{{ lc('member_com_00021') }}</th>
+                        <th width="260">{{ lc('member_user_00181') }}</th>
+                        <th>{{ lc('member_com_00207') }}</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_00873'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_00873') }}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input v-model="list.sy_safekey" placeholder="{yun:}t key='wap_user_00076'{/yun}">
+                                <el-input v-model="list.sy_safekey" :placeholder="lc('wap_user_00076')">
                                 </el-input>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>{yun:}t key='admin_00874'{/yun}</span>
+                                <span>{{ lc('admin_00874') }}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_00875'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_00875') }}</div>
                         </td>
                         <td>
                             <div class="TableButn">
@@ -38,13 +38,13 @@
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>{yun:}t key='admin_00875'{/yun}</span>
+                                <span>{{ lc('admin_00875') }}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_00876'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_00876') }}</div>
                         </td>
                         <td>
                             <div class="TableButn">
@@ -54,88 +54,88 @@
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>{yun:}t key='admin_00876'{/yun}</span>
+                                <span>{{ lc('admin_00876') }}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_00877'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_00877') }}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input v-model="list.sy_fkeyword" placeholder="{yun:}t key='wap_user_00076'{/yun}"></el-input>
+                                <el-input v-model="list.sy_fkeyword" :placeholder="lc('wap_user_00076')"></el-input>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>{yun:}t key='admin_00878'{/yun}</span>
+                                <span>{{ lc('admin_00878') }}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_00879'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_00879') }}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input v-model="list.sy_fkeyword_all" placeholder="{yun:}t key='wap_user_00076'{/yun}"></el-input>
+                                <el-input v-model="list.sy_fkeyword_all" :placeholder="lc('wap_user_00076')"></el-input>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>{yun:}t key='admin_00880'{/yun}</span>
+                                <span>{{ lc('admin_00880') }}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_00881'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_00881') }}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input type="textarea" :rows="2" autosize v-model="list.sy_useragent" placeholder="{yun:}t key='wap_user_00076'{/yun}"></el-input>
+                                <el-input type="textarea" :rows="2" autosize v-model="list.sy_useragent" :placeholder="lc('wap_user_00076')"></el-input>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>{yun:}t key='admin_00882'{/yun}</span>
+                                <span>{{ lc('admin_00882') }}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_00883'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_00883') }}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input type="textarea" :rows="2" autosize v-model="list.sy_bannedip" placeholder="{yun:}t key='wap_user_00076'{/yun}"></el-input>
+                                <el-input type="textarea" :rows="2" autosize v-model="list.sy_bannedip" :placeholder="lc('wap_user_00076')"></el-input>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>{yun:}t key='admin_00884'{/yun}</span>
+                                <span>{{ lc('admin_00884') }}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_00885'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_00885') }}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input  type="textarea" :rows="2" autosize v-model="list.sy_bannedip_alert" placeholder="{yun:}t key='wap_user_00076'{/yun}"></el-input>
+                                <el-input  type="textarea" :rows="2" autosize v-model="list.sy_bannedip_alert" :placeholder="lc('wap_user_00076')"></el-input>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>{yun:}t key='admin_00886'{/yun}</span>
+                                <span>{{ lc('admin_00886') }}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_00887'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_00887') }}</div>
                         </td>
                         <td>
                             <div class="TableButn">
@@ -145,13 +145,13 @@
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>{yun:}t key='admin_00888'{/yun}</span>
+                                <span>{{ lc('admin_00888') }}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_00889'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_00889') }}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
@@ -160,7 +160,7 @@
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>{yun:}t key='admin_00890'{/yun}</span>
+                                <span>{{ lc('admin_00890') }}</span>
                             </div>
                         </td>
                     </tr>
@@ -169,7 +169,7 @@
             </table>
         </div>
         <div class="setBasicButn" style="border: none; height: 80px;">
-            <el-button type="primary" size="medium" @click="save" :disabled="saveLoading">{yun:}t key='common.submit'{/yun}</el-button>
+            <el-button type="primary" size="medium" @click="save" :disabled="saveLoading">{{ lc('common.submit') }}</el-button>
         </div>
     </div>
 </template>
@@ -214,7 +214,7 @@ module.exports = {
             httpPost(url, ruleForm).then(function (response) {
                 var res = response.data;
                 if (res.error == 0) {
-                    message.success("{yun:}t key='wap_user_00264'{/yun}");
+                    message.success(lc('wap_user_00264'));
                     _this.$emit('get-list', true)
                 } else {
                     message.error(res.msg);

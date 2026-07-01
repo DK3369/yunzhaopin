@@ -4,137 +4,137 @@
             <table class="tableVue">
                 <thead>
                     <tr align="left">
-                        <th width="180">{yun:}t key='member_com_00021'{/yun}</th>
-                        <th width="240">{yun:}t key='member_user_00181'{/yun}</th>
-                        <th>{yun:}t key='member_com_00207'{/yun}</th>
+                        <th width="180">{{ lc('member_com_00021') }}</th>
+                        <th width="240">{{ lc('member_user_00181') }}</th>
+                        <th>{{ lc('member_com_00207') }}</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_system_00382'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_system_00382') }}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input v-model="list.pic_maxsize" @input="inputIntNumber($event, 'list', 'pic_maxsize')" placeholder="{yun:}t key='wap_user_00076'{/yun}">
+                                <el-input v-model="list.pic_maxsize" @input="inputIntNumber($event, 'list', 'pic_maxsize')" :placeholder="lc('wap_user_00076')">
                                     <span slot="suffix" class="slotspan">M</span>
                                 </el-input>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>{yun:}t key='admin_00983'{/yun}</span>
+                                <span>{{ lc('admin_00983') }}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_system_00384'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_system_00384') }}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input v-model="list.file_maxsize" @input="inputIntNumber($event, 'list', 'file_maxsize')" placeholder="{yun:}t key='wap_user_00076'{/yun}">
+                                <el-input v-model="list.file_maxsize" @input="inputIntNumber($event, 'list', 'file_maxsize')" :placeholder="lc('wap_user_00076')">
                                     <span slot="suffix" class="slotspan">M</span>
                                 </el-input>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>{yun:}t key='admin_00983'{/yun}</span>
+                                <span>{{ lc('admin_00983') }}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_system_00383'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_system_00383') }}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input v-model="list.pic_type" placeholder="{yun:}t key='wap_user_00076'{/yun}"></el-input>
+                                <el-input v-model="list.pic_type" :placeholder="lc('wap_user_00076')"></el-input>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>{yun:}t key='admin_00984'{/yun}</span>
+                                <span>{{ lc('admin_00984') }}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_system_00385'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_system_00385') }}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input v-model="list.file_type" placeholder="{yun:}t key='wap_user_00076'{/yun}"></el-input>
+                                <el-input v-model="list.file_type" :placeholder="lc('wap_user_00076')"></el-input>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>{yun:}t key='admin_00985'{/yun}</span>
+                                <span>{{ lc('admin_00985') }}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_system_00388'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_system_00388') }}</div>
                         </td>
                         <td>
                             <div class="TableButn">
                                 <el-radio-group v-model="list.is_picself">
-                                    <el-radio  label="1">{yun:}t key='member_com_00287'{/yun}</el-radio>
-                                    <el-radio  label="2">{yun:}t key='common.close'{/yun}</el-radio>
+                                    <el-radio  label="1">{{ lc('member_com_00287') }}</el-radio>
+                                    <el-radio  label="2">{{ lc('common.close') }}</el-radio>
                                 </el-radio-group>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>{yun:}t key='admin_00986'{/yun}</span>
+                                <span>{{ lc('admin_00986') }}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_system_00389'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_system_00389') }}</div>
                         </td>
                         <td>
                             <div class="TableButn">
                                 <el-radio-group v-model="list.is_picthumb">
-                                    <el-radio label="1">{yun:}t key='member_com_00287'{/yun}</el-radio>
-                                    <el-radio label="2">{yun:}t key='common.close'{/yun}</el-radio>
+                                    <el-radio label="1">{{ lc('member_com_00287') }}</el-radio>
+                                    <el-radio label="2">{{ lc('common.close') }}</el-radio>
                                 </el-radio-group>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>{yun:}t key='admin_00987'{/yun}</span>
+                                <span>{{ lc('admin_00987') }}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_system_00392'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_system_00392') }}</div>
                         </td>
                         <td>
                             <div class="TableButn">
                                 <el-radio-group v-model="list.is_watermark">
-                                    <el-radio  label="1">{yun:}t key='member_com_00287'{/yun}</el-radio>
-                                    <el-radio  label="2">{yun:}t key='common.close'{/yun}</el-radio>
+                                    <el-radio  label="1">{{ lc('member_com_00287') }}</el-radio>
+                                    <el-radio  label="2">{{ lc('common.close') }}</el-radio>
                                 </el-radio-group>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>{yun:}t key='admin_00988'{/yun}</span>
+                                <span>{{ lc('admin_00988') }}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_system_00391'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_system_00391') }}</div>
                         </td>
                         <td>
                             <div class="TableSelect">
-                                <el-select v-model="list.wmark_position" placeholder="{yun:}t key='wap_user_00100'{/yun}">
+                                <el-select v-model="list.wmark_position" :placeholder="lc('wap_user_00100')">
                                     <el-option v-for="item in options" :key="item.value" :label="item.label"
                                         :value="item.value">
                                     </el-option>
@@ -143,13 +143,13 @@
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>{yun:}t key='admin_system_00381'{/yun}</span>
+                                <span>{{ lc('admin_system_00381') }}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_system_00390'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_system_00390') }}</div>
                         </td>
                         <td>
                             <div class="TableUpload">
@@ -159,7 +159,7 @@
                                         :file-list="fileList" :limit="1"
                                         :on-success="handleAvatarSuccess"
                                         list-type="picture">
-                                        <el-button size="small" type="primary">{yun:}t key='wap_js_00071'{/yun}</el-button>
+                                        <el-button size="small" type="primary">{{ lc('wap_js_00071') }}</el-button>
                                         <!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
                                     </el-upload>
                                 </div>
@@ -167,7 +167,7 @@
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>{yun:}t key='admin_system_00381'{/yun}</span>
+                                <span>{{ lc('admin_system_00381') }}</span>
                             </div>
                         </td>
                     </tr>
@@ -175,7 +175,7 @@
             </table>
         </div>
         <div class="setBasicButn" style="border: none; height: 80px;">
-            <el-button type="primary" size="medium" @click="save" :disabled="saveLoading">{yun:}t key='common.submit'{/yun}</el-button>
+            <el-button type="primary" size="medium" @click="save" :disabled="saveLoading">{{ lc('common.submit') }}</el-button>
         </div>
     </div>
 </template>
@@ -198,19 +198,19 @@ module.exports = {
             pytoken:localStorage.getItem("pytoken"),
             options: [{
                 value: '1',
-                label: "{yun:}t key='admin_00989'{/yun}"
+                label: lc('admin_00989')
             }, {
                 value: '3',
-                label: "{yun:}t key='admin_00207'{/yun}"
+                label: lc('admin_00207')
             }, {
                 value: '5',
-                label: "{yun:}t key='admin_00990'{/yun}"
+                label: lc('admin_00990')
             }, {
                 value: '7',
-                label: "{yun:}t key='admin_00991'{/yun}"
+                label: lc('admin_00991')
             }, {
                 value: '9',
-                label: "{yun:}t key='admin_00992'{/yun}"
+                label: lc('admin_00992')
             }],
             uri:"m=system&c=",
             files: [],
@@ -249,7 +249,7 @@ module.exports = {
                     // 修改图片类型缓存
                     let pic_accept = '.' + _this.list.pic_type;
                     localStorage.setItem("pic_accept", pic_accept ? pic_accept.split(',').join(',.') : '.jpg,.png,.jpeg,.bmp,.gif');
-                    message.success("{yun:}t key='wap_user_00264'{/yun}");
+                    message.success(lc('wap_user_00264'));
                     _this.$emit('get-list', true)
                 } else {
                     message.error(res.msg);

@@ -4,19 +4,19 @@
             <table class="tableVue">
                 <thead>
                     <tr align="left">
-                        <th width="200">{yun:}t key='member_com_00021'{/yun}</th>
-                        <th width="500">{yun:}t key='member_user_00181'{/yun}</th>
-                        <th>{yun:}t key='member_com_00207'{/yun}</th>
+                        <th width="200">{{ lc('member_com_00021') }}</th>
+                        <th width="500">{{ lc('member_user_00181') }}</th>
+                        <th>{{ lc('member_com_00207') }}</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_tool_00437'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_tool_00437') }}</div>
                         </td>
                         <td>
                             <div class="TableButn">
-                                <el-switch v-model="configdata.sy_qqlogin" active-text="{yun:}t key='member_com_00287'{/yun}" inactive-text="{yun:}t key='resume_00030'{/yun}" active-value="1" inactive-value="0"></el-switch>
+                                <el-switch v-model="configdata.sy_qqlogin" :active-text="lc('member_com_00287')" :inactive-text="lc('resume_00030')" active-value="1" inactive-value="0"></el-switch>
                             </div>
                         </td>
                         <td>
@@ -31,7 +31,7 @@
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="configdata.sy_qqappid">
+                                <el-input :placeholder="lc('wap_user_00076')" v-model="configdata.sy_qqappid">
                                 </el-input>
                             </div>
                         </td>
@@ -47,7 +47,7 @@
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="configdata.sy_qqappkey">
+                                <el-input :placeholder="lc('wap_user_00076')" v-model="configdata.sy_qqappkey">
                                 </el-input>
                             </div>
                         </td>
@@ -59,16 +59,16 @@
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_tool_00438'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_tool_00438') }}</div>
                         </td>
                         <td>
                             <div class="TableButn">
-                                <el-switch v-model="configdata.sy_qqdt" active-text="{yun:}t key='common_02085'{/yun}" inactive-text="{yun:}t key='common_02063'{/yun}" active-value="1" inactive-value="0"></el-switch>
+                                <el-switch v-model="configdata.sy_qqdt" :active-text="lc('common_02085')" :inactive-text="lc('common_02063')" active-value="1" inactive-value="0"></el-switch>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>{yun:}t key='admin_tool_00436'{/yun}</span>
+                                <span>{{ lc('admin_tool_00436') }}</span>
                             </div>
                         </td>
                     </tr>
@@ -76,7 +76,7 @@
             </table>
         </div>
         <div class="setBasicButn" style="border: none;">
-            <el-button type="primary" size="medium" @click="post">{yun:}t key='common.submit'{/yun}</el-button>
+            <el-button type="primary" size="medium" @click="post">{{ lc('common.submit') }}</el-button>
         </div>
     </div>
 </template>

@@ -1,7 +1,7 @@
 <template>
     <div class="moduleElHight">
         <div class="tableDome_tip">
-            <el-alert title="{yun:}t key='admin_tool_00558'{/yun}" type="success"
+            <el-alert :title="lc('admin_tool_00558')" type="success"
                       :closable="false">
             </el-alert>
         </div>
@@ -9,17 +9,17 @@
             <div class="moduleSeachleft">
 
                 <div class="tableSeachInpt" style="margin-bottom: 0px;;">
-                    <el-input placeholder="{yun:}t key='admin_00340'{/yun}" v-model="keyword" size="small" prefix-icon="el-icon-search"
+                    <el-input :placeholder="lc('admin_00340')" v-model="keyword" size="small" prefix-icon="el-icon-search"
                               clearable>
                     </el-input>
                 </div>
 
                 <div class="tableSeachInpt" style="margin-bottom: 0px;;">
-                    <el-button type="primary" icon="el-icon-search" size="mini" @click="search">{yun:}t key='admin_user_weipin_00049'{/yun}</el-button>
+                    <el-button type="primary" icon="el-icon-search" size="mini" @click="search">{{ lc('admin_user_weipin_00049') }}</el-button>
                 </div>
             </div>
             <div class="moduleSeachButn">
-                <el-button type="primary" icon="el-icon-document-add" size="mini" @click="addinfo()">{yun:}t key='admin_tool_00573'{/yun}</el-button>
+                <el-button type="primary" icon="el-icon-document-add" size="mini" @click="addinfo()">{{ lc('admin_tool_00573') }}</el-button>
             </div>
         </div>
 
@@ -29,17 +29,17 @@
                       :empty-text="emptytext">
                 <el-table-column type="selection" width="55">
                 </el-table-column>
-                <el-table-column prop="id" label="{yun:}t key='member_com_00345'{/yun}" width="80">
+                <el-table-column prop="id" :label="lc('member_com_00345')" width="80">
                 </el-table-column>
-                <el-table-column prop="title" label="{yun:}t key='admin_tool_00575'{/yun}">
+                <el-table-column prop="title" :label="lc('admin_tool_00575')">
                 </el-table-column>
-                <el-table-column prop="keyword" label="{yun:}t key='admin_tool_00574'{/yun}">
+                <el-table-column prop="keyword" :label="lc('admin_tool_00574')">
                 </el-table-column>
-                <el-table-column label="{yun:}t key='member_user_00048'{/yun}" width="130" fixed="right" header-align="center">
+                <el-table-column :label="lc('member_user_00048')" width="130" fixed="right" header-align="center">
                     <template slot-scope="scope">
                         <div class="cz_button">
-                            <el-button size="mini" @click="editinfo(scope.row.id)">{yun:}t key='wap_js_00073'{/yun}</el-button>
-                            <el-button type="danger" size="small" @click="deleteinfo(scope.row.id)">{yun:}t key='common.delete'{/yun}</el-button>
+                            <el-button size="mini" @click="editinfo(scope.row.id)">{{ lc('wap_js_00073') }}</el-button>
+                            <el-button type="danger" size="small" @click="deleteinfo(scope.row.id)">{{ lc('common.delete') }}</el-button>
                         </div>
                     </template>
                 </el-table-column>
@@ -49,8 +49,8 @@
 
         <div class="modulePaging">
             <div class="modulecz modulePagButn">
-                <el-checkbox v-model="allchecked" @change="allcheckChange">{yun:}t key='wap_js_00074'{/yun}</el-checkbox>
-                <el-button size="mini" @click="deleteAll">{yun:}t key='member_com_00055'{/yun}</el-button>
+                <el-checkbox v-model="allchecked" @change="allcheckChange">{{ lc('wap_js_00074') }}</el-checkbox>
+                <el-button size="mini" @click="deleteAll">{{ lc('member_com_00055') }}</el-button>
             </div>
             <div class="modulePagNum">
                 <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
@@ -68,29 +68,29 @@
                 <div class="drawerReply">
                     <div class="drawerModLis">
                         <div class="drawerModTite">
-                            <span>{yun:}t key='admin_tool_00575'{/yun}</span>
+                            <span>{{ lc('admin_tool_00575') }}</span>
                         </div>
                         <div class="drawerModInpt">
-                            <el-input v-model="row.title" :maxlength="255" placeholder="{yun:}t key='admin_tool_00583'{/yun}"></el-input>
+                            <el-input v-model="row.title" :maxlength="255" :placeholder="lc('admin_tool_00583')"></el-input>
                         </div>
 
                     </div>
                     <div class="drawerModLis" style="align-items: initial;">
                         <div class="drawerModTite" style="margin-top: 8px;">
-                            <span>{yun:}t key='admin_tool_00571'{/yun}</span>
+                            <span>{{ lc('admin_tool_00571') }}</span>
                         </div>
                         <div class="drawerModInpt">
                             <el-input type="textarea" v-model="row.keyword" :maxlength="255"
-                                      placeholder="{yun:}t key='admin_system_00198'{/yun}"></el-input>
+                                      :placeholder="lc('admin_system_00198')"></el-input>
                         </div>
                         <div class="drawerModTips">
-                            <el-alert title="{yun:}t key='admin_tool_00582'{/yun}" type="info" show-icon :closable="false">
+                            <el-alert :title="lc('admin_tool_00582')" type="info" show-icon :closable="false">
                             </el-alert>
                         </div>
                     </div>
                     <div class="drawerModLis" style="align-items: initial;">
                         <div class="drawerModTite" style="margin-top: 10px;">
-                            <span>{yun:}t key='admin_tool_00579'{/yun}</span>
+                            <span>{{ lc('admin_tool_00579') }}</span>
                         </div>
                         <div class="drawerModInpt">
                             <div class="ReplyHuifu">
@@ -100,13 +100,13 @@
                                                  :label="lc('admin_vue_00124') + (index + 1) + ' ' + item.msgtype_n">
                                         <div class="drawerModLis">
                                             <div class="drawerModTite">
-                                                <span>{yun:}t key='admin_tool_00581'{/yun}</span>
+                                                <span>{{ lc('admin_tool_00581') }}</span>
                                             </div>
                                             <div class="drawerModInpt">
                                                 <el-radio-group v-model="item.msgtype" @input="radio_type">
-                                                    <el-radio label="text">{yun:}t key='admin_system_00432'{/yun}</el-radio>
-                                                    <el-radio label="image">{yun:}t key='wap_js_00081'{/yun}</el-radio>
-                                                    <el-radio label="xcx">{yun:}t key='admin_tool_00567'{/yun}</el-radio>
+                                                    <el-radio label="text">{{ lc('admin_system_00432') }}</el-radio>
+                                                    <el-radio label="image">{{ lc('wap_js_00081') }}</el-radio>
+                                                    <el-radio label="xcx">{{ lc('admin_tool_00567') }}</el-radio>
                                                 </el-radio-group>
                                             </div>
 
@@ -114,20 +114,20 @@
 
                                         <div class="drawerModLis">
                                             <div class="drawerModTite">
-                                                <span>{yun:}t key='admin_tool_00569'{/yun}</span>
+                                                <span>{{ lc('admin_tool_00569') }}</span>
                                             </div>
                                             <div class="drawerModInpt">
-                                                <el-input v-model="item.sort" placeholder="{yun:}t key='admin_tool_00565'{/yun}"></el-input>
+                                                <el-input v-model="item.sort" :placeholder="lc('admin_tool_00565')"></el-input>
                                             </div>
                                         </div>
 
 
                                         <div class="drawerModLis" v-show="item.msgtype == 'text'">
                                             <div class="drawerModTite">
-                                                <span>{yun:}t key='wap_com_00313'{/yun}</span>
+                                                <span>{{ lc('wap_com_00313') }}</span>
                                             </div>
                                             <div class="drawerModInpt">
-                                                <el-input type="textarea" :rows="2" placeholder="{yun:}t key='wap_user_00076'{/yun}"
+                                                <el-input type="textarea" :rows="2" :placeholder="lc('wap_user_00076')"
                                                           v-model="item.content">
                                                 </el-input>
                                             </div>
@@ -135,27 +135,27 @@
                                         <div v-show="item.msgtype == 'xcx'">
                                             <div class="drawerModLis">
                                                 <div class="drawerModTite">
-                                                    <span>{yun:}t key='admin_tool_00572'{/yun}</span>
+                                                    <span>{{ lc('admin_tool_00572') }}</span>
                                                 </div>
                                                 <div class="drawerModInpt">
-                                                    <el-input placeholder="{yun:}t key='admin_tool_00566'{/yun}" v-model="item.xcx_title"></el-input>
+                                                    <el-input :placeholder="lc('admin_tool_00566')" v-model="item.xcx_title"></el-input>
                                                 </div>
                                             </div>
                                             <div class="drawerModLis">
                                                 <div class="drawerModTite">
-                                                    <span>{yun:}t key='admin_tool_00564'{/yun}</span>
+                                                    <span>{{ lc('admin_tool_00564') }}</span>
                                                 </div>
                                                 <div class="drawerModInpt">
-                                                    <el-input placeholder="{yun:}t key='admin_tool_00563'{/yun}"
+                                                    <el-input :placeholder="lc('admin_tool_00563')"
                                                               v-model="item.xcx_appid"></el-input>
                                                 </div>
                                             </div>
                                             <div class="drawerModLis">
                                                 <div class="drawerModTite">
-                                                    <span>{yun:}t key='admin_tool_00568'{/yun}</span>
+                                                    <span>{{ lc('admin_tool_00568') }}</span>
                                                 </div>
                                                 <div class="drawerModInpt">
-                                                    <el-input placeholder="{yun:}t key='admin_tool_00560'{/yun}"
+                                                    <el-input :placeholder="lc('admin_tool_00560')"
                                                               v-model="item.xcx_pagepath"></el-input>
                                                 </div>
                                             </div>
@@ -164,7 +164,7 @@
                                              v-show="item.msgtype == 'image' || item.msgtype == 'xcx'"
                                              style="align-items: initial;">
                                             <div class="drawerModTite" style="margin-top: 8px;">
-                                                <span>{yun:}t key='admin_tool_00559'{/yun}</span>
+                                                <span>{{ lc('admin_tool_00559') }}</span>
                                             </div>
                                             <div class="drawerModInpt">
                                                 <el-upload :action="uploadAction" class="avatar-uploader" :auto-upload="false"
@@ -177,11 +177,11 @@
                                                                   fit="contain"></el-image>
                                                     </div>
 
-                                                    <el-button slot="trigger" size="small" type="primary">{yun:}t key='admin_tool_00584'{/yun}
+                                                    <el-button slot="trigger" size="small" type="primary">{{ lc('admin_tool_00584') }}
                                                     </el-button>
                                                     <div slot="tip" class="el-upload__tip"
                                                          v-show="item.msgtype == 'xcx'">
-                                                        {yun:}t key='admin_tool_00580'{/yun}
+                                                        {{ lc('admin_tool_00580') }}
                                                     </div>
                                                 </el-upload>
                                             </div>
@@ -194,7 +194,7 @@
                         </div>
                     </div>
                     <div class="ReplyButn">
-                        <el-button type="primary" @click="saveinfo" :loading="post_loading">{yun:}t key='wap_com_00019'{/yun}</el-button>
+                        <el-button type="primary" @click="saveinfo" :loading="post_loading">{{ lc('wap_com_00019') }}</el-button>
                     </div>
                 </div>
             </el-drawer>
@@ -207,7 +207,7 @@ const defaultcon = {
     id: '',
     sort: '',
     msgtype: 'text',
-    msgtype_n: "{yun:}t key='admin_tool_00578'{/yun}",
+    msgtype_n: lc('admin_tool_00578'),
 
     content: '',
 
@@ -226,7 +226,7 @@ module.exports = {
     data: function () {
         return {
             pic_accept: localStorage.getItem("pic_accept"),
-            emptytext: window.yunAdminT("{yun:}t key='wap_js_00113'{/yun}"),
+            emptytext: window.yunAdminT(lc('wap_js_00113')),
             tableData: [],
             total: 0,
             limit: 0,
@@ -274,7 +274,7 @@ module.exports = {
             }
 
             this.list_loading = true;
-            that.emptytext = window.yunAdminT("{yun:}t key='admin_user_weipin_00026'{/yun}");
+            that.emptytext = window.yunAdminT(lc('admin_user_weipin_00026'));
             httpPost('m=tool&c=weixinmenu&a=zdkeyword', params).then((result) => {
                 this.list_loading = false;
                 var res = result.data;
@@ -290,7 +290,7 @@ module.exports = {
 						that.$refs.table.bodyWrapper.scrollTop = 0;
 					}
                     if (that.tableData.length === 0) {
-                        that.emptytext = window.yunAdminT("{yun:}t key='wap_js_00113'{/yun}");
+                        that.emptytext = window.yunAdminT(lc('wap_js_00113'));
                     }
                 }
             }).catch(function (e) {
@@ -340,7 +340,7 @@ module.exports = {
                     idarr.push(this.choosedata[i].id);
                 }
             } else {
-                message.error(window.yunAdminT("{yun:}t key='admin_user_weipin_00005'{/yun}"));
+                message.error(window.yunAdminT(lc('admin_user_weipin_00005')));
                 return;
             }
             var params = {
@@ -439,7 +439,7 @@ module.exports = {
             } else {
 
                 if (self.conarr.length >= 3) {
-                    message.warning(window.yunAdminT("{yun:}t key='admin_tool_00561'{/yun}"));
+                    message.warning(window.yunAdminT(lc('admin_tool_00561')));
                     return;
                 }
                 var randnum = parseInt(Math.random() * 1000);
@@ -477,11 +477,11 @@ module.exports = {
             var conkey = parseInt(this.conkey);
             var conarr = deepClone(this.conarr);
 
-            var msgtype_n = window.yunAdminT("{yun:}t key='admin_tool_00578'{/yun}");
+            var msgtype_n = window.yunAdminT(lc('admin_tool_00578'));
             if (msgtype == 'image') {
-                msgtype_n = window.yunAdminT("{yun:}t key='wap_js_00081'{/yun}");
+                msgtype_n = window.yunAdminT(lc('wap_js_00081'));
             } else if (msgtype == 'xcx') {
-                msgtype_n = window.yunAdminT("{yun:}t key='admin_tool_00567'{/yun}");
+                msgtype_n = window.yunAdminT(lc('admin_tool_00567'));
             }
             conarr[conkey].msgtype = msgtype;
             conarr[conkey].msgtype_n = msgtype_n;
@@ -510,10 +510,10 @@ module.exports = {
             var con_post = [];
 
             if (row.title == '') {
-                message.warning(window.yunAdminT("{yun:}t key='admin_tool_00585'{/yun}"));
+                message.warning(window.yunAdminT(lc('admin_tool_00585')));
                 return;
             } else if (row.keyword.trim() == '') {
-                message.warning(window.yunAdminT("{yun:}t key='admin_tool_00586'{/yun}"));
+                message.warning(window.yunAdminT(lc('admin_tool_00586')));
                 return;
             }
 

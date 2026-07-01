@@ -1,22 +1,22 @@
 <template>
     <div class="tableDome" style="top: 40px; width: initial;">
         <div class="tableDome_tip">
-            <el-alert title="{yun:}t key='admin_01033'{/yun}" type="info" :closable="false"></el-alert>
+            <el-alert :title="lc('admin_01033')" type="info" :closable="false"></el-alert>
         </div>
         <div class="moduleTable" style="height: calc(100% - 80px); max-height: initial;">
             <div style="overflow-y: auto; position: relative; width: 100%; height: calc(100% - 80px);">
                 <table class="quanxiantable">
                     <tbody>
                         <tr>
-                            <td bgcolor="#F5F7FA">{yun:}t key='admin_system_00212'{/yun}</td>
+                            <td bgcolor="#F5F7FA">{{ lc('admin_system_00212') }}</td>
                             <td colspan="2">
                                 <div class="quanxiantext">
                                     <div class="quanxiantext_in">
-                                        <el-input v-model="groupInfo.group_name" placeholder="{yun:}t key='admin_01034'{/yun}"
+                                        <el-input v-model="groupInfo.group_name" :placeholder="lc('admin_01034')"
                                             size="small"></el-input>
                                     </div>
                                     <div class="quanxiantext_in">
-                                        <el-select v-model="groupInfo.did" placeholder="{yun:}t key='admin_system_00143'{/yun}" size="small">
+                                        <el-select v-model="groupInfo.did" :placeholder="lc('admin_system_00143')" size="small">
                                             <el-option v-for="item in domainOptionS" :key="item.value" :label="item.label"
                                                 :value="item.value"></el-option>
                                         </el-select>
@@ -25,9 +25,9 @@
                             </td>
                         </tr>
                         <tr align="left">
-                            <th width="150" bgcolor="#F5F7FA">{yun:}t key='admin_user_company_00362'{/yun}</th>
-                            <th width="150" bgcolor="#F5F7FA">{yun:}t key='admin_user_company_00364'{/yun}</th>
-                            <th bgcolor="#F5F7FA">{yun:}t key='admin_system_00214'{/yun}</th>
+                            <th width="150" bgcolor="#F5F7FA">{{ lc('admin_user_company_00362') }}</th>
+                            <th width="150" bgcolor="#F5F7FA">{{ lc('admin_user_company_00364') }}</th>
+                            <th bgcolor="#F5F7FA">{{ lc('admin_system_00214') }}</th>
                         </tr>
                         <tr>
                             <td valign="top">
@@ -69,7 +69,7 @@
                 </table>
             </div>
             <div class="setBasicButn" style="border: none;">
-                <el-button type="primary" size="medium" @click="saveGroup" :loading="saveLoading">{yun:}t key='common.submit'{/yun}</el-button>
+                <el-button type="primary" size="medium" @click="saveGroup" :loading="saveLoading">{{ lc('common.submit') }}</el-button>
             </div>
         </div>
     </div>
@@ -182,7 +182,7 @@ module.exports = {
         },
         handleCheckedThreeChange(val) {
             var that = this
-            if (that.checkedThreeIds.includes(that.currCheckedId)) {// {yun:}t key='admin_user_company_00028'{/yun}
+            if (that.checkedThreeIds.includes(that.currCheckedId)) {// {{ lc('admin_user_company_00028') }}
                 if (that.threeMenu[that.currCheckedId]) {
                     that.threeMenu[that.currCheckedId].forEach(function (item, index) {
                         if (!that.checkedFourIds.includes(item.id)) {
@@ -190,7 +190,7 @@ module.exports = {
                         }
                     })
                 }
-            } else {// {yun:}t key='common.cancel'{/yun}
+            } else {// {{ lc('common.cancel') }}
                 if (that.threeMenu[that.currCheckedId]) {
                     that.threeMenu[that.currCheckedId].forEach(function (id_item, index) {
                         if (that.checkedFourIds.includes(id_item.id)) {

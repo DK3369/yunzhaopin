@@ -1,40 +1,40 @@
 <template>
     <div class="tableDome" style="top: 40px;">
         <div class="tableDome_tip">
-            <el-alert title="{yun:}t key='admin_system_00144'{/yun}" type="info" :closable="false"></el-alert>
+            <el-alert :title="lc('admin_system_00144')" type="info" :closable="false"></el-alert>
         </div>
         <div class="moduleTable">
             <table class="tableVue">
                 <thead>
                     <tr align="left">
-                        <th width="200">{yun:}t key='member_com_00021'{/yun}</th>
-                        <th width="500">{yun:}t key='member_user_00181'{/yun}</th>
-                        <th>{yun:}t key='member_com_00207'{/yun}</th>
+                        <th width="200">{{ lc('member_com_00021') }}</th>
+                        <th width="500">{{ lc('member_user_00181') }}</th>
+                        <th>{{ lc('member_com_00207') }}</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_system_00166'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_system_00166') }}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="domainInfo.title"></el-input>
+                                <el-input :placeholder="lc('wap_user_00076')" v-model="domainInfo.title"></el-input>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>{yun:}t key='admin_01040'{/yun}</span>
+                                <span>{{ lc('admin_01040') }}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_system_00161'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_system_00161') }}</div>
                         </td>
                         <td>
                             <div class="TableSelect">
-                                <el-select v-model="domainInfo.mode" placeholder="{yun:}t key='wap_user_00100'{/yun}">
+                                <el-select v-model="domainInfo.mode" :placeholder="lc('wap_user_00100')">
                                     <el-option v-for="(item,key) in modeOptionS" :key="key" :label="item.label"
                                         :value="item.value">
                                     </el-option>
@@ -43,47 +43,47 @@
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>{yun:}t key='admin_system_00161'{/yun}</span>
+                                <span>{{ lc('admin_system_00161') }}</span>
                             </div>
                         </td>
                     </tr>
                     <tr v-show="domainInfo.mode == 1">
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_system_00168'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_system_00168') }}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="domainInfo.domain"></el-input>
+                                <el-input :placeholder="lc('wap_user_00076')" v-model="domainInfo.domain"></el-input>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>{yun:}t key='admin_01041'{/yun}</span>
+                                <span>{{ lc('admin_01041') }}</span>
                             </div>
                         </td>
                     </tr>
                     <tr v-show="domainInfo.mode == 2">
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_system_00162'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_system_00162') }}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="domainInfo.indexdir"></el-input>
+                                <el-input :placeholder="lc('wap_user_00076')" v-model="domainInfo.indexdir"></el-input>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>{yun:}t key='admin_01042'{/yun}</span>
+                                <span>{{ lc('admin_01042') }}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_system_00163'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_system_00163') }}</div>
                         </td>
                         <td>
                             <div class="TableSelect">
-                                <el-select v-model="domainInfo.fz_type" placeholder="{yun:}t key='wap_user_00100'{/yun}">
+                                <el-select v-model="domainInfo.fz_type" :placeholder="lc('wap_user_00100')">
                                     <el-option v-for="(item,key) in typeOptionS" :key="key" :label="item.label"
                                         :value="item.value">
                                     </el-option>
@@ -92,28 +92,28 @@
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>{yun:}t key='admin_system_00163'{/yun}</span>
+                                <span>{{ lc('admin_system_00163') }}</span>
                             </div>
                         </td>
                     </tr>
                     <tr v-show="domainInfo.fz_type == 1">
                         <td>
-                            <div class="TableTite">{yun:}t key='wap_com_00015'{/yun}</div>
+                            <div class="TableTite">{{ lc('wap_com_00015') }}</div>
                         </td>
                         <td>
                             <div class="TableSelect" style="display: flex;align-items: center;">
-                                <el-select v-model="domainInfo.province" placeholder="{yun:}t key='wap_user_00100'{/yun}" @change="handelProOption">
+                                <el-select v-model="domainInfo.province" :placeholder="lc('wap_user_00100')" @change="handelProOption">
                                     <el-option v-for="(item,key) in provinceOptionS" :key="key" :label="item.label"
                                         :value="item.value">
                                     </el-option>
                                 </el-select>
-                                <el-select v-model="domainInfo.cityid" placeholder="{yun:}t key='wap_user_00100'{/yun}" style="margin: 0 6px;"
+                                <el-select v-model="domainInfo.cityid" :placeholder="lc('wap_user_00100')" style="margin: 0 6px;"
                                     @change="handelCityOption">
                                     <el-option v-for="(item,key) in cityOptionS" :key="key" :label="item.label"
                                         :value="item.value">
                                     </el-option>
                                 </el-select>
-                                <el-select v-model="domainInfo.three_cityid" placeholder="{yun:}t key='wap_user_00100'{/yun}" @change="handelCountyOption">
+                                <el-select v-model="domainInfo.three_cityid" :placeholder="lc('wap_user_00100')" @change="handelCountyOption">
                                     <el-option v-for="(item,key) in countyOptionS" :key="key" :label="item.label"
                                         :value="item.value">
                                     </el-option>
@@ -122,17 +122,17 @@
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>{yun:}t key='admin_system_00160'{/yun}</span>
+                                <span>{{ lc('admin_system_00160') }}</span>
                             </div>
                         </td>
                     </tr>
                     <tr v-show="domainInfo.fz_type == 2">
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_system_00167'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_system_00167') }}</div>
                         </td>
                         <td>
                             <div class="TableSelect">
-                                <el-select v-model="domainInfo.hy" placeholder="{yun:}t key='wap_user_00100'{/yun}">
+                                <el-select v-model="domainInfo.hy" :placeholder="lc('wap_user_00100')">
                                     <el-option v-for="(item,key) in hyOptionS" :key="key" :label="item.label"
                                         :value="item.value">
                                     </el-option>
@@ -141,18 +141,18 @@
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>{yun:}t key='admin_system_00164'{/yun}</span>
+                                <span>{{ lc('admin_system_00164') }}</span>
                             </div>
                         </td>
                     </tr>
 
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_system_00169'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_system_00169') }}</div>
                         </td>
                         <td>
                             <div class="TableSelect">
-                                <el-select v-model="domainInfo.style" placeholder="{yun:}t key='wap_user_00100'{/yun}">
+                                <el-select v-model="domainInfo.style" :placeholder="lc('wap_user_00100')">
                                     <el-option v-for="(item,key) in styleOptionS" :key="key" :label="item.label"
                                         :value="item.value">
                                     </el-option>
@@ -161,105 +161,105 @@
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>{yun:}t key='admin_system_00146'{/yun}</span>
+                                <span>{{ lc('admin_system_00146') }}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_system_00170'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_system_00170') }}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input placeholder="{yun:}t key='wap_user_00076'{/yun}" v-model="domainInfo.tpl"></el-input>
+                                <el-input :placeholder="lc('wap_user_00076')" v-model="domainInfo.tpl"></el-input>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>{yun:}t key='admin_system_00145'{/yun}</span>
+                                <span>{{ lc('admin_system_00145') }}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_system_00153'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_system_00153') }}</div>
                         </td>
                         <td>
                             <div class="setBasicIput">
-                                <el-switch v-model="isType" active-text="{yun:}t key='member_com_00287'{/yun}"></el-switch>
+                                <el-switch v-model="isType" :active-text="lc('member_com_00287')"></el-switch>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>{yun:}t key='admin_system_00147'{/yun}</span>
+                                <span>{{ lc('admin_system_00147') }}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_system_00157'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_system_00157') }}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input type="textarea" :rows="2" placeholder="{yun:}t key='wap_user_00076'{/yun}"
+                                <el-input type="textarea" :rows="2" :placeholder="lc('wap_user_00076')"
                                     v-model="domainInfo.webtitle"></el-input>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>{yun:}t key='admin_system_00157'{/yun}</span>
+                                <span>{{ lc('admin_system_00157') }}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_system_00152'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_system_00152') }}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input type="textarea" :rows="2" placeholder="{yun:}t key='wap_user_00076'{/yun}"
+                                <el-input type="textarea" :rows="2" :placeholder="lc('wap_user_00076')"
                                     v-model="domainInfo.webkeyword"></el-input>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>{yun:}t key='admin_system_00152'{/yun}</span>
+                                <span>{{ lc('admin_system_00152') }}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_system_00156'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_system_00156') }}</div>
                         </td>
                         <td>
                             <div class="TableInpt">
-                                <el-input type="textarea" :rows="2" placeholder="{yun:}t key='wap_user_00076'{/yun}"
+                                <el-input type="textarea" :rows="2" :placeholder="lc('wap_user_00076')"
                                     v-model="domainInfo.webmeta"></el-input>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>{yun:}t key='admin_system_00156'{/yun}</span>
+                                <span>{{ lc('admin_system_00156') }}</span>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div class="TableTite">{yun:}t key='admin_system_00154'{/yun}</div>
+                            <div class="TableTite">{{ lc('admin_system_00154') }}</div>
                         </td>
                         <td>
                             <div class="TableUpload">
                                 <el-upload class="upload-demo" :accept="pic_accept" :action="upLogoUrl" :auto-upload="false"
                                     :show-file-list="false" :on-change="upLogoChange">
-                                    <el-button slot="trigger" size="small" type="primary">{yun:}t key='admin_system_00158'{/yun}</el-button>
+                                    <el-button slot="trigger" size="small" type="primary">{{ lc('admin_system_00158') }}</el-button>
                                     <img class="el-upload-list__item-thumbnail" v-if="domainInfo.weblogo"
-                                        :src="domainInfo.weblogo" alt="{yun:}t key='admin_system_00155'{/yun}" />
+                                        :src="domainInfo.weblogo" alt=lc('admin_system_00155') />
                                 </el-upload>
                             </div>
                         </td>
                         <td>
                             <div class="TableShuom">
-                                <span>{yun:}t key='admin_01043'{/yun}<br>{yun:}t key='admin_01044'{/yun}</span>
+                                <span>{{ lc('admin_01043') }}<br>{{ lc('admin_01044') }}</span>
                             </div>
                         </td>
                     </tr>
@@ -267,7 +267,7 @@
             </table>
         </div>
         <div class="setBasicButn" style="border: none;">
-            <el-button type="primary" size="medium" @click="saveDomain" :disabled="saveLoading">{yun:}t key='common.submit'{/yun}</el-button>
+            <el-button type="primary" size="medium" @click="saveDomain" :disabled="saveLoading">{{ lc('common.submit') }}</el-button>
         </div>
     </div>
 </template>
@@ -317,17 +317,17 @@ module.exports = {
             isType: true,
             modeOptionS: [{
                 value: 1,
-                label: "{yun:}t key='admin_system_00159'{/yun}"
+                label: lc('admin_system_00159')
             }, {
                 value: 2,
-                label: "{yun:}t key='admin_system_00171'{/yun}"
+                label: lc('admin_system_00171')
             }],
             typeOptionS: [{
                 value: 1,
-                label: "{yun:}t key='admin_system_00165'{/yun}"
+                label: lc('admin_system_00165')
             }, {
                 value: 2,
-                label: "{yun:}t key='wap_00507'{/yun}"
+                label: lc('wap_00507')
             }],
             styleOptionS: [],
 
@@ -488,7 +488,7 @@ module.exports = {
             formData.append('mode', self.domainInfo.mode);
             if (self.domainInfo.mode == 1) {
                 if (self.domainInfo.domain == '') {
-                    message.error("{yun:}t key='admin_system_00148'{/yun}");
+                    message.error(lc('admin_system_00148'));
                     return false;
                 } else {
                     formData.append('domain', self.domainInfo.domain);
@@ -496,7 +496,7 @@ module.exports = {
             }
             if (self.domainInfo.mode == 2) {
                 if (self.domainInfo.indexdir == '') {
-                    message.error("{yun:}t key='admin_system_00149'{/yun}");
+                    message.error(lc('admin_system_00149'));
                     return false;
                 } else {
                     formData.append('indexdir', self.domainInfo.indexdir);
@@ -507,7 +507,7 @@ module.exports = {
             if (self.domainInfo.fz_type == 1) {
                 if (self.domainInfo.province == '') {
 
-                    message.error("{yun:}t key='admin_system_00150'{/yun}");
+                    message.error(lc('admin_system_00150'));
                     return false;
                 } else {
 
@@ -519,7 +519,7 @@ module.exports = {
             if (self.domainInfo.fz_type == 2) {
                 if (self.domainInfo.hy == '') {
 
-                    message.error("{yun:}t key='admin_system_00151'{/yun}");
+                    message.error(lc('admin_system_00151'));
                     return false;
                 } else {
 

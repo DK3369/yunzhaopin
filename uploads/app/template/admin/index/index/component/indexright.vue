@@ -2,20 +2,20 @@
     <div>
         <div class="homeTopRigDuax">
             <div class="homeTopRiTite">
-                <span>{yun:}t key='admin_00094'{/yun}</span>
+                <span>{{ lc('admin_00094') }}</span>
             </div>
             <div class="homeTopRigDumao">
                 <div class="homeTopumaod">
                     <span class="spannum">{{numdata.msgnum}}</span>
                     <!-- <b>剩余短信数量</b> -->
-                    <el-button type="primary" size="mini" @click="tomsg">{yun:}t key='wap_user_00172'{/yun}</el-button>
+                    <el-button type="primary" size="mini" @click="tomsg">{{ lc('wap_user_00172') }}</el-button>
                 </div>
             </div>
         </div>
         
         <div class="indexLetSixan">
             <div class="homeTopRiTite">
-                <span>{yun:}t key='admin_00093'{/yun}</span>
+                <span>{{ lc('admin_00093') }}</span>
             </div>
             <div class="indexLetshicConts">
                 <el-carousel :interval="5000" arrow="always" :autoplay="false" v-if="msgNumData.length>0">
@@ -60,7 +60,7 @@ module.exports = {
     },
     methods: {
         format(percentage) {
-            let tex = "{yun:}t key='admin_00095'{/yun}"
+            let tex = lc('admin_00095')
             return tex + percentage + '%'
         },
         getData: function() {

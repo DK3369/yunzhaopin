@@ -1,7 +1,7 @@
 <template>
     <div v-loading="loading" style="overflow: hidden; position: relative; width: 100%;">
         <div class="mplatejdshds">
-            <el-select v-model="jobId" size="small" multiple :multiple-limit="multiple ? max : 1" placeholder="{yun:}t key='admin_00055'{/yun}"
+            <el-select v-model="jobId" size="small" multiple :multiple-limit="multiple ? max : 1" :placeholder="lc('admin_00055')"
                        filterable remote :remote-method="remoteClassList" @change="classChange" @remove-tag="classRemove" v-if="showsearch==true">
                 <el-option v-for="opitem in classOptions" :key="opitem.id" :label="opitem.name"
                            :value="opitem.id" :disabled="opitem.disabled" >
@@ -11,7 +11,7 @@
                     </span>
                 </el-option>
             </el-select>
-            <el-input style="cursor: pointer;" :readonly="true" placeholder="{yun:}t key='admin_00052'{/yun}" v-else> </el-input>
+            <el-input style="cursor: pointer;" :readonly="true" :placeholder="lc('admin_00052')" v-else> </el-input>
             <div slot="prefix">
                 <el-button type="text" icon="el-icon-s-operation" style="width:25px; margin-right: 25px;"
                        @click="jobOpen"></el-button>
@@ -24,9 +24,9 @@
                        :show-close="true" size="80%">
                 <div class="modluDrawerContents">
                     <div class="modluDrawerTi9te">
-                        <div>{yun:}t key='wap_com_00272'{/yun}</div>
+                        <div>{{ lc('wap_com_00272') }}</div>
                         <div class="shuytans">
-                            <el-input v-model="searchJob" placeholder="{yun:}t key='admin_00057'{/yun}"
+                            <el-input v-model="searchJob" :placeholder="lc('admin_00057')"
                                       @input="handleSearchJob">
                                 <i slot="prefix" class="el-input__icon el-icon-search"></i>
                             </el-input>
@@ -88,13 +88,13 @@
                     </div>
                     <div v-else class="noneResults">
                         <div>
-                            <el-empty description="{yun:}t key='admin_00039'{/yun}"></el-empty>
+                            <el-empty :description="lc('admin_00039')"></el-empty>
                             
                         </div>
                     </div>
                     <div slot="footer" class="dialog-footer dialoFoofetee">
                         <div class="footText">
-                            <div class="mingdsc"><span>{yun:}t key='admin_00390'{/yun}</span></div>
+                            <div class="mingdsc"><span>{{ lc('admin_00390') }}</span></div>
                             <div class="mingdEltags" style="padding-top: 4px;">
                                 <el-tag v-for="(selectClass, selectIndex) in selectJobClass" :key="selectIndex"
                                         closable size="small" @close="handleCloseJob(selectClass.id)">
@@ -103,7 +103,7 @@
                             </div>
                         </div>
                         <div class="footTextburn">
-                            <el-button type="primary" size="mini" round @click="handleSubmitJob">{yun:}t key='wap_com_00019'{/yun}</el-button>
+                            <el-button type="primary" size="mini" round @click="handleSubmitJob">{{ lc('wap_com_00019') }}</el-button>
                         </div>
                     </div>
                 </div>
@@ -116,7 +116,7 @@
         props: {
             multiple: {type: Boolean, default: false}, // 选择方式 false-单选/true-多选
             max: {type: Number, default: 5}, // 多选下有效，最多选择几个
-            selected: {type: Object, default: null}, // 已选中数据，数据内容如：{167: "{yun:}t key='common_01417'{/yun}", 168: "{yun:}t key='admin_00056'{/yun}"}
+            selected: {type: Object, default: null}, // 已选中数据，数据内容如：{167: lc('common_01417'), 168: lc('admin_00056')}
             showsearch: {type: Boolean, default: true},
         },
         data: function () {
@@ -234,7 +234,7 @@
 
                                 let childrenIds = await this.getJobChildIds(classOptions[i].id),
                                     index = -1;
-                                if (childrenIds && childrenIds.length > 0 && this.jobId.length > 0) { // {yun:}t key='common_01285'{/yun}
+                                if (childrenIds && childrenIds.length > 0 && this.jobId.length > 0) { // {{ lc('common_01285') }}
                                     for (var j = 0; j < childrenIds.length; j++) {
                                         index = this.jobId.indexOf(childrenIds[j]);
                                         if (index > -1) { // 检索已选中下级
@@ -340,7 +340,7 @@
                     }
 
                     if (selectJobId.length >= max) {
-                        message.warning("{yun:}t key='admin_00045'{/yun}" + max + "{yun:}t key='common_02104'{/yun}");
+                        message.warning(lc('admin_00045') + max + lc('common_02104'));
                         return false;
                     }
                     that.selectJobId.push(id);

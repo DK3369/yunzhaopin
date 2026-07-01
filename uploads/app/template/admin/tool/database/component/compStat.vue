@@ -2,23 +2,23 @@
     <div class="moduleElHight">
         <div class="dataEchatFrom">
             <div class="dataEchFromTip">
-                <span :class="search.days == -1 ? 'spanDay': ''" @click="handleSearch(-1)">{yun:}t key='common_02000'{/yun}</span>
-                <span :class="search.days == 1 ? 'spanDay': ''" @click="handleSearch(1)">{yun:}t key='common_01940'{/yun}</span>
-                <span :class="search.days == 2 ? 'spanDay': ''" @click="handleSearch(2)">{yun:}t key='admin_tool_00142'{/yun}</span>
-                <span :class="search.days == 3 ? 'spanDay': ''" @click="handleSearch(3)">{yun:}t key='admin_tool_00143'{/yun}</span>
-                <span :class="search.days == 4 ? 'spanDay': ''" @click="handleSearch(4)">{yun:}t key='admin_tool_00146'{/yun}</span>
-                <span :class="search.days == 5 ? 'spanDay': ''" @click="handleSearch(5)">{yun:}t key='admin_tool_00145'{/yun}</span>
+                <span :class="search.days == -1 ? 'spanDay': ''" @click="handleSearch(-1)">{{ lc('common_02000') }}</span>
+                <span :class="search.days == 1 ? 'spanDay': ''" @click="handleSearch(1)">{{ lc('common_01940') }}</span>
+                <span :class="search.days == 2 ? 'spanDay': ''" @click="handleSearch(2)">{{ lc('admin_tool_00142') }}</span>
+                <span :class="search.days == 3 ? 'spanDay': ''" @click="handleSearch(3)">{{ lc('admin_tool_00143') }}</span>
+                <span :class="search.days == 4 ? 'spanDay': ''" @click="handleSearch(4)">{{ lc('admin_tool_00146') }}</span>
+                <span :class="search.days == 5 ? 'spanDay': ''" @click="handleSearch(5)">{{ lc('admin_tool_00145') }}</span>
             </div>
             <div class="dataEchFromInpt">
-                <el-date-picker v-model="search.time" type="daterange" range-separator="{yun:}t key='admin_company_00019'{/yun}" :picker-options="pickerOptions" start-placeholder="{yun:}t key='admin_00343'{/yun}" end-placeholder="{yun:}t key='admin_00344'{/yun}" value-format="timestamp" @change="handleSearch(0)"></el-date-picker>
-                <el-button type="primary" icon="el-icon-search" size="mini" @click="handleSearch(0)">{yun:}t key='admin_user_weipin_00049'{/yun}</el-button>
+                <el-date-picker v-model="search.time" type="daterange" :range-separator="lc('admin_company_00019')" :picker-options="pickerOptions" :start-placeholder="lc('admin_00343')" :end-placeholder="lc('admin_00344')" value-format="timestamp" @change="handleSearch(0)"></el-date-picker>
+                <el-button type="primary" icon="el-icon-search" size="mini" @click="handleSearch(0)">{{ lc('admin_user_weipin_00049') }}</el-button>
             </div>
         </div>
         <div class="dataEchNumber">
             <div class="dataEchNuWione">
                 <div class="dataEchNumxzen">
                     <div>
-                        <span>{yun:}t key='admin_user_00305'{/yun}</span>
+                        <span>{{ lc('admin_user_00305') }}</span>
                         <b>{{allNum.adduser}}</b>
                     </div>
                 </div>
@@ -26,7 +26,7 @@
                     <div class="dataEchNumList">
                         <div class="dataEchNumName">
                             <img src="../../images/dataim1.png" alt="">
-                            <span>{yun:}t key='admin_user_00193'{/yun}</span>
+                            <span>{{ lc('admin_user_00193') }}</span>
                         </div>
                         <div class="dataEchNumSusn">
                             <b>{{allNum.addexpect}}</b>
@@ -35,7 +35,7 @@
                     <div class="dataEchNumList">
                         <div class="dataEchNumName">
                             <img src="../../images/dataim2.png" alt="">
-                            <span>{yun:}t key='admin_tool_00176'{/yun}</span>
+                            <span>{{ lc('admin_tool_00176') }}</span>
                         </div>
                         <div class="dataEchNumSusn">
                             <b>{{allNum.resumeRefresh}}</b>
@@ -44,7 +44,7 @@
                     <div class="dataEchNumList">
                         <div class="dataEchNumName">
                             <img src="../../images/dataim3.png" alt="">
-                            <span>{yun:}t key='member_com_00152'{/yun}</span>
+                            <span>{{ lc('member_com_00152') }}</span>
                         </div>
                         <div class="dataEchNumSusn">
                             <b>{{allNum.resumeDelivery}}</b>
@@ -55,7 +55,7 @@
             <div class="dataEchNuWitwo">
                 <div class="dataEchNumxzen" style="background: #5880FC;">
                     <div>
-                        <span>{yun:}t key='admin_user_company_00162'{/yun}</span>
+                        <span>{{ lc('admin_user_company_00162') }}</span>
                         <b>{{allNum.addcom}}</b>
                     </div>
                 </div>
@@ -63,7 +63,7 @@
                     <div class="dataEchNumList">
                         <div class="dataEchNumName">
                             <img src="../../images/dataim4.png" alt="">
-                            <span>{yun:}t key='member_com_00250'{/yun}</span>
+                            <span>{{ lc('member_com_00250') }}</span>
                         </div>
                         <div class="dataEchNumSusn">
                             <b>{{allNum.addjob}}</b>
@@ -72,7 +72,7 @@
                     <div class="dataEchNumList">
                         <div class="dataEchNumName">
                             <img src="../../images/dataim5.png" alt="">
-                            <span>{yun:}t key='wap_com_00045'{/yun}</span>
+                            <span>{{ lc('wap_com_00045') }}</span>
                         </div>
                         <div class="dataEchNumSusn">
                             <b>{{allNum.jobRefresh}}</b>
@@ -81,7 +81,7 @@
                     <div class="dataEchNumList">
                         <div class="dataEchNumName">
                             <img src="../../images/dataim6.png" alt="">
-                            <span>{yun:}t key='wap_com_00042'{/yun}</span>
+                            <span>{{ lc('wap_com_00042') }}</span>
                         </div>
                         <div class="dataEchNumSusn">
                             <b>{{allNum.downResume}}</b>
@@ -90,7 +90,7 @@
                     <div class="dataEchNumList">
                         <div class="dataEchNumName">
                             <img src="../../images/dataim7.png" alt="">
-                            <span>{yun:}t key='resume_00029'{/yun}</span>
+                            <span>{{ lc('resume_00029') }}</span>
                         </div>
                         <div class="dataEchNumSusn">
                             <b>{{allNum.inviteInterview}}</b>
@@ -102,14 +102,14 @@
         </div>
 
         <div class="dataEchatTite">
-            <span>{yun:}t key='admin_tool_00177'{/yun}</span>
+            <span>{{ lc('admin_tool_00177') }}</span>
         </div>
         <div class="dataEchatInfo">
             <div class="dataEchatModul" id="main1"></div>
             <div class="dataEchatModul" id="main2"></div>
         </div>
         <div class="dataEchatTite">
-            <span>{yun:}t key='admin_tool_00178'{/yun}</span>
+            <span>{{ lc('admin_tool_00178') }}</span>
         </div>
         <div class="dataEchatInfo">
             <div class="dataEchatModul" id="main3"></div>
@@ -206,7 +206,7 @@
                 var option = {
                     color: ['#39c3d5', '#46a6ff', '#5259F4'],
                     title: {
-                        text: window.yunAdminT("{yun:}t key='admin_tool_00179'{/yun}"),
+                        text: window.yunAdminT(lc('admin_tool_00179')),
                         textStyle: {
                             color: '#333',
                             fontWeight: '500',
@@ -302,7 +302,7 @@
                 var myChart = echarts.init(document.getElementById('main2'));
                 var option = {
                     title: {
-                        text: window.yunAdminT("{yun:}t key='admin_tool_00180'{/yun}"),
+                        text: window.yunAdminT(lc('admin_tool_00180')),
                         textStyle: {
                             color: '#333',
                             fontWeight: '500',
@@ -414,7 +414,7 @@
                 var option = {
                     color: ['#23C9C9', '#1890FF'],
                     title: {
-                        text: window.yunAdminT("{yun:}t key='admin_tool_00181'{/yun}"),
+                        text: window.yunAdminT(lc('admin_tool_00181')),
                         textStyle: {
                             color: '#333',
                             fontWeight: '500',
@@ -504,7 +504,7 @@
                 var option = {
                     color: ['#1890FF', '#23C9C9', '#5259F4'],
                     title: {
-                        text: window.yunAdminT("{yun:}t key='admin_tool_00108'{/yun}"),
+                        text: window.yunAdminT(lc('admin_tool_00108')),
                         textStyle: {
                             color: '#333',
                             fontWeight: '500',
@@ -562,7 +562,7 @@
                             // smooth: true,
                             areaStyle: {
                                 normal: {
-                                    //右，下，{yun:}t key='wap_01540'{/yun}，上
+                                    //右，下，{{ lc('wap_01540') }}，上
                                     color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
                                         {
                                             offset: 0,
@@ -600,7 +600,7 @@
                 var myChart = echarts.init(document.getElementById('main5'));
                 var option = {
                     title: {
-                        text: window.yunAdminT("{yun:}t key='admin_tool_00182'{/yun}"),
+                        text: window.yunAdminT(lc('admin_tool_00182')),
                         textStyle: {
                             color: '#333',
                             fontWeight: '500',
@@ -691,7 +691,7 @@
                 var option = {
                     color: ['#39c3d5', '#46a6ff', '#5259F4'],
                     title: {
-                        text: window.yunAdminT("{yun:}t key='admin_tool_00114'{/yun}"),
+                        text: window.yunAdminT(lc('admin_tool_00114')),
                         textStyle: {
                             color: '#333',
                             fontWeight: '500',

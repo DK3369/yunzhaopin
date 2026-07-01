@@ -2,9 +2,9 @@
     <div class="homeCenterAll">
         <div class="homeCentLeft">
             <div class="homeCentLeTite">
-                <div class="homeCentLeName"><span>{yun:}t key='admin_00072'{/yun}</span></div>
+                <div class="homeCentLeName"><span>{{ lc('admin_00072') }}</span></div>
                 <div class="homeCentLeTime">
-                    <el-date-picker v-model="date" type="month" value-format="yyyy-MM" placeholder="{yun:}t key='admin_user_00192'{/yun}" @change="dateChange" :picker-options="pickerOptions" :clearable="false">
+                    <el-date-picker v-model="date" type="month" value-format="yyyy-MM" :placeholder="lc('admin_user_00192')" @change="dateChange" :picker-options="pickerOptions" :clearable="false">
                     </el-date-picker>
                 </div>
             </div>
@@ -12,39 +12,39 @@
                 <div class="homeLeEchatInfo">
                     <ul>
                         <li :class="tjTbName=='getweb'?'spanCurs':''" @click="clicktb('getweb')">
-                            <span>{yun:}t key='admin_00073'{/yun}</span>
+                            <span>{{ lc('admin_00073') }}</span>
                             <b>{{userNumMon}}</b>
                         </li>
                         <li :class="tjTbName=='resumetj'?'spanCurs':''" @click="clicktb('resumetj')">
-                            <span>{yun:}t key='common.resume'{/yun}</span>
+                            <span>{{ lc('common.resume') }}</span>
                             <b>{{resumeNumMon}}</b>
                         </li>
                         <li :class="tjTbName=='comtj'?'spanCurs':''" @click="clicktb('comtj')">
-                            <span>{yun:}t key='admin_00074'{/yun}</span>
+                            <span>{{ lc('admin_00074') }}</span>
                             <b>{{companyNumMon}}</b>
                         </li>
                         <li :class="tjTbName=='jobtj'?'spanCurs':''" @click="clicktb('jobtj')">
-                            <span>{yun:}t key='common.job'{/yun}</span>
+                            <span>{{ lc('common.job') }}</span>
                             <b>{{jobNumMon}}</b>
                         </li>
                         <li :class="tjTbName=='ujobtj'?'spanCurs':''" @click="clicktb('ujobtj')">
-                            <span>{yun:}t key='member_com_00152'{/yun}</span>
+                            <span>{{ lc('member_com_00152') }}</span>
                             <b>{{userjobNumMon}}</b>
                         </li>
                         <li :class="tjTbName=='yqmstj'?'spanCurs':''" @click="clicktb('yqmstj')">
-                            <span>{yun:}t key='resume_00029'{/yun}</span>
+                            <span>{{ lc('resume_00029') }}</span>
                             <b>{{yqmsNumMon}}</b>
                         </li>
                         <li :class="tjTbName=='downresumetj'?'spanCurs':''" @click="clicktb('downresumetj')">
-                            <span>{yun:}t key='wap_com_00042'{/yun}</span>
+                            <span>{{ lc('wap_com_00042') }}</span>
                             <b>{{downreusmeNumMon}}</b>
                         </li>
                         <li :class="tjTbName=='adtj'?'spanCurs':''" @click="clicktb('adtj')">
-                            <span>{yun:}t key='admin_00075'{/yun}</span>
+                            <span>{{ lc('admin_00075') }}</span>
                             <b>{{ggNumMon}}</b>
                         </li>
                         <li :class="tjTbName=='wxbdtj'?'spanCurs':''" @click="clicktb('wxbdtj')">
-                            <span>{yun:}t key='wap_user_00115'{/yun}</span>
+                            <span>{{ lc('wap_user_00115') }}</span>
                             <b>{{wxbdNumMon}}</b>
                         </li>
                     </ul>
@@ -55,12 +55,12 @@
                     </div>
                     <div class="homeEchatWebText">
                         <div class="homeEchatWebInfo">
-                            <h3>{yun:}t key='admin_00071'{/yun}</h3>
+                            <h3>{{ lc('admin_00071') }}</h3>
                             <b>{{wxbdcomNumMon}}</b>
                             <span>{{ lc("admin_percent_value", [comwx_percent]) }}</span>
                         </div>
                         <div class="homeEchatWebInfo">
-                            <h3>{yun:}t key='admin_00070'{/yun}</h3>
+                            <h3>{{ lc('admin_00070') }}</h3>
                             <b>{{wxbduserNumMon}}</b>
                             <span>{{ lc("admin_percent_value", [userwx_percent]) }}</span>
                         </div>

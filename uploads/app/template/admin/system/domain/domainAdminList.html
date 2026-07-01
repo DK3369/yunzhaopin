@@ -74,7 +74,7 @@
                 },
 
                 addAdminShow: false,
-                addAdminTitle: '添加分站管理员',
+                addAdminTitle: lc('admin_system_00186'),
 
                 adminUid: 0,
                 tableData: [],
@@ -114,7 +114,7 @@
                 params.pageSize = that.pageSize;
                 params.page = that.currentPage;
                 that.loading = true;
-                that.emptytext = "数据加载中";
+                that.emptytext = lc('admin_user_weipin_00026');
                 httpPost('m=system&c=domain_group&a=adminList', params, { hideloading: true }).then(function (res) {
                     let data = res.data.data;
                     that.tableData = data.list;
@@ -127,7 +127,7 @@
                     }
                     that.loading = false;
                     if (that.tableData.length === 0){
-                        that.emptytext = "暂无数据";
+                        that.emptytext = lc('wap_js_00113');
                     }
                 }).catch(function (error) {
                     console.log(error);
@@ -174,7 +174,7 @@
                     name = '（' + scope.row.name + '）';
                     params.uid = scope.row.uid;
                 }
-                delConfirm(this, params, this.delete, '您确定要删除管理员' + name + '信息吗？');
+                delConfirm(this, params, this.delete, lc('admin_system_00182') + name + lc('admin_01052'));
             },
             delAdminSel() {
                 var that = this;
@@ -214,13 +214,13 @@
             addAdmin() {
                 var self = this;
                 self.adminUid = 0;
-                self.addAdminTitle = '添加分站管理员';
+                self.addAdminTitle = lc('admin_system_00186');
                 self.addAdminShow = true;
             },
             editAdmin(scope) {
                 var self = this;
                 self.adminUid = parseInt(scope.row.uid);
-                self.addAdminTitle = '修改分站管理员';
+                self.addAdminTitle = lc('admin_system_00183');
                 self.addAdminShow = true;
             },
             closeAdminAdd: function () {

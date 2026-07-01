@@ -2,27 +2,27 @@
 	<div class="moduleElHight">
 		<div class="moduleSeachbig">
             <div class="tableSeachInpt tableSeachInptsmall" >
-                <el-select v-model="search.status" size="small" slot="prepend" placeholder="{yun:}t key='admin_user_00161'{/yun}" clearable @change="doUserQuery">
-                    <el-option label="{yun:}t key='admin_user_00164'{/yun}" value="1"></el-option>
-                    <el-option label="{yun:}t key='admin_user_00163'{/yun}" value="2"></el-option>
+                <el-select v-model="search.status" size="small" slot="prepend" :placeholder="lc('admin_user_00161')" clearable @change="doUserQuery">
+                    <el-option :label="lc('admin_user_00164')" value="1"></el-option>
+                    <el-option :label="lc('admin_user_00163')" value="2"></el-option>
                 </el-select>
             </div>
 			<div class="tableSeachInpt tableSeachInptsmall">
-				<el-input placeholder="{yun:}t key='admin_00340'{/yun}" size="small" @keyup.enter.native="doUserQuery" v-model="search.keyword" class="input-with-select" clearable>
-					<el-select v-model="search.type" size="small" slot="prepend" placeholder="{yun:}t key='admin_user_00140'{/yun}" >
-						<el-option label="{yun:}t key='admin_user_00140'{/yun}" value="1"></el-option>
-						<el-option label="{yun:}t key='wap_01619'{/yun}" value="2"></el-option>
-						<el-option label="{yun:}t key='admin_user_00130'{/yun}" value="3"></el-option>
+				<el-input :placeholder="lc('admin_00340')" size="small" @keyup.enter.native="doUserQuery" v-model="search.keyword" class="input-with-select" clearable>
+					<el-select v-model="search.type" size="small" slot="prepend" :placeholder="lc('admin_user_00140')" >
+						<el-option :label="lc('admin_user_00140')" value="1"></el-option>
+						<el-option :label="lc('wap_01619')" value="2"></el-option>
+						<el-option :label="lc('admin_user_00130')" value="3"></el-option>
 					</el-select>
 				</el-input>
 			</div>
 			<div class="tableSeachInpt">
-				<el-button type="primary" icon="el-icon-search" size="mini" @click="doUserQuery">{yun:}t key='admin_user_weipin_00049'{/yun}</el-button>
+				<el-button type="primary" icon="el-icon-search" size="mini" @click="doUserQuery">{{ lc('admin_user_weipin_00049') }}</el-button>
 			</div>
 					 
 		</div>
 		<div class="admin_datatip"><i class="el-icon-document"></i>  {{ lc("admin_data_stats") }} {{ lc("admin_total_count", [memNum.count]) }}
-            <span class="admin_datatip_n cp_n" @click="lockList">{yun:}t key='admin_00447'{/yun}</span>
+            <span class="admin_datatip_n cp_n" @click="lockList">{{ lc('admin_00447') }}</span>
             <span class="admin_datatip_n">{{ lc("admin_search_results_count", [total]) }}</span>
 		</div>
 		<div class="moduleElTable" :class="{ 'moduleElTableHig': tableHig }" style="border: 1px solid #ebeef5; width: calc(100% - 2px);">
@@ -32,25 +32,25 @@
 					<p>{{dataText}}</p>
 				</template>
                 <el-table-column type="selection" width="55"> </el-table-column>
-                <el-table-column prop="uid" label="{yun:}t key='admin_user_00130'{/yun}" width="80"> </el-table-column>
-                <el-table-column prop="username" label="{yun:}t key='admin_user_00140'{/yun}" > </el-table-column>
-                <el-table-column prop="usertype_name" label="{yun:}t key='admin_user_00162'{/yun}"  width="130">
+                <el-table-column prop="uid" :label="lc('admin_user_00130')" width="80"> </el-table-column>
+                <el-table-column prop="username" :label="lc('admin_user_00140')" > </el-table-column>
+                <el-table-column prop="usertype_name" :label="lc('admin_user_00162')"  width="130">
                 </el-table-column>
-                <el-table-column prop="tel" label="{yun:}t key='wap_01619'{/yun}" > </el-table-column>
-                <el-table-column prop="ctime_ymd" label="{yun:}t key='wap_com_00342'{/yun}" width="180" > </el-table-column>
-                <el-table-column prop="zt" label="{yun:}t key='member_user_00181'{/yun}">
+                <el-table-column prop="tel" :label="lc('wap_01619')" > </el-table-column>
+                <el-table-column prop="ctime_ymd" :label="lc('wap_com_00342')" width="180" > </el-table-column>
+                <el-table-column prop="zt" :label="lc('member_user_00181')">
                     <template slot-scope="scope">
                         <div class="admin_state">
-                            <span v-if="scope.row.status == '2'" class="admin_state1">{yun:}t key='admin_user_00163'{/yun}</span>
-                            <span v-else class="admin_state2">{yun:}t key='admin_user_00164'{/yun}</span>
+                            <span v-if="scope.row.status == '2'" class="admin_state1">{{ lc('admin_user_00163') }}</span>
+                            <span v-else class="admin_state2">{{ lc('admin_user_00164') }}</span>
                         </div>
                     </template>
                 </el-table-column>
-			    <el-table-column label="{yun:}t key='member_user_00048'{/yun}" width="140" fixed="right">
+			    <el-table-column :label="lc('member_user_00048')" width="140" fixed="right">
                     <template slot-scope="scope">
                         <div class="cz_button">
-                            <el-button  v-if="scope.row.status == '1'"  size="small " plain @click="handle(scope.row)">{yun:}t key='admin_user_00165'{/yun}</el-button>
-                            <el-button   type="danger" size="small "  @click="del(scope.row)">{yun:}t key='common.delete'{/yun}</el-button>
+                            <el-button  v-if="scope.row.status == '1'"  size="small " plain @click="handle(scope.row)">{{ lc('admin_user_00165') }}</el-button>
+                            <el-button   type="danger" size="small "  @click="del(scope.row)">{{ lc('common.delete') }}</el-button>
                         </div>
                     </template>
                 </el-table-column>
@@ -59,8 +59,8 @@
 
 		<div class="modulePaging">
             <div>
-                <el-checkbox v-model="checkedAll" @change="selectAllBottom">{yun:}t key='wap_js_00074'{/yun}</el-checkbox>
-                <el-button @click="batchDel" size="mini">{yun:}t key='member_com_00055'{/yun}</el-button></div>
+                <el-checkbox v-model="checkedAll" @change="selectAllBottom">{{ lc('wap_js_00074') }}</el-checkbox>
+                <el-button @click="batchDel" size="mini">{{ lc('member_com_00055') }}</el-button></div>
             <div class="modulePagNum">
                 <el-pagination :total="total" @current-change="userPageChange"
                                @size-change="handleSizeChange"
@@ -71,14 +71,14 @@
 		</div>
 
 		 <div class="modluDrawer">
-		 	<el-dialog title="{yun:}t key='admin_00448'{/yun}" :visible.sync="cldrawer" :with-header="true" :modal-append-to-body="false"
+		 	<el-dialog :title="lc('admin_00448')" :visible.sync="cldrawer" :with-header="true" :modal-append-to-body="false"
 		 		:show-close="true" width="300px">
 		 		<div>
-		 			<i class="el-icon-warning"></i> {yun:}t key='admin_user_00160'{/yun}
+		 			<i class="el-icon-warning"></i> {{ lc('admin_user_00160') }}
 		 		</div>
 		 		<span slot="footer" class="dialog-footer">
-		 			<el-button @click="cldrawer = false">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
-		 			<el-button type="primary" @click="cldrawer = false">{yun:}t key='wap_com_00019'{/yun}</el-button>
+		 			<el-button @click="cldrawer = false">{{ lc('admin_user_weipin_00043') }}</el-button>
+		 			<el-button type="primary" @click="cldrawer = false">{{ lc('wap_com_00019') }}</el-button>
 		 		</span>
 		 	</el-dialog>
 		 </div>
@@ -93,7 +93,7 @@ module.exports = {
 	data: function () {
 		return {
 			loading: false,
-			dataText: "{yun:}t key='admin_user_weipin_00026'{/yun}",
+			dataText: lc('admin_user_weipin_00026'),
             search:{
 				type: '1',
 				keyword:'',
@@ -112,7 +112,7 @@ module.exports = {
 			currentPage4: 4,
 			tableData: [],
 			items: [
-				{ type: '', label: "{yun:}t key='admin_user_00149'{/yun}" }, 
+				{ type: '', label: lc('admin_user_00149') }, 
 			],
             idsArr:[],
             uri: "m=user&c=",
@@ -182,7 +182,7 @@ module.exports = {
 					}
                     _this.pageSizes =res.data.pageSizes;
                     if (_this.tableData.length === 0) {
-	                    _this.dataText = "{yun:}t key='wap_js_00113'{/yun}";
+	                    _this.dataText = lc('wap_js_00113');
 	                }
                 }
             })
@@ -221,7 +221,7 @@ module.exports = {
 				params = {};
 			params.id = detail.id;
             let url = this.uri + 'admin_member_logout&a=status';
-			let msg = "{yun:}t key='admin_vue_00031'{/yun}";
+			let msg = lc('admin_vue_00031');
 			delConfirm(_this, params, function (params) {
 				httpPost(url, params).then(function(res) {
 					if (res.data.error > 0) {
@@ -239,7 +239,7 @@ module.exports = {
 				params = {};
 			params.id = detail.id;
             let url = this.uri + 'admin_member_logout&a=del';
-			let msg = "{yun:}t key='admin_vue_00028'{/yun}";
+			let msg = lc('admin_vue_00028');
 			delConfirm(_this, params, function (params) {
 				httpPost(url, params).then(function(res) {
 					if (res.data.error > 0) {
@@ -263,7 +263,7 @@ module.exports = {
 				params = {};
 			params.del = ids;
             let url = this.uri + 'admin_member_logout&a=del'
-			let msg = "{yun:}t key='admin_vue_00028'{/yun}";
+			let msg = lc('admin_vue_00028');
 			delConfirm(_this, params, function (params) {
 				httpPost(url, params).then(function(res) {
 					if (res.data.error > 0) {

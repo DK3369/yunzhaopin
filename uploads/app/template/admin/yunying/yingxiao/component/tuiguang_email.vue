@@ -4,15 +4,15 @@
             <table class="tableVue">
                 <thead>
                 <tr align="left">
-                    <th width="250">{yun:}t key='member_com_00021'{/yun}</th>
-                    <th>{yun:}t key='member_user_00181'{/yun}</th>
-                    <th width="300">{yun:}t key='member_user_00048'{/yun}</th>
+                    <th width="250">{{ lc('member_com_00021') }}</th>
+                    <th>{{ lc('member_user_00181') }}</th>
+                    <th width="300">{{ lc('member_user_00048') }}</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_yunying_00178'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_yunying_00178') }}</div>
                     </td>
                     <td>
                         <div class="TableTexta">
@@ -21,15 +21,15 @@
                     </td>
                     <td>
                         <div class="TableCaozuo">
-                            <el-button :disabled="anniversary.disabled==1 || anniversary_e == 0" plain size="mini" @click="sendemail('2','2','1','','3','0',lc('admin_yunying_00170'),'0','0')">{yun:}t key='admin_user_00167'{/yun}</el-button>
-                            <el-button :disabled="anniversary.disabled==1 || anniversary_e == 0" plain size="mini" @click="outemail('anniversary')">{yun:}t key='admin_01112'{/yun}</el-button>
-                            <el-button :disabled="anniversary.disabled==1 || anniversary_e == 0" plain size="mini" @click="finishemail('anniversary')" >{yun:}t key='admin_yunying_00180'{/yun}</el-button>
+                            <el-button :disabled="anniversary.disabled==1 || anniversary_e == 0" plain size="mini" @click="sendemail('2','2','1','','3','0',lc('admin_yunying_00170'),'0','0')">{{ lc('admin_user_00167') }}</el-button>
+                            <el-button :disabled="anniversary.disabled==1 || anniversary_e == 0" plain size="mini" @click="outemail('anniversary')">{{ lc('admin_01112') }}</el-button>
+                            <el-button :disabled="anniversary.disabled==1 || anniversary_e == 0" plain size="mini" @click="finishemail('anniversary')" >{{ lc('admin_yunying_00180') }}</el-button>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_01113'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_01113') }}</div>
                     </td>
                     <td>
                         <div class="TableTexta">
@@ -38,15 +38,15 @@
                     </td>
                     <td>
                         <div class="TableCaozuo">
-                            <el-button :disabled="todaydue.disabled==1 || todaydue_e == 0" plain size="mini" @click="sendemail('1','3','1','1','3','0',lc('admin_yunying_00170'),'0','0')">{yun:}t key='admin_user_00167'{/yun}</el-button>
-                            <el-button :disabled="todaydue.disabled==1 || todaydue_e == 0" plain size="mini" @click="outemail('todaydue')">{yun:}t key='admin_01112'{/yun}</el-button>
-                            <el-button :disabled="todaydue.disabled==1 || todaydue_e == 0" plain size="mini" @click="finishemail('todaydue')">{yun:}t key='admin_yunying_00180'{/yun}</el-button>
+                            <el-button :disabled="todaydue.disabled==1 || todaydue_e == 0" plain size="mini" @click="sendemail('1','3','1','1','3','0',lc('admin_yunying_00170'),'0','0')">{{ lc('admin_user_00167') }}</el-button>
+                            <el-button :disabled="todaydue.disabled==1 || todaydue_e == 0" plain size="mini" @click="outemail('todaydue')">{{ lc('admin_01112') }}</el-button>
+                            <el-button :disabled="todaydue.disabled==1 || todaydue_e == 0" plain size="mini" @click="finishemail('todaydue')">{{ lc('admin_yunying_00180') }}</el-button>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_yunying_00175'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_yunying_00175') }}</div>
                     </td>
                     <td>
                         <div class="TableTexta">
@@ -55,15 +55,15 @@
                     </td>
                     <td>
                         <div class="TableCaozuo">
-                            <el-button :disabled="sevendue.disabled==1 || sevendue_e == 0" plain size="mini" @click="sendemail('1','3','1','7','3','0',lc('admin_yunying_00170'),'0','0')">{yun:}t key='admin_user_00167'{/yun}</el-button>
-                            <el-button :disabled="sevendue.disabled==1 || sevendue_e == 0" plain size="mini" @click="outemail('sevendue')">{yun:}t key='admin_01112'{/yun}</el-button>
-                            <el-button :disabled="sevendue.disabled==1 || sevendue_e == 0" plain size="mini" @click="finishemail('sevendue')">{yun:}t key='admin_yunying_00180'{/yun}</el-button>
+                            <el-button :disabled="sevendue.disabled==1 || sevendue_e == 0" plain size="mini" @click="sendemail('1','3','1','7','3','0',lc('admin_yunying_00170'),'0','0')">{{ lc('admin_user_00167') }}</el-button>
+                            <el-button :disabled="sevendue.disabled==1 || sevendue_e == 0" plain size="mini" @click="outemail('sevendue')">{{ lc('admin_01112') }}</el-button>
+                            <el-button :disabled="sevendue.disabled==1 || sevendue_e == 0" plain size="mini" @click="finishemail('sevendue')">{{ lc('admin_yunying_00180') }}</el-button>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_yunying_00173'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_yunying_00173') }}</div>
                     </td>
                     <td>
                         <div class="TableTexta">
@@ -72,15 +72,15 @@
                     </td>
                     <td>
                         <div class="TableCaozuo">
-                            <el-button :disabled="useradd.disabled==1 || useradd_e == 0" plain size="mini" @click="sendemail('1','4','1','7','3','0',lc('admin_yunying_00170'),'0','0')">{yun:}t key='admin_user_00167'{/yun}</el-button>
-                            <el-button :disabled="useradd.disabled==1 || useradd_e == 0" plain size="mini" @click="outemail('useradd')">{yun:}t key='admin_01112'{/yun}</el-button>
-                            <el-button :disabled="useradd.disabled==1 || useradd_e == 0" plain size="mini" @click="finishemail('useradd')">{yun:}t key='admin_yunying_00180'{/yun}</el-button>
+                            <el-button :disabled="useradd.disabled==1 || useradd_e == 0" plain size="mini" @click="sendemail('1','4','1','7','3','0',lc('admin_yunying_00170'),'0','0')">{{ lc('admin_user_00167') }}</el-button>
+                            <el-button :disabled="useradd.disabled==1 || useradd_e == 0" plain size="mini" @click="outemail('useradd')">{{ lc('admin_01112') }}</el-button>
+                            <el-button :disabled="useradd.disabled==1 || useradd_e == 0" plain size="mini" @click="finishemail('useradd')">{{ lc('admin_yunying_00180') }}</el-button>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_yunying_00176'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_yunying_00176') }}</div>
                     </td>
                     <td>
                         <div class="TableTexta">
@@ -89,15 +89,15 @@
                     </td>
                     <td>
                         <div class="TableCaozuo">
-                            <el-button :disabled="userup.disabled==1 || userup_e == 0" plain size="mini" @click="sendemail('1','5','1','7','3','0',lc('admin_yunying_00170'),'0','0')">{yun:}t key='admin_user_00167'{/yun}</el-button>
-                            <el-button :disabled="userup.disabled==1 || userup_e == 0" plain size="mini" @click="outemail('userup')">{yun:}t key='admin_01112'{/yun}</el-button>
-                            <el-button :disabled="userup.disabled==1 || userup_e == 0" plain size="mini" @click="finishemail('userup')">{yun:}t key='admin_yunying_00180'{/yun}</el-button>
+                            <el-button :disabled="userup.disabled==1 || userup_e == 0" plain size="mini" @click="sendemail('1','5','1','7','3','0',lc('admin_yunying_00170'),'0','0')">{{ lc('admin_user_00167') }}</el-button>
+                            <el-button :disabled="userup.disabled==1 || userup_e == 0" plain size="mini" @click="outemail('userup')">{{ lc('admin_01112') }}</el-button>
+                            <el-button :disabled="userup.disabled==1 || userup_e == 0" plain size="mini" @click="finishemail('userup')">{{ lc('admin_yunying_00180') }}</el-button>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_yunying_00174'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_yunying_00174') }}</div>
                     </td>
                     <td>
                         <div class="TableTexta">
@@ -106,15 +106,15 @@
                     </td>
                     <td>
                         <div class="TableCaozuo">
-                            <el-button :disabled="addjob.disabled==1 || addjob_e == 0" plain size="mini" @click="sendemail('2','6','1','7','3','0',lc('admin_yunying_00170'),'0','0')">{yun:}t key='admin_user_00167'{/yun}</el-button>
-                            <el-button :disabled="addjob.disabled==1 || addjob_e == 0" plain size="mini" @click="outemail('addjob')">{yun:}t key='admin_01112'{/yun}</el-button>
-                            <el-button :disabled="addjob.disabled==1 || addjob_e == 0" plain size="mini" @click="finishemail('addjob')">{yun:}t key='admin_yunying_00180'{/yun}</el-button>
+                            <el-button :disabled="addjob.disabled==1 || addjob_e == 0" plain size="mini" @click="sendemail('2','6','1','7','3','0',lc('admin_yunying_00170'),'0','0')">{{ lc('admin_user_00167') }}</el-button>
+                            <el-button :disabled="addjob.disabled==1 || addjob_e == 0" plain size="mini" @click="outemail('addjob')">{{ lc('admin_01112') }}</el-button>
+                            <el-button :disabled="addjob.disabled==1 || addjob_e == 0" plain size="mini" @click="finishemail('addjob')">{{ lc('admin_yunying_00180') }}</el-button>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_yunying_00177'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_yunying_00177') }}</div>
                     </td>
                     <td>
                         <div class="TableTexta">
@@ -123,9 +123,9 @@
                     </td>
                     <td>
                         <div class="TableCaozuo">
-                            <el-button :disabled="upjob.disabled==1 || upjob_e == 0" plain size="mini" @click="sendemail('2','7','1','7','3','0',lc('admin_yunying_00170'),'0','0')">{yun:}t key='admin_user_00167'{/yun}</el-button>
-                            <el-button :disabled="upjob.disabled==1 || upjob_e == 0" plain size="mini" @click="outemail('upjob')">{yun:}t key='admin_01112'{/yun}</el-button>
-                            <el-button :disabled="upjob.disabled==1 || upjob_e == 0" plain size="mini" @click="finishemail('upjob')">{yun:}t key='admin_yunying_00180'{/yun}</el-button>
+                            <el-button :disabled="upjob.disabled==1 || upjob_e == 0" plain size="mini" @click="sendemail('2','7','1','7','3','0',lc('admin_yunying_00170'),'0','0')">{{ lc('admin_user_00167') }}</el-button>
+                            <el-button :disabled="upjob.disabled==1 || upjob_e == 0" plain size="mini" @click="outemail('upjob')">{{ lc('admin_01112') }}</el-button>
+                            <el-button :disabled="upjob.disabled==1 || upjob_e == 0" plain size="mini" @click="finishemail('upjob')">{{ lc('admin_yunying_00180') }}</el-button>
                         </div>
                     </td>
                 </tr>
@@ -243,7 +243,7 @@
             },
             outemail(outtype) {
                 let that = this;
-                message.confirm("{yun:}t key='admin_yunying_00179'{/yun}", function() {
+                message.confirm(lc('admin_yunying_00179'), function() {
                     httpPost('m=yunying&c=yingxiao_tuiguang&a=xls', {outtype: outtype, xls_type: 'email'}).then(function (response) {
                         let res = response.data;
 
@@ -262,9 +262,9 @@
                         data = res.data;
 
                     if (res.error > 0) {
-                        message.error("{yun:}t key='admin_system_00397'{/yun}");
+                        message.error(lc('admin_system_00397'));
                     } else {
-                        message.success("{yun:}t key='wap_user_00264'{/yun}", function () {
+                        message.success(lc('wap_user_00264'), function () {
                             that.getData();
                         });
                     }

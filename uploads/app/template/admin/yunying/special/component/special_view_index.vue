@@ -2,14 +2,14 @@
     <div class="jobspecial_box">
         <div class="moduleSeachbig">
             <div class="tableSeachInpt">
-                <el-input v-model="searchForm.keyword" placeholder="{yun:}t key='wap_com_00157'{/yun}" size="small" prefix-icon="el-icon-search" clearable>
+                <el-input v-model="searchForm.keyword" :placeholder="lc('wap_com_00157')" size="small" prefix-icon="el-icon-search" clearable>
                 </el-input>
             </div>
             <div class="tableSeachInpt">
-                <el-button type="primary" icon="el-icon-search" size="mini" @click="handleSearch">{yun:}t key='admin_user_weipin_00049'{/yun}</el-button>
+                <el-button type="primary" icon="el-icon-search" size="mini" @click="handleSearch">{{ lc('admin_user_weipin_00049') }}</el-button>
             </div>
             <div v-if="showAdd" class="tableSeachInpt">
-                <el-button type="primary" plain icon="el-icon-plus" size="mini" @click="companyVisible = true">{yun:}t key='admin_00850'{/yun}</el-button>
+                <el-button type="primary" plain icon="el-icon-plus" size="mini" @click="companyVisible = true">{{ lc('admin_00850') }}</el-button>
             </div>
         </div>
 
@@ -24,14 +24,14 @@
                     </template>
                     <el-table-column type="selection" width="55">
                     </el-table-column>
-                    <el-table-column prop="uid" label="{yun:}t key='member_com_00345'{/yun}" sortable="custom" width="100">
+                    <el-table-column prop="uid" :label="lc('member_com_00345')" sortable="custom" width="100">
                     </el-table-column>
-                    <el-table-column prop="name" label="{yun:}t key='wap_com_00157'{/yun}" min-width="220">
+                    <el-table-column prop="name" :label="lc('wap_com_00157')" min-width="220">
                         <template slot-scope="scope">
                             <el-link :href="scope.row.comUrl" target="_blank" type="primary">{{ scope.row.name }}</el-link>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="sort" label="{yun:}t key='member_com_00022'{/yun}" sortable="custom" width="120">
+                    <el-table-column prop="sort" :label="lc('member_com_00022')" sortable="custom" width="120">
                         <template slot-scope="scope">
                             <el-input v-if="scope.row[scope.column.property + 'isShow']" :ref="scope.column.property + scope.$index"
                                 :id="scope.column.property + scope.$index" v-model="scope.row.sort" @blur="alterData(scope, 'int')"
@@ -42,26 +42,26 @@
               </span>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="tpl" label="{yun:}t key='member_user_00181'{/yun}" width="140">
+                    <el-table-column prop="tpl" :label="lc('member_user_00181')" width="140">
                         <template slot-scope="scope">
-                            <template v-if="scope.row.status == 1"><span style="color:#61687C;">{yun:}t key='admin_yunying_00133'{/yun}</span></template>
-                            <template v-else-if="scope.row.status == 2"><span style="color:red;">{yun:}t key='wap_user_00167'{/yun}</span></template>
-                            <template v-else>{yun:}t key='admin_01232'{/yun}</template>
+                            <template v-if="scope.row.status == 1"><span style="color:#61687C;">{{ lc('admin_yunying_00133') }}</span></template>
+                            <template v-else-if="scope.row.status == 2"><span style="color:red;">{{ lc('wap_user_00167') }}</span></template>
+                            <template v-else>{{ lc('admin_01232') }}</template>
                         </template>
                     </el-table-column>
-                    <el-table-column v-if="special.tpl == 'gl.htm'" prop="limit" label="{yun:}t key='admin_01233'{/yun}" width="150">
+                    <el-table-column v-if="special.tpl == 'gl.htm'" prop="limit" :label="lc('admin_01233')" width="150">
                         <template slot-scope="scope">
                             <div class="cz_button">
-                                <el-button v-if="scope.row.famous == 1" size="mini" @click="handleSpecialFamous(scope)">{yun:}t key='common.cancel'{/yun}</el-button>
-                                <el-button v-else size="mini" @click="handleSpecialFamous(scope)">{yun:}t key='admin_user_company_00147'{/yun}</el-button>
+                                <el-button v-if="scope.row.famous == 1" size="mini" @click="handleSpecialFamous(scope)">{{ lc('common.cancel') }}</el-button>
+                                <el-button v-else size="mini" @click="handleSpecialFamous(scope)">{{ lc('admin_user_company_00147') }}</el-button>
                             </div>
                         </template>
                     </el-table-column>
-                    <el-table-column label="{yun:}t key='member_user_00048'{/yun}" width="140" header-align="center" align="right">
+                    <el-table-column :label="lc('member_user_00048')" width="140" header-align="center" align="right">
                         <template slot-scope="scope">
                             <div class="cz_button">
-                                <el-button size="mini" @click="handleAudit(scope)">{yun:}t key='admin_yunying_00138'{/yun}</el-button>
-                                <el-button type="danger" size="mini" @click="deleteRow(scope)">{yun:}t key='common.cancel'{/yun}</el-button>
+                                <el-button size="mini" @click="handleAudit(scope)">{{ lc('admin_yunying_00138') }}</el-button>
+                                <el-button type="danger" size="mini" @click="deleteRow(scope)">{{ lc('common.cancel') }}</el-button>
                             </div>
                         </template>
                     </el-table-column>
@@ -69,10 +69,10 @@
             </div>
             <div class="modulePaging">
                 <div>
-                    <el-checkbox :indeterminate="isIndeterminate" v-model="checked" @change="selectAllBottom">{yun:}t key='wap_js_00074'{/yun}</el-checkbox>
-                    <el-button @click="deleteRow(null, true)" size="mini">{yun:}t key='member_com_00055'{/yun}</el-button>
-                    <el-button @click="handleStatuscom" size="mini">{yun:}t key='admin_user_weipin_00037'{/yun}</el-button>
-                    <el-button plain icon="el-icon-download" @click.native.prevent="handleExport" size="mini">{yun:}t key='admin_00851'{/yun}</el-button>
+                    <el-checkbox :indeterminate="isIndeterminate" v-model="checked" @change="selectAllBottom">{{ lc('wap_js_00074') }}</el-checkbox>
+                    <el-button @click="deleteRow(null, true)" size="mini">{{ lc('member_com_00055') }}</el-button>
+                    <el-button @click="handleStatuscom" size="mini">{{ lc('admin_user_weipin_00037') }}</el-button>
+                    <el-button plain icon="el-icon-download" @click.native.prevent="handleExport" size="mini">{{ lc('admin_00851') }}</el-button>
                 </div>
                 <div class="modulePagNum">
                     <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
@@ -85,7 +85,7 @@
 
         <!-- 批量审核 弹窗 -->
         <div class="modluDrawer">
-            <el-dialog :visible.sync="statuscomVisible" title="{yun:}t key='admin_01234'{/yun}" width="400px" :modal-append-to-body="false"
+            <el-dialog :visible.sync="statuscomVisible" :title="lc('admin_01234')" width="400px" :modal-append-to-body="false"
                 :append-to-body="true" :show-close="true" :destroy-on-close="true">
                 <special_view_status :pid="statuscomPids" @child-event="statuscomVisible = false; getList();"
                     @child-event-close="statuscomVisible = false"></special_view_status>
@@ -93,13 +93,13 @@
         </div>
 
         <!--企业详情审核 -->
-        <el-drawer :visible.sync="auditVisible" title="{yun:}t key='wap_00188'{/yun}" :append-to-body="true" :destroy-on-close="true"
+        <el-drawer :visible.sync="auditVisible" :title="lc('wap_00188')" :append-to-body="true" :destroy-on-close="true"
             :modal-append-to-body="false" size="80%">
             <special_view_audit :id="info.id" :uid="info.uid" @child-event="auditVisible = false; getList();"></special_view_audit>
         </el-drawer>
 
         <!--添加参会企业-->
-        <el-drawer :visible.sync="companyVisible" title="{yun:}t key='admin_00850'{/yun}" :append-to-body="true" :destroy-on-close="true"
+        <el-drawer :visible.sync="companyVisible" :title="lc('admin_00850')" :append-to-body="true" :destroy-on-close="true"
             :modal-append-to-body="false" size="90%">
             <special_view_company :id="id" @child-event="companyVisible = false; getList();"></special_view_company>
         </el-drawer>
@@ -116,7 +116,7 @@ module.exports = {
         return {
             loading: false,
 			pagerCount: 5,
-            dataText: "{yun:}t key='admin_user_weipin_00026'{/yun}",
+            dataText: lc('admin_user_weipin_00026'),
             pytoken: localStorage.getItem("pytoken"),
             searchForm: {
                 page: 1,
@@ -135,9 +135,9 @@ module.exports = {
             special: {},//专题的部分信息
             statuscomVisible: false,//批量审核
             statuscomPids: '",
-            auditVisible: false,//{yun:}t key='admin_yunying_00138'{/yun}
+            auditVisible: false,//{{ lc('admin_yunying_00138') }}
             info: {},
-            companyVisible: false,//{yun:}t key='admin_00850'{/yun}
+            companyVisible: false,//{{ lc('admin_00850') }}
             prevPage:0
         }
     },
@@ -208,7 +208,7 @@ module.exports = {
                     }
                     _this.loading = false;
                     if (_this.tableData.length === 0) {
-                        _this.dataText = "{yun:}t key='wap_js_00113'{/yun}";
+                        _this.dataText = lc('wap_js_00113');
                     }
                 }
             }).catch(function (error) {
@@ -219,7 +219,7 @@ module.exports = {
             let params = {};
             if (isMore) {
                 if (!this.selectedItem.length) {
-                    message.error("{yun:}t key='admin_user_weipin_00005'{/yun}");
+                    message.error(lc('admin_user_weipin_00005'));
                     return false;
                 }
                 let list = [];
@@ -284,9 +284,9 @@ module.exports = {
             httpPost('m=yunying&c=special_special&a=ajaxsort', params, {hideloading: true}).then(function (response) {
                 let res = response.data;
                 if (res.error === 0) {
-                    message.success("{yun:}t key='admin_user_company_00208'{/yun}");
+                    message.success(lc('admin_user_company_00208'));
                 } else {
-                    message.error("{yun:}t key='admin_00187'{/yun}");
+                    message.error(lc('admin_00187'));
                 }
                 _this.oldData = null;
                 _this.getList();
@@ -301,7 +301,7 @@ module.exports = {
         handleStatuscom() {
             // BatchAudit
             if (!this.selectedItem.length) {
-                message.error("{yun:}t key='admin_00572'{/yun}");
+                message.error(lc('admin_00572'));
                 return false;
             }
 
@@ -322,9 +322,9 @@ module.exports = {
             params.famous = scope.row.famous;
             let msg = '';
             if (scope.row.famous == 1) {
-                msg = "{yun:}t key='admin_vue_00078'{/yun}";
+                msg = lc('admin_vue_00078');
             } else {
-                msg = "{yun:}t key='admin_vue_00079'{/yun}"
+                msg = lc('admin_vue_00079')
             }
             delConfirm(this, params, this.doSpecialFamous, msg);
         },
@@ -387,7 +387,7 @@ module.exports = {
             }
             formElement.submit();
             formElement.remove();
-            message.success("{yun:}t key='wap_01063'{/yun}");
+            message.success(lc('wap_01063'));
         }
     },
     components: {

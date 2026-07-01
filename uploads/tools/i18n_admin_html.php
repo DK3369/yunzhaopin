@@ -1,5 +1,10 @@
 <?php
 /**
+ * DEPRECATED — DO NOT USE.
+ *
+ * This batch tool caused site outages (aliases.php corruption, broken Vue syntax).
+ * Use manual per-file lc() binding instead. See .cursor/rules/agent-workflow.mdc
+ *
  * Convert admin .html shell pages: bare Chinese → lc('key') bindings.
  *
  * Usage:
@@ -8,6 +13,9 @@
  *
  * Full-site batch disabled without --file= or --dir=.
  */
+fwrite(STDERR, "ERROR: i18n_admin_html.php is disabled. Use manual per-file lc() binding.\n");
+exit(1);
+
 define('ROOT', dirname(__DIR__) . '/');
 $dryRun = in_array('--dry-run', $argv ?? array(), true);
 $singleFile = '';

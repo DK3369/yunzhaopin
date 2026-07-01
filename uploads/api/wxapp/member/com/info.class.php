@@ -2,7 +2,9 @@
 
 class info_controller extends com_controller{
 
-    
+    /**
+     * 获取企业信息
+     */
     function getinfo_action()
     {
 
@@ -18,7 +20,7 @@ class info_controller extends com_controller{
         $comcert   =  $companyM->getCertInfo(array('uid'=>$this->member['uid'],'type'=>3));
 
         $info['cert_pic']    =  $comcert['check'];
-        // 
+        // 首先根据企业表的认证状态来判断
         if ($info['yyzz_status'] == 1){
             $info['cert_status'] = 1;
         }else{
@@ -30,7 +32,7 @@ class info_controller extends com_controller{
 
         $cacheM    =  $this->MODEL('cache');
         $cache     =  $cacheM->GetCache('com');
-        // 
+        //福利缓存数据
         if(is_array($cache['comdata']['job_welfare'])){
             foreach($cache['comdata']['job_welfare'] as $k=>$v){
                 $welfareData[]	=	$cache['comclass_name'][$v];
@@ -65,7 +67,7 @@ class info_controller extends com_controller{
 		$info['app_push']   =  $this->member['app_push'];
 		$info['usertype'] 	= 	$this->member['usertype'];
         
-		// 
+		// 第三方绑定相关参数
 		$userInfoM  =  $this->MODEL('userinfo');
 		$member     =  $userInfoM->getInfo(array('uid'=>$this->member['uid']),array('field'=>'`qqid`,`qqunionid`,`wxid`,`wxopenid`,`unionid`,`sinaid`,`maguid`,`qfyuid`'));
 		
@@ -171,7 +173,7 @@ class info_controller extends com_controller{
 
 		if(empty($this->member['uid'])){
 		    $error	=	3;
-		    $msg	=	yun_at('wap_01833');
+		    $msg	=	'参数不正确';
 		}else{
 		    if(empty($this -> comInfo['uid'])){
 		        $userinfoM  =  $this->MODEL("userinfo");
@@ -198,7 +200,7 @@ class info_controller extends com_controller{
         $companyM	=	$this->MODEL('company');
 
         if(empty($this->member['uid'])){
-            $this->render_json(3, yun_at('wap_01833'));
+            $this->render_json(3, '参数不正确');
         }else{
             $where['uid']	=	$this->member['uid'];
             !empty($_GET['pageSize']) && $where['limit'] = $_GET['pageSize'];
@@ -216,7 +218,7 @@ class info_controller extends com_controller{
 
         if(empty($this->member['uid'])){
             $error	=	3;
-            $msg	=	yun_at('wap_01833');
+            $msg	=	'参数不正确';
         }else{
             if($_POST['wappic']==1){
                 $data['base'] = $_POST['uimage'];
@@ -245,18 +247,18 @@ class info_controller extends com_controller{
 
         if(empty($this->member['uid']) || empty($_POST['id'])){
             $error	=	3;
-            $msg	=	yun_at('wap_01833');
+            $msg	=	'参数不正确';
         }else{
             $oid	=	$companyM->delCompanyShow(is_array($_POST['id']) ? $_POST['id'] : explode(',', $_POST['id']),array('uid'=>$this->member['uid']));
 
             if($oid){
-                $logM->member_log(yun_at('api_wxapp_00004'),16,3, $this->member['uid'], $this->member['usertype']);// member log
+                $logM->member_log("删除企业环境展示",16,3, $this->member['uid'], $this->member['usertype']);//会员日志
 
                 $error	=	1;
-                $msg	=	yun_at('wap_user_00147');
+                $msg	=	'删除成功';
             }else{
                 $error	=	2;
-                $msg	=	yun_at('wap_user_00146');
+                $msg	=	'删除失败';
             }
         }
         $this->render_json($error, $msg);
@@ -264,16 +266,16 @@ class info_controller extends com_controller{
 	function delcomqcode_action(){
         if(empty($this->member['uid'])){
             $error	=	3;
-            $msg	=	yun_at('wap_01833');
+            $msg	=	'参数不正确';
         }else{
             $comM      =   $this->MODEL('company');
             $return = $comM->upInfo($this->member['uid'],array(),array('comqcode'=>''));
             if($return){
                 $error	=	1;
-                $msg	=	yun_at('wap_user_00147');
+                $msg	=	'删除成功';
             }else{
                 $error	=	2;
-                $msg	=	yun_at('wap_user_00146');
+                $msg	=	'删除失败';
             }
         }
         $this->render_json($error, $msg);

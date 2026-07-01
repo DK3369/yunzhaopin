@@ -11,7 +11,7 @@ class finance_controller extends user_controller{
         if($info['topdate']>1){
 			$info['topdate']	=	date('Y-m-d',$info['topdate']);
 		}else{
-			$info['topdate']	=	yun_at('api_wxapp_00017');
+			$info['topdate']	=	'未设置';
 		}
 		$data['info']	=	$info;
 	    $data['webtel']	=	$this->config['sy_freewebtel'];
@@ -20,7 +20,7 @@ class finance_controller extends user_controller{
 	    $data['fktype']  =  $this->fktype();
 		$this->render_json('1','',$data);
 	}
-	// 
+	//设置简历置顶简历
 	function setServer_action()
 	{
 	    $result   =  array();
@@ -64,7 +64,7 @@ class finance_controller extends user_controller{
 		$StatisM	=	$this		->	MODEL('statis');
 		$orderM		=	$this		->	MODEL('companyorder');
         $integralM		                =	$this->MODEL('integral');
-		$statis		=	$StatisM	->	getInfo($this->member['uid'],array('usertype'=>'1'));// member statis
+		$statis		=	$StatisM	->	getInfo($this->member['uid'],array('usertype'=>'1'));//查询会员信息
         $orders		=	$orderM->getPayList(array('com_id'=>$this->member['uid'], 'usertype' =>1, 'type'=>'1'),array('field'=>'`order_price`'));
         $allprice   =   0;
         foreach($orders as $key=>$val){
@@ -86,13 +86,13 @@ class finance_controller extends user_controller{
 
         $data['task']                   =   $statusList;
 
-        // app
+        // app用分享数据
         if (isset($_POST['provider']) && $_POST['provider'] == 'app'){
 
             $data['shareData']  =   array(
                 'url'       =>  Url('wap').'index.php?c=register&uid='.$this->member['uid'],
-                'title'     =>  yun_at('wap_01590'),
-                'summary'   =>  yun_at('api_wxapp_00036').$this->config['sy_webname'].yun_at('api_wxapp_00037'),
+                'title'     =>  '邀请注册',
+                'summary'   =>  '我在'.$this->config['sy_webname'].'上找工作；真的很不错，忍不住推荐给你',
                 'imageUrl'  =>  checkpic($this->config['sy_wx_sharelogo'])
             );
         }
@@ -100,7 +100,7 @@ class finance_controller extends user_controller{
 		$data['statis']		=	$statis;
 		$this->render_json(1,'',$data);
 	}
-    // 
+    //消费明细
 	function consume_action()
 	{
 		
@@ -112,7 +112,7 @@ class finance_controller extends user_controller{
 		$where['orderby']	=	'pay_time,desc';
 	    $page				=	$_POST['page'];
 		$limit				=	$_POST['limit'] ? $_POST['limit'] : 10;
-		if($page){// paginate
+		if($page){//分页
 			$pagenav		=	($page-1)*$limit;
 			$where['limit']	=	array($pagenav,$limit);
 		}else{
@@ -138,7 +138,7 @@ class finance_controller extends user_controller{
 
 		$this->render_json(0,'',$data,$total);
 	}
-    // 
+    //订单列表
 	function fklog_action(){
 		
 		$orderM					=	$this->MODEL('companyorder');
@@ -149,7 +149,7 @@ class finance_controller extends user_controller{
 		$where['orderby']		=	array('order_time,desc','order_state,asc');
 	    $page					=	$_POST['page'];
 		$limit					=	$_POST['limit'] ? $_POST['limit'] : 10;
-		if($page){// paginate
+		if($page){//分页
 			$pagenav			=	($page-1)*$limit;
 			$where['limit']		=	array($pagenav,$limit);
 		}else{
@@ -167,15 +167,15 @@ class finance_controller extends user_controller{
 	    	$List[$lk]['dingdan_state']		=	$lv['order_state'];
 	    	$List[$lk]['dingdan_type']		=	$lv['order_type'];
 	    	if ($lv['type']=='1'){
-		    	$List[$lk]['type_n']		=	yun_at('default_00090');
+		    	$List[$lk]['type_n']		=	'购买会员';
 		    }elseif($lv['type']=='2'){
-		    	$List[$lk]['type_n']		=	$this->config['integral_pricename']. yun_at('common_01946');
+		    	$List[$lk]['type_n']		=	$this->config['integral_pricename'].'充值';
 		    }elseif($lv['type']=='3'){
-		    	$List[$lk]['type_n']		=	yun_at('wap_01805');
+		    	$List[$lk]['type_n']		=	'银行转账';
 		    }elseif($lv['type']=='4'){
-		    	$List[$lk]['type_n']		=	yun_at('wap_01041');
+		    	$List[$lk]['type_n']		=	'金额充值';
 		    }elseif($lv['type']=='14'){
-		    	$List[$lk]['type_n']		=	yun_at('wap_user_00207');
+		    	$List[$lk]['type_n']		=	'简历置顶';
 		    }
 	    }
 		$data['list']		=	$List ;
@@ -183,7 +183,7 @@ class finance_controller extends user_controller{
 		$this->render_json(0,'',$data,$total);
 	
 	}
-	// 
+	//删除订单
 	function delfklog_action(){
 		$orderM		=	$this->MODEL('companyorder');
 		$id			=	(int)$_POST['id'];
@@ -191,7 +191,7 @@ class finance_controller extends user_controller{
 		
 		$this->render_json($return['errcode'],$return['msg']);
 	}
-	// 
+	//订单付款页面
 	function fk_action()
     {
 	    
@@ -204,23 +204,23 @@ class finance_controller extends user_controller{
 		    
 		    $id  =  (int)$_POST['id'];
 		    
-			if($id){// order
+			if($id){//订单
 			    
 			    $orderM		=	$this->MODEL('companyorder');
 				$order		=	$orderM->getInfo(array('id'=>$id));
 
 				if(empty($order)){
 					$error	=	2;
-					$msg	=	yun_at('api_wxapp_00010'); 
+					$msg	=	'订单不存在'; 
 				}elseif($order['order_state']!='1'){
 				    $error	=	3;
-				    $msg	=	yun_at('wap_01285');
+				    $msg	=	'请检查订单状态,本订单无需付款';
 				}else{
 					$ordertype	=	array(
-						'2'	=>	$this->config['integral_pricename']. yun_at('common_01946'),
-						'3'	=>	yun_at('admin_system_00529'),
-						'4'	=>	yun_at('wap_01041'),
-						'14'=>	yun_at('wap_user_00207')
+						'2'	=>	$this->config['integral_pricename'].'充值',
+						'3'	=>	'银行转帐',
+						'4'	=>	'金额充值',
+						'14'=>	'简历置顶'
 					);
 					$order['type_n']	=	$ordertype[$order['type']];
 					$error	=	1;
@@ -231,13 +231,13 @@ class finance_controller extends user_controller{
 			$data['fktype']  =  $fktype;
 		}else{
 			$error	=  2;
-			$msg	=  yun_at('wap_01295'); 
+			$msg	=  '暂未开通支付'; 
 			$data   =  array();
 		}
 
 	    $this->render_json($error,$msg,$data);
 	}
-	// 
+	//生成订单
 	function dingdan_action()
 	{
 	    $data['price_int']	   =  intval($_POST['price_int']);
@@ -267,7 +267,9 @@ class finance_controller extends user_controller{
 	    }
 	    $this->render_json(0,$msg,$result);
   	}
-  	
+  	/**
+  	 * 充值页面
+  	 */
 	function fkclass_action()
 	{
 		
@@ -327,7 +329,7 @@ class finance_controller extends user_controller{
 	    $this->render_json(0, 'ok', $return);
 	}
 	 
-    // 
+    //任务中心
     function getIntegralTask_action()
     {
 
@@ -353,13 +355,13 @@ class finance_controller extends user_controller{
         $data['integral_answerpl']        =   $this->config['integral_answerpl'];
 		$data['integral_bind_wx']      =   $this->config['integral_bind_wx'];
         $data['expectnum'] = $expectnum;
-        // app
+        // app用分享数据
         if (isset($_POST['provider']) && $_POST['provider'] == 'app'){
 
             $data['shareData']  =   array(
                 'url'       =>  Url('wap').'index.php?c=register&uid='.$this->member['uid'],
-                'title'     =>  yun_at('wap_01590'),
-                'summary'   =>  yun_at('api_wxapp_00036').$this->config['sy_webname'].yun_at('api_wxapp_00037'),
+                'title'     =>  '邀请注册',
+                'summary'   =>  '我在'.$this->config['sy_webname'].'上找工作；真的很不错，忍不住推荐给你',
                 'imageUrl'  =>  checkpic($this->config['sy_wx_sharelogo'])
             );
         }

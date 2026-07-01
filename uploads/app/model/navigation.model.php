@@ -185,6 +185,24 @@ class navigation_model extends model{
 		}
 		return $nid;
 	}
+
+	public function translateAdminNavRows($rows = array())
+	{
+	    if (empty($rows) || !function_exists('lc')) {
+	        return $rows;
+	    }
+	    foreach ($rows as $mk => $mv) {
+	        if (!isset($mv['name'])) {
+	            continue;
+	        }
+	        $rows[$mk]['name_key'] = $mv['name'];
+	        if (function_exists('yun_is_auto_key') && yun_is_auto_key($mv['name'])) {
+	            $rows[$mk]['name'] = lc($mv['name']);
+	        }
+	    }
+	    return $rows;
+	}
+
 	/**
 	 * 后台导航查询处理
 	 * @param array $whereData
@@ -193,13 +211,7 @@ class navigation_model extends model{
 	public function getAdminNavList($whereData=array(),$data=array('utype'=>null)){
 	    //导航配置
 	    $menurows  =  $this -> select_all('admin_navigation',$whereData);
-	    if (!empty($menurows) && function_exists('yun_auto_t')) {
-	        foreach ($menurows as $mk => $mv) {
-	            if (isset($mv['name'])) {
-	                $menurows[$mk]['name'] = yun_auto_t($mv['name']);
-	            }
-	        }
-	    }
+	    $menurows = $this->translateAdminNavRows($menurows);
 	    
 	    $i = $j = $a = $b = 0;
 	    $navigation = $menu = $one_menu = $two_menu = array();
@@ -211,6 +223,7 @@ class navigation_model extends model{
 					$navId[]					  =  $v['id'];
 	                $navigation[$i]['id']         =  $v['id'];
 	                $navigation[$i]['name']       =  $v['name'];
+	                $navigation[$i]['name_key']   =  isset($v['name_key']) ? $v['name_key'] : $v['name'];
 	                $navigation[$i]['classname']  =  $v['classname'];
 	                $navigation[$i]['sort']       =  $v['sort'];
 	                $i++;
@@ -219,6 +232,7 @@ class navigation_model extends model{
 	                $menu[$j]['id']         =  $v['id'];
 	                $menu[$j]['keyid']      =  $v['keyid'];
 	                $menu[$j]['name']       =  $v['name'];
+	                $menu[$j]['name_key']   =  isset($v['name_key']) ? $v['name_key'] : $v['name'];
 	                $menu[$j]['classname']  =  $v['classname'];
 	                $menu[$j]['url']        =  $v['url'];
                     $menu[$j]['path']       =  $v['path'];

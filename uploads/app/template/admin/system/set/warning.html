@@ -12,7 +12,7 @@
     <div class="moduleSeachs">
         <div class="moduleSeachleft">
             <div class="moduleSeachInpt" style="margin-right: 12px;">
-                <el-date-picker size="small" style="width: 260px;" v-model="daterange" type="daterange" @change="changedate" :range-separator="lc('admin_company_00019')" start-:placeholder="lc('admin_00343')" end-:placeholder="lc('admin_00344')"></el-date-picker>
+                <el-date-picker size="small" style="width: 260px;" v-model="daterange" type="daterange" @change="changedate" :range-separator="lc('admin_company_00019')" :start-placeholder="lc('admin_00343')" :end-placeholder="lc('admin_00344')"></el-date-picker>
             </div>
             <div class="tableSeachInptsmall newsinput">
                 <el-select v-model="status" size="small" slot="prepend" :clearable="true" :placeholder="lc('member_user_00181')" @change="search">
@@ -141,7 +141,7 @@
                     params.status = this.status;
                 }
                 this.loading = true;
-                that.emptytext = "数据加载中";
+                that.emptytext = lc('admin_user_weipin_00026');
                 httpPost('m=system&c=warning&a=index', params).then((result) => {
 
                     var res = result.data
@@ -156,7 +156,7 @@
                         }
                         that.loading = false;
                         if (that.tableData.length === 0){
-                            that.emptytext = "暂无数据";
+                            that.emptytext = lc('wap_js_00113');
                         }
                     }
                 }).catch(function (e) {

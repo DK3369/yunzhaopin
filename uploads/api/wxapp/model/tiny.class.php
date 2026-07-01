@@ -1,7 +1,7 @@
 <?php
 
 class tiny_controller extends wxapp_controller{
-	function list_action(){// tiny resume list
+	function list_action(){//微简历列表
 		$tinyM		=	$this->MODEL('tiny');
 		$where['status']	=	'1';
 		$keyword	=	$this->stringfilter($_POST['keyword']);
@@ -15,13 +15,13 @@ class tiny_controller extends wxapp_controller{
 		$order		=	$_POST['order'];
 		$nodata		=	$_POST['nodata'];
 		$limit		=	!$limit?10:$limit;
-		if($sex){// category id
+		if($sex){//类别ID
 			$where['sex']	=	$sex;
 		}
-		if($edu){// category id
+		if($edu){//类别ID
 			$where['edu']	=	$edu;
 		}
-		if($keyword){// keyword
+		if($keyword){//关键字
 			
 			$where['PHPYUNBTWSTART_A']	=	'';
             $where['username']	=	array('like',$keyword);
@@ -31,22 +31,22 @@ class tiny_controller extends wxapp_controller{
 		}
 
 		
-		if($nodata){// skip empty fields
+		if($nodata){//排除没有值的字段
 			$nodataarr	=	explode(",",$nodata);
 			foreach($nodataarr as $v){
 				$where[$v]	=	array('<>','');
 			}
 		}
-		if($provinceid){// category id
+		if($provinceid){//类别ID
 			$where['provinceid']=	$provinceid;
 		}
-		if($cityid){// category id
+		if($cityid){//类别ID
 			$where['cityid']	=	$cityid;
 		}
-		if($three_cityid){// category id
+		if($three_cityid){//类别ID
 			$where['three_cityid']	=	$three_cityid;
 		}
-		// 
+		// 处理分站查询条件
 		if (!empty($_POST['did'])){
 		    
 		    $domain  =  $this->getDomain($_POST['did'], true);
@@ -56,21 +56,21 @@ class tiny_controller extends wxapp_controller{
 		        $data['didcity']    =  $domain['didcity'];
 		        
 		        if (!empty($_POST['provinceid'])){
-		            // ，，
+		            // 分站下，再次选择城市，查询按选择的来
 		            $where['provinceid']  =  $_POST['provinceid'];
 		            $data['didcity']      =  $domain['city_name'][$_POST['provinceid']];
 		        }elseif (!empty($domain['provinceid'])){
 		            $where['provinceid']  =  $domain['provinceid'];
 		        }
 		        if (!empty($_POST['cityid'])){
-		            // ，，
+		            // 分站下，再次选择城市，查询按选择的来
 		            $where['cityid']  =  $_POST['cityid'];
 		            $data['didcity']  =  $domain['city_name'][$_POST['cityid']];
 		        }elseif (!empty($domain['cityid'])){
 		            $where['cityid']  =  $domain['cityid'];
 		        }
 		        if (!empty($_POST['three_cityid'])){
-		            // ，，
+		            // 分站下，再次选择城市，查询按选择的来
 		            $where['three_cityid']  =  $_POST['three_cityid'];
 		            $data['didcity']        =  $domain['city_name'][$_POST['three_cityid']];
 		        }elseif (!empty($domain['three_cityid'])){
@@ -85,8 +85,8 @@ class tiny_controller extends wxapp_controller{
 		        $data['three_cityid']  =  !empty($where['three_cityid']) ? intval($where['three_cityid']) : 0;
 		    }
 		}else{
-		    // ，（--）
-		    // ，，
+		    // 没有已选择的城市，按后台设置的列表页区域默认设置来（后台-页面设置-列表页区域默认设置）
+		    // 设置了一级城市，后面的搜索，不再展示其他一级城市
 		    if (empty($_POST['provinceid']) && empty($_POST['cityid']) && empty($_POST['three_cityid']) || (!empty($_POST['provinceid']) && $_POST['provinceid'] == $this->config['sy_web_city_one'])){
 		        
 		        $list_cityid      = isset($where['cityid']) ? $where['cityid'] : 0;
@@ -113,12 +113,12 @@ class tiny_controller extends wxapp_controller{
 		        }
 		    }
 		}
-		if($order){// sort
+		if($order){//排序
 			$where['orderby']	=	$order.',desc';
 		}else{
 			$where['orderby']	=	'lastupdate,desc';
 		}
-		if($page){// paginate
+		if($page){//分页
 			$pagenav	=	($page-1)*$limit;
 			$where['limit']		=	array($pagenav,$limit);
 		}else{
@@ -135,7 +135,7 @@ class tiny_controller extends wxapp_controller{
 		}
 		$this->render_json($error,'',$data);
 	}
-	function show_action(){// tiny resume detail
+	function show_action(){//微简历内容
 		$id		=	(int)$_POST['id'];
 		if(!$id){
 			$data['error']	=	3;
@@ -167,11 +167,11 @@ class tiny_controller extends wxapp_controller{
 
         $noticeM 		= 		$this->MODEL('notice');
 
-        $port	=	$this->plat == 'mini' ? '3' : '4';	// SMS port: 3=mini 4=app
+        $port	=	$this->plat == 'mini' ? '3' : '4';	// 短信发送端口$port : 3-小程序  4-APP
         $result	=	$noticeM->sendCode($moblie, 'code', $port, array(), 6, 120, 'msg');
         if($result['error']==1){
             $errcode	=	1;
-            $msg = yun_at('admin_tool_00495');
+            $msg = '发送成功';
         }else{
             $errcode	=	2;
             $msg		=	$result['msg'];
@@ -185,7 +185,7 @@ class tiny_controller extends wxapp_controller{
 		if($_POST['submit']){
 			if(!$_POST['username'] || !$_POST['password'] || !$_POST['sex'] || !$_POST['exp'] || !$_POST['mobile'] || !$_POST['production'] || !$_POST['job']){
 				$data['error']	=	3;
-				$data['msg']	=	yun_at('wap_01860');
+				$data['msg']	=	'请完善信息！';
 				echo json_encode($data);die;
 			}
 
@@ -290,10 +290,10 @@ class tiny_controller extends wxapp_controller{
 				 
 				if($nid){
 					$rdata['error']	=	1;
-					$rdata['msg']	=	yun_at('member_user_00602');
+					$rdata['msg']	=	'修改成功！';
 				}else{
 					$rdata['error']	=	2;
-					$rdata['msg']	=	yun_at('member_user_00603');
+					$rdata['msg']	=	'修改失败！';
 				}
 			}else{
 				$rdata['error']	=	2;

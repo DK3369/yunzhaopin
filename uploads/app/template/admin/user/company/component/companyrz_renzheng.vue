@@ -4,28 +4,28 @@
         <div class="moduleElSearchInf">
             <div class="moduleElTabInpt" style="flex-wrap: wrap;">
                 <div class="tableSeachInpt">
-                    <el-input v-model="searchForm.keyword" @keyup.enter.native="handleSearch" placeholder="{yun:}t key='admin_00340'{/yun}" size="small" prefix-icon="el-icon-search"
+                    <el-input v-model="searchForm.keyword" @keyup.enter.native="handleSearch" :placeholder="lc('admin_00340')" size="small" prefix-icon="el-icon-search"
                         clearable>
                     </el-input>
                 </div>
                 <div class="tableSeachInpt tableSeachInptsmall">
-                    <el-select v-model="searchForm.status" size="small" slot="prepend" placeholder="{yun:}t key='wap_com_00406'{/yun}" clearable @change="handleSearch">
-                        <el-option label="{yun:}t key='wap_user_00166'{/yun}" value="3"></el-option>
-                        <el-option label="{yun:}t key='wap_user_00165'{/yun}" value="1"></el-option>
-                        <el-option label="{yun:}t key='wap_user_00167'{/yun}" value="2"></el-option>
+                    <el-select v-model="searchForm.status" size="small" slot="prepend" :placeholder="lc('wap_com_00406')" clearable @change="handleSearch">
+                        <el-option :label="lc('wap_user_00166')" value="3"></el-option>
+                        <el-option :label="lc('wap_user_00165')" value="1"></el-option>
+                        <el-option :label="lc('wap_user_00167')" value="2"></el-option>
                     </el-select>
                 </div>
                 <div class="tableSeachInpt tableSeachInptsmall">
-                    <el-select v-model="searchForm.end" size="small" slot="prepend" placeholder="{yun:}t key='wap_com_00342'{/yun}" clearable @change="handleSearch">
-                        <el-option label="{yun:}t key='common_01940'{/yun}" value="1"></el-option>
-                        <el-option label="{yun:}t key='admin_user_00179'{/yun}" value="3"></el-option>
-                        <el-option label="{yun:}t key='admin_user_00178'{/yun}" value="7"></el-option>
-                        <el-option label="{yun:}t key='admin_user_00180'{/yun}" value="15"></el-option>
-                        <el-option label="{yun:}t key='admin_user_00175'{/yun}" value="30"></el-option>
+                    <el-select v-model="searchForm.end" size="small" slot="prepend" :placeholder="lc('wap_com_00342')" clearable @change="handleSearch">
+                        <el-option :label="lc('common_01940')" value="1"></el-option>
+                        <el-option :label="lc('admin_user_00179')" value="3"></el-option>
+                        <el-option :label="lc('admin_user_00178')" value="7"></el-option>
+                        <el-option :label="lc('admin_user_00180')" value="15"></el-option>
+                        <el-option :label="lc('admin_user_00175')" value="30"></el-option>
                     </el-select>
                 </div>
                 <div class="tableSeachInpt">
-                    <el-button type="primary" icon="el-icon-search" size="mini" @click="handleSearch">{yun:}t key='admin_user_weipin_00049'{/yun}</el-button>
+                    <el-button type="primary" icon="el-icon-search" size="mini" @click="handleSearch">{{ lc('admin_user_weipin_00049') }}</el-button>
                 </div>
             </div>
         </div>
@@ -43,27 +43,27 @@
                     <p>{{dataText}}</p>
                 </template>
                 <el-table-column type="selection" width="55"></el-table-column>
-                <el-table-column prop="uid" label="{yun:}t key='admin_user_00130'{/yun}" sortable="custom" width="90"></el-table-column>
-                <el-table-column prop="name" label="{yun:}t key='wap_user_00080'{/yun}"></el-table-column>
-                <el-table-column label="{yun:}t key='admin_user_00188'{/yun}">
+                <el-table-column prop="uid" :label="lc('admin_user_00130')" sortable="custom" width="90"></el-table-column>
+                <el-table-column prop="name" :label="lc('wap_user_00080')"></el-table-column>
+                <el-table-column :label="lc('admin_user_00188')">
                     <template slot-scope="scope">
                         <template v-if="scope.row.check">
-                            <el-button type="primary" size="mini" plain @click="handleStatus(scope)">{yun:}t key='member_com_00325'{/yun}</el-button>
+                            <el-button type="primary" size="mini" plain @click="handleStatus(scope)">{{ lc('member_com_00325') }}</el-button>
                         </template>
                         <template v-else>
-                            {yun:}t key='common_02082'{/yun}
+                            {{ lc('common_02082') }}
                         </template>
                     </template>
                 </el-table-column>
-                <el-table-column prop="ctime" label="{yun:}t key='wap_com_00342'{/yun}" sortable="custom">
+                <el-table-column prop="ctime" :label="lc('wap_com_00342')" sortable="custom">
                     <template slot-scope="scope">{{ scope.row.ctime_n }}</template>
                 </el-table-column>
-                <el-table-column prop="status" label="{yun:}t key='member_user_00181'{/yun}" width="100">
+                <el-table-column prop="status" :label="lc('member_user_00181')" width="100">
                     <template slot-scope="scope">
                         <div class="admin_state">
-                            <span v-if="scope.row.status == 1" class="admin_state1">{yun:}t key='wap_user_00165'{/yun}</span>
-                            <span v-else-if="scope.row.status == 0" class="admin_state4">{yun:}t key='wap_user_00166'{/yun}</span>
-                            <span v-else-if="scope.row.status == 2" class="admin_state2">{yun:}t key='wap_user_00167'{/yun}</span>
+                            <span v-if="scope.row.status == 1" class="admin_state1">{{ lc('wap_user_00165') }}</span>
+                            <span v-else-if="scope.row.status == 0" class="admin_state4">{{ lc('wap_user_00166') }}</span>
+                            <span v-else-if="scope.row.status == 2" class="admin_state2">{{ lc('wap_user_00167') }}</span>
                             <template v-else>--</template>
                             <!--<span class="admin_state1">已审核</span>-->
                             <!--<span class="admin_state2">未通过</span>-->
@@ -73,11 +73,11 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="{yun:}t key='member_user_00048'{/yun}" width="140">
+                <el-table-column :label="lc('member_user_00048')" width="140">
                     <template slot-scope="scope">
                         <div class="cz_button">
-                            <el-button size="mini" plain @click="handleStatus(scope)">{yun:}t key='member_user_00152'{/yun}</el-button>
-                            <el-button type="danger" size="mini" @click="deleteRow(scope)">{yun:}t key='common.delete'{/yun}</el-button>
+                            <el-button size="mini" plain @click="handleStatus(scope)">{{ lc('member_user_00152') }}</el-button>
+                            <el-button type="danger" size="mini" @click="deleteRow(scope)">{{ lc('common.delete') }}</el-button>
                         </div>
                     </template>
                 </el-table-column>
@@ -85,9 +85,9 @@
         </div>
         <div class="modulePaging">
             <div>
-                <el-checkbox :indeterminate="isIndeterminate" v-model="checked" @change="selectAllBottom">{yun:}t key='wap_js_00074'{/yun}</el-checkbox>
-                <el-button @click="deleteRow(null, true)" size="mini">{yun:}t key='member_com_00055'{/yun}</el-button>
-                <el-button @click="handleStatus(null, true)" size="mini">{yun:}t key='admin_user_weipin_00037'{/yun}</el-button>
+                <el-checkbox :indeterminate="isIndeterminate" v-model="checked" @change="selectAllBottom">{{ lc('wap_js_00074') }}</el-checkbox>
+                <el-button @click="deleteRow(null, true)" size="mini">{{ lc('member_com_00055') }}</el-button>
+                <el-button @click="handleStatus(null, true)" size="mini">{{ lc('admin_user_weipin_00037') }}</el-button>
             </div>
             <div class="modulePagNum">
                 <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
@@ -98,74 +98,74 @@
         </div>
         <!--单个审核-->
         <div class="modluDrawer">
-            <el-dialog title="{yun:}t key='admin_user_company_00064'{/yun}" :visible.sync="statusVisible" :with-header="true" :modal-append-to-body="false"
+            <el-dialog :title="lc('admin_user_company_00064')" :visible.sync="statusVisible" :with-header="true" :modal-append-to-body="false"
                 :show-close="true" width="450px">
                 <div>
-                    <div class="wxsettip_small">{yun:}t key='wap_com_00157'{/yun}</div>
+                    <div class="wxsettip_small">{{ lc('wap_com_00157') }}</div>
                     <el-input placeholder="" v-model="ruleFormStatus.name"></el-input>
                     <template v-if="com_social_credit">
-                        <div class="wxsettip_small">{yun:}t key='admin_user_company_00063'{/yun}</div>
+                        <div class="wxsettip_small">{{ lc('admin_user_company_00063') }}</div>
                         <el-input placeholder="" v-model="info.social_credit" :disabled="true"></el-input>
                     </template>
-                    <div class="wxsettip_small">{yun:}t key='admin_00460'{/yun}</div>
+                    <div class="wxsettip_small">{{ lc('admin_00460') }}</div>
                     <div class="zzrz_img">
                         <div class="zzrz_imgpreview">
                             <el-image style="width: 80px; height: 80px" :src="info.check"
                                 :preview-src-list="[info.check]"></el-image>
-                            <div>{yun:}t key='admin_user_company_00065'{/yun}</div>
+                            <div>{{ lc('admin_user_company_00065') }}</div>
                         </div>
                         <template v-if="com_cert_owner">
                             <div class="zzrz_imgpreview">
                                 <el-image style="width: 80px; height: 80px" :src="info.owner_cert"
                                     :preview-src-list="[info.owner_cert]"></el-image>
-                                <div>{yun:}t key='member_com_00067'{/yun}</div>
+                                <div>{{ lc('member_com_00067') }}</div>
                             </div>
                         </template>
                         <template v-if="com_cert_wt">
                             <div class="zzrz_imgpreview">
                                 <el-image style="width: 80px; height: 80px" :src="info.wt_cert"
                                     :preview-src-list="[info.wt_cert]"></el-image>
-                                <div>{yun:}t key='member_com_00062'{/yun}</div>
+                                <div>{{ lc('member_com_00062') }}</div>
                             </div>
                         </template>
                         <template v-if="com_cert_other">
                             <div class="zzrz_imgpreview">
                                 <el-image style="width: 80px; height: 80px" :src="info.other_cert"
                                     :preview-src-list="[info.other_cert]"></el-image>
-                                <div>{yun:}t key='member_com_00069'{/yun}</div>
+                                <div>{{ lc('member_com_00069') }}</div>
                             </div>
                         </template>
                     </div>
-                    <div class="wxsettip_small ">{yun:}t key='admin_user_weipin_00032'{/yun}</div>
-                    <el-radio v-model="ruleFormStatus.status" label="1">{yun:}t key='admin_user_00149'{/yun}</el-radio>
-                    <el-radio v-model="ruleFormStatus.status" label="2">{yun:}t key='wap_user_00167'{/yun}</el-radio>
-                    <div class="wxsettip_small ">{yun:}t key='admin_00633'{/yun}</div>
-                    <el-checkbox v-model="ruleFormStatus.job_status">{yun:}t key='admin_user_company_00062'{/yun}</el-checkbox>
-                    <div class="wxsettip_small ">{yun:}t key='member_user_00062'{/yun}</div>
+                    <div class="wxsettip_small ">{{ lc('admin_user_weipin_00032') }}</div>
+                    <el-radio v-model="ruleFormStatus.status" label="1">{{ lc('admin_user_00149') }}</el-radio>
+                    <el-radio v-model="ruleFormStatus.status" label="2">{{ lc('wap_user_00167') }}</el-radio>
+                    <div class="wxsettip_small ">{{ lc('admin_00633') }}</div>
+                    <el-checkbox v-model="ruleFormStatus.job_status">{{ lc('admin_user_company_00062') }}</el-checkbox>
+                    <div class="wxsettip_small ">{{ lc('member_user_00062') }}</div>
                     <el-input type="textarea" :rows="2" placeholder="" v-model="ruleFormStatus.statusbody"></el-input>
                 </div>
                 <span slot="footer" class="dialog-footer">
-                    <el-button @click="resetFormStatus('ruleFormStatus')">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
-                    <el-button type="primary" @click="submitFormStatus('ruleFormStatus')" :disabled="submitLoading">{yun:}t key='wap_com_00019'{/yun}</el-button>
+                    <el-button @click="resetFormStatus('ruleFormStatus')">{{ lc('admin_user_weipin_00043') }}</el-button>
+                    <el-button type="primary" @click="submitFormStatus('ruleFormStatus')" :disabled="submitLoading">{{ lc('wap_com_00019') }}</el-button>
                 </span>
             </el-dialog>
         </div>
         <!--批量审核-->
         <div class="modluDrawer">
-            <el-dialog title="{yun:}t key='admin_user_weipin_00037'{/yun}" :visible.sync="statusAllVisible" :with-header="true" :modal-append-to-body="false"
+            <el-dialog :title="lc('admin_user_weipin_00037')" :visible.sync="statusAllVisible" :with-header="true" :modal-append-to-body="false"
                 :show-close="true" width="450px">
                 <div>
-                    <div class="wxsettip_small ">{yun:}t key='admin_user_weipin_00032'{/yun}</div>
-                    <el-radio v-model="ruleFormStatus.status" label="1">{yun:}t key='admin_user_00149'{/yun}</el-radio>
-                    <el-radio v-model="ruleFormStatus.status" label="2">{yun:}t key='wap_user_00167'{/yun}</el-radio>
-                    <div class="wxsettip_small ">{yun:}t key='admin_00633'{/yun}</div>
-                    <el-checkbox v-model="ruleFormStatus.job_status">{yun:}t key='admin_user_company_00062'{/yun}</el-checkbox>
-                    <div class="wxsettip_small ">{yun:}t key='member_user_00062'{/yun}</div>
+                    <div class="wxsettip_small ">{{ lc('admin_user_weipin_00032') }}</div>
+                    <el-radio v-model="ruleFormStatus.status" label="1">{{ lc('admin_user_00149') }}</el-radio>
+                    <el-radio v-model="ruleFormStatus.status" label="2">{{ lc('wap_user_00167') }}</el-radio>
+                    <div class="wxsettip_small ">{{ lc('admin_00633') }}</div>
+                    <el-checkbox v-model="ruleFormStatus.job_status">{{ lc('admin_user_company_00062') }}</el-checkbox>
+                    <div class="wxsettip_small ">{{ lc('member_user_00062') }}</div>
                     <el-input type="textarea" :rows="2" placeholder="" v-model="ruleFormStatus.statusbody"></el-input>
                 </div>
                 <span slot="footer" class="dialog-footer">
-                    <el-button @click="resetFormStatus('ruleFormStatus')">{yun:}t key='admin_user_weipin_00043'{/yun}</el-button>
-                    <el-button type="primary" @click="submitFormStatus('ruleFormStatus')" :disabled="submitLoading">{yun:}t key='wap_com_00019'{/yun}</el-button>
+                    <el-button @click="resetFormStatus('ruleFormStatus')">{{ lc('admin_user_weipin_00043') }}</el-button>
+                    <el-button type="primary" @click="submitFormStatus('ruleFormStatus')" :disabled="submitLoading">{{ lc('wap_com_00019') }}</el-button>
                 </span>
             </el-dialog>
         </div>
@@ -180,7 +180,7 @@ module.exports = {
     data: function () {
         return {
             loading: false,
-            dataText: "{yun:}t key='admin_user_weipin_00026'{/yun}",
+            dataText: lc('admin_user_weipin_00026'),
             searchForm: {
                 page: 1,
                 limit: null,
@@ -216,8 +216,8 @@ module.exports = {
                 uid: null,
                 name:'",
                 status: null,//操作审核
-                job_status: false,//{yun:}t key='admin_user_company_00325'{/yun}
-                statusbody: null,//{yun:}t key='member_user_00062'{/yun}
+                job_status: false,//{{ lc('admin_user_company_00325') }}
+                statusbody: null,//{{ lc('member_user_00062') }}
             },
             // BatchAudit
             statusAllVisible: false,
@@ -319,7 +319,7 @@ module.exports = {
                         _this.$refs.multipleTable.bodyWrapper.scrollTop = 0;
                     }
                     if (_this.tableData.length === 0) {
-                        _this.dataText = "{yun:}t key='wap_js_00113'{/yun}";
+                        _this.dataText = lc('wap_js_00113');
                     }
                 }
             }).catch(function (error) {
@@ -330,7 +330,7 @@ module.exports = {
             let params = {};
             if (isMore) {
                 if (!this.selectedItem.length) {
-                    message.error("{yun:}t key='admin_user_weipin_00005'{/yun}");
+                    message.error(lc('admin_user_weipin_00005'));
                     return false;
                 }
                 let list = [];
@@ -351,10 +351,10 @@ module.exports = {
             httpPost('m=user&c=company_cert&a=del', params).then(function (response) {
                 let res = response.data;
                 if (res.error === 0) {
-                    message.success("{yun:}t key='admin_user_00187'{/yun}");
+                    message.success(lc('admin_user_00187'));
                     _this.getList();
                 } else {
-                    message.error("{yun:}t key='admin_user_00186'{/yun}");
+                    message.error(lc('admin_user_00186'));
                 }
             }).catch(function (error) {
                 console.log(error);
@@ -363,7 +363,7 @@ module.exports = {
         handleStatus(scope, isMore) {
             if (isMore) {
                 if (!this.selectedItem.length) {
-                    message.error("{yun:}t key='admin_user_weipin_00001'{/yun}");
+                    message.error(lc('admin_user_weipin_00001'));
                     return false;
                 }
                 let list = [];
@@ -398,7 +398,7 @@ module.exports = {
             let params = JSON.parse(JSON.stringify(this.ruleFormStatus));
             params.job_status = params.job_status ? 1 : 0;
             if (params.status == null) {
-                message.error("{yun:}t key='admin_user_weipin_00001'{/yun}");
+                message.error(lc('admin_user_weipin_00001'));
                 return false;
             }
             _this.submitLoading = true;

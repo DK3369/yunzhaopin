@@ -1562,6 +1562,7 @@ return array(
   'admin_index_00078' => '预警设置',
   'admin_index_00079' => '工作台',
   'admin_index_00080' => '待查看',
+  'admin_index_00081' => '可点击所需栏目，开启工作哟~',
   'admin_neirong_00001' => '请选择您要删除的测评试卷！',
   'admin_neirong_00002' => '请正确填写你的类别！',
   'admin_neirong_00003' => '已经存在此类别！',
@@ -2225,6 +2226,11 @@ return array(
   'admin_system_00627' => '手机版分享H5画面',
   'admin_system_00628' => '数据分享二维码形式',
   'admin_system_00629' => '首页底部浮动提示条',
+  'admin_system_00630' => 'SEO修改',
+  'admin_system_00631' => '该手机已经在白名单中,不能添加到黑名单',
+  'admin_system_00632' => '此操作将永久删除该文件, 是否继续?',
+  'admin_system_00633' => '上传身份证图片只能是 JPG, PNG, JPEG, GIF 格式!',
+  'admin_system_00634' => '上传身份证图片大小不能超过 2MB!',
   'admin_system_00630' => '百度自动推送功能',
   'admin_system_00631' => '请选择二维码形式',
   'admin_system_00632' => '职位简历点击器',
@@ -16025,38 +16031,17 @@ return array(
   'admin_vue_00135' => '宽',
   'admin_vue_00136' => '到',
 
+  'admin_yunying_00200' => '批量删除将会删除该简历的所有举报 , 确定要删除吗？',
+  'admin_yunying_00201' => '确定移除 {0}？',
+  'admin_neirong_zph_00001' => '一级分类：A区',
+  'admin_demo_00001' => '选项1',
+  'admin_demo_00002' => '选项2',
+  'admin_demo_00003' => '选项3',
+  'admin_demo_00004' => '选项4',
+  'admin_demo_00005' => '选项5',
+
   "admin_html_00001" => '静态页面是把动态数据按要求生成静态页面，打开网页时不用去读取数据库。 区别：
 1、动态站点网页打开相对静态页面要慢很多；
 2、静态页面更容易搜索引挚的抓取，权重也比动态页面高。
 3、动态页面容易有sql注入危险，静态页面不存在',
-
-  'admin_html_00002' => 'id==\'\'?\'添加模板\':\'修改模板\'',
-
-  'admin_html_00003' => 'id ? \'修改\' : \'添加\'',
-  'admin_html_00004' => 'id ? \'修改导航\' : \'添加导航\'',
-  'admin_html_00005' => '请对系统->支付设置网站轻松与支付宝、微信支付进行对接，对接后实现用户在线支付功能！可以购买广告位、会员套餐等服务。',
-  'admin_html_00006' => '注意事项：办理电汇时，请在电汇单\"汇款用途\"一栏处注明您的订单号。',
-  'admin_html_00007' => 'detail.id ? \'SEO修改\' : \'SEO添加\'',
-  'admin_html_00008' => '若选择\"否\"，则直接显示简历列表',
-  'admin_html_00009' => '若选择\"否\"，则直接显示职位列表',
-
-  'admin_html_00010' => '\'外宣海报\'',
-  'admin_html_00011' => 'info.id ? \'公招修改\' : \'公招添加\'',
-  'admin_html_00012' => 'detail.id ? \'修改类别\' : \'添加类别\'',
-  'admin_html_00013' => '0\" @click=\"childClass(0)\">返回',
-  'admin_html_00014' => 'ruleForm.id ? \'修改工具箱类别\' : \'添加工具箱类别\'',
-  'admin_html_00015' => 'detail.id ? \'修改文档\' : \'添加文档\'',
-  'admin_html_00016' => 'detail.id ? \'修改公告\' : \'添加公告\'',
-
-  'admin_html_00017' => '\'返还\'+integral_pricename',
-  'admin_html_00019' => '\'兑换\'+integral_pricename',
-
-  'admin_html_00018' => '可点击所需栏目，开启工作哟~',
-
-  'admin_html_00020' => '上传身份证图片只能是 JPG, PNG, JPEG, GIF 格式!',
-  'admin_html_00021' => '上传身份证图片大小不能超过 2MB!',
-
-  'admin_html_00022' => '该手机已经在白名单中,不能添加到黑名单',
-
-  'admin_html_00023' => '此操作将永久删除该文件, 是否继续?',
 );

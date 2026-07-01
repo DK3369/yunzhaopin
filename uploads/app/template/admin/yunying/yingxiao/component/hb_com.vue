@@ -3,25 +3,25 @@
         <div class="uploadTable">
             <div class="playbillHeader">
                 <div class="playbillHeaText">
-                    <span class="span1">{yun:}t key='member_user_00449'{/yun}</span>
-                    <span>{yun:}t key='admin_01063'{/yun}</span>
+                    <span class="span1">{{ lc('member_user_00449') }}</span>
+                    <span>{{ lc('admin_01063') }}</span>
                 </div>
                 <div class="playbillHeabutn">
                     <el-button type="primary" icon="el-icon-document-add" size="mini"
-                               @click="openAdd('')">{yun:}t key='admin_01064'{/yun}</el-button>
+                               @click="openAdd('')">{{ lc('admin_01064') }}</el-button>
                 </div>
             </div>
             <div class="playbillHeader">
                 <div class="playbillHeaText" style="width: 100%;">
-                    <span class="span1" style="display: block;">{yun:}t key='admin_01065'{/yun}</span>
+                    <span class="span1" style="display: block;">{{ lc('admin_01065') }}</span>
                     <span style="overflow: hidden; display: block; width: calc(100% - 75px);">
-                        {yun:}t key='admin_vue_00133'{/yun}
+                        {{ lc('admin_vue_00133') }}
                     </span>
                 </div>
             </div>
             <div class="playbilCont">
                 <div class="playbilName">
-                    <span>{yun:}t key='admin_01066'{/yun}</span>
+                    <span>{{ lc('admin_01066') }}</span>
                 </div>
                 <div class="playbilFlex">
                     <ul>
@@ -33,8 +33,8 @@
                                 <img :src="item.pic_n" alt="">
                             </div>
                             <div class="playbilAnNiu">
-                                <el-button size="mini" @click="openAdd(item)">{yun:}t key='wap_com_00304'{/yun}</el-button>
-                                <el-button size="mini" @click="del(index)">{yun:}t key='common.delete'{/yun}</el-button>
+                                <el-button size="mini" @click="openAdd(item)">{{ lc('wap_com_00304') }}</el-button>
+                                <el-button size="mini" @click="del(index)">{{ lc('common.delete') }}</el-button>
                             </div>
                         </li>
                     </ul>
@@ -42,50 +42,50 @@
             </div>
         </div>
         <div v-if="list.length > 0" class="setBasicButn" style="border: none; height: 80px;">
-            <el-button type="primary" size="medium" @click="save">{yun:}t key='common.submit'{/yun}</el-button>
+            <el-button type="primary" size="medium" @click="save">{{ lc('common.submit') }}</el-button>
         </div>
         <div class="modluDrawer">
-            <el-dialog title="{yun:}t key='admin_01071'{/yun}" width="500px" top="1%" :visible.sync="dialogAdd" :modal-append-to-body="false">
+            <el-dialog :title="lc('admin_01071')" width="500px" top="1%" :visible.sync="dialogAdd" :modal-append-to-body="false">
                 <div class="toolClasDia fenpeizhand" style="max-height: 400px; overflow-y: auto;">
                     <div class="toolClasList">
                         <div class="toolClasTite">
-                            <span>{yun:}t key='admin_01067'{/yun}</span>
+                            <span>{{ lc('admin_01067') }}</span>
                         </div>
                         <div class="toolClasCont">
-                            <el-input v-model="ruleForm.name" placeholder="{yun:}t key='admin_01072'{/yun}"></el-input>
+                            <el-input v-model="ruleForm.name" :placeholder="lc('admin_01072')"></el-input>
                         </div>
                     </div>
                     <div class="toolClasList" style="align-items: initial;">
                         <div class="toolClasTite" style="margin-top: 6px;">
-                            <span>{yun:}t key='admin_yunying_00144'{/yun}</span>
+                            <span>{{ lc('admin_yunying_00144') }}</span>
                         </div>
                         <div class="toolClasCont">
                             <el-input v-model="ruleForm.num" placeholder="" @input="inputIntNumber($event, 'ruleForm', 'num')"></el-input>
                             <div class="alertTips">
-                                <el-alert title="{yun:}t key='admin_01073'{/yun}" type="info" :closable="false" show-icon>
+                                <el-alert :title="lc('admin_01073')" type="info" :closable="false" show-icon>
                                 </el-alert>
                             </div>
                         </div>
                     </div>
                     <div class="toolClasList" style="align-items: initial;">
                         <div class="toolClasTite" style="margin-top: 6px;">
-                            <span>{yun:}t key='admin_01068'{/yun}</span>
+                            <span>{{ lc('admin_01068') }}</span>
                         </div>
                         <div class="toolClasCont">
                             <el-input v-model="ruleForm.style" placeholder="" @input="inputIntNumber($event, 'ruleForm', 'style')"></el-input>
                             <div class="alertTips">
-                                <el-alert title="{yun:}t key='admin_01074'{/yun}" type="info" :closable="false" show-icon>
+                                <el-alert :title="lc('admin_01074')" type="info" :closable="false" show-icon>
                                 </el-alert>
                             </div>
                             <div class="alertTips">
-                                <el-alert title="{yun:}t key='admin_01075'{/yun}" type="error" :closable="false" show-icon>
+                                <el-alert :title="lc('admin_01075')" type="error" :closable="false" show-icon>
                                 </el-alert>
                             </div>
                         </div>
                     </div>
                     <div class="toolClasList" style="align-items: initial;">
                         <div class="toolClasTite" style="margin-top: 15px;">
-                            <span>{yun:}t key='admin_01069'{/yun}</span>
+                            <span>{{ lc('admin_01069') }}</span>
                         </div>
                         <div class="toolClasCont">
                             <el-upload :accept="pic_accept"
@@ -99,26 +99,26 @@
                                 <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                             </el-upload>
                             <div class="alertTips">
-                                <el-alert title="{yun:}t key='admin_yunying_00143'{/yun}" type="info" :closable="false" show-icon>
+                                <el-alert :title="lc('admin_yunying_00143')" type="info" :closable="false" show-icon>
                                 </el-alert>
                             </div>
                         </div>
                     </div>
                     <div class="toolClasList" style="align-items: initial;">
                         <div class="toolClasTite" style="margin-top: 6px;">
-                            <span>{yun:}t key='admin_system_00103'{/yun}</span>
+                            <span>{{ lc('admin_system_00103') }}</span>
                         </div>
                         <div class="toolClasCont">
                             <el-input v-model="ruleForm.sort" placeholder="" @input="inputIntNumber($event, 'ruleForm', 'sort')"></el-input>
                             <div class="alertTips">
-                                <el-alert title="{yun:}t key='admin_01076'{/yun}" type="info" :closable="false" show-icon>
+                                <el-alert :title="lc('admin_01076')" type="info" :closable="false" show-icon>
                                 </el-alert>
                             </div>
                         </div>
                     </div>
                     <div class="toolClasList">
                         <div class="toolClasTite">
-                            <span>{yun:}t key='admin_01070'{/yun}</span>
+                            <span>{{ lc('admin_01070') }}</span>
                         </div>
                         <div class="toolClasCont">
                             <el-switch v-model="ruleForm.isopen" active-value="1" inactive-value="0">
@@ -127,7 +127,7 @@
                     </div>
                 </div>
                 <div slot="footer" class="dialog-footer">
-                    <el-button type="primary" @click="saveWhb">{yun:}t key='wap_js_00091'{/yun}</el-button>
+                    <el-button type="primary" @click="saveWhb">{{ lc('wap_js_00091') }}</el-button>
                 </div>
             </el-dialog>
         </div>
@@ -248,12 +248,12 @@ module.exports = {
                 formData = new FormData();
 
             if (!ruleForm.name) {
-                message.error("{yun:}t key='admin_01072'{/yun}");
+                message.error(lc('admin_01072'));
                 return false;
             }
 
             if (!ruleForm.pic_n) {
-                message.error("{yun:}t key='wap_01412'{/yun}");
+                message.error(lc('wap_01412'));
                 return false;
             }
 

@@ -1,26 +1,26 @@
 <template>
     <div class="moduleElHight">
         <div class="tableDome_tip">
-            <el-alert title="{yun:}t key='admin_tool_00059'{/yun}" type="success" :closable="false"></el-alert>
+            <el-alert :title="lc('admin_tool_00059')" type="success" :closable="false"></el-alert>
         </div>
         <div class=" moduleTable">
 
             <table class="tableVue">
                 <thead>
                 <tr align="left">
-                    <th width="200">{yun:}t key='member_com_00021'{/yun}</th>
-                    <th width="400">{yun:}t key='member_user_00181'{/yun}</th>
-                    <th>{yun:}t key='member_com_00207'{/yun}</th>
+                    <th width="200">{{ lc('member_com_00021') }}</th>
+                    <th width="400">{{ lc('member_user_00181') }}</th>
+                    <th>{{ lc('member_com_00207') }}</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_tool_00269'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_tool_00269') }}</div>
                     </td>
                     <td>
                         <div class="TableSelect" style="display: flex;align-items: center;">
-                            <el-select v-model="locoy_config.locoy_user_sexs" placeholder="{yun:}t key='wap_user_00100'{/yun}">
+                            <el-select v-model="locoy_config.locoy_user_sexs" :placeholder="lc('wap_user_00100')">
                                 <el-option v-for="sex in sexOptions" :key="sex.value" :label="sex.label" :value="sex.value"></el-option>
                             </el-select>
                         </div>
@@ -33,11 +33,11 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_tool_00270'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_tool_00270') }}</div>
                     </td>
                     <td>
                         <div class="TableSelect" style="display: flex;align-items: center;">
-                            <el-select v-model="locoy_config.locoy_user_marriage" placeholder="{yun:}t key='wap_user_00100'{/yun}">
+                            <el-select v-model="locoy_config.locoy_user_marriage" :placeholder="lc('wap_user_00100')">
                                 <el-option v-for="marriage in marriageOptions" :key="marriage.value" :label="marriage.label" :value="marriage.value"></el-option>
                             </el-select>
                         </div>
@@ -50,11 +50,11 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_tool_00271'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_tool_00271') }}</div>
                     </td>
                     <td>
                         <div class="TableSelect" style="display: flex;align-items: center;">
-                            <el-select v-model="locoy_config.locoy_user_edu" placeholder="{yun:}t key='wap_user_00100'{/yun}">
+                            <el-select v-model="locoy_config.locoy_user_edu" :placeholder="lc('wap_user_00100')">
                                 <el-option v-for="edu in eduOptions" :key="edu.value" :label="edu.label" :value="edu.value"></el-option>
                             </el-select>
                         </div>
@@ -67,11 +67,11 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_tool_00272'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_tool_00272') }}</div>
                     </td>
                     <td>
                         <div class="TableSelect" style="display: flex;align-items: center;">
-                            <el-select v-model="locoy_config.locoy_user_exp" placeholder="{yun:}t key='wap_user_00100'{/yun}">
+                            <el-select v-model="locoy_config.locoy_user_exp" :placeholder="lc('wap_user_00100')">
                                 <el-option v-for="exp in expOptions" :key="exp.value" :label="exp.label" :value="exp.value"></el-option>
                             </el-select>
                         </div>
@@ -84,7 +84,7 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_tool_00273'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_tool_00273') }}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
@@ -93,14 +93,14 @@
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>{yun:}t key='admin_tool_00274'{/yun}</span>
+                            <span>{{ lc('admin_tool_00274') }}</span>
                         </div>
                     </td>
                 </tr>
                 </tbody>
             </table>
             <div class="setBasicButn" style="border: none;">
-                <el-button type="primary" size="medium" @click="submitLocoyConfig" :disabled="saveLoading">{yun:}t key='common.submit'{/yun}</el-button>
+                <el-button type="primary" size="medium" @click="submitLocoyConfig" :disabled="saveLoading">{{ lc('common.submit') }}</el-button>
             </div>
         </div>
     </div>

@@ -209,7 +209,7 @@
             },
             handleAdd() {
 
-                this.titleAddEdit = '添加广告类别';
+                this.titleAddEdit = lc('admin_01175');
                 this.info = {};
                 this.addVisible = true;
             },
@@ -223,7 +223,7 @@
                 this.changeToBuy = false;
             },
             editRow(scope) {
-                this.titleAddEdit = '修改广告类别';
+                this.titleAddEdit = lc('admin_01176');
                 this.info = scope.row;
                 this.addVisible = true;
             },
@@ -337,7 +337,7 @@
              * 设为购买
              */
             handleBuy(scope) {
-                this.titleAddEdit = '设为可购买广告类别';
+                this.titleAddEdit = lc('admin_01177');
                 this.info = scope.row;
                 this.addVisible = true;
                 this.changeToBuy = true;
@@ -349,7 +349,7 @@
                 let params = {};
                 params.id = scope.row.id;
 
-                delConfirm(this, params, this.delbuy, '确定要设置为不可购买？');
+                delConfirm(this, params, this.delbuy, lc('admin_01178'));
             },
             /**
              * 取消购买

@@ -3,14 +3,14 @@
     <div v-loading="loading" class="drawerModlue">
         <div class="drawerModInfo drawerModInfoOne">
             <div class="adminBoldTips">
-                <el-alert title="{yun:}t key='admin_00699'{/yun}" show-icon type="success"></el-alert>
+                <el-alert :title="lc('admin_00699')" show-icon type="success"></el-alert>
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>{yun:}t key='admin_user_company_00214'{/yun}</span>
+                    <span>{{ lc('admin_user_company_00214') }}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-select v-model="ruleForm.type" placeholder="{yun:}t key='wap_user_00100'{/yun}" clearable>
+                    <el-select v-model="ruleForm.type" :placeholder="lc('wap_user_00100')" clearable>
                         <el-option
                             v-for="item in zzData"
                             :key="item.id"
@@ -24,12 +24,12 @@
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>{yun:}t key='admin_user_company_00212'{/yun}</span>
+                    <span>{{ lc('admin_user_company_00212') }}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input v-model="ruleForm.service_price" placeholder="{yun:}t key='admin_user_00342'{/yun}">
-                        <template slot="prepend">{yun:}t key='admin_user_company_00021'{/yun}</template>
-                        <span slot="suffix" class="slotspan">{yun:}t key='common_02056'{/yun}</span>
+                    <el-input v-model="ruleForm.service_price" :placeholder="lc('admin_user_00342')">
+                        <template slot="prepend">{{ lc('admin_user_company_00021') }}</template>
+                        <span slot="suffix" class="slotspan">{{ lc('common_02056') }}</span>
                     </el-input>
                 </div>
                 <div class="drawerModTips">
@@ -37,64 +37,64 @@
             </div>
             <div class="drawerModLis drawerModInFlex">
                 <div class="drawerModTite">
-                    <span>{yun:}t key='admin_user_company_00213'{/yun}</span>
+                    <span>{{ lc('admin_user_company_00213') }}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input v-model="ruleForm.job_num" placeholder="{yun:}t key='admin_user_00342'{/yun}">
-                        <template slot="prepend">{yun:}t key='member_com_00033'{/yun}</template>
-                        <span slot="suffix" class="slotspan">{yun:}t key='common_02052'{/yun}</span>
+                    <el-input v-model="ruleForm.job_num" :placeholder="lc('admin_user_00342')">
+                        <template slot="prepend">{{ lc('member_com_00033') }}</template>
+                        <span slot="suffix" class="slotspan">{{ lc('common_02052') }}</span>
                     </el-input>
-                    <el-input v-model="ruleForm.breakjob_num" placeholder="{yun:}t key='admin_user_00342'{/yun}" style="margin-left: 10px;">
-                        <template slot="prepend">{yun:}t key='member_com_00035'{/yun}</template>
-                        <span slot="suffix" class="slotspan">{yun:}t key='common_02089'{/yun}</span>
+                    <el-input v-model="ruleForm.breakjob_num" :placeholder="lc('admin_user_00342')" style="margin-left: 10px;">
+                        <template slot="prepend">{{ lc('member_com_00035') }}</template>
+                        <span slot="suffix" class="slotspan">{{ lc('common_02089') }}</span>
                     </el-input>
-                    <el-input v-model="ruleForm.resume" placeholder="{yun:}t key='admin_user_00342'{/yun}">
-                        <template slot="prepend">{yun:}t key='member_com_00034'{/yun}</template>
-                        <span slot="suffix" class="slotspan">{yun:}t key='common_02052'{/yun}</span>
+                    <el-input v-model="ruleForm.resume" :placeholder="lc('admin_user_00342')">
+                        <template slot="prepend">{{ lc('member_com_00034') }}</template>
+                        <span slot="suffix" class="slotspan">{{ lc('common_02052') }}</span>
                     </el-input>
-                    <el-input v-model="ruleForm.interview" placeholder="{yun:}t key='admin_user_00342'{/yun}" style="margin-left: 10px;">
-                        <template slot="prepend">{yun:}t key='member_com_00037'{/yun}</template>
-                        <span slot="suffix" class="slotspan">{yun:}t key='common_02052'{/yun}</span>
+                    <el-input v-model="ruleForm.interview" :placeholder="lc('admin_user_00342')" style="margin-left: 10px;">
+                        <template slot="prepend">{{ lc('member_com_00037') }}</template>
+                        <span slot="suffix" class="slotspan">{{ lc('common_02052') }}</span>
                     </el-input>
-                    <el-input v-model="ruleForm.zph_num" placeholder="{yun:}t key='admin_user_00342'{/yun}">
-                        <template slot="prepend">{yun:}t key='admin_user_company_00211'{/yun}</template>
-                        <span slot="suffix" class="slotspan">{yun:}t key='common_02052'{/yun}</span>
+                    <el-input v-model="ruleForm.zph_num" :placeholder="lc('admin_user_00342')">
+                        <template slot="prepend">{{ lc('admin_user_company_00211') }}</template>
+                        <span slot="suffix" class="slotspan">{{ lc('common_02052') }}</span>
                     </el-input>
-                    <el-input v-model="ruleForm.top_num" placeholder="{yun:}t key='admin_user_00342'{/yun}" style="margin-left: 10px;">
-                        <template slot="prepend">{yun:}t key='wap_user_00209'{/yun}</template>
-                        <span slot="suffix" class="slotspan">{yun:}t key='common_02067'{/yun}</span>
+                    <el-input v-model="ruleForm.top_num" :placeholder="lc('admin_user_00342')" style="margin-left: 10px;">
+                        <template slot="prepend">{{ lc('wap_user_00209') }}</template>
+                        <span slot="suffix" class="slotspan">{{ lc('common_02067') }}</span>
                     </el-input>
-                    <el-input v-model="ruleForm.urgent_num" placeholder="{yun:}t key='admin_user_00342'{/yun}">
-                        <template slot="prepend">{yun:}t key='wap_com_00043'{/yun}</template>
-                        <span slot="suffix" class="slotspan">{yun:}t key='common_02067'{/yun}</span>
+                    <el-input v-model="ruleForm.urgent_num" :placeholder="lc('admin_user_00342')">
+                        <template slot="prepend">{{ lc('wap_com_00043') }}</template>
+                        <span slot="suffix" class="slotspan">{{ lc('common_02067') }}</span>
                     </el-input>
-                    <el-input v-model="ruleForm.rec_num" placeholder="{yun:}t key='admin_user_00342'{/yun}" style="margin-left: 10px;">
-                        <template slot="prepend">{yun:}t key='wap_com_00041'{/yun}</template>
-                        <span slot="suffix" class="slotspan">{yun:}t key='common_02067'{/yun}</span>
+                    <el-input v-model="ruleForm.rec_num" :placeholder="lc('admin_user_00342')" style="margin-left: 10px;">
+                        <template slot="prepend">{{ lc('wap_com_00041') }}</template>
+                        <span slot="suffix" class="slotspan">{{ lc('common_02067') }}</span>
                     </el-input>
                     
                 </div>
                 <div class="drawerModTips">
-                    <el-alert title="{yun:}t key='admin_00700'{/yun}" type="warning" show-icon :closable="false">
+                    <el-alert :title="lc('admin_00700')" type="warning" show-icon :closable="false">
                     </el-alert>
                 </div>
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>{yun:}t key='member_com_00022'{/yun}</span>
+                    <span>{{ lc('member_com_00022') }}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input v-model="ruleForm.sort" placeholder="{yun:}t key='admin_user_00342'{/yun}">
+                    <el-input v-model="ruleForm.sort" :placeholder="lc('admin_user_00342')">
                     </el-input>
                 </div>
                 <div class="drawerModTips">
-                    <el-alert title="{yun:}t key='admin_user_company_00197'{/yun}" type="info" show-icon :closable="false">
+                    <el-alert :title="lc('admin_user_company_00197')" type="info" show-icon :closable="false">
                     </el-alert>
                 </div>
             </div>
         </div>
         <div class="setBasicButn" style="border: none;">
-            <el-button type="primary" size="medium" @click="submitForm('ruleForm')" :disabled="submitLoading">{yun:}t key='common.submit'{/yun}</el-button>
+            <el-button type="primary" size="medium" @click="submitForm('ruleForm')" :disabled="submitLoading">{{ lc('common.submit') }}</el-button>
         </div>
     </div>
 </template>
@@ -115,21 +115,21 @@ module.exports = {
                 type: null,
                 //服务价格
                 service_price: '",
-                //{yun:}t key='member_com_00033'{/yun}
+                //{{ lc('member_com_00033') }}
                 job_num: "",
-                //{yun:}t key='member_com_00035'{/yun}
+                //{{ lc('member_com_00035') }}
                 breakjob_num: "",
-                //{yun:}t key='member_com_00034'{/yun}
+                //{{ lc('member_com_00034') }}
                 resume: "",
-                //{yun:}t key='member_com_00037'{/yun}
+                //{{ lc('member_com_00037') }}
                 interview: "",
-                //{yun:}t key='admin_user_company_00211'{/yun}
+                //{{ lc('admin_user_company_00211') }}
                 zph_num: "",
-                //{yun:}t key='wap_user_00209'{/yun}
+                //{{ lc('wap_user_00209') }}
                 top_num: "",
-                //{yun:}t key='wap_com_00043'{/yun}
+                //{{ lc('wap_com_00043') }}
                 urgent_num: "",
-                //{yun:}t key='wap_com_00041'{/yun}
+                //{{ lc('wap_com_00041') }}
                 rec_num: "',
                 //sy_chat_name
                 chat_num: '',
@@ -183,11 +183,11 @@ module.exports = {
             let params = JSON.parse(JSON.stringify(this.ruleForm));
             params.tid = this.tid;
             if (!params.type) {
-                message.error("{yun:}t key='member_com_00523'{/yun}");
+                message.error(lc('member_com_00523'));
                 return false;
             }
             if (parseFloat(params.service_price) < 0) {
-                message.error("{yun:}t key='admin_company_00013'{/yun}");
+                message.error(lc('admin_company_00013'));
                 return false;
             }
             _this.submitLoading = true;

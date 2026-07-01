@@ -7,18 +7,18 @@
         <div class="drawerModInfo drawerModInfoOne">
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>{yun:}t key='admin_00113'{/yun}</span>
+                    <span>{{ lc('admin_00113') }}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input v-model="info.name" placeholder="{yun:}t key='admin_00108'{/yun}"></el-input>
+                    <el-input v-model="info.name" :placeholder="lc('admin_00108')"></el-input>
                 </div>
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>{yun:}t key='admin_00110'{/yun}</span>
+                    <span>{{ lc('admin_00110') }}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-select v-model="info.keyid" placeholder="{yun:}t key='admin_00857'{/yun}">
+                    <el-select v-model="info.keyid" :placeholder="lc('admin_00857')">
                         <el-option v-for="group in group_all" :key="group.id" :label="group.name" :value="group.id">
                         </el-option>
                     </el-select>
@@ -26,64 +26,64 @@
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>{yun:}t key='admin_00119'{/yun}</span>
+                    <span>{{ lc('admin_00119') }}</span>
                 </div>
                 <div class="drawerModInpt">
                     <el-upload class="upload-demo" st :action="''" :auto-upload="false" :show-file-list="false" :accept="pic_accept"
                         :on-change="picChange">
-                        <el-button size="small" type="primary" plain icon="el-icon-plus">{yun:}t key='wap_00540'{/yun}</el-button>
+                        <el-button size="small" type="primary" plain icon="el-icon-plus">{{ lc('wap_00540') }}</el-button>
                     </el-upload>
                     <img style="width: 208px; height: 167px;padding-left: 5px;" v-if="info.pic_n" :src="info.pic_n">
                 </div>
                 <div class="drawerModTips">
-                    <el-alert title="{yun:}t key='admin_00107'{/yun}" type="info" show-icon :closable="false">
+                    <el-alert :title="lc('admin_00107')" type="info" show-icon :closable="false">
                     </el-alert>
                 </div>
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>{yun:}t key='admin_00115'{/yun}</span>
+                    <span>{{ lc('admin_00115') }}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input v-model="info.sort" placeholder="{yun:}t key='admin_00109'{/yun}"></el-input>
+                    <el-input v-model="info.sort" :placeholder="lc('admin_00109')"></el-input>
                 </div>
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>{yun:}t key='admin_00114'{/yun}</span>
+                    <span>{{ lc('admin_00114') }}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-checkbox v-model="topcheck">{yun:}t key='admin_00111'{/yun}</el-checkbox>
-                    <el-checkbox v-model="hotcheck">{yun:}t key='admin_00120'{/yun}</el-checkbox>
-                    <el-checkbox v-model="reccheck">{yun:}t key='common.recommended'{/yun}</el-checkbox>
+                    <el-checkbox v-model="topcheck">{{ lc('admin_00111') }}</el-checkbox>
+                    <el-checkbox v-model="hotcheck">{{ lc('admin_00120') }}</el-checkbox>
+                    <el-checkbox v-model="reccheck">{{ lc('common.recommended') }}</el-checkbox>
                 </div>
             </div>
             <div class="drawerModLis">
                 <div class="drawerModTite">
-                    <span>{yun:}t key='admin_00118'{/yun}</span>
+                    <span>{{ lc('admin_00118') }}</span>
                 </div>
                 <div class="drawerModInpt">
-                    <el-input type="textarea" :rows="2" placeholder="{yun:}t key='wap_00936'{/yun}" v-model="info.description">
+                    <el-input type="textarea" :rows="2" :placeholder="lc('wap_00936')" v-model="info.description">
                     </el-input>
                 </div>
             </div>
             <div class="drawerModLis" style="align-items: initial;">
                 <div class="drawerModTite"></div>
                 <div class="drawerModInpt">
-                    <el-button type="primary" icon="el-icon-plus" plain size="medium" @click="addrate">{yun:}t key='admin_00112'{/yun}</el-button>
-					<el-button type="primary" icon="el-icon-plus" plain size="medium" @click="addquestion">{yun:}t key='admin_00117'{/yun}</el-button>
+                    <el-button type="primary" icon="el-icon-plus" plain size="medium" @click="addrate">{{ lc('admin_00112') }}</el-button>
+					<el-button type="primary" icon="el-icon-plus" plain size="medium" @click="addquestion">{{ lc('admin_00117') }}</el-button>
                 </div>
             </div>
         </div>
         <div class="setBasicButn" style="border: none;">
-            <el-button type="primary" size="medium" @click="save" :disabled="submitLoading">{yun:}t key='common.submit'{/yun}</el-button>
+            <el-button type="primary" size="medium" @click="save" :disabled="submitLoading">{{ lc('common.submit') }}</el-button>
         </div>
 		<div class="modluDrawer">
-			<el-drawer title="{yun:}t key='admin_00112'{/yun}" :visible.sync="drawerrate" :append-to-body="true" :modal-append-to-body="false" :show-close="true"
+			<el-drawer :title="lc('admin_00112')" :visible.sync="drawerrate" :append-to-body="true" :modal-append-to-body="false" :show-close="true"
 			    :with-header="true" size="40%">
 			    <addrate ref="addrate" :sjid="id" :ratedata="ratedata"></addrate>
 			</el-drawer>
-		    <el-drawer title="{yun:}t key='admin_00116'{/yun}" :visible.sync="drawerquestion" :append-to-body="true" :modal-append-to-body="false" :show-close="true"
+		    <el-drawer :title="lc('admin_00116')" :visible.sync="drawerquestion" :append-to-body="true" :modal-append-to-body="false" :show-close="true"
 		        :with-header="true" size="42%">
 		        <addquestion ref="addask" :sjid="id" :askdata="askdata"></addquestion>
 		    </el-drawer>
@@ -162,7 +162,7 @@ module.exports = {
                 return false;
             }
             if (!that.info.keyid) {
-				message.error("{yun:}t key='admin_00857'{/yun}");
+				message.error(lc('admin_00857'));
                 return false;
             }
             that.info.top = that.topcheck == true ? '1' : '0'

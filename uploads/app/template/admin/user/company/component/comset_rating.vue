@@ -3,49 +3,49 @@
     <div class="setUpload">
         <div class="uploadTable">
             <div class="admin_datatip">
-                {yun:}t key='admin_00713'{/yun}
+                {{ lc('admin_00713') }}
             </div>
             <table class="tableVue">
                 <thead>
                 <tr align="left">
-                    <th width="180">{yun:}t key='member_com_00021'{/yun}</th>
-                    <th width="400">{yun:}t key='member_user_00181'{/yun}</th>
-                    <th>{yun:}t key='member_com_00207'{/yun}</th>
+                    <th width="180">{{ lc('member_com_00021') }}</th>
+                    <th width="400">{{ lc('member_user_00181') }}</th>
+                    <th>{{ lc('member_com_00207') }}</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_user_company_00318'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_user_company_00318') }}</div>
                     </td>
                     <td>
                         <div class="TableButn">
-                            <el-radio v-model="ruleForm.com_vip_type" label="1">{yun:}t key='admin_user_company_00199'{/yun}</el-radio>
-                            <el-radio v-model="ruleForm.com_vip_type" label="2">{yun:}t key='admin_user_company_00198'{/yun}</el-radio>
-                            <el-radio v-model="ruleForm.com_vip_type" label="0">{yun:}t key='admin_user_company_00321'{/yun}</el-radio>
+                            <el-radio v-model="ruleForm.com_vip_type" label="1">{{ lc('admin_user_company_00199') }}</el-radio>
+                            <el-radio v-model="ruleForm.com_vip_type" label="2">{{ lc('admin_user_company_00198') }}</el-radio>
+                            <el-radio v-model="ruleForm.com_vip_type" label="0">{{ lc('admin_user_company_00321') }}</el-radio>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
                             <div class="tc_checktip el-icon-info">
-                                {yun:}t key='admin_00714'{/yun}
+                                {{ lc('admin_00714') }}
                             </div>
                             <div class="tc_checktip el-icon-info">
-                                {yun:}t key='admin_00715'{/yun}
+                                {{ lc('admin_00715') }}
                             </div>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_user_company_00319'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_user_company_00319') }}</div>
                     </td>
                     <td>
                         <div class="TableButn">
-                            <el-radio v-model="ruleForm.com_integral_online" label="1">{yun:}t key='admin_user_company_00322'{/yun}</el-radio>
-                            <el-radio v-model="ruleForm.com_integral_online" label="2">{yun:}t key='admin_00716'{/yun}</el-radio>
-                            <el-radio v-model="ruleForm.com_integral_online" label="3">{yun:}t key='admin_00717'{/yun}</el-radio>
-                            <el-radio v-model="ruleForm.com_integral_online" label="4">{yun:}t key='admin_00718'{/yun}</el-radio>
+                            <el-radio v-model="ruleForm.com_integral_online" label="1">{{ lc('admin_user_company_00322') }}</el-radio>
+                            <el-radio v-model="ruleForm.com_integral_online" label="2">{{ lc('admin_00716') }}</el-radio>
+                            <el-radio v-model="ruleForm.com_integral_online" label="3">{{ lc('admin_00717') }}</el-radio>
+                            <el-radio v-model="ruleForm.com_integral_online" label="4">{{ lc('admin_00718') }}</el-radio>
                         </div>
                     </td>
                     <td>
@@ -54,126 +54,126 @@
                                 {{ lc("admin_company_00003", [lc("admin_user_company_00322"), lc("common_02033"), config.integral_pricename, lc("wap_com_00383")]) }}
                             </div>
                             <div class="tc_checktip el-icon-info">
-                                {yun:}t key='admin_00719'{/yun}
+                                {{ lc('admin_00719') }}
                             </div>
                             <div class="tc_checktip el-icon-info">
                                 {{ lc("admin_company_00004", [config.integral_pricename]) }}
                             </div>
-                            <div class="tc_checktip el-icon-info">{yun:}t key='admin_00720'{/yun}</div>
+                            <div class="tc_checktip el-icon-info">{{ lc('admin_00720') }}</div>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_user_company_00320'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_user_company_00320') }}</div>
                     </td>
                     <td>
                         <el-checkbox-group v-model="ruleForm.com_single_can">
                             <div class="tc_checkbox">
-                                <el-checkbox label="issuejob">{yun:}t key='wap_com_00028'{/yun}</el-checkbox>
+                                <el-checkbox label="issuejob">{{ lc('wap_com_00028') }}</el-checkbox>
                             </div>
                             <div class="tc_checkbox">
-                                <el-checkbox label="jobtop">{yun:}t key='wap_com_00238'{/yun}</el-checkbox>
+                                <el-checkbox label="jobtop">{{ lc('wap_com_00238') }}</el-checkbox>
                             </div>
                             <div class="tc_checkbox">
-                                <el-checkbox label="jobrec">{yun:}t key='wap_com_00237'{/yun}</el-checkbox>
+                                <el-checkbox label="jobrec">{{ lc('wap_com_00237') }}</el-checkbox>
                             </div>
                             <div class="tc_checkbox">
-                                <el-checkbox label="joburgent">{yun:}t key='member_com_00247'{/yun}</el-checkbox>
+                                <el-checkbox label="joburgent">{{ lc('member_com_00247') }}</el-checkbox>
                             </div>
                             <div class="tc_checkbox">
-                                <el-checkbox label="sxjob">{yun:}t key='wap_com_00029'{/yun}</el-checkbox>
+                                <el-checkbox label="sxjob">{{ lc('wap_com_00029') }}</el-checkbox>
                             </div>
                             <div class="tc_checkbox">
-                                <el-checkbox label="downresume">{yun:}t key='wap_00451'{/yun}</el-checkbox>
+                                <el-checkbox label="downresume">{{ lc('wap_00451') }}</el-checkbox>
                             </div>
                             <div class="tc_checkbox">
-                                <el-checkbox label="invite">{yun:}t key='resume_00029'{/yun}</el-checkbox>
+                                <el-checkbox label="invite">{{ lc('resume_00029') }}</el-checkbox>
                             </div>
                             <div class="tc_checkbox">
-                                <el-checkbox label="zph">{yun:}t key='admin_user_company_00210'{/yun}</el-checkbox>
+                                <el-checkbox label="zph">{{ lc('admin_user_company_00210') }}</el-checkbox>
                             </div>
                         </el-checkbox-group>
                     </td>
                     <td>
                         <div class="TableShuom">
                             <div class="tc_checktip el-icon-info">
-                                {yun:}t key='admin_00721'{/yun}
+                                {{ lc('admin_00721') }}
                             </div>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_user_company_00315'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_user_company_00315') }}</div>
                     </td>
                     <td>
                         <el-checkbox-group v-model="ruleForm.sy_only_price">
                             <div class="tc_checkbox">
-                                <el-checkbox label="vip">{yun:}t key='admin_user_company_00034'{/yun}</el-checkbox>
+                                <el-checkbox label="vip">{{ lc('admin_user_company_00034') }}</el-checkbox>
                             </div>
                             <div class="tc_checkbox">
-                                <el-checkbox label="pack">{yun:}t key='admin_user_company_00290'{/yun}</el-checkbox>
+                                <el-checkbox label="pack">{{ lc('admin_user_company_00290') }}</el-checkbox>
                             </div>
                             <div class="tc_checkbox">
-                                <el-checkbox label="issuejob">{yun:}t key='wap_com_00028'{/yun}</el-checkbox>
+                                <el-checkbox label="issuejob">{{ lc('wap_com_00028') }}</el-checkbox>
                             </div>
                             <div class="tc_checkbox">
-                                <el-checkbox label="jobtop">{yun:}t key='wap_com_00238'{/yun}</el-checkbox>
+                                <el-checkbox label="jobtop">{{ lc('wap_com_00238') }}</el-checkbox>
                             </div>
                             <div class="tc_checkbox">
-                                <el-checkbox label="jobrec">{yun:}t key='wap_com_00237'{/yun}</el-checkbox>
+                                <el-checkbox label="jobrec">{{ lc('wap_com_00237') }}</el-checkbox>
                             </div>
                             <div class="tc_checkbox">
-                                <el-checkbox label="joburgent">{yun:}t key='member_com_00247'{/yun}</el-checkbox>
+                                <el-checkbox label="joburgent">{{ lc('member_com_00247') }}</el-checkbox>
                             </div>
                             <div class="tc_checkbox">
-                                <el-checkbox label="sxjob">{yun:}t key='wap_com_00029'{/yun}</el-checkbox>
+                                <el-checkbox label="sxjob">{{ lc('wap_com_00029') }}</el-checkbox>
                             </div>
                             <div class="tc_checkbox">
-                                <el-checkbox label="downresume">{yun:}t key='wap_00451'{/yun}</el-checkbox>
+                                <el-checkbox label="downresume">{{ lc('wap_00451') }}</el-checkbox>
                             </div>
                             <div class="tc_checkbox">
-                                <el-checkbox label="invite">{yun:}t key='resume_00029'{/yun}</el-checkbox>
+                                <el-checkbox label="invite">{{ lc('resume_00029') }}</el-checkbox>
                             </div>
                             <div class="tc_checkbox">
-                                <el-checkbox label="zph">{yun:}t key='admin_user_company_00210'{/yun}</el-checkbox>
+                                <el-checkbox label="zph">{{ lc('admin_user_company_00210') }}</el-checkbox>
                             </div>
                         </el-checkbox-group>
                     </td>
                     <td>
                         <div class="TableShuom">
                             <div class="tc_checktip el-icon-info">
-                                {yun:}t key='admin_00722'{/yun}
+                                {{ lc('admin_00722') }}
                             </div>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_00723'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_00723') }}</div>
                     </td>
                     <td>
                         <div class="TableButn">
-                            <el-radio v-model="ruleForm.tg_back" label="1">{yun:}t key='member_com_00287'{/yun}</el-radio>
-                            <el-radio v-model="ruleForm.tg_back" label="2">{yun:}t key='common.close'{/yun}</el-radio>
+                            <el-radio v-model="ruleForm.tg_back" label="1">{{ lc('member_com_00287') }}</el-radio>
+                            <el-radio v-model="ruleForm.tg_back" label="2">{{ lc('common.close') }}</el-radio>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
                             <div class="tc_checktip el-icon-info">
-                                {yun:}t key='admin_00724'{/yun}
+                                {{ lc('admin_00724') }}
                             </div>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_user_company_00316'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_user_company_00316') }}</div>
                     </td>
                     <td>
                         <div class="TableButn w_500">
-                            <el-select v-model="ruleForm.rating_add" multiple placeholder="{yun:}t key='wap_user_00100'{/yun}">
+                            <el-select v-model="ruleForm.rating_add" multiple :placeholder="lc('wap_user_00100')">
                                 <el-option v-for="item in qy_rows" :key="item.id" :label="item.name" :value="item.id"></el-option>
                             </el-select>
                         </div>
@@ -181,44 +181,44 @@
                     <td>
                         <div class="TableShuom">
                             <div class="tc_checktip el-icon-info">
-                                {yun:}t key='admin_00725'{/yun}<span style="color: red;">{yun:}t key='admin_user_company_00311'{/yun}</span>
+                                {{ lc('admin_00725') }}<span style="color: red;">{{ lc('admin_user_company_00311') }}</span>
                             </div>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_user_company_00317'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_user_company_00317') }}</div>
                     </td>
                     <td>
                         <div class="TableButn w_500">
                             <template v-if="qy_rows.length">
-                                <el-select v-model="ruleForm.job_ms_rating" multiple placeholder="{yun:}t key='wap_user_00100'{/yun}">
+                                <el-select v-model="ruleForm.job_ms_rating" multiple :placeholder="lc('wap_user_00100')">
                                     <el-option v-for="item in qy_rows" :key="item.id" :label="item.name" :value="item.id"></el-option>
                                 </el-select>
                             </template>
                             <template v-else>
-                                {yun:}t key='admin_00726'{/yun}
-                                <el-button style="color: red;" @click="handleAdd">{yun:}t key='admin_00727'{/yun}</el-button>
+                                {{ lc('admin_00726') }}
+                                <el-button style="color: red;" @click="handleAdd">{{ lc('admin_00727') }}</el-button>
                             </template>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
                             <div class="tc_checktip el-icon-info">
-                                {yun:}t key='admin_00728'{/yun}
+                                {{ lc('admin_00728') }}
                             </div>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_user_company_00314'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_user_company_00314') }}</div>
                     </td>
                     <td>
                         <div class="TableButn w_500">
-                            <el-select v-model="ruleForm.com_package_open" multiple placeholder="{yun:}t key='wap_user_00100'{/yun}">
-                                <el-option label="{yun:}t key='admin_user_company_00297'{/yun}" value="0"></el-option>
+                            <el-select v-model="ruleForm.com_package_open" multiple :placeholder="lc('wap_user_00100')">
+                                <el-option :label="lc('admin_user_company_00297')" value="0"></el-option>
                                 <el-option v-for="item in qy_rows" :key="item.id" :label="item.name" :value="item.id"></el-option>
                             </el-select>
                         </div>
@@ -226,62 +226,62 @@
                     <td>
                         <div class="TableShuom">
                             <div class="tc_checktip el-icon-info">
-                                {yun:}t key='admin_00729'{/yun}<span style="color:red">{yun:}t key='admin_00730'{/yun}</span>
+                                {{ lc('admin_00729') }}<span style="color:red">{{ lc('admin_00730') }}</span>
                             </div>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_user_company_00312'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_user_company_00312') }}</div>
                     </td>
                     <td>
                         <div class="TableSelect">
                             <template v-if="qy_rows.length">
-                                <el-select v-model="ruleForm.com_rating" placeholder="{yun:}t key='wap_user_00100'{/yun}">
+                                <el-select v-model="ruleForm.com_rating" :placeholder="lc('wap_user_00100')">
                                     <el-option v-for="(item, index) in qy_rows" :key="index" :label="item.name"
                                         :value="item.id">
                                     </el-option>
                                 </el-select>
                             </template>
                             <template v-else>
-                                {yun:}t key='admin_00726'{/yun}
-                                <el-button style="color: red;" @click="handleAdd">{yun:}t key='admin_00727'{/yun}</el-button>
+                                {{ lc('admin_00726') }}
+                                <el-button style="color: red;" @click="handleAdd">{{ lc('admin_00727') }}</el-button>
                             </template>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
                             <div class="tc_checktip el-icon-info">
-                                {yun:}t key='admin_user_company_00312'{/yun}
+                                {{ lc('admin_user_company_00312') }}
                             </div>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_user_company_00313'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_user_company_00313') }}</div>
                     </td>
                     <td>
                         <div class="TableSelect">
                             <template v-if="qy_rows.length">
-                                <el-select v-model="ruleForm.com_vip_done" placeholder="{yun:}t key='wap_user_00100'{/yun}">
-                                    <el-option label="{yun:}t key='admin_user_company_00297'{/yun}" value="0"></el-option>
+                                <el-select v-model="ruleForm.com_vip_done" :placeholder="lc('wap_user_00100')">
+                                    <el-option :label="lc('admin_user_company_00297')" value="0"></el-option>
                                     <el-option v-for="(item, index) in qy_rows" :key="index" :label="item.name"
                                         :value="item.id">
                                     </el-option>
                                 </el-select>
                             </template>
                             <template v-else>
-                                {yun:}t key='admin_00726'{/yun}
-                                <el-button style="color: red;" @click="handleAdd">{yun:}t key='admin_00727'{/yun}</el-button>
+                                {{ lc('admin_00726') }}
+                                <el-button style="color: red;" @click="handleAdd">{{ lc('admin_00727') }}</el-button>
                             </template>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
                             <div class="tc_checktip el-icon-info">
-                                {yun:}t key='admin_00731'{/yun}
+                                {{ lc('admin_00731') }}
                             </div>
                         </div>
                     </td>
@@ -290,7 +290,7 @@
             </table>
         </div>
         <div class="setBasicButn" style="border: none; height: 80px;">
-            <el-button type="primary" size="medium" @click="submitForm('ruleForm')" :disabled="submitLoading">{yun:}t key='common.submit'{/yun}</el-button>
+            <el-button type="primary" size="medium" @click="submitForm('ruleForm')" :disabled="submitLoading">{{ lc('common.submit') }}</el-button>
         </div>
         <!--设置会员套餐-->
         <el-drawer :title="titleAddEdit" :visible.sync="addVisible" :destroy-on-close="true" :modal-append-to-body="false" :wrapper-closable="false" size="770px">
@@ -310,29 +310,29 @@ module.exports = {
             qy_rows: [],
             tcPackage: [],
             ruleForm: {
-                //{yun:}t key='admin_user_company_00318'{/yun}
+                //{{ lc('admin_user_company_00318') }}
                 com_vip_type: null,
-                //{yun:}t key='admin_user_company_00319'{/yun}
+                //{{ lc('admin_user_company_00319') }}
                 com_integral_online: null,
-                //{yun:}t key='admin_user_company_00320'{/yun}
+                //{{ lc('admin_user_company_00320') }}
                 com_single_can: [],
-                //{yun:}t key='admin_user_company_00315'{/yun}
+                //{{ lc('admin_user_company_00315') }}
                 sy_only_price: [],
-                //{yun:}t key='admin_00723'{/yun}
+                //{{ lc('admin_00723') }}
                 tg_back: null,
-                //{yun:}t key='admin_user_company_00316'{/yun}
+                //{{ lc('admin_user_company_00316') }}
                 rating_add: [],
-                //{yun:}t key='admin_user_company_00317'{/yun}
+                //{{ lc('admin_user_company_00317') }}
                 job_ms_rating: [],
-                //{yun:}t key='admin_user_company_00314'{/yun}
+                //{{ lc('admin_user_company_00314') }}
                 com_package_open: [],
-                //{yun:}t key='admin_user_company_00312'{/yun}
+                //{{ lc('admin_user_company_00312') }}
                 com_rating: null,
-                //{yun:}t key='admin_user_company_00313'{/yun}
+                //{{ lc('admin_user_company_00313') }}
                 com_vip_done: null,
             },
             submitLoading: false,
-            titleAddEdit: "{yun:}t key='admin_00689'{/yun}",
+            titleAddEdit: lc('admin_00689'),
             addVisible: false,
         }
     },
@@ -356,25 +356,25 @@ module.exports = {
                         _this.config.integral_pricename = res.data.config.integral_pricename;
                         
                         let config = res.data.config ? res.data.config : {};
-                        //{yun:}t key='admin_user_company_00318'{/yun}
+                        //{{ lc('admin_user_company_00318') }}
                         _this.ruleForm.com_vip_type = config.com_vip_type !== undefined ? config.com_vip_type : null;
-                        //{yun:}t key='admin_user_company_00319'{/yun}
+                        //{{ lc('admin_user_company_00319') }}
                         _this.ruleForm.com_integral_online = config.com_integral_online !== undefined ? config.com_integral_online : null;
-                        //{yun:}t key='admin_user_company_00320'{/yun}
+                        //{{ lc('admin_user_company_00320') }}
                         _this.ruleForm.com_single_can = config.com_single_can;
-                        //{yun:}t key='admin_user_company_00315'{/yun}
+                        //{{ lc('admin_user_company_00315') }}
                         _this.ruleForm.sy_only_price = config.sy_only_price;
-                        //{yun:}t key='admin_00723'{/yun}
+                        //{{ lc('admin_00723') }}
                         _this.ruleForm.tg_back = config.tg_back !== undefined ? config.tg_back : null;
-                        //{yun:}t key='admin_user_company_00316'{/yun}
+                        //{{ lc('admin_user_company_00316') }}
                         _this.ruleForm.rating_add = config.rating_add;
-                        //{yun:}t key='admin_user_company_00317'{/yun}
+                        //{{ lc('admin_user_company_00317') }}
                         _this.ruleForm.job_ms_rating = config.job_ms_rating;
-                        //{yun:}t key='admin_user_company_00314'{/yun}
+                        //{{ lc('admin_user_company_00314') }}
                         _this.ruleForm.com_package_open = config.com_package_open;
-                        //{yun:}t key='admin_user_company_00312'{/yun}
+                        //{{ lc('admin_user_company_00312') }}
                         _this.ruleForm.com_rating = config.com_rating !== undefined ? config.com_rating : null;
-                        //{yun:}t key='admin_user_company_00313'{/yun}
+                        //{{ lc('admin_user_company_00313') }}
                         _this.ruleForm.com_vip_done = config.com_vip_done !== undefined ? config.com_vip_done : null;
                     }
                     if (_this.qy_rows.length < 1) {
@@ -389,7 +389,7 @@ module.exports = {
             // this.$refs[formName].validate((valid) => {if (valid) {}});
             let _this = this;
             let params = JSON.parse(JSON.stringify(this.ruleForm));
-            params.config = "{yun:}t key='common.submit'{/yun}";
+            params.config = lc('common.submit');
             params.isDayActionAllCheck = 0;
             params.isDayActionZeroCostCheck = 0;
             params.com_single_can = params.com_single_can.length > 0 ? params.com_single_can : '';
@@ -413,7 +413,7 @@ module.exports = {
             });
         },
         handleAdd(){
-            this.titleAddEdit = "{yun:}t key='admin_00689'{/yun}";
+            this.titleAddEdit = lc('admin_00689');
             this.addVisible = true;
         },
         handleCloseList() {

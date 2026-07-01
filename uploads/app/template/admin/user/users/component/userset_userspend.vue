@@ -5,43 +5,43 @@
             <table class="tableVue">
                 <thead>
                 <tr align="left">
-                    <th width="180">{yun:}t key='member_com_00021'{/yun}</th>
-                    <th width="400">{yun:}t key='member_user_00181'{/yun}</th>
-                    <th>{yun:}t key='member_com_00207'{/yun}</th>
+                    <th width="180">{{ lc('member_com_00021') }}</th>
+                    <th width="400">{{ lc('member_user_00181') }}</th>
+                    <th>{{ lc('member_com_00207') }}</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_user_00348'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_user_00348') }}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-input v-model="ruleForm.integral_resume_top" placeholder="{yun:}t key='admin_user_00342'{/yun}">
-                                <span slot="suffix" class="slotspan">{yun:}t key='admin_user_00350'{/yun}</span>
+                            <el-input v-model="ruleForm.integral_resume_top" :placeholder="lc('admin_user_00342')">
+                                <span slot="suffix" class="slotspan">{{ lc('admin_user_00350') }}</span>
                             </el-input>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>{yun:}t key='admin_user_00348'{/yun}</span>
+                            <span>{{ lc('admin_user_00348') }}</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <div class="TableTite">{yun:}t key='admin_user_00347'{/yun}</div>
+                        <div class="TableTite">{{ lc('admin_user_00347') }}</div>
                     </td>
                     <td>
                         <div class="TableInpt">
-                            <el-input v-model="ruleForm.pay_trust_resume" placeholder="{yun:}t key='admin_user_00342'{/yun}">
-                                <span slot="suffix" class="slotspan">{yun:}t key='admin_user_00349'{/yun}</span>
+                            <el-input v-model="ruleForm.pay_trust_resume" :placeholder="lc('admin_user_00342')">
+                                <span slot="suffix" class="slotspan">{{ lc('admin_user_00349') }}</span>
                             </el-input>
                         </div>
                     </td>
                     <td>
                         <div class="TableShuom">
-                            <span>{yun:}t key='admin_user_00347'{/yun}</span>
+                            <span>{{ lc('admin_user_00347') }}</span>
                         </div>
                     </td>
                 </tr>
@@ -50,7 +50,7 @@
             </table>
         </div>
         <div class="setBasicButn" style="border: none; height: 80px;">
-            <el-button type="primary" size="medium" @click="submitForm('ruleForm')" :disabled="submitLoading">{yun:}t key='common.submit'{/yun}</el-button>
+            <el-button type="primary" size="medium" @click="submitForm('ruleForm')" :disabled="submitLoading">{{ lc('common.submit') }}</el-button>
         </div>
     </div>
 </template>
@@ -64,7 +64,7 @@ module.exports = {
                 integral_resume_top_type: 2,
                 //个人简历置顶费用
                 integral_resume_top: '",
-                //{yun:}t key='admin_user_00347'{/yun}
+                //{{ lc('admin_user_00347') }}
                 pay_trust_resume: "',
             },
             submitLoading: false,
@@ -96,7 +96,7 @@ module.exports = {
             // this.$refs[formName].validate((valid) => {if (valid) {}});
             let _this = this;
             let params = JSON.parse(JSON.stringify(this.ruleForm));
-            params.config = "{yun:}t key='common.submit'{/yun}";
+            params.config = lc('common.submit');
             _this.submitLoading = true;
             httpPost('m=user&c=users_userset&a=saveSpend', params).then(function (response) {
                 let res = response.data;

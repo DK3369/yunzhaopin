@@ -15,7 +15,7 @@ module.exports = {
         },
         text:{
             type:String,
-            default:"{yun:}t key='admin_00332'{/yun}"
+            default:lc('admin_00332')
         },
         showDuration:{
             type:Boolean,
