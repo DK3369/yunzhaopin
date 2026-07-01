@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -rIEl '--include=*.php' 'eval[[:space:]]*\\\\\\([[:space:]]*\\(base64_decode|gzinflate|gzuncompress|str_rot13|\\\\$_\\(POST|GET|REQUEST|COOKIE|SERVER\\)\\)' .)",
+      "Bash(grep -rIEl '--include=*.php' '@?assert[[:space:]]*\\\\\\([[:space:]]*\\\\$_\\(POST|GET|REQUEST|COOKIE\\)' .)",
+      "Bash(grep -rIEln '--include=*.php' '\\\\$_\\(POST|GET|REQUEST|COOKIE\\)[[:space:]]*\\\\[[^]]+\\\\][[:space:]]*\\\\\\(' .)",
+      "Bash(grep -rIEln '--include=*.php' '\\\\b\\(call_user_func|call_user_func_array\\)[[:space:]]*\\\\\\([[:space:]]*\\\\$_\\(POST|GET|REQUEST|COOKIE\\)' .)",
+      "Bash(grep -rIln --include=\"*.php\" -E \"@?\\(eval|assert\\)[[:space:]]*\\\\\\([[:space:]]*['\\\\\"]?\\\\\\\\\\\\$\" .)",
+      "Bash(grep -rIEln --include=\"*.php\" \"\\\\\\\\\\\\$\\\\{[[:space:]]*['\\\\\"]?\\\\\\\\\\\\$|\\\\\\\\\\\\$\\\\\\\\\\\\$[a-zA-Z_]\" .)",
+      "Bash(grep -rIEln --include=\"*.php\" \"[A-Za-z0-9+/]{300,}={0,2}\" .)",
+      "Bash(xargs ls *)"
+    ]
+  }
+}
