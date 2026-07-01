@@ -17,7 +17,7 @@
         </div>
         </div>
 
-        <!--请选择城市类别-->
+        <!-- Select city category -->
         <div class="modluDrawer">
             <el-drawer :visible.sync="cityVisible" :with-header="false" :modal-append-to-body="false" append-to-body
                        :show-close="true" size="60%">
@@ -37,17 +37,17 @@
                     <div class="xuanzleibie" v-if="classList.length > 0">
                         <ul>
                             <li v-for="(oneItem, oneIndex) in classList" :key="oneIndex">
-                                <!--第一级-->
+                                <!-- First level -->
                                 <div class="xuanzlOne pointer" :data-id="oneItem.id" :data-name="oneItem.name"
                                      :data-one="oneIndex" :data-level="1"
                                      :class="selectCityId.indexOf(oneItem.id) > -1 ? 'class-selected' : ''"
                                      @click="handleSelectCity">{{ oneItem.name }}</div>
                                 <div class="xuanzlTwo">
                                     <div v-for="(twoItem, twoIndex) in oneItem.children" :key="twoIndex" class="xuanzlTwoList">
-                                        <!--有第三级-->
+                                        <!-- Has third level -->
                                         <el-popover v-if="twoItem.children" placement="bottom" width="350" trigger="click">
                                             <div class="xuanzlTwoCont" v-loading="twoItem.children.length == 0">
-                                                <!--第二级-->
+                                                <!-- Second level -->
                                                 <div class="xuanzlTwoBit">
                                                     <i class="el-icon-remove"></i>
                                                     <span v-if="multiple && selectCityId.indexOf(oneItem.id) > -1"
@@ -57,7 +57,7 @@
                                                           :class="selectCityId.indexOf(twoItem.id) > -1 ? 'class-selected' : ''"
                                                           @click="handleSelectCity">{{ twoItem.name }}</span>
                                                 </div>
-                                                <!--第三级-->
+                                                <!-- Third level -->
                                                 <div class="xuanzlTwoTips">
                                                     <template v-for="(threeItem, threeIndex) in twoItem.children">
                                                         <span v-if="multiple && (selectCityId.indexOf(oneItem.id) > -1 || selectCityId.indexOf(twoItem.id) > -1)"
@@ -80,7 +80,7 @@
                                                       >{{ twoItem.name }}</span>
                                             </div>
                                         </el-popover>
-                                        <!--无第三级-->
+                                        <!-- No third level -->
                                         <div v-else class="xuanzNamte blue">
                                             <i class="el-icon-remove"></i>
                                             <span v-if="multiple && selectCityId.indexOf(oneItem.id) > -1"
@@ -120,9 +120,9 @@
 <script>
     module.exports = {
         props: {
-            multiple: {type: Boolean, default: false}, // 选择方式 false-单选/true-多选
-            max: {type: Number, default: 5}, // 多选下有效，最多选择几个
-            selected: {type: Object, default: null} // 已选中数据，数据内容如：{1911: lc('admin_00047'), 1912: lc('admin_00048')}
+            multiple: {type: Boolean, default: false}, // Selection mode: false for single-select, true for multi-select
+            max: {type: Number, default: 5}, // Maximum selection count for multi-select mode
+            selected: {type: Object, default: null} // Selected data, for example: {1911: lc('admin_00047'), 1912: lc('admin_00048')}
         },
         data: function () {
             return {
@@ -148,7 +148,7 @@
             this.handleSelected();
         },
         methods: {
-            // 首次加载分类(一级和二级)
+            // Initial category load for first and second levels
             getClassList() {
                 let that = this,
                     params = {};
@@ -168,7 +168,7 @@
                 })
             },
 
-            // 搜索分类
+            // Search categories
             remoteClassList(query) {
                 if ($.trim(query) !== '') {
                     let that = this;
@@ -177,37 +177,37 @@
                         let res = response.data,
                             classList = res.data.classList;
 
-                        // 层级数据转为一级数据
+                        // Flatten hierarchical data to first-level options
                         if (classList && classList.length > 0) {
                             let newClassList = [],
                                 newClassId = [];
                             classList.forEach(function (oneItem, oneIndex) {
-                                if (oneItem.name.includes(query)) { // 一级须包含关键字
+                                if (oneItem.name.includes(query)) { // First-level item must contain the keyword
                                     newClassList.push({
                                         id: oneItem.id,
                                         name: oneItem.name,
                                         upname: ''
                                     })
-                                    newClassId.push(oneItem.id); // 用来判断存在一级，二级不显示一级的名称
+                                    newClassId.push(oneItem.id); // Used to hide first-level name when first-level item already exists
                                 }
-                                if (oneItem.children) { // 存在二级
+                                if (oneItem.children) { // Has second-level children
                                     oneItem.children.forEach(function (twoItem, twoIndex) {
-                                        if (twoItem.name.includes(query)) { // 二级须包含销售关键字
+                                        if (twoItem.name.includes(query)) { // Second-level item must contain the search keyword
                                             newClassList.push({
                                                 id: twoItem.id,
                                                 name: twoItem.name,
-                                                disabled: that.cityId.indexOf(oneItem.id) !== -1, // 选中一级，二级禁用选择
+                                                disabled: that.cityId.indexOf(oneItem.id) !== -1, // Disable second-level selection when first level is selected
                                                 upname: newClassId.indexOf(oneItem.id) === -1 ? oneItem.name : ''
                                             })
-                                            newClassId.push(twoItem.id); // 用来判断存在二级，三级不显示二级的名称
+                                            newClassId.push(twoItem.id); // Used to hide second-level name when second-level item already exists
                                         }
 
-                                        if (twoItem.children) { // 存在三级
+                                        if (twoItem.children) { // Has third-level children
                                             twoItem.children.forEach(function (threeItem, threeIndex) {
                                                 newClassList.push({
                                                     id: threeItem.id,
                                                     name: threeItem.name,
-                                                    disabled: that.cityId.indexOf(oneItem.id) !== -1 || that.selectCityId.indexOf(twoItem.id) !== -1, // 选中一级或二级，三级均禁用选择
+                                                    disabled: that.cityId.indexOf(oneItem.id) !== -1 || that.selectCityId.indexOf(twoItem.id) !== -1, // Disable third-level selection when first or second level is selected
                                                     upname: newClassId.indexOf(twoItem.id) === -1 ? twoItem.name : ''
                                                 })
                                             })
@@ -225,7 +225,7 @@
                 }
             },
 
-            // 分类变更
+            // Category changed
             async classChange(val) {
                 let classOptions = this.classOptions,
                     valLen = val.length,
@@ -233,14 +233,14 @@
                     cityClass = this.cityClass,
                     cityClassLen = cityClass.length;
 
-                if (cityClassLen > valLen) { // 删除
+                if (cityClassLen > valLen) { // Remove
                     for (var i = 0; i < cityClassLen; i++) {
-                        if (val.indexOf(cityClass[i].id) === -1) { // 未在已选中列表的，清除
+                        if (val.indexOf(cityClass[i].id) === -1) { // Clear items that are no longer selected
                             this.cityClass.splice(i, 1);
                             break;
                         }
                     }
-                } else { // 增加
+                } else { // Add
                     for (var i = 0; i < classOptions.length; i++) {
                         if (classOptions[i].id == id) {
                             if (this.multiple) {
@@ -251,8 +251,8 @@
                                 if (childrenIds && childrenIds.length > 0 && this.cityId.length > 0) { // {{ lc('common_01285') }}
                                     for (var j = 0; j < childrenIds.length; j++) {
                                         index = this.cityId.indexOf(childrenIds[j]);
-                                        if (index > -1) { // 检索已选中下级
-                                            this.cityId.splice(index, 1); // 删除下级
+                                        if (index > -1) { // Find selected child item
+                                            this.cityId.splice(index, 1); // Remove child item
                                             this.cityClass.splice(index, 1);
                                         }
                                     }
@@ -267,7 +267,7 @@
 
                 this.$emit("confirm", {cityId: this.cityId});
             },
-            // 移除分类
+            // Remove category
             classRemove(val) {
                 let that = this;
 
@@ -278,7 +278,7 @@
                 })
             },
 
-            // 打开弹窗
+            // Open dialog
             cityOpen() {
                 this.cityVisible = true;
                 if (this.cityId.length > 0) {
@@ -288,13 +288,13 @@
                     this.selectCityId = [];
                     this.selectCityClass = [];
                 }
-                if (this.searchCity !== '') { // 上一次有搜索过，再次打开重新加载分类数据
+                if (this.searchCity !== '') { // Reload category data when the previous dialog session searched
                     this.searchCity = '';
                     this.getClassList();
                 }
             },
 
-            // 获取子类
+            // Load child categories
             childClassList(event) {
                 let that = this,
                     dataset = event.currentTarget.dataset,
@@ -302,7 +302,7 @@
                     oneIndex = dataset.one,
                     twoIndex = dataset.two;
 
-                if (that.classList[oneIndex]['children'][twoIndex]['children'].length > 0) { // 存在子类,不在触发加载
+                if (that.classList[oneIndex]['children'][twoIndex]['children'].length > 0) { // Child categories already exist, skip loading
                     return false;
                 }
 
@@ -310,18 +310,18 @@
                     let res = response.data,
                         classList = res.data.classList;
 
-                    that.classList[oneIndex]['children'][twoIndex]['children'] = classList && classList.length > 0 ? classList : false; // 默认为没有下级
+                    that.classList[oneIndex]['children'][twoIndex]['children'] = classList && classList.length > 0 ? classList : false; // Default to no child categories
                 })
             },
 
-            // 获取下级分类ID
+            // Get child category IDs
             async getCityChildIds(pid) {
                 let response = await httpPost('m=common&c=cache&a=getCityChildIds', {pid: pid}, {hideLoading: true});
 
                 return response.data.data;
             },
 
-            // 选中分类
+            // Select category
             async handleSelectCity(event) {
                 let that = this,
                     dataset = event.currentTarget.dataset,
@@ -334,18 +334,18 @@
                     one = dataset.one,
                     classList = that.classList;
 
-                if (index > -1) { // 重复点击,取消选中
+                if (index > -1) { // Toggle off repeated clicks
                     that.selectCityId.splice(index, 1);
                     that.selectCityClass.splice(index, 1);
                     return true;
                 }
 
-                if (that.multiple) { // 多选
+                if (that.multiple) { // Multi-select
                     if (level == 1 || level == 2) {
                         let childrenIds = [],
                             oneClass = classList[one];
 
-                        if (level == 1) { // 选择一级，清空下级已选项
+                        if (level == 1) { // Selecting first level clears selected child items
                             if (typeof oneClass.childrenIds === 'undefined') {
                                 childrenIds = await that.getCityChildIds(oneClass.id);
                                 that.$set(that.classList[one], 'childrenIds', childrenIds);
@@ -353,7 +353,7 @@
                                 childrenIds = oneClass.childrenIds;
                             }
                             that.handleSelectClass(childrenIds);
-                        } else if (level == 2) { // 选择二级 清空三级已选选项
+                        } else if (level == 2) { // Selecting second level clears selected third-level items
                             let two = dataset.two,
                                 twoClass = oneClass['children'][two];
                             if (typeof twoClass.childrenIds === 'undefined') {
@@ -372,14 +372,14 @@
                     }
                     that.selectCityId.push(id);
                     that.selectCityClass.push({id: id, name: name});
-                } else { // 单选
+                } else { // Single-select
                     that.selectCityId = [id];
                     that.selectCityClass = [
                         {id: id, name: name}
-                    ]; // 单选覆盖选中值
+                    ]; // Single-select replaces selected value
                 }
             },
-            // 删除选中分类
+            // Remove selected category
             handleCloseCity(id) {
                 let index = this.selectCityId.indexOf(id);
 
@@ -389,25 +389,25 @@
                 }
             },
             /**
-             * 下级分类处理
-             * @params ids 所有下级ID
+             * Child category handling
+             * @params ids All child IDs
              */
             handleSelectClass(ids) {
                 let that = this,
                     index = -1;
 
-                if (ids && ids.length > 0 && that.selectCityId.length > 0) { // 一级或二级选中，清空下级已选选项
+                if (ids && ids.length > 0 && that.selectCityId.length > 0) { // Clear selected child items when first or second level is selected
                     ids.forEach(function (id) {
                         index = that.selectCityId.indexOf(id);
-                        if (index > -1) { // 检索已选中下级
-                            that.selectCityId.splice(index, 1); // 删除下级
+                        if (index > -1) { // Find selected child item
+                            that.selectCityId.splice(index, 1); // Remove child item
                             that.selectCityClass.splice(index, 1);
                         }
                     })
                 }
             },
 
-            // 弹出层搜索
+            // Dialog search
             handleSearchCity() {
                 this.debouncedSearchHandler();
             },
@@ -419,14 +419,14 @@
                 that.timer = setTimeout(() => {
                     that.getClassList();
                     that.timer = null;
-                }, 500); // 延迟时间设置为500毫秒
+                }, 500); // Delay is 500 ms
             },
 
-            // 确认选中分类
+            // Confirm selected category
             handleSubmitCity() {
                 let that = this;
 
-                // 调用引入页面方法,自行处理数据
+                // Call parent page method to process selected data
                 this.cityId = deepClone(this.selectCityId);
                 this.cityClass = deepClone(this.selectCityClass);
                 this.classOptions = deepClone(this.selectCityClass);
@@ -434,18 +434,18 @@
                 let timer = setTimeout(() => {
                     that.classOptions = [];
                     timer = null;
-                }, 500); // 清空搜索下拉选项
+                }, 500); // Clear search dropdown options
 
                 this.cityVisible = false;
                 this.$emit("confirm", {cityId: this.cityId});
             },
 
-            // 处理选中值
+            // Handle selected values
             handleSelected() {
                 let that = this,
                     selected = this.selected;
 
-                if (this.searchCity !== '') { // 上一次有搜索过，再次打开重新加载分类数据
+                if (this.searchCity !== '') { // Reload category data when the previous dialog session searched
                     this.searchCity = '';
                     this.getClassList();
                 }
@@ -468,7 +468,7 @@
                     let timer = setTimeout(() => {
                         that.classOptions = [];
                         timer = null;
-                    }, 500); // 清空搜索下拉选项
+                    }, 500); // Clear search dropdown options
                 }
             },
         },

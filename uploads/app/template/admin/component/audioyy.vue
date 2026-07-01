@@ -59,7 +59,7 @@ module.exports = {
             this.timer&&clearInterval( this.timer)
             this.animate=false
         }
-        window.audioList.push(this.audio)//所有实例加入全局变量
+        window.audioList.push(this.audio)// Add all instances to the global list
     },
     methods:{
         async countAudioTime(){
@@ -72,7 +72,7 @@ module.exports = {
             this.duration=this.format(this.audio.duration)
         },
         play(){
-            window.audioList.forEach(audio=>{//开始前先关闭所有可能正在运行的实例
+            window.audioList.forEach(audio=>{// Close any running instances before starting playback
                 if(audio.src!=this.src){
                     audio.pause()
                 }

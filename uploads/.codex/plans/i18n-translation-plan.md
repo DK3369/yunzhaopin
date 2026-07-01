@@ -338,6 +338,8 @@ php tools/scan_wap_zero_zh.php
 5. 语言包质量收敛：修复 `en_us` 中中文残留、与 `zh_cn` 相同的错误译文、误存的模板/Vue/JS 表达式。
 6. 扫描报告收敛：更新扫描报告，并标注剩余中文属于协议数据、第三方库、表情编码或用户内容。
 
+Batch 2 执行范围：后台壳页 `app/template/admin/index.htm`、共享组件 `app/template/admin/component/*_class.vue` / `admin_add.vue` / `audioyy.vue`、以及 `app/template/admin/js/api.js`、`app/template/admin/js/router.js`。本批优先处理中文注释英文化和可见中文复核；已 `lc()` 的文案不重复迁移。
+
 ## 11. 推荐执行顺序
 
 1. 修复语言包损坏项和扫描脚本误报规则。

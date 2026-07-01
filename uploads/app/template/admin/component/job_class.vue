@@ -18,7 +18,7 @@
             </div>
         </div>
 
-        <!--请选择职位类别-->
+        <!-- Select job category -->
         <div class="modluDrawer">
             <el-drawer :visible.sync="jobVisible" :with-header="false" :modal-append-to-body="false" append-to-body
                        :show-close="true" size="80%">
@@ -38,14 +38,14 @@
                     <div class="xuanzleibie" v-if="classList.length > 0">
                         <ul>
                             <li v-for="(oneItem, oneIndex) in classList" :key="oneIndex">
-                                <!--第一级-->
+                                <!-- First level -->
                                 <div class="xuanzlOne">{{ oneItem.name }}</div>
                                 <div class="xuanzlTwo">
                                     <div v-for="(twoItem, twoIndex) in oneItem.children" :key="twoIndex" class="xuanzlTwoList">
-                                        <!--有第三级-->
+                                        <!-- Has third level -->
                                         <el-popover v-if="twoItem.children" placement="bottom" width="350" trigger="click">
                                             <div class="xuanzlTwoCont" v-loading="twoItem.children.length == 0">
-                                                <!--第二级-->
+                                                <!-- Second level -->
                                                 <div class="xuanzlTwoBit">
                                                     <i class="el-icon-remove"></i>
                                                     <span :data-id="twoItem.id" :data-name="twoItem.name"
@@ -53,7 +53,7 @@
                                                           :class="selectJobId.indexOf(twoItem.id) > -1 ? 'class-selected' : ''"
                                                           @click="handleSelectJob">{{ twoItem.name }}</span>
                                                 </div>
-                                                <!--第三级-->
+                                                <!-- Third level -->
                                                 <div class="xuanzlTwoTips">
                                                     <template v-for="(threeItem, threeIndex) in twoItem.children">
                                                         <span v-if="multiple && selectJobId.indexOf(twoItem.id) > -1" :key="threeIndex"
@@ -73,7 +73,7 @@
                                                       >{{ twoItem.name }}</span>
                                             </div>
                                         </el-popover>
-                                        <!--无第三级-->
+                                        <!-- No third level -->
                                         <div v-else class="xuanzNamte blue">
                                             <i class="el-icon-remove"></i>
                                             <span :data-id="twoItem.id" :data-name="twoItem.name"
@@ -114,9 +114,9 @@
 <script>
     module.exports = {
         props: {
-            multiple: {type: Boolean, default: false}, // 选择方式 false-单选/true-多选
-            max: {type: Number, default: 5}, // 多选下有效，最多选择几个
-            selected: {type: Object, default: null}, // 已选中数据，数据内容如：{167: lc('common_01417'), 168: lc('admin_00056')}
+            multiple: {type: Boolean, default: false}, // Selection mode: false for single-select, true for multi-select
+            max: {type: Number, default: 5}, // Maximum selection count for multi-select mode
+            selected: {type: Object, default: null}, // Selected data, for example: {167: lc('common_01417'), 168: lc('admin_00056')}
             showsearch: {type: Boolean, default: true},
         },
         data: function () {
@@ -143,7 +143,7 @@
             this.handleSelected();
         },
         methods: {
-            // 首次加载分类(一级和二级)
+            // Initial category load for first and second levels
             getClassList() {
                 let that = this,
                     params = {};
@@ -163,7 +163,7 @@
                 })
             },
 
-            // 搜索分类
+            // Search categories
             remoteClassList(query) {
                 if ($.trim(query) !== '') {
                     let that = this;
@@ -172,28 +172,28 @@
                         let res = response.data,
                             classList = res.data.classList;
 
-                        // 层级数据转为一级数据
+                        // Flatten hierarchical data to first-level options
                         if (classList && classList.length > 0) {
                             let newClassList = [],
                                 newClassId = [];
                             classList.forEach(function (oneItem, oneIndex) {
-                                if (oneItem.children) { // 存在二级
+                                if (oneItem.children) { // Has second-level children
                                     oneItem.children.forEach(function (twoItem, twoIndex) {
-                                        if (twoItem.name.includes(query)) { // 二级须包含关键字
+                                        if (twoItem.name.includes(query)) { // Second-level item must contain the keyword
                                             newClassList.push({
                                                 id: twoItem.id,
                                                 name: twoItem.name,
                                                 upname: oneItem.name
                                             })
-                                            newClassId.push(twoItem.id); // 用来判断存在二级，三级不显示二级的名称
+                                            newClassId.push(twoItem.id); // Used to hide second-level name when second-level item already exists
                                         }
 
-                                        if (twoItem.children) { // 存在三级
+                                        if (twoItem.children) { // Has third-level children
                                             twoItem.children.forEach(function (threeItem, threeIndex) {
                                                 newClassList.push({
                                                     id: threeItem.id,
                                                     name: threeItem.name,
-                                                    disabled: that.jobId.indexOf(twoItem.id) !== -1, // 选中二级，三级禁止选择
+                                                    disabled: that.jobId.indexOf(twoItem.id) !== -1, // Disable third-level selection when second level is selected
                                                     upname: newClassId.indexOf(twoItem.id) === -1 ? twoItem.name : ''
                                                 })
                                             })
@@ -211,7 +211,7 @@
                 }
             },
 
-            // 分类变更
+            // Category changed
             async classChange(val) {
                 let classOptions = this.classOptions,
                     valLen = val.length,
@@ -219,16 +219,16 @@
                     jobClass = this.jobClass
                     jobClassLen = jobClass.length;
 
-                if (jobClassLen > valLen) { // 删除
+                if (jobClassLen > valLen) { // Remove
                     for (var i = 0; i < jobClassLen; i++) {
-                        if (val.indexOf(jobClass[i].id) === -1) { // 未在已选中列表的，清除
+                        if (val.indexOf(jobClass[i].id) === -1) { // Clear items that are no longer selected
                             this.jobClass.splice(i, 1);
                             break;
                         }
                     }
-                } else { // 增加
+                } else { // Add
                     for (var i = 0; i < classOptions.length; i++) {
-                        if (classOptions[i].id == id) { // 获取选中值数据
+                        if (classOptions[i].id == id) { // Get selected value data
                             if (this.multiple) {
                                 this.jobClass.push({id: classOptions[i].id, name: classOptions[i].name});
 
@@ -237,8 +237,8 @@
                                 if (childrenIds && childrenIds.length > 0 && this.jobId.length > 0) { // {{ lc('common_01285') }}
                                     for (var j = 0; j < childrenIds.length; j++) {
                                         index = this.jobId.indexOf(childrenIds[j]);
-                                        if (index > -1) { // 检索已选中下级
-                                            this.jobId.splice(index, 1); // 删除下级
+                                        if (index > -1) { // Find selected child item
+                                            this.jobId.splice(index, 1); // Remove child item
                                             this.jobClass.splice(index, 1);
                                         }
                                     }
@@ -253,7 +253,7 @@
 
                 this.$emit("confirm", {jobId: this.jobId});
             },
-            // 移除分类
+            // Remove category
             classRemove(val) {
                 let that = this;
 
@@ -264,7 +264,7 @@
                 })
             },
 
-            // 打开弹窗
+            // Open dialog
             jobOpen() {
                 this.jobVisible = true;
                 if (this.jobId.length > 0) {
@@ -274,13 +274,13 @@
                     this.selectJobId = [];
                     this.selectJobClass = [];
                 }
-                if (this.searchJob !== '') { // 上一次有搜索过，再次打开重新加载分类数据
+                if (this.searchJob !== '') { // Reload category data when the previous dialog session searched
                     this.searchJob = '';
                     this.getClassList();
                 }
             },
 
-            // 获取子类
+            // Load child categories
             childClassList(event) {
                 let that = this,
                     dataset = event.currentTarget.dataset,
@@ -288,7 +288,7 @@
                     oneIndex = dataset.one,
                     twoIndex = dataset.two;
 
-                if (that.classList[oneIndex]['children'][twoIndex]['children'].length > 0) { // 存在子类,不在触发加载
+                if (that.classList[oneIndex]['children'][twoIndex]['children'].length > 0) { // Child categories already exist, skip loading
                     return false;
                 }
 
@@ -296,18 +296,18 @@
                     let res = response.data,
                         classList = res.data.classList;
 
-                    that.classList[oneIndex]['children'][twoIndex]['children'] = classList && classList.length > 0 ? classList : false; // 默认为没有下级
+                    that.classList[oneIndex]['children'][twoIndex]['children'] = classList && classList.length > 0 ? classList : false; // Default to no child categories
                 })
             },
 
-            // 获取下级分类ID
+            // Get child category IDs
             async getJobChildIds(pid) {
                 let response = await httpPost('m=common&c=cache&a=getJobChildIds', {pid: pid}, {hideLoading: true});
 
                 return response.data.data;
             },
 
-            // 选中分类
+            // Select category
             async handleSelectJob(event) {
                 let that = this,
                     dataset = event.currentTarget.dataset,
@@ -320,14 +320,14 @@
                     one = dataset.one,
                     two = dataset.two;
 
-                if (index > -1) { // 重复点击,取消选中
+                if (index > -1) { // Toggle off repeated clicks
                     that.selectJobId.splice(index, 1);
                     that.selectJobClass.splice(index, 1);
                     return true;
                 }
 
-                if (that.multiple) { // 多选
-                    if (level == 2) { // 选择二级 清空三级已选选项
+                if (that.multiple) { // Multi-select
+                    if (level == 2) { // Selecting second level clears selected third-level items
                         let twoClass = that.classList[one]['children'][two],
                             childrenIds = '';
                         if (typeof twoClass.childrenIds === 'undefined') {
@@ -345,14 +345,14 @@
                     }
                     that.selectJobId.push(id);
                     that.selectJobClass.push({id: id, name: name});
-                } else { // 单选
+                } else { // Single-select
                     that.selectJobId = [id];
                     that.selectJobClass = [
                         {id: id, name: name}
-                    ]; // 单选覆盖选中值
+                    ]; // Single-select replaces selected value
                 }
             },
-            // 删除选中分类
+            // Remove selected category
             handleCloseJob(id) {
                 let index = this.selectJobId.indexOf(id);
 
@@ -362,25 +362,25 @@
                 }
             },
             /**
-             * 下级分类处理
-             * @params ids 所有下级ID
+             * Child category handling
+             * @params ids All child IDs
              */
             handleSelectClass(ids) {
                 let that = this,
                     index = -1;
 
-                if (ids && ids.length > 0 && that.selectJobId.length > 0) { // 二级选中，清空下级已选选项
+                if (ids && ids.length > 0 && that.selectJobId.length > 0) { // Clear selected child items when second level is selected
                     ids.forEach(function (id) {
                         index = that.selectJobId.indexOf(id);
-                        if (index > -1) { // 检索已选中下级
-                            that.selectJobId.splice(index, 1); // 删除下级
+                        if (index > -1) { // Find selected child item
+                            that.selectJobId.splice(index, 1); // Remove child item
                             that.selectJobClass.splice(index, 1);
                         }
                     })
                 }
             },
 
-            // 弹出层搜索
+            // Dialog search
             handleSearchJob() {
                 this.debouncedSearchHandler();
             },
@@ -392,14 +392,14 @@
                 that.timer = setTimeout(() => {
                     that.getClassList();
                     that.timer = null;
-                }, 500); // 延迟时间设置为500毫秒
+                }, 500); // Delay is 500 ms
             },
 
-            // 确认选中分类
+            // Confirm selected category
             handleSubmitJob() {
                 let that = this;
 
-                // 调用引入页面方法,自行处理数据
+                // Call parent page method to process selected data
                 this.jobId = deepClone(this.selectJobId);
                 this.jobClass = deepClone(this.selectJobClass);
                 this.classOptions = deepClone(this.selectJobClass);
@@ -407,18 +407,18 @@
                 let timer = setTimeout(() => {
                     that.classOptions = [];
                     timer = null;
-                }, 500); // 清空搜索下拉选项
+                }, 500); // Clear search dropdown options
 
                 this.jobVisible = false;
                 this.$emit("confirm", {jobId: this.jobId});
             },
 
-            // 处理选中值
+            // Handle selected values
             handleSelected() {
                 let that = this,
                     selected = this.selected;
 
-                if (this.searchJob !== '') { // 上一次有搜索过，再次打开重新加载分类数据
+                if (this.searchJob !== '') { // Reload category data when the previous dialog session searched
                     this.searchJob = '';
                     this.getClassList();
                 }
@@ -441,7 +441,7 @@
                     let timer = setTimeout(() => {
                         that.classOptions = [];
                         timer = null;
-                    }, 500); // 清空搜索下拉选项
+                    }, 500); // Clear search dropdown options
                 }
             },
         },

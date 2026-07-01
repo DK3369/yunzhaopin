@@ -1,4 +1,4 @@
-// 后台运行时多语言：覆盖静态HTML、Vue组件、Element提示。
+// Admin runtime i18n: translates static HTML, Vue components, and Element UI prompts.
 (function () {
     function getCookie(name) {
         var parts = document.cookie ? document.cookie.split("; ") : [];
@@ -12,7 +12,7 @@
     }
 
     function hasZh(text) {
-        return typeof text === "string" && /[一-龥]/.test(text);
+        return typeof text === "string" && /[\u4e00-\u9fa5]/.test(text);
     }
 
     function resolveLang() {
@@ -251,48 +251,48 @@
     });
 })();
 
-// 请求拦截器
+// Request interceptor
 axios.interceptors.request.use(function (config) {
-    // 在发送请求之前做些什么
+    // Run before sending the request
 
-    // 不传递默认开启loading，传递 hideloading=true 则不显示loading
+    // Loading is enabled by default; pass hideloading=true to hide it
     if (!config.hideloading) {
         showFullScreenLoading();
     }
 
-    // let token = localStorage.getItem("token"); // 传token
+    // let token = localStorage.getItem("token"); // Pass token
     config.headers['Content-Type'] = "application/x-www-form-urlencoded";
     // config.headers['token'] = token;  //Authorization
 
     return config;
 }, function (error) {
-    // 对请求错误做些什么
+    // Handle request errors
     console.log('requestError', error);
     return Promise.reject(error);
 });
 
-// 响应拦截器
+// Response interceptor
 axios.interceptors.response.use(function (response) {
-    // 2xx 范围内的状态码都会触发该函数。
-    // 响应后则清除定时器、关闭加载动画
+    // 2xx status codes trigger this handler.
+    // Clear the timer and close loading after response
     tryHideFullScreenLoading();
     return response;
 }, function (error) {
-    // 超出 2xx 范围的状态码都会触发该函数。
-    // 对响应错误做点什么
+    // Non-2xx status codes trigger this handler.
+    // Handle response errors
     console.log('responseError', error)
 
-    // 响应后则清除定时器、关闭加载动画
+    // Clear the timer and close loading after response
     tryHideFullScreenLoading();
 
     /**
-     * @code 登录过期 token验证失败 根据后端调
+     * @code Login expired or token validation failed; follow backend contract
      */
     // if (response.data.code == 401) {
-    //     // TODO 跳转登录
+    //     // TODO: redirect to login
     // }
 
-    // 权限校验
+    // Authorization check
     if (error.response.status == 777) {
         message.warning(error.response.data.msg);
         // vue.$router.push('/login');
@@ -306,7 +306,7 @@ axios.interceptors.response.use(function (response) {
 
     let err = {
         code: 999,
-        msg: '未知异常，请联系管理员！'
+        msg: window.lc ? window.lc('admin_00334', null, 'Unknown exception. Please contact the administrator.') : 'Unknown exception. Please contact the administrator.'
     };
 
     return Promise.reject(err);
@@ -316,12 +316,12 @@ let baseUrl = localStorage.getItem("baseUrl") + '?';
 let version = Date.now();
 
 /**
- * POST 请求
+ * POST request
  * @param url
- * @param params 接口参数
- * @param config 配置
- *        {hideloading: true} 隐藏加载动画
- * @param newBase 请求地址，部分情况下，还没有baseUrl，需要传一下
+ * @param params API parameters
+ * @param config Configuration
+ *        {hideloading: true} Hide loading animation
+ * @param newBase Request base URL, used before baseUrl is available
  * @returns {*}
  */
 function httpPost(url, params = null, config = {}, newBase = '') {
@@ -349,13 +349,13 @@ function httpPost(url, params = null, config = {}, newBase = '') {
 function getUrlParams(location = window.location) {
     var qs = '';
     if (location.search) {
-        qs = location.search.substr(1); // 获取url中"?"符后的字串
-    } else if (location.hash) { // 获取url中#符后的参数
+        qs = location.search.substr(1); // Get query string after "?"
+    } else if (location.hash) { // Get query string after hash
         qs = location.hash.substr(location.hash.indexOf('?') + 1);
     }
 
-    var args = {}, // 保存参数数据的对象
-        items = qs.length ? qs.split("&") : [], // 取得每一个参数项,
+    var args = {}, // Parsed parameter object
+        items = qs.length ? qs.split("&") : [], // Split each parameter item,
         item = null,
         len = items.length;
 
@@ -370,7 +370,7 @@ function getUrlParams(location = window.location) {
     return args;
 }
 let loadingTimeout = null;
-// 显示loading加载动画
+// Show loading animation
 let loading;
 function startLoading() {
     loading = Vue.prototype.$loading({
@@ -381,7 +381,7 @@ function startLoading() {
     });
 
 }
-// 清除loading加载动画
+// Clear loading animation
 function endLoading(){
     clearTimeout(loadingTimeout);
     loadingTimeout = null;
@@ -389,12 +389,12 @@ function endLoading(){
         loading.close();
     }
 }
-// 需要考虑一个问题，可能同时发起多个请求，而我们显示动画是一次性的，即等当前所有请求完毕后再清除动画。
-// 声明一个对象用于存储请求个数
+// Multiple requests can run at once; hide loading only after all current requests complete.
+// Track active loading request count
 let needLoadingRequestCount = 0;
 function showFullScreenLoading() {
     if (needLoadingRequestCount === 0) {
-        // 800毫秒没有响应，则显示加载动画
+        // Show loading if no response arrives within 800 ms
         loadingTimeout = setTimeout(() => {
             startLoading();
         }, 800);
@@ -419,20 +419,20 @@ const message = new Vue({
         },
 
         /**
-         * 确认框显示
-         * @param msg 提示信息
-         * @param confirmFun 确定回调函数
-         * @param confirmButtonText 确定按钮文字
-         * @param title 标题
-         * @param type 是否有图标 success / info / warning / error
-         * @param showCancelButton 是否显示取消按钮
-         * @param cancelButtonText 取消按钮文字
-         * @param cancelFun 取消回调
+         * Show confirm dialog
+         * @param msg Prompt message
+         * @param confirmFun Confirm callback
+         * @param confirmButtonText Confirm button text
+         * @param title Dialog title
+         * @param type Icon type: success / info / warning / error
+         * @param showCancelButton Whether to show cancel button
+         * @param cancelButtonText Cancel button text
+         * @param cancelFun Cancel callback
          */
         confirm(msg, confirmFun = null, confirmButtonText = '', title = '', type = '', showCancelButton = true, cancelButtonText = '', cancelFun = null) {
-            this.$confirm(window.yunAdminT ? window.yunAdminT(msg) : msg, title ? (window.yunAdminT ? window.yunAdminT(title) : title) : (window.yunAdminT ? window.yunAdminT('温馨提示') : '温馨提示'), {
-                confirmButtonText: confirmButtonText ? (window.yunAdminT ? window.yunAdminT(confirmButtonText) : confirmButtonText) : (window.yunAdminT ? window.yunAdminT('确定') : '确定'),
-                cancelButtonText: cancelButtonText ? (window.yunAdminT ? window.yunAdminT(cancelButtonText) : cancelButtonText) : (window.yunAdminT ? window.yunAdminT('取消') : '取消'),
+            this.$confirm(window.yunAdminT ? window.yunAdminT(msg) : msg, title ? (window.yunAdminT ? window.yunAdminT(title) : title) : (window.lc ? window.lc('common_01520', null, 'Tips') : 'Tips'), {
+                confirmButtonText: confirmButtonText ? (window.yunAdminT ? window.yunAdminT(confirmButtonText) : confirmButtonText) : (window.lc ? window.lc('common_02016', null, 'Confirm') : 'Confirm'),
+                cancelButtonText: cancelButtonText ? (window.yunAdminT ? window.yunAdminT(cancelButtonText) : cancelButtonText) : (window.lc ? window.lc('wap_js_00080', null, 'Cancel') : 'Cancel'),
                 type: type,
                 showCancelButton: showCancelButton
             }).then(() => {
@@ -443,14 +443,14 @@ const message = new Vue({
         },
 
         /**
-         * alert 消息提示
-         * @param msg 提示语
-         * @param confirmFun 回调方法
-         * @param confirmButtonText 按钮文字
+         * Show alert message
+         * @param msg Prompt message
+         * @param confirmFun Callback
+         * @param confirmButtonText Button text
          */
         alert(msg, confirmFun = null, confirmButtonText = '') {
             this.$alert(window.yunAdminT ? window.yunAdminT(msg) : msg, {
-                confirmButtonText: confirmButtonText ? (window.yunAdminT ? window.yunAdminT(confirmButtonText) : confirmButtonText) : (window.yunAdminT ? window.yunAdminT('确定') : '确定'),
+                confirmButtonText: confirmButtonText ? (window.yunAdminT ? window.yunAdminT(confirmButtonText) : confirmButtonText) : (window.lc ? window.lc('common_02016', null, 'Confirm') : 'Confirm'),
                 callback: action => {
                     typeof(confirmFun) == 'function' && confirmFun();
                 }
@@ -458,11 +458,11 @@ const message = new Vue({
         },
 
         /**
-         * 参数说明
-         * @param message 提示语
-         * @param closeFun 提示语结束后执行的关闭回调函数
-         * @param duration 显示时长，单位毫秒
-         * @param options 参考官方的自定议参数，文档地址：https://element.eleme.cn/#/zh-CN/component/message
+         * Parameter description
+         * @param message Prompt message
+         * @param closeFun Close callback after message ends
+         * @param duration Display duration in milliseconds
+         * @param options Element UI message options: https://element.eleme.cn/#/zh-CN/component/message
          */
         success(message, closeFun = null, duration = 2000, options = {}) {
             this.commonMsg('success', message, closeFun, duration, options);
@@ -495,20 +495,20 @@ const message = new Vue({
 })
 
 /**
- * 删除弹窗
+ * Delete confirmation dialog
  * @param _this
  * @param params
- * @param delFun 删除方法名称，传参如 this.delFun
- * @param msg 删除操作提示语
- * @param cancelFun 删除提示框取消操作方法
+ * @param delFun Delete callback, for example this.delFun
+ * @param msg Delete confirmation message
+ * @param cancelFun Cancel callback
  */
 function delConfirm(_this, params, delFun, msg, cancelFun) {
     if (typeof msg == 'undefined' || msg == ''){
-        msg = window.yunAdminT ? window.yunAdminT('你确定要删除当前项吗？') : '你确定要删除当前项吗？';
+        msg = window.lc ? window.lc('admin_00333', null, 'Are you sure you want to delete the current item?') : 'Are you sure you want to delete the current item?';
     }
-    _this.$confirm(window.yunAdminT ? window.yunAdminT(msg) : msg, window.yunAdminT ? window.yunAdminT('温馨提示') : '温馨提示', {
-        confirmButtonText: window.yunAdminT ? window.yunAdminT('确定') : '确定',
-        cancelButtonText: window.yunAdminT ? window.yunAdminT('取消') : '取消',
+    _this.$confirm(window.yunAdminT ? window.yunAdminT(msg) : msg, window.lc ? window.lc('common_01520', null, 'Tips') : 'Tips', {
+        confirmButtonText: window.lc ? window.lc('common_02016', null, 'Confirm') : 'Confirm',
+        cancelButtonText: window.lc ? window.lc('wap_js_00080', null, 'Cancel') : 'Cancel',
         type: 'warning'
     }).then(() => {
         delFun(params);
@@ -517,17 +517,17 @@ function delConfirm(_this, params, delFun, msg, cancelFun) {
     });
 }
 
-// 判断arr是否为一个数组，返回一个bool值
+// Return whether arr is an array
 function isArray (arr) {
     return Object.prototype.toString.call(arr) === '[object Array]';
 }
 
-// 深度克隆
+// Deep clone
 function deepClone (obj) {
-    // 对常见的“非”值，直接返回原来值
+    // Return common non-values as-is
     if([null, undefined, NaN, false].includes(obj)) return obj;
     if(typeof obj !== "object" && typeof obj !== 'function') {
-        //原始类型直接返回
+        // Return primitive values as-is
         return obj;
     }
     var o = isArray(obj) ? [] : {};
@@ -539,7 +539,7 @@ function deepClone (obj) {
     return o;
 }
 
-// 格式化日期-年月
+// Format date as year-month
 function formatMonth(date) {
     let year = date.getFullYear(),
         month = date.getMonth()+1;
@@ -547,7 +547,7 @@ function formatMonth(date) {
     return `${year}-${month < 10 ? '0' + month : month}`;
 }
 
-// 格式化日期
+// Format date
 function formatDate(date) {
     let year = date.getFullYear(),
         month = date.getMonth()+1,
@@ -556,7 +556,7 @@ function formatDate(date) {
     return `${year}-${month < 10 ? '0' + month : month}-${day < 10 ? '0' + day : day}`;
 }
 
-// 格式化日期时间
+// Format date and time
 function formatDatetime(date) {
     let hours = date.getHours(),
         minutes = date.getMinutes(),
@@ -565,7 +565,7 @@ function formatDatetime(date) {
     return formatDate(date) + ` ${hours < 10 ? '0' + hours : hours}:${minutes < 10 ? '0' + minutes : minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
 }
 
-//  jsMath函数 Start
+// jsMath functions start
 function accAdd(arg1, arg2) {
     if (isNaN(arg1)) {
         arg1 = 0;
@@ -642,9 +642,9 @@ function accDiv(arg1, arg2) {
         return (r1 / r2) * pow(10, t2 - t1);
     }
 }
-//  jsMath函数 End
+// jsMath functions end
 
-//Cascader 城市级联选择器 options数据处理
+// Process Cascader city options
 function cityCascader(obj={}){
 
     var cidata = ctdata = cndata = options = [];
@@ -719,7 +719,7 @@ function cityCascader(obj={}){
     return options;
 }
 
-//Cascader 职能级联选择器 options数据处理
+// Process Cascader job category options
 function jobCascader(obj={}){
 
     var jidata = jtdata = jndata = options = [];
@@ -791,7 +791,7 @@ function jobCascader(obj={}){
     return options;
 }
 
-//Cascader 职能级联选择器 设置默认Value处理
+// Process default Cascader job category value
 function jobCasaderValue(idStr = null) {
 
     if (idStr != null) {
@@ -850,12 +850,12 @@ function jobCasaderValue(idStr = null) {
     }
 }
 
-//select 职能/城市类别搜索 获取可选项
+// Get selectable options for job/city category search
 function jobcityclass_slist(obj={}){
 
-    var keyword = '';//搜索关键词
+    var keyword = '';// Search keyword
     var type = '';//jobclass，cityclass
-    var choosed = [];//已选项
+    var choosed = [];// Selected items
 
     if(typeof obj.keyword!='undefined' && obj.keyword.trim()!=''){
         keyword = obj.keyword;
@@ -927,7 +927,7 @@ function jobcityclass_slist(obj={}){
             fsn.forEach(function(item,index){
                 itemv   =   item.toString().toLowerCase();
 
-                if(itemv.indexOf(keyword)!= -1){//当前级（可为1/2/3级）
+                if(itemv.indexOf(keyword)!= -1){// Current level, either 1, 2, or 3
                     thisclass.push(index);
                 }
             })
@@ -969,14 +969,14 @@ function jobcityclass_slist(obj={}){
 
                     fsArr.push({"name":fsn[fsone[i]],"value":fsone[i],"selected":oneselected,"disabled":false,"upname":''});
                     if(fst && fst.length>0 && fst!='new Array()'){
-                        for(var j=0;j<fst[fsone[i]].length;j++){//先判断选项里是否有二级属于此一级
+                        for(var j=0;j<fst[fsone[i]].length;j++){// Check whether any second-level option belongs to this first-level item
                             if(fstwo.indexOf(parseInt(fst[fsone[i]][j]))!=-1){
                                 hastwo = true;
                             }
                         }
                     }
 
-                    if(hastwo){//有二级
+                    if(hastwo){// Has second-level options
                         if(fstwo.length>0){
                             for(var m=0;m<fstwo.length;m++){
 
@@ -1069,7 +1069,7 @@ function jobcityclass_slist(obj={}){
         }
     }else{
 
-        //只有一级类别时，点击输入框直接展示所有选项
+        // When only first-level categories exist, show all options when the input is clicked
         if(!(fst && fst.length>0)){
 
             fsone = fsi;
@@ -1087,7 +1087,7 @@ function jobcityclass_slist(obj={}){
     return fsArr;
 }
 
-// 将图片转成base64
+// Convert image to base64
 function getBase64Image(img) {
     var canvas = document.createElement("canvas");
     canvas.width = img.width;
@@ -1097,7 +1097,7 @@ function getBase64Image(img) {
     var dataURL = canvas.toDataURL("image/png");
     return dataURL;
 }
-//手机号格式检测
+// Mobile number format check
 function isjsMobile(obj) {
 	var reg= /^[1][3456789]\d{9}$/;
 
@@ -1107,7 +1107,7 @@ function isjsMobile(obj) {
     else return true;
 }
 
-// 校验参数是否为空
+// Check whether a parameter is empty
 function isEmpty(val) {
     if (val === undefined || $.trim(val) === '') {
         return true;
@@ -1120,7 +1120,7 @@ function toDate(str){
     return new Date(parseInt(sd[0]),parseInt(sd[1]),parseInt(sd[2]));
 }
 
-//对象数组 按某个字段 排序
+// Sort object array by a field
 function sortByField(arr,field,sort){
 
 	return arr.sort(function(a,b){
@@ -1134,15 +1134,15 @@ function sortByField(arr,field,sort){
 
 function formatMoney(value,row,item,_this){
 	let val = (value && value.split("")) || [];
-	let sNum = val.toString(); //先转换成字符串类型
-	if (sNum.indexOf('.') === 0) {//第一位就是 .
+	let sNum = val.toString(); // Convert to string first
+	if (sNum.indexOf('.') === 0) {// First character is a decimal point
 		sNum = '0' + sNum
 	}
-	sNum = sNum.replace(/[^\d.]/g,"");  //清除“数字”和“.”以外的字符
-	sNum = sNum.replace(/\.{2,}/g,"."); //只保留第一个. 清除多余的
+	sNum = sNum.replace(/[^\d.]/g,"");  // Remove characters other than digits and decimal point
+	sNum = sNum.replace(/\.{2,}/g,"."); // Keep only the first decimal point and remove extras
 	sNum = sNum.replace(".","$#$").replace(/\./g,"").replace("$#$",".");
-	sNum = sNum.replace(/^(\-)*(\d+)\.(\d\d).*$/,'$1$2.$3');//只能输入两个小数
-	//以上已经过滤，此处控制的是如果没有小数点，首位不能为类似于 01、02的金额
+	sNum = sNum.replace(/^(\-)*(\d+)\.(\d\d).*$/,'$1$2.$3');// Allow only two decimal places
+	// After filtering, prevent leading values like 01 or 02 when there is no decimal point
 	if(sNum.indexOf(".")< 0 && sNum !==""){
 		sNum = parseFloat(sNum);
 	}

@@ -231,10 +231,10 @@
 <script>
     module.exports = {
         props: {
-            source: {type: String, default: 'useradd'}, // 编辑数据
-            week: {type: Object, default: null}, // 轮值时间
-            group: {type: Array, default: null}, // 轮值时间
-            user: {type: Object, default: null} // 编辑数据
+            source: {type: String, default: 'useradd'}, // Edit data
+            week: {type: Object, default: null}, // Shift time
+            group: {type: Array, default: null}, // Shift time
+            user: {type: Object, default: null} // Edit data
         },
         data: function () {
             return {
@@ -259,13 +259,13 @@
             that.initData()
         },
         methods: {
-            //用来阻止第二次或更多次点击密码输入框时下拉用户密码清单的框一闪而过的问题
+            // Prevent password dropdown flicker after repeated password-field clicks
             pwdMousedown(){
                 var that = this
                 this.pwdreadonly = true
                 setTimeout(function(){ that.pwdreadonly = false, 100})
             },
-            // 防止密码框内容清楚后展示用户密码清单
+            // Prevent browser password suggestions after clearing the password field
             pwdchange: function(val){
                 var that = this
                 if (val == '') {
@@ -273,7 +273,7 @@
                     setTimeout(function(){ that.pwdreadonly = false, 100})
                 }
             },
-            // 修改密码框readonly{{ lc('wap_js_00085') }}，防止密码框展示浏览器记录的密码信息
+            // Temporarily change password readonly state to prevent browser password history suggestions
             readonlyCtl: function(res){
                 var that = this
                 setTimeout(function(){
@@ -339,15 +339,15 @@
                 }
             },
             upPhotoChange(file) {
-                // 预览文件处理
+                // Preview file handling
                 this.info.photo = URL.createObjectURL(file.raw);
-                // 复刻文件信息
+                // Clone file metadata
                 this.photo_file = file.raw;
             },
             upEwmChange(file) {
-                // 预览文件处理
+                // Preview file handling
                 this.info.ewm = URL.createObjectURL(file.raw);
-                // 复刻文件信息
+                // Clone file metadata
                 this.ewm_file = file.raw;
             },
             submitForm() {
