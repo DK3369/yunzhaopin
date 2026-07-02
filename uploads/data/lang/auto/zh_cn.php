@@ -16034,6 +16034,13 @@ return array(
   'admin_yunying_00200' => '批量删除将会删除该简历的所有举报 , 确定要删除吗？',
   'admin_yunying_00201' => '确定移除 {0}？',
   'admin_neirong_zph_00001' => '一级分类：A区',
+  'admin_model_00001' => '订单合同图片(ID:{id})添加成功！',
+  'admin_model_00002' => '订单合同图片(ID:{id})删除成功！',
+  'admin_model_00003' => '年度报告数据(ID:{id})修改成功',
+  'admin_model_00004' => 'OSS配置成功',
+  'admin_model_00005' => '数据调用（ID:{id}）保存成功！',
+  'admin_model_00006' => '数据调用（ID:{id}）更新成功！',
+
   'admin_demo_00001' => '选项1',
   'admin_demo_00002' => '选项2',
   'admin_demo_00003' => '选项3',

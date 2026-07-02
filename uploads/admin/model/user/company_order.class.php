@@ -73,7 +73,7 @@ class company_order_controller extends adminCommon
         }
         $page = !empty($_POST['page']) ? intval($_POST['page']) : 1;
         $pageSize = !empty($_POST['pageSize']) ? intval($_POST['pageSize']) : intval($this->config['sy_listnum']);
-        //提取分页
+        // Build pagination
         $pageM = $this->MODEL('page');
         $pages = $pageM->adminPageList('company_order', $where, $page, array('limit' => $pageSize));
         if($pages['total'] > 0){
@@ -151,7 +151,7 @@ class company_order_controller extends adminCommon
     }
 
     /*
-     * 上传订单合同图片
+     * Upload order contract images
      */
     function upload_action(){
         $orderM = $this->MODEL('companyorder');
@@ -167,7 +167,7 @@ class company_order_controller extends adminCommon
 
         $page = !empty($_POST['page']) ? intval($_POST['page']) : 1;
         $pageSize = !empty($_POST['pageSize']) ? intval($_POST['pageSize']) : intval($this->config['sy_listnum']);
-        //提取分页
+        // Build pagination
         $pageM = $this->MODEL('page');
         $pages = $pageM->adminPageList('order_ht_pic', $where, $page, array('limit' => $pageSize));
         if($pages['total'] > 0){
@@ -186,11 +186,11 @@ class company_order_controller extends adminCommon
         $this->render_json(0, '', $rt);
     }
     /*
-     * 批量上传图片
+     * Batch upload images
      */
     function multiupload_action(){
         if($_FILES['file']['tmp_name']!=''){
-            // pc端上传
+            // PC upload
             $upArr = array(
                 'file' => $_FILES['file'],
                 'dir' => 'order_ht'
@@ -206,7 +206,7 @@ class company_order_controller extends adminCommon
     }
 
     /*
-     * 保存订单合同图片
+     * Save order contract image
      */
     function uploadsave_action(){
         $orderM = $this->MODEL('companyorder');
@@ -214,14 +214,14 @@ class company_order_controller extends adminCommon
         if($_POST['add']){
             $nbid = $orderM->addOrderHtPicInfo($_POST);
             if ($nbid) {
-                $this->admin_json(0, "订单合同图片(ID:" . $nbid . ")添加成功！");
+                $this->admin_json(0, yun_t('admin_model_00001', array('id' => $nbid)));
             } else {
                 $this->render_json(1, yun_at('admin_system_00137'));
             }
         }
     }
     /*
-     * 删除订单合同图片
+     * Delete order contract image
      */
     function htpic_del_action(){
         $ZphM =	$this->MODEL('companyorder');
@@ -229,7 +229,7 @@ class company_order_controller extends adminCommon
         if($id){
             $delid = $ZphM->delOrderHtPic(array('id' => $id));
             if ($delid) {
-                $this->admin_json(0, "订单合同图片(ID:" . $id . ")删除成功！");
+                $this->admin_json(0, yun_t('admin_model_00002', array('id' => $id)));
             } else {
                 $this->render_json(1, yun_at('admin_user_00186'));
             }

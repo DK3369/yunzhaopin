@@ -104,7 +104,7 @@ class finance_company_order_controller extends adminCommon
         if(!$pages['total']) {
             $this->render_json(0,yun_at('wap_js_00113'),['data'=>[],'total'=>0,'pageSizes'=>$pages['page_sizes']]);
         }
-        //统计
+        // Statistics
         $MsgNum =   $this->MODEL('msgNum');
         $arr =  $MsgNum->orderSum($where);
         $orderSum = json_decode($arr,true);
@@ -233,12 +233,12 @@ class finance_company_order_controller extends adminCommon
 
         $col = 'A';
         $thead = ['member_com_00345', 'admin_user_company_00144', 'admin_01417', 'wap_user_00311', 'member_user_00240', 'wap_user_00318', 'admin_01418', 'wap_js_00088', 'member_user_00181','admin_user_company_00049'];
-        // 循环字段
+        // Iterate fields
         foreach ($thead as $tval) {
             $width = 20;
-            $objPHPExcel->getActiveSheet()->getColumnDimension($col)->setWidth($width); // 设置列宽
+            $objPHPExcel->getActiveSheet()->getColumnDimension($col)->setWidth($width); // Set column width
 
-            $objPHPExcel->getActiveSheet()->setCellValue($col . '1', $tval); // 设置表头
+            $objPHPExcel->getActiveSheet()->setCellValue($col . '1', $tval); // Set header
             $col++;
         }
 
@@ -299,11 +299,11 @@ class finance_company_order_controller extends adminCommon
     }
 
     /*
-     * 批量上传图片
+     * Batch upload images
      */
     function multiupload_action(){
         if($_FILES['file']['tmp_name']!=''){
-            // pc端上传
+            // PC upload
             $upArr = array(
                 'file' => $_FILES['file'],
                 'dir' => 'order_ht'
@@ -319,7 +319,7 @@ class finance_company_order_controller extends adminCommon
     }
 
     /*
-     * 保存订单合同图片
+     * Save order contract image
      */
     function uploadsave_action(){
         $orderM =	$this->MODEL('companyorder');
@@ -330,13 +330,13 @@ class finance_company_order_controller extends adminCommon
 
         $nbid = $orderM->addOrderHtPicInfo($_POST);
         if($nbid){
-            $this->admin_json('0',"订单合同图片(ID:" . $nbid . ")添加成功！");
+            $this->admin_json('0', yun_t('admin_model_00001', array('id' => $nbid)));
         }else{
             $this->admin_json('1','admin_system_00137');
         }
     }
     /*
-     * 删除订单合同图片
+     * Delete order contract image
      */
     function htpic_del_action(){
         $ZphM =	$this->MODEL('companyorder');
@@ -346,7 +346,7 @@ class finance_company_order_controller extends adminCommon
         }
         $delid = $ZphM->delOrderHtPic(array('id'=>$id));
         if ($delid){
-            $this->admin_json('0',"订单合同图片(ID:".$_POST['delid'].")删除成功！");
+            $this->admin_json('0', yun_t('admin_model_00002', array('id' => $_POST['delid'])));
         }else{
             $this->render_json('1',yun_at('wap_user_00146'));
         }

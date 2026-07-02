@@ -58,7 +58,7 @@ class dataOss_controller extends adminCommon
             );
             made_web(APP_PATH.'data/api/aliyun_oss/oss_data.php',ArrayToString($oss_data),'oss_data');
 
-            $this->admin_json(0, 'OSS配置成功');
+            $this->admin_json(0, yun_t('admin_model_00004'));
         }
     }
 }

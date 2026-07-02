@@ -58,19 +58,19 @@ class dataCall_controller extends adminCommon
         $this->render_json(0, '', $result);
     }
 
-    //  获取预览信息展示
+    // Get preview display data
     function getPreviewData_action()
     {
 
         include LIB_PATH."datacall.class.php";
         $call   =   new datacall(PLUS_PATH . "data/", $this->obj);
-        $row    =   $call->get_data($_POST['id']);//生成缓存
+        $row    =   $call->get_data($_POST['id']); // Generate cache
         $row    =   str_replace(array("<!--循环开始-->", "<!--循环结束-->", "\n", "\r"), "", $row);
         $result =   array('list' => $row,);
         $this->render_json(0, '', $result);
     }
 
-    //  添加/修改保存数据信息
+    // Add or update data call information
     function saveCall_action()
     {
         if ($_POST) {
@@ -95,7 +95,7 @@ class dataCall_controller extends adminCommon
 
             if ($return['errcode'] == 9){
 
-                $this->admin_json(0, '数据调用（Id：' . $return['id'] . '）保存成功！');
+                $this->admin_json(0, yun_t('admin_model_00005', array('id' => $return['id'])));
             }else{
 
                 $this->render_json(1, $return['msg']);
@@ -106,17 +106,17 @@ class dataCall_controller extends adminCommon
         }
     }
 
-    //  更新数据信息
+    // Update data call information
     function upCall_action()
     {
 
         include LIB_PATH . "datacall.class.php";
         $call = new datacall("../data/plus/data/", $this->obj);
         $call->editcache($_POST['id']);
-        $this->admin_json(0, '数据调用（Id：' . $_POST['id'] . 'admin_01374');
+        $this->admin_json(0, yun_t('admin_model_00006', array('id' => $_POST['id'])));
     }
 
-    //  删除数据信息
+    // Delete data call information
     function delCall_action()
     {
 

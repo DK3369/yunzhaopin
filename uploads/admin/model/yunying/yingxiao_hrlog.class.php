@@ -4,7 +4,7 @@
 
 class yingxiao_hrlog_controller extends adminCommon
 {
-    // HR报告列表
+    // HR report list
     function index_action()
     {
         if (trim($_POST['keyword'])) {
@@ -36,7 +36,7 @@ class yingxiao_hrlog_controller extends adminCommon
         $this->render_json(0, 'ok', compact('list', 'total', 'page_sizes', 'limit', 'page'));
     }
 
-    // 设置-数据获取
+    // Fetch settings data
     function set_action()
     {
         $config = $this->config;
@@ -51,7 +51,7 @@ class yingxiao_hrlog_controller extends adminCommon
         $this->render_json(0, 'ok', compact('set'));
     }
 
-    // 设置-数据保存
+    // Save settings data
     function setSave_action()
     {
         if ($_FILES['sy_yearreport_pic']['tmp_name']) {
@@ -99,7 +99,7 @@ class yingxiao_hrlog_controller extends adminCommon
         $this->admin_json(0, 'admin_01452');
     }
 
-    // 年度报告修改-保存
+    // Save annual report edits
     function editsave_action()
     {
         if (empty($_POST['id'])) {
@@ -117,7 +117,7 @@ class yingxiao_hrlog_controller extends adminCommon
         $return = $hrM->uphrlog(array('id' => $id), $_POST);
 
         if ($return) {
-            $this->admin_json(0, '年度报告数据(ID:' . $id . ')修改成功');
+            $this->admin_json(0, yun_t('admin_model_00003', array('id' => $id)));
         } else {
             $this->render_json(1, yun_at('admin_01453'));
         }
@@ -138,12 +138,12 @@ class yingxiao_hrlog_controller extends adminCommon
         }
         
         if ($return) {
-            $this->admin_json(0, '年度报告数据(ID:' . $id . ')修改成功');
+            $this->admin_json(0, yun_t('admin_model_00003', array('id' => $id)));
         } else {
             $this->render_json(1, yun_at('admin_01453'));
         }
     }
-    // 年度报告-海报链接生成
+    // Generate annual report poster link
     function getHb_action()
     {
         $hbUrl = Url('ajax', array(
@@ -154,7 +154,7 @@ class yingxiao_hrlog_controller extends adminCommon
         $this->render_json(0, 'ok', compact('hbUrl'));
     }
 
-    // 区域报告
+    // Regional report
     function datashowset_action()
     {
         $previewUrl = $this->config['sy_weburl'] . '/wap/index.php?c=ajax&a=dataShowIndex';
@@ -178,7 +178,7 @@ class yingxiao_hrlog_controller extends adminCommon
         $this->render_json(0, 'ok', compact('previewUrl', 'previewCode', 'config'));
     }
 
-    // 区域报告-保存
+    // Save regional report settings
     function datashowsetSave_action()
     {
         $configM = $this->MODEL('config');
@@ -203,7 +203,7 @@ class yingxiao_hrlog_controller extends adminCommon
         $lastyear = date('Y', strtotime('-1 year'));
         $start = strtotime($lastyear . '-01-01');
         $end = strtotime($lastyear . '-12-31');
-        // 查询今年登录过的企业
+        // Query companies that logged in this year
         $logM = $this->MODEL('log');
         $frontW = array('usertype' => 2, 'groupby' => 'uid');
         $frontW['PHPYUNBTWSTART'] = '';
@@ -211,7 +211,7 @@ class yingxiao_hrlog_controller extends adminCommon
         $frontW['ctime'][] = array('<', $end);
         $frontW['PHPYUNBTWEND'] = '';
 
-        if (isset($_POST['page'])) {//分页
+        if (isset($_POST['page'])) { // Pagination
             $pagenav = ($_POST['page'] - 1) * $limit;
             $where['limit'] = array($pagenav, $limit);
         } else {

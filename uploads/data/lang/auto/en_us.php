@@ -16033,6 +16033,13 @@ return array(
   'admin_yunying_00200' => 'Batch delete will remove all reports for this resume. Continue?',
   'admin_yunying_00201' => 'Remove {0}?',
   'admin_neirong_zph_00001' => 'Level 1: Zone A',
+  'admin_model_00001' => 'Order contract image (ID:{id}) added successfully!',
+  'admin_model_00002' => 'Order contract image (ID:{id}) deleted successfully!',
+  'admin_model_00003' => 'Annual report data (ID:{id}) updated successfully',
+  'admin_model_00004' => 'OSS configured successfully',
+  'admin_model_00005' => 'Data call (ID:{id}) saved successfully!',
+  'admin_model_00006' => 'Data call (ID:{id}) updated successfully!',
+
   'admin_demo_00001' => 'Option 1',
   'admin_demo_00002' => 'Option 2',
   'admin_demo_00003' => 'Option 3',

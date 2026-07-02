@@ -374,6 +374,8 @@ Batch 17 执行范围：验证码配置匹配兼容 `app/include/i18n.functions.
 
 Batch 18 执行范围：后台 JSON 返回运行时 key 解析 `app/include/i18n.class.php`。补齐 `yun_json_encode()` -> `yun_auto_array()` -> `autoT()` 对 `msg/message/error` 等输出字段中纯自动 key（如 `admin_01452`）和带分隔符的自动 key 片段（如 `admin_01452, admin_01453`）的翻译能力；不处理 `admin_01350` 与 ID 直接粘连成 `admin_01350123` 的错误拼接，该类必须后续逐文件改为 `yun_t()`/占位符或明确分隔符。
 
+Batch 19 执行范围：后台模型返回文案显式 key 化 `admin/model/yunying/yingxiao_hrlog.class.php`、`admin/model/tool/dataOss.class.php`、`admin/model/tool/dataCall.class.php`、`admin/model/user/company_order.class.php`、`admin/model/yunying/finance_company_order.class.php`。将年度报告、OSS 配置、数据调用、订单合同图片增删等含 ID 的中文拼接改为 `yun_t()` + `{id}` 占位符，并同步补齐 `data/lang/auto/zh_cn.php` 与 `data/lang/auto/en_us.php` 的 `admin_model_00001` 起始 key。
+
 ## 11. 推荐执行顺序
 
 1. 修复语言包损坏项和扫描脚本误报规则。

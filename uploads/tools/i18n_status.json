@@ -1,5 +1,5 @@
 {
-    "generated": "2026-07-02T16:01:22+08:00",
+    "generated": "2026-07-02T16:05:32+08:00",
     "wap_actionable": 327,
     "hardcoded_php": {
         "total": 9,
@@ -21,8 +21,8 @@
     },
     "template_missing_pack": 24,
     "lang_pack": {
-        "zh_keys": 16031,
-        "en_keys": 16031,
+        "zh_keys": 16037,
+        "en_keys": 16037,
         "only_zh": 0,
         "only_en": 0,
         "en_same_or_empty": 14,
