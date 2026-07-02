@@ -73,7 +73,7 @@
 			</div>
 		</div>
 
-		<!--账户详情-->
+		<!-- Account details -->
 		<div class="modluDrawer">
 			<el-drawer :title="lc('admin_00454')" :visible.sync="detaildrawer" :append-to-body="true" size="620px">
 				<div class="drawerModInfo drawerModInfoOne" style="padding: 0 20px;">
@@ -171,7 +171,7 @@
 				</div>
 			</el-drawer>
 		</div>
-		<!--发短信-->
+		<!-- Send message -->
 		<div class="modluDrawer">
 			<el-dialog :title="title" :visible.sync="sendInfodrawer" :append-to-body="true" width="450px">
                 <template v-if="isEmail">
@@ -331,7 +331,7 @@ module.exports = {
             })
         },
 		handleCurrentChange(val) {
-			console.log(`当前页: ${val}`);
+			console.log(`Current page: ${val}`);
 		},
         set:function (detail) {
             let _this = this,

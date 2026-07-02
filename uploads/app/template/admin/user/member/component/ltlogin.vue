@@ -152,7 +152,7 @@ module.exports = {
             this.getList();
         },
         handleCurrentChange(val) {
-            console.log(`当前页: ${val}`);
+            console.log(`Current page: ${val}`);
         },
         del: function (detail) {
             let _this = this,

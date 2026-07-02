@@ -358,6 +358,8 @@ Batch 10 执行范围：企业认证图片审核组件 `app/template/admin/user/
 
 Batch 11 执行范围：设置/日志/刷新小组件 `app/template/admin/user/users/component/userset_index.vue`、`userlog.vue`、`app/template/admin/user/company/component/comlog_index.vue`、`refresh.vue`。扫描器未发现可见裸中文时，本批只清理中文注释和注释掉的旧状态片段；不改筛选字段、日期范围、日志删除、刷新关闭和批量操作逻辑。
 
+Batch 12 执行范围：会员记录/申诉与积分优惠小组件 `app/template/admin/user/member/component/logoff.vue`、`ltlogin.vue`、`qylogin.vue`、`shensu.vue`、`app/template/admin/system/set/component/jifenyouhui.vue`。本批只清理中文注释和调试日志文案；不改分页、搜索、短信发送、账户详情和优惠配置逻辑。
+
 ## 11. 推荐执行顺序
 
 1. 修复语言包损坏项和扫描脚本误报规则。

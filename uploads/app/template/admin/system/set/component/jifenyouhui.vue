@@ -86,10 +86,10 @@ module.exports = {
     },
     methods: {
         handleSizeChange(val) {
-            console.log(`每页 ${val} {{ lc('common_02088') }}`);
+            console.log(`Page size: ${val}`);
         },
         handleCurrentChange(val) {
-            console.log(`当前页: ${val}`);
+            console.log(`Current page: ${val}`);
         },
         list() {
             let _this = this;
