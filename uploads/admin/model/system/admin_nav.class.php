@@ -2,7 +2,7 @@
 
 class admin_nav_controller extends adminCommon{
     /**
-     * 后台导航管理
+     * Admin navigation management.
      */
 	function index_action(){
         $navigationM = $this->MODEL('navigation');
@@ -10,19 +10,19 @@ class admin_nav_controller extends adminCommon{
         $data = array();
         $where = array('orderby' => 'sort');
 
-        if (isset($_POST['keyid'])) { // 前端懒加载需要
+        if (isset($_POST['keyid'])) { // Required for frontend lazy loading.
             $where['keyid'] = $_POST['keyid'];
             $data['hasChildren'] = true;
         }
         $return = $navigationM->getAdminNavList($where, $data);
 
-        $list = !empty($return['list']) ? isset($_POST['keyid']) ? $return['list'] : $navigationM->childrenList($return['list']) : array(); // 存在keyid不查子级
+        $list = !empty($return['list']) ? isset($_POST['keyid']) ? $return['list'] : $navigationM->childrenList($return['list']) : array(); // Do not query child nodes when keyid exists.
 
         $this->render_json(0, '', compact('list'));
 	}
 
 	/**
-	 * 后台导航管理：添加
+	 * Admin navigation management: add.
 	 */
 	function add_action(){
 	    $data  =  array(
@@ -54,7 +54,7 @@ class admin_nav_controller extends adminCommon{
         }
 	}
 
-	// 升级记录
+	// Upgrade records.
 	function version_action(){
 	    
 	    $versionM = $this->MODEL('version');
@@ -69,7 +69,7 @@ class admin_nav_controller extends adminCommon{
 	}
 
     /**
-     * 导航信息获取
+     * Get navigation info.
      *
      */
     function info_action()
@@ -82,7 +82,7 @@ class admin_nav_controller extends adminCommon{
     }
 
     /**
-     * 后台导航删除
+     * Delete admin navigation.
      */
     function del_action()
     {
@@ -93,7 +93,7 @@ class admin_nav_controller extends adminCommon{
         $this->admin_json($return['error'] == 9 ? 0 : 1, $return['msg']);
     }
 
-    // 导航是否启用
+    // Toggle navigation enabled state.
     function changeDisplay_action()
     {
         $navigationM = $this->MODEL('navigation');
@@ -101,9 +101,9 @@ class admin_nav_controller extends adminCommon{
         $res = $navigationM->upAdminNav(array(trim($_POST['field']) => intval($_POST['status'])), array('id' => intval($_POST['id'])));
 
         if ($res) {
-            $this->admin_json(0, "导航状态(ID:{$_POST['id']})修改成功");
+            $this->admin_json(0, yun_t('admin_model_00083', array('id' => $_POST['id'])));
         } else {
-            $this->admin_json(1, "导航状态(ID:{$_POST['id']})修改失败");
+            $this->admin_json(1, yun_t('admin_model_00084', array('id' => $_POST['id'])));
         }
     }
 }

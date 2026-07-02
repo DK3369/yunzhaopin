@@ -3,7 +3,7 @@
 class set_config_controller extends adminCommon{
 
     /**
-     * 系统-网站设置
+     * System website settings.
      */
     function index_action(){
         $data = array();
@@ -118,7 +118,7 @@ class set_config_controller extends adminCommon{
     }
 
     /**
-     * 系统-网站设置-网站logo
+     * System website settings: website logo.
      */
     function save_logo_action(){
         if (!$_POST['waterconfig']) {
@@ -128,12 +128,12 @@ class set_config_controller extends adminCommon{
         $this->render_json(0,yun_at('wap_user_00264'));
     }
 
-    // 保存
+    // Save.
     function save_action(){
 
         if ($_POST['config'] == 'uploadconfig'){
 
-            // 上传参数为空，保存默认值
+            // Use defaults when upload params are empty.
             if (!$_POST['pic_maxsize'] || ($_POST['pic_maxsize'] == '' || $_POST['pic_maxsize'] < 1)){
                 $_POST['pic_maxsize'] = 5;
             }
@@ -146,7 +146,7 @@ class set_config_controller extends adminCommon{
             }else{
                 $pic_type			=  explode(',',str_replace(' ','',$_POST['pic_type']));
 
-                //禁止后台设定可执行程序后缀
+                // Prevent executable extensions from being configured in admin.
                 foreach($pic_type as $pickey => $picvalue){
                     $new_pic_type	=	strtolower(str_replace('.','',trim($picvalue)));
                     if(in_array($new_pic_type,array('php','asp','aspx','jsp','exe','do'))){
@@ -160,7 +160,7 @@ class set_config_controller extends adminCommon{
                 $_POST['file_type'] = 'rar,zip,doc,docx,xls';
             }else{
                 $file_type			=  explode(',',str_replace(' ','',$_POST['file_type']));
-                //禁止后台设定可执行程序后缀
+                // Prevent executable extensions from being configured in admin.
                 foreach($file_type as $filekey => $filevalue){
 
                     $new_file_type	=	strtolower(str_replace('.','',trim($filevalue)));
@@ -191,20 +191,20 @@ class set_config_controller extends adminCommon{
             if (stripos($weburl, 'http') === false){
                 $this->render_json('1',yun_at('admin_system_00038'));
             }
-            // 保存域名时，相关的内容要重新保存，防止域名或http头改变后，有关功能异常
+            // Re-save related content when domain/protocol changes to avoid feature errors.
             if (!empty($this->config['map_key'])){
-                // 地图地址
+                // Map URL.
                 $_POST['mapurl'] = 'https://webapi.amap.com/maps?v=2.0&key=' . $this->config['map_key'];
             }
             if (!empty($this->config['sy_indexdomain'])){
-                // 分站默认域名
+                // Default sub-site domain.
                 $protocol  =  getprotocol($weburl);
                 $indexUrl  =  parse_url($this->config['sy_indexdomain']);
                 $indexPath =  !empty($indexUrl['path']) ? $indexUrl['path'] : '';
                 $_POST['sy_indexdomain']  =  $protocol . $indexUrl['host'] . $indexPath;
             }
             if (file_exists(DATA_PATH.'/api/alipay/alipay_data.php')){
-                // 支付宝配置参数中网站域名，跟随调整
+                // Keep the website domain in Alipay config aligned.
                 @include(DATA_PATH.'api/alipay/alipay_data.php');
                 if (!empty($alipaydata)){
                     $alipaydata['sy_weburl']  =  $weburl;
@@ -213,20 +213,20 @@ class set_config_controller extends adminCommon{
             }
         }
         $configM  =  $this->MODEL('config');
-        if (isset($_POST['code_kind']) && $_POST['code_kind'] == 6) {// 腾讯云验证码
-            PHP_VERSION < 7 && $this->layer_msg("腾讯云验证码要求php版本>=7.0！", 8, 1, '');
+        if (isset($_POST['code_kind']) && $_POST['code_kind'] == 6) {// Tencent Cloud captcha.
+            PHP_VERSION < 7 && $this->layer_msg(yun_t('admin_model_00073'), 8, 1, '');
         }
         $configM -> setConfig($_POST);
-        // 判断验证字符
+        // Validate captcha character length.
         if ($_POST['code_strlength'] < 5) {
             $this->web_config();
-            $this->render_json('0',yun_auto_t('网站配置设置成功!'));
+            $this->render_json('0', yun_t('admin_model_00074'));
         } else {
             $this->render_json('1',yun_at('admin_system_00039'));
         }
     }
 
-    // 加载模板缓存
+    // Load template cache.
     function settplcache_action(){
         include (CONFIG_PATH . "db.data.php");
         include (PLUS_PATH . "cache.config.php");
@@ -240,7 +240,7 @@ class set_config_controller extends adminCommon{
 
     }
 
-    // 保存设置模板缓存
+    // Save template cache settings.
     function savetplcache_action(){
 
         include(CONFIG_PATH . "db.data.php");

@@ -5,7 +5,7 @@
 class set_seo_controller extends adminCommon
 {
     /**
-     * SEO设置
+     * SEO settings.
      */
     public function index_action()
     {
@@ -14,7 +14,7 @@ class set_seo_controller extends adminCommon
         /* @var $arr_data */
         include(CONFIG_PATH . "/db.data.php");
 
-        if (!empty($_POST['action'])) { // 获取seo列表
+        if (!empty($_POST['action'])) { // Get SEO list.
             $seolist = $seoM->getSeoList(array('seomodel' => $_POST['action']));
             $data['seolist'] = $seolist;
         } else {
@@ -25,7 +25,7 @@ class set_seo_controller extends adminCommon
     }
 
     /**
-     * SEO添加
+     * Add SEO.
      */
     function seoadd_action()
     {
@@ -36,7 +36,7 @@ class set_seo_controller extends adminCommon
         $data['seomodel'] = $arr_data['seomodel'];
         $data['seoconfig'] = $arr_data['seoconfig'];
 
-        //提取分站内容
+        // Load site data.
         $cacheM = $this->MODEL('cache');
         $domain = $cacheM->GetCache('domain');
         $data['Dname'] = (object)$domain['Dname'];
@@ -47,7 +47,7 @@ class set_seo_controller extends adminCommon
     }
 
     /**
-     * SEO保存
+     * Save SEO.
      */
     function save_action()
     {
@@ -70,19 +70,21 @@ class set_seo_controller extends adminCommon
 
         if (!empty($_POST['id'])) {
             $return = $seoM->upSeo(array('id' => $_POST['id']), $postData);
-            $msg = "SEO 修改成功（ID：{$_POST['id']}）";
+            $successMsg = yun_t('admin_model_00100', array('id' => $_POST['id']));
+            $errorMsg = yun_t('admin_model_00102', array('id' => $_POST['id']));
         } else {
             $return = $seoM->addSeo($postData);
-            $msg = "SEO 添加成功（ID：{$return}）";
+            $successMsg = yun_t('admin_model_00101', array('id' => $return));
+            $errorMsg = yun_t('admin_model_00103');
         }
 
-        $return && $this->seocache(); // 缓存生成
+        $return && $this->seocache(); // Generate cache.
 
-        $this->admin_json($return ? 0 : 1, $msg);
+        $this->admin_json($return ? 0 : 1, $return ? $successMsg : $errorMsg);
     }
 
     /**
-     * 删除SEO
+     * Delete SEO.
      */
     function del_action()
     {
@@ -91,15 +93,15 @@ class set_seo_controller extends adminCommon
             $return = $seoM->delSeo(array('id' => intval($_POST['id'])));
             if ($return) {
                 $this->seocache();
-                $this->admin_json(0, 'SEO(ID:' . $_POST['del'] . ')删除成功！');
+                $this->admin_json(0, yun_t('admin_model_00104', array('id' => $_POST['id'])));
             } else {
-                $this->admin_json(1, 'SEO(ID:' . $_POST['del'] . ')删除失败！');
+                $this->admin_json(1, yun_t('admin_model_00105', array('id' => $_POST['id'])));
             }
         }
     }
 
     /**
-     * 更新SEO缓存
+     * Refresh SEO cache.
      */
     function seocache()
     {

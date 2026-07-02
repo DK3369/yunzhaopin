@@ -2,7 +2,7 @@
 
 class set_navmap_controller extends adminCommon{
     /**
-     * 网站地图
+     * Sitemap.
      */
     function index_action(){
         $NavmapM = $this->MODEL('navmap');
@@ -34,7 +34,7 @@ class set_navmap_controller extends adminCommon{
         }
         $page = !empty($_POST['page']) ? intval($_POST['page']) : 1;
         $pageSize = !empty($_POST['pageSize']) ? intval($_POST['pageSize']) : intval($this->config['sy_listnum']);
-        //提取分页
+        // Build pagination.
         $pageM = $this->MODEL('page');
         $pages = $pageM->adminPageList('navmap', $where, $page, array('limit' => $pageSize));
         $nav = array();
@@ -60,7 +60,7 @@ class set_navmap_controller extends adminCommon{
         $this->render_json(0,'ok', $data);
     }
     /**
-     * 网站地图信息
+     * Sitemap info.
      */
 	function getTypes_action(){
         $NavmapM = $this->MODEL('navmap');
@@ -76,7 +76,7 @@ class set_navmap_controller extends adminCommon{
 	}
 
     /**
-     * 网站地图-添加、修改保存
+     * Sitemap add/update save.
      */
     function save_action(){
         $NavmapM = $this->MODEL('navmap');
@@ -93,25 +93,27 @@ class set_navmap_controller extends adminCommon{
             );
             if($_POST['id']){
                 $nbid =	$NavmapM->upNavMap(array('id'=>$_POST['id']),$postData);
-                $msg = "更新网站地图(ID:".$_POST['id'].")";
+                $successMsg = yun_t('admin_model_00094', array('id' => $_POST['id']));
+                $errorMsg = yun_t('admin_model_00096', array('id' => $_POST['id']));
             }else{
                 $nbid =	$NavmapM->addNavMap($postData);
-                $msg = 'admin_system_00472';
+                $successMsg = yun_t('admin_model_00095', array('id' => $nbid));
+                $errorMsg = yun_t('admin_model_00097');
             }
             $this->cache_action();
             if (isset($nbid) && $nbid) {
-                $this->admin_json(0, $msg.'wap_js_00104');
+                $this->admin_json(0, $successMsg);
             } else {
-                $this->admin_json(1, $msg.'wap_js_00103');
+                $this->admin_json(1, $errorMsg);
             }
         }
     }
 
     /*
-     * 删除网站地图
+     * Delete sitemap.
      */
     function del_action(){
-        //批量删除
+        // Batch delete.
         $NavmapM = $this->MODEL('navmap');
         $return = $NavmapM->delNavMap($_POST['del']);
         $this->cache_action();
@@ -124,15 +126,15 @@ class set_navmap_controller extends adminCommon{
         $makecache=$cacheclass->navmap_cache("navmap.cache.php");
     }
     /*
-     * 网站地图显示、隐藏
+     * Show or hide sitemap.
      */
     function nav_xianshi_action(){
         $NavmapM = $this->MODEL('navmap');
         $nid = $NavmapM->upNavMap(array('id' => intval($_POST['id'])), array(''.$_POST['type'].'' => intval($_POST['rec'])));
         if($_POST['type']=='display'){
-            $this->MODEL('log')->addAdminLog("网站地图是否显示(ID:".$_POST['id'].")设置成功！");
+            $this->MODEL('log')->addAdminLog(yun_t('admin_model_00098', array('id' => $_POST['id'])));
         }else{
-            $this->MODEL('log')->addAdminLog('admin_system_00051'.$_POST['id'].")设置成功！");
+            $this->MODEL('log')->addAdminLog(yun_t('admin_model_00099', array('id' => $_POST['id'])));
         }
         $this->cache_action();
         $this->render_json($nid ? 0 : 1);

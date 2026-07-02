@@ -14,7 +14,7 @@ class set_regset_controller extends adminCommon
         $this->render_json(0,'ok',$data);
     }
 
-    // 保存
+    // Save.
     function save_action()
     {
         if ($_POST['config']) {
@@ -22,7 +22,7 @@ class set_regset_controller extends adminCommon
             unset($_POST['config']);
             $configM = $this->MODEL('config');
 
-            // 注册配置特殊处理
+            // Special handling for registration config.
             $regData = array(
                 'regname' => jsJsonDecode($_POST['regname']),
                 'mobile_number' => jsJsonDecode($_POST['mobile_number']),
@@ -43,9 +43,9 @@ class set_regset_controller extends adminCommon
 
             include(LIB_PATH."cache.class.php");
             $cacheclass	= new cache(PLUS_PATH,$this->obj);
-            $cacheclass->regconfig_cache("reg.cache.php"); // 生成注册配置缓存
+            $cacheclass->regconfig_cache("reg.cache.php"); // Generate registration config cache.
             
-            $this->admin_json(0,'注册设置成功');
+            $this->admin_json(0, yun_t('admin_model_00072'));
         }
     }
 }

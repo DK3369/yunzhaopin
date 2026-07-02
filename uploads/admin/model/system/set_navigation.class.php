@@ -5,7 +5,7 @@
 class set_navigation_controller extends adminCommon
 {
     /**
-     * 导航设置
+     * Navigation settings.
      */
     public function index_action()
     {
@@ -45,7 +45,7 @@ class set_navigation_controller extends adminCommon
             if ($_POST['order']) {
                 $where['orderby'] = $_POST['t'] . ',' . $_POST['order'];
             } else {
-                //按id降序
+                // Sort by ID descending.
                 $where['orderby'] = 'id';
             }
 
@@ -67,7 +67,7 @@ class set_navigation_controller extends adminCommon
     }
 
     /**
-     * 导航添加
+     * Add navigation.
      */
     function add_action()
     {
@@ -83,7 +83,7 @@ class set_navigation_controller extends adminCommon
     }
 
     /**
-     * 导航保存
+     * Save navigation.
      */
     function save_action()
     {
@@ -112,14 +112,14 @@ class set_navigation_controller extends adminCommon
         if (!empty($_POST['id'])) {
             $return = $navigationM->upNav($postData, array('id' => $_POST['id']));
 
-            // 图片上传失败提示
+            // Image upload failure message.
             if (isset($return['msg'])) {
                 $this->render_json(1, $return['msg']);
             }
 
             if ($return) {
                 $this->cache_action();
-                $this->admin_json(0, "网站导航(ID:" . $_POST['id'] . ")修改成功");
+                $this->admin_json(0, yun_t('admin_model_00085', array('id' => $_POST['id'])));
             } else {
                 $this->render_json(1, yun_at('admin_01389'));
             }
@@ -130,14 +130,14 @@ class set_navigation_controller extends adminCommon
             } else {
                 $return = $navigationM->addNav($postData);
 
-                // 图片上传失败提示
+                // Image upload failure message.
                 if (isset($return['msg'])) {
                     $this->render_json(1, $return['msg']);
                 }
 
                 if ($return) {
                     $this->cache_action();
-                    $this->admin_json(0, "网站导航(ID:" . $return . ")添加成功");
+                    $this->admin_json(0, yun_t('admin_model_00086', array('id' => $return)));
                 } else {
                     $this->render_json(1, yun_at('admin_01390'));
                 }
@@ -146,18 +146,18 @@ class set_navigation_controller extends adminCommon
     }
 
     /**
-     * 删除导航
+     * Delete navigation.
      */
     function del_action()
     {
         $navigationM = $this->MODEL('navigation');
         $descriptionM = $this->MODEL('description');
         $articleM = $this->MODEL('article');
-        //批量删除
+        // Batch delete.
         if ($_POST['del']) {
             $del = $_POST['del'];
             if (is_array($del)) {
-                //更新单页面和新闻类别
+                // Update single pages and news categories.
                 $where = array();
                 $where['id'] = array('in', pylode(',', $del));
                 $where['PHPYUNBTWSTART'] = '';
@@ -180,14 +180,14 @@ class set_navigation_controller extends adminCommon
                 $navigationM->delNav(array('id' => array('in', pylode(',', $del))));
 
                 $this->cache_action();
-                $this->admin_json(0, "导航(ID:" . @implode(',', $_POST['del']) . ")删除成功");
+                $this->admin_json(0, yun_t('admin_model_00087', array('ids' => @implode(',', $_POST['del']))));
             } else {
                 $this->render_json(1, yun_at('common_01063'));
             }
         }
-        //删除
+        // Delete.
         if (isset($_POST['id'])) {
-            //更新单页面和新闻类别
+            // Update single pages and news categories.
             $row = $navigationM->getNav(array('id' => $_POST['id']));
             if ($row['desc'] != "") {
                 $descriptionM->upDes(array('is_menu' => '0'), array('id' => $row['desc']));
@@ -199,7 +199,7 @@ class set_navigation_controller extends adminCommon
             $this->cache_action();
 
             if ($result) {
-                $this->admin_json(0, '导航(ID:' . $_POST['id'] . ')删除成功');
+                $this->admin_json(0, yun_t('admin_model_00087', array('ids' => $_POST['id'])));
             } else {
                 $this->render_json(1, yun_at('model_00033'));
             }
@@ -207,7 +207,7 @@ class set_navigation_controller extends adminCommon
     }
 
     /**
-     * 导航设置
+     * Navigation setting.
      */
     function navset_action()
     {
@@ -216,9 +216,9 @@ class set_navigation_controller extends adminCommon
         $return = $navigationM->upNav(array('' . $_POST['type'] . '' => intval($_POST['rec'])), array('id' => intval($_POST['id'])));
 
         if ($_POST['type'] == 'display') {
-            $msg = "导航是否显示(ID:" . $_POST['id'] . ")设置成功";
+            $msg = yun_t('admin_model_00088', array('id' => $_POST['id']));
         } else {
-            $msg = 'admin_system_00048' . $_POST['id'] . ")设置成功";
+            $msg = yun_t('admin_model_00089', array('id' => $_POST['id']));
         }
 
         if ($return) {
@@ -230,7 +230,7 @@ class set_navigation_controller extends adminCommon
     }
 
     /**
-     * 导航排序
+     * Navigation sort.
      */
     function navsort_action()
     {
@@ -242,13 +242,13 @@ class set_navigation_controller extends adminCommon
         $return = $navigationM->upNav($postData, array("id" => $_POST['id']));
         if ($return) {
             $this->cache_action();
-            $this->admin_json(0, '导航排序（ID:' . $_POST['id'] . 'admin_01391');
+            $this->admin_json(0, yun_t('admin_model_00090', array('id' => $_POST['id'])));
         } else {
             $this->render_json(1, yun_at('admin_01392'));
         }
     }
 
-    // 生成导航缓存
+    // Generate navigation cache.
     function cache_action()
     {
         include(LIB_PATH . "cache.class.php");
@@ -256,7 +256,7 @@ class set_navigation_controller extends adminCommon
         $cacheclass->menu_cache("menu.cache.php");
     }
 
-    // 导航类别
+    // Navigation categories.
     function type_action()
     {
         $navigationM = $this->MODEL('navigation');
@@ -264,7 +264,7 @@ class set_navigation_controller extends adminCommon
         $this->render_json(0, 'ok', compact('list'));
     }
 
-    // 添加类别
+    // Add category.
     function typeadd_action()
     {
         $navigationM = $this->MODEL('navigation');
@@ -280,14 +280,14 @@ class set_navigation_controller extends adminCommon
             $nbid = $navigationM->addNavType(array('typename' => $_POST['typename']));
             if ($nbid) {
                 $this->cache_action();
-                $this->admin_json(0, "导航类别(ID:" . $nbid . ")添加成功");
+                $this->admin_json(0, yun_t('admin_model_00091', array('id' => $nbid)));
             } else {
                 $this->render_json(1, yun_at('admin_01394'));
             }
         }
     }
 
-    // 更新类别名称
+    // Update category name.
     function typename_action()
     {
         $navigationM = $this->MODEL('navigation');
@@ -300,13 +300,13 @@ class set_navigation_controller extends adminCommon
 
         if ($return) {
             $this->cache_action();
-            $this->admin_json(0, "导航类别(ID:" . $_POST['id'] . ")修改成功");
+            $this->admin_json(0, yun_t('admin_model_00092', array('id' => $_POST['id'])));
         } else {
             $this->render_json(1, yun_at('admin_01395'));
         }
     }
 
-    // 删除导航类别
+    // Delete navigation category.
     function typedel_action()
     {
         $navigationM = $this->MODEL('navigation');
@@ -337,11 +337,11 @@ class set_navigation_controller extends adminCommon
             $descriptionM->upDes(array('is_menu' => '0'), array('id' => array('in', pylode(',', $desc))));
             $articleM->updGroup(array('id' => array('in', pylode(',', $news))), array('is_menu' => '0'));
         }
-        $navigationM->delNav(array('nid' => $_POST['id']));//删除导航
+        $navigationM->delNav(array('nid' => $_POST['id']));// Delete navigation.
 
         if ($return) {
             $this->cache_action();
-            $this->admin_json(0, "导航类别(ID:" . $_POST['id'] . ")删除成功");
+            $this->admin_json(0, yun_t('admin_model_00093', array('id' => $_POST['id'])));
         } else {
             $this->render_json(1, yun_at('admin_01396'));
         }
