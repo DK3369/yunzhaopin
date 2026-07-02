@@ -91,7 +91,7 @@
                 </div>
             </div>
         </div>
-        <!-- 类别管理弹窗 -->
+        <!-- Category management drawer -->
         <el-drawer :title="lc('admin_00199')" :close-on-press-escape="false" :wrapper-closable="false" :visible.sync="draweredit" append-to-body :modal-append-to-body="false" size="80%">
             <div class="tctable_cont">
                 <div class="moduleSeachs" style="padding: 0; width: 100%;flex-wrap: wrap;">
@@ -150,7 +150,7 @@
                 </div>
             </div>
         </el-drawer>
-        <!--批量转移分类-->
+        <!-- Batch transfer category -->
         <div class="modluDrawer">
             <el-dialog :title="lc('admin_00164')" width="400px" :visible.sync="drawerClassMultiple" append-to-body :modal-append-to-body="false">
                 <div class="toolClasDia fenpeizhand">
@@ -180,11 +180,11 @@
                 </span>
             </el-dialog>
         </div>
-        <!--新闻管理-->
+        <!-- News management -->
         <el-drawer :title="lc('admin_00194')" :close-on-press-escape="false" :wrapper-closable="false" :visible.sync="shownewslist" append-to-body :modal-append-to-body="false" size="80%">
             <news ref="newsmanage"></news>
         </el-drawer>
-        <!-- 添加类别弹窗 -->
+        <!-- Add category dialog -->
         <div class="modluDrawer">
             <el-dialog :title="lc('admin_00222')" :visible.sync="draweraddclass" width="500px" append-to-body :modal-append-to-body="false">
                 <div class="wxsettip_small ">{{ lc('admin_00182') }}</div>
@@ -211,7 +211,7 @@
                 </span>
             </el-dialog>
         </div>
-        <!-- 设为导航、修改导航弹窗 -->
+        <!-- Set/edit navigation drawer -->
         <div class="modluDrawer">
             <el-drawer :title="lc('admin_00201')" :close-on-press-escape="false" :wrapper-closable="false" :visible.sync="drawersetmenu" size="800px" top="0" append-to-body :modal-append-to-body="false">
                 <div class="moduleTable" style="margin: 0 20px; width: calc(100% - 40px);">
@@ -391,58 +391,58 @@
                     </table>
                 </div>
                 <div class="setBasicButn" style="border: none;">
-                    <!-- <el-button type="primary" size="medium" @click="save">提交</el-button> -->
-                    <!-- <el-button @click="drawersetmenu = false">取 消</el-button> -->
+                    <!-- <el-button type="primary" size="medium" @click="save">Submit</el-button> -->
+                    <!-- <el-button @click="drawersetmenu = false">Cancel</el-button> -->
                     <el-button type="primary" @click="saveMenu" :disabled="submitLoading">{{ lc('wap_com_00019') }}</el-button>
                 </div>
                 <!-- <div class="setdaohanNvas">
-                    <div class="wxsettip_small ">导航类别</div>
-                    <el-select v-model="menu.nid" filterable placeholder="请选择导航类别">
+                    <div class="wxsettip_small ">Navigation Category</div>
+                    <el-select v-model="menu.nid" filterable placeholder="Select navigation category">
                         <el-option v-for="item in typearr" :key="item.id" :label="item.typename" :value="item.id">
                         </el-option>
                     </el-select>
-                    <div class="wxsettip_small ">导航名称</div>
-                    <el-input placeholder="请输入导航名称" v-model="menu.name">
+                    <div class="wxsettip_small ">Navigation Name</div>
+                    <el-input placeholder="Enter navigation name" v-model="menu.name">
                     </el-input>
-                    <div class="wxsettip_small ">链接地址</div>
-                    <el-input placeholder="请输入链接地址" v-model="menu.url">
+                    <div class="wxsettip_small ">Link URL</div>
+                    <el-input placeholder="Enter link URL" v-model="menu.url">
                     </el-input>
-                    <div class="wxsettip_small ">伪静态地址</div>
-                    <el-input placeholder="请输入伪静态地址" v-model="menu.furl">
+                    <div class="wxsettip_small ">Pseudo-static URL</div>
+                    <el-input placeholder="Enter pseudo-static URL" v-model="menu.furl">
                     </el-input>
-                    <div class="wxsettip_small ">导航类型</div>
+                    <div class="wxsettip_small ">Navigation Type</div>
                     <template>
-                        <el-radio v-model="menu.type" label="1">站内链接</el-radio>
-                        <el-radio v-model="menu.type" label="2">原链接</el-radio>
+                        <el-radio v-model="menu.type" label="1">Internal Link</el-radio>
+                        <el-radio v-model="menu.type" label="2">Original Link</el-radio>
                     </template>
-                    <div class="adminav_set_r">站内链接如：http://www.ov6.com 原链接如：index.php?m=com </div>
-                    <div class="wxsettip_small ">排序</div>
-                    <el-input placeholder="请输入排序" v-model="menu.sort">
+                    <div class="adminav_set_r">Internal link example: http://www.ov6.com; original link example: index.php?m=com </div>
+                    <div class="wxsettip_small ">Sort</div>
+                    <el-input placeholder="Enter sort order" v-model="menu.sort">
                     </el-input>
-                    <div class="wxsettip_small ">弹出窗口</div>
+                    <div class="wxsettip_small ">Popup Window</div>
                     <template>
-                        <el-radio v-model="menu.eject" label="1">新窗口</el-radio>
-                        <el-radio v-model="menu.eject" label="0">原窗口</el-radio>
+                        <el-radio v-model="menu.eject" label="1">New Window</el-radio>
+                        <el-radio v-model="menu.eject" label="0">Current Window</el-radio>
                     </template>
-                    <div class="wxsettip_small ">状态</div>
+                    <div class="wxsettip_small ">Status</div>
                     <template>
-                        <el-radio v-model="menu.model" label="hot">热</el-radio>
-                        <el-radio v-model="menu.model" label="new">新</el-radio>
-                        <el-radio v-model="menu.model" label="">无</el-radio>
+                        <el-radio v-model="menu.model" label="hot">Hot</el-radio>
+                        <el-radio v-model="menu.model" label="new">New</el-radio>
+                        <el-radio v-model="menu.model" label="">None</el-radio>
                     </template>
-                    <div class="wxsettip_small ">加粗</div>
+                    <div class="wxsettip_small ">Bold</div>
                     <template>
-                        <el-radio v-model="menu.bold" label="1">是</el-radio>
-                        <el-radio v-model="menu.bold" label="0">否</el-radio>
+                        <el-radio v-model="menu.bold" label="1">Yes</el-radio>
+                        <el-radio v-model="menu.bold" label="0">No</el-radio>
                     </template>
-                    <div class="wxsettip_small ">显示</div>
+                    <div class="wxsettip_small ">Display</div>
                     <template>
-                        <el-radio v-model="menu.display" label="1">是</el-radio>
-                        <el-radio v-model="menu.display" label="0">否</el-radio>
+                        <el-radio v-model="menu.display" label="1">Yes</el-radio>
+                        <el-radio v-model="menu.display" label="0">No</el-radio>
                     </template>
                     <div class="dialGooter">
-                        <el-button @click="drawersetmenu = false">取 消</el-button>
-                        <el-button type="primary" @click="saveMenu" :disabled="submitLoading">确 定</el-button>
+                        <el-button @click="drawersetmenu = false">Cancel</el-button>
+                        <el-button type="primary" @click="saveMenu" :disabled="submitLoading">Confirm</el-button>
                     </div>
                 </div> -->
             </el-drawer>
@@ -460,7 +460,7 @@ const custoapp = new Vue({
             draweraddclass: false,
 			list: [],
             tableData: [],
-            subTableData: [], // 当前编辑的一级分类及子类数据
+            subTableData: [], // Current top-level category and child category data being edited
             draweredit: false,
             zmselect: '',
             options: [],
@@ -533,7 +533,7 @@ const custoapp = new Vue({
                 console.log(error);
             })
         },
-        // 设置导航
+        // Set navigation
         saveMenu() {
             var that = this
             var params = that.menu
@@ -554,14 +554,14 @@ const custoapp = new Vue({
                 that.submitLoading = false;
             });
         },
-        // 添加分类
+        // Add category
         addclass() {
             this.classid = ''
             this.classname = ''
             this.rec = '0'
             this.draweraddclass = true
         },
-        // 添加分类保存
+        // Save added category
         saveAddClass() {
             var that = this
             if (that.classname == '') {
@@ -656,9 +656,9 @@ const custoapp = new Vue({
                 copyRow[column.property + "isShow"] = true;
                 this.$set(this.list, index, copyRow);
             } else {
-                if (index === 0) { // 一级分类修改
+                if (index === 0) { // Edit top-level category
                     this.subTableData[0][column.property + "isShow"] = true;
-                } else { // 二级分类修改
+                } else { // Edit second-level category
                     this.subTableData[0].children.forEach((item) => {
                         if (item.id == row.id) {
                             item[column.property + "isShow"] = true
@@ -689,10 +689,10 @@ const custoapp = new Vue({
             if (type == 1) {
                 copyRow[column.property + "isShow"] = false;
                 this.$set(this.list, index, copyRow);
-            } else { // 管理弹窗表格修改名称、排序
-                if (index === 0) { // 一级分类修改
+            } else { // Edit name and sort in the management drawer table
+                if (index === 0) { // Edit top-level category
                     this.subTableData[0][column.property + "isShow"] = false;
-                } else { // 二级分类修改
+                } else { // Edit second-level category
                     this.subTableData[0].children.forEach((item) => {
                         if (item.id == row.id) {
                             item[column.property + "isShow"] = false
@@ -767,7 +767,7 @@ const custoapp = new Vue({
             value ? this.$refs.multipleTable.toggleAllSelection() : this.$refs.multipleTable.clearSelection();
         },
         selectSubTblAllBottom(value) {
-            // 处理嵌套数据选中
+            // Handle nested data selection
             if (this.subTableData[0].children) {
                 this.subTableData[0].children.forEach((row) => {
                     if (this.selectedItem.indexOf(row.id) < 0) {

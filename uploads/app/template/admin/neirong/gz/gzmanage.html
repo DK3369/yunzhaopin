@@ -7,12 +7,12 @@
     <title>Document</title>
     <script src="../../../admin/header.js"></script>
     <script src="../../../admin/httpVueLoader.js"></script>
-    <!-- 配置文件 -->
+    <!-- Config file -->
     <script type="text/javascript" src="../../../../../js/ueditor/ueditor.config.js"></script>
-    <!-- 编辑器源码文件 -->
+    <!-- Editor source file -->
     <script type="text/javascript" src="../../../../../js/ueditor/ueditor.all.min.js"></script>
-    <!--建议手动加在语言，避免在ie下有时因为加载语言失败导致编辑器加载失败-->
-    <!--这里加载的语言文件会覆盖你在配置项目里添加的语言类型，比如你在配置项目里配置的是英文，这里加载的中文，那最后就是中文-->
+    <!-- Load the editor language explicitly to avoid editor init failures in older IE. -->
+    <!-- This language file overrides the language configured in the editor options. -->
     <script type="text/javascript" charset="utf-8" src="../../../../../js/ueditor/lang/zh-cn/zh-cn.js"></script>
 </head>
 <body>
@@ -101,7 +101,7 @@
                 </el-pagination>
             </div>
         </div>
-        <!--外宣海报弹窗-->
+        <!-- Public poster drawer -->
         <div class="modluDrawer">
             <el-drawer :title="lc('admin_00146')" :visible.sync="drawerhb" :modal-append-to-body="false" append-to-body
                 :show-close="true" :with-header="true" size="45%">
@@ -122,7 +122,7 @@
                 </div>
             </el-drawer>
         </div>
-        <!-- 海报预览弹窗 -->
+        <!-- Poster preview dialog -->
         <div class="tck_setbox">
             <el-dialog :title="lc('admin_user_company_00142')" :visible.sync="showhb" :with-header="true" append-to-body
                 :modal-append-to-body="false" :show-close="true" width="300px" @closed="drawerhb = true">
@@ -132,7 +132,7 @@
             </el-dialog>
         </div>
         <div class="modluDrawer">
-            <!-- 新增、修改弹窗 -->
+            <!-- Add/edit drawer -->
             <el-drawer :title="info.id ? lc('admin_00142') : lc('admin_00145')" :visible.sync="draweradd" :modal-append-to-body="false"
                 :show-close="true" :wrapper-closable="false" :with-header="true" size="900px">
                 <div class="drawerModlue">
@@ -242,7 +242,7 @@
                 </div>
             </el-drawer>
 
-            <!--分站切换-->
+            <!-- Domain switch -->
             <el-dialog :title="lc('admin_user_weipin_00029')" :visible.sync="dialogDomain" :modal-append-to-body="false"
                        :show-close="true" width="500px">
                 <div class="toolClasDia fenpeizhand">
@@ -311,7 +311,7 @@
 
                 detail: {},
 
-                // 分站切换
+                // Domain switch
                 dialogDomain: false,
                 ruleFormDomain: {},
                 prevPage:0
@@ -337,7 +337,7 @@
                     canvas.toBlob((blob) => {
                         let url = URL.createObjectURL(blob)
                         download(url, 'gzhb_' + that.gzid)
-                        // 用完释放URL对象
+                        // Revoke the URL object after use
                         URL.revokeObjectURL(url)
                     })
                 }
@@ -385,24 +385,24 @@
             },
             picChange(file) {
                 var tmp = deepClone(this.info)
-                // 预览文件处理
+                // Preview file handling
                 tmp.pic_n = URL.createObjectURL(file.raw);
-                // 复刻文件信息
+                // Copy file info
                 this.piclist[0] = file.raw;
                 this.info = tmp
             },
             initEditor() {
                 var that = this
                 ue = UE.getEditor('projectBasis', {
-                    //focus时自动清空初始化时的内容
-                    // 关闭字数统计
+                    // Auto-clear initial content on focus
+                    // Disable word count
                     wordCount:false,
-                    /* maximumWords:8000, */       //允许的最大字符数
-                    //关闭elementPath 元素路径
+                    /* maximumWords:8000, */       // Maximum allowed characters
+                    // Disable the element path
                     elementPathEnabled:false,
-                    //默认的编辑区域高度
+                    // Default editor height
                     initialFrameHeight:300,
-                    initialFrameWidth:600  //初始化编辑器宽度,默认1000
+                    initialFrameWidth:600  // Initial editor width, default 1000
                 });
                 ue.ready(function () {
                     if (that.info.content) {
@@ -607,9 +607,9 @@
                 })
             },
 
-            // 分站设置
+            // Domain settings
             openDomain(row) {
-                if (row === '') { // 批量操作
+                if (row === '') { // Batch operation
                     if (!this.selectedItem.length) {
                         message.error(lc('admin_user_weipin_00001'));
                         return false;
@@ -618,7 +618,7 @@
                     this.detail = {};
                     this.$set(this.ruleFormDomain, 'id', this.selectedItem);
                     this.$set(this.ruleFormDomain, 'did', '');
-                } else { // 单个操作
+                } else { // Single operation
                     this.detail = row;
                     this.$set(this.ruleFormDomain, 'id', row.id);
                     this.$set(this.ruleFormDomain, 'did', '' + row.did + '');

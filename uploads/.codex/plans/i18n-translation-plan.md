@@ -360,6 +360,8 @@ Batch 11 执行范围：设置/日志/刷新小组件 `app/template/admin/user/u
 
 Batch 12 执行范围：会员记录/申诉与积分优惠小组件 `app/template/admin/user/member/component/logoff.vue`、`ltlogin.vue`、`qylogin.vue`、`shensu.vue`、`app/template/admin/system/set/component/jifenyouhui.vue`。本批只清理中文注释和调试日志文案；不改分页、搜索、短信发送、账户详情和优惠配置逻辑。
 
+Batch 13 执行范围：后台内容/系统旧页面 `app/template/admin/neirong/news/newslb.html`、`app/template/admin/system/category/city.html`、`app/template/admin/neirong/gz/gzmanage.html`、`app/template/admin/neirong/announcement/index.html`、`app/template/admin/system/role/component/groupadd.vue`、`app/template/admin/system/domain/component/adminGroup.vue`。本批只清理中文注释和注释掉的旧模板片段；不改分类树、导航设置、公告列表、分站切换、菜单权限提交和编辑器配置逻辑。
+
 ## 11. 推荐执行顺序
 
 1. 修复语言包损坏项和扫描脚本误报规则。

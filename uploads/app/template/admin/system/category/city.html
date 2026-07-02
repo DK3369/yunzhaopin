@@ -90,7 +90,7 @@
         </div>
     </div>
 
-    <!--添加子类-->
+    <!-- Add child category -->
     <div class="modluDrawer">
         <el-drawer :title="addTitle" :visible.sync="addVisible" :modal-append-to-body="false" :show-close="true"
             :with-header="true" size="35%">
@@ -117,7 +117,7 @@
                 tableData: [],
                 randomKey: Math.random(),
                 checked: false,
-                isIndeterminate: false,// checkbox 的不确定状态
+                isIndeterminate: false,// Checkbox indeterminate state
                 selectedItem: [],
                 addVisible: false,
                 addParams: {},
@@ -138,16 +138,16 @@
             rowSelect(selection, row) {
                 // if (row.children) {
                 //     if (!row.isChecked) {
-                //         //由行数据中的元素isChecked判断当前是否被选中
+                //         // Determine selection state from the row isChecked flag
                 //         row.children.map(item => {
-                //             //遍历所有子节点
-                //             this.$refs.multipleTable.toggleRowSelection(item, true); //切换该子节点选中状态
+                //             // Iterate all child nodes
+                //             this.$refs.multipleTable.toggleRowSelection(item, true); // Toggle this child node selection state
                 //             item.isChecked = true;
-                //             //添加选中数据
+                //             // Add selected data
                 //             this.selectedItem.push({ id: item.id });
                 //         });
                 //         this.selectedItem.push({ id: row.id });
-                //         row.isChecked = true; //当前行isChecked标志元素切换为false
+                //         row.isChecked = true; // Toggle the current row isChecked flag to false
                 //     } else {
                 //         row.children.map(item => {
                 //             this.$refs.multipleTable.toggleRowSelection(item, false);
@@ -160,14 +160,14 @@
                 // }
             },
             selectAll() {
-                // selection 是选中的数据集合
+                // selection is the selected data collection
                 this.$refs.multipleTable.tableData.map(items => {
-                    //使用$ref获取注册的子组件信息，用data获取所有行，并用map函数遍历行
+                    // Use $ref to access the child component data and iterate all rows
                     if (items.children) {
                         if (!items.isChecked) {
-                            //若遍历出来的行未选中
-                            this.$refs.multipleTable.toggleRowSelection(items, true); //行变为选中状态
-                            items.isChecked = true; //更新标志参数
+                            // If the iterated row is not selected
+                            this.$refs.multipleTable.toggleRowSelection(items, true); // Mark row as selected
+                            items.isChecked = true; // Update the flag parameter
                             this.selectedItem.push({ id: items.id });
                             items.children.map(item => {
                                 if (item.children){
@@ -179,13 +179,13 @@
                                         })
                                     }
                                 }
-                                //遍历子节点并改变状态与标志参数
+                                // Iterate child nodes and update state plus flags
                                 this.$refs.multipleTable.toggleRowSelection(item, true);
                                 item.isChecked = true;
                                 this.selectedItem.push({ id: item.id });
                             });
                         } else {
-                            //选中状态同理
+                            // Selection state follows the same rule
                             this.$refs.multipleTable.toggleRowSelection(items, false);
                             items.isChecked = false;
                             this.selectedItem.splice(this.selectedItem.indexOf(items), 1);
@@ -253,15 +253,15 @@
                     _this.maps.set(tree.id, {tree, treeNode, resolve});
                 })
             },
-            // 局部刷新列表
+            // Refresh part of the list
             refreshRow(keyid) {
                 if (this.maps.get(keyid) == undefined) {
                     return false;
                 }
-                const {tree, treeNode, resolve} = this.maps.get(keyid);//根据父级id取出对应的节点数据
-                //将对应父节点下的数据清空，需要在el-table中增加参数 `ref="multipleTable"`
+                const {tree, treeNode, resolve} = this.maps.get(keyid);// Get node data by parent id
+                // Clear child data under the parent node; el-table must define `ref="multipleTable"`
                 this.$set(this.$refs.multipleTable.store.states.lazyTreeNodeMap, tree.id, []);
-                //实现数据的重新加载
+                // Reload data
                 if (tree) {
                     this.load(tree, treeNode, resolve);
                 }
@@ -291,7 +291,7 @@
                 }
             },
             /**
-             * 添加分类
+             * Add category
              */
             handleAdd(id, level) {
                 this.keyid = 0;
@@ -301,7 +301,7 @@
                 this.addVisible = true;
             },
             /**
-             * 添加子类
+             * Add child category
              */
             handleAddChild(scope) {
                 let levelNew = isNaN(parseInt(scope.row.level)) ? 0 + 1 : parseInt(scope.row.level) + 1;
@@ -318,7 +318,7 @@
                 this.addVisible = true;
             },
             /**
-             * 更新
+             * Update
              */
             handleSingle(scope) {
                 let _this = this;
@@ -382,7 +382,7 @@
                                 _this.refreshRow(params.keyid);
                             }
                         } else {
-                            //批量删除，全部更新
+                            // Batch delete, then refresh all
                             _this.getList();
                         }
                     } else {
@@ -432,7 +432,7 @@
                 }, this.doPinyin, window.lc('admin_system_00074'));
             },
             /**
-             * 生成拼音
+             * Generate pinyin
              * @param params {page:0, pagesize:100}
              */
             doPinyin(params) {

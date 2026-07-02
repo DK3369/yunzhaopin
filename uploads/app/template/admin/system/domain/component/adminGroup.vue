@@ -203,22 +203,22 @@ module.exports = {
         saveGroup: function () {
             let that = this;
             let checkedTwoIds = [], checkedOneIds = [];
-            // 根据选中的三级菜单id来获取需要选中提交的二级菜单id
+            // Build submitted second-level menu ids from selected third-level menu ids
             if (that.checkedThreeIds.length) {
                 that.checkedThreeIds.forEach(function (ck_three_id) {
                     for (parentId in that.twoChildrenIds) {
-                        // 三级菜单被选中且对应的二级菜单未被选中，将二级菜单id添加到需要选中提交的二级菜单id数组中
+                        // Add the parent second-level menu id when a selected third-level menu has no selected parent yet
                         if (that.twoChildrenIds[parentId].includes(ck_three_id) && !checkedTwoIds.includes(parentId)) {
                             checkedTwoIds.push(parentId)
                         }
                     }
                 })
             }
-            // 根据选中的二级菜单id来获取需要选中提交的一级菜单id
+            // Build submitted first-level menu ids from selected second-level menu ids
             if (checkedTwoIds.length) {
                 checkedTwoIds.forEach(function (ck_two_id) {
                     for (parentId in that.oneChildrenIds) {
-                        // 二级菜单被选中且对应的一级菜单未被选中，将一级菜单id添加到需要选中提交的一级菜单id数组中
+                        // Add the parent first-level menu id when a selected second-level menu has no selected parent yet
                         if (that.oneChildrenIds[parentId].includes(ck_two_id) && !checkedOneIds.includes(parentId)) {
                             checkedOneIds.push(parentId)
                         }

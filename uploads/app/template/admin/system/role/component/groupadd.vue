@@ -158,22 +158,22 @@
 			submitForm() {
 				let that = this;
 				let checked_two_ids = [],checked_one_ids = [];
-				// 根据选中的三级菜单id来获取需要选中提交的二级菜单id
+				// Build submitted second-level menu ids from selected third-level menu ids
 				if (that.checked_three_ids.length) {
 					that.checked_three_ids.forEach(function(ck_three_id){
 						for(parentid in that.two_children_ids){
-							// 三级菜单被选中且对应的二级菜单未被选中，将二级菜单id添加到需要选中提交的二级菜单id数组中
+							// Add the parent second-level menu id when a selected third-level menu has no selected parent yet
 							if (that.two_children_ids[parentid].includes(ck_three_id) && !checked_two_ids.includes(parentid)) {
 								checked_two_ids.push(parentid)
 							}
 						}
 					})
 				}
-				// 根据选中的二级菜单id来获取需要选中提交的一级菜单id
+				// Build submitted first-level menu ids from selected second-level menu ids
 				if (checked_two_ids.length) {
 					checked_two_ids.forEach(function(ck_two_id){
 						for(parentid in that.one_children_ids){
-							// 二级菜单被选中且对应的一级菜单未被选中，将一级菜单id添加到需要选中提交的一级菜单id数组中
+							// Add the parent first-level menu id when a selected second-level menu has no selected parent yet
 							if (that.one_children_ids[parentid].includes(ck_two_id) && !checked_one_ids.includes(parentid)) {
 								checked_one_ids.push(parentid)
 							}
