@@ -89,7 +89,7 @@ class generate_page_controller extends adminCommon
                 $fw = $this->articleindex($_POST["make_new_url"]);
                 $configM->setConfig(array('make_new_url' => $_POST['make_new_url']));
                 $this->web_config();
-                $fw ? $this->admin_json(0, "生成新闻首页(ID:$fw)成功！") : $this->render_json(1, yun_at('admin_01401'));
+                $fw ? $this->admin_json(0, yun_t('admin_model_00245', array('id' => $fw))) : $this->render_json(1, yun_at('admin_01401'));
             }
         }
     }
@@ -97,7 +97,7 @@ class generate_page_controller extends adminCommon
     private function articleindex($path)
     {
         $this->seo("news");
-        global $phpyun;//必须传参数$cache_id,否则多个文件的内容会重复
+        global $phpyun; // $cache_id is required to avoid duplicate content across files.
         $this->yunset("ishtml", '1');
         $contect = $phpyun->fetch(APP_PATH . "/app/template/" . $this->config['style'] . "/article/index.htm");
         $path = $this->format_url($path);
@@ -273,10 +273,10 @@ class generate_page_controller extends adminCommon
             }
         }
         $info = $news;
-        $data['news_title'] = $news['title'];//新闻名称
-        $data['news_keyword'] = $news['keyword'];//描述
-        $data['news_class'] = $class['name'];//新闻类别
-        $data['news_desc'] = $this->GET_content_desc($news['description']);//描述
+        $data['news_title'] = $news['title']; // News title.
+        $data['news_keyword'] = $news['keyword']; // Description.
+        $data['news_class'] = $class['name']; // News category.
+        $data['news_desc'] = $this->GET_content_desc($news['description']); // Description.
         $this->data = $data;
         $info["news_class"] = $class['name'];
         $info["last"] = $news_last;

@@ -164,7 +164,7 @@ class messagelog_controller extends adminCommon
         }
         
         if($del){
-            $msg = '短信记录(ID:'.$delid.')删除成功！';
+            $msg = yun_t('admin_model_00243', array('ids' => $delid));
             $error = 0;
         }else{
             $msg = 'admin_user_00186';

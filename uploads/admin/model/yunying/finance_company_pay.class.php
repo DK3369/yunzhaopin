@@ -58,7 +58,7 @@ class finance_company_pay_controller extends adminCommon{
             if ($v['type'] == 1){
                 $v['price_str'] = $v['order_price'] .$integral_pricename;
             }else{
-                $v['price_str'] = $v['order_price'] ."元";
+                $v['price_str'] = yun_t('admin_model_00252', array('amount' => $v['order_price']));
             }
             $v['pay_time'] = $v['pay_time']?date('Y-m-d H:i:s',$v['pay_time']):'';
         }

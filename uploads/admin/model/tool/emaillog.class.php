@@ -152,7 +152,7 @@ class emaillog_controller extends adminCommon
         }
         
         if($del){
-            $msg = '邮件记录(ID:'.$delid.')删除成功！';
+            $msg = yun_t('admin_model_00244', array('ids' => $delid));
             $error = 0;
         }else{
             $msg = 'admin_user_00186';

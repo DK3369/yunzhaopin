@@ -48,7 +48,7 @@ class generate_cache_controller extends adminCommon
             if (@in_array("7", $cache)) {
                 $makecache = $this->del_dir("../data/templates_c", 1);
                 $makecache = $this->del_dir("../data/cache", 1);
-                $cacheclass->regconfig_cache("reg.cache.php"); // 生成注册配置缓存
+                $cacheclass->regconfig_cache("reg.cache.php"); // Generate registration config cache.
             }
             if (@in_array("8", $cache)) {
                 $makecache = $cacheclass->seo_cache("seo.cache.php");
@@ -113,9 +113,9 @@ class generate_cache_controller extends adminCommon
                 $makecache = $wxAppM->tplappCache();
             }
             if ($makecache) {
-                $this->admin_json(0, "生成(ID:$makecache)成功！");
+                $this->admin_json(0, yun_t('admin_model_00246', array('id' => $makecache)));
             } else {
-                $this->admin_json(8, "生成(ID:$makecache)失败！");
+                $this->admin_json(8, yun_t('admin_model_00247', array('id' => $makecache)));
             }
         }
     }

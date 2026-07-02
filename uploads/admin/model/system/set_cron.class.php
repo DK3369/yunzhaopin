@@ -44,7 +44,7 @@ class set_cron_controller extends adminCommon{
         $this->render_json(0,'ok', $data);
 	}
 
-	// 执行计划任务
+	// Run scheduled task.
     function run_action()
     {
         if (!$_POST['id']) {
@@ -53,7 +53,7 @@ class set_cron_controller extends adminCommon{
         $CronM = $this->MODEL('cron');
         $cron = $CronM->getList();
         $CronM->excron($cron, $_POST['id'],'admin');
-        $this->admin_json(0, '计划任务(ID:' . $_POST["id"] . ')执行成功！');
+        $this->admin_json(0, yun_t('admin_model_00248', array('id' => $_POST["id"])));
     }
 
     function info_action()
@@ -66,10 +66,10 @@ class set_cron_controller extends adminCommon{
         $arrweek[] = array('label' => 'wap_js_00031', 'value' => '5');
         $arrweek[] = array('label' => 'wap_js_00033', 'value' => '6');
         for ($i = 1; $i <= 31; $i++) {
-            $montharr[] = array('label' => $i . "日", 'value' => '' . $i);
+            $montharr[] = array('label' => yun_t('admin_model_00249', array('day' => $i)), 'value' => '' . $i);
         }
         for ($i = 0; $i <= 23; $i++) {
-            $hourarr[] = array('label' => $i . "时", 'value' => '' . $i);
+            $hourarr[] = array('label' => yun_t('admin_model_00250', array('hour' => $i)), 'value' => '' . $i);
         }
         $data['hourarr'] = $hourarr;
         $data['montharr'] = $montharr;

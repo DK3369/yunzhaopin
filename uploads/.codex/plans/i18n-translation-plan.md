@@ -402,6 +402,8 @@ Batch 30 执行范围：分站后台模块 `admin/model/system/domain_list.class
 
 Batch 31 执行范围：后台工具与海报相关消息 `admin/model/tool/weixinrecord.class.php`、`weixinmenu.class.php`、`emailset.class.php`、`fabutool.class.php`、`admin/model/yunying/yingxiao_hbconfig.class.php`。迁移微信用户解绑、微信菜单增删改日志、自动回复关键词删除、邮件测试内容/删除、微信发布模板删除、海报删除等管理员可见消息；新增 key 从 `admin_model_00232` 继续。本批不改微信接口调用、素材上传、邮件发送配置、模板解析、海报保存或第三方返回信息。
 
+Batch 32 执行范围：剩余后台工具/系统小消息 `admin/model/tool/messagelog.class.php`、`emaillog.class.php`、`generate_page.class.php`、`generate_cache.class.php`、`gsdConfig.class.php`、`admin/model/system/set_cron.class.php`、`admin/model/yunying/finance_company_pay.class.php`。迁移短信/邮件记录删除、页面/缓存生成、计划任务执行与时间标签、IP 归属地配置、后台支付金额展示等管理员可见消息；新增 key 从 `admin_model_00243` 继续。本批不改生成流程、缓存项选择、计划任务执行、IP 配置字段、订单金额原始值或支付记录结构。
+
 ## 11. 推荐执行顺序
 
 1. 修复语言包损坏项和扫描脚本误报规则。
