@@ -1,5 +1,5 @@
 <template>
-    <!--会员-企业-认证&审核：企业认证审核-->
+    <!-- Member > Company > Verification & Review: Company verification review -->
     <div class="moduleElHight">
         <div class="moduleElSearchInf">
             <div class="moduleElTabInpt" style="flex-wrap: wrap;">
@@ -65,11 +65,11 @@
                             <span v-else-if="scope.row.status == 0" class="admin_state4">{{ lc('wap_user_00166') }}</span>
                             <span v-else-if="scope.row.status == 2" class="admin_state2">{{ lc('wap_user_00167') }}</span>
                             <template v-else>--</template>
-                            <!--<span class="admin_state1">已审核</span>-->
-                            <!--<span class="admin_state2">未通过</span>-->
-                            <!--<span class="admin_state3">已锁定</span>-->
-                            <!--<span class="admin_state4">待审核</span>-->
-                            <!--<span class="admin_state5">已暂停</span>-->
+                            <!--<span class="admin_state1">Reviewed</span>-->
+                            <!--<span class="admin_state2">Rejected</span>-->
+                            <!--<span class="admin_state3">Locked</span>-->
+                            <!--<span class="admin_state4">Pending review</span>-->
+                            <!--<span class="admin_state5">Suspended</span>-->
                         </div>
                     </template>
                 </el-table-column>
@@ -96,7 +96,7 @@
                 </el-pagination>
             </div>
         </div>
-        <!--单个审核-->
+        <!-- Single review -->
         <div class="modluDrawer">
             <el-dialog :title="lc('admin_user_company_00064')" :visible.sync="statusVisible" :with-header="true" :modal-append-to-body="false"
                 :show-close="true" width="450px">
@@ -150,7 +150,7 @@
                 </span>
             </el-dialog>
         </div>
-        <!--批量审核-->
+        <!-- Batch review -->
         <div class="modluDrawer">
             <el-dialog :title="lc('admin_user_weipin_00037')" :visible.sync="statusAllVisible" :with-header="true" :modal-append-to-body="false"
                 :show-close="true" width="450px">
@@ -193,14 +193,14 @@ module.exports = {
             com_cert_wt: null,
             com_cert_other: null,
             comCertAll: 0,
-            comCert1: 0,//未审核
-            comCert2: 0,//未通过
+            comCert1: 0,// Unreviewed
+            comCert2: 0,// Rejected
             total: 0,
             tableData: [],
             pageSizes: [],
             tableHig: true,
-            checked: false,//全选
-            isIndeterminate: false,// checkbox 的不确定状态
+            checked: false,// Select all
+            isIndeterminate: false,// Checkbox indeterminate state
             selectedItem: [],
             info: {
                 name: '',
@@ -215,7 +215,7 @@ module.exports = {
             ruleFormStatus: {
                 uid: null,
                 name:'',
-                status: null,//操作审核
+                status: null,// Review operation
                 job_status: false,//{{ lc('admin_user_company_00325') }}
                 statusbody: null,//{{ lc('member_user_00062') }}
             },
