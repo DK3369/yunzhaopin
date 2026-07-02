@@ -1,5 +1,5 @@
 <template>
-    <!--会员-企业-企业设置：企业设置-->
+    <!-- Member > Company > Company Settings -->
     <div class="setUpload">
         <div class="uploadTable">
             <table class="tableVue">
@@ -11,7 +11,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                <!--审核信息-->
+                <!-- Review information -->
                 <tr>
                     <td>
                         <div class="TableTite">{{ lc('admin_user_company_00291') }}</div>
@@ -51,7 +51,7 @@
                         </div>
                     </td>
                 </tr>
-                <!--强制操作-->
+                <!-- Required actions -->
                 <tr>
                     <td>
                         <div class="TableTite">{{ lc('admin_user_00337') }}</div>
@@ -82,7 +82,7 @@
                         </div>
                     </td>
                 </tr>
-                <!--企业资质上传项-->
+                <!-- Company qualification upload items -->
                 <tr>
                     <td>
                         <div class="TableTite">{{ lc('admin_user_company_00259') }}</div>
@@ -107,7 +107,7 @@
                         </div>
                     </td>
                 </tr>
-                <!--委托书-->
+                <!-- Authorization letter -->
                 <tr>
                     <td>
                         <div class="TableTite">{{ lc('wap_com_00057') }}</div>
@@ -130,7 +130,7 @@
                         </div>
                     </td>
                 </tr>
-                <!--功能开关-->
+                <!-- Feature toggles -->
                 <tr>
                     <td>
                         <div class="TableTite">{{ lc('admin_user_company_00287') }}</div>
@@ -157,7 +157,7 @@
                         </div>
                     </td>
                 </tr>
-                <!--职位刷新-->
+                <!-- Job refresh -->
                 <tr>
                     <td>
                         <div class="TableTite">{{ lc('wap_com_00045') }}</div>
@@ -175,7 +175,7 @@
                     </td>
                 </tr>
                 <template v-if="ruleForm.com_job_reserve == 1">
-                    <!--预约刷新时间间隔-->
+                    <!-- Reserved refresh interval -->
                     <tr>
                         <td>
                             <div class="TableTite">{{ lc('admin_user_company_00257') }}</div>
@@ -193,7 +193,7 @@
                             </div>
                         </td>
                     </tr>
-                    <!--预约刷新消费套餐-->
+                    <!-- Reserved refresh package -->
                     <tr>
                         <td>
                             <div class="TableTite">{{ lc('admin_user_company_00258') }}</div>
@@ -211,7 +211,7 @@
                             </div>
                         </td>
                     </tr>
-                    <!--刷新职位增值服务-->
+                    <!-- Job refresh value-added service -->
                     <tr>
                         <td>
                             <div class="TableTite">{{ lc('admin_user_company_00252') }}</div>
@@ -233,7 +233,7 @@
                         </td>
                     </tr>
                 </template>
-                <!--人才搜索-->
+                <!-- Talent search -->
                 <tr>
                     <td>
                         <div class="TableTite">{{ lc('admin_user_company_00280') }}</div>
@@ -254,7 +254,7 @@
                         </div>
                     </td>
                 </tr>
-                <!--人才下载-->
+                <!-- Talent download -->
                 <tr>
                     <td>
                         <div class="TableTite">{{ lc('admin_user_company_00279') }}</div>
@@ -270,7 +270,7 @@
                         </div>
                     </td>
                 </tr>
-                <!--企业搜索器-->
+                <!-- Company searcher -->
                 <tr>
                     <td>
                         <div class="TableTite">{{ lc('admin_user_company_00273') }}</div>
@@ -288,7 +288,7 @@
                         </div>
                     </td>
                 </tr>
-                <!--邀请面试模板数-->
+                <!-- Interview invitation template count -->
                 <tr>
                     <td>
                         <div class="TableTite">{{ lc('admin_user_company_00264') }}</div>
@@ -306,7 +306,7 @@
                         </div>
                     </td>
                 </tr>
-                <!--会员到期提醒-->
+                <!-- Membership expiration reminder -->
                 <tr>
                     <td>
                         <div class="TableTite">{{ lc('admin_user_company_00265') }}</div>
@@ -324,7 +324,7 @@
                         </div>
                     </td>
                 </tr>
-                <!--展示职位投递数限制-->
+                <!-- Displayed job application count limit -->
                 <tr>
                     <td>
                         <div class="TableTite">{{ lc('admin_user_company_00249') }}</div>
@@ -342,7 +342,7 @@
                         </div>
                     </td>
                 </tr>
-                <!--职位列表置顶（移动端首页）-->
+                <!-- Job list top placement on mobile home -->
                 <tr>
                     <td>
                         <div class="TableTite">{{ lc('admin_user_company_00246') }}</div>
@@ -360,7 +360,7 @@
                         </div>
                     </td>
                 </tr>
-                <!--职位列表置顶-->
+                <!-- Job list top placement -->
                 <tr>
                     <td>
                         <div class="TableTite">{{ lc('admin_00708') }}</div>
@@ -378,7 +378,7 @@
                         </div>
                     </td>
                 </tr>
-                <!--职位名称锁定-->
+                <!-- Job title lock -->
                 <tr>
                     <td>
                         <div class="TableTite">{{ lc('admin_user_company_00271') }}</div>
@@ -395,7 +395,7 @@
                         </div>
                     </td>
                 </tr>
-                <!--职位投递要求限制-->
+                <!-- Job application requirement limit -->
                 <tr>
                     <td>
                         <div class="TableTite">{{ lc('admin_user_company_00256') }}</div>
@@ -413,7 +413,7 @@
                         </div>
                     </td>
                 </tr>
-                <!--名企排序-->
+                <!-- Featured company sort -->
                 <tr>
                     <td>
                         <div class="TableTite">{{ lc('admin_user_company_00288') }}</div>
@@ -431,7 +431,7 @@
                         </div>
                     </td>
                 </tr>
-                <!--会员到期职位下架-->
+                <!-- Take jobs offline when membership expires -->
                 <tr>
                     <td>
                         <div class="TableTite">{{ lc('admin_user_company_00251') }}</div>
@@ -448,7 +448,7 @@
                         </div>
                     </td>
                 </tr>
-                <!--职位下架延期设置-->
+                <!-- Offline job extension setting -->
                 <template v-if="ruleForm.jobunder == '1'">
                     <tr>
                         <td>
@@ -468,7 +468,7 @@
                         </td>
                     </tr>
                 </template>
-                <!--查看企业联系方式-->
+                <!-- View company contact information -->
                 <tr>
                     <td>
                         <div class="TableTite">{{ lc('admin_user_company_00254') }}</div>
@@ -504,7 +504,7 @@
                         </div>
                     </td>
                 </tr>
-                <!--屏蔽企业联系方式-->
+                <!-- Mask company contact information -->
                 <tr>
                     <td>
                         <div class="TableTite">{{ lc('admin_user_company_00253') }}</div>
@@ -523,7 +523,7 @@
                         </div>
                     </td>
                 </tr>
-                <!--联系方式提示语-->
+                <!-- Contact information prompt -->
                 <tr>
                     <td>
                         <div class="TableTite">{{ lc('admin_user_company_00262') }}</div>
@@ -539,7 +539,7 @@
                         </div>
                     </td>
                 </tr>
-				<!--职位全文搜索-->
+				<!-- Full-text job search -->
                 <tr>
                     <td>
                         <div class="TableTite">{{ lc('admin_user_company_00270') }}</div>
@@ -586,29 +586,29 @@ module.exports = {
             com_servers: [],
             ruleForm: {
                 // AuditInfo
-                com_status: false,//企业会员
-                com_job_status: false,//发布职位
-                com_partjob_status: false,//发布兼职
-                com_cert_status: false,//企业资质
-                com_logo_status: false,//企业LOGO
-                com_show_status: false,//企业环境
-                com_banner_status: false,//企业横幅
-                com_revise_status: false,//企业修改
+                com_status: false,// Company member
+                com_job_status: false,// Publish job
+                com_partjob_status: false,// Publish part-time job
+                com_cert_status: false,// Company qualification
+                com_logo_status: false,// Company logo
+                com_show_status: false,// Company environment
+                com_banner_status: false,// Company banner
+                com_revise_status: false,// Company edit
                 
-                com_yqmb_status: false,//邀请面试模板
-                //强制操作
-                com_enforce_info: false,//信息完善
-                com_enforce_mobilecert: false,//手机认证
-                com_enforce_emailcert: false,//邮箱认证
-                com_enforce_licensecert: false,//企业资质
-                com_enforce_setposition: false,//地理位置
-                com_gzgzh: false,//关注微信公众号
-                //企业资质上传项
-                com_social_credit: false,//统一社会信用代码
-                com_cert_owner: false,//经办人身份证件
-                com_cert_wt: false,//承诺函
-                com_cert_other: false,//其他材料
-                //委托书/承诺函范本
+                com_yqmb_status: false,// Interview invitation template
+                // Required actions
+                com_enforce_info: false,// Complete information
+                com_enforce_mobilecert: false,// Mobile verification
+                com_enforce_emailcert: false,// Email verification
+                com_enforce_licensecert: false,// Company qualification
+                com_enforce_setposition: false,// Geographic location
+                com_gzgzh: false,// Follow WeChat official account
+                // Company qualification upload items
+                com_social_credit: false,// Unified social credit code
+                com_cert_owner: false,// Agent identity document
+                com_cert_wt: false,// Commitment letter
+                com_cert_other: false,// Other materials
+                // Authorization/commitment template
                 exa_cert_wt: '',
                 //{{ lc('admin_user_company_00287') }}
                 com_message: false,//{{ lc('wap_com_00408') }}
@@ -635,7 +635,7 @@ module.exports = {
                 sy_maturityday: "",
                 //{{ lc('admin_user_company_00249') }}
                 sy_sq_job_num: "",
-                // {{ lc('wap_com_00238') }}（移动端首页）
+                // {{ lc('wap_com_00238') }} (mobile home)
                 joblist_top_index: null,
                 // JobListtop/sticky
                 joblist_top: null,
@@ -659,7 +659,7 @@ module.exports = {
 				//{{ lc('admin_user_company_00270') }}
                 job_full_text_search:null
             },
-            file: [],//暂存文件
+            file: [],// Temporary files
             fileName: '',
             serverVisible: false,
             submitLoading: false,
@@ -673,7 +673,7 @@ module.exports = {
         uploadChange(file) {
             //this.ruleForm.exa_cert_wt = URL.createObjectURL(file.raw);
             this.fileName = file.name;
-            // 复刻文件信息
+            // Clone file metadata
             this.file = file.raw;
         },
         getList() {
@@ -711,7 +711,7 @@ module.exports = {
                     _this.ruleForm.com_cert_owner = config.com_cert_owner == "1" ? true : false;//{{ lc('admin_user_company_00261') }}
                     _this.ruleForm.com_cert_wt = config.com_cert_wt == "1" ? true : false;//{{ lc('admin_user_company_00302') }}
                     _this.ruleForm.com_cert_other = config.com_cert_other == "1" ? true : false;//{{ lc('member_com_00069') }}
-                    //{{ lc('common_01902') }}/承诺函范本
+                    // {{ lc('common_01902') }} / commitment template
                     _this.ruleForm.exa_cert_wt = config.exa_cert_wt !== undefined ? config.exa_cert_wt : "";
                     //{{ lc('admin_user_company_00287') }}
                     _this.ruleForm.com_message = config.com_message == "1" ? true : false;//{{ lc('wap_com_00408') }}
@@ -738,7 +738,7 @@ module.exports = {
                     _this.ruleForm.sy_maturityday = config.sy_maturityday !== undefined ? config.sy_maturityday : "";
                     //{{ lc('admin_user_company_00249') }}
                     _this.ruleForm.sy_sq_job_num = config.sy_sq_job_num !== undefined ? config.sy_sq_job_num : "";
-                    // {{ lc('wap_com_00238') }}（移动端首页）
+                    // {{ lc('wap_com_00238') }} (mobile home)
                     _this.ruleForm.joblist_top_index = config.joblist_top_index !== undefined ? config.joblist_top_index : null;
                     // JobListtop/sticky
                     _this.ruleForm.joblist_top = config.joblist_top !== undefined ? config.joblist_top : null;
@@ -805,7 +805,7 @@ module.exports = {
             formData.append("com_cert_owner", params.com_cert_owner ? 1 : 0);//{{ lc('admin_user_company_00261') }}
             formData.append("com_cert_wt", params.com_cert_wt ? 1 : 0);//{{ lc('admin_user_company_00302') }}
             formData.append("com_cert_other", params.com_cert_other ? 1 : 0);//{{ lc('member_com_00069') }}
-            //{{ lc('common_01902') }}/承诺函范本
+            // {{ lc('common_01902') }} / commitment template
             if (this.file.length !== 0) {
                 formData.append("exa_cert_wt_files", this.file);
             }
@@ -834,7 +834,7 @@ module.exports = {
             formData.append("sy_maturityday", params.sy_maturityday);
             //{{ lc('admin_user_company_00249') }}
             formData.append("sy_sq_job_num", params.sy_sq_job_num ? params.sy_sq_job_num : 0);
-            // {{ lc('wap_com_00238') }}（移动端首页）
+            // {{ lc('wap_com_00238') }} (mobile home)
             formData.append('joblist_top_index', params.joblist_top_index);
             // JobListtop/sticky
             formData.append('joblist_top', params.joblist_top);
