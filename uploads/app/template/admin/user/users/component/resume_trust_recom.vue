@@ -1,7 +1,7 @@
 <template>
 	<div class="moduleElHight">
 		<div class="moduleSeachbig">
-			<!--关键字搜索和查询在一起-->
+			<!-- Keyword search and filters -->
 			<div class="tableSeachInpt tableSeachInptsmall">
 				<el-input v-model="searchForm.keyword" :placeholder="lc('admin_user_weipin_00003')" size="small"
 						  prefix-icon="el-icon-search" clearable>
@@ -72,7 +72,7 @@
 		</div>
 
 		<div class="modluDrawer">
-			<!--推荐发送进度-->
+			<!-- Recommendation send progress -->
 			<el-dialog :title="lc('admin_00494')" :visible.sync="dialogSend" center append-to-body width="12%">
 				<div style="text-align:center;">
 					<el-progress type="circle" :percentage="sendPercentage" :format="formatSend"></el-progress>
@@ -95,7 +95,7 @@
 				tableHig: true,
 				saveLoading: false,
 
-				// 搜索筛选项
+				// Search filters
 				searchForm: {
 					type: 1
 				},
@@ -107,16 +107,16 @@
 				total: 0,
 				pageSizes: [],
 
-				// 列表排序
+				// List sorting
 				t: '',
 				order: '',
 
 				checkedAll: false, // {{ lc('wap_js_00074') }}
 				checkedAllIndeterminate: false,
-				multipleSelection: [], // 多选值存储
+				multipleSelection: [], // Multi-select value storage
 				idArr: [],
 
-				// 发送进度弹窗
+				// Send progress dialog
 				dialogSend: false,
 				sendNum: 0,
 				sendPercentage: 0,
@@ -183,10 +183,10 @@
 					that.total = parseInt(data.total);
 					that.pageSizes = data.page_sizes;
 					if (that.limit === 0) {
-						that.limit = parseInt(data.limit); // 取系统配置默认数量
+						that.limit = parseInt(data.limit); // Use default count from system config
 					}
 					if (that.page > data.page) {
-						that.page = parseInt(data.page); // 最后一页被删除后，取最新的页数
+						that.page = parseInt(data.page); // Use latest page after the last page is deleted
 					}
 					that.loading = false;
 					if(that.prevPage != that.page){
@@ -199,7 +199,7 @@
 				})
 			},
 
-			// 批量操作
+			// Batch operation
 			handleSelectionChange(val) {
 				if (val.length == 0) {
 					this.checkedAll = false;
@@ -254,16 +254,16 @@
 					params = {
 						eid: that.eid
 					};
-				if (typeof idx == 'undefined') { // 批量发送
+				if (typeof idx == 'undefined') { // Batch send
 					that.dialogSend = true;
 					let list = that.multipleSelection;
-					for(let i = 0; i < list.length; i++) { // 循环发送
+					for(let i = 0; i < list.length; i++) { // Send in loop
 						params.comid = list[i].uid;
 						params.jobid = list[i].id;
 						await that.sendEmail(2, params);
 					}
 					that.$refs.multipleTable.clearSelection();
-				} else {// 单个发送
+				} else {// Single send
 					let row = that.list[idx];
 					params.comid = row.uid;
 					params.jobid = row.id;
@@ -272,7 +272,7 @@
 				that.getList();
 				that.saveLoading = false;
 			},
-			// 进度格式化方法
+			// Progress formatting method
 			formatSend(percentage) {
 				let that = this;
 				if (percentage === 100) {
@@ -296,7 +296,7 @@
 						message.success(res.data.msg);
 					} else {
 						that.sendNum++;
-						that.sendPercentage = accMul(accDiv(that.sendNum, that.idArr.length), 100); // 计算百分比进度
+						that.sendPercentage = accMul(accDiv(that.sendNum, that.idArr.length), 100); // Calculate percentage progress
 					}
 				}
 			},

@@ -352,6 +352,8 @@ Batch 7 执行范围：认证/审核小组件 `app/template/admin/user/users/com
 
 Batch 8 执行范围：新增/编辑表单组件 `app/template/admin/user/company/component/addjob.vue`、`company_add.vue`、`addhotjob.vue`。扫描器未发现可见裸中文时，本批只清理中文注释；不改职位字段、企业字段、地图加载、编辑器配置和表单校验逻辑。
 
+Batch 9 执行范围：简历委托/推荐文件 `app/template/admin/user/users/component/resume_trust.vue`、`resume_trust_recom.vue`。扫描器未发现可见裸中文时，本批只清理中文注释；不改委托状态、推荐发送、进度计算和列表筛选逻辑。
+
 ## 11. 推荐执行顺序
 
 1. 修复语言包损坏项和扫描脚本误报规则。

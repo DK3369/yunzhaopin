@@ -1,7 +1,7 @@
 <template>
 	<div class="moduleElHight">
 		<div class="moduleSeachbig">
-			<!--关键字搜索和查询在一起-->
+			<!-- Keyword search and filters -->
 			<div class="tableSeachInpt tableSeachInptsmall">
 				<el-input v-model="searchForm.keyword" @keyup.enter.native="search" :placeholder="lc('admin_user_weipin_00003')" size="small"
 						  prefix-icon="el-icon-search" clearable>
@@ -96,7 +96,7 @@
 				</el-pagination>
 			</div>
 		</div>
-		 <!--审核-->
+		 <!-- Review -->
 		<div class="modluDrawer">
 			<el-dialog :title="lc('admin_00489')" :visible.sync="dialogAudit" :with-header="true" :modal-append-to-body="false"
 				:show-close="true" width="450px">
@@ -117,11 +117,11 @@
 		</div>
 
 		<div class="modluDrawer">
-			<!--预览简历-->
+			<!-- Resume preview -->
 			<el-drawer :title="lc('wap_user_00217')" :visible.sync="drawerPreview" append-to-body size="60%">
 				<preview :id="detail.eid"></preview>
 			</el-drawer>
-			<!--匹配岗位-->
+			<!-- Matching jobs -->
 			<el-drawer :title="lc('admin_00488')" :append-to-body="true" :visible.sync="drawerRecom" :show-close="true"
 					   :with-header="true" size="80%">
 				<recom :id="detail.id" :eid="detail.eid"></recom>
@@ -142,7 +142,7 @@
 				tableHig: true,
 				saveLoading: false,
 
-				// 搜索筛选项
+				// Search filters
 				searchList: [],
 				searchForm: {
 					type: 1,
@@ -156,16 +156,16 @@
 				total: 0,
 				pageSizes: [],
 
-				// 列表排序
+				// List sorting
 				t: '',
 				order: '',
 
 				checkedAll: false, // {{ lc('wap_js_00074') }}
 				checkedAllIndeterminate: false,
-				multipleSelection: [], // 多选值存储
+				multipleSelection: [], // Multi-select value storage
 				idArr: [],
 
-				detail: {}, // 单条数据记录
+				detail: {}, // Single record data
 
 				// Data statistics
 				resumeAllNum: 0,
@@ -300,10 +300,10 @@
 					that.total = parseInt(data.total);
 					that.pageSizes = data.page_sizes;
 					if (that.limit === 0) {
-						that.limit = parseInt(data.limit); // 取系统配置默认数量
+						that.limit = parseInt(data.limit); // Use default count from system config
 					}
 					if (that.page > data.page) {
-						that.page = parseInt(data.page); // 最后一页被删除后，取最新的页数
+						that.page = parseInt(data.page); // Use latest page after the last page is deleted
 					}
 					that.loading = false;
 					if(that.prevPage != that.page){
@@ -317,7 +317,7 @@
 				})
 			},
 
-			// 批量操作
+			// Batch operation
 			handleSelectionChange(val) {
 				if (val.length == 0) {
 					this.checkedAll = false;
@@ -414,13 +414,13 @@
 				})
 			},
 
-			// 预览简历
+			// Preview resume
 			openPreview(row) {
 				this.detail = row;
 				this.drawerPreview = true;
 			},
 
-			// 匹配岗位
+			// Matching jobs
 			openRecom(row) {
 				this.detail = row;
 				this.drawerRecom = true;
