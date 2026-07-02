@@ -19,7 +19,7 @@
 					</el-select>
                 </el-input>
             </div>
-            <!--收起部分-->
+            <!-- Collapsed section -->
             <div class="tableSeachInpt tableSeachInptsmall" :class="{ 'searchbutnOnff': seachbutn }">
                 <el-select v-model="searchForm.time_type" size="small" slot="prepend" :placeholder="lc('admin_user_00135')" clearable @change="handleTimeChange">
                     <el-option :label="lc('member_com_00087')" value="adtime"></el-option>
@@ -39,13 +39,13 @@
             </div>
             <div class="tableSeachInpt" :class="{ 'searchbutnOnff': seachbutn }">
                 <div class="block">
-                    <!--7.0 统一类别选择-->
+                    <!-- 7.0 unified category selector -->
                     <job_class @confirm="confirmJobSearch"></job_class>
                 </div>
             </div>
             <div class=" tableSeachInpt" :class="{ 'searchbutnOnff': seachbutn }">
                 <div class="block">
-                    <!--7.0 统一城市选择-->
+                    <!-- 7.0 unified city selector -->
                     <city_class @confirm="confirmCitySearch"></city_class>
                 </div>
             </div>
@@ -111,7 +111,7 @@
                         <div class=" ">
                             <div>
                                 <span class="user_resumejob" @click="openPreview(scope.row)">{{ scope.row.name }}</span>
-                               <!-- <span v-if="scope.row.defaults == 1" class="user_resumrmr">默认</span>-->
+                               <!-- <span v-if="scope.row.defaults == 1" class="user_resumrmr">Default</span>-->
                             </div>
                             <div class="">
                                 {{ lc('admin_00496') }}
@@ -174,7 +174,7 @@
 				            </el-switch>
 				        </div>
 				        <div class="job_tg_bth jobBthChufa">
-				            <!--因点击switch会触发值的改变，固需遮罩层触发事件-->
+				            <!-- Clicking switch changes the value, so use an overlay to trigger the event -->
 				            <div class="chufaButn" @click="openTop(scope.row)">{{ lc('admin_00499') }}</div>
 				            <el-switch v-model="scope.row.top_day" :inactive-text="lc('wap_user_00335')" :width="30"
 				                :active-value="scope.row.top_day > 0 ? scope.row.top_day : 1"
@@ -267,7 +267,7 @@
             </div>
         </div>
         <div class="modluDrawer">
-            <!-- 导出字段选择弹出 -->
+            <!-- Export field selection dialog -->
             <el-dialog :title="lc('admin_user_00246')" :visible.sync="dialogExport" :with-header="true" :modal-append-to-body="false"
                 :show-close="true" width="650px">
                 <div class="tck_setname">
@@ -323,7 +323,7 @@
                 </span>
             </el-dialog>
         </div>
-        <!--公开简历-->
+        <!-- Public resume -->
         <div class="modluDrawer">
             <el-dialog :title="lc('member_com_00110')" :visible.sync="dialogStatus" :with-header="true" :modal-append-to-body="false"
                 :show-close="true" width="450px">
@@ -343,7 +343,7 @@
                 </span>
             </el-dialog>
         </div>
-        <!--简历置顶-->
+        <!-- Resume top placement -->
         <div class="modluDrawer">
             <el-dialog :title="lc('wap_user_00207')" :visible.sync="dialogTop" :with-header="true" :modal-append-to-body="false"
                 :show-close="true" width="450px">
@@ -367,7 +367,7 @@
                 </span>
             </el-dialog>
         </div>
-        <!--简历备注-->
+        <!-- Resume remark -->
         <div class=" ">
             <el-dialog :title="lc('wap_com_00070')" :visible.sync="dialogRemark" :with-header="true" :modal-append-to-body="false"
                 :show-close="true" width="450px">
@@ -389,7 +389,7 @@
             </el-dialog>
         </div>
 
-        <!--投递记录-->
+        <!-- Application records -->
         <el-drawer :title="lc('admin_00517')" :append-to-body="true" :visible.sync="drawerJobSqLog" size="80%">
             <div class="uploadTable" style="padding:0px 20px;font-size:14px;color:#666">
                 <div class="moduleElHight">
@@ -443,7 +443,7 @@
                 </div>
             </div>
         </el-drawer>
-        <!--批量审核-->
+        <!-- Batch review -->
         <el-dialog :title="lc('admin_user_weipin_00037')" :visible.sync="dialogAudit" :modal-append-to-body="false" :show-close="true" width="500px">
             <div class="toolClasDia fenpeizhand">
                 <div class="toolClasList">
@@ -470,7 +470,7 @@
                 <el-button type="primary" @click="submitBatchAudit">{{ lc('wap_com_00019') }}</el-button>
             </span>
         </el-dialog>
-        <!--简历审核-->
+        <!-- Resume review -->
         <el-drawer :title="lc('member_com_00028')" :visible.sync="drawerAudit" @closed="closedAudit"
             :modal-append-to-body="false" size="90%" :append-to-body="true">
             <div class="shbox" style="padding-right: 380px;;" v-loading="expectLoading">
@@ -515,7 +515,7 @@
                             {{ lc("admin_detail_address_value", [resume.address]) }}</div>
                     </div>
 
-                    <!--个人优势-->
+                    <!-- Personal strengths -->
                     <div class="user_resume_list">
                         <div class="shshow_tit">
                             <i class="el-icon-medal-1"></i> {{ lc('wap_user_00326') }}
@@ -525,7 +525,7 @@
                             <div class="cominfo">{{ resume.description }}</div>
                         </div>
                         <div class="user_resume_add userEsumeAdds">
-                            <!-- <div class="">总结优势，突出亮点，个人优势将突出展示给HR</div> -->
+                            <!-- <div class="">Summarize strengths and highlights. Personal strengths are shown prominently to HR.</div> -->
                             <div class="user_resume_addbth">
                                 <el-button type="primary" size="small" style="width:150px" @click="openTag">
                                     <i class="el-icon-circle-plus-outline"></i> {{ (resume.arrayTag &&
@@ -534,7 +534,7 @@
                             </div>
                         </div>
                     </div>
-                    <!--求职意向-->
+                    <!-- Job intention -->
                     <div class="user_resume_list">
                         <div class="shshow_tit"><i class="el-icon-notebook-2"></i> {{ lc('wap_00460') }}</div>
                         <div class="shshow_p" v-if="expectData.expect">
@@ -550,7 +550,7 @@
 
 
                         <div class="user_resume_add userEsumeAdds">
-                            <!-- <div class="">建议完善求职偏好</div> -->
+                            <!-- <div class="">Recommend completing job preferences</div> -->
                             <div class="user_resume_addbth">
                                 <el-button type="primary" size="small" style="width:150px" @click="openJob">
                                     <i class="el-icon-circle-plus-outline"></i> {{ lc('admin_00472') }}
@@ -559,10 +559,10 @@
                         </div>
                     </div>
 
-                    <!--工作经历-->
+                    <!-- Work experience -->
                     <div class="user_resume_list">
                         <div class="shshow_tit"><i class="el-icon-suitcase-1"></i> {{ lc('wap_00457') }}</div>
-                        <!--循环-->
+                        <!-- Loop -->
                         <div class="user_resume_show" v-for="(work, workkey) in expectData.work" :key="workkey">
                             <div class="user_resume_addname ">{{ work.name }}
                                 <el-button type="text" @click="openWork(workkey)">
@@ -578,9 +578,9 @@
                             </div>
                             <div class="user_resume_ms">{{ work.content }}</div>
                         </div>
-                        <!--循环-->
+                        <!-- Loop -->
                         <div class="user_resume_add userEsumeAdds">
-                            <!-- <div class="">展示工作经验、工作能力否符合岗位要求的重要依据</div> -->
+                            <!-- <div class="">Important basis for judging whether work experience and ability match job requirements</div> -->
                             <div class="user_resume_addbth">
                                 <el-button type="primary" size="small" style="width:150px" @click="openWork('')">
                                     <i class="el-icon-circle-plus-outline"></i> {{ lc('wap_js_00091') }}
@@ -588,10 +588,10 @@
                             </div>
                         </div>
                     </div>
-                    <!--教育经历-->
+                    <!-- Education experience -->
                     <div class="user_resume_list">
                         <div class="shshow_tit"><i class="el-icon-school"></i> {{ lc('wap_00459') }}</div>
-                        <!--循环-->
+                        <!-- Loop -->
                         <div class="user_resume_show" v-for="(edu, edukey) in expectData.edu" :key="edukey">
                             <div class="user_resume_addname ">{{ edu.name }}
                                 <el-button type="text" @click="openEdu(edukey)">
@@ -607,9 +607,9 @@
                                 <div class="user_resume_time">{{ edu.sdate_n }}-{{ edu.edate_n }}</div>
                             </div>
                         </div>
-                        <!--循环-->
+                        <!-- Loop -->
                         <div class="user_resume_add userEsumeAdds">
-                            <!-- <div class="">补足HR对学历背景的了解</div> -->
+                            <!-- <div class="">Help HR understand the education background</div> -->
                             <div class="user_resume_addbth">
                                 <el-button type="primary" size="small" style="width:150px" @click="openEdu('')">
                                     <i class="el-icon-circle-plus-outline"></i> {{ lc('wap_js_00091') }}
@@ -617,10 +617,10 @@
                             </div>
                         </div>
                     </div>
-                    <!--培训经历-->
+                    <!-- Training experience -->
                     <div class="user_resume_list">
                         <div class="shshow_tit"><i class="el-icon-data-analysis"></i> {{ lc('wap_00455') }}</div>
-                        <!--循环-->
+                        <!-- Loop -->
                         <div class="user_resume_show" v-for="(training, trainingKey) in expectData.training" :key="trainingKey">
                             <div class="user_resume_addname ">{{ training.name }}
                                 <el-button type="text" @click="openTraining(trainingKey)">
@@ -636,10 +636,10 @@
                             </div>
                             <div class="user_resume_ms">{{ training.content }}</div>
                         </div>
-                        <!--循环-->
+                        <!-- Loop -->
 
                         <div class="user_resume_add userEsumeAdds">
-                            <!-- <div class="">展示培训经验否符合岗位要求的重要依据</div> -->
+                            <!-- <div class="">Important basis for judging whether training experience matches job requirements</div> -->
                             <div class="user_resume_addbth">
                                 <el-button type="primary" size="small" style="width:150px" @click="openTraining('')">
                                     <i class="el-icon-circle-plus-outline"></i> {{ lc('wap_js_00091') }}
@@ -647,10 +647,10 @@
                             </div>
                         </div>
                     </div>
-                    <!--职业技能-->
+                    <!-- Professional skills -->
                     <div class="user_resume_list">
                         <div class="shshow_tit"><i class="el-icon-reading"></i> {{ lc('wap_00461') }}</div>
-                        <!--循环-->
+                        <!-- Loop -->
                         <div class="user_resume_show" v-for="(skill, skillkey) in expectData.skill" :key="skillkey">
                             <div class="user_resume_addname ">{{ skill.name }}
                                 <el-button type="text" @click="openSkill(skillkey)">
@@ -668,10 +668,10 @@
                                 <img :src="skill.pic" width="95" height="70" :preview-src-list="skill.pic">
                             </div>
                         </div>
-                        <!--循环-->
+                        <!-- Loop -->
 
                         <div class="user_resume_add userEsumeAdds">
-                            <!-- <div class="">技能专长建议填写职业技能为简历加分</div> -->
+                            <!-- <div class="">Add professional skills to strengthen the resume</div> -->
                             <div class="user_resume_addbth">
                                 <el-button type="primary" size="small" style="width:150px" @click="openSkill('')">
                                     <i class="el-icon-circle-plus-outline"></i> {{ lc('wap_js_00091') }}
@@ -679,10 +679,10 @@
                             </div>
                         </div>
                     </div>
-                    <!--项目经历-->
+                    <!-- Project experience -->
                     <div class="user_resume_list">
                         <div class="shshow_tit"><i class="el-icon-wallet"></i> {{ lc('wap_00465') }}</div>
-                        <!--循环-->
+                        <!-- Loop -->
                         <div class="user_resume_show" v-for="(project, projectkey) in expectData.project" :key="projectkey">
                             <div class="user_resume_addname ">{{ project.name }}
                                 <el-button type="text" @click="openProject(projectkey)">
@@ -698,10 +698,10 @@
                             </div>
                             <div class="user_resume_ms">{{ project.content }}</div>
                         </div>
-                        <!--循环-->
+                        <!-- Loop -->
 
                         <div class="user_resume_add userEsumeAdds">
-                            <!-- <div class="">展示工作经验、能力，这也是HR判断是否符合岗位要求的重要依据。</div> -->
+                            <!-- <div class="">Show work experience and ability as an important basis for HR evaluation.</div> -->
                             <div class="user_resume_addbth">
                                 <el-button type="primary" size="small" style="width:150px" @click="openProject('')">
                                     <i class="el-icon-circle-plus-outline"></i> {{ lc('wap_js_00091') }}
@@ -709,10 +709,10 @@
                             </div>
                         </div>
                     </div>
-                    <!--其他描述-->
+                    <!-- Other description -->
                     <div class="user_resume_list" style="padding-bottom:80px; ;">
                         <div class="shshow_tit"><i class="el-icon-mic"></i> {{ lc('admin_00068') }}</div>
-                        <!--循环-->
+                        <!-- Loop -->
                         <div class="user_resume_show" v-for="(other, otherkey) in expectData.other" :key="otherkey">
                             <div class="user_resume_addname ">{{ other.name }}
                                 <el-button type="text" @click="openOther(otherkey)">
@@ -724,9 +724,9 @@
                             </div>
                             <div class="user_resume_ms">{{ other.content }}</div>
                         </div>
-                        <!--循环-->
+                        <!-- Loop -->
                         <div class="user_resume_add userEsumeAdds">
-                            <!-- <div class="">其他加分补充</div> -->
+                            <!-- <div class="">Other supporting details</div> -->
                             <div class="user_resume_addbth">
                                 <el-button type="primary" size="small" style="width:150px" @click="openOther('')">
                                     <i class="el-icon-circle-plus-outline"></i> {{ lc('wap_js_00091') }}
@@ -781,7 +781,7 @@
             </div>
         </el-drawer>
 
-        <!---编辑简历 基本资料-->
+        <!-- Edit resume basic information -->
         <el-drawer :title="lc('admin_00475')" :append-to-body="true" :visible.sync="drawerBasic" :wrapper-closable="false" size="60%">
             <div class="uploadTable" style="padding:0px 20px;">
                 <table class="tableVue">
@@ -1015,7 +1015,7 @@
 
 
         </el-drawer>
-        <!---编辑求职意向-->
+        <!-- Edit job intention -->
         <el-drawer :title="lc('admin_00483')" :append-to-body="true" :visible.sync="drawerJob" :wrapper-closable="false" size="60%">
             <div class="uploadTable" style="padding:0px 20px;">
                 <table class="tableVue">
@@ -1043,7 +1043,7 @@
                             </td>
                             <td>
                                 <div class="TableSelect">
-                                    <!--7.0 统一类别选择-->
+                                    <!-- 7.0 unified category selector -->
                                     <job_class multiple :max="5" @confirm="confirmJob" :selected="jobSelected"></job_class>
                                 </div>
                             </td>
@@ -1054,7 +1054,7 @@
                             </td>
                             <td>
                                 <div class="TableSelect">
-                                    <!--7.0 统一城市选择-->
+                                    <!-- 7.0 unified city selector -->
                                     <city_class multiple :max="5" @confirm="confirmCity" :selected="citySelected"></city_class>
                                 </div>
                             </td>
@@ -1140,7 +1140,7 @@
             </div>
         </el-drawer>
 
-        <!---编辑个人优势-->
+        <!-- Edit personal strengths -->
         <div class="modluDrawer">
             <el-dialog :title="lc('wap_user_00326')" :visible.sync="dialogTag" :with-header="true" :modal-append-to-body="false"
                 :show-close="true" width="450px" append-to-body>
@@ -1169,7 +1169,7 @@
                 </span>
             </el-dialog>
         </div>
-        <!---编辑工作经历-->
+        <!-- Edit work experience -->
         <div class="modluDrawer">
             <el-dialog :title="lc('wap_00457')" :visible.sync="dialogWork" :with-header="true" :modal-append-to-body="false"
                 :show-close="true" width="450px" append-to-body>
@@ -1199,7 +1199,7 @@
                 </span>
             </el-dialog>
         </div>
-        <!---编辑学历-->
+        <!-- Edit education -->
         <div class="modluDrawer">
             <el-dialog :title="lc('wap_00459')" :visible.sync="dialogEdu" :with-header="true" :modal-append-to-body="false"
                 :show-close="true" width="450px" append-to-body>
@@ -1230,7 +1230,7 @@
             </el-dialog>
         </div>
 
-        <!---编辑培训经历-->
+        <!-- Edit training experience -->
         <div class="modluDrawer">
             <el-dialog :title="lc('wap_00455')" :visible.sync="dialogTraining" :with-header="true" :modal-append-to-body="false"
                 :show-close="true" width="450px" append-to-body>
@@ -1255,7 +1255,7 @@
                 </span>
             </el-dialog>
         </div>
-        <!---编辑项目经历-->
+        <!-- Edit project experience -->
         <div class="modluDrawer">
             <el-dialog :title="lc('wap_00465')" :visible.sync="dialogProject" :with-header="true" :modal-append-to-body="false"
                 :show-close="true" width="450px" append-to-body>
@@ -1279,7 +1279,7 @@
                 </span>
             </el-dialog>
         </div>
-        <!---编辑其他-->
+        <!-- Edit other details -->
         <div class="modluDrawer">
             <el-dialog :title="lc('admin_user_00216')" :visible.sync="dialogOther" :with-header="true" :modal-append-to-body="false"
                 :show-close="true" width="450px" append-to-body>
@@ -1296,7 +1296,7 @@
                 </span>
             </el-dialog>
         </div>
-        <!---编辑技能-->
+        <!-- Edit skills -->
         <div class="modluDrawer">
             <el-dialog :title="lc('wap_00461')" :visible.sync="dialogSkill" :with-header="true" :modal-append-to-body="false"
                 :show-close="true" width="450px" append-to-body>
@@ -1333,7 +1333,7 @@
             </el-dialog>
         </div>
 
-        <!--删除弹窗-->
+        <!-- Delete dialog -->
         <div class="modluDrawer">
             <el-dialog :title="lc('admin_user_00241')" :visible.sync="dialogDel" :with-header="true" append-to-body :show-close="true"
                 width="300px">
@@ -1351,11 +1351,11 @@
         </div>
 
         <div class="modluDrawer">
-            <!--预览简历-->
+            <!-- Resume preview -->
             <el-drawer :title="lc('wap_user_00217')" :visible.sync="drawerPreview" append-to-body size="60%">
                 <preview :id="detail.id"></preview>
             </el-drawer>
-            <!--新增简历-->
+            <!-- Add resume -->
             <el-drawer :title="lc('admin_user_00193')" :visible.sync="drawerAdd" append-to-body :wrapper-closable="false" size="45%">
                 <add @child-event="closeAdd"></add>
             </el-drawer>
@@ -1384,10 +1384,10 @@ module.exports = {
             seachbutn: true,
             tableHig: true,
 
-            // 来源
+            // Source
             source: {},
 
-            // 搜索筛选项
+            // Search filters
             searchList: [],
             searchForm: {
 				keytype: 1,
@@ -1456,7 +1456,7 @@ module.exports = {
 
             checkedAll: false, // {{ lc('wap_js_00074') }}
             checkedAllIndeterminate: false,
-            multipleSelection: [], // 多选值存储
+            multipleSelection: [], // Multi-select value storage
             idArr: [],
 
             detail: {},
@@ -1482,7 +1482,7 @@ module.exports = {
             dialogExport: false,
             isIndeterminateExport: false,
             checkAllExport: false,
-            typeExport: {}, // 导出字段
+            typeExport: {}, // Export fields
             ruleFormExport: {
                 type: [],
                 limit: '',
@@ -1538,7 +1538,7 @@ module.exports = {
             minsalaryList: [],
             maxsalaryList: [],
 
-            todayCheck: false, // 至今选中
+            todayCheck: false, // Present selected
 
             // Work experience
             dialogWork: false,
@@ -1554,7 +1554,7 @@ module.exports = {
             indexTraining: -1,
             daterangeTraining: [],
             ruleFormTraining: {},
-            // 技能提升
+            // Skill improvement
             dialogSkill: false,
             indexSkill: -1,
             ruleFormSkill: {},
@@ -1614,10 +1614,10 @@ module.exports = {
             this.mouseFlag = false;
         },
         mouseMoveHandler(e) {
-            // 这里面需要注意，{{ lc('admin_user_company_00161') }}ref需要那个那个包含table元素的父元素
+            // The ref must point to the parent element that contains the table element
             let divData = this.$refs.multipleTable.bodyWrapper;
             if (this.mouseFlag) {
-                // 设置水平方向的元素的位置
+                // Set horizontal scroll position
                 divData.scrollLeft -= (- this.mouseOffset + (this.mouseOffset = e.clientX));
             }
         },
@@ -1661,11 +1661,11 @@ module.exports = {
             this.search();
         },
 
-        // 搜索职位选择
+        // Search job selector
         confirmJobSearch(data) {
             this.searchForm.job_class = data.jobId.join(',');
         },
-        // 搜索城市选择
+        // Search city selector
         confirmCitySearch(data) {
             this.searchForm.city_class = data.cityId.join(',');
         },
@@ -1732,10 +1732,10 @@ module.exports = {
                 that.total = parseInt(data.total);
                 that.pageSizes = data.page_sizes;
                 if (that.limit === 0) {
-                    that.limit = parseInt(data.limit); // 取系统配置默认数量
+                    that.limit = parseInt(data.limit); // Use default count from system config
                 }
                 if (that.page > data.page) {
-                    that.page = parseInt(data.page); // 最后一页被删除后，取最新的页数
+                    that.page = parseInt(data.page); // Use latest page after the last page is deleted
                 }
                 that.loading = false;
                 if(that.prevPage != that.page){
@@ -1749,7 +1749,7 @@ module.exports = {
             })
         },
 
-        // 批量操作
+        // Batch operation
         handleSelectionChange(val) {
             if (val.length == 0) {
                 this.checkedAll = false;
@@ -2104,7 +2104,7 @@ module.exports = {
 				}, 2000);
 			});
         },
-        // 打开审核
+        // Open review
         openAudit(row) {
             this.getAudit(row.id);
             this.drawerAudit = true;
@@ -2112,7 +2112,7 @@ module.exports = {
         setFormAudit() {
             let detail = this.detail;
             this.ruleFormAudit = {
-                single: 1, // 单个审核
+                single: 1, // Single review
                 id: detail.id,
                 uid: detail.uid,
                 r_status: detail.r_status,
@@ -2122,13 +2122,13 @@ module.exports = {
             };
             this.auditTpl = '';
         },
-        // 关闭审核
+        // Close review
         closedAudit() {
             if (this.refreshList) {
                 this.getList();
             }
         },
-        // 获取详情
+        // Get details
         async getAudit(id) {
             this.expectLoading = true;
             let response = await httpPost('m=user&c=users_resume&a=resumeAudit', { id: id });
@@ -2150,11 +2150,11 @@ module.exports = {
 
             this.setFormAudit();
         },
-        // 切换审核模板
+        // Switch review template
         changeTpl(val) {
             this.ruleFormAudit.statusbody = this.userclass_name[val];
         },
-        // 提交审核
+        // Submit review
         submitAudit(atype) {
             let that = this,
                 detail = that.detail,
@@ -2197,7 +2197,7 @@ module.exports = {
                         that.saveLoading = false;
                     });
                     that.refreshList = true;
-                    if (typeof res.data !== 'undefined' && typeof res.data.next_id !== 'undefined') { // 审核下一个
+                    if (typeof res.data !== 'undefined' && typeof res.data.next_id !== 'undefined') { // Review next item
                         that.getAudit(res.data.next_id);
                     } else {
                         that.drawerAudit = false;
@@ -2245,7 +2245,7 @@ module.exports = {
 
             if (typeof row === 'undefined') { // {{ lc('admin_user_00248') }}
                 params.ids = this.idArr;
-            } else { // 单个刷新
+            } else { // Single refresh
                 params.id = row.id;
             }
 
@@ -2310,7 +2310,7 @@ module.exports = {
             };
             this.drawerBasic = true;
         },
-        // 上传时触发
+        // Triggered during upload
         handleChangeWxewm(file, fileList) {
             this.$set(this.ruleFormBasic, 'file', file.raw);
             this.$set(this.ruleFormBasic, 'wxewm_n', file.url);
@@ -2344,7 +2344,7 @@ module.exports = {
                 } else {
                     that.drawerBasic = false;
                     that.refreshList = true;
-                    // 重新拉取详情
+                    // Reload details
                     that.getAudit(that.detail.id);
                     message.success(res.msg);
                 }
@@ -2370,7 +2370,7 @@ module.exports = {
             if (resume.arrayTag && resume.arrayTag.length > 0) {
                 resume.arrayTag.forEach(function (item) {
                     if (userTag.indexOf(item) < 0) {
-                        userTag.push(item); // 不在已有标签里的,追加标签
+                        userTag.push(item); // Append tags that are not already present
                     }
                 })
             }
@@ -2418,9 +2418,9 @@ module.exports = {
             let tag = this.ruleFormTag.tag,
                 index = tag.indexOf(val);
 
-            if (index > -1) { // 二次点击取消选中
+            if (index > -1) { // Second click cancels selection
                 tag.splice(index, 1);
-            } else { // 首次点击选中
+            } else { // First click selects
                 if (tag.length >= 5) {
                     message.warning(lc('admin_user_00206'));
                     return false;
@@ -2581,7 +2581,7 @@ module.exports = {
                 } else {
                     that.drawerJob = false;
                     that.refreshList = true;
-                    // 重新拉取详情
+                    // Reload details
                     that.getAudit(ruleForm.eid);
                     message.success(res.msg);
                 }
@@ -2592,7 +2592,7 @@ module.exports = {
 			});
         },
 
-        // 至今选择
+        // Select present
         todayChange(val, type) {
             if (type == 'work') {
                 this.$set(this.ruleFormWork, 'edate', '');
@@ -2679,7 +2679,7 @@ module.exports = {
                     that.dialogWork = false;
                     that.refreshList = true;
 
-                    // 拼接工作经历数据 - 减少请求服务器
+                    // Build experience data locally to reduce server requests
                     if (ruleForm.id == '') {
                         let work = deepClone(ruleForm);
                         work.id = res.data.id;
@@ -2724,7 +2724,7 @@ module.exports = {
                     name: edu.name,
                     education: edu.education > 0 ? edu.education : '',
                     specialty: edu.specialty,
-                    title: '', // 此字段没实际意义，暂时占位
+                    title: '', // Placeholder field with no current business meaning
                 };
                 this.daterangeEdu = [
                     new Date(edu.sdate_n),
@@ -2741,7 +2741,7 @@ module.exports = {
                     edate: '',
                     education: '',
                     specialty: '',
-                    title: '', // 此字段没实际意义，暂时占位
+                    title: '', // Placeholder field with no current business meaning
                 };
                 this.daterangeEdu = [];
                 this.indexEdu = -1
@@ -2789,7 +2789,7 @@ module.exports = {
                     that.dialogEdu = false;
                     that.refreshList = true;
 
-                    // 拼接工作经历数据 - 减少请求服务器
+                    // Build experience data locally to reduce server requests
                     if (ruleForm.id == '') {
                         let edu = deepClone(ruleForm);
                         edu.id = res.data.id;
@@ -2892,7 +2892,7 @@ module.exports = {
                     that.dialogTraining = false;
                     that.refreshList = true;
 
-                    // 拼接工作经历数据 - 减少请求服务器
+                    // Build experience data locally to reduce server requests
                     if (ruleForm.id == '') {
                         let training = deepClone(ruleForm);
                         training.id = res.data.id;
@@ -2951,7 +2951,7 @@ module.exports = {
 
             this.dialogSkill = true;
         },
-        // 上传时触发
+        // Triggered during upload
         handleChangeSkillPic(file, fileList) {
             this.$set(this.ruleFormSkill, 'file', file.raw);
             this.$set(this.ruleFormSkill, 'pic_n', file.url);
@@ -2995,7 +2995,7 @@ module.exports = {
                     that.dialogSkill = false;
                     that.refreshList = true;
 
-                    // 拼接工作经历数据 - 减少请求服务器
+                    // Build experience data locally to reduce server requests
                     if (ruleForm.id == '') {
                         let skill = deepClone(ruleForm);
                         skill.id = res.data.id;
@@ -3094,7 +3094,7 @@ module.exports = {
                     that.dialogProject = false;
                     that.refreshList = true;
 
-                    // 拼接工作经历数据 - 减少请求服务器
+                    // Build experience data locally to reduce server requests
                     if (ruleForm.id == '') {
                         let project = deepClone(ruleForm);
                         project.id = res.data.id;
@@ -3177,7 +3177,7 @@ module.exports = {
                     that.dialogOther = false;
                     that.refreshList = true;
 
-                    // 拼接工作经历数据 - 减少请求服务器
+                    // Build experience data locally to reduce server requests
                     if (ruleForm.id == '') {
                         let other = deepClone(ruleForm);
                         other.id = res.data.id;
@@ -3198,7 +3198,7 @@ module.exports = {
 			});
         },
 
-        // 公用删除附表数据
+        // Common delete for related table data
         delResumeFb(type, index, id) {
             let that = this,
                 expectData = that.expectData;
@@ -3223,7 +3223,7 @@ module.exports = {
             }, lc('admin_user_00204'));
         },
 
-        // 投递岗位记录
+        // Application job records
         openJobSqlLog(row) {
             this.detail = row;
             this.$set(this.$data, 'jobSqLog', {
@@ -3259,10 +3259,10 @@ module.exports = {
                 jobSqLog.total = parseInt(data.total);
                 jobSqLog.pageSizes = data.page_sizes;
                 if (jobSqLog.limit === 0) {
-                    jobSqLog.limit = parseInt(data.limit); // 取系统配置默认数量
+                    jobSqLog.limit = parseInt(data.limit); // Use default count from system config
                 }
                 if (jobSqLog.page > data.page) {
-                    jobSqLog.page = parseInt(data.page); // 最后一页被删除后，取最新的页数
+                    jobSqLog.page = parseInt(data.page); // Use latest page after the last page is deleted
                 }
                 if(that.prevPage2 != jobSqLog.page){
                     that.prevPage2 = jobSqLog.page;

@@ -344,6 +344,8 @@ Batch 3 执行范围：职位相关高频文件 `app/template/admin/user/company
 
 Batch 4 执行范围：用户/企业核心大文件 `app/template/admin/user/users/component/usersall.vue`、`app/template/admin/user/company/component/companyuser.vue`。扫描器未发现可见裸中文时，本批只清理中文注释和注释掉的旧模板片段；发现可见文案时必须进入语言包或复用已有 key。
 
+Batch 5 执行范围：简历核心文件 `app/template/admin/user/users/component/resumeall.vue`、`app/template/admin/user/users/component/resume_edit.vue`。扫描器未发现可见裸中文时，本批只清理中文注释和注释掉的旧模板片段；不改简历字段、审核状态、接口参数和表单结构。
+
 ## 11. 推荐执行顺序
 
 1. 修复语言包损坏项和扫描脚本误报规则。
