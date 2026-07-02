@@ -114,11 +114,11 @@ class partjob_controller extends adminCommon
         $citys = array();
         foreach ($cache['city_index'] as $fir_v) {
             $citys[$fir_v] = array('value' => $fir_v, 'label' => $cache['city_name'][$fir_v]);
-            if ($cache['city_type'][$fir_v]) {// 二级城市
+            if ($cache['city_type'][$fir_v]) { // Second-level city.
                 $citys[$fir_v]['children'] = array();
                 foreach ($cache['city_type'][$fir_v] as $sec_v) {
                     $citys[$fir_v]['children'][$sec_v] = array('value' => $sec_v, 'label' => $cache['city_name'][$sec_v]);
-                    if ($cache['city_type'][$sec_v]) {// 三级城市
+                    if ($cache['city_type'][$sec_v]) { // Third-level city.
                         $citys[$fir_v]['children'][$sec_v]['children'] = array();
                         foreach ($cache['city_type'][$sec_v] as $thi_v) {
                             $citys[$fir_v]['children'][$sec_v]['children'][$thi_v] = array('value' => $thi_v, 'label' => $cache['city_name'][$thi_v]);
@@ -303,7 +303,7 @@ class partjob_controller extends adminCommon
         $partM = $this->MODEL('part');
         $data['ids'] = $_POST['ids'];
         $partM->refreshPartJob($data);
-        $this->admin_json(0, 'admin_user_00074' . $_POST['ids'] . ")刷新成功");
+        $this->admin_json(0, yun_t('admin_model_00164', array('ids' => $_POST['ids'])));
     }
 
     /**

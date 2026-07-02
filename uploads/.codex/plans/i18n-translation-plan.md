@@ -388,6 +388,8 @@ Batch 23 执行范围：系统设置、导航、关键词、SEO 相关后台模�
 
 Batch 24 执行范围：高频用户/企业/职位/简历后台模型 `admin/model/user/company.class.php`、`users_member.class.php`、`company_job.class.php`、`users_resume.class.php`。本批只迁移管理员实际可见的 `admin_json()`、`render_json()`、`addAdminLog()` 和相关 `$msg/$content` 运行态中文，新增 key 从 `admin_model_00106` 继续；大文件中的历史中文注释、导出字段、省市县展示值、搜索枚举和业务字典不在本批统一清理。禁止改动账户认证、分站分配、套餐绑定、职位审核、简历保存和导出业务逻辑。
 
+Batch 25 执行范围：剩余用户相关小模型 `admin/model/user/admin_appeal.class.php`、`admin_member.class.php`、`admin_loginlog.class.php`、`company_cert.class.php`、`company_comrating.class.php`、`company_news.class.php`、`company_product.class.php`、`company_pic.class.php`、`hotjob.class.php`、`partjob.class.php`、`weipin_once.class.php`、`weipin_tiny.class.php`。迁移管理员可见的返回消息、日志消息和触碰处注释，新增 key 从 `admin_model_00141` 继续。本批不改图片/文件处理、审核状态、刷新记录、分站分配、兼职/微招聘/名企删除和企业内容审核业务逻辑。
+
 ## 11. 推荐执行顺序
 
 1. 修复语言包损坏项和扫描脚本误报规则。

@@ -58,13 +58,13 @@ class hotjob_controller extends adminCommon
         }
         if($_POST['time']){
             if ($_POST['time'] == '1') {
-                $num = "+7 day"; // 7天
+                $num = "+7 day"; // 7 days.
             } elseif ($_POST['time'] == '2') {
-                $num = "+1 month"; // 一个月
+                $num = "+1 month"; // 1 month.
             } elseif ($_POST['time'] == '3') {
-                $num = "+6 month"; // 半年
+                $num = "+6 month"; // 6 months.
             } elseif ($_POST['time'] == '4') {
-                $num = "+1 year"; // 一年
+                $num = "+1 year"; // 1 year.
             }
             if($_POST['time']=='5'){
                 $where['time_end'] = array('<', time());
@@ -132,9 +132,9 @@ class hotjob_controller extends adminCommon
         $ComM = $this->MODEL('company');
         $uid = trim($_POST['uid']);
         $company = $ComM->getInfo($uid, array('logo' => 1, 'utype' => 'admin', 'field' => '`name` as `username`,`uid`,`logo`,`rec`'));
-        if ($company['rec'] == 1) {// 当前已是名企
+        if ($company['rec'] == 1) { // Already featured.
             $hotjob = $ComM->getHotJob(array('uid' => $uid));
-        } else {// 非名企
+        } else { // Not featured.
             $statisM = $this->MODEL('statis');
             $statis = $statisM->getInfo($uid, array('usertype' => '2', 'field' => '`rating` as `rating_id`, `rating_name` as `rating`'));
             $company['hot_pic_n'] = checkpic($company['logo']);
@@ -177,7 +177,7 @@ class hotjob_controller extends adminCommon
         $ComM = $this->MODEL('company');
         $return = $ComM->delHotJob($uid);
         if ($return) {
-            $this->admin_json(0, '名企(ID:'.pylode(',', $uid).')删除成功！');
+            $this->admin_json(0, yun_t('admin_model_00150', array('ids' => pylode(',', $uid))));
         } else {
             $this->render_json(1, yun_at('admin_user_00186'));
         }

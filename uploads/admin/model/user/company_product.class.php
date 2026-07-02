@@ -98,33 +98,32 @@ class company_product_controller extends adminCommon
         $status = intval($_POST['status']);
         $data['status'] = $status;
         $data['statusbody'] = $_POST['statusbody'];
-        $id = $_POST['id'];//字符串
+        $id = $_POST['id']; // ID string.
         if ($id) {
             $nid = $CompanyM->upCompanyProductStatus($id, $data);
             $where['id'] = array('in', $id);
             $CpList = $CompanyM->getCompanyProductList($where, array('field' => 'uid,title'));
-            /* 消息前缀 */
-            $tagName = 'default_00092';
+            /* Message content. */
             foreach ($CpList as $v) {
                 $uids[] = $v['uid'];
-                /* 处理审核信息 */
+                /* Review message. */
                 if ($data['status'] == 2) {
-                    $statusInfo = $tagName . $v['name'] . '审核未通过 , ';
+                    $statusInfo = yun_t('admin_model_00156', array('title' => $v['title']));
                     if ($data['statusbody']) {
-                        $statusInfo .= 'admin_system_00134' . $data['statusbody'];
+                        $statusInfo = yun_t('admin_model_00157', array('title' => $v['title'], 'reason' => $data['statusbody']));
                     }
                     $msg[$v['uid']][] = $statusInfo;
                 } elseif ($data['status'] == 1) {
-                    $msg[$v['uid']][] = $tagName . $v['name'] . 'admin_01312';
+                    $msg[$v['uid']][] = yun_t('admin_model_00158', array('title' => $v['title']));
                 }
             }
-            // 发送系统通知
+            // Send system notifications.
             $sysmsgM->addInfo(array(
                 'uid' => $uids,
                 'usertype' => 2,
                 'content' => $msg
             ));
-            $nid ? $this->admin_json(0, "企业产品(ID:" . $id . ")审核成功") : $this->render_json(1, 'wap_01715');
+            $nid ? $this->admin_json(0, yun_t('admin_model_00155', array('ids' => $id))) : $this->render_json(1, 'wap_01715');
         } else {
             $this->render_json(8, yun_at('model_00001'));
         }

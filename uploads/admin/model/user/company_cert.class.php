@@ -192,25 +192,25 @@ class company_cert_controller extends adminCommon
                 }
             }
 
-            /* 消息前缀 */
+            /* Message content. */
             foreach ($company as $v) {
                 $uids[] = $v['uid'];
-                /* 处理审核信息 */
+                /* Review message. */
                 if ($_POST['status'] == 2) {
                     $statusInfo = 'admin_user_00023';
                     if ($_POST['statusbody']) {
-                        $statusInfo .= ' , 原因：' . $_POST['statusbody'];
+                        $statusInfo = yun_t('admin_model_00160', array('reason' => $_POST['statusbody']));
                     }
                     $msg[$v['uid']] = $statusInfo;
                 } elseif ($_POST['status'] == 1) {
                     $msg[$v['uid']] = 'admin_user_00022';
                 }
             }
-            //发送系统通知
+            // Send system notifications.
             $sysmsgM = $this->MODEL('sysmsg');
             $sysmsgM->addInfo(array('uid' => $uids, 'usertype' => 2, 'content' => $msg));
             if ($id) {
-                $this->admin_json(0, 'admin_user_00027' . $uid . ')设置成功！');
+                $this->admin_json(0, yun_t('admin_model_00159', array('ids' => $uid)));
             } else {
                 $this->render_json(3, yun_at('wap_01715'));
             }

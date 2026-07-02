@@ -70,7 +70,7 @@ class admin_appeal_controller extends adminCommon{
             $this->render_json(1,yun_at('admin_user_00002'));
         }
     }
-    //删除
+    // Delete appeal records.
     function del_action(){
         $memberM						=		$this->MODEL('userinfo');
 		
@@ -86,7 +86,7 @@ class admin_appeal_controller extends adminCommon{
 		
 		$result 						=		$memberM->upInfo(array('uid'=>array('in',pylode(',',$delid))),array('appeal'=>'','appealtime'=>'','appealstate'=>'1'));
         if ($result){
-            $this->admin_json(0,'申诉(ID:'.pylode(',',$delid).')删除成功！');
+            $this->admin_json(0, yun_t('admin_model_00141', array('ids' => pylode(',', $delid))));
         }else{
             $this->render_json(1,yun_at('admin_user_00186'));
         }

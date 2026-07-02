@@ -164,7 +164,7 @@ class admin_member_controller extends adminCommon
     }
 
 	/**
-	 * 会员列表（重置密码）
+	 * Member list password reset.
 	 */
 	function reset_pw_action(){
 
@@ -175,7 +175,7 @@ class admin_member_controller extends adminCommon
 
 		$userinfoM -> upInfo(array('uid'=>intval($_POST['uid'])),array('password'=>'123456'));
 
-		$this -> MODEL('log') -> addAdminLog('common_01459'.$_POST['uid'].')重置密码成功');
+		$this -> MODEL('log') -> addAdminLog(yun_t('admin_model_00162', array('uid' => $_POST['uid'])));
         $this->render_json('0',yun_at('admin_user_company_00208'));
 
     }
@@ -294,7 +294,7 @@ class admin_member_controller extends adminCommon
 					$this->get_return("3",$result['page'],'admin_user_00374'.$name.'admin_user_00017',$result['sendok'],$result['sendno']);
 				}else{
                     $this->render_json(0,yun_at('admin_tool_00495'));
-//					$this->get_return("1",$result['page'],"发送成功:".$result['sendok'].",失败:".$result['sendno']);
+//					$this->get_return("1",$result['page'],"Sent:".$result['sendok'].", failed:".$result['sendno']);
  				}
 			}
 		}

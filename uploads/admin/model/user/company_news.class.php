@@ -100,29 +100,28 @@ class company_news_controller extends adminCommon
             $Cnews = $CompanyM->getCompanyNewsList($where, array(
                 'field' => 'uid,title'
             ));
-            /* 消息前缀 */
-            $tagName = 'company_00019';
+            /* Message content. */
             foreach ($Cnews as $v) {
                 $uids[] = $v['uid'];
-                /* 处理审核信息 */
+                /* Review message. */
                 if ($data['status'] == 2) {
-                    $statusInfo = $tagName . ':' . $v['title'] . 'wap_user_00325';
+                    $statusInfo = yun_t('admin_model_00152', array('title' => $v['title']));
                     if ($data['statusbody']) {
-                        $statusInfo .= ' , 原因：' . $data['statusbody'];
+                        $statusInfo = yun_t('admin_model_00153', array('title' => $v['title'], 'reason' => $data['statusbody']));
                     }
                     $msg[$v['uid']][] = $statusInfo;
                 } elseif ($data['status'] == 1) {
-                    $msg[$v['uid']][] = $tagName . ':' . $v['title'] . 'admin_01312';
+                    $msg[$v['uid']][] = yun_t('admin_model_00154', array('title' => $v['title']));
                 }
             }
-            // 发送系统通知
+            // Send system notifications.
             $sysmsgM->addInfo(array(
                 'uid' => $uids,
                 'usertype' => 2,
                 'content' => $msg
             ));
 
-            $nid ? $this->admin_json(0, "企业新闻审核(ID:" . pylode(',', $allid) . ")设置成功！") : $this->render_json(8, 'wap_01715');
+            $nid ? $this->admin_json(0, yun_t('admin_model_00151', array('ids' => pylode(',', $allid)))) : $this->render_json(8, 'wap_01715');
         } else {
             $this->render_json(8, yun_at('model_00001'));
         }

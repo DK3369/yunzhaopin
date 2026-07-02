@@ -100,9 +100,8 @@ class admin_loginlog_controller extends adminCommon
 			} else {
 				$logM->delLoginlog('', array('id' => $del));
 			}
-			$this->render_json(0,'admin_01295' . pylode(',', $del) . ')删除成功！');
+			$this->render_json(0, yun_t('admin_model_00163', array('ids' => pylode(',', $del))));
 		}
 	}
 }
 ?>
-

@@ -157,8 +157,8 @@ class company_comrating_controller extends adminCommon
     }
 
     /**
-     * @desc 后台--会员--企业--增值套餐服务-- 增值服务列表
-     *  ajax 修改类型名称
+     * @desc Admin company value-added service list.
+     * Ajax update service name.
      */
     function ajax_action()
     {
@@ -172,7 +172,7 @@ class company_comrating_controller extends adminCommon
             }
 
             $ratingM->setComService(array('name' => $name), array('id' => $id));
-            $this->admin_json(0, 'admin_user_00052' . $_POST['id'] . ")名称修改成功");
+            $this->admin_json(0, yun_t('admin_model_00161', array('id' => $_POST['id'])));
         }
     }
 

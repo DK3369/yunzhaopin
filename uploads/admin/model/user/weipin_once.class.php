@@ -109,11 +109,11 @@ class weipin_once_controller extends adminCommon
 
         $siteM->updDid(array('once_job'), array('id' => array('in', $ids)), $didData);
 
-        $this->admin_json(0, 'admin_user_00105' . $ids . ')分配站点成功');
+        $this->admin_json(0, yun_t('admin_model_00143', array('ids' => $ids)));
     }
 
 
-    // 审核功能
+    // Review action.
     function status_action()
     {
         if (empty($_POST['id'])) {
@@ -324,7 +324,7 @@ class weipin_once_controller extends adminCommon
 
             if ($add) {
                 $this->cache_action();
-                $this->admin_json(0, 'admin_user_00104' . $add . ")添加成功");
+                $this->admin_json(0, yun_t('admin_model_00144', array('id' => $add)));
             } else {
                 $this->render_json(2, yun_at('admin_01281'));
             }
@@ -333,7 +333,7 @@ class weipin_once_controller extends adminCommon
         }
     }
 
-    // 招聘时长-修改
+    // Update recruitment duration.
     function price_gear_ajax_action()
     {
         $onceM = $this->MODEL('once');
@@ -346,23 +346,25 @@ class weipin_once_controller extends adminCommon
             }
 
             $nid = $onceM->upPriceGear(array('id' => (int)$_POST['id']), array('days' => $_POST['days']));
-            $msg = 'admin_user_00104' . $_POST['id'] . ")修改天数";
+            $successMsg = yun_t('admin_model_00145', array('id' => $_POST['id']));
+            $errorMsg = yun_t('admin_model_00146', array('id' => $_POST['id']));
         }
 
         if (isset($_POST['price'])) {
             $nid = $onceM->upPriceGear(array('id' => (int)$_POST['id']), array('price' => $_POST['price']));
-            $msg = 'admin_user_00104' . $_POST['id'] . ")修改价格";
+            $successMsg = yun_t('admin_model_00147', array('id' => $_POST['id']));
+            $errorMsg = yun_t('admin_model_00148', array('id' => $_POST['id']));
         }
 
         if ($nid) {
             $this->cache_action();
-            $this->admin_json(0, $msg . 'admin_tool_00502');
+            $this->admin_json(0, $successMsg);
         } else {
-            $this->render_json(1, $msg . 'admin_tool_00501');
+            $this->render_json(1, $errorMsg);
         }
     }
 
-    // 招聘时长-删除
+    // Delete recruitment duration.
     function price_gear_del_action()
     {
         if (empty($_POST['del'])) {
@@ -377,7 +379,7 @@ class weipin_once_controller extends adminCommon
 
         if ($id) {
             $this->cache_action();
-            $this->admin_json(0, 'admin_user_00104' . $ids . ')删除成功');
+            $this->admin_json(0, yun_t('admin_model_00149', array('ids' => $ids)));
         } else {
             $this->render_json(1, yun_at('admin_01282'));
         }

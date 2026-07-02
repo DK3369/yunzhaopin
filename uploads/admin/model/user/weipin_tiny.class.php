@@ -93,7 +93,7 @@ class weipin_tiny_controller extends adminCommon
 
         $nid = $tinyM->setResumeTinyStatus($_POST['id'], array('status' => $status));
         if ($nid) {
-            $this->render_json(0, yun_at('admin_01324')); // 因模型里增加了管理员日志，这里就用 render_json 返回结果
+            $this->render_json(0, yun_at('admin_01324')); // The model adds the admin log, so return through render_json here.
         } else {
             $this->render_json(1, yun_at('admin_user_00113'));
         }
@@ -172,7 +172,7 @@ class weipin_tiny_controller extends adminCommon
         }
     }
 
-    // 普工简历-数据统计
+    // General worker resume statistics.
     function tinyNum_action()
     {
         $MsgNum = $this->MODEL("msgNum");
@@ -180,7 +180,7 @@ class weipin_tiny_controller extends adminCommon
     }
 
     /**
-     * @desc  普工-分站设置
+     * @desc General worker site assignment.
      */
     function checksitedid_action()
     {
@@ -197,11 +197,11 @@ class weipin_tiny_controller extends adminCommon
 
         $siteM->updDid(array('resume_tiny'), array('id' => array('in', $ids)), $didData);
 
-        $this->admin_json(0, 'admin_user_00111' . $ids . ')分配站点成功');
+        $this->admin_json(0, yun_t('admin_model_00142', array('ids' => $ids)));
     }
 
     /**
-     * 普工简历刷新
+     * Refresh general worker resume.
      */
     function refresh_action()
     {
