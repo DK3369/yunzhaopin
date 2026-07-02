@@ -117,7 +117,7 @@ module.exports = {
             isedit: false,
             com_arr: [],
             mqlogolist: [],
-            comindex: -1,// 企业详情点击设为名企企业index
+            comindex: -1,// Company index when setting featured company from company details
             saveLoading: false
         }
     },
@@ -162,7 +162,7 @@ module.exports = {
         inputIntNumber(val, form, key) {
             this.$data[form][key] = val.replace(/[^0-9]/g, '');
         },
-        // 添加名企业搜索企业
+        // Search company when adding featured company
         getComArr(query) {
             var that = this
             if (query !== '') {
@@ -181,7 +181,7 @@ module.exports = {
                 this.com_arr = [];
             }
         },
-        // 添加参会企业选择企业
+        // Select company when adding participant company
         comChange(data) {
             var that = this
             var selOption = this.com_arr.find((item) => item.value === data)
@@ -258,9 +258,9 @@ module.exports = {
         },
         mqlogoChange(file) {
             var tmp = deepClone(this.info)
-            // 预览文件处理
+            // Preview file handling
             tmp.hot_pic_n = URL.createObjectURL(file.raw);
-            // 复刻文件信息
+            // Clone file metadata
             this.mqlogolist[0] = file.raw;
             this.info = tmp
         },

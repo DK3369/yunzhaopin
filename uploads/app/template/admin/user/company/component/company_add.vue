@@ -270,8 +270,8 @@
                     </td>
                     <td colspan="2">
                         <div style="border: 1px solid #ccc;">
-                            <div id="toolbar-container-comdesc"><!-- 工具栏 --></div>
-                            <div id="editor-container-comdesc" style="height: 300px;"><!-- 编辑器 --></div>
+                            <div id="toolbar-container-comdesc"><!-- Toolbar --></div>
+                            <div id="editor-container-comdesc" style="height: 300px;"><!-- Editor --></div>
                         </div>
                     </td>
                     <td>
@@ -411,7 +411,7 @@
             editorInterval = null;
         },
         methods: {
-            //用来阻止第二次或更多次点击密码输入框时下拉用户密码清单的框一闪而过的问题
+            // Prevent password dropdown flicker after repeated password-field clicks
             pwdMousedown(){
                 var that = this
                 this.pwdreadonly = true
@@ -425,7 +425,7 @@
                     setTimeout(function(){ that.pwdreadonly = false, 100})
                 }
             },
-            // 修改密码框readonly{{ lc('wap_js_00085') }}，防止密码框展示浏览器记录的密码信息
+            // Temporarily change password readonly state to prevent browser password history suggestions
             readonlyCtl: function(res){
                 var that = this
                 setTimeout(function(){
@@ -471,20 +471,20 @@
             },
             writeJs: function(url, secret) {
                 return new Promise((resolve, reject) => {
-                    // 如果已加载直接返回
+                    // Return directly if already loaded
                     if (typeof window.AMap !== 'undefined') {
                         resolve(window.AMap);
                         return true;
                     }
-                    // 地图异步加载回调处理
+                    // Handle async map loading callback
                     window.onAMapCallback = function () {
                         resolve(AMap);
                     };
-                    // 设置安全密钥
+                    // Set security key
                     window._AMapSecurityConfig = {
                         securityJsCode: secret,
                     }
-                    // 插入script脚本
+                    // Insert script tag
                     let scriptNode = document.createElement('script');
                     scriptNode.setAttribute('type', 'text/javascript');
                     scriptNode.setAttribute('src', url);
@@ -572,14 +572,14 @@
                 this.x = c[0];
                 this.y = c[1];
                 var map = that.getMap();
-                // 设置marker
+                // Set marker
                 var lngLat = new AMap.LngLat(c[0],c[1]);
                 map.setZoomAndCenter(17,lngLat);
                 var marker = new AMap.Marker({
                     position: lngLat
                 });
                 map.add(marker);
-                // 地图监听点击事件
+                // Listen for map click events
                 map.on("click",function(e){
                     var lngLat = e.lnglat;
                     this.x = lngLat.lng;
@@ -592,7 +592,7 @@
                 });
                 this.poiSearchArr = [];
             },
-            // 用户名是否重复检测
+            // Check whether username is duplicated
             checkuname: function(e){
                 httpPost('m=user&c=company&a=checkUsername', {username: e.target.value}).then(function (response) {
                     let res = response.data;
@@ -718,7 +718,7 @@
                     message.error(lc('wap_com_00131'));
                     return false;
                 }
-                // 去除html标签后判断内容是否为空
+                // Check whether content is empty after removing HTML tags
                 var regex = /(<([^>]+)>)/ig
                 var content = editor_desc.getHtml().replace(regex, "")
                 if (content == "") {

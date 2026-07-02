@@ -350,6 +350,8 @@ Batch 6 执行范围：企业设置文件 `app/template/admin/user/company/compo
 
 Batch 7 执行范围：认证/审核小组件 `app/template/admin/user/users/component/renzheng_show.vue`、`renzheng_logo.vue`、`renzheng_renzheng.vue`、`app/template/admin/user/company/component/companyrz_renzheng.vue`。扫描器未发现可见裸中文时，本批只清理中文注释和注释掉的旧状态片段；不改审核状态值、上传字段、接口参数和批量选择逻辑。
 
+Batch 8 执行范围：新增/编辑表单组件 `app/template/admin/user/company/component/addjob.vue`、`company_add.vue`、`addhotjob.vue`。扫描器未发现可见裸中文时，本批只清理中文注释；不改职位字段、企业字段、地图加载、编辑器配置和表单校验逻辑。
+
 ## 11. 推荐执行顺序
 
 1. 修复语言包损坏项和扫描脚本误报规则。

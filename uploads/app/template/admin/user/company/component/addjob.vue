@@ -80,8 +80,8 @@
                         <td>
                             <div class="TableInpt">
                                 <div id="jobeditor—wrapper" style="border: 1px solid #ccc; width: 100%;">
-                                    <div id="jobtoolbar-container"><!-- 工具栏 --></div>
-                                    <div id="jobeditor-container" style="height: 260px;"><!-- 编辑器 --></div>
+                                    <div id="jobtoolbar-container"><!-- Toolbar --></div>
+                                    <div id="jobeditor-container" style="height: 260px;"><!-- Editor --></div>
                                 </div>
                             </div>
                         </td>
@@ -297,7 +297,7 @@
                 <el-button type="primary" size="medium" :loading="save_load" @click="jobsave">{{ lc('common.submit') }}</el-button>
             </div>
         </div>
-        <!--新增工作地址弹窗-->
+        <!-- Add work address dialog -->
         <el-drawer :title="lc('admin_00585')" :visible.sync="addressdrawer" append-to-body :wrapper-closable="false" size="60%">
             <div class="yunyinDialog" style="padding-right: 20px;">
                 <div class="yunyinDiaList">
@@ -492,20 +492,20 @@
         methods: {
             writeJs: function(url, secret) {
                 return new Promise((resolve, reject) => {
-                    // 如果已加载直接返回
+                    // Return directly if already loaded
                     if (typeof window.AMap !== 'undefined') {
                         resolve(window.AMap);
                         return true;
                     }
-                    // 地图异步加载回调处理
+                    // Handle async map loading callback
                     window.onAMapCallback = function () {
                         resolve(AMap);
                     };
-					// 设置安全密钥
+					// Set security key
 					window._AMapSecurityConfig = {
 						securityJsCode: secret,
 					}
-                    // 插入script脚本
+                    // Insert script tag
                     let scriptNode = document.createElement('script');
                     scriptNode.setAttribute('type', 'text/javascript');
                     scriptNode.setAttribute('src', url);
@@ -611,14 +611,14 @@
 				this.x = c[0];
 				this.y = c[1];
 				var map = that.getMap();
-				// 设置marker
+				// Set marker
 				var lngLat = new AMap.LngLat(c[0],c[1]);
 				map.setZoomAndCenter(17,lngLat);
 				var marker = new AMap.Marker({
 					position: lngLat
 				});
 				map.add(marker);
-				// 地图监听点击事件
+				// Listen for map click events
 				map.on("click",function(e){
 					var lngLat = e.lnglat;
 					this.x = lngLat.lng;
@@ -722,7 +722,7 @@
                 this.inputVisible = false;
                 this.inputValue = '';
             },
-            // 职位修改
+            // Edit job
             edit: function () {
                 var that = this
                 var params = {}
@@ -795,7 +795,7 @@
                             if (that.curr_job.report == 0 && that.curr_job.id) {
                                 that.curr_job.report = ''
                             }
-                            if (that.curr_job.is_link == 1 || that.curr_job.link_id == 0) {// 使用企业默认地址
+                            if (that.curr_job.is_link == 1 || that.curr_job.link_id == 0) {// Use company default address
                                 that.curr_job.link_id = '-1';
                             }
                             that.curr_job.exp_req = parseInt(that.curr_job.exp_req)>0?that.curr_job.exp_req:0;
@@ -884,7 +884,7 @@
                                 editor: jobeditor,
                                 selector: '#jobtoolbar-container',
                                 config: {
-                                    // 去除工具栏key
+                                    // Remove toolbar key
                                     excludeKeys: ['blockquote', 'header1', 'header2', 'header3', '|', 'through', 'color', 'bgColor', 'insertLink', 'todo', '|', 'insertVideo', 'insertTable', 'codeBlock', '|', 'undo', 'redo', '|',]
                                 },
                                 mode: 'simple'
@@ -915,7 +915,7 @@
 						return false;
 					}
 				}
-                if (that.mychecked == 0) {// 非薪资面议
+                if (that.mychecked == 0) {// Salary is not negotiable
                     if (that.curr_job.minsalary == '' || that.curr_job.minsalary == '0') {
                         message.error(lc('wap_01706'))
                         return false;
@@ -937,7 +937,7 @@
                     message.error(lc('wap_00888'))
                     return false;
                 }
-                // 去除html标签后判断内容是否为空
+                // Check whether content is empty after removing HTML tags
                 var regex = /(<([^>]+)>)/ig
                 var content = jobeditor.getHtml().replace(regex, "")
 				
@@ -984,9 +984,9 @@
                     if (res.error == 0) {
                         message.success(res.msg, function () {
                             that.$parent.$parent.getList()
-                            if (that.curr_job.id) {// 编辑
+                            if (that.curr_job.id) {// Edit
                                 that.$parent.$parent.drawerEditJob = false
-                            } else {// 新增
+                            } else {// Add
                                 that.$parent.$parent.drawerAddJob = false
                             }
                         })
