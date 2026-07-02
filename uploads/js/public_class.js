@@ -1,3 +1,15 @@
+function publicClassT(key, params, fallback) {
+    var text = typeof yunT === 'function' ? yunT(key, params, fallback) : (fallback !== undefined ? fallback : key);
+    if (params && typeof text === 'string') {
+        for (var name in params) {
+            if (Object.prototype.hasOwnProperty.call(params, name)) {
+                text = text.split('{' + name + '}').join(params[name]);
+            }
+        }
+    }
+    return text;
+}
+
 function isInArray(arr, value) {
     for (var i=0; i < arr.length; i++){
         if (value === arr[i]){
@@ -10,10 +22,10 @@ function isInArray(arr, value) {
 function index_job_new(allow_select_jobclass_count, target_jobclassin_names, target_jobclassin_ids, jobdiv_style, isShowBigClass)
 {
 
-    window.allow_select_jobclass_count = allow_select_jobclass_count;   //  选择数量
-    window.target_jobclassin_names = target_jobclassin_names;           //  点击id
-    window.target_jobclassin_ids = target_jobclassin_ids;               //  选择类别存放的id
-    window.isShowBigClass = isShowBigClass;                             //  允许选择二级
+    window.allow_select_jobclass_count = allow_select_jobclass_count;   // Selection limit.
+    window.target_jobclassin_names = target_jobclassin_names;           // Target display field.
+    window.target_jobclassin_ids = target_jobclassin_ids;               // Target ID field.
+    window.isShowBigClass = isShowBigClass;                             // Allow second-level selection.
 
     if (window.allow_select_jobclass_count == 1) {
 
@@ -28,13 +40,13 @@ function index_job_new(allow_select_jobclass_count, target_jobclassin_names, tar
     layerHtml.push('<section class="pupopChoice" id="ChooseJobClassLayer">' +
                         '<div class="pupopConAll">');
 
-    /*头部搜索部分*/
+    /* Header search area. */
     layerHtml.push('<div class="pupopConAllOne">' +
                         '<div class="conAllOneOice">' +
-                            '<p>选择职位类别</p>' +
+                            '<p>' + publicClassT('public_js_00001', null, 'Select Job Category') + '</p>' +
                             '<div class="conAllOneInput">' +
                                 '<button><img src="images/fangd.png?v='+cachecode+'" alt=""></button>' +
-                                '<input id="ChooseJobSearch" type="text" placeholder="搜索职位类别" value="">' +
+                                '<input id="ChooseJobSearch" type="text" placeholder="' + publicClassT('public_js_00002', null, 'Search job categories') + '" value="">' +
                             '</div>' +
                         '</div>' +
                         '<div class="conAllOneClose">' +
@@ -42,46 +54,46 @@ function index_job_new(allow_select_jobclass_count, target_jobclassin_names, tar
                         '</div>' +
                     '</div>');
 
-    /*分类信息内容 Start → */
+    /* Category content start. */
     layerHtml.push('<div class="pupopTwoFrist" id="def">');
 
-    /*一级分类*/
+    /* First-level categories. */
     layerHtml.push('<div class="pupopFristLeft"><ul id="newPublicClassJobOne"></ul></div>');
 
-    /*二级分类（三级分类）*/
+    /* Second-level and third-level categories. */
     layerHtml.push('<div class="pupopFristRight" id="newPublicClassJobTwo"></div>');
 
     layerHtml.push('</div>');
-    /*分类信息内容 End ← */
+    /* Category content end. */
 
     layerHtml.push('<div class="pupopTwoFrist" id="sea" style="display: none;" >');
-    /*一级分类搜索*/
+    /* First-level category search results. */
     layerHtml.push('<div class="pupopFristLeft"><ul id="newSPublicClassJobOne"></ul></div>');
 
-    /*二级分类（三级分类）搜索*/
+    /* Second-level and third-level category search results. */
     layerHtml.push('<div class="pupopFristRight" id="newSPublicClassJobTwo"></div>');
 
     layerHtml.push('</div>');
 
-    layerHtml.push('<div class="pupopNoSearch" style="display: none;"><div style=\"text-align:center; font-weight:bold; margin-top:250px;\">抱歉，没有找到结果！</div></div>');
+    layerHtml.push('<div class="pupopNoSearch" style="display: none;"><div style=\"text-align:center; font-weight:bold; margin-top:250px;\">' + publicClassT('public_js_00003', null, 'Sorry, no results found.') + '</div></div>');
 
     layerHtml.push('<div class="pupopConAllButt">\n' +
                         '<div class="footerp2">\n' +
                             '<div class="footerp2Name">\n' +
-                                '<p>已选：</p>\n' +
+                                '<p>' + publicClassT('public_js_00004', null, 'Selected:') + '</p>\n' +
                             '</div>\n' +
                             '<div class="footerpFlex">\n' +
                                 '<div class="footerp2List">\n' +
                                 '</div>' +
                             '</div>' +
                             // '<div class="footerp2More">\n' +
-                            //     '<p>更多</p>\n' +
+                            //     '<p>More</p>\n' +
                             //     '<i class="layui-icon layui-icon-down"></i>\n' +
                             // '</div>' +
                         '</div>' +
                         '<div class="footerp4">\n' +
-                            '<a class="footerp4Cancel">取消</a>\n' +
-                            '<a class="footerp4Buts">确定</a>\n' +
+                            '<a class="footerp4Cancel">' + publicClassT('public_js_00005', null, 'Cancel') + '</a>\n' +
+                            '<a class="footerp4Buts">' + publicClassT('public_js_00006', null, 'Confirm') + '</a>\n' +
                         '</div>' +
                     '</div>');
 
@@ -93,7 +105,7 @@ function index_job_new(allow_select_jobclass_count, target_jobclassin_names, tar
 
     var listTwoHtml = [];
 
-    $(ji).each(function (i, data) { //一级类别显示
+    $(ji).each(function (i, data) { // Display first-level categories.
 
         if (i == 0){
             listHtml.push('<li class="fristCur">\n' +
@@ -123,7 +135,7 @@ function index_job_new(allow_select_jobclass_count, target_jobclassin_names, tar
 
         listTwoHtml.push('<ul>');
 
-        $(jt[data]).each(function(ii,data2){//二级类别显示
+        $(jt[data]).each(function(ii,data2){// Display second-level categories.
             if (i == 0 && ii == 0){
                 listTwoHtml.push('<li class="secoCur" >\n' +
                             '<div class="tabLeftName" precode='+data+'>\n' +
@@ -152,7 +164,7 @@ function index_job_new(allow_select_jobclass_count, target_jobclassin_names, tar
         listTwoHtml.push('</ul>');
 
         listTwoHtml.push('<div class="secondTabRight">');
-        $(jt[data]).each(function(ii,data2) {//三级级类别显示
+        $(jt[data]).each(function(ii,data2) {// Display third-level categories.
             if (ii == 0) {
                 listTwoHtml.push('<div class="tabRightCont secoOn">\n' +
                     '<div class="thirdChoice">');
@@ -161,7 +173,7 @@ function index_job_new(allow_select_jobclass_count, target_jobclassin_names, tar
                     '<div class="thirdChoice">');
             }
 
-            $(jt[data2]).each(function(iii,data3) {//三级级类别显示
+            $(jt[data2]).each(function(iii,data3) {// Display third-level categories.
                 listTwoHtml.push('<div class="thirdList" code='+data3+' name='+jn[data3]+' precode='+data2+' fircode='+data+'>\n' +
                                     '<span><i class="layui-icon layui-icon-ok"></i></span>\n' +
                                     '<p>'+jn[data3]+'</p>\n' +
@@ -261,7 +273,7 @@ function index_job_new(allow_select_jobclass_count, target_jobclassin_names, tar
 
     window.newjob_layer = $.layer({
         type: 1,
-        title: '请选择职位类别',
+        title: publicClassT('public_js_00007', null, 'Please select a job category'),
         shift: 'top',
         closeBtn: [0, true],
         border: [10, 0.3, '#000', true],
@@ -273,24 +285,24 @@ function index_job_new(allow_select_jobclass_count, target_jobclassin_names, tar
     });
 
     if (window.newjob_layer) {
-        //  搜索职位类别
+        // Search job categories.
         $("#ChooseJobSearch").on("keyup", function () {
             var $this = $(this);
             var txt = $this.val();
-            if (txt.length == 0) {//没有关键字，显示全部
+            if (txt.length == 0) { // No keyword; show all categories.
 
                 $("#ChooseJobClassLayer #def").show();
                 $("#ChooseJobClassLayer #sea").hide();
                 $("#ChooseJobClassLayer .pupopNoSearch").hide();
             } else {
-                //搜索数据源
+                // Search the data source.
                 var sListHtml = [];
                 var sListTwoHtml = [];
                 var iArr = [];
                 jn.forEach(function (data, i) {
-                    if (data.toString().indexOf(txt) > -1) {    //  匹配到关键字
+                    if (data.toString().indexOf(txt) > -1) {    // Keyword matched.
 
-                        iArr.push(i);                           //  类ID
+                        iArr.push(i);                           // Category ID.
                     }
                 });
 
@@ -303,13 +315,13 @@ function index_job_new(allow_select_jobclass_count, target_jobclassin_names, tar
                 var twoIdsArr = [];
 
                 jn.forEach(function (data, i) {
-                    if (data.toString().indexOf(txt) > -1) {    //  匹配到关键字
+                    if (data.toString().indexOf(txt) > -1) {    // Keyword matched.
 
                         $(ji).each(function (onek, onev) {
                             if (!isInArray(oneArr, onev)) {
                                 oneArr.push(onev);
                             }
-                            if (i == onev) {                     //  一级匹配到关键字
+                            if (i == onev) {                     // First-level keyword matched.
                                 if (!isInArray(oneSArr, onev)) {
                                     oneSArr.push(onev);
                                 }
@@ -476,7 +488,7 @@ function index_job_new(allow_select_jobclass_count, target_jobclassin_names, tar
                     var secIdArr = [];
 
                     jn.forEach(function (data, i) {
-                        if (data.toString().indexOf(txt) > -1) {    //  匹配到关键字
+                        if (data.toString().indexOf(txt) > -1) {    // Keyword matched.
                             noOneArr.forEach(onev => {
                                 $(jt[onev]).each(function (twok, twov) {
                                     if (i == twov) {
@@ -602,14 +614,14 @@ function index_job_new(allow_select_jobclass_count, target_jobclassin_names, tar
                     }
                 }
 
-                if (noOneArr.length > 0) {       //  查询第三级类别
+                if (noOneArr.length > 0) {       // Search third-level categories.
 
                     var firIdArr = [];
                     var secIdArr = [];
                     var thrIdArr = [];
 
                     jn.forEach(function (data, i) {
-                        if (data.toString().indexOf(txt) > -1) {    //  匹配到关键字
+                        if (data.toString().indexOf(txt) > -1) {    // Keyword matched.
 
                             noOneArr.forEach(onev => {
                                 $(jt[onev]).each(function (twok, twov) {
@@ -742,7 +754,7 @@ function index_job_new(allow_select_jobclass_count, target_jobclassin_names, tar
                 $("#newSPublicClassJobOne").html(sListHtml.join(""));
                 $("#newSPublicClassJobTwo").html(sListTwoHtml.join(""));
 
-                if (sListHtml.length == 0) {//没有关键字
+                if (sListHtml.length == 0) { // No matching keyword.
 
                     $("#ChooseJobClassLayer #sea").hide();
                     $("#ChooseJobClassLayer .pupopNoSearch").show();
@@ -757,7 +769,7 @@ function index_job_new(allow_select_jobclass_count, target_jobclassin_names, tar
             }
         })
 
-        //  一级类目展开操作
+        // Expand first-level category.
         $("body").on('click', ".pupopFristLeft li", function () {
 
             $(this).addClass("fristCur").siblings().removeClass('fristCur');
@@ -765,7 +777,7 @@ function index_job_new(allow_select_jobclass_count, target_jobclassin_names, tar
             $(".fristRightCon").eq($(".pupopFristLeft li").index(this)).addClass("fristOn").siblings().removeClass('fristOn');
         });
 
-        //  二级类目展开操作
+        // Expand second-level category.
         $('body').on('click', ".secondTabLeft li", function () {
 
             $(this).addClass("secoCur").siblings().removeClass('secoCur');
@@ -773,12 +785,12 @@ function index_job_new(allow_select_jobclass_count, target_jobclassin_names, tar
             $(".tabRightCont").eq($(".secondTabLeft li").index(this)).addClass("secoOn").siblings().removeClass('secoOn');
         });
 
-        //  弹窗右上角叉号关闭操作
+        // Close with the top-right icon.
         $(".conAllOneClose").on('click', function () {
             layer.close(window.newjob_layer);
         });
 
-        //  一级类目选择操作
+        // Select first-level category.
         $("body").on('click', ".fristLeftp1 span",function (event) {
 
             var jobClassId = $(this).attr('code');
@@ -809,7 +821,7 @@ function index_job_new(allow_select_jobclass_count, target_jobclassin_names, tar
             event.stopPropagation()
         });
 
-        //  二级类目选择操作
+        // Select second-level category.
         $("body").on('click', ".tabLeftName span", function (event) {
 
             var parent = this.parentNode;
@@ -818,16 +830,16 @@ function index_job_new(allow_select_jobclass_count, target_jobclassin_names, tar
             var jobClassId = $(this).attr('code');
             var jobClassName = $(this).attr('name');
 
-            if ($(parent).hasClass('mustNot')) {            //  不可点击
+            if ($(parent).hasClass('mustNot')) {            // Not clickable.
 
                 return false;
-            } else if ($(this).hasClass('spanLinkTwo')) {   //  已选中
+            } else if ($(this).hasClass('spanLinkTwo')) {   // Selected.
 
                 $("#ChooseJobClassLayer .thirdChoice div[precode=\"" + jobClassId + "\"]").removeClass('mustNotSan');
                 $(this).removeClass('spanLinkTwo');
 
                 $("#ChooseJobClassLayer .footNone[code=\"" + jobClassId + "\"]").remove();
-            } else {                                        //  未选中
+            } else {                                        // Not selected.
 
                 $("#ChooseJobClassLayer .thirdChoice div[precode=\"" + jobClassId + "\"]").addClass('mustNotSan');
                 $("#ChooseJobClassLayer .thirdList[precode=\"" + jobClassId + "\"]").removeClass('thirdLink');
@@ -840,7 +852,7 @@ function index_job_new(allow_select_jobclass_count, target_jobclassin_names, tar
             event.stopPropagation();
         });
 
-        // 三级类目选择操作
+        // Select third-level category.
         $("body").on('click', ".thirdList", function () {
 
             var fClassId = $(this).attr('fircode');
@@ -865,10 +877,9 @@ function index_job_new(allow_select_jobclass_count, target_jobclassin_names, tar
             }
         });
 
-        //  删除已选操作
+        // Remove selected category.
         $('body').on('click', ".footerp2List p", function () {
 
-            console.log(1212);
 
             var code = $(this).attr('code');
             $("#ChooseJobClassLayer .footNone[code=\"" + code + "\"]").remove();
@@ -893,12 +904,12 @@ function index_job_new(allow_select_jobclass_count, target_jobclassin_names, tar
             }
         });
 
-        //  取消操作
+        // Cancel.
         $('.footerp4Cancel').on('click', function () {
             layer.close(window.newjob_layer);
         });
 
-        //  确定操作
+        // Confirm.
         $('.footerp4Buts').on('click', function () {
 
             var jobClassIdArray = [];

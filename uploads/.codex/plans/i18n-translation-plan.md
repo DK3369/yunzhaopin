@@ -404,6 +404,8 @@ Batch 31 执行范围：后台工具与海报相关消息 `admin/model/tool/weix
 
 Batch 32 执行范围：剩余后台工具/系统小消息 `admin/model/tool/messagelog.class.php`、`emaillog.class.php`、`generate_page.class.php`、`generate_cache.class.php`、`gsdConfig.class.php`、`admin/model/system/set_cron.class.php`、`admin/model/yunying/finance_company_pay.class.php`。迁移短信/邮件记录删除、页面/缓存生成、计划任务执行与时间标签、IP 归属地配置、后台支付金额展示等管理员可见消息；新增 key 从 `admin_model_00243` 继续。本批不改生成流程、缓存项选择、计划任务执行、IP 配置字段、订单金额原始值或支付记录结构。
 
+Batch 33 执行范围：公共职位/城市分类选择 JS `js/public_class.js`、`js/newclass.public.js`。迁移选择弹窗标题、搜索 placeholder、已选提示、确定/取消按钮、无结果提示和最多选择提示，新增 key 使用 `public_js_00001` 起始；触碰到的中文注释改为英文。本批不改分类数据结构、DOM class/id、事件绑定、搜索算法、选择数量限制、layer 参数或回填字段逻辑。`js/member_public.js` 文案较多，单独留到后续批次。
+
 ## 11. 推荐执行顺序
 
 1. 修复语言包损坏项和扫描脚本误报规则。

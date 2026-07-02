@@ -1,9 +1,21 @@
-/*********************************职位类别选择开始*******************************/
+function newClassT(key, params, fallback) {
+	var text = typeof yunT === 'function' ? yunT(key, params, fallback) : (fallback !== undefined ? fallback : key);
+	if (params && typeof text === 'string') {
+		for (var name in params) {
+			if (Object.prototype.hasOwnProperty.call(params, name)) {
+				text = text.split('{' + name + '}').join(params[name]);
+			}
+		}
+	}
+	return text;
+}
+
+/*********************************Job category selection start*******************************/
 function index_job_new(allow_select_jobclass_count, target_jobclassin_names, target_jobclassin_ids,jobdiv_style, isShowBigClass) {
-	window.allow_select_jobclass_count = allow_select_jobclass_count;//选择数量
-	window.target_jobclassin_names = target_jobclassin_names;//点击id
-	window.target_jobclassin_ids = target_jobclassin_ids;//选择类别存放的id
-	window.isShowBigClass = isShowBigClass;//允许选择二级
+	window.allow_select_jobclass_count = allow_select_jobclass_count;// Selection limit.
+	window.target_jobclassin_names = target_jobclassin_names;// Target display field.
+	window.target_jobclassin_ids = target_jobclassin_ids;// Target ID field.
+	window.isShowBigClass = isShowBigClass;// Allow second-level selection.
 	if(window.allow_select_jobclass_count==1){
 		window.style="style=\"visibility:hidden;\"";
 	}else{
@@ -13,21 +25,21 @@ function index_job_new(allow_select_jobclass_count, target_jobclassin_names, tar
 	var layerHtml = [];
 	layerHtml.push("<div class=\"layerContain\"  id=\"ChooseJobClassLayer\">");
 
-	layerHtml.push("<div class=\"lbsx_box\"><input id=\"ChooseJobSearch\" type=\"text\" class=\"sx_input_n\" value=\"搜索职位类别\" /></div><div class=\"layerHead\"><div class=\"chose\"><h4  class=\"layerHead_h4\">最多可选择"+window.allow_select_jobclass_count+"项：</h4><div class=\"ShowJobClass\"></div><a style=\" cursor:pointer;\" target=\"_self\" class=\"RemoveJobClass\"></a></div><button class=\"queding\">确定</button></div><div class=\"layerNei\"><ul class=\"z_prof_n\" style=\"display:block;\"></ul><ul class=\"t_sort_n\" style=\"display:none;\"></ul><ul class=\"nonesearch\" style=\"display:none;\"><div style=\"text-align:center; font-weight:bold; margin-top:250px;\">抱歉，没有找到结果！</div></ul></div></div>");
+	layerHtml.push("<div class=\"lbsx_box\"><input id=\"ChooseJobSearch\" type=\"text\" class=\"sx_input_n\" value=\"" + newClassT('public_js_00002', null, 'Search job categories') + "\" /></div><div class=\"layerHead\"><div class=\"chose\"><h4  class=\"layerHead_h4\">" + newClassT('public_js_00008', {count: window.allow_select_jobclass_count}, 'You can select up to {count} items:') + "</h4><div class=\"ShowJobClass\"></div><a style=\" cursor:pointer;\" target=\"_self\" class=\"RemoveJobClass\"></a></div><button class=\"queding\">" + newClassT('public_js_00006', null, 'Confirm') + "</button></div><div class=\"layerNei\"><ul class=\"z_prof_n\" style=\"display:block;\"></ul><ul class=\"t_sort_n\" style=\"display:none;\"></ul><ul class=\"nonesearch\" style=\"display:none;\"><div style=\"text-align:center; font-weight:bold; margin-top:250px;\">" + newClassT('public_js_00003', null, 'Sorry, no results found.') + "</div></ul></div></div>");
 
 	$("body").append(layerHtml.join(""));
 	var listHtml = [];
 	var num = 0;
-	$(ji).each(function (i, data) {//一级类别显示
+	$(ji).each(function (i, data) {// Display first-level categories.
 		listHtml.push("<li class=\"category_list\"><div class=\"category\" style=\"\">"+jn[data]+"</div><div class=\"detail\" ><ul>");
-		$(jt[data]).each(function(i,data2){//二级类别显示
-			if(jt[data2]=='undefined'||!jt[data2]){//没有三级类别
+		$(jt[data]).each(function(i,data2){// Display second-level categories.
+			if(jt[data2]=='undefined'||!jt[data2]){// No third-level categories.
 				if (isShowBigClass == "1") {
 					listHtml.push("<li class=\"twojobclass\"><span class=\"big-class-icon reduce-icon\"></span><label><input "+window.style+" type=\"checkbox\" value=\"" + data2 + "\" name=\"" + jn[data2] + "\" />"+jn[data2]+"</label></li>");
 				}else {
 					listHtml.push("<li code=\""+data2+"\" name=\""+jn[data2]+"\" ><span class=\"big-class-icon  reduce-icon\"></span>"+jn[data2]+"<div class=\"flo\"></div></li>")
 				}
-			}else{//有三级类别，
+			}else{// Has third-level categories.
 				listHtml.push("<li code=\""+data2+"\" name=\""+jn[data2]+"\"><span class=\"big-class-icon\"></span>"+jn[data2]+"<div class=\"flo\"></div></li>")
 			}
 		});
@@ -78,7 +90,7 @@ function index_job_new(allow_select_jobclass_count, target_jobclassin_names, tar
 	}
 	window.newjob_layer = $.layer({
 		type : 1,
-		title :'请选择职位类别',
+		title : newClassT('public_js_00007', null, 'Please select a job category'),
 		shift : 'top',
 		closeBtn : [0 , true],
 		border : [10 , 0.3 , '#000', true],
@@ -90,7 +102,7 @@ function index_job_new(allow_select_jobclass_count, target_jobclassin_names, tar
 	});
 
 }
-//已选择类别里显示的样式
+// Style selected categories.
 function showcheckedclassstyle(){
 	if(window.allow_select_jobclass_count==5){
 		$("#ChooseJobClassLayer .ShowJobClass .job").css("width","90");
@@ -108,15 +120,15 @@ function showcheckedclassstyle(){
 }
 
 $(document).ready(function(){
-	//下拉层效果,点击二级，显示三级类别
+	// Dropdown effect: click second-level category to show third-level categories.
 	$("#ChooseJobClassLayer .z_prof_n .detail li").live("click", function () {
 		var checkedStr = "";
 		var $this = $(this);
 		var arrhtml = [];
 		var bigClass = $this.attr("code");
 		var bigClassName = $this.attr("name");
-		if(bigClass){//没有三级类别，不显示下拉层
-			//职位二级类别
+		if(bigClass){// Do not show dropdown when no third-level categories exist.
+			// Job second-level category.
 			arrhtml.push("<div class=\"flo_li\"><div class=\"flo_lin twojobclass\"><label>");
 			if (isShowBigClass == "1") {
 				if ($("#ChooseJobClassLayer .ShowJobClass div[code=\"" + $(this).attr("code") + "\"]").length > 0) {
@@ -128,7 +140,7 @@ $(document).ready(function(){
 			}
 			arrhtml.push("</div>");
 			arrhtml.push("<div class=\"hover_div\">");
-			//职位三级类别
+			// Job third-level category.
 			var disabledStr = "";
 			if (checkedStr.length > 0) {
 				disabledStr = "disabled=\"disabled\" checked=\"checked\"";
@@ -205,11 +217,11 @@ $(document).ready(function(){
 		$("#ChooseJobClassLayer .ShowJobClass div").remove();
 		$("#ChooseJobClassLayer :input").prop({ "checked": false, "disabled": false });
 	});
-	//确认按钮
+	// Confirm button.
 	$("#ChooseJobClassLayer .queding").live("click", function () {
 		if ($("#ChooseJobClassLayer .ShowJobClass div").length == 0) {
 			if($(""+window.target_jobclassin_names+"")){
-				$(""+window.target_jobclassin_names+"").val("请选择类别");
+				$(""+window.target_jobclassin_names+"").val(newClassT('public_js_00010', null, 'Please select a category'));
 			}
 			$(""+window.target_jobclassin_ids+"").val("");
 		}else {
@@ -258,7 +270,7 @@ $(document).ready(function(){
 		layer.close(window.newjob_layer);
 	});
 
-	//下拉层大类点击
+	// Click top-level dropdown category.
 	$("#ChooseJobClassLayer .twojobclass label").live("click", function (e) {
 		e.stopPropagation();
 	});
@@ -272,7 +284,7 @@ $(document).ready(function(){
 				$("#ChooseJobClassLayer .ShowJobClass div[parentcode=\"" + $(this).val() + "\"]").remove();
 				if ($("#ChooseJobClassLayer .ShowJobClass").find("div").length >=window.allow_select_jobclass_count) {
 					$(this).prop("checked", false);
-					layer.msg('最多选择'+window.allow_select_jobclass_count+'项！',2,8);
+					layer.msg(newClassT('public_js_00009', {count: window.allow_select_jobclass_count}, 'Select up to {count} items!'),2,8);
 					$("#ChooseJobClassLayer :input[bigclass=\"" + $(this).val() + "\"]").prop({ "disabled": false, "checked": false });
 					$("#ChooseJobClassLayer .ShowJobClass div[parentcode=\"" + $(this).val() + "\"]").remove();
 					return false;
@@ -286,7 +298,7 @@ $(document).ready(function(){
 		}
 		showcheckedclassstyle();
 	});
-	//下拉小类点击
+	// Click lower-level dropdown category.
 	$("#ChooseJobClassLayer .threejobclass label").live("click", function (e) {
 		e.stopPropagation();
 	});
@@ -298,7 +310,7 @@ $(document).ready(function(){
 			}else{
 				if ($("#ChooseJobClassLayer .ShowJobClass").find("div").length >= window.allow_select_jobclass_count) {
 					$(this).prop("checked", false);
-					layer.msg('最多选择'+window.allow_select_jobclass_count+'项！',2,8);
+					layer.msg(newClassT('public_js_00009', {count: window.allow_select_jobclass_count}, 'Select up to {count} items!'),2,8);
 					return false;
 				} else {
 					$("#ChooseJobClassLayer .ShowJobClass").append("<div class=\"job\" parentcode=\"" + $(this).attr("bigclass") + "\" type=\"small\" title=\"" + $(this).attr("name") + "\"  code=\"" + $(this).val() + "\"><span>" + $(this).attr("name") + "</span><label class=\"job_lab\"></label></div>");
@@ -309,11 +321,11 @@ $(document).ready(function(){
 			$("#ChooseJobClassLayer .ShowJobClass div[code=\"" + $(this).val() + "\"]").remove();
 		}
 	});
-	//根据搜索结果，点击选择
+	// Select from search results.
 	$("#ChooseJobClassLayer .t_sort_n :input").live("change", function () {
 		var ischeck = $(this).prop("checked");
 		var bigvalue = $(this).val();
-		if ($(this).attr("typeid") == "big") {//选择2级
+		if ($(this).attr("typeid") == "big") {// Select second-level category.
 			if (ischeck) {
 				if(window.allow_select_jobclass_count==1){
 					$("#ChooseJobClassLayer .ShowJobClass div").remove();
@@ -324,7 +336,7 @@ $(document).ready(function(){
 					if ($("#ChooseJobClassLayer .ShowJobClass").find("div").length >=window.allow_select_jobclass_count) {
 						$(this).prop("checked", false);
 						$("#ChooseJobClassLayer .t_sort_n :input[bigclass='" + bigvalue + "']").prop({ "disabled": false, "checked": false });
-						layer.msg('最多选择'+window.allow_select_jobclass_count+'项！',2,8);
+						layer.msg(newClassT('public_js_00009', {count: window.allow_select_jobclass_count}, 'Select up to {count} items!'),2,8);
 						return false;
 					}else {
 						$("#ChooseJobClassLayer .ShowJobClass").append("<div class=\"job\" code=\"" + $(this).val() + "\" type=\"big\" title=\"" + $(this).attr("name") + "\" ><span>" + $(this).attr("name") + "</span><label class=\"job_lab \"></label></div>");
@@ -334,7 +346,7 @@ $(document).ready(function(){
 				$("#ChooseJobClassLayer .t_sort_n :input[bigclass='" + bigvalue + "']").prop({ "disabled": false, "checked": false });
 				$("#ChooseJobClassLayer .ShowJobClass div[code=\"" + $(this).val() + "\"]").remove();
 			}
-		}else {//选择3级
+		}else {// Select third-level category.
 			if(ischeck) {
 				if(window.allow_select_jobclass_count==1){
 					$("#ChooseJobClassLayer .ShowJobClass div").remove();
@@ -342,7 +354,7 @@ $(document).ready(function(){
 				}else{
 					if ($("#ChooseJobClassLayer .ShowJobClass").find("div").length >= window.allow_select_jobclass_count) {
 						$(this).prop("checked", false);
-						layer.msg('最多选择'+window.allow_select_jobclass_count+'项！',2,8);
+						layer.msg(newClassT('public_js_00009', {count: window.allow_select_jobclass_count}, 'Select up to {count} items!'),2,8);
 						return false;
 					}else {
 						$("#ChooseJobClassLayer .ShowJobClass").append("<div class=\"job\" parentcode=\"" + $(this).attr("bigclass") + "\" type=\"small\" title=\"" + $(this).attr("name") + "\"  code=\"" + $(this).val() + "\"><span>" + $(this).attr("name") + "</span><label class=\"job_lab\"></label></div>");
@@ -355,7 +367,7 @@ $(document).ready(function(){
 		showcheckedclassstyle();
 	});
 
-	//搜索
+	// Search.
 	$("#ChooseJobSearch").live("focus", function () {
 		if ($(this).val() == this.defaultValue) {
 			$(this).val("");
@@ -368,16 +380,16 @@ $(document).ready(function(){
 	$("#ChooseJobSearch").live("keyup",function () {
 		var $this = $(this);
 		var txt = $this.val();
-		if (txt.length == 0) {//没有关键字，显示全部
+		if (txt.length == 0) {// No keyword; show all categories.
 			$("#ChooseJobClassLayer .z_prof_n").show();
 			$("#ChooseJobClassLayer .t_sort_n").hide();
 			$("#ChooseJobClassLayer .nonesearch").hide();
 		} else {
-			//搜索数据源
+			// Search the data source.
 			var searchHtml = [];
 			jn.forEach(function(data,i) {
 				if(ji.indexOf(i) <0){
-					if (data.toString().indexOf(txt) > -1) {//2级里有关键字，显示关键字
+					if (data.toString().indexOf(txt) > -1) {// Keyword matched in second-level category.
 						var dataname=false;
 						$(ji).each(function (onek, onev) {
 							$(jt[onev]).each(function(twok,twov){
@@ -398,25 +410,25 @@ $(document).ready(function(){
 							}
 							searchHtml.push(data + "</label></div>");
 							searchHtml.push("<div class=\"detail\"><ul>");
-							var smallSearch1 = [];//3级里有关键字，显示关键字
-							var smallSearch2 = [];//3级里没有关键字显示区别
+							var smallSearch1 = [];// Third-level categories with keyword matches.
+							var smallSearch2 = [];// Third-level categories without keyword matches.
 							$(jt[i]).each(function (i2, n) {
-								var isbigcheck = $("#ChooseJobClassLayer .ShowJobClass div[code=\"" + i+ "\"]").length > 0;//2级是否已选择
-								if (jn[n].toString().indexOf(txt) > -1) {//3级里有关键字，显示关键字
+								var isbigcheck = $("#ChooseJobClassLayer .ShowJobClass div[code=\"" + i+ "\"]").length > 0;// Whether the second-level category is selected.
+								if (jn[n].toString().indexOf(txt) > -1) {// Keyword matched in third-level category.
 									smallSearch1.push("<li><div style=\"width:145px; text-align:left; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;\"><label title=\"" + jn[n] + "\"><input "+window.style+" type=\"checkbox\" name=\"" + jn[n] + "\" bigclass=\"" + i + "\" value=\"" + n + "\" ");
-									if ($("#ChooseJobClassLayer .ShowJobClass div[code=\"" + i+ "\"]").length > 0) {//2级已选择，3级显示全选
+									if ($("#ChooseJobClassLayer .ShowJobClass div[code=\"" + i+ "\"]").length > 0) {// If second-level category is selected, third-level categories show selected.
 										smallSearch1.push(" checked=\"checked\" ");
 									}
-									if (isbigcheck) {//2级已选择，3级显示不可选
+									if (isbigcheck) {// If second-level category is selected, third-level categories are disabled.
 										smallSearch1.push(" disabled=\"disabled\" ");
 									}
 									smallSearch1.push(" />" + jn[n] + "</label></div></li>");
 								}
 								smallSearch2.push("<li><div style=\"width:145px; text-align:left; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;\"><label title=\"" + jn[n] + "\"><input "+window.style+" type=\"checkbox\" name=\"" +jn[n] + "\" bigclass=\"" + i+ "\" value=\"" + n + "\" ");
-								if ($("#ChooseJobClassLayer .ShowJobClass div[code=\"" + i+ "\"]").length > 0) {//2级已选择，3级显示全选
+								if ($("#ChooseJobClassLayer .ShowJobClass div[code=\"" + i+ "\"]").length > 0) {// If second-level category is selected, third-level categories show selected.
 									smallSearch2.push(" checked=\"checked\" ");
 								}
-								if (isbigcheck) {//2级已选择，3级显示不可选
+								if (isbigcheck) {// If second-level category is selected, third-level categories are disabled.
 									smallSearch2.push(" disabled=\"disabled\" ");
 								}
 								smallSearch2.push(" />" +jn[n] + "</label></div></li>");
@@ -426,7 +438,7 @@ $(document).ready(function(){
 						}
 
 					}else {
-						//2级没有关键字，查询三级
+						// No second-level keyword match; search third-level categories.
 						var smallSearch1 = [];
 						$(jt[i]).each(function (i2, n) {
 							if (jn[n].toString().indexOf(txt) > -1) {
@@ -460,7 +472,7 @@ $(document).ready(function(){
 				}
 
 			});
-			if (searchHtml.length == 0) {//没有关键字
+			if (searchHtml.length == 0) {// No matching keyword.
 				$("#ChooseJobClassLayer .t_sort_n").hide();
 				$("#ChooseJobClassLayer .nonesearch").show();
 			}else {
@@ -473,8 +485,8 @@ $(document).ready(function(){
 		}
 	})
 })
-/*********************************职位类别选择结束*******************************/
-//查询职位描述模板--start
+/*********************************Job category selection end*******************************/
+// Query job description templates -- start.
 function confirm_selected_jobclass_itemss(id){
 
 	$.post(weburl+"/index.php?m=ajax&c=getcontent",{ids:id},function(data){
@@ -501,12 +513,12 @@ function setexample(id){
 	});
 
 }
-//查询职位描述模板--END
-/*********************************城市类别选择开始*******************************/
+// Query job description templates -- end.
+/*********************************City category selection start*******************************/
 function index_city_new(allow_select_cityclass_count, target_cityclass_names, target_cityclass_ids,citydiv_style, codeids,isShowBigCity) {
-	window.allow_select_cityclass_count = allow_select_cityclass_count;//选择数量
-	window.target_cityclass_names = target_cityclass_names;//点击id
-	window.target_cityclass_ids = target_cityclass_ids;//选择类别存放的id
+	window.allow_select_cityclass_count = allow_select_cityclass_count;// Selection limit.
+	window.target_cityclass_names = target_cityclass_names;// Target display field.
+	window.target_cityclass_ids = target_cityclass_ids;// Target ID field.
 	window.isShowBigCity	=	isShowBigCity ? isShowBigCity :1;
 	if(window.allow_select_cityclass_count==1){
 		window.style="style=\"visibility:hidden;\"";
@@ -516,7 +528,7 @@ function index_city_new(allow_select_cityclass_count, target_cityclass_names, ta
 	var areaHtml = [];
 	areaHtml.push("<div class=\"layerAreaContain\" id=\"ChooseCityClassLayer\">");
 
-	areaHtml.push("<div class=\"lbsx_box\"><input id=\"ChooseCitySearch\" type=\"text\" class=\"sx_input_n\" value=\"搜索城市名称\" /></div><div class=\"layerHead chose_city_h1\"><div class=\"chose\"><h4 style=\"margin: 0px; padding: 2px 0 0 2px; font-size: 12px; color: #999; height: 24px;line-height: 25px; *line-height: 24px; float: left;\">您已经选择的城市是：</h4><div class=\"ShowCityClass\"></div><a style=\" cursor:pointer;\" target=\"_self\" class=\"RemoveCityClass\" ></a></div><button class=\"queding\" onclick=\"queding()\">确定</button></div><div class=\"layerNei\"><ul class=\"a_prof_n a_prof_citylist\" style=\"display:block;\"></ul><ul class=\"a_sort_n\" style=\"display:none;\"></ul><ul class=\"nonesearch\" style=\"display:none;\"><div style=\"text-align:center; font-weight:bold; margin-top:250px;\">抱歉，没有找到结果！</div></ul></div></div>");
+	areaHtml.push("<div class=\"lbsx_box\"><input id=\"ChooseCitySearch\" type=\"text\" class=\"sx_input_n\" value=\"" + newClassT('public_js_00011', null, 'Search city name') + "\" /></div><div class=\"layerHead chose_city_h1\"><div class=\"chose\"><h4 style=\"margin: 0px; padding: 2px 0 0 2px; font-size: 12px; color: #999; height: 24px;line-height: 25px; *line-height: 24px; float: left;\">" + newClassT('public_js_00012', null, 'Selected cities:') + "</h4><div class=\"ShowCityClass\"></div><a style=\" cursor:pointer;\" target=\"_self\" class=\"RemoveCityClass\" ></a></div><button class=\"queding\" onclick=\"queding()\">" + newClassT('public_js_00006', null, 'Confirm') + "</button></div><div class=\"layerNei\"><ul class=\"a_prof_n a_prof_citylist\" style=\"display:block;\"></ul><ul class=\"a_sort_n\" style=\"display:none;\"></ul><ul class=\"nonesearch\" style=\"display:none;\"><div style=\"text-align:center; font-weight:bold; margin-top:250px;\">" + newClassT('public_js_00003', null, 'Sorry, no results found.') + "</div></ul></div></div>");
 
 	var n=$("#ChooseCityClassLayer").top;
 	var m = $("#ChooseCityClassLayer").left;
@@ -524,9 +536,9 @@ function index_city_new(allow_select_cityclass_count, target_cityclass_names, ta
 	var f = n + inpH;
 	$("body").append(areaHtml.join(""));
 	$(".layerAreaContain").css({ "top": f, "left": m });
-	var AreaLayer = $("#ChooseCityClassLayer");//弹层
+	var AreaLayer = $("#ChooseCityClassLayer");// Layer.
 	var listHtml = [];
-	var num = 0;//二级类个数确定一级类行高
+	var num = 0;// Second-level count determines first-level row height.
 	$(ci).each(function (i, data) {
 		listHtml.push("<li><div class=\"category\"><label><input "+window.style+" type=\"checkbox\" value=\""+data+"\" name=\""+cn[data]+"\" />"+cn[data]+"</label></div><div class=\"detail\" ><ul>");
 		$(ct[data]).each(function(i,datas){
@@ -548,7 +560,7 @@ function index_city_new(allow_select_cityclass_count, target_cityclass_names, ta
 	})
 
 
-	//选项回显
+	// Restore selected options.
 	if ($(window.target_cityclass_ids).val().length == 0) {
 		$("#ChooseCityClassLayer .ShowCityClass").html("");
 	}else {
@@ -579,7 +591,7 @@ function index_city_new(allow_select_cityclass_count, target_cityclass_names, ta
 	}
 	window.newcity_layer = $.layer({
 		type : 1,
-		title :'请选择城市',
+		title : newClassT('public_js_00013', null, 'Please select a city'),
 		shift : 'top',
 		closeBtn : [0 , true],
 		border : [10 , 0.3 , '#000', true],
@@ -594,7 +606,7 @@ function index_city_new(allow_select_cityclass_count, target_cityclass_names, ta
 function queding(){
 	if ($("#ChooseCityClassLayer .ShowCityClass div").length == 0) {
 		if($(""+window.target_cityclass_names+"")){
-			$(""+window.target_cityclass_names+"").val("请选择城市");
+			$(""+window.target_cityclass_names+"").val(newClassT('public_js_00013', null, 'Please select a city'));
 		}
 
 		$(""+window.target_cityclass_ids+"").val("");
@@ -650,7 +662,7 @@ function queding(){
 	layer.close(window.newcity_layer);$("#mask").remove();
 }
 $(document).ready(function(){
-	//二级类点击
+	// Click second-level city category.
 	$("#ChooseCityClassLayer .a_prof_n .detail li").live("click",function(){
 		var checkedStr = "";
 		var arrhtml = [];
@@ -658,7 +670,7 @@ $(document).ready(function(){
 		var cityClass = $this.attr("cityvalue");
 		var cityClassName = $this.attr("name");
 		var provinceValue = $this.attr("parentvalue");
-		//市
+		// City.
 		arrhtml.push("<div class=\"flo_li\"><div class=\"flo_lin\"><label>");
 		if ($("#ChooseCityClassLayer .ShowCityClass div[code=\"" + cityClass + "\"]").length > 0 || $("#ChooseCityClassLayer .ShowCityClass div[code=\"" + provinceValue + "\"]").length > 0&&window.allow_select_cityclass_count>1) {
 			checkedStr = "checked=\"checked\"";
@@ -666,7 +678,7 @@ $(document).ready(function(){
 		arrhtml.push("<input value=\""+cityClass+"\" "+checkedStr+" provincevalue=\""+provinceValue+"\" name=\""+cityClassName+"\" "+window.style+" type=\"checkbox\"><span class=\"big-class-icon reduce-icon\"></span>"+cityClassName+"</label></div>");
 		arrhtml.push("</div>");
 		arrhtml.push("<div class=\"hover_div\">");
-		//区
+		// District.
 		var disabledStr = "";
 		if (checkedStr.length > 0&&window.allow_select_cityclass_count>1) {
 			disabledStr = "disabled=\"disabled\" checked=\"checked\"";
@@ -712,7 +724,7 @@ $(document).ready(function(){
 		$this.find(".flo1").hover(function(){$(this).find("div").show();},function(){$(this).parent().removeAttr("style");$(this).hide();});
 		$(".detail li").click(function () { $(this).find("div").show(); $(this).css("z-index","2"); });
 	})
-	//一级类点击
+	// Click first-level city category.
 	$("#ChooseCityClassLayer .category :input").live("change",function(){
 		var code = $(this).attr("value");
 		var checkedStr = "";
@@ -725,7 +737,7 @@ $(document).ready(function(){
 				$("#ChooseCityClassLayer .ShowCityClass div[provincecode=\"" + code + "\"]").remove();
 				if($("#ChooseCityClassLayer .ShowCityClass").find("div").length >=window.allow_select_cityclass_count) {
 					$(this).prop("checked", false);
-					layer.msg('最多选择'+window.allow_select_cityclass_count+'项！',2,8);
+					layer.msg(newClassT('public_js_00009', {count: window.allow_select_cityclass_count}, 'Select up to {count} items!'),2,8);
 					$("#ChooseCityClassLayer .ShowCityClass div[code=\"" + code + "\"]").remove();
 					return false;
 				}else {
@@ -736,7 +748,7 @@ $(document).ready(function(){
 			}
 		}
 	})
-	//下拉二级区域点击取消冒泡
+	// Prevent bubbling when clicking the second-level dropdown area.
 	$("#ChooseCityClassLayer").find(" .flo_li label, .flo_li1 label").live("click", function (e) {
 		e.stopPropagation();
 	});
@@ -751,7 +763,7 @@ $(document).ready(function(){
 				$("#ChooseCityClassLayer .ShowCityClass div[citycode=\"" + $(this).val() + "\"]").remove();
 				if ($("#ChooseCityClassLayer .ShowCityClass").find("div").length >= window.allow_select_cityclass_count) {
 					$(this).prop("checked", false);
-					layer.msg('最多选择'+window.allow_select_cityclass_count+'项！',2,8);
+					layer.msg(newClassT('public_js_00009', {count: window.allow_select_cityclass_count}, 'Select up to {count} items!'),2,8);
 					$("#ChooseCityClassLayer :input[cityvalue=\"" + $(this).val() + "\"]").prop({ "disabled": false, "checked": false });
 					$("#ChooseCityClassLayer .ShowCityClass div[citycode=\"" + $(this).val() + "\"]").remove();
 					return false;
@@ -776,7 +788,7 @@ $(document).ready(function(){
 			}
 		}
 	});
-	//下拉小类点击
+	// Click lower-level dropdown category.
 	$("#ChooseCityClassLayer .inp_n label").live("click", function (e) {
 		e.stopPropagation();
 	});
@@ -789,7 +801,7 @@ $(document).ready(function(){
 			if ($(this).attr("checked")) {
 				if ($("#ChooseCityClassLayer .ShowCityClass").find("div").length >= window.allow_select_cityclass_count) {
 					$(this).prop("checked", false);
-					layer.msg('最多选择'+window.allow_select_cityclass_count+'项！',2,8);
+					layer.msg(newClassT('public_js_00009', {count: window.allow_select_cityclass_count}, 'Select up to {count} items!'),2,8);
 					return false;
 				}else {
 					$("#ChooseCityClassLayer .ShowCityClass").append("<div class=\"job\" provincecode=\"" + $(this).attr("provincevalue") + "\"   citycode=\"" + $(this).attr("cityvalue") + "\" type=\"area\" title=\"" + $(this).attr("name") + "\"  code=\"" + $(this).val() + "\"><span>" + $(this).attr("name") + "</span><label class=\"job_lab\"></label></div>");
@@ -814,7 +826,7 @@ $(document).ready(function(){
 		$("#ChooseCityClassLayer .ShowCityClass div").remove();
 		$("#ChooseCityClassLayer :input").prop({ "checked": false, "disabled": false });
 	});
-	//搜索
+	// Search.
 	$("#ChooseCitySearch").live("focus", function () {
 		if ($(this).val() == this.defaultValue) {
 			$(this).val("");
@@ -827,12 +839,12 @@ $(document).ready(function(){
 	$("#ChooseCitySearch").live("keyup",function () {
 		var $this = $(this);
 		var txt = $this.val();
-		if (txt.length == 0) {//没有关键字，显示全部
+		if (txt.length == 0) {// No keyword; show all categories.
 			$("#ChooseCityClassLayer .a_prof_n").show();
 			$("#ChooseCityClassLayer .a_sort_n").hide();
 			$("#ChooseCityClassLayer .nonesearch").hide();
 		} else {
-			//搜索数据源
+			// Search the data source.
 			var searchHtml = [];
 			var onechoosed = $("#ChooseCityClassLayer .ShowCityClass div[type=\"province\"]");
 			var onechoosedArr = [];
@@ -843,7 +855,7 @@ $(document).ready(function(){
 			}
 			cn.forEach(function(data,i) {
 				if(ci.indexOf(i) <0){
-					if (data.toString().indexOf(txt) > -1) {//2级里有关键字，显示关键字
+					if (data.toString().indexOf(txt) > -1) {// Keyword matched in second-level category.
 
 						var dataname=false;
 						$(ci).each(function (onek, onev) {
@@ -875,33 +887,33 @@ $(document).ready(function(){
 							}
 							searchHtml.push(data + "</label></div>");
 							searchHtml.push("<div class=\"detail\"><ul>");
-							var smallSearch1 = [];//3级里有关键字，显示关键字
-							var smallSearch2 = [];//3级里没有关键字显示区别
+							var smallSearch1 = [];// Third-level categories with keyword matches.
+							var smallSearch2 = [];// Third-level categories without keyword matches.
 
 
 
 							$(ct[i]).each(function (i2, n) {
 								var isbigcheck = false;
 								if($("#ChooseCityClassLayer .ShowCityClass div[code=\"" + i+ "\"]").length > 0
-									|| upchecked){//2级是否已选择 或一级是否已选择
+									|| upchecked){// Whether the second-level or first-level category is selected.
 									isbigcheck = true;
 								}
 
-								if (cn[n].indexOf(txt) > -1) {//3级里有关键字，显示关键字
+								if (cn[n].indexOf(txt) > -1) {// Keyword matched in third-level category.
 									smallSearch1.push("<li><div style=\"width:145px; text-align:left; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;\"><label title=\"" + cn[n] + "\"><input "+window.style+" type=\"checkbox\" name=\"" + cn[n] + "\" bigclass=\"" + i + "\" value=\"" + n + "\" ");
-									if ($("#ChooseCityClassLayer .ShowCityClass div[code=\"" + n+ "\"]").length > 0 || isbigcheck) {//2、1级已选择，3级显示全选 或三级已选择
+									if ($("#ChooseCityClassLayer .ShowCityClass div[code=\"" + n+ "\"]").length > 0 || isbigcheck) {// If higher-level or current category is selected, third-level categories show selected.
 										smallSearch1.push(" checked=\"checked\" ");
 									}
-									if (isbigcheck) {//2 1级已选择，3级显示不可选
+									if (isbigcheck) {// If higher-level category is selected, third-level categories are disabled.
 										smallSearch1.push(" disabled=\"disabled\" ");
 									}
 									smallSearch1.push(" />" + cn[n] + "</label></div></li>");
 								}
 								smallSearch2.push("<li><div style=\"width:145px; text-align:left; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;\"><label title=\"" + cn[n] + "\"><input "+window.style+" type=\"checkbox\" name=\"" +cn[n] + "\" bigclass=\"" + i+ "\" value=\"" + n + "\" ");
-								if ($("#ChooseCityClassLayer .ShowCityClass div[code=\"" + n+ "\"]").length > 0 ||  isbigcheck) {//2、1级已选择，3级显示全选 或三级已选择
+								if ($("#ChooseCityClassLayer .ShowCityClass div[code=\"" + n+ "\"]").length > 0 ||  isbigcheck) {// If higher-level or current category is selected, third-level categories show selected.
 									smallSearch2.push(" checked=\"checked\" ");
 								}
-								if (isbigcheck) {//2级已选择，3级显示不可选
+								if (isbigcheck) {// If second-level category is selected, third-level categories are disabled.
 									smallSearch2.push(" disabled=\"disabled\" ");
 								}
 								smallSearch2.push(" />" +cn[n] + "</label></div></li>");
@@ -912,7 +924,7 @@ $(document).ready(function(){
 						}
 
 					}else {
-						//2级没有关键字，查询三级
+						// No second-level keyword match; search third-level categories.
 						var upchecked	 = false;
 						if(onechoosedArr.length>0){
 							for(var oi=0;oi<onechoosedArr.length;oi++){
@@ -958,7 +970,7 @@ $(document).ready(function(){
 
 			});
 
-			if (searchHtml.length == 0) {//没有关键字
+			if (searchHtml.length == 0) {// No matching keyword.
 				$("#ChooseCityClassLayer .a_sort_n").hide();
 				$("#ChooseCityClassLayer .nonesearch").show();
 			}else {
@@ -970,7 +982,7 @@ $(document).ready(function(){
 			$("#ChooseCityClassLayer .a_prof_n").hide();
 		}
 	})
-	//根据搜索结果，点击选择
+	// Select from search results.
 	$("#ChooseCityClassLayer .a_sort_n :input").live("change", function () {
 		var ischeck = $(this).prop("checked");
 		var bigvalue = $(this).val();
@@ -981,7 +993,7 @@ $(document).ready(function(){
 				onechoosedArr.push(Number($(oval).attr("code")));
 			})
 		}
-		if ($(this).attr("typeid") == "big") {//选择2级
+		if ($(this).attr("typeid") == "big") {// Select second-level category.
 
 			if (ischeck) {
 
@@ -991,17 +1003,17 @@ $(document).ready(function(){
 				}else{
 					$("#ChooseCityClassLayer .a_sort_n :input[bigclass='" + bigvalue + "']").attr({ "disabled": ischeck, "checked": true });
 
-					if($("#ChooseCityClassLayer .ShowCityClass div[parentcode=\"" + $(this).val() + "\"]")){//搜索后选中的三级城市
+					if($("#ChooseCityClassLayer .ShowCityClass div[parentcode=\"" + $(this).val() + "\"]")){// Third-level cities selected from search.
 						$("#ChooseCityClassLayer .ShowCityClass div[parentcode=\"" + $(this).val() + "\"]").remove();
 					}
-					if($("#ChooseCityClassLayer .ShowCityClass div[citycode=\"" + $(this).val() + "\"]")){//非搜索情况下主页面选中的三级城市
+					if($("#ChooseCityClassLayer .ShowCityClass div[citycode=\"" + $(this).val() + "\"]")){// Third-level cities selected from the main list.
 						$("#ChooseCityClassLayer .ShowCityClass div[citycode=\"" + $(this).val() + "\"]").remove();
 					}
 
 					if ($("#ChooseCityClassLayer .ShowCityClass").find("div").length >=window.allow_select_cityclass_count) {
 						$(this).prop("checked", false);
 						$("#ChooseCityClassLayer .a_sort_n :input[bigclass='" + bigvalue + "']").prop({ "disabled": false, "checked": false });
-						layer.msg('最多选择'+window.allow_select_cityclass_count+'项！',2,8);
+						layer.msg(newClassT('public_js_00009', {count: window.allow_select_cityclass_count}, 'Select up to {count} items!'),2,8);
 						return false;
 					}else {
 						$("#ChooseCityClassLayer .ShowCityClass").append("<div class=\"job\" code=\"" + $(this).val() + "\" type=\"city\" title=\"" + $(this).attr("name") + "\" ><span>" + $(this).attr("name") + "</span><label class=\"job_lab \"></label></div>");
@@ -1020,7 +1032,7 @@ $(document).ready(function(){
 					}
 				}
 			}
-		}else {//选择3级
+		}else {// Select third-level category.
 			if(ischeck) {
 				if(window.allow_select_cityclass_count==1){
 					$("#ChooseCityClassLayer .ShowCityClass div").remove();
@@ -1028,7 +1040,7 @@ $(document).ready(function(){
 				}else{
 					if ($("#ChooseCityClassLayer .ShowCityClass").find("div").length >= window.allow_select_cityclass_count) {
 						$(this).prop("checked", false);
-						layer.msg('最多选择'+window.allow_select_cityclass_count+'项！',2,8);
+						layer.msg(newClassT('public_js_00009', {count: window.allow_select_cityclass_count}, 'Select up to {count} items!'),2,8);
 						return false;
 					}else {
 						$("#ChooseCityClassLayer .ShowCityClass").append("<div class=\"job\" parentcode=\"" + $(this).attr("bigclass") + "\" type=\"area\" title=\"" + $(this).attr("name") + "\"  code=\"" + $(this).val() + "\"><span>" + $(this).attr("name") + "</span><label class=\"job_lab\"></label></div>");
@@ -1040,4 +1052,4 @@ $(document).ready(function(){
 		}
 	});
 })
-/*********************************城市类别选择结束*******************************/
+/*********************************City category selection end*******************************/
