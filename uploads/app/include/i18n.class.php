@@ -129,6 +129,37 @@ class Yun_I18n
         return count(explode('_', $m[1])) <= 3;
     }
 
+    function hasAutoKeyToken($text)
+    {
+        return is_string($text) && preg_match('/(^|[^A-Za-z0-9_])([a-z][a-z0-9_]*_[0-9]{5})(?=$|[^A-Za-z0-9_])/', $text);
+    }
+
+    function replaceAutoKeyTokens($text)
+    {
+        return preg_replace_callback(
+            '/(^|[^A-Za-z0-9_])([a-z][a-z0-9_]*_[0-9]{5})(?=$|[^A-Za-z0-9_])/',
+            array($this, 'replaceAutoKeyToken'),
+            $text
+        );
+    }
+
+    function replaceAutoKeyToken($matches)
+    {
+        $prefix = $matches[1];
+        $key = $matches[2];
+
+        if (!$this->isAutoKey($key)) {
+            return $matches[0];
+        }
+        if (isset($this->autoMessages[$key])) {
+            return $prefix . $this->autoMessages[$key];
+        }
+        if ($this->currentLang != $this->fallbackLang && isset($this->fallbackAutoMessages[$key])) {
+            return $prefix . $this->fallbackAutoMessages[$key];
+        }
+        return $matches[0];
+    }
+
     function t($key, $params = array(), $default = '')
     {
         $value = $this->getValue($key, $this->messages);
@@ -184,6 +215,12 @@ class Yun_I18n
         if (isset($this->autoMessages[$text])) {
             return $leading . $this->autoMessages[$text] . $trailing;
         }
+        if ($this->isAutoKey($text) && $this->currentLang != $this->fallbackLang && isset($this->fallbackAutoMessages[$text])) {
+            return $leading . $this->fallbackAutoMessages[$text] . $trailing;
+        }
+        if ($this->hasAutoKeyToken($text)) {
+            $text = $this->replaceAutoKeyTokens($text);
+        }
         if (!preg_match('/[\x{4e00}-\x{9fff}]/u', $text)) {
             return $leading . $text . $trailing;
         }
@@ -229,10 +266,23 @@ class Yun_I18n
 
     function shouldTranslateValue($key, $value)
     {
-        if ($value === '' || !preg_match('/[\x{4e00}-\x{9fff}]/u', $value)) {
+        if ($value === '') {
             return false;
         }
 
+        if (!$this->isTranslatableOutputKey($key)) {
+            return false;
+        }
+
+        if ($this->hasAutoKeyToken($value)) {
+            return true;
+        }
+
+        return preg_match('/[\x{4e00}-\x{9fff}]/u', $value) ? true : false;
+    }
+
+    function isTranslatableOutputKey($key)
+    {
         if ($key === '' || is_int($key)) {
             return true;
         }
@@ -245,6 +295,7 @@ class Yun_I18n
             'msg',
             'message',
             'errmsg',
+            'error',
             'error_msg',
             'error_message',
             'tip',

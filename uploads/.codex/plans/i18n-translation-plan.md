@@ -372,6 +372,8 @@ Batch 16 后严格裸中文扫描剩余项：`app/template/admin/js/xjhlive.js:2
 
 Batch 17 执行范围：验证码配置匹配兼容 `app/include/i18n.functions.php`、`app/model/notice.model.php`、`app/template/admin/login.htm`。新增 i18n 候选匹配 helper，用语言 key 同时匹配当前语言、`zh_cn`、`en_us` 和 key 本身；后台登录页和 `jycheck()` 改用 helper，避免默认英文环境下 `code_web` 保存为英文后验证码判断失效，同时兼容旧中文配置。
 
+Batch 18 执行范围：后台 JSON 返回运行时 key 解析 `app/include/i18n.class.php`。补齐 `yun_json_encode()` -> `yun_auto_array()` -> `autoT()` 对 `msg/message/error` 等输出字段中纯自动 key（如 `admin_01452`）和带分隔符的自动 key 片段（如 `admin_01452, admin_01453`）的翻译能力；不处理 `admin_01350` 与 ID 直接粘连成 `admin_01350123` 的错误拼接，该类必须后续逐文件改为 `yun_t()`/占位符或明确分隔符。
+
 ## 11. 推荐执行顺序
 
 1. 修复语言包损坏项和扫描脚本误报规则。
