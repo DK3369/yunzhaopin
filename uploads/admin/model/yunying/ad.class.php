@@ -3,7 +3,7 @@
 class ad_controller extends adminCommon
 {
     /**
-     * 广告管理
+     * Ad management.
      */
     public function index_action()
     {
@@ -11,7 +11,7 @@ class ad_controller extends adminCommon
         $adM = $this->MODEL('ad');
 
         $time = time();
-        //审核状态
+        // Review status.
         if ($_POST['is_check']) {
             if ($_POST['is_check'] == '1') {
                 $where['is_check'] = '1';
@@ -25,14 +25,14 @@ class ad_controller extends adminCommon
                 $where['time_end'] = array('unixtime', '<=', $time);
             }
         }
-        //广告类别
+        // Ad category.
         if ($_POST['class_id']) {
             $where['class_id'] = $_POST['class_id'];
         }
         if ($_POST['name']) {
             $where['ad_name'] = array('like', $_POST['name']);
         }
-        //广告类型
+        // Ad type.
         if ($_POST['ad']) {
             if ($_POST['ad'] == '1') {
                 $where['ad_type'] = 'word';
@@ -44,15 +44,15 @@ class ad_controller extends adminCommon
                 $where['ad_type'] = 'flash';
             }
         }
-        //提取分页
+        // Build pagination.
         $page = $pageM->page($_POST);
         $pageSize = $pageM->limit($_POST);
         $pages = $pageM->adminPageList('ad', $where, $page, array('limit' => $pageSize));
         $pageSizes = $pages['page_sizes'];
         $list = array();
-        //分页数大于0的情况下 执行列表查询
+        // Query the list only when records exist.
         if ($pages['total'] > 0) {
-            //limit order 只有在列表查询时才需要
+            // Limit/order is only needed for list queries.
             $orderby = array();
             if ($_POST['order']) {
                 $orderby[] = $_POST['t'] . ',' . $_POST['order'];
@@ -60,7 +60,7 @@ class ad_controller extends adminCommon
             $orderby[] = 'id,desc';
             $where['orderby'] = $orderby;
             $where['limit'] = $pages['limit'];
-            //获取列表
+            // Get list data.
             $List = $adM->getAdList($where);
             $list = $List['list'];
         }
@@ -74,7 +74,7 @@ class ad_controller extends adminCommon
 
     function get_base_data_action()
     {
-        //广告分类
+        // Ad categories.
         $adM = $this->MODEL('ad');
         $adClassArr = $adM->getAdClassArr();
         $classArr = $adClassArr['classArr'];
@@ -99,7 +99,7 @@ class ad_controller extends adminCommon
             }
         }
 
-        //站点
+        // Sites.
         $cacheM = $this->MODEL('cache');
         $domain = $cacheM->GetCache('domain', $Options = array('needreturn' => true, 'needassign' => true, 'needall' => true));
         $domainData = array();
@@ -118,7 +118,7 @@ class ad_controller extends adminCommon
             $adM = $this->MODEL('ad');
             $info = $adM->getInfo(array('id' => $_POST['id']));
         }
-        // 处理移送端广告跳转，有缓存文件，说明有移动端
+        // Handle mobile ad redirects when the mobile cache exists.
         $appad = 0;
         if (file_exists(DATA_PATH . 'api/wxapp/tplapp.cache.php')) {
             $appad = 1;
@@ -130,7 +130,7 @@ class ad_controller extends adminCommon
         ));
     }
 
-    //广告 添加/修改 提交
+    // Submit ad add/update.
     function ad_saveadd_action()
     {
         $_POST = $this->post_trim($_POST);
@@ -144,14 +144,14 @@ class ad_controller extends adminCommon
             $_POST['ad_time_end'] = $_POST['ad_time'][1];
         }
 
-        //广告类型
+        // Ad type.
         if ($_POST['ad_type'] == 'pic') {
-            //图片广告
+            // Image ad.
             if ($_POST['upload'] == 'upload') {
-                //图片地址 远程地址
+                // Remote image URL.
                 $pictures = $_POST['pic_url_n'];
             } else {
-                //图片地址 本地上传
+                // Local image upload.
                 if ($_FILES['file']['tmp_name']) {
                     $upArr = array(
                         'file' => $_FILES['file'],
@@ -167,12 +167,12 @@ class ad_controller extends adminCommon
                 }
             }
         } elseif ($_POST['ad_type'] == 'flash') {
-            //FLASH广告
+            // Flash ad.
             if ($_POST['flash'] == 'flash') {
-                //远程地址
+                // Remote URL.
                 $pictures = $_POST['flash_url'];
             } else {
-                //本地上传
+                // Local upload.
                 $time = time();
                 $flash_name = $time . rand(0, 999) . '.swf';
                 move_uploaded_file($_FILES['flash_url']['tmp_name'], DATA_PATH . '/upload/flash/' . $flash_name);
@@ -180,7 +180,7 @@ class ad_controller extends adminCommon
             }
         }
 
-        //新窗口打开 2是 1否
+        // Open in a new window: 2 yes, 1 no.
         $_POST['target'] = $_POST['target'] == 2 ? 2 : 1;
         $_POST['is_check'] = 1;
         $adM = $this->MODEL('ad');
@@ -210,11 +210,11 @@ class ad_controller extends adminCommon
 
         $del = $adM->delAd($where, $data);
         $adM->model_ad_arr();
-        $del ? $this->admin_json(0, '广告(ID:' . $delid . ')删除成功！') : $this->render_json(2, 'admin_user_00186');
+        $del ? $this->admin_json(0, yun_t('admin_model_00043', array('ids' => $delid))) : $this->render_json(2, 'admin_user_00186');
     }
 
     /**
-     * 广告管理 调用/预览
+     * Ad preview.
      */
     function preview_action()
     {
@@ -252,7 +252,7 @@ class ad_controller extends adminCommon
     }
 
     /**
-     * 审核
+     * Review.
      */
     function check_action()
     {
@@ -262,15 +262,15 @@ class ad_controller extends adminCommon
             $adM->upInfo(array('id' => $id), array('is_check' => $_POST['val']));
             $adM->model_ad_arr();
             if ($_POST['val'] == '1') {
-                $this->admin_json(0, '<font color="green">已审核</font>(广告ID：' . $id . ')');
+                $this->admin_json(0, '<font color="green">' . yun_t('admin_model_00044', array('id' => $id)) . '</font>');
             } else {
-                $this->admin_json(0, '<font color="red">未审核</font>(广告ID：' . $id . ')');
+                $this->admin_json(0, '<font color="red">' . yun_t('admin_model_00045', array('id' => $id)) . '</font>');
             }
         }
     }
 
     /**
-     * 更新缓存
+     * Refresh cache.
      */
     function cache_ad_action()
     {
@@ -280,7 +280,7 @@ class ad_controller extends adminCommon
     }
 
     /**
-     * 批量延期
+     * Batch extension.
      */
     function ctime_action()
     {
@@ -294,12 +294,12 @@ class ad_controller extends adminCommon
             $upWhere['id'] = array('in', $_POST['jobid']);
             $id = $adM->upInfo($upWhere, $upData);
             $adM->model_ad_arr();
-            $id ? $this->admin_json(0, '广告批量延期(ID:' . $_POST['jobid'] . ')设置成功！') : $this->render_json(1, 'wap_01715');
+            $id ? $this->admin_json(0, yun_t('admin_model_00046', array('ids' => $_POST['jobid']))) : $this->render_json(1, 'wap_01715');
         }
     }
 
     /**
-     * 更新排序
+     * Update sort.
      */
     function upsort_action()
     {

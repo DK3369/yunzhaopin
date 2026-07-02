@@ -3,7 +3,7 @@
 class ad_class_controller extends adminCommon
 {
     /**
-     * 广告类别
+     * Ad categories.
      */
     public function index_action()
     {
@@ -21,16 +21,16 @@ class ad_class_controller extends adminCommon
             }
         }
 
-        //提取分页
+        // Build pagination.
         $page = $pageM->page($_POST);
         $pageSize = $pageM->limit($_POST);
         $pages = $pageM->adminPageList('ad_class', $where, $page, array('limit' => $pageSize));
         $pageSizes = $pages['page_sizes'];
         $list = array();
 
-        //分页数大于0的情况下 执行列表查询
+        // Query the list only when records exist.
         if ($pages['total']) {
-            //limit order 只有在列表查询时才需要
+            // Limit/order is only needed for list queries.
             $orderby = array();
             if ($_POST['t'] && in_array($_POST['order'], array('asc', 'desc'))) {
                 $orderby[] = $_POST['t'] . ',' . $_POST['order'];
@@ -38,7 +38,7 @@ class ad_class_controller extends adminCommon
             $orderby[] = 'id,desc';
             $where['orderby'] = $orderby;
             $where['limit'] = $pages['limit'];
-            //获取列表
+            // Get list data.
             $List = $adM->getAdClassList($where, array('href' => true));
             $list = $List['list'];
         }
@@ -68,8 +68,8 @@ class ad_class_controller extends adminCommon
     }
 
     /**
-     * 添加/修改
-     * 设为购买
+     * Add or update.
+     * Enable purchase.
      */
     function addclass_action()
     {
@@ -110,11 +110,11 @@ class ad_class_controller extends adminCommon
             if ($_POST['id']) {
                 $upWhere['id'] = $_POST['id'];
                 $nid = $adM->upAdClass($upWhere, $data);
-                $nid ? $this->admin_json(0, '广告类别(ID:' . $_POST['id'] . ')修改成功') : $this->render_json(1, 'admin_00187');
+                $nid ? $this->admin_json(0, yun_t('admin_model_00039', array('id' => $_POST['id']))) : $this->render_json(1, 'admin_00187');
             } else {
                 if ($_POST['type']) {
                     $nid = $adM->addAdClass($data);
-                    $nid ? $this->admin_json(0, '广告类别(ID:' . $nid . ')添加成功') : $this->render_json(2, 'api_wxapp_00012');
+                    $nid ? $this->admin_json(0, yun_t('admin_model_00040', array('id' => $nid))) : $this->render_json(2, 'api_wxapp_00012');
                 }
             }
         }
@@ -124,7 +124,7 @@ class ad_class_controller extends adminCommon
     {
         $adM = $this->MODEL('ad');
         if ($_POST['del']) {
-            //批量删除
+            // Batch delete.
             $del = $_POST['del'];
             if ($del) {
                 if (is_array($del)) {
@@ -136,13 +136,13 @@ class ad_class_controller extends adminCommon
                         $hWhere['id'] = array('in', pylode(',', $del));
                         $adM->delAdClass($hWhere, array('type' => 'all'));
                     }
-                    $this->admin_json(0, '广告类别(ID:' . @implode(',', $del) . ')删除成功！');
+                    $this->admin_json(0, yun_t('admin_model_00041', array('ids' => @implode(',', $del))));
                 }
             } else {
                 $this->render_json(2, yun_at('admin_01415'));
             }
         } else {
-            //单个删除
+            // Single delete.
             if (intval($_POST['id']) <= 0) {
                 $this->render_json(4, yun_at('admin_01415'));
             }
@@ -151,13 +151,13 @@ class ad_class_controller extends adminCommon
                 $this->render_json(3, yun_at('admin_yunying_00002'));
             } else {
                 $adM->delAdClass(array('id' => intval($_POST['id'])), array('type' => 'one'));
-                $this->admin_json(0, '广告类别(ID:' . intval($_POST['id']) . ')删除成功！');
+                $this->admin_json(0, yun_t('admin_model_00041', array('ids' => intval($_POST['id']))));
             }
         }
     }
 
     /**
-     * 取消购买
+     * Cancel purchase.
      */
     function delbuy_action()
     {
@@ -172,7 +172,7 @@ class ad_class_controller extends adminCommon
             $data['remark'] = '';
             $result = $adM->upAdClass(array('id' => intval($_POST['id'])), $data);
             if ($result) {
-                $this->admin_json(0, '广告类别(ID:' . $_POST['id'] . 'admin_yunying_00003');
+                $this->admin_json(0, yun_t('admin_model_00042', array('id' => $_POST['id'])));
             } else {
                 $this->render_json(1, yun_at('model_00004'));
             }
@@ -180,7 +180,7 @@ class ad_class_controller extends adminCommon
     }
 
     /**
-     * 排序
+     * Sort.
      */
     function upsort_action(){
         if ($_POST) {

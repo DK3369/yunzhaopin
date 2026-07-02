@@ -18,7 +18,7 @@ class zhaopinhui_controller extends adminCommon
         }elseif($_POST['status'] == '2'){
             $where['endtime'] =	array('unixtime', '<', time());
         }
-        //排序
+        // Sort.
         if($_POST['order']){
             $where['orderby'] = $_POST['t'] . ',' . $_POST['order'];
         }else{
@@ -26,7 +26,7 @@ class zhaopinhui_controller extends adminCommon
         }
         $page = !empty($_POST['page']) ? intval($_POST['page']) : 1;
         $pageSize = !empty($_POST['pageSize']) ? intval($_POST['pageSize']) : intval($this->config['sy_listnum']);
-        //提取分页
+        // Build pagination.
         $pageM = $this->MODEL('page');
         $pages = $pageM->adminPageList('zhaopinhui', $where, $page, array('limit' => $pageSize));
         $ZphM = $this->MODEL('zph');
@@ -50,7 +50,7 @@ class zhaopinhui_controller extends adminCommon
 
         $space = $ZphM->getZphSpaceList(array('keyid' => '0'));
         $rt['preview_url'] = $this->config['sy_weburl'] . '/index.php?m=zph&c=show&id=';
-        //提取分站内容
+        // Load site data.
         $cacheM = $this->MODEL('cache');
         $domain = $cacheM->GetCache('domain');
         $rt['Dname'] = (object)$domain['Dname'];
@@ -62,7 +62,7 @@ class zhaopinhui_controller extends adminCommon
     }
 
     function add_action(){
-        //提取分站内容
+        // Load site data.
         if ($_POST['submit']){
             $ZphM =	$this->MODEL('zph');
             $info = $this->post_trim($_POST);
@@ -114,16 +114,16 @@ class zhaopinhui_controller extends adminCommon
             if($info['id']){
                 $nbid =	$ZphM->upInfo(array('id' => intval($info['id'])), $info);
                 if (isset($nbid)) {
-                    $this->admin_json(0, 'admin_01350' . $info['id'] . ")修改成功！");
+                    $this->admin_json(0, yun_t('admin_model_00025', array('id' => $info['id'])));
                 } else {
-                    $this->render_json(1, 'admin_01350' . $info['id'] . ")修改失败！");
+                    $this->render_json(1, yun_t('admin_model_00026', array('id' => $info['id'])));
                 }
             }else{
                 $nbid =	$ZphM->addInfo($info);
                 if (isset($nbid)) {
-                    $this->admin_json(0, "招聘会(ID:$nbid)添加成功！");
+                    $this->admin_json(0, yun_t('admin_model_00027', array('id' => $nbid)));
                 } else {
-                    $this->render_json(1, yun_auto_t('招聘会(ID:$nbid)添加失败！'));
+                    $this->render_json(1, yun_t('admin_model_00028'));
                 }
             }
         }else{
@@ -140,10 +140,10 @@ class zhaopinhui_controller extends adminCommon
             $this->render_json(0, '', $rt);
         }
     }
-    // 招聘会添加、修改保存
+    // Save job fair add/update.
     function save_action(){
         if (isset($_POST['add'])){
-            // 添加打开弹窗请求，方便权限控制
+            // Open the add dialog for permission checks.
             $this->render_json(0);
         }
 
@@ -204,47 +204,47 @@ class zhaopinhui_controller extends adminCommon
             $_POST['zid'] = intval($_POST['zph_id']);
             $nbid = $ZphM->addZphPicInfo($_POST);
             if (isset($nbid)) {
-                $this->admin_json(0, "招聘会图片(ID:" . $nbid . ")添加成功！");
+                $this->admin_json(0, yun_t('admin_model_00029', array('id' => $nbid)));
             } else {
                 $this->render_json(1, yun_at('admin_system_00137'));
             }
         } else {
             $nbid =	$ZphM->upZphPicInfo(array('id' => $id), $_POST);
             if (isset($nbid)) {
-                $this->admin_json(0, "招聘会图片(ID:" . $id . ")修改成功！");
+                $this->admin_json(0, yun_t('admin_model_00030', array('id' => $id)));
             } else {
                 $this->render_json(1, yun_at('member_user_00603'));
             }
         }
     }
-    //设为缩略图
+    // Set as thumbnail.
     function setthemb_action(){
         $ZphM =	$this->MODEL('zph');
         $ZphM->getSetThembInfo(array('id' => $_POST['id']));
         $this->render_json(0, yun_at('wap_com_00240'));
     }
-    // 删除招聘会图片
+    // Delete job fair image.
     function delpic_action(){
         $ZphM =	$this->MODEL('zph');
         $id = $_POST['del'];
         if($id){
             $delid = $ZphM->delZphPic(array('id' => $id));
             if ($delid) {
-                $this->admin_json(0, "招聘会图片(ID:" . $id . ")删除成功！");
+                $this->admin_json(0, yun_t('admin_model_00031', array('id' => $id)));
             } else {
                 $this->render_json(1, yun_at('admin_user_00186'));
             }
         }
     }
 
-    //设置高级搜索功能
+    // Configure advanced search.
     function set_searchs(){
         $search_list[] = array("param"=>"status","name"=>'wap_com_00406',"value"=>array("3"=>'wap_user_00166',"1"=>'member_user_00042',"2"=>'wap_user_00167'));
         $this->yunset("search_list",$search_list);
     }
 
     /*
-     * 招聘会参会企业
+     * Job fair participant companies.
      */
     function com_action(){
         $ZphM =	$this->MODEL('zph');
@@ -284,7 +284,7 @@ class zhaopinhui_controller extends adminCommon
                 }
             }
         }
-        //排序
+        // Sort.
         if($_POST['order']){
             if($_POST['t'] == 'id') {
                 $where['orderby'] = $_POST['t'] . ',' . $_POST['order'];
@@ -298,7 +298,7 @@ class zhaopinhui_controller extends adminCommon
         }
         $page = !empty($_POST['page']) ? intval($_POST['page']) : 1;
         $pageSize = !empty($_POST['pageSize']) ? intval($_POST['pageSize']) : intval($this->config['sy_listnum']);
-        //提取分页
+        // Build pagination.
         $pageM = $this->MODEL('page');
         $pages = $pageM->adminPageList('zhaopinhui_com', $where, $page, array('limit' => $pageSize));
         if($pages['total'] > 0){
@@ -335,7 +335,7 @@ class zhaopinhui_controller extends adminCommon
         $id = @explode(",", $_POST['pid']);
         $nid = $ZphM->upZphCom($id, $data);
         if ($nid){
-            $this->admin_json(0, 'admin_01350'.$_POST['pid'].")设置成功！");
+            $this->admin_json(0, yun_t('admin_model_00032', array('ids' => $_POST['pid'])));
         }else{
             $this->render_json(1, yun_at('wap_01715'));
         }
@@ -367,7 +367,7 @@ class zhaopinhui_controller extends adminCommon
         $this->render_json(0, '', $info);
     }
     /*
-     * 参会企业导出校验
+     * Validate participant company export.
      */
     function comxlscheck_action(){
         $ZphM =	$this->MODEL('zph');
@@ -409,7 +409,7 @@ class zhaopinhui_controller extends adminCommon
     }
 
     /*
-     * 参会企业导出
+     * Export participant companies.
      */
     function comxls_action(){
         $letters = $this->getA_ZZ();
@@ -487,29 +487,29 @@ class zhaopinhui_controller extends adminCommon
                 $objPHPExcel = new PHPExcel();
                 $objPHPExcel->setActiveSheetIndex(0);
                 $width = 20;
-                $objPHPExcel->getActiveSheet()->getColumnDimension('A')->setWidth($width); // 设置列宽
-                $objPHPExcel->getActiveSheet()->setCellValue('A1', 'wap_00270'); // 设置表头
-                $objPHPExcel->getActiveSheet()->mergeCells('A1:J1'); // 表头列合并
+                $objPHPExcel->getActiveSheet()->getColumnDimension('A')->setWidth($width); // Set column width.
+                $objPHPExcel->getActiveSheet()->setCellValue('A1', 'wap_00270'); // Set header.
+                $objPHPExcel->getActiveSheet()->mergeCells('A1:J1'); // Merge header columns.
                 $colindex = $this->getfiled_index($letters, 'A');
-                // 循环字段
+                // Loop fields.
                 foreach ($comfieldsList as $com_v) {
-                    $objPHPExcel->getActiveSheet()->getColumnDimension($letters[$colindex])->setWidth($width); // 设置列宽
-                    $objPHPExcel->getActiveSheet()->setCellValue($letters[$colindex] . '2', $com_v); // 设置表头
+                    $objPHPExcel->getActiveSheet()->getColumnDimension($letters[$colindex])->setWidth($width); // Set column width.
+                    $objPHPExcel->getActiveSheet()->setCellValue($letters[$colindex] . '2', $com_v); // Set header.
                     $colindex++;
                 }
                 $colindex = $this->getfiled_index($letters, 'K');
                 foreach ($jobheader1 as $hv) {
-                    $objPHPExcel->getActiveSheet()->getColumnDimension($letters[$colindex])->setWidth($width); // 设置列宽
-                    $objPHPExcel->getActiveSheet()->setCellValue($letters[$colindex] . '1', $hv); // 设置表头
-                    // 表头列合并
+                    $objPHPExcel->getActiveSheet()->getColumnDimension($letters[$colindex])->setWidth($width); // Set column width.
+                    $objPHPExcel->getActiveSheet()->setCellValue($letters[$colindex] . '1', $hv); // Set header.
+                    // Merge header columns.
                     $objPHPExcel->getActiveSheet()->mergeCells($letters[$colindex] .'1:' . $letters[$colindex + 5] . '1');
                     foreach ($jobfieldsList as $job_v) {
-                        $objPHPExcel->getActiveSheet()->getColumnDimension($letters[$colindex])->setWidth($width); // 设置列宽
-                        $objPHPExcel->getActiveSheet()->setCellValue($letters[$colindex] . '2', $job_v); // 设置表头
+                        $objPHPExcel->getActiveSheet()->getColumnDimension($letters[$colindex])->setWidth($width); // Set column width.
+                        $objPHPExcel->getActiveSheet()->setCellValue($letters[$colindex] . '2', $job_v); // Set header.
                         $colindex++;
                     }
                 }
-                // 头部样式设置
+                // Header style.
                 $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow(0,1, 10 + $maxJobNum * 6, 1)->getFont()->setBold(true);
                 $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow(0,1, 10 + $maxJobNum * 6, 1)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
                 $objPHPExcel->getActiveSheet()->getStyleByColumnAndRow(0,1, 10 + $maxJobNum * 6, 1)->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_CENTER);
@@ -520,7 +520,7 @@ class zhaopinhui_controller extends adminCommon
 
                 foreach ($companys as $key => $val) {
                     $colindex = $this->getfiled_index($letters, 'A');
-                    // 循环企业信息字段
+                    // Loop company fields.
                     foreach ($comfieldsList as $com_k => $com_v) {
                         if ($com_k == 'space') {
                             $text = $spacearr[$val['space']['sid']] . '-' . $spacearr[$val['space']['cid']] . '-' . $spacearr[$val['space']['bid']];
@@ -540,16 +540,16 @@ class zhaopinhui_controller extends adminCommon
                         } else {
                             $text = $val[$com_k] ? $val[$com_k] : '';
                         }
-                        if (in_array($com_k, array('linkphone', 'linktel'))) { // 数字转字符的字段
-                            $objPHPExcel->getActiveSheet()->setCellValueExplicit($letters[$colindex] . ($key + 3), $text, PHPExcel_Cell_DataType::TYPE_STRING); // 转类型
+                        if (in_array($com_k, array('linkphone', 'linktel'))) { // Cast numeric fields to strings.
+                            $objPHPExcel->getActiveSheet()->setCellValueExplicit($letters[$colindex] . ($key + 3), $text, PHPExcel_Cell_DataType::TYPE_STRING); // Cast type.
                         } else {
-                            $objPHPExcel->getActiveSheet()->setCellValue($letters[$colindex] . ($key + 3), $text); // 动态表格内容
+                            $objPHPExcel->getActiveSheet()->setCellValue($letters[$colindex] . ($key + 3), $text); // Dynamic table content.
                         }
                         $colindex++;
                     }
                     $colindex = $this->getfiled_index($letters, 'K');
                     foreach ($val['jobs'] as $job) {
-                        // 循环职位信息字段
+                        // Loop job fields.
                         foreach ($jobfieldsList as $job_k => $job_v) {
                             if ($job_k == 'address') {
                                 $text = $job['job_city_one'] . '-' . $job['job_city_two'];
@@ -559,20 +559,20 @@ class zhaopinhui_controller extends adminCommon
                             } else {
                                 $text = $job[$job_k] ? $job[$job_k] : '';
                             }
-                            if (in_array($job_k, array('job_number'))) { // 数字转字符的字段
-                                $objPHPExcel->getActiveSheet()->setCellValueExplicit($letters[$colindex] . ($key + 3), $text, PHPExcel_Cell_DataType::TYPE_STRING); // 转类型
+                            if (in_array($job_k, array('job_number'))) { // Cast numeric fields to strings.
+                                $objPHPExcel->getActiveSheet()->setCellValueExplicit($letters[$colindex] . ($key + 3), $text, PHPExcel_Cell_DataType::TYPE_STRING); // Cast type.
                             } else {
-                                $objPHPExcel->getActiveSheet()->setCellValue($letters[$colindex] . ($key + 3), $text); // 动态表格内容
+                                $objPHPExcel->getActiveSheet()->setCellValue($letters[$colindex] . ($key + 3), $text); // Dynamic table content.
                             }
                             $colindex++;
                         }
                     }
                 }
-                // 设置边框
+                // Set borders.
                 $styleArray = array(
                     'borders' => array(
                         'allborders' => array(
-                            'style' => PHPExcel_Style_Border::BORDER_THIN,//细边框
+                            'style' => PHPExcel_Style_Border::BORDER_THIN,// Thin border.
                         ),
                     ),
                 );
@@ -592,7 +592,7 @@ class zhaopinhui_controller extends adminCommon
             }
         }
     }
-    //删除链接
+    // Delete link.
     function delcom_action(){
         $ZphM =	$this->MODEL('zph');
         $delID = $_POST['del'];
@@ -600,7 +600,7 @@ class zhaopinhui_controller extends adminCommon
         if(is_array($list)){
             foreach($list as $v){
                 $IntegralM = $this->MODEL('integral');
-                $IntegralM->company_invtal($v['uid'], 2, $v['price'], true, 'admin_01353', true, 2, 'integral');//积分操作记录
+                $IntegralM->company_invtal($v['uid'], 2, $v['price'], true, 'admin_01353', true, 2, 'integral');// Points operation log.
             }
         }
         $arr = $ZphM->delZphCom($delID, array('utype' => 'admin'));
@@ -619,7 +619,7 @@ class zhaopinhui_controller extends adminCommon
                 $siteDomain = $this->MODEL('site');
                 $siteDomain->updDid(array('zhaopinhui'), array('id' => array('in', $uid)), array('did' => $_POST['did']));
                 $siteDomain->updDid(array('zhaopinhui_com','zhaopinhui_pic'), array('zid' => array('in', $uid)), array('did' => $_POST['did']));
-                $this->admin_json(0, 'admin_01350'.$_POST['uid'].')分配站点成功！');
+                $this->admin_json(0, yun_t('admin_model_00033', array('ids' => $_POST['uid'])));
             }else{
                 $this->render_json(1, yun_at('admin_neirong_00004'));
             }
@@ -628,7 +628,7 @@ class zhaopinhui_controller extends adminCommon
         }
     }
 
-    //获取展位
+    // Get booths.
     function getzhanwei_action(){
         $ZphM = $this->MODEL('zph');
         if($_POST['sid']){
@@ -669,7 +669,7 @@ class zhaopinhui_controller extends adminCommon
             $this->render_json(0, '', array('reserved_arr' => $reserved_arr, 'space' => $rt));
         }
     }
-    //修改展位
+    // Update booth.
     function upzhanwei_action(){
         if ($_POST['zcomid']){
             $value = array(
@@ -687,16 +687,16 @@ class zhaopinhui_controller extends adminCommon
             $this->render_json(1, yun_at('admin_neirong_00031'));
         }
     }
-    //添加参会企业
+    // Add participant company.
     function comadd_action(){
         $ZphM =	$this->MODEL('zph');
         $zph = $ZphM->getInfo(array('id' => intval($_POST['id'])));
-        $keyid = $zph['sid'];//场地id
+        $keyid = $zph['sid'];// Venue ID.
         $space = $ZphM->getZphSpaceList(array('keyid' => $keyid, 'orderby' => 'sort,asc'),array( 'id' => $_POST['id'], 'utype' => 'index'));
         $this->render_json(0, '', array('spacelist' => $space));
     }
 
-    //获取招聘会展位
+    // Get job fair booths.
     function getspacelist_action(){
         $ZphM = $this->MODEL('zph');
         $cid = intval($_POST['cid']);
@@ -713,10 +713,10 @@ class zhaopinhui_controller extends adminCommon
         foreach ($zphcom as $v){
             $combids[] = $v['bid'];
         }
-        // 取全部展位和已被报名展位的差集为可选展位，没有展位的进行提示
+        // Available booths are all booths minus already registered booths.
         $rows = array_diff($bids, $combids);
         if (!empty($rows)){
-            $html = '<option value="">请选择</option>';
+            $html = '<option value="">' . yun_t('admin_model_00034') . '</option>';
             foreach ($rows as $v){
                 $html .= '<option value="'.$v.'">'.$spacename[$v].'</option>';
             }
@@ -726,7 +726,7 @@ class zhaopinhui_controller extends adminCommon
         }
     }
 
-    //根据企业名称搜索企业列表
+    // Search company list by company name.
     function getcomlist_action(){
         $companyM = $this->MODEL('company');
         $comname = trim($_POST['comname']);
@@ -738,7 +738,7 @@ class zhaopinhui_controller extends adminCommon
         $this->render_json(0, '', $arr);
     }
 
-    //后台修改参会企业职位
+    // Update participant company jobs from admin.
     function upjob_action(){
         if ($_POST['zphjob']){
             $value = array(
@@ -756,7 +756,7 @@ class zhaopinhui_controller extends adminCommon
         }
     }
 
-    //根据选择的企业展示前台可以显示的职位列表
+    // Show frontend-visible job list for the selected company.
     function getjoblist_action(){
         $JobM =	$this->MODEL('job');
         $comid = intval($_POST['comid']);
@@ -777,7 +777,7 @@ class zhaopinhui_controller extends adminCommon
         $this->render_json(0, '', $arr);
     }
 
-    //保存参会企业
+    // Save participant company.
     function comaddsave_action(){
         $ZphM =	$this->MODEL('zph');
         $zphcom	= $ZphM->getZphComInfo(array('uid' => intval($_POST['comid']),'zid' => intval($_POST['zphid'])));
@@ -791,13 +791,13 @@ class zhaopinhui_controller extends adminCommon
             $_POST['bid'] =	intval($_POST['bid']);
             $nid = $ZphM->addZCom($_POST);
             if ($nid) {
-                $this->admin_json(0, "招聘会企业(ID:".$nid.")添加成功！");
+                $this->admin_json(0, yun_t('admin_model_00035', array('id' => $nid)));
             } else {
                 $this->render_json(1, yun_at('wap_01715'));
             }
         }
     }
-    //招聘会前台显示情况修改
+    // Update frontend display state for job fair.
     function upisopen_action(){
         if(!$_POST['pid']) {
             $this->render_json(1, yun_at('admin_neirong_00029'));
@@ -812,7 +812,7 @@ class zhaopinhui_controller extends adminCommon
         }
 
     }
-    // 参会企业排序修改
+    // Update participant company sort.
     function ajaxsort_action(){
         if($_POST['id']){
             $ZphM =	$this->MODEL('zph');

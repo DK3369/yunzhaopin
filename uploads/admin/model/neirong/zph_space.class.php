@@ -21,7 +21,7 @@ class zph_space_controller extends adminCommon
     function add_action(){
 
         if (isset($_POST['add'])){
-            // 添加打开弹窗请求，方便权限控制
+            // Open the add dialog for permission checks.
             $this->render_json(0);
         }
         $ZphM =	$this->MODEL('zph');
@@ -30,7 +30,7 @@ class zph_space_controller extends adminCommon
             $this->render_json(1, yun_at('admin_01357'));
         }
         if($_FILES){
-            // pc端上传
+            // PC upload.
             $upArr = array(
                 'file' => $_FILES['pic'],
                 'dir' => 'zhaopinhui'
@@ -69,7 +69,7 @@ class zph_space_controller extends adminCommon
         }
     }
 
-    // 获取二级分类
+    // Get child categories.
     function ajaxspace_action(){
         $ZphM =	$this->MODEL('zph');
         $id = intval($_POST['id']);
@@ -80,7 +80,7 @@ class zph_space_controller extends adminCommon
     }
 
     function up_action(){
-        // 查询子类别
+        // Query child categories.
         $ZphM=$this->MODEL('zph');
         if((int)$_POST['id']){
             $id	= (int)$_POST['id'];
@@ -136,23 +136,23 @@ class zph_space_controller extends adminCommon
 
     function ajax_action(){
         $ZphM =	$this->MODEL('zph');
-        if(isset($_POST['sort'])){//修改招聘会场地排序
+        if(isset($_POST['sort'])){// Update job fair venue sort.
             $sValue['sort'] = $_POST['sort'];
             $sWhere['id'] =	$_POST['id'];
             $ZphM->upZphSpaceInfos($sWhere,$sValue);
-            $this->MODEL('log')->addAdminLog("修改招聘会场地(ID:".$_POST['id'].'admin_neirong_00034');
+            $this->MODEL('log')->addAdminLog(yun_t('admin_model_00036', array('id' => $_POST['id'])));
         }
-        if(isset($_POST['name'])){//修改招聘会场地名称
+        if(isset($_POST['name'])){// Update job fair venue name.
             $nValue['name'] = $_POST['name'];
             $nWhere['id'] =	$_POST['id'];
             $ZphM->upZphSpaceInfos($nWhere,$nValue);
-            $this->MODEL('log')->addAdminLog("修改招聘会场地(ID:".$_POST['id'].")名称");
+            $this->MODEL('log')->addAdminLog(yun_t('admin_model_00037', array('id' => $_POST['id'])));
         }
-        if($_POST['price']!=""){//修改招聘会场地名称
+        if($_POST['price']!=""){// Update job fair venue price.
             $pValue['price'] = $_POST['price'];
             $pWhere['id'] =	$_POST['id'];
             $ZphM->upZphSpaceInfos($pWhere,$pValue);
-            $this->MODEL('log')->addAdminLog("修改招聘会场地(ID:".$_POST['id'].")名称");
+            $this->MODEL('log')->addAdminLog(yun_t('admin_model_00038', array('id' => $_POST['id'])));
         }
         $this->render_json(0, yun_at('wap_user_00264'));
     }

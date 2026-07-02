@@ -382,6 +382,8 @@ Batch 21 执行范围：问答与投诉后台模型 `admin/model/neirong/questio
 
 Batch 21.1 修正范围：复核 Batch 19-21 新增的 `yun_t()` 占位符调用。`Yun_I18n::replaceParams()` 会在参数 key 外自动拼 `{}`，因此调用必须传 `array('id' => $id)`，不能传 `array('{id}' => $id)`；语言包 value 仍保留 `{id}`、`{ids}` 等占位符。本批只修正参数 key，不改语言包 key、文案、业务逻辑或接口结构。
 
+Batch 22 执行范围：招聘会、招聘会场地、招聘专题、广告和广告分类模型 `admin/model/neirong/zhaopinhui.class.php`、`zph_space.class.php`、`admin/model/yunying/special_special.class.php`、`ad.class.php`、`ad_class.class.php`。将 `admin_json()`、`render_json()`、`addAdminLog()`、系统通知和少量运行态 `<option>` 中文改为 `yun_t()`/稳定 key，占位符参数使用不带 `{}` 的 key；同步补齐 `admin_model_00025` 起始中英文语言包。触碰到的中文注释改为英文。本批不改广告类型、审核枚举、搜索条件、导出字段结构、第三方 Excel 库调用、数据库字段或业务状态值。
+
 ## 11. 推荐执行顺序
 
 1. 修复语言包损坏项和扫描脚本误报规则。

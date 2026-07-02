@@ -3,7 +3,7 @@
 class special_special_controller extends adminCommon
 {
     /**
-     * 招聘专题
+     * Recruitment specials.
      */
     function index_action()
     {
@@ -13,16 +13,16 @@ class special_special_controller extends adminCommon
         if (trim($_POST['keyword'])) {
             $where['title'] = array('like', trim($_POST['keyword']));
         }
-        //提取分页
+        // Build pagination.
         $page = $pageM->page($_POST);
         $pageSize = $pageM->limit($_POST);
         $pages = $pageM->adminPageList('special', $where, $page, array('limit' => $pageSize));
         $pageSizes = $pages['page_sizes'];
 
         $list = array();
-        //分页数大于0的情况下 执行列表查询
+        // Query the list only when records exist.
         if ($pages['total'] > 0) {
-            //排序
+            // Sort.
             $orderby = array();
             if ($_POST['t'] && in_array($_POST['order'], array('asc', 'desc'))) {
                 $orderby[] = $_POST['t'] . ',' . $_POST['order'];
@@ -61,9 +61,9 @@ class special_special_controller extends adminCommon
     function get_base_data_action()
     {
         $ratingM = $this->MODEL("rating");
-        //企业等级 会员等级
+        // Company membership levels.
         $qy_rows = $ratingM->getList(array('category' => 1, 'orderby' => 'sort,desc'), array('field' => '`id`,`name`'));
-        //专题模板
+        // Special templates.
         $file = array();
         $publicdir = "../app/template/" . $this->config['style'] . "/special/";
         $filesnames = @scandir($publicdir);
@@ -84,7 +84,7 @@ class special_special_controller extends adminCommon
     }
 
     /**
-     * 专题列表，编辑操作，获取专题信息
+     * Special list edit: get special info.
      */
     function info_action()
     {
@@ -99,7 +99,7 @@ class special_special_controller extends adminCommon
 
     function  add_action(){
         if (isset($_POST['add'])){
-            // 添加打开弹窗请求，方便权限控制
+            // Open the add dialog for permission checks.
             if ($_POST['id']) {
                 $specialM = $this->MODEL("special");
                 $row = $specialM->getSpecialOne(array('id' => $_POST['id']));
@@ -159,19 +159,19 @@ class special_special_controller extends adminCommon
                         'dir' => 'special',
                     );
                 }
-                //缩率图参数
+                // Thumbnail parameters.
                 $uploadM = $this->MODEL('upload');
                 if (isset($upArrSl)) {
-                    $picSl = $uploadM->newUpload($upArrSl);//缩略图
+                    $picSl = $uploadM->newUpload($upArrSl);// Thumbnail.
                 }
                 if (isset($upArrBg)) {
-                    $picBg = $uploadM->newUpload($upArrBg);//背景图
+                    $picBg = $uploadM->newUpload($upArrBg);// Background image.
                 }
                 if (isset($upArrWapsl)) {
-                    $wapSl = $uploadM->newUpload($upArrWapsl);//移动端缩略图
+                    $wapSl = $uploadM->newUpload($upArrWapsl);// Mobile thumbnail.
                 }
                 if (isset($upArrWapbg)) {
-                    $wapBg = $uploadM->newUpload($upArrWapbg);//移动端背景图
+                    $wapBg = $uploadM->newUpload($upArrWapbg);// Mobile background image.
                 }
                 if (isset($picSl) && !empty($picSl['msg'])) {
                     $this->render_json(8, $picSl['msg']);
@@ -198,18 +198,20 @@ class special_special_controller extends adminCommon
             }
             if (!$id) {
                 $nid = $specialM->addSpecial($data);
-                $name = "专题招聘（ID：" . $nid . 'common_06563';
+                $successMsg = yun_t('admin_model_00047', array('id' => $nid));
+                $errorMsg = yun_t('admin_model_00049');
             } else {
                 $nid = $specialM->upSpecial(array('id' => $id), $data);
-                $name = "专题招聘（ID：" . $id . 'common_06564';
+                $successMsg = yun_t('admin_model_00048', array('id' => $id));
+                $errorMsg = yun_t('admin_model_00050', array('id' => $id));
             }
-            $nid ? $this->admin_json(0, $name . 'wap_js_00104') : $this->render_json(1, $name . 'wap_js_00103');
+            $nid ? $this->admin_json(0, $successMsg) : $this->render_json(1, $errorMsg);
 
         }
     }
 
     /**
-     * 添加/修改 提交
+     * Submit add/update.
      */
     function save_action()
     {
@@ -217,7 +219,7 @@ class special_special_controller extends adminCommon
             }
 
     /**
-     * 查看参会企业
+     * View participant companies.
      */
     function com_action()
     {
@@ -237,7 +239,7 @@ class special_special_controller extends adminCommon
                 $where['uid'] = array('in', pylode(',', $uids));
             }
         }
-        //提取分页
+        // Build pagination.
         $page = $pageM->page($_POST);
         $pageSize = $pageM->limit($_POST);
         $pages = $pageM->adminPageList('special_com', $where, $page, array('limit' => $pageSize));
@@ -245,11 +247,11 @@ class special_special_controller extends adminCommon
 
         $list = array();
         /**
-         * 参会企业的在招职位数量
+         * Active job count for participant companies.
          */
         $jobsNum = 0;
         if ($pages['total'] > 0) {
-            //排序
+            // Sort.
             $orderby = array();
             if ($_POST['t'] && in_array($_POST['order'], array('asc', 'desc'))) {
                 $orderby[] = $_POST['t'] . ',' . $_POST['order'];
@@ -278,7 +280,7 @@ class special_special_controller extends adminCommon
                 }
             }
             $jobM = $this->MODEL('job');
-            //参会职位数量
+            // Participant job count.
             $row = $specialM->getSpecialComOne($whereJobsnum, array('field'=>'group_concat(uid) as uidstring'));
             $uidstring = $row['uidstring'];
             $jobwhere['uid'] = array('in', $uidstring);
@@ -298,15 +300,15 @@ class special_special_controller extends adminCommon
             'total' => intval($pages['total']),
             'perPage' => $pageSize,
             'pageSizes' => $pageSizes,
-            'showAdd' => $special['limit'] > $applyNum,//是否显示 添加参会企业
-            'applyNum' => $applyNum,//参会企业的数量
-            'jobsNum' => $jobsNum,//参会职位数量
+            'showAdd' => $special['limit'] > $applyNum,// Whether to show Add participant company.
+            'applyNum' => $applyNum,// Participant company count.
+            'jobsNum' => $jobsNum,// Participant job count.
             'special' => $special,
         ));
     }
 
     /**
-     * 导出参会企业
+     * Export participant companies.
      */
     function comxls_action(){
 
@@ -315,9 +317,9 @@ class special_special_controller extends adminCommon
         $CompanyM		=	$this -> MODEL('company');
 
         $JobM			=	$this -> MODEL('job');
-        //专题ID
+        // Special ID.
         if($_POST['zid']){
-            //企业ID
+            // Company ID.
             if($_POST['cid']){
                 $zcwhere = array('id'=>array('in',$_POST['cid']));
             }else{
@@ -349,7 +351,7 @@ class special_special_controller extends adminCommon
                 $jobField  =  '`id`,`uid`,`name`,`zp_num`,`minsalary`,`maxsalary`,`exp`,`edu`,`provinceid`,`cityid`,`three_cityid`';
 
                 $jobWhere['state']          =   1;
-                $jobWhere['status']         =   0;//招聘中职位
+                $jobWhere['status']         =   0;// Active jobs.
                 $jobWhere['r_status']       =   1;
 
                 $jobWhere['PHPYUNBTWSTART'] =   '';
@@ -384,9 +386,9 @@ class special_special_controller extends adminCommon
 
                 for($i=1;$i<=$maxJobNum;$i++){
 
-                    $jobTr .= '<th colspan="6">岗位'.$i.'</th>';
+                    $jobTr .= '<th colspan="6">' . yun_t('admin_model_00065', array('index' => $i)) . '</th>';
 
-                    $jobSonTr .= '<th>招聘岗位</th><th>招聘人数</th><th>薪酬</th><th>经验要求</th><th>学历要求</th><th>工作地点</th>';
+                    $jobSonTr .= '<th>' . yun_t('admin_model_00066') . '</th><th>' . yun_t('admin_model_00067') . '</th><th>' . yun_t('admin_model_00068') . '</th><th>' . yun_t('admin_model_00069') . '</th><th>' . yun_t('admin_model_00070') . '</th><th>' . yun_t('admin_model_00071') . '</th>';
                 }
 
                 $this -> yunset('jobTr',$jobTr);
@@ -407,7 +409,7 @@ class special_special_controller extends adminCommon
     }
 
     /**
-     * 批量审核 | 加入-保存
+     * Batch review or join-save.
      */
     function statuscom_action(){
         $specialM	=	$this->MODEL("special");
@@ -416,7 +418,7 @@ class special_special_controller extends adminCommon
         $pid		=	$_POST['pid'];
         $status		=	(int)$_POST['status'];
         $statusbody	=	trim($_POST['statusbody']);
-        //未通过
+        // Rejected.
         if($status=='2'){
             $iWhere['id']		=	array('in',$pid);
             $iWhere['status']	=	array('<>','2');
@@ -443,7 +445,7 @@ class special_special_controller extends adminCommon
         $list				=	$specialM->getSpecialComList($lWhere,$ldata);
 
         if($list['list']){
-            /* 消息前缀 */
+            /* Message prefix. */
             $sysmsgM			=	$this->MODEL('sysmsg');
 
             $tagName  			=	'admin_01442';
@@ -452,19 +454,19 @@ class special_special_controller extends adminCommon
             $sid    			=	$v['sid'];
             $special			= 	$specialM->getSpecialOne(array('id'=>$sid),array('field'=>'`title`'));
 
-            //发送企业
+            // Send to companies.
             foreach($list['list'] as $v){
 
                 $uids[]  =  $v['uid'];
 
-                /* 处理审核信息 */
+                /* Build review message. */
                 if ($_POST['status'] == 2){
 
-                    $statusInfo  =  'admin_yunying_00014'.$special['title'].':报名审核未通过';
+                    $statusInfo  =  yun_t('admin_model_00051', array('title' => $special['title']));
 
                     if($_POST['statusbody']){
 
-                        $statusInfo  .=  ' , 原因：'.$_POST['statusbody'];
+                        $statusInfo  =  yun_t('admin_model_00052', array('title' => $special['title'], 'reason' => $_POST['statusbody']));
 
                     }
 
@@ -472,31 +474,31 @@ class special_special_controller extends adminCommon
 
                 }elseif($_POST['status'] == 1){
 
-                    $msg[$v['uid']]  =   'admin_yunying_00014'.$special['title'].':报名已审核通过';
+                    $msg[$v['uid']]  =   yun_t('admin_model_00053', array('title' => $special['title']));
 
                 }
             }
 
-            //发送系统通知
+            // Send system notification.
             $sysmsgM -> addInfo(array('uid'=>$uids,'usertype'=>2, 'content'=>$msg));
         }
 
         if (isset($_POST['single'])){
             if ($id){
-                $this->admin_json(0, '招聘专题参会企业审核(ID：' . $pid . ')成功！');
+                $this->admin_json(0, yun_t('admin_model_00054', array('ids' => $pid)));
             }else{
                 $this->render_json(1, yun_at('model_00003'));
             }
         }else{
-            $id ? $this->admin_json(0, '招聘专题参会企业审核(ID：' . $pid . ')成功！') : $this->render_json(1, 'model_00003');
+            $id ? $this->admin_json(0, yun_t('admin_model_00054', array('ids' => $pid))) : $this->render_json(1, 'model_00003');
         }
     }
 
     /**
-     * 招聘专题-参会企业-加入，获取企业信息
+     * Recruitment special participant add: get company info.
      */
     function audit_action(){
-        $id =  intval($_POST['id']);//special_com.id
+        $id =  intval($_POST['id']);// special_com.id
 
         $specialM =	$this->MODEL("special");
         $ComM     = $this -> MODEL('company');
@@ -506,7 +508,7 @@ class special_special_controller extends adminCommon
 
         $Info   = $ComM->getInfo($specialCom['uid'], array('ywy' => 1));
         $member = $userinfoM->getInfo(array('uid' => $specialCom['uid']),array('field' => 'login_ip,reg_date'));
-        //不返回多余数据
+        // Return only required data.
         $return = array(
             'name' => $Info['name'],
             'rating_name' => $Info['rating_name'],
@@ -535,7 +537,7 @@ class special_special_controller extends adminCommon
     }
 
     /**
-     * 招聘专题-参会企业-加入，获取招聘岗位
+     * Recruitment special participant add: get jobs.
      */
     function comjob_action()
     {
@@ -551,7 +553,7 @@ class special_special_controller extends adminCommon
         $jobwhere['r_status'] = 1;
         $jobwhere['status'] = 0;
 
-        //提取分页
+        // Build pagination.
         $page = $pageM->page($_POST);
         $pageSize = $pageM->limit($_POST);
         $pages = $pageM->adminPageList('company_job', $jobwhere, $page, array('limit' => $pageSize));
@@ -562,7 +564,7 @@ class special_special_controller extends adminCommon
         if ($total > 0) {
             $jobwhere['orderby'] = array('lastupdate,desc');
             $jobwhere['limit'] = $pageM->pageLimit($_POST);
-            $jobsA = $jobM->getList($jobwhere, array('isurl' => 'yes', 'utype' => 'admin'));//招聘中职位
+            $jobsA = $jobM->getList($jobwhere, array('isurl' => 'yes', 'utype' => 'admin'));// Active jobs.
             if (is_array($jobsA['list'])) {
                 foreach ($jobsA['list'] as $value){
                     $list[] = array(
@@ -591,7 +593,7 @@ class special_special_controller extends adminCommon
     }
 
     /**
-     * 查看参会企业页面，取消/删除
+     * Participant company page: cancel/delete.
      */
     function delcom_action()
     {
@@ -605,14 +607,14 @@ class special_special_controller extends adminCommon
             }
             $specialM->delSpecialCom(array('id' => array('in', $del)), array('type' => 'all'));
 
-            $this->admin_json(0, "公司申请(ID:" . $del . ")删除成功！");
+            $this->admin_json(0, yun_t('admin_model_00055', array('ids' => $del)));
         } else {
             $this->render_json(1, yun_at('model_00034'));
         }
     }
 
     /**
-     * 删除
+     * Delete.
      */
     function del_action()
     {
@@ -628,14 +630,14 @@ class special_special_controller extends adminCommon
             $specialM = $this->MODEL("special");
             $specialM->delSpecial(array('id' => array('in', $del)), array('type' => $type));
 
-            $this->admin_json(0, "专题(ID:" . $del . ")删除成功！");
+            $this->admin_json(0, yun_t('admin_model_00056', array('ids' => $del)));
         } else {
             $this->render_json(1, yun_at('model_00034'));
         }
     }
 
     /**
-     * 开启或关闭专题招聘
+     * Enable or disable recruitment special.
      */
     function recommend_action()
     {
@@ -646,15 +648,15 @@ class special_special_controller extends adminCommon
             $nid = $specialM->upSpecial($where, $data);
             $msg = $_POST['rec'] == 1 ? yun_at('member_com_00287') : yun_at('resume_00030');
             if ($nid) {
-                $this->admin_json(0, 'admin_01438' . $_POST['id'] . ")" . $msg . 'wap_js_00104');
+                $this->admin_json(0, yun_t('admin_model_00063', array('id' => $_POST['id'], 'action' => $msg)));
             } else {
-                $this->render_json(1, 'admin_01438' . $_POST['id'] . ")" . $msg . 'wap_js_00103');
+                $this->render_json(1, yun_t('admin_model_00064', array('id' => $_POST['id'], 'action' => $msg)));
             }
         }
     }
 
     /**
-     * 参会企业 排序
+     * Participant company sort.
      */
     function ajaxsort_action(){
         if ($_POST['id']) {
@@ -663,12 +665,12 @@ class special_special_controller extends adminCommon
                 $uparr['sort'] = intval($_POST['sort']);
             }
             $specialM->upSpecialCom(array('id' => $_POST['id']), $uparr);
-            $this->admin_json(0, '参会企业(ID:' . $_POST['id'] . ' sort=' . intval($_POST['sort']) . ')排序修改成功');
+            $this->admin_json(0, yun_t('admin_model_00057', array('id' => $_POST['id'], 'sort' => intval($_POST['sort']))));
         }
     }
 
     /**
-     * 招聘专题 排序
+     * Recruitment special sort.
      */
     function setOrder_action()
     {
@@ -679,7 +681,7 @@ class special_special_controller extends adminCommon
             $data = array('sort' => $post['sort']);
             $nid = $specialM->upSpecial($where, $data);
             if ($nid) {
-                $this->admin_json(0, '专题招聘(ID：' . $post['id'] . ', sort=' . $post['sort'] . ')排序更新成功');
+                $this->admin_json(0, yun_t('admin_model_00058', array('id' => $post['id'], 'sort' => $post['sort'])));
             } else {
                 $this->render_json(1, yun_at('admin_01443'));
             }
@@ -687,7 +689,7 @@ class special_special_controller extends adminCommon
     }
 
     /**
-     * 添加参会企业，页面的搜索条件
+     * Add participant company search filters.
      */
     function set_comaddsearch_action()
     {
@@ -709,24 +711,24 @@ class special_special_controller extends adminCommon
         $timeSection = array(array('value' => '1', 'label' => 'common_01940'), array('value' => '3', 'label' => 'admin_tool_00619'), array('value' => '7', 'label' => 'admin_tool_00622'), array('value' => '15', 'label' => 'admin_yunying_00017'), array('value' => '30', 'label' => 'admin_yunying_00016'), array('value' => '31', 'label' => 'admin_01444'), array('value' => '32', 'label' => 'admin_01445'), array('value' => '33', 'label' => 'admin_01446'), array('value' => '34', 'label' => 'admin_01447'),);
         $status = array(array('value' => '1', 'label' => 'wap_user_00165'), array('value' => '2', 'label' => 'admin_user_00138'), array('value' => '3', 'label' => 'wap_user_00167'), array('value' => '4', 'label' => 'wap_user_00166'), array('value' => '5', 'label' => 'admin_user_00184'),);
         $edtime = array(array('value' => '1', 'label' => 'admin_tool_00622'), array('value' => '2', 'label' => 'common_01659'), array('value' => '3', 'label' => 'common_01897'), array('value' => '4', 'label' => 'common_01875'), array('value' => '5', 'label' => 'wap_com_00319'),);
-        $isrec = array(array('value' => '1', 'label' => '是'), array('value' => '2', 'label' => '否'), array('value' => '3', 'label' => 'wap_com_00319'),);
+        $isrec = array(array('value' => '1', 'label' => 'admin_model_00059'), array('value' => '2', 'label' => 'admin_model_00060'), array('value' => '3', 'label' => 'wap_com_00319'),);
         $isgw = array(array('value' => '1', 'label' => 'admin_01303'), array('value' => '2', 'label' => 'admin_user_company_00153'),);
 
         $result = array(
-            'ratingList' => $ratingList,//会员等级
-            'timeList' => $edtime,//到期时间
-            'statusList' => $status,//审核状态
-            'sourceList' => $sourceList,//数据来源
-            'recList' => $isrec,//知名企业
-            'gwList' => $isgw,//企业顾问
-            'lotimeList' => $timeSection,//最近登录
-            'adtimeList' => $timeSection,//最近注册
+            'ratingList' => $ratingList,// Membership level.
+            'timeList' => $edtime,// Expiration time.
+            'statusList' => $status,// Review status.
+            'sourceList' => $sourceList,// Data source.
+            'recList' => $isrec,// Featured company.
+            'gwList' => $isgw,// Company consultant.
+            'lotimeList' => $timeSection,// Recent login.
+            'adtimeList' => $timeSection,// Recent registration.
         );
         $this->render_json(0, '', $result);
     }
 
     /**
-     * 按钮[添加参会企业]，获取参会企业
+     * Add participant company button: get companies.
      */
     function addlist_action()
     {
@@ -739,69 +741,69 @@ class special_special_controller extends adminCommon
             $keywordStr =   trim($_POST['keyword']);
             $typeStr    =   intval($_POST['type']);
             if (!empty($keywordStr) && $typeStr == 1) {
-                //企业名称/简称
+                // Company name/short name.
                 $where['PHPYUNBTWSTART_C']   = '';
                 $where['name']               = array('like',$keywordStr);
                 $where['shortname']          = array('like',$keywordStr,'OR');
                 $where['PHPYUNBTWEND_C']     = '';
             } elseif (!empty($keywordStr) && $typeStr == 2) {
-                //用户名称
+                // User name.
                 $mwhere['username'] =   array('like', $keywordStr);
             } else if (!empty($keywordStr) && $typeStr == 3) {
-                //联系人
+                // Contact.
                 $where['linkman']   =   array('like', $keywordStr);
             } else if (!empty($keywordStr) && $typeStr == 4) {
-                //联系电话
+                // Contact phone.
                 $where['linktel']   =   array('like', $keywordStr);
             } else if (!empty($keywordStr) && $typeStr == 5) {
-                //用户邮箱
+                // User email.
                 $where['linkmail']  =   array('like', $keywordStr);
             } else if (!empty($keywordStr) && $typeStr == 6) {
-                //用户ID
+                // User ID.
                 $where['uid'][]     =   array('=', $keywordStr);
             }
         }
-        //审核状态
+        // Review status.
         if ($_POST['status']) {
             $status =   intval($_POST['status']);
             if ($status == 4) {
-                //未审核
+                // Pending review.
                 $where['r_status']  =   0;
             } else if ($status == 5) {
-                //已暂停
+                // Paused.
                 $where['r_status']  =   4;
             } else {
                 $where['r_status']  =   $status;
             }
         }
-        //最近注册
+        // Recent registration.
         if ($_POST['adtime']) {
             $adtime = intval($_POST['adtime']);
             if ($adtime == 1) {
-                //今天
+                // Today.
                 $mwhere['reg_date'] = array('>', strtotime('today'));
             } else if ($adtime < 31) {
                 $mwhere['reg_date'] = array('>', strtotime('-' . $adtime . ' day'));
-            } else if ($adtime == 31) {// 1 - 3 个月
+            } else if ($adtime == 31) {// 1 - 3 months.
                 $mwhere['PHPYUNBTWSTART_C'] = '';
                 $mwhere['reg_date'][] = array('<', strtotime('-1 month'));
                 $mwhere['reg_date'][] = array('>=', strtotime('-3 month'));
                 $mwhere['PHPYUNBTWEND_C'] = '';
-            } else if ($adtime == 32) {// 3 - 6个月
+            } else if ($adtime == 32) {// 3 - 6 months.
                 $mwhere['PHPYUNBTWSTART_C'] = '';
                 $mwhere['reg_date'][] = array('<', strtotime('-3 month'));
                 $mwhere['reg_date'][] = array('>=', strtotime('-6 month'));
                 $mwhere['PHPYUNBTWEND_C'] = '';
-            } else if ($adtime == 33) {// 6个月 - 1年
+            } else if ($adtime == 33) {// 6 months - 1 year.
                 $mwhere['PHPYUNBTWSTART_C'] = '';
                 $mwhere['reg_date'][] = array('<', strtotime('-6 month'));
                 $mwhere['reg_date'][] = array('>=', strtotime('-12 month'));
                 $mwhere['PHPYUNBTWEND_C'] = '';
-            } else if ($adtime == 34) {// 1年以上
+            } else if ($adtime == 34) {// More than 1 year.
                 $mwhere['reg_date'] = array('<', strtotime('-1 year'));
             }
         }
-        //最近登录
+        // Recent login.
         if($_POST['lotime']){
             $lotime    =   intval($_POST['lotime']);
             if($lotime ==  1){
@@ -827,7 +829,7 @@ class special_special_controller extends adminCommon
                 $mwhere['login_date']  =   array('<',  strtotime('-1 year'));
             }
         }
-        //数据来源
+        // Data source.
         if($_POST['source']){
             $mwhere['source']          =   $_POST['source'];
         }
@@ -845,32 +847,32 @@ class special_special_controller extends adminCommon
             }
             $where['uid'][] =	array('in', pylode(',',$mUids));
         }
-        //会员等级
+        // Membership level.
         if($_POST['rating']){
             $where['rating']   =   $_POST['rating'];
         }
-        //到期时间
+        // Expiration time.
         $toDay	    =	strtotime(date('Y-m-d'));
         if($_POST['time']){
             $time   =   intval($_POST['time']);
             if($time == 5){
-                //已到期
+                // Expired.
                 $where['PHPYUNBTWSTART_A']    =   '';
                 $where['vipetime'][]         =   array('>', '0','AND');
                 $where['vipetime'][]         =   array('<',  $toDay,'AND');
                 $where['PHPYUNBTWEND_A']      =   '';
             }else{
                 if($time == 1){
-                    //7天内
+                    // Within 7 days.
                     $num   =   '+7 day';
                 }elseif($time == 2 ){
-                    //一个月内
+                    // Within 1 month.
                     $num   =   '+1 month';
                 }elseif($time == 3){
-                    //半年内
+                    // Within 6 months.
                     $num   =   '+6 month';
                 }elseif($time == 4){
-                    //一年内
+                    // Within 1 year.
                     $num='+1 year';
                 }
 
@@ -880,41 +882,41 @@ class special_special_controller extends adminCommon
                 $where['PHPYUNBTWEND_B']      =   '';
             }
         }
-        //知名企业
+        // Featured company.
         if($_POST['rec']){
             $rec    =   intval($_POST['rec']);
             if($rec == 1){
-                //是
+                // Yes.
                 $where['rec']       =   '1';
                 $where['hottime']   =   array('>', time());
             }elseif ($rec == 2){
-                //否
+                // No.
                 $where['rec']       =   '0';
             }elseif ($rec == 3){
-                //已到期
+                // Expired.
                 $where['rec']       =   '1';
                 $where['hottime']   =   array('<', time());
             }
         }
-        //企业顾问
+        // Company consultant.
         if($_POST['gw']){
             if(intval($_POST['gw']) == 1){
-                //已分配
+                // Assigned.
                 $where['crm_uid']     =   array('<>', '0');
             }else{
-                //未分配
+                // Unassigned.
                 $where['crm_uid']     =   '0';
             }
         }
-        //职位状况
+        // Job status.
         if ($_POST['job']) {
             $job = intval($_POST['job']);
             if (in_array($job, array(1, 2))) {
                 $jobM = $this->MODEL('job');
                 $jobwhere = array();
-                $jobwhere['state'] = 1;//(审核)状态:0-未审核，1-已审核，2-已过期，3-未通过
-                $jobwhere['r_status'] = 1;//2-锁定。企业会员被锁定，会同时锁定职位，4-企业暂停同时暂停职位,1-正常
-                $jobwhere['status'] = 0;//(招聘)状态,1-已暂停（下架），0:招聘中（已上架）
+                $jobwhere['state'] = 1;// Review state: 0 pending, 1 approved, 2 expired, 3 rejected.
+                $jobwhere['r_status'] = 1;// 2 locked, 4 company paused and jobs paused, 1 normal.
+                $jobwhere['status'] = 0;// Recruitment state: 1 paused/offline, 0 recruiting/online.
                 $jobsUidList = $jobM->getListId($jobwhere, array('field' => 'distinct `uid`'));
                 $jobsUidArr = array();
                 $jobsUids = '0';
@@ -925,34 +927,34 @@ class special_special_controller extends adminCommon
                     $jobsUids = pylode(',', $jobsUidArr);
                 }
                 if (intval($_POST['job']) == 1) {
-                    //有职位
+                    // Has jobs.
                     $where['uid'] = array('in', $jobsUids);
                 } else {
-                    //无职位
+                    // No jobs.
                     $where['uid'] = array('notin', $jobsUids);
                 }
             }
         }
-        //提取分页
+        // Build pagination.
         $page = $pageM->page($_POST);
         $pageSize = $pageM->limit($_POST);
         $pages = $pageM->adminPageList('company', $where, $page, array('limit' => $pageSize));
         $pageSizes = $pages['page_sizes'];
 
         $list = array();
-        //分页数大于0的情况下 执行列表查询
+        // Query the list only when records exist.
         if($pages['total'] > 0){
-            //limit order 只有在列表查询时才需要
+            // Limit/order is only needed for list queries.
             if($_POST['order']){
                 $where['orderby']		=	$_POST['t'].','.$_POST['order'];
             }else if($_POST['time'] == '5'){
-                //到期时间 已到期
+                // Expiration time: expired.
                 $where['orderby']		=	array('vipetime,desc','uid,desc');
             }else if($_POST['time']){
-                //到期时间
+                // Expiration time.
                 $where['orderby']		=	array('vipetime,asc');
             }else if($_POST['lotime']){
-                //最近登录
+                // Recent login.
                 $where['orderby']		=	array('login_date,desc');
             }else{
                 $where['orderby']		=	'uid,desc';
@@ -962,7 +964,7 @@ class special_special_controller extends adminCommon
 
             $ListNew    =   $ComM -> getList($where,array('utype'=>'admin'));
 
-            // 查询本场网招参会企业，在待添加企业列表中展示，企业是否已参加
+            // Query participants in this online special and mark joined companies in the add list.
             $netcom     =   $specialM->getSpecialComList(array('sid'=>$_POST['sid']),array('field'=>'uid'));
 
             if (!empty($netcom['list'])){
@@ -981,8 +983,8 @@ class special_special_controller extends adminCommon
                 }
                 $list[$key] = [
                     'uid' => $val['uid'],
-                    'jobnum' => $val['jobnum'],//职位数
-                    'zz_jobnum' => $val['zz_jobnum'],//在招职位数
+                    'jobnum' => $val['jobnum'],// Job count.
+                    'zz_jobnum' => $val['zz_jobnum'],// Active job count.
                     'r_status' => $val['r_status'],
                     'name' => $val['name'],
                     'shortname' => $val['shortname'],
@@ -1022,7 +1024,7 @@ class special_special_controller extends adminCommon
             'totalNum' => $totalNum, 'applyNum' => $applyNum, 'noNum' => $noNum));
     }
 
-    // 添加参会企业保存
+    // Save added participant company.
     function savespecial_action()
     {
         $SpecialM = $this->MODEL('special');
@@ -1036,7 +1038,7 @@ class special_special_controller extends adminCommon
 
         $nid    =   $SpecialM->addSpecialCom(array("sid" => $id, "uid" => $uid, 'sort' => 0, 'status' => '1', 'time' => time()));
         if (isset($nid)) {
-            $this->admin_json(0, '专题招聘报名成功(专题ID：' . $id . '，企业ID：' . $uid . ')');
+            $this->admin_json(0, yun_t('admin_model_00061', array('sid' => $id, 'uid' => $uid)));
         } else {
             $this->render_json(2, yun_at('admin_01448'));
         }
@@ -1049,13 +1051,13 @@ class special_special_controller extends adminCommon
         $data['sid'] = intval($_POST['sid']);
         $return = $specialM->addSpecialMutiCom($data);
         if ($return['error'] === 0) {
-            $this->admin_json(0, '专题招聘报名成功(专题ID：' . $data['sid'] . '，企业ID：' . $data['uid'] . ')');
+            $this->admin_json(0, yun_t('admin_model_00061', array('sid' => $data['sid'], 'uid' => $data['uid'])));
         } else {
             $this->render_json($return['error'], $return['msg']);
         }
     }
 
-    //根据企业名称搜索企业列表
+    // Search company list by company name.
     function getcomlist_action(){
 
         $companyM  =  $this->MODEL('company');
@@ -1064,7 +1066,7 @@ class special_special_controller extends adminCommon
 
         $rows	=  $companyM -> getChCompanyList(array('name'=>array('like',$comname)));
 
-        $html 	=  '<option value="">请选择</option>';
+        $html 	=  '<option value="">' . yun_t('admin_model_00034') . '</option>';
 
         foreach ($rows as $v){
 
@@ -1075,7 +1077,7 @@ class special_special_controller extends adminCommon
     }
 
     /**
-     * 查看参会企业，设为名企 取消名企
+     * View participant company: set or cancel featured company.
      */
     function setFamous_action()
     {
@@ -1091,7 +1093,7 @@ class special_special_controller extends adminCommon
             $nid = $specialM->upSpecialCom(array('sid' => $_POST['sid'], 'uid' => $_POST['uid']), array('famous' => $famous));
 
             if ($nid) {
-                $this->admin_json(0, '名企设置成功(sid=' . $_POST['sid'] . ',uid=' . $_POST['uid'] . ')');
+                $this->admin_json(0, yun_t('admin_model_00062', array('sid' => $_POST['sid'], 'uid' => $_POST['uid'])));
             } else {
                 $this->render_json(1, yun_at('admin_01449'));
             }
