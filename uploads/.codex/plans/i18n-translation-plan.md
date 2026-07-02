@@ -368,6 +368,8 @@ Batch 15 执行范围：财务/广告/问答模块 `app/template/admin/yunying/c
 
 Batch 16 执行范围：严格裸中文扫描命中的调试日志 `app/template/admin/yunying/special/component/special_view_audit.vue`、`app/template/admin/yunying/caiwu/xiaofei.html`、`chongzhidd.html`、`app/template/admin/tool/database/dataRecycle.html`、`app/template/admin/system/domain/domainAdminList.html`、`app/template/admin/system/domain/component/domainAdminGroup.vue`。本批只将分页 `console.log` 调试文案英文化；不改分页状态、接口参数、表格刷新和域名管理员权限逻辑。
 
+Batch 16 后严格裸中文扫描剩余项：`app/template/admin/js/xjhlive.js:200` 为聊天表情名称映射，按表情编码字典排除；`app/template/admin/login.htm:70` 为 `$config.code_web` 中 `后台登录` 的配置匹配值，不是展示文案；`app/template/admin/tool/weixin/addpubtemp.html:438` 为微信模板内容解析 `样式=` 标记，需确认上游模板协议后再决定是否改为 key/常量。
+
 ## 11. 推荐执行顺序
 
 1. 修复语言包损坏项和扫描脚本误报规则。
