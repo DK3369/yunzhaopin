@@ -133,7 +133,7 @@ class news_controller extends adminCommon
         $didData = array('did' => $_POST['did']);
         $siteDomain->updDid(array('news_base'), array('id' => array('in', $uid)), $didData);
         $siteDomain->updDid(array('news_content'),  array('nbid' => array('in', $uid)), $didData);
-        $this->admin_json(0, '新闻(ID:'.$_POST['uid'].')分配站点成功！');
+        $this->admin_json(0, yun_t('admin_model_00175', array('ids' => $_POST['uid'])));
     }
 
     /**
@@ -146,23 +146,23 @@ class news_controller extends adminCommon
         if(empty($_POST['proid'])){
             $this->render_json(1, yun_at('wap_01298'));
         }
-        //实例化新闻类
+        // Initialize article model.
         $articleM =	$this->MODEL('article');
         $baseWhereData = array('id' => array('in', $_POST['proid']));
         $list =	$articleM->getList($baseWhereData, array('field' => '`id`, `describe`'));
         if(empty($list['list'])){
             $this->render_json(1, yun_at('member_com_00051'));
         }
-        //保存新闻属性
+        // Save news property.
         if($typeStr == 'add'){
             $describe =	pylode(',', $_POST['describe']);
             if(empty($describe)){
                 $this->render_json(1, yun_at('admin_01331'));
             }
             $articleM->upBase($baseWhereData, array('describe' => $describe));
-            $this->admin_json(0, '新闻(ID:'.$_POST['proid'].'admin_neirong_00017');
+            $this->admin_json(0, yun_t('admin_model_00176', array('ids' => $_POST['proid'])));
         }
-        //删除新闻属性
+        // Remove news property.
         if($typeStr == 'del'){
             foreach($list['list'] as $key => $value){
                 if(!empty($value['describe'])){
@@ -175,7 +175,7 @@ class news_controller extends adminCommon
                     $articleM->upBase(array('id' => array('=', $value['id'])), array('describe' => pylode(',', $describe)));
                 }
             }
-            $this->admin_json(0, '新闻(ID:'.$_POST['proid'].'admin_neirong_00016');
+            $this->admin_json(0, yun_t('admin_model_00177', array('ids' => $_POST['proid'])));
         }
     }
 
@@ -281,10 +281,10 @@ class news_controller extends adminCommon
             //新闻类别
             $class = $articleM->getGroup(array('id' => $news['nid']));
             $info =	$news;
-            $data['news_title'] = $news['title'];//新闻名称
-            $data['news_keyword'] =	$news['keyword'];//描述
-            $data['news_class'] = $class['name'];//新闻类别
-            $data['news_desc'] = $this->GET_content_desc($news['description']);//描述
+            $data['news_title'] = $news['title']; // News title.
+            $data['news_keyword'] =	$news['keyword']; // Description.
+            $data['news_class'] = $class['name']; // News category.
+            $data['news_desc'] = $this->GET_content_desc($news['description']); // Description.
             $this->data = $data;
             $info['news_class'] = $class['name'];
             $info['last'] =	$news_last;
@@ -320,7 +320,7 @@ class news_controller extends adminCommon
         }
         $articleM =	$this->MODEL('article');
         $articleM->delNews(array('id' => array('in', $linkid)));
-        $this->admin_json(0, '新闻(ID:'.$linkid.')删除成功！');
+        $this->admin_json(0, yun_t('admin_model_00178', array('ids' => $linkid)));
     }
 
     /**
@@ -483,18 +483,18 @@ class news_controller extends adminCommon
             $this->render_json(1, yun_at('member_com_00056'));
         }
         $_POST = $this->post_trim($_POST);
-        if(isset($_POST['sort'])&& $_POST['sort'] >= 0){//修改排序
+        if(isset($_POST['sort'])&& $_POST['sort'] >= 0){ // Update sort.
             $articleM->updGroup(array('id' => array('=', $idStr)), array('sort' => $_POST['sort']));
-            $msg = '新闻类别(ID:'.$idStr.'admin_neirong_00020';
+            $msg = yun_t('admin_model_00179', array('id' => $idStr));
         }
-        if($_POST['name']){//修改类别名称
+        if($_POST['name']){ // Update category name.
             if($row['is_menu'] == 1){
                 $naviM = $this->MODEL('navigation');
                 $naviM->upNav(array('name' => $_POST['name']), array('news' => array('=', $idStr)));
                 $this->menu_cache_action();
             }
             $articleM->updGroup(array('id' => array('=', $idStr)), array('name' => $_POST['name']));
-            $msg = '新闻类别(ID:'.$idStr.'admin_neirong_00019';
+            $msg = yun_t('admin_model_00180', array('id' => $idStr));
         }
         $this->get_cache();
         $this->admin_json(0, $msg);
@@ -603,7 +603,7 @@ class news_controller extends adminCommon
         $naviM = $this->MODEL('navigation');
         $naviM->delNav(array('news' => array('=', $idStr)));
         $this->menu_cache_action();
-        $this->admin_json(0, '新闻类别导航('.$idStr.'admin_neirong_00023');
+        $this->admin_json(0, yun_t('admin_model_00181', array('id' => $idStr)));
     }
     /**
      * 内容 - 新闻 - 新闻类别

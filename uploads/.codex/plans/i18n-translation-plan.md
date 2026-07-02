@@ -390,6 +390,8 @@ Batch 24 执行范围：高频用户/企业/职位/简历后台模型 `admin/mod
 
 Batch 25 执行范围：剩余用户相关小模型 `admin/model/user/admin_appeal.class.php`、`admin_member.class.php`、`admin_loginlog.class.php`、`company_cert.class.php`、`company_comrating.class.php`、`company_news.class.php`、`company_product.class.php`、`company_pic.class.php`、`hotjob.class.php`、`partjob.class.php`、`weipin_once.class.php`、`weipin_tiny.class.php`。迁移管理员可见的返回消息、日志消息和触碰处注释，新增 key 从 `admin_model_00141` 继续。本批不改图片/文件处理、审核状态、刷新记录、分站分配、兼职/微招聘/名企删除和企业内容审核业务逻辑。
 
+Batch 26 执行范围：内容模块新闻与测评 `admin/model/neirong/news.class.php`、`evaluate.class.php`。迁移管理员可见的新闻分站、属性设置、删除、类别 ajax、导航取消，以及测评试题日志、试卷/问题/类别删除等运行态中文；新增 key 从 `admin_model_00175` 继续。本批不改新闻静态页生成、新闻内容字段、分类树结构、测评分数计算、上传处理、模型返回结构或业务状态值。
+
 ## 11. 推荐执行顺序
 
 1. 修复语言包损坏项和扫描脚本误报规则。

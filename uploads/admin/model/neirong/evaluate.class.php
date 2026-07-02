@@ -162,7 +162,7 @@ class evaluate_controller extends adminCommon
                             'option' => $v['option'],
                             'score' => $v['score']
                         ));
-                        $scale && $this->MODEL('log')->addAdminLog("测评问题(ID:" . $v['id'] . ")修改成功");
+                        $scale && $this->MODEL('log')->addAdminLog(yun_t('admin_model_00182', array('id' => $v['id'])));
                         !in_array($v['id'], $ids) && array_push($ids, $v['id']);
                     } else {
                         $scale = $EvaluateM->addEvaQuestion(array(
@@ -172,18 +172,18 @@ class evaluate_controller extends adminCommon
                             'examid' => intval($nid)
                         ));
                         if ($scale) {
-                            $this->MODEL('log')->addAdminLog("测评问题(ID:" . $scale . ")添加成功");
+                            $this->MODEL('log')->addAdminLog(yun_t('admin_model_00183', array('id' => $scale)));
                         }
                         !in_array($scale, $ids) && array_push($ids, $scale);
                     }
                 }
             }
-            $EvaluateM->delEvaQuestion($ids, intval($nid), 'notin');// 删除多余的试题
+            $EvaluateM->delEvaQuestion($ids, intval($nid), 'notin'); // Delete extra questions.
             $scale ? $this->admin_json(0, 'wap_js_00159', array('nid' => $nid)) : $this->render_json(1, yun_at('model_00003'));
         }
    }
 
-    //添加,更新问题
+    // Add or update questions.
     function ajaxsave_action(){
         $EvaluateM = $this->MODEL('evaluate');
         $ask = json_decode(stripslashes($_POST['ask']), 1);
@@ -196,7 +196,7 @@ class evaluate_controller extends adminCommon
                     'option' => $v['option'],
                     'score' => $v['score']
                 ));
-                $scale && $this->MODEL('log')->addAdminLog("测评问题(ID:" . $v['id'] . ")修改成功");
+                $scale && $this->MODEL('log')->addAdminLog(yun_t('admin_model_00182', array('id' => $v['id'])));
                 !in_array($v['id'], $ids) && array_push($ids, $v['id']);
             } else {
                 $scale = $EvaluateM->addEvaQuestion(array(
@@ -206,16 +206,16 @@ class evaluate_controller extends adminCommon
                     'examid' => intval($_POST['examid'])
                 ));
                 if($scale){
-                    $this->MODEL('log')->addAdminLog("测评问题(ID:".$scale.")添加成功");
+                    $this->MODEL('log')->addAdminLog(yun_t('admin_model_00183', array('id' => $scale)));
                 }
                 !in_array($scale, $ids) && array_push($ids, $scale);
             }
         }
-        $EvaluateM->delEvaQuestion($ids, intval($_POST['examid']), 'notin');// 删除多余的试题
+        $EvaluateM->delEvaQuestion($ids, intval($_POST['examid']), 'notin'); // Delete extra questions.
         $this->render_json(0, yun_at('wap_user_00264'));
     }
 
-    //删除测评试卷
+    // Delete evaluation paper.
     function delevaluate_action(){
         $EvaluateM = $this->MODEL('evaluate');
         if($_POST['del']){
@@ -225,21 +225,21 @@ class evaluate_controller extends adminCommon
             }
             if(is_array($del)){
                 $this->delevagroup($del);
-                $this->admin_json(0, '测评试卷(ID:'.@implode(',',$del).')删除成功！');
+                $this->admin_json(0, yun_t('admin_model_00184', array('ids' => @implode(',', $del))));
             } else {
                 $result	= $EvaluateM->delevaluate($del);
-                isset($result) ? $this->admin_json(0, '测评试卷(ID:' . $del . ')删除成功！') : $this->render_json(1,'admin_user_00186');
+                isset($result) ? $this->admin_json(0, yun_t('admin_model_00184', array('ids' => $del))) : $this->render_json(1,'admin_user_00186');
             }
         }
     }
 
-    //删除问题
+    // Delete question.
     function delquestion_action(){
         $EvaluateM = $this->MODEL('evaluate');
         if($_POST['qid']){
             $qid = $_POST['qid'];
             $scale = $EvaluateM->delEvaQuestion($qid);
-            isset($scale) ? $this->admin_json(0, '测评问题(ID:'.$qid.')删除成功！') : $this->render_json(1, 'admin_user_00186');
+            isset($scale) ? $this->admin_json(0, yun_t('admin_model_00185', array('id' => $qid))) : $this->render_json(1, 'admin_user_00186');
         }
     }
 
@@ -314,11 +314,11 @@ class evaluate_controller extends adminCommon
         $this->render_json(0, yun_at('wap_user_00264'));
     }
 
-    //删除测评类别
+    // Delete evaluation category.
     function delgroup_action(){
         $EvaluateM = $this->MODEL('evaluate');
-        // 删除分组   删除该分组下的所有试卷。
-        // 该分组下所有的试卷的id
+        // Delete the group and all papers under it.
+        // IDs of all papers under the group.
         $id	= intval($_POST['del']);
         if (!$id) {
             $this->render_json(1, yun_at('admin_user_weipin_00005'));
@@ -330,7 +330,7 @@ class evaluate_controller extends adminCommon
         }
         $this->delevagroup($ids);
         $result	= $EvaluateM->delEvaluateGroup($id);
-        isset($result) ? $this->admin_json(0, '测评类别(ID:'.$_GET['id'].')删除成功！') : $this->render_json(1,'admin_user_00186');
+        isset($result) ? $this->admin_json(0, yun_t('admin_model_00186', array('id' => $id))) : $this->render_json(1,'admin_user_00186');
     }
 
     //测评留言管理列表
