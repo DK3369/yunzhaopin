@@ -342,6 +342,8 @@ Batch 2 执行范围：后台壳页 `app/template/admin/index.htm`、共享组�
 
 Batch 3 执行范围：职位相关高频文件 `app/template/admin/user/company/component/company_job.vue`、`joball.vue`、`partjob.vue`。本批先处理中文注释英文化和裸默认文案复核，保持 API 字段、状态值、路由和业务逻辑不变。
 
+Batch 4 执行范围：用户/企业核心大文件 `app/template/admin/user/users/component/usersall.vue`、`app/template/admin/user/company/component/companyuser.vue`。扫描器未发现可见裸中文时，本批只清理中文注释和注释掉的旧模板片段；发现可见文案时必须进入语言包或复用已有 key。
+
 ## 11. 推荐执行顺序
 
 1. 修复语言包损坏项和扫描脚本误报规则。

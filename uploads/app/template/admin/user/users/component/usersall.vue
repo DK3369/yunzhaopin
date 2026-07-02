@@ -14,7 +14,7 @@
                     </el-select>
                 </el-input>
             </div>
-            <!--收起部分-->
+            <!-- Collapsed section -->
             <div class="tableSeachInpt tableSeachInptsmall" :class="{ 'searchbutnOnff': seachbutn }">
                 <el-select v-model="searchForm.time_type" size="small" slot="prepend" :placeholder="lc('admin_user_00135')" clearable @change="handleTimeChange">
                     <el-option :label="lc('admin_user_00129')" value="adtime"></el-option>
@@ -226,7 +226,7 @@
                 </el-pagination>
             </div>
         </div>
-        <!--删除弹窗-->
+        <!-- Delete dialog -->
         <div class="modluDrawer">
             <el-dialog :title="lc('admin_00547')" :visible.sync="dialogDel" :with-header="true" append-to-body :show-close="true"
                 width="300px">
@@ -242,7 +242,7 @@
                 </span>
             </el-dialog>
         </div>
-        <!--身份认证弹窗-->
+        <!-- Identity verification dialog -->
         <div class="modluDrawer">
             <el-dialog :title="lc('wap_01030')" :visible.sync="dialogIdcardRz" :with-header="true" :modal-append-to-body="false"
                 :show-close="true" width="450px">
@@ -272,7 +272,7 @@
                 </span>
             </el-dialog>
         </div>
-        <!--手机认证弹窗-->
+        <!-- Mobile verification dialog -->
         <div class="modluDrawer">
             <el-dialog :title="lc('member_com_00071')" :visible.sync="dialogMoblieRz" :with-header="true" :modal-append-to-body="false"
                 :show-close="true" width="450px">
@@ -288,7 +288,7 @@
                 </span>
             </el-dialog>
         </div>
-        <!--邮箱认证弹窗-->
+        <!-- Email verification dialog -->
         <div class="modluDrawer">
             <el-dialog :title="lc('wap_com_00186')" :visible.sync="dialogEmailRz" :with-header="true" :modal-append-to-body="false"
                 :show-close="true" width="450px">
@@ -304,8 +304,8 @@
                 </span>
             </el-dialog>
         </div>
-        <!--投递岗位弹窗-->
-        <!--新增个人用户弹窗-->
+        <!-- Applied jobs dialog -->
+        <!-- Add individual user dialog -->
         <div class="modluDrawer">
             <el-dialog :title="lc('admin_00548')" :visible.sync="dialogAdd" :append-to-body="true" width="450px">
                 <div>
@@ -380,7 +380,7 @@
                 </span>
             </el-dialog>
         </div>
-        <!--账户合并弹窗-->
+        <!-- Account merge dialog -->
         <div class="modluDrawer">
             <el-dialog :title="lc('admin_user_00280')" :visible.sync="dialogAccountMerge" :with-header="true" :modal-append-to-body="false"
                 :show-close="true" width="450px" append-to-body>
@@ -388,7 +388,7 @@
                     <div class="wxsettip_small ">{{ lc('default_00330') }}</div>
                     <div class="">{{ lc("admin_name_value", [detail.username_n]) }} {{ lc("admin_account_value", [detail.username]) }}</div>
                     <div class="wxsettip_small ">{{ lc('wap_com_00157') }}</div>
-                    <!--<el-input v-model="ruleFormAccountMerge.com_uid" placeholder="请输入企业名称"></el-input>-->
+                    <!--<el-input v-model="ruleFormAccountMerge.com_uid" placeholder="Enter company name"></el-input>-->
                     <el-autocomplete style="width: 100%;" v-model="AccountMergeComname" :fetch-suggestions="querySearchCom"
                         value-key="name" :placeholder="lc('wap_user_00149')" @select="handleSelectCom"></el-autocomplete>
                     <el-divider content-position="left">{{ lc('admin_user_00270') }}</el-divider>
@@ -414,7 +414,7 @@
                 </span>
             </el-dialog>
         </div>
-        <!--删除弹窗-->
+        <!-- Delete dialog -->
         <div class="modluDrawer">
             <el-dialog :title="lc('admin_00549')" :visible.sync="scdrawer" :with-header="true" :modal-append-to-body="false"
                 :show-close="true" width="450px" append-to-body>
@@ -425,8 +425,8 @@
                 </span>
             </el-dialog>
         </div>
-        <!--预览简历弹窗-->
-        <!--账户信息弹窗-->
+        <!-- Resume preview dialog -->
+        <!-- Account information dialog -->
         <div class="modluDrawer">
             <el-dialog :title="lc('admin_user_00191')" :visible.sync="dialogAccount" :with-header="true" :modal-append-to-body="false"
                 :show-close="true" width="450px" append-to-body>
@@ -452,7 +452,7 @@
                 </span>
             </el-dialog>
         </div>
-        <!--个人详情弹窗-->
+        <!-- Individual details dialog -->
         <el-drawer :title="lc('admin_user_00291')" :visible.sync="drawerDetail" @closed="closedDetail" :modal-append-to-body="false" size="95%"
             :append-to-body="true">
             <div class="shbox">
@@ -493,7 +493,7 @@
                             </el-button>
                         </div>
                     </div>
-                    <!--个人详情详情切换-->
+                    <!-- Individual details tab switch -->
                     <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
                         <el-tab-pane :label="lc('admin_00550')" name="resume">
                             <div v-loading="expectLoading">
@@ -536,7 +536,7 @@
                                     <div class="cominfo" v-if="resume.address"><i class="el-icon-location-information"></i>
                                         {{ lc("admin_detail_address_value", [resume.address]) }}</div>
                                 </div>
-                                <!--个人优势-->
+                                <!-- Personal strengths -->
                                 <div class="user_resume_list">
                                     <div class="shshow_tit">
                                         <i class="el-icon-medal-1"></i> {{ lc('wap_user_00326') }}
@@ -557,7 +557,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <!--求职意向-->
+                                <!-- Job intention -->
                                 <div class="user_resume_list">
                                     <div class="shshow_tit"><i class="el-icon-notebook-2"></i> {{ lc('wap_00460') }} </div>
                                     <div class="shshow_p" v-if="expectData.expect">
@@ -579,10 +579,10 @@
                                         </div>
                                     </div>
                                 </div>
-                                <!--工作经历-->
+                                <!-- Work experience -->
                                 <div class="user_resume_list">
                                     <div class="shshow_tit"> <i class="el-icon-suitcase-1"></i> {{ lc('wap_00457') }} </div>
-                                    <!--循环-->
+                                    <!-- Loop -->
                                     <div class="user_resume_show" v-for="(work, workkey) in expectData.work">
                                         <div class="user_resume_addname ">{{ work.name }}
                                             <el-button type="text" @click="openWork(workkey)">
@@ -598,7 +598,7 @@
                                         </div>
                                         <div class="user_resume_ms">{{ work.content }}</div>
                                     </div>
-                                    <!--循环-->
+                                    <!-- Loop -->
                                     <div class="user_resume_add">
                                         <div class="">{{ lc('admin_user_00195') }}</div>
                                         <div class="user_resume_addbth">
@@ -608,10 +608,10 @@
                                         </div>
                                     </div>
                                 </div>
-                                <!--教育经历-->
+                                <!-- Education experience -->
                                 <div class="user_resume_list">
                                     <div class="shshow_tit"> <i class="el-icon-school"></i> {{ lc('wap_00459') }} </div>
-                                    <!--循环-->
+                                    <!-- Loop -->
                                     <div class="user_resume_show" v-for="(edu, edukey) in expectData.edu">
                                         <div class="user_resume_addname ">{{ edu.name }}
                                             <el-button type="text" @click="openEdu(edukey)">
@@ -628,7 +628,7 @@
                                             <div class="user_resume_time">{{ edu.sdate_n }}-{{ edu.edate_n }}</div>
                                         </div>
                                     </div>
-                                    <!--循环-->
+                                    <!-- Loop -->
                                     <div class="user_resume_add">
                                         <div class="">{{ lc('admin_user_00202') }} </div>
                                         <div class="user_resume_addbth">
@@ -638,10 +638,10 @@
                                         </div>
                                     </div>
                                 </div>
-                                <!--培训经历-->
+                                <!-- Training experience -->
                                 <div class="user_resume_list">
                                     <div class="shshow_tit"> <i class="el-icon-data-analysis"></i> {{ lc('wap_00455') }} </div>
-                                    <!--循环-->
+                                    <!-- Loop -->
                                     <div class="user_resume_show" v-for="(training, trainingKey) in expectData.training">
                                         <div class="user_resume_addname ">{{ training.name }}
                                             <el-button type="text" @click="openTraining(trainingKey)">
@@ -659,7 +659,7 @@
                                         </div>
                                         <div class="user_resume_ms">{{ training.content }}</div>
                                     </div>
-                                    <!--循环-->
+                                    <!-- Loop -->
                                     <div class="user_resume_add">
                                         <div class="">{{ lc('admin_user_00197') }}</div>
                                         <div class="user_resume_addbth">
@@ -669,10 +669,10 @@
                                         </div>
                                     </div>
                                 </div>
-                                <!--职业技能-->
+                                <!-- Professional skills -->
                                 <div class="user_resume_list">
                                     <div class="shshow_tit"><i class="el-icon-reading"></i> {{ lc('wap_00461') }}</div>
-                                    <!--循环-->
+                                    <!-- Loop -->
                                     <div class="user_resume_show" v-for="(skill, skillkey) in expectData.skill">
                                         <div class="user_resume_addname ">{{ skill.name }}
                                             <el-button type="text" @click="openSkill(skillkey)">
@@ -690,7 +690,7 @@
                                             <img :src="skill.pic" width="95" height="70" :preview-src-list="skill.pic">
                                         </div>
                                     </div>
-                                    <!--循环-->
+                                    <!-- Loop -->
                                     <div class="user_resume_add">
                                         <div class="">{{ lc('admin_user_00199') }}</div>
                                         <div class="user_resume_addbth">
@@ -700,10 +700,10 @@
                                         </div>
                                     </div>
                                 </div>
-                                <!--项目经历-->
+                                <!-- Project experience -->
                                 <div class="user_resume_list">
                                     <div class="shshow_tit"><i class="el-icon-wallet"></i> {{ lc('wap_00465') }} </div>
-                                    <!--循环-->
+                                    <!-- Loop -->
                                     <div class="user_resume_show" v-for="(project, projectkey) in expectData.project">
                                         <div class="user_resume_addname ">{{ project.name }}
                                             <el-button type="text" @click="openProject(projectkey)">
@@ -719,7 +719,7 @@
                                         </div>
                                         <div class="user_resume_ms">{{ project.content }}</div>
                                     </div>
-                                    <!--循环-->
+                                    <!-- Loop -->
                                     <div class="user_resume_add">
                                         <div class="">{{ lc('admin_user_00194') }}</div>
                                         <div class="user_resume_addbth">
@@ -729,10 +729,10 @@
                                         </div>
                                     </div>
                                 </div>
-                                <!--其他描述-->
+                                <!-- Other description -->
                                 <div class="user_resume_list" style="padding-bottom:80px; ;">
                                     <div class="shshow_tit"> <i class="el-icon-mic"></i> {{ lc('admin_00068') }} </div>
-                                    <!--循环-->
+                                    <!-- Loop -->
                                     <div class="user_resume_show" v-for="(other, otherkey) in expectData.other">
                                         <div class="user_resume_addname ">{{ other.name }}
                                             <el-button type="text" @click="openOther(otherkey)">
@@ -744,7 +744,7 @@
                                         </div>
                                         <div class="user_resume_ms">{{ other.content }}</div>
                                     </div>
-                                    <!--循环-->
+                                    <!-- Loop -->
                                     <div class="user_resume_add">
                                         <div class="">{{ lc('admin_user_00215') }}</div>
                                         <div class="user_resume_addbth">
@@ -887,13 +887,13 @@
                                             </li>
                                             <!--<li>-->
                                             <!--	<div class="dt_time">08:35</div>-->
-                                            <!--	<div class="dt_name">浏览职位</div>-->
-                                            <!--	<div class="dt_mx">黄灿灿 浏览了 红河州勤行设计装饰工程有限公司 的 行政资料员</div>-->
+                                            <!--	<div class="dt_name">Viewed job</div>-->
+                                            <!--	<div class="dt_mx">Sample user viewed a sample company job</div>-->
                                             <!--</li>-->
                                             <!--<li>-->
                                             <!--	<div class="dt_time">10:39</div>-->
-                                            <!--	<div class="dt_name">访问行为</div>-->
-                                            <!--	<div class="dt_mx">黄灿灿 访问了求职小助手</div>-->
+                                            <!--	<div class="dt_name">Visit behavior</div>-->
+                                            <!--	<div class="dt_mx">Sample user visited the job assistant</div>-->
                                             <!--</li>-->
                                         </ul>
                                     </div>
@@ -906,8 +906,8 @@
                         </el-tab-pane>
                         <el-tab-pane :label="lc('admin_00556')" name="pay">
                             <!--<div class="admin_datatip">-->
-                            <!--	<i class="el-icon-document"></i> {{ lc("admin_data_stats") }}目前拥有积分 3526-->
-                            <!--	<span class="admin_datatip_n">共消费积分：13625 </span>-->
+                            <!--	<i class="el-icon-document"></i> {{ lc("admin_data_stats") }} Current points: 3526-->
+                            <!--	<span class="admin_datatip_n">Total points spent: 13625 </span>-->
                             <!--</div>-->
                             <div class="moduleElHight">
                                 <div class="moduleElTable"
@@ -941,7 +941,7 @@
                     </el-tabs>
                 </div>
             </div>
-            <!---编辑简历 基本资料-->
+            <!-- Edit resume basic information -->
             <el-drawer :title="lc('admin_00475')" :append-to-body="true" :visible.sync="drawerBasic" :wrapper-closable="false"
                 size="60%">
                 <div class="uploadTable" style="padding:0px 20px;">
@@ -1179,7 +1179,7 @@
                     <el-button type="primary" size="medium" @click="submitBasic">{{ lc('common.submit') }}</el-button>
                 </div>
             </el-drawer>
-            <!---编辑求职意向-->
+            <!-- Edit job intention -->
             <el-drawer :title="lc('admin_00483')" :append-to-body="true" :visible.sync="drawerJob" :wrapper-closable="false" size="60%">
                 <div class="uploadTable" style="padding:0px 20px;">
                     <table class="tableVue">
@@ -1207,7 +1207,7 @@
                                 </td>
                                 <td>
                                     <div class="TableSelect">
-                                        <!--7.0 统一类别选择-->
+                                        <!-- 7.0 unified category selector -->
                                         <job_class multiple :max="5" @confirm="confirmJob" :selected="jobSelected">
                                         </job_class>
                                     </div>
@@ -1219,7 +1219,7 @@
                                 </td>
                                 <td>
                                     <div class="TableSelect">
-                                        <!--7.0 统一城市选择-->
+                                        <!-- 7.0 unified city selector -->
                                         <city_class multiple :max="5" @confirm="confirmCity" :selected="citySelected">
                                         </city_class>
                                     </div>
@@ -1309,7 +1309,7 @@
                 </div>
             </el-drawer>
         </el-drawer>
-        <!---编辑个人优势-->
+        <!-- Edit personal strengths -->
         <div class="modluDrawer">
             <el-dialog :title="lc('wap_user_00326')" :visible.sync="dialogTag" :with-header="true" :modal-append-to-body="false"
                 :show-close="true" width="450px" append-to-body>
@@ -1338,7 +1338,7 @@
                 </span>
             </el-dialog>
         </div>
-        <!---编辑工作经历-->
+        <!-- Edit work experience -->
         <div class="modluDrawer">
             <el-dialog :title="lc('wap_00457')" :visible.sync="dialogWork" :with-header="true" :modal-append-to-body="false"
                 :show-close="true" width="450px" append-to-body>
@@ -1372,7 +1372,7 @@
                 </span>
             </el-dialog>
         </div>
-        <!---编辑学历-->
+        <!-- Edit education -->
         <div class="modluDrawer">
             <el-dialog :title="lc('wap_00459')" :visible.sync="dialogEdu" :with-header="true" :modal-append-to-body="false"
                 :show-close="true" width="450px" append-to-body>
@@ -1406,7 +1406,7 @@
                 </span>
             </el-dialog>
         </div>
-        <!---编辑培训经历-->
+        <!-- Edit training experience -->
         <div class="modluDrawer">
             <el-dialog :title="lc('wap_00455')" :visible.sync="dialogTraining" :with-header="true" :modal-append-to-body="false"
                 :show-close="true" width="450px" append-to-body>
@@ -1435,7 +1435,7 @@
                 </span>
             </el-dialog>
         </div>
-        <!---编辑项目经历-->
+        <!-- Edit project experience -->
         <div class="modluDrawer">
             <el-dialog :title="lc('wap_00465')" :visible.sync="dialogProject" :with-header="true" :modal-append-to-body="false"
                 :show-close="true" width="450px" append-to-body>
@@ -1463,7 +1463,7 @@
                 </span>
             </el-dialog>
         </div>
-        <!---编辑其他-->
+        <!-- Edit other details -->
         <div class="modluDrawer">
             <el-dialog :title="lc('admin_user_00216')" :visible.sync="dialogOther" :with-header="true" :modal-append-to-body="false"
                 :show-close="true" width="450px" append-to-body>
@@ -1482,7 +1482,7 @@
                 </span>
             </el-dialog>
         </div>
-        <!---编辑技能-->
+        <!-- Edit skills -->
         <div class="modluDrawer">
             <el-dialog :title="lc('wap_00461')" :visible.sync="dialogSkill" :with-header="true" :modal-append-to-body="false"
                 :show-close="true" width="450px" append-to-body>
@@ -1520,7 +1520,7 @@
                 </span>
             </el-dialog>
         </div>
-        <!--新增简历-->
+        <!-- Add resume -->
         <div class="modluDrawer">
             <el-drawer :title="lc('admin_user_00193')" :visible.sync="drawerResume" append-to-body :wrapper-closable="false" size="45%">
                 <add :uid="detail.uid" @child-event="closeResume"></add>
@@ -1594,10 +1594,10 @@ module.exports = {
                 type: '',
                 label: lc('admin_user_00149')
             },],
-            // 来源
+            // Source
             source: {},
 
-            // 搜索筛选项
+            // Search filters
             searchList: [],
             searchForm: {
                 type: 1,
@@ -1667,7 +1667,7 @@ module.exports = {
 
             checkedAll: false, // {{ lc('wap_js_00074') }}
             checkedAllIndeterminate: false,
-            multipleSelection: [], // 多选值存储
+            multipleSelection: [], // Multi-select value storage
             idArr: [],
 
             detail: {},
@@ -1678,13 +1678,13 @@ module.exports = {
 
             saveLoading: false,
 
-            // 身份证认证
+            // ID card verification
             dialogIdcardRz: false,
             ruleFormIdcardRz: {},
             // mobileverification
             dialogMoblieRz: false,
             ruleFormMobileRz: {},
-            // 邮件认证
+            // Email verification
             dialogEmailRz: false,
             ruleFormEmailRz: {},
 
@@ -1692,7 +1692,7 @@ module.exports = {
             dialogAuth: false,
             ruleFormAuth: {},
 
-            // 分站切换
+            // Subsite switch
             dialogDomain: false,
             ruleFormDomain: {},
             domainList: {},
@@ -1748,7 +1748,7 @@ module.exports = {
             minsalaryList: [],
             maxsalaryList: [],
 
-            todayCheck: false, // 至今选中
+            todayCheck: false, // Present selected
 
             // Work experience
             dialogWork: false,
@@ -1764,7 +1764,7 @@ module.exports = {
             indexTraining: -1,
             daterangeTraining: [],
             ruleFormTraining: {},
-            // 技能提升
+            // Skill improvement
             dialogSkill: false,
             indexSkill: -1,
             ruleFormSkill: {},
@@ -1790,7 +1790,7 @@ module.exports = {
                 limit: 0,
                 total: 0
             },
-            // 行为分析
+            // Behavior analysis
             behavior: {
                 reverseone: true,
                 daterange: '',
@@ -1803,20 +1803,20 @@ module.exports = {
                 pageCode: '',
                 xialaStatus: true
             },
-            // 个人动态
+            // Individual activity
             userLog: {
                 page: 1,
                 limit: 0,
                 list: null
             },
-            // 积分管理
+            // Points management
             payLog: {
                 page: 1,
                 limit: 0,
                 total: 0
             },
 
-            // 新增简历
+            // Add resume
             drawerResume: false,
 
             pic_accept: localStorage.getItem("pic_accept"),
@@ -1889,7 +1889,7 @@ module.exports = {
         }, 200)
     },
     methods: {
-        //用来阻止第二次或更多次点击密码输入框时下拉用户密码清单的框一闪而过的问题
+        // Prevent password dropdown flicker after repeated password-field clicks
         pwdMousedown(){
             var that = this
             this.pwdreadonly = true
@@ -1903,7 +1903,7 @@ module.exports = {
                 setTimeout(function(){ that.pwdreadonly = false, 100})
             }
         },
-        // 修改密码框readonly{{ lc('wap_js_00085') }}，防止密码框展示浏览器记录的密码信息
+        // Temporarily change password readonly state to prevent browser password history suggestions
         readonlyCtl: function(res){
             var that = this
             setTimeout(function(){
@@ -1918,14 +1918,14 @@ module.exports = {
             this.mouseFlag = false;
         },
         mouseMoveHandler(e) {
-            // 这里面需要注意，{{ lc('admin_user_company_00161') }}ref需要那个那个包含table元素的父元素
+            // The ref must point to the parent element that contains the table element
             let divData = this.$refs.multipleTable.bodyWrapper;
             if (this.mouseFlag) {
-                // 设置水平方向的元素的位置
+                // Set horizontal scroll position
                 divData.scrollLeft -= (- this.mouseOffset + (this.mouseOffset = e.clientX));
             }
         },
-        // 跳转会员中心前检测
+        // Check before jumping to member center
         memberCheck: function (uid, usertype) {
             var that = this
             var tip = ''
@@ -1947,7 +1947,7 @@ module.exports = {
                 that.jumpToMember(uid);
             }
         },
-        // 跳转到会员中心
+        // Jump to member center
         jumpToMember: function (uid) {
             let tmpWin = window.open('', '_blank')
             var params = { uid: uid }
@@ -2053,10 +2053,10 @@ module.exports = {
                 that.total = parseInt(data.total);
                 that.pageSizes = data.page_sizes;
                 if (that.limit === 0) {
-                    that.limit = parseInt(data.limit); // 取系统配置默认数量
+                    that.limit = parseInt(data.limit); // Use default count from system config
                 }
                 if (that.page > data.page) {
-                    that.page = parseInt(data.page); // 最后一页被删除后，取最新的页数
+                    that.page = parseInt(data.page); // Use latest page after the last page is deleted
                 }
                 if (that.prevPage != that.page) {
                     that.prevPage = that.page;
@@ -2070,7 +2070,7 @@ module.exports = {
             })
         },
 
-        // 批量操作
+        // Batch operation
         handleSelectionChange(val) {
             if (val.length == 0) {
                 this.checkedAll = false;
@@ -2145,7 +2145,7 @@ module.exports = {
                     message.error(res.msg);
                 } else {
                     that.dialogDel = false;
-                    that.refreshList = false; // 删除时关闭详情弹窗，不触发关闭事件的刷新
+                    that.refreshList = false; // Close details dialog on delete without triggering close-refresh event
                     that.drawerDetail = false;
                     that.getList();
                     that.$refs.multipleTable.clearSelection();
@@ -2154,7 +2154,7 @@ module.exports = {
             })
         },
 
-        // 身份证认证
+        // ID card verification
         idcardRz(row) {
             this.detail = row;
             this.ruleFormIdcardRz = {
@@ -2230,7 +2230,7 @@ module.exports = {
                 }
             })
         },
-        // 邮件认证
+        // Email verification
         emailRz(row) {
             this.detail = row;
             this.ruleFormEmailRz = {
@@ -2269,7 +2269,7 @@ module.exports = {
             })
         },
 
-        // 查询手机归属地
+        // Query mobile location
         getMobileAddress(index) {
             let that = this,
                 row = that.list[index];
@@ -2294,7 +2294,7 @@ module.exports = {
                 }
             })
         },
-        // 查询IP归属地
+        // Query IP location
         getIpAddress(index) {
             let that = this,
                 row = that.list[index];
@@ -2325,7 +2325,7 @@ module.exports = {
                 this.detail = {};
                 this.$set(this.ruleFormDomain, 'uid', this.idArr);
                 this.$set(this.ruleFormDomain, 'did', '');
-            } else { // 单个操作
+            } else { // Single operation
                 this.detail = row;
                 this.$set(this.ruleFormDomain, 'uid', row.uid);
                 this.$set(this.ruleFormDomain, 'did', row.did && this.domainList[row.did] ? '' + row.did : '');
@@ -2356,7 +2356,7 @@ module.exports = {
                         that.getList();
                     } else { // {{ lc('common_01711') }}
                         that.refreshList = true;
-                        // 重新拉取详情
+                        // Reload details
                         that.getDetail(ruleForm.uid);
                     }
                     message.success(res.msg)
@@ -2426,28 +2426,28 @@ module.exports = {
             this.$data[form][key] = val.replace(/[^0-9Xx.]/g, '');
         },
 
-        // 打开详情
+        // Open details
         openDetail(index, row) {
             this.expectLoading = true;
             this.index = index;
             this.detail = row;
             this.getDetail();
 
-            // 存在默认标签，加载默认标签数据
+            // Load default tag data when a default tag exists
             if (this.activeName == 'sqlog') {
                 this.getJobSqLog();
             }
 
             this.drawerDetail = true;
         },
-        // 关闭详情
+        // Close details
         closedDetail() {
             if (this.refreshList) {
                 this.getList();
             }
             this.resetDetail();
         },
-        // 重置详情加载的数据
+        // Reset loaded detail data
         resetDetail() {
             this.activeName = 'resume';
             // {{ lc('admin_00551') }}
@@ -2462,7 +2462,7 @@ module.exports = {
                 limit: 0,
                 total: 0
             });
-            // 行为分析
+            // Behavior analysis
             this.behavior = {
                 reverseone: true,
                 daterange: '',
@@ -2488,7 +2488,7 @@ module.exports = {
                 total: 0
             });
         },
-        // 获取详情
+        // Get details
         async getDetail() {
             let response = await httpPost('m=user&c=users_member&a=edit', { uid: this.detail.uid });
             let that = this,
@@ -2635,7 +2635,7 @@ module.exports = {
                 } else {
                     that.dialogAccount = false;
                     that.refreshList = true;
-                    // 重新拉取详情
+                    // Reload details
                     that.getDetail(ruleForm.uid);
                     message.success(res.msg);
                 }
@@ -2692,7 +2692,7 @@ module.exports = {
                     message.error(res.msg);
                 } else {
 
-                    // 重新拉取详情
+                    // Reload details
                     //that.getDetail();
                     message.success(res.msg, function () {
                         that.dialogAccountMerge = false;
@@ -2718,7 +2718,7 @@ module.exports = {
             }, lc('admin_user_00274'))
         },
 
-        // 编辑资料
+        // Edit profile
         openBasic() {
             let resume = this.resume;
             this.ruleFormBasic = {
@@ -2745,7 +2745,7 @@ module.exports = {
             };
             this.drawerBasic = true;
         },
-        // 上传时触发
+        // Triggered during upload
         handleChangeWxewm(file, fileList) {
             this.$set(this.ruleFormBasic, 'file', file.raw);
             this.$set(this.ruleFormBasic, 'wxewm_n', file.url);
@@ -2780,7 +2780,7 @@ module.exports = {
                 } else {
                     that.drawerBasic = false;
                     that.refreshList = true;
-                    // 重新拉取详情
+                    // Reload details
                     that.getDetail(ruleForm.uid);
                     message.success(res.msg, function () {
                         that.saveLoading = false;
@@ -2804,7 +2804,7 @@ module.exports = {
             if (resume.arrayTag && resume.arrayTag.length > 0) {
                 resume.arrayTag.forEach(function (item) {
                     if (userTag.indexOf(item) < 0) {
-                        userTag.push(item); // 不在已有标签里的,追加标签
+                        userTag.push(item); // Append tags that are not already present
                     }
                 })
             }
@@ -2852,9 +2852,9 @@ module.exports = {
             let tag = this.ruleFormTag.tag,
                 index = tag.indexOf(val);
 
-            if (index > -1) { // 二次点击取消选中
+            if (index > -1) { // Second click cancels selection
                 tag.splice(index, 1);
-            } else { // 首次点击选中
+            } else { // First click selects
                 if (tag.length >= 5) {
                     message.error(lc('admin_user_00206'));
                     return false;
@@ -3015,7 +3015,7 @@ module.exports = {
                 } else {
                     that.drawerJob = false;
                     that.refreshList = true;
-                    // 重新拉取详情
+                    // Reload details
                     that.getDetail(ruleForm.uid);
                     message.success(res.msg, function () {
                         that.saveLoading = false;
@@ -3024,7 +3024,7 @@ module.exports = {
             })
         },
 
-        // 至今选择
+        // Select present
         todayChange(val, type) {
             if (type == 'work') {
                 this.$set(this.ruleFormWork, 'edate', '');
@@ -3112,7 +3112,7 @@ module.exports = {
                     that.dialogWork = false;
                     that.refreshList = true;
 
-                    // 拼接工作经历数据 - 减少请求服务器
+                    // Build experience data locally to reduce server requests
                     if (ruleForm.id == '') {
                         let work = deepClone(ruleForm);
                         work.id = res.data.id;
@@ -3155,7 +3155,7 @@ module.exports = {
                     name: edu.name,
                     education: edu.education > 0 ? edu.education : '',
                     specialty: edu.specialty,
-                    title: '', // 此字段没实际意义，暂时占位
+                    title: '', // Placeholder field with no current business meaning
                 };
                 this.daterangeEdu = [
                     new Date(edu.sdate_n),
@@ -3172,7 +3172,7 @@ module.exports = {
                     edate: '',
                     education: '',
                     specialty: '',
-                    title: '', // 此字段没实际意义，暂时占位
+                    title: '', // Placeholder field with no current business meaning
                 };
                 this.daterangeEdu = [];
                 this.indexEdu = -1
@@ -3221,7 +3221,7 @@ module.exports = {
                     that.dialogEdu = false;
                     that.refreshList = true;
 
-                    // 拼接工作经历数据 - 减少请求服务器
+                    // Build experience data locally to reduce server requests
                     if (ruleForm.id == '') {
                         let edu = deepClone(ruleForm);
                         edu.id = res.data.id;
@@ -3323,7 +3323,7 @@ module.exports = {
                     that.dialogTraining = false;
                     that.refreshList = true;
 
-                    // 拼接工作经历数据 - 减少请求服务器
+                    // Build experience data locally to reduce server requests
                     if (ruleForm.id == '') {
                         let training = deepClone(ruleForm);
                         training.id = res.data.id;
@@ -3380,7 +3380,7 @@ module.exports = {
 
             this.dialogSkill = true;
         },
-        // 上传时触发
+        // Triggered during upload
         handleChangeSkillPic(file, fileList) {
             this.$set(this.ruleFormSkill, 'file', file.raw);
             this.$set(this.ruleFormSkill, 'pic_n', file.url);
@@ -3425,7 +3425,7 @@ module.exports = {
                     that.dialogSkill = false;
                     that.refreshList = true;
 
-                    // 拼接工作经历数据 - 减少请求服务器
+                    // Build experience data locally to reduce server requests
                     if (ruleForm.id == '') {
                         let skill = deepClone(ruleForm);
                         skill.id = res.data.id;
@@ -3523,7 +3523,7 @@ module.exports = {
                     that.dialogProject = false;
                     that.refreshList = true;
 
-                    // 拼接工作经历数据 - 减少请求服务器
+                    // Build experience data locally to reduce server requests
                     if (ruleForm.id == '') {
                         let project = deepClone(ruleForm);
                         project.id = res.data.id;
@@ -3605,7 +3605,7 @@ module.exports = {
                     that.dialogOther = false;
                     that.refreshList = true;
 
-                    // 拼接工作经历数据 - 减少请求服务器
+                    // Build experience data locally to reduce server requests
                     if (ruleForm.id == '') {
                         let other = deepClone(ruleForm);
                         other.id = res.data.id;
@@ -3624,7 +3624,7 @@ module.exports = {
             })
         },
 
-        // 公用删除附表数据
+        // Common delete for related table data
         delResumeFb(type, index, id) {
             let that = this,
                 expectData = that.expectData;
@@ -3649,7 +3649,7 @@ module.exports = {
             }, lc('admin_user_00204'));
         },
 
-        // 投递记录
+        // Application records
         handleSizeChangeJobSqlLog(val) {
             this.jobSqLog.limit = val;
             this.getJobSqLog();
@@ -3675,10 +3675,10 @@ module.exports = {
                 jobSqLog.total = parseInt(data.total);
                 jobSqLog.pageSizes = data.page_sizes;
                 if (jobSqLog.limit === 0) {
-                    jobSqLog.limit = parseInt(data.limit); // 取系统配置默认数量
+                    jobSqLog.limit = parseInt(data.limit); // Use default count from system config
                 }
                 if (jobSqLog.page > data.page) {
-                    jobSqLog.page = parseInt(data.page); // 最后一页被删除后，取最新的页数
+                    jobSqLog.page = parseInt(data.page); // Use latest page after the last page is deleted
                 }
                 if (that.prevPage2 != jobSqLog.page) {
                     that.prevPage2 = jobSqLog.page;
@@ -3719,10 +3719,10 @@ module.exports = {
                 yqmsLog.total = parseInt(data.total);
                 yqmsLog.pageSizes = data.page_sizes;
                 if (yqmsLog.limit === 0) {
-                    yqmsLog.limit = parseInt(data.limit); // 取系统配置默认数量
+                    yqmsLog.limit = parseInt(data.limit); // Use default count from system config
                 }
                 if (yqmsLog.page > data.page) {
-                    yqmsLog.page = parseInt(data.page); // 最后一页被删除后，取最新的页数
+                    yqmsLog.page = parseInt(data.page); // Use latest page after the last page is deleted
                 }
                 if (that.prevPage3 != yqmsLog.page) {
                     that.prevPage3 = yqmsLog.page;
@@ -3736,7 +3736,7 @@ module.exports = {
             })
         },
         
-        // 个人动态
+        // Individual activity
         getUserLog() {
             let that = this,
                 userLog = deepClone(that.userLog),
@@ -3767,10 +3767,10 @@ module.exports = {
                 userLog.last_page = parseInt(data.last_page);
                 userLog.pageSizes = data.page_sizes;
                 if (userLog.limit === 0) {
-                    userLog.limit = parseInt(data.limit); // 取系统配置默认数量
+                    userLog.limit = parseInt(data.limit); // Use default count from system config
                 }
                 if (userLog.page > data.page) {
-                    userLog.page = parseInt(data.page); // 最后一页被删除后，取最新的页数
+                    userLog.page = parseInt(data.page); // Use latest page after the last page is deleted
                 }
 
                 that.userLog = userLog;
@@ -3811,10 +3811,10 @@ module.exports = {
                 payLog.total = parseInt(data.total);
                 payLog.pageSizes = data.page_sizes;
                 if (payLog.limit === 0) {
-                    payLog.limit = parseInt(data.limit); // 取系统配置默认数量
+                    payLog.limit = parseInt(data.limit); // Use default count from system config
                 }
                 if (payLog.page > data.page) {
-                    payLog.page = parseInt(data.page); // 最后一页被删除后，取最新的页数
+                    payLog.page = parseInt(data.page); // Use latest page after the last page is deleted
                 }
                 if (that.prevPage4 != payLog.page) {
                     that.prevPage4 = payLog.page;
@@ -3829,7 +3829,7 @@ module.exports = {
             })
         },
 
-        // 新增简历
+        // Add resume
         openResume(row) {
             this.detail = row;
             this.detail.uid = parseInt(row.uid);
@@ -3924,7 +3924,7 @@ module.exports = {
     line-height: 76px
 }
 
-/* 上传样式开始 */
+/* Upload styles start */
 .avatar-uploader .el-upload {
     border: 1px dashed #d9d9d9;
     border-radius: 6px;
@@ -3981,7 +3981,7 @@ module.exports = {
     height: calc(100% - 134px) !important;
 }
 
-/* 上传样式结束 */
+/* Upload styles end */
 
 .shinfo .el-tab-pane {
     height: 100%;

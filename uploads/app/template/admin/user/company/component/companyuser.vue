@@ -1,7 +1,7 @@
 <template>
     <div class="moduleElHight" :class="searchClass == 'drawer' ? 'pad_lr_20' : ''">
         <div class="moduleSeachbig">
-            <!--关键字搜索和查询在一起-------------------------------------------------------------------->
+            <!-- Keyword search and filters -------------------------------------------------------------------->
             <div class="tableSeachInpt tableSeachInptsmall tableSeacFromer" style="padding: 2px 0;">
                 <el-input v-model="search_params.keyword" @keyup.enter.native="search" :placeholder="lc('admin_00340')" class="input-with-select" size="small"
                      clearable>
@@ -17,7 +17,7 @@
                     </el-select>
                 </el-input>
             </div>
-            <!--收起部分-->
+            <!-- Collapsed section -->
             <div class="tableSeachInpt tableSeachInptsmall" :class="{ 'searchbutnOnff': seachbutn }">
                 <el-select v-model="search_params.time_type" size="small" slot="prepend" :placeholder="lc('admin_user_00135')" clearable @change="handleTimeChange">
                     <el-option :label="lc('admin_user_00129')" value="adtime"></el-option>
@@ -34,7 +34,7 @@
             </div>
 			<div class=" tableSeachInpt" :class="{ 'searchbutnOnff': seachbutn }">
 			    <div class="block">
-			        <!--7.0 统一城市选择-->
+			        <!-- 7.0 unified city selector -->
 			        <city_class @confirm="confirmCitySearch"></city_class>
 			    </div>
 			</div>
@@ -169,7 +169,7 @@
                                     <i class="rzicon rzicon_yxwrz"></i>
                                 </el-button>
                             </el-tooltip>
-                            <!--实地-->
+                            <!-- On-site -->
                             <el-tooltip v-if="scope.row.fact_status == '1'" class="item" effect="dark" placement="top-start">
                                 <div slot="content">
                                     <span style="line-height: 20px;">{{ lc('admin_user_company_00127') }}</span><br />
@@ -365,7 +365,7 @@
                 </el-pagination>
             </div>
         </div>
-        <!--企业详情审核 ---------------------------------------------------------------------->
+        <!-- Company detail review ---------------------------------------------------------------------->
         <el-drawer :title="lc('admin_user_company_00134')" :visible.sync="comdrawersh" append-to-body :modal-append-to-body="false" :close-on-click-modal="false" size="80%">
             <div class="shbox" v-if="comdrawersh">
                 <div class="shinfo">
@@ -451,7 +451,7 @@
                 </div>
             </div>
         </el-drawer>
-        <!--批量审核企业-->
+        <!-- Batch company review -->
         <div class="modluDrawer">
             <el-dialog :title="lc('admin_user_company_00116')" width="400px" :visible.sync="drawerauditmultiple" append-to-body
                 :modal-append-to-body="false">
@@ -482,13 +482,13 @@
                 </span>
             </el-dialog>
         </div>
-        <!--企业日志 ---------------------------------------------------------------------->
+        <!-- Company logs ---------------------------------------------------------------------->
         <el-drawer :title="lc('admin_user_00177')" :visible.sync="qyrz" append-to-body :modal-append-to-body="false" size="80%">
             <div class="elTabQanCompany">
                 <comlog :typelist="typeArr" :time="time" :type="'3'" :keyword="curr_com.uid"></comlog>
             </div>
         </el-drawer>
-        <!--企业详情 ---------------------------------------------------------------------->
+        <!-- Company details ---------------------------------------------------------------------->
         <el-drawer :title="lc('wap_00188')" :visible.sync="qyxqdrawer" append-to-body :modal-append-to-body="false" size="95%">
             <div class="shbox">
                 <div class="shinfo">
@@ -541,7 +541,7 @@
                         <el-button type="primary" size="mini" @click="bindPackage"> {{ lc('admin_00655') }}</el-button>
                         <el-button type="danger" size="mini" @click="openDel(comindex, curr_com.uid)"> {{ lc('admin_user_company_00123') }}</el-button>
                     </div>
-                    <!--企业详情切换-->
+                    <!-- Company details tab switch -->
                     <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
                         <el-tab-pane :label="lc('wap_user_00341')" name="first" :lazy="true">
                             <div class="shshow_tit">
@@ -689,7 +689,7 @@
                 </div>
             </div>
         </el-drawer>
-        <!-- 企业基本信息弹出框-->
+        <!-- Company basic information dialog -->
         <el-drawer :title="lc('admin_00679')" v-if="hascache" :append-to-body="true" :visible.sync="infoDrawer" :wrapper-closable="false" size="60%">
             <div class="uploadTable" style="padding:0px 20px;">
                 <table class="tableVue">
@@ -901,10 +901,10 @@
                                 <div class="TableInpt">
                                     <div id="editor—wrapper" style="border: 1px solid #ccc;">
                                         <div id="toolbar-container">
-                                            <!-- 工具栏 -->
+                                            <!-- Toolbar -->
                                         </div>
                                         <div id="editor-container" style="height: 300px;">
-                                            <!-- 编辑器 -->
+                                            <!-- Editor -->
                                         </div>
                                     </div>
                                 </div>
@@ -975,7 +975,7 @@
                                     <el-radio v-model="curr_editcom.r_status" label="0">{{ lc('wap_user_00166') }}</el-radio>
                                     <el-radio v-model="curr_editcom.r_status" label="1">{{ lc('admin_user_00149') }}</el-radio>
                                 </div>
-                                <!--<el-input type="textarea" :rows="2" placeholder="请输入理由" v-model="textarea"></el-input>-->
+                                <!--<el-input type="textarea" :rows="2" placeholder="Enter reason" v-model="textarea"></el-input>-->
                             </td>
                         </tr>
                     </tbody>
@@ -985,11 +985,11 @@
                 <el-button type="primary" size="medium" @click="comeditsave" :loading="edit_loading">{{ lc('common.submit') }}</el-button>
             </div>
         </el-drawer>
-        <!--职位基本信息弹出框-->
+        <!-- Job basic information dialog -->
         <el-drawer :title="lc('admin_00615')" :visible.sync="drawerEditJob" append-to-body :wrapper-closable="false" size="60%">
             <addjob ref="jobedit" :jid="jobid" :jtypes="job_types" :ctypes="city_types"></addjob>
         </el-drawer>
-        <!--执照认证弹窗-->
+        <!-- License verification dialog -->
         <div class="modluDrawer">
             <el-dialog :title="lc('admin_00681')" :visible.sync="zzrztc" :with-header="true" :modal-append-to-body="false"
                 :show-close="true" width="450px">
@@ -1037,7 +1037,7 @@
                 </span>
             </el-dialog>
         </div>
-        <!--手机认证弹窗-->
+        <!-- Mobile verification dialog -->
         <div class="modluDrawer">
             <el-dialog :title="lc('member_com_00071')" :visible.sync="sjrztc" :with-header="true" :modal-append-to-body="false"
                 :show-close="true" width="450px">
@@ -1053,7 +1053,7 @@
                 </span>
             </el-dialog>
         </div>
-        <!--邮箱认证弹窗-->
+        <!-- Email verification dialog -->
         <div class="modluDrawer">
             <el-dialog :title="lc('wap_com_00186')" :visible.sync="yxrztc" :with-header="true" :modal-append-to-body="false"
                 :show-close="true" width="450px">
@@ -1069,7 +1069,7 @@
                 </span>
             </el-dialog>
         </div>
-        <!--微信认证弹窗-->
+        <!-- WeChat verification dialog -->
         <div class="modluDrawer" v-if="wxrztc">
             <el-dialog :title="lc('admin_00682')" :visible.sync="wxrztc" :with-header="true" append-to-body
                 :modal-append-to-body="false" :show-close="true" width="300px">
@@ -1083,7 +1083,7 @@
                 </div>
             </el-dialog>
         </div>
-        <!--企业发送至推文弹窗-->
+        <!-- Company post-to-feed dialog -->
         <div class="modluDrawer">
             <el-dialog :close-on-click-modal="false" :title="lc('admin_user_company_00107')" :visible.sync="twdrawer" :with-header="true" :modal-append-to-body="false"
                 :show-close="true" width="450px">
@@ -1108,7 +1108,7 @@
                 </span>
             </el-dialog>
         </div>
-        <!--企业会员等级修改-->
+        <!-- Company membership level edit -->
         <div class="modluDrawer">
             <el-dialog :title="lc('admin_00683')" :visible.sync="drawerrating" :with-header="true" append-to-body
                 :modal-append-to-body="false" :show-close="true" width="630px">
@@ -1244,7 +1244,7 @@
                 </span>
             </el-dialog>
         </div>
-        <!--企业logo-->
+        <!-- Company logo -->
         <div class="modluDrawer">
             <el-dialog :title="lc('wap_com_00148')" :visible.sync="drawerlogo" :with-header="true" append-to-body
                 :modal-append-to-body="false" :show-close="true" width="530px">
@@ -1301,7 +1301,7 @@
                 </el-tabs>
             </el-dialog>
         </div>
-        <!--企业logo预览-->
+        <!-- Company logo preview -->
         <div class="modluDrawer">
             <el-dialog :title="lc('admin_00685')" :visible.sync="drawerlogopreview" :with-header="true" append-to-body
                 :modal-append-to-body="false" :show-close="true" width="260px">
@@ -1310,7 +1310,7 @@
                 </div>
             </el-dialog>
         </div>
-        <!--企业取消暂停弹窗-->
+        <!-- Cancel company suspension dialog -->
         <div class="modluDrawer">
             <el-dialog :title="lc('admin_user_company_00115')" :visible.sync="drawerqyzt" :with-header="true" append-to-body
                 :modal-append-to-body="false" :show-close="true" width="350px">
@@ -1322,7 +1322,7 @@
                 </span>
             </el-dialog>
         </div>
-        <!--批量分配站点弹窗-->
+        <!-- Batch assign subsite dialog -->
         <div class="modluDrawer">
             <el-dialog :title="lc('admin_user_00279')" :visible.sync="drawerfpzdmulti" append-to-body width="450px">
                 <div>
@@ -1340,7 +1340,7 @@
                 </span>
             </el-dialog>
         </div>
-        <!--分配站点弹窗-->
+        <!-- Assign subsite dialog -->
         <div class="modluDrawer">
             <el-dialog :title="lc('admin_user_weipin_00029')" :visible.sync="drawerfpzd" append-to-body width="450px">
                 <div class="wxsettip_small ">{{ lc('admin_user_00140') }}</div>
@@ -1360,13 +1360,13 @@
                 </span>
             </el-dialog>
         </div>
-        <!--设为名企弹窗-->
+        <!-- Set featured company dialog -->
         <div class="modluDrawer" v-if="hotcom">
             <el-drawer :title="lc('home.famous_companies')" :visible.sync="drawermq" :modal-append-to-body="false" append-to-body :wrapper-closable="false" size="600px">
                 <addhotjob :hotinfo="hotcom" :hascom="true" :cindex="comindex"></addhotjob>
             </el-drawer>
         </div>
-        <!--生成海报弹窗-->
+        <!-- Generate poster dialog -->
         <div class="modluDrawer">
             <el-drawer :title="lc('wap_01572')" :visible.sync="drawerhb" :modal-append-to-body="false" append-to-body
                 :show-close="true" :with-header="true" size="95%">
@@ -1379,8 +1379,8 @@
                                     <div class="hb_cz">
                                         <el-button @click="showHb(item.style)" size="mini">{{ lc('wap_00071') }}</el-button>
                                         <el-button @click="downHb(item.style)" size="mini">{{ lc('wap_00070') }}</el-button>
-                                        <!-- <a href="javascript:;" @click="showHb(item.style)">预览</a>
-                                        <a href="javascript:;" @click="downHb(item.style)">下载</a> -->
+                                        <!-- <a href="javascript:;" @click="showHb(item.style)">Preview</a>
+                                        <a href="javascript:;" @click="downHb(item.style)">Download</a> -->
                                     </div>
                                 </div>
                             </div>
@@ -1389,7 +1389,7 @@
                 </div>
             </el-drawer>
         </div>
-        <!-- 海报预览弹窗 -->
+        <!-- Poster preview dialog -->
         <div class="tck_setbox" v-if="hburl != ''">
             <el-dialog :title="lc('admin_user_company_00142')" :visible.sync="showhb" :with-header="true" append-to-body :show-close="true" width="300px">
                 <div class="code_img" style="display:flex;justify-content: center;margin-bottom: 20px;">
@@ -1397,7 +1397,7 @@
                 </div>
             </el-dialog>
         </div>
-        <!--企业模板弹窗-->
+        <!-- Company template dialog -->
         <div class="modluDrawer">
             <el-drawer :title="lc('admin_user_company_00135')" :visible.sync="drawercommb" :modal-append-to-body="false" append-to-body
                 :show-close="true" :with-header="true" size="95%">
@@ -1428,7 +1428,7 @@
                 </div>
             </el-drawer>
         </div>
-        <!--发送短信弹窗-->
+        <!-- Send SMS dialog -->
         <div class="modluDrawer">
             <el-dialog :title="lc('admin_user_00166')" :visible.sync="drawersendmsg" append-to-body width="450px">
                 <div class="wxsettip_small">{{ lc('admin_00666') }}</div>
@@ -1439,7 +1439,7 @@
                 </span>
             </el-dialog>
         </div>
-        <!--发送邮件弹窗-->
+        <!-- Send email dialog -->
         <div class="modluDrawer">
             <el-dialog :title="lc('admin_user_00167')" :visible.sync="drawersendmail" append-to-body width="450px">
                 <div class="wxsettip_small">{{ lc('admin_00667') }}</div>
@@ -1452,7 +1452,7 @@
                 </span>
             </el-dialog>
         </div>
-        <!--绑定套餐-->
+        <!-- Bind package -->
         <div class="modluDrawer">
             <el-dialog :title="lc('admin_00655')" :visible.sync="dialogPackage" append-to-body width="650px">
                 <div class="tck_setname">
@@ -1470,7 +1470,7 @@
                 </span>
             </el-dialog>
         </div>
-        <!--删除弹窗-->
+        <!-- Delete dialog -->
         <div class="modluDrawer">
             <el-dialog :title="lc('admin_user_company_00117')" :visible.sync="dialogDel" :with-header="true" append-to-body :show-close="true"
                 width="300px">
@@ -1486,7 +1486,7 @@
                 </span>
             </el-dialog>
         </div>
-        <!--职位推广弹窗-->
+        <!-- Job promotion dialog -->
         <div class="modluDrawer">
             <el-dialog :title="jobtgtit" :visible.sync="jobtgdrawer" :with-header="true" append-to-body :show-close="true"
                 width="400px">
@@ -1515,13 +1515,13 @@
                 </span>
             </el-dialog>
         </div>
-        <!--新增企业-->
+        <!-- Add company -->
         <div class="modluDrawer">
             <el-drawer :title="lc('admin_user_company_00162')" :visible.sync="comadddrawer" :modal-append-to-body="false" append-to-body :wrapper-closable="false" size="65%">
                 <company_add ref="comadd" :rates="ratingarr" :pricename="pricename"></company_add>
             </el-drawer>
         </div>
-        <!--导出字段弹窗-->
+        <!-- Export fields dialog -->
         <div class="modluDrawer">
             <el-dialog :title="lc('admin_user_00246')" :visible.sync="exportdrawer" :with-header="true" append-to-body :show-close="true"
                 width="740px">
@@ -1544,7 +1544,7 @@
                 </span>
             </el-dialog>
         </div>
-        <!--分配顾问弹窗-->
+        <!-- Assign consultant dialog -->
         <div class="modluDrawer">
             <el-dialog :title="fpgwmulti ? lc('admin_user_company_00119') : lc('admin_company_00034')" :visible.sync="drawerfpgw" append-to-body width="450px">
                 <div v-if="fpgwmulti == false">
@@ -1569,7 +1569,7 @@
                 </span>
             </el-dialog>
         </div>
-        <!--批量认证弹窗-->
+        <!-- Batch verification dialog -->
         <div class="modluDrawer">
             <el-dialog :title="lc('admin_user_00292')" :visible.sync="drawerrzmulti" append-to-body width="450px">
                 <div>
@@ -1595,11 +1595,11 @@
                 </span>
             </el-dialog>
         </div>
-        <!--新增职位提示-->
+        <!-- Add job notice -->
         <el-drawer :title="lc('member_com_00250')" :visible.sync="drawerAddJob" append-to-body :wrapper-closable="false" size="60%">
             <addjob ref="jobadd" style="margin-right:10px;" :comid="curr_comid"></addjob>
         </el-drawer>
-        <!--账户信息弹窗-->
+        <!-- Account information dialog -->
         <div class="modluDrawer">
             <el-dialog :title="lc('admin_user_00191')" :visible.sync="dialogAccount" :with-header="true" :modal-append-to-body="false" :show-close="true" width="450px" append-to-body>
                 <div>
@@ -1624,7 +1624,7 @@
 		        </span>
 		    </el-dialog>
 		</div>
-        <!--实地核验-->
+        <!-- On-site verification -->
         <div class="modluDrawer" v-if="factshow">
             <el-dialog :title="lc('wap_00274')" :visible.sync="factshow" :with-header="true" append-to-body
                 :modal-append-to-body="false" :show-close="true" width="43%">
@@ -1662,7 +1662,7 @@ let editor = null,
 const { createEditor, createToolbar } = window.wangEditor;
 
 /**
- * @desc 邮箱格式验证
+ * @desc Email format validation
  */
 function check_email(strEmail) {
     var emailReg = /^([a-zA-Z0-9\-]+[_|\_|\.]?)*[a-zA-Z0-9\-]+@([a-zA-Z0-9\-]+[_|\_|\.]?)*[a-zA-Z0-9]+\.[a-zA-Z]{2,3}$/;
@@ -1673,7 +1673,7 @@ function check_email(strEmail) {
 }
 
 /**
- * @desc 手机号码验证
+ * @desc Mobile number validation
  */
 function isjsMobile(obj) {
     var reg = /^[1][3456789]\d{9}$/;
@@ -1684,7 +1684,7 @@ function isjsMobile(obj) {
 }
 
 /**
- * @desc 电话验证
+ * @desc Phone number validation
  */
 function isjsTell(str) {
     //var result = str.match(/^((0\d{2,3})-)(\d{7,8})(-(\d{3,}))?$/);
@@ -1989,7 +1989,7 @@ module.exports = {
             qxtgchecked: '0',
             tgjid: '',
             jionly: 0,
-            // 行为分析
+            // Behavior analysis
             behavior: {
                 reverseone: true,
                 daterange: '',
@@ -2162,7 +2162,7 @@ module.exports = {
         this.getList();
     },
     methods: {
-            //用来阻止第二次或更多次点击密码输入框时下拉用户密码清单的框一闪而过的问题
+            // Prevent password dropdown flicker after repeated password-field clicks
             pwdMousedown(){
                 var that = this
                 this.pwdreadonly = true
@@ -2176,7 +2176,7 @@ module.exports = {
                     setTimeout(function(){ that.pwdreadonly = false, 100})
                 }
             },
-            // 修改密码框readonly{{ lc('wap_js_00085') }}，防止密码框展示浏览器记录的密码信息
+            // Temporarily change password readonly state to prevent browser password history suggestions
             readonlyCtl: function(res){
                 var that = this
                 setTimeout(function(){
@@ -2191,10 +2191,10 @@ module.exports = {
             this.mouseFlag = false;
         },
         mouseMoveHandler(e) {
-            // 这里面需要注意，{{ lc('admin_user_company_00161') }}ref需要那个那个包含table元素的父元素
+            // The ref must point to the parent element that contains the table element
             let divData = this.$refs.multipleTable.bodyWrapper;
             if (this.mouseFlag) {
-                // 设置水平方向的元素的位置
+                // Set horizontal scroll position
                 divData.scrollLeft -= (- this.mouseOffset + (this.mouseOffset = e.clientX));
             }
         },
@@ -2236,7 +2236,7 @@ module.exports = {
             this.plstatus = ''
             this.drawerrzmulti = true
         },
-        // 批量认证保存
+        // Save batch verification
         multirzSubmit: function () {
             if (this.selectedItem.length == 0) {
                 message.error(lc('admin_user_weipin_00001'));
@@ -2293,15 +2293,15 @@ module.exports = {
             }
             this.drawerfpgw = true
         },
-        // 分配顾问保存
+        // Save consultant assignment
         fpgwSubmit: function () {
             var that = this,
                 params = {
                     gid: that.gwid
                 }
-            if (that.fpgwmulti == false) { // 单个操作
+            if (that.fpgwmulti == false) { // Single operation
                 params.comid = that.curr_uid
-            } else { // 批量分配
+            } else { // Batch assignment
                 if (that.selectedItem.length == 0) {
                     message.error(lc('admin_user_weipin_00001'));
                     return false
@@ -2384,7 +2384,7 @@ module.exports = {
             }
             that.drawerauditmultiple = true
         },
-        // 企业批量审核保存
+        // Save batch company review
         multipleStatusSave() {
             var that = this
             if (!that.selectedItem.length) {
@@ -2405,7 +2405,7 @@ module.exports = {
                 that.$refs.comadd.getinfo()
             })
         },
-        // 职位推广提交
+        // Submit job promotion
         jobTgSubmit: function () {
             var that = this
             var url = 'm=user&c=company_job&a='
@@ -2449,27 +2449,27 @@ module.exports = {
                 console.log(e)
             })
         },
-        // 职位推广设置
+        // Job promotion settings
         tgchange: function (val, data, type) {
             this.jobtgtype = type
             this.curr_job = data
             this.tgjid = data.id
             if (type == 1) { // {{ lc('wap_user_00335') }}
-                this.curr_job.istop = !this.curr_job.istop // 防止switch状态直接改变
+                this.curr_job.istop = !this.curr_job.istop // Prevent switch state from changing before request result
                 this.jobtgetime = data.top_time_n ? data.top_time_n : ''
                 this.jobtgtit = lc('wap_com_00238')
-            } else if (type == 2) { // 推荐
-                this.curr_job.isrec = !this.curr_job.isrec // 防止switch状态直接改变
+            } else if (type == 2) { // Recommendation
+                this.curr_job.isrec = !this.curr_job.isrec // Prevent switch state from changing before request result
                 this.jobtgetime = data.rec_time_n != undefined ? data.rec_time_n : ''
                 this.jobtgtit = lc('wap_com_00237')
-            } else if (type == 3) { // 紧急
-                this.curr_job.isurgent = !this.curr_job.isurgent // 防止switch状态直接改变
+            } else if (type == 3) { // Urgent promotion
+                this.curr_job.isurgent = !this.curr_job.isurgent // Prevent switch state from changing before request result
                 this.jobtgetime = data.urgent_time_n ? data.urgent_time_n : ''
                 this.jobtgtit = lc('member_com_00613')
             }
             this.jobtgdrawer = true
         },
-        // 职位招聘状态修改
+        // Change job recruitment status
         zpstatuschange: function (val, id) {
             var that = this
             httpPost('m=user&c=company_job&a=checkstate', { id: id, state: val ? 2 : 1 }).then(function (result) {
@@ -2531,7 +2531,7 @@ module.exports = {
                 that.$refs.jobedit.edit()
             })
         },
-        // 获取企业招聘岗位
+        // Get company jobs
         getComJobList: function () {
             let that = this;
             let params = {
@@ -2594,7 +2594,7 @@ module.exports = {
 
             }, lc('admin_user_company_00103'))
         },
-        // 发送邮件弹窗
+        // Send email dialog
         sendmail: function () {
             if (this.curr_com.linkmail == '') {
                 message.error(lc('admin_user_company_00092'))
@@ -2602,7 +2602,7 @@ module.exports = {
             }
             this.drawersendmail = true
         },
-        // 邮件发送
+        // Send email
         dosendmail: function () {
             var that = this
             if (that.mailtit == '') {
@@ -2637,7 +2637,7 @@ module.exports = {
 
             })
         },
-        // 发送短信弹窗
+        // Send SMS dialog
         sendmsg: function () {
             if (this.curr_com.linktel == '') {
                 message.error(lc('admin_user_company_00091'))
@@ -2645,7 +2645,7 @@ module.exports = {
             }
             this.drawersendmsg = true
         },
-        // 短信发送
+        // Send SMS
         dosend: function () {
             var that = this
             if (that.msgcontent == '') {
@@ -2675,7 +2675,7 @@ module.exports = {
 
             })
         },
-        // 使用模板
+        // Use template
         checktpl: function (id) {
             var that = this
             let params = {id: id, comid: that.curr_com.uid};
@@ -2713,7 +2713,7 @@ module.exports = {
 
             })
         },
-        // 下载海报
+        // Download poster
         downHb(style) {
             var that = this
             let image = new Image()
@@ -2729,7 +2729,7 @@ module.exports = {
                 canvas.toBlob((blob) => {
                     let url = URL.createObjectURL(blob)
                     download(url, 'whb' + style)
-                    // 用完释放URL对象
+                    // Release URL object after use
                     URL.revokeObjectURL(url)
                 })
             }
@@ -2742,7 +2742,7 @@ module.exports = {
                 eleLink.remove()
             }
         },
-        // 预览海报
+        // Preview poster
         showHb(style) {
             this.hburl = this.basehburl + '&uid=' + this.curr_com.uid + '&style=' + style
             this.hbkey = Math.random()
@@ -2765,7 +2765,7 @@ module.exports = {
 
             })
         },
-        // 取消名企
+        // Cancel featured company
         qxmq: function () {
             var that = this
 
@@ -2788,7 +2788,7 @@ module.exports = {
 
             }, lc('admin_user_company_00098'))
         },
-        // 设为名企
+        // Set featured company
         setmq: function () {
             var that = this
             if (that.curr_com.name == '') {
@@ -2810,9 +2810,9 @@ module.exports = {
         welfareInputConfirm(type) {
             let inputValue = this.inputValue;
             if (inputValue) {
-                if (type == 1) { // 企业编辑福利修改
+                if (type == 1) { // Edit company benefits
                     this.curr_editcom.all_welfare.push(inputValue);
-                } else { // 职位编辑福利修改
+                } else { // Edit job benefits
                     this.curr_job.all_welfare.push(inputValue);
                 }
                 this.checkedwelfare.push(inputValue)
@@ -2820,7 +2820,7 @@ module.exports = {
             this.inputVisible = false;
             this.inputValue = '';
         },
-        // 企业基本信息保存
+        // Save company basic information
         comeditsave: function () {
             var that = this
             if (that.curr_editcom.linkmail && check_email(that.curr_editcom.linkmail) == false) {
@@ -2897,9 +2897,9 @@ module.exports = {
         },
         comqcodeChange(file) {
             var tmp = deepClone(this.curr_editcom)
-            // 预览文件处理
+            // Preview file handling
             tmp.comqcode = URL.createObjectURL(file.raw);
-            // 复刻文件信息
+            // Clone file metadata
             this.comqcodelist[0] = file.raw;
             this.curr_editcom = tmp
         },
@@ -2952,20 +2952,20 @@ module.exports = {
         },
 		writeJs: function(url, secret) {
 			return new Promise((resolve, reject) => {
-				// 如果已加载直接返回
+				// Return directly if already loaded
 				if (typeof window.AMap !== 'undefined') {
 					resolve(window.AMap);
 					return true;
 				}
-				// 地图异步加载回调处理
+				// Handle async map loading callback
 				window.onAMapCallback = function () {
 					resolve(AMap);
 				};
-				// 设置安全密钥
+				// Set security key
 				window._AMapSecurityConfig = {
 					securityJsCode: secret,
 				}
-				// 插入script脚本
+				// Insert script tag
 				let scriptNode = document.createElement('script');
 				scriptNode.setAttribute('type', 'text/javascript');
 				scriptNode.setAttribute('src', url);
@@ -3050,14 +3050,14 @@ module.exports = {
 			this.x = c[0];
 			this.y = c[1];
 			var map = that.getMap();
-			// 设置marker
+			// Set marker
 			var lngLat = new AMap.LngLat(c[0],c[1]);
 			map.setZoomAndCenter(17,lngLat);
 			var marker = new AMap.Marker({
 				position: lngLat
 			});
 			map.add(marker);
-			// 地图监听点击事件
+			// Listen for map click events
 			map.on("click",function(e){
 				var lngLat = e.lnglat;
 				this.x = lngLat.lng;
@@ -3070,15 +3070,15 @@ module.exports = {
 			});
 			this.poiSearchArr = [];
 		},
-        // 分配站点保存
+        // Save subsite assignment
         fpzdSubmit: function (type) {
             var that = this,
                 params = {
                     did: that.comdid
                 }
-            if (type == 1) { // 单个操作
+            if (type == 1) { // Single operation
                 params.uid = that.curr_uid
-            } else if (type == 2) { // 批量分配站点
+            } else if (type == 2) { // Batch assign subsite
                 if (that.selectedItem.length == 0) {
                     message.error(lc('admin_user_company_00093'))
                     return false
@@ -3110,7 +3110,7 @@ module.exports = {
                 }, 2000);
             });
         },
-        // 企业暂停
+        // Suspend company
         comzt: function (rstatus) {
             var that = this
             if (rstatus == '2') {
@@ -3136,12 +3136,12 @@ module.exports = {
                 })
             }, lc('admin_user_company_00095'))
         },
-        // 解除暂停
+        // Cancel suspension
         comunzt: function (ztdays) {
             this.ztdays = ztdays
             this.drawerqyzt = true
         },
-        //解除暂停
+        // Cancel suspension
         setupcom: function (addzttime) {
             var that = this
             httpPost('m=user&c=company&a=setupcom', {
@@ -3183,7 +3183,7 @@ module.exports = {
 
             })
         },
-		// 账户信息
+		// Account information
 		openAccount() {
 		    let member = this.curr_com;
 		    this.ruleFormAccount = {
@@ -3244,7 +3244,7 @@ module.exports = {
                 message.error(res.msg)
             }
         },
-        // 企业logo弹窗
+        // Company logo dialog
         makeLogo: function (uid, short, name, type) {
             var that = this
             that.uplogopic = '';
@@ -3322,7 +3322,7 @@ module.exports = {
 
             })
         },
-        // 企业会员等级切换
+        // Switch company membership level
         rateChange: function (e) {
             var that = this
             httpPost('m=user&c=company&a=getrating', { id: e, uid: that.curr_uid }).then(function (result) {
@@ -3339,7 +3339,7 @@ module.exports = {
 
             })
         },
-        // 会员等级修改弹窗会员信息处理
+        // Prepare member information for membership level edit dialog
         initrating: function (rate) {
             this.integral = rate.integral
             if (rate.vipetime == lc('common_01936')) {
@@ -3366,7 +3366,7 @@ module.exports = {
             
 			this.suspend_num = rate.suspend_num
         },
-        // 会员等级修改
+        // Edit membership level
         editRating: function (uid, r_status) {
             var that = this
             httpPost('m=user&c=company&a=getstatis', { uid: uid }).then(function (result) {
@@ -3390,7 +3390,7 @@ module.exports = {
 
             })
         },
-        // 会员等级修改提交
+        // Submit membership level edit
         ratingSubmit: function () {
             var that = this
             var params = {
@@ -3448,7 +3448,7 @@ module.exports = {
                 }, 2000);
             });
         },
-        // 跳转会员中心前检测
+        // Check before jumping to member center
         memberCheck: function (uid, usertype) {
             var that = this
             var tip = ''
@@ -3470,7 +3470,7 @@ module.exports = {
                 that.jumpToMember(uid);
             }
         },
-        // 跳转到会员中心
+        // Jump to member center
         jumpToMember: function (uid, type = '') {
             let tmpWin = window.open('', '_blank')
             var params = { uid: uid }
@@ -3486,7 +3486,7 @@ module.exports = {
                 tmpWin.close()
             })
         },
-        // 查询手机归属地
+        // Query mobile location
         getmobileaddress: function (uid, moblie) {
             var that = this
             httpPost('m=index&c=getMobileAddress', { uid: uid, moblie: moblie }).then(function (result) {
@@ -3518,7 +3518,7 @@ module.exports = {
                 console.log(e)
             })
         },
-        // 获取企业数量统计
+        // Get company count statistics
         getTjNum: function () {
             var that = this;
             httpPost('m=user&c=company&a=companyNum', {}, { hideloading: true }).then(function (result) {
@@ -3560,7 +3560,7 @@ module.exports = {
                 }
             })
         },
-        // 微信绑定绑定检测
+        // Check WeChat binding
         async wxbindstatus(comid) {
             var that = this;
             httpPost('m=user&c=company&a=getacbindstatus', { comid: comid }).then(function (result) {
@@ -3575,7 +3575,7 @@ module.exports = {
                 console.log(e)
             })
         },
-        // 获取微信绑定二维码，显示微信绑定弹窗
+        // Get WeChat binding QR code and show binding dialog
         showQrcode: function (comid, wxid) {
             var that = this
             if (wxid != '') {
@@ -3662,7 +3662,7 @@ module.exports = {
                 console.log(error);
             })
         },
-        // 营业执照认证弹窗
+        // Business license verification dialog
         yyzzrz: function (data) {
             var that = this
             that.yy_comname = data.name
@@ -3705,7 +3705,7 @@ module.exports = {
                 console.log(e)
             })
         },
-        // 营业执照弹窗提交
+        // Submit business license dialog
         yyzzrzSubmit: function () {
             var that = this
             var params = {
@@ -3730,7 +3730,7 @@ module.exports = {
                 console.log(e)
             })
         },
-        // 邮箱认证弹窗
+        // Email verification dialog
         yxrz: function (email, status, uid) {
             var that = this
             that.yx_email = email
@@ -3738,7 +3738,7 @@ module.exports = {
             that.yx_uid = uid
             that.yxrztc = true
         },
-        // 邮箱认证弹窗提交
+        // Submit email verification dialog
         yxrzSubmit: function () {
             var that = this
             var params = {
@@ -3759,7 +3759,7 @@ module.exports = {
                 console.log(e)
             })
         },
-        // 手机认证弹窗
+        // Mobile verification dialog
         sjrz: function (mobile, status, uid) {
             var that = this
             that.sj_mobile = mobile
@@ -3767,7 +3767,7 @@ module.exports = {
             that.sj_uid = uid
             that.sjrztc = true
         },
-        // 手机认证弹窗提交
+        // Submit mobile verification dialog
         sjrzSubmit: function () {
             var that = this
             var params = {
@@ -3788,7 +3788,7 @@ module.exports = {
                 console.log(e)
             })
         },
-        // 批量推文任务
+        // Batch feed-post task
         twtaskall: function () {
             var that = this
             var nowTime = parseInt(new Date().getTime() / 1000);
@@ -3853,7 +3853,7 @@ module.exports = {
             that.multitw = true
             that.twdrawer = true
         },
-        // 创建单个企业推文任务
+        // Create single company feed-post task
         addTuiWenTask: function (id, name, lastupdate, num) {
             var that = this
             if (num > 0) {
@@ -3881,7 +3881,7 @@ module.exports = {
             that.multitw = false
             that.twdrawer = true
         },
-        // 提交创建推文任务信息
+        // Submit feed-post task creation data
         addTwTask: function () {
             var that = this
             var params = {
@@ -3909,7 +3909,7 @@ module.exports = {
                 console.log(e)
             })
         },
-        // 企业审核提交
+        // Submit company review
         comSh: function (atype) {
             var that = this
             var params = {
@@ -3950,7 +3950,7 @@ module.exports = {
                 console.log(e)
             })
         },
-        // 获取企业审核信息
+        // Get company review information
         comaudit: function (uid) {
             var that = this
             httpPost('m=user&c=company&a=companyAudit', { uid: uid }).then(function (result) {
@@ -4010,7 +4010,7 @@ module.exports = {
             this.sort_col = column.prop
             this.search();
         },
-		// 搜索城市选择
+		// Search city selector
 		confirmCitySearch(data) {
 			this.search_params.city_class = data.cityId.join(',');
 		},
@@ -4174,7 +4174,7 @@ module.exports = {
                 params = that.ruleFormPackage;
 
             // if (params.package.length == 0) {
-            //     message.warning('请选择绑定套餐');
+            //     message.warning('Please select a package to bind');
             //     return;
             // }
 
