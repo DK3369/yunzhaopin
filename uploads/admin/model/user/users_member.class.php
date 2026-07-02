@@ -323,7 +323,7 @@ class users_member_controller extends adminCommon
             $nid = $userinfoM->addInfo(array('mdata' => $mdata, 'udata' => $udata));
 
             if ($nid > 0) {
-                $this->admin_json(0, '个人会员(ID:' . $nid . ')添加成功');
+                $this->admin_json(0, yun_t('admin_model_00106', array('id' => $nid)));
             } else {
                 $this->render_json(1, yun_at('admin_user_00076'));
             }
@@ -513,9 +513,9 @@ class users_member_controller extends adminCommon
                     $msg .= 'admin_user_00091' . $rInfo['email'];
                 }
 
-                $this->MODEL('log')->addAdminLog("个人会员(ID" . $uid . ")认证邮箱【" . $email . "】");
+                $this->MODEL('log')->addAdminLog(yun_t('admin_model_00108', array('uid' => $uid, 'email' => $email)));
 
-                $this->admin_json(0, "邮箱认证成功(用户ID：" . $uid . "，" . $msg . ")");
+                $this->admin_json(0, yun_t('admin_model_00107', array('uid' => $uid, 'detail' => $msg)));
             } else {
                 $this->render_json(1, yun_at('admin_user_00089'));
             }
@@ -588,7 +588,7 @@ class users_member_controller extends adminCommon
                 $this->obj->update_once('lt_info', array('moblie' => '', 'moblie_status' => 0), array('uid' => array('<>', $uid), 'moblie' => $phone));
                 $this->obj->update_once('pr_train', array('linktel' => '', 'moblie_status' => 0), array('uid' => array('<>', $uid), 'linktel' => $phone));
 
-                $this->admin_json(0, "手机认证成功(用户ID：" . $uid . "，" . $msg . ")");
+                $this->admin_json(0, yun_t('admin_model_00109', array('uid' => $uid, 'detail' => $msg)));
             } else {
                 $this->render_json(1, yun_at('admin_user_00087'));
             }
@@ -674,7 +674,7 @@ class users_member_controller extends adminCommon
 
             $ty = $status == 1 ? yun_at('wap_user_00128') : yun_at('admin_user_00300');
 
-            $this->admin_json(0, '(个人列表)' . implode(',', $msg) . 'admin_user_00092' . $ty . 'common_01499' . $ids . ')');
+            $this->admin_json(0, yun_t('admin_model_00110', array('items' => implode(',', $msg), 'status' => $ty, 'ids' => $ids)));
         }
     }
 
@@ -743,7 +743,7 @@ class users_member_controller extends adminCommon
 
         $siteM->updDid($Table, array('uid' => array('in', $uid)), $didData);
 
-        $this->admin_json(0, 'common_01459' . $uid . ')分配站点成功');
+        $this->admin_json(0, yun_t('admin_model_00111', array('ids' => $uid)));
     }
 
     /**
@@ -848,7 +848,7 @@ class users_member_controller extends adminCommon
         $uid = intval($_POST['uid']);
         $userinfoM->upInfo(array('uid' => $uid), array('password' => '123456'));
 
-        $this->admin_json(0, 'common_01459' . $uid . ')重置密码成功');
+        $this->admin_json(0, yun_t('admin_model_00112', array('uid' => $uid)));
     }
 
     /**
@@ -964,7 +964,7 @@ class users_member_controller extends adminCommon
         $return = $logM->delMemlog($where);
 
         if ($return['errcode'] == 9) {
-            $this->admin_json(0, $ids == 'all' ? 'admin_01290' : '解绑记录（ID:' . $ids . 'admin_01291');
+            $this->admin_json(0, $ids == 'all' ? yun_t('admin_01290') : yun_t('admin_model_00113', array('ids' => $ids)));
         } else {
             $this->render_json(1, yun_at('admin_01292'));
         }
@@ -1139,7 +1139,7 @@ class users_member_controller extends adminCommon
         $return = $logM->delMemlog($where);
 
         if ($return['errcode'] == 9) {
-            $this->admin_json(0, $ids == 'all' ? 'admin_01293' : '个人日志（ID:' . $ids . 'admin_01291');
+            $this->admin_json(0, $ids == 'all' ? yun_t('admin_01293') : yun_t('admin_model_00114', array('ids' => $ids)));
         } else {
             $this->render_json(1, yun_at('admin_01294'));
         }
@@ -1274,7 +1274,7 @@ class users_member_controller extends adminCommon
 
         $logM = $this->MODEL('log');
 
-        $content = 'wap_user_00361' . $_SESSION['ausername'] . '登录个人账户(ID:' . $member['uid'] . ')';
+        $content = yun_t('admin_model_00138', array('admin' => $_SESSION['ausername'], 'uid' => $member['uid']));
 
         $logM->addAdminLog($content);
 

@@ -535,7 +535,7 @@ class company_controller extends adminCommon
                         $noticeM->sendSMSType(array('name' => $mdata['username'], 'username' => $mdata['username'],'password' => $_POST['password'], 'moblie' => $_POST['moblie'], 'type' => 'reg', 'uid' => $nid, 'port' => 1));
                     }
                 }
-                $this->admin_json(0, '企业会员(ID:'.$nid.')添加成功！');
+                $this->admin_json(0, yun_t('admin_model_00115', array('id' => $nid)));
             }else{
                 $this->render_json(1, yun_at('admin_01304'));
             }
@@ -732,7 +732,7 @@ class company_controller extends adminCommon
                 $this->render_json(1, $return['msg']);
 
             }else{
-                $this->admin_json(0, $return['msg'].'(企业列表-修改信息-修改会员信息，ID：'.$cuid.')');
+                $this->admin_json(0, yun_t('admin_model_00116', array('message' => $return['msg'], 'id' => $cuid)));
             }
         }
 
@@ -1083,7 +1083,7 @@ class company_controller extends adminCommon
             $logContent = isset($msgContent) ? $content.$msgContent : $content.'admin_user_00032';
             $logM =	$this->MODEL('log');
             $logM->addAdminLog($logContent);
-            $this->admin_json(0, 'common_01452' . $uid . ')修改成功！');
+            $this->admin_json(0, yun_t('admin_model_00117', array('uid' => $uid)));
         } else {
             $this->render_json(1, yun_at('model_00001'));
         }
@@ -1143,7 +1143,7 @@ class company_controller extends adminCommon
             }
         }
         $logM = $this->MODEL('log');
-        $content = 'wap_user_00361'.$_SESSION['ausername'].'登录企业账户(ID:'.$member['uid'].')';
+        $content = yun_t('admin_model_00139', array('admin' => $_SESSION['ausername'], 'uid' => $member['uid']));
         $logM->addAdminLog($content);
         $this->render_json(0, '', $this->config['sy_weburl'].'/member/'.$url);
     }
@@ -1358,7 +1358,7 @@ class company_controller extends adminCommon
         $siteM->updDid(array('down_resume'), array('comid' => array('in', $uid), 'usertype' => 2), $didData);
         $siteM->updDid(array('ad_order'), array('comid' => array('in', $uid)), $didData);
         $siteM->updDid($Table,array('uid' => array('in', $uid)), $didData);
-        $this->admin_json(0, 'common_01459'.$_POST['uid'].')分配站点成功！');
+        $this->admin_json(0, yun_t('admin_model_00118', array('ids' => $_POST['uid'])));
     }
 
     /**
@@ -1441,7 +1441,7 @@ class company_controller extends adminCommon
     function reset_companypassword_action(){
         $userinfoM = $this->MODEL('userinfo');
         $userinfoM->upInfo(array('uid' => intval($_POST['uid'])), array('password' => '123456'));
-        $this->admin_json(0, 'common_01459' . $_POST['uid'] . ')重置密码成功');
+        $this->admin_json(0, yun_t('admin_model_00119', array('uid' => $_POST['uid'])));
     }
 
     /**
@@ -1568,8 +1568,8 @@ class company_controller extends adminCommon
                 if (!empty($comInfo['linkmail']) && $comInfo['linkmail'] != $email) {
                     $msg .= 'admin_user_00091' . $comInfo['linkmail'];
                 }
-                $this->MODEL('log')->addAdminLog('model_00027'.$_POST['uid'].")认证邮箱【".$email."】");
-                $this->admin_json(0, "邮箱认证成功(用户ID：" . $uid . "，" . $msg . ")");
+                $this->MODEL('log')->addAdminLog(yun_t('admin_model_00120', array('uid' => $_POST['uid'], 'email' => $email)));
+                $this->admin_json(0, yun_t('admin_model_00107', array('uid' => $uid, 'detail' => $msg)));
             } else {
                 $this->render_json(1, yun_at('admin_user_00089'));
             }
@@ -1629,7 +1629,7 @@ class company_controller extends adminCommon
                 $this->obj->update_once('company', array('linktel' => '', 'moblie_status' => 0), array('uid' => array('<>', $uid), 'linktel' => $moblie));
                 $this->obj->update_once('lt_info', array('moblie' => '', 'moblie_status' => 0), array('uid' => array('<>', $uid), 'moblie' => $moblie));
                 $this->obj->update_once('pr_train', array('linktel' => '', 'moblie_status' => 0), array('uid' => array('<>', $uid), 'linktel' => $moblie));
-                $this->admin_json(0, "手机认证成功(用户ID：" . $uid . "，" . $msg . ")");
+                $this->admin_json(0, yun_t('admin_model_00109', array('uid' => $uid, 'detail' => $msg)));
             } else {
                 $this->render_json(1, yun_at('admin_user_00087'));
             }
@@ -1722,7 +1722,7 @@ class company_controller extends adminCommon
             $CompanyM->upCertInfo($checwhere, $checkdata, array('utype' => 'admin'));
         }
         $ty = $status = 1 ? yun_at('wap_user_00128') : yun_at('admin_user_00300');
-        $this->admin_json(0, '(企业列表)' . implode(',', $msg) . 'admin_user_00092' . $ty . 'common_01499' . pylode(',', $_POST['uid']) . ')');
+        $this->admin_json(0, yun_t('admin_model_00121', array('items' => implode(',', $msg), 'status' => $ty, 'ids' => pylode(',', $_POST['uid']))));
     }
 
     /**
@@ -1818,7 +1818,7 @@ class company_controller extends adminCommon
             $sysmsgM = $this->MODEL('sysmsg');
             $sysmsgM->addInfo(array('uid' => $uids, 'usertype' => 2, 'content' => $msg));
             if ($id) {
-                $this->admin_json(0, 'admin_user_00027' . $uid . ')设置成功！');
+                $this->admin_json(0, yun_t('admin_model_00122', array('ids' => $uid)));
             } else {
                 $this->render_json(1, yun_at('wap_01715'));
             }
@@ -1883,7 +1883,7 @@ class company_controller extends adminCommon
             $comM = $this->MODEL('company');
             $result = $comM->setLogoByAdmin(array('logo' => $_POST['logo'], 'logo_status' => 0), array('uid' => $_POST['uid']));
             if ($result) {
-                $this->admin_json(0, 'LOGO设置成功（企业UID: '.$_POST['uid'].'）');
+                $this->admin_json(0, yun_t('admin_model_00123', array('uid' => $_POST['uid'])));
             } else {
                 $this->render_json(1, yun_at('api_wxapp_00016'));
             }
@@ -2012,7 +2012,7 @@ class company_controller extends adminCommon
             $comM = $this->MODEL('company');
             $result	= $comM->upInfo($_POST['uid'], array(), array('package' => pylode(',', $_POST['package'])));
             if ($result){
-                $this->MODEL('log')->addAdminLog('common_06391' . $_POST['uid'].'）绑定会员套餐（ID：' . $_POST['package'] . 'admin_user_00046');
+                $this->MODEL('log')->addAdminLog(yun_t('admin_model_00124', array('uid' => $_POST['uid'], 'package' => pylode(',', $_POST['package']))));
                 $this->render_json(0, yun_at('wap_user_00264'));
             }else{
                 $this->render_json(1, yun_at('wap_js_00141'));
@@ -2101,7 +2101,7 @@ class company_controller extends adminCommon
         $logM = $this->MODEL('log');
         $return = $logM->delMemlog($where);
         if ($return['errcode'] == 9) {
-            $this->admin_json(0, $ids == 'all' ? 'admin_01290' : '解绑记录（ID:' . $ids . 'admin_01291');
+            $this->admin_json(0, $ids == 'all' ? yun_t('admin_01290') : yun_t('admin_model_00113', array('ids' => $ids)));
         } else {
             $this->render_json(1, yun_at('admin_01292'));
         }

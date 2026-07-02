@@ -258,7 +258,7 @@ class company_job_controller extends adminCommon
     }
 
     /**
-     * 招聘/下架操作
+     * Publish/offline operation.
      */
     function checkstate_action()
     {
@@ -269,16 +269,16 @@ class company_job_controller extends adminCommon
             $postData['status'] = intval($_POST['state']);
             $JobM->upInfo($postData, array('id' => $id));
             if ($_POST['state'] == 0) {
-                $logMsg = "职位(ID" . $_POST['id'] . ")上架成功";
+                $logMsg = yun_t('admin_model_00125', array('id' => $_POST['id']));
             } else {
-                $logMsg = "职位(ID" . $_POST['id'] . ")下架成功";
+                $logMsg = yun_t('admin_model_00126', array('id' => $_POST['id']));
             }
             $this->MODEL('log')->addAdminLog($logMsg);
         }
         $this->render_json(0, $logMsg);
     }
 
-    // 	职位置顶
+        // Job top.
     function xuanshang_action()
     {
         $id = trim($_POST['pid']);
@@ -295,7 +295,7 @@ class company_job_controller extends adminCommon
         }
     }
 
-    //  职位推荐
+    // Job recommendation.
     function recommend_action()
     {
         $id = trim($_POST['pid']);
@@ -312,7 +312,7 @@ class company_job_controller extends adminCommon
         }
     }
 
-    //  职位紧急招聘
+    // Urgent hiring.
     function urgent_action()
     {
         $id = trim($_POST['pid']);
@@ -329,7 +329,7 @@ class company_job_controller extends adminCommon
         }
     }
 
-    //  职位审核
+    // Job review.
     function status_action()
     {
         $jobM = $this->MODEL('job');
@@ -337,16 +337,16 @@ class company_job_controller extends adminCommon
             'state' => intval($_POST['status']),
             'statusbody' => trim($_POST['statusbody']),
             'single' => isset($_POST['single']) ? $_POST['single'] : '',
-            'lock_status' => trim($_POST['lock_status']) // 新增需求 单个审核锁定企业也可以审核 新增lock_status 状态值，批量审核未传该值
+            'lock_status' => trim($_POST['lock_status']) // Allows reviewing a locked company in single review; batch review does not send this value.
         );
         $return = $jobM->statusJob($_POST['pid'], $statusData);
         if (isset($_POST['single'])) {
             if ($return['errcode'] == 9) {
                 if ($_POST['atype'] == 1) {
-                    // 仅保存
+                    // Save only.
                     $this->admin_json(0, $return['msg']);
                 } else {
-                    // 下一个待审核职位
+                    // Next pending job.
                     $jobM = $this->MODEL('job');
                     $row = $jobM->getInfo(array('state' => 0, 'orderby' => array('lastupdate,DESC')), array('field' => 'id'));
                     if (!empty($row)) {
@@ -367,7 +367,7 @@ class company_job_controller extends adminCommon
         }
     }
 
-    // 职位审核同步企业审核
+    // Sync job review with company review.
     function cjobstatus_action()
     {
         if ($_POST) {
@@ -385,10 +385,10 @@ class company_job_controller extends adminCommon
             if (isset($_POST['single'])) {
                 if ($return['errcode'] == 9) {
                     if ($_POST['atype'] == 1) {
-                        // 仅保存
+                        // Save only.
                         $this->admin_json(0, $return['msg']);
                     } else {
-                        // 下一个待审核职位
+                        // Next pending job.
                         $jobM = $this->MODEL('job');
                         $row = $jobM->getInfo(array('state' => 0, 'orderby' => array('lastupdate,DESC')), array('field' => 'id'));
                         if (!empty($row)) {
@@ -410,7 +410,7 @@ class company_job_controller extends adminCommon
         }
     }
 
-    //  修改浏览量/曝光量
+    // Update views/exposure.
     function upjobhits_action()
     {
         $jobM = $this->MODEL('job');
@@ -426,11 +426,11 @@ class company_job_controller extends adminCommon
         $citys = array();
         foreach ($CacheList['city_index'] as $fir_v) {
             $citys[$fir_v] = array('value' => $fir_v, 'label' => $CacheList['city_name'][$fir_v]);
-            if ($CacheList['city_type'][$fir_v]) {// 二级城市
+            if ($CacheList['city_type'][$fir_v]) {// Second-level city.
                 $citys[$fir_v]['children'] = array();
                 foreach ($CacheList['city_type'][$fir_v] as $sec_v) {
                     $citys[$fir_v]['children'][$sec_v] = array('value' => $sec_v, 'label' => $CacheList['city_name'][$sec_v]);
-                    if ($CacheList['city_type'][$sec_v]) {// 三级城市
+                    if ($CacheList['city_type'][$sec_v]) {// Third-level city.
                         $citys[$fir_v]['children'][$sec_v]['children'] = array();
                         foreach ($CacheList['city_type'][$sec_v] as $thi_v) {
                             $citys[$fir_v]['children'][$sec_v]['children'][$thi_v] = array('value' => $thi_v, 'label' => $CacheList['city_name'][$thi_v]);
@@ -457,11 +457,11 @@ class company_job_controller extends adminCommon
         $jobtypes = array();
         foreach ($CacheList['job_index'] as $fir_v) {
             $jobtypes[$fir_v] = array('value' => $fir_v, 'label' => $CacheList['job_name'][$fir_v]);
-            if ($CacheList['job_type'][$fir_v]) {// 二级
+            if ($CacheList['job_type'][$fir_v]) {// Second level.
                 $jobtypes[$fir_v]['children'] = array();
                 foreach ($CacheList['job_type'][$fir_v] as $sec_v) {
                     $jobtypes[$fir_v]['children'][$sec_v] = array('value' => $sec_v, 'label' => $CacheList['job_name'][$sec_v]);
-                    if ($CacheList['job_type'][$sec_v]) {// 三级
+                    if ($CacheList['job_type'][$sec_v]) {// Third level.
                         $jobtypes[$fir_v]['children'][$sec_v]['children'] = array();
                         foreach ($CacheList['job_type'][$sec_v] as $thi_v) {
                             $jobtypes[$fir_v]['children'][$sec_v]['children'][$thi_v] = array('value' => $thi_v, 'label' => $CacheList['job_name'][$thi_v]);
@@ -485,7 +485,7 @@ class company_job_controller extends adminCommon
     }
 
     /**
-     * @desc 后台 -- 会员 -- 企业 -- 企业管理 / 职位管理 -- 新增  /  修改
+     * @desc Admin member/company job add or update.
      */
     function add_action()
     {
@@ -617,7 +617,7 @@ class company_job_controller extends adminCommon
         $this->render_json(0, '', $rt);
     }
 
-    // 转移类别
+    // Transfer category.
     function saveclass_action()
     {
         $JobM = $this->MODEL('job');
@@ -639,28 +639,30 @@ class company_job_controller extends adminCommon
         if ($job) {
             $msg = array();
             $uids = array();
-            //  提取职位uid 和职位名称
+            // Get job uid and name.
             foreach ($job as $k => $v) {
                 $uids[] = $v['uid'];
-                $msg[$v['uid']][] = '您的职位<a href="comjobtpl,' . $v['id'] . '">《' . $v['name'] . '》</a>管理员已修改，行业类别为：' . $cache[industry_name][$_POST['hy']] . 'admin_user_00065' . $cache[job_name][$_POST['job1']];
+                $jobLink = '<a href="comjobtpl,' . $v['id'] . '">' . $v['name'] . '</a>';
+                $jobCategory = $cache[job_name][$_POST['job1']];
                 if ($_POST['job1_son']) {
-                    $msg[$v['uid']][] .= '' . $cache[job_name][$_POST['job1_son']];
+                    $jobCategory .= $cache[job_name][$_POST['job1_son']];
                 }
                 if ($_POST['job_post']) {
-                    $msg[$v['uid']][] .= '' . $cache[job_name][$_POST['job_post']];
+                    $jobCategory .= $cache[job_name][$_POST['job_post']];
                 }
+                $msg[$v['uid']][] = yun_t('admin_model_00127', array('job_link' => $jobLink, 'industry' => $cache[industry_name][$_POST['hy']], 'job_category' => $jobCategory));
             }
             $sysmsgM = $this->MODEL('sysmsg');
             $sysmsgM->addInfo(array('uid' => $uids, 'usertype' => 2, 'content' => $msg));
         }
         if ($nid) {
-            $this->admin_json(0, '职位类别(ID:' . $_POST['jobid'] . ')修改成功！');
+            $this->admin_json(0, yun_t('admin_model_00128', array('ids' => $_POST['jobid'])));
         } else {
             $this->render_json(1, yun_at('member_user_00603'));
         }
     }
 
-    // 删除职位
+    // Delete job.
     function del_action()
     {
         $JobM = $this->Model('job');
@@ -697,13 +699,13 @@ class company_job_controller extends adminCommon
             }
             $logM->addJobSxLogS($vData);
         }
-        $this->admin_json(0, "职位(ID" . $_POST['ids'] . 'wap_user_00198');
+        $this->admin_json(0, yun_t('admin_model_00129', array('ids' => $_POST['ids'])));
     }
 
-    // 导出字段
+    // Export fields.
     private function getFields()
     {
-        // rtype 开头 简历字段 type 开头 个人信息字段
+        // rtype prefixes are resume fields; type prefixes are user info fields.
         $fieldsList = [
             'id' => 'admin_user_company_00370',
             'uid' => 'admin_user_company_00120',
@@ -734,7 +736,7 @@ class company_job_controller extends adminCommon
         return $fieldsList;
     }
 
-    // 导出职位列表数据
+    // Export job list data.
     function xls_action()
     {
         $where = $_SESSION['jobXls'] ? $_SESSION['jobXls'] : array('orderby' => 'id');
@@ -774,16 +776,16 @@ class company_job_controller extends adminCommon
             $objPHPExcel = new PHPExcel();
             $objPHPExcel->setActiveSheetIndex(0);
             $col = 'A';
-            // 循环字段
+            // Loop fields.
             foreach ($export_type as $tval) {
                 $width = 20;
-                $objPHPExcel->getActiveSheet()->getColumnDimension($col)->setWidth($width); // 设置列宽
-                $objPHPExcel->getActiveSheet()->setCellValue($col . '1', $fieldsList[$tval]); // 设置表头
+                $objPHPExcel->getActiveSheet()->getColumnDimension($col)->setWidth($width); // Set column width.
+                $objPHPExcel->getActiveSheet()->setCellValue($col . '1', $fieldsList[$tval]); // Set header.
                 $col++;
             }
             foreach ($jobs as $key => $val) {
                 $col = 'A';
-                // 循环字段
+                // Loop fields.
                 foreach ($export_type as $tval) {
                     if (in_array($tval, array('hy', 'exp', 'report', 'sex', 'edu', 'marriage', 'pr', 'mun'))) {
                         $text = $val['job_' . $tval];
@@ -815,7 +817,7 @@ class company_job_controller extends adminCommon
                         $text = date('Y-m-d', $val['lastupdate']);
                     } else if ($tval == 'zp_minage,zp_maxage') {
                         if ($val['zp_minage'] && $val['zp_maxage']) {
-                            $text = $val['zp_minage'] . '-' . $val['zp_maxage'] . '岁';
+                        $text = $val['zp_minage'] . '-' . $val['zp_maxage'] . yun_t('admin_model_00140');
                         } else if ($val['zp_minage']) {
                             $text = $val['zp_minage'] . 'wap_com_00296';
                         }
@@ -824,10 +826,10 @@ class company_job_controller extends adminCommon
                     } else {
                         $text = $val[$tval] ? $val[$tval] : '';
                     }
-                    if (in_array($tval, array('id', 'uid'))) { // 数字转字符的字段
-                        $objPHPExcel->getActiveSheet()->setCellValueExplicit($col . ($key + 2), $text, PHPExcel_Cell_DataType::TYPE_STRING); // 转类型
+                    if (in_array($tval, array('id', 'uid'))) { // Cast numeric fields to strings.
+                        $objPHPExcel->getActiveSheet()->setCellValueExplicit($col . ($key + 2), $text, PHPExcel_Cell_DataType::TYPE_STRING); // Cast type.
                     } else {
-                        $objPHPExcel->getActiveSheet()->setCellValue($col . ($key + 2), $text); // 动态表格内容
+                        $objPHPExcel->getActiveSheet()->setCellValue($col . ($key + 2), $text); // Dynamic table content.
                     }
                     $col++;
                 }
@@ -847,7 +849,7 @@ class company_job_controller extends adminCommon
         }
     }
 
-    /* 职位匹配简历 */
+    /* Match resumes for job. */
     function matching_action()
     {
 
@@ -906,7 +908,7 @@ class company_job_controller extends adminCommon
                     }
                     $where .= ")";
                 }
-                //  学历要求
+                // Education requirement.
                 if ($_POST['edu']) {
                     $eduKey = $this->obj->select_once('userclass', array('variable' => 'user_edu'), "`id`");
                     $eduReq = $this->obj->select_once('userclass', array('id' => $_POST['edu']), "`sort`,`name`");
@@ -919,7 +921,7 @@ class company_job_controller extends adminCommon
                         $where .= " and a.edu in (" . pylode(',', $eduIds) . ") ";
                     }
                 }
-                //  工作经验
+                // Work experience.
                 if ($_POST['exp']) {
                     $expKey = $this->obj->select_once('userclass', array('variable' => 'user_word'), "`id`");
                     $expReq = $this->obj->select_once('userclass', array('id' => $_POST['exp']), "`sort`,`name`");
@@ -932,21 +934,21 @@ class company_job_controller extends adminCommon
                         $where .= " and a.exp in (" . pylode(',', $expIds) . ") ";
                     }
                 }
-                //  工作城市
+                // Work city.
                 if ($_POST['city_class']) {
                     $cityclass = explode(',', $_POST['city_class']);
                     $rt['cityArr'] = $cityclass;
                 }
-                //  工作职能
+                // Job function.
                 if ($_POST['job_class']) {
                     $jobclass = explode(',', $_POST['job_class']);
                     $rt['jobArr'] = $jobclass;
                 }
-                //  简历标签
+                // Resume tags.
                 if ($_POST['label']) {
                     $where .= ' and a.label=' . intval($_POST['label']);
                 }
-                //  简历备注
+                // Resume remark.
                 if ($_POST['content']) {
                     $where .= " and a.content like '%" . trim($_POST['content']) . "%'";
                 }
@@ -1026,7 +1028,7 @@ class company_job_controller extends adminCommon
                         $cjwhere .= "{$cjand}$city_col = {$_POST['city_class']}";
                     }
                 }
-                // 拼接唯一标识字段
+                // Build unique identifier field.
                 if ($city_col || $job_col) {
                     if ($city_col && $job_col) {
                         $cjwhere .= " AND {$city_col}_{$job_col}_num = 1";
@@ -1042,13 +1044,13 @@ class company_job_controller extends adminCommon
             $countSql = "select count(*) as num from `" . $this->def . "resume_expect` a{$city_job_class} where {$where}";
             $page = !empty($_POST['page']) ? intval($_POST['page']) : 1;
             $pageSize = !empty($_POST['pageSize']) ? intval($_POST['pageSize']) : intval($this->config['sy_listnum']);
-            //提取分页
+            // Build pagination.
             $pageM = $this->MODEL('page');
             $pages = $pageM->adminPageList('resume_expect', $where, $page, array('limit' => $pageSize, 'sql' => $countSql));
             $order = '';
-            //分页数大于0的情况下 执行列表查询
+            // Query the list only when records exist.
             if ($pages['total'] > 0) {
-                //limit order 只有在列表查询时才需要
+                // Limit/order is only needed for list queries.
                 if ($_POST['order']) {
                     if ($_POST['t'] == 'time') {
                         $order .= "order by a.lastupdate " . $_POST['order'];
@@ -1160,7 +1162,7 @@ class company_job_controller extends adminCommon
         $Info['login_date_n'] = $memberInfo['login_date'] > 0 ? date('Y-m-d H:i:s', $memberInfo['login_date']) : '';
         $Info['jobname'] = $Info['name'];
         $rt['info'] = $Info;
-        // 待审核数量
+        // Pending review count.
         $snum = $JobM->getJobNum(array('state' => 0, 'id' => array('<>', $jobid)));
         $rt['snum'] = $snum;
         $this->render_json(0, '', $rt);
@@ -1189,7 +1191,7 @@ class company_job_controller extends adminCommon
         }
         $page = !empty($_POST['page']) ? intval($_POST['page']) : 1;
         $pageSize = !empty($_POST['pageSize']) ? intval($_POST['pageSize']) : intval($this->config['sy_listnum']);
-        //提取分页
+        // Build pagination.
         $pageM = $this->MODEL('page');
         $pages = $pageM->adminPageList('company_job', $where, $page, array('limit' => $pageSize));
         if ($pages['total'] > 0) {
@@ -1214,7 +1216,7 @@ class company_job_controller extends adminCommon
         $ids = $_POST['ids'];
         $return = $JobM->closeReserve(array('jobids' => $ids, 'utype' => 'admin'));
         if ($return['errcode'] == 9) {
-            $this->MODEL('log')->addAdminLog("关闭职位（ID" . $ids . 'common_06316');
+            $this->MODEL('log')->addAdminLog(yun_t('admin_model_00130', array('ids' => $ids)));
         }
         if ($return['errcode'] == 9) {
             $this->admin_json(0, $return['msg']);
@@ -1252,7 +1254,7 @@ class company_job_controller extends adminCommon
     }
 
     /**
-     * @desc 职位匹配简历投递
+     * @desc Matched resume delivery for job.
      */
     function applyJob_action()
     {
@@ -1319,7 +1321,7 @@ class company_job_controller extends adminCommon
      *Data:2023/2/4
      *Time:9:25
      *
-     * 单职位联系方式选择性开放
+     * Selectively open contact info for a single job.
      */
     function setlinkopen_action()
     {
@@ -1335,7 +1337,7 @@ class company_job_controller extends adminCommon
     }
 
     /**
-     * 职位降权
+     * Job depower.
      */
     function depower_action()
     {
@@ -1348,9 +1350,9 @@ class company_job_controller extends adminCommon
         $return = $jobM->upInfo($data, $where);
         $msg = $data['is_depower'] == 1 ? yun_at('admin_user_company_00374') : yun_at('admin_user_company_00367');
         if ($return) {
-            $this->admin_json(0, "职位{$msg}（ID：{$where['id']}）操作成功");
+            $this->admin_json(0, yun_t('admin_model_00131', array('action' => $msg, 'id' => $where['id'])));
         } else {
-            $this->render_json(1, yun_auto_t('职位{$msg}操作失败'));
+            $this->render_json(1, yun_t('admin_model_00132', array('action' => $msg)));
         }
     }
 }

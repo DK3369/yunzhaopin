@@ -651,7 +651,8 @@ class users_resume_controller extends adminCommon
             );
             $return = $resumeM->addInfo(array('uid' => $uid, 'eData' => $expectDate, 'utype' => 'admin'));
             $eid = $return['id'];
-            $msg = "简历(ID:{$eid})添加";
+            $successMsg = yun_t('admin_model_00133', array('id' => $eid));
+            $errorMsg = yun_t('admin_model_00134');
         } else {
             $expectDate = array(
                 'name' => $_POST['name'],
@@ -667,13 +668,14 @@ class users_resume_controller extends adminCommon
             );
 
             $return = $resumeM->upInfo(array('id' => $eid), array('eData' => $expectDate, 'utype' => 'admin'));
-            $msg = "求职意向(ID:{$eid})修改";
+            $successMsg = yun_t('admin_model_00135', array('id' => $eid));
+            $errorMsg = yun_t('admin_model_00136', array('id' => $eid));
         }
 
         if ($return['id']) {
-            $this->admin_json(0, $msg . 'admin_tool_00502', compact('eid'));
+            $this->admin_json(0, $successMsg, compact('eid'));
         } else {
-            $this->render_json(1, $msg . 'admin_tool_00501');
+            $this->render_json(1, $errorMsg);
         }
     }
     /**
@@ -719,7 +721,7 @@ class users_resume_controller extends adminCommon
         $return = $resumeM->upResumeInfo(array('uid' => $uid), array('rData' => $rData));
 
         if ($return['id']) {
-            $this->admin_json(0, '简历(UID:' . $uid . ')个人优势保存成功');
+            $this->admin_json(0, yun_t('admin_model_00137', array('uid' => $uid)));
         } else {
             $this->render_json(1, yun_at('admin_01320'));
         }
@@ -1239,9 +1241,9 @@ class users_resume_controller extends adminCommon
         $result     =   $userinfoM -> addMemberCheck(array('username'=>trim($_POST['username'])));
 
         if (!empty($result['error'])) {
-            $this->render_json(1, $result['msg']); // 异常
+            $this->render_json(1, $result['msg']); // Error.
         } else {
-            $this->render_json(0); // 成功
+            $this->render_json(0); // Success.
         }
     }
     /**

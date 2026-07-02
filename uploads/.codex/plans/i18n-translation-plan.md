@@ -386,6 +386,8 @@ Batch 22 执行范围：招聘会、招聘会场地、招聘专题、广告和�
 
 Batch 23 执行范围：系统设置、导航、关键词、SEO 相关后台模型 `admin/model/system/set_config.class.php`、`set_regset.class.php`、`set_web_config.class.php`、`set_guanjianci.class.php`、`set_navigation.class.php`、`admin_nav.class.php`、`set_navmap.class.php`、`set_seo.class.php`。将后台返回消息、日志消息和已命中的运行态中文改为 `yun_t()` 占位符；同步补齐 `admin_model_00072` 起始中英文语言包。触碰到的中文注释改为英文。本批不改配置字段名、缓存文件名、菜单 URL、导航类型、SEO 模型标识、审核枚举、验证码厂商参数或上传安全规则。
 
+Batch 24 执行范围：高频用户/企业/职位/简历后台模型 `admin/model/user/company.class.php`、`users_member.class.php`、`company_job.class.php`、`users_resume.class.php`。本批只迁移管理员实际可见的 `admin_json()`、`render_json()`、`addAdminLog()` 和相关 `$msg/$content` 运行态中文，新增 key 从 `admin_model_00106` 继续；大文件中的历史中文注释、导出字段、省市县展示值、搜索枚举和业务字典不在本批统一清理。禁止改动账户认证、分站分配、套餐绑定、职位审核、简历保存和导出业务逻辑。
+
 ## 11. 推荐执行顺序
 
 1. 修复语言包损坏项和扫描脚本误报规则。
