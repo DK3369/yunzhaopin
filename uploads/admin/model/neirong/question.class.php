@@ -93,7 +93,7 @@ class question_controller extends adminCommon
         $nid = $askM->upRecommend(array('id' => $id), array('is_recom' => intval($_POST['rec'])));
 
         if ($nid) {
-            $this->admin_json(0, yun_t('admin_model_00007', array('{id}' => $id)));
+            $this->admin_json(0, yun_t('admin_model_00007', array('id' => $id)));
         } else {
             $this->render_json(1, yun_at('admin_01340'));
         }
@@ -167,7 +167,7 @@ class question_controller extends adminCommon
         $nbid = $askM->upAskInfo(array('id' => $id), $post);
 
         if ($nbid) {
-            $this->admin_json(0, yun_t('admin_model_00008', array('{id}' => $id)));
+            $this->admin_json(0, yun_t('admin_model_00008', array('id' => $id)));
         } else {
             $this->render_json(1, yun_at('admin_neirong_00025'));
         }
@@ -191,7 +191,7 @@ class question_controller extends adminCommon
         $return = $askM->delquestion($ids, array('utype' => 'admin'));
 
         if ($return) {
-            $this->admin_json(0, yun_t('admin_model_00009', array('{ids}' => $ids)));
+            $this->admin_json(0, yun_t('admin_model_00009', array('ids' => $ids)));
         } else {
             $this->render_json(1, yun_at('admin_01341'));
         }
@@ -224,14 +224,14 @@ class question_controller extends adminCommon
                 $titleLink = '<a href="answertpl,' . $v['id'] . '">' . $v['title'] . '</a>';
                 if ($_POST['status'] == 2) {
                     if ($_POST['statusbody']) {
-                        $statusInfo = yun_t('admin_model_00017', array('{title_link}' => $titleLink, '{reason}' => $_POST['statusbody']));
+                        $statusInfo = yun_t('admin_model_00017', array('title_link' => $titleLink, 'reason' => $_POST['statusbody']));
                     } else {
-                        $statusInfo = yun_t('admin_model_00016', array('{title_link}' => $titleLink));
+                        $statusInfo = yun_t('admin_model_00016', array('title_link' => $titleLink));
                     }
 
                     $msg[$v['uid']][] = $statusInfo;
                 } elseif ($_POST['status'] == 1) {
-                    $msg[$v['uid']][] = yun_t('admin_model_00018', array('{title_link}' => $titleLink));
+                    $msg[$v['uid']][] = yun_t('admin_model_00018', array('title_link' => $titleLink));
                 }
             }
             // Send system notifications.
@@ -242,7 +242,7 @@ class question_controller extends adminCommon
         }
 
         if ($nid) {
-            $this->admin_json(0, yun_t('admin_model_00010', array('{ids}' => $ids)));
+            $this->admin_json(0, yun_t('admin_model_00010', array('ids' => $ids)));
         } else {
             $this->render_json(1, yun_at('admin_01342'));
         }
@@ -320,7 +320,7 @@ class question_controller extends adminCommon
         $return = $askM->upAnswerInfo(array('id' => $id), $data);
 
         if ($return) {
-            $this->admin_json(0, yun_t('admin_model_00011', array('{id}' => $id)));
+            $this->admin_json(0, yun_t('admin_model_00011', array('id' => $id)));
         } else {
             $this->render_json(1, yun_at('admin_01343'));
         }
@@ -348,7 +348,7 @@ class question_controller extends adminCommon
 
         if ($result['errcode'] == 9) {
             $askM->upStatusInfo(intval($_POST['qid']), '', array('answer_num' => array('-', $nums)));
-            $this->admin_json(0, yun_t('admin_model_00012', array('{ids}' => $ids)));
+            $this->admin_json(0, yun_t('admin_model_00012', array('ids' => $ids)));
         } else {
             $this->render_json(1, yun_at('admin_01344'));
         }
@@ -418,7 +418,7 @@ class question_controller extends adminCommon
         $return = $askM->upReview(array('id' => $id), $_POST);
 
         if ($return) {
-            $this->admin_json(0, yun_t('admin_model_00013', array('{id}' => $id)));
+            $this->admin_json(0, yun_t('admin_model_00013', array('id' => $id)));
         } else {
             $this->render_json(1, yun_at('admin_01345'));
         }
@@ -434,7 +434,7 @@ class question_controller extends adminCommon
         $return = $askM->delReview($delID);
 
         if ($return['errcode'] == 9) {
-            $this->admin_json(0, yun_t('admin_model_00014', array('{ids}' => pylode(',', $delID))));
+            $this->admin_json(0, yun_t('admin_model_00014', array('ids' => pylode(',', $delID))));
         } else {
             $this->render_json(1, yun_at('admin_01346'));
         }

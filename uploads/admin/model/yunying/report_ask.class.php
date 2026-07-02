@@ -62,7 +62,7 @@ class report_ask_controller extends adminCommon
         $return =   $reportM->upReport(array('id' => $id), $upData);
         if ($return){
             $logM   =   $this->MODEL('log');
-            $logM->addAdminLog(yun_t('admin_model_00020', array('{id}' => $id)));
+            $logM->addAdminLog(yun_t('admin_model_00020', array('id' => $id)));
             $this->render_json(0, yun_at('wap_user_00264'));
         }else{
             $this->render_json(1, yun_at('common_01266'));
@@ -83,7 +83,7 @@ class report_ask_controller extends adminCommon
         if ($_POST['del']) {
             $askM = $this->MODEL('ask');
             $askM->delquestion($_POST['del'],array('utype'=>'admin'));
-            $this->render_json(0, yun_t('admin_model_00009', array('{ids}' => $_POST['del'])));
+            $this->render_json(0, yun_t('admin_model_00009', array('ids' => $_POST['del'])));
         }
     }
     function getclass_action(){

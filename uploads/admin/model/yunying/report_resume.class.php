@@ -144,7 +144,7 @@ class report_resume_controller extends adminCommon
             $return         =   $reportM->upReport($where, $data);
             if ($return){
                 $logM   =   $this->MODEL('log');
-                $logM->addAdminLog(yun_t('admin_model_00023', array('{ids}' => pylode(',', $rids))));
+                $logM->addAdminLog(yun_t('admin_model_00023', array('ids' => pylode(',', $rids))));
                 $this->render_json(0, yun_at('wap_user_00264'));
             }else{
                 $this->render_json(1, yun_at('common_01266'));
@@ -246,9 +246,9 @@ class report_resume_controller extends adminCommon
         if ($return){
             $logM   =   $this->MODEL('log');
             if ($rtComIds) {
-                $logMsg = yun_t('admin_model_00024', array('{ids}' => implode(',', $rids), '{company_ids}' => implode(',', $rtComIds)));
+                $logMsg = yun_t('admin_model_00024', array('ids' => implode(',', $rids), 'company_ids' => implode(',', $rtComIds)));
             } else {
-                $logMsg = yun_t('admin_model_00023', array('{ids}' => implode(',', $rids)));
+                $logMsg = yun_t('admin_model_00023', array('ids' => implode(',', $rids)));
             }
             $logM->addAdminLog($logMsg);
             $this->render_json(0, yun_at('wap_user_00264'));

@@ -380,6 +380,8 @@ Batch 20 执行范围：后台壳页 tab/菜单标题 `app/template/admin/index.
 
 Batch 21 执行范围：问答与投诉后台模型 `admin/model/neirong/question.class.php`、`admin/model/yunying/report_job.class.php`、`report_ask.class.php`、`report_advise.class.php`、`report_xjh.class.php`、`report_resume.class.php`。将 `admin_json()`、`render_json()`、`addAdminLog()`、直接 `echo` 和问答审核系统通知中的中文拼接改为 `yun_t()` + 占位符；同步补齐 `admin_model_00007` 起始的中英文语言包 key。仅处理可见/日志文案和注释，不改投诉处理、返还积分/金额/简历数、审核状态、接口字段和枚举值。
 
+Batch 21.1 修正范围：复核 Batch 19-21 新增的 `yun_t()` 占位符调用。`Yun_I18n::replaceParams()` 会在参数 key 外自动拼 `{}`，因此调用必须传 `array('id' => $id)`，不能传 `array('{id}' => $id)`；语言包 value 仍保留 `{id}`、`{ids}` 等占位符。本批只修正参数 key，不改语言包 key、文案、业务逻辑或接口结构。
+
 ## 11. 推荐执行顺序
 
 1. 修复语言包损坏项和扫描脚本误报规则。
