@@ -164,10 +164,10 @@ module.exports = {
 
         this.searchForm.limit = val;
         this.getList();
-      console.log(`每页 ${val} 条`);
+      console.log(`Page size: ${val}`);
     },
     handleCurrentChange(val) {
-      console.log(`当前页: ${val}`);
+      console.log(`Current page: ${val}`);
     }
   },
   watch: {

@@ -366,6 +366,8 @@ Batch 14 执行范围：后台自有 JS `app/template/admin/js/xjhlive.js`、`ba
 
 Batch 15 执行范围：财务/广告/问答模块 `app/template/admin/yunying/caiwu/component/comhytc.vue`、`comhyzzb.vue`、`app/template/admin/yunying/ad/component/ad_edit.vue`、`app/template/admin/neirong/question/index.html`、`class.html`。扫描器未发现运行态裸中文时，本批只清理中文注释和注释掉的旧按钮/状态片段；不改套餐搜索、广告字段、问答审核、回答/评论列表和删除逻辑。
 
+Batch 16 执行范围：严格裸中文扫描命中的调试日志 `app/template/admin/yunying/special/component/special_view_audit.vue`、`app/template/admin/yunying/caiwu/xiaofei.html`、`chongzhidd.html`、`app/template/admin/tool/database/dataRecycle.html`、`app/template/admin/system/domain/domainAdminList.html`、`app/template/admin/system/domain/component/domainAdminGroup.vue`。本批只将分页 `console.log` 调试文案英文化；不改分页状态、接口参数、表格刷新和域名管理员权限逻辑。
+
 ## 11. 推荐执行顺序
 
 1. 修复语言包损坏项和扫描脚本误报规则。
