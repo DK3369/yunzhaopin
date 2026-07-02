@@ -16,7 +16,7 @@ class shop_set_controller extends adminCommon{
             $UploadM=$this->MODEL('upload');
             $return = $UploadM->layUpload($data);
             if (!empty($_POST['name']) && $return['code'] == 0){
-                // 后台上传logo后，重新生成缓存
+                // Regenerate cache after admin logo upload.
                 $this->web_config();
             }
             $this->render_json(0, yun_at('admin_01437'));
@@ -25,11 +25,11 @@ class shop_set_controller extends adminCommon{
         }
 
 	}
-	//商品类别
+	// Product category.
 	function get_redeem_option_action(){
 	    
 	    include(PLUS_PATH."redeem.cache.php");
-	    $html = '<option value="">请选择</option>';
+	    $html = '<option value="">' . yun_t('admin_model_00228') . '</option>';
 	    if(!isset($_POST['tnid']) || !isset($redeem_type[$_POST['tnid']])
 	        || count($redeem_type[$_POST['tnid']]) < 1){
 	            echo $html;

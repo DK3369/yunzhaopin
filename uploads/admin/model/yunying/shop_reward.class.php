@@ -72,8 +72,8 @@ class shop_reward_controller extends adminCommon{
 
         $search_list[] = array("param" => "status", "name" => 'member_user_00181', "value" => array("1" => 'wap_com_00244', "2" => 'wap_com_00245'));
         $search_list[] = array("param" => "nid", "name" => 'admin_00223', "value" => $classdata);
-        $search_list[] = array("param" => "rec", "name" => 'wap_01465', "value" => array("1" => "是", "2" => "否"));
-        $search_list[] = array("param" => "hot", "name" => 'wap_js_00093', "value" => array("1" => "是", "2" => "否"));
+        $search_list[] = array("param" => "rec", "name" => 'wap_01465', "value" => array("1" => yun_t('admin_model_00059'), "2" => yun_t('admin_model_00060')));
+        $search_list[] = array("param" => "hot", "name" => 'wap_js_00093', "value" => array("1" => yun_t('admin_model_00059'), "2" => yun_t('admin_model_00060')));
         $this->render_json(0, 'ok', compact('search_list'));
     }
 	
@@ -154,7 +154,7 @@ class shop_reward_controller extends adminCommon{
 	function status_action(){
 		$redeemM	=	$this->MODEL("redeem");
 		$id			=	$redeemM->upInfo(array('status'=>$_POST['status']),array('id'=>(int)$_POST['id']));
-		$this->MODEL('log')->addAdminLog("商品(ID:".$_POST['id'].")状态设置成功！");
+		$this->MODEL('log')->addAdminLog(yun_t('admin_model_00222', array('id' => $_POST['id'])));
 
         $this->render_json($id?0:1, $id?yun_at('admin_01433'):yun_at('api_wxapp_00016'));
 	}
@@ -162,14 +162,14 @@ class shop_reward_controller extends adminCommon{
 	function rec_action(){
 		$redeemM	=	$this->MODEL("redeem");
 		$id			=	$redeemM->upInfo(array('rec'=>$_POST['rec']),array('id'=>(int)$_POST['id']));
-		$this->MODEL('log')->addAdminLog("商品(ID:".$_POST['id'].")推荐设置成功！");
+		$this->MODEL('log')->addAdminLog(yun_t('admin_model_00223', array('id' => $_POST['id'])));
         $this->render_json($id?0:1, $id?yun_at('admin_01434'):yun_at('api_wxapp_00016'));
 	}
 
     function hot_action(){
 		$redeemM	=	$this->MODEL("redeem");
 		$id			=	$redeemM->upInfo(array('hot'=>$_POST['hot']),array('id'=>(int)$_POST['id']));
-		$this->MODEL('log')->addAdminLog("商品(ID:".$_POST['id'].")热门设置成功！");
+		$this->MODEL('log')->addAdminLog(yun_t('admin_model_00224', array('id' => $_POST['id'])));
         $this->render_json($id?0:1, $id?yun_at('admin_01435'):yun_at('api_wxapp_00016'));
 	}
 

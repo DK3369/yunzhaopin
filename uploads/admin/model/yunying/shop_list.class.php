@@ -79,7 +79,7 @@ class shop_list_controller extends adminCommon{
 					$ordernum	=	$orderM->getCompanyPayNum(array('com_id'=>$change['uid'],'pay_remark'=>'admin_01428'));
 					if(!$ordernum){
 						$IntegralM		=	$this->MODEL("integral");
-						$IntegralM->company_invtal($change['uid'],$change['usertype'],$change['integral'],true,'admin_01428',true,2,'integral',24);//积分操作记录
+						$IntegralM->company_invtal($change['uid'],$change['usertype'],$change['integral'],true,'admin_01428',true,2,'integral',24); // Integral operation record.
 					}
 					
 					$upReData['num']	=	array('-',$change['num']);
@@ -92,17 +92,15 @@ class shop_list_controller extends adminCommon{
 				}
 			}
 			
-			/* 消息前缀 */		
-			$tagName  				=	'admin_yunying_00012';
-			
-			/* 处理审核信息 */
+			/* Review message. */
+            $productLink = '<a href="rewardtpl,'.$reward['id'].'">'.$reward['name'].'</a>';
 			if ($_POST['status'] == 2){
 				
-				$statusInfo  =  '您兑换的商品:<a href="rewardtpl,'.$reward['id'].'">'.$reward['name'].'</a>,审核未通过';
+				$statusInfo  =  yun_t('admin_model_00225', array('product_link' => $productLink));
 				
 				if($_POST['statusbody']){
 					
-					$statusInfo  .=  ' , 原因：'.$_POST['statusbody'];
+					$statusInfo  =  yun_t('admin_model_00226', array('product_link' => $productLink, 'reason' => $_POST['statusbody']));
 					
 				}
 				
@@ -110,14 +108,14 @@ class shop_list_controller extends adminCommon{
 				
 			}elseif($_POST['status'] == 1){
 				
-				$msg[$change['uid']]  =  '您兑换的商品:<a href="rewardtpl,'.$reward['id'].'">'.$reward['name'].'</a>,已审核通过';
+				$msg[$change['uid']]  =  yun_t('admin_model_00227', array('product_link' => $productLink));
 				
 			}
 			
 			if(!empty($msg)){
 				$uids[]		=	$change['uid'];
 				
-				//发送系统通知
+				// Send system notification.
 				
 				$sysmsgM	=	$this->MODEL('sysmsg');
 				

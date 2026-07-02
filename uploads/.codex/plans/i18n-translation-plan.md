@@ -396,6 +396,8 @@ Batch 27 执行范围：剩余内容小模块 `admin/model/neirong/announcement.
 
 Batch 28 执行范围：系统设置小模块 `admin/model/system/set_integral.class.php`、`set_payset.class.php`、`singlepage.class.php`、`set_module.class.php`。迁移积分优惠删除/编辑日志、银行转账新增修改删除、单页面保存结果、SEO 保存结果等管理员可见消息；新增 key 从 `admin_model_00206` 继续。本批不改支付配置字段、银行账号字段、单页面 URL 校验/静态生成、SEO 配置结构、缓存生成或第三方支付参数。
 
+Batch 29 执行范围：积分商城后台模块 `admin/model/yunying/shop_class.class.php`、`shop_reward.class.php`、`shop_list.class.php`、`shop_set.class.php`。迁移商品类别日志、商品状态/推荐/热门日志、兑换审核系统通知、商城分类下拉默认项和搜索过滤显示值；新增 key 从 `admin_model_00219` 继续。本批不改库存回退、积分返还、商品/分类 CRUD、审核状态值、兑换记录结构或缓存生成逻辑。
+
 ## 11. 推荐执行顺序
 
 1. 修复语言包损坏项和扫描脚本误报规则。

@@ -26,7 +26,7 @@ class shop_class_controller extends adminCommon{
 
             foreach ($name as $key=>$val){
 				
-                if($_POST['ctype']=='1'){//一级分类
+                if($_POST['ctype']=='1'){ // Top-level category.
                     $value['name']	=	$val;
                 }else{
 					$value['name']	=	$val;
@@ -42,7 +42,7 @@ class shop_class_controller extends adminCommon{
             }else{
 			    $tit = 'api_wxapp_00012';
             }
-			$this->MODEL('log')->addAdminLog("商品类别(ID:".$add.")添加成功");
+			$this->MODEL('log')->addAdminLog(yun_t('admin_model_00219', array('id' => $add)));
 		}else{
 			$msg	=	1;
 			$tit = 'admin_system_00050';
@@ -95,14 +95,14 @@ class shop_class_controller extends adminCommon{
 			$sValue['sort']	=	$_POST['sort'];
 			$sWhere['id']	=	$_POST['id'];
 			$up				=	$redeemM->upRedeemClassInfo($sWhere,$sValue);
-			$this->MODEL('log')->addAdminLog("商品类别(ID:".$_POST['id'].")排序修改成功");
+			$this->MODEL('log')->addAdminLog(yun_t('admin_model_00220', array('id' => $_POST['id'])));
 		}
 		
 		if($_POST['name']){
 			$nValue['name']	=	$_POST['name'];
 			$nWhere['id']	=	$_POST['id'];
 			$up				=	$redeemM->upRedeemClassInfo($nWhere,$nValue);
-			$this->MODEL('log')->addAdminLog("商品类别(ID:".$_POST['id'].")名称修改成功");
+			$this->MODEL('log')->addAdminLog(yun_t('admin_model_00221', array('id' => $_POST['id'])));
 		}
 		$this->cache_action();
         $this->render_json(0, yun_at('admin_user_company_00208'));
