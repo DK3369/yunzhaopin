@@ -47,7 +47,7 @@ class gongzhao_controller extends adminCommon
     function add_action()
     {
         if (isset($_POST['add'])){
-            // 添加打开弹窗请求，方便权限控制
+            // Open dialog request for permission control.
             $this->render_json(0);
         }
         $gongzhaoM = $this->MODEL('gongzhao');
@@ -58,7 +58,7 @@ class gongzhao_controller extends adminCommon
         }
         $info['startime'] = $info['startime_n'] ? $info['startime_n'] : date('Y-m-d');
         $info['endtime'] = $info['endtime_n'] ? $info['endtime_n'] : '';
-        // 新上传图片文件处理
+        // Handle newly uploaded image files.
         foreach ($_FILES['pic'] as $nk => $nv) {
             foreach ($nv as $nkk => $nvv) {
                 $pic_file[$nkk][$nk] = $nvv;
@@ -118,7 +118,7 @@ class gongzhao_controller extends adminCommon
             if ($id) {
                 $siteDomain = $this->MODEL('site');
                 $siteDomain->updDid(array('gongzhao'), array('id' => array('in', $id)), array('did' => $_POST['did']));
-                $this->admin_json(0, 'admin_01328' . $_POST['uid'] . ')分配站点成功！');
+                $this->admin_json(0, yun_t('admin_model_00192', array('ids' => $id)));
             } else {
                 $this->render_json(1, yun_at('admin_neirong_00004'));
             }
@@ -149,7 +149,7 @@ class gongzhao_controller extends adminCommon
         echo $whbM->getGongzhaoHb($data);
     }
 
-    // 设置和取消推荐
+    // Set or cancel recommendation.
     function setRec_action(){
         $id = intval($_POST['del']);
         if (isset($_POST['rec']) && intval($_POST['rec'] == 1)){

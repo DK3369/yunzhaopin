@@ -14,7 +14,7 @@ class toolbox_class_controller extends adminCommon
         $this->render_json(0, 'ok', compact('list'));
     }
 
-    // 保存
+    // Save.
     function save_action()
     {
         $post = $this->post_trim($_POST);
@@ -48,20 +48,22 @@ class toolbox_class_controller extends adminCommon
         if (!empty($post['id'])) {
             $id = intval($post['id']);
             $nid = $hrM->upClassInfo(array('id' => $id), $data);
-            $msg = "工具箱类别(ID:" . $id . ")修改";
+            $successMsg = yun_t('admin_model_00197', array('id' => $id));
+            $errorMsg = yun_t('admin_model_00198', array('id' => $id));
         } else {
             $nid = $hrM->addClassInfo($data);
-            $msg = "工具箱类别(ID:" . $nid . ")添加";
+            $successMsg = yun_t('admin_model_00199', array('id' => $nid));
+            $errorMsg = yun_t('admin_model_00200', array('id' => $nid));
         }
 
         if ($nid) {
-            $this->admin_json(0, $msg . 'admin_tool_00502');
+            $this->admin_json(0, $successMsg);
         } else {
-            $this->render_json(1, $msg . 'admin_tool_00501');
+            $this->render_json(1, $errorMsg);
         }
     }
 
-    // 删除
+    // Delete.
     function del_action()
     {
         if (empty($_POST['del'])) {

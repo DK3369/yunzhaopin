@@ -112,7 +112,7 @@ class toolbox_doc_controller extends adminCommon
         $this->render_json(0, 'ok', compact('classList', 'info'));
     }
 
-    // 保存
+    // Save.
     function save_action()
     {
         $hrM = $this->MODEL('hr');
@@ -154,21 +154,23 @@ class toolbox_doc_controller extends adminCommon
 
         if ($id) {
             $nid = $hrM->upHrInfo(array('id' => $id), array('post' => $post));
-            $msg = "文档(ID:{$id})更新";
+            $successMsg = yun_t('admin_model_00201', array('id' => $id));
+            $errorMsg = yun_t('admin_model_00202', array('id' => $id));
         } else {
             $post['add_time'] = time();
             $nid = $hrM->addHrInfo($post);
-            $msg = "文档(ID:{$nid})添加";
+            $successMsg = yun_t('admin_model_00203', array('id' => $nid));
+            $errorMsg = yun_t('admin_model_00204', array('id' => $nid));
         }
 
         if ($nid) {
-            $this->admin_json(0, $msg . 'admin_tool_00502');
+            $this->admin_json(0, $successMsg);
         } else {
-            $this->render_json(1, $msg . 'admin_tool_00501');
+            $this->render_json(1, $errorMsg);
         }
     }
 
-    // 删除文档
+    // Delete document.
     function del_action()
     {
         $hrM = $this->Model('hr');
@@ -184,14 +186,14 @@ class toolbox_doc_controller extends adminCommon
         }
     }
 
-    // 前台显示状态设置
+    // Frontend display status.
     function show_action()
     {
         $hrM = $this->Model('hr');
         $nid = $hrM->upHrInfo(array('id' => intval($_POST['id'])), array('post' => array('is_show' => intval($_POST['show']))));
 
         if ($nid) {
-            $this->admin_json(0, "文档(ID:{$_POST['id']})显示状态设置成功");
+            $this->admin_json(0, yun_t('admin_model_00205', array('id' => $_POST['id'])));
         } else {
             $this->render_json(1, yun_at('admin_01349'));
         }

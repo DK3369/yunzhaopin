@@ -392,6 +392,8 @@ Batch 25 执行范围：剩余用户相关小模型 `admin/model/user/admin_appe
 
 Batch 26 执行范围：内容模块新闻与测评 `admin/model/neirong/news.class.php`、`evaluate.class.php`。迁移管理员可见的新闻分站、属性设置、删除、类别 ajax、导航取消，以及测评试题日志、试卷/问题/类别删除等运行态中文；新增 key 从 `admin_model_00175` 继续。本批不改新闻静态页生成、新闻内容字段、分类树结构、测评分数计算、上传处理、模型返回结构或业务状态值。
 
+Batch 27 执行范围：剩余内容小模块 `admin/model/neirong/announcement.class.php`、`gongzhao.class.php`、`question_class.class.php`、`toolbox_class.class.php`、`toolbox_doc.class.php`。迁移公告、公招、问答分类、工具箱分类/文档的新增、修改、删除、分站、显示状态等管理员可见返回消息；新增 key 从 `admin_model_00187` 继续。本批不改上传处理、权限弹窗、缓存生成、分类删除级联、工具箱文档内容或模型返回结构。
+
 ## 11. 推荐执行顺序
 
 1. 修复语言包损坏项和扫描脚本误报规则。

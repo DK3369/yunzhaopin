@@ -55,7 +55,7 @@ class question_class_controller extends adminCommon
         $this->render_json(0, 'ok', compact('info', 'classList'));
     }
 
-    // 保存分类
+    // Save category.
     function save_action()
     {
         $askM = $this->Model('ask');
@@ -86,21 +86,23 @@ class question_class_controller extends adminCommon
         if (!empty($_POST['id'])) {
             $id = intval($_POST['id']);
             $nbid = $askM->upQclassInfo(array('id' => $id), $_POST);
-            $msg = "问答类别(ID:{$id})添加";
+            $successMsg = yun_t('admin_model_00193', array('id' => $id));
+            $errorMsg = yun_t('admin_model_00194', array('id' => $id));
         } else {
             $nbid = $askM->addQclassInfo($_POST);
-            $msg = "问答类别(ID:{$nbid})添加";
+            $successMsg = yun_t('admin_model_00195', array('id' => $nbid));
+            $errorMsg = yun_t('admin_model_00196', array('id' => $nbid));
         }
 
         if ($nbid) {
             $this->cache_action();
-            $this->admin_json(0, $msg . 'admin_tool_00502');
+            $this->admin_json(0, $successMsg);
         } else {
-            $this->render_json(1, $msg . 'admin_tool_00501');
+            $this->render_json(1, $errorMsg);
         }
     }
 
-    // 删除
+    // Delete.
     function del_action()
     {
         $askM = $this->Model('ask');

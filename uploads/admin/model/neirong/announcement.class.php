@@ -72,7 +72,7 @@ class announcement_controller extends adminCommon
 
     }
 
-    // 保存
+    // Save.
     function add_action()
     {
 
@@ -101,16 +101,18 @@ class announcement_controller extends adminCommon
             if (!empty($post['id'])) {
                 $id = intval($post['id']);
                 $nid = $announcementM->upInfo(array('id' => $id), $data);
-                $msg = '公告(ID:' . $id . ')修改';
+                $successMsg = yun_t('admin_model_00187', array('id' => $id));
+                $errorMsg = yun_t('admin_model_00188', array('id' => $id));
             } else {
                 $nid = $announcementM->addInfo($data);
-                $msg = '公告(ID:' . $nid . ')添加';
+                $successMsg = yun_t('admin_model_00189', array('id' => $nid));
+                $errorMsg = yun_t('admin_model_00190', array('id' => $nid));
             }
 
             if ($nid) {
-                $this->admin_json(0, $msg . 'admin_tool_00502');
+                $this->admin_json(0, $successMsg);
             } else {
-                $this->render_json(1, $msg . 'admin_tool_00501');
+                $this->render_json(1, $errorMsg);
             }
         }else{
             $announcementM = $this->MODEL('announcement');
@@ -119,7 +121,7 @@ class announcement_controller extends adminCommon
                 $id = intval($_POST['id']);
                 $info = $announcementM->getInfo(array('id' => $id));
             }
-            //提取分站内容
+            // Load site content.
             $cacheM = $this->MODEL('cache');
             $domain = $cacheM->GetCache('domain', $Options = array('needreturn' => true, 'needassign' => true, 'needall' => true));
 
@@ -129,7 +131,7 @@ class announcement_controller extends adminCommon
         }
     }
 
-    // 删除
+    // Delete.
     function del_action()
     {
         $announcementM = $this->Model('announcement');
@@ -145,7 +147,7 @@ class announcement_controller extends adminCommon
         }
     }
 
-    // 分配站点
+    // Assign site.
     function checksitedid_action()
     {
         if (empty($_POST['id']) || !isset($_POST['did'])) {
@@ -157,7 +159,7 @@ class announcement_controller extends adminCommon
         $siteDomain = $this->MODEL('site');
         $siteDomain->updDid(array('admin_announcement'), array('id' => array('in', $ids)), array('did' => $_POST['did']));
 
-        $this->admin_json(0, '公告(ID:' . $ids . ')分配站点成功');
+        $this->admin_json(0, yun_t('admin_model_00191', array('ids' => $ids)));
     }
 }
 
