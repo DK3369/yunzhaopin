@@ -13,9 +13,9 @@
                 <el-button type="primary" icon="el-icon-search" size="mini" @click="search">{{ lc('admin_user_weipin_00049') }}</el-button>
             </div>
         </div>
-        <!--<div class="admin_datatip"><i class="el-icon-document"></i> 数据统计：共 400 条<span class="admin_datatip_n">未审核：32 条-->
-			<!--</span><span class="admin_datatip_n">未通过：3 条</span> <span class="admin_datatip_n">已锁定：1 条</span> <span-->
-                <!--class="admin_datatip_n">搜索结果： 400 条</span>-->
+        <!--<div class="admin_datatip"><i class="el-icon-document"></i> Data stats: 400 total<span class="admin_datatip_n">Unreviewed: 32-->
+			<!--</span><span class="admin_datatip_n">Rejected: 3</span> <span class="admin_datatip_n">Locked: 1</span> <span-->
+                <!--class="admin_datatip_n">Search results: 400</span>-->
         <!--</div>-->
         <div class="moduleElTable"
              style="border: 1px solid #ebeef5; width: calc(100% - 2px);">
@@ -79,7 +79,7 @@
                 </el-pagination>
             </div>
         </div>
-        <!--批量转移类别-->
+        <!-- Batch category transfer -->
         <div class="modluDrawer">
             <el-dialog :title="lc('admin_00755')" :visible.sync="drawertz" :with-header="true" append-to-body :show-close="true"
                        width="400px">
@@ -146,11 +146,11 @@
                 tableHig: true,
                 drawertz: false,
                 curr_data: null,
-                pickerOptions: {//el-date-picker 时间限定
+                pickerOptions: {// el-date-picker date limits
                     disabledDate(time) {
-                        // 今天及今天之前的日期
+                        // Today and earlier dates
                         // return time.getTime() > Date.now();
-                        // 今天及今天之后的日期
+                        // Today and later dates
                         return time.getTime() < Date.now() - 8.64e7;
                     }
                 },
@@ -258,13 +258,13 @@
                     console.log(error);
                 })
             },
-            // 关闭预约
+            // Close reservation
             closeReserve: function (ids, type) {
                 var that= this
                 var params = {ids: ids}
-                if (type == 1) {// 单个操作
+                if (type == 1) {// Single operation
                     params.ids = ids
-                } else {// 批量操作
+                } else {// Batch operation
                     if (that.selectedItem.length == 0) {
                         message.error(lc('admin_company_00008'));
                         return false;

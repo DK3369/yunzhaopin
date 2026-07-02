@@ -1,5 +1,5 @@
 <template>
-    <!--会员-个人-个人设置：个人设置-->
+    <!-- Member > Individual > Personal Settings -->
     <div class="setUpload">
         <div class="uploadTable">
             <table class="tableVue">
@@ -107,7 +107,7 @@
                 <tr>
                     <td>
                         <div class="TableTite">{{ lc('admin_user_00327') }}</div>
-                        <!--<div style="color:red;">这一块要重新写样式</div>-->
+                        <!--<div style="color:red;">This section needs restyling</div>-->
                     </td>
                     <td>
                         <div class="tc_checkbox">
@@ -149,8 +149,8 @@
                             <div class="TableShuom tc_checktip">
                                 {{ lc('admin_00561') }}
                             </div>
-                            <!--TODO 7.0 统一类别选择-->
-                            <!-- <el-button>设置不强制填写职位类别项</el-button> -->
+                            <!-- TODO: 7.0 unified category selector -->
+                            <!-- <el-button>Set job category items as not required</el-button> -->
                             <job_class ref="job_class" multiple :max="100" @confirm="confirmJob" :showsearch="false" :selected="jobSelected"></job_class>
                             <div style="overflow: hidden; position: relative; margin-top: 8px" v-if="ruleForm.sy_resume_job_classid && cache.hasOwnProperty('job_name')">
                                 <el-tag style="margin:5px 5px 0 0;" v-for="(item,key) in ruleForm.sy_resume_job_classid" :key="key" @close="deltag(item)" closable>{{ cache.job_name[item] }}</el-tag>
@@ -461,7 +461,7 @@ module.exports = {
             searchForm: {},
             ruleForm: {
                 config: lc('common.submit'),
-                //信息审核
+                // Information review
                 user_height_resume: false,
                 user_idcard_status: false,
                 user_msg_status: false,
@@ -565,20 +565,20 @@ module.exports = {
                     _this.ruleForm.user_gzgzh = config.user_gzgzh == "1" ? true : false;
                     //----{{ lc('admin_user_00338') }}
                     _this.ruleForm.resume_kstd = config.resume_kstd !== undefined ? config.resume_kstd : null;
-                    //----简历创建必填项
+                    // ---- Required fields for resume creation
                     // Work experience
                     _this.ruleForm.resume_create_exp = config.resume_create_exp == '1' ? true : false;
                     // Educational experience
                     _this.ruleForm.resume_create_edu = config.resume_create_edu == '1' ? true : false;
                     // Project experience
                     _this.ruleForm.resume_create_project = config.resume_create_project == '1' ? true : false;
-                    //工作经历选项
+                    // Work experience options
                     if (config.expcreate !== undefined && config.expcreate.length) {
                         _this.ruleForm.expcreate = config.expcreate.split(',');
                     } else {
                         _this.ruleForm.expcreate = [];
                     }
-                    //教育经历选项
+                    // Education experience options
                     if (config.educreate !== undefined && config.educreate.length) {
                         _this.ruleForm.educreate = config.educreate.split(',');
                     } else {
@@ -591,9 +591,9 @@ module.exports = {
                     } else {
                         _this.ruleForm.sy_resume_job_classid = [];
                     }
-                    //跨职位类别投递，是否要判断完整度  1 0
+                    // Whether to check completeness for cross-category applications: 1/0
                     _this.ruleForm.sy_resume_kh_td = config.sy_resume_kh_td !== undefined ? config.sy_resume_kh_td : null;
-                    //{{ lc('admin_user_00338') }}，是否遵从简历必填项  1 2
+                    // {{ lc('admin_user_00338') }}, whether to follow resume required fields: 1/2
                     _this.ruleForm.resume_kstd_req = config.resume_kstd_req !== undefined ? config.resume_kstd_req : null;
                     //----{{ lc('admin_user_00318') }}
                     _this.ruleForm.user_sqintegrity = config.user_sqintegrity !== undefined ? config.user_sqintegrity : "";

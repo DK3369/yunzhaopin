@@ -1,5 +1,5 @@
 <template>
-    <!--会员-企业-行为记录：职位申请记录-->
+    <!-- Member > Company > Behavior Records: Job application records -->
     <div class="moduleElHight" :class="searchClass == 'drawer' ? 'pad20' : ''">
         <div class="moduleElSearchInf" v-if="cansearch">
             <div class="moduleElTabInpt" style="flex-wrap: wrap;">
@@ -71,11 +71,11 @@
                             <span v-else-if="scope.row.is_browse == 4" class="admin_state3">{{ lc('wap_user_00354') }}</span>
                             <span v-else-if="scope.row.is_browse == 5" class="admin_state2">{{ lc('member_com_00108') }}</span>
                             <span v-else class="admin_state2">{{ lc('wap_user_00260') }}</span>
-                            <!--<span class="admin_state1">已审核</span>-->
-                            <!--<span class="admin_state2">未通过</span>-->
-                            <!--<span class="admin_state3">已锁定</span>-->
-                            <!--<span class="admin_state4">待审核</span>-->
-                            <!--<span class="admin_state5">已暂停</span>-->
+                            <!--<span class="admin_state1">Reviewed</span>-->
+                            <!--<span class="admin_state2">Rejected</span>-->
+                            <!--<span class="admin_state3">Locked</span>-->
+                            <!--<span class="admin_state4">Pending review</span>-->
+                            <!--<span class="admin_state5">Suspended</span>-->
                         </div>
                     </template>
                 </el-table-column>
@@ -85,8 +85,8 @@
                 <el-table-column prop="isdel_n" :label="lc('member_user_00181')" width="100">
                     <!--<template slot-scope="scope">-->
                     <!--	<div class="admin_state">-->
-                    <!--		<span class="admin_state1">正常</span>-->
-                    <!--		<span class="admin_state2">异常</span>-->
+                    <!--		<span class="admin_state1">Normal</span>-->
+                    <!--		<span class="admin_state2">Abnormal</span>-->
                     <!--	</div>-->
                     <!--</template>-->
                 </el-table-column>
@@ -233,7 +233,7 @@ module.exports = {
             pageSizes: [],
             tableHig: true,
             checked: false,//{{ lc('wap_js_00074') }}
-            isIndeterminate: false,// checkbox 的不确定状态
+            isIndeterminate: false,// Checkbox indeterminate state
             selectedItem: [],
             info: {},
             resumePreviewVisible: false,
@@ -335,7 +335,7 @@ module.exports = {
 		},
     },
     methods: {
-        // 跳转到会员中心
+        // Jump to member center
         jumpToMember: function (uid) {
             let tmpWin = window.open('', '_blank')
             var params = { uid: uid }

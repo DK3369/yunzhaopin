@@ -41,7 +41,7 @@
 				<el-table-column prop="username" :label="lc('admin_user_00140')" width="150"></el-table-column>
 				<el-table-column :label="lc('wap_00529')" width="150">
 					<template slot-scope="scope">
-						<!--点击需要预览简历-->
+						<!-- Click to preview resume -->
 						<el-link :underline="false" type="primary" @click="openPreview(scope.row)">{{scope.row.rname}}</el-link>
 					</template>
 				</el-table-column>
@@ -97,7 +97,7 @@
 				// date selection
 				daterange: '',
 
-				// 搜索筛选项
+				// Search filters
 				searchList: [],
 				searchForm: {
 					type: 1
@@ -116,7 +116,7 @@
 
 				checkedAll: false, // {{ lc('wap_js_00074') }}
 				checkedAllIndeterminate: false,
-				multipleSelection: [], // 多选值存储
+				multipleSelection: [], // Multi-select value storage
 				idArr: [],
 
 				prevPage: 0,
@@ -231,10 +231,10 @@
 					that.total = parseInt(data.total);
 					that.pageSizes = data.page_sizes;
 					if (that.limit === 0) {
-						that.limit = parseInt(data.limit); // 取系统配置默认数量
+						that.limit = parseInt(data.limit); // Use default count from system config
 					}
 					if (that.page > data.page) {
-						that.page = parseInt(data.page); // 最后一页被删除后，取最新的页数
+						that.page = parseInt(data.page); // Use latest page after the last page is deleted
 					}
 					that.loading = false;
 					if(that.prevPage != that.page){
@@ -248,7 +248,7 @@
 				})
 			},
 
-			// 批量操作
+			// Batch operation
 			handleSelectionChange(val) {
 				if (val.length == 0) {
 					this.checkedAll = false;
@@ -296,7 +296,7 @@
 				} else if (idx == 'all') { // {{ lc('admin_user_00260') }}
 					params.del = 'all';
 					msg = lc('admin_company_00007');
-				} else {// 单个删除
+				} else {// Single delete
 					params.del = that.list[idx].id;
 					msg = lc('admin_00333');
 				}
