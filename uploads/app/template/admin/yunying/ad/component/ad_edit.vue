@@ -1,6 +1,6 @@
 <template>
     <div class="drawerModlue" v-loading="addloading">
-        <!--运营-广告-广告管理 添加/修改-->
+        <!-- Operations > Ads > Ad Management: Add/Edit -->
         <div class="drawerModInfo" style="height: calc(100% - 80px); overflow-y: auto;">
             <div class="adminBoldTips guangaoBanner">
                 {{ lc('admin_01133') }}
@@ -214,8 +214,8 @@
 module.exports = {
     props: {
         id: Number,
-        classData: Array,/*广告分类*/
-        domainData: Array,/*站点*/
+        classData: Array,/* Ad category */
+        domainData: Array,/* Site */
     },
     data: function () {
         return {
@@ -229,25 +229,25 @@ module.exports = {
                 targetChecked: false,
                 did: "0",//{{ lc('admin_user_00126') }}
                 class_id: "",//{{ lc('admin_01167') }}
-                is_open: null,//广告是否启用 1{{ lc('admin_user_company_00205') }} 0{{ lc('common.close') }}
-                ad_time: null,//广告有效期
+                is_open: null,// Whether the ad is enabled: 1 open, 0 closed
+                ad_time: null,// Ad validity period
                 remark: "",
                 sort: null,//{{ lc('member_com_00022') }}
-                appurl: "",//移动端跳转链接
+                appurl: "",// Mobile redirect link
                 ad_type: null,//{{ lc('admin_01168') }}
-                word_info: '',//文字信息
+                word_info: '',// Text info
                 word_url: '',//{{ lc('admin_01013') }}
-                upload: 'upload',//图片地址
-                pic_url: '',//图片远程地址
+                upload: 'upload',// Image path
+                pic_url: '',// Remote image URL
                 pic_url_n: '',
                 pic_upload_n: '',
                 pic_src: '',//{{ lc('admin_00100') }}
-                pic_content: '',//图片描述
-                pic_width: '',//图片宽度
-                pic_height: '',//图片高度
-                lianmeng_url: '',//广告联盟代码
+                pic_content: '',// Image description
+                pic_width: '',// Image width
+                pic_height: '',// Image height
+                lianmeng_url: '',// Ad network code
             },
-            file_pic: [],//暂存文件
+            file_pic: [],// Temporary files
             addloading: false,
             submitLoading: false,
             uploadAction: baseUrl + 'm=common&c=common_upload'
@@ -259,7 +259,7 @@ module.exports = {
     methods: {
         uploadChange(file) {
             this.ruleForm.pic_upload_n = URL.createObjectURL(file.raw);
-            // 复刻文件信息
+            // Copy file info
             this.file_pic = file.raw;
         },
         handleTarget(val) {
@@ -387,17 +387,17 @@ module.exports = {
 
 .drawerModTite {
     width: 120px;
-    /* //默认90px; */
+    /* // Default 90px; */
 }
 
 .drawerModInpt {
     width: calc(100% - 130px);
-    /* //默认100px; */
+    /* // Default 100px; */
 }
 
 .drawerModTips {
     padding-left: 130px;
-    /* //默认100px; */
+    /* // Default 100px; */
 }
 
 .guangaoBanner {

@@ -90,34 +90,34 @@
             return {
                 emptytext: lc('wap_js_00113'),
                 loading: false,
-                // 搜索筛选项
+                // Search filters
                 searchForm: {},
 
-                // 列表
+                // List
                 page: 1,
                 limit: 0,
                 list: [],
                 total: 0,
                 pageSizes: [],
 
-                // 列表排序
+                // List sorting
                 t: '',
                 order: '',
 
-                checkedAll: false, // 全选
+                checkedAll: false, // Select all
                 checkedAllIndeterminate: false,
-                multipleSelection: [], // 多选值存储
+                multipleSelection: [], // Multi-select value storage
                 idArr: [],
 
-                pid: 0, // 父类ID
+                pid: 0, // Parent category ID
 
                 detail: {},
 
-                // 添加
+                // Add
                 drawerAdd: false,
                 random: 0,
 
-                // 管理子类
+                // Manage child categories
                 drawerManage: false,
                 prevPage:0,
 
@@ -168,10 +168,10 @@
                     that.total = parseInt(data.total);
                     that.pageSizes = data.page_sizes;
                     if (that.limit === 0) {
-                        that.limit = parseInt(data.limit); // 取系统配置默认数量
+                        that.limit = parseInt(data.limit); // Use default count from system config
                     }
                     if (that.page > data.page) {
-                        that.page = parseInt(data.page); // 最后一页被删除后，取最新的页数
+                        that.page = parseInt(data.page); // Use latest page after the last page is deleted
                     }
                     if(that.prevPage != that.page){
                         that.prevPage = that.page;
@@ -184,7 +184,7 @@
                 })
             },
 
-            // 管理子类
+            // Manage child categories
             openManage(row) {
                 this.detail = row;
                 this.drawerManage = true;
@@ -193,7 +193,7 @@
                 this.getList();
             },
 
-            // 批量操作
+            // Batch operation
             handleSelectionChange(val) {
                 if (val.length == 0) {
                     this.checkedAll = false;
@@ -241,10 +241,10 @@
                     params = {},
                     msg = '';
 
-                if (typeof idx == 'undefined') { // 批量删除
+                if (typeof idx == 'undefined') { // Batch delete
                     params.del = this.idArr;
                     msg = lc('common_00853');
-                } else {// 单个删除
+                } else {// Single delete
                     params.id = that.list[idx].id;
                     msg = lc('admin_00333');
                 }

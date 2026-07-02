@@ -364,6 +364,8 @@ Batch 13 执行范围：后台内容/系统旧页面 `app/template/admin/neirong
 
 Batch 14 执行范围：后台自有 JS `app/template/admin/js/xjhlive.js`、`base64ToFile.js`。本批只清理中文注释和注释掉的旧调试文案；`faces()` 表情名称字典属于协议/表情编码映射，按排除规则保留不改。
 
+Batch 15 执行范围：财务/广告/问答模块 `app/template/admin/yunying/caiwu/component/comhytc.vue`、`comhyzzb.vue`、`app/template/admin/yunying/ad/component/ad_edit.vue`、`app/template/admin/neirong/question/index.html`、`class.html`。扫描器未发现运行态裸中文时，本批只清理中文注释和注释掉的旧按钮/状态片段；不改套餐搜索、广告字段、问答审核、回答/评论列表和删除逻辑。
+
 ## 11. 推荐执行顺序
 
 1. 修复语言包损坏项和扫描脚本误报规则。

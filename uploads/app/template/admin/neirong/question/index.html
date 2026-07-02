@@ -93,8 +93,8 @@
                     <div class="admin_state">
                         <span v-if="scope.row.state == 1" class="admin_state1">{{ lc('wap_user_00165') }}</span>
                         <span v-else-if="scope.row.state == 2" class="admin_state2">{{ lc('wap_user_00167') }}</span>
-                        <!--<span class="admin_state3">已锁定</span>-->
-                        <!--<span class="admin_state4">待审核</span>-->
+                        <!--<span class="admin_state3">Locked</span>-->
+                        <!--<span class="admin_state4">Pending review</span>-->
                         <span v-else class="admin_state5">{{ lc('wap_user_00166') }}</span>
                     </div>
                 </template>
@@ -166,49 +166,49 @@
             return {
                 emptytext: lc('wap_js_00113'),
                 loading: false,
-                // 搜索筛选项
+                // Search filters
                 searchList: [],
                 searchForm: {
                     type: '1'
                 },
 
-                // 列表
+                // List
                 page: 1,
                 limit: 0,
                 list: [],
                 total: 0,
                 pageSizes: [],
 
-                // 列表排序
+                // List sorting
                 t: '',
                 order: '',
 
-                checkedAll: false, // 全选
+                checkedAll: false, // Select all
                 checkedAllIndeterminate: false,
-                multipleSelection: [], // 多选值存储
+                multipleSelection: [], // Multi-select value storage
                 idArr: [],
 
                 detail: {},
 
                 saveLoading: false,
 
-                // 审核
+                // Review
                 dialogAudit: false,
                 ruleFormAudit: {},
 
-                // 修改
+                // Edit
                 drawerEdit: false,
 
-                // 回答列表
+                // Answer list
                 drawerAnswer: false,
 
-                // 评论列表
+                // Comment list
                 drawerReview: false,
                 prevPage:0,
                 status: {
                     answer: '',
                     comment: '',
-                }, // 待处理消息跳转过来使用
+                }, // Used when navigating from pending messages
             }
         },
         components: {
@@ -220,7 +220,7 @@
             var that = this
             let query = window.parent.homeapp.$route.query;
 
-            if (query.drawer) { // 有指定弹出，走指定弹出逻辑
+            if (query.drawer) { // Use the specified drawer logic when a drawer is specified
                 if (query.drawer == 'answer') {
                     that.drawerAnswer = true;
                 } else if (query.drawer == 'comment') {
@@ -282,10 +282,10 @@
                     that.total = parseInt(data.total);
                     that.pageSizes = data.page_sizes;
                     if (that.limit === 0) {
-                        that.limit = parseInt(data.limit); // 取系统配置默认数量
+                        that.limit = parseInt(data.limit); // Use default count from system config
                     }
                     if (that.page > data.page) {
-                        that.page = parseInt(data.page); // 最后一页被删除后，取最新的页数
+                        that.page = parseInt(data.page); // Use latest page after the last page is deleted
                     }
                     if(that.prevPage != that.page){
                         that.prevPage = that.page;
@@ -298,7 +298,7 @@
                 })
             },
 
-            // 批量操作
+            // Batch operation
             handleSelectionChange(val) {
                 if (val.length == 0) {
                     this.checkedAll = false;
@@ -348,10 +348,10 @@
                     params = {},
                     msg = '';
 
-                if (typeof idx == 'undefined') { // 批量删除
+                if (typeof idx == 'undefined') { // Batch delete
                     params.del = this.idArr;
                     msg = lc('common_00853');
-                } else {// 单个删除
+                } else {// Single delete
                     params.id = that.list[idx].id;
                     msg = lc('admin_00333');
                 }

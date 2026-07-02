@@ -220,11 +220,11 @@ module.exports = {
                 rating_name: ''
             },
             expireTimeStatus: true,
-            pickerOptions: {//el-date-picker 时间限定
+            pickerOptions: {// el-date-picker date limits
                 disabledDate(time) {
-                    // 今天及今天之前的日期
+                    // Today and earlier dates
                     // return time.getTime() > Date.now();
-                    // 今天及今天之后的日期
+                    // Today and later dates
                     return time.getTime() < Date.now() - 8.64e7;
                 }
             },
@@ -246,17 +246,17 @@ module.exports = {
                 let res = response.data;
                 if (res.error == 0) {
                     _this.usernameList = res.namelist;
-                    let callBackArr = []; // 准备一个空数组，此数组是最终返给输入框的数组
-                    // 这个res是发请求，从后台获取的数据
+                    let callBackArr = []; // Prepare the result array returned to the input
+                    // res is data fetched from the backend
                     _this.usernameList.forEach((item) => {
-                        // if (item.value.indexOf(queryString) == 0) { // 等于0 以什么什么开头
+                        // if (item.value.indexOf(queryString) == 0) { // equals 0 means starts with the query string
                         item.value = item.username;
-                        if (item.value.indexOf(query) > -1) { // 大于-1，只要包含就行，不再乎位置
-                            // 如果有具有关联性的数据
-                            callBackArr.push(item); // 就存到callBackArr里面准备返回呈现
+                        if (item.value.indexOf(query) > -1) { // greater than -1 means any matching position is allowed
+                            // If related data exists
+                            callBackArr.push(item); // Store it in callBackArr for display
                         }
                     });
-                    // 经过这么一波查询操作以后，如果这个数组还为空，说明没有查询到具有关联的数据，就直接返回给用户暂无数据
+                    // If the array is still empty after filtering, return no-data to the user
                     if (callBackArr.length == 0) {
                         cb([]);
                     } else {
@@ -295,17 +295,17 @@ module.exports = {
                 let res = response.data;
                 if (res.error == 0) {
                     _this.comnameList = res.namelist;
-                    let callBackArr = []; // 准备一个空数组，此数组是最终返给输入框的数组
-                    // 这个res是发请求，从后台获取的数据
+                    let callBackArr = []; // Prepare the result array returned to the input
+                    // res is data fetched from the backend
                     _this.comnameList.forEach((item) => {
-                        // if (item.value.indexOf(queryString) == 0) { // 等于0 以什么什么开头
+                        // if (item.value.indexOf(queryString) == 0) { // equals 0 means starts with the query string
                         item.value = item.comname;
-                        if (item.value.indexOf(query) > -1) { // 大于-1，只要包含就行，不再乎位置
-                            // 如果有具有关联性的数据
-                            callBackArr.push(item); // 就存到callBackArr里面准备返回呈现
+                        if (item.value.indexOf(query) > -1) { // greater than -1 means any matching position is allowed
+                            // If related data exists
+                            callBackArr.push(item); // Store it in callBackArr for display
                         }
                     });
-                    // 经过这么一波查询操作以后，如果这个数组还为空，说明没有查询到具有关联的数据，就直接返回给用户暂无数据
+                    // If the array is still empty after filtering, return no-data to the user
                     if (callBackArr.length == 0) {
                         cb([]);
                     } else {
