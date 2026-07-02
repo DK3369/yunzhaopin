@@ -400,6 +400,8 @@ Batch 29 执行范围：积分商城后台模块 `admin/model/yunying/shop_class
 
 Batch 30 执行范围：分站后台模块 `admin/model/system/domain_list.class.php`、`domain_group.class.php` 及 `app/template/admin/system/domain/component/domainAdminGroup.vue`。迁移分站新增/更新、管理员自改后重新登录提示等管理员可见返回消息，并清理模板中残留的中文注释按钮文本；新增 key 从 `admin_model_00229` 继续。本批不改分站 URL/目录校验、管理员权限、分站缓存、删除逻辑或表单字段结构。
 
+Batch 31 执行范围：后台工具与海报相关消息 `admin/model/tool/weixinrecord.class.php`、`weixinmenu.class.php`、`emailset.class.php`、`fabutool.class.php`、`admin/model/yunying/yingxiao_hbconfig.class.php`。迁移微信用户解绑、微信菜单增删改日志、自动回复关键词删除、邮件测试内容/删除、微信发布模板删除、海报删除等管理员可见消息；新增 key 从 `admin_model_00232` 继续。本批不改微信接口调用、素材上传、邮件发送配置、模板解析、海报保存或第三方返回信息。
+
 ## 11. 推荐执行顺序
 
 1. 修复语言包损坏项和扫描脚本误报规则。

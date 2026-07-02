@@ -149,7 +149,7 @@ class yingxiao_hbconfig_controller extends adminCommon
         $this->admin_json(0, 'admin_01451');
     }
 
-    // 删除海报
+    // Delete poster.
     function delWhb_action()
     {
         if (empty($_POST['id'])) {
@@ -162,7 +162,7 @@ class yingxiao_hbconfig_controller extends adminCommon
 
         if (!empty($whb)) {
             $WhbM->delWhb(array('id' => $whb['id']));
-            $this->admin_json(0, '海报（ID：' . $whb['id'] . 'admin_01291');
+            $this->admin_json(0, yun_t('admin_model_00242', array('id' => $whb['id'])));
         }
     }
 

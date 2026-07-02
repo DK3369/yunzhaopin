@@ -6,7 +6,7 @@ class weixinrecord_controller extends adminCommon{
         
         // 查询出字段值为纯数字的，排除带参二维码
         $where['wxloginid']  =  array('regexp','[^0-9.]');
-        //实例化
+        // Initialize model.
         $weiXinM    =   $this->MODEL('weixin');
 
         if(trim($_POST['keyword'])){
@@ -158,7 +158,7 @@ class weixinrecord_controller extends adminCommon{
             $userInfoM->upInfo($where,$data);
 
             $error = 0;
-            $msg = 'admin_tool_00056'.pylode(',',$_POST['del']).')取消绑定成功！';
+            $msg = yun_t('admin_model_00232', array('ids' => pylode(',', $_POST['del'])));
 
         }else{
             $error = 1;

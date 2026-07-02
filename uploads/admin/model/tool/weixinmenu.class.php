@@ -91,19 +91,19 @@ class weixinmenu_controller extends adminCommon{
             $weiXinM->delWxNav($where,array('type'=>'all'));
 
             $error = 0;
-            $msg = 'admin_tool_00051'.pylode(',',$_POST['del']).')删除成功！';
+            $msg = yun_t('admin_model_00233', array('ids' => pylode(',', $_POST['del'])));
         }else{
 
             $where['id']    =   (int)$_POST['del'];
 
             $where['keyid'] =   array('=',(int)$_POST['del'],'or');
 
-            //删除微信菜单及子菜单
+            // Delete WeChat menu and child menus.
             $id =   $weiXinM->delWxNav($where,array('type'=>'one'));
 
             if($id){
                 $error = 0;
-                $msg = 'admin_tool_00051'.$_POST['del'].')删除成功！';
+                $msg = yun_t('admin_model_00233', array('ids' => $_POST['del']));
             }else{
                 $error = 1;
                 $msg = 'admin_user_00186';
@@ -198,13 +198,13 @@ class weixinmenu_controller extends adminCommon{
 
                 $weiXinM->upWxNavInfo($upWhere,$data);
 
-                $logM   ->addAdminLog('admin_tool_00051'.$navid.')修改成功');
+                $logM   ->addAdminLog(yun_t('admin_model_00234', array('id' => $navid)));
 
             }else{
 
                 $navid  =   $weiXinM->addWxNavInfo($data);
 
-                $logM   ->addAdminLog('admin_tool_00051'.$navid.')添加成功');
+                $logM   ->addAdminLog(yun_t('admin_model_00235', array('id' => $navid)));
             }
 
             $this->render_json(3);
@@ -231,7 +231,7 @@ class weixinmenu_controller extends adminCommon{
 
             $weiXinM->upWxNavInfo($upWhere,$data);
 
-            $logM->addAdminLog('admin_tool_00051'.$_POST['id'].')排序修改成功');
+            $logM->addAdminLog(yun_t('admin_model_00236', array('id' => $_POST['id'])));
         }
 
         if($_POST['name']){
@@ -242,7 +242,7 @@ class weixinmenu_controller extends adminCommon{
 
             $weiXinM->upWxNavInfo($upWhere,$data);
 
-            $logM->addAdminLog('admin_tool_00051'.$_POST['id'].')名称修改成功');
+            $logM->addAdminLog(yun_t('admin_model_00237', array('id' => $_POST['id'])));
         }
 
         $this->render_json(1);
@@ -359,7 +359,7 @@ class weixinmenu_controller extends adminCommon{
 
             if($del){
                 $error = 0;
-                $msg = '(ID:'.$delid.')删除成功！';
+                $msg = yun_t('admin_model_00238', array('ids' => $delid));
             }else{
                 $error = 1;
                 $msg = 'admin_user_00186';
@@ -442,7 +442,7 @@ class weixinmenu_controller extends adminCommon{
                 $pkey++;
             }
 
-            if($cv['msgtype']=='text'){//文字
+            if($cv['msgtype']=='text'){ // Text.
 
                 if($cv['content']==''){
                     $this->render_json(3,yun_at('wap_00641'));
@@ -533,9 +533,9 @@ class weixinmenu_controller extends adminCommon{
 
                 $conval['content'] = serialize($content);
             }
-            if($cv['isadd']==1){//新增消息
+            if($cv['isadd']==1){ // New message.
                 $addval[] = $conval;
-            }else{//修改消息
+            }else{ // Update message.
                 $conval['id'] = $cv['id'];
                 $editval[] = $conval;
             }

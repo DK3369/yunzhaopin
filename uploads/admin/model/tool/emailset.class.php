@@ -101,13 +101,13 @@ class emailset_controller extends adminCommon{
         
         if($_POST["ceshi_email"]){
             
-            //发送邮件并记录入库
+            // Send email and write the record.
             $emailData['smtpServerId']  =   $_POST["id"];
             $emailData['email']         =   $_POST["ceshi_email"];
             
             $emailData['subject']       =   $this->config['sy_webname'].'admin_tool_00028';
             
-            $emailData['content']       =   "恭喜你，该邮件帐户可以正常使用<br> ".$this->config['sy_webname']."- Powered by OV6.";
+            $emailData['content']       =   yun_t('admin_model_00239') . "<br> " . $this->config['sy_webname']."- Powered by OV6.";
             
             $sendid = $notice->sendEmail($emailData);
             
@@ -134,7 +134,7 @@ class emailset_controller extends adminCommon{
             
             $emailConfig    =   $emailM->getInfo(array('id'=>(int)$_POST["id"]));
             
-            //查询邮件服务器数量
+            // Count email servers.
             $num            =   $emailM->getNum(array('default'=>'1'));
             
             if($emailConfig['default']=='1' && $num<2){
@@ -147,7 +147,7 @@ class emailset_controller extends adminCommon{
                 
                 $emailM->delEmail(array('id'=>(int)$_POST["id"]),array('type'=>'one'));
                 
-                $msg    =   '邮箱(ID:'.$_POST["id"].')删除成功！';
+                $msg    =   yun_t('admin_model_00240', array('id' => $_POST["id"]));
                 
                 $error   =   0;
                 

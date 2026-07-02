@@ -43,7 +43,7 @@ class fabutool_controller extends adminCommon{
 
     function wxPubTempDel_action(){
 
-        //实例化
+        // Initialize model.
         $wxpubtempM =   $this->MODEL('wxpubtemp');
 
         if($_POST['del']){
@@ -62,7 +62,7 @@ class fabutool_controller extends adminCommon{
 
             if($return['errcode']==9){
                 $error = 0;
-                $msg = '(ID:'.$delid.')删除成功！';
+                $msg = yun_t('admin_model_00241', array('ids' => $delid));
             }else{
                 $error = 1;
                 $msg = 'admin_user_00186';
@@ -853,7 +853,7 @@ class fabutool_controller extends adminCommon{
                     $tempmap_key    =   '{' . $img_arr[0] . '}';
                     $style_v        =   str_replace('admin_tool_00515', '', $img_arr[1]);
                     $style_v        =   str_replace(array('&amp;', '&quot;', '&lt;', '&gt;'), array('&', '"', '<', '>'), $style_v);
-                    //将{img|xxxx|样式=""}整体加入$tempmap
+                    // Add the full {img|xxxx|style=""} token to $tempmap.
                     $tempmap['{img|'.$value.'}']    =   array(
                         'php'   =>  str_replace('style_v', $style_v, $tempmap[$tempmap_key]['php'])
                     );
@@ -884,9 +884,9 @@ class fabutool_controller extends adminCommon{
 
                         $lengthTemp = str_replace('{/yun}', $length_v.'{/yun}', $tempmap[$tempmap_key]['php']);
 
-                        if($length_v!=''){//设置了文段长度的，将大于设置文段的，截取后加省略号，不然不加省略号
+                        if($length_v!=''){ // Truncate over-length text and append an ellipsis when a length limit is configured.
 
-                            $column = str_replace(array('{yun:}','{/yun}'),array('',''), $tempmap[$tempmap_key]['php']);//提取出变量名 例如$v.desc
+                            $column = str_replace(array('{yun:}','{/yun}'),array('',''), $tempmap[$tempmap_key]['php']); // Extract the variable name, such as $v.desc.
                             
                             $lengthTemp = '{yun:}if mb_strlen('.$column.')>'.$fun_arr[1].'{/yun}';
                             $lengthTemp .= str_replace('{/yun}', $length_v.'{/yun}', $tempmap[$tempmap_key]['php']).'...';
