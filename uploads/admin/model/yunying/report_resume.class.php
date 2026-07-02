@@ -21,7 +21,7 @@ class report_resume_controller extends adminCommon
             $eids[$rv['eid']]       =   $rv['eid'];
             $comIds[$rv['p_uid']]   =   $rv['p_uid'];
         }
-        if ($ftypeStr == 1) {        //  简历名称
+        if ($ftypeStr == 1) {        // Resume name.
             $resumeA            =   $this->obj->select_all('resume_expect', array('id' => array('in', pylode(',', $eids)), 'name' => array('like', $keywordStr)), 'id');
             if (!empty($resumeA)) {
                 $reIds          =   array();
@@ -30,10 +30,10 @@ class report_resume_controller extends adminCommon
                 }
             }
             $where['eid']       =   array('in', pylode(',', $reIds));
-        } elseif ($ftypeStr == 2) {   //  个人姓名
+        } elseif ($ftypeStr == 2) {   // Personal name.
 
             $where['r_name']    =   array('like', $keywordStr);
-        } elseif ($ftypeStr == 3) {   //  企业名称
+        } elseif ($ftypeStr == 3) {   // Company name.
 
             $coms               =   $this->obj->select_all('company', array('uid' => array('in', pylode(',', $comIds)), 'name' => array('like', $keywordStr)), 'uid');
             if (!empty($coms)) {
@@ -103,17 +103,17 @@ class report_resume_controller extends adminCommon
                     foreach ($dreport as $key => $val) {
                         foreach ($order as $k => $v) {
                             if ($val['p_uid'] == $v['uid'] && $val['eid'] == $v['sid']) {
-                                $dreport[$key]['fhtype']    =   2;//金额操作
+                                $dreport[$key]['fhtype']    =   2; // Money operation.
                                 $dreport[$key]['fhprice']   =   $v['order_price'];
                             }
                         }
                         foreach ($compay as $k => $v) {
                             if ($val['p_uid'] == $v['com_id'] && $val['eid'] == $v['eid']) {
                                 if ($dreport[$key]['fhtype'] == 2) {
-                                    $dreport[$key]['fhtype']        =   4;//金额+积分操作
+                                    $dreport[$key]['fhtype']        =   4; // Money plus points operation.
                                     $dreport[$key]['fhprice_two']   =   abs($v['order_price']);
                                 } else {
-                                    $dreport[$key]['fhtype']        =   3;//积分操作
+                                    $dreport[$key]['fhtype']        =   3; // Points operation.
                                     $dreport[$key]['fhprice']       =   abs($v['order_price']);
                                 }
                             }
@@ -144,7 +144,7 @@ class report_resume_controller extends adminCommon
             $return         =   $reportM->upReport($where, $data);
             if ($return){
                 $logM   =   $this->MODEL('log');
-                $logM->addAdminLog("简历投诉(ID:" . pylode(',', $rids) . ")处理");
+                $logM->addAdminLog(yun_t('admin_model_00023', array('{ids}' => pylode(',', $rids))));
                 $this->render_json(0, yun_at('wap_user_00264'));
             }else{
                 $this->render_json(1, yun_at('common_01266'));
@@ -163,17 +163,17 @@ class report_resume_controller extends adminCommon
         $statisM    =   $this->MODEL('statis');
         $integralM  =   $this->MODEL('integral');
         $orderM     =   $this->MODEL('companyorder');
-        $rtComIds = array();// 初始化需要返还下载数量的企业用户id
-        if (isset($_POST['tongbu']) && $_POST['tongbu'] == 1){     //  同步处理
+        $rtComIds = array(); // Company user IDs that need returned resume download quota.
+        if (isset($_POST['tongbu']) && $_POST['tongbu'] == 1){     // Sync handling.
 
             $reportList     =   $reportM -> getReportList(array('eid' => $eid, 'type' => 0, 'usertype' => 2, 'status' => 0));
             $reportResume   =   $reportList['list'];
             $rids   =   $comIds =   array();
             foreach ($reportResume as $key => $val){
-                $rids[]     =   $val['id'];// 记录待处理的举报记录id
+                $rids[]     =   $val['id']; // Pending report IDs.
                 $comIds[]   =   $val['p_uid'];
             }
-            if (isset($_POST['datafh']) && $_POST['datafh'] == 1){  //  返还企业特权（积分/简历数）
+            if (isset($_POST['datafh']) && $_POST['datafh'] == 1){  // Return company benefits: points or resume download quota.
                 $comIdA =   $dReport    =   array();
                 $dResume=   $downM -> getSimpleList(array('eid' => $eid, 'comid' => array('in', pylode(",", $comIds))));
                 foreach ($reportResume as $key => $val){
@@ -197,8 +197,8 @@ class report_resume_controller extends adminCommon
                 }
                 foreach ($dReport as $drk => $drv) {
                     if (!in_array($drv['p_uid'], $notUid) && in_array($drv['p_uid'], $comIdA)) {
-                        !in_array($drv['p_uid'], $rtComIds) && array_push($rtComIds, $drv['p_uid']);// 记录返还下载数量的企业用户id
-                        // 没有充值购买记录，有下载记录的，返还下载数量
+                        !in_array($drv['p_uid'], $rtComIds) && array_push($rtComIds, $drv['p_uid']); // Company user IDs receiving returned quota.
+                        // Return quota when there is a download record but no recharge purchase record.
                         $statisM->upInfo(array('down_resume' => array('+', 1)), array('usertype' => 2, 'uid' => $drv['p_uid']));
                     }
                 }
@@ -206,7 +206,7 @@ class report_resume_controller extends adminCommon
 
             $where['id']    =   array('in', pylode(",", $rids));
         }else{
-            $rids = array($id);// 待处理的举报记录id
+            $rids = array($id); // Pending report ID.
             $report =   $reportM->getReportOne(array('id' => $id), array('field' => '`p_uid`, `datafh`'));
 
             if (intval($_POST['datafh']) == 1 && $report['datafh']!= 1) {
@@ -227,8 +227,8 @@ class report_resume_controller extends adminCommon
                     $integralM->company_invtal($comId, 2, abs($compay['order_price']), true, 'admin_01424', true, 2, 'integral', 99);
                 }
                 if (empty($order) && empty($compay) && !empty($dResume)) {
-                    !in_array($comId, $rtComIds) && array_push($rtComIds, $comId);// 记录返还下载数量的企业用户id
-                    // 没有充值购买记录，有下载记录的，返还下载数量
+                    !in_array($comId, $rtComIds) && array_push($rtComIds, $comId); // Company user ID receiving returned quota.
+                    // Return quota when there is a download record but no recharge purchase record.
                     $statisM->upInfo(array('down_resume' => array('+', 1)), array('usertype' => 2, 'uid' => $comId));
                 }
             }
@@ -245,15 +245,19 @@ class report_resume_controller extends adminCommon
         $return     =   $reportM->upReport($where, $upData);
         if ($return){
             $logM   =   $this->MODEL('log');
-            $m = $rtComIds ? 'admin_yunying_00008' . implode(',', $rtComIds) . 'admin_yunying_00007' : "";
-            $logM->addAdminLog("简历投诉(ID:" . implode(',', $rids) . ")处理" . $m);
+            if ($rtComIds) {
+                $logMsg = yun_t('admin_model_00024', array('{ids}' => implode(',', $rids), '{company_ids}' => implode(',', $rtComIds)));
+            } else {
+                $logMsg = yun_t('admin_model_00023', array('{ids}' => implode(',', $rids)));
+            }
+            $logM->addAdminLog($logMsg);
             $this->render_json(0, yun_at('wap_user_00264'));
         }else{
             $this->render_json(1, yun_at('common_01266'));
         }
     }
     /**
-     * @desc 删除举报简历,返还套餐特权
+     * @desc Delete reported resume and return package benefits.
      */
     function delresume_action()
     {
@@ -293,7 +297,7 @@ class report_resume_controller extends adminCommon
                 $integralM->company_invtal($comid, 2, abs($compay['order_price']), true, 'admin_01424', true, 2, 'integral', 99);
             }
             if (empty($order) && empty($compay) && !empty($dresume) && $report['datafh'] != 1) {
-                // 没有充值购买记录，有下载记录的，返还下载数量
+                // Return quota when there is a download record but no recharge purchase record.
                 $statisM->upInfo(array('down_resume' => array('+', 1)), array('usertype' => 2, 'uid' => $comid));
             }
 
@@ -309,7 +313,7 @@ class report_resume_controller extends adminCommon
         }
     }
     /**
-     * @desc 批量删除举报简历
+     * @desc Batch delete reported resumes.
      */
     function delresumeall_action()
     {
@@ -341,17 +345,17 @@ class report_resume_controller extends adminCommon
                 foreach ($dreport as $key => $val) {
                     foreach ($order as $k => $v) {
                         if ($val['p_uid'] == $v['uid'] && $val['eid'] == $v['sid']) {
-                            $dreport[$key]['fhtype']    =   2;//金额操作
+                            $dreport[$key]['fhtype']    =   2; // Money operation.
                             $dreport[$key]['fhprice']   =   $v['order_price'];
                         }
                     }
                     foreach ($compay as $k => $v) {
                         if ($val['p_uid'] == $v['com_id'] && $val['eid'] == $v['eid']) {
                             if ($dreport[$key]['fhtype'] == 2) {
-                                $dreport[$key]['fhtype']        =   4;//金额+积分操作
+                                $dreport[$key]['fhtype']        =   4; // Money plus points operation.
                                 $dreport[$key]['fhprice_two']   =   abs($v['order_price']);
                             } else {
-                                $dreport[$key]['fhtype']        =   3;//积分操作
+                                $dreport[$key]['fhtype']        =   3; // Points operation.
                                 $dreport[$key]['fhprice']       =   abs($v['order_price']);
                             }
                         }

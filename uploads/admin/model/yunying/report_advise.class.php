@@ -59,7 +59,7 @@ class report_advise_controller extends adminCommon
         $return =   $reportM->upReport(array('id' => $id), $upData);
         if ($return){
             $logM   =   $this->MODEL('log');
-            $logM->addAdminLog("顾问投诉(ID:" . $id . ")处理");
+            $logM->addAdminLog(yun_t('admin_model_00021', array('{id}' => $id)));
             $this->render_json(0, yun_at('wap_user_00264'));
         }else{
             $this->render_json(1, yun_at('common_01266'));

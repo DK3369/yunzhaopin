@@ -59,7 +59,7 @@ class report_xjh_controller extends adminCommon
         $return =   $reportM->upReport(array('id' => $id), $upData);
         if ($return){
             $logM   =   $this->MODEL('log');
-            $logM->addAdminLog('admin_yunying_00010' . $id . ")处理");
+            $logM->addAdminLog(yun_t('admin_model_00022', array('{id}' => $id)));
             $this->render_json(0, yun_at('wap_user_00264'));
         }else{
             $this->render_json(1, yun_at('common_01266'));

@@ -4,7 +4,7 @@
 
 class question_controller extends adminCommon
 {
-    //设置高级搜索功能
+    // Configure advanced search filters.
     function set_search()
     {
         $search_list[] = array("param" => "is_recom", "name" => 'admin_00231', "value" => array("1" => 'admin_01339', "2" => 'admin_system_00448'));
@@ -21,12 +21,12 @@ class question_controller extends adminCommon
         $search_list = $this->set_search();
         $this->render_json(0, 'ok', compact('search_list'));
     }
-    // 列表
+    // List questions.
     function index_action()
     {
         $askM = $this->MODEL('ask');
 
-        if ($_POST['id']) {//举报页传递参数
+        if ($_POST['id']) { // Parameter passed from the report page.
             $where['id'] = $_POST['id'];
         }
 
@@ -80,7 +80,7 @@ class question_controller extends adminCommon
         $this->render_json(0, 'ok', compact('list', 'total', 'page_sizes', 'limit', 'page'));
     }
 
-    // 是否推荐
+    // Toggle recommendation.
     function recommend_action()
     {
         if (empty($_POST['id']) || !isset($_POST['rec'])) {
@@ -93,13 +93,13 @@ class question_controller extends adminCommon
         $nid = $askM->upRecommend(array('id' => $id), array('is_recom' => intval($_POST['rec'])));
 
         if ($nid) {
-            $this->admin_json(0, 'admin_01420' . $id . ')推荐设置成功');
+            $this->admin_json(0, yun_t('admin_model_00007', array('{id}' => $id)));
         } else {
             $this->render_json(1, yun_at('admin_01340'));
         }
     }
 
-    // 获取添加信息
+    // Load add/edit data.
     function add_action()
     {
         $askM = $this->Model('ask');
@@ -116,7 +116,7 @@ class question_controller extends adminCommon
             $newClassList = array();
             foreach ($classList as $key => $val) {
                 if ($val['pid'] == 0) {
-                    if (isset($newClassList[$val['id']])) { // 先增加子类的情况下需要把父类合并进去
+                    if (isset($newClassList[$val['id']])) { // Merge the parent when child records were added first.
                         $newClassList[$val['id']] = array_merge($val, $newClassList[$val['id']]);
                     } else {
                         $newClassList[$val['id']] = $val;
@@ -131,7 +131,7 @@ class question_controller extends adminCommon
         $this->render_json(0, 'ok', compact('info', 'classList'));
     }
 
-    // 获取子类 - 暂时无用
+    // Load child categories; currently unused.
     function get_class_action()
     {
         $askM = $this->Model('ask');
@@ -147,12 +147,12 @@ class question_controller extends adminCommon
 
                 echo $html;
             } else {
-                echo $html = "<div class=\"yun_admin_select_box_list\">该分类下暂无子类！</div>";
+                echo $html = '<div class="yun_admin_select_box_list">' . yun_t('admin_model_00015') . '</div>';
             }
         }
     }
 
-    // 保存
+    // Save question.
     function save_action()
     {
         $post = $this->post_trim($_POST);
@@ -167,22 +167,22 @@ class question_controller extends adminCommon
         $nbid = $askM->upAskInfo(array('id' => $id), $post);
 
         if ($nbid) {
-            $this->admin_json(0, 'admin_01420' . $id . 'admin_neirong_00010');
+            $this->admin_json(0, yun_t('admin_model_00008', array('{id}' => $id)));
         } else {
             $this->render_json(1, yun_at('admin_neirong_00025'));
         }
     }
 
-    // 删除问答
+    // Delete questions.
     function del_action()
     {
         if (empty($_POST['del']) && empty($_POST['id'])) {
             $this->render_json(1, yun_at('wap_com_00228'));
         }
 
-        if (!empty($_POST['del'])) { // 批量删除
+        if (!empty($_POST['del'])) { // Batch delete.
             $ids = pylode(',', $_POST['del']);
-        } else {// 单个删除
+        } else { // Single delete.
             $ids = $_POST['id'];
         }
 
@@ -191,13 +191,13 @@ class question_controller extends adminCommon
         $return = $askM->delquestion($ids, array('utype' => 'admin'));
 
         if ($return) {
-            $this->admin_json(0, "问答(ID:{$ids})删除成功");
+            $this->admin_json(0, yun_t('admin_model_00009', array('{ids}' => $ids)));
         } else {
             $this->render_json(1, yun_at('admin_01341'));
         }
     }
 
-    //修改审核状态
+    // Update review status.
     function status_action()
     {
         if (empty($_POST['id']) || empty($_POST['status'])) {
@@ -216,26 +216,25 @@ class question_controller extends adminCommon
         $ids = pylode(',', $id);
         $List = $askM->getList(array('id' => array('in', $ids)), array('field' => '`id`,`uid`,`title`'));
 
-        /* 消息前缀 */
-        $tagName = 'wap_user_00223';
-
         if (!empty($List)) {
             foreach ($List as $v) {
                 $uids[] = $v['uid'];
 
-                /* 处理审核信息 */
+                // Build review notification content.
+                $titleLink = '<a href="answertpl,' . $v['id'] . '">' . $v['title'] . '</a>';
                 if ($_POST['status'] == 2) {
-                    $statusInfo = $tagName . ':<a href="answertpl,' . $v['id'] . '">' . $v['title'] . '</a>,审核未通过';
                     if ($_POST['statusbody']) {
-                        $statusInfo .= ' , 原因：' . $_POST['statusbody'];
+                        $statusInfo = yun_t('admin_model_00017', array('{title_link}' => $titleLink, '{reason}' => $_POST['statusbody']));
+                    } else {
+                        $statusInfo = yun_t('admin_model_00016', array('{title_link}' => $titleLink));
                     }
 
                     $msg[$v['uid']][] = $statusInfo;
                 } elseif ($_POST['status'] == 1) {
-                    $msg[$v['uid']][] = $tagName . ':<a href="answertpl,' . $v['id'] . '">' . $v['title'] . '</a>,已审核通过';
+                    $msg[$v['uid']][] = yun_t('admin_model_00018', array('{title_link}' => $titleLink));
                 }
             }
-            //发送系统通知
+            // Send system notifications.
             if (!empty($_POST['status'])) {
                 $sysmsgM = $this->MODEL('sysmsg');
                 $sysmsgM->addInfo(array('uid' => $uids, 'content' => $msg));
@@ -243,13 +242,13 @@ class question_controller extends adminCommon
         }
 
         if ($nid) {
-            $this->admin_json(0, "问答审核(ID:{$ids})设置成功");
+            $this->admin_json(0, yun_t('admin_model_00010', array('{ids}' => $ids)));
         } else {
             $this->render_json(1, yun_at('admin_01342'));
         }
     }
 
-    //获取该提问的所有回答
+    // Load all answers for the question.
     function getanswer_action()
     {
         $askM = $this->MODEL('ask');
@@ -281,7 +280,7 @@ class question_controller extends adminCommon
     }
 
     /**
-     * 审核
+     * Review answer.
      */
     function statusAnswer_action()
     {
@@ -305,7 +304,7 @@ class question_controller extends adminCommon
         }
     }
 
-    //更新 回答
+    // Update answer.
     function save_answer_action()
     {
         if (empty($_POST['id']) || empty($_POST['content'])) {
@@ -321,24 +320,24 @@ class question_controller extends adminCommon
         $return = $askM->upAnswerInfo(array('id' => $id), $data);
 
         if ($return) {
-            $this->admin_json(0, "回答(ID:{$id})修改成功");
+            $this->admin_json(0, yun_t('admin_model_00011', array('{id}' => $id)));
         } else {
             $this->render_json(1, yun_at('admin_01343'));
         }
     }
 
-    // 删除用户回答
+    // Delete user answers.
     function delanswer_action()
     {
         if ((empty($_POST['del']) && empty($_POST['id'])) || empty($_POST['qid'])) {
             $this->render_json(1, yun_at('wap_com_00228'));
         }
 
-        if (!empty($_POST['del'])) { // 批量删除
+        if (!empty($_POST['del'])) { // Batch delete.
             $id = $_POST['del'];
             $nums = count($id);
             $ids = pylode(',', $id);
-        } else {// 单个删除
+        } else { // Single delete.
             $nums = 1;
             $id = $ids = intval($_POST['id']);
         }
@@ -349,13 +348,13 @@ class question_controller extends adminCommon
 
         if ($result['errcode'] == 9) {
             $askM->upStatusInfo(intval($_POST['qid']), '', array('answer_num' => array('-', $nums)));
-            $this->admin_json(0, '问答回答(ID:' . $ids . ')删除成功');
+            $this->admin_json(0, yun_t('admin_model_00012', array('{ids}' => $ids)));
         } else {
             $this->render_json(1, yun_at('admin_01344'));
         }
     }
 
-    // 获得针对某一提问回答的评论
+    // Load comments for a question answer.
     function getcomment_action()
     {
         $askM = $this->MODEL('ask');
@@ -382,7 +381,7 @@ class question_controller extends adminCommon
     }
 
     /**
-     * 评论审核
+     * Review answer comment.
      */
     function statusAnswerReview_action()
     {
@@ -406,7 +405,7 @@ class question_controller extends adminCommon
         }
     }
 
-    // 修改评论
+    // Update comment.
     function save_review_action()
     {
         if (empty($_POST['id']) || empty($_POST['content'])) {
@@ -419,13 +418,13 @@ class question_controller extends adminCommon
         $return = $askM->upReview(array('id' => $id), $_POST);
 
         if ($return) {
-            $this->admin_json(0, '问答评论(ID:' . $id . ')修改成功');
+            $this->admin_json(0, yun_t('admin_model_00013', array('{id}' => $id)));
         } else {
             $this->render_json(1, yun_at('admin_01345'));
         }
     }
 
-    // 删除针对某回答的评论
+    // Delete comments for an answer.
     function delreview_action()
     {
         $askM = $this->MODEL('ask');
@@ -435,13 +434,13 @@ class question_controller extends adminCommon
         $return = $askM->delReview($delID);
 
         if ($return['errcode'] == 9) {
-            $this->admin_json(0, '问答评论(ID:' . pylode(',', $delID) . ')删除成功');
+            $this->admin_json(0, yun_t('admin_model_00014', array('{ids}' => pylode(',', $delID))));
         } else {
             $this->render_json(1, yun_at('admin_01346'));
         }
     }
 
-    // 问答设置
+    // Q&A settings.
     function config_action()
     {
         $config = $this->config;
@@ -457,7 +456,7 @@ class question_controller extends adminCommon
         $this->render_json(0, 'ok', compact('config'));
     }
 
-    // 问答设置保存
+    // Save Q&A settings.
     function configSave_action()
     {
         if (empty($_POST)) {

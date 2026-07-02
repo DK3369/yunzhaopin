@@ -22,7 +22,7 @@ class report_job_controller extends adminCommon
             $jobIds[$rv['eid']]     =   $rv['eid'];
             $r_uids[$rv['p_uid']]   =   $rv['p_uid'];
         }
-        if ($ftypeStr == 1) {        //  职位名称
+        if ($ftypeStr == 1) {        // Job title.
             $jobs           =   $this->obj->select_all('company_job', array('name' => array('like', $keywordStr), 'id' => array('in', pylode(',', $jobIds))), 'id');
             if (!empty($jobs)) {
                 $eids       =   array();
@@ -31,9 +31,9 @@ class report_job_controller extends adminCommon
                 }
             }
             $where['eid']   =   array('in', pylode(',', $eids));
-        } elseif ($ftypeStr == 2) {   //  企业名称
+        } elseif ($ftypeStr == 2) {   // Company name.
             $where['r_name']=   array('like', $keywordStr);
-        } elseif ($ftypeStr == 3) {   //  个人姓名
+        } elseif ($ftypeStr == 3) {   // Personal name.
             $resumes        =   $this->obj->select_all('resume', array('uid' => array('in', pylode(',', $r_uids)), 'name' => array('like', $keywordStr)), 'uid');
             $uids           =   array();
             if (!empty($resumes)) {
@@ -83,7 +83,7 @@ class report_job_controller extends adminCommon
         $return =   $reportM->upReport(array('id' => $id), $upData);
         if ($return){
             $logM   =   $this->MODEL('log');
-            $logM->addAdminLog("职位投诉(ID:" . $id . ")处理");
+            $logM->addAdminLog(yun_t('admin_model_00019', array('{id}' => $id)));
             $this->render_json(0, yun_at('wap_user_00264'));
         }else{
             $this->render_json(1, yun_at('common_01266'));
