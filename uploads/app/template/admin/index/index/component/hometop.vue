@@ -274,7 +274,7 @@ module.exports = {
                 params.times = this.monthrange;
             }
 			
-			window.parent.homeapp.checkMenuTwo(3,161,162,lc('admin_user_company_00136'),'/chongzhidd',params)
+			window.parent.homeapp.checkMenuTwo(3,161,162,'admin_user_company_00136','/chongzhidd',params)
 			
         },
         toMem: function(params = {}) {
@@ -287,7 +287,7 @@ module.exports = {
 			query.tabs = 'first';
 			query.params = params;
 			
-			window.parent.homeapp.checkMenuTwo(1,401,402,lc('admin_00086'),'/usercrm',query)
+			window.parent.homeapp.checkMenuTwo(1,401,402,'admin_00086','/usercrm',query)
             
         },
         touserMem: function(params = {}) {
@@ -297,7 +297,7 @@ module.exports = {
                 params.times = this.monthrange;
             }
 			
-			window.parent.homeapp.checkMenuTwo(1,7,17,lc('admin_user_00122'),'/userscrm',params)
+			window.parent.homeapp.checkMenuTwo(1,7,17,'admin_user_00122','/userscrm',params)
             
         },
         tocomMem: function(params = {}) {
@@ -308,7 +308,7 @@ module.exports = {
             }
 			var query ={};
 			query.params = params;
-			window.parent.homeapp.checkMenuTwo(1,6,16,lc('admin_user_00124'),'/companycrm',query)
+			window.parent.homeapp.checkMenuTwo(1,6,16,'admin_user_00124','/companycrm',query)
             
         },
         toPage: function(nval, oval, tval,name, path, query = null) {
@@ -317,7 +317,7 @@ module.exports = {
 			
         },
         toCompanyJob(params = {}) {
-            window.parent.homeapp.checkMenuTwo(1, 6, 40, lc('wap_com_00106'), '/companyjob', params);
+            window.parent.homeapp.checkMenuTwo(1, 6, 40, 'wap_com_00106', '/companyjob', params);
         },
         tomsg: function() {
             window.open('https://u.ov6.com/');

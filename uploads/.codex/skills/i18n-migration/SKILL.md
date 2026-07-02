@@ -51,6 +51,7 @@ For SQL seed changes, import into a local test database or clearly report that S
 ## Hard Rules
 
 - For i18n, currency, money storage, SQL seed strategy, migration helper, shared formatter, or configuration-default changes, update the matching `.codex/plans/` document before editing code.
+- Admin shell tabs and menu jumps must store stable translation keys (`name_key`/auto key) when available; render the label through `lc()`/`yunAdminT()` and clear stale translated `localStorage` tab cache when language changes.
 - Never run disabled bulk tools such as `php tools/i18n_admin_html.php`.
 - Do not edit third-party vendor libraries unless the user explicitly scopes that work.
 - Do not translate identifiers: variables, functions, classes, DB fields, URL params, enum values, CSS classes, IDs, or storage keys.

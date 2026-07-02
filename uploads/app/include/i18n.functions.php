@@ -28,6 +28,15 @@ function yun_is_auto_key($key)
     return is_string($key) && preg_match('/^([a-z][a-z0-9_]*)_([0-9]{5})$/', $key, $m) && count(explode('_', $m[1])) <= 3;
 }
 
+function yun_auto_alias_key($text)
+{
+    $i18n = yun_i18n();
+    if ($i18n && method_exists($i18n, 'autoAliasKey')) {
+        return $i18n->autoAliasKey($text);
+    }
+    return '';
+}
+
 function yun_t($key, $params = array(), $default = '')
 {
     $i18n = yun_i18n();

@@ -187,6 +187,14 @@ class Yun_I18n
         return $this->messages;
     }
 
+    function autoAliasKey($text)
+    {
+        if (!is_string($text) || $text === '') {
+            return '';
+        }
+        return isset($this->autoAliases[$text]) ? $this->autoAliases[$text] : '';
+    }
+
     function autoT($text)
     {
         if ($text === '') {

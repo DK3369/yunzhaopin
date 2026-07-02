@@ -376,6 +376,8 @@ Batch 18 执行范围：后台 JSON 返回运行时 key 解析 `app/include/i18n
 
 Batch 19 执行范围：后台模型返回文案显式 key 化 `admin/model/yunying/yingxiao_hrlog.class.php`、`admin/model/tool/dataOss.class.php`、`admin/model/tool/dataCall.class.php`、`admin/model/user/company_order.class.php`、`admin/model/yunying/finance_company_order.class.php`。将年度报告、OSS 配置、数据调用、订单合同图片增删等含 ID 的中文拼接改为 `yun_t()` + `{id}` 占位符，并同步补齐 `data/lang/auto/zh_cn.php` 与 `data/lang/auto/en_us.php` 的 `admin_model_00001` 起始 key。
 
+Batch 20 执行范围：后台壳页 tab/菜单标题 `app/template/admin/index.htm`、已知 `window.parent.homeapp.checkMenuTwo()` 调用点、后台菜单翻译 helper `app/model/navigation.model.php`、`app/include/i18n.class.php`、`app/include/i18n.functions.php`。修复顶部小标签页仍显示中文的问题：菜单接口返回时必须保留稳定 `name_key`，中文菜单名如果存在 `data/lang/auto/aliases.php` 映射则转换为对应 auto key；前端 tabList 只能优先保存/使用 key，显示时再通过 `lc()` 翻译。旧 `localStorage.tabList` 中已缓存中文标题时，在非 `zh_cn` 环境下清理 tab 缓存，避免继续显示历史中文。禁止把 `localStorage` key 本身改名。
+
 ## 11. 推荐执行顺序
 
 1. 修复语言包损坏项和扫描脚本误报规则。
@@ -384,4 +386,3 @@ Batch 19 执行范围：后台模型返回文案显式 key 化 `admin/model/yuny
 4. 再处理独立 JS 和 CSS 视觉适配。
 5. 最后处理 SQL 安装数据和新增语言扩展。
 6. 每个阶段保存 baseline，避免长期迁移中无法判断回归。
-

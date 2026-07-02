@@ -188,7 +188,7 @@
                                             <span>{{ lc('admin_index_00075') }}</span>
                                         </div>
                                         {yun:}if in_array('809',$power){/yun}
-                                        <div @click="checkMenuTwo(5, 102, 104, lc('weixin_00009'), '/myaccount', {ly: 'pass'})">
+                                        <div @click="checkMenuTwo(5, 102, 104, 'weixin_00009', '/myaccount', {ly: 'pass'})">
                                             <img src="../app/template/admin/images/index_topright7.png" alt="">
                                             <span>{{ lc('member_user_00226') }}</span>
                                         </div>
@@ -211,7 +211,7 @@
                         <ul>
                             <li @click="checkTab(tabIndex)" :class="{'subContTipsCur': cur_menu_two == tabItem.two_menu_id}" v-for="(tabItem, tabIndex) in tabList" :key="tabIndex">
                                 <div class="spana">
-                                    <span class="curspan"><template>{{ tabLabel(tabItem.name) }}</template></span>
+                                    <span class="curspan"><template>{{ tabLabel(tabItem) }}</template></span>
                                     <i v-if="tabItem.isdel" class="el-icon-close" @click.stop="closeTab(tabIndex)"></i>
                                 </div>
                             </li>
@@ -249,15 +249,15 @@
                     <el-checkbox-group v-model="formShortcutMenu">
                         <div class="homeDiaCaiConts" v-for="(oneSMItem, oneSMIndex) in navigation" :key="oneSMIndex">
                             <div class="homeDiaCaiOntite">
-                                <span>{{oneSMItem.name}}</span>
+                                <span>{{ menuLabel(oneSMItem) }}</span>
                             </div>
                             <div class="homeDiaCaiLis" v-for="(twoSMItem, twoSMIndex) in oneSMItem.children" :key="twoSMIndex">
                                 <div class="homeCaiTwoTite">
-                                    <span>{{twoSMItem.name}}</span>
+                                    <span>{{ menuLabel(twoSMItem) }}</span>
                                 </div>
                                 <div class="homeCaiTwoNeir" v-if="twoSMItem.children">
                                     <div class="homeCaiTwocheck" v-for="(threeSMItem, threeSMIndex) in twoSMItem.children" :key="threeSMIndex">
-                                        <el-checkbox :label="threeSMItem.id">{{threeSMItem.name}}</el-checkbox>
+                                        <el-checkbox :label="threeSMItem.id">{{ menuLabel(threeSMItem) }}</el-checkbox>
                                     </div>
                                 </div>
                             </div>
@@ -283,15 +283,15 @@
                 <div class="homeDiaCaidan" style="height: 420px;">
                     <div class="homeDiaCaiConts" v-for="(oneMItem, oneMIndex) in navigation" :key="oneMIndex" v-if="!oneMItem.hide">
                         <div class="homeDiaCaiOntite">
-                            <span>{{oneMItem.name}}</span>
+                            <span>{{ menuLabel(oneMItem) }}</span>
                         </div>
                         <div class="homeDiaCaiLis" v-for="(twoMItem, twoMIndex) in oneMItem.children" :key="twoMIndex" v-if="!twoMItem.hide">
                             <div class="homeCaiTwoTite">
-                                <span>{{twoMItem.name}}</span>
+                                <span>{{ menuLabel(twoMItem) }}</span>
                             </div>
                             <div class="homeCaiTwoNeir" v-if="twoMItem.children">
                                 <div class="homeCaiTwocheck" v-for="(threeMItem, threeMIndex) in twoMItem.children" :key="threeMIndex" v-if="!threeMItem.hide">
-                                    <a href="javascript:void(0);" @click="checkMenuTwo(oneMItem.id, twoMItem.id, threeMItem.id, threeMItem.name_key || threeMItem.name, threeMItem.path);dialogMap = false;">{{threeMItem.name}}</a>
+                                    <a href="javascript:void(0);" @click="checkMenuTwo(oneMItem.id, twoMItem.id, threeMItem.id, threeMItem.name_key || threeMItem.name, threeMItem.path);dialogMap = false;">{{ menuLabel(threeMItem) }}</a>
                                 </div>
                             </div>
                         </div>
@@ -326,41 +326,41 @@
     localStorage.setItem("file_accept", file_accept ? file_accept.split(',').join(',.') : '.doc,.docx,.xls,.pdf');
 
 	var msgNumDef = {
-		company_job:{name:lc('admin_index_00055'),num:0,menudata:{nval:1,oval:6,tval:40,name:lc('wap_com_00106'),path:'/companyjob',query:{state: '4'}}},
-		partjob:{name:lc('admin_index_00053'),num:0,menudata:{nval:1,oval:6,tval:40,name:lc('wap_com_00106'),path:'/companyjob',query:{state: '4', tabs: 'partjob'}}},
-		company:{name:lc('admin_00316'),num:0,menudata:{nval:1,oval:6,tval:16,name:lc('admin_user_00124'),path:'/companycrm',query:{status: '4'}}},
-		company_cert:{name:lc('admin_index_00027'),num:0,menudata:{nval:1,oval:6,tval:47,name:lc('admin_index_00058'),path:'/companyrz',query:{status: '3'}}},
-		comlogo:{name:lc('admin_index_00003'),num:0,menudata:{nval:1,oval:6,tval:47,name:lc('admin_index_00058'),path:'/companyrz',query:{status: '1', tabs: 'logo'}}},
-		comshow:{name:lc('admin_index_00026'),num:0,menudata:{nval:1,oval:6,tval:47,name:lc('admin_index_00058'),path:'/companyrz',query:{status: '1', tabs: 'show'}}},
-		combanner:{name:lc('admin_index_00025'),num:0,menudata:{nval:1,oval:6,tval:47,name:lc('admin_index_00058'),path:'/companyrz',query:{status: '1', tabs: 'banner'}}},
-		company_product:{name:lc('admin_index_00023'),num:0,menudata:{nval:1,oval:6,tval:47,name:lc('admin_index_00058'),path:'/companyrz',query:{status: '3', tabs: 'product'}}},
-		company_news:{name:lc('admin_index_00024'),num:0,menudata:{nval:1,oval:6,tval:47,name:lc('admin_index_00058'),path:'/companyrz',query:{status: '3', tabs: 'news'}}},
-		once_job:{name:lc('admin_index_00033'),num:0,menudata:{nval:1,oval:6,tval:48,name:lc('wap_js_00130'),path:'/weipin_once',query:{status: '3'}}},
-		resume_expect:{name:lc('admin_index_00054'),num:0,menudata:{nval:1,oval:7,tval:33,name:lc('wap_com_00105'),path:'/resume',query:{status: '4'}}},
-		resumetrust:{name:lc('admin_index_00032'),num:0,menudata:{nval:1,oval:7,tval:33,name:lc('wap_com_00105'),path:'/resume',query:{status: '3', tabs: 'trust'}}},
-		appealnum:{name:lc('admin_index_00062'),num:0,menudata:{nval:1,oval:401,tval:402,name:lc('admin_00086'),path:'/usercrm',query:{tabs: 'four',params:{appealstate:'1'}}}},
-		logout:{name:lc('admin_index_00019'),num:0,menudata:{nval:1,oval:401,tval:402,name:lc('admin_00086'),path:'/usercrm',query:{status: '1', tabs: 'three'}}},
-		usercertNum:{name:lc('admin_index_00021'),num:0,menudata:{nval:1,oval:7,tval:34,name:lc('admin_index_00058'),path:'/renzheng',query:{status: '2'}}},
-		userpic:{name:lc('admin_index_00020'),num:0,menudata:{nval:1,oval:7,tval:34,name:lc('admin_index_00058'),path:'/renzheng',query:{status: '1', tabs: 'second'}}},
-		usershow:{name:lc('admin_index_00028'),num:0,menudata:{nval:1,oval:7,tval:34,name:lc('admin_index_00058'),path:'/renzheng',query:{status: '1', tabs: 'third'}}},
-		linkNum:{name:lc('admin_index_00030'),num:0,menudata:{nval:5,oval:121,tval:194,name:lc('default_00256'),path:'/friendlink',query:{state: '2'}}},
-		tiny:{name:lc('admin_index_00034'),num:0,menudata:{nval:1,oval:156,tval:36,name:lc('wap_js_00066'),path:'/weipin_tiny',query:{status: '2'}}},
-		zphcom:{name:lc('admin_index_00029'),num:0,menudata:{nval:2,oval:12,tval:61,name:lc('wap_00558'),path:'/xczph',query:{status: '3', tabs: 'com'}}},
-		ask:{name:lc('admin_index_00056'),num:0,menudata:{nval:2,oval:15,tval:66,name:lc('admin_index_00077'),path:'/question',query:{status: '0'}}},
-		answer_msg:{name:lc('admin_index_00036'),num:0,menudata:{nval:2,oval:15,tval:66,name:lc('admin_index_00077'),path:'/question',query:{status: '0', drawer: 'answer'}}},
-		answerreview_msg:{name:lc('admin_index_00037'),num:0,menudata:{nval:2,oval:15,tval:66,name:lc('admin_index_00077'),path:'/question',query:{status: '0', drawer: 'comment'}}},
-		redeem:{name:lc('admin_index_00031'),num:0,menudata:{nval:3,oval:74,tval:77,name:lc('wap_user_00170'),path:'/shoplist',query:{status: '-1'}}},
-		order:{name:lc('admin_index_00016'),num:0,menudata:{nval:3,oval:161,tval:162,name:lc('admin_user_company_00136'),path:'/chongzhidd',query:{order_state: '1'}}},
-		specialcom:{name:lc('admin_index_00022'),num:0,menudata:{nval:3,oval:343,tval:49,name:lc('admin_index_00069'),path:'/special',query:null}},
-		reportjob:{name:lc('admin_index_00014'),num:0,menudata:{nval:3,oval:176,tval:178,name:lc('admin_index_00059'),path:'/reportjob',query:{status: '0'}}},
-		reportresume:{name:lc('admin_index_00013'),num:0,menudata:{nval:3,oval:176,tval:179,name:lc('wap_com_00349'),path:'/reportresume',query:{status: '0'}}},
-		reportask:{name:lc('admin_index_00015'),num:0,menudata:{nval:3,oval:176,tval:180,name:lc('ask_00002'),path:'/reportask',query:{status: '0'}}},
-		reportgw:{name:lc('admin_index_00018'),num:0,menudata:{nval:3,oval:176,tval:181,name:lc('admin_index_00060'),path:'/reportadvise',query:{status: '0'}}},
-		handlenum:{name:lc('admin_index_00017'),num:0,menudata:{nval:5,oval:198,tval:65,name:lc('wap_user_00203'),path:'/feedback',query:{status: '1'}}},
-		errlog:{name:lc('admin_index_00076'),num:0,menudata:{nval:5,oval:198,tval:814,name:lc('admin_index_00076'),path:'/errorlog',query:null}},
-		yqmb_msg:{name:lc('admin_index_00038'),num:0,menudata:{nval:1,oval:6,tval:46,name:lc('member_com_00213'),path:'/companyms',query:{status: '0', tabs: 'first'}}},
-		usermsg_msg:{name:lc('admin_index_00035'),num:0,menudata:{nval:1,oval:7,tval:37,name:lc('wap_com_00408'),path:'/zixun',query:{status: '0'}}},
-		warning:{name:lc('admin_index_00057'),num:0,menudata:{nval:5,oval:121,tval:175,name:lc('admin_index_00078'),path:'/warning',query:{status: '2'}}},
+		company_job:{name:lc('admin_index_00055'),num:0,menudata:{nval:1,oval:6,tval:40,name:'wap_com_00106',path:'/companyjob',query:{state: '4'}}},
+		partjob:{name:lc('admin_index_00053'),num:0,menudata:{nval:1,oval:6,tval:40,name:'wap_com_00106',path:'/companyjob',query:{state: '4', tabs: 'partjob'}}},
+		company:{name:lc('admin_00316'),num:0,menudata:{nval:1,oval:6,tval:16,name:'admin_user_00124',path:'/companycrm',query:{status: '4'}}},
+		company_cert:{name:lc('admin_index_00027'),num:0,menudata:{nval:1,oval:6,tval:47,name:'admin_index_00058',path:'/companyrz',query:{status: '3'}}},
+		comlogo:{name:lc('admin_index_00003'),num:0,menudata:{nval:1,oval:6,tval:47,name:'admin_index_00058',path:'/companyrz',query:{status: '1', tabs: 'logo'}}},
+		comshow:{name:lc('admin_index_00026'),num:0,menudata:{nval:1,oval:6,tval:47,name:'admin_index_00058',path:'/companyrz',query:{status: '1', tabs: 'show'}}},
+		combanner:{name:lc('admin_index_00025'),num:0,menudata:{nval:1,oval:6,tval:47,name:'admin_index_00058',path:'/companyrz',query:{status: '1', tabs: 'banner'}}},
+		company_product:{name:lc('admin_index_00023'),num:0,menudata:{nval:1,oval:6,tval:47,name:'admin_index_00058',path:'/companyrz',query:{status: '3', tabs: 'product'}}},
+		company_news:{name:lc('admin_index_00024'),num:0,menudata:{nval:1,oval:6,tval:47,name:'admin_index_00058',path:'/companyrz',query:{status: '3', tabs: 'news'}}},
+		once_job:{name:lc('admin_index_00033'),num:0,menudata:{nval:1,oval:6,tval:48,name:'wap_js_00130',path:'/weipin_once',query:{status: '3'}}},
+		resume_expect:{name:lc('admin_index_00054'),num:0,menudata:{nval:1,oval:7,tval:33,name:'wap_com_00105',path:'/resume',query:{status: '4'}}},
+		resumetrust:{name:lc('admin_index_00032'),num:0,menudata:{nval:1,oval:7,tval:33,name:'wap_com_00105',path:'/resume',query:{status: '3', tabs: 'trust'}}},
+		appealnum:{name:lc('admin_index_00062'),num:0,menudata:{nval:1,oval:401,tval:402,name:'admin_00086',path:'/usercrm',query:{tabs: 'four',params:{appealstate:'1'}}}},
+		logout:{name:lc('admin_index_00019'),num:0,menudata:{nval:1,oval:401,tval:402,name:'admin_00086',path:'/usercrm',query:{status: '1', tabs: 'three'}}},
+		usercertNum:{name:lc('admin_index_00021'),num:0,menudata:{nval:1,oval:7,tval:34,name:'admin_index_00058',path:'/renzheng',query:{status: '2'}}},
+		userpic:{name:lc('admin_index_00020'),num:0,menudata:{nval:1,oval:7,tval:34,name:'admin_index_00058',path:'/renzheng',query:{status: '1', tabs: 'second'}}},
+		usershow:{name:lc('admin_index_00028'),num:0,menudata:{nval:1,oval:7,tval:34,name:'admin_index_00058',path:'/renzheng',query:{status: '1', tabs: 'third'}}},
+		linkNum:{name:lc('admin_index_00030'),num:0,menudata:{nval:5,oval:121,tval:194,name:'default_00256',path:'/friendlink',query:{state: '2'}}},
+		tiny:{name:lc('admin_index_00034'),num:0,menudata:{nval:1,oval:156,tval:36,name:'wap_js_00066',path:'/weipin_tiny',query:{status: '2'}}},
+		zphcom:{name:lc('admin_index_00029'),num:0,menudata:{nval:2,oval:12,tval:61,name:'wap_00558',path:'/xczph',query:{status: '3', tabs: 'com'}}},
+		ask:{name:lc('admin_index_00056'),num:0,menudata:{nval:2,oval:15,tval:66,name:'admin_index_00077',path:'/question',query:{status: '0'}}},
+		answer_msg:{name:lc('admin_index_00036'),num:0,menudata:{nval:2,oval:15,tval:66,name:'admin_index_00077',path:'/question',query:{status: '0', drawer: 'answer'}}},
+		answerreview_msg:{name:lc('admin_index_00037'),num:0,menudata:{nval:2,oval:15,tval:66,name:'admin_index_00077',path:'/question',query:{status: '0', drawer: 'comment'}}},
+		redeem:{name:lc('admin_index_00031'),num:0,menudata:{nval:3,oval:74,tval:77,name:'wap_user_00170',path:'/shoplist',query:{status: '-1'}}},
+		order:{name:lc('admin_index_00016'),num:0,menudata:{nval:3,oval:161,tval:162,name:'admin_user_company_00136',path:'/chongzhidd',query:{order_state: '1'}}},
+		specialcom:{name:lc('admin_index_00022'),num:0,menudata:{nval:3,oval:343,tval:49,name:'admin_index_00069',path:'/special',query:null}},
+		reportjob:{name:lc('admin_index_00014'),num:0,menudata:{nval:3,oval:176,tval:178,name:'admin_index_00059',path:'/reportjob',query:{status: '0'}}},
+		reportresume:{name:lc('admin_index_00013'),num:0,menudata:{nval:3,oval:176,tval:179,name:'wap_com_00349',path:'/reportresume',query:{status: '0'}}},
+		reportask:{name:lc('admin_index_00015'),num:0,menudata:{nval:3,oval:176,tval:180,name:'ask_00002',path:'/reportask',query:{status: '0'}}},
+		reportgw:{name:lc('admin_index_00018'),num:0,menudata:{nval:3,oval:176,tval:181,name:'admin_index_00060',path:'/reportadvise',query:{status: '0'}}},
+		handlenum:{name:lc('admin_index_00017'),num:0,menudata:{nval:5,oval:198,tval:65,name:'wap_user_00203',path:'/feedback',query:{status: '1'}}},
+		errlog:{name:lc('admin_index_00076'),num:0,menudata:{nval:5,oval:198,tval:814,name:'admin_index_00076',path:'/errorlog',query:null}},
+		yqmb_msg:{name:lc('admin_index_00038'),num:0,menudata:{nval:1,oval:6,tval:46,name:'member_com_00213',path:'/companyms',query:{status: '0', tabs: 'first'}}},
+		usermsg_msg:{name:lc('admin_index_00035'),num:0,menudata:{nval:1,oval:7,tval:37,name:'wap_com_00408',path:'/zixun',query:{status: '0'}}},
+		warning:{name:lc('admin_index_00057'),num:0,menudata:{nval:5,oval:121,tval:175,name:'admin_index_00078',path:'/warning',query:{status: '2'}}},
 	};
 
     const homeapp = new Vue({
@@ -381,6 +381,7 @@
                     one_menu_id: parseInt('{yun:}$indexData.one_menu_id{/yun}'),
                     two_menu_id: parseInt('{yun:}$indexData.two_menu_id{/yun}'),
                     name: '{yun:}$indexData.name{/yun}',
+                    name_key: '{yun:}$indexData.name{/yun}',
                     path: '{yun:}$indexData.path{/yun}',
                     isdel: false
                 }],
@@ -416,6 +417,22 @@
                 tabArrStr = localStorage.getItem("tabArr"),
                 tabListStr = localStorage.getItem("tabList");
 
+            if (tabListStr) {
+                try {
+                    let storedTabList = JSON.parse(tabListStr);
+                    if (this.hasChineseTabCache(storedTabList)) {
+                        this.resetTabState();
+                        this.clearTabStorage();
+                        cur_menu = cur_menu_one = cur_menu_two = tabArrStr = tabListStr = '';
+                    } else {
+                        this.tabList = this.normalizeTabList(storedTabList);
+                    }
+                } catch (e) {
+                    this.resetTabState();
+                    this.clearTabStorage();
+                    cur_menu = cur_menu_one = cur_menu_two = tabArrStr = tabListStr = '';
+                }
+            }
             if (cur_menu) {
                 this.cur_menu = parseInt(cur_menu);
             }
@@ -427,9 +444,6 @@
             }
             if (tabArrStr) {
                 this.tabArr = JSON.parse(tabArrStr);
-            }
-            if (tabListStr) {
-                this.tabList = JSON.parse(tabListStr);
             }
             this.getMsgNum();
         },
@@ -444,7 +458,7 @@
                 var lang = this.languageForm.lang || "en_us";
                 localStorage.setItem("lang", lang);
                 document.cookie = "admin_lang=" + lang + "; path=/; max-age=31536000";
-                localStorage.removeItem("tabList");
+                this.clearTabStorage();
                 var url = new URL(window.location.href);
                 url.searchParams.set("lang", lang);
                 window.location.href = url.toString();
@@ -474,7 +488,7 @@
                 let tab = this.tabList[0];
                 if (val == 0 && tab.path == '/index') { // Navigate only when clicking Home and the Home tab exists
 					this.getMsgNum();
-                    this.checkMenuTwo(tab.nav_id, tab.one_menu_id, tab.two_menu_id, tab.name, tab.path);
+                    this.checkMenuTwo(tab.nav_id, tab.one_menu_id, tab.two_menu_id, tab.name_key || tab.name, tab.path);
                 }
             },
             MenuOpenChange(val) {
@@ -486,14 +500,82 @@
                 }
             },
 
-            tabLabel(name) {
-                if (!name) {
+            isAutoKey(value) {
+                return typeof value === 'string' && /^[a-z][a-z0-9_]*_[0-9]{5}$/.test(value);
+            },
+            hasChineseText(value) {
+                return typeof value === 'string' && /[\u4e00-\u9fff]/.test(value);
+            },
+            activeLang() {
+                return localStorage.getItem("lang") || "en_us";
+            },
+            translateMenuText(value) {
+                if (!value) {
                     return '';
                 }
-                if (typeof lc === 'function' && /^[a-z][a-z0-9_]*_[0-9]{5}$/.test(name)) {
-                    return lc(name);
+                if (this.isAutoKey(value) && typeof lc === 'function') {
+                    return lc(value);
                 }
-                return name;
+                if (typeof window.yunAdminT === 'function') {
+                    return window.yunAdminT(value);
+                }
+                return value;
+            },
+            menuKey(item) {
+                if (!item) {
+                    return '';
+                }
+                return item.name_key || item.name || '';
+            },
+            menuLabel(item) {
+                let value = typeof item === 'string' ? item : this.menuKey(item);
+                return this.translateMenuText(value);
+            },
+            normalizeTabName(name) {
+                let value = name || '';
+                return {
+                    name: value,
+                    name_key: this.isAutoKey(value) ? value : ''
+                };
+            },
+            normalizeTabList(tabList) {
+                if (!Array.isArray(tabList)) {
+                    return this.tabList;
+                }
+                for (let i = 0; i < tabList.length; i++) {
+                    if (tabList[i] && !tabList[i].name_key && this.isAutoKey(tabList[i].name)) {
+                        tabList[i].name_key = tabList[i].name;
+                    }
+                }
+                return tabList;
+            },
+            hasChineseTabCache(tabList) {
+                return this.activeLang() !== 'zh_cn' && this.hasChineseText(JSON.stringify(tabList || []));
+            },
+            resetTabState() {
+                this.cur_menu = parseInt('{yun:}$indexData.nav_id{/yun}');
+                this.cur_menu_one = parseInt('{yun:}$indexData.one_menu_id{/yun}');
+                this.cur_menu_two = parseInt('{yun:}$indexData.two_menu_id{/yun}');
+                this.tabArr = [parseInt('{yun:}$indexData.two_menu_id{/yun}')];
+                this.tabList = [{
+                    nav_id: parseInt('{yun:}$indexData.nav_id{/yun}'),
+                    one_menu_id: parseInt('{yun:}$indexData.one_menu_id{/yun}'),
+                    two_menu_id: parseInt('{yun:}$indexData.two_menu_id{/yun}'),
+                    name: '{yun:}$indexData.name{/yun}',
+                    name_key: '{yun:}$indexData.name{/yun}',
+                    path: '{yun:}$indexData.path{/yun}',
+                    isdel: false
+                }];
+            },
+            clearTabStorage() {
+                localStorage.removeItem("cur_menu");
+                localStorage.removeItem("cur_menu_one");
+                localStorage.removeItem("cur_menu_two");
+                localStorage.removeItem("tabArr");
+                localStorage.removeItem("tabList");
+            },
+            tabLabel(tab) {
+                return this.menuLabel(tab);
             },
             checkMenuOpen(val) {
                 let idx = this.MenuOpen.indexOf(val);
@@ -511,11 +593,13 @@
 
                 if (this.tabArr.indexOf(tval) == -1) {
                     this.tabArr.push(tval);
+                    let tabName = this.normalizeTabName(name);
                     this.tabList.push({
                         nav_id: nval,
                         one_menu_id: oval,
                         two_menu_id: tval,
-                        name: name,
+                        name: tabName.name,
+                        name_key: tabName.name_key,
                         path: path,
                         isdel: true
                     })
@@ -697,7 +781,8 @@
                                 if (threeList && threeList.length > 0) {
                                     threeList.forEach(function(threeItem, threeKey) {
                                         if (query) {
-                                            if (threeItem.name.includes(query)) { // Third-level item must contain the keyword
+                                            let searchName = that.menuLabel(threeItem);
+                                            if ((searchName && searchName.includes(query)) || (threeItem.name && threeItem.name.includes(query))) { // Third-level item must contain the keyword
                                                 navigation[oneKey].hide = false; // Show first-level navigation
                                                 navigation[oneKey]['children'][twoKey].hide = false; // Show second-level navigation
                                                 navigation[oneKey]['children'][twoKey]['children'][threeKey].hide = false; // Mark third-level navigation as visible

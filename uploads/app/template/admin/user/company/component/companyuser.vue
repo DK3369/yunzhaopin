@@ -4200,7 +4200,7 @@ module.exports = {
                 type:'1',
                 status:status?status:''
             }
-            window.parent.homeapp.checkMenuTwo(1, 6, 40, lc('wap_com_00106'), '/companyjob', params);
+            window.parent.homeapp.checkMenuTwo(1, 6, 40, 'wap_com_00106', '/companyjob', params);
             },
             handleTimeChange() {
                 if (this.search_params.time_type != '' && Array.isArray(this.search_params.times) && this.search_params.times.length) {

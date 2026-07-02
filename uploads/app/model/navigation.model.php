@@ -195,9 +195,22 @@ class navigation_model extends model{
 	        if (!isset($mv['name'])) {
 	            continue;
 	        }
-	        $rows[$mk]['name_key'] = $mv['name'];
-	        if (function_exists('yun_is_auto_key') && yun_is_auto_key($mv['name'])) {
-	            $rows[$mk]['name'] = lc($mv['name']);
+
+	        $name = $mv['name'];
+	        $nameKey = $name;
+
+	        if (function_exists('yun_is_auto_key') && yun_is_auto_key($name)) {
+	            $nameKey = $name;
+	        } elseif (function_exists('yun_auto_alias_key')) {
+	            $aliasKey = yun_auto_alias_key($name);
+	            if ($aliasKey !== '') {
+	                $nameKey = $aliasKey;
+	            }
+	        }
+
+	        $rows[$mk]['name_key'] = $nameKey;
+	        if (function_exists('yun_is_auto_key') && yun_is_auto_key($nameKey)) {
+	            $rows[$mk]['name'] = lc($nameKey);
 	        }
 	    }
 	    return $rows;
