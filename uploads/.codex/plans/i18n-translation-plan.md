@@ -406,6 +406,8 @@ Batch 32 执行范围：剩余后台工具/系统小消息 `admin/model/tool/mes
 
 Batch 33 执行范围：公共职位/城市分类选择 JS `js/public_class.js`、`js/newclass.public.js`。迁移选择弹窗标题、搜索 placeholder、已选提示、确定/取消按钮、无结果提示和最多选择提示，新增 key 使用 `public_js_00001` 起始；触碰到的中文注释改为英文。本批不改分类数据结构、DOM class/id、事件绑定、搜索算法、选择数量限制、layer 参数或回填字段逻辑。`js/member_public.js` 文案较多，单独留到后续批次。
 
+Batch 34 执行范围：会员中心公共 JS `js/member_public.js`。迁移 layer loading、msg、alert、confirm、弹窗 title、动态 HTML/option 文案、签到/消息/订单/职位上下架/金额转换提示，新增 key 使用 `member_js_00001` 起始；触碰到的中文注释改为英文。本批不改 Ajax URL、表单字段、localStorage key、CSS class/id、正则、验证码流程、套餐/积分计算、职位发布条件判断、订单取消逻辑或服务端返回结构。
+
 ## 11. 推荐执行顺序
 
 1. 修复语言包损坏项和扫描脚本误报规则。

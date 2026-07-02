@@ -1,6 +1,18 @@
+function memberPublicT(key, params, fallback) {
+	var text = typeof yunT === 'function' ? yunT(key, params, fallback) : (fallback !== undefined ? fallback : key);
+	if (params && typeof text === 'string') {
+		for (var name in params) {
+			if (Object.prototype.hasOwnProperty.call(params, name)) {
+				text = text.split('{' + name + '}').join(params[name]);
+			}
+		}
+	}
+	return text;
+}
+
 var timestamp=Math.round(new Date().getTime()/1000) ;
 function loadlayer(){
-	return layer.load('执行中，请稍候...',0);
+	return layer.load(memberPublicT('member_js_00001', null, 'Processing, please wait...'),0);
 }
 function toDate(str){
 	var sd=str.split("-");
@@ -8,10 +20,10 @@ function toDate(str){
 }
 function wait_result(){
 	layer.closeAll();
-	layer.load('执行中，请稍候...',0);
+	layer.load(memberPublicT('member_js_00001', null, 'Processing, please wait...'),0);
 }
-function showImgDelay(imgObj,imgSrc,maxErrorNum){  
-    if(maxErrorNum>0){ 
+function showImgDelay(imgObj,imgSrc,maxErrorNum){
+    if(maxErrorNum>0){
         imgObj.onerror=function(){
             showImgDelay(imgObj,imgSrc,maxErrorNum-1);
         };
@@ -21,9 +33,9 @@ function showImgDelay(imgObj,imgSrc,maxErrorNum){
 		maxErrorNum=parseInt(maxErrorNum)-parseInt(1);
     }
 }
-function layer_del(msg,url){ 
+function layer_del(msg,url){
 	if(msg==''){
-		var i=layer.load('执行中，请稍候...',0);
+		var i=layer.load(memberPublicT('member_js_00001', null, 'Processing, please wait...'),0);
 		$.get(url,function(data){
 			layer.close(i);
 			var data=eval('('+data+')');
@@ -35,8 +47,8 @@ function layer_del(msg,url){
 		});
 	}else{
 		layer.confirm(msg, function(){
-			var i=layer.load('执行中，请稍候...',0);
-			
+			var i=layer.load(memberPublicT('member_js_00001', null, 'Processing, please wait...'),0);
+
 			$.get(url,function(data){
 				layer.close(i);
 				var data=eval('('+data+')');
@@ -51,11 +63,11 @@ function layer_del(msg,url){
 }
 function addblack(){
 	$(".Blacklist_box>form>ul").html("");
-	$("#name").val('');	
+	$("#name").val('');
 	$.layer({
 		type : 1,
-		title : '搜索企业',
-		closeBtn : [0 , true], 
+		title : memberPublicT('member_js_00002', null, 'Search Company'),
+		closeBtn : [0 , true],
 		border : [10 , 0.3 , '#000', true],
 		area : ['400px','340px'],
 		page : {dom : '#blackdiv'}
@@ -65,8 +77,8 @@ function canceljob(id){
 	$("#qsid").val(id);
 	$.layer({
 		type : 1,
-		title : '取消原因',
-		closeBtn : [0 , true], 
+		title : memberPublicT('member_js_00003', null, 'Cancellation Reason'),
+		closeBtn : [0 , true],
 		border : [10 , 0.3 , '#000', true],
 		area : ['300px','200px'],
 		page : {dom : '#blackdiv'}
@@ -79,25 +91,25 @@ function logout(url){
 				$('#uclogin').html(msg);
 			}
 			window.localStorage.setItem("socketState", "2");
-			layer.msg('您已成功退出！', 2, 9,function(){window.location.href =weburl;window.event.returnValue = false;return false;});
+			layer.msg(memberPublicT('member_js_00004', null, 'You have logged out successfully!'), 2, 9,function(){window.location.href =weburl;window.event.returnValue = false;return false;});
 		}else{
-			layer.msg('退出失败！', 2, 8);
+			layer.msg(memberPublicT('member_js_00005', null, 'Logout failed!'), 2, 8);
 		}
 	});
 }
-// 搜索要屏蔽的企业
+// Search companies to block.
 function searchcom(){
 	var name=$.trim($("#name").val());
 	if(name==''){
 		layer.closeAll();
-		layer.msg('请输入搜索的公司名称！', 2, 8,function(){addblack();});return false;
+		layer.msg(memberPublicT('member_js_00006', null, 'Please enter the company name to search.'), 2, 8,function(){addblack();});return false;
 	}else{
-		var loadi = layer.load('执行中，请稍候...',0);
+		var loadi = layer.load(memberPublicT('member_js_00001', null, 'Processing, please wait...'),0);
 		$.post("index.php?c=privacy&act=searchcom",{name:name},function(data){
 			layer.close(loadi);
-			$(".Blacklist_box>form>ul").html(data);		
+			$(".Blacklist_box>form>ul").html(data);
 		});
-	} 
+	}
 }
 function ckaddblack(){
 	var chk_value=[];
@@ -105,62 +117,62 @@ function ckaddblack(){
 		chk_value.push($(this).val());
 	});
 	layer.closeAll();
-	if(chk_value.length==0){ 
-		layer.msg("请选择要屏蔽的公司！",2,8,function(){addblack()});return false;
-	} 
-	layer.load('执行中，请稍候...',0);
+	if(chk_value.length==0){
+		layer.msg(memberPublicT('member_js_00007', null, 'Please select a company to block!'),2,8,function(){addblack()});return false;
+	}
+	layer.load(memberPublicT('member_js_00001', null, 'Processing, please wait...'),0);
 }
 
 function buyad(){
 	if($.trim($('#ad_name').val())==''){
-		layer.msg('请输入广告名称！', 2, 8);return false;
+		layer.msg(memberPublicT('member_js_00008', null, 'Please enter the ad name!'), 2, 8);return false;
 	}
 	if($("input[name=file]").val()==''){
-		layer.msg('请选择广告图片！', 2,8);return false;
+		layer.msg(memberPublicT('member_js_00009', null, 'Please select an ad image!'), 2,8);return false;
 	}
 	if($.trim($('#pic_src').val())==''){
-		layer.msg('请输入广告链接！', 2,8);return false;
+		layer.msg(memberPublicT('member_js_00010', null, 'Please enter the ad link!'), 2,8);return false;
 	}
 	if($.trim($('#buy_time').val())==''){
-		layer.msg('请输入购买时间！', 2,8);return false;
+		layer.msg(memberPublicT('member_js_00011', null, 'Please enter the purchase duration!'), 2,8);return false;
 	}
 	buy_vip_ad();
 }
-function buy_vip_ad(){ 
+function buy_vip_ad(){
 	var integral_buy=$("input[name=integral_buy]").val();
-	var yh_integral=$("input[name=yh_integral]").val(); 
-	var btype=$('#btype').val();	
-	if(isNaN(yh_integral)==false){ 
+	var yh_integral=$("input[name=yh_integral]").val();
+	var btype=$('#btype').val();
+	if(isNaN(yh_integral)==false){
 		integral_buy=parseInt(integral_buy)-parseInt(yh_integral);
 	}
 	if(btype==2){
-		var msg="购买此项服将消费"+integral_buy+"元，是否继续？"; 
+		var msg = memberPublicT('member_js_00012', {amount: integral_buy}, 'This purchase will cost {amount} yuan. Continue?');
 	}else{
-		var msg="购买此项服将扣除"+integral_buy+integral_pricename+"，是否继续？"; 
+		var msg = memberPublicT('member_js_00013', {amount: integral_buy, unit: integral_pricename}, 'This purchase will deduct {amount}{unit}. Continue?');
 	}
-	
-	layer.confirm(msg,function(){ 
+
+	layer.confirm(msg,function(){
 		setTimeout(function(){$('#myform').submit()},0);
 	});
 }
 $(document).ready(function(){
-	/*签到*/
+	/* Sign in. */
 	$(".signdiv").hover();
 	$(".signdiv").hover(function(){
-		$("#sign_layer").show(); 
+		$("#sign_layer").show();
 	},function(){
-		$("#sign_layer").hide();	
+		$("#sign_layer").hide();
 	});
 	$(".left_box_zp_qd").click(function(){
-		if($(this).hasClass("yqd")==false){ 
-			var loadi = layer.load('执行中，请稍候...',0);
-			$.get(weburl+"/member/index.php?m=ajax&c=sign",function(data){ 
+		if($(this).hasClass("yqd")==false){
+			var loadi = layer.load(memberPublicT('member_js_00001', null, 'Processing, please wait...'),0);
+			$.get(weburl+"/member/index.php?m=ajax&c=sign",function(data){
 				layer.close(loadi);
 				var data=eval('('+data+')');
 				if(data.type=='-2'){
-					layer.msg('操作失败！',2,8);return false;
-				}else{ 
-					if(data.type>0){  
+					layer.msg(memberPublicT('member_js_00014', null, 'Operation failed!'),2,8);return false;
+				}else{
+					if(data.type>0){
 						var $_font=$("<div class='f_18 f_red mod_join_coin'>+"+data.integral+"</div>").appendTo("body");
 						var $_btned=$(".left_box_zp_qd");
 						var pos=$_btned.offset(),btnedH=$_btned.outerHeight();
@@ -174,52 +186,52 @@ $(document).ready(function(){
 						   "opacity": "show",
 						   "top":_fontTop-45
 						}, 1500,function(){
-							$(this).remove(); 
-						}); 
+							$(this).remove();
+						});
 						$(".signdiv .left_box_zp_qd").addClass('yqd');
-						$(".signdiv .left_box_zp_qd").html('已签到');
+						$(".signdiv .left_box_zp_qd").html(memberPublicT('member_js_00015', null, 'Signed in'));
 						$("#sign_cal .day"+data.type).addClass('on');
 						$("#integral").html(parseInt($("#integral").html())+parseInt(data.integral));
 						$(".jifen").html(parseInt($(".jifen").html())+parseInt(data.integral));
-					}  
+					}
 				}
-			}) 
+			})
 		}
     });
- 
+
 	$("input[name=default_resume],.default_resume").click(function(){
 		var value=$(this).val();
 		if(value==''){value=$(this).attr('value');}
 		$.post(weburl+"/member/index.php?m=ajax&c=default_resume",{eid:value},function(data){
 			if(data==0){
-				layer.alert('请先登录！', 0, '提示',function(){window.location.href ="index.php?m=login&usertype=1";window.event.returnValue = false;return false;});
-			}else if(data==1){ 
-				layer.msg('设置成功！', 2, 9,function(){ window.location.reload();window.event.returnValue = false;return false;});return false; 
-			}else{ 
-				layer.msg('系统出错，请稍后再试！', 2, 8,function(){ window.location.reload();window.event.returnValue = false;return false;});return false; 
+				layer.alert(memberPublicT('member_js_00016', null, 'Please log in first!'), 0, memberPublicT('member_js_00017', null, 'Notice'),function(){window.location.href ="index.php?m=login&usertype=1";window.event.returnValue = false;return false;});
+			}else if(data==1){
+				layer.msg(memberPublicT('member_js_00018', null, 'Settings saved successfully!'), 2, 9,function(){ window.location.reload();window.event.returnValue = false;return false;});return false;
+			}else{
+				layer.msg(memberPublicT('member_js_00019', null, 'System error. Please try again later!'), 2, 8,function(){ window.location.reload();window.event.returnValue = false;return false;});return false;
 			}
-		}) 
-	}) 
-	 
+		})
+	})
+
 	$("#colse_box").click(function(){$('.job_box').hide();})
 	$(".province").change(function(){
 		var province=$(this).val();
 		var lid=$(this).attr("lid");
 		if(province==""){
 			$("#"+lid+" option").remove()
-			$("<option value='0'>请选择城市</option>").appendTo("#"+lid);
+			$("<option value='0'>"+memberPublicT('member_js_00020', null, 'Please select a city')+"</option>").appendTo("#"+lid);
 			lid2=$("#"+lid).attr("lid");
 			if(lid2){
 				$("#"+lid2+" option").remove();
-				$("<option value='0'>请选择城市</option>").appendTo("#"+lid2);
+				$("<option value='0'>"+memberPublicT('member_js_00020', null, 'Please select a city')+"</option>").appendTo("#"+lid2);
 				$("#"+lid2).hide();
 			}
 		}
-		$.post(weburl+"/index.php?m=ajax&c=ajax&"+timestamp, {"str":province},function(data) {  
+		$.post(weburl+"/index.php?m=ajax&c=ajax&"+timestamp, {"str":province},function(data) {
 			if(lid!="" && data!=""){
 				$('#'+lid+' option').remove();
 				$(data).appendTo("#"+lid);
-				city_type(lid); 
+				city_type(lid);
 			}
 		})
 	})
@@ -251,14 +263,14 @@ $(document).ready(function(){
 		var name=$(this).attr("name");
 		$("#details-con-"+name).show();
 	})
-	
+
 	memberMsgnum();
 })
 function memberMsgnum(){
-	$.get(weburl+"/index.php?m=ajax&c=msgNum",function(data){ 
+	$.get(weburl+"/index.php?m=ajax&c=msgNum",function(data){
 		var datas=eval("(" + data + ")");
 		if(datas.usertype==1){
-			
+
 			if(datas.msgNum){
 				if(parseInt(datas.msgNum) > 0){
 					$('#msgNum').html(parseInt(datas.msgNum));
@@ -284,11 +296,11 @@ function memberMsgnum(){
 			}
 			if(datas.sysmsgNum){$('#sysmsgNum').html(datas.sysmsgNum);}
 			if(datas.jobApplyNum){$('#jobApplyNum').html(datas.jobApplyNum);}
-			if(datas.jobAskNum){$('#jobAskNum').html(datas.jobAskNum);}	
+			if(datas.jobAskNum){$('#jobAskNum').html(datas.jobAskNum);}
 			if(datas.ComMsgNum){$('#ComMsgNum').html(datas.ComMsgNum);}
 
 		}
-		
+
 	})
 }
 function tzmsgNumShow(type){
@@ -321,7 +333,7 @@ function headerInfoShow(type){
 	}else{$('.yun_m_header_info').hide();
 	}
 }
- 
+
 function city_type(id){
 	var id;
 	var province=$("#"+id).val();
@@ -338,7 +350,7 @@ function city_type(id){
 					$('#'+lid).show();
 				}else{
 					$('#'+lid+' option').remove();
-					$("<option value='0'>请选择城市</option").appendTo("#"+lid);
+					$("<option value='0'>"+memberPublicT('member_js_00020', null, 'Please select a city')+"</option").appendTo("#"+lid);
 					$('#'+lid).hide();
 				}
 			}
@@ -348,23 +360,23 @@ function city_type(id){
 function showrebate(id,url){
 	$.post(url, {id:id},function(data) {
 		 var data=eval('('+data+')');
-			$("#rebateuname").html(data.uname); 
-			$("#rebatesex").html(data.sex); 
-			$("#rebatebirthday").html(data.birthday); 
-			$("#rebateedu").html(data.edu); 
-			$("#rebateexp").html(data.exp); 
-			$("#rebatetelphone").html(data.telphone); 
-			$("#rebateemail").html(data.email); 
-			$("#rebatehy").html(data.hy); 
-			$("#rebatejob_classid").html(data.job_classid); 
-			$("#rebatecity").html(data.city); 
-			$("#rebatesalary").html(data.salary); 
-			$("#rebatetype").html(data.type); 
-			$("#rebatereport").html(data.report); 
-			$("#rebatecontent").html(data.content); 
+			$("#rebateuname").html(data.uname);
+			$("#rebatesex").html(data.sex);
+			$("#rebatebirthday").html(data.birthday);
+			$("#rebateedu").html(data.edu);
+			$("#rebateexp").html(data.exp);
+			$("#rebatetelphone").html(data.telphone);
+			$("#rebateemail").html(data.email);
+			$("#rebatehy").html(data.hy);
+			$("#rebatejob_classid").html(data.job_classid);
+			$("#rebatecity").html(data.city);
+			$("#rebatesalary").html(data.salary);
+			$("#rebatetype").html(data.type);
+			$("#rebatereport").html(data.report);
+			$("#rebatecontent").html(data.content);
 			$.layer({
 				type : 1,
-				title :'人才详情',  
+				title : memberPublicT('member_js_00021', null, 'Talent Details'),
 				closeBtn : [0 , true],
 				border : [10 , 0.3 , '#000', true],
 				area : ['600px','auto'],
@@ -386,11 +398,11 @@ function job_type(id){
 function check_form(ifidname,byidname){
 	var ifidname;
 	var byidname;
-	if (ifidname){ 
-		var msg=$("#"+byidname).html(); 
+	if (ifidname){
+		var msg=$("#"+byidname).html();
 		layer.msg(msg, 2, 8);return false;
 	}else{
-		$("#"+byidname).hide(); 
+		$("#"+byidname).hide();
 		return true;
 	}
 }
@@ -418,7 +430,7 @@ function check_email(strEmail){
 	 return false;
  }
 function isjsMobile(obj){
-	var reg= /^[1][3456789]\d{9}$/; //验证手机号码  
+	var reg= /^[1][3456789]\d{9}$/; // Validate mobile number.
 	if(obj==''){
 		return false;
 	}else if(!reg.test(obj)){
@@ -433,16 +445,16 @@ function isjsTell(str) {
     return true;
 }
 function checkIdcard(num){
-    //身份证号码为15位或者18位，15位时全为数字，18位前17位为数字，最后一位是校验位，可能为数字或字符X。
-   var reg = /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/;  
-   if(reg.test(num) === false)  
-   {  
-       return  false;  
-   }  
+    // Chinese ID card numbers are 15 or 18 characters; the check digit may be a number or X.
+   var reg = /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/;
+   if(reg.test(num) === false)
+   {
+       return  false;
+   }
 }
 function isIdCardNo(v_card)
 {
-	
+
    var reg=/^d{15}(d{2}[0-9X])?$/i;
 
    if (!reg.test(v_card)){
@@ -512,35 +524,35 @@ function isDate(strDate) {
    var intDay;
    var boolLeapYear;
    strDateArray=strDate.split(strSeparator);
-   if (strDateArray.length != 3) 
+   if (strDateArray.length != 3)
        return false;
    intYear=parseInt(strDateArray[0], 10);
    intMonth=parseInt(strDateArray[1], 10);
    intDay=parseInt(strDateArray[2], 10);
-   if (isNaN(intYear) || isNaN(intMonth) || isNaN(intDay)) 
+   if (isNaN(intYear) || isNaN(intMonth) || isNaN(intDay))
        return false;
-   if (intMonth >12 || intMonth <1) 
+   if (intMonth >12 || intMonth <1)
        return false;
-   if ((intMonth == 1 || intMonth == 3 || intMonth == 5 || intMonth == 7 || intMonth == 8 || intMonth == 10 || intMonth == 12) &&(intDay >31 || intDay <1)) 
+   if ((intMonth == 1 || intMonth == 3 || intMonth == 5 || intMonth == 7 || intMonth == 8 || intMonth == 10 || intMonth == 12) &&(intDay >31 || intDay <1))
        return false;
-   if ((intMonth == 4 || intMonth == 6 || intMonth == 9 || intMonth == 11) &&(intDay >30 || intDay <1)) 
+   if ((intMonth == 4 || intMonth == 6 || intMonth == 9 || intMonth == 11) &&(intDay >30 || intDay <1))
        return false;
    if (intMonth == 2) {
-       if (intDay <1) 
+       if (intDay <1)
            return false;
        boolLeapYear=false;
        if ((intYear % 100) == 0) {
-           if ((intYear % 400) == 0) 
+           if ((intYear % 400) == 0)
                boolLeapYear=true;
        }else {
-           if ((intYear % 4) == 0) 
+           if ((intYear % 4) == 0)
                boolLeapYear=true;
        }
        if (boolLeapYear) {
-           if (intDay >29) 
+           if (intDay >29)
                return false;
        }else {
-           if (intDay >28) 
+           if (intDay >28)
                return false;
        }
    }
@@ -552,10 +564,10 @@ function checkshare(){
 	var smallday = $.trim($("#smallday").val());
 	if(smallday!=""){
 		if (!re.test(smallday)){
-			layer.msg('购买天数填写不正确！', 2, 8);return false;  
+			layer.msg(memberPublicT('member_js_00022', null, 'Invalid purchase days!'), 2, 8);return false;
 		}
 	}else{
-		layer.msg('购买天数不能为空！', 2, 8);return false;   
+		layer.msg(memberPublicT('member_js_00023', null, 'Purchase days cannot be empty!'), 2, 8);return false;
 	}
 	return true;
 }
@@ -572,24 +584,24 @@ function m_checkAll(form){
 	for (var i=0;i<form.elements.length;i++){
 		var e = form.elements[i];
 		if (e.Name != 'checkAll' && e.disabled==false)
-		e.checked = form.checkAll.checked; 
+		e.checked = form.checkAll.checked;
 	}
-} 
+}
 function really(name){
-	var chk_value =[];    
-	$('input[name="'+name+'"]:checked').each(function(){    
-		chk_value.push($(this).val());   
-	});   
+	var chk_value =[];
+	$('input[name="'+name+'"]:checked').each(function(){
+		chk_value.push($(this).val());
+	});
 	if(chk_value.length==0){
-		layer.msg("请选择要删除的数据！",2,8);return false;
+		layer.msg(memberPublicT('member_js_00024', null, 'Please select data to delete!'),2,8);return false;
 	}else{
-		var delcf = layer.confirm("确定删除吗？",function(){
+		var delcf = layer.confirm(memberPublicT('member_js_00025', null, 'Are you sure you want to delete?'),function(){
 			layer.close(delcf);
 			loadlayer();
-			setTimeout(function(){$('#myform').submit()},0); 
+			setTimeout(function(){$('#myform').submit()},0);
 		});
-	} 
-} 
+	}
+}
 function search_show(id){
     $(".cus-sel-opt-panel").hide();
 	var obj=document.getElementById(id);
@@ -600,21 +612,21 @@ function search_show(id){
 	}
 }
 function CheckForm(){
-	var chk_value =[];    
-	$('input[name="usertype"]:checked').each(function(){    
-		chk_value.push($(this).val());   
+	var chk_value =[];
+	$('input[name="usertype"]:checked').each(function(){
+		chk_value.push($(this).val());
 	});
 	if(chk_value.length==0){
-		layer.msg("请选择购买类型！",2,8);return false;
+		layer.msg(memberPublicT('member_js_00026', null, 'Please select a purchase type!'),2,8);return false;
 	}
 }
 function pay_form(name){
-	if($("#comvip").length!=0&&$("#comvip").val()==''){ 
-		layer.msg("请选择购买类型！",2,8);return false;
+	if($("#comvip").length!=0&&$("#comvip").val()==''){
+		layer.msg(memberPublicT('member_js_00026', null, 'Please select a purchase type!'),2,8);return false;
 	}
-	if($("#price_int").length!=0&&$("#price_int").val()<1){ 
-		layer.msg(name,2,8);return false; 
-	} 
+	if($("#price_int").length!=0&&$("#price_int").val()<1){
+		layer.msg(name,2,8);return false;
+	}
 }
 function Showsub1(){
 	var oldpass = $("#oldpassword").val();
@@ -625,37 +637,37 @@ function Showsub1(){
 	repass=$.trim(repass);
 	var flag = true;
 	if(oldpass==""){
-		$("#msg_oldpassword").html("<font color='red'>原始密码不能为空!</font>");
+		$("#msg_oldpassword").html("<font color='red'>"+memberPublicT('member_js_00027', null, 'Original password cannot be empty!')+"</font>");
 		flag = false;
 	} else if(oldpass.length<6 || oldpass.length>20){
-		$("#msg_oldpassword").html("<font color='red'>密码需在 6-20个字符之内!</font>");
+		$("#msg_oldpassword").html("<font color='red'>"+memberPublicT('member_js_00028', null, 'Password must be 6-20 characters!')+"</font>");
 		flag = false;
 	} else{
-		$("#msg_oldpassword").html("<font color='#008000'>输入成功!</font>");
+		$("#msg_oldpassword").html("<font color='#008000'>"+memberPublicT('member_js_00029', null, 'Entered successfully!')+"</font>");
 	}
 	if(pass==""){
-		$("#msg_password").html("<font color='red'>新密码不能为空!</font>");
+		$("#msg_password").html("<font color='red'>"+memberPublicT('member_js_00030', null, 'New password cannot be empty!')+"</font>");
 		flag = false;
 	}else if(pass.length<6 || pass.length>20){
-		$("#msg_password").html("<font color='red'>新密码需在 6-20个字符之内!</font>");
+		$("#msg_password").html("<font color='red'>"+memberPublicT('member_js_00031', null, 'New password must be 6-20 characters!')+"</font>");
 		flag = false;
 	}else{
-		$("#msg_password").html("<font color='#008000'>输入成功!</font>");
+		$("#msg_password").html("<font color='#008000'>"+memberPublicT('member_js_00029', null, 'Entered successfully!')+"</font>");
 	}
 	if(repass==""){
-		$("#msg_repassword").html("<font color='red'>请再次确认新密码!</font>");
+		$("#msg_repassword").html("<font color='red'>"+memberPublicT('member_js_00032', null, 'Please confirm the new password again!')+"</font>");
 		flag = false;
 	}else if(repass.length<6 || repass.length>20){
-		$("#msg_repassword").html("<font color='red'>新密码需在 6-20个字符之内!</font>");
+		$("#msg_repassword").html("<font color='red'>"+memberPublicT('member_js_00031', null, 'New password must be 6-20 characters!')+"</font>");
 		flag = false;
 	} if(repass!=pass){
-		$("#msg_repassword").html("<font color='red'>两次密码输入不一致，请重新输入!</font>");
+		$("#msg_repassword").html("<font color='red'>"+memberPublicT('member_js_00033', null, 'The two passwords do not match. Please try again!')+"</font>");
 		flag = false;
 	}else if(repass==pass && repass!=""){
-		$("#msg_repassword").html("<font color='#008000'>输入成功!</font>");
+		$("#msg_repassword").html("<font color='#008000'>"+memberPublicT('member_js_00029', null, 'Entered successfully!')+"</font>");
 	}
 	if(oldpass!=""&&oldpass==pass){
-		layer.msg("原始密码和新密码一致，不需要修改！",2,8);return false;
+		layer.msg(memberPublicT('member_js_00034', null, 'Original password and new password are the same. No change is needed!'),2,8);return false;
 	}
 	return flag;
 }
@@ -664,32 +676,32 @@ function Showsub1(){
 function reply_xin(id,uid,name,content){
 	$("#pid").val(id);
 	$("#fid").val(uid);
-	$("#wnc").html("<div class='Reply_cont_name'><font color='#0066FF'>"+name+"</font> 给您留言：</div>"+content); 
+	$("#wnc").html("<div class='Reply_cont_name'><font color='#0066FF'>"+name+"</font> " + memberPublicT('member_js_00035', null, 'left you a message:') + "</div>"+content);
 	$.layer({
 		type : 1,
-		title : '回复',
+		title : memberPublicT('member_js_00036', null, 'Reply'),
 		closeBtn : [0 , true],
 		border : [10 , 0.3 , '#000', true],
 		area : ['450px','auto'],
 		page : {dom : '#reply'}
 	});
-} 
+}
 function check_xin(){
 	if($("#content").val()==""){
-		layer.msg('回复内容不能为空！', 2, 8);return false; 
-	}	
+		layer.msg(memberPublicT('member_js_00037', null, 'Reply content cannot be empty!'), 2, 8);return false;
+	}
 }
-function Showsub(){ 
+function Showsub(){
 	 var con = $("#content").val();
  	 con=$.trim(con);
-	 if(con==""){layer.msg('请提出您的问题和建议！', 2, 8);return false;}			
+	 if(con==""){layer.msg(memberPublicT('member_js_00038', null, 'Please enter your questions and suggestions!'), 2, 8);return false;}
 }
 function zhankaiShouqi(control){
 	$(control).parent().find('.job_add_y_list:gt(4)').slideToggle(1000);
-	if($(control).html()=='更多'){
-		$(control).html('收起');
+	if($(control).html()==memberPublicT('member_js_00039', null, 'More')){
+		$(control).html(memberPublicT('member_js_00040', null, 'Collapse'));
 	}else{
-		$(control).html('更多');
+		$(control).html(memberPublicT('member_js_00039', null, 'More'));
 	}
 }
 
@@ -705,7 +717,7 @@ $(function () {
         }
         if (evt.target.id != "province") {
             $('#province').next().next().hide();
-        }           
+        }
         if (evt.target.id != "pr_button") {
             $('#pr_button').next().next().hide();
         }
@@ -777,7 +789,7 @@ $(function () {
 		}
 		if($(evt.target).parents("#job_report").length==0 && evt.target.id != "report") {
 		   $('#job_report').hide();
-		}	
+		}
 		if($(evt.target).parents("#infostatusid").length==0 && evt.target.id != "infostatus") {
 		   $('#job_infostatus').hide();
 		}
@@ -786,25 +798,25 @@ $(function () {
 		}
 		if($(evt.target).parents("#job_province").length==0 && evt.target.id != "province") {
 		   $('#job_province').hide();
-		}	
+		}
 		if($(evt.target).parents("#job_twocity").length==0 && evt.target.id != "twocity") {
 		   $('#job_twocity').hide();
 		}
 		if($(evt.target).parents("#job_cityid").length==0 && evt.target.id != "cityid") {
 		   $('#job_cityid').hide();
-		}	
+		}
 		if($(evt.target).parents("#job_threecity").length==0 && evt.target.id != "threecity") {
 		   $('#job_threecity').hide();
 		}
 		if($(evt.target).parents("#job_three_cityid").length==0 && evt.target.id != "three_cityid") {
 		   $('#job_three_cityid').hide();
-		}	
+		}
 		if($(evt.target).parents("#job_skillc").length==0 && evt.target.id != "skillc") {
 		   $('#job_skillc').hide();
 		}
 		if($(evt.target).parents("#job_level").length==0 && evt.target.id != "level") {
 		   $('#job_level').hide();
-		}	
+		}
 		if($(evt.target).parents("#job_marriage").length==0 && evt.target.id != "marriage") {
 		   $('#job_marriage').hide();
 		}
@@ -813,7 +825,7 @@ $(function () {
 		}
 		if($(evt.target).parents("#job_edu").length==0 && evt.target.id != "edu") {
 		   $('#job_edu').hide();
-		}	
+		}
 		if($(evt.target).parents("#job_type").length==0 && evt.target.id != "type") {
 		   $("#job_type").hide();
 		}
@@ -834,10 +846,10 @@ $(function () {
 		}
 		if($(evt.target).parents("#job_qypr").length==0 && evt.target.id != "qypr") {
 		   $("#job_qypr").hide();
-		}	
+		}
 		if($(evt.target).parents("#job_mun").length==0 && evt.target.id != "mun") {
 		   $("#job_mun").hide();
-		}	
+		}
 		if($(evt.target).parents("#job_qyprovince").length==0 && evt.target.id != "qyprovince") {
 		   $("#job_qyprovince").hide();
 		}
@@ -846,13 +858,13 @@ $(function () {
 		}
 		if($(evt.target).parents("#job_citys").length==0 && evt.target.id != "citys") {
 		   $("#job_citys").hide();
-		}	
+		}
 		if($(evt.target).parents("#job_three_city").length==0 && evt.target.id != "three_city") {
 		   $("#job_three_city").hide();
-		}	
+		}
 		if($(evt.target).parents("#job_basic_info").length==0 && evt.target.id != "basic_info") {
 		   $("#job_basic_info").hide();
-		} 
+		}
 		if($(evt.target).parents("#job_job1").length==0 && evt.target.id != "job1") {
 		   $("#job_job1").hide();
 		}
@@ -861,10 +873,10 @@ $(function () {
 		}
 		if($(evt.target).parents("#job_job_post").length==0 && evt.target.id != "job_post") {
 		   $("#job_job_post").hide();
-		} 
+		}
 		if($(evt.target).parents("#job_age").length==0 && evt.target.id !="age"){
 			$('#job_age').hide();
-		}	
+		}
 		if($(evt.target).parents("#job_sex").length==0 && evt.target.id !="sex"){
 			$("#job_sex").hide();
 		}
@@ -926,10 +938,10 @@ function selectjobone(id,type,name,gettype){
 	$("#"+type).val(id);
 	$("#"+type+"_name").val(name);
 	$("#jobtwo").val("");
-	$("#jobtwo_name").val("请选择");
+	$("#jobtwo_name").val(memberPublicT('member_js_00041', null, 'Please select'));
 	$.post(weburl+"/member/index.php?m=ajax&c=ajax_ltjobone&"+timestamp, {"str":id},function(data) {
 		if(data!=""){
-			$('#job_type2').find("ul").html(data); 
+			$('#job_type2').find("ul").html(data);
 		}
 	});
 	$("#job_type1").hide();
@@ -944,95 +956,95 @@ function checktpl(id,price){
 	var	buytpl=$("#buytpl_"+id).val();
 	var name=$("input[name=tplname"+id+"]").val();
 	var msg;
-	var p=$("#list_tpl_"+id).html().replace("模板价格：","");
+	var p=$("#list_tpl_"+id).html().replace(memberPublicT('member_js_00042', null, 'Template Price:'),"");
 	$('#tplid').val(id);
 	if(buytpl==1){
-		msg="确定使用该模板？";
+		msg = memberPublicT('member_js_00043', null, 'Use this template?');
 	}else{
 		if(parseInt(price)=="0"){
-			msg="确定使用该模板？";
+			msg = memberPublicT('member_js_00043', null, 'Use this template?');
 		}else{
-			msg="确定使用"+name+",扣除"+p+"？";
+			msg = memberPublicT('member_js_00044', {name: name, price: p}, 'Use {name} and deduct {price}?');
 		}
 	}
-	layer.confirm(msg,function(){ 
+	layer.confirm(msg,function(){
 		setTimeout(function(){$('#myform').submit()},0);
-	}); 
+	});
 }
 function job_refresh(){
-	layer.confirm("刷新次数已用完，是否先购买特权？",function(){
-		window.location.href =weburl+"/member/index.php?c=right";window.event.returnValue = false;return false; 
+	layer.confirm(memberPublicT('member_js_00045', null, 'Refresh quota is used up. Buy privileges first?'),function(){
+		window.location.href =weburl+"/member/index.php?c=right";window.event.returnValue = false;return false;
 	});
 }
 function job_refresh_not(){
-	layer.confirm("刷新次数不足，是否先购买特权？",function(){
-		window.location.href =weburl+"/member/index.php?c=right";window.event.returnValue = false;return false; 
+	layer.confirm(memberPublicT('member_js_00046', null, 'Refresh quota is insufficient. Buy privileges first?'),function(){
+		window.location.href =weburl+"/member/index.php?c=right";window.event.returnValue = false;return false;
 	});
 }
 function job_edit(){
-	layer.confirm("修改次数已用完，是否先购买特权？",function(){
-		window.location.href =weburl+"/member/index.php?c=right";window.event.returnValue = false;return false; 
+	layer.confirm(memberPublicT('member_js_00047', null, 'Edit quota is used up. Buy privileges first?'),function(){
+		window.location.href =weburl+"/member/index.php?c=right";window.event.returnValue = false;return false;
 	});
 }
 
 /**
- * @desc 系统消息批量阅读
+ * @desc Batch mark system messages as read.
  * @param name
  * @returns
  */
-function isReaded(name){ 
-	var chk_value =[];    
-	$('input[name="'+name+'"]:checked').each(function(){    
-		chk_value.push($(this).val());   
-	});   
+function isReaded(name){
+	var chk_value =[];
+	$('input[name="'+name+'"]:checked').each(function(){
+		chk_value.push($(this).val());
+	});
 	if(chk_value.length==0){
-		layer.msg("请选择要阅读的数据！",2,8);return false;
+		layer.msg(memberPublicT('member_js_00048', null, 'Please select data to mark as read!'),2,8);return false;
 	}else{
-		layer.confirm("确定阅读吗？",function(){
+		layer.confirm(memberPublicT('member_js_00049', null, 'Mark as read?'),function(){
 			$.post("index.php?m=ajax&c=ajaxReadsys",{ids:chk_value},function(data){
 				if(data){
-					parent.layer.msg("批量阅读设置成功", 2, 9,function(){window.location.reload();window.event.returnValue = false;return false;});return false;
+					parent.layer.msg(memberPublicT('member_js_00050', null, 'Batch mark as read successful'), 2, 9,function(){window.location.reload();window.event.returnValue = false;return false;});return false;
 				}else{
-					parent.layer.msg("批量阅读设置失败", 2,8);return false;
+					parent.layer.msg(memberPublicT('member_js_00051', null, 'Batch mark as read failed'), 2,8);return false;
 				}
 			})
 		});
-	} 
+	}
 }
 
 /**
- * @desc 系统消息全部标记为已读
+ * @desc Mark all system messages as read.
  * @returns
  */
 function readAll(){
-	
-	layer.confirm("确定全部标记为已读？",function(){
+
+	layer.confirm(memberPublicT('member_js_00052', null, 'Mark all as read?'),function(){
 		$.post("index.php?m=ajax&c=ajaxRreadSysAll",{rand: Math.random()},function(data){
 			if(data){
-				parent.layer.msg("标记成功！", 2, 9,function(){
+				parent.layer.msg(memberPublicT('member_js_00053', null, 'Marked successfully!'), 2, 9,function(){
 					window.location.reload();
 					window.event.returnValue = false;
 					return false;
 				});
 				return false;
 			}else{
-				parent.layer.msg("标记失败！", 2,8);
+				parent.layer.msg(memberPublicT('member_js_00054', null, 'Mark failed!'), 2,8);
 				return false;
 			}
 		})
 	});
 }
 
-function really_rebates(name){ 
-	var chk_value =[];    
-	$('input[name="'+name+'"]:checked').each(function(){    
-		chk_value.push($(this).val());   
-	});   
+function really_rebates(name){
+	var chk_value =[];
+	$('input[name="'+name+'"]:checked').each(function(){
+		chk_value.push($(this).val());
+	});
 	if(chk_value.length==0){
-		layer.msg("请选择要阅读的数据！",2,8);return false;
+		layer.msg(memberPublicT('member_js_00048', null, 'Please select data to mark as read!'),2,8);return false;
 	}else{
-		layer.confirm("确定阅读吗？",function(){
-			$.post("index.php?c=rebates&act=hrset",{ids:chk_value,ajax:1},function(data){ 
+		layer.confirm(memberPublicT('member_js_00049', null, 'Mark as read?'),function(){
+			$.post("index.php?c=rebates&act=hrset",{ids:chk_value,ajax:1},function(data){
 				var data=eval('('+data+')');
 				if(data.url=='1'){
 					parent.layer.msg(data.msg, Number(data.tm), Number(data.st),function(){window.location.reload();window.event.returnValue = false;return false;});return false;
@@ -1041,18 +1053,18 @@ function really_rebates(name){
 				}
 			})
 		});
-	} 
+	}
 }
-function really_quxiao(name){ 
-	var chk_value =[];    
-	$('input[name="'+name+'"]:checked').each(function(){    
-		chk_value.push($(this).val());   
-	});   
+function really_quxiao(name){
+	var chk_value =[];
+	$('input[name="'+name+'"]:checked').each(function(){
+		chk_value.push($(this).val());
+	});
 	if(chk_value.length==0){
-		layer.msg("请选择要取消的数据！",2,8);return false;
+		layer.msg(memberPublicT('member_js_00055', null, 'Please select data to cancel!'),2,8);return false;
 	}else{
-		layer.confirm("确定取消吗？",function(){
-			$.post("index.php?c=job&act=is_browse",{ids:chk_value},function(data){ 
+		layer.confirm(memberPublicT('member_js_00056', null, 'Confirm cancellation?'),function(){
+			$.post("index.php?c=job&act=is_browse",{ids:chk_value},function(data){
 				var data=eval('('+data+')');
 				if(data.url=='1'){
 					parent.layer.msg(data.msg, Number(data.tm), Number(data.st),function(){window.location.reload();window.event.returnValue = false;return false;});return false;
@@ -1061,29 +1073,29 @@ function really_quxiao(name){
 				}
 			})
 		});
-	} 
+	}
 }
 
-function del_pay(oid){ 
-	layer.confirm('是否取消该订单？', function(){
+function del_pay(oid){
+	layer.confirm(memberPublicT('member_js_00057', null, 'Cancel this order?'), function(){
 		$.get("index.php?c=paylog&act=del&id="+oid,function(msg){
 			if(msg=='0'){
-				layer.msg('非法操作！', 2, 8);return false;  
+				layer.msg(memberPublicT('member_js_00058', null, 'Illegal operation!'), 2, 8);return false;
 			}else{
-				layer.msg('取消成功！', 2, 9,function(){window.location.reload();window.event.returnValue = false;return false;});return false;  
+				layer.msg(memberPublicT('member_js_00059', null, 'Canceled successfully!'), 2, 9,function(){window.location.reload();window.event.returnValue = false;return false;});return false;
 			}
 		});
-	});  
-} 
+	});
+}
 
-function returnmessage(frame_id){ 
+function returnmessage(frame_id){
 	if(frame_id==''||frame_id==undefined){
 		frame_id='supportiframe';
 	}
-	var message = $(window.frames[frame_id].document).find("#layer_msg").val(); 
+	var message = $(window.frames[frame_id].document).find("#layer_msg").val();
 	if(message != null){
-		if(message=='验证码错误！'){$("#vcode_img").trigger("click");}
-		if(message=='请点击按钮进行验证！'){
+		if(message==memberPublicT('member_js_00060', null, 'Verification code error!')){$("#vcode_img").trigger("click");}
+		if(message==memberPublicT('member_js_00061', null, 'Please click the button to verify!')){
 			$("#popup-submit").trigger("click");
 		}
 		var url=$(window.frames[frame_id].document).find("#layer_url").val();
@@ -1096,7 +1108,7 @@ function returnmessage(frame_id){
 		}else if(url==''){
 			layer.msg(message, layer_time, Number(layer_st));
 		}else{
-			
+
 			window.event.returnValue = false;
 			layer.msg(message, layer_time, Number(layer_st),function(){window.location.href = url;return false;});
 		}
@@ -1104,54 +1116,54 @@ function returnmessage(frame_id){
 }
 
 /**
- * @desc	点击添加职位操作
- * 
- * @param num	1：正常发布 2：会员套餐已用完 0：会员过期
- * @param type	lietou：猎头会员发布职位 lt：企业发布猎头职位 part：企业发布兼职	 默认：企业发布职位
+ * @desc	Click to add a job.
+ *
+ * @param num	1: normal post, 2: package quota used up, 0: membership expired.
+ * @param type	lietou: headhunter posts job, lt: company posts headhunter job, part: company posts part-time job. Default: company posts job.
  * @returns
  */
 function jobadd_url(num, type){
-  	
+
 	if(type == 'part') {
-		
+
 		var gourl = 'index.php?c=partadd';
 	}  else {
-		
+
 		var gourl = weburl + '/member/index.php?c=jobadd';
 	}
   	var target = (typeof windowstarget!='undefined' && windowstarget!='')?windowstarget:'_self';
   	var url 		= 	weburl + '/index.php?m=ajax&c=ajax_day_action_check';
 	var checkUrl	= 	weburl + '/member/index.php?c=jobadd&act=jobCheck';
 
-	layer.load('执行中，请稍候...',3);
-	
+	layer.load(memberPublicT('member_js_00001', null, 'Processing, please wait...'),3);
+
 	$.post(url, {'type': 'jobnum'}, function(data) {
-			
+
 		layer.closeAll();
-		
+
 		data = eval('(' + data + ')');
-		
+
 		if(data.status == -1) {
-			
+
 			layer.msg(data.msg, 2, 8);
 			return false;
-			
+
 		} else if(data.status == 1) {
-			
+
 			$.post(checkUrl, {rand:Math.random()}, function(data){
-				
+
 				var data = eval('(' + data + ')');
-				
+
  				if(data.msgList && data.msgList.length > 0 ){
-					
+
 					$("#msgList").html(data.msgList);
-					$('#tips_way').html('<div class="yun_prompt_release_tip">以下条件尚未满足，暂时无法发布职位，请按顺序完成：</div>');
-					$("#gourl").html('<a href="'+ gourl +'" target="'+target+'" class="yun_prompt_writing_operation_bth">我已完成以上操作</a>');
+					$('#tips_way').html('<div class="yun_prompt_release_tip">' + memberPublicT('member_js_00062', null, 'The following conditions are not met. You cannot post a job yet. Complete them in order:') + '</div>');
+					$("#gourl").html('<a href="'+ gourl +'" target="'+target+'" class="yun_prompt_writing_operation_bth">' + memberPublicT('member_js_00063', null, 'I have completed these actions') + '</a>');
 
 					var msgLayer	=	layer.open({
-						
+
 						type		:	1,
-						title		:	'温馨提示',
+						title		:	memberPublicT('member_js_00064', null, 'Reminder'),
 						closeBtn	:	1,
 						border		: 	[10, 0.3, '#000', true],
 						area		: 	['auto', 'auto'],
@@ -1160,14 +1172,14 @@ function jobadd_url(num, type){
 							window.location.reload();
 						}
 					});
-					
+
 				}else{
 					if (data.job_num == 0){
 						server_single('issuejob');
 						firstTab();
 						var msglayer = layer.open({
 							type: 1,
-							title: '发布职位',
+							title: memberPublicT('member_js_00065', null, 'Post Job'),
 							closeBtn: 1,
 							border: [10, 0.3, '#000', true],
 							area: ['810px', 'auto'],
@@ -1179,16 +1191,16 @@ function jobadd_url(num, type){
 						return  false;
 					}
 					if(num == 1) {
-						
+
 						if(target == '_parent'){
 							parent.location.href = gourl;
 						}else{
 							window.location.href = gourl;
 						}
 						window.event.returnValue = false;
-						
+
 					}else if(num == 2){
-						layer.confirm('当前会员套餐可上架职位数已达上限，新发布职位将无法直接上架哦~', function(){
+						layer.confirm(memberPublicT('member_js_00066', null, 'Your package has reached the maximum number of online jobs. New jobs cannot be listed directly. Continue?'), function(){
 							if(target == '_parent'){
 								parent.location.href = gourl;
 							}else{
@@ -1202,7 +1214,7 @@ function jobadd_url(num, type){
 						firstTab();
 						var msglayer = layer.open({
 							type: 1,
-							title: '职位上架',
+							title: memberPublicT('member_js_00067', null, 'List Job'),
 							closeBtn: 1,
 							border: [10, 0.3, '#000', true],
 							area: ['810px', 'auto'],
@@ -1217,7 +1229,7 @@ function jobadd_url(num, type){
 		}
 	});
 }
- //上架下架设置
+ // Configure job listing status.
 function onstatus(id, status, type, message) {
 	message = message || '';
 	if(type == 'part'){
@@ -1228,12 +1240,12 @@ function onstatus(id, status, type, message) {
 		var url = "index.php?c=job&act=opera";
 	}
 	if(status == 1){
-		var msg = '确认下架？';
+		var msg = memberPublicT('member_js_00068', null, 'Confirm offline?');
 	}else{
 		if (message != '') {
 			var msg = message;
 		} else {
-			var msg = '上架将消耗发布职位数量，确认上架？';
+			var msg = memberPublicT('member_js_00069', null, 'Listing will consume one job post quota. Confirm listing?');
 		}
 	}
 	var c = layer.confirm(msg, function () {
@@ -1246,7 +1258,7 @@ function onstatus(id, status, type, message) {
 			layer.close(i);
 			var res = eval('(' + data + ')');
 			if (res.errcode == '1') {
-				layer.msg('设置成功！', 2, 9, function () {
+				layer.msg(memberPublicT('member_js_00018', null, 'Settings saved successfully!'), 2, 9, function () {
 					window.location.reload();
 				});
 				return false;
@@ -1255,7 +1267,7 @@ function onstatus(id, status, type, message) {
 				firstTab();
 					var msglayer = layer.open({
 						type: 1,
-						title: '职位上架',
+						title: memberPublicT('member_js_00067', null, 'List Job'),
 						closeBtn: 1,
 						border: [10, 0.3, '#000', true],
 						area: ['810px', 'auto'],
@@ -1271,20 +1283,20 @@ function onstatus(id, status, type, message) {
 	})
 }
 
-//修改用户名
+// Change username.
 function Savenamepost(){
 	var username = $.trim($("#username").val());
 	var pass = $.trim($("#password").val());
 	if(username.length<2 || username.length>16){
-		layer.msg("用户名长度应该为2-16位！",2,8);return false;
+		layer.msg(memberPublicT('member_js_00070', null, 'Username must be 2-16 characters!'),2,8);return false;
 	}
 	if(pass.length<6 || pass.length>20){
-		layer.msg("密码长度应该为6-20位！",2,8);return false;
+		layer.msg(memberPublicT('member_js_00071', null, 'Password must be 6-20 characters!'),2,8);return false;
 	}
-	 
+
 	$.post("index.php?c=setname",{username:username,password:pass},function(data){
 		if(data==1){
-			layer.msg("修改成功，请重新登录！", 2, 9,function(){window.location.href=weburl+"/index.php?m=login";window.event.returnValue = false;return false;});return false;
+			layer.msg(memberPublicT('member_js_00072', null, 'Updated successfully. Please log in again!'), 2, 9,function(){window.location.href=weburl+"/index.php?m=login";window.event.returnValue = false;return false;});return false;
 		}else{
 			layer.msg(data,2,8);return false;
 		}
@@ -1309,25 +1321,25 @@ function check_out(){
 	var comname=$.trim($("#comname").val());
 	var jobname=$.trim($("#jobname").val());
 	if(resume==""){
-		layer.msg("请选择简历！",2,8);return false;
+		layer.msg(memberPublicT('member_js_00073', null, 'Please select a resume!'),2,8);return false;
 	}
 	if(email==""){
-		layer.msg("请输入邮箱！",2,8);return false;
+		layer.msg(memberPublicT('member_js_00074', null, 'Please enter an email!'),2,8);return false;
 	}else if(check_email(email)==false){
-		layer.msg("邮箱格式错误！",2,8);return false;
+		layer.msg(memberPublicT('member_js_00075', null, 'Invalid email format!'),2,8);return false;
 	}
 	if(comname==""){
-		layer.msg("请输入企业名称！",2,8);return false;
+		layer.msg(memberPublicT('member_js_00076', null, 'Please enter company name!'),2,8);return false;
 	}
 	if(jobname==""){
-		layer.msg("请输入职位名称！",2,8);return false;
+		layer.msg(memberPublicT('member_js_00077', null, 'Please enter job title!'),2,8);return false;
 	}
-	layer.load('执行中，请稍候...',0);
+	layer.load(memberPublicT('member_js_00001', null, 'Processing, please wait...'),0);
 }
 function checksex(id){
 	$(".yun_info_sex").removeClass('yun_info_sex_cur');
 	$("#sex"+id).addClass('yun_info_sex_cur');
-	$("#sex").val(id); 
+	$("#sex").val(id);
 	var addtype=$("#addtype").val();
 	if(addtype=='addexpect'){
 		$("#hidsex").attr("class","resume_tipok");
@@ -1342,30 +1354,30 @@ function phototype(){
 	$.post("index.php?c=info&act=phototype",{phototype:phototype},function(data){
 		if(data==1){
 			$("#phototype").attr("checked","checked");
-			layer.msg("头像不公开操作成功！",2,9);return false;
+			layer.msg(memberPublicT('member_js_00078', null, 'Avatar hidden successfully!'),2,9);return false;
 		}else{
 			$("#phototype").remove("checked");
-			layer.msg("头像公开操作成功！",2,9);return false;
+			layer.msg(memberPublicT('member_js_00079', null, 'Avatar visible successfully!'),2,9);return false;
 		}
 	})
 }
 
 
 function jobrefresh(id){
-	$.post("index.php?c=job&act=refresh",{id:id},function(data){			
+	$.post("index.php?c=job&act=refresh",{id:id},function(data){
 	if(data=="1"){
-		layer.msg("刷新成功！",2,9,function(){window.location.reload();});return false;
-	}	
+		layer.msg(memberPublicT('member_js_00080', null, 'Refreshed successfully!'),2,9,function(){window.location.reload();});return false;
+	}
 	})
 }
 
 function showsys(sys,id,time){
     $("#sysshow").html(sys);
 	$("#systime").html(time);
-	$("#delsys").attr("onclick","layer_del('确定要删除？', 'index.php?c=sysnews&act=del&id="+id+"');")
+	$("#delsys").attr("onclick","layer_del('"+memberPublicT('member_js_00025', null, 'Are you sure you want to delete?')+"', 'index.php?c=sysnews&act=del&id="+id+"');")
     var layindex = $.layer({
 		type : 1,
-		title :'消息详情', 
+		title : memberPublicT('member_js_00081', null, 'Message Details'),
 		closeBtn : [0 , true],
 		border : [10 , 0.3 , '#000', true],
 		area : ['450px','auto'],
@@ -1377,15 +1389,15 @@ function showsys(sys,id,time){
 function ck_box(id,name){
 	$("."+name).removeClass('m_name_tag01');
 	$("#"+name+id).addClass('m_name_tag01');
-	$("#"+name+"id").val(id); 
+	$("#"+name+"id").val(id);
 	var addtype=$("#addtype").val();
 	if(addtype=='addexpect'){
 		$("#hid"+name+"id").attr("class","resume_tipok");
 		$("#hid"+name+"id").html('');
 	}
 }
-  
-function accAdd(arg1,arg2){ 
+
+function accAdd(arg1,arg2){
 	if (isNaN(arg1)) {
 		arg1 = 0;
 	}
@@ -1427,8 +1439,8 @@ function accAdd(arg1,arg2){
 function accSub(arg1,arg2){
 	arg1 = $.trim(arg1);
 	arg2 = $.trim(arg2);
-	return accAdd(arg1,-arg2); 
-} 
+	return accAdd(arg1,-arg2);
+}
 function accMul(arg1, arg2) {
 	arg1 = $.trim(arg1);
 	arg2 = $.trim(arg2);
@@ -1437,31 +1449,31 @@ function accMul(arg1, arg2) {
 	try { m += s2.split(".")[1].length } catch (e) { }
 	return Number(s1.replace(".", "")) * Number(s2.replace(".", "")) / Math.pow(10, m)
 }
-function accDiv(arg1,arg2){ 
+function accDiv(arg1,arg2){
 	arg1 = $.trim(arg1);
 	arg2 = $.trim(arg2);
-	var t1=0,t2=0,r1,r2;    
-	try{t1=arg1.toString().split(".")[1].length}catch(e){}    
-	try{t2=arg2.toString().split(".")[1].length}catch(e){}    
-	with(Math){        
-		r1=Number(arg1.toString().replace(".",""));        
-		r2=Number(arg2.toString().replace(".",""));        
-		return (r1/r2)*pow(10,t2-t1);    
+	var t1=0,t2=0,r1,r2;
+	try{t1=arg1.toString().split(".")[1].length}catch(e){}
+	try{t2=arg2.toString().split(".")[1].length}catch(e){}
+	with(Math){
+		r1=Number(arg1.toString().replace(".",""));
+		r2=Number(arg2.toString().replace(".",""));
+		return (r1/r2)*pow(10,t2-t1);
 	}
 }
 
 function myFunction(_this) {
 	_this.value = _this.value.replace(/[^0-9]/g, '');
 }
-/**************************会员中心金额转换积分开始*****************************/
-//packpay 可转换金额
-//proportion 转换积分比例
-//minchangeprice 最低转换金额
-//changeNum 已转回次数
-//packpaymax 每日最多转换次数
+/**************************Member center amount-to-points conversion start*****************************/
+// packpay convertible amount.
+// proportion points conversion ratio.
+// minchangeprice minimum conversion amount.
+// changeNum converted count.
+// packpaymax daily conversion limit.
 function changepriceprice(obj){
 	var changeprice=$("#changeprice").val();
-	
+
 	if(changeprice!=""){
 		var changeprice=parseFloat(changeprice);
 	}
@@ -1469,13 +1481,13 @@ function changepriceprice(obj){
 		$("#changeprice").val(minchangeprice);
 		$("#changeintegral").val(proportion*minchangeprice);
 		$("#payintegral").html(proportion*minchangeprice);
-		layer.msg('转换金额不能小于'+minchangeprice+',请重新填写 ！', 2, 8);return false;
+		layer.msg(memberPublicT('member_js_00082', {amount: minchangeprice}, 'The conversion amount cannot be less than {amount}. Please enter it again.'), 2, 8);return false;
 	}
 	obj.value = obj.value.replace(/^[0]/gi,"");
-	obj.value = obj.value.replace(/[^\d.]/g,"");  
-	obj.value = obj.value.replace(/\.{2,}/g,"."); 
-	obj.value = obj.value.replace(".","$#$").replace(/\./g,"").replace("$#$","."); 
-	obj.value = obj.value.replace(/^(\-)*(\d+)\.(\d\d).*$/,'$1$2.$3'); 
+	obj.value = obj.value.replace(/[^\d.]/g,"");
+	obj.value = obj.value.replace(/\.{2,}/g,".");
+	obj.value = obj.value.replace(".","$#$").replace(/\./g,"").replace("$#$",".");
+	obj.value = obj.value.replace(/^(\-)*(\d+)\.(\d\d).*$/,'$1$2.$3');
 
 	if(changeprice!=""){
 
@@ -1499,7 +1511,7 @@ function changepriceprice(obj){
 			$("#changeintegral").val(integraltotal);
 			$("#payintegral").html(integraltotal);
 		}
-		 
+
 	}else{
 		$("#changeprice").val("");
 		$("#changeintegral").val("");
@@ -1510,20 +1522,20 @@ function changetrsist(){
 	var changeprice = $("#changeprice").val();
 	var changeintegral = $("#changeintegral").val();
 	if(changeprice=="" || changeintegral == ""){
-		layer.msg('请正确填写转换金额！',2,8);return false;
+		layer.msg(memberPublicT('member_js_00083', null, 'Please enter a valid conversion amount!'),2,8);return false;
 	}
 	$.post('index.php?c=jobpack&act=savechange',{changeprice:changeprice,changeintegral:changeintegral},function(data){
 		var data = eval('('+data+')')
 		if(data.error==1){
-			layer.msg("转换成功！",2,9,function(){window.location.href="index.php?c=jobpack&act=change";});
+			layer.msg(memberPublicT('member_js_00084', null, 'Converted successfully!'),2,9,function(){window.location.href="index.php?c=jobpack&act=change";});
 		}else if(data.msg){
 			layer.msg(data.msg,2,8);return false;
 		}else{
-			layer.msg("转换失败",2,8);return false;
+			layer.msg(memberPublicT('member_js_00085', null, 'Conversion failed'),2,8);return false;
 		}
 	});
 }
-/**************************会员中心金额转换积分结束*****************************/
+/**************************Member center amount-to-points conversion end*****************************/
 $(function(){
 	$('.onecheck').click(function(){
 		$('.allcheck').removeClass('com_received_ckcur');
