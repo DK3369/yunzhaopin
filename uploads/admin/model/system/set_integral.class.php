@@ -72,7 +72,7 @@ class set_integral_controller extends adminCommon{
     }
 
 
-	//删除
+	// Delete.
 	function del_action()
 	{
 		$integralM			=	$this->MODEL('integral');
@@ -80,7 +80,7 @@ class set_integral_controller extends adminCommon{
 		{
 			$ids			=	$_POST['delid'];
 		}
-        //批量删除
+        // Batch delete.
 		if($_POST['del']) {
 			$ids			=	$_POST['del'];
 		}
@@ -89,7 +89,7 @@ class set_integral_controller extends adminCommon{
         $this->cache_action();
 
         if($id) {
-			$this->admin_json(0,'积分优惠(ID:'.$ids.')删除成功！');
+			$this->admin_json(0, yun_t('admin_model_00206', array('ids' => $ids)));
 		}else{
             $this->render_json(1,yun_at('admin_user_00186'));
 		}
@@ -112,7 +112,7 @@ class set_integral_controller extends adminCommon{
 			
 			$nid		=	$integralM->upIntClass(array('id' =>(int)$_POST['id']) , array($_POST['type']=>$state));
 			
-			$this->MODEL('log')->addAdminLog($this->config['integral_pricename']."类型(ID:".$_POST['id'].")修改状态！");
+			$this->MODEL('log')->addAdminLog(yun_t('admin_model_00207', array('name' => $this->config['integral_pricename'], 'id' => $_POST['id'])));
 		}
 		if($_POST['integral']){
 			
@@ -123,13 +123,13 @@ class set_integral_controller extends adminCommon{
 			
 			$nid				=	$integralM->upIntClass(array('id' =>(int)$_POST['id']) , array('integral'=>$_POST['integral']));
 			
-			$this->MODEL('log')->addAdminLog($this->config['integral_pricename'].'admin_system_00046'.$_POST['id'].")修改数量！");
+			$this->MODEL('log')->addAdminLog(yun_t('admin_model_00208', array('name' => $this->config['integral_pricename'], 'id' => $_POST['id'])));
 		}
 		
 		if(isset($_POST['discount'])&& $_POST['discount']>=0){
 			$nid				=	$integralM->upIntClass(array('id' =>(int)$_POST['id']) , array('discount'=>$_POST['discount']));
 			
-			$this->MODEL('log')->addAdminLog($this->config['integral_pricename'].'admin_system_00046'.$_POST['id'].")修改折扣！");
+			$this->MODEL('log')->addAdminLog(yun_t('admin_model_00209', array('name' => $this->config['integral_pricename'], 'id' => $_POST['id'])));
 		}
 		
 		$this->cache_action();

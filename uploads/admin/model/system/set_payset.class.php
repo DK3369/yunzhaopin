@@ -14,7 +14,7 @@ class set_payset_controller extends adminCommon{
             $alipaydata = array(
                 'alipaytype' => '1',
                 'sy_alipayname' => '',
-                'sy_alipayKeyType' => '1',//加密模式，默认：MD5加密
+                'sy_alipayKeyType' => '1', // Encryption mode. Default: MD5.
                 'sy_alipayid' => '',
                 'sy_alipaycode' => '',
                 'sy_alipayemail' => '',
@@ -66,7 +66,7 @@ class set_payset_controller extends adminCommon{
             $alipaya['sy_weburl'] = $this->config['sy_weburl'];
             $alipaya['alipaytype'] = trim($_POST['alipaytype']);
             $alipaya['sy_alipayname'] = trim($_POST['sy_alipayname']);
-            $alipaya['sy_alipayKeyType'] = trim($_POST['sy_alipayKeyType']);//加密方式：1-MD5; 2-公钥加密
+            $alipaya['sy_alipayKeyType'] = trim($_POST['sy_alipayKeyType']); // Encryption mode: 1-MD5; 2-public key.
             $alipaya['sy_alipayid'] = trim($_POST['sy_alipayid']);
             $alipaya['sy_alipaycode'] = trim($_POST['sy_alipaycode']);
             $alipaya['sy_alipayemail'] = trim($_POST['sy_alipayemail']);
@@ -121,10 +121,10 @@ class set_payset_controller extends adminCommon{
             
             if (!$_POST['id']) {
                 $bank = $ConfigM->addBank($postData);
-                $this->admin_json(0, 'admin_system_00053' . $bank . ")添加成功！");
+                $this->admin_json(0, yun_t('admin_model_00210', array('id' => $bank)));
             } else {
                 $ConfigM->upBank(array('id' => $_POST['id']), $postData);
-                $this->admin_json(0, 'admin_system_00053' . $_POST['id'] . ")修改成功！");
+                $this->admin_json(0, yun_t('admin_model_00211', array('id' => $_POST['id'])));
             }
         }
     }
@@ -133,7 +133,7 @@ class set_payset_controller extends adminCommon{
     {
         $ConfigM = $this->MODEL('config');
         $ConfigM->delBank(array('id' => $_POST['del']));
-        $this->admin_json(0, 'admin_system_00053' . $_POST['del'] . ")删除成功！");
+        $this->admin_json(0, yun_t('admin_model_00212', array('id' => $_POST['del'])));
     }
 }
 ?>

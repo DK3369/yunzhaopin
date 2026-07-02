@@ -60,11 +60,11 @@ class set_module_controller extends adminCommon
 
             foreach ($_POST as $key1 => $val1) {
                 foreach ($val1 as $key2 => $val2) { // 循环保存每一项
-                    if ($key2 == 'value') { // 不写入缓存，这里做跳过处理
+                    if ($key2 == 'value') { // Skip writing this value to cache.
                         continue;
                     }
 
-                    $configName = 'sy_' . $key1 . ($key2 == 'web' ? '_' : '') . $key2; // 基于config配置名称的特殊性，增加特殊处理
+                    $configName = 'sy_' . $key1 . ($key2 == 'web' ? '_' : '') . $key2; // Handle config naming differences.
                     $config = $configM->getNum(array('name' => $configName));
                     if ($config > 0) {
                         $configM->upInfo(array('name' => $configName), array('config' => $val2));
@@ -179,7 +179,7 @@ class set_module_controller extends adminCommon
             $return = $seoM->upSeo(array('id' => $_POST['id']), $postData);
             $this->seocache();
 
-            $this->admin_json($return ? 0 : 1, $return ? yun_auto_t('SEO设置成功') : yun_auto_t('SEO设置失败'));
+            $this->admin_json($return ? 0 : 1, $return ? yun_t('admin_model_00217') : yun_t('admin_model_00218'));
         }
     }
 

@@ -113,7 +113,8 @@ class singlepage_controller extends adminCommon{
 		if(!$_POST['id']){
 			$descid	=	$descM	->	addDes($addData);
 			$ids=$descid;
-			$alert='wap_js_00091';
+			$successMsg = yun_t('admin_model_00213', array('id' => $ids));
+			$errorMsg = yun_t('admin_model_00214', array('id' => $ids));
 		}else{
 			$row	=	$descM	->	getDes(array('id'=>$_POST['id']));
 			if($row['is_menu']=="1"){
@@ -127,7 +128,8 @@ class singlepage_controller extends adminCommon{
 			}
 			$descid =   $descM	->	upDes($addData,array('id'=>$_POST['id']));
 			$ids    =   $_POST['id'];
-			$alert  =   'wap_00225';
+			$successMsg = yun_t('admin_model_00215', array('id' => $ids));
+			$errorMsg = yun_t('admin_model_00216', array('id' => $ids));
 		}
 
 		if($descid){
@@ -135,12 +137,12 @@ class singlepage_controller extends adminCommon{
 			if($_POST['is_type']==1){
                 $this	->	descriptionshow($ids,$url);
 			}
-			$this->admin_json(0,"单页面(ID:".$ids.")".$alert.'wap_js_00104');
+			$this->admin_json(0, $successMsg);
 		}else{
-			$this->render_json(1,$alert.'wap_js_00103');
+			$this->render_json(1, $errorMsg);
 		}
 	}
-	//删除
+	// Delete.
 	function del_action(){
 		if(is_array($_POST['del'])){
 			$linkid			=	$_POST['del'];

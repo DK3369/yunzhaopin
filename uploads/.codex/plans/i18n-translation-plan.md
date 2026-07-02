@@ -394,6 +394,8 @@ Batch 26 执行范围：内容模块新闻与测评 `admin/model/neirong/news.cl
 
 Batch 27 执行范围：剩余内容小模块 `admin/model/neirong/announcement.class.php`、`gongzhao.class.php`、`question_class.class.php`、`toolbox_class.class.php`、`toolbox_doc.class.php`。迁移公告、公招、问答分类、工具箱分类/文档的新增、修改、删除、分站、显示状态等管理员可见返回消息；新增 key 从 `admin_model_00187` 继续。本批不改上传处理、权限弹窗、缓存生成、分类删除级联、工具箱文档内容或模型返回结构。
 
+Batch 28 执行范围：系统设置小模块 `admin/model/system/set_integral.class.php`、`set_payset.class.php`、`singlepage.class.php`、`set_module.class.php`。迁移积分优惠删除/编辑日志、银行转账新增修改删除、单页面保存结果、SEO 保存结果等管理员可见消息；新增 key 从 `admin_model_00206` 继续。本批不改支付配置字段、银行账号字段、单页面 URL 校验/静态生成、SEO 配置结构、缓存生成或第三方支付参数。
+
 ## 11. 推荐执行顺序
 
 1. 修复语言包损坏项和扫描脚本误报规则。
