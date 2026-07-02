@@ -398,6 +398,8 @@ Batch 28 执行范围：系统设置小模块 `admin/model/system/set_integral.c
 
 Batch 29 执行范围：积分商城后台模块 `admin/model/yunying/shop_class.class.php`、`shop_reward.class.php`、`shop_list.class.php`、`shop_set.class.php`。迁移商品类别日志、商品状态/推荐/热门日志、兑换审核系统通知、商城分类下拉默认项和搜索过滤显示值；新增 key 从 `admin_model_00219` 继续。本批不改库存回退、积分返还、商品/分类 CRUD、审核状态值、兑换记录结构或缓存生成逻辑。
 
+Batch 30 执行范围：分站后台模块 `admin/model/system/domain_list.class.php`、`domain_group.class.php` 及 `app/template/admin/system/domain/component/domainAdminGroup.vue`。迁移分站新增/更新、管理员自改后重新登录提示等管理员可见返回消息，并清理模板中残留的中文注释按钮文本；新增 key 从 `admin_model_00229` 继续。本批不改分站 URL/目录校验、管理员权限、分站缓存、删除逻辑或表单字段结构。
+
 ## 11. 推荐执行顺序
 
 1. 修复语言包损坏项和扫描脚本误报规则。

@@ -16262,6 +16262,9 @@ return array(
   'admin_model_00226' => '您兑换的商品:{product_link},审核未通过，原因：{reason}',
   'admin_model_00227' => '您兑换的商品:{product_link},已审核通过',
   'admin_model_00228' => '请选择',
+  'admin_model_00229' => '分站(ID:{id})更新成功！',
+  'admin_model_00230' => '分站(ID:{id})创建成功！',
+  'admin_model_00231' => '管理员(ID:{uid})修改成功，请重新登录！',
 
   'admin_demo_00001' => '选项1',
   'admin_demo_00002' => '选项2',

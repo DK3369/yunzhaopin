@@ -261,12 +261,12 @@ class domain_list_controller extends adminCommon
 
             $result =   $siteM->addInfo($_POST, array('id' => $_POST['id']));
             $this->DomainArr();
-            $this->admin_json(0, '分站（ID：'.$_POST['id'].'admin_01374');
+            $this->admin_json(0, yun_t('admin_model_00229', array('id' => $_POST['id'])));
         }else{
 
             $result =   $siteM->addInfo($_POST);
             $this->DomainArr();
-            $this->admin_json(0, '分站（ID：'.$result.'admin_01375');
+            $this->admin_json(0, yun_t('admin_model_00230', array('id' => $result)));
         }
     }
 }

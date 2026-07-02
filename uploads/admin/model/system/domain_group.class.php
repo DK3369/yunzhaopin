@@ -144,7 +144,7 @@ class domain_group_controller extends adminCommon
                 unset($_SESSION['ausername']);
                 unset($_SESSION['ashell']);
 
-                $this->admin_json(0, '管理员(ID:' . $_POST['uid'] . 'admin_system_00008');
+                $this->admin_json(0, yun_t('admin_model_00231', array('uid' => $_POST['uid'])));
             }
         }
         if ($return['errcode'] == '9'){

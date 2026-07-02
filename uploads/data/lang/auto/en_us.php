@@ -16261,6 +16261,9 @@ return array(
   'admin_model_00226' => 'Your redeemed product {product_link} was rejected. Reason: {reason}',
   'admin_model_00227' => 'Your redeemed product {product_link} was approved',
   'admin_model_00228' => 'Please select',
+  'admin_model_00229' => 'Subsite (ID:{id}) updated successfully!',
+  'admin_model_00230' => 'Subsite (ID:{id}) created successfully!',
+  'admin_model_00231' => 'Admin (ID:{uid}) updated successfully. Please log in again!',
 
   'admin_demo_00001' => 'Option 1',
   'admin_demo_00002' => 'Option 2',

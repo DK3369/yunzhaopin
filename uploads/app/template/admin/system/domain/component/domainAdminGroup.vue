@@ -27,7 +27,7 @@
                     <template slot-scope="scope">
                         <div class="moduleElTaCaoz">
                             <!-- <a href="javascript:;" @click="editGroup(scope);">
-                                <el-button @click="editGroup(scope);" size="small">修改</el-button>
+                                <el-button @click="editGroup(scope);" size="small">{{ lc('wap_js_00073') }}</el-button>
                             </a> -->
                             <el-button @click="editGroup(scope);" size="mini">{{ lc('wap_js_00073') }}</el-button>
                             <el-button size="mini" @click="delGroup(scope)" type="danger">{{ lc('common.delete') }}</el-button>
@@ -75,7 +75,7 @@ module.exports = {
             pageSize: 0,
             pageSizes: [],
 
-            // 批量选择
+            // Batch selection.
             checkAll: false,
             isIndeterminate: false,
             selectedItem: [],
