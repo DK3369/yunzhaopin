@@ -18,10 +18,10 @@ var scrollHeight = 0,
 // 		}
 //         hiddenCommon();
 //     } else {
-//         console.log("您的浏览器不支持聊天!");
+//         console.log("Your browser does not support chat.");
 //     }
 //     $("body").click(function(e){
-//         var con = $("#commonly");   // 设置目标区域
+//         var con = $("#commonly");   // Set target area
 //         var face = $("#face");
 //         if ((!con.is(e.target) && con.has(e.target).length === 0) && (!face.is(e.target) && face.has(e.target).length === 0)) {
 //             commonHide();
@@ -69,12 +69,12 @@ var scrollHeight = 0,
 // 				ping_timer = null;
 // 			}
 // 		};
-// 		//捕捉socket端发来的事件
+// 		// Capture events sent by the socket server
 // 		socket.onmessage = function(event) {
 // 			var e = JSON.parse(event.data);
 // 			//console.log(e);
 // 			switch (e.type) {
-// 				//显示收到的消息
+// 				// Display received messages
 // 				case 'xjhMessage':
 // 					getMessage(e.data);
 // 					break;
@@ -95,7 +95,7 @@ var scrollHeight = 0,
 // 		};
 // 	}
 // }
-// 未登录用户加载聊天数据
+// Load chat data for guests
 function chatUnlogin(){
     httpPost('m=neirong&c=xjhlive&a=getUnloginToken', {chattype: 'admin'}).then(function (response) {
         if (response.data.error == 0) {
@@ -125,7 +125,7 @@ function chatUnlogin(){
     })
 }
 function hiddenCommon(){
-	// 检查页面是否后台运行
+	// Check whether the page is running in the background
 	var yunhdn, yunvsb;
 	if (typeof document.hidden !== "undefined") {
 		yunhdn = "hidden";
@@ -138,7 +138,7 @@ function hiddenCommon(){
 		yunvsb = "webkitvisibilitychange";
 	}
 	document.addEventListener(yunvsb, function(){
-		// 前台运行后，如socket断开，重新连接
+		// Reconnect if the socket is disconnected after returning to the foreground
 		if(!document[yunhdn]){
 			if (!socket || (socket && socket.readyState != 1)) {
 				webSocket(socketUrl);
@@ -155,7 +155,7 @@ function getMessage(msg){
 	}
 }
 function chatRender(msg){
-	// 渲染消息内容
+	// Render message content
 	var	newlog = {
 	    chatid: msg.chatid,
 		msgtype: msg.msgtype,
@@ -177,25 +177,25 @@ function chatRender(msg){
 		chatScrollTo(scroll);
 	},100);
 }
-// 页面滚动
+// Page scroll
 function chatScrollTo(ypos) {
 	var clientHeight = document.getElementById('chat_content').clientHeight;
 	if(ypos > clientHeight){
-		// 兼容各种浏览器
+		// Browser compatibility
 		document.getElementById('chat_content').scrollTop = ypos;
 	}
 }
-// 转义内容
+// Escape content
 function rexContent(content){
 	content = (content||'').replace(/&(?!#?[a-zA-Z0-9]+;)/g, '&amp;')
     .replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/'/g, '&#39;').replace(/"/g, '&quot;') //XSS
-	.replace(/face\[([^\s\[\]]+?)\]/g, function(face){  //转义表情
+	.replace(/face\[([^\s\[\]]+?)\]/g, function(face){  // Escape emoji
 		var alt = face.replace(/^face/g, '');
 		return '<img class="chat_bq_img" alt="'+ alt +'" title="'+ alt +'" src="' + faces([alt]) + '">';
 	})
 	return content;
 }
-//表情库
+// Emoji dictionary
 function faces(fc){
     var alt = {1:'[龇牙]',2:'[调皮]',3:'[流汗]',4:'[偷笑]',5:'[再见]',6:'[敲打]',7:'[擦汗]',8:'[流泪]',9:'[大哭]',10:'[嘘]',11:'[酷]',12:'[抓狂]',13:'[可爱]',14:'[色]',15:'[害羞]',16:'[得意]',17:'[吐]',18:'[微笑]',19:'[怒]',20:'[尴尬]',21:'[惊恐]',22:'[冷汗]',23:'[白眼]',24:'[傲慢]',25:'[难过]',26:'[惊讶]',27:'[疑问]',28:'[么么哒]',29:'[困]',30:'[憨笑]',31:'[撇嘴]',32:'[阴险]',33:'[奋斗]',34:'[发呆]',35:'[左哼哼]',36:'[右哼哼]',74:'[抱抱]',37:'[坏笑]',38:'[鄙视]',39:'[晕]',40:'[可怜]',41:'[饥饿]',42:'[咒骂]',43:'[折磨]',44:'[抠鼻]',45:'[鼓掌]',46:'[糗大了]',47:'[打哈欠]',48:'[快哭了]',49:'[吓]',50:'[闭嘴]',51:'[大兵]',52:'[委屈]',53:'[NO]',54:'[OK]',56:'[弱]',57:'[强]',60:'[握手]',63:'[胜利]',58:'[抱拳]',66:'[凋谢]',99:'[米饭]',108:'[蛋糕]',112:'[西瓜]',70:'[啤酒]',89:'[瓢虫]',62:'[勾引]',82:'[爱你]',69:'[咖啡]',72:'[月亮]',68:'[刀]',55:'[差劲]',59:'[拳头]',65:'[便便]',79:'[炸弹]',107:'[菜刀]',82:'[心碎了]',83:'[爱心]',71:'[太阳]',97:'[礼物]',92:'[皮球]',137:'[骷髅]',123:'[闪电]',80:'[猪头]',67:'[玫瑰]',98:'[篮球]',64:'[乒乓]',101:'[红双喜]',139:'[麻将]',73:'[彩带]',61:'[爱你]',95:'[示爱]',111:'[衰]',109:'[蜡烛]'},arr = {};
 	$.each(alt, function(index, item){
@@ -207,7 +207,7 @@ function faces(fc){
 		return arr;
 	}
 }
-//在焦点处插入内容
+// Insert content at the cursor
 function focusInsert(obj, str, nofocus){
     var result, val = obj.value;
     nofocus || obj.focus();
@@ -223,7 +223,7 @@ function focusInsert(obj, str, nofocus){
     }
 }
 
-// 格式化时间戳
+// Format timestamp
 function timeFormat(sendtime) {
 	var nowtime = new Date();
 	if (sendtime) {
@@ -257,12 +257,12 @@ function timeFormat(sendtime) {
 	}
 	return time;
 }
-// 获取文档完整的高度
+// Get full document height
 function getScrollHeight() {
 	return Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);
 }
 
-// 直播
+// Live stream
 function livePlay(live_hls, live_poster){
     // debugger
 	if (!document.getElementById('live_video')) {
@@ -300,7 +300,7 @@ function livePlay(live_hls, live_poster){
 					playerint = null;
 				}
 			});
-			// 播放器重载
+			// Player reload
 			if(playreload){
 				clearInterval(playreload);
 				playreload = null;
@@ -316,7 +316,7 @@ function livePlay(live_hls, live_poster){
 function playered(url, mbstyle){
 	// debugger
 	if(document.getElementById('playered')){
-		// 实例化播放器
+		// Instantiate player
 		player = new QPlayer({
 			url: url,
 			container: document.getElementById("playered"),

@@ -1,17 +1,17 @@
 const utilFile = {
-    // 创建一个a标签，并做下载点击事件
+    // Create an anchor tag and trigger download
     downloadFile: function (blob, fileName) {
         const link = document.createElement('a')
         link.href = window.URL.createObjectURL(blob)
         link.download = fileName
-        // 此写法兼容可火狐浏览器
+        // This approach is compatible with Firefox
         document.body.appendChild(link)
         const evt = document.createEvent('MouseEvents')
         evt.initEvent('click', false, false)
         link.dispatchEvent(evt)
         document.body.removeChild(link)
     },
-    // 将Base64文件转为 Blob
+    // Convert a Base64 file to Blob
     buildBlobByByte: function (data) {
         const raw = window.atob(data)
         const rawLength = raw.length
@@ -21,7 +21,7 @@ const utilFile = {
         }
         return new Blob([uInt8Array])
     },
-    // 二进制数组 生成文件
+    // Generate a file from a byte array
     downloadFileByByte: function (data, fileName) {
         const blob = this.buildBlobByByte(data)
         this.downloadFile(blob, fileName)

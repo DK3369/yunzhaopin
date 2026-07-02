@@ -362,6 +362,8 @@ Batch 12 执行范围：会员记录/申诉与积分优惠小组件 `app/templat
 
 Batch 13 执行范围：后台内容/系统旧页面 `app/template/admin/neirong/news/newslb.html`、`app/template/admin/system/category/city.html`、`app/template/admin/neirong/gz/gzmanage.html`、`app/template/admin/neirong/announcement/index.html`、`app/template/admin/system/role/component/groupadd.vue`、`app/template/admin/system/domain/component/adminGroup.vue`。本批只清理中文注释和注释掉的旧模板片段；不改分类树、导航设置、公告列表、分站切换、菜单权限提交和编辑器配置逻辑。
 
+Batch 14 执行范围：后台自有 JS `app/template/admin/js/xjhlive.js`、`base64ToFile.js`。本批只清理中文注释和注释掉的旧调试文案；`faces()` 表情名称字典属于协议/表情编码映射，按排除规则保留不改。
+
 ## 11. 推荐执行顺序
 
 1. 修复语言包损坏项和扫描脚本误报规则。
