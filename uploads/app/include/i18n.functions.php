@@ -137,6 +137,59 @@ function yun_i18n_langpack($keys = null)
     );
 }
 
+function yun_i18n_text_candidates($key)
+{
+    static $cache = array();
+
+    if (!is_string($key) || $key === '') {
+        return array();
+    }
+    if (isset($cache[$key])) {
+        return $cache[$key];
+    }
+
+    $values = array($key);
+    $current = yun_t($key, array(), '');
+    if ($current !== '' && $current !== $key) {
+        $values[] = $current;
+    }
+
+    if (defined('DATA_PATH')) {
+        foreach (array(DATA_PATH . 'lang/auto/', DATA_PATH . 'lang/') as $dir) {
+            foreach (glob($dir . '*.php') ?: array() as $file) {
+                $pack = include $file;
+                if (is_array($pack) && isset($pack[$key]) && $pack[$key] !== '') {
+                    $values[] = (string) $pack[$key];
+                }
+            }
+        }
+    }
+
+    $cache[$key] = array_values(array_unique($values));
+    return $cache[$key];
+}
+
+function yun_i18n_contains($haystack, $key)
+{
+    $haystack = (string) $haystack;
+    if ($haystack === '') {
+        return false;
+    }
+
+    foreach (yun_i18n_text_candidates($key) as $candidate) {
+        if ($candidate !== '' && strpos($haystack, $candidate) !== false) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function yun_i18n_text_candidates_json($key)
+{
+    $options = defined('JSON_UNESCAPED_UNICODE') ? JSON_UNESCAPED_UNICODE : 0;
+    return json_encode(yun_i18n_text_candidates($key), $options);
+}
+
 function yun_i18n_langpack_json($keys = null)
 {
     $options = defined('JSON_UNESCAPED_UNICODE') ? JSON_UNESCAPED_UNICODE : 0;

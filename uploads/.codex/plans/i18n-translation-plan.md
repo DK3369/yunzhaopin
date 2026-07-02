@@ -370,6 +370,8 @@ Batch 16 执行范围：严格裸中文扫描命中的调试日志 `app/template
 
 Batch 16 后严格裸中文扫描剩余项：`app/template/admin/js/xjhlive.js:200` 为聊天表情名称映射，按表情编码字典排除；`app/template/admin/login.htm:70` 为 `$config.code_web` 中 `后台登录` 的配置匹配值，不是展示文案；`app/template/admin/tool/weixin/addpubtemp.html:438` 为微信模板内容解析 `样式=` 标记，需确认上游模板协议后再决定是否改为 key/常量。
 
+Batch 17 执行范围：验证码配置匹配兼容 `app/include/i18n.functions.php`、`app/model/notice.model.php`、`app/template/admin/login.htm`。新增 i18n 候选匹配 helper，用语言 key 同时匹配当前语言、`zh_cn`、`en_us` 和 key 本身；后台登录页和 `jycheck()` 改用 helper，避免默认英文环境下 `code_web` 保存为英文后验证码判断失效，同时兼容旧中文配置。
+
 ## 11. 推荐执行顺序
 
 1. 修复语言包损坏项和扫描脚本误报规则。

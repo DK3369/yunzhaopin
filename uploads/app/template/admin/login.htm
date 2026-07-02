@@ -67,7 +67,7 @@
 										<div class="adminLogins adminLoginTwo"><input type="password" class="ipt"
 												placeholder="{yun:}t key='wap_js_00139'{/yun}" v-model="password" /></div>
 									</li>
-									{yun:}if strpos($config.code_web,"后台登录")!==false{/yun}
+									{yun:}if yun_i18n_contains($config.code_web,'admin_system_00423'){/yun}
 
 									{yun:}if $config.code_kind > 2{/yun}
 									<div class="gtdx-captcha">
@@ -144,7 +144,8 @@
 	<script>
 		var weburl = "{yun:}$config.sy_weburl{/yun}",
 			code_web = '{yun:}$config.code_web{/yun}',
-			code_kind = '{yun:}$config.code_kind{/yun}';
+			code_kind = '{yun:}$config.code_kind{/yun}',
+			adminLoginCodeLabels = {yun:}yun_i18n_text_candidates_json('admin_system_00423'){/yun};
 
 		const loginapp = new Vue({
 			el: '#loginapp',
@@ -229,8 +230,10 @@
 						this.$message.error("{yun:}t key='wap_js_00061'{/yun}");
 						return false;
 					}
-					var codesear = new RegExp("{yun:}t key='admin_system_00423'{/yun}");
-					if (codesear.test(code_web)) {
+					var codeEnabled = adminLoginCodeLabels.some(function (label) {
+						return label && code_web.indexOf(label) >= 0;
+					});
+					if (codeEnabled) {
 						if (code_kind == 1) {
 							if (this.authcode == '') {
 								this.$message.error("{yun:}t key='member_user_00523'{/yun}");

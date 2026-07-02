@@ -760,7 +760,8 @@ class notice_model extends model{
         $image  =   false;
         session_start();
         if (!empty($tag)) {
-            if (strpos($this->config['code_web'], $tag) !== false) {
+            $codeWebEnabled = function_exists('yun_i18n_contains') ? yun_i18n_contains($this->config['code_web'], $tag) : strpos($this->config['code_web'], $tag) !== false;
+            if ($codeWebEnabled) {
                 if ($this->config['code_kind'] > 2) {
 
                     $check  =   verifytoken($this->config);
