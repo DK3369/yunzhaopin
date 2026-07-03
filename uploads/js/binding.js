@@ -1,3 +1,22 @@
+function bindingPublicT(key, params, fallback) {
+    var text;
+    if (typeof yunT === 'function') {
+        text = yunT(key, params, fallback);
+    } else if (typeof yunAt === 'function') {
+        text = yunAt(key, params, fallback);
+    } else {
+        text = fallback !== undefined ? fallback : key;
+    }
+    if (params && typeof text === 'string') {
+        for (var name in params) {
+            if (Object.prototype.hasOwnProperty.call(params, name)) {
+                text = text.split('{' + name + '}').join(params[name]);
+            }
+        }
+    }
+    return text;
+}
+
 function getshow(id,title){
 	if(id=='email'){
 		checkCode('vcode_img');
@@ -20,8 +39,8 @@ function getshow(id,title){
 }
 
 /**
- * @desc 手机绑定发送验证码
- * @param img 图片验证码
+ * @desc Send mobile binding verification code.
+ * @param img Image captcha element.
  * @returns
  */
 function sendmoblie(img){
@@ -33,18 +52,18 @@ function sendmoblie(img){
 	var pcode=$("input[name=phoneimg_code]").val();
 	
 	if(pcode==""){
-		layer.msg('验证码不能为空！',2,8);return false;
+		layer.msg(bindingPublicT('binding_js_00001', null, 'Verification code cannot be empty!'),2,8);return false;
 	}
 	
 	if(moblie==''){
-		layer.msg('手机号不能为空！',2,8);return false;
+		layer.msg(bindingPublicT('binding_js_00002', null, 'Mobile number cannot be empty!'),2,8);return false;
 	}else if(mobile==moblie){
-		layer.msg('请绑定新的号码！',2,8);return false;
+		layer.msg(bindingPublicT('binding_js_00003', null, 'Please bind a new number!'),2,8);return false;
 	}else if(!isjsMobile(moblie)){
-		layer.msg('手机号码格式错误！',2,8);return false;
+		layer.msg(bindingPublicT('binding_js_00004', null, 'Invalid mobile number format!'),2,8);return false;
 	}  
 	
-	var i=layer.load('执行中，请稍候...',0);
+	var i=layer.load(bindingPublicT('binding_js_00005', null, 'Processing, please wait...'),0);
 	
 	$.ajaxSetup({cache:false});
 	
@@ -70,44 +89,44 @@ function sendmoblie(img){
 }
 
 /**
- * @desc 短信倒计时
+ * @desc SMS countdown.
  * @param i
  * @returns
  */
 function sends(i){
 	i--;
 	if(i==-1){
-		$("#time").html("重新获取");
+		$('#time').html(bindingPublicT('binding_js_00006', null, 'Resend'));
 		$("#send").val(0)
 	}else{
 		$("#send").val(1)
-		$("#time").html(i+"秒");
+		$('#time').html(bindingPublicT('binding_js_00007', {seconds: i}, '{seconds}s'));
 		setTimeout("sends("+i+");",1000);
 	}
 }
 
 /**
- * @desc 会员中心 手机认证保存
+ * @desc Save member center mobile verification.
  */
 function check_moblie(){
 
 	var moblie=$("input[name=moblie]").val();
 	if(moblie==""){ 
-		layer.msg('请输入手机号码！',2,8);return false;
+		layer.msg(bindingPublicT('binding_js_00008', null, 'Please enter mobile number!'),2,8);return false;
 	}
 	
 	var pcode=$("#phoneimg_code").val();
 	if(pcode==""){ 
-		layer.msg('请输入图片验证码！',2,8,function(){getshow('moblie','绑定手机号码');});return false;
+		layer.msg(bindingPublicT('binding_js_00009', null, 'Please enter image captcha!'),2,8,function(){getshow('moblie', bindingPublicT('binding_js_00010', null, 'Bind Mobile Number'));});return false;
 	}
 	
 	var code=$("#moblie_code").val();
 	if(code==""){ 
-		layer.msg('请输入短信验证码！',2,8);
+		layer.msg(bindingPublicT('binding_js_00011', null, 'Please enter SMS verification code!'),2,8);
 		return false;
 	}
 
-	var i=layer.load('执行中，请稍候...',0);
+	var i=layer.load(bindingPublicT('binding_js_00005', null, 'Processing, please wait...'),0);
 	
 	$.ajaxSetup({cache:false});
 	
@@ -119,31 +138,31 @@ function check_moblie(){
 			
 			if($("#info").val()==1){
 				
-				$("#bdphone").html("<input type=\"text\" size=\"35\" name=\"linktel\" value=\""+moblie+"\" class=\"com_info_text\" style=\"width:250px;background:#D3D3D3;\" readonly=\"readonly\"/><a href=\"javascript:void(0)\"  onclick=\"getshow('moblie','绑定手机号码');\" class=\"com_set_a\" >重新绑定</a>");
+				$("#bdphone").html("<input type=\"text\" size=\"35\" name=\"linktel\" value=\""+moblie+"\" class=\"com_info_text\" style=\"width:250px;background:#D3D3D3;\" readonly=\"readonly\"/><a href=\"javascript:void(0)\"  onclick=\"getshow('moblie',bindingPublicT('binding_js_00010', null, 'Bind Mobile Number'));\" class=\"com_set_a\" >" + bindingPublicT('binding_js_00022', null, 'Rebind') + "</a>");
 				
 				layer.closeAll();
 				
-				layer.msg('手机绑定成功！',2,9);
+				layer.msg(bindingPublicT('binding_js_00012', null, 'Mobile bound successfully!'),2,9);
 				
 			}else{
 				
-				layer.msg('手机绑定成功！',2,9,function(){location.reload();});
+				layer.msg(bindingPublicT('binding_js_00012', null, 'Mobile bound successfully!'),2,9,function(){location.reload();});
 				
 			}
 			
 		}else if(data==4){
 			
-			layer.msg('短信验证码已过期，请重新发送！',2,8,function(){
+			layer.msg(bindingPublicT('binding_js_00013', null, 'SMS verification code has expired. Please resend it!'),2,8,function(){
 				$("#moblie_code").val('');
 			});
 			
 		}else if(data==3){
 			
-			layer.msg('短信验证码不正确！',2,8,function(){$("#moblie_code").val('');});
+			layer.msg(bindingPublicT('binding_js_00014', null, 'Incorrect SMS verification code!'),2,8,function(){$("#moblie_code").val('');});
 			
 		}else{
 			
-			layer.msg('请先获取短信验证码！',2,8);
+			layer.msg(bindingPublicT('binding_js_00015', null, 'Please request the SMS verification code first!'),2,8);
 		}	
 	})
 }
@@ -154,18 +173,18 @@ function sendbemail(img){
 	var myreg = /^([a-zA-Z0-9\-]+[_|\_|\.]?)*[a-zA-Z0-9\-]+@([a-zA-Z0-9\-]+[_|\_|\.]?)*[a-zA-Z0-9]+\.[a-zA-Z]{2,3}$/; 
 	
 	if(email==''){
-		layer.msg('邮箱不能为空！',2,8);return false;
+		layer.msg(bindingPublicT('binding_js_00016', null, 'Email cannot be empty!'),2,8);return false;
 	}else if(!myreg.test(email)){
-		layer.msg('邮箱格式错误！',2,8);return false;
+		layer.msg(bindingPublicT('binding_js_00017', null, 'Invalid email format!'),2,8);return false;
 	}
 	
 	var authcode=$("input[name=email_code]").val();
 	
 	if(authcode==""){
-		layer.msg('验证码不能为空！',2,8);return false;
+		layer.msg(bindingPublicT('binding_js_00001', null, 'Verification code cannot be empty!'),2,8);return false;
 	}
 	
-	var i=layer.load('执行中，请稍候...',0);
+	var i=layer.load(bindingPublicT('binding_js_00005', null, 'Processing, please wait...'),0);
 	
 	$.ajaxSetup({cache:false});
 	
@@ -176,79 +195,79 @@ function sendbemail(img){
 		if(data){
 			
 			if(data=="4"){
-				layer.msg('验证码不正确！',2,8,function(){checkCode(img);});
+				layer.msg(bindingPublicT('binding_js_00018', null, 'Incorrect verification code!'),2,8,function(){checkCode(img);});
 			}
 			
 			if(data=="3"){
-				layer.msg('邮件没有配置，请联系管理员！',2,8);
+				layer.msg(bindingPublicT('binding_js_00019', null, 'Email is not configured. Please contact the administrator!'),2,8);
 			}
 			
 			if(data=="2"){
-				layer.msg('邮件通知已关闭，请联系管理员！',2,8);
+				layer.msg(bindingPublicT('binding_js_00020', null, 'Email notifications are disabled. Please contact the administrator!'),2,8);
 			}
 			
 			if(data=="1"){
 				if($("#info").val()==1){
-					$("#bdmail").html("<input type=\"text\" size=\"35\" name=\"linkmail\" value=\""+email+"\" class=\"com_info_text\" style=\"width:250px;background:#D3D3D3;\" readonly=\"readonly\"/><a href=\"javascript:void(0)\"  onclick=\"getshow('email','绑定邮箱');\" class=\"com_set_a\" >重新绑定</a>");
+					$("#bdmail").html("<input type=\"text\" size=\"35\" name=\"linkmail\" value=\""+email+"\" class=\"com_info_text\" style=\"width:250px;background:#D3D3D3;\" readonly=\"readonly\"/><a href=\"javascript:void(0)\"  onclick=\"getshow('email',bindingPublicT('binding_js_00021', null, 'Bind Email'));\" class=\"com_set_a\" >" + bindingPublicT('binding_js_00022', null, 'Rebind') + "</a>");
 					layer.closeAll();
-					layer.msg('邮件已发送到您邮箱，请注意查收验证！',2,9);
+					layer.msg(bindingPublicT('binding_js_00023', null, 'The email has been sent. Please check your inbox to verify it!'),2,9);
 				}else{
-					layer.msg('邮件已发送到您邮箱，请注意查收验证！',2,9,function(){location.reload();});
+					layer.msg(bindingPublicT('binding_js_00023', null, 'The email has been sent. Please check your inbox to verify it!'),2,9,function(){location.reload();});
 				}
 			}
 		}else{
-			layer.msg('请重新登录！',2,8,function(){window.location.href =weburl;});
+			layer.msg(bindingPublicT('binding_js_00024', null, 'Please log in again!'),2,8,function(){window.location.href =weburl;});
 		} 
 	})
 }
 
 function check_company_cert(){
 	if($.trim($("#company_name").val())==''){
-		layer.msg('企业全称不能为空！',2,8);
+		layer.msg(bindingPublicT('binding_js_00025', null, 'Company full name cannot be empty!'),2,8);
 		return false;
 	}
 	if($("#social_credit").val()=='' && com_social_credit=="1") {
-        layer.msg('请填写统一社会信用代码！', 2, 8);
+        layer.msg(bindingPublicT('binding_js_00026', null, 'Please enter unified social credit code!'), 2, 8);
         return false;
     }
 	if($("#old_cert").val()=='' && $("input[name=check]").val() == "") {
-        layer.msg('请上传营业执照/组织机构代码证！', 2, 8);
+        layer.msg(bindingPublicT('binding_js_00027', null, 'Please upload business license/organization code certificate!'), 2, 8);
         return false;
     }
     if($("#old_owner_cert").val()=='' && $("input[name=owner_cert]").val() == "" && com_cert_owner=="1") {
-        layer.msg('请上传经办人身份证！', 2, 8);
+        layer.msg(bindingPublicT('binding_js_00028', null, "Please upload the handler's ID card!"), 2, 8);
         return false;
     }
     if($("#old_wt_cert").val()=='' && $("input[name=wt_cert]").val() == "" && com_cert_wt=="1") {
-        layer.msg('请上传委托书/承诺函！', 2, 8);
+        layer.msg(bindingPublicT('binding_js_00029', null, 'Please upload authorization letter/commitment letter!'), 2, 8);
         return false;
     }
     if($("#old_other_cert").val()=='' && $("input[name=other_cert]").val() == "" && com_cert_other=="1") {
-        layer.msg('请上传其他证明材料！', 2, 8);
+        layer.msg(bindingPublicT('binding_js_00030', null, 'Please upload other supporting materials!'), 2, 8);
         return false;
     }
 	$("#certform").submit();
-	layer.load('执行中，请稍候...',0);
+	layer.load(bindingPublicT('binding_js_00005', null, 'Processing, please wait...'),0);
 }
 function check_user_cert(){
 	if($.trim($("#idcard").val())==''){
-		layer.msg('请填写身份证号码！',2,8);return false;
+		layer.msg(bindingPublicT('binding_js_00031', null, 'Please enter ID card number!'),2,8);return false;
 	}
 	if($.trim($("#name").val())==''){
-		layer.msg('请填写真实姓名！',2,8);return false;
+		layer.msg(bindingPublicT('binding_js_00032', null, 'Please enter real name!'),2,8);return false;
 	}
 	if(checkIdcard($.trim($("#idcard").val()))==false){
-		layer.msg('请填写正确身份证号码！',2,8);return false;
+		layer.msg(bindingPublicT('binding_js_00033', null, 'Please enter a valid ID card number!'),2,8);return false;
 	}
 	if($("#old_cert").val()=='' && $("input[name=file]").val() == "") {
-        layer.msg('请上传身份证照片！', 2, 8);
+        layer.msg(bindingPublicT('binding_js_00034', null, 'Please upload ID card photo!'), 2, 8);
         return false;
     }
 	
 	$("#certform").submit();
-	layer.load('执行中，请稍候...',0);
+	layer.load(bindingPublicT('binding_js_00005', null, 'Processing, please wait...'),0);
 }
-//防止企业会出现覆盖情况
+// Prevent company certificate overwrite conflicts.
 function getyyzzcom(title,width,height){
 	var layindex = $.layer({
 		type : 1,
