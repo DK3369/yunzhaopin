@@ -1,50 +1,69 @@
+function webUploaderT(key, params, fallback) {
+    var text;
+    if (typeof yunT === 'function') {
+        text = yunT(key, params, fallback);
+    } else if (typeof yunAt === 'function') {
+        text = yunAt(key, params, fallback);
+    } else {
+        text = fallback !== undefined ? fallback : key;
+    }
+    if (params && typeof text === 'string') {
+        for (var name in params) {
+            if (Object.prototype.hasOwnProperty.call(params, name)) {
+                text = text.split('{' + name + '}').join(params[name]);
+            }
+        }
+    }
+    return text;
+}
+
 (function( $ ){
-    // 当domReady的时候开始初始化
+    // Initialize when DOM is ready.
     $(function() {
         var $wrap = $('#uploader'),
-		
+
 			$usershowid = $( '#usershowid' ).val(),
-			//后台企业环境
+			// Admin company context.
 			$comid = $( '#comid' ).val(),
 			$pytoken = $('#pytoken').val(),
 
-            // 图片容器
+            // Image container.
             $queue = $( '<ul class="filelist"></ul>' )
                 .appendTo( $wrap.find( '.queueList' ) ),
 
-            // 状态栏，包括进度和控制按钮
+            // Status bar, including progress and control buttons.
             $statusBar = $wrap.find( '.statusBar' ),
 
-            // 文件总体选择信息。
+            // Overall selected file info.
             $info = $statusBar.find( '.info' ),
 
-            // 上传按钮
+            // Upload button.
             $upload = $wrap.find( '.uploadBtn' ),
 
-            // 没选择文件之前的内容。
+            // Placeholder before files are selected.
             $placeHolder = $wrap.find( '.placeholder' ),
 
             $progress = $statusBar.find( '.progress' ).hide(),
 
-            // 添加的文件数量
+            // Added file count.
             fileCount = 0,
 
-            // 添加的文件总大小
+            // Total size of added files.
             fileSize = 0,
 
-            // 优化retina, 在retina下这个值是2
+            // Retina optimization; this value is 2 on retina screens.
             ratio = window.devicePixelRatio || 1,
 
-            // 缩略图大小
+            // Thumbnail size.
             thumbnailWidth = 110 * ratio,
             thumbnailHeight = 110 * ratio,
 
-            // 可能有pedding, ready, uploading, confirm, done.
+            // Possible states: pedding, ready, uploading, confirm, done.
             state = 'pedding',
 
-            // 所有文件的进度信息，key为file id
+            // Progress info for all files, keyed by file id.
             percentages = {},
-            // 判断浏览器是否支持图片的base64
+            // Check whether the browser supports image base64.
             isSupportBase64 = ( function() {
                 var data = new Image();
                 var support = true;
@@ -57,7 +76,7 @@
                 return support;
             } )(),
 
-            // 检测是否已经安装flash，检测flash的版本
+            // Detect whether Flash is installed and get its version.
             flashVersion = ( function() {
                 var version;
 
@@ -87,22 +106,22 @@
                 return r;
             })(),
 
-            // WebUploader实例
+            // WebUploader instance.
             uploader;
 
         if ( !WebUploader.Uploader.support('flash') && WebUploader.browser.ie ) {
 
-            // flash 安装了但是版本过低。
+            // Flash is installed but the version is too low.
             if (flashVersion) {
                 (function(container) {
                     window['expressinstallcallback'] = function( state ) {
                         switch(state) {
                             case 'Download.Cancelled':
-								layer.msg( '您取消了更新！',2,8); break;  
+								layer.msg(webUploaderT('webuploader_js_00001', null, 'Update canceled!'),2,8); break;
                             case 'Download.Failed':
-								layer.msg( '安装失败！',2,8); break; 
+								layer.msg(webUploaderT('webuploader_js_00002', null, 'Installation failed!'),2,8); break;
                             default:
-								layer.msg( '安装已成功，请刷新！',2,8);return; 
+								layer.msg(webUploaderT('webuploader_js_00003', null, 'Installation completed. Please refresh!'),2,8);return;
                         }
                         delete window['expressinstallcallback'];
                     };
@@ -126,21 +145,21 @@
 
                 })($wrap);
 
-            // 压根就没有安转。
+            // Flash is not installed at all.
             } else {
                 $wrap.html('<a href="http://www.adobe.com/go/getflashplayer" target="_blank" border="0"><img alt="get flash player" src="http://www.adobe.com/macromedia/style_guide/images/160x41_Get_Flash_Player.jpg" /></a>');
             }
 
             return;
         } else if (!WebUploader.Uploader.support()) {
-            layer.msg( 'Web Uploader 不支持您的浏览器！',2,8);return;
+            layer.msg(webUploaderT('webuploader_js_00004', null, 'Web Uploader does not support your browser!'),2,8);return;
         }
 
-        // 实例化
+        // Instantiate.
         uploader = WebUploader.create({
             pick: {
                 id: '#filePicker',
-                label: '点击选择图片'
+                label: webUploaderT('webuploader_js_00005', null, 'Select Images')
             },
             formData: {
                 usershowid: $usershowid,
@@ -161,23 +180,23 @@
                  mimeTypes: 'image/*'
              },
 
-            // 禁掉全局的拖拽功能。这样不会出现图片拖进页面的时候，把图片打开。
+            // Disable global drag-and-drop so dropped images do not open the page.
             disableGlobalDnd: true,
             fileNumLimit: 50,
             fileSizeLimit: 5 * 1024 * 1024,    // 200 M
             fileSingleSizeLimit: 5 * 1024 * 1024    // 50 M
         });
 
-        // 拖拽时不接受 js, txt 文件。
+        // Do not accept js or txt files when dragging.
         uploader.on( 'dndAccept', function( items ) {
             var denied = false,
                 len = items.length,
                 i = 0,
-                // 修改js类型
+                // Mark disallowed js type.
                 unAllowed = 'text/plain;application/javascript ';
 
             for ( ; i < len; i++ ) {
-                // 如果在列表里面
+                // If the file type is in the disallowed list.
                 if ( ~unAllowed.indexOf( items[ i ].type ) ) {
                     denied = true;
                     break;
@@ -201,17 +220,17 @@
         //     });
         // });
 
-        // 添加“添加文件”的按钮，
+        // Add the add-file button.
         uploader.addButton({
             id: '#filePicker2',
-            label: '继续添加'
+            label: webUploaderT('webuploader_js_00006', null, 'Add More')
         });
 
         uploader.on('ready', function() {
             window.uploader = uploader;
         });
 
-        // 当有文件添加进来时执行，负责view的创建
+        // Create the item view when a file is added.
         function addFile( file ) {
             var $li = $( '<li id="' + file.id + '">' +
                     '<p class="title">' + file.name + '</p>' +
@@ -220,9 +239,9 @@
                     '</li>' ),
 
                 $btns = $('<div class="file-panel">' +
-                    '<span class="cancel">删除</span>' +
-                    '<span class="rotateRight">向右旋转</span>' +
-                    '<span class="rotateLeft">向左旋转</span></div>').appendTo( $li ),
+                    '<span class="cancel">' + webUploaderT('webuploader_js_00007', null, 'Delete') + '</span>' +
+                    '<span class="rotateRight">' + webUploaderT('webuploader_js_00008', null, 'Rotate Right') + '</span>' +
+                    '<span class="rotateLeft">' + webUploaderT('webuploader_js_00009', null, 'Rotate Left') + '</span></div>').appendTo( $li ),
                 $prgress = $li.find('p.progress span'),
                 $wrap = $li.find( 'p.imgWrap' ),
                 $info = $('<p class="error"></p>'),
@@ -230,15 +249,15 @@
                 showError = function( code ) {
                     switch( code ) {
                         case 'exceed_size':
-                            text = '文件大小超出';
+                            text = webUploaderT('webuploader_js_00010', null, 'File size exceeded');
                             break;
 
                         case 'interrupt':
-                            text = '上传暂停';
+                            text = webUploaderT('webuploader_js_00011', null, 'Upload paused');
                             break;
 
                         default:
-                            text = '上传失败，请重试';
+                            text = webUploaderT('webuploader_js_00012', null, 'Upload failed. Please try again');
                             break;
                     }
 
@@ -249,12 +268,12 @@
                 showError( file.statusText );
             } else {
                 // @todo lazyload
-                $wrap.text( '预览中' );
+                $wrap.text(webUploaderT('webuploader_js_00013', null, 'Previewing'));
                 uploader.makeThumb( file, function( error, src ) {
                     var img;
 
                     if ( error ) {
-                        $wrap.text( '不能预览' );
+                        $wrap.text(webUploaderT('webuploader_js_00014', null, 'Cannot preview'));
                         return;
                     }
 
@@ -271,7 +290,7 @@
                                 img = $('<img src="'+response.result+'">');
                                 $wrap.empty().append( img );
                             } else {
-                                $wrap.text("预览出错");
+                                $wrap.text(webUploaderT('webuploader_js_00015', null, 'Preview error'));
                             }
                         });
                     }
@@ -289,7 +308,7 @@
                     $btns.remove();
                 }
 
-                // 成功
+                // Success.
                 if ( cur === 'error' || cur === 'invalid' ) {
                     console.log( file.statusText );
                     showError( file.statusText );
@@ -371,7 +390,7 @@
             $li.appendTo( $queue );
         }
 
-        // 负责view的销毁
+        // Destroy the item view.
         function removeFile( file ) {
             var $li = $('#'+file.id);
 
@@ -403,23 +422,32 @@
             var text = '', stats;
 
             if ( state === 'ready' ) {
-                text = '选中' + fileCount + '张图片，共' +
-                        WebUploader.formatSize( fileSize ) + '。';
+                text = webUploaderT('webuploader_js_00016', {
+                    count: fileCount,
+                    size: WebUploader.formatSize( fileSize )
+                }, 'Selected {count} images, total {size}.');
             } else if ( state === 'confirm' ) {
                 stats = uploader.getStats();
                 if ( stats.uploadFailNum ) {
-                    text = '已成功上传' + stats.successNum+ '张照片，'+
-                        stats.uploadFailNum + '张照片上传失败，<a class="retry" href="#">重新上传</a>失败图片或<a class="ignore" href="#">忽略</a>'
+                    text = webUploaderT('webuploader_js_00017', {
+                        success: stats.successNum,
+                        fail: stats.uploadFailNum
+                    }, 'Uploaded {success} photos successfully, {fail} photos failed, ') +
+                        '<a class="retry" href="#">' + webUploaderT('webuploader_js_00018', null, 'Retry upload') + '</a>' +
+                        webUploaderT('webuploader_js_00019', null, ' failed images or ') +
+                        '<a class="ignore" href="#">' + webUploaderT('webuploader_js_00020', null, 'Ignore') + '</a>'
                 }
 
             } else {
                 stats = uploader.getStats();
-                text = '共' + fileCount + '张（' +
-                        WebUploader.formatSize( fileSize )  +
-                        '），已上传' + stats.successNum + '张';
+                text = webUploaderT('webuploader_js_00021', {
+                    count: fileCount,
+                    size: WebUploader.formatSize( fileSize ),
+                    success: stats.successNum
+                }, 'Total {count} images ({size}), uploaded {success}');
 
                 if ( stats.uploadFailNum ) {
-                    text += '，失败' + stats.uploadFailNum + '张';
+                    text += webUploaderT('webuploader_js_00022', {fail: stats.uploadFailNum}, ', failed {fail}');
                 }
             }
 
@@ -456,18 +484,18 @@
                 case 'uploading':
                     $( '#filePicker2' ).addClass( 'element-invisible' );
                     $progress.show();
-                    $upload.text( '暂停上传' );
+                    $upload.text(webUploaderT('webuploader_js_00023', null, 'Pause Upload'));
                     break;
 
                 case 'paused':
                     $progress.show();
-                    $upload.text( '继续上传' );
+                    $upload.text(webUploaderT('webuploader_js_00024', null, 'Continue Upload'));
                     break;
 
                 case 'confirm':
                     $progress.hide();
                     $( '#filePicker2' ).removeClass( 'element-invisible' );
-                    $upload.text( '开始上传' );
+                    $upload.text(webUploaderT('webuploader_js_00025', null, 'Start Upload'));
 
                     stats = uploader.getStats();
                     if ( stats.successNum && !stats.uploadFailNum ) {
@@ -479,22 +507,22 @@
                     stats = uploader.getStats();
                     if ( stats.successNum ) {
 						if(returnUrl){
-							layer.msg( '上传成功！',2,9,function(data){window.location.href=returnUrl;}); 
+							layer.msg(webUploaderT('webuploader_js_00026', null, 'Upload successful!'),2,9,function(data){window.location.href=returnUrl;});
 						}else{
-							layer.msg('上传成功！',2,9); 
+							layer.msg(webUploaderT('webuploader_js_00026', null, 'Upload successful!'),2,9);
 						}
                     } else {
-                        // 没有成功的图片，重设
+                        // No image uploaded successfully; reset.
                         state = 'done';
                         location.reload();
                     }
                     break;
             }
 
-            
+
         }
 		uploader.on( 'uploadProgress', function( file, percentage ) {
-			layer.load('执行中，请稍候...',0);return;
+			layer.load(webUploaderT('webuploader_js_00027', null, 'Processing, please wait...'),0);return;
 		});
         uploader.onUploadProgress = function( file, percentage ) {
             var $li = $('#'+file.id),

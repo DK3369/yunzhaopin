@@ -424,6 +424,8 @@ Batch 41 执行范围：地图交互 JS `js/map.js`。迁移地图弹窗标题�
 
 Batch 42 执行范围：会员绑定与认证 JS `js/binding.js`。迁移手机/邮箱绑定、验证码、企业认证、个人认证相关 layer 提示、loading 文案、倒计时文案、重新绑定按钮和弹窗标题，新增 key 使用 `binding_js_00001` 起始；触碰到的中文注释改为英文。本批不改 Ajax URL、表单字段、验证码刷新、手机号/邮箱/身份证校验、上传字段、提交表单、layer 参数或认证业务分支。
 
+Batch 43 执行范围：WebUploader 上传组件 `js/webuploader/upload.js`。迁移 Flash 安装提示、浏览器不支持、选择/继续添加图片、删除/旋转按钮、上传错误、预览状态、统计状态、暂停/继续/开始上传、上传成功和 loading 文案，新增 key 使用 `webuploader_js_00001` 起始；触碰到的中文注释改为英文。本批不改 `pedding/ready/uploading/paused/confirm/finish/done` 状态值、`file.statusText`、`stats.successNum/uploadFailNum`、`fileCount/fileSize`、`percentages`、`retry/ignore/cancel/rotateRight/rotateLeft` class、WebUploader 配置字段、上传 URL、`formData`、文件数量/大小限制、进度百分比、跳转 `returnUrl` 或上传成功后的 reload/location 行为。状态统计 HTML 结构继续在 JS 内拼接，语言包 value 只保存纯文本和 `{count}`、`{size}`、`{success}`、`{fail}` 占位符。
+
 ## 11. 推荐执行顺序
 
 1. 修复语言包损坏项和扫描脚本误报规则。
