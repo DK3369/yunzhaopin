@@ -16511,6 +16511,9 @@ return array(
   'webuploader_js_00025' => '开始上传',
   'webuploader_js_00026' => '上传成功！',
   'webuploader_js_00027' => '执行中，请稍候...',
+  'webuploader_js_00028' => '执行中……',
+  'webuploader_js_00029' => '上传失败！',
+  'webuploader_js_00030' => '不能预览！',
 
   'admin_demo_00001' => '选项1',
   'admin_demo_00002' => '选项2',

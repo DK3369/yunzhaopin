@@ -16510,6 +16510,9 @@ return array(
   'webuploader_js_00025' => 'Start Upload',
   'webuploader_js_00026' => 'Upload successful!',
   'webuploader_js_00027' => 'Processing, please wait...',
+  'webuploader_js_00028' => 'Processing...',
+  'webuploader_js_00029' => 'Upload failed!',
+  'webuploader_js_00030' => 'Cannot preview!',
 
   'admin_demo_00001' => 'Option 1',
   'admin_demo_00002' => 'Option 2',

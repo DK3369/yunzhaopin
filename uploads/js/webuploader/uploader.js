@@ -1,3 +1,22 @@
+function webUploaderCropT(key, params, fallback) {
+    var text;
+    if (typeof yunT === 'function') {
+        text = yunT(key, params, fallback);
+    } else if (typeof yunAt === 'function') {
+        text = yunAt(key, params, fallback);
+    } else {
+        text = fallback !== undefined ? fallback : key;
+    }
+    if (params && typeof text === 'string') {
+        for (var name in params) {
+            if (Object.prototype.hasOwnProperty.call(params, name)) {
+                text = text.split('{' + name + '}').join(params[name]);
+            }
+        }
+    }
+    return text;
+}
+
 (function( factory ) {
     if ( !window.jQuery ) {
         alert('jQuery is required.')
@@ -17,18 +36,18 @@
 var Uploader = (function() {
 
     // -------setting-------
-    // 如果使用原始大小，超大的图片可能会出现 Croper UI 卡顿，所以这里建议先缩小后再crop.
-    var FRAME_WIDTH = 400; 
+    // Large original images can freeze the Croper UI, so shrink before cropping.
+    var FRAME_WIDTH = 400;
     var _ = WebUploader;
     var Uploader = _.Uploader;
     var uploaderContainer = $('.uploader-container');
-    var uploader, file; 
+    var uploader, file;
     if ( !Uploader.support() ) {
-		layer.alert( 'Web Uploader 不支持您的浏览器！'); 
+		layer.alert(webUploaderCropT('webuploader_js_00004', null, 'Web Uploader does not support your browser!'));
     }
 
     // hook,
-    // 在文件开始上传前进行裁剪。
+    // Crop before the file starts uploading.
     Uploader.register({
         'before-send-file': 'cropImage'
     }, {
@@ -55,8 +74,8 @@ var Uploader = (function() {
             image.once( 'complete', function() {
                 var blob, size;
 
-                // 移动端 UC / qq 浏览器的无图模式下
-                // ctx.getImageData 处理大图的时候会报 Exception
+                // In image-free mode on mobile UC/QQ browsers.
+                // ctx.getImageData can throw when processing large images.
                 // INDEX_SIZE_ERR: DOM Exception 1
                 try {
                     blob = image.getAsBlob();
@@ -69,7 +88,7 @@ var Uploader = (function() {
                     deferred.resolve();
                 } catch ( e ) {
                     console.log( e );
-                    // 出错了直接继续，让其上传原始图片
+                    // Continue on error and upload the original image.
                     deferred.resolve();
                 }
             });
@@ -89,21 +108,21 @@ var Uploader = (function() {
                     multiple: false
                 },
 
-                // 设置用什么方式去生成缩略图。
+                // Configure how thumbnails are generated.
                 thumb: {
                     quality: 100,
 
-                    // 不允许放大
+                    // Do not magnify.
                     allowMagnify: false,
 
-                    // 是否采用裁剪模式。如果采用这样可以避免空白内容。
+                    // Whether to use crop mode; this can avoid blank content.
                     crop: false
                 },
 
-                // 禁掉分块传输，默认是开起的。
+                // Disable chunked upload; it is enabled by default.
                 chunked: false,
 
-                // 禁掉上传前压缩功能，因为会手动裁剪。
+                // Disable pre-upload compression because cropping is handled manually.
                 compress: false,
 
                 // fileSingleSizeLimit: 2 * 1024 * 1024,
@@ -111,35 +130,35 @@ var Uploader = (function() {
                 server: serverPath,
                 swf:  tplPath+'js/webuploader/Uploader.swf',
                 fileNumLimit: 1,
-                onError: function() {  
+                onError: function() {
                     var args = [].slice.call(arguments, 0);
                     alert(args.join('\n'));
-                } 
+                }
             });
-			
-			
-			uploader.on( 'uploadProgress', function( file, percentage ) { 
-				layer.msg('执行中……',{icon:16,time:100000});return;
+
+
+			uploader.on( 'uploadProgress', function( file, percentage ) {
+				layer.msg(webUploaderCropT('webuploader_js_00028', null, 'Processing...'),{icon:16,time:100000});return;
 			});
 			uploader.on( 'uploadSuccess', function( file ,st) {
 				if(st=='1'){
-					layer.msg('上传成功！',{icon:6},function(){location.reload();});
+					layer.msg(webUploaderCropT('webuploader_js_00026', null, 'Upload successful!'),{icon:6},function(){location.reload();});
 				}else{
-					layer.msg('上传失败！',{icon:5},function(){location.reload();});	
-				} 
-			}); 
+					layer.msg(webUploaderCropT('webuploader_js_00029', null, 'Upload failed!'),{icon:5},function(){location.reload();});
+				}
+			});
             uploader.on('fileQueued', function( _file ) {
                 file = _file;
 
                 uploader.makeThumb( file, function( error, src ) {
 
                     if ( error ) {
-						layer.msg('不能预览！',{icon:5});return;
+						layer.msg(webUploaderCropT('webuploader_js_00030', null, 'Cannot preview!'),{icon:5});return;
                     }
 
                     selectCb( src );
 
-                }, FRAME_WIDTH, 1 );   // 注意这里的 height 值是 1，被当成了 100% 使用。
+                }, FRAME_WIDTH, 1 );   // Height value 1 is treated as 100% here.
             });
         },
 
@@ -207,10 +226,10 @@ var Croper = (function() {
                 data: src,
                 dataType:'json'
             }).done(function( response ) {
-                if (response.result) { 
+                if (response.result) {
                     cb( response.result );
                 } else {
-					layer.msg('预览出错！',{icon:5});return false; 
+					layer.msg(webUploaderCropT('webuploader_js_00015', null, 'Preview error'),{icon:5});return false;
                 }
             });
         }
@@ -224,8 +243,8 @@ var Croper = (function() {
     return {
         setSource: function( src ) {
 
-            // 处理 base64 不支持的情况。
-            // 一般出现在 ie6-ie8
+            // Handle browsers without base64 support.
+            // Usually appears in IE6-IE8.
             srcWrap( src, function( src ) {
                 $image.cropper("setImgSrc", src);
             });
@@ -271,10 +290,10 @@ Uploader.init(function( src ) {
 
     Croper.setSource( src );
 
-    // 隐藏选择按钮。
+    // Hide the select button.
     container.addClass('webuploader-element-invisible');
 
-    // 当用户选择上传的时候，开始上传。
+    // Start uploading when the user chooses upload.
     Croper.setCallback(function( data ) {
         Uploader.crop(data);
         Uploader.upload();

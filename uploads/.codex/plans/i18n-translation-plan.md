@@ -426,6 +426,8 @@ Batch 42 执行范围：会员绑定与认证 JS `js/binding.js`。迁移手机/
 
 Batch 43 执行范围：WebUploader 上传组件 `js/webuploader/upload.js`。迁移 Flash 安装提示、浏览器不支持、选择/继续添加图片、删除/旋转按钮、上传错误、预览状态、统计状态、暂停/继续/开始上传、上传成功和 loading 文案，新增 key 使用 `webuploader_js_00001` 起始；触碰到的中文注释改为英文。本批不改 `pedding/ready/uploading/paused/confirm/finish/done` 状态值、`file.statusText`、`stats.successNum/uploadFailNum`、`fileCount/fileSize`、`percentages`、`retry/ignore/cancel/rotateRight/rotateLeft` class、WebUploader 配置字段、上传 URL、`formData`、文件数量/大小限制、进度百分比、跳转 `returnUrl` 或上传成功后的 reload/location 行为。状态统计 HTML 结构继续在 JS 内拼接，语言包 value 只保存纯文本和 `{count}`、`{size}`、`{success}`、`{fail}` 占位符。
 
+Batch 44 执行范围：WebUploader 裁剪上传组件 `js/webuploader/uploader.js`。迁移浏览器不支持、执行中、上传成功、上传失败、不能预览、预览出错等可见文案，新增 key 使用 `webuploader_js_00028` 起始，并复用 `webuploader_js_00004`、`webuploader_js_00015`、`webuploader_js_00026`；触碰到的中文注释改为英文。本批不改 `file._cropData`、`file.source`、`file.size`、`FRAME_WIDTH`、`cropImage` hook、`before-send-file`、`selectCb(src)`、`serverPath/tplPath`、`uploadSuccess` 返回值判断、裁剪尺寸、坐标、状态码或上传返回结构。
+
 ## 11. 推荐执行顺序
 
 1. 修复语言包损坏项和扫描脚本误报规则。
