@@ -2,23 +2,23 @@ $(document).ready(function(){
 	if(document.getElementById("bind-captcha")){
 		var uptime = 0;
 		var myCaptcha = _dx.Captcha(document.getElementById('bind-captcha'), {
-			appId: dxappid, //appId，在控制台中“应用管理”或“应用配置”模块获取
+			appId: dxappid, // appId from the console's application management or application configuration module.
 			style: 'popup',
 			success: function (token) {
 				myCaptcha.hide();
-                if (uptime > 0 && ((new Date()).valueOf() - uptime) <= 500) {// 防止刷新验证码获取图片失败自动校验重复提交
+                if (uptime > 0 && ((new Date()).valueOf() - uptime) <= 500) {// Prevent duplicate auto-submit when refreshing captcha images fails.
                     myCaptcha.reload();
                     return false;
                 }
 				$("input[name='verify_token']").val(token);
-			    //提交操作
+			    // Submit operation.
 				var type = $('#bind-captcha').attr('data-type');
 				var dataid = $('#bind-captcha').attr('data-id');
-				//提交表单
+				// Submit the form.
 				if(type=='submit'){
 					$('#'+dataid).submit();
 				}else{
-					//模拟点击
+					// Simulate a click.
 					$("#"+dataid).trigger("click");
 				}
 			   //console.log('token:', token)
@@ -26,7 +26,7 @@ $(document).ready(function(){
 		})
 	}
 	$("#popup-submit").click(function(){
-        uptime = (new Date()).valueOf();// 更新时间
+        uptime = (new Date()).valueOf();// Update time.
 		$("input[name='verify_token']").val('');
 		myCaptcha.reload();
 		//throw SyntaxError();

@@ -1,7 +1,7 @@
 /*
  * -- grayscale.js --
  * Copyright (C) James Padolsey (http://james.padolsey.com)
- * 网站整体变成灰色
+ * Turn the whole site grayscale.
  */
 var grayscale = (function(){
     var config = {

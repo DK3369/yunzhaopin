@@ -2,38 +2,38 @@ $(document).ready(function(){
 
 	if(document.getElementById("bind-captcha")){
 		vaptcha({
-			  vid: vaptchaid, // 验证单元id
-			  type: "invisible", // 显示类型 隐藏式
-			  scene: 0, // 场景值 默认0
-			  offline_server: "", //离线模式服务端地址，若尚未配置离线模式，请填写任意地址即可。
-			  //可选参数
-			  //lang: 'auto', // 语言 默认auto,可选值auto,zh-CN,en,zh-TW,jp
-			  //https: true, // 使用https 默认 true
+			  vid: vaptchaid, // Verification unit id.
+			  type: "invisible", // Display type: invisible.
+			  scene: 0, // Scene value; default is 0.
+			  offline_server: "", // Offline-mode server address. If offline mode is not configured, any value is acceptable.
+			  // Optional parameters.
+			  //lang: 'auto', // Language. Default is auto. Options: auto, zh-CN, en, zh-TW, jp.
+			  //https: true, // Use HTTPS. Default is true.
 			}).then(function (vaptchaObj) {
-			  obj = vaptchaObj; //将VAPTCHA验证实例保存到局部变量中
-			  //获取token的方式一：
-			  //vaptchaObj.renderTokenInput('.login-form')//以form的方式提交数据时，使用此函数向表单添加token值
-			  //获取token的方式二：
+			  obj = vaptchaObj; // Save the VAPTCHA instance to a local variable.
+			  // Token method 1:
+			  //vaptchaObj.renderTokenInput('.login-form')// Use this to add a token value to the form when submitting as a form.
+			  // Token method 2:
 			  vaptchaObj.listen("pass", function () {
-				// 验证成功进行后续操作
+				// Continue after successful verification.
 				
 				$("input[name='verify_token']").val(vaptchaObj.getToken());
-				//提交操作
+				// Submit operation.
 				
 				var type = $('#bind-captcha').attr('data-type');
 				var dataid = $('#bind-captcha').attr('data-id');
 				
-				//提交表单
+				// Submit the form.
 				if(type=='submit'){
 					
 					$('#'+dataid).submit();
 				}else{
-					//模拟点击
+					// Simulate a click.
 					$("#"+dataid).trigger("click");
 					
 				}
 			  });
-			  //关闭验证弹窗时触发
+			  // Triggered when the verification popup closes.
 			  vaptchaObj.listen("close", function () {
 				
 			   

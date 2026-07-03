@@ -1,36 +1,36 @@
-// 腾讯验证码回调函数
+// Tencent captcha callback.
 function tecentCallback(res) {
 	// var url = web_url+'/index.php?m=tecentcode'
     if (res.ret === 0) {
         $("input[name='verify_token']").val(res.ticket);
         $("input[name='verify_str']").val(res.randstr);
-        //提交操作
+        // Submit operation.
         var type = $('#bind-captcha').attr('data-type');
         var dataid = $('#bind-captcha').attr('data-id');
-        //提交表单
+        // Submit the form.
         if(type=='submit'){
             $('#'+dataid).submit();
         }else{
-            //模拟点击
+            // Simulate a click.
             $("#"+dataid).trigger("click");
         }
         // $.post(url, {
         //     ticket: res.ticket,
         //     str: res.randstr
         // }, function(data) {
-        //     if(data == 0) {// 二次验证未通过，刷新验证码
+        //     if(data == 0) {// Secondary verification failed; refresh the captcha.
         //         $('#bind-captcha').click();
         //     } else {
         //         $("input[name='verify_token']").val(res.ticket);
-        //         //提交操作
+        //         // Submit operation.
         //         var type = $('#bind-captcha').attr('data-type');
         //         var dataid = $('#bind-captcha').attr('data-id');
         //         // debugger
-        //         //提交表单
+        //         // Submit the form.
         //         if(type=='submit'){
         //             $('#'+dataid).submit();
         //         }else{
-        //             //模拟点击
+        //             // Simulate a click.
         //             $("#"+dataid).trigger("click");
         //         }
         //     }
@@ -46,11 +46,11 @@ $(document).ready(function(){
         document.getElementById('bind-captcha').onclick = function(){
             try {
                 var captcha = new TencentCaptcha(tecentappid, tecentCallback, {});
-                // 调用方法，显示验证码
+                // Call the method to show the captcha.
                 captcha.show();
             } catch (error) {
-                // 加载异常，调用验证码js加载错误处理函数
-                // 生成容灾票据或自行做其它处理
+                // On load errors, call the captcha JS load-error handler.
+                // Generate a fallback ticket or handle it as needed.
                 var ticket = 'terror_1001_' + tecentappid + Math.floor(new Date().getTime() / 1000);
                 callback({
                     ret: 0,
@@ -68,4 +68,3 @@ $(document).ready(function(){
         $("input[name='verify_str']").val('');
     });
 });
-

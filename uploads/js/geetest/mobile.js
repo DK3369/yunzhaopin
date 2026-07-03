@@ -2,7 +2,7 @@ $(document).ready(function(){
 
 
 var handlerPopupMobile = function (captchaObj) {
-	// 成功的回调
+	// Success callback.
 	captchaObj.appendTo("#popup-captcha-mobile");
 
 	captchaObj.onSuccess(function () {
@@ -14,14 +14,14 @@ var handlerPopupMobile = function (captchaObj) {
 	
 
 			$("input[name='verify_token']").val(validate.geetest_challenge+'*'+validate.geetest_validate+'*'+validate.geetest_seccode);
-			//提交操作
+			// Submit operation.
 			var type = $('#bind-captcha').attr('data-type');
 			var dataid = $('#bind-captcha').attr('data-id');
-			//提交表单
+			// Submit the form.
 			if(type=='submit'){
 				$('#'+dataid).submit();
 			}else{
-				//模拟点击
+				// Simulate a click.
 				$("#"+dataid).trigger("click");
 			}
 		}

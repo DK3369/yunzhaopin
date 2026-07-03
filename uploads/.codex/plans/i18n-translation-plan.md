@@ -432,6 +432,8 @@ Batch 45 执行范围：Layui formSelects 多选组件 `js/layui/formSelects-v4.
 
 Batch 46 执行范围：自有上传封装、前端 i18n helper 和 layer 兼容封装 `js/layui.upload.js`、`js/yun-i18n.js`、`js/layui/phpyun_layer.js`。本批只清理中文注释和注释示例，不新增语言包 key；不改上传 URL、上传字段、预览 DOM 结构、`res.data.url/picurl` 返回读取、layer 兼容方法签名、默认参数、遮罩配置、`yunT/yunAt/yunAutoT/yunLc` 对外 API、语言包加载流程或自动 key 匹配规则。
 
+Batch 47 执行范围：验证码接入 wrapper 与灰度工具注释 `js/geetest/pc.js`、`js/geetest/mobile.js`、`js/tecent/pc.js`、`js/dingxiang/pc.js`、`js/vaptcha/pc.js`、`js/grayscale.js`。本批只清理中文注释，不新增语言包 key；不改验证码厂商 SDK 参数、appId/vid/scene/lang/token 字段、提交/模拟点击流程、隐藏字段名、接口 URL、错误票据生成、回调函数名或灰度算法。
+
 ## 11. 推荐执行顺序
 
 1. 修复语言包损坏项和扫描脚本误报规则。
