@@ -16438,6 +16438,10 @@ return array(
   'date_js_00007' => '日期',
   'date_js_00008' => '{day}日',
 
+  'search_js_00001' => '更多',
+  'search_js_00002' => '收起',
+  'search_js_00003' => '没有条件，无法保存！',
+
   'admin_demo_00001' => '选项1',
   'admin_demo_00002' => '选项2',
   'admin_demo_00003' => '选项3',

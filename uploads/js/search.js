@@ -1,13 +1,37 @@
+function searchPublicT(key, params, fallback) {
+    var text;
+    if (typeof yunT === 'function') {
+        text = yunT(key, params, fallback);
+    } else if (typeof yunAt === 'function') {
+        text = yunAt(key, params, fallback);
+    } else {
+        text = fallback !== undefined ? fallback : key;
+    }
+    if (params && typeof text === 'string') {
+        for (var name in params) {
+            if (Object.prototype.hasOwnProperty.call(params, name)) {
+                text = text.split('{' + name + '}').join(params[name]);
+            }
+        }
+    }
+    return text;
+}
+
+function searchPublicIsMore(text) {
+    var value = $.trim(text || '');
+    return value === '\u66f4\u591a' || value === searchPublicT('search_js_00001', null, 'More');
+}
+
 function checkmore(type){
-	var html=$("#"+type).html();
+	var html=$("#"+type).text();
 	//$("."+type).slideToggle();
 	$("."+type).toggle();
-	if(html=="更多"){
+	if(searchPublicIsMore(html)){
 		$("#"+type).attr('class','showcheck');
-		$("#"+type).html('收起');
+		$("#"+type).html(searchPublicT('search_js_00002', null, 'Collapse'));
 	}else{
 		$("#"+type).attr('class','hidecheck');
-		$("#"+type).html('更多');
+		$("#"+type).html(searchPublicT('search_js_00001', null, 'More'));
 	}
 }
 $(document).ready(function(){
@@ -38,15 +62,15 @@ $(document).ready(function(){
 		} 
 	);
 	
-	//搜索城市列表一二级展现
+	// Show level 1 and level 2 city search lists.
 	$('.Search_jobs_sub_a').bind('mouseenter',function(){
 		var dataid = $(this).attr('data-id');
 		if(dataid){
 			$('.Search_jobs_select').hide();
 			$('#citytype'+dataid).show();
-			//根据当前位置调整指向箭头
+			// Adjust the pointer arrow based on the current position.
 			var leftPx = $(this).position().left; 
-			//调整箭头位置
+			// Adjust arrow position.
 			$('#icon_'+dataid).css('left',leftPx-60);
 		}
 		
@@ -55,7 +79,7 @@ $(document).ready(function(){
 		$('.Search_jobs_select').hide();
 		$('.oldshow').show();
 	});
-	/*找工作、找人才新加更多4.3*/ 
+	/* More city options for job and talent lists. */
 	$('#acity').hover(function(){
 		$('.Search_cityall').removeClass('none');  
 	},function(){
@@ -66,12 +90,12 @@ $(document).ready(function(){
 	},function(){
 		$('.Search_cityall').addClass('none'); 
 	});
-	/*结束*/
+	/* End. */
 });
 
 function addfinder(para,usertype,type){
 	if(para==''){
-		layer.msg('没有条件，无法保存！',2,8);return false;
+		layer.msg(searchPublicT('search_js_00003', null, 'No conditions to save!'),2,8);return false;
 	}
 	loadlayer();
 	$.post(weburl+"/job/index.php?c=addfinder",{para:para,usertype:usertype},function(data){
@@ -87,7 +111,7 @@ function addfinder(para,usertype,type){
 function showurl(url){
 	window.location.href=url;
 }
-//找人才、找工作城市新加 4.3
+// City tabs for talent and job search.
 function acityshow(id){
 	if(id==1){
 		$(".acity_two").addClass('search_city_active');
@@ -101,13 +125,13 @@ function acityshow(id){
 		$("#acity_three").removeClass('none');
 	}
 }
-// 列表搜索行业更多处理
+// Handle more industry filters in list search.
 function hy_more_click(obj){
-	if($(obj).text() == '更多'){
-		$(obj).text('收起');
+	if(searchPublicIsMore($(obj).text())){
+		$(obj).text(searchPublicT('search_js_00002', null, 'Collapse'));
 		$(".list_hy_more").removeClass('none');
 	}else{
-		$(obj).text('更多');
+		$(obj).text(searchPublicT('search_js_00001', null, 'More'));
 		$(".list_hy_more").addClass('none');
 	}
 }

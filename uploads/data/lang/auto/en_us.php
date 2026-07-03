@@ -16437,6 +16437,10 @@ return array(
   'date_js_00007' => 'Day',
   'date_js_00008' => '{day}',
 
+  'search_js_00001' => 'More',
+  'search_js_00002' => 'Collapse',
+  'search_js_00003' => 'No conditions to save!',
+
   'admin_demo_00001' => 'Option 1',
   'admin_demo_00002' => 'Option 2',
   'admin_demo_00003' => 'Option 3',
