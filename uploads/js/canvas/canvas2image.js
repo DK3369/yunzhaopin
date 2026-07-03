@@ -82,7 +82,7 @@ var Canvas2Image = function () {
 
   /**
    * create bitmap image
-   * 按照规则生成图片响应头和响应体
+   * Generate the image response header and body according to the bitmap rules.
    */
   var genBitmapImage = function (oData) {
 

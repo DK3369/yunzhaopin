@@ -1001,7 +1001,7 @@
             } else if (node === clonedWindow.document.body || node === clonedWindow.document.documentElement) {
                 canvas = renderer.canvas;
             }else if(options.scale && options.canvas !=null){
-                log("放大canvas",options.canvas);
+                log("Scale canvas",options.canvas);
                 var scale = options.scale || 1;
                 // console.log(bounds.top *scale)
                 canvas = crop(renderer.canvas, {width: bounds.width * scale, height:bounds.height * scale, top: bounds.top *scale, left: bounds.left *scale, x: 0, y: 0});

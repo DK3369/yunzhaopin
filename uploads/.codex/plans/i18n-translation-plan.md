@@ -436,6 +436,8 @@ Batch 47 执行范围：验证码接入 wrapper 与灰度工具注释 `js/geetes
 
 Batch 48 执行范围：可控 CSS 注释和字体别名 `js/layui/css/formSelects-v4.css`、`js/imgareaselect/imgareaselect.css`、`js/article/css/style.css`。本批只清理中文注释，并将 `微软雅黑/宋体` 替换为等价英文 CSS 字体族名 `Microsoft YaHei/SimSun`；不新增语言包 key，不改 selector、class/id、尺寸、颜色、URL、图标字体、裁剪样式、文章轮播布局或任何 JS 数据结构。
 
+Batch 49 执行范围：demo/canvas/png 工具注释和调试日志 `js/layui/css/layui.demo.css`、`js/canvas/canvas2image.js`、`js/canvas/html2canvas.js`、`js/png.js`。本批只清理中文注释、乱码注释和一条 canvas 调试日志，不新增语言包 key；不改 CSS selector、布局尺寸、canvas 裁剪参数、图片编码响应结构、html2canvas 渲染流程、VML stylesheet 规则或第三方库 API。
+
 ## 11. 推荐执行顺序
 
 1. 修复语言包损坏项和扫描脚本误报规则。
