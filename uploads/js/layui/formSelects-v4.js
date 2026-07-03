@@ -6,19 +6,19 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 /**
  * name: formSelects
- * 基于Layui Select多选
+ * Layui select multi-select component.
  * version: 4.0.0.0910
  * http://sun.faysunshine.com/layui/formSelects-v4/dist/formSelects-v4.js
  */
 (function (layui, window, factory) {
 	if ((typeof exports === 'undefined' ? 'undefined' : _typeof(exports)) === 'object') {
-		// 支持 CommonJS
+		// Supports CommonJS.
 		module.exports = factory();
 	} else if (typeof define === 'function' && define.amd) {
-		// 支持 AMD
+		// Supports AMD.
 		define(factory);
 	} else if (window.layui && layui.define) {
-		//layui加载
+		// Loaded by layui.
 		layui.define(['jquery'], function (exports) {
 			exports('formSelects', factory());
 		});
@@ -26,6 +26,25 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 		window.formSelects = factory();
 	}
 })(typeof layui == 'undefined' ? null : layui, window, function () {
+	function formSelectsT(key, params, fallback) {
+		var text;
+		if (typeof yunT === 'function') {
+			text = yunT(key, params, fallback);
+		} else if (typeof yunAt === 'function') {
+			text = yunAt(key, params, fallback);
+		} else {
+			text = fallback !== undefined ? fallback : key;
+		}
+		if (params && typeof text === 'string') {
+			for (var name in params) {
+				if (Object.prototype.hasOwnProperty.call(params, name)) {
+					text = text.split('{' + name + '}').join(params[name]);
+				}
+			}
+		}
+		return text;
+	}
+
 	var v = '4.0.0.0910',
 	    NAME = 'xm-select',
 	    PNAME = 'xm-select-parent',
@@ -64,8 +83,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 	    FORM_TEAM_PID = 'XM_PID_VALUE',
 	    CZ = 'xm-cz',
 	    CZ_GROUP = 'xm-cz-group',
-	    TIPS = '请选择',
-	    XMTYPE='xm-select-type',//自定义参数
+	    TIPS = formSelectsT('form_selects_js_00001', null, 'Please select'),
+	    XMTYPE='xm-select-type',// Custom parameter.
 	    data = {},
 	    events = {
 		on: {},
@@ -108,13 +127,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			lazy: true
 		}
 	},
-	    quickBtns = [{ icon: 'xm-iconfont icon-quanxuan', name: '全选', click: function click(id, cm) {
+	    quickBtns = [{ icon: 'xm-iconfont icon-quanxuan', name: formSelectsT('form_selects_js_00002', null, 'Select All'), click: function click(id, cm) {
 			cm.selectAll(id, true, true);
-		} }, { icon: 'xm-iconfont icon-qingkong', name: '清空', click: function click(id, cm) {
+		} }, { icon: 'xm-iconfont icon-qingkong', name: formSelectsT('form_selects_js_00003', null, 'Clear'), click: function click(id, cm) {
 			cm.removeAll(id, true, true);
-		} }, { icon: 'xm-iconfont icon-fanxuan', name: '反选', click: function click(id, cm) {
+		} }, { icon: 'xm-iconfont icon-fanxuan', name: formSelectsT('form_selects_js_00004', null, 'Invert'), click: function click(id, cm) {
 			cm.reverse(id, true, true);
-		} }, { icon: 'xm-iconfont icon-pifu', name: '换肤', click: function click(id, cm) {
+		} }, { icon: 'xm-iconfont icon-pifu', name: formSelectsT('form_selects_js_00005', null, 'Theme'), click: function click(id, cm) {
 			cm.skin(id);
 		} }],
 	    $ = window.$ || window.layui && window.layui.jquery,
@@ -138,8 +157,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 					ipt.removeAttr('style');
 				}, 300);
 			},
-			init: null, //初始化的选择值,
-			on: null, //select值发生变化
+			init: null, // Initial selected values.
+			on: null, // Triggered when select values change.
 			opened: null,
 			closed: null,
 			filter: function filter(id, inputVal, val, isDisabled) {
@@ -175,7 +194,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 		}
 	};
 
-	//一些简单的处理方法
+	// Basic utility methods.
 	var Common = function Common() {
 		this.appender();
 		this.on();
@@ -183,8 +202,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 	};
 
 	Common.prototype.appender = function () {
-		//针对IE做的一些拓展
-		//拓展Array map方法
+		// IE compatibility extensions.
+		// Extend Array map.
 		if (!Array.prototype.map) {
 			Array.prototype.map = function (i, h) {
 				var b,
@@ -201,7 +220,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			};
 		};
 
-		//拓展Array foreach方法
+		// Extend Array foreach.
 		if (!Array.prototype.forEach) {
 			Array.prototype.forEach = function forEach(g, b) {
 				var d, c;if (this == null) {
@@ -218,7 +237,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			};
 		};
 
-		//拓展Array filter方法
+		// Extend Array filter.
 		if (!Array.prototype.filter) {
 			Array.prototype.filter = function (b) {
 				if (this === void 0 || this === null) {
@@ -239,7 +258,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 	Common.prototype.init = function (target) {
 		var _this2 = this;
 
-		//初始化页面上已有的select
+		// Initialize existing select elements on the page.
 		$(target ? target : 'select[' + NAME + ']').each(function (index, select) {
 			var othis = $(select),
 			    id = othis.attr(NAME),
@@ -265,7 +284,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 					xmtype: othis.attr(XMTYPE)
 				},
 			    value = othis.find('option[selected]').toArray().map(function (option) {
-				//获取已选中的数据
+				// Get selected data.
 				return {
 					name: option.innerHTML,
 					value: option.value
@@ -296,11 +315,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 			data[id] = fs;
 
-			//先取消layui对select的渲染
+			// Remove layui's select rendering first.
 			hasLayuiRender[0] && hasLayuiRender.remove();
 			hasRender[0] && hasRender.remove();
 
-			//构造渲染div
+			// Build the rendered div.
 			var dinfo = _this2.renderSelect(id, fs.config.placeholder, select);
 			var heightStyle = !fs.config.height || fs.config.height == 'auto' ? '' : 'xm-hg style="height: 34px;"';
 			var inputHtml = ['<div class="' + LABEL + '">', '<input type="text" fsw class="' + FORM_INPUT + ' ' + INPUT + '" ' + (fs.config.isSearch ? '' : 'style="display: none;"') + ' autocomplete="off" debounce="0" />', '</div>'];
@@ -313,7 +332,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			othis.removeAttr('name') && othis.attr('_name', fs.config.formname);
 			othis.removeAttr('lay-verify') && othis.attr('_lay-verify', fs.config.layverify);
 
-			//如果可搜索, 加上事件
+			// Add events when search is enabled.
 			if (fs.config.isSearch) {
 				ajaxs[id] = $.extend({}, ajax, { searchUrl: fs.config.searchUrl }, ajaxs[id]);
 				$(document).on('input', 'div.' + PNAME + '[FS_ID="' + id + '"] .' + INPUT, function (e) {
@@ -323,17 +342,17 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 				
 
 				if (fs.config.searchUrl) {
-					//触发第一次请求事件
+					// Trigger the first request event.
 					//_this2.triggerSearch(reElem, true);
 				}
 			} else {
-				//隐藏第二个dl
+				// Hide the second dl.
 				reElem.find('dl dd.' + FORM_DL_INPUT).css('display', 'none');
 			}
 		});
 	};
 
-	//输入后搜索
+	// Search after input.
 	Common.prototype.search = function (id, e, searchUrl, call) {
 		var _this3 = this;
 
@@ -348,7 +367,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			}
 		}
 		var inputValue = $.trim(input.value);
-		//过滤一下tips
+		// Filter tips.
 		this.changePlaceHolder($(input));
 
 		var ajaxConfig = ajaxs[id] ? ajaxs[id] : ajax;
@@ -357,7 +376,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 		    isCreate = fs.config.isCreate,
 		    reElem = $('dl[xid="' + id + '"]').parents('.' + FORM_SELECT),
 		    div = $('[xid="' + id + '"]').prev().find('.' + LABEL);
-		//如果开启了远程搜索
+		// Remote search is enabled.
 
 		if (searchUrl) {
 			if (ajaxConfig.searchVal) {
@@ -375,7 +394,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 				_this3.changeShow(div, true);
 				fs.clearid = setTimeout(function () {
 					reElem.find('dl > *:not(.' + FORM_SELECT_TIPS + ')').remove();
-					reElem.find('dd.' + FORM_NONE).addClass(FORM_EMPTY).text('请求中');
+					reElem.find('dd.' + FORM_NONE).addClass(FORM_EMPTY).text(formSelectsT('form_selects_js_00006', null, 'Loading'));
 					_this3.ajax(id, searchUrl, inputValue, false, null, true);
 				}, delay);
 			}
@@ -396,13 +415,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 					fsthr		=	[],
 					rfs			=	[];
 				if(fs.config.xmtype=='jobclass'){
-					//*jobclass输入框搜索
+					//*jobclass input search.
 					fsn			=	jn;
 					fs_parent	=	job_parent;
 					fsi			=	ji;
 					fst			=	jt;
 				}else if(fs.config.xmtype=='cityclass'){
-					//*cityclass输入框搜索
+					//*cityclass input search.
 					fsn			=	cn;
 					fs_parent	=	city_parent;
 					fsi			=	ci;
@@ -422,7 +441,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 						fsn.forEach(function(item,index){
 							itemv	=	item.toString().toLowerCase();
 
-							if(itemv.indexOf(inputv)!= -1){//当前级（可为1/2/3级）
+							if(itemv.indexOf(inputv)!= -1){// Current level, which can be level 1, 2, or 3.
 								thisclass.push(index);
 							}
 				        })
@@ -458,14 +477,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			        			hastwo = false;
 			        			fsArr.push({"name":fsn[fsone[i]],"value":fsone[i],"selected":'',"disabled":''});
 			        			if(fst && fst.length>0 && fst!='new Array()'){
-					        		for(var j=0;j<fst[fsone[i]].length;j++){//先判断选项里是否有二级属于此一级
+								for(var j=0;j<fst[fsone[i]].length;j++){// Check whether any option has a level-2 item under this level-1 item.
 					        			if(fstwo.indexOf(parseInt(fst[fsone[i]][j]))!=-1){
 					        				hastwo = true;
 					        			}
 					        		}
 					        	}
 				        		
-				        		if(hastwo){//有二级
+							if(hastwo){// Has level-2 options.
 			        				if(fstwo.length>0){
 				        				for(var m=0;m<fstwo.length;m++){
 						        			if(fst[fsone[i]] && (fst[fsone[i]].indexOf(fstwo[m])!=-1 || fst[fsone[i]].indexOf(fstwo[m].toString())!=-1)){
@@ -527,7 +546,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			        }
 				}else{
 					
-					//只有一级类别时，点击输入框直接展示所有选项
+					// Show all options directly when there is only one category level.
 					if(!(fst && fst.length>0 && fst!='new Array()')){
 
 						_this3.changeShow(div, true);
@@ -542,10 +561,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 					}
 				}
 				_this3.renderData(id, fsArr, false, null, true);
-			}else{//下方为插件源码
+			}else{// Original plugin source below.
 				
 				reElem.find('dl .' + DD_HIDE).removeClass(DD_HIDE);
-				//遍历选项, 选择可以显示的值
+				// Iterate options and choose the values that can be displayed.
 				reElem.find('dl dd:not(.' + FORM_SELECT_TIPS + ')').each(function (idx, item) {
 					var _item = $(item);
 					var searchFun = events.filter[id] || data[id].config.filter;
@@ -553,17 +572,17 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 						_item.addClass(DD_HIDE);
 					}
 				});
-				//控制分组名称
+				// Control group names.
 				reElem.find('dl dt').each(function (index, item) {
 					if (!$(item).nextUntil('dt', ':not(.' + DD_HIDE + ')').length) {
 						$(item).addClass(DD_HIDE);
 					}
 				});
-				//动态创建
+				// Create dynamically.
 				this.create(id, isCreate, inputValue);
 				var shows = reElem.find('dl dd:not(.' + FORM_SELECT_TIPS + '):not(.' + DD_HIDE + ')');
 				if (!shows.length) {
-					reElem.find('dd.' + FORM_NONE).addClass(FORM_EMPTY).text('无匹配项');
+					reElem.find('dd.' + FORM_NONE).addClass(FORM_EMPTY).text(formSelectsT('form_selects_js_00007', null, 'No matching options'));
 				} else {
 					reElem.find('dd.' + FORM_NONE).removeClass(FORM_EMPTY);
 				}
@@ -605,7 +624,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 		var ajaxConfig = ajaxs[id] ? ajaxs[id] : ajax;
 		var ajaxData = $.extend(true, {}, ajaxConfig.data);
 		ajaxData[ajaxConfig.searchName] = inputValue;
-		//是否需要对ajax添加随机时间
+		// Whether ajax needs a random timestamp.
 		//ajaxData['_'] = Date.now();
 		if(inputValue!=''){
 			$.ajax({
@@ -638,7 +657,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 				},
 				error: function error(err) {
 					reElem.find('dd[lay-value]:not(.' + FORM_SELECT_TIPS + ')').remove();
-					reElem.find('dd.' + FORM_NONE).addClass(FORM_EMPTY).text('服务异常');
+					reElem.find('dd.' + FORM_NONE).addClass(FORM_EMPTY).text(formSelectsT('form_selects_js_00008', null, 'Service error'));
 					ajaxConfig.error && ajaxConfig.error instanceof Function && ajaxConfig.error(id, searchUrl, inputValue, err);
 				}
 			});
@@ -653,7 +672,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			fs = data[id];
 
 		if (linkage) {
-			//渲染多级联动
+			// Render multi-level linkage.
 			this.renderLinkage(id, dataArr, linkageWidth);
 			return;
 		}
@@ -687,12 +706,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 		var label = reElem.find('.' + LABEL);
 		var dl = reElem.find('dl[xid]');
 		if (isSearch) {
-			//这里需要判重
+			// Deduplicate here.
 			var oldVal = data[id].values;
 			var valBuffer = {};
 			oldVal.forEach(function (item, index) {
 				dl.find('dd[lay-value="' + item.value + '"]').addClass(THIS);
-				//搜索时，如果搜出选项是已选值的子类，则设为不可选状态 *jobclass cityclass
+				// During search, disable options that are children of selected values. *jobclass cityclass
 				var svalstr = '',
 					sval = 0,
 					toadd = false;
@@ -702,7 +721,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 					sval = Number(svalstr);
 					toadd = false;
 					if(fs.config.xmtype=='jobclass'){
-						if(jt[item.value] && (jt[item.value].indexOf(sval)!=-1 || jt[item.value].indexOf(svalstr.toString())!=-1)){//属于该选中项的下级 
+						if(jt[item.value] && (jt[item.value].indexOf(sval)!=-1 || jt[item.value].indexOf(svalstr.toString())!=-1)){// Child of the selected item.
 							toadd = true;
 						}
 					}else if(fs.config.xmtype=='cityclass'){
@@ -717,7 +736,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 						}
 					}
 					if(toadd){
-						//设为不可选状态
+						// Set disabled state.
 						$(oitem).addClass(DISABLED);
 						$(oitem).children('div').addClass(DISABLED);
 						$(oitem).addClass(THIS);
@@ -790,7 +809,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 		html.push('<div style="clear: both; height: 288px;"></div>');
 		html.push('</div>');
 		reElem.find('dl').html(html.join(''));
-		reElem.find('.' + INPUT).css('display', 'none'); //联动暂时不支持搜索
+		reElem.find('.' + INPUT).css('display', 'none'); // Linkage does not support search yet.
 	};
 
 	Common.prototype.renderReplace = function (id, dataArr) {
@@ -819,7 +838,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 	};
 
 	Common.prototype.exchangeData = function (id, arr) {
-		//这里处理树形结构
+		// Handle tree data here.
 		var ajaxConfig = ajaxs[id] ? ajaxs[id] : ajax;
 		var childrenName = ajaxConfig['keyChildren'];
 		var disabledName = ajaxConfig['keyDis'];
@@ -868,7 +887,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 				}
 			});
 			if (!tdd) {
-				//如果不存在, 则创建
+				// Create it if it does not exist.
 				var val = fs.config.create(id, inputValue);
 				if (temp[0]) {
 					temp.attr('lay-value', val);
@@ -952,7 +971,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 				dl.parents('.' + FORM_SELECT).attr(SEARCH_TYPE, data[id].config.searchType);
 				dl.find('.' + CZ_GROUP).css('max-width', dl.prev().width() - 54 + 'px');
 			}, 10);
-			arr.push(['<dd lay-value="" class="' + FORM_SELECT_TIPS + '" style="background-color: #FFF!important;">', this.renderBtns(id, null, '30px'), '</dd>', '<dd lay-value="" class="' + FORM_SELECT_TIPS + ' ' + FORM_DL_INPUT + '" style="background-color: #FFF!important;">', '<i class="xm-iconfont icon-sousuo"></i>', '<input type="text" class="' + FORM_INPUT + ' ' + INPUT + '" placeholder="\u8BF7\u641C\u7D22"/>', '</dd>'].join(''));
+			arr.push(['<dd lay-value="" class="' + FORM_SELECT_TIPS + '" style="background-color: #FFF!important;">', this.renderBtns(id, null, '30px'), '</dd>', '<dd lay-value="" class="' + FORM_SELECT_TIPS + ' ' + FORM_DL_INPUT + '" style="background-color: #FFF!important;">', '<i class="xm-iconfont icon-sousuo"></i>', '<input type="text" class="' + FORM_INPUT + ' ' + INPUT + '" placeholder="' + formSelectsT('form_selects_js_00010', null, 'Search') + '"/>', '</dd>'].join(''));
 		} else {
 			arr.push('<dd lay-value="" class="' + FORM_SELECT_TIPS + '">' + tips + '</dd>');
 		}
@@ -979,20 +998,20 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			});
 		}
 		arr.push('<dt style="display:none;"> </dt>');
-		arr.push('<dd class="' + FORM_SELECT_TIPS + ' ' + FORM_NONE + ' ' + (arr.length === 2 ? FORM_EMPTY : '') + '">\u6CA1\u6709\u9009\u9879</dd>');
+		arr.push('<dd class="' + FORM_SELECT_TIPS + ' ' + FORM_NONE + ' ' + (arr.length === 2 ? FORM_EMPTY : '') + '">' + formSelectsT('form_selects_js_00011', null, 'No options') + '</dd>');
 		return arr.join('');
 	};
 
 	Common.prototype.on = function () {
 		var _this10 = this;
 
-		//事件绑定
+		// Bind events.
 		this.one();
 
 		$(document).on('click', function (e) {
 
 			if (!$(e.target).parents('.' + FORM_TITLE)[0]) {
-				//清空input中的值
+				// Clear input values.
 				$('.' + PNAME + ' dl .' + DD_HIDE).removeClass(DD_HIDE);
 				$('.' + PNAME + ' dl dd.' + FORM_EMPTY).removeClass(FORM_EMPTY);
 				$('.' + PNAME + ' dl dd.' + TEMP).remove();
@@ -1016,7 +1035,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 		if (!label.find('span').length) {
 			left = 0;
 		} else if (call) {
-			//校正归位
+			// Correct the position.
 			var span = label.find('span:last');
 			span.css('display') == 'none' ? span = span.prev()[0] : span = span[0];
 			var spos = this.getPosition(span);
@@ -1053,29 +1072,29 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 	Common.prototype.one = function (target) {
 		var _this11 = this;
 
-		//一次性事件绑定
+		// One-time event binding.
 		$(target ? target : document).off('click', '.' + FORM_TITLE).on('click', '.' + FORM_TITLE, function (e) {
 			var othis = $(e.target),
 			    title = othis.is(FORM_TITLE) ? othis : othis.parents('.' + FORM_TITLE),
 			    dl = title.next(),
 			    id = dl.attr('xid');
 
-			//清空非本select的input val
+			// Clear input values from other selects.
 			$('dl[xid]').not(dl).each(function (index, item) {
 				_this11.clearInput($(item).attr('xid'));
 			});
 			$('dl[xid]').not(dl).find('dd.' + DD_HIDE).removeClass(DD_HIDE);
 
-			//如果是disabled select
+			// Disabled select.
 			if (title.hasClass(DIS)) {
 				return false;
 			}
-			//如果点击的是右边的三角或者只读的input
+			// Clicked the right triangle or readonly input.
 			if (othis.is('.' + SANJIAO) || othis.is('.' + INPUT + '[readonly]')) {
 				_this11.changeShow(title, !title.parents('.' + FORM_SELECT).hasClass(FORM_SELECTED));
 				return false;
 			}
-			//如果点击的是input的右边, focus一下
+			// Focus when clicking the right side of the input.
 			if (title.find('.' + INPUT + ':not(readonly)')[0]) {
 				var input = title.find('.' + INPUT),
 				    epos = { x: e.pageX, y: e.pageY },
@@ -1091,19 +1110,19 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 				}
 			}
 
-			//如果点击的是可搜索的input
+			// Clicked a searchable input.
 			if (othis.is('.' + INPUT)) {
 				var fs = data[id];
 				_this11.search(id, e, fs.config.searchUrl);
 				//_this11.changeShow(title, true);
 				return false;
 			}
-			//如果点击的是x按钮
+			// Clicked the x button.
 			if (othis.is('i[fsw="' + NAME + '"]')) {
 				var val = _this11.getItem(id, othis),
 				    dd = dl.find('dd[lay-value=\'' + val.value + '\']');
 				if (dd.hasClass(DISABLED)) {
-					//如果是disabled状态, 不可选, 不可删
+					// Disabled items cannot be selected or deleted.
 					return false;
 				}
 				_this11.handlerLabel(id, dd, false, val);
@@ -1116,22 +1135,22 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 		$(target ? target : document).off('click', 'dl.' + DL).on('click', 'dl.' + DL, function (e) {
 			var othis = $(e.target);
 			if (othis.is('.' + LINKAGE) || othis.parents('.' + LINKAGE)[0]) {
-				//linkage的处理
+				// Handle linkage.
 				othis = othis.is('li') ? othis : othis.parents('li[xm-value]');
 				var _group = othis.parents('.xm-select-linkage-group'),
 				    _id = othis.parents('dl').attr('xid');
 				if (!_id) {
 					return false;
 				}
-				//激活li
+				// Activate li.
 				_group.find('.xm-select-active').removeClass('xm-select-active');
 				othis.addClass('xm-select-active');
-				//激活下一个group, 激活前显示对应数据
+				// Activate the next group and show matching data first.
 				_group.nextAll('.xm-select-linkage-group').addClass('xm-select-linkage-hide');
 				var nextGroup = _group.next('.xm-select-linkage-group');
 				nextGroup.find('li').addClass('xm-select-linkage-hide');
 				nextGroup.find('li[pid="' + othis.attr('xm-value') + '"]').removeClass('xm-select-linkage-hide');
-				//如果没有下一个group, 或没有对应的值
+				// No next group or no matching value.
 				if (!nextGroup[0] || nextGroup.find('li:not(.xm-select-linkage-hide)').length == 0) {
 					var vals = [],
 					    index = 0,
@@ -1179,11 +1198,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			var id = dd.parent('dl').attr('xid');
 
 			if (dd.hasClass(DISABLED)) {
-				//被禁用选项的处理
+				// Handle disabled options.
 				return false;
 			}
 
-			//菜单功效
+			// Menu behavior.
 			if (othis.is('i.icon-caidan')) {
 				var opens = [],
 				    closes = [];
@@ -1196,10 +1215,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 				});
 				return false;
 			}
-			//树状结构的选择
+			// Select tree structure items.
 			var treeId = dd.attr('tree-id');
 			if (treeId) {
-				//忽略右边的图标
+				// Ignore the icon on the right.
 				if (othis.is('i:not(.icon-expand)')) {
 					_this11.handlerLabel(id, dd, !dd.hasClass(THIS));
 					return false;
@@ -1239,7 +1258,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			}
 
 			if (dd.hasClass(FORM_SELECT_TIPS)) {
-				//tips的处理
+				// Handle tips.
 				var btn = othis.is('.' + CZ) ? othis : othis.parents('.' + CZ);
 				if (!btn[0]) {
 					return false;
@@ -1352,14 +1371,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			return;
 		}
 		this.checkHideSpan(key, label);
-		//计算input的提示语
+		// Calculate the input placeholder.
 		this.changePlaceHolder(label);
-		//计算高度
+		// Calculate height.
 		this.retop(label.parents('.' + FORM_SELECT));
 		this.calcLabelLeft(label, 0, true);
-		//表单默认值
+		// Default form value.
 		this.setHidnVal(key, label);
-		//title值
+		// Title value.
 		label.parents('.' + FORM_TITLE + ' .' + NAME).attr('title', data[key].values.map(function (val) {
 			return val.name;
 		}).join(','));
@@ -1402,7 +1421,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 		}).join(','));
 	};
 	
-	//点击监听
+	// Click listener.
 	Common.prototype.handlerLabel = function (id, dd, isAdd, oval, notOn) {
 		var div = $('[xid="' + id + '"]').prev().find('.' + LABEL),
 		    val = dd && this.getItem(id, dd),
@@ -1428,11 +1447,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 		var dl = $('dl[xid="' + id + '"]');
 		isAdd ? (dd && dd[0] ? (dd.addClass(THIS), dd.removeClass(TEMP)) : dl.find('.xm-select-linkage')[0] && this.linkageAdd(id, val), this.addLabel(id, div, val), vals.push(val)) : (dd && dd[0] ? dd.removeClass(THIS) : dl.find('.xm-select-linkage')[0] && this.linkageDel(id, val),this.remove(vals, val), this.delLabel(id, div, val));
 		
-		if(isAdd){//*jobclass *cityclass 检查 搜索出的下拉列表 中是否有属于 当前选中项 的 下级类别
-			if(fs.config.radio){//单选模式下先全部设为
+		if(isAdd){//*jobclass *cityclass checks whether search results contain child categories of the selected item.
+			if(fs.config.radio){// In radio mode, reset all first.
 				dl.find('.'+DISABLED).removeClass(DISABLED+' '+THIS);
 			}
-			//检查已选项 且已选项不在搜出列表里的情况下 如果该选中项是已选项的上级/上上级 先去掉已选项值
+			// If a selected item is not in the search results and this selected item is its parent, remove the selected value first.
 			
 			var valLabelBuffer = {};
 			var cityparent		= 0;
@@ -1441,7 +1460,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 				if(fs.config.xmtype=='jobclass'){
 					if(jt[val.value]){
 						if(jt[val.value].indexOf(vals[i].value)!=-1 || jt[val.value].indexOf(vals[i].value.toString())!=-1){
-							//值操作
+							// Value operation.
 							valLabelBuffer.value = vals[i].value;
 							_this18.remove(vals, valLabelBuffer);
 							_this18.delLabel(id, div, valLabelBuffer);
@@ -1455,7 +1474,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 						if((ct[val.value].indexOf(vals[i].value)!=-1 || ct[val.value].indexOf(vals[i].value.toString())!=-1)
 							||(ct[val.value].indexOf(cityparent)!=-1 || ct[val.value].indexOf(cityparent.toString())!=-1)
 							){
-							//值操作
+							// Value operation.
 							valLabelBuffer.value = vals[i].value;
 							_this18.remove(vals, valLabelBuffer);
 							_this18.delLabel(id, div, valLabelBuffer);
@@ -1465,19 +1484,19 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 				}
 			}
 
-			//同列表下的多级判断
+			// Multi-level check within the same list.
 			var valBuffer = {};
 			if(fs.config.xmtype=='jobclass'){
 				dd.parent().children('dd[lay-value]').each(function(index,item){
 					var svalnum = Number($(item).attr('lay-value')),
 						svalstr = $(item).attr('lay-value');
 					
-					if(jt[val.value] && (jt[val.value].indexOf(svalnum)!=-1 || jt[val.value].indexOf(svalstr)!=-1)){//属于该选中项的次级 1,设为不可选状态和添加已选中状态样式;2,去掉输入框中已选的属下三级、值 
-						//设为不可选状态
+					if(jt[val.value] && (jt[val.value].indexOf(svalnum)!=-1 || jt[val.value].indexOf(svalstr)!=-1)){// Child of this selected item: disable it, mark selected, and remove selected descendants from the input.
+						// Set disabled state.
 						$(item).addClass(DISABLED);
 						$(item).children('div').addClass(DISABLED);
 						$(item).addClass(THIS);
-						//值操作
+						// Value operation.
 						valBuffer.value = svalnum;
 						_this18.remove(vals, valBuffer);
 						_this18.delLabel(id, div, valBuffer);
@@ -1492,27 +1511,27 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 				dd.parent().children('dd[lay-value]').each(function(index,item){
 					var svalnum = Number($(item).attr('lay-value')),
 						svalstr = $(item).attr('lay-value');
-					if(ct[val.value]){//选中项含有次级分类 判断搜出项是否属于该选中项的次级 1,设为不可选状态和添加已选中状态样式;2,去掉输入框中已选的次级、值 
+					if(ct[val.value]){// Selected item has child categories; check whether search results belong to its child categories.
 						
-						if(ctwoarr.indexOf(svalnum)!=-1 || ctwoarr.indexOf(svalstr)!=-1){//查看是否属于选中项的次级城市
+						if(ctwoarr.indexOf(svalnum)!=-1 || ctwoarr.indexOf(svalstr)!=-1){// Check whether it belongs to a child city of the selected item.
 							$(item).addClass(DISABLED);
 							$(item).children('div').addClass(DISABLED);
 							$(item).addClass(THIS);
-							//值操作
+							// Value operation.
 							valBuffer.value = svalnum;
 							_this18.remove(vals, valBuffer);
 							_this18.delLabel(id, div, valBuffer);
 							
-						}else{//不属于次级则查看是否属于三级城市
-							if(ci && ci.indexOf(val.value)!=-1){//首先判断选中项是否是一级城市
+						}else{// If not a direct child, check whether it belongs to a level-3 city.
+							if(ci && ci.indexOf(val.value)!=-1){// First check whether the selected item is a level-1 city.
 								for(var i=0;i<ctwoarr.length;i++){
-									cthreearr = ct[ctwoarr[i]];//三级城市集合
+									cthreearr = ct[ctwoarr[i]];// Level-3 city set.
 									if(cthreearr && (cthreearr.indexOf(svalnum)!=-1 || cthreearr.indexOf(svalstr)!=-1)){
-										//设为不可选状态
+										// Set disabled state.
 										$(item).addClass(DISABLED);
 										$(item).children('div').addClass(DISABLED);
 										$(item).addClass(THIS);
-										//值操作
+										// Value operation.
 										valBuffer.value = svalnum;
 										_this18.remove(vals, valBuffer);
 										_this18.delLabel(id, div, valBuffer);
@@ -1526,7 +1545,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			}
 			
 
-		}else{//取消选中 将属下类别全部设为可选未选中状态
+		}else{// Deselected; set all child categories to selectable and unselected.
 			if(fs.config.xmtype=='jobclass'){
 				dd.parent().children('dd[lay-value]').each(function(index,item){
 					var svalnum = Number($(item).attr('lay-value')),
@@ -1548,7 +1567,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 					if(ct[val.value]){
 						if(ct[val.value].indexOf(svalnum)!=-1 || ct[val.value].indexOf(svalstr)!=-1){
 							remove = true;
-						}else if(ci.indexOf(val.value)!=-1 || ci.indexOf(val.value.toString())!=-1){//点中的是一级的话，还需要查看是否有跨级
+					}else if(ci.indexOf(val.value)!=-1 || ci.indexOf(val.value.toString())!=-1){// If the selected item is level 1, also check cross-level items.
 							for(var i=0;i<ct[val.value].length;i++){
 								if(ct[ct[val.value][i]] && (ct[ct[val.value][i]].indexOf(svalnum)!=-1 || ct[ct[val.value][i]].indexOf(svalstr)!=-1)){
 									remove = true;
@@ -1567,14 +1586,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 		}
 
 		if (!div[0]) return;
-		//单选选完后直接关闭选择域
+		// Close the select panel directly after radio selection.
 		if (fs.config.radio) {
 			this.changeShow(div, false);
 		}
-		//移除表单验证的红色边框
+		// Remove the red border from form validation.
 		div.parents('.' + FORM_TITLE).prev().removeClass('layui-form-danger');
 
-		//清空搜索值
+		// Clear search value.
 		fs.config.clearInput && this.clearInput(id);
 
 		this.commonHandler(id, div);
@@ -1586,25 +1605,25 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 		if (!val) return;
 		var tips = 'fsw="' + NAME + '"';
 
-		var nameval=val.name.length>3 ? val.name.substring(0,3)+'..' :  val.name;//*jobclass *cityclass,约束输入框中的显示长度
+		var nameval=val.name.length>3 ? val.name.substring(0,3)+'..' :  val.name;//*jobclass *cityclass, limit the display length in the input.
 		
 		var _ref = [$('<span ' + tips + ' value="' + val.value + '"><font ' + tips + '>' + nameval + '</font></span>'), $('<i ' + tips + ' class="xm-iconfont icon-close"></i>')],
 		    $label = _ref[0],
 		    $close = _ref[1];
 
 		$label.append($close);
-		//如果是radio模式
+		// Radio mode.
 		var fs = data[id];
 		if (fs.config.radio) {
 			fs.values.length = 0;
 			$('dl[xid="' + id + '"]').find('dd.' + THIS + ':not([lay-value="' + val.value + '"])').removeClass(THIS);
 			div.find('span').remove();
 		}
-		//如果是固定高度
+		// Fixed height.
 		//div.find('input').css('width', '50px');
 		div.find('input').before($label);
 		//placeholder
-		div.find('input').attr('placeholder','请输入关键字');
+		div.find('input').attr('placeholder', formSelectsT('form_selects_js_00009', null, 'Please enter keyword'));
 	};
 
 	Common.prototype.delLabel = function (id, div, val) {
@@ -1637,7 +1656,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 	};
 
 	Common.prototype.retop = function (div) {
-		//计算dl显示的位置
+		// Calculate dl display position.
 		var dl = div.find('dl'),
 		    top = div.offset().top + div.outerHeight() + 5 - $win.scrollTop(),
 		    dlHeight = dl.outerHeight();
@@ -1667,7 +1686,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 	};
 
 	Common.prototype.changeShow = function (children, isShow) {
-		//显示于隐藏
+		// Show or hide.
 		$('.layui-form-selected').removeClass('layui-form-selected');
 		var top = children.parents('.' + FORM_SELECT),
 		    realShow = top.hasClass(FORM_SELECTED),
@@ -1686,7 +1705,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			top.find('dl .' + FORM_EMPTY).removeClass(FORM_EMPTY);
 			top.find('dl dd.' + DD_HIDE).removeClass(DD_HIDE);
 			top.find('dl dd.' + TEMP).remove();
-			//计算ajax数据是否为空, 然后重新请求数据
+			// Check whether ajax data is empty, then request again.
 			if (id && data[id] && data[id].config.isEmpty) {
 				this.triggerSearch(top);
 			}
@@ -1701,8 +1720,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 	};
 
 	Common.prototype.changePlaceHolder = function (div) {
-		//显示于隐藏提示语
-		//调整pane模式下的高度
+		// Show or hide placeholder text.
+		// Adjust height in pane mode.
 		var title = div.parents('.' + FORM_TITLE);
 		title[0] || (title = div.parents('dl').prev());
 		if (!title[0]) {
@@ -1710,12 +1729,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 		}
 
 		var id = div.parents('.' + PNAME).find('dl[xid]').attr('xid');
-		if (data[id] && data[id].config.height) {//既然固定高度了, 那就看着办吧
+		if (data[id] && data[id].config.height) {// Fixed height is configured, so keep the current behavior.
 
 		} else {
 			var height = title.find('.' + NAME)[0].clientHeight;
 			title.css('height', (height > 36 ? height + 4 : height) + 'px');
-			//如果是layui pane模式, 处理label的高度
+			// In layui pane mode, handle label height.
 			var label = title.parents('.' + PNAME).parent().prev();
 			if (label.is('.layui-form-label') && title.parents('.layui-form-pane')[0]) {
 				height = height > 36 ? height + 4 : height;
@@ -1783,7 +1802,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			return;
 		}
 		if (dl.find('.xm-select-linkage')[0]) {
-			//针对多级联动的处理
+			// Handle multi-level linkage.
 			data[id].values.concat([]).forEach(function (item, idx) {
 				var vs = item.value.split('/');
 				var pid = void 0,
@@ -1840,7 +1859,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 	};
 
 	Common.prototype.onreset = function () {
-		//监听reset按钮, 然后重置多选
+		// Listen for reset buttons, then reset multi-selects.
 		$(document).on('click', '[type=reset]', function (e) {
 			$(e.target).parents('form').find('.' + PNAME + ' dl[xid]').each(function (index, item) {
 				var id = item.getAttribute('xid'),
@@ -1942,13 +1961,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			    dd = void 0,
 			    isAdd = true;
 			if (isAppend == false) {
-				//删除传入的数组
+				// Remove the passed array.
 				isAdd = false;
 			} else if (isAppend == true) {
-				//追加模式
+				// Append mode.
 				isAdd = true;
 			} else {
-				//删除原有的数据
+				// Remove existing data.
 				common.removeAll(id);
 			}
 			if (isAdd) {

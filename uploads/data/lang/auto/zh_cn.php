@@ -16515,6 +16515,18 @@ return array(
   'webuploader_js_00029' => '上传失败！',
   'webuploader_js_00030' => '不能预览！',
 
+  'form_selects_js_00001' => '请选择',
+  'form_selects_js_00002' => '全选',
+  'form_selects_js_00003' => '清空',
+  'form_selects_js_00004' => '反选',
+  'form_selects_js_00005' => '换肤',
+  'form_selects_js_00006' => '请求中',
+  'form_selects_js_00007' => '无匹配项',
+  'form_selects_js_00008' => '服务异常',
+  'form_selects_js_00009' => '请输入关键字',
+  'form_selects_js_00010' => '请搜索',
+  'form_selects_js_00011' => '没有选项',
+
   'admin_demo_00001' => '选项1',
   'admin_demo_00002' => '选项2',
   'admin_demo_00003' => '选项3',

@@ -16514,6 +16514,18 @@ return array(
   'webuploader_js_00029' => 'Upload failed!',
   'webuploader_js_00030' => 'Cannot preview!',
 
+  'form_selects_js_00001' => 'Please select',
+  'form_selects_js_00002' => 'Select All',
+  'form_selects_js_00003' => 'Clear',
+  'form_selects_js_00004' => 'Invert',
+  'form_selects_js_00005' => 'Theme',
+  'form_selects_js_00006' => 'Loading',
+  'form_selects_js_00007' => 'No matching options',
+  'form_selects_js_00008' => 'Service error',
+  'form_selects_js_00009' => 'Please enter keyword',
+  'form_selects_js_00010' => 'Search',
+  'form_selects_js_00011' => 'No options',
+
   'admin_demo_00001' => 'Option 1',
   'admin_demo_00002' => 'Option 2',
   'admin_demo_00003' => 'Option 3',

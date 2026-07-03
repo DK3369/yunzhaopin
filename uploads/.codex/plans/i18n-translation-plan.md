@@ -428,6 +428,8 @@ Batch 43 执行范围：WebUploader 上传组件 `js/webuploader/upload.js`。�
 
 Batch 44 执行范围：WebUploader 裁剪上传组件 `js/webuploader/uploader.js`。迁移浏览器不支持、执行中、上传成功、上传失败、不能预览、预览出错等可见文案，新增 key 使用 `webuploader_js_00028` 起始，并复用 `webuploader_js_00004`、`webuploader_js_00015`、`webuploader_js_00026`；触碰到的中文注释改为英文。本批不改 `file._cropData`、`file.source`、`file.size`、`FRAME_WIDTH`、`cropImage` hook、`before-send-file`、`selectCb(src)`、`serverPath/tplPath`、`uploadSuccess` 返回值判断、裁剪尺寸、坐标、状态码或上传返回结构。
 
+Batch 45 执行范围：Layui formSelects 多选组件 `js/layui/formSelects-v4.js`。迁移默认提示、快捷按钮、远程搜索状态、无匹配项、服务异常、搜索 placeholder 和空选项等运行态文案，新增 key 使用 `form_selects_js_00001` 起始；触碰到的中文注释改为英文。本批不改 `xm-select` 配置结构、DOM class/id、快捷按钮数组形状、事件回调、ajax 请求/响应字段、`value/name/selected/disabled/children` 映射、job/city 搜索数据结构、联动/单选/树形模式或返回数据判断。
+
 ## 11. 推荐执行顺序
 
 1. 修复语言包损坏项和扫描脚本误报规则。
