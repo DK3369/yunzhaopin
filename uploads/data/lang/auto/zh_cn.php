@@ -16442,6 +16442,8 @@ return array(
   'search_js_00002' => '收起',
   'search_js_00003' => '没有条件，无法保存！',
 
+  'city_js_00001' => '请选择',
+
   'admin_demo_00001' => '选项1',
   'admin_demo_00002' => '选项2',
   'admin_demo_00003' => '选项3',

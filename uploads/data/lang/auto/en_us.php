@@ -16441,6 +16441,8 @@ return array(
   'search_js_00002' => 'Collapse',
   'search_js_00003' => 'No conditions to save!',
 
+  'city_js_00001' => 'Please select',
+
   'admin_demo_00001' => 'Option 1',
   'admin_demo_00002' => 'Option 2',
   'admin_demo_00003' => 'Option 3',

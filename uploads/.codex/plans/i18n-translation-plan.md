@@ -416,6 +416,8 @@ Batch 37 执行范围：前台日期选择器 `js/date.js`。迁移上一段/下
 
 Batch 38 执行范围：前台列表搜索展开 JS `js/search.js`。迁移更多/收起按钮和保存搜索器空条件提示，新增 key 使用 `search_js_00001` 起始；切换判断需兼容旧中文文案和新英文文案。触碰到的中文注释改为英文。本批不改搜索 URL、筛选参数、DOM class/id、hover 行为、选中项删除或跳转逻辑。
 
+Batch 39 执行范围：省市县联动下拉 JS `js/city.js`。迁移默认 option “请选择”，新增 key 使用 `city_js_00001` 起始；触碰到的中文注释改为英文。本批不改 layui form 事件、ct/cn 分类数据、select name/id、三级联动显示逻辑或 form.render 调用。
+
 ## 11. 推荐执行顺序
 
 1. 修复语言包损坏项和扫描脚本误报规则。
