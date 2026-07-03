@@ -430,6 +430,8 @@ Batch 44 执行范围：WebUploader 裁剪上传组件 `js/webuploader/uploader.
 
 Batch 45 执行范围：Layui formSelects 多选组件 `js/layui/formSelects-v4.js`。迁移默认提示、快捷按钮、远程搜索状态、无匹配项、服务异常、搜索 placeholder 和空选项等运行态文案，新增 key 使用 `form_selects_js_00001` 起始；触碰到的中文注释改为英文。本批不改 `xm-select` 配置结构、DOM class/id、快捷按钮数组形状、事件回调、ajax 请求/响应字段、`value/name/selected/disabled/children` 映射、job/city 搜索数据结构、联动/单选/树形模式或返回数据判断。
 
+Batch 46 执行范围：自有上传封装、前端 i18n helper 和 layer 兼容封装 `js/layui.upload.js`、`js/yun-i18n.js`、`js/layui/phpyun_layer.js`。本批只清理中文注释和注释示例，不新增语言包 key；不改上传 URL、上传字段、预览 DOM 结构、`res.data.url/picurl` 返回读取、layer 兼容方法签名、默认参数、遮罩配置、`yunT/yunAt/yunAutoT/yunLc` 对外 API、语言包加载流程或自动 key 匹配规则。
+
 ## 11. 推荐执行顺序
 
 1. 修复语言包损坏项和扫描脚本误报规则。

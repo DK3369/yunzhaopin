@@ -1,32 +1,32 @@
 /**
- * 使2017.11.15之前对独立弹窗组件layer.min.js的调用方法兼容于layui.use(['layer'])
+ * Make layer.min.js calls from before 2017-11-15 compatible with layui.use(['layer']).
 
- * 注意：该文件必须在 layui/layui.js 文件之后引入页面（同时删除原来引用的 js/layer/layer.min.js）
+ * This file must be loaded after layui/layui.js. Remove the old js/layer/layer.min.js include.
 */
 
 /*
- * 使旧的layer.msg()调用兼容layui.use(['layer'])
+ * Make old layer.msg() calls compatible with layui.use(['layer']).
  *
- * msg : 消息内容
- * timeSecond : 时间，单位秒，可以有小数位
- * icon ： 1 打勾，2打叉，5/9伤心，6/8笑脸，7感叹号
- * callback : 消息展示结束后回调函数
+ * msg: message content.
+ * timeSecond: seconds; decimals are supported.
+ * icon: 1 check, 2 cross, 5/9 sad face, 6/8 smile, 7 exclamation.
+ * callback: called after the message closes.
 */
 layui.use(['layer'], function(){
 	var layer = layui.layer,
     $ = layui.$;
 
-	//先保存原始的layer.msg()方法
+	// Save the original layer.msg() method.
 	layer.oriMsg = layer.msg;
 
-	//再重写layer.msg()
+	// Then override layer.msg().
   // layer.msg = function (msg, timeSecond = 1.5, icon = 6, callback = function(){}){
   layer.msg = function (msg, timeSecond , icon , callback ){
     timeSecond = (typeof timeSecond !== 'undefined') ?  timeSecond : 1.5;
     icon = (typeof icon !== 'undefined') ?  icon : 6;
     callback = (typeof callback !== 'undefined') ?  callback : function(){};
 
-  	//兼容原本layui.use(['layer'])的layer.msg()用法
+	// Preserve the original layui.use(['layer']) layer.msg() call style.
   	if(typeof(timeSecond) == 'object'){
   		if(typeof(icon) == 'function'){
   			return layer.oriMsg(msg, timeSecond, icon);
@@ -38,8 +38,8 @@ layui.use(['layer'], function(){
 
     var tm = timeSecond * 1000;
 
-		//layui.use(['layer'])中icon： 1 打勾，2打叉，5伤心，6笑脸，7感叹号
-		//layer.min.js中icon： 8失败，9成功
+		// In layui.use(['layer']): icon 1 check, 2 cross, 5 sad face, 6 smile, 7 exclamation.
+		// In layer.min.js: icon 8 failure, 9 success.
 		if(icon == 8){
 			icon = 5;
 		}
@@ -51,7 +51,7 @@ layui.use(['layer'], function(){
 			{
 				time : tm,
 				icon : icon,
-                shade: [0.8, '#393D49'] //加过滤层黑色透明背景
+                shade: [0.8, '#393D49'] // Add a black transparent shade layer.
 			},
 			function(){
 				callback();
@@ -59,7 +59,7 @@ layui.use(['layer'], function(){
 		);
   };//end layer.msg
 
-	//加载动画加遮罩层
+	// Add a shade layer to the loading animation.
 	layer.oriLoad = layer.load;
 	layer.load = function(icon,options)
 	{
@@ -70,12 +70,12 @@ layui.use(['layer'], function(){
 		return layer.oriLoad(icon, options);
 	};
 
-	//alert对话框
+	// Alert dialog.
 	layer.oriAlert = layer.alert;
 	layer.alert = function(msg, icon, title, callback)
 	{
 		if(typeof icon == 'object'){
-			//layui的layer模块原本调用方式
+			// Original layui layer module call style.
 			if(typeof title == 'function'){
 				return layer.oriAlert(msg, icon, title);
 			}
@@ -83,7 +83,7 @@ layui.use(['layer'], function(){
 				return layer.oriAlert(msg, icon);
 			}
 		}else if(typeof icon != 'undefined' && typeof title == 'undefined'){
-			//兼容layer.min.js的调用方式
+			// Compatible with layer.min.js call style.
 			return layer.msg(msg, 1.5, icon);
 		}else if(typeof callback == 'function'){
 			return layer.oriAlert(msg, {title : title}, callback);
@@ -93,12 +93,12 @@ layui.use(['layer'], function(){
 	}
 
   /**
-   * 【页面层（和父窗口属于同一个html页面）】 封装layer.open({type:1})
+   * Page layer in the same HTML page as the parent window. Wraps layer.open({type:1}).
    *
-   * content : 展示的内容 ： html代码（字符串），dom节点（例如：$("#id") ）
+   * content: display content, such as HTML strings or DOM nodes like $("#id").
    * area : ['300px', '200px']
-   * offset :  ['100px', '50px'] , 'auto', 'r' 等
-   * options : {} 其他layui文档中的参数
+   * offset: ['100px', '50px'], 'auto', 'r', etc.
+   * options: other parameters from the layui documentation.
   */
   // layer.page = function (content, title, area, offset = 'auto', options = {}){
   layer.page = function (content, title, area, offset , options ){
@@ -114,9 +114,9 @@ layui.use(['layer'], function(){
   	return layer.open(options);
   };
 
-  //封装layer.open({type:2})【iframe页面层】
+  // Wrap layer.open({type:2}) for iframe page layers.
   // layer.iframe = function (url, title, area, offset = 'auto', options = {}){
-  layer.iframe = function (url, title, area, offset, options ){//浏览器兼容写法
+  layer.iframe = function (url, title, area, offset, options ){// Browser-compatible syntax.
     offset = (typeof offset !== 'undefined') ?  offset : 'auto';
     options = (typeof options !== 'undefined') ?  options : {};
 
@@ -224,4 +224,3 @@ if(typeof($) !== 'undefined'){
     return retval;
   };//end $.layer  
 }
-

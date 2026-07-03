@@ -1,7 +1,7 @@
 /**
- * pc文件上传
+ * PC file upload.
 */
-// 多图片上传预览图片删除
+// Remove a preview image from multi-image uploads.
 $(document).on("click", ".del_preview_multi_pic", function () {
     $(this).parents('.preview_multi_pic').remove();
 });
@@ -11,11 +11,11 @@ layui.use('upload', function(){
 		,layer = layui.layer
 		,device = layui.device();
 
-	var layupload_type = $("#layupload_type").val();   //文件上传方式   2、选完文件后自动上传
-	var laynoupload = $("#laynoupload").val(); 		   //1、选完不上传
+	var layupload_type = $("#layupload_type").val();   // File upload mode. 2 means upload automatically after selecting files.
+	var laynoupload = $("#laynoupload").val(); 		   // 1 means do not upload after selecting files.
 	var uploadmulti = 0;
     uploadmulti = $("#uploadmulti").val();
-    if (uploadmulti == 1) {// 多文件上传
+    if (uploadmulti == 1) {// Multi-file upload.
         upload.render({
             elem: '.noupload'
             ,multiple: true
@@ -34,10 +34,10 @@ layui.use('upload', function(){
             }
         });
 	} else {
-        //选完不上传，url暂未用到，只是需要其样式
+        // Do not upload after selecting files; url is only needed for its style.
         if (laynoupload == 1){
             var layfiletype = $("#layfiletype").val();
-            //上传文件类型
+            // Uploaded file type.
             if (layfiletype == 2){
                 var layaccept = 'file', layexts = 'doc|docx|rar|zip|pdf|xls|xlsx';
             }else{
@@ -46,12 +46,12 @@ layui.use('upload', function(){
             upload.render({
                 elem: '.noupload'
                 ,auto: false
-                ,bindAction: '#test9'   //触发上传的对象，暂未用到
+                ,bindAction: '#test9'   // Upload trigger element, currently unused.
                 ,accept: layaccept
                 ,exts: layexts
                 ,choose: function(obj){
                     if(this.imgid){
-                        //预读本地文件示例，不支持ie8/9
+                        // Preview local files; IE8/9 are not supported.
                         var imgid = null,
                             parentid = null;
                         if(this.imgid){
@@ -66,7 +66,7 @@ layui.use('upload', function(){
                                 $('#'+imgid).attr('src', result);
                             }else if(imgid && $('#'+imgid).length>0){
                                 $('#'+imgid).removeClass('none');
-                                $('#'+imgid).attr('src', result); //图片链接（base64）
+                                $('#'+imgid).attr('src', result); // Image URL in base64.
                             }
                             $('#checka').hide();
                         });
@@ -107,7 +107,7 @@ layui.use('upload', function(){
                     }
                     ,done: function(res){
                         layer.closeAll('loading');
-                        if(res.code > 0){                //上传失败，返回失败原因
+                        if(res.code > 0){                // Upload failed; return the failure reason.
                             return layer.msg(res.msg,{icon: 5, time: 2000});
                         }else{
                             if(res.msg){
@@ -116,7 +116,7 @@ layui.use('upload', function(){
                             if(this.name=='pic'){
                                 $('input[name="'+ this.name +'"]').val(res.data.url);
                             }
-                            //图片外层有其他元素
+                            // The image has a wrapper element.
                             if ($('#'+this.parentid).length>0){
                                 $('#'+this.parentid).removeClass('none');
                                 $('#'+this.imgid).attr('src', res.data.url);
@@ -134,11 +134,11 @@ layui.use('upload', function(){
             }
         }
 
-        // 新选完不上传 - 同一页面多上传功能
+        // New no-auto-upload mode: multiple upload controls on one page.
         $(".lay-uploads").each(function(index, item) {
             let file = $(item).data('file');
             let filetype = $(item).data('filetype');
-            //上传文件类型
+            // Uploaded file type.
             if (filetype == 2){
                 let layaccept = file,
                     layexts = 'doc|docx|rar|zip|pdf|xls|xlsx';
@@ -154,7 +154,7 @@ layui.use('upload', function(){
                 ,exts: layexts
                 ,choose: function(obj){
                     if(this.imgid){
-                        //预读本地文件示例，不支持ie8/9
+                        // Preview local files; IE8/9 are not supported.
                         var imgid = null,
                             parentid = null;
                         if(this.imgid){
@@ -169,7 +169,7 @@ layui.use('upload', function(){
                                 $('#'+imgid).attr('src', result);
                             }else if(imgid && $('#'+imgid).length>0){
                                 $('#'+imgid).removeClass('none');
-                                $('#'+imgid).attr('src', result); //图片链接（base64）
+                                $('#'+imgid).attr('src', result); // Image URL in base64.
                             }
                             $('#checka').hide();
                         });

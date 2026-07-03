@@ -1,10 +1,10 @@
 /**
- * yun-i18n.js — 前端统一翻译（对应 PHP yun_t / yun_at / yun_auto_t）
+ * yun-i18n.js - frontend unified translation, matching PHP yun_t / yun_at / yun_auto_t.
  *
- * yunT('home.search_placeholder')   结构化 key
- * yunAt('wap_00703')                编号 key（yunT 别名）
- * yunAutoT('成为企业会员…')          中文兜底（auto 语言包）
- * yunLc('save')                     后台 lc 命名空间
+ * yunT('home.search_placeholder')   structured key.
+ * yunAt('wap_00703')                numbered key; alias of yunT.
+ * yunAutoT('auto_key_00001')        auto language-pack fallback.
+ * yunLc('save')                     admin lc namespace.
  */
 (function (global) {
     'use strict';
