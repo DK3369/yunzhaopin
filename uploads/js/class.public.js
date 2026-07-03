@@ -1,3 +1,22 @@
+function classPublicT(key, params, fallback) {
+    var text;
+    if (typeof yunT === 'function') {
+        text = yunT(key, params, fallback);
+    } else if (typeof yunAt === 'function') {
+        text = yunAt(key, params, fallback);
+    } else {
+        text = fallback !== undefined ? fallback : key;
+    }
+    if (params && typeof text === 'string') {
+        for (var name in params) {
+            if (Object.prototype.hasOwnProperty.call(params, name)) {
+                text = text.split('{' + name + '}').join(params[name]);
+            }
+        }
+    }
+    return text;
+}
+
 $(document).ready(function () {
     $('.delete').on('click', function () {
         var id = $(this).attr('data-id');
@@ -22,14 +41,14 @@ $(document).ready(function () {
 	);
 
     $(".com_admin_ask").hover(function () {
-        layer.tips("加入搜索器，方便下次直接搜索，无需点击众多条件！", this, {
+        layer.tips(classPublicT('class_js_00001', null, 'Add to search filters so you can search directly next time.'), this, {
             guide: 1,
             style: ['background-color:#F26C4F; color:#fff;top:-7px', '#F26C4F']
         });
     }, function () { layer.closeTips(); });
 });
 
-//职位类别选择弹出框---------------------------------------------------------------------------------------------------------------开始----------------------
+// Job category selector popup start.
 $(document).ready(function () {
     $('#jobdiv').delegate('.yun_tck_con_list_jobclass1 ul .jobclassid1', 'click', function () {
         if (window.jobclass1_checkbox_type == 'hidden') {
@@ -39,16 +58,14 @@ $(document).ready(function () {
         var jobclassid2_html = '';
         if (typeof (jt[jobclassid1]) == 'object') {
             if (jt[jobclassid1].length <= 0) {
-                //没有子类别，选中当前节点
+                // No child category; select current node.
                 jobclass_item_select($(this).attr('codeid'), $(this).attr('codename'), 1, $(this));
             } else {
-                //存在子类别，加载子类列表
-                //全选
+                // Child categories exist; load child list.
+                // Select all.
                 if (window.jobclass2_checkbox_type != 'hidden') {
                     jobclassid2_html += '<li class="jobclassid2_all jobclassid2" codeid="' + jobclassid1 + '" codename="' + jn[jobclassid1] + '">' +
-											'<labelabc for="jobclassid2_all_' + jn[jobclassid1] + '"><input type="' + window.jobclass2_checkbox_type + '" name="jobclassid2_all" class="jobclassid2_all_checkbox" id="jobclassid2_all_' + jn[jobclassid1] + '"/>全部(' +
-												jn[jobclassid1] +
-											')</labelabc>' +
+											'<labelabc for="jobclassid2_all_' + jn[jobclassid1] + '"><input type="' + window.jobclass2_checkbox_type + '" name="jobclassid2_all" class="jobclassid2_all_checkbox" id="jobclassid2_all_' + jn[jobclassid1] + '"/>' + classPublicT('class_js_00002', {name: jn[jobclassid1]}, 'All ({name})') + '</labelabc>' +
 										'</li>';
                 }
                 for (var j = 0; j < jt[jobclassid1].length; j++) {
@@ -61,7 +78,7 @@ $(document).ready(function () {
                 }
             }
         } else {
-            //没有子类别，选中当前节点
+            // No child category; select current node.
             jobclass_item_select($(this).attr('codeid'), $(this).attr('codename'), 1, $(this));
         }
         if (jobclassid2_html != '') {
@@ -78,10 +95,10 @@ $(document).ready(function () {
         var jobclassid3_html = '';
         if ((typeof (jt[jobclassid2]) == 'object') && (!$(this).hasClass('jobclassid2_all'))) {
             if (jt[jobclassid2].length <= 0) {
-                //没有子类别，选中当前节点
+                // No child category; select current node.
                 var checked_all = jobclass_item_select($(this).attr('codeid'), $(this).attr('codename'), 1, $(this));
                 if ($(this).hasClass('jobclassid2_all')) {
-                    //判断是否全选项目
+                    // Check whether all items are selected.
                     if (checked_all) {
                         $(this).addClass('selected').siblings().removeClass('selected');
                     } else {
@@ -90,12 +107,10 @@ $(document).ready(function () {
                     $(this).siblings().each(function () { $(this).find('input')[0].checked = checked_all; if (checked_all) { $(this).find('input').attr('disabled', 'disabled'); } else { $(this).find('input').removeAttr('disabled'); } });
                 }
             } else {
-                //存在子类别，加载子类列表
+                // Child categories exist; load child list.
                 if (window.jobclass3_checkbox_type != 'hidden') {
                     jobclassid3_html += '<li class="jobclassid3_all jobclassid3" codeid="' + jobclassid2 + '" codename="' + jn[jobclassid2] + '">' +
-											'<labelabc for="jobclassid3_all_' + jn[jobclassid2] + '"><input type="' + window.jobclass3_checkbox_type + '" name="jobclassid3_all" class="jobclassid3_all_checkbox" id="jobclassid3_all_' + jn[jobclassid2] + '"/>全部(' +
-												jn[jobclassid2] +
-											')</labelabc>' +
+											'<labelabc for="jobclassid3_all_' + jn[jobclassid2] + '"><input type="' + window.jobclass3_checkbox_type + '" name="jobclassid3_all" class="jobclassid3_all_checkbox" id="jobclassid3_all_' + jn[jobclassid2] + '"/>' + classPublicT('class_js_00002', {name: jn[jobclassid2]}, 'All ({name})') + '</labelabc>' +
 										'</li>';
                 }
                 for (var j = 0; j < jt[jobclassid2].length; j++) {
@@ -108,10 +123,10 @@ $(document).ready(function () {
                 }
             }
         } else {
-            //没有子类别，选中当前节点
+            // No child category; select current node.
             var checked_all = jobclass_item_select($(this).attr('codeid'), $(this).attr('codename'), 1, $(this));
             if ($(this).hasClass('jobclassid2_all')) {
-                //判断是否全选项目
+                // Check whether all items are selected.
                 if (checked_all) {
                     $(this).addClass('selected').siblings().removeClass('selected');
                 } else {
@@ -126,7 +141,7 @@ $(document).ready(function () {
         }
     });
     $('#jobdiv').delegate('.yun_tck_con_list_jobclass3 ul .jobclassid3', 'click', function () {
-        //没有子类别，选中当前节点
+        // No child category; select current node.
         if ($(this).siblings('.jobclassid3_all').length > 0) {
             if ($(this).siblings('.jobclassid3_all').hasClass('selected')) {
                 return;
@@ -134,7 +149,7 @@ $(document).ready(function () {
         }
         var checked_all = jobclass_item_select($(this).attr('codeid'), $(this).attr('codename'), 1, $(this));
         if ($(this).hasClass('jobclassid3_all')) {
-            //判断是否全选项目
+            // Check whether all items are selected.
             if (checked_all) {
                 $(this).addClass('selected').siblings().removeClass('selected');
             } else {
@@ -181,9 +196,9 @@ function get_jobclass_deep() {
     }
     return window.jobclass_deep;
 }
-//选中职位类别项目
+// Select category item.
 function jobclass_item_select(jobclass_id, jobclass_name, type, jobclass_element) {
-    //单选模式
+    // Single-select mode.
     if (window.allow_select_jobclass_count == 1) {
         $('#jobdiv .yun_tit_selected .selected').html('');
         $('#jobdiv .yun_tit_selected .selected').append('<li codeid="' + jobclass_id + '" codename="' + jobclass_name + '">' +
@@ -192,7 +207,7 @@ function jobclass_item_select(jobclass_id, jobclass_name, type, jobclass_element
 									jobclass_name +
 								'</span>' +
 								'<span class="delete">' +
-									'移除' +
+									classPublicT('class_js_00003', null, 'Remove') +
 								'</span>' +
 							'</a>' +
 						'</li>');
@@ -202,7 +217,7 @@ function jobclass_item_select(jobclass_id, jobclass_name, type, jobclass_element
         //return;
     } else {
         var jobclass_items = $('#jobdiv .yun_tit_selected .selected li');
-        //检查是否已经被选中
+        // Check whether it is already selected.
         for (var i = 0; i < jobclass_items.length; i++) {
             if ($(jobclass_items[i]).attr('codeid') == jobclass_id) {
                 if ($(jobclass_items[i]).find('input').is(":hidden")) {
@@ -216,7 +231,7 @@ function jobclass_item_select(jobclass_id, jobclass_name, type, jobclass_element
                     return false;
                 }
             }
-            //判断是否所选元素的子类
+            // Check whether it is a child of the selected item.
             if (typeof (jt[jobclass_id]) == 'object') {
                 if (jt[jobclass_id].length > 0) {
                     for (var j = 0; j < jt[jobclass_id].length; j++) {
@@ -228,9 +243,9 @@ function jobclass_item_select(jobclass_id, jobclass_name, type, jobclass_element
                 }
             }
         }
-        //检查家否超出限制
+        // Check whether the limit is exceeded.
         if (jobclass_items.length >= parseInt(window.allow_select_jobclass_count)) {
-			layer.msg('最多不能超过'+parseInt(window.allow_select_jobclass_count)+'个！', 2, 8);return false;
+			layer.msg(classPublicT('class_js_00004', {count: parseInt(window.allow_select_jobclass_count)}, 'Select no more than {count} items!'), 2, 8);return false;
             $(jobclass_element).find('.delete').click();
             $('#jobdiv li[codeid=' + jobclass_id + ']').removeClass('selected');
             $('#jobdiv li[codeid=' + jobclass_id + ']').find('input')[0].checked = false;
@@ -244,16 +259,16 @@ function jobclass_item_select(jobclass_id, jobclass_name, type, jobclass_element
                                         jobclass_name +
                                     '</span>' +
                                     '<span class="delete">' +
-                                        '移除' +
+                                        classPublicT('class_js_00003', null, 'Remove') +
                                     '</span>' +
                                 '</a>' +
                             '</li>');
     }
     return true;
 }
-//确认选中的职位类别项目
+// Confirm selected category items.
 function confirm_selected_jobclass_items() {
-    //检查属否已经被选中
+    // Check whether any item is selected.
     var jobclass_items = $('#jobdiv .yun_tit_selected .selected li');
     var jobclass_ids = '';
     var jobclass_names = '';
@@ -262,9 +277,9 @@ function confirm_selected_jobclass_items() {
         jobclass_names += ',' + $(jobclass_items[i]).attr('codename');
     } 
     if(jobclass_names.length<=0){
-        layer.msg('请选择具体类别！', 2, 8);return false;
+        layer.msg(classPublicT('class_js_00005', null, 'Please select a specific category!'), 2, 8);return false;
     }else{
-        //将已选中的职位类别项目，ids,names赋值到目标元素
+        // Write selected IDs and names to target elements.
       if (window.target_jobclassin_names_tagname == 'INPUT') {
           $(window.target_jobclassin_names).val(jobclass_names.substring(1));
 		  var addtype=$("#addtype").val();
@@ -306,30 +321,30 @@ function setexample(id){
 	});
 	
 }
-//职位类别，支持单选、多选切换，限制最大选择数量，指定目标元素类型html(),val()
+// Job category selector supports single/multiple select, max count, and target element type.
 function index_job(allow_select_jobclass_count, target_jobclassin_names, target_jobclassin_ids, jobdiv_style, codeids, index_jobclass_callback) {
 	if(document.getElementById('jobdiv').style.display=='block'){
 		return;
 	}
-    if ($(target_jobclassin_names).length <= 0) {layer.msg('职位类别名称目标元素不存在！', 2, 8);return false;}
-    if ($(target_jobclassin_ids).length <= 0) { layer.msg('职位类别编号目标元素不存在！', 2, 8);return false;}
-    //允许选择的最大个数，等于1时为单选
+    if ($(target_jobclassin_names).length <= 0) {layer.msg(classPublicT('class_js_00006', null, 'Job category name target element does not exist!'), 2, 8);return false;}
+    if ($(target_jobclassin_ids).length <= 0) { layer.msg(classPublicT('class_js_00007', null, 'Job category ID target element does not exist!'), 2, 8);return false;}
+    // Maximum selectable count; 1 means single-select.
     window.allow_select_jobclass_count = allow_select_jobclass_count;
-    //职位类别名称目标元素的选择器
+    // Name target selector.
     window.target_jobclassin_names = target_jobclassin_names;
-    //职位类别编号目标元素的选择器
+    // ID target selector.
     window.target_jobclassin_ids = target_jobclassin_ids;
-    //职位类别名称目标元素的类型 html()、val()
+    // Name target element type: html() or val().
     window.target_jobclassin_names_tagname = $(target_jobclassin_names)[0].nodeName;
-    //职位类别编号目标元素的类型 html()、val()
+    // ID target element type: html() or val().
     window.target_jobclassin_ids_tagname = $(target_jobclassin_ids)[0].nodeName;
-    //弹出层的样式
+    // Popup style.
     window.jobdiv_style = jobdiv_style;
-    //选择确定后的回调函数
+    // Callback after confirming selection.
     window.index_jobclass_callback = index_jobclass_callback;
-    //判断是否需要复选框checkbox，单选和没有子类的情况下需要复选框
+    // Determine whether checkbox input is needed.
 
-    //计算职位类别级数
+    // Calculate category depth.
     var jobclass_deep = get_jobclass_deep();
     switch (jobclass_deep) {
         case 1:
@@ -357,7 +372,7 @@ function index_job(allow_select_jobclass_count, target_jobclassin_names, target_
             break;
         default: break;
     }
-    //单选模式
+    // Single-select mode.
     if (window.allow_select_jobclass_count == 1) {
         window.jobclass1_checkbox_type = 'hidden';
         window.jobclass2_checkbox_type = 'hidden';
@@ -378,7 +393,7 @@ function index_job(allow_select_jobclass_count, target_jobclassin_names, target_
 									codename +
 								'</span>' +
 								'<span class="delete">' +
-									'移除' +
+									classPublicT('class_js_00003', null, 'Remove') +
 								'</span>' +
 							'</a>' +
 						'</li>';
@@ -396,20 +411,20 @@ function index_job(allow_select_jobclass_count, target_jobclassin_names, target_
             '<div class="yun_tck_box">' +
                 '<div class="yun_tck_tit">' +
                     '<span class="yun_tck_tit_span">' +
-                        '职位类别' +
+                        classPublicT('class_js_00012', null, 'Job Category') +
                     '</span>' +
                     '<a href="javascript:;" class="yun_tck_tit_close">' +
-                        '关闭' +
+                        classPublicT('class_js_00015', null, 'Close') +
                     '</a>' +
                 '</div>' +
 				'<div class="yun_tck_title">' +
                     '<div class="yun_tck_title_box">' +
                         '<div class="yun_tck_tit_xz">' +
                             '<span class="yun_tck_tit_xz_l">' +
-                                '已选择：' +
+                                classPublicT('class_js_00016', null, 'Selected:') +
                             '</span>' +
                             '<span class="yun_tck_tit_xz_r">' +
-                                '(最多可以选择 ' + allow_select_jobclass_count + ' 项)' +
+                                classPublicT('class_js_00017', {count: allow_select_jobclass_count}, '(Select up to {count} items)') +
                             '</span>' +
                         '</div>' +
 						'<div class="yun_tit_selected">' +
@@ -446,10 +461,10 @@ function index_job(allow_select_jobclass_count, target_jobclassin_names, target_
             '</div>' +
             '<div class="actions">' +
                 '<button class="button_a button_a_red" id="btnSubmitJobsort">' +
-                    '确定' +
+                    classPublicT('class_js_00018', null, 'Confirm') +
                 '</button>' +
                 '<button class="button_a" id="cancel_btn">' +
-                    '取消' +
+                    classPublicT('class_js_00019', null, 'Cancel') +
                 '</button>' +
             '</div>' +
         '</div>';
@@ -469,7 +484,7 @@ function index_job(allow_select_jobclass_count, target_jobclassin_names, target_
         page: { dom: '#jobdiv' }
     });
 }
-//职位类别选择弹出框---------------------------------------------------------------------------------------------------------------结束----------------------
+// Job category selector popup end.
 
 function check_select_show(id) {
     $("#list" + id).show();
@@ -485,7 +500,7 @@ function addfinder(para, usertype) {
         layer.msg(data.msg, Number(data.tm), Number(data.st)); return false;
     });
 }
-//城市选择弹出框---------------------------------------------------------------------------------------------------------------开始----------------------
+// City selector popup start.
 $(document).ready(function () {
     $('#citydiv').delegate('.yun_tck_con_list_city1 ul .cityid1', 'click', function () {
         if (window.city1_checkbox_type == 'hidden') {
@@ -495,16 +510,14 @@ $(document).ready(function () {
         var cityid2_html = '';
         if (typeof (ct[cityid1]) == 'object') {
             if (ct[cityid1].length <= 0) {
-                //没有子类别，选中当前节点
+                // No child category; select current node.
                 city_item_select($(this).attr('codeid'), $(this).attr('codename'), 1, $(this));
             } else {
-                //存在子类别，加载子类列表
-                //全选
+                // Child categories exist; load child list.
+                // Select all.
                 if (window.city2_checkbox_type != 'hidden') {
                     cityid2_html += '<li class="cityid2_all cityid2" codeid="' + cityid1 + '" parentid="' + 0 + '" codename="' + cn[cityid1] + '">' +
-											'<labelabc for="cityid2_all_' + cn[cityid1] + '"><input type="' + window.city2_checkbox_type + '" name="cityid2_all" class="cityid2_all_checkbox" id="cityid2_all_' + cn[cityid1] + '"/>全部(' +
-												cn[cityid1] +
-											')</labelabc>' +
+											'<labelabc for="cityid2_all_' + cn[cityid1] + '"><input type="' + window.city2_checkbox_type + '" name="cityid2_all" class="cityid2_all_checkbox" id="cityid2_all_' + cn[cityid1] + '"/>' + classPublicT('class_js_00002', {name: cn[cityid1]}, 'All ({name})') + '</labelabc>' +
 										'</li>';
                 }
                 for (var j = 0; j < ct[cityid1].length; j++) {
@@ -518,7 +531,7 @@ $(document).ready(function () {
                 city_item_select($(this).attr('codeid'), $(this).attr('codename'), 1, $(this));
             }
         } else {
-            //没有子类别，选中当前节点
+            // No child category; select current node.
             city_item_select($(this).attr('codeid'), $(this).attr('codename'), 1, $(this));
         }
         if (cityid2_html != '') {
@@ -538,10 +551,10 @@ $(document).ready(function () {
         var cityid3_html = '';
         if ((typeof (ct[cityid2]) == 'object') && (!$(this).hasClass('cityid2_all'))) {
             if (ct[cityid2].length <= 0) {
-                //没有子类别，选中当前节点
+                // No child category; select current node.
                 var checked_all = city_item_select($(this).attr('codeid'), $(this).attr('codename'), 1, $(this));
                 if ($(this).hasClass('cityid2_all')) {
-                    //判断是否全选项目
+                    // Check whether all items are selected.
                     if (checked_all) {
                         $(this).addClass('selected').siblings().removeClass('selected');
                     } else {
@@ -550,14 +563,12 @@ $(document).ready(function () {
                     $(this).siblings().each(function () { $(this).find('input')[0].checked = checked_all; if (checked_all) { $(this).find('input').attr('disabled', 'disabled'); } else { $(this).find('input').removeAttr('disabled'); } });
                 }
             } else {
-                //存在子类别，加载子类列表
+                // Child categories exist; load child list.
                 city_item_select($(this).attr('codeid'), $(this).attr('codename'), 1, $(this));
                 if (window.allow_select_city_level > 2) {
                     if (window.city3_checkbox_type != 'hidden') {
                         cityid3_html += '<li class="cityid3_all cityid3 data-first" codeid="' + cityid2 + '" parentid="' + cityid1 + '" codename="' + cn[cityid2] + '">' +
-                                                '<labelabc for="cityid3_all_' + cn[cityid2] + '"><input type="' + window.city3_checkbox_type + '" name="cityid3_all" class="cityid3_all_checkbox" id="cityid3_all_' + cn[cityid2] + '"/>全部(' +
-                                                    cn[cityid2] +
-                                                ')</labelabc>' +
+                                                '<labelabc for="cityid3_all_' + cn[cityid2] + '"><input type="' + window.city3_checkbox_type + '" name="cityid3_all" class="cityid3_all_checkbox" id="cityid3_all_' + cn[cityid2] + '"/>' + classPublicT('class_js_00002', {name: cn[cityid2]}, 'All ({name})') + '</labelabc>' +
                                             '</li>';
                     }
                     for (var j = 0; j < ct[cityid2].length; j++) {
@@ -571,10 +582,10 @@ $(document).ready(function () {
                 }
             }
         } else {
-            //没有子类别，选中当前节点
+            // No child category; select current node.
             var checked_all = city_item_select($(this).attr('codeid'), $(this).attr('codename'), 1, $(this));
             if ($(this).hasClass('cityid2_all')) {
-                //判断是否全选项目
+                // Check whether all items are selected.
                 if (checked_all) {
                     $(this).addClass('selected').siblings().removeClass('selected');
                 } else {
@@ -589,7 +600,7 @@ $(document).ready(function () {
         }
     });
     $('#citydiv').delegate('.yun_tck_con_list_city3 ul .cityid3', 'click', function () {
-        //没有子类别，选中当前节点
+        // No child category; select current node.
         if ($(this).siblings('.cityid3_all').length > 0) {
             if ($(this).siblings('.cityid3_all').hasClass('selected')) {
                 return;
@@ -597,7 +608,7 @@ $(document).ready(function () {
         }
         var checked_all = city_item_select($(this).attr('codeid'), $(this).attr('codename'), 1, $(this),$(this).attr('parentid'));
         if ($(this).hasClass('cityid3_all')) {
-            //判断是否全选项目
+            // Check whether all items are selected.
             if (checked_all) {
                 $(this).addClass('selected').siblings().removeClass('selected');
             } else {
@@ -642,9 +653,9 @@ function get_city_deep() {
     }
     return window.city_deep;
 }
-//选中职位类别项目
+// Select category item.
 function city_item_select(city_id, city_name, type, city_element,parentid) {
-    //单选模式
+    // Single-select mode.
     if (window.allow_select_city_count == 1) {
         $('#citydiv .yun_tit_selected .selected').html('');
         $('#citydiv .yun_tit_selected .selected').append('<li codeid="' + city_id + '" codename="' + city_name + '">' +
@@ -653,7 +664,7 @@ function city_item_select(city_id, city_name, type, city_element,parentid) {
 						city_name +
 					'</span>' +
 					'<span class="delete">' +
-						'移除' +
+						classPublicT('class_js_00003', null, 'Remove') +
 					'</span>' +
 				'</a>' +
 			'</li>');
@@ -662,11 +673,11 @@ function city_item_select(city_id, city_name, type, city_element,parentid) {
         //layer.close(window.city_layer);
         //return;
     } else {
-    	//移除父元素
+		// Remove parent element.
     	$('#citydiv li[codeid=' + $(city_element).attr('parentid') + ']').find('.delete').click();
         var city_items = $('#citydiv .yun_tit_selected .selected li');
     	var threecheck = true;
-        //检查是否已经被选中
+        // Check whether it is already selected.
         for (var i = 0; i < city_items.length; i++) {
             if ($(city_items[i]).attr('codeid') == city_id) {
                 if ($(city_items[i]).find('input').is(":hidden")) {
@@ -674,7 +685,7 @@ function city_item_select(city_id, city_name, type, city_element,parentid) {
                     $(city_element).find('input')[0].checked = false;
                     return false;
                 } else {
-                	//针对第三级城市，第一次全选操作
+					// First select-all operation for third-level cities.
                 	if($('#citydiv li[codeid=' + $(city_items[i]).attr('codeid') + ']').hasClass('data-first')){
                 		$('#citydiv li[codeid=' + $(city_items[i]).attr('codeid') + ']').removeClass('data-first');
                 		$(city_element).find('input')[0].checked = true;
@@ -687,7 +698,7 @@ function city_item_select(city_id, city_name, type, city_element,parentid) {
                 	}
                 }
             }
-            //判断是否所选元素的子类
+            // Check whether it is a child of the selected item.
             if (typeof (ct[city_id]) == 'object') {
                 if (ct[city_id].length > 0) {
                     for (var j = 0; j < ct[city_id].length; j++) {
@@ -700,9 +711,9 @@ function city_item_select(city_id, city_name, type, city_element,parentid) {
             }
         }
         if(threecheck==true){
-            //检查家否超出限制
+            // Check whether the limit is exceeded.
             if (city_items.length >=parseInt(window.allow_select_city_count)) {
-            	layer.msg('最多不能超过'+parseInt(window.allow_select_city_count)+'个！', 2, 8);return false;
+				layer.msg(classPublicT('class_js_00004', {count: parseInt(window.allow_select_city_count)}, 'Select no more than {count} items!'), 2, 8);return false;
                 $(city_element).find('.delete').click();
                 $('#citydiv li[codeid=' + city_id + ']').removeClass('selected');
                 $('#citydiv li[codeid=' + city_id + ']').find('input')[0].checked = false;
@@ -716,7 +727,7 @@ function city_item_select(city_id, city_name, type, city_element,parentid) {
                             city_name +
                         '</span>' +
                         '<span class="delete">' +
-                            '移除' +
+                            classPublicT('class_js_00003', null, 'Remove') +
                         '</span>' +
                     '</a>' +
                 '</li>');
@@ -724,9 +735,9 @@ function city_item_select(city_id, city_name, type, city_element,parentid) {
     }
     return true;
 }
-//确认选中的职位类别项目
+// Confirm selected category items.
 function confirm_selected_city_items() {
-    //检查属否已经被选中
+    // Check whether any item is selected.
     var city_items = $('#citydiv .yun_tit_selected .selected li');
     var city_ids = '';
     var city_names = '';
@@ -734,7 +745,7 @@ function confirm_selected_city_items() {
     	city_names += ',' + $(city_items[i]).attr('codename');
     	city_ids += ',' + $(city_items[i]).attr('codeid');
     }
-    //将已选中的职位类别项目，ids,names赋值到目标元素
+    // Write selected IDs and names to target elements.
     if (window.target_cityin_names_tagname == 'INPUT') {
 		var addtype=$("#addtype").val();
 		  if(addtype=='addexpect'){
@@ -760,27 +771,27 @@ function index_city(allow_select_city_count, target_cityin_names, target_cityin_
 	if(document.getElementById('citydiv').style.display=='block'){
 		return;
 	}
-    if ($(target_cityin_names).length <= 0) {layer.msg('城市名称目标元素不存在！', 2, 8);return false; }
-    if ($(target_cityin_ids).length <= 0) { layer.msg('城市编号目标元素不存在！', 2, 8);return false;}
-    //允许选择的最大个数，等于1时为单选
+    if ($(target_cityin_names).length <= 0) {layer.msg(classPublicT('class_js_00008', null, 'City name target element does not exist!'), 2, 8);return false; }
+    if ($(target_cityin_ids).length <= 0) { layer.msg(classPublicT('class_js_00009', null, 'City ID target element does not exist!'), 2, 8);return false;}
+    // Maximum selectable count; 1 means single-select.
     window.allow_select_city_count = allow_select_city_count;
-    //职位类别名称目标元素的选择器
+    // Name target selector.
     window.target_cityin_names = target_cityin_names;
-    //职位类别编号目标元素的选择器
+    // ID target selector.
     window.target_cityin_ids = target_cityin_ids;
-    //职位类别名称目标元素的类型 html()、val()
+    // Name target element type: html() or val().
     window.target_cityin_names_tagname = $(target_cityin_names)[0].nodeName;
-    //职位类别编号目标元素的类型 html()、val()
+    // ID target element type: html() or val().
     window.target_cityin_ids_tagname = $(target_cityin_ids)[0].nodeName;
-    //弹出层的样式
+    // Popup style.
     window.citydiv_style = citydiv_style;
-    //选择确定后的回调函数
+    // Callback after confirming selection.
     window.index_city_callback = index_city_callback;
-    //可选择的最低城市级别
+    // Lowest selectable city level.
     window.allow_select_city_level = allow_select_city_level ? allow_select_city_level : 99;
-    //判断是否需要复选框checkbox，单选和没有子类的情况下需要复选框
+    // Determine whether checkbox input is needed.
 
-    //计算职位类别级数
+    // Calculate category depth.
     var city_deep = get_city_deep();
     switch (city_deep) {
         case 1:
@@ -800,7 +811,7 @@ function index_city(allow_select_city_count, target_cityin_names, target_cityin_
             break;
         default: break;
     }
-    //单选模式
+    // Single-select mode.
     if (window.allow_select_city_count == 1) {
         window.city1_checkbox_type = 'hidden';
         window.city2_checkbox_type = 'hidden';
@@ -821,7 +832,7 @@ function index_city(allow_select_city_count, target_cityin_names, target_cityin_
 									codename +
 								'</span>' +
 								'<span class="delete">' +
-									'移除' +
+									classPublicT('class_js_00003', null, 'Remove') +
 								'</span>' +
 							'</a>' +
 						'</li>';
@@ -839,20 +850,20 @@ function index_city(allow_select_city_count, target_cityin_names, target_cityin_
             '<div class="yun_tck_box">' +
                 '<div class="yun_tck_tit">' +
                     '<span class="yun_tck_tit_span">' +
-                        '城市选择' +
+                        classPublicT('class_js_00013', null, 'City Selection') +
                     '</span>' +
                     '<a href="javascript:;" class="yun_tck_tit_close">' +
-                        '关闭' +
+                        classPublicT('class_js_00015', null, 'Close') +
                     '</a>' +
                 '</div>' +
 				'<div class="yun_tck_title">' +
                     '<div class="yun_tck_title_box">' +
                         '<div class="yun_tck_tit_xz">' +
                             '<span class="yun_tck_tit_xz_l">' +
-                                '已选择：' +
+                                classPublicT('class_js_00016', null, 'Selected:') +
                             '</span>' +
                             '<span class="yun_tck_tit_xz_r">' +
-                                '(最多可以选择 ' + allow_select_city_count + ' 项)' +
+                                classPublicT('class_js_00017', {count: allow_select_city_count}, '(Select up to {count} items)') +
                             '</span>' +
                         '</div>' +
 						'<div class="yun_tit_selected">' +
@@ -889,10 +900,10 @@ function index_city(allow_select_city_count, target_cityin_names, target_cityin_
             '</div>' +
             '<div class="actions">' +
                 '<button class="button_a button_a_red" id="btnSubmitJobsort">' +
-                    '确定' +
+                    classPublicT('class_js_00018', null, 'Confirm') +
                 '</button>' +
                 '<button class="button_a" id="cancel_btn">' +
-                    '取消' +
+                    classPublicT('class_js_00019', null, 'Cancel') +
                 '</button>' +
             '</div>' +
         '</div>';
@@ -940,9 +951,9 @@ function index_city(allow_select_city_count, target_cityin_names, target_cityin_
         page: { dom: '#citydiv' }
     });
 }
-//城市选择弹出框---------------------------------------------------------------------------------------------------------------结束----------------------
+// City selector popup end.
 function addsel(id, pid) {
-    //判断数量
+    // Check count.
     var i = 0;
     $(".selall").each(function () {
         i++;
@@ -950,22 +961,22 @@ function addsel(id, pid) {
     if (parseInt(pid) > 0) {
         if (i > 5) {
             unsel(id, pid);
-            layer.msg('您最多只能选择五项！', 2, 8);
+            layer.msg(classPublicT('class_js_00020', null, 'You can select up to five items!'), 2, 8);
             return false;
         } else {
             var name = $('#job_class_' + id).attr('data-name');
-            html = '<li class="job_class_' + id + ' parent_' + pid + '"><a class="clean g3 selall" href="javascript:void(0);" data-val="' + id + '+' + name + '"><span class="text">' + name + '</span><span class="delete" data-id="' + id + '" data-pid ="' + pid + '">移除</span></a></li>';
+            html = '<li class="job_class_' + id + ' parent_' + pid + '"><a class="clean g3 selall" href="javascript:void(0);" data-val="' + id + '+' + name + '"><span class="text">' + name + '</span><span class="delete" data-id="' + id + '" data-pid ="' + pid + '">' + classPublicT('class_js_00003', null, 'Remove') + '</span></a></li>';
             $('.job_class_' + id).remove();
             $('.selected').first().append(html);
         }
     } else {
         if (i > 4) {
             unsel(id);
-            layer.msg('您最多只能选择五项！', 2, 8);
+            layer.msg(classPublicT('class_js_00020', null, 'You can select up to five items!'), 2, 8);
             return false;
         } else {
             var name = $('#all' + id).attr('data-name');
-            html = '<li class="all' + id + '"><a class="clean g3 selall" href="javascript:void(0);"  data-val="' + id + '+' + name + '"><span class="text">' + name + '</span><span class="delete" data-id="' + id + '">移除</span></a></li>';
+            html = '<li class="all' + id + '"><a class="clean g3 selall" href="javascript:void(0);"  data-val="' + id + '+' + name + '"><span class="text">' + name + '</span><span class="delete" data-id="' + id + '">' + classPublicT('class_js_00003', null, 'Remove') + '</span></a></li>';
             $('.parent_' + id).remove();
             $('.all' + id).remove();
             $('.selected').first().append(html);
@@ -998,7 +1009,7 @@ function check_this(id) {
 }
 
 
-//行业类别选择弹出框---------------------------------------------------------------------------------------------------------------开始----------------------
+// Industry selector popup start.
 $(document).ready(function () {
     $('#industrydiv').delegate('.yun_tck_con_list_industry1 ul .industryid1', 'click', function () {
         if (window.industry1_checkbox_type == 'hidden') {
@@ -1008,16 +1019,14 @@ $(document).ready(function () {
         var industryid2_html = '';
         if (typeof (ht[industryid1]) == 'object') {
             if (ht[industryid1].length <= 0) {
-                //没有子类别，选中当前节点
+                // No child category; select current node.
                 industry_item_select($(this).attr('codeid'), $(this).attr('codename'), 1, $(this));
             } else {
-                //存在子类别，加载子类列表
-                //全选
+                // Child categories exist; load child list.
+                // Select all.
                 if (window.industry2_checkbox_type != 'hidden') {
                     industryid2_html += '<li class="industryid2_all industryid2" codeid="' + industryid1 + '" codename="' + hyname[industryid1] + '">' +
-											'<labelabc for="industryid2_all_' + hyname[industryid1] + '"><input type="' + window.industry2_checkbox_type + '" name="industryid2_all" class="industryid2_all_checkbox" id="industryid2_all_' + hyname[industryid1] + '"/>全部(' +
-												hyname[industryid1] +
-											')</labelabc>' +
+											'<labelabc for="industryid2_all_' + hyname[industryid1] + '"><input type="' + window.industry2_checkbox_type + '" name="industryid2_all" class="industryid2_all_checkbox" id="industryid2_all_' + hyname[industryid1] + '"/>' + classPublicT('class_js_00002', {name: hyname[industryid1]}, 'All ({name})') + '</labelabc>' +
 										'</li>';
                 }
                 for (var j = 0; j < ht[industryid1].length; j++) {
@@ -1030,7 +1039,7 @@ $(document).ready(function () {
                 }
             }
         } else {
-            //没有子类别，选中当前节点
+            // No child category; select current node.
             industry_item_select($(this).attr('codeid'), $(this).attr('codename'), 1, $(this));
         }
         if (industryid2_html != '') {
@@ -1046,10 +1055,10 @@ $(document).ready(function () {
         var industryid3_html = '';
         if ((typeof (ht[industryid2]) == 'object') && (!$(this).hasClass('industryid2_all'))) {
             if (ht[industryid2].length <= 0) {
-                //没有子类别，选中当前节点
+                // No child category; select current node.
                 var checked_all = industry_item_select($(this).attr('codeid'), $(this).attr('codename'), 1, $(this));
                 if ($(this).hasClass('industryid2_all')) {
-                    //判断是否全选项目
+                    // Check whether all items are selected.
                     if (checked_all) {
                         $(this).addClass('selected').siblings().removeClass('selected');
                     } else {
@@ -1058,12 +1067,10 @@ $(document).ready(function () {
                     $(this).siblings().each(function () { $(this).find('input')[0].checked = checked_all; if (checked_all) { $(this).find('input').attr('disabled', 'disabled'); } else { $(this).find('input').removeAttr('disabled'); } });
                 }
             } else {
-                //存在子类别，加载子类列表
+                // Child categories exist; load child list.
                 if (window.industry3_checkbox_type != 'hidden') {
                     industryid3_html += '<li class="industryid3_all industryid3" codeid="' + industryid2 + '" codename="' + hyname[industryid2] + '">' +
-											'<labelabc for="industryid3_all_' + hyname[industryid2] + '"><input type="' + window.industry3_checkbox_type + '" name="industryid3_all" class="industryid3_all_checkbox" id="industryid3_all_' + hyname[industryid2] + '"/>全部(' +
-												hyname[industryid2] +
-											')</labelabc>' +
+											'<labelabc for="industryid3_all_' + hyname[industryid2] + '"><input type="' + window.industry3_checkbox_type + '" name="industryid3_all" class="industryid3_all_checkbox" id="industryid3_all_' + hyname[industryid2] + '"/>' + classPublicT('class_js_00002', {name: hyname[industryid2]}, 'All ({name})') + '</labelabc>' +
 										'</li>';
                 }
                 for (var j = 0; j < ht[industryid2].length; j++) {
@@ -1076,10 +1083,10 @@ $(document).ready(function () {
                 }
             }
         } else {
-            //没有子类别，选中当前节点
+            // No child category; select current node.
             var checked_all = industry_item_select($(this).attr('codeid'), $(this).attr('codename'), 1, $(this));
             if ($(this).hasClass('industryid2_all')) {
-                //判断是否全选项目
+                // Check whether all items are selected.
                 if (checked_all) {
                     $(this).addClass('selected').siblings().removeClass('selected');
                 } else {
@@ -1099,10 +1106,10 @@ $(document).ready(function () {
                 return;
             }
         }
-        //没有子类别，选中当前节点
+        // No child category; select current node.
         var checked_all = industry_item_select($(this).attr('codeid'), $(this).attr('codename'), 1, $(this));
         if ($(this).hasClass('industryid3_all')) {
-            //判断是否全选项目
+            // Check whether all items are selected.
             if (checked_all) {
                 $(this).addClass('selected').siblings().removeClass('selected');
             } else {
@@ -1145,9 +1152,9 @@ function get_industry_deep() {
     }
     return window.industry_deep;
 }
-//选中行业类别项目
+// Select industry category item.
 function industry_item_select(industry_id, industry_name, type, industry_element) {
-    //单选模式
+    // Single-select mode.
     if (window.allow_select_industry_count == 1) {
         $('#industrydiv .yun_tit_selected .selected').html('');
         $('#industrydiv .yun_tit_selected .selected').append('<li codeid="' + industry_id + '" codename="' + industry_name + '">' +
@@ -1156,7 +1163,7 @@ function industry_item_select(industry_id, industry_name, type, industry_element
 									industry_name +
 								'</span>' +
 								'<span class="delete">' +
-									'移除' +
+									classPublicT('class_js_00003', null, 'Remove') +
 								'</span>' +
 							'</a>' +
 						'</li>');
@@ -1166,7 +1173,7 @@ function industry_item_select(industry_id, industry_name, type, industry_element
         //return;
     } else {
         var industry_items = $('#industrydiv .yun_tit_selected .selected li');
-        //检查是否已经被选中
+        // Check whether it is already selected.
         for (var i = 0; i < industry_items.length; i++) {
             if ($(industry_items[i]).attr('codeid') == industry_id) {
                 if ($(industry_items[i]).find('input').is(":hidden")) {
@@ -1180,7 +1187,7 @@ function industry_item_select(industry_id, industry_name, type, industry_element
                     return false;
                 }
             }
-            //判断是否所选元素的子类
+            // Check whether it is a child of the selected item.
             if (typeof (ht[industry_id]) == 'object') {
                 if (ht[industry_id].length > 0) {
                     for (var j = 0; j < ht[industry_id].length; j++) {
@@ -1192,9 +1199,9 @@ function industry_item_select(industry_id, industry_name, type, industry_element
                 }
             }
         }
-        //检查家否超出限制
+        // Check whether the limit is exceeded.
         if (industry_items.length >= parseInt(window.allow_select_industry_count)) {
-			layer.msg('最多不能超过'+parseInt(window.allow_select_industry_count)+'个！', 2, 8);return false;
+			layer.msg(classPublicT('class_js_00004', {count: parseInt(window.allow_select_industry_count)}, 'Select no more than {count} items!'), 2, 8);return false;
             $(industry_element).find('.delete').click();
             $('#industrydiv li[codeid=' + industry_id + ']').removeClass('selected');
             $('#industrydiv li[codeid=' + industry_id + ']').find('input')[0].checked = false;
@@ -1208,16 +1215,16 @@ function industry_item_select(industry_id, industry_name, type, industry_element
                                         industry_name +
                                     '</span>' +
                                     '<span class="delete">' +
-                                        '移除' +
+                                        classPublicT('class_js_00003', null, 'Remove') +
                                     '</span>' +
                                 '</a>' +
                             '</li>');
     }
     return true;
 }
-//确认选中的行业类别项目
+// Confirm selected industry category items.
 function confirm_selected_industry_items() {
-    //检查属否已经被选中
+    // Check whether any item is selected.
     var industry_items = $('#industrydiv .yun_tit_selected .selected li');
     var industry_ids = '';
     var industry_names = '';
@@ -1226,9 +1233,9 @@ function confirm_selected_industry_items() {
         industry_names += ',' + $(industry_items[i]).attr('codename');
     }
 	 if(industry_names.length<=0){
-        layer.msg('请选择具体类别！', 2, 8);return false;
+        layer.msg(classPublicT('class_js_00005', null, 'Please select a specific category!'), 2, 8);return false;
     }else{
-    //将已选中的职位类别项目，ids,names赋值到目标元素
+    // Write selected IDs and names to target elements.
     if (window.target_industryin_names_tagname == 'INPUT') {
         $(window.target_industryin_names).val(industry_names.substring(1));
     } else {
@@ -1246,28 +1253,28 @@ function confirm_selected_industry_items() {
     return true;
 	} 
 }
-//行业类别，支持单选、多选切换，限制最大选择数量，指定目标元素类型html(),val()
+// Industry selector supports single/multiple select, max count, and target element type.
 function index_industry(allow_select_industry_count, target_industryin_names, target_industryin_ids, industrydiv_style, codeids, index_industry_callback) {
 
-    if ($(target_industryin_names).length <= 0) { layer.msg('行业类别名称目标元素不存在！', 2, 8);return false;}
-    if ($(target_industryin_ids).length <= 0) { layer.msg('行业类别编号目标元素不存在！', 2, 8);return false;}
-    //允许选择的最大个数，等于1时为单选
+    if ($(target_industryin_names).length <= 0) { layer.msg(classPublicT('class_js_00010', null, 'Industry category name target element does not exist!'), 2, 8);return false;}
+    if ($(target_industryin_ids).length <= 0) { layer.msg(classPublicT('class_js_00011', null, 'Industry category ID target element does not exist!'), 2, 8);return false;}
+    // Maximum selectable count; 1 means single-select.
     window.allow_select_industry_count = allow_select_industry_count;
-    //职位类别名称目标元素的选择器
+    // Name target selector.
     window.target_industryin_names = target_industryin_names;
-    //职位类别编号目标元素的选择器
+    // ID target selector.
     window.target_industryin_ids = target_industryin_ids;
-    //职位类别名称目标元素的类型 html()、val()
+    // Name target element type: html() or val().
     window.target_industryin_names_tagname = $(target_industryin_names)[0].nodeName;
-    //职位类别编号目标元素的类型 html()、val()
+    // ID target element type: html() or val().
     window.target_industryin_ids_tagname = $(target_industryin_ids)[0].nodeName;
-    //弹出层的样式
+    // Popup style.
     window.industrydiv_style = industrydiv_style;
-    //选择确定后的回调函数
+    // Callback after confirming selection.
     window.index_industry_callback = index_industry_callback;
-    //判断是否需要复选框checkbox，单选和没有子类的情况下需要复选框
+    // Determine whether checkbox input is needed.
 
-    //计算职位类别级数
+    // Calculate category depth.
     var industry_deep = get_industry_deep();
     switch (industry_deep) {
         case 1:
@@ -1294,7 +1301,7 @@ function index_industry(allow_select_industry_count, target_industryin_names, ta
             break;
         default: break;
     }
-    //单选模式
+    // Single-select mode.
     if (window.allow_select_industry_count == 1) {
         window.industry1_checkbox_type = 'hidden';
         window.industry2_checkbox_type = 'hidden';
@@ -1315,7 +1322,7 @@ function index_industry(allow_select_industry_count, target_industryin_names, ta
 									codename +
 								'</span>' +
 								'<span class="delete">' +
-									'移除' +
+									classPublicT('class_js_00003', null, 'Remove') +
 								'</span>' +
 							'</a>' +
 						'</li>';
@@ -1333,20 +1340,20 @@ function index_industry(allow_select_industry_count, target_industryin_names, ta
             '<div class="yun_tck_box">' +
                 '<div class="yun_tck_tit">' +
                     '<span class="yun_tck_tit_span">' +
-                        '行业类别' +
+                        classPublicT('class_js_00014', null, 'Industry Category') +
                     '</span>' +
                     '<a href="javascript:;" class="yun_tck_tit_close">' +
-                        '关闭' +
+                        classPublicT('class_js_00015', null, 'Close') +
                     '</a>' +
                 '</div>' +
 				'<div class="yun_tck_title">' +
                     '<div class="yun_tck_title_box">' +
                         '<div class="yun_tck_tit_xz">' +
                             '<span class="yun_tck_tit_xz_l">' +
-                                '已选择：' +
+                                classPublicT('class_js_00016', null, 'Selected:') +
                             '</span>' +
                             '<span class="yun_tck_tit_xz_r">' +
-                                '(最多可以选择 ' + allow_select_industry_count + ' 项)' +
+                                classPublicT('class_js_00017', {count: allow_select_industry_count}, '(Select up to {count} items)') +
                             '</span>' +
                         '</div>' +
 						'<div class="yun_tit_selected">' +
@@ -1383,10 +1390,10 @@ function index_industry(allow_select_industry_count, target_industryin_names, ta
             '</div>' +
             '<div class="actions">' +
                 '<button class="button_a button_a_red" id="btnSubmitJobsort">' +
-                    '确定' +
+                    classPublicT('class_js_00018', null, 'Confirm') +
                 '</button>' +
                 '<button class="button_a" id="cancel_btn">' +
-                    '取消' +
+                    classPublicT('class_js_00019', null, 'Cancel') +
                 '</button>' +
             '</div>' +
         '</div>';
@@ -1407,4 +1414,4 @@ function index_industry(allow_select_industry_count, target_industryin_names, ta
         page: { dom: '#industrydiv' }
     });
 }
-//行业类别选择弹出框---------------------------------------------------------------------------------------------------------------结束----------------------
+// Industry selector popup end.
