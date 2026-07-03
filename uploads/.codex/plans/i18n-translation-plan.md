@@ -408,6 +408,8 @@ Batch 33 执行范围：公共职位/城市分类选择 JS `js/public_class.js`�
 
 Batch 34 执行范围：会员中心公共 JS `js/member_public.js`。迁移 layer loading、msg、alert、confirm、弹窗 title、动态 HTML/option 文案、签到/消息/订单/职位上下架/金额转换提示，新增 key 使用 `member_js_00001` 起始；触碰到的中文注释改为英文。本批不改 Ajax URL、表单字段、localStorage key、CSS class/id、正则、验证码流程、套餐/积分计算、职位发布条件判断、订单取消逻辑或服务端返回结构。
 
+Batch 35 执行范围：前台公共 JS `js/public.js`。迁移邀请面试提示、收藏状态、收藏确认按钮、设为首页浏览器提示、找回密码错误、举报职位弹窗、展开/收起、验证码消息比较、举报理由默认值、城市选择默认值和时间连接符等运行态文案，新增 key 使用 `front_js_00001` 起始；触碰到的中文注释改为英文。本批不改 Ajax URL、表单字段、DOM class/id、localStorage key、接口返回结构、收藏/邀请/举报业务逻辑、深拷贝工具或日期格式函数。
+
 ## 11. 推荐执行顺序
 
 1. 修复语言包损坏项和扫描脚本误报规则。

@@ -1,19 +1,37 @@
+function frontPublicT(key, params, fallback) {
+	var text;
+	if (typeof yunT === 'function') {
+		text = yunT(key, params, fallback);
+	} else if (typeof yunAt === 'function') {
+		text = yunAt(key, params, fallback);
+	} else {
+		text = fallback !== undefined ? fallback : key;
+	}
+	if (params && typeof text === 'string') {
+		for (var name in params) {
+			if (Object.prototype.hasOwnProperty.call(params, name)) {
+				text = text.split('{' + name + '}').join(params[name]);
+			}
+		}
+	}
+	return text;
+}
 
 function loadlayer(){
 	return parent.layer.load(yunAt('wap_js_00148'),0);
-} 
+}
 
-//认领简历、企业
+// Claim resume or company.
 function claim(url){
 	var loadi = layer.load(yunAt('wap_js_00148'),0);
 	$.get(url,function(data){
 		var data=eval('('+data+')');
-		layer.close(loadi); 
-		//layer.confirm(data.msg,9);return false; 
+		layer.close(loadi);
+		//layer.confirm(data.msg,9);return false;
 		$("#claimmsg").html(data.msg);
 		$.layer({
 			type : 1,
-			title :yunAt('common_06091'), 
+			title :yunAt('common_06091'),
 			border : [10 , 0.3 , '#000', true],
 			area : ['380px','auto'],
 			page : {dom :"#status_div"}
@@ -35,7 +53,7 @@ $(function() {
 		$("#"+t+"_t").show();
 	},function(){
 	    var t=$(this).attr("did");
-	   $("#"+t+"_t").hide();    
+	   $("#"+t+"_t").hide();
 	});
 });
 
@@ -47,7 +65,7 @@ $(document).ready(function() {
 	});
 	$('.hp_nav li').hover(function() {
 		var aid=$(this).attr('aid');
-		$("#nav"+aid).addClass('hp_nav_cur');        
+		$("#nav"+aid).addClass('hp_nav_cur');
     },function(){
 		var aid=$(this).attr('aid');
 		$("#nav"+aid).removeClass('hp_nav_cur');
@@ -64,17 +82,17 @@ $(document).ready(function() {
 	});
 });
 
-//验证码，根据id刷新验证码，无需写多个方法
+// Refresh captcha by ID.
 function checkCode(id){
 	if(document.getElementById(id)){
 		document.getElementById(id).src=weburl+"/app/include/authcode.inc.php?"+Math.random();
 	}
 }
 
-//由于复选框一般选中的是多个,所以可以循环输出
+// Checkboxes can return multiple selected values.
 function get_comindes_jobid(){
 	var codewebarr="";
-	$("input[name=checkbox_job]:checked").each(function(){ //由于复选框一般选中的是多个,所以可以循环输出
+	$("input[name=checkbox_job]:checked").each(function(){ // Checkboxes can return multiple selected values.
 		if(codewebarr==""){codewebarr=$(this).val();}else{codewebarr=codewebarr+","+$(this).val();}
 	});
 	return codewebarr;
@@ -111,7 +129,7 @@ function logout(url,redirecturl){
 function cutusertype(url, utype){
 	window.location.href = url+"&utype="+utype;
 }
-	
+
 function logoutUser(url,tourl){
 	$.get(url,function(msg){
 		if(msg==1 || msg.indexOf('script')){
@@ -124,8 +142,8 @@ function logoutUser(url,tourl){
 	});
 }
 
-$(document).ready(function(){	
-	//头部提醒
+$(document).ready(function(){
+	// Header notification.
 	$("#login_head_div").on('mouseover', '.yun_topLogin', function(){
 		$(this).find(".yun_More").attr("class","yun_More yun_Morecurrent");
 		$(this).find("ul").show();
@@ -143,29 +161,29 @@ $(document).ready(function(){
 		$(this).find(".yun_navMore").attr("class","yun_navMore");
 		$(this).find(".yun_webMoredown").hide();
 	});
-	
-	/* PC 端，输入邀请信息，点击邀请操作 */
+
+	/* PC invite flow. */
 	$("#click_invite").click(function(){
 		layer.closeAll();
 
-		//判断是否达到每天最大操作次数
+		// Check daily operation limit.
 		$.post(weburl + '/index.php?m=ajax&c=ajax_day_action_check', {'type' : 'interview'}, function(data){
-			
+
 			data = eval('(' + data + ')');
-			
+
 			if(data.status == -1){
-				
+
 				layer.msg(data.msg, 2, 8);
 			}else if(data.status == 1){
-				
+
 				if($("#jobtype").length>0){
-				
+
 					var jobtype=$("#jobtype").val();
 				}else{
-					
+
 					var jobtype=0;
 				}
-				
+
 				var uid			=	$("#uid").val();
 				var content		=	$("#content").val();
 				var username	=	$("#username").val();
@@ -176,74 +194,74 @@ $(document).ready(function(){
 				var linktel		=	$("#linktel").val();
 				var address		=	$("#address").val();
 				var ymid		=	$("#ymid").val();
-				
+
 				var save_yqmb	= 	$("#save_yqmb").attr("checked")=='checked' ? 1 : 0;
 
 				if($.trim(intertime) == ''){
-				
+
 					layer.msg(yunAt('member_com_00681'), 2, 8);return false;
 				}
-				
+
 				if ((isjsTell(linktel) != true) && (isjsMobile(linktel) != true) && ($.trim(linktel) != '')) {
-					
+
 				    layer.msg(yunAt('member_com_00679'), 2,8); return false;
 				}
 				if($.trim(address) == ''){
-					
+
 					layer.msg(yunAt('common_06094'), 2, 8);return false;
 				}
 				layer.load(yunAt('wap_js_00148'),0);
-				
+
 				$.post(weburl+"/index.php?m=ajax&c=sava_ajaxresume",{uid:uid,content:content,username:username,jobname:jobname,address:address,linkman:linkman,linktel:linktel,intertime:intertime,jobid:jobid,jobtype:jobtype,save_yqmb:save_yqmb,ymid:ymid},function(data){
-				
+
 					layer.closeAll();
-					
+
 					var data	=	eval('('+data+')');
 					var status	=	data.status;
-					
+
 					if(status == 4){
 
-						
-				        
+
+
 						layer.msg(data.msg, 2, 8,function(){
 							$.layer({
 								type : 1,
 								offset: ['100px', ''],
-								title :yunAt('resume_00029'), 
+								title :yunAt('resume_00029'),
 								closeBtn : [0 , true],
 								border : [10 , 0.3 , '#000', true],
 								area : ['auto','auto'],
 								page : {dom :"#job_box"}
 							});
-						}); 
+						});
 					}else if(status == 3){
-						
+
 						layer.msg(yunAt('common_06095'), 2, 9,function(){location.reload();});
 					}else{
-						
+
 						var login	=	data.login;
 						if(login){
-							
+
 							layer.confirm(data.msg, {
-								btn: [yunAt('default_00062'),yunAt('default_00266')]  
+								btn: [yunAt('default_00062'),yunAt('default_00266')]
 							}, function(){
 								window.location.href 		=	wapurl + "index.php?m=login&usertype=2&type=out";
 								window.event.returnValue 	= 	false;
 								return false;
 							});
 						}else{
-							
+
 							layer.msg(data.msg, 2, 8);
 						}
 					}
- 					
-					 
+
+
 				});
 			}
 		});//end function(data)
 	});//end $("#click_invite").click()
 
-	
+
 
 	$("input[name=city]").click(function(){
 		$('.city_box').show();
@@ -257,7 +275,8 @@ $(document).ready(function(){
 	})
 	$("#close_job").click(function(){
 		var check_val="0";
-		var name_val = "不限";
+		var defaultJobName = frontPublicT('front_js_00002', null, 'Unlimited');
+		var name_val = defaultJobName;
 		$("input[type='checkbox'][name='job_box']:checked").each(function(){
 		  var info = $(this).val().split("+");
 			  check_val+=","+info[0];
@@ -265,7 +284,7 @@ $(document).ready(function(){
 		  });
 		  check_val = check_val.replace("0,","");
 		  $("#qw_job").val(check_val);
-		  name_val = name_val.replace("不限+","");
+		  name_val = name_val.replace(defaultJobName + "+", "");
 		  $("#qw_show_job").html(name_val);
 		  $("#bg").hide(1000);
 		  $('#pannel_job').hide(1000);
@@ -298,7 +317,7 @@ $(document).ready(function(){
 	$(".header_seach_find_list").mouseover(function(){
 	    $(".index_header_seach_find_list").show();
 	});
-	
+
 	$(".index_search_place").mouseover(function(){
 		$(".index_place_position").show();
 	}).mouseout(function(){
@@ -315,7 +334,7 @@ $(document).ready(function(){
 		$("#Company_job_"+name).show();
 	});
 
-	//头部提醒
+	// Header notification.
 	$("#login_head_div").on('mouseover', '.header_Remind_hover', function(){
 		$(".header_Remind_list").show();
 		$(".header_Remind_em").addClass("header_Remind_em_hover");
@@ -325,18 +344,18 @@ $(document).ready(function(){
 		$(".header_Remind_em_hover").removeClass("header_Remind_em_hover");
 	});
 
-	//前台头部登录后样式
+	// Front header style after login.
 	$("#header_fix").on('mouseover', '.header_fixed_login_after', function(){
 		$(".header_fixed_reg_box").show();
 	});
 	$("#header_fix").on('mouseout', '.header_fixed_login_after', function(){
 		$(".header_fixed_reg_box").hide();
 	});
-	
+
 	if(!isPlaceholder('input')){
-		$("input").not("input[type='password']").each(//把input绑定事件 排除password框
+		$("input").not("input[type='password']").each(// Bind input events except password fields.
 		function(){
-			
+
 			if($(this).val()=="" && $(this).attr("placeholder")!=""){
 				$(this).val($(this).attr("placeholder"));
 				$(this).focus(function(){
@@ -349,7 +368,7 @@ $(document).ready(function(){
 		});
 	}
 	if(!isPlaceholder('textarea')){
-		$("textarea").each(//把textarea绑定事件
+		$("textarea").each(// Bind textarea events.
 		function(){
 			if($(this).val()=="" && $(this).attr("placeholder")!=""){
 				$(this).val($(this).attr("placeholder"));
@@ -370,52 +389,52 @@ function issq_resume(obj){
 		sq_resume(obj)
 	});
 }
-// pc端邀请面试
+// PC invite interview flow.
 function sq_resume(obj){
 
 	var jobid = $(obj).attr("jobid");
-	var r_uid = $(obj).attr("uid");	// 人才UID
+	var r_uid = $(obj).attr("uid");	// Talent UID.
 
 	if(jobid){
 		$("#nameid").val(jobid);
 	}
 
 	var jobtype	=	'';
-	
+
 	if($(obj).attr("uid")){$("#uid").val($(obj).attr("uid"));}
 	if($(obj).attr("username")){$("#username").val($(obj).attr("username"));}
 	if($(obj).attr("jobtype")){jobtype=$(obj).attr("jobtype");}
-	
-	//判断是否达到每天最大操作次数
+
+	// Check daily operation limit.
 	$.post(weburl + '/index.php?m=ajax&c=ajax_day_action_check', {'type' : 'interview'}, function(data){
-			
+
 		data = eval('(' + data + ')');
-		
+
 		if(data.status == -1){
-			
+
 			layer.msg(data.msg, 2, 8);
-			
+
 		}else if(data.status == 1){
 
 			$.post(weburl+"/index.php?m=ajax&c=indexajaxresume",{show_job:1,jobid:jobid,jobtype:jobtype,ruid:r_uid},function(data){
-				
+
 				var data	=	eval('('+data+')');
-				
+
 				var status	=	data.status;
 				if(data.jobname){ $("#name").val(data.jobname); }
 				if(data.linkman){ $("#linkman").val(data.linkman); }
 				if(data.linktel){ $("#linktel").val(data.linktel); }
 				if(data.address){ $("#address").val(data.address); }
-				
-				if(status == 1){	//	没有职位
-					
+
+				if(status == 1){	// No jobs.
+
 					var msgList		=	data.msgList;
 					if (msgList != null) {
 						var msg = msgList.join('');
 						var invite = data.invite;
 
 						if (invite == 1) {
-							$('#tips_way').html('<div class="yun_prompt_release_tip">以下条件尚未满足,暂时无法邀请面试，请按顺序完成：</div>');
+							$('#tips_way').html('<div class="yun_prompt_release_tip">' + frontPublicT('front_js_00001', null, 'The following conditions are not met. You cannot invite an interview yet. Complete them in order:') + '</div>');
 						}
 
 						$("#msgList").html(msg);
@@ -432,8 +451,8 @@ function sq_resume(obj){
 					}else{
 						layer.msg(yunAt('common_06096'), 2,8);
 					}
-				}else if(status == 2){	//	购买服务
-					
+				}else if(status == 2){	// Purchase service.
+
 					server_single('invite');
 					firstTab();
 					var msglayer = layer.open({
@@ -447,10 +466,10 @@ function sq_resume(obj){
 							window.location.reload();
 						}
 					});
-				
-					 
-				}else if(status == 3){	// 邀请面试
-					
+
+
+				}else if(status == 3){	// Invite interview.
+
 					var msglayer = layer.open({
 						type: 1,
 						title: yunAt('resume_00029'),
@@ -462,9 +481,9 @@ function sq_resume(obj){
 							window.location.reload();
 						}
 					});
-					
+
 				}else{
-					
+
 					if(data.login==1){
 
 						showlogin(data.login);
@@ -473,9 +492,9 @@ function sq_resume(obj){
 			            return false;
 					}
 				}
-			});	
-		}	
-	});	
+			});
+		}
+	});
 }
 function check_email(strEmail) {
 	 var emailReg = /^([a-zA-Z0-9\-]+[_|\_|\.]?)*[a-zA-Z0-9\-]+@([a-zA-Z0-9\-]+[_|\_|\.]?)*[a-zA-Z0-9]+\.[a-zA-Z]{2,3}$/;
@@ -485,8 +504,8 @@ function check_email(strEmail) {
 	 return false;
  }
 function isjsMobile(obj){
-	var reg= /^[1][3456789]\d{9}$/;   
-	
+	var reg= /^[1][3456789]\d{9}$/;
+
     if (obj.length != 11) return false;
     else if (!reg.test(obj)) return false;
     else if (isNaN(obj)) return false;
@@ -511,16 +530,16 @@ function isPlaceholder(ele){
 }
 
 /**
- * @desc	首页职位发布
- * @param num	1：正常发布 2：会员套餐已用完 0：会员过期
- * @param integral_job：	购买发布职位所需要金额
- * @param online	1 金额抵扣模式 2 金额模式 3积分模式 4套餐模式
- * @param pro：	积分比例
+ * @desc	Home page job posting.
+ * @param num	1: normal post, 2: package quota used up, 0: membership expired.
+ * @param integral_job	Amount required to post a job.
+ * @param online	1 amount deduction, 2 amount, 3 points, 4 package.
+ * @param pro	Points ratio.
  * @returns
  */
 function addJobIndex(num,integral_job,online,pro){
-  	
-	 
+
+
 	var gourl 		= 	weburl + '/member/index.php?c=jobadd';
 	var bindurl		= 	weburl + '/member/index.php?c=binding';
 	var righturl	= 	weburl + '/member/index.php?c=right';
@@ -528,46 +547,46 @@ function addJobIndex(num,integral_job,online,pro){
 	var checkUrl	= 	weburl + '/member/index.php?c=jobadd&act=jobCheck';
 
 	layer.load(yunAt('wap_js_00148'),3);
-	
+
 	$.post(url, {'type': 'jobnum'}, function(data) {
-			
+
 		layer.closeAll();
-		
+
 		data = eval('(' + data + ')');
-		
+
 		if(data.status == -1) {
-			
+
 			layer.msg(data.msg, 2, 8);
 			return false;
-			
+
 		} else if(data.status == 1) {
-			
+
 			$.post(checkUrl, {rand:Math.random()}, function(data){
-				
+
 				var data = eval('(' + data + ')');
-				
+
  				if(data.msgList && data.msgList.length > 0 ){
- 					
+
  					layer.msg(yunAt('common_06097'), 2,8, function(){
- 						
+
  						window.location.href = bindurl;
  						window.event.returnValue = false;
  					});
- 					
+
  				}else{
 
 					if(num == 1 || (integral_job == 0 && num == 2)) {
-						
+
 						window.location.href = gourl;
 						window.event.returnValue = false;
-						
+
 					}else{
 						layer.msg(yunAt('common_06098'), 2,8, function(){
 							window.location.href = righturl;
-							window.event.returnValue = false; 
+							window.event.returnValue = false;
 						});
-						
-					} 
+
+					}
 				}
 			});
 		}
@@ -575,7 +594,7 @@ function addJobIndex(num,integral_job,online,pro){
 }
 
 /**
- * 取消收藏职位
+ * Cancel favorite job.
  * @param id
  * @param type
  */
@@ -593,15 +612,15 @@ function cancelFavJob(id, type) {
 		}
 	});
 }
-function fav_job(id,type){//收藏职位
+function fav_job(id,type){// Favorite job.
 	$.post(weburl+"/index.php?m=ajax&c=favjobuser",{id:id},function(data){
 		var data=eval('('+data+')');
 		if(data.state==1){
-			if(type==2){ 
-				$("#favjobid"+id).html("已收藏");
+			if(type==2){
+				$('#favjobid'+id).html(frontPublicT('front_js_00003', null, 'Favorited'));
 				var msglayer = layer.open({
 					type: 1,
-					title: '收藏信息',
+					title: frontPublicT('front_js_00004', null, 'Favorite Information'),
 					closeBtn: 1,
 					border: [10, 0.3, '#000', true],
 					area: ['450px', 'auto'],
@@ -611,10 +630,10 @@ function fav_job(id,type){//收藏职位
 					}
 				});
 			}else{
-				$(".scjobid"+id).html("已收藏");
+				$('.scjobid'+id).html(frontPublicT('front_js_00003', null, 'Favorited'));
 				$(".scjobid"+id).attr('class','yun_job_operation_ysc');
-				var i = layer.confirm(data.msg+'是否返回个人中心？',
-					{btn : ['确定','继续浏览']},
+				var i = layer.confirm(frontPublicT('front_js_00005', {msg: data.msg}, '{msg} Return to member center?'),
+					{btn : [frontPublicT('front_js_00006', null, 'Confirm'), frontPublicT('front_js_00007', null, 'Continue Browsing')]},
 					function(){
 						window.location.href =weburl+"/member/index.php?c=favorite";window.event.returnValue = false;return false;
 					},
@@ -637,7 +656,7 @@ function fav_job(id,type){//收藏职位
 		}
 	});
 }
-//加入收藏夹
+// Add to favorites.
 function addwebfav(url,title){
 	var title,url;
 	if(document.all){
@@ -646,7 +665,7 @@ function addwebfav(url,title){
 		window.sidebar.addPanel(title,url,"");
 	}
 }
-//设置首页
+// Set homepage.
 function setHomepage(url){
    var url;
    if(document.all){
@@ -658,7 +677,7 @@ function setHomepage(url){
 				netscape.security.PrivilegeManager.enablePrivilege("UniversalXPConnect");
 			 }
 			 catch(e){
-				layer.alert('您的浏览器未启用[设为首页]功能，开启方法：先在地址栏内输入about:config,然后将项 signed.applets.codebase_principal_support 值该为true即可！');return false; 
+				layer.alert(frontPublicT('front_js_00008', null, 'Your browser has not enabled the Set Homepage feature. To enable it, enter about:config in the address bar and set signed.applets.codebase_principal_support to true.'));return false;
 			 }
 		}
 		var prefs=Components.classes['@mozilla.org/preferences-service;1'].getService(Components.interfaces.nsIPrefBranch);
@@ -683,16 +702,16 @@ function marquee(time,id){
 		}).trigger('mouseleave');
 	});
 }
-//弹出框
+// Popup.
 function forget(){
 	var aucode = $("#txt_CheckCode").val();
 	var username =  $("#username").val();
 	if(username==""){
-		$("#msg_error").html("<font color='red'>请填写你注册时的用户名！</font>");
+		$('#msg_error').html("<font color='red'>" + frontPublicT('front_js_00009', null, 'Please enter the username you registered with!') + "</font>");
 		return false;
 	}
 	if(aucode==""){
-		$("#msg_error").html("<font color='red'>验证码不能为空！</font>");
+		$('#msg_error').html("<font color='red'>" + frontPublicT('front_js_00010', null, 'Verification code cannot be empty!') + "</font>");
 		return false;
 	}
 	return true;
@@ -714,7 +733,7 @@ function report_com(){
 	checkCode('vcodeimg');
 	$.layer({
 		type : 1,
-		title :'举报该职位', 
+		title : frontPublicT('front_js_00011', null, 'Report This Job'),
 		closeBtn : [0 , true],
 		border : [10 , 0.3 , '#000', true],
 		area : ['450px','460px'],
@@ -729,7 +748,7 @@ function check_skill(id){
 	$("#skill"+id).show();
 }
 $(document).ready(function () {
-    //首页搜索框，搜索类型的选择
+    // Home search type selector.
     $('body').click(function (evt) {
         if (!$(evt.target).parent().hasClass('yunHeaderSearch_s') && !$(evt.target).hasClass('yunHeaderSearch_s') && evt.target.id != 'search_name') {
             $('.yunHeaderSearch_list_box').hide();
@@ -737,28 +756,28 @@ $(document).ready(function () {
     });
 })
 function checkmore(type,div,size,msg){
-	if(msg=="展开"){
-		var msg="收起";
+	if(msg==frontPublicT('front_js_00012', null, 'Expand')){
+		var msg = frontPublicT('front_js_00013', null, 'Collapse');
 		$("#"+type+" a:gt("+size+")").show();
 		$("#"+div).html("<a class=\"yun_close  icon\" href=\"javascript:;\" onclick=\"checkmore('"+type+"','"+div+"','"+size+"','"+msg+"');\">"+msg+"</a>");
 	}else{
-		var msg="展开";
+		var msg = frontPublicT('front_js_00012', null, 'Expand');
 		$("#"+type+" a:gt("+size+")").hide();
 		$("#"+div).show();
 		$("#"+div).html("<a class=\"yun_open  icon\" href=\"javascript:;\" onclick=\"checkmore('"+type+"','"+div+"','"+size+"','"+msg+"');\">"+msg+"</a>");
 	}
 }
-function check_pl(){//企业评论
+function check_pl(){// Company comments.
 	if($.trim($("#content").val())==""){
 		layer.msg(yunAt('common_06100'), 2,8);return false;
 	}
 	var authcode=$("#msg_CheckCode").val();
 	if(authcode==''){
 		layer.msg(yunAt('wap_js_00107'), 2, 8);return false;
-	} 
+	}
 }
 
-function layer_del(msg,url){ 
+function layer_del(msg,url){
 	if(msg==''){
 		var i=layer.load(yunAt('wap_js_00148'),0);
 		$.ajaxSetup({cache:false});
@@ -812,19 +831,19 @@ function top_searchs(M,name){
 	$(".index_place_position").hide();
 	$('#search_name').html(name)
 }
-function returnmessage(frame_id){ 
+function returnmessage(frame_id){
 	if(frame_id==''||frame_id==undefined){
 		frame_id='supportiframe';
 	}
-	var message = $(window.frames[frame_id].document).find("#layer_msg").val(); 
+	var message = $(window.frames[frame_id].document).find("#layer_msg").val();
 	if(message != null){
 		var url=$(window.frames[frame_id].document).find("#layer_url").val();
 		var layer_time=$(window.frames[frame_id].document).find("#layer_time").val();
 		var layer_st=$(window.frames[frame_id].document).find("#layer_st").val();
-		if(message=='验证码错误！'){$("#vcode_img").trigger("click");$("#vcodeimgs").trigger("click");}
-		if(message=='验证码错误！'){$("#vcode_imgs").trigger("click");}
-		if(message=='验证码错误！'){$("#vcodeimgs").trigger("click");}
-		if(message=='请点击按钮进行验证！'){
+		if(message==frontPublicT('front_js_00014', null, 'Verification code error!')){$("#vcode_img").trigger("click");$("#vcodeimgs").trigger("click");}
+		if(message==frontPublicT('front_js_00014', null, 'Verification code error!')){$("#vcode_imgs").trigger("click");}
+		if(message==frontPublicT('front_js_00014', null, 'Verification code error!')){$("#vcodeimgs").trigger("click");}
+		if(message==frontPublicT('front_js_00015', null, 'Please click the button to verify!')){
 			$("#popup-submit").trigger("click");
 		}
 		layer.closeAll('loading');
@@ -848,10 +867,10 @@ function com_msg(){
 	var authcode=$("#msg_CheckCode").val();
 	if(authcode==''){
 		layer.msg(yunAt('wap_js_00107'), 2, 8);return false;
-	} 
+	}
 }
 
-/*简历修改页，城市弹出框 lgl */
+/* Resume edit city popup. */
 function job_class(id,type,grade){
 	if(type=='f'){
 		var height=$("#dt_job_"+id).offset().top;
@@ -861,7 +880,7 @@ function job_class(id,type,grade){
 			var top=parseInt(height)-parseInt(615);
 			$("#layout_job .dd_job_2").hide();
 			$("#layout_job .dt_job_2").removeClass('cur');
-		}else{ 
+		}else{
 			var top=34;
 		}
 		$("#dt_job_"+id).addClass('cur');
@@ -871,7 +890,7 @@ function job_class(id,type,grade){
 		var check_length = $("input[type='checkbox'][name='job_class'][checked]").length;
 		if($("#job_"+id).attr("checked")=="checked"){
 			if(check_length>=5){
-				layer.msg(yunAt('common_06012'), 2,8,function(){$("#job_"+id).attr("checked",false);}); 
+				layer.msg(yunAt('common_06012'), 2,8,function(){$("#job_"+id).attr("checked",false);});
 			}else{
 				var value=$("#job_"+id).val();
 				$("#job_choosed").append("<span id='span_job_"+id+"'><input id='ck_job_"+id+"'  value='"+id+"' onclick=\"del_ck('job_"+id+"')\" name='job_class' checked='checked' type='checkbox' target='"+value+"'>"+value+"</span>");
@@ -898,7 +917,7 @@ function job_city(id,type,grade){
 		var check_length = $("input[type='checkbox'][name='select_city'][checked]").length;
 		if($("#"+id).attr("checked")=="checked"){
 			if(check_length>=5){
-				layer.msg(yunAt('common_06102'), 2,8,function(){$("#"+id).attr("checked",false);}); 
+				layer.msg(yunAt('common_06102'), 2,8,function(){$("#"+id).attr("checked",false);});
 			}else{
 				var value=$("#"+id).val();
 				$("#choosed").append("<span id='span_"+id+"'><input id='ck_"+id+"'  value='"+id+"' onclick=\"del_ck('"+id+"')\" name='select_city' checked='checked' type='checkbox' target='"+value+"'>"+value+"</span>");
@@ -935,8 +954,8 @@ function del_ck(id){
 	$("#"+id).removeAttr("checked");
 }
 
-/*弹出框结束*/
-function atn(id,url,tid){//关注企业
+/* Popup end. */
+function atn(id,url,tid){// Follow company.
 	if(id){
 		loadlayer();
 		$.post(url,{id:id,tid:tid},function(data){
@@ -949,7 +968,7 @@ function atn(id,url,tid){//关注企业
 				layer.msg(data.msg, 2,9, function(){
 					window.location.reload();
 				});return false;
-			} 
+			}
 		});
 	}
 }
@@ -964,12 +983,12 @@ function jsmsg(id){
 	}
 	$("#msg"+id).show();
 }
-function showImgDelay(imgObj,imgSrc,maxErrorNum){   
-	if(maxErrorNum>0){ 
+function showImgDelay(imgObj,imgSrc,maxErrorNum){
+	if(maxErrorNum>0){
         imgObj.onerror=function(){
             showImgDelay(imgObj,imgSrc,maxErrorNum-1);
         };
-		
+
         setTimeout(function(){
             imgObj.src=imgSrc;
         },500);
@@ -987,43 +1006,46 @@ function add_reason(s){
 
 function reportSub(img){
 	var authcode=$("#report_authcode").val();
-	
+
 	var r_uid=$("#r_uid").val();
 	var id=$("#id").val();
 	var r_name=$("#r_name").val();
-	
+
 		var r1 = $("#r1").html(),
         	r2 = $("#r2").html(),
         	r3 = $("#r3").html(),
         	r4 = $("#r4").html(),
         	r0 = $("#r0").html();
-		var reason = "理由：";
-		
+		var reasonPrefix = frontPublicT('front_js_00016', null, 'Reason: ');
+		var reasonSep = frontPublicT('front_js_00017', null, ', ');
+		var reasonEnd = frontPublicT('front_js_00018', null, '; ');
+		var reason = reasonPrefix;
+
 		if($("#r1").hasClass('report_job_ly_cur')){
-			var reason = reason+r1+"，";
+			var reason = reason + r1 + reasonSep;
 		}
 		if($("#r2").hasClass('report_job_ly_cur')){
-			var reason = reason+r2+"，";
+			var reason = reason + r2 + reasonSep;
 		}
 		if($("#r3").hasClass('report_job_ly_cur')){
-			var reason = reason+r3+"，";
+			var reason = reason + r3 + reasonSep;
 		}
 		if($("#r4").hasClass('report_job_ly_cur')){
-			var reason = reason+r4+"，";
+			var reason = reason + r4 + reasonSep;
 		}
 		if($("#r0").hasClass('report_job_ly_cur')){
-			var reason = reason+r0+"；";
+			var reason = reason + r0 + reasonEnd;
 		}
-	
-	
-	if($.trim(reason)=="理由："){
+
+
+	if($.trim(reason)==$.trim(reasonPrefix)){
 		layer.msg(yunAt('wap_01562'), 2, 8);
 		return false;
 	}
-	
+
 	var r_reason = reason + $("#r_reason").val();
-	
-	
+
+
 	var i = loadlayer();
 	$.post(weburl+"/job/index.php?c=report",{authcode:authcode,r_reason:r_reason,id:id,r_name:r_name,r_uid:r_uid},function(data){
 		layer.close(i);
@@ -1039,8 +1061,8 @@ function reportSub(img){
 		}
 	})
 }
-//职位详情页，申请记录分页
-/*function forrecord(id,page){ 
+// Job detail application record pagination.
+/*function forrecord(id,page){
 	$.post(weburl+"/index.php?m=ajax&c=jobrecord",{id:id,page:page},function(data){
 		$(".Company_job_record_div").html(data);
 	});
@@ -1053,7 +1075,7 @@ $(function(){
 	})
 });
 
-//积分兑换表单
+// Points redemption form.
 function checkform_redeem_show(){
 	var num=$("#num").val();
 	var stock=$("#stock").val();
@@ -1098,7 +1120,7 @@ function redeem_dh(){
 	}else{
 		var citys	=$("#cityid").val();
 	}
-	
+
 	var address	=$("input[name=address]").val();
 	if(!linkman || !linktel){
 		layer.msg(yunAt('common_06104'), 2, 8);
@@ -1107,8 +1129,8 @@ function redeem_dh(){
 	var reg_linktel= (/^[1][3456789]\d{9}$|^([0-9]{3,4}\-)?[0-9]{7,8}$/);
 	if(linktel){
 		if(!reg_linktel.test(linktel)){
-			layer.msg(yunAt('common_06105'), 2, 8);return false; 
-		} 
+			layer.msg(yunAt('common_06105'), 2, 8);return false;
+		}
 	}
 	if(!cityid || !address){
 		layer.msg(yunAt('common_06106'), 2, 8);
@@ -1135,7 +1157,7 @@ function tianyancha(url,name){
 				$('#creditCode').html(business.creditCode);
 				$('#estiblishTime').html(business.estiblishTime);
 				$('#orgNumber').html(business.orgNumber);
-				$('#Time').html(business.fromTime+'至'+business.toTime);
+				$('#Time').html(frontPublicT('front_js_00019', {from: business.fromTime, to: business.toTime}, '{from} to {to}'));
 				$('#companyOrgType').html(business.companyOrgType);
 				$('#regInstitute').html(business.regInstitute);
 				$('#regStatus').html(business.regStatus);
@@ -1147,7 +1169,7 @@ function tianyancha(url,name){
 				$('#businessInfo').show();
 			}else{
 				$('#businessInfo').hide();
-				
+
 				$('#companybusiness').hide();
 
 			}
@@ -1161,15 +1183,15 @@ function redeem_show(id){
 function redeem_city(id,type,name,typeid){
 	$('#'+type).val(name);
 	$("#"+type+'_name').val(name);
-	
+
 	if(type=='province'){
-		$("#city_name").val('请选择');
-		$("#three_city_name").val('请选择');
+		$('#city_name').val(frontPublicT('front_js_00020', null, 'Please select'));
+		$('#three_city_name').val(frontPublicT('front_js_00020', null, 'Please select'));
 		$("#city").val('');
 		$("#three_city").val('');
 	}
 	if(type=='city'){
-		$("#three_city_name").val('请选择');
+		$('#three_city_name').val(frontPublicT('front_js_00020', null, 'Please select'));
 		$("#three_city").val('');
 	}
 	$.post(weburl+'/index.php?m=ajax&c=redeem_city',{type:type,id:id,typeid:typeid},function(data){
@@ -1193,12 +1215,12 @@ function isArray (arr) {
     return Object.prototype.toString.call(arr) === '[object Array]';
 }
 
-// 深度克隆
+// Deep clone.
 function deepClone (obj) {
-	// 对常见的“非”值，直接返回原来值
+	// Return common non-values as-is.
 	if(!obj || typeof(obj) == 'undefined' || isNaN(obj)) return obj;
     if(typeof obj !== "object" && typeof obj !== 'function') {
-		//原始类型直接返回
+		// Return primitive values as-is.
         return obj;
     }
     var o = isArray(obj) ? [] : {};
@@ -1210,7 +1232,7 @@ function deepClone (obj) {
     return o;
 }
 
-//对象数组 按某个字段 排序
+// Sort object array by field.
 function sortByField(arr,field,sort){
 
 	return arr.sort(function(a,b){
@@ -1222,7 +1244,7 @@ function sortByField(arr,field,sort){
 	});
 }
 
-// 格式化日期-年月
+// Format date as year-month.
 function formatMonth(date) {
 	let year = date.getFullYear(),
 		month = date.getMonth()+1;
@@ -1230,7 +1252,7 @@ function formatMonth(date) {
 	return `${year}-${month < 10 ? '0' + month : month}`;
 }
 
-// 格式化日期
+// Format date.
 function formatDate(date) {
 	let year = date.getFullYear(),
 		month = date.getMonth()+1,
@@ -1239,7 +1261,7 @@ function formatDate(date) {
 	return `${year}-${month < 10 ? '0' + month : month}-${day < 10 ? '0' + day : day}`;
 }
 
-// 格式化日期时间
+// Format date and time.
 function formatDatetime(date) {
 	let hours = date.getHours(),
 		minutes = date.getMinutes(),
