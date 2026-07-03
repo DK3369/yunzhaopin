@@ -434,6 +434,8 @@ Batch 46 执行范围：自有上传封装、前端 i18n helper 和 layer 兼容
 
 Batch 47 执行范围：验证码接入 wrapper 与灰度工具注释 `js/geetest/pc.js`、`js/geetest/mobile.js`、`js/tecent/pc.js`、`js/dingxiang/pc.js`、`js/vaptcha/pc.js`、`js/grayscale.js`。本批只清理中文注释，不新增语言包 key；不改验证码厂商 SDK 参数、appId/vid/scene/lang/token 字段、提交/模拟点击流程、隐藏字段名、接口 URL、错误票据生成、回调函数名或灰度算法。
 
+Batch 48 执行范围：可控 CSS 注释和字体别名 `js/layui/css/formSelects-v4.css`、`js/imgareaselect/imgareaselect.css`、`js/article/css/style.css`。本批只清理中文注释，并将 `微软雅黑/宋体` 替换为等价英文 CSS 字体族名 `Microsoft YaHei/SimSun`；不新增语言包 key，不改 selector、class/id、尺寸、颜色、URL、图标字体、裁剪样式、文章轮播布局或任何 JS 数据结构。
+
 ## 11. 推荐执行顺序
 
 1. 修复语言包损坏项和扫描脚本误报规则。

@@ -1,6 +1,6 @@
 @charset "gb2312"
 *{margin:0;padding:0;border:0;list-style:none;}
-body{font-family:"微软雅黑","宋体";}
+body{font-family:"Microsoft YaHei", SimSun;}
 a{color:#333;text-decoration:none}
 a:hover{color:#C00;text-decoration:underline}
 
@@ -13,7 +13,7 @@ a:hover{color:#C00;text-decoration:underline}
 .slide li .text{bottom:0;overflow:hidden;background-color:rgba(0,0,0,0.6);width:148px;float:right;position:relative;height:auto;background:0;filter:none;text-indent:0;margin:15px 10px 0 0;padding:6px 0;}
 .slide li .text a{color:#fff;font-size:14px;line-height:17px;float:left;}
 .slide li img{width:400px;height:280px;}
-.slide li .text .title a{font-size:16px;font-weight:700;color:#000;font-family:"微软雅黑","宋体";line-height:22px;text-indent:0;float:none;}
+.slide li .text .title a{font-size:16px;font-weight:700;color:#000;font-family:"Microsoft YaHei", SimSun;line-height:22px;text-indent:0;float:none;}
 .slide li .text p{color:#888;font-size:12px;text-indent:0;clear:both;line-height:20px;margin-top:4px;}
 
 .slide .triggers{position:absolute;z-index:1;width:400px;text-align:center;bottom:10px;height:38px;right:0;left:0;padding:0 0 8px;}
