@@ -16429,6 +16429,15 @@ return array(
   'class_js_00019' => '取消',
   'class_js_00020' => '您最多只能选择五项！',
 
+  'date_js_00001' => '更早时间',
+  'date_js_00002' => '更晚时间',
+  'date_js_00003' => '{year}年',
+  'date_js_00004' => '{start}年-{end}年',
+  'date_js_00005' => '月份',
+  'date_js_00006' => '{month}月',
+  'date_js_00007' => '日期',
+  'date_js_00008' => '{day}日',
+
   'admin_demo_00001' => '选项1',
   'admin_demo_00002' => '选项2',
   'admin_demo_00003' => '选项3',

@@ -1,3 +1,51 @@
+function datePublicT(key, params, fallback) {
+    var text;
+    if (typeof yunT === 'function') {
+        text = yunT(key, params, fallback);
+    } else if (typeof yunAt === 'function') {
+        text = yunAt(key, params, fallback);
+    } else {
+        text = fallback !== undefined ? fallback : key;
+    }
+    if (params && typeof text === 'string') {
+        for (var name in params) {
+            if (Object.prototype.hasOwnProperty.call(params, name)) {
+                text = text.split('{' + name + '}').join(params[name]);
+            }
+        }
+    }
+    return text;
+}
+
+function datePublicEsc(text) {
+    return String(text)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+function datePublicTitle(options) {
+    return '<div class="title"><img class="img_ft" src="' + userstyle + '/images/tit_ft.png" title="' +
+        datePublicEsc(datePublicT('date_js_00001', null, 'Earlier')) + '" id="' + options.type + 'up"/>' +
+        datePublicEsc(datePublicT('date_js_00004', {start: options.start, end: options.end}, '{start} - {end}')) +
+        '<img id="' + options.type + 'next" class="img_rt" src="' + userstyle + '/images/tit_rt.png" title="' +
+        datePublicEsc(datePublicT('date_js_00002', null, 'Later')) + '"></div>';
+}
+
+function datePublicYear(year) {
+    return datePublicEsc(datePublicT('date_js_00003', {year: year}, '{year}'));
+}
+
+function datePublicMonth(month) {
+    return datePublicEsc(datePublicT('date_js_00006', {month: month}, '{month}'));
+}
+
+function datePublicDay(day) {
+    return datePublicEsc(datePublicT('date_js_00008', {day: day}, '{day}'));
+}
+
 (function ($) {
     $.fn.yDate = function (options) {
         var $id = this;
@@ -13,12 +61,12 @@
         }
         var options = $.extend(defaults, options);
         this.children().remove();
-        this.append("<div class=\"title\"><img class=\"img_ft\" src=\""+userstyle+"/images/tit_ft.png\" title=\"更早时间\" id=\""+options.type+"up\"/>" + options.start + "年-" + options.end + "年<img id=\""+options.type+"next\" class=\"img_rt\" src=\""+userstyle+"/images/tit_rt.png\" title=\"更晚时间\"></div>");
+        this.append(datePublicTitle(options));
         var years = parseInt(options.end) - parseInt(options.start);
         var num = (100 / parseInt(options.number)) + "%";
 		var text='<div class="list_ct"><ul>';
         for (var i = 0; i < years + 1; i++) {
-            text += "<li class=\""+options.type+"Date-year\"><a href=\"javascript:void(0);\">" + (parseInt(options.start) + i) + "年</a></li>";
+            text += "<li class=\""+options.type+"Date-year\"><a href=\"javascript:void(0);\">" + datePublicYear(parseInt(options.start) + i) + "</a></li>";
         }
 		text+='</ul></div>';
 		this.append(text);
@@ -32,12 +80,12 @@
             options.start = options.start - years;
             options.end = options.end - years;
             $id.children().remove();
-            $id.append("<div class=\"title\"><img class=\"img_ft\" src=\""+userstyle+"/images/tit_ft.png\" title=\"更早时间\" id=\""+options.type+"up\"/>" + options.start + "年-" + options.end + "年<img id=\""+options.type+"next\" class=\"img_rt\" src=\""+userstyle+"/images/tit_rt.png\" title=\"更晚时间\"></div>");
+            $id.append(datePublicTitle(options));
             years = parseInt(options.end) - parseInt(options.start);
             num = (100 / parseInt(options.number)) + "%";
             var text='<div class="list_ct"><ul>';
 			for (var i = 0; i < years + 1; i++) {
-                text+= "<li class=\""+options.type+"Date-year\"><a href=\"javascript:void(0);\">" + (parseInt(options.start) + i) + "年</a></li>";               
+                text+= "<li class=\""+options.type+"Date-year\"><a href=\"javascript:void(0);\">" + datePublicYear(parseInt(options.start) + i) + "</a></li>";
             }
 			text+='</ul></div>';
 			$id.append(text);
@@ -52,12 +100,12 @@
             options.start = options.start + years;
             options.end = options.end + years;
             $id.children().remove();
-            $id.append("<div class=\"title\"><img class=\"img_ft\" src=\""+userstyle+"/images/tit_ft.png\" title=\"更早时间\" id=\""+options.type+"up\"/>" + options.start + "年-" + options.end + "年<img id=\""+options.type+"next\" class=\"img_rt\" src=\""+userstyle+"/images/tit_rt.png\" title=\"更晚时间\"></div>");
+            $id.append(datePublicTitle(options));
             years = parseInt(options.end) - parseInt(options.start);
             num = (100 / parseInt(options.number)) + "%";
             var text='<div class="list_ct"><ul>';
 			for (var i = 0; i < years + 1; i++) {
-                text+= "<li class=\""+options.type+"Date-year\"><a href=\"javascript:void(0);\">" + (parseInt(options.start) + i) + "年</a></li>";
+                text+= "<li class=\""+options.type+"Date-year\"><a href=\"javascript:void(0);\">" + datePublicYear(parseInt(options.start) + i) + "</a></li>";
             }
 			text+='</ul></div>';
 			$id.append(text);
@@ -92,14 +140,14 @@
         }
         var options = $.extend(defaults, options);
         this.children().remove();
-        this.append("<div class=\"title\">月份</div>");
+        this.append('<div class="title">' + datePublicEsc(datePublicT('date_js_00005', null, 'Month')) + '</div>');
         var num = (100 / parseInt(options.number)) + "%";
 		var text='<div class="list_ct"><ul>';
         for (var i = 1; i <=12; i++) {
 			if(i<10){
 				i='0'+i;
 			}
-            text += "<li class=\""+options.type+"Date-month\"><a href=\"javascript:void(0);\">" +  i+ "月</a></li>";
+            text += "<li class=\""+options.type+"Date-month\"><a href=\"javascript:void(0);\">" + datePublicMonth(i) + "</a></li>";
         }
 		text+='</ul></div>';
 		this.append(text);
@@ -130,7 +178,7 @@
         }
         var options = $.extend(defaults, options);
         this.children().remove();
-        this.append("<div class=\"title\">日期</div>");
+        this.append('<div class="title">' + datePublicEsc(datePublicT('date_js_00007', null, 'Day')) + '</div>');
 		var yearval=parseInt(options.year);
 		var monthval=parseInt(options.month);
         var num = (100 / parseInt(options.number)) + "%";
@@ -140,14 +188,14 @@
 				if(i<10){
 					i='0'+i;
 				}
-				text += "<li class=\""+options.type+"Date-day\"><a href=\"javascript:void(0);\">" +  i+ "日</a></li>";
+				text += "<li class=\""+options.type+"Date-day\"><a href=\"javascript:void(0);\">" + datePublicDay(i) + "</a></li>";
 			}
 		}else if(monthval==4||monthval==6||monthval==9||monthval==11){
 			for(var i = 1; i <=30; i++){
 				if(i<10){
 					i='0'+i;
 				}
-				text += "<li class=\""+options.type+"Date-day\"><a href=\"javascript:void(0);\">" +  i+ "日</a></li>";
+				text += "<li class=\""+options.type+"Date-day\"><a href=\"javascript:void(0);\">" + datePublicDay(i) + "</a></li>";
 			}
 		}else if(monthval==2){
 			if(yearval%4==0&&(yearval%100!=0||yearval%400==0)){
@@ -155,14 +203,14 @@
 					if(i<10){
 						i='0'+i;
 					}
-					text += "<li class=\""+options.type+"Date-day\"><a href=\"javascript:void(0);\">" +  i+ "日</a></li>";
+					text += "<li class=\""+options.type+"Date-day\"><a href=\"javascript:void(0);\">" + datePublicDay(i) + "</a></li>";
 				}
 			}else{
 				for(var i = 1; i <=28; i++){
 					if(i<10){
 						i='0'+i;
 					}
-					text += "<li class=\""+options.type+"Date-day\"><a href=\"javascript:void(0);\">" +  i+ "日</a></li>";
+					text += "<li class=\""+options.type+"Date-day\"><a href=\"javascript:void(0);\">" + datePublicDay(i) + "</a></li>";
 				}
 			}
 		}

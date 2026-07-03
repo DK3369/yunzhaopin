@@ -16428,6 +16428,15 @@ return array(
   'class_js_00019' => 'Cancel',
   'class_js_00020' => 'You can select up to five items!',
 
+  'date_js_00001' => 'Earlier',
+  'date_js_00002' => 'Later',
+  'date_js_00003' => '{year}',
+  'date_js_00004' => '{start} - {end}',
+  'date_js_00005' => 'Month',
+  'date_js_00006' => '{month}',
+  'date_js_00007' => 'Day',
+  'date_js_00008' => '{day}',
+
   'admin_demo_00001' => 'Option 1',
   'admin_demo_00002' => 'Option 2',
   'admin_demo_00003' => 'Option 3',
