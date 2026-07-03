@@ -420,6 +420,8 @@ Batch 39 执行范围：省市县联动下拉 JS `js/city.js`。迁移默认 opt
 
 Batch 40 执行范围：旧弹窗窗口 JS `js/isven_window/isven_window.js`。迁移关闭按钮 title，新增 key 使用 `isven_js_00001` 起始；触碰到的中文注释改为英文。本批不改弹窗 DOM 结构、iframe、遮罩层、拖拽坐标、滚动锁定或关闭函数名。
 
+Batch 41 执行范围：地图交互 JS `js/map.js`。迁移地图弹窗标题和路线起点校验提示，新增 key 使用 `map_js_00001` 起始；触碰到的中文注释和 console 调试文案改为英文。本批不改 AMap API、坐标字段、DOM id、公交/驾车策略枚举、异步 JSONP 配置、地图中心点或路线搜索逻辑。
+
 ## 11. 推荐执行顺序
 
 1. 修复语言包损坏项和扫描脚本误报规则。

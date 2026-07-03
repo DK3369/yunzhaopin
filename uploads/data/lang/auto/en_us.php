@@ -16445,6 +16445,9 @@ return array(
 
   'isven_js_00001' => 'Close',
 
+  'map_js_00001' => 'Map View',
+  'map_js_00002' => 'Please enter a route starting point.',
+
   'admin_demo_00001' => 'Option 1',
   'admin_demo_00002' => 'Option 2',
   'admin_demo_00003' => 'Option 3',

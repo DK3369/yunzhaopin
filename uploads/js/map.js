@@ -1,5 +1,24 @@
+function mapPublicT(key, params, fallback) {
+    var text;
+    if (typeof yunT === 'function') {
+        text = yunT(key, params, fallback);
+    } else if (typeof yunAt === 'function') {
+        text = yunAt(key, params, fallback);
+    } else {
+        text = fallback !== undefined ? fallback : key;
+    }
+    if (params && typeof text === 'string') {
+        for (var name in params) {
+            if (Object.prototype.hasOwnProperty.call(params, name)) {
+                text = text.split('{' + name + '}').join(params[name]);
+            }
+        }
+    }
+    return text;
+}
+
 var localCityName = '';
-//获取地图坐标
+// Get map coordinates.
 function getmaplnglat(id,x,y,xid,yid){
 	var data=get_map_config();
 	if(data && dataindexOf('map_x')>-1){
@@ -9,8 +28,8 @@ function getmaplnglat(id,x,y,xid,yid){
 		var map = getMap(id, x, y);
 		map.on("click",function(e){
 			var lngLat = e.lnglat;
-			document.getElementById(xid).value=lngLat.lng;//X写入到隐藏框中
-			document.getElementById(yid).value=lngLat.lat;//Y写入到隐藏框中
+			document.getElementById(xid).value=lngLat.lng;// Write X to hidden field.
+			document.getElementById(yid).value=lngLat.lat;// Write Y to hidden field.
 			map.clearMap();
 			var marker = new AMap.Marker({
 				position: new AMap.LngLat(lngLat.lng, lngLat.lat)
@@ -20,7 +39,7 @@ function getmaplnglat(id,x,y,xid,yid){
 	}
 }
 
-//在标准上展示内容
+// Show content on the map.
 function getmapshowcont(id,x,y,title,cont){
 	var map = getMap(id, x, y);
 	var marker = new AMap.Marker({
@@ -37,7 +56,7 @@ function getmapshowcont(id,x,y,title,cont){
 	   content: title,
 	   offset: [0,-30]
 	});
-	// 在地图上打开信息窗体
+	// Open info window on the map.
 	infoWindow.open(map, [x,y]);
 	
 	document.getElementById("map_end").value=cont;
@@ -113,7 +132,7 @@ function getMap(id,x, y){
 function showmap(id, x, y, com_name, address) {
 	$.layer({
 		type: 1,
-		title: '地图展示',
+		title: mapPublicT('map_js_00001', null, 'Map View'),
 		closeBtn: [0, true],
 		offset: ['100px', ''],
 		border: [10, 0.3, '#000', true],
@@ -124,11 +143,11 @@ function showmap(id, x, y, com_name, address) {
 	});
 	getmapshowcont('map_container', x, y, com_name, address);
 }
-//公交查询
+// Transit query.
 function bus_query(id,x, y) {
 	var map_start = $.trim($("#map_start").val());
 	if (map_start == "") {
-		layer.msg("请输入线路查询起点", 2,8);
+		layer.msg(mapPublicT('map_js_00002', null, 'Please enter a route starting point.'), 2,8);
 		return false;
 	}
 	var map_end = $.trim($("#map_end").val());
@@ -139,34 +158,34 @@ function bus_query(id,x, y) {
 		driving.clear();
 	}
 	AMap.plugin('AMap.Transfer', function() {
-	// 公交路线规划
+	// Transit route planning.
 	   var transOptions = {
 		   map: map,
 		   city: localCityName,
 		   panel: 'panel',
-		   policy: AMap.TransferPolicy.LEAST_TIME //乘车策略
+		   policy: AMap.TransferPolicy.LEAST_TIME // Transit policy.
 	   };
 		window.transfer = new AMap.Transfer(transOptions);
-		//根据起、终点名称查询公交换乘路线
+		// Search route by start and end names.
 		transfer.search([
 			{keyword: map_start},
 			{keyword: map_end}
 		], function(status, result) {
 			if (status === 'complete') {
-				console.log('绘制公交路线完成')
+				console.log('Transit route drawn successfully')
 			} else {
-				console.log('公交路线数据查询失败');
+				console.log('Transit route query failed');
 				console.log(result);
 			}
 		});		
 	});
 }
 
-//驾车查询
+// Driving query.
 function map_drving(id,x, y) {
 	var map_start = $.trim($("#map_start").val());
 	if (map_start == "") {
-		layer.msg("请输入线路查询起点", 2,8);
+		layer.msg(mapPublicT('map_js_00002', null, 'Please enter a route starting point.'), 2,8);
 		return false;
 	}
 	var map_end = $.trim($("#map_end").val());
@@ -177,7 +196,7 @@ function map_drving(id,x, y) {
 		transfer.clear();
 	}
 	AMap.plugin('AMap.Driving', function() {
-	// 公交路线规划
+	// Driving route planning.
 	   var drivingOptions = {
 		   map: map,
 		   city: localCityName,
@@ -185,15 +204,15 @@ function map_drving(id,x, y) {
 		   policy: AMap.DrivingPolicy.LEAST_TIME
 	   };
 		window.driving  = new AMap.Driving(drivingOptions);
-		//根据起、终点名称查询公交换乘路线
+		// Search route by start and end names.
 		driving.search([
 			{keyword: map_start},
 			{keyword: map_end}
 		], function(status, result) {
 			if (status === 'complete') {
-				console.log('驾车路线完成')
+				console.log('Driving route completed')
 			} else {
-				console.log('驾车数据查询失败');
+				console.log('Driving route query failed');
 				console.log(result);
 			}
 		});		
