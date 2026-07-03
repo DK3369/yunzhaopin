@@ -16444,6 +16444,8 @@ return array(
 
   'city_js_00001' => '请选择',
 
+  'isven_js_00001' => '关闭',
+
   'admin_demo_00001' => '选项1',
   'admin_demo_00002' => '选项2',
   'admin_demo_00003' => '选项3',

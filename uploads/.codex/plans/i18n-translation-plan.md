@@ -418,6 +418,8 @@ Batch 38 执行范围：前台列表搜索展开 JS `js/search.js`。迁移更�
 
 Batch 39 执行范围：省市县联动下拉 JS `js/city.js`。迁移默认 option “请选择”，新增 key 使用 `city_js_00001` 起始；触碰到的中文注释改为英文。本批不改 layui form 事件、ct/cn 分类数据、select name/id、三级联动显示逻辑或 form.render 调用。
 
+Batch 40 执行范围：旧弹窗窗口 JS `js/isven_window/isven_window.js`。迁移关闭按钮 title，新增 key 使用 `isven_js_00001` 起始；触碰到的中文注释改为英文。本批不改弹窗 DOM 结构、iframe、遮罩层、拖拽坐标、滚动锁定或关闭函数名。
+
 ## 11. 推荐执行顺序
 
 1. 修复语言包损坏项和扫描脚本误报规则。

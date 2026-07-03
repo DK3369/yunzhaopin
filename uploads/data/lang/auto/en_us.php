@@ -16443,6 +16443,8 @@ return array(
 
   'city_js_00001' => 'Please select',
 
+  'isven_js_00001' => 'Close',
+
   'admin_demo_00001' => 'Option 1',
   'admin_demo_00002' => 'Option 2',
   'admin_demo_00003' => 'Option 3',
