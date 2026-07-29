@@ -617,7 +617,7 @@ function PageLimit($pagenum, $num, $limit, $pageurl, $notpl = false, $_smarty_tp
 
 
     global $db, $db_config, $config;
-    $pagesize = $pagesize >=0 ? $pagesize:0;
+    $pagesize = 0;
 
 
     include_once (LIB_PATH . "page.class.php");
@@ -635,6 +635,8 @@ function PageLimit($pagenum, $num, $limit, $pageurl, $notpl = false, $_smarty_tp
         $_smarty_tpl->tpl_vars['pages'] = new Smarty_Variable();
         $_smarty_tpl->tpl_vars['total'] = new Smarty_Variable();
         $_smarty_tpl->tpl_vars['pagelink'] = new Smarty_Variable();
+        $_smarty_tpl->tpl_vars['pagenum'] = new Smarty_Variable();
+        $_smarty_tpl->tpl_vars['totalshow'] = new Smarty_Variable();
         $_smarty_tpl->tpl_vars[$pagenavname] = new Smarty_Variable();
         $_smarty_tpl->tpl_vars['limit']->value = $limit;
         $_smarty_tpl->tpl_vars['pages']->value = $pages;
@@ -668,6 +670,8 @@ function Page($pagenum,$num,$limit,$pageurl,$notpl=false,$_smarty_tpl,$pagenavna
             $_smarty_tpl->tpl_vars['pages'] = new Smarty_Variable;
             $_smarty_tpl->tpl_vars['total'] = new Smarty_Variable;
             $_smarty_tpl->tpl_vars['pagelink'] = new Smarty_Variable();
+            $_smarty_tpl->tpl_vars['pagenum'] = new Smarty_Variable();
+            $_smarty_tpl->tpl_vars['totalshow'] = new Smarty_Variable();
             $_smarty_tpl->tpl_vars[$pagenavname] = new Smarty_Variable;
             $_smarty_tpl->tpl_vars['limit']->value=$limit;
             $_smarty_tpl->tpl_vars['pages']->value=$pages;

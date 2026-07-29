@@ -12,6 +12,8 @@ Upgrade the production runtime from PHP 7.4.33 to PHP 8.5.7 while keeping PHP 7.
 - WAP authentication entrypoints must remain directly testable after the switch; desktop/local access to WAP login, register, and password recovery should not be forced through either WAP jump helper.
 - WAP templates should load shared API/JS i18n snippets from the common header only; page templates must not duplicate the same shared include before the header because legacy Smarty can truncate nested duplicate subtemplate output under PHP 8.5.
 - Optional WAP DIY template cache files must be guarded when absent so missing runtime cache does not emit noisy PHP 8.5 warnings.
+- Local development hosts such as dev.test, localhost, and 127.0.0.1 should be allowed to open explicit /wap/ URLs without desktop-to-PC redirects, while production hosts keep the existing redirect behavior.
+- Legacy PHP4-style parent constructor calls and count() guards must be modernized where they cause PHP 8.5 fatal errors.
 
 ## Server Changes
 
@@ -25,3 +27,4 @@ Upgrade the production runtime from PHP 7.4.33 to PHP 8.5.7 while keeping PHP 7.
 - Run PHP syntax checks for changed files after each compatibility batch.
 - Run tools/php_lint_gate.php before switching web traffic.
 - After PHP 8.5 is installed, repeat syntax checks using the PHP 8.5 binary and smoke test the site homepage, admin login, collection API, payment entrypoints, and UC entrypoints.
+- WAP list pages must avoid PHP 8.5 fatal patterns seen during local smoke tests: initialize Smarty pagination variables before assignment, compare resume sex CSS classes by numeric `sex_id` instead of nested translated labels, and count filter arrays before `implode()`.

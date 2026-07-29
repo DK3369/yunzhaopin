@@ -7,7 +7,7 @@ class resume_controller extends common
 
     function __construct($tpl, $db, $def = '', $model = 'index', $m = '')
     {
-        $this->common($tpl, $db, $def, $model, $m);
+        parent::__construct($tpl, $db, $def, $model, $m);
         
         if ($this->usertype == '2') {
 	

@@ -573,6 +573,7 @@ class Smarty_Internal_Compile_Userlist extends Smarty_Internal_CompileBase{
 						}elseif ($val[\'sex\']==153){
 							$val[\'sex\']=\'2\';
 						}
+						'.$name.'[$k][\'sex_id\'] = $val[\'sex\'];
 						'.$name.'[$k][\'sex\'] =$arr_data[sex][$val[\'sex\']];
 		                '.$name.'[$k][\'phototype\']=$val[phototype];
 		                $photo=$icon="";

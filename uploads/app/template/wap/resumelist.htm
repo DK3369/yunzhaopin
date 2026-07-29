@@ -14,7 +14,7 @@
 							{yun:}else{/yun}
 								<img src="{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_member_icon{/yun}">
 							{yun:}/if{/yun}
-							<span class="{yun:}if $zduser.sex=='{yun:}t key='common_02069'{/yun}'{/yun}user_xbn{yun:}elseif $zduser.sex=='{yun:}t key='common_02092'{/yun}'{/yun}user_xb{yun:}/if{/yun}"></span>
+							<span class="{yun:}if $zduser.sex_id==2{/yun}user_xbn{yun:}elseif $zduser.sex_id==1{/yun}user_xb{yun:}/if{/yun}"></span>
 						</div>
 
 						<div class="yun_newedition_resume_wantjob"><span class="yun_newedition_resume_wantjob_n">{yun:}if in_array($zduser.id,$eid){/yun}
@@ -61,7 +61,7 @@
 						{yun:}else{/yun}
 							<img src="{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_member_icon{/yun}">
 						{yun:}/if{/yun}
-						<span class="{yun:}if $user.sex=='{yun:}t key='common_02069'{/yun}'{/yun}user_xbn{yun:}elseif $user.sex=='{yun:}t key='common_02092'{/yun}'{/yun}user_xb{yun:}/if{/yun}"></span>
+						<span class="{yun:}if $user.sex_id==2{/yun}user_xbn{yun:}elseif $user.sex_id==1{/yun}user_xb{yun:}/if{/yun}"></span>
 					</div>
 					<div class="yun_newedition_resume_wantjob"><span class="yun_newedition_resume_wantjob_n">{yun:}if in_array($user.id,$eid){/yun}
 							{yun:}$user.uname{/yun}

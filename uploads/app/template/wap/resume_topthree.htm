@@ -9,7 +9,7 @@
 			{yun:}else{/yun}
 				<img src="{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_member_icon{/yun}"> 
 			{yun:}/if{/yun}
-			<span class="{yun:}if $zduser.sex=='{yun:}t key='common_02069'{/yun}'{/yun}user_xbn{yun:}elseif $zduser.sex=='{yun:}t key='common_02092'{/yun}'{/yun}user_xb{yun:}/if{/yun}"></span>
+			<span class="{yun:}if $zduser.sex_id==2{/yun}user_xbn{yun:}elseif $zduser.sex_id==1{/yun}user_xb{yun:}/if{/yun}"></span>
 		</div>
 		<div class="yun_newedition_resume_wantjob"><span class="yun_newedition_resume_wantjob_n">{yun:}if in_array($zduser.id,$eid){/yun}
 				{yun:}$zduser.uname{/yun}
@@ -61,7 +61,7 @@
 				{yun:}else{/yun}
 					<img src="{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_member_icon{/yun}"> 
 				{yun:}/if{/yun}
-				<span class="{yun:}if $mouser.sex=='{yun:}t key='common_02069'{/yun}'{/yun}user_tj_xb{yun:}elseif $mouser.sex=='{yun:}t key='common_02092'{/yun}'{/yun}user_tj_xg{yun:}/if{/yun}"></span>
+				<span class="{yun:}if $mouser.sex_id==2{/yun}user_tj_xb{yun:}elseif $mouser.sex_id==1{/yun}user_tj_xg{yun:}/if{/yun}"></span>
 			</div>
 			<div class="yun_newedition_resume_wantjob"><span class="yun_newedition_resume_wantjob_n">{yun:}if in_array($mouser.id,$eid){/yun}
 						{yun:}$mouser.uname{/yun}
@@ -103,7 +103,7 @@
 					{yun:}else{/yun}
 						<img src="{yun:}$config.sy_ossurl{/yun}/{yun:}$config.sy_member_icon{/yun}"> 
 					{yun:}/if{/yun}
-					<span class="{yun:}if $mouser.sex=='{yun:}t key='common_02069'{/yun}'{/yun}user_tj_xb{yun:}elseif $mouser.sex=='{yun:}t key='common_02092'{/yun}'{/yun}user_tj_xg{yun:}/if{/yun}"></span>
+					<span class="{yun:}if $mouser.sex_id==2{/yun}user_tj_xb{yun:}elseif $mouser.sex_id==1{/yun}user_tj_xg{yun:}/if{/yun}"></span>
 				</div>
 				
 				<div class="yun_newedition_resume_wantjob"><span class="yun_newedition_resume_wantjob_n">{yun:}if in_array($mouser.id,$eid){/yun}

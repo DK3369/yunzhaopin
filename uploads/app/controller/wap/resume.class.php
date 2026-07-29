@@ -58,6 +58,8 @@ class resume_controller extends common{
 			}
 		}
 		
+		$this->yunset('eid', array());
+
 		if ($this->usertype == 2) {
     		// 
     		$downM    =	  $this -> MODEL('downresume');
@@ -77,6 +79,7 @@ class resume_controller extends common{
 			
 		}
 		
+		$searchurlCount = is_array($searchurl) ? count($searchurl) : 0;
 		$searchurl	=	@implode('&', $searchurl);
 		$this -> yunset('searchurl', $searchurl);
 		$this->yunset('searchUrlObj',yun_json_encode($searchUrlObj));
@@ -117,7 +120,7 @@ class resume_controller extends common{
 		include(CONFIG_PATH.'db.data.php');
 		$this -> yunset('integrity_name',$arr_data['integrity_name']);
 
-		if (count($searchurl) > 1){
+		if ($searchurlCount > 1){
 		    $this->seo('user_search');
 		}else{
 		    $this->seo('user');

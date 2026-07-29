@@ -1324,8 +1324,10 @@ function pcJump($config)
     $a = isset($_GET['a']) ? $_GET['a'] : '';
     $cArray = array('work', 'login', 'register', 'forgetpw');
     $aArray = array('getHbBase', 'dataShowIndex');
+    $host = isset($_SERVER['HTTP_HOST']) ? strtolower(explode(':', $_SERVER['HTTP_HOST'])[0]) : '';
+    $localWapHost = in_array($host, array('dev.test', 'localhost', '127.0.0.1'));
     
-    if (!isMobileUser() && $config['sy_pc_jump_wap'] != '1' && !in_array($c,$cArray) && !in_array($a,$aArray)) {
+    if (!isMobileUser() && $config['sy_pc_jump_wap'] != '1' && !$localWapHost && !in_array($c,$cArray) && !in_array($a,$aArray)) {
 
         
 
