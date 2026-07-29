@@ -1,5 +1,8 @@
 <?php
 class DES_NET{  
+    function __construct( $key, $iv=0 ) {
+        $this->DES_NET($key, $iv);
+    }
     var $key;  
     var $iv; //偏移量  
        
@@ -9,19 +12,19 @@ class DES_NET{
         if( $iv == 0 ) {  
             $this->iv = $key; //默认以$key 作为 iv  
         } else {  
-            $this->iv = $iv; //mcrypt_create_iv ( mcrypt_get_block_size (MCRYPT_DES, MCRYPT_MODE_CBC), MCRYPT_DEV_RANDOM );  
+            $this->iv = $iv;  
         }  
     }         
     function encrypt($str) {  
     //加密，返回大写十六进制字符串  
-        $size = mcrypt_get_block_size ( MCRYPT_DES, MCRYPT_MODE_CBC );  
+        $size = 8;  
         $str = $this->pkcs5Pad ( $str, $size );  
-        return strtoupper( bin2hex( mcrypt_cbc(MCRYPT_DES, $this->key, $str, MCRYPT_ENCRYPT, $this->iv ) ) );  
+        return strtoupper(bin2hex(openssl_encrypt($str, "DES-CBC", $this->key, OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING, $this->iv)));  
     }
     function decrypt($str) {  
     //解密  
         $strBin = $this->hex2bin( strtolower( $str ) );  
-        $str = mcrypt_cbc( MCRYPT_DES, $this->key, $strBin, MCRYPT_DECRYPT, $this->iv );  
+        $str = openssl_decrypt($strBin, "DES-CBC", $this->key, OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING, $this->iv);  
         $str = $this->pkcs5Unpad( $str );  
         return $str;  
     }         
@@ -37,7 +40,7 @@ class DES_NET{
         return $text . str_repeat ( chr ( $pad ), $pad );  
     }  
     function pkcs5Unpad($text) {
-        $pad = ord ( $text {strlen ( $text ) - 1} );  
+        $pad = ord ( $text[strlen($text) - 1] );  
         if ($pad > strlen ( $text ))  
             return false;  
         if (strspn ( $text, chr ( $pad ), strlen ( $text ) - $pad ) != $pad)  

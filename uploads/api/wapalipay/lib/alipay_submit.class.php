@@ -106,7 +106,7 @@ class AlipaySubmit {
       	//待请求参数数组
 		$para = $this->buildRequestPara($para_temp);
       	$sHtml = $this->alipay_gateway_new."_input_charset=".trim(strtolower($this->alipay_config['input_charset']));
-      	while (list ($key, $val) = each ($para)) {
+      	foreach ($para as $key => $val) {
             $sHtml.= "&".$key."=".$val;
         }
      

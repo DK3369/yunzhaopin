@@ -23,7 +23,7 @@ define('UC_API_FUNC', UC_CONNECT == 'mysql' ? 'uc_api_mysql' : 'uc_api_post');
 $GLOBALS['uc_controls'] = array();
 
 function uc_addslashes($string, $force = 0, $strip = FALSE) {
-	!defined('MAGIC_QUOTES_GPC') && define('MAGIC_QUOTES_GPC', get_magic_quotes_gpc());
+	!defined('MAGIC_QUOTES_GPC') && define('MAGIC_QUOTES_GPC', function_exists('get_magic_quotes_gpc') ? get_magic_quotes_gpc() : 0);
 	if(!MAGIC_QUOTES_GPC || $force) {
 		if(is_array($string)) {
 			foreach($string as $key => $val) {
@@ -86,7 +86,7 @@ if(!function_exists('fsocketopen')) {
 }
 
 function uc_stripslashes($string) {
-	!defined('MAGIC_QUOTES_GPC') && define('MAGIC_QUOTES_GPC', get_magic_quotes_gpc());
+	!defined('MAGIC_QUOTES_GPC') && define('MAGIC_QUOTES_GPC', function_exists('get_magic_quotes_gpc') ? get_magic_quotes_gpc() : 0);
 	if(MAGIC_QUOTES_GPC) {
 		return stripslashes($string);
 	} else {
@@ -143,7 +143,7 @@ function uc_api_mysql($model, $action, $args=array()) {
 		include_once UC_ROOT."./control/$model.php";
 		eval("\$uc_controls['$model'] = new {$model}control();");
 	}
-	if($action{0} != '_') {
+	if($action[0] != '_') {
 		$args = uc_addslashes($args, 1, TRUE);
 		$action = 'on'.$action;
 		$uc_controls[$model]->input = $args;

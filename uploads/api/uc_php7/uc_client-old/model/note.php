@@ -227,7 +227,7 @@ class notemodel {
 
 				parse_str($note['getdata'], $note['getdata']);
 
-				if(get_magic_quotes_gpc()) {
+				if(function_exists('get_magic_quotes_gpc') ? get_magic_quotes_gpc() : 0) {
 
 					$note['getdata'] = $this->base->dstripslashes($note['getdata']);
 

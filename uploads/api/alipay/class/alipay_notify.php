@@ -17,6 +17,10 @@
 require_once("alipay_function.php");
 
 class alipay_notify {
+
+    function __construct($partner, $security_code, $sign_type, $_input_charset = "utf-8", $transport = "https") {
+        $this->alipay_notify($partner, $security_code, $sign_type, $_input_charset, $transport);
+    }
     var $gateway;           //网关地址
     var $security_code;  	//安全校验码
     var $partner;           //合作伙伴ID

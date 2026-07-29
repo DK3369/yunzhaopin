@@ -20,10 +20,10 @@
 	$str = addPKCS7Padding($str);
 
 	//设置全0的IV
-	$iv_size = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_128,MCRYPT_MODE_CBC);
-	$iv = str_repeat("\0", $iv_size);
+	$iv = str_repeat("\0", 16);
+	$method = strlen($screct_key) == 32 ? "AES-256-CBC" : (strlen($screct_key) == 24 ? "AES-192-CBC" : "AES-128-CBC");
 
-	$encrypt_str = mcrypt_encrypt(MCRYPT_RIJNDAEL_128, $screct_key, $str, MCRYPT_MODE_CBC, $iv);
+	$encrypt_str = openssl_encrypt($str, $method, $screct_key, OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING, $iv);
 	return base64_encode($encrypt_str);
 }
 
@@ -38,10 +38,10 @@
 	$screct_key = base64_decode($screct_key);
 
 	//设置全0的IV
-	$iv_size = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_128,MCRYPT_MODE_CBC);
-	$iv = str_repeat("\0", $iv_size);
+	$iv = str_repeat("\0", 16);
+	$method = strlen($screct_key) == 32 ? "AES-256-CBC" : (strlen($screct_key) == 24 ? "AES-192-CBC" : "AES-128-CBC");
 
-	$decrypt_str = mcrypt_decrypt(MCRYPT_RIJNDAEL_128, $screct_key, $str, MCRYPT_MODE_CBC, $iv);
+	$decrypt_str = openssl_decrypt($str, $method, $screct_key, OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING, $iv);
 	$decrypt_str = stripPKSC7Padding($decrypt_str);
 	return $decrypt_str;
 }
@@ -53,7 +53,7 @@
  */
 function addPKCS7Padding($source){
 	$source = trim($source);
-	$block = mcrypt_get_block_size(MCRYPT_RIJNDAEL_128, MCRYPT_MODE_CBC);
+	$block = 16;
 
 	$pad = $block - (strlen($source) % $block);
 	if ($pad <= $block) {

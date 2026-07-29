@@ -29,10 +29,10 @@ function build_mysign($sort_array,$security_code,$sign_type = "MD5") {
 */
 function create_linkstring($array) {
     $arg  = "";
-    while (list ($key, $val) = each ($array)) {
+    foreach ($array as $key => $val) {
         $arg.=$key."=".$val."&";
     }
-    $arg = substr($arg,0,count($arg)-2);		     //去掉最后一个&字符
+    $arg = rtrim($arg, "&");		     //去掉最后一个&字符
     return $arg;
 }
 
@@ -46,12 +46,12 @@ function create_linkstring($array) {
 */
 function create_linkstring_urlencode($array) {
     $arg  = "";
-    while (list ($key, $val) = each ($array)) {
+    foreach ($array as $key => $val) {
 		if ($key != "service" && $key != "_input_charset")
 			$arg.=$key."=".urlencode($val)."&";
 		else $arg.=$key."=".$val."&";
     }
-    $arg = substr($arg,0,count($arg)-2);		     //去掉最后一个&字符
+    $arg = rtrim($arg, "&");		     //去掉最后一个&字符
     return $arg;
 }
 

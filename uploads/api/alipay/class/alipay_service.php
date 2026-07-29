@@ -15,6 +15,10 @@ require_once("alipay_function.php");
 
 class alipay_service {
 
+    function __construct($parameter, $security_code, $sign_type) {
+        $this->alipay_service($parameter, $security_code, $sign_type);
+    }
+
     var $gateway;			//网关地址
     var $security_code;		//安全校验码
     var $mysign;			//加密结果（签名结果）
@@ -70,7 +74,7 @@ class alipay_service {
 
         $sHtml = "<form id='alipaysubmit' name='alipaysubmit' action='".$this->gateway."_input_charset=".$this->parameter['_input_charset']."' method='post'>";
 
-        while (list ($key, $val) = each ($this->parameter)) {
+        foreach ($this->parameter as $key => $val) {
             $sHtml.= "<input type='hidden' name='".$key."' value='".$val."'/>";
         }
 
