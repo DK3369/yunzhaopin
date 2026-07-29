@@ -30,3 +30,4 @@ Upgrade the production runtime from PHP 7.4.33 to PHP 8.5.7 while keeping PHP 7.
 - WAP list pages must avoid PHP 8.5 fatal patterns seen during local smoke tests: initialize Smarty pagination variables before assignment, compare resume sex CSS classes by numeric `sex_id` instead of nested translated labels, and count filter arrays before `implode()`.
 - Member and API base controllers must call `parent::__construct(...)` instead of legacy PHP4-style `$this->common(...)`, including WAP member, PC member, wxapp, and version API entrypoints.
 - API front controllers should guard missing route parameters and missing model files, returning structured JSON errors instead of letting PHP 8.5 `require` failures become HTTP 500 responses.
+- PHP 7.4 is fully disabled operationally after the PHP 8.5.7 cutover: keep rollback config files on disk, but stop and disable the PHP-FPM 7.4 service and point the default `enable-php.conf` include at `/tmp/php-cgi-85.sock`.
