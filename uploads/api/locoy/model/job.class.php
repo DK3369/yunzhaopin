@@ -3,13 +3,8 @@
 class job_controller extends common{
     function add_action(){
         
-        include(APP_PATH."data/api/locoy/locoy_config.php");
-        if($locoyinfo['locoy_online']!=1){
-            echo 4;die;
-        }
-        if($locoyinfo['locoy_key']!=trim($_GET['key'])){
-            echo 5;die;
-        }
+
+        $locoyinfo = locoy_config();
         if(!$_POST['job_name'] || !$_POST['com_name']){
             echo 2;die;
         }

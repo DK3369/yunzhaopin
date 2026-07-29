@@ -2,14 +2,8 @@
 
 class user_controller extends common{
 	function add_action(){
-		include(APP_PATH."data/api/locoy/locoy_config.php");
-		
-		if($locoyinfo['locoy_online']!=1){
-			echo 4;die;
-		}
-		if($locoyinfo['locoy_key']!=trim($_GET['key'])){
-			echo 5;die;
-		}
+
+        $locoyinfo = locoy_config();
         if(!$_POST['info_name']){
 			echo 2;die;
 		}
@@ -137,284 +131,128 @@ class user_controller extends common{
     		$resumeM = $this->MODEL('resume');
     		$res = $resumeM->addInfo(array('uid'=>$uid,'eData'=>$v));
     		$nid = $res['id'];
-			if($nid){ 
-				
-				if($p['skill_name'] || $p['skill_skill'] || $p['skill_ing']){
-					$skill_v="`uid`='".$uid."',";
-					$skill_v.="`eid`='".$nid."',";
-					$skill_v.="`name`='".$p['skill_name']."',";
-					$skill_v.="`skill`='".$p['skill_skill']."',";
-					$skill_v.="`ing`='".$p['skill_ing']."',";
-					$skill_v.="`longtime`='".$p['skill_longtime']."'";
-					$this->obj->DB_insert_once("resume_skill",$skill_v);
-				}
-				if($p['work_name'] || $p['work_sdate']){
-					$work_v="`uid`='".$uid."',";
-					$work_v.="`eid`='".$nid."',";
-					$work_v.="`name`='".$p['work_name']."',";
+			if($nid){
 
-					$p['work_sdate'] = str_replace(array('年','月','日'),'-',$p['work_sdate']);
-					$p['work_edate'] = str_replace(array('年','月','日'),'-',$p['work_edate']);
-					if(substr($p['work_sdate'], -1)=='-')
-					{
-						$p['work_sdate'].='01';
-					}
-					if(substr($p['work_edate'], -1)=='-')
-					{
-						$p['work_edate'].='01';
-					}
-					$work_v.="`sdate`='".strtotime($p['work_sdate'])."',";
-					$work_v.="`edate`='".strtotime($p['work_edate'])."',";
-					$work_v.="`department`='".$p['work_department']."',";
-					$work_v.="`content`='".$p['work_content']."',";
-					$work_v.="`title`='".$p['work_title']."'";
-					$this->obj->DB_insert_once("resume_work",$work_v);
+				if($this->locoyField($p, 'skill_name') || $this->locoyField($p, 'skill_skill') || $this->locoyField($p, 'skill_ing')){
+					$this->obj->insert_into('resume_skill', array(
+						'uid'      => (int) $uid,
+						'eid'      => (int) $nid,
+						'name'     => $this->locoyField($p, 'skill_name'),
+						'skill'    => $this->locoyField($p, 'skill_skill'),
+						'ing'      => (int) $this->locoyField($p, 'skill_ing'),
+						'longtime' => (int) $this->locoyField($p, 'skill_longtime')
+					));
 				}
-				if($p['work_name1'] || $p['work_sdate1']){    
-					$work_v1="`uid`='".$uid."',";
-					$work_v1.="`eid`='".$nid."',";
-					$work_v1.="`name`='".$p['work_name1']."',";
 
-					$p['work_sdate1'] = str_replace(array('年','月','日'),'-',$p['work_sdate1']);
-					$p['work_edate1'] = str_replace(array('年','月','日'),'-',$p['work_edate1']);
-					if(substr($p['work_sdate1'], -1)=='-')
-					{
-						$p['work_sdate1'].='01';
+				for($workIndex = 0; $workIndex <= 4; $workIndex++){
+					$suffix = $workIndex === 0 ? '' : (string) $workIndex;
+					if($this->locoyField($p, 'work_name'.$suffix) || $this->locoyField($p, 'work_sdate'.$suffix)){
+						$this->obj->insert_into('resume_work', array(
+							'uid'        => (int) $uid,
+							'eid'        => (int) $nid,
+							'name'       => $this->locoyField($p, 'work_name'.$suffix),
+							'sdate'      => $this->locoyDate($this->locoyField($p, 'work_sdate'.$suffix)),
+							'edate'      => $this->locoyDate($this->locoyField($p, 'work_edate'.$suffix)),
+							'department' => $this->locoyField($p, 'work_department'.$suffix),
+							'content'    => $this->locoyField($p, 'work_content'.$suffix),
+							'title'      => $this->locoyField($p, 'work_title'.$suffix)
+						));
 					}
-					if(substr($p['work_edate1'], -1)=='-')
-					{
-						$p['work_edate1'].='01';
-					}
-					
-					$work_v1.="`sdate`='".strtotime($p['work_sdate1'])."',";
-					$work_v1.="`edate`='".strtotime($p['work_edate1'])."',";
-					$work_v1.="`department`='".$p['work_department1']."',";
-					$work_v1.="`content`='".$p['work_content1']."',";
-					$work_v1.="`title`='".$p['work_title1']."'";
-					$this->obj->DB_insert_once("resume_work",$work_v1);
 				}
-				if($p['work_name2'] || $p['work_sdate2']){    
-					$work_v2="`uid`='".$uid."',";
-					$work_v2.="`eid`='".$nid."',";
-					$work_v2.="`name`='".$p['work_name2']."',";
 
-					$p['work_sdate2'] = str_replace(array('年','月','日'),'-',$p['work_sdate2']);
-					$p['work_edate2'] = str_replace(array('年','月','日'),'-',$p['work_edate2']);
-					if(substr($p['work_sdate2'], -1)=='-')
-					{
-						$p['work_sdate2'].='01';
-					}
-					if(substr($p['work_edate2'], -1)=='-')
-					{
-						$p['work_edate2'].='01';
-					}
-					
-					$work_v2.="`sdate`='".strtotime($p['work_sdate2'])."',";
-					$work_v2.="`edate`='".strtotime($p['work_edate2'])."',";
-					$work_v2.="`department`='".$p['work_department2']."',";
-					$work_v2.="`content`='".$p['work_content2']."',";
-					$work_v2.="`title`='".$p['work_title2']."'";
-					$this->obj->DB_insert_once("resume_work",$work_v2);
+				if($this->locoyField($p, 'pro_name') || $this->locoyField($p, 'pro_sdate')){
+					$this->obj->insert_into('resume_project', array(
+						'uid'     => (int) $uid,
+						'eid'     => (int) $nid,
+						'name'    => $this->locoyField($p, 'pro_name'),
+						'sdate'   => $this->locoyDate($this->locoyField($p, 'pro_sdate')),
+						'edate'   => $this->locoyDate($this->locoyField($p, 'pro_edate')),
+						'sys'     => $this->locoyField($p, 'pro_sys'),
+						'content' => $this->locoyField($p, 'pro_content'),
+						'title'   => $this->locoyField($p, 'pro_title')
+					));
 				}
-				if($p['work_name3'] || $p['work_sdate3']){    
-					$work_v3="`uid`='".$uid."',";
-					$work_v3.="`eid`='".$nid."',";
-					$work_v3.="`name`='".$p['work_name3']."',";
 
-					$p['work_sdate3'] = str_replace(array('年','月','日'),'-',$p['work_sdate3']);
-					$p['work_edate3'] = str_replace(array('年','月','日'),'-',$p['work_edate3']);
-					if(substr($p['work_sdate3'], -1)=='-')
-					{
-						$p['work_sdate3'].='01';
+				for($eduIndex = 0; $eduIndex <= 2; $eduIndex++){
+					$suffix = $eduIndex === 0 ? '' : (string) $eduIndex;
+					$eduName = $this->locoyField($p, 'edu_name'.$suffix);
+					$eduTitle = $this->locoyField($p, 'edu_title'.$suffix);
+					if($eduName || $eduTitle){
+						$eduData = array(
+							'uid'       => (int) $uid,
+							'eid'       => (int) $nid,
+							'name'      => $eduName,
+							'sdate'     => $this->locoyDate($this->locoyField($p, 'edu_sdate'.$suffix)),
+							'edate'     => $this->locoyDate($this->locoyField($p, 'edu_edate'.$suffix)),
+							'specialty' => $this->locoyField($p, 'edu_specialty'.$suffix),
+							'content'   => $this->locoyField($p, 'edu_content'.$suffix)
+						);
+						if($eduIndex === 0){
+							$eduData['education'] = $this->locoytostr($this->get_user_type('edu'), $eduTitle, $l['locoy_rate']);
+						}else{
+							$eduData['title'] = $eduTitle;
+						}
+						$this->obj->insert_into('resume_edu', $eduData);
 					}
-					if(substr($p['work_edate3'], -1)=='-')
-					{
-						$p['work_edate3'].='01';
-					}
-					
-					$work_v3.="`sdate`='".strtotime($p['work_sdate3'])."',";
-					$work_v3.="`edate`='".strtotime($p['work_edate3'])."',";
-					$work_v3.="`department`='".$p['work_department3']."',";
-					$work_v3.="`content`='".$p['work_content3']."',";
-					$work_v3.="`title`='".$p['work_title3']."'";
-					$this->obj->DB_insert_once("resume_work",$work_v3);
 				}
-				if($p['work_name4'] || $p['work_sdate4']){    
-					$work_v4="`uid`='".$uid."',";
-					$work_v4.="`eid`='".$nid."',";
-					$work_v4.="`name`='".$p['work_name4']."',";
 
-					$p['work_sdate4'] = str_replace(array('年','月','日'),'-',$p['work_sdate4']);
-					$p['work_edate4'] = str_replace(array('年','月','日'),'-',$p['work_edate4']);
-					if(substr($p['work_sdate4'], -1)=='-')
-					{
-						$p['work_sdate4'].='01';
-					}
-					if(substr($p['work_edate4'], -1)=='-')
-					{
-						$p['work_edate4'].='01';
-					}
-					
-					$work_v4.="`sdate`='".strtotime($p['work_sdate4'])."',";
-					$work_v4.="`edate`='".strtotime($p['work_edate4'])."',";
-					$work_v4.="`department`='".$p['work_department4']."',";
-					$work_v4.="`content`='".$p['work_content4']."',";
-					$work_v4.="`title`='".$p['work_title4']."'";
-					$this->obj->DB_insert_once("resume_work",$work_v4);
+				if($this->locoyField($p, 'cert_name') || $this->locoyField($p, 'cert_title')){
+					$this->obj->insert_into('resume_cert', array(
+						'uid'     => (int) $uid,
+						'eid'     => (int) $nid,
+						'name'    => $this->locoyField($p, 'cert_name'),
+						'sdate'   => $this->locoyDate($this->locoyField($p, 'cert_sdate')),
+						'content' => $this->locoyField($p, 'cert_content'),
+						'title'   => $this->locoyField($p, 'cert_title')
+					));
 				}
-				
-				if($p['pro_name']|| $p['pro_sdate']){
-					$pro_v="`uid`='".$uid."',";
-					$pro_v.="`eid`='".$nid."',";
-					$pro_v.="`name`='".$p['pro_name']."',";
-					$p['pro_sdate'] = str_replace(array('年','月','日'),'-',$p['pro_sdate']);
-					$p['pro_edate'] = str_replace(array('年','月','日'),'-',$p['pro_edate']);
-					if(substr($p['pro_sdate'], -1)=='-')
-					{
-						$p['pro_sdate'].='01';
-					}
-					if(substr($p['pro_edate'], -1)=='-')
-					{
-						$p['pro_edate'].='01';
-					}
-					$pro_v.="`sdate`='".strtotime($p['pro_sdate'])."',";
-					$pro_v.="`edate`='".strtotime($p['pro_edate'])."',";
-					$pro_v.="`sys`='".$p['pro_sys']."',";
-					$pro_v.="`content`='".$p['pro_content']."',";
-					$pro_v.="`title`='".$p['pro_title']."'";
-					$this->obj->DB_insert_once("resume_project",$pro_v);
+
+				if($this->locoyField($p, 'other_content') || $this->locoyField($p, 'other_title')){
+					$this->obj->insert_into('resume_other', array(
+						'uid'     => (int) $uid,
+						'eid'     => (int) $nid,
+						'content' => $this->locoyField($p, 'other_content'),
+						'name'    => $this->locoyField($p, 'other_name')
+					));
 				}
-				if($p['edu_name'] || $p['edu_title']){
-					$edu_v="`uid`='".$uid."',";
-					$edu_v.="`eid`='".$nid."',";
-					$edu_v.="`name`='".$p['edu_name']."',";
-					$p['edu_sdate'] = str_replace(array('年','月','日'),'-',$p['edu_sdate']);
-					$p['edu_edate'] = str_replace(array('年','月','日'),'-',$p['edu_edate']);
-					if(substr($p['edu_sdate'], -1)=='-')
-					{
-						$p['edu_sdate'].='01';
+
+				for($trainIndex = 0; $trainIndex <= 1; $trainIndex++){
+					$suffix = $trainIndex === 0 ? '' : (string) $trainIndex;
+					if($this->locoyField($p, 'train_name'.$suffix) || $this->locoyField($p, 'train_title'.$suffix)){
+						$this->obj->insert_into('resume_training', array(
+							'uid'     => (int) $uid,
+							'eid'     => (int) $nid,
+							'name'    => $this->locoyField($p, 'train_name'.$suffix),
+							'sdate'   => $this->locoyDate($this->locoyField($p, 'train_sdate'.$suffix)),
+							'edate'   => $this->locoyDate($this->locoyField($p, 'train_edate'.$suffix)),
+							'content' => $this->locoyField($p, 'train_content'.$suffix),
+							'title'   => $this->locoyField($p, 'train_title'.$suffix)
+						));
 					}
-					if(substr($p['edu_edate'], -1)=='-')
-					{
-						$p['edu_edate'].='01';
-					}
-					$H['edu']=$this->locoytostr($this->get_user_type('edu'),$p['edu_title'],$l['locoy_rate']);
-					$edu_v.="`sdate`='".strtotime($p['edu_sdate'])."',";
-					$edu_v.="`edate`='".strtotime($p['edu_edate'])."',";
-					$edu_v.="`specialty`='".$p['edu_specialty']."',";
-					$edu_v.="`content`='".$p['edu_content']."',";
-					$edu_v.="`education`='".$H['edu']."'";
-					$this->obj->DB_insert_once("resume_edu",$edu_v);
-				}
-				if($p['edu_name1'] || $p['edu_title1']){       
-					$edu_v1="`uid`='".$uid."',";
-					$edu_v1.="`eid`='".$nid."',";
-					$edu_v1.="`name`='".$p['edu_name1']."',";
-					$p['edu_sdate1'] = str_replace(array('年','月','日'),'-',$p['edu_sdate1']);
-					$p['edu_edate1'] = str_replace(array('年','月','日'),'-',$p['edu_edate1']);
-					if(substr($p['edu_sdate1'], -1)=='-')
-					{
-						$p['edu_sdate1'].='01';
-					}
-					if(substr($p['edu_edate1'], -1)=='-')
-					{
-						$p['edu_edate1'].='01';
-					}
-					$edu_v1.="`sdate`='".strtotime($p['edu_sdate1'])."',";
-					$edu_v1.="`edate`='".strtotime($p['edu_edate1'])."',";
-					$edu_v1.="`specialty`='".$p['edu_specialty1']."',";
-					$edu_v1.="`content`='".$p['edu_content1']."',";
-					$edu_v1.="`title`='".$p['edu_title1']."'";
-					$this->obj->DB_insert_once("resume_edu",$edu_v1);
-				}
-				if($p['edu_name2'] || $p['edu_title2']){       
-					$edu_v2="`uid`='".$uid."',";
-					$edu_v2.="`eid`='".$nid."',";
-					$edu_v2.="`name`='".$p['edu_name2']."',";
-					$p['edu_sdate2'] = str_replace(array('年','月','日'),'-',$p['edu_sdate2']);
-					$p['edu_edate2'] = str_replace(array('年','月','日'),'-',$p['edu_edate2']);
-					if(substr($p['edu_sdate2'], -1)=='-')
-					{
-						$p['edu_sdate2'].='01';
-					}
-					if(substr($p['edu_edate2'], -1)=='-')
-					{
-						$p['edu_edate2'].='01';
-					}
-					$edu_v2.="`sdate`='".strtotime($p['edu_sdate2'])."',";
-					$edu_v2.="`edate`='".strtotime($p['edu_edate2'])."',";
-					$edu_v2.="`specialty`='".$p['edu_specialty2']."',";
-					$edu_v2.="`content`='".$p['edu_content2']."',";
-					$edu_v2.="`title`='".$p['edu_title2']."'";
-					$this->obj->DB_insert_once("resume_edu",$edu_v2);
-				}
-				if($p['cert_name'] || $p['cert_title']){
-					$cert_v="`uid`='".$uid."',";
-					$cert_v.="`eid`='".$nid."',";
-					$cert_v.="`name`='".$p['cert_name']."',";
-					$p['cert_sdate'] = str_replace(array('年','月','日'),'-',$p['edu_edate']);
-					if(substr($p['cert_sdate'], -1)=='-')
-					{
-						$p['cert_sdate'].='01';
-					}
-					$cert_v.="`sdate`='".strtotime($p['cert_sdate'])."',";
-					$cert_v.="`content`='".$p['cert_content']."',";
-					$cert_v.="`title`='".$p['cert_title']."'";
-					$this->obj->DB_insert_once("resume_cert",$cert_v);
-				}
-				if($p['other_content'] || $p['other_title']){
-					$other_v="`uid`='".$uid."',";
-					$other_v.="`eid`='".$nid."',";
-					$other_v.="`content`='".$p['other_content']."',";
-					$other_v.="`name`='".$p['other_name']."'";
-					$this->obj->DB_insert_once("resume_other",$other_v);
-				}
-				if($p['train_name'] || $p['train_title']){
-					$train_v="`uid`='".$uid."',";
-					$train_v.="`eid`='".$nid."',";
-					$train_v.="`name`='".$p['train_name']."',";
-					$p['train_sdate'] = str_replace(array('年','月','日'),'-',$p['train_sdate']);
-					$p['train_edate'] = str_replace(array('年','月','日'),'-',$p['train_edate']);
-					if(substr($p['train_sdate'], -1)=='-')
-					{
-						$p['train_sdate'].='01';
-					}
-					if(substr($p['train_edate'], -1)=='-')
-					{
-						$p['train_edate'].='01';
-					}
-					$train_v.="`sdate`='".strtotime($p['train_sdate'])."',";
-					$train_v.="`edate`='".strtotime($p['train_edate'])."',";
-					$train_v.="`content`='".$p['train_content']."',";
-					$train_v.="`title`='".$p['train_title']."'";
-					$this->obj->DB_insert_once("resume_training",$train_v);
-				}
-				if($p['train_name1'] || $p['train_title1']){    
-					$train_v1="`uid`='".$uid."',";
-					$train_v1.="`eid`='".$nid."',";
-					$train_v1.="`name`='".$p['train_name1']."',";
-					$p['train_sdate1'] = str_replace(array('年','月','日'),'-',$p['train_sdate1']);
-					$p['train_edate1'] = str_replace(array('年','月','日'),'-',$p['train_edate1']);
-					if(substr($p['train_sdate1'], -1)=='-')
-					{
-						$p['train_sdate1'].='01';
-					}
-					if(substr($p['train_edate1'], -1)=='-')
-					{
-						$p['train_edat1'].='01';
-					}
-					$train_v1.="`sdate`='".strtotime($p['train_sdate1'])."',";
-					$train_v1.="`edate`='".strtotime($p['train_edate1'])."',";
-					$train_v1.="`content`='".$p['train_content1']."',";
-					$train_v1.="`title`='".$p['train_title1']."'";
-					$this->obj->DB_insert_once("resume_training",$train_v1);
 				}
 				echo 1;die;
 			}
 	}
-	
+
+	private function locoyField($data, $field, $default = '')
+	{
+		return isset($data[$field]) && !is_array($data[$field]) ? $data[$field] : $default;
+	}
+
+	private function locoyDate($value)
+	{
+		$value = str_replace(array('年', '月', '日'), '-', trim((string) $value));
+		if($value !== '' && substr($value, -1) === '-'){
+			$value .= '01';
+		}
+		$timestamp = $value !== '' ? strtotime($value) : false;
+		return $timestamp === false ? 0 : $timestamp;
+	}
+
 	function add_user_info($p,$l){
-		$row=$this->obj->DB_select_once("resume","`name`='".$p['info_name']."'");
+		$row = $this->obj->select_once('resume', array(
+			'name' => $this->locoyField($p, 'info_name')
+		));
 		if(is_array($row)){
 			return $row['uid'];
 		}else{
@@ -483,16 +321,29 @@ class user_controller extends common{
 	}
 	
 	function add_user($p,$l){
-		$salt = substr(uniqid(rand()),-6);
-		$pass = md5(md5($l['locoy_pwd']).$salt);
+		$salt = substr(bin2hex(random_bytes(8)), -6);
+		$password = isset($l['locoy_pwd']) ? (string) $l['locoy_pwd'] : '';
+		$pass = passCheck($password, $salt);
 		$ip = fun_ip_get();
 		$time = time();
-		$username=$this->get_username($l);
+		$username = $this->get_username($l);
 		
-		$userid=$this->obj->DB_insert_once("member","`username`='".$username."',`password`='$pass',`moblie`='".$p['info_telphone']."',`email`='".$p['info_email']."',`usertype`='1',`status`='1',`salt`='$salt',`reg_date`='$time',`reg_ip`='$ip',`source`='6'");
-		$value="`uid`='$userid'";
-		$this->obj->DB_insert_once("resume",$value);
-		$this->obj->DB_insert_once("member_statis",$value);
+		$userid = $this->obj->insert_into('member', array(
+			'username' => $username,
+			'password' => $pass,
+			'moblie'   => $this->locoyField($p, 'info_telphone'),
+			'email'    => $this->locoyField($p, 'info_email'),
+			'usertype' => 1,
+			'status'   => 1,
+			'salt'     => $salt,
+			'reg_date' => $time,
+			'reg_ip'   => $ip,
+			'source'   => 6
+		));
+		if($userid){
+			$this->obj->insert_into('resume', array('uid' => (int) $userid));
+			$this->obj->insert_into('member_statis', array('uid' => (int) $userid));
+		}
 		return $userid;
 	}
 	

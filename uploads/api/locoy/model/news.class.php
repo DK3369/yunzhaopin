@@ -2,13 +2,8 @@
 
 class news_controller extends common{
 	function addnews_action(){//新闻添加
-		include(APP_PATH."data/api/locoy/locoy_config.php");
-		if($locoyinfo['locoy_online']!=1){
-			echo 4;die;
-		}
-		if($locoyinfo['locoy_key']!=trim($_GET['key'])){
-			echo 5;die;
-		}
+
+        $locoyinfo = locoy_config();
         if(!$_POST['title'] || !$_POST['content'] || !$_POST['nid']){
 			echo 2;die;
 		}
