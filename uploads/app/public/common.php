@@ -279,7 +279,7 @@ class common{
 		}
 	}
 	//UC资料修改
-    function uc_edit_pw($post, $old = "1", $url)
+    function uc_edit_pw($post, $old = "1", $url = "")
     {
 
         $old_info   =   $this->obj->select_once('member', array('uid' => $post['uid']), "`name_repeat`,`username`");
@@ -401,8 +401,12 @@ class common{
 		   
 		}
 		$this->tpl->is_fun();
-		include PLUS_PATH.'/tplmoblie.cache.php';
-		if($tplmoblie['wapdiy']==1){
+		$tplmoblie = array();
+		$tplmoblieFile = PLUS_PATH . '/tplmoblie.cache.php';
+		if (is_file($tplmoblieFile)) {
+			include $tplmoblieFile;
+		}
+		if(isset($tplmoblie['wapdiy']) && $tplmoblie['wapdiy']==1){
 			$this->yunset('tplmoblie',$tplmoblie);
 		}
 		
@@ -915,10 +919,13 @@ class common{
             header('location:' . $this->config['sy_weburl']);
         }
 
-        $UA =   strtoupper($_SERVER['HTTP_USER_AGENT']);
-        if ($this->config['sy_pc_jump_wap'] != '1' && strpos($UA, 'WINDOWS NT') !== false) {
+        $UA =   strtoupper(isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '');
+        $c  =   isset($_GET['c']) ? $_GET['c'] : '';
+        $cArray = array('login', 'register', 'forgetpw');
+        if ($this->config['sy_pc_jump_wap'] != '1' && strpos($UA, 'WINDOWS NT') !== false && !in_array($c, $cArray)) {
 
             header('location:' . Url('index', array('c' => 'wap')));
+            exit();
         }
     }
 

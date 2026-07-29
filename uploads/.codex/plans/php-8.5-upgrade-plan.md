@@ -9,7 +9,9 @@ Upgrade the production runtime from PHP 7.4.33 to PHP 8.5.7 while keeping PHP 7.
 - PHP 7 and newer must load the mysqli-backed database driver.
 - Legacy payment and UC entrypoints must not route PHP 8.x to PHP 5 mysql_* code paths.
 - Removed PHP APIs such as each() and get_magic_quotes_gpc() must be replaced or guarded before the runtime switch.
-- WAP authentication entrypoints must remain directly testable after the switch; desktop/local access to WAP login, register, and password recovery should not be forced through the PC jump helper.
+- WAP authentication entrypoints must remain directly testable after the switch; desktop/local access to WAP login, register, and password recovery should not be forced through either WAP jump helper.
+- WAP templates should load shared API/JS i18n snippets from the common header only; page templates must not duplicate the same shared include before the header because legacy Smarty can truncate nested duplicate subtemplate output under PHP 8.5.
+- Optional WAP DIY template cache files must be guarded when absent so missing runtime cache does not emit noisy PHP 8.5 warnings.
 
 ## Server Changes
 

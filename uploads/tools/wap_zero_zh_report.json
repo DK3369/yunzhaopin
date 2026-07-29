@@ -1,5 +1,5 @@
 {
-    "generated": "2026-07-03T21:18:16+08:00",
+    "generated": "2026-07-29T15:52:07+08:00",
     "summary": {
         "enum_hub": 25,
         "comment": 463,
@@ -17,9 +17,9 @@
         "api\/wxapp\/member\/user\/msg.class.php": 9,
         "api\/wxapp\/member\/user\/part.class.php": 4,
         "api\/wxapp\/member\/user\/privacy.class.php": 12,
-        "api\/wxapp\/member\/user\/resume.class.php": 52,
         "api\/wxapp\/member\/user\/reward.class.php": 2,
         "api\/wxapp\/member\/user\/set.class.php": 35,
+        "api\/wxapp\/member\/user\/resume.class.php": 52,
         "api\/wxapp\/member\/com\/finance.class.php": 40,
         "api\/wxapp\/member\/com\/fk.class.php": 37,
         "api\/wxapp\/member\/com\/index.class.php": 17,
@@ -805,6 +805,228 @@
             "text": "    \/\/保存要屏蔽的企业"
         },
         {
+            "file": "api\/wxapp\/member\/user\/reward.class.php",
+            "line": 6,
+            "category": "comment",
+            "text": "     * 兑换记录列表"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/reward.class.php",
+            "line": 40,
+            "category": "comment",
+            "text": "    \/\/删除兑换记录"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/set.class.php",
+            "line": 5,
+            "category": "comment",
+            "text": "    \/\/个人设置信息页面"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/set.class.php",
+            "line": 24,
+            "category": "comment",
+            "text": "        \/\/ 第三方绑定相关参数"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/set.class.php",
+            "line": 50,
+            "category": "comment",
+            "text": "    \/\/查询用户是否有多重身份"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/set.class.php",
+            "line": 70,
+            "category": "comment",
+            "text": "    \/\/身份证审核查询"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/set.class.php",
+            "line": 86,
+            "category": "comment",
+            "text": "\t\/\/上传身份证"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/set.class.php",
+            "line": 107,
+            "category": "comment",
+            "text": "\t\/\/手机认证,发送短信；"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/set.class.php",
+            "line": 117,
+            "category": "comment",
+            "text": "\t\t$port\t =\t$this->plat == 'mini' ? '3' : '4';\t\/\/ 短信发送端口$port : 3-小程序  4-APP"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/set.class.php",
+            "line": 122,
+            "category": "ui",
+            "text": "            $logContent =   '账号认证：发送手机认证验证码';"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/set.class.php",
+            "line": 123,
+            "category": "ui",
+            "text": "            $logDetail  =   '手机认证，发送短信验证码；认证手机号码：'.$moblie;"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/set.class.php",
+            "line": 131,
+            "category": "comment",
+            "text": "\t\/\/修改密码"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/set.class.php",
+            "line": 151,
+            "category": "comment",
+            "text": "\t\/\/手机号和邮箱绑定"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/set.class.php",
+            "line": 173,
+            "category": "ui",
+            "text": "\t\t\t\t$msg    \t\t=    \t'手机号码已存在，请重新填写新号码';"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/set.class.php",
+            "line": 187,
+            "category": "comment",
+            "text": "\t\t\t\t    \/\/ 用户名和手机号重复，修改手机号会修改用户名，需要重新生成token;"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/set.class.php",
+            "line": 195,
+            "category": "ui",
+            "text": "\t\t\t\t\t$msg\t\t=\t\t'验证码时间已过期，请重新获取验证码';"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/set.class.php",
+            "line": 198,
+            "category": "ui",
+            "text": "\t\t\t\t\t$msg\t\t=\t\t'验证码错误';"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/set.class.php",
+            "line": 201,
+            "category": "ui",
+            "text": "\t\t\t\t\t$msg\t\t=\t\t'验证码不存在，请获取验证码';"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/set.class.php",
+            "line": 206,
+            "category": "ui",
+            "text": "\t\t\t\t\t$msg\t\t=\t\t'绑定失败';"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/set.class.php",
+            "line": 213,
+            "category": "comment",
+            "text": "\t\t\t\/\/判断邮箱是否存在"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/set.class.php",
+            "line": 231,
+            "category": "ui",
+            "text": "                    $this->render_json($result['error'], \"图片验证码错误\");"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/set.class.php",
+            "line": 236,
+            "category": "ui",
+            "text": "\t\t\t\t$msg    \t\t=    \t'邮箱已存在，请重新填写邮箱';"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/set.class.php",
+            "line": 250,
+            "category": "ui",
+            "text": "\t\t\t\t\t$msg    \t\t=    \t'邮件没有配置，请联系管理员！';"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/set.class.php",
+            "line": 254,
+            "category": "ui",
+            "text": "\t\t\t\t\t$msg\t\t\t=\t\t'邮件通知已关闭，请联系管理员';"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/set.class.php",
+            "line": 260,
+            "category": "ui",
+            "text": "\t\t\t\t\t$msg\t\t\t=\t\t'操作错误';"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/set.class.php",
+            "line": 270,
+            "category": "comment",
+            "text": "\t\/\/修改用户名"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/set.class.php",
+            "line": 291,
+            "category": "ui",
+            "text": "\t\t\t$msg\t=\t'修改失败';"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/set.class.php",
+            "line": 297,
+            "category": "comment",
+            "text": "    \/\/账户分离"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/set.class.php",
+            "line": 311,
+            "category": "comment",
+            "text": "    \/\/社交账号绑定页面"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/set.class.php",
+            "line": 338,
+            "category": "comment",
+            "text": "\t\/\/保存社交账号绑定"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/set.class.php",
+            "line": 346,
+            "category": "ui",
+            "text": "\t                $uni = 'H5\/微信';"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/set.class.php",
+            "line": 361,
+            "category": "ui",
+            "text": "            $logContent =   '账号认证：解除绑定';"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/set.class.php",
+            "line": 362,
+            "category": "ui",
+            "text": "            $logDetail  =   $uni.'解除绑定';"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/set.class.php",
+            "line": 370,
+            "category": "comment",
+            "text": "\t\/\/ 查询申请注销记录"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/set.class.php",
+            "line": 378,
+            "category": "ui",
+            "text": "\t        $this->render_json(1,'您已申请了注销账号');"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/set.class.php",
+            "line": 384,
+            "category": "comment",
+            "text": "\t\/\/注销账号申请"
+        },
+        {
+            "file": "api\/wxapp\/member\/user\/set.class.php",
+            "line": 404,
+            "category": "comment",
+            "text": "    \/\/手机注销账号申请"
+        },
+        {
             "file": "api\/wxapp\/member\/user\/resume.class.php",
             "line": 4,
             "category": "comment",
@@ -1115,228 +1337,6 @@
             "line": 926,
             "category": "comment",
             "text": "     * @param file\/需上传文件; dir\/上传目录; type\/上传图片类型; base\/需上传base64; preview\/pc预览即上传"
-        },
-        {
-            "file": "api\/wxapp\/member\/user\/reward.class.php",
-            "line": 6,
-            "category": "comment",
-            "text": "     * 兑换记录列表"
-        },
-        {
-            "file": "api\/wxapp\/member\/user\/reward.class.php",
-            "line": 40,
-            "category": "comment",
-            "text": "    \/\/删除兑换记录"
-        },
-        {
-            "file": "api\/wxapp\/member\/user\/set.class.php",
-            "line": 5,
-            "category": "comment",
-            "text": "    \/\/个人设置信息页面"
-        },
-        {
-            "file": "api\/wxapp\/member\/user\/set.class.php",
-            "line": 24,
-            "category": "comment",
-            "text": "        \/\/ 第三方绑定相关参数"
-        },
-        {
-            "file": "api\/wxapp\/member\/user\/set.class.php",
-            "line": 50,
-            "category": "comment",
-            "text": "    \/\/查询用户是否有多重身份"
-        },
-        {
-            "file": "api\/wxapp\/member\/user\/set.class.php",
-            "line": 70,
-            "category": "comment",
-            "text": "    \/\/身份证审核查询"
-        },
-        {
-            "file": "api\/wxapp\/member\/user\/set.class.php",
-            "line": 86,
-            "category": "comment",
-            "text": "\t\/\/上传身份证"
-        },
-        {
-            "file": "api\/wxapp\/member\/user\/set.class.php",
-            "line": 107,
-            "category": "comment",
-            "text": "\t\/\/手机认证,发送短信；"
-        },
-        {
-            "file": "api\/wxapp\/member\/user\/set.class.php",
-            "line": 117,
-            "category": "comment",
-            "text": "\t\t$port\t =\t$this->plat == 'mini' ? '3' : '4';\t\/\/ 短信发送端口$port : 3-小程序  4-APP"
-        },
-        {
-            "file": "api\/wxapp\/member\/user\/set.class.php",
-            "line": 122,
-            "category": "ui",
-            "text": "            $logContent =   '账号认证：发送手机认证验证码';"
-        },
-        {
-            "file": "api\/wxapp\/member\/user\/set.class.php",
-            "line": 123,
-            "category": "ui",
-            "text": "            $logDetail  =   '手机认证，发送短信验证码；认证手机号码：'.$moblie;"
-        },
-        {
-            "file": "api\/wxapp\/member\/user\/set.class.php",
-            "line": 131,
-            "category": "comment",
-            "text": "\t\/\/修改密码"
-        },
-        {
-            "file": "api\/wxapp\/member\/user\/set.class.php",
-            "line": 151,
-            "category": "comment",
-            "text": "\t\/\/手机号和邮箱绑定"
-        },
-        {
-            "file": "api\/wxapp\/member\/user\/set.class.php",
-            "line": 173,
-            "category": "ui",
-            "text": "\t\t\t\t$msg    \t\t=    \t'手机号码已存在，请重新填写新号码';"
-        },
-        {
-            "file": "api\/wxapp\/member\/user\/set.class.php",
-            "line": 187,
-            "category": "comment",
-            "text": "\t\t\t\t    \/\/ 用户名和手机号重复，修改手机号会修改用户名，需要重新生成token;"
-        },
-        {
-            "file": "api\/wxapp\/member\/user\/set.class.php",
-            "line": 195,
-            "category": "ui",
-            "text": "\t\t\t\t\t$msg\t\t=\t\t'验证码时间已过期，请重新获取验证码';"
-        },
-        {
-            "file": "api\/wxapp\/member\/user\/set.class.php",
-            "line": 198,
-            "category": "ui",
-            "text": "\t\t\t\t\t$msg\t\t=\t\t'验证码错误';"
-        },
-        {
-            "file": "api\/wxapp\/member\/user\/set.class.php",
-            "line": 201,
-            "category": "ui",
-            "text": "\t\t\t\t\t$msg\t\t=\t\t'验证码不存在，请获取验证码';"
-        },
-        {
-            "file": "api\/wxapp\/member\/user\/set.class.php",
-            "line": 206,
-            "category": "ui",
-            "text": "\t\t\t\t\t$msg\t\t=\t\t'绑定失败';"
-        },
-        {
-            "file": "api\/wxapp\/member\/user\/set.class.php",
-            "line": 213,
-            "category": "comment",
-            "text": "\t\t\t\/\/判断邮箱是否存在"
-        },
-        {
-            "file": "api\/wxapp\/member\/user\/set.class.php",
-            "line": 231,
-            "category": "ui",
-            "text": "                    $this->render_json($result['error'], \"图片验证码错误\");"
-        },
-        {
-            "file": "api\/wxapp\/member\/user\/set.class.php",
-            "line": 236,
-            "category": "ui",
-            "text": "\t\t\t\t$msg    \t\t=    \t'邮箱已存在，请重新填写邮箱';"
-        },
-        {
-            "file": "api\/wxapp\/member\/user\/set.class.php",
-            "line": 250,
-            "category": "ui",
-            "text": "\t\t\t\t\t$msg    \t\t=    \t'邮件没有配置，请联系管理员！';"
-        },
-        {
-            "file": "api\/wxapp\/member\/user\/set.class.php",
-            "line": 254,
-            "category": "ui",
-            "text": "\t\t\t\t\t$msg\t\t\t=\t\t'邮件通知已关闭，请联系管理员';"
-        },
-        {
-            "file": "api\/wxapp\/member\/user\/set.class.php",
-            "line": 260,
-            "category": "ui",
-            "text": "\t\t\t\t\t$msg\t\t\t=\t\t'操作错误';"
-        },
-        {
-            "file": "api\/wxapp\/member\/user\/set.class.php",
-            "line": 270,
-            "category": "comment",
-            "text": "\t\/\/修改用户名"
-        },
-        {
-            "file": "api\/wxapp\/member\/user\/set.class.php",
-            "line": 291,
-            "category": "ui",
-            "text": "\t\t\t$msg\t=\t'修改失败';"
-        },
-        {
-            "file": "api\/wxapp\/member\/user\/set.class.php",
-            "line": 297,
-            "category": "comment",
-            "text": "    \/\/账户分离"
-        },
-        {
-            "file": "api\/wxapp\/member\/user\/set.class.php",
-            "line": 311,
-            "category": "comment",
-            "text": "    \/\/社交账号绑定页面"
-        },
-        {
-            "file": "api\/wxapp\/member\/user\/set.class.php",
-            "line": 338,
-            "category": "comment",
-            "text": "\t\/\/保存社交账号绑定"
-        },
-        {
-            "file": "api\/wxapp\/member\/user\/set.class.php",
-            "line": 346,
-            "category": "ui",
-            "text": "\t                $uni = 'H5\/微信';"
-        },
-        {
-            "file": "api\/wxapp\/member\/user\/set.class.php",
-            "line": 361,
-            "category": "ui",
-            "text": "            $logContent =   '账号认证：解除绑定';"
-        },
-        {
-            "file": "api\/wxapp\/member\/user\/set.class.php",
-            "line": 362,
-            "category": "ui",
-            "text": "            $logDetail  =   $uni.'解除绑定';"
-        },
-        {
-            "file": "api\/wxapp\/member\/user\/set.class.php",
-            "line": 370,
-            "category": "comment",
-            "text": "\t\/\/ 查询申请注销记录"
-        },
-        {
-            "file": "api\/wxapp\/member\/user\/set.class.php",
-            "line": 378,
-            "category": "ui",
-            "text": "\t        $this->render_json(1,'您已申请了注销账号');"
-        },
-        {
-            "file": "api\/wxapp\/member\/user\/set.class.php",
-            "line": 384,
-            "category": "comment",
-            "text": "\t\/\/注销账号申请"
-        },
-        {
-            "file": "api\/wxapp\/member\/user\/set.class.php",
-            "line": 404,
-            "category": "comment",
-            "text": "    \/\/手机注销账号申请"
         },
         {
             "file": "api\/wxapp\/member\/com\/finance.class.php",

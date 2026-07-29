@@ -1,4 +1,3 @@
-{yun:}include file="$wapstyle/publichtm/wap_api_enum.htm"{/yun}
 {yun:}include file="$wapstyle/header.htm"{/yun}
 <style>
     body {
@@ -325,7 +324,7 @@
         } else {
             $(obj).html("{yun:}t key='wap_js_00124'{/yun}");
             $(obj).attr({
-                'style': 'background: ;"
+                'style': 'background: ;'
             });
             smsTimer_flag = smsTimer_time;
             clearInterval(Timer);
@@ -334,7 +333,7 @@
 
     function changeCaptcha() {
         // {yun:}t key='common_01315'{/yun}
-        $("#bind-captcha').attr('data-id', 'login_bth');
+        $('#bind-captcha').attr('data-id', 'login_bth');
         $('#bind-captcha').attr('data-type', 'click');
     }
 </script>
