@@ -15810,7 +15810,7 @@ return array(
   'wap_user_00360' => 'Sick',
   'wap_user_00361' => 'Managers',
   'wap_user_00362' => 'The WeChat account bound to this account is not the current WeChat account. Do you want to switch binding to the current WeChat account?',
-  'wap_user_00363' => 'System Messages',
+  'wap_user_00363' => 'Messages',
   'wap_user_00364' => 'Job Inquiry',
   'wap_user_00365' => 'Message',
   'wap_user_00366' => 'Username Length',
