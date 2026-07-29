@@ -446,3 +446,7 @@ Batch 49 执行范围：demo/canvas/png 工具注释和调试日志 `js/layui/cs
 4. 再处理独立 JS 和 CSS 视觉适配。
 5. 最后处理 SQL 安装数据和新增语言扩展。
 6. 每个阶段保存 baseline，避免长期迁移中无法判断回归。
+
+## PHP 8.5 WAP null-safety batch
+
+This batch is limited to `app/template/wap/job.htm`, `resume.htm`, `company.htm`, and `login.htm`. It adds existence/default guards around optional request, configuration, and model values so PHP 8.5 does not evaluate null array offsets or pass null to string functions. Existing translation keys, user-visible wording, Smarty structure, routes, and business conditions must remain unchanged. Validate with the PHP lint gate, i18n status scan, WAP scanner, page smoke tests, and a new-log deprecation check.
