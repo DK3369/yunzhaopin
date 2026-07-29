@@ -1242,7 +1242,7 @@
         "module": "admin",
         "id": 173,
         "old_key": "",
-        "zh": "添加大类时，不用选择类别。 添加二级分类时，要选择类别。 分类转移只能转移二级分类。 点击类别名称\/排序旁边的图标，可进行修改。",
+        "zh": "添加大类时，不用选择类别。 添加二级分类时，要选择类别。 分类转移只能转移二级分类。 点击类别名称/排序旁边的图标，可进行修改。",
         "en": "When adding a top-level category, no parent category is needed. When adding a second-level category, select a parent category. Category transfer only supports second-level categories. Click the icon next to category name or sort to edit."
     },
     "admin_00174": {
@@ -1256,15 +1256,15 @@
         "module": "admin",
         "id": 175,
         "old_key": "",
-        "zh": "站内链接如：http:\/\/www.ov6.com 原链接如：index.php?m=com",
-        "en": "Internal link example: http:\/\/www.ov6.com. Original link example: index.php?m=com"
+        "zh": "站内链接如：http://www.ov6.com 原链接如：index.php?m=com",
+        "en": "Internal link example: http://www.ov6.com. Original link example: index.php?m=com"
     },
     "admin_00176": {
         "module": "admin",
         "id": 176,
         "old_key": "",
-        "zh": "站内链接如：http:\/\/www.ov6.com",
-        "en": "Internal link example: http:\/\/www.ov6.com"
+        "zh": "站内链接如：http://www.ov6.com",
+        "en": "Internal link example: http://www.ov6.com"
     },
     "admin_00177": {
         "module": "admin",
@@ -2376,8 +2376,8 @@
         "module": "admin",
         "id": 335,
         "old_key": "",
-        "zh": "已选 {checked}\/{total} 项",
-        "en": "Selected {checked}\/{total} items"
+        "zh": "已选 {checked}/{total} 项",
+        "en": "Selected {checked}/{total} items"
     },
     "admin_00336": {
         "module": "admin",
@@ -2495,8 +2495,8 @@
         "module": "admin",
         "id": 352,
         "old_key": "",
-        "zh": "条\/页",
-        "en": "items\/page"
+        "zh": "条/页",
+        "en": "items/page"
     },
     "admin_00353": {
         "module": "admin",
@@ -3797,8 +3797,8 @@
         "module": "admin_system",
         "id": 38,
         "old_key": "",
-        "zh": "网站地址缺少http:\/\/或https:\/\/",
-        "en": "Website address is missing http:\/\/ or https:\/\/"
+        "zh": "网站地址缺少http://或https://",
+        "en": "Website address is missing http:// or https://"
     },
     "admin_system_00039": {
         "module": "admin_system",
@@ -4147,8 +4147,8 @@
         "module": "admin_system",
         "id": 88,
         "old_key": "",
-        "zh": "英文名称\/拼音：",
-        "en": "English Name\/Pinyin:"
+        "zh": "英文名称/拼音：",
+        "en": "English Name/Pinyin:"
     },
     "admin_system_00089": {
         "module": "admin_system",
@@ -4161,8 +4161,8 @@
         "module": "admin_system",
         "id": 90,
         "old_key": "",
-        "zh": "英文\/拼音(点击修改)",
-        "en": "English\/Pinyin (Click to Edit)"
+        "zh": "英文/拼音(点击修改)",
+        "en": "English/Pinyin (Click to Edit)"
     },
     "admin_system_00091": {
         "module": "admin_system",
@@ -4259,8 +4259,8 @@
         "module": "admin_system",
         "id": 104,
         "old_key": "",
-        "zh": "英文名称\/拼音",
-        "en": "English Name\/Pinyin"
+        "zh": "英文名称/拼音",
+        "en": "English Name/Pinyin"
     },
     "admin_system_00105": {
         "module": "admin_system",
@@ -4287,8 +4287,8 @@
         "module": "admin_system",
         "id": 108,
         "old_key": "",
-        "zh": "英文名称\/拼音(点击修改)",
-        "en": "English Name\/Pinyin (Click to Edit)"
+        "zh": "英文名称/拼音(点击修改)",
+        "en": "English Name/Pinyin (Click to Edit)"
     },
     "admin_system_00109": {
         "module": "admin_system",
@@ -4756,8 +4756,8 @@
         "module": "admin_system",
         "id": 175,
         "old_key": "",
-        "zh": "开启多城市并且绑定域名不支持2级目录，本地测试如 http:\/\/localhost\/phpyun 请解析测试域名",
-        "en": "Multi-city mode with bound domains does not support level-2 directories. For local testing such as http:\/\/localhost\/phpyun, please resolve a test domain."
+        "zh": "开启多城市并且绑定域名不支持2级目录，本地测试如 http://localhost/phpyun 请解析测试域名",
+        "en": "Multi-city mode with bound domains does not support level-2 directories. For local testing such as http://localhost/phpyun, please resolve a test domain."
     },
     "admin_system_00176": {
         "module": "admin_system",
@@ -4882,8 +4882,8 @@
         "module": "admin_system",
         "id": 193,
         "old_key": "",
-        "zh": "域名\/目录",
-        "en": "Domain\/Directory"
+        "zh": "域名/目录",
+        "en": "Domain/Directory"
     },
     "admin_system_00194": {
         "module": "admin_system",
@@ -5274,8 +5274,8 @@
         "module": "admin_system",
         "id": 249,
         "old_key": "",
-        "zh": "前端页面地址，取router.js中的path，如：\/admin_nav",
-        "en": "Frontend page address. Use the path in router.js, e.g. \/admin_nav"
+        "zh": "前端页面地址，取router.js中的path，如：/admin_nav",
+        "en": "Frontend page address. Use the path in router.js, e.g. /admin_nav"
     },
     "admin_system_00250": {
         "module": "admin_system",
@@ -5316,8 +5316,8 @@
         "module": "admin_system",
         "id": 255,
         "old_key": "",
-        "zh": "执行文件名 如：index.php,文件存放路径\/app\/include\/cron\/",
-        "en": "Execution file name, e.g. index.php. File path: \/app\/include\/cron\/"
+        "zh": "执行文件名 如：index.php,文件存放路径/app/include/cron/",
+        "en": "Execution file name, e.g. index.php. File path: /app/include/cron/"
     },
     "admin_system_00256": {
         "module": "admin_system",
@@ -5708,8 +5708,8 @@
         "module": "admin_system",
         "id": 311,
         "old_key": "",
-        "zh": "次\/日",
-        "en": "Times\/day"
+        "zh": "次/日",
+        "en": "Times/day"
     },
     "admin_system_00312": {
         "module": "admin_system",
@@ -5736,8 +5736,8 @@
         "module": "admin_system",
         "id": 315,
         "old_key": "",
-        "zh": "如：https:\/\/www.ov6.com",
-        "en": "Example: https:\/\/www.ov6.com"
+        "zh": "如：https://www.ov6.com",
+        "en": "Example: https://www.ov6.com"
     },
     "admin_system_00316": {
         "module": "admin_system",
@@ -6387,22 +6387,22 @@
         "module": "admin_system",
         "id": 408,
         "old_key": "",
-        "zh": "份\/天",
-        "en": "Items\/days"
+        "zh": "份/天",
+        "en": "Items/days"
     },
     "admin_system_00409": {
         "module": "admin_system",
         "id": 409,
         "old_key": "",
-        "zh": "条\/时",
-        "en": "items\/hour"
+        "zh": "条/时",
+        "en": "items/hour"
     },
     "admin_system_00410": {
         "module": "admin_system",
         "id": 410,
         "old_key": "",
-        "zh": "类\/天",
-        "en": "categories\/day"
+        "zh": "类/天",
+        "en": "categories/day"
     },
     "admin_system_00411": {
         "module": "admin_system",
@@ -7283,8 +7283,8 @@
         "module": "admin_system",
         "id": 536,
         "old_key": "",
-        "zh": "被禁止的手机号段，不允许手机注册:如: 170\/171\/165\/167，此四个号段为虚拟号段，建议禁止。",
-        "en": "Forbidden mobile number segments cannot be used for mobile registration. For example: 170\/171\/165\/167 are virtual segments and are recommended to be blocked."
+        "zh": "被禁止的手机号段，不允许手机注册:如: 170/171/165/167，此四个号段为虚拟号段，建议禁止。",
+        "en": "Forbidden mobile number segments cannot be used for mobile registration. For example: 170/171/165/167 are virtual segments and are recommended to be blocked."
     },
     "admin_system_00537": {
         "module": "admin_system",
@@ -7626,8 +7626,8 @@
         "module": "admin_system",
         "id": 585,
         "old_key": "",
-        "zh": "设置 人才\/职位（详情页\/列表页）刷新时间格式，仅当天可用",
-        "en": "Set refresh time format for talent\/jobs on detail and list pages. Only valid for the current day."
+        "zh": "设置 人才/职位（详情页/列表页）刷新时间格式，仅当天可用",
+        "en": "Set refresh time format for talent/jobs on detail and list pages. Only valid for the current day."
     },
     "admin_system_00586": {
         "module": "admin_system",
@@ -7773,15 +7773,15 @@
         "module": "admin_system",
         "id": 606,
         "old_key": "",
-        "zh": "推荐职位\/简历最小时间间隔",
-        "en": "Minimum Interval for Job\/Resume Recommendations"
+        "zh": "推荐职位/简历最小时间间隔",
+        "en": "Minimum Interval for Job/Resume Recommendations"
     },
     "admin_system_00607": {
         "module": "admin_system",
         "id": 607,
         "old_key": "",
-        "zh": "每天推荐职位\/简历最大次数",
-        "en": "Daily Maximum Job\/Resume Recommendations"
+        "zh": "每天推荐职位/简历最大次数",
+        "en": "Daily Maximum Job/Resume Recommendations"
     },
     "admin_system_00608": {
         "module": "admin_system",
@@ -7956,7 +7956,7 @@
         "id": 632,
         "old_key": "",
         "zh": "职位简历点击器",
-        "en": "Job\/Resume Click Counter"
+        "en": "Job/Resume Click Counter"
     },
     "admin_system_00633": {
         "module": "admin_system",
@@ -8137,15 +8137,15 @@
         "module": "admin_system",
         "id": 658,
         "old_key": "",
-        "zh": "例：default\/footer 注：default为当前风格目录 模板后缀为(.htm)",
-        "en": "Example: default\/footer. Note: default is the current style directory, and the template suffix is (.htm)."
+        "zh": "例：default/footer 注：default为当前风格目录 模板后缀为(.htm)",
+        "en": "Example: default/footer. Note: default is the current style directory, and the template suffix is (.htm)."
     },
     "admin_system_00659": {
         "module": "admin_system",
         "id": 659,
         "old_key": "",
-        "zh": "例：default\/header 注：default为当前风格目录 模板后缀为(.htm)",
-        "en": "Example: default\/header. Note: default is the current style directory, and the template suffix is (.htm)."
+        "zh": "例：default/header 注：default为当前风格目录 模板后缀为(.htm)",
+        "en": "Example: default/header. Note: default is the current style directory, and the template suffix is (.htm)."
     },
     "admin_system_00660": {
         "module": "admin_system",
@@ -8179,8 +8179,8 @@
         "module": "admin_system",
         "id": 664,
         "old_key": "",
-        "zh": "(可以为多级目录)。例：\/about\/index.html",
-        "en": "Can be a multi-level directory. Example: \/about\/index.html"
+        "zh": "(可以为多级目录)。例：/about/index.html",
+        "en": "Can be a multi-level directory. Example: /about/index.html"
     },
     "admin_system_00665": {
         "module": "admin_system",
@@ -8963,8 +8963,8 @@
         "module": "admin_tool",
         "id": 86,
         "old_key": "",
-        "zh": "职位\/简历数据统计",
-        "en": "Job\/Resume Data Statistics"
+        "zh": "职位/简历数据统计",
+        "en": "Job/Resume Data Statistics"
     },
     "admin_tool_00087": {
         "module": "admin_tool",
@@ -9390,36 +9390,36 @@
         "module": "admin_tool",
         "id": 147,
         "old_key": "",
-        "zh": "会员注册\/登录统计",
-        "en": "Member Registration\/Login Statistics"
+        "zh": "会员注册/登录统计",
+        "en": "Member Registration/Login Statistics"
     },
     "admin_tool_00148": {
         "module": "admin_tool",
         "id": 148,
         "old_key": "",
-        "zh": "职位\/简历浏览统计",
-        "en": "Job\/Resume View Statistics"
+        "zh": "职位/简历浏览统计",
+        "en": "Job/Resume View Statistics"
     },
     "admin_tool_00149": {
         "module": "admin_tool",
         "id": 149,
         "old_key": "",
-        "zh": "邀请面试\/简历下载",
-        "en": "Interview Invitations\/Resume Downloads"
+        "zh": "邀请面试/简历下载",
+        "en": "Interview Invitations/Resume Downloads"
     },
     "admin_tool_00150": {
         "module": "admin_tool",
         "id": 150,
         "old_key": "",
-        "zh": "财务统计\/广告统计",
-        "en": "Finance\/Ad Statistics"
+        "zh": "财务统计/广告统计",
+        "en": "Finance/Ad Statistics"
     },
     "admin_tool_00151": {
         "module": "admin_tool",
         "id": 151,
         "old_key": "",
-        "zh": "企业统计\/简历投递",
-        "en": "Company Statistics\/Resume Applications"
+        "zh": "企业统计/简历投递",
+        "en": "Company Statistics/Resume Applications"
     },
     "admin_tool_00152": {
         "module": "admin_tool",
@@ -9488,8 +9488,8 @@
         "module": "admin_tool",
         "id": 161,
         "old_key": "",
-        "zh": "发布\/刷新职位统计",
-        "en": "Posted\/Refreshed Job Statistics"
+        "zh": "发布/刷新职位统计",
+        "en": "Posted/Refreshed Job Statistics"
     },
     "admin_tool_00162": {
         "module": "admin_tool",
@@ -9509,8 +9509,8 @@
         "module": "admin_tool",
         "id": 164,
         "old_key": "",
-        "zh": "发布\/刷新简历统计",
-        "en": "Posted\/Refreshed Resume Statistics"
+        "zh": "发布/刷新简历统计",
+        "en": "Posted/Refreshed Resume Statistics"
     },
     "admin_tool_00165": {
         "module": "admin_tool",
@@ -9614,22 +9614,22 @@
         "module": "admin_tool",
         "id": 179,
         "old_key": "",
-        "zh": "用户\/简历趋势对比图",
-        "en": "User\/Resume Trend Comparison"
+        "zh": "用户/简历趋势对比图",
+        "en": "User/Resume Trend Comparison"
     },
     "admin_tool_00180": {
         "module": "admin_tool",
         "id": 180,
         "old_key": "",
-        "zh": "简历投递\/刷新趋势对比图",
-        "en": "Resume Application\/Refresh Trend Comparison"
+        "zh": "简历投递/刷新趋势对比图",
+        "en": "Resume Application/Refresh Trend Comparison"
     },
     "admin_tool_00181": {
         "module": "admin_tool",
         "id": 181,
         "old_key": "",
-        "zh": "企业\/职位趋势对比图",
-        "en": "Company\/Job Trend Comparison"
+        "zh": "企业/职位趋势对比图",
+        "en": "Company/Job Trend Comparison"
     },
     "admin_tool_00182": {
         "module": "admin_tool",
@@ -10056,7 +10056,7 @@
         "id": 242,
         "old_key": "",
         "zh": "城市地区无法匹配为：",
-        "en": "Default When City\/Area Cannot Match:"
+        "en": "Default When City/Area Cannot Match:"
     },
     "admin_tool_00243": {
         "module": "admin_tool",
@@ -10664,8 +10664,8 @@
         "module": "admin_tool",
         "id": 329,
         "old_key": "",
-        "zh": "阿里云OSS远程存储地址, 如https:\/\/img.hr135.com",
-        "en": "Alibaba Cloud OSS remote storage URL, e.g. https:\/\/img.hr135.com"
+        "zh": "阿里云OSS远程存储地址, 如https://img.hr135.com",
+        "en": "Alibaba Cloud OSS remote storage URL, e.g. https://img.hr135.com"
     },
     "admin_tool_00330": {
         "module": "admin_tool",
@@ -10839,8 +10839,8 @@
         "module": "admin_tool",
         "id": 354,
         "old_key": "",
-        "zh": "可以使用QQ\/163等邮箱，465端口需要开启SSL服务，注意邮箱密码不是账户密码一般是独立授权密码",
-        "en": "You can use QQ\/163 mailboxes. Port 465 requires SSL. Note that the mailbox password is usually an app-specific authorization password, not the account password."
+        "zh": "可以使用QQ/163等邮箱，465端口需要开启SSL服务，注意邮箱密码不是账户密码一般是独立授权密码",
+        "en": "You can use QQ/163 mailboxes. Port 465 requires SSL. Note that the mailbox password is usually an app-specific authorization password, not the account password."
     },
     "admin_tool_00355": {
         "module": "admin_tool",
@@ -11028,8 +11028,8 @@
         "module": "admin_tool",
         "id": 381,
         "old_key": "",
-        "zh": "生成请确保\/plus,\/cache目录有可写权限，否则无法生成。生成所有的类别，时间较长，建议分批更新",
-        "en": "Make sure \/plus and \/cache are writable before generating. Generating all categories may take a long time; batch updates are recommended."
+        "zh": "生成请确保/plus,/cache目录有可写权限，否则无法生成。生成所有的类别，时间较长，建议分批更新",
+        "en": "Make sure /plus and /cache are writable before generating. Generating all categories may take a long time; batch updates are recommended."
     },
     "admin_tool_00382": {
         "module": "admin_tool",
@@ -11455,8 +11455,8 @@
         "module": "admin_tool",
         "id": 442,
         "old_key": "",
-        "zh": "如果整合失败导致后台无法进入或者出现前台用户混乱，请将根目录下\/data\/plus\/config.php 打开找到 sy_pw_type 将PW_UC置空,再登录后台关闭PW_UC",
-        "en": "If integration fails and prevents admin login or causes frontend user confusion, open \/data\/plus\/config.php, find sy_pw_type, clear PW_UC, then log in to admin and disable PW_UC."
+        "zh": "如果整合失败导致后台无法进入或者出现前台用户混乱，请将根目录下/data/plus/config.php 打开找到 sy_pw_type 将PW_UC置空,再登录后台关闭PW_UC",
+        "en": "If integration fails and prevents admin login or causes frontend user confusion, open /data/plus/config.php, find sy_pw_type, clear PW_UC, then log in to admin and disable PW_UC."
     },
     "admin_tool_00443": {
         "module": "admin_tool",
@@ -11581,8 +11581,8 @@
         "module": "admin_tool",
         "id": 460,
         "old_key": "",
-        "zh": "如：http:\/\/localhost\/ucenter",
-        "en": "Example: http:\/\/localhost\/ucenter"
+        "zh": "如：http://localhost/ucenter",
+        "en": "Example: http://localhost/ucenter"
     },
     "admin_tool_00461": {
         "module": "admin_tool",
@@ -11672,8 +11672,8 @@
         "module": "admin_tool",
         "id": 473,
         "old_key": "",
-        "zh": "归属地以外的手机号禁止注册,省市以 \/ 分隔，多个地区以英文逗号 , 分隔，如：北京,江苏\/南京,浙江\/杭州 , 留空则不限制",
-        "en": "Mobile numbers outside allowed regions are forbidden from registering. Separate province\/city with \/. Separate multiple regions with English commas, e.g. Beijing,Jiangsu\/Nanjing,Zhejiang\/Hangzhou. Leave empty for no limit."
+        "zh": "归属地以外的手机号禁止注册,省市以 / 分隔，多个地区以英文逗号 , 分隔，如：北京,江苏/南京,浙江/杭州 , 留空则不限制",
+        "en": "Mobile numbers outside allowed regions are forbidden from registering. Separate province/city with /. Separate multiple regions with English commas, e.g. Beijing,Jiangsu/Nanjing,Zhejiang/Hangzhou. Leave empty for no limit."
     },
     "admin_tool_00474": {
         "module": "admin_tool",
@@ -11812,8 +11812,8 @@
         "module": "admin_tool",
         "id": 493,
         "old_key": "",
-        "zh": "发送人\/接收人",
-        "en": "Sender\/Recipient"
+        "zh": "发送人/接收人",
+        "en": "Sender/Recipient"
     },
     "admin_tool_00494": {
         "module": "admin_tool",
@@ -11889,15 +11889,15 @@
         "module": "admin_tool",
         "id": 504,
         "old_key": "",
-        "zh": "IP\/发送时间",
-        "en": "IP\/Sending Time"
+        "zh": "IP/发送时间",
+        "en": "IP/Sending Time"
     },
     "admin_tool_00505": {
         "module": "admin_tool",
         "id": 505,
         "old_key": "",
-        "zh": "端口\/归属地",
-        "en": "Port\/Location"
+        "zh": "端口/归属地",
+        "en": "Port/Location"
     },
     "admin_tool_00506": {
         "module": "admin_tool",
@@ -12281,8 +12281,8 @@
         "module": "admin_tool",
         "id": 560,
         "old_key": "",
-        "zh": "请输入跳转小程序页面 实例：pages\/index\/index",
-        "en": "Please enter the Mini Program page to redirect to. Example: pages\/index\/index"
+        "zh": "请输入跳转小程序页面 实例：pages/index/index",
+        "en": "Please enter the Mini Program page to redirect to. Example: pages/index/index"
     },
     "admin_tool_00561": {
         "module": "admin_tool",
@@ -12617,8 +12617,8 @@
         "module": "admin_tool",
         "id": 608,
         "old_key": "",
-        "zh": "站点\/分站",
-        "en": "Site\/Site"
+        "zh": "站点/分站",
+        "en": "Site/Site"
     },
     "admin_tool_00609": {
         "module": "admin_tool",
@@ -13996,8 +13996,8 @@
         "module": "admin_user",
         "id": 117,
         "old_key": "",
-        "zh": "手机号\/归属地",
-        "en": "Mobile \/ Location"
+        "zh": "手机号/归属地",
+        "en": "Mobile / Location"
     },
     "admin_user_00118": {
         "module": "admin_user",
@@ -14010,8 +14010,8 @@
         "module": "admin_user",
         "id": 119,
         "old_key": "",
-        "zh": "名称\/用户名",
-        "en": "Name \/ Username"
+        "zh": "名称/用户名",
+        "en": "Name / Username"
     },
     "admin_user_00120": {
         "module": "admin_user",
@@ -14024,8 +14024,8 @@
         "module": "admin_user",
         "id": 121,
         "old_key": "",
-        "zh": "注册\/登录",
-        "en": "Register \/ Login"
+        "zh": "注册/登录",
+        "en": "Register / Login"
     },
     "admin_user_00122": {
         "module": "admin_user",
@@ -14234,8 +14234,8 @@
         "module": "admin_user",
         "id": 151,
         "old_key": "",
-        "zh": "浏览\/屏蔽",
-        "en": "Browse\/Block"
+        "zh": "浏览/屏蔽",
+        "en": "Browse/Block"
     },
     "admin_user_00152": {
         "module": "admin_user",
@@ -14641,7 +14641,7 @@
         "id": 209,
         "old_key": "",
         "zh": "请输入培训方向",
-        "en": "Please enter Training Direction"
+        "en": "Focus"
     },
     "admin_user_00210": {
         "module": "admin_user",
@@ -14878,8 +14878,8 @@
         "module": "admin_user",
         "id": 243,
         "old_key": "",
-        "zh": "姓名\/手机号",
-        "en": "Name\/Mobile"
+        "zh": "姓名/手机号",
+        "en": "Name/Mobile"
     },
     "admin_user_00244": {
         "module": "admin_user",
@@ -15004,15 +15004,15 @@
         "module": "admin_user",
         "id": 261,
         "old_key": "",
-        "zh": "企业\/联系人\/手机号",
-        "en": "Company\/Contact Person\/Mobile"
+        "zh": "企业/联系人/手机号",
+        "en": "Company/Contact Person/Mobile"
     },
     "admin_user_00262": {
         "module": "admin_user",
         "id": 262,
         "old_key": "",
-        "zh": "人才\/手机号",
-        "en": "Talent\/Mobile Number"
+        "zh": "人才/手机号",
+        "en": "Talent/Mobile Number"
     },
     "admin_user_00263": {
         "module": "admin_user",
@@ -15354,8 +15354,8 @@
         "module": "admin_user",
         "id": 311,
         "old_key": "",
-        "zh": "编号：如NO.12，性别称呼：如冯先生\/女士，真实姓名：如冯云鹏",
-        "en": "Number: e.g. NO.12; Gender title: e.g. Mr.\/Ms. Feng; Real name: e.g. Yunpeng Feng"
+        "zh": "编号：如NO.12，性别称呼：如冯先生/女士，真实姓名：如冯云鹏",
+        "en": "Number: e.g. NO.12; Gender title: e.g. Mr./Ms. Feng; Real name: e.g. Yunpeng Feng"
     },
     "admin_user_00312": {
         "module": "admin_user",
@@ -15578,8 +15578,8 @@
         "module": "admin_user",
         "id": 343,
         "old_key": "",
-        "zh": "只能上传jpg\/png\/jpeg\/gif文件",
-        "en": "Only jpg\/png\/jpeg\/gif files can be uploaded"
+        "zh": "只能上传jpg/png/jpeg/gif文件",
+        "en": "Only jpg/png/jpeg/gif files can be uploaded"
     },
     "admin_user_00344": {
         "module": "admin_user",
@@ -15620,15 +15620,15 @@
         "module": "admin_user",
         "id": 349,
         "old_key": "",
-        "zh": "元\/份",
-        "en": "Yuan\/items"
+        "zh": "元/份",
+        "en": "Yuan/items"
     },
     "admin_user_00350": {
         "module": "admin_user",
         "id": 350,
         "old_key": "",
-        "zh": "元\/天",
-        "en": "CNY\/day"
+        "zh": "元/天",
+        "en": "CNY/day"
     },
     "admin_user_00351": {
         "module": "admin_user",
@@ -16047,8 +16047,8 @@
         "module": "admin_user_company",
         "id": 29,
         "old_key": "",
-        "zh": "只能上传jpg\/png文件，且不超过500kb",
-        "en": "Only jpg\/png files under 500 KB can be uploaded"
+        "zh": "只能上传jpg/png文件，且不超过500kb",
+        "en": "Only jpg/png files under 500 KB can be uploaded"
     },
     "admin_user_company_00030": {
         "module": "admin_user_company",
@@ -16131,8 +16131,8 @@
         "module": "admin_user_company",
         "id": 41,
         "old_key": "",
-        "zh": "企业名称\/姓名",
-        "en": "Company Name\/Name"
+        "zh": "企业名称/姓名",
+        "en": "Company Name/Name"
     },
     "admin_user_company_00042": {
         "module": "admin_user_company",
@@ -16299,8 +16299,8 @@
         "module": "admin_user_company",
         "id": 65,
         "old_key": "",
-        "zh": "执照\/代码证",
-        "en": "License \/ Code Certificate"
+        "zh": "执照/代码证",
+        "en": "License / Code Certificate"
     },
     "admin_user_company_00066": {
         "module": "admin_user_company",
@@ -16726,8 +16726,8 @@
         "module": "admin_user_company",
         "id": 126,
         "old_key": "",
-        "zh": "名称\/简称",
-        "en": "Name\/Short Name"
+        "zh": "名称/简称",
+        "en": "Name/Short Name"
     },
     "admin_user_company_00127": {
         "module": "admin_user_company",
@@ -16999,8 +16999,8 @@
         "module": "admin_user_company",
         "id": 165,
         "old_key": "",
-        "zh": "服务金额\/时间",
-        "en": "Service Amount\/Time"
+        "zh": "服务金额/时间",
+        "en": "Service Amount/Time"
     },
     "admin_user_company_00166": {
         "module": "admin_user_company",
@@ -17434,7 +17434,7 @@
         "id": 227,
         "old_key": "",
         "zh": "全部显示、随机20条：任意搜索项，展示符合搜索结果的置顶职位，",
-        "en": "Show all \/ Random 20: for any search term, show pinned jobs matching the search results."
+        "en": "Show all / Random 20: for any search term, show pinned jobs matching the search results."
     },
     "admin_user_company_00228": {
         "module": "admin_user_company",
@@ -18252,8 +18252,8 @@
         "module": "admin_user_company",
         "id": 344,
         "old_key": "",
-        "zh": "职位\/企业名称",
-        "en": "Job\/CompanyName"
+        "zh": "职位/企业名称",
+        "en": "Job/CompanyName"
     },
     "admin_user_company_00345": {
         "module": "admin_user_company",
@@ -18364,8 +18364,8 @@
         "module": "admin_user_company",
         "id": 360,
         "old_key": "",
-        "zh": "职位\/企业",
-        "en": "Job\/Company"
+        "zh": "职位/企业",
+        "en": "Job/Company"
     },
     "admin_user_company_00361": {
         "module": "admin_user_company",
@@ -18525,8 +18525,8 @@
         "module": "admin_user_company",
         "id": 383,
         "old_key": "",
-        "zh": "工作类型\/招人数",
-        "en": "Work Type \/ Hiring Count"
+        "zh": "工作类型/招人数",
+        "en": "Work Type / Hiring Count"
     },
     "admin_user_company_00384": {
         "module": "admin_user_company",
@@ -18553,8 +18553,8 @@
         "module": "admin_user_company",
         "id": 387,
         "old_key": "",
-        "zh": "薪水\/类型",
-        "en": "Salary\/Type"
+        "zh": "薪水/类型",
+        "en": "Salary/Type"
     },
     "admin_user_company_00388": {
         "module": "admin_user_company",
@@ -18721,8 +18721,8 @@
         "module": "admin_user_weipin",
         "id": 6,
         "old_key": "",
-        "zh": "职位名称\/店铺名",
-        "en": "Job Name \/ Shop Name"
+        "zh": "职位名称/店铺名",
+        "en": "Job Name / Shop Name"
     },
     "admin_user_weipin_00007": {
         "module": "admin_user_weipin",
@@ -19659,8 +19659,8 @@
         "module": "admin_yunying",
         "id": 69,
         "old_key": "",
-        "zh": "积分\/月",
-        "en": "Points\/Month"
+        "zh": "积分/月",
+        "en": "Points/Month"
     },
     "admin_yunying_00070": {
         "module": "admin_yunying",
@@ -19701,8 +19701,8 @@
         "module": "admin_yunying",
         "id": 75,
         "old_key": "",
-        "zh": "充值单号\/支付类型\/订单类型",
-        "en": "Recharge Order No.\/Payment Type\/Order Type"
+        "zh": "充值单号/支付类型/订单类型",
+        "en": "Recharge Order No./Payment Type/Order Type"
     },
     "admin_yunying_00076": {
         "module": "admin_yunying",
@@ -20051,8 +20051,8 @@
         "module": "admin_yunying",
         "id": 125,
         "old_key": "",
-        "zh": "企业名称\/简称",
-        "en": "CompanyName\/Short Name"
+        "zh": "企业名称/简称",
+        "en": "CompanyName/Short Name"
     },
     "admin_yunying_00126": {
         "module": "admin_yunying",
@@ -21290,8 +21290,8 @@
         "module": "common",
         "id": 9,
         "old_key": "",
-        "zh": ">温馨提示：您的帐号未通过审核 if $member.lock_info ，未通过原因： $member.lock_info 。  else 。 \/if 欢迎随时与我们取得联系（ ($config.sy_comwebtel!=",
-        "en": ">Reminder: your account was rejected if $member.lock_info , reason: $member.lock_info . else . \/if Feel free to contact us ( ($config.sy_comwebtel!="
+        "zh": ">温馨提示：您的帐号未通过审核 if $member.lock_info ，未通过原因： $member.lock_info 。  else 。 /if 欢迎随时与我们取得联系（ ($config.sy_comwebtel!=",
+        "en": ">Reminder: your account was rejected if $member.lock_info , reason: $member.lock_info . else . /if Feel free to contact us ( ($config.sy_comwebtel!="
     },
     "common_00010": {
         "module": "common",
@@ -21304,8 +21304,8 @@
         "module": "common",
         "id": 11,
         "old_key": "",
-        "zh": "1.请用 if $config.pic_type  $config.pic_type  else jpg , png , jpeg , bmp , gif \/if 格式的图片,大小不超过2M;",
-        "en": "1. Please use images in if $config.pic_type  $config.pic_type  else jpg , png , jpeg , bmp , gif \/if format, no larger than 2M;"
+        "zh": "1.请用 if $config.pic_type  $config.pic_type  else jpg , png , jpeg , bmp , gif /if 格式的图片,大小不超过2M;",
+        "en": "1. Please use images in if $config.pic_type  $config.pic_type  else jpg , png , jpeg , bmp , gif /if format, no larger than 2M;"
     },
     "common_00012": {
         "module": "common",
@@ -21381,8 +21381,8 @@
         "module": "common",
         "id": 22,
         "old_key": "",
-        "zh": "> if $smarty.get.hy  $industry_name[$smarty.get.hy]  else 工作行业 \/if  <i class=",
-        "en": "> if $smarty.get.hy  $industry_name[$smarty.get.hy]  else Work Industry \/if  <i class="
+        "zh": "> if $smarty.get.hy  $industry_name[$smarty.get.hy]  else 工作行业 /if  <i class=",
+        "en": "> if $smarty.get.hy  $industry_name[$smarty.get.hy]  else Work Industry /if  <i class="
     },
     "common_00023": {
         "module": "common",
@@ -21395,8 +21395,8 @@
         "module": "common",
         "id": 24,
         "old_key": "",
-        "zh": "Users [duncan1](http:\/\/dev.test\/index.php?m=resume&c=showuid&uid=1) Follow了你",
-        "en": "User [duncan1](http:\/\/dev.test\/index.php?m=resume&c=showuid&uid=1) followed you"
+        "zh": "Users [duncan1](http://dev.test/index.php?m=resume&c=showuid&uid=1) Follow了你",
+        "en": "User [duncan1](http://dev.test/index.php?m=resume&c=showuid&uid=1) followed you"
     },
     "common_00025": {
         "module": "common",
@@ -21430,8 +21430,8 @@
         "module": "common",
         "id": 29,
         "old_key": "",
-        "zh": "if $smarty.get.cycle  $partclass_name[$smarty.get.cycle]  else 结算方式 \/if",
-        "en": "if $smarty.get.cycle  $partclass_name[$smarty.get.cycle]  else Settlement Method \/if"
+        "zh": "if $smarty.get.cycle  $partclass_name[$smarty.get.cycle]  else 结算方式 /if",
+        "en": "if $smarty.get.cycle  $partclass_name[$smarty.get.cycle]  else Settlement Method /if"
     },
     "common_00030": {
         "module": "common",
@@ -21451,8 +21451,8 @@
         "module": "common",
         "id": 32,
         "old_key": "",
-        "zh": "用户 [duncan1](http:\/\/dev.test\/index.php?m=resume&c=showuid&uid=1) 关注了你",
-        "en": "User [duncan1](http:\/\/dev.test\/index.php?m=resume&c=showuid&uid=1) followed you"
+        "zh": "用户 [duncan1](http://dev.test/index.php?m=resume&c=showuid&uid=1) 关注了你",
+        "en": "User [duncan1](http://dev.test/index.php?m=resume&c=showuid&uid=1) followed you"
     },
     "common_00033": {
         "module": "common",
@@ -21465,8 +21465,8 @@
         "module": "common",
         "id": 34,
         "old_key": "",
-        "zh": "if $Info.privacy_status == 1 为保护隐私，请到网站查看 else  $Info.telphone  \/if",
-        "en": "if $Info.privacy_status == 1 To protect privacy, please view on the website else  $Info.telphone  \/if"
+        "zh": "if $Info.privacy_status == 1 为保护隐私，请到网站查看 else  $Info.telphone  /if",
+        "en": "if $Info.privacy_status == 1 To protect privacy, please view on the website else  $Info.telphone  /if"
     },
     "common_00035": {
         "module": "common",
@@ -21507,8 +21507,8 @@
         "module": "common",
         "id": 40,
         "old_key": "",
-        "zh": "you账号Review approved！例：http:\/\/www.ov6.com 全站Use 仅在HomeUse",
-        "en": "Your account review was approved! Example: http:\/\/www.ov6.com. Use site-wide or only on the home page."
+        "zh": "you账号Review approved！例：http://www.ov6.com 全站Use 仅在HomeUse",
+        "en": "Your account review was approved! Example: http://www.ov6.com. Use site-wide or only on the home page."
     },
     "common_00041": {
         "module": "common",
@@ -21556,8 +21556,8 @@
         "module": "common",
         "id": 47,
         "old_key": "",
-        "zh": "$look.sex , if $look.age==0 保密 else  $look.age 岁 \/if",
-        "en": "$look.sex , if $look.age==0 Confidential else  $look.age years old \/if"
+        "zh": "$look.sex , if $look.age==0 保密 else  $look.age 岁 /if",
+        "en": "$look.sex , if $look.age==0 Confidential else  $look.age years old /if"
     },
     "common_00048": {
         "module": "common",
@@ -21591,8 +21591,8 @@
         "module": "common",
         "id": 52,
         "old_key": "",
-        "zh": "if $msglist.reply  $msglist.reply  else 企业尚未回复 \/if",
-        "en": "if $msglist.reply  $msglist.reply  else Company has not replied \/if"
+        "zh": "if $msglist.reply  $msglist.reply  else 企业尚未回复 /if",
+        "en": "if $msglist.reply  $msglist.reply  else Company has not replied /if"
     },
     "common_00053": {
         "module": "common",
@@ -21613,7 +21613,7 @@
         "id": 55,
         "old_key": "",
         "zh": "预约Job Refreshes Member自动Expired Jobs付费Auto Refresh",
-        "en": "Reserved Job Refresh \/ Member Auto Expired Jobs \/ Paid Auto Refresh"
+        "en": "Reserved Job Refresh / Member Auto Expired Jobs / Paid Auto Refresh"
     },
     "common_00056": {
         "module": "common",
@@ -21633,8 +21633,8 @@
         "module": "common",
         "id": 58,
         "old_key": "",
-        "zh": "|| !$smarty.get.c 职位名\/公司名 elseif $smarty.get.c==",
-        "en": "|| !$smarty.get.c Job title \/ company name elseif $smarty.get.c=="
+        "zh": "|| !$smarty.get.c 职位名/公司名 elseif $smarty.get.c==",
+        "en": "|| !$smarty.get.c Job title / company name elseif $smarty.get.c=="
     },
     "common_00059": {
         "module": "common",
@@ -21654,8 +21654,8 @@
         "module": "common",
         "id": 61,
         "old_key": "",
-        "zh": "$link.linkMsg  if !$job.userid_job ，请直接投递简历 \/if",
-        "en": "$link.linkMsg  if !$job.userid_job , please submit your resume directly \/if"
+        "zh": "$link.linkMsg  if !$job.userid_job ，请直接投递简历 /if",
+        "en": "$link.linkMsg  if !$job.userid_job , please submit your resume directly /if"
     },
     "common_00062": {
         "module": "common",
@@ -21703,8 +21703,8 @@
         "module": "common",
         "id": 68,
         "old_key": "",
-        "zh": "$link.linkMsg  if !$userIdJobNum ，请直接投递简历 \/if",
-        "en": "$link.linkMsg  if !$userIdJobNum , please submit your resume directly \/if"
+        "zh": "$link.linkMsg  if !$userIdJobNum ，请直接投递简历 /if",
+        "en": "$link.linkMsg  if !$userIdJobNum , please submit your resume directly /if"
     },
     "common_00069": {
         "module": "common",
@@ -21801,8 +21801,8 @@
         "module": "common",
         "id": 82,
         "old_key": "",
-        "zh": "【[获取More模板](http:\/\/www.ov6.com\/tpl.php)】",
-        "en": "[Get More Templates](http:\/\/www.ov6.com\/tpl.php)"
+        "zh": "【[获取More模板](http://www.ov6.com/tpl.php)】",
+        "en": "[Get More Templates](http://www.ov6.com/tpl.php)"
     },
     "common_00083": {
         "module": "common",
@@ -21906,8 +21906,8 @@
         "module": "common",
         "id": 97,
         "old_key": "",
-        "zh": "Recharge Order No.\/PayType\/OrderType",
-        "en": "Recharge Order No.\/Payment Type\/Order Type"
+        "zh": "Recharge Order No./PayType/OrderType",
+        "en": "Recharge Order No./Payment Type/Order Type"
     },
     "common_00098": {
         "module": "common",
@@ -21920,8 +21920,8 @@
         "module": "common",
         "id": 99,
         "old_key": "",
-        "zh": "例：http:\/\/www.ov6.com 全站Use 仅在HomeUse",
-        "en": "Example: http:\/\/www.ov6.com. Site-wide use. Home only."
+        "zh": "例：http://www.ov6.com 全站Use 仅在HomeUse",
+        "en": "Example: http://www.ov6.com. Site-wide use. Home only."
     },
     "common_00100": {
         "module": "common",
@@ -22025,8 +22025,8 @@
         "module": "common",
         "id": 114,
         "old_key": "",
-        "zh": "0  $v.service_time 天 else 永久 \/if",
-        "en": "0  $v.service_time days else Permanent \/if"
+        "zh": "0  $v.service_time 天 else 永久 /if",
+        "en": "0  $v.service_time days else Permanent /if"
     },
     "common_00115": {
         "module": "common",
@@ -22060,8 +22060,8 @@
         "module": "common",
         "id": 119,
         "old_key": "",
-        "zh": "例：http:\/\/www.ov6.com 全站使用 仅在首页使用",
-        "en": "Example: http:\/\/www.ov6.com. Site-wide use. Home only."
+        "zh": "例：http://www.ov6.com 全站使用 仅在首页使用",
+        "en": "Example: http://www.ov6.com. Site-wide use. Home only."
     },
     "common_00120": {
         "module": "common",
@@ -22438,8 +22438,8 @@
         "module": "common",
         "id": 173,
         "old_key": "",
-        "zh": "Level 1Category:市政\/能燃\/农林牧渔",
-        "en": "Level 1 Category: Municipal\/Utilities\/Agriculture\/Forestry\/Animal Husbandry\/Fishery"
+        "zh": "Level 1Category:市政/能燃/农林牧渔",
+        "en": "Level 1 Category: Municipal/Utilities/Agriculture/Forestry/Animal Husbandry/Fishery"
     },
     "common_00174": {
         "module": "common",
@@ -22564,8 +22564,8 @@
         "module": "common",
         "id": 191,
         "old_key": "",
-        "zh": "掌握时间： $one.longtime 年 \/if",
-        "en": "Mastery Time: $one.longtime years \/if"
+        "zh": "掌握时间： $one.longtime 年 /if",
+        "en": "Mastery Time: $one.longtime years /if"
     },
     "common_00192": {
         "module": "common",
@@ -22648,8 +22648,8 @@
         "module": "common",
         "id": 203,
         "old_key": "",
-        "zh": "Level 1Category:咨询\/翻译\/法律",
-        "en": "Level 1 Category: Consulting\/Translation\/Legal"
+        "zh": "Level 1Category:咨询/翻译/法律",
+        "en": "Level 1 Category: Consulting/Translation/Legal"
     },
     "common_00204": {
         "module": "common",
@@ -23019,8 +23019,8 @@
         "module": "common",
         "id": 256,
         "old_key": "",
-        "zh": "Level 1Category:供应链\/物流",
-        "en": "Level 1 Category: Supply Chain\/Logistics"
+        "zh": "Level 1Category:供应链/物流",
+        "en": "Level 1 Category: Supply Chain/Logistics"
     },
     "common_00257": {
         "module": "common",
@@ -23440,7 +23440,7 @@
         "id": 316,
         "old_key": "",
         "zh": "Level 1Category:采购贸易",
-        "en": "Level 1 Category: Procurement\/Trade"
+        "en": "Level 1 Category: Procurement/Trade"
     },
     "common_00317": {
         "module": "common",
@@ -24895,8 +24895,8 @@
         "module": "common",
         "id": 524,
         "old_key": "",
-        "zh": "人才\/Mobile Number",
-        "en": "Talent\/Mobile Number"
+        "zh": "人才/Mobile Number",
+        "en": "Talent/Mobile Number"
     },
     "common_00525": {
         "module": "common",
@@ -25483,8 +25483,8 @@
         "module": "common",
         "id": 608,
         "old_key": "",
-        "zh": "<\/span>元，是否继续？",
-        "en": "<\/span> CNY. Continue?"
+        "zh": "</span>元，是否继续？",
+        "en": "</span> CNY. Continue?"
     },
     "common_00609": {
         "module": "common",
@@ -26050,8 +26050,8 @@
         "module": "common",
         "id": 689,
         "old_key": "",
-        "zh": "Work Type\/招人数",
-        "en": "Work Type\/Recruitment Count"
+        "zh": "Work Type/招人数",
+        "en": "Work Type/Recruitment Count"
     },
     "common_00690": {
         "module": "common",
@@ -26267,8 +26267,8 @@
         "module": "common",
         "id": 720,
         "old_key": "",
-        "zh": "服务Amount\/Time",
-        "en": "Service Amount\/Time"
+        "zh": "服务Amount/Time",
+        "en": "Service Amount/Time"
     },
     "common_00721": {
         "module": "common",
@@ -26316,8 +26316,8 @@
         "module": "common",
         "id": 727,
         "old_key": "",
-        "zh": "知识产权\/专利\/商标代理人",
-        "en": "Intellectual Property\/Patent\/Trademark Agent"
+        "zh": "知识产权/专利/商标代理人",
+        "en": "Intellectual Property/Patent/Trademark Agent"
     },
     "common_00728": {
         "module": "common",
@@ -26526,8 +26526,8 @@
         "module": "common",
         "id": 757,
         "old_key": "",
-        "zh": "<\/span> 元，是否",
-        "en": "<\/span> CNY, confirm?"
+        "zh": "</span> 元，是否",
+        "en": "</span> CNY, confirm?"
     },
     "common_00758": {
         "module": "common",
@@ -26631,8 +26631,8 @@
         "module": "common",
         "id": 772,
         "old_key": "",
-        "zh": "email主题\/正文为空",
-        "en": "Email subject\/body is empty"
+        "zh": "email主题/正文为空",
+        "en": "Email subject/body is empty"
     },
     "common_00773": {
         "module": "common",
@@ -26673,8 +26673,8 @@
         "module": "common",
         "id": 778,
         "old_key": "",
-        "zh": "份 else - \/if",
-        "en": "items else - \/if"
+        "zh": "份 else - /if",
+        "en": "items else - /if"
     },
     "common_00779": {
         "module": "common",
@@ -26750,8 +26750,8 @@
         "module": "common",
         "id": 789,
         "old_key": "",
-        "zh": "天 else - \/if",
-        "en": "days else - \/if"
+        "zh": "天 else - /if",
+        "en": "days else - /if"
     },
     "common_00790": {
         "module": "common",
@@ -26820,8 +26820,8 @@
         "module": "common",
         "id": 799,
         "old_key": "",
-        "zh": "次 else - \/if",
-        "en": "times else - \/if"
+        "zh": "次 else - /if",
+        "en": "times else - /if"
     },
     "common_00800": {
         "module": "common",
@@ -27177,8 +27177,8 @@
         "module": "common",
         "id": 850,
         "old_key": "",
-        "zh": "会计\/金融\/银行\/保险",
-        "en": "Accounting\/Finance\/Banking\/Insurance"
+        "zh": "会计/金融/银行/保险",
+        "en": "Accounting/Finance/Banking/Insurance"
     },
     "common_00851": {
         "module": "common",
@@ -27310,8 +27310,8 @@
         "module": "common",
         "id": 869,
         "old_key": "",
-        "zh": "咨询\/法律\/教育\/科研",
-        "en": "Consulting\/Legal\/Education\/Research"
+        "zh": "咨询/法律/教育/科研",
+        "en": "Consulting/Legal/Education/Research"
     },
     "common_00870": {
         "module": "common",
@@ -27352,8 +27352,8 @@
         "module": "common",
         "id": 875,
         "old_key": "",
-        "zh": "广告\/市场\/媒体\/艺术",
-        "en": "Advertising\/Market\/Media\/Art"
+        "zh": "广告/市场/媒体/艺术",
+        "en": "Advertising/Market/Media/Art"
     },
     "common_00876": {
         "module": "common",
@@ -27513,15 +27513,15 @@
         "module": "common",
         "id": 898,
         "old_key": "",
-        "zh": "生产\/营运\/采购\/物流",
-        "en": "Production\/Operations\/Procurement\/Logistics"
+        "zh": "生产/营运/采购/物流",
+        "en": "Production/Operations/Procurement/Logistics"
     },
     "common_00899": {
         "module": "common",
         "id": 899,
         "old_key": "",
-        "zh": "生物\/制药\/医疗\/护理",
-        "en": "Biology\/Pharmaceutical\/Medical\/Nursing"
+        "zh": "生物/制药/医疗/护理",
+        "en": "Biology/Pharmaceutical/Medical/Nursing"
     },
     "common_00900": {
         "module": "common",
@@ -27863,8 +27863,8 @@
         "module": "common",
         "id": 948,
         "old_key": "",
-        "zh": "<\/a> 下载了您(",
-        "en": "<\/a> downloaded your ("
+        "zh": "</a> 下载了您(",
+        "en": "</a> downloaded your ("
     },
     "common_00949": {
         "module": "common",
@@ -28031,8 +28031,8 @@
         "module": "common",
         "id": 972,
         "old_key": "",
-        "zh": "人事\/行政\/高级管理",
-        "en": "HR\/Administration\/Senior Management"
+        "zh": "人事/行政/高级管理",
+        "en": "HR/Administration/Senior Management"
     },
     "common_00973": {
         "module": "common",
@@ -28185,8 +28185,8 @@
         "module": "common",
         "id": 994,
         "old_key": "",
-        "zh": "市政\/能燃\/农林牧渔",
-        "en": "Municipal\/Utilities\/Agriculture\/Forestry\/Animal Husbandry\/Fishery"
+        "zh": "市政/能燃/农林牧渔",
+        "en": "Municipal/Utilities/Agriculture/Forestry/Animal Husbandry/Fishery"
     },
     "common_00995": {
         "module": "common",
@@ -28773,8 +28773,8 @@
         "module": "common",
         "id": 1078,
         "old_key": "",
-        "zh": "销售\/客服\/技术支持",
-        "en": "Sales\/Customer Service\/Technical Support"
+        "zh": "销售/客服/技术支持",
+        "en": "Sales/Customer Service/Technical Support"
     },
     "common_01079": {
         "module": "common",
@@ -29004,8 +29004,8 @@
         "module": "common",
         "id": 1111,
         "old_key": "",
-        "zh": "公务员\/翻译\/其他",
-        "en": "Civil Servant\/Translation\/Other"
+        "zh": "公务员/翻译/其他",
+        "en": "Civil Servant/Translation/Other"
     },
     "common_01112": {
         "module": "common",
@@ -29067,8 +29067,8 @@
         "module": "common",
         "id": 1120,
         "old_key": "",
-        "zh": "工作类型\/招聘人数",
-        "en": "Work Type\/Recruitment Count"
+        "zh": "工作类型/招聘人数",
+        "en": "Work Type/Recruitment Count"
     },
     "common_01121": {
         "module": "common",
@@ -29732,8 +29732,8 @@
         "module": "common",
         "id": 1215,
         "old_key": "",
-        "zh": "人事\/行政\/财务",
-        "en": "HR\/Admin\/Finance"
+        "zh": "人事/行政/财务",
+        "en": "HR/Admin/Finance"
     },
     "common_01216": {
         "module": "common",
@@ -29921,8 +29921,8 @@
         "module": "common",
         "id": 1242,
         "old_key": "",
-        "zh": "咨询\/翻译\/法律",
-        "en": "Consulting\/Translation\/Legal"
+        "zh": "咨询/翻译/法律",
+        "en": "Consulting/Translation/Legal"
     },
     "common_01243": {
         "module": "common",
@@ -30194,8 +30194,8 @@
         "module": "common",
         "id": 1281,
         "old_key": "",
-        "zh": "机械\/设备\/技工",
-        "en": "Machinery\/Equipment\/Technicians"
+        "zh": "机械/设备/技工",
+        "en": "Machinery/Equipment/Technicians"
     },
     "common_01282": {
         "module": "common",
@@ -30467,8 +30467,8 @@
         "module": "common",
         "id": 1320,
         "old_key": "",
-        "zh": "0 天 \/if",
-        "en": "0 days \/if"
+        "zh": "0 天 /if",
+        "en": "0 days /if"
     },
     "common_01321": {
         "module": "common",
@@ -30705,8 +30705,8 @@
         "module": "common",
         "id": 1354,
         "old_key": "",
-        "zh": "头像\/作品审核",
-        "en": "Avatar\/Portfolio Review"
+        "zh": "头像/作品审核",
+        "en": "Avatar/Portfolio Review"
     },
     "common_01355": {
         "module": "common",
@@ -30880,8 +30880,8 @@
         "module": "common",
         "id": 1379,
         "old_key": "",
-        "zh": "机械设计\/制造",
-        "en": "Mechanical Design\/Manufacturing"
+        "zh": "机械设计/制造",
+        "en": "Mechanical Design/Manufacturing"
     },
     "common_01380": {
         "module": "common",
@@ -30915,8 +30915,8 @@
         "module": "common",
         "id": 1384,
         "old_key": "",
-        "zh": "法务专员\/助理",
-        "en": "Legal Specialist\/Assistant"
+        "zh": "法务专员/助理",
+        "en": "Legal Specialist/Assistant"
     },
     "common_01385": {
         "module": "common",
@@ -31006,8 +31006,8 @@
         "module": "common",
         "id": 1397,
         "old_key": "",
-        "zh": "薪水\/Type",
-        "en": "Salary\/Type"
+        "zh": "薪水/Type",
+        "en": "Salary/Type"
     },
     "common_01398": {
         "module": "common",
@@ -31020,8 +31020,8 @@
         "module": "common",
         "id": 1399,
         "old_key": "",
-        "zh": "计算机\/互联网",
-        "en": "Computer\/Internet"
+        "zh": "计算机/互联网",
+        "en": "Computer/Internet"
     },
     "common_01400": {
         "module": "common",
@@ -31132,15 +31132,15 @@
         "module": "common",
         "id": 1415,
         "old_key": "",
-        "zh": "运营助理\/专员",
-        "en": "Operations Assistant\/Specialist"
+        "zh": "运营助理/专员",
+        "en": "Operations Assistant/Specialist"
     },
     "common_01416": {
         "module": "common",
         "id": 1416,
         "old_key": "",
-        "zh": "运营经理\/主管",
-        "en": "Operations Manager\/Supervisor"
+        "zh": "运营经理/主管",
+        "en": "Operations Manager/Supervisor"
     },
     "common_01417": {
         "module": "common",
@@ -31468,8 +31468,8 @@
         "module": "common",
         "id": 1463,
         "old_key": "",
-        "zh": "供应链\/物流",
-        "en": "Supply Chain\/Logistics"
+        "zh": "供应链/物流",
+        "en": "Supply Chain/Logistics"
     },
     "common_01464": {
         "module": "common",
@@ -31678,8 +31678,8 @@
         "module": "common",
         "id": 1493,
         "old_key": "",
-        "zh": "建筑\/房地产",
-        "en": "Construction\/Real Estate"
+        "zh": "建筑/房地产",
+        "en": "Construction/Real Estate"
     },
     "common_01494": {
         "module": "common",
@@ -31727,8 +31727,8 @@
         "module": "common",
         "id": 1500,
         "old_key": "",
-        "zh": "房地产\/建筑",
-        "en": "Real Estate\/Construction"
+        "zh": "房地产/建筑",
+        "en": "Real Estate/Construction"
     },
     "common_01501": {
         "module": "common",
@@ -31811,8 +31811,8 @@
         "module": "common",
         "id": 1512,
         "old_key": "",
-        "zh": "普工\/操作工",
-        "en": "General Worker\/Operator"
+        "zh": "普工/操作工",
+        "en": "General Worker/Operator"
     },
     "common_01513": {
         "module": "common",
@@ -32175,8 +32175,8 @@
         "module": "common",
         "id": 1564,
         "old_key": "",
-        "zh": "10条\/页",
-        "en": "10 items\/page"
+        "zh": "10条/页",
+        "en": "10 items/page"
     },
     "common_01565": {
         "module": "common",
@@ -32287,8 +32287,8 @@
         "module": "common",
         "id": 1580,
         "old_key": "",
-        "zh": "人事\/行政",
-        "en": "HR\/Admin"
+        "zh": "人事/行政",
+        "en": "HR/Admin"
     },
     "common_01581": {
         "module": "common",
@@ -32364,15 +32364,15 @@
         "module": "common",
         "id": 1591,
         "old_key": "",
-        "zh": "化工\/能源",
-        "en": "Chemical\/Energy"
+        "zh": "化工/能源",
+        "en": "Chemical/Energy"
     },
     "common_01592": {
         "module": "common",
         "id": 1592,
         "old_key": "",
-        "zh": "医生\/医技",
-        "en": "Doctor\/Medical Technician"
+        "zh": "医生/医技",
+        "en": "Doctor/Medical Technician"
     },
     "common_01593": {
         "module": "common",
@@ -32392,8 +32392,8 @@
         "module": "common",
         "id": 1595,
         "old_key": "",
-        "zh": "咨询\/调研",
-        "en": "Consulting\/Research"
+        "zh": "咨询/调研",
+        "en": "Consulting/Research"
     },
     "common_01596": {
         "module": "common",
@@ -32407,7 +32407,7 @@
         "id": 1597,
         "old_key": "",
         "zh": "子账号增删",
-        "en": "Sub-account Add\/Delete"
+        "en": "Sub-account Add/Delete"
     },
     "common_01598": {
         "module": "common",
@@ -32511,15 +32511,15 @@
         "module": "common",
         "id": 1612,
         "old_key": "",
-        "zh": "技工\/普工",
-        "en": "Technicians\/General Workers"
+        "zh": "技工/普工",
+        "en": "Technicians/General Workers"
     },
     "common_01613": {
         "module": "common",
         "id": 1613,
         "old_key": "",
-        "zh": "护士\/护理",
-        "en": "Nurse\/Nursing"
+        "zh": "护士/护理",
+        "en": "Nurse/Nursing"
     },
     "common_01614": {
         "module": "common",
@@ -32721,8 +32721,8 @@
         "module": "common",
         "id": 1642,
         "old_key": "",
-        "zh": "贸易\/百货",
-        "en": "Trade\/Department Store"
+        "zh": "贸易/百货",
+        "en": "Trade/Department Store"
     },
     "common_01643": {
         "module": "common",
@@ -32736,14 +32736,14 @@
         "id": 1644,
         "old_key": "",
         "zh": "进出口贸易",
-        "en": "Import\/Export Trade"
+        "en": "Import/Export Trade"
     },
     "common_01645": {
         "module": "common",
         "id": 1645,
         "old_key": "",
-        "zh": "通信\/电子",
-        "en": "Communications\/Electronics"
+        "zh": "通信/电子",
+        "en": "Communications/Electronics"
     },
     "common_01646": {
         "module": "common",
@@ -32981,7 +32981,7 @@
         "id": 1679,
         "old_key": "",
         "zh": "促销导购",
-        "en": "Promoter\/Shopping Guide"
+        "en": "Promoter/Shopping Guide"
     },
     "common_01680": {
         "module": "common",
@@ -33015,8 +33015,8 @@
         "module": "common",
         "id": 1684,
         "old_key": "",
-        "zh": "元\/小时",
-        "en": "CNY\/hour"
+        "zh": "元/小时",
+        "en": "CNY/hour"
     },
     "common_01685": {
         "module": "common",
@@ -33429,7 +33429,7 @@
         "id": 1743,
         "old_key": "",
         "zh": "审核录入",
-        "en": "Review\/Data Entry"
+        "en": "Review/Data Entry"
     },
     "common_01744": {
         "module": "common",
@@ -34234,7 +34234,7 @@
         "id": 1858,
         "old_key": "",
         "zh": "采购贸易",
-        "en": "Procurement\/Trade"
+        "en": "Procurement/Trade"
     },
     "common_01859": {
         "module": "common",
@@ -34450,15 +34450,15 @@
         "module": "common",
         "id": 1889,
         "old_key": "",
-        "zh": "元\/周",
-        "en": "CNY\/week"
+        "zh": "元/周",
+        "en": "CNY/week"
     },
     "common_01890": {
         "module": "common",
         "id": 1890,
         "old_key": "",
-        "zh": "元\/次",
-        "en": "CNY\/time"
+        "zh": "元/次",
+        "en": "CNY/time"
     },
     "common_01891": {
         "module": "common",
@@ -36004,8 +36004,8 @@
         "module": "common",
         "id": 2111,
         "old_key": "",
-        "zh": "份\/日",
-        "en": "Items\/day"
+        "zh": "份/日",
+        "en": "Items/day"
     },
     "common_02112": {
         "module": "common",
@@ -36509,7 +36509,7 @@
         "id": 2183,
         "old_key": "",
         "zh": "教育培训",
-        "en": "Education\/Training"
+        "en": "Education/Training"
     },
     "common_02184": {
         "module": "common",
@@ -36858,15 +36858,15 @@
         "module": "default",
         "id": 3,
         "old_key": "",
-        "zh": "次职位\/简历！",
-        "en": "job\/resume recommendations."
+        "zh": "次职位/简历！",
+        "en": "job/resume recommendations."
     },
     "default_00004": {
         "module": "default",
         "id": 4,
         "old_key": "",
-        "zh": "次职位\/简历",
-        "en": "Jobs\/resumes per day"
+        "zh": "次职位/简历",
+        "en": "Jobs/resumes per day"
     },
     "default_00005": {
         "module": "default",
@@ -39644,15 +39644,15 @@
         "module": "member_com",
         "id": 29,
         "old_key": "",
-        "zh": "元\/ 份",
-        "en": "Yuan\/items"
+        "zh": "元/ 份",
+        "en": "Yuan/items"
     },
     "member_com_00030": {
         "module": "member_com",
         "id": 30,
         "old_key": "",
-        "zh": "元\/ 天",
-        "en": "Yuan\/days"
+        "zh": "元/ 天",
+        "en": "Yuan/days"
     },
     "member_com_00031": {
         "module": "member_com",
@@ -39875,8 +39875,8 @@
         "module": "member_com",
         "id": 62,
         "old_key": "",
-        "zh": "委托书\/承诺函",
-        "en": "Authorization\/Commitment Letter"
+        "zh": "委托书/承诺函",
+        "en": "Authorization/Commitment Letter"
     },
     "member_com_00063": {
         "module": "member_com",
@@ -39966,8 +39966,8 @@
         "module": "member_com",
         "id": 75,
         "old_key": "",
-        "zh": "请单击这里，下载委托书\/承诺函模板",
-        "en": "Click here to download the authorization\/commitment letter template"
+        "zh": "请单击这里，下载委托书/承诺函模板",
+        "en": "Click here to download the authorization/commitment letter template"
     },
     "member_com_00076": {
         "module": "member_com",
@@ -40652,8 +40652,8 @@
         "module": "member_com",
         "id": 173,
         "old_key": "",
-        "zh": "请上传委托书\/承诺函！",
-        "en": "Please upload authorization\/commitment letter!"
+        "zh": "请上传委托书/承诺函！",
+        "en": "Please upload authorization/commitment letter!"
     },
     "member_com_00174": {
         "module": "member_com",
@@ -41506,8 +41506,8 @@
         "module": "member_com",
         "id": 295,
         "old_key": "",
-        "zh": "姓名\/性别",
-        "en": "Name\/Gender"
+        "zh": "姓名/性别",
+        "en": "Name/Gender"
     },
     "member_com_00296": {
         "module": "member_com",
@@ -41787,7 +41787,7 @@
         "id": 335,
         "old_key": "",
         "zh": "搜索求职意向、工作经历",
-        "en": "SearchJob Preference\/Work Experience"
+        "en": "SearchJob Preference/Work Experience"
     },
     "member_com_00336": {
         "module": "member_com",
@@ -42172,7 +42172,7 @@
         "id": 8,
         "old_key": "",
         "zh": "培训方向：",
-        "en": "Training Direction:"
+        "en": "Focus:"
     },
     "member_user_00009": {
         "module": "member_user",
@@ -42381,8 +42381,8 @@
         "module": "member_user",
         "id": 38,
         "old_key": "",
-        "zh": "元 \/ 天",
-        "en": "Yuan\/days"
+        "zh": "元 / 天",
+        "en": "Yuan/days"
     },
     "member_user_00039": {
         "module": "member_user",
@@ -43200,8 +43200,8 @@
         "module": "member_user",
         "id": 155,
         "old_key": "",
-        "zh": "个人主页\/博客",
-        "en": "Personal Homepage\/Blog"
+        "zh": "个人主页/博客",
+        "en": "Personal Homepage/Blog"
     },
     "member_user_00156": {
         "module": "member_user",
@@ -44467,15 +44467,15 @@
         "module": "resume",
         "id": 34,
         "old_key": "",
-        "zh": "推荐职位\/简历功能已关闭！",
-        "en": "The job\/resume recommendation feature is closed."
+        "zh": "推荐职位/简历功能已关闭！",
+        "en": "The job/resume recommendation feature is closed."
     },
     "resume_00035": {
         "module": "resume",
         "id": 35,
         "old_key": "",
-        "zh": "推荐职位\/简历功能已关闭",
-        "en": "Job\/resume recommendation is disabled"
+        "zh": "推荐职位/简历功能已关闭",
+        "en": "Job/resume recommendation is disabled"
     },
     "resume_00036": {
         "module": "resume",
@@ -44635,8 +44635,8 @@
         "module": "upgrade",
         "id": 1,
         "old_key": "",
-        "zh": "\/data目录没有写入权限，请先修改对应目录权限后再试！",
-        "en": "The \/data directory is not writable. Please update directory permissions and try again."
+        "zh": "/data目录没有写入权限，请先修改对应目录权限后再试！",
+        "en": "The /data directory is not writable. Please update directory permissions and try again."
     },
     "upgrade_00002": {
         "module": "upgrade",
@@ -46868,8 +46868,8 @@
         "module": "wap",
         "id": 302,
         "old_key": "",
-        "zh": "请输入用户名\/邮箱\/手机号",
-        "en": "Please enter Username\/Email\/Mobile Number"
+        "zh": "请输入用户名/邮箱/手机号",
+        "en": "Please enter Username/Email/Mobile Number"
     },
     "wap_00303": {
         "module": "wap",
@@ -47170,7 +47170,7 @@
         "id": 345,
         "old_key": "",
         "zh": "服务员",
-        "en": "Waiter\/Waitress"
+        "en": "Waiter/Waitress"
     },
     "wap_00346": {
         "module": "wap",
@@ -47463,8 +47463,8 @@
         "module": "wap",
         "id": 387,
         "old_key": "",
-        "zh": "邮箱\/手机号\/用户名",
-        "en": "Email\/Mobile Number\/Username"
+        "zh": "邮箱/手机号/用户名",
+        "en": "Email/Mobile Number/Username"
     },
     "wap_00388": {
         "module": "wap",
@@ -49115,8 +49115,8 @@
         "module": "wap_com",
         "id": 49,
         "old_key": "",
-        "zh": "次\/天",
-        "en": "Times\/day"
+        "zh": "次/天",
+        "en": "Times/day"
     },
     "wap_com_00050": {
         "module": "wap_com",
@@ -49150,8 +49150,8 @@
         "module": "wap_com",
         "id": 54,
         "old_key": "",
-        "zh": "上传营业执照\/组织机构代码证",
-        "en": "Upload Business License \/ Organization Code Certificate"
+        "zh": "上传营业执照/组织机构代码证",
+        "en": "Upload Business License / Organization Code Certificate"
     },
     "wap_com_00055": {
         "module": "wap_com",
@@ -49164,15 +49164,15 @@
         "module": "wap_com",
         "id": 56,
         "old_key": "",
-        "zh": "请上传委托书\/承诺函",
-        "en": "Please upload authorization\/commitment letter"
+        "zh": "请上传委托书/承诺函",
+        "en": "Please upload authorization/commitment letter"
     },
     "wap_com_00057": {
         "module": "wap_com",
         "id": 57,
         "old_key": "",
-        "zh": "委托书\/承诺函范本",
-        "en": "Authorization\/Commitment Letter Template"
+        "zh": "委托书/承诺函范本",
+        "en": "Authorization/Commitment Letter Template"
     },
     "wap_com_00058": {
         "module": "wap_com",
@@ -49627,7 +49627,7 @@
         "id": 122,
         "old_key": "",
         "zh": "建议格式：XX市XX县XX路",
-        "en": "Suggested format: City, County\/District, Street"
+        "en": "Suggested format: City, County/District, Street"
     },
     "wap_com_00123": {
         "module": "wap_com",
@@ -50837,8 +50837,8 @@
         "module": "wap_com",
         "id": 295,
         "old_key": "",
-        "zh": "元\/月",
-        "en": "CNY\/month"
+        "zh": "元/月",
+        "en": "CNY/month"
     },
     "wap_com_00296": {
         "module": "wap_com",
@@ -51636,7 +51636,7 @@
         "id": 409,
         "old_key": "",
         "zh": "暂无说明、请联系管理员",
-        "en": "No Description\/Pleasecontact the administrator"
+        "en": "No Description/Pleasecontact the administrator"
     },
     "wap_com_00410": {
         "module": "wap_com",
@@ -53547,14 +53547,14 @@
         "id": 82,
         "old_key": "",
         "zh": "培训描述",
-        "en": "Training Description"
+        "en": "Description"
     },
     "wap_user_00083": {
         "module": "wap_user",
         "id": 83,
         "old_key": "",
         "zh": "培训方向",
-        "en": "Training Direction"
+        "en": "Focus"
     },
     "wap_user_00084": {
         "module": "wap_user",
@@ -54100,7 +54100,7 @@
         "id": 161,
         "old_key": "",
         "zh": "审核原因：暂无说明、请联系管理员",
-        "en": "ReviewReason:No Description\/Pleasecontact the administrator"
+        "en": "ReviewReason:No Description/Pleasecontact the administrator"
     },
     "wap_user_00162": {
         "module": "wap_user",
@@ -54323,8 +54323,8 @@
         "module": "wap_user",
         "id": 193,
         "old_key": "",
-        "zh": "收藏\/关注",
-        "en": "Favorites \/ Follow"
+        "zh": "收藏/关注",
+        "en": "Favorites / Follow"
     },
     "wap_user_00194": {
         "module": "wap_user",
@@ -54541,7 +54541,7 @@
         "id": 224,
         "old_key": "",
         "zh": "XXX省XXX市XXX区XXX街道",
-        "en": "Province \/ City \/ District \/ Street"
+        "en": "Province / City / District / Street"
     },
     "wap_user_00225": {
         "module": "wap_user",
