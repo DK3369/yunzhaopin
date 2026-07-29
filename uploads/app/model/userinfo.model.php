@@ -1923,7 +1923,7 @@ class userinfo_model extends model
 							'uid'       =>  $userid,
 							'name'      =>  $params['workname_0'],
 							'sdate'     =>  strtotime($params['worksdate_0']),
-							'edate'     =>  $params['totoday_0'] ? 0 : $params['workedate_0'] ? strtotime($params['workedate_0']) : 0,
+							'edate'     =>  $params['totoday_0'] ? 0 : ($params['workedate_0'] ? strtotime($params['workedate_0']) : 0),
 							'title'     =>  $params['worktitle_0'],
 							'content'   =>  $params['workcontent_0']
 						);

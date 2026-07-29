@@ -267,7 +267,7 @@ class resume_controller extends user_controller{
                     'uid'       =>  $this->member['uid'],
                     'name'      =>  $_POST['workname'][$i],
                     'sdate'     =>  strtotime($_POST['worksdate'][$i]),
-                    'edate'     =>  $_POST['totoday'][$i] ? 0 : $_POST['workedate'][$i] ? strtotime($_POST['workedate'][$i]) : 0,
+                    'edate'     =>  $_POST['totoday'][$i] ? 0 : ($_POST['workedate'][$i] ? strtotime($_POST['workedate'][$i]) : 0),
                     'title'     =>  $_POST['worktitle'][$i],
                     'content'   =>  $_POST['workcontent'][$i]
                 );
