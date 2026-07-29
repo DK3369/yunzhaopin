@@ -47,7 +47,7 @@ header('Content-Type: text/html; charset=UTF-8');
 header("Cache-control: private");
 header('X-Frame-Options: SAMEORIGIN');
 date_default_timezone_set($db_config['timezone']);
-if (substr(PHP_VERSION, 0, 1) == '7') {
+if (PHP_VERSION_ID >= 70000) {
     
     include_once(LIB_PATH."mysqli.class.php");
     

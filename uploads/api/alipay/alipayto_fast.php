@@ -21,7 +21,7 @@ require_once("class/alipay_service.php");
 require_once(dirname(dirname(dirname(__FILE__)))."/config/db.safety.php");
 require_once(dirname(dirname(dirname(__FILE__)))."/config/db.config.php");
 require_once(dirname(dirname(dirname(__FILE__)))."/data/plus/config.php");
-if (substr(PHP_VERSION, 0, 1) == '7') {
+if (PHP_VERSION_ID >= 70000) {
 	require_once(dirname(dirname(dirname(__FILE__)))."/app/include/mysqli.class.php");
 }else{
 	require_once(dirname(dirname(dirname(__FILE__)))."/app/include/mysql.class.php");

@@ -25,9 +25,11 @@ define('DISCUZ_ROOT', '');
 //note 普通的 http 通知方式
 if(!defined('IN_UC')) {
 	error_reporting(0);
-	set_magic_quotes_runtime(0);
+	if(function_exists('set_magic_quotes_runtime')) {
+		set_magic_quotes_runtime(0);
+	}
 
-	defined('MAGIC_QUOTES_GPC') || define('MAGIC_QUOTES_GPC', get_magic_quotes_gpc());
+	defined('MAGIC_QUOTES_GPC') || define('MAGIC_QUOTES_GPC', function_exists('get_magic_quotes_gpc') ? get_magic_quotes_gpc() : 0);
 	require_once dirname(dirname(dirname(__FILE__))).'/data/api/uc/config.inc.php';
 	$_DCACHE = $get = $post = array();
 
@@ -52,7 +54,11 @@ if(!defined('IN_UC')) {
 	
 	if(in_array($get['action'], array('test', 'deleteuser', 'renameuser', 'gettag', 'synlogin', 'synlogout', 'updatepw', 'updatebadwords', 'updatehosts', 'updateapps', 'updateclient', 'updatecredit', 'getcreditsettings', 'updatecreditsettings'))) {
 		
-		require_once 'include/db_mysql.class.php';
+		if(PHP_VERSION_ID >= 70000) {
+			require_once dirname(dirname(__FILE__)).'/uc_php7/include/db_mysql.class.php';
+		} else {
+			require_once 'include/db_mysql.class.php';
+		}
 		$db_uc = new dbstuff;
 		require_once dirname(dirname(dirname(__FILE__))).'/data/api/uc/config.inc.php';
 		$db_uc->connect(UC_DBHOST,UC_DBUSER,UC_DBPW,UC_DBNAME,UC_DBCONNECT);
@@ -161,7 +167,7 @@ class uc_note {
 		require_once ($this->appdir."config/db.config.php");
 
 		
-		if (substr(PHP_VERSION, 0, 1) == '7') {
+		if (PHP_VERSION_ID >= 70000) {
 			require_once ($this->appdir."app/include/mysqli.class.php");
 		}else{
 			require_once ($this->appdir."app/include/mysql.class.php");
