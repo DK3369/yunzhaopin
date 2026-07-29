@@ -9,6 +9,7 @@ Upgrade the production runtime from PHP 7.4.33 to PHP 8.5.7 while keeping PHP 7.
 - PHP 7 and newer must load the mysqli-backed database driver.
 - Legacy payment and UC entrypoints must not route PHP 8.x to PHP 5 mysql_* code paths.
 - Removed PHP APIs such as each() and get_magic_quotes_gpc() must be replaced or guarded before the runtime switch.
+- WAP authentication entrypoints must remain directly testable after the switch; desktop/local access to WAP login, register, and password recovery should not be forced through the PC jump helper.
 
 ## Server Changes
 

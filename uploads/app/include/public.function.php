@@ -1322,7 +1322,7 @@ function pcJump($config)
     // 电脑点访问WAP,不需跳转的链接
     $c = isset($_GET['c']) ? $_GET['c'] : '';
     $a = isset($_GET['a']) ? $_GET['a'] : '';
-    $cArray = array('work');
+    $cArray = array('work', 'login', 'register', 'forgetpw');
     $aArray = array('getHbBase', 'dataShowIndex');
     
     if (!isMobileUser() && $config['sy_pc_jump_wap'] != '1' && !in_array($c,$cArray) && !in_array($a,$aArray)) {
@@ -1639,7 +1639,7 @@ function is_weixin()
  * @param $time
  * @param $domain
  */
-function setcookies($parseDate = array(), $time, $domain)
+function setcookies($parseDate, $time, $domain)
 {
 
     $domain =   get_domain($domain);
