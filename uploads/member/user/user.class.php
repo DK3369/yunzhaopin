@@ -4,7 +4,7 @@ class user extends common{
 	
 	function __construct($tpl,$db,$def='',$model='index',$m='') {
 
-		$this->common($tpl,$db,$def,$model,$m);
+		parent::__construct($tpl,$db,$def,$model,$m);
 		$this->member_satic();
 		//判断是否强制创建简历(等同于企业强制完善基本资料)
 		$resumeM    =  $this->MODEL('resume');

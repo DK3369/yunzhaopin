@@ -10,7 +10,7 @@ class company extends common
 
     function __construct($tpl, $db, $def = '', $model = 'index', $m = '')
     {
-        $this->common($tpl, $db, $def, $model, $m);
+        parent::__construct($tpl, $db, $def, $model, $m);
 
         // 入口判断企业资料是否完善 排除部分act
         $Company        =   $this->MODEL('company');

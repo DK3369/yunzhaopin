@@ -28,3 +28,5 @@ Upgrade the production runtime from PHP 7.4.33 to PHP 8.5.7 while keeping PHP 7.
 - Run tools/php_lint_gate.php before switching web traffic.
 - After PHP 8.5 is installed, repeat syntax checks using the PHP 8.5 binary and smoke test the site homepage, admin login, collection API, payment entrypoints, and UC entrypoints.
 - WAP list pages must avoid PHP 8.5 fatal patterns seen during local smoke tests: initialize Smarty pagination variables before assignment, compare resume sex CSS classes by numeric `sex_id` instead of nested translated labels, and count filter arrays before `implode()`.
+- Member and API base controllers must call `parent::__construct(...)` instead of legacy PHP4-style `$this->common(...)`, including WAP member, PC member, wxapp, and version API entrypoints.
+- API front controllers should guard missing route parameters and missing model files, returning structured JSON errors instead of letting PHP 8.5 `require` failures become HTTP 500 responses.

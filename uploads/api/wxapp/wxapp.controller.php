@@ -12,7 +12,7 @@ class wxapp_controller extends common
     function __construct($tpl, $db, $def = '', $model = 'index', $m = '')
     {
         $_POST = $this->undefinedToEnpty($_POST);
-        $this->common($tpl, $db, $def, 'wxapp');
+        parent::__construct($tpl, $db, $def, 'wxapp');
 
 
         if (isset($_GET['h']) && ($_GET['h'] == 'user' || $_GET['h'] == 'com')) {

@@ -4,20 +4,20 @@ include (dirname(dirname(dirname(__FILE__)))."/global.php");
 
 $pageType   =   'wap';
  
-$model      =   $_GET['m'];
-$action     =   $_GET['c'];
+$model      =   isset($_GET['m']) ? $_GET['m'] : '';
+$action     =   isset($_GET['c']) ? $_GET['c'] : '';
 
 if ($action == '')
     $action =   'index';
 
-$usertype   =   $_COOKIE['usertype'];
+$usertype   =   isset($_COOKIE['usertype']) ? $_COOKIE['usertype'] : '';
 
 if ($usertype == 1) {
     $model  =   'index';
 } elseif ($usertype == 2) {
     $model  =   'com';
 } else {
-    if(!$_COOKIE['uid']){
+    if(empty($_COOKIE['uid'])){
     	$model  =   'index';
     }else{
     	header('Location: '.Url('wap', array('c' => 'register', 'a' => 'ident')));

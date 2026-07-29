@@ -20,8 +20,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 $pageType = 'wxapp';
-$model    = $_GET['m'];
-$action   = $_GET['c'];
+$model    = isset($_GET['m']) ? $_GET['m'] : '';
+$action   = isset($_GET['c']) ? $_GET['c'] : '';
 $member   = '';
 
 if (isset($_GET['h'])){
@@ -36,14 +36,21 @@ require (APP_PATH . 'app/public/common.php');
 require ('wxapp.controller.php');
 
 if ($member == 'user') {
+    $modelFile = 'member/user/' . $model . '.class.php';
     require ('member/user.class.php');
-    require ('member/user/' . $model . '.class.php');
 } elseif ($member == 'com') {
+    $modelFile = 'member/com/' . $model . '.class.php';
     require ('member/com.class.php');
-    require ('member/com/' . $model . '.class.php');
 } else {
-    require ('model/' . $model . '.class.php');
+    $modelFile = 'model/' . $model . '.class.php';
 }
+
+if (!is_file($modelFile)) {
+    header('content-type:application/json; charset=utf-8');
+    echo json_encode(array('error' => 404, 'msg' => 'api not found', 'data' => array()));
+    exit;
+}
+require ($modelFile);
 
 $conclass = $model . '_controller';
 $actfunc = $action . '_action';
