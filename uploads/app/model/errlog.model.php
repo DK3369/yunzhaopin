@@ -13,7 +13,7 @@ class errlog_model extends model{
      * 1-注册，2-添加简历，3-申请职位，4-发布职位，5:-刷新职位,6:-下载简历，7-邀请面试,8-发送邮件，9-发送短信
      * @param string $content
      */
-    public function addErrorLog($uid, $type = '', $content)
+    public function addErrorLog($uid, $type, $content)
     {
 
         if ($type && $content) {

@@ -185,6 +185,12 @@ function formatparamer($paramer,$_smarty_tpl){
 //URL生成函数
 function get_url($paramer,$config,$seo,$type='',$index='',$_smarty_tpl=''){
 
+    $paramer = is_array($paramer) ? $paramer : array();
+    $m = isset($paramer['m']) ? $paramer['m'] : '';
+    $c = array();
+    $paramers = array();
+    $urlarr = array();
+    $a = array();
     if (isset($paramer['d']) && $paramer['d'] == 'wxapp'){
         // H5专用，后期H5采用打包模式可以去除
         $p = '';
@@ -214,9 +220,9 @@ function get_url($paramer,$config,$seo,$type='',$index='',$_smarty_tpl=''){
     }
 
     if($type){
-        if($config['sy_'.$type.'domain'] && $type!='index'){
+        if(!empty($config['sy_'.$type.'domain']) && $type!='index'){
 
-            if($config['sy_'.$type.'ssl']=='1'){
+            if(!empty($config['sy_'.$type.'ssl'])){
                 $protocol = 'https://';
             }else{
                 $protocol = 'http://';
@@ -232,9 +238,9 @@ function get_url($paramer,$config,$seo,$type='',$index='',$_smarty_tpl=''){
         }else{
             // 后台调用本函数，$ModuleName是后台目录，wap被归于普通m，没有按目录形式处理，需增加 $type = wap 条件
             if(($ModuleName!=$adminDir && $ModuleName!='siteadmin') || !$ModuleName || $type == 'wap'){
-                $typeDir = $config['sy_'.$type.'dir'];
+                $typeDir = isset($config['sy_'.$type.'dir']) ? $config['sy_'.$type.'dir'] : '';
             }
-            if($config['sy_web_site'] == '1' && $type == 'wap' && $config['sy_indexdomain']){
+            if($config['sy_web_site'] == '1' && $type == 'wap' && !empty($config['sy_indexdomain'])){
                 $defaultUrl = $config['sy_indexdomain'];
                 $defaultUrlRewrite = $config['sy_indexdomain'];
             }else{
@@ -261,10 +267,8 @@ function get_url($paramer,$config,$seo,$type='',$index='',$_smarty_tpl=''){
 
         unset($paramer['m']);
     }else{
-        if(empty($paramer['m']) && (!$config['sy_'.$type.'domain'] || $type=='index')){
+        if(empty($m) && (empty($config['sy_'.$type.'domain']) || $type=='index')){
             $m='index';
-        }else{
-            $m=$paramer['m'];
         }
     }
 
@@ -295,7 +299,7 @@ function get_url($paramer,$config,$seo,$type='',$index='',$_smarty_tpl=''){
     // 后台查看链接，不需要走伪静态，防止未审核等情况，无法查看
     $look  =  isset($paramer['look']) ? $paramer['look'] : '';
 
-    if($config['sy_seo_rewrite'] && $index!='admin' && $index!='member' && $paramer['m']!='ajax' && $paramer['m']!='member' && $look != 'admin' && $ModuleName!='wapadmin'){
+    if($config['sy_seo_rewrite'] && $index!='admin' && $index!='member' && $m!='ajax' && $m!='member' && $look != 'admin' && $ModuleName!='wapadmin'){
 
         $seourl=get_seo_url($paramer,$config,$seo,$type);
 
@@ -331,7 +335,7 @@ function get_url($paramer,$config,$seo,$type='',$index='',$_smarty_tpl=''){
             $url=$url.'member/';
         }
 
-        if($index!='admin' && ($config['sy_'.$m.'_web']==1)&&(trim($config['sy_'.$m.'dir']))&&(!trim($config['sy_'.$m.'domain']))){
+        if($index!='admin' && !empty($m) && !empty($config['sy_'.$m.'_web']) && !empty($config['sy_'.$m.'dir']) && empty($config['sy_'.$m.'domain'])){
             if($index=='member'){
                 $url=$config['sy_'.$m.'dir'].'/'.$url;
             }else{
@@ -370,7 +374,7 @@ function get_url($paramer,$config,$seo,$type='',$index='',$_smarty_tpl=''){
                 }
             }
         }
-        $code = $url[0];
+        $code = isset($url[0]) ? $url[0] : '';
         if ($code == '/'){
             $url=$defaultUrl.$url;
         }else{
@@ -473,19 +477,19 @@ function addkeywords($type,$keyword){
 
 }
 //smarty自定义标签的分页函数
-function PageNav($paramer,$get,$table,$where,$Purls,$table2="",$islt='0',$_smarty_tpl,$pagewhere="",$joinwhere=""){
+function PageNav($paramer,$get,$table,$where,$Purls,$table2,$islt,$_smarty_tpl,$pagewhere="",$joinwhere=""){
 
     global $db,$db_config,$config;
     $url=array();
-    if($paramer['islt']){
+    if(!empty($paramer['islt'])){
         $islt=$paramer['islt'];
     }
-    $page=$get['page']<1?1:$get['page'];
-    if($get['c']){
+    $page = !empty($get['page']) && $get['page'] > 0 ? $get['page'] : 1;
+    if(!empty($get['c'])){
         $urlarr["c"]=$get['c'];
         $Purl['c'] = $get['c'];
     }
-    if($get['a']){
+    if(!empty($get['a'])){
         $urlarr["a"]=$get['a'];
         $Purl["a"]	=$get['a'];
     }
@@ -525,7 +529,7 @@ function PageNav($paramer,$get,$table,$where,$Purls,$table2="",$islt='0',$_smart
         $pageurl = $config['sy_weburl']."/member/index.php?".$memberurl."&page={{page}} ";
     }elseif($islt=='4'){
         foreach($Purl as $k=>$v){
-            if(!trim($v)){
+            if(!trim((string) $v)){
                 unset($Purl[$k]);
             }
         }
@@ -541,7 +545,7 @@ function PageNav($paramer,$get,$table,$where,$Purls,$table2="",$islt='0',$_smart
         }
     }else{
         foreach($Purl as $k=>$v){
-            if(!trim($v)){
+            if(!trim((string) $v)){
                 unset($Purl[$k]);
             }
         }
@@ -612,7 +616,7 @@ function PageNav($paramer,$get,$table,$where,$Purls,$table2="",$islt='0',$_smart
     }
 }
 //生成分页信息，返回limit信息
-function PageLimit($pagenum, $num, $limit, $pageurl, $notpl = false, $_smarty_tpl, $pagenavname = 'pagenav', $pageStyle = '')
+function PageLimit($pagenum, $num, $limit, $pageurl, $notpl, $_smarty_tpl, $pagenavname = 'pagenav', $pageStyle = '')
 {
 
 
@@ -654,7 +658,7 @@ function PageLimit($pagenum, $num, $limit, $pageurl, $notpl = false, $_smarty_tp
     return $ststrsql;
 }
 //生成分页信息，返回分页代码
-function Page($pagenum,$num,$limit,$pageurl,$notpl=false,$_smarty_tpl,$pagenavname='pagenav',$isadmin=false){
+function Page($pagenum,$num,$limit,$pageurl,$notpl,$_smarty_tpl,$pagenavname='pagenav',$isadmin=false){
     global $db,$db_config,$config;
     include_once(LIB_PATH."page.class.php");
 
@@ -751,6 +755,9 @@ function FormatPicUrl($paramer){
 }
 //获取smarty自定义标签参数
 function GetSmarty($arr,$get,$_smarty_tpl=''){
+    $get = is_array($get) ? $get : array();
+    $purl = array();
+    $url = '';
     $arr = str_replace("\"","",$arr);
     $arr = str_replace("'","",$arr);
     $arr = str_replace("“","",$arr);
@@ -760,13 +767,14 @@ function GetSmarty($arr,$get,$_smarty_tpl=''){
             $val = mb_substr($value,0,5);
             if(preg_match ("/auto./i", $value)){
                 $nval = str_replace("auto.","",$value);
-                $purl[$key] = $get[$nval];
-                $arr[$key] = $get[$nval];
-                if($get[$nval]!=""){
+                $getValue = isset($get[$nval]) ? $get[$nval] : '';
+                $purl[$key] = $getValue;
+                $arr[$key] = $getValue;
+                if($getValue!=""){
                     if($key=="keyword"){
-                        $arr[$key]=trim($get[$key]);
+                        $arr[$key]=trim((string) (isset($get[$key]) ? $get[$key] : ''));
                     }
-                    $url.="&".$key."=".$get[$key];
+                    $url.="&".$key."=".(isset($get[$key]) ? $get[$key] : '');
                 }
             }
             if(preg_match ("/@./i", $value)){
@@ -779,10 +787,15 @@ function GetSmarty($arr,$get,$_smarty_tpl=''){
                     $smarty_val = $_smarty_tpl->tpl_vars;
                     foreach($nval as $k=>$v){
 
-                        if($smarty_val[$v]->value){
-                            $smarty_val = $smarty_val[$v]->value;
-                        }else{
-                            $smarty_val = $smarty_val[$v];
+                        if (!is_array($smarty_val) || !isset($smarty_val[$v])) {
+                            $smarty_val = '';
+                            break;
+                        }
+                        $smartyValue = $smarty_val[$v];
+                        if (is_object($smartyValue) && isset($smartyValue->value)) {
+                            $smarty_val = $smartyValue->value;
+                        } else {
+                            $smarty_val = $smartyValue;
                         }
                     }
                     $arr[$key] = $smarty_val;

@@ -11,7 +11,7 @@ class Smarty_Internal_Compile_Hrclass extends Smarty_Internal_CompileBase{
         $name = $_attr['item'];
         $name=str_replace('\'','',$name);
         $name=$name?$name:'list';$name='$'.$name;
-        if (!strncmp("\$_smarty_tpl->tpl_vars[$item]", $from, strlen($item) + 24)) {
+        if (!strncmp("\$_smarty_tpl->tpl_vars[$item]", (string) $from, strlen((string) $item) + 24)) {
             $compiler->trigger_template_error("item variable {$item} may not be the same variable as at 'from'", $compiler->lex->taglineno);
         }
         

@@ -27,6 +27,16 @@
  * @return string |void
  * @uses   smarty_make_timestamp()
  */
+function smarty_date_format_to_php($format)
+{
+    return strtr($format, array(
+        '%Y' => 'Y', '%y' => 'y', '%m' => 'm', '%d' => 'd',
+        '%e' => 'j', '%H' => 'H', '%I' => 'h', '%M' => 'i',
+        '%S' => 's', '%p' => 'A', '%b' => 'M', '%B' => 'F',
+        '%%' => '%'
+    ));
+}
+
 function smarty_modifier_date_format($string, $format = null, $default_date = '', $formatter = 'auto')
 {
     if ($format === null) {
@@ -66,7 +76,7 @@ function smarty_modifier_date_format($string, $format = null, $default_date = ''
         if($strFormat){
         return date($strFormat, $timestamp);
         }else{
-        return strftime($format, $timestamp);
+        return date(smarty_date_format_to_php($format), $timestamp);
         }
     } else {
         return date($format, $timestamp);

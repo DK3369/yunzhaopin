@@ -86,7 +86,7 @@ abstract class Smarty_Resource
      * @param Smarty_Template_Source   $source    source object
      * @param Smarty_Internal_Template $_template template object
      */
-    abstract public function populate(Smarty_Template_Source $source, Smarty_Internal_Template $_template = null);
+    abstract public function populate(Smarty_Template_Source $source, ?Smarty_Internal_Template $_template = null);
 
     /**
      * populate Source Object with timestamp and exists from Resource
@@ -212,7 +212,7 @@ abstract class Smarty_Resource
      * @return string                   fully qualified filepath
      * @throws SmartyException          if default template handler is registered but not callable
      */
-    protected function buildFilepath(Smarty_Template_Source $source, Smarty_Internal_Template $_template = null)
+    protected function buildFilepath(Smarty_Template_Source $source, ?Smarty_Internal_Template $_template = null)
     {
         $file = $source->name;
         if ($source instanceof Smarty_Config_Source) {
@@ -532,7 +532,7 @@ abstract class Smarty_Resource
      *
      * @return Smarty_Template_Source   Source Object
      */
-    public static function source(Smarty_Internal_Template $_template = null, Smarty $smarty = null, $template_resource = null)
+    public static function source(?Smarty_Internal_Template $_template = null, ?Smarty $smarty = null, $template_resource = null)
     {
         if ($_template) {
             $smarty = $_template->smarty;
@@ -625,6 +625,7 @@ abstract class Smarty_Resource
  * @property boolean $template  Extended Template reference
  * @property string  $content   Source Content
  */
+#[AllowDynamicProperties]
 class Smarty_Template_Source
 {
     /**

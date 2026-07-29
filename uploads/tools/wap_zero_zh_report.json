@@ -1,5 +1,5 @@
 {
-    "generated": "2026-07-29T16:27:03+08:00",
+    "generated": "2026-07-29T18:21:04+08:00",
     "summary": {
         "enum_hub": 25,
         "comment": 463,
@@ -3854,133 +3854,133 @@
         },
         {
             "file": "api\/wxapp\/model\/public.class.php",
-            "line": 577,
+            "line": 587,
             "category": "ui",
             "text": "\t\t\t$prname[]\t=\t'请选择企业性质';"
         },
         {
             "file": "api\/wxapp\/model\/public.class.php",
-            "line": 592,
+            "line": 602,
             "category": "ui",
             "text": "\t\t\t$munname[]\t=  '请选择企业规模';"
         },
         {
             "file": "api\/wxapp\/model\/public.class.php",
-            "line": 607,
+            "line": 617,
             "category": "ui",
             "text": "\t\t\t$numbername[]  =  '请选择招聘人数';"
         },
         {
             "file": "api\/wxapp\/model\/public.class.php",
-            "line": 634,
+            "line": 644,
             "category": "ui",
             "text": "\t\t\t$reportname[]  =  '请选择到岗时间';"
         },
         {
             "file": "api\/wxapp\/model\/public.class.php",
-            "line": 647,
+            "line": 657,
             "category": "ui",
             "text": "\t\t\t$agename[]\t=\t'请选择年龄要求';"
         },
         {
             "file": "api\/wxapp\/model\/public.class.php",
-            "line": 674,
+            "line": 684,
             "category": "ui",
             "text": "\t\t\t$marriagename[]  =  '请选择婚姻状况';"
         },
         {
             "file": "api\/wxapp\/model\/public.class.php",
-            "line": 700,
+            "line": 710,
             "category": "enum",
             "text": "\t\t        if($v != '男'){"
         },
         {
             "file": "api\/wxapp\/model\/public.class.php",
-            "line": 710,
+            "line": 720,
             "category": "ui",
             "text": "\t\t$comdata['uptime']\t=\tarray('1'=>'今天','3'=>'最近三天','7'=>'最近七天','30'=>'最近一个月','90'=>'最近三个月');"
         },
         {
             "file": "api\/wxapp\/model\/public.class.php",
-            "line": 721,
+            "line": 731,
             "category": "ui",
             "text": "            $remarkname[]\t=\t'请选择简历状态';"
         },
         {
             "file": "api\/wxapp\/model\/public.class.php",
-            "line": 733,
+            "line": 743,
             "category": "comment",
             "text": "\t\t\/\/投递要求"
         },
         {
             "file": "api\/wxapp\/model\/public.class.php",
-            "line": 737,
+            "line": 747,
             "category": "ui",
             "text": "\t\t\t$expreqname[]\t\t=\t'请选择工作经验';"
         },
         {
             "file": "api\/wxapp\/model\/public.class.php",
-            "line": 750,
+            "line": 760,
             "category": "ui",
             "text": "\t\t\t$edureqname[]\t\t=\t'请选择学历';"
         },
         {
             "file": "api\/wxapp\/model\/public.class.php",
-            "line": 759,
+            "line": 769,
             "category": "comment",
             "text": "\t\t\/\/ 企业福利"
         },
         {
             "file": "api\/wxapp\/model\/public.class.php",
-            "line": 762,
+            "line": 772,
             "category": "ui",
             "text": "\t\t    $arrwelfare[] = array('id'=>0,'name'=>'全部');"
         },
         {
             "file": "api\/wxapp\/model\/public.class.php",
-            "line": 897,
+            "line": 907,
             "category": "comment",
             "text": "\tfunction keyword_action(){  \/\/关键字展示"
         },
         {
             "file": "api\/wxapp\/model\/public.class.php",
-            "line": 901,
+            "line": 911,
             "category": "comment",
             "text": "                if($v['type']==$_POST['type']&&$v['tuijian']=='1' && count($key_name) < 12){\/\/ 热搜关键词最多展示12个"
         },
         {
             "file": "api\/wxapp\/model\/public.class.php",
-            "line": 909,
+            "line": 919,
             "category": "comment",
             "text": "\tfunction group_action(){  \/\/关键字类别"
         },
         {
             "file": "api\/wxapp\/model\/public.class.php",
-            "line": 916,
+            "line": 926,
             "category": "comment",
             "text": "\t * 查询分站数据"
         },
         {
             "file": "api\/wxapp\/model\/public.class.php",
-            "line": 980,
+            "line": 990,
             "category": "ui",
             "text": "\t            'letter'  =>  '行业分站',"
         },
         {
             "file": "api\/wxapp\/model\/public.class.php",
-            "line": 991,
+            "line": 1001,
             "category": "comment",
             "text": "\t * 获取举报简历原因"
         },
         {
             "file": "api\/wxapp\/model\/public.class.php",
-            "line": 1009,
+            "line": 1019,
             "category": "comment",
             "text": "     * 获取举报职位原因"
         },
         {
             "file": "api\/wxapp\/model\/public.class.php",
-            "line": 1028,
+            "line": 1038,
             "category": "comment",
             "text": "     * 获取邀请注册模板列表"
         },

@@ -253,25 +253,25 @@ class mysql {
 			include (function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path("job.cache.php") : PLUS_PATH."job.cache.php");
 			include (function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('industry.cache.php') : PLUS_PATH.'industry.cache.php');
 		}
-		$job_info["job_class_one"] = $job_name[$job_info["job1"]];
-		$job_info["job_class_two"] = $job_name[$job_info["job1_son"]];
-		$job_info["job_class_three"] = $job_name[$job_info["job_post"]];
-		$job_info["job_exp"] = $comclass_name[$job_info["exp"]];
-		$job_info["job_edu"] = $comclass_name[$job_info["edu"]];
-		$job_info["job_salary"] = $comclass_name[$job_info["salary"]];
-		$job_info["job_number"] = $comclass_name[$job_info["number"]];
-		$job_info["job_mun"] = $comclass_name[$job_info["mun"]];
+		$job_info["job_class_one"] = $job_name[$job_info["job1"] ?? ""] ?? "";
+		$job_info["job_class_two"] = $job_name[$job_info["job1_son"] ?? ""] ?? "";
+		$job_info["job_class_three"] = $job_name[$job_info["job_post"] ?? ""] ?? "";
+		$job_info["job_exp"] = $comclass_name[$job_info["exp"] ?? ""] ?? "";
+		$job_info["job_edu"] = $comclass_name[$job_info["edu"] ?? ""] ?? "";
+		$job_info["job_salary"] = $comclass_name[$job_info["salary"] ?? ""] ?? "";
+		$job_info["job_number"] = $comclass_name[$job_info["number"] ?? ""] ?? "";
+		$job_info["job_mun"] = $comclass_name[$job_info["mun"] ?? ""] ?? "";
 
-		$job_info["job_age"] = $comclass_name[$job_info["age"]];
-		$job_info["job_type"] = $comclass_name[$job_info["type"]];
-		$job_info["job_marriage"] = $comclass_name[$job_info["marriage"]];
-		$job_info["job_report"] = $comclass_name[$job_info["report"]];
-		$job_info["job_city_one"] = $city_name[$job_info["provinceid"]];
-		$job_info["com_city"] = $city_name[$job_info["com_provinceid"]];
-		$job_info["job_pr"] = $comclass_name[$job_info["pr"]];
-		$job_info["job_city_two"] = $city_name[$job_info["cityid"]];
-		$job_info["job_city_three"] = $city_name[$job_info["three_cityid"]];
-		$job_info["job_hy"] = $industry_name[$job_info["hy"]];
+		$job_info["job_age"] = $comclass_name[$job_info["age"] ?? ""] ?? "";
+		$job_info["job_type"] = $comclass_name[$job_info["type"] ?? ""] ?? "";
+		$job_info["job_marriage"] = $comclass_name[$job_info["marriage"] ?? ""] ?? "";
+		$job_info["job_report"] = $comclass_name[$job_info["report"] ?? ""] ?? "";
+		$job_info["job_city_one"] = $city_name[$job_info["provinceid"] ?? ""] ?? "";
+		$job_info["com_city"] = $city_name[$job_info["com_provinceid"] ?? ""] ?? "";
+		$job_info["job_pr"] = $comclass_name[$job_info["pr"] ?? ""] ?? "";
+		$job_info["job_city_two"] = $city_name[$job_info["cityid"] ?? ""] ?? "";
+		$job_info["job_city_three"] = $city_name[$job_info["three_cityid"] ?? ""] ?? "";
+		$job_info["job_hy"] = $industry_name[$job_info["hy"] ?? ""] ?? "";
         
 		if($job_info["lang"]!=""){
 			$lang = @explode(",",$job_info["lang"]);
@@ -410,13 +410,7 @@ class mysql {
 	// 根据select查询结果计算结果集条数
 	public function db_num_rows() {
 		$this->connect();
-		if ($this->result == null) {
-			if ($this->show_error) {
-				$this->show_error("SQL语句错误", "暂时为空，没有任何内容！");
-			}
-		} else {
-			return mysqli_num_rows($this->result);
-		}
+		return $this->result instanceof mysqli_result ? mysqli_num_rows($this->result) : 0;
 	}
 	// 根据insert,update,delete执行结果取得影响行数
 	public function db_affected_rows() {
@@ -428,7 +422,9 @@ class mysql {
 	}
 	//释放结果集
 	public function free() {
-		@ mysqli_free_result($this->result);
+		if ($this->result instanceof mysqli_result) {
+			mysqli_free_result($this->result);
+		}
 	}
 	//数据库选择
 	public function select_db($db_database) {
@@ -467,7 +463,7 @@ class mysql {
 		
 		$this->connect();
 		
-		return mysqli_real_escape_string($this->conn,$string);
+		return mysqli_real_escape_string($this->conn, (string) $string);
 	}
 	//关闭数据库,垃圾回收机制
 	public function close() {

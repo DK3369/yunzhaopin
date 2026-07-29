@@ -513,6 +513,14 @@ class Smarty_Variable
      * @var int
      */
     public $scope = Smarty::SCOPE_LOCAL;
+    public $_loop = false;
+    public $key = null;
+    public $total = 0;
+    public $iteration = 0;
+    public $index = -1;
+    public $show = false;
+    public $first = false;
+    public $last = false;
 
     /**
      * create Smarty variable object

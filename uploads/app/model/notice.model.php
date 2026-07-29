@@ -54,7 +54,7 @@ class notice_model extends model{
 		}
     }
     
-    private function addErrorLog($uid,$type='',$content) {
+    private function addErrorLog($uid,$type,$content) {
         
         require_once ('errlog.model.php');
         

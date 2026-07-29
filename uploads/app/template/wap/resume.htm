@@ -38,9 +38,9 @@
                         {yun:}else if $config.cityid&&$config.sy_web_site=='1'{/yun}
                             {yun:}$city_name[$config.cityid]{/yun}
                         {yun:}else{/yun}
-                            {yun:}if $city_name[$smarty.get.cityid] || $city_name[$smarty.get.provinceid]{/yun}
-                                {yun:}$city_name[$smarty.get.cityid]{/yun}{yun:}$city_name[$smarty.get.provinceid]{/yun}
-                            {yun:}elseif $city_name[$smarty.get.threecityid]{/yun}
+                            {yun:}if $smarty.get.cityid || $smarty.get.provinceid{/yun}
+                                {yun:}if $smarty.get.cityid{/yun}{yun:}$city_name[$smarty.get.cityid]{/yun}{yun:}/if{/yun}{yun:}if $smarty.get.provinceid{/yun}{yun:}$city_name[$smarty.get.provinceid]{/yun}{yun:}/if{/yun}
+                            {yun:}elseif $smarty.get.threecityid && $city_name[$smarty.get.threecityid]{/yun}
                                 {yun:}$city_name[$smarty.get.threecityid]{/yun}
                             {yun:}else{/yun}
                                 {yun:}t key='common_02110'{/yun}

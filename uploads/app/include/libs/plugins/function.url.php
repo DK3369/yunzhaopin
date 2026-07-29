@@ -1,15 +1,16 @@
 <?php
 function smarty_function_url($paramer,$template){
 	global $config,$seo;
-	if(!$paramer['index'] && $paramer['m']=='member'){
+    $index = isset($paramer['index']) ? $paramer['index'] : '';
+    $module = isset($paramer['m']) ? $paramer['m'] : '';
+	if(!$index && $module=='member'){
 		$index='member';
 		unset($paramer['m']);
-	}else{
-		$index=$paramer['index'];
 	}
     
      unset($paramer['index']);
-     $url  =  get_url($paramer,$config,$seo,$paramer['m'],$index,$template);
+     $module = isset($paramer['m']) ? $paramer['m'] : '';
+     $url  =  get_url($paramer,$config,$seo,$module,$index,$template);
 	return $url;
 }
 ?>

@@ -19,6 +19,8 @@ class common{
 	public $protocol="";
 	public $protocol_wap="";
 	public $cookie = '';
+	public $def = '';
+	public $m = '';
 
 	//实例化
 	function __construct($tpl,$db,$def='',$model='index',$m='') {
@@ -617,7 +619,8 @@ class common{
 	 
 		include PLUS_PATH."seo.cache.php";
 	 
-		$seo=$seo[$ident];
+		$seo = isset($seo[$ident]) ? $seo[$ident] : array();
+        $fzseo = array();
 		if(is_array($seo)){
 			foreach($seo as $k=>$v){
 				if($this->config['did']!="" && $this->config['did']==$v['did']){
@@ -694,7 +697,7 @@ class common{
 				}
 			}
 		}
-		$desc = mb_substr(str_replace("	","",str_replace("\r","",str_replace("\n","",strip_tags($seo['description'])))),0,200,'utf-8');
+		$desc = mb_substr(str_replace("	","",str_replace("\r","",str_replace("\n","",strip_tags((string) (isset($seo['description']) ? $seo['description'] : ''))))),0,200,'utf-8');
 		
 		if($settpl){
 		    $this->yunset('title',$seo['title']);
@@ -715,7 +718,12 @@ class common{
 	    $cacheM  =  $this->MODEL('cache');
 	    $cache   =  $cacheM->GetCache(array('hy'));
 		
-	    $industry_name  =  $cache['industry_name'];
+	    $industry_name  =  isset($cache['industry_name']) ? $cache['industry_name'] : array();
+        $comdata = array();
+        $sex = array();
+        $comclass_name = array();
+        $userdata = array();
+        $userclass_name = array();
 	    
 		if($ident=='com_search' || $ident=='part'){
 		    $comcache   =  $cacheM->GetCache(array('com'));
@@ -732,11 +740,12 @@ class common{
 		
 		$uptime  =  array(1=>'common_01940',3=>'wap_00432',7=>'wap_00433',30=>'admin_user_00175','90'=>'wap_00431');
 		$data    =  array();
+        $alldata = array();
 
 		foreach($_GET as $key=>$v){
 			switch($key){
 				case 'hy':
-				    $data[]=$industry_name[$v];
+				    $data[] = isset($industry_name[$v]) ? $industry_name[$v] : '';
 				    break;
 				case 'rec':
 				    $data[]='wap_01465';
@@ -749,15 +758,15 @@ class common{
     				break;
 				default:
 				if(!in_array($key,array('idcard','work','cert'))){
-					if($comdata['job_'.$key]&&$comclass_name[$v]){
+					if(!empty($comdata['job_'.$key]) && !empty($comclass_name[$v])){
 						$data[]=$comclass_name[$v];
 					}else if($key=='salary'){
 						$data[]=$v;
-					}else if($key=='sex'&&$sex[$v]){
+					}else if($key=='sex' && !empty($sex[$v])){
 					    $data[]=$sex[$v];
-					}else if($key=='uptime'&&$uptime[$v]){
+					}else if($key=='uptime' && !empty($uptime[$v])){
 						$data[]=$uptime[$v];
-					}else if(($userdata['user_'.$key]||$key=='exp')&&$userclass_name[$v]){
+					}else if((!empty($userdata['user_'.$key]) || $key=='exp') && !empty($userclass_name[$v])){
 						$data[]=$userclass_name[$v];
 					} 
 				}
@@ -789,6 +798,7 @@ class common{
         $job_name = $cache['job_name'];
 
         $data = array();
+        $alldata = array();
 
         $getArr = $_GET;
         //对职能、城市进行处理，有子级时，显示子级，不显示父级、祖父级
@@ -805,7 +815,7 @@ class common{
                 case 'job1':
                 case 'job1_son':
                 case 'job_post':
-                    $data[] = $job_name[$v];
+                    $data[] = isset($job_name[$v]) ? $job_name[$v] : '';
                     break;
             }
         }
@@ -832,6 +842,7 @@ class common{
         $city_name  =   $cache['city_name'];
 
         $data       =   array();
+        $alldata    =   array();
         $getArr     =   $_GET;
 
         //对职能、城市进行处理，有子级时，显示子级，不显示父级、祖父级
@@ -850,7 +861,7 @@ class common{
                 case 'provinceid':
                 case 'cityid':
                 case 'three_cityid':
-                    $data[] = $city_name[$v];
+                    $data[] = isset($city_name[$v]) ? $city_name[$v] : '';
                     break;
             }
         }
@@ -1090,7 +1101,7 @@ class common{
      */
     function stringfilter($string)
     {
-        $str    =   trim($string);
+        $str    =   trim((string) $string);
 
         $regex  =   "/\\$|\'|\\\|/";
         $str    =   preg_replace($regex, "", $str);
@@ -1429,7 +1440,7 @@ class common{
                 $needLogin = true;
 
                 foreach ($userAgent as $key => $value) {
-                    if (stripos($_SERVER['HTTP_USER_AGENT'], trim($value)) !== false) {
+                    if (stripos(isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '', trim($value)) !== false) {
 
                         $needLogin = false;
                     }

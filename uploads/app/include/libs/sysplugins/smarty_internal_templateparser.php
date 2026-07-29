@@ -31,20 +31,20 @@ class TP_yyToken implements ArrayAccess
 
     public function __toString()
     {
-        return $this->_string;
+        return $this->string;
     }
 
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         return isset($this->metadata[$offset]);
     }
 
-    public function offsetGet($offset)
+    public function offsetGet($offset): mixed
     {
         return $this->metadata[$offset];
     }
 
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
         if ($offset === null) {
             if (isset($value[0])) {
@@ -68,7 +68,7 @@ class TP_yyToken implements ArrayAccess
         }
     }
 
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         unset($this->metadata[$offset]);
     }
@@ -106,6 +106,14 @@ class Smarty_Internal_Templateparser#line 80 "smarty_internal_templateparser.php
     private $lex;
     private $internalError = false;
     private $strip = false;
+    public $compiler;
+    public $smarty;
+    public $template;
+    public $block_nesting_level = 0;
+    public $security = false;
+    public $php_handling;
+    public $is_xml = false;
+    public $asp_tags = false;
 
     function __construct($lex, $compiler)
     {

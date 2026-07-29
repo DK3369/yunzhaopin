@@ -31,7 +31,7 @@ if(!empty($config)){
 	$initObj = new initDeal();
 	$hatReturn = $initObj->getAllParam();
 
-	if($hatReturn['param']){
+	if(!empty($hatReturn['param'])){
 		$_GET = array_merge($_GET,$hatReturn['param']);
 	}
 	//入口处理end

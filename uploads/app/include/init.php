@@ -3,7 +3,7 @@
 
 
 
-if ($_GET['ivk_sa']){
+if (!empty($_GET['ivk_sa'])){
     unset($_GET['ivk_sa']);
 }
 

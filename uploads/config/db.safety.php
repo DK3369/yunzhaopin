@@ -2,11 +2,8 @@
 
 function quotesGPC() {
 	
-	if(version_compare(PHP_VERSION,'5.4.0','<')) {
-		ini_set('magic_quotes_runtime',0);
-		define('MAGIC_QUOTES_GPC',get_magic_quotes_gpc()? true : false);
-	}else{
-		define('MAGIC_QUOTES_GPC',false);
+	if (!defined('MAGIC_QUOTES_GPC')) {
+		define('MAGIC_QUOTES_GPC', false);
 	}
 
 
@@ -81,6 +78,7 @@ function common_htmlspecialchars($key,$str,$str2,$config){
 
 		}
 	}else{
+		$str = $str === null ? '' : (string) $str;
 		$str = preg_replace('/([\x00-\x08\x0b-\x0c\x0e-\x19])/', '', $str);
 		
 		if(!in_array((string)$key,array('content','config','group_power','description','body','job_desc','eligible','other','code','intro','doc','traffic','media','packages','booth','participate','expinfo','eduinfo','skillinfo','projectinfo','chat_id', 'userId', 'userid', 'cursor'))){
@@ -275,7 +273,8 @@ foreach($_COOKIE  as $id=>$v){
 $serverArray = array('HTTP_REFERER','HTTP_HOST','REQUEST_URI');
 
 foreach($serverArray as $v){
-    $_SERVER[$v] = common_htmlspecialchars($v,$_SERVER[$v],$_SERVER[$v],$config);
+    $serverValue = isset($_SERVER[$v]) ? $_SERVER[$v] : '';
+    $_SERVER[$v] = common_htmlspecialchars($v, $serverValue, $serverValue, $config);
 }
 
 function safe_pape($msg = '您提交的数据存在安全隐患，已被禁止！'){

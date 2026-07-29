@@ -5,13 +5,13 @@ class login_controller extends common{
 		$this->get_moblie();
  
 		// wap
-		if(preg_match("/^[a-zA-Z0-9_-]+$/",$_GET['wxid'])){
+		if(isset($_GET['wxid']) && preg_match("/^[a-zA-Z0-9_-]+$/", $_GET['wxid'])){
 			$wxid = $_GET['wxid'];
 			$this->cookie->setcookie("wxid",$_GET['wxid'],time() + 86400);
-		}elseif($_COOKIE['wxid']){
+		}elseif(!empty($_COOKIE['wxid'])){
 			$wxid = $_COOKIE['wxid'];
 		}
-		if(preg_match("/^[a-zA-Z0-9_-]+$/",$_GET['wxloginid'])){
+		if(isset($_GET['wxloginid']) && preg_match("/^[a-zA-Z0-9_-]+$/", $_GET['wxloginid'])){
 			$this->cookie->setcookie("wxloginid",$_GET['wxloginid'],time() + 86400);
 		}
 		if($wxid){

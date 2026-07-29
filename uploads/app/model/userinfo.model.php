@@ -13,7 +13,7 @@ class userinfo_model extends model
     	4	=>	'admin_user_company_00204'
     );
 
-    private function addErrorLog($uid,$type='',$content)
+    private function addErrorLog($uid,$type,$content)
     {
         
         require_once ('errlog.model.php');

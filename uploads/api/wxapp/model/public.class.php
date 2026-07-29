@@ -568,8 +568,18 @@ class public_controller extends wxapp_controller{
 		$this->render_json(0,'ok',$data);
 	}
 	function com_action(){//获取企业类别
-	    
-	    $cacheM  =  $this -> MODEL('cache');
+		$prid = $prname = $arrpr = $munid = $munname = $arrmun = array();
+		$numberid = $numbername = $expid = $expname = $arrexp = array();
+		$reportid = $reportname = $ageid = $agename = array();
+		$eduid = $eduname = $arredu = $marriageid = $marriagename = array();
+		$id = $name = $arrsex = $req_sex_id = $req_sex_name = array();
+		$lang = $remarkid = $remarkname = $arrremark = $otherarr = array();
+		$expreqid = $expreqname = $edureqid = $edureqname = $arrwelfare = array();
+		$remarkIndex = $edureqIndex = $expreqIndex = $sexreqIndex = 0;
+		$prIndex = $munIndex = $numberIndex = $reportIndex = $ageIndex = 0;
+		$eduIndex = $expIndex = $marriageIndex = $sexIndex = 0;
+
+		$cacheM  =  $this -> MODEL('cache');
 	    $cache   =  $cacheM -> GetCache(array('com','user'));
 	    $job_pr  =  $cache['comdata']['job_pr'];
 	    if(!empty($job_pr)){

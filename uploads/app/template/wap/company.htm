@@ -23,9 +23,9 @@
                     {yun:}else if $config.cityid&&$config.sy_web_site=='1'{/yun}
                         {yun:}$city_name[$config.cityid]{/yun}
                     {yun:}else{/yun}
-                        {yun:}if $city_name[$smarty.get.cityid] || $city_name[$smarty.get.provinceid]{/yun}
-                            {yun:}$city_name[$smarty.get.cityid]{/yun}{yun:}$city_name[$smarty.get.provinceid]{/yun}
-                        {yun:}elseif $city_name[$smarty.get.three_cityid]{/yun}
+                        {yun:}if $smarty.get.cityid || $smarty.get.provinceid{/yun}
+                            {yun:}if $smarty.get.cityid{/yun}{yun:}$city_name[$smarty.get.cityid]{/yun}{yun:}/if{/yun}{yun:}if $smarty.get.provinceid{/yun}{yun:}$city_name[$smarty.get.provinceid]{/yun}{yun:}/if{/yun}
+                        {yun:}elseif $smarty.get.three_cityid && $city_name[$smarty.get.three_cityid]{/yun}
                             {yun:}$city_name[$smarty.get.three_cityid]{/yun}
                         {yun:}else{/yun}
                             {yun:}t key='common_02110'{/yun}
@@ -33,13 +33,13 @@
                     {yun:}/if{/yun}
                     <i class="nav_right_open"></i>
                 </li>
-                <li onclick="hyshow();">{yun:}if $industry_name[$smarty.get.hy]{/yun}{yun:}$industry_name[$smarty.get.hy]|mb_substr:0:6:'utf-8'{/yun}{yun:}else{/yun}{yun:}t key='admin_user_company_00373'{/yun}{yun:}/if{/yun}
+                <li onclick="hyshow();">{yun:}if $smarty.get.hy && $industry_name[$smarty.get.hy]{/yun}{yun:}$industry_name[$smarty.get.hy]|mb_substr:0:6:'utf-8'{/yun}{yun:}else{/yun}{yun:}t key='admin_user_company_00373'{/yun}{yun:}/if{/yun}
                     <i class="nav_right_open"></i>
                 </li>
-                <li onclick="prshow();">{yun:}if $comclass_name[$smarty.get.pr]{/yun}{yun:}$comclass_name[$smarty.get.pr]{/yun}{yun:}else{/yun}{yun:}t key='default_00281'{/yun}{yun:}/if{/yun}
+                <li onclick="prshow();">{yun:}if $smarty.get.pr && $comclass_name[$smarty.get.pr]{/yun}{yun:}$comclass_name[$smarty.get.pr]{/yun}{yun:}else{/yun}{yun:}t key='default_00281'{/yun}{yun:}/if{/yun}
                     <i class="nav_right_open"></i>
                 </li>
-                <li onclick="munshow();">{yun:}if $comclass_name[$smarty.get.mun]{/yun}{yun:}$comclass_name[$smarty.get.mun]{/yun}{yun:}else{/yun}{yun:}t key='company_00024'{/yun}{yun:}/if{/yun}
+                <li onclick="munshow();">{yun:}if $smarty.get.mun && $comclass_name[$smarty.get.mun]{/yun}{yun:}$comclass_name[$smarty.get.mun]{/yun}{yun:}else{/yun}{yun:}t key='company_00024'{/yun}{yun:}/if{/yun}
                     <i class="nav_right_open"></i>
                 </li>
             </ul>

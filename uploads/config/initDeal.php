@@ -99,7 +99,7 @@ class initDeal{
 		foreach ($seo as $k => $v) {
 			$v = reset($v);
 			
-			if($v[$reg_type] && !empty($v[$reg_type])){
+			if (!empty($v[$reg_type]) && is_array($v[$reg_type])){
 				
 				$regpair = array();
 
@@ -215,7 +215,7 @@ class initDeal{
 			$preg_res = array();
 			preg_match($reg, $url, $preg_res);
 
-			if($preg_res[0]){
+			if (!empty($preg_res[0])){
 			    
 				$res = preg_replace($reg,$v,$url);
 				break;
@@ -318,7 +318,7 @@ class initDeal{
         	foreach ($reg_arr as $srk => $srv) {
         		preg_match($srk, $url, $preg_res);
 
-				if($preg_res[0]){
+				if (!empty($preg_res[0])){
 
 					$this->ishatccess = true;
 					break;

@@ -12,7 +12,7 @@ class Smarty_Internal_Compile_Article extends Smarty_Internal_CompileBase{
     $name = $_attr['item'];
     $name=str_replace('\'','',$name);
     $name=$name?$name:'list';$name='$'.$name;
-    if (!strncmp("\$_smarty_tpl->tpl_vars[$item]", $from, strlen($item) + 24)) {
+    if (!strncmp("\$_smarty_tpl->tpl_vars[$item]", (string) $from, strlen((string) $item) + 24)) {
       $compiler->trigger_template_error("item variable {$item} may not be the same variable as at 'from'", $compiler->lex->taglineno);
     }
 
@@ -203,7 +203,7 @@ class Smarty_Internal_Compile_Article extends Smarty_Internal_CompileBase{
 						$rs["url"] = Url("article",array("c"=>"show","id"=>$rs[id]),"1");
 					}
 
-					if(mb_substr($rs[newsphoto],0,4)=="http"){
+					if(mb_substr(isset($rs[\'newsphoto\']) ? (string)$rs[\'newsphoto\'] : \'\',0,4)=="http"){
 						$rs["picurl"]=$rs[newsphoto];
 					}else{
 						if($rs[\'newsphoto\']==""){
@@ -263,7 +263,7 @@ class Smarty_Internal_Compile_Article extends Smarty_Internal_CompileBase{
 					$rs["url"] = Url("article",array("c"=>"show","id"=>$rs[id]),"1");
 				}
 
-				if(mb_substr($rs[newsphoto],0,4)=="http"){
+				if(mb_substr(isset($rs[\'newsphoto\']) ? (string)$rs[\'newsphoto\'] : \'\',0,4)=="http"){
 					$rs["picurl"]=$rs[newsphoto];
 				}else{
 					if($rs[\'newsphoto\']==""){
@@ -312,7 +312,7 @@ class Smarty_Internal_Compile_Article extends Smarty_Internal_CompileBase{
 					$rs["url"] = Url("article",array("c"=>"show","id"=>$rs[id]),"1");
 				}
 
-				if(mb_substr($rs[newsphoto],0,4)=="http"){
+				if(mb_substr(isset($rs[\'newsphoto\']) ? (string)$rs[\'newsphoto\'] : \'\',0,4)=="http"){
 					$rs["picurl"]=$rs[newsphoto];
 				}else{
 					if($rs[\'newsphoto\']==""){

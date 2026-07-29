@@ -17,7 +17,7 @@ class job_model extends model{
     /**
      * @desc   添加错误日志
      */
-    private function addErrorLog($uid, $type = '', $content)
+    private function addErrorLog($uid, $type, $content)
     {
 
         require_once('errlog.model.php');

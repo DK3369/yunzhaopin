@@ -7,7 +7,7 @@ class index_controller extends common{
 	function index_action(){
 		
 		//是否加载区域分站
-		if(!$this->config['did'] && $this->config['sy_gotocity']=='1' && !$_COOKIE['gotocity']){
+		if(!($this->config['did'] ?? 0) && $this->config['sy_gotocity']=='1' && empty($_COOKIE['gotocity'])){
 
 
 			go_to_city($this->config);//自动跳转分站
@@ -29,8 +29,8 @@ class index_controller extends common{
 		$where['status']	=	1;
 		$where['r_status']	=	1;
 		$where['rec_resume']=	1;
-		if($this->config['did']>0){
-			$where['did']	=	$this->config['did'];
+		if(($this->config['did'] ?? 0)>0){
+			$where['did']	=	($this->config['did'] ?? 0);
 		}else{
 			$where['PHPYUNBTWSTART']=	'';
 			$where['did'][]	=	array('isnull');
@@ -50,7 +50,7 @@ class index_controller extends common{
 		
 		//首页弹框记录
 		$cookieM       =   $this->MODEL('cookie');
-        $bannerFlag   =   $_COOKIE['pc_bannerFlag'];
+        $bannerFlag   =   isset($_COOKIE['pc_bannerFlag']) ? $_COOKIE['pc_bannerFlag'] : '';
         if (!$bannerFlag) {
         	$cookieM -> setcookie('pc_bannerFlag', true, time() + 3600);
         }
@@ -63,7 +63,7 @@ class index_controller extends common{
             $_GET['cityid'] 	= 	$this->config['sy_web_city_two'];
         }
 
-		if($this->config["did"]){
+		if(($this->config["did"] ?? 0)){
 
 			$this->seo("index",$this->config['sy_webtitle'],$this->config['sy_webkeyword'],$this->config['sy_webmeta']);
 
@@ -77,7 +77,7 @@ class index_controller extends common{
 
 				foreach($site_domain as $d){
 
-					if($d['id']==$this->config["did"]){
+					if($d['id']==($this->config["did"] ?? 0)){
 
 						$domain['tpl']	=	$d['tpl'];
 

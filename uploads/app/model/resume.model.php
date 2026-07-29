@@ -65,7 +65,7 @@ class resume_model extends model{
 
         return $expect;
     }
-    private function addErrorLog($uid,$type='',$content) {
+    private function addErrorLog($uid,$type,$content) {
 
         require_once ('errlog.model.php');
 
@@ -141,16 +141,16 @@ class resume_model extends model{
                 $List[$k]['marriage_n'] =   $cache['userclass_name'][$v['marriage']];
             }
             if ($v['sex']) {
-                $List[$k]['sex_n']      =   $cache['user_sex'][$v['sex']];
+                $List[$k]['sex_n']      =   isset($cache['user_sex'][($v['sex'] ?? '')]) ? $cache['user_sex'][($v['sex'] ?? '')] : '';
             }
             if ($v['edu']) {
-                $List[$k]['edu_n']      =   $cache['userclass_name'][$v['edu']];
+                $List[$k]['edu_n']      =   isset($cache['userclass_name'][($v['edu'] ?? '')]) ? $cache['userclass_name'][($v['edu'] ?? '')] : '';
             }
             if ($v['exp']) {
-                $List[$k]['exp_n']      =   $cache['userclass_name'][$v['exp']];
+                $List[$k]['exp_n']      =   isset($cache['userclass_name'][($v['exp'] ?? '')]) ? $cache['userclass_name'][($v['exp'] ?? '')] : '';
             }
             if ($v['birthday']) {
-                $List[$k]['age_n']      =   date('Y') - date('Y',strtotime($v['birthday']));
+                $List[$k]['age_n']      =   !empty($v['birthday']) ? date('Y') - date('Y', strtotime($v['birthday'])) : 0;
             }
             if ($v['idcard_pic']) {
                 $List[$k]['idcard_pic'] =	checkpic($v['idcard_pic']);
@@ -162,7 +162,7 @@ class resume_model extends model{
             $List[$k]['moblie_status']		=			$v['moblie_status'];
             $List[$k]['idcard_status']		=			$v['idcard_status'];
             $List[$k]['idcard']				=			$v['idcard'];
-            $List[$k]['description']        =           str_replace(array('\r','\n'), array('<br/>','<br/>'), strip_tags($v['description'],'\r,\n'));
+            $List[$k]['description']        =           str_replace(array('\r','\n'), array('<br/>','<br/>'), strip_tags((string) (isset($v['description']) ? $v['description'] : ''), '\r,\n'));
         }
         if ($data['utype']=='admin') {
 
@@ -475,23 +475,23 @@ class resume_model extends model{
 
 	            $euids[]				=  $v['uid'];
 
-	            $List[$k]['age_n']		=  date('Y') - date('Y',strtotime($v['birthday']));
+	            $List[$k]['age_n']		=  !empty($v['birthday']) ? date('Y') - date('Y', strtotime($v['birthday'])) : 0;
 
 	            $List[$k]['hy_n']		=  $cache['industry_name'][$v['hy']] ? $cache['industry_name'][$v['hy']] : WapDbEnum::UNLIMITED;
 
-	            $List[$k]['sex_n']		=  $cache['user_sex'][$v['sex']];
+	            $List[$k]['sex_n']		=  isset($cache['user_sex'][($v['sex'] ?? '')]) ? $cache['user_sex'][($v['sex'] ?? '')] : '';
 
-	            $List[$k]['edu_n']		=  $cache['userclass_name'][$v['edu']];
+	            $List[$k]['edu_n']		=  isset($cache['userclass_name'][($v['edu'] ?? '')]) ? $cache['userclass_name'][($v['edu'] ?? '')] : '';
 
-	            $List[$k]['exp_n']		=  $cache['userclass_name'][$v['exp']];
+	            $List[$k]['exp_n']		=  isset($cache['userclass_name'][($v['exp'] ?? '')]) ? $cache['userclass_name'][($v['exp'] ?? '')] : '';
 
-	            $List[$k]['report_n']	=  $cache['userclass_name'][$v['report']];
+	            $List[$k]['report_n']	=  isset($cache['userclass_name'][($v['report'] ?? '')]) ? $cache['userclass_name'][($v['report'] ?? '')] : '';
 
-	            $List[$k]['type_n']		=  $cache['userclass_name'][$v['type']];
+	            $List[$k]['type_n']		=  isset($cache['userclass_name'][($v['type'] ?? '')]) ? $cache['userclass_name'][($v['type'] ?? '')] : '';
 
-                $List[$k]['label_n']	=  $cache['userclass_name'][$v['label']];
+                $List[$k]['label_n']	=  isset($cache['userclass_name'][($v['label'] ?? '')]) ? $cache['userclass_name'][($v['label'] ?? '')] : '';
 
-                $List[$k]['content_n']	=  str_replace(array("\r\n","\r","\n"), array("","",""), strip_tags($v['content'],'\r\n'));
+                $List[$k]['content_n']	=  str_replace(array("\r\n","\r","\n"), array("","",""), strip_tags((string) (isset($v['content']) ? $v['content'] : ''), '\r\n'));
                 if($v['lastupdate']){
                     $ltime				=  $v['lastupdate'];
 
@@ -2466,7 +2466,7 @@ class resume_model extends model{
 	    $edus  =   $this->select_all('resume_edu', $where, $field);
 
 	    foreach ($edus as $k=>$v){
-			$edus[$k]['content'] =   str_replace('\r\n', '<br/>', strip_tags($v['content'],'\r\n'));
+			$edus[$k]['content'] =   str_replace('\r\n', '<br/>', strip_tags((string) (isset($v['content']) ? $v['content'] : ''), '\r\n'));
 
 	        $edus[$k]['sdate_n'] =   date('Y-m',$v['sdate']);
 
@@ -2517,7 +2517,7 @@ class resume_model extends model{
 
 		$others	=	$this -> select_all('resume_other', $where, $field);
 		foreach ($others as $k=>$v){
-			$others[$k]['content'] =   str_replace('\r\n', '<br/>', strip_tags($v['content'],'\r\n'));
+			$others[$k]['content'] =   str_replace('\r\n', '<br/>', strip_tags((string) (isset($v['content']) ? $v['content'] : ''), '\r\n'));
 		}
 		return $others;
 	}
@@ -2564,7 +2564,7 @@ class resume_model extends model{
 	    $projects  =   $this->select_all('resume_project', $where, $field);
 
 	    foreach ($projects as $k=>$v){
-			$projects[$k]['content'] =   str_replace('\r\n', '<br/>', strip_tags($v['content'],'\r\n'));
+			$projects[$k]['content'] =   str_replace('\r\n', '<br/>', strip_tags((string) (isset($v['content']) ? $v['content'] : ''), '\r\n'));
 
 	        $projects[$k]['sdate_n'] =   date('Y-m',$v['sdate']);
 
@@ -2693,7 +2693,7 @@ class resume_model extends model{
 	    $trainings  =   $this->select_all('resume_training', $where, $field);
 
 	    foreach ($trainings as $k=>$v){
-			$trainings[$k]['content'] =   str_replace('\r\n', '<br/>', strip_tags($v['content'],'\r\n'));
+			$trainings[$k]['content'] =   str_replace('\r\n', '<br/>', strip_tags((string) (isset($v['content']) ? $v['content'] : ''), '\r\n'));
 
 	        $trainings[$k]['sdate_n'] =   date('Y-m', $v['sdate']);
 

@@ -31,7 +31,7 @@ class downresume_model extends model
      * @param string $type
      * @param $content
      */
-    private function addErrorLog($uid, $type = '', $content)
+    private function addErrorLog($uid, $type, $content)
     {
 
         require_once('errlog.model.php');
