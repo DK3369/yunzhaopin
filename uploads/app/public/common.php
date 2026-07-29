@@ -21,7 +21,7 @@ class common{
 	public $cookie = '';
 
 	//实例化
-	function common($tpl,$db,$def='',$model='index',$m='') {
+	function __construct($tpl,$db,$def='',$model='index',$m='') {
 		global $config, $i18n;
 		$this->config = $config;
 		$this->tpl=$tpl;

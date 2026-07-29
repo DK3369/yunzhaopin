@@ -818,7 +818,7 @@ abstract class Smarty_Internal_TemplateCompilerBase
             }
         }
         $e = new SmartyCompilerException($error_text);
-        $e->line = $line;
+        $e->compilerLine = $line;
         $e->source = trim(preg_replace('![\t\r\n]+!', ' ', $match[$line - 1]));
         $e->desc = $args;
         $e->template = $this->template->source->filepath;
