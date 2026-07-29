@@ -273,7 +273,7 @@ function index_job_new(allow_select_jobclass_count, target_jobclassin_names, tar
 
     window.newjob_layer = $.layer({
         type: 1,
-        title: publicClassT('public_js_00007', null, 'Please select a job category'),
+        title: publicClassT('public_js_00007', null, 'Select a job category'),
         shift: 'top',
         closeBtn: [0, true],
         border: [10, 0.3, '#000', true],

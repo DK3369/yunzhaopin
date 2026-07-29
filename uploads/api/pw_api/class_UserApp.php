@@ -8,6 +8,10 @@ class UserApp {
 	var $base;
 	var $db;
 
+	function __construct($base) {
+		$this->UserApp($base);
+	}
+
 	function UserApp($base) {
 		$this->base = $base;
 		$this->db = $base->db;

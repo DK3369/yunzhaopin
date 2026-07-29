@@ -128,6 +128,7 @@ class Smarty_Internal_Compile_Partlist extends Smarty_Internal_CompileBase{
 		
 		'.$name.' = $db->select_all("partjob",$where.$limit);
 		if(is_array('.$name.')){
+			$comuids = array();
 			foreach('.$name.' as $v){
     			$comuids[]=$v[\'uid\'];
     		}

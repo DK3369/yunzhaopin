@@ -83,7 +83,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 	    FORM_TEAM_PID = 'XM_PID_VALUE',
 	    CZ = 'xm-cz',
 	    CZ_GROUP = 'xm-cz-group',
-	    TIPS = formSelectsT('form_selects_js_00001', null, 'Please select'),
+	    TIPS = formSelectsT('form_selects_js_00001', null, 'Select'),
 	    XMTYPE='xm-select-type',// Custom parameter.
 	    data = {},
 	    events = {

@@ -8,6 +8,10 @@ class Site {
 	var $base;
 	var $db;
 
+	function __construct($base) {
+		$this->Site($base);
+	}
+
 	function Site($base) {
 		$this->base = $base;
 		$this->db = $base->db;

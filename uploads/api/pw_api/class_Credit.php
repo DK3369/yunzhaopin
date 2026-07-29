@@ -8,6 +8,10 @@ class Credit {
 	var $base;
 	var $db;
 
+	function __construct($base) {
+		$this->Credit($base);
+	}
+
 	function Credit($base) {
 		$this->base = $base;
 		$this->db = $base->db;

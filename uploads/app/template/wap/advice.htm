@@ -1,4 +1,3 @@
-{yun:}include file="$wapstyle/publichtm/wap_api_enum.htm"{/yun}
 {yun:}include file="$wapstyle/header_cont.htm"{/yun}
 <style>body{ background:#fff}</style>
 <div class="">
@@ -197,20 +196,20 @@
 		}
 		
 		if (username == "") {
-			showToast('{yun:}t key=\'wap_01459\'{/yun}', 2);
+			showToast("{yun:}t key='wap_01459'{/yun}", 2);
 			return false;
 		}
 
 		if (moblie == "") {
-			showToast('{yun:}t key=\'wap_01460\'{/yun}', 2);
+			showToast("{yun:}t key='wap_01460'{/yun}", 2);
 			return false;
 		} else if (!isjsMobile(moblie)) {
-			showToast('{yun:}t key=\'wap_01461\'{/yun}', 2);
+			showToast("{yun:}t key='wap_01461'{/yun}", 2);
 			return false
 		}
 
 		if (content == "") {
-			showToast('{yun:}t key=\'wap_01462\'{/yun}', 2);
+			showToast("{yun:}t key='wap_01462'{/yun}", 2);
 			return false;
 		}
 		

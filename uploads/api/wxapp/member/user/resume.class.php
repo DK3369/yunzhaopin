@@ -775,8 +775,9 @@ class resume_controller extends user_controller{
 		$resumeM	=	$this -> MODEL('resume');
 		
 		$return		=	$resumeM -> topResumeCheck($data);
+		$msg		=	isset($return['msg']) ? $return['msg'] : '';
 		
-		$this -> render_json('0',$return['msg']);
+		$this -> render_json(0, $msg);
 	}
 	//个人评价看看别人怎么写
 	function getIntroduceInfo_action(){

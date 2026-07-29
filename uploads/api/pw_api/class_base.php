@@ -12,6 +12,10 @@ class ApiResponse {
 	var $result;
 	var $mode;
 
+	function __construct($res, $mode = null) {
+		$this->ApiResponse($res, $mode);
+	}
+
 	function ApiResponse($res, $mode = null) {
 		$this->result = $res;
 		$this->mode = $mode;
@@ -30,6 +34,10 @@ class ErrorMsg {
 
 	var $errCode = 0;
 	var $errMessage = '';
+
+	function __construct($errCode, $errMessage) {
+		$this->ErrorMsg($errCode, $errMessage);
+	}
 
 	function ErrorMsg($errCode, $errMessage) {
 		$this->errCode = $errCode;
@@ -58,6 +66,10 @@ class api_client {
 	var $classdb;
     var $siteappkey;
 
+	function __construct() {
+		$this->api_client();
+	}
+
 	function api_client() {
 		global $mysqli;
 		$this->apikey	= '';
@@ -70,7 +82,18 @@ class api_client {
 
 	function run($request) {
 		global $mysqli,$config;
-		$request = $this->strips($request);
+		if (!is_array($request) || count($request) > 20) {
+			return new ErrorMsg(API_SIGN_ERROR, 'Invalid Request');
+		}
+		foreach ($request as $value) {
+			if (!is_scalar($value) && $value !== null) {
+				return new ErrorMsg(API_SIGN_ERROR, 'Invalid Request');
+			}
+		}
+		$paramsRaw = isset($request['params']) && is_scalar($request['params']) ? (string) $request['params'] : '';
+		if (strlen($paramsRaw) > 1048576) {
+			return new ErrorMsg(API_SIGN_ERROR, 'Invalid Request');
+		}
 		if (isset($request['type']) && $request['type'] == 'uc') {
 			$this->type		= 'uc';
 			$this->apikey	= UC_KEY;
@@ -92,13 +115,24 @@ class api_client {
 				$arg.="$key=$value&";
 			}
 		}
-		if(empty($this->apikey) || md5($arg.$this->apikey)!=$request['sig']) {
+		$signature = isset($request['sig']) && is_scalar($request['sig']) ? strtolower((string) $request['sig']) : '';
+		$expected = md5($arg.$this->apikey);
+		if(empty($this->apikey) || !preg_match('/^[a-f0-9]{32}$/D', $signature)
+			|| !hash_equals($expected, $signature)) {
 			return new ErrorMsg(API_SIGN_ERROR, 'Error Sign');
 		}
-		$mode	= $request['mode'];
-		$method	= $request['method'];
+		$mode	= isset($request['mode']) && is_scalar($request['mode']) ? (string) $request['mode'] : '';
+		$method	= isset($request['method']) && is_scalar($request['method']) ? (string) $request['method'] : '';
+		if (!preg_match('/^[A-Za-z][A-Za-z0-9_]{0,31}$/D', $mode)
+			|| !preg_match('/^[A-Za-z][A-Za-z0-9_]{0,63}$/D', $method)
+			|| !$this->routeAllowed($mode, $method)) {
+			return new ErrorMsg(API_METHOD_NOT_EXISTS, 'Invalid Route');
+		}
 		//echo $request['params'];
-		$params = isset($request['params'])?unserialize($request['params']):array();
+		$params = $paramsRaw !== '' ? @unserialize($paramsRaw, array('allowed_classes' => false)) : array();
+		if (!is_array($params) || $this->containsObject($params)) {
+			return new ErrorMsg(API_SIGN_ERROR, 'Invalid Params');
+		}
         if (isset($params['appthreads'])) {
 			require_once(R_P.'class_json.php');
 			$json = new Services_JSON(true);
@@ -110,6 +144,32 @@ class api_client {
 		}
 		//print_r($this->callback($mode, $method, $params));
 		return $this->callback($mode, $method, $params);
+	}
+
+	function routeAllowed($mode, $method) {
+		$routes = array(
+			'Credit'  => array('get', 'syncredit', 'getvalue'),
+			'Invite'  => array('get'),
+			'Msg'     => array('send', 'SendAppmsg'),
+			'Site'    => array('connect'),
+			'User'    => array('getInfo', 'alterName', 'deluser', 'synlogin', 'synlogout', 'getusergroup', 'getphpyun'),
+			'UserApp' => array('isInstall', 'add', 'appsUpdateCache')
+		);
+		return isset($routes[$mode]) && in_array($method, $routes[$mode], true);
+	}
+
+	function containsObject($value, $depth = 0) {
+		if ($depth > 32 || is_object($value) || is_resource($value)) {
+			return true;
+		}
+		if (is_array($value)) {
+			foreach ($value as $item) {
+				if ($this->containsObject($item, $depth + 1)) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	function callback($mode, $method, $params) {
@@ -155,7 +215,7 @@ class api_client {
 	function strcode($string, $encode = true) {
 		!$encode && $string = base64_decode($string);
 		$code = '';
-		$key  = substr(md5($_SERVER['HTTP_USER_AGENT'] . $this->apikey),8,18);
+		$key  = substr(md5((string) ($_SERVER['HTTP_USER_AGENT'] ?? '') . $this->apikey),8,18);
 		 $keylen = strlen($key);
 		 $strlen = strlen($string);
 		for ($i = 0; $i < $strlen; $i++) {

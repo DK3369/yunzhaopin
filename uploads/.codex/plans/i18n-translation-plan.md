@@ -298,7 +298,7 @@ php tools/scan_wap_zero_zh.php
 - 状态词统一：待审核 `Pending Review`、已通过 `Approved`、未通过 `Rejected`、已下架 `Offline`。
 - 操作词统一：新增 `Add`、编辑 `Edit`、删除 `Delete`、刷新 `Refresh`、提交 `Submit`。
 - 英文 UI 保持简短，按钮通常 1-3 个词。
-- 错误提示说明原因和操作，例如 `Please select a resume first.`。
+- 错误提示说明原因和操作，例如 `Select a resume first.`。
 - 不翻译品牌名、第三方平台名、专有配置 key。
 
 ## 9. 验收清单

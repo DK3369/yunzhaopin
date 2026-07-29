@@ -95,6 +95,13 @@ class Smarty_Internal_Compile_Nav extends Smarty_Internal_CompileBase{
 			$Navlist =$menu_name[$paramer[nid]];
 		}else{
 			$Navlist =$menu_name[1];
+		}
+		if(is_array($Navlist) && function_exists(\'yun_auto_t\')){
+			foreach($Navlist as $nk=>$nv){
+				if(isset($nv[\'name\'])){
+					$Navlist[$nk][\'name\']=yun_auto_t($nv[\'name\']);
+				}
+			}
 		}';
 
         return SmartyOutputStr($this,$compiler,$_attr,'nav','$Navlist',$OutputStr,'$Navlist');

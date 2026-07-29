@@ -1,6 +1,11 @@
 <?php
 
 error_reporting(0);
+if ((int) ($_SERVER['CONTENT_LENGTH'] ?? 0) > 1048576
+	|| count($_POST) + count($_GET) > 20) {
+	http_response_code(413);
+	exit('Request Too Large');
+}
 define('P_W','admincp');
 define('S_DIR',dirname(__FILE__)."/");
 define('R_P',S_DIR.'/');

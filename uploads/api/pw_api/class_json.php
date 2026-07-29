@@ -41,6 +41,12 @@ define('SERVICES_JSON_SUPPRESS_ERRORS', 32);
  */
 class Services_JSON
 {
+    var $use;
+
+    function __construct($use = 0)
+    {
+        $this->Services_JSON($use);
+    }
 
     function Services_JSON($use = 0)
     {

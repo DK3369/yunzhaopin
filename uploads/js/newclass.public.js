@@ -90,7 +90,7 @@ function index_job_new(allow_select_jobclass_count, target_jobclassin_names, tar
 	}
 	window.newjob_layer = $.layer({
 		type : 1,
-		title : newClassT('public_js_00007', null, 'Please select a job category'),
+		title : newClassT('public_js_00007', null, 'Select a job category'),
 		shift : 'top',
 		closeBtn : [0 , true],
 		border : [10 , 0.3 , '#000', true],
@@ -221,7 +221,7 @@ $(document).ready(function(){
 	$("#ChooseJobClassLayer .queding").live("click", function () {
 		if ($("#ChooseJobClassLayer .ShowJobClass div").length == 0) {
 			if($(""+window.target_jobclassin_names+"")){
-				$(""+window.target_jobclassin_names+"").val(newClassT('public_js_00010', null, 'Please select a category'));
+				$(""+window.target_jobclassin_names+"").val(newClassT('public_js_00010', null, 'Select a category'));
 			}
 			$(""+window.target_jobclassin_ids+"").val("");
 		}else {
@@ -591,7 +591,7 @@ function index_city_new(allow_select_cityclass_count, target_cityclass_names, ta
 	}
 	window.newcity_layer = $.layer({
 		type : 1,
-		title : newClassT('public_js_00013', null, 'Please select a city'),
+		title : newClassT('public_js_00013', null, 'Select a city'),
 		shift : 'top',
 		closeBtn : [0 , true],
 		border : [10 , 0.3 , '#000', true],
@@ -606,7 +606,7 @@ function index_city_new(allow_select_cityclass_count, target_cityclass_names, ta
 function queding(){
 	if ($("#ChooseCityClassLayer .ShowCityClass div").length == 0) {
 		if($(""+window.target_cityclass_names+"")){
-			$(""+window.target_cityclass_names+"").val(newClassT('public_js_00013', null, 'Please select a city'));
+			$(""+window.target_cityclass_names+"").val(newClassT('public_js_00013', null, 'Select a city'));
 		}
 
 		$(""+window.target_cityclass_ids+"").val("");

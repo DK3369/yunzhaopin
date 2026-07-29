@@ -1508,7 +1508,9 @@ class resume_model extends model{
 		}
 		$tj	=	$this->getTj(array('edu'=>$user_edu,'train'=>$user_training,'work'=>$user_work,'xm'=>$user_xm,'skill'=>$user_skill , 'show'=>$user_show));
 
-		$resume['per']				=	sprintf('%.2f%%',($expect['dnum']/$expect['hits'])*100);
+		$hits = isset($expect['hits']) ? (int)$expect['hits'] : 0;
+		$dnum = isset($expect['dnum']) ? (int)$expect['dnum'] : 0;
+		$resume['per']				=	$hits > 0 ? sprintf('%.2f%%', ($dnum / $hits) * 100) : '0.00%';
 
 		$resume['description']		=	str_replace(array('\r','\n'), array('<br/>','<br/>'), strip_tags($resume['description'],'\r,\n'));
 		$resume['user_doc']			=	isset($user_doc) ? $user_doc : array();
@@ -6157,8 +6159,8 @@ class resume_model extends model{
             require_once ('job.model.php');
             $jobM  =  new job_model($this->db, $this->def);
             $List	=	$jobM -> getList($where,$cdata);
-            $job	=	$List['list'];
-            if(is_array($resume)){
+            $job	=	(!empty($List['list']) && is_array($List['list'])) ? $List['list'] : array();
+            if(is_array($resume) && !empty($job)){
 
                 foreach($job as $k=>$v){
 
@@ -6201,7 +6203,7 @@ class resume_model extends model{
                         $arrSort[$key][$uniqid]		 =	 $value;
                     }
                 }
-                if($sort['direction']){
+                if($sort['direction'] && !empty($arrSort[$sort['field']]) && is_array($arrSort[$sort['field']])){
 
                     array_multisort($arrSort[$sort['field']], constant($sort['direction']), $job);
                 }

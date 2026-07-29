@@ -5,13 +5,62 @@
 <script src="{yun:}$wap_style{/yun}/js/alloy-crop.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
 <script src="{yun:}$wap_style{/yun}/js/compress.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
 <script src="{yun:}$wap_style{/yun}/js/exif.js?v={yun:}$config.cachecode{/yun}" language="javascript"></script>
+<style>
+/* 个人信息：左标签 / 右内容右对齐，适配英文长文案 */
+#yunvue .yun_createbox .yun_createlist{
+	display:flex;
+	align-items:center;
+	padding-left:0.4rem;
+	padding-right:0.85rem;
+	min-height:1.533333rem;
+	box-sizing:border-box;
+}
+#yunvue .yun_createbox .yun_createlist_pr{padding-right:2.666666rem;}
+#yunvue .yun_createbox .yun_create_name{
+	position:relative;
+	left:auto;
+	top:auto;
+	flex:0 1 auto;
+	max-width:38%;
+	margin-right:0.2rem;
+	line-height:1.3;
+	white-space:normal;
+	word-break:break-word;
+}
+#yunvue .yun_createbox .yun_create_text{
+	flex:1 1 auto;
+	min-width:0;
+}
+#yunvue .yun_createbox .yun_create_text input,
+#yunvue .yun_createbox .yun_create_select,
+#yunvue .yun_createbox .yun_create_bkt,
+#yunvue .yun_createbox .yun_create_tx,
+#yunvue .yun_createbox .yun_create_text_p{
+	text-align:right;
+}
+#yunvue .yun_createbox .yun_create_select{
+	flex:1 1 auto;
+	width:auto;
+	min-width:0;
+	box-sizing:border-box;
+}
+#yunvue .yun_createbox .yun_create_fx{
+	position:relative;
+	top:auto;
+	right:auto;
+	flex:0 0 16px;
+	margin-left:0.08rem;
+}
+#yunvue .yun_createbox .yun_create_tx{padding-right:1.2rem;box-sizing:border-box;}
+#yunvue .yun_createbox .yun_create_bkt{padding-right:1.5rem;box-sizing:border-box;}
+</style>
 <div id="yunvue" class="none">
 	<div class="personal_details_min_body" id="wholeBody">
 		<div class="yun_createbox">
 			<form id="infoForm">
 			 
 				<div class="yun_createlist">
-					<div class="yun_create_name"><span class="m_bt">&nbsp;</span>{yun:}t key='common_02068'{/yun}<span class="nbsp">{yun:}t key='common_02055'{/yun}</span></div>
+					<div class="yun_create_name"><span class="m_bt">&nbsp;</span>{yun:}t key='member_user_00161'{/yun}</div>
 					<div class="yun_create_text">
 							<div class="yun_create_tx">{yun:}t key='wap_user_00225'{/yun}</div>
 					<div class="yun_create_tximg" @click="openPhoto">
@@ -20,7 +69,7 @@
 					</div>
 				</div>
 				<div class="yun_createlist yun_createlist_pr">
-					<div class="yun_create_name"><span class="m_bt">*</span>{yun:}t key='common_02070'{/yun}<span class="nbsp">{yun:}t key='common_02061'{/yun}</span></div>
+					<div class="yun_create_name"><span class="m_bt">*</span>{yun:}t key='wap_00529'{/yun}</div>
 					<div class="yun_create_text">
 						<input type="text" name="name" :placeholder="i18n.namePlaceholder" :value="infoShow.name" :disabled="infoShow.idcard_status==1" />
 						<input type="hidden" id="idcard_status" name="idcard_status" :value="infoShow.idcard_status"  />
@@ -98,26 +147,26 @@
 					</div>
 				</div>
 				<div class="yun_createlist">
-					<div class="yun_create_name"><span class="m_bt">&nbsp;</span>{yun:}t key='common_02100'{/yun}<span class="nbsp">{yun:}t key='common_02105'{/yun}</span></div>
+					<div class="yun_create_name"><span class="m_bt">&nbsp;</span>{yun:}t key='member_user_00165'{/yun}</div>
 					<div class="yun_create_text">
 						<input type="text" name="height" v-model="infoShow.height" :placeholder="i18n.heightPlaceholder">
 					</div>
 				</div>
 				<div class="yun_createlist">
-					<div class="yun_create_name"><span class="m_bt">&nbsp;</span>{yun:}t key='common_02054'{/yun}<span class="nbsp">{yun:}t key='common_02101'{/yun}</span></div>
+					<div class="yun_create_name"><span class="m_bt">&nbsp;</span>{yun:}t key='member_user_00160'{/yun}</div>
 					<div class="yun_create_text">
 						<input type="text" name="weight" v-model="infoShow.weight" :placeholder="i18n.weightPlaceholder">
 					</div>
 				</div>
 				<div class="yun_createlist">
-					<div class="yun_create_name"><span class="m_bt">&nbsp;</span>{yun:}t key='wap_user_00249'{/yun}<span class="nbsp">{yun:}t key='wap_user_00248'{/yun}</span></div>
+					<div class="yun_create_name"><span class="m_bt">&nbsp;</span>{yun:}t key='member_user_00164'{/yun}</div>
 					<div class="yun_create_text">
 						<input type="text" name="nationality" v-model="infoShow.nationality" :placeholder="i18n.nationalityPlaceholder">
 					</div>
 				</div>
 		 
 					<div class="yun_createlist"@click="marriagePicker">
-						<div class="yun_create_name"><span class="m_bt">&nbsp;</span>{yun:}t key='common_02072'{/yun}<span class="nbsp">{yun:}t key='common_02071'{/yun}</span></div>
+						<div class="yun_create_name"><span class="m_bt">&nbsp;</span>{yun:}t key='member_user_00162'{/yun}</div>
 					
 						<div class="yun_create_select" v-if="marriage_n" id="marriageValue">{{marriage_n}}</div>
 						<div class="yun_create_select" id="marriageValue" style="color:#cecccc;" v-else>{{i18n.selectMarriage}}</div>
@@ -128,7 +177,7 @@
 					</div>
 				</div>
 				<div class="yun_createlist">
-					<div class="yun_create_name"><span class="m_bt">&nbsp;</span>{yun:}t key='common_02079'{/yun}<span class="nbsp">{yun:}t key='wap_user_00251'{/yun}</span></div>
+					<div class="yun_create_name"><span class="m_bt">&nbsp;</span>{yun:}t key='common_01989'{/yun}</div>
 					<div class="yun_create_text">
 						<input type="text" name="domicile" v-model="infoShow.domicile" :placeholder="i18n.domicilePlaceholder">
 					</div>

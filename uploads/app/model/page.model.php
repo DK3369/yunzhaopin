@@ -26,7 +26,7 @@ class page_model extends model
             //统计总数的时候 去掉order by条件
 			$whereTotalData = $whereData;
 			if($whereData['orderby']){
-				unset($whereTotalData[orderby]);
+				unset($whereTotalData['orderby']);
 			}
             $num    =   $this->select_num($tableName, $whereTotalData);
         }
@@ -68,7 +68,7 @@ class page_model extends model
             //统计总数的时候 去掉order by条件
 			$whereTotalData = $whereData;
 			if($whereData['orderby']){
-				unset($whereTotalData[orderby]);
+				unset($whereTotalData['orderby']);
 			}
             $num    =   $this->select_num($tableName, $whereTotalData);
         }

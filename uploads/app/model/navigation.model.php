@@ -13,6 +13,9 @@ class navigation_model extends model{
         if (!empty($list)) {
             foreach ($list as $key => $val) {
                 isset($val['type']) && $list[$key]['type_n'] = $val['type'] == 1 ? yun_at('admin_00198') : yun_at('admin_system_00663');
+                if (isset($val['name']) && function_exists('yun_auto_t')) {
+                    $list[$key]['name'] = yun_auto_t($val['name']);
+                }
             }
         }
 
@@ -144,6 +147,13 @@ class navigation_model extends model{
 	 */
 	function getNavTypeList($whereData=array(), $data=array('field'=>'*')){
 		$list	=	$this	->	select_all('navigation_type', $whereData, $data['field']);
+		if (!empty($list) && function_exists('yun_auto_t')) {
+			foreach ($list as $key => $val) {
+				if (isset($val['typename'])) {
+					$list[$key]['typename'] = yun_auto_t($val['typename']);
+				}
+			}
+		}
 		return	$list;
 	}
 	/**

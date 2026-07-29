@@ -266,6 +266,10 @@ function get_url($paramer,$config,$seo,$type='',$index='',$_smarty_tpl=''){
         }
 
         unset($paramer['m']);
+        // wap 已按目录拼入 defaultUrl，清空 $m 避免再拼 index.php?m=wap，便于模板拼接 member/
+        if ($type == 'wap') {
+            $m = '';
+        }
     }else{
         if(empty($m) && (empty($config['sy_'.$type.'domain']) || $type=='index')){
             $m='index';

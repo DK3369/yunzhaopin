@@ -8,6 +8,10 @@ class Msg {
 	var $base;
 	var $db;
 
+	function __construct($base) {
+		$this->Msg($base);
+	}
+
 	function Msg($base) {
 		$this->base = $base;
 		$this->db = $base->db;

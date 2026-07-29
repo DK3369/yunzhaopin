@@ -10,6 +10,10 @@ class User {
 	var $base;
 	var $db;
 
+	function __construct($base) {
+		$this->User($base);
+	}
+
 	function User($base) {
 		$this->base = $base;
 		$this->db = $base->db;

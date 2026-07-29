@@ -1185,13 +1185,13 @@ function redeem_city(id,type,name,typeid){
 	$("#"+type+'_name').val(name);
 
 	if(type=='province'){
-		$('#city_name').val(frontPublicT('front_js_00020', null, 'Please select'));
-		$('#three_city_name').val(frontPublicT('front_js_00020', null, 'Please select'));
+		$('#city_name').val(frontPublicT('front_js_00020', null, 'Select'));
+		$('#three_city_name').val(frontPublicT('front_js_00020', null, 'Select'));
 		$("#city").val('');
 		$("#three_city").val('');
 	}
 	if(type=='city'){
-		$('#three_city_name').val(frontPublicT('front_js_00020', null, 'Please select'));
+		$('#three_city_name').val(frontPublicT('front_js_00020', null, 'Select'));
 		$("#three_city").val('');
 	}
 	$.post(weburl+'/index.php?m=ajax&c=redeem_city',{type:type,id:id,typeid:typeid},function(data){

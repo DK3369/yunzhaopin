@@ -4174,7 +4174,7 @@ module.exports = {
                 params = that.ruleFormPackage;
 
             // if (params.package.length == 0) {
-            //     message.warning('Please select a package to bind');
+            //     message.warning('Select a package to bind');
             //     return;
             // }
 

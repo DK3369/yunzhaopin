@@ -8,6 +8,10 @@ class Invite {
 	var $base;
 	var $db;
 
+	function __construct($base) {
+		$this->Invite($base);
+	}
+
 	function Invite($base) {
 		$this->base = $base;
 		$this->db = $base->db;
