@@ -47,7 +47,7 @@ class mysql {
 				}
 			
 				@mysqli_query($this->conn,"SET NAMES $this->coding");
-				@mysqli_query($this->conn,"SET character_set_connection=utf8,character_set_results=utf8,character_set_client=binary", $this->conn);
+				@mysqli_query($this->conn,"SET character_set_connection=utf8,character_set_results=utf8,character_set_client=binary");
 			}
 		
 	}

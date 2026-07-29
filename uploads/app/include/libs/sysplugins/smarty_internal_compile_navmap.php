@@ -17,21 +17,21 @@ class Smarty_Internal_Compile_Navmap extends Smarty_Internal_CompileBase{
 		include(function_exists(\'yun_i18n_plus_path\') ? yun_i18n_plus_path(\'navmap.cache.php\') : PLUS_PATH.\'navmap.cache.php\');$Navlist=array();
 		if(is_array($navmap)){
 			$ParamerArr = GetSmarty($paramer,$_GET,$_smarty_tpl);
-			$paramer = $ParamerArr[arr];
-			$Purl =  $ParamerArr[purl];
+			$paramer = $ParamerArr[\'arr\'];
+			$Purl =  $ParamerArr[\'purl\'];
 		}
 		//默认调用头部导航
 		$Navlist =$navmap[0];
 		if(is_array($navmap)){
 			foreach($navmap as $k=>$v){
 				foreach($Navlist as $key=>$val){
-					if($k==$val[id]){
+					if($k==$val[\'id\']){
 						foreach($v as $kk=>$value){
-							if($value[type]==\'1\'){
-								if($config[sy_seo_rewrite]=="1" && $value[furl]!=\'\'){
-									$v[$kk][url] = $config[sy_weburl]."/".$value[furl];
+							if($value[\'type\']==\'1\'){
+								if($config[\'sy_seo_rewrite\']=="1" && $value[\'furl\']!=\'\'){
+									$v[$kk][\'url\'] = $config[\'sy_weburl\']."/".$value[\'furl\'];
 								}else{
-									$v[$kk][url] = navUrl(array("url"=>$value[\'url\']));
+									$v[$kk][\'url\'] = navUrl(array("url"=>$value[\'url\']));
 								}
 							}
 						}
@@ -40,11 +40,11 @@ class Smarty_Internal_Compile_Navmap extends Smarty_Internal_CompileBase{
 				}
 			}
 			foreach($Navlist as $key=>$value){
-				if($value[type]==\'1\'){
-					if($config[sy_seo_rewrite]=="1" && $value[furl]!=\'\'){
-						$Navlist[$key][url] = $config[sy_weburl]."/".$value[furl];
+				if($value[\'type\']==\'1\'){
+					if($config[\'sy_seo_rewrite\']=="1" && $value[\'furl\']!=\'\'){
+						$Navlist[$key][\'url\'] = $config[\'sy_weburl\']."/".$value[\'furl\'];
 					}else{
-						$Navlist[$key][url] = navUrl(array("url"=>$value[\'url\']));
+						$Navlist[$key][\'url\'] = navUrl(array("url"=>$value[\'url\']));
 					}
 				}
 			}
