@@ -26,17 +26,42 @@ class cookie_model extends model
         return $weburl;
     }
 
-    public function setcookie($name, $value, $time = 0)
+    private function _setCookie($name, $value, $time, $weburl, $httpOnly = false, $sameSite = '')
+    {
+        $secure = getprotocol() == 'https://';
+
+        if (PHP_VERSION_ID >= 70300) {
+
+            SetCookie(
+                $name,
+                $value,
+                array(
+                    'expires'  => $time,
+                    'path'     => '/',
+                    'domain'   => $weburl,
+                    'secure'   => $secure,
+                    'httponly' => $httpOnly,
+                    'samesite' => $sameSite
+                )
+            );
+        } else {
+
+            $path = $sameSite ? '/; SameSite=' . $sameSite : '/';
+            SetCookie($name, $value, $time, $path, $weburl, $secure, $httpOnly);
+        }
+    }
+
+    public function setcookie($name, $value, $time = 0, $httpOnly = false, $sameSite = '')
     {
         $weburl = $this->_getCookieDomain();
         if (is_array($value)) {
             foreach ($value as $k => $v) {
-                SetCookie($name . '[' . $k . ']', $v, $time, '/', $weburl);
+                $this->_setCookie($name . '[' . $k . ']', $v, $time, $weburl, $httpOnly, $sameSite);
             }
         } else {
-            SetCookie($name, $value, $time, "/", $weburl);
+            $this->_setCookie($name, $value, $time, $weburl, $httpOnly, $sameSite);
 			if($time == 0 && $weburl){
-                SetCookie($name, $value, $time, "/");
+                $this->_setCookie($name, $value, $time, '', $httpOnly, $sameSite);
             }
         }
     }
@@ -53,20 +78,20 @@ class cookie_model extends model
             $userdid = $this->config['did'];
         }
 
-        $this->setcookie("uid", $uid, time() + $expire_date);
-        $this->setcookie("shell", md5($username . $pass . $salt), time() + $expire_date);
-        $this->setcookie("usertype", $type, time() + $expire_date);
-        $this->setcookie("userdid", $userdid, time() + $expire_date);
-        $this->setcookie("amtype", $isadmin, time() + $expire_date);
+        $this->setcookie("uid", $uid, time() + $expire_date, true, 'Lax');
+        $this->setcookie("shell", md5($username . $pass . $salt), time() + $expire_date, true, 'Lax');
+        $this->setcookie("usertype", $type, time() + $expire_date, true, 'Lax');
+        $this->setcookie("userdid", $userdid, time() + $expire_date, true, 'Lax');
+        $this->setcookie("amtype", $isadmin, time() + $expire_date, true, 'Lax');
     }
 
     public function unset_cookie($auid = null)
     {
 
-        $this->setcookie("uid", "", 0);
-        $this->setcookie("shell", "", 0);
-        $this->setcookie("usertype", "", 0);
-        $this->setcookie("userdid", "", 0);
+        $this->setcookie("uid", "", 0, true, 'Lax');
+        $this->setcookie("shell", "", 0, true, 'Lax');
+        $this->setcookie("usertype", "", 0, true, 'Lax');
+        $this->setcookie("userdid", "", 0, true, 'Lax');
 
 
         $this->setcookie("exprefresh", "", 0);
@@ -74,6 +99,6 @@ class cookie_model extends model
         $this->setcookie("support", "", 0);
 
         $this->setcookie("wxloginid", "", 0);
-        $this->setcookie("amtype", "", 0);
+        $this->setcookie("amtype", "", 0, true, 'Lax');
     }
 }

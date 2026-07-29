@@ -12,34 +12,39 @@ class news_controller extends common{
         if(!$_POST['title'] || !$_POST['content'] || !$_POST['nid']){
 			echo 2;die;
 		}
-		$row=$this->obj->DB_select_once("news_base","`title`='".trim($_POST['title'])."' and `nid`='".$_POST['nid']."'");
+		$nid = intval($_POST['nid']);
+		$row = $this->obj->select_once(
+			"news_base",
+			array(
+				'title' => trim($_POST['title']),
+				'nid'   => $nid
+			)
+		);
 		if(is_array($row)){
 			echo 3;die;
 		}
 		$content=$_POST['content'];
-		
-		$value="";
-        $value.="`title`='".trim($_POST['title'])."',";
-		$value.="`nid`='".$_POST['nid']."',";
-		
-		if($_POST['did']){
-			$value.="`did`='".$_POST['did']."',";
-		}else{
-			$value.="`did`='0',";
-		}
-		$value.="`author`='".$_POST['author']."',";
+
+		$baseData = array(
+			'title'  => trim($_POST['title']),
+			'nid'    => $nid,
+			'did'    => !empty($_POST['did']) ? intval($_POST['did']) : 0,
+			'author' => isset($_POST['author']) ? $_POST['author'] : ''
+		);
 		$description=mb_substr(strip_tags(html_entity_decode($content,ENT_NOQUOTES,"GB2312")),0,180,"utf-8");
 		$description=$_POST['description']?$_POST['description']:$description;
 		$description=str_replace(array(' ',"\n","\r","\r\n"," "),array(''),$description);
-		$value.="`description`='".$description."',";
-		$value.="`source`='".$_POST['source']."'";
+		$baseData['description'] = $description;
+		$baseData['source'] = isset($_POST['source']) ? $_POST['source'] : '';
 		if($_POST['ctime']){
-			$value.=",`datetime`='".strtotime($_POST['ctime'])."',`starttime`='".strtotime($_POST['ctime'])."'";
+			$baseData['datetime'] = strtotime($_POST['ctime']);
+			$baseData['starttime'] = strtotime($_POST['ctime']);
 		}else{
-			$value.=",`datetime`='".time()."',`starttime`='".strtotime('today')."'";
+			$baseData['datetime'] = time();
+			$baseData['starttime'] = strtotime('today');
 		}
 		if($_POST['hits']){
-			$value.=",`hits`='".trim($_POST['hits'])."'";
+			$baseData['hits'] = intval($_POST['hits']);
 		}else{
 			$row=explode('-',$locoyinfo['locoy_rand']);
 			if(is_array($row)){
@@ -47,10 +52,10 @@ class news_controller extends common{
 			}else{
 				$rand=!trim($row)?0:$row;
 			}
-			$value.=",`hits`='".$rand."'";
+			$baseData['hits'] = intval($rand);
 		}
 		if($_POST['sort']){
-			$value.=",`sort`='".trim($_POST['sort'])."'";
+			$baseData['sort'] = intval($_POST['sort']);
 		}else{
 			$row=explode('-',$locoyinfo['locoy_sort']);
 			if(is_array($row)){
@@ -58,24 +63,32 @@ class news_controller extends common{
 			}else{
 				$rand=!trim($row)?0:$row;
 			}
-			$value.=",`sort`='".$rand."'";
+			$baseData['sort'] = intval($rand);
 		}
 		if($_POST['newsphoto']){
-			$value.=",`newsphoto`='".trim($_POST['newsphoto'])."'";
+			$baseData['newsphoto'] = trim($_POST['newsphoto']);
 		}
 		if($_POST['s_thumb']){
-			$value.=",`s_thumb`='".trim($_POST['s_thumb'])."'";
+			$baseData['s_thumb'] = trim($_POST['s_thumb']);
 		}
        if(!$_POST['keyword'] && $locoyinfo['locoy_keyword']==1){
 			require(LIB_PATH."lib_splitword_class.php");
 			$sp = new SplitWord();
 			$keywordarr=$sp->getkeyword(strip_tags(html_entity_decode($content)));
-			$value.=",`keyword`='".strip_tags(@implode(",",$keywordarr))."'";
+			$baseData['keyword'] = strip_tags(@implode(",",$keywordarr));
 		}elseif($_POST['keyword']){
-			$value.=",`keyword`='".str_replace("，",",",$_POST['keyword'])."'";
+			$baseData['keyword'] = str_replace("，",",",$_POST['keyword']);
 		}
-     	$new_base = $this->obj->DB_insert_once("news_base",$value);
-        $news_content = $this->obj->DB_insert_once("news_content", "`nbid`='$new_base',`content`='".html_entity_decode($content,ENT_NOQUOTES,"GB2312")."'");
+		$new_base = $this->obj->insert_into("news_base", $baseData);
+		if ($new_base) {
+			$this->obj->insert_into(
+				"news_content",
+				array(
+					'nbid'    => $new_base,
+					'content' => html_entity_decode($content, ENT_NOQUOTES, "GB2312")
+				)
+			);
+		}
 		if($new_base){
 			echo 1;die;
 		}else{
