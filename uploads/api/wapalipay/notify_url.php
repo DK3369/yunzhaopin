@@ -18,6 +18,13 @@ error_reporting(0);
 require_once("alipay.config.php");
 require_once("lib/alipay_notify.class.php");
 require_once(dirname(dirname(dirname(__FILE__)))."/global.php");
+if (!isset($_POST['sign']) || !is_scalar($_POST['sign'])
+    || strlen((string) $_POST['sign']) > 1024
+    || (int) ($_SERVER['CONTENT_LENGTH'] ?? 0) > 1048576) {
+    http_response_code(400);
+    echo "fail";
+    exit;
+}
 
 if($alipay_config['sign_type'] == 'MD5') {
 //计算得出通知验证结果
@@ -25,13 +32,27 @@ if($alipay_config['sign_type'] == 'MD5') {
     $verify_result = $alipayNotify->verifyNotify();
 
     if ($verify_result) {//验证成功
+        $notifyData = isset($_POST['notify_data']) && is_string($_POST['notify_data']) ? $_POST['notify_data'] : '';
+        if ($notifyData === '' || strlen($notifyData) > 1048576) {
+            echo "fail";
+            exit;
+        }
         $doc = new DOMDocument();
+        $oldXmlErrors = libxml_use_internal_errors(true);
         if ($alipay_config['sign_type'] == 'MD5') {
-            $doc->loadXML($_POST['notify_data']);
+            $xmlLoaded = $doc->loadXML($notifyData, LIBXML_NONET | LIBXML_NOERROR | LIBXML_NOWARNING);
         }
 
         if ($alipay_config['sign_type'] == '0001') {
-            $doc->loadXML($alipayNotify->decrypt($_POST['notify_data']));
+            $decrypted = $alipayNotify->decrypt($notifyData);
+            $xmlLoaded = is_string($decrypted) && strlen($decrypted) <= 1048576
+                && $doc->loadXML($decrypted, LIBXML_NONET | LIBXML_NOERROR | LIBXML_NOWARNING);
+        }
+        libxml_clear_errors();
+        libxml_use_internal_errors($oldXmlErrors);
+        if (empty($xmlLoaded)) {
+            echo "fail";
+            exit;
         }
 
         if (!empty($doc->getElementsByTagName("notify")->item(0)->nodeValue)) {
@@ -54,7 +75,7 @@ if($alipay_config['sign_type'] == 'MD5') {
             sOld_trade_status="0";表示订单未处理；
             sOld_trade_status="1";表示交易成功（TRADE_FINISHED/TRADE_SUCCESS）；
             */
-            if (($trade_status == 'TRADE_FINISHED') || ($trade_status == 'TRADE_SUCCESS') || ($result == 'success')) {    //交易成功结束
+            if (($trade_status == 'TRADE_FINISHED') || ($trade_status == 'TRADE_SUCCESS')) {    //交易成功结束
                 //放入订单交易完成后的数据库更新程序代码，请务必保证echo出来的信息只有success
                 //为了保证不被重复调用，或重复执行数据库更新程序，请判断该笔交易状态是否是订单未处理状态
 
@@ -86,7 +107,7 @@ if($alipay_config['sign_type'] == 'MD5') {
     $data = $_POST;
     $aop = new AopClient();
     $aop->alipayrsaPublicKey = $alipaydata['sy_alipaypublickey'];
-    $data['fund_bill_list']  =  stripslashes($data['fund_bill_list']);
+    $data['fund_bill_list']  =  stripslashes((string) ($data['fund_bill_list'] ?? ''));
     $result = $aop->rsaCheckV1($data, $alipaydata['sy_alipaypublickey'], $alipay_config['sign_type']);
     if($result){
         $trade_status = $data['trade_status'];
@@ -99,7 +120,8 @@ if($alipay_config['sign_type'] == 'MD5') {
 
             $apiPay = new apipay($phpyun, $db, $db_config['def'], 'index');
 
-            $return = $apiPay->payAll($data['out_trade_no'], $total_fee, 'wapalipay');
+            $callbackAmount = $data['total_amount'] ?? ($data['total_fee'] ?? '');
+            $return = $apiPay->payAll($data['out_trade_no'], $callbackAmount, 'wapalipay');
 
             if ($return == 2) {
                 echo "success";

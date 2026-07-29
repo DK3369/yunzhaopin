@@ -26,35 +26,28 @@ error_reporting(0);
 require_once(dirname(dirname(dirname(__FILE__)))."/config/db.config.php");
 require_once(dirname(dirname(dirname(__FILE__)))."/data/plus/config.php");
 require_once(dirname(dirname(dirname(__FILE__)))."/config/db.safety.php");
-if (PHP_VERSION_ID >= 70000) {
-	require_once(dirname(dirname(dirname(__FILE__)))."/app/include/mysqli.class.php");
-}else{
-	require_once(dirname(dirname(dirname(__FILE__)))."/app/include/mysql.class.php");
+require_once(dirname(dirname(dirname(__FILE__)))."/app/include/mysqli.class.php");
+require_once(dirname(dirname(dirname(__FILE__)))."/app/include/payment_security.php");
+$db = new mysql($db_config['dbhost'], $db_config['dbuser'], $db_config['dbpass'], $db_config['dbname'], 'conn', $db_config['charset']);
+$orderId = yun_payment_order_id($_GET['dingdan'] ?? null);
+$row = $orderId === false ? array() : yun_payment_fetch_order($db, $db_config['def'], $orderId);
+if (!yun_payment_is_pending_order($row)) {
+	yun_payment_log('init.invalid_order', array('gateway' => 'wapalipay'));
+	http_response_code(400);
+	die;
 }
-$db = new mysql($db_config['dbhost'], $db_config['dbuser'], $db_config['dbpass'], $db_config['dbname'], ALL_PS, $db_config['charset']);
-if(!is_numeric($_GET['dingdan'])){die;}
-if($_GET['token']){
-    $member_sql=$db->query("SELECT * FROM `".$db_config["def"]."member` WHERE `uid`='".$_GET['uid']."' limit 1");
-    $member=$db->fetch_array($member_sql);
-    $mdtoken = md5($member['username'].$member['password'].$member['salt'].$member['usertype']);
-    $uid = $member['uid'];
-    if($_GET['token']!=$mdtoken){
-        die;
-    }
-}else{
-    $uid=(int)$_COOKIE['uid'];
-    $_GET['balance']=(int)$_GET['balance'];
-    if(!$_COOKIE['fast']){
-		$member_sql=$db->query("SELECT * FROM `".$db_config["def"]."member` WHERE `uid`='".$uid."' limit 1");
-		$member=$db->fetch_array($member_sql);
-		if($member['usertype'] != $_COOKIE['usertype']||md5($member['username'].$member['password'].$member['salt'])!=$_COOKIE['shell']){
-			die;
-		}
-    }
+if (!empty($_GET['token'])) {
+	$member = yun_payment_token_member($db, $db_config['def'], $_GET['uid'] ?? null, $_GET['token']);
+	$authorized = yun_payment_order_owned_by($row, $member);
+} elseif (!empty($_COOKIE['fast'])) {
+	$authorized = yun_payment_fast_order_matches($row);
+} else {
+	$member = yun_payment_cookie_member($db, $db_config['def']);
+	$authorized = yun_payment_order_owned_by($row, $member);
 }
-$sql=$db->query("select * from `".$db_config["def"]."company_order` where `order_id`='".$_GET['dingdan']."' AND `order_price`>=0");
-$row=$db->fetch_array($sql);
-if(!$_COOKIE['fast']&&((!$row['uid']) || ($row['uid']!=$uid))){
+if (!$authorized) {
+	yun_payment_log('init.unauthorized', array('gateway' => 'wapalipay', 'order_id' => $orderId));
+	http_response_code(403);
 	die;
 }
 

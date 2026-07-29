@@ -71,6 +71,64 @@ class mysql {
 		
 		return $this->result;
 	}
+    /**
+     * Execute a read-only prepared statement and return its first row.
+     *
+     * Legacy payment entry points instantiate this driver directly instead of
+     * the model layer. Keeping parameter binding here prevents those public
+     * endpoints from falling back to interpolated SQL.
+     */
+    public function prepared_select_one($sql, $types = '', $params = array()) {
+
+        $this->connect();
+
+        if (!is_string($sql) || stripos(ltrim($sql), 'select ') !== 0) {
+            error_log('[db-security] rejected non-select prepared statement');
+            return false;
+        }
+
+        $stmt = @mysqli_prepare($this->conn, $sql);
+        if (!$stmt) {
+            error_log('[db-security] prepared statement failed');
+            return false;
+        }
+
+        if ($types !== '') {
+            if (!is_array($params) || strlen($types) !== count($params)) {
+                mysqli_stmt_close($stmt);
+                error_log('[db-security] prepared parameter mismatch');
+                return false;
+            }
+
+            $bind = array($types);
+            foreach ($params as $key => $value) {
+                $params[$key] = $value;
+                $bind[] = &$params[$key];
+            }
+
+            if (!@call_user_func_array(array($stmt, 'bind_param'), $bind)) {
+                mysqli_stmt_close($stmt);
+                error_log('[db-security] prepared bind failed');
+                return false;
+            }
+        }
+
+        if (!@mysqli_stmt_execute($stmt)) {
+            mysqli_stmt_close($stmt);
+            error_log('[db-security] prepared execution failed');
+            return false;
+        }
+
+        $result = @mysqli_stmt_get_result($stmt);
+        $row = $result instanceof mysqli_result ? mysqli_fetch_assoc($result) : false;
+        if ($result instanceof mysqli_result) {
+            mysqli_free_result($result);
+        }
+        mysqli_stmt_close($stmt);
+
+        return $row;
+    }
+
     function GetMicrotime5(){
         if (PHP_VERSION >= '5.0.0'){
             return microtime(true);

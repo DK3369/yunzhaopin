@@ -13,6 +13,11 @@ error_reporting(0);
 require_once("class/alipay_notify.php");
 require_once("alipay_config.php");
 require_once(dirname(dirname(dirname(__FILE__)))."/global.php");
+if (!isset($_GET['sign']) || !is_scalar($_GET['sign']) || strlen((string) $_GET['sign']) > 1024) {
+	http_response_code(400);
+	echo "fail";
+	exit;
+}
 
 if($sign_type == 'MD5'){
 
@@ -42,17 +47,13 @@ if($verify_result) {
         //放入订单交易完成后的数据库更新程序代码，请务必保证echo出来的信息只有success
         //为了保证不被重复调用，或重复执行数据库更新程序，请判断该笔交易状态是否是订单未处理状态
 
-        if ($sOld_trade_status < 1) {
+        //根据订单号更新订单，把订单处理成交易成功
+		require_once(APP_PATH.'app/public/common.php');
+		require_once(LIB_PATH.'ApiPay.class.php');
+		$apiPay = new apipay($phpyun,$db,$db_config['def'],'index');
+		$apiPay->payAll($dingdan,$total_fee,'alipay');
 
-            //根据订单号更新订单，把订单处理成交易成功
-			require_once(APP_PATH.'app/public/common.php');
-			require_once(LIB_PATH.'ApiPay.class.php');
-			$apiPay = new apipay($phpyun,$db,$db_config['def'],'index');
-
-			$apiPay->payAll($dingdan,$total_fee,'alipay');
-        }
-        $order_sql  =   $db->query("SELECT * FROM `".$db_config["def"]."company_order` WHERE `order_id`='".$dingdan."' limit 1");
-        $orderInfo  =   $db->fetch_array($order_sql);
+        $orderInfo = yun_payment_fetch_order($db, $db_config['def'], $dingdan);
         if (!$orderInfo['fast']){
             header("Location:".$config['sy_weburl']."/member/index.php?c=paylog");
         }else{
@@ -104,8 +105,7 @@ if($verify_result) {
 
         $return = $apiPay->payAll($dingdan,$total_amount,'alipay');
         if ($return==2){
-            $order_sql  =   $db->query("SELECT * FROM `".$db_config["def"]."company_order` WHERE `order_id`='".$dingdan."' limit 1");
-            $orderInfo  =   $db->fetch_array($order_sql);
+            $orderInfo = yun_payment_fetch_order($db, $db_config['def'], $dingdan);
             if (!$orderInfo['fast']){
                 header("Location:".$config['sy_weburl']."/member/index.php?c=paylog");
             }else{

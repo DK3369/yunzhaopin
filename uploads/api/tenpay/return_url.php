@@ -7,8 +7,14 @@ error_reporting(0);
 require_once ("./classes/PayResponseHandler.class.php");
 require_once(dirname(dirname(dirname(__FILE__)))."/data/api/tenpay/tenpay_data.php");
 require_once(dirname(dirname(dirname(__FILE__)))."/global.php");
+if ((!isset($_GET['sign']) && !isset($_POST['sign']))
+    || (int) ($_SERVER['CONTENT_LENGTH'] ?? 0) > 1048576) {
+	http_response_code(400);
+	echo "认证签名失败";
+	exit;
+}
 /* 密钥 */
-$key =$tenpaydata[sy_tenpaycode];
+$key = $tenpaydata['sy_tenpaycode'];
 
 /* 创建支付应答对象 */
 $resHandler = new PayResponseHandler();

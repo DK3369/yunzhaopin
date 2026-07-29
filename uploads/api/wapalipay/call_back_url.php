@@ -4,6 +4,11 @@ error_reporting(0);
 require_once("alipay.config.php");
 require_once("lib/alipay_notify.class.php");
 require_once(dirname(dirname(dirname(__FILE__)))."/global.php");
+if (!isset($_GET['sign']) || !is_scalar($_GET['sign']) || strlen((string) $_GET['sign']) > 1024) {
+    http_response_code(400);
+    echo "验证失败";
+    exit;
+}
 
 if($alipay_config['sign_type'] == 'MD5') {
     $alipayNotify = new AlipayNotify($alipay_config);
@@ -80,13 +85,12 @@ if(!($config['sy_wapdomain'])){
 }else{
 	$wapdomain='http://'.$config['sy_wapdomain'];
 }
-$order_sql  =   $db->query("SELECT * FROM `".$db_config["def"]."company_order` WHERE `order_id`='".$out_trade_no."' limit 1");
-$orderInfo  =   $db->fetch_array($order_sql);
+$orderInfo = yun_payment_fetch_order($db, $db_config['def'], $out_trade_no);
 if (!$orderInfo['fast']) {
 
-    $member_sql =   $db->query("SELECT * FROM `" . $db_config["def"] . "member` WHERE `uid`='" . $_COOKIE['uid'] . "' limit 1");
-    $member     =   $db->fetch_array($member_sql);
-    if ($member['usertype'] != $_COOKIE['usertype'] || md5($member['username'].$member['password'].$member['salt']) != $_COOKIE['shell']) {
+    $member = yun_payment_cookie_member($db, $db_config['def']);
+    if (!$member || !yun_payment_order_owned_by($orderInfo, $member)) {
+        yun_payment_log('return.unauthorized', array('gateway' => 'wapalipay', 'order_id' => $out_trade_no));
         die;
     }
     if ($member['usertype'] == 1) {

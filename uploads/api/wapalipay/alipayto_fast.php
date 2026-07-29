@@ -25,17 +25,16 @@ error_reporting(0);
 require_once(dirname(dirname(dirname(__FILE__)))."/config/db.config.php");
 require_once(dirname(dirname(dirname(__FILE__)))."/data/plus/config.php");
 require_once(dirname(dirname(dirname(__FILE__)))."/config/db.safety.php");
-if (PHP_VERSION_ID >= 70000) {
-	require_once(dirname(dirname(dirname(__FILE__)))."/app/include/mysqli.class.php");
-}else{
-	require_once(dirname(dirname(dirname(__FILE__)))."/app/include/mysql.class.php");
+require_once(dirname(dirname(dirname(__FILE__)))."/app/include/mysqli.class.php");
+require_once(dirname(dirname(dirname(__FILE__)))."/app/include/payment_security.php");
+$db = new mysql($db_config['dbhost'], $db_config['dbuser'], $db_config['dbpass'], $db_config['dbname'], 'conn', $db_config['charset']);
+$orderId = yun_payment_order_id($_GET['dingdan'] ?? null);
+$row = $orderId === false ? array() : yun_payment_fetch_order($db, $db_config['def'], $orderId);
+if (!yun_payment_is_pending_order($row) || !yun_payment_fast_order_matches($row)) {
+	yun_payment_log('init.fast_unauthorized', array('gateway' => 'wapalipay', 'order_id' => $orderId ?: ''));
+	http_response_code(403);
+	die;
 }
-$db = new mysql($db_config['dbhost'], $db_config['dbuser'], $db_config['dbpass'], $db_config['dbname'], ALL_PS, $db_config['charset']);
-if(!is_numeric($_GET['dingdan'])){die;}
- 
-
-$sql=$db->query("select * from `".$db_config["def"]."company_order` where `order_id`='".$_GET['dingdan']."' AND `order_price`>=0");
-$row=$db->fetch_array($sql);
  
 require_once("alipay.config.php");
 require_once("lib/alipay_submit.class.php");

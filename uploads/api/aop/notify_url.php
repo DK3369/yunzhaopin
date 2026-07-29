@@ -5,6 +5,13 @@ error_reporting(0);
 require_once 'AopClient.php';
 require_once(dirname(dirname(dirname(__FILE__)))."/data/api/alipay/alipay_aop.php");
 require_once(dirname(dirname(dirname(__FILE__)))."/global.php");
+if (!isset($_POST['sign']) || !is_scalar($_POST['sign'])
+	|| strlen((string) $_POST['sign']) > 1024
+	|| (int) ($_SERVER['CONTENT_LENGTH'] ?? 0) > 1048576) {
+	http_response_code(400);
+	echo "fail";
+	exit;
+}
 
 $aop = new AopClient();
 $aop->alipayrsaPublicKey = $alipaydata['sy_publicKey'];
@@ -14,7 +21,7 @@ $requestParamsArr  =  $_POST;
 
 //除去sign、sign_type两个参数外，凡是通知返回回来的参数皆是待验签的参数。
 unset($requestParamsArr['sign_type']);
-$requestParamsArr['fund_bill_list']  =  stripslashes($_POST['fund_bill_list']);
+$requestParamsArr['fund_bill_list']  =  stripslashes((string) ($_POST['fund_bill_list'] ?? ''));
 //验证RSA2格式签名
 $verify_result  =  $aop->rsaCheckV2($requestParamsArr, $aop->alipayrsaPublicKey,$aop->signType);
 

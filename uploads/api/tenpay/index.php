@@ -10,42 +10,30 @@ require_once ("classes/PayRequestHandler.class.php");
 require_once(dirname(dirname(dirname(__FILE__)))."/data/api/tenpay/tenpay_data.php");
 require_once(dirname(dirname(dirname(__FILE__)))."/config/db.config.php");
 require_once(dirname(dirname(dirname(__FILE__)))."/config/db.safety.php");
-if (PHP_VERSION_ID >= 70000) {
-	require_once(dirname(dirname(dirname(__FILE__)))."/app/include/mysqli.class.php");
-}else{
-	require_once(dirname(dirname(dirname(__FILE__)))."/app/include/mysql.class.php");
-}
+require_once(dirname(dirname(dirname(__FILE__)))."/app/include/mysqli.class.php");
+require_once(dirname(dirname(dirname(__FILE__)))."/app/include/payment_security.php");
 require_once(dirname(dirname(dirname(__FILE__)))."/data/plus/config.php");
 
-$db = new mysql($db_config['dbhost'], $db_config['dbuser'], $db_config['dbpass'], $db_config['dbname'], ALL_PS, $db_config['charset']);
-if(!is_numeric($_POST['dingdan']))
-{
-	die;
-}
-
-$_COOKIE['uid']=(int)$_COOKIE['uid'];
-$member_sql=$db->query("SELECT * FROM `".$db_config["def"]."member` WHERE `uid`='".$_COOKIE['uid']."' limit 1");
-$member=$db->fetch_array($member_sql);
-if($member['usertype'] != $_COOKIE['usertype']||md5($member['username'].$member['password'].$member['salt'])!=$_COOKIE['shell']){
-	echo '登录信息验证错误，请重新登录！';die;
-}
-$sql=$db->query("select * from `".$db_config["def"]."company_order` where `order_id`='$_POST[dingdan]' AND `order_price`>=0");
-$row=$db->fetch_array($sql);
-if(!$row['uid'] || $row['uid']!=$_COOKIE['uid'])
-{
+$db = new mysql($db_config['dbhost'], $db_config['dbuser'], $db_config['dbpass'], $db_config['dbname'], 'conn', $db_config['charset']);
+$orderId = yun_payment_order_id($_POST['dingdan'] ?? null);
+$row = $orderId === false ? array() : yun_payment_fetch_order($db, $db_config['def'], $orderId);
+$member = yun_payment_cookie_member($db, $db_config['def']);
+if (!yun_payment_is_pending_order($row) || !yun_payment_order_owned_by($row, $member)) {
+	yun_payment_log('init.unauthorized', array('gateway' => 'tenpay', 'order_id' => $orderId ?: ''));
+	http_response_code(403);
 	die;
 }
 
 
 
 /* 商户号 */
-$bargainor_id = $tenpaydata[sy_tenpayid];
+$bargainor_id = $tenpaydata['sy_tenpayid'];
 
 /* 密钥 */
-$key = $tenpaydata[sy_tenpaycode];
+$key = $tenpaydata['sy_tenpaycode'];
 
 /* 返回处理地址 */
-$return_url = $tenpaydata[sy_weburl]."/api/tenpay/return_url.php";
+$return_url = $tenpaydata['sy_weburl']."/api/tenpay/return_url.php";
 
 //date_default_timezone_set(PRC);
 $strDate = date("Ymd");
@@ -54,19 +42,19 @@ $strTime = date("His");
 //4位随机数
 $randNum = rand(1000, 9999);
 
-$attach=$_POST[pay_type];
+$attach = isset($_POST['pay_type']) && is_scalar($_POST['pay_type']) ? mb_substr((string) $_POST['pay_type'], 0, 64) : '';
 
 //10位序列号,可以自行调整。
 $strReq = $strTime . $randNum;
 
 /* 商家订单号,长度若超过32位，取前32位。财付通只记录商家订单号，不保证唯一。 */
-$sp_billno = $_POST[dingdan];
+$sp_billno = $orderId;
 
 /* 财付通交易单号，规则为：10位商户号+8位时间（YYYYmmdd)+10位流水号 */
 $transaction_id =trim($bargainor_id.$strDate.$strReq);
 
 /* 商品价格（包含运费），以分为单位 */
-$total_fee = $row[order_price]*100;
+$total_fee = yun_payment_amount_in_cents($row['order_price']);
 //$total_fee = 1;
 
 /* 商品名称 */

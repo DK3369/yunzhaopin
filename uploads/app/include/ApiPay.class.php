@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/payment_security.php';
+
 /**
  * @desc 合并所有支付API 支付成功逻辑处理函数（支付宝、财付通、微信、wap支付宝）
  * @method 支付处理函数
@@ -18,13 +20,36 @@ class ApiPay extends common
 
 
         //支付回调参数验证数据合法性
-        if (!preg_match('/^[0-9]+$/', $dingdan)) {
-            die;
+        $dingdan = yun_payment_order_id($dingdan);
+        if ($dingdan === false) {
+            yun_payment_log('callback.invalid_order_id');
+            return false;
+        }
+
+        $paymentLock = yun_payment_order_lock($dingdan);
+        if ($paymentLock === false) {
+            yun_payment_log('callback.lock_failed', array('order_id' => $dingdan));
+            return false;
         }
 
         //查询订单是否真实存在
         $orderM =   $this->MODEL('companyorder');
         $order  =   $orderM->getInfo(array('order_id' => $dingdan));
+
+        if (empty($order['id'])) {
+            yun_payment_log('callback.order_not_found', array('order_id' => $dingdan));
+            yun_payment_order_unlock($paymentLock);
+            return false;
+        }
+
+        if (!yun_payment_callback_amount_matches($order['order_price'], $total_fee, $paytype)) {
+            yun_payment_log('callback.amount_mismatch', array(
+                'order_id' => $dingdan,
+                'paytype'  => $paytype
+            ));
+            yun_payment_order_unlock($paymentLock);
+            return false;
+        }
 
         $userinfoM  =   $this->MODEL('userinfo');
         $resumeM    =   $this->MODEL('resume');
@@ -122,7 +147,7 @@ class ApiPay extends common
                         $integralM->insert_company_pay($addJF, 2, $uid, $order['usertype'], 'common_01253', 1, 2, true);
                     }
 
-                    $order_info =   unserialize($order['order_info']);
+                    $order_info =   yun_payment_unserialize_array($order['order_info']);
 
                     if ($order_info['vip_integral'] && $order['integral']) { // 充值积分购买会员
 
@@ -174,7 +199,7 @@ class ApiPay extends common
 
                 if ($nid) {
 
-                    $order_info = unserialize($order['order_info']);
+                    $order_info = yun_payment_unserialize_array($order['order_info']);
 
                     if ($order_info['pack_integral'] && $order['integral']) { // 充值积分购买增值服务
 
@@ -198,7 +223,7 @@ class ApiPay extends common
                  * 购买置顶职位，付款成功后续操作，
                  * @var jobid days price
                  */
-                $order_info =   unserialize($order['order_info']);
+                $order_info =   yun_payment_unserialize_array($order['order_info']);
 
                 $jobname    =   '';
 
@@ -237,7 +262,7 @@ class ApiPay extends common
                  * 购买紧急招聘，付款成功后续操作，
                  * @var jobid days price
                  */
-                $order_info =   unserialize($order['order_info']);
+                $order_info =   yun_payment_unserialize_array($order['order_info']);
 
                 $jobname    =   '';
 
@@ -276,7 +301,7 @@ class ApiPay extends common
                  * 购买职位推荐，付款成功后续操作，
                  * @var jobid days price
                  */
-                $order_info =   unserialize($order['order_info']);
+                $order_info =   yun_payment_unserialize_array($order['order_info']);
 
                 $jobname    =   '';
 
@@ -314,7 +339,7 @@ class ApiPay extends common
                  * 购买自动刷新，付款成功后续操作，
                  * @var jobautoids days price
                  */
-                $order_info =   unserialize($order['order_info']);
+                $order_info =   yun_payment_unserialize_array($order['order_info']);
 
                 if ($order_info['jobid']) {
 
@@ -359,7 +384,7 @@ class ApiPay extends common
                  * 购买简历置顶，付款成功后续操作，
                  * @var resumeid days price
                  */
-                $order_info =   unserialize($order['order_info']);
+                $order_info =   yun_payment_unserialize_array($order['order_info']);
 
                 $orderMsg   =   '';
 
@@ -381,7 +406,7 @@ class ApiPay extends common
                 $sendInfo['info']   =   yun_at('wap_user_00207');
             }  else if ($type == 16) {   //职位刷新
 
-                $order_info =   unserialize($order['order_info']);
+                $order_info =   yun_payment_unserialize_array($order['order_info']);
 
                 if ($order_info['jobid']) {
 
@@ -412,7 +437,7 @@ class ApiPay extends common
                 $sendInfo['info']   =   yun_at('wap_com_00045');
             } else if ($type == 17) {   //兼职刷新
 
-                $order_info = unserialize($order['order_info']);
+                $order_info = yun_payment_unserialize_array($order['order_info']);
 
                 if ($order_info['jobid']) {
 
@@ -441,7 +466,7 @@ class ApiPay extends common
                 $sendInfo['info']   =   yun_at('default_00034');
             } else if ($type == 19) {   //下载简历
 
-                $order_info =   unserialize($order['order_info']);
+                $order_info =   yun_payment_unserialize_array($order['order_info']);
 
                 if ($order_info['eid']) {
 
@@ -495,7 +520,7 @@ class ApiPay extends common
             } else if ($type == 20) {   //上架职位
 
                 $msg        =   'common_06222';
-                $order_info =   unserialize($order['order_info']);
+                $order_info =   yun_payment_unserialize_array($order['order_info']);
 
                 if ($usertype == 2) {
                     $jobnum =   array('+', 1);
@@ -520,7 +545,7 @@ class ApiPay extends common
                 $sendInfo['info']   =   $msg;
             }   else if ($type == 23) {   //面试邀请
 
-                $order_info =   unserialize($order['order_info']);
+                $order_info =   yun_payment_unserialize_array($order['order_info']);
 
                 if ($usertype == 2) {
                     $inviteNum  =   array('+', 1);
@@ -545,7 +570,7 @@ class ApiPay extends common
                 $sendInfo['info']   =   yun_at('common_06228');
             } else if ($type == 24) {   //兼职推荐
 
-                $order_info =   unserialize($order['order_info']);
+                $order_info =   yun_payment_unserialize_array($order['order_info']);
 
                 if ($order_info['jobid']) {
 
@@ -608,7 +633,7 @@ class ApiPay extends common
                 $sendInfo['info']   =   yun_at('common_06233');
             } else if ($type == 28) {   //招聘会报名
 
-                $order_info =   unserialize($order['order_info']);
+                $order_info =   yun_payment_unserialize_array($order['order_info']);
 
                 if ($order_info['zid']) {
 
@@ -672,12 +697,18 @@ class ApiPay extends common
                     $integralM  =   $this->MODEL('integral');
                     $integralM->insert_company_pay($order['integral'], 2, $order['uid'], $order['usertype'], 'member_user_00285' . $this->config['integral_pricename'], 1, 2, true);
                 }
+                yun_payment_order_unlock($paymentLock);
                 return 2;
             }
         } else {
 
-            return $order['order_state'];
+            $orderState = $order['order_state'];
+            yun_payment_order_unlock($paymentLock);
+            return $orderState;
         }
+
+        yun_payment_order_unlock($paymentLock);
+        return false;
     }
 
     function getOrder($id)

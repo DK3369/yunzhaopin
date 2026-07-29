@@ -22,32 +22,36 @@ require_once("class/alipay_service.php");
 require_once(dirname(dirname(dirname(__FILE__)))."/config/db.safety.php");
 require_once(dirname(dirname(dirname(__FILE__)))."/config/db.config.php");
 require_once(dirname(dirname(dirname(__FILE__)))."/data/plus/config.php");
-if (PHP_VERSION_ID >= 70000) {
-	require_once(dirname(dirname(dirname(__FILE__)))."/app/include/mysqli.class.php");
-}else{
-	require_once(dirname(dirname(dirname(__FILE__)))."/app/include/mysql.class.php");
-}
-$db = new mysql($db_config['dbhost'], $db_config['dbuser'], $db_config['dbpass'], $db_config['dbname'], ALL_PS, $db_config['charset']);
-if(!is_numeric($_POST['dingdan'])){die;}
-$_COOKIE['uid']=(int)$_COOKIE['uid'];
-if(!$_COOKIE['fast']){
-	$member_sql=$db->query("SELECT * FROM `".$db_config["def"]."member` WHERE `uid`='".$_COOKIE['uid']."' limit 1");
-	$member=$db->fetch_array($member_sql);
-	if($member['usertype'] != $_COOKIE['usertype']||md5($member['username'].$member['password'].$member['salt'])!=$_COOKIE['shell']){
-		echo '登录信息验证错误，请重新登录！';die;
-	}
-}
-$sql=$db->query("select * from `".$db_config["def"]."company_order` where `order_id`='".$_POST['dingdan']."' AND `order_price`>=0");
-$row=$db->fetch_array($sql);
-if(!$_COOKIE['fast']&&(!$row['uid'] || $row['uid']!=$_COOKIE['uid']))
-{
+require_once(dirname(dirname(dirname(__FILE__)))."/app/include/mysqli.class.php");
+require_once(dirname(dirname(dirname(__FILE__)))."/app/include/payment_security.php");
+$db = new mysql($db_config['dbhost'], $db_config['dbuser'], $db_config['dbpass'], $db_config['dbname'], 'conn', $db_config['charset']);
+$orderId = yun_payment_order_id($_POST['dingdan'] ?? null);
+$row = $orderId === false ? array() : yun_payment_fetch_order($db, $db_config['def'], $orderId);
+$member = array();
+if (!yun_payment_is_pending_order($row)) {
+	yun_payment_log('init.invalid_order', array('gateway' => 'alipay'));
+	http_response_code(400);
 	die;
+}
+if (!empty($_COOKIE['fast'])) {
+	if (!yun_payment_fast_order_matches($row)) {
+		yun_payment_log('init.fast_mismatch', array('gateway' => 'alipay', 'order_id' => $orderId));
+		http_response_code(403);
+		die;
+	}
+} else {
+	$member = yun_payment_cookie_member($db, $db_config['def']);
+	if (!yun_payment_order_owned_by($row, $member)) {
+		yun_payment_log('init.unauthorized', array('gateway' => 'alipay', 'order_id' => $orderId));
+		http_response_code(403);
+		die;
+	}
 }
 
 
 //必填参数
-	$out_trade_no = $_POST['dingdan'];	//请与贵网站订单系统中的唯一订单号匹配
-	$subject      = $_POST['subject']?$_POST['subject']:'充值';		//订单名称，显示在支付宝收银台里的“商品名称”里，显示在支付宝的交易管理的“商品名称”的列表里。
+	$out_trade_no = $orderId;	//请与贵网站订单系统中的唯一订单号匹配
+	$subject      = isset($_POST['subject']) && is_scalar($_POST['subject']) ? mb_substr(strip_tags((string) $_POST['subject']), 0, 128) : '充值';		//订单名称
 	$body         = $row['order_remark'];		//订单描述、订单详细、订单备注，显示在支付宝收银台里的“商品描述”里
 	$total_fee    = $row['order_price'];		//订单总金额，显示在支付宝收银台里的“应付总额”里
 
