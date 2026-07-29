@@ -720,18 +720,18 @@ class Smarty_Internal_Compile_Userlist extends Smarty_Internal_CompileBase{
 				}
 				//  是否浏览过
 				'.$name.'[$k][\'isLookEd\'] = 0;
-				if(in_array($v[\'id\'], $lookResumeId)){
+				if(in_array($v[\'id\'], (array)$lookResumeId)){
 				    '.$name.'[$k][\'isLookEd\'] = 1;
 				}
 				if($paramer[isrck] == 1){
 				//  是否已下载
 				'.$name.'[$k][\'islink\'] = 0;
-				foreach ($downList as $dv) {
+				foreach ((array)$downList as $dv) {
                     if ($v[\'id\'] == $dv[\'eid\']) {
                         '.$name.'[$k][\'islink\'] = 1;
                     }
                 }
-                foreach ($freedownList as $dv) {
+                foreach ((array)$freedownList as $dv) {
                     if ($v[\'id\'] == $dv[\'eid\']) {
                         if ($vipetime) {
                             '.$name.'[$k][\'islink\'] = 1;

@@ -35,7 +35,10 @@ class mysql {
 	}
 	/*数据库连接*/
 	public function connect() {
-		
+				if (function_exists('mysqli_report')) {
+			mysqli_report(MYSQLI_REPORT_OFF);
+		}
+
 			if(!$this->conn){
 				
 				$this->conn=mysqli_connect($this->db_host,$this->db_user,$this->db_pwd,$this->db_database);
@@ -250,45 +253,45 @@ class mysql {
 			include (function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path("job.cache.php") : PLUS_PATH."job.cache.php");
 			include (function_exists('yun_i18n_plus_path') ? yun_i18n_plus_path('industry.cache.php') : PLUS_PATH.'industry.cache.php');
 		}
-		$job_info[job_class_one] = $job_name[$job_info["job1"]];
-		$job_info[job_class_two] = $job_name[$job_info[job1_son]];
-		$job_info[job_class_three] = $job_name[$job_info[job_post]];
-		$job_info[job_exp] = $comclass_name[$job_info["exp"]];
-		$job_info[job_edu] = $comclass_name[$job_info[edu]];
-		$job_info[job_salary] = $comclass_name[$job_info[salary]];
-		$job_info[job_number] = $comclass_name[$job_info[number]];
-		$job_info[job_mun] = $comclass_name[$job_info[mun]];
+		$job_info["job_class_one"] = $job_name[$job_info["job1"]];
+		$job_info["job_class_two"] = $job_name[$job_info["job1_son"]];
+		$job_info["job_class_three"] = $job_name[$job_info["job_post"]];
+		$job_info["job_exp"] = $comclass_name[$job_info["exp"]];
+		$job_info["job_edu"] = $comclass_name[$job_info["edu"]];
+		$job_info["job_salary"] = $comclass_name[$job_info["salary"]];
+		$job_info["job_number"] = $comclass_name[$job_info["number"]];
+		$job_info["job_mun"] = $comclass_name[$job_info["mun"]];
 
-		$job_info[job_age] = $comclass_name[$job_info[age]];
-		$job_info[job_type] = $comclass_name[$job_info[type]];
-		$job_info[job_marriage] = $comclass_name[$job_info[marriage]];
-		$job_info[job_report] = $comclass_name[$job_info[report]];
-		$job_info[job_city_one] = $city_name[$job_info[provinceid]];
-		$job_info[com_city] = $city_name[$job_info[com_provinceid]];
-		$job_info[job_pr] = $comclass_name[$job_info[pr]];
-		$job_info[job_city_two] = $city_name[$job_info[cityid]];
-		$job_info[job_city_three] = $city_name[$job_info[three_cityid]];
-		$job_info[job_hy] = $industry_name[$job_info[hy]];
+		$job_info["job_age"] = $comclass_name[$job_info["age"]];
+		$job_info["job_type"] = $comclass_name[$job_info["type"]];
+		$job_info["job_marriage"] = $comclass_name[$job_info["marriage"]];
+		$job_info["job_report"] = $comclass_name[$job_info["report"]];
+		$job_info["job_city_one"] = $city_name[$job_info["provinceid"]];
+		$job_info["com_city"] = $city_name[$job_info["com_provinceid"]];
+		$job_info["job_pr"] = $comclass_name[$job_info["pr"]];
+		$job_info["job_city_two"] = $city_name[$job_info["cityid"]];
+		$job_info["job_city_three"] = $city_name[$job_info["three_cityid"]];
+		$job_info["job_hy"] = $industry_name[$job_info["hy"]];
         
-		if($job_info[lang]!=""){
-			$lang = @explode(",",$job_info[lang]);
+		if($job_info["lang"]!=""){
+			$lang = @explode(",",$job_info["lang"]);
 			foreach($lang as $key=>$value){
 				$langinfo[]=$comclass_name[$value];
 			}
-			$job_info[lang_info] = @implode(",",$langinfo);
-			$job_info[lang] =$lang;
+			$job_info["lang_info"] = @implode(",",$langinfo);
+			$job_info["lang"] =$lang;
 		}else{
-			$job_info[lang_info] ="";
+			$job_info["lang_info"] ="";
 		}
-		if($job_info[welfare]!=""){
-			$welfare = @explode(",",$job_info[welfare]);
+		if($job_info["welfare"]!=""){
+			$welfare = @explode(",",$job_info["welfare"]);
 			foreach($welfare as $key=>$value){
 				$welfareinfo[]=$value;
 			}
-			$job_info[welfare_info] = @implode(",",$welfareinfo);
-			$job_info[welfare] =$welfare;
+			$job_info["welfare_info"] = @implode(",",$welfareinfo);
+			$job_info["welfare"] =$welfare;
 		}else{
-			$job_info[welfare_info] ="";
+			$job_info["welfare_info"] ="";
 		}
 		return $job_info;
 	}
@@ -359,19 +362,19 @@ class mysql {
 	/*取得记录集,获取数组-索引和关联,使用$row['content'] */
 	public function fetch_array($sql="") {
 		$this->connect();
-		if(!$sql){
-		    return @mysqli_fetch_array($this->result, MYSQLI_ASSOC);
-		}else{
-		    return @mysqli_fetch_array($sql, MYSQLI_ASSOC);
+		$result = $sql ? $sql : $this->result;
+		if (!($result instanceof mysqli_result)) {
+			return false;
 		}
+		return @mysqli_fetch_array($result, MYSQLI_ASSOC);
 	}
 	public function fetch_array_old($sql="") {
 		$this->connect();
-		if(!$sql){
-		    return @mysqli_fetch_array($this->resul);
-		}else{
-		    return @mysqli_fetch_array($sql);
+		$result = $sql ? $sql : (isset($this->result) ? $this->result : false);
+		if (!($result instanceof mysqli_result)) {
+			return false;
 		}
+		return @mysqli_fetch_array($result);
 	}
 	//获取关联数组,使用$row['字段名']
 	public function fetch_assoc() {

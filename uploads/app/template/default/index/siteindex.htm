@@ -241,7 +241,7 @@
 <li>
 <div class="fz_index_userbox">
 <div class="fz_index_user_photo"><img src="{yun:}$recuser.photo{/yun}" width="70" height="70"></div>
-<div class="fz_index_username"><span class="fz_index_username_p"><a {yun:}if $config.com_search==1 && !$uid{/yun} href="{yun:}url m=login{/yun}"{yun:}else{/yun}href="{yun:}$recuser.user_url{/yun}"{yun:}/if{/yun}>{yun:}if in_array($recuser.id,$eid){/yun}{yun:}$recuser.uname{/yun}{yun:}else{/yun}{yun:}$recuser.username_n{/yun}{yun:}/if{/yun}</a></span> {yun:}$recuser.sex{/yun}，{yun:}$recuser.age{/yun}{yun:}t key='home.age_suffix'{/yun}</div>
+<div class="fz_index_username"><span class="fz_index_username_p"><a {yun:}if $config.com_search==1 && !$uid{/yun} href="{yun:}url m=login{/yun}"{yun:}else{/yun}href="{yun:}$recuser.user_url{/yun}"{yun:}/if{/yun}>{yun:}if is_array($eid) && in_array($recuser.id,$eid){/yun}{yun:}$recuser.uname{/yun}{yun:}else{/yun}{yun:}$recuser.username_n{/yun}{yun:}/if{/yun}</a></span> {yun:}$recuser.sex{/yun}，{yun:}$recuser.age{/yun}{yun:}t key='home.age_suffix'{/yun}</div>
 <div class="fz_index_userinfo">{yun:}$recuser.exp_n{/yun}{yun:}t key='home.experience_suffix'{/yun}<span class="fz_index_jobinfo_line">|</span>{yun:}$recuser.edu_n{/yun}{yun:}t key='home.education_suffix'{/yun}</div>
 <div class="fz_index_user_wanjob">{yun:}t key='resume_00067'{/yun}<span class="fz_index_user_wanjob_n">{yun:}$recuser.job_post_n{/yun}</span></div>
 </div>
@@ -254,7 +254,7 @@
 <li>
 <div class="fz_index_userbox">
 <div class="fz_index_user_photo"><img src="{yun:}$newuser.photo{/yun}" width="70" height="70"></div>
-<div class="fz_index_username"><span class="fz_index_username_p"><a {yun:}if $config.com_search==1 && !$uid{/yun} href="{yun:}url m=login{/yun}"{yun:}else{/yun}href="{yun:}$newuser.user_url{/yun}"{yun:}/if{/yun}>{yun:}if in_array($newuser.id,$eid){/yun}{yun:}$newuser.uname{/yun}{yun:}else{/yun}{yun:}$newuser.username_n{/yun}{yun:}/if{/yun}</a></span> {yun:}$newuser.sex{/yun}，{yun:}$newuser.age{/yun}{yun:}t key='home.age_suffix'{/yun}</div>
+<div class="fz_index_username"><span class="fz_index_username_p"><a {yun:}if $config.com_search==1 && !$uid{/yun} href="{yun:}url m=login{/yun}"{yun:}else{/yun}href="{yun:}$newuser.user_url{/yun}"{yun:}/if{/yun}>{yun:}if is_array($eid) && in_array($newuser.id,$eid){/yun}{yun:}$newuser.uname{/yun}{yun:}else{/yun}{yun:}$newuser.username_n{/yun}{yun:}/if{/yun}</a></span> {yun:}$newuser.sex{/yun}，{yun:}$newuser.age{/yun}{yun:}t key='home.age_suffix'{/yun}</div>
 <div class="fz_index_userinfo">{yun:}$newuser.exp_n{/yun}{yun:}t key='home.experience_suffix'{/yun}<span class="fz_index_jobinfo_line">|</span>{yun:}$newuser.edu_n{/yun}{yun:}t key='home.education_suffix'{/yun}</div>
 <div class="fz_index_user_wanjob">{yun:}t key='resume_00067'{/yun}<span class="fz_index_user_wanjob_n">{yun:}$newuser.job_post_n{/yun}</span></div>
 </div>

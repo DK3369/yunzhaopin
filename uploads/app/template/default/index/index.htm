@@ -325,7 +325,7 @@
                     <div class="tjuser_photo"><img src='{yun:}$style{/yun}/images/lay-loding.png' lay-src="{yun:}$ulist_rec.photo{/yun}" width="80" height="80"></div>
                     <div class="tjuser_name">
                         <a {yun:}if $config.com_search==1 && !$uid{/yun} href="{yun:}url m=login{/yun}" {yun:}else if $usertype==1{/yun}{yun:}if $config.sy_user_change==1{/yun}onclick="layer.msg('{yun:}t key='auth.apply_company_first'{/yun}', 2, 8)" {yun:}else{/yun}onclick="layer.msg('{yun:}t key='auth.company_only_view'{/yun}', 2, 8)"{yun:}/if{/yun} {yun:}else{/yun}href="{yun:}$ulist_rec.user_url{/yun}" target="_blank" {yun:}/if{/yun}>
-                        {yun:}if in_array($ulist_rec.id,$eid){/yun} {yun:}$ulist_rec.uname{/yun} {yun:}else{/yun} {yun:}$ulist_rec.username_n|mb_substr:0:10:"utf-8"{/yun} {yun:}/if{/yun}
+                        {yun:}if is_array($eid) && in_array($ulist_rec.id,$eid){/yun} {yun:}$ulist_rec.uname{/yun} {yun:}else{/yun} {yun:}$ulist_rec.username_n|mb_substr:0:10:"utf-8"{/yun} {yun:}/if{/yun}
                         </a>
                     </div>
                     <div class="index_tjresume_user"></div>
@@ -348,7 +348,7 @@
                     <div class="index_resume_user">
                         <a {yun:}if $config.com_search==1 && !$uid{/yun} href="{yun:}url m=login{/yun}" {yun:}else if $usertype==1{/yun}{yun:}if $config.sy_user_change==1{/yun}onclick="layer.msg('{yun:}t key='auth.apply_company_first'{/yun}', 2, 8)" {yun:}else{/yun}onclick="layer.msg('{yun:}t key='auth.company_only_view'{/yun}', 2, 8)"{yun:}/if{/yun} {yun:}else{/yun}href="{yun:}$ulist.user_url{/yun}" target="_blank" {yun:}/if{/yun} class="index_resume_username">
                         <img src='{yun:}$style{/yun}/images/lay-loding.png' lay-src="{yun:}$ulist.photo{/yun}" width="30" height="30">
-                        {yun:}if in_array($ulist.id,$eid){/yun} {yun:}$ulist.uname{/yun} {yun:}else{/yun} {yun:}$ulist.username_n|mb_substr:0:10:"utf-8"{/yun} {yun:}/if{/yun}
+                        {yun:}if is_array($eid) && in_array($ulist.id,$eid){/yun} {yun:}$ulist.uname{/yun} {yun:}else{/yun} {yun:}$ulist.username_n|mb_substr:0:10:"utf-8"{/yun} {yun:}/if{/yun}
                         </a>
                     </div>
                     <div class="index_resume_userinfo">

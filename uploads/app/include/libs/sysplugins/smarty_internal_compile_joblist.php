@@ -32,6 +32,7 @@ class Smarty_Internal_Compile_Joblist extends Smarty_Internal_CompileBase{
 		include_once  PLUS_PATH."/comrating.cache.php";
 		include(CONFIG_PATH."db.data.php"); 
         $cache_array = $db->cacheget();
+			$lookJobIdArr = array();
         $comclass_name  = $cache_array["comclass_name"];
         $comdata        = $cache_array["comdata"];
         $city_name      = $cache_array["city_name"];
@@ -559,7 +560,7 @@ class Smarty_Internal_Compile_Joblist extends Smarty_Internal_CompileBase{
 					}
 					//  是否浏览过
                     '.$name.'[$key][\'isLookEd\'] = 0;
-                    if(in_array($value[\'id\'], $lookJobIdArr)){
+                    if(in_array($value[\'id\'], (array)$lookJobIdArr)){
                         '.$name.'[$key][\'isLookEd\'] = 1;
                     }
 				}

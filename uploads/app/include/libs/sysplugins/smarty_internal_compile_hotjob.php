@@ -20,6 +20,11 @@ class Smarty_Internal_Compile_Hotjob extends Smarty_Internal_CompileBase{
 		$OutputStr='global $db,$db_config,$config;$paramer='.ArrayToString($_attr,true).';'.$name.'=array();
 		
 		$time = time();
+		$ListId = array();
+		$cuid = array();
+		$cinfouid = array();
+		$hotwhere = "";
+		$jobwheres = "";
 		//处理传入参数，并且构造分页参数
 		$ParamerArr = GetSmarty($paramer,$_GET,$_smarty_tpl);
 		$paramer = $ParamerArr[\'arr\'];

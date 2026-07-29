@@ -90,7 +90,7 @@ class Smarty_Internal_Compile_Article extends Smarty_Internal_CompileBase{
 			if(is_array($type_arr) && !empty($type_arr)){
 				foreach($type_arr as $key=>$value){
 					$where .=" AND FIND_IN_SET(\'".$value."\',`describe`)";
-					if(count($nids)>0){
+					if(count((array)$nids)>0){
 						$picwhere .=" AND FIND_IN_SET(\'".$value."\',`describe`)";
 					}
 				}
@@ -131,7 +131,7 @@ class Smarty_Internal_Compile_Article extends Smarty_Internal_CompileBase{
 		}
 
 		//多类别新闻查找
-		if(!intval($paramer[\'ispage\']) && count($nids)>0){
+		if(!intval($paramer[\'ispage\']) && count((array)$nids)>0){
 
 			$nidArr = @explode(\',\',$paramer[nid]);
 			$rsnids = array();
@@ -280,7 +280,7 @@ class Smarty_Internal_Compile_Article extends Smarty_Internal_CompileBase{
 				}
 			}//end while
 
-		}//end if(!intval($paramer[\'ispage\']) && count($nids)>0)
+		}//end if(!intval($paramer[\'ispage\']) && count((array)$nids)>0)
 		else{
 			$query = $db->query("SELECT * FROM `$db_config[def]news_base` WHERE ".$where.$limit);
 
