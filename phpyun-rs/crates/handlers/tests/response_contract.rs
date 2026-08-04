@@ -141,10 +141,12 @@ async fn auth_errors_401_with_specific_tags() {
     let server = TestServer::new(router()).unwrap();
     let body: Value = server.get("/err/unauth").await.json();
     assert_eq!(body["code"], json::json!(401));
+    assert_eq!(body["key"], json::json!("errors.unauth"));
     assert_eq!(body["msg"], json::json!(translated_msg("unauth")));
 
     let body: Value = server.get("/err/session").await.json();
     assert_eq!(body["code"], json::json!(401));
+    assert_eq!(body["key"], json::json!("errors.session_expired"));
     assert_eq!(body["msg"], json::json!(translated_msg("session_expired")));
 }
 
@@ -161,6 +163,8 @@ async fn locked_403_rate_429_upstream_502() {
     ] {
         let body: Value = server.get(path).await.json();
         assert_eq!(body["code"], json::json!(expected_code), "at {path}");
+        let expected_key = format!("errors.{tag}");
+        assert_eq!(body["key"], json::json!(expected_key), "at {path}");
         let msg = body["msg"].as_str().expect("msg is a string");
         assert!(
             !msg.is_empty(),
@@ -188,6 +192,7 @@ async fn param_invalid_400() {
     let server = TestServer::new(router()).unwrap();
     let body: Value = server.get("/err/param").await.json();
     assert_eq!(body["code"], json::json!(400));
+    assert_eq!(body["key"], json::json!("errors.param_invalid"));
     let msg = body["msg"].as_str().expect("msg is a string");
     assert!(!msg.is_empty(), "msg should be a non-empty translated string");
     assert!(!msg.starts_with("errors."), "msg should be translated, got {msg:?}");
@@ -198,7 +203,7 @@ async fn sqlx_auto_converts_to_500_db() {
     let server = TestServer::new(router()).unwrap();
     let body: Value = server.get("/err/internal").await.json();
     assert_eq!(body["code"], json::json!(500));
-    assert_eq!(body["msg"], json::json!("db"));
+    assert_eq!(body["msg"], json::json!(translated_msg("db")));
 }
 
 // ==================== Pluggability tests (the key proof) ====================
@@ -210,12 +215,12 @@ async fn custom_domain_error_plugs_in_with_zero_core_changes() {
     // 410 / demo_expired — this code and tag are defined only in this file; core has never seen them
     let body: Value = server.get("/err/demo/expired").await.json();
     assert_eq!(body["code"], json::json!(410));
-    assert_eq!(body["msg"], json::json!("demo_expired"));
+    assert_eq!(body["msg"], json::json!(translated_msg("demo_expired")));
 
     // 402 / demo_quota — same as above
     let body: Value = server.get("/err/demo/quota").await.json();
     assert_eq!(body["code"], json::json!(402));
-    assert_eq!(body["msg"], json::json!("demo_quota"));
+    assert_eq!(body["msg"], json::json!(translated_msg("demo_quota")));
 }
 
 #[tokio::test]

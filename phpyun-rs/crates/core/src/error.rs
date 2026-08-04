@@ -18,8 +18,8 @@
 //!
 //! ## Response contract
 //! - Success: `{code: 200, msg: "ok", data: T}`.
-//! - Failure: `{code: <HTTP status>, msg: "<short tag>", data: null}`.
-//! - `code` == HTTP status; `msg` is a short ASCII tag.
+//! - Failure: `{code: <HTTP status>, key: "errors.<tag>", msg: "<translated>", data: null}`.
+//! - `code` == HTTP status; `key` is stable for clients and `msg` is display-ready.
 //!
 //! ## Adding a new domain error (3 steps, zero changes to `core`)
 //!
@@ -397,7 +397,26 @@ impl IntoResponse for AppError {
         // 3. If `detail` is free text → use the `errors.<short>_with` template
         //    (which carries a `%{detail}` placeholder) and interpolate.
         // 4. No `detail` → translate `errors.<short>`.
-        // 5. Nothing matches → return the raw tag verbatim.
+        // 5. Nothing matches → use the English generic error, never a raw key.
+        let response_key = if let Some(d) = detail {
+            let dotted_key = d.contains('.')
+                && d.chars().all(|c| c.is_ascii_alphanumeric() || c == '_' || c == '.')
+                && !d.starts_with('.')
+                && !d.ends_with('.');
+            if dotted_key {
+                d.to_string()
+            } else if (key_short == "param_invalid" || key_short == "param_missing")
+                && d.chars().all(|c| c.is_ascii_lowercase() || c.is_ascii_digit() || c == '_')
+                && d.as_bytes().first().is_some_and(u8::is_ascii_lowercase)
+            {
+                format!("errors.{d}")
+            } else {
+                format!("errors.{key_short}")
+            }
+        } else {
+            format!("errors.{key_short}")
+        };
+
         let i18n_msg = if let Some(d) = detail {
             // Detect whether `d` is an i18n key (shaped like "namespace.subkey",
             // pure ASCII).
@@ -436,14 +455,24 @@ impl IntoResponse for AppError {
             (short_msg != short_key).then_some(short_msg)
         };
 
-        // When the translation misses, fall back to the raw tag (backward
-        // compatible; avoids showing the user "errors.xxx").
-        let msg = i18n_msg.unwrap_or_else(|| raw_tag.to_string());
+        // A missing business translation must remain displayable. Prefer the
+        // explicit English key, then use a generic sentence; never expose a
+        // raw i18n key or internal error tag to clients.
+        let msg = i18n_msg.unwrap_or_else(|| {
+            let fallback_key = format!("errors.{key_short}");
+            let english = crate::i18n::t(&fallback_key, crate::i18n::Lang::En);
+            if english != fallback_key {
+                english
+            } else {
+                "Request failed".to_string()
+            }
+        });
 
         (
             status,
             Json(json!({
                 "code": code,
+                "key": response_key,
                 "msg": msg,
                 "data": null,
             })),

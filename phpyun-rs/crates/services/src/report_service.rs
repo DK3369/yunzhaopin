@@ -33,6 +33,11 @@ pub async fn submit(
         return Err(InfraError::InvalidParam(format!("target_kind={}", input.target_kind)).into());
     }
 
+    let reason = report_repo::resolve_reason(state.db.reader(), input.reason_code)
+        .await?
+        .ok_or_else(|| InfraError::InvalidParam("report_reason_not_found".into()))?;
+    let normalized_reason_code = reason.id.to_string();
+
     // Per-user rate limit: at most 10 reports per 10 minutes
     rate_limit::check_and_incr(
         &state.redis,
@@ -50,7 +55,7 @@ pub async fn submit(
             reporter_uid: user.uid,
             target_kind: input.target_kind,
             target_id: input.target_id,
-            reason_code: input.reason_code,
+            reason_code: &normalized_reason_code,
             detail: input.detail,
         },
         clock::now_ts(),
@@ -64,7 +69,7 @@ pub async fn submit(
             .meta(&serde_json::json!({
                 "target_kind": input.target_kind,
                 "target_id": input.target_id,
-                "reason_code": input.reason_code,
+                "reason_code": normalized_reason_code,
             })),
     )
     .await;

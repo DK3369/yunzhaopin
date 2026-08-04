@@ -362,31 +362,21 @@ pub async fn build_job_detail_value(
 
     // --- Latest 5 inquiries (raw table fields passed through) ---
     let msg_list: Vec<json::Value> = {
-        let rows: Vec<(
-            i64, i64, Option<String>, Option<String>, Option<String>, i64, i64,
-        )> = sqlx::query_as( // TODO(arch): job_msg::repo::list_public_for_job filters by `type` — add a no-type-filter variant for job-detail page
-            "SELECT id, CAST(COALESCE(uid,0) AS SIGNED), username, content, reply, \
-                    CAST(COALESCE(datetime,0) AS SIGNED), CAST(COALESCE(reply_time,0) AS SIGNED) \
-             FROM phpyun_msg \
-             WHERE jobid = ? AND job_uid = ? AND status = 1 \
-               AND reply IS NOT NULL AND reply != '' AND del_status = 0 \
-             ORDER BY datetime DESC LIMIT 5",
+        let rows = phpyun_models::job_msg::repo::list_public_for_job_any_type(
+            state.db.reader(), id, d.job.uid, 5,
         )
-        .bind(id as i64)
-        .bind(d.job.uid as i64)
-        .fetch_all(state.db.reader())
         .await
         .unwrap_or_default();
         rows.into_iter()
-            .map(|(id, uid, username, content, reply, datetime, reply_time)| {
+            .map(|row| {
                 json::json!({
-                    "id": id,
-                    "uid": uid,
-                    "username": username.unwrap_or_default(),
-                    "content": content.unwrap_or_default(),
-                    "reply": reply.unwrap_or_default(),
-                    "datetime": datetime,
-                    "reply_time": reply_time,
+                    "id": row.id,
+                    "uid": row.uid,
+                    "username": row.username,
+                    "content": row.content,
+                    "reply": row.reply,
+                    "datetime": row.datetime,
+                    "reply_time": row.reply_time,
                 })
             })
             .collect()
@@ -400,28 +390,20 @@ pub async fn build_job_detail_value(
     // the `interview::repo` API. Same for `phpyun_report` — kept as raw SQL.
     let (fav_job, userid_job, report_job, invite_job) = if let Some(u) = user.as_ref() {
         let db = state.db.reader();
-        let com_id = d.job.uid as i64;
         let fav_fut = phpyun_models::collect::repo::exists_with_type(db, u.uid, id, 1);
         let apply_fut = phpyun_models::apply::repo::find_by_uid_job(db, u.uid, id);
-        let report_fut = sqlx::query_as::<_, (i64,)>( // raw query — see note above
-            "SELECT COUNT(*) FROM phpyun_report WHERE p_uid = ? AND eid = ? AND c_uid = ?",
-        )
-        .bind(u.uid as i64)
-        .bind(id as i64)
-        .bind(com_id)
-        .fetch_one(db);
-        let invite_fut = sqlx::query_as::<_, (i64,)>( // raw query — see note above
-            "SELECT COUNT(*) FROM phpyun_yqmb WHERE uid = ? AND did = ? AND status != 0",
-        )
-        .bind(com_id)
-        .bind(u.uid as i64)
-        .fetch_one(db);
+        let report_fut = phpyun_models::report::repo::count_job_report_context(
+            db, u.uid, id, d.job.uid,
+        );
+        let invite_fut = phpyun_models::interview::repo::count_active_from_company_to_user(
+            db, d.job.uid, u.uid,
+        );
         let (f, a, r, i) = tokio::join!(fav_fut, apply_fut, report_fut, invite_fut);
         (
             i32::from(f.unwrap_or(false)),
             i32::from(a.unwrap_or(None).is_some()),
-            r.map(|(n,)| n as i32).unwrap_or(0),
-            i.map(|(n,)| n as i32).unwrap_or(0),
+            r.map(|n| n as i32).unwrap_or(0),
+            i.map(|n| n as i32).unwrap_or(0),
         )
     } else {
         (0, 0, 0, 0)

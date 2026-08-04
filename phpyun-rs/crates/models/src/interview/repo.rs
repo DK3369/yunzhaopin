@@ -152,6 +152,21 @@ pub async fn count_for_company(pool: &MySqlPool, com_id: u64) -> Result<u64, sql
     Ok(n.max(0) as u64)
 }
 
+pub async fn count_active_from_company_to_user(
+    pool: &MySqlPool,
+    company_uid: u64,
+    user_uid: u64,
+) -> Result<u64, sqlx::Error> {
+    let (n,): (i64,) = sqlx::query_as(
+        "SELECT COUNT(*) FROM phpyun_yqmb WHERE uid = ? AND did = ? AND status != 0",
+    )
+    .bind(user_uid)
+    .bind(company_uid)
+    .fetch_one(pool)
+    .await?;
+    Ok(n.max(0) as u64)
+}
+
 /// Job seeker responds to interview -- 1 = accept / 2 = decline.
 pub async fn respond_by_user(
     pool: &MySqlPool,

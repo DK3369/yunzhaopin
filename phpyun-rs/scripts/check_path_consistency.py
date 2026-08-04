@@ -171,7 +171,10 @@ def main() -> int:
             print(f"  {rel}::{fn}  doc → {d}")
         print()
 
-    failed = bool(mismatches or duplicate_openapi)
+    # A real route without documentation (or documentation without a route)
+    # is just as broken as a mismatched path: clients cannot discover or call
+    # the API reliably. Keep --strict suitable for CI completeness checks.
+    failed = bool(mismatches or duplicate_openapi or undocumented or orphan_docs)
     if failed:
         print("❌ FAIL")
         return 1 if args.strict else 0

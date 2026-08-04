@@ -109,8 +109,9 @@ impl From<phpyun_models::report::entity::Report> for ReportItem {
     path = "/v1/mcenter/reports/list",
     tag = "mcenter",
     security(("bearer" = [])),
-    responses((status = 200, description = "ok"))
-)]pub async fn list_mine(
+    responses((status = 200, description = "Paginated report list"))
+)]
+pub async fn list_mine(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,

@@ -168,10 +168,7 @@ fn start_invite_email_queued(state: &AppState) {
     );
 }
 
-async fn handle_invite_email(
-    base: &str,
-    msg: &phpyun_core::events::Message,
-) -> AppResult<()> {
+async fn handle_invite_email(base: &str, msg: &phpyun_core::events::Message) -> AppResult<()> {
     #[derive(serde::Deserialize)]
     struct Payload {
         invite_id: u64,
@@ -179,7 +176,11 @@ async fn handle_invite_email(
         inviter_uid: u64,
     }
     let p: Payload = serde_json::from_slice(&msg.payload).map_err(AppError::internal)?;
-    let link = format!("{}/wap/register?uid={}", base.trim_end_matches('/'), p.inviter_uid);
+    let link = format!(
+        "{}/wap/register?uid={}",
+        base.trim_end_matches('/'),
+        p.inviter_uid
+    );
     // TODO: wire up a real SMTP backend (SendGrid/SES/Postal); for now just log via tracing.
     tracing::info!(
         invite_id = p.invite_id,
@@ -208,19 +209,32 @@ fn start_email_verify_queued(state: &AppState) {
     );
 }
 
-async fn handle_email_verify(
-    base: &str,
-    msg: &phpyun_core::events::Message,
-) -> AppResult<()> {
+async fn handle_email_verify(base: &str, msg: &phpyun_core::events::Message) -> AppResult<()> {
     #[derive(serde::Deserialize)]
     struct Payload {
         #[serde(default)]
         kind: String,
+        #[serde(default)]
         uid: u64,
         email: String,
+        #[serde(default)]
         token: String,
+        #[serde(default)]
+        code: String,
+        #[serde(default)]
+        ttl_secs: u64,
     }
     let p: Payload = serde_json::from_slice(&msg.payload).map_err(AppError::internal)?;
+    if !p.code.is_empty() {
+        tracing::info!(
+            kind = %p.kind,
+            email = %p.email,
+            code = %p.code,
+            ttl_secs = p.ttl_secs,
+            "EMAIL (noop): verification code"
+        );
+        return Ok(());
+    }
     let link = format!(
         "{}/v1/wap/cert/email/verify?token={}",
         base.trim_end_matches('/'),

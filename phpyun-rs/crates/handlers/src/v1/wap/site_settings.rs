@@ -2,13 +2,16 @@
 
 use axum::{
     extract::State,
+    Json,
     Router,
     routing::post,
 };
 use phpyun_core::error::InfraError;
-use phpyun_core::{ApiJson, AppError, AppResult, AppState, ValidatedJson};
+use phpyun_core::{ApiJson, AppError, AppResult, AppState, Lang, ValidatedJson};
+use phpyun_models::report::repo as report_repo;
 use phpyun_services::site_setting_service;
 use serde::Serialize;
+use serde_json::{Value, json};
 use utoipa::ToSchema;
 
 pub fn routes() -> Router<AppState> {
@@ -34,11 +37,70 @@ impl From<phpyun_models::site_setting::entity::SiteSetting> for SettingView {
     }
 }
 
-/// List public settings
-#[utoipa::path(post, path = "/v1/wap/site/settings", tag = "wap", responses((status = 200, description = "ok", body = [SettingView])))]
-pub async fn list(State(state): State<AppState>) -> AppResult<ApiJson<Vec<SettingView>>> {
+/// List public settings, or return selectable report reasons when
+/// `key=report_reasons`.
+#[utoipa::path(
+    post,
+    path = "/v1/wap/site/settings",
+    tag = "wap",
+    request_body = GetOneBody,
+    responses((status = 200, description = "Public settings, or report reason options for report_reasons"))
+)]
+pub async fn list(
+    State(state): State<AppState>,
+    lang: Lang,
+    body: Option<Json<GetOneBody>>,
+) -> AppResult<ApiJson<Value>> {
+    if body.as_ref().is_some_and(|b| b.key == "report_reasons") {
+        let reasons = report_repo::list_reasons(state.db.reader()).await?;
+        let data: Vec<ReportReasonView> = reasons
+            .into_iter()
+            .map(|reason| ReportReasonView {
+                id: reason.id,
+                code: reason.id.to_string(),
+                name: localize_reason(reason.id, &reason.name, lang).to_owned(),
+            })
+            .collect();
+        return Ok(ApiJson(json!(data)));
+    }
+
     let list = site_setting_service::list_public(&state).await?;
-    Ok(ApiJson(list.into_iter().map(SettingView::from).collect()))
+    let data: Vec<SettingView> = list.into_iter().map(SettingView::from).collect();
+    Ok(ApiJson(json!(data)))
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct ReportReasonView {
+    pub id: u64,
+    /// Pass this value as `reason_code` when submitting a report.
+    pub code: String,
+    pub name: String,
+}
+
+fn localize_reason<'a>(id: u64, database_name: &'a str, lang: Lang) -> &'a str {
+    match lang {
+        Lang::ZhCN => database_name,
+        Lang::ZhTW => match id {
+            1 => "非建設性提問",
+            2 => "不友善言論、垃圾內容與不適宜討論的內容",
+            3 => "不構成提問或問題表意不明確",
+            4 => "問題已失效或過期",
+            5 => "廣告等垃圾資訊",
+            6 => "違法違規內容",
+            7 => "不宜公開討論的政治內容",
+            _ => database_name,
+        },
+        Lang::En => match id {
+            1 => "Non-constructive content",
+            2 => "Abusive, spam, or inappropriate content",
+            3 => "Unclear or invalid question",
+            4 => "Outdated or no longer relevant",
+            5 => "Advertising or spam",
+            6 => "Illegal or prohibited content",
+            7 => "Sensitive political content",
+            _ => database_name,
+        },
+    }
 }
 
 /// Single public setting

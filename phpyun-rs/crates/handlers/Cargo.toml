@@ -7,6 +7,7 @@ edition.workspace = true
 axum.workspace = true
 tokio.workspace = true
 serde.workspace = true
+serde_json.workspace = true
 validator.workspace = true
 tracing.workspace = true
 sqlx.workspace = true
@@ -27,5 +28,4 @@ anyhow.workspace = true
 thiserror.workspace = true
 regex.workspace = true
 tower = { workspace = true }
-serde_json = { workspace = true }
 tracing-subscriber = { workspace = true }

@@ -111,14 +111,30 @@ impl Modify for UniqueOperationId {
             let set = |m: &str, op: &mut utoipa::openapi::path::Operation| {
                 op.operation_id = Some(format!("{m}_{base}"));
             };
-            if let Some(op) = item.get.as_mut() { set("get", op); }
-            if let Some(op) = item.post.as_mut() { set("post", op); }
-            if let Some(op) = item.put.as_mut() { set("put", op); }
-            if let Some(op) = item.delete.as_mut() { set("delete", op); }
-            if let Some(op) = item.patch.as_mut() { set("patch", op); }
-            if let Some(op) = item.head.as_mut() { set("head", op); }
-            if let Some(op) = item.options.as_mut() { set("options", op); }
-            if let Some(op) = item.trace.as_mut() { set("trace", op); }
+            if let Some(op) = item.get.as_mut() {
+                set("get", op);
+            }
+            if let Some(op) = item.post.as_mut() {
+                set("post", op);
+            }
+            if let Some(op) = item.put.as_mut() {
+                set("put", op);
+            }
+            if let Some(op) = item.delete.as_mut() {
+                set("delete", op);
+            }
+            if let Some(op) = item.patch.as_mut() {
+                set("patch", op);
+            }
+            if let Some(op) = item.head.as_mut() {
+                set("head", op);
+            }
+            if let Some(op) = item.options.as_mut() {
+                set("options", op);
+            }
+            if let Some(op) = item.trace.as_mut() {
+                set("trace", op);
+            }
         }
     }
 }
@@ -140,6 +156,8 @@ impl Modify for UniqueOperationId {
         // auth
         v1::wap::login::mlogin,
         v1::wap::login::login_sms,
+        v1::wap::login::send_email_code,
+        v1::wap::login::login_email,
         v1::wap::auth::logout,
         v1::wap::auth::refresh,
         v1::wap::auth::me,
@@ -254,6 +272,20 @@ impl Modify for UniqueOperationId {
         // mcenter: feedback / reports / chat
         v1::mcenter::feedback::submit,
         v1::mcenter::reports::submit,
+        v1::mcenter::reports::list_mine,
+        v1::mcenter::company_content::addr_list,
+        v1::mcenter::company_content::addr_create,
+        v1::mcenter::company_content::addr_update,
+        v1::mcenter::company_content::addr_delete,
+        v1::mcenter::company_content::content_list,
+        v1::mcenter::company_content::content_get,
+        v1::mcenter::company_content::content_create,
+        v1::mcenter::company_content::content_update,
+        v1::mcenter::company_content::content_delete,
+        v1::mcenter::company_content::gallery_list,
+        v1::mcenter::company_content::gallery_create,
+        v1::mcenter::company_content::gallery_update,
+        v1::mcenter::company_content::gallery_delete,
         v1::mcenter::chat::send,
         v1::mcenter::chat::list_with,
         v1::mcenter::chat::list_conversations,
@@ -688,6 +720,9 @@ impl Modify for UniqueOperationId {
         schemas(
             v1::wap::login::LoginForm,
             v1::wap::login::LoginSmsForm,
+            v1::wap::login::EmailCodeSendForm,
+            v1::wap::login::EmailLoginForm,
+            v1::wap::login::EmailLoginData,
             phpyun_core::dto::AuthTokenData,
             v1::wap::auth::LogoutData,
             v1::wap::auth::MeData,
@@ -757,6 +792,20 @@ impl Modify for UniqueOperationId {
             v1::mcenter::feedback::FeedbackItem,
             v1::mcenter::reports::ReportForm,
             v1::mcenter::reports::ReportItem,
+            v1::mcenter::company_content::AddressView,
+            v1::mcenter::company_content::AddressForm,
+            v1::mcenter::company_content::AddressUpdateBody,
+            v1::mcenter::company_content::ContentView,
+            v1::mcenter::company_content::ContentListQuery,
+            v1::mcenter::company_content::ContentDetailBody,
+            v1::mcenter::company_content::ContentDeleteBody,
+            v1::mcenter::company_content::ContentForm,
+            v1::mcenter::company_content::ContentUpdateBody,
+            v1::mcenter::company_content::GalleryView,
+            v1::mcenter::company_content::GalleryListBody,
+            v1::mcenter::company_content::GalleryDeleteBody,
+            v1::mcenter::company_content::GalleryCreate,
+            v1::mcenter::company_content::GalleryUpdate,
             v1::mcenter::chat::SendForm,
             v1::mcenter::chat::ChatItem,
             phpyun_core::dto::UnreadCount,
@@ -838,6 +887,7 @@ impl Modify for UniqueOperationId {
             v1::admin::company_cert::ReviewForm,
             v1::mcenter::resume_score::Completion,
             v1::wap::site_settings::SettingView,
+            v1::wap::site_settings::ReportReasonView,
             v1::admin::site_settings::SettingItem,
             v1::admin::site_settings::UpsertForm,
             v1::mcenter::contact_cert::MobileSendForm,
@@ -1049,7 +1099,9 @@ pub fn swagger_ui() -> SwaggerUi {
             **jobseeker**(`/v1/mcenter/resume/*` 等求职者专属):\n```\n{js}\n```\n\n\
             **employer**(`/v1/mcenter/applications` 等企业专属):\n```\n{er}\n```\n\n\
             JSON 接口取 token:[`GET /dev/token`](/dev/token)(仅测试环境返回)。\n\n---\n",
-            admin = t.admin, js = t.jobseeker, er = t.employer,
+            admin = t.admin,
+            js = t.jobseeker,
+            er = t.employer,
         );
         let inject = |info: &mut utoipa::openapi::Info| {
             info.description = Some(format!(

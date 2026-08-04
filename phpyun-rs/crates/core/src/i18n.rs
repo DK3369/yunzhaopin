@@ -21,7 +21,7 @@
 //! 2. HTTP header: `Accept-Language: zh-TW` (W3C standard; mobile / browser
 //!    sends it automatically).
 //! 3. Cookie: `lang=en` (persistent site preference).
-//! 4. Server default: `zh-CN`.
+//! 4. Server default: `en`.
 //!
 //! ```text
 //! curl -H 'Accept-Language: en' http://api.example.com/...   ← recommended
@@ -70,7 +70,7 @@ pub enum Lang {
 
 impl Default for Lang {
     fn default() -> Self {
-        Self::ZhCN
+        Self::En
     }
 }
 

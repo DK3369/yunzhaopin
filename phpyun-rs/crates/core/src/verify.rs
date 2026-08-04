@@ -36,6 +36,8 @@ pub enum VerifyKind {
     SmsOnceJob,
     /// Anonymous tiny-resume flow (PHPYun `wap/tiny::sendmsg`).
     SmsTinyResume,
+    /// Passwordless email login; an unknown email is registered after verification.
+    EmailLogin,
     EmailReset,
     EmailChange,
 }
@@ -50,6 +52,7 @@ impl VerifyKind {
             Self::SmsMobileChange => "verify:sms:mchange",
             Self::SmsOnceJob => "verify:sms:once",
             Self::SmsTinyResume => "verify:sms:tiny",
+            Self::EmailLogin => "verify:email:login",
             Self::EmailReset => "verify:email:reset",
             Self::EmailChange => "verify:email:change",
         }
@@ -170,6 +173,7 @@ mod tests {
             VerifyKind::SmsMobileChange.prefix(),
             VerifyKind::SmsOnceJob.prefix(),
             VerifyKind::SmsTinyResume.prefix(),
+            VerifyKind::EmailLogin.prefix(),
             VerifyKind::EmailReset.prefix(),
             VerifyKind::EmailChange.prefix(),
         ];

@@ -1,8 +1,10 @@
 use super::entity::AuditLog;
 use sqlx::{MySqlPool, QueryBuilder};
 
-const FIELDS: &str =
-    "id, actor_uid, actor_ip, actor_ua, action, target, success, meta, created_at";
+const FIELDS: &str = "CAST(id AS UNSIGNED) AS id, \
+    CAST(actor_uid AS UNSIGNED) AS actor_uid, actor_ip, actor_ua, action, target, \
+    CAST(success AS SIGNED) AS success, CAST(meta AS CHAR) AS meta, \
+    CAST(created_at AS SIGNED) AS created_at";
 
 pub struct AuditFilter<'a> {
     pub action_prefix: Option<&'a str>,

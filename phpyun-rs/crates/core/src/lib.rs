@@ -5,7 +5,7 @@
 // to reach the workspace root.
 // The `i18n!` macro must be invoked at the crate root (lib.rs); otherwise the
 // `t!` macro in submodules cannot find the generated static symbols.
-rust_i18n::i18n!("../../locales", fallback = "zh-CN");
+rust_i18n::i18n!("../../locales", fallback = "en");
 
 pub mod admin_guard;
 pub mod audit;

@@ -95,6 +95,7 @@ pub mod job_mgmt_service;
 pub mod job_msg_service;
 pub mod job_service;
 pub mod maintenance;
+pub mod mail_service;
 pub mod map_service;
 pub mod mcenter_service;
 pub mod member_logout_service;

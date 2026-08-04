@@ -5,7 +5,7 @@
 //! `state.db.pool()` (writer) and emit audit logs synchronously.
 
 use phpyun_core::audit::{self, Actor, AuditEvent};
-use phpyun_core::{AppResult, AppState, AuthenticatedUser, Paged, Pagination};
+use phpyun_core::{AppError, AppResult, AppState, AuthenticatedUser, InfraError, Paged, Pagination};
 use phpyun_models::feedback::{entity::Feedback, repo as feedback_repo};
 use phpyun_models::job::{entity::Job, repo as job_repo};
 use phpyun_models::report::{entity::Report, repo as report_repo};
@@ -73,7 +73,10 @@ pub async fn set_report_status(
     report_id: u64,
     status: i32,
 ) -> AppResult<()> {
-    report_repo::set_status(state.db.pool(), report_id, status).await?;
+    let affected = report_repo::set_status(state.db.pool(), report_id, status).await?;
+    if affected == 0 {
+        return Err(AppError::new(InfraError::InvalidParam("report_not_found".into())));
+    }
     let _ = audit::emit(
         state,
         AuditEvent::new("admin.report.set_status", Actor::uid(actor.uid))

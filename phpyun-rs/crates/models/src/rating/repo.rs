@@ -8,8 +8,14 @@
 use super::entity::{Rating, RatingAggregate};
 use sqlx::MySqlPool;
 
-const FIELDS: &str =
-    "id, rater_uid, target_uid, target_kind, stars, comment, status, created_at, updated_at";
+// MySQL stores these timestamps as INT UNSIGNED, while the Rust entities and
+// public API use i64 timestamps. Explicit casts keep sqlx's MySQL decoder from
+// rejecting the unsigned INT metadata (notably on MariaDB/MySQL versions that
+// do not widen INT UNSIGNED to BIGINT for an i64 target).
+const FIELDS: &str = "\
+    id, rater_uid, target_uid, target_kind, stars, comment, status,\
+    CAST(created_at AS SIGNED) AS created_at,\
+    CAST(updated_at AS SIGNED) AS updated_at";
 
 pub async fn find_mine(
     pool: &MySqlPool,
@@ -163,7 +169,8 @@ pub async fn aggregate(
     target_kind: i32,
 ) -> Result<Option<RatingAggregate>, sqlx::Error> {
     sqlx::query_as::<_, RatingAggregate>(
-        "SELECT target_uid, target_kind, count, sum_stars, avg_x100, updated_at
+        "SELECT target_uid, target_kind, count, sum_stars, avg_x100,
+                CAST(updated_at AS SIGNED) AS updated_at
          FROM phpyun_rs_rating_aggregate WHERE target_uid = ? AND target_kind = ?",
     )
     .bind(target_uid)

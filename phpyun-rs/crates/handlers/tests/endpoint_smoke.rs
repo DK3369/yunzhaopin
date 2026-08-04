@@ -126,7 +126,11 @@ async fn smoke_every_v1_post_endpoint() {
             .push(path.clone());
 
         // Read body once; even non-5xx may carry diagnostic info.
-        let bytes = axum::body::to_bytes(resp.into_body(), 64 * 1024)
+        let headers_snapshot = resp.headers().clone();
+        // Admin CMS content can legitimately exceed 64 KiB; keep this above
+        // the configured 20 MiB request/response envelope without masking
+        // runaway responses.
+        let bytes = axum::body::to_bytes(resp.into_body(), 2 * 1024 * 1024)
             .await
             .unwrap_or_default();
         let body_str = String::from_utf8_lossy(&bytes).into_owned();
@@ -142,7 +146,10 @@ async fn smoke_every_v1_post_endpoint() {
             let v: serde_json::Value = match serde_json::from_str(&body_str) {
                 Ok(v) => v,
                 Err(_) => {
-                    bad_envelope.push((path.clone(), "non-JSON body".into()));
+                    bad_envelope.push((
+                        path.clone(),
+                        format!("non-JSON body: {} headers: {:?}", body_str.chars().take(180).collect::<String>(), headers_snapshot),
+                    ));
                     continue;
                 }
             };

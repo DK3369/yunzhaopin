@@ -4,17 +4,16 @@
 //! // Success
 //! { "code": 200, "msg": "ok", "data": { ... } }
 //!
-//! // Failure (different errors carry different codes + short tags; see error.rs)
-//! { "code": 401, "msg": "unauth",                "data": null }
-//! { "code": 429, "msg": "rate_limit",            "data": null }
-//! { "code": 500, "msg": "biz:insufficient_balance", "data": null }
+//! // Failure (see error.rs for stable keys and translation)
+//! { "code": 401, "key": "errors.unauth", "msg": "Not logged in", "data": null }
+//! { "code": 429, "key": "errors.rate_limit", "msg": "Too many requests, please try again later", "data": null }
 //! ```
 //!
 //! ## Design points
 //! - `code` aligns with the HTTP status: frontend, backend, and monitoring all
 //!   read the same number.
-//! - `msg` is a short ASCII tag (`unauth` / `rate_limit` / ...); the frontend
-//!   handles i18n.
+//! - Failure `key` is a stable machine-readable key; failure `msg` is already
+//!   translated for display.
 //! - `data` is the business payload on success; on failure it's `null`
 //!   (`Option::is_none` omits the field during serialization to save bytes).
 //! - `BusinessError(s)` can carry a custom phrase in the form `"biz:<phrase>"`.
@@ -24,8 +23,8 @@
 //! if (resp.code === 200) {
 //!   use resp.data
 //! } else {
-//!   // resp.msg is a short tag; the frontend maps it to user-visible copy
-//!   showToast(i18n[resp.msg] ?? resp.msg)
+//!   // resp.msg is already localized; `resp.key` is for branching/analytics.
+//!   showToast(resp.msg)
 //! }
 //! ```
 

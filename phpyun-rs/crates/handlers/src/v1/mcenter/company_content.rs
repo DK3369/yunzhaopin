@@ -112,6 +112,7 @@ pub struct AddressForm {
     pub y: String,
 }
 
+#[utoipa::path(post, path = "/v1/mcenter/company-addresses", tag = "mcenter", security(("bearer" = [])), responses((status = 200, description = "Paginated company address list")))]
 pub async fn addr_list(
     State(state): State<AppState>,
     user: AuthenticatedUser,
@@ -121,6 +122,7 @@ pub async fn addr_list(
     Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
 }
 
+#[utoipa::path(post, path = "/v1/mcenter/company-addresses/create", tag = "mcenter", security(("bearer" = [])), request_body = AddressForm, responses((status = 200, description = "Created address id")))]
 pub async fn addr_create(
     State(state): State<AppState>,
     user: AuthenticatedUser,
@@ -148,6 +150,7 @@ pub async fn addr_create(
     Ok(ApiJson(json::json!({ "id": id })))
 }
 
+#[utoipa::path(post, path = "/v1/mcenter/company-addresses/update", tag = "mcenter", security(("bearer" = [])), request_body = AddressUpdateBody, responses((status = 200, description = "Updated row count")))]
 pub async fn addr_update(
     State(state): State<AppState>,
     user: AuthenticatedUser,
@@ -176,6 +179,7 @@ pub async fn addr_update(
     Ok(ApiJson(json::json!({ "updated": n })))
 }
 
+#[utoipa::path(post, path = "/v1/mcenter/company-addresses/delete", tag = "mcenter", security(("bearer" = [])), request_body = IdsBody, responses((status = 200, description = "Deleted row count")))]
 pub async fn addr_delete(
     State(state): State<AppState>,
     user: AuthenticatedUser,
@@ -255,6 +259,7 @@ fn parse_content_kind(s: &str) -> AppResult<ContentKind> {
         .ok_or_else(|| AppError::new(InfraError::InvalidParam(format!("kind={s}"))))
 }
 
+#[utoipa::path(post, path = "/v1/mcenter/company-contents/list", tag = "mcenter", security(("bearer" = [])), request_body = ContentListQuery, responses((status = 200, description = "Paginated company content list")))]
 pub async fn content_list(
     State(state): State<AppState>,
     user: AuthenticatedUser,
@@ -273,6 +278,7 @@ pub async fn content_list(
     Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
 }
 
+#[utoipa::path(post, path = "/v1/mcenter/company-contents/detail", tag = "mcenter", security(("bearer" = [])), request_body = ContentDetailBody, responses((status = 200, description = "Company content detail", body = ContentView)))]
 pub async fn content_get(
     State(state): State<AppState>,
     user: AuthenticatedUser,
@@ -312,6 +318,7 @@ pub struct ContentUpdateBody {
     pub file: Option<String>,
 }
 
+#[utoipa::path(post, path = "/v1/mcenter/company-contents/create", tag = "mcenter", security(("bearer" = [])), request_body = ContentForm, responses((status = 200, description = "Created content id")))]
 pub async fn content_create(
     State(state): State<AppState>,
     user: AuthenticatedUser,
@@ -334,6 +341,7 @@ pub async fn content_create(
     Ok(ApiJson(json::json!({ "id": id })))
 }
 
+#[utoipa::path(post, path = "/v1/mcenter/company-contents/update", tag = "mcenter", security(("bearer" = [])), request_body = ContentUpdateBody, responses((status = 200, description = "Updated row count")))]
 pub async fn content_update(
     State(state): State<AppState>,
     user: AuthenticatedUser,
@@ -355,6 +363,7 @@ pub async fn content_update(
     Ok(ApiJson(json::json!({ "updated": n })))
 }
 
+#[utoipa::path(post, path = "/v1/mcenter/company-contents/delete", tag = "mcenter", security(("bearer" = [])), request_body = ContentDeleteBody, responses((status = 200, description = "Deleted row count")))]
 pub async fn content_delete(
     State(state): State<AppState>,
     user: AuthenticatedUser,
@@ -408,6 +417,7 @@ pub struct GalleryDeleteBody {
     pub ids: Vec<u64>,
 }
 
+#[utoipa::path(post, path = "/v1/mcenter/galleries/list", tag = "mcenter", security(("bearer" = [])), request_body = GalleryListBody, responses((status = 200, description = "Paginated gallery list")))]
 pub async fn gallery_list(
     State(state): State<AppState>,
     user: AuthenticatedUser,
@@ -434,6 +444,7 @@ pub struct GalleryCreate {
     pub sort: i32,
 }
 
+#[utoipa::path(post, path = "/v1/mcenter/galleries/create", tag = "mcenter", security(("bearer" = [])), request_body = GalleryCreate, responses((status = 200, description = "Created gallery id")))]
 pub async fn gallery_create(
     State(state): State<AppState>,
     user: AuthenticatedUser,
@@ -459,6 +470,7 @@ pub struct GalleryUpdate {
     pub sort: Option<i32>,
 }
 
+#[utoipa::path(post, path = "/v1/mcenter/galleries/update", tag = "mcenter", security(("bearer" = [])), request_body = GalleryUpdate, responses((status = 200, description = "Updated row count")))]
 pub async fn gallery_update(
     State(state): State<AppState>,
     user: AuthenticatedUser,
@@ -478,6 +490,7 @@ pub async fn gallery_update(
     Ok(ApiJson(json::json!({ "updated": n })))
 }
 
+#[utoipa::path(post, path = "/v1/mcenter/galleries/delete", tag = "mcenter", security(("bearer" = [])), request_body = GalleryDeleteBody, responses((status = 200, description = "Deleted row count")))]
 pub async fn gallery_delete(
     State(state): State<AppState>,
     user: AuthenticatedUser,

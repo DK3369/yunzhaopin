@@ -13,6 +13,13 @@ pub struct Report {
     pub created_at: i64,
 }
 
+/// A selectable reason from the legacy `phpyun_reason` table.
+#[derive(Debug, Clone, FromRow, Serialize, Deserialize)]
+pub struct ReportReason {
+    pub id: u64,
+    pub name: String,
+}
+
 pub const KIND_JOB: i32 = 1;
 pub const KIND_COMPANY: i32 = 2;
 pub const KIND_RESUME: i32 = 3;

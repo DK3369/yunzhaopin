@@ -22,8 +22,8 @@ async fn audit_underlying_table_counts() {
     // (endpoint, [tables to count])
     let probes: &[(&str, &[(&str, &str)])] = &[
         ("/v1/wap/articles",            &[("phpyun_news_base", "1=1")]),
-        ("/v1/wap/companies",           &[("phpyun_company", "show_status = 1")]),
-        ("/v1/wap/companies/hot",       &[("phpyun_company", "show_status = 1")]),
+        ("/v1/wap/companies",           &[("phpyun_company", "r_status = 1")]),
+        ("/v1/wap/companies/hot",       &[("phpyun_company", "r_status = 1")]),
         ("/v1/wap/parts",               &[("phpyun_partjob", "1=1")]),
         ("/v1/wap/zph",                 &[("phpyun_zhaopinhui", "1=1")]),
         ("/v1/wap/specials",            &[("phpyun_special", "1=1")]),
@@ -44,7 +44,7 @@ async fn audit_underlying_table_counts() {
         ("/v1/wap/data-show/company-city",   &[("phpyun_company", "1=1")]),
         ("/v1/wap/data-show/company-scale",  &[("phpyun_company", "1=1")]),
         ("/v1/wap/data-show/company-property", &[("phpyun_company", "1=1")]),
-        ("/v1/mcenter/eval-logs",       &[("phpyun_examinee", "uid = 1")]),
+        ("/v1/mcenter/eval-logs",       &[("phpyun_evaluate_log", "uid = 1")]),
         ("/v1/mcenter/my/questions",    &[("phpyun_question", "uid = 1")]),
         ("/v1/mcenter/my/answers",      &[("phpyun_answer", "uid = 1")]),
         ("/v1/mcenter/recommend/jobs",  &[("phpyun_company_job", "state = 1 AND status = 0 AND r_status = 1")]),

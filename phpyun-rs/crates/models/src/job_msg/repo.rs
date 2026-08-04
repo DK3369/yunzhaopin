@@ -90,6 +90,28 @@ pub async fn list_public_for_job(
         .await
 }
 
+/// Latest visible, answered inquiries for a job regardless of legacy
+/// message `type`. The job detail page historically displayed both kinds.
+pub async fn list_public_for_job_any_type(
+    pool: &MySqlPool,
+    jobid: u64,
+    job_uid: u64,
+    limit: u64,
+) -> Result<Vec<JobMsg>, sqlx::Error> {
+    let sql = format!(
+        "SELECT {FIELDS} FROM phpyun_msg \
+         WHERE jobid = ? AND job_uid = ? AND status = 1 \
+           AND reply IS NOT NULL AND reply != '' AND del_status = 0 \
+         ORDER BY datetime DESC LIMIT ?"
+    );
+    sqlx::query_as::<_, JobMsg>(&sql)
+        .bind(jobid)
+        .bind(job_uid)
+        .bind(limit)
+        .fetch_all(pool)
+        .await
+}
+
 pub async fn count_public_for_job(
     pool: &MySqlPool,
     jobid: u64,

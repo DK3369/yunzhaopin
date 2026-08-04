@@ -13,7 +13,7 @@
 //! - `status`       → `status`
 //! - `created_at`   → `inputtime`
 
-use super::entity::Report;
+use super::entity::{Report, ReportReason};
 use sqlx::MySqlPool;
 
 const SELECT_FIELDS: &str = "CAST(id AS UNSIGNED) AS id, \
@@ -24,6 +24,32 @@ const SELECT_FIELDS: &str = "CAST(id AS UNSIGNED) AS id, \
                              result AS detail, \
                              COALESCE(status, 0) AS status, \
                              COALESCE(inputtime, 0) AS created_at";
+
+pub async fn list_reasons(pool: &MySqlPool) -> Result<Vec<ReportReason>, sqlx::Error> {
+    sqlx::query_as::<_, ReportReason>(
+        "SELECT CAST(id AS UNSIGNED) AS id, COALESCE(name, '') AS name \
+         FROM phpyun_reason ORDER BY id ASC",
+    )
+    .fetch_all(pool)
+    .await
+}
+
+/// Resolve a client supplied reason code. New clients send the numeric id as
+/// a string; accepting the exact legacy name keeps older clients working.
+pub async fn resolve_reason(
+    pool: &MySqlPool,
+    code_or_name: &str,
+) -> Result<Option<ReportReason>, sqlx::Error> {
+    let id = code_or_name.parse::<u64>().ok().unwrap_or_default();
+    sqlx::query_as::<_, ReportReason>(
+        "SELECT CAST(id AS UNSIGNED) AS id, COALESCE(name, '') AS name \
+         FROM phpyun_reason WHERE id = ? OR name = ? ORDER BY id ASC LIMIT 1",
+    )
+    .bind(id)
+    .bind(code_or_name)
+    .fetch_optional(pool)
+    .await
+}
 
 pub struct ReportCreate<'a> {
     pub reporter_uid: u64,
@@ -76,6 +102,25 @@ pub async fn count_by_reporter(
         "SELECT COUNT(*) FROM phpyun_report WHERE c_uid = ?",
     )
     .bind(reporter_uid)
+    .fetch_one(pool)
+    .await?;
+    Ok(n.max(0) as u64)
+}
+
+/// Legacy job-detail context check. PHPYun stores the viewed user/company
+/// relationship in `p_uid`/`c_uid`, while `eid` identifies the job.
+pub async fn count_job_report_context(
+    pool: &MySqlPool,
+    user_uid: u64,
+    job_id: u64,
+    company_uid: u64,
+) -> Result<u64, sqlx::Error> {
+    let (n,): (i64,) = sqlx::query_as(
+        "SELECT COUNT(*) FROM phpyun_report WHERE p_uid = ? AND eid = ? AND c_uid = ?",
+    )
+    .bind(user_uid)
+    .bind(job_id)
+    .bind(company_uid)
     .fetch_one(pool)
     .await?;
     Ok(n.max(0) as u64)

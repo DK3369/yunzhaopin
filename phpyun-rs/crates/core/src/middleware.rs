@@ -15,14 +15,16 @@
 use crate::config::Config;
 use axum::{
     extract::{MatchedPath, Request},
-    http::{header, HeaderName, HeaderValue, Method},
+    http::{header, HeaderName, HeaderValue, Method, StatusCode},
     middleware::Next,
-    response::Response,
+    response::{IntoResponse, Response},
+    Json,
     Router,
 };
+use serde_json::json;
 use std::{sync::Arc, time::Duration};
 use tower::limit::ConcurrencyLimitLayer;
-use tower_governor::{governor::GovernorConfigBuilder, GovernorLayer};
+use tower_governor::{governor::GovernorConfigBuilder, GovernorError, GovernorLayer};
 use tower_http::{
     compression::CompressionLayer,
     cors::{AllowOrigin, CorsLayer},
@@ -80,7 +82,7 @@ where
             axum::http::StatusCode::REQUEST_TIMEOUT,
             Duration::from_secs(cfg.request_timeout_secs),
         ))
-        .layer(GovernorLayer::new(governor_conf))
+        .layer(GovernorLayer::new(governor_conf).error_handler(governor_error_response))
         .layer(CompressionLayer::new())
         .layer(cors)
         // Security response headers (added to every response).
@@ -101,6 +103,130 @@ where
         // Outermost: metrics middleware for accurate end-to-end latency.
         .layer(axum::middleware::from_fn(latency_metrics))
         .layer(trace)
+        // Normalize framework rejections (method filter, body limit, timeout,
+        // unmatched API routes, etc.) into the same JSON/i18n contract as
+        // handler errors. This keeps clients from seeing bare text responses.
+        .layer(axum::middleware::from_fn(normalize_api_rejections))
+}
+
+/// Convert non-JSON failures on business routes into the public response
+/// envelope. Handler-produced JSON is left untouched, including its detailed
+/// validation payloads; only framework-generated text/empty responses are
+/// replaced.
+async fn normalize_api_rejections(req: Request, next: Next) -> Response {
+    let path = req.uri().path().to_string();
+    let response = next.run(req).await;
+    if !path.starts_with("/v1/") || response.status().as_u16() < 400 {
+        return response;
+    }
+
+    let is_json = response
+        .headers()
+        .get(header::CONTENT_TYPE)
+        .and_then(|value| value.to_str().ok())
+        .is_some_and(|value| value.to_ascii_lowercase().starts_with("application/json"));
+    if is_json {
+        return response;
+    }
+
+    let status = response.status();
+    let key = match status {
+        StatusCode::UNAUTHORIZED => "errors.unauth",
+        StatusCode::FORBIDDEN => "errors.forbidden",
+        StatusCode::NOT_FOUND => "errors.not_found",
+        StatusCode::METHOD_NOT_ALLOWED => "errors.method_not_allowed",
+        StatusCode::REQUEST_TIMEOUT => "errors.timeout",
+        StatusCode::PAYLOAD_TOO_LARGE => "errors.body_too_large",
+        StatusCode::TOO_MANY_REQUESTS => "errors.rate_limit",
+        StatusCode::SERVICE_UNAVAILABLE => "errors.unavailable",
+        StatusCode::BAD_REQUEST | StatusCode::UNPROCESSABLE_ENTITY => "errors.param_invalid",
+        _ if status.is_server_error() => "errors.internal",
+        _ => "errors.request_failed",
+    };
+    let lang = crate::i18n::current_lang();
+    let msg = crate::i18n::t(key, lang);
+    let mut normalized = Json(json!({
+        "code": status.as_u16(),
+        "key": key,
+        "msg": msg,
+        "data": null,
+    }))
+    .into_response();
+    *normalized.status_mut() = status;
+
+    // Keep operational headers such as Retry-After and request IDs, but let
+    // Json set the correct content type and content length.
+    for (name, value) in response.headers() {
+        if name != header::CONTENT_TYPE && name != header::CONTENT_LENGTH {
+            normalized.headers_mut().insert(name.clone(), value.clone());
+        }
+    }
+    normalized
+}
+
+fn localized_rejection(status: StatusCode, key: &'static str) -> Response {
+    let lang = crate::i18n::current_lang();
+    let msg = crate::i18n::t(key, lang);
+    (status, Json(json!({
+        "code": status.as_u16(),
+        "key": key,
+        "msg": msg,
+        "data": null,
+    })))
+        .into_response()
+}
+
+/// Convert rate-limit middleware rejections into the same JSON/i18n envelope
+/// used by handler errors. The default implementation is plain text, which
+/// breaks clients and the response contract under load.
+fn governor_error_response(error: GovernorError) -> Response {
+    let (status, key, msg, headers) = match error {
+        GovernorError::TooManyRequests { headers, .. } => {
+            let lang = crate::i18n::current_lang();
+            (
+                axum::http::StatusCode::TOO_MANY_REQUESTS,
+                "errors.rate_limit",
+                crate::i18n::t("errors.rate_limit", lang),
+                headers,
+            )
+        }
+        GovernorError::UnableToExtractKey => {
+            let lang = crate::i18n::current_lang();
+            (
+                axum::http::StatusCode::INTERNAL_SERVER_ERROR,
+                "errors.internal",
+                crate::i18n::t("errors.internal", lang),
+                None,
+            )
+        }
+        GovernorError::Other { code, headers, .. } => {
+            let lang = crate::i18n::current_lang();
+            let status = if code.is_server_error() {
+                axum::http::StatusCode::INTERNAL_SERVER_ERROR
+            } else {
+                code
+            };
+            let key = if status == axum::http::StatusCode::TOO_MANY_REQUESTS {
+                "errors.rate_limit"
+            } else {
+                "errors.internal"
+            };
+            (status, key, crate::i18n::t(key, lang), headers)
+        }
+    };
+
+    let mut response = Json(json!({
+        "code": status.as_u16(),
+        "key": key,
+        "msg": msg,
+        "data": null,
+    }))
+    .into_response();
+    *response.status_mut() = status;
+    if let Some(headers) = headers {
+        response.headers_mut().extend(headers);
+    }
+    response
 }
 
 /// Method filter:
@@ -118,10 +244,7 @@ where
 /// needs GET (WeChat's verification handshake mandates GET + query string —
 /// outside our control). We allow-list it explicitly.
 async fn only_get_post(req: Request, next: Next) -> Response {
-    use axum::{
-        http::{Method, StatusCode},
-        response::IntoResponse,
-    };
+    use axum::http::Method;
     let path = req.uri().path();
     let method = req.method();
 
@@ -129,7 +252,7 @@ async fn only_get_post(req: Request, next: Next) -> Response {
     if path == "/v1/wap/wechat/callback" {
         return match *method {
             Method::GET | Method::POST | Method::HEAD | Method::OPTIONS => next.run(req).await,
-            _ => StatusCode::METHOD_NOT_ALLOWED.into_response(),
+            _ => localized_rejection(StatusCode::METHOD_NOT_ALLOWED, "errors.method_not_allowed"),
         };
     }
 
@@ -137,7 +260,7 @@ async fn only_get_post(req: Request, next: Next) -> Response {
     if path.starts_with("/v1/") {
         return match *method {
             Method::POST | Method::HEAD | Method::OPTIONS => next.run(req).await,
-            _ => StatusCode::METHOD_NOT_ALLOWED.into_response(),
+            _ => localized_rejection(StatusCode::METHOD_NOT_ALLOWED, "errors.method_not_allowed"),
         };
     }
 
@@ -145,7 +268,7 @@ async fn only_get_post(req: Request, next: Next) -> Response {
     //    permissive GET / POST allowance.
     match *method {
         Method::GET | Method::POST | Method::HEAD | Method::OPTIONS => next.run(req).await,
-        _ => StatusCode::NOT_FOUND.into_response(),
+        _ => localized_rejection(StatusCode::NOT_FOUND, "errors.not_found"),
     }
 }
 
@@ -181,7 +304,6 @@ const BOT_UA_PATTERNS: &[&str] = &[
 /// (k8s probes, internal monitoring, our own curl smoke-tests often have none),
 /// but anything matching the blacklist is dropped before rate-limit / DB.
 async fn block_bots(req: Request, next: Next) -> Response {
-    use axum::{http::StatusCode, response::IntoResponse};
     if let Some(ua) = req
         .headers()
         .get(header::USER_AGENT)
@@ -189,7 +311,7 @@ async fn block_bots(req: Request, next: Next) -> Response {
     {
         let ua_lower = ua.to_ascii_lowercase();
         if BOT_UA_PATTERNS.iter().any(|p| ua_lower.contains(p)) {
-            return (StatusCode::FORBIDDEN, "bots are not welcome here").into_response();
+            return localized_rejection(StatusCode::FORBIDDEN, "errors.forbidden");
         }
     }
     next.run(req).await

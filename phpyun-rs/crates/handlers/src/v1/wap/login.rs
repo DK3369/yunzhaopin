@@ -27,6 +27,8 @@ pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/login", post(mlogin))
         .route("/login/sms", post(login_sms))
+        .route("/login/email/code", post(send_email_code))
+        .route("/login/email", post(login_email))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
@@ -137,6 +139,108 @@ pub async fn login_sms(
         uid: r.uid,
         usertype: r.usertype,
         access_token: r.access,
+    }))
+}
+
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct EmailCodeSendForm {
+    #[validate(email)]
+    pub email: String,
+    /// Temporarily optional: image-captcha verification is disabled for this endpoint.
+    #[serde(default)]
+    #[validate(length(max = 64))]
+    pub captcha_cid: Option<String>,
+    /// Temporarily optional: image-captcha verification is disabled for this endpoint.
+    #[serde(default)]
+    #[validate(length(max = 16))]
+    pub authcode: Option<String>,
+}
+
+/// Send a six-digit code for passwordless email login or automatic registration.
+#[utoipa::path(
+    post,
+    path = "/v1/wap/login/email/code",
+    tag = "auth",
+    request_body = EmailCodeSendForm,
+    responses(
+        (status = 200, description = "Email accepted for delivery"),
+        (status = 400, description = "Invalid email"),
+        (status = 429, description = "Rate limited"),
+        (status = 502, description = "Mail delivery failed"),
+    )
+)]
+pub async fn send_email_code(
+    State(state): State<AppState>,
+    ValidatedJson(form): ValidatedJson<EmailCodeSendForm>,
+) -> AppResult<phpyun_core::ApiOk> {
+    // TEMP: image-captcha verification intentionally disabled. Email-based
+    // per-minute and per-hour rate limits remain enforced in the service.
+    user_service::send_email_login_code(&state, &form.email).await?;
+    Ok(phpyun_core::ApiOk("sent"))
+}
+
+fn default_email_usertype() -> u8 {
+    1
+}
+
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct EmailLoginForm {
+    #[validate(email)]
+    pub email: String,
+    #[validate(length(min = 6, max = 6))]
+    pub code: String,
+    #[serde(
+        default = "default_email_usertype",
+        deserialize_with = "phpyun_core::date_parse::de_loose_u8"
+    )]
+    #[validate(range(min = 1, max = 3))]
+    pub usertype: u8,
+    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_u32")]
+    #[validate(range(max = 999))]
+    pub did: u32,
+}
+
+#[derive(Debug, serde::Serialize, ToSchema)]
+pub struct EmailLoginData {
+    pub uid: u64,
+    pub usertype: u8,
+    pub access_token: String,
+    pub is_new: bool,
+}
+
+/// Passwordless email authentication: existing users log in; unknown emails register and log in.
+#[utoipa::path(
+    post,
+    path = "/v1/wap/login/email",
+    tag = "auth",
+    request_body = EmailLoginForm,
+    responses(
+        (status = 200, description = "Logged in or registered", body = EmailLoginData),
+        (status = 400, description = "Invalid or expired code"),
+        (status = 423, description = "Account locked"),
+    )
+)]
+pub async fn login_email(
+    State(state): State<AppState>,
+    ClientIp(ip): ClientIp,
+    headers: HeaderMap,
+    ValidatedJson(form): ValidatedJson<EmailLoginForm>,
+) -> AppResult<ApiJson<EmailLoginData>> {
+    let ua = ua_from(&headers);
+    let (result, is_new) = user_service::login_or_register_with_email_code(
+        &state,
+        &form.email,
+        &form.code,
+        form.usertype,
+        form.did,
+        LoginContext { ip: &ip, ua: &ua },
+    )
+    .await?;
+    Ok(ApiJson(EmailLoginData {
+        uid: result.uid,
+        usertype: result.usertype,
+        access_token: result.access,
+        is_new,
     }))
 }
 

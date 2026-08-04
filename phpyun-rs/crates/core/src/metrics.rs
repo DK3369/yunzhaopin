@@ -65,6 +65,7 @@ pub fn auth_event(kind: &'static str, reason: Option<&'static str>) {
         "logout" => "auth.logout",
         "token_refreshed" => "auth.token_refreshed",
         "password_upgraded" => "auth.password_upgraded",
+        "email_login_code_sent" => "auth.email_login_code_sent",
         other => {
             // Unregistered kinds are still allowed through, but a warn lets us
             // catch any that slipped past the typed list.

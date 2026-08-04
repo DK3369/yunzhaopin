@@ -1,6 +1,12 @@
 use super::entity::{conv_key_for, Chat};
 use sqlx::MySqlPool;
 
+const FIELDS: &str = "CAST(id AS UNSIGNED) AS id, \
+    CAST(sender_uid AS UNSIGNED) AS sender_uid, \
+    CAST(receiver_uid AS UNSIGNED) AS receiver_uid, \
+    conv_key, body, CAST(is_read AS SIGNED) AS is_read, \
+    CAST(created_at AS SIGNED) AS created_at";
+
 pub async fn send(
     pool: &MySqlPool,
     sender_uid: u64,
@@ -35,24 +41,22 @@ pub async fn list_with_peer(
     let conv_key = conv_key_for(self_uid, peer_uid);
     let row_limit = limit.clamp(1, 200);
     let q = if let Some(before) = before_id {
-        sqlx::query_as::<_, Chat>(
-            r#"SELECT id, sender_uid, receiver_uid, conv_key, body, is_read, created_at
+        let sql = format!(r#"SELECT {FIELDS}
                FROM phpyun_rs_chat
                WHERE conv_key = ? AND id < ?
-               ORDER BY id DESC LIMIT ?"#,
-        )
+               ORDER BY id DESC LIMIT ?"#);
+        sqlx::query_as::<_, Chat>(&sql)
         .bind(conv_key)
         .bind(before)
         .bind(row_limit)
         .fetch_all(pool)
         .await
     } else {
-        sqlx::query_as::<_, Chat>(
-            r#"SELECT id, sender_uid, receiver_uid, conv_key, body, is_read, created_at
+        let sql = format!(r#"SELECT {FIELDS}
                FROM phpyun_rs_chat
                WHERE conv_key = ?
-               ORDER BY id DESC LIMIT ?"#,
-        )
+               ORDER BY id DESC LIMIT ?"#);
+        sqlx::query_as::<_, Chat>(&sql)
         .bind(conv_key)
         .bind(row_limit)
         .fetch_all(pool)
@@ -75,7 +79,11 @@ pub async fn list_conversations(
     // For each conv_key, fetch the row with the largest id.
     phpyun_core::db::ok_default_if_object_missing(
         sqlx::query_as::<_, Chat>(
-            r#"SELECT c.id, c.sender_uid, c.receiver_uid, c.conv_key, c.body, c.is_read, c.created_at
+            r#"SELECT CAST(c.id AS UNSIGNED) AS id,
+                      CAST(c.sender_uid AS UNSIGNED) AS sender_uid,
+                      CAST(c.receiver_uid AS UNSIGNED) AS receiver_uid,
+                      c.conv_key, c.body, CAST(c.is_read AS SIGNED) AS is_read,
+                      CAST(c.created_at AS SIGNED) AS created_at
                FROM phpyun_rs_chat c
                INNER JOIN (
                  SELECT conv_key, MAX(id) AS max_id

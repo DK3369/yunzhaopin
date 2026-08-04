@@ -21,6 +21,8 @@ use phpyun_core::{
     metrics::{auth_event, cache_hit, cache_miss},
     rate_limit, AppError, AppResult, AppState,
 };
+use phpyun_models::company::repo as company_repo;
+use phpyun_models::resume::repo as resume_repo;
 use phpyun_models::user::{entity::Member, repo as user_repo};
 
 use crate::user_session_service::{self, LoginRecord};
@@ -37,6 +39,8 @@ pub struct LoginContext<'a> {
 use crate::user_error::UserError;
 use std::sync::Arc;
 use std::time::Duration;
+
+const EMAIL_LOGIN_TTL_SECS: u64 = 600;
 
 // ==================== Login ====================
 
@@ -121,7 +125,12 @@ pub async fn login(
         refresh_exp,
         jti_access,
         jti_refresh,
-    } = issue_pair(&state.config, user.uid, user.usertype as u8, user.did as u32)?;
+    } = issue_pair(
+        &state.config,
+        user.uid,
+        user.usertype as u8,
+        user.did as u32,
+    )?;
 
     // Record the login as a session row so the user can list / kick devices.
     // Best-effort: never blocks login on session-table failure.
@@ -262,6 +271,180 @@ pub async fn login_with_sms_code(
         access_exp,
         refresh_exp,
     })
+}
+
+/// Issue a one-time code for the merged email login/registration flow.
+pub async fn send_email_login_code(state: &AppState, email: &str) -> AppResult<()> {
+    use phpyun_core::verify::{self, VerifyKind};
+
+    let email = email.trim().to_ascii_lowercase();
+    rate_limit::check_and_incr(
+        &state.redis,
+        &format!("rl:email:login:hour:{email}"),
+        rate_limit::LimitRule {
+            max: 5,
+            window: Duration::from_secs(3600),
+        },
+    )
+    .await?;
+    rate_limit::check_and_incr(
+        &state.redis,
+        &format!("rl:email:login:min:{email}"),
+        rate_limit::LimitRule {
+            max: 1,
+            window: Duration::from_secs(60),
+        },
+    )
+    .await?;
+
+    let code = verify::gen_digit_code(6);
+    crate::mail_service::send_text(
+        state,
+        &email,
+        "Your login verification code",
+        &format!(
+            "Your verification code is {code}. It expires in {} minutes. If you did not request it, ignore this email.",
+            EMAIL_LOGIN_TTL_SECS / 60
+        ),
+    )
+    .await?;
+    verify::issue(
+        &state.redis,
+        VerifyKind::EmailLogin,
+        &email,
+        &code,
+        Duration::from_secs(EMAIL_LOGIN_TTL_SECS),
+    )
+    .await?;
+    auth_event("email_login_code_sent", None);
+    Ok(())
+}
+
+/// Verify an email code, then log in an existing account or atomically create a new one.
+pub async fn login_or_register_with_email_code(
+    state: &AppState,
+    email: &str,
+    code: &str,
+    usertype: u8,
+    did: u32,
+    ctx: LoginContext<'_>,
+) -> AppResult<(LoginResult, bool)> {
+    use phpyun_core::verify::{self, VerifyKind};
+
+    let email = email.trim().to_ascii_lowercase();
+    if !verify::verify(&state.redis, VerifyKind::EmailLogin, &email, code).await? {
+        auth_event("login_fail", Some("bad_email_code"));
+        return Err(AppError::param_invalid("email_code"));
+    }
+
+    let (user, is_new) = match user_repo::find_by_email_loose(state.db.pool(), &email).await? {
+        Some(user) => (user, false),
+        None => {
+            let now = phpyun_core::clock::now_ts();
+            let salt = uuid::Uuid::now_v7()
+                .simple()
+                .to_string()
+                .chars()
+                .take(16)
+                .collect::<String>();
+            let random_password = uuid::Uuid::new_v4().simple().to_string();
+            let hash = argon2_hash_async(format!("{random_password}{salt}")).await?;
+            let email_c = email.clone();
+            let ip = ctx.ip.to_string();
+            let uid = state
+                .db
+                .with_tx(|tx| {
+                    Box::pin(async move {
+                        let uid = user_repo::create_member(
+                            &mut **tx,
+                            &email_c,
+                            &hash,
+                            &salt,
+                            None,
+                            Some(&email_c),
+                            usertype,
+                            did,
+                            &ip,
+                            now,
+                        )
+                        .await?;
+                        match usertype {
+                            1 => resume_repo::ensure_row_in_tx(&mut **tx, uid, did, now).await?,
+                            2 => company_repo::ensure_row(&mut **tx, uid, did).await?,
+                            _ => {}
+                        }
+                        Ok::<u64, AppError>(uid)
+                    })
+                })
+                .await?;
+            let user = user_repo::find_by_uid(state.db.pool(), uid)
+                .await?
+                .ok_or_else(|| {
+                    AppError::internal(std::io::Error::other("email registration lookup failed"))
+                })?;
+            auth_event("register_success", Some("email"));
+            let _ = audit::emit(
+                state,
+                AuditEvent::new("user.register", Actor::uid(uid).with_ip(ctx.ip))
+                    .target(format!("uid:{uid}"))
+                    .meta(&serde_json::json!({ "regway": 3, "usertype": usertype, "did": did })),
+            )
+            .await;
+            (user, true)
+        }
+    };
+
+    if user.status == 2 {
+        return Err(AppError::locked());
+    }
+    rate_limit::clear_login_fail(&state.redis, &email).await;
+    let JwtIssued {
+        access,
+        refresh,
+        access_exp,
+        refresh_exp,
+        jti_access,
+        jti_refresh,
+    } = issue_pair(
+        &state.config,
+        user.uid,
+        user.usertype as u8,
+        user.did as u32,
+    )?;
+    let _ = user_session_service::record_login(
+        state,
+        LoginRecord {
+            uid: user.uid,
+            usertype: user.usertype as u8,
+            jti_access: &jti_access,
+            jti_refresh: &jti_refresh,
+            access_exp,
+            refresh_exp,
+            ip: ctx.ip,
+            ua: ctx.ua,
+        },
+    )
+    .await;
+    auth_event("login_success", Some("email"));
+    let _ = audit::emit(
+        state,
+        AuditEvent::new("user.login", Actor::uid(user.uid).with_ip(ctx.ip))
+            .target(format!("uid:{}", user.uid))
+            .meta(&serde_json::json!({ "via": "email", "is_new": is_new })),
+    )
+    .await;
+
+    Ok((
+        LoginResult {
+            access,
+            refresh,
+            uid: user.uid,
+            usertype: user.usertype as u8,
+            access_exp,
+            refresh_exp,
+        },
+        is_new,
+    ))
 }
 
 // ==================== Logout ====================
