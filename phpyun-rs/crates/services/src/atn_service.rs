@@ -35,16 +35,7 @@ pub async fn toggle(
     target_uid: u64,
 ) -> AppResult<FollowResult> {
     user.require_jobseeker()?;
-    if !matches!(target_kind, KIND_USER | KIND_COMPANY) {
-        return Err(AppError::param_invalid("target_kind"));
-    }
-    if target_uid == 0 {
-        return Err(AppError::param_invalid("target_uid"));
-    }
-    if target_uid == user.uid {
-        // PHP returns errcode=2 "自己不能关注自己"
-        return Err(AppError::param_invalid("self_follow_forbidden"));
-    }
+    validate_target(user.uid, target_kind, target_uid)?;
 
     let pool = state.db.pool();
     let existing = atn_repo::find_one(pool, user.uid, target_uid, target_kind).await?;
@@ -74,6 +65,40 @@ pub async fn toggle(
         }
         Ok(FollowResult { following: true })
     }
+}
+
+/// Remove a follow edge without toggling it back on when the edge is absent.
+/// This is used by the unified favorites/remove endpoint; the legacy follows
+/// endpoint keeps its toggle semantics.
+pub async fn remove(
+    state: &AppState,
+    user: &AuthenticatedUser,
+    target_kind: i32,
+    target_uid: u64,
+) -> AppResult<()> {
+    user.require_jobseeker()?;
+    validate_target(user.uid, target_kind, target_uid)?;
+
+    let n = atn_repo::delete_edge(state.db.pool(), user.uid, target_uid, target_kind).await?;
+    if n > 0 && target_kind == KIND_COMPANY {
+        let _ = atn_repo::bump_company_ant_num(state.db.pool(), target_uid, -1).await;
+        best_effort_notify(state, user, target_uid, target_kind, false).await;
+    }
+    Ok(())
+}
+
+fn validate_target(viewer_uid: u64, target_kind: i32, target_uid: u64) -> AppResult<()> {
+    if !matches!(target_kind, KIND_USER | KIND_COMPANY) {
+        return Err(AppError::param_invalid("kind"));
+    }
+    if target_uid == 0 {
+        return Err(AppError::param_invalid("target_id"));
+    }
+    if target_uid == viewer_uid {
+        // PHP returns errcode=2 "自己不能关注自己"
+        return Err(AppError::param_invalid("self_follow_forbidden"));
+    }
+    Ok(())
 }
 
 async fn best_effort_notify(

@@ -90,6 +90,16 @@ fn follow_routes_registered() {
 }
 
 #[test]
+fn unified_favorite_routes_registered() {
+    assert_endpoint("POST", "/v1/mcenter/favorites");
+    assert_endpoint("POST", "/v1/mcenter/favorites/list");
+    assert_endpoint("POST", "/v1/mcenter/favorites/exists");
+    assert_endpoint("POST", "/v1/mcenter/favorites/remove");
+    assert_schema("FavoriteListForm");
+    assert_schema("FavoriteListItem");
+}
+
+#[test]
 fn unread_summary_registered() {
     // PHP wap/ajax::msgNum_action → GET /v1/mcenter/messages/unread-summary
     assert_endpoint("POST", "/v1/mcenter/messages/unread-summary");
@@ -128,7 +138,6 @@ fn v1_doc_path_count_floor() {
 
 // ==================== Methods are unique on shared paths ====================
 
-#[test]
 #[test]
 fn follows_routes_post_only() {
     let openapi = doc();

@@ -32,7 +32,8 @@ pub async fn list_by_viewer(
     limit: u64,
 ) -> Result<Vec<View>, sqlx::Error> {
     sqlx::query_as::<_, View>(
-        r#"SELECT id, viewer_uid, kind, target_id, datetime
+        r#"SELECT id, viewer_uid, kind, target_id,
+                  CAST(datetime AS SIGNED) AS datetime
            FROM phpyun_rs_views
            WHERE viewer_uid = ? AND kind = ?
            ORDER BY datetime DESC
@@ -71,7 +72,8 @@ pub async fn list_by_target(
     limit: u64,
 ) -> Result<Vec<View>, sqlx::Error> {
     sqlx::query_as::<_, View>(
-        r#"SELECT id, viewer_uid, kind, target_id, datetime
+        r#"SELECT id, viewer_uid, kind, target_id,
+                  CAST(datetime AS SIGNED) AS datetime
            FROM phpyun_rs_views
            WHERE kind = ? AND target_id = ?
            ORDER BY datetime DESC

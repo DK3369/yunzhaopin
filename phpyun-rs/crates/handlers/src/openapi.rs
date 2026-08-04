@@ -216,6 +216,7 @@ impl Modify for UniqueOperationId {
         v1::mcenter::applications::invite,
         // mcenter: favorites
         v1::mcenter::favorites::add,
+        v1::mcenter::favorites::list,
         v1::mcenter::favorites::remove,
         v1::mcenter::favorites::exists,
         // mcenter: resume children (jobseeker)
@@ -757,6 +758,8 @@ impl Modify for UniqueOperationId {
             v1::mcenter::apply::MyApplySummary,
             v1::mcenter::applications::ApplicantSummary,
             v1::mcenter::favorites::AddFavoriteForm,
+            v1::mcenter::favorites::FavoriteListForm,
+            v1::mcenter::favorites::FavoriteListItem,
             v1::mcenter::favorites::ToggleResp,
             phpyun_core::dto::ExistsResp,
             v1::mcenter::fans::FanItem,

@@ -198,7 +198,8 @@
 | POST | `/v1/mcenter/eval-papers/messages` | Leave a public message on an assessment paper. Counterpart o… |
 | POST | `/v1/mcenter/eval-papers/submit` | Submit assessment answers |
 | POST | `/v1/mcenter/fans` | Paginated list of jobseekers who have favorited my company's… |
-| POST | `/v1/mcenter/favorites` | Toggle favorite — favorited ↔ unfavorited. The response's `d… |
+| POST | `/v1/mcenter/favorites` | Unified toggle for job favorites and company/user follows (`kind` + `target_id`). |
+| POST | `/v1/mcenter/favorites/list` | Unified paginated list; `kind=1` jobs, `kind=2` companies, `kind=3` users. |
 | POST | `/v1/mcenter/favorites/exists` | Whether the current user has already favorited a given targe… |
 | POST | `/v1/mcenter/favorites/remove` | Remove favorite |
 | POST | `/v1/mcenter/feedback` | Submit feedback (anonymous allowed) |

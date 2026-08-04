@@ -86,13 +86,38 @@ GET  /v1/mcenter/chat/unread-count
 
 ### Q8. Field names for `POST /v1/mcenter/favorites`?
 
-**Your `{kind, target_id}` is exactly right**:
+The member-center favorites surface uses `{kind, target_id}` for both saved
+jobs and follow relationships:
 ```json
 { "kind": 1, "target_id": 12345 }
 ```
-- `kind`: 1 = job / 2 = company / 3 = resume
-- Delete: `DELETE /v1/mcenter/favorites/{kind}/{target_id}`
-- Existence check: `GET /v1/mcenter/favorites/exists/{kind}/{target_id}`
+- `kind=1`: job favorite → `phpyun_fav_job.job_id`
+- `kind=2`: company follow → `phpyun_atn.sc_uid` with `sc_usertype=2`
+- `kind=3`: user follow → `phpyun_atn.sc_uid` with `sc_usertype=1`
+- Remove: `POST /v1/mcenter/favorites/remove` with the same body
+- Existence check: `POST /v1/mcenter/favorites/exists` with the same body
+
+List requests use the same kind and body pagination:
+```json
+{ "kind": 2, "page": 1, "page_size": 20 }
+```
+The list response keeps the relationship row even when its target is no
+longer visible:
+```json
+{
+  "list": [{ "kind": 2, "target_id": 123, "time": 1700000000, "detail": {} }],
+  "total": 1,
+  "page": 1,
+  "page_size": 20
+}
+```
+`detail` is a job card for kind 1, a company summary for kind 2, and a user
+summary for kind 3; an unavailable target gets an empty object. `kind` must be
+1, 2, or 3, and `target_id` must be positive. Jobseekers are the only account
+type allowed to use these relationship operations, and kind 3 rejects self
+follows.
+The legacy `/v1/mcenter/follows*` routes remain available with their original
+`target_kind` / `target_uid` request fields.
 
 ### Q9. Body of `PUT /v1/mcenter/jobs/{id}/status`?
 
