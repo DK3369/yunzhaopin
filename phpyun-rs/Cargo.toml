@@ -19,7 +19,7 @@ repository = "https://example.com/phpyun-rs"
 [workspace.dependencies]
 # ---- HTTP / Web ----
 axum = "0.8"
-tower = { version = "0.5", features = ["limit", "timeout", "util"] }
+tower = { version = "0.5", features = ["limit", "util"] }
 tower-http = { version = "0.6", features = [
     "trace", "cors", "limit", "compression-gzip",
     "request-id", "timeout", "set-header",
@@ -97,7 +97,6 @@ axum-test = "17"
 
 # ---- OpenAPI auto docs ----
 utoipa = { version = "5", features = ["axum_extras", "chrono", "uuid"] }
-utoipa-axum = "0.2"
 utoipa-swagger-ui = { version = "9", features = ["axum"] }
 
 # ---- Internal workspace crate aliases (avoid clashing with Rust's built-in `core`) ----
