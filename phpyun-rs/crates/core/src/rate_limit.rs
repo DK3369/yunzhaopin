@@ -10,7 +10,7 @@
 //! Algorithm: **fixed window + INCR + EXPIRE**, atomicity provided by Redis; the
 //! implementation goes entirely through the `Kv` facade — no direct `use redis::...`.
 
-use crate::AppError;
+use crate::ApiError;
 use crate::kv::Kv;
 use crate::metrics::rate_limit_blocked;
 use std::time::Duration;
@@ -21,12 +21,12 @@ pub struct LimitRule {
     pub window: Duration,
 }
 
-/// Check and increment; returns `AppError::rate_limit()` if the limit is exceeded.
-pub async fn check_and_incr(kv: &Kv, key: &str, rule: LimitRule) -> Result<(), AppError> {
+/// Check and increment; returns `ApiError::rate_limit()` if the limit is exceeded.
+pub async fn check_and_incr(kv: &Kv, key: &str, rule: LimitRule) -> Result<(), ApiError> {
     let count = kv.incr_with_expire(key, rule.window.as_secs()).await?;
     if count as u64 > rule.max {
         rate_limit_blocked(prefix(key));
-        return Err(AppError::rate_limit());
+        return Err(ApiError::rate_limit());
     }
     Ok(())
 }
@@ -44,7 +44,7 @@ fn prefix(key: &str) -> &'static str {
 }
 
 /// Preset: login-failure counter (5 failures within 15 minutes triggers a lockout).
-pub async fn check_login_fail(kv: &Kv, account: &str) -> Result<(), AppError> {
+pub async fn check_login_fail(kv: &Kv, account: &str) -> Result<(), ApiError> {
     check_and_incr(
         kv,
         &format!("rl:login:fail:{account}"),
@@ -54,7 +54,7 @@ pub async fn check_login_fail(kv: &Kv, account: &str) -> Result<(), AppError> {
 }
 
 /// Preset: SMS sending — 1 per minute + 5 per hour.
-pub async fn check_sms_rate(kv: &Kv, mobile: &str) -> Result<(), AppError> {
+pub async fn check_sms_rate(kv: &Kv, mobile: &str) -> Result<(), ApiError> {
     check_and_incr(
         kv,
         &format!("rl:sms:hour:{mobile}"),

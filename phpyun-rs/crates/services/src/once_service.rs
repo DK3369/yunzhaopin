@@ -10,7 +10,7 @@
 
 use phpyun_auth::md5_hex;
 use phpyun_core::audit::{self, Actor, AuditEvent};
-use phpyun_core::{clock, AppError, AppResult, AppState, Pagination};
+use phpyun_core::{clock, ApiError, AppResult, AppState, Pagination};
 use phpyun_models::once_job::entity::OnceJob;
 use phpyun_models::once_job::repo as once_repo;
 
@@ -62,7 +62,7 @@ pub async fn list_public(
 pub async fn show(state: &AppState, id: u64) -> AppResult<OnceJob> {
     let item = once_repo::find_by_id(state.db.reader(), id)
         .await?
-        .ok_or(AppError::business("tiny_not_found"))?;
+        .ok_or(ApiError::business("tiny_not_found"))?;
 
     let pool = state.db.pool().clone();
     tokio::spawn(async move {
@@ -120,7 +120,7 @@ pub async fn upsert(state: &AppState, input: &UpsertInput) -> AppResult<UpsertRe
 
     if let Some(id) = input.id {
         if pwd_md5.is_empty() {
-            return Err(AppError::param_invalid("password_required").into());
+            return Err(ApiError::param_invalid("password_required").into());
         }
         let upd = once_repo::Update {
             companyname: &input.companyname,
@@ -138,7 +138,7 @@ pub async fn upsert(state: &AppState, input: &UpsertInput) -> AppResult<UpsertRe
         };
         let n = once_repo::update_with_password_check(state.db.pool(), id, &pwd_md5, &upd).await?;
         if n == 0 {
-            return Err(AppError::business("tiny_pwd_mismatch").into());
+            return Err(ApiError::business("tiny_pwd_mismatch").into());
         }
         let _ = audit::emit(
             state,
@@ -151,14 +151,14 @@ pub async fn upsert(state: &AppState, input: &UpsertInput) -> AppResult<UpsertRe
 
     // Quota check
     if input.daily_total_limit > 0 && input.today_total >= input.daily_total_limit {
-        return Err(AppError::business("tiny_site_limit").into());
+        return Err(ApiError::business("tiny_site_limit").into());
     }
     if input.daily_ip_limit > 0 && input.today_by_ip >= input.daily_ip_limit {
-        return Err(AppError::business("tiny_ip_limit").into());
+        return Err(ApiError::business("tiny_ip_limit").into());
     }
 
     if pwd_md5.is_empty() {
-        return Err(AppError::param_invalid("password_required").into());
+        return Err(ApiError::param_invalid("password_required").into());
     }
 
     let now = clock::now_ts();
@@ -201,19 +201,19 @@ pub async fn upsert(state: &AppState, input: &UpsertInput) -> AppResult<UpsertRe
 
 fn validate_fields(input: &UpsertInput) -> AppResult<()> {
     if input.companyname.trim().is_empty() {
-        return Err(AppError::param_invalid("companyname").into());
+        return Err(ApiError::param_invalid("companyname").into());
     }
     if input.linkman.trim().is_empty() {
-        return Err(AppError::param_invalid("linkman").into());
+        return Err(ApiError::param_invalid("linkman").into());
     }
     if input.linktel.trim().is_empty() {
-        return Err(AppError::param_invalid("linktel").into());
+        return Err(ApiError::param_invalid("linktel").into());
     }
     if input.provinceid == 0 && input.cityid == 0 {
-        return Err(AppError::param_invalid("city").into());
+        return Err(ApiError::param_invalid("city").into());
     }
     if input.require.trim().is_empty() {
-        return Err(AppError::param_invalid("require").into());
+        return Err(ApiError::param_invalid("require").into());
     }
     Ok(())
 }
@@ -234,14 +234,14 @@ pub async fn manage(
     op: ManageOp,
 ) -> AppResult<()> {
     if password.is_empty() {
-        return Err(AppError::param_invalid("password").into());
+        return Err(ApiError::param_invalid("password").into());
     }
     let pwd_md5 = md5_hex(password);
     match op {
         ManageOp::Verify => {
             let ok = once_repo::verify_password(state.db.reader(), id, &pwd_md5).await?;
             if !ok {
-                return Err(AppError::business("tiny_pwd_mismatch").into());
+                return Err(ApiError::business("tiny_pwd_mismatch").into());
             }
         }
         ManageOp::Refresh => {
@@ -253,13 +253,13 @@ pub async fn manage(
             )
             .await?;
             if n == 0 {
-                return Err(AppError::business("tiny_pwd_mismatch").into());
+                return Err(ApiError::business("tiny_pwd_mismatch").into());
             }
         }
         ManageOp::Delete => {
             let n = once_repo::delete_with_password(state.db.pool(), id, &pwd_md5).await?;
             if n == 0 {
-                return Err(AppError::business("tiny_pwd_mismatch").into());
+                return Err(ApiError::business("tiny_pwd_mismatch").into());
             }
         }
     }
@@ -303,24 +303,24 @@ pub struct PayInput<'a> {
 /// a public endpoint — no JWT required (mirrors PHP).
 pub async fn create_pay_order(state: &AppState, input: PayInput<'_>) -> AppResult<PayResult> {
     if input.once_id == 0 {
-        return Err(AppError::param_invalid("once_id").into());
+        return Err(ApiError::param_invalid("once_id").into());
     }
     if input.password.is_empty() {
-        return Err(AppError::param_invalid("password").into());
+        return Err(ApiError::param_invalid("password").into());
     }
     if input.gear_id == 0 {
-        return Err(AppError::param_invalid("oncepricegear").into());
+        return Err(ApiError::param_invalid("oncepricegear").into());
     }
 
     let pool = state.db.pool();
     let pwd_md5 = md5_hex(input.password);
     if !once_repo::verify_password(pool, input.once_id, &pwd_md5).await? {
-        return Err(AppError::business("tiny_pwd_mismatch").into());
+        return Err(ApiError::business("tiny_pwd_mismatch").into());
     }
 
     let (days, price) = once_repo::find_price_gear(pool, input.gear_id)
         .await?
-        .ok_or_else(|| AppError::param_invalid("gear_not_found"))?;
+        .ok_or_else(|| ApiError::param_invalid("gear_not_found"))?;
 
     // Wipe stale pending orders on the same once_job before creating a new one.
     let _ = once_repo::delete_pending_orders_for_once(pool, input.once_id).await;
@@ -397,7 +397,7 @@ pub async fn cancel_pending_order(
     user.require_employer()?;
     let n = once_repo::cancel_pending_once_order(state.db.pool(), user.uid, order_id).await?;
     if n == 0 {
-        return Err(AppError::param_invalid("order_not_cancellable").into());
+        return Err(ApiError::param_invalid("order_not_cancellable").into());
     }
     Ok(())
 }

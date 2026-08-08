@@ -14,7 +14,7 @@
 //!      in-flight access token AND any pending refresh attempt are refused.
 
 use phpyun_core::utils::fmt_ts;
-use phpyun_core::{clock, jwt_blacklist, session_presence, AppError, AppResult, AppState, AuthenticatedUser};
+use phpyun_core::{clock, jwt_blacklist, session_presence, ApiError, AppResult, AppState, AuthenticatedUser};
 use phpyun_models::user_session::{entity::UserSession, repo as session_repo};
 use std::sync::Arc;
 
@@ -153,7 +153,7 @@ pub async fn rotate_on_refresh(
     )
     .await?;
     if n == 0 {
-        return Err(AppError::session_expired());
+        return Err(ApiError::session_expired());
     }
     // Eagerly cache the new access jti as active so the very next request
     // with the new token doesn't need a DB round-trip to confirm presence.
@@ -184,7 +184,7 @@ pub async fn rotate_on_access_refresh(
     )
     .await?;
     if n == 0 {
-        return Err(AppError::session_expired());
+        return Err(ApiError::session_expired());
     }
     // Drop the old jti's cached "active" entry (it now points at a row that
     // no longer matches `jti_access = old`); prime the cache for the new jti.
@@ -282,10 +282,10 @@ pub async fn revoke_session(
 ) -> AppResult<()> {
     let row = session_repo::find_by_id_and_uid(state.db.reader(), session_id, user.uid).await?;
     let Some(s) = row else {
-        return Err(AppError::param_invalid("session_not_found"));
+        return Err(ApiError::param_invalid("session_not_found"));
     };
     if s.jti_access == user.jti {
-        return Err(AppError::param_invalid("session_is_current"));
+        return Err(ApiError::param_invalid("session_is_current"));
     }
     if s.revoked_at != 0 {
         return Ok(()); // idempotent

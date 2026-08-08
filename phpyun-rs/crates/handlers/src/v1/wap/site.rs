@@ -6,7 +6,7 @@ use axum::{
     Router,
     routing::post,
 };
-use phpyun_core::{ApiJson, AppError, AppResult, AppState, ValidatedJson};
+use phpyun_core::{ApiJson, ApiError, AppResult, AppState, ValidatedJson};
 use phpyun_services::site_page_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
@@ -41,7 +41,7 @@ pub async fn get_page(State(state): State<AppState>,
     phpyun_core::validators::ensure_path_token(&code)?;
     let p = site_page_service::get(&state, &code)
         .await?
-        .ok_or_else(|| AppError::param_invalid("page_not_found"))?;
+        .ok_or_else(|| ApiError::param_invalid("page_not_found"))?;
     Ok(ApiJson(SitePageView {
         code: p.code,
         title: p.title,

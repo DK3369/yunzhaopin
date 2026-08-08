@@ -12,7 +12,7 @@
 //! Side effects are **best-effort**: failure on the counter / sysmsg does NOT
 //! roll back the primary INSERT/DELETE — same as PHP (no transaction).
 
-use phpyun_core::{clock, i18n::{t, t_args, Lang}, AppError, AppResult, AppState, AuthenticatedUser, Pagination};
+use phpyun_core::{clock, i18n::{t, t_args, Lang}, ApiError, AppResult, AppState, AuthenticatedUser, Pagination};
 use phpyun_models::atn::entity::{Atn, KIND_COMPANY, KIND_USER};
 use phpyun_models::atn::repo as atn_repo;
 use phpyun_models::message::repo as message_repo;
@@ -89,14 +89,14 @@ pub async fn remove(
 
 fn validate_target(viewer_uid: u64, target_kind: i32, target_uid: u64) -> AppResult<()> {
     if !matches!(target_kind, KIND_USER | KIND_COMPANY) {
-        return Err(AppError::param_invalid("kind"));
+        return Err(ApiError::param_invalid("kind"));
     }
     if target_uid == 0 {
-        return Err(AppError::param_invalid("target_id"));
+        return Err(ApiError::param_invalid("target_id"));
     }
     if target_uid == viewer_uid {
         // PHP returns errcode=2 "自己不能关注自己"
-        return Err(AppError::param_invalid("self_follow_forbidden"));
+        return Err(ApiError::param_invalid("self_follow_forbidden"));
     }
     Ok(())
 }
@@ -151,7 +151,7 @@ pub async fn list_following(
     page: Pagination,
 ) -> AppResult<AtnPage> {
     if !matches!(target_kind, KIND_USER | KIND_COMPANY) {
-        return Err(AppError::param_invalid("target_kind"));
+        return Err(ApiError::param_invalid("target_kind"));
     }
     let pool = state.db.pool();
     let total = atn_repo::count_by_follower(pool, user.uid, target_kind).await?;

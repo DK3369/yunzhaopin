@@ -5,7 +5,7 @@ use axum::{
     Router,
     routing::post,
 };
-use phpyun_core::{ApiJson, AppError, AppResult, AppState, Paged, Pagination, ValidatedJson};
+use phpyun_core::{ApiJson, ApiError, AppResult, AppState, Paged, Pagination, ValidatedJson};
 use phpyun_services::announcement_service;
 use serde::Serialize;
 use utoipa::ToSchema;
@@ -129,7 +129,7 @@ pub async fn detail(State(state): State<AppState>,
     let id = b.id;
     let row = announcement_service::get_detail(&state, id)
         .await?
-        .ok_or_else(|| AppError::param_invalid("announcement_not_found"))?;
+        .ok_or_else(|| ApiError::param_invalid("announcement_not_found"))?;
     Ok(ApiJson(AnnouncementDetail::from(row)))
 }
 

@@ -26,10 +26,10 @@
 //! - **Async L2 refill with backpressure**: routed through `Kv::spawn_set_json_ex`;
 //!   if Redis is slow, the write is dropped without blocking the main path.
 //! - **Shared errors**: init-future errors are shared with every waiter as
-//!   `Arc<AppError>`; `AppError::from_arc` downgrades the Arc into a new
-//!   `AppError` (preserving only code + tag).
+//!   `Arc<ApiError>`; `ApiError::from_arc` downgrades the Arc into a new
+//!   `ApiError` (preserving only code + tag).
 
-use crate::AppError;
+use crate::ApiError;
 use crate::json::Value;
 use crate::kv::Kv;
 use crate::metrics::{cache_hit, cache_miss};
@@ -77,11 +77,11 @@ pub async fn get_or_load<T, F, Fut>(
     ttl: Duration,
     scope: &'static str,
     loader: F,
-) -> Result<Arc<T>, AppError>
+) -> Result<Arc<T>, ApiError>
 where
     T: Serialize + DeserializeOwned + Send + Sync + 'static,
     F: FnOnce() -> Fut + Send,
-    Fut: Future<Output = Result<T, AppError>> + Send,
+    Fut: Future<Output = Result<T, ApiError>> + Send,
 {
     // L1 fast path
     if let Some(hit) = local.get(&key).await {
@@ -107,11 +107,11 @@ where
             let arc = Arc::new(fresh);
             // refill L2 (background; drop on failure)
             kv_c.spawn_set_json_ex(key_c.clone(), &*arc, ttl_secs);
-            Ok::<_, AppError>(arc)
+            Ok::<_, ApiError>(arc)
         })
         .await;
 
-    result.map_err(AppError::from_arc)
+    result.map_err(ApiError::from_arc)
 }
 
 /// Write-path invalidation (clears L1 + L2). Call this after writing to the DB.
@@ -178,17 +178,17 @@ where
     /// Singleflight: concurrent calls for the same key share one loader future.
     /// The loader returns a plain `V`; the cache wraps it in `Arc` internally
     /// so subsequent reads are zero-copy.
-    pub async fn get_or_load<F, Fut>(&self, key: K, loader: F) -> Result<Arc<V>, AppError>
+    pub async fn get_or_load<F, Fut>(&self, key: K, loader: F) -> Result<Arc<V>, ApiError>
     where
         F: FnOnce() -> Fut + Send,
-        Fut: Future<Output = Result<V, AppError>> + Send,
+        Fut: Future<Output = Result<V, ApiError>> + Send,
     {
         self.inner
             .try_get_with(key, async move {
                 match loader().await {
-                    Ok(v) => Ok::<_, AppError>(Arc::new(v)),
+                    Ok(v) => Ok::<_, ApiError>(Arc::new(v)),
                     Err(e) => {
-                        // moka shares one Arc<AppError> across all waiters and
+                        // moka shares one Arc<ApiError> across all waiters and
                         // `from_arc` later degrades to just (code, tag),
                         // losing the underlying sqlx / redis source. Log the
                         // full chain HERE so the root cause is in the trace.
@@ -202,7 +202,7 @@ where
                 }
             })
             .await
-            .map_err(AppError::from_arc)
+            .map_err(ApiError::from_arc)
     }
 
     /// Lookup `key` without triggering a loader. Returns `None` on miss.

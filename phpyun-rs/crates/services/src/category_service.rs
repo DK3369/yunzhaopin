@@ -7,7 +7,7 @@
 //! finer-grained invalidation to matter.
 
 use phpyun_core::cache::SimpleCache;
-use phpyun_core::{audit, clock, AppError, AppResult, AppState, AuthenticatedUser};
+use phpyun_core::{audit, clock, ApiError, AppResult, AppState, AuthenticatedUser};
 use phpyun_models::category::{entity::Category, repo as cat_repo};
 use std::sync::Arc;
 
@@ -130,7 +130,7 @@ pub async fn admin_update(
     )
     .await?;
     if affected == 0 {
-        return Err(AppError::param_invalid("cat_not_found"));
+        return Err(ApiError::param_invalid("cat_not_found"));
     }
     invalidate_all();
     Ok(())

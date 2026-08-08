@@ -14,7 +14,7 @@
 
 use phpyun_core::clock;
 use phpyun_core::i18n::{t, t_args, Lang};
-use phpyun_core::{AppError, AppResult, AppState};
+use phpyun_core::{ApiError, AppResult, AppState};
 use phpyun_models::message::{entity as msg_entity, repo as message_repo};
 
 // Notification copy: when persisted to the DB it is rendered in the system default language (ZhCN).
@@ -57,7 +57,7 @@ async fn handle_apply_created(
         #[serde(default)]
         apply_id: u64,
     }
-    let p: Payload = serde_json::from_slice(&msg.payload).map_err(AppError::internal)?;
+    let p: Payload = serde_json::from_slice(&msg.payload).map_err(ApiError::internal)?;
 
     let title = t("notifications.apply.new_application_title", NOTIF_LANG);
     let body = t_args(
@@ -109,7 +109,7 @@ async fn handle_vip_activated(
         package: String,
         duration_days: i32,
     }
-    let p: Payload = serde_json::from_slice(&msg.payload).map_err(AppError::internal)?;
+    let p: Payload = serde_json::from_slice(&msg.payload).map_err(ApiError::internal)?;
     let title = t("notifications.vip.activated_title", NOTIF_LANG);
     let body = t_args(
         "notifications.vip.activated_body",
@@ -175,7 +175,7 @@ async fn handle_invite_email(base: &str, msg: &phpyun_core::events::Message) -> 
         email: String,
         inviter_uid: u64,
     }
-    let p: Payload = serde_json::from_slice(&msg.payload).map_err(AppError::internal)?;
+    let p: Payload = serde_json::from_slice(&msg.payload).map_err(ApiError::internal)?;
     let link = format!(
         "{}/wap/register?uid={}",
         base.trim_end_matches('/'),
@@ -224,7 +224,7 @@ async fn handle_email_verify(base: &str, msg: &phpyun_core::events::Message) -> 
         #[serde(default)]
         ttl_secs: u64,
     }
-    let p: Payload = serde_json::from_slice(&msg.payload).map_err(AppError::internal)?;
+    let p: Payload = serde_json::from_slice(&msg.payload).map_err(ApiError::internal)?;
     if !p.code.is_empty() {
         tracing::info!(
             kind = %p.kind,

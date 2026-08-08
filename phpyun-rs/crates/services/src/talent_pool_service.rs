@@ -8,7 +8,7 @@
 //! - After adding, send the jobseeker a system message (`sysmsg`) indicating "company XX has favorited your resume" —
 //!   use the public `message_service` endpoint for this.
 
-use phpyun_core::AppError;
+use phpyun_core::ApiError;
 use phpyun_core::audit::{self, Actor, AuditEvent};
 use phpyun_core::{clock, AppResult, AppState, AuthenticatedUser, Pagination};
 use phpyun_models::talent_pool::entity::TalentPoolItem;
@@ -29,7 +29,7 @@ pub async fn add(
     client_ip: &str,
 ) -> AppResult<u64> {
     user.require_employer()
-        .map_err(|_| AppError::business("company_not_verified"))?;
+        .map_err(|_| ApiError::business("company_not_verified"))?;
 
     // Deduplicate: the same company cannot add the same resume twice
     if let Some(existing) = tp_repo::find_by_com_and_eid(state.db.reader(), user.uid, eid).await? {

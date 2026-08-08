@@ -2,7 +2,7 @@
 //!
 //! Public endpoint returns the currently active ads for a `slot`; admin endpoint performs CRUD.
 
-use phpyun_core::{audit, clock, AppError, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
+use phpyun_core::{audit, clock, ApiError, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
 use phpyun_models::ad::{entity::Ad, repo as ad_repo};
 
 pub async fn list_active(
@@ -104,7 +104,7 @@ pub async fn admin_update(
     )
     .await?;
     if affected == 0 {
-        return Err(AppError::param_invalid("ad_not_found"));
+        return Err(ApiError::param_invalid("ad_not_found"));
     }
     Ok(())
 }

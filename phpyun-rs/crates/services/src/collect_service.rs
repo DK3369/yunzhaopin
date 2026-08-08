@@ -23,7 +23,7 @@
 //! All side effects are **best-effort**: a failure on the counter / log / sysmsg
 //! does NOT undo the primary INSERT/DELETE. PHP behaves the same (no transaction).
 
-use phpyun_core::AppError;
+use phpyun_core::ApiError;
 use phpyun_core::{clock, background, i18n::{t_args, Lang}, AppResult, AppState, AuthenticatedUser, Pagination};
 use phpyun_models::collect::entity::{Collect, KIND_JOB};
 use phpyun_models::collect::repo as collect_repo;
@@ -78,7 +78,7 @@ pub struct CollectPage {
 
 fn require_job_kind(kind: i32) -> AppResult<()> {
     if kind != KIND_JOB {
-        return Err(AppError::business("collect_bad_kind").into());
+        return Err(ApiError::business("collect_bad_kind").into());
     }
     Ok(())
 }
@@ -138,7 +138,7 @@ pub async fn toggle(
 
     // Add branch — fetch job snapshot for INSERT.
     let Some(job) = phpyun_models::job::repo::find_by_id(state.db.reader(), target_id).await? else {
-        return Err(AppError::business("collect_target_not_found").into());
+        return Err(ApiError::business("collect_target_not_found").into());
     };
 
     collect_repo::insert(

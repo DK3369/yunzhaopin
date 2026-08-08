@@ -177,7 +177,7 @@ pub async fn get_log(
     let row = phpyun_models::eval::repo::find_log_for_owner(state.db.reader(), log_id, user.uid)
         .await?
         .ok_or_else(|| {
-            phpyun_core::AppError::param_invalid(
+            phpyun_core::ApiError::param_invalid(
                 "log_not_found",
             )
         })?;

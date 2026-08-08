@@ -9,7 +9,7 @@
 //!   `/v1/wap/wechat/qr/{kind}/{id}` to obtain the real QR code
 //! - `fields`: business fields to render (job name / company name / salary / inviter uid, etc.)
 
-use phpyun_core::{AppError, AppResult, AppState};
+use phpyun_core::{ApiError, AppResult, AppState};
 use phpyun_models::poster_template::entity::{PosterKind, PosterTemplate};
 use phpyun_models::poster_template::repo as tpl_repo;
 use serde::Serialize;
@@ -54,7 +54,7 @@ pub async fn list_templates(
 
 fn parse_kind(s: &str) -> AppResult<PosterKind> {
     PosterKind::parse(s)
-        .ok_or_else(|| AppError::param_invalid(format!("poster_kind={s}")))
+        .ok_or_else(|| ApiError::param_invalid(format!("poster_kind={s}")))
 }
 
 async fn pick_template(
@@ -67,7 +67,7 @@ async fn pick_template(
         _ => tpl_repo::default_for_kind(state.db.reader(), kind).await?,
     };
     tpl.ok_or_else(|| {
-        AppError::param_invalid("poster_template_not_found")
+        ApiError::param_invalid("poster_template_not_found")
     })
 }
 
@@ -84,7 +84,7 @@ pub async fn job_poster_spec(
     // Fetch the job data
     let job = phpyun_models::job::repo::find_by_id(state.db.reader(), job_id)
         .await?
-        .ok_or_else(|| AppError::param_invalid("job_not_found"))?;
+        .ok_or_else(|| ApiError::param_invalid("job_not_found"))?;
 
     let mut fields = BTreeMap::new();
     fields.insert("job_name".into(), job.name);
@@ -192,6 +192,6 @@ async fn fetch_company_brief(
 ) -> AppResult<(String, String)> {
     let c = phpyun_models::company::repo::find_by_uid(state.db.reader(), com_uid)
         .await?
-        .ok_or_else(|| AppError::param_invalid("company_not_found"))?;
+        .ok_or_else(|| ApiError::param_invalid("company_not_found"))?;
     Ok((c.name.unwrap_or_default(), c.logo.unwrap_or_default()))
 }

@@ -9,7 +9,7 @@
 //! - What I have viewed: `list_by_viewer(user, kind)`
 //! - Who has viewed me: `list_on_target(user, kind)` -- target_id takes user.uid
 
-use phpyun_core::AppError;
+use phpyun_core::ApiError;
 use phpyun_core::{background, clock, AppResult, AppState, AuthenticatedUser, Pagination};
 use phpyun_models::view::{entity::View, repo as view_repo};
 
@@ -48,7 +48,7 @@ pub struct ViewPage {
 
 fn validate_kind(kind: i32) -> AppResult<()> {
     if !matches!(kind, KIND_JOB | KIND_COMPANY | KIND_RESUME) {
-        return Err(AppError::param_invalid(format!("kind={kind}")).into());
+        return Err(ApiError::param_invalid(format!("kind={kind}")).into());
     }
     Ok(())
 }

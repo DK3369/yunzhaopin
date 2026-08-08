@@ -15664,7 +15664,7 @@ return array(
   'wap_user_00214' => 'Account Settings',
   'wap_user_00215' => 'Privacy',
   'wap_user_00216' => 'Notices',
-  'wap_user_00217' => 'PreviewResume',
+  'wap_user_00217' => 'Resume',
   'wap_user_00218' => 'Go ToComplete',
   'wap_user_00219' => 'AlreadyPin',
   'wap_user_00220' => 'Part-time',

@@ -16,7 +16,7 @@ use phpyun_core::jwt_blacklist;
 use phpyun_core::metrics::auth_event;
 use phpyun_core::sms::SmsTemplate;
 use phpyun_core::verify::{self, VerifyKind};
-use phpyun_core::{rate_limit, AppError, AppResult, AppState};
+use phpyun_core::{rate_limit, ApiError, AppResult, AppState};
 use phpyun_models::user::repo as user_repo;
 use std::time::Duration;
 
@@ -69,13 +69,13 @@ pub async fn reset_with_sms(
     // Verification code
     if !verify::verify(&state.redis, VerifyKind::SmsResetPw, mobile, sms_code).await? {
         auth_event("reset_pw_fail", Some("bad_sms_code"));
-        return Err(AppError::param_invalid("sms_code").into());
+        return Err(ApiError::param_invalid("sms_code").into());
     }
 
     // Look up the user
     let user = user_repo::find_by_mobile(state.db.reader(), mobile)
         .await?
-        .ok_or_else(|| -> AppError { AppError::param_invalid("mobile_not_registered").into() })?;
+        .ok_or_else(|| -> ApiError { ApiError::param_invalid("mobile_not_registered").into() })?;
 
     // Hash the new password (note: we do not concat salt for argon2 — PHPYun compatibility lives in the login layer)
     // The new password is stored in argon2 format. Whether to concat salt is up to the login side —
@@ -136,7 +136,7 @@ async fn check_email_rate(kv: &phpyun_core::Kv, email: &str) -> AppResult<()> {
 /// Send a 6-digit password-reset code to the given email address.
 pub async fn send_email_code(state: &AppState, email: &str) -> AppResult<()> {
     if !email.contains('@') {
-        return Err(AppError::param_invalid("email"));
+        return Err(ApiError::param_invalid("email"));
     }
 
     check_email_rate(&state.redis, email).await?;
@@ -189,13 +189,13 @@ pub async fn reset_with_email(
 ) -> AppResult<()> {
     if !verify::verify(&state.redis, VerifyKind::EmailReset, email, email_code).await? {
         auth_event("reset_pw_fail", Some("bad_email_code"));
-        return Err(AppError::param_invalid("email_code").into());
+        return Err(ApiError::param_invalid("email_code").into());
     }
 
     let user = user_repo::find_by_email_loose(state.db.reader(), email)
         .await?
-        .ok_or_else(|| -> AppError {
-            AppError::param_invalid("email_not_registered").into()
+        .ok_or_else(|| -> ApiError {
+            ApiError::param_invalid("email_not_registered").into()
         })?;
 
     let salt = uuid::Uuid::now_v7().simple().to_string()[..16].to_string();
@@ -243,20 +243,20 @@ pub async fn submit_appeal(
 ) -> AppResult<u64> {
     let acc = input.account.trim();
     if acc.is_empty() {
-        return Err(AppError::param_invalid("account_empty"));
+        return Err(ApiError::param_invalid("account_empty"));
     }
     if input.linkman.trim().is_empty() {
-        return Err(AppError::param_invalid("linkman_empty"));
+        return Err(ApiError::param_invalid("linkman_empty"));
     }
     if input.linkphone.trim().is_empty() {
-        return Err(AppError::param_invalid("linkphone_empty"));
+        return Err(ApiError::param_invalid("linkphone_empty"));
     }
 
     let reader = state.db.reader();
     // Try username → email → mobile (PHPYun matches only username; we relax this).
     let uid = phpyun_models::user::repo::uid_by_account(reader, acc)
         .await?
-        .ok_or_else(|| AppError::param_invalid("account_not_found"))?;
+        .ok_or_else(|| ApiError::param_invalid("account_not_found"))?;
 
     // PHP packs three contact fields into one column with a `-` separator.
     let shensu = format!(
@@ -266,14 +266,14 @@ pub async fn submit_appeal(
         input.linkemail.trim()
     );
     if shensu.chars().count() > 100 {
-        return Err(AppError::param_invalid("appeal_too_long"));
+        return Err(ApiError::param_invalid("appeal_too_long"));
     }
 
     let now = phpyun_core::clock::now_ts();
     let n =
         phpyun_models::user::repo::submit_appeal(state.db.pool(), uid, &shensu, now).await?;
     if n == 0 {
-        return Err(AppError::param_invalid("appeal_persist_failed").into());
+        return Err(ApiError::param_invalid("appeal_persist_failed").into());
     }
 
     auth_event("password_appeal_submitted", None);

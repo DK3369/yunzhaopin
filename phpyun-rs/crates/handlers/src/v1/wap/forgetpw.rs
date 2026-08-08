@@ -7,7 +7,7 @@ use axum::{
 };
 use phpyun_core::json;
 use phpyun_core::verify::{self, VerifyKind};
-use phpyun_core::{validators, ApiJson, ApiOk, AppError, AppResult, AppState, ClientIp, ValidatedJson};
+use phpyun_core::{validators, ApiJson, ApiOk, ApiError, AppResult, AppState, ClientIp, ValidatedJson};
 use phpyun_services::password_reset_service;
 use serde::Deserialize;
 use utoipa::ToSchema;
@@ -55,7 +55,7 @@ pub async fn send_sms(
     // Mandatory image captcha
     let code = f.authcode.to_uppercase();
     if !verify::verify(&state.redis, VerifyKind::ImageCaptcha, &f.captcha_cid, &code).await? {
-        return Err(AppError::captcha());
+        return Err(ApiError::captcha());
     }
 
     password_reset_service::send_sms_code(&state, &f.moblie).await?;
@@ -131,7 +131,7 @@ pub async fn send_email(
 ) -> AppResult<ApiOk> {
     let code = f.authcode.to_uppercase();
     if !verify::verify(&state.redis, VerifyKind::ImageCaptcha, &f.captcha_cid, &code).await? {
-        return Err(AppError::captcha());
+        return Err(ApiError::captcha());
     }
     password_reset_service::send_email_code(&state, &f.email).await?;
     Ok(ApiOk("sent"))

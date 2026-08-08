@@ -10,7 +10,7 @@
 
 use phpyun_auth::verify_password_async;
 use phpyun_core::audit::{self, Actor, AuditEvent};
-use phpyun_core::{clock, AppError, AppResult, AppState, AuthenticatedUser};
+use phpyun_core::{clock, ApiError, AppResult, AppState, AuthenticatedUser};
 use phpyun_models::member_logout::entity::MemberLogout;
 use phpyun_models::member_logout::repo as logout_repo;
 use phpyun_models::user::repo as user_repo;
@@ -29,12 +29,12 @@ pub async fn apply(
     client_ip: &str,
 ) -> AppResult<u64> {
     if password.is_empty() {
-        return Err(AppError::param_invalid("password").into());
+        return Err(ApiError::param_invalid("password").into());
     }
 
     let member = user_repo::find_by_uid(state.db.reader(), user.uid)
         .await?
-        .ok_or_else(|| AppError::param_invalid("account_not_found"))?;
+        .ok_or_else(|| ApiError::param_invalid("account_not_found"))?;
 
     if !verify_password_async(
         password.to_string(),
@@ -43,7 +43,7 @@ pub async fn apply(
     )
     .await
     {
-        return Err(AppError::bad_credentials().into());
+        return Err(ApiError::bad_credentials().into());
     }
 
     // Reuse an existing pending request if present

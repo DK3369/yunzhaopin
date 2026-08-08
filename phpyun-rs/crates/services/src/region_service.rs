@@ -23,7 +23,7 @@
 
 use arc_swap::ArcSwap;
 use phpyun_core::i18n::Lang;
-use phpyun_core::{AppError, AppResult, AppState};
+use phpyun_core::{ApiError, AppResult, AppState};
 use phpyun_models::region::entity::{Region, LEVEL_COUNTRY};
 use phpyun_models::region::repo as region_repo;
 use std::collections::HashMap;
@@ -214,7 +214,7 @@ async fn load_full(state: &AppState) -> AppResult<RegionTree> {
     let pool = state.db.reader();
     let rows = region_repo::list_all_active(pool)
         .await
-        .map_err(AppError::internal)?;
+        .map_err(ApiError::internal)?;
 
     // Pull region translations from `phpyun_dict_i18n` (kind='region').
     // Table may be missing in older deployments; fall back silently.

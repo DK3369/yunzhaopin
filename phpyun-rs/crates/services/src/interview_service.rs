@@ -5,7 +5,7 @@
 //! - Jobseeker responds (accept / decline).
 //! - Company cancels an invitation.
 
-use phpyun_core::AppError;
+use phpyun_core::ApiError;
 use phpyun_core::audit::{self, Actor, AuditEvent};
 use phpyun_core::i18n::{t, Lang};
 use phpyun_core::{clock, AppResult, AppState, AuthenticatedUser, Pagination};
@@ -36,9 +36,9 @@ pub async fn create_by_company(
     // Validate that the application exists and belongs to the current company
     let apply = apply_repo::find_by_id(state.db.reader(), input.apply_id)
         .await?
-        .ok_or(AppError::business("apply_not_found"))?;
+        .ok_or(ApiError::business("apply_not_found"))?;
     if apply.com_id != user.uid {
-        return Err(AppError::business("apply_not_owner").into());
+        return Err(ApiError::business("apply_not_owner").into());
     }
 
     let now = clock::now_ts();
@@ -158,11 +158,11 @@ pub async fn respond(
 ) -> AppResult<()> {
     user.require_jobseeker()?;
     if !matches!(status, 1 | 2) {
-        return Err(AppError::business("job_not_found").into());
+        return Err(ApiError::business("job_not_found").into());
     }
     let affected = interview_repo::respond_by_user(state.db.pool(), id, user.uid, status).await?;
     if affected == 0 {
-        return Err(AppError::business("apply_not_owner").into());
+        return Err(ApiError::business("apply_not_owner").into());
     }
 
     // Notify the company
@@ -210,7 +210,7 @@ pub async fn cancel(
     user.require_employer()?;
     let affected = interview_repo::cancel_by_company(state.db.pool(), id, user.uid).await?;
     if affected == 0 {
-        return Err(AppError::business("apply_not_owner").into());
+        return Err(ApiError::business("apply_not_owner").into());
     }
     // Notify the jobseeker
     if let Ok(Some(iv)) = interview_repo::find_by_id(state.db.reader(), id).await {

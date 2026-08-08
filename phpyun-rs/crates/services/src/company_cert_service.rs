@@ -7,7 +7,7 @@
 //!   4) On approval, also flip `phpyun_company.r_status` to 1 (since the Rust side does not modify the company table directly,
 //!      we only update the cert here; the `company.r_status` sync is performed by a backend job or review SQL trigger).
 
-use phpyun_core::{audit, clock, AppError, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
+use phpyun_core::{audit, clock, ApiError, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
 use phpyun_models::company_cert::{
     entity::{CompanyCert, STATUS_APPROVED, STATUS_REJECTED},
     repo as cert_repo,
@@ -29,7 +29,7 @@ pub async fn submit(
 ) -> AppResult<()> {
     user.require_employer()?;
     if license_photo.is_empty() || id_photo.is_empty() {
-        return Err(AppError::param_invalid("photos_required"));
+        return Err(ApiError::param_invalid("photos_required"));
     }
     let now = clock::now_ts();
     cert_repo::upsert(state.db.pool(), user.uid, license_photo, id_photo, now).await?;
@@ -68,7 +68,7 @@ pub async fn review(
     let affected =
         cert_repo::review(state.db.pool(), target_uid, status, note, admin.uid, now).await?;
     if affected == 0 {
-        return Err(AppError::param_invalid("cert_not_pending"));
+        return Err(ApiError::param_invalid("cert_not_pending"));
     }
     let _ = audit::emit(
         state,

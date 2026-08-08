@@ -7,7 +7,7 @@ use axum::{
     routing::post,
 };
 use phpyun_core::json;
-use phpyun_core::{ApiJson, AppError, AppResult, AppState, AuthenticatedUser, ClientIp, ProviderKind, ValidatedJson};
+use phpyun_core::{ApiJson, ApiError, AppResult, AppState, AuthenticatedUser, ClientIp, ProviderKind, ValidatedJson};
 use phpyun_services::mcenter_service;
 use serde::Serialize;
 use utoipa::ToSchema;
@@ -67,7 +67,7 @@ pub async fn unbind(
 ) -> AppResult<ApiJson<json::Value>> {
     phpyun_core::validators::ensure_path_token(&b.provider)?;
     let kind = ProviderKind::parse(&b.provider)
-        .ok_or_else(|| AppError::param_invalid(format!("provider: {}", b.provider)))?;
+        .ok_or_else(|| ApiError::param_invalid(format!("provider: {}", b.provider)))?;
     mcenter_service::unbind(&state, user.uid, kind, &ip).await?;
     Ok(ApiJson(json::json!({ "ok": true })))
 }

@@ -1,6 +1,6 @@
 //! Saved searches (jobseekers persist search criteria to receive push notifications).
 
-use phpyun_core::{clock, AppError, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
+use phpyun_core::{clock, ApiError, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
 use phpyun_models::saved_search::{entity::SavedSearch, repo as ss_repo};
 
 const MAX_PER_USER: u64 = 20;
@@ -33,12 +33,12 @@ pub async fn create(
     let db = state.db.reader();
     let used = ss_repo::count_by_uid(db, user.uid).await?;
     if used >= MAX_PER_USER {
-        return Err(AppError::param_invalid(
+        return Err(ApiError::param_invalid(
             "saved_search_limit_reached",
         ));
     }
     if !matches!(input.kind, "job" | "company" | "resume") {
-        return Err(AppError::param_invalid("bad_kind"));
+        return Err(ApiError::param_invalid("bad_kind"));
     }
     let id = ss_repo::create(
         state.db.pool(),
@@ -61,7 +61,7 @@ pub async fn set_notify(
 ) -> AppResult<()> {
     let affected = ss_repo::set_notify(state.db.pool(), id, user.uid, notify, clock::now_ts()).await?;
     if affected == 0 {
-        return Err(AppError::forbidden());
+        return Err(ApiError::forbidden());
     }
     Ok(())
 }
@@ -73,7 +73,7 @@ pub async fn delete(
 ) -> AppResult<()> {
     let affected = ss_repo::delete(state.db.pool(), id, user.uid).await?;
     if affected == 0 {
-        return Err(AppError::forbidden());
+        return Err(ApiError::forbidden());
     }
     Ok(())
 }

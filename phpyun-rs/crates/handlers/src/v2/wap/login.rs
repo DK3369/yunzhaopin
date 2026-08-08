@@ -16,7 +16,7 @@ use axum::{
     Router,
 };
 use phpyun_core::verify::{self, VerifyKind};
-use phpyun_core::{clock, ApiJson, AppError, AppResult, AppState, ClientIp, ValidatedJson};
+use phpyun_core::{clock, ApiJson, ApiError, AppResult, AppState, ClientIp, ValidatedJson};
 use phpyun_services::user_service::{self, LoginContext};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
@@ -73,7 +73,7 @@ pub async fn mlogin(
         if !cid.is_empty() && !code.is_empty() {
             let code_up = code.to_uppercase();
             if !verify::verify(&state.redis, VerifyKind::ImageCaptcha, cid, &code_up).await? {
-                return Err(AppError::captcha());
+                return Err(ApiError::captcha());
             }
         }
     }

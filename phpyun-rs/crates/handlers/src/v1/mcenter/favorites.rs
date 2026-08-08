@@ -20,7 +20,7 @@ use phpyun_core::{
     ApiJson,
     ApiMsg,
     ApiMsgData,
-    AppError,
+    ApiError,
     AppResult,
     AppState,
     AuthenticatedUser,
@@ -118,7 +118,7 @@ pub async fn add(
                 .await?
                 .following
         }
-        _ => return Err(AppError::param_invalid("kind")),
+        _ => return Err(ApiError::param_invalid("kind")),
     };
 
     Ok(ApiMsgData {
@@ -153,7 +153,7 @@ pub async fn remove(
         KIND_USER => {
             atn_service::remove(&state, &user, ATN_KIND_USER, f.target_id).await?
         }
-        _ => return Err(AppError::param_invalid("kind")),
+        _ => return Err(ApiError::param_invalid("kind")),
     }
     Ok(ApiMsg("collect_removed"))
 }
@@ -177,7 +177,7 @@ pub async fn list(
         KIND_JOB => list_jobs(&state, &user, page).await,
         KIND_COMPANY => list_atn(&state, &user, page, KIND_COMPANY).await,
         KIND_USER => list_atn(&state, &user, page, KIND_USER).await,
-        _ => Err(AppError::param_invalid("kind")),
+        _ => Err(ApiError::param_invalid("kind")),
     }
 }
 
@@ -203,7 +203,7 @@ pub async fn exists(
         KIND_USER => {
             atn_service::exists(&state, &user, ATN_KIND_USER, f.target_id).await?
         }
-        _ => return Err(AppError::param_invalid("kind")),
+        _ => return Err(ApiError::param_invalid("kind")),
     };
     Ok(ApiJson(ExistsResp { exists }))
 }
@@ -270,7 +270,7 @@ async fn list_atn(
 ) -> AppResult<ApiJson<Paged<FavoriteListItem>>> {
     user.require_jobseeker()?;
     let target_kind = atn_kind_for_favorite(kind)
-        .ok_or_else(|| AppError::param_invalid("kind"))?;
+        .ok_or_else(|| ApiError::param_invalid("kind"))?;
     let r = atn_service::list_following(state, user, target_kind, page).await?;
     let dicts = if kind == KIND_COMPANY {
         Some(phpyun_services::dict_service::get(state).await?)

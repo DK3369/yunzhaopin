@@ -2,7 +2,7 @@
 //!
 //! Covers the core paths of PHPYun `wap/resume` + `mcenter/resume`: viewing, updating the master table, and toggling display status.
 
-use phpyun_core::AppError;
+use phpyun_core::ApiError;
 use phpyun_core::audit::{self, Actor, AuditEvent};
 use phpyun_core::{clock, AppResult, AppState, AuthenticatedUser, Pagination};
 use phpyun_models::resume::repo::ResumeFilter;
@@ -41,7 +41,7 @@ pub async fn get_public(
     user.require_employer()?;
     resume_repo::find_public(state.db.reader(), uid)
         .await?
-        .ok_or_else(|| AppError::business("resume_not_found").into())
+        .ok_or_else(|| ApiError::business("resume_not_found").into())
 }
 
 pub struct ResumeUpdateInput<'a> {
@@ -67,7 +67,7 @@ pub async fn get_mine(state: &AppState, user: &AuthenticatedUser) -> AppResult<R
     resume_repo::ensure_row(state.db.pool(), user.uid, user.did, clock::now_ts()).await?;
     resume_repo::find_by_uid(state.db.pool(), user.uid)
         .await?
-        .ok_or_else(|| AppError::business("resume_not_found").into())
+        .ok_or_else(|| ApiError::business("resume_not_found").into())
 }
 
 pub async fn update_mine(
@@ -149,7 +149,7 @@ pub async fn set_status(
 ) -> AppResult<()> {
     user.require_jobseeker()?;
     if !matches!(status, 1..=3) {
-        return Err(AppError::business("resume_bad_status").into());
+        return Err(ApiError::business("resume_bad_status").into());
     }
     resume_repo::update_status(state.db.pool(), user.uid, status).await?;
 

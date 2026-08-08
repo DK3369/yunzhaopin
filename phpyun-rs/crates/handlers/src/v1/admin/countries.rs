@@ -10,7 +10,7 @@ use axum::{
     Router,
     routing::post,
 };
-use phpyun_core::{clock, ApiJson, ApiOk, AppError, AppResult, AppState, AuthenticatedUser, ValidatedJson};
+use phpyun_core::{clock, ApiJson, ApiOk, ApiError, AppResult, AppState, AuthenticatedUser, ValidatedJson};
 use phpyun_models::country::repo as country_repo;
 use phpyun_services::country_service;
 use serde::Deserialize;
@@ -92,7 +92,7 @@ pub async fn create(
         clock::now_ts(),
     )
     .await
-    .map_err(AppError::internal)?;
+    .map_err(ApiError::internal)?;
     country_service::invalidate().await;
     Ok(ApiJson(CreatedId { id }))
 }
@@ -158,9 +158,9 @@ pub async fn patch(State(state): State<AppState>,
         clock::now_ts(),
     )
     .await
-    .map_err(AppError::internal)?;
+    .map_err(ApiError::internal)?;
     if affected == 0 {
-        return Err(AppError::param_invalid(
+        return Err(ApiError::param_invalid(
             "country_not_found",
         ));
     }
@@ -187,9 +187,9 @@ pub async fn delete(State(state): State<AppState>,
     user.require_admin()?;
     let affected = country_repo::soft_delete(state.db.pool(), id, clock::now_ts())
         .await
-        .map_err(AppError::internal)?;
+        .map_err(ApiError::internal)?;
     if affected == 0 {
-        return Err(AppError::param_invalid(
+        return Err(ApiError::param_invalid(
             "country_not_found",
         ));
     }

@@ -19,7 +19,7 @@ use phpyun_core::jwt::{issue_pair, JwtIssued};
 use phpyun_core::{
     background, jwt_blacklist,
     metrics::{auth_event, cache_hit, cache_miss},
-    rate_limit, AppError, AppResult, AppState,
+    rate_limit, ApiError, AppResult, AppState,
 };
 use phpyun_models::company::repo as company_repo;
 use phpyun_models::resume::repo as resume_repo;
@@ -73,7 +73,7 @@ pub async fn login(
     .is_err()
     {
         auth_event("login_blocked", Some("too_many_fails"));
-        return Err(AppError::rate_limit());
+        return Err(ApiError::rate_limit());
     }
 
     // 2. Look up the user (use the reader pool to offload the writer)
@@ -81,12 +81,12 @@ pub async fn login(
         .await?
         .ok_or_else(|| {
             auth_event("login_fail", Some("not_found"));
-            AppError::bad_credentials()
+            ApiError::bad_credentials()
         })?;
 
     if user.status == 2 {
         auth_event("login_fail", Some("locked"));
-        return Err(AppError::locked());
+        return Err(ApiError::locked());
     }
 
     // 3. Password verification (CPU-intensive, runs on spawn_blocking)
@@ -98,7 +98,7 @@ pub async fn login(
     .await;
     if !valid {
         auth_event("login_fail", Some("bad_password"));
-        return Err(AppError::bad_credentials());
+        return Err(ApiError::bad_credentials());
     }
 
     // 4. Login succeeded: clear the failure counter
@@ -200,13 +200,13 @@ pub async fn login_with_sms_code(
     .is_err()
     {
         auth_event("login_blocked", Some("too_many_fails"));
-        return Err(AppError::rate_limit());
+        return Err(ApiError::rate_limit());
     }
 
     // 2. Verify the SMS code
     if !verify::verify(&state.redis, VerifyKind::SmsLogin, mobile, sms_code).await? {
         auth_event("login_fail", Some("bad_sms_code"));
-        return Err(AppError::bad_credentials());
+        return Err(ApiError::bad_credentials());
     }
 
     // 3. Look up the user by phone number
@@ -214,11 +214,11 @@ pub async fn login_with_sms_code(
         .await?
         .ok_or_else(|| {
             auth_event("login_fail", Some("not_found"));
-            AppError::bad_credentials()
+            ApiError::bad_credentials()
         })?;
     if user.status == 2 {
         auth_event("login_fail", Some("locked"));
-        return Err(AppError::locked());
+        return Err(ApiError::locked());
     }
 
     // 4. Clear the failure counter
@@ -348,7 +348,7 @@ pub async fn login_or_register_with_email_code(
     let email = email.trim().to_ascii_lowercase();
     if !verify::verify(&state.redis, VerifyKind::EmailLogin, &email, code).await? {
         auth_event("login_fail", Some("bad_email_code"));
-        return Err(AppError::param_invalid("email_code"));
+        return Err(ApiError::param_invalid("email_code"));
     }
 
     let (user, is_new) = match user_repo::find_by_email_loose(state.db.pool(), &email).await? {
@@ -387,14 +387,14 @@ pub async fn login_or_register_with_email_code(
                             2 => company_repo::ensure_row(&mut **tx, uid, did).await?,
                             _ => {}
                         }
-                        Ok::<u64, AppError>(uid)
+                        Ok::<u64, ApiError>(uid)
                     })
                 })
                 .await?;
             let user = user_repo::find_by_uid(state.db.pool(), uid)
                 .await?
                 .ok_or_else(|| {
-                    AppError::internal(std::io::Error::other("email registration lookup failed"))
+                    ApiError::internal(std::io::Error::other("email registration lookup failed"))
                 })?;
             auth_event("register_success", Some("email"));
             let _ = audit::emit(
@@ -409,7 +409,7 @@ pub async fn login_or_register_with_email_code(
     };
 
     if user.status == 2 {
-        return Err(AppError::locked());
+        return Err(ApiError::locked());
     }
     rate_limit::clear_login_fail(&state.redis, &email).await;
     let JwtIssued {
@@ -488,10 +488,10 @@ pub async fn refresh_access(
     // re-check after the bearer was issued (in case it was kicked between
     // request reception and this point).
     if jwt_blacklist::is_revoked(&state.redis, &user.jti).await {
-        return Err(AppError::session_expired());
+        return Err(ApiError::session_expired());
     }
     if jwt_blacklist::is_token_stale(&state.redis, user.uid, user.iat).await {
-        return Err(AppError::session_expired());
+        return Err(ApiError::session_expired());
     }
 
     let JwtIssued {
@@ -591,14 +591,14 @@ pub async fn get_profile(state: &AppState, uid: u64) -> AppResult<Arc<UserProfil
             cache_miss(PROFILE_SCOPE);
             let member = user_repo::find_by_uid(&reader, uid)
                 .await?
-                .ok_or(AppError::business("user_not_found"))?;
+                .ok_or(ApiError::business("user_not_found"))?;
             let profile: UserProfile = member.into();
             // Backfill L2 in the background (with backpressure; lossy writes do not block)
             kv.spawn_set_json_ex(key, &profile, PROFILE_TTL_SECS);
             json::to_value(&profile).map(Arc::new)
         })
         .await
-        .map_err(AppError::from_arc)?;
+        .map_err(ApiError::from_arc)?;
 
     json::from_value::<UserProfile>((*shared_val).clone()).map(Arc::new)
 }
@@ -621,12 +621,12 @@ pub async fn invalidate_profile(state: &AppState, uid: u64) {
 /// when a usertype is already chosen — caller should surface that as 409.
 pub async fn set_usertype(state: &AppState, uid: u64, usertype: u8) -> AppResult<()> {
     if !matches!(usertype, 1 | 2 | 3) {
-        return Err(AppError::param_invalid("usertype"));
+        return Err(ApiError::param_invalid("usertype"));
     }
     let pool = state.db.pool();
     let updated = user_repo::set_usertype_if_unset(pool, uid, usertype).await?;
     if updated == 0 {
-        return Err(AppError::business("usertype_already_set"));
+        return Err(ApiError::business("usertype_already_set"));
     }
     seed_role_rows(state, uid, usertype).await;
     invalidate_profile(state, uid).await;

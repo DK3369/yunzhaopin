@@ -19,7 +19,7 @@
 //! - `http.client.retry{host}` counter.
 //! - `http.client.error{host, kind}` counter.
 
-use crate::{AppError, AppResult};
+use crate::{ApiError, AppResult};
 use crate::json;
 use crate::metrics as m;
 use reqwest::Client;
@@ -199,7 +199,7 @@ impl Http {
         retry: RetryPolicy,
     ) -> AppResult<String> {
         let host = host_of(url);
-        let mut last_err: Option<AppError> = None;
+        let mut last_err: Option<ApiError> = None;
 
         for attempt in 0..retry.max_attempts {
             if attempt > 0 {
@@ -233,7 +233,7 @@ impl Http {
                         return resp.text().await.map_err(map_reqwest_err);
                     }
                     if status.is_server_error() {
-                        last_err = Some(AppError::upstream(format!(
+                        last_err = Some(ApiError::upstream(format!(
                             "{method} {url} → {status}"
                         )));
                         m::counter_with(
@@ -243,7 +243,7 @@ impl Http {
                         continue; // Only 5xx triggers a retry.
                     }
                     // 4xx isn't retried; return the business error directly.
-                    return Err(AppError::upstream(format!("{method} {url} → {status}")));
+                    return Err(ApiError::upstream(format!("{method} {url} → {status}")));
                 }
                 Err(e) => {
                     let kind = if e.is_timeout() {
@@ -257,17 +257,17 @@ impl Http {
                         "http.client.error",
                         &[("host", as_static(&host)), ("kind", kind)],
                     );
-                    last_err = Some(AppError::upstream(format!("{method} {url}: {e}")));
+                    last_err = Some(ApiError::upstream(format!("{method} {url}: {e}")));
                 }
             }
         }
 
-        Err(last_err.unwrap_or_else(|| AppError::upstream(format!("{method} {url} failed"))))
+        Err(last_err.unwrap_or_else(|| ApiError::upstream(format!("{method} {url} failed"))))
     }
 }
 
-fn map_reqwest_err(e: reqwest::Error) -> AppError {
-    AppError::upstream(e.to_string())
+fn map_reqwest_err(e: reqwest::Error) -> ApiError {
+    ApiError::upstream(e.to_string())
 }
 
 /// Extract the host from the URL for the metric label. Label cardinality is

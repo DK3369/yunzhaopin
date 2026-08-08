@@ -28,11 +28,11 @@
 //! - Periodic task `record_pool_metrics()`: `db.pool.size / idle /
 //!   reader.pool.size / idle`.
 //! - Slow queries go to tracing WARN.
-//! - All query errors funnel through `AppError` (5xx, tag `"db"`).
+//! - All query errors funnel through `ApiError` (5xx, tag `"db"`).
 
 use crate::clock;
 use crate::config::Config;
-use crate::{AppError, AppResult};
+use crate::{ApiError, AppResult};
 use crate::metrics as m;
 use sqlx::mysql::{MySqlConnectOptions, MySqlPool, MySqlPoolOptions};
 use sqlx::{ConnectOptions, MySql, Transaction};
@@ -257,7 +257,7 @@ pub async fn run_migrations(db: &Db) -> AppResult<()> {
     sqlx::migrate!("../../migrations/sqlx")
         .run(db.pool())
         .await
-        .map_err(AppError::internal)?;
+        .map_err(ApiError::internal)?;
     tracing::info!("migrations done");
     Ok(())
 }

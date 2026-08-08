@@ -43,7 +43,7 @@
 //! - 5xx errors are not cached (avoid caching transient failures).
 //! - Cache TTL defaults to 24h, configurable.
 
-use crate::AppError;
+use crate::ApiError;
 use crate::kv::Kv;
 use crate::metrics as m;
 use crate::state::AppState;
@@ -166,7 +166,7 @@ fn replay(cached: CachedResponse) -> Response {
         Ok(b) => b,
         Err(_) => {
             m::counter("idempotency.cache_corrupt");
-            return AppError::internal(std::io::Error::other("idempotency cache corrupt"))
+            return ApiError::internal(std::io::Error::other("idempotency cache corrupt"))
                 .into_response();
         }
     };
@@ -176,7 +176,7 @@ fn replay(cached: CachedResponse) -> Response {
         builder = builder.header(axum::http::header::CONTENT_TYPE, ct);
     }
     builder.body(Body::from(body_bytes)).unwrap_or_else(|_| {
-        AppError::internal(std::io::Error::other("idempotency replay build failed"))
+        ApiError::internal(std::io::Error::other("idempotency replay build failed"))
             .into_response()
     })
 }

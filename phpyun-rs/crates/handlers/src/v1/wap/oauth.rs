@@ -8,7 +8,7 @@ use axum::{
     Router,
     routing::post,
 };
-use phpyun_core::{dto::{AuthTokenData, OAuthAuthorizeData, OkResp}, ApiJson, AppError, AppResult, AppState, AuthenticatedUser, ClientIp, ProviderKind, ValidatedJson};
+use phpyun_core::{dto::{AuthTokenData, OAuthAuthorizeData, OkResp}, ApiJson, ApiError, AppResult, AppState, AuthenticatedUser, ClientIp, ProviderKind, ValidatedJson};
 use phpyun_services::oauth_service;
 use serde::Deserialize;
 use utoipa::ToSchema;
@@ -69,7 +69,7 @@ pub async fn oauth_login(
 ) -> AppResult<ApiJson<AuthTokenData>> {
     phpyun_core::validators::ensure_path_token(&f.provider)?;
     let kind = ProviderKind::parse(&f.provider)
-        .ok_or_else(|| AppError::param_invalid(format!("provider: {}", f.provider)))?;
+        .ok_or_else(|| ApiError::param_invalid(format!("provider: {}", f.provider)))?;
 
     let ua = headers
         .get(axum::http::header::USER_AGENT)
@@ -106,7 +106,7 @@ pub async fn oauth_bind(
 ) -> AppResult<ApiJson<OkResp>> {
     phpyun_core::validators::ensure_path_token(&f.provider)?;
     let kind = ProviderKind::parse(&f.provider)
-        .ok_or_else(|| AppError::param_invalid(format!("provider: {}", f.provider)))?;
+        .ok_or_else(|| ApiError::param_invalid(format!("provider: {}", f.provider)))?;
     oauth_service::bind_oauth(&state, user.uid, kind, &f.id_token, &ip).await?;
     Ok(ApiJson(OkResp { ok: true }))
 }
@@ -145,7 +145,7 @@ pub async fn wechat_authorize_url(
         .config
         .wechat_appid
         .as_deref()
-        .ok_or_else(|| AppError::param_invalid("wechat_appid_missing"))?;
+        .ok_or_else(|| ApiError::param_invalid("wechat_appid_missing"))?;
 
     // Open-redirect protection: `redirect_uri` must exactly match (or share an
     // origin prefix with) the backend-configured `WECHAT_OAUTH_REDIRECT`.
@@ -155,9 +155,9 @@ pub async fn wechat_authorize_url(
         .config
         .wechat_oauth_redirect
         .as_deref()
-        .ok_or_else(|| AppError::param_invalid("wechat_oauth_redirect_not_configured"))?;
+        .ok_or_else(|| ApiError::param_invalid("wechat_oauth_redirect_not_configured"))?;
     if q.redirect_uri != allowed {
-        return Err(AppError::param_invalid("redirect_uri_not_allowed"));
+        return Err(ApiError::param_invalid("redirect_uri_not_allowed"));
     }
 
     // Generate / verify state: always have the server produce a random string
@@ -211,7 +211,7 @@ pub async fn wechat_code_login(
     // state must exist in Redis (written by authorize-url, 10 minute TTL)
     let key = format!("{WECHAT_STATE_PREFIX}{}", f.state);
     if !state.redis.exists(&key).await {
-        return Err(AppError::param_invalid("invalid_state"));
+        return Err(ApiError::param_invalid("invalid_state"));
     }
     // One-time use: delete immediately after use to prevent replay
     let _ = state.redis.del(&key).await;
@@ -252,12 +252,12 @@ pub async fn qq_authorize_url(
         .config
         .qq_appid
         .as_deref()
-        .ok_or_else(|| AppError::param_invalid("qq_appid_missing"))?;
+        .ok_or_else(|| ApiError::param_invalid("qq_appid_missing"))?;
     let redirect = state
         .config
         .qq_oauth_redirect
         .as_deref()
-        .ok_or_else(|| AppError::param_invalid("qq_oauth_redirect_missing"))?;
+        .ok_or_else(|| ApiError::param_invalid("qq_oauth_redirect_missing"))?;
 
     let state_val = uuid::Uuid::now_v7().simple().to_string();
     state
@@ -307,7 +307,7 @@ pub async fn qq_code_login(
 ) -> AppResult<ApiJson<AuthTokenData>> {
     let key = format!("{QQ_STATE_PREFIX}{}", f.state);
     if !state.redis.exists(&key).await {
-        return Err(AppError::param_invalid("invalid_state"));
+        return Err(ApiError::param_invalid("invalid_state"));
     }
     let _ = state.redis.del(&key).await;
 
@@ -347,12 +347,12 @@ pub async fn weibo_authorize_url(
         .config
         .weibo_appid
         .as_deref()
-        .ok_or_else(|| AppError::param_invalid("weibo_appid_missing"))?;
+        .ok_or_else(|| ApiError::param_invalid("weibo_appid_missing"))?;
     let redirect = state
         .config
         .weibo_oauth_redirect
         .as_deref()
-        .ok_or_else(|| AppError::param_invalid("weibo_oauth_redirect_missing"))?;
+        .ok_or_else(|| ApiError::param_invalid("weibo_oauth_redirect_missing"))?;
 
     let state_val = uuid::Uuid::now_v7().simple().to_string();
     state
@@ -391,7 +391,7 @@ pub async fn weibo_code_login(
 ) -> AppResult<ApiJson<AuthTokenData>> {
     let key = format!("{WEIBO_STATE_PREFIX}{}", f.state);
     if !state.redis.exists(&key).await {
-        return Err(AppError::param_invalid("invalid_state"));
+        return Err(ApiError::param_invalid("invalid_state"));
     }
     let _ = state.redis.del(&key).await;
 

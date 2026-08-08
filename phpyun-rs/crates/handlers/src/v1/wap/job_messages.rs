@@ -13,7 +13,7 @@ use axum::{
 };
 use phpyun_core::{
     json, verify::{self, VerifyKind},
-    ApiJson, AppError, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
+    ApiJson, ApiError, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
 };
 use phpyun_services::job_msg_service::{self, CreateInput};
 use serde::{Deserialize, Serialize};
@@ -121,7 +121,7 @@ pub async fn create(
     // Captcha — same scheme as register / sms send.
     let code = f.authcode.to_uppercase();
     if !verify::verify(&state.redis, VerifyKind::ImageCaptcha, &f.captcha_cid, &code).await? {
-        return Err(AppError::captcha());
+        return Err(ApiError::captcha());
     }
 
     let mid = job_msg_service::create(

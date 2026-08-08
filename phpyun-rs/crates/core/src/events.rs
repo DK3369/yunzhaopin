@@ -27,7 +27,7 @@
 //! ## Configuration (env)
 //! - `EVENTBUS_KIND`: `redis-stream` (default) | `memory` (for tests)
 
-use crate::{AppError, AppResult};
+use crate::{ApiError, AppResult};
 use crate::json;
 use crate::kv::{Kv, StreamMessage};
 use crate::metrics as m;
@@ -195,7 +195,7 @@ impl EventBus {
         match kind {
             "redis-stream" => Ok(Self::new(RedisStreamBus::new(kv))),
             "memory" => Ok(Self::new(InMemoryBus::default())),
-            other => Err(AppError::param_invalid(format!(
+            other => Err(ApiError::param_invalid(format!(
                 "unknown EVENTBUS_KIND: {other}"
             ))),
         }

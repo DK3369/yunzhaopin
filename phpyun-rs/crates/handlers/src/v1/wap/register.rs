@@ -206,7 +206,7 @@ pub async fn check_availability(
         "mobile" | "moblie" => user_repo::exists_mobile(db, &q.value).await?,
         "email" => user_repo::exists_email(db, &q.value).await?,
         _ => {
-            return Err(phpyun_core::AppError::param_invalid("field"));
+            return Err(phpyun_core::ApiError::param_invalid("field"));
         }
     };
     Ok(ApiJson(CheckResult {

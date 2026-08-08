@@ -20,7 +20,7 @@
 //!   the backend.
 
 use crate::config::Config;
-use crate::{AppError, AppResult};
+use crate::{ApiError, AppResult};
 use async_trait::async_trait;
 use std::sync::Arc;
 
@@ -84,7 +84,7 @@ pub struct AliyunSmsBackend {
 #[async_trait]
 impl SmsBackend for AliyunSmsBackend {
     async fn send_code(&self, _mobile: &str, _code: &str, _tmpl: SmsTemplate) -> AppResult<()> {
-        Err(AppError::internal(std::io::Error::other(
+        Err(ApiError::internal(std::io::Error::other(
             "AliyunSmsBackend not implemented yet (TODO)",
         )))
     }
@@ -110,11 +110,11 @@ impl Sms {
                 let ak = cfg
                     .sms_aliyun_ak
                     .clone()
-                    .ok_or_else(|| AppError::param_invalid("SMS_ALIYUN_AK required"))?;
+                    .ok_or_else(|| ApiError::param_invalid("SMS_ALIYUN_AK required"))?;
                 let sk = cfg
                     .sms_aliyun_sk
                     .clone()
-                    .ok_or_else(|| AppError::param_invalid("SMS_ALIYUN_SK required"))?;
+                    .ok_or_else(|| ApiError::param_invalid("SMS_ALIYUN_SK required"))?;
                 let sign = cfg
                     .sms_aliyun_sign
                     .clone()
@@ -125,7 +125,7 @@ impl Sms {
                     sign_name: sign,
                 }))
             }
-            other => Err(AppError::param_invalid(format!("unknown SMS_KIND: {other}"))),
+            other => Err(ApiError::param_invalid(format!("unknown SMS_KIND: {other}"))),
         }
     }
 

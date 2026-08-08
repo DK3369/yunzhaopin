@@ -6,7 +6,7 @@
 //! No direct sqlx usage in the service — the data is serialized to JSON and persisted via models/recycle_bin/repo.rs.
 
 use phpyun_core::audit::{self, Actor, AuditEvent};
-use phpyun_core::{clock, AppError, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
+use phpyun_core::{clock, ApiError, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
 use phpyun_models::recycle_bin::{entity::RecycleEntry, repo as recycle_repo};
 use serde::Serialize;
 
@@ -46,7 +46,7 @@ pub async fn snapshot(
     note: &str,
 ) -> AppResult<u64> {
     let json = serde_json::to_string(body)
-        .map_err(|e| AppError::upstream(format!("recycle.encode: {e}")))?;
+        .map_err(|e| ApiError::upstream(format!("recycle.encode: {e}")))?;
     let id = recycle_repo::insert(
         state.db.pool(),
         tablename,
@@ -75,7 +75,7 @@ pub async fn list(
 pub async fn get(state: &AppState, id: u64) -> AppResult<RecycleView> {
     let row = recycle_repo::get(state.db.reader(), id)
         .await?
-        .ok_or_else(|| AppError::param_invalid("recycle_not_found"))?;
+        .ok_or_else(|| ApiError::param_invalid("recycle_not_found"))?;
     Ok(RecycleView::from(row))
 }
 
@@ -84,7 +84,7 @@ pub async fn get(state: &AppState, id: u64) -> AppResult<RecycleView> {
 pub async fn purge(state: &AppState, admin: &AuthenticatedUser, id: u64) -> AppResult<()> {
     let affected = recycle_repo::delete_by_id(state.db.pool(), id).await?;
     if affected == 0 {
-        return Err(AppError::param_invalid("recycle_not_found"));
+        return Err(ApiError::param_invalid("recycle_not_found"));
     }
     let _ = audit::emit(
         state,

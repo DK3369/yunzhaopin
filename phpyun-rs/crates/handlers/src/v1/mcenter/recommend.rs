@@ -186,7 +186,7 @@ pub async fn send_email(State(state): State<AppState>,
         "job" => recommend_email_service::recommend_job(&state, &user, id, input).await?,
         "resume" => recommend_email_service::recommend_resume(&state, &user, id, input).await?,
         _ => {
-            return Err(phpyun_core::AppError::param_invalid(format!(
+            return Err(phpyun_core::ApiError::param_invalid(format!(
                 "kind: {kind}"
             )))
         }

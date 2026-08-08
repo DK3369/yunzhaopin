@@ -23,7 +23,7 @@
 //! business layer uses `sub` to look up the `{provider}_id` field in
 //! `yun_member`.
 
-use crate::{AppError, AppResult};
+use crate::{ApiError, AppResult};
 use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -112,7 +112,7 @@ fn stub_decode(id_token: &str) -> AppResult<ProviderIdentity> {
     let payload = id_token
         .split('.')
         .nth(1)
-        .ok_or_else(|| AppError::param_invalid("id_token: not a JWT"))?;
+        .ok_or_else(|| ApiError::param_invalid("id_token: not a JWT"))?;
     let bytes = base64::Engine::decode(
         &base64::engine::general_purpose::URL_SAFE_NO_PAD,
         payload,
@@ -120,7 +120,7 @@ fn stub_decode(id_token: &str) -> AppResult<ProviderIdentity> {
     .or_else(|_| {
         base64::Engine::decode(&base64::engine::general_purpose::STANDARD_NO_PAD, payload)
     })
-    .map_err(|e| AppError::param_invalid(format!("id_token payload b64: {e}")))?;
+    .map_err(|e| ApiError::param_invalid(format!("id_token payload b64: {e}")))?;
 
     #[derive(Deserialize)]
     struct StubClaims {
@@ -129,7 +129,7 @@ fn stub_decode(id_token: &str) -> AppResult<ProviderIdentity> {
         name: Option<String>,
     }
     let claims: StubClaims = serde_json::from_slice(&bytes)
-        .map_err(|e| AppError::param_invalid(format!("id_token payload json: {e}")))?;
+        .map_err(|e| ApiError::param_invalid(format!("id_token payload json: {e}")))?;
 
     Ok(ProviderIdentity {
         sub: claims.sub,
@@ -209,7 +209,7 @@ impl OAuth {
     /// Verify an id_token and return the identity from the provider.
     pub async fn verify(&self, kind: ProviderKind, id_token: &str) -> AppResult<ProviderIdentity> {
         let Some(p) = self.providers.get(&kind) else {
-            return Err(AppError::param_invalid(format!(
+            return Err(ApiError::param_invalid(format!(
                 "oauth provider not configured: {}",
                 kind.as_str()
             )));

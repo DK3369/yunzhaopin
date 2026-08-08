@@ -10,7 +10,7 @@
 //! to > refresh_ttl (8 days), enough to cover the longest token lifetime.
 
 use crate::clock;
-use crate::AppError;
+use crate::ApiError;
 use crate::kv::Kv;
 
 const KEY_PREFIX: &str = "jwt:blk:";
@@ -22,7 +22,7 @@ const PW_EPOCH_TTL_SECS: u64 = 8 * 24 * 3600;
 /// Revoke a jti. `exp_ts` is the token's expiration Unix-seconds timestamp; this
 /// function converts it to a remaining TTL and uses it as the Redis key's expiration
 /// — Redis cleans up automatically once it expires.
-pub async fn revoke(kv: &Kv, jti: &str, exp_ts: i64) -> Result<(), AppError> {
+pub async fn revoke(kv: &Kv, jti: &str, exp_ts: i64) -> Result<(), ApiError> {
     let ttl = clock::ttl_until(exp_ts);
     kv.set_ex(&format!("{KEY_PREFIX}{jti}"), "1", ttl).await
 }
@@ -33,7 +33,7 @@ pub async fn is_revoked(kv: &Kv, jti: &str) -> bool {
 
 /// Record this user's "password change moment". Any access/refresh token issued
 /// before this point is treated as invalid.
-pub async fn bump_pw_epoch(kv: &Kv, uid: u64) -> Result<(), AppError> {
+pub async fn bump_pw_epoch(kv: &Kv, uid: u64) -> Result<(), ApiError> {
     let now = clock::now_ts();
     kv.set_ex(
         &format!("{PW_EPOCH_PREFIX}{uid}"),

@@ -12,7 +12,7 @@
 use phpyun_core::audit::{self, Actor, AuditEvent};
 use phpyun_core::jwt::{issue_pair, JwtIssued};
 use phpyun_core::metrics::auth_event;
-use phpyun_core::{AppError, AppResult, AppState, ProviderKind};
+use phpyun_core::{ApiError, AppResult, AppState, ProviderKind};
 use phpyun_models::user::repo as user_repo;
 
 pub struct OAuthLoginResult {
@@ -49,7 +49,7 @@ pub async fn login_with_oauth(
 
     let Some(user) = member else {
         auth_event("oauth_not_bound", Some(provider.as_str()));
-        return Err(AppError::param_invalid(format!(
+        return Err(ApiError::param_invalid(format!(
             "oauth_not_bound:{}:{}",
             provider.as_str(),
             identity.sub
@@ -58,7 +58,7 @@ pub async fn login_with_oauth(
 
     if user.status == 2 {
         auth_event("oauth_login_fail", Some("locked"));
-        return Err(AppError::locked());
+        return Err(ApiError::locked());
     }
 
     // 3. Issue tokens
@@ -127,9 +127,9 @@ pub async fn login_with_wechat_code(
         .config
         .wechat_appid
         .as_deref()
-        .ok_or_else(|| AppError::param_invalid("wechat_appid_missing"))?;
+        .ok_or_else(|| ApiError::param_invalid("wechat_appid_missing"))?;
     let appsecret = state.config.wechat_appsecret.as_deref().ok_or_else(|| {
-        AppError::param_invalid("wechat_appsecret_missing")
+        ApiError::param_invalid("wechat_appsecret_missing")
     })?;
 
     // 1) Get the openid
@@ -156,13 +156,13 @@ pub async fn login_with_wechat_code(
     if let Some(code) = resp.errcode {
         if code != 0 {
             let msg = resp.errmsg.unwrap_or_default();
-            return Err(AppError::upstream(format!(
+            return Err(ApiError::upstream(format!(
                 "wechat errcode={code} errmsg={msg}"
             )));
         }
     }
     let Some(openid) = resp.openid else {
-        return Err(AppError::upstream(
+        return Err(ApiError::upstream(
             "wechat oauth returned no openid",
         ));
     };
@@ -171,14 +171,14 @@ pub async fn login_with_wechat_code(
     let member = user_repo::find_by_oauth_id(state.db.reader(), "wxid", &openid).await?;
     let Some(user) = member else {
         auth_event("oauth_not_bound", Some("wechat"));
-        return Err(AppError::param_invalid(format!(
+        return Err(ApiError::param_invalid(format!(
             "oauth_not_bound:wechat:{openid}"
         )));
     };
 
     if user.status == 2 {
         auth_event("oauth_login_fail", Some("locked"));
-        return Err(AppError::locked());
+        return Err(ApiError::locked());
     }
 
     let JwtIssued {
@@ -259,14 +259,14 @@ pub async fn login_with_qq_code(
         .config
         .qq_appid
         .as_deref()
-        .ok_or_else(|| AppError::param_invalid("qq_appid_missing"))?;
+        .ok_or_else(|| ApiError::param_invalid("qq_appid_missing"))?;
     let appsecret = state
         .config
         .qq_appsecret
         .as_deref()
-        .ok_or_else(|| AppError::param_invalid("qq_appsecret_missing"))?;
+        .ok_or_else(|| ApiError::param_invalid("qq_appsecret_missing"))?;
     let redirect = state.config.qq_oauth_redirect.as_deref().ok_or_else(|| {
-        AppError::param_invalid(
+        ApiError::param_invalid(
             "qq_oauth_redirect_missing",
         )
     })?;
@@ -293,12 +293,12 @@ pub async fn login_with_qq_code(
     let resp: QqTokenResp = state.http.get_json(&token_url).await?;
     if let Some(err) = resp.error {
         let msg = resp.error_description.unwrap_or_default();
-        return Err(AppError::upstream(format!(
+        return Err(ApiError::upstream(format!(
             "qq token error={err} msg={msg}"
         )));
     }
     let Some(access_token) = resp.access_token else {
-        return Err(AppError::upstream(
+        return Err(ApiError::upstream(
             "qq oauth returned no access_token",
         ));
     };
@@ -322,12 +322,12 @@ pub async fn login_with_qq_code(
     let me: QqMeResp = state.http.get_json(&me_url).await?;
     if let Some(err) = me.error {
         let msg = me.error_description.unwrap_or_default();
-        return Err(AppError::upstream(format!(
+        return Err(ApiError::upstream(format!(
             "qq /me error={err} msg={msg}"
         )));
     }
     let Some(openid) = me.openid else {
-        return Err(AppError::upstream(
+        return Err(ApiError::upstream(
             "qq oauth returned no openid",
         ));
     };
@@ -336,13 +336,13 @@ pub async fn login_with_qq_code(
     let member = user_repo::find_by_oauth_id(state.db.reader(), "qqid", &openid).await?;
     let Some(user) = member else {
         auth_event("oauth_not_bound", Some("qq"));
-        return Err(AppError::param_invalid(format!(
+        return Err(ApiError::param_invalid(format!(
             "oauth_not_bound:qq:{openid}"
         )));
     };
     if user.status == 2 {
         auth_event("oauth_login_fail", Some("locked"));
-        return Err(AppError::locked());
+        return Err(ApiError::locked());
     }
 
     let JwtIssued {
@@ -419,12 +419,12 @@ pub async fn login_with_weibo_code(
         .config
         .weibo_appid
         .as_deref()
-        .ok_or_else(|| AppError::param_invalid("weibo_appid_missing"))?;
+        .ok_or_else(|| ApiError::param_invalid("weibo_appid_missing"))?;
     let appsecret = state.config.weibo_appsecret.as_deref().ok_or_else(|| {
-        AppError::param_invalid("weibo_appsecret_missing")
+        ApiError::param_invalid("weibo_appsecret_missing")
     })?;
     let redirect = state.config.weibo_oauth_redirect.as_deref().ok_or_else(|| {
-        AppError::param_invalid(
+        ApiError::param_invalid(
             "weibo_oauth_redirect_missing",
         )
     })?;
@@ -463,13 +463,13 @@ pub async fn login_with_weibo_code(
                 .error_description
                 .or_else(|| resp.error_code.map(|c| c.to_string()))
                 .unwrap_or_default();
-            return Err(AppError::upstream(format!(
+            return Err(ApiError::upstream(format!(
                 "weibo error={err} msg={msg}"
             )));
         }
     }
     let Some(uid_str) = resp.uid else {
-        return Err(AppError::upstream(
+        return Err(ApiError::upstream(
             "weibo oauth returned no uid",
         ));
     };
@@ -478,13 +478,13 @@ pub async fn login_with_weibo_code(
     let member = user_repo::find_by_oauth_id(state.db.reader(), "sinaid", &uid_str).await?;
     let Some(user) = member else {
         auth_event("oauth_not_bound", Some("weibo"));
-        return Err(AppError::param_invalid(format!(
+        return Err(ApiError::param_invalid(format!(
             "oauth_not_bound:weibo:{uid_str}"
         )));
     };
     if user.status == 2 {
         auth_event("oauth_login_fail", Some("locked"));
-        return Err(AppError::locked());
+        return Err(ApiError::locked());
     }
 
     let JwtIssued {
@@ -612,7 +612,7 @@ pub async fn bind_oauth(
     .await?
     {
         if other.uid != uid {
-            return Err(AppError::param_invalid("oauth_sub_bound_elsewhere").into());
+            return Err(ApiError::param_invalid("oauth_sub_bound_elsewhere").into());
         }
     }
 

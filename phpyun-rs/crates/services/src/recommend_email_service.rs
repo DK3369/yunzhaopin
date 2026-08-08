@@ -15,7 +15,7 @@
 //! the same downstream worker that handles forgot-password emails picks it up.
 
 use phpyun_core::{
-    audit, clock, i18n::{current_lang, t, t_args, Lang}, AppError, AppResult, AppState,
+    audit, clock, i18n::{current_lang, t, t_args, Lang}, ApiError, AppResult, AppState,
     AuthenticatedUser,
 };
 use phpyun_models::recommend::{
@@ -66,10 +66,10 @@ async fn common(
 ) -> AppResult<RecommendResult> {
     let email = input.target_email.trim();
     if !email.contains('@') {
-        return Err(AppError::param_invalid("email"));
+        return Err(ApiError::param_invalid("email"));
     }
     if rec_id == 0 {
-        return Err(AppError::param_invalid("rec_id"));
+        return Err(ApiError::param_invalid("rec_id"));
     }
 
     let pool = state.db.pool();
@@ -80,13 +80,13 @@ async fn common(
     let day_start = today_begin_ts(now);
     let used_today = rec_repo::count_today_by_user(reader, user.uid, day_start).await?;
     if used_today >= DEFAULT_DAY_CAP {
-        return Err(AppError::rate_limit());
+        return Err(ApiError::rate_limit());
     }
 
     // 2) Min-interval
     if let Some(last) = rec_repo::last_addtime_by_user(reader, user.uid).await? {
         if now - last < DEFAULT_MIN_INTERVAL_SECS {
-            return Err(AppError::rate_limit());
+            return Err(ApiError::rate_limit());
         }
     }
 

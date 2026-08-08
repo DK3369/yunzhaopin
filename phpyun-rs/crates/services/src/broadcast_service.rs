@@ -2,7 +2,7 @@
 //!
 //! Admin broadcasts -> users see them as unread according to usertype. Read receipts are written to `phpyun_rs_broadcast_reads`.
 
-use phpyun_core::{audit, clock, AppError, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
+use phpyun_core::{audit, clock, ApiError, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
 use phpyun_models::broadcast::{entity::Broadcast, repo as bc_repo};
 
 pub async fn admin_create(
@@ -14,7 +14,7 @@ pub async fn admin_create(
 ) -> AppResult<u64> {
     admin.require_admin()?;
     if !(0..=3).contains(&target_usertype) {
-        return Err(AppError::param_invalid("bad_target_usertype"));
+        return Err(ApiError::param_invalid("bad_target_usertype"));
     }
     let id = bc_repo::create(
         state.db.pool(),

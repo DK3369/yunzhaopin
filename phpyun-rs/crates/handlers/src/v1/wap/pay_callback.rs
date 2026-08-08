@@ -15,7 +15,7 @@ use axum::{
     routing::post,
     Router,
 };
-use phpyun_core::{dto::OkResp, ApiJson, AppError, AppResult, AppState, ValidatedJson};
+use phpyun_core::{dto::OkResp, ApiJson, ApiError, AppResult, AppState, ValidatedJson};
 use phpyun_services::vip_service;
 use serde::Deserialize;
 use utoipa::ToSchema;
@@ -56,13 +56,13 @@ pub async fn callback(
         .payment_callback_token
         .as_deref()
         .ok_or_else(|| {
-            AppError::upstream(
+            ApiError::upstream(
                 "payment_callback_token not configured",
             )
         })?;
     // Startup config::validate() already requires >= 32 characters; keep a runtime safety net here.
     if expected.len() < 32 {
-        return Err(AppError::upstream(
+        return Err(ApiError::upstream(
             "payment_callback_token too short",
         ));
     }
@@ -74,7 +74,7 @@ pub async fn callback(
         .unwrap_or("");
     if !constant_time_eq(got.as_bytes(), expected.as_bytes()) {
         tracing::warn!(order = %f.order_no, "pay callback: bad token");
-        return Err(AppError::unauth());
+        return Err(ApiError::unauth());
     }
 
     // 3. Mark as paid

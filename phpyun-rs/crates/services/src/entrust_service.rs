@@ -11,7 +11,7 @@
 //!   - unbind by lt_uid or by row id
 //!   - count my bindings (used by dashboard)
 
-use phpyun_core::{clock, AppError, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
+use phpyun_core::{clock, ApiError, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
 use phpyun_models::entrust::{entity::Entrust, repo as entrust_repo};
 
 pub async fn count_mine(
@@ -44,11 +44,11 @@ pub async fn bind(
 ) -> AppResult<u64> {
     user.require_jobseeker()?;
     if lt_uid == 0 {
-        return Err(AppError::param_invalid("lt_uid"));
+        return Err(ApiError::param_invalid("lt_uid"));
     }
     if lt_uid == user.uid {
         // Can't entrust yourself — application-layer rule.
-        return Err(AppError::param_invalid("entrust_self"));
+        return Err(ApiError::param_invalid("entrust_self"));
     }
     if let Some(existing) =
         entrust_repo::find_binding(state.db.reader(), user.uid, lt_uid).await?

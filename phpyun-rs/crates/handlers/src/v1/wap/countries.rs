@@ -11,7 +11,7 @@ use axum::{
     routing::post,
 };
 use phpyun_core::i18n::{current_lang, Lang};
-use phpyun_core::{ApiJson, AppError, AppResult, AppState, ValidatedJson};
+use phpyun_core::{ApiJson, ApiError, AppResult, AppState, ValidatedJson};
 use phpyun_models::country::entity::Country;
 use phpyun_services::country_service;
 use serde::{Deserialize, Serialize};
@@ -123,7 +123,7 @@ pub async fn by_id(State(state): State<AppState>,
     let lang = current_lang();
     let c = country_service::find_by_id(&state, id)
         .await?
-        .ok_or_else(|| AppError::param_invalid("country_not_found"))?;
+        .ok_or_else(|| ApiError::param_invalid("country_not_found"))?;
     Ok(ApiJson(to_view(&c, lang)))
 }
 
@@ -144,7 +144,7 @@ pub async fn by_code(State(state): State<AppState>,
     let lang = current_lang();
     let c = country_service::find_by_code(&state, &code)
         .await?
-        .ok_or_else(|| AppError::param_invalid("country_not_found"))?;
+        .ok_or_else(|| ApiError::param_invalid("country_not_found"))?;
     Ok(ApiJson(to_view(&c, lang)))
 }
 

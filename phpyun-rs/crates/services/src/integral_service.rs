@@ -11,7 +11,7 @@
 //! checks at the PHP layer — not atomic, so it has oversell / double-deduct issues. The migrated
 //! version fixes that along the way.
 
-use phpyun_core::{audit, clock, AppError, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
+use phpyun_core::{audit, clock, ApiError, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
 use phpyun_models::integral::{
     entity::{IntegralExchange, IntegralItem, UserIntegral},
     repo as integral_repo,
@@ -30,7 +30,7 @@ pub async fn list_items(
 pub async fn get_item(state: &AppState, id: u64) -> AppResult<IntegralItem> {
     integral_repo::find_item(state.db.reader(), id)
         .await?
-        .ok_or_else(|| AppError::param_invalid("item_not_found"))
+        .ok_or_else(|| ApiError::param_invalid("item_not_found"))
 }
 
 pub async fn balance(
@@ -48,9 +48,9 @@ pub async fn exchange(
 ) -> AppResult<u64> {
     let item = integral_repo::find_item(state.db.reader(), item_id)
         .await?
-        .ok_or_else(|| AppError::param_invalid("item_not_found"))?;
+        .ok_or_else(|| ApiError::param_invalid("item_not_found"))?;
     if item.status != 1 {
-        return Err(AppError::param_invalid("item_unavailable"));
+        return Err(ApiError::param_invalid("item_unavailable"));
     }
 
     let pool = state.db.pool();
@@ -59,7 +59,7 @@ pub async fn exchange(
     // 1) Deduct stock
     let stock_affected = integral_repo::try_consume_stock(pool, item_id).await?;
     if stock_affected == 0 {
-        return Err(AppError::param_invalid("item_sold_out"));
+        return Err(ApiError::param_invalid("item_sold_out"));
     }
 
     // 2) Deduct points
@@ -67,7 +67,7 @@ pub async fn exchange(
     if deduct_affected == 0 {
         // Roll back stock
         integral_repo::rollback_stock(pool, item_id).await?;
-        return Err(AppError::param_invalid("insufficient_balance"));
+        return Err(ApiError::param_invalid("insufficient_balance"));
     }
 
     // 3) Write the exchange record
@@ -120,15 +120,15 @@ pub async fn transfer(
     note: &str,
 ) -> AppResult<u64> {
     if to_uid == user.uid {
-        return Err(AppError::param_invalid("cannot_transfer_to_self"));
+        return Err(ApiError::param_invalid("cannot_transfer_to_self"));
     }
     if points == 0 {
-        return Err(AppError::param_invalid("bad_points"));
+        return Err(ApiError::param_invalid("bad_points"));
     }
     let now = clock::now_ts();
     let id = transfer_repo::execute(state.db.pool(), user.uid, to_uid, points, note, now)
         .await?
-        .ok_or_else(|| AppError::param_invalid("insufficient_balance"))?;
+        .ok_or_else(|| ApiError::param_invalid("insufficient_balance"))?;
     let _ = audit::emit(
         state,
         audit::AuditEvent::new("integral.transfer", audit::Actor::uid(user.uid))

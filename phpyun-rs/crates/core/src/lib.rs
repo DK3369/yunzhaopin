@@ -46,12 +46,12 @@ pub mod verify;
 
 // Public facade: most crates should import shared application primitives from
 // `phpyun_core::{...}` or `phpyun_core::prelude::*`. Implementation modules
-// remain namespaced by concern; `error` stays private so `AppError` is the only
+// remain namespaced by concern; `error` stays private so `ApiError` is the only
 // application error type visible outside core.
 pub use cache::AppCaches;
 pub use config::Config;
 pub use db::Db;
-pub use error::{AppError, AppResult};
+pub use error::{ApiError, AppResult};
 pub use events::{EventBus, EventBusBackend};
 pub use extractors::{
     AuthenticatedUser, ClientIp, MaybeUser, Pagination, ValidatedForm, ValidatedJson,
@@ -74,7 +74,7 @@ pub use storage::{ObjectStore, Storage};
 pub mod prelude {
     pub use crate::dto::*;
     pub use crate::{
-        ApiBody, ApiJson, ApiMsg, ApiMsgData, ApiOk, ApiResponse, AppError, AppResult, AppState,
+        ApiBody, ApiJson, ApiMsg, ApiMsgData, ApiOk, ApiResponse, ApiError, AppResult, AppState,
         AuthenticatedUser, ClientIp, Lang, MaybeUser, Paged, Pagination, ValidatedForm,
         ValidatedJson, ValidatedQuery,
     };

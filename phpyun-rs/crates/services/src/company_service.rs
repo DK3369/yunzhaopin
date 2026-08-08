@@ -1,6 +1,6 @@
 //! Company service (usertype=2).
 
-use phpyun_core::AppError;
+use phpyun_core::ApiError;
 use phpyun_core::audit::{self, Actor, AuditEvent};
 use phpyun_core::{clock, AppResult, AppState, AuthenticatedUser, Pagination};
 use phpyun_models::company::{entity::Company, repo as company_repo};
@@ -53,14 +53,14 @@ pub async fn get_mine(state: &AppState, user: &AuthenticatedUser) -> AppResult<C
     company_repo::ensure_row(state.db.pool(), user.uid, user.did).await?;
     company_repo::find_by_uid(state.db.pool(), user.uid)
         .await?
-        .ok_or_else(|| AppError::business("company_not_found").into())
+        .ok_or_else(|| ApiError::business("company_not_found").into())
 }
 
 /// Public company view (WAP detail page) — accessible to anyone, but the company must have `r_status=1` (passed review).
 pub async fn get_public(state: &AppState, uid: u64) -> AppResult<Company> {
     let c = company_repo::find_by_uid(state.db.reader(), uid)
         .await?
-        .ok_or(AppError::business("company_not_found"))?;
+        .ok_or(ApiError::business("company_not_found"))?;
     match c.r_status {
         1 => {
             // View counter +1 (best-effort, written in the background)
@@ -71,8 +71,8 @@ pub async fn get_public(state: &AppState, uid: u64) -> AppResult<Company> {
             });
             Ok(c)
         }
-        2 => Err(AppError::business("company_locked").into()),
-        _ => Err(AppError::business("company_not_verified").into()),
+        2 => Err(ApiError::business("company_locked").into()),
+        _ => Err(ApiError::business("company_not_verified").into()),
     }
 }
 

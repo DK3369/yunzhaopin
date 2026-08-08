@@ -4,7 +4,7 @@
 //! (PHPYun reads `com_yqmb_num` from config; the migrated version uses a hard-coded value
 //! for now and will switch to the config facade later).
 
-use phpyun_core::{clock, AppError, AppResult, AppState, AuthenticatedUser};
+use phpyun_core::{clock, ApiError, AppResult, AppState, AuthenticatedUser};
 use phpyun_models::interview_template::{entity::InterviewTemplate, repo as tpl_repo};
 
 const MAX_PER_EMPLOYER: u64 = 10;
@@ -32,11 +32,11 @@ pub async fn create(
 ) -> AppResult<u64> {
     let now = clock::now_ts();
     if input.intertime != 0 && input.intertime < now {
-        return Err(AppError::param_invalid("intertime_past"));
+        return Err(ApiError::param_invalid("intertime_past"));
     }
     let used = tpl_repo::count_by_uid(state.db.reader(), user.uid).await?;
     if used >= MAX_PER_EMPLOYER {
-        return Err(AppError::param_invalid("tpl_limit_reached"));
+        return Err(ApiError::param_invalid("tpl_limit_reached"));
     }
     let id = tpl_repo::create(
         state.db.pool(),
@@ -73,7 +73,7 @@ pub async fn update(
 ) -> AppResult<()> {
     if let Some(t) = patch.intertime {
         if t != 0 && t < clock::now_ts() {
-            return Err(AppError::param_invalid("intertime_past"));
+            return Err(ApiError::param_invalid("intertime_past"));
         }
     }
     let affected = tpl_repo::update(
@@ -93,7 +93,7 @@ pub async fn update(
     )
     .await?;
     if affected == 0 {
-        return Err(AppError::forbidden());
+        return Err(ApiError::forbidden());
     }
     Ok(())
 }
@@ -105,7 +105,7 @@ pub async fn delete(
 ) -> AppResult<()> {
     let affected = tpl_repo::delete(state.db.pool(), id, user.uid).await?;
     if affected == 0 {
-        return Err(AppError::forbidden());
+        return Err(ApiError::forbidden());
     }
     Ok(())
 }

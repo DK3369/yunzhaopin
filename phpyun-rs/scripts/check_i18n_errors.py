@@ -10,7 +10,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 LOCALES = ("en", "zh-CN", "zh-TW")
 TAG_RE = re.compile(r"=>\s*\"([a-z][a-z0-9_]+)\"\.into\(\)")
-KEY_RE = re.compile(r"(?:param_invalid|InvalidParam|param_missing)\(\s*\"([a-z][a-z0-9_]*)\"")
+KEY_RE = re.compile(r"(?:param_invalid|param_missing)\(\s*\"([a-z][a-z0-9_]*)\"")
 
 
 def main() -> int:
@@ -28,7 +28,7 @@ def main() -> int:
     for path in (ROOT / "crates").rglob("*.rs"):
         source = path.read_text(encoding="utf-8", errors="replace")
         keys.update(KEY_RE.findall(source))
-        # AppError constructors use stable string tags. Include those tags so
+        # ApiError constructors use stable string tags. Include those tags so
         # business errors cannot fall back to a raw machine key when a locale
         # entry is missing.
         keys.update(TAG_RE.findall(source))

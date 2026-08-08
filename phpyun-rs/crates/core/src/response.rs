@@ -55,8 +55,8 @@ impl<T: Serialize> ApiBody<T> {
     }
 
     /// Failure envelope. Business code normally doesn't construct this directly;
-    /// `AppError::into_response()` builds it automatically. The API is kept for
-    /// the rare case where you need to bypass the `AppError` enum.
+    /// `ApiError::into_response()` builds it automatically. The API is kept for
+    /// the rare case where you need to bypass the `ApiError` enum.
     pub fn err(code: u16, msg: impl Into<String>) -> Self {
         Self {
             code,

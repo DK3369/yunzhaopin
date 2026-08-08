@@ -287,7 +287,7 @@ pub async fn list_jobs(
         page.page,
         page.page_size,
     );
-    Ok(ApiJson(json::to_value(&paged).map_err(phpyun_core::AppError::internal)?))
+    Ok(ApiJson(json::to_value(&paged).map_err(phpyun_core::ApiError::internal)?))
 }
 
 /// Public job detail -- returned as a nested map **grouped by business concern**.
@@ -644,7 +644,7 @@ pub async fn share_text(
     let job = phpyun_models::job::repo::find_public_by_id(state.db.reader(), id)
         .await?
         .ok_or_else(|| {
-            phpyun_core::AppError::param_invalid("job_not_found")
+            phpyun_core::ApiError::param_invalid("job_not_found")
         })?;
 
     let jid = job.id;
@@ -772,7 +772,7 @@ pub async fn job_contact(
     let id = b.id;
     let c = phpyun_models::job::repo::get_job_contact(state.db.reader(), id)
         .await?
-        .ok_or_else(|| phpyun_core::AppError::param_invalid("job_not_found"))?;
+        .ok_or_else(|| phpyun_core::ApiError::param_invalid("job_not_found"))?;
 
     // Resolve city name from the dict cache so the front-end doesn't need a
     // second round-trip just to render it.

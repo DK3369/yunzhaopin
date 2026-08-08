@@ -6,7 +6,7 @@ use axum::{
     routing::post,
 };
 use phpyun_core::verify::{self, VerifyKind};
-use phpyun_core::{validators, ApiOk, AppError, AppResult, AppState, ValidatedJson};
+use phpyun_core::{validators, ApiOk, ApiError, AppResult, AppState, ValidatedJson};
 use phpyun_services::sms_service::{self, SmsScene};
 use serde::Deserialize;
 use utoipa::ToSchema;
@@ -53,7 +53,7 @@ pub async fn send(
     // 1. Mandatory image-captcha validation (anti SMS-bombing / mobile-enumeration)
     let code = f.authcode.to_uppercase();
     if !verify::verify(&state.redis, VerifyKind::ImageCaptcha, &f.captcha_cid, &code).await? {
-        return Err(AppError::captcha());
+        return Err(ApiError::captcha());
     }
 
     let scene = match f.scene.as_str() {
@@ -66,7 +66,7 @@ pub async fn send(
         // `verify::verify(SmsOnceJob | SmsTinyResume)`.
         "once" | "once_job" => SmsScene::OnceJob,
         "tiny" | "tiny_resume" => SmsScene::TinyResume,
-        _ => return Err(AppError::param_invalid("scene")),
+        _ => return Err(ApiError::param_invalid("scene")),
     };
     sms_service::send_sms_code(&state, &f.moblie, scene).await?;
     Ok(ApiOk("sent"))

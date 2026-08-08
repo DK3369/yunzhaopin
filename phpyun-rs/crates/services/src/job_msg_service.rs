@@ -8,7 +8,7 @@
 //!   * `com_name` / `job_name` are denormalised into the row (snapshot at write
 //!     time) — fall back to the live company / job rows if missing.
 
-use phpyun_core::{clock, AppError, AppResult, AppState, AuthenticatedUser, Pagination};
+use phpyun_core::{clock, ApiError, AppResult, AppState, AuthenticatedUser, Pagination};
 use phpyun_models::job_msg::{entity::JobMsg, repo as msg_repo};
 
 pub struct JobMsgPage {
@@ -32,10 +32,10 @@ pub async fn create(
 
     let content = input.content.trim();
     if content.is_empty() {
-        return Err(AppError::param_invalid("content_empty"));
+        return Err(ApiError::param_invalid("content_empty"));
     }
     if content.chars().count() > 1000 {
-        return Err(AppError::param_invalid("content_too_long"));
+        return Err(ApiError::param_invalid("content_too_long"));
     }
 
     let pool = state.db.pool();
@@ -45,19 +45,19 @@ pub async fn create(
     //    and is approved for public viewing.
     let job = phpyun_models::job::repo::find_public_by_id(reader, input.jobid)
         .await?
-        .ok_or_else(|| AppError::param_invalid("job_not_found"))?;
+        .ok_or_else(|| ApiError::param_invalid("job_not_found"))?;
     let job_uid = job.uid;
     let job_name = job.name.clone();
     let com_name = job.com_name.clone().unwrap_or_default();
 
     if job_uid == user.uid {
-        return Err(AppError::param_invalid("self_message_forbidden"));
+        return Err(ApiError::param_invalid("self_message_forbidden"));
     }
 
     // 2. Mutual blacklist check — skip if the company has blacklisted the user
     //    (PHP `wap/ajax::pl_action` returns errcode=7 in this case).
     if phpyun_models::blacklist::repo::is_blocked(reader, job_uid, user.uid).await? {
-        return Err(AppError::param_invalid("blocked_by_company"));
+        return Err(ApiError::param_invalid("blocked_by_company"));
     }
 
     // 3. Pull the username for the snapshot column (the JWT layer doesn't
@@ -141,16 +141,16 @@ pub async fn employer_reply(
     user.require_employer()?;
     let reply = reply.trim();
     if reply.is_empty() {
-        return Err(AppError::param_invalid("reply_empty"));
+        return Err(ApiError::param_invalid("reply_empty"));
     }
     if reply.chars().count() > 1000 {
-        return Err(AppError::param_invalid("reply_too_long"));
+        return Err(ApiError::param_invalid("reply_too_long"));
     }
 
     let pool = state.db.pool();
     let n = msg_repo::employer_reply(pool, msg_id, user.uid, reply, clock::now_ts()).await?;
     if n == 0 {
-        return Err(AppError::param_invalid(
+        return Err(ApiError::param_invalid(
             "msg_not_found_or_not_yours",
         ));
     }
@@ -166,12 +166,12 @@ pub async fn hide(
 ) -> AppResult<()> {
     let pool = state.db.pool();
     let row = msg_repo::find(pool, msg_id).await?;
-    let m = row.ok_or_else(|| AppError::param_invalid("msg_not_found"))?;
+    let m = row.ok_or_else(|| ApiError::param_invalid("msg_not_found"))?;
 
     let is_author = m.uid == Some(user.uid);
     let is_owner = m.job_uid == Some(user.uid) && user.usertype == 2;
     if !(is_author || is_owner) {
-        return Err(AppError::forbidden());
+        return Err(ApiError::forbidden());
     }
 
     let _ = msg_repo::soft_hide(pool, msg_id).await?;

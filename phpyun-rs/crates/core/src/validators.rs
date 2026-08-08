@@ -106,7 +106,7 @@ pub fn username(v: &str) -> Result<(), ValidationError> {
 /// could break out of an identifier: NUL / whitespace / `;` / quotes /
 /// non-ASCII / over-length payloads.
 ///
-/// Use this as `AppError::param_invalid("path_token")` failure case at the
+/// Use this as `ApiError::param_invalid("path_token")` failure case at the
 /// top of every Path<String> handler.
 pub fn path_token(v: &str) -> Result<(), ValidationError> {
     if v.is_empty() || v.len() > 64 {
@@ -152,22 +152,22 @@ pub fn path_hex_token(v: &str) -> Result<(), ValidationError> {
     }
 }
 
-/// `AppError`-flavoured wrapper around [`path_token`] for handler use.
+/// `ApiError`-flavoured wrapper around [`path_token`] for handler use.
 ///
 /// Calling pattern at handler entry:
 /// ```ignore
 /// validators::ensure_path_token(&kind)?;
 /// ```
-pub fn ensure_path_token(v: &str) -> Result<(), crate::AppError> {
-    path_token(v).map_err(|e| crate::AppError::param_invalid(e.code))
+pub fn ensure_path_token(v: &str) -> Result<(), crate::ApiError> {
+    path_token(v).map_err(|e| crate::ApiError::param_invalid(e.code))
 }
 
-pub fn ensure_path_key(v: &str) -> Result<(), crate::AppError> {
-    path_key(v).map_err(|e| crate::AppError::param_invalid(e.code))
+pub fn ensure_path_key(v: &str) -> Result<(), crate::ApiError> {
+    path_key(v).map_err(|e| crate::ApiError::param_invalid(e.code))
 }
 
-pub fn ensure_path_hex_token(v: &str) -> Result<(), crate::AppError> {
-    path_hex_token(v).map_err(|e| crate::AppError::param_invalid(e.code))
+pub fn ensure_path_hex_token(v: &str) -> Result<(), crate::ApiError> {
+    path_hex_token(v).map_err(|e| crate::ApiError::param_invalid(e.code))
 }
 
 /// URL (http / https) — rejects schemes like `javascript:` / `data:`.

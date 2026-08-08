@@ -12,7 +12,7 @@ use axum::extract::State;
 use axum::http::{header, HeaderMap};
 use axum::routing::post;
 use axum::Router;
-use phpyun_core::{ApiJson, AppError, AppResult, AppState, AuthenticatedUser};
+use phpyun_core::{ApiJson, ApiError, AppResult, AppState, AuthenticatedUser};
 use serde::Serialize;
 use utoipa::ToSchema;
 
@@ -59,16 +59,16 @@ fn check_type(ct: &str, allowed: &[&str]) -> AppResult<()> {
     if allowed.iter().any(|t| ct.starts_with(t)) {
         Ok(())
     } else {
-        Err(AppError::param_invalid(format!("unsupported content-type: {ct}")))
+        Err(ApiError::param_invalid(format!("unsupported content-type: {ct}")))
     }
 }
 
 fn check_size(body: &Bytes, max: usize) -> AppResult<()> {
     if body.is_empty() {
-        return Err(AppError::param_invalid("empty body"));
+        return Err(ApiError::param_invalid("empty body"));
     }
     if body.len() > max {
-        return Err(AppError::param_invalid(format!(
+        return Err(ApiError::param_invalid(format!(
             "file too large: {} bytes > {}",
             body.len(),
             max

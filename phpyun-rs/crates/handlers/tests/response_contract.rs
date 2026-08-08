@@ -1,17 +1,17 @@
 //! Lock the API response contract for the unified application error type.
 //!
 //! 1. **Contract**: success `{code: 200, msg: "ok", data}` / failure `{code: <HTTP>, msg: <tag>, data: null}`
-//! 2. **Unified errors**: all application failures are returned as `AppError`; only
+//! 2. **Unified errors**: all application failures are returned as `ApiError`; only
 //!    unauthenticated and expired sessions use 401.
 
 use axum::{routing::get, Router};
 use axum_test::TestServer;
 use phpyun_core::i18n::{self, Lang};
 use phpyun_core::json::{self, Value};
-use phpyun_core::{ApiJson, AppError, AppResult};
+use phpyun_core::{ApiJson, ApiError, AppResult};
 use serde::Serialize;
 
-/// Resolve `errors.<tag>` through i18n the same way `AppError::into_response`
+/// Resolve `errors.<tag>` through i18n the same way `ApiError::into_response`
 /// does on a request without the `lang_layer` middleware (default lang).
 /// Tests use this to assert against the real translated message instead of
 /// hard-coding either the English tag or specific Chinese copy.
@@ -40,36 +40,36 @@ async fn ok_handler() -> AppResult<ApiJson<Payload>> {
 }
 
 async fn err_unauth() -> AppResult<ApiJson<Payload>> {
-    Err(AppError::unauth())
+    Err(ApiError::unauth())
 }
 
 async fn err_session() -> AppResult<ApiJson<Payload>> {
-    Err(AppError::session_expired())
+    Err(ApiError::session_expired())
 }
 
 async fn err_locked() -> AppResult<ApiJson<Payload>> {
-    Err(AppError::locked())
+    Err(ApiError::locked())
 }
 
 async fn err_rate() -> AppResult<ApiJson<Payload>> {
-    Err(AppError::rate_limit())
+    Err(ApiError::rate_limit())
 }
 
 async fn err_upstream() -> AppResult<ApiJson<Payload>> {
-    Err(AppError::upstream("sms gateway timeout"))
+    Err(ApiError::upstream("sms gateway timeout"))
 }
 
 async fn err_internal() -> AppResult<ApiJson<Payload>> {
-    // sqlx::Error auto-converts to AppError (database errors are 500 / db).
+    // sqlx::Error auto-converts to ApiError (database errors are 500 / db).
     Err(sqlx::Error::RowNotFound.into())
 }
 
 async fn err_param() -> AppResult<ApiJson<Payload>> {
-    Err(AppError::param_invalid("bad email").into())
+    Err(ApiError::param_invalid("bad email").into())
 }
 
 async fn err_business() -> AppResult<ApiJson<Payload>> {
-    Err(AppError::business("job_not_found").into())
+    Err(ApiError::business("job_not_found").into())
 }
 
 fn router() -> Router {

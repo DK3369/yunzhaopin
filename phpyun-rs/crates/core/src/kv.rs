@@ -3,8 +3,8 @@
 //! ## Stability
 //! - **Every operation has a timeout** (default 500 ms) to keep a slow Redis
 //!   from dragging down a Tokio worker.
-//! - Redis errors map to `AppError` (code=500); timeouts map to
-//!   `AppError::upstream()` (code=502); metrics distinguish them.
+//! - Redis errors and timeouts map to `ApiError` (code=500); metrics still
+//!   distinguish redis errors from timeout errors.
 //! - Connection failures are auto-recovered by `ConnectionManager`; callers
 //!   only see "this call failed", not a panic.
 //!
@@ -24,7 +24,7 @@
 //! - `kv.op.error{op, kind=redis|timeout}` counter
 //! - `kv.spawn.dropped` counter — number of writes dropped due to backpressure
 
-use crate::AppError;
+use crate::ApiError;
 use crate::json;
 use crate::metrics as m;
 use redis::aio::ConnectionManager;
@@ -124,7 +124,7 @@ impl Kv {
     }
 
     /// Internal execution wrapper: timing + timeout + uniform error mapping + metric.
-    async fn run<F, T>(&self, op: &'static str, fut: F) -> Result<T, AppError>
+    async fn run<F, T>(&self, op: &'static str, fut: F) -> Result<T, ApiError>
     where
         F: Future<Output = redis::RedisResult<T>>,
     {
@@ -140,7 +140,7 @@ impl Kv {
             }
             Err(_elapsed) => {
                 m::counter_with("kv.op.error", &[("op", op), ("kind", "timeout")]);
-                Err(AppError::upstream(format!(
+                Err(ApiError::upstream(format!(
                     "redis timeout ({op} > {}ms)",
                     self.op_timeout.as_millis()
                 )))
@@ -157,13 +157,13 @@ impl Kv {
 
     // ---------- Basic KV ----------
 
-    pub async fn get_str(&self, key: &str) -> Result<Option<String>, AppError> {
+    pub async fn get_str(&self, key: &str) -> Result<Option<String>, ApiError> {
         let mut c = self.inner.clone();
         self.run("get", async move { c.get::<_, Option<String>>(key).await })
             .await
     }
 
-    pub async fn set_ex(&self, key: &str, val: &str, ttl_secs: u64) -> Result<(), AppError> {
+    pub async fn set_ex(&self, key: &str, val: &str, ttl_secs: u64) -> Result<(), ApiError> {
         let mut c = self.inner.clone();
         self.run("set_ex", async move {
             c.set_ex::<_, _, ()>(key, val, ttl_secs).await
@@ -171,7 +171,7 @@ impl Kv {
         .await
     }
 
-    pub async fn del(&self, key: &str) -> Result<(), AppError> {
+    pub async fn del(&self, key: &str) -> Result<(), ApiError> {
         let mut c = self.inner.clone();
         self.run("del", async move { c.del::<_, ()>(key).await }).await
     }
@@ -180,7 +180,7 @@ impl Kv {
     /// the message (typically ignored).
     /// Used for cross-process broadcast signals — e.g. dictionary translation
     /// table updates that ask all app instances to reload.
-    pub async fn publish(&self, channel: &str, payload: &str) -> Result<i64, AppError> {
+    pub async fn publish(&self, channel: &str, payload: &str) -> Result<i64, ApiError> {
         let mut c = self.inner.clone();
         let channel = channel.to_string();
         let payload = payload.to_string();
@@ -203,23 +203,23 @@ impl Kv {
         channel: &str,
     ) -> Result<
         impl tokio_stream::Stream<Item = redis::Msg> + Send + 'static,
-        AppError,
+        ApiError,
     > {
         // Open a dedicated PubSub connection via the underlying client.
         let url = self.client_url.clone().unwrap_or_default();
         if url.is_empty() {
-            return Err(AppError::upstream("redis url not configured for pubsub"));
+            return Err(ApiError::upstream("redis url not configured for pubsub"));
         }
         let client = redis::Client::open(url)
-            .map_err(|e| AppError::upstream(format!("redis client open: {e}")))?;
+            .map_err(|e| ApiError::upstream(format!("redis client open: {e}")))?;
         let mut pubsub = client
             .get_async_pubsub()
             .await
-            .map_err(|e| AppError::upstream(format!("redis pubsub conn: {e}")))?;
+            .map_err(|e| ApiError::upstream(format!("redis pubsub conn: {e}")))?;
         pubsub
             .subscribe(channel)
             .await
-            .map_err(|e| AppError::upstream(format!("redis subscribe: {e}")))?;
+            .map_err(|e| ApiError::upstream(format!("redis subscribe: {e}")))?;
         Ok(pubsub.into_on_message())
     }
 
@@ -231,7 +231,7 @@ impl Kv {
         matches!(timeout(self.op_timeout, fut).await, Ok(Ok(true)))
     }
 
-    pub async fn expire(&self, key: &str, ttl_secs: i64) -> Result<(), AppError> {
+    pub async fn expire(&self, key: &str, ttl_secs: i64) -> Result<(), ApiError> {
         let mut c = self.inner.clone();
         self.run("expire", async move {
             c.expire::<_, ()>(key, ttl_secs).await
@@ -242,13 +242,13 @@ impl Kv {
     // ---------- Redis SET commands (used by collect / view / saved-search caches) ----------
 
     /// SADD — add a single i64 member to a set. Returns 1 if newly added, 0 if existed.
-    pub async fn sadd_i64(&self, key: &str, member: i64) -> Result<i64, AppError> {
+    pub async fn sadd_i64(&self, key: &str, member: i64) -> Result<i64, ApiError> {
         let mut c = self.inner.clone();
         self.run("sadd", async move { c.sadd::<_, _, i64>(key, member).await }).await
     }
 
     /// SADD many — bulk insert (single RTT). Returns count of newly-added members.
-    pub async fn sadd_i64_many(&self, key: &str, members: &[i64]) -> Result<i64, AppError> {
+    pub async fn sadd_i64_many(&self, key: &str, members: &[i64]) -> Result<i64, ApiError> {
         if members.is_empty() {
             return Ok(0);
         }
@@ -258,13 +258,13 @@ impl Kv {
     }
 
     /// SREM — remove a single i64 member.
-    pub async fn srem_i64(&self, key: &str, member: i64) -> Result<i64, AppError> {
+    pub async fn srem_i64(&self, key: &str, member: i64) -> Result<i64, ApiError> {
         let mut c = self.inner.clone();
         self.run("srem", async move { c.srem::<_, _, i64>(key, member).await }).await
     }
 
     /// SISMEMBER — check membership.
-    pub async fn sismember_i64(&self, key: &str, member: i64) -> Result<bool, AppError> {
+    pub async fn sismember_i64(&self, key: &str, member: i64) -> Result<bool, ApiError> {
         let mut c = self.inner.clone();
         self.run("sismember", async move { c.sismember::<_, _, bool>(key, member).await }).await
     }
@@ -276,7 +276,7 @@ impl Kv {
         &self,
         key: &str,
         members: &[i64],
-    ) -> Result<Vec<bool>, AppError> {
+    ) -> Result<Vec<bool>, ApiError> {
         if members.is_empty() {
             return Ok(Vec::new());
         }
@@ -294,7 +294,7 @@ impl Kv {
     }
 
     /// SMEMBERS — fetch the entire set.
-    pub async fn smembers_i64(&self, key: &str) -> Result<Vec<i64>, AppError> {
+    pub async fn smembers_i64(&self, key: &str) -> Result<Vec<i64>, ApiError> {
         let mut c = self.inner.clone();
         self.run("smembers", async move { c.smembers::<_, Vec<i64>>(key).await }).await
     }
@@ -308,7 +308,7 @@ impl Kv {
         &self,
         key: &str,
         window_secs: u64,
-    ) -> Result<i64, AppError> {
+    ) -> Result<i64, ApiError> {
         let mut c = self.inner.clone();
         let script = incr_expire_script().clone();
         let pexpire_ms = window_secs.saturating_mul(1000) as i64;
@@ -331,7 +331,7 @@ impl Kv {
         key: &str,
         owner: &str,
         ttl_ms: u64,
-    ) -> Result<bool, AppError> {
+    ) -> Result<bool, ApiError> {
         let mut c = self.inner.clone();
         let script = lock_acquire_script().clone();
         let got: i64 = self
@@ -349,7 +349,7 @@ impl Kv {
 
     /// Release a distributed lock: only DEL when the owner matches (CAS),
     /// otherwise the lock belongs to someone else and we refuse to release it.
-    pub async fn release_lock(&self, key: &str, owner: &str) -> Result<bool, AppError> {
+    pub async fn release_lock(&self, key: &str, owner: &str) -> Result<bool, ApiError> {
         let mut c = self.inner.clone();
         let script = lock_release_script().clone();
         let freed: i64 = self
@@ -369,7 +369,7 @@ impl Kv {
     pub async fn get_json<T: DeserializeOwned>(
         &self,
         key: &str,
-    ) -> Result<Option<T>, AppError> {
+    ) -> Result<Option<T>, ApiError> {
         match self.get_str(key).await? {
             Some(s) => Ok(Some(json::from_str::<T>(&s)?)),
             None => Ok(None),
@@ -381,7 +381,7 @@ impl Kv {
         key: &str,
         val: &T,
         ttl_secs: u64,
-    ) -> Result<(), AppError> {
+    ) -> Result<(), ApiError> {
         let s = json::to_string(val)?;
         self.set_ex(key, &s, ttl_secs).await
     }
@@ -390,7 +390,7 @@ impl Kv {
     pub async fn mget_json<T: DeserializeOwned>(
         &self,
         keys: &[&str],
-    ) -> Result<Vec<Option<T>>, AppError> {
+    ) -> Result<Vec<Option<T>>, ApiError> {
         if keys.is_empty() {
             return Ok(vec![]);
         }
@@ -456,7 +456,7 @@ impl Kv {
         &self,
         stream: &str,
         fields: &[(&str, &[u8])],
-    ) -> Result<String, AppError> {
+    ) -> Result<String, ApiError> {
         let mut c = self.inner.clone();
         let stream = stream.to_string();
         let owned: Vec<(Vec<u8>, Vec<u8>)> = fields
@@ -480,7 +480,7 @@ impl Kv {
         &self,
         stream: &str,
         group: &str,
-    ) -> Result<(), AppError> {
+    ) -> Result<(), ApiError> {
         let mut c = self.inner.clone();
         let stream = stream.to_string();
         let group = group.to_string();
@@ -524,7 +524,7 @@ impl Kv {
         consumer: &str,
         count: usize,
         block_ms: u64,
-    ) -> Result<Vec<StreamMessage>, AppError> {
+    ) -> Result<Vec<StreamMessage>, ApiError> {
         let mut c = self.inner.clone();
         let stream = stream.to_string();
         let group = group.to_string();
@@ -561,7 +561,7 @@ impl Kv {
     }
 
     /// `XACK stream group id`.
-    pub async fn xack(&self, stream: &str, group: &str, id: &str) -> Result<(), AppError> {
+    pub async fn xack(&self, stream: &str, group: &str, id: &str) -> Result<(), ApiError> {
         let mut c = self.inner.clone();
         let stream = stream.to_string();
         let group = group.to_string();

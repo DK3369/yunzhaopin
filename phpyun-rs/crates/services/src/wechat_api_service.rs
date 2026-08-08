@@ -13,9 +13,9 @@
 //! - `ticket_to_showqrcode_url(&ticket)` -- build the showqrcode URL
 //!
 //! All methods require `WECHAT_APPID` + `WECHAT_APPSECRET` config; if not set,
-//! returns an `InvalidParam` error.
+//! returns an `ApiError::param_invalid` error.
 
-use phpyun_core::{AppError, AppResult, AppState};
+use phpyun_core::{ApiError, AppResult, AppState};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 
@@ -52,9 +52,9 @@ pub async fn get_access_token(state: &AppState) -> AppResult<String> {
         .config
         .wechat_appid
         .as_deref()
-        .ok_or_else(|| AppError::param_invalid("wechat_appid_missing"))?;
+        .ok_or_else(|| ApiError::param_invalid("wechat_appid_missing"))?;
     let secret = state.config.wechat_appsecret.as_deref().ok_or_else(|| {
-        AppError::param_invalid("wechat_appsecret_missing")
+        ApiError::param_invalid("wechat_appsecret_missing")
     })?;
 
     let url = format!(
@@ -66,14 +66,14 @@ pub async fn get_access_token(state: &AppState) -> AppResult<String> {
 
     if let Some(code) = resp.errcode {
         if code != 0 {
-            return Err(AppError::upstream(format!(
+            return Err(ApiError::upstream(format!(
                 "wechat token errcode={code} errmsg={}",
                 resp.errmsg.unwrap_or_default()
             )));
         }
     }
     let token = resp.access_token.ok_or_else(|| {
-        AppError::upstream("wechat token response missing")
+        ApiError::upstream("wechat token response missing")
     })?;
     // Leave a 60s margin to absorb boundary jitter
     let ttl = resp.expires_in.unwrap_or(7200).saturating_sub(60).max(60);
@@ -125,7 +125,7 @@ pub async fn create_qr_scene(
     expire_seconds: u64,
 ) -> AppResult<QrCodeResult> {
     if scene_str.is_empty() || scene_str.len() > 64 {
-        return Err(AppError::param_invalid("scene_str").into());
+        return Err(ApiError::param_invalid("scene_str").into());
     }
     let token = get_access_token(state).await?;
     let url = format!("{QR_CREATE_URL}?access_token={}", urlencoding_minimal(&token));
@@ -137,14 +137,14 @@ pub async fn create_qr_scene(
     let resp: QrResp = state.http.post_json(&url, &body).await?;
     if let Some(code) = resp.errcode {
         if code != 0 {
-            return Err(AppError::upstream(format!(
+            return Err(ApiError::upstream(format!(
                 "wechat qrcode errcode={code} errmsg={}",
                 resp.errmsg.unwrap_or_default()
             )));
         }
     }
     let ticket = resp.ticket.ok_or_else(|| {
-        AppError::upstream(
+        ApiError::upstream(
             "wechat qrcode response missing ticket",
         )
     })?;
@@ -197,7 +197,7 @@ struct ErrResp {
 /// and on failure we surface errcode as-is to the caller.
 pub async fn send_text(state: &AppState, openid: &str, content: &str) -> AppResult<()> {
     if openid.is_empty() || content.is_empty() {
-        return Err(AppError::param_invalid("openid_or_content").into());
+        return Err(ApiError::param_invalid("openid_or_content").into());
     }
     let token = get_access_token(state).await?;
     let url = format!(
@@ -212,7 +212,7 @@ pub async fn send_text(state: &AppState, openid: &str, content: &str) -> AppResu
     let resp: ErrResp = state.http.post_json(&url, &body).await?;
     if let Some(code) = resp.errcode {
         if code != 0 {
-            return Err(AppError::upstream(format!(
+            return Err(ApiError::upstream(format!(
                 "wechat custom send errcode={code} errmsg={}",
                 resp.errmsg.unwrap_or_default()
             )));
@@ -248,7 +248,7 @@ pub async fn send_mini_program(
     let resp: ErrResp = state.http.post_json(&url, &body).await?;
     if let Some(code) = resp.errcode {
         if code != 0 {
-            return Err(AppError::upstream(format!(
+            return Err(ApiError::upstream(format!(
                 "wechat miniprogram send errcode={code} errmsg={}",
                 resp.errmsg.unwrap_or_default()
             )));

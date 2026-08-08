@@ -168,7 +168,7 @@ pub async fn get_one(State(state): State<AppState>,
     let id = b.id;
     let d = description_service::get(&state, id).await?;
     if d.status != 1 {
-        return Err(phpyun_core::AppError::param_invalid(
+        return Err(phpyun_core::ApiError::param_invalid(
             "description_hidden",
         ));
     }
@@ -193,7 +193,7 @@ pub async fn get_by_name(State(state): State<AppState>,
     phpyun_core::validators::ensure_path_token(&name)?;
     let row = phpyun_models::description::repo::find_by_name(state.db.reader(), &name).await?;
     let d = row.ok_or_else(|| {
-        phpyun_core::AppError::param_invalid(
+        phpyun_core::ApiError::param_invalid(
             "description_not_found",
         )
     })?;
@@ -229,14 +229,14 @@ pub async fn get_legal_page(State(state): State<AppState>,
         "privacy" => "隐私政策",
         "protocol" => "注册协议",
         _ => {
-            return Err(phpyun_core::AppError::param_invalid(format!(
+            return Err(phpyun_core::ApiError::param_invalid(format!(
                 "slug: {slug}"
             )))
         }
     };
     let row = phpyun_models::description::repo::find_by_name(state.db.reader(), name).await?;
     let d = row.ok_or_else(|| {
-        phpyun_core::AppError::param_invalid(
+        phpyun_core::ApiError::param_invalid(
             "description_not_found",
         )
     })?;

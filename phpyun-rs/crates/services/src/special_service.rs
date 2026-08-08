@@ -1,7 +1,7 @@
 //! Special recruiting events (aligned with PHPYun `wap/special`).
 
 use phpyun_core::{
-    background, clock, AppError, AppResult, AppState, AuthenticatedUser, Paged, Pagination,
+    background, clock, ApiError, AppResult, AppState, AuthenticatedUser, Paged, Pagination,
 };
 use phpyun_models::special::{
     entity::{Special, SpecialCompany},
@@ -20,9 +20,9 @@ pub async fn list(state: &AppState, page: Pagination) -> AppResult<Paged<Special
 pub async fn get(state: &AppState, id: u64) -> AppResult<Special> {
     let s = special_repo::find(state.db.reader(), id)
         .await?
-        .ok_or_else(|| AppError::param_invalid("special_not_found"))?;
+        .ok_or_else(|| ApiError::param_invalid("special_not_found"))?;
     if s.status != 1 {
-        return Err(AppError::param_invalid("special_unavailable"));
+        return Err(ApiError::param_invalid("special_unavailable"));
     }
     let pool = state.db.pool().clone();
     background::spawn_best_effort("special.view", async move {
@@ -73,7 +73,7 @@ pub struct SignupResult {
 ///   6. when the event sets `rating`, the company's tier must be in that list
 ///   7. company must have enough integral; deducted atomically
 ///
-/// All errors return as `InvalidParam` with a stable string code so the
+/// All errors return through `ApiError::param_invalid` with a stable string code so the
 /// frontend can localise.
 pub async fn apply(
     state: &AppState,
@@ -85,36 +85,36 @@ pub async fn apply(
 
     let info = special_repo::find(pool, sid)
         .await?
-        .ok_or_else(|| AppError::param_invalid("special_not_found"))?;
+        .ok_or_else(|| ApiError::param_invalid("special_not_found"))?;
 
     let now = clock::now_ts();
     if info.com_bm != 1 {
-        return Err(AppError::param_invalid(
+        return Err(ApiError::param_invalid(
             "special_signup_disabled",
         ));
     }
     if info.end_at > 0 && info.end_at < now {
-        return Err(AppError::param_invalid(
+        return Err(ApiError::param_invalid(
             "special_signup_closed",
         ));
     }
 
     if special_repo::already_applied(pool, sid, user.uid).await? {
-        return Err(AppError::param_invalid(
+        return Err(ApiError::param_invalid(
             "special_already_applied",
         ));
     }
 
     let signups = special_repo::count_signups(pool, sid).await?;
     if info.max_count > 0 && signups >= info.max_count as u64 {
-        return Err(AppError::param_invalid(
+        return Err(ApiError::param_invalid(
             "special_full",
         ));
     }
 
     let job_count = special_repo::count_active_jobs_by_company(pool, user.uid, now).await?;
     if job_count == 0 {
-        return Err(AppError::param_invalid(
+        return Err(ApiError::param_invalid(
             "company_no_active_job",
         ));
     }
@@ -128,7 +128,7 @@ pub async fn apply(
         if !allowed.is_empty() {
             let my_rating = special_repo::get_company_rating(pool, user.uid).await?;
             if !allowed.contains(&my_rating) {
-                return Err(AppError::param_invalid(
+                return Err(ApiError::param_invalid(
                     "company_rating_not_eligible",
                 ));
             }
@@ -139,14 +139,14 @@ pub async fn apply(
         let cost = info.integral as i64;
         let bal = special_repo::get_company_integral(pool, user.uid).await?;
         if bal < cost {
-            return Err(AppError::param_invalid(
+            return Err(ApiError::param_invalid(
                 "insufficient_integral",
             ));
         }
         let affected =
             special_repo::try_deduct_company_integral(pool, user.uid, cost).await?;
         if affected == 0 {
-            return Err(AppError::param_invalid(
+            return Err(ApiError::param_invalid(
                 "insufficient_integral",
             ));
         }

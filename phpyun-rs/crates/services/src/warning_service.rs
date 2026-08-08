@@ -2,7 +2,7 @@
 //!
 //! Admins issue warnings to accounts -> users see the unread warnings in mcenter.
 
-use phpyun_core::{audit, clock, AppError, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
+use phpyun_core::{audit, clock, ApiError, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
 use phpyun_models::warning::{entity::Warning, repo as warn_repo};
 
 pub struct WarnInput<'a> {
@@ -19,7 +19,7 @@ pub async fn admin_issue(
 ) -> AppResult<u64> {
     admin.require_admin()?;
     if !(1..=4).contains(&input.target_kind) {
-        return Err(AppError::param_invalid("bad_target_kind"));
+        return Err(ApiError::param_invalid("bad_target_kind"));
     }
     let id = warn_repo::create(
         state.db.pool(),

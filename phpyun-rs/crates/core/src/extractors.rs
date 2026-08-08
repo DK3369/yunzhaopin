@@ -9,7 +9,7 @@
 //! ) -> AppResult<...> { ... }
 //! ```
 
-use crate::AppError;
+use crate::ApiError;
 use crate::state::AppState;
 use axum::{
     extract::{FromRequest, FromRequestParts, Query, Request},
@@ -47,32 +47,32 @@ pub const USERTYPE_ADMIN: u8 = 3;
 impl AuthenticatedUser {
     /// Require the current user to be a jobseeker (`usertype=1`); otherwise
     /// return `role_mismatch` 403.
-    pub fn require_jobseeker(&self) -> Result<(), AppError> {
+    pub fn require_jobseeker(&self) -> Result<(), ApiError> {
         if self.usertype != USERTYPE_JOBSEEKER {
-            return Err(AppError::role_mismatch());
+            return Err(ApiError::role_mismatch());
         }
         Ok(())
     }
 
     /// Require the current user to be an employer (`usertype=2`).
-    pub fn require_employer(&self) -> Result<(), AppError> {
+    pub fn require_employer(&self) -> Result<(), ApiError> {
         if self.usertype != USERTYPE_EMPLOYER {
-            return Err(AppError::role_mismatch());
+            return Err(ApiError::role_mismatch());
         }
         Ok(())
     }
 
     /// Require the current user to be an admin (`usertype=3`).
-    pub fn require_admin(&self) -> Result<(), AppError> {
+    pub fn require_admin(&self) -> Result<(), ApiError> {
         if self.usertype != USERTYPE_ADMIN {
-            return Err(AppError::role_mismatch());
+            return Err(ApiError::role_mismatch());
         }
         Ok(())
     }
 }
 
 impl FromRequestParts<AppState> for AuthenticatedUser {
-    type Rejection = AppError;
+    type Rejection = ApiError;
 
     async fn from_request_parts(
         parts: &mut Parts,
@@ -98,7 +98,7 @@ impl FromRequestParts<AppState> for AuthenticatedUser {
                             .find_map(|c| c.strip_prefix("token="))
                     })
             })
-            .ok_or_else(AppError::unauth)?;
+            .ok_or_else(ApiError::unauth)?;
 
         // 3. Verify (only access tokens are accepted; refresh tokens are used
         //    solely to mint new access tokens).
@@ -111,14 +111,14 @@ impl FromRequestParts<AppState> for AuthenticatedUser {
         //    doesn't fall over wholesale; truly sensitive operations should
         //    re-check at the service layer.
         if crate::jwt_blacklist::is_revoked(&state.redis, &claims.jti).await {
-            return Err(AppError::session_expired());
+            return Err(ApiError::session_expired());
         }
 
         // 5. Post-password-change revocation: on password change / reset /
         //    account split we bump `pw_epoch`; every access/refresh token
         //    issued before the epoch becomes invalid (`iat < epoch`).
         if crate::jwt_blacklist::is_token_stale(&state.redis, claims.sub, claims.iat).await {
-            return Err(AppError::session_expired());
+            return Err(ApiError::session_expired());
         }
 
         // 6. Session-row presence: the JWT may pass signature + blacklist +
@@ -127,7 +127,7 @@ impl FromRequestParts<AppState> for AuthenticatedUser {
         //    row is the canonical "this session is alive" signal. Cached
         //    in-process for 60 s to keep request cost negligible.
         if !crate::session_presence::is_active(state.db.reader(), &claims.jti).await {
-            return Err(AppError::session_expired());
+            return Err(ApiError::session_expired());
         }
 
         Ok(AuthenticatedUser {
@@ -286,12 +286,12 @@ impl Pagination {
 }
 
 impl<S: Send + Sync> FromRequestParts<S> for Pagination {
-    type Rejection = AppError;
+    type Rejection = ApiError;
 
     async fn from_request_parts(parts: &mut Parts, state: &S) -> Result<Self, Self::Rejection> {
         let Query(raw) = Query::<PaginationRaw>::from_request_parts(parts, state)
             .await
-            .map_err(|e| AppError::param_invalid(format!("pagination: {e}")))?;
+            .map_err(|e| ApiError::param_invalid(format!("pagination: {e}")))?;
         let page = raw.page.max(1);
         let page_size = raw.page_size.clamp(1, 200);
         Ok(Pagination {
@@ -310,7 +310,7 @@ impl<S: Send + Sync> FromRequestParts<S> for Pagination {
 ///
 /// Convention: every `#[validate(... message = "validation.xxx.yyy")]` writes
 /// the message as an i18n key. That way, when `IntoResponse` receives the
-/// `AppError`, the `detail` is already a clean i18n key that can be looked up
+/// `ApiError`, the `detail` is already a clean i18n key that can be looked up
 /// directly.
 ///
 /// For example, when a form has both `username` and `password` failing:
@@ -344,7 +344,7 @@ fn first_validation_key(errors: &validator::ValidationErrors) -> String {
 }
 
 /// Requires the body type to implement `validator::Validate`.
-/// On validation failure, returns `AppError::InvalidParam(<i18n key>)`;
+/// On validation failure, returns `ApiError::param_invalid(<i18n key>)`;
 /// `IntoResponse` materializes the message by translating it using the current
 /// `Lang`.
 pub struct ValidatedJson<T>(pub T);
@@ -354,15 +354,15 @@ where
     S: Send + Sync,
     T: DeserializeOwned + validator::Validate,
 {
-    type Rejection = AppError;
+    type Rejection = ApiError;
 
     async fn from_request(req: Request, state: &S) -> Result<Self, Self::Rejection> {
         let Json(value) = Json::<T>::from_request(req, state)
             .await
-            .map_err(|e| AppError::param_invalid(e.to_string()))?;
+            .map_err(|e| ApiError::param_invalid(e.to_string()))?;
         value
             .validate()
-            .map_err(|e| AppError::param_invalid(first_validation_key(&e)))?;
+            .map_err(|e| ApiError::param_invalid(first_validation_key(&e)))?;
         Ok(ValidatedJson(value))
     }
 }
@@ -383,7 +383,7 @@ where
     S: Send + Sync,
     T: DeserializeOwned + validator::Validate,
 {
-    type Rejection = AppError;
+    type Rejection = ApiError;
 
     async fn from_request_parts(
         parts: &mut Parts,
@@ -391,10 +391,10 @@ where
     ) -> Result<Self, Self::Rejection> {
         let Query(value) = Query::<T>::from_request_parts(parts, state)
             .await
-            .map_err(|e| AppError::param_invalid(format!("query: {e}")))?;
+            .map_err(|e| ApiError::param_invalid(format!("query: {e}")))?;
         value
             .validate()
-            .map_err(|e| AppError::param_invalid(first_validation_key(&e)))?;
+            .map_err(|e| ApiError::param_invalid(first_validation_key(&e)))?;
         Ok(ValidatedQuery(value))
     }
 }
@@ -407,15 +407,15 @@ where
     S: Send + Sync,
     T: DeserializeOwned + validator::Validate,
 {
-    type Rejection = AppError;
+    type Rejection = ApiError;
 
     async fn from_request(req: Request, state: &S) -> Result<Self, Self::Rejection> {
         let axum::Form(value) = axum::Form::<T>::from_request(req, state)
             .await
-            .map_err(|e| AppError::param_invalid(e.to_string()))?;
+            .map_err(|e| ApiError::param_invalid(e.to_string()))?;
         value
             .validate()
-            .map_err(|e| AppError::param_invalid(first_validation_key(&e)))?;
+            .map_err(|e| ApiError::param_invalid(first_validation_key(&e)))?;
         Ok(ValidatedForm(value))
     }
 }

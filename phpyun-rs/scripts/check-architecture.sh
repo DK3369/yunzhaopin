@@ -95,8 +95,8 @@ report_core_contract() {
 # ----------------------------------------------------------------------------
 
 echo "→ Auditing core public error contract..."
-report_core_contract "application crates must use phpyun_core::{AppError, AppResult}; no legacy public errors" \
-    '\b(ApiError|InfraError|SystemError|SharedError|UserError|ResumeError|CompanyError|JobError)\b|AppError::new'
+report_core_contract "application crates must use ApiError constructors instead of ad-hoc construction" \
+    '\bApiError::new'
 report_core_contract "application crates may not reference phpyun_core::error::* directly" \
     '\bphpyun_core::error::'
 

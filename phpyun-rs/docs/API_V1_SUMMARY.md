@@ -346,7 +346,7 @@
 | POST | `/v1/wap/dict/experiences` | Work experience |
 | POST | `/v1/wap/dict/industries` | Industry categories |
 | POST | `/v1/wap/dict/job-categories` | Top-level job categories |
-| POST | `/v1/wap/dict/job-types` | Job types (full-time / part-time / internship / ...) |
+| POST | `/v1/wap/dict/job-types` | Job types (full-time / part-time / internship / temporary / remote) |
 | POST | `/v1/wap/dict/salaries` | Salary ranges |
 | POST | `/v1/wap/eval-papers` | Assessment list |
 | POST | `/v1/wap/eval-papers/messages` | Public list of leave-messages on an assessment paper. Counte… |

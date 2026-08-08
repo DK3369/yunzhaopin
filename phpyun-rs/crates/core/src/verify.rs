@@ -16,7 +16,7 @@
 //! - SMS captcha: `target = mobile`.
 //! - Email captcha: `target = email`.
 
-use crate::AppError;
+use crate::ApiError;
 use crate::kv::Kv;
 use serde::{Deserialize, Serialize};
 use std::time::Duration;
@@ -77,7 +77,7 @@ pub async fn issue(
     target: &str,
     code: &str,
     ttl: Duration,
-) -> Result<(), AppError> {
+) -> Result<(), ApiError> {
     let v = Stored {
         code: code.to_string(),
         attempts_left: MAX_ATTEMPTS,
@@ -92,7 +92,7 @@ pub async fn verify(
     kind: VerifyKind,
     target: &str,
     input: &str,
-) -> Result<bool, AppError> {
+) -> Result<bool, ApiError> {
     let k = key(kind, target);
     let Some(mut stored) = kv.get_json::<Stored>(&k).await? else {
         return Ok(false); // never issued or already expired
@@ -119,14 +119,14 @@ pub async fn verify(
 }
 
 /// Active deletion (for cancel scenarios).
-pub async fn invalidate(kv: &Kv, kind: VerifyKind, target: &str) -> Result<(), AppError> {
+pub async fn invalidate(kv: &Kv, kind: VerifyKind, target: &str) -> Result<(), ApiError> {
     kv.del(&key(kind, target)).await
 }
 
 /// Read-only inspection of the currently stored code (used for non-OTP scenarios
 /// like email tokens; for OTP scenarios use `verify`, which provides
 /// attempt-count protection).
-pub async fn peek(kv: &Kv, kind: VerifyKind, target: &str) -> Result<Option<String>, AppError> {
+pub async fn peek(kv: &Kv, kind: VerifyKind, target: &str) -> Result<Option<String>, ApiError> {
     Ok(kv
         .get_json::<Stored>(&key(kind, target))
         .await?

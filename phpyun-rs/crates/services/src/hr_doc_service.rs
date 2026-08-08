@@ -1,6 +1,6 @@
 //! HR toolbox documents (aligned with PHPYun `hr.model.php` / `toolbox_doc`).
 
-use phpyun_core::{background, AppError, AppResult, AppState, Paged, Pagination};
+use phpyun_core::{background, ApiError, AppResult, AppState, Paged, Pagination};
 use phpyun_models::hr_doc::{entity::HrDoc, repo as hr_repo};
 
 pub async fn list(
@@ -19,7 +19,7 @@ pub async fn list(
 pub async fn get(state: &AppState, id: u64) -> AppResult<HrDoc> {
     let d = hr_repo::find(state.db.reader(), id)
         .await?
-        .ok_or_else(|| AppError::param_invalid("doc_not_found"))?;
+        .ok_or_else(|| ApiError::param_invalid("doc_not_found"))?;
     let pool = state.db.pool().clone();
     background::spawn_best_effort("hr_doc.hit", async move {
         let _ = hr_repo::incr_hit(&pool, id).await;

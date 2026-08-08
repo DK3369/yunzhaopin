@@ -1,6 +1,6 @@
 //! Member center - Job management (usertype=2 employer).
 
-use phpyun_core::AppError;
+use phpyun_core::ApiError;
 use axum::{
     extract::State,
     Router,
@@ -379,7 +379,7 @@ pub async fn detail(
     let j = phpyun_models::job::repo::find_by_id(state.db.reader(), b.id)
         .await?
         .filter(|j| j.uid == user.uid)
-        .ok_or_else(|| AppError::business("job_not_found"))?;
+        .ok_or_else(|| ApiError::business("job_not_found"))?;
     Ok(ApiJson(json::to_value(&j)?))
 }
 

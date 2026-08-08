@@ -11,7 +11,7 @@ use axum::{
     Router,
     routing::post,
 };
-use phpyun_core::{ApiJson, AppError, AppResult, AppState, MaybeUser, ValidatedJson};
+use phpyun_core::{ApiJson, ApiError, AppResult, AppState, MaybeUser, ValidatedJson};
 use phpyun_services::poster_service::{self, PosterSpec, PosterTemplateView};
 use serde::Deserialize;
 use utoipa::IntoParams;
@@ -76,7 +76,7 @@ pub async fn render_spec(State(state): State<AppState>,
         "company" => poster_service::company_poster_spec(&state, q.hb, id).await?,
         "gongzhao" => poster_service::gongzhao_poster_spec(&state, q.hb, id).await?,
         other => {
-            return Err(AppError::param_invalid(format!(
+            return Err(ApiError::param_invalid(format!(
                 "poster_kind={other}"
             )));
         }
@@ -114,7 +114,7 @@ pub async fn invite_reg_self(
         None => q.uid.unwrap_or(0),
     };
     if inviter_uid == 0 {
-        return Err(AppError::param_invalid("uid"));
+        return Err(ApiError::param_invalid("uid"));
     }
     Ok(ApiJson(
         poster_service::invite_reg_poster_spec(&state, q.hb, inviter_uid).await?,

@@ -12,7 +12,7 @@
 
 use phpyun_core::audit::{self, Actor, AuditEvent};
 use phpyun_core::cache::SimpleCache;
-use phpyun_core::{clock, AppError, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
+use phpyun_core::{clock, ApiError, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
 use phpyun_models::integral::repo as integral_repo;
 use phpyun_models::redeem::{
     entity::{RedeemClass, RedeemOrder, Reward},
@@ -72,7 +72,7 @@ pub async fn create_class(
 pub async fn delete_class(state: &AppState, actor: &AuthenticatedUser, id: u64) -> AppResult<()> {
     let n = redeem_repo::delete_class(state.db.pool(), id).await?;
     if n == 0 {
-        return Err(AppError::param_invalid("class_not_found"));
+        return Err(ApiError::param_invalid("class_not_found"));
     }
     invalidate_classes_cache().await;
     let _ = audit::emit(
@@ -108,7 +108,7 @@ pub async fn list_rewards(
 pub async fn get_reward(state: &AppState, id: u64) -> AppResult<Reward> {
     redeem_repo::get_reward(state.db.reader(), id)
         .await?
-        .ok_or_else(|| AppError::param_invalid("reward_not_found"))
+        .ok_or_else(|| ApiError::param_invalid("reward_not_found"))
 }
 
 pub struct NewRewardForm<'a> {
@@ -159,7 +159,7 @@ pub async fn set_reward_status(
 ) -> AppResult<()> {
     let n = redeem_repo::set_reward_status(state.db.pool(), id, status).await?;
     if n == 0 {
-        return Err(AppError::param_invalid("reward_not_found"));
+        return Err(ApiError::param_invalid("reward_not_found"));
     }
     let _ = audit::emit(
         state,
@@ -180,24 +180,24 @@ pub async fn set_reward_flags(
 ) -> AppResult<()> {
     admin.require_admin()?;
     if id == 0 {
-        return Err(AppError::param_invalid("reward_id"));
+        return Err(ApiError::param_invalid("reward_id"));
     }
     // Defense-in-depth: even with handler-level validation, refuse anything
     // outside {0, 1} so a misbehaving caller can't shove arbitrary ints into
     // the column.
     if let Some(v) = is_rec {
         if v < 0 || v > 1 {
-            return Err(AppError::param_invalid("is_rec"));
+            return Err(ApiError::param_invalid("is_rec"));
         }
     }
     if let Some(v) = is_hot {
         if v < 0 || v > 1 {
-            return Err(AppError::param_invalid("is_hot"));
+            return Err(ApiError::param_invalid("is_hot"));
         }
     }
     let n = redeem_repo::set_reward_flags(state.db.pool(), id, is_rec, is_hot).await?;
     if n == 0 {
-        return Err(AppError::param_invalid("reward_not_found"));
+        return Err(ApiError::param_invalid("reward_not_found"));
     }
     let _ = audit::emit(
         state,
@@ -216,7 +216,7 @@ pub async fn delete_reward(
 ) -> AppResult<()> {
     let n = redeem_repo::delete_reward(state.db.pool(), id).await?;
     if n == 0 {
-        return Err(AppError::param_invalid("reward_not_found"));
+        return Err(ApiError::param_invalid("reward_not_found"));
     }
     let _ = audit::emit(
         state,
@@ -243,26 +243,26 @@ pub async fn redeem(
     f: &RedeemForm<'_>,
 ) -> AppResult<u64> {
     if f.num == 0 {
-        return Err(AppError::param_invalid("bad_num"));
+        return Err(ApiError::param_invalid("bad_num"));
     }
     let reward = get_reward(state, reward_id).await?;
     if reward.status != 1 {
-        return Err(AppError::param_invalid("reward_unavailable"));
+        return Err(ApiError::param_invalid("reward_unavailable"));
     }
     if reward.stock < f.num {
-        return Err(AppError::param_invalid("out_of_stock"));
+        return Err(ApiError::param_invalid("out_of_stock"));
     }
     if reward.restriction > 0 {
         let already =
             redeem_repo::count_user_orders_for_reward(state.db.reader(), user.uid, reward_id)
                 .await?;
         if already + f.num > reward.restriction {
-            return Err(AppError::param_invalid("over_per_user_limit"));
+            return Err(ApiError::param_invalid("over_per_user_limit"));
         }
     }
     let total_cost = reward.integral.saturating_mul(f.num);
     if total_cost == 0 {
-        return Err(AppError::param_invalid("bad_cost"));
+        return Err(ApiError::param_invalid("bad_cost"));
     }
 
     let pool = state.db.pool();
@@ -271,7 +271,7 @@ pub async fn redeem(
     // 1) Deduct points (most stable, do first; on failure return directly, no compensation needed)
     let deducted = integral_repo::try_deduct(pool, user.uid, total_cost, now).await?;
     if deducted == 0 {
-        return Err(AppError::param_invalid("insufficient_balance"));
+        return Err(ApiError::param_invalid("insufficient_balance"));
     }
 
     // 2) Lock stock (CAS: stock>=num AND status=1)
@@ -281,7 +281,7 @@ pub async fn redeem(
         let _ = tx.rollback().await;
         // Refund points
         let _ = integral_repo::add_balance(pool, user.uid, total_cost as i32, now).await;
-        return Err(AppError::param_invalid("out_of_stock"));
+        return Err(ApiError::param_invalid("out_of_stock"));
     }
 
     // 3) Write work order
@@ -345,9 +345,9 @@ pub async fn cancel_my_order(
 ) -> AppResult<()> {
     let order = redeem_repo::get_order(state.db.reader(), order_id)
         .await?
-        .ok_or_else(|| AppError::param_invalid("order_not_found"))?;
+        .ok_or_else(|| ApiError::param_invalid("order_not_found"))?;
     if order.uid != user.uid {
-        return Err(AppError::param_invalid("not_owner"));
+        return Err(ApiError::param_invalid("not_owner"));
     }
     refund_order(state, &order, /*expected_status=*/ 0, "redeem.user_cancel").await
 }
@@ -377,7 +377,7 @@ pub async fn approve_order(
     let n = redeem_repo::tx_set_order_status(&mut tx, order_id, /*expected=*/ 0, /*new=*/ 1).await?;
     if n == 0 {
         let _ = tx.rollback().await;
-        return Err(AppError::param_invalid("order_not_pending"));
+        return Err(ApiError::param_invalid("order_not_pending"));
     }
     tx.commit().await?;
     let _ = audit::emit(
@@ -396,7 +396,7 @@ pub async fn reject_order(
 ) -> AppResult<()> {
     let order = redeem_repo::get_order(state.db.reader(), order_id)
         .await?
-        .ok_or_else(|| AppError::param_invalid("order_not_found"))?;
+        .ok_or_else(|| ApiError::param_invalid("order_not_found"))?;
     refund_order(state, &order, /*expected_status=*/ 0, "admin.redeem.reject").await?;
     let _ = audit::emit(
         state,
@@ -422,7 +422,7 @@ async fn refund_order(
     let n = redeem_repo::tx_set_order_status(&mut tx, order.id, expected_status, /*new=*/ 2).await?;
     if n == 0 {
         let _ = tx.rollback().await;
-        return Err(AppError::param_invalid("order_not_pending"));
+        return Err(ApiError::param_invalid("order_not_pending"));
     }
     let _ = redeem_repo::tx_return_stock(&mut tx, order.gid, order.num).await?;
     tx.commit().await?;

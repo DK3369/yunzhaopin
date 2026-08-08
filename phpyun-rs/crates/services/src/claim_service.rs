@@ -9,7 +9,7 @@
 //! Claim code source: the `check2` field of PHPYun `phpyun_cert` rows where `type=6`.
 
 use phpyun_auth::argon2_hash_async;
-use phpyun_core::{audit, clock, AppError, AppResult, AppState};
+use phpyun_core::{audit, clock, ApiError, AppResult, AppState};
 use phpyun_models::company_claim::repo as claim_repo;
 use phpyun_models::user::repo as user_repo;
 use uuid::Uuid;
@@ -35,17 +35,17 @@ pub async fn claim(state: &AppState, input: ClaimInput<'_>) -> AppResult<()> {
         .await?
         .unwrap_or_default();
     if code.is_empty() || code != input.code {
-        return Err(AppError::param_invalid("invalid_claim_code"));
+        return Err(ApiError::param_invalid("invalid_claim_code"));
     }
 
     // 2) Prevent duplicate claims
     if claim_repo::find_by_uid(db, input.uid).await?.is_some() {
-        return Err(AppError::param_invalid("already_claimed"));
+        return Err(ApiError::param_invalid("already_claimed"));
     }
 
     // 3) Username must not be taken
     if user_repo::exists_username(reader, input.username).await? {
-        return Err(AppError::param_invalid("username_taken"));
+        return Err(ApiError::param_invalid("username_taken"));
     }
 
     // 4) Update username + password (argon2 hash; salt stored separately)
@@ -57,7 +57,7 @@ pub async fn claim(state: &AppState, input: ClaimInput<'_>) -> AppResult<()> {
         user_repo::update_username_and_password(db, input.uid, input.username, &salt, &hash, now)
             .await?;
     if affected == 0 {
-        return Err(AppError::param_invalid("member_not_found"));
+        return Err(ApiError::param_invalid("member_not_found"));
     }
 
     // 5) Write the claim record + audit log

@@ -10,7 +10,7 @@
 //! failures the key is invalidated automatically.
 
 use phpyun_core::verify::{self, VerifyKind};
-use phpyun_core::{metrics as m, AppError, AppResult, AppState};
+use phpyun_core::{metrics as m, ApiError, AppResult, AppState};
 use std::time::Duration;
 use uuid::Uuid;
 
@@ -62,7 +62,7 @@ fn render_png() -> AppResult<(String, Vec<u8>)> {
 
     let png = c
         .as_png()
-        .ok_or_else(|| AppError::internal(std::io::Error::other("captcha PNG render failed")))?;
+        .ok_or_else(|| ApiError::internal(std::io::Error::other("captcha PNG render failed")))?;
     Ok((code, png))
 }
 

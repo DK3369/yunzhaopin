@@ -5,7 +5,7 @@
 
 use phpyun_core::audit::{self, Actor, AuditEvent};
 use phpyun_core::cache::SimpleCache;
-use phpyun_core::{clock, AppError, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
+use phpyun_core::{clock, ApiError, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
 use phpyun_models::description::{
     entity::{DescClass, Description},
     repo as desc_repo,
@@ -64,7 +64,7 @@ pub async fn update_class_sort(
 ) -> AppResult<()> {
     let n = desc_repo::update_class_sort(state.db.pool(), id, sort).await?;
     if n == 0 {
-        return Err(AppError::param_invalid("class_not_found"));
+        return Err(ApiError::param_invalid("class_not_found"));
     }
     invalidate_classes_cache().await;
     let _ = audit::emit(
@@ -84,7 +84,7 @@ pub async fn delete_class(
 ) -> AppResult<()> {
     let n = desc_repo::delete_class(state.db.pool(), id).await?;
     if n == 0 {
-        return Err(AppError::param_invalid("class_not_found"));
+        return Err(ApiError::param_invalid("class_not_found"));
     }
     invalidate_classes_cache().await;
     let _ = audit::emit(
@@ -115,7 +115,7 @@ pub async fn list(
 pub async fn get(state: &AppState, id: u64) -> AppResult<Description> {
     desc_repo::get(state.db.reader(), id)
         .await?
-        .ok_or_else(|| AppError::param_invalid("description_not_found"))
+        .ok_or_else(|| ApiError::param_invalid("description_not_found"))
 }
 
 pub struct UpsertForm<'a> {
@@ -164,7 +164,7 @@ pub async fn upsert(
 pub async fn delete(state: &AppState, admin: &AuthenticatedUser, id: u64) -> AppResult<()> {
     let n = desc_repo::delete(state.db.pool(), id).await?;
     if n == 0 {
-        return Err(AppError::param_invalid("description_not_found"));
+        return Err(ApiError::param_invalid("description_not_found"));
     }
     let _ = audit::emit(
         state,

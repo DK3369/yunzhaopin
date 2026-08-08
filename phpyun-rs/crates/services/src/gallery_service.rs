@@ -5,7 +5,7 @@
 //! `kind = resume`: personal portfolio (usertype=1 only)
 
 use phpyun_core::audit::{self, Actor, AuditEvent};
-use phpyun_core::{AppResult, AppState, AuthenticatedUser, AppError, Pagination};
+use phpyun_core::{AppResult, AppState, AuthenticatedUser, ApiError, Pagination};
 use phpyun_models::gallery::entity::{GalleryItem, GalleryKind};
 use phpyun_models::gallery::repo as gallery_repo;
 
@@ -50,7 +50,7 @@ pub async fn create(
 ) -> AppResult<u64> {
     check_role(user, kind)?;
     if picurl.trim().is_empty() {
-        return Err(AppError::param_invalid("picurl").into());
+        return Err(ApiError::param_invalid("picurl").into());
     }
     let id = gallery_repo::create(state.db.pool(), kind, user.uid, title, picurl, sort).await?;
     let _ = audit::emit(

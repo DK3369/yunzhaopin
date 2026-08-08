@@ -9,7 +9,7 @@ use axum::{
     routing::post,
 };
 use phpyun_core::i18n::{current_lang, Lang};
-use phpyun_core::{ApiJson, AppError, AppResult, AppState, ValidatedJson};
+use phpyun_core::{ApiJson, ApiError, AppResult, AppState, ValidatedJson};
 use phpyun_services::region_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
@@ -127,7 +127,7 @@ pub async fn by_id(State(state): State<AppState>,
     let lang = current_lang();
     let node = tree
         .get(id)
-        .ok_or_else(|| AppError::param_invalid("region_not_found"))?;
+        .ok_or_else(|| ApiError::param_invalid("region_not_found"))?;
     Ok(ApiJson(to_view(node, lang, tree.has_children(node.region.id))))
 }
 
@@ -149,7 +149,7 @@ pub async fn by_code(State(state): State<AppState>,
     let lang = current_lang();
     let node = tree
         .find_by_code(&code)
-        .ok_or_else(|| AppError::param_invalid("region_not_found"))?;
+        .ok_or_else(|| ApiError::param_invalid("region_not_found"))?;
     Ok(ApiJson(to_view(node, lang, tree.has_children(node.region.id))))
 }
 

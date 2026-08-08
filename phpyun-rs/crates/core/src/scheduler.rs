@@ -44,7 +44,7 @@
 //! its own `fn my_task(state)` and registers it in `main`. The scheduler
 //! itself doesn't change.
 
-use crate::AppError;
+use crate::ApiError;
 use crate::kv::Kv;
 use crate::metrics as m;
 use cron::Schedule;
@@ -98,12 +98,12 @@ impl Scheduler {
         name: &'static str,
         expr: &str,
         job: F,
-    ) -> Result<&mut Self, AppError>
+    ) -> Result<&mut Self, ApiError>
     where
         F: Fn() -> Fut + Send + Sync + 'static,
         Fut: Future<Output = ()> + Send + 'static,
     {
-        let schedule = Schedule::from_str(expr).map_err(AppError::internal)?;
+        let schedule = Schedule::from_str(expr).map_err(ApiError::internal)?;
         self.jobs.push(Job {
             name,
             kind: JobKind::Cron(Box::new(schedule)),

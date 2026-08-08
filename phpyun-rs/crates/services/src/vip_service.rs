@@ -4,7 +4,7 @@
 //! In production this needs to integrate with alipay / wechat / stripe.
 
 use phpyun_core::audit::{self, Actor, AuditEvent};
-use phpyun_core::{clock, AppError, AppResult, AppState, AuthenticatedUser, Pagination};
+use phpyun_core::{clock, ApiError, AppResult, AppState, AuthenticatedUser, Pagination};
 use phpyun_models::vip::{entity::{PayOrder, UserVip, VipPackage}, repo as vip_repo};
 use uuid::Uuid;
 
@@ -27,14 +27,14 @@ pub async fn create_order(
 ) -> AppResult<String> {
     let pkg = vip_repo::find_package_by_code(state.db.reader(), package_code)
         .await?
-        .ok_or_else(|| -> AppError {
-            AppError::param_invalid(format!("unknown package: {package_code}")).into()
+        .ok_or_else(|| -> ApiError {
+            ApiError::param_invalid(format!("unknown package: {package_code}")).into()
         })?;
     if pkg.is_active != 1 {
-        return Err(AppError::param_invalid("package_inactive").into());
+        return Err(ApiError::param_invalid("package_inactive").into());
     }
     if pkg.target_usertype != 0 && pkg.target_usertype != user.usertype as i32 {
-        return Err(AppError::param_invalid("package_usertype_mismatch").into());
+        return Err(ApiError::param_invalid("package_usertype_mismatch").into());
     }
 
     let order_no = format!("ON{}", Uuid::now_v7().simple());
@@ -80,20 +80,20 @@ pub async fn mark_paid(
 ) -> AppResult<()> {
     let order = vip_repo::find_order_by_no(state.db.reader(), order_no)
         .await?
-        .ok_or_else(|| -> AppError { AppError::param_invalid("order_not_found").into() })?;
+        .ok_or_else(|| -> ApiError { ApiError::param_invalid("order_not_found").into() })?;
     if order.status != 0 {
-        return Err(AppError::param_invalid("order_not_pending").into());
+        return Err(ApiError::param_invalid("order_not_pending").into());
     }
 
     let pkg = vip_repo::find_package_by_code(state.db.reader(), &order.package_code)
         .await?
-        .ok_or_else(|| -> AppError { AppError::internal(std::io::Error::other("package gone")) })?;
+        .ok_or_else(|| -> ApiError { ApiError::internal(std::io::Error::other("package gone")) })?;
 
     let now = clock::now_ts();
     // 1. Update order status
     let affected = vip_repo::mark_order_paid(state.db.pool(), order_no, pay_tx_id, now).await?;
     if affected == 0 {
-        return Err(AppError::param_invalid("order_already_processed").into());
+        return Err(ApiError::param_invalid("order_already_processed").into());
     }
     // 2. Activate / renew VIP
     vip_repo::upsert_user_vip(
@@ -160,7 +160,7 @@ pub async fn cancel_order(
 ) -> AppResult<()> {
     let affected = vip_repo::cancel_order(state.db.pool(), order_no, user.uid).await?;
     if affected == 0 {
-        return Err(AppError::param_invalid("order_not_cancellable").into());
+        return Err(ApiError::param_invalid("order_not_cancellable").into());
     }
     let _ = audit::emit(
         state,
@@ -227,7 +227,7 @@ pub async fn quote_package_price(
     let pkg = phpyun_models::vip::repo::find_package_pricing(reader, package_id)
         .await?
         .ok_or_else(|| {
-            phpyun_core::AppError::param_invalid(
+            phpyun_core::ApiError::param_invalid(
                 "package_not_found",
             )
         })?;
@@ -271,7 +271,7 @@ pub async fn quote_package_price(
             (pkg.service_price, pkg.service_price)
         }
     } else {
-        return Err(phpyun_core::AppError::param_invalid("kind"));
+        return Err(phpyun_core::ApiError::param_invalid("kind"));
     };
 
     let integral_excluded = only_price_csv.iter().any(|s| *s == kind);

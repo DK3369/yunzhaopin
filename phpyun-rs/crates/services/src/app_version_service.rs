@@ -1,11 +1,11 @@
 //! App version check (aligned with PHPYun `version.model.php`).
 
-use phpyun_core::{audit, clock, AppError, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
+use phpyun_core::{audit, clock, ApiError, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
 use phpyun_models::app_version::{entity::AppVersion, repo as ver_repo};
 
 pub async fn latest(state: &AppState, platform: &str) -> AppResult<Option<AppVersion>> {
     if platform.is_empty() {
-        return Err(AppError::param_missing("platform"));
+        return Err(ApiError::param_missing("platform"));
     }
     Ok(ver_repo::latest_for_platform(state.db.reader(), platform).await?)
 }

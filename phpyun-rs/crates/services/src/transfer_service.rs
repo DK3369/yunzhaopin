@@ -23,7 +23,7 @@
 use phpyun_auth::{argon2_hash_async, verify_password_async};
 use phpyun_core::audit::{self, Actor, AuditEvent};
 use phpyun_core::jwt_blacklist;
-use phpyun_core::{clock, AppError, AppResult, AppState, AuthenticatedUser};
+use phpyun_core::{clock, ApiError, AppResult, AppState, AuthenticatedUser};
 use phpyun_core::validators;
 use phpyun_models::user::repo as user_repo;
 
@@ -95,19 +95,19 @@ pub async fn split_account(
 
     // 1. Basic validation
     if validators::username(input.new_username).is_err() {
-        return Err(AppError::param_invalid("username").into());
+        return Err(ApiError::param_invalid("username").into());
     }
     if validators::strong_password(input.new_password).is_err() {
-        return Err(AppError::param_invalid("password").into());
+        return Err(ApiError::param_invalid("password").into());
     }
     if input.old_password.is_empty() {
-        return Err(AppError::param_invalid("old_password").into());
+        return Err(ApiError::param_invalid("old_password").into());
     }
 
     // 2. Load the original account and verify the old password
     let member = user_repo::find_by_uid(state.db.reader(), user.uid)
         .await?
-        .ok_or_else(|| AppError::param_invalid("account_not_found"))?;
+        .ok_or_else(|| ApiError::param_invalid("account_not_found"))?;
 
     let pwd_ok = verify_password_async(
         input.old_password.to_string(),
@@ -116,18 +116,18 @@ pub async fn split_account(
     )
     .await;
     if !pwd_ok {
-        return Err(AppError::bad_credentials().into());
+        return Err(ApiError::bad_credentials().into());
     }
 
     // 3. Uniqueness of the new username
     if user_repo::exists_username(state.db.reader(), input.new_username).await? {
-        return Err(AppError::param_invalid("username_taken").into());
+        return Err(ApiError::param_invalid("username_taken").into());
     }
 
     // 4. Generate the argon2 hash for the new password
     let new_pw_hash = argon2_hash_async(input.new_password.to_string())
         .await
-        .map_err(|e| AppError::param_invalid(format!("hash_failed: {e}")))?;
+        .map_err(|e| ApiError::param_invalid(format!("hash_failed: {e}")))?;
 
     let now = clock::now_ts();
     let old_uid = user.uid;
@@ -254,17 +254,17 @@ pub async fn merge_into_company(
 ) -> AppResult<MergeResult> {
     admin.require_admin()?;
     if user_uid == 0 || company_uid == 0 || user_uid == company_uid {
-        return Err(AppError::param_invalid("uid").into());
+        return Err(ApiError::param_invalid("uid").into());
     }
 
     // Precondition: the personal account must not already have a company identity
     if phpyun_models::company::repo::exists_by_uid(state.db.reader(), user_uid).await? {
-        return Err(AppError::param_invalid("user_has_company_identity").into());
+        return Err(ApiError::param_invalid("user_has_company_identity").into());
     }
 
     // Precondition: the company account must not already have a personal identity
     if phpyun_models::resume::repo::exists_by_uid(state.db.reader(), company_uid).await? {
-        return Err(AppError::param_invalid("company_has_resume_identity").into());
+        return Err(ApiError::param_invalid("company_has_resume_identity").into());
     }
 
     // Transaction: bulk uid update + member deletion

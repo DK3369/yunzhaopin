@@ -5,7 +5,7 @@ use axum::{
     Router,
     routing::post,
 };
-use phpyun_core::{ApiJson, AppError, AppResult, AppState, ClientIp, MaybeUser, ValidatedJson};
+use phpyun_core::{ApiJson, ApiError, AppResult, AppState, ClientIp, MaybeUser, ValidatedJson};
 use validator::Validate;
 use phpyun_services::ad_service;
 use serde::{Deserialize, Serialize};
@@ -114,7 +114,7 @@ pub async fn track_click(State(state): State<AppState>,
     use phpyun_models::ad::repo as ad_repo;
     let target = ad_repo::find_target(state.db.reader(), id)
         .await?
-        .ok_or_else(|| AppError::param_invalid("ad_not_found"))?;
+        .ok_or_else(|| ApiError::param_invalid("ad_not_found"))?;
 
     let now = phpyun_core::clock::now_ts();
 

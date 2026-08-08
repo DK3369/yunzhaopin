@@ -24,7 +24,7 @@ pub struct JobFilter<'a> {
     pub max_salary: Option<i32>,
     pub exp: Option<i32>,
     pub edu: Option<i32>,
-    /// 1 = full-time / 2 = part-time / 3 = internship / 4 = temporary
+    /// 1 = full-time / 2 = part-time / 3 = internship / 4 = temporary / 5 = remote
     /// (aligns with PHPYun `phpyun_company_job.type`).
     pub job_type: Option<i32>,
     /// Industry dict id (`phpyun_company_job.hy`).

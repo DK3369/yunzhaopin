@@ -36,7 +36,7 @@
 //! // Add a case in Storage::from_config; business code doesn't change.
 //! ```
 
-use crate::{AppError, AppResult};
+use crate::{ApiError, AppResult};
 use async_trait::async_trait;
 use bytes::Bytes;
 use std::path::PathBuf;
@@ -105,11 +105,11 @@ impl ObjectStore for LocalFsStorage {
     async fn put(&self, key: &str, _content_type: &str, data: Bytes) -> AppResult<()> {
         let path = self.safe_path(key);
         if let Some(parent) = path.parent() {
-            fs::create_dir_all(parent).await.map_err(AppError::internal)?;
+            fs::create_dir_all(parent).await.map_err(ApiError::internal)?;
         }
-        let mut f = fs::File::create(&path).await.map_err(AppError::internal)?;
-        f.write_all(&data).await.map_err(AppError::internal)?;
-        f.sync_all().await.map_err(AppError::internal)?;
+        let mut f = fs::File::create(&path).await.map_err(ApiError::internal)?;
+        f.write_all(&data).await.map_err(ApiError::internal)?;
+        f.sync_all().await.map_err(ApiError::internal)?;
         Ok(())
     }
 
@@ -118,7 +118,7 @@ impl ObjectStore for LocalFsStorage {
         match fs::remove_file(&path).await {
             Ok(()) => Ok(()),
             Err(e) if e.kind() == std::io::ErrorKind::NotFound => Ok(()),
-            Err(e) => Err(AppError::internal(e)),
+            Err(e) => Err(ApiError::internal(e)),
         }
     }
 
@@ -157,13 +157,13 @@ pub struct S3Storage {
 #[async_trait]
 impl ObjectStore for S3Storage {
     async fn put(&self, _key: &str, _content_type: &str, _data: Bytes) -> AppResult<()> {
-        Err(AppError::internal(std::io::Error::other(
+        Err(ApiError::internal(std::io::Error::other(
             "S3Storage::put not yet implemented (TODO: aws-sdk-s3)",
         )))
     }
 
     async fn delete(&self, _key: &str) -> AppResult<()> {
-        Err(AppError::internal(std::io::Error::other(
+        Err(ApiError::internal(std::io::Error::other(
             "S3Storage::delete not yet implemented",
         )))
     }
@@ -182,7 +182,7 @@ impl ObjectStore for S3Storage {
         _content_type: &str,
         _ttl: Duration,
     ) -> AppResult<String> {
-        Err(AppError::internal(std::io::Error::other(
+        Err(ApiError::internal(std::io::Error::other(
             "S3Storage::presigned_put not yet implemented",
         )))
     }
@@ -221,7 +221,7 @@ impl Storage {
                 let bucket = cfg
                     .storage_s3_bucket
                     .clone()
-                    .ok_or_else(|| AppError::param_invalid("STORAGE_S3_BUCKET required"))?;
+                    .ok_or_else(|| ApiError::param_invalid("STORAGE_S3_BUCKET required"))?;
                 let region = cfg
                     .storage_s3_region
                     .clone()
@@ -232,7 +232,7 @@ impl Storage {
                     .unwrap_or_else(|| format!("https://{bucket}.s3.{region}.amazonaws.com"));
                 Ok(Self::new(S3Storage { bucket, region, base_url: base }))
             }
-            other => Err(AppError::param_invalid(format!("unknown STORAGE_KIND: {other}"))),
+            other => Err(ApiError::param_invalid(format!("unknown STORAGE_KIND: {other}"))),
         }
     }
 

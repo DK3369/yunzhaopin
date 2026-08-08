@@ -3,7 +3,7 @@
 //! The primary company (`usertype=2`) generates an invitation code; HR accounts join via that code and become secondary members of the company.
 //! Once joined, HR can post jobs and view applications on behalf of the company (downstream modules can consult `company_hrs` to decide).
 
-use phpyun_core::{audit, clock, AppError, AppResult, AppState, AuthenticatedUser};
+use phpyun_core::{audit, clock, ApiError, AppResult, AppState, AuthenticatedUser};
 use phpyun_models::company_hr::{
     entity::{CompanyHr, InviteCode},
     repo as hr_repo,
@@ -83,7 +83,7 @@ pub async fn revoke_code(
     user.require_employer()?;
     let affected = hr_repo::revoke_code(state.db.pool(), id, user.uid).await?;
     if affected == 0 {
-        return Err(AppError::forbidden());
+        return Err(ApiError::forbidden());
     }
     Ok(())
 }
@@ -123,13 +123,13 @@ pub async fn join_by_code(
     let now = clock::now_ts();
     let c = hr_repo::find_code_active(state.db.reader(), code, now)
         .await?
-        .ok_or_else(|| AppError::param_invalid("invalid_code"))?;
+        .ok_or_else(|| ApiError::param_invalid("invalid_code"))?;
     if c.company_uid == user.uid {
-        return Err(AppError::param_invalid("cannot_join_self"));
+        return Err(ApiError::param_invalid("cannot_join_self"));
     }
     let consumed = hr_repo::consume_code(state.db.pool(), c.id).await?;
     if consumed == 0 {
-        return Err(AppError::param_invalid("code_exhausted"));
+        return Err(ApiError::param_invalid("code_exhausted"));
     }
     hr_repo::add_hr(state.db.pool(), c.company_uid, user.uid, "hr", now).await?;
     let _ = audit::emit(

@@ -11,7 +11,7 @@
 
 use phpyun_auth::md5_hex;
 use phpyun_core::audit::{self, Actor, AuditEvent};
-use phpyun_core::{clock, AppResult, AppState, AppError, Pagination};
+use phpyun_core::{clock, AppResult, AppState, ApiError, Pagination};
 use phpyun_models::tiny::entity::TinyResume;
 use phpyun_models::tiny::repo as tiny_repo;
 
@@ -62,7 +62,7 @@ pub async fn list_public(
 pub async fn show(state: &AppState, id: u64) -> AppResult<TinyResume> {
     let item = tiny_repo::find_by_id(state.db.reader(), id)
         .await?
-        .ok_or(AppError::business("tiny_not_found"))?;
+        .ok_or(ApiError::business("tiny_not_found"))?;
 
     let pool = state.db.pool().clone();
     tokio::spawn(async move {
@@ -121,7 +121,7 @@ pub async fn upsert(state: &AppState, input: &UpsertInput) -> AppResult<UpsertRe
 
     if let Some(id) = input.id {
         if pwd_md5.is_empty() {
-            return Err(AppError::param_invalid("password_required").into());
+            return Err(ApiError::param_invalid("password_required").into());
         }
         let now = clock::now_ts();
         let upd = tiny_repo::UpdateTiny {
@@ -139,7 +139,7 @@ pub async fn upsert(state: &AppState, input: &UpsertInput) -> AppResult<UpsertRe
         let n =
             tiny_repo::update_with_password_check(state.db.pool(), id, &pwd_md5, &upd).await?;
         if n == 0 {
-            return Err(AppError::business("tiny_pwd_mismatch").into());
+            return Err(ApiError::business("tiny_pwd_mismatch").into());
         }
 
         let _ = audit::emit(
@@ -154,14 +154,14 @@ pub async fn upsert(state: &AppState, input: &UpsertInput) -> AppResult<UpsertRe
 
     // Insert -- check quota first
     if input.daily_total_limit > 0 && input.today_total >= input.daily_total_limit {
-        return Err(AppError::business("tiny_site_limit").into());
+        return Err(ApiError::business("tiny_site_limit").into());
     }
     if input.daily_ip_limit > 0 && input.today_by_ip >= input.daily_ip_limit {
-        return Err(AppError::business("tiny_ip_limit").into());
+        return Err(ApiError::business("tiny_ip_limit").into());
     }
 
     if pwd_md5.is_empty() {
-        return Err(AppError::param_invalid("password_required").into());
+        return Err(ApiError::param_invalid("password_required").into());
     }
 
     let now = clock::now_ts();
@@ -195,25 +195,25 @@ pub async fn upsert(state: &AppState, input: &UpsertInput) -> AppResult<UpsertRe
 
 fn validate_fields(input: &UpsertInput) -> AppResult<()> {
     if input.username.trim().is_empty() {
-        return Err(AppError::param_invalid("username").into());
+        return Err(ApiError::param_invalid("username").into());
     }
     if input.sex <= 0 {
-        return Err(AppError::param_invalid("sex").into());
+        return Err(ApiError::param_invalid("sex").into());
     }
     if input.exp <= 0 {
-        return Err(AppError::param_invalid("exp").into());
+        return Err(ApiError::param_invalid("exp").into());
     }
     if input.job.trim().is_empty() {
-        return Err(AppError::param_invalid("job").into());
+        return Err(ApiError::param_invalid("job").into());
     }
     if input.mobile.trim().is_empty() {
-        return Err(AppError::param_invalid("mobile").into());
+        return Err(ApiError::param_invalid("mobile").into());
     }
     if input.provinceid == 0 && input.cityid == 0 {
-        return Err(AppError::param_invalid("city").into());
+        return Err(ApiError::param_invalid("city").into());
     }
     if input.production.trim().is_empty() {
-        return Err(AppError::param_invalid("production").into());
+        return Err(ApiError::param_invalid("production").into());
     }
     Ok(())
 }
@@ -237,7 +237,7 @@ pub async fn manage(
     op: ManageOp,
 ) -> AppResult<ManageResult> {
     if password.is_empty() {
-        return Err(AppError::param_invalid("password").into());
+        return Err(ApiError::param_invalid("password").into());
     }
     let pwd_md5 = md5_hex(password);
 
@@ -245,7 +245,7 @@ pub async fn manage(
         ManageOp::Verify => {
             let ok = tiny_repo::verify_password(state.db.reader(), id, &pwd_md5).await?;
             if !ok {
-                return Err(AppError::business("tiny_pwd_mismatch").into());
+                return Err(ApiError::business("tiny_pwd_mismatch").into());
             }
             Ok(ManageResult::Verified)
         }
@@ -258,7 +258,7 @@ pub async fn manage(
             )
             .await?;
             if n == 0 {
-                return Err(AppError::business("tiny_pwd_mismatch").into());
+                return Err(ApiError::business("tiny_pwd_mismatch").into());
             }
             Ok(ManageResult::Refreshed)
         }
@@ -266,7 +266,7 @@ pub async fn manage(
             let n =
                 tiny_repo::delete_with_password(state.db.pool(), id, &pwd_md5).await?;
             if n == 0 {
-                return Err(AppError::business("tiny_pwd_mismatch").into());
+                return Err(ApiError::business("tiny_pwd_mismatch").into());
             }
             Ok(ManageResult::Deleted)
         }

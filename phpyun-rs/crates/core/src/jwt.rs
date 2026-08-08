@@ -10,7 +10,7 @@
 //!   `jsonwebtoken::errors::Error`.
 
 use crate::clock;
-use crate::{AppError, AppResult};
+use crate::{ApiError, AppResult};
 use jsonwebtoken::{decode, encode, DecodingKey, EncodingKey, Header, Validation};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
@@ -91,7 +91,7 @@ pub fn issue_pair(
 }
 
 fn encode_claim(key: &EncodingKey, claims: Claims) -> AppResult<String> {
-    encode(&Header::default(), &claims, key).map_err(AppError::internal)
+    encode(&Header::default(), &claims, key).map_err(ApiError::internal)
 }
 
 pub fn verify(secret: &str, token: &str) -> AppResult<Claims> {
@@ -106,8 +106,8 @@ pub fn verify(secret: &str, token: &str) -> AppResult<Claims> {
         // tells the user to refresh) from "the token doesn't validate at all"
         // (unauth — wrong secret / forged / malformed; tells the user the
         // server doesn't recognise this credential at all).
-        jsonwebtoken::errors::ErrorKind::ExpiredSignature => AppError::session_expired(),
-        _ => AppError::unauth(),
+        jsonwebtoken::errors::ErrorKind::ExpiredSignature => ApiError::session_expired(),
+        _ => ApiError::unauth(),
     })
 }
 
@@ -115,7 +115,7 @@ pub fn verify(secret: &str, token: &str) -> AppResult<Claims> {
 pub fn verify_access(secret: &str, token: &str) -> AppResult<Claims> {
     let claims = verify(secret, token)?;
     if claims.typ != "access" {
-        return Err(AppError::session_expired());
+        return Err(ApiError::session_expired());
     }
     Ok(claims)
 }
@@ -124,7 +124,7 @@ pub fn verify_access(secret: &str, token: &str) -> AppResult<Claims> {
 pub fn verify_refresh(secret: &str, token: &str) -> AppResult<Claims> {
     let claims = verify(secret, token)?;
     if claims.typ != "refresh" {
-        return Err(AppError::session_expired());
+        return Err(ApiError::session_expired());
     }
     Ok(claims)
 }

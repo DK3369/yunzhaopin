@@ -11,7 +11,7 @@
 //! Handlers are **HTTP adapters**. Their job:
 //! 1. Parse request input via extractors (`Path`, `Query`, `ValidatedJson`).
 //! 2. Call **one or more services**.
-//! 3. Map the service result to `ApiJson<T>` / `ApiOk` / `AppError`.
+//! 3. Map the service result to `ApiJson<T>` / `ApiOk` / `ApiError`.
 //!
 //! **Forbidden in handlers:**
 //! - `use sqlx::*` — write a repo method on a model and call it via a service.

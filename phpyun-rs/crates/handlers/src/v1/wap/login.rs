@@ -17,7 +17,7 @@ use axum::{
 use phpyun_core::dto::AuthTokenData;
 use phpyun_core::validators;
 use phpyun_core::verify::{self, VerifyKind};
-use phpyun_core::{ApiJson, AppError, AppResult, AppState, ClientIp, ValidatedJson};
+use phpyun_core::{ApiJson, ApiError, AppResult, AppState, ClientIp, ValidatedJson};
 use phpyun_services::user_service::{self, LoginContext};
 use serde::Deserialize;
 use utoipa::ToSchema;
@@ -75,7 +75,7 @@ pub async fn mlogin(
         if !cid.is_empty() && !code.is_empty() {
             let code_up = code.to_uppercase();
             if !verify::verify(&state.redis, VerifyKind::ImageCaptcha, cid, &code_up).await? {
-                return Err(AppError::captcha());
+                return Err(ApiError::captcha());
             }
         }
     }
@@ -164,9 +164,7 @@ pub struct EmailCodeSendForm {
     request_body = EmailCodeSendForm,
     responses(
         (status = 200, description = "Email accepted for delivery"),
-        (status = 400, description = "Invalid email"),
-        (status = 429, description = "Rate limited"),
-        (status = 502, description = "Mail delivery failed"),
+        (status = 500, description = "Invalid email, rate limited, or mail delivery failed"),
     )
 )]
 pub async fn send_email_code(

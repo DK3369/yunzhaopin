@@ -1,7 +1,7 @@
 //! Peer-to-peer direct messages.
 
 use phpyun_core::i18n::{t, Lang};
-use phpyun_core::{clock, rate_limit, AppResult, AppState, AuthenticatedUser, AppError};
+use phpyun_core::{clock, rate_limit, AppResult, AppState, AuthenticatedUser, ApiError};
 
 // Notification copy: translated using the system default language when written to the DB; can be reworked once a recipient preferred-language is introduced.
 const NOTIF_LANG: Lang = Lang::ZhCN;
@@ -17,10 +17,10 @@ pub async fn send(
     body: &str,
 ) -> AppResult<u64> {
     if peer_uid == user.uid {
-        return Err(AppError::param_invalid("cannot_chat_self").into());
+        return Err(ApiError::param_invalid("cannot_chat_self").into());
     }
     if body.is_empty() || body.len() > 5000 {
-        return Err(AppError::param_invalid("body_length").into());
+        return Err(ApiError::param_invalid("body_length").into());
     }
 
     rate_limit::check_and_incr(

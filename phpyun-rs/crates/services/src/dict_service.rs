@@ -433,7 +433,7 @@ async fn load_default(
 ) -> AppResult<HashMap<i32, String>> {
     let rows = phpyun_models::dict_i18n::repo::list_default(pool, table)
         .await
-        .map_err(phpyun_core::AppError::internal)?;
+        .map_err(phpyun_core::ApiError::internal)?;
     Ok(rows
         .into_iter()
         .map(|(id, name)| (id, name.unwrap_or_default()))

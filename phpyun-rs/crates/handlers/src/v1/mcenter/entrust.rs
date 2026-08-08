@@ -12,7 +12,7 @@ use axum::{
     Router,
     routing::post,
 };
-use phpyun_core::{ApiJson, ApiMsg, AppError, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
+use phpyun_core::{ApiJson, ApiMsg, ApiError, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::entrust_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
@@ -135,7 +135,7 @@ pub async fn unbind(
     } else if f.id > 0 {
         entrust_service::unbind_by_id(&state, &user, f.id).await?;
     } else {
-        return Err(AppError::param_invalid("lt_uid_or_id_required"));
+        return Err(ApiError::param_invalid("lt_uid_or_id_required"));
     }
     Ok(ApiMsg("entrust_unbound"))
 }

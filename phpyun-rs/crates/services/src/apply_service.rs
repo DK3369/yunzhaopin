@@ -4,7 +4,7 @@
 //! Aligned with PHPYun `wap/job::comapply_action` (submit) + `mcenter/applicant`
 //! (employer view) + `mcenter/apply` (jobseeker view).
 
-use phpyun_core::AppError;
+use phpyun_core::ApiError;
 use phpyun_core::audit::{self, Actor, AuditEvent};
 use phpyun_core::{clock, AppResult, AppState, AuthenticatedUser, Pagination};
 use phpyun_models::apply::{entity::Apply, repo as apply_repo};
@@ -29,20 +29,20 @@ pub async fn apply_to_job(
     // 1. The job must be applicable: online / approved / not expired
     let job = job_repo::find_by_id(state.db.reader(), job_id)
         .await?
-        .ok_or(AppError::business("job_not_found"))?;
+        .ok_or(ApiError::business("job_not_found"))?;
     if job.status == 2 {
-        return Err(AppError::business("job_offline").into());
+        return Err(ApiError::business("job_offline").into());
     }
     if job.state != 1 || job.r_status != 1 {
-        return Err(AppError::business("job_pending").into());
+        return Err(ApiError::business("job_pending").into());
     }
     if job.edate > 0 && job.edate <= clock::now_ts() {
-        return Err(AppError::business("job_expired").into());
+        return Err(ApiError::business("job_expired").into());
     }
 
     // 2. Cannot apply to your own posting (edge case where jobseeker uid = employer uid)
     if job.uid == user.uid {
-        return Err(AppError::business("apply_own_job").into());
+        return Err(ApiError::business("apply_own_job").into());
     }
 
     // 3. Prevent duplicate applications
@@ -50,7 +50,7 @@ pub async fn apply_to_job(
         .await?
         .is_some()
     {
-        return Err(AppError::business("apply_duplicate").into());
+        return Err(ApiError::business("apply_duplicate").into());
     }
 
     // 4. Persist (PHPYun's eid equals the jobseeker uid, denoting the default resume)
@@ -128,7 +128,7 @@ pub async fn withdraw(
     user.require_jobseeker()?;
     let affected = apply_repo::withdraw(state.db.pool(), apply_id, user.uid).await?;
     if affected == 0 {
-        return Err(AppError::business("apply_not_owner").into());
+        return Err(ApiError::business("apply_not_owner").into());
     }
     let _ = audit::emit(
         state,
@@ -183,12 +183,12 @@ pub async fn set_browse_state(
 ) -> AppResult<()> {
     user.require_employer()?;
     if !matches!(new_state, 0 | 1 | 3 | 4 | 7) {
-        return Err(AppError::param_invalid("state").into());
+        return Err(ApiError::param_invalid("state").into());
     }
     let affected =
         apply_repo::set_browse_state(state.db.pool(), apply_id, user.uid, new_state).await?;
     if affected == 0 {
-        return Err(AppError::business("apply_not_owner").into());
+        return Err(ApiError::business("apply_not_owner").into());
     }
     let _ = audit::emit(
         state,
@@ -213,7 +213,7 @@ pub async fn invite_interview(
     let affected =
         apply_repo::invite(state.db.pool(), apply_id, user.uid, clock::now_ts()).await?;
     if affected == 0 {
-        return Err(AppError::business("apply_not_owner").into());
+        return Err(ApiError::business("apply_not_owner").into());
     }
     let _ = audit::emit(
         state,

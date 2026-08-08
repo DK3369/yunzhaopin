@@ -8,7 +8,7 @@
 //! company profile flow (existing `company_service`). The result is cleaner.
 
 use phpyun_core::audit::{self, Actor, AuditEvent};
-use phpyun_core::{AppResult, AppState, AuthenticatedUser, AppError, Pagination};
+use phpyun_core::{AppResult, AppState, AuthenticatedUser, ApiError, Pagination};
 use phpyun_models::company_address::entity::CompanyAddress;
 use phpyun_models::company_address::repo as addr_repo;
 
@@ -48,13 +48,13 @@ pub struct AddressInput<'a> {
 
 fn validate(input: &AddressInput<'_>) -> AppResult<()> {
     if input.link_man.trim().is_empty() {
-        return Err(AppError::param_invalid("link_man").into());
+        return Err(ApiError::param_invalid("link_man").into());
     }
     if input.link_moblie.trim().is_empty() {
-        return Err(AppError::param_invalid("link_moblie").into());
+        return Err(ApiError::param_invalid("link_moblie").into());
     }
     if input.provinceid == 0 && input.cityid == 0 {
-        return Err(AppError::param_invalid("city").into());
+        return Err(ApiError::param_invalid("city").into());
     }
     Ok(())
 }

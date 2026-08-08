@@ -3,7 +3,7 @@
 //! Question structure: `options` is a JSON array `[{label, text, score}, ...]`.
 //! Users submit `answers = {"<question_id>": "<label>", ...}` and the server tallies the totals from each option's `score`.
 
-use phpyun_core::{background, clock, AppError, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
+use phpyun_core::{background, clock, ApiError, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
 use phpyun_models::eval::{
     entity::{EvalLog, EvalPaper, EvalQuestion},
     repo as eval_repo,
@@ -29,7 +29,7 @@ pub async fn get_paper_with_questions(
     let db = state.db.reader();
     let paper = eval_repo::find_paper(db, paper_id)
         .await?
-        .ok_or_else(|| AppError::param_invalid("paper_not_found"))?;
+        .ok_or_else(|| ApiError::param_invalid("paper_not_found"))?;
     let questions = eval_repo::list_questions(db, paper_id).await?;
 
     let pool = state.db.pool().clone();
@@ -50,11 +50,11 @@ pub async fn submit(
     let reader = state.db.reader();
     let _paper = eval_repo::find_paper(reader, paper_id)
         .await?
-        .ok_or_else(|| AppError::param_invalid("paper_not_found"))?;
+        .ok_or_else(|| ApiError::param_invalid("paper_not_found"))?;
 
     let questions = eval_repo::list_questions(reader, paper_id).await?;
     if questions.is_empty() {
-        return Err(AppError::param_invalid("no_questions"));
+        return Err(ApiError::param_invalid("no_questions"));
     }
 
     // Scoring: for each question, look up the option.score for the label submitted by the user
@@ -73,7 +73,7 @@ pub async fn submit(
         }
     }
 
-    let answers_json = serde_json::to_value(&answers).map_err(AppError::internal)?;
+    let answers_json = serde_json::to_value(&answers).map_err(ApiError::internal)?;
     let id =
         eval_repo::create_log(db, user.uid, paper_id, score, &answers_json, clock::now_ts()).await?;
     Ok((id, score))

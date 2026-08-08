@@ -1,6 +1,6 @@
 //! Navigation menu (aligned with PHPYun `navigation.model.php`).
 
-use phpyun_core::{audit, clock, AppError, AppResult, AppState, AuthenticatedUser};
+use phpyun_core::{audit, clock, ApiError, AppResult, AppState, AuthenticatedUser};
 use phpyun_models::nav_menu::{entity::NavMenu, repo as nav_repo};
 
 pub async fn list(state: &AppState, position: &str) -> AppResult<Vec<NavMenu>> {
@@ -86,7 +86,7 @@ pub async fn admin_update(
     )
     .await?;
     if affected == 0 {
-        return Err(AppError::param_invalid("nav_not_found"));
+        return Err(ApiError::param_invalid("nav_not_found"));
     }
     Ok(())
 }
