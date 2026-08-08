@@ -1,15 +1,15 @@
 //! Unified application error model.
 //!
-//! `AppError` is the only application-defined error type exposed across the
-//! workspace. Its internal kind keeps classification private while the public
-//! response contract remains stable:
+//! `ApiError` is the only application-defined error type exposed across the
+//! workspace. It stores a typed [`ApiErrorKind`] and an optional source error;
+//! the public response code and stable key/tag are derived from that kind:
 //!
 //! - success: `{code: 200, msg: "ok", data: ...}`
 //! - unauthenticated / expired session: HTTP 401
 //! - every other error: HTTP 500
 //!
-//! The stable `key` and translated `msg` are preserved for clients; the
-//! internal error kind is never serialized.
+//! The stable `key` and translated `msg` are preserved for clients; no extra
+//! error type field is serialized.
 
 use std::borrow::Cow;
 use std::sync::Arc;
@@ -17,131 +17,142 @@ use std::sync::Arc;
 use axum::{http::StatusCode, response::IntoResponse, Json};
 use serde_json::json;
 
-/// Internal classification for `AppError`.
-///
-/// This is deliberately private: business modules should only depend on
-/// `AppError` and `AppResult`, not on a second public error hierarchy.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum AppErrorType {
-    Unauthenticated,
+const CODE_UNAUTH: u16 = 401;
+const CODE_ERROR: u16 = 500;
+
+/// Stable error kinds exposed by the API layer.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum ApiErrorKind {
+    Unauth,
     SessionExpired,
-    InvalidCredentials,
+    BadCredentials,
     Forbidden,
     RoleMismatch,
-    AccountLocked,
-    MissingParam,
-    InvalidParam,
-    InvalidCaptcha,
-    RateLimited,
-    Upstream,
-    Business,
-    Database,
-    Redis,
+    Locked,
+    RateLimit,
+    Captcha,
+    Business(String),
+    Upstream(String),
+    ParamInvalid(String),
+    ParamMissing(String),
     Internal,
+    Db,
+    Redis,
 }
 
-/// Unified application error.
-pub struct AppError {
-    kind: AppErrorType,
-    tag: Cow<'static, str>,
-    source: Option<anyhow::Error>,
-}
-
-impl AppError {
-    fn tagged(kind: AppErrorType, tag: impl Into<Cow<'static, str>>) -> Self {
-        Self {
-            kind,
-            tag: tag.into(),
-            source: None,
+impl ApiErrorKind {
+    fn code(&self) -> u16 {
+        match self {
+            Self::Unauth | Self::SessionExpired => CODE_UNAUTH,
+            _ => CODE_ERROR,
         }
     }
 
-    fn sourced(kind: AppErrorType, tag: &'static str, source: anyhow::Error) -> Self {
+    fn tag(&self) -> Cow<'static, str> {
+        match self {
+            Self::Unauth => Cow::Borrowed("unauth"),
+            Self::SessionExpired => Cow::Borrowed("session_expired"),
+            Self::BadCredentials => Cow::Borrowed("bad_credentials"),
+            Self::Forbidden => Cow::Borrowed("forbidden"),
+            Self::RoleMismatch => Cow::Borrowed("role_mismatch"),
+            Self::Locked => Cow::Borrowed("locked"),
+            Self::RateLimit => Cow::Borrowed("rate_limit"),
+            Self::Captcha => Cow::Borrowed("captcha"),
+            Self::Business(key) => Cow::Owned(key.clone()),
+            Self::Upstream(msg) => Cow::Owned(format!("upstream: {msg}")),
+            Self::ParamInvalid(msg) => Cow::Owned(format!("param_invalid: {msg}")),
+            Self::ParamMissing(name) => Cow::Owned(format!("param_missing: {name}")),
+            Self::Internal => Cow::Borrowed("internal"),
+            Self::Db => Cow::Borrowed("db"),
+            Self::Redis => Cow::Borrowed("redis"),
+        }
+    }
+}
+
+/// Unified application error.
+pub struct ApiError {
+    kind: ApiErrorKind,
+    source: Option<anyhow::Error>,
+}
+
+impl ApiError {
+    fn tagged(kind: ApiErrorKind) -> Self {
+        Self { kind, source: None }
+    }
+
+    fn sourced(kind: ApiErrorKind, source: anyhow::Error) -> Self {
         Self {
             kind,
-            tag: Cow::Borrowed(tag),
             source: Some(source),
         }
     }
 
     /// Create a business error while preserving the stable i18n key.
     pub fn business(key: impl Into<String>) -> Self {
-        Self::tagged(AppErrorType::Business, Cow::Owned(key.into()))
+        Self::tagged(ApiErrorKind::Business(key.into()))
     }
 
     pub fn unauth() -> Self {
-        Self::tagged(AppErrorType::Unauthenticated, "unauth")
+        Self::tagged(ApiErrorKind::Unauth)
     }
 
     pub fn session_expired() -> Self {
-        Self::tagged(AppErrorType::SessionExpired, "session_expired")
+        Self::tagged(ApiErrorKind::SessionExpired)
     }
 
     pub fn bad_credentials() -> Self {
-        Self::tagged(AppErrorType::InvalidCredentials, "bad_credentials")
+        Self::tagged(ApiErrorKind::BadCredentials)
     }
 
     pub fn forbidden() -> Self {
-        Self::tagged(AppErrorType::Forbidden, "forbidden")
+        Self::tagged(ApiErrorKind::Forbidden)
     }
 
     pub fn role_mismatch() -> Self {
-        Self::tagged(AppErrorType::RoleMismatch, "role_mismatch")
+        Self::tagged(ApiErrorKind::RoleMismatch)
     }
 
     pub fn locked() -> Self {
-        Self::tagged(AppErrorType::AccountLocked, "locked")
+        Self::tagged(ApiErrorKind::Locked)
     }
 
     pub fn rate_limit() -> Self {
-        Self::tagged(AppErrorType::RateLimited, "rate_limit")
+        Self::tagged(ApiErrorKind::RateLimit)
     }
 
     pub fn captcha() -> Self {
-        Self::tagged(AppErrorType::InvalidCaptcha, "captcha")
+        Self::tagged(ApiErrorKind::Captcha)
     }
 
     pub fn upstream(msg: impl Into<String>) -> Self {
-        Self::tagged(
-            AppErrorType::Upstream,
-            Cow::Owned(format!("upstream: {}", msg.into())),
-        )
+        Self::tagged(ApiErrorKind::Upstream(msg.into()))
     }
 
     pub fn param_invalid(msg: impl Into<String>) -> Self {
-        Self::tagged(
-            AppErrorType::InvalidParam,
-            Cow::Owned(format!("param_invalid: {}", msg.into())),
-        )
+        Self::tagged(ApiErrorKind::ParamInvalid(msg.into()))
     }
 
     pub fn param_missing(name: &'static str) -> Self {
-        Self::tagged(
-            AppErrorType::MissingParam,
-            Cow::Owned(format!("param_missing: {name}")),
-        )
+        Self::tagged(ApiErrorKind::ParamMissing(name.to_owned()))
     }
 
     /// Wrap a source failure as a 500 internal error.
     pub fn internal<E: std::error::Error + Send + Sync + 'static>(source: E) -> Self {
-        Self::sourced(
-            AppErrorType::Internal,
-            "internal",
-            anyhow::Error::new(source),
-        )
+        Self::sourced(ApiErrorKind::Internal, anyhow::Error::new(source))
+    }
+
+    pub fn kind(&self) -> &ApiErrorKind {
+        &self.kind
     }
 
     /// Public response code: only unauthenticated and expired sessions remain
     /// 401; all other application errors are 500.
     pub fn code(&self) -> u16 {
-        match self.kind {
-            AppErrorType::Unauthenticated | AppErrorType::SessionExpired => 401,
-            _ => 500,
-        }
+        self.kind.code()
     }
 
     pub fn tag(&self) -> Cow<'static, str> {
-        self.tag.clone()
+        self.kind.tag()
     }
 
     pub fn should_log(&self) -> bool {
@@ -152,38 +163,38 @@ impl AppError {
         StatusCode::from_u16(self.code()).unwrap_or(StatusCode::INTERNAL_SERVER_ERROR)
     }
 
-    /// Rebuild an owned error after moka shares one `Arc<AppError>` with
+    /// Rebuild an owned error after moka shares one `Arc<ApiError>` with
     /// concurrent waiters. The source chain is intentionally not duplicated;
     /// the original loader logs it before this downgrade.
-    pub fn from_arc(arc: Arc<AppError>) -> Self {
+    pub fn from_arc(arc: Arc<ApiError>) -> Self {
         Self {
-            kind: arc.kind,
-            tag: arc.tag.clone(),
+            kind: arc.kind.clone(),
             source: None,
         }
     }
 }
 
-impl std::fmt::Debug for AppError {
+impl std::fmt::Debug for ApiError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct("AppError")
+        f.debug_struct("ApiError")
+            .field("code", &self.code())
             .field("kind", &self.kind)
-            .field("tag", &self.tag)
             .field("source", &self.source)
             .finish()
     }
 }
 
-impl std::fmt::Display for AppError {
+impl std::fmt::Display for ApiError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let tag = self.tag();
         match &self.source {
-            Some(source) => write!(f, "{}: {source}", self.tag),
-            None => f.write_str(&self.tag),
+            Some(source) => write!(f, "{tag}: {source}"),
+            None => f.write_str(&tag),
         }
     }
 }
 
-impl std::error::Error for AppError {
+impl std::error::Error for ApiError {
     fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
         self.source
             .as_ref()
@@ -191,27 +202,27 @@ impl std::error::Error for AppError {
     }
 }
 
-impl From<sqlx::Error> for AppError {
+impl From<sqlx::Error> for ApiError {
     fn from(source: sqlx::Error) -> Self {
-        Self::sourced(AppErrorType::Database, "db", anyhow::Error::new(source))
+        Self::sourced(ApiErrorKind::Db, anyhow::Error::new(source))
     }
 }
 
-impl From<redis::RedisError> for AppError {
+impl From<redis::RedisError> for ApiError {
     fn from(source: redis::RedisError) -> Self {
-        Self::sourced(AppErrorType::Redis, "redis", anyhow::Error::new(source))
+        Self::sourced(ApiErrorKind::Redis, anyhow::Error::new(source))
     }
 }
 
-impl From<anyhow::Error> for AppError {
+impl From<anyhow::Error> for ApiError {
     fn from(source: anyhow::Error) -> Self {
-        Self::sourced(AppErrorType::Internal, "internal", source)
+        Self::sourced(ApiErrorKind::Internal, source)
     }
 }
 
-pub type AppResult<T> = Result<T, AppError>;
+pub type AppResult<T> = Result<T, ApiError>;
 
-impl IntoResponse for AppError {
+impl IntoResponse for ApiError {
     fn into_response(self) -> axum::response::Response {
         let status = self.http_status();
         let code = self.code();
@@ -237,13 +248,15 @@ impl IntoResponse for AppError {
         // i18n keys; simple business details resolve under errors.*.
         let response_key = if let Some(d) = detail {
             let dotted_key = d.contains('.')
-                && d.chars().all(|c| c.is_ascii_alphanumeric() || c == '_' || c == '.')
+                && d.chars()
+                    .all(|c| c.is_ascii_alphanumeric() || c == '_' || c == '.')
                 && !d.starts_with('.')
                 && !d.ends_with('.');
             if dotted_key {
                 d.to_string()
             } else if (key_short == "param_invalid" || key_short == "param_missing")
-                && d.chars().all(|c| c.is_ascii_lowercase() || c.is_ascii_digit() || c == '_')
+                && d.chars()
+                    .all(|c| c.is_ascii_lowercase() || c.is_ascii_digit() || c == '_')
                 && d.as_bytes().first().is_some_and(u8::is_ascii_lowercase)
             {
                 format!("errors.{d}")
@@ -256,7 +269,8 @@ impl IntoResponse for AppError {
 
         let i18n_msg = if let Some(d) = detail {
             let dotted_key = d.contains('.')
-                && d.chars().all(|c| c.is_ascii_alphanumeric() || c == '_' || c == '.')
+                && d.chars()
+                    .all(|c| c.is_ascii_alphanumeric() || c == '_' || c == '.')
                 && !d.starts_with('.')
                 && !d.ends_with('.');
 
@@ -315,41 +329,66 @@ mod tests {
 
     #[test]
     fn only_authentication_session_errors_are_401() {
-        assert_eq!(AppError::unauth().code(), 401);
-        assert_eq!(AppError::session_expired().code(), 401);
-        assert_eq!(AppError::bad_credentials().code(), 500);
-        assert_eq!(AppError::business("not_found").code(), 500);
-        assert_eq!(AppError::param_invalid("email").code(), 500);
-        assert_eq!(AppError::forbidden().code(), 500);
-        assert_eq!(AppError::rate_limit().code(), 500);
-        assert_eq!(AppError::upstream("mail").code(), 500);
-        assert_eq!(AppError::internal(std::io::Error::other("disk")).code(), 500);
+        assert_eq!(ApiError::unauth().code(), 401);
+        assert_eq!(ApiError::session_expired().code(), 401);
+        assert_eq!(ApiError::bad_credentials().code(), 500);
+        assert_eq!(ApiError::business("not_found").code(), 500);
+        assert_eq!(ApiError::param_invalid("email").code(), 500);
+        assert_eq!(ApiError::forbidden().code(), 500);
+        assert_eq!(ApiError::rate_limit().code(), 500);
+        assert_eq!(ApiError::upstream("mail").code(), 500);
+        assert_eq!(
+            ApiError::internal(std::io::Error::other("disk")).code(),
+            500
+        );
+    }
+
+    #[test]
+    fn errors_use_centralized_api_error_kinds() {
+        assert_eq!(ApiError::unauth().kind(), &ApiErrorKind::Unauth);
+        assert_eq!(
+            ApiError::business("job_not_found").kind(),
+            &ApiErrorKind::Business("job_not_found".to_owned())
+        );
+        assert_eq!(
+            ApiError::param_invalid("email").kind(),
+            &ApiErrorKind::ParamInvalid("email".to_owned())
+        );
+
+        let db: ApiError = sqlx::Error::RowNotFound.into();
+        assert_eq!(db.kind(), &ApiErrorKind::Db);
     }
 
     #[test]
     fn tags_preserve_existing_i18n_contract() {
-        assert_eq!(AppError::unauth().tag(), "unauth");
-        assert_eq!(AppError::session_expired().tag(), "session_expired");
-        assert_eq!(AppError::param_invalid("email_code").tag(), "param_invalid: email_code");
-        assert_eq!(AppError::business("job_not_found").tag(), "job_not_found");
-        assert_eq!(AppError::upstream("mail unavailable").tag(), "upstream: mail unavailable");
+        assert_eq!(ApiError::unauth().tag(), "unauth");
+        assert_eq!(ApiError::session_expired().tag(), "session_expired");
+        assert_eq!(
+            ApiError::param_invalid("email_code").tag(),
+            "param_invalid: email_code"
+        );
+        assert_eq!(ApiError::business("job_not_found").tag(), "job_not_found");
+        assert_eq!(
+            ApiError::upstream("mail unavailable").tag(),
+            "upstream: mail unavailable"
+        );
     }
 
     #[test]
-    fn external_errors_convert_to_app_error() {
-        let db: AppError = sqlx::Error::RowNotFound.into();
+    fn external_errors_convert_to_api_error() {
+        let db: ApiError = sqlx::Error::RowNotFound.into();
         assert_eq!(db.code(), 500);
         assert_eq!(db.tag(), "db");
 
-        let internal: AppError = anyhow::anyhow!("disk full").into();
+        let internal: ApiError = anyhow::anyhow!("disk full").into();
         assert_eq!(internal.code(), 500);
         assert_eq!(internal.tag(), "internal");
     }
 
     #[test]
     fn cache_downgrade_preserves_public_error_metadata() {
-        let original = Arc::new(AppError::business("resume_not_found"));
-        let degraded = AppError::from_arc(original);
+        let original = Arc::new(ApiError::business("resume_not_found"));
+        let degraded = ApiError::from_arc(original);
         assert_eq!(degraded.code(), 500);
         assert_eq!(degraded.tag(), "resume_not_found");
     }
