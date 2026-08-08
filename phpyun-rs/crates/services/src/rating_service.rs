@@ -4,7 +4,6 @@
 //! - The aggregate table `phpyun_company_rating` is decoupled from `list_for_target`: the aggregate powers detail/sort views, while the list drives the comment feed.
 //! - No self-rating: the rater cannot be the target. Only `status=1` rows are visible to the public.
 
-use phpyun_core::error::InfraError;
 use phpyun_core::{audit, clock, AppError, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
 use phpyun_models::rating::{
     entity::{Rating, RatingAggregate},
@@ -20,13 +19,13 @@ pub async fn rate(
     comment: &str,
 ) -> AppResult<()> {
     if !(1..=3).contains(&target_kind) {
-        return Err(AppError::new(InfraError::InvalidParam("bad_target_kind".into())));
+        return Err(AppError::param_invalid("bad_target_kind"));
     }
     if !(1..=5).contains(&stars) {
-        return Err(AppError::new(InfraError::InvalidParam("bad_stars".into())));
+        return Err(AppError::param_invalid("bad_stars"));
     }
     if target_uid == user.uid {
-        return Err(AppError::new(InfraError::InvalidParam("cannot_rate_self".into())));
+        return Err(AppError::param_invalid("cannot_rate_self"));
     }
     rating_repo::upsert(
         state.db.pool(),

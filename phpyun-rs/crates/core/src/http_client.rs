@@ -19,7 +19,7 @@
 //! - `http.client.retry{host}` counter.
 //! - `http.client.error{host, kind}` counter.
 
-use crate::error::{AppError, AppResult};
+use crate::{AppError, AppResult};
 use crate::json;
 use crate::metrics as m;
 use reqwest::Client;

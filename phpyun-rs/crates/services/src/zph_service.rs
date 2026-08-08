@@ -1,6 +1,5 @@
 //! Job fair service.
 
-use phpyun_core::error::InfraError;
 use phpyun_core::{clock, AppError, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
 use phpyun_models::zph::{
     entity::{Zph, ZphCompany, ZphReservation},
@@ -17,7 +16,7 @@ pub async fn list(state: &AppState, page: Pagination) -> AppResult<Paged<Zph>> {
 pub async fn get_detail(state: &AppState, id: u64) -> AppResult<Zph> {
     zph_repo::find_by_id(state.db.reader(), id)
         .await?
-        .ok_or_else(|| AppError::new(InfraError::InvalidParam("zph_not_found".into())))
+        .ok_or_else(|| AppError::param_invalid("zph_not_found"))
 }
 
 pub async fn list_companies(
@@ -46,9 +45,9 @@ pub async fn reserve(
     // Must confirm the zph exists and is published
     let zph = zph_repo::find_by_id(state.db.reader(), zid)
         .await?
-        .ok_or_else(|| AppError::new(InfraError::InvalidParam("zph_not_found".into())))?;
+        .ok_or_else(|| AppError::param_invalid("zph_not_found"))?;
     if zph.status != 1 {
-        return Err(AppError::new(InfraError::InvalidParam("zph_unavailable".into())));
+        return Err(AppError::param_invalid("zph_unavailable"));
     }
 
     let id = zph_repo::upsert_reservation(

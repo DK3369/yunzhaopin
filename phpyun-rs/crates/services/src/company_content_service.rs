@@ -6,7 +6,7 @@
 //! - simple XSS filter on the body: replaces the PHP-side `ti<x>tle` placeholder
 
 use phpyun_core::audit::{self, Actor, AuditEvent};
-use phpyun_core::{clock, AppResult, AppState, AuthenticatedUser, InfraError, Pagination};
+use phpyun_core::{clock, AppResult, AppState, AuthenticatedUser, AppError, Pagination};
 use phpyun_models::company_content::entity::{CompanyContent, ContentKind};
 use phpyun_models::company_content::repo as content_repo;
 
@@ -49,7 +49,7 @@ pub async fn get(
     user.require_employer()?;
     content_repo::find_by_id(state.db.reader(), kind, id, user.uid)
         .await?
-        .ok_or_else(|| InfraError::InvalidParam("content_not_found".into()).into())
+        .ok_or_else(|| AppError::param_invalid("content_not_found").into())
 }
 
 pub struct ContentInput<'a> {
@@ -60,10 +60,10 @@ pub struct ContentInput<'a> {
 
 fn validate(input: &ContentInput<'_>) -> AppResult<()> {
     if input.title.trim().is_empty() {
-        return Err(InfraError::InvalidParam("title".into()).into());
+        return Err(AppError::param_invalid("title").into());
     }
     if input.body.trim().is_empty() {
-        return Err(InfraError::InvalidParam("body".into()).into());
+        return Err(AppError::param_invalid("body").into());
     }
     Ok(())
 }

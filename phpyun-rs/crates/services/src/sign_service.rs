@@ -9,7 +9,6 @@
 //! Design note: dedup via the `(uid, date_ymd)` UNIQUE index is more robust than PHPYun's PHP-session-based
 //! check (sessions break across a multi-instance backend).
 
-use phpyun_core::error::InfraError;
 use phpyun_core::{audit, clock, AppError, AppResult, AppState, AuthenticatedUser};
 use phpyun_models::integral::repo as integral_repo;
 use phpyun_models::sign_in::{entity::UserSign, repo as sign_repo};
@@ -89,7 +88,7 @@ pub async fn sign(
         .await
         .unwrap_or(false);
     if !got {
-        return Err(AppError::new(InfraError::InvalidParam("already_signed".into())));
+        return Err(AppError::param_invalid("already_signed"));
     }
 
     // 1) Read the previous sign-in state and compute signday
@@ -110,7 +109,7 @@ pub async fn sign(
     // 3) INSERT IGNORE backed by the unique index
     let affected = sign_repo::try_sign(db, user.uid, today, client_ip, reward, now).await?;
     if affected == 0 {
-        return Err(AppError::new(InfraError::InvalidParam("already_signed".into())));
+        return Err(AppError::param_invalid("already_signed"));
     }
 
     // 4) Update user_sign + add points

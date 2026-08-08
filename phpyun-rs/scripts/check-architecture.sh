@@ -64,9 +64,41 @@ report() {
     fi
 }
 
+report_core_contract() {
+    local label="$1"
+    local pattern="$2"
+
+    local paths=()
+    case "$target" in
+        services) paths=(crates/services/src) ;;
+        handlers) paths=(crates/handlers/src) ;;
+        all)      paths=(crates/app/src crates/auth/src crates/handlers/src crates/models/src crates/services/src) ;;
+        *)        return ;;
+    esac
+
+    local hits
+    hits=$(grep -rnE "$pattern" "${paths[@]}" --include='*.rs' 2>/dev/null \
+        | grep -v 'TODO(arch)' \
+        | grep -vE ':[[:space:]]*(//|/\*|\*[[:space:]])' \
+        | grep -v 'tests/')
+
+    if [ -n "$hits" ]; then
+        echo "❌ $label"
+        echo "$hits" | sed 's/^/    /'
+        echo ""
+        violations=$((violations + $(echo "$hits" | wc -l)))
+    fi
+}
+
 # ----------------------------------------------------------------------------
 # Rules
 # ----------------------------------------------------------------------------
+
+echo "→ Auditing core public error contract..."
+report_core_contract "application crates must use phpyun_core::{AppError, AppResult}; no legacy public errors" \
+    '\b(ApiError|InfraError|SystemError|SharedError|UserError|ResumeError|CompanyError|JobError)\b|AppError::new'
+report_core_contract "application crates may not reference phpyun_core::error::* directly" \
+    '\bphpyun_core::error::'
 
 if [ "$target" = "all" ] || [ "$target" = "services" ]; then
     echo "→ Auditing services/ for direct third-party imports..."

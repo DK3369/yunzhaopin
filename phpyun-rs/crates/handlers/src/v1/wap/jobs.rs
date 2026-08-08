@@ -83,8 +83,8 @@ pub struct JobListQuery {
     pub exp: Option<i32>,
     #[validate(range(min = 0, max = 99))]
     pub edu: Option<i32>,
-    /// 1 = full-time / 2 = part-time / 3 = internship / 4 = temporary
-    #[validate(range(min = 0, max = 4))]
+    /// 1 = full-time / 2 = part-time / 3 = internship / 4 = temporary / 5 = remote
+    #[validate(range(min = 0, max = 5))]
     pub job_type: Option<i32>,
     /// Industry dict id (PHP `hy`).
     #[validate(range(min = 0, max = 99_999))]
@@ -644,7 +644,7 @@ pub async fn share_text(
     let job = phpyun_models::job::repo::find_public_by_id(state.db.reader(), id)
         .await?
         .ok_or_else(|| {
-            phpyun_core::AppError::new(phpyun_core::InfraError::InvalidParam("job_not_found".into()))
+            phpyun_core::AppError::param_invalid("job_not_found")
         })?;
 
     let jid = job.id;

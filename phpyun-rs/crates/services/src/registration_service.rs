@@ -16,7 +16,7 @@ use phpyun_core::verify::{self, VerifyKind};
 use phpyun_core::{
     clock,
     metrics::auth_event,
-    AppError, AppResult, AppState, InfraError,
+    AppError, AppResult, AppState,
 };
 use phpyun_models::company::repo as company_repo;
 use phpyun_models::resume::repo as resume_repo;
@@ -79,21 +79,21 @@ pub async fn register(state: &AppState, input: RegisterInput<'_>) -> AppResult<R
         .await?
         {
             auth_event("register_fail", Some("bad_sms_code"));
-            return Err(InfraError::InvalidParam("sms_code".into()).into());
+            return Err(AppError::param_invalid("sms_code").into());
         }
     }
 
     // 3. Uniqueness check (writer guarantees real-time consistency)
     let writer = state.db.pool();
     if user_repo::exists_username(writer, input.username).await? {
-        return Err(InfraError::InvalidParam("username_taken".into()).into());
+        return Err(AppError::param_invalid("username_taken").into());
     }
     if !input.mobile.is_empty() && user_repo::exists_mobile(writer, input.mobile).await? {
-        return Err(InfraError::InvalidParam("mobile_taken".into()).into());
+        return Err(AppError::param_invalid("mobile_taken").into());
     }
     if let Some(email) = input.email {
         if !email.is_empty() && user_repo::exists_email(writer, email).await? {
-            return Err(InfraError::InvalidParam("email_taken".into()).into());
+            return Err(AppError::param_invalid("email_taken").into());
         }
     }
 

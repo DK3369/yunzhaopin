@@ -7,7 +7,6 @@
 //! - `expires_at` must be > now and <= now + 30d.
 //! - `revoked_at > 0` is treated as revoked.
 
-use phpyun_core::error::InfraError;
 use phpyun_core::{background, clock, AppError, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
 use phpyun_models::resume::entity::Resume;
 use phpyun_models::resume::repo as resume_repo;
@@ -23,7 +22,7 @@ pub async fn create(
 ) -> AppResult<ShareToken> {
     user.require_jobseeker()?;
     if ttl_secs <= 0 || ttl_secs > MAX_TTL_SECS {
-        return Err(AppError::new(InfraError::InvalidParam("bad_ttl".into())));
+        return Err(AppError::param_invalid("bad_ttl"));
     }
     let now = clock::now_ts();
     let token = Uuid::now_v7().simple().to_string();
@@ -61,7 +60,7 @@ pub async fn revoke(
     let affected =
         share_repo::revoke(state.db.pool(), token, user.uid, clock::now_ts()).await?;
     if affected == 0 {
-        return Err(AppError::new(InfraError::Forbidden));
+        return Err(AppError::forbidden());
     }
     Ok(())
 }
@@ -73,18 +72,18 @@ pub async fn view_by_token(
 ) -> AppResult<Resume> {
     let t = share_repo::find(state.db.reader(), token)
         .await?
-        .ok_or_else(|| AppError::new(InfraError::InvalidParam("share_not_found".into())))?;
+        .ok_or_else(|| AppError::param_invalid("share_not_found"))?;
     let now = clock::now_ts();
     if t.revoked_at > 0 {
-        return Err(AppError::new(InfraError::InvalidParam("share_revoked".into())));
+        return Err(AppError::param_invalid("share_revoked"));
     }
     if t.expires_at <= now {
-        return Err(AppError::new(InfraError::InvalidParam("share_expired".into())));
+        return Err(AppError::param_invalid("share_expired"));
     }
 
     let resume = resume_repo::find_public(state.db.reader(), t.uid)
         .await?
-        .ok_or_else(|| AppError::new(InfraError::InvalidParam("resume_unavailable".into())))?;
+        .ok_or_else(|| AppError::param_invalid("resume_unavailable"))?;
 
     // Increment the view counter asynchronously
     let pool = state.db.pool().clone();

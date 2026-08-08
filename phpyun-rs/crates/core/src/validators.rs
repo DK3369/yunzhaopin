@@ -158,16 +158,16 @@ pub fn path_hex_token(v: &str) -> Result<(), ValidationError> {
 /// ```ignore
 /// validators::ensure_path_token(&kind)?;
 /// ```
-pub fn ensure_path_token(v: &str) -> Result<(), crate::error::AppError> {
-    path_token(v).map_err(|e| crate::error::AppError::param_invalid(e.code))
+pub fn ensure_path_token(v: &str) -> Result<(), crate::AppError> {
+    path_token(v).map_err(|e| crate::AppError::param_invalid(e.code))
 }
 
-pub fn ensure_path_key(v: &str) -> Result<(), crate::error::AppError> {
-    path_key(v).map_err(|e| crate::error::AppError::param_invalid(e.code))
+pub fn ensure_path_key(v: &str) -> Result<(), crate::AppError> {
+    path_key(v).map_err(|e| crate::AppError::param_invalid(e.code))
 }
 
-pub fn ensure_path_hex_token(v: &str) -> Result<(), crate::error::AppError> {
-    path_hex_token(v).map_err(|e| crate::error::AppError::param_invalid(e.code))
+pub fn ensure_path_hex_token(v: &str) -> Result<(), crate::AppError> {
+    path_hex_token(v).map_err(|e| crate::AppError::param_invalid(e.code))
 }
 
 /// URL (http / https) — rejects schemes like `javascript:` / `data:`.

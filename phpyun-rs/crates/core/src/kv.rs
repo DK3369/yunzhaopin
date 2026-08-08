@@ -3,8 +3,8 @@
 //! ## Stability
 //! - **Every operation has a timeout** (default 500 ms) to keep a slow Redis
 //!   from dragging down a Tokio worker.
-//! - Redis errors map to `SystemError::Redis` (code=500); timeouts map to
-//!   `InfraError::Upstream` (code=502); metrics distinguish them.
+//! - Redis errors map to `AppError` (code=500); timeouts map to
+//!   `AppError::upstream()` (code=502); metrics distinguish them.
 //! - Connection failures are auto-recovered by `ConnectionManager`; callers
 //!   only see "this call failed", not a panic.
 //!
@@ -24,7 +24,7 @@
 //! - `kv.op.error{op, kind=redis|timeout}` counter
 //! - `kv.spawn.dropped` counter — number of writes dropped due to backpressure
 
-use crate::error::AppError;
+use crate::AppError;
 use crate::json;
 use crate::metrics as m;
 use redis::aio::ConnectionManager;

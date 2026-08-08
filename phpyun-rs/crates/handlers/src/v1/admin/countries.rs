@@ -10,7 +10,7 @@ use axum::{
     Router,
     routing::post,
 };
-use phpyun_core::{clock, ApiJson, ApiOk, AppError, AppResult, AppState, AuthenticatedUser, InfraError, ValidatedJson};
+use phpyun_core::{clock, ApiJson, ApiOk, AppError, AppResult, AppState, AuthenticatedUser, ValidatedJson};
 use phpyun_models::country::repo as country_repo;
 use phpyun_services::country_service;
 use serde::Deserialize;
@@ -160,9 +160,9 @@ pub async fn patch(State(state): State<AppState>,
     .await
     .map_err(AppError::internal)?;
     if affected == 0 {
-        return Err(AppError::new(InfraError::InvalidParam(
-            "country_not_found".into(),
-        )));
+        return Err(AppError::param_invalid(
+            "country_not_found",
+        ));
     }
     country_service::invalidate().await;
     Ok(ApiOk("updated"))
@@ -189,9 +189,9 @@ pub async fn delete(State(state): State<AppState>,
         .await
         .map_err(AppError::internal)?;
     if affected == 0 {
-        return Err(AppError::new(InfraError::InvalidParam(
-            "country_not_found".into(),
-        )));
+        return Err(AppError::param_invalid(
+            "country_not_found",
+        ));
     }
     country_service::invalidate().await;
     Ok(ApiOk("deleted"))

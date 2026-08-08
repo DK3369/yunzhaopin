@@ -36,11 +36,11 @@ pub struct LoginContext<'a> {
     pub ua: &'a str,
 }
 
-use crate::user_error::UserError;
 use std::sync::Arc;
 use std::time::Duration;
 
 const EMAIL_LOGIN_TTL_SECS: u64 = 600;
+const DEV_EMAIL_LOGIN_CODE: &str = "111111";
 
 // ==================== Login ====================
 
@@ -297,17 +297,31 @@ pub async fn send_email_login_code(state: &AppState, email: &str) -> AppResult<(
     )
     .await?;
 
-    let code = verify::gen_digit_code(6);
-    crate::mail_service::send_text(
-        state,
-        &email,
-        "Your login verification code",
-        &format!(
-            "Your verification code is {code}. It expires in {} minutes. If you did not request it, ignore this email.",
-            EMAIL_LOGIN_TTL_SECS / 60
-        ),
-    )
-    .await?;
+    // Development-only fallback: local environments often do not have an MTA
+    // configured. Keep production fail-closed so a mail delivery failure never
+    // turns into a known login code.
+    let code = if state.config.env == "dev" {
+        DEV_EMAIL_LOGIN_CODE.to_string()
+    } else {
+        verify::gen_digit_code(6)
+    };
+    if state.config.env == "dev" {
+        // Development must not wait for a host MTA. A missing or misconfigured
+        // sendmail can block forever, preventing the endpoint from returning
+        // even though the fixed development code is already known.
+        tracing::info!(email = %email, code = %code, "development email login code issued");
+    } else {
+        crate::mail_service::send_text(
+            state,
+            &email,
+            "Your login verification code",
+            &format!(
+                "Your verification code is {code}. It expires in {} minutes. If you did not request it, ignore this email.",
+                EMAIL_LOGIN_TTL_SECS / 60
+            ),
+        )
+        .await?;
+    }
     verify::issue(
         &state.redis,
         VerifyKind::EmailLogin,
@@ -577,7 +591,7 @@ pub async fn get_profile(state: &AppState, uid: u64) -> AppResult<Arc<UserProfil
             cache_miss(PROFILE_SCOPE);
             let member = user_repo::find_by_uid(&reader, uid)
                 .await?
-                .ok_or(UserError::NotFound)?;
+                .ok_or(AppError::business("user_not_found"))?;
             let profile: UserProfile = member.into();
             // Backfill L2 in the background (with backpressure; lossy writes do not block)
             kv.spawn_set_json_ex(key, &profile, PROFILE_TTL_SECS);
@@ -603,7 +617,7 @@ pub async fn invalidate_profile(state: &AppState, uid: u64) {
 /// per-role satellite row (`phpyun_member_statis` for jobseeker,
 /// `phpyun_company_statis` + `phpyun_company` shell for employer).
 ///
-/// Idempotent on satellite rows (UPSERT). Returns `UserError::ConflictUsertypeSet`
+/// Idempotent on satellite rows (UPSERT). Returns `usertype_already_set` on conflict.
 /// when a usertype is already chosen — caller should surface that as 409.
 pub async fn set_usertype(state: &AppState, uid: u64, usertype: u8) -> AppResult<()> {
     if !matches!(usertype, 1 | 2 | 3) {
@@ -612,10 +626,7 @@ pub async fn set_usertype(state: &AppState, uid: u64, usertype: u8) -> AppResult
     let pool = state.db.pool();
     let updated = user_repo::set_usertype_if_unset(pool, uid, usertype).await?;
     if updated == 0 {
-        return Err(AppError::new(phpyun_core::SharedError::new(
-            409,
-            "usertype_already_set",
-        )));
+        return Err(AppError::business("usertype_already_set"));
     }
     seed_role_rows(state, uid, usertype).await;
     invalidate_profile(state, uid).await;

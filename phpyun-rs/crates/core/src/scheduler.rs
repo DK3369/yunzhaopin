@@ -44,7 +44,7 @@
 //! its own `fn my_task(state)` and registers it in `main`. The scheduler
 //! itself doesn't change.
 
-use crate::error::AppError;
+use crate::AppError;
 use crate::kv::Kv;
 use crate::metrics as m;
 use cron::Schedule;

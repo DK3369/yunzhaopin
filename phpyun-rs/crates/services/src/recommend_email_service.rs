@@ -16,7 +16,7 @@
 
 use phpyun_core::{
     audit, clock, i18n::{current_lang, t, t_args, Lang}, AppError, AppResult, AppState,
-    AuthenticatedUser, InfraError,
+    AuthenticatedUser,
 };
 use phpyun_models::recommend::{
     entity::{REC_TYPE_JOB, REC_TYPE_RESUME},
@@ -80,13 +80,13 @@ async fn common(
     let day_start = today_begin_ts(now);
     let used_today = rec_repo::count_today_by_user(reader, user.uid, day_start).await?;
     if used_today >= DEFAULT_DAY_CAP {
-        return Err(AppError::new(InfraError::RateLimited));
+        return Err(AppError::rate_limit());
     }
 
     // 2) Min-interval
     if let Some(last) = rec_repo::last_addtime_by_user(reader, user.uid).await? {
         if now - last < DEFAULT_MIN_INTERVAL_SECS {
-            return Err(AppError::new(InfraError::RateLimited));
+            return Err(AppError::rate_limit());
         }
     }
 

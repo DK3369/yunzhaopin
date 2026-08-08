@@ -5,6 +5,7 @@
 //! - On the first download, sends a message to the jobseeker: "Company XX downloaded your resume".
 //! - Contact info can be unlocked after a download (business rule; the frontend controls how it is displayed).
 
+use phpyun_core::AppError;
 use phpyun_core::audit::{self, Actor, AuditEvent};
 use phpyun_core::i18n::{t, Lang};
 use phpyun_core::{clock, AppResult, AppState, AuthenticatedUser, Pagination};
@@ -14,7 +15,6 @@ use phpyun_models::message::{entity as msg_entity, repo as message_repo};
 use phpyun_models::resume::repo as resume_repo;
 use phpyun_models::resume_download::{entity::ResumeDownload, repo as download_repo};
 
-use crate::domain_errors::ResumeError;
 
 pub struct DownloadPage {
     pub list: Vec<ResumeDownload>,
@@ -33,7 +33,7 @@ pub async fn download(
     // The resume must exist and be publicly accessible
     let r = resume_repo::find_public(state.db.reader(), target_uid)
         .await?
-        .ok_or(ResumeError::NotFound)?;
+        .ok_or(AppError::business("resume_not_found"))?;
 
     // Send a notification on the first download
     let first_time = !download_repo::already_downloaded(state.db.reader(), user.uid, target_uid)

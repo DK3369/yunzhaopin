@@ -28,11 +28,11 @@
 //! - Periodic task `record_pool_metrics()`: `db.pool.size / idle /
 //!   reader.pool.size / idle`.
 //! - Slow queries go to tracing WARN.
-//! - All query errors funnel through `SystemError::Database` (5xx, tag `"db"`).
+//! - All query errors funnel through `AppError` (5xx, tag `"db"`).
 
 use crate::clock;
 use crate::config::Config;
-use crate::error::{AppError, AppResult};
+use crate::{AppError, AppResult};
 use crate::metrics as m;
 use sqlx::mysql::{MySqlConnectOptions, MySqlPool, MySqlPoolOptions};
 use sqlx::{ConnectOptions, MySql, Transaction};

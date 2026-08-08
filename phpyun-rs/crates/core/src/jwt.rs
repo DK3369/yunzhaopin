@@ -10,7 +10,7 @@
 //!   `jsonwebtoken::errors::Error`.
 
 use crate::clock;
-use crate::error::{AppError, AppResult};
+use crate::{AppError, AppResult};
 use jsonwebtoken::{decode, encode, DecodingKey, EncodingKey, Header, Validation};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;

@@ -6,7 +6,7 @@
 //! - Admin side: approve -> also updates `phpyun_member.usertype`; reject -> only updates status.
 
 use phpyun_core::audit::{self, Actor, AuditEvent};
-use phpyun_core::{clock, AppError, AppResult, AppState, AuthenticatedUser, InfraError};
+use phpyun_core::{clock, AppError, AppResult, AppState, AuthenticatedUser};
 use phpyun_models::usertype_change::entity::UsertypeChange;
 use phpyun_models::usertype_change::repo as chg_repo;
 
@@ -26,10 +26,10 @@ pub async fn apply(
 ) -> AppResult<u64> {
     // Basic checks: 1=jobseeker / 2=company; cannot switch to 3 (admin) and cannot switch in place
     if !matches!(apply_usertype, 1 | 2) {
-        return Err(InfraError::InvalidParam("apply_usertype".into()).into());
+        return Err(AppError::param_invalid("apply_usertype").into());
     }
     if (user.usertype as i32) == apply_usertype {
-        return Err(InfraError::InvalidParam("same_usertype".into()).into());
+        return Err(AppError::param_invalid("same_usertype").into());
     }
 
     // Reuse the existing pending row directly (aligned with PHP behavior: avoid duplicate submissions)
@@ -77,9 +77,9 @@ pub async fn admin_approve(
     admin.require_admin()?;
     let row = chg_repo::find_by_id(state.db.reader(), id)
         .await?
-        .ok_or_else(|| AppError::new(InfraError::InvalidParam("change_not_found".into())))?;
+        .ok_or_else(|| AppError::param_invalid("change_not_found"))?;
     if row.status != 1 {
-        return Err(InfraError::InvalidParam("change_not_pending".into()).into());
+        return Err(AppError::param_invalid("change_not_pending").into());
     }
 
     // Transaction: set status 2 + update member.usertype

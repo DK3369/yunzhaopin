@@ -6,6 +6,7 @@
 //! - TODO: after writing any child table we could call `state.cache.user.invalidate(uid)` to
 //!   invalidate the /me cache. Not urgent — /me cache only stores main profile fields.
 
+use phpyun_core::AppError;
 use phpyun_core::audit::{self, Actor, AuditEvent};
 use phpyun_core::{clock, AppResult, AppState, AuthenticatedUser};
 use phpyun_models::resume::{
@@ -13,7 +14,6 @@ use phpyun_models::resume::{
     repo as resume_repo, skill, training, user_resume, work,
 };
 
-use crate::domain_errors::ResumeError;
 
 /// Which kind of child-row write happened — drives the side-effect mix.
 #[derive(Debug, Clone, Copy)]
@@ -66,13 +66,13 @@ async fn after_child(
 /// Resolve the eid to attach a child row (work / edu / project / skill / ...)
 /// to. PHPYun fans every child off `phpyun_resume_expect.id`, so this looks
 /// up the user's default expect (or most-recent fallback). If the user has no
-/// expect yet — i.e. wizard skipped step 2 — return `ResumeError::NotFound`
+/// expect yet — i.e. wizard skipped step 2 — return `AppError::business("resume_not_found")`
 /// so the caller surfaces a clear "请先创建求职意向" instead of writing an
 /// orphan row that no read endpoint would ever surface.
 async fn resolve_default_eid(state: &AppState, uid: u64) -> AppResult<u64> {
     expect::find_default_id_by_uid(state.db.reader(), uid)
         .await?
-        .ok_or_else(|| ResumeError::NotFound.into())
+        .ok_or_else(|| AppError::business("resume_not_found").into())
 }
 
 // ==================== Job intentions ====================
@@ -154,7 +154,7 @@ pub mod expect_svc {
         let affected =
             expect::update(state.db.pool(), id, user.uid, &input, clock::now_ts()).await?;
         if affected == 0 {
-            return Err(ResumeError::NotFound.into());
+            return Err(AppError::business("resume_not_found").into());
         }
         let _ = audit::emit(
             state,
@@ -177,7 +177,7 @@ pub mod expect_svc {
         user.require_jobseeker()?;
         let affected = expect::delete(state.db.pool(), id, user.uid).await?;
         if affected == 0 {
-            return Err(ResumeError::NotFound.into());
+            return Err(AppError::business("resume_not_found").into());
         }
         let _ = audit::emit(
             state,
@@ -239,10 +239,10 @@ pub mod edu_svc {
         // the side-effects below; doubles as the existence + ownership check.
         let eid = user_resume::fetch_eid(pool, user_resume::Section::Edu, id, user.uid)
             .await?
-            .ok_or(ResumeError::NotFound)?;
+            .ok_or(AppError::business("resume_not_found"))?;
         let affected = edu::update(pool, id, user.uid, &input).await?;
         if affected == 0 {
-            return Err(ResumeError::NotFound.into());
+            return Err(AppError::business("resume_not_found").into());
         }
         super::after_child(state, user.uid, eid, user_resume::Section::Edu, ChildOp::Update).await;
         let _ = audit::emit(
@@ -267,10 +267,10 @@ pub mod edu_svc {
         let pool = state.db.pool();
         let eid = user_resume::fetch_eid(pool, user_resume::Section::Edu, id, user.uid)
             .await?
-            .ok_or(ResumeError::NotFound)?;
+            .ok_or(AppError::business("resume_not_found"))?;
         let affected = edu::delete(pool, id, user.uid).await?;
         if affected == 0 {
-            return Err(ResumeError::NotFound.into());
+            return Err(AppError::business("resume_not_found").into());
         }
         super::after_child(state, user.uid, eid, user_resume::Section::Edu, ChildOp::Delete).await;
         let _ = audit::emit(
@@ -331,10 +331,10 @@ pub mod work_svc {
         let pool = state.db.pool();
         let eid = user_resume::fetch_eid(pool, user_resume::Section::Work, id, user.uid)
             .await?
-            .ok_or(ResumeError::NotFound)?;
+            .ok_or(AppError::business("resume_not_found"))?;
         let affected = work::update(pool, id, user.uid, &input).await?;
         if affected == 0 {
-            return Err(ResumeError::NotFound.into());
+            return Err(AppError::business("resume_not_found").into());
         }
         super::after_child(state, user.uid, eid, user_resume::Section::Work, ChildOp::Update).await;
         let _ = audit::emit(
@@ -359,10 +359,10 @@ pub mod work_svc {
         let pool = state.db.pool();
         let eid = user_resume::fetch_eid(pool, user_resume::Section::Work, id, user.uid)
             .await?
-            .ok_or(ResumeError::NotFound)?;
+            .ok_or(AppError::business("resume_not_found"))?;
         let affected = work::delete(pool, id, user.uid).await?;
         if affected == 0 {
-            return Err(ResumeError::NotFound.into());
+            return Err(AppError::business("resume_not_found").into());
         }
         super::after_child(state, user.uid, eid, user_resume::Section::Work, ChildOp::Delete).await;
         let _ = audit::emit(
@@ -424,10 +424,10 @@ pub mod project_svc {
         let pool = state.db.pool();
         let eid = user_resume::fetch_eid(pool, user_resume::Section::Project, id, user.uid)
             .await?
-            .ok_or(ResumeError::NotFound)?;
+            .ok_or(AppError::business("resume_not_found"))?;
         let affected = project::update(pool, id, user.uid, &input).await?;
         if affected == 0 {
-            return Err(ResumeError::NotFound.into());
+            return Err(AppError::business("resume_not_found").into());
         }
         super::after_child(state, user.uid, eid, user_resume::Section::Project, ChildOp::Update).await;
         let _ = audit::emit(
@@ -452,10 +452,10 @@ pub mod project_svc {
         let pool = state.db.pool();
         let eid = user_resume::fetch_eid(pool, user_resume::Section::Project, id, user.uid)
             .await?
-            .ok_or(ResumeError::NotFound)?;
+            .ok_or(AppError::business("resume_not_found"))?;
         let affected = project::delete(pool, id, user.uid).await?;
         if affected == 0 {
-            return Err(ResumeError::NotFound.into());
+            return Err(AppError::business("resume_not_found").into());
         }
         super::after_child(state, user.uid, eid, user_resume::Section::Project, ChildOp::Delete).await;
         let _ = audit::emit(
@@ -517,10 +517,10 @@ pub mod skill_svc {
         let pool = state.db.pool();
         let eid = user_resume::fetch_eid(pool, user_resume::Section::Skill, id, user.uid)
             .await?
-            .ok_or(ResumeError::NotFound)?;
+            .ok_or(AppError::business("resume_not_found"))?;
         let affected = skill::update(pool, id, user.uid, &input).await?;
         if affected == 0 {
-            return Err(ResumeError::NotFound.into());
+            return Err(AppError::business("resume_not_found").into());
         }
         super::after_child(state, user.uid, eid, user_resume::Section::Skill, ChildOp::Update).await;
         Ok(())
@@ -536,10 +536,10 @@ pub mod skill_svc {
         let pool = state.db.pool();
         let eid = user_resume::fetch_eid(pool, user_resume::Section::Skill, id, user.uid)
             .await?
-            .ok_or(ResumeError::NotFound)?;
+            .ok_or(AppError::business("resume_not_found"))?;
         let affected = skill::delete(pool, id, user.uid).await?;
         if affected == 0 {
-            return Err(ResumeError::NotFound.into());
+            return Err(AppError::business("resume_not_found").into());
         }
         super::after_child(state, user.uid, eid, user_resume::Section::Skill, ChildOp::Delete).await;
         Ok(())
@@ -580,7 +580,7 @@ pub mod language_svc {
         user.require_jobseeker()?;
         let affected = language::update(state.db.pool(), id, user.uid, &input).await?;
         if affected == 0 {
-            return Err(ResumeError::NotFound.into());
+            return Err(AppError::business("resume_not_found").into());
         }
         Ok(())
     }
@@ -594,7 +594,7 @@ pub mod language_svc {
         user.require_jobseeker()?;
         let affected = language::delete(state.db.pool(), id, user.uid).await?;
         if affected == 0 {
-            return Err(ResumeError::NotFound.into());
+            return Err(AppError::business("resume_not_found").into());
         }
         Ok(())
     }

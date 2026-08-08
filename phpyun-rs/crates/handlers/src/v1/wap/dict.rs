@@ -176,7 +176,7 @@ pub async fn salaries() -> AppResult<ApiJson<Vec<DictItem>>> {
     Ok(ApiJson(render(SALARIES, current_lang())))
 }
 
-/// Job types (full-time / part-time / internship / ...)
+/// Job types (full-time / part-time / internship / temporary / remote)
 #[utoipa::path(
     post,
     path = "/v1/wap/dict/job-types",
@@ -326,4 +326,21 @@ const JOB_TYPES: &[DictEntry] = &[
     DictEntry::new(2, "dict.job_type.2"),
     DictEntry::new(3, "dict.job_type.3"),
     DictEntry::new(4, "dict.job_type.4"),
+    DictEntry::new(5, "dict.job_type.5"),
 ];
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn job_types_include_remote_in_all_supported_languages() {
+        let zh_cn = render(JOB_TYPES, Lang::ZhCN);
+        let zh_tw = render(JOB_TYPES, Lang::ZhTW);
+        let en = render(JOB_TYPES, Lang::En);
+
+        assert_eq!(zh_cn.last().map(|item| (item.id, item.name.as_str())), Some((5, "远程")));
+        assert_eq!(zh_tw.last().map(|item| (item.id, item.name.as_str())), Some((5, "遠端")));
+        assert_eq!(en.last().map(|item| (item.id, item.name.as_str())), Some((5, "Remote")));
+    }
+}

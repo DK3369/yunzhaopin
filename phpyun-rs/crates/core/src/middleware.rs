@@ -129,8 +129,9 @@ async fn normalize_api_rejections(req: Request, next: Next) -> Response {
         return response;
     }
 
-    let status = response.status();
-    let key = match status {
+    let source_status = response.status();
+    let status = public_error_status(source_status);
+    let key = match source_status {
         StatusCode::UNAUTHORIZED => "errors.unauth",
         StatusCode::FORBIDDEN => "errors.forbidden",
         StatusCode::NOT_FOUND => "errors.not_found",
@@ -164,15 +165,29 @@ async fn normalize_api_rejections(req: Request, next: Next) -> Response {
     normalized
 }
 
+/// Public API error status policy: keep only authentication/session failures
+/// as 401; all other failures are exposed as 500.
+fn public_error_status(status: StatusCode) -> StatusCode {
+    if status == StatusCode::UNAUTHORIZED {
+        StatusCode::UNAUTHORIZED
+    } else {
+        StatusCode::INTERNAL_SERVER_ERROR
+    }
+}
+
 fn localized_rejection(status: StatusCode, key: &'static str) -> Response {
     let lang = crate::i18n::current_lang();
     let msg = crate::i18n::t(key, lang);
-    (status, Json(json!({
-        "code": status.as_u16(),
-        "key": key,
-        "msg": msg,
-        "data": null,
-    })))
+    let status = public_error_status(status);
+    (
+        status,
+        Json(json!({
+            "code": status.as_u16(),
+            "key": key,
+            "msg": msg,
+            "data": null,
+        })),
+    )
         .into_response()
 }
 
@@ -180,7 +195,7 @@ fn localized_rejection(status: StatusCode, key: &'static str) -> Response {
 /// used by handler errors. The default implementation is plain text, which
 /// breaks clients and the response contract under load.
 fn governor_error_response(error: GovernorError) -> Response {
-    let (status, key, msg, headers) = match error {
+    let (source_status, key, msg, headers) = match error {
         GovernorError::TooManyRequests { headers, .. } => {
             let lang = crate::i18n::current_lang();
             (
@@ -201,19 +216,20 @@ fn governor_error_response(error: GovernorError) -> Response {
         }
         GovernorError::Other { code, headers, .. } => {
             let lang = crate::i18n::current_lang();
-            let status = if code.is_server_error() {
+            let source_status = if code.is_server_error() {
                 axum::http::StatusCode::INTERNAL_SERVER_ERROR
             } else {
                 code
             };
-            let key = if status == axum::http::StatusCode::TOO_MANY_REQUESTS {
+            let key = if source_status == axum::http::StatusCode::TOO_MANY_REQUESTS {
                 "errors.rate_limit"
             } else {
                 "errors.internal"
             };
-            (status, key, crate::i18n::t(key, lang), headers)
+            (source_status, key, crate::i18n::t(key, lang), headers)
         }
     };
+    let status = public_error_status(source_status);
 
     let mut response = Json(json!({
         "code": status.as_u16(),

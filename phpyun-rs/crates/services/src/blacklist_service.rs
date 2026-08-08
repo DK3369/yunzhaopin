@@ -2,7 +2,6 @@
 //!
 //! Business rule: a company can blacklist a jobseeker uid and vice versa. Once blacklisted, chat / invite / etc. should consult `is_blocked`.
 
-use phpyun_core::error::InfraError;
 use phpyun_core::{audit, clock, AppError, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
 use phpyun_models::blacklist::{entity::BlacklistEntry, repo as bl_repo};
 
@@ -13,7 +12,7 @@ pub async fn add(
     reason: &str,
 ) -> AppResult<()> {
     if blocked_uid == user.uid {
-        return Err(AppError::new(InfraError::InvalidParam("cannot_block_self".into())));
+        return Err(AppError::param_invalid("cannot_block_self"));
     }
     bl_repo::add(state.db.pool(), user.uid, blocked_uid, reason, clock::now_ts()).await?;
     let _ = audit::emit(

@@ -8,6 +8,8 @@
     "locked": "Account is locked",
     "param_missing": "Missing required parameter: %{field}",
     "param_invalid": "Invalid parameter",
+    "platform": "Platform",
+    "target_id": "Target ID",
     "param_invalid_with": "Invalid parameter: %{detail}",
     "captcha": "Captcha verification failed",
     "rate_limit": "Too many requests, please try again later",
@@ -493,7 +495,8 @@
       "1": "Full-time",
       "2": "Part-time",
       "3": "Internship",
-      "4": "Temporary"
+      "4": "Temporary",
+      "5": "Remote"
     }
   }
 }

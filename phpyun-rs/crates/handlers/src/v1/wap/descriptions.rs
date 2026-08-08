@@ -168,9 +168,9 @@ pub async fn get_one(State(state): State<AppState>,
     let id = b.id;
     let d = description_service::get(&state, id).await?;
     if d.status != 1 {
-        return Err(phpyun_core::AppError::new(phpyun_core::error::InfraError::InvalidParam(
-            "description_hidden".into(),
-        )));
+        return Err(phpyun_core::AppError::param_invalid(
+            "description_hidden",
+        ));
     }
     Ok(ApiJson(d.into()))
 }
@@ -193,9 +193,9 @@ pub async fn get_by_name(State(state): State<AppState>,
     phpyun_core::validators::ensure_path_token(&name)?;
     let row = phpyun_models::description::repo::find_by_name(state.db.reader(), &name).await?;
     let d = row.ok_or_else(|| {
-        phpyun_core::AppError::new(phpyun_core::error::InfraError::InvalidParam(
-            "description_not_found".into(),
-        ))
+        phpyun_core::AppError::param_invalid(
+            "description_not_found",
+        )
     })?;
     Ok(ApiJson(d.into()))
 }
@@ -236,9 +236,9 @@ pub async fn get_legal_page(State(state): State<AppState>,
     };
     let row = phpyun_models::description::repo::find_by_name(state.db.reader(), name).await?;
     let d = row.ok_or_else(|| {
-        phpyun_core::AppError::new(phpyun_core::error::InfraError::InvalidParam(
-            "description_not_found".into(),
-        ))
+        phpyun_core::AppError::param_invalid(
+            "description_not_found",
+        )
     })?;
     Ok(ApiJson(d.into()))
 }

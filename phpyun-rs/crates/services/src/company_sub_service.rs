@@ -3,7 +3,6 @@
 //! - Public access: only `status=1` rows are visible.
 //! - Company self-management: list/create/update/delete, requires `user.uid == uid` (enforced by `require_employer()` at the handler layer).
 
-use phpyun_core::error::InfraError;
 use phpyun_core::{background, clock, AppError, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
 use phpyun_models::company_sub::{
     entity::{CompanyNews, CompanyProduct},
@@ -32,7 +31,7 @@ pub async fn get_product(
 ) -> AppResult<CompanyProduct> {
     sub_repo::find_product_public(state.db.reader(), com_uid, id)
         .await?
-        .ok_or_else(|| AppError::new(InfraError::InvalidParam("product_not_found".into())))
+        .ok_or_else(|| AppError::param_invalid("product_not_found"))
 }
 
 pub async fn list_own_products(
@@ -104,7 +103,7 @@ pub async fn update_product(
     )
     .await?;
     if affected == 0 {
-        return Err(AppError::new(InfraError::Forbidden));
+        return Err(AppError::forbidden());
     }
     Ok(())
 }
@@ -116,7 +115,7 @@ pub async fn delete_product(
 ) -> AppResult<()> {
     let affected = sub_repo::delete_product(state.db.pool(), id, user.uid).await?;
     if affected == 0 {
-        return Err(AppError::new(InfraError::Forbidden));
+        return Err(AppError::forbidden());
     }
     Ok(())
 }
@@ -143,7 +142,7 @@ pub async fn get_news(
 ) -> AppResult<CompanyNews> {
     let n = sub_repo::find_news_public(state.db.reader(), com_uid, id)
         .await?
-        .ok_or_else(|| AppError::new(InfraError::InvalidParam("news_not_found".into())))?;
+        .ok_or_else(|| AppError::param_invalid("news_not_found"))?;
     // hits +1 asynchronously
     let pool = state.db.pool().clone();
     let id_bg = id;
@@ -218,7 +217,7 @@ pub async fn update_news(
     )
     .await?;
     if affected == 0 {
-        return Err(AppError::new(InfraError::Forbidden));
+        return Err(AppError::forbidden());
     }
     Ok(())
 }
@@ -230,7 +229,7 @@ pub async fn delete_news(
 ) -> AppResult<()> {
     let affected = sub_repo::delete_news(state.db.pool(), id, user.uid).await?;
     if affected == 0 {
-        return Err(AppError::new(InfraError::Forbidden));
+        return Err(AppError::forbidden());
     }
     Ok(())
 }

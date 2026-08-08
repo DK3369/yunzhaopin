@@ -27,7 +27,7 @@
 //! ## Configuration (env)
 //! - `EVENTBUS_KIND`: `redis-stream` (default) | `memory` (for tests)
 
-use crate::error::{AppError, AppResult};
+use crate::{AppError, AppResult};
 use crate::json;
 use crate::kv::{Kv, StreamMessage};
 use crate::metrics as m;

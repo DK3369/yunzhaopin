@@ -2,11 +2,11 @@
 //!
 //! Aligns with the PHPYun `mcenter/job` controller. usertype=2 only; service-layer validation.
 
+use phpyun_core::AppError;
 use phpyun_core::audit::{self, Actor, AuditEvent};
 use phpyun_core::{clock, AppResult, AppState, AuthenticatedUser, Pagination};
 use phpyun_models::job::{entity::Job, repo as job_repo};
 
-use crate::domain_errors::JobError;
 
 // ==================== Create ====================
 
@@ -139,7 +139,7 @@ pub async fn update(
     )
     .await?;
     if affected == 0 {
-        return Err(JobError::NotFound.into());
+        return Err(AppError::business("job_not_found").into());
     }
     let _ = audit::emit(
         state,
@@ -161,11 +161,11 @@ pub async fn set_status(
 ) -> AppResult<()> {
     user.require_employer()?;
     if !matches!(status, 0 | 2) {
-        return Err(JobError::NotFound.into()); // coarse error mapping
+        return Err(AppError::business("job_not_found").into()); // coarse error mapping
     }
     let affected = job_repo::set_status(state.db.pool(), id, user.uid, status).await?;
     if affected == 0 {
-        return Err(JobError::NotFound.into());
+        return Err(AppError::business("job_not_found").into());
     }
     let label = if status == 0 { "online" } else { "offline" };
     let _ = audit::emit(
@@ -189,7 +189,7 @@ pub async fn refresh(
     user.require_employer()?;
     let affected = job_repo::refresh(state.db.pool(), id, user.uid, clock::now_ts()).await?;
     if affected == 0 {
-        return Err(JobError::NotFound.into());
+        return Err(AppError::business("job_not_found").into());
     }
     let _ = audit::emit(
         state,
@@ -211,7 +211,7 @@ pub async fn delete(
     user.require_employer()?;
     let affected = job_repo::delete(state.db.pool(), id, user.uid).await?;
     if affected == 0 {
-        return Err(JobError::NotFound.into());
+        return Err(AppError::business("job_not_found").into());
     }
     let _ = audit::emit(
         state,

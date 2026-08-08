@@ -18,7 +18,7 @@
 //! request body is parsed — so even unauthenticated POSTs can't side-effect
 //! the request stream.
 
-use crate::error::AppError;
+use crate::AppError;
 use crate::extractors::{AuthenticatedUser, USERTYPE_ADMIN};
 use crate::state::AppState;
 use axum::extract::{FromRequestParts, Request, State};
@@ -40,7 +40,7 @@ pub async fn layer(
     match outcome {
         Err(e) => e.into_response(),
         Ok(user) if user.usertype != USERTYPE_ADMIN => {
-            AppError::new(crate::error::InfraError::RoleMismatch).into_response()
+            AppError::role_mismatch().into_response()
         }
         Ok(user) => {
             // Re-attach the typed user to the request extensions so handlers

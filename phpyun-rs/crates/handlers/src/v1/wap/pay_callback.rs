@@ -15,7 +15,6 @@ use axum::{
     routing::post,
     Router,
 };
-use phpyun_core::error::InfraError;
 use phpyun_core::{dto::OkResp, ApiJson, AppError, AppResult, AppState, ValidatedJson};
 use phpyun_services::vip_service;
 use serde::Deserialize;
@@ -57,15 +56,15 @@ pub async fn callback(
         .payment_callback_token
         .as_deref()
         .ok_or_else(|| {
-            AppError::new(InfraError::Upstream(
-                "payment_callback_token not configured".into(),
-            ))
+            AppError::upstream(
+                "payment_callback_token not configured",
+            )
         })?;
     // Startup config::validate() already requires >= 32 characters; keep a runtime safety net here.
     if expected.len() < 32 {
-        return Err(AppError::new(InfraError::Upstream(
-            "payment_callback_token too short".into(),
-        )));
+        return Err(AppError::upstream(
+            "payment_callback_token too short",
+        ));
     }
 
     // 2. Header verification (constant-time comparison to prevent timing attacks)

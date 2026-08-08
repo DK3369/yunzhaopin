@@ -8,6 +8,8 @@
     "locked": "帳號已被凍結",
     "param_missing": "缺少必填參數：%{field}",
     "param_invalid": "參數錯誤",
+    "platform": "平台",
+    "target_id": "目標 ID",
     "param_invalid_with": "參數錯誤：%{detail}",
     "captcha": "圖形驗證碼錯誤",
     "rate_limit": "請求過於頻繁，請稍後再試",
@@ -487,7 +489,8 @@
       "1": "全職",
       "2": "兼職",
       "3": "實習",
-      "4": "臨時工"
+      "4": "臨時工",
+      "5": "遠端"
     }
   }
 }

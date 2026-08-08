@@ -10,7 +10,7 @@
 //! Algorithm: **fixed window + INCR + EXPIRE**, atomicity provided by Redis; the
 //! implementation goes entirely through the `Kv` facade — no direct `use redis::...`.
 
-use crate::error::AppError;
+use crate::AppError;
 use crate::kv::Kv;
 use crate::metrics::rate_limit_blocked;
 use std::time::Duration;

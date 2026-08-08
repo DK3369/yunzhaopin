@@ -6,7 +6,7 @@ use axum::{
     Router,
     routing::post,
 };
-use phpyun_core::{json, ApiJson, AppError, AppResult, AppState, AuthenticatedUser, ClientIp, InfraError, Paged, Pagination, ValidatedJson};
+use phpyun_core::{json, ApiJson, AppError, AppResult, AppState, AuthenticatedUser, ClientIp, Paged, Pagination, ValidatedJson};
 use phpyun_models::company_content::entity::ContentKind;
 use phpyun_models::gallery::entity::GalleryKind;
 use phpyun_services::{
@@ -256,7 +256,7 @@ pub struct ContentDeleteBody {
 
 fn parse_content_kind(s: &str) -> AppResult<ContentKind> {
     ContentKind::parse(s)
-        .ok_or_else(|| AppError::new(InfraError::InvalidParam(format!("kind={s}"))))
+        .ok_or_else(|| AppError::param_invalid(format!("kind={s}")))
 }
 
 #[utoipa::path(post, path = "/v1/mcenter/company-contents/list", tag = "mcenter", security(("bearer" = [])), request_body = ContentListQuery, responses((status = 200, description = "Paginated company content list")))]
@@ -400,7 +400,7 @@ impl From<phpyun_models::gallery::entity::GalleryItem> for GalleryView {
 
 fn parse_gallery_kind(s: &str) -> AppResult<GalleryKind> {
     GalleryKind::parse(s)
-        .ok_or_else(|| AppError::new(InfraError::InvalidParam(format!("kind={s}"))))
+        .ok_or_else(|| AppError::param_invalid(format!("kind={s}")))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]

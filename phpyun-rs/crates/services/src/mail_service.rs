@@ -1,6 +1,6 @@
 //! Transactional email delivery through the host MTA (`sendmail`).
 
-use phpyun_core::{error::InfraError, AppResult, AppState};
+use phpyun_core::{AppError, AppResult, AppState};
 use std::io::Write;
 use std::process::{Command, Stdio};
 
@@ -36,12 +36,12 @@ pub async fn send_text(state: &AppState, to: &str, subject: &str, body: &str) ->
         child.wait_with_output()
     })
     .await
-    .map_err(|e| InfraError::Upstream(format!("mail task failed: {e}")))?
-    .map_err(|e| InfraError::Upstream(format!("sendmail unavailable: {e}")))?;
+    .map_err(|e| AppError::upstream(format!("mail task failed: {e}")))?
+    .map_err(|e| AppError::upstream(format!("sendmail unavailable: {e}")))?;
 
     if !result.status.success() {
         let stderr = String::from_utf8_lossy(&result.stderr).trim().to_string();
-        return Err(InfraError::Upstream(format!("mail delivery rejected: {stderr}")).into());
+        return Err(AppError::upstream(format!("mail delivery rejected: {stderr}")).into());
     }
     Ok(())
 }

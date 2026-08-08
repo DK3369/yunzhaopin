@@ -1,7 +1,7 @@
 //! Report service. Target kind validation + rate limit + audit.
 
 use phpyun_core::audit::{self, Actor, AuditEvent};
-use phpyun_core::{clock, rate_limit, AppResult, AppState, AuthenticatedUser, InfraError, Pagination};
+use phpyun_core::{clock, rate_limit, AppResult, AppState, AuthenticatedUser, AppError, Pagination};
 use phpyun_models::report::{
     entity::{Report, KIND_ARTICLE, KIND_COMPANY, KIND_JOB, KIND_RESUME, KIND_USER},
     repo as report_repo,
@@ -30,12 +30,12 @@ pub async fn submit(
         input.target_kind,
         KIND_JOB | KIND_COMPANY | KIND_RESUME | KIND_ARTICLE | KIND_USER
     ) {
-        return Err(InfraError::InvalidParam(format!("target_kind={}", input.target_kind)).into());
+        return Err(AppError::param_invalid(format!("target_kind={}", input.target_kind)).into());
     }
 
     let reason = report_repo::resolve_reason(state.db.reader(), input.reason_code)
         .await?
-        .ok_or_else(|| InfraError::InvalidParam("report_reason_not_found".into()))?;
+        .ok_or_else(|| AppError::param_invalid("report_reason_not_found"))?;
     let normalized_reason_code = reason.id.to_string();
 
     // Per-user rate limit: at most 10 reports per 10 minutes

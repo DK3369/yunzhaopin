@@ -3,10 +3,10 @@
 //! Implements the list and detail portions of PHPYun `wap/job::index_action` +
 //! `wap/job::comapply_action`. Application submission lives in `apply_service`.
 
+use phpyun_core::AppError;
 use phpyun_core::{clock, AppResult, AppState, Pagination};
 use phpyun_models::job::{entity::Job, repo as job_repo, repo::JobFilter};
 
-use crate::domain_errors::JobError;
 
 /// Public search parameters. Field set mirrors PHPYun's WAP `wap/job` finder
 /// + the `joblist` Smarty plugin (`smarty_internal_compile_joblist.php`).
@@ -107,16 +107,16 @@ pub async fn list_public(
 pub async fn get_public(state: &AppState, id: u64) -> AppResult<Job> {
     let j = job_repo::find_by_id(state.db.reader(), id)
         .await?
-        .ok_or(JobError::NotFound)?;
+        .ok_or(AppError::business("job_not_found"))?;
     // Status checks
     if j.status == 2 {
-        return Err(JobError::Offline.into());
+        return Err(AppError::business("job_offline").into());
     }
     if j.state != 1 || j.r_status != 1 {
-        return Err(JobError::PendingReview.into());
+        return Err(AppError::business("job_pending").into());
     }
     if j.edate > 0 && j.edate <= clock::now_ts() {
-        return Err(JobError::Expired.into());
+        return Err(AppError::business("job_expired").into());
     }
     Ok(j)
 }
@@ -200,7 +200,7 @@ pub async fn list_same_company(
     let now = clock::now_ts();
     let cur = job_repo::find_by_id(state.db.reader(), job_id)
         .await?
-        .ok_or(JobError::NotFound)?;
+        .ok_or(AppError::business("job_not_found"))?;
     Ok(job_repo::list_same_company(state.db.reader(), cur.uid, job_id, now, limit).await?)
 }
 
@@ -213,7 +213,7 @@ pub async fn list_similar(
     let now = clock::now_ts();
     let cur = job_repo::find_by_id(state.db.reader(), job_id)
         .await?
-        .ok_or(JobError::NotFound)?;
+        .ok_or(AppError::business("job_not_found"))?;
     Ok(job_repo::list_similar(state.db.reader(), cur.job1, job_id, cur.uid, now, limit).await?)
 }
 

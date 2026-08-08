@@ -10,7 +10,7 @@
 //! to > refresh_ttl (8 days), enough to cover the longest token lifetime.
 
 use crate::clock;
-use crate::error::AppError;
+use crate::AppError;
 use crate::kv::Kv;
 
 const KEY_PREFIX: &str = "jwt:blk:";

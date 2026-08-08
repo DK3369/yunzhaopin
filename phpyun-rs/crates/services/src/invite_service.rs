@@ -3,7 +3,6 @@
 //! Daily limit of N per uid (N comes from config, default 10). Writes a queued record then
 //! publishes `invite.email_queued` on the event bus; the actual SMTP delivery is handled by a backend consumer.
 
-use phpyun_core::error::InfraError;
 use phpyun_core::i18n::{t_args, Lang};
 use phpyun_core::{audit, clock, AppError, AppResult, AppState, AuthenticatedUser};
 use phpyun_models::invite::repo as invite_repo;
@@ -29,14 +28,14 @@ pub async fn send(
     client_ip: &str,
 ) -> AppResult<u64> {
     if !input.email.contains('@') {
-        return Err(AppError::new(InfraError::InvalidParam("invalid_email".into())));
+        return Err(AppError::param_invalid("invalid_email"));
     }
     let now = clock::now_ts();
     let today = today_start_ts(now);
 
     let used = invite_repo::count_today_by_user(state.db.reader(), user.uid, today).await?;
     if used >= DAILY_LIMIT {
-        return Err(AppError::new(InfraError::RateLimited));
+        return Err(AppError::rate_limit());
     }
 
     let subject = t_args(

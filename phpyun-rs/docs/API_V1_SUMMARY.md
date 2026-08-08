@@ -10,7 +10,9 @@
 | 参数位置 | JSON body，`Content-Type: application/json` |
 | 认证 | `Authorization: Bearer <token>`（登录态接口） |
 | 响应包络 | `{ "code": 200, "msg": "ok", "data": ... }` |
-| 校验失败 | HTTP 400 + `param_invalid: validation.<rule>` |
+| 成功返回 | HTTP 200 + `code=200` |
+| 一般错误 | HTTP 500 + 保留稳定的 `key` / `msg` |
+| 未登录 / Token 过期 | HTTP 401，客户端踢下线 |
 
 ## 按 Tag 分类（OpenAPI 一级分类）
 

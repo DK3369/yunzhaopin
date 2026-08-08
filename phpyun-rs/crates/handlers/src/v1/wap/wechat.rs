@@ -16,7 +16,7 @@ use axum::{
     routing::{get, post},
 };
 use phpyun_core::i18n::{t, Lang};
-use phpyun_core::{ApiJson, AppError, AppResult, AppState, InfraError, ValidatedJson};
+use phpyun_core::{ApiJson, AppError, AppResult, AppState, ValidatedJson};
 use phpyun_services::wechat_api_service;
 use phpyun_services::wechat_service::{
     self, default_reply, parse_incoming, verify_signature, SUCCESS_ACK,
@@ -158,7 +158,7 @@ pub async fn qr_for_resource(State(state): State<AppState>,
     phpyun_core::validators::ensure_path_token(&kind)?;
     let tag = opts.tag.as_deref().unwrap_or("weixin");
     let scene = wechat_api_service::scene_str_for(&kind, id, tag)
-        .ok_or_else(|| AppError::new(InfraError::InvalidParam(format!("kind={kind}"))))?;
+        .ok_or_else(|| AppError::param_invalid(format!("kind={kind}")))?;
     let qr = wechat_api_service::create_qr_scene(&state, &scene, opts.expire).await?;
     Ok(ApiJson(QrView {
         ticket: qr.ticket,

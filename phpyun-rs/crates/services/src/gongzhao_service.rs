@@ -1,6 +1,5 @@
 //! Joint recruitment (aligned with PHPYun `wap/gongzhao`).
 
-use phpyun_core::error::InfraError;
 use phpyun_core::{background, AppError, AppResult, AppState, Paged, Pagination};
 use phpyun_models::gongzhao::{entity::Gongzhao, repo as gz_repo};
 
@@ -20,9 +19,9 @@ pub async fn list(
 pub async fn get(state: &AppState, id: u64) -> AppResult<Gongzhao> {
     let g = gz_repo::find(state.db.reader(), id)
         .await?
-        .ok_or_else(|| AppError::new(InfraError::InvalidParam("gongzhao_not_found".into())))?;
+        .ok_or_else(|| AppError::param_invalid("gongzhao_not_found"))?;
     if g.status != 1 {
-        return Err(AppError::new(InfraError::InvalidParam("gongzhao_unavailable".into())));
+        return Err(AppError::param_invalid("gongzhao_unavailable"));
     }
     let pool = state.db.pool().clone();
     background::spawn_best_effort("gongzhao.view", async move {

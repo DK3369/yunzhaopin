@@ -4,7 +4,6 @@
 //!
 //! View counters are fire-and-forget so they never block the main path.
 
-use phpyun_core::error::InfraError;
 use phpyun_core::{background, clock, AppError, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
 use phpyun_models::qna::{
     entity::{Answer, AnswerReview, QClass, Question, SUPPORT_KIND_ANSWER, SUPPORT_KIND_QUESTION},
@@ -39,9 +38,9 @@ pub async fn list_questions(
 pub async fn get_question(state: &AppState, id: u64) -> AppResult<Question> {
     let q = qna_repo::find_question(state.db.reader(), id)
         .await?
-        .ok_or_else(|| AppError::new(InfraError::InvalidParam("question_not_found".into())))?;
+        .ok_or_else(|| AppError::param_invalid("question_not_found"))?;
     if q.status != 1 {
-        return Err(AppError::new(InfraError::InvalidParam("question_unavailable".into())));
+        return Err(AppError::param_invalid("question_unavailable"));
     }
     let pool = state.db.pool().clone();
     background::spawn_best_effort("qna.question.hit", async move {
@@ -82,7 +81,7 @@ pub async fn delete_question(
 ) -> AppResult<()> {
     let affected = qna_repo::delete_question(state.db.pool(), id, user.uid).await?;
     if affected == 0 {
-        return Err(AppError::new(InfraError::Forbidden));
+        return Err(AppError::forbidden());
     }
     Ok(())
 }
@@ -107,9 +106,9 @@ pub async fn answer(
     // The question must exist and be published
     let q = qna_repo::find_question(state.db.reader(), question_id)
         .await?
-        .ok_or_else(|| AppError::new(InfraError::InvalidParam("question_not_found".into())))?;
+        .ok_or_else(|| AppError::param_invalid("question_not_found"))?;
     if q.status != 1 {
-        return Err(AppError::new(InfraError::InvalidParam("question_unavailable".into())));
+        return Err(AppError::param_invalid("question_unavailable"));
     }
     let id = qna_repo::create_answer(
         state.db.pool(),
@@ -132,9 +131,9 @@ pub async fn accept_answer(
 ) -> AppResult<()> {
     let q = qna_repo::find_question(state.db.reader(), question_id)
         .await?
-        .ok_or_else(|| AppError::new(InfraError::InvalidParam("question_not_found".into())))?;
+        .ok_or_else(|| AppError::param_invalid("question_not_found"))?;
     if q.uid != user.uid {
-        return Err(AppError::new(InfraError::Forbidden));
+        return Err(AppError::forbidden());
     }
     qna_repo::mark_answer_accepted(state.db.pool(), answer_id, question_id).await?;
     Ok(())
@@ -248,14 +247,14 @@ pub async fn add_review(
     }
     let db = state.db.pool();
     let Some((qid, status)) = qna_repo::answer_qid_status(db, aid).await? else {
-        return Err(AppError::new(InfraError::InvalidParam(
-            "answer_not_found".into(),
-        )));
+        return Err(AppError::param_invalid(
+            "answer_not_found",
+        ));
     };
     if status != 1 {
-        return Err(AppError::new(InfraError::InvalidParam(
-            "answer_unavailable".into(),
-        )));
+        return Err(AppError::param_invalid(
+            "answer_unavailable",
+        ));
     }
     let now = clock::now_ts();
     let usertype: i32 = if user.usertype > 0 { user.usertype as i32 } else { 1 };
@@ -283,9 +282,9 @@ pub async fn delete_review(
     let db = state.db.pool();
     let n = qna_repo::delete_review(db, review_id, user.uid).await?;
     if n == 0 {
-        return Err(AppError::new(InfraError::InvalidParam(
-            "review_not_found".into(),
-        )));
+        return Err(AppError::param_invalid(
+            "review_not_found",
+        ));
     }
     Ok(())
 }

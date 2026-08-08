@@ -4,7 +4,7 @@
 //! Failures are uniformly mapped to `AppError::internal(e)` (code=500, tag=internal),
 //! so handlers don't need to write `map_err` manually.
 
-use crate::error::AppError;
+use crate::AppError;
 use serde::{de::DeserializeOwned, Serialize};
 
 pub type Value = serde_json::Value;

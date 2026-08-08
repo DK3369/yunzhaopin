@@ -8,7 +8,7 @@
 //! - Then, whether first apply or repeat, update `member_statis.comtpl = url`.
 
 use phpyun_core::audit::{self, Actor, AuditEvent};
-use phpyun_core::{clock, AppError, AppResult, AppState, AuthenticatedUser, InfraError};
+use phpyun_core::{clock, AppError, AppResult, AppState, AuthenticatedUser};
 use phpyun_models::company_tpl::entity::CompanyTpl;
 use phpyun_models::company_tpl::repo as tpl_repo;
 use phpyun_models::integral::repo as integral_repo;
@@ -37,9 +37,9 @@ pub async fn apply(
 
     let tpl = tpl_repo::find_by_id(state.db.reader(), tpl_id)
         .await?
-        .ok_or_else(|| AppError::new(InfraError::InvalidParam("tpl_not_found".into())))?;
+        .ok_or_else(|| AppError::param_invalid("tpl_not_found"))?;
     if tpl.status != 1 {
-        return Err(InfraError::InvalidParam("tpl_disabled".into()).into());
+        return Err(AppError::param_invalid("tpl_disabled").into());
     }
 
     // Check whether already purchased
@@ -62,9 +62,9 @@ pub async fn apply(
         )
         .await?;
         if affected == 0 {
-            return Err(AppError::new(InfraError::InvalidParam(
-                "integral_insufficient".into(),
-            )));
+            return Err(AppError::param_invalid(
+                "integral_insufficient",
+            ));
         }
         tpl_repo::append_purchased_url(state.db.pool(), user.uid, &tpl.url).await?;
         newly_purchased = true;

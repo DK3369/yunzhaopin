@@ -7,7 +7,7 @@ use phpyun_auth::{argon2_hash_async, verify_password_async};
 use phpyun_core::audit::{self, Actor, AuditEvent};
 use phpyun_core::jwt_blacklist;
 use phpyun_core::metrics::auth_event;
-use phpyun_core::{AppError, AppResult, AppState, InfraError, ProviderKind};
+use phpyun_core::{AppError, AppResult, AppState, ProviderKind};
 use phpyun_models::user::repo as user_repo;
 
 use crate::user_service;
@@ -23,12 +23,12 @@ pub async fn update_email(
 ) -> AppResult<()> {
     // Empty string is treated as clearing the field
     if new_email.is_empty() {
-        return Err(InfraError::InvalidParam("email".into()).into());
+        return Err(AppError::param_invalid("email").into());
     }
 
     // Uniqueness
     if user_repo::exists_email(state.db.pool(), new_email).await? {
-        return Err(InfraError::InvalidParam("email_taken".into()).into());
+        return Err(AppError::param_invalid("email_taken").into());
     }
 
     user_repo::update_email(state.db.pool(), uid, new_email).await?;
@@ -60,16 +60,16 @@ pub async fn rename_username(
 ) -> AppResult<()> {
     // 1. New username length / uniqueness
     if new_username.len() < 3 || new_username.len() > 20 {
-        return Err(InfraError::InvalidParam("username_length".into()).into());
+        return Err(AppError::param_invalid("username_length").into());
     }
     if user_repo::exists_username(state.db.reader(), new_username).await? {
-        return Err(InfraError::InvalidParam("username_taken".into()).into());
+        return Err(AppError::param_invalid("username_taken").into());
     }
 
     // 2. Fetch the original account + verify the old password
     let user = user_repo::find_by_uid(state.db.reader(), uid)
         .await?
-        .ok_or_else(|| -> AppError { InfraError::InvalidParam("user_not_found".into()).into() })?;
+        .ok_or_else(|| -> AppError { AppError::param_invalid("user_not_found").into() })?;
     let valid = verify_password_async(
         old_password.to_string(),
         user.password.clone(),
@@ -83,7 +83,7 @@ pub async fn rename_username(
     // 3. One-time rename (only allowed when claim=0; sets claim=1 after the rename)
     let affected = user_repo::rename_username_once(state.db.pool(), uid, new_username).await?;
     if affected == 0 {
-        return Err(InfraError::InvalidParam("already_renamed".into()).into());
+        return Err(AppError::param_invalid("already_renamed").into());
     }
 
     // 4. Invalidate cache + emit audit log
@@ -108,7 +108,7 @@ pub async fn change_password(
     // Fetch the current user
     let user = user_repo::find_by_uid(state.db.reader(), uid)
         .await?
-        .ok_or_else(|| -> AppError { InfraError::InvalidParam("user_not_found".into()).into() })?;
+        .ok_or_else(|| -> AppError { AppError::param_invalid("user_not_found").into() })?;
 
     // Verify the old password (spawn_blocking, compatible with argon2 / md5)
     let valid = verify_password_async(

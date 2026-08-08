@@ -13,7 +13,6 @@
 //!   2. Push BOTH access and refresh jtis into the JWT blacklist so the
 //!      in-flight access token AND any pending refresh attempt are refused.
 
-use phpyun_core::error::InfraError;
 use phpyun_core::utils::fmt_ts;
 use phpyun_core::{clock, jwt_blacklist, session_presence, AppError, AppResult, AppState, AuthenticatedUser};
 use phpyun_models::user_session::{entity::UserSession, repo as session_repo};
@@ -283,7 +282,7 @@ pub async fn revoke_session(
 ) -> AppResult<()> {
     let row = session_repo::find_by_id_and_uid(state.db.reader(), session_id, user.uid).await?;
     let Some(s) = row else {
-        return Err(AppError::new(InfraError::InvalidParam("session_not_found".into())));
+        return Err(AppError::param_invalid("session_not_found"));
     };
     if s.jti_access == user.jti {
         return Err(AppError::param_invalid("session_is_current"));

@@ -1,5 +1,6 @@
 //! VIP packages / orders / status.
 
+use phpyun_core::AppError;
 use axum::{
     extract::State,
     Router,
@@ -248,14 +249,13 @@ pub async fn mock_paid(State(state): State<AppState>,
     let order_no = b.order_no;
     phpyun_core::validators::ensure_path_token(&order_no)?;
     // Defensive check: the order must belong to the currently logged-in user, to avoid marking someone else's order as paid.
-    use phpyun_core::error::InfraError;
     let order = phpyun_models::vip::repo::find_order_by_no(state.db.reader(), &order_no)
         .await?
         .ok_or_else(|| -> phpyun_core::AppError {
-            InfraError::InvalidParam("order_not_found".into()).into()
+            AppError::param_invalid("order_not_found").into()
         })?;
     if order.uid != user.uid {
-        return Err(InfraError::InvalidParam("order_not_owned".into()).into());
+        return Err(AppError::param_invalid("order_not_owned").into());
     }
 
     let fake_tx = format!("MOCK-{}", uuid::Uuid::now_v7().simple());

@@ -7,7 +7,7 @@
 //! - Per-company cap: passed in by the caller (handler) from admin config (aligned with PHP `com_banner_num`).
 
 use phpyun_core::audit::{self, Actor, AuditEvent};
-use phpyun_core::{clock, AppResult, AppState, AuthenticatedUser, InfraError};
+use phpyun_core::{clock, AppResult, AppState, AuthenticatedUser, AppError};
 use phpyun_models::company_banner::entity::CompanyBanner;
 use phpyun_models::company_banner::repo as banner_repo;
 
@@ -36,12 +36,12 @@ pub async fn add(
 ) -> AppResult<u64> {
     user.require_employer()?;
     if input.pic.is_empty() {
-        return Err(InfraError::InvalidParam("pic".into()).into());
+        return Err(AppError::param_invalid("pic").into());
     }
     if input.max_per_company > 0 {
         let used = banner_repo::count_by_uid(state.db.reader(), user.uid).await?;
         if used >= input.max_per_company {
-            return Err(InfraError::RateLimited.into());
+            return Err(AppError::rate_limit().into());
         }
     }
     let id = banner_repo::create(

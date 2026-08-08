@@ -27,7 +27,7 @@
 
 use crate::background;
 use crate::clock;
-use crate::error::AppResult;
+use crate::AppResult;
 use crate::events::EventBus;
 use crate::json;
 use crate::state::AppState;

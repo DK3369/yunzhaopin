@@ -43,7 +43,7 @@
 //! - 5xx errors are not cached (avoid caching transient failures).
 //! - Cache TTL defaults to 24h, configurable.
 
-use crate::error::AppError;
+use crate::AppError;
 use crate::kv::Kv;
 use crate::metrics as m;
 use crate::state::AppState;

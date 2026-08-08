@@ -1,6 +1,5 @@
 //! Navigation menu (aligned with PHPYun `navigation.model.php`).
 
-use phpyun_core::error::InfraError;
 use phpyun_core::{audit, clock, AppError, AppResult, AppState, AuthenticatedUser};
 use phpyun_models::nav_menu::{entity::NavMenu, repo as nav_repo};
 
@@ -87,7 +86,7 @@ pub async fn admin_update(
     )
     .await?;
     if affected == 0 {
-        return Err(AppError::new(InfraError::InvalidParam("nav_not_found".into())));
+        return Err(AppError::param_invalid("nav_not_found"));
     }
     Ok(())
 }

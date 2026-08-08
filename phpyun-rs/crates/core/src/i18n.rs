@@ -35,7 +35,7 @@
 //!
 //! ```json
 //! {
-//!   "code": 400,
+//!   "code": 500,
 //!   "key":  "errors.bad_credentials",
 //!   "msg":  "Invalid account or password",
 //!   "data": null

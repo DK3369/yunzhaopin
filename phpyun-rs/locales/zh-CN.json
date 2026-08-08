@@ -8,6 +8,8 @@
     "locked": "账号已被冻结",
     "param_missing": "缺少必填参数：%{field}",
     "param_invalid": "参数错误",
+    "platform": "平台",
+    "target_id": "目标 ID",
     "param_invalid_with": "参数错误：%{detail}",
     "captcha": "图形验证码错误",
     "rate_limit": "请求过于频繁，请稍后再试",
@@ -487,7 +489,8 @@
       "1": "全职",
       "2": "兼职",
       "3": "实习",
-      "4": "临时工"
+      "4": "临时工",
+      "5": "远程"
     }
   }
 }

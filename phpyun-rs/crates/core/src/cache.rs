@@ -29,7 +29,7 @@
 //!   `Arc<AppError>`; `AppError::from_arc` downgrades the Arc into a new
 //!   `AppError` (preserving only code + tag).
 
-use crate::error::AppError;
+use crate::AppError;
 use crate::json::Value;
 use crate::kv::Kv;
 use crate::metrics::{cache_hit, cache_miss};

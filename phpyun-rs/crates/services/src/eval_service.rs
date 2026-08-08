@@ -3,7 +3,6 @@
 //! Question structure: `options` is a JSON array `[{label, text, score}, ...]`.
 //! Users submit `answers = {"<question_id>": "<label>", ...}` and the server tallies the totals from each option's `score`.
 
-use phpyun_core::error::InfraError;
 use phpyun_core::{background, clock, AppError, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
 use phpyun_models::eval::{
     entity::{EvalLog, EvalPaper, EvalQuestion},
@@ -30,7 +29,7 @@ pub async fn get_paper_with_questions(
     let db = state.db.reader();
     let paper = eval_repo::find_paper(db, paper_id)
         .await?
-        .ok_or_else(|| AppError::new(InfraError::InvalidParam("paper_not_found".into())))?;
+        .ok_or_else(|| AppError::param_invalid("paper_not_found"))?;
     let questions = eval_repo::list_questions(db, paper_id).await?;
 
     let pool = state.db.pool().clone();
@@ -51,11 +50,11 @@ pub async fn submit(
     let reader = state.db.reader();
     let _paper = eval_repo::find_paper(reader, paper_id)
         .await?
-        .ok_or_else(|| AppError::new(InfraError::InvalidParam("paper_not_found".into())))?;
+        .ok_or_else(|| AppError::param_invalid("paper_not_found"))?;
 
     let questions = eval_repo::list_questions(reader, paper_id).await?;
     if questions.is_empty() {
-        return Err(AppError::new(InfraError::InvalidParam("no_questions".into())));
+        return Err(AppError::param_invalid("no_questions"));
     }
 
     // Scoring: for each question, look up the option.score for the label submitted by the user

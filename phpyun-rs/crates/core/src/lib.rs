@@ -17,7 +17,7 @@ pub mod date_parse;
 pub mod db;
 pub mod dev_token;
 pub mod dto;
-pub mod error;
+mod error;
 pub mod events;
 pub mod extractors;
 pub mod http_client;
@@ -44,10 +44,14 @@ pub mod utils;
 pub mod validators;
 pub mod verify;
 
+// Public facade: most crates should import shared application primitives from
+// `phpyun_core::{...}` or `phpyun_core::prelude::*`. Implementation modules
+// remain namespaced by concern; `error` stays private so `AppError` is the only
+// application error type visible outside core.
 pub use cache::AppCaches;
 pub use config::Config;
 pub use db::Db;
-pub use error::{ApiError, AppError, AppResult, InfraError, SharedError, SystemError};
+pub use error::{AppError, AppResult};
 pub use events::{EventBus, EventBusBackend};
 pub use extractors::{
     AuthenticatedUser, ClientIp, MaybeUser, Pagination, ValidatedForm, ValidatedJson,
@@ -62,3 +66,16 @@ pub use state::AppState;
 pub use oauth::{OAuth, OAuthProvider, ProviderIdentity, ProviderKind};
 pub use sms::{Sms, SmsBackend, SmsTemplate};
 pub use storage::{ObjectStore, Storage};
+
+/// Common imports for handlers and services.
+///
+/// Keep this list boring and stable: request extractors, response wrappers,
+/// state, pagination, shared DTOs, and the single public error type.
+pub mod prelude {
+    pub use crate::dto::*;
+    pub use crate::{
+        ApiBody, ApiJson, ApiMsg, ApiMsgData, ApiOk, ApiResponse, AppError, AppResult, AppState,
+        AuthenticatedUser, ClientIp, Lang, MaybeUser, Paged, Pagination, ValidatedForm,
+        ValidatedJson, ValidatedQuery,
+    };
+}

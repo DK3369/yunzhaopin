@@ -20,7 +20,7 @@
 //!   the backend.
 
 use crate::config::Config;
-use crate::error::{AppError, AppResult};
+use crate::{AppError, AppResult};
 use async_trait::async_trait;
 use std::sync::Arc;
 

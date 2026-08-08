@@ -5,7 +5,7 @@
 //! `state.db.pool()` (writer) and emit audit logs synchronously.
 
 use phpyun_core::audit::{self, Actor, AuditEvent};
-use phpyun_core::{AppError, AppResult, AppState, AuthenticatedUser, InfraError, Paged, Pagination};
+use phpyun_core::{AppError, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
 use phpyun_models::feedback::{entity::Feedback, repo as feedback_repo};
 use phpyun_models::job::{entity::Job, repo as job_repo};
 use phpyun_models::report::{entity::Report, repo as report_repo};
@@ -75,7 +75,7 @@ pub async fn set_report_status(
 ) -> AppResult<()> {
     let affected = report_repo::set_status(state.db.pool(), report_id, status).await?;
     if affected == 0 {
-        return Err(AppError::new(InfraError::InvalidParam("report_not_found".into())));
+        return Err(AppError::param_invalid("report_not_found"));
     }
     let _ = audit::emit(
         state,
@@ -247,15 +247,15 @@ pub async fn set_order_status(
     status: i32,
 ) -> AppResult<()> {
     if !matches!(status, 2 | 3) {
-        return Err(phpyun_core::AppError::new(phpyun_core::error::InfraError::InvalidParam(
-            "bad_status".into(),
-        )));
+        return Err(phpyun_core::AppError::param_invalid(
+            "bad_status",
+        ));
     }
     let affected = vip_repo::admin_set_order_status(state.db.pool(), order_no, status).await?;
     if affected == 0 {
-        return Err(phpyun_core::AppError::new(phpyun_core::error::InfraError::InvalidParam(
-            "order_not_found".into(),
-        )));
+        return Err(phpyun_core::AppError::param_invalid(
+            "order_not_found",
+        ));
     }
     let _ = audit::emit(
         state,

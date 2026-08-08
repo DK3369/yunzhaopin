@@ -6,7 +6,6 @@ use axum::{
     Router,
     routing::post,
 };
-use phpyun_core::error::InfraError;
 use phpyun_core::{ApiJson, AppError, AppResult, AppState, Lang, ValidatedJson};
 use phpyun_models::report::repo as report_repo;
 use phpyun_services::site_setting_service;
@@ -117,7 +116,7 @@ pub async fn get_one(State(state): State<AppState>,
     let row = site_setting_service::get(&state, &key)
         .await?
         .filter(|s| s.is_public == 1)
-        .ok_or_else(|| AppError::new(InfraError::InvalidParam("setting_not_found".into())))?;
+        .ok_or_else(|| AppError::param_invalid("setting_not_found"))?;
     Ok(ApiJson(SettingView::from(row)))
 }
 

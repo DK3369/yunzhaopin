@@ -36,7 +36,7 @@
 //! // Add a case in Storage::from_config; business code doesn't change.
 //! ```
 
-use crate::error::{AppError, AppResult};
+use crate::{AppError, AppResult};
 use async_trait::async_trait;
 use bytes::Bytes;
 use std::path::PathBuf;

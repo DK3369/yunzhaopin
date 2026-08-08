@@ -23,7 +23,7 @@
 //! business layer uses `sub` to look up the `{provider}_id` field in
 //! `yun_member`.
 
-use crate::error::{AppError, AppResult};
+use crate::{AppError, AppResult};
 use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;

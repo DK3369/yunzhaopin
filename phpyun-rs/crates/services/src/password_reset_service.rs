@@ -16,7 +16,7 @@ use phpyun_core::jwt_blacklist;
 use phpyun_core::metrics::auth_event;
 use phpyun_core::sms::SmsTemplate;
 use phpyun_core::verify::{self, VerifyKind};
-use phpyun_core::{rate_limit, AppError, AppResult, AppState, InfraError};
+use phpyun_core::{rate_limit, AppError, AppResult, AppState};
 use phpyun_models::user::repo as user_repo;
 use std::time::Duration;
 
@@ -69,13 +69,13 @@ pub async fn reset_with_sms(
     // Verification code
     if !verify::verify(&state.redis, VerifyKind::SmsResetPw, mobile, sms_code).await? {
         auth_event("reset_pw_fail", Some("bad_sms_code"));
-        return Err(InfraError::InvalidParam("sms_code".into()).into());
+        return Err(AppError::param_invalid("sms_code").into());
     }
 
     // Look up the user
     let user = user_repo::find_by_mobile(state.db.reader(), mobile)
         .await?
-        .ok_or_else(|| -> AppError { InfraError::InvalidParam("mobile_not_registered".into()).into() })?;
+        .ok_or_else(|| -> AppError { AppError::param_invalid("mobile_not_registered").into() })?;
 
     // Hash the new password (note: we do not concat salt for argon2 — PHPYun compatibility lives in the login layer)
     // The new password is stored in argon2 format. Whether to concat salt is up to the login side —
@@ -189,13 +189,13 @@ pub async fn reset_with_email(
 ) -> AppResult<()> {
     if !verify::verify(&state.redis, VerifyKind::EmailReset, email, email_code).await? {
         auth_event("reset_pw_fail", Some("bad_email_code"));
-        return Err(InfraError::InvalidParam("email_code".into()).into());
+        return Err(AppError::param_invalid("email_code").into());
     }
 
     let user = user_repo::find_by_email_loose(state.db.reader(), email)
         .await?
         .ok_or_else(|| -> AppError {
-            InfraError::InvalidParam("email_not_registered".into()).into()
+            AppError::param_invalid("email_not_registered").into()
         })?;
 
     let salt = uuid::Uuid::now_v7().simple().to_string()[..16].to_string();
@@ -273,7 +273,7 @@ pub async fn submit_appeal(
     let n =
         phpyun_models::user::repo::submit_appeal(state.db.pool(), uid, &shensu, now).await?;
     if n == 0 {
-        return Err(InfraError::InvalidParam("appeal_persist_failed".into()).into());
+        return Err(AppError::param_invalid("appeal_persist_failed").into());
     }
 
     auth_event("password_appeal_submitted", None);

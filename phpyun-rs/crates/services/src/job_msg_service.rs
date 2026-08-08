@@ -9,7 +9,6 @@
 //!     time) — fall back to the live company / job rows if missing.
 
 use phpyun_core::{clock, AppError, AppResult, AppState, AuthenticatedUser, Pagination};
-use phpyun_core::error::InfraError;
 use phpyun_models::job_msg::{entity::JobMsg, repo as msg_repo};
 
 pub struct JobMsgPage {
@@ -46,7 +45,7 @@ pub async fn create(
     //    and is approved for public viewing.
     let job = phpyun_models::job::repo::find_public_by_id(reader, input.jobid)
         .await?
-        .ok_or_else(|| AppError::new(InfraError::InvalidParam("job_not_found".into())))?;
+        .ok_or_else(|| AppError::param_invalid("job_not_found"))?;
     let job_uid = job.uid;
     let job_name = job.name.clone();
     let com_name = job.com_name.clone().unwrap_or_default();
@@ -151,9 +150,9 @@ pub async fn employer_reply(
     let pool = state.db.pool();
     let n = msg_repo::employer_reply(pool, msg_id, user.uid, reply, clock::now_ts()).await?;
     if n == 0 {
-        return Err(AppError::new(InfraError::InvalidParam(
-            "msg_not_found_or_not_yours".into(),
-        )));
+        return Err(AppError::param_invalid(
+            "msg_not_found_or_not_yours",
+        ));
     }
     Ok(())
 }
@@ -167,7 +166,7 @@ pub async fn hide(
 ) -> AppResult<()> {
     let pool = state.db.pool();
     let row = msg_repo::find(pool, msg_id).await?;
-    let m = row.ok_or_else(|| AppError::new(InfraError::InvalidParam("msg_not_found".into())))?;
+    let m = row.ok_or_else(|| AppError::param_invalid("msg_not_found"))?;
 
     let is_author = m.uid == Some(user.uid);
     let is_owner = m.job_uid == Some(user.uid) && user.usertype == 2;

@@ -1,10 +1,10 @@
 //! Public browsing for articles / news posts.
 
+use phpyun_core::AppError;
 use phpyun_core::{background, AppResult, AppState, Pagination};
 use phpyun_models::article::{entity::Article, repo as article_repo};
 use phpyun_models::article::repo::ArticleFilter;
 
-use crate::domain_errors::ResumeError; // Reused: article-not-found also returns not_found; a dedicated ArticleError can be added later
 
 pub struct ArticlePage {
     pub list: Vec<Article>,
@@ -29,9 +29,9 @@ pub async fn list_public(
 pub async fn get_public(state: &AppState, id: u64) -> AppResult<Article> {
     let a = article_repo::find_by_id(state.db.reader(), id)
         .await?
-        .ok_or(ResumeError::NotFound)?;
+        .ok_or(AppError::business("resume_not_found"))?;
     if a.status != 1 {
-        return Err(ResumeError::NotFound.into());
+        return Err(AppError::business("resume_not_found").into());
     }
     // hits +1 written in the background
     let pool = state.db.pool().clone();

@@ -9,7 +9,7 @@
 //! ) -> AppResult<...> { ... }
 //! ```
 
-use crate::error::AppError;
+use crate::AppError;
 use crate::state::AppState;
 use axum::{
     extract::{FromRequest, FromRequestParts, Query, Request},
@@ -49,7 +49,7 @@ impl AuthenticatedUser {
     /// return `role_mismatch` 403.
     pub fn require_jobseeker(&self) -> Result<(), AppError> {
         if self.usertype != USERTYPE_JOBSEEKER {
-            return Err(AppError::new(crate::error::InfraError::RoleMismatch));
+            return Err(AppError::role_mismatch());
         }
         Ok(())
     }
@@ -57,7 +57,7 @@ impl AuthenticatedUser {
     /// Require the current user to be an employer (`usertype=2`).
     pub fn require_employer(&self) -> Result<(), AppError> {
         if self.usertype != USERTYPE_EMPLOYER {
-            return Err(AppError::new(crate::error::InfraError::RoleMismatch));
+            return Err(AppError::role_mismatch());
         }
         Ok(())
     }
@@ -65,7 +65,7 @@ impl AuthenticatedUser {
     /// Require the current user to be an admin (`usertype=3`).
     pub fn require_admin(&self) -> Result<(), AppError> {
         if self.usertype != USERTYPE_ADMIN {
-            return Err(AppError::new(crate::error::InfraError::RoleMismatch));
+            return Err(AppError::role_mismatch());
         }
         Ok(())
     }

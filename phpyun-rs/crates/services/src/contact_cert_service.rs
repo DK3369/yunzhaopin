@@ -5,7 +5,6 @@
 //!
 //! For the email flow, the actual SMTP delivery is handled by the `email.verify_queued` consumer; this service only enqueues and verifies.
 
-use phpyun_core::error::InfraError;
 use phpyun_core::verify::{self, VerifyKind};
 use phpyun_core::{audit, clock, AppError, AppResult, AppState, AuthenticatedUser};
 use phpyun_models::user::repo as user_repo;
@@ -22,10 +21,10 @@ pub async fn send_mobile_code(
     new_mobile: &str,
 ) -> AppResult<()> {
     if new_mobile.len() < 6 {
-        return Err(AppError::new(InfraError::InvalidParam("bad_mobile".into())));
+        return Err(AppError::param_invalid("bad_mobile"));
     }
     if user_repo::exists_mobile(state.db.reader(), new_mobile).await? {
-        return Err(AppError::new(InfraError::InvalidParam("mobile_taken".into())));
+        return Err(AppError::param_invalid("mobile_taken"));
     }
     send_sms_code(state, new_mobile, SmsScene::MobileChange).await
 }
@@ -44,7 +43,7 @@ pub async fn verify_and_change_mobile(
     )
     .await?;
     if !ok {
-        return Err(AppError::new(InfraError::InvalidCaptcha));
+        return Err(AppError::captcha());
     }
     user_repo::update_mobile(state.db.pool(), user.uid, new_mobile).await?;
     let _ = audit::emit(
@@ -64,10 +63,10 @@ pub async fn send_email_link(
     new_email: &str,
 ) -> AppResult<()> {
     if !new_email.contains('@') {
-        return Err(AppError::new(InfraError::InvalidParam("bad_email".into())));
+        return Err(AppError::param_invalid("bad_email"));
     }
     if user_repo::exists_email(state.db.reader(), new_email).await? {
-        return Err(AppError::new(InfraError::InvalidParam("email_taken".into())));
+        return Err(AppError::param_invalid("email_taken"));
     }
     let token = Uuid::now_v7().simple().to_string();
     // Reuse the verify store: key=target=token, value=code=uid:new_email
@@ -99,15 +98,15 @@ pub async fn verify_email_token(state: &AppState, token: &str) -> AppResult<()> 
     // Read the raw value from the verify store
     let payload = match verify::peek(&state.redis, VerifyKind::EmailChange, token).await? {
         Some(p) => p,
-        None => return Err(AppError::new(InfraError::InvalidCaptcha)),
+        None => return Err(AppError::captcha()),
     };
     // Consume the token
     verify::invalidate(&state.redis, VerifyKind::EmailChange, token).await?;
     let (uid_str, email) = payload
         .split_once(':')
-        .ok_or_else(|| AppError::new(InfraError::InvalidParam("token_payload".into())))?;
+        .ok_or_else(|| AppError::param_invalid("token_payload"))?;
     let uid: u64 = uid_str.parse().map_err(|_| {
-        AppError::new(InfraError::InvalidParam("token_payload".into()))
+        AppError::param_invalid("token_payload")
     })?;
     user_repo::update_email(state.db.pool(), uid, email).await?;
     let _ = audit::emit(

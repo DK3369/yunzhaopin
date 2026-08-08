@@ -3,7 +3,7 @@
 //! Aligned with PHPYun `tpl.model::{payResumetpl, setResumetpl}` + `member/user/resumetpl`.
 
 use phpyun_core::audit::{self, Actor, AuditEvent};
-use phpyun_core::{clock, AppError, AppResult, AppState, AuthenticatedUser, InfraError};
+use phpyun_core::{clock, AppError, AppResult, AppState, AuthenticatedUser};
 use phpyun_models::integral::repo as integral_repo;
 use phpyun_models::resume_tpl::entity::ResumeTpl;
 use phpyun_models::resume_tpl::repo as tpl_repo;
@@ -27,9 +27,9 @@ pub async fn buy(
     user.require_jobseeker()?;
     let tpl = tpl_repo::find_by_id(state.db.reader(), tpl_id)
         .await?
-        .ok_or_else(|| AppError::new(InfraError::InvalidParam("tpl_not_found".into())))?;
+        .ok_or_else(|| AppError::param_invalid("tpl_not_found"))?;
     if tpl.status != 1 {
-        return Err(InfraError::InvalidParam("tpl_disabled".into()).into());
+        return Err(AppError::param_invalid("tpl_disabled").into());
     }
 
     // Already purchased -> return immediately
@@ -57,7 +57,7 @@ pub async fn buy(
         )
         .await?;
         if n == 0 {
-            return Err(InfraError::InvalidParam("integral_insufficient".into()).into());
+            return Err(AppError::param_invalid("integral_insufficient").into());
         }
     }
     tpl_repo::append_purchased_id(state.db.pool(), user.uid, tpl_id).await?;
@@ -96,9 +96,9 @@ pub async fn apply(
         // Allow one more case: template `price=0` means it is free
         let tpl = tpl_repo::find_by_id(state.db.reader(), tpl_id)
             .await?
-            .ok_or_else(|| AppError::new(InfraError::InvalidParam("tpl_not_found".into())))?;
+            .ok_or_else(|| AppError::param_invalid("tpl_not_found"))?;
         if tpl.price > 0 {
-            return Err(InfraError::InvalidParam("tpl_not_owned".into()).into());
+            return Err(AppError::param_invalid("tpl_not_owned").into());
         }
     }
     let n = tpl_repo::set_applied_tpl(state.db.pool(), user.uid, tpl_id).await?;

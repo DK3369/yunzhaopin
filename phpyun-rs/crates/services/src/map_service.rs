@@ -2,7 +2,6 @@
 //!
 //! Longitude/latitude as `x` and `y`; radius capped at 50km to prevent full-table scans.
 
-use phpyun_core::error::InfraError;
 use phpyun_core::{clock, AppError, AppResult, AppState};
 use phpyun_models::geo::repo::{self as geo_repo, CompanyNear, JobNear};
 
@@ -11,10 +10,10 @@ const DEFAULT_LIMIT: u64 = 50;
 
 fn validate(x: f64, y: f64, radius_km: f64) -> AppResult<()> {
     if !(-180.0..=180.0).contains(&x) || !(-90.0..=90.0).contains(&y) {
-        return Err(AppError::new(InfraError::InvalidParam("bad_coords".into())));
+        return Err(AppError::param_invalid("bad_coords"));
     }
     if radius_km <= 0.0 || radius_km > MAX_RADIUS_KM {
-        return Err(AppError::new(InfraError::InvalidParam("bad_radius".into())));
+        return Err(AppError::param_invalid("bad_radius"));
     }
     Ok(())
 }

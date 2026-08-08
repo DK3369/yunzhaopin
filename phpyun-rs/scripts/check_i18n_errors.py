@@ -28,9 +28,9 @@ def main() -> int:
     for path in (ROOT / "crates").rglob("*.rs"):
         source = path.read_text(encoding="utf-8", errors="replace")
         keys.update(KEY_RE.findall(source))
-        # ApiError implementations use stable string tags in their tag()
-        # matches. Include those tags so domain errors cannot fall back to a
-        # raw machine key when a locale entry is missing.
+        # AppError constructors use stable string tags. Include those tags so
+        # business errors cannot fall back to a raw machine key when a locale
+        # entry is missing.
         keys.update(TAG_RE.findall(source))
 
     missing = []

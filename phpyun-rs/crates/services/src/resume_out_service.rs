@@ -10,7 +10,7 @@
 //!   subscribing to the `resume.out.sent` event
 
 use phpyun_core::audit::{self, Actor, AuditEvent};
-use phpyun_core::{clock, AppResult, AppState, AuthenticatedUser, InfraError, Pagination};
+use phpyun_core::{clock, AppResult, AppState, AuthenticatedUser, AppError, Pagination};
 use phpyun_models::resume_out::entity::ResumeOut;
 use phpyun_models::resume_out::repo as ro_repo;
 
@@ -47,13 +47,13 @@ pub async fn send(
 ) -> AppResult<OutResult> {
     user.require_jobseeker()?;
     if limits.daily_max == 0 {
-        return Err(InfraError::InvalidParam("feature_disabled".into()).into());
+        return Err(AppError::param_invalid("feature_disabled").into());
     }
     if input.email.is_empty() || !input.email.contains('@') {
-        return Err(InfraError::InvalidParam("email".into()).into());
+        return Err(AppError::param_invalid("email").into());
     }
     if input.com_name.is_empty() || input.job_name.is_empty() {
-        return Err(InfraError::InvalidParam("com_or_job_name".into()).into());
+        return Err(AppError::param_invalid("com_or_job_name").into());
     }
 
     let now = clock::now_ts();
@@ -65,14 +65,14 @@ pub async fn send(
     // Number of sends today
     let used = ro_repo::count_today_for_uid(state.db.reader(), user.uid, today_begin).await?;
     if used >= limits.daily_max as u64 {
-        return Err(InfraError::RateLimited.into());
+        return Err(AppError::rate_limit().into());
     }
 
     // Interval check
     if limits.interval_secs > 0 {
         if let Some(last) = ro_repo::last_send_ts(state.db.reader(), user.uid).await? {
             if now - last < limits.interval_secs {
-                return Err(InfraError::RateLimited.into());
+                return Err(AppError::rate_limit().into());
             }
         }
     }
