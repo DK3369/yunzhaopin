@@ -1,12 +1,8 @@
 //! Member center - resume (usertype=1 job seeker only).
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
-};
+use axum::{extract::State, routing::post, Router};
 use phpyun_core::json;
-use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, ValidatedJson};
+use phpyun_core::{ApiResponse, AppResult, AppState, AuthenticatedUser, ClientIp, ValidatedJson};
 use phpyun_services::resume_service::{self, ResumeUpdateInput};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
@@ -46,12 +42,13 @@ pub struct ResumeData {
     tag = "mcenter",
     security(("bearer" = [])),
     responses((status = 200, description = "ok", body = ResumeData))
-)]pub async fn get_mine(
+)]
+pub async fn get_mine(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-) -> AppResult<ApiJson<ResumeData>> {
+) -> AppResult<ApiResponse<ResumeData>> {
     let r = resume_service::get_mine(&state, &user).await?;
-    Ok(ApiJson(ResumeData {
+    Ok(ApiResponse::data(ResumeData {
         uid: r.uid,
         name: r.name,
         nametype: r.nametype,
@@ -77,10 +74,16 @@ pub struct UpdateResumeForm {
     /// Loose deserializer accepts both `1` and `"1"` — PHPYun frontend
     /// serialises every numeric form field as a string. Same pattern for
     /// all `Option<i32>` siblings below.
-    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_i32_opt")]
+    #[serde(
+        default,
+        deserialize_with = "phpyun_core::date_parse::de_loose_i32_opt"
+    )]
     #[validate(range(min = 1, max = 2))]
     pub nametype: Option<i32>,
-    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_i32_opt")]
+    #[serde(
+        default,
+        deserialize_with = "phpyun_core::date_parse::de_loose_i32_opt"
+    )]
     #[validate(range(min = 0, max = 2))]
     pub sex: Option<i32>,
     /// PHPYun stores `birthday` as a `YYYY-MM` string (year-month), e.g.
@@ -89,10 +92,16 @@ pub struct UpdateResumeForm {
     /// max 10 keeps `YYYY-MM-DD` working.
     #[validate(length(min = 7, max = 10))]
     pub birthday: Option<String>,
-    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_i32_opt")]
+    #[serde(
+        default,
+        deserialize_with = "phpyun_core::date_parse::de_loose_i32_opt"
+    )]
     #[validate(range(min = 0, max = 2))]
     pub marriage: Option<i32>,
-    #[serde(default, deserialize_with = "phpyun_core::date_parse::de_loose_i32_opt")]
+    #[serde(
+        default,
+        deserialize_with = "phpyun_core::date_parse::de_loose_i32_opt"
+    )]
     #[validate(range(min = 0))]
     pub education: Option<i32>,
     #[validate(length(min = 5, max = 20))]
@@ -117,7 +126,7 @@ pub async fn update_mine(
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
     ValidatedJson(f): ValidatedJson<UpdateResumeForm>,
-) -> AppResult<ApiJson<json::Value>> {
+) -> AppResult<ApiResponse<json::Value>> {
     resume_service::update_mine(
         &state,
         &user,
@@ -135,7 +144,7 @@ pub async fn update_mine(
         &ip,
     )
     .await?;
-    Ok(ApiJson(json::json!({ "ok": true })))
+    Ok(ApiResponse::data(json::json!({ "ok": true })))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
@@ -159,9 +168,11 @@ pub async fn update_status(
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
     ValidatedJson(f): ValidatedJson<UpdateStatusForm>,
-) -> AppResult<ApiJson<json::Value>> {
+) -> AppResult<ApiResponse<json::Value>> {
     resume_service::set_status(&state, &user, f.status, &ip).await?;
-    Ok(ApiJson(json::json!({ "ok": true, "status": f.status })))
+    Ok(ApiResponse::data(
+        json::json!({ "ok": true, "status": f.status }),
+    ))
 }
 
 /// Refresh my resume (bump lastupdate to rank higher in public search).
@@ -180,7 +191,9 @@ pub async fn refresh(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
-) -> AppResult<ApiJson<json::Value>> {
+) -> AppResult<ApiResponse<json::Value>> {
     let ts = resume_service::refresh_mine(&state, &user, &ip).await?;
-    Ok(ApiJson(json::json!({ "ok": true, "lastupdate": ts })))
+    Ok(ApiResponse::data(
+        json::json!({ "ok": true, "lastupdate": ts }),
+    ))
 }

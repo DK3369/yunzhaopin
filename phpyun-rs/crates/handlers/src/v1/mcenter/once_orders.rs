@@ -5,17 +5,15 @@
 //! Rust port assumes an authenticated employer and keys on `uid`, which is
 //! both safer and matches how the rest of the member centre works.
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
-};
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::dto::IdBody;
 use phpyun_core::json;
-use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
+use phpyun_core::{
+    ApiResponse, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
+};
 use phpyun_services::once_service;
 use serde::Serialize;
 use utoipa::ToSchema;
-use phpyun_core::dto::{IdBody};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -66,9 +64,11 @@ pub async fn list_pending(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-) -> AppResult<ApiJson<Paged<OrderItem>>> {
+) -> AppResult<ApiResponse<Paged<OrderItem>>> {
     let r = once_service::list_my_pending_orders(&state, &user, page).await?;
-    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
+    Ok(ApiResponse::data(Paged::from_listing(
+        r.list, r.total, page,
+    )))
 }
 
 /// Cancel a pending one-off-posting order (sets `order_state = 3`).
@@ -87,7 +87,7 @@ pub async fn cancel(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(b): ValidatedJson<IdBody>,
-) -> AppResult<ApiJson<json::Value>> {
+) -> AppResult<ApiResponse<json::Value>> {
     once_service::cancel_pending_order(&state, &user, b.id).await?;
-    Ok(ApiJson(json::json!({ "ok": true })))
+    Ok(ApiResponse::data(json::json!({ "ok": true })))
 }

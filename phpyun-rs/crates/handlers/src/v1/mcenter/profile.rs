@@ -1,13 +1,9 @@
 //! GET  /v1/mcenter/profile — current user summary
 //! PUT  /v1/mcenter/profile — update email (more fields to be added later)
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
-};
+use axum::{extract::State, routing::post, Router};
 use phpyun_core::json;
-use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, ValidatedJson};
+use phpyun_core::{ApiResponse, AppResult, AppState, AuthenticatedUser, ClientIp, ValidatedJson};
 use phpyun_services::{mcenter_service, user_service};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
@@ -44,12 +40,13 @@ pub struct ProfileData {
         (status = 200, description = "ok", body = ProfileData),
         (status = 401, description = "Unauthorized"),
     )
-)]pub async fn get_profile(
+)]
+pub async fn get_profile(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-) -> AppResult<ApiJson<ProfileData>> {
+) -> AppResult<ApiResponse<ProfileData>> {
     let p = user_service::get_profile(&state, user.uid).await?;
-    Ok(ApiJson(ProfileData {
+    Ok(ApiResponse::data(ProfileData {
         uid: p.uid,
         username: p.username.clone(),
         email: p.email.clone(),
@@ -85,7 +82,7 @@ pub async fn update_profile(
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
     ValidatedJson(f): ValidatedJson<UpdateProfileForm>,
-) -> AppResult<ApiJson<json::Value>> {
+) -> AppResult<ApiResponse<json::Value>> {
     mcenter_service::update_email(&state, user.uid, &f.email, &ip).await?;
-    Ok(ApiJson(json::json!({ "ok": true })))
+    Ok(ApiResponse::data(json::json!({ "ok": true })))
 }

@@ -12,7 +12,7 @@ use axum::extract::State;
 use axum::http::{header, HeaderMap};
 use axum::routing::post;
 use axum::Router;
-use phpyun_core::{ApiJson, ApiError, AppResult, AppState, AuthenticatedUser};
+use phpyun_core::{ApiError, ApiResponse, AppResult, AppState, AuthenticatedUser};
 use serde::Serialize;
 use utoipa::ToSchema;
 
@@ -59,7 +59,9 @@ fn check_type(ct: &str, allowed: &[&str]) -> AppResult<()> {
     if allowed.iter().any(|t| ct.starts_with(t)) {
         Ok(())
     } else {
-        Err(ApiError::param_invalid(format!("unsupported content-type: {ct}")))
+        Err(ApiError::param_invalid(format!(
+            "unsupported content-type: {ct}"
+        )))
     }
 }
 
@@ -84,7 +86,12 @@ fn ext_of(ct: &str) -> &'static str {
         c if c.starts_with("image/webp") => "webp",
         c if c.starts_with("application/pdf") => "pdf",
         c if c.starts_with("application/msword") => "doc",
-        c if c.starts_with("application/vnd.openxmlformats-officedocument.wordprocessingml.document") => "docx",
+        c if c.starts_with(
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        ) =>
+        {
+            "docx"
+        }
         _ => "bin",
     }
 }
@@ -100,7 +107,11 @@ async fn store(
     let key = format!("{dir}/{}/{}.{}", uid, uuid::Uuid::now_v7(), ext);
     let bytes_len = body.len();
     let url = state.storage.put(&key, ct, body).await?;
-    Ok(UploadResult { url, key, bytes: bytes_len })
+    Ok(UploadResult {
+        url,
+        key,
+        bytes: bytes_len,
+    })
 }
 
 /// Upload avatar (1MB image)
@@ -117,11 +128,13 @@ pub async fn upload_avatar(
     user: AuthenticatedUser,
     headers: HeaderMap,
     body: Bytes,
-) -> AppResult<ApiJson<UploadResult>> {
+) -> AppResult<ApiResponse<UploadResult>> {
     let ct = ct_of(&headers);
     check_type(ct, IMG_TYPES)?;
     check_size(&body, MAX_AVATAR_BYTES)?;
-    Ok(ApiJson(store(&state, user.uid, "avatars", ct, body).await?))
+    Ok(ApiResponse::data(
+        store(&state, user.uid, "avatars", ct, body).await?,
+    ))
 }
 
 /// Upload company logo (2MB image, employer only)
@@ -138,12 +151,14 @@ pub async fn upload_company_logo(
     user: AuthenticatedUser,
     headers: HeaderMap,
     body: Bytes,
-) -> AppResult<ApiJson<UploadResult>> {
+) -> AppResult<ApiResponse<UploadResult>> {
     user.require_employer()?;
     let ct = ct_of(&headers);
     check_type(ct, IMG_TYPES)?;
     check_size(&body, MAX_LOGO_BYTES)?;
-    Ok(ApiJson(store(&state, user.uid, "logos", ct, body).await?))
+    Ok(ApiResponse::data(
+        store(&state, user.uid, "logos", ct, body).await?,
+    ))
 }
 
 /// Upload resume photo (2MB image, jobseeker only)
@@ -160,12 +175,14 @@ pub async fn upload_resume_photo(
     user: AuthenticatedUser,
     headers: HeaderMap,
     body: Bytes,
-) -> AppResult<ApiJson<UploadResult>> {
+) -> AppResult<ApiResponse<UploadResult>> {
     user.require_jobseeker()?;
     let ct = ct_of(&headers);
     check_type(ct, IMG_TYPES)?;
     check_size(&body, MAX_PHOTO_BYTES)?;
-    Ok(ApiJson(store(&state, user.uid, "resume_photos", ct, body).await?))
+    Ok(ApiResponse::data(
+        store(&state, user.uid, "resume_photos", ct, body).await?,
+    ))
 }
 
 /// Upload verification image (5MB) -- company business license / legal representative ID
@@ -182,11 +199,13 @@ pub async fn upload_cert(
     user: AuthenticatedUser,
     headers: HeaderMap,
     body: Bytes,
-) -> AppResult<ApiJson<UploadResult>> {
+) -> AppResult<ApiResponse<UploadResult>> {
     let ct = ct_of(&headers);
     check_type(ct, IMG_TYPES)?;
     check_size(&body, MAX_CERT_BYTES)?;
-    Ok(ApiJson(store(&state, user.uid, "certs", ct, body).await?))
+    Ok(ApiResponse::data(
+        store(&state, user.uid, "certs", ct, body).await?,
+    ))
 }
 
 /// Upload attachment (10MB, pdf/doc/docx; for resume attachments / portfolio)
@@ -203,9 +222,11 @@ pub async fn upload_attachment(
     user: AuthenticatedUser,
     headers: HeaderMap,
     body: Bytes,
-) -> AppResult<ApiJson<UploadResult>> {
+) -> AppResult<ApiResponse<UploadResult>> {
     let ct = ct_of(&headers);
     check_type(ct, DOC_TYPES)?;
     check_size(&body, MAX_ATTACH_BYTES)?;
-    Ok(ApiJson(store(&state, user.uid, "attachments", ct, body).await?))
+    Ok(ApiResponse::data(
+        store(&state, user.uid, "attachments", ct, body).await?,
+    ))
 }

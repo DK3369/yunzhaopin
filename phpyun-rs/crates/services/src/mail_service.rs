@@ -5,10 +5,12 @@ use std::io::Write;
 use std::process::{Command, Stdio};
 
 async fn setting(state: &AppState, key: &str) -> AppResult<Option<String>> {
-    Ok(phpyun_models::site_setting::repo::find(state.db.reader(), key)
-        .await?
-        .map(|row| row.value.trim().to_string())
-        .filter(|value| !value.is_empty()))
+    Ok(
+        phpyun_models::site_setting::repo::find(state.db.reader(), key)
+            .await?
+            .map(|row| row.value.trim().to_string())
+            .filter(|value| !value.is_empty()),
+    )
 }
 
 /// Submit a plain-text message to the host MTA and wait until it accepts it.
@@ -32,7 +34,11 @@ pub async fn send_text(state: &AppState, to: &str, subject: &str, body: &str) ->
             .stdout(Stdio::piped())
             .stderr(Stdio::piped())
             .spawn()?;
-        child.stdin.take().expect("sendmail stdin").write_all(message.as_bytes())?;
+        child
+            .stdin
+            .take()
+            .expect("sendmail stdin")
+            .write_all(message.as_bytes())?;
         child.wait_with_output()
     })
     .await

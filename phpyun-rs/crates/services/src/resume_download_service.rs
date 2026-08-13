@@ -5,16 +5,15 @@
 //! - On the first download, sends a message to the jobseeker: "Company XX downloaded your resume".
 //! - Contact info can be unlocked after a download (business rule; the frontend controls how it is displayed).
 
-use phpyun_core::ApiError;
 use phpyun_core::audit::{self, Actor, AuditEvent};
 use phpyun_core::i18n::{t, Lang};
+use phpyun_core::ApiError;
 use phpyun_core::{clock, AppResult, AppState, AuthenticatedUser, Pagination};
 
 const NOTIF_LANG: Lang = Lang::ZhCN;
 use phpyun_models::message::{entity as msg_entity, repo as message_repo};
 use phpyun_models::resume::repo as resume_repo;
 use phpyun_models::resume_download::{entity::ResumeDownload, repo as download_repo};
-
 
 pub struct DownloadPage {
     pub list: Vec<ResumeDownload>,
@@ -74,11 +73,8 @@ pub async fn download(
 
     let _ = audit::emit(
         state,
-        AuditEvent::new(
-            "resume.download",
-            Actor::uid(user.uid).with_ip(client_ip),
-        )
-        .target(format!("uid:{target_uid}")),
+        AuditEvent::new("resume.download", Actor::uid(user.uid).with_ip(client_ip))
+            .target(format!("uid:{target_uid}")),
     )
     .await;
 

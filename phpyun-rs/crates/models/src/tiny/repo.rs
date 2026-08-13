@@ -8,7 +8,8 @@ use sqlx::{MySqlPool, QueryBuilder};
 // `phpyun_resume_tiny` declares lastupdate / did / hits as nullable int;
 // `TinyResume` reads them as plain `i64 / u32 / i64`. COALESCE so a NULL row
 // can't surprise sqlx.
-const FIELDS: &str = "id, username, sex, exp, job, mobile, password, provinceid, cityid, three_cityid, \
+const FIELDS: &str =
+    "id, username, sex, exp, job, mobile, password, provinceid, cityid, three_cityid, \
     production, status, login_ip, time, \
     COALESCE(lastupdate, 0) AS lastupdate, \
     COALESCE(did, 0) AS did, \
@@ -97,13 +98,12 @@ pub async fn count_today_by_ip(
     ip: &str,
     since_ts: i64,
 ) -> Result<u64, sqlx::Error> {
-    let (n,): (i64,) = sqlx::query_as(
-        "SELECT COUNT(*) FROM phpyun_resume_tiny WHERE login_ip = ? AND time > ?",
-    )
-    .bind(ip)
-    .bind(since_ts)
-    .fetch_one(pool)
-    .await?;
+    let (n,): (i64,) =
+        sqlx::query_as("SELECT COUNT(*) FROM phpyun_resume_tiny WHERE login_ip = ? AND time > ?")
+            .bind(ip)
+            .bind(since_ts)
+            .fetch_one(pool)
+            .await?;
     Ok(n.max(0) as u64)
 }
 
@@ -206,13 +206,12 @@ pub async fn verify_password(
     id: u64,
     password_md5: &str,
 ) -> Result<bool, sqlx::Error> {
-    let (n,): (i64,) = sqlx::query_as(
-        "SELECT COUNT(*) FROM phpyun_resume_tiny WHERE id = ? AND password = ?",
-    )
-    .bind(id)
-    .bind(password_md5)
-    .fetch_one(pool)
-    .await?;
+    let (n,): (i64,) =
+        sqlx::query_as("SELECT COUNT(*) FROM phpyun_resume_tiny WHERE id = ? AND password = ?")
+            .bind(id)
+            .bind(password_md5)
+            .fetch_one(pool)
+            .await?;
     Ok(n > 0)
 }
 
@@ -222,14 +221,13 @@ pub async fn refresh_with_password(
     password_md5: &str,
     now: i64,
 ) -> Result<u64, sqlx::Error> {
-    let res = sqlx::query(
-        "UPDATE phpyun_resume_tiny SET lastupdate = ? WHERE id = ? AND password = ?",
-    )
-    .bind(now)
-    .bind(id)
-    .bind(password_md5)
-    .execute(pool)
-    .await?;
+    let res =
+        sqlx::query("UPDATE phpyun_resume_tiny SET lastupdate = ? WHERE id = ? AND password = ?")
+            .bind(now)
+            .bind(id)
+            .bind(password_md5)
+            .execute(pool)
+            .await?;
     Ok(res.rows_affected())
 }
 
@@ -239,13 +237,11 @@ pub async fn delete_with_password(
     id: u64,
     password_md5: &str,
 ) -> Result<u64, sqlx::Error> {
-    let res = sqlx::query(
-        "UPDATE phpyun_resume_tiny SET status = 2 WHERE id = ? AND password = ?",
-    )
-    .bind(id)
-    .bind(password_md5)
-    .execute(pool)
-    .await?;
+    let res = sqlx::query("UPDATE phpyun_resume_tiny SET status = 2 WHERE id = ? AND password = ?")
+        .bind(id)
+        .bind(password_md5)
+        .execute(pool)
+        .await?;
     Ok(res.rows_affected())
 }
 

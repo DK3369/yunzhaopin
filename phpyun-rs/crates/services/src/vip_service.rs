@@ -5,7 +5,10 @@
 
 use phpyun_core::audit::{self, Actor, AuditEvent};
 use phpyun_core::{clock, ApiError, AppResult, AppState, AuthenticatedUser, Pagination};
-use phpyun_models::vip::{entity::{PayOrder, UserVip, VipPackage}, repo as vip_repo};
+use phpyun_models::vip::{
+    entity::{PayOrder, UserVip, VipPackage},
+    repo as vip_repo,
+};
 use uuid::Uuid;
 
 const SECS_PER_DAY: i64 = 86_400;
@@ -73,11 +76,7 @@ pub async fn create_order(
 ///     (see `pay_callback.rs`)
 ///   - dev: the `mock_paid` handler **must** first check `order.uid == authenticated_user.uid`
 /// Any new entry point that bypasses the above and calls this function directly is a security hole.
-pub async fn mark_paid(
-    state: &AppState,
-    order_no: &str,
-    pay_tx_id: &str,
-) -> AppResult<()> {
+pub async fn mark_paid(state: &AppState, order_no: &str, pay_tx_id: &str) -> AppResult<()> {
     let order = vip_repo::find_order_by_no(state.db.reader(), order_no)
         .await?
         .ok_or_else(|| -> ApiError { ApiError::param_invalid("order_not_found").into() })?;
@@ -226,16 +225,16 @@ pub async fn quote_package_price(
 
     let pkg = phpyun_models::vip::repo::find_package_pricing(reader, package_id)
         .await?
-        .ok_or_else(|| {
-            phpyun_core::ApiError::param_invalid(
-                "package_not_found",
-            )
-        })?;
+        .ok_or_else(|| phpyun_core::ApiError::param_invalid("package_not_found"))?;
 
     // Read site config (`com_integral_online`, `integral_proportion`) and
     // `sy_only_price` (CSV of kinds that opt out of integral payment).
-    let online_mode = read_int_setting(state, "com_integral_online").await.unwrap_or(0);
-    let proportion = read_int_setting(state, "integral_proportion").await.unwrap_or(0);
+    let online_mode = read_int_setting(state, "com_integral_online")
+        .await
+        .unwrap_or(0);
+    let proportion = read_int_setting(state, "integral_proportion")
+        .await
+        .unwrap_or(0);
     let only_price = read_str_setting(state, "sy_only_price")
         .await
         .unwrap_or_default();
@@ -244,26 +243,25 @@ pub async fn quote_package_price(
     let now = phpyun_core::clock::now_ts();
     let promo_active = pkg.time_start < now && pkg.time_end > now;
 
-    let user_integral =
-        phpyun_models::vip::repo::read_company_integral(reader, user.uid).await?;
-    let discount =
-        phpyun_models::vip::repo::read_company_rating_discount(reader, user.uid).await?;
+    let user_integral = phpyun_models::vip::repo::read_company_integral(reader, user.uid).await?;
+    let discount = phpyun_models::vip::repo::read_company_rating_discount(reader, user.uid).await?;
 
     // PHP `service_discount` is a percent (e.g. 80 = 80%); divide by 100.
     let discount_factor = (discount as f64) / 100.0;
     let pro = proportion.max(0) as f64; // multiplier between yuan and integral
 
-    let effective_yh = if pkg.yh_price > 0.0 { pkg.yh_price } else { pkg.service_price };
+    let effective_yh = if pkg.yh_price > 0.0 {
+        pkg.yh_price
+    } else {
+        pkg.service_price
+    };
 
     // PHP separates `pack` and `vip` paths but the math is the same once
     // discount + window are folded in. The only difference: `pack` always
     // applies the rating discount; `vip` only applies the promo-window
     // discount. We stay faithful to that here.
     let (display_yh, display_service) = if kind == "pack" {
-        (
-            effective_yh * discount_factor,
-            pkg.service_price,
-        )
+        (effective_yh * discount_factor, pkg.service_price)
     } else if kind == "vip" {
         if promo_active {
             (pkg.yh_price, pkg.service_price)

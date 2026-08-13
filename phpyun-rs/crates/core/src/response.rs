@@ -5,17 +5,16 @@
 //! { "code": 200, "msg": "ok", "data": { ... } }
 //!
 //! // Failure (see error.rs for stable keys and translation)
-//! { "code": 401, "key": "errors.unauth", "msg": "Not logged in", "data": null }
-//! { "code": 429, "key": "errors.rate_limit", "msg": "Too many requests, please try again later", "data": null }
+//! { "code": 401, "msg": "Not logged in", "data": "" }
+//! { "code": 429, "msg": "Too many requests, please try again later", "data": "" }
 //! ```
 //!
 //! ## Design points
 //! - `code` aligns with the HTTP status: frontend, backend, and monitoring all
 //!   read the same number.
-//! - Failure `key` is a stable machine-readable key; failure `msg` is already
-//!   translated for display.
-//! - `data` is the business payload on success; on failure it's `null`
-//!   (`Option::is_none` omits the field during serialization to save bytes).
+//! - Failure `msg` is already translated for display.
+//! - `data` is the business payload on success; when there is no payload it is
+//!   serialized as an empty string.
 //! - `BusinessError(s)` can carry a custom phrase in the form `"biz:<phrase>"`.
 //!
 //! ## Frontend decision logic
@@ -32,7 +31,7 @@ use axum::{
     response::{IntoResponse, Response},
     Json,
 };
-use serde::Serialize;
+use serde::{Serialize, Serializer};
 
 /// Success code. Every successful endpoint uses this.
 pub const CODE_OK: u16 = 200;
@@ -41,8 +40,18 @@ pub const CODE_OK: u16 = 200;
 pub struct ApiBody<T: Serialize> {
     pub code: u16,
     pub msg: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(serialize_with = "serialize_data")]
     pub data: Option<T>,
+}
+
+fn serialize_data<T: Serialize, S: Serializer>(
+    data: &Option<T>,
+    serializer: S,
+) -> Result<S::Ok, S::Error> {
+    match data {
+        Some(data) => data.serialize(serializer),
+        None => "".serialize(serializer),
+    }
 }
 
 impl<T: Serialize> ApiBody<T> {
@@ -54,9 +63,7 @@ impl<T: Serialize> ApiBody<T> {
         }
     }
 
-    /// Failure envelope. Business code normally doesn't construct this directly;
-    /// `ApiError::into_response()` builds it automatically. The API is kept for
-    /// the rare case where you need to bypass the `ApiError` enum.
+    /// Failure envelope. `ApiError::into_response()` builds it automatically.
     pub fn err(code: u16, msg: impl Into<String>) -> Self {
         Self {
             code,
@@ -66,91 +73,51 @@ impl<T: Serialize> ApiBody<T> {
     }
 }
 
-/// Handler return type. `impl IntoResponse` automatically wraps the value in
-/// `{code:200, msg:"ok", data}`.
+/// Unified successful handler response.
 ///
-/// ```ignore
-/// pub async fn me(...) -> AppResult<ApiJson<MeData>> {
-///     Ok(ApiJson(profile))
-/// }
-/// ```
-pub struct ApiJson<T: Serialize>(pub T);
+/// Use [`Self::data`] for a normal payload, [`Self::message`] for a translated
+/// message without data, or [`Self::message_data`] when both are needed.
+pub struct ApiResponse<T: Serialize = ()> {
+    msg_key: Option<&'static str>,
+    data: Option<T>,
+}
 
-impl<T: Serialize> IntoResponse for ApiJson<T> {
-    fn into_response(self) -> Response {
-        Json(ApiBody::ok(self.0)).into_response()
+impl<T: Serialize> ApiResponse<T> {
+    pub fn data(data: T) -> Self {
+        Self {
+            msg_key: None,
+            data: Some(data),
+        }
+    }
+
+    pub fn message_data(msg_key: &'static str, data: T) -> Self {
+        Self {
+            msg_key: Some(msg_key),
+            data: Some(data),
+        }
     }
 }
 
-/// Success response with only `msg` and no `data` (e.g. `ApiOk("deleted")`).
-pub struct ApiOk(pub &'static str);
-impl IntoResponse for ApiOk {
-    fn into_response(self) -> Response {
-        let lang = crate::i18n::current_lang();
-        let msg = resolve_msg_key(self.0, lang);
-        Json(ApiBody::<()> {
-            code: CODE_OK,
-            msg,
+impl ApiResponse<()> {
+    pub fn message(msg_key: &'static str) -> Self {
+        Self {
+            msg_key: Some(msg_key),
             data: None,
-        })
-        .into_response()
+        }
     }
 }
 
-/// Success response whose `msg` goes through the i18n table at runtime.
-///
-/// Pass either a fully-qualified key (`"messages.collect_added"`) or a short
-/// snake_case form (`"collect_added"`); the latter is auto-prefixed with
-/// `messages.` for lookup. Falls back to the literal string if no translation
-/// matches.
-///
-/// ```ignore
-/// pub async fn add(...) -> AppResult<ApiMsg> {
-///     ...
-///     Ok(ApiMsg("collect_added"))
-/// }
-/// ```
-pub struct ApiMsg(pub &'static str);
-
-impl IntoResponse for ApiMsg {
+impl<T: Serialize> IntoResponse for ApiResponse<T> {
     fn into_response(self) -> Response {
         let lang = crate::i18n::current_lang();
-        let msg = resolve_msg_key(self.0, lang);
-        Json(ApiBody::<()> {
-            code: CODE_OK,
-            msg,
-            data: None,
-        })
-        .into_response()
-    }
-}
-
-/// Like `ApiMsg` but also carries a `data` payload — useful when the action
-/// needs to tell the client *both* a translatable status message AND the
-/// resulting state (e.g. toggle endpoints).
-///
-/// ```ignore
-/// pub async fn toggle(...) -> AppResult<ApiMsgData<ToggleResp>> {
-///     let now = collect_service::toggle(...).await?;
-///     Ok(ApiMsgData {
-///         msg_key: if now { "collect_added" } else { "collect_removed" },
-///         data: ToggleResp { favorited: now },
-///     })
-/// }
-/// ```
-pub struct ApiMsgData<T: Serialize> {
-    pub msg_key: &'static str,
-    pub data: T,
-}
-
-impl<T: Serialize> IntoResponse for ApiMsgData<T> {
-    fn into_response(self) -> Response {
-        let lang = crate::i18n::current_lang();
-        let msg = resolve_msg_key(self.msg_key, lang);
+        let msg = self
+            .msg_key
+            .map(|key| resolve_msg_key(key, lang))
+            .unwrap_or_else(|| "ok".to_owned());
         Json(ApiBody {
             code: CODE_OK,
             msg,
-            data: Some(self.data),
+            data: self.data,
         })
         .into_response()
     }
@@ -216,9 +183,6 @@ impl<T: Serialize> Paged<T> {
     }
 }
 
-// Legacy alias kept for backward compatibility.
-pub type ApiResponse<T> = ApiBody<T>;
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -233,12 +197,12 @@ mod tests {
     }
 
     #[test]
-    fn err_body_omits_data() {
+    fn err_body_uses_empty_string_data() {
         let body: ApiBody<()> = ApiBody::err(401, "unauth");
         let json = serde_json::to_value(&body).unwrap();
         assert_eq!(json["code"], 401);
         assert_eq!(json["msg"], "unauth");
-        assert!(json.get("data").is_none(), "data should be omitted when None");
+        assert_eq!(json["data"], "");
     }
 
     #[test]

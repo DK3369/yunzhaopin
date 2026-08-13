@@ -498,5 +498,38 @@
       "4": "Temporary",
       "5": "Remote"
     }
+  },
+  "categories": {
+    "job": {
+      "2028": "Municipal/Utilities/Agriculture/Forestry/Animal Husbandry/Fishery",
+      "1779": "Tourism",
+      "1743": "Consulting/Translation/Legal",
+      "1654": "Supply Chain/Logistics",
+      "1635": "Procurement/Trade",
+      "1579": "Healthcare",
+      "1441": "Finance",
+      "1097": "Product",
+      "1332": "Senior Management",
+      "1115": "Design",
+      "955": "Technology",
+      "1372": "Media",
+      "1341": "Sales",
+      "1228": "Marketing",
+      "1497": "Education/Training",
+      "1690": "Real Estate/Construction",
+      "1174": "Operations",
+      "1794": "Services",
+      "1286": "HR/Administration/Finance",
+      "1880": "Manufacturing"
+    },
+    "industry": {
+      "71": "Doctorate",
+      "70": "Master's Degree",
+      "69": "Bachelor's Degree",
+      "68": "Associate Degree",
+      "67": "Secondary Vocational School",
+      "66": "High School",
+      "65": "No Limit"
+    }
   }
 }

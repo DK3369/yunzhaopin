@@ -13,7 +13,7 @@
 use axum::{routing::post, Router};
 use axum_test::TestServer;
 use phpyun_core::json::{self, Value};
-use phpyun_core::{ApiJson, AppResult};
+use phpyun_core::{ApiResponse, AppResult};
 use serde::Serialize;
 
 // ---- Mock v1 login response (Unix seconds) ----
@@ -23,8 +23,8 @@ struct V1LoginData {
     access_exp: i64,
 }
 
-async fn v1_login_stub() -> AppResult<ApiJson<V1LoginData>> {
-    Ok(ApiJson(V1LoginData {
+async fn v1_login_stub() -> AppResult<ApiResponse<V1LoginData>> {
+    Ok(ApiResponse::data(V1LoginData {
         uid: 1,
         access_exp: 1_800_000_000,
     }))
@@ -37,8 +37,8 @@ struct V2LoginData {
     access_expires_at: String,
 }
 
-async fn v2_login_stub() -> AppResult<ApiJson<V2LoginData>> {
-    Ok(ApiJson(V2LoginData {
+async fn v2_login_stub() -> AppResult<ApiResponse<V2LoginData>> {
+    Ok(ApiResponse::data(V2LoginData {
         uid: 1,
         access_expires_at: "2027-01-15T08:00:00+00:00".into(),
     }))
@@ -50,10 +50,8 @@ async fn health_stub() -> axum::Json<Value> {
 
 /// Mirrors the real repo assembly: nest /v1, /v2; health at the root path
 fn mock_build_router() -> Router {
-    let v1 = Router::new()
-        .nest("/wap", Router::new().route("/login", post(v1_login_stub)));
-    let v2 = Router::new()
-        .nest("/wap", Router::new().route("/login", post(v2_login_stub)));
+    let v1 = Router::new().nest("/wap", Router::new().route("/login", post(v1_login_stub)));
+    let v2 = Router::new().nest("/wap", Router::new().route("/login", post(v2_login_stub)));
 
     Router::new()
         .nest("/v1", v1)
@@ -71,7 +69,10 @@ async fn v1_and_v2_coexist_with_different_shapes() {
     let body: Value = server.post("/v1/wap/login").await.json();
     assert_eq!(body["code"], json::json!(200));
     assert_eq!(body["data"]["uid"], json::json!(1));
-    assert!(body["data"]["access_exp"].is_i64(), "v1 access_exp must be a number");
+    assert!(
+        body["data"]["access_exp"].is_i64(),
+        "v1 access_exp must be a number"
+    );
     assert!(
         body["data"]["access_expires_at"].is_null(),
         "v1 should not have an access_expires_at field"
@@ -85,7 +86,10 @@ async fn v1_and_v2_coexist_with_different_shapes() {
         body["data"]["access_expires_at"].is_string(),
         "v2 access_expires_at must be a string"
     );
-    assert!(body["data"]["access_exp"].is_null(), "v2 should not have an access_exp field");
+    assert!(
+        body["data"]["access_exp"].is_null(),
+        "v2 should not have an access_exp field"
+    );
 }
 
 #[tokio::test]
@@ -117,8 +121,8 @@ async fn unversioned_business_path_returns_404() {
 /// This test simulates that reuse, ensuring clients can hit /v2/wap/logout.
 #[tokio::test]
 async fn v2_reuses_v1_handlers_for_unchanged_endpoints() {
-    async fn shared_logout() -> AppResult<ApiJson<Value>> {
-        Ok(ApiJson(json::json!({"revoked": true})))
+    async fn shared_logout() -> AppResult<ApiResponse<Value>> {
+        Ok(ApiResponse::data(json::json!({"revoked": true})))
     }
     // v1 defines logout
     let v1_auth = Router::<()>::new().route("/logout", post(shared_logout));

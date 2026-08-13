@@ -1,16 +1,14 @@
 //! Admin recycle bin. List snapshots / view detail / permanent delete. Restoration is handled by each business service.
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::dto::IdBody;
+use phpyun_core::{
+    ApiResponse, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
 };
-use phpyun_core::{ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::recycle_bin_service::{self, RecycleView};
 use serde::Deserialize;
 use utoipa::IntoParams;
 use validator::Validate;
-use phpyun_core::dto::{IdBody};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -39,10 +37,10 @@ pub async fn list(
     user: AuthenticatedUser,
     page: Pagination,
     ValidatedJson(q): ValidatedJson<ListQuery>,
-) -> AppResult<ApiJson<Paged<RecycleView>>> {
+) -> AppResult<ApiResponse<Paged<RecycleView>>> {
     user.require_admin()?;
     let r = recycle_bin_service::list(&state, q.tablename.as_deref(), page).await?;
-    Ok(ApiJson(r))
+    Ok(ApiResponse::data(r))
 }
 
 /// Single record detail
@@ -53,12 +51,16 @@ pub async fn list(
     request_body = IdBody,
     responses((status = 200, description = "ok"))
 )]
-pub async fn detail(State(state): State<AppState>,
+pub async fn detail(
+    State(state): State<AppState>,
     user: AuthenticatedUser,
-    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiJson<RecycleView>> {
+    ValidatedJson(b): ValidatedJson<IdBody>,
+) -> AppResult<ApiResponse<RecycleView>> {
     let id = b.id;
     user.require_admin()?;
-    Ok(ApiJson(recycle_bin_service::get(&state, id).await?))
+    Ok(ApiResponse::data(
+        recycle_bin_service::get(&state, id).await?,
+    ))
 }
 
 /// Permanently delete
@@ -69,12 +71,13 @@ pub async fn detail(State(state): State<AppState>,
     request_body = IdBody,
     responses((status = 200, description = "ok"))
 )]
-pub async fn purge(State(state): State<AppState>,
+pub async fn purge(
+    State(state): State<AppState>,
     user: AuthenticatedUser,
-    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiOk> {
+    ValidatedJson(b): ValidatedJson<IdBody>,
+) -> AppResult<ApiResponse> {
     let id = b.id;
     user.require_admin()?;
     recycle_bin_service::purge(&state, &user, id).await?;
-    Ok(ApiOk("purged"))
+    Ok(ApiResponse::message("purged"))
 }
-

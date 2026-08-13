@@ -1,26 +1,25 @@
 //! Company talent pool (usertype=2). Matches PHPYun `wap/ajax::talentpool_action`
 //! + `member/com/talent_pool` CRUD.
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::dto::{CreatedId, IdsBody};
+use phpyun_core::utils::fmt_dt;
+use phpyun_core::{
+    json, ApiResponse, AppResult, AppState, AuthenticatedUser, ClientIp, Paged, Pagination,
+    ValidatedJson,
 };
-use phpyun_core::{json, ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, Paged, Pagination, ValidatedJson};
 use phpyun_services::talent_pool_service;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
-use phpyun_core::dto::{CreatedId, IdsBody};
-use phpyun_core::utils::{fmt_dt};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/talent-pool", post(add))
-        .route("/talent-pool/list", post(list)).route("/talent-pool/delete", post(delete_many))
+        .route("/talent-pool/list", post(list))
+        .route("/talent-pool/delete", post(delete_many))
         .route("/talent-pool/remark", post(update_remark))
 }
-
 
 #[derive(Debug, Serialize, ToSchema)]
 pub struct TalentPoolView {
@@ -72,17 +71,10 @@ pub async fn add(
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
     ValidatedJson(f): ValidatedJson<AddForm>,
-) -> AppResult<ApiJson<CreatedId>> {
-    let id = talent_pool_service::add(
-        &state,
-        &user,
-        f.eid,
-        f.seeker_uid,
-        f.remark.as_deref(),
-        &ip,
-    )
-    .await?;
-    Ok(ApiJson(CreatedId { id }))
+) -> AppResult<ApiResponse<CreatedId>> {
+    let id = talent_pool_service::add(&state, &user, f.eid, f.seeker_uid, f.remark.as_deref(), &ip)
+        .await?;
+    Ok(ApiResponse::data(CreatedId { id }))
 }
 
 #[utoipa::path(
@@ -91,13 +83,16 @@ pub async fn add(
     tag = "mcenter",
     security(("bearer" = [])),
     responses((status = 200, description = "ok"))
-)]pub async fn list(
+)]
+pub async fn list(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-) -> AppResult<ApiJson<Paged<TalentPoolView>>> {
+) -> AppResult<ApiResponse<Paged<TalentPoolView>>> {
     let r = talent_pool_service::list_mine(&state, &user, page).await?;
-    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
+    Ok(ApiResponse::data(Paged::from_listing(
+        r.list, r.total, page,
+    )))
 }
 
 #[utoipa::path(
@@ -112,9 +107,9 @@ pub async fn delete_many(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(b): ValidatedJson<IdsBody>,
-) -> AppResult<ApiJson<json::Value>> {
+) -> AppResult<ApiResponse<json::Value>> {
     let n = talent_pool_service::delete_mine(&state, &user, &b.ids).await?;
-    Ok(ApiJson(json::json!({ "deleted": n })))
+    Ok(ApiResponse::data(json::json!({ "deleted": n })))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
@@ -132,10 +127,12 @@ pub struct RemarkBody {
     request_body = RemarkBody,
     responses((status = 200, description = "ok"))
 )]
-pub async fn update_remark(State(state): State<AppState>,
+pub async fn update_remark(
+    State(state): State<AppState>,
     user: AuthenticatedUser,
-    ValidatedJson(b): ValidatedJson<RemarkBody>) -> AppResult<ApiJson<json::Value>> {
+    ValidatedJson(b): ValidatedJson<RemarkBody>,
+) -> AppResult<ApiResponse<json::Value>> {
     let id = b.id;
     let n = talent_pool_service::update_remark(&state, &user, id, &b.remark).await?;
-    Ok(ApiJson(json::json!({ "updated": n })))
+    Ok(ApiResponse::data(json::json!({ "updated": n })))
 }

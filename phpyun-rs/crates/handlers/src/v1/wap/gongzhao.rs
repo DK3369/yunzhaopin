@@ -1,19 +1,13 @@
 //! Joint recruitment (aligned with PHPYun `wap/gongzhao`).
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
-};
-use phpyun_core::{ApiJson, AppResult, AppState, Paged, Pagination, ValidatedJson};
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::dto::IdBody;
+use phpyun_core::utils::{fmt_date, fmt_dt, pic_n_str as pic_n};
+use phpyun_core::{ApiResponse, AppResult, AppState, Paged, Pagination, ValidatedJson};
 use phpyun_services::gongzhao_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
-use phpyun_core::dto::{IdBody};
-use phpyun_core::utils::{fmt_date, fmt_dt, pic_n_str as pic_n};
-
-
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -50,10 +44,7 @@ pub struct GzSummary {
 }
 
 impl GzSummary {
-    pub fn from_with_ctx(
-        g: phpyun_models::gongzhao::entity::Gongzhao,
-        state: &AppState,
-    ) -> Self {
+    pub fn from_with_ctx(g: phpyun_models::gongzhao::entity::Gongzhao, state: &AppState) -> Self {
         let tag_arr = g
             .tag
             .split(',')
@@ -132,10 +123,7 @@ pub struct GzDetail {
 }
 
 impl GzDetail {
-    pub fn from_with_ctx(
-        g: phpyun_models::gongzhao::entity::Gongzhao,
-        state: &AppState,
-    ) -> Self {
+    pub fn from_with_ctx(g: phpyun_models::gongzhao::entity::Gongzhao, state: &AppState) -> Self {
         let tag_arr = g
             .tag
             .split(',')
@@ -176,9 +164,9 @@ pub async fn list(
     State(state): State<AppState>,
     page: Pagination,
     ValidatedJson(q): ValidatedJson<ListQuery>,
-) -> AppResult<ApiJson<Paged<GzSummary>>> {
+) -> AppResult<ApiResponse<Paged<GzSummary>>> {
     let r = gongzhao_service::list(&state, q.tag.as_deref(), page).await?;
-    Ok(ApiJson(Paged::new(
+    Ok(ApiResponse::data(Paged::new(
         r.list
             .into_iter()
             .map(|g| GzSummary::from_with_ctx(g, &state))
@@ -196,10 +184,11 @@ pub async fn list(
     request_body = IdBody,
     responses((status = 200, description = "ok", body = GzDetail))
 )]
-pub async fn detail(State(state): State<AppState>,
-    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiJson<GzDetail>> {
+pub async fn detail(
+    State(state): State<AppState>,
+    ValidatedJson(b): ValidatedJson<IdBody>,
+) -> AppResult<ApiResponse<GzDetail>> {
     let id = b.id;
     let g = gongzhao_service::get(&state, id).await?;
-    Ok(ApiJson(GzDetail::from_with_ctx(g, &state)))
+    Ok(ApiResponse::data(GzDetail::from_with_ctx(g, &state)))
 }
-

@@ -18,4 +18,3 @@ pub fn router() -> Router<AppState> {
         .nest("/mcenter", mcenter::router())
         .nest("/admin", admin::router())
 }
-

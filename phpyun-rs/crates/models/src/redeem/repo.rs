@@ -76,14 +76,12 @@ pub async fn insert_class(
     now: i64,
 ) -> Result<u64, sqlx::Error> {
     let _ = now;
-    let res = sqlx::query(
-        "INSERT INTO phpyun_redeem_class (keyid, name, sort) VALUES (?, ?, ?)",
-    )
-    .bind(parent_id)
-    .bind(name)
-    .bind(sort)
-    .execute(pool)
-    .await?;
+    let res = sqlx::query("INSERT INTO phpyun_redeem_class (keyid, name, sort) VALUES (?, ?, ?)")
+        .bind(parent_id)
+        .bind(name)
+        .bind(sort)
+        .execute(pool)
+        .await?;
     Ok(res.last_insert_id())
 }
 
@@ -401,13 +399,11 @@ pub async fn tx_set_order_status(
     expected: i32,
     new_status: i32,
 ) -> Result<u64, sqlx::Error> {
-    let res = sqlx::query(
-        "UPDATE phpyun_company_order SET status = ? WHERE id = ? AND status = ?",
-    )
-    .bind(new_status)
-    .bind(id)
-    .bind(expected)
-    .execute(&mut **tx)
-    .await?;
+    let res = sqlx::query("UPDATE phpyun_company_order SET status = ? WHERE id = ? AND status = ?")
+        .bind(new_status)
+        .bind(id)
+        .bind(expected)
+        .execute(&mut **tx)
+        .await?;
     Ok(res.rows_affected())
 }

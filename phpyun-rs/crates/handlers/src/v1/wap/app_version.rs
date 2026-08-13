@@ -1,11 +1,7 @@
 //! App version check (public).
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
-};
-use phpyun_core::{ApiJson, AppResult, AppState, ValidatedJson};
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::{ApiResponse, AppResult, AppState, ValidatedJson};
 use phpyun_services::app_version_service;
 use serde::Serialize;
 use utoipa::ToSchema;
@@ -32,12 +28,14 @@ pub struct VersionView {
     request_body = LatestBody,
     responses((status = 200, description = "ok"))
 )]
-pub async fn latest(State(state): State<AppState>,
-    ValidatedJson(b): ValidatedJson<LatestBody>) -> AppResult<ApiJson<Option<VersionView>>> {
+pub async fn latest(
+    State(state): State<AppState>,
+    ValidatedJson(b): ValidatedJson<LatestBody>,
+) -> AppResult<ApiResponse<Option<VersionView>>> {
     let platform = b.platform;
     phpyun_core::validators::ensure_path_token(&platform)?;
     let v = app_version_service::latest(&state, &platform).await?;
-    Ok(ApiJson(v.map(|v| VersionView {
+    Ok(ApiResponse::data(v.map(|v| VersionView {
         platform: v.platform,
         version: v.version,
         version_code: v.version_code,
@@ -50,6 +48,9 @@ pub async fn latest(State(state): State<AppState>,
 
 #[derive(Debug, serde::Deserialize, validator::Validate, utoipa::ToSchema)]
 pub struct LatestBody {
-    #[validate(length(min = 1, max = 64), custom(function = "phpyun_core::validators::path_token"))]
+    #[validate(
+        length(min = 1, max = 64),
+        custom(function = "phpyun_core::validators::path_token")
+    )]
     pub platform: String,
 }

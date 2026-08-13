@@ -1,11 +1,7 @@
 //! Resume completeness score.
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
-};
-use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser};
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::{ApiResponse, AppResult, AppState, AuthenticatedUser};
 use phpyun_services::resume_score_service;
 use serde::Serialize;
 use utoipa::ToSchema;
@@ -31,9 +27,9 @@ pub struct Completion {
 pub async fn completion(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-) -> AppResult<ApiJson<Completion>> {
+) -> AppResult<ApiResponse<Completion>> {
     let r = resume_score_service::compute(&state, &user).await?;
-    Ok(ApiJson(Completion {
+    Ok(ApiResponse::data(Completion {
         score: r.score,
         missing: r.missing.into_iter().map(|s| s.to_string()).collect(),
     }))

@@ -1,17 +1,15 @@
 //! System broadcasts (admin).
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::dto::{CreatedId, IdBody};
+use phpyun_core::utils::fmt_dt;
+use phpyun_core::{
+    ApiResponse, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
 };
-use phpyun_core::{ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::broadcast_service;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
-use phpyun_core::dto::{CreatedId, IdBody};
-use phpyun_core::utils::{fmt_dt};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -20,9 +18,13 @@ pub fn routes() -> Router<AppState> {
         .route("/broadcasts/delete", post(remove))
 }
 
-
 fn target_usertype_name(t: i32) -> &'static str {
-    match t { 0 => "all", 1 => "jobseeker", 2 => "company", _ => "unknown" }
+    match t {
+        0 => "all",
+        1 => "jobseeker",
+        2 => "company",
+        _ => "unknown",
+    }
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -66,14 +68,17 @@ pub struct CreateForm {
     pub target_usertype: i32,
 }
 
-#[utoipa::path(post, path = "/v1/admin/broadcasts/list", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok")))]pub async fn list(
+#[utoipa::path(post, path = "/v1/admin/broadcasts/list", tag = "admin", security(("bearer" = [])), responses((status = 200, description = "ok")))]
+pub async fn list(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-) -> AppResult<ApiJson<Paged<BroadcastItem>>> {
+) -> AppResult<ApiResponse<Paged<BroadcastItem>>> {
     user.require_admin()?;
     let r = broadcast_service::admin_list(&state, &user, page).await?;
-    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
+    Ok(ApiResponse::data(Paged::from_listing(
+        r.list, r.total, page,
+    )))
 }
 
 #[utoipa::path(post, path = "/v1/admin/broadcasts", tag = "admin", security(("bearer" = [])), request_body = CreateForm, responses((status = 200, description = "ok", body = CreatedId)))]
@@ -81,12 +86,11 @@ pub async fn create(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(f): ValidatedJson<CreateForm>,
-) -> AppResult<ApiJson<CreatedId>> {
+) -> AppResult<ApiResponse<CreatedId>> {
     user.require_admin()?;
-    let id =
-        broadcast_service::admin_create(&state, &user, &f.title, &f.body, f.target_usertype)
-            .await?;
-    Ok(ApiJson(CreatedId { id }))
+    let id = broadcast_service::admin_create(&state, &user, &f.title, &f.body, f.target_usertype)
+        .await?;
+    Ok(ApiResponse::data(CreatedId { id }))
 }
 
 #[utoipa::path(post, path = "/v1/admin/broadcasts/delete", tag = "admin", security(("bearer" = [])), request_body = IdBody, responses((status = 200, description = "ok")))]
@@ -94,8 +98,8 @@ pub async fn remove(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(b): ValidatedJson<IdBody>,
-) -> AppResult<ApiOk> {
+) -> AppResult<ApiResponse> {
     user.require_admin()?;
     broadcast_service::admin_delete(&state, &user, b.id).await?;
-    Ok(ApiOk("deleted"))
+    Ok(ApiResponse::message("deleted"))
 }

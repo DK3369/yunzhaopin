@@ -2,11 +2,10 @@
 //!
 //! Aligns with the PHPYun `mcenter/job` controller. usertype=2 only; service-layer validation.
 
-use phpyun_core::ApiError;
 use phpyun_core::audit::{self, Actor, AuditEvent};
+use phpyun_core::ApiError;
 use phpyun_core::{clock, AppResult, AppState, AuthenticatedUser, Pagination};
 use phpyun_models::job::{entity::Job, repo as job_repo};
-
 
 // ==================== Create ====================
 
@@ -238,7 +237,10 @@ pub async fn batch_refresh(
 ) -> AppResult<BatchReport> {
     user.require_employer()?;
     if ids.is_empty() {
-        return Ok(BatchReport { requested: 0, affected: 0 });
+        return Ok(BatchReport {
+            requested: 0,
+            affected: 0,
+        });
     }
     let now = clock::now_ts();
     let mut total: u64 = 0;
@@ -251,7 +253,10 @@ pub async fn batch_refresh(
             .meta(&serde_json::json!({ "requested": ids.len(), "affected": total })),
     )
     .await;
-    Ok(BatchReport { requested: ids.len(), affected: total })
+    Ok(BatchReport {
+        requested: ids.len(),
+        affected: total,
+    })
 }
 
 /// Batch unlist.
@@ -263,7 +268,10 @@ pub async fn batch_close(
 ) -> AppResult<BatchReport> {
     user.require_employer()?;
     if ids.is_empty() {
-        return Ok(BatchReport { requested: 0, affected: 0 });
+        return Ok(BatchReport {
+            requested: 0,
+            affected: 0,
+        });
     }
     let mut total: u64 = 0;
     for id in ids {
@@ -275,7 +283,10 @@ pub async fn batch_close(
             .meta(&serde_json::json!({ "requested": ids.len(), "affected": total })),
     )
     .await;
-    Ok(BatchReport { requested: ids.len(), affected: total })
+    Ok(BatchReport {
+        requested: ids.len(),
+        affected: total,
+    })
 }
 
 /// Batch delete (hard delete; only the caller's own rows).
@@ -287,7 +298,10 @@ pub async fn batch_delete(
 ) -> AppResult<BatchReport> {
     user.require_employer()?;
     if ids.is_empty() {
-        return Ok(BatchReport { requested: 0, affected: 0 });
+        return Ok(BatchReport {
+            requested: 0,
+            affected: 0,
+        });
     }
     let mut total: u64 = 0;
     for id in ids {
@@ -299,7 +313,10 @@ pub async fn batch_delete(
             .meta(&serde_json::json!({ "requested": ids.len(), "affected": total })),
     )
     .await;
-    Ok(BatchReport { requested: ids.len(), affected: total })
+    Ok(BatchReport {
+        requested: ids.len(),
+        affected: total,
+    })
 }
 
 // ==================== List ====================
@@ -318,7 +335,13 @@ pub async fn list_mine(
     user.require_employer()?;
     let (total_res, list_res) = tokio::join!(
         job_repo::count_own(state.db.reader(), user.uid, state_filter),
-        job_repo::list_own(state.db.reader(), user.uid, state_filter, page.offset, page.limit),
+        job_repo::list_own(
+            state.db.reader(),
+            user.uid,
+            state_filter,
+            page.offset,
+            page.limit
+        ),
     );
     Ok(MyJobsPage {
         total: total_res?,

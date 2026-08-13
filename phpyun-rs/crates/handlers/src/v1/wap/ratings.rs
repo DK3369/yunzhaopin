@@ -1,16 +1,12 @@
 //! Public rating reads (aligned with PHPYun `rating.model.php` detail page comment block).
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
-};
-use phpyun_core::{ApiJson, AppResult, AppState, Paged, Pagination, ValidatedJson};
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::utils::fmt_dt;
+use phpyun_core::{ApiResponse, AppResult, AppState, Paged, Pagination, ValidatedJson};
 use phpyun_services::rating_service;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
-use phpyun_core::utils::{fmt_dt};
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct RatingTargetBody {
@@ -21,7 +17,6 @@ pub struct RatingTargetBody {
     #[validate(range(min = 1, max = 999_999_999))]
     pub uid: u64,
 }
-
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -106,9 +101,11 @@ pub async fn list(
     State(state): State<AppState>,
     page: Pagination,
     ValidatedJson(b): ValidatedJson<RatingTargetBody>,
-) -> AppResult<ApiJson<Paged<RatingItem>>> {
+) -> AppResult<ApiResponse<Paged<RatingItem>>> {
     let r = rating_service::list(&state, b.uid, b.kind, page).await?;
-    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
+    Ok(ApiResponse::data(Paged::from_listing(
+        r.list, r.total, page,
+    )))
 }
 
 /// Rating summary (count + avg)
@@ -122,7 +119,7 @@ pub async fn list(
 pub async fn summary(
     State(state): State<AppState>,
     ValidatedJson(b): ValidatedJson<RatingTargetBody>,
-) -> AppResult<ApiJson<RatingSummary>> {
+) -> AppResult<ApiResponse<RatingSummary>> {
     let a = rating_service::aggregate(&state, b.uid, b.kind).await?;
-    Ok(ApiJson(RatingSummary::from(a)))
+    Ok(ApiResponse::data(RatingSummary::from(a)))
 }

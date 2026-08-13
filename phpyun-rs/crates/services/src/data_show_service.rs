@@ -154,10 +154,9 @@ async fn distribution(
     cache
         .get_or_load(cache_key, move || async move {
             let (s, e) = last_year_range(phpyun_core::clock::now_ts());
-            let rows = phpyun_models::stats::repo::bucket_distribution(
-                &db, table, col, s, e, limit,
-            )
-            .await?;
+            let rows =
+                phpyun_models::stats::repo::bucket_distribution(&db, table, col, s, e, limit)
+                    .await?;
             Ok(buckets_to_dist(rows))
         })
         .await
@@ -228,9 +227,8 @@ fn compute_age_years(birthday: &str, now_ts: i64) -> Option<i32> {
     // enough for distribution charts.
     // chrono would be more rigorous; we use the approximation here to avoid extra conversion.
     const YEAR_SEC: i64 = 365 * 86400 + 21600; // +6h roughly compensates for leap years
-    let birth_ts_approx = (y as i64 - 1970) * YEAR_SEC
-        + (m as i64 - 1) * 30 * 86400
-        + (d as i64 - 1) * 86400;
+    let birth_ts_approx =
+        (y as i64 - 1970) * YEAR_SEC + (m as i64 - 1) * 30 * 86400 + (d as i64 - 1) * 86400;
     let age_years = (now_ts - birth_ts_approx) / YEAR_SEC;
     Some(age_years as i32)
 }
@@ -239,14 +237,28 @@ fn compute_age_years(birthday: &str, now_ts: i64) -> Option<i32> {
 
 /// Company-size distribution (`phpyun_company.mun`)
 pub async fn company_scale_distribution(state: &AppState) -> AppResult<Arc<Vec<DistItem>>> {
-    distribution(state, dist_cache(), "company_scale", "phpyun_company", "mun", 0).await
+    distribution(
+        state,
+        dist_cache(),
+        "company_scale",
+        "phpyun_company",
+        "mun",
+        0,
+    )
+    .await
 }
 
 /// Company-nature distribution (`phpyun_company.pr`)
-pub async fn company_property_distribution(
-    state: &AppState,
-) -> AppResult<Arc<Vec<DistItem>>> {
-    distribution(state, dist_cache(), "company_property", "phpyun_company", "pr", 0).await
+pub async fn company_property_distribution(state: &AppState) -> AppResult<Arc<Vec<DistItem>>> {
+    distribution(
+        state,
+        dist_cache(),
+        "company_property",
+        "phpyun_company",
+        "pr",
+        0,
+    )
+    .await
 }
 
 /// Company region distribution (`phpyun_company.provinceid | cityid | three_cityid`)
@@ -286,10 +298,8 @@ async fn city_distribution(
                 _ => "cityid",
             };
             let (s, e) = last_year_range(phpyun_core::clock::now_ts());
-            let rows = phpyun_models::stats::repo::bucket_distribution(
-                &db, table, col, s, e, 50,
-            )
-            .await?;
+            let rows =
+                phpyun_models::stats::repo::bucket_distribution(&db, table, col, s, e, 50).await?;
             Ok(buckets_to_dist(rows))
         })
         .await
@@ -344,10 +354,9 @@ async fn month_bucket_trend(
     let now = phpyun_core::clock::now_ts();
     let start = now - 365 * DAY;
 
-    let rows = phpyun_models::stats::repo::month_bucket_trend(
-        db, table, ts_col, start, where_extra,
-    )
-    .await?;
+    let rows =
+        phpyun_models::stats::repo::month_bucket_trend(db, table, ts_col, start, where_extra)
+            .await?;
 
     // Pad the past 12 months with zeros, keyed by YYYY-MM
     let buckets = recent_12_months(now);
@@ -402,7 +411,20 @@ fn days_to_ymd(days: i64) -> (i32, u32, u32) {
         d -= in_year;
         y += 1;
     }
-    let months = [31, if is_leap(y) { 29 } else { 28 }, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+    let months = [
+        31,
+        if is_leap(y) { 29 } else { 28 },
+        31,
+        30,
+        31,
+        30,
+        31,
+        31,
+        30,
+        31,
+        30,
+        31,
+    ];
     let mut m: u32 = 1;
     for &md in &months {
         if d < md {
@@ -449,7 +471,7 @@ mod tests {
     #[test]
     fn age_bucket_classification() {
         let now = 1767225600; // 2026-01-01 00:00 UTC
-        // 2001-01-02 (~25 years old)
+                              // 2001-01-02 (~25 years old)
         assert_eq!(compute_age_years("2001-01-02", now), Some(24));
         // 1990-06-15 (~35 years old)
         let a = compute_age_years("1990-06-15", now).unwrap();

@@ -38,7 +38,7 @@ fn main() -> anyhow::Result<()> {
 }
 
 async fn async_main(config: Config, worker_threads: usize) -> anyhow::Result<()> {
-    telemetry::init(&config.log_level, &config.env);
+    telemetry::init(&config.log_level, config.env);
     tracing::info!(
         bind = %config.bind,
         env = %config.env,
@@ -57,7 +57,9 @@ async fn async_main(config: Config, worker_threads: usize) -> anyhow::Result<()>
 
     // Run migrations (recommended false in prod; managed by a separate release pipeline via `sqlx migrate run`)
     if config.run_migrations_on_boot {
-        db::run_migrations(&state.db).await.map_err(|e| anyhow::anyhow!(e.to_string()))?;
+        db::run_migrations(&state.db)
+            .await
+            .map_err(|e| anyhow::anyhow!(e.to_string()))?;
     }
 
     // Global cache for the dictionary translation table: synchronously load once into ArcSwap at startup,

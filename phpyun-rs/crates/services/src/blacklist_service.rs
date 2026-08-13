@@ -2,7 +2,9 @@
 //!
 //! Business rule: a company can blacklist a jobseeker uid and vice versa. Once blacklisted, chat / invite / etc. should consult `is_blocked`.
 
-use phpyun_core::{audit, clock, ApiError, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
+use phpyun_core::{
+    audit, clock, ApiError, AppResult, AppState, AuthenticatedUser, Paged, Pagination,
+};
 use phpyun_models::blacklist::{entity::BlacklistEntry, repo as bl_repo};
 
 pub async fn add(
@@ -14,7 +16,14 @@ pub async fn add(
     if blocked_uid == user.uid {
         return Err(ApiError::param_invalid("cannot_block_self"));
     }
-    bl_repo::add(state.db.pool(), user.uid, blocked_uid, reason, clock::now_ts()).await?;
+    bl_repo::add(
+        state.db.pool(),
+        user.uid,
+        blocked_uid,
+        reason,
+        clock::now_ts(),
+    )
+    .await?;
     let _ = audit::emit(
         state,
         audit::AuditEvent::new("blacklist.add", audit::Actor::uid(user.uid))
@@ -24,20 +33,13 @@ pub async fn add(
     Ok(())
 }
 
-pub async fn remove(
-    state: &AppState,
-    user: &AuthenticatedUser,
-    blocked_uid: u64,
-) -> AppResult<()> {
+pub async fn remove(state: &AppState, user: &AuthenticatedUser, blocked_uid: u64) -> AppResult<()> {
     bl_repo::remove(state.db.pool(), user.uid, blocked_uid).await?;
     Ok(())
 }
 
 /// Clears the current user's blacklist. Returns the number of entries deleted.
-pub async fn clear_all(
-    state: &AppState,
-    user: &AuthenticatedUser,
-) -> AppResult<u64> {
+pub async fn clear_all(state: &AppState, user: &AuthenticatedUser) -> AppResult<u64> {
     let removed = bl_repo::remove_all(state.db.pool(), user.uid).await?;
     if removed > 0 {
         let _ = audit::emit(
@@ -50,11 +52,7 @@ pub async fn clear_all(
     Ok(removed)
 }
 
-pub async fn is_blocked(
-    state: &AppState,
-    uid: u64,
-    blocked_uid: u64,
-) -> AppResult<bool> {
+pub async fn is_blocked(state: &AppState, uid: u64, blocked_uid: u64) -> AppResult<bool> {
     Ok(bl_repo::is_blocked(state.db.reader(), uid, blocked_uid).await?)
 }
 

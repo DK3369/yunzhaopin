@@ -1,19 +1,18 @@
 //! Public part-time browsing (aligned with `wap/part::index_action` / `wap/part::show_action` /
 //! `wap/part::collect_action` / `wap/part::apply_action`).
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::dto::{CreatedId, IdBody};
+use phpyun_core::utils::{fmt_date, fmt_dt};
+use phpyun_core::{
+    ApiResponse, AppResult, AppState, AuthenticatedUser, ClientIp, MaybeUser, Paged, Pagination,
+    ValidatedJson,
 };
-use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, MaybeUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::hot_search_service;
 use phpyun_services::part_service::{self, PartSearch};
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
-use phpyun_core::dto::{CreatedId, IdBody};
-use phpyun_core::utils::{fmt_date, fmt_dt};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -125,8 +124,6 @@ pub fn part_summary_from_dict(
     }
 }
 
-
-
 /// Public part-time list
 #[utoipa::path(
     post,
@@ -140,7 +137,7 @@ pub async fn list_parts(
     MaybeUser(user): MaybeUser,
     page: Pagination,
     ValidatedJson(q): ValidatedJson<PartListQuery>,
-) -> AppResult<ApiJson<Paged<PartSummary>>> {
+) -> AppResult<ApiResponse<Paged<PartSummary>>> {
     if let Some(kw) = q.keyword.as_ref().filter(|k| !k.trim().is_empty()) {
         hot_search_service::bump_async(&state, "part", kw.trim().to_string());
         if let Some(u) = user.as_ref() {
@@ -168,7 +165,7 @@ pub async fn list_parts(
     let r = part_service::list_public(&state, &search, page).await?;
     let dicts = phpyun_services::dict_service::get(&state).await?;
     let now = phpyun_core::clock::now_ts();
-    Ok(ApiJson(Paged::new(
+    Ok(ApiResponse::data(Paged::new(
         r.list
             .into_iter()
             .map(|j| crate::v1::wap::part::part_summary_from_dict(j, &state, &dicts, now))
@@ -277,16 +274,20 @@ fn compute_edate_state(edate: i64, now: i64) -> i32 {
         (status = 410, description = "Off-shelf / expired"),
     )
 )]
-pub async fn part_detail(State(state): State<AppState>,
-    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiJson<PartDetail>> {
+pub async fn part_detail(
+    State(state): State<AppState>,
+    ValidatedJson(b): ValidatedJson<IdBody>,
+) -> AppResult<ApiResponse<PartDetail>> {
     let id = b.id;
     let j = part_service::get_public(&state, id).await?;
     let now = phpyun_core::clock::now_ts();
 
     // JOIN company info (phpyun_company) + HR login time (phpyun_member.login_date)
     let db = state.db.reader();
-    let company =
-        phpyun_models::company::repo::find_by_uid(db, j.uid).await.ok().flatten();
+    let company = phpyun_models::company::repo::find_by_uid(db, j.uid)
+        .await
+        .ok()
+        .flatten();
     let login_date = phpyun_models::user::repo::login_date(db, j.uid)
         .await
         .unwrap_or(0);
@@ -297,26 +298,35 @@ pub async fn part_detail(State(state): State<AppState>,
         let _ = phpyun_models::part::repo::incr_hits(&pool, id).await;
     });
 
-    let (com_logo, com_shortname, com_hy, com_mun, com_rating, com_rating_name,
-         com_address, com_website, com_phone, com_mail) =
-        if let Some(c) = company {
-            (
-                c.logo,
-                c.shortname,
-                c.hy,
-                c.mun,
-                c.rating,
-                c.rating_name,
-                c.address,
-                c.website,
-                c.linkphone,
-                c.linkmail,
-            )
-        } else {
-            (None, None, 0, 0, 0, None, None, None, None, None)
-        };
+    let (
+        com_logo,
+        com_shortname,
+        com_hy,
+        com_mun,
+        com_rating,
+        com_rating_name,
+        com_address,
+        com_website,
+        com_phone,
+        com_mail,
+    ) = if let Some(c) = company {
+        (
+            c.logo,
+            c.shortname,
+            c.hy,
+            c.mun,
+            c.rating,
+            c.rating_name,
+            c.address,
+            c.website,
+            c.linkphone,
+            c.linkmail,
+        )
+    } else {
+        (None, None, 0, 0, 0, None, None, None, None, None)
+    };
 
-    Ok(ApiJson(PartDetail {
+    Ok(ApiResponse::data(PartDetail {
         id: j.id,
         uid: j.uid,
         name: j.name,
@@ -394,14 +404,16 @@ pub struct CollectForm {
         (status = 409, description = "Already favorited"),
     )
 )]
-pub async fn collect(State(state): State<AppState>,
+pub async fn collect(
+    State(state): State<AppState>,
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
-    ValidatedJson(f): ValidatedJson<CollectForm>) -> AppResult<ApiJson<CreatedId>> {
+    ValidatedJson(f): ValidatedJson<CollectForm>,
+) -> AppResult<ApiResponse<CreatedId>> {
     let id = f.id;
     let com = f.com_id.unwrap_or(0);
     let id = part_service::collect(&state, &user, id, com, &ip).await?;
-    Ok(ApiJson(CreatedId { id }))
+    Ok(ApiResponse::data(CreatedId { id }))
 }
 
 // ==================== apply ====================
@@ -424,15 +436,16 @@ pub type ApplyCreated = crate::v1::mcenter::apply::ApplyCreated;
         (status = 410, description = "Off-shelf / expired"),
     )
 )]
-pub async fn apply(State(state): State<AppState>,
+pub async fn apply(
+    State(state): State<AppState>,
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
-    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiJson<ApplyCreated>> {
+    ValidatedJson(b): ValidatedJson<IdBody>,
+) -> AppResult<ApiResponse<ApplyCreated>> {
     let id = b.id;
     let r = part_service::apply(&state, &user, id, &ip).await?;
-    Ok(ApiJson(ApplyCreated {
+    Ok(ApiResponse::data(ApplyCreated {
         id: r.id,
         job_id: r.job_id,
     }))
 }
-

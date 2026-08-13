@@ -53,8 +53,7 @@ pub async fn list_templates(
 }
 
 fn parse_kind(s: &str) -> AppResult<PosterKind> {
-    PosterKind::parse(s)
-        .ok_or_else(|| ApiError::param_invalid(format!("poster_kind={s}")))
+    PosterKind::parse(s).ok_or_else(|| ApiError::param_invalid(format!("poster_kind={s}")))
 }
 
 async fn pick_template(
@@ -66,9 +65,7 @@ async fn pick_template(
         Some(id) if id > 0 => tpl_repo::find_by_id(state.db.reader(), id).await?,
         _ => tpl_repo::default_for_kind(state.db.reader(), kind).await?,
     };
-    tpl.ok_or_else(|| {
-        ApiError::param_invalid("poster_template_not_found")
-    })
+    tpl.ok_or_else(|| ApiError::param_invalid("poster_template_not_found"))
 }
 
 // ==================== Job poster ====================
@@ -186,10 +183,7 @@ pub async fn gongzhao_poster_spec(
 
 // ========== helpers ==========
 
-async fn fetch_company_brief(
-    state: &AppState,
-    com_uid: u64,
-) -> AppResult<(String, String)> {
+async fn fetch_company_brief(state: &AppState, com_uid: u64) -> AppResult<(String, String)> {
     let c = phpyun_models::company::repo::find_by_uid(state.db.reader(), com_uid)
         .await?
         .ok_or_else(|| ApiError::param_invalid("company_not_found"))?;

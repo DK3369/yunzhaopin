@@ -13,13 +13,9 @@
 //! the token to this endpoint — the token never appears in HTTP request
 //! lines that get logged downstream.
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
-};
+use axum::{extract::State, routing::post, Router};
 use phpyun_core::i18n::{current_lang, t};
-use phpyun_core::{ApiJson, AppResult, AppState, ValidatedJson};
+use phpyun_core::{ApiResponse, AppResult, AppState, ValidatedJson};
 use phpyun_services::resume_share_service;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
@@ -66,7 +62,7 @@ pub struct SharedResume {
 pub async fn view(
     State(state): State<AppState>,
     ValidatedJson(b): ValidatedJson<ViewBody>,
-) -> AppResult<ApiJson<SharedResume>> {
+) -> AppResult<ApiResponse<SharedResume>> {
     let r = resume_share_service::view_by_token(&state, &b.token).await?;
     let age = r.birthday.as_deref().and_then(|b| {
         let y: u16 = b.get(..4)?.parse().ok()?;
@@ -87,7 +83,7 @@ pub async fn view(
         }
         _ => t("ui.resume.anonymous", current_lang()),
     };
-    Ok(ApiJson(SharedResume {
+    Ok(ApiResponse::data(SharedResume {
         uid: r.uid,
         display_name,
         sex: r.sex,

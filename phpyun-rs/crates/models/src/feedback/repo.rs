@@ -33,11 +33,7 @@ pub struct FeedbackCreate<'a> {
     pub client_ip: &'a str,
 }
 
-pub async fn create(
-    pool: &MySqlPool,
-    c: FeedbackCreate<'_>,
-    now: i64,
-) -> Result<u64, sqlx::Error> {
+pub async fn create(pool: &MySqlPool, c: FeedbackCreate<'_>, now: i64) -> Result<u64, sqlx::Error> {
     // PHP `infotype` is an int; if `category` parses as an int we use it,
     // otherwise default to 0.
     let infotype: Option<i32> = c.category.parse().ok();
@@ -47,10 +43,10 @@ pub async fn create(
            (username, infotype, content, mobile, ctime, status)
            VALUES (?, ?, ?, ?, ?, 0)"#,
     )
-    .bind("")              // username — caller doesn't have it; PHP filled in from session
+    .bind("") // username — caller doesn't have it; PHP filled in from session
     .bind(infotype.unwrap_or(0))
     .bind(c.content)
-    .bind(c.contact)       // contact lands in `mobile` (PHP convention)
+    .bind(c.contact) // contact lands in `mobile` (PHP convention)
     .bind(now)
     .execute(pool)
     .await?;
@@ -97,10 +93,7 @@ pub async fn list_by_status(
     q.fetch_all(pool).await
 }
 
-pub async fn count_by_status(
-    pool: &MySqlPool,
-    status: Option<i32>,
-) -> Result<u64, sqlx::Error> {
+pub async fn count_by_status(pool: &MySqlPool, status: Option<i32>) -> Result<u64, sqlx::Error> {
     let (n,): (i64,) = match status {
         Some(s) => {
             sqlx::query_as("SELECT COUNT(*) FROM phpyun_advice_question WHERE status = ?")

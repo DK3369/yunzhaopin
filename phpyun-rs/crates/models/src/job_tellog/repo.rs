@@ -36,11 +36,10 @@ pub async fn insert(
 }
 
 pub async fn count_by_job(pool: &MySqlPool, jobid: u64) -> Result<u64, sqlx::Error> {
-    let (n,): (i64,) =
-        sqlx::query_as("SELECT COUNT(*) FROM phpyun_job_tellog WHERE jobid = ?")
-            .bind(jobid)
-            .fetch_one(pool)
-            .await?;
+    let (n,): (i64,) = sqlx::query_as("SELECT COUNT(*) FROM phpyun_job_tellog WHERE jobid = ?")
+        .bind(jobid)
+        .fetch_one(pool)
+        .await?;
     Ok(n.max(0) as u64)
 }
 
@@ -62,10 +61,9 @@ pub async fn list_by_com(
 }
 
 pub async fn count_by_com(pool: &MySqlPool, comid: u64) -> Result<u64, sqlx::Error> {
-    let (n,): (i64,) =
-        sqlx::query_as("SELECT COUNT(*) FROM phpyun_job_tellog WHERE comid = ?")
-            .bind(comid)
-            .fetch_one(pool)
-            .await?;
+    let (n,): (i64,) = sqlx::query_as("SELECT COUNT(*) FROM phpyun_job_tellog WHERE comid = ?")
+        .bind(comid)
+        .fetch_one(pool)
+        .await?;
     Ok(n.max(0) as u64)
 }

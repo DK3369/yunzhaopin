@@ -1,18 +1,14 @@
 //! Public article / news browsing. Aligned with PHPYun `wap/article`.
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
-};
-use phpyun_core::{ApiJson, AppResult, AppState, Paged, Pagination, ValidatedJson};
-use validator::Validate;
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::dto::{HitsResp, IdBody};
+use phpyun_core::utils::{fmt_date, pic_n_str as pic_n};
+use phpyun_core::{ApiResponse, AppResult, AppState, Paged, Pagination, ValidatedJson};
 use phpyun_models::article::repo::ArticleFilter;
 use phpyun_services::article_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
-use phpyun_core::dto::{HitsResp, IdBody};
-use phpyun_core::utils::{fmt_date, pic_n_str as pic_n};
+use validator::Validate;
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -226,7 +222,7 @@ pub async fn list_articles(
     State(state): State<AppState>,
     page: Pagination,
     ValidatedJson(q): ValidatedJson<ArticleListQuery>,
-) -> AppResult<ApiJson<Paged<ArticleSummary>>> {
+) -> AppResult<ApiResponse<Paged<ArticleSummary>>> {
     let filter = ArticleFilter {
         category: q.category.as_deref(),
         keyword: q.keyword.as_deref(),
@@ -234,7 +230,7 @@ pub async fn list_articles(
         did: q.did,
     };
     let r = article_service::list_public(&state, &filter, page).await?;
-    Ok(ApiJson(Paged::new(
+    Ok(ApiResponse::data(Paged::new(
         r.list
             .into_iter()
             .map(|a| ArticleSummary::from_with_ctx(a, &state))
@@ -255,11 +251,13 @@ pub async fn list_articles(
         (status = 404, description = "Not found"),
     )
 )]
-pub async fn article_detail(State(state): State<AppState>,
-    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiJson<ArticleDetail>> {
+pub async fn article_detail(
+    State(state): State<AppState>,
+    ValidatedJson(b): ValidatedJson<IdBody>,
+) -> AppResult<ApiResponse<ArticleDetail>> {
     let id = b.id;
     let a = article_service::get_public(&state, id).await?;
-    Ok(ApiJson(ArticleDetail::from_with_ctx(a, &state)))
+    Ok(ApiResponse::data(ArticleDetail::from_with_ctx(a, &state)))
 }
 
 /// Bump and return the new hit count. Counterpart of PHP
@@ -271,10 +269,11 @@ pub async fn article_detail(State(state): State<AppState>,
     request_body = IdBody,
     responses((status = 200, description = "ok", body = HitsResp))
 )]
-pub async fn bump_hits(State(state): State<AppState>,
-    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiJson<HitsResp>> {
+pub async fn bump_hits(
+    State(state): State<AppState>,
+    ValidatedJson(b): ValidatedJson<IdBody>,
+) -> AppResult<ApiResponse<HitsResp>> {
     let id = b.id;
     let hits = phpyun_models::article::repo::bump_and_get_hits(state.db.pool(), id).await?;
-    Ok(ApiJson(HitsResp { hits }))
+    Ok(ApiResponse::data(HitsResp { hits }))
 }
-

@@ -5,19 +5,17 @@
 //! Aligned with PHPYun `member/user/model/partapply.class.php` / `partcollect.class.php` /
 //! `member/com/model/part.class.php` / `partok.class.php`.
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
-};
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::dto::IdsBody;
 use phpyun_core::json;
-use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
+use phpyun_core::utils::fmt_dt;
+use phpyun_core::{
+    ApiResponse, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
+};
 use phpyun_services::part_service;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
-use phpyun_core::dto::{IdsBody};
-use phpyun_core::utils::{fmt_dt};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -30,11 +28,13 @@ pub fn routes() -> Router<AppState> {
         .route("/com-parts", post(com_delete_parts))
         .route("/com-parts/list", post(com_parts))
         .route("/com-part-applications", post(com_applies))
-        .route("/com-part-applications/status", post(com_update_apply_status))
+        .route(
+            "/com-part-applications/status",
+            post(com_update_apply_status),
+        )
 }
 
 // ==================== DTO ====================
-
 
 fn part_apply_status_name(s: i32) -> &'static str {
     match s {
@@ -120,13 +120,16 @@ pub struct ApplyStatusBody {
     tag = "mcenter",
     security(("bearer" = [])),
     responses((status = 200, description = "ok"))
-)]pub async fn my_applies(
+)]
+pub async fn my_applies(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-) -> AppResult<ApiJson<Paged<MyPartApplyItem>>> {
+) -> AppResult<ApiResponse<Paged<MyPartApplyItem>>> {
     let r = part_service::list_my_applies(&state, &user, page).await?;
-    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
+    Ok(ApiResponse::data(Paged::from_listing(
+        r.list, r.total, page,
+    )))
 }
 
 #[utoipa::path(
@@ -141,9 +144,9 @@ pub async fn delete_applies(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(b): ValidatedJson<IdsBody>,
-) -> AppResult<ApiJson<json::Value>> {
+) -> AppResult<ApiResponse<json::Value>> {
     let n = part_service::delete_my_applies(&state, &user, &b.ids).await?;
-    Ok(ApiJson(json::json!({ "deleted": n })))
+    Ok(ApiResponse::data(json::json!({ "deleted": n })))
 }
 
 #[utoipa::path(
@@ -157,9 +160,11 @@ pub async fn my_collects(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-) -> AppResult<ApiJson<Paged<MyPartCollectItem>>> {
+) -> AppResult<ApiResponse<Paged<MyPartCollectItem>>> {
     let r = part_service::list_my_collects(&state, &user, page).await?;
-    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
+    Ok(ApiResponse::data(Paged::from_listing(
+        r.list, r.total, page,
+    )))
 }
 
 #[utoipa::path(
@@ -174,9 +179,9 @@ pub async fn delete_collects(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(b): ValidatedJson<IdsBody>,
-) -> AppResult<ApiJson<json::Value>> {
+) -> AppResult<ApiResponse<json::Value>> {
     let n = part_service::delete_my_collects(&state, &user, &b.ids).await?;
-    Ok(ApiJson(json::json!({ "deleted": n })))
+    Ok(ApiResponse::data(json::json!({ "deleted": n })))
 }
 
 // ==================== Company ====================
@@ -192,11 +197,11 @@ pub async fn com_parts(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-) -> AppResult<ApiJson<Paged<ComPartSummary>>> {
+) -> AppResult<ApiResponse<Paged<ComPartSummary>>> {
     let r = part_service::list_com_parts(&state, &user, page).await?;
     let dicts = phpyun_services::dict_service::get(&state).await?;
     let now = phpyun_core::clock::now_ts();
-    Ok(ApiJson(Paged::new(
+    Ok(ApiResponse::data(Paged::new(
         r.list
             .into_iter()
             .map(|j| crate::v1::wap::part::part_summary_from_dict(j, &state, &dicts, now))
@@ -219,9 +224,9 @@ pub async fn com_delete_parts(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(b): ValidatedJson<IdsBody>,
-) -> AppResult<ApiJson<json::Value>> {
+) -> AppResult<ApiResponse<json::Value>> {
     let n = part_service::delete_com_parts(&state, &user, &b.ids).await?;
-    Ok(ApiJson(json::json!({ "deleted": n })))
+    Ok(ApiResponse::data(json::json!({ "deleted": n })))
 }
 
 #[utoipa::path(
@@ -235,9 +240,11 @@ pub async fn com_applies(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-) -> AppResult<ApiJson<Paged<MyPartApplyItem>>> {
+) -> AppResult<ApiResponse<Paged<MyPartApplyItem>>> {
     let r = part_service::list_com_applies(&state, &user, page).await?;
-    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
+    Ok(ApiResponse::data(Paged::from_listing(
+        r.list, r.total, page,
+    )))
 }
 
 #[utoipa::path(
@@ -252,7 +259,7 @@ pub async fn com_update_apply_status(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(b): ValidatedJson<ApplyStatusBody>,
-) -> AppResult<ApiJson<json::Value>> {
+) -> AppResult<ApiResponse<json::Value>> {
     let n = part_service::update_com_apply_status(&state, &user, b.id, b.status).await?;
-    Ok(ApiJson(json::json!({ "updated": n })))
+    Ok(ApiResponse::data(json::json!({ "updated": n })))
 }

@@ -1,17 +1,13 @@
 //! Company multi-account (main company manages HRs + HR joins companies).
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
-};
-use phpyun_core::{ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, ValidatedJson};
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::dto::{IdBody, UidBody};
+use phpyun_core::utils::fmt_dt;
+use phpyun_core::{ApiResponse, AppResult, AppState, AuthenticatedUser, ValidatedJson};
 use phpyun_services::company_hr_service::{self, CodeInput};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
-use phpyun_core::dto::{IdBody, UidBody};
-use phpyun_core::utils::{fmt_dt};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -23,7 +19,6 @@ pub fn routes() -> Router<AppState> {
         .route("/company/join", post(join))
         .route("/company/my-companies", post(my_companies))
 }
-
 
 #[derive(Debug, Serialize, ToSchema)]
 pub struct CodeView {
@@ -140,7 +135,7 @@ pub async fn create_code(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(f): ValidatedJson<CodeForm>,
-) -> AppResult<ApiJson<CodeView>> {
+) -> AppResult<ApiResponse<CodeView>> {
     let c = company_hr_service::create_code(
         &state,
         &user,
@@ -151,16 +146,19 @@ pub async fn create_code(
         },
     )
     .await?;
-    Ok(ApiJson(CodeView::from(c)))
+    Ok(ApiResponse::data(CodeView::from(c)))
 }
 
 /// Main company: list invite codes
-#[utoipa::path(post, path = "/v1/mcenter/company/invite-codes/list", tag = "mcenter", security(("bearer" = [])), responses((status = 200, description = "ok")))]pub async fn list_codes(
+#[utoipa::path(post, path = "/v1/mcenter/company/invite-codes/list", tag = "mcenter", security(("bearer" = [])), responses((status = 200, description = "ok")))]
+pub async fn list_codes(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-) -> AppResult<ApiJson<Vec<CodeView>>> {
+) -> AppResult<ApiResponse<Vec<CodeView>>> {
     let list = company_hr_service::list_codes(&state, &user).await?;
-    Ok(ApiJson(list.into_iter().map(CodeView::from).collect()))
+    Ok(ApiResponse::data(
+        list.into_iter().map(CodeView::from).collect(),
+    ))
 }
 
 /// Main company: revoke invite code
@@ -169,9 +167,9 @@ pub async fn revoke_code(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(b): ValidatedJson<IdBody>,
-) -> AppResult<ApiOk> {
+) -> AppResult<ApiResponse> {
     company_hr_service::revoke_code(&state, &user, b.id).await?;
-    Ok(ApiOk("revoked"))
+    Ok(ApiResponse::message("revoked"))
 }
 
 /// Main company: list HRs
@@ -179,9 +177,11 @@ pub async fn revoke_code(
 pub async fn list_hrs(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-) -> AppResult<ApiJson<Vec<HrView>>> {
+) -> AppResult<ApiResponse<Vec<HrView>>> {
     let list = company_hr_service::list_hrs(&state, &user).await?;
-    Ok(ApiJson(list.into_iter().map(HrView::from).collect()))
+    Ok(ApiResponse::data(
+        list.into_iter().map(HrView::from).collect(),
+    ))
 }
 
 /// Main company: remove HR
@@ -190,9 +190,9 @@ pub async fn remove_hr(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(b): ValidatedJson<UidBody>,
-) -> AppResult<ApiOk> {
+) -> AppResult<ApiResponse> {
     company_hr_service::remove_hr(&state, &user, b.uid).await?;
-    Ok(ApiOk("removed"))
+    Ok(ApiResponse::message("removed"))
 }
 
 /// HR: join a company with an invite code
@@ -208,9 +208,9 @@ pub async fn join(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(f): ValidatedJson<JoinForm>,
-) -> AppResult<ApiJson<JoinedResult>> {
+) -> AppResult<ApiResponse<JoinedResult>> {
     let company_uid = company_hr_service::join_by_code(&state, &user, &f.code).await?;
-    Ok(ApiJson(JoinedResult { company_uid }))
+    Ok(ApiResponse::data(JoinedResult { company_uid }))
 }
 
 /// HR: companies I have joined
@@ -224,7 +224,9 @@ pub async fn join(
 pub async fn my_companies(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-) -> AppResult<ApiJson<Vec<MyCompany>>> {
+) -> AppResult<ApiResponse<Vec<MyCompany>>> {
     let list = company_hr_service::my_companies(&state, &user).await?;
-    Ok(ApiJson(list.into_iter().map(MyCompany::from).collect()))
+    Ok(ApiResponse::data(
+        list.into_iter().map(MyCompany::from).collect(),
+    ))
 }

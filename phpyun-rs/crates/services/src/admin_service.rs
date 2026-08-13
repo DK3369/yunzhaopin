@@ -162,7 +162,10 @@ pub async fn batch_set_job_state(
     state_val: i32,
 ) -> AppResult<AdminBatchReport> {
     if ids.is_empty() {
-        return Ok(AdminBatchReport { requested: 0, affected: 0 });
+        return Ok(AdminBatchReport {
+            requested: 0,
+            affected: 0,
+        });
     }
     let mut total: u64 = 0;
     for id in ids {
@@ -175,7 +178,10 @@ pub async fn batch_set_job_state(
         ),
     )
     .await;
-    Ok(AdminBatchReport { requested: ids.len(), affected: total })
+    Ok(AdminBatchReport {
+        requested: ids.len(),
+        affected: total,
+    })
 }
 
 pub async fn batch_set_report_status(
@@ -185,7 +191,10 @@ pub async fn batch_set_report_status(
     status: i32,
 ) -> AppResult<AdminBatchReport> {
     if ids.is_empty() {
-        return Ok(AdminBatchReport { requested: 0, affected: 0 });
+        return Ok(AdminBatchReport {
+            requested: 0,
+            affected: 0,
+        });
     }
     let mut total: u64 = 0;
     for id in ids {
@@ -198,7 +207,10 @@ pub async fn batch_set_report_status(
         ),
     )
     .await;
-    Ok(AdminBatchReport { requested: ids.len(), affected: total })
+    Ok(AdminBatchReport {
+        requested: ids.len(),
+        affected: total,
+    })
 }
 
 pub async fn batch_set_feedback_status(
@@ -208,7 +220,10 @@ pub async fn batch_set_feedback_status(
     status: i32,
 ) -> AppResult<AdminBatchReport> {
     if ids.is_empty() {
-        return Ok(AdminBatchReport { requested: 0, affected: 0 });
+        return Ok(AdminBatchReport {
+            requested: 0,
+            affected: 0,
+        });
     }
     let mut total: u64 = 0;
     for id in ids {
@@ -221,7 +236,10 @@ pub async fn batch_set_feedback_status(
         ),
     )
     .await;
-    Ok(AdminBatchReport { requested: ids.len(), affected: total })
+    Ok(AdminBatchReport {
+        requested: ids.len(),
+        affected: total,
+    })
 }
 
 // ---------- VIP order management ----------
@@ -247,15 +265,11 @@ pub async fn set_order_status(
     status: i32,
 ) -> AppResult<()> {
     if !matches!(status, 2 | 3) {
-        return Err(phpyun_core::ApiError::param_invalid(
-            "bad_status",
-        ));
+        return Err(phpyun_core::ApiError::param_invalid("bad_status"));
     }
     let affected = vip_repo::admin_set_order_status(state.db.pool(), order_no, status).await?;
     if affected == 0 {
-        return Err(phpyun_core::ApiError::param_invalid(
-            "order_not_found",
-        ));
+        return Err(phpyun_core::ApiError::param_invalid("order_not_found"));
     }
     let _ = audit::emit(
         state,

@@ -14,10 +14,7 @@ const SELECT_FIELDS: &str = "CAST(id AS UNSIGNED) AS id, \
                              0 AS sort, \
                              0 AS addtime";
 
-pub async fn list_by_uid(
-    pool: &MySqlPool,
-    uid: u64,
-) -> Result<Vec<CompanyBanner>, sqlx::Error> {
+pub async fn list_by_uid(pool: &MySqlPool, uid: u64) -> Result<Vec<CompanyBanner>, sqlx::Error> {
     let sql = format!(
         "SELECT {SELECT_FIELDS} FROM phpyun_banner \
          WHERE uid = ? AND status != 2 \
@@ -30,12 +27,11 @@ pub async fn list_by_uid(
 }
 
 pub async fn count_by_uid(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Error> {
-    let (n,): (i64,) = sqlx::query_as(
-        "SELECT COUNT(*) FROM phpyun_banner WHERE uid = ? AND status != 2",
-    )
-    .bind(uid)
-    .fetch_one(pool)
-    .await?;
+    let (n,): (i64,) =
+        sqlx::query_as("SELECT COUNT(*) FROM phpyun_banner WHERE uid = ? AND status != 2")
+            .bind(uid)
+            .fetch_one(pool)
+            .await?;
     Ok(n.max(0) as u64)
 }
 
@@ -49,13 +45,11 @@ pub async fn create(
 ) -> Result<u64, sqlx::Error> {
     // PHP table has only (uid, pic, status, statusbody, did). status defaults to 1.
     // link / sort / addtime have no PHP column and are silently dropped.
-    let res = sqlx::query(
-        "INSERT INTO phpyun_banner (uid, pic) VALUES (?, ?)",
-    )
-    .bind(uid)
-    .bind(pic)
-    .execute(pool)
-    .await?;
+    let res = sqlx::query("INSERT INTO phpyun_banner (uid, pic) VALUES (?, ?)")
+        .bind(uid)
+        .bind(pic)
+        .execute(pool)
+        .await?;
     Ok(res.last_insert_id())
 }
 
@@ -71,8 +65,7 @@ pub async fn update(
     let Some(p) = pic else {
         return Ok(0);
     };
-    let mut qb: QueryBuilder<sqlx::MySql> =
-        QueryBuilder::new("UPDATE phpyun_banner SET pic = ");
+    let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new("UPDATE phpyun_banner SET pic = ");
     qb.push_bind(p);
     qb.push(" WHERE id = ");
     qb.push_bind(id);
@@ -84,11 +77,7 @@ pub async fn update(
 }
 
 /// Soft delete: bulk UPDATE status=2.
-pub async fn delete_by_ids(
-    pool: &MySqlPool,
-    ids: &[u64],
-    uid: u64,
-) -> Result<u64, sqlx::Error> {
+pub async fn delete_by_ids(pool: &MySqlPool, ids: &[u64], uid: u64) -> Result<u64, sqlx::Error> {
     if ids.is_empty() {
         return Ok(0);
     }

@@ -53,9 +53,11 @@ pub async fn get_access_token(state: &AppState) -> AppResult<String> {
         .wechat_appid
         .as_deref()
         .ok_or_else(|| ApiError::param_invalid("wechat_appid_missing"))?;
-    let secret = state.config.wechat_appsecret.as_deref().ok_or_else(|| {
-        ApiError::param_invalid("wechat_appsecret_missing")
-    })?;
+    let secret = state
+        .config
+        .wechat_appsecret
+        .as_deref()
+        .ok_or_else(|| ApiError::param_invalid("wechat_appsecret_missing"))?;
 
     let url = format!(
         "{TOKEN_URL}?grant_type=client_credential&appid={}&secret={}",
@@ -72,9 +74,9 @@ pub async fn get_access_token(state: &AppState) -> AppResult<String> {
             )));
         }
     }
-    let token = resp.access_token.ok_or_else(|| {
-        ApiError::upstream("wechat token response missing")
-    })?;
+    let token = resp
+        .access_token
+        .ok_or_else(|| ApiError::upstream("wechat token response missing"))?;
     // Leave a 60s margin to absorb boundary jitter
     let ttl = resp.expires_in.unwrap_or(7200).saturating_sub(60).max(60);
     let _ = state.redis.set_ex(TOKEN_CACHE_KEY, &token, ttl).await;
@@ -128,7 +130,10 @@ pub async fn create_qr_scene(
         return Err(ApiError::param_invalid("scene_str").into());
     }
     let token = get_access_token(state).await?;
-    let url = format!("{QR_CREATE_URL}?access_token={}", urlencoding_minimal(&token));
+    let url = format!(
+        "{QR_CREATE_URL}?access_token={}",
+        urlencoding_minimal(&token)
+    );
     let body = json!({
         "expire_seconds": expire_seconds.clamp(60, 2592000), // [1min, 30d]
         "action_name": "QR_STR_SCENE",
@@ -143,11 +148,9 @@ pub async fn create_qr_scene(
             )));
         }
     }
-    let ticket = resp.ticket.ok_or_else(|| {
-        ApiError::upstream(
-            "wechat qrcode response missing ticket",
-        )
-    })?;
+    let ticket = resp
+        .ticket
+        .ok_or_else(|| ApiError::upstream("wechat qrcode response missing ticket"))?;
     Ok(QrCodeResult {
         show_url: ticket_to_showqrcode_url(&ticket),
         ticket,
@@ -286,8 +289,14 @@ mod tests {
             scene_str_for("company", 7, "wxapp"),
             Some("wxapp_companyid_7".into())
         );
-        assert_eq!(scene_str_for("jobtel", 9, ""), Some("weixin_jobtelid_9".into()));
-        assert_eq!(scene_str_for("register", 1, "inv"), Some("inv_ruid_1".into()));
+        assert_eq!(
+            scene_str_for("jobtel", 9, ""),
+            Some("weixin_jobtelid_9".into())
+        );
+        assert_eq!(
+            scene_str_for("register", 1, "inv"),
+            Some("inv_ruid_1".into())
+        );
         assert_eq!(scene_str_for("unknown", 1, ""), None);
     }
 

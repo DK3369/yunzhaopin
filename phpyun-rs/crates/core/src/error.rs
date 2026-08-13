@@ -244,29 +244,6 @@ impl IntoResponse for ApiError {
             None => (raw_tag.as_ref(), None),
         };
 
-        // Resolve the stable response key. Dotted details are already full
-        // i18n keys; simple business details resolve under errors.*.
-        let response_key = if let Some(d) = detail {
-            let dotted_key = d.contains('.')
-                && d.chars()
-                    .all(|c| c.is_ascii_alphanumeric() || c == '_' || c == '.')
-                && !d.starts_with('.')
-                && !d.ends_with('.');
-            if dotted_key {
-                d.to_string()
-            } else if (key_short == "param_invalid" || key_short == "param_missing")
-                && d.chars()
-                    .all(|c| c.is_ascii_lowercase() || c.is_ascii_digit() || c == '_')
-                && d.as_bytes().first().is_some_and(u8::is_ascii_lowercase)
-            {
-                format!("errors.{d}")
-            } else {
-                format!("errors.{key_short}")
-            }
-        } else {
-            format!("errors.{key_short}")
-        };
-
         let i18n_msg = if let Some(d) = detail {
             let dotted_key = d.contains('.')
                 && d.chars()
@@ -306,7 +283,7 @@ impl IntoResponse for ApiError {
             if english != fallback_key {
                 english
             } else {
-                "Request failed".to_string()
+                raw_tag.to_string()
             }
         });
 
@@ -314,9 +291,8 @@ impl IntoResponse for ApiError {
             status,
             Json(json!({
                 "code": code,
-                "key": response_key,
                 "msg": msg,
-                "data": null,
+                "data": "",
             })),
         )
             .into_response()

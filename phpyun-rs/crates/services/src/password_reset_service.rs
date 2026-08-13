@@ -194,9 +194,7 @@ pub async fn reset_with_email(
 
     let user = user_repo::find_by_email_loose(state.db.reader(), email)
         .await?
-        .ok_or_else(|| -> ApiError {
-            ApiError::param_invalid("email_not_registered").into()
-        })?;
+        .ok_or_else(|| -> ApiError { ApiError::param_invalid("email_not_registered").into() })?;
 
     let salt = uuid::Uuid::now_v7().simple().to_string()[..16].to_string();
     let salted = format!("{new_password}{salt}");
@@ -270,8 +268,7 @@ pub async fn submit_appeal(
     }
 
     let now = phpyun_core::clock::now_ts();
-    let n =
-        phpyun_models::user::repo::submit_appeal(state.db.pool(), uid, &shensu, now).await?;
+    let n = phpyun_models::user::repo::submit_appeal(state.db.pool(), uid, &shensu, now).await?;
     if n == 0 {
         return Err(ApiError::param_invalid("appeal_persist_failed").into());
     }
@@ -279,11 +276,8 @@ pub async fn submit_appeal(
     auth_event("password_appeal_submitted", None);
     let _ = audit::emit(
         state,
-        AuditEvent::new(
-            "user.password_appeal",
-            Actor::uid(uid).with_ip(client_ip),
-        )
-        .target(format!("uid:{uid}")),
+        AuditEvent::new("user.password_appeal", Actor::uid(uid).with_ip(client_ip))
+            .target(format!("uid:{uid}")),
     )
     .await;
 

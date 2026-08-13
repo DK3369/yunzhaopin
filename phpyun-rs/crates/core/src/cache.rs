@@ -29,10 +29,10 @@
 //!   `Arc<ApiError>`; `ApiError::from_arc` downgrades the Arc into a new
 //!   `ApiError` (preserving only code + tag).
 
-use crate::ApiError;
 use crate::json::Value;
 use crate::kv::Kv;
 use crate::metrics::{cache_hit, cache_miss};
+use crate::ApiError;
 use moka::future::Cache;
 use serde::{de::DeserializeOwned, Serialize};
 use std::future::Future;

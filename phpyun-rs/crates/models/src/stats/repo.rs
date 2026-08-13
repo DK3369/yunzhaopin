@@ -10,18 +10,16 @@ pub async fn count_active_jobs(pool: &MySqlPool) -> Result<u64, sqlx::Error> {
 }
 
 pub async fn count_active_companies(pool: &MySqlPool) -> Result<u64, sqlx::Error> {
-    let (n,): (i64,) =
-        sqlx::query_as("SELECT COUNT(*) FROM phpyun_company WHERE r_status = 1")
-            .fetch_one(pool)
-            .await?;
+    let (n,): (i64,) = sqlx::query_as("SELECT COUNT(*) FROM phpyun_company WHERE r_status = 1")
+        .fetch_one(pool)
+        .await?;
     Ok(n.max(0) as u64)
 }
 
 pub async fn count_active_resumes(pool: &MySqlPool) -> Result<u64, sqlx::Error> {
-    let (n,): (i64,) =
-        sqlx::query_as("SELECT COUNT(*) FROM phpyun_resume WHERE r_status = 1")
-            .fetch_one(pool)
-            .await?;
+    let (n,): (i64,) = sqlx::query_as("SELECT COUNT(*) FROM phpyun_resume WHERE r_status = 1")
+        .fetch_one(pool)
+        .await?;
     Ok(n.max(0) as u64)
 }
 
@@ -152,9 +150,18 @@ pub async fn hr_log_year_report(
     .bind(uid)
     .fetch_optional(pool)
     .await?;
-    Ok(row.map(|(login, job, lookjob, sqjob, lookresume, yq, nightwork, lastwork)| {
-        HrLogYearReport { login, job, lookjob, sqjob, lookresume, yq, nightwork, lastwork }
-    }))
+    Ok(row.map(
+        |(login, job, lookjob, sqjob, lookresume, yq, nightwork, lastwork)| HrLogYearReport {
+            login,
+            job,
+            lookjob,
+            sqjob,
+            lookresume,
+            yq,
+            nightwork,
+            lastwork,
+        },
+    ))
 }
 
 /// Month-bucket trend: returns `(YYYY-MM, count)` rows from `[since, ∞)`,

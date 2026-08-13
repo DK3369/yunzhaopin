@@ -1,16 +1,12 @@
 //! User advice/feedback (matching PHPYun `wap/advice`) — public endpoint, anonymous submission allowed.
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
-};
-use phpyun_core::{ApiJson, AppResult, AppState, ClientIp, MaybeUser, ValidatedJson};
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::dto::CreatedId;
+use phpyun_core::{ApiResponse, AppResult, AppState, ClientIp, MaybeUser, ValidatedJson};
 use phpyun_services::feedback_service::{self, FeedbackInput};
 use serde::Deserialize;
 use utoipa::ToSchema;
 use validator::Validate;
-use phpyun_core::dto::{CreatedId};
 
 pub fn routes() -> Router<AppState> {
     Router::new().route("/advice", post(submit))
@@ -41,7 +37,7 @@ pub async fn submit(
     MaybeUser(user): MaybeUser,
     ClientIp(ip): ClientIp,
     ValidatedJson(f): ValidatedJson<AdviceForm>,
-) -> AppResult<ApiJson<CreatedId>> {
+) -> AppResult<ApiResponse<CreatedId>> {
     let id = feedback_service::submit(
         &state,
         user.as_ref(),
@@ -53,5 +49,5 @@ pub async fn submit(
         &ip,
     )
     .await?;
-    Ok(ApiJson(CreatedId { id }))
+    Ok(ApiResponse::data(CreatedId { id }))
 }

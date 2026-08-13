@@ -2,14 +2,12 @@
 //!
 //! Public endpoint returns the currently active ads for a `slot`; admin endpoint performs CRUD.
 
-use phpyun_core::{audit, clock, ApiError, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
+use phpyun_core::{
+    audit, clock, ApiError, AppResult, AppState, AuthenticatedUser, Paged, Pagination,
+};
 use phpyun_models::ad::{entity::Ad, repo as ad_repo};
 
-pub async fn list_active(
-    state: &AppState,
-    slot: &str,
-    limit: u64,
-) -> AppResult<Vec<Ad>> {
+pub async fn list_active(state: &AppState, slot: &str, limit: u64) -> AppResult<Vec<Ad>> {
     let now = clock::now_ts();
     Ok(ad_repo::list_active(state.db.reader(), slot, now, limit.clamp(1, 50)).await?)
 }
@@ -109,11 +107,7 @@ pub async fn admin_update(
     Ok(())
 }
 
-pub async fn admin_delete(
-    state: &AppState,
-    user: &AuthenticatedUser,
-    id: u64,
-) -> AppResult<()> {
+pub async fn admin_delete(state: &AppState, user: &AuthenticatedUser, id: u64) -> AppResult<()> {
     user.require_admin()?;
     ad_repo::delete(state.db.pool(), id).await?;
     Ok(())

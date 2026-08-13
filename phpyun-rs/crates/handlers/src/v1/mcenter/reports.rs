@@ -1,17 +1,15 @@
 //! Violation reports.
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::dto::CreatedId;
+use phpyun_core::utils::{fmt_dt, review_status_name as report_status_name};
+use phpyun_core::{
+    ApiResponse, AppResult, AppState, AuthenticatedUser, ClientIp, Paged, Pagination, ValidatedJson,
 };
-use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, Paged, Pagination, ValidatedJson};
 use phpyun_services::report_service::{self, ReportInput};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
-use phpyun_core::dto::{CreatedId};
-use phpyun_core::utils::{fmt_dt, review_status_name as report_status_name};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -46,7 +44,7 @@ pub async fn submit(
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
     ValidatedJson(f): ValidatedJson<ReportForm>,
-) -> AppResult<ApiJson<CreatedId>> {
+) -> AppResult<ApiResponse<CreatedId>> {
     let id = report_service::submit(
         &state,
         &user,
@@ -59,13 +57,16 @@ pub async fn submit(
         &ip,
     )
     .await?;
-    Ok(ApiJson(CreatedId { id }))
+    Ok(ApiResponse::data(CreatedId { id }))
 }
-
 
 fn report_kind_name(k: i32) -> &'static str {
     match k {
-        1 => "job", 2 => "company", 3 => "resume", 4 => "article", 5 => "user",
+        1 => "job",
+        2 => "company",
+        3 => "resume",
+        4 => "article",
+        5 => "user",
         _ => "unknown",
     }
 }
@@ -115,7 +116,9 @@ pub async fn list_mine(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-) -> AppResult<ApiJson<Paged<ReportItem>>> {
+) -> AppResult<ApiResponse<Paged<ReportItem>>> {
     let r = report_service::list_mine(&state, &user, page).await?;
-    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
+    Ok(ApiResponse::data(Paged::from_listing(
+        r.list, r.total, page,
+    )))
 }

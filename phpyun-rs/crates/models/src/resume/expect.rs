@@ -58,7 +58,10 @@ pub async fn list_by_uid(pool: &MySqlPool, uid: u64) -> Result<Vec<Expect>, sqlx
         "SELECT {FIELDS} FROM phpyun_resume_expect
          WHERE uid = ? ORDER BY lastupdate DESC"
     );
-    sqlx::query_as::<_, Expect>(&sql).bind(uid).fetch_all(pool).await
+    sqlx::query_as::<_, Expect>(&sql)
+        .bind(uid)
+        .fetch_all(pool)
+        .await
 }
 
 /// Resolve the user's "current" expect id — prefer the row marked
@@ -227,11 +230,7 @@ pub async fn get_hits(pool: &MySqlPool, id: u64) -> Result<u64, sqlx::Error> {
     Ok(row.map(|(n,)| n.max(0) as u64).unwrap_or(0))
 }
 
-pub async fn bump_and_get_hits(
-    pool: &MySqlPool,
-    id: u64,
-    delta: u32,
-) -> Result<u64, sqlx::Error> {
+pub async fn bump_and_get_hits(pool: &MySqlPool, id: u64, delta: u32) -> Result<u64, sqlx::Error> {
     incr_hits(pool, id, delta).await?;
     get_hits(pool, id).await
 }
@@ -272,14 +271,12 @@ pub async fn recompute_whour(
     } else {
         0
     };
-    sqlx::query(
-        "UPDATE phpyun_resume_expect SET whour = ?, avghour = ? WHERE id = ? AND uid = ?",
-    )
-    .bind(whour as i32)
-    .bind(avghour as i32)
-    .bind(eid)
-    .bind(uid)
-    .execute(pool)
-    .await?;
+    sqlx::query("UPDATE phpyun_resume_expect SET whour = ?, avghour = ? WHERE id = ? AND uid = ?")
+        .bind(whour as i32)
+        .bind(avghour as i32)
+        .bind(eid)
+        .bind(uid)
+        .execute(pool)
+        .await?;
     Ok(())
 }

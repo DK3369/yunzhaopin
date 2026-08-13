@@ -1,18 +1,14 @@
 //! Job expectation CRUD (usertype=1).
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
-};
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::dto::CreatedId;
 use phpyun_core::json;
-use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, ValidatedJson};
+use phpyun_core::{ApiResponse, AppResult, AppState, AuthenticatedUser, ClientIp, ValidatedJson};
 use phpyun_models::resume::expect::ExpectInput;
 use phpyun_services::resume_children_service::expect_svc;
 use serde::Deserialize;
 use utoipa::ToSchema;
 use validator::Validate;
-use phpyun_core::dto::{CreatedId};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -104,7 +100,9 @@ fn de_loose_i64<'de, D: serde::Deserializer<'de>>(d: D) -> Result<i64, D::Error>
                 t.parse::<i64>().map_err(D::Error::custom)
             }
         }
-        v => Err(D::Error::custom(format!("expected number or string, got {v:?}"))),
+        v => Err(D::Error::custom(format!(
+            "expected number or string, got {v:?}"
+        ))),
     }
 }
 
@@ -139,13 +137,14 @@ fn de_loose_i32_opt<'de, D: serde::Deserializer<'de>>(d: D) -> Result<Option<i32
     tag = "mcenter",
     security(("bearer" = [])),
     responses((status = 200, description = "ok"))
-)]pub async fn list(
+)]
+pub async fn list(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-) -> AppResult<ApiJson<Vec<ExpectItem>>> {
+) -> AppResult<ApiResponse<Vec<ExpectItem>>> {
     let list = expect_svc::list(&state, &user).await?;
     let dicts = phpyun_services::dict_service::get(&state).await?;
-    Ok(ApiJson(
+    Ok(ApiResponse::data(
         list.into_iter()
             .map(|e| crate::v1::wap::resumes::resume_expect_item_from_dict(e, &dicts))
             .collect(),
@@ -166,7 +165,7 @@ pub async fn create(
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
     ValidatedJson(f): ValidatedJson<ExpectForm>,
-) -> AppResult<ApiJson<CreatedId>> {
+) -> AppResult<ApiResponse<CreatedId>> {
     let (job_id, city_id) = resolve_classids(&state, &f).await?;
     let id = expect_svc::create(
         &state,
@@ -186,17 +185,14 @@ pub async fn create(
         &ip,
     )
     .await?;
-    Ok(ApiJson(CreatedId { id }))
+    Ok(ApiResponse::data(CreatedId { id }))
 }
 
 /// Resolve `*_classid` from either the numeric id sent directly OR the
 /// human-readable `*_classname` text via the dict service. Front-ends that
 /// send classname (no id) hit this path; we look up the dict cache by name.
 /// If neither is provided, the value stays 0.
-async fn resolve_classids(
-    state: &AppState,
-    f: &ExpectForm,
-) -> AppResult<(i64, i64)> {
+async fn resolve_classids(state: &AppState, f: &ExpectForm) -> AppResult<(i64, i64)> {
     let mut job = f.job_classid;
     let mut city = f.city_classid;
     if job == 0 || city == 0 {
@@ -229,11 +225,13 @@ pub async fn update(
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
     ValidatedJson(f): ValidatedJson<ExpectForm>,
-) -> AppResult<ApiJson<json::Value>> {
+) -> AppResult<ApiResponse<json::Value>> {
     let id = f.id as u64;
     if f.status == Some(2) {
         expect_svc::delete(&state, &user, id, &ip).await?;
-        return Ok(ApiJson(json::json!({ "ok": true, "deleted": true })));
+        return Ok(ApiResponse::data(
+            json::json!({ "ok": true, "deleted": true }),
+        ));
     }
     let (job_id, city_id) = resolve_classids(&state, &f).await?;
     expect_svc::update(
@@ -255,5 +253,5 @@ pub async fn update(
         &ip,
     )
     .await?;
-    Ok(ApiJson(json::json!({ "ok": true })))
+    Ok(ApiResponse::data(json::json!({ "ok": true })))
 }

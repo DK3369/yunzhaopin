@@ -1,17 +1,13 @@
 //! Public single-page CMS (mirrors PHPYun `description`): class list / list / detail.
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
-};
-use phpyun_core::{ApiJson, AppResult, AppState, Paged, Pagination, ValidatedJson};
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::dto::IdBody;
+use phpyun_core::utils::fmt_dt;
+use phpyun_core::{ApiResponse, AppResult, AppState, Paged, Pagination, ValidatedJson};
 use phpyun_services::description_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
-use phpyun_core::dto::{IdBody};
-use phpyun_core::utils::{fmt_dt};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -21,7 +17,6 @@ pub fn routes() -> Router<AppState> {
         .route("/descriptions/by-name", post(get_by_name))
         .route("/legal", post(get_legal_page))
 }
-
 
 /// Class item -- all 4 columns of phpyun_desc_class.
 #[derive(Debug, Serialize, ToSchema)]
@@ -52,11 +47,11 @@ impl From<phpyun_models::description::entity::DescClass> for ClassItem {
     tag = "wap",
     responses((status = 200, description = "ok"))
 )]
-pub async fn list_classes(
-    State(state): State<AppState>,
-) -> AppResult<ApiJson<Vec<ClassItem>>> {
+pub async fn list_classes(State(state): State<AppState>) -> AppResult<ApiResponse<Vec<ClassItem>>> {
     let l = description_service::list_classes(&state).await?;
-    Ok(ApiJson(l.iter().cloned().map(ClassItem::from).collect()))
+    Ok(ApiResponse::data(
+        l.iter().cloned().map(ClassItem::from).collect(),
+    ))
 }
 
 #[derive(Debug, Deserialize, Validate, IntoParams)]
@@ -115,9 +110,11 @@ pub async fn list(
     State(state): State<AppState>,
     page: Pagination,
     ValidatedJson(q): ValidatedJson<ListQuery>,
-) -> AppResult<ApiJson<Paged<DescItem>>> {
+) -> AppResult<ApiResponse<Paged<DescItem>>> {
     let r = description_service::list(&state, q.class_id, true, page).await?;
-    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
+    Ok(ApiResponse::data(Paged::from_listing(
+        r.list, r.total, page,
+    )))
 }
 
 /// Single-page detail -- all 10 columns (including full content) + formatted timestamps.
@@ -163,16 +160,16 @@ impl From<phpyun_models::description::entity::Description> for DescDetail {
     request_body = IdBody,
     responses((status = 200, description = "ok"))
 )]
-pub async fn get_one(State(state): State<AppState>,
-    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiJson<DescDetail>> {
+pub async fn get_one(
+    State(state): State<AppState>,
+    ValidatedJson(b): ValidatedJson<IdBody>,
+) -> AppResult<ApiResponse<DescDetail>> {
     let id = b.id;
     let d = description_service::get(&state, id).await?;
     if d.status != 1 {
-        return Err(phpyun_core::ApiError::param_invalid(
-            "description_hidden",
-        ));
+        return Err(phpyun_core::ApiError::param_invalid("description_hidden"));
     }
-    Ok(ApiJson(d.into()))
+    Ok(ApiResponse::data(d.into()))
 }
 
 /// Look up a description by its hand-typed `name` (PHPYun's `phpyun_description.name`).
@@ -187,17 +184,15 @@ pub async fn get_one(State(state): State<AppState>,
         (status = 404, description = "Not found"),
     )
 )]
-pub async fn get_by_name(State(state): State<AppState>,
-    ValidatedJson(b): ValidatedJson<GetByNameBody>) -> AppResult<ApiJson<DescDetail>> {
+pub async fn get_by_name(
+    State(state): State<AppState>,
+    ValidatedJson(b): ValidatedJson<GetByNameBody>,
+) -> AppResult<ApiResponse<DescDetail>> {
     let name = b.name;
     phpyun_core::validators::ensure_path_token(&name)?;
     let row = phpyun_models::description::repo::find_by_name(state.db.reader(), &name).await?;
-    let d = row.ok_or_else(|| {
-        phpyun_core::ApiError::param_invalid(
-            "description_not_found",
-        )
-    })?;
-    Ok(ApiJson(d.into()))
+    let d = row.ok_or_else(|| phpyun_core::ApiError::param_invalid("description_not_found"))?;
+    Ok(ApiResponse::data(d.into()))
 }
 
 /// Stable-slug shortcut for PHP `wap/index::about/contact/privacy/protocol`.
@@ -219,8 +214,10 @@ pub async fn get_by_name(State(state): State<AppState>,
         (status = 404, description = "No matching description configured"),
     )
 )]
-pub async fn get_legal_page(State(state): State<AppState>,
-    ValidatedJson(b): ValidatedJson<GetLegalPageBody>) -> AppResult<ApiJson<DescDetail>> {
+pub async fn get_legal_page(
+    State(state): State<AppState>,
+    ValidatedJson(b): ValidatedJson<GetLegalPageBody>,
+) -> AppResult<ApiResponse<DescDetail>> {
     let slug = b.slug;
     phpyun_core::validators::ensure_path_token(&slug)?;
     let name = match slug.as_str() {
@@ -235,22 +232,24 @@ pub async fn get_legal_page(State(state): State<AppState>,
         }
     };
     let row = phpyun_models::description::repo::find_by_name(state.db.reader(), name).await?;
-    let d = row.ok_or_else(|| {
-        phpyun_core::ApiError::param_invalid(
-            "description_not_found",
-        )
-    })?;
-    Ok(ApiJson(d.into()))
+    let d = row.ok_or_else(|| phpyun_core::ApiError::param_invalid("description_not_found"))?;
+    Ok(ApiResponse::data(d.into()))
 }
 
 #[derive(Debug, serde::Deserialize, validator::Validate, utoipa::ToSchema)]
 pub struct GetByNameBody {
-    #[validate(length(min = 1, max = 64), custom(function = "phpyun_core::validators::path_token"))]
+    #[validate(
+        length(min = 1, max = 64),
+        custom(function = "phpyun_core::validators::path_token")
+    )]
     pub name: String,
 }
 
 #[derive(Debug, serde::Deserialize, validator::Validate, utoipa::ToSchema)]
 pub struct GetLegalPageBody {
-    #[validate(length(min = 1, max = 64), custom(function = "phpyun_core::validators::path_token"))]
+    #[validate(
+        length(min = 1, max = 64),
+        custom(function = "phpyun_core::validators::path_token")
+    )]
     pub slug: String,
 }

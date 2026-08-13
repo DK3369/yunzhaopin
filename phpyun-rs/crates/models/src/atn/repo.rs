@@ -61,18 +61,13 @@ pub async fn exists(
 /// Same as [`exists`] but without filtering by `sc_usertype` — used by the
 /// public company-detail page to render the "已关注" button (we don't know
 /// the user-type at that point, follow is unique by (uid, sc_uid) anyway).
-pub async fn exists_pair(
-    pool: &MySqlPool,
-    uid: u64,
-    sc_uid: u64,
-) -> Result<bool, sqlx::Error> {
-    let row: Option<(i64,)> = sqlx::query_as(
-        "SELECT 1 FROM phpyun_atn WHERE uid = ? AND sc_uid = ? LIMIT 1",
-    )
-    .bind(uid)
-    .bind(sc_uid)
-    .fetch_optional(pool)
-    .await?;
+pub async fn exists_pair(pool: &MySqlPool, uid: u64, sc_uid: u64) -> Result<bool, sqlx::Error> {
+    let row: Option<(i64,)> =
+        sqlx::query_as("SELECT 1 FROM phpyun_atn WHERE uid = ? AND sc_uid = ? LIMIT 1")
+            .bind(uid)
+            .bind(sc_uid)
+            .fetch_optional(pool)
+            .await?;
     Ok(row.is_some())
 }
 
@@ -144,13 +139,12 @@ pub async fn count_by_follower(
     uid: u64,
     sc_usertype: i32,
 ) -> Result<u64, sqlx::Error> {
-    let (n,): (i64,) = sqlx::query_as(
-        "SELECT COUNT(*) FROM phpyun_atn WHERE uid = ? AND sc_usertype = ?",
-    )
-    .bind(uid)
-    .bind(sc_usertype)
-    .fetch_one(pool)
-    .await?;
+    let (n,): (i64,) =
+        sqlx::query_as("SELECT COUNT(*) FROM phpyun_atn WHERE uid = ? AND sc_usertype = ?")
+            .bind(uid)
+            .bind(sc_usertype)
+            .fetch_one(pool)
+            .await?;
     Ok(n.max(0) as u64)
 }
 
@@ -181,29 +175,24 @@ pub async fn count_by_followee(
     sc_uid: u64,
     sc_usertype: i32,
 ) -> Result<u64, sqlx::Error> {
-    let (n,): (i64,) = sqlx::query_as(
-        "SELECT COUNT(*) FROM phpyun_atn WHERE sc_uid = ? AND sc_usertype = ?",
-    )
-    .bind(sc_uid)
-    .bind(sc_usertype)
-    .fetch_one(pool)
-    .await?;
+    let (n,): (i64,) =
+        sqlx::query_as("SELECT COUNT(*) FROM phpyun_atn WHERE sc_uid = ? AND sc_usertype = ?")
+            .bind(sc_uid)
+            .bind(sc_usertype)
+            .fetch_one(pool)
+            .await?;
     Ok(n.max(0) as u64)
 }
 
 /// Return the set of `sc_uid` values a given user follows (any usertype).
 /// Used by feed pages that need to mark "followed?" against many target uids
 /// at once — one query is cheaper than N point-checks.
-pub async fn list_followee_uids(
-    pool: &MySqlPool,
-    uid: u64,
-) -> Result<Vec<u64>, sqlx::Error> {
-    let rows: Vec<(i64,)> = sqlx::query_as(
-        "SELECT CAST(COALESCE(sc_uid,0) AS SIGNED) FROM phpyun_atn WHERE uid = ?",
-    )
-    .bind(uid)
-    .fetch_all(pool)
-    .await?;
+pub async fn list_followee_uids(pool: &MySqlPool, uid: u64) -> Result<Vec<u64>, sqlx::Error> {
+    let rows: Vec<(i64,)> =
+        sqlx::query_as("SELECT CAST(COALESCE(sc_uid,0) AS SIGNED) FROM phpyun_atn WHERE uid = ?")
+            .bind(uid)
+            .fetch_all(pool)
+            .await?;
     Ok(rows.into_iter().map(|(v,)| v.max(0) as u64).collect())
 }
 
@@ -221,13 +210,11 @@ pub async fn bump_company_ant_num(
             .execute(pool)
             .await?;
     } else {
-        sqlx::query(
-            "UPDATE phpyun_company SET ant_num = GREATEST(ant_num - ?, 0) WHERE uid = ?",
-        )
-        .bind(-delta)
-        .bind(company_uid)
-        .execute(pool)
-        .await?;
+        sqlx::query("UPDATE phpyun_company SET ant_num = GREATEST(ant_num - ?, 0) WHERE uid = ?")
+            .bind(-delta)
+            .bind(company_uid)
+            .execute(pool)
+            .await?;
     }
     Ok(())
 }

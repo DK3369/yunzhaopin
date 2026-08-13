@@ -105,7 +105,11 @@ pub async fn upsert(
     tx.commit().await?;
 
     Ok((
-        if prev.is_none() { Some(res.last_insert_id()) } else { None },
+        if prev.is_none() {
+            Some(res.last_insert_id())
+        } else {
+            None
+        },
         prev,
     ))
 }

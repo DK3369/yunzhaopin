@@ -45,9 +45,7 @@ pub fn cn_mobile(v: &str) -> Result<(), ValidationError> {
 /// check only — does not validate the check digit.
 pub fn cn_id_card(v: &str) -> Result<(), ValidationError> {
     static RE: OnceLock<regex::Regex> = OnceLock::new();
-    let re = RE.get_or_init(|| {
-        regex::Regex::new(r"^\d{17}[\dXx]$").expect("valid regex")
-    });
+    let re = RE.get_or_init(|| regex::Regex::new(r"^\d{17}[\dXx]$").expect("valid regex"));
     if re.is_match(v) {
         Ok(())
     } else {
@@ -89,8 +87,8 @@ pub fn strong_password(v: &str) -> Result<(), ValidationError> {
 /// Username: 3–30 chars; letters / digits / underscore; first char can't be a digit.
 pub fn username(v: &str) -> Result<(), ValidationError> {
     static RE: OnceLock<regex::Regex> = OnceLock::new();
-    let re =
-        RE.get_or_init(|| regex::Regex::new(r"^[A-Za-z_][A-Za-z0-9_]{2,29}$").expect("valid regex"));
+    let re = RE
+        .get_or_init(|| regex::Regex::new(r"^[A-Za-z_][A-Za-z0-9_]{2,29}$").expect("valid regex"));
     if re.is_match(v) {
         Ok(())
     } else {
@@ -112,9 +110,9 @@ pub fn path_token(v: &str) -> Result<(), ValidationError> {
     if v.is_empty() || v.len() > 64 {
         return Err(ValidationError::new("path_token_length"));
     }
-    if v.bytes().all(|b| {
-        b.is_ascii_alphanumeric() || b == b'_' || b == b'-' || b == b'.'
-    }) {
+    if v.bytes()
+        .all(|b| b.is_ascii_alphanumeric() || b == b'_' || b == b'-' || b == b'.')
+    {
         Ok(())
     } else {
         Err(ValidationError::new("path_token_charset"))

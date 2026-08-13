@@ -32,11 +32,7 @@ pub async fn list(
     })
 }
 
-pub async fn mark_read(
-    state: &AppState,
-    user: &AuthenticatedUser,
-    id: u64,
-) -> AppResult<()> {
+pub async fn mark_read(state: &AppState, user: &AuthenticatedUser, id: u64) -> AppResult<()> {
     let _ = message_repo::mark_read(state.db.pool(), id, user.uid).await?;
     Ok(())
 }
@@ -45,11 +41,7 @@ pub async fn mark_all_read(state: &AppState, user: &AuthenticatedUser) -> AppRes
     Ok(message_repo::mark_all_read(state.db.pool(), user.uid).await?)
 }
 
-pub async fn delete(
-    state: &AppState,
-    user: &AuthenticatedUser,
-    id: u64,
-) -> AppResult<()> {
+pub async fn delete(state: &AppState, user: &AuthenticatedUser, id: u64) -> AppResult<()> {
     let _ = message_repo::delete(state.db.pool(), id, user.uid).await?;
     Ok(())
 }

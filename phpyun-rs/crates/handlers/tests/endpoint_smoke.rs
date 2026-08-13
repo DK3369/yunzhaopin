@@ -9,7 +9,7 @@
 //!   working as designed.
 //! - **5xx**: regression, schema mismatch, or panic — must investigate.
 //!
-//! The test boots a real `AppState` (DB + Redis as configured by `.env`),
+//! The test boots a real `AppState` (DB + Redis as configured by `.env.dev`),
 //! mints an admin JWT so admin routes don't 403 the smoke probe, then
 //! POSTs `{}` to every path discovered from the OpenAPI spec.
 
@@ -18,11 +18,10 @@ use axum::extract::ConnectInfo;
 use axum::http::{Method, Request};
 use phpyun_core::shutdown::CancellationToken;
 use phpyun_core::{AppState, Config};
-use phpyun_handlers::{build_router_with_state, V1Doc};
+use phpyun_handlers::{build_router_with_state, v1_openapi};
 use std::collections::BTreeMap;
 use std::net::SocketAddr;
 use tower::util::ServiceExt;
-use utoipa::OpenApi;
 
 const TEST_ADMIN_UID: u64 = 1; // Conventional super-admin uid in PHPYun installs.
 
@@ -32,8 +31,8 @@ const TEST_ADMIN_UID: u64 = 1; // Conventional super-admin uid in PHPYun install
 /// `phpyun_user_session`; we stamp one in here using the same code path the
 /// real login flow uses.
 async fn issue_token_with_session(state: &AppState, cfg: &Config, usertype: u8) -> String {
-    let issued = phpyun_core::jwt::issue_pair(cfg, TEST_ADMIN_UID, usertype, 0)
-        .expect("issue_pair");
+    let issued =
+        phpyun_core::jwt::issue_pair(cfg, TEST_ADMIN_UID, usertype, 0).expect("issue_pair");
     phpyun_services::user_session_service::record_login(
         state,
         phpyun_services::user_session_service::LoginRecord {
@@ -65,9 +64,8 @@ async fn smoke_every_v1_post_endpoint() {
         )
         .with_test_writer()
         .try_init();
-    // Config::load reads .env (the same file the running server uses) before
-    // pulling values from the environment.
-    let config = Config::load().expect("Config::load (is .env present?)");
+    let config = Config::load_for_test()
+        .expect("Config::load_for_test (copy .env.dev.example to .env.dev first)");
     let shutdown = CancellationToken::new();
     let state = AppState::build(config.clone(), shutdown.clone())
         .await
@@ -78,15 +76,11 @@ async fn smoke_every_v1_post_endpoint() {
     let user_token = issue_token_with_session(&state, &config, 1).await;
 
     // Enumerate POST paths from the OpenAPI spec.
-    let api = V1Doc::openapi();
+    let api = v1_openapi();
     let mut paths: Vec<(String, bool /* admin */, bool /* needs auth */)> = Vec::new();
     for (path, item) in api.paths.paths.iter() {
         let Some(op) = &item.post else { continue };
-        let needs_auth = op
-            .security
-            .as_ref()
-            .map(|s| !s.is_empty())
-            .unwrap_or(false);
+        let needs_auth = op.security.as_ref().map(|s| !s.is_empty()).unwrap_or(false);
         let is_admin = path.starts_with("/v1/admin/");
         paths.push((path.clone(), is_admin, needs_auth));
     }
@@ -114,8 +108,7 @@ async fn smoke_every_v1_post_endpoint() {
         let mut req = req.body(Body::from("{}")).unwrap();
         let octet_a = (idx >> 8) as u8;
         let octet_b = (idx & 0xff) as u8;
-        let peer: SocketAddr =
-            format!("10.99.{octet_a}.{octet_b}:65535").parse().unwrap();
+        let peer: SocketAddr = format!("10.99.{octet_a}.{octet_b}:65535").parse().unwrap();
         req.extensions_mut().insert(ConnectInfo(peer));
 
         let resp = router.clone().oneshot(req).await.expect("router oneshot");
@@ -148,7 +141,11 @@ async fn smoke_every_v1_post_endpoint() {
                 Err(_) => {
                     bad_envelope.push((
                         path.clone(),
-                        format!("non-JSON body: {} headers: {:?}", body_str.chars().take(180).collect::<String>(), headers_snapshot),
+                        format!(
+                            "non-JSON body: {} headers: {:?}",
+                            body_str.chars().take(180).collect::<String>(),
+                            headers_snapshot
+                        ),
                     ));
                     continue;
                 }
@@ -164,7 +161,7 @@ async fn smoke_every_v1_post_endpoint() {
                 continue;
             }
             // `data` may legitimately be absent for action endpoints that
-            // return `ApiOk` (Option::is_none skips serialization). Treat
+            // return `ApiResponse` (Option::is_none skips serialization). Treat
             // missing data field as Null for classification.
             let owned_null = serde_json::Value::Null;
             let data = v.get("data").unwrap_or(&owned_null);

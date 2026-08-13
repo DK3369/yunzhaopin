@@ -77,11 +77,7 @@ pub async fn update_class_sort(
     Ok(())
 }
 
-pub async fn delete_class(
-    state: &AppState,
-    admin: &AuthenticatedUser,
-    id: u64,
-) -> AppResult<()> {
+pub async fn delete_class(state: &AppState, admin: &AuthenticatedUser, id: u64) -> AppResult<()> {
     let n = desc_repo::delete_class(state.db.pool(), id).await?;
     if n == 0 {
         return Err(ApiError::param_invalid("class_not_found"));
@@ -152,7 +148,11 @@ pub async fn upsert(
     let _ = audit::emit(
         state,
         AuditEvent::new(
-            if f.id.is_some() { "admin.description.update" } else { "admin.description.create" },
+            if f.id.is_some() {
+                "admin.description.update"
+            } else {
+                "admin.description.create"
+            },
             Actor::uid(admin.uid),
         )
         .target(format!("description:{id}")),

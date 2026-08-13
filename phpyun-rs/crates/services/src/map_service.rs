@@ -43,4 +43,6 @@ pub async fn companies_near(
     Ok(geo_repo::list_companies_near(state.db.reader(), x, y, radius_km, limit).await?)
 }
 
-pub fn default_limit() -> u64 { DEFAULT_LIMIT }
+pub fn default_limit() -> u64 {
+    DEFAULT_LIMIT
+}

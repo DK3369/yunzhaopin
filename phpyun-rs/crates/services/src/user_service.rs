@@ -300,12 +300,12 @@ pub async fn send_email_login_code(state: &AppState, email: &str) -> AppResult<(
     // Development-only fallback: local environments often do not have an MTA
     // configured. Keep production fail-closed so a mail delivery failure never
     // turns into a known login code.
-    let code = if state.config.env == "dev" {
+    let code = if state.config.env.is_dev_or_test() {
         DEV_EMAIL_LOGIN_CODE.to_string()
     } else {
         verify::gen_digit_code(6)
     };
-    if state.config.env == "dev" {
+    if state.config.env.is_dev_or_test() {
         // Development must not wait for a host MTA. A missing or misconfigured
         // sendmail can block forever, preventing the endpoint from returning
         // even though the fixed development code is already known.

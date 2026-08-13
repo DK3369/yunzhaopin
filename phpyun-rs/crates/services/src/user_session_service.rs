@@ -14,7 +14,9 @@
 //!      in-flight access token AND any pending refresh attempt are refused.
 
 use phpyun_core::utils::fmt_ts;
-use phpyun_core::{clock, jwt_blacklist, session_presence, ApiError, AppResult, AppState, AuthenticatedUser};
+use phpyun_core::{
+    clock, jwt_blacklist, session_presence, ApiError, AppResult, AppState, AuthenticatedUser,
+};
 use phpyun_models::user_session::{entity::UserSession, repo as session_repo};
 use std::sync::Arc;
 
@@ -303,13 +305,9 @@ pub async fn revoke_session(
 
 /// Kick all other sessions, keep the current one.
 /// Returns the count of revoked sessions for the response payload.
-pub async fn revoke_other_sessions(
-    state: &AppState,
-    user: &AuthenticatedUser,
-) -> AppResult<u64> {
+pub async fn revoke_other_sessions(state: &AppState, user: &AuthenticatedUser) -> AppResult<u64> {
     let now = clock::now_ts();
-    let revoked =
-        session_repo::revoke_others(state.db.pool(), user.uid, &user.jti, now).await?;
+    let revoked = session_repo::revoke_others(state.db.pool(), user.uid, &user.jti, now).await?;
     let n = revoked.len() as u64;
     for (acc_jti, acc_exp, ref_jti, ref_exp) in revoked {
         let _ = jwt_blacklist::revoke(&state.redis, &acc_jti, acc_exp).await;

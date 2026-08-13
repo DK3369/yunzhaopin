@@ -1,16 +1,14 @@
 //! My activity log (filtered from `yun_rs_audit_log` where actor_uid = self).
 
-use axum::{
-    extract::{State},
-    Router,
-    routing::post,
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::utils::fmt_dt;
+use phpyun_core::{
+    ApiResponse, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
 };
-use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::audit_log_service::{self, Filter};
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
-use phpyun_core::utils::{fmt_dt};
 
 pub fn routes() -> Router<AppState> {
     Router::new().route("/activity", post(list))
@@ -25,7 +23,6 @@ pub struct ActivityQuery {
     #[validate(range(min = 0i64, max = 4_102_444_800i64))]
     pub until: Option<i64>,
 }
-
 
 /// Personal activity log item — all 9 columns of phpyun_audit_log + formatted timestamp (full uid/ip/ua audit info).
 #[derive(Debug, Serialize, ToSchema)]
@@ -73,7 +70,7 @@ pub async fn list(
     user: AuthenticatedUser,
     page: Pagination,
     ValidatedJson(q): ValidatedJson<ActivityQuery>,
-) -> AppResult<ApiJson<Paged<ActivityItem>>> {
+) -> AppResult<ApiResponse<Paged<ActivityItem>>> {
     let f = Filter {
         action_prefix: q.action_prefix.as_deref(),
         actor_uid: None, // ignored; service forces self
@@ -81,5 +78,7 @@ pub async fn list(
         until: q.until,
     };
     let r = audit_log_service::list_mine(&state, &user, &f, page).await?;
-    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
+    Ok(ApiResponse::data(Paged::from_listing(
+        r.list, r.total, page,
+    )))
 }

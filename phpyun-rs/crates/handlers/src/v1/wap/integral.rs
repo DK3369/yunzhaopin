@@ -1,15 +1,11 @@
 //! Points mall (public): item list / detail.
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
-};
-use phpyun_core::{ApiJson, AppResult, AppState, Paged, Pagination, ValidatedJson};
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::dto::IdBody;
+use phpyun_core::{ApiResponse, AppResult, AppState, Paged, Pagination, ValidatedJson};
 use phpyun_services::integral_service;
 use serde::Serialize;
 use utoipa::ToSchema;
-use phpyun_core::dto::{IdBody};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -45,9 +41,11 @@ impl From<phpyun_models::integral::entity::IntegralItem> for IntegralItemView {
 pub async fn list_items(
     State(state): State<AppState>,
     page: Pagination,
-) -> AppResult<ApiJson<Paged<IntegralItemView>>> {
+) -> AppResult<ApiResponse<Paged<IntegralItemView>>> {
     let r = integral_service::list_items(&state, page).await?;
-    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
+    Ok(ApiResponse::data(Paged::from_listing(
+        r.list, r.total, page,
+    )))
 }
 
 /// Points-mall item detail
@@ -57,10 +55,11 @@ pub async fn list_items(
     request_body = IdBody,
     responses((status = 200, description = "ok", body = IntegralItemView))
 )]
-pub async fn item_detail(State(state): State<AppState>,
-    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiJson<IntegralItemView>> {
+pub async fn item_detail(
+    State(state): State<AppState>,
+    ValidatedJson(b): ValidatedJson<IdBody>,
+) -> AppResult<ApiResponse<IntegralItemView>> {
     let id = b.id;
     let it = integral_service::get_item(&state, id).await?;
-    Ok(ApiJson(IntegralItemView::from(it)))
+    Ok(ApiResponse::data(IntegralItemView::from(it)))
 }
-

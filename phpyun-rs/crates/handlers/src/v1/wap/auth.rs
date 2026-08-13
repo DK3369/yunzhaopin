@@ -5,13 +5,9 @@
 //! - /logout writes the access jti revocation into Redis with TTL auto-expiry
 //! - /refresh exchanges new access+refresh; old refresh is revoked immediately (replay protection)
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
-};
+use axum::{extract::State, routing::post, Router};
 use phpyun_core::dto::AuthTokenData;
-use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, ValidatedJson};
+use phpyun_core::{ApiResponse, AppResult, AppState, AuthenticatedUser, ValidatedJson};
 use phpyun_services::user_service::{self, UserProfile};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
@@ -46,9 +42,9 @@ pub struct LogoutData {
 pub async fn logout(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-) -> AppResult<ApiJson<LogoutData>> {
+) -> AppResult<ApiResponse<LogoutData>> {
     user_service::logout(&state, &user.jti, user.exp).await?;
-    Ok(ApiJson(LogoutData { revoked: true }))
+    Ok(ApiResponse::data(LogoutData { revoked: true }))
 }
 
 // ==================== POST /v1/wap/refresh ====================
@@ -74,9 +70,9 @@ pub async fn logout(
 pub async fn refresh(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-) -> AppResult<ApiJson<AuthTokenData>> {
+) -> AppResult<ApiResponse<AuthTokenData>> {
     let r = user_service::refresh_access(&state, &user).await?;
-    Ok(ApiJson(AuthTokenData {
+    Ok(ApiResponse::data(AuthTokenData {
         uid: r.uid,
         usertype: r.usertype,
         access_token: r.access,
@@ -122,9 +118,9 @@ impl From<&UserProfile> for MeData {
 pub async fn me(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-) -> AppResult<ApiJson<MeData>> {
+) -> AppResult<ApiResponse<MeData>> {
     let profile = user_service::get_profile(&state, user.uid).await?;
-    Ok(ApiJson(MeData::from(profile.as_ref())))
+    Ok(ApiResponse::data(MeData::from(profile.as_ref())))
 }
 
 // ==================== POST /v1/wap/usertype/select ====================
@@ -162,9 +158,9 @@ pub async fn select_usertype(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(form): ValidatedJson<SelectUsertypeForm>,
-) -> AppResult<ApiJson<SelectUsertypeData>> {
+) -> AppResult<ApiResponse<SelectUsertypeData>> {
     user_service::set_usertype(&state, user.uid, form.usertype).await?;
-    Ok(ApiJson(SelectUsertypeData {
+    Ok(ApiResponse::data(SelectUsertypeData {
         usertype: form.usertype,
     }))
 }

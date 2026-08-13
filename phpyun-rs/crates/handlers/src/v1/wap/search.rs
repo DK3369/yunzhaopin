@@ -3,12 +3,8 @@
 //! Reuses the rich Summary types from each domain: JobSummary (34) / CompanySummary (18) / ArticleSummary (29) / QuestionSummary (19),
 //! so the search page and list pages keep the same field shapes.
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
-};
-use phpyun_core::{ApiJson, AppResult, AppState, ValidatedJson};
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::{ApiResponse, AppResult, AppState, ValidatedJson};
 use phpyun_services::search_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
@@ -57,14 +53,18 @@ pub async fn search(
     State(state): State<AppState>,
     phpyun_core::MaybeUser(user): phpyun_core::MaybeUser,
     ValidatedJson(q): ValidatedJson<SearchQuery>,
-) -> AppResult<ApiJson<SearchData>> {
+) -> AppResult<ApiResponse<SearchData>> {
     let r = search_service::global_search(&state, &q.kw, &q.scope, q.did).await?;
     let dicts = phpyun_services::dict_service::get(&state).await?;
     let now = phpyun_core::clock::now_ts();
     let job_ids: Vec<u64> = r.jobs.iter().map(|j| j.id).collect();
-    let fav_set =
-        phpyun_services::collect_service::favorited_set(&state, user.as_ref().map(|u| u.uid), &job_ids).await;
-    Ok(ApiJson(SearchData {
+    let fav_set = phpyun_services::collect_service::favorited_set(
+        &state,
+        user.as_ref().map(|u| u.uid),
+        &job_ids,
+    )
+    .await;
+    Ok(ApiResponse::data(SearchData {
         jobs: r
             .jobs
             .into_iter()

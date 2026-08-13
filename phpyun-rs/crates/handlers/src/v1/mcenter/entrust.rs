@@ -7,17 +7,15 @@
 //! - POST  /v1/mcenter/entrust              — bind a headhunter `{lt_uid}` (idempotent)
 //! - POST  /v1/mcenter/entrust/delete       — unbind by `{lt_uid}` or `{id}`
 
-use axum::{
-    extract::{State},
-    Router,
-    routing::post,
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::utils::fmt_dt;
+use phpyun_core::{
+    ApiError, ApiResponse, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
 };
-use phpyun_core::{ApiJson, ApiMsg, ApiError, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::entrust_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
-use phpyun_core::utils::{fmt_dt};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -25,7 +23,6 @@ pub fn routes() -> Router<AppState> {
         .route("/entrust/list", post(list))
         .route("/entrust/delete", post(unbind))
 }
-
 
 #[derive(Debug, Serialize, ToSchema)]
 pub struct EntrustItem {
@@ -63,15 +60,21 @@ pub struct ListQuery {}
     security(("bearer" = [])),
     params(ListQuery),
     responses((status = 200, description = "ok"))
-)]pub async fn list(
+)]
+pub async fn list(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
     ValidatedJson(_q): ValidatedJson<ListQuery>,
-) -> AppResult<ApiJson<Paged<EntrustItem>>> {
+) -> AppResult<ApiResponse<Paged<EntrustItem>>> {
     let r = entrust_service::list_mine(&state, &user, page).await?;
     let items: Vec<EntrustItem> = r.list.into_iter().map(EntrustItem::from).collect();
-    Ok(ApiJson(Paged::new(items, r.total, page.page, page.page_size)))
+    Ok(ApiResponse::data(Paged::new(
+        items,
+        r.total,
+        page.page,
+        page.page_size,
+    )))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
@@ -100,9 +103,12 @@ pub async fn bind(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(f): ValidatedJson<BindForm>,
-) -> AppResult<ApiJson<BindResp>> {
+) -> AppResult<ApiResponse<BindResp>> {
     let id = entrust_service::bind(&state, &user, f.lt_uid).await?;
-    Ok(ApiJson(BindResp { id, lt_uid: f.lt_uid }))
+    Ok(ApiResponse::data(BindResp {
+        id,
+        lt_uid: f.lt_uid,
+    }))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
@@ -129,7 +135,7 @@ pub async fn unbind(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(f): ValidatedJson<UnbindForm>,
-) -> AppResult<ApiMsg> {
+) -> AppResult<ApiResponse> {
     if f.lt_uid > 0 {
         entrust_service::unbind(&state, &user, f.lt_uid).await?;
     } else if f.id > 0 {
@@ -137,5 +143,5 @@ pub async fn unbind(
     } else {
         return Err(ApiError::param_invalid("lt_uid_or_id_required"));
     }
-    Ok(ApiMsg("entrust_unbound"))
+    Ok(ApiResponse::message("entrust_unbound"))
 }

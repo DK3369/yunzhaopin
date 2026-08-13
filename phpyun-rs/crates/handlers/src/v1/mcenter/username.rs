@@ -3,13 +3,9 @@
 //! Matches PHPYun `setname.htm`: each account may rename only once (enforced by the `phpyun_member.claim` field).
 //! On success, the server clears that uid's cache; clients are encouraged to refetch `/v1/mcenter/profile`.
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
-};
+use axum::{extract::State, routing::post, Router};
 use phpyun_core::json;
-use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, ValidatedJson};
+use phpyun_core::{ApiResponse, AppResult, AppState, AuthenticatedUser, ClientIp, ValidatedJson};
 use phpyun_services::mcenter_service;
 use serde::Deserialize;
 use utoipa::ToSchema;
@@ -45,8 +41,10 @@ pub async fn rename(
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
     ValidatedJson(f): ValidatedJson<RenameForm>,
-) -> AppResult<ApiJson<json::Value>> {
+) -> AppResult<ApiResponse<json::Value>> {
     mcenter_service::rename_username(&state, user.uid, &f.old_password, &f.new_username, &ip)
         .await?;
-    Ok(ApiJson(json::json!({ "ok": true, "new_username": f.new_username })))
+    Ok(ApiResponse::data(
+        json::json!({ "ok": true, "new_username": f.new_username }),
+    ))
 }

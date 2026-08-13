@@ -76,7 +76,11 @@ pub async fn is_favorited(state: &AppState, uid: u64, job_id: u64) -> AppResult<
     if ensure_warmed(state, uid).await.is_err() {
         return Ok(collect_repo::exists(state.db.reader(), uid, job_id).await?);
     }
-    match state.redis.sismember_i64(&key_set(uid), job_id as i64).await {
+    match state
+        .redis
+        .sismember_i64(&key_set(uid), job_id as i64)
+        .await
+    {
         Ok(b) => Ok(b),
         // Redis hiccup AFTER warm — go direct to DB rather than lying with `false`.
         Err(_) => Ok(collect_repo::exists(state.db.reader(), uid, job_id).await?),
@@ -86,11 +90,7 @@ pub async fn is_favorited(state: &AppState, uid: u64, job_id: u64) -> AppResult<
 /// Batch membership check — given many job_ids, return the favorited subset.
 /// One Redis RTT (SMISMEMBER). Caller passes `uid=None` for unauthenticated
 /// requests; that returns an empty set without any RPC.
-pub async fn favorited_set(
-    state: &AppState,
-    uid: Option<u64>,
-    job_ids: &[u64],
-) -> HashSet<u64> {
+pub async fn favorited_set(state: &AppState, uid: Option<u64>, job_ids: &[u64]) -> HashSet<u64> {
     let Some(uid) = uid else {
         return HashSet::new();
     };
@@ -126,7 +126,10 @@ pub async fn record_added(state: &AppState, uid: u64, job_id: u64) {
     let _ = state.redis.sadd_i64(&key_set(uid), job_id as i64).await;
     // Refresh TTL while we're touching the key
     let _ = state.redis.expire(&key_set(uid), TTL_SECS).await;
-    let _ = state.redis.set_ex(&key_warmed(uid), "1", TTL_SECS as u64).await;
+    let _ = state
+        .redis
+        .set_ex(&key_warmed(uid), "1", TTL_SECS as u64)
+        .await;
 }
 
 /// Cache write — call after the DB DELETE succeeds.

@@ -9,11 +9,10 @@
 //! see `crates/app/tests/` (when added) for that.
 
 use phpyun_core::json;
-use phpyun_handlers::openapi::V1Doc;
-use utoipa::OpenApi;
+use phpyun_handlers::openapi::v1_openapi;
 
 fn doc() -> utoipa::openapi::OpenApi {
-    V1Doc::openapi()
+    v1_openapi()
 }
 
 /// Helper: assert a path exists at the given method + tag.
@@ -141,10 +140,21 @@ fn v1_doc_path_count_floor() {
 #[test]
 fn follows_routes_post_only() {
     let openapi = doc();
-    let item = openapi.paths.paths.get("/v1/mcenter/follows").expect("/follows");
+    let item = openapi
+        .paths
+        .paths
+        .get("/v1/mcenter/follows")
+        .expect("/follows");
     assert!(item.post.is_some(), "POST /follows should exist");
-    assert!(item.get.is_none(), "GET /follows should be removed (all POST)");
-    let listit = openapi.paths.paths.get("/v1/mcenter/follows/list").expect("/follows/list");
+    assert!(
+        item.get.is_none(),
+        "GET /follows should be removed (all POST)"
+    );
+    let listit = openapi
+        .paths
+        .paths
+        .get("/v1/mcenter/follows/list")
+        .expect("/follows/list");
     assert!(listit.post.is_some(), "POST /follows/list should exist");
 }
 
@@ -469,10 +479,7 @@ fn path_string_bindings(sig: &str) -> Vec<String> {
         out.push(m[1].to_string());
     }
     // Tuple Path<(String, T)> / Path<(String, T, U)>:  Path((a, b, c)): Path<(String, ...)>
-    let tup = regex::Regex::new(
-        r"Path\(\(([^)]+)\)\):\s*Path<\(\s*String([^>]*)\)>",
-    )
-    .unwrap();
+    let tup = regex::Regex::new(r"Path\(\(([^)]+)\)\):\s*Path<\(\s*String([^>]*)\)>").unwrap();
     for m in tup.captures_iter(sig) {
         let names: Vec<&str> = m[1].split(',').map(|s| s.trim()).collect();
         // Walk the type list; only keep names whose corresponding type is `String`
@@ -519,7 +526,7 @@ fn no_raw_json_extractor_in_handlers() {
             }
             // `axum::Json(` (extractor) — NOT `axum::Json<` (return type) and
             // NOT `Json::<` turbofish.
-            if line.contains("axum::Json(") && !line.contains("ApiJson") {
+            if line.contains("axum::Json(") && !line.contains("ApiResponse") {
                 violations.push(format!(
                     "{}:{}: {}",
                     p.strip_prefix(env!("CARGO_MANIFEST_DIR"))
@@ -572,10 +579,10 @@ fn no_raw_query_extractor_in_handlers() {
             if trim.starts_with("//") || trim.starts_with("///") {
                 continue;
             }
-            let bad = (line.contains("Query(") && line.contains(": Query<")
+            let bad = (line.contains("Query(")
+                && line.contains(": Query<")
                 && !line.contains("ValidatedQuery"))
-                || (line.contains("axum::extract::Query(")
-                    && !line.contains("ValidatedQuery"));
+                || (line.contains("axum::extract::Query(") && !line.contains("ValidatedQuery"));
             if bad {
                 violations.push(format!(
                     "{}:{}: {}",
@@ -734,18 +741,23 @@ fn high_risk_search_handlers_use_validated_query() {
     let crate_root = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
     let targets: &[(&str, &[&str])] = &[
         ("src/v1/wap/jobs.rs", &["JobListQuery", "RecQuery"]),
-        ("src/v1/wap/companies.rs", &["CompanyListQuery", "CompanyAutoQuery", "HotCompaniesQuery"]),
+        (
+            "src/v1/wap/companies.rs",
+            &["CompanyListQuery", "CompanyAutoQuery", "HotCompaniesQuery"],
+        ),
         ("src/v1/wap/resumes.rs", &["ResumeListQuery"]),
         ("src/v1/wap/articles.rs", &["ArticleListQuery"]),
-        ("src/v1/wap/qna.rs", &["QListQuery", "HotweekQuery", "TopAnswerersQuery"]),
+        (
+            "src/v1/wap/qna.rs",
+            &["QListQuery", "HotweekQuery", "TopAnswerersQuery"],
+        ),
         ("src/v1/wap/search.rs", &["SearchQuery"]),
         ("src/v1/wap/ads.rs", &["AdQuery"]),
     ];
     let mut violations: Vec<String> = Vec::new();
     for (rel, structs) in targets {
         let path = crate_root.join(rel);
-        let src = std::fs::read_to_string(&path)
-            .unwrap_or_else(|e| panic!("read {rel}: {e}"));
+        let src = std::fs::read_to_string(&path).unwrap_or_else(|e| panic!("read {rel}: {e}"));
         for s in *structs {
             // Forbid `Query<S>` (would be the unvalidated extractor) — must be
             // `ValidatedQuery<S>`.
@@ -753,7 +765,10 @@ fn high_risk_search_handlers_use_validated_query() {
             let needle_good = format!("ValidatedQuery<{s}>");
             for (lineno, line) in src.lines().enumerate() {
                 if line.contains(&needle_bad) && !line.contains(&needle_good) {
-                    violations.push(format!("{rel}:{}: raw `{needle_bad}` (use `{needle_good}`)", lineno + 1));
+                    violations.push(format!(
+                        "{rel}:{}: raw `{needle_bad}` (use `{needle_good}`)",
+                        lineno + 1
+                    ));
                 }
             }
         }

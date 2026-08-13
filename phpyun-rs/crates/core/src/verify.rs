@@ -16,8 +16,8 @@
 //! - SMS captcha: `target = mobile`.
 //! - Email captcha: `target = email`.
 
-use crate::ApiError;
 use crate::kv::Kv;
+use crate::ApiError;
 use serde::{Deserialize, Serialize};
 use std::time::Duration;
 

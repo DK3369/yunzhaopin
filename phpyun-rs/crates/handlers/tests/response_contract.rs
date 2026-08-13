@@ -1,6 +1,6 @@
 //! Lock the API response contract for the unified application error type.
 //!
-//! 1. **Contract**: success `{code: 200, msg: "ok", data}` / failure `{code: <HTTP>, msg: <tag>, data: null}`
+//! 1. **Contract**: success `{code: 200, msg: "ok", data}` / failure `{code: <HTTP>, msg: <error>, data: ""}`
 //! 2. **Unified errors**: all application failures are returned as `ApiError`; only
 //!    unauthenticated and expired sessions use 401.
 
@@ -8,7 +8,7 @@ use axum::{routing::get, Router};
 use axum_test::TestServer;
 use phpyun_core::i18n::{self, Lang};
 use phpyun_core::json::{self, Value};
-use phpyun_core::{ApiJson, ApiError, AppResult};
+use phpyun_core::{ApiError, ApiResponse, AppResult};
 use serde::Serialize;
 
 /// Resolve `errors.<tag>` through i18n the same way `ApiError::into_response`
@@ -35,40 +35,43 @@ struct Payload {
 
 // ==================== handlers ====================
 
-async fn ok_handler() -> AppResult<ApiJson<Payload>> {
-    Ok(ApiJson(Payload { name: "alice", n: 42 }))
+async fn ok_handler() -> AppResult<ApiResponse<Payload>> {
+    Ok(ApiResponse::data(Payload {
+        name: "alice",
+        n: 42,
+    }))
 }
 
-async fn err_unauth() -> AppResult<ApiJson<Payload>> {
+async fn err_unauth() -> AppResult<ApiResponse<Payload>> {
     Err(ApiError::unauth())
 }
 
-async fn err_session() -> AppResult<ApiJson<Payload>> {
+async fn err_session() -> AppResult<ApiResponse<Payload>> {
     Err(ApiError::session_expired())
 }
 
-async fn err_locked() -> AppResult<ApiJson<Payload>> {
+async fn err_locked() -> AppResult<ApiResponse<Payload>> {
     Err(ApiError::locked())
 }
 
-async fn err_rate() -> AppResult<ApiJson<Payload>> {
+async fn err_rate() -> AppResult<ApiResponse<Payload>> {
     Err(ApiError::rate_limit())
 }
 
-async fn err_upstream() -> AppResult<ApiJson<Payload>> {
+async fn err_upstream() -> AppResult<ApiResponse<Payload>> {
     Err(ApiError::upstream("sms gateway timeout"))
 }
 
-async fn err_internal() -> AppResult<ApiJson<Payload>> {
+async fn err_internal() -> AppResult<ApiResponse<Payload>> {
     // sqlx::Error auto-converts to ApiError (database errors are 500 / db).
     Err(sqlx::Error::RowNotFound.into())
 }
 
-async fn err_param() -> AppResult<ApiJson<Payload>> {
+async fn err_param() -> AppResult<ApiResponse<Payload>> {
     Err(ApiError::param_invalid("bad email").into())
 }
 
-async fn err_business() -> AppResult<ApiJson<Payload>> {
+async fn err_business() -> AppResult<ApiResponse<Payload>> {
     Err(ApiError::business("job_not_found").into())
 }
 
@@ -107,12 +110,12 @@ async fn auth_errors_401_with_specific_tags() {
     let server = TestServer::new(router()).unwrap();
     let body: Value = server.get("/err/unauth").await.json();
     assert_eq!(body["code"], json::json!(401));
-    assert_eq!(body["key"], json::json!("errors.unauth"));
+    assert!(body.get("key").is_none());
+    assert_eq!(body["data"], json::json!(""));
     assert_eq!(body["msg"], json::json!(translated_msg("unauth")));
 
     let body: Value = server.get("/err/session").await.json();
     assert_eq!(body["code"], json::json!(401));
-    assert_eq!(body["key"], json::json!("errors.session_expired"));
     assert_eq!(body["msg"], json::json!(translated_msg("session_expired")));
 }
 
@@ -129,8 +132,6 @@ async fn non_auth_errors_are_500() {
     ] {
         let body: Value = server.get(path).await.json();
         assert_eq!(body["code"], json::json!(expected_code), "at {path}");
-        let expected_key = format!("errors.{tag}");
-        assert_eq!(body["key"], json::json!(expected_key), "at {path}");
         let msg = body["msg"].as_str().expect("msg is a string");
         assert!(
             !msg.is_empty(),
@@ -158,10 +159,15 @@ async fn param_invalid_is_500() {
     let server = TestServer::new(router()).unwrap();
     let body: Value = server.get("/err/param").await.json();
     assert_eq!(body["code"], json::json!(500));
-    assert_eq!(body["key"], json::json!("errors.param_invalid"));
     let msg = body["msg"].as_str().expect("msg is a string");
-    assert!(!msg.is_empty(), "msg should be a non-empty translated string");
-    assert!(!msg.starts_with("errors."), "msg should be translated, got {msg:?}");
+    assert!(
+        !msg.is_empty(),
+        "msg should be a non-empty translated string"
+    );
+    assert!(
+        !msg.starts_with("errors."),
+        "msg should be translated, got {msg:?}"
+    );
 }
 
 #[tokio::test]
@@ -185,7 +191,11 @@ async fn body_code_equals_http_status_across_all_variants() {
         ("/err/business", 500),
     ] {
         let resp = server.get(path).await;
-        assert_eq!(resp.status_code().as_u16(), expected, "HTTP status at {path}");
+        assert_eq!(
+            resp.status_code().as_u16(),
+            expected,
+            "HTTP status at {path}"
+        );
         let body: Value = resp.json();
         assert_eq!(
             body["code"],

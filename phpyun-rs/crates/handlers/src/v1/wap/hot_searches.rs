@@ -1,16 +1,12 @@
 //! Hot search keywords (public endpoint).
 
-use axum::{
-    extract::{State},
-    Router,
-    routing::post,
-};
-use phpyun_core::{ApiJson, AppResult, AppState, ValidatedJson};
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::utils::fmt_dt;
+use phpyun_core::{ApiResponse, AppResult, AppState, ValidatedJson};
 use phpyun_services::hot_search_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
-use phpyun_core::utils::{fmt_dt};
 
 pub fn routes() -> Router<AppState> {
     Router::new().route("/hot-searches", post(list))
@@ -32,7 +28,6 @@ fn default_scope() -> String {
 fn default_limit() -> u64 {
     10
 }
-
 
 /// Hot search keyword item — all 5 columns of phpyun_hot_search + formatted timestamp.
 #[derive(Debug, Serialize, ToSchema)]
@@ -69,7 +64,9 @@ impl From<phpyun_models::hot_search::entity::HotSearch> for HotItem {
 pub async fn list(
     State(state): State<AppState>,
     ValidatedJson(q): ValidatedJson<HotQuery>,
-) -> AppResult<ApiJson<Vec<HotItem>>> {
+) -> AppResult<ApiResponse<Vec<HotItem>>> {
     let list = hot_search_service::top(&state, &q.scope, q.limit).await?;
-    Ok(ApiJson(list.iter().cloned().map(HotItem::from).collect()))
+    Ok(ApiResponse::data(
+        list.iter().cloned().map(HotItem::from).collect(),
+    ))
 }

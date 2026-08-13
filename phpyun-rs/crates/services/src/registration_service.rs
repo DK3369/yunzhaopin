@@ -13,11 +13,7 @@ use phpyun_auth::argon2_hash_async;
 use phpyun_core::audit::{self, Actor, AuditEvent};
 use phpyun_core::jwt::{issue_pair, JwtIssued};
 use phpyun_core::verify::{self, VerifyKind};
-use phpyun_core::{
-    clock,
-    metrics::auth_event,
-    ApiError, AppResult, AppState,
-};
+use phpyun_core::{clock, metrics::auth_event, ApiError, AppResult, AppState};
 use phpyun_models::company::repo as company_repo;
 use phpyun_models::resume::repo as resume_repo;
 use phpyun_models::user::repo as user_repo;

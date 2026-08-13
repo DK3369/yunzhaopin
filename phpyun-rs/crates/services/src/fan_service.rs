@@ -33,7 +33,10 @@ pub async fn list_fans(
     // return an empty page rather than 403 — the frontend already gates the
     // page by usertype, this is just defensive.
     if user.usertype != 2 {
-        return Ok(FanPage { total: 0, list: vec![] });
+        return Ok(FanPage {
+            total: 0,
+            list: vec![],
+        });
     }
 
     let pool = state.db.reader();

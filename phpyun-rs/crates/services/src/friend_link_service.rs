@@ -21,10 +21,7 @@ pub async fn invalidate_all() {
     cache().invalidate_all();
 }
 
-pub async fn list(
-    state: &AppState,
-    category: Option<&str>,
-) -> AppResult<Arc<Vec<FriendLink>>> {
+pub async fn list(state: &AppState, category: Option<&str>) -> AppResult<Arc<Vec<FriendLink>>> {
     let key = category.map(str::to_owned);
     let db = state.db.reader().clone();
     let key_clone = key.clone();

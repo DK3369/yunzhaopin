@@ -30,10 +30,7 @@ fn position_to_int(p: &str) -> i32 {
     p.parse::<i32>().unwrap_or(0)
 }
 
-pub async fn list_public(
-    pool: &MySqlPool,
-    position: &str,
-) -> Result<Vec<NavMenu>, sqlx::Error> {
+pub async fn list_public(pool: &MySqlPool, position: &str) -> Result<Vec<NavMenu>, sqlx::Error> {
     let sql = format!(
         "SELECT {FIELDS} FROM phpyun_navigation \
          WHERE `type` = ? AND display = 1 \
@@ -75,11 +72,7 @@ pub struct NavCreate<'a> {
     pub sort: i32,
 }
 
-pub async fn create(
-    pool: &MySqlPool,
-    c: NavCreate<'_>,
-    _now: i64,
-) -> Result<u64, sqlx::Error> {
+pub async fn create(pool: &MySqlPool, c: NavCreate<'_>, _now: i64) -> Result<u64, sqlx::Error> {
     let res = sqlx::query(
         "INSERT INTO phpyun_navigation (`type`, name, url, pic, nid, sort, display) \
          VALUES (?, ?, ?, ?, ?, ?, 1)",

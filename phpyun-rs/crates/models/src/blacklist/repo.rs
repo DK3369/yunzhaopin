@@ -69,20 +69,14 @@ pub async fn remove(pool: &MySqlPool, uid: u64, blocked_uid: u64) -> Result<u64,
 }
 
 pub async fn remove_all(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Error> {
-    let res = sqlx::query(
-        "UPDATE phpyun_blacklist SET status = 2 WHERE p_uid = ? AND status != 2",
-    )
-    .bind(uid)
-    .execute(pool)
-    .await?;
+    let res = sqlx::query("UPDATE phpyun_blacklist SET status = 2 WHERE p_uid = ? AND status != 2")
+        .bind(uid)
+        .execute(pool)
+        .await?;
     Ok(res.rows_affected())
 }
 
-pub async fn is_blocked(
-    pool: &MySqlPool,
-    uid: u64,
-    blocked_uid: u64,
-) -> Result<bool, sqlx::Error> {
+pub async fn is_blocked(pool: &MySqlPool, uid: u64, blocked_uid: u64) -> Result<bool, sqlx::Error> {
     let row = sqlx::query_scalar::<_, i64>(
         "SELECT 1 FROM phpyun_blacklist \
          WHERE p_uid = ? AND c_uid = ? AND status != 2 LIMIT 1",
@@ -121,11 +115,10 @@ pub async fn list_by_uid(
 }
 
 pub async fn count_by_uid(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Error> {
-    let (n,): (i64,) = sqlx::query_as(
-        "SELECT COUNT(*) FROM phpyun_blacklist WHERE p_uid = ? AND status != 2",
-    )
-    .bind(uid)
-    .fetch_one(pool)
-    .await?;
+    let (n,): (i64,) =
+        sqlx::query_as("SELECT COUNT(*) FROM phpyun_blacklist WHERE p_uid = ? AND status != 2")
+            .bind(uid)
+            .fetch_one(pool)
+            .await?;
     Ok(n.max(0) as u64)
 }

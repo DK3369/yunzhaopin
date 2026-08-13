@@ -7,17 +7,17 @@
 //! migrate to `company-contents` for new integrations and don't extend this
 //! module.
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::dto::CreatedId;
+use phpyun_core::{
+    ApiResponse, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
 };
-use phpyun_core::{ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
-use phpyun_services::company_sub_service::{self, NewsInput, NewsUpdateInput, ProductInput, ProductUpdateInput};
+use phpyun_services::company_sub_service::{
+    self, NewsInput, NewsUpdateInput, ProductInput, ProductUpdateInput,
+};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
-use phpyun_core::dto::{CreatedId};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -89,14 +89,17 @@ pub struct ProductPatch {
 }
 
 /// My product list
-#[utoipa::path(post, path = "/v1/mcenter/company/products/list", tag = "mcenter", security(("bearer" = [])), responses((status = 200, description = "ok")))]pub async fn list_products(
+#[utoipa::path(post, path = "/v1/mcenter/company/products/list", tag = "mcenter", security(("bearer" = [])), responses((status = 200, description = "ok")))]
+pub async fn list_products(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-) -> AppResult<ApiJson<Paged<OwnProduct>>> {
+) -> AppResult<ApiResponse<Paged<OwnProduct>>> {
     user.require_employer()?;
     let r = company_sub_service::list_own_products(&state, &user, page).await?;
-    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
+    Ok(ApiResponse::data(Paged::from_listing(
+        r.list, r.total, page,
+    )))
 }
 
 /// Create product
@@ -105,7 +108,7 @@ pub async fn create_product(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(f): ValidatedJson<ProductForm>,
-) -> AppResult<ApiJson<CreatedId>> {
+) -> AppResult<ApiResponse<CreatedId>> {
     user.require_employer()?;
     let id = company_sub_service::create_product(
         &state,
@@ -118,19 +121,21 @@ pub async fn create_product(
         },
     )
     .await?;
-    Ok(ApiJson(CreatedId { id }))
+    Ok(ApiResponse::data(CreatedId { id }))
 }
 
 /// Update or soft-delete a product (body with `"status":2` triggers deletion)
 #[utoipa::path(post, path = "/v1/mcenter/company/products/update", tag = "mcenter", security(("bearer" = [])), request_body = ProductPatch, responses((status = 200, description = "ok")))]
-pub async fn update_product(State(state): State<AppState>,
+pub async fn update_product(
+    State(state): State<AppState>,
     user: AuthenticatedUser,
-    ValidatedJson(f): ValidatedJson<ProductPatch>) -> AppResult<ApiOk> {
+    ValidatedJson(f): ValidatedJson<ProductPatch>,
+) -> AppResult<ApiResponse> {
     let id = f.id;
     user.require_employer()?;
     if f.status == Some(2) {
         company_sub_service::delete_product(&state, &user, id).await?;
-        return Ok(ApiOk("deleted"));
+        return Ok(ApiResponse::message("deleted"));
     }
     company_sub_service::update_product(
         &state,
@@ -145,7 +150,7 @@ pub async fn update_product(State(state): State<AppState>,
         },
     )
     .await?;
-    Ok(ApiOk("ok"))
+    Ok(ApiResponse::message("ok"))
 }
 
 // ---------- News ----------
@@ -204,10 +209,12 @@ pub async fn list_news(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-) -> AppResult<ApiJson<Paged<OwnNews>>> {
+) -> AppResult<ApiResponse<Paged<OwnNews>>> {
     user.require_employer()?;
     let r = company_sub_service::list_own_news(&state, &user, page).await?;
-    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
+    Ok(ApiResponse::data(Paged::from_listing(
+        r.list, r.total, page,
+    )))
 }
 
 /// Create news
@@ -216,7 +223,7 @@ pub async fn create_news(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(f): ValidatedJson<NewsForm>,
-) -> AppResult<ApiJson<CreatedId>> {
+) -> AppResult<ApiResponse<CreatedId>> {
     user.require_employer()?;
     let id = company_sub_service::create_news(
         &state,
@@ -228,19 +235,21 @@ pub async fn create_news(
         },
     )
     .await?;
-    Ok(ApiJson(CreatedId { id }))
+    Ok(ApiResponse::data(CreatedId { id }))
 }
 
 /// Update or soft-delete a news entry (body with `"status":2` triggers deletion)
 #[utoipa::path(post, path = "/v1/mcenter/company/news/update", tag = "mcenter", security(("bearer" = [])), request_body = NewsPatch, responses((status = 200, description = "ok")))]
-pub async fn update_news(State(state): State<AppState>,
+pub async fn update_news(
+    State(state): State<AppState>,
     user: AuthenticatedUser,
-    ValidatedJson(f): ValidatedJson<NewsPatch>) -> AppResult<ApiOk> {
+    ValidatedJson(f): ValidatedJson<NewsPatch>,
+) -> AppResult<ApiResponse> {
     let id = f.id;
     user.require_employer()?;
     if f.status == Some(2) {
         company_sub_service::delete_news(&state, &user, id).await?;
-        return Ok(ApiOk("deleted"));
+        return Ok(ApiResponse::message("deleted"));
     }
     company_sub_service::update_news(
         &state,
@@ -254,5 +263,5 @@ pub async fn update_news(State(state): State<AppState>,
         },
     )
     .await?;
-    Ok(ApiOk("ok"))
+    Ok(ApiResponse::message("ok"))
 }

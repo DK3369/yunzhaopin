@@ -20,10 +20,7 @@ pub struct CompletionReport {
     pub missing: Vec<&'static str>,
 }
 
-pub async fn compute(
-    state: &AppState,
-    user: &AuthenticatedUser,
-) -> AppResult<CompletionReport> {
+pub async fn compute(state: &AppState, user: &AuthenticatedUser) -> AppResult<CompletionReport> {
     user.require_jobseeker()?;
     let db = state.db.reader();
 
@@ -102,5 +99,8 @@ pub async fn compute(
         missing.push("skill_or_language_or_project");
     }
 
-    Ok(CompletionReport { score: score.min(100), missing })
+    Ok(CompletionReport {
+        score: score.min(100),
+        missing,
+    })
 }

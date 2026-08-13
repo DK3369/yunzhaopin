@@ -36,11 +36,7 @@ pub async fn insert(pool: &MySqlPool, v: InsertJob<'_>) -> Result<u64, sqlx::Err
     Ok(res.last_insert_id())
 }
 
-pub async fn delete(
-    pool: &MySqlPool,
-    uid: u64,
-    job_id: u64,
-) -> Result<u64, sqlx::Error> {
+pub async fn delete(pool: &MySqlPool, uid: u64, job_id: u64) -> Result<u64, sqlx::Error> {
     let res = sqlx::query("DELETE FROM phpyun_fav_job WHERE uid = ? AND job_id = ?")
         .bind(uid)
         .bind(job_id)
@@ -49,20 +45,15 @@ pub async fn delete(
     Ok(res.rows_affected())
 }
 
-pub async fn exists(
-    pool: &MySqlPool,
-    uid: u64,
-    job_id: u64,
-) -> Result<bool, sqlx::Error> {
+pub async fn exists(pool: &MySqlPool, uid: u64, job_id: u64) -> Result<bool, sqlx::Error> {
     // 1 literal sidesteps any signed/unsigned int decode mismatch — we only
     // care whether any row matches, not the actual id.
-    let row: Option<(i64,)> = sqlx::query_as(
-        "SELECT 1 FROM phpyun_fav_job WHERE uid = ? AND job_id = ? LIMIT 1",
-    )
-    .bind(uid)
-    .bind(job_id)
-    .fetch_optional(pool)
-    .await?;
+    let row: Option<(i64,)> =
+        sqlx::query_as("SELECT 1 FROM phpyun_fav_job WHERE uid = ? AND job_id = ? LIMIT 1")
+            .bind(uid)
+            .bind(job_id)
+            .fetch_optional(pool)
+            .await?;
     Ok(row.is_some())
 }
 
@@ -119,10 +110,7 @@ pub async fn list_by_user(
 /// Pull every favorited job_id for a user — used to warm the Redis cache.
 /// Bounded to 5000 to keep cold-warm cost predictable; users with > 5000
 /// favorites are an edge case we'd handle by paginating the warm.
-pub async fn all_job_ids_by_user(
-    pool: &MySqlPool,
-    uid: u64,
-) -> Result<Vec<u64>, sqlx::Error> {
+pub async fn all_job_ids_by_user(pool: &MySqlPool, uid: u64) -> Result<Vec<u64>, sqlx::Error> {
     let rows: Vec<(u64,)> = sqlx::query_as(
         "SELECT CAST(job_id AS UNSIGNED) FROM phpyun_fav_job
           WHERE uid = ? AND job_id IS NOT NULL
@@ -135,24 +123,19 @@ pub async fn all_job_ids_by_user(
 }
 
 pub async fn count_by_user(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Error> {
-    let (n,): (i64,) =
-        sqlx::query_as("SELECT COUNT(*) FROM phpyun_fav_job WHERE uid = ?")
-            .bind(uid)
-            .fetch_one(pool)
-            .await?;
+    let (n,): (i64,) = sqlx::query_as("SELECT COUNT(*) FROM phpyun_fav_job WHERE uid = ?")
+        .bind(uid)
+        .fetch_one(pool)
+        .await?;
     Ok(n.max(0) as u64)
 }
 
 /// How many users have collected a given job.
-pub async fn count_collectors_of_job(
-    pool: &MySqlPool,
-    job_id: u64,
-) -> Result<u64, sqlx::Error> {
-    let (n,): (i64,) =
-        sqlx::query_as("SELECT COUNT(*) FROM phpyun_fav_job WHERE job_id = ?")
-            .bind(job_id)
-            .fetch_one(pool)
-            .await?;
+pub async fn count_collectors_of_job(pool: &MySqlPool, job_id: u64) -> Result<u64, sqlx::Error> {
+    let (n,): (i64,) = sqlx::query_as("SELECT COUNT(*) FROM phpyun_fav_job WHERE job_id = ?")
+        .bind(job_id)
+        .fetch_one(pool)
+        .await?;
     Ok(n.max(0) as u64)
 }
 
@@ -190,10 +173,7 @@ pub async fn list_fans_by_com_uid(
         .collect())
 }
 
-pub async fn count_fans_by_com_uid(
-    pool: &MySqlPool,
-    com_uid: u64,
-) -> Result<u64, sqlx::Error> {
+pub async fn count_fans_by_com_uid(pool: &MySqlPool, com_uid: u64) -> Result<u64, sqlx::Error> {
     let (n,): (i64,) = sqlx::query_as(
         "SELECT COUNT(DISTINCT uid) FROM phpyun_fav_job WHERE com_id = ? AND uid > 0",
     )

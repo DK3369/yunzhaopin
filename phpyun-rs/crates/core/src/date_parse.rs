@@ -147,7 +147,9 @@ fn coerce_value_to_i64<E: de::Error>(v: Value) -> Result<i64, E> {
                 t.parse::<i64>().map_err(E::custom)
             }
         }
-        other => Err(E::custom(format!("expected number or string, got {other:?}"))),
+        other => Err(E::custom(format!(
+            "expected number or string, got {other:?}"
+        ))),
     }
 }
 
@@ -227,10 +229,7 @@ mod tests {
     fn parses_full_date() {
         assert_eq!(parse_loose_date("2020-01-01"), Some(1577836800));
         assert_eq!(parse_loose_date("2020/01/01"), Some(1577836800));
-        assert_eq!(
-            parse_loose_date("2020-01-01 12:30:45"),
-            Some(1577881845)
-        );
+        assert_eq!(parse_loose_date("2020-01-01 12:30:45"), Some(1577881845));
     }
 
     #[test]

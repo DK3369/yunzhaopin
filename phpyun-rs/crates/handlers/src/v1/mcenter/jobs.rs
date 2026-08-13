@@ -1,18 +1,16 @@
 //! Member center - Job management (usertype=2 employer).
 
-use phpyun_core::ApiError;
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
-};
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::dto::{BatchResult, CreatedId, IdBody};
 use phpyun_core::json;
-use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, Paged, Pagination, ValidatedJson};
+use phpyun_core::ApiError;
+use phpyun_core::{
+    ApiResponse, AppResult, AppState, AuthenticatedUser, ClientIp, Paged, Pagination, ValidatedJson,
+};
 use phpyun_services::job_mgmt_service::{self, CreateJobInput, UpdateJobInput};
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
-use phpyun_core::dto::{BatchResult, CreatedId, IdBody};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -100,7 +98,7 @@ pub async fn create(
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
     ValidatedJson(f): ValidatedJson<CreateJobForm>,
-) -> AppResult<ApiJson<CreatedId>> {
+) -> AppResult<ApiResponse<CreatedId>> {
     // Company name comes from the company table; leave None here for now (employer side syncs `com_name` on update).
     let id = job_mgmt_service::create(
         &state,
@@ -128,7 +126,7 @@ pub async fn create(
         &ip,
     )
     .await?;
-    Ok(ApiJson(CreatedId { id }))
+    Ok(ApiResponse::data(CreatedId { id }))
 }
 
 // ==================== Update ====================
@@ -201,7 +199,7 @@ pub async fn update(
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
     ValidatedJson(f): ValidatedJson<UpdateJobForm>,
-) -> AppResult<ApiJson<json::Value>> {
+) -> AppResult<ApiResponse<json::Value>> {
     job_mgmt_service::update(
         &state,
         &user,
@@ -228,7 +226,7 @@ pub async fn update(
         &ip,
     )
     .await?;
-    Ok(ApiJson(json::json!({ "ok": true })))
+    Ok(ApiResponse::data(json::json!({ "ok": true })))
 }
 
 // ==================== Status group counts ====================
@@ -255,9 +253,9 @@ pub struct JobCountsView {
 pub async fn counts_by_state(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-) -> AppResult<ApiJson<JobCountsView>> {
+) -> AppResult<ApiResponse<JobCountsView>> {
     let c = job_mgmt_service::counts_by_state(&state, &user).await?;
-    Ok(ApiJson(JobCountsView {
+    Ok(ApiResponse::data(JobCountsView {
         online: c.online,
         pending: c.pending,
         closed: c.closed,
@@ -290,9 +288,11 @@ pub async fn set_status(
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
     ValidatedJson(f): ValidatedJson<SetStatusForm>,
-) -> AppResult<ApiJson<json::Value>> {
+) -> AppResult<ApiResponse<json::Value>> {
     job_mgmt_service::set_status(&state, &user, f.id, f.status, &ip).await?;
-    Ok(ApiJson(json::json!({ "ok": true, "status": f.status })))
+    Ok(ApiResponse::data(
+        json::json!({ "ok": true, "status": f.status }),
+    ))
 }
 
 /// Refresh job (bumps `lastupdate` so it sorts to the top of the public list)
@@ -309,9 +309,9 @@ pub async fn refresh(
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
     ValidatedJson(b): ValidatedJson<IdBody>,
-) -> AppResult<ApiJson<json::Value>> {
+) -> AppResult<ApiResponse<json::Value>> {
     job_mgmt_service::refresh(&state, &user, b.id, &ip).await?;
-    Ok(ApiJson(json::json!({ "ok": true })))
+    Ok(ApiResponse::data(json::json!({ "ok": true })))
 }
 
 // Delete job — **merged into update**:
@@ -341,16 +341,17 @@ pub type MyJobSummary = crate::v1::wap::jobs::JobSummary;
     security(("bearer" = [])),
     params(MyJobsQuery),
     responses((status = 200, description = "ok"))
-)]pub async fn list_mine(
+)]
+pub async fn list_mine(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
     ValidatedJson(q): ValidatedJson<MyJobsQuery>,
-) -> AppResult<ApiJson<Paged<MyJobSummary>>> {
+) -> AppResult<ApiResponse<Paged<MyJobSummary>>> {
     let r = job_mgmt_service::list_mine(&state, &user, q.state, page).await?;
     let dicts = phpyun_services::dict_service::get(&state).await?;
     let now = phpyun_core::clock::now_ts();
-    Ok(ApiJson(Paged::new(
+    Ok(ApiResponse::data(Paged::new(
         r.list
             .into_iter()
             .map(|j| crate::v1::wap::jobs::job_summary_from_dict(j, &dicts, now))
@@ -374,13 +375,13 @@ pub async fn detail(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(b): ValidatedJson<IdBody>,
-) -> AppResult<ApiJson<json::Value>> {
+) -> AppResult<ApiResponse<json::Value>> {
     user.require_employer()?;
     let j = phpyun_models::job::repo::find_by_id(state.db.reader(), b.id)
         .await?
         .filter(|j| j.uid == user.uid)
         .ok_or_else(|| ApiError::business("job_not_found"))?;
-    Ok(ApiJson(json::to_value(&j)?))
+    Ok(ApiResponse::data(json::to_value(&j)?))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
@@ -391,7 +392,10 @@ pub struct BatchIdsForm {
 }
 
 fn batch_result(r: phpyun_services::job_mgmt_service::BatchReport) -> BatchResult {
-    BatchResult { requested: r.requested, affected: r.affected }
+    BatchResult {
+        requested: r.requested,
+        affected: r.affected,
+    }
 }
 
 /// Batch refresh
@@ -408,9 +412,9 @@ pub async fn batch_refresh(
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
     ValidatedJson(f): ValidatedJson<BatchIdsForm>,
-) -> AppResult<ApiJson<BatchResult>> {
+) -> AppResult<ApiResponse<BatchResult>> {
     let r = job_mgmt_service::batch_refresh(&state, &user, &f.ids, &ip).await?;
-    Ok(ApiJson(batch_result(r)))
+    Ok(ApiResponse::data(batch_result(r)))
 }
 
 /// Batch close
@@ -427,9 +431,9 @@ pub async fn batch_close(
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
     ValidatedJson(f): ValidatedJson<BatchIdsForm>,
-) -> AppResult<ApiJson<BatchResult>> {
+) -> AppResult<ApiResponse<BatchResult>> {
     let r = job_mgmt_service::batch_close(&state, &user, &f.ids, &ip).await?;
-    Ok(ApiJson(batch_result(r)))
+    Ok(ApiResponse::data(batch_result(r)))
 }
 
 /// Batch delete
@@ -446,7 +450,7 @@ pub async fn batch_delete(
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
     ValidatedJson(f): ValidatedJson<BatchIdsForm>,
-) -> AppResult<ApiJson<BatchResult>> {
+) -> AppResult<ApiResponse<BatchResult>> {
     let r = job_mgmt_service::batch_delete(&state, &user, &f.ids, &ip).await?;
-    Ok(ApiJson(batch_result(r)))
+    Ok(ApiResponse::data(batch_result(r)))
 }

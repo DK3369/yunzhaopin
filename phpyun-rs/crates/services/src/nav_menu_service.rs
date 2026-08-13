@@ -91,11 +91,7 @@ pub async fn admin_update(
     Ok(())
 }
 
-pub async fn admin_delete(
-    state: &AppState,
-    admin: &AuthenticatedUser,
-    id: u64,
-) -> AppResult<()> {
+pub async fn admin_delete(state: &AppState, admin: &AuthenticatedUser, id: u64) -> AppResult<()> {
     admin.require_admin()?;
     nav_repo::delete(state.db.pool(), id).await?;
     Ok(())

@@ -3,12 +3,8 @@
 //! - `GET  /v1/mcenter/account/usertype/status`  query the current request status
 //! - `POST /v1/mcenter/account/usertype/apply`   submit a request
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
-};
-use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, ValidatedJson};
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::{ApiResponse, AppResult, AppState, AuthenticatedUser, ClientIp, ValidatedJson};
 use phpyun_services::usertype_change_service;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
@@ -38,7 +34,7 @@ pub struct StatusView {
 pub async fn status(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-) -> AppResult<ApiJson<StatusView>> {
+) -> AppResult<ApiResponse<StatusView>> {
     let row = usertype_change_service::status(&state, &user).await?;
     let (pending, apply_ut, st, ct) = match row {
         Some(r) => (
@@ -49,7 +45,7 @@ pub async fn status(
         ),
         None => (false, None, None, None),
     };
-    Ok(ApiJson(StatusView {
+    Ok(ApiResponse::data(StatusView {
         pending,
         apply_usertype: apply_ut,
         status: st,
@@ -84,9 +80,8 @@ pub async fn apply(
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
     ValidatedJson(f): ValidatedJson<ApplyForm>,
-) -> AppResult<ApiJson<phpyun_core::json::Value>> {
+) -> AppResult<ApiResponse<phpyun_core::json::Value>> {
     let id =
-        usertype_change_service::apply(&state, &user, f.apply_usertype, &f.apply_body, &ip)
-            .await?;
-    Ok(ApiJson(phpyun_core::json::json!({ "id": id })))
+        usertype_change_service::apply(&state, &user, f.apply_usertype, &f.apply_body, &ip).await?;
+    Ok(ApiResponse::data(phpyun_core::json::json!({ "id": id })))
 }

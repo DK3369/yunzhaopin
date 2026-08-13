@@ -41,26 +41,30 @@ pub async fn list_with_peer(
     let conv_key = conv_key_for(self_uid, peer_uid);
     let row_limit = limit.clamp(1, 200);
     let q = if let Some(before) = before_id {
-        let sql = format!(r#"SELECT {FIELDS}
+        let sql = format!(
+            r#"SELECT {FIELDS}
                FROM phpyun_rs_chat
                WHERE conv_key = ? AND id < ?
-               ORDER BY id DESC LIMIT ?"#);
+               ORDER BY id DESC LIMIT ?"#
+        );
         sqlx::query_as::<_, Chat>(&sql)
-        .bind(conv_key)
-        .bind(before)
-        .bind(row_limit)
-        .fetch_all(pool)
-        .await
+            .bind(conv_key)
+            .bind(before)
+            .bind(row_limit)
+            .fetch_all(pool)
+            .await
     } else {
-        let sql = format!(r#"SELECT {FIELDS}
+        let sql = format!(
+            r#"SELECT {FIELDS}
                FROM phpyun_rs_chat
                WHERE conv_key = ?
-               ORDER BY id DESC LIMIT ?"#);
+               ORDER BY id DESC LIMIT ?"#
+        );
         sqlx::query_as::<_, Chat>(&sql)
-        .bind(conv_key)
-        .bind(row_limit)
-        .fetch_all(pool)
-        .await
+            .bind(conv_key)
+            .bind(row_limit)
+            .fetch_all(pool)
+            .await
     };
     phpyun_core::db::ok_default_if_object_missing(q)
 }

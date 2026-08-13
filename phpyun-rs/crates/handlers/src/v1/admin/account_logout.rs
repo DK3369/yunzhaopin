@@ -1,12 +1,8 @@
 //! Admin: account deletion request approvals.
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
-};
+use axum::{extract::State, routing::post, Router};
 use phpyun_core::{
-    dto::IdBody, json, ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, ValidatedJson,
+    dto::IdBody, json, ApiResponse, AppResult, AppState, AuthenticatedUser, ClientIp, ValidatedJson,
 };
 use phpyun_services::member_logout_service;
 
@@ -29,10 +25,10 @@ pub async fn approve(
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
     ValidatedJson(b): ValidatedJson<IdBody>,
-) -> AppResult<ApiJson<json::Value>> {
+) -> AppResult<ApiResponse<json::Value>> {
     user.require_admin()?;
     let n = member_logout_service::admin_approve(&state, &user, b.id, &ip).await?;
-    Ok(ApiJson(json::json!({ "updated": n })))
+    Ok(ApiResponse::data(json::json!({ "updated": n })))
 }
 
 #[utoipa::path(
@@ -48,8 +44,8 @@ pub async fn reject(
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
     ValidatedJson(b): ValidatedJson<IdBody>,
-) -> AppResult<ApiJson<json::Value>> {
+) -> AppResult<ApiResponse<json::Value>> {
     user.require_admin()?;
     let n = member_logout_service::admin_reject(&state, &user, b.id, &ip).await?;
-    Ok(ApiJson(json::json!({ "updated": n })))
+    Ok(ApiResponse::data(json::json!({ "updated": n })))
 }

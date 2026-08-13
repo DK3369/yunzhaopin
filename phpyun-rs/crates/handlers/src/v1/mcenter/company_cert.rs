@@ -1,22 +1,18 @@
 //! Company certification (member side).
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
-};
-use phpyun_core::{ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, ValidatedJson};
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::utils::{fmt_dt, pic_n_str as pic_n};
+use phpyun_core::{ApiResponse, AppResult, AppState, AuthenticatedUser, ValidatedJson};
 use phpyun_services::company_cert_service;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
-use phpyun_core::utils::{fmt_dt, pic_n_str as pic_n};
 
 pub fn routes() -> Router<AppState> {
-    Router::new().route("/company/cert", post(submit))
+    Router::new()
+        .route("/company/cert", post(submit))
         .route("/company/cert/list", post(get_mine))
 }
-
 
 fn cert_status_name(s: i32) -> &'static str {
     match s {
@@ -58,12 +54,13 @@ pub struct CertView {
     tag = "mcenter",
     security(("bearer" = [])),
     responses((status = 200, description = "ok"))
-)]pub async fn get_mine(
+)]
+pub async fn get_mine(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-) -> AppResult<ApiJson<Option<CertView>>> {
+) -> AppResult<ApiResponse<Option<CertView>>> {
     let c = company_cert_service::get_mine(&state, &user).await?;
-    Ok(ApiJson(c.map(|c| CertView {
+    Ok(ApiResponse::data(c.map(|c| CertView {
         license_photo_n: pic_n(&state, &c.license_photo),
         id_photo_n: pic_n(&state, &c.id_photo),
         status_n: cert_status_name(c.status).to_string(),
@@ -105,7 +102,7 @@ pub async fn submit(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(f): ValidatedJson<SubmitForm>,
-) -> AppResult<ApiOk> {
+) -> AppResult<ApiResponse> {
     company_cert_service::submit(&state, &user, &f.license_photo, &f.id_photo).await?;
-    Ok(ApiOk("submitted"))
+    Ok(ApiResponse::message("submitted"))
 }

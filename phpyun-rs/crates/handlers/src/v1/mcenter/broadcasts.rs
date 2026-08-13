@@ -1,16 +1,14 @@
 //! My system broadcasts.
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::dto::{IdBody, UnreadCount};
+use phpyun_core::utils::fmt_dt;
+use phpyun_core::{
+    ApiResponse, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
 };
-use phpyun_core::{ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::broadcast_service;
 use serde::Serialize;
 use utoipa::ToSchema;
-use phpyun_core::dto::{IdBody, UnreadCount};
-use phpyun_core::utils::{fmt_dt};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -18,7 +16,6 @@ pub fn routes() -> Router<AppState> {
         .route("/broadcasts/unread-count", post(unread))
         .route("/broadcasts/read", post(mark_read))
 }
-
 
 #[derive(Debug, Serialize, ToSchema)]
 pub struct BcItem {
@@ -59,9 +56,11 @@ pub async fn list(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-) -> AppResult<ApiJson<Paged<BcItem>>> {
+) -> AppResult<ApiResponse<Paged<BcItem>>> {
     let r = broadcast_service::list_for_me(&state, &user, page).await?;
-    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
+    Ok(ApiResponse::data(Paged::from_listing(
+        r.list, r.total, page,
+    )))
 }
 
 /// Unread broadcast count
@@ -75,9 +74,9 @@ pub async fn list(
 pub async fn unread(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-) -> AppResult<ApiJson<UnreadCount>> {
+) -> AppResult<ApiResponse<UnreadCount>> {
     let n = broadcast_service::unread_count(&state, &user).await?;
-    Ok(ApiJson(UnreadCount { unread: n }))
+    Ok(ApiResponse::data(UnreadCount { unread: n }))
 }
 
 /// Mark as read
@@ -93,7 +92,7 @@ pub async fn mark_read(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(b): ValidatedJson<IdBody>,
-) -> AppResult<ApiOk> {
+) -> AppResult<ApiResponse> {
     broadcast_service::mark_read(&state, &user, b.id).await?;
-    Ok(ApiOk("ok"))
+    Ok(ApiResponse::message("ok"))
 }

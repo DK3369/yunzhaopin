@@ -102,11 +102,7 @@ pub async fn ensure_row(pool: &MySqlPool, uid: u64) -> Result<(), sqlx::Error> {
 ///
 /// Best-effort: callers swallow the result because counters are denormalised
 /// signals, not authoritative data.
-pub async fn bump_fav_jobnum(
-    pool: &MySqlPool,
-    uid: u64,
-    delta: i32,
-) -> Result<(), sqlx::Error> {
+pub async fn bump_fav_jobnum(pool: &MySqlPool, uid: u64, delta: i32) -> Result<(), sqlx::Error> {
     if delta >= 0 {
         sqlx::query(
             r#"INSERT INTO phpyun_member_statis (uid, integral, fav_jobnum, resume_num, sq_jobnum, message_num, down_num)

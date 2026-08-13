@@ -1,15 +1,13 @@
 //! My warnings (member-side view of warnings I have received).
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::dto::{IdBody, UnreadCount};
+use phpyun_core::{
+    ApiResponse, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
 };
-use phpyun_core::{ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::warning_service;
 use serde::Serialize;
 use utoipa::ToSchema;
-use phpyun_core::dto::{IdBody, UnreadCount};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -53,9 +51,11 @@ pub async fn list(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-) -> AppResult<ApiJson<Paged<MyWarning>>> {
+) -> AppResult<ApiResponse<Paged<MyWarning>>> {
     let r = warning_service::list_mine(&state, &user, page).await?;
-    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
+    Ok(ApiResponse::data(Paged::from_listing(
+        r.list, r.total, page,
+    )))
 }
 
 /// Unread warning count
@@ -69,9 +69,9 @@ pub async fn list(
 pub async fn unread(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-) -> AppResult<ApiJson<UnreadCount>> {
+) -> AppResult<ApiResponse<UnreadCount>> {
     let n = warning_service::unread_count(&state, &user).await?;
-    Ok(ApiJson(UnreadCount { unread: n }))
+    Ok(ApiResponse::data(UnreadCount { unread: n }))
 }
 
 /// Mark as read
@@ -87,7 +87,7 @@ pub async fn mark_read(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(b): ValidatedJson<IdBody>,
-) -> AppResult<ApiOk> {
+) -> AppResult<ApiResponse> {
     warning_service::mark_read(&state, &user, b.id).await?;
-    Ok(ApiOk("ok"))
+    Ok(ApiResponse::message("ok"))
 }

@@ -30,10 +30,7 @@ pub async fn count_items(_pool: &MySqlPool) -> Result<u64, sqlx::Error> {
     Ok(0)
 }
 
-pub async fn find_item(
-    _pool: &MySqlPool,
-    _id: u64,
-) -> Result<Option<IntegralItem>, sqlx::Error> {
+pub async fn find_item(_pool: &MySqlPool, _id: u64) -> Result<Option<IntegralItem>, sqlx::Error> {
     Ok(None)
 }
 

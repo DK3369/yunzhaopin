@@ -1,16 +1,14 @@
 //! Company certification review (admin).
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::utils::{fmt_dt, pic_n_str as pic_n};
+use phpyun_core::{
+    ApiResponse, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
 };
-use phpyun_core::{ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::company_cert_service;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
-use phpyun_core::utils::{fmt_dt, pic_n_str as pic_n};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -18,9 +16,14 @@ pub fn routes() -> Router<AppState> {
         .route("/company-certs/review", post(review))
 }
 
-
 fn cert_status_name(s: i32) -> &'static str {
-    match s { 0 => "draft", 1 => "pending", 2 => "approved", 3 => "rejected", _ => "unknown" }
+    match s {
+        0 => "draft",
+        1 => "pending",
+        2 => "approved",
+        3 => "rejected",
+        _ => "unknown",
+    }
 }
 
 /// Admin review queue item — all 10 columns of phpyun_company_cert + CDN URL + formatted timestamps + status name.
@@ -57,10 +60,10 @@ pub async fn list_pending(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-) -> AppResult<ApiJson<Paged<CertItem>>> {
+) -> AppResult<ApiResponse<Paged<CertItem>>> {
     user.require_admin()?;
     let r = company_cert_service::list_pending(&state, page).await?;
-    Ok(ApiJson(Paged::new(
+    Ok(ApiResponse::data(Paged::new(
         r.list
             .into_iter()
             .map(|c| CertItem {
@@ -107,11 +110,13 @@ pub struct ReviewForm {
     request_body = ReviewForm,
     responses((status = 200, description = "ok"))
 )]
-pub async fn review(State(state): State<AppState>,
+pub async fn review(
+    State(state): State<AppState>,
     user: AuthenticatedUser,
-    ValidatedJson(f): ValidatedJson<ReviewForm>) -> AppResult<ApiOk> {
+    ValidatedJson(f): ValidatedJson<ReviewForm>,
+) -> AppResult<ApiResponse> {
     let uid = f.uid;
     user.require_admin()?;
     company_cert_service::review(&state, &user, uid, f.approve, &f.note).await?;
-    Ok(ApiOk("ok"))
+    Ok(ApiResponse::message("ok"))
 }

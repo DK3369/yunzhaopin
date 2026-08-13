@@ -288,10 +288,7 @@ mod tests {
     fn debug_available_locales() {
         let langs: Vec<_> = rust_i18n::available_locales!();
         eprintln!("Available locales: {:?}", langs);
-        eprintln!(
-            "zh-CN errors.unauth: {:?}",
-            t("errors.unauth", Lang::ZhCN)
-        );
+        eprintln!("zh-CN errors.unauth: {:?}", t("errors.unauth", Lang::ZhCN));
     }
 
     #[test]
@@ -315,11 +312,7 @@ mod tests {
 
     #[test]
     fn translate_with_args() {
-        let s = t_args(
-            "errors.param_missing",
-            Lang::En,
-            &[("field", "username")],
-        );
+        let s = t_args("errors.param_missing", Lang::En, &[("field", "username")]);
         assert_eq!(s, "Missing required parameter: username");
     }
 

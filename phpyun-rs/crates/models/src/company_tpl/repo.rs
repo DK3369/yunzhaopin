@@ -19,9 +19,7 @@ const FIELDS: &str = "\
     CAST(0 AS SIGNED) AS sort";
 
 pub async fn list_public(pool: &MySqlPool) -> Result<Vec<CompanyTpl>, sqlx::Error> {
-    let sql = format!(
-        "SELECT {FIELDS} FROM phpyun_company_tpl WHERE status = 1 ORDER BY id DESC"
-    );
+    let sql = format!("SELECT {FIELDS} FROM phpyun_company_tpl WHERE status = 1 ORDER BY id DESC");
     sqlx::query_as::<_, CompanyTpl>(&sql).fetch_all(pool).await
 }
 
@@ -50,18 +48,13 @@ pub async fn fetch_purchased_urls(
     Ok(row.and_then(|(s,)| s))
 }
 
-pub async fn set_applied_tpl(
-    pool: &MySqlPool,
-    uid: u64,
-    url: &str,
-) -> Result<u64, sqlx::Error> {
-    let res = sqlx::query(
-        "UPDATE phpyun_member_statis SET comtpl = ? WHERE uid = ? AND usertype = 2",
-    )
-    .bind(url)
-    .bind(uid)
-    .execute(pool)
-    .await?;
+pub async fn set_applied_tpl(pool: &MySqlPool, uid: u64, url: &str) -> Result<u64, sqlx::Error> {
+    let res =
+        sqlx::query("UPDATE phpyun_member_statis SET comtpl = ? WHERE uid = ? AND usertype = 2")
+            .bind(url)
+            .bind(uid)
+            .execute(pool)
+            .await?;
     Ok(res.rows_affected())
 }
 
@@ -75,10 +68,7 @@ pub async fn append_purchased_url(
     let current = fetch_purchased_urls(pool, uid).await?;
     let new_value = match current {
         Some(s) if !s.is_empty() => {
-            let already = s
-                .split(',')
-                .map(|x| x.trim())
-                .any(|x| x == url);
+            let already = s.split(',').map(|x| x.trim()).any(|x| x == url);
             if already {
                 return Ok(());
             }

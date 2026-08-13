@@ -20,9 +20,7 @@ pub async fn list_default(
 
 /// Load every translation row across all kinds. Used at startup to seed the
 /// in-memory cache.
-pub async fn list_all(
-    pool: &MySqlPool,
-) -> Result<Vec<(String, i32, String, String)>, sqlx::Error> {
+pub async fn list_all(pool: &MySqlPool) -> Result<Vec<(String, i32, String, String)>, sqlx::Error> {
     sqlx::query_as("SELECT kind, item_id, lang, text FROM phpyun_dict_i18n")
         .fetch_all(pool)
         .await

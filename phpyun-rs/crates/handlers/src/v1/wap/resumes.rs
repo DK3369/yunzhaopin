@@ -1,21 +1,19 @@
 //! Public resume search (company view, usertype=2 required).
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
-};
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::dto::{EidBody, UidBody};
 use phpyun_core::i18n::{current_lang, t};
-use phpyun_core::{clock, ApiJson, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
-use validator::Validate;
+use phpyun_core::utils::{fmt_date, fmt_dt, mask_name_resume as mask_name, pic_n as pic_n_local};
+use phpyun_core::{
+    clock, ApiResponse, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
+};
 use phpyun_models::resume::repo::ResumeFilter;
 use phpyun_services::hot_search_service;
 use phpyun_services::view_service::{self, KIND_RESUME};
 use phpyun_services::{resume_children_service, resume_service};
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
-use phpyun_core::dto::{EidBody, UidBody};
-use phpyun_core::utils::{fmt_date, fmt_dt, pic_n as pic_n_local, mask_name_resume as mask_name};
+use validator::Validate;
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -112,8 +110,6 @@ fn age_from_birthday(b: &str) -> Option<u16> {
     let year: u16 = b.get(..4)?.parse().ok()?;
     Some(clock::now_year().saturating_sub(year))
 }
-
-
 
 impl ResumeSummary {
     pub fn from_with_dict(
@@ -242,7 +238,7 @@ pub async fn list_resumes(
     user: AuthenticatedUser,
     page: Pagination,
     ValidatedJson(q): ValidatedJson<ResumeListQuery>,
-) -> AppResult<ApiJson<Paged<ResumeSummary>>> {
+) -> AppResult<ApiResponse<Paged<ResumeSummary>>> {
     if let Some(kw) = q.keyword.as_ref().filter(|k| !k.trim().is_empty()) {
         hot_search_service::bump_async(&state, "resume", kw.trim().to_string());
     }
@@ -255,7 +251,7 @@ pub async fn list_resumes(
     };
     let r = resume_service::list_public(&state, &user, &filter, page).await?;
     let dicts = phpyun_services::dict_service::get(&state).await?;
-    Ok(ApiJson(Paged::new(
+    Ok(ApiResponse::data(Paged::new(
         r.list
             .into_iter()
             .map(|x| ResumeSummary::from_with_dict(x, &state, &dicts))
@@ -429,7 +425,7 @@ pub async fn resume_detail(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(b): ValidatedJson<UidBody>,
-) -> AppResult<ApiJson<ResumeDetail>> {
+) -> AppResult<ApiResponse<ResumeDetail>> {
     let uid = b.uid;
     let r = resume_service::get_public(&state, &user, uid).await?;
     // Recording footprints when a company views a resume (source for "who viewed me")
@@ -446,7 +442,7 @@ pub async fn resume_detail(
         _ => t("ui.resume.anonymous", current_lang()),
     };
     let age = r.birthday.as_deref().and_then(age_from_birthday);
-    Ok(ApiJson(ResumeDetail {
+    Ok(ApiResponse::data(ResumeDetail {
         uid: r.uid,
         display_name,
         nametype: r.nametype,
@@ -506,7 +502,10 @@ pub async fn resume_detail(
             .into_iter()
             .map(|s| crate::v1::wap::resumes::resume_skill_item_from_dict(s, &dicts))
             .collect(),
-        trainings: trainings.into_iter().map(ResumeTrainingItem::from).collect(),
+        trainings: trainings
+            .into_iter()
+            .map(ResumeTrainingItem::from)
+            .collect(),
         certs: certs.into_iter().map(ResumeCertItem::from).collect(),
         others: others
             .into_iter()
@@ -543,10 +542,9 @@ pub struct ResumeHitsResp {
 pub async fn bump_expect_hits(
     State(state): State<AppState>,
     ValidatedJson(b): ValidatedJson<EidBody>,
-) -> AppResult<ApiJson<ResumeHitsResp>> {
-    let hits =
-        phpyun_models::resume::expect::bump_and_get_hits(state.db.pool(), b.eid, 1).await?;
-    Ok(ApiJson(ResumeHitsResp { eid: b.eid, hits }))
+) -> AppResult<ApiResponse<ResumeHitsResp>> {
+    let hits = phpyun_models::resume::expect::bump_and_get_hits(state.db.pool(), b.eid, 1).await?;
+    Ok(ApiResponse::data(ResumeHitsResp { eid: b.eid, hits }))
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -572,10 +570,9 @@ pub struct DefaultExpectResp {
 pub async fn default_expect_by_uid(
     State(state): State<AppState>,
     ValidatedJson(b): ValidatedJson<UidBody>,
-) -> AppResult<ApiJson<DefaultExpectResp>> {
-    let default_eid =
-        phpyun_models::resume::repo::default_eid(state.db.reader(), b.uid).await?;
-    Ok(ApiJson(DefaultExpectResp {
+) -> AppResult<ApiResponse<DefaultExpectResp>> {
+    let default_eid = phpyun_models::resume::repo::default_eid(state.db.reader(), b.uid).await?;
+    Ok(ApiResponse::data(DefaultExpectResp {
         uid: b.uid,
         default_eid,
     }))

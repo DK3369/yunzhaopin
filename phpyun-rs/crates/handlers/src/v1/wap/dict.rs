@@ -12,16 +12,16 @@
 //! Translation entries are maintained under the `dict.*` namespace of `locales/<lang>.json`.
 
 use axum::{
+    routing::{get, post},
     Router,
-    routing::post,
 };
-use phpyun_core::ValidatedJson;
-use serde::Deserialize;
-use validator::Validate;
 use phpyun_core::i18n::{current_lang, t, Lang};
-use phpyun_core::{ApiJson, AppResult, AppState};
+use phpyun_core::ValidatedJson;
+use phpyun_core::{ApiResponse, AppResult, AppState};
+use serde::Deserialize;
 use serde::Serialize;
 use utoipa::ToSchema;
+use validator::Validate;
 
 pub fn routes() -> Router<AppState> {
     // Two cities routes are explicitly deprecated; we still register them so
@@ -30,7 +30,7 @@ pub fn routes() -> Router<AppState> {
     let r = Router::new()
         .route("/dict/cities", post(cities))
         .route("/dict/cities/by-province", post(cities_of_province));
-    r.route("/dict/industries", post(industries))
+    r.route("/dict/industries", get(industries).post(industries))
         .route("/dict/job-categories", post(job_categories))
         .route("/dict/educations", post(educations))
         .route("/dict/experiences", post(experiences))
@@ -82,8 +82,8 @@ fn render(entries: &[DictEntry], lang: Lang) -> Vec<DictItem> {
     responses((status = 200, description = "DEPRECATED — prefer GET /v1/wap/regions"))
 )]
 #[deprecated(note = "use GET /v1/wap/regions?country=CN&level=1 instead")]
-pub async fn cities() -> AppResult<ApiJson<Vec<DictItem>>> {
-    Ok(ApiJson(render(PROVINCES, current_lang())))
+pub async fn cities() -> AppResult<ApiResponse<Vec<DictItem>>> {
+    Ok(ApiResponse::data(render(PROVINCES, current_lang())))
 }
 
 /// Cities under a given province
@@ -107,7 +107,7 @@ pub struct ProvinceBody {
 #[deprecated(note = "use POST /v1/wap/regions/children instead")]
 pub async fn cities_of_province(
     ValidatedJson(b): ValidatedJson<ProvinceBody>,
-) -> AppResult<ApiJson<Vec<DictItem>>> {
+) -> AppResult<ApiResponse<Vec<DictItem>>> {
     let pid = b.province_id;
     let lang = current_lang();
     let v = match pid {
@@ -118,7 +118,7 @@ pub async fn cities_of_province(
             name: t("dict.all", lang),
         }],
     };
-    Ok(ApiJson(v))
+    Ok(ApiResponse::data(v))
 }
 
 /// Industry categories
@@ -128,8 +128,8 @@ pub async fn cities_of_province(
     tag = "wap",
     responses((status = 200, description = "ok"))
 )]
-pub async fn industries() -> AppResult<ApiJson<Vec<DictItem>>> {
-    Ok(ApiJson(render(INDUSTRIES, current_lang())))
+pub async fn industries() -> AppResult<ApiResponse<Vec<DictItem>>> {
+    Ok(ApiResponse::data(render(INDUSTRIES, current_lang())))
 }
 
 /// Top-level job categories
@@ -139,8 +139,8 @@ pub async fn industries() -> AppResult<ApiJson<Vec<DictItem>>> {
     tag = "wap",
     responses((status = 200, description = "ok"))
 )]
-pub async fn job_categories() -> AppResult<ApiJson<Vec<DictItem>>> {
-    Ok(ApiJson(render(JOB_CATEGORIES, current_lang())))
+pub async fn job_categories() -> AppResult<ApiResponse<Vec<DictItem>>> {
+    Ok(ApiResponse::data(render(JOB_CATEGORIES, current_lang())))
 }
 
 /// Education levels
@@ -150,8 +150,8 @@ pub async fn job_categories() -> AppResult<ApiJson<Vec<DictItem>>> {
     tag = "wap",
     responses((status = 200, description = "ok"))
 )]
-pub async fn educations() -> AppResult<ApiJson<Vec<DictItem>>> {
-    Ok(ApiJson(render(EDUCATIONS, current_lang())))
+pub async fn educations() -> AppResult<ApiResponse<Vec<DictItem>>> {
+    Ok(ApiResponse::data(render(EDUCATIONS, current_lang())))
 }
 
 /// Work experience
@@ -161,8 +161,8 @@ pub async fn educations() -> AppResult<ApiJson<Vec<DictItem>>> {
     tag = "wap",
     responses((status = 200, description = "ok"))
 )]
-pub async fn experiences() -> AppResult<ApiJson<Vec<DictItem>>> {
-    Ok(ApiJson(render(EXPERIENCES, current_lang())))
+pub async fn experiences() -> AppResult<ApiResponse<Vec<DictItem>>> {
+    Ok(ApiResponse::data(render(EXPERIENCES, current_lang())))
 }
 
 /// Salary ranges
@@ -172,8 +172,8 @@ pub async fn experiences() -> AppResult<ApiJson<Vec<DictItem>>> {
     tag = "wap",
     responses((status = 200, description = "ok"))
 )]
-pub async fn salaries() -> AppResult<ApiJson<Vec<DictItem>>> {
-    Ok(ApiJson(render(SALARIES, current_lang())))
+pub async fn salaries() -> AppResult<ApiResponse<Vec<DictItem>>> {
+    Ok(ApiResponse::data(render(SALARIES, current_lang())))
 }
 
 /// Job types (full-time / part-time / internship / temporary / remote)
@@ -183,8 +183,8 @@ pub async fn salaries() -> AppResult<ApiJson<Vec<DictItem>>> {
     tag = "wap",
     responses((status = 200, description = "ok"))
 )]
-pub async fn job_types() -> AppResult<ApiJson<Vec<DictItem>>> {
-    Ok(ApiJson(render(JOB_TYPES, current_lang())))
+pub async fn job_types() -> AppResult<ApiResponse<Vec<DictItem>>> {
+    Ok(ApiResponse::data(render(JOB_TYPES, current_lang())))
 }
 
 // ==================== Static data: (id, i18n key) ====================
@@ -193,15 +193,15 @@ pub async fn job_types() -> AppResult<ApiJson<Vec<DictItem>>> {
 // To update translations just edit the JSON -- no need to touch Rust code.
 
 const PROVINCES: &[DictEntry] = &[
-    DictEntry::new(1,  "dict.province.1"),
-    DictEntry::new(2,  "dict.province.2"),
-    DictEntry::new(3,  "dict.province.3"),
-    DictEntry::new(4,  "dict.province.4"),
-    DictEntry::new(5,  "dict.province.5"),
-    DictEntry::new(6,  "dict.province.6"),
-    DictEntry::new(7,  "dict.province.7"),
-    DictEntry::new(8,  "dict.province.8"),
-    DictEntry::new(9,  "dict.province.9"),
+    DictEntry::new(1, "dict.province.1"),
+    DictEntry::new(2, "dict.province.2"),
+    DictEntry::new(3, "dict.province.3"),
+    DictEntry::new(4, "dict.province.4"),
+    DictEntry::new(5, "dict.province.5"),
+    DictEntry::new(6, "dict.province.6"),
+    DictEntry::new(7, "dict.province.7"),
+    DictEntry::new(8, "dict.province.8"),
+    DictEntry::new(9, "dict.province.9"),
     DictEntry::new(10, "dict.province.10"),
     DictEntry::new(11, "dict.province.11"),
     DictEntry::new(12, "dict.province.12"),
@@ -256,15 +256,15 @@ const SHANGHAI_DISTRICTS: &[DictEntry] = &[
 ];
 
 const INDUSTRIES: &[DictEntry] = &[
-    DictEntry::new(1,  "dict.industry.1"),
-    DictEntry::new(2,  "dict.industry.2"),
-    DictEntry::new(3,  "dict.industry.3"),
-    DictEntry::new(4,  "dict.industry.4"),
-    DictEntry::new(5,  "dict.industry.5"),
-    DictEntry::new(6,  "dict.industry.6"),
-    DictEntry::new(7,  "dict.industry.7"),
-    DictEntry::new(8,  "dict.industry.8"),
-    DictEntry::new(9,  "dict.industry.9"),
+    DictEntry::new(1, "dict.industry.1"),
+    DictEntry::new(2, "dict.industry.2"),
+    DictEntry::new(3, "dict.industry.3"),
+    DictEntry::new(4, "dict.industry.4"),
+    DictEntry::new(5, "dict.industry.5"),
+    DictEntry::new(6, "dict.industry.6"),
+    DictEntry::new(7, "dict.industry.7"),
+    DictEntry::new(8, "dict.industry.8"),
+    DictEntry::new(9, "dict.industry.9"),
     DictEntry::new(10, "dict.industry.10"),
     DictEntry::new(11, "dict.industry.11"),
     DictEntry::new(12, "dict.industry.12"),
@@ -273,15 +273,15 @@ const INDUSTRIES: &[DictEntry] = &[
 ];
 
 const JOB_CATEGORIES: &[DictEntry] = &[
-    DictEntry::new(1,  "dict.job_category.1"),
-    DictEntry::new(2,  "dict.job_category.2"),
-    DictEntry::new(3,  "dict.job_category.3"),
-    DictEntry::new(4,  "dict.job_category.4"),
-    DictEntry::new(5,  "dict.job_category.5"),
-    DictEntry::new(6,  "dict.job_category.6"),
-    DictEntry::new(7,  "dict.job_category.7"),
-    DictEntry::new(8,  "dict.job_category.8"),
-    DictEntry::new(9,  "dict.job_category.9"),
+    DictEntry::new(1, "dict.job_category.1"),
+    DictEntry::new(2, "dict.job_category.2"),
+    DictEntry::new(3, "dict.job_category.3"),
+    DictEntry::new(4, "dict.job_category.4"),
+    DictEntry::new(5, "dict.job_category.5"),
+    DictEntry::new(6, "dict.job_category.6"),
+    DictEntry::new(7, "dict.job_category.7"),
+    DictEntry::new(8, "dict.job_category.8"),
+    DictEntry::new(9, "dict.job_category.9"),
     DictEntry::new(10, "dict.job_category.10"),
     DictEntry::new(11, "dict.job_category.11"),
     DictEntry::new(12, "dict.job_category.12"),
@@ -339,8 +339,17 @@ mod tests {
         let zh_tw = render(JOB_TYPES, Lang::ZhTW);
         let en = render(JOB_TYPES, Lang::En);
 
-        assert_eq!(zh_cn.last().map(|item| (item.id, item.name.as_str())), Some((5, "远程")));
-        assert_eq!(zh_tw.last().map(|item| (item.id, item.name.as_str())), Some((5, "遠端")));
-        assert_eq!(en.last().map(|item| (item.id, item.name.as_str())), Some((5, "Remote")));
+        assert_eq!(
+            zh_cn.last().map(|item| (item.id, item.name.as_str())),
+            Some((5, "远程"))
+        );
+        assert_eq!(
+            zh_tw.last().map(|item| (item.id, item.name.as_str())),
+            Some((5, "遠端"))
+        );
+        assert_eq!(
+            en.last().map(|item| (item.id, item.name.as_str())),
+            Some((5, "Remote"))
+        );
     }
 }

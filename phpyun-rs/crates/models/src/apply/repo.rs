@@ -10,16 +10,13 @@ use sqlx::{MySqlPool, QueryBuilder};
 
 // PHP `phpyun_userid_job.invited / invite_time` are nullable int; entity
 // uses plain i32/i64. COALESCE so a NULL row can't trip sqlx.
-const FIELDS: &str =
-    "id, uid, job_id, com_id, eid, datetime, is_browse, \
+const FIELDS: &str = "id, uid, job_id, com_id, eid, datetime, is_browse, \
      COALESCE(invited, 0) AS invited, \
      COALESCE(invite_time, 0) AS invite_time, \
      isdel, quxiao";
 
 pub async fn find_by_id(pool: &MySqlPool, id: u64) -> Result<Option<Apply>, sqlx::Error> {
-    let sql = format!(
-        "SELECT {FIELDS} FROM phpyun_userid_job WHERE id = ? AND isdel = 9 LIMIT 1"
-    );
+    let sql = format!("SELECT {FIELDS} FROM phpyun_userid_job WHERE id = ? AND isdel = 9 LIMIT 1");
     sqlx::query_as::<_, Apply>(&sql)
         .bind(id)
         .fetch_optional(pool)
@@ -133,26 +130,23 @@ pub async fn set_browse_state(
     com_id: u64,
     state: i32,
 ) -> Result<u64, sqlx::Error> {
-    let res = sqlx::query(
-        "UPDATE phpyun_userid_job SET is_browse = ? WHERE id = ? AND com_id = ?",
-    )
-    .bind(state)
-    .bind(id)
-    .bind(com_id)
-    .execute(pool)
-    .await?;
+    let res = sqlx::query("UPDATE phpyun_userid_job SET is_browse = ? WHERE id = ? AND com_id = ?")
+        .bind(state)
+        .bind(id)
+        .bind(com_id)
+        .execute(pool)
+        .await?;
     Ok(res.rows_affected())
 }
 
 /// Job seeker withdraws application (soft delete + set quxiao=1).
 pub async fn withdraw(pool: &MySqlPool, id: u64, uid: u64) -> Result<u64, sqlx::Error> {
-    let res = sqlx::query(
-        "UPDATE phpyun_userid_job SET quxiao = 1, isdel = 0 WHERE id = ? AND uid = ?",
-    )
-    .bind(id)
-    .bind(uid)
-    .execute(pool)
-    .await?;
+    let res =
+        sqlx::query("UPDATE phpyun_userid_job SET quxiao = 1, isdel = 0 WHERE id = ? AND uid = ?")
+            .bind(id)
+            .bind(uid)
+            .execute(pool)
+            .await?;
     Ok(res.rows_affected())
 }
 
@@ -197,9 +191,8 @@ pub async fn count_by_com(
     com_id: u64,
     f: ApplyFilter,
 ) -> Result<u64, sqlx::Error> {
-    let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new(
-        "SELECT COUNT(*) FROM phpyun_userid_job WHERE com_id = ",
-    );
+    let mut qb: QueryBuilder<sqlx::MySql> =
+        QueryBuilder::new("SELECT COUNT(*) FROM phpyun_userid_job WHERE com_id = ");
     qb.push_bind(com_id);
     qb.push(" AND isdel = 9 AND quxiao = 0");
     if let Some(unread) = f.unread_only {
@@ -227,12 +220,7 @@ pub async fn mark_browsed(pool: &MySqlPool, id: u64, com_id: u64) -> Result<u64,
 }
 
 /// Company invites for interview.
-pub async fn invite(
-    pool: &MySqlPool,
-    id: u64,
-    com_id: u64,
-    now: i64,
-) -> Result<u64, sqlx::Error> {
+pub async fn invite(pool: &MySqlPool, id: u64, com_id: u64, now: i64) -> Result<u64, sqlx::Error> {
     let res = sqlx::query(
         "UPDATE phpyun_userid_job SET invited = 1, invite_time = ? WHERE id = ? AND com_id = ?",
     )

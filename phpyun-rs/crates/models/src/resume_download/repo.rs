@@ -27,13 +27,12 @@ pub async fn already_downloaded(
     com_id: u64,
     uid: u64,
 ) -> Result<bool, sqlx::Error> {
-    let row: Option<(u64,)> = sqlx::query_as(
-        "SELECT id FROM phpyun_down_resume WHERE comid = ? AND uid = ? LIMIT 1",
-    )
-    .bind(com_id)
-    .bind(uid)
-    .fetch_optional(pool)
-    .await?;
+    let row: Option<(u64,)> =
+        sqlx::query_as("SELECT id FROM phpyun_down_resume WHERE comid = ? AND uid = ? LIMIT 1")
+            .bind(com_id)
+            .bind(uid)
+            .fetch_optional(pool)
+            .await?;
     Ok(row.is_some())
 }
 
@@ -60,12 +59,10 @@ pub async fn list_for_company(
 }
 
 pub async fn count_for_company(pool: &MySqlPool, com_id: u64) -> Result<u64, sqlx::Error> {
-    let (n,): (i64,) = sqlx::query_as(
-        "SELECT COUNT(*) FROM phpyun_down_resume WHERE comid = ?",
-    )
-    .bind(com_id)
-    .fetch_one(pool)
-    .await?;
+    let (n,): (i64,) = sqlx::query_as("SELECT COUNT(*) FROM phpyun_down_resume WHERE comid = ?")
+        .bind(com_id)
+        .fetch_one(pool)
+        .await?;
     Ok(n.max(0) as u64)
 }
 
@@ -92,11 +89,9 @@ pub async fn list_for_user(
 }
 
 pub async fn count_for_user(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Error> {
-    let (n,): (i64,) = sqlx::query_as(
-        "SELECT COUNT(*) FROM phpyun_down_resume WHERE uid = ?",
-    )
-    .bind(uid)
-    .fetch_one(pool)
-    .await?;
+    let (n,): (i64,) = sqlx::query_as("SELECT COUNT(*) FROM phpyun_down_resume WHERE uid = ?")
+        .bind(uid)
+        .fetch_one(pool)
+        .await?;
     Ok(n.max(0) as u64)
 }

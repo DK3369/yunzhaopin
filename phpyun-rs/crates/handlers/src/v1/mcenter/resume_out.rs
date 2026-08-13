@@ -5,18 +5,17 @@
 //! - `POST   /v1/mcenter/resume-outbox`      send once
 //! - `DELETE /v1/mcenter/resume-outbox`      batch delete
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::dto::{CreatedId, IdsBody};
+use phpyun_core::utils::fmt_dt;
+use phpyun_core::{
+    json, ApiResponse, AppResult, AppState, AuthenticatedUser, ClientIp, Paged, Pagination,
+    ValidatedJson,
 };
-use phpyun_core::{json, ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, Paged, Pagination, ValidatedJson};
 use phpyun_services::resume_out_service::{self, Limits, OutInput};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
-use phpyun_core::dto::{CreatedId, IdsBody};
-use phpyun_core::utils::{fmt_dt};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -24,7 +23,6 @@ pub fn routes() -> Router<AppState> {
         .route("/resume-outbox/list", post(list))
         .route("/resume-outbox/delete", post(delete_many))
 }
-
 
 #[derive(Debug, Serialize, ToSchema)]
 pub struct OutView {
@@ -61,13 +59,16 @@ impl From<phpyun_models::resume_out::entity::ResumeOut> for OutView {
     tag = "mcenter",
     security(("bearer" = [])),
     responses((status = 200, description = "ok"))
-)]pub async fn list(
+)]
+pub async fn list(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-) -> AppResult<ApiJson<Paged<OutView>>> {
+) -> AppResult<ApiResponse<Paged<OutView>>> {
     let r = resume_out_service::list_mine(&state, &user, page).await?;
-    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
+    Ok(ApiResponse::data(Paged::from_listing(
+        r.list, r.total, page,
+    )))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
@@ -109,7 +110,7 @@ pub async fn send(
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
     ValidatedJson(f): ValidatedJson<SendForm>,
-) -> AppResult<ApiJson<CreatedId>> {
+) -> AppResult<ApiResponse<CreatedId>> {
     let input = OutInput {
         resume_id: f.resume_id,
         email: &f.email,
@@ -122,7 +123,7 @@ pub async fn send(
         interval_secs: f.interval_secs,
     };
     let r = resume_out_service::send(&state, &user, &input, &limits, &ip).await?;
-    Ok(ApiJson(CreatedId { id: r.id }))
+    Ok(ApiResponse::data(CreatedId { id: r.id }))
 }
 
 #[utoipa::path(
@@ -137,7 +138,7 @@ pub async fn delete_many(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(b): ValidatedJson<IdsBody>,
-) -> AppResult<ApiJson<json::Value>> {
+) -> AppResult<ApiResponse<json::Value>> {
     let n = resume_out_service::delete_mine(&state, &user, &b.ids).await?;
-    Ok(ApiJson(json::json!({ "deleted": n })))
+    Ok(ApiResponse::data(json::json!({ "deleted": n })))
 }

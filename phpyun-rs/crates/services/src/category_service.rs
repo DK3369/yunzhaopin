@@ -136,11 +136,7 @@ pub async fn admin_update(
     Ok(())
 }
 
-pub async fn admin_delete(
-    state: &AppState,
-    user: &AuthenticatedUser,
-    id: u64,
-) -> AppResult<()> {
+pub async fn admin_delete(state: &AppState, user: &AuthenticatedUser, id: u64) -> AppResult<()> {
     user.require_admin()?;
     cat_repo::delete(state.db.pool(), id).await?;
     invalidate_all();

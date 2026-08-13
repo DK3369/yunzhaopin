@@ -1,18 +1,14 @@
 //! Peer-to-peer private messaging.
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
-};
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::dto::{CreatedId, PeerBody, UnreadCount};
 use phpyun_core::json;
-use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, ValidatedJson};
+use phpyun_core::utils::fmt_dt;
+use phpyun_core::{ApiResponse, AppResult, AppState, AuthenticatedUser, ValidatedJson};
 use phpyun_services::chat_service;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
-use phpyun_core::dto::{CreatedId, PeerBody, UnreadCount};
-use phpyun_core::utils::{fmt_dt};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -58,11 +54,10 @@ pub async fn send(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(f): ValidatedJson<SendForm>,
-) -> AppResult<ApiJson<CreatedId>> {
+) -> AppResult<ApiResponse<CreatedId>> {
     let id = chat_service::send(&state, &user, f.peer_uid, &f.body).await?;
-    Ok(ApiJson(CreatedId { id }))
+    Ok(ApiResponse::data(CreatedId { id }))
 }
-
 
 /// Private message item — full 7 columns of phpyun_chat + formatted timestamps + dual-track derived is_read.
 #[derive(Debug, Serialize, ToSchema)]
@@ -108,9 +103,11 @@ pub async fn list_with(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(b): ValidatedJson<ChatWithBody>,
-) -> AppResult<ApiJson<Vec<ChatItem>>> {
+) -> AppResult<ApiResponse<Vec<ChatItem>>> {
     let list = chat_service::list_with(&state, &user, b.peer, b.before_id, b.limit).await?;
-    Ok(ApiJson(list.into_iter().map(ChatItem::from).collect()))
+    Ok(ApiResponse::data(
+        list.into_iter().map(ChatItem::from).collect(),
+    ))
 }
 
 /// My conversation list (one latest message per conversation)
@@ -124,9 +121,11 @@ pub async fn list_with(
 pub async fn list_conversations(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-) -> AppResult<ApiJson<Vec<ChatItem>>> {
+) -> AppResult<ApiResponse<Vec<ChatItem>>> {
     let list = chat_service::list_conversations(&state, &user, 50).await?;
-    Ok(ApiJson(list.into_iter().map(ChatItem::from).collect()))
+    Ok(ApiResponse::data(
+        list.into_iter().map(ChatItem::from).collect(),
+    ))
 }
 
 /// Mark all messages from the peer in a conversation as read
@@ -142,9 +141,9 @@ pub async fn mark_read(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(b): ValidatedJson<PeerBody>,
-) -> AppResult<ApiJson<json::Value>> {
+) -> AppResult<ApiResponse<json::Value>> {
     let n = chat_service::mark_read_with(&state, &user, b.peer).await?;
-    Ok(ApiJson(json::json!({ "ok": true, "updated": n })))
+    Ok(ApiResponse::data(json::json!({ "ok": true, "updated": n })))
 }
 
 /// Total count of my unread private messages (for the frontend message badge)
@@ -158,7 +157,7 @@ pub async fn mark_read(
 pub async fn unread_count(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-) -> AppResult<ApiJson<UnreadCount>> {
+) -> AppResult<ApiResponse<UnreadCount>> {
     let unread = chat_service::unread_count(&state, &user).await?;
-    Ok(ApiJson(UnreadCount { unread }))
+    Ok(ApiResponse::data(UnreadCount { unread }))
 }

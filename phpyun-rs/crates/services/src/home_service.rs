@@ -56,9 +56,18 @@ pub async fn home(state: &AppState, did: u32) -> AppResult<Arc<HomePayload>> {
         .get_or_load(did, move || async move {
             let db = st.db.reader();
             let now = phpyun_core::clock::now_ts();
-            let job_filter = JobFilter { did, ..Default::default() };
-            let com_filter = CompanyFilter { did, ..Default::default() };
-            let art_filter = ArticleFilter { did, ..Default::default() };
+            let job_filter = JobFilter {
+                did,
+                ..Default::default()
+            };
+            let com_filter = CompanyFilter {
+                did,
+                ..Default::default()
+            };
+            let art_filter = ArticleFilter {
+                did,
+                ..Default::default()
+            };
 
             let (ann_r, jobs_r, coms_r, art_r, hot_r) = tokio::join!(
                 ann_repo::list_published(db, 0, 5),

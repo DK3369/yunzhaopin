@@ -1,24 +1,18 @@
 //! Site announcements (aligned with PHPYun `wap/announcement`).
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
-};
-use phpyun_core::{ApiJson, ApiError, AppResult, AppState, Paged, Pagination, ValidatedJson};
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::dto::IdBody;
+use phpyun_core::utils::{fmt_date, fmt_dt};
+use phpyun_core::{ApiError, ApiResponse, AppResult, AppState, Paged, Pagination, ValidatedJson};
 use phpyun_services::announcement_service;
 use serde::Serialize;
 use utoipa::ToSchema;
-use phpyun_core::dto::{IdBody};
-use phpyun_core::utils::{fmt_date, fmt_dt};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/announcements", post(list))
         .route("/announcements/detail", post(detail))
 }
-
-
 
 /// Announcement list item — aligned with all fields of phpyun_announcement.
 #[derive(Debug, Serialize, ToSchema)]
@@ -112,9 +106,11 @@ impl From<phpyun_models::announcement::entity::Announcement> for AnnouncementDet
 pub async fn list(
     State(state): State<AppState>,
     page: Pagination,
-) -> AppResult<ApiJson<Paged<AnnouncementSummary>>> {
+) -> AppResult<ApiResponse<Paged<AnnouncementSummary>>> {
     let r = announcement_service::list(&state, page).await?;
-    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
+    Ok(ApiResponse::data(Paged::from_listing(
+        r.list, r.total, page,
+    )))
 }
 
 /// Announcement detail (`upViewNum` semantics: async +1)
@@ -124,12 +120,13 @@ pub async fn list(
     request_body = IdBody,
     responses((status = 200, description = "ok", body = AnnouncementDetail), (status = 404))
 )]
-pub async fn detail(State(state): State<AppState>,
-    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiJson<AnnouncementDetail>> {
+pub async fn detail(
+    State(state): State<AppState>,
+    ValidatedJson(b): ValidatedJson<IdBody>,
+) -> AppResult<ApiResponse<AnnouncementDetail>> {
     let id = b.id;
     let row = announcement_service::get_detail(&state, id)
         .await?
         .ok_or_else(|| ApiError::param_invalid("announcement_not_found"))?;
-    Ok(ApiJson(AnnouncementDetail::from(row)))
+    Ok(ApiResponse::data(AnnouncementDetail::from(row)))
 }
-

@@ -15,7 +15,12 @@ use phpyun_models::user::repo as user_repo;
 use uuid::Uuid;
 
 fn gen_salt() -> String {
-    Uuid::now_v7().simple().to_string().chars().take(16).collect()
+    Uuid::now_v7()
+        .simple()
+        .to_string()
+        .chars()
+        .take(16)
+        .collect()
 }
 
 pub struct ClaimInput<'a> {
@@ -64,8 +69,11 @@ pub async fn claim(state: &AppState, input: ClaimInput<'_>) -> AppResult<()> {
     claim_repo::record(db, input.uid, input.uid, input.client_ip, now).await?;
     let _ = audit::emit(
         state,
-        audit::AuditEvent::new("company.claim", audit::Actor::uid(input.uid).with_ip(input.client_ip))
-            .target(format!("uid:{}", input.uid)),
+        audit::AuditEvent::new(
+            "company.claim",
+            audit::Actor::uid(input.uid).with_ip(input.client_ip),
+        )
+        .target(format!("uid:{}", input.uid)),
     )
     .await;
 

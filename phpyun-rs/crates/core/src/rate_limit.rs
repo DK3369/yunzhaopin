@@ -10,9 +10,9 @@
 //! Algorithm: **fixed window + INCR + EXPIRE**, atomicity provided by Redis; the
 //! implementation goes entirely through the `Kv` facade — no direct `use redis::...`.
 
-use crate::ApiError;
 use crate::kv::Kv;
 use crate::metrics::rate_limit_blocked;
+use crate::ApiError;
 use std::time::Duration;
 
 #[derive(Debug, Clone, Copy)]
@@ -48,7 +48,10 @@ pub async fn check_login_fail(kv: &Kv, account: &str) -> Result<(), ApiError> {
     check_and_incr(
         kv,
         &format!("rl:login:fail:{account}"),
-        LimitRule { max: 5, window: Duration::from_secs(900) },
+        LimitRule {
+            max: 5,
+            window: Duration::from_secs(900),
+        },
     )
     .await
 }
@@ -58,13 +61,19 @@ pub async fn check_sms_rate(kv: &Kv, mobile: &str) -> Result<(), ApiError> {
     check_and_incr(
         kv,
         &format!("rl:sms:hour:{mobile}"),
-        LimitRule { max: 5, window: Duration::from_secs(3600) },
+        LimitRule {
+            max: 5,
+            window: Duration::from_secs(3600),
+        },
     )
     .await?;
     check_and_incr(
         kv,
         &format!("rl:sms:min:{mobile}"),
-        LimitRule { max: 1, window: Duration::from_secs(60) },
+        LimitRule {
+            max: 1,
+            window: Duration::from_secs(60),
+        },
     )
     .await
 }

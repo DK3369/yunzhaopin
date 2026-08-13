@@ -11,7 +11,7 @@
 //! Handlers are **HTTP adapters**. Their job:
 //! 1. Parse request input via extractors (`Path`, `Query`, `ValidatedJson`).
 //! 2. Call **one or more services**.
-//! 3. Map the service result to `ApiJson<T>` / `ApiOk` / `ApiError`.
+//! 3. Map the service result to `ApiResponse<T>` / `ApiResponse` / `ApiError`.
 //!
 //! **Forbidden in handlers:**
 //! - `use sqlx::*` — write a repo method on a model and call it via a service.
@@ -29,5 +29,5 @@ pub mod routes;
 pub mod v1;
 pub mod v2;
 
-pub use openapi::{swagger_ui, V1Doc, V2Doc};
+pub use openapi::{swagger_ui, v1_openapi, V1Doc, V2Doc};
 pub use routes::{build_router, build_router_with_state};

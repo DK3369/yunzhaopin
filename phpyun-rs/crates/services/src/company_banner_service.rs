@@ -7,7 +7,7 @@
 //! - Per-company cap: passed in by the caller (handler) from admin config (aligned with PHP `com_banner_num`).
 
 use phpyun_core::audit::{self, Actor, AuditEvent};
-use phpyun_core::{clock, AppResult, AppState, AuthenticatedUser, ApiError};
+use phpyun_core::{clock, ApiError, AppResult, AppState, AuthenticatedUser};
 use phpyun_models::company_banner::entity::CompanyBanner;
 use phpyun_models::company_banner::repo as banner_repo;
 
@@ -78,9 +78,16 @@ pub async fn update(
     input: &UpdateInput<'_>,
 ) -> AppResult<u64> {
     user.require_employer()?;
-    banner_repo::update(state.db.pool(), id, user.uid, input.pic, input.link, input.sort)
-        .await
-        .map_err(Into::into)
+    banner_repo::update(
+        state.db.pool(),
+        id,
+        user.uid,
+        input.pic,
+        input.link,
+        input.sort,
+    )
+    .await
+    .map_err(Into::into)
 }
 
 pub async fn delete_mine(

@@ -24,14 +24,14 @@ pub struct Skill {
     pub years: i32,
 }
 
-const FIELDS: &str =
-    "id, uid, eid, name, skill AS level, longtime AS years";
+const FIELDS: &str = "id, uid, eid, name, skill AS level, longtime AS years";
 
 pub async fn list_by_uid(pool: &MySqlPool, uid: u64) -> Result<Vec<Skill>, sqlx::Error> {
-    let sql = format!(
-        "SELECT {FIELDS} FROM phpyun_resume_skill WHERE uid = ? ORDER BY id"
-    );
-    sqlx::query_as::<_, Skill>(&sql).bind(uid).fetch_all(pool).await
+    let sql = format!("SELECT {FIELDS} FROM phpyun_resume_skill WHERE uid = ? ORDER BY id");
+    sqlx::query_as::<_, Skill>(&sql)
+        .bind(uid)
+        .fetch_all(pool)
+        .await
 }
 
 pub struct SkillInput<'a> {

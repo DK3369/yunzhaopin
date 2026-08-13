@@ -1,5 +1,5 @@
 //! Dev/test convenience: long-lived JWTs (one per role) minted at boot when
-//! `APP_ENV != prod`, used by Swagger UI / Postman / curl so engineers don't
+//! `APP_ENV` is `dev` or `test`, used by Swagger UI / Postman / curl so engineers don't
 //! have to log in to play with auth-gated endpoints.
 //!
 //! Three tokens are pre-minted, all bound to `uid = 1`:
@@ -18,9 +18,8 @@
 //! - Any blacklist entries for these jtis are cleared (smoke tests can pollute
 //!   them via `/sessions/revoke-others`).
 //!
-//! **Never enable in prod.** The validator gates on `Config::env`; the only
-//! way for prod to leak the tokens is for someone to set `APP_ENV != prod`,
-//! which is the same surface as deploying the wrong binary.
+//! **Never enable in prod.** `APP_ENV` is a strict enum and production is also
+//! required to run a release binary.
 
 use crate::clock;
 use crate::config::Config;
@@ -80,9 +79,9 @@ fn jti_refresh(usertype: u8) -> String {
 }
 
 /// Idempotent. Call once at startup, after `AppState::build`. Skipped (no-op,
-/// `tokens()` returns `None`) when `Config::env == "prod"`.
+/// `tokens()` returns `None`) unless the environment is `dev` or `test`.
 pub async fn init(cfg: &Config, db: &sqlx::MySqlPool, kv: &Kv) {
-    if cfg.env == "prod" {
+    if !cfg.env.is_dev_or_test() {
         let _ = DEV_TOKENS.set(None);
         return;
     }
@@ -115,7 +114,11 @@ pub async fn init(cfg: &Config, db: &sqlx::MySqlPool, kv: &Kv) {
     let _ = DEV_TOKENS.set(Some(out));
 }
 
-async fn build_one(cfg: &Config, db: &sqlx::MySqlPool, usertype: u8) -> Result<String, sqlx::Error> {
+async fn build_one(
+    cfg: &Config,
+    db: &sqlx::MySqlPool,
+    usertype: u8,
+) -> Result<String, sqlx::Error> {
     let now = clock::now_ts();
     let exp = now + DEV_TOKEN_TTL_SECS;
     let jti_a = jti_access(usertype);

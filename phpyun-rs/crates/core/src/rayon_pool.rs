@@ -19,7 +19,7 @@ pub fn init(threads: usize) {
                 .map(|n| n.get())
                 .unwrap_or(4)
                 / 2)
-                .max(2)
+            .max(2)
         } else {
             threads
         };

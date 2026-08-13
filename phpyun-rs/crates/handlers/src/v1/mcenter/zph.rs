@@ -1,16 +1,12 @@
 //! Job-fair reservation (login required).
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
-};
-use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, ValidatedJson};
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::dto::{CreatedId, IdBody};
+use phpyun_core::{ApiResponse, AppResult, AppState, AuthenticatedUser, ValidatedJson};
 use phpyun_services::zph_service::{self, ReserveInput};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
-use phpyun_core::dto::{CreatedId, IdBody};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -43,9 +39,11 @@ pub struct ReserveForm {
     request_body = ReserveForm,
     responses((status = 200, description = "ok", body = CreatedId))
 )]
-pub async fn reserve(State(state): State<AppState>,
+pub async fn reserve(
+    State(state): State<AppState>,
     user: AuthenticatedUser,
-    ValidatedJson(f): ValidatedJson<ReserveForm>) -> AppResult<ApiJson<CreatedId>> {
+    ValidatedJson(f): ValidatedJson<ReserveForm>,
+) -> AppResult<ApiResponse<CreatedId>> {
     let id = f.id;
     user.require_jobseeker()?;
     let rid = zph_service::reserve(
@@ -59,7 +57,7 @@ pub async fn reserve(State(state): State<AppState>,
         },
     )
     .await?;
-    Ok(ApiJson(CreatedId { id: rid }))
+    Ok(ApiResponse::data(CreatedId { id: rid }))
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -95,12 +93,14 @@ impl From<phpyun_models::zph::entity::ZphReservation> for MyReservation {
     request_body = IdBody,
     responses((status = 200, description = "ok"))
 )]
-pub async fn my_reservation(State(state): State<AppState>,
+pub async fn my_reservation(
+    State(state): State<AppState>,
     user: AuthenticatedUser,
-    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiJson<Option<MyReservation>>> {
+    ValidatedJson(b): ValidatedJson<IdBody>,
+) -> AppResult<ApiResponse<Option<MyReservation>>> {
     let id = b.id;
     let row = zph_service::my_reservation(&state, &user, id).await?;
-    Ok(ApiJson(row.map(MyReservation::from)))
+    Ok(ApiResponse::data(row.map(MyReservation::from)))
 }
 
 // ==================== Pre-apply status (counterpart of `wap/ajax::ajaxComjob`) ====================
@@ -134,9 +134,11 @@ pub struct ComStatusView {
         (status = 403, description = "Not an employer"),
     )
 )]
-pub async fn com_status(State(state): State<AppState>,
+pub async fn com_status(
+    State(state): State<AppState>,
     user: AuthenticatedUser,
-    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiJson<ComStatusView>> {
+    ValidatedJson(b): ValidatedJson<IdBody>,
+) -> AppResult<ApiResponse<ComStatusView>> {
     let id = b.id;
     use zph_service::ComStatusOutcome;
     let view = match zph_service::com_status_for_fair(&state, &user, id).await? {
@@ -163,6 +165,5 @@ pub async fn com_status(State(state): State<AppState>,
             jobs: Some(Vec::new()),
         },
     };
-    Ok(ApiJson(view))
+    Ok(ApiResponse::data(view))
 }
-

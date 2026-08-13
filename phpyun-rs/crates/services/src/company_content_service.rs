@@ -6,7 +6,7 @@
 //! - simple XSS filter on the body: replaces the PHP-side `ti<x>tle` placeholder
 
 use phpyun_core::audit::{self, Actor, AuditEvent};
-use phpyun_core::{clock, AppResult, AppState, AuthenticatedUser, ApiError, Pagination};
+use phpyun_core::{clock, ApiError, AppResult, AppState, AuthenticatedUser, Pagination};
 use phpyun_models::company_content::entity::{CompanyContent, ContentKind};
 use phpyun_models::company_content::repo as content_repo;
 
@@ -91,8 +91,11 @@ pub async fn create(
     .await?;
     let _ = audit::emit(
         state,
-        AuditEvent::new("company.content_add", Actor::uid(user.uid).with_ip(client_ip))
-            .target(format!("{}:{id}", kind.table())),
+        AuditEvent::new(
+            "company.content_add",
+            Actor::uid(user.uid).with_ip(client_ip),
+        )
+        .target(format!("{}:{id}", kind.table())),
     )
     .await;
     Ok(id)

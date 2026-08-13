@@ -1,7 +1,9 @@
 //! Report service. Target kind validation + rate limit + audit.
 
 use phpyun_core::audit::{self, Actor, AuditEvent};
-use phpyun_core::{clock, rate_limit, AppResult, AppState, AuthenticatedUser, ApiError, Pagination};
+use phpyun_core::{
+    clock, rate_limit, ApiError, AppResult, AppState, AuthenticatedUser, Pagination,
+};
 use phpyun_models::report::{
     entity::{Report, KIND_ARTICLE, KIND_COMPANY, KIND_JOB, KIND_RESUME, KIND_USER},
     repo as report_repo,

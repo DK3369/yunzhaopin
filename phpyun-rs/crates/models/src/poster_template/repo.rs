@@ -17,13 +17,8 @@ pub async fn list_by_kind(
         .await
 }
 
-pub async fn find_by_id(
-    pool: &MySqlPool,
-    id: u64,
-) -> Result<Option<PosterTemplate>, sqlx::Error> {
-    let sql = format!(
-        "SELECT {FIELDS} FROM phpyun_admin_jobwhb WHERE id = ? LIMIT 1"
-    );
+pub async fn find_by_id(pool: &MySqlPool, id: u64) -> Result<Option<PosterTemplate>, sqlx::Error> {
+    let sql = format!("SELECT {FIELDS} FROM phpyun_admin_jobwhb WHERE id = ? LIMIT 1");
     sqlx::query_as::<_, PosterTemplate>(&sql)
         .bind(id)
         .fetch_optional(pool)

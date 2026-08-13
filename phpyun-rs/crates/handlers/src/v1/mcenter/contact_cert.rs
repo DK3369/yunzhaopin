@@ -1,11 +1,7 @@
 //! Contact info change verification (aligned with PHPYun `ajax::mobliecert` / `emailcert`).
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
-};
-use phpyun_core::{ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, ValidatedJson};
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::{ApiResponse, AppResult, AppState, AuthenticatedUser, ValidatedJson};
 use phpyun_services::contact_cert_service;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
@@ -38,9 +34,9 @@ pub async fn mobile_send(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(f): ValidatedJson<MobileSendForm>,
-) -> AppResult<ApiOk> {
+) -> AppResult<ApiResponse> {
     contact_cert_service::send_mobile_code(&state, &user, &f.moblie).await?;
-    Ok(ApiOk("sent"))
+    Ok(ApiResponse::message("sent"))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
@@ -65,10 +61,10 @@ pub async fn mobile_verify(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(f): ValidatedJson<MobileVerifyForm>,
-) -> AppResult<ApiOk> {
+) -> AppResult<ApiResponse> {
     contact_cert_service::verify_and_change_mobile(&state, &user, &f.moblie, &f.moblie_code)
         .await?;
-    Ok(ApiOk("ok"))
+    Ok(ApiResponse::message("ok"))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
@@ -95,7 +91,7 @@ pub async fn email_send(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(f): ValidatedJson<EmailSendForm>,
-) -> AppResult<ApiJson<EmailSent>> {
+) -> AppResult<ApiResponse<EmailSent>> {
     contact_cert_service::send_email_link(&state, &user, &f.email).await?;
-    Ok(ApiJson(EmailSent { sent: true }))
+    Ok(ApiResponse::data(EmailSent { sent: true }))
 }

@@ -59,21 +59,15 @@ pub async fn list_by_uid(
 }
 
 pub async fn count_by_uid(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Error> {
-    let (n,): (i64,) = sqlx::query_as(
-        "SELECT COUNT(*) FROM phpyun_resumeout WHERE uid = ?",
-    )
-    .bind(uid)
-    .fetch_one(pool)
-    .await?;
+    let (n,): (i64,) = sqlx::query_as("SELECT COUNT(*) FROM phpyun_resumeout WHERE uid = ?")
+        .bind(uid)
+        .fetch_one(pool)
+        .await?;
     Ok(n.max(0) as u64)
 }
 
 /// Hard delete (PHP table has no `status` column for soft-delete).
-pub async fn delete_by_ids(
-    pool: &MySqlPool,
-    ids: &[u64],
-    uid: u64,
-) -> Result<u64, sqlx::Error> {
+pub async fn delete_by_ids(pool: &MySqlPool, ids: &[u64], uid: u64) -> Result<u64, sqlx::Error> {
     if ids.is_empty() {
         return Ok(0);
     }
@@ -126,12 +120,10 @@ pub async fn insert_recommend_mark(
     uid: u64,
     now: i64,
 ) -> Result<(), sqlx::Error> {
-    let _ = sqlx::query(
-        "INSERT INTO phpyun_recommend (uid, rec_type, addtime) VALUES (?, 3, ?)",
-    )
-    .bind(uid)
-    .bind(now)
-    .execute(pool)
-    .await?;
+    let _ = sqlx::query("INSERT INTO phpyun_recommend (uid, rec_type, addtime) VALUES (?, 3, ?)")
+        .bind(uid)
+        .bind(now)
+        .execute(pool)
+        .await?;
     Ok(())
 }

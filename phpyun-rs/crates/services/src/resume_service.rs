@@ -2,12 +2,11 @@
 //!
 //! Covers the core paths of PHPYun `wap/resume` + `mcenter/resume`: viewing, updating the master table, and toggling display status.
 
-use phpyun_core::ApiError;
 use phpyun_core::audit::{self, Actor, AuditEvent};
+use phpyun_core::ApiError;
 use phpyun_core::{clock, AppResult, AppState, AuthenticatedUser, Pagination};
 use phpyun_models::resume::repo::ResumeFilter;
 use phpyun_models::resume::{entity::Resume, repo as resume_repo};
-
 
 pub struct ResumePage {
     pub list: Vec<Resume>,
@@ -33,11 +32,7 @@ pub async fn list_public(
 }
 
 /// Public resume detail — visible only when `status=1` and `r_status=1`.
-pub async fn get_public(
-    state: &AppState,
-    user: &AuthenticatedUser,
-    uid: u64,
-) -> AppResult<Resume> {
+pub async fn get_public(state: &AppState, user: &AuthenticatedUser, uid: u64) -> AppResult<Resume> {
     user.require_employer()?;
     resume_repo::find_public(state.db.reader(), uid)
         .await?
@@ -161,9 +156,12 @@ pub async fn set_status(
     };
     let _ = audit::emit(
         state,
-        AuditEvent::new("resume.status_change", Actor::uid(user.uid).with_ip(client_ip))
-            .target(format!("uid:{}", user.uid))
-            .meta(&serde_json::json!({ "status": label })),
+        AuditEvent::new(
+            "resume.status_change",
+            Actor::uid(user.uid).with_ip(client_ip),
+        )
+        .target(format!("uid:{}", user.uid))
+        .meta(&serde_json::json!({ "status": label })),
     )
     .await;
     Ok(())

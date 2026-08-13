@@ -1,16 +1,12 @@
 //! Navigation management (admin).
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
-};
-use phpyun_core::{ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, ValidatedJson};
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::dto::CreatedId;
+use phpyun_core::{ApiResponse, AppResult, AppState, AuthenticatedUser, ValidatedJson};
 use phpyun_services::nav_menu_service::{self, NavInput, NavPatch};
 use serde::Deserialize;
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
-use phpyun_core::dto::{CreatedId};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -24,7 +20,6 @@ pub struct ListQuery {
     #[validate(length(min = 1, max = 16))]
     pub position: Option<String>,
 }
-
 
 // Reuse wap's `NavItem` (identical shape and `From<NavMenu>`); admin needs no
 // extra fields here, just a different list filter on the service layer.
@@ -69,14 +64,17 @@ pub struct NavPatchForm {
     pub status: Option<i32>,
 }
 
-#[utoipa::path(post, path = "/v1/admin/nav/list", tag = "admin", security(("bearer" = [])), params(ListQuery), responses((status = 200, description = "ok")))]pub async fn list(
+#[utoipa::path(post, path = "/v1/admin/nav/list", tag = "admin", security(("bearer" = [])), params(ListQuery), responses((status = 200, description = "ok")))]
+pub async fn list(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(q): ValidatedJson<ListQuery>,
-) -> AppResult<ApiJson<Vec<NavItem>>> {
+) -> AppResult<ApiResponse<Vec<NavItem>>> {
     user.require_admin()?;
     let list = nav_menu_service::admin_list(&state, &user, q.position.as_deref()).await?;
-    Ok(ApiJson(list.into_iter().map(NavItem::from).collect()))
+    Ok(ApiResponse::data(
+        list.into_iter().map(NavItem::from).collect(),
+    ))
 }
 
 #[utoipa::path(post, path = "/v1/admin/nav", tag = "admin", security(("bearer" = [])), request_body = NavForm, responses((status = 200, description = "ok", body = CreatedId)))]
@@ -84,7 +82,7 @@ pub async fn create(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(f): ValidatedJson<NavForm>,
-) -> AppResult<ApiJson<CreatedId>> {
+) -> AppResult<ApiResponse<CreatedId>> {
     user.require_admin()?;
     let id = nav_menu_service::admin_create(
         &state,
@@ -99,19 +97,21 @@ pub async fn create(
         },
     )
     .await?;
-    Ok(ApiJson(CreatedId { id }))
+    Ok(ApiResponse::data(CreatedId { id }))
 }
 
 /// Update or soft-delete a navigation entry (sending `"status":2` deletes it)
 #[utoipa::path(post, path = "/v1/admin/nav/update", tag = "admin", security(("bearer" = [])), request_body = NavPatchForm, responses((status = 200, description = "ok")))]
-pub async fn update(State(state): State<AppState>,
+pub async fn update(
+    State(state): State<AppState>,
     user: AuthenticatedUser,
-    ValidatedJson(f): ValidatedJson<NavPatchForm>) -> AppResult<ApiOk> {
+    ValidatedJson(f): ValidatedJson<NavPatchForm>,
+) -> AppResult<ApiResponse> {
     let id = f.id;
     user.require_admin()?;
     if f.status == Some(2) {
         nav_menu_service::admin_delete(&state, &user, id).await?;
-        return Ok(ApiOk("deleted"));
+        return Ok(ApiResponse::message("deleted"));
     }
     nav_menu_service::admin_update(
         &state,
@@ -127,5 +127,5 @@ pub async fn update(State(state): State<AppState>,
         },
     )
     .await?;
-    Ok(ApiOk("ok"))
+    Ok(ApiResponse::message("ok"))
 }

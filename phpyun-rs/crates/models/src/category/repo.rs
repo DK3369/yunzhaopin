@@ -122,11 +122,7 @@ pub struct CatCreate<'a> {
     pub sort: i32,
 }
 
-pub async fn create(
-    pool: &MySqlPool,
-    c: CatCreate<'_>,
-    _now: i64,
-) -> Result<u64, sqlx::Error> {
+pub async fn create(pool: &MySqlPool, c: CatCreate<'_>, _now: i64) -> Result<u64, sqlx::Error> {
     let Some((table, pc)) = resolve(c.kind) else {
         return Err(sqlx::Error::Protocol(format!(
             "unknown category kind: {}",
@@ -172,7 +168,9 @@ pub async fn update_kind(
 ) -> Result<u64, sqlx::Error> {
     let _ = u.status; // PHPYun tables have no status column
     let Some((table, pc)) = resolve(kind) else {
-        return Err(sqlx::Error::Protocol(format!("unknown category kind: {kind}")));
+        return Err(sqlx::Error::Protocol(format!(
+            "unknown category kind: {kind}"
+        )));
     };
     let sql = format!(
         "UPDATE {table} SET \
@@ -198,13 +196,11 @@ pub async fn delete(pool: &MySqlPool, id: u64) -> Result<u64, sqlx::Error> {
 
 pub async fn delete_kind(pool: &MySqlPool, id: u64, kind: &str) -> Result<u64, sqlx::Error> {
     let Some((table, pc)) = resolve(kind) else {
-        return Err(sqlx::Error::Protocol(format!("unknown category kind: {kind}")));
+        return Err(sqlx::Error::Protocol(format!(
+            "unknown category kind: {kind}"
+        )));
     };
     let sql = format!("DELETE FROM {table} WHERE id = ? OR {pc} = ?");
-    let res = sqlx::query(&sql)
-        .bind(id)
-        .bind(id)
-        .execute(pool)
-        .await?;
+    let res = sqlx::query(&sql).bind(id).bind(id).execute(pool).await?;
     Ok(res.rows_affected())
 }

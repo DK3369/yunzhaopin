@@ -33,9 +33,7 @@ pub async fn create(
     let db = state.db.reader();
     let used = ss_repo::count_by_uid(db, user.uid).await?;
     if used >= MAX_PER_USER {
-        return Err(ApiError::param_invalid(
-            "saved_search_limit_reached",
-        ));
+        return Err(ApiError::param_invalid("saved_search_limit_reached"));
     }
     if !matches!(input.kind, "job" | "company" | "resume") {
         return Err(ApiError::param_invalid("bad_kind"));
@@ -59,18 +57,15 @@ pub async fn set_notify(
     id: u64,
     notify: bool,
 ) -> AppResult<()> {
-    let affected = ss_repo::set_notify(state.db.pool(), id, user.uid, notify, clock::now_ts()).await?;
+    let affected =
+        ss_repo::set_notify(state.db.pool(), id, user.uid, notify, clock::now_ts()).await?;
     if affected == 0 {
         return Err(ApiError::forbidden());
     }
     Ok(())
 }
 
-pub async fn delete(
-    state: &AppState,
-    user: &AuthenticatedUser,
-    id: u64,
-) -> AppResult<()> {
+pub async fn delete(state: &AppState, user: &AuthenticatedUser, id: u64) -> AppResult<()> {
     let affected = ss_repo::delete(state.db.pool(), id, user.uid).await?;
     if affected == 0 {
         return Err(ApiError::forbidden());

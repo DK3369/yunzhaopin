@@ -14,7 +14,6 @@ use phpyun_core::{clock, ApiError, AppResult, AppState, Pagination};
 use phpyun_models::once_job::entity::OnceJob;
 use phpyun_models::once_job::repo as once_repo;
 
-
 // ==================== Public browsing ====================
 
 #[derive(Debug, Clone, Default)]
@@ -142,8 +141,11 @@ pub async fn upsert(state: &AppState, input: &UpsertInput) -> AppResult<UpsertRe
         }
         let _ = audit::emit(
             state,
-            AuditEvent::new("once.update", Actor::anonymous().with_ip(input.login_ip.clone()))
-                .target(format!("once:{id}")),
+            AuditEvent::new(
+                "once.update",
+                Actor::anonymous().with_ip(input.login_ip.clone()),
+            )
+            .target(format!("once:{id}")),
         )
         .await;
         return Ok(UpsertResult { id, created: false });
@@ -192,8 +194,11 @@ pub async fn upsert(state: &AppState, input: &UpsertInput) -> AppResult<UpsertRe
     let id = once_repo::create(state.db.pool(), &create).await?;
     let _ = audit::emit(
         state,
-        AuditEvent::new("once.create", Actor::anonymous().with_ip(input.login_ip.clone()))
-            .target(format!("once:{id}")),
+        AuditEvent::new(
+            "once.create",
+            Actor::anonymous().with_ip(input.login_ip.clone()),
+        )
+        .target(format!("once:{id}")),
     )
     .await;
     Ok(UpsertResult { id, created: true })
@@ -227,12 +232,7 @@ pub enum ManageOp {
     Delete,
 }
 
-pub async fn manage(
-    state: &AppState,
-    id: u64,
-    password: &str,
-    op: ManageOp,
-) -> AppResult<()> {
+pub async fn manage(state: &AppState, id: u64, password: &str, op: ManageOp) -> AppResult<()> {
     if password.is_empty() {
         return Err(ApiError::param_invalid("password").into());
     }
@@ -245,13 +245,9 @@ pub async fn manage(
             }
         }
         ManageOp::Refresh => {
-            let n = once_repo::refresh_with_password(
-                state.db.pool(),
-                id,
-                &pwd_md5,
-                clock::now_ts(),
-            )
-            .await?;
+            let n =
+                once_repo::refresh_with_password(state.db.pool(), id, &pwd_md5, clock::now_ts())
+                    .await?;
             if n == 0 {
                 return Err(ApiError::business("tiny_pwd_mismatch").into());
             }

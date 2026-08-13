@@ -1,17 +1,16 @@
 //! Assessment submission + my history.
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::utils::fmt_dt;
+use phpyun_core::{
+    dto::{CreatedId, IdBody},
+    ApiResponse, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
 };
-use phpyun_core::{dto::{CreatedId, IdBody}, ApiJson, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::eval_service;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use utoipa::ToSchema;
 use validator::Validate;
-use phpyun_core::utils::{fmt_dt};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -32,9 +31,7 @@ pub struct SubmitForm {
     pub answers: HashMap<String, String>,
 }
 
-fn validate_answers(
-    answers: &HashMap<String, String>,
-) -> Result<(), validator::ValidationError> {
+fn validate_answers(answers: &HashMap<String, String>) -> Result<(), validator::ValidationError> {
     if answers.len() > 120 {
         return Err(validator::ValidationError::new("answers_too_many"));
     }
@@ -60,14 +57,15 @@ pub struct SubmitResult {
     request_body = SubmitForm,
     responses((status = 200, description = "ok", body = SubmitResult))
 )]
-pub async fn submit(State(state): State<AppState>,
+pub async fn submit(
+    State(state): State<AppState>,
     user: AuthenticatedUser,
-    ValidatedJson(f): ValidatedJson<SubmitForm>) -> AppResult<ApiJson<SubmitResult>> {
+    ValidatedJson(f): ValidatedJson<SubmitForm>,
+) -> AppResult<ApiResponse<SubmitResult>> {
     let id = f.id;
     let (log_id, score) = eval_service::submit(&state, &user, id, f.answers).await?;
-    Ok(ApiJson(SubmitResult { log_id, score }))
+    Ok(ApiResponse::data(SubmitResult { log_id, score }))
 }
-
 
 /// Assessment history item — all 6 columns of phpyun_eval_log + formatted timestamp.
 #[derive(Debug, Serialize, ToSchema)]
@@ -107,9 +105,11 @@ pub async fn list_logs(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-) -> AppResult<ApiJson<Paged<LogItem>>> {
+) -> AppResult<ApiResponse<Paged<LogItem>>> {
     let r = eval_service::list_my_logs(&state, &user, page).await?;
-    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
+    Ok(ApiResponse::data(Paged::from_listing(
+        r.list, r.total, page,
+    )))
 }
 
 // ==================== Leave a message on a paper ====================
@@ -134,9 +134,11 @@ pub struct PaperMessageForm {
     request_body = PaperMessageForm,
     responses((status = 200, description = "ok", body = CreatedId))
 )]
-pub async fn post_message(State(state): State<AppState>,
+pub async fn post_message(
+    State(state): State<AppState>,
     user: AuthenticatedUser,
-    ValidatedJson(f): ValidatedJson<PaperMessageForm>) -> AppResult<ApiJson<CreatedId>> {
+    ValidatedJson(f): ValidatedJson<PaperMessageForm>,
+) -> AppResult<ApiResponse<CreatedId>> {
     let id = f.id;
     let id_u32 = id as u32;
     let now = phpyun_core::clock::now_ts();
@@ -149,7 +151,7 @@ pub async fn post_message(State(state): State<AppState>,
         now,
     )
     .await?;
-    Ok(ApiJson(CreatedId { id: new_id }))
+    Ok(ApiResponse::data(CreatedId { id: new_id }))
 }
 
 // ==================== Single eval log detail ====================
@@ -172,14 +174,10 @@ pub async fn get_log(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(b): ValidatedJson<IdBody>,
-) -> AppResult<ApiJson<LogItem>> {
+) -> AppResult<ApiResponse<LogItem>> {
     let log_id = b.id;
     let row = phpyun_models::eval::repo::find_log_for_owner(state.db.reader(), log_id, user.uid)
         .await?
-        .ok_or_else(|| {
-            phpyun_core::ApiError::param_invalid(
-                "log_not_found",
-            )
-        })?;
-    Ok(ApiJson(LogItem::from(row)))
+        .ok_or_else(|| phpyun_core::ApiError::param_invalid("log_not_found"))?;
+    Ok(ApiResponse::data(LogItem::from(row)))
 }

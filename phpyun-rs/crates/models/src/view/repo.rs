@@ -52,13 +52,12 @@ pub async fn count_by_viewer(
     viewer_uid: u64,
     kind: i32,
 ) -> Result<u64, sqlx::Error> {
-    let (n,): (i64,) = sqlx::query_as(
-        "SELECT COUNT(*) FROM phpyun_rs_views WHERE viewer_uid = ? AND kind = ?",
-    )
-    .bind(viewer_uid)
-    .bind(kind)
-    .fetch_one(pool)
-    .await?;
+    let (n,): (i64,) =
+        sqlx::query_as("SELECT COUNT(*) FROM phpyun_rs_views WHERE viewer_uid = ? AND kind = ?")
+            .bind(viewer_uid)
+            .bind(kind)
+            .fetch_one(pool)
+            .await?;
     Ok(n.max(0) as u64)
 }
 
@@ -92,13 +91,12 @@ pub async fn count_by_target(
     kind: i32,
     target_id: u64,
 ) -> Result<u64, sqlx::Error> {
-    let (n,): (i64,) = sqlx::query_as(
-        "SELECT COUNT(*) FROM phpyun_rs_views WHERE kind = ? AND target_id = ?",
-    )
-    .bind(kind)
-    .bind(target_id)
-    .fetch_one(pool)
-    .await?;
+    let (n,): (i64,) =
+        sqlx::query_as("SELECT COUNT(*) FROM phpyun_rs_views WHERE kind = ? AND target_id = ?")
+            .bind(kind)
+            .bind(target_id)
+            .fetch_one(pool)
+            .await?;
     Ok(n.max(0) as u64)
 }
 

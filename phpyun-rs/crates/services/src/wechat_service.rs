@@ -124,11 +124,9 @@ pub fn default_reply(msg: &IncomingMessage, site_welcome: &str) -> Option<String
     match msg.msg_type.as_str() {
         "event" => {
             match msg.event.as_deref() {
-                Some("subscribe") => Some(text_reply_xml(
-                    &msg.from_user,
-                    &msg.to_user,
-                    site_welcome,
-                )),
+                Some("subscribe") => {
+                    Some(text_reply_xml(&msg.from_user, &msg.to_user, site_welcome))
+                }
                 Some("unsubscribe") => None, // Unsubscribe events do not need a reply
                 _ => None,
             }
@@ -139,11 +137,7 @@ pub fn default_reply(msg: &IncomingMessage, site_welcome: &str) -> Option<String
                 None
             } else {
                 // Default: echo + hint — production would do keyword lookup
-                let reply = t_args(
-                    "wechat.echo_reply",
-                    WECHAT_LANG,
-                    &[("content", content)],
-                );
+                let reply = t_args("wechat.echo_reply", WECHAT_LANG, &[("content", content)]);
                 Some(text_reply_xml(&msg.from_user, &msg.to_user, &reply))
             }
         }
@@ -166,10 +160,7 @@ mod tests {
         let nonce = "zXyAbcD";
         let mut parts = vec![token, ts, nonce];
         parts.sort_unstable();
-        let expected = format!(
-            "{:x}",
-            Sha1::digest(parts.concat().as_bytes())
-        );
+        let expected = format!("{:x}", Sha1::digest(parts.concat().as_bytes()));
         assert!(verify_signature(token, ts, nonce, &expected));
     }
 

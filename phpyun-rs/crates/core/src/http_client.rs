@@ -19,9 +19,9 @@
 //! - `http.client.retry{host}` counter.
 //! - `http.client.error{host, kind}` counter.
 
-use crate::{ApiError, AppResult};
 use crate::json;
 use crate::metrics as m;
+use crate::{ApiError, AppResult};
 use reqwest::Client;
 use serde::{de::DeserializeOwned, Serialize};
 use std::time::{Duration, Instant};
@@ -182,7 +182,10 @@ impl Http {
                 }
                 Err(e) => return Err(map_reqwest_err(e)),
             };
-            m::histogram_ms("http.client.latency_ms", started.elapsed().as_secs_f64() * 1000.0);
+            m::histogram_ms(
+                "http.client.latency_ms",
+                started.elapsed().as_secs_f64() * 1000.0,
+            );
             record_status(&host, status);
             Ok(text)
         }
@@ -203,7 +206,9 @@ impl Http {
 
         for attempt in 0..retry.max_attempts {
             if attempt > 0 {
-                let base = retry.base_delay_ms.saturating_mul(1u64 << (attempt - 1).min(4));
+                let base = retry
+                    .base_delay_ms
+                    .saturating_mul(1u64 << (attempt - 1).min(4));
                 let wait = base.saturating_add(jitter_ms(base));
                 tokio::time::sleep(Duration::from_millis(wait)).await;
                 m::counter_with("http.client.retry", &[("host", as_static(&host))]);
@@ -233,9 +238,7 @@ impl Http {
                         return resp.text().await.map_err(map_reqwest_err);
                     }
                     if status.is_server_error() {
-                        last_err = Some(ApiError::upstream(format!(
-                            "{method} {url} → {status}"
-                        )));
+                        last_err = Some(ApiError::upstream(format!("{method} {url} → {status}")));
                         m::counter_with(
                             "http.client.error",
                             &[("host", as_static(&host)), ("kind", "5xx")],
@@ -332,7 +335,10 @@ mod tests {
     #[test]
     fn host_of_extracts_host() {
         assert_eq!(host_of("http://api.example.com/v1/x"), "api.example.com");
-        assert_eq!(host_of("https://api.example.com:8443/path"), "api.example.com");
+        assert_eq!(
+            host_of("https://api.example.com:8443/path"),
+            "api.example.com"
+        );
         assert_eq!(host_of("http://127.0.0.1:3000/health"), "127.0.0.1");
         assert_eq!(host_of("not-a-url"), "unknown");
     }
@@ -342,7 +348,10 @@ mod tests {
         for base in [0u64, 10, 100, 1000] {
             for _ in 0..32 {
                 let j = jitter_ms(base);
-                assert!(j <= base / 2 + 1, "jitter {j} out of bounds for base {base}");
+                assert!(
+                    j <= base / 2 + 1,
+                    "jitter {j} out of bounds for base {base}"
+                );
             }
         }
     }

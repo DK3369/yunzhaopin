@@ -6,14 +6,13 @@
 //! - TODO: after writing any child table we could call `state.cache.user.invalidate(uid)` to
 //!   invalidate the /me cache. Not urgent — /me cache only stores main profile fields.
 
-use phpyun_core::ApiError;
 use phpyun_core::audit::{self, Actor, AuditEvent};
+use phpyun_core::ApiError;
 use phpyun_core::{clock, AppResult, AppState, AuthenticatedUser};
 use phpyun_models::resume::{
-    cert, edu, expect, language, other, project,
-    repo as resume_repo, skill, training, user_resume, work,
+    cert, edu, expect, language, other, project, repo as resume_repo, skill, training, user_resume,
+    work,
 };
-
 
 /// Which kind of child-row write happened — drives the side-effect mix.
 #[derive(Debug, Clone, Copy)]
@@ -133,11 +132,8 @@ pub mod expect_svc {
         );
         let _ = audit::emit(
             state,
-            AuditEvent::new(
-                "resume.expect_add",
-                Actor::uid(user.uid).with_ip(client_ip),
-            )
-            .target(format!("expect:{id}")),
+            AuditEvent::new("resume.expect_add", Actor::uid(user.uid).with_ip(client_ip))
+                .target(format!("expect:{id}")),
         )
         .await;
         Ok(id)
@@ -212,11 +208,23 @@ pub mod edu_svc {
         let eid = super::resolve_default_eid(state, user.uid).await?;
         let id = edu::create(state.db.pool(), user.uid, eid, &input).await?;
         tracing::info!(
-            op = "edu.create", uid = user.uid, eid, id,
-            ip = client_ip, name = input.name, education = input.education,
+            op = "edu.create",
+            uid = user.uid,
+            eid,
+            id,
+            ip = client_ip,
+            name = input.name,
+            education = input.education,
             "wizard write"
         );
-        super::after_child(state, user.uid, eid, user_resume::Section::Edu, ChildOp::Create).await;
+        super::after_child(
+            state,
+            user.uid,
+            eid,
+            user_resume::Section::Edu,
+            ChildOp::Create,
+        )
+        .await;
         let _ = audit::emit(
             state,
             AuditEvent::new("resume.edu_add", Actor::uid(user.uid).with_ip(client_ip))
@@ -244,14 +252,18 @@ pub mod edu_svc {
         if affected == 0 {
             return Err(ApiError::business("resume_not_found").into());
         }
-        super::after_child(state, user.uid, eid, user_resume::Section::Edu, ChildOp::Update).await;
+        super::after_child(
+            state,
+            user.uid,
+            eid,
+            user_resume::Section::Edu,
+            ChildOp::Update,
+        )
+        .await;
         let _ = audit::emit(
             state,
-            AuditEvent::new(
-                "resume.edu_update",
-                Actor::uid(user.uid).with_ip(client_ip),
-            )
-            .target(format!("edu:{id}")),
+            AuditEvent::new("resume.edu_update", Actor::uid(user.uid).with_ip(client_ip))
+                .target(format!("edu:{id}")),
         )
         .await;
         Ok(())
@@ -272,14 +284,18 @@ pub mod edu_svc {
         if affected == 0 {
             return Err(ApiError::business("resume_not_found").into());
         }
-        super::after_child(state, user.uid, eid, user_resume::Section::Edu, ChildOp::Delete).await;
+        super::after_child(
+            state,
+            user.uid,
+            eid,
+            user_resume::Section::Edu,
+            ChildOp::Delete,
+        )
+        .await;
         let _ = audit::emit(
             state,
-            AuditEvent::new(
-                "resume.edu_delete",
-                Actor::uid(user.uid).with_ip(client_ip),
-            )
-            .target(format!("edu:{id}")),
+            AuditEvent::new("resume.edu_delete", Actor::uid(user.uid).with_ip(client_ip))
+                .target(format!("edu:{id}")),
         )
         .await;
         Ok(())
@@ -306,11 +322,23 @@ pub mod work_svc {
         let eid = super::resolve_default_eid(state, user.uid).await?;
         let id = work::create(state.db.pool(), user.uid, eid, &input).await?;
         tracing::info!(
-            op = "work.create", uid = user.uid, eid, id,
-            ip = client_ip, name = input.name, title = input.title,
+            op = "work.create",
+            uid = user.uid,
+            eid,
+            id,
+            ip = client_ip,
+            name = input.name,
+            title = input.title,
             "wizard write"
         );
-        super::after_child(state, user.uid, eid, user_resume::Section::Work, ChildOp::Create).await;
+        super::after_child(
+            state,
+            user.uid,
+            eid,
+            user_resume::Section::Work,
+            ChildOp::Create,
+        )
+        .await;
         let _ = audit::emit(
             state,
             AuditEvent::new("resume.work_add", Actor::uid(user.uid).with_ip(client_ip))
@@ -336,7 +364,14 @@ pub mod work_svc {
         if affected == 0 {
             return Err(ApiError::business("resume_not_found").into());
         }
-        super::after_child(state, user.uid, eid, user_resume::Section::Work, ChildOp::Update).await;
+        super::after_child(
+            state,
+            user.uid,
+            eid,
+            user_resume::Section::Work,
+            ChildOp::Update,
+        )
+        .await;
         let _ = audit::emit(
             state,
             AuditEvent::new(
@@ -364,7 +399,14 @@ pub mod work_svc {
         if affected == 0 {
             return Err(ApiError::business("resume_not_found").into());
         }
-        super::after_child(state, user.uid, eid, user_resume::Section::Work, ChildOp::Delete).await;
+        super::after_child(
+            state,
+            user.uid,
+            eid,
+            user_resume::Section::Work,
+            ChildOp::Delete,
+        )
+        .await;
         let _ = audit::emit(
             state,
             AuditEvent::new(
@@ -400,7 +442,14 @@ pub mod project_svc {
         user.require_jobseeker()?;
         let eid = super::resolve_default_eid(state, user.uid).await?;
         let id = project::create(state.db.pool(), user.uid, eid, &input).await?;
-        super::after_child(state, user.uid, eid, user_resume::Section::Project, ChildOp::Create).await;
+        super::after_child(
+            state,
+            user.uid,
+            eid,
+            user_resume::Section::Project,
+            ChildOp::Create,
+        )
+        .await;
         let _ = audit::emit(
             state,
             AuditEvent::new(
@@ -429,7 +478,14 @@ pub mod project_svc {
         if affected == 0 {
             return Err(ApiError::business("resume_not_found").into());
         }
-        super::after_child(state, user.uid, eid, user_resume::Section::Project, ChildOp::Update).await;
+        super::after_child(
+            state,
+            user.uid,
+            eid,
+            user_resume::Section::Project,
+            ChildOp::Update,
+        )
+        .await;
         let _ = audit::emit(
             state,
             AuditEvent::new(
@@ -457,7 +513,14 @@ pub mod project_svc {
         if affected == 0 {
             return Err(ApiError::business("resume_not_found").into());
         }
-        super::after_child(state, user.uid, eid, user_resume::Section::Project, ChildOp::Delete).await;
+        super::after_child(
+            state,
+            user.uid,
+            eid,
+            user_resume::Section::Project,
+            ChildOp::Delete,
+        )
+        .await;
         let _ = audit::emit(
             state,
             AuditEvent::new(
@@ -476,10 +539,7 @@ pub mod project_svc {
 pub mod skill_svc {
     use super::*;
 
-    pub async fn list(
-        state: &AppState,
-        user: &AuthenticatedUser,
-    ) -> AppResult<Vec<skill::Skill>> {
+    pub async fn list(state: &AppState, user: &AuthenticatedUser) -> AppResult<Vec<skill::Skill>> {
         user.require_jobseeker()?;
         Ok(skill::list_by_uid(state.db.reader(), user.uid).await?)
     }
@@ -493,14 +553,18 @@ pub mod skill_svc {
         user.require_jobseeker()?;
         let eid = super::resolve_default_eid(state, user.uid).await?;
         let id = skill::create(state.db.pool(), user.uid, eid, &input).await?;
-        super::after_child(state, user.uid, eid, user_resume::Section::Skill, ChildOp::Create).await;
+        super::after_child(
+            state,
+            user.uid,
+            eid,
+            user_resume::Section::Skill,
+            ChildOp::Create,
+        )
+        .await;
         let _ = audit::emit(
             state,
-            AuditEvent::new(
-                "resume.skill_add",
-                Actor::uid(user.uid).with_ip(client_ip),
-            )
-            .target(format!("skill:{id}")),
+            AuditEvent::new("resume.skill_add", Actor::uid(user.uid).with_ip(client_ip))
+                .target(format!("skill:{id}")),
         )
         .await;
         Ok(id)
@@ -522,7 +586,14 @@ pub mod skill_svc {
         if affected == 0 {
             return Err(ApiError::business("resume_not_found").into());
         }
-        super::after_child(state, user.uid, eid, user_resume::Section::Skill, ChildOp::Update).await;
+        super::after_child(
+            state,
+            user.uid,
+            eid,
+            user_resume::Section::Skill,
+            ChildOp::Update,
+        )
+        .await;
         Ok(())
     }
 
@@ -541,7 +612,14 @@ pub mod skill_svc {
         if affected == 0 {
             return Err(ApiError::business("resume_not_found").into());
         }
-        super::after_child(state, user.uid, eid, user_resume::Section::Skill, ChildOp::Delete).await;
+        super::after_child(
+            state,
+            user.uid,
+            eid,
+            user_resume::Section::Skill,
+            ChildOp::Delete,
+        )
+        .await;
         Ok(())
     }
 }

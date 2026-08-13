@@ -7,16 +7,12 @@
 //! Kicking the current session is intentionally NOT supported here; the
 //! frontend should call `/v1/mcenter/account/logout` for that path.
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
-};
-use phpyun_core::{ApiJson, ApiMsg, AppResult, AppState, AuthenticatedUser, ValidatedJson};
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::dto::IdBody;
+use phpyun_core::{ApiResponse, AppResult, AppState, AuthenticatedUser, ValidatedJson};
 use phpyun_services::user_session_service::{self, SessionItem};
 use serde::Serialize;
 use utoipa::ToSchema;
-use phpyun_core::dto::{IdBody};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -75,9 +71,11 @@ impl From<SessionItem> for SessionItemDto {
 pub async fn list(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-) -> AppResult<ApiJson<Vec<SessionItemDto>>> {
+) -> AppResult<ApiResponse<Vec<SessionItemDto>>> {
     let list = user_session_service::list_my_sessions(&state, &user).await?;
-    Ok(ApiJson(list.iter().cloned().map(SessionItemDto::from).collect()))
+    Ok(ApiResponse::data(
+        list.iter().cloned().map(SessionItemDto::from).collect(),
+    ))
 }
 
 /// Kick a specific session (must NOT be the current one — for that, use logout)
@@ -88,12 +86,14 @@ pub async fn list(
     request_body = IdBody,
     responses((status = 200, description = "ok"))
 )]
-pub async fn revoke(State(state): State<AppState>,
+pub async fn revoke(
+    State(state): State<AppState>,
     user: AuthenticatedUser,
-    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiMsg> {
+    ValidatedJson(b): ValidatedJson<IdBody>,
+) -> AppResult<ApiResponse> {
     let id = b.id;
     user_session_service::revoke_session(&state, &user, id).await?;
-    Ok(ApiMsg("session_revoked"))
+    Ok(ApiResponse::message("session_revoked"))
 }
 
 /// Kick all OTHER sessions, keeping only the current one
@@ -107,8 +107,7 @@ pub async fn revoke(State(state): State<AppState>,
 pub async fn revoke_others(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-) -> AppResult<ApiMsg> {
+) -> AppResult<ApiResponse> {
     let _n = user_session_service::revoke_other_sessions(&state, &user).await?;
-    Ok(ApiMsg("sessions_revoked"))
+    Ok(ApiResponse::message("sessions_revoked"))
 }
-

@@ -1,16 +1,15 @@
 //! Remarks: companies note remarks on job seekers / resumes / applications.
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::utils::fmt_dt;
+use phpyun_core::{
+    dto::KindTargetUidBody, ApiResponse, AppResult, AppState, AuthenticatedUser, Paged, Pagination,
+    ValidatedJson,
 };
-use phpyun_core::{dto::KindTargetUidBody, ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::remark_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
-use phpyun_core::utils::{fmt_dt};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -20,9 +19,13 @@ pub fn routes() -> Router<AppState> {
         .route("/remarks/delete", post(remove))
 }
 
-
 fn remark_kind_name(k: i32) -> &'static str {
-    match k { 1 => "resume", 2 => "company", 3 => "apply", _ => "unknown" }
+    match k {
+        1 => "resume",
+        2 => "company",
+        3 => "apply",
+        _ => "unknown",
+    }
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -76,14 +79,17 @@ pub struct UpsertForm {
     security(("bearer" = [])),
     params(ListQuery),
     responses((status = 200, description = "ok"))
-)]pub async fn list(
+)]
+pub async fn list(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
     ValidatedJson(q): ValidatedJson<ListQuery>,
-) -> AppResult<ApiJson<Paged<RemarkView>>> {
+) -> AppResult<ApiResponse<Paged<RemarkView>>> {
     let r = remark_service::list(&state, &user, q.kind, page).await?;
-    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
+    Ok(ApiResponse::data(Paged::from_listing(
+        r.list, r.total, page,
+    )))
 }
 
 /// Create / update a remark
@@ -99,9 +105,9 @@ pub async fn upsert(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(f): ValidatedJson<UpsertForm>,
-) -> AppResult<ApiOk> {
+) -> AppResult<ApiResponse> {
     remark_service::upsert(&state, &user, f.target_uid, f.target_kind, &f.note).await?;
-    Ok(ApiOk("ok"))
+    Ok(ApiResponse::message("ok"))
 }
 
 /// Get a specific remark
@@ -117,9 +123,9 @@ pub async fn get_one(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(b): ValidatedJson<KindTargetUidBody>,
-) -> AppResult<ApiJson<Option<RemarkView>>> {
+) -> AppResult<ApiResponse<Option<RemarkView>>> {
     let r = remark_service::get(&state, &user, b.target_uid, b.kind).await?;
-    Ok(ApiJson(r.map(RemarkView::from)))
+    Ok(ApiResponse::data(r.map(RemarkView::from)))
 }
 
 /// Delete a remark
@@ -135,7 +141,7 @@ pub async fn remove(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(b): ValidatedJson<KindTargetUidBody>,
-) -> AppResult<ApiOk> {
+) -> AppResult<ApiResponse> {
     remark_service::delete(&state, &user, b.target_uid, b.kind).await?;
-    Ok(ApiOk("deleted"))
+    Ok(ApiResponse::message("deleted"))
 }

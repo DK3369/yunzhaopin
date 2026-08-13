@@ -54,17 +54,11 @@ pub async fn apply(
     let mut newly_purchased = false;
     if !already_purchased && tpl.price > 0 {
         // Atomic deduction: when the balance is insufficient affected=0 -> insufficient-balance error
-        let affected = integral_repo::try_deduct(
-            state.db.pool(),
-            user.uid,
-            tpl.price as u32,
-            clock::now_ts(),
-        )
-        .await?;
+        let affected =
+            integral_repo::try_deduct(state.db.pool(), user.uid, tpl.price as u32, clock::now_ts())
+                .await?;
         if affected == 0 {
-            return Err(ApiError::param_invalid(
-                "integral_insufficient",
-            ));
+            return Err(ApiError::param_invalid("integral_insufficient"));
         }
         tpl_repo::append_purchased_url(state.db.pool(), user.uid, &tpl.url).await?;
         newly_purchased = true;
@@ -75,17 +69,14 @@ pub async fn apply(
 
     let _ = audit::emit(
         state,
-        AuditEvent::new(
-            "company.tpl_apply",
-            Actor::uid(user.uid).with_ip(client_ip),
-        )
-        .target(format!("tpl:{tpl_id}"))
-        .meta(&serde_json::json!({
-            "url": tpl.url,
-            "newly_purchased": newly_purchased,
-            "price": tpl.price,
-            "kind": tpl.r#type,
-        })),
+        AuditEvent::new("company.tpl_apply", Actor::uid(user.uid).with_ip(client_ip))
+            .target(format!("tpl:{tpl_id}"))
+            .meta(&serde_json::json!({
+                "url": tpl.url,
+                "newly_purchased": newly_purchased,
+                "price": tpl.price,
+                "kind": tpl.r#type,
+            })),
     )
     .await;
 

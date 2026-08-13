@@ -2,18 +2,16 @@
 //!
 //! Aligned with PHPYun `member/com/comtpl` + `member/com/banner`.
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::dto::{IdBody, IdsBody};
+use phpyun_core::utils::{fmt_dt, pic_n};
+use phpyun_core::{
+    json, ApiResponse, AppResult, AppState, AuthenticatedUser, ClientIp, ValidatedJson,
 };
-use phpyun_core::{json, ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, ValidatedJson};
 use phpyun_services::{company_banner_service, company_tpl_service};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
-use phpyun_core::dto::{IdBody, IdsBody};
-use phpyun_core::utils::{fmt_dt, pic_n};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -30,7 +28,11 @@ pub fn routes() -> Router<AppState> {
 // ==================== Template ====================
 
 fn kind_name(k: i32) -> &'static str {
-    match k { 1 => "integral", 2 => "balance", _ => "unknown" }
+    match k {
+        1 => "integral",
+        2 => "balance",
+        _ => "unknown",
+    }
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -50,7 +52,10 @@ pub struct TplView {
 }
 
 impl TplView {
-    pub fn from_with_ctx(t: phpyun_models::company_tpl::entity::CompanyTpl, state: &AppState) -> Self {
+    pub fn from_with_ctx(
+        t: phpyun_models::company_tpl::entity::CompanyTpl,
+        state: &AppState,
+    ) -> Self {
         Self {
             pic_n: pic_n(state, t.pic.as_deref()),
             id: t.id,
@@ -92,9 +97,13 @@ impl From<phpyun_models::company_tpl::entity::CompanyTpl> for TplView {
     security(("bearer" = [])),
     responses((status = 200, description = "ok"))
 )]
-pub async fn tpl_list(State(state): State<AppState>) -> AppResult<ApiJson<Vec<TplView>>> {
+pub async fn tpl_list(State(state): State<AppState>) -> AppResult<ApiResponse<Vec<TplView>>> {
     let list = company_tpl_service::list(&state).await?;
-    Ok(ApiJson(list.into_iter().map(|t| TplView::from_with_ctx(t, &state)).collect()))
+    Ok(ApiResponse::data(
+        list.into_iter()
+            .map(|t| TplView::from_with_ctx(t, &state))
+            .collect(),
+    ))
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -118,13 +127,15 @@ pub struct ApplyView {
         (status = 403, description = "Not a company account"),
     )
 )]
-pub async fn tpl_apply(State(state): State<AppState>,
+pub async fn tpl_apply(
+    State(state): State<AppState>,
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
-    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiJson<ApplyView>> {
+    ValidatedJson(b): ValidatedJson<IdBody>,
+) -> AppResult<ApiResponse<ApplyView>> {
     let id = b.id;
     let r = company_tpl_service::apply(&state, &user, id, &ip).await?;
-    Ok(ApiJson(ApplyView {
+    Ok(ApiResponse::data(ApplyView {
         tpl_id: r.tpl_id,
         tpl_url: r.tpl_url,
         newly_purchased: r.newly_purchased,
@@ -134,7 +145,6 @@ pub async fn tpl_apply(State(state): State<AppState>,
 }
 
 // ==================== Banner ====================
-
 
 #[derive(Debug, Serialize, ToSchema)]
 pub struct BannerView {
@@ -149,7 +159,10 @@ pub struct BannerView {
 }
 
 impl BannerView {
-    pub fn from_with_ctx(b: phpyun_models::company_banner::entity::CompanyBanner, state: &AppState) -> Self {
+    pub fn from_with_ctx(
+        b: phpyun_models::company_banner::entity::CompanyBanner,
+        state: &AppState,
+    ) -> Self {
         Self {
             pic_n: pic_n(state, Some(&b.pic)),
             id: b.id,
@@ -184,12 +197,17 @@ impl From<phpyun_models::company_banner::entity::CompanyBanner> for BannerView {
     tag = "mcenter",
     security(("bearer" = [])),
     responses((status = 200, description = "ok"))
-)]pub async fn banner_list(
+)]
+pub async fn banner_list(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-) -> AppResult<ApiJson<Vec<BannerView>>> {
+) -> AppResult<ApiResponse<Vec<BannerView>>> {
     let list = company_banner_service::list_mine(&state, &user).await?;
-    Ok(ApiJson(list.into_iter().map(|b| BannerView::from_with_ctx(b, &state)).collect()))
+    Ok(ApiResponse::data(
+        list.into_iter()
+            .map(|b| BannerView::from_with_ctx(b, &state))
+            .collect(),
+    ))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
@@ -220,7 +238,7 @@ pub async fn banner_add(
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
     ValidatedJson(f): ValidatedJson<BannerAddForm>,
-) -> AppResult<ApiJson<json::Value>> {
+) -> AppResult<ApiResponse<json::Value>> {
     let id = company_banner_service::add(
         &state,
         &user,
@@ -233,7 +251,7 @@ pub async fn banner_add(
         &ip,
     )
     .await?;
-    Ok(ApiJson(json::json!({ "id": id })))
+    Ok(ApiResponse::data(json::json!({ "id": id })))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
@@ -256,9 +274,11 @@ pub struct BannerUpdateForm {
     request_body = BannerUpdateForm,
     responses((status = 200, description = "ok"))
 )]
-pub async fn banner_update(State(state): State<AppState>,
+pub async fn banner_update(
+    State(state): State<AppState>,
     user: AuthenticatedUser,
-    ValidatedJson(f): ValidatedJson<BannerUpdateForm>) -> AppResult<ApiJson<json::Value>> {
+    ValidatedJson(f): ValidatedJson<BannerUpdateForm>,
+) -> AppResult<ApiResponse<json::Value>> {
     let id = f.id;
     let n = company_banner_service::update(
         &state,
@@ -271,7 +291,7 @@ pub async fn banner_update(State(state): State<AppState>,
         },
     )
     .await?;
-    Ok(ApiJson(json::json!({ "updated": n })))
+    Ok(ApiResponse::data(json::json!({ "updated": n })))
 }
 
 #[utoipa::path(
@@ -286,8 +306,7 @@ pub async fn banner_delete(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(b): ValidatedJson<IdsBody>,
-) -> AppResult<ApiJson<json::Value>> {
+) -> AppResult<ApiResponse<json::Value>> {
     let n = company_banner_service::delete_mine(&state, &user, &b.ids).await?;
-    Ok(ApiJson(json::json!({ "deleted": n })))
+    Ok(ApiResponse::data(json::json!({ "deleted": n })))
 }
-

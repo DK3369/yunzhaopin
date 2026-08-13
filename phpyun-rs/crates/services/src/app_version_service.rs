@@ -1,6 +1,8 @@
 //! App version check (aligned with PHPYun `version.model.php`).
 
-use phpyun_core::{audit, clock, ApiError, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
+use phpyun_core::{
+    audit, clock, ApiError, AppResult, AppState, AuthenticatedUser, Paged, Pagination,
+};
 use phpyun_models::app_version::{entity::AppVersion, repo as ver_repo};
 
 pub async fn latest(state: &AppState, platform: &str) -> AppResult<Option<AppVersion>> {
@@ -20,8 +22,7 @@ pub async fn admin_list(
 ) -> AppResult<Paged<AppVersion>> {
     admin.require_admin()?;
     // best-effort count via admin_list.len (small table)
-    let list =
-        ver_repo::admin_list(state.db.reader(), platform, page.offset, page.limit).await?;
+    let list = ver_repo::admin_list(state.db.reader(), platform, page.offset, page.limit).await?;
     let total = list.len() as u64 + page.offset;
     Ok(Paged::new(list, total, page.page, page.page_size))
 }
@@ -70,11 +71,7 @@ pub async fn admin_create(
     Ok(id)
 }
 
-pub async fn admin_delete(
-    state: &AppState,
-    admin: &AuthenticatedUser,
-    id: u64,
-) -> AppResult<()> {
+pub async fn admin_delete(state: &AppState, admin: &AuthenticatedUser, id: u64) -> AppResult<()> {
     admin.require_admin()?;
     ver_repo::delete(state.db.pool(), id).await?;
     Ok(())

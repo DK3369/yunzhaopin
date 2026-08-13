@@ -113,14 +113,11 @@ fn stub_decode(id_token: &str) -> AppResult<ProviderIdentity> {
         .split('.')
         .nth(1)
         .ok_or_else(|| ApiError::param_invalid("id_token: not a JWT"))?;
-    let bytes = base64::Engine::decode(
-        &base64::engine::general_purpose::URL_SAFE_NO_PAD,
-        payload,
-    )
-    .or_else(|_| {
-        base64::Engine::decode(&base64::engine::general_purpose::STANDARD_NO_PAD, payload)
-    })
-    .map_err(|e| ApiError::param_invalid(format!("id_token payload b64: {e}")))?;
+    let bytes = base64::Engine::decode(&base64::engine::general_purpose::URL_SAFE_NO_PAD, payload)
+        .or_else(|_| {
+            base64::Engine::decode(&base64::engine::general_purpose::STANDARD_NO_PAD, payload)
+        })
+        .map_err(|e| ApiError::param_invalid(format!("id_token payload b64: {e}")))?;
 
     #[derive(Deserialize)]
     struct StubClaims {
@@ -193,7 +190,9 @@ impl OAuth {
         m.insert(ProviderKind::Google, Arc::new(GoogleProvider));
         m.insert(ProviderKind::Facebook, Arc::new(FacebookProvider));
         m.insert(ProviderKind::Apple, Arc::new(AppleProvider));
-        Self { providers: Arc::new(m) }
+        Self {
+            providers: Arc::new(m),
+        }
     }
 
     /// Manually register a provider (can replace a stub, e.g. swap in a
@@ -215,10 +214,7 @@ impl OAuth {
             )));
         };
         let identity = p.verify(id_token).await?;
-        crate::metrics::counter_with(
-            "oauth.verify.success",
-            &[("provider", kind.as_str())],
-        );
+        crate::metrics::counter_with("oauth.verify.success", &[("provider", kind.as_str())]);
         Ok(identity)
     }
 }

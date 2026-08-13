@@ -1,16 +1,14 @@
 //! Q&A: authenticated interactions (ask / answer / follow / upvote / accept / delete / mine).
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::dto::{CreatedId, IdBody};
+use phpyun_core::{
+    ApiResponse, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
 };
-use phpyun_core::{ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::qna_service::{self, CreateQuestionInput};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
-use phpyun_core::dto::{CreatedId, IdBody};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -76,7 +74,7 @@ pub async fn ask(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(f): ValidatedJson<AskForm>,
-) -> AppResult<ApiJson<CreatedId>> {
+) -> AppResult<ApiResponse<CreatedId>> {
     let id = qna_service::create_question(
         &state,
         &user,
@@ -87,7 +85,7 @@ pub async fn ask(
         },
     )
     .await?;
-    Ok(ApiJson(CreatedId { id }))
+    Ok(ApiResponse::data(CreatedId { id }))
 }
 
 /// Delete my question
@@ -103,9 +101,9 @@ pub async fn remove(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(b): ValidatedJson<IdBody>,
-) -> AppResult<ApiOk> {
+) -> AppResult<ApiResponse> {
     qna_service::delete_question(&state, &user, b.id).await?;
-    Ok(ApiOk("deleted"))
+    Ok(ApiResponse::message("deleted"))
 }
 
 /// Answer
@@ -121,9 +119,9 @@ pub async fn answer(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(b): ValidatedJson<AnswerBody>,
-) -> AppResult<ApiJson<CreatedId>> {
+) -> AppResult<ApiResponse<CreatedId>> {
     let aid = qna_service::answer(&state, &user, b.id, &b.content).await?;
-    Ok(ApiJson(CreatedId { id: aid }))
+    Ok(ApiResponse::data(CreatedId { id: aid }))
 }
 
 /// Accept an answer (only the questioner can)
@@ -139,9 +137,9 @@ pub async fn accept(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(b): ValidatedJson<AcceptBody>,
-) -> AppResult<ApiOk> {
+) -> AppResult<ApiResponse> {
     qna_service::accept_answer(&state, &user, b.id, b.aid).await?;
-    Ok(ApiOk("ok"))
+    Ok(ApiResponse::message("ok"))
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -162,9 +160,9 @@ pub async fn toggle_attention(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(b): ValidatedJson<IdBody>,
-) -> AppResult<ApiJson<Toggled>> {
+) -> AppResult<ApiResponse<Toggled>> {
     let on = qna_service::toggle_attention(&state, &user, b.id).await?;
-    Ok(ApiJson(Toggled { on }))
+    Ok(ApiResponse::data(Toggled { on }))
 }
 
 /// Upvote a question
@@ -180,9 +178,9 @@ pub async fn support_question(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(b): ValidatedJson<IdBody>,
-) -> AppResult<ApiJson<Toggled>> {
+) -> AppResult<ApiResponse<Toggled>> {
     let on = qna_service::toggle_support_question(&state, &user, b.id).await?;
-    Ok(ApiJson(Toggled { on }))
+    Ok(ApiResponse::data(Toggled { on }))
 }
 
 /// Upvote an answer
@@ -198,9 +196,9 @@ pub async fn support_answer(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(b): ValidatedJson<IdBody>,
-) -> AppResult<ApiJson<Toggled>> {
+) -> AppResult<ApiResponse<Toggled>> {
     let on = qna_service::toggle_support_answer(&state, &user, b.id).await?;
-    Ok(ApiJson(Toggled { on }))
+    Ok(ApiResponse::data(Toggled { on }))
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -237,9 +235,11 @@ pub async fn my_questions(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-) -> AppResult<ApiJson<Paged<MyQuestion>>> {
+) -> AppResult<ApiResponse<Paged<MyQuestion>>> {
     let r = qna_service::list_my_questions(&state, &user, page).await?;
-    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
+    Ok(ApiResponse::data(Paged::from_listing(
+        r.list, r.total, page,
+    )))
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -276,9 +276,11 @@ pub async fn my_answers(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-) -> AppResult<ApiJson<Paged<MyAnswer>>> {
+) -> AppResult<ApiResponse<Paged<MyAnswer>>> {
     let r = qna_service::list_my_answers(&state, &user, page).await?;
-    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
+    Ok(ApiResponse::data(Paged::from_listing(
+        r.list, r.total, page,
+    )))
 }
 
 /// Questions I follow
@@ -293,9 +295,11 @@ pub async fn attended(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-) -> AppResult<ApiJson<Paged<MyQuestion>>> {
+) -> AppResult<ApiResponse<Paged<MyQuestion>>> {
     let r = qna_service::list_attended(&state, &user, page).await?;
-    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
+    Ok(ApiResponse::data(Paged::from_listing(
+        r.list, r.total, page,
+    )))
 }
 
 /// Comment on an answer (aligned with PHP `wap/ask::forcomment_action`)
@@ -311,9 +315,9 @@ pub async fn post_comment(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(b): ValidatedJson<CommentBody>,
-) -> AppResult<ApiJson<CreatedId>> {
+) -> AppResult<ApiResponse<CreatedId>> {
     let id = qna_service::add_review(&state, &user, b.aid, &b.content).await?;
-    Ok(ApiJson(CreatedId { id }))
+    Ok(ApiResponse::data(CreatedId { id }))
 }
 
 /// Delete my own comment
@@ -329,7 +333,7 @@ pub async fn remove_comment(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(b): ValidatedJson<IdBody>,
-) -> AppResult<ApiOk> {
+) -> AppResult<ApiResponse> {
     qna_service::delete_review(&state, &user, b.id).await?;
-    Ok(ApiOk("deleted"))
+    Ok(ApiResponse::message("deleted"))
 }

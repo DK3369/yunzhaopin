@@ -12,11 +12,11 @@ use axum::{
     extract::State,
     http::{header, StatusCode},
     response::Response,
-    Router,
     routing::{get, post},
+    Router,
 };
 use phpyun_core::i18n::{t, Lang};
-use phpyun_core::{ApiJson, ApiError, AppResult, AppState, ValidatedJson};
+use phpyun_core::{ApiError, ApiResponse, AppResult, AppState, ValidatedJson};
 use phpyun_services::wechat_api_service;
 use phpyun_services::wechat_service::{
     self, default_reply, parse_incoming, verify_signature, SUCCESS_ACK,
@@ -117,7 +117,10 @@ pub struct QrView {
 
 #[derive(Debug, Deserialize, Validate, utoipa::IntoParams)]
 pub struct QrOpts {
-    #[validate(length(min = 1, max = 64), custom(function = "phpyun_core::validators::path_token"))]
+    #[validate(
+        length(min = 1, max = 64),
+        custom(function = "phpyun_core::validators::path_token")
+    )]
     pub kind: String,
     #[validate(range(min = 1, max = 999_999_999))]
     pub id: u64,
@@ -150,8 +153,10 @@ fn default_expire() -> u64 {
         (status = 500, description = "Invalid kind, WeChat not configured, or WeChat upstream error"),
     )
 )]
-pub async fn qr_for_resource(State(state): State<AppState>,
-    ValidatedJson(opts): ValidatedJson<QrOpts>) -> AppResult<ApiJson<QrView>> {
+pub async fn qr_for_resource(
+    State(state): State<AppState>,
+    ValidatedJson(opts): ValidatedJson<QrOpts>,
+) -> AppResult<ApiResponse<QrView>> {
     let kind = opts.kind;
     let id = opts.id;
     phpyun_core::validators::ensure_path_token(&kind)?;
@@ -159,7 +164,7 @@ pub async fn qr_for_resource(State(state): State<AppState>,
     let scene = wechat_api_service::scene_str_for(&kind, id, tag)
         .ok_or_else(|| ApiError::param_invalid(format!("kind={kind}")))?;
     let qr = wechat_api_service::create_qr_scene(&state, &scene, opts.expire).await?;
-    Ok(ApiJson(QrView {
+    Ok(ApiResponse::data(QrView {
         ticket: qr.ticket,
         show_url: qr.show_url,
         expire_seconds: qr.expire_seconds,

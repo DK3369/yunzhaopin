@@ -12,7 +12,11 @@
 //! Side effects are **best-effort**: failure on the counter / sysmsg does NOT
 //! roll back the primary INSERT/DELETE — same as PHP (no transaction).
 
-use phpyun_core::{clock, i18n::{t, t_args, Lang}, ApiError, AppResult, AppState, AuthenticatedUser, Pagination};
+use phpyun_core::{
+    clock,
+    i18n::{t, t_args, Lang},
+    ApiError, AppResult, AppState, AuthenticatedUser, Pagination,
+};
 use phpyun_models::atn::entity::{Atn, KIND_COMPANY, KIND_USER};
 use phpyun_models::atn::repo as atn_repo;
 use phpyun_models::message::repo as message_repo;
@@ -155,14 +159,8 @@ pub async fn list_following(
     }
     let pool = state.db.pool();
     let total = atn_repo::count_by_follower(pool, user.uid, target_kind).await?;
-    let list = atn_repo::list_by_follower(
-        pool,
-        user.uid,
-        target_kind,
-        page.offset,
-        page.limit,
-    )
-    .await?;
+    let list =
+        atn_repo::list_by_follower(pool, user.uid, target_kind, page.offset, page.limit).await?;
     Ok(AtnPage { list, total })
 }
 
@@ -178,14 +176,8 @@ pub async fn list_followers(
     };
     let pool = state.db.pool();
     let total = atn_repo::count_by_followee(pool, user.uid, target_kind).await?;
-    let list = atn_repo::list_by_followee(
-        pool,
-        user.uid,
-        target_kind,
-        page.offset,
-        page.limit,
-    )
-    .await?;
+    let list =
+        atn_repo::list_by_followee(pool, user.uid, target_kind, page.offset, page.limit).await?;
     Ok(AtnPage { list, total })
 }
 

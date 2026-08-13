@@ -6,12 +6,8 @@
 //! returns the new uid on success; the client should discard the current token (the old account's
 //! token is still valid but the resume data has already been migrated away).
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
-};
-use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, ValidatedJson};
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::{ApiResponse, AppResult, AppState, AuthenticatedUser, ClientIp, ValidatedJson};
 use phpyun_services::transfer_service::{self, TransferInput};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
@@ -61,14 +57,14 @@ pub async fn split(
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
     ValidatedJson(f): ValidatedJson<SplitForm>,
-) -> AppResult<ApiJson<SplitResult>> {
+) -> AppResult<ApiResponse<SplitResult>> {
     let input = TransferInput {
         new_username: &f.new_username,
         new_password: &f.new_password,
         old_password: &f.old_password,
     };
     let r = transfer_service::split_account(&state, &user, &input, &ip).await?;
-    Ok(ApiJson(SplitResult {
+    Ok(ApiResponse::data(SplitResult {
         old_uid: r.old_uid,
         new_uid: r.new_uid,
     }))

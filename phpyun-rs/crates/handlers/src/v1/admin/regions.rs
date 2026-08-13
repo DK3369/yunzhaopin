@@ -5,18 +5,16 @@
 //! - `POST /v1/admin/regions/{id}/delete`  soft-delete
 //! - `POST /v1/admin/regions/reload`  manual cache reload
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::dto::{CreatedId, IdBody};
+use phpyun_core::{
+    clock, ApiError, ApiResponse, AppResult, AppState, AuthenticatedUser, ValidatedJson,
 };
-use phpyun_core::{clock, ApiJson, ApiOk, ApiError, AppResult, AppState, AuthenticatedUser, ValidatedJson};
 use phpyun_models::region::repo as region_repo;
 use phpyun_services::region_service;
 use serde::Deserialize;
 use utoipa::ToSchema;
 use validator::Validate;
-use phpyun_core::dto::{CreatedId, IdBody};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -67,7 +65,7 @@ pub async fn create(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(f): ValidatedJson<CreateForm>,
-) -> AppResult<ApiJson<CreatedId>> {
+) -> AppResult<ApiResponse<CreatedId>> {
     user.require_admin()?;
     let id = region_repo::create(
         state.db.pool(),
@@ -85,7 +83,7 @@ pub async fn create(
     .await
     .map_err(ApiError::internal)?;
     region_service::reload(&state).await?;
-    Ok(ApiJson(CreatedId { id }))
+    Ok(ApiResponse::data(CreatedId { id }))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
@@ -115,9 +113,11 @@ pub struct PatchForm {
         (status = 404, description = "Not found"),
     )
 )]
-pub async fn patch(State(state): State<AppState>,
+pub async fn patch(
+    State(state): State<AppState>,
     user: AuthenticatedUser,
-    ValidatedJson(f): ValidatedJson<PatchForm>) -> AppResult<ApiOk> {
+    ValidatedJson(f): ValidatedJson<PatchForm>,
+) -> AppResult<ApiResponse> {
     let id = f.id;
     user.require_admin()?;
     let affected = region_repo::update(
@@ -133,12 +133,10 @@ pub async fn patch(State(state): State<AppState>,
     .await
     .map_err(ApiError::internal)?;
     if affected == 0 {
-        return Err(ApiError::param_invalid(
-            "region_not_found",
-        ));
+        return Err(ApiError::param_invalid("region_not_found"));
     }
     region_service::reload(&state).await?;
-    Ok(ApiOk("updated"))
+    Ok(ApiResponse::message("updated"))
 }
 
 /// Soft-delete (`status=2`). Children are not auto-cascaded — the cache filters
@@ -155,21 +153,21 @@ pub async fn patch(State(state): State<AppState>,
         (status = 404, description = "Not found"),
     )
 )]
-pub async fn delete(State(state): State<AppState>,
+pub async fn delete(
+    State(state): State<AppState>,
     user: AuthenticatedUser,
-    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiOk> {
+    ValidatedJson(b): ValidatedJson<IdBody>,
+) -> AppResult<ApiResponse> {
     let id = b.id;
     user.require_admin()?;
     let affected = region_repo::soft_delete(state.db.pool(), id, clock::now_ts())
         .await
         .map_err(ApiError::internal)?;
     if affected == 0 {
-        return Err(ApiError::param_invalid(
-            "region_not_found",
-        ));
+        return Err(ApiError::param_invalid("region_not_found"));
     }
     region_service::reload(&state).await?;
-    Ok(ApiOk("deleted"))
+    Ok(ApiResponse::message("deleted"))
 }
 
 /// Force a cluster-wide cache reload from DB (rarely needed; useful after a manual SQL bulk import).
@@ -183,9 +181,8 @@ pub async fn delete(State(state): State<AppState>,
 pub async fn reload(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-) -> AppResult<ApiOk> {
+) -> AppResult<ApiResponse> {
     user.require_admin()?;
     region_service::reload(&state).await?;
-    Ok(ApiOk("reloaded"))
+    Ok(ApiResponse::message("reloaded"))
 }
-

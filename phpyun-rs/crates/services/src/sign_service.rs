@@ -133,13 +133,12 @@ pub async fn sign(
     })
 }
 
-pub async fn status(
-    state: &AppState,
-    user: &AuthenticatedUser,
-) -> AppResult<(UserSign, bool)> {
+pub async fn status(state: &AppState, user: &AuthenticatedUser) -> AppResult<(UserSign, bool)> {
     let today = ymd_of(clock::now_ts());
     let us = sign_repo::get_user_sign(state.db.reader(), user.uid).await?;
-    let signed_today = sign_repo::find_today(state.db.reader(), user.uid, today).await?.is_some();
+    let signed_today = sign_repo::find_today(state.db.reader(), user.uid, today)
+        .await?
+        .is_some();
     Ok((us, signed_today))
 }
 

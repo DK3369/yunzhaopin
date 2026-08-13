@@ -67,19 +67,12 @@ pub async fn create_code(
     })
 }
 
-pub async fn list_codes(
-    state: &AppState,
-    user: &AuthenticatedUser,
-) -> AppResult<Vec<InviteCode>> {
+pub async fn list_codes(state: &AppState, user: &AuthenticatedUser) -> AppResult<Vec<InviteCode>> {
     user.require_employer()?;
     Ok(hr_repo::list_codes(state.db.reader(), user.uid).await?)
 }
 
-pub async fn revoke_code(
-    state: &AppState,
-    user: &AuthenticatedUser,
-    id: u64,
-) -> AppResult<()> {
+pub async fn revoke_code(state: &AppState, user: &AuthenticatedUser, id: u64) -> AppResult<()> {
     user.require_employer()?;
     let affected = hr_repo::revoke_code(state.db.pool(), id, user.uid).await?;
     if affected == 0 {
@@ -88,19 +81,12 @@ pub async fn revoke_code(
     Ok(())
 }
 
-pub async fn list_hrs(
-    state: &AppState,
-    user: &AuthenticatedUser,
-) -> AppResult<Vec<CompanyHr>> {
+pub async fn list_hrs(state: &AppState, user: &AuthenticatedUser) -> AppResult<Vec<CompanyHr>> {
     user.require_employer()?;
     Ok(hr_repo::list_hrs(state.db.reader(), user.uid).await?)
 }
 
-pub async fn remove_hr(
-    state: &AppState,
-    user: &AuthenticatedUser,
-    hr_uid: u64,
-) -> AppResult<()> {
+pub async fn remove_hr(state: &AppState, user: &AuthenticatedUser, hr_uid: u64) -> AppResult<()> {
     user.require_employer()?;
     hr_repo::remove_hr(state.db.pool(), user.uid, hr_uid).await?;
     let _ = audit::emit(
@@ -141,10 +127,7 @@ pub async fn join_by_code(
     Ok(c.company_uid)
 }
 
-pub async fn my_companies(
-    state: &AppState,
-    user: &AuthenticatedUser,
-) -> AppResult<Vec<CompanyHr>> {
+pub async fn my_companies(state: &AppState, user: &AuthenticatedUser) -> AppResult<Vec<CompanyHr>> {
     Ok(hr_repo::list_companies_for_hr(state.db.reader(), user.uid).await?)
 }
 

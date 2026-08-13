@@ -1,11 +1,7 @@
 //! GET /v1/wap/captcha — issue an image CAPTCHA (PNG base64 data URI).
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
-};
-use phpyun_core::{ApiJson, AppResult, AppState};
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::{ApiResponse, AppResult, AppState};
 use phpyun_services::captcha_service;
 use serde::Serialize;
 use utoipa::ToSchema;
@@ -32,11 +28,9 @@ pub struct CaptchaData {
         (status = 200, description = "Issued", body = CaptchaData),
     )
 )]
-pub async fn issue(
-    State(state): State<AppState>,
-) -> AppResult<ApiJson<CaptchaData>> {
+pub async fn issue(State(state): State<AppState>) -> AppResult<ApiResponse<CaptchaData>> {
     let r = captcha_service::issue(&state).await?;
-    Ok(ApiJson(CaptchaData {
+    Ok(ApiResponse::data(CaptchaData {
         cid: r.cid,
         image: r.image,
     }))

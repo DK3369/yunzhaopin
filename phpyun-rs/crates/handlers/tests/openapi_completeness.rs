@@ -15,7 +15,9 @@ fn crate_root() -> PathBuf {
 }
 
 fn walk(dir: &Path, out: &mut Vec<PathBuf>) {
-    let Ok(entries) = fs::read_dir(dir) else { return };
+    let Ok(entries) = fs::read_dir(dir) else {
+        return;
+    };
     for entry in entries.flatten() {
         let p = entry.path();
         if p.is_dir() {
@@ -39,7 +41,8 @@ fn collect_documented_handlers() -> BTreeSet<String> {
     // name is the first `pub async fn <name>` after the closing `)]`. The
     // naive regex `\([^\]]*\)\]` fails because the attribute body is
     // multi-line and contains nested `responses(...)` parens.
-    let re_fn_after = regex::Regex::new(r"\s*\][^\n]*\n(?:[^\n]*\n)*?pub async fn (\w+)\b").unwrap();
+    let re_fn_after =
+        regex::Regex::new(r"\s*\][^\n]*\n(?:[^\n]*\n)*?pub async fn (\w+)\b").unwrap();
 
     for f in files {
         let src = match fs::read_to_string(&f) {

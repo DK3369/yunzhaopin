@@ -8,7 +8,7 @@
 //! company profile flow (existing `company_service`). The result is cleaner.
 
 use phpyun_core::audit::{self, Actor, AuditEvent};
-use phpyun_core::{AppResult, AppState, AuthenticatedUser, ApiError, Pagination};
+use phpyun_core::{ApiError, AppResult, AppState, AuthenticatedUser, Pagination};
 use phpyun_models::company_address::entity::CompanyAddress;
 use phpyun_models::company_address::repo as addr_repo;
 
@@ -82,8 +82,11 @@ pub async fn create(
     let id = addr_repo::create(state.db.pool(), user.uid, &f).await?;
     let _ = audit::emit(
         state,
-        AuditEvent::new("company.address_add", Actor::uid(user.uid).with_ip(client_ip))
-            .target(format!("addr:{id}")),
+        AuditEvent::new(
+            "company.address_add",
+            Actor::uid(user.uid).with_ip(client_ip),
+        )
+        .target(format!("addr:{id}")),
     )
     .await;
     Ok(id)

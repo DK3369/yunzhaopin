@@ -174,12 +174,11 @@ pub async fn list_by_user(
 }
 
 pub async fn count_by_user(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Error> {
-    let (n,): (i64,) = sqlx::query_as(
-        "SELECT COUNT(*) FROM phpyun_company_pay WHERE com_id = ? AND pay_type = ?",
-    )
-    .bind(uid)
-    .bind(PAY_TYPE_USER_TRANSFER)
-    .fetch_one(pool)
-    .await?;
+    let (n,): (i64,) =
+        sqlx::query_as("SELECT COUNT(*) FROM phpyun_company_pay WHERE com_id = ? AND pay_type = ?")
+            .bind(uid)
+            .bind(PAY_TYPE_USER_TRANSFER)
+            .fetch_one(pool)
+            .await?;
     Ok(n.max(0) as u64)
 }

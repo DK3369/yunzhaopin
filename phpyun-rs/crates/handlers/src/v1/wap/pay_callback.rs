@@ -15,7 +15,7 @@ use axum::{
     routing::post,
     Router,
 };
-use phpyun_core::{dto::OkResp, ApiJson, ApiError, AppResult, AppState, ValidatedJson};
+use phpyun_core::{dto::OkResp, ApiError, ApiResponse, AppResult, AppState, ValidatedJson};
 use phpyun_services::vip_service;
 use serde::Deserialize;
 use utoipa::ToSchema;
@@ -49,22 +49,16 @@ pub async fn callback(
     State(state): State<AppState>,
     headers: HeaderMap,
     ValidatedJson(f): ValidatedJson<CallbackForm>,
-) -> AppResult<ApiJson<OkResp>> {
+) -> AppResult<ApiResponse<OkResp>> {
     // 1. The server must have a token configured; if not, return 503 (avoid running the endpoint unprotected)
     let expected = state
         .config
         .payment_callback_token
         .as_deref()
-        .ok_or_else(|| {
-            ApiError::upstream(
-                "payment_callback_token not configured",
-            )
-        })?;
+        .ok_or_else(|| ApiError::upstream("payment_callback_token not configured"))?;
     // Startup config::validate() already requires >= 32 characters; keep a runtime safety net here.
     if expected.len() < 32 {
-        return Err(ApiError::upstream(
-            "payment_callback_token too short",
-        ));
+        return Err(ApiError::upstream("payment_callback_token too short"));
     }
 
     // 2. Header verification (constant-time comparison to prevent timing attacks)
@@ -79,7 +73,7 @@ pub async fn callback(
 
     // 3. Mark as paid
     vip_service::mark_paid(&state, &f.order_no, &f.pay_tx_id).await?;
-    Ok(ApiJson(OkResp { ok: true }))
+    Ok(ApiResponse::data(OkResp { ok: true }))
 }
 
 fn constant_time_eq(a: &[u8], b: &[u8]) -> bool {

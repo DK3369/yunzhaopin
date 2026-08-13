@@ -5,16 +5,14 @@
 //!     * `kind=2`: company sees "who has visited my company profile page"
 //!     * `kind=3`: jobseeker sees "who (company) has viewed my resume"
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::utils::fmt_dt;
+use phpyun_core::{
+    ApiResponse, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
 };
-use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::view_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
-use phpyun_core::utils::{fmt_dt};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -28,7 +26,6 @@ pub struct KindQuery {
     #[validate(range(min = 1, max = 3))]
     pub kind: i32,
 }
-
 
 fn view_kind_name(k: i32) -> &'static str {
     match k {
@@ -79,9 +76,11 @@ pub async fn list_my_views(
     user: AuthenticatedUser,
     page: Pagination,
     ValidatedJson(q): ValidatedJson<KindQuery>,
-) -> AppResult<ApiJson<Paged<ViewItem>>> {
+) -> AppResult<ApiResponse<Paged<ViewItem>>> {
     let r = view_service::list_by_viewer(&state, &user, q.kind, page).await?;
-    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
+    Ok(ApiResponse::data(Paged::from_listing(
+        r.list, r.total, page,
+    )))
 }
 
 /// Who has viewed me
@@ -101,7 +100,9 @@ pub async fn list_profile_views(
     user: AuthenticatedUser,
     page: Pagination,
     ValidatedJson(q): ValidatedJson<KindQuery>,
-) -> AppResult<ApiJson<Paged<ViewItem>>> {
+) -> AppResult<ApiResponse<Paged<ViewItem>>> {
     let r = view_service::list_on_target(&state, &user, q.kind, page).await?;
-    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
+    Ok(ApiResponse::data(Paged::from_listing(
+        r.list, r.total, page,
+    )))
 }

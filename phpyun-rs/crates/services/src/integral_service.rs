@@ -11,16 +11,15 @@
 //! checks at the PHP layer — not atomic, so it has oversell / double-deduct issues. The migrated
 //! version fixes that along the way.
 
-use phpyun_core::{audit, clock, ApiError, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
+use phpyun_core::{
+    audit, clock, ApiError, AppResult, AppState, AuthenticatedUser, Paged, Pagination,
+};
 use phpyun_models::integral::{
     entity::{IntegralExchange, IntegralItem, UserIntegral},
     repo as integral_repo,
 };
 
-pub async fn list_items(
-    state: &AppState,
-    page: Pagination,
-) -> AppResult<Paged<IntegralItem>> {
+pub async fn list_items(state: &AppState, page: Pagination) -> AppResult<Paged<IntegralItem>> {
     let db = state.db.reader();
     let list = integral_repo::list_items(db, page.offset, page.limit).await?;
     let total = integral_repo::count_items(db).await?;
@@ -33,10 +32,7 @@ pub async fn get_item(state: &AppState, id: u64) -> AppResult<IntegralItem> {
         .ok_or_else(|| ApiError::param_invalid("item_not_found"))
 }
 
-pub async fn balance(
-    state: &AppState,
-    user: &AuthenticatedUser,
-) -> AppResult<UserIntegral> {
+pub async fn balance(state: &AppState, user: &AuthenticatedUser) -> AppResult<UserIntegral> {
     Ok(integral_repo::get_balance(state.db.reader(), user.uid).await?)
 }
 
@@ -102,8 +98,7 @@ pub async fn list_history(
     page: Pagination,
 ) -> AppResult<Paged<IntegralExchange>> {
     let db = state.db.reader();
-    let list =
-        integral_repo::list_exchanges_by_user(db, user.uid, page.offset, page.limit).await?;
+    let list = integral_repo::list_exchanges_by_user(db, user.uid, page.offset, page.limit).await?;
     let total = integral_repo::count_exchanges_by_user(db, user.uid).await?;
     Ok(Paged::new(list, total, page.page, page.page_size))
 }

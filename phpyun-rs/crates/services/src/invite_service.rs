@@ -76,9 +76,12 @@ pub async fn send(
 
     let _ = audit::emit(
         state,
-        audit::AuditEvent::new("invite.send", audit::Actor::uid(user.uid).with_ip(client_ip))
-            .target(format!("invite:{id}"))
-            .meta(&serde_json::json!({ "email": input.email })),
+        audit::AuditEvent::new(
+            "invite.send",
+            audit::Actor::uid(user.uid).with_ip(client_ip),
+        )
+        .target(format!("invite:{id}"))
+        .meta(&serde_json::json!({ "email": input.email })),
     )
     .await;
 

@@ -1,11 +1,7 @@
 //! Member center aggregate (matching PHPYun `ajax::msgNum` composite counts).
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
-};
-use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser};
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::{ApiResponse, AppResult, AppState, AuthenticatedUser};
 use phpyun_services::dashboard_service;
 use serde::Serialize;
 use utoipa::ToSchema;
@@ -40,9 +36,9 @@ pub struct DashboardView {
 pub async fn counts(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-) -> AppResult<ApiJson<DashboardView>> {
+) -> AppResult<ApiResponse<DashboardView>> {
     let d = dashboard_service::counts(&state, &user).await?;
-    Ok(ApiJson(DashboardView {
+    Ok(ApiResponse::data(DashboardView {
         unread_messages: d.unread_messages,
         unread_chats: d.unread_chats,
         apply_count: d.apply_count,
@@ -81,9 +77,9 @@ pub struct ComDashboardView {
 pub async fn com_counts(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-) -> AppResult<ApiJson<ComDashboardView>> {
+) -> AppResult<ApiResponse<ComDashboardView>> {
     let d = dashboard_service::com_counts(&state, &user).await?;
-    Ok(ApiJson(ComDashboardView {
+    Ok(ApiResponse::data(ComDashboardView {
         applies_received: d.applies_received,
         applies_unread: d.applies_unread,
         interviews_sent: d.interviews_sent,
@@ -127,9 +123,9 @@ pub struct YearReportView {
 pub async fn year_report(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-) -> AppResult<ApiJson<YearReportView>> {
+) -> AppResult<ApiResponse<YearReportView>> {
     let d = dashboard_service::year_report(&state, &user).await?;
-    Ok(ApiJson(YearReportView {
+    Ok(ApiResponse::data(YearReportView {
         login_days: d.login_days,
         job_count: d.job_count,
         view_count: d.view_count,

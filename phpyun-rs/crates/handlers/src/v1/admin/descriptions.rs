@@ -1,17 +1,15 @@
 //! Admin single-page CMS: class and page CRUD.
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::dto::{CreatedId, IdBody};
+use phpyun_core::utils::fmt_dt;
+use phpyun_core::{
+    ApiResponse, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
 };
-use phpyun_core::{ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::description_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
-use phpyun_core::dto::{CreatedId, IdBody};
-use phpyun_core::utils::{fmt_dt};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -33,7 +31,12 @@ pub struct ClassItem {
 
 impl From<phpyun_models::description::entity::DescClass> for ClassItem {
     fn from(c: phpyun_models::description::entity::DescClass) -> Self {
-        Self { id: c.id, name: c.name, sort: c.sort, created_at: c.created_at }
+        Self {
+            id: c.id,
+            name: c.name,
+            sort: c.sort,
+            created_at: c.created_at,
+        }
     }
 }
 
@@ -43,13 +46,16 @@ impl From<phpyun_models::description::entity::DescClass> for ClassItem {
     tag = "admin",
     security(("bearer" = [])),
     responses((status = 200, description = "ok"))
-)]pub async fn list_classes(
+)]
+pub async fn list_classes(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-) -> AppResult<ApiJson<Vec<ClassItem>>> {
+) -> AppResult<ApiResponse<Vec<ClassItem>>> {
     user.require_admin()?;
     let l = description_service::list_classes(&state).await?;
-    Ok(ApiJson(l.iter().cloned().map(ClassItem::from).collect()))
+    Ok(ApiResponse::data(
+        l.iter().cloned().map(ClassItem::from).collect(),
+    ))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
@@ -73,10 +79,10 @@ pub async fn create_class(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(f): ValidatedJson<ClassForm>,
-) -> AppResult<ApiJson<CreatedId>> {
+) -> AppResult<ApiResponse<CreatedId>> {
     user.require_admin()?;
     let id = description_service::create_class(&state, &user, &f.name, f.sort).await?;
-    Ok(ApiJson(CreatedId { id }))
+    Ok(ApiResponse::data(CreatedId { id }))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
@@ -101,19 +107,21 @@ pub struct ClassPatchForm {
     request_body = ClassPatchForm,
     responses((status = 200, description = "ok"))
 )]
-pub async fn update_class(State(state): State<AppState>,
+pub async fn update_class(
+    State(state): State<AppState>,
     user: AuthenticatedUser,
-    ValidatedJson(f): ValidatedJson<ClassPatchForm>) -> AppResult<ApiOk> {
+    ValidatedJson(f): ValidatedJson<ClassPatchForm>,
+) -> AppResult<ApiResponse> {
     let id = f.id;
     user.require_admin()?;
     if f.status == Some(2) {
         description_service::delete_class(&state, &user, id).await?;
-        return Ok(ApiOk("deleted"));
+        return Ok(ApiResponse::message("deleted"));
     }
     if let Some(sort) = f.sort {
         description_service::update_class_sort(&state, &user, id, sort).await?;
     }
-    Ok(ApiOk("ok"))
+    Ok(ApiResponse::message("ok"))
 }
 
 #[derive(Debug, Deserialize, Validate, IntoParams)]
@@ -124,7 +132,6 @@ pub struct ListQuery {
     #[serde(default)]
     pub only_visible: bool,
 }
-
 
 /// Single-page admin item — all 10 phpyun_description columns + time formatting (incl. content).
 #[derive(Debug, Serialize, ToSchema)]
@@ -175,10 +182,12 @@ pub async fn list(
     user: AuthenticatedUser,
     page: Pagination,
     ValidatedJson(q): ValidatedJson<ListQuery>,
-) -> AppResult<ApiJson<Paged<DescItem>>> {
+) -> AppResult<ApiResponse<Paged<DescItem>>> {
     user.require_admin()?;
     let r = description_service::list(&state, q.class_id, q.only_visible, page).await?;
-    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
+    Ok(ApiResponse::data(Paged::from_listing(
+        r.list, r.total, page,
+    )))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
@@ -219,7 +228,7 @@ pub async fn upsert(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(f): ValidatedJson<UpsertForm>,
-) -> AppResult<ApiJson<CreatedId>> {
+) -> AppResult<ApiResponse<CreatedId>> {
     user.require_admin()?;
     let id = description_service::upsert(
         &state,
@@ -236,7 +245,7 @@ pub async fn upsert(
         },
     )
     .await?;
-    Ok(ApiJson(CreatedId { id }))
+    Ok(ApiResponse::data(CreatedId { id }))
 }
 
 #[utoipa::path(post,
@@ -246,12 +255,13 @@ pub async fn upsert(
     request_body = IdBody,
     responses((status = 200, description = "ok"))
 )]
-pub async fn delete_one(State(state): State<AppState>,
+pub async fn delete_one(
+    State(state): State<AppState>,
     user: AuthenticatedUser,
-    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiOk> {
+    ValidatedJson(b): ValidatedJson<IdBody>,
+) -> AppResult<ApiResponse> {
     let id = b.id;
     user.require_admin()?;
     description_service::delete(&state, &user, id).await?;
-    Ok(ApiOk("deleted"))
+    Ok(ApiResponse::message("deleted"))
 }
-

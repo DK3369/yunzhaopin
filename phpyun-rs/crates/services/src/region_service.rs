@@ -101,9 +101,7 @@ impl RegionTree {
             .collect()
     }
     pub fn has_children(&self, parent_id: u64) -> bool {
-        self.children
-            .get(&parent_id)
-            .is_some_and(|v| !v.is_empty())
+        self.children.get(&parent_id).is_some_and(|v| !v.is_empty())
     }
     pub fn total(&self) -> usize {
         self.by_id.len()
@@ -278,9 +276,7 @@ async fn load_translations(
             continue;
         }
         if let Some(lang) = Lang::parse_tag(&lang_str) {
-            out.entry(item_id as u64)
-                .or_default()
-                .insert(lang, text);
+            out.entry(item_id as u64).or_default().insert(lang, text);
         }
     }
     Ok(out)

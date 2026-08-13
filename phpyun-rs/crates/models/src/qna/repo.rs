@@ -96,10 +96,7 @@ pub async fn list_questions(
     q.bind(limit).bind(offset).fetch_all(pool).await
 }
 
-pub async fn count_questions(
-    pool: &MySqlPool,
-    f: &QuestionFilter<'_>,
-) -> Result<u64, sqlx::Error> {
+pub async fn count_questions(pool: &MySqlPool, f: &QuestionFilter<'_>) -> Result<u64, sqlx::Error> {
     let mut sql = String::from("SELECT COUNT(*) FROM phpyun_question WHERE state = 1");
     if f.keyword.is_some() {
         sql.push_str(" AND title LIKE ?");
@@ -118,10 +115,7 @@ pub async fn count_questions(
     Ok(n.max(0) as u64)
 }
 
-pub async fn find_question(
-    pool: &MySqlPool,
-    id: u64,
-) -> Result<Option<Question>, sqlx::Error> {
+pub async fn find_question(pool: &MySqlPool, id: u64) -> Result<Option<Question>, sqlx::Error> {
     let sql = format!("SELECT {Q_FIELDS} FROM phpyun_question WHERE id = ?");
     sqlx::query_as::<_, Question>(&sql)
         .bind(id)
@@ -332,12 +326,11 @@ pub async fn toggle_attention(
     question_id: u64,
     _now: i64,
 ) -> Result<bool, sqlx::Error> {
-    let row: Option<(Option<String>,)> = sqlx::query_as(
-        "SELECT ids FROM phpyun_attention WHERE uid = ? AND type = 1 LIMIT 1",
-    )
-    .bind(uid)
-    .fetch_optional(pool)
-    .await?;
+    let row: Option<(Option<String>,)> =
+        sqlx::query_as("SELECT ids FROM phpyun_attention WHERE uid = ? AND type = 1 LIMIT 1")
+            .bind(uid)
+            .fetch_optional(pool)
+            .await?;
     let mut ids: Vec<u64> = row
         .as_ref()
         .and_then(|(s,)| s.as_deref())
@@ -360,21 +353,17 @@ pub async fn toggle_attention(
         .collect::<Vec<_>>()
         .join(",");
     if row.is_some() {
-        sqlx::query(
-            "UPDATE phpyun_attention SET ids = ? WHERE uid = ? AND type = 1",
-        )
-        .bind(&csv)
-        .bind(uid)
-        .execute(pool)
-        .await?;
+        sqlx::query("UPDATE phpyun_attention SET ids = ? WHERE uid = ? AND type = 1")
+            .bind(&csv)
+            .bind(uid)
+            .execute(pool)
+            .await?;
     } else if !ids.is_empty() {
-        sqlx::query(
-            "INSERT INTO phpyun_attention (uid, type, ids) VALUES (?, 1, ?)",
-        )
-        .bind(uid)
-        .bind(&csv)
-        .execute(pool)
-        .await?;
+        sqlx::query("INSERT INTO phpyun_attention (uid, type, ids) VALUES (?, 1, ?)")
+            .bind(uid)
+            .bind(&csv)
+            .execute(pool)
+            .await?;
     }
     Ok(!was_present)
 }
@@ -390,12 +379,11 @@ pub async fn list_attended_questions(
     // the `ids` text field, distinguished by `type`. We fetch the CSV row
     // for this user, parse the ids client-side, then look up the question
     // rows in one shot. Empty result if no row / empty CSV.
-    let row: Option<(Option<String>,)> = sqlx::query_as(
-        "SELECT ids FROM phpyun_attention WHERE uid = ? AND type = 1 LIMIT 1",
-    )
-    .bind(uid)
-    .fetch_optional(pool)
-    .await?;
+    let row: Option<(Option<String>,)> =
+        sqlx::query_as("SELECT ids FROM phpyun_attention WHERE uid = ? AND type = 1 LIMIT 1")
+            .bind(uid)
+            .fetch_optional(pool)
+            .await?;
     let csv = match row.and_then(|(ids,)| ids) {
         Some(s) if !s.trim().is_empty() => s,
         _ => return Ok(Vec::new()),
@@ -440,12 +428,11 @@ pub async fn list_attended_questions(
 pub async fn count_attended_questions(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Error> {
     // Count = number of comma-separated ids in `phpyun_attention.ids` for
     // type=1. Empty / missing row → 0.
-    let row: Option<(Option<String>,)> = sqlx::query_as(
-        "SELECT ids FROM phpyun_attention WHERE uid = ? AND type = 1 LIMIT 1",
-    )
-    .bind(uid)
-    .fetch_optional(pool)
-    .await?;
+    let row: Option<(Option<String>,)> =
+        sqlx::query_as("SELECT ids FROM phpyun_attention WHERE uid = ? AND type = 1 LIMIT 1")
+            .bind(uid)
+            .fetch_optional(pool)
+            .await?;
     let n = match row.and_then(|(ids,)| ids) {
         Some(s) if !s.trim().is_empty() => s
             .split(',')
@@ -583,11 +570,7 @@ pub async fn create_review(
 }
 
 /// Delete a comment (only the author can; phpyun_answer.comment is decremented).
-pub async fn delete_review(
-    pool: &MySqlPool,
-    review_id: u64,
-    uid: u64,
-) -> Result<u64, sqlx::Error> {
+pub async fn delete_review(pool: &MySqlPool, review_id: u64, uid: u64) -> Result<u64, sqlx::Error> {
     let row: Option<(i64, i32)> =
         sqlx::query_as("SELECT aid, status FROM phpyun_answer_review WHERE id = ? AND uid = ?")
             .bind(review_id as i64)
@@ -604,12 +587,10 @@ pub async fn delete_review(
         .execute(&mut *tx)
         .await?;
     if res.rows_affected() > 0 && status == 1 {
-        sqlx::query(
-            "UPDATE phpyun_answer SET comment = GREATEST(comment - 1, 0) WHERE id = ?",
-        )
-        .bind(aid)
-        .execute(&mut *tx)
-        .await?;
+        sqlx::query("UPDATE phpyun_answer SET comment = GREATEST(comment - 1, 0) WHERE id = ?")
+            .bind(aid)
+            .execute(&mut *tx)
+            .await?;
     }
     tx.commit().await?;
     Ok(res.rows_affected())
@@ -627,8 +608,7 @@ const QC_FIELDS: &str = "\
     CAST(COALESCE(add_time, 0) AS SIGNED) AS add_time";
 
 pub async fn list_qclasses(pool: &MySqlPool) -> Result<Vec<QClass>, sqlx::Error> {
-    let sql =
-        format!("SELECT {QC_FIELDS} FROM phpyun_q_class ORDER BY pid ASC, sort DESC, id ASC");
+    let sql = format!("SELECT {QC_FIELDS} FROM phpyun_q_class ORDER BY pid ASC, sort DESC, id ASC");
     sqlx::query_as::<_, QClass>(&sql).fetch_all(pool).await
 }
 

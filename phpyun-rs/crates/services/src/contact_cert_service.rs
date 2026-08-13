@@ -35,13 +35,7 @@ pub async fn verify_and_change_mobile(
     new_mobile: &str,
     code: &str,
 ) -> AppResult<()> {
-    let ok = verify::verify(
-        &state.redis,
-        VerifyKind::SmsMobileChange,
-        new_mobile,
-        code,
-    )
-    .await?;
+    let ok = verify::verify(&state.redis, VerifyKind::SmsMobileChange, new_mobile, code).await?;
     if !ok {
         return Err(ApiError::captcha());
     }
@@ -105,9 +99,9 @@ pub async fn verify_email_token(state: &AppState, token: &str) -> AppResult<()> 
     let (uid_str, email) = payload
         .split_once(':')
         .ok_or_else(|| ApiError::param_invalid("token_payload"))?;
-    let uid: u64 = uid_str.parse().map_err(|_| {
-        ApiError::param_invalid("token_payload")
-    })?;
+    let uid: u64 = uid_str
+        .parse()
+        .map_err(|_| ApiError::param_invalid("token_payload"))?;
     user_repo::update_email(state.db.pool(), uid, email).await?;
     let _ = audit::emit(
         state,

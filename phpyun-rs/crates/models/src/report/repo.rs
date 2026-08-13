@@ -94,16 +94,11 @@ pub async fn list_by_reporter(
         .await
 }
 
-pub async fn count_by_reporter(
-    pool: &MySqlPool,
-    reporter_uid: u64,
-) -> Result<u64, sqlx::Error> {
-    let (n,): (i64,) = sqlx::query_as(
-        "SELECT COUNT(*) FROM phpyun_report WHERE c_uid = ?",
-    )
-    .bind(reporter_uid)
-    .fetch_one(pool)
-    .await?;
+pub async fn count_by_reporter(pool: &MySqlPool, reporter_uid: u64) -> Result<u64, sqlx::Error> {
+    let (n,): (i64,) = sqlx::query_as("SELECT COUNT(*) FROM phpyun_report WHERE c_uid = ?")
+        .bind(reporter_uid)
+        .fetch_one(pool)
+        .await?;
     Ok(n.max(0) as u64)
 }
 
@@ -151,10 +146,7 @@ pub async fn list_by_status(
     q.fetch_all(pool).await
 }
 
-pub async fn count_by_status(
-    pool: &MySqlPool,
-    status: Option<i32>,
-) -> Result<u64, sqlx::Error> {
+pub async fn count_by_status(pool: &MySqlPool, status: Option<i32>) -> Result<u64, sqlx::Error> {
     let (n,): (i64,) = match status {
         Some(s) => {
             sqlx::query_as("SELECT COUNT(*) FROM phpyun_report WHERE status = ?")
@@ -171,11 +163,7 @@ pub async fn count_by_status(
     Ok(n.max(0) as u64)
 }
 
-pub async fn set_status(
-    pool: &MySqlPool,
-    id: u64,
-    status: i32,
-) -> Result<u64, sqlx::Error> {
+pub async fn set_status(pool: &MySqlPool, id: u64, status: i32) -> Result<u64, sqlx::Error> {
     let res = sqlx::query("UPDATE phpyun_report SET status = ? WHERE id = ?")
         .bind(status)
         .bind(id)

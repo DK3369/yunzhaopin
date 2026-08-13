@@ -1,17 +1,15 @@
 //! One-off shop recruitment (`once`) front-end. Aligned with PHPYun `once/index::{index,show,add,ajax}_action`.
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::dto::{IdBody, IdPasswordBody, UpsertCreated};
+use phpyun_core::utils::{mask_name_short as mask_name, mask_tel};
+use phpyun_core::{
+    json, ApiResponse, AppResult, AppState, ClientIp, Paged, Pagination, ValidatedJson,
 };
-use phpyun_core::{json, ApiJson, AppResult, AppState, ClientIp, Paged, Pagination, ValidatedJson};
 use phpyun_services::once_service::{self, ManageOp, OnceSearch, UpsertInput};
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
-use phpyun_core::dto::{IdBody, IdPasswordBody, UpsertCreated};
-use phpyun_core::utils::{mask_tel, mask_name_short as mask_name};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -80,11 +78,12 @@ impl From<phpyun_models::once_job::entity::OnceJob> for OnceListItem {
     }
 }
 
-#[utoipa::path(post, path = "/v1/wap/once-jobs/list", tag = "wap", params(ListQuery), responses((status = 200, description = "ok")))]pub async fn list(
+#[utoipa::path(post, path = "/v1/wap/once-jobs/list", tag = "wap", params(ListQuery), responses((status = 200, description = "ok")))]
+pub async fn list(
     State(state): State<AppState>,
     page: Pagination,
     ValidatedJson(q): ValidatedJson<ListQuery>,
-) -> AppResult<ApiJson<Paged<OnceListItem>>> {
+) -> AppResult<ApiResponse<Paged<OnceListItem>>> {
     let search = OnceSearch {
         keyword: q.keyword,
         province_id: q.province_id,
@@ -95,7 +94,9 @@ impl From<phpyun_models::once_job::entity::OnceJob> for OnceListItem {
         did: q.did,
     };
     let r = once_service::list_public(&state, &search, page).await?;
-    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
+    Ok(ApiResponse::data(Paged::from_listing(
+        r.list, r.total, page,
+    )))
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -123,11 +124,13 @@ pub struct OnceDetail {
 
 #[utoipa::path(post, path = "/v1/wap/once-jobs/show", tag = "wap", request_body = IdBody,
     responses((status = 200, description = "ok", body = OnceDetail)))]
-pub async fn show(State(state): State<AppState>,
-    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiJson<OnceDetail>> {
+pub async fn show(
+    State(state): State<AppState>,
+    ValidatedJson(b): ValidatedJson<IdBody>,
+) -> AppResult<ApiResponse<OnceDetail>> {
     let id = b.id;
     let j = once_service::show(&state, id).await?;
-    Ok(ApiJson(OnceDetail {
+    Ok(ApiResponse::data(OnceDetail {
         id: j.id,
         companyname: j.companyname,
         linktel_masked: mask_tel(&j.linktel),
@@ -259,8 +262,10 @@ pub async fn create(
     State(state): State<AppState>,
     ClientIp(ip): ClientIp,
     ValidatedJson(b): ValidatedJson<UpsertBody>,
-) -> AppResult<ApiJson<UpsertCreated>> {
-    Ok(ApiJson(upsert_common(&state, &ip, None, b).await?))
+) -> AppResult<ApiResponse<UpsertCreated>> {
+    Ok(ApiResponse::data(
+        upsert_common(&state, &ip, None, b).await?,
+    ))
 }
 
 /// Update a one-off recruitment. Body must satisfy `UpsertBody` validation
@@ -268,39 +273,51 @@ pub async fn create(
 /// has been split out to its dedicated route — see
 /// `POST /v1/wap/once-jobs/{id}/delete`.
 #[utoipa::path(post, path = "/v1/wap/once-jobs/update", tag = "wap", request_body = UpsertBody, responses((status = 200, description = "ok")))]
-pub async fn update(State(state): State<AppState>,
+pub async fn update(
+    State(state): State<AppState>,
     ClientIp(ip): ClientIp,
-    ValidatedJson(b): ValidatedJson<UpsertBody>) -> AppResult<ApiJson<json::Value>> {
+    ValidatedJson(b): ValidatedJson<UpsertBody>,
+) -> AppResult<ApiResponse<json::Value>> {
     let id = b.id;
     let r = upsert_common(&state, &ip, Some(id), b).await?;
-    Ok(ApiJson(json::json!({ "id": r.id, "created": r.created })))
+    Ok(ApiResponse::data(
+        json::json!({ "id": r.id, "created": r.created }),
+    ))
 }
 
 /// Soft-delete a one-off recruitment. Counterpart of the legacy
 /// `{password, status:2}` update body; password is verified against the
 /// row's stored hash.
 #[utoipa::path(post, path = "/v1/wap/once-jobs/delete", tag = "wap", request_body = IdPasswordBody, responses((status = 200, description = "ok")))]
-pub async fn soft_delete(State(state): State<AppState>,
-    ValidatedJson(b): ValidatedJson<IdPasswordBody>) -> AppResult<ApiJson<json::Value>> {
+pub async fn soft_delete(
+    State(state): State<AppState>,
+    ValidatedJson(b): ValidatedJson<IdPasswordBody>,
+) -> AppResult<ApiResponse<json::Value>> {
     let id = b.id;
     once_service::manage(&state, id, &b.password, ManageOp::Delete).await?;
-    Ok(ApiJson(json::json!({ "ok": true, "deleted": true })))
+    Ok(ApiResponse::data(
+        json::json!({ "ok": true, "deleted": true }),
+    ))
 }
 
 #[utoipa::path(post, path = "/v1/wap/once-jobs/verify", tag = "wap", request_body = IdPasswordBody, responses((status = 200, description = "ok")))]
-pub async fn verify(State(state): State<AppState>,
-    ValidatedJson(b): ValidatedJson<IdPasswordBody>) -> AppResult<ApiJson<json::Value>> {
+pub async fn verify(
+    State(state): State<AppState>,
+    ValidatedJson(b): ValidatedJson<IdPasswordBody>,
+) -> AppResult<ApiResponse<json::Value>> {
     let id = b.id;
     once_service::manage(&state, id, &b.password, ManageOp::Verify).await?;
-    Ok(ApiJson(json::json!({ "ok": true })))
+    Ok(ApiResponse::data(json::json!({ "ok": true })))
 }
 
 #[utoipa::path(post, path = "/v1/wap/once-jobs/refresh", tag = "wap", request_body = IdPasswordBody, responses((status = 200, description = "ok")))]
-pub async fn refresh(State(state): State<AppState>,
-    ValidatedJson(b): ValidatedJson<IdPasswordBody>) -> AppResult<ApiJson<json::Value>> {
+pub async fn refresh(
+    State(state): State<AppState>,
+    ValidatedJson(b): ValidatedJson<IdPasswordBody>,
+) -> AppResult<ApiResponse<json::Value>> {
     let id = b.id;
     once_service::manage(&state, id, &b.password, ManageOp::Refresh).await?;
-    Ok(ApiJson(json::json!({ "refreshed": true })))
+    Ok(ApiResponse::data(json::json!({ "refreshed": true })))
 }
 
 // Delete a one-off recruitment: now triggered via `POST /v1/wap/once-jobs/{id}` body `{"password":..., "status":2}`.
@@ -352,8 +369,10 @@ pub struct PayCreated {
         (status = 400, description = "Invalid gear / wrong password / once-job not found"),
     )
 )]
-pub async fn pay(State(state): State<AppState>,
-    ValidatedJson(f): ValidatedJson<PayForm>) -> AppResult<ApiJson<PayCreated>> {
+pub async fn pay(
+    State(state): State<AppState>,
+    ValidatedJson(f): ValidatedJson<PayForm>,
+) -> AppResult<ApiResponse<PayCreated>> {
     let id = f.id;
     let r = once_service::create_pay_order(
         &state,
@@ -366,7 +385,7 @@ pub async fn pay(State(state): State<AppState>,
         },
     )
     .await?;
-    Ok(ApiJson(PayCreated {
+    Ok(ApiResponse::data(PayCreated {
         order_id: r.order_id,
         price: r.price,
         days: r.days,
@@ -374,4 +393,3 @@ pub async fn pay(State(state): State<AppState>,
         fast: r.fast,
     }))
 }
-

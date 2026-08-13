@@ -87,11 +87,7 @@ pub async fn create(
 
 /// Anyone (auth optional) can read approved + answered messages for a job —
 /// this powers the public message panel on the job-detail page.
-pub async fn list_public(
-    state: &AppState,
-    jobid: u64,
-    page: Pagination,
-) -> AppResult<JobMsgPage> {
+pub async fn list_public(state: &AppState, jobid: u64, page: Pagination) -> AppResult<JobMsgPage> {
     let reader = state.db.reader();
     let job_uid: u64 = phpyun_models::job::repo::find_by_id(reader, jobid)
         .await?
@@ -99,7 +95,10 @@ pub async fn list_public(
         .unwrap_or(0);
 
     if job_uid == 0 {
-        return Ok(JobMsgPage { list: vec![], total: 0 });
+        return Ok(JobMsgPage {
+            list: vec![],
+            total: 0,
+        });
     }
 
     let (list, total) = tokio::join!(
@@ -150,20 +149,14 @@ pub async fn employer_reply(
     let pool = state.db.pool();
     let n = msg_repo::employer_reply(pool, msg_id, user.uid, reply, clock::now_ts()).await?;
     if n == 0 {
-        return Err(ApiError::param_invalid(
-            "msg_not_found_or_not_yours",
-        ));
+        return Err(ApiError::param_invalid("msg_not_found_or_not_yours"));
     }
     Ok(())
 }
 
 /// Soft-hide a message. Either the original author or the employer who owns
 /// the job can do this.
-pub async fn hide(
-    state: &AppState,
-    user: &AuthenticatedUser,
-    msg_id: u64,
-) -> AppResult<()> {
+pub async fn hide(state: &AppState, user: &AuthenticatedUser, msg_id: u64) -> AppResult<()> {
     let pool = state.db.pool();
     let row = msg_repo::find(pool, msg_id).await?;
     let m = row.ok_or_else(|| ApiError::param_invalid("msg_not_found"))?;

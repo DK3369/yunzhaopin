@@ -107,11 +107,7 @@ pub struct CountryCreate<'a> {
     pub sort: i32,
 }
 
-pub async fn create(
-    pool: &MySqlPool,
-    c: CountryCreate<'_>,
-    now: i64,
-) -> Result<u64, sqlx::Error> {
+pub async fn create(pool: &MySqlPool, c: CountryCreate<'_>, now: i64) -> Result<u64, sqlx::Error> {
     let res = sqlx::query(
         "INSERT INTO phpyun_country \
          (code, code3, numeric_code, name_en, name_zh, continent, phone_code, currency, flag, sort, status, created_at, updated_at) \
@@ -153,13 +149,27 @@ pub async fn update(
     now: i64,
 ) -> Result<u64, sqlx::Error> {
     let mut sets: Vec<&str> = Vec::new();
-    if p.name_en.is_some()    { sets.push("name_en = ?"); }
-    if p.name_zh.is_some()    { sets.push("name_zh = ?"); }
-    if p.continent.is_some()  { sets.push("continent = ?"); }
-    if p.phone_code.is_some() { sets.push("phone_code = ?"); }
-    if p.currency.is_some()   { sets.push("currency = ?"); }
-    if p.flag.is_some()       { sets.push("flag = ?"); }
-    if p.sort.is_some()       { sets.push("sort = ?"); }
+    if p.name_en.is_some() {
+        sets.push("name_en = ?");
+    }
+    if p.name_zh.is_some() {
+        sets.push("name_zh = ?");
+    }
+    if p.continent.is_some() {
+        sets.push("continent = ?");
+    }
+    if p.phone_code.is_some() {
+        sets.push("phone_code = ?");
+    }
+    if p.currency.is_some() {
+        sets.push("currency = ?");
+    }
+    if p.flag.is_some() {
+        sets.push("flag = ?");
+    }
+    if p.sort.is_some() {
+        sets.push("sort = ?");
+    }
     if sets.is_empty() {
         return Ok(0);
     }
@@ -169,24 +179,34 @@ pub async fn update(
         sets.join(", ")
     );
     let mut q = sqlx::query(&sql);
-    if let Some(v) = p.name_en    { q = q.bind(v); }
-    if let Some(v) = p.name_zh    { q = q.bind(v); }
-    if let Some(v) = p.continent  { q = q.bind(v); }
-    if let Some(v) = p.phone_code { q = q.bind(v); }
-    if let Some(v) = p.currency   { q = q.bind(v); }
-    if let Some(v) = p.flag       { q = q.bind(v); }
-    if let Some(v) = p.sort       { q = q.bind(v); }
+    if let Some(v) = p.name_en {
+        q = q.bind(v);
+    }
+    if let Some(v) = p.name_zh {
+        q = q.bind(v);
+    }
+    if let Some(v) = p.continent {
+        q = q.bind(v);
+    }
+    if let Some(v) = p.phone_code {
+        q = q.bind(v);
+    }
+    if let Some(v) = p.currency {
+        q = q.bind(v);
+    }
+    if let Some(v) = p.flag {
+        q = q.bind(v);
+    }
+    if let Some(v) = p.sort {
+        q = q.bind(v);
+    }
     q = q.bind(now).bind(id);
     Ok(q.execute(pool).await?.rows_affected())
 }
 
 /// Soft delete (`status = 2`). Cache filters by `status != 2` so deleted
 /// rows disappear on the next reload.
-pub async fn soft_delete(
-    pool: &MySqlPool,
-    id: u64,
-    now: i64,
-) -> Result<u64, sqlx::Error> {
+pub async fn soft_delete(pool: &MySqlPool, id: u64, now: i64) -> Result<u64, sqlx::Error> {
     let res = sqlx::query(
         "UPDATE phpyun_country SET status = 2, updated_at = ? WHERE id = ? AND status != 2",
     )

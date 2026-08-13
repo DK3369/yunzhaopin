@@ -24,9 +24,9 @@
 //! - `kv.op.error{op, kind=redis|timeout}` counter
 //! - `kv.spawn.dropped` counter — number of writes dropped due to backpressure
 
-use crate::ApiError;
 use crate::json;
 use crate::metrics as m;
+use crate::ApiError;
 use redis::aio::ConnectionManager;
 use redis::{AsyncCommands, Script};
 use serde::{de::DeserializeOwned, Serialize};
@@ -173,7 +173,8 @@ impl Kv {
 
     pub async fn del(&self, key: &str) -> Result<(), ApiError> {
         let mut c = self.inner.clone();
-        self.run("del", async move { c.del::<_, ()>(key).await }).await
+        self.run("del", async move { c.del::<_, ()>(key).await })
+            .await
     }
 
     /// Redis PUBSUB publish. Returns the number of subscribers that received
@@ -201,10 +202,7 @@ impl Kv {
     pub async fn subscribe(
         &self,
         channel: &str,
-    ) -> Result<
-        impl tokio_stream::Stream<Item = redis::Msg> + Send + 'static,
-        ApiError,
-    > {
+    ) -> Result<impl tokio_stream::Stream<Item = redis::Msg> + Send + 'static, ApiError> {
         // Open a dedicated PubSub connection via the underlying client.
         let url = self.client_url.clone().unwrap_or_default();
         if url.is_empty() {
@@ -233,9 +231,10 @@ impl Kv {
 
     pub async fn expire(&self, key: &str, ttl_secs: i64) -> Result<(), ApiError> {
         let mut c = self.inner.clone();
-        self.run("expire", async move {
-            c.expire::<_, ()>(key, ttl_secs).await
-        })
+        self.run(
+            "expire",
+            async move { c.expire::<_, ()>(key, ttl_secs).await },
+        )
         .await
     }
 
@@ -244,7 +243,11 @@ impl Kv {
     /// SADD — add a single i64 member to a set. Returns 1 if newly added, 0 if existed.
     pub async fn sadd_i64(&self, key: &str, member: i64) -> Result<i64, ApiError> {
         let mut c = self.inner.clone();
-        self.run("sadd", async move { c.sadd::<_, _, i64>(key, member).await }).await
+        self.run(
+            "sadd",
+            async move { c.sadd::<_, _, i64>(key, member).await },
+        )
+        .await
     }
 
     /// SADD many — bulk insert (single RTT). Returns count of newly-added members.
@@ -254,29 +257,35 @@ impl Kv {
         }
         let mut c = self.inner.clone();
         let members = members.to_vec();
-        self.run("sadd_many", async move { c.sadd::<_, _, i64>(key, members).await }).await
+        self.run("sadd_many", async move {
+            c.sadd::<_, _, i64>(key, members).await
+        })
+        .await
     }
 
     /// SREM — remove a single i64 member.
     pub async fn srem_i64(&self, key: &str, member: i64) -> Result<i64, ApiError> {
         let mut c = self.inner.clone();
-        self.run("srem", async move { c.srem::<_, _, i64>(key, member).await }).await
+        self.run(
+            "srem",
+            async move { c.srem::<_, _, i64>(key, member).await },
+        )
+        .await
     }
 
     /// SISMEMBER — check membership.
     pub async fn sismember_i64(&self, key: &str, member: i64) -> Result<bool, ApiError> {
         let mut c = self.inner.clone();
-        self.run("sismember", async move { c.sismember::<_, _, bool>(key, member).await }).await
+        self.run("sismember", async move {
+            c.sismember::<_, _, bool>(key, member).await
+        })
+        .await
     }
 
     /// SMISMEMBER — batch membership check (single RTT). Returns a Vec<bool>
     /// in the same order as `members`. Saves N round-trips for list views
     /// asking "is each of these N items favorited".
-    pub async fn smismember_i64(
-        &self,
-        key: &str,
-        members: &[i64],
-    ) -> Result<Vec<bool>, ApiError> {
+    pub async fn smismember_i64(&self, key: &str, members: &[i64]) -> Result<Vec<bool>, ApiError> {
         if members.is_empty() {
             return Ok(Vec::new());
         }
@@ -296,7 +305,11 @@ impl Kv {
     /// SMEMBERS — fetch the entire set.
     pub async fn smembers_i64(&self, key: &str) -> Result<Vec<i64>, ApiError> {
         let mut c = self.inner.clone();
-        self.run("smembers", async move { c.smembers::<_, Vec<i64>>(key).await }).await
+        self.run(
+            "smembers",
+            async move { c.smembers::<_, Vec<i64>>(key).await },
+        )
+        .await
     }
 
     // ---------- Atomic compound ops: Lua, single RTT ----------
@@ -304,11 +317,7 @@ impl Kv {
     /// Atomic INCR + first-time PEXPIRE (millisecond TTL) in a single RTT.
     /// Solves the classic "two-step INCR+EXPIRE crashes between steps and the
     /// key never expires" problem.
-    pub async fn incr_with_expire(
-        &self,
-        key: &str,
-        window_secs: u64,
-    ) -> Result<i64, ApiError> {
+    pub async fn incr_with_expire(&self, key: &str, window_secs: u64) -> Result<i64, ApiError> {
         let mut c = self.inner.clone();
         let script = incr_expire_script().clone();
         let pexpire_ms = window_secs.saturating_mul(1000) as i64;
@@ -354,11 +363,7 @@ impl Kv {
         let script = lock_release_script().clone();
         let freed: i64 = self
             .run("lock_release", async move {
-                script
-                    .key(key)
-                    .arg(owner)
-                    .invoke_async::<i64>(&mut c)
-                    .await
+                script.key(key).arg(owner).invoke_async::<i64>(&mut c).await
             })
             .await?;
         Ok(freed == 1)
@@ -366,10 +371,7 @@ impl Kv {
 
     // ---------- JSON convenience ----------
 
-    pub async fn get_json<T: DeserializeOwned>(
-        &self,
-        key: &str,
-    ) -> Result<Option<T>, ApiError> {
+    pub async fn get_json<T: DeserializeOwned>(&self, key: &str) -> Result<Option<T>, ApiError> {
         match self.get_str(key).await? {
             Some(s) => Ok(Some(json::from_str::<T>(&s)?)),
             None => Ok(None),
@@ -452,11 +454,7 @@ impl Kv {
     // ---------- Redis Streams (used by the events module) ----------
 
     /// `XADD stream * <k> <v> ...` — publish an event; returns the id Redis generated.
-    pub async fn xadd(
-        &self,
-        stream: &str,
-        fields: &[(&str, &[u8])],
-    ) -> Result<String, ApiError> {
+    pub async fn xadd(&self, stream: &str, fields: &[(&str, &[u8])]) -> Result<String, ApiError> {
         let mut c = self.inner.clone();
         let stream = stream.to_string();
         let owned: Vec<(Vec<u8>, Vec<u8>)> = fields
@@ -476,11 +474,7 @@ impl Kv {
 
     /// `XGROUP CREATE stream group 0 MKSTREAM`. Returns Ok(()) when it
     /// already exists, without erroring.
-    pub async fn xgroup_create_mkstream(
-        &self,
-        stream: &str,
-        group: &str,
-    ) -> Result<(), ApiError> {
+    pub async fn xgroup_create_mkstream(&self, stream: &str, group: &str) -> Result<(), ApiError> {
         let mut c = self.inner.clone();
         let stream = stream.to_string();
         let group = group.to_string();
@@ -595,17 +589,25 @@ fn parse_xread_reply(v: redis::Value) -> Vec<StreamMessage> {
         return out; // Nil / other → no messages
     };
     for stream in streams {
-        let redis::Value::Array(parts) = stream else { continue };
+        let redis::Value::Array(parts) = stream else {
+            continue;
+        };
         if parts.len() < 2 {
             continue;
         }
-        let redis::Value::Array(msgs) = &parts[1] else { continue };
+        let redis::Value::Array(msgs) = &parts[1] else {
+            continue;
+        };
         for msg in msgs {
-            let redis::Value::Array(entry) = msg else { continue };
+            let redis::Value::Array(entry) = msg else {
+                continue;
+            };
             if entry.len() < 2 {
                 continue;
             }
-            let Some(id) = value_as_string(&entry[0]) else { continue };
+            let Some(id) = value_as_string(&entry[0]) else {
+                continue;
+            };
             let fields = parse_fields(&entry[1]);
             out.push(StreamMessage { id, fields });
         }
@@ -623,7 +625,9 @@ fn value_as_string(v: &redis::Value) -> Option<String> {
 
 fn parse_fields(v: &redis::Value) -> Vec<(String, Vec<u8>)> {
     let mut fields = Vec::new();
-    let redis::Value::Array(arr) = v else { return fields };
+    let redis::Value::Array(arr) = v else {
+        return fields;
+    };
     let mut i = 0;
     while i + 1 < arr.len() {
         if let (redis::Value::BulkString(k), redis::Value::BulkString(v)) = (&arr[i], &arr[i + 1]) {

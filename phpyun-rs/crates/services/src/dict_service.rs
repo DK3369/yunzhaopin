@@ -427,10 +427,7 @@ fn build_table(
     }
 }
 
-async fn load_default(
-    pool: &sqlx::MySqlPool,
-    table: &str,
-) -> AppResult<HashMap<i32, String>> {
+async fn load_default(pool: &sqlx::MySqlPool, table: &str) -> AppResult<HashMap<i32, String>> {
     let rows = phpyun_models::dict_i18n::repo::list_default(pool, table)
         .await
         .map_err(phpyun_core::ApiError::internal)?;

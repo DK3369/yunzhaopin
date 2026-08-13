@@ -49,7 +49,7 @@ pub mod verify;
 // remain namespaced by concern; `error` stays private so `ApiError` is the only
 // application error type visible outside core.
 pub use cache::AppCaches;
-pub use config::Config;
+pub use config::{AppEnvironment, Config};
 pub use db::Db;
 pub use error::{ApiError, AppResult};
 pub use events::{EventBus, EventBusBackend};
@@ -59,23 +59,23 @@ pub use extractors::{
 };
 pub use i18n::{t, t_args, Lang};
 pub use kv::Kv;
-pub use response::{ApiBody, ApiJson, ApiMsg, ApiMsgData, ApiOk, ApiResponse, Paged};
+pub use oauth::{OAuth, OAuthProvider, ProviderIdentity, ProviderKind};
+pub use response::{ApiBody, ApiResponse, Paged};
 pub use scheduler::Scheduler;
 pub use shutdown::{wait_for_signal, CancellationToken};
-pub use state::AppState;
-pub use oauth::{OAuth, OAuthProvider, ProviderIdentity, ProviderKind};
 pub use sms::{Sms, SmsBackend, SmsTemplate};
+pub use state::AppState;
 pub use storage::{ObjectStore, Storage};
 
 /// Common imports for handlers and services.
 ///
 /// Keep this list boring and stable: request extractors, response wrappers,
-/// state, pagination, shared DTOs, and the single public error type.
+/// state, pagination, shared DTOs, the unified response type, and the public
+/// error type.
 pub mod prelude {
     pub use crate::dto::*;
     pub use crate::{
-        ApiBody, ApiJson, ApiMsg, ApiMsgData, ApiOk, ApiResponse, ApiError, AppResult, AppState,
-        AuthenticatedUser, ClientIp, Lang, MaybeUser, Paged, Pagination, ValidatedForm,
-        ValidatedJson, ValidatedQuery,
+        ApiBody, ApiError, ApiResponse, AppResult, AppState, AuthenticatedUser, ClientIp, Lang,
+        MaybeUser, Paged, Pagination, ValidatedForm, ValidatedJson, ValidatedQuery,
     };
 }

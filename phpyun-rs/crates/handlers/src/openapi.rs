@@ -296,7 +296,6 @@ impl Modify for UniqueOperationId {
         v1::mcenter::vip::list_packages,
         v1::mcenter::vip::get_current,
         v1::mcenter::vip::create_order,
-        v1::mcenter::vip::mock_paid,
         // wap: hot searches
         v1::wap::hot_searches::list,
         // wap: announcements
@@ -1048,6 +1047,25 @@ impl Modify for UniqueOperationId {
 )]
 pub struct V1Doc;
 
+#[cfg(debug_assertions)]
+#[derive(OpenApi)]
+#[openapi(paths(v1::mcenter::vip::mock_paid))]
+struct DebugOnlyDoc;
+
+/// Build the environment-appropriate v1 specification. Development-only
+/// operations are merged only when they can actually be routed by this binary.
+pub fn v1_openapi() -> utoipa::openapi::OpenApi {
+    let api = V1Doc::openapi();
+    #[cfg(debug_assertions)]
+    {
+        let mut api = api;
+        api.merge(DebugOnlyDoc::openapi());
+        return api;
+    }
+    #[cfg(not(debug_assertions))]
+    api
+}
+
 // ==================== V2 ====================
 
 #[derive(OpenApi)]
@@ -1091,7 +1109,7 @@ pub struct V2Doc;
 /// it once, clicks **Authorize**, pastes — and `persist_authorization(true)`
 /// keeps it in browser localStorage across reloads.
 pub fn swagger_ui() -> SwaggerUi {
-    let mut v1 = V1Doc::openapi();
+    let mut v1 = v1_openapi();
     let mut v2 = V2Doc::openapi();
     if let Some(t) = phpyun_core::dev_token::tokens() {
         let banner = format!(
@@ -1119,4 +1137,18 @@ pub fn swagger_ui() -> SwaggerUi {
         .url("/api-docs/v1/openapi.json", v1)
         .url("/api-docs/v2/openapi.json", v2)
         .config(utoipa_swagger_ui::Config::default().persist_authorization(true))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::v1_openapi;
+
+    #[test]
+    fn mock_payment_documentation_matches_build_profile() {
+        let documented = v1_openapi()
+            .paths
+            .paths
+            .contains_key("/v1/mcenter/vip/orders/mock-paid");
+        assert_eq!(documented, cfg!(debug_assertions));
+    }
 }

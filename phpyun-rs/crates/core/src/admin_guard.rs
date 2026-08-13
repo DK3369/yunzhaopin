@@ -18,19 +18,15 @@
 //! request body is parsed — so even unauthenticated POSTs can't side-effect
 //! the request stream.
 
-use crate::ApiError;
 use crate::extractors::{AuthenticatedUser, USERTYPE_ADMIN};
 use crate::state::AppState;
+use crate::ApiError;
 use axum::extract::{FromRequestParts, Request, State};
 use axum::http::request::Parts;
 use axum::middleware::Next;
 use axum::response::{IntoResponse, Response};
 
-pub async fn layer(
-    State(state): State<AppState>,
-    req: Request,
-    next: Next,
-) -> Response {
+pub async fn layer(State(state): State<AppState>, req: Request, next: Next) -> Response {
     // Split request → parts so we can run AuthenticatedUser's full
     // validation pipeline (Bearer + cookie fallback, JWT verify, jti
     // blacklist, pw_epoch staleness) without duplicating the logic here.
@@ -39,9 +35,7 @@ pub async fn layer(
 
     match outcome {
         Err(e) => e.into_response(),
-        Ok(user) if user.usertype != USERTYPE_ADMIN => {
-            ApiError::role_mismatch().into_response()
-        }
+        Ok(user) if user.usertype != USERTYPE_ADMIN => ApiError::role_mismatch().into_response(),
         Ok(user) => {
             // Re-attach the typed user to the request extensions so handlers
             // that take `AuthenticatedUser` resolve it without a second JWT

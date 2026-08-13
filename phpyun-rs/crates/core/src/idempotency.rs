@@ -43,10 +43,10 @@
 //! - 5xx errors are not cached (avoid caching transient failures).
 //! - Cache TTL defaults to 24h, configurable.
 
-use crate::ApiError;
 use crate::kv::Kv;
 use crate::metrics as m;
 use crate::state::AppState;
+use crate::ApiError;
 use axum::body::{to_bytes, Body};
 use axum::extract::{Request, State};
 use axum::http::Method;
@@ -148,13 +148,17 @@ pub async fn layer(State(state): State<AppState>, req: Request, next: Next) -> R
 }
 
 fn is_mutating(m: &Method) -> bool {
-    matches!(*m, Method::POST | Method::PUT | Method::PATCH | Method::DELETE)
+    matches!(
+        *m,
+        Method::POST | Method::PUT | Method::PATCH | Method::DELETE
+    )
 }
 
 fn is_valid_key(s: &str) -> bool {
     let len = s.len();
     (16..=128).contains(&len)
-        && s.chars().all(|c| c.is_ascii_alphanumeric() || c == '-' || c == '_')
+        && s.chars()
+            .all(|c| c.is_ascii_alphanumeric() || c == '-' || c == '_')
 }
 
 async fn read_cache(kv: &Kv, key: &str) -> Option<CachedResponse> {
@@ -176,19 +180,14 @@ fn replay(cached: CachedResponse) -> Response {
         builder = builder.header(axum::http::header::CONTENT_TYPE, ct);
     }
     builder.body(Body::from(body_bytes)).unwrap_or_else(|_| {
-        ApiError::internal(std::io::Error::other("idempotency replay build failed"))
-            .into_response()
+        ApiError::internal(std::io::Error::other("idempotency replay build failed")).into_response()
     })
 }
 
 /// Reads the response body, writes it to the cache, then rebuilds and returns
 /// a Response from the same bytes. On failure returns `Err(original response)`
 /// — we must never swallow the original response from the upstream caller.
-async fn capture_and_cache(
-    kv: &Kv,
-    cache_key: &str,
-    resp: Response,
-) -> Result<Response, Response> {
+async fn capture_and_cache(kv: &Kv, cache_key: &str, resp: Response) -> Result<Response, Response> {
     let status = resp.status();
     // Don't cache 5xx (avoid caching transient failures).
     if status.is_server_error() {
@@ -230,7 +229,9 @@ mod tests {
     #[test]
     fn key_validation() {
         assert!(is_valid_key("0123456789abcdef")); // 16 chars
-        assert!(is_valid_key("a-b_c-d-".repeat(8).as_str().get(..64).unwrap()));
+        assert!(is_valid_key(
+            "a-b_c-d-".repeat(8).as_str().get(..64).unwrap()
+        ));
         assert!(!is_valid_key("short")); // <16
         assert!(!is_valid_key(&"x".repeat(200))); // >128
         assert!(!is_valid_key("contains space here is")); // contains a space
@@ -259,7 +260,9 @@ mod tests {
         let back: CachedResponse = serde_json::from_str(&s).unwrap();
         assert_eq!(back.status, 200);
         assert_eq!(
-            base64::engine::general_purpose::STANDARD.decode(&back.body).unwrap(),
+            base64::engine::general_purpose::STANDARD
+                .decode(&back.body)
+                .unwrap(),
             b"hello"
         );
     }
@@ -269,4 +272,3 @@ mod tests {
         const _: () = assert!(DEFAULT_TTL_SECS == 86_400);
     }
 }
-

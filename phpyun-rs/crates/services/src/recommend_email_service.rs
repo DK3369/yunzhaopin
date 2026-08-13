@@ -15,8 +15,9 @@
 //! the same downstream worker that handles forgot-password emails picks it up.
 
 use phpyun_core::{
-    audit, clock, i18n::{current_lang, t, t_args, Lang}, ApiError, AppResult, AppState,
-    AuthenticatedUser,
+    audit, clock,
+    i18n::{current_lang, t, t_args, Lang},
+    ApiError, AppResult, AppState, AuthenticatedUser,
 };
 use phpyun_models::recommend::{
     entity::{REC_TYPE_JOB, REC_TYPE_RESUME},
@@ -116,8 +117,16 @@ async fn common(
 
     let _ = audit::emit(
         state,
-        audit::AuditEvent::new("recommend.email_sent", audit::Actor::uid(user.uid))
-            .target(format!("{}:{rec_id}", if rec_type == REC_TYPE_JOB { "job" } else { "resume" })),
+        audit::AuditEvent::new("recommend.email_sent", audit::Actor::uid(user.uid)).target(
+            format!(
+                "{}:{rec_id}",
+                if rec_type == REC_TYPE_JOB {
+                    "job"
+                } else {
+                    "resume"
+                }
+            ),
+        ),
     )
     .await;
 
@@ -195,13 +204,14 @@ pub struct QuotaStatus {
     pub seconds_remaining: i64,
 }
 
-pub async fn check_quota(
-    state: &AppState,
-    user: &AuthenticatedUser,
-) -> AppResult<QuotaStatus> {
+pub async fn check_quota(state: &AppState, user: &AuthenticatedUser) -> AppResult<QuotaStatus> {
     let reader = state.db.reader();
-    let day_cap = read_int_setting(state, "sy_recommend_day_num").await.unwrap_or(0);
-    let interval_secs = read_int_setting(state, "sy_recommend_interval").await.unwrap_or(0);
+    let day_cap = read_int_setting(state, "sy_recommend_day_num")
+        .await
+        .unwrap_or(0);
+    let interval_secs = read_int_setting(state, "sy_recommend_interval")
+        .await
+        .unwrap_or(0);
     let now = clock::now_ts();
 
     let day_start = today_begin_ts(now);

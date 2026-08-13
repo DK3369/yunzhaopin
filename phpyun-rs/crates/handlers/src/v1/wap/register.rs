@@ -7,12 +7,8 @@
 //! - `usertype` (1=jobseeker / 2=company / 3=campus)
 //! - `regway`  (1=username / 2=mobile / 3=email; currently only recorded for audit, uniqueness is checked across all fields)
 
-use axum::{
-    extract::{State},
-    Router,
-    routing::post,
-};
-use phpyun_core::{validators, ApiJson, AppResult, AppState, ClientIp, ValidatedJson};
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::{validators, ApiResponse, AppResult, AppState, ClientIp, ValidatedJson};
 use phpyun_models::user::repo as user_repo;
 use phpyun_services::registration_service::{self, RegisterInput};
 use serde::{Deserialize, Serialize};
@@ -128,7 +124,7 @@ pub async fn register(
     ClientIp(ip): ClientIp,
     headers: axum::http::HeaderMap,
     ValidatedJson(f): ValidatedJson<RegisterForm>,
-) -> AppResult<ApiJson<RegisterData>> {
+) -> AppResult<ApiResponse<RegisterData>> {
     let ua = headers
         .get(axum::http::header::USER_AGENT)
         .and_then(|v| v.to_str().ok())
@@ -154,7 +150,7 @@ pub async fn register(
     )
     .await?;
 
-    Ok(ApiJson(RegisterData {
+    Ok(ApiResponse::data(RegisterData {
         uid: r.uid,
         access_token: r.access,
         access_exp: r.access_exp,
@@ -199,7 +195,7 @@ pub struct CheckResult {
 pub async fn check_availability(
     State(state): State<AppState>,
     ValidatedJson(q): ValidatedJson<CheckQuery>,
-) -> AppResult<ApiJson<CheckResult>> {
+) -> AppResult<ApiResponse<CheckResult>> {
     let db = state.db.reader();
     let taken = match q.field.as_str() {
         "username" => user_repo::exists_username(db, &q.value).await?,
@@ -209,7 +205,7 @@ pub async fn check_availability(
             return Err(phpyun_core::ApiError::param_invalid("field"));
         }
     };
-    Ok(ApiJson(CheckResult {
+    Ok(ApiResponse::data(CheckResult {
         available: !taken,
         field: q.field,
     }))
@@ -236,8 +232,8 @@ pub struct RegisterConfig {
     tag = "auth",
     responses((status = 200, description = "ok", body = RegisterConfig))
 )]
-pub async fn config() -> AppResult<ApiJson<RegisterConfig>> {
-    Ok(ApiJson(RegisterConfig {
+pub async fn config() -> AppResult<ApiResponse<RegisterConfig>> {
+    Ok(ApiResponse::data(RegisterConfig {
         username_min_len: 3,
         username_max_len: 20,
         password_min_len: 6,

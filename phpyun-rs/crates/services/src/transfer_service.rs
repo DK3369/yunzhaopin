@@ -23,8 +23,8 @@
 use phpyun_auth::{argon2_hash_async, verify_password_async};
 use phpyun_core::audit::{self, Actor, AuditEvent};
 use phpyun_core::jwt_blacklist;
-use phpyun_core::{clock, ApiError, AppResult, AppState, AuthenticatedUser};
 use phpyun_core::validators;
+use phpyun_core::{clock, ApiError, AppResult, AppState, AuthenticatedUser};
 use phpyun_models::user::repo as user_repo;
 
 /// Tables that can be migrated along with the account split (only have a `uid` column,
@@ -168,9 +168,8 @@ pub async fn split_account(
 
                 // Tables filtered by uid + usertype=1
                 for table in TABLES_UID_AND_USERTYPE {
-                    let _ =
-                        bulk::reassign_uid_with_usertype(&mut **tx, table, new_uid, old_uid, 1)
-                            .await?;
+                    let _ = bulk::reassign_uid_with_usertype(&mut **tx, table, new_uid, old_uid, 1)
+                        .await?;
                 }
 
                 // Special owner columns: blacklist.c_uid / report.p_uid
@@ -223,10 +222,7 @@ pub async fn split_account(
     )
     .await;
 
-    Ok(TransferResult {
-        new_uid,
-        old_uid,
-    })
+    Ok(TransferResult { new_uid, old_uid })
 }
 
 // ==================== Account merge ====================
@@ -278,7 +274,11 @@ pub async fn merge_into_company(
                 }
                 for table in TABLES_UID_AND_USERTYPE {
                     let _ = bulk::reassign_uid_with_usertype(
-                        &mut **tx, table, company_uid, user_uid, 1,
+                        &mut **tx,
+                        table,
+                        company_uid,
+                        user_uid,
+                        1,
                     )
                     .await?;
                 }

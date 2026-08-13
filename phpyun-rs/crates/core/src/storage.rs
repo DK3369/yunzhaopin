@@ -105,7 +105,9 @@ impl ObjectStore for LocalFsStorage {
     async fn put(&self, key: &str, _content_type: &str, data: Bytes) -> AppResult<()> {
         let path = self.safe_path(key);
         if let Some(parent) = path.parent() {
-            fs::create_dir_all(parent).await.map_err(ApiError::internal)?;
+            fs::create_dir_all(parent)
+                .await
+                .map_err(ApiError::internal)?;
         }
         let mut f = fs::File::create(&path).await.map_err(ApiError::internal)?;
         f.write_all(&data).await.map_err(ApiError::internal)?;
@@ -127,7 +129,11 @@ impl ObjectStore for LocalFsStorage {
     }
 
     fn url_of(&self, key: &str) -> String {
-        let safe = key.split('/').filter(|s| !s.is_empty() && *s != "..").collect::<Vec<_>>().join("/");
+        let safe = key
+            .split('/')
+            .filter(|s| !s.is_empty() && *s != "..")
+            .collect::<Vec<_>>()
+            .join("/");
         format!("{}/{}", self.base_url.trim_end_matches('/'), safe)
     }
 
@@ -173,7 +179,11 @@ impl ObjectStore for S3Storage {
     }
 
     fn url_of(&self, key: &str) -> String {
-        format!("{}/{}", self.base_url.trim_end_matches('/'), key.trim_start_matches('/'))
+        format!(
+            "{}/{}",
+            self.base_url.trim_end_matches('/'),
+            key.trim_start_matches('/')
+        )
     }
 
     async fn presigned_put(
@@ -230,9 +240,15 @@ impl Storage {
                     .storage_base_url
                     .clone()
                     .unwrap_or_else(|| format!("https://{bucket}.s3.{region}.amazonaws.com"));
-                Ok(Self::new(S3Storage { bucket, region, base_url: base }))
+                Ok(Self::new(S3Storage {
+                    bucket,
+                    region,
+                    base_url: base,
+                }))
             }
-            other => Err(ApiError::param_invalid(format!("unknown STORAGE_KIND: {other}"))),
+            other => Err(ApiError::param_invalid(format!(
+                "unknown STORAGE_KIND: {other}"
+            ))),
         }
     }
 
@@ -338,7 +354,11 @@ mod tests {
         let store = Storage::new(s);
 
         let url = store
-            .put("avatars/1/x.jpg", "image/jpeg", Bytes::from_static(b"hello"))
+            .put(
+                "avatars/1/x.jpg",
+                "image/jpeg",
+                Bytes::from_static(b"hello"),
+            )
             .await
             .unwrap();
         assert_eq!(url, "https://cdn.test/avatars/1/x.jpg");
@@ -358,7 +378,11 @@ mod tests {
 
         // Try ../../etc/passwd — it should land under root, not escape.
         store
-            .put("../../etc/passwd", "text/plain", Bytes::from_static(b"oops"))
+            .put(
+                "../../etc/passwd",
+                "text/plain",
+                Bytes::from_static(b"oops"),
+            )
             .await
             .unwrap();
         // The actual file should be at root/etc/passwd (with .. stripped), not /etc/passwd.
@@ -393,12 +417,7 @@ mod tests {
         fn url_of(&self, key: &str) -> String {
             format!("mem://{key}")
         }
-        async fn presigned_put(
-            &self,
-            key: &str,
-            _ct: &str,
-            _ttl: Duration,
-        ) -> AppResult<String> {
+        async fn presigned_put(&self, key: &str, _ct: &str, _ttl: Duration) -> AppResult<String> {
             Ok(format!("mem://{key}?presigned=1"))
         }
     }
@@ -408,7 +427,10 @@ mod tests {
         let store = Storage::new(InMemStorage(Arc::new(tokio::sync::Mutex::new(
             std::collections::HashMap::new(),
         ))));
-        let url = store.put("k1", "text/plain", Bytes::from_static(b"x")).await.unwrap();
+        let url = store
+            .put("k1", "text/plain", Bytes::from_static(b"x"))
+            .await
+            .unwrap();
         assert_eq!(url, "mem://k1");
         assert!(store.exists("k1").await);
     }

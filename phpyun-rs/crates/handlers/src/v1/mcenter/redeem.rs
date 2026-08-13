@@ -1,17 +1,15 @@
 //! User redeem orders: submit redemption / my list / cancel (pending only).
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::dto::{IdBody, StatusFilterBody};
+use phpyun_core::utils::{fmt_dt, redeem_order_status_name as order_status_name};
+use phpyun_core::{
+    ApiResponse, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
 };
-use phpyun_core::{ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::redeem_service::{self, RedeemForm};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
-use phpyun_core::dto::{IdBody, StatusFilterBody};
-use phpyun_core::utils::{fmt_dt, redeem_order_status_name as order_status_name};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -53,17 +51,21 @@ pub async fn redeem(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(f): ValidatedJson<RedeemSubmit>,
-) -> AppResult<ApiJson<RedeemCreated>> {
+) -> AppResult<ApiResponse<RedeemCreated>> {
     let id = redeem_service::redeem(
         &state,
         &user,
         f.id,
-        &RedeemForm { linkman: &f.linkman, linktel: &f.linktel, address: &f.address, num: f.num },
+        &RedeemForm {
+            linkman: &f.linkman,
+            linktel: &f.linktel,
+            address: &f.address,
+            num: f.num,
+        },
     )
     .await?;
-    Ok(ApiJson(RedeemCreated { order_id: id }))
+    Ok(ApiResponse::data(RedeemCreated { order_id: id }))
 }
-
 
 /// Redeem order item — full 11 columns of phpyun_redeem_order + formatted timestamp + status name + derived total_integral.
 #[derive(Debug, Serialize, ToSchema)]
@@ -120,9 +122,11 @@ pub async fn list_mine(
     user: AuthenticatedUser,
     page: Pagination,
     ValidatedJson(q): ValidatedJson<StatusFilterBody>,
-) -> AppResult<ApiJson<Paged<OrderItem>>> {
+) -> AppResult<ApiResponse<Paged<OrderItem>>> {
     let r = redeem_service::list_my_orders(&state, &user, q.status, page).await?;
-    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
+    Ok(ApiResponse::data(Paged::from_listing(
+        r.list, r.total, page,
+    )))
 }
 
 /// Cancel my pending order
@@ -138,7 +142,7 @@ pub async fn cancel_mine(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(b): ValidatedJson<IdBody>,
-) -> AppResult<ApiOk> {
+) -> AppResult<ApiResponse> {
     redeem_service::cancel_my_order(&state, &user, b.id).await?;
-    Ok(ApiOk("cancelled"))
+    Ok(ApiResponse::message("cancelled"))
 }

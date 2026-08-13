@@ -24,11 +24,14 @@
 //! does NOT undo the primary INSERT/DELETE. PHP behaves the same (no transaction).
 
 use phpyun_core::ApiError;
-use phpyun_core::{clock, background, i18n::{t_args, Lang}, AppResult, AppState, AuthenticatedUser, Pagination};
+use phpyun_core::{
+    background, clock,
+    i18n::{t_args, Lang},
+    AppResult, AppState, AuthenticatedUser, Pagination,
+};
 use phpyun_models::collect::entity::{Collect, KIND_JOB};
 use phpyun_models::collect::repo as collect_repo;
 use phpyun_models::message::repo as message_repo;
-
 
 // ==================== PHP-aligned side effects ====================
 // These are intentionally inlined (not in a shared module) because they're
@@ -36,8 +39,8 @@ use phpyun_models::message::repo as message_repo;
 // can be extracted then.
 
 const MEMBER_LOG_OPERA_FAV: i32 = 5; // PHP `collectJob` passes opera=5 (collection ops)
-const MEMBER_LOG_TYPE_ADD: i32 = 1;  // PHP type=1 = add
-const MEMBER_LOG_TYPE_DEL: i32 = 3;  // PHP type=3 = delete
+const MEMBER_LOG_TYPE_ADD: i32 = 1; // PHP type=1 = add
+const MEMBER_LOG_TYPE_DEL: i32 = 3; // PHP type=3 = delete
 
 /// Persisted log / sysmsg copy uses the system default language until recipient
 /// language preferences are stored (see `notification_consumers::NOTIF_LANG`).
@@ -110,8 +113,7 @@ pub async fn toggle(
     // the cache lookup is O(1) and avoids hitting MySQL on every click.
     // Propagate errors here — silently defaulting to `false` would risk
     // double-inserting since `phpyun_fav_job` has no UNIQUE on (uid, job_id).
-    let already_favorited =
-        crate::collect_cache::is_favorited(state, user.uid, target_id).await?;
+    let already_favorited = crate::collect_cache::is_favorited(state, user.uid, target_id).await?;
 
     // Already favorited → cancel branch
     if already_favorited {
@@ -131,13 +133,23 @@ pub async fn toggle(
                 NOTIF_LANG,
                 &[("id", &target_id.to_string())],
             );
-            add_member_log(&st, uid, usertype, did, &ip_owned, &content, MEMBER_LOG_TYPE_DEL).await;
+            add_member_log(
+                &st,
+                uid,
+                usertype,
+                did,
+                &ip_owned,
+                &content,
+                MEMBER_LOG_TYPE_DEL,
+            )
+            .await;
         });
         return Ok(false);
     }
 
     // Add branch — fetch job snapshot for INSERT.
-    let Some(job) = phpyun_models::job::repo::find_by_id(state.db.reader(), target_id).await? else {
+    let Some(job) = phpyun_models::job::repo::find_by_id(state.db.reader(), target_id).await?
+    else {
         return Err(ApiError::business("collect_target_not_found").into());
     };
 
@@ -174,14 +186,25 @@ pub async fn toggle(
             NOTIF_LANG,
             &[("job_name", &job_name)],
         );
-        add_member_log(&st, uid, usertype, did, &ip_owned, &content, MEMBER_LOG_TYPE_ADD).await;
+        add_member_log(
+            &st,
+            uid,
+            usertype,
+            did,
+            &ip_owned,
+            &content,
+            MEMBER_LOG_TYPE_ADD,
+        )
+        .await;
         // 3. notify the company that owns the job (PHP `addSystem` to job.uid usertype=2)
         let sysmsg_content = t_args(
             "notifications.collect.favorited_sysmsg",
             NOTIF_LANG,
             &[("job_name", &job_name)],
         );
-        let _ = message_repo::insert_simple(st.db.pool(), com_uid, 2, &sysmsg_content, clock::now_ts()).await;
+        let _ =
+            message_repo::insert_simple(st.db.pool(), com_uid, 2, &sysmsg_content, clock::now_ts())
+                .await;
     });
 
     Ok(true)
@@ -211,7 +234,16 @@ pub async fn remove(
                 NOTIF_LANG,
                 &[("id", &target_id.to_string())],
             );
-            add_member_log(&st, uid, usertype, did, &ip_owned, &content, MEMBER_LOG_TYPE_DEL).await;
+            add_member_log(
+                &st,
+                uid,
+                usertype,
+                did,
+                &ip_owned,
+                &content,
+                MEMBER_LOG_TYPE_DEL,
+            )
+            .await;
         });
     }
     Ok(())
@@ -238,14 +270,14 @@ pub async fn list(
         collect_repo::count_by_user(state.db.reader(), user.uid),
         collect_repo::list_by_user(state.db.reader(), user.uid, page.offset, page.limit),
     );
-    Ok(CollectPage { total: total?, list: list? })
+    Ok(CollectPage {
+        total: total?,
+        list: list?,
+    })
 }
 
 /// Count how many users have favorited a given job (used by job-detail aggregations).
-pub async fn count_collectors_of_job(
-    state: &AppState,
-    job_id: u64,
-) -> AppResult<u64> {
+pub async fn count_collectors_of_job(state: &AppState, job_id: u64) -> AppResult<u64> {
     Ok(collect_repo::count_collectors_of_job(state.db.reader(), job_id).await?)
 }
 

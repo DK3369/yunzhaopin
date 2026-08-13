@@ -1,18 +1,16 @@
 //! Saved-search subscription management.
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
-};
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::dto::{CreatedId, IdBody};
 use phpyun_core::json;
-use phpyun_core::{ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
+use phpyun_core::utils::fmt_dt;
+use phpyun_core::{
+    ApiResponse, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
+};
 use phpyun_services::saved_search_service::{self, CreateInput};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
-use phpyun_core::dto::{CreatedId, IdBody};
-use phpyun_core::utils::{fmt_dt};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -37,7 +35,6 @@ pub struct SavedItem {
     pub updated_at: i64,
     pub updated_at_n: String,
 }
-
 
 impl From<phpyun_models::saved_search::entity::SavedSearch> for SavedItem {
     fn from(s: phpyun_models::saved_search::entity::SavedSearch) -> Self {
@@ -82,7 +79,9 @@ fn validate_params_size(v: &json::Value) -> Result<(), validator::ValidationErro
     }
     Ok(())
 }
-fn default_notify() -> bool { true }
+fn default_notify() -> bool {
+    true
+}
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct NotifyForm {
@@ -99,13 +98,16 @@ pub struct NotifyForm {
     tag = "mcenter",
     security(("bearer" = [])),
     responses((status = 200, description = "ok"))
-)]pub async fn list(
+)]
+pub async fn list(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-) -> AppResult<ApiJson<Paged<SavedItem>>> {
+) -> AppResult<ApiResponse<Paged<SavedItem>>> {
     let r = saved_search_service::list(&state, &user, page).await?;
-    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
+    Ok(ApiResponse::data(Paged::from_listing(
+        r.list, r.total, page,
+    )))
 }
 
 /// Create a saved search
@@ -121,7 +123,7 @@ pub async fn create(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(f): ValidatedJson<CreateForm>,
-) -> AppResult<ApiJson<CreatedId>> {
+) -> AppResult<ApiResponse<CreatedId>> {
     let id = saved_search_service::create(
         &state,
         &user,
@@ -133,7 +135,7 @@ pub async fn create(
         },
     )
     .await?;
-    Ok(ApiJson(CreatedId { id }))
+    Ok(ApiResponse::data(CreatedId { id }))
 }
 
 /// Toggle notification switch
@@ -144,12 +146,14 @@ pub async fn create(
     request_body = NotifyForm,
     responses((status = 200, description = "ok"))
 )]
-pub async fn set_notify(State(state): State<AppState>,
+pub async fn set_notify(
+    State(state): State<AppState>,
     user: AuthenticatedUser,
-    ValidatedJson(f): ValidatedJson<NotifyForm>) -> AppResult<ApiOk> {
+    ValidatedJson(f): ValidatedJson<NotifyForm>,
+) -> AppResult<ApiResponse> {
     let id = f.id;
     saved_search_service::set_notify(&state, &user, id, f.notify).await?;
-    Ok(ApiOk("ok"))
+    Ok(ApiResponse::message("ok"))
 }
 
 /// Delete a saved search
@@ -160,11 +164,12 @@ pub async fn set_notify(State(state): State<AppState>,
     request_body = IdBody,
     responses((status = 200, description = "ok"))
 )]
-pub async fn remove(State(state): State<AppState>,
+pub async fn remove(
+    State(state): State<AppState>,
     user: AuthenticatedUser,
-    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiOk> {
+    ValidatedJson(b): ValidatedJson<IdBody>,
+) -> AppResult<ApiResponse> {
     let id = b.id;
     saved_search_service::delete(&state, &user, id).await?;
-    Ok(ApiOk("deleted"))
+    Ok(ApiResponse::message("deleted"))
 }
-

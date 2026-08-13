@@ -15,12 +15,8 @@
 //! that reads `?token=...`, immediately POSTs to this endpoint, then shows
 //! the result. The frontend page never persists or logs the URL.
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
-};
-use phpyun_core::{ApiOk, AppResult, AppState, ValidatedJson};
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::{ApiResponse, AppResult, AppState, ValidatedJson};
 use phpyun_services::contact_cert_service;
 use serde::Deserialize;
 use utoipa::ToSchema;
@@ -56,7 +52,7 @@ pub struct VerifyBody {
 pub async fn verify(
     State(state): State<AppState>,
     ValidatedJson(b): ValidatedJson<VerifyBody>,
-) -> AppResult<ApiOk> {
+) -> AppResult<ApiResponse> {
     contact_cert_service::verify_email_token(&state, &b.token).await?;
-    Ok(ApiOk("email_verified"))
+    Ok(ApiResponse::message("email_verified"))
 }

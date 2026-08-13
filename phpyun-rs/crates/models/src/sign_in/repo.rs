@@ -65,12 +65,10 @@ pub async fn upsert_user_sign(
     _date_ymd: u32,
     _now: i64,
 ) -> Result<(), sqlx::Error> {
-    sqlx::query(
-        "UPDATE phpyun_member SET signday = ?, signdays = signdays + 1 WHERE uid = ?",
-    )
-    .bind(signday)
-    .bind(uid)
-    .execute(pool)
-    .await?;
+    sqlx::query("UPDATE phpyun_member SET signday = ?, signdays = signdays + 1 WHERE uid = ?")
+        .bind(signday)
+        .bind(uid)
+        .execute(pool)
+        .await?;
     Ok(())
 }

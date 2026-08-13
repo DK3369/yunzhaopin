@@ -42,16 +42,12 @@ pub async fn list_products_public(
         .await
 }
 
-pub async fn count_products_public(
-    pool: &MySqlPool,
-    com_uid: u64,
-) -> Result<u64, sqlx::Error> {
-    let (n,): (i64,) = sqlx::query_as(
-        "SELECT COUNT(*) FROM phpyun_company_product WHERE uid = ? AND status = 1",
-    )
-    .bind(com_uid)
-    .fetch_one(pool)
-    .await?;
+pub async fn count_products_public(pool: &MySqlPool, com_uid: u64) -> Result<u64, sqlx::Error> {
+    let (n,): (i64,) =
+        sqlx::query_as("SELECT COUNT(*) FROM phpyun_company_product WHERE uid = ? AND status = 1")
+            .bind(com_uid)
+            .fetch_one(pool)
+            .await?;
     Ok(n.max(0) as u64)
 }
 
@@ -90,16 +86,12 @@ pub async fn list_products_own(
         .await
 }
 
-pub async fn count_products_own(
-    pool: &MySqlPool,
-    com_uid: u64,
-) -> Result<u64, sqlx::Error> {
-    let (n,): (i64,) = sqlx::query_as(
-        "SELECT COUNT(*) FROM phpyun_company_product WHERE uid = ? AND status != 2",
-    )
-    .bind(com_uid)
-    .fetch_one(pool)
-    .await?;
+pub async fn count_products_own(pool: &MySqlPool, com_uid: u64) -> Result<u64, sqlx::Error> {
+    let (n,): (i64,) =
+        sqlx::query_as("SELECT COUNT(*) FROM phpyun_company_product WHERE uid = ? AND status != 2")
+            .bind(com_uid)
+            .fetch_one(pool)
+            .await?;
     Ok(n.max(0) as u64)
 }
 
@@ -167,11 +159,7 @@ pub async fn update_product(
 }
 
 /// Soft delete: UPDATE status=2, no physical DELETE.
-pub async fn delete_product(
-    pool: &MySqlPool,
-    id: u64,
-    uid: u64,
-) -> Result<u64, sqlx::Error> {
+pub async fn delete_product(pool: &MySqlPool, id: u64, uid: u64) -> Result<u64, sqlx::Error> {
     let res = sqlx::query(
         "UPDATE phpyun_company_product SET status = 2 \
          WHERE id = ? AND uid = ? AND status != 2",
@@ -215,16 +203,12 @@ pub async fn list_news_public(
         .await
 }
 
-pub async fn count_news_public(
-    pool: &MySqlPool,
-    com_uid: u64,
-) -> Result<u64, sqlx::Error> {
-    let (n,): (i64,) = sqlx::query_as(
-        "SELECT COUNT(*) FROM phpyun_company_news WHERE uid = ? AND status = 1",
-    )
-    .bind(com_uid)
-    .fetch_one(pool)
-    .await?;
+pub async fn count_news_public(pool: &MySqlPool, com_uid: u64) -> Result<u64, sqlx::Error> {
+    let (n,): (i64,) =
+        sqlx::query_as("SELECT COUNT(*) FROM phpyun_company_news WHERE uid = ? AND status = 1")
+            .bind(com_uid)
+            .fetch_one(pool)
+            .await?;
     Ok(n.max(0) as u64)
 }
 
@@ -269,12 +253,11 @@ pub async fn list_news_own(
 }
 
 pub async fn count_news_own(pool: &MySqlPool, com_uid: u64) -> Result<u64, sqlx::Error> {
-    let (n,): (i64,) = sqlx::query_as(
-        "SELECT COUNT(*) FROM phpyun_company_news WHERE uid = ? AND status != 2",
-    )
-    .bind(com_uid)
-    .fetch_one(pool)
-    .await?;
+    let (n,): (i64,) =
+        sqlx::query_as("SELECT COUNT(*) FROM phpyun_company_news WHERE uid = ? AND status != 2")
+            .bind(com_uid)
+            .fetch_one(pool)
+            .await?;
     Ok(n.max(0) as u64)
 }
 

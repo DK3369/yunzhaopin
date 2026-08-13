@@ -1,11 +1,9 @@
 //! Ratings I have given to others.
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::{
+    dto::KindTargetUidBody, ApiResponse, AppResult, AppState, AuthenticatedUser, ValidatedJson,
 };
-use phpyun_core::{dto::KindTargetUidBody, ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, ValidatedJson};
 use phpyun_services::rating_service;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
@@ -66,7 +64,7 @@ pub async fn rate(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(f): ValidatedJson<RateForm>,
-) -> AppResult<ApiOk> {
+) -> AppResult<ApiResponse> {
     rating_service::rate(
         &state,
         &user,
@@ -76,7 +74,7 @@ pub async fn rate(
         &f.comment,
     )
     .await?;
-    Ok(ApiOk("ok"))
+    Ok(ApiResponse::message("ok"))
 }
 
 /// Get my rating for a target
@@ -92,9 +90,9 @@ pub async fn get_mine(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(b): ValidatedJson<KindTargetUidBody>,
-) -> AppResult<ApiJson<Option<MyRating>>> {
+) -> AppResult<ApiResponse<Option<MyRating>>> {
     let r = rating_service::get_mine(&state, &user, b.target_uid, b.kind).await?;
-    Ok(ApiJson(r.map(MyRating::from)))
+    Ok(ApiResponse::data(r.map(MyRating::from)))
 }
 
 /// Withdraw rating
@@ -110,7 +108,7 @@ pub async fn unrate(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(b): ValidatedJson<KindTargetUidBody>,
-) -> AppResult<ApiOk> {
+) -> AppResult<ApiResponse> {
     rating_service::unrate(&state, &user, b.target_uid, b.kind).await?;
-    Ok(ApiOk("removed"))
+    Ok(ApiResponse::message("removed"))
 }

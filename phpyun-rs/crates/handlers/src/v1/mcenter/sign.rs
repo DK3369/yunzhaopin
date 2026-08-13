@@ -1,11 +1,7 @@
 //! Daily check-in (matching PHPYun `ajax::sign_action`).
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
-};
-use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp};
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::{ApiResponse, AppResult, AppState, AuthenticatedUser, ClientIp};
 use phpyun_services::sign_service;
 use serde::Serialize;
 use utoipa::ToSchema;
@@ -35,9 +31,9 @@ pub async fn sign(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
-) -> AppResult<ApiJson<SignResp>> {
+) -> AppResult<ApiResponse<SignResp>> {
     let r = sign_service::sign(&state, &user, &ip).await?;
-    Ok(ApiJson(SignResp {
+    Ok(ApiResponse::data(SignResp {
         signday: r.signday,
         signdays: r.signdays,
         reward: r.reward,
@@ -63,9 +59,9 @@ pub struct StatusResp {
 pub async fn status(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-) -> AppResult<ApiJson<StatusResp>> {
+) -> AppResult<ApiResponse<StatusResp>> {
     let (us, signed) = sign_service::status(&state, &user).await?;
-    Ok(ApiJson(StatusResp {
+    Ok(ApiResponse::data(StatusResp {
         signday: us.signday,
         signdays: us.signdays,
         last_date_ymd: us.last_date_ymd,

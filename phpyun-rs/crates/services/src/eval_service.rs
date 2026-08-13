@@ -3,17 +3,16 @@
 //! Question structure: `options` is a JSON array `[{label, text, score}, ...]`.
 //! Users submit `answers = {"<question_id>": "<label>", ...}` and the server tallies the totals from each option's `score`.
 
-use phpyun_core::{background, clock, ApiError, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
+use phpyun_core::{
+    background, clock, ApiError, AppResult, AppState, AuthenticatedUser, Paged, Pagination,
+};
 use phpyun_models::eval::{
     entity::{EvalLog, EvalPaper, EvalQuestion},
     repo as eval_repo,
 };
 use std::collections::HashMap;
 
-pub async fn list_papers(
-    state: &AppState,
-    page: Pagination,
-) -> AppResult<Paged<EvalPaper>> {
+pub async fn list_papers(state: &AppState, page: Pagination) -> AppResult<Paged<EvalPaper>> {
     let db = state.db.reader();
     let (list, total) = tokio::join!(
         eval_repo::list_papers(db, page.offset, page.limit),
@@ -61,8 +60,12 @@ pub async fn submit(
     let mut score: i32 = 0;
     for q in &questions {
         let qid_key = q.id.to_string();
-        let Some(user_label) = answers.get(&qid_key) else { continue };
-        let Some(opts) = q.options.as_array() else { continue };
+        let Some(user_label) = answers.get(&qid_key) else {
+            continue;
+        };
+        let Some(opts) = q.options.as_array() else {
+            continue;
+        };
         for opt in opts {
             if opt.get("label").and_then(|v| v.as_str()) == Some(user_label.as_str()) {
                 if let Some(s) = opt.get("score").and_then(|v| v.as_i64()) {
@@ -74,8 +77,15 @@ pub async fn submit(
     }
 
     let answers_json = serde_json::to_value(&answers).map_err(ApiError::internal)?;
-    let id =
-        eval_repo::create_log(db, user.uid, paper_id, score, &answers_json, clock::now_ts()).await?;
+    let id = eval_repo::create_log(
+        db,
+        user.uid,
+        paper_id,
+        score,
+        &answers_json,
+        clock::now_ts(),
+    )
+    .await?;
     Ok((id, score))
 }
 

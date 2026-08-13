@@ -5,9 +5,10 @@ A Rust rewrite of the PHPYun backend. See the parent [PROJECT_PLAN.md](../PROJEC
 ## Quick Start
 
 ```bash
-# 1. Copy the environment variables file
-cp .env.example .env
-# Edit .env and fill in the actual DATABASE_URL / JWT_SECRET
+# 1. Prepare the shared development/test configuration
+cp .env.dev.example .env.dev
+# Edit .env.dev and fill in DATABASE_URL / JWT_SECRET.
+# Development and integration tests intentionally use this same MySQL/Redis set.
 
 # 2. Start dependencies (if MySQL/Redis are not available locally)
 # You can use the host machine's aapanel MySQL directly
@@ -64,6 +65,13 @@ cargo install sqlx-cli --no-default-features --features mysql
 cargo sqlx prepare --workspace
 ```
 
+`APP_ENV` is required and accepts only `dev`, `test`, or `prod`. Debug binaries
+load `.env.dev`; release binaries load `.env.pro` from their working directory
+when present. Set `PHPYUN_ENV_FILE=/absolute/path/to/file` to select an exact
+file. Database-backed integration tests also load `.env.dev`, reject
+`APP_ENV=prod`, and internally switch the typed runtime mode to `test`; they
+therefore share the development MySQL and Redis data by design.
+
 ## Contribution Guidelines
 
 - Code must pass `cargo fmt` + `cargo clippy -- -D warnings`
@@ -71,13 +79,28 @@ cargo sqlx prepare --workspace
 - New endpoints must be paired with updates to `WAP_API_SPEC.md`
 - Commit messages should follow [Conventional Commits](https://www.conventionalcommits.org/)
 
-## Production Deployment (Reference)
+## Production package
 
-See PROJECT_PLAN.md §9 for the deployment strategy. At this stage, systemd is sufficient:
+Production artifacts must be built on a native x86_64 Linux host. The script
+checks formatting and library tests, uses locked dependencies, builds the
+release binary, and emits a complete tarball plus SHA-256 checksum under
+`dist/`:
 
 ```bash
-cargo build --release -p phpyun-app
-sudo cp target/release/app /usr/local/bin/phpyun-rs
-sudo cp deploy/systemd/phpyun-rs.service /etc/systemd/system/
-sudo systemctl enable --now phpyun-rs
+scripts/build-production.sh
 ```
+
+Prepare production configuration separately from the development/test file:
+
+```bash
+cp .env.pro.example .env.pro
+chmod 640 .env.pro
+```
+
+The repository ignores both `.env.dev` and `.env.pro`; never commit their
+credentials.
+
+The package includes the binary, production environment template, embedded
+SQLx migration sources, systemd template, build manifest, and checksums. It
+does not install, migrate, or restart the service. See
+[`deploy/INSTALL.md`](deploy/INSTALL.md) for deployment and rollback steps.

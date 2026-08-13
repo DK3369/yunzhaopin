@@ -1,20 +1,19 @@
 //! Warning management (admin issues warnings).
 
-use axum::{
-    extract::{State},
-    Router,
-    routing::post,
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::dto::CreatedId;
+use phpyun_core::utils::fmt_dt;
+use phpyun_core::{
+    ApiResponse, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
 };
-use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::warning_service::{self, WarnInput};
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
-use phpyun_core::dto::{CreatedId};
-use phpyun_core::utils::{fmt_dt};
 
 pub fn routes() -> Router<AppState> {
-    Router::new().route("/warnings", post(issue))
+    Router::new()
+        .route("/warnings", post(issue))
         .route("/warnings/list", post(list))
 }
 
@@ -24,9 +23,14 @@ pub struct ListQuery {
     pub kind: Option<i32>,
 }
 
-
 fn warn_kind_name(k: i32) -> &'static str {
-    match k { 1 => "user", 2 => "company", 3 => "job", 4 => "resume", _ => "unknown" }
+    match k {
+        1 => "user",
+        2 => "company",
+        3 => "job",
+        4 => "resume",
+        _ => "unknown",
+    }
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -84,15 +88,18 @@ pub struct WarnForm {
     security(("bearer" = [])),
     params(ListQuery),
     responses((status = 200, description = "ok"))
-)]pub async fn list(
+)]
+pub async fn list(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
     ValidatedJson(q): ValidatedJson<ListQuery>,
-) -> AppResult<ApiJson<Paged<WarningItem>>> {
+) -> AppResult<ApiResponse<Paged<WarningItem>>> {
     user.require_admin()?;
     let r = warning_service::admin_list(&state, q.kind, page).await?;
-    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
+    Ok(ApiResponse::data(Paged::from_listing(
+        r.list, r.total, page,
+    )))
 }
 
 /// Admin: issue a warning
@@ -108,7 +115,7 @@ pub async fn issue(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(f): ValidatedJson<WarnForm>,
-) -> AppResult<ApiJson<CreatedId>> {
+) -> AppResult<ApiResponse<CreatedId>> {
     user.require_admin()?;
     let id = warning_service::admin_issue(
         &state,
@@ -121,5 +128,5 @@ pub async fn issue(
         },
     )
     .await?;
-    Ok(ApiJson(CreatedId { id }))
+    Ok(ApiResponse::data(CreatedId { id }))
 }

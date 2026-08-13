@@ -179,7 +179,7 @@ pub struct ClearResult {
 
 /// `{ ok }` — generic boolean-success response. Used by claim / oauth-bind /
 /// payment-callback endpoints that just want to signal completion. Prefer
-/// `ApiOk` for the full message-envelope; this struct is for cases where the
+/// `ApiResponse::message` for the full message-envelope; this struct is for cases where the
 /// frontend explicitly reads `data.ok`.
 #[derive(Debug, Serialize, ToSchema)]
 pub struct OkResp {

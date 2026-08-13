@@ -4,12 +4,11 @@
 //! Toggle semantics: `POST /v1/mcenter/follows` flips between followed and
 //! unfollowed; `data.following` is the authoritative new state.
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::{
+    dto::{ExistsResp, KindTargetUidBody},
+    ApiResponse, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
 };
-use phpyun_core::{dto::{ExistsResp, KindTargetUidBody}, ApiJson, ApiMsgData, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::atn_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
@@ -55,12 +54,18 @@ pub async fn toggle(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(f): ValidatedJson<FollowToggleForm>,
-) -> AppResult<ApiMsgData<ToggleResp>> {
+) -> AppResult<ApiResponse<ToggleResp>> {
     let r = atn_service::toggle(&state, &user, f.target_kind, f.target_uid).await?;
-    Ok(ApiMsgData {
-        msg_key: if r.following { "follow_added" } else { "follow_removed" },
-        data: ToggleResp { following: r.following },
-    })
+    Ok(ApiResponse::message_data(
+        if r.following {
+            "follow_added"
+        } else {
+            "follow_removed"
+        },
+        ToggleResp {
+            following: r.following,
+        },
+    ))
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -107,9 +112,11 @@ pub async fn list_following(
     user: AuthenticatedUser,
     page: Pagination,
     ValidatedJson(q): ValidatedJson<ListQuery>,
-) -> AppResult<ApiJson<Paged<FollowItem>>> {
+) -> AppResult<ApiResponse<Paged<FollowItem>>> {
     let r = atn_service::list_following(&state, &user, q.kind, page).await?;
-    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
+    Ok(ApiResponse::data(Paged::from_listing(
+        r.list, r.total, page,
+    )))
 }
 
 /// Followers of the current user (employers see who follows their company,
@@ -125,9 +132,11 @@ pub async fn list_followers(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-) -> AppResult<ApiJson<Paged<FollowItem>>> {
+) -> AppResult<ApiResponse<Paged<FollowItem>>> {
     let r = atn_service::list_followers(&state, &user, page).await?;
-    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
+    Ok(ApiResponse::data(Paged::from_listing(
+        r.list, r.total, page,
+    )))
 }
 
 /// Cheap probe used by frontend to render the follow-button state.
@@ -143,7 +152,7 @@ pub async fn exists(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(b): ValidatedJson<KindTargetUidBody>,
-) -> AppResult<ApiJson<ExistsResp>> {
+) -> AppResult<ApiResponse<ExistsResp>> {
     let ok = atn_service::exists(&state, &user, b.kind, b.target_uid).await?;
-    Ok(ApiJson(ExistsResp { exists: ok }))
+    Ok(ApiResponse::data(ExistsResp { exists: ok }))
 }

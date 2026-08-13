@@ -1,18 +1,14 @@
 //! Language skill CRUD (usertype=1). Single-resource delete is folded into update (`status:2` is a soft delete).
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
-};
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::dto::CreatedId;
 use phpyun_core::json;
-use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, ValidatedJson};
+use phpyun_core::{ApiResponse, AppResult, AppState, AuthenticatedUser, ClientIp, ValidatedJson};
 use phpyun_models::resume::language::LanguageInput;
 use phpyun_services::resume_children_service::language_svc;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
-use phpyun_core::dto::{CreatedId};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -64,12 +60,15 @@ pub struct LanguageForm {
     tag = "mcenter",
     security(("bearer" = [])),
     responses((status = 200, description = "ok"))
-)]pub async fn list(
+)]
+pub async fn list(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-) -> AppResult<ApiJson<Vec<LanguageItem>>> {
+) -> AppResult<ApiResponse<Vec<LanguageItem>>> {
     let list = language_svc::list(&state, &user).await?;
-    Ok(ApiJson(list.into_iter().map(LanguageItem::from).collect()))
+    Ok(ApiResponse::data(
+        list.into_iter().map(LanguageItem::from).collect(),
+    ))
 }
 
 #[utoipa::path(
@@ -85,7 +84,7 @@ pub async fn create(
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
     ValidatedJson(f): ValidatedJson<LanguageForm>,
-) -> AppResult<ApiJson<CreatedId>> {
+) -> AppResult<ApiResponse<CreatedId>> {
     let id = language_svc::create(
         &state,
         &user,
@@ -96,7 +95,7 @@ pub async fn create(
         &ip,
     )
     .await?;
-    Ok(ApiJson(CreatedId { id }))
+    Ok(ApiResponse::data(CreatedId { id }))
 }
 
 #[utoipa::path(
@@ -112,10 +111,12 @@ pub async fn update(
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
     ValidatedJson(f): ValidatedJson<LanguageForm>,
-) -> AppResult<ApiJson<json::Value>> {
+) -> AppResult<ApiResponse<json::Value>> {
     if f.status == Some(2) {
         language_svc::delete(&state, &user, f.id, &ip).await?;
-        return Ok(ApiJson(json::json!({ "ok": true, "deleted": true })));
+        return Ok(ApiResponse::data(
+            json::json!({ "ok": true, "deleted": true }),
+        ));
     }
     language_svc::update(
         &state,
@@ -128,5 +129,5 @@ pub async fn update(
         &ip,
     )
     .await?;
-    Ok(ApiJson(json::json!({ "ok": true })))
+    Ok(ApiResponse::data(json::json!({ "ok": true })))
 }

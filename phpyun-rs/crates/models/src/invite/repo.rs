@@ -44,11 +44,7 @@ pub struct InviteCreate<'a> {
     pub content: &'a str,
 }
 
-pub async fn create(
-    pool: &MySqlPool,
-    c: InviteCreate<'_>,
-    now: i64,
-) -> Result<u64, sqlx::Error> {
+pub async fn create(pool: &MySqlPool, c: InviteCreate<'_>, now: i64) -> Result<u64, sqlx::Error> {
     // We don't bind subject/content/status — those fields exist only in the
     // Rust API surface, not on the PHP table. They travel via the event bus
     // payload (see `invite_service::send`). `rec_type=0` flags this row as a
@@ -73,13 +69,12 @@ pub async fn count_today_by_user(
     uid: u64,
     today_start_ts: i64,
 ) -> Result<u64, sqlx::Error> {
-    let (n,): (i64,) = sqlx::query_as(
-        "SELECT COUNT(*) FROM phpyun_recommend WHERE uid = ? AND addtime >= ?",
-    )
-    .bind(uid)
-    .bind(today_start_ts)
-    .fetch_one(pool)
-    .await?;
+    let (n,): (i64,) =
+        sqlx::query_as("SELECT COUNT(*) FROM phpyun_recommend WHERE uid = ? AND addtime >= ?")
+            .bind(uid)
+            .bind(today_start_ts)
+            .fetch_one(pool)
+            .await?;
     Ok(n.max(0) as u64)
 }
 
@@ -105,10 +100,9 @@ pub async fn list_by_user(
 }
 
 pub async fn count_by_user(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Error> {
-    let (n,): (i64,) =
-        sqlx::query_as("SELECT COUNT(*) FROM phpyun_recommend WHERE uid = ?")
-            .bind(uid)
-            .fetch_one(pool)
-            .await?;
+    let (n,): (i64,) = sqlx::query_as("SELECT COUNT(*) FROM phpyun_recommend WHERE uid = ?")
+        .bind(uid)
+        .fetch_one(pool)
+        .await?;
     Ok(n.max(0) as u64)
 }

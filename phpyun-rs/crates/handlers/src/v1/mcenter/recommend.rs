@@ -1,12 +1,8 @@
 //! Recommendations (matching PHPYun `finder.model.php`).
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
-};
+use axum::{extract::State, routing::post, Router};
 use phpyun_core::i18n::{current_lang, t};
-use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, ValidatedJson};
+use phpyun_core::{ApiResponse, AppResult, AppState, AuthenticatedUser, ValidatedJson};
 use phpyun_services::{recommend_email_service, recommend_service};
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
@@ -69,9 +65,11 @@ pub async fn jobs(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(q): ValidatedJson<RecQuery>,
-) -> AppResult<ApiJson<Vec<RecJob>>> {
+) -> AppResult<ApiResponse<Vec<RecJob>>> {
     let list = recommend_service::recommend_jobs_for_me(&state, &user, q.limit).await?;
-    Ok(ApiJson(list.into_iter().map(RecJob::from).collect()))
+    Ok(ApiResponse::data(
+        list.into_iter().map(RecJob::from).collect(),
+    ))
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -91,7 +89,11 @@ impl From<phpyun_models::resume::entity::Resume> for RecResume {
             Some(n) if !n.is_empty() => {
                 let mut s = String::new();
                 for (i, ch) in n.chars().enumerate() {
-                    if i == 0 { s.push(ch); } else { s.push('*'); }
+                    if i == 0 {
+                        s.push(ch);
+                    } else {
+                        s.push('*');
+                    }
                 }
                 s
             }
@@ -120,9 +122,11 @@ pub async fn resumes(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(q): ValidatedJson<RecQuery>,
-) -> AppResult<ApiJson<Vec<RecResume>>> {
+) -> AppResult<ApiResponse<Vec<RecResume>>> {
     let list = recommend_service::recommend_resumes_for_me(&state, &user, q.limit).await?;
-    Ok(ApiJson(list.into_iter().map(RecResume::from).collect()))
+    Ok(ApiResponse::data(
+        list.into_iter().map(RecResume::from).collect(),
+    ))
 }
 
 // ==================== Email recommend ====================
@@ -131,7 +135,10 @@ pub async fn resumes(
 pub struct EmailRecommendForm {
     #[validate(range(min = 1, max = 99_999_999))]
     pub id: u64,
-    #[validate(length(min = 1, max = 64), custom(function = "phpyun_core::validators::path_token"))]
+    #[validate(
+        length(min = 1, max = 64),
+        custom(function = "phpyun_core::validators::path_token")
+    )]
     pub kind: String,
     #[validate(email)]
     pub email: String,
@@ -172,9 +179,11 @@ pub struct EmailRecommendResp {
         (status = 429, description = "Per-day cap reached or interval too short"),
     )
 )]
-pub async fn send_email(State(state): State<AppState>,
+pub async fn send_email(
+    State(state): State<AppState>,
     user: AuthenticatedUser,
-    ValidatedJson(f): ValidatedJson<EmailRecommendForm>) -> AppResult<ApiJson<EmailRecommendResp>> {
+    ValidatedJson(f): ValidatedJson<EmailRecommendForm>,
+) -> AppResult<ApiResponse<EmailRecommendResp>> {
     let kind = f.kind;
     let id = f.id;
     phpyun_core::validators::ensure_path_token(&kind)?;
@@ -191,7 +200,7 @@ pub async fn send_email(State(state): State<AppState>,
             )))
         }
     };
-    Ok(ApiJson(EmailRecommendResp { log_id: r.log_id }))
+    Ok(ApiResponse::data(EmailRecommendResp { log_id: r.log_id }))
 }
 
 // ==================== Quota preflight ====================
@@ -234,7 +243,7 @@ impl From<phpyun_services::recommend_email_service::QuotaStatus> for QuotaView {
 pub async fn quota(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-) -> AppResult<ApiJson<QuotaView>> {
+) -> AppResult<ApiResponse<QuotaView>> {
     let q = recommend_email_service::check_quota(&state, &user).await?;
-    Ok(ApiJson(QuotaView::from(q)))
+    Ok(ApiResponse::data(QuotaView::from(q)))
 }

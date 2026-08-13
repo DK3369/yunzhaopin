@@ -4,7 +4,9 @@
 //!
 //! View counters are fire-and-forget so they never block the main path.
 
-use phpyun_core::{background, clock, ApiError, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
+use phpyun_core::{
+    background, clock, ApiError, AppResult, AppState, AuthenticatedUser, Paged, Pagination,
+};
 use phpyun_models::qna::{
     entity::{Answer, AnswerReview, QClass, Question, SUPPORT_KIND_ANSWER, SUPPORT_KIND_QUESTION},
     repo as qna_repo,
@@ -74,11 +76,7 @@ pub async fn create_question(
     Ok(id)
 }
 
-pub async fn delete_question(
-    state: &AppState,
-    user: &AuthenticatedUser,
-    id: u64,
-) -> AppResult<()> {
+pub async fn delete_question(state: &AppState, user: &AuthenticatedUser, id: u64) -> AppResult<()> {
     let affected = qna_repo::delete_question(state.db.pool(), id, user.uid).await?;
     if affected == 0 {
         return Err(ApiError::forbidden());
@@ -144,13 +142,7 @@ pub async fn toggle_attention(
     user: &AuthenticatedUser,
     question_id: u64,
 ) -> AppResult<bool> {
-    Ok(qna_repo::toggle_attention(
-        state.db.pool(),
-        user.uid,
-        question_id,
-        clock::now_ts(),
-    )
-    .await?)
+    Ok(qna_repo::toggle_attention(state.db.pool(), user.uid, question_id, clock::now_ts()).await?)
 }
 
 pub async fn list_attended(
@@ -159,8 +151,7 @@ pub async fn list_attended(
     page: Pagination,
 ) -> AppResult<Paged<Question>> {
     let db = state.db.reader();
-    let list =
-        qna_repo::list_attended_questions(db, user.uid, page.offset, page.limit).await?;
+    let list = qna_repo::list_attended_questions(db, user.uid, page.offset, page.limit).await?;
     let total = qna_repo::count_attended_questions(db, user.uid).await?;
     Ok(Paged::new(list, total, page.page, page.page_size))
 }
@@ -201,8 +192,7 @@ pub async fn list_my_questions(
     page: Pagination,
 ) -> AppResult<Paged<Question>> {
     let db = state.db.reader();
-    let list =
-        qna_repo::list_questions_by_user(db, user.uid, page.offset, page.limit).await?;
+    let list = qna_repo::list_questions_by_user(db, user.uid, page.offset, page.limit).await?;
     let total = qna_repo::count_questions_by_user(db, user.uid).await?;
     Ok(Paged::new(list, total, page.page, page.page_size))
 }
@@ -247,17 +237,17 @@ pub async fn add_review(
     }
     let db = state.db.pool();
     let Some((qid, status)) = qna_repo::answer_qid_status(db, aid).await? else {
-        return Err(ApiError::param_invalid(
-            "answer_not_found",
-        ));
+        return Err(ApiError::param_invalid("answer_not_found"));
     };
     if status != 1 {
-        return Err(ApiError::param_invalid(
-            "answer_unavailable",
-        ));
+        return Err(ApiError::param_invalid("answer_unavailable"));
     }
     let now = clock::now_ts();
-    let usertype: i32 = if user.usertype > 0 { user.usertype as i32 } else { 1 };
+    let usertype: i32 = if user.usertype > 0 {
+        user.usertype as i32
+    } else {
+        1
+    };
     let id = qna_repo::create_review(
         db,
         qna_repo::ReviewCreate {
@@ -282,9 +272,7 @@ pub async fn delete_review(
     let db = state.db.pool();
     let n = qna_repo::delete_review(db, review_id, user.uid).await?;
     if n == 0 {
-        return Err(ApiError::param_invalid(
-            "review_not_found",
-        ));
+        return Err(ApiError::param_invalid("review_not_found"));
     }
     Ok(())
 }

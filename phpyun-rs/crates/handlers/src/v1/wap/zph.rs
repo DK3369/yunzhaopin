@@ -1,16 +1,10 @@
 //! Public browsing of job fairs (mirrors PHPYun `wap/zph`).
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
-};
-use phpyun_core::{ApiJson, AppResult, AppState, Paged, Pagination, ValidatedJson};
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::{ApiResponse, AppResult, AppState, Paged, Pagination, ValidatedJson};
 use phpyun_services::zph_service;
 use serde::Serialize;
 use utoipa::ToSchema;
-
-
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -308,10 +302,10 @@ impl From<phpyun_models::zph::entity::Zph> for ZphDetail {
 pub async fn list(
     State(state): State<AppState>,
     page: Pagination,
-) -> AppResult<ApiJson<Paged<ZphSummary>>> {
+) -> AppResult<ApiResponse<Paged<ZphSummary>>> {
     let r = zph_service::list(&state, page).await?;
     let dicts = phpyun_services::dict_service::get(&state).await?;
-    Ok(ApiJson(Paged::new(
+    Ok(ApiResponse::data(Paged::new(
         r.list
             .into_iter()
             .map(|z| ZphSummary::from_with_dict(z, &state, &dicts))
@@ -329,12 +323,16 @@ pub async fn list(
     request_body = IdBody,
     responses((status = 200, description = "ok", body = ZphDetail), (status = 404))
 )]
-pub async fn detail(State(state): State<AppState>,
-    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiJson<ZphDetail>> {
+pub async fn detail(
+    State(state): State<AppState>,
+    ValidatedJson(b): ValidatedJson<IdBody>,
+) -> AppResult<ApiResponse<ZphDetail>> {
     let id = b.id;
     let z = zph_service::get_detail(&state, id).await?;
     let dicts = phpyun_services::dict_service::get(&state).await?;
-    Ok(ApiJson(ZphDetail::from_with_dict(z, &state, &dicts)))
+    Ok(ApiResponse::data(ZphDetail::from_with_dict(
+        z, &state, &dicts,
+    )))
 }
 
 /// Participating-company item -- all phpyun_zph_company columns + JOIN of company basic info (name/logo/hy/pr/mun/city).
@@ -372,9 +370,11 @@ pub struct ZphCompanyItem {
     request_body = IdBody,
     responses((status = 200, description = "ok"))
 )]
-pub async fn list_companies(State(state): State<AppState>,
+pub async fn list_companies(
+    State(state): State<AppState>,
     page: Pagination,
-    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiJson<Paged<ZphCompanyItem>>> {
+    ValidatedJson(b): ValidatedJson<IdBody>,
+) -> AppResult<ApiResponse<Paged<ZphCompanyItem>>> {
     let id = b.id;
     let r = zph_service::list_companies(&state, id, page).await?;
     let dicts = phpyun_services::dict_service::get(&state).await?;
@@ -399,8 +399,7 @@ pub async fn list_companies(State(state): State<AppState>,
             let mun = card.map(|x| x.mun).unwrap_or(0);
             let prov = card.map(|x| x.provinceid).unwrap_or(0);
             let city = card.map(|x| x.cityid).unwrap_or(0);
-            let logo_full =
-                pic_n(&state, com_logo.as_deref().unwrap_or(""));
+            let logo_full = pic_n(&state, com_logo.as_deref().unwrap_or(""));
             ZphCompanyItem {
                 id: c.id,
                 zid: c.zid,
@@ -426,7 +425,7 @@ pub async fn list_companies(State(state): State<AppState>,
         })
         .collect();
 
-    Ok(ApiJson(Paged::new(
+    Ok(ApiResponse::data(Paged::new(
         items,
         r.total,
         page.page,
@@ -443,7 +442,7 @@ pub async fn list_companies(State(state): State<AppState>,
 // end can render the same card it uses elsewhere.
 
 use super::jobs::JobSummary;
-use phpyun_core::dto::{IdBody};
+use phpyun_core::dto::IdBody;
 use phpyun_core::utils::{fmt_date, fmt_dt, pic_n_str as pic_n};
 
 /// Jobs participating in a recruitment fair. Counterpart of PHP
@@ -456,8 +455,10 @@ use phpyun_core::utils::{fmt_date, fmt_dt, pic_n_str as pic_n};
     request_body = IdBody,
     responses((status = 200, description = "ok"))
 )]
-pub async fn list_jobs(State(state): State<AppState>,
-    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiJson<Vec<JobSummary>>> {
+pub async fn list_jobs(
+    State(state): State<AppState>,
+    ValidatedJson(b): ValidatedJson<IdBody>,
+) -> AppResult<ApiResponse<Vec<JobSummary>>> {
     let id = b.id;
     let csvs = phpyun_models::zph::repo::jobid_csvs_for_zph(state.db.reader(), id).await?;
 
@@ -475,16 +476,15 @@ pub async fn list_jobs(State(state): State<AppState>,
         }
     }
     if job_ids.is_empty() {
-        return Ok(ApiJson(Vec::new()));
+        return Ok(ApiResponse::data(Vec::new()));
     }
 
     // Pull live rows in a single query; filter to on-shelf in-memory so we
     // can keep the CSV-derived ordering. The PHP page caps the list at 40 —
     // we keep that cap to avoid exploding the response on busy fairs.
-    let mut jobs =
-        phpyun_models::job::repo::list_by_ids(state.db.reader(), &job_ids)
-            .await
-            .unwrap_or_default();
+    let mut jobs = phpyun_models::job::repo::list_by_ids(state.db.reader(), &job_ids)
+        .await
+        .unwrap_or_default();
     jobs.retain(|j| j.state == 1 && j.r_status == 1 && j.status == 0);
     let mut by_id: std::collections::HashMap<u64, phpyun_models::job::entity::Job> =
         jobs.into_iter().map(|j| (j.id, j)).collect();
@@ -499,6 +499,5 @@ pub async fn list_jobs(State(state): State<AppState>,
         .map(|j| crate::v1::wap::jobs::job_summary_from_dict_fav(j, &dicts, now, false))
         .collect();
 
-    Ok(ApiJson(items))
+    Ok(ApiResponse::data(items))
 }
-

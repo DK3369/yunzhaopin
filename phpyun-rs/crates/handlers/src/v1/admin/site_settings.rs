@@ -1,16 +1,12 @@
 //! Site settings management (admin).
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
-};
-use phpyun_core::{ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, ValidatedJson};
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::utils::fmt_dt;
+use phpyun_core::{ApiResponse, AppResult, AppState, AuthenticatedUser, ValidatedJson};
 use phpyun_services::site_setting_service::{self, UpsertInput};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
-use phpyun_core::utils::{fmt_dt};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -18,7 +14,6 @@ pub fn routes() -> Router<AppState> {
         .route("/site-settings/list", post(list))
         .route("/site-settings/delete", post(remove))
 }
-
 
 #[derive(Debug, Serialize, ToSchema)]
 pub struct SettingItem {
@@ -52,13 +47,16 @@ impl From<phpyun_models::site_setting::entity::SiteSetting> for SettingItem {
     tag = "admin",
     security(("bearer" = [])),
     responses((status = 200, description = "ok"))
-)]pub async fn list(
+)]
+pub async fn list(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-) -> AppResult<ApiJson<Vec<SettingItem>>> {
+) -> AppResult<ApiResponse<Vec<SettingItem>>> {
     user.require_admin()?;
     let list = site_setting_service::admin_list(&state, &user).await?;
-    Ok(ApiJson(list.into_iter().map(SettingItem::from).collect()))
+    Ok(ApiResponse::data(
+        list.into_iter().map(SettingItem::from).collect(),
+    ))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
@@ -87,7 +85,7 @@ pub async fn upsert(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(f): ValidatedJson<UpsertForm>,
-) -> AppResult<ApiOk> {
+) -> AppResult<ApiResponse> {
     user.require_admin()?;
     site_setting_service::admin_upsert(
         &state,
@@ -100,7 +98,7 @@ pub async fn upsert(
         },
     )
     .await?;
-    Ok(ApiOk("ok"))
+    Ok(ApiResponse::message("ok"))
 }
 
 /// Delete setting
@@ -111,18 +109,23 @@ pub async fn upsert(
     request_body = RemoveBody,
     responses((status = 200, description = "ok"))
 )]
-pub async fn remove(State(state): State<AppState>,
+pub async fn remove(
+    State(state): State<AppState>,
     user: AuthenticatedUser,
-    ValidatedJson(b): ValidatedJson<RemoveBody>) -> AppResult<ApiOk> {
+    ValidatedJson(b): ValidatedJson<RemoveBody>,
+) -> AppResult<ApiResponse> {
     let key = b.key;
     phpyun_core::validators::ensure_path_key(&key)?;
     user.require_admin()?;
     site_setting_service::admin_delete(&state, &user, &key).await?;
-    Ok(ApiOk("deleted"))
+    Ok(ApiResponse::message("deleted"))
 }
 
 #[derive(Debug, serde::Deserialize, validator::Validate, utoipa::ToSchema)]
 pub struct RemoveBody {
-    #[validate(length(min = 1, max = 64), custom(function = "phpyun_core::validators::path_token"))]
+    #[validate(
+        length(min = 1, max = 64),
+        custom(function = "phpyun_core::validators::path_token")
+    )]
     pub key: String,
 }

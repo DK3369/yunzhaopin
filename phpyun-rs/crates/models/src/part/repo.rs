@@ -205,11 +205,10 @@ pub async fn list_by_com(
 }
 
 pub async fn count_by_com(pool: &MySqlPool, com_uid: u64) -> Result<u64, sqlx::Error> {
-    let (n,): (i64,) =
-        sqlx::query_as("SELECT COUNT(*) FROM phpyun_partjob WHERE uid = ?")
-            .bind(com_uid)
-            .fetch_one(pool)
-            .await?;
+    let (n,): (i64,) = sqlx::query_as("SELECT COUNT(*) FROM phpyun_partjob WHERE uid = ?")
+        .bind(com_uid)
+        .fetch_one(pool)
+        .await?;
     Ok(n.max(0) as u64)
 }
 
@@ -239,10 +238,7 @@ pub async fn delete_by_ids(
 }
 
 /// Cascade-delete part_collect / part_apply (used together with delete_by_ids).
-pub async fn cascade_delete_children(
-    pool: &MySqlPool,
-    job_ids: &[u64],
-) -> Result<(), sqlx::Error> {
+pub async fn cascade_delete_children(pool: &MySqlPool, job_ids: &[u64]) -> Result<(), sqlx::Error> {
     if job_ids.is_empty() {
         return Ok(());
     }
@@ -276,9 +272,9 @@ pub async fn find_apply(
     uid: u64,
     jobid: u64,
 ) -> Result<Option<PartApply>, sqlx::Error> {
-    sqlx::query_as::<_, PartApply>(
-        &format!("SELECT {APPLY_FIELDS} FROM phpyun_part_apply WHERE uid = ? AND jobid = ? LIMIT 1"),
-    )
+    sqlx::query_as::<_, PartApply>(&format!(
+        "SELECT {APPLY_FIELDS} FROM phpyun_part_apply WHERE uid = ? AND jobid = ? LIMIT 1"
+    ))
     .bind(uid)
     .bind(jobid)
     .fetch_optional(pool)
@@ -321,11 +317,10 @@ pub async fn list_applies_by_uid(
 }
 
 pub async fn count_applies_by_uid(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Error> {
-    let (n,): (i64,) =
-        sqlx::query_as("SELECT COUNT(*) FROM phpyun_part_apply WHERE uid = ?")
-            .bind(uid)
-            .fetch_one(pool)
-            .await?;
+    let (n,): (i64,) = sqlx::query_as("SELECT COUNT(*) FROM phpyun_part_apply WHERE uid = ?")
+        .bind(uid)
+        .fetch_one(pool)
+        .await?;
     Ok(n.max(0) as u64)
 }
 
@@ -346,11 +341,10 @@ pub async fn list_applies_by_com(
 }
 
 pub async fn count_applies_by_com(pool: &MySqlPool, com_uid: u64) -> Result<u64, sqlx::Error> {
-    let (n,): (i64,) =
-        sqlx::query_as("SELECT COUNT(*) FROM phpyun_part_apply WHERE comid = ?")
-            .bind(com_uid)
-            .fetch_one(pool)
-            .await?;
+    let (n,): (i64,) = sqlx::query_as("SELECT COUNT(*) FROM phpyun_part_apply WHERE comid = ?")
+        .bind(com_uid)
+        .fetch_one(pool)
+        .await?;
     Ok(n.max(0) as u64)
 }
 
@@ -360,14 +354,12 @@ pub async fn update_apply_status(
     com_uid: u64,
     status: i32,
 ) -> Result<u64, sqlx::Error> {
-    let res = sqlx::query(
-        "UPDATE phpyun_part_apply SET status = ? WHERE id = ? AND comid = ?",
-    )
-    .bind(status)
-    .bind(id)
-    .bind(com_uid)
-    .execute(pool)
-    .await?;
+    let res = sqlx::query("UPDATE phpyun_part_apply SET status = ? WHERE id = ? AND comid = ?")
+        .bind(status)
+        .bind(id)
+        .bind(com_uid)
+        .execute(pool)
+        .await?;
     Ok(res.rows_affected())
 }
 
@@ -453,11 +445,10 @@ pub async fn list_collects_by_uid(
 }
 
 pub async fn count_collects_by_uid(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Error> {
-    let (n,): (i64,) =
-        sqlx::query_as("SELECT COUNT(*) FROM phpyun_part_collect WHERE uid = ?")
-            .bind(uid)
-            .fetch_one(pool)
-            .await?;
+    let (n,): (i64,) = sqlx::query_as("SELECT COUNT(*) FROM phpyun_part_collect WHERE uid = ?")
+        .bind(uid)
+        .fetch_one(pool)
+        .await?;
     Ok(n.max(0) as u64)
 }
 

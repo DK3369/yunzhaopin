@@ -35,11 +35,7 @@ pub fn bump_async(state: &AppState, scope: &'static str, keyword: String) {
     });
 }
 
-pub async fn top(
-    state: &AppState,
-    scope: &str,
-    limit: u64,
-) -> AppResult<Arc<Vec<HotSearch>>> {
+pub async fn top(state: &AppState, scope: &str, limit: u64) -> AppResult<Arc<Vec<HotSearch>>> {
     let limit = limit.clamp(1, 50);
     let key = (scope.to_owned(), limit);
     let scope_owned = key.0.clone();

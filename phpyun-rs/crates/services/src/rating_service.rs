@@ -4,7 +4,9 @@
 //! - The aggregate table `phpyun_company_rating` is decoupled from `list_for_target`: the aggregate powers detail/sort views, while the list drives the comment feed.
 //! - No self-rating: the rater cannot be the target. Only `status=1` rows are visible to the public.
 
-use phpyun_core::{audit, clock, ApiError, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
+use phpyun_core::{
+    audit, clock, ApiError, AppResult, AppState, AuthenticatedUser, Paged, Pagination,
+};
 use phpyun_models::rating::{
     entity::{Rating, RatingAggregate},
     repo as rating_repo,
@@ -53,8 +55,14 @@ pub async fn unrate(
     target_uid: u64,
     target_kind: i32,
 ) -> AppResult<()> {
-    rating_repo::delete(state.db.pool(), user.uid, target_uid, target_kind, clock::now_ts())
-        .await?;
+    rating_repo::delete(
+        state.db.pool(),
+        user.uid,
+        target_uid,
+        target_kind,
+        clock::now_ts(),
+    )
+    .await?;
     Ok(())
 }
 

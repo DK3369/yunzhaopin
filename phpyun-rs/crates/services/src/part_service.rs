@@ -13,12 +13,11 @@
 //! - Deduplication: a given (uid, jobid) can only apply / favourite once
 //! - Roles: only jobseekers (usertype=1) may apply or favourite
 
-use phpyun_core::ApiError;
 use phpyun_core::audit::{self, Actor, AuditEvent};
+use phpyun_core::ApiError;
 use phpyun_core::{clock, AppResult, AppState, AuthenticatedUser, Pagination};
 use phpyun_models::part::entity::{PartApply, PartCollect, PartJob};
 use phpyun_models::part::repo as part_repo;
-
 
 // ==================== Public browsing ====================
 
@@ -115,7 +114,8 @@ pub async fn apply(
     client_ip: &str,
 ) -> AppResult<ApplyResult> {
     // PHPYun rule: only jobseekers can apply
-    user.require_jobseeker().map_err(|_| ApiError::business("part_role_not_allowed"))?;
+    user.require_jobseeker()
+        .map_err(|_| ApiError::business("part_role_not_allowed"))?;
 
     let job = part_repo::find_by_id(state.db.reader(), job_id)
         .await?
@@ -145,12 +145,9 @@ pub async fn apply(
 
     let _ = audit::emit(
         state,
-        AuditEvent::new(
-            "part.apply",
-            Actor::uid(user.uid).with_ip(client_ip),
-        )
-        .target(format!("partjob:{job_id}"))
-        .meta(&serde_json::json!({ "apply_id": id, "com_id": job.uid })),
+        AuditEvent::new("part.apply", Actor::uid(user.uid).with_ip(client_ip))
+            .target(format!("partjob:{job_id}"))
+            .meta(&serde_json::json!({ "apply_id": id, "com_id": job.uid })),
     )
     .await;
 
@@ -179,7 +176,8 @@ pub async fn collect(
     com_id: u64,
     client_ip: &str,
 ) -> AppResult<u64> {
-    user.require_jobseeker().map_err(|_| ApiError::business("part_role_not_allowed"))?;
+    user.require_jobseeker()
+        .map_err(|_| ApiError::business("part_role_not_allowed"))?;
 
     let job = part_repo::find_by_id(state.db.reader(), job_id)
         .await?
@@ -198,14 +196,9 @@ pub async fn collect(
         return Err(ApiError::business("part_collect_duplicate").into());
     }
 
-    let id = part_repo::create_collect(
-        state.db.pool(),
-        user.uid,
-        job_id,
-        real_com,
-        clock::now_ts(),
-    )
-    .await?;
+    let id =
+        part_repo::create_collect(state.db.pool(), user.uid, job_id, real_com, clock::now_ts())
+            .await?;
 
     let _ = audit::emit(
         state,
@@ -331,7 +324,6 @@ pub async fn update_com_apply_status(
     if !(1..=3).contains(&status) {
         return Err(ApiError::param_invalid("status").into());
     }
-    let n =
-        part_repo::update_apply_status(state.db.pool(), apply_id, user.uid, status).await?;
+    let n = part_repo::update_apply_status(state.db.pool(), apply_id, user.uid, status).await?;
     Ok(n)
 }

@@ -38,7 +38,10 @@ pub async fn list_by_uid(pool: &MySqlPool, uid: u64) -> Result<Vec<Edu>, sqlx::E
         "SELECT {FIELDS} FROM phpyun_resume_edu
          WHERE uid = ? ORDER BY sdate DESC"
     );
-    sqlx::query_as::<_, Edu>(&sql).bind(uid).fetch_all(pool).await
+    sqlx::query_as::<_, Edu>(&sql)
+        .bind(uid)
+        .fetch_all(pool)
+        .await
 }
 
 pub async fn find_by_id(pool: &MySqlPool, id: u64) -> Result<Option<Edu>, sqlx::Error> {

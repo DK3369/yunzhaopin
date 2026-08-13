@@ -1,18 +1,13 @@
 //! Public points-mall endpoints (no login required): classes, reward list, reward detail.
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
-};
-use phpyun_core::{ApiJson, AppResult, AppState, Paged, Pagination, ValidatedJson};
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::dto::IdBody;
+use phpyun_core::utils::{fmt_dt, pic_n_str as pic_n};
+use phpyun_core::{ApiResponse, AppResult, AppState, Paged, Pagination, ValidatedJson};
 use phpyun_services::redeem_service::{self, RewardFilter};
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
-use phpyun_core::dto::{IdBody};
-use phpyun_core::utils::{fmt_dt, pic_n_str as pic_n};
-
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -62,9 +57,11 @@ impl From<phpyun_models::redeem::entity::RedeemClass> for ClassItem {
 pub async fn list_classes(
     State(state): State<AppState>,
     ValidatedJson(q): ValidatedJson<ClassQuery>,
-) -> AppResult<ApiJson<Vec<ClassItem>>> {
+) -> AppResult<ApiResponse<Vec<ClassItem>>> {
     let list = redeem_service::list_classes(&state, q.parent_id).await?;
-    Ok(ApiJson(list.iter().cloned().map(ClassItem::from).collect()))
+    Ok(ApiResponse::data(
+        list.iter().cloned().map(ClassItem::from).collect(),
+    ))
 }
 
 #[derive(Debug, Deserialize, Validate, IntoParams)]
@@ -102,10 +99,7 @@ pub struct RewardItem {
 }
 
 impl RewardItem {
-    pub fn from_with_ctx(
-        r: phpyun_models::redeem::entity::Reward,
-        state: &AppState,
-    ) -> Self {
+    pub fn from_with_ctx(r: phpyun_models::redeem::entity::Reward, state: &AppState) -> Self {
         let content_excerpt: String = r.content.chars().take(80).collect();
         let remaining = (r.stock as i64) - (r.sold as i64);
         Self {
@@ -170,10 +164,14 @@ pub async fn list_rewards(
     State(state): State<AppState>,
     page: Pagination,
     ValidatedJson(q): ValidatedJson<RewardListQuery>,
-) -> AppResult<ApiJson<Paged<RewardItem>>> {
-    let f = RewardFilter { only_active: true, nid: q.nid, tnid: q.tnid };
+) -> AppResult<ApiResponse<Paged<RewardItem>>> {
+    let f = RewardFilter {
+        only_active: true,
+        nid: q.nid,
+        tnid: q.tnid,
+    };
     let r = redeem_service::list_rewards(&state, &f, page).await?;
-    Ok(ApiJson(Paged::new(
+    Ok(ApiResponse::data(Paged::new(
         r.list
             .into_iter()
             .map(|x| RewardItem::from_with_ctx(x, &state))
@@ -208,10 +206,7 @@ pub struct RewardDetail {
 }
 
 impl RewardDetail {
-    pub fn from_with_ctx(
-        r: phpyun_models::redeem::entity::Reward,
-        state: &AppState,
-    ) -> Self {
+    pub fn from_with_ctx(r: phpyun_models::redeem::entity::Reward, state: &AppState) -> Self {
         let remaining = (r.stock as i64) - (r.sold as i64);
         Self {
             pic_n: pic_n(state, &r.pic),
@@ -269,10 +264,11 @@ impl From<phpyun_models::redeem::entity::Reward> for RewardDetail {
     request_body = IdBody,
     responses((status = 200, description = "ok"))
 )]
-pub async fn get_reward(State(state): State<AppState>,
-    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiJson<RewardDetail>> {
+pub async fn get_reward(
+    State(state): State<AppState>,
+    ValidatedJson(b): ValidatedJson<IdBody>,
+) -> AppResult<ApiResponse<RewardDetail>> {
     let id = b.id;
     let r = redeem_service::get_reward(&state, id).await?;
-    Ok(ApiJson(RewardDetail::from_with_ctx(r, &state)))
+    Ok(ApiResponse::data(RewardDetail::from_with_ctx(r, &state)))
 }
-

@@ -1,11 +1,7 @@
 //! Invite-to-register flow (matching PHPYun `invitereg`).
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
-};
-use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, ValidatedJson};
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::{ApiResponse, AppResult, AppState, AuthenticatedUser, ClientIp, ValidatedJson};
 use phpyun_services::invite_service::{self, InviteInput};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
@@ -42,7 +38,7 @@ pub async fn send(
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
     ValidatedJson(f): ValidatedJson<InviteForm>,
-) -> AppResult<ApiJson<Sent>> {
+) -> AppResult<ApiResponse<Sent>> {
     let id = invite_service::send(
         &state,
         &user,
@@ -53,5 +49,5 @@ pub async fn send(
         &ip,
     )
     .await?;
-    Ok(ApiJson(Sent { invite_id: id }))
+    Ok(ApiResponse::data(Sent { invite_id: id }))
 }

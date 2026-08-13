@@ -4,20 +4,15 @@
 //! The richer "search by city / salary / edu" capability the previous Rust
 //! version offered has no backing schema in PHP and was therefore removed.
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
-};
-use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::utils::fmt_dt;
+use phpyun_core::{ApiResponse, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
 use serde::Serialize;
 use utoipa::ToSchema;
-use phpyun_core::utils::{fmt_dt};
 
 pub fn routes() -> Router<AppState> {
     Router::new().route("/entrusts", post(list_for_headhunter))
 }
-
 
 #[derive(Debug, Serialize, ToSchema)]
 pub struct EntrustedSeekerItem {
@@ -42,7 +37,7 @@ pub async fn list_for_headhunter(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-) -> AppResult<ApiJson<Paged<EntrustedSeekerItem>>> {
+) -> AppResult<ApiResponse<Paged<EntrustedSeekerItem>>> {
     // No formal `require_headhunter` helper yet — accept any authenticated
     // user and just return their inbound bindings. Callers who aren't lt
     // members will simply see an empty list.
@@ -65,7 +60,7 @@ pub async fn list_for_headhunter(
         })
         .collect();
 
-    Ok(ApiJson(Paged::new(
+    Ok(ApiResponse::data(Paged::new(
         items,
         total.unwrap_or(0),
         page.page,

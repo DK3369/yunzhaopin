@@ -2,7 +2,9 @@
 //!
 //! Admins issue warnings to accounts -> users see the unread warnings in mcenter.
 
-use phpyun_core::{audit, clock, ApiError, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
+use phpyun_core::{
+    audit, clock, ApiError, AppResult, AppState, AuthenticatedUser, Paged, Pagination,
+};
 use phpyun_models::warning::{entity::Warning, repo as warn_repo};
 
 pub struct WarnInput<'a> {
@@ -75,18 +77,11 @@ pub async fn list_mine(
     Ok(Paged::new(list?, total?, page.page, page.page_size))
 }
 
-pub async fn unread_count(
-    state: &AppState,
-    user: &AuthenticatedUser,
-) -> AppResult<u64> {
+pub async fn unread_count(state: &AppState, user: &AuthenticatedUser) -> AppResult<u64> {
     Ok(warn_repo::count_unread(state.db.reader(), user.uid).await?)
 }
 
-pub async fn mark_read(
-    state: &AppState,
-    user: &AuthenticatedUser,
-    id: u64,
-) -> AppResult<()> {
+pub async fn mark_read(state: &AppState, user: &AuthenticatedUser, id: u64) -> AppResult<()> {
     warn_repo::mark_read(state.db.pool(), id, user.uid).await?;
     Ok(())
 }

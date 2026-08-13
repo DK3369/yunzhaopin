@@ -1,17 +1,15 @@
 //! Resume share link management (jobseeker side).
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::dto::TokenBody;
+use phpyun_core::utils::fmt_dt;
+use phpyun_core::{
+    ApiResponse, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
 };
-use phpyun_core::{ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::resume_share_service;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
-use phpyun_core::dto::{TokenBody};
-use phpyun_core::utils::{fmt_dt};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -26,7 +24,6 @@ pub struct CreateForm {
     #[validate(range(min = 60, max = 2_592_000))]
     pub ttl_secs: i64,
 }
-
 
 #[derive(Debug, Serialize, ToSchema)]
 pub struct ShareTokenView {
@@ -75,9 +72,9 @@ pub async fn create(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(f): ValidatedJson<CreateForm>,
-) -> AppResult<ApiJson<ShareTokenView>> {
+) -> AppResult<ApiResponse<ShareTokenView>> {
     let t = resume_share_service::create(&state, &user, f.ttl_secs).await?;
-    Ok(ApiJson(ShareTokenView::from(t)))
+    Ok(ApiResponse::data(ShareTokenView::from(t)))
 }
 
 /// My share list
@@ -92,9 +89,11 @@ pub async fn list_mine(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-) -> AppResult<ApiJson<Paged<ShareTokenView>>> {
+) -> AppResult<ApiResponse<Paged<ShareTokenView>>> {
     let r = resume_share_service::list_mine(&state, &user, page).await?;
-    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
+    Ok(ApiResponse::data(Paged::from_listing(
+        r.list, r.total, page,
+    )))
 }
 
 /// Revoke share
@@ -110,8 +109,8 @@ pub async fn revoke(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(b): ValidatedJson<TokenBody>,
-) -> AppResult<ApiOk> {
+) -> AppResult<ApiResponse> {
     phpyun_core::validators::ensure_path_hex_token(&b.token)?;
     resume_share_service::revoke(&state, &user, &b.token).await?;
-    Ok(ApiOk("revoked"))
+    Ok(ApiResponse::message("revoked"))
 }

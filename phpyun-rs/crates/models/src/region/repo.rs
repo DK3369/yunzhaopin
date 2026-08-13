@@ -27,9 +27,8 @@ pub async fn list_all_active(pool: &MySqlPool) -> Result<Vec<Region>, sqlx::Erro
 }
 
 pub async fn find_by_id(pool: &MySqlPool, id: u64) -> Result<Option<Region>, sqlx::Error> {
-    let sql = format!(
-        "SELECT {SELECT_FIELDS} FROM phpyun_region WHERE id = ? AND status != 2 LIMIT 1"
-    );
+    let sql =
+        format!("SELECT {SELECT_FIELDS} FROM phpyun_region WHERE id = ? AND status != 2 LIMIT 1");
     sqlx::query_as::<_, Region>(&sql)
         .bind(id)
         .fetch_optional(pool)
@@ -37,19 +36,15 @@ pub async fn find_by_id(pool: &MySqlPool, id: u64) -> Result<Option<Region>, sql
 }
 
 pub async fn find_by_code(pool: &MySqlPool, code: &str) -> Result<Option<Region>, sqlx::Error> {
-    let sql = format!(
-        "SELECT {SELECT_FIELDS} FROM phpyun_region WHERE code = ? AND status != 2 LIMIT 1"
-    );
+    let sql =
+        format!("SELECT {SELECT_FIELDS} FROM phpyun_region WHERE code = ? AND status != 2 LIMIT 1");
     sqlx::query_as::<_, Region>(&sql)
         .bind(code)
         .fetch_optional(pool)
         .await
 }
 
-pub async fn list_children(
-    pool: &MySqlPool,
-    parent_id: u64,
-) -> Result<Vec<Region>, sqlx::Error> {
+pub async fn list_children(pool: &MySqlPool, parent_id: u64) -> Result<Vec<Region>, sqlx::Error> {
     let sql = format!(
         "SELECT {SELECT_FIELDS} FROM phpyun_region \
          WHERE parent_id = ? AND status != 2 \
@@ -101,11 +96,7 @@ pub struct RegionCreate<'a> {
     pub sort: i32,
 }
 
-pub async fn create(
-    pool: &MySqlPool,
-    r: RegionCreate<'_>,
-    now: i64,
-) -> Result<u64, sqlx::Error> {
+pub async fn create(pool: &MySqlPool, r: RegionCreate<'_>, now: i64) -> Result<u64, sqlx::Error> {
     let res = sqlx::query(
         "INSERT INTO phpyun_region \
          (parent_id, country_code, code, level, name, continent, sort, status, created_at, updated_at) \
@@ -172,11 +163,7 @@ pub async fn update(
 
 /// Soft delete (sets `status=2`). Cascades manually: any descendant rows
 /// are also flipped because front-end queries filter `status != 2`.
-pub async fn soft_delete(
-    pool: &MySqlPool,
-    id: u64,
-    now: i64,
-) -> Result<u64, sqlx::Error> {
+pub async fn soft_delete(pool: &MySqlPool, id: u64, now: i64) -> Result<u64, sqlx::Error> {
     let res = sqlx::query(
         "UPDATE phpyun_region SET status = 2, updated_at = ? WHERE id = ? AND status != 2",
     )

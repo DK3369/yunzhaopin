@@ -2,7 +2,9 @@
 //!
 //! Admin broadcasts -> users see them as unread according to usertype. Read receipts are written to `phpyun_rs_broadcast_reads`.
 
-use phpyun_core::{audit, clock, ApiError, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
+use phpyun_core::{
+    audit, clock, ApiError, AppResult, AppState, AuthenticatedUser, Paged, Pagination,
+};
 use phpyun_models::broadcast::{entity::Broadcast, repo as bc_repo};
 
 pub async fn admin_create(
@@ -34,11 +36,7 @@ pub async fn admin_create(
     Ok(id)
 }
 
-pub async fn admin_delete(
-    state: &AppState,
-    admin: &AuthenticatedUser,
-    id: u64,
-) -> AppResult<()> {
+pub async fn admin_delete(state: &AppState, admin: &AuthenticatedUser, id: u64) -> AppResult<()> {
     admin.require_admin()?;
     bc_repo::delete(state.db.pool(), id).await?;
     Ok(())
@@ -74,10 +72,7 @@ pub async fn list_for_me(
     Ok(Paged::new(list?, total?, page.page, page.page_size))
 }
 
-pub async fn unread_count(
-    state: &AppState,
-    user: &AuthenticatedUser,
-) -> AppResult<u64> {
+pub async fn unread_count(state: &AppState, user: &AuthenticatedUser) -> AppResult<u64> {
     Ok(bc_repo::count_unread(state.db.reader(), user.uid, user.usertype as i32).await?)
 }
 

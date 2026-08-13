@@ -70,11 +70,7 @@ pub struct VersionCreate<'a> {
     pub released_at: i64,
 }
 
-pub async fn create(
-    pool: &MySqlPool,
-    c: VersionCreate<'_>,
-    now: i64,
-) -> Result<u64, sqlx::Error> {
+pub async fn create(pool: &MySqlPool, c: VersionCreate<'_>, now: i64) -> Result<u64, sqlx::Error> {
     let res = sqlx::query(
         "INSERT INTO phpyun_app_version \
          (platform, version, version_code, is_force, download_url, changelog, status, released_at, ctime) \

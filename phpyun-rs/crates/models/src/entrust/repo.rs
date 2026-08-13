@@ -53,11 +53,10 @@ pub async fn list_by_uid(
 }
 
 pub async fn count_by_uid(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Error> {
-    let (n,): (i64,) =
-        sqlx::query_as("SELECT COUNT(*) FROM phpyun_entrust WHERE uid = ?")
-            .bind(uid)
-            .fetch_one(pool)
-            .await?;
+    let (n,): (i64,) = sqlx::query_as("SELECT COUNT(*) FROM phpyun_entrust WHERE uid = ?")
+        .bind(uid)
+        .fetch_one(pool)
+        .await?;
     Ok(n.max(0) as u64)
 }
 
@@ -83,15 +82,11 @@ pub async fn list_by_lt_uid(
         .await
 }
 
-pub async fn count_by_lt_uid(
-    pool: &MySqlPool,
-    lt_uid: u64,
-) -> Result<u64, sqlx::Error> {
-    let (n,): (i64,) =
-        sqlx::query_as("SELECT COUNT(*) FROM phpyun_entrust WHERE lt_uid = ?")
-            .bind(lt_uid)
-            .fetch_one(pool)
-            .await?;
+pub async fn count_by_lt_uid(pool: &MySqlPool, lt_uid: u64) -> Result<u64, sqlx::Error> {
+    let (n,): (i64,) = sqlx::query_as("SELECT COUNT(*) FROM phpyun_entrust WHERE lt_uid = ?")
+        .bind(lt_uid)
+        .fetch_one(pool)
+        .await?;
     Ok(n.max(0) as u64)
 }
 
@@ -114,11 +109,7 @@ pub async fn insert(
 }
 
 /// Unbind by (uid, lt_uid). Idempotent.
-pub async fn delete(
-    pool: &MySqlPool,
-    uid: u64,
-    lt_uid: u64,
-) -> Result<u64, sqlx::Error> {
+pub async fn delete(pool: &MySqlPool, uid: u64, lt_uid: u64) -> Result<u64, sqlx::Error> {
     let res = sqlx::query("DELETE FROM phpyun_entrust WHERE uid = ? AND lt_uid = ?")
         .bind(uid)
         .bind(lt_uid)
@@ -128,11 +119,7 @@ pub async fn delete(
 }
 
 /// Unbind by row id (uid scoped — caller cannot delete someone else's row).
-pub async fn delete_by_id(
-    pool: &MySqlPool,
-    id: u64,
-    uid: u64,
-) -> Result<u64, sqlx::Error> {
+pub async fn delete_by_id(pool: &MySqlPool, id: u64, uid: u64) -> Result<u64, sqlx::Error> {
     let res = sqlx::query("DELETE FROM phpyun_entrust WHERE id = ? AND uid = ?")
         .bind(id)
         .bind(uid)

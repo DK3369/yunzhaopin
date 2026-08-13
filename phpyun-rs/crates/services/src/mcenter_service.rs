@@ -137,11 +137,8 @@ pub async fn change_password(
     auth_event("change_pw_success", None);
     let _ = audit::emit(
         state,
-        AuditEvent::new(
-            "user.password_change",
-            Actor::uid(uid).with_ip(client_ip),
-        )
-        .target(format!("uid:{uid}")),
+        AuditEvent::new("user.password_change", Actor::uid(uid).with_ip(client_ip))
+            .target(format!("uid:{uid}")),
     )
     .await;
     Ok(())

@@ -1,17 +1,13 @@
 //! Personal search history (matching PHPYun `search::history`).
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
-};
-use phpyun_core::{ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, ValidatedJson};
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::dto::{ClearResult, IdBody};
+use phpyun_core::utils::fmt_dt;
+use phpyun_core::{ApiResponse, AppResult, AppState, AuthenticatedUser, ValidatedJson};
 use phpyun_services::search_history_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
-use phpyun_core::dto::{ClearResult, IdBody};
-use phpyun_core::utils::{fmt_dt};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -28,14 +24,15 @@ pub struct ListQuery {
     #[validate(range(min = 1, max = 200))]
     pub limit: u64,
 }
-fn default_limit() -> u64 { 20 }
+fn default_limit() -> u64 {
+    20
+}
 
 #[derive(Debug, Deserialize, Validate, IntoParams)]
 pub struct ClearQuery {
     #[validate(length(max = 16))]
     pub scope: Option<String>,
 }
-
 
 #[derive(Debug, Serialize, ToSchema)]
 pub struct HistoryItem {
@@ -68,13 +65,16 @@ impl From<phpyun_models::search_history::entity::SearchHistory> for HistoryItem 
     security(("bearer" = [])),
     params(ListQuery),
     responses((status = 200, description = "ok"))
-)]pub async fn list(
+)]
+pub async fn list(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(q): ValidatedJson<ListQuery>,
-) -> AppResult<ApiJson<Vec<HistoryItem>>> {
+) -> AppResult<ApiResponse<Vec<HistoryItem>>> {
     let list = search_history_service::list(&state, &user, q.scope.as_deref(), q.limit).await?;
-    Ok(ApiJson(list.into_iter().map(HistoryItem::from).collect()))
+    Ok(ApiResponse::data(
+        list.into_iter().map(HistoryItem::from).collect(),
+    ))
 }
 
 /// Clear search history (optionally filtered by scope)
@@ -90,9 +90,9 @@ pub async fn clear(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(q): ValidatedJson<ClearQuery>,
-) -> AppResult<ApiJson<ClearResult>> {
+) -> AppResult<ApiResponse<ClearResult>> {
     let n = search_history_service::clear(&state, &user, q.scope.as_deref()).await?;
-    Ok(ApiJson(ClearResult { removed: n }))
+    Ok(ApiResponse::data(ClearResult { removed: n }))
 }
 
 /// Delete a single entry
@@ -103,11 +103,12 @@ pub async fn clear(
     request_body = IdBody,
     responses((status = 200, description = "ok"))
 )]
-pub async fn remove(State(state): State<AppState>,
+pub async fn remove(
+    State(state): State<AppState>,
     user: AuthenticatedUser,
-    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiOk> {
+    ValidatedJson(b): ValidatedJson<IdBody>,
+) -> AppResult<ApiResponse> {
     let id = b.id;
     search_history_service::delete_one(&state, &user, id).await?;
-    Ok(ApiOk("deleted"))
+    Ok(ApiResponse::message("deleted"))
 }
-

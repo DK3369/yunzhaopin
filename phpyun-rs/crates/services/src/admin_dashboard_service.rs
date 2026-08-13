@@ -26,16 +26,23 @@ fn today_ts(now: i64) -> i64 {
     now - now.rem_euclid(86_400)
 }
 
-pub async fn overview(
-    state: &AppState,
-    admin: &AuthenticatedUser,
-) -> AppResult<AdminOverview> {
+pub async fn overview(state: &AppState, admin: &AuthenticatedUser) -> AppResult<AdminOverview> {
     admin.require_admin()?;
     let db = state.db.reader();
     let today = today_ts(clock::now_ts());
 
     // Parallel all counts
-    let (certs, jobs_pending, reports_pending, fb_pending, active_jobs, active_coms, active_res, new_j, new_r) = tokio::join!(
+    let (
+        certs,
+        jobs_pending,
+        reports_pending,
+        fb_pending,
+        active_jobs,
+        active_coms,
+        active_res,
+        new_j,
+        new_r,
+    ) = tokio::join!(
         cert_repo::count_pending(db),
         job_repo::admin_count(db, Some(0)),
         report_repo::count_by_status(db, Some(0)),

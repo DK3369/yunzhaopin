@@ -1,17 +1,15 @@
 //! Ad slot management (admin).
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::dto::CreatedId;
+use phpyun_core::utils::fmt_dt;
+use phpyun_core::{
+    ApiResponse, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
 };
-use phpyun_core::{ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::ad_service::{self, AdInput, AdPatch};
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
-use phpyun_core::dto::{CreatedId};
-use phpyun_core::utils::{fmt_dt};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -25,7 +23,6 @@ pub struct ListQuery {
     #[validate(length(max = 100))]
     pub slot: Option<String>,
 }
-
 
 /// Ad management item — all 14 columns of phpyun_ad + formatted timestamps + derived is_active hint for the frontend button.
 #[derive(Debug, Serialize, ToSchema)]
@@ -120,15 +117,18 @@ pub struct AdPatchForm {
     pub status: Option<i32>,
 }
 
-#[utoipa::path(post, path = "/v1/admin/ads/list", tag = "admin", security(("bearer" = [])), params(ListQuery), responses((status = 200, description = "ok")))]pub async fn list(
+#[utoipa::path(post, path = "/v1/admin/ads/list", tag = "admin", security(("bearer" = [])), params(ListQuery), responses((status = 200, description = "ok")))]
+pub async fn list(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
     ValidatedJson(q): ValidatedJson<ListQuery>,
-) -> AppResult<ApiJson<Paged<AdItem>>> {
+) -> AppResult<ApiResponse<Paged<AdItem>>> {
     user.require_admin()?;
     let r = ad_service::admin_list(&state, &user, q.slot.as_deref(), page).await?;
-    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
+    Ok(ApiResponse::data(Paged::from_listing(
+        r.list, r.total, page,
+    )))
 }
 
 #[utoipa::path(post, path = "/v1/admin/ads", tag = "admin", security(("bearer" = [])), request_body = AdForm, responses((status = 200, description = "ok", body = CreatedId)))]
@@ -136,7 +136,7 @@ pub async fn create(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(f): ValidatedJson<AdForm>,
-) -> AppResult<ApiJson<CreatedId>> {
+) -> AppResult<ApiResponse<CreatedId>> {
     user.require_admin()?;
     let id = ad_service::admin_create(
         &state,
@@ -152,19 +152,21 @@ pub async fn create(
         },
     )
     .await?;
-    Ok(ApiJson(CreatedId { id }))
+    Ok(ApiResponse::data(CreatedId { id }))
 }
 
 /// Update or soft-delete an ad (sending `"status":2` deletes; underlying UPDATE sets status=2)
 #[utoipa::path(post, path = "/v1/admin/ads/update", tag = "admin", security(("bearer" = [])), request_body = AdPatchForm, responses((status = 200, description = "ok")))]
-pub async fn update(State(state): State<AppState>,
+pub async fn update(
+    State(state): State<AppState>,
     user: AuthenticatedUser,
-    ValidatedJson(f): ValidatedJson<AdPatchForm>) -> AppResult<ApiOk> {
+    ValidatedJson(f): ValidatedJson<AdPatchForm>,
+) -> AppResult<ApiResponse> {
     let id = f.id;
     user.require_admin()?;
     if f.status == Some(2) {
         ad_service::admin_delete(&state, &user, id).await?;
-        return Ok(ApiOk("deleted"));
+        return Ok(ApiResponse::message("deleted"));
     }
     ad_service::admin_update(
         &state,
@@ -182,5 +184,5 @@ pub async fn update(State(state): State<AppState>,
         },
     )
     .await?;
-    Ok(ApiOk("ok"))
+    Ok(ApiResponse::message("ok"))
 }

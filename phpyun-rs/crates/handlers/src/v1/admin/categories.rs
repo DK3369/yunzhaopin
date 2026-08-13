@@ -1,17 +1,13 @@
 //! Category tree management (admin).
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
-};
-use phpyun_core::{ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, ValidatedJson};
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::dto::CreatedId;
+use phpyun_core::utils::fmt_dt;
+use phpyun_core::{ApiResponse, AppResult, AppState, AuthenticatedUser, ValidatedJson};
 use phpyun_services::category_service::{self, CatInput, CatPatch};
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
-use phpyun_core::dto::{CreatedId};
-use phpyun_core::utils::{fmt_dt};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -25,7 +21,6 @@ pub struct ListQuery {
     #[validate(length(min = 1, max = 200))]
     pub kind: String,
 }
-
 
 #[derive(Debug, Serialize, ToSchema)]
 pub struct CatItem {
@@ -84,14 +79,17 @@ pub struct CatPatchForm {
     pub status: Option<i32>,
 }
 
-#[utoipa::path(post, path = "/v1/admin/categories/list", tag = "admin", security(("bearer" = [])), params(ListQuery), responses((status = 200, description = "ok")))]pub async fn list(
+#[utoipa::path(post, path = "/v1/admin/categories/list", tag = "admin", security(("bearer" = [])), params(ListQuery), responses((status = 200, description = "ok")))]
+pub async fn list(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(q): ValidatedJson<ListQuery>,
-) -> AppResult<ApiJson<Vec<CatItem>>> {
+) -> AppResult<ApiResponse<Vec<CatItem>>> {
     user.require_admin()?;
     let list = category_service::admin_list(&state, &user, &q.kind).await?;
-    Ok(ApiJson(list.into_iter().map(CatItem::from).collect()))
+    Ok(ApiResponse::data(
+        list.into_iter().map(CatItem::from).collect(),
+    ))
 }
 
 #[utoipa::path(post, path = "/v1/admin/categories", tag = "admin", security(("bearer" = [])), request_body = CatForm, responses((status = 200, description = "ok", body = CreatedId)))]
@@ -99,7 +97,7 @@ pub async fn create(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(f): ValidatedJson<CatForm>,
-) -> AppResult<ApiJson<CreatedId>> {
+) -> AppResult<ApiResponse<CreatedId>> {
     user.require_admin()?;
     let id = category_service::admin_create(
         &state,
@@ -112,18 +110,20 @@ pub async fn create(
         },
     )
     .await?;
-    Ok(ApiJson(CreatedId { id }))
+    Ok(ApiResponse::data(CreatedId { id }))
 }
 
 #[utoipa::path(post, path = "/v1/admin/categories/update", tag = "admin", security(("bearer" = [])), request_body = CatPatchForm, responses((status = 200, description = "ok")))]
-pub async fn update(State(state): State<AppState>,
+pub async fn update(
+    State(state): State<AppState>,
     user: AuthenticatedUser,
-    ValidatedJson(f): ValidatedJson<CatPatchForm>) -> AppResult<ApiOk> {
+    ValidatedJson(f): ValidatedJson<CatPatchForm>,
+) -> AppResult<ApiResponse> {
     let id = f.id;
     user.require_admin()?;
     if f.status == Some(2) {
         category_service::admin_delete(&state, &user, id).await?;
-        return Ok(ApiOk("deleted"));
+        return Ok(ApiResponse::message("deleted"));
     }
     category_service::admin_update(
         &state,
@@ -137,5 +137,5 @@ pub async fn update(State(state): State<AppState>,
         },
     )
     .await?;
-    Ok(ApiOk("ok"))
+    Ok(ApiResponse::message("ok"))
 }

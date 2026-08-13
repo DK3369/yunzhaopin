@@ -15,10 +15,7 @@ use phpyun_models::member_logout::entity::MemberLogout;
 use phpyun_models::member_logout::repo as logout_repo;
 use phpyun_models::user::repo as user_repo;
 
-pub async fn status(
-    state: &AppState,
-    user: &AuthenticatedUser,
-) -> AppResult<Option<MemberLogout>> {
+pub async fn status(state: &AppState, user: &AuthenticatedUser) -> AppResult<Option<MemberLogout>> {
     Ok(logout_repo::find_by_uid(state.db.reader(), user.uid).await?)
 }
 

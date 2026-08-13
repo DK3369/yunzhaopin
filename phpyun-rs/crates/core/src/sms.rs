@@ -125,16 +125,13 @@ impl Sms {
                     sign_name: sign,
                 }))
             }
-            other => Err(ApiError::param_invalid(format!("unknown SMS_KIND: {other}"))),
+            other => Err(ApiError::param_invalid(format!(
+                "unknown SMS_KIND: {other}"
+            ))),
         }
     }
 
-    pub async fn send_code(
-        &self,
-        mobile: &str,
-        code: &str,
-        tmpl: SmsTemplate,
-    ) -> AppResult<()> {
+    pub async fn send_code(&self, mobile: &str, code: &str, tmpl: SmsTemplate) -> AppResult<()> {
         self.inner.send_code(mobile, code, tmpl).await?;
         crate::metrics::counter_with("sms.sent", &[("template", tmpl.as_tag())]);
         Ok(())

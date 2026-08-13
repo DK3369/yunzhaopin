@@ -68,9 +68,7 @@ pub async fn list_public(
 ) -> Result<Vec<OnceJob>, sqlx::Error> {
     let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new("SELECT ");
     qb.push(FIELDS);
-    qb.push(
-        " FROM phpyun_once_job WHERE status = 1 AND (edate = 0 OR edate > ",
-    );
+    qb.push(" FROM phpyun_once_job WHERE status = 1 AND (edate = 0 OR edate > ");
     qb.push_bind(now);
     qb.push(") AND did = ");
     qb.push_bind(f.did);
@@ -131,22 +129,20 @@ pub async fn count_today_by_ip(
     ip: &str,
     since_ts: i64,
 ) -> Result<u64, sqlx::Error> {
-    let (n,): (i64,) = sqlx::query_as(
-        "SELECT COUNT(*) FROM phpyun_once_job WHERE login_ip = ? AND ctime > ?",
-    )
-    .bind(ip)
-    .bind(since_ts)
-    .fetch_one(pool)
-    .await?;
+    let (n,): (i64,) =
+        sqlx::query_as("SELECT COUNT(*) FROM phpyun_once_job WHERE login_ip = ? AND ctime > ?")
+            .bind(ip)
+            .bind(since_ts)
+            .fetch_one(pool)
+            .await?;
     Ok(n.max(0) as u64)
 }
 
 pub async fn count_today_total(pool: &MySqlPool, since_ts: i64) -> Result<u64, sqlx::Error> {
-    let (n,): (i64,) =
-        sqlx::query_as("SELECT COUNT(*) FROM phpyun_once_job WHERE ctime > ?")
-            .bind(since_ts)
-            .fetch_one(pool)
-            .await?;
+    let (n,): (i64,) = sqlx::query_as("SELECT COUNT(*) FROM phpyun_once_job WHERE ctime > ?")
+        .bind(since_ts)
+        .fetch_one(pool)
+        .await?;
     Ok(n.max(0) as u64)
 }
 
@@ -258,13 +254,12 @@ pub async fn verify_password(
     id: u64,
     password_md5: &str,
 ) -> Result<bool, sqlx::Error> {
-    let (n,): (i64,) = sqlx::query_as(
-        "SELECT COUNT(*) FROM phpyun_once_job WHERE id = ? AND password = ?",
-    )
-    .bind(id)
-    .bind(password_md5)
-    .fetch_one(pool)
-    .await?;
+    let (n,): (i64,) =
+        sqlx::query_as("SELECT COUNT(*) FROM phpyun_once_job WHERE id = ? AND password = ?")
+            .bind(id)
+            .bind(password_md5)
+            .fetch_one(pool)
+            .await?;
     Ok(n > 0)
 }
 
@@ -274,14 +269,12 @@ pub async fn refresh_with_password(
     password_md5: &str,
     now: i64,
 ) -> Result<u64, sqlx::Error> {
-    let res = sqlx::query(
-        "UPDATE phpyun_once_job SET ctime = ? WHERE id = ? AND password = ?",
-    )
-    .bind(now)
-    .bind(id)
-    .bind(password_md5)
-    .execute(pool)
-    .await?;
+    let res = sqlx::query("UPDATE phpyun_once_job SET ctime = ? WHERE id = ? AND password = ?")
+        .bind(now)
+        .bind(id)
+        .bind(password_md5)
+        .execute(pool)
+        .await?;
     Ok(res.rows_affected())
 }
 
@@ -292,13 +285,11 @@ pub async fn delete_with_password(
     id: u64,
     password_md5: &str,
 ) -> Result<u64, sqlx::Error> {
-    let res = sqlx::query(
-        "UPDATE phpyun_once_job SET status = 2 WHERE id = ? AND password = ?",
-    )
-    .bind(id)
-    .bind(password_md5)
-    .execute(pool)
-    .await?;
+    let res = sqlx::query("UPDATE phpyun_once_job SET status = 2 WHERE id = ? AND password = ?")
+        .bind(id)
+        .bind(password_md5)
+        .execute(pool)
+        .await?;
     Ok(res.rows_affected())
 }
 
@@ -380,10 +371,7 @@ pub struct OrderInsert<'a> {
     pub fast: &'a str,
 }
 
-pub async fn insert_once_order(
-    pool: &MySqlPool,
-    o: OrderInsert<'_>,
-) -> Result<u64, sqlx::Error> {
+pub async fn insert_once_order(pool: &MySqlPool, o: OrderInsert<'_>) -> Result<u64, sqlx::Error> {
     let res = sqlx::query(
         "INSERT INTO phpyun_company_order \
             (uid, order_id, order_type, order_price, order_time, order_state, \
@@ -443,10 +431,7 @@ pub async fn list_pending_once_orders(
         .await
 }
 
-pub async fn count_pending_once_orders(
-    pool: &MySqlPool,
-    uid: u64,
-) -> Result<u64, sqlx::Error> {
+pub async fn count_pending_once_orders(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Error> {
     let (n,): (i64,) = sqlx::query_as(
         "SELECT COUNT(*) FROM phpyun_company_order \
          WHERE uid = ? AND type = ? AND order_state = 1",

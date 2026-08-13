@@ -22,8 +22,7 @@ const SELECT_FIELDS: &str = "\
 
 /// PHPYun's "published" predicate (no status column): startime<=now<endtime
 /// (or endtime=0 meaning permanent).
-const PUBLISHED_WHERE: &str =
-    " (startime = 0 OR startime <= UNIX_TIMESTAMP()) \
+const PUBLISHED_WHERE: &str = " (startime = 0 OR startime <= UNIX_TIMESTAMP()) \
       AND (endtime = 0 OR endtime > UNIX_TIMESTAMP())";
 
 pub async fn list_published(
@@ -48,13 +47,8 @@ pub async fn count_published(pool: &MySqlPool) -> Result<u64, sqlx::Error> {
     Ok(n.max(0) as u64)
 }
 
-pub async fn find_by_id(
-    pool: &MySqlPool,
-    id: u64,
-) -> Result<Option<Announcement>, sqlx::Error> {
-    let sql = format!(
-        "SELECT {SELECT_FIELDS} FROM phpyun_admin_announcement WHERE id = ?"
-    );
+pub async fn find_by_id(pool: &MySqlPool, id: u64) -> Result<Option<Announcement>, sqlx::Error> {
+    let sql = format!("SELECT {SELECT_FIELDS} FROM phpyun_admin_announcement WHERE id = ?");
     sqlx::query_as::<_, Announcement>(&sql)
         .bind(id)
         .fetch_optional(pool)

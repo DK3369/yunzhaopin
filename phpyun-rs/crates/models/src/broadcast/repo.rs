@@ -77,10 +77,9 @@ pub async fn admin_list(
 }
 
 pub async fn admin_count(pool: &MySqlPool) -> Result<u64, sqlx::Error> {
-    let (n,): (i64,) =
-        sqlx::query_as("SELECT COUNT(*) FROM phpyun_admin_announcement")
-            .fetch_one(pool)
-            .await?;
+    let (n,): (i64,) = sqlx::query_as("SELECT COUNT(*) FROM phpyun_admin_announcement")
+        .fetch_one(pool)
+        .await?;
     Ok(n.max(0) as u64)
 }
 

@@ -15,7 +15,10 @@ pub fn record_async(state: &AppState, uid: u64, scope: &'static str, keyword: St
     let pool = state.db.pool().clone();
     background::spawn_best_effort("search_history.insert", async move {
         let now = clock::now_ts();
-        if sh_repo::insert(&pool, uid, scope, &keyword, now).await.is_ok() {
+        if sh_repo::insert(&pool, uid, scope, &keyword, now)
+            .await
+            .is_ok()
+        {
             // trim old entries
             let _ = sh_repo::trim(&pool, uid, scope, KEEP_PER_SCOPE).await;
         }
@@ -32,11 +35,7 @@ pub async fn list(
     Ok(sh_repo::list(state.db.reader(), user.uid, scope, limit).await?)
 }
 
-pub async fn delete_one(
-    state: &AppState,
-    user: &AuthenticatedUser,
-    id: u64,
-) -> AppResult<()> {
+pub async fn delete_one(state: &AppState, user: &AuthenticatedUser, id: u64) -> AppResult<()> {
     sh_repo::delete_one(state.db.pool(), id, user.uid).await?;
     Ok(())
 }

@@ -4,21 +4,16 @@
 //! the company side returns rows — jobseekers receive an empty list (the
 //! reciprocal "who has viewed my resume" lives on `/v1/mcenter/profile-views`).
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
-};
-use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::utils::fmt_dt;
+use phpyun_core::{ApiResponse, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
 use phpyun_services::fan_service;
 use serde::Serialize;
 use utoipa::ToSchema;
-use phpyun_core::utils::{fmt_dt};
 
 pub fn routes() -> Router<AppState> {
     Router::new().route("/fans", post(list_mine))
 }
-
 
 #[derive(Debug, Serialize, ToSchema)]
 pub struct FanItem {
@@ -59,7 +54,9 @@ pub async fn list_mine(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-) -> AppResult<ApiJson<Paged<FanItem>>> {
+) -> AppResult<ApiResponse<Paged<FanItem>>> {
     let r = fan_service::list_fans(&state, &user, page).await?;
-    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
+    Ok(ApiResponse::data(Paged::from_listing(
+        r.list, r.total, page,
+    )))
 }

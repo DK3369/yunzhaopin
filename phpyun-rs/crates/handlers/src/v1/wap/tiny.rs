@@ -9,18 +9,16 @@
 //! - POST   `/v1/wap/tiny-resumes/{id}/refresh` refresh lastupdate
 //! - DELETE `/v1/wap/tiny-resumes/{id}`       delete (requires password)
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::dto::{IdBody, IdPasswordBody, UpsertCreated};
+use phpyun_core::utils::mask_tel as mask_mobile;
+use phpyun_core::{
+    json, ApiResponse, AppResult, AppState, ClientIp, Paged, Pagination, ValidatedJson,
 };
-use phpyun_core::{json, ApiJson, AppResult, AppState, ClientIp, Paged, Pagination, ValidatedJson};
 use phpyun_services::tiny_service::{self, ManageOp, TinySearch, UpsertInput};
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
-use phpyun_core::dto::{IdBody, IdPasswordBody, UpsertCreated};
-use phpyun_core::utils::mask_tel as mask_mobile;
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -92,11 +90,12 @@ impl From<phpyun_models::tiny::entity::TinyResume> for TinyListItem {
     tag = "wap",
     params(ListQuery),
     responses((status = 200, description = "ok"))
-)]pub async fn list(
+)]
+pub async fn list(
     State(state): State<AppState>,
     page: Pagination,
     ValidatedJson(q): ValidatedJson<ListQuery>,
-) -> AppResult<ApiJson<Paged<TinyListItem>>> {
+) -> AppResult<ApiResponse<Paged<TinyListItem>>> {
     let search = TinySearch {
         keyword: q.keyword,
         province_id: q.province_id,
@@ -107,7 +106,9 @@ impl From<phpyun_models::tiny::entity::TinyResume> for TinyListItem {
         did: q.did,
     };
     let r = tiny_service::list_public(&state, &search, page).await?;
-    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
+    Ok(ApiResponse::data(Paged::from_listing(
+        r.list, r.total, page,
+    )))
 }
 
 // ==================== show ====================
@@ -140,11 +141,13 @@ pub struct TinyDetail {
         (status = 404, description = "not found"),
     )
 )]
-pub async fn show(State(state): State<AppState>,
-    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiJson<TinyDetail>> {
+pub async fn show(
+    State(state): State<AppState>,
+    ValidatedJson(b): ValidatedJson<IdBody>,
+) -> AppResult<ApiResponse<TinyDetail>> {
     let id = b.id;
     let t = tiny_service::show(&state, id).await?;
-    Ok(ApiJson(TinyDetail {
+    Ok(ApiResponse::data(TinyDetail {
         id: t.id,
         username: t.username,
         sex: t.sex,
@@ -255,9 +258,9 @@ pub async fn create(
     State(state): State<AppState>,
     ClientIp(ip): ClientIp,
     ValidatedJson(b): ValidatedJson<UpsertBody>,
-) -> AppResult<ApiJson<UpsertCreated>> {
+) -> AppResult<ApiResponse<UpsertCreated>> {
     let r = upsert_common(&state, &ip, None, b).await?;
-    Ok(ApiJson(r))
+    Ok(ApiResponse::data(r))
 }
 
 /// Update a tiny resume. Soft-delete has been split out to
@@ -269,12 +272,16 @@ pub async fn create(
     request_body = UpsertBody,
     responses((status = 200, description = "updated"))
 )]
-pub async fn update(State(state): State<AppState>,
+pub async fn update(
+    State(state): State<AppState>,
     ClientIp(ip): ClientIp,
-    ValidatedJson(b): ValidatedJson<UpsertBody>) -> AppResult<ApiJson<json::Value>> {
+    ValidatedJson(b): ValidatedJson<UpsertBody>,
+) -> AppResult<ApiResponse<json::Value>> {
     let id = b.id;
     let r = upsert_common(&state, &ip, Some(id), b).await?;
-    Ok(ApiJson(json::json!({ "id": r.id, "created": r.created })))
+    Ok(ApiResponse::data(
+        json::json!({ "id": r.id, "created": r.created }),
+    ))
 }
 
 /// Soft-delete a tiny resume. Counterpart of the legacy `{password,
@@ -286,11 +293,15 @@ pub async fn update(State(state): State<AppState>,
     request_body = IdPasswordBody,
     responses((status = 200, description = "deleted"))
 )]
-pub async fn soft_delete(State(state): State<AppState>,
-    ValidatedJson(b): ValidatedJson<IdPasswordBody>) -> AppResult<ApiJson<json::Value>> {
+pub async fn soft_delete(
+    State(state): State<AppState>,
+    ValidatedJson(b): ValidatedJson<IdPasswordBody>,
+) -> AppResult<ApiResponse<json::Value>> {
     let id = b.id;
     tiny_service::manage(&state, id, &b.password, ManageOp::Delete).await?;
-    Ok(ApiJson(json::json!({ "ok": true, "deleted": true })))
+    Ok(ApiResponse::data(
+        json::json!({ "ok": true, "deleted": true }),
+    ))
 }
 
 // ==================== verify / refresh / delete ====================
@@ -301,11 +312,13 @@ pub async fn soft_delete(State(state): State<AppState>,
     request_body = IdPasswordBody,
     responses((status = 200, description = "ok"))
 )]
-pub async fn verify(State(state): State<AppState>,
-    ValidatedJson(b): ValidatedJson<IdPasswordBody>) -> AppResult<ApiJson<json::Value>> {
+pub async fn verify(
+    State(state): State<AppState>,
+    ValidatedJson(b): ValidatedJson<IdPasswordBody>,
+) -> AppResult<ApiResponse<json::Value>> {
     let id = b.id;
     tiny_service::manage(&state, id, &b.password, ManageOp::Verify).await?;
-    Ok(ApiJson(json::json!({ "ok": true })))
+    Ok(ApiResponse::data(json::json!({ "ok": true })))
 }
 
 #[utoipa::path(post,
@@ -314,11 +327,13 @@ pub async fn verify(State(state): State<AppState>,
     request_body = IdPasswordBody,
     responses((status = 200, description = "ok"))
 )]
-pub async fn refresh(State(state): State<AppState>,
-    ValidatedJson(b): ValidatedJson<IdPasswordBody>) -> AppResult<ApiJson<json::Value>> {
+pub async fn refresh(
+    State(state): State<AppState>,
+    ValidatedJson(b): ValidatedJson<IdPasswordBody>,
+) -> AppResult<ApiResponse<json::Value>> {
     let id = b.id;
     tiny_service::manage(&state, id, &b.password, ManageOp::Refresh).await?;
-    Ok(ApiJson(json::json!({ "refreshed": true })))
+    Ok(ApiResponse::data(json::json!({ "refreshed": true })))
 }
 
 // Delete a tiny resume: now triggered via `POST /v1/wap/tiny-resumes/{id}` body `{"password":..., "status":2}`.
@@ -338,4 +353,3 @@ mod tests {
         assert_eq!(mask_mobile("123"), "123");
     }
 }
-

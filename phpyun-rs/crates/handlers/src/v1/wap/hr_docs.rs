@@ -1,17 +1,13 @@
 //! HR toolbox public read.
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
-};
-use phpyun_core::{ApiJson, AppResult, AppState, Paged, Pagination, ValidatedJson};
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::dto::IdBody;
+use phpyun_core::utils::fmt_dt;
+use phpyun_core::{ApiResponse, AppResult, AppState, Paged, Pagination, ValidatedJson};
 use phpyun_services::hr_doc_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
-use phpyun_core::dto::{IdBody};
-use phpyun_core::utils::{fmt_dt};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -25,7 +21,6 @@ pub struct HrQuery {
     #[validate(range(min = 1, max = 99_999_999))]
     pub cid: Option<u64>,
 }
-
 
 /// HR document list item -- all 9 columns of phpyun_hr_doc + body excerpt + formatted timestamps.
 #[derive(Debug, Serialize, ToSchema)]
@@ -103,9 +98,11 @@ pub async fn list(
     State(state): State<AppState>,
     page: Pagination,
     ValidatedJson(q): ValidatedJson<HrQuery>,
-) -> AppResult<ApiJson<Paged<HrSummary>>> {
+) -> AppResult<ApiResponse<Paged<HrSummary>>> {
     let r = hr_doc_service::list(&state, q.cid, page).await?;
-    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
+    Ok(ApiResponse::data(Paged::from_listing(
+        r.list, r.total, page,
+    )))
 }
 
 /// HR toolbox detail
@@ -115,11 +112,13 @@ pub async fn list(
     request_body = IdBody,
     responses((status = 200, description = "ok", body = HrDetail))
 )]
-pub async fn detail(State(state): State<AppState>,
-    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiJson<HrDetail>> {
+pub async fn detail(
+    State(state): State<AppState>,
+    ValidatedJson(b): ValidatedJson<IdBody>,
+) -> AppResult<ApiResponse<HrDetail>> {
     let id = b.id;
     let d = hr_doc_service::get(&state, id).await?;
-    Ok(ApiJson(HrDetail::from(d)))
+    Ok(ApiResponse::data(HrDetail::from(d)))
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -144,17 +143,18 @@ pub struct HrDownloadResp {
         (status = 404, description = "Not found"),
     )
 )]
-pub async fn track_download(State(state): State<AppState>,
-    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiJson<HrDownloadResp>> {
+pub async fn track_download(
+    State(state): State<AppState>,
+    ValidatedJson(b): ValidatedJson<IdBody>,
+) -> AppResult<ApiResponse<HrDownloadResp>> {
     let id = b.id;
     let _ = phpyun_models::hr_doc::repo::incr_hit(state.db.pool(), id).await?;
     let d = hr_doc_service::get(&state, id).await?;
     let web_base = state.config.web_base_url.as_deref();
     let url_n = state.storage.normalize_legacy_url(&d.url, web_base);
-    Ok(ApiJson(HrDownloadResp {
+    Ok(ApiResponse::data(HrDownloadResp {
         url: url_n,
         raw_url: d.url,
         hits: d.hits,
     }))
 }
-

@@ -148,11 +148,10 @@ fn push_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &CompanyFilter<'a
 /// Cheap existence check — `SELECT 1`. Used by transfer/merge preconditions
 /// where the full entity is unnecessary.
 pub async fn exists_by_uid(pool: &MySqlPool, uid: u64) -> Result<bool, sqlx::Error> {
-    let row: Option<(i64,)> =
-        sqlx::query_as("SELECT 1 FROM phpyun_company WHERE uid = ? LIMIT 1")
-            .bind(uid)
-            .fetch_optional(pool)
-            .await?;
+    let row: Option<(i64,)> = sqlx::query_as("SELECT 1 FROM phpyun_company WHERE uid = ? LIMIT 1")
+        .bind(uid)
+        .fetch_optional(pool)
+        .await?;
     Ok(row.is_some())
 }
 
@@ -254,12 +253,10 @@ pub async fn incr_hits(pool: &MySqlPool, uid: u64) -> Result<(), sqlx::Error> {
 /// Increment both `hits` and `expoure` by 1. Used by the public detail page —
 /// PHP's `$companyM->upInfo($cuid, '', ['hits' => ['+', 1], 'expoure' => ['+', 1]])`.
 pub async fn incr_hits_and_expoure(pool: &MySqlPool, uid: u64) -> Result<(), sqlx::Error> {
-    sqlx::query(
-        "UPDATE phpyun_company SET hits = hits + 1, expoure = expoure + 1 WHERE uid = ?",
-    )
-    .bind(uid)
-    .execute(pool)
-    .await?;
+    sqlx::query("UPDATE phpyun_company SET hits = hits + 1, expoure = expoure + 1 WHERE uid = ?")
+        .bind(uid)
+        .execute(pool)
+        .await?;
     Ok(())
 }
 

@@ -1,11 +1,7 @@
 //! Site statistics (matching PHPYun `tongji` + `ajax::*Data`). Public viewing.
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
-};
-use phpyun_core::{ApiJson, AppResult, AppState};
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::{ApiResponse, AppResult, AppState};
 use phpyun_services::stats_service;
 use serde::Serialize;
 use utoipa::ToSchema;
@@ -30,11 +26,9 @@ pub struct SiteOverviewView {
     tag = "wap",
     responses((status = 200, description = "ok", body = SiteOverviewView))
 )]
-pub async fn overview(
-    State(state): State<AppState>,
-) -> AppResult<ApiJson<SiteOverviewView>> {
+pub async fn overview(State(state): State<AppState>) -> AppResult<ApiResponse<SiteOverviewView>> {
     let o = stats_service::overview(&state).await?;
-    Ok(ApiJson(SiteOverviewView {
+    Ok(ApiResponse::data(SiteOverviewView {
         total_jobs: o.total_jobs,
         total_companies: o.total_companies,
         total_resumes: o.total_resumes,

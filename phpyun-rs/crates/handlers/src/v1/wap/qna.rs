@@ -1,18 +1,14 @@
 //! Public Q&A browsing (aligned with the index/list/content parts of PHPYun `wap/ask`).
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
-};
-use phpyun_core::{ApiJson, AppResult, AppState, MaybeUser, Paged, Pagination, ValidatedJson};
-use validator::Validate;
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::dto::IdBody;
+use phpyun_core::utils::{fmt_dt, pic_n};
+use phpyun_core::{ApiResponse, AppResult, AppState, MaybeUser, Paged, Pagination, ValidatedJson};
 use phpyun_models::qna::repo::QuestionOrder;
 use phpyun_services::qna_service::{self, QuestionListFilter};
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
-use phpyun_core::dto::{IdBody};
-use phpyun_core::utils::{fmt_dt, pic_n};
+use validator::Validate;
 
 /// `unix -> Y-m-d H:i` (equivalent to PHP `date('Y-m-d H:i', $ts)`); returns empty string when ts<=0.
 
@@ -302,7 +298,7 @@ pub async fn list_questions(
     State(state): State<AppState>,
     page: Pagination,
     ValidatedJson(q): ValidatedJson<QListQuery>,
-) -> AppResult<ApiJson<Paged<QuestionSummary>>> {
+) -> AppResult<ApiResponse<Paged<QuestionSummary>>> {
     let f = QuestionListFilter {
         keyword: q.keyword.as_deref(),
         category_id: q.category_id,
@@ -310,7 +306,7 @@ pub async fn list_questions(
     };
     let r = qna_service::list_questions(&state, &f, page).await?;
     let dicts = phpyun_services::dict_service::get(&state).await?;
-    Ok(ApiJson(Paged::new(
+    Ok(ApiResponse::data(Paged::new(
         r.list
             .into_iter()
             .map(|q| QuestionSummary::from_with_ctx(q, &state, &dicts))
@@ -328,9 +324,11 @@ pub async fn list_questions(
     request_body = IdBody,
     responses((status = 200, description = "ok", body = QuestionDetail), (status = 404))
 )]
-pub async fn question_detail(State(state): State<AppState>,
+pub async fn question_detail(
+    State(state): State<AppState>,
     MaybeUser(user): MaybeUser,
-    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiJson<QuestionDetail>> {
+    ValidatedJson(b): ValidatedJson<IdBody>,
+) -> AppResult<ApiResponse<QuestionDetail>> {
     let id = b.id;
     let q = qna_service::get_question(&state, id).await?;
     let cid = q.category_id;
@@ -339,8 +337,7 @@ pub async fn question_detail(State(state): State<AppState>,
 
     // Dict + top 5 answers in parallel
     let dicts_fut = phpyun_services::dict_service::get(&state);
-    let top_fut =
-        phpyun_models::qna::repo::list_answers(state.db.reader(), id, 0, 5);
+    let top_fut = phpyun_models::qna::repo::list_answers(state.db.reader(), id, 0, 5);
     let (dicts_res, top_raw) = tokio::join!(dicts_fut, top_fut);
     let dicts = dicts_res?;
     let top_raw = top_raw.unwrap_or_default();
@@ -348,8 +345,7 @@ pub async fn question_detail(State(state): State<AppState>,
     let pic_full = pic_n(&state, q.pic.as_deref());
 
     // === Fetch the current user's follow list (for the question author + every answer author) in one shot ===
-    let mut atn_uids: std::collections::HashSet<u64> =
-        std::collections::HashSet::new();
+    let mut atn_uids: std::collections::HashSet<u64> = std::collections::HashSet::new();
     if let Some(uid) = viewer_uid {
         // PHP `atnM->getatnList(uid=> $this->uid, field => sc_uid)` -- list of followed users
         atn_uids = phpyun_models::atn::repo::list_followee_uids(state.db.reader(), uid)
@@ -369,7 +365,8 @@ pub async fn question_detail(State(state): State<AppState>,
         if uid == q_uid {
             2
         } else {
-            let row: Option<(String,)> = sqlx::query_as( // TODO(arch): qna::repo models phpyun_attention as a (uid, qid) join table; legacy DB still uses (uid, type, ids CSV)
+            let row: Option<(String,)> = sqlx::query_as(
+                // TODO(arch): qna::repo models phpyun_attention as a (uid, qid) join table; legacy DB still uses (uid, type, ids CSV)
                 "SELECT COALESCE(ids,'') FROM phpyun_attention \
                  WHERE uid = ? AND type = 1 LIMIT 1",
             )
@@ -379,9 +376,7 @@ pub async fn question_detail(State(state): State<AppState>,
             .unwrap_or(None);
             let ids = row.map(|(s,)| s).unwrap_or_default();
             let id_str = id.to_string();
-            let hit = ids
-                .split(',')
-                .any(|s| !s.is_empty() && s.trim() == id_str);
+            let hit = ids.split(',').any(|s| !s.is_empty() && s.trim() == id_str);
             if hit {
                 1
             } else {
@@ -425,7 +420,7 @@ pub async fn question_detail(State(state): State<AppState>,
         .map(|a| AnswerItem::from_with_ctx(a, &state, viewer_uid, &atn_uids))
         .collect();
 
-    Ok(ApiJson(QuestionDetail {
+    Ok(ApiResponse::data(QuestionDetail {
         id: q.id,
         uid: q.uid,
         title: q.title,
@@ -462,10 +457,12 @@ pub async fn question_detail(State(state): State<AppState>,
     request_body = IdBody,
     responses((status = 200, description = "ok"))
 )]
-pub async fn list_answers(State(state): State<AppState>,
+pub async fn list_answers(
+    State(state): State<AppState>,
     MaybeUser(user): MaybeUser,
     page: Pagination,
-    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiJson<Paged<AnswerItem>>> {
+    ValidatedJson(b): ValidatedJson<IdBody>,
+) -> AppResult<ApiResponse<Paged<AnswerItem>>> {
     let id = b.id;
     let r = qna_service::list_answers(&state, id, page).await?;
     let viewer_uid = user.as_ref().map(|u| u.uid);
@@ -477,7 +474,7 @@ pub async fn list_answers(State(state): State<AppState>,
             .into_iter()
             .collect();
     }
-    Ok(ApiJson(Paged::new(
+    Ok(ApiResponse::data(Paged::new(
         r.list
             .into_iter()
             .map(|a| AnswerItem::from_with_ctx(a, &state, viewer_uid, &atn_uids))
@@ -517,10 +514,12 @@ impl From<phpyun_models::qna::entity::QClass> for CategoryItem {
 #[utoipa::path(post, path = "/v1/wap/qna/categories", tag = "wap", responses((status = 200, description = "ok")))]
 pub async fn list_categories(
     State(state): State<AppState>,
-) -> AppResult<ApiJson<Vec<CategoryItem>>> {
+) -> AppResult<ApiResponse<Vec<CategoryItem>>> {
     let list = qna_service::list_categories(&state).await?;
     // Arc<Vec<QClass>> -- 60s TTL cache; cloning each entity is enough, with zero extra alloc overall
-    Ok(ApiJson(list.iter().cloned().map(CategoryItem::from).collect()))
+    Ok(ApiResponse::data(
+        list.iter().cloned().map(CategoryItem::from).collect(),
+    ))
 }
 
 #[derive(Debug, Deserialize, Validate, IntoParams)]
@@ -539,9 +538,11 @@ fn default_hot_limit() -> u64 {
 pub async fn list_hotweek(
     State(state): State<AppState>,
     ValidatedJson(q): ValidatedJson<HotweekQuery>,
-) -> AppResult<ApiJson<Vec<QuestionSummary>>> {
+) -> AppResult<ApiResponse<Vec<QuestionSummary>>> {
     let list = qna_service::list_hotweek(&state, q.limit).await?;
-    Ok(ApiJson(list.into_iter().map(QuestionSummary::from).collect()))
+    Ok(ApiResponse::data(
+        list.into_iter().map(QuestionSummary::from).collect(),
+    ))
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -583,12 +584,16 @@ impl From<phpyun_models::qna::entity::AnswerReview> for CommentItem {
     request_body = ListCommentsBody,
     responses((status = 200, description = "ok"))
 )]
-pub async fn list_comments(State(state): State<AppState>,
+pub async fn list_comments(
+    State(state): State<AppState>,
     page: Pagination,
-    ValidatedJson(b): ValidatedJson<ListCommentsBody>) -> AppResult<ApiJson<Paged<CommentItem>>> {
+    ValidatedJson(b): ValidatedJson<ListCommentsBody>,
+) -> AppResult<ApiResponse<Paged<CommentItem>>> {
     let aid = b.aid;
     let r = qna_service::list_reviews(&state, aid, page).await?;
-    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
+    Ok(ApiResponse::data(Paged::from_listing(
+        r.list, r.total, page,
+    )))
 }
 
 // ==================== Top answerers leaderboard ====================
@@ -644,9 +649,11 @@ impl From<phpyun_services::qna_service::AnswererBrief> for TopAnswererItem {
 pub async fn list_top_answerers(
     State(state): State<AppState>,
     ValidatedJson(q): ValidatedJson<TopAnswerersQuery>,
-) -> AppResult<ApiJson<Vec<TopAnswererItem>>> {
+) -> AppResult<ApiResponse<Vec<TopAnswererItem>>> {
     let rows = qna_service::list_top_answerers(&state, q.days, q.limit).await?;
-    Ok(ApiJson(rows.into_iter().map(TopAnswererItem::from).collect()))
+    Ok(ApiResponse::data(
+        rows.into_iter().map(TopAnswererItem::from).collect(),
+    ))
 }
 
 #[derive(Debug, serde::Deserialize, validator::Validate, utoipa::ToSchema)]

@@ -1,22 +1,17 @@
 //! My referral rewards.
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
-};
-use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::utils::fmt_dt;
+use phpyun_core::{ApiResponse, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
 use phpyun_services::referral_service;
 use serde::Serialize;
 use utoipa::ToSchema;
-use phpyun_core::utils::{fmt_dt};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/referrals", post(list))
         .route("/referrals/summary", post(summary))
 }
-
 
 #[derive(Debug, Serialize, ToSchema)]
 pub struct ReferralItem {
@@ -61,9 +56,11 @@ pub async fn list(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-) -> AppResult<ApiJson<Paged<ReferralItem>>> {
+) -> AppResult<ApiResponse<Paged<ReferralItem>>> {
     let r = referral_service::list_mine(&state, &user, page).await?;
-    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
+    Ok(ApiResponse::data(Paged::from_listing(
+        r.list, r.total, page,
+    )))
 }
 
 /// Summary: number of invitees + accumulated points
@@ -77,9 +74,9 @@ pub async fn list(
 pub async fn summary(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-) -> AppResult<ApiJson<SummaryView>> {
+) -> AppResult<ApiResponse<SummaryView>> {
     let s = referral_service::summary(&state, &user).await?;
-    Ok(ApiJson(SummaryView {
+    Ok(ApiResponse::data(SummaryView {
         count: s.count,
         total_points: s.total_points,
     }))

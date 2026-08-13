@@ -1,12 +1,8 @@
 //! Site static pages (about / privacy / protocol / contact / appDown) +
 //! multi-site domain switcher endpoints.
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
-};
-use phpyun_core::{ApiJson, ApiError, AppResult, AppState, ValidatedJson};
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::{ApiError, ApiResponse, AppResult, AppState, ValidatedJson};
 use phpyun_services::site_page_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
@@ -35,14 +31,16 @@ pub struct SitePageView {
     request_body = GetPageBody,
     responses((status = 200, description = "ok", body = SitePageView), (status = 404))
 )]
-pub async fn get_page(State(state): State<AppState>,
-    ValidatedJson(b): ValidatedJson<GetPageBody>) -> AppResult<ApiJson<SitePageView>> {
+pub async fn get_page(
+    State(state): State<AppState>,
+    ValidatedJson(b): ValidatedJson<GetPageBody>,
+) -> AppResult<ApiResponse<SitePageView>> {
     let code = b.code;
     phpyun_core::validators::ensure_path_token(&code)?;
     let p = site_page_service::get(&state, &code)
         .await?
         .ok_or_else(|| ApiError::param_invalid("page_not_found"))?;
-    Ok(ApiJson(SitePageView {
+    Ok(ApiResponse::data(SitePageView {
         code: p.code,
         title: p.title,
         content: p.content,
@@ -119,13 +117,15 @@ pub struct SubSitesQuery {
 pub async fn list_sub_sites(
     State(state): State<AppState>,
     ValidatedJson(q): ValidatedJson<SubSitesQuery>,
-) -> AppResult<ApiJson<Vec<SubSiteView>>> {
+) -> AppResult<ApiResponse<Vec<SubSiteView>>> {
     use phpyun_models::domain::repo as domain_repo;
     let rows = match q.fz_type {
         Some(t) => domain_repo::list_by_fz_type(state.db.reader(), t).await?,
         None => domain_repo::list_all(state.db.reader()).await?,
     };
-    Ok(ApiJson(rows.into_iter().map(SubSiteView::from).collect()))
+    Ok(ApiResponse::data(
+        rows.into_iter().map(SubSiteView::from).collect(),
+    ))
 }
 
 #[derive(Debug, Deserialize, Validate, IntoParams)]
@@ -156,15 +156,15 @@ pub struct MatchSubSiteQuery {
 pub async fn match_sub_site(
     State(state): State<AppState>,
     ValidatedJson(q): ValidatedJson<MatchSubSiteQuery>,
-) -> AppResult<ApiJson<Option<SubSiteView>>> {
+) -> AppResult<ApiResponse<Option<SubSiteView>>> {
     let p = q.province_id.unwrap_or(0);
     let c = q.city_id.unwrap_or(0);
     let t = q.three_city_id.unwrap_or(0);
     if p == 0 && c == 0 && t == 0 {
-        return Ok(ApiJson(None));
+        return Ok(ApiResponse::data(None));
     }
     let row = phpyun_models::domain::repo::find_for_city(state.db.reader(), p, c, t).await?;
-    Ok(ApiJson(row.map(SubSiteView::from)))
+    Ok(ApiResponse::data(row.map(SubSiteView::from)))
 }
 
 // ==================== Baidu Maps config ====================
@@ -194,21 +194,16 @@ pub struct MapConfigView {
     tag = "wap",
     responses((status = 200, description = "ok", body = MapConfigView))
 )]
-pub async fn map_config(
-    State(state): State<AppState>,
-) -> AppResult<ApiJson<MapConfigView>> {
+pub async fn map_config(State(state): State<AppState>) -> AppResult<ApiResponse<MapConfigView>> {
     let pool = state.db.reader();
-    async fn read(
-        pool: &sqlx::MySqlPool,
-        key: &str,
-    ) -> Option<String> {
+    async fn read(pool: &sqlx::MySqlPool, key: &str) -> Option<String> {
         phpyun_models::site_setting::repo::find(pool, key)
             .await
             .ok()
             .flatten()
             .map(|s| s.value)
     }
-    Ok(ApiJson(MapConfigView {
+    Ok(ApiResponse::data(MapConfigView {
         map_x: read(pool, "map_x").await,
         map_y: read(pool, "map_y").await,
         map_rating: read(pool, "map_rating").await,
@@ -222,6 +217,9 @@ pub async fn map_config(
 
 #[derive(Debug, serde::Deserialize, validator::Validate, utoipa::ToSchema)]
 pub struct GetPageBody {
-    #[validate(length(min = 1, max = 64), custom(function = "phpyun_core::validators::path_token"))]
+    #[validate(
+        length(min = 1, max = 64),
+        custom(function = "phpyun_core::validators::path_token")
+    )]
     pub code: String,
 }

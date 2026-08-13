@@ -22,18 +22,14 @@ const FIELDS: &str = "\
 
 pub async fn list_all(pool: &MySqlPool) -> Result<Vec<DomainSite>, sqlx::Error> {
     let sql = format!("SELECT {FIELDS} FROM phpyun_domain ORDER BY id ASC");
-    sqlx::query_as::<_, DomainSite>(&sql)
-        .fetch_all(pool)
-        .await
+    sqlx::query_as::<_, DomainSite>(&sql).fetch_all(pool).await
 }
 
 pub async fn list_by_fz_type(
     pool: &MySqlPool,
     fz_type: i32,
 ) -> Result<Vec<DomainSite>, sqlx::Error> {
-    let sql = format!(
-        "SELECT {FIELDS} FROM phpyun_domain WHERE fz_type = ? ORDER BY id ASC"
-    );
+    let sql = format!("SELECT {FIELDS} FROM phpyun_domain WHERE fz_type = ? ORDER BY id ASC");
     sqlx::query_as::<_, DomainSite>(&sql)
         .bind(fz_type)
         .fetch_all(pool)

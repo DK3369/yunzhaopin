@@ -2,12 +2,8 @@
 //!
 //! Only `usertype=3` may use this.
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
-};
-use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, ValidatedJson};
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::{ApiResponse, AppResult, AppState, AuthenticatedUser, ClientIp, ValidatedJson};
 use phpyun_services::transfer_service;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
@@ -48,11 +44,11 @@ pub async fn merge(
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
     ValidatedJson(f): ValidatedJson<MergeForm>,
-) -> AppResult<ApiJson<MergeDone>> {
+) -> AppResult<ApiResponse<MergeDone>> {
     user.require_admin()?;
-    let r = transfer_service::merge_into_company(&state, &user, f.user_uid, f.company_uid, &ip)
-        .await?;
-    Ok(ApiJson(MergeDone {
+    let r =
+        transfer_service::merge_into_company(&state, &user, f.user_uid, f.company_uid, &ip).await?;
+    Ok(ApiResponse::data(MergeDone {
         user_uid: r.user_uid,
         company_uid: r.company_uid,
     }))

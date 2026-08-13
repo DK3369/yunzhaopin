@@ -1,25 +1,23 @@
 //! Blacklist (the list of uids I have blocked).
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::dto::{ClearResult, UidBody};
+use phpyun_core::utils::fmt_dt;
+use phpyun_core::{
+    ApiResponse, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
 };
-use phpyun_core::{ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::blacklist_service;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
-use phpyun_core::dto::{ClearResult, UidBody};
-use phpyun_core::utils::{fmt_dt};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/blacklist", post(add))
-        .route("/blacklist/list", post(list)).route("/blacklist/delete", post(clear))
+        .route("/blacklist/list", post(list))
+        .route("/blacklist/delete", post(clear))
         .route("/blacklist/remove", post(remove))
 }
-
 
 #[derive(Debug, Serialize, ToSchema)]
 pub struct BlackItem {
@@ -60,13 +58,16 @@ pub struct AddForm {
     tag = "mcenter",
     security(("bearer" = [])),
     responses((status = 200, description = "ok"))
-)]pub async fn list(
+)]
+pub async fn list(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-) -> AppResult<ApiJson<Paged<BlackItem>>> {
+) -> AppResult<ApiResponse<Paged<BlackItem>>> {
     let r = blacklist_service::list(&state, &user, page).await?;
-    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
+    Ok(ApiResponse::data(Paged::from_listing(
+        r.list, r.total, page,
+    )))
 }
 
 /// Block
@@ -82,9 +83,9 @@ pub async fn add(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(f): ValidatedJson<AddForm>,
-) -> AppResult<ApiOk> {
+) -> AppResult<ApiResponse> {
     blacklist_service::add(&state, &user, f.blocked_uid, &f.reason).await?;
-    Ok(ApiOk("ok"))
+    Ok(ApiResponse::message("ok"))
 }
 
 /// Unblock
@@ -100,9 +101,9 @@ pub async fn remove(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(b): ValidatedJson<UidBody>,
-) -> AppResult<ApiOk> {
+) -> AppResult<ApiResponse> {
     blacklist_service::remove(&state, &user, b.uid).await?;
-    Ok(ApiOk("removed"))
+    Ok(ApiResponse::message("removed"))
 }
 
 /// Clear my entire blacklist
@@ -116,7 +117,7 @@ pub async fn remove(
 pub async fn clear(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-) -> AppResult<ApiJson<ClearResult>> {
+) -> AppResult<ApiResponse<ClearResult>> {
     let removed = blacklist_service::clear_all(&state, &user).await?;
-    Ok(ApiJson(ClearResult { removed }))
+    Ok(ApiResponse::data(ClearResult { removed }))
 }

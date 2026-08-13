@@ -1,19 +1,17 @@
 //! Employer views received applications + mark as read + invite to interview (usertype=2).
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
-};
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::dto::IdBody;
 use phpyun_core::json;
-use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, Paged, Pagination, ValidatedJson};
+use phpyun_core::utils::fmt_dt;
+use phpyun_core::{
+    ApiResponse, AppResult, AppState, AuthenticatedUser, ClientIp, Paged, Pagination, ValidatedJson,
+};
 use phpyun_models::apply::repo::ApplyFilter;
 use phpyun_services::apply_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
-use phpyun_core::dto::{IdBody};
-use phpyun_core::utils::{fmt_dt};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -32,7 +30,6 @@ pub struct ApplicationsQuery {
     #[serde(default)]
     pub invited_only: Option<bool>,
 }
-
 
 /// Application record item — full 11 columns of phpyun_userid_job + formatted timestamps + derived unread/invited booleans.
 #[derive(Debug, Serialize, ToSchema)]
@@ -99,13 +96,15 @@ pub async fn list_received(
     user: AuthenticatedUser,
     page: Pagination,
     ValidatedJson(q): ValidatedJson<ApplicationsQuery>,
-) -> AppResult<ApiJson<Paged<ApplicantSummary>>> {
+) -> AppResult<ApiResponse<Paged<ApplicantSummary>>> {
     let filter = ApplyFilter {
         unread_only: q.unread_only,
         invited_only: q.invited_only,
     };
     let r = apply_service::list_for_company(&state, &user, filter, page).await?;
-    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
+    Ok(ApiResponse::data(Paged::from_listing(
+        r.list, r.total, page,
+    )))
 }
 
 /// Mark as read (idempotent)
@@ -121,9 +120,9 @@ pub async fn mark_browsed(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(b): ValidatedJson<IdBody>,
-) -> AppResult<ApiJson<json::Value>> {
+) -> AppResult<ApiResponse<json::Value>> {
     apply_service::mark_browsed(&state, &user, b.id).await?;
-    Ok(ApiJson(json::json!({ "ok": true })))
+    Ok(ApiResponse::data(json::json!({ "ok": true })))
 }
 
 #[derive(Debug, serde::Deserialize, Validate, ToSchema)]
@@ -153,9 +152,11 @@ pub async fn set_state(
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
     ValidatedJson(b): ValidatedJson<SetStateBody>,
-) -> AppResult<ApiJson<json::Value>> {
+) -> AppResult<ApiResponse<json::Value>> {
     apply_service::set_browse_state(&state, &user, b.id, b.state, &ip).await?;
-    Ok(ApiJson(json::json!({ "ok": true, "state": b.state })))
+    Ok(ApiResponse::data(
+        json::json!({ "ok": true, "state": b.state }),
+    ))
 }
 
 /// Invite to interview
@@ -172,7 +173,7 @@ pub async fn invite(
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
     ValidatedJson(b): ValidatedJson<IdBody>,
-) -> AppResult<ApiJson<json::Value>> {
+) -> AppResult<ApiResponse<json::Value>> {
     apply_service::invite_interview(&state, &user, b.id, &ip).await?;
-    Ok(ApiJson(json::json!({ "ok": true })))
+    Ok(ApiResponse::data(json::json!({ "ok": true })))
 }

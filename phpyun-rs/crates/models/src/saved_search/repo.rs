@@ -62,11 +62,10 @@ pub async fn list_by_uid(
 }
 
 pub async fn count_by_uid(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Error> {
-    let (n,): (i64,) =
-        sqlx::query_as("SELECT COUNT(*) FROM phpyun_subscribe WHERE uid = ?")
-            .bind(uid)
-            .fetch_one(pool)
-            .await?;
+    let (n,): (i64,) = sqlx::query_as("SELECT COUNT(*) FROM phpyun_subscribe WHERE uid = ?")
+        .bind(uid)
+        .fetch_one(pool)
+        .await?;
     Ok(n.max(0) as u64)
 }
 
@@ -106,23 +105,20 @@ pub async fn set_notify(
     _now: i64,
 ) -> Result<u64, sqlx::Error> {
     // PHP table has no `updated_at` — only flip status.
-    let res = sqlx::query(
-        "UPDATE phpyun_subscribe SET status = ? WHERE id = ? AND uid = ?",
-    )
-    .bind(if notify { 1i8 } else { 0 })
-    .bind(id)
-    .bind(uid)
-    .execute(pool)
-    .await?;
+    let res = sqlx::query("UPDATE phpyun_subscribe SET status = ? WHERE id = ? AND uid = ?")
+        .bind(if notify { 1i8 } else { 0 })
+        .bind(id)
+        .bind(uid)
+        .execute(pool)
+        .await?;
     Ok(res.rows_affected())
 }
 
 pub async fn delete(pool: &MySqlPool, id: u64, uid: u64) -> Result<u64, sqlx::Error> {
-    let res =
-        sqlx::query("DELETE FROM phpyun_subscribe WHERE id = ? AND uid = ?")
-            .bind(id)
-            .bind(uid)
-            .execute(pool)
-            .await?;
+    let res = sqlx::query("DELETE FROM phpyun_subscribe WHERE id = ? AND uid = ?")
+        .bind(id)
+        .bind(uid)
+        .execute(pool)
+        .await?;
     Ok(res.rows_affected())
 }

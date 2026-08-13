@@ -1,18 +1,13 @@
 //! Public browsing of career assessments (aligned with PHPYun `wap/evaluate`).
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
-};
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::dto::IdBody;
 use phpyun_core::json;
-use phpyun_core::{ApiJson, AppResult, AppState, Paged, Pagination, ValidatedJson};
+use phpyun_core::utils::{fmt_dt, pic_n_str as pic_n};
+use phpyun_core::{ApiResponse, AppResult, AppState, Paged, Pagination, ValidatedJson};
 use phpyun_services::eval_service;
 use serde::Serialize;
 use utoipa::ToSchema;
-use phpyun_core::dto::{IdBody};
-use phpyun_core::utils::{fmt_dt, pic_n_str as pic_n};
-
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -37,10 +32,7 @@ pub struct PaperSummary {
 }
 
 impl PaperSummary {
-    pub fn from_with_ctx(
-        p: phpyun_models::eval::entity::EvalPaper,
-        state: &AppState,
-    ) -> Self {
+    pub fn from_with_ctx(p: phpyun_models::eval::entity::EvalPaper, state: &AppState) -> Self {
         Self {
             cover_n: pic_n(state, &p.cover),
             id: p.id,
@@ -123,9 +115,9 @@ fn strip_scores(v: &json::Value) -> json::Value {
 pub async fn list_papers(
     State(state): State<AppState>,
     page: Pagination,
-) -> AppResult<ApiJson<Paged<PaperSummary>>> {
+) -> AppResult<ApiResponse<Paged<PaperSummary>>> {
     let r = eval_service::list_papers(&state, page).await?;
-    Ok(ApiJson(Paged::new(
+    Ok(ApiResponse::data(Paged::new(
         r.list
             .into_iter()
             .map(|p| PaperSummary::from_with_ctx(p, &state))
@@ -143,12 +135,14 @@ pub async fn list_papers(
     request_body = IdBody,
     responses((status = 200, description = "ok", body = PaperDetail))
 )]
-pub async fn paper_detail(State(state): State<AppState>,
-    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiJson<PaperDetail>> {
+pub async fn paper_detail(
+    State(state): State<AppState>,
+    ValidatedJson(b): ValidatedJson<IdBody>,
+) -> AppResult<ApiResponse<PaperDetail>> {
     let id = b.id;
     let (p, qs) = eval_service::get_paper_with_questions(&state, id).await?;
     let cover_n = pic_n(&state, &p.cover);
-    Ok(ApiJson(PaperDetail {
+    Ok(ApiResponse::data(PaperDetail {
         id: p.id,
         name: p.name,
         description: p.description,
@@ -207,9 +201,11 @@ impl From<phpyun_models::eval::repo::PaperMessage> for PaperMessageItem {
     request_body = IdBody,
     responses((status = 200, description = "ok"))
 )]
-pub async fn list_messages(State(state): State<AppState>,
+pub async fn list_messages(
+    State(state): State<AppState>,
     page: Pagination,
-    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiJson<Paged<PaperMessageItem>>> {
+    ValidatedJson(b): ValidatedJson<IdBody>,
+) -> AppResult<ApiResponse<Paged<PaperMessageItem>>> {
     let id = b.id;
     let examid = id as u32;
     let pool = state.db.reader();
@@ -217,7 +213,7 @@ pub async fn list_messages(State(state): State<AppState>,
         phpyun_models::eval::repo::list_paper_messages(pool, examid, page.offset, page.limit),
         phpyun_models::eval::repo::count_paper_messages(pool, examid),
     );
-    Ok(ApiJson(Paged::new(
+    Ok(ApiResponse::data(Paged::new(
         list?.into_iter().map(PaperMessageItem::from).collect(),
         total?,
         page.page,
@@ -256,11 +252,14 @@ impl From<phpyun_models::eval::repo::ExamineeBrief> for ExamineeItem {
     request_body = IdBody,
     responses((status = 200, description = "ok"))
 )]
-pub async fn list_recent_examinees(State(state): State<AppState>,
-    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiJson<Vec<ExamineeItem>>> {
+pub async fn list_recent_examinees(
+    State(state): State<AppState>,
+    ValidatedJson(b): ValidatedJson<IdBody>,
+) -> AppResult<ApiResponse<Vec<ExamineeItem>>> {
     let id = b.id;
-    let rows = phpyun_models::eval::repo::list_recent_examinees(state.db.reader(), id as u32, 12)
-        .await?;
-    Ok(ApiJson(rows.into_iter().map(ExamineeItem::from).collect()))
+    let rows =
+        phpyun_models::eval::repo::list_recent_examinees(state.db.reader(), id as u32, 12).await?;
+    Ok(ApiResponse::data(
+        rows.into_iter().map(ExamineeItem::from).collect(),
+    ))
 }
-

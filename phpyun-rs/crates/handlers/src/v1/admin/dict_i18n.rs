@@ -5,12 +5,8 @@
 //!
 //! Skipping the call is fine: a 30-minute fallback timer will pull the new data automatically.
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
-};
-use phpyun_core::{ApiOk, AppResult, AppState, AuthenticatedUser};
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::{ApiResponse, AppResult, AppState, AuthenticatedUser};
 use phpyun_services::dict_service;
 
 pub fn routes() -> Router<AppState> {
@@ -31,8 +27,8 @@ pub fn routes() -> Router<AppState> {
 pub async fn reload(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-) -> AppResult<ApiOk> {
+) -> AppResult<ApiResponse> {
     user.require_admin()?;
     dict_service::reload(&state).await?;
-    Ok(ApiOk("reloaded"))
+    Ok(ApiResponse::message("reloaded"))
 }

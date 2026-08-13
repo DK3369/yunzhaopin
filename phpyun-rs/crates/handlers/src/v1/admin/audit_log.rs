@@ -1,16 +1,14 @@
 //! Audit log queries (admin).
 
-use axum::{
-    extract::{State},
-    Router,
-    routing::post,
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::utils::fmt_dt;
+use phpyun_core::{
+    ApiResponse, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
 };
-use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::audit_log_service::{self, Filter};
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
-use phpyun_core::utils::{fmt_dt};
 
 pub fn routes() -> Router<AppState> {
     Router::new().route("/audit-log", post(list))
@@ -28,7 +26,6 @@ pub struct AuditQuery {
     #[validate(range(min = 0i64, max = 4_102_444_800i64))]
     pub until: Option<i64>,
 }
-
 
 #[derive(Debug, Serialize, ToSchema)]
 pub struct AuditItem {
@@ -75,7 +72,7 @@ pub async fn list(
     user: AuthenticatedUser,
     page: Pagination,
     ValidatedJson(q): ValidatedJson<AuditQuery>,
-) -> AppResult<ApiJson<Paged<AuditItem>>> {
+) -> AppResult<ApiResponse<Paged<AuditItem>>> {
     user.require_admin()?;
     let f = Filter {
         action_prefix: q.action_prefix.as_deref(),
@@ -84,5 +81,7 @@ pub async fn list(
         until: q.until,
     };
     let r = audit_log_service::admin_list(&state, &user, &f, page).await?;
-    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
+    Ok(ApiResponse::data(Paged::from_listing(
+        r.list, r.total, page,
+    )))
 }

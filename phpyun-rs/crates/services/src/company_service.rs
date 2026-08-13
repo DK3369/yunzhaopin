@@ -1,11 +1,10 @@
 //! Company service (usertype=2).
 
-use phpyun_core::ApiError;
 use phpyun_core::audit::{self, Actor, AuditEvent};
+use phpyun_core::ApiError;
 use phpyun_core::{clock, AppResult, AppState, AuthenticatedUser, Pagination};
-use phpyun_models::company::{entity::Company, repo as company_repo};
 use phpyun_models::company::repo::CompanyFilter;
-
+use phpyun_models::company::{entity::Company, repo as company_repo};
 
 pub struct CompanyPage {
     pub list: Vec<Company>,

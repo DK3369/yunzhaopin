@@ -27,10 +27,10 @@
 
 use crate::background;
 use crate::clock;
-use crate::AppResult;
 use crate::events::EventBus;
 use crate::json;
 use crate::state::AppState;
+use crate::AppResult;
 use serde::{Deserialize, Serialize};
 use sqlx::MySqlPool;
 
@@ -43,11 +43,19 @@ pub struct Actor {
 
 impl Actor {
     pub fn anonymous() -> Self {
-        Self { uid: None, ip: None, ua: None }
+        Self {
+            uid: None,
+            ip: None,
+            ua: None,
+        }
     }
 
     pub fn uid(uid: u64) -> Self {
-        Self { uid: Some(uid), ip: None, ua: None }
+        Self {
+            uid: Some(uid),
+            ip: None,
+            ua: None,
+        }
     }
 
     pub fn with_ip(mut self, ip: impl Into<String>) -> Self {
@@ -147,7 +155,10 @@ async fn insert_db(pool: &MySqlPool, e: &AuditEvent, created_at: i64) -> AppResu
         Err(err) if crate::db::is_missing_table(&err) => {
             // Audit table not provisioned — log once and continue. The bus
             // publish path will still run, so audit consumers keep working.
-            tracing::warn!(action = e.action, "phpyun_rs_audit_log missing — skipping DB write");
+            tracing::warn!(
+                action = e.action,
+                "phpyun_rs_audit_log missing — skipping DB write"
+            );
             Ok(())
         }
         Err(err) => Err(err.into()),

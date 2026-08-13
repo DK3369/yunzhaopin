@@ -7,7 +7,9 @@
 //!   4) On approval, also flip `phpyun_company.r_status` to 1 (since the Rust side does not modify the company table directly,
 //!      we only update the cert here; the `company.r_status` sync is performed by a backend job or review SQL trigger).
 
-use phpyun_core::{audit, clock, ApiError, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
+use phpyun_core::{
+    audit, clock, ApiError, AppResult, AppState, AuthenticatedUser, Paged, Pagination,
+};
 use phpyun_models::company_cert::{
     entity::{CompanyCert, STATUS_APPROVED, STATUS_REJECTED},
     repo as cert_repo,
@@ -43,10 +45,7 @@ pub async fn submit(
 
 // ---------- admin ----------
 
-pub async fn list_pending(
-    state: &AppState,
-    page: Pagination,
-) -> AppResult<Paged<CompanyCert>> {
+pub async fn list_pending(state: &AppState, page: Pagination) -> AppResult<Paged<CompanyCert>> {
     let db = state.db.reader();
     let (list, total) = tokio::join!(
         cert_repo::list_pending(db, page.offset, page.limit),
@@ -63,7 +62,11 @@ pub async fn review(
     note: &str,
 ) -> AppResult<()> {
     admin.require_admin()?;
-    let status = if approve { STATUS_APPROVED } else { STATUS_REJECTED };
+    let status = if approve {
+        STATUS_APPROVED
+    } else {
+        STATUS_REJECTED
+    };
     let now = clock::now_ts();
     let affected =
         cert_repo::review(state.db.pool(), target_uid, status, note, admin.uid, now).await?;

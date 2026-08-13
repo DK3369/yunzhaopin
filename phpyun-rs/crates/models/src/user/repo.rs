@@ -32,7 +32,7 @@ fn oauth_column_for(provider: &str) -> Option<&'static str> {
         // Mainstream domestic providers (natively supported by PHPYun)
         "qq" => Some("qqid"),
         "weibo" | "sina" => Some("sinaid"),
-        "wechat" | "weixin" => Some("unionid"),       // On the Rust side, WeChat accounts are keyed by unionid
+        "wechat" | "weixin" => Some("unionid"), // On the Rust side, WeChat accounts are keyed by unionid
         "wechat_mp" | "wxopenid" => Some("wxopenid"), // Official Account / Mini Program openid
         "baidu" => Some("bdopenid"),
         // Overseas providers (PHPYun has no column; we keep the interface but return None, so upstream gets "bind failed")
@@ -43,7 +43,10 @@ fn oauth_column_for(provider: &str) -> Option<&'static str> {
 
 // ==================== Queries ====================
 
-pub async fn find_for_login(pool: &MySqlPool, account: &str) -> Result<Option<Member>, sqlx::Error> {
+pub async fn find_for_login(
+    pool: &MySqlPool,
+    account: &str,
+) -> Result<Option<Member>, sqlx::Error> {
     let sql = format!(
         "SELECT {FIELDS} FROM phpyun_member \
          WHERE username = ? OR moblie = ? OR email = ? \
@@ -153,22 +156,20 @@ pub async fn exists_username(pool: &MySqlPool, username: &str) -> Result<bool, s
 }
 
 pub async fn exists_mobile(pool: &MySqlPool, mobile: &str) -> Result<bool, sqlx::Error> {
-    let row: Option<(u64,)> = sqlx::query_as(
-        "SELECT CAST(uid AS UNSIGNED) FROM phpyun_member WHERE moblie = ? LIMIT 1",
-    )
-    .bind(mobile)
-    .fetch_optional(pool)
-    .await?;
+    let row: Option<(u64,)> =
+        sqlx::query_as("SELECT CAST(uid AS UNSIGNED) FROM phpyun_member WHERE moblie = ? LIMIT 1")
+            .bind(mobile)
+            .fetch_optional(pool)
+            .await?;
     Ok(row.is_some())
 }
 
 pub async fn exists_email(pool: &MySqlPool, email: &str) -> Result<bool, sqlx::Error> {
-    let row: Option<(u64,)> = sqlx::query_as(
-        "SELECT CAST(uid AS UNSIGNED) FROM phpyun_member WHERE email = ? LIMIT 1",
-    )
-    .bind(email)
-    .fetch_optional(pool)
-    .await?;
+    let row: Option<(u64,)> =
+        sqlx::query_as("SELECT CAST(uid AS UNSIGNED) FROM phpyun_member WHERE email = ? LIMIT 1")
+            .bind(email)
+            .fetch_optional(pool)
+            .await?;
     Ok(row.is_some())
 }
 
@@ -226,7 +227,11 @@ where
     Ok(res.last_insert_id())
 }
 
-pub async fn update_password(pool: &MySqlPool, uid: u64, new_hash: &str) -> Result<(), sqlx::Error> {
+pub async fn update_password(
+    pool: &MySqlPool,
+    uid: u64,
+    new_hash: &str,
+) -> Result<(), sqlx::Error> {
     sqlx::query("UPDATE phpyun_member SET password = ? WHERE uid = ?")
         .bind(new_hash)
         .bind(uid)
@@ -354,11 +359,7 @@ pub async fn set_usertype_if_unset(
 /// Force-set `usertype` regardless of current value. Used by the account-
 /// split flow when an old account is being collapsed into the company role.
 /// Generic over `Executor` so it can run inside a transaction.
-pub async fn set_usertype<'e, E>(
-    exec: E,
-    uid: u64,
-    usertype: i32,
-) -> Result<u64, sqlx::Error>
+pub async fn set_usertype<'e, E>(exec: E, uid: u64, usertype: i32) -> Result<u64, sqlx::Error>
 where
     E: sqlx::Executor<'e, Database = sqlx::MySql>,
 {
@@ -423,10 +424,7 @@ pub async fn admin_list(
     q.bind(limit).bind(offset).fetch_all(pool).await
 }
 
-pub async fn admin_count(
-    pool: &MySqlPool,
-    f: &AdminUserFilter<'_>,
-) -> Result<u64, sqlx::Error> {
+pub async fn admin_count(pool: &MySqlPool, f: &AdminUserFilter<'_>) -> Result<u64, sqlx::Error> {
     let mut sql = String::from("SELECT COUNT(*) FROM phpyun_member WHERE 1=1");
     if f.keyword.is_some() {
         sql.push_str(" AND (username LIKE ? OR moblie LIKE ? OR email LIKE ?)");
@@ -453,11 +451,7 @@ pub async fn admin_count(
     Ok(n.max(0) as u64)
 }
 
-pub async fn admin_set_status(
-    pool: &MySqlPool,
-    uid: u64,
-    status: i32,
-) -> Result<u64, sqlx::Error> {
+pub async fn admin_set_status(pool: &MySqlPool, uid: u64, status: i32) -> Result<u64, sqlx::Error> {
     let res = sqlx::query("UPDATE phpyun_member SET status = ? WHERE uid = ?")
         .bind(status)
         .bind(uid)
@@ -471,10 +465,7 @@ pub async fn admin_set_status(
 /// Returns PHPYun's "company claim code" — corresponds to the `phpyun_member.appeal` field.
 /// (PHPYun's claim flow: generate an `appeal` string first, hand it to the user, and only update the
 /// username once the user submits it back successfully.)
-pub async fn get_claim_code(
-    pool: &MySqlPool,
-    uid: u64,
-) -> Result<Option<String>, sqlx::Error> {
+pub async fn get_claim_code(pool: &MySqlPool, uid: u64) -> Result<Option<String>, sqlx::Error> {
     let row: Option<(Option<String>,)> =
         sqlx::query_as("SELECT appeal FROM phpyun_member WHERE uid = ? LIMIT 1")
             .bind(uid)

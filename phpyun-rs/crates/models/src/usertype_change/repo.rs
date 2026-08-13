@@ -25,9 +25,8 @@ pub async fn find_latest_by_uid(
     pool: &MySqlPool,
     uid: u64,
 ) -> Result<Option<UsertypeChange>, sqlx::Error> {
-    let sql = format!(
-        "SELECT {SELECT_FIELDS} FROM phpyun_change WHERE uid = ? ORDER BY id DESC LIMIT 1"
-    );
+    let sql =
+        format!("SELECT {SELECT_FIELDS} FROM phpyun_change WHERE uid = ? ORDER BY id DESC LIMIT 1");
     sqlx::query_as::<_, UsertypeChange>(&sql)
         .bind(uid)
         .fetch_optional(pool)
@@ -56,28 +55,19 @@ pub async fn create(
     Ok(res.last_insert_id())
 }
 
-pub async fn set_status_admin<'e, E>(
-    exec: E,
-    id: u64,
-    new_status: i32,
-) -> Result<u64, sqlx::Error>
+pub async fn set_status_admin<'e, E>(exec: E, id: u64, new_status: i32) -> Result<u64, sqlx::Error>
 where
     E: sqlx::Executor<'e, Database = sqlx::MySql>,
 {
-    let res = sqlx::query(
-        "UPDATE phpyun_change SET status = ? WHERE id = ? AND status = 1",
-    )
-    .bind(new_status)
-    .bind(id)
-    .execute(exec)
-    .await?;
+    let res = sqlx::query("UPDATE phpyun_change SET status = ? WHERE id = ? AND status = 1")
+        .bind(new_status)
+        .bind(id)
+        .execute(exec)
+        .await?;
     Ok(res.rows_affected())
 }
 
-pub async fn find_by_id(
-    pool: &MySqlPool,
-    id: u64,
-) -> Result<Option<UsertypeChange>, sqlx::Error> {
+pub async fn find_by_id(pool: &MySqlPool, id: u64) -> Result<Option<UsertypeChange>, sqlx::Error> {
     let sql = format!("SELECT {SELECT_FIELDS} FROM phpyun_change WHERE id = ? LIMIT 1");
     sqlx::query_as::<_, UsertypeChange>(&sql)
         .bind(id)

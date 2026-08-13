@@ -1,17 +1,13 @@
 //! Interview invitation templates (aligned with PHPYun `yqmb`) — employer-side CRUD.
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
-};
-use phpyun_core::{ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, ValidatedJson};
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::dto::CreatedId;
+use phpyun_core::utils::fmt_dt;
+use phpyun_core::{ApiResponse, AppResult, AppState, AuthenticatedUser, ValidatedJson};
 use phpyun_services::interview_template_service::{self, TplInput, TplPatch};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
-use phpyun_core::dto::{CreatedId};
-use phpyun_core::utils::{fmt_dt};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -19,7 +15,6 @@ pub fn routes() -> Router<AppState> {
         .route("/interview-templates/list", post(list))
         .route("/interview-templates/update", post(update))
 }
-
 
 /// Interview template item — all 11 columns of `phpyun_interview_template` + formatted time.
 #[derive(Debug, Serialize, ToSchema)]
@@ -107,13 +102,16 @@ pub struct TplPatchForm {
     tag = "mcenter",
     security(("bearer" = [])),
     responses((status = 200, description = "ok"))
-)]pub async fn list(
+)]
+pub async fn list(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-) -> AppResult<ApiJson<Vec<TplItem>>> {
+) -> AppResult<ApiResponse<Vec<TplItem>>> {
     user.require_employer()?;
     let list = interview_template_service::list(&state, &user).await?;
-    Ok(ApiJson(list.into_iter().map(TplItem::from).collect()))
+    Ok(ApiResponse::data(
+        list.into_iter().map(TplItem::from).collect(),
+    ))
 }
 
 /// Create interview template
@@ -129,7 +127,7 @@ pub async fn create(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(f): ValidatedJson<TplForm>,
-) -> AppResult<ApiJson<CreatedId>> {
+) -> AppResult<ApiResponse<CreatedId>> {
     user.require_employer()?;
     let id = interview_template_service::create(
         &state,
@@ -144,7 +142,7 @@ pub async fn create(
         },
     )
     .await?;
-    Ok(ApiJson(CreatedId { id }))
+    Ok(ApiResponse::data(CreatedId { id }))
 }
 
 /// Update or soft-delete an interview template (body with `"status":2` triggers deletion)
@@ -160,11 +158,11 @@ pub async fn update(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(f): ValidatedJson<TplPatchForm>,
-) -> AppResult<ApiOk> {
+) -> AppResult<ApiResponse> {
     user.require_employer()?;
     if f.status == Some(2) {
         interview_template_service::delete(&state, &user, f.id).await?;
-        return Ok(ApiOk("deleted"));
+        return Ok(ApiResponse::message("deleted"));
     }
     interview_template_service::update(
         &state,
@@ -181,5 +179,5 @@ pub async fn update(
         },
     )
     .await?;
-    Ok(ApiOk("ok"))
+    Ok(ApiResponse::message("ok"))
 }

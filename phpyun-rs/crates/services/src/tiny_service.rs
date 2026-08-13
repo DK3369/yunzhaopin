@@ -11,10 +11,9 @@
 
 use phpyun_auth::md5_hex;
 use phpyun_core::audit::{self, Actor, AuditEvent};
-use phpyun_core::{clock, AppResult, AppState, ApiError, Pagination};
+use phpyun_core::{clock, ApiError, AppResult, AppState, Pagination};
 use phpyun_models::tiny::entity::TinyResume;
 use phpyun_models::tiny::repo as tiny_repo;
-
 
 // ==================== Public browsing ====================
 
@@ -136,16 +135,18 @@ pub async fn upsert(state: &AppState, input: &UpsertInput) -> AppResult<UpsertRe
             status: input.default_status,
             now,
         };
-        let n =
-            tiny_repo::update_with_password_check(state.db.pool(), id, &pwd_md5, &upd).await?;
+        let n = tiny_repo::update_with_password_check(state.db.pool(), id, &pwd_md5, &upd).await?;
         if n == 0 {
             return Err(ApiError::business("tiny_pwd_mismatch").into());
         }
 
         let _ = audit::emit(
             state,
-            AuditEvent::new("tiny.update", Actor::anonymous().with_ip(input.login_ip.clone()))
-                .target(format!("tiny:{id}")),
+            AuditEvent::new(
+                "tiny.update",
+                Actor::anonymous().with_ip(input.login_ip.clone()),
+            )
+            .target(format!("tiny:{id}")),
         )
         .await;
 
@@ -185,8 +186,11 @@ pub async fn upsert(state: &AppState, input: &UpsertInput) -> AppResult<UpsertRe
 
     let _ = audit::emit(
         state,
-        AuditEvent::new("tiny.create", Actor::anonymous().with_ip(input.login_ip.clone()))
-            .target(format!("tiny:{id}")),
+        AuditEvent::new(
+            "tiny.create",
+            Actor::anonymous().with_ip(input.login_ip.clone()),
+        )
+        .target(format!("tiny:{id}")),
     )
     .await;
 
@@ -250,21 +254,16 @@ pub async fn manage(
             Ok(ManageResult::Verified)
         }
         ManageOp::Refresh => {
-            let n = tiny_repo::refresh_with_password(
-                state.db.pool(),
-                id,
-                &pwd_md5,
-                clock::now_ts(),
-            )
-            .await?;
+            let n =
+                tiny_repo::refresh_with_password(state.db.pool(), id, &pwd_md5, clock::now_ts())
+                    .await?;
             if n == 0 {
                 return Err(ApiError::business("tiny_pwd_mismatch").into());
             }
             Ok(ManageResult::Refreshed)
         }
         ManageOp::Delete => {
-            let n =
-                tiny_repo::delete_with_password(state.db.pool(), id, &pwd_md5).await?;
+            let n = tiny_repo::delete_with_password(state.db.pool(), id, &pwd_md5).await?;
             if n == 0 {
                 return Err(ApiError::business("tiny_pwd_mismatch").into());
             }
@@ -289,10 +288,7 @@ pub fn today_begin_ts(now: i64) -> i64 {
     now - (now.rem_euclid(DAY))
 }
 
-pub async fn usage_today(
-    state: &AppState,
-    login_ip: &str,
-) -> AppResult<(u64, u64)> {
+pub async fn usage_today(state: &AppState, login_ip: &str) -> AppResult<(u64, u64)> {
     let begin = today_begin_ts(clock::now_ts());
     let (by_ip, total) = tokio::join!(
         tiny_repo::count_today_by_ip(state.db.reader(), login_ip, begin),

@@ -75,26 +75,16 @@ pub async fn list(
     }
 }
 
-pub async fn delete_one(
-    pool: &MySqlPool,
-    id: u64,
-    uid: u64,
-) -> Result<u64, sqlx::Error> {
-    let res = sqlx::query(
-        "DELETE FROM phpyun_keyword_log WHERE id = ? AND uid = ?",
-    )
-    .bind(id)
-    .bind(uid)
-    .execute(pool)
-    .await?;
+pub async fn delete_one(pool: &MySqlPool, id: u64, uid: u64) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query("DELETE FROM phpyun_keyword_log WHERE id = ? AND uid = ?")
+        .bind(id)
+        .bind(uid)
+        .execute(pool)
+        .await?;
     Ok(res.rows_affected())
 }
 
-pub async fn clear(
-    pool: &MySqlPool,
-    uid: u64,
-    scope: Option<&str>,
-) -> Result<u64, sqlx::Error> {
+pub async fn clear(pool: &MySqlPool, uid: u64, scope: Option<&str>) -> Result<u64, sqlx::Error> {
     let usertype = scope.and_then(|s| match s {
         "user" | "jobseeker" | "1" => Some(1i32),
         "company" | "employer" | "2" => Some(2i32),
@@ -119,12 +109,7 @@ pub async fn clear(
 }
 
 /// When there are more than `keep` entries, delete the older ones until only `keep` remain.
-pub async fn trim(
-    pool: &MySqlPool,
-    uid: u64,
-    scope: &str,
-    keep: u64,
-) -> Result<u64, sqlx::Error> {
+pub async fn trim(pool: &MySqlPool, uid: u64, scope: &str, keep: u64) -> Result<u64, sqlx::Error> {
     let usertype: i32 = match scope {
         "user" | "jobseeker" | "1" => 1,
         "company" | "employer" | "2" => 2,

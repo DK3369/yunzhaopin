@@ -3,12 +3,12 @@
 //! - POST /v1/wap/oauth/{provider}/login  -- id_token -> login
 //! - POST /v1/wap/oauth/{provider}/bind   -- logged-in user binds third-party account
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::{
+    dto::{AuthTokenData, OAuthAuthorizeData, OkResp},
+    ApiError, ApiResponse, AppResult, AppState, AuthenticatedUser, ClientIp, ProviderKind,
+    ValidatedJson,
 };
-use phpyun_core::{dto::{AuthTokenData, OAuthAuthorizeData, OkResp}, ApiJson, ApiError, AppResult, AppState, AuthenticatedUser, ClientIp, ProviderKind, ValidatedJson};
 use phpyun_services::oauth_service;
 use serde::Deserialize;
 use utoipa::ToSchema;
@@ -20,22 +20,13 @@ pub fn routes() -> Router<AppState> {
         .route("/oauth/bind", post(oauth_bind))
         // Code-flow providers (no id_token, third-party returns `code`).
         // WeChat Official Account snsapi_base
-        .route(
-            "/oauth/wechat/authorize-url",
-            post(wechat_authorize_url),
-        )
+        .route("/oauth/wechat/authorize-url", post(wechat_authorize_url))
         .route("/oauth/wechat/code-login", post(wechat_code_login))
         // QQ Connect
-        .route(
-            "/oauth/qq/authorize-url",
-            post(qq_authorize_url),
-        )
+        .route("/oauth/qq/authorize-url", post(qq_authorize_url))
         .route("/oauth/qq/code-login", post(qq_code_login))
         // Weibo
-        .route(
-            "/oauth/weibo/authorize-url",
-            post(weibo_authorize_url),
-        )
+        .route("/oauth/weibo/authorize-url", post(weibo_authorize_url))
         .route("/oauth/weibo/code-login", post(weibo_code_login))
 }
 
@@ -66,7 +57,7 @@ pub async fn oauth_login(
     ClientIp(ip): ClientIp,
     headers: axum::http::HeaderMap,
     ValidatedJson(f): ValidatedJson<OAuthLoginForm>,
-) -> AppResult<ApiJson<AuthTokenData>> {
+) -> AppResult<ApiResponse<AuthTokenData>> {
     phpyun_core::validators::ensure_path_token(&f.provider)?;
     let kind = ProviderKind::parse(&f.provider)
         .ok_or_else(|| ApiError::param_invalid(format!("provider: {}", f.provider)))?;
@@ -78,11 +69,11 @@ pub async fn oauth_login(
         .to_string();
     let r = oauth_service::login_with_oauth(&state, kind, &f.id_token, &ip, &ua).await?;
 
-    Ok(ApiJson(AuthTokenData {
+    Ok(ApiResponse::data(AuthTokenData {
         uid: r.uid,
         usertype: r.usertype,
         access_token: r.access,
-        }))
+    }))
 }
 
 /// Logged-in user binds a third-party account to the current uid
@@ -103,12 +94,12 @@ pub async fn oauth_bind(
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
     ValidatedJson(f): ValidatedJson<OAuthLoginForm>,
-) -> AppResult<ApiJson<OkResp>> {
+) -> AppResult<ApiResponse<OkResp>> {
     phpyun_core::validators::ensure_path_token(&f.provider)?;
     let kind = ProviderKind::parse(&f.provider)
         .ok_or_else(|| ApiError::param_invalid(format!("provider: {}", f.provider)))?;
     oauth_service::bind_oauth(&state, user.uid, kind, &f.id_token, &ip).await?;
-    Ok(ApiJson(OkResp { ok: true }))
+    Ok(ApiResponse::data(OkResp { ok: true }))
 }
 
 // ==================== WeChat snsapi_base ====================
@@ -140,7 +131,7 @@ const WECHAT_STATE_TTL_SECS: u64 = 600; // 10 minutes
 pub async fn wechat_authorize_url(
     State(state): State<AppState>,
     ValidatedJson(q): ValidatedJson<WechatAuthorizeQuery>,
-) -> AppResult<ApiJson<OAuthAuthorizeData>> {
+) -> AppResult<ApiResponse<OAuthAuthorizeData>> {
     let appid = state
         .config
         .wechat_appid
@@ -174,7 +165,7 @@ pub async fn wechat_authorize_url(
         .await?;
 
     let url = oauth_service::wechat_authorize_url(appid, &q.redirect_uri, &state_val);
-    Ok(ApiJson(OAuthAuthorizeData {
+    Ok(ApiResponse::data(OAuthAuthorizeData {
         authorize_url: url,
         state: state_val,
     }))
@@ -207,7 +198,7 @@ pub async fn wechat_code_login(
     ClientIp(ip): ClientIp,
     headers: axum::http::HeaderMap,
     ValidatedJson(f): ValidatedJson<WechatCodeLoginForm>,
-) -> AppResult<ApiJson<AuthTokenData>> {
+) -> AppResult<ApiResponse<AuthTokenData>> {
     // state must exist in Redis (written by authorize-url, 10 minute TTL)
     let key = format!("{WECHAT_STATE_PREFIX}{}", f.state);
     if !state.redis.exists(&key).await {
@@ -222,11 +213,11 @@ pub async fn wechat_code_login(
         .unwrap_or("")
         .to_string();
     let r = oauth_service::login_with_wechat_code(&state, &f.code, &ip, &ua).await?;
-    Ok(ApiJson(AuthTokenData {
+    Ok(ApiResponse::data(AuthTokenData {
         uid: r.uid,
         usertype: r.usertype,
         access_token: r.access,
-        }))
+    }))
 }
 
 // ==================== QQ Connect ====================
@@ -247,7 +238,7 @@ const QQ_STATE_TTL_SECS: u64 = 600;
 )]
 pub async fn qq_authorize_url(
     State(state): State<AppState>,
-) -> AppResult<ApiJson<OAuthAuthorizeData>> {
+) -> AppResult<ApiResponse<OAuthAuthorizeData>> {
     let appid = state
         .config
         .qq_appid
@@ -270,7 +261,7 @@ pub async fn qq_authorize_url(
         .await?;
 
     let url = oauth_service::qq_authorize_url(appid, redirect, &state_val);
-    Ok(ApiJson(OAuthAuthorizeData {
+    Ok(ApiResponse::data(OAuthAuthorizeData {
         authorize_url: url,
         state: state_val,
     }))
@@ -304,7 +295,7 @@ pub async fn qq_code_login(
     ClientIp(ip): ClientIp,
     headers: axum::http::HeaderMap,
     ValidatedJson(f): ValidatedJson<CodeLoginForm>,
-) -> AppResult<ApiJson<AuthTokenData>> {
+) -> AppResult<ApiResponse<AuthTokenData>> {
     let key = format!("{QQ_STATE_PREFIX}{}", f.state);
     if !state.redis.exists(&key).await {
         return Err(ApiError::param_invalid("invalid_state"));
@@ -317,11 +308,11 @@ pub async fn qq_code_login(
         .unwrap_or("")
         .to_string();
     let r = oauth_service::login_with_qq_code(&state, &f.code, &ip, &ua).await?;
-    Ok(ApiJson(AuthTokenData {
+    Ok(ApiResponse::data(AuthTokenData {
         uid: r.uid,
         usertype: r.usertype,
         access_token: r.access,
-        }))
+    }))
 }
 
 // ==================== Weibo (Sina) ====================
@@ -342,7 +333,7 @@ const WEIBO_STATE_TTL_SECS: u64 = 600;
 )]
 pub async fn weibo_authorize_url(
     State(state): State<AppState>,
-) -> AppResult<ApiJson<OAuthAuthorizeData>> {
+) -> AppResult<ApiResponse<OAuthAuthorizeData>> {
     let appid = state
         .config
         .weibo_appid
@@ -365,7 +356,7 @@ pub async fn weibo_authorize_url(
         .await?;
 
     let url = oauth_service::weibo_authorize_url(appid, redirect, &state_val);
-    Ok(ApiJson(OAuthAuthorizeData {
+    Ok(ApiResponse::data(OAuthAuthorizeData {
         authorize_url: url,
         state: state_val,
     }))
@@ -388,7 +379,7 @@ pub async fn weibo_code_login(
     ClientIp(ip): ClientIp,
     headers: axum::http::HeaderMap,
     ValidatedJson(f): ValidatedJson<CodeLoginForm>,
-) -> AppResult<ApiJson<AuthTokenData>> {
+) -> AppResult<ApiResponse<AuthTokenData>> {
     let key = format!("{WEIBO_STATE_PREFIX}{}", f.state);
     if !state.redis.exists(&key).await {
         return Err(ApiError::param_invalid("invalid_state"));
@@ -401,9 +392,9 @@ pub async fn weibo_code_login(
         .unwrap_or("")
         .to_string();
     let r = oauth_service::login_with_weibo_code(&state, &f.code, &ip, &ua).await?;
-    Ok(ApiJson(AuthTokenData {
+    Ok(ApiResponse::data(AuthTokenData {
         uid: r.uid,
         usertype: r.usertype,
         access_token: r.access,
-        }))
+    }))
 }

@@ -1,18 +1,15 @@
 //! Special recruitment events (aligned with PHPYun `wap/special`).
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::dto::IdBody;
+use phpyun_core::utils::{fmt_date, pic_n_str as pic_n};
+use phpyun_core::{
+    ApiResponse, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
 };
-use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::special_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
-use phpyun_core::dto::{IdBody};
-use phpyun_core::utils::{fmt_date, pic_n_str as pic_n};
-
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -62,10 +59,7 @@ pub struct SpecialSummary {
 }
 
 impl SpecialSummary {
-    pub fn from_with_ctx(
-        s: phpyun_models::special::entity::Special,
-        state: &AppState,
-    ) -> Self {
+    pub fn from_with_ctx(s: phpyun_models::special::entity::Special, state: &AppState) -> Self {
         let banner_n = pic_n(state, &s.banner);
         let background_n = pic_n(state, &s.background);
         let wappic_n = pic_n(state, &s.wappic);
@@ -173,9 +167,9 @@ pub type SpecialJob = super::jobs::JobSummary;
 pub async fn list(
     State(state): State<AppState>,
     page: Pagination,
-) -> AppResult<ApiJson<Paged<SpecialSummary>>> {
+) -> AppResult<ApiResponse<Paged<SpecialSummary>>> {
     let r = special_service::list(&state, page).await?;
-    Ok(ApiJson(Paged::new(
+    Ok(ApiResponse::data(Paged::new(
         r.list
             .into_iter()
             .map(|s| SpecialSummary::from_with_ctx(s, &state))
@@ -193,11 +187,13 @@ pub async fn list(
     request_body = IdBody,
     responses((status = 200, description = "ok", body = SpecialDetail))
 )]
-pub async fn detail(State(state): State<AppState>,
-    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiJson<SpecialDetail>> {
+pub async fn detail(
+    State(state): State<AppState>,
+    ValidatedJson(b): ValidatedJson<IdBody>,
+) -> AppResult<ApiResponse<SpecialDetail>> {
     let id = b.id;
     let s = special_service::get(&state, id).await?;
-    Ok(ApiJson(SpecialDetail::from_with_ctx(s, &state)))
+    Ok(ApiResponse::data(SpecialDetail::from_with_ctx(s, &state)))
 }
 
 /// Participating companies (phpyun_special_company JOIN phpyun_company)
@@ -207,9 +203,11 @@ pub async fn detail(State(state): State<AppState>,
     request_body = IdBody,
     responses((status = 200, description = "ok"))
 )]
-pub async fn companies(State(state): State<AppState>,
+pub async fn companies(
+    State(state): State<AppState>,
     page: Pagination,
-    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiJson<Paged<SpecialCompanyItem>>> {
+    ValidatedJson(b): ValidatedJson<IdBody>,
+) -> AppResult<ApiResponse<Paged<SpecialCompanyItem>>> {
     let id = b.id;
     let r = special_service::list_companies(&state, id, page).await?;
     let dicts = phpyun_services::dict_service::get(&state).await?;
@@ -256,7 +254,7 @@ pub async fn companies(State(state): State<AppState>,
             }
         })
         .collect();
-    Ok(ApiJson(Paged::new(
+    Ok(ApiResponse::data(Paged::new(
         items,
         r.total,
         page.page,
@@ -273,7 +271,9 @@ pub struct JobQuery {
     #[validate(range(min = 1, max = 200))]
     pub limit: u64,
 }
-fn default_limit() -> u64 { 50 }
+fn default_limit() -> u64 {
+    50
+}
 
 // ==================== Sign-up ====================
 
@@ -301,12 +301,14 @@ pub struct ApplyResp {
         (status = 403, description = "Only employers (usertype=2) may apply"),
     )
 )]
-pub async fn apply(State(state): State<AppState>,
+pub async fn apply(
+    State(state): State<AppState>,
     user: AuthenticatedUser,
-    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiJson<ApplyResp>> {
+    ValidatedJson(b): ValidatedJson<IdBody>,
+) -> AppResult<ApiResponse<ApplyResp>> {
     let id = b.id;
     let r = special_service::apply(&state, &user, id).await?;
-    Ok(ApiJson(ApplyResp {
+    Ok(ApiResponse::data(ApplyResp {
         id: r.id,
         integral_spent: r.integral_spent,
     }))
@@ -319,16 +321,17 @@ pub async fn apply(State(state): State<AppState>,
     params(("id" = u64, Path), JobQuery),
     responses((status = 200, description = "ok"))
 )]
-pub async fn jobs(State(state): State<AppState>,
-    ValidatedJson(q): ValidatedJson<JobQuery>) -> AppResult<ApiJson<Vec<SpecialJob>>> {
+pub async fn jobs(
+    State(state): State<AppState>,
+    ValidatedJson(q): ValidatedJson<JobQuery>,
+) -> AppResult<ApiResponse<Vec<SpecialJob>>> {
     let id = q.id;
     let list = special_service::list_jobs(&state, id, q.limit.clamp(1, 200)).await?;
     let dicts = phpyun_services::dict_service::get(&state).await?;
     let now = phpyun_core::clock::now_ts();
-    Ok(ApiJson(
+    Ok(ApiResponse::data(
         list.into_iter()
             .map(|j| crate::v1::wap::jobs::job_summary_from_dict(j, &dicts, now))
             .collect(),
     ))
 }
-

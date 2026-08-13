@@ -1,18 +1,16 @@
 //! Job seeker submitting resumes + my applications (usertype=1).
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
-};
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::dto::IdBody;
 use phpyun_core::json;
-use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, Paged, Pagination, ValidatedJson};
+use phpyun_core::utils::fmt_dt;
+use phpyun_core::{
+    ApiResponse, AppResult, AppState, AuthenticatedUser, ClientIp, Paged, Pagination, ValidatedJson,
+};
 use phpyun_services::apply_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
-use phpyun_core::dto::{IdBody};
-use phpyun_core::utils::{fmt_dt};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -53,14 +51,13 @@ pub async fn apply_to_job(
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
     ValidatedJson(f): ValidatedJson<ApplyForm>,
-) -> AppResult<ApiJson<ApplyCreated>> {
+) -> AppResult<ApiResponse<ApplyCreated>> {
     let r = apply_service::apply_to_job(&state, &user, f.job_id, &ip).await?;
-    Ok(ApiJson(ApplyCreated {
+    Ok(ApiResponse::data(ApplyCreated {
         id: r.id,
         job_id: r.job_id,
     }))
 }
-
 
 /// My application item — full 11 columns of phpyun_userid_job + formatted timestamps + derived employer_viewed/invited booleans.
 #[derive(Debug, Serialize, ToSchema)]
@@ -130,9 +127,11 @@ pub async fn list_mine(
     user: AuthenticatedUser,
     page: Pagination,
     ValidatedJson(q): ValidatedJson<MyAppliesQuery>,
-) -> AppResult<ApiJson<Paged<MyApplySummary>>> {
+) -> AppResult<ApiResponse<Paged<MyApplySummary>>> {
     let r = apply_service::list_mine(&state, &user, q.state, page).await?;
-    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
+    Ok(ApiResponse::data(Paged::from_listing(
+        r.list, r.total, page,
+    )))
 }
 
 /// Withdraw an application
@@ -149,7 +148,7 @@ pub async fn withdraw(
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
     ValidatedJson(b): ValidatedJson<IdBody>,
-) -> AppResult<ApiJson<json::Value>> {
+) -> AppResult<ApiResponse<json::Value>> {
     apply_service::withdraw(&state, &user, b.id, &ip).await?;
-    Ok(ApiJson(json::json!({ "ok": true })))
+    Ok(ApiResponse::data(json::json!({ "ok": true })))
 }

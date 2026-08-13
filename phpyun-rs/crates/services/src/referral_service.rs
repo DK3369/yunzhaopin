@@ -12,11 +12,7 @@ use phpyun_models::referral::{entity::Referral, repo as ref_repo};
 const REFERRAL_POINTS: i32 = 20;
 
 /// Called after a successful signup. On failure we only warn (no error returned) — a reward failure must not roll back the signup.
-pub async fn record_on_signup(
-    state: &AppState,
-    inviter_uid: u64,
-    invitee_uid: u64,
-) {
+pub async fn record_on_signup(state: &AppState, inviter_uid: u64, invitee_uid: u64) {
     if inviter_uid == 0 || inviter_uid == invitee_uid {
         return;
     }
@@ -38,13 +34,8 @@ pub async fn record_on_signup(
     };
 
     if affected > 0 {
-        if let Err(e) = integral_repo::add_balance(
-            state.db.pool(),
-            inviter_uid,
-            REFERRAL_POINTS,
-            now,
-        )
-        .await
+        if let Err(e) =
+            integral_repo::add_balance(state.db.pool(), inviter_uid, REFERRAL_POINTS, now).await
         {
             tracing::warn!(?e, inviter_uid, "referral grant integral failed");
             return;
@@ -65,10 +56,7 @@ pub struct RefSummary {
     pub total_points: i64,
 }
 
-pub async fn summary(
-    state: &AppState,
-    user: &AuthenticatedUser,
-) -> AppResult<RefSummary> {
+pub async fn summary(state: &AppState, user: &AuthenticatedUser) -> AppResult<RefSummary> {
     let db = state.db.reader();
     let (count, total) = tokio::join!(
         ref_repo::count_by_inviter(db, user.uid),

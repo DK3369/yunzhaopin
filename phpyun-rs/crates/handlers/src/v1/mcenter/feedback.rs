@@ -1,17 +1,16 @@
 //! User feedback endpoints.
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::dto::CreatedId;
+use phpyun_core::utils::fmt_dt;
+use phpyun_core::{
+    ApiResponse, AppResult, AppState, AuthenticatedUser, ClientIp, MaybeUser, Paged, Pagination,
+    ValidatedJson,
 };
-use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, MaybeUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::feedback_service::{self, FeedbackInput};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
-use phpyun_core::dto::{CreatedId};
-use phpyun_core::utils::{fmt_dt};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -42,7 +41,7 @@ pub async fn submit(
     MaybeUser(user): MaybeUser,
     ClientIp(ip): ClientIp,
     ValidatedJson(f): ValidatedJson<FeedbackForm>,
-) -> AppResult<ApiJson<CreatedId>> {
+) -> AppResult<ApiResponse<CreatedId>> {
     let id = feedback_service::submit(
         &state,
         user.as_ref(),
@@ -54,9 +53,8 @@ pub async fn submit(
         &ip,
     )
     .await?;
-    Ok(ApiJson(CreatedId { id }))
+    Ok(ApiResponse::data(CreatedId { id }))
 }
-
 
 #[derive(Debug, Serialize, ToSchema)]
 pub struct FeedbackItem {
@@ -94,11 +92,14 @@ impl From<phpyun_models::feedback::entity::Feedback> for FeedbackItem {
     tag = "mcenter",
     security(("bearer" = [])),
     responses((status = 200, description = "ok"))
-)]pub async fn list_mine(
+)]
+pub async fn list_mine(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-) -> AppResult<ApiJson<Paged<FeedbackItem>>> {
+) -> AppResult<ApiResponse<Paged<FeedbackItem>>> {
     let r = feedback_service::list_mine(&state, &user, page).await?;
-    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
+    Ok(ApiResponse::data(Paged::from_listing(
+        r.list, r.total, page,
+    )))
 }

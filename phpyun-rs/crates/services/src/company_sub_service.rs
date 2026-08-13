@@ -3,7 +3,9 @@
 //! - Public access: only `status=1` rows are visible.
 //! - Company self-management: list/create/update/delete, requires `user.uid == uid` (enforced by `require_employer()` at the handler layer).
 
-use phpyun_core::{background, clock, ApiError, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
+use phpyun_core::{
+    background, clock, ApiError, AppResult, AppState, AuthenticatedUser, Paged, Pagination,
+};
 use phpyun_models::company_sub::{
     entity::{CompanyNews, CompanyProduct},
     repo as sub_repo,
@@ -24,11 +26,7 @@ pub async fn list_products(
     Ok(Paged::new(list?, total?, page.page, page.page_size))
 }
 
-pub async fn get_product(
-    state: &AppState,
-    com_uid: u64,
-    id: u64,
-) -> AppResult<CompanyProduct> {
+pub async fn get_product(state: &AppState, com_uid: u64, id: u64) -> AppResult<CompanyProduct> {
     sub_repo::find_product_public(state.db.reader(), com_uid, id)
         .await?
         .ok_or_else(|| ApiError::param_invalid("product_not_found"))
@@ -108,11 +106,7 @@ pub async fn update_product(
     Ok(())
 }
 
-pub async fn delete_product(
-    state: &AppState,
-    user: &AuthenticatedUser,
-    id: u64,
-) -> AppResult<()> {
+pub async fn delete_product(state: &AppState, user: &AuthenticatedUser, id: u64) -> AppResult<()> {
     let affected = sub_repo::delete_product(state.db.pool(), id, user.uid).await?;
     if affected == 0 {
         return Err(ApiError::forbidden());
@@ -135,11 +129,7 @@ pub async fn list_news(
     Ok(Paged::new(list?, total?, page.page, page.page_size))
 }
 
-pub async fn get_news(
-    state: &AppState,
-    com_uid: u64,
-    id: u64,
-) -> AppResult<CompanyNews> {
+pub async fn get_news(state: &AppState, com_uid: u64, id: u64) -> AppResult<CompanyNews> {
     let n = sub_repo::find_news_public(state.db.reader(), com_uid, id)
         .await?
         .ok_or_else(|| ApiError::param_invalid("news_not_found"))?;
@@ -222,11 +212,7 @@ pub async fn update_news(
     Ok(())
 }
 
-pub async fn delete_news(
-    state: &AppState,
-    user: &AuthenticatedUser,
-    id: u64,
-) -> AppResult<()> {
+pub async fn delete_news(state: &AppState, user: &AuthenticatedUser, id: u64) -> AppResult<()> {
     let affected = sub_repo::delete_news(state.db.pool(), id, user.uid).await?;
     if affected == 0 {
         return Err(ApiError::forbidden());

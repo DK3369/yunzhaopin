@@ -16,9 +16,7 @@ pub async fn list_by_uid(
     pool: &MySqlPool,
     uid: u64,
 ) -> Result<Vec<InterviewTemplate>, sqlx::Error> {
-    let sql = format!(
-        "SELECT {FIELDS} FROM phpyun_yqmb WHERE uid = ? ORDER BY id DESC"
-    );
+    let sql = format!("SELECT {FIELDS} FROM phpyun_yqmb WHERE uid = ? ORDER BY id DESC");
     sqlx::query_as::<_, InterviewTemplate>(&sql)
         .bind(uid)
         .fetch_all(pool)
@@ -26,11 +24,10 @@ pub async fn list_by_uid(
 }
 
 pub async fn count_by_uid(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Error> {
-    let (n,): (i64,) =
-        sqlx::query_as("SELECT COUNT(*) FROM phpyun_yqmb WHERE uid = ?")
-            .bind(uid)
-            .fetch_one(pool)
-            .await?;
+    let (n,): (i64,) = sqlx::query_as("SELECT COUNT(*) FROM phpyun_yqmb WHERE uid = ?")
+        .bind(uid)
+        .fetch_one(pool)
+        .await?;
     Ok(n.max(0) as u64)
 }
 
@@ -39,9 +36,7 @@ pub async fn find_by_id(
     id: u64,
     uid: u64,
 ) -> Result<Option<InterviewTemplate>, sqlx::Error> {
-    let sql = format!(
-        "SELECT {FIELDS} FROM phpyun_yqmb WHERE id = ? AND uid = ?"
-    );
+    let sql = format!("SELECT {FIELDS} FROM phpyun_yqmb WHERE id = ? AND uid = ?");
     sqlx::query_as::<_, InterviewTemplate>(&sql)
         .bind(id)
         .bind(uid)
@@ -59,11 +54,7 @@ pub struct TplCreate<'a> {
     pub intertime: i64,
 }
 
-pub async fn create(
-    pool: &MySqlPool,
-    c: TplCreate<'_>,
-    now: i64,
-) -> Result<u64, sqlx::Error> {
+pub async fn create(pool: &MySqlPool, c: TplCreate<'_>, now: i64) -> Result<u64, sqlx::Error> {
     // `phpyun_yqmb` has no `created_at` / `updated_at` columns — only
     // `addtime` (and `did` / `statusbody`). Map both timestamps onto
     // `addtime`; the Rust caller's `updated_at` semantics is lost on the

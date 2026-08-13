@@ -98,13 +98,11 @@ pub async fn bump(
     // row exists, then UPDATE — this avoids a race window between SELECT
     // and INSERT. The default-row values match PHP's defaults from the
     // `phpyun_user_resume` schema.
-    let _ = sqlx::query(
-        "INSERT IGNORE INTO phpyun_user_resume (uid, eid, info) VALUES (?, ?, 1)",
-    )
-    .bind(uid)
-    .bind(eid)
-    .execute(pool)
-    .await?;
+    let _ = sqlx::query("INSERT IGNORE INTO phpyun_user_resume (uid, eid, info) VALUES (?, ?, 1)")
+        .bind(uid)
+        .bind(eid)
+        .execute(pool)
+        .await?;
     let sql = format!(
         "UPDATE phpyun_user_resume \
          SET `{col}` = GREATEST(COALESCE(`{col}`, 0) + ?, 0) \

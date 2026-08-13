@@ -127,11 +127,7 @@ pub async fn update(
     };
 
     let q = sqlx::query(&sql).bind(title).bind(body);
-    let q = if let Some(f) = file {
-        q.bind(f)
-    } else {
-        q
-    };
+    let q = if let Some(f) = file { q.bind(f) } else { q };
     let res = q.bind(now).bind(id).bind(uid).execute(pool).await?;
     Ok(res.rows_affected())
 }

@@ -113,20 +113,14 @@ pub async fn find_package_pricing(
 
 /// Read company integral balance from `phpyun_company_statis.integral`.
 /// Re-exported from the canonical `company_statis::repo`.
-pub async fn read_company_integral(
-    pool: &MySqlPool,
-    uid: u64,
-) -> Result<i64, sqlx::Error> {
+pub async fn read_company_integral(pool: &MySqlPool, uid: u64) -> Result<i64, sqlx::Error> {
     crate::company_statis::repo::read_integral(pool, uid).await
 }
 
 /// Read the company's rating-tier discount (`service_discount`) — applied to
 /// `getPackPrice_action`'s computation. Returns `100` (= no discount) when
 /// the user has no rating row.
-pub async fn read_company_rating_discount(
-    pool: &MySqlPool,
-    uid: u64,
-) -> Result<i32, sqlx::Error> {
+pub async fn read_company_rating_discount(pool: &MySqlPool, uid: u64) -> Result<i32, sqlx::Error> {
     let row: Option<(i32,)> = sqlx::query_as(
         "SELECT CAST(COALESCE(r.service_discount, 100) AS SIGNED) \
          FROM phpyun_company_statis cs \
@@ -323,11 +317,7 @@ pub async fn list_user_orders(
         .await
 }
 
-pub async fn cancel_order(
-    pool: &MySqlPool,
-    order_no: &str,
-    uid: u64,
-) -> Result<u64, sqlx::Error> {
+pub async fn cancel_order(pool: &MySqlPool, order_no: &str, uid: u64) -> Result<u64, sqlx::Error> {
     let res = sqlx::query(
         r#"UPDATE phpyun_company_order
            SET order_state = 2
@@ -341,12 +331,10 @@ pub async fn cancel_order(
 }
 
 pub async fn count_user_orders(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Error> {
-    let (n,): (i64,) = sqlx::query_as(
-        "SELECT COUNT(*) FROM phpyun_company_order WHERE uid = ?",
-    )
-    .bind(uid)
-    .fetch_one(pool)
-    .await?;
+    let (n,): (i64,) = sqlx::query_as("SELECT COUNT(*) FROM phpyun_company_order WHERE uid = ?")
+        .bind(uid)
+        .fetch_one(pool)
+        .await?;
     Ok(n.max(0) as u64)
 }
 
@@ -379,16 +367,17 @@ pub async fn admin_list_orders(
     };
     let q = sqlx::query_as::<_, PayOrder>(&sql);
     if with_status {
-        q.bind(status.unwrap()).bind(limit).bind(offset).fetch_all(pool).await
+        q.bind(status.unwrap())
+            .bind(limit)
+            .bind(offset)
+            .fetch_all(pool)
+            .await
     } else {
         q.bind(limit).bind(offset).fetch_all(pool).await
     }
 }
 
-pub async fn admin_count_orders(
-    pool: &MySqlPool,
-    status: Option<i32>,
-) -> Result<u64, sqlx::Error> {
+pub async fn admin_count_orders(pool: &MySqlPool, status: Option<i32>) -> Result<u64, sqlx::Error> {
     let (n,): (i64,) = match status {
         Some(s) => {
             sqlx::query_as("SELECT COUNT(*) FROM phpyun_company_order WHERE order_state = ?")
@@ -410,12 +399,10 @@ pub async fn admin_set_order_status(
     order_no: &str,
     status: i32,
 ) -> Result<u64, sqlx::Error> {
-    let res = sqlx::query(
-        "UPDATE phpyun_company_order SET order_state = ? WHERE order_id = ?",
-    )
-    .bind(status)
-    .bind(order_no)
-    .execute(pool)
-    .await?;
+    let res = sqlx::query("UPDATE phpyun_company_order SET order_state = ? WHERE order_id = ?")
+        .bind(status)
+        .bind(order_no)
+        .execute(pool)
+        .await?;
     Ok(res.rows_affected())
 }

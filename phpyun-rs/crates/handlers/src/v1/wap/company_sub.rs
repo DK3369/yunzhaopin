@@ -1,17 +1,12 @@
 //! Company sub-pages: products / news (aligned with PHPYun `company::productshow` / `company::newsshow`).
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
-};
-use phpyun_core::{ApiJson, AppResult, AppState, Paged, Pagination, ValidatedJson};
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::dto::{UidBody, UidIdBody};
+use phpyun_core::utils::{fmt_dt, pic_n_str as pic_n};
+use phpyun_core::{ApiResponse, AppResult, AppState, Paged, Pagination, ValidatedJson};
 use phpyun_services::company_sub_service;
 use serde::Serialize;
 use utoipa::ToSchema;
-use phpyun_core::dto::{UidBody, UidIdBody};
-use phpyun_core::utils::{fmt_dt, pic_n_str as pic_n};
-
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -198,9 +193,9 @@ pub async fn list_products(
     State(state): State<AppState>,
     page: Pagination,
     ValidatedJson(b): ValidatedJson<UidBody>,
-) -> AppResult<ApiJson<Paged<ProductSummary>>> {
+) -> AppResult<ApiResponse<Paged<ProductSummary>>> {
     let r = company_sub_service::list_products(&state, b.uid, page).await?;
-    Ok(ApiJson(Paged::new(
+    Ok(ApiResponse::data(Paged::new(
         r.list
             .into_iter()
             .map(|p| ProductSummary::from_with_ctx(p, &state))
@@ -218,9 +213,9 @@ pub async fn list_products(
 pub async fn product_detail(
     State(state): State<AppState>,
     ValidatedJson(b): ValidatedJson<UidIdBody>,
-) -> AppResult<ApiJson<ProductDetail>> {
+) -> AppResult<ApiResponse<ProductDetail>> {
     let p = company_sub_service::get_product(&state, b.uid, b.id).await?;
-    Ok(ApiJson(ProductDetail::from_with_ctx(p, &state)))
+    Ok(ApiResponse::data(ProductDetail::from_with_ctx(p, &state)))
 }
 
 /// Company news list
@@ -229,9 +224,11 @@ pub async fn list_news(
     State(state): State<AppState>,
     page: Pagination,
     ValidatedJson(b): ValidatedJson<UidBody>,
-) -> AppResult<ApiJson<Paged<NewsSummary>>> {
+) -> AppResult<ApiResponse<Paged<NewsSummary>>> {
     let r = company_sub_service::list_news(&state, b.uid, page).await?;
-    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
+    Ok(ApiResponse::data(Paged::from_listing(
+        r.list, r.total, page,
+    )))
 }
 
 /// Company news detail
@@ -241,7 +238,7 @@ pub async fn list_news(
 pub async fn news_detail(
     State(state): State<AppState>,
     ValidatedJson(b): ValidatedJson<UidIdBody>,
-) -> AppResult<ApiJson<NewsDetail>> {
+) -> AppResult<ApiResponse<NewsDetail>> {
     let n = company_sub_service::get_news(&state, b.uid, b.id).await?;
-    Ok(ApiJson(NewsDetail::from(n)))
+    Ok(ApiResponse::data(NewsDetail::from(n)))
 }

@@ -1,16 +1,12 @@
 //! Admin dashboard aggregate.
 
-use axum::{
-    extract::{State},
-    Router,
-    routing::post,
-};
-use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, ValidatedJson};
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::utils::fmt_dt;
+use phpyun_core::{ApiResponse, AppResult, AppState, AuthenticatedUser, ValidatedJson};
 use phpyun_services::admin_dashboard_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
-use phpyun_core::utils::{fmt_dt};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -43,10 +39,10 @@ pub struct OverviewView {
 pub async fn overview(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-) -> AppResult<ApiJson<OverviewView>> {
+) -> AppResult<ApiResponse<OverviewView>> {
     user.require_admin()?;
     let o = admin_dashboard_service::overview(&state, &user).await?;
-    Ok(ApiJson(OverviewView {
+    Ok(ApiResponse::data(OverviewView {
         pending_company_certs: o.pending_company_certs,
         pending_jobs: o.pending_jobs,
         pending_reports: o.pending_reports,
@@ -66,15 +62,27 @@ pub struct RecentQuery {
     #[validate(range(min = 1, max = 200))]
     pub limit: u64,
 }
-fn default_limit() -> u64 { 10 }
-
+fn default_limit() -> u64 {
+    10
+}
 
 fn usertype_name(t: i32) -> &'static str {
-    match t { 1 => "jobseeker", 2 => "company", 3 => "admin", _ => "unknown" }
+    match t {
+        1 => "jobseeker",
+        2 => "company",
+        3 => "admin",
+        _ => "unknown",
+    }
 }
 
 fn user_status_name(s: i32) -> &'static str {
-    match s { 0 => "pending", 1 => "active", 2 => "locked", 3 => "deleted", _ => "unknown" }
+    match s {
+        0 => "pending",
+        1 => "active",
+        2 => "locked",
+        3 => "deleted",
+        _ => "unknown",
+    }
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -107,10 +115,10 @@ pub async fn recent_signups(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(q): ValidatedJson<RecentQuery>,
-) -> AppResult<ApiJson<Vec<RecentUser>>> {
+) -> AppResult<ApiResponse<Vec<RecentUser>>> {
     user.require_admin()?;
     let list = admin_dashboard_service::recent_signups(&state, &user, q.limit).await?;
-    Ok(ApiJson(
+    Ok(ApiResponse::data(
         list.into_iter()
             .map(|m| RecentUser {
                 uid: m.uid,

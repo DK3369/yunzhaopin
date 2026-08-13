@@ -1,11 +1,10 @@
 //! Job review (admin).
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::{
+    dto::BatchResult, ApiResponse, AppResult, AppState, AuthenticatedUser, Paged, Pagination,
+    ValidatedJson,
 };
-use phpyun_core::{dto::BatchResult, ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::admin_service;
 use serde::Deserialize;
 use utoipa::{IntoParams, ToSchema};
@@ -44,12 +43,12 @@ pub async fn list(
     user: AuthenticatedUser,
     page: Pagination,
     ValidatedJson(q): ValidatedJson<JobListQuery>,
-) -> AppResult<ApiJson<Paged<AdminJobItem>>> {
+) -> AppResult<ApiResponse<Paged<AdminJobItem>>> {
     user.require_admin()?;
     let r = admin_service::list_jobs(&state, q.state, page).await?;
     let dicts = phpyun_services::dict_service::get(&state).await?;
     let now = phpyun_core::clock::now_ts();
-    Ok(ApiJson(Paged::new(
+    Ok(ApiResponse::data(Paged::new(
         r.list
             .into_iter()
             .map(|j| crate::v1::wap::jobs::job_summary_from_dict(j, &dicts, now))
@@ -77,13 +76,15 @@ pub struct SetJobStateForm {
     request_body = SetJobStateForm,
     responses((status = 200, description = "ok"))
 )]
-pub async fn set_state(State(state): State<AppState>,
+pub async fn set_state(
+    State(state): State<AppState>,
     user: AuthenticatedUser,
-    ValidatedJson(f): ValidatedJson<SetJobStateForm>) -> AppResult<ApiOk> {
+    ValidatedJson(f): ValidatedJson<SetJobStateForm>,
+) -> AppResult<ApiResponse> {
     let id = f.id;
     user.require_admin()?;
     admin_service::set_job_state(&state, &user, id, f.state).await?;
-    Ok(ApiOk("ok"))
+    Ok(ApiResponse::message("ok"))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
@@ -107,10 +108,10 @@ pub async fn batch_set_state(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(f): ValidatedJson<BatchStateForm>,
-) -> AppResult<ApiJson<BatchResult>> {
+) -> AppResult<ApiResponse<BatchResult>> {
     user.require_admin()?;
     let r = admin_service::batch_set_job_state(&state, &user, &f.ids, f.state).await?;
-    Ok(ApiJson(BatchResult {
+    Ok(ApiResponse::data(BatchResult {
         requested: r.requested,
         affected: r.affected,
     }))

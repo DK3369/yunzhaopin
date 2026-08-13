@@ -1,18 +1,14 @@
 //! Education history CRUD (usertype=1).
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
-};
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::dto::CreatedId;
 use phpyun_core::json;
-use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, ValidatedJson};
+use phpyun_core::{ApiResponse, AppResult, AppState, AuthenticatedUser, ClientIp, ValidatedJson};
 use phpyun_models::resume::edu::EduInput;
 use phpyun_services::resume_children_service::edu_svc;
 use serde::Deserialize;
 use utoipa::ToSchema;
 use validator::Validate;
-use phpyun_core::dto::{CreatedId};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -54,7 +50,11 @@ pub struct EduForm {
     /// PHPYun's frontend posts and reads this as `education` / `education_n`;
     /// the older Rust port called this `title`, accepted as alias for back-compat.
     /// Loose deserializer accepts both `17` (int) and `"17"` (string).
-    #[serde(default, alias = "title", deserialize_with = "phpyun_core::date_parse::de_loose_i32")]
+    #[serde(
+        default,
+        alias = "title",
+        deserialize_with = "phpyun_core::date_parse::de_loose_i32"
+    )]
     #[validate(range(min = 0, max = 9_999))]
     pub education: i32,
     /// Soft delete: pass `2` to delete the entry (equivalent to the original DELETE).
@@ -71,13 +71,14 @@ pub struct EduForm {
     tag = "mcenter",
     security(("bearer" = [])),
     responses((status = 200, description = "ok"))
-)]pub async fn list(
+)]
+pub async fn list(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-) -> AppResult<ApiJson<Vec<EduItem>>> {
+) -> AppResult<ApiResponse<Vec<EduItem>>> {
     let list = edu_svc::list(&state, &user).await?;
     let dicts = phpyun_services::dict_service::get(&state).await?;
-    Ok(ApiJson(
+    Ok(ApiResponse::data(
         list.into_iter()
             .map(|e| crate::v1::wap::resumes::resume_edu_item_from_dict(e, &dicts))
             .collect(),
@@ -98,7 +99,7 @@ pub async fn create(
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
     ValidatedJson(f): ValidatedJson<EduForm>,
-) -> AppResult<ApiJson<CreatedId>> {
+) -> AppResult<ApiResponse<CreatedId>> {
     let id = edu_svc::create(
         &state,
         &user,
@@ -112,7 +113,7 @@ pub async fn create(
         &ip,
     )
     .await?;
-    Ok(ApiJson(CreatedId { id }))
+    Ok(ApiResponse::data(CreatedId { id }))
 }
 
 /// Update an education history entry (or soft delete — body with `"status":2` means delete).
@@ -129,10 +130,12 @@ pub async fn update(
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
     ValidatedJson(f): ValidatedJson<EduForm>,
-) -> AppResult<ApiJson<json::Value>> {
+) -> AppResult<ApiResponse<json::Value>> {
     if f.status == Some(2) {
         edu_svc::delete(&state, &user, f.id, &ip).await?;
-        return Ok(ApiJson(json::json!({ "ok": true, "deleted": true })));
+        return Ok(ApiResponse::data(
+            json::json!({ "ok": true, "deleted": true }),
+        ));
     }
     edu_svc::update(
         &state,
@@ -148,5 +151,5 @@ pub async fn update(
         &ip,
     )
     .await?;
-    Ok(ApiJson(json::json!({ "ok": true })))
+    Ok(ApiResponse::data(json::json!({ "ok": true })))
 }

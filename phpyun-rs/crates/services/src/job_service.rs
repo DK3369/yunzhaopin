@@ -7,7 +7,6 @@ use phpyun_core::ApiError;
 use phpyun_core::{clock, AppResult, AppState, Pagination};
 use phpyun_models::job::{entity::Job, repo as job_repo, repo::JobFilter};
 
-
 /// Public search parameters. Field set mirrors PHPYun's WAP `wap/job` finder
 /// + the `joblist` Smarty plugin (`smarty_internal_compile_joblist.php`).
 #[derive(Debug, Default, Clone)]
@@ -154,25 +153,35 @@ pub async fn get_detail(state: &AppState, id: u64) -> AppResult<JobDetailData> {
         let _ = phpyun_models::job::repo::incr_jobhits(&pool, id).await;
     });
 
-    let (com_logo, com_provinceid, com_cityid, com_mun, com_hy, com_rating, comqcode,
-         linkman, linktel, linkphone, linkmail) =
-        if let Some(c) = company {
-            (
-                c.logo.unwrap_or_default(),
-                c.provinceid,
-                c.cityid,
-                0,                  // mun is not defined on the entity; default to 0
-                c.hy,
-                c.rec,              // reuse rec as the rating tier for now
-                String::new(),      // comqcode requires a separate query
-                c.linkman.unwrap_or_default(),
-                c.linkphone.unwrap_or_default(),
-                String::new(),      // linkphone vs linktel: PHPYun's linkphone is the phone, linktel is the extension; entity only has linkphone
-                c.linkmail.unwrap_or_default(),
-            )
-        } else {
-            Default::default()
-        };
+    let (
+        com_logo,
+        com_provinceid,
+        com_cityid,
+        com_mun,
+        com_hy,
+        com_rating,
+        comqcode,
+        linkman,
+        linktel,
+        linkphone,
+        linkmail,
+    ) = if let Some(c) = company {
+        (
+            c.logo.unwrap_or_default(),
+            c.provinceid,
+            c.cityid,
+            0, // mun is not defined on the entity; default to 0
+            c.hy,
+            c.rec,         // reuse rec as the rating tier for now
+            String::new(), // comqcode requires a separate query
+            c.linkman.unwrap_or_default(),
+            c.linkphone.unwrap_or_default(),
+            String::new(), // linkphone vs linktel: PHPYun's linkphone is the phone, linktel is the extension; entity only has linkphone
+            c.linkmail.unwrap_or_default(),
+        )
+    } else {
+        Default::default()
+    };
 
     Ok(JobDetailData {
         job,
@@ -192,11 +201,7 @@ pub async fn get_detail(state: &AppState, id: u64) -> AppResult<JobDetailData> {
 }
 
 /// Other active jobs from the same company.
-pub async fn list_same_company(
-    state: &AppState,
-    job_id: u64,
-    limit: u64,
-) -> AppResult<Vec<Job>> {
+pub async fn list_same_company(state: &AppState, job_id: u64, limit: u64) -> AppResult<Vec<Job>> {
     let now = clock::now_ts();
     let cur = job_repo::find_by_id(state.db.reader(), job_id)
         .await?
@@ -205,11 +210,7 @@ pub async fn list_same_company(
 }
 
 /// Similar jobs (same job1 category, different company).
-pub async fn list_similar(
-    state: &AppState,
-    job_id: u64,
-    limit: u64,
-) -> AppResult<Vec<Job>> {
+pub async fn list_similar(state: &AppState, job_id: u64, limit: u64) -> AppResult<Vec<Job>> {
     let now = clock::now_ts();
     let cur = job_repo::find_by_id(state.db.reader(), job_id)
         .await?

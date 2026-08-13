@@ -15,10 +15,7 @@ pub async fn get(state: &AppState, key: &str) -> AppResult<Option<SiteSetting>> 
 
 // ---------- admin ----------
 
-pub async fn admin_list(
-    state: &AppState,
-    user: &AuthenticatedUser,
-) -> AppResult<Vec<SiteSetting>> {
+pub async fn admin_list(state: &AppState, user: &AuthenticatedUser) -> AppResult<Vec<SiteSetting>> {
     user.require_admin()?;
     Ok(setting_repo::list_all(state.db.reader()).await?)
 }
@@ -55,11 +52,7 @@ pub async fn admin_upsert(
     Ok(())
 }
 
-pub async fn admin_delete(
-    state: &AppState,
-    user: &AuthenticatedUser,
-    key: &str,
-) -> AppResult<()> {
+pub async fn admin_delete(state: &AppState, user: &AuthenticatedUser, key: &str) -> AppResult<()> {
     user.require_admin()?;
     setting_repo::delete(state.db.pool(), key).await?;
     let _ = audit::emit(

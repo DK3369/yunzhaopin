@@ -58,7 +58,8 @@ pub async fn create_class(
     name: &str,
     sort: i32,
 ) -> AppResult<u64> {
-    let id = redeem_repo::insert_class(state.db.pool(), parent_id, name, sort, clock::now_ts()).await?;
+    let id =
+        redeem_repo::insert_class(state.db.pool(), parent_id, name, sort, clock::now_ts()).await?;
     invalidate_classes_cache().await;
     let _ = audit::emit(
         state,
@@ -209,11 +210,7 @@ pub async fn set_reward_flags(
     Ok(())
 }
 
-pub async fn delete_reward(
-    state: &AppState,
-    admin: &AuthenticatedUser,
-    id: u64,
-) -> AppResult<()> {
+pub async fn delete_reward(state: &AppState, admin: &AuthenticatedUser, id: u64) -> AppResult<()> {
     let n = redeem_repo::delete_reward(state.db.pool(), id).await?;
     if n == 0 {
         return Err(ApiError::param_invalid("reward_not_found"));
@@ -349,7 +346,13 @@ pub async fn cancel_my_order(
     if order.uid != user.uid {
         return Err(ApiError::param_invalid("not_owner"));
     }
-    refund_order(state, &order, /*expected_status=*/ 0, "redeem.user_cancel").await
+    refund_order(
+        state,
+        &order,
+        /*expected_status=*/ 0,
+        "redeem.user_cancel",
+    )
+    .await
 }
 
 // ---------- Admin approval ----------
@@ -374,7 +377,8 @@ pub async fn approve_order(
 ) -> AppResult<()> {
     let pool = state.db.pool();
     let mut tx = pool.begin().await?;
-    let n = redeem_repo::tx_set_order_status(&mut tx, order_id, /*expected=*/ 0, /*new=*/ 1).await?;
+    let n =
+        redeem_repo::tx_set_order_status(&mut tx, order_id, /*expected=*/ 0, /*new=*/ 1).await?;
     if n == 0 {
         let _ = tx.rollback().await;
         return Err(ApiError::param_invalid("order_not_pending"));
@@ -397,7 +401,13 @@ pub async fn reject_order(
     let order = redeem_repo::get_order(state.db.reader(), order_id)
         .await?
         .ok_or_else(|| ApiError::param_invalid("order_not_found"))?;
-    refund_order(state, &order, /*expected_status=*/ 0, "admin.redeem.reject").await?;
+    refund_order(
+        state,
+        &order,
+        /*expected_status=*/ 0,
+        "admin.redeem.reject",
+    )
+    .await?;
     let _ = audit::emit(
         state,
         AuditEvent::new("admin.redeem.reject", Actor::uid(admin.uid))
@@ -419,7 +429,8 @@ async fn refund_order(
     let now = clock::now_ts();
 
     let mut tx = pool.begin().await?;
-    let n = redeem_repo::tx_set_order_status(&mut tx, order.id, expected_status, /*new=*/ 2).await?;
+    let n =
+        redeem_repo::tx_set_order_status(&mut tx, order.id, expected_status, /*new=*/ 2).await?;
     if n == 0 {
         let _ = tx.rollback().await;
         return Err(ApiError::param_invalid("order_not_pending"));

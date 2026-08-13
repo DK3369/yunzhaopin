@@ -34,10 +34,7 @@ pub async fn list_all(state: &AppState) -> AppResult<Arc<Vec<Country>>> {
 }
 
 /// Filter helper for `?continent=AS`.
-pub async fn list_by_continent(
-    state: &AppState,
-    continent: &str,
-) -> AppResult<Vec<Country>> {
+pub async fn list_by_continent(state: &AppState, continent: &str) -> AppResult<Vec<Country>> {
     let all = list_all(state).await?;
     Ok(all
         .iter()

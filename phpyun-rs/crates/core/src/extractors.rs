@@ -9,8 +9,8 @@
 //! ) -> AppResult<...> { ... }
 //! ```
 
-use crate::ApiError;
 use crate::state::AppState;
+use crate::ApiError;
 use axum::{
     extract::{FromRequest, FromRequestParts, Query, Request},
     http::{header, request::Parts},
@@ -167,9 +167,7 @@ pub struct ClientIp(pub String);
 /// when this returns `true` do we trust `XFF` / `XRI`.
 fn is_trusted_peer(addr: &std::net::IpAddr) -> bool {
     match addr {
-        std::net::IpAddr::V4(v4) => {
-            v4.is_loopback() || v4.is_private() || v4.is_link_local()
-        }
+        std::net::IpAddr::V4(v4) => v4.is_loopback() || v4.is_private() || v4.is_link_local(),
         std::net::IpAddr::V6(v6) => {
             v6.is_loopback()
                 // ULA fc00::/7
@@ -187,10 +185,7 @@ fn is_trusted_peer(addr: &std::net::IpAddr) -> bool {
 impl<S: Send + Sync> FromRequestParts<S> for ClientIp {
     type Rejection = std::convert::Infallible;
 
-    async fn from_request_parts(
-        parts: &mut Parts,
-        _state: &S,
-    ) -> Result<Self, Self::Rejection> {
+    async fn from_request_parts(parts: &mut Parts, _state: &S) -> Result<Self, Self::Rejection> {
         let peer = parts
             .extensions
             .get::<axum::extract::ConnectInfo<std::net::SocketAddr>>()
@@ -215,11 +210,7 @@ impl<S: Send + Sync> FromRequestParts<S> for ClientIp {
             }
 
             // 2. X-Real-IP
-            if let Some(xri) = parts
-                .headers
-                .get("x-real-ip")
-                .and_then(|v| v.to_str().ok())
-            {
+            if let Some(xri) = parts.headers.get("x-real-ip").and_then(|v| v.to_str().ok()) {
                 let ip = xri.trim();
                 if !ip.is_empty() {
                     return Ok(ClientIp(ip.to_string()));
@@ -253,7 +244,9 @@ impl FromRequestParts<AppState> for MaybeUser {
         state: &AppState,
     ) -> Result<Self, Self::Rejection> {
         Ok(MaybeUser(
-            AuthenticatedUser::from_request_parts(parts, state).await.ok(),
+            AuthenticatedUser::from_request_parts(parts, state)
+                .await
+                .ok(),
         ))
     }
 }
@@ -268,8 +261,12 @@ pub struct PaginationRaw {
     pub page_size: u32,
 }
 
-fn default_page() -> u32 { 1 }
-fn default_page_size() -> u32 { 20 }
+fn default_page() -> u32 {
+    1
+}
+fn default_page_size() -> u32 {
+    20
+}
 
 #[derive(Debug, Clone, Copy)]
 pub struct Pagination {
@@ -385,10 +382,7 @@ where
 {
     type Rejection = ApiError;
 
-    async fn from_request_parts(
-        parts: &mut Parts,
-        state: &S,
-    ) -> Result<Self, Self::Rejection> {
+    async fn from_request_parts(parts: &mut Parts, state: &S) -> Result<Self, Self::Rejection> {
         let Query(value) = Query::<T>::from_request_parts(parts, state)
             .await
             .map_err(|e| ApiError::param_invalid(format!("query: {e}")))?;
@@ -439,8 +433,7 @@ mod ip_tests {
         }
         p.headers = h;
         if let Some(ip) = peer {
-            p.extensions
-                .insert(ConnectInfo(SocketAddr::new(ip, 0)));
+            p.extensions.insert(ConnectInfo(SocketAddr::new(ip, 0)));
         }
         p
     }
@@ -466,10 +459,7 @@ mod ip_tests {
     async fn xff_ignored_when_peer_is_public() {
         // Attacker directly connects from the public internet and forges XFF —
         // we should ignore the header and use peer.
-        let mut p = parts_with(
-            &[("x-forwarded-for", "1.2.3.4")],
-            Some(public_ip()),
-        );
+        let mut p = parts_with(&[("x-forwarded-for", "1.2.3.4")], Some(public_ip()));
         let ip: ClientIp = ClientIp::from_request_parts(&mut p, &()).await.unwrap();
         assert_eq!(ip.0, "203.0.113.99");
     }
@@ -507,10 +497,7 @@ mod ip_tests {
     #[tokio::test]
     async fn empty_xff_falls_through_to_real_ip() {
         let mut p = parts_with(
-            &[
-                ("x-forwarded-for", "   "),
-                ("x-real-ip", "198.51.100.1"),
-            ],
+            &[("x-forwarded-for", "   "), ("x-real-ip", "198.51.100.1")],
             Some(loopback()),
         );
         let ip: ClientIp = ClientIp::from_request_parts(&mut p, &()).await.unwrap();

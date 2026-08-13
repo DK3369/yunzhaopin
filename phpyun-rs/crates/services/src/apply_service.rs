@@ -4,12 +4,11 @@
 //! Aligned with PHPYun `wap/job::comapply_action` (submit) + `mcenter/applicant`
 //! (employer view) + `mcenter/apply` (jobseeker view).
 
-use phpyun_core::ApiError;
 use phpyun_core::audit::{self, Actor, AuditEvent};
+use phpyun_core::ApiError;
 use phpyun_core::{clock, AppResult, AppState, AuthenticatedUser, Pagination};
 use phpyun_models::apply::{entity::Apply, repo as apply_repo};
 use phpyun_models::job::repo as job_repo;
-
 
 // ==================== Jobseeker submission ====================
 
@@ -58,7 +57,7 @@ pub async fn apply_to_job(
         state.db.pool(),
         user.uid,
         job_id,
-        job.uid, // com_id
+        job.uid,  // com_id
         user.uid, // eid = uid
         clock::now_ts(),
     )
@@ -132,8 +131,11 @@ pub async fn withdraw(
     }
     let _ = audit::emit(
         state,
-        AuditEvent::new("resume.apply_withdraw", Actor::uid(user.uid).with_ip(client_ip))
-            .target(format!("apply:{apply_id}")),
+        AuditEvent::new(
+            "resume.apply_withdraw",
+            Actor::uid(user.uid).with_ip(client_ip),
+        )
+        .target(format!("apply:{apply_id}")),
     )
     .await;
     Ok(())
@@ -210,8 +212,7 @@ pub async fn invite_interview(
     client_ip: &str,
 ) -> AppResult<()> {
     user.require_employer()?;
-    let affected =
-        apply_repo::invite(state.db.pool(), apply_id, user.uid, clock::now_ts()).await?;
+    let affected = apply_repo::invite(state.db.pool(), apply_id, user.uid, clock::now_ts()).await?;
     if affected == 0 {
         return Err(ApiError::business("apply_not_owner").into());
     }

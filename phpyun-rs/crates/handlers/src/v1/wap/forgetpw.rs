@@ -1,13 +1,11 @@
 //! Forgot password (aligned with PHPYun `wap/forgetpw`). Parameter names match PHP: `moblie` / `moblie_code` / `password`.
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
-};
+use axum::{extract::State, routing::post, Router};
 use phpyun_core::json;
 use phpyun_core::verify::{self, VerifyKind};
-use phpyun_core::{validators, ApiJson, ApiOk, ApiError, AppResult, AppState, ClientIp, ValidatedJson};
+use phpyun_core::{
+    validators, ApiError, ApiResponse, AppResult, AppState, ClientIp, ValidatedJson,
+};
 use phpyun_services::password_reset_service;
 use serde::Deserialize;
 use utoipa::ToSchema;
@@ -51,15 +49,22 @@ pub struct SendSmsForm {
 pub async fn send_sms(
     State(state): State<AppState>,
     ValidatedJson(f): ValidatedJson<SendSmsForm>,
-) -> AppResult<ApiOk> {
+) -> AppResult<ApiResponse> {
     // Mandatory image captcha
     let code = f.authcode.to_uppercase();
-    if !verify::verify(&state.redis, VerifyKind::ImageCaptcha, &f.captcha_cid, &code).await? {
+    if !verify::verify(
+        &state.redis,
+        VerifyKind::ImageCaptcha,
+        &f.captcha_cid,
+        &code,
+    )
+    .await?
+    {
         return Err(ApiError::captcha());
     }
 
     password_reset_service::send_sms_code(&state, &f.moblie).await?;
-    Ok(ApiOk("sent"))
+    Ok(ApiResponse::message("sent"))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
@@ -91,10 +96,10 @@ pub async fn reset(
     State(state): State<AppState>,
     ClientIp(ip): ClientIp,
     ValidatedJson(f): ValidatedJson<ResetForm>,
-) -> AppResult<ApiJson<json::Value>> {
+) -> AppResult<ApiResponse<json::Value>> {
     password_reset_service::reset_with_sms(&state, &f.moblie, &f.moblie_code, &f.password, &ip)
         .await?;
-    Ok(ApiJson(json::json!({ "ok": true })))
+    Ok(ApiResponse::data(json::json!({ "ok": true })))
 }
 
 // ==================== Email channel ====================
@@ -128,13 +133,20 @@ pub struct SendEmailForm {
 pub async fn send_email(
     State(state): State<AppState>,
     ValidatedJson(f): ValidatedJson<SendEmailForm>,
-) -> AppResult<ApiOk> {
+) -> AppResult<ApiResponse> {
     let code = f.authcode.to_uppercase();
-    if !verify::verify(&state.redis, VerifyKind::ImageCaptcha, &f.captcha_cid, &code).await? {
+    if !verify::verify(
+        &state.redis,
+        VerifyKind::ImageCaptcha,
+        &f.captcha_cid,
+        &code,
+    )
+    .await?
+    {
         return Err(ApiError::captcha());
     }
     password_reset_service::send_email_code(&state, &f.email).await?;
-    Ok(ApiOk("sent"))
+    Ok(ApiResponse::message("sent"))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
@@ -165,10 +177,10 @@ pub async fn reset_by_email(
     State(state): State<AppState>,
     ClientIp(ip): ClientIp,
     ValidatedJson(f): ValidatedJson<ResetByEmailForm>,
-) -> AppResult<ApiJson<json::Value>> {
+) -> AppResult<ApiResponse<json::Value>> {
     password_reset_service::reset_with_email(&state, &f.email, &f.email_code, &f.password, &ip)
         .await?;
-    Ok(ApiJson(json::json!({ "ok": true })))
+    Ok(ApiResponse::data(json::json!({ "ok": true })))
 }
 
 // ==================== Manual appeal (last-resort recovery) ====================
@@ -210,7 +222,7 @@ pub async fn submit_appeal(
     State(state): State<AppState>,
     ClientIp(ip): ClientIp,
     ValidatedJson(f): ValidatedJson<AppealForm>,
-) -> AppResult<ApiJson<AppealResponse>> {
+) -> AppResult<ApiResponse<AppealResponse>> {
     let uid = password_reset_service::submit_appeal(
         &state,
         password_reset_service::AppealInput {
@@ -222,5 +234,5 @@ pub async fn submit_appeal(
         &ip,
     )
     .await?;
-    Ok(ApiJson(AppealResponse { ticket_uid: uid }))
+    Ok(ApiResponse::data(AppealResponse { ticket_uid: uid }))
 }

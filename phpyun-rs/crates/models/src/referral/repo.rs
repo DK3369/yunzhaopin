@@ -36,16 +36,10 @@ pub async fn list_by_inviter(
     Ok(Vec::new())
 }
 
-pub async fn count_by_inviter(
-    _pool: &MySqlPool,
-    _inviter_uid: u64,
-) -> Result<u64, sqlx::Error> {
+pub async fn count_by_inviter(_pool: &MySqlPool, _inviter_uid: u64) -> Result<u64, sqlx::Error> {
     Ok(0)
 }
 
-pub async fn total_points_earned(
-    _pool: &MySqlPool,
-    _inviter_uid: u64,
-) -> Result<i64, sqlx::Error> {
+pub async fn total_points_earned(_pool: &MySqlPool, _inviter_uid: u64) -> Result<i64, sqlx::Error> {
     Ok(0)
 }

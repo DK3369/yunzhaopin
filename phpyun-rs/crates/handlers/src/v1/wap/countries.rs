@@ -5,19 +5,15 @@
 //! flag, and bilingual names — designed for forms / dropdowns. All reads
 //! hit the in-process cache (`country_service`), so they're sub-microsecond.
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
-};
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::dto::IdBody;
 use phpyun_core::i18n::{current_lang, Lang};
-use phpyun_core::{ApiJson, ApiError, AppResult, AppState, ValidatedJson};
+use phpyun_core::{ApiError, ApiResponse, AppResult, AppState, ValidatedJson};
 use phpyun_models::country::entity::Country;
 use phpyun_services::country_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
-use phpyun_core::dto::{IdBody};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -90,7 +86,7 @@ pub struct ListQuery {
 pub async fn list(
     State(state): State<AppState>,
     ValidatedJson(q): ValidatedJson<ListQuery>,
-) -> AppResult<ApiJson<Vec<CountryView>>> {
+) -> AppResult<ApiResponse<Vec<CountryView>>> {
     let lang = current_lang();
     let out: Vec<CountryView> = match q.continent.as_deref() {
         Some(c) => country_service::list_by_continent(&state, c)
@@ -104,7 +100,7 @@ pub async fn list(
             .map(|c| to_view(c, lang))
             .collect(),
     };
-    Ok(ApiJson(out))
+    Ok(ApiResponse::data(out))
 }
 
 /// Single country by surrogate `id`.
@@ -117,14 +113,16 @@ pub async fn list(
         (status = 404, description = "Not found"),
     )
 )]
-pub async fn by_id(State(state): State<AppState>,
-    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiJson<CountryView>> {
+pub async fn by_id(
+    State(state): State<AppState>,
+    ValidatedJson(b): ValidatedJson<IdBody>,
+) -> AppResult<ApiResponse<CountryView>> {
     let id = b.id;
     let lang = current_lang();
     let c = country_service::find_by_id(&state, id)
         .await?
         .ok_or_else(|| ApiError::param_invalid("country_not_found"))?;
-    Ok(ApiJson(to_view(&c, lang)))
+    Ok(ApiResponse::data(to_view(&c, lang)))
 }
 
 /// Single country by ISO 3166-1 alpha-2 code (case-insensitive).
@@ -137,19 +135,24 @@ pub async fn by_id(State(state): State<AppState>,
         (status = 404, description = "Not found"),
     )
 )]
-pub async fn by_code(State(state): State<AppState>,
-    ValidatedJson(b): ValidatedJson<ByCodeBody>) -> AppResult<ApiJson<CountryView>> {
+pub async fn by_code(
+    State(state): State<AppState>,
+    ValidatedJson(b): ValidatedJson<ByCodeBody>,
+) -> AppResult<ApiResponse<CountryView>> {
     let code = b.code;
     phpyun_core::validators::ensure_path_token(&code)?;
     let lang = current_lang();
     let c = country_service::find_by_code(&state, &code)
         .await?
         .ok_or_else(|| ApiError::param_invalid("country_not_found"))?;
-    Ok(ApiJson(to_view(&c, lang)))
+    Ok(ApiResponse::data(to_view(&c, lang)))
 }
 
 #[derive(Debug, serde::Deserialize, validator::Validate, utoipa::ToSchema)]
 pub struct ByCodeBody {
-    #[validate(length(min = 1, max = 64), custom(function = "phpyun_core::validators::path_token"))]
+    #[validate(
+        length(min = 1, max = 64),
+        custom(function = "phpyun_core::validators::path_token")
+    )]
     pub code: String,
 }

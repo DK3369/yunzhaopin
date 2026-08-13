@@ -1,7 +1,7 @@
 //! Peer-to-peer direct messages.
 
 use phpyun_core::i18n::{t, Lang};
-use phpyun_core::{clock, rate_limit, AppResult, AppState, AuthenticatedUser, ApiError};
+use phpyun_core::{clock, rate_limit, ApiError, AppResult, AppState, AuthenticatedUser};
 
 // Notification copy: translated using the system default language when written to the DB; can be reworked once a recipient preferred-language is introduced.
 const NOTIF_LANG: Lang = Lang::ZhCN;

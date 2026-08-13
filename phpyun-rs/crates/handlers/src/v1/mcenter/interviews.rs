@@ -1,18 +1,16 @@
 //! Interview invitations — job seekers view / respond; employers create / cancel.
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
-};
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::dto::{CreatedId, IdBody};
 use phpyun_core::json;
-use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, Paged, Pagination, ValidatedJson};
+use phpyun_core::utils::fmt_dt;
+use phpyun_core::{
+    ApiResponse, AppResult, AppState, AuthenticatedUser, ClientIp, Paged, Pagination, ValidatedJson,
+};
 use phpyun_services::interview_service::{self, InterviewCreateInput};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
-use phpyun_core::dto::{CreatedId, IdBody};
-use phpyun_core::utils::{fmt_dt};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -23,7 +21,6 @@ pub fn routes() -> Router<AppState> {
         .route("/company/interviews/create", post(create))
         .route("/company/interviews/cancel", post(cancel))
 }
-
 
 fn interview_status_name(s: i32) -> &'static str {
     match s {
@@ -93,9 +90,11 @@ pub async fn list_mine(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-) -> AppResult<ApiJson<Paged<InterviewItem>>> {
+) -> AppResult<ApiResponse<Paged<InterviewItem>>> {
     let r = interview_service::list_mine(&state, &user, page).await?;
-    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
+    Ok(ApiResponse::data(Paged::from_listing(
+        r.list, r.total, page,
+    )))
 }
 
 /// Accept interview
@@ -112,9 +111,9 @@ pub async fn accept(
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
     ValidatedJson(b): ValidatedJson<IdBody>,
-) -> AppResult<ApiJson<json::Value>> {
+) -> AppResult<ApiResponse<json::Value>> {
     interview_service::respond(&state, &user, b.id, 1, &ip).await?;
-    Ok(ApiJson(json::json!({ "ok": true, "status": 1 })))
+    Ok(ApiResponse::data(json::json!({ "ok": true, "status": 1 })))
 }
 
 /// Reject interview
@@ -131,9 +130,9 @@ pub async fn reject(
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
     ValidatedJson(b): ValidatedJson<IdBody>,
-) -> AppResult<ApiJson<json::Value>> {
+) -> AppResult<ApiResponse<json::Value>> {
     interview_service::respond(&state, &user, b.id, 2, &ip).await?;
-    Ok(ApiJson(json::json!({ "ok": true, "status": 2 })))
+    Ok(ApiResponse::data(json::json!({ "ok": true, "status": 2 })))
 }
 
 // ==================== Employer side ====================
@@ -168,7 +167,7 @@ pub async fn create(
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
     ValidatedJson(f): ValidatedJson<CreateInterviewForm>,
-) -> AppResult<ApiJson<CreatedId>> {
+) -> AppResult<ApiResponse<CreatedId>> {
     let id = interview_service::create_by_company(
         &state,
         &user,
@@ -183,7 +182,7 @@ pub async fn create(
         &ip,
     )
     .await?;
-    Ok(ApiJson(CreatedId { id }))
+    Ok(ApiResponse::data(CreatedId { id }))
 }
 
 /// Employer views interview invitations they have sent
@@ -198,9 +197,11 @@ pub async fn list_by_company(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-) -> AppResult<ApiJson<Paged<InterviewItem>>> {
+) -> AppResult<ApiResponse<Paged<InterviewItem>>> {
     let r = interview_service::list_by_company(&state, &user, page).await?;
-    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
+    Ok(ApiResponse::data(Paged::from_listing(
+        r.list, r.total, page,
+    )))
 }
 
 /// Employer cancels an interview
@@ -217,7 +218,7 @@ pub async fn cancel(
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
     ValidatedJson(b): ValidatedJson<IdBody>,
-) -> AppResult<ApiJson<json::Value>> {
+) -> AppResult<ApiResponse<json::Value>> {
     interview_service::cancel(&state, &user, b.id, &ip).await?;
-    Ok(ApiJson(json::json!({ "ok": true })))
+    Ok(ApiResponse::data(json::json!({ "ok": true })))
 }

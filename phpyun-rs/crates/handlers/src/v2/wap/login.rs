@@ -16,7 +16,7 @@ use axum::{
     Router,
 };
 use phpyun_core::verify::{self, VerifyKind};
-use phpyun_core::{clock, ApiJson, ApiError, AppResult, AppState, ClientIp, ValidatedJson};
+use phpyun_core::{clock, ApiError, ApiResponse, AppResult, AppState, ClientIp, ValidatedJson};
 use phpyun_services::user_service::{self, LoginContext};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
@@ -68,7 +68,7 @@ pub async fn mlogin(
     ClientIp(ip): ClientIp,
     headers: HeaderMap,
     ValidatedJson(form): ValidatedJson<LoginForm>,
-) -> AppResult<ApiJson<LoginData>> {
+) -> AppResult<ApiResponse<LoginData>> {
     if let (Some(cid), Some(code)) = (form.captcha_cid.as_deref(), form.authcode.as_deref()) {
         if !cid.is_empty() && !code.is_empty() {
             let code_up = code.to_uppercase();
@@ -89,7 +89,7 @@ pub async fn mlogin(
         LoginContext { ip: &ip, ua: &ua },
     )
     .await?;
-    Ok(ApiJson(LoginData {
+    Ok(ApiResponse::data(LoginData {
         uid: r.uid,
         usertype: r.usertype,
         access_token: r.access,

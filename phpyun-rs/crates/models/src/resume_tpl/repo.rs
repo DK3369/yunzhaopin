@@ -13,16 +13,12 @@ const FIELDS: &str = "\
     CAST(COALESCE(`type`, 0) AS SIGNED) AS sort";
 
 pub async fn list_public(pool: &MySqlPool) -> Result<Vec<ResumeTpl>, sqlx::Error> {
-    let sql = format!(
-        "SELECT {FIELDS} FROM phpyun_resumetpl WHERE status = 1 ORDER BY id DESC"
-    );
+    let sql = format!("SELECT {FIELDS} FROM phpyun_resumetpl WHERE status = 1 ORDER BY id DESC");
     sqlx::query_as::<_, ResumeTpl>(&sql).fetch_all(pool).await
 }
 
 pub async fn find_by_id(pool: &MySqlPool, id: u64) -> Result<Option<ResumeTpl>, sqlx::Error> {
-    let sql = format!(
-        "SELECT {FIELDS} FROM phpyun_resumetpl WHERE id = ? LIMIT 1"
-    );
+    let sql = format!("SELECT {FIELDS} FROM phpyun_resumetpl WHERE id = ? LIMIT 1");
     sqlx::query_as::<_, ResumeTpl>(&sql)
         .bind(id)
         .fetch_optional(pool)
@@ -40,12 +36,11 @@ pub async fn fetch_purchased_ids(
     pool: &MySqlPool,
     uid: u64,
 ) -> Result<Option<String>, sqlx::Error> {
-    let row: Option<(Option<String>,)> = sqlx::query_as(
-        "SELECT paytpls FROM phpyun_member_statis WHERE uid = ? LIMIT 1",
-    )
-    .bind(uid)
-    .fetch_optional(pool)
-    .await?;
+    let row: Option<(Option<String>,)> =
+        sqlx::query_as("SELECT paytpls FROM phpyun_member_statis WHERE uid = ? LIMIT 1")
+            .bind(uid)
+            .fetch_optional(pool)
+            .await?;
     Ok(row.and_then(|(s,)| s))
 }
 
@@ -65,37 +60,27 @@ pub async fn append_purchased_id(
         }
         _ => tpl_id.to_string(),
     };
-    let affected = sqlx::query(
-        "UPDATE phpyun_member_statis SET paytpls = ? WHERE uid = ?",
-    )
-    .bind(&new_value)
-    .bind(uid)
-    .execute(pool)
-    .await?
-    .rows_affected();
-    if affected == 0 {
-        let _ = sqlx::query(
-            "INSERT INTO phpyun_member_statis (uid, paytpls) VALUES (?, ?)",
-        )
-        .bind(uid)
+    let affected = sqlx::query("UPDATE phpyun_member_statis SET paytpls = ? WHERE uid = ?")
         .bind(&new_value)
+        .bind(uid)
         .execute(pool)
-        .await?;
+        .await?
+        .rows_affected();
+    if affected == 0 {
+        let _ = sqlx::query("INSERT INTO phpyun_member_statis (uid, paytpls) VALUES (?, ?)")
+            .bind(uid)
+            .bind(&new_value)
+            .execute(pool)
+            .await?;
     }
     Ok(())
 }
 
-pub async fn set_applied_tpl(
-    pool: &MySqlPool,
-    uid: u64,
-    tpl_id: u64,
-) -> Result<u64, sqlx::Error> {
-    let res = sqlx::query(
-        "UPDATE phpyun_member_statis SET tpl = ? WHERE uid = ?",
-    )
-    .bind(tpl_id)
-    .bind(uid)
-    .execute(pool)
-    .await?;
+pub async fn set_applied_tpl(pool: &MySqlPool, uid: u64, tpl_id: u64) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query("UPDATE phpyun_member_statis SET tpl = ? WHERE uid = ?")
+        .bind(tpl_id)
+        .bind(uid)
+        .execute(pool)
+        .await?;
     Ok(res.rows_affected())
 }

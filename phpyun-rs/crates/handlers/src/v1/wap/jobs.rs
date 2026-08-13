@@ -1,19 +1,18 @@
 //! Public job browsing (WAP, aligned with `wap/job::index_action` / detail portion of `wap/job::comapply_action`).
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::dto::{HitsResp, IdBody, UidBody};
+use phpyun_core::utils::fmt_ts;
+use phpyun_core::{
+    i18n::{current_lang, t, t_args},
+    json, ApiResponse, AppResult, AppState, ClientIp, MaybeUser, Paged, Pagination, ValidatedJson,
 };
-use phpyun_core::{json, i18n::{current_lang, t, t_args}, ApiJson, AppResult, AppState, ClientIp, MaybeUser, Paged, Pagination, ValidatedJson};
-use validator::Validate;
 use phpyun_services::hot_search_service;
 use phpyun_services::job_service::{self, JobSearch};
 use phpyun_services::view_service::{self, KIND_JOB};
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
-use phpyun_core::dto::{HitsResp, IdBody, UidBody};
-use phpyun_core::utils::{fmt_ts};
+use validator::Validate;
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct SimilarBody {
@@ -227,11 +226,11 @@ pub async fn list_jobs(
     MaybeUser(user): MaybeUser,
     page: Pagination,
     ValidatedJson(q): ValidatedJson<JobListQuery>,
-) -> AppResult<ApiJson<json::Value>> {
+) -> AppResult<ApiResponse<json::Value>> {
     // Detail mode: body carried an id → defer to the same logic as
     // `/v1/wap/jobs/detail` so callers get the full job document.
     if let Some(id) = q.id {
-        return Ok(ApiJson(
+        return Ok(ApiResponse::data(
             build_job_detail_value(&state, user.as_ref(), id).await?,
         ));
     }
@@ -273,8 +272,12 @@ pub async fn list_jobs(
     let dicts = phpyun_services::dict_service::get(&state).await?;
     let now = phpyun_core::clock::now_ts();
     let job_ids: Vec<u64> = r.list.iter().map(|j| j.id).collect();
-    let fav_set =
-        phpyun_services::collect_service::favorited_set(&state, user.as_ref().map(|u| u.uid), &job_ids).await;
+    let fav_set = phpyun_services::collect_service::favorited_set(
+        &state,
+        user.as_ref().map(|u| u.uid),
+        &job_ids,
+    )
+    .await;
     let paged: Paged<JobSummary> = Paged::new(
         r.list
             .into_iter()
@@ -287,7 +290,9 @@ pub async fn list_jobs(
         page.page,
         page.page_size,
     );
-    Ok(ApiJson(json::to_value(&paged).map_err(phpyun_core::ApiError::internal)?))
+    Ok(ApiResponse::data(
+        json::to_value(&paged).map_err(phpyun_core::ApiError::internal)?,
+    ))
 }
 
 /// Public job detail -- returned as a nested map **grouped by business concern**.
@@ -314,8 +319,10 @@ pub async fn job_detail(
     State(state): State<AppState>,
     MaybeUser(user): MaybeUser,
     ValidatedJson(b): ValidatedJson<IdBody>,
-) -> AppResult<ApiJson<json::Value>> {
-    Ok(ApiJson(build_job_detail_value(&state, user.as_ref(), b.id).await?))
+) -> AppResult<ApiResponse<json::Value>> {
+    Ok(ApiResponse::data(
+        build_job_detail_value(&state, user.as_ref(), b.id).await?,
+    ))
 }
 
 /// Detail-page body builder, callable from both `/v1/wap/jobs/detail` and
@@ -363,7 +370,10 @@ pub async fn build_job_detail_value(
     // --- Latest 5 inquiries (raw table fields passed through) ---
     let msg_list: Vec<json::Value> = {
         let rows = phpyun_models::job_msg::repo::list_public_for_job_any_type(
-            state.db.reader(), id, d.job.uid, 5,
+            state.db.reader(),
+            id,
+            d.job.uid,
+            5,
         )
         .await
         .unwrap_or_default();
@@ -392,12 +402,10 @@ pub async fn build_job_detail_value(
         let db = state.db.reader();
         let fav_fut = phpyun_models::collect::repo::exists_with_type(db, u.uid, id, 1);
         let apply_fut = phpyun_models::apply::repo::find_by_uid_job(db, u.uid, id);
-        let report_fut = phpyun_models::report::repo::count_job_report_context(
-            db, u.uid, id, d.job.uid,
-        );
-        let invite_fut = phpyun_models::interview::repo::count_active_from_company_to_user(
-            db, d.job.uid, u.uid,
-        );
+        let report_fut =
+            phpyun_models::report::repo::count_job_report_context(db, u.uid, id, d.job.uid);
+        let invite_fut =
+            phpyun_models::interview::repo::count_active_from_company_to_user(db, d.job.uid, u.uid);
         let (f, a, r, i) = tokio::join!(fav_fut, apply_fut, report_fut, invite_fut);
         (
             i32::from(f.unwrap_or(false)),
@@ -475,7 +483,9 @@ pub struct RecQuery {
     #[validate(range(min = 1, max = 30))]
     pub limit: u64,
 }
-fn default_rec_limit() -> u64 { 6 }
+fn default_rec_limit() -> u64 {
+    6
+}
 
 /// Similar jobs (same job1 category)
 #[utoipa::path(
@@ -489,15 +499,19 @@ pub async fn similar_jobs(
     State(state): State<AppState>,
     MaybeUser(user): MaybeUser,
     ValidatedJson(b): ValidatedJson<SimilarBody>,
-) -> AppResult<ApiJson<Vec<JobSummary>>> {
+) -> AppResult<ApiResponse<Vec<JobSummary>>> {
     let id = b.id;
     let list = job_service::list_similar(&state, id, b.limit.clamp(1, 30)).await?;
     let dicts = phpyun_services::dict_service::get(&state).await?;
     let now = phpyun_core::clock::now_ts();
     let job_ids: Vec<u64> = list.iter().map(|j| j.id).collect();
-    let fav_set =
-        phpyun_services::collect_service::favorited_set(&state, user.as_ref().map(|u| u.uid), &job_ids).await;
-    Ok(ApiJson(
+    let fav_set = phpyun_services::collect_service::favorited_set(
+        &state,
+        user.as_ref().map(|u| u.uid),
+        &job_ids,
+    )
+    .await;
+    Ok(ApiResponse::data(
         list.into_iter()
             .map(|j| {
                 let fav = fav_set.contains(&j.id);
@@ -519,15 +533,19 @@ pub async fn same_company_jobs(
     State(state): State<AppState>,
     MaybeUser(user): MaybeUser,
     ValidatedJson(b): ValidatedJson<SimilarBody>,
-) -> AppResult<ApiJson<Vec<JobSummary>>> {
+) -> AppResult<ApiResponse<Vec<JobSummary>>> {
     let id = b.id;
     let list = job_service::list_same_company(&state, id, b.limit.clamp(1, 30)).await?;
     let dicts = phpyun_services::dict_service::get(&state).await?;
     let now = phpyun_core::clock::now_ts();
     let job_ids: Vec<u64> = list.iter().map(|j| j.id).collect();
-    let fav_set =
-        phpyun_services::collect_service::favorited_set(&state, user.as_ref().map(|u| u.uid), &job_ids).await;
-    Ok(ApiJson(
+    let fav_set = phpyun_services::collect_service::favorited_set(
+        &state,
+        user.as_ref().map(|u| u.uid),
+        &job_ids,
+    )
+    .await;
+    Ok(ApiResponse::data(
         list.into_iter()
             .map(|j| {
                 let fav = fav_set.contains(&j.id);
@@ -550,14 +568,18 @@ pub async fn company_jobs(
     MaybeUser(user): MaybeUser,
     page: Pagination,
     ValidatedJson(b): ValidatedJson<UidBody>,
-) -> AppResult<ApiJson<Paged<JobSummary>>> {
+) -> AppResult<ApiResponse<Paged<JobSummary>>> {
     let r = job_service::list_by_company(&state, b.uid, page).await?;
     let dicts = phpyun_services::dict_service::get(&state).await?;
     let now = phpyun_core::clock::now_ts();
     let job_ids: Vec<u64> = r.list.iter().map(|j| j.id).collect();
-    let fav_set =
-        phpyun_services::collect_service::favorited_set(&state, user.as_ref().map(|u| u.uid), &job_ids).await;
-    Ok(ApiJson(Paged::new(
+    let fav_set = phpyun_services::collect_service::favorited_set(
+        &state,
+        user.as_ref().map(|u| u.uid),
+        &job_ids,
+    )
+    .await;
+    Ok(ApiResponse::data(Paged::new(
         r.list
             .into_iter()
             .map(|j| {
@@ -601,10 +623,10 @@ pub async fn log_tel_click(
     MaybeUser(user): MaybeUser,
     ClientIp(ip): ClientIp,
     ValidatedJson(b): ValidatedJson<TelClickBodyFull>,
-) -> AppResult<ApiJson<json::Value>> {
+) -> AppResult<ApiResponse<json::Value>> {
     let viewer_uid = user.as_ref().map(|u| u.uid);
     job_service::log_tel_click(&state, viewer_uid, b.id, b.com_id, b.source, &ip).await?;
-    Ok(ApiJson(json::json!({ "ok": true })))
+    Ok(ApiResponse::data(json::json!({ "ok": true })))
 }
 
 // ==================== Share text (copyable / Weibo / WeChat) ====================
@@ -639,13 +661,11 @@ pub struct JobShareText {
 pub async fn share_text(
     State(state): State<AppState>,
     ValidatedJson(b): ValidatedJson<IdBody>,
-) -> AppResult<ApiJson<JobShareText>> {
+) -> AppResult<ApiResponse<JobShareText>> {
     let id = b.id;
     let job = phpyun_models::job::repo::find_public_by_id(state.db.reader(), id)
         .await?
-        .ok_or_else(|| {
-            phpyun_core::ApiError::param_invalid("job_not_found")
-        })?;
+        .ok_or_else(|| phpyun_core::ApiError::param_invalid("job_not_found"))?;
 
     let jid = job.id;
     let job_name = job.name.clone();
@@ -668,7 +688,11 @@ pub async fn share_text(
             ],
         )
     } else if minsalary > 0 {
-        t_args("ui.job.salary_min_plus", lang, &[("min", &minsalary.to_string())])
+        t_args(
+            "ui.job.salary_min_plus",
+            lang,
+            &[("min", &minsalary.to_string())],
+        )
     } else {
         String::new()
     };
@@ -702,7 +726,7 @@ pub async fn share_text(
         share_url
     );
 
-    Ok(ApiJson(JobShareText {
+    Ok(ApiResponse::data(JobShareText {
         job_id: jid,
         job_name,
         com_name,
@@ -727,9 +751,9 @@ pub async fn share_text(
 pub async fn bump_jobhits(
     State(state): State<AppState>,
     ValidatedJson(b): ValidatedJson<IdBody>,
-) -> AppResult<ApiJson<HitsResp>> {
+) -> AppResult<ApiResponse<HitsResp>> {
     let hits = phpyun_models::job::repo::bump_and_get_jobhits(state.db.pool(), b.id).await?;
-    Ok(ApiJson(HitsResp { hits }))
+    Ok(ApiResponse::data(HitsResp { hits }))
 }
 
 // ==================== Job contact reveal (getJobLink) ====================
@@ -768,7 +792,7 @@ pub struct JobContactView {
 pub async fn job_contact(
     State(state): State<AppState>,
     ValidatedJson(b): ValidatedJson<IdBody>,
-) -> AppResult<ApiJson<JobContactView>> {
+) -> AppResult<ApiResponse<JobContactView>> {
     let id = b.id;
     let c = phpyun_models::job::repo::get_job_contact(state.db.reader(), id)
         .await?
@@ -779,7 +803,7 @@ pub async fn job_contact(
     let dicts = phpyun_services::dict_service::get(&state).await?;
     let city_name = dicts.city(c.cityid).to_string();
 
-    Ok(ApiJson(JobContactView {
+    Ok(ApiResponse::data(JobContactView {
         job_id: id,
         linkman: c.linkman,
         linktel: c.linktel,

@@ -3,18 +3,14 @@
 //! All reads hit the in-process `Arc<RegionTree>` cache (`region_service`),
 //! so they are sub-microsecond and don't touch the DB.
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
-};
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::dto::IdBody;
 use phpyun_core::i18n::{current_lang, Lang};
-use phpyun_core::{ApiJson, ApiError, AppResult, AppState, ValidatedJson};
+use phpyun_core::{ApiError, ApiResponse, AppResult, AppState, ValidatedJson};
 use phpyun_services::region_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
-use phpyun_core::dto::{IdBody};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -85,7 +81,7 @@ pub struct ListQuery {
 pub async fn list(
     State(state): State<AppState>,
     ValidatedJson(q): ValidatedJson<ListQuery>,
-) -> AppResult<ApiJson<Vec<RegionView>>> {
+) -> AppResult<ApiResponse<Vec<RegionView>>> {
     let tree = region_service::get(&state).await?;
     let lang = current_lang();
     let nodes: Vec<&region_service::RegionNode> = match (q.country.as_deref(), q.level) {
@@ -107,7 +103,7 @@ pub async fn list(
         .into_iter()
         .map(|n| to_view(n, lang, tree.has_children(n.region.id)))
         .collect();
-    Ok(ApiJson(out))
+    Ok(ApiResponse::data(out))
 }
 
 /// Single node by surrogate `id`.
@@ -120,15 +116,21 @@ pub async fn list(
         (status = 404, description = "Not found"),
     )
 )]
-pub async fn by_id(State(state): State<AppState>,
-    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiJson<RegionView>> {
+pub async fn by_id(
+    State(state): State<AppState>,
+    ValidatedJson(b): ValidatedJson<IdBody>,
+) -> AppResult<ApiResponse<RegionView>> {
     let id = b.id;
     let tree = region_service::get(&state).await?;
     let lang = current_lang();
     let node = tree
         .get(id)
         .ok_or_else(|| ApiError::param_invalid("region_not_found"))?;
-    Ok(ApiJson(to_view(node, lang, tree.has_children(node.region.id))))
+    Ok(ApiResponse::data(to_view(
+        node,
+        lang,
+        tree.has_children(node.region.id),
+    )))
 }
 
 /// Single node by stable code (recommended for client-side references).
@@ -141,8 +143,10 @@ pub async fn by_id(State(state): State<AppState>,
         (status = 404, description = "Not found"),
     )
 )]
-pub async fn by_code(State(state): State<AppState>,
-    ValidatedJson(b): ValidatedJson<ByCodeBody>) -> AppResult<ApiJson<RegionView>> {
+pub async fn by_code(
+    State(state): State<AppState>,
+    ValidatedJson(b): ValidatedJson<ByCodeBody>,
+) -> AppResult<ApiResponse<RegionView>> {
     let code = b.code;
     phpyun_core::validators::ensure_path_token(&code)?;
     let tree = region_service::get(&state).await?;
@@ -150,7 +154,11 @@ pub async fn by_code(State(state): State<AppState>,
     let node = tree
         .find_by_code(&code)
         .ok_or_else(|| ApiError::param_invalid("region_not_found"))?;
-    Ok(ApiJson(to_view(node, lang, tree.has_children(node.region.id))))
+    Ok(ApiResponse::data(to_view(
+        node,
+        lang,
+        tree.has_children(node.region.id),
+    )))
 }
 
 // ==================== City → sub-site domain lookup ====================
@@ -190,8 +198,8 @@ pub struct CityDomainResp {
 pub async fn city_domain(
     State(_state): State<AppState>,
     ValidatedJson(_q): ValidatedJson<CityDomainQuery>,
-) -> AppResult<ApiJson<CityDomainResp>> {
-    Ok(ApiJson(CityDomainResp {
+) -> AppResult<ApiResponse<CityDomainResp>> {
+    Ok(ApiResponse::data(CityDomainResp {
         error: 2,
         domain: None,
         city: None,
@@ -205,8 +213,10 @@ pub async fn city_domain(
     request_body = IdBody,
     responses((status = 200, description = "ok", body = [RegionView]))
 )]
-pub async fn children(State(state): State<AppState>,
-    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiJson<Vec<RegionView>>> {
+pub async fn children(
+    State(state): State<AppState>,
+    ValidatedJson(b): ValidatedJson<IdBody>,
+) -> AppResult<ApiResponse<Vec<RegionView>>> {
     let id = b.id;
     let tree = region_service::get(&state).await?;
     let lang = current_lang();
@@ -215,11 +225,14 @@ pub async fn children(State(state): State<AppState>,
         .into_iter()
         .map(|n| to_view(n, lang, tree.has_children(n.region.id)))
         .collect();
-    Ok(ApiJson(out))
+    Ok(ApiResponse::data(out))
 }
 
 #[derive(Debug, serde::Deserialize, validator::Validate, utoipa::ToSchema)]
 pub struct ByCodeBody {
-    #[validate(length(min = 1, max = 64), custom(function = "phpyun_core::validators::path_token"))]
+    #[validate(
+        length(min = 1, max = 64),
+        custom(function = "phpyun_core::validators::path_token")
+    )]
     pub code: String,
 }

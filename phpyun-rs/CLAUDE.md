@@ -20,7 +20,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Build / run / test
 
 ```bash
-cargo run -p phpyun-app                           # run the server (reads .env)
+cargo run -p phpyun-app                           # debug server (reads .env)
 cargo build --package phpyun-app --bin app        # build only the binary
 cargo test --package phpyun-handlers              # all handler integration tests
 cargo test --package phpyun-handlers --test endpoint_smoke -- --nocapture
@@ -31,7 +31,13 @@ scripts/check-architecture.sh                     # architecture-rule grep guard
 
 **Memory-constrained machines**: the workspace links many crates in parallel and can OOM-kill `ld`. Use `CARGO_BUILD_JOBS=1 cargo build …` if you see linker SIGKILLs.
 
-`cargo test` requires a reachable MySQL + Redis (per `.env`); offline-mode for sqlx is not used.
+Database-backed integration tests require a reachable MySQL + Redis configured
+in `.env.dev` and refuse to run when that file has `APP_ENV=prod`. Development
+and integration tests intentionally share its MySQL/Redis resources; the test
+loader switches the typed mode to `test`. Start from `.env.dev.example`;
+unit/library tests do not need external services. An
+explicit `PHPYUN_ENV_FILE` may replace the default test file, but it must also
+declare `APP_ENV=test`.
 
 ## Live endpoint testing
 

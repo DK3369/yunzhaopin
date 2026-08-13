@@ -1,12 +1,8 @@
 //! Dynamic category tree (public).
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
-};
-use phpyun_core::{ApiJson, AppResult, AppState, ValidatedJson};
-use phpyun_services::category_service;
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::{i18n, ApiResponse, AppResult, AppState, Lang, ValidatedJson};
+use phpyun_services::{category_service, dict_service};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
@@ -53,14 +49,47 @@ pub struct CatNode {
     pub sort: i32,
 }
 
-impl From<phpyun_models::category::entity::Category> for CatNode {
-    fn from(c: phpyun_models::category::entity::Category) -> Self {
+impl CatNode {
+    fn from_category(c: phpyun_models::category::entity::Category, name: String) -> Self {
         Self {
             id: c.id,
             parent_id: c.parent_id,
-            name: c.name,
+            name,
             sort: c.sort,
         }
+    }
+}
+
+fn localized_name(
+    dicts: &dict_service::LocalizedDicts,
+    kind: &str,
+    id: u64,
+    fallback: &str,
+) -> String {
+    // The legacy database stores Chinese as the default value. For the
+    // public English category tree, prefer embedded JSON translations so a
+    // missing DB translation cannot silently turn the response Chinese.
+    if dicts.lang() == Lang::En {
+        let key = format!("categories.{kind}.{id}");
+        let translated = i18n::t(&key, Lang::En);
+        if translated != key {
+            return translated;
+        }
+    }
+
+    let id = i32::try_from(id).unwrap_or_default();
+    let name = match kind {
+        "job" => dicts.job(id),
+        "company" | "industry" | "com" | "comclass" => dicts.comclass(id),
+        "city" => dicts.city(id),
+        "part" | "partclass" => dicts.part(id),
+        "question" | "qa" | "q" | "q_class" => dicts.question(id),
+        _ => "",
+    };
+    if name.is_empty() {
+        fallback.to_owned()
+    } else {
+        name.to_owned()
     }
 }
 
@@ -75,10 +104,19 @@ impl From<phpyun_models::category::entity::Category> for CatNode {
 pub async fn list(
     State(state): State<AppState>,
     ValidatedJson(b): ValidatedJson<KindBody>,
-) -> AppResult<ApiJson<Vec<CatNode>>> {
+) -> AppResult<ApiResponse<Vec<CatNode>>> {
     phpyun_core::validators::ensure_path_token(&b.kind)?;
     let list = category_service::list(&state, &b.kind).await?;
-    Ok(ApiJson(list.iter().cloned().map(CatNode::from).collect()))
+    let dicts = dict_service::get(&state).await?;
+    Ok(ApiResponse::data(
+        list.iter()
+            .cloned()
+            .map(|c| {
+                let name = localized_name(&dicts, &b.kind, c.id, &c.name);
+                CatNode::from_category(c, name)
+            })
+            .collect(),
+    ))
 }
 
 /// Get the direct children of a given parent node
@@ -92,10 +130,19 @@ pub async fn list(
 pub async fn children(
     State(state): State<AppState>,
     ValidatedJson(b): ValidatedJson<ChildrenBody>,
-) -> AppResult<ApiJson<Vec<CatNode>>> {
+) -> AppResult<ApiResponse<Vec<CatNode>>> {
     phpyun_core::validators::ensure_path_token(&b.kind)?;
     let list = category_service::list_children(&state, &b.kind, b.parent_id).await?;
-    Ok(ApiJson(list.iter().cloned().map(CatNode::from).collect()))
+    let dicts = dict_service::get(&state).await?;
+    Ok(ApiResponse::data(
+        list.iter()
+            .cloned()
+            .map(|c| {
+                let name = localized_name(&dicts, &b.kind, c.id, &c.name);
+                CatNode::from_category(c, name)
+            })
+            .collect(),
+    ))
 }
 
 /// Recommended categories (hand-picked by admin via `rec=1` flag).
@@ -114,10 +161,18 @@ pub async fn children(
 pub async fn recommended(
     State(state): State<AppState>,
     ValidatedJson(b): ValidatedJson<RecommendedBody>,
-) -> AppResult<ApiJson<Vec<CatNode>>> {
+) -> AppResult<ApiResponse<Vec<CatNode>>> {
     phpyun_core::validators::ensure_path_token(&b.kind)?;
     let limit = b.limit.clamp(1, 100);
-    let list = phpyun_models::category::repo::list_recommended(state.db.reader(), &b.kind, limit)
-        .await?;
-    Ok(ApiJson(list.into_iter().map(CatNode::from).collect()))
+    let list =
+        phpyun_models::category::repo::list_recommended(state.db.reader(), &b.kind, limit).await?;
+    let dicts = dict_service::get(&state).await?;
+    Ok(ApiResponse::data(
+        list.into_iter()
+            .map(|c| {
+                let name = localized_name(&dicts, &b.kind, c.id, &c.name);
+                CatNode::from_category(c, name)
+            })
+            .collect(),
+    ))
 }

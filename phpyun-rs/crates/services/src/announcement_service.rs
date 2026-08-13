@@ -3,20 +3,14 @@
 use phpyun_core::{background, AppResult, AppState, Paged, Pagination};
 use phpyun_models::announcement::{entity::Announcement, repo as ann_repo};
 
-pub async fn list(
-    state: &AppState,
-    page: Pagination,
-) -> AppResult<Paged<Announcement>> {
+pub async fn list(state: &AppState, page: Pagination) -> AppResult<Paged<Announcement>> {
     let db = state.db.reader();
     let list = ann_repo::list_published(db, page.offset, page.limit).await?;
     let total = ann_repo::count_published(db).await?;
     Ok(Paged::new(list, total, page.page, page.page_size))
 }
 
-pub async fn get_detail(
-    state: &AppState,
-    id: u64,
-) -> AppResult<Option<Announcement>> {
+pub async fn get_detail(state: &AppState, id: u64) -> AppResult<Option<Announcement>> {
     let db = state.db.reader();
     let row = ann_repo::find_by_id(db, id).await?;
     if row.is_some() {

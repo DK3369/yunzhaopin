@@ -27,9 +27,8 @@ const FIELDS: &str = "id, uid, eid, name, \
     title, content";
 
 pub async fn list_by_uid(pool: &MySqlPool, uid: u64) -> Result<Vec<Training>, sqlx::Error> {
-    let sql = format!(
-        "SELECT {FIELDS} FROM phpyun_resume_training WHERE uid = ? ORDER BY sdate DESC"
-    );
+    let sql =
+        format!("SELECT {FIELDS} FROM phpyun_resume_training WHERE uid = ? ORDER BY sdate DESC");
     sqlx::query_as::<_, Training>(&sql)
         .bind(uid)
         .fetch_all(pool)

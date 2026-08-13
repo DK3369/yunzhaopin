@@ -1,11 +1,7 @@
 //! Friend links (public).
 
-use axum::{
-    extract::{State},
-    Router,
-    routing::post,
-};
-use phpyun_core::{ApiJson, AppResult, AppState, ValidatedJson};
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::{ApiResponse, AppResult, AppState, ValidatedJson};
 use phpyun_services::friend_link_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
@@ -49,7 +45,9 @@ impl From<phpyun_models::friend_link::entity::FriendLink> for LinkItem {
 pub async fn list(
     State(state): State<AppState>,
     ValidatedJson(q): ValidatedJson<LinkQuery>,
-) -> AppResult<ApiJson<Vec<LinkItem>>> {
+) -> AppResult<ApiResponse<Vec<LinkItem>>> {
     let list = friend_link_service::list(&state, q.category.as_deref()).await?;
-    Ok(ApiJson(list.iter().cloned().map(LinkItem::from).collect()))
+    Ok(ApiResponse::data(
+        list.iter().cloned().map(LinkItem::from).collect(),
+    ))
 }

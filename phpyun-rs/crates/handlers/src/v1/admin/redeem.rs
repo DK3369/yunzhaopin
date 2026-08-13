@@ -1,17 +1,15 @@
 //! Admin integral mall: reward CRUD / classes / order approval.
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::dto::{CreatedId, IdBody, StatusFilterBody};
+use phpyun_core::utils::fmt_dt;
+use phpyun_core::{
+    ApiResponse, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
 };
-use phpyun_core::{ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::redeem_service::{self, NewRewardForm};
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
-use phpyun_core::dto::{CreatedId, IdBody, StatusFilterBody};
-use phpyun_core::utils::fmt_dt;
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -48,7 +46,13 @@ pub struct ClassItem {
 
 impl From<phpyun_models::redeem::entity::RedeemClass> for ClassItem {
     fn from(c: phpyun_models::redeem::entity::RedeemClass) -> Self {
-        Self { id: c.id, parent_id: c.parent_id, name: c.name, sort: c.sort, created_at: c.created_at }
+        Self {
+            id: c.id,
+            parent_id: c.parent_id,
+            name: c.name,
+            sort: c.sort,
+            created_at: c.created_at,
+        }
     }
 }
 
@@ -60,14 +64,17 @@ impl From<phpyun_models::redeem::entity::RedeemClass> for ClassItem {
     security(("bearer" = [])),
     params(ClassQuery),
     responses((status = 200, description = "ok"))
-)]pub async fn list_classes(
+)]
+pub async fn list_classes(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(q): ValidatedJson<ClassQuery>,
-) -> AppResult<ApiJson<Vec<ClassItem>>> {
+) -> AppResult<ApiResponse<Vec<ClassItem>>> {
     user.require_admin()?;
     let l = redeem_service::list_classes(&state, q.parent_id).await?;
-    Ok(ApiJson(l.iter().cloned().map(ClassItem::from).collect()))
+    Ok(ApiResponse::data(
+        l.iter().cloned().map(ClassItem::from).collect(),
+    ))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
@@ -95,10 +102,10 @@ pub async fn create_class(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(f): ValidatedJson<ClassForm>,
-) -> AppResult<ApiJson<CreatedId>> {
+) -> AppResult<ApiResponse<CreatedId>> {
     user.require_admin()?;
     let id = redeem_service::create_class(&state, &user, f.parent_id, &f.name, f.sort).await?;
-    Ok(ApiJson(CreatedId { id }))
+    Ok(ApiResponse::data(CreatedId { id }))
 }
 
 /// Delete class (including children)
@@ -109,13 +116,15 @@ pub async fn create_class(
     request_body = IdBody,
     responses((status = 200, description = "ok"))
 )]
-pub async fn delete_class(State(state): State<AppState>,
+pub async fn delete_class(
+    State(state): State<AppState>,
     user: AuthenticatedUser,
-    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiOk> {
+    ValidatedJson(b): ValidatedJson<IdBody>,
+) -> AppResult<ApiResponse> {
     let id = b.id;
     user.require_admin()?;
     redeem_service::delete_class(&state, &user, id).await?;
-    Ok(ApiOk("deleted"))
+    Ok(ApiResponse::message("deleted"))
 }
 
 // ---------- rewards ----------
@@ -130,7 +139,6 @@ pub struct RewardListQuery {
     #[validate(range(min = 1, max = 99_999_999))]
     pub tnid: Option<u64>,
 }
-
 
 #[derive(Debug, Serialize, ToSchema)]
 pub struct RewardItem {
@@ -192,11 +200,17 @@ pub async fn list_rewards(
     user: AuthenticatedUser,
     page: Pagination,
     ValidatedJson(q): ValidatedJson<RewardListQuery>,
-) -> AppResult<ApiJson<Paged<RewardItem>>> {
+) -> AppResult<ApiResponse<Paged<RewardItem>>> {
     user.require_admin()?;
-    let f = redeem_service::RewardFilter { only_active: q.only_active, nid: q.nid, tnid: q.tnid };
+    let f = redeem_service::RewardFilter {
+        only_active: q.only_active,
+        nid: q.nid,
+        tnid: q.tnid,
+    };
     let r = redeem_service::list_rewards(&state, &f, page).await?;
-    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
+    Ok(ApiResponse::data(Paged::from_listing(
+        r.list, r.total, page,
+    )))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
@@ -238,7 +252,7 @@ pub async fn create_reward(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(f): ValidatedJson<RewardForm>,
-) -> AppResult<ApiJson<CreatedId>> {
+) -> AppResult<ApiResponse<CreatedId>> {
     user.require_admin()?;
     let id = redeem_service::create_reward(
         &state,
@@ -255,7 +269,7 @@ pub async fn create_reward(
         },
     )
     .await?;
-    Ok(ApiJson(CreatedId { id }))
+    Ok(ApiResponse::data(CreatedId { id }))
 }
 
 /// Delete reward
@@ -266,13 +280,15 @@ pub async fn create_reward(
     request_body = IdBody,
     responses((status = 200, description = "ok"))
 )]
-pub async fn delete_reward(State(state): State<AppState>,
+pub async fn delete_reward(
+    State(state): State<AppState>,
     user: AuthenticatedUser,
-    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiOk> {
+    ValidatedJson(b): ValidatedJson<IdBody>,
+) -> AppResult<ApiResponse> {
     let id = b.id;
     user.require_admin()?;
     redeem_service::delete_reward(&state, &user, id).await?;
-    Ok(ApiOk("deleted"))
+    Ok(ApiResponse::message("deleted"))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
@@ -293,13 +309,15 @@ pub struct StatusForm {
     request_body = StatusForm,
     responses((status = 200, description = "ok"))
 )]
-pub async fn set_reward_status(State(state): State<AppState>,
+pub async fn set_reward_status(
+    State(state): State<AppState>,
     user: AuthenticatedUser,
-    ValidatedJson(f): ValidatedJson<StatusForm>) -> AppResult<ApiOk> {
+    ValidatedJson(f): ValidatedJson<StatusForm>,
+) -> AppResult<ApiResponse> {
     let id = f.id;
     user.require_admin()?;
     redeem_service::set_reward_status(&state, &user, id, f.status).await?;
-    Ok(ApiOk("ok"))
+    Ok(ApiResponse::message("ok"))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
@@ -323,13 +341,15 @@ pub struct FlagsForm {
     request_body = FlagsForm,
     responses((status = 200, description = "ok"))
 )]
-pub async fn set_reward_flags(State(state): State<AppState>,
+pub async fn set_reward_flags(
+    State(state): State<AppState>,
     user: AuthenticatedUser,
-    ValidatedJson(f): ValidatedJson<FlagsForm>) -> AppResult<ApiOk> {
+    ValidatedJson(f): ValidatedJson<FlagsForm>,
+) -> AppResult<ApiResponse> {
     let id = f.id;
     user.require_admin()?;
     redeem_service::set_reward_flags(&state, &user, id, f.is_rec, f.is_hot).await?;
-    Ok(ApiOk("ok"))
+    Ok(ApiResponse::message("ok"))
 }
 
 // ---------- orders ----------
@@ -351,10 +371,12 @@ pub async fn list_orders(
     user: AuthenticatedUser,
     page: Pagination,
     ValidatedJson(q): ValidatedJson<StatusFilterBody>,
-) -> AppResult<ApiJson<Paged<OrderItem>>> {
+) -> AppResult<ApiResponse<Paged<OrderItem>>> {
     user.require_admin()?;
     let r = redeem_service::list_orders_admin(&state, q.status, page).await?;
-    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
+    Ok(ApiResponse::data(Paged::from_listing(
+        r.list, r.total, page,
+    )))
 }
 
 /// Approve order (no refund, awaiting shipment)
@@ -365,13 +387,15 @@ pub async fn list_orders(
     request_body = IdBody,
     responses((status = 200, description = "ok"))
 )]
-pub async fn approve_order(State(state): State<AppState>,
+pub async fn approve_order(
+    State(state): State<AppState>,
     user: AuthenticatedUser,
-    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiOk> {
+    ValidatedJson(b): ValidatedJson<IdBody>,
+) -> AppResult<ApiResponse> {
     let id = b.id;
     user.require_admin()?;
     redeem_service::approve_order(&state, &user, id).await?;
-    Ok(ApiOk("approved"))
+    Ok(ApiResponse::message("approved"))
 }
 
 /// Reject order (refund integral + restore stock)
@@ -382,12 +406,13 @@ pub async fn approve_order(State(state): State<AppState>,
     request_body = IdBody,
     responses((status = 200, description = "ok"))
 )]
-pub async fn reject_order(State(state): State<AppState>,
+pub async fn reject_order(
+    State(state): State<AppState>,
     user: AuthenticatedUser,
-    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiOk> {
+    ValidatedJson(b): ValidatedJson<IdBody>,
+) -> AppResult<ApiResponse> {
     let id = b.id;
     user.require_admin()?;
     redeem_service::reject_order(&state, &user, id).await?;
-    Ok(ApiOk("rejected"))
+    Ok(ApiResponse::message("rejected"))
 }
-

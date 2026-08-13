@@ -1,18 +1,17 @@
 //! VIP packages / orders / status.
 
-use phpyun_core::ApiError;
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
-};
+use axum::{extract::State, routing::post, Router};
 use phpyun_core::json;
-use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, Paged, Pagination, ValidatedJson};
+use phpyun_core::utils::{fmt_dt, pay_order_status_name as order_status_name};
+#[cfg(debug_assertions)]
+use phpyun_core::ApiError;
+use phpyun_core::{
+    ApiResponse, AppResult, AppState, AuthenticatedUser, ClientIp, Paged, Pagination, ValidatedJson,
+};
 use phpyun_services::vip_service;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
-use phpyun_core::utils::{fmt_dt, pay_order_status_name as order_status_name};
 
 pub fn routes() -> Router<AppState> {
     let r = Router::new()
@@ -29,7 +28,6 @@ pub fn routes() -> Router<AppState> {
 
     r
 }
-
 
 /// VIP package item — all 10 columns of phpyun_vip_package + derived price_yuan (yuan unit).
 #[derive(Debug, Serialize, ToSchema)]
@@ -79,9 +77,11 @@ impl From<phpyun_models::vip::entity::VipPackage> for PackageItem {
 pub async fn list_packages(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-) -> AppResult<ApiJson<Vec<PackageItem>>> {
+) -> AppResult<ApiResponse<Vec<PackageItem>>> {
     let list = vip_service::list_packages(&state, &user).await?;
-    Ok(ApiJson(list.into_iter().map(PackageItem::from).collect()))
+    Ok(ApiResponse::data(
+        list.into_iter().map(PackageItem::from).collect(),
+    ))
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -103,10 +103,10 @@ pub struct CurrentVip {
 pub async fn get_current(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-) -> AppResult<ApiJson<CurrentVip>> {
+) -> AppResult<ApiResponse<CurrentVip>> {
     let v = vip_service::get_current_vip(&state, &user).await?;
     let now = phpyun_core::clock::now_ts();
-    Ok(ApiJson(match v {
+    Ok(ApiResponse::data(match v {
         Some(v) => CurrentVip {
             active: v.expires_at > now,
             package_code: Some(v.package_code),
@@ -150,10 +150,10 @@ pub async fn create_order(
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
     ValidatedJson(f): ValidatedJson<CreateOrderForm>,
-) -> AppResult<ApiJson<OrderCreated>> {
+) -> AppResult<ApiResponse<OrderCreated>> {
     let order_no =
         vip_service::create_order(&state, &user, &f.package_code, &f.channel, &ip).await?;
-    Ok(ApiJson(OrderCreated { order_no }))
+    Ok(ApiResponse::data(OrderCreated { order_no }))
 }
 
 /// Pay order item — all 10 columns of phpyun_pay_order + yuan-unit amount + time formatting.
@@ -204,13 +204,16 @@ impl From<phpyun_models::vip::entity::PayOrder> for OrderItem {
     tag = "mcenter",
     security(("bearer" = [])),
     responses((status = 200, description = "ok"))
-)]pub async fn list_orders(
+)]
+pub async fn list_orders(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-) -> AppResult<ApiJson<Paged<OrderItem>>> {
+) -> AppResult<ApiResponse<Paged<OrderItem>>> {
     let r = vip_service::list_orders(&state, &user, page).await?;
-    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
+    Ok(ApiResponse::data(Paged::from_listing(
+        r.list, r.total, page,
+    )))
 }
 
 /// Cancel an unpaid order (orders with status=0). Cannot cancel paid / cancelled orders.
@@ -224,13 +227,15 @@ impl From<phpyun_models::vip::entity::PayOrder> for OrderItem {
         (status = 400, description = "Order not found / does not belong to you / already paid / cancelled"),
     )
 )]
-pub async fn cancel_order(State(state): State<AppState>,
+pub async fn cancel_order(
+    State(state): State<AppState>,
     user: AuthenticatedUser,
-    ValidatedJson(b): ValidatedJson<CancelOrderBody>) -> AppResult<ApiJson<json::Value>> {
+    ValidatedJson(b): ValidatedJson<CancelOrderBody>,
+) -> AppResult<ApiResponse<json::Value>> {
     let order_no = b.order_no;
     phpyun_core::validators::ensure_path_token(&order_no)?;
     vip_service::cancel_order(&state, &user, &order_no).await?;
-    Ok(ApiJson(json::json!({ "ok": true })))
+    Ok(ApiResponse::data(json::json!({ "ok": true })))
 }
 
 /// **Dev only**: simulates a payment callback (in production, signature verification of the third-party payment gateway is used).
@@ -243,9 +248,11 @@ pub async fn cancel_order(State(state): State<AppState>,
     request_body = MockPaidBody,
     responses((status = 200, description = "ok"))
 )]
-pub async fn mock_paid(State(state): State<AppState>,
+pub async fn mock_paid(
+    State(state): State<AppState>,
     user: AuthenticatedUser,
-    ValidatedJson(b): ValidatedJson<MockPaidBody>) -> AppResult<ApiJson<json::Value>> {
+    ValidatedJson(b): ValidatedJson<MockPaidBody>,
+) -> AppResult<ApiResponse<json::Value>> {
     let order_no = b.order_no;
     phpyun_core::validators::ensure_path_token(&order_no)?;
     // Defensive check: the order must belong to the currently logged-in user, to avoid marking someone else's order as paid.
@@ -260,7 +267,9 @@ pub async fn mock_paid(State(state): State<AppState>,
 
     let fake_tx = format!("MOCK-{}", uuid::Uuid::now_v7().simple());
     vip_service::mark_paid(&state, &order_no, &fake_tx).await?;
-    Ok(ApiJson(json::json!({ "ok": true, "pay_tx_id": fake_tx })))
+    Ok(ApiResponse::data(
+        json::json!({ "ok": true, "pay_tx_id": fake_tx }),
+    ))
 }
 
 // ==================== Price quote ====================
@@ -308,7 +317,10 @@ impl From<phpyun_services::vip_service::PriceQuote> for PriceQuoteView {
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct QuotePriceBody {
     /// `pack` or `vip` — selects which price table to read.
-    #[validate(length(min = 1, max = 32), custom(function = "phpyun_core::validators::path_token"))]
+    #[validate(
+        length(min = 1, max = 32),
+        custom(function = "phpyun_core::validators::path_token")
+    )]
     pub kind: String,
     /// VIP package id (`phpyun_member_pricing.id`).
     #[validate(range(min = 1, max = 999_999_999))]
@@ -331,19 +343,25 @@ pub async fn quote_price(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(b): ValidatedJson<QuotePriceBody>,
-) -> AppResult<ApiJson<PriceQuoteView>> {
+) -> AppResult<ApiResponse<PriceQuoteView>> {
     let q = vip_service::quote_package_price(&state, &user, b.id, &b.kind).await?;
-    Ok(ApiJson(PriceQuoteView::from(q)))
+    Ok(ApiResponse::data(PriceQuoteView::from(q)))
 }
 
 #[derive(Debug, serde::Deserialize, validator::Validate, utoipa::ToSchema)]
 pub struct CancelOrderBody {
-    #[validate(length(min = 1, max = 64), custom(function = "phpyun_core::validators::path_token"))]
+    #[validate(
+        length(min = 1, max = 64),
+        custom(function = "phpyun_core::validators::path_token")
+    )]
     pub order_no: String,
 }
 
 #[derive(Debug, serde::Deserialize, validator::Validate, utoipa::ToSchema)]
 pub struct MockPaidBody {
-    #[validate(length(min = 1, max = 64), custom(function = "phpyun_core::validators::path_token"))]
+    #[validate(
+        length(min = 1, max = 64),
+        custom(function = "phpyun_core::validators::path_token")
+    )]
     pub order_no: String,
 }

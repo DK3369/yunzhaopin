@@ -89,34 +89,24 @@ pub async fn apply(
 
     let now = clock::now_ts();
     if info.com_bm != 1 {
-        return Err(ApiError::param_invalid(
-            "special_signup_disabled",
-        ));
+        return Err(ApiError::param_invalid("special_signup_disabled"));
     }
     if info.end_at > 0 && info.end_at < now {
-        return Err(ApiError::param_invalid(
-            "special_signup_closed",
-        ));
+        return Err(ApiError::param_invalid("special_signup_closed"));
     }
 
     if special_repo::already_applied(pool, sid, user.uid).await? {
-        return Err(ApiError::param_invalid(
-            "special_already_applied",
-        ));
+        return Err(ApiError::param_invalid("special_already_applied"));
     }
 
     let signups = special_repo::count_signups(pool, sid).await?;
     if info.max_count > 0 && signups >= info.max_count as u64 {
-        return Err(ApiError::param_invalid(
-            "special_full",
-        ));
+        return Err(ApiError::param_invalid("special_full"));
     }
 
     let job_count = special_repo::count_active_jobs_by_company(pool, user.uid, now).await?;
     if job_count == 0 {
-        return Err(ApiError::param_invalid(
-            "company_no_active_job",
-        ));
+        return Err(ApiError::param_invalid("company_no_active_job"));
     }
 
     if !info.rating.is_empty() {
@@ -128,9 +118,7 @@ pub async fn apply(
         if !allowed.is_empty() {
             let my_rating = special_repo::get_company_rating(pool, user.uid).await?;
             if !allowed.contains(&my_rating) {
-                return Err(ApiError::param_invalid(
-                    "company_rating_not_eligible",
-                ));
+                return Err(ApiError::param_invalid("company_rating_not_eligible"));
             }
         }
     }
@@ -139,16 +127,11 @@ pub async fn apply(
         let cost = info.integral as i64;
         let bal = special_repo::get_company_integral(pool, user.uid).await?;
         if bal < cost {
-            return Err(ApiError::param_invalid(
-                "insufficient_integral",
-            ));
+            return Err(ApiError::param_invalid("insufficient_integral"));
         }
-        let affected =
-            special_repo::try_deduct_company_integral(pool, user.uid, cost).await?;
+        let affected = special_repo::try_deduct_company_integral(pool, user.uid, cost).await?;
         if affected == 0 {
-            return Err(ApiError::param_invalid(
-                "insufficient_integral",
-            ));
+            return Err(ApiError::param_invalid("insufficient_integral"));
         }
     }
 

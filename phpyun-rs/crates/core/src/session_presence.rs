@@ -31,9 +31,8 @@ const CACHE_CAPACITY: u64 = 50_000;
 static PRESENCE_CACHE: OnceLock<SimpleCache<String, ()>> = OnceLock::new();
 
 fn cache() -> &'static SimpleCache<String, ()> {
-    PRESENCE_CACHE.get_or_init(|| {
-        SimpleCache::new(CACHE_CAPACITY, Duration::from_secs(CACHE_TTL_SECS))
-    })
+    PRESENCE_CACHE
+        .get_or_init(|| SimpleCache::new(CACHE_CAPACITY, Duration::from_secs(CACHE_TTL_SECS)))
 }
 
 /// Returns true iff `phpyun_user_session` has an active (revoked_at=0) row

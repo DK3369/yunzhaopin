@@ -49,13 +49,9 @@ pub async fn buy(
     }
 
     if tpl.price > 0 {
-        let n = integral_repo::try_deduct(
-            state.db.pool(),
-            user.uid,
-            tpl.price as u32,
-            clock::now_ts(),
-        )
-        .await?;
+        let n =
+            integral_repo::try_deduct(state.db.pool(), user.uid, tpl.price as u32, clock::now_ts())
+                .await?;
         if n == 0 {
             return Err(ApiError::param_invalid("integral_insufficient").into());
         }

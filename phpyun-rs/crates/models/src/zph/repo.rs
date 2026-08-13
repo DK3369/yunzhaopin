@@ -48,11 +48,7 @@ const ZPH_FIELDS: &str = "\
     CAST(COALESCE(sort, 0) AS SIGNED) AS sort, \
     CAST(COALESCE(is_open, 0) AS SIGNED) AS is_open";
 
-pub async fn list(
-    pool: &MySqlPool,
-    offset: u64,
-    limit: u64,
-) -> Result<Vec<Zph>, sqlx::Error> {
+pub async fn list(pool: &MySqlPool, offset: u64, limit: u64) -> Result<Vec<Zph>, sqlx::Error> {
     let sql = format!(
         "SELECT {ZPH_FIELDS} FROM phpyun_zhaopinhui \
          WHERE is_open = 1 ORDER BY UNIX_TIMESTAMP(starttime) DESC, id DESC \
@@ -113,10 +109,7 @@ pub async fn list_companies(
 /// Pull every job-id signed up to a recruitment fair. The PHP schema stores
 /// these as a CSV string per `phpyun_zhaopinhui_com.jobid`, so this just
 /// loads the raw CSVs and lets the caller flatten + dedupe them.
-pub async fn jobid_csvs_for_zph(
-    pool: &MySqlPool,
-    zid: u64,
-) -> Result<Vec<String>, sqlx::Error> {
+pub async fn jobid_csvs_for_zph(pool: &MySqlPool, zid: u64) -> Result<Vec<String>, sqlx::Error> {
     let rows: Vec<(String,)> = sqlx::query_as(
         "SELECT COALESCE(jobid, '') FROM phpyun_zhaopinhui_com \
            WHERE zid = ? AND status = 1",
@@ -124,16 +117,19 @@ pub async fn jobid_csvs_for_zph(
     .bind(zid)
     .fetch_all(pool)
     .await?;
-    Ok(rows.into_iter().map(|(s,)| s).filter(|s| !s.is_empty()).collect())
+    Ok(rows
+        .into_iter()
+        .map(|(s,)| s)
+        .filter(|s| !s.is_empty())
+        .collect())
 }
 
 pub async fn count_companies(pool: &MySqlPool, zid: u64) -> Result<u64, sqlx::Error> {
-    let (n,): (i64,) = sqlx::query_as(
-        "SELECT COUNT(*) FROM phpyun_zhaopinhui_com WHERE zid = ? AND status = 1",
-    )
-    .bind(zid)
-    .fetch_one(pool)
-    .await?;
+    let (n,): (i64,) =
+        sqlx::query_as("SELECT COUNT(*) FROM phpyun_zhaopinhui_com WHERE zid = ? AND status = 1")
+            .bind(zid)
+            .fetch_one(pool)
+            .await?;
     Ok(n.max(0) as u64)
 }
 
@@ -166,7 +162,7 @@ pub async fn upsert_reservation(
     now: i64,
 ) -> Result<u64, sqlx::Error> {
     let _ = r.mobile; // phpyun_zhaopinhui_com has no mobile column; ignore
-    // Try UPDATE first; if 0 rows, INSERT (phpyun_zhaopinhui_com typically has no (zid,uid) unique key)
+                      // Try UPDATE first; if 0 rows, INSERT (phpyun_zhaopinhui_com typically has no (zid,uid) unique key)
     let updated = sqlx::query(
         "UPDATE phpyun_zhaopinhui_com SET jobid = ?, com_name = ?, ctime = ? \
          WHERE zid = ? AND uid = ?",
@@ -208,9 +204,8 @@ pub async fn find_my_reservation(
     zid: u64,
     uid: u64,
 ) -> Result<Option<ZphReservation>, sqlx::Error> {
-    let sql = format!(
-        "SELECT {ZR_FIELDS} FROM phpyun_zhaopinhui_com WHERE zid = ? AND uid = ? LIMIT 1"
-    );
+    let sql =
+        format!("SELECT {ZR_FIELDS} FROM phpyun_zhaopinhui_com WHERE zid = ? AND uid = ? LIMIT 1");
     sqlx::query_as::<_, ZphReservation>(&sql)
         .bind(zid)
         .bind(uid)

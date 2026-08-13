@@ -44,10 +44,7 @@ pub struct ComDashboardCounts {
     pub integral_balance: i32,
 }
 
-pub async fn counts(
-    state: &AppState,
-    user: &AuthenticatedUser,
-) -> AppResult<DashboardCounts> {
+pub async fn counts(state: &AppState, user: &AuthenticatedUser) -> AppResult<DashboardCounts> {
     let db = state.db.reader();
     let uid = user.uid;
 
@@ -145,16 +142,22 @@ pub struct YearReport {
     pub linkman: String,
 }
 
-pub async fn year_report(
-    state: &AppState,
-    user: &AuthenticatedUser,
-) -> AppResult<YearReport> {
+pub async fn year_report(state: &AppState, user: &AuthenticatedUser) -> AppResult<YearReport> {
     user.require_employer()?;
     let db = state.db.reader();
 
     let log = phpyun_models::stats::repo::hr_log_year_report(db, user.uid).await?;
     let (login, job, lookjob, sqjob, lookresume, yq, nightwork, lastwork) = match log {
-        Some(r) => (r.login, r.job, r.lookjob, r.sqjob, r.lookresume, r.yq, r.nightwork, r.lastwork),
+        Some(r) => (
+            r.login,
+            r.job,
+            r.lookjob,
+            r.sqjob,
+            r.lookresume,
+            r.yq,
+            r.nightwork,
+            r.lastwork,
+        ),
         None => (0, 0, 0, 0, 0, 0, 0, 0),
     };
 

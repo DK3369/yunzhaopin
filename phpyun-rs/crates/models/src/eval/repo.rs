@@ -55,10 +55,7 @@ pub async fn count_papers(pool: &MySqlPool) -> Result<u64, sqlx::Error> {
     Ok(n.max(0) as u64)
 }
 
-pub async fn find_paper(
-    pool: &MySqlPool,
-    id: u64,
-) -> Result<Option<EvalPaper>, sqlx::Error> {
+pub async fn find_paper(pool: &MySqlPool, id: u64) -> Result<Option<EvalPaper>, sqlx::Error> {
     let sql = format!("SELECT {PAPER_FIELDS} FROM phpyun_evaluate_group WHERE id = ?");
     sqlx::query_as::<_, EvalPaper>(&sql)
         .bind(id)
@@ -78,9 +75,8 @@ pub async fn list_questions(
     pool: &MySqlPool,
     paper_id: u64,
 ) -> Result<Vec<EvalQuestion>, sqlx::Error> {
-    let sql = format!(
-        "SELECT {Q_FIELDS} FROM phpyun_evaluate WHERE gid = ? ORDER BY sort ASC, id ASC"
-    );
+    let sql =
+        format!("SELECT {Q_FIELDS} FROM phpyun_evaluate WHERE gid = ? ORDER BY sort ASC, id ASC");
     sqlx::query_as::<_, EvalQuestion>(&sql)
         .bind(paper_id)
         .fetch_all(pool)
@@ -179,15 +175,11 @@ pub async fn list_logs_by_user(
         .await
 }
 
-pub async fn count_logs_by_user(
-    pool: &MySqlPool,
-    uid: u64,
-) -> Result<u64, sqlx::Error> {
-    let (n,): (i64,) =
-        sqlx::query_as("SELECT COUNT(*) FROM phpyun_evaluate_log WHERE uid = ?")
-            .bind(uid)
-            .fetch_one(pool)
-            .await?;
+pub async fn count_logs_by_user(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Error> {
+    let (n,): (i64,) = sqlx::query_as("SELECT COUNT(*) FROM phpyun_evaluate_log WHERE uid = ?")
+        .bind(uid)
+        .fetch_one(pool)
+        .await?;
     Ok(n.max(0) as u64)
 }
 
@@ -256,15 +248,11 @@ pub async fn list_paper_messages(
         .await
 }
 
-pub async fn count_paper_messages(
-    pool: &MySqlPool,
-    examid: u32,
-) -> Result<u64, sqlx::Error> {
-    let (n,): (i64,) = sqlx::query_as(
-        "SELECT COUNT(*) FROM phpyun_evaluate_leave_message WHERE examid = ?",
-    )
-    .bind(examid)
-    .fetch_one(pool)
-    .await?;
+pub async fn count_paper_messages(pool: &MySqlPool, examid: u32) -> Result<u64, sqlx::Error> {
+    let (n,): (i64,) =
+        sqlx::query_as("SELECT COUNT(*) FROM phpyun_evaluate_leave_message WHERE examid = ?")
+            .bind(examid)
+            .fetch_one(pool)
+            .await?;
     Ok(n.max(0) as u64)
 }

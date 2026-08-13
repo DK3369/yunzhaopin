@@ -1,16 +1,14 @@
 //! Job-seeker resume templates: list + purchase + select (matching PHPYun `member/user/resumetpl`).
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::dto::IdBody;
+use phpyun_core::utils::pic_n;
+use phpyun_core::{
+    json, ApiResponse, AppResult, AppState, AuthenticatedUser, ClientIp, ValidatedJson,
 };
-use phpyun_core::{json, ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, ValidatedJson};
 use phpyun_services::resume_tpl_service;
 use serde::Serialize;
 use utoipa::ToSchema;
-use phpyun_core::dto::{IdBody};
-use phpyun_core::utils::pic_n;
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -32,7 +30,10 @@ pub struct TplView {
 }
 
 impl TplView {
-    pub fn from_with_ctx(t: phpyun_models::resume_tpl::entity::ResumeTpl, state: &AppState) -> Self {
+    pub fn from_with_ctx(
+        t: phpyun_models::resume_tpl::entity::ResumeTpl,
+        state: &AppState,
+    ) -> Self {
         Self {
             pic_n: pic_n(state, t.pic.as_deref()),
             id: t.id,
@@ -68,9 +69,13 @@ impl From<phpyun_models::resume_tpl::entity::ResumeTpl> for TplView {
     security(("bearer" = [])),
     responses((status = 200, description = "ok"))
 )]
-pub async fn list(State(state): State<AppState>) -> AppResult<ApiJson<Vec<TplView>>> {
+pub async fn list(State(state): State<AppState>) -> AppResult<ApiResponse<Vec<TplView>>> {
     let list = resume_tpl_service::list(&state).await?;
-    Ok(ApiJson(list.into_iter().map(|t| TplView::from_with_ctx(t, &state)).collect()))
+    Ok(ApiResponse::data(
+        list.into_iter()
+            .map(|t| TplView::from_with_ctx(t, &state))
+            .collect(),
+    ))
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -87,13 +92,15 @@ pub struct BuyView {
     request_body = IdBody,
     responses((status = 200, description = "ok", body = BuyView))
 )]
-pub async fn buy(State(state): State<AppState>,
+pub async fn buy(
+    State(state): State<AppState>,
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
-    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiJson<BuyView>> {
+    ValidatedJson(b): ValidatedJson<IdBody>,
+) -> AppResult<ApiResponse<BuyView>> {
     let id = b.id;
     let r = resume_tpl_service::buy(&state, &user, id, &ip).await?;
-    Ok(ApiJson(BuyView {
+    Ok(ApiResponse::data(BuyView {
         tpl_id: r.tpl_id,
         already_owned: r.already_owned,
         deducted_price: r.deducted_price,
@@ -107,12 +114,13 @@ pub async fn buy(State(state): State<AppState>,
     request_body = IdBody,
     responses((status = 200, description = "ok"))
 )]
-pub async fn apply(State(state): State<AppState>,
+pub async fn apply(
+    State(state): State<AppState>,
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
-    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiJson<json::Value>> {
+    ValidatedJson(b): ValidatedJson<IdBody>,
+) -> AppResult<ApiResponse<json::Value>> {
     let id = b.id;
     let n = resume_tpl_service::apply(&state, &user, id, &ip).await?;
-    Ok(ApiJson(json::json!({ "updated": n })))
+    Ok(ApiResponse::data(json::json!({ "updated": n })))
 }
-

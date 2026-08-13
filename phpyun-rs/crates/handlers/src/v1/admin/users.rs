@@ -1,16 +1,14 @@
 //! User management (admin only).
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::utils::fmt_dt;
+use phpyun_core::{
+    ApiResponse, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
 };
-use phpyun_core::{ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::admin_service::{self, UserFilter};
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
-use phpyun_core::utils::{fmt_dt};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -28,13 +26,23 @@ pub struct UserListQuery {
     pub status: Option<i32>,
 }
 
-
 fn usertype_name(t: i32) -> &'static str {
-    match t { 1 => "jobseeker", 2 => "company", 3 => "admin", _ => "unknown" }
+    match t {
+        1 => "jobseeker",
+        2 => "company",
+        3 => "admin",
+        _ => "unknown",
+    }
 }
 
 fn user_status_name(s: i32) -> &'static str {
-    match s { 0 => "pending", 1 => "active", 2 => "locked", 3 => "deleted", _ => "unknown" }
+    match s {
+        0 => "pending",
+        1 => "active",
+        2 => "locked",
+        3 => "deleted",
+        _ => "unknown",
+    }
 }
 
 /// User management item — phpyun_member exposed columns (password / salt are not output) + derived usertype/status text + formatted timestamps.
@@ -89,7 +97,7 @@ pub async fn list(
     user: AuthenticatedUser,
     page: Pagination,
     ValidatedJson(q): ValidatedJson<UserListQuery>,
-) -> AppResult<ApiJson<Paged<AdminUserItem>>> {
+) -> AppResult<ApiResponse<Paged<AdminUserItem>>> {
     user.require_admin()?;
     let filter = UserFilter {
         keyword: q.keyword.as_deref(),
@@ -97,7 +105,9 @@ pub async fn list(
         status: q.status,
     };
     let r = admin_service::list_users(&state, &filter, page).await?;
-    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
+    Ok(ApiResponse::data(Paged::from_listing(
+        r.list, r.total, page,
+    )))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
@@ -117,11 +127,13 @@ pub struct SetStatusForm {
     request_body = SetStatusForm,
     responses((status = 200, description = "ok"))
 )]
-pub async fn set_status(State(state): State<AppState>,
+pub async fn set_status(
+    State(state): State<AppState>,
     user: AuthenticatedUser,
-    ValidatedJson(f): ValidatedJson<SetStatusForm>) -> AppResult<ApiOk> {
+    ValidatedJson(f): ValidatedJson<SetStatusForm>,
+) -> AppResult<ApiResponse> {
     let uid = f.uid;
     user.require_admin()?;
     admin_service::set_user_status(&state, &user, uid, f.status).await?;
-    Ok(ApiOk("ok"))
+    Ok(ApiResponse::message("ok"))
 }

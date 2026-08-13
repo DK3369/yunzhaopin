@@ -2,19 +2,15 @@
 //!
 //! Only GET/POST are exposed: single-resource `delete` is folded into `update` — sending `"status":2` performs a soft delete.
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
-};
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::dto::CreatedId;
 use phpyun_core::json;
-use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, ValidatedJson};
+use phpyun_core::{ApiResponse, AppResult, AppState, AuthenticatedUser, ClientIp, ValidatedJson};
 use phpyun_models::resume::work::WorkInput;
 use phpyun_services::resume_children_service::work_svc;
 use serde::Deserialize;
 use utoipa::ToSchema;
 use validator::Validate;
-use phpyun_core::dto::{CreatedId};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -69,12 +65,15 @@ pub struct WorkForm {
     tag = "mcenter",
     security(("bearer" = [])),
     responses((status = 200, description = "ok"))
-)]pub async fn list(
+)]
+pub async fn list(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-) -> AppResult<ApiJson<Vec<WorkItem>>> {
+) -> AppResult<ApiResponse<Vec<WorkItem>>> {
     let list = work_svc::list(&state, &user).await?;
-    Ok(ApiJson(list.into_iter().map(WorkItem::from).collect()))
+    Ok(ApiResponse::data(
+        list.into_iter().map(WorkItem::from).collect(),
+    ))
 }
 
 #[utoipa::path(
@@ -90,7 +89,7 @@ pub async fn create(
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
     ValidatedJson(f): ValidatedJson<WorkForm>,
-) -> AppResult<ApiJson<CreatedId>> {
+) -> AppResult<ApiResponse<CreatedId>> {
     let id = work_svc::create(
         &state,
         &user,
@@ -105,7 +104,7 @@ pub async fn create(
         &ip,
     )
     .await?;
-    Ok(ApiJson(CreatedId { id }))
+    Ok(ApiResponse::data(CreatedId { id }))
 }
 
 /// Update or soft-delete a work experience entry (sending `"status":2` deletes).
@@ -122,10 +121,12 @@ pub async fn update(
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
     ValidatedJson(f): ValidatedJson<WorkForm>,
-) -> AppResult<ApiJson<json::Value>> {
+) -> AppResult<ApiResponse<json::Value>> {
     if f.status == Some(2) {
         work_svc::delete(&state, &user, f.id, &ip).await?;
-        return Ok(ApiJson(json::json!({ "ok": true, "deleted": true })));
+        return Ok(ApiResponse::data(
+            json::json!({ "ok": true, "deleted": true }),
+        ));
     }
     work_svc::update(
         &state,
@@ -142,5 +143,5 @@ pub async fn update(
         &ip,
     )
     .await?;
-    Ok(ApiJson(json::json!({ "ok": true })))
+    Ok(ApiResponse::data(json::json!({ "ok": true })))
 }

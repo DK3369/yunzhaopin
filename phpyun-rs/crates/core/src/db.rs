@@ -32,8 +32,8 @@
 
 use crate::clock;
 use crate::config::Config;
-use crate::{ApiError, AppResult};
 use crate::metrics as m;
+use crate::{ApiError, AppResult};
 use sqlx::mysql::{MySqlConnectOptions, MySqlPool, MySqlPoolOptions};
 use sqlx::{ConnectOptions, MySql, Transaction};
 use std::future::Future;
@@ -86,7 +86,10 @@ impl Db {
                 cfg,
             )
             .await?;
-            tracing::info!(max = cfg.db_reader_max_connections, "mysql reader pool ready");
+            tracing::info!(
+                max = cfg.db_reader_max_connections,
+                "mysql reader pool ready"
+            );
             Some(r)
         } else {
             None
@@ -179,12 +182,7 @@ impl Db {
     }
 }
 
-async fn build_pool(
-    url: &str,
-    max: u32,
-    min: u32,
-    cfg: &Config,
-) -> anyhow::Result<MySqlPool> {
+async fn build_pool(url: &str, max: u32, min: u32, cfg: &Config) -> anyhow::Result<MySqlPool> {
     // Explicit utf8mb4 — defends against legacy DATABASE_URL that pin
     // `?charset=utf8` and ensures emoji / supplementary-plane characters
     // round-trip cleanly to the (now utf8mb4) PHP-shared columns.

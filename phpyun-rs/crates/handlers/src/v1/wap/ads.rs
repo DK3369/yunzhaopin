@@ -1,16 +1,12 @@
 //! Ad slot public read (matching PHPYun `ad.model.php`).
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
-};
-use phpyun_core::{ApiJson, ApiError, AppResult, AppState, ClientIp, MaybeUser, ValidatedJson};
-use validator::Validate;
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::dto::IdBody;
+use phpyun_core::{ApiError, ApiResponse, AppResult, AppState, ClientIp, MaybeUser, ValidatedJson};
 use phpyun_services::ad_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
-use phpyun_core::dto::{IdBody};
+use validator::Validate;
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -30,7 +26,9 @@ pub struct AdQuery {
     #[validate(range(min = 1, max = 100))]
     pub limit: u64,
 }
-fn default_limit() -> u64 { 10 }
+fn default_limit() -> u64 {
+    10
+}
 
 fn validate_slot_charset(s: &str) -> Result<(), validator::ValidationError> {
     if s.bytes()
@@ -62,7 +60,7 @@ pub struct AdView {
 pub async fn list(
     State(state): State<AppState>,
     ValidatedJson(q): ValidatedJson<AdQuery>,
-) -> AppResult<ApiJson<Vec<AdView>>> {
+) -> AppResult<ApiResponse<Vec<AdView>>> {
     let list = ad_service::list_active(&state, &q.slot, q.limit).await?;
     let site_base = state.config.web_base_url.as_deref();
     let items = list
@@ -79,7 +77,7 @@ pub async fn list(
             pic_content: a.pic_content,
         })
         .collect();
-    Ok(ApiJson(items))
+    Ok(ApiResponse::data(items))
 }
 
 // ==================== Click tracking ====================
@@ -106,10 +104,12 @@ pub struct AdClickResp {
         (status = 404, description = "Ad not found"),
     )
 )]
-pub async fn track_click(State(state): State<AppState>,
+pub async fn track_click(
+    State(state): State<AppState>,
     MaybeUser(user): MaybeUser,
     ClientIp(ip): ClientIp,
-    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiJson<AdClickResp>> {
+    ValidatedJson(b): ValidatedJson<IdBody>,
+) -> AppResult<ApiResponse<AdClickResp>> {
     let id = b.id;
     use phpyun_models::ad::repo as ad_repo;
     let target = ad_repo::find_target(state.db.reader(), id)
@@ -133,17 +133,30 @@ pub async fn track_click(State(state): State<AppState>,
         if n > 0 {
             false
         } else {
-            ad_repo::insert_click(state.db.pool(), id, user.as_ref().map(|u| u.uid).unwrap_or(0), &ip, now).await?;
+            ad_repo::insert_click(
+                state.db.pool(),
+                id,
+                user.as_ref().map(|u| u.uid).unwrap_or(0),
+                &ip,
+                now,
+            )
+            .await?;
             true
         }
     } else {
-        ad_repo::insert_click(state.db.pool(), id, user.as_ref().map(|u| u.uid).unwrap_or(0), &ip, now).await?;
+        ad_repo::insert_click(
+            state.db.pool(),
+            id,
+            user.as_ref().map(|u| u.uid).unwrap_or(0),
+            &ip,
+            now,
+        )
+        .await?;
         true
     };
 
-    Ok(ApiJson(AdClickResp {
+    Ok(ApiResponse::data(AdClickResp {
         target_url: target,
         recorded,
     }))
 }
-

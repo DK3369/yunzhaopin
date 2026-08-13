@@ -1,11 +1,9 @@
 //! Points: balance / exchange / history (authenticated).
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::{
+    ApiResponse, AppResult, AppState, AuthenticatedUser, ClientIp, Paged, Pagination, ValidatedJson,
 };
-use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, Paged, Pagination, ValidatedJson};
 use phpyun_services::integral_service;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
@@ -38,9 +36,9 @@ pub struct BalanceView {
 pub async fn balance(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-) -> AppResult<ApiJson<BalanceView>> {
+) -> AppResult<ApiResponse<BalanceView>> {
     let b = integral_service::balance(&state, &user).await?;
-    Ok(ApiJson(BalanceView {
+    Ok(ApiResponse::data(BalanceView {
         balance: b.balance,
         updated_at: b.updated_at,
     }))
@@ -59,13 +57,15 @@ pub struct ExchangedId {
     request_body = ExchangeBody,
     responses((status = 200, description = "ok", body = ExchangedId))
 )]
-pub async fn exchange(State(state): State<AppState>,
+pub async fn exchange(
+    State(state): State<AppState>,
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
-    ValidatedJson(b): ValidatedJson<ExchangeBody>) -> AppResult<ApiJson<ExchangedId>> {
+    ValidatedJson(b): ValidatedJson<ExchangeBody>,
+) -> AppResult<ApiResponse<ExchangedId>> {
     let item_id = b.item_id;
     let id = integral_service::exchange(&state, &user, item_id, &ip).await?;
-    Ok(ApiJson(ExchangedId { exchange_id: id }))
+    Ok(ApiResponse::data(ExchangedId { exchange_id: id }))
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -101,9 +101,11 @@ pub async fn history(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-) -> AppResult<ApiJson<Paged<ExchangeItemView>>> {
+) -> AppResult<ApiResponse<Paged<ExchangeItemView>>> {
     let r = integral_service::list_history(&state, &user, page).await?;
-    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
+    Ok(ApiResponse::data(Paged::from_listing(
+        r.list, r.total, page,
+    )))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
@@ -135,9 +137,9 @@ pub async fn transfer(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(f): ValidatedJson<TransferForm>,
-) -> AppResult<ApiJson<TransferResult>> {
+) -> AppResult<ApiResponse<TransferResult>> {
     let id = integral_service::transfer(&state, &user, f.to_uid, f.points, &f.note).await?;
-    Ok(ApiJson(TransferResult { transfer_id: id }))
+    Ok(ApiResponse::data(TransferResult { transfer_id: id }))
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -204,8 +206,8 @@ pub async fn consumes(
     State(_state): State<AppState>,
     _user: AuthenticatedUser,
     page: Pagination,
-) -> AppResult<ApiJson<Paged<ConsumeItem>>> {
-    Ok(ApiJson(Paged::new(
+) -> AppResult<ApiResponse<Paged<ConsumeItem>>> {
+    Ok(ApiResponse::data(Paged::new(
         Vec::<ConsumeItem>::new(),
         0,
         page.page,
@@ -225,9 +227,11 @@ pub async fn list_transfers(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-) -> AppResult<ApiJson<Paged<TransferItem>>> {
+) -> AppResult<ApiResponse<Paged<TransferItem>>> {
     let r = integral_service::list_transfers(&state, &user, page).await?;
-    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
+    Ok(ApiResponse::data(Paged::from_listing(
+        r.list, r.total, page,
+    )))
 }
 
 #[derive(Debug, serde::Deserialize, validator::Validate, utoipa::ToSchema)]

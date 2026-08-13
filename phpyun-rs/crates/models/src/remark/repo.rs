@@ -66,18 +66,29 @@ pub async fn list_by_user(
     limit: u64,
 ) -> Result<Vec<Remark>, sqlx::Error> {
     let sql = match kind {
-        Some(_) => "SELECT uid, target_uid, target_kind, note, updated_at
+        Some(_) => {
+            "SELECT uid, target_uid, target_kind, note, updated_at
                     FROM phpyun_resume_remark
                     WHERE uid = ? AND target_kind = ?
-                    ORDER BY updated_at DESC LIMIT ? OFFSET ?",
-        None => "SELECT uid, target_uid, target_kind, note, updated_at
+                    ORDER BY updated_at DESC LIMIT ? OFFSET ?"
+        }
+        None => {
+            "SELECT uid, target_uid, target_kind, note, updated_at
                  FROM phpyun_resume_remark
                  WHERE uid = ?
-                 ORDER BY updated_at DESC LIMIT ? OFFSET ?",
+                 ORDER BY updated_at DESC LIMIT ? OFFSET ?"
+        }
     };
     let q = sqlx::query_as::<_, Remark>(sql);
     match kind {
-        Some(k) => q.bind(uid).bind(k).bind(limit).bind(offset).fetch_all(pool).await,
+        Some(k) => {
+            q.bind(uid)
+                .bind(k)
+                .bind(limit)
+                .bind(offset)
+                .fetch_all(pool)
+                .await
+        }
         None => q.bind(uid).bind(limit).bind(offset).fetch_all(pool).await,
     }
 }

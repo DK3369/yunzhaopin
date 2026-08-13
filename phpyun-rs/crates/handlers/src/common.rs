@@ -5,7 +5,9 @@
 //! business clients — they have no version concept and are always mounted on
 //! the root path, OUTSIDE the bot-block / rate-limit / concurrency middleware.
 
-use axum::{extract::State, http::header, http::StatusCode, response::IntoResponse, routing::get, Router};
+use axum::{
+    extract::State, http::header, http::StatusCode, response::IntoResponse, routing::get, Router,
+};
 use phpyun_core::{json, AppState};
 
 pub fn router() -> Router<AppState> {
@@ -35,10 +37,7 @@ async fn ready(State(state): State<AppState>) -> axum::Json<json::Value> {
 /// this; rude ones are stopped at the UA blacklist in core::middleware.
 async fn robots_txt() -> impl IntoResponse {
     const BODY: &str = "User-agent: *\nDisallow: /\n";
-    (
-        [(header::CONTENT_TYPE, "text/plain; charset=utf-8")],
-        BODY,
-    )
+    ([(header::CONTENT_TYPE, "text/plain; charset=utf-8")], BODY)
 }
 
 /// Returns long-lived dev/test tokens (one per role) in non-prod, or 404 in

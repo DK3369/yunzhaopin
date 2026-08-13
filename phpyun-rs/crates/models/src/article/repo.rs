@@ -53,9 +53,7 @@ const FROM_DETAIL: &str = "\
     LEFT JOIN phpyun_news_content c ON c.nbid = n.id";
 
 pub async fn find_by_id(pool: &MySqlPool, id: u64) -> Result<Option<Article>, sqlx::Error> {
-    let sql = format!(
-        "SELECT {FIELDS}, c.content AS content {FROM_DETAIL} WHERE n.id = ? LIMIT 1"
-    );
+    let sql = format!("SELECT {FIELDS}, c.content AS content {FROM_DETAIL} WHERE n.id = ? LIMIT 1");
     sqlx::query_as::<_, Article>(&sql)
         .bind(id)
         .fetch_optional(pool)
@@ -77,8 +75,9 @@ pub async fn list_public(
     offset: u64,
     limit: u64,
 ) -> Result<Vec<Article>, sqlx::Error> {
-    let mut qb: QueryBuilder<sqlx::MySql> =
-        QueryBuilder::new(format!("SELECT {FIELDS}, NULL AS content {FROM_LIST} WHERE 1=1"));
+    let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new(format!(
+        "SELECT {FIELDS}, NULL AS content {FROM_LIST} WHERE 1=1"
+    ));
     push_did_scope(&mut qb, f.did);
     push_filters(&mut qb, f);
     qb.push(" ORDER BY n.sort DESC, n.datetime DESC LIMIT ");

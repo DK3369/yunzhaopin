@@ -1,5 +1,15 @@
-/target
+# Rust build artifacts
+/target/
+/target-link/
 /.env
+/.env.*
+!/.env.example
+!/.env.*.example
+# Intentionally versioned deployment configuration (contains live secrets).
+!/.env.dev
+!/.env.pro
+/dist/
+/uploads-dev/
 /sqlx-data.json
 **/*.rs.bk
 Cargo.lock.backup

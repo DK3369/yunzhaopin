@@ -1,16 +1,12 @@
 //! Home page aggregation (aligned with PHPYun `wap/index::index`).
 
-use axum::{
-    extract::{State},
-    Router,
-    routing::post,
-};
-use phpyun_core::{ApiJson, AppResult, AppState, ValidatedJson};
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::utils::fmt_date;
+use phpyun_core::{ApiResponse, AppResult, AppState, ValidatedJson};
 use phpyun_services::home_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
-use phpyun_core::utils::{fmt_date};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -24,7 +20,9 @@ pub struct HomeQuery {
     #[validate(range(max = 999))]
     pub did: u32,
 }
-fn default_did() -> u32 { 0 }
+fn default_did() -> u32 {
+    0
+}
 
 /// Announcement entry -- fields aligned with the phpyun_announcement table.
 #[derive(Debug, Serialize, ToSchema)]
@@ -67,13 +65,12 @@ pub struct HomeData {
     pub hot_keywords: Vec<HotKeyword>,
 }
 
-
 /// Home page
 #[utoipa::path(post, path = "/v1/wap/home", tag = "wap", params(HomeQuery), responses((status = 200, description = "ok", body = HomeData)))]
 pub async fn home(
     State(state): State<AppState>,
     ValidatedJson(q): ValidatedJson<HomeQuery>,
-) -> AppResult<ApiJson<HomeData>> {
+) -> AppResult<ApiResponse<HomeData>> {
     let p = home_service::home(&state, q.did).await?;
     let dicts = phpyun_services::dict_service::get(&state).await?;
     let now = phpyun_core::clock::now_ts();
@@ -122,7 +119,7 @@ pub async fn home(
             })
             .collect(),
     };
-    Ok(ApiJson(data))
+    Ok(ApiResponse::data(data))
 }
 
 // ==================== /home/aggregate ====================
@@ -219,7 +216,7 @@ pub struct AggregateData {
 pub async fn aggregate(
     State(state): State<AppState>,
     ValidatedJson(q): ValidatedJson<AggregateQuery>,
-) -> AppResult<ApiJson<AggregateData>> {
+) -> AppResult<ApiResponse<AggregateData>> {
     let db = state.db.reader();
     let now = phpyun_core::clock::now_ts();
     let _ = q.did; // current dictionaries / friend links are fetched site-wide; sub-site isolation will come in the next round
@@ -234,14 +231,11 @@ pub async fn aggregate(
         }
     };
     let nav_fut = phpyun_models::nav_menu::repo::list_public(db, &q.nav);
-    let hot_fut =
-        phpyun_models::hot_search::repo::top(db, &q.hot_scope, q.hot_limit);
-    let ann_fut =
-        phpyun_models::announcement::repo::list_published(db, 0, 5);
+    let hot_fut = phpyun_models::hot_search::repo::top(db, &q.hot_scope, q.hot_limit);
+    let ann_fut = phpyun_models::announcement::repo::list_published(db, 0, 5);
     let links_fut = phpyun_models::friend_link::repo::list_active(db, None);
 
-    let (ads, nav, hots, anns, links) =
-        tokio::join!(ads_fut, nav_fut, hot_fut, ann_fut, links_fut);
+    let (ads, nav, hots, anns, links) = tokio::join!(ads_fut, nav_fut, hot_fut, ann_fut, links_fut);
 
     let ads = ads.unwrap_or_default();
     let nav = nav.unwrap_or_default();
@@ -250,7 +244,7 @@ pub async fn aggregate(
     let links = links.unwrap_or_default();
 
     let site_base = state.config.web_base_url.as_deref();
-    Ok(ApiJson(AggregateData {
+    Ok(ApiResponse::data(AggregateData {
         ads: ads
             .into_iter()
             .map(|a| AdItem {

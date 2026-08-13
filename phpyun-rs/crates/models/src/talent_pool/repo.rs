@@ -82,21 +82,16 @@ pub async fn list_by_com(
 }
 
 pub async fn count_by_com(pool: &MySqlPool, cuid: u64) -> Result<u64, sqlx::Error> {
-    let (n,): (i64,) = sqlx::query_as(
-        "SELECT COUNT(*) FROM phpyun_talent_pool WHERE cuid = ? AND status != 2",
-    )
-    .bind(cuid)
-    .fetch_one(pool)
-    .await?;
+    let (n,): (i64,) =
+        sqlx::query_as("SELECT COUNT(*) FROM phpyun_talent_pool WHERE cuid = ? AND status != 2")
+            .bind(cuid)
+            .fetch_one(pool)
+            .await?;
     Ok(n.max(0) as u64)
 }
 
 /// Soft delete: bulk UPDATE status=2; no physical DELETE.
-pub async fn delete_by_ids(
-    pool: &MySqlPool,
-    ids: &[u64],
-    cuid: u64,
-) -> Result<u64, sqlx::Error> {
+pub async fn delete_by_ids(pool: &MySqlPool, ids: &[u64], cuid: u64) -> Result<u64, sqlx::Error> {
     if ids.is_empty() {
         return Ok(0);
     }

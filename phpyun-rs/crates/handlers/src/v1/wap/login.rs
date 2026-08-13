@@ -17,7 +17,7 @@ use axum::{
 use phpyun_core::dto::AuthTokenData;
 use phpyun_core::validators;
 use phpyun_core::verify::{self, VerifyKind};
-use phpyun_core::{ApiJson, ApiError, AppResult, AppState, ClientIp, ValidatedJson};
+use phpyun_core::{ApiError, ApiResponse, AppResult, AppState, ClientIp, ValidatedJson};
 use phpyun_services::user_service::{self, LoginContext};
 use serde::Deserialize;
 use utoipa::ToSchema;
@@ -69,7 +69,7 @@ pub async fn mlogin(
     ClientIp(ip): ClientIp,
     headers: HeaderMap,
     ValidatedJson(form): ValidatedJson<LoginForm>,
-) -> AppResult<ApiJson<AuthTokenData>> {
+) -> AppResult<ApiResponse<AuthTokenData>> {
     // Opt-in verification: only verify when cid + authcode are supplied together (aligned with PHP mlogin behavior).
     if let (Some(cid), Some(code)) = (form.captcha_cid.as_deref(), form.authcode.as_deref()) {
         if !cid.is_empty() && !code.is_empty() {
@@ -88,7 +88,7 @@ pub async fn mlogin(
         LoginContext { ip: &ip, ua: &ua },
     )
     .await?;
-    Ok(ApiJson(AuthTokenData {
+    Ok(ApiResponse::data(AuthTokenData {
         uid: r.uid,
         usertype: r.usertype,
         access_token: r.access,
@@ -126,7 +126,7 @@ pub async fn login_sms(
     ClientIp(ip): ClientIp,
     headers: HeaderMap,
     ValidatedJson(form): ValidatedJson<LoginSmsForm>,
-) -> AppResult<ApiJson<AuthTokenData>> {
+) -> AppResult<ApiResponse<AuthTokenData>> {
     let ua = ua_from(&headers);
     let r = user_service::login_with_sms_code(
         &state,
@@ -135,7 +135,7 @@ pub async fn login_sms(
         LoginContext { ip: &ip, ua: &ua },
     )
     .await?;
-    Ok(ApiJson(AuthTokenData {
+    Ok(ApiResponse::data(AuthTokenData {
         uid: r.uid,
         usertype: r.usertype,
         access_token: r.access,
@@ -170,11 +170,11 @@ pub struct EmailCodeSendForm {
 pub async fn send_email_code(
     State(state): State<AppState>,
     ValidatedJson(form): ValidatedJson<EmailCodeSendForm>,
-) -> AppResult<phpyun_core::ApiOk> {
+) -> AppResult<phpyun_core::ApiResponse> {
     // TEMP: image-captcha verification intentionally disabled. Email-based
     // per-minute and per-hour rate limits remain enforced in the service.
     user_service::send_email_login_code(&state, &form.email).await?;
-    Ok(phpyun_core::ApiOk("sent"))
+    Ok(phpyun_core::ApiResponse::message("sent"))
 }
 
 fn default_email_usertype() -> u8 {
@@ -223,7 +223,7 @@ pub async fn login_email(
     ClientIp(ip): ClientIp,
     headers: HeaderMap,
     ValidatedJson(form): ValidatedJson<EmailLoginForm>,
-) -> AppResult<ApiJson<EmailLoginData>> {
+) -> AppResult<ApiResponse<EmailLoginData>> {
     let ua = ua_from(&headers);
     let (result, is_new) = user_service::login_or_register_with_email_code(
         &state,
@@ -234,7 +234,7 @@ pub async fn login_email(
         LoginContext { ip: &ip, ua: &ua },
     )
     .await?;
-    Ok(ApiJson(EmailLoginData {
+    Ok(ApiResponse::data(EmailLoginData {
         uid: result.uid,
         usertype: result.usertype,
         access_token: result.access,

@@ -128,13 +128,17 @@ impl From<PartJob> for PartSummary {
 }
 
 fn fmt_date(ts: i64) -> String {
-    if ts <= 0 { return String::new(); }
+    if ts <= 0 {
+        return String::new();
+    }
     chrono::DateTime::from_timestamp(ts, 0)
         .map(|dt| dt.format("%Y-%m-%d").to_string())
         .unwrap_or_default()
 }
 fn fmt_dt(ts: i64) -> String {
-    if ts <= 0 { return String::new(); }
+    if ts <= 0 {
+        return String::new();
+    }
     chrono::DateTime::from_timestamp(ts, 0)
         .map(|dt| dt.format("%Y-%m-%d %H:%M").to_string())
         .unwrap_or_default()

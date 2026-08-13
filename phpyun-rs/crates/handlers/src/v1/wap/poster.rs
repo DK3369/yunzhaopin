@@ -6,12 +6,8 @@
 //! side returns a JSON composition spec `{template, qr_scene, fields}` and the client composes
 //! it via Canvas -- saves bandwidth and is architecturally more modern.
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
-};
-use phpyun_core::{ApiJson, ApiError, AppResult, AppState, MaybeUser, ValidatedJson};
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::{ApiError, ApiResponse, AppResult, AppState, MaybeUser, ValidatedJson};
 use phpyun_services::poster_service::{self, PosterSpec, PosterTemplateView};
 use serde::Deserialize;
 use utoipa::IntoParams;
@@ -30,11 +26,13 @@ pub fn routes() -> Router<AppState> {
     request_body = ListTemplatesBody,
     responses((status = 200, description = "ok"))
 )]
-pub async fn list_templates(State(state): State<AppState>,
-    ValidatedJson(b): ValidatedJson<ListTemplatesBody>) -> AppResult<ApiJson<Vec<PosterTemplateView>>> {
+pub async fn list_templates(
+    State(state): State<AppState>,
+    ValidatedJson(b): ValidatedJson<ListTemplatesBody>,
+) -> AppResult<ApiResponse<Vec<PosterTemplateView>>> {
     let kind = b.kind;
     phpyun_core::validators::ensure_path_token(&kind)?;
-    Ok(ApiJson(
+    Ok(ApiResponse::data(
         poster_service::list_templates(&state, &kind).await?,
     ))
 }
@@ -66,8 +64,10 @@ pub struct RenderQuery {
         (status = 400, description = "Invalid kind / resource not found")
     )
 )]
-pub async fn render_spec(State(state): State<AppState>,
-    ValidatedJson(q): ValidatedJson<RenderQuery>) -> AppResult<ApiJson<PosterSpec>> {
+pub async fn render_spec(
+    State(state): State<AppState>,
+    ValidatedJson(q): ValidatedJson<RenderQuery>,
+) -> AppResult<ApiResponse<PosterSpec>> {
     let kind = q.kind;
     let id = q.id;
     phpyun_core::validators::ensure_path_token(&kind)?;
@@ -76,12 +76,10 @@ pub async fn render_spec(State(state): State<AppState>,
         "company" => poster_service::company_poster_spec(&state, q.hb, id).await?,
         "gongzhao" => poster_service::gongzhao_poster_spec(&state, q.hb, id).await?,
         other => {
-            return Err(ApiError::param_invalid(format!(
-                "poster_kind={other}"
-            )));
+            return Err(ApiError::param_invalid(format!("poster_kind={other}")));
         }
     };
-    Ok(ApiJson(spec))
+    Ok(ApiResponse::data(spec))
 }
 
 /// Invitation registration poster for the currently logged-in user.
@@ -108,7 +106,7 @@ pub async fn invite_reg_self(
     State(state): State<AppState>,
     MaybeUser(user): MaybeUser,
     ValidatedJson(q): ValidatedJson<InviteRegQuery>,
-) -> AppResult<ApiJson<PosterSpec>> {
+) -> AppResult<ApiResponse<PosterSpec>> {
     let inviter_uid = match user {
         Some(u) => u.uid,
         None => q.uid.unwrap_or(0),
@@ -116,14 +114,16 @@ pub async fn invite_reg_self(
     if inviter_uid == 0 {
         return Err(ApiError::param_invalid("uid"));
     }
-    Ok(ApiJson(
+    Ok(ApiResponse::data(
         poster_service::invite_reg_poster_spec(&state, q.hb, inviter_uid).await?,
     ))
 }
 
-
 #[derive(Debug, serde::Deserialize, validator::Validate, utoipa::ToSchema)]
 pub struct ListTemplatesBody {
-    #[validate(length(min = 1, max = 64), custom(function = "phpyun_core::validators::path_token"))]
+    #[validate(
+        length(min = 1, max = 64),
+        custom(function = "phpyun_core::validators::path_token")
+    )]
     pub kind: String,
 }

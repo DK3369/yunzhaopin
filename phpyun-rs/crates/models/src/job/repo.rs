@@ -98,17 +98,12 @@ pub async fn find_public_by_id(pool: &MySqlPool, id: u64) -> Result<Option<Job>,
 /// Batch fetch by ids (single round-trip). Caller deduplicates ids if needed;
 /// missing ids simply don't appear in the result. Empty input → empty result,
 /// no DB call. Used by favorites / saved-search / view list enrichment.
-pub async fn list_by_ids(
-    pool: &MySqlPool,
-    ids: &[u64],
-) -> Result<Vec<Job>, sqlx::Error> {
+pub async fn list_by_ids(pool: &MySqlPool, ids: &[u64]) -> Result<Vec<Job>, sqlx::Error> {
     if ids.is_empty() {
         return Ok(Vec::new());
     }
     let placeholders = vec!["?"; ids.len()].join(",");
-    let sql = format!(
-        "SELECT {FIELDS} FROM phpyun_company_job WHERE id IN ({placeholders})"
-    );
+    let sql = format!("SELECT {FIELDS} FROM phpyun_company_job WHERE id IN ({placeholders})");
     let mut q = sqlx::query_as::<_, Job>(&sql);
     for id in ids {
         q = q.bind(*id);
@@ -485,13 +480,11 @@ pub async fn refresh(pool: &MySqlPool, id: u64, uid: u64, now: i64) -> Result<u6
 ///
 /// state values: 0 = recruiting, 1 = pending review, 2 = delisted/deleted.
 pub async fn delete(pool: &MySqlPool, id: u64, uid: u64) -> Result<u64, sqlx::Error> {
-    let res = sqlx::query(
-        "UPDATE phpyun_company_job SET state = 2 WHERE id = ? AND uid = ?",
-    )
-    .bind(id)
-    .bind(uid)
-    .execute(pool)
-    .await?;
+    let res = sqlx::query("UPDATE phpyun_company_job SET state = 2 WHERE id = ? AND uid = ?")
+        .bind(id)
+        .bind(uid)
+        .execute(pool)
+        .await?;
     Ok(res.rows_affected())
 }
 
@@ -519,10 +512,7 @@ pub async fn admin_list(
     qb.build_query_as::<Job>().fetch_all(pool).await
 }
 
-pub async fn admin_count(
-    pool: &MySqlPool,
-    state_filter: Option<i32>,
-) -> Result<u64, sqlx::Error> {
+pub async fn admin_count(pool: &MySqlPool, state_filter: Option<i32>) -> Result<u64, sqlx::Error> {
     let mut qb: QueryBuilder<sqlx::MySql> =
         QueryBuilder::new("SELECT COUNT(*) FROM phpyun_company_job WHERE 1=1");
     if let Some(s) = state_filter {
@@ -634,11 +624,7 @@ pub async fn expire_overdue(pool: &MySqlPool, now: i64) -> Result<u64, sqlx::Err
 }
 
 /// Admin: review (modify state). `state=1` = approve / `state=2` = reject.
-pub async fn admin_set_state(
-    pool: &MySqlPool,
-    id: u64,
-    state: i32,
-) -> Result<u64, sqlx::Error> {
+pub async fn admin_set_state(pool: &MySqlPool, id: u64, state: i32) -> Result<u64, sqlx::Error> {
     let res = sqlx::query("UPDATE phpyun_company_job SET state = ? WHERE id = ?")
         .bind(state)
         .bind(id)
@@ -712,17 +698,20 @@ pub async fn get_job_contact(
     .bind(job_id)
     .fetch_optional(pool)
     .await?;
-    let Some((com_uid, is_link, link_id)) = job else { return Ok(None) };
+    let Some((com_uid, is_link, link_id)) = job else {
+        return Ok(None);
+    };
 
-    let default_row: Option<(String, String, String, String, String, i32, String, String)> = sqlx::query_as(
-        "SELECT COALESCE(linkman, ''), COALESCE(linktel, ''), COALESCE(linkphone, ''), \
+    let default_row: Option<(String, String, String, String, String, i32, String, String)> =
+        sqlx::query_as(
+            "SELECT COALESCE(linkman, ''), COALESCE(linktel, ''), COALESCE(linkphone, ''), \
                 COALESCE(linkmail, ''), COALESCE(address, ''), COALESCE(cityid, 0), \
                 COALESCE(x, ''), COALESCE(y, '') \
            FROM phpyun_company WHERE uid = ? LIMIT 1",
-    )
-    .bind(com_uid)
-    .fetch_optional(pool)
-    .await?;
+        )
+        .bind(com_uid)
+        .fetch_optional(pool)
+        .await?;
     let default_contact = default_row.map(
         |(linkman, linktel, linkphone, linkmail, address, cityid, x, y)| JobContact {
             linkman,
@@ -737,15 +726,16 @@ pub async fn get_job_contact(
     );
 
     let alt: Option<JobContact> = if link_id > 0 {
-        let alt_row: Option<(String, String, String, String, i32, String, String)> = sqlx::query_as(
-            "SELECT COALESCE(link_man, ''), COALESCE(link_moblie, ''), \
+        let alt_row: Option<(String, String, String, String, i32, String, String)> =
+            sqlx::query_as(
+                "SELECT COALESCE(link_man, ''), COALESCE(link_moblie, ''), \
                     COALESCE(link_phone, ''), COALESCE(link_address, ''), \
                     COALESCE(cityid, 0), COALESCE(x, ''), COALESCE(y, '') \
                FROM phpyun_company_job_link WHERE id = ? LIMIT 1",
-        )
-        .bind(link_id)
-        .fetch_optional(pool)
-        .await?;
+            )
+            .bind(link_id)
+            .fetch_optional(pool)
+            .await?;
         alt_row.map(
             |(link_man, link_moblie, link_phone, link_address, cityid, x, y)| JobContact {
                 linkman: link_man,

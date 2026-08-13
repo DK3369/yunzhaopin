@@ -39,12 +39,10 @@ pub async fn list_by_uid(
 }
 
 pub async fn count_by_uid(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Error> {
-    let (n,): (i64,) = sqlx::query_as(
-        "SELECT COUNT(*) FROM phpyun_company_job_link WHERE uid = ?",
-    )
-    .bind(uid)
-    .fetch_one(pool)
-    .await?;
+    let (n,): (i64,) = sqlx::query_as("SELECT COUNT(*) FROM phpyun_company_job_link WHERE uid = ?")
+        .bind(uid)
+        .fetch_one(pool)
+        .await?;
     Ok(n.max(0) as u64)
 }
 
@@ -77,11 +75,7 @@ pub struct AddressFields<'a> {
     pub y: &'a str,
 }
 
-pub async fn create(
-    pool: &MySqlPool,
-    uid: u64,
-    f: &AddressFields<'_>,
-) -> Result<u64, sqlx::Error> {
+pub async fn create(pool: &MySqlPool, uid: u64, f: &AddressFields<'_>) -> Result<u64, sqlx::Error> {
     let res = sqlx::query(
         "INSERT INTO phpyun_company_job_link
            (uid, link_man, link_moblie, link_phone, email, link_address,
@@ -133,11 +127,7 @@ pub async fn update(
     Ok(res.rows_affected())
 }
 
-pub async fn delete_by_ids(
-    pool: &MySqlPool,
-    ids: &[u64],
-    uid: u64,
-) -> Result<u64, sqlx::Error> {
+pub async fn delete_by_ids(pool: &MySqlPool, ids: &[u64], uid: u64) -> Result<u64, sqlx::Error> {
     if ids.is_empty() {
         return Ok(0);
     }

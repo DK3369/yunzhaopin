@@ -1,12 +1,10 @@
 //! POST /v1/mcenter/password — the logged-in user changes their own password (must supply the old password).
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
-};
+use axum::{extract::State, routing::post, Router};
 use phpyun_core::json;
-use phpyun_core::{validators, ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, ValidatedJson};
+use phpyun_core::{
+    validators, ApiResponse, AppResult, AppState, AuthenticatedUser, ClientIp, ValidatedJson,
+};
 use phpyun_services::mcenter_service;
 use serde::Deserialize;
 use utoipa::ToSchema;
@@ -42,14 +40,8 @@ pub async fn change_password(
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
     ValidatedJson(f): ValidatedJson<ChangePasswordForm>,
-) -> AppResult<ApiJson<json::Value>> {
-    mcenter_service::change_password(
-        &state,
-        user.uid,
-        &f.old_password,
-        &f.new_password,
-        &ip,
-    )
-    .await?;
-    Ok(ApiJson(json::json!({ "ok": true })))
+) -> AppResult<ApiResponse<json::Value>> {
+    mcenter_service::change_password(&state, user.uid, &f.old_password, &f.new_password, &ip)
+        .await?;
+    Ok(ApiResponse::data(json::json!({ "ok": true })))
 }

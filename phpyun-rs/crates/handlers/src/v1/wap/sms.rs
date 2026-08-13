@@ -1,12 +1,8 @@
 //! POST /v1/wap/sms/send — generic SMS code dispatch (register / login / reset_pw scenes).
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
-};
+use axum::{extract::State, routing::post, Router};
 use phpyun_core::verify::{self, VerifyKind};
-use phpyun_core::{validators, ApiOk, ApiError, AppResult, AppState, ValidatedJson};
+use phpyun_core::{validators, ApiError, ApiResponse, AppResult, AppState, ValidatedJson};
 use phpyun_services::sms_service::{self, SmsScene};
 use serde::Deserialize;
 use utoipa::ToSchema;
@@ -49,10 +45,17 @@ pub struct SmsSendForm {
 pub async fn send(
     State(state): State<AppState>,
     ValidatedJson(f): ValidatedJson<SmsSendForm>,
-) -> AppResult<ApiOk> {
+) -> AppResult<ApiResponse> {
     // 1. Mandatory image-captcha validation (anti SMS-bombing / mobile-enumeration)
     let code = f.authcode.to_uppercase();
-    if !verify::verify(&state.redis, VerifyKind::ImageCaptcha, &f.captcha_cid, &code).await? {
+    if !verify::verify(
+        &state.redis,
+        VerifyKind::ImageCaptcha,
+        &f.captcha_cid,
+        &code,
+    )
+    .await?
+    {
         return Err(ApiError::captcha());
     }
 
@@ -69,5 +72,5 @@ pub async fn send(
         _ => return Err(ApiError::param_invalid("scene")),
     };
     sms_service::send_sms_code(&state, &f.moblie, scene).await?;
-    Ok(ApiOk("sent"))
+    Ok(ApiResponse::message("sent"))
 }

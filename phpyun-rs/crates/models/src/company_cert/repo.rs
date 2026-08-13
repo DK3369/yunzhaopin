@@ -32,10 +32,7 @@ const SELECT_FIELDS: &str = "CAST(COALESCE(uid, 0) AS UNSIGNED) AS uid, \
                              COALESCE(ctime, 0) AS created_at, \
                              COALESCE(ctime, 0) AS updated_at";
 
-pub async fn find(
-    pool: &MySqlPool,
-    uid: u64,
-) -> Result<Option<CompanyCert>, sqlx::Error> {
+pub async fn find(pool: &MySqlPool, uid: u64) -> Result<Option<CompanyCert>, sqlx::Error> {
     let sql = format!("SELECT {SELECT_FIELDS} FROM phpyun_company_cert WHERE uid = ? LIMIT 1");
     sqlx::query_as::<_, CompanyCert>(&sql)
         .bind(uid)
@@ -52,12 +49,11 @@ pub async fn upsert(
     id_photo: &str,
     now: i64,
 ) -> Result<(), sqlx::Error> {
-    let exists: Option<(i64,)> = sqlx::query_as(
-        "SELECT 1 FROM phpyun_company_cert WHERE uid = ? LIMIT 1",
-    )
-    .bind(uid)
-    .fetch_optional(pool)
-    .await?;
+    let exists: Option<(i64,)> =
+        sqlx::query_as("SELECT 1 FROM phpyun_company_cert WHERE uid = ? LIMIT 1")
+            .bind(uid)
+            .fetch_optional(pool)
+            .await?;
     if exists.is_some() {
         sqlx::query(
             r#"UPDATE phpyun_company_cert
@@ -128,9 +124,8 @@ pub async fn list_pending(
 }
 
 pub async fn count_pending(pool: &MySqlPool) -> Result<u64, sqlx::Error> {
-    let (n,): (i64,) =
-        sqlx::query_as("SELECT COUNT(*) FROM phpyun_company_cert WHERE status = 1")
-            .fetch_one(pool)
-            .await?;
+    let (n,): (i64,) = sqlx::query_as("SELECT COUNT(*) FROM phpyun_company_cert WHERE status = 1")
+        .fetch_one(pool)
+        .await?;
     Ok(n.max(0) as u64)
 }

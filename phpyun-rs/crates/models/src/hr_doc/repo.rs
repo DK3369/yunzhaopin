@@ -46,10 +46,7 @@ pub async fn list_public(
     }
 }
 
-pub async fn count_public(
-    pool: &MySqlPool,
-    cid: Option<u64>,
-) -> Result<u64, sqlx::Error> {
+pub async fn count_public(pool: &MySqlPool, cid: Option<u64>) -> Result<u64, sqlx::Error> {
     let (n,): (i64,) = match cid {
         Some(c) => {
             sqlx::query_as("SELECT COUNT(*) FROM phpyun_toolbox_doc WHERE is_show = 1 AND cid = ?")

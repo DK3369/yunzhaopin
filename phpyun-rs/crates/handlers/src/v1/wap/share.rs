@@ -5,15 +5,11 @@
 //!
 //! `base_url` is read from `state.config.web_base_url`.
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
-};
-use phpyun_core::{ApiJson, AppResult, AppState, ValidatedJson};
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::dto::{IdBody, UidBody};
+use phpyun_core::{ApiResponse, AppResult, AppState, ValidatedJson};
 use serde::Serialize;
 use utoipa::ToSchema;
-use phpyun_core::dto::{IdBody, UidBody};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -49,10 +45,14 @@ fn base_of(state: &AppState) -> String {
 pub async fn job_share(
     State(state): State<AppState>,
     ValidatedJson(b): ValidatedJson<IdBody>,
-) -> AppResult<ApiJson<ShareUrl>> {
+) -> AppResult<ApiResponse<ShareUrl>> {
     let base = base_of(&state);
     let url = build_url(&base, &format!("/wap/jobs/{}", b.id));
-    Ok(ApiJson(ShareUrl { kind: "job".into(), id: b.id, url }))
+    Ok(ApiResponse::data(ShareUrl {
+        kind: "job".into(),
+        id: b.id,
+        url,
+    }))
 }
 
 /// Company share link
@@ -62,10 +62,14 @@ pub async fn job_share(
 pub async fn company_share(
     State(state): State<AppState>,
     ValidatedJson(b): ValidatedJson<UidBody>,
-) -> AppResult<ApiJson<ShareUrl>> {
+) -> AppResult<ApiResponse<ShareUrl>> {
     let base = base_of(&state);
     let url = build_url(&base, &format!("/wap/companies/{}", b.uid));
-    Ok(ApiJson(ShareUrl { kind: "company".into(), id: b.uid, url }))
+    Ok(ApiResponse::data(ShareUrl {
+        kind: "company".into(),
+        id: b.uid,
+        url,
+    }))
 }
 
 /// Public resume share link (non-token version — login required to view)
@@ -75,8 +79,12 @@ pub async fn company_share(
 pub async fn resume_share(
     State(state): State<AppState>,
     ValidatedJson(b): ValidatedJson<UidBody>,
-) -> AppResult<ApiJson<ShareUrl>> {
+) -> AppResult<ApiResponse<ShareUrl>> {
     let base = base_of(&state);
     let url = build_url(&base, &format!("/wap/resumes/{}", b.uid));
-    Ok(ApiJson(ShareUrl { kind: "resume".into(), id: b.uid, url }))
+    Ok(ApiResponse::data(ShareUrl {
+        kind: "resume".into(),
+        id: b.uid,
+        url,
+    }))
 }

@@ -26,11 +26,7 @@ const FIELDS: &str = "\
     COALESCE(wappic, '') AS wappic, \
     COALESCE(wapback, '') AS wapback";
 
-pub async fn list(
-    pool: &MySqlPool,
-    offset: u64,
-    limit: u64,
-) -> Result<Vec<Special>, sqlx::Error> {
+pub async fn list(pool: &MySqlPool, offset: u64, limit: u64) -> Result<Vec<Special>, sqlx::Error> {
     let sql = format!(
         "SELECT {FIELDS} FROM phpyun_special \
          WHERE display = 1 ORDER BY sort DESC, ctime DESC, id DESC LIMIT ? OFFSET ?"
@@ -43,10 +39,9 @@ pub async fn list(
 }
 
 pub async fn count(pool: &MySqlPool) -> Result<u64, sqlx::Error> {
-    let (n,): (i64,) =
-        sqlx::query_as("SELECT COUNT(*) FROM phpyun_special WHERE display = 1")
-            .fetch_one(pool)
-            .await?;
+    let (n,): (i64,) = sqlx::query_as("SELECT COUNT(*) FROM phpyun_special WHERE display = 1")
+        .fetch_one(pool)
+        .await?;
     Ok(n.max(0) as u64)
 }
 
@@ -98,12 +93,11 @@ pub async fn list_company_uids(
 }
 
 pub async fn count_companies(pool: &MySqlPool, sid: u64) -> Result<u64, sqlx::Error> {
-    let (n,): (i64,) = sqlx::query_as(
-        "SELECT COUNT(*) FROM phpyun_special_com WHERE sid = ? AND status = 1",
-    )
-    .bind(sid)
-    .fetch_one(pool)
-    .await?;
+    let (n,): (i64,) =
+        sqlx::query_as("SELECT COUNT(*) FROM phpyun_special_com WHERE sid = ? AND status = 1")
+            .bind(sid)
+            .fetch_one(pool)
+            .await?;
     Ok(n.max(0) as u64)
 }
 
@@ -127,27 +121,21 @@ pub async fn list_company_uid_ids(
 
 // ==================== Company sign-up to a special ====================
 
-pub async fn already_applied(
-    pool: &MySqlPool,
-    sid: u64,
-    uid: u64,
-) -> Result<bool, sqlx::Error> {
-    let row: Option<(i64,)> = sqlx::query_as(
-        "SELECT 1 FROM phpyun_special_com WHERE sid = ? AND uid = ? LIMIT 1",
-    )
-    .bind(sid)
-    .bind(uid)
-    .fetch_optional(pool)
-    .await?;
+pub async fn already_applied(pool: &MySqlPool, sid: u64, uid: u64) -> Result<bool, sqlx::Error> {
+    let row: Option<(i64,)> =
+        sqlx::query_as("SELECT 1 FROM phpyun_special_com WHERE sid = ? AND uid = ? LIMIT 1")
+            .bind(sid)
+            .bind(uid)
+            .fetch_optional(pool)
+            .await?;
     Ok(row.is_some())
 }
 
 pub async fn count_signups(pool: &MySqlPool, sid: u64) -> Result<u64, sqlx::Error> {
-    let (n,): (i64,) =
-        sqlx::query_as("SELECT COUNT(*) FROM phpyun_special_com WHERE sid = ?")
-            .bind(sid)
-            .fetch_one(pool)
-            .await?;
+    let (n,): (i64,) = sqlx::query_as("SELECT COUNT(*) FROM phpyun_special_com WHERE sid = ?")
+        .bind(sid)
+        .fetch_one(pool)
+        .await?;
     Ok(n.max(0) as u64)
 }
 
@@ -169,19 +157,13 @@ pub async fn count_active_jobs_by_company(
 
 /// Read the company's stored rating tier (1..n) — used to gate `info.rating`.
 /// Re-exported from the canonical `company_statis::repo`.
-pub async fn get_company_rating(
-    pool: &MySqlPool,
-    uid: u64,
-) -> Result<i32, sqlx::Error> {
+pub async fn get_company_rating(pool: &MySqlPool, uid: u64) -> Result<i32, sqlx::Error> {
     crate::company_statis::repo::read_rating(pool, uid).await
 }
 
 /// Read the company's integral balance.
 /// Re-exported from the canonical `company_statis::repo`.
-pub async fn get_company_integral(
-    pool: &MySqlPool,
-    uid: u64,
-) -> Result<i64, sqlx::Error> {
+pub async fn get_company_integral(pool: &MySqlPool, uid: u64) -> Result<i64, sqlx::Error> {
     crate::company_statis::repo::read_integral(pool, uid).await
 }
 

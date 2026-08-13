@@ -1,17 +1,15 @@
 //! App version management (admin).
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::dto::{CreatedId, IdBody};
+use phpyun_core::utils::fmt_dt;
+use phpyun_core::{
+    ApiResponse, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
 };
-use phpyun_core::{ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::app_version_service::{self, VersionInput};
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
-use phpyun_core::dto::{CreatedId, IdBody};
-use phpyun_core::utils::{fmt_dt};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -25,7 +23,6 @@ pub struct ListQuery {
     #[validate(length(max = 100))]
     pub platform: Option<String>,
 }
-
 
 #[derive(Debug, Serialize, ToSchema)]
 pub struct VersionItem {
@@ -83,15 +80,18 @@ pub struct CreateForm {
     pub released_at: i64,
 }
 
-#[utoipa::path(post, path = "/v1/admin/app-versions/list", tag = "admin", security(("bearer" = [])), params(ListQuery), responses((status = 200, description = "ok")))]pub async fn list(
+#[utoipa::path(post, path = "/v1/admin/app-versions/list", tag = "admin", security(("bearer" = [])), params(ListQuery), responses((status = 200, description = "ok")))]
+pub async fn list(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
     ValidatedJson(q): ValidatedJson<ListQuery>,
-) -> AppResult<ApiJson<Paged<VersionItem>>> {
+) -> AppResult<ApiResponse<Paged<VersionItem>>> {
     user.require_admin()?;
     let r = app_version_service::admin_list(&state, &user, q.platform.as_deref(), page).await?;
-    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
+    Ok(ApiResponse::data(Paged::from_listing(
+        r.list, r.total, page,
+    )))
 }
 
 #[utoipa::path(post, path = "/v1/admin/app-versions", tag = "admin", security(("bearer" = [])), request_body = CreateForm, responses((status = 200, description = "ok", body = CreatedId)))]
@@ -99,7 +99,7 @@ pub async fn create(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(f): ValidatedJson<CreateForm>,
-) -> AppResult<ApiJson<CreatedId>> {
+) -> AppResult<ApiResponse<CreatedId>> {
     user.require_admin()?;
     let id = app_version_service::admin_create(
         &state,
@@ -111,11 +111,15 @@ pub async fn create(
             is_force: f.is_force,
             download_url: &f.download_url,
             changelog: &f.changelog,
-            released_at: if f.released_at > 0 { f.released_at } else { phpyun_core::clock::now_ts() },
+            released_at: if f.released_at > 0 {
+                f.released_at
+            } else {
+                phpyun_core::clock::now_ts()
+            },
         },
     )
     .await?;
-    Ok(ApiJson(CreatedId { id }))
+    Ok(ApiResponse::data(CreatedId { id }))
 }
 
 #[utoipa::path(post, path = "/v1/admin/app-versions/delete", tag = "admin", security(("bearer" = [])), request_body = IdBody, responses((status = 200, description = "ok")))]
@@ -123,8 +127,8 @@ pub async fn remove(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(b): ValidatedJson<IdBody>,
-) -> AppResult<ApiOk> {
+) -> AppResult<ApiResponse> {
     user.require_admin()?;
     app_version_service::admin_delete(&state, &user, b.id).await?;
-    Ok(ApiOk("deleted"))
+    Ok(ApiResponse::message("deleted"))
 }

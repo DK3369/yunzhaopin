@@ -1,19 +1,15 @@
 //! Public company browsing (mirrors PHPYun `wap/company::index_action` + `show_action`).
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
-};
-use phpyun_core::{ApiJson, AppResult, AppState, MaybeUser, Paged, Pagination, ValidatedJson};
-use validator::Validate;
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::dto::UidBody;
+use phpyun_core::{ApiResponse, AppResult, AppState, MaybeUser, Paged, Pagination, ValidatedJson};
 use phpyun_models::company::repo::CompanyFilter;
 use phpyun_services::company_service;
 use phpyun_services::hot_search_service;
 use phpyun_services::view_service::{self, KIND_COMPANY};
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
-use phpyun_core::dto::{UidBody};
+use validator::Validate;
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -107,7 +103,7 @@ pub async fn list_companies(
     State(state): State<AppState>,
     page: Pagination,
     ValidatedJson(q): ValidatedJson<CompanyListQuery>,
-) -> AppResult<ApiJson<Paged<CompanySummary>>> {
+) -> AppResult<ApiResponse<Paged<CompanySummary>>> {
     if let Some(kw) = q.keyword.as_ref().filter(|k| !k.trim().is_empty()) {
         hot_search_service::bump_async(&state, "company", kw.trim().to_string());
     }
@@ -125,8 +121,11 @@ pub async fn list_companies(
     };
     let r = company_service::list_public(&state, &filter, page).await?;
     let dicts = phpyun_services::dict_service::get(&state).await?;
-    Ok(ApiJson(Paged::new(
-        r.list.into_iter().map(|c| crate::v1::wap::companies::company_summary_from_dict(c, &dicts)).collect(),
+    Ok(ApiResponse::data(Paged::new(
+        r.list
+            .into_iter()
+            .map(|c| crate::v1::wap::companies::company_summary_from_dict(c, &dicts))
+            .collect(),
         r.total,
         page.page,
         page.page_size,
@@ -257,7 +256,7 @@ pub async fn company_detail(
     State(state): State<AppState>,
     MaybeUser(user): MaybeUser,
     ValidatedJson(b): ValidatedJson<UidBody>,
-) -> AppResult<ApiJson<CompanyDetail>> {
+) -> AppResult<ApiResponse<CompanyDetail>> {
     let uid = b.uid;
     let c = company_service::get_public(&state, uid).await?;
     if let Some(u) = user.as_ref() {
@@ -280,29 +279,26 @@ pub async fn company_detail(
     let city_two = dicts.city(c.cityid).to_string();
 
     // Company showcase items (phpyun_company_show, status=0 means active)
-    let show_items: Vec<CompanyShowItem> = phpyun_models::company::repo::list_show_items(
-        state.db.reader(),
-        uid,
-    )
-    .await
-    .unwrap_or_default()
-    .into_iter()
-    .map(|r| CompanyShowItem {
-        id: r.id,
-        title: r.title.unwrap_or_default(),
-        picurl: r.picurl.unwrap_or_default(),
-        body: r.body.unwrap_or_default(),
-        sort: r.sort,
-        ctime: r.ctime,
-    })
-    .collect();
+    let show_items: Vec<CompanyShowItem> =
+        phpyun_models::company::repo::list_show_items(state.db.reader(), uid)
+            .await
+            .unwrap_or_default()
+            .into_iter()
+            .map(|r| CompanyShowItem {
+                id: r.id,
+                title: r.title.unwrap_or_default(),
+                picurl: r.picurl.unwrap_or_default(),
+                body: r.body.unwrap_or_default(),
+                sort: r.sort,
+                ctime: r.ctime,
+            })
+            .collect();
 
     // From the logged-in jobseeker's perspective: follow flag + number of applications
     let (isatn, userid_job) = if let Some(u) = user.as_ref() {
         let db = state.db.reader();
         let atn_fut = phpyun_models::atn::repo::exists_pair(db, u.uid, uid);
-        let apply_fut =
-            phpyun_models::apply::repo::count_by_uid_to_company(db, u.uid, uid);
+        let apply_fut = phpyun_models::apply::repo::count_by_uid_to_company(db, u.uid, uid);
         let (a, b) = tokio::join!(atn_fut, apply_fut);
         (
             a.map(|x| if x { 1 } else { 0 }).unwrap_or(0),
@@ -312,7 +308,7 @@ pub async fn company_detail(
         (0, 0)
     };
 
-    Ok(ApiJson(CompanyDetail {
+    Ok(ApiResponse::data(CompanyDetail {
         uid: c.uid,
         name: c.name,
         shortname: c.shortname,
@@ -439,7 +435,7 @@ pub struct HotCompanyView {
 pub async fn hot_companies(
     State(state): State<AppState>,
     ValidatedJson(q): ValidatedJson<HotCompaniesQuery>,
-) -> AppResult<ApiJson<Vec<HotCompanyView>>> {
+) -> AppResult<ApiResponse<Vec<HotCompanyView>>> {
     let sort_mode = match q.order.as_deref() {
         Some("recent") => 1,
         Some("random") => 2,
@@ -448,8 +444,8 @@ pub async fn hot_companies(
     let limit = q.limit.clamp(1, 50) as u64;
     let now = phpyun_core::clock::now_ts();
 
-    let rows = phpyun_models::company::repo::list_hot(state.db.reader(), sort_mode, limit, now)
-        .await?;
+    let rows =
+        phpyun_models::company::repo::list_hot(state.db.reader(), sort_mode, limit, now).await?;
     let web_base = state.config.web_base_url.as_deref();
     let storage = &state.storage;
     let out: Vec<HotCompanyView> = rows
@@ -470,7 +466,7 @@ pub async fn hot_companies(
             }
         })
         .collect();
-    Ok(ApiJson(out))
+    Ok(ApiResponse::data(out))
 }
 
 // ==================== Autocomplete ====================
@@ -516,14 +512,14 @@ pub struct CompanyAutoItem {
 pub async fn autocomplete(
     State(state): State<AppState>,
     ValidatedJson(q): ValidatedJson<CompanyAutoQuery>,
-) -> AppResult<ApiJson<Vec<CompanyAutoItem>>> {
+) -> AppResult<ApiResponse<Vec<CompanyAutoItem>>> {
     let keyword = q.keyword.trim();
     if keyword.is_empty() {
-        return Ok(ApiJson(Vec::new()));
+        return Ok(ApiResponse::data(Vec::new()));
     }
     let limit = q.limit.clamp(1, 20) as u64;
-    let rows = phpyun_models::company::repo::search_brief(state.db.reader(), keyword, limit)
-        .await?;
+    let rows =
+        phpyun_models::company::repo::search_brief(state.db.reader(), keyword, limit).await?;
     let web_base = state.config.web_base_url.as_deref();
     let storage = &state.storage;
     let out: Vec<CompanyAutoItem> = rows
@@ -534,5 +530,5 @@ pub async fn autocomplete(
             logo_n: storage.normalize_legacy_url(c.logo.as_deref().unwrap_or(""), web_base),
         })
         .collect();
-    Ok(ApiJson(out))
+    Ok(ApiResponse::data(out))
 }

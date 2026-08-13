@@ -1,16 +1,15 @@
 //! Report queue (admin).
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::utils::{fmt_dt, review_status_name as report_status_name};
+use phpyun_core::{
+    dto::{BatchResult, StatusFilterBody},
+    ApiResponse, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
 };
-use phpyun_core::{dto::{BatchResult, StatusFilterBody}, ApiJson, ApiOk, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
 use phpyun_services::admin_service;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
-use phpyun_core::utils::{fmt_dt, review_status_name as report_status_name};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -19,9 +18,15 @@ pub fn routes() -> Router<AppState> {
         .route("/reports/batch/status", post(batch_set_status))
 }
 
-
 fn report_kind_name(k: i32) -> &'static str {
-    match k { 1 => "job", 2 => "company", 3 => "resume", 4 => "article", 5 => "user", _ => "unknown" }
+    match k {
+        1 => "job",
+        2 => "company",
+        3 => "resume",
+        4 => "article",
+        5 => "user",
+        _ => "unknown",
+    }
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -71,10 +76,12 @@ pub async fn list(
     user: AuthenticatedUser,
     page: Pagination,
     ValidatedJson(q): ValidatedJson<StatusFilterBody>,
-) -> AppResult<ApiJson<Paged<AdminReportItem>>> {
+) -> AppResult<ApiResponse<Paged<AdminReportItem>>> {
     user.require_admin()?;
     let r = admin_service::list_reports(&state, q.status, page).await?;
-    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
+    Ok(ApiResponse::data(Paged::from_listing(
+        r.list, r.total, page,
+    )))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
@@ -94,13 +101,15 @@ pub struct SetReportStatusForm {
     request_body = SetReportStatusForm,
     responses((status = 200, description = "ok"))
 )]
-pub async fn set_status(State(state): State<AppState>,
+pub async fn set_status(
+    State(state): State<AppState>,
     user: AuthenticatedUser,
-    ValidatedJson(f): ValidatedJson<SetReportStatusForm>) -> AppResult<ApiOk> {
+    ValidatedJson(f): ValidatedJson<SetReportStatusForm>,
+) -> AppResult<ApiResponse> {
     let id = f.id;
     user.require_admin()?;
     admin_service::set_report_status(&state, &user, id, f.status).await?;
-    Ok(ApiOk("ok"))
+    Ok(ApiResponse::message("ok"))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
@@ -124,10 +133,10 @@ pub async fn batch_set_status(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(f): ValidatedJson<BatchStatusForm>,
-) -> AppResult<ApiJson<BatchResult>> {
+) -> AppResult<ApiResponse<BatchResult>> {
     user.require_admin()?;
     let r = admin_service::batch_set_report_status(&state, &user, &f.ids, f.status).await?;
-    Ok(ApiJson(BatchResult {
+    Ok(ApiResponse::data(BatchResult {
         requested: r.requested,
         affected: r.affected,
     }))

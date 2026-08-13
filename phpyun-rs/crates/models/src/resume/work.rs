@@ -34,7 +34,10 @@ pub async fn list_by_uid(pool: &MySqlPool, uid: u64) -> Result<Vec<Work>, sqlx::
         "SELECT {FIELDS} FROM phpyun_resume_work
          WHERE uid = ? ORDER BY sdate DESC"
     );
-    sqlx::query_as::<_, Work>(&sql).bind(uid).fetch_all(pool).await
+    sqlx::query_as::<_, Work>(&sql)
+        .bind(uid)
+        .fetch_all(pool)
+        .await
 }
 
 pub async fn find_by_id(pool: &MySqlPool, id: u64) -> Result<Option<Work>, sqlx::Error> {

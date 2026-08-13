@@ -24,11 +24,10 @@ const FIELDS: &str = "\
 /// Cheap existence check — `SELECT 1`. Counterpart of
 /// [`crate::company::repo::exists_by_uid`].
 pub async fn exists_by_uid(pool: &MySqlPool, uid: u64) -> Result<bool, sqlx::Error> {
-    let row: Option<(i64,)> =
-        sqlx::query_as("SELECT 1 FROM phpyun_resume WHERE uid = ? LIMIT 1")
-            .bind(uid)
-            .fetch_optional(pool)
-            .await?;
+    let row: Option<(i64,)> = sqlx::query_as("SELECT 1 FROM phpyun_resume WHERE uid = ? LIMIT 1")
+        .bind(uid)
+        .fetch_optional(pool)
+        .await?;
     Ok(row.is_some())
 }
 
@@ -82,10 +81,7 @@ pub async fn list_public(
     qb.build_query_as::<Resume>().fetch_all(pool).await
 }
 
-pub async fn count_public(
-    pool: &MySqlPool,
-    f: &ResumeFilter<'_>,
-) -> Result<u64, sqlx::Error> {
+pub async fn count_public(pool: &MySqlPool, f: &ResumeFilter<'_>) -> Result<u64, sqlx::Error> {
     let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new(
         "SELECT COUNT(*) FROM phpyun_resume WHERE status = 1 AND r_status = 1 AND did = ",
     );
@@ -124,11 +120,17 @@ fn push_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &ResumeFilter<'a>
 /// Race window between SELECT and INSERT exists; same race as PHPYun's
 /// PHP code, mitigated by the fact the only races come from concurrent
 /// wizard saves which all carry the same uid (worst case: an extra row).
-pub async fn ensure_row(pool: &sqlx::MySqlPool, uid: u64, did: u32, now: i64) -> Result<(), sqlx::Error> {
-    let exists: Option<(i64,)> = sqlx::query_as("SELECT 1 FROM phpyun_resume WHERE uid = ? LIMIT 1")
-        .bind(uid)
-        .fetch_optional(pool)
-        .await?;
+pub async fn ensure_row(
+    pool: &sqlx::MySqlPool,
+    uid: u64,
+    did: u32,
+    now: i64,
+) -> Result<(), sqlx::Error> {
+    let exists: Option<(i64,)> =
+        sqlx::query_as("SELECT 1 FROM phpyun_resume WHERE uid = ? LIMIT 1")
+            .bind(uid)
+            .fetch_optional(pool)
+            .await?;
     if exists.is_some() {
         return Ok(());
     }
@@ -149,7 +151,12 @@ pub async fn ensure_row(pool: &sqlx::MySqlPool, uid: u64, did: u32, now: i64) ->
 /// guarantees this is a freshly-created uid (member INSERT just succeeded
 /// in the same tx), so a SELECT first would be redundant. Kept generic on
 /// `Executor` so the registration service can pass `&mut **tx` directly.
-pub async fn ensure_row_in_tx<'e, E>(exec: E, uid: u64, did: u32, now: i64) -> Result<(), sqlx::Error>
+pub async fn ensure_row_in_tx<'e, E>(
+    exec: E,
+    uid: u64,
+    did: u32,
+    now: i64,
+) -> Result<(), sqlx::Error>
 where
     E: sqlx::Executor<'e, Database = sqlx::MySql>,
 {
@@ -170,10 +177,11 @@ where
 /// MySQL default. Used by `seed_role_rows` when a member's usertype is set
 /// post-registration. SELECT-then-INSERT discipline.
 pub async fn ensure_uid_only(pool: &sqlx::MySqlPool, uid: u64) -> Result<(), sqlx::Error> {
-    let exists: Option<(i64,)> = sqlx::query_as("SELECT 1 FROM phpyun_resume WHERE uid = ? LIMIT 1")
-        .bind(uid)
-        .fetch_optional(pool)
-        .await?;
+    let exists: Option<(i64,)> =
+        sqlx::query_as("SELECT 1 FROM phpyun_resume WHERE uid = ? LIMIT 1")
+            .bind(uid)
+            .fetch_optional(pool)
+            .await?;
     if exists.is_some() {
         return Ok(());
     }
@@ -198,7 +206,12 @@ pub struct ResumeUpdate<'a> {
 
 /// Update the resume main table — only non-None fields are changed.
 /// To keep the SQL static (faster for sqlx), uses COALESCE rather than dynamically building SQL.
-pub async fn update(pool: &MySqlPool, uid: u64, u: ResumeUpdate<'_>, now: i64) -> Result<(), sqlx::Error> {
+pub async fn update(
+    pool: &MySqlPool,
+    uid: u64,
+    u: ResumeUpdate<'_>,
+    now: i64,
+) -> Result<(), sqlx::Error> {
     sqlx::query(
         r#"UPDATE phpyun_resume SET
             name       = COALESCE(?, name),
@@ -231,11 +244,7 @@ pub async fn update(pool: &MySqlPool, uid: u64, u: ResumeUpdate<'_>, now: i64) -
 
 /// Refresh the resume — bump `lastupdate` to the current time. The public list is sorted by `lastupdate` DESC,
 /// so after refreshing the resume will move to the front of search results.
-pub async fn touch_lastupdate(
-    pool: &MySqlPool,
-    uid: u64,
-    now: i64,
-) -> Result<u64, sqlx::Error> {
+pub async fn touch_lastupdate(pool: &MySqlPool, uid: u64, now: i64) -> Result<u64, sqlx::Error> {
     let res = sqlx::query("UPDATE phpyun_resume SET lastupdate = ? WHERE uid = ?")
         .bind(now)
         .bind(uid)
@@ -257,16 +266,12 @@ pub async fn update_status(pool: &MySqlPool, uid: u64, status: i32) -> Result<()
 /// Cheap getter for the avatar/photo column only — used by features that
 /// render a user card (asker/answerer/viewer) and don't need the full Resume
 /// entity.
-pub async fn photo_for_uid(
-    pool: &MySqlPool,
-    uid: u64,
-) -> Result<Option<String>, sqlx::Error> {
-    let row: Option<(Option<String>,)> = sqlx::query_as(
-        "SELECT photo FROM phpyun_resume WHERE uid = ? LIMIT 1",
-    )
-    .bind(uid)
-    .fetch_optional(pool)
-    .await?;
+pub async fn photo_for_uid(pool: &MySqlPool, uid: u64) -> Result<Option<String>, sqlx::Error> {
+    let row: Option<(Option<String>,)> =
+        sqlx::query_as("SELECT photo FROM phpyun_resume WHERE uid = ? LIMIT 1")
+            .bind(uid)
+            .fetch_optional(pool)
+            .await?;
     Ok(row.and_then(|(p,)| p))
 }
 

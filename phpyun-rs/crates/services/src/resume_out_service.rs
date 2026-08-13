@@ -10,7 +10,7 @@
 //!   subscribing to the `resume.out.sent` event
 
 use phpyun_core::audit::{self, Actor, AuditEvent};
-use phpyun_core::{clock, AppResult, AppState, AuthenticatedUser, ApiError, Pagination};
+use phpyun_core::{clock, ApiError, AppResult, AppState, AuthenticatedUser, Pagination};
 use phpyun_models::resume_out::entity::ResumeOut;
 use phpyun_models::resume_out::repo as ro_repo;
 

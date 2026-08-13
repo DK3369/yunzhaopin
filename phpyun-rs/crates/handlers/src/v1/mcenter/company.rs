@@ -1,19 +1,16 @@
 //! Member center - company (usertype=2).
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
-};
+use axum::{extract::State, routing::post, Router};
 use phpyun_core::json;
-use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, ValidatedJson};
+use phpyun_core::{ApiResponse, AppResult, AppState, AuthenticatedUser, ClientIp, ValidatedJson};
 use phpyun_services::company_service::{self, CompanyUpdateInput};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
 
 pub fn routes() -> Router<AppState> {
-    Router::new().route("/company", post(update_mine))
+    Router::new()
+        .route("/company", post(update_mine))
         .route("/company/list", post(get_mine))
 }
 
@@ -44,12 +41,13 @@ pub struct CompanyData {
     tag = "mcenter",
     security(("bearer" = [])),
     responses((status = 200, description = "ok", body = CompanyData))
-)]pub async fn get_mine(
+)]
+pub async fn get_mine(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-) -> AppResult<ApiJson<CompanyData>> {
+) -> AppResult<ApiResponse<CompanyData>> {
     let c = company_service::get_mine(&state, &user).await?;
-    Ok(ApiJson(CompanyData {
+    Ok(ApiResponse::data(CompanyData {
         uid: c.uid,
         name: c.name,
         shortname: c.shortname,
@@ -111,7 +109,7 @@ pub async fn update_mine(
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
     ValidatedJson(f): ValidatedJson<UpdateCompanyForm>,
-) -> AppResult<ApiJson<json::Value>> {
+) -> AppResult<ApiResponse<json::Value>> {
     company_service::update_mine(
         &state,
         &user,
@@ -132,5 +130,5 @@ pub async fn update_mine(
         &ip,
     )
     .await?;
-    Ok(ApiJson(json::json!({ "ok": true })))
+    Ok(ApiResponse::data(json::json!({ "ok": true })))
 }

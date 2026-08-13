@@ -1,11 +1,7 @@
 //! My resume activity timeline.
 
-use axum::{
-    extract::{State},
-    Router,
-    routing::post,
-};
-use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, ValidatedJson};
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::{ApiResponse, AppResult, AppState, AuthenticatedUser, ValidatedJson};
 use phpyun_services::resume_timeline_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
@@ -47,9 +43,9 @@ pub async fn list(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(q): ValidatedJson<TimelineQuery>,
-) -> AppResult<ApiJson<Vec<TimelineItem>>> {
+) -> AppResult<ApiResponse<Vec<TimelineItem>>> {
     let list = resume_timeline_service::list(&state, &user, q.limit).await?;
-    Ok(ApiJson(
+    Ok(ApiResponse::data(
         list.into_iter()
             .map(|e| TimelineItem {
                 kind: e.kind.to_string(),

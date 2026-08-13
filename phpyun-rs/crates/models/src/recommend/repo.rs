@@ -43,20 +43,16 @@ pub async fn count_today_by_user(
     uid: u64,
     day_start_ts: i64,
 ) -> Result<u64, sqlx::Error> {
-    let (n,): (i64,) = sqlx::query_as(
-        "SELECT COUNT(*) FROM phpyun_recommend WHERE uid = ? AND addtime >= ?",
-    )
-    .bind(uid)
-    .bind(day_start_ts)
-    .fetch_one(pool)
-    .await?;
+    let (n,): (i64,) =
+        sqlx::query_as("SELECT COUNT(*) FROM phpyun_recommend WHERE uid = ? AND addtime >= ?")
+            .bind(uid)
+            .bind(day_start_ts)
+            .fetch_one(pool)
+            .await?;
     Ok(n.max(0) as u64)
 }
 
-pub async fn last_addtime_by_user(
-    pool: &MySqlPool,
-    uid: u64,
-) -> Result<Option<i64>, sqlx::Error> {
+pub async fn last_addtime_by_user(pool: &MySqlPool, uid: u64) -> Result<Option<i64>, sqlx::Error> {
     let row: Option<(i64,)> = sqlx::query_as(
         "SELECT CAST(COALESCE(addtime, 0) AS SIGNED) FROM phpyun_recommend \
          WHERE uid = ? ORDER BY addtime DESC, id DESC LIMIT 1",

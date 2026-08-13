@@ -1,18 +1,16 @@
 //! Message center.
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
-};
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::dto::IdBody;
 use phpyun_core::json;
-use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
+use phpyun_core::utils::fmt_dt;
+use phpyun_core::{
+    ApiResponse, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
+};
 use phpyun_services::{broadcast_service, chat_service, message_service, warning_service};
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
-use phpyun_core::dto::{IdBody};
-use phpyun_core::utils::{fmt_dt};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -30,7 +28,6 @@ pub struct MessageListQuery {
     #[serde(default)]
     pub unread_only: Option<bool>,
 }
-
 
 /// Message item — backed by `phpyun_sysmsg`.
 ///
@@ -107,7 +104,7 @@ pub async fn list(
     user: AuthenticatedUser,
     page: Pagination,
     ValidatedJson(q): ValidatedJson<MessageListQuery>,
-) -> AppResult<ApiJson<Paged<MessageItem>>> {
+) -> AppResult<ApiResponse<Paged<MessageItem>>> {
     let r = message_service::list(
         &state,
         &user,
@@ -116,7 +113,9 @@ pub async fn list(
         page,
     )
     .await?;
-    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
+    Ok(ApiResponse::data(Paged::from_listing(
+        r.list, r.total, page,
+    )))
 }
 
 /// Mark as read
@@ -132,9 +131,9 @@ pub async fn mark_read(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(b): ValidatedJson<IdBody>,
-) -> AppResult<ApiJson<json::Value>> {
+) -> AppResult<ApiResponse<json::Value>> {
     message_service::mark_read(&state, &user, b.id).await?;
-    Ok(ApiJson(json::json!({ "ok": true })))
+    Ok(ApiResponse::data(json::json!({ "ok": true })))
 }
 
 /// Mark all as read
@@ -148,9 +147,9 @@ pub async fn mark_read(
 pub async fn mark_all_read(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-) -> AppResult<ApiJson<json::Value>> {
+) -> AppResult<ApiResponse<json::Value>> {
     let n = message_service::mark_all_read(&state, &user).await?;
-    Ok(ApiJson(json::json!({ "ok": true, "updated": n })))
+    Ok(ApiResponse::data(json::json!({ "ok": true, "updated": n })))
 }
 
 /// Delete message
@@ -166,9 +165,9 @@ pub async fn remove(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(b): ValidatedJson<IdBody>,
-) -> AppResult<ApiJson<json::Value>> {
+) -> AppResult<ApiResponse<json::Value>> {
     message_service::delete(&state, &user, b.id).await?;
-    Ok(ApiJson(json::json!({ "ok": true })))
+    Ok(ApiResponse::data(json::json!({ "ok": true })))
 }
 
 // ==================== Aggregate unread badge ====================
@@ -199,7 +198,7 @@ pub struct UnreadSummary {
 pub async fn unread_summary(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-) -> AppResult<ApiJson<UnreadSummary>> {
+) -> AppResult<ApiResponse<UnreadSummary>> {
     let (messages, chat, broadcasts, warnings) = tokio::join!(
         message_service::unread_count(&state, &user),
         chat_service::unread_count(&state, &user),
@@ -210,7 +209,7 @@ pub async fn unread_summary(
     let chat = chat.unwrap_or(0);
     let broadcasts = broadcasts.unwrap_or(0);
     let warnings = warnings.unwrap_or(0);
-    Ok(ApiJson(UnreadSummary {
+    Ok(ApiResponse::data(UnreadSummary {
         messages,
         chat,
         broadcasts,

@@ -7,7 +7,9 @@
 //! - `expires_at` must be > now and <= now + 30d.
 //! - `revoked_at > 0` is treated as revoked.
 
-use phpyun_core::{background, clock, ApiError, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
+use phpyun_core::{
+    background, clock, ApiError, AppResult, AppState, AuthenticatedUser, Paged, Pagination,
+};
 use phpyun_models::resume::entity::Resume;
 use phpyun_models::resume::repo as resume_repo;
 use phpyun_models::resume_share::{entity::ShareToken, repo as share_repo};
@@ -52,13 +54,8 @@ pub async fn list_mine(
     Ok(Paged::new(list?, total?, page.page, page.page_size))
 }
 
-pub async fn revoke(
-    state: &AppState,
-    user: &AuthenticatedUser,
-    token: &str,
-) -> AppResult<()> {
-    let affected =
-        share_repo::revoke(state.db.pool(), token, user.uid, clock::now_ts()).await?;
+pub async fn revoke(state: &AppState, user: &AuthenticatedUser, token: &str) -> AppResult<()> {
+    let affected = share_repo::revoke(state.db.pool(), token, user.uid, clock::now_ts()).await?;
     if affected == 0 {
         return Err(ApiError::forbidden());
     }
@@ -66,10 +63,7 @@ pub async fn revoke(
 }
 
 /// External viewer accesses the resume via a token.
-pub async fn view_by_token(
-    state: &AppState,
-    token: &str,
-) -> AppResult<Resume> {
+pub async fn view_by_token(state: &AppState, token: &str) -> AppResult<Resume> {
     let t = share_repo::find(state.db.reader(), token)
         .await?
         .ok_or_else(|| ApiError::param_invalid("share_not_found"))?;

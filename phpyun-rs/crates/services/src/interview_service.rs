@@ -5,9 +5,9 @@
 //! - Jobseeker responds (accept / decline).
 //! - Company cancels an invitation.
 
-use phpyun_core::ApiError;
 use phpyun_core::audit::{self, Actor, AuditEvent};
 use phpyun_core::i18n::{t, Lang};
+use phpyun_core::ApiError;
 use phpyun_core::{clock, AppResult, AppState, AuthenticatedUser, Pagination};
 
 const NOTIF_LANG: Lang = Lang::ZhCN;
@@ -15,7 +15,6 @@ use phpyun_models::apply::repo as apply_repo;
 use phpyun_models::interview::{entity::Interview, repo as interview_repo};
 use phpyun_models::message::entity as msg_entity;
 use phpyun_models::message::repo as message_repo;
-
 
 pub struct InterviewCreateInput<'a> {
     pub apply_id: u64,
@@ -96,15 +95,12 @@ pub async fn create_by_company(
 
     let _ = audit::emit(
         state,
-        AuditEvent::new(
-            "interview.create",
-            Actor::uid(user.uid).with_ip(client_ip),
-        )
-        .target(format!("interview:{id}"))
-        .meta(&serde_json::json!({
-            "apply_id": apply.id,
-            "inter_time": input.inter_time,
-        })),
+        AuditEvent::new("interview.create", Actor::uid(user.uid).with_ip(client_ip))
+            .target(format!("interview:{id}"))
+            .meta(&serde_json::json!({
+                "apply_id": apply.id,
+                "inter_time": input.inter_time,
+            })),
     )
     .await;
 
@@ -190,12 +186,9 @@ pub async fn respond(
 
     let _ = audit::emit(
         state,
-        AuditEvent::new(
-            "interview.respond",
-            Actor::uid(user.uid).with_ip(client_ip),
-        )
-        .target(format!("interview:{id}"))
-        .meta(&serde_json::json!({ "status": status })),
+        AuditEvent::new("interview.respond", Actor::uid(user.uid).with_ip(client_ip))
+            .target(format!("interview:{id}"))
+            .meta(&serde_json::json!({ "status": status })),
     )
     .await;
     Ok(())
@@ -232,11 +225,8 @@ pub async fn cancel(
     }
     let _ = audit::emit(
         state,
-        AuditEvent::new(
-            "interview.cancel",
-            Actor::uid(user.uid).with_ip(client_ip),
-        )
-        .target(format!("interview:{id}")),
+        AuditEvent::new("interview.cancel", Actor::uid(user.uid).with_ip(client_ip))
+            .target(format!("interview:{id}")),
     )
     .await;
     Ok(())

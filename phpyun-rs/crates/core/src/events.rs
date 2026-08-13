@@ -27,10 +27,10 @@
 //! ## Configuration (env)
 //! - `EVENTBUS_KIND`: `redis-stream` (default) | `memory` (for tests)
 
-use crate::{ApiError, AppResult};
 use crate::json;
 use crate::kv::{Kv, StreamMessage};
 use crate::metrics as m;
+use crate::{ApiError, AppResult};
 use async_trait::async_trait;
 use bytes::Bytes;
 use serde::Serialize;
@@ -114,7 +114,10 @@ impl EventBusBackend for RedisStreamBus {
         count: usize,
         block_ms: u64,
     ) -> AppResult<Vec<Message>> {
-        let msgs = self.kv.xread_group(topic, group, consumer, count, block_ms).await?;
+        let msgs = self
+            .kv
+            .xread_group(topic, group, consumer, count, block_ms)
+            .await?;
         Ok(msgs.into_iter().map(Message::from).collect())
     }
 
@@ -261,10 +264,7 @@ impl EventBus {
                 let msgs = match backend.read(topic, group, consumer, 16, 1000).await {
                     Ok(m) => m,
                     Err(e) => {
-                        m::counter_with(
-                            "events.read_error",
-                            &[("topic", topic_label(topic))],
-                        );
+                        m::counter_with("events.read_error", &[("topic", topic_label(topic))]);
                         tracing::warn!(?e, topic, group, "read failed");
                         tokio::time::sleep(Duration::from_millis(500)).await;
                         continue;
@@ -345,15 +345,17 @@ mod tests {
     #[tokio::test]
     async fn in_memory_bus_publish_then_read() {
         let bus = EventBus::new(InMemoryBus::default());
-        let id1 = bus.publish("t1", Bytes::from_static(b"hello")).await.unwrap();
-        let id2 = bus.publish("t1", Bytes::from_static(b"world")).await.unwrap();
-        assert_ne!(id1, id2);
-
-        let msgs = bus
-            .inner
-            .read("t1", "g1", "c1", 10, 0)
+        let id1 = bus
+            .publish("t1", Bytes::from_static(b"hello"))
             .await
             .unwrap();
+        let id2 = bus
+            .publish("t1", Bytes::from_static(b"world"))
+            .await
+            .unwrap();
+        assert_ne!(id1, id2);
+
+        let msgs = bus.inner.read("t1", "g1", "c1", 10, 0).await.unwrap();
         assert_eq!(msgs.len(), 2);
         assert_eq!(&msgs[0].payload[..], b"hello");
         assert_eq!(&msgs[1].payload[..], b"world");
@@ -367,9 +369,15 @@ mod tests {
             uid: u64,
             action: &'static str,
         }
-        bus.publish_json("t1", &E { uid: 42, action: "login" })
-            .await
-            .unwrap();
+        bus.publish_json(
+            "t1",
+            &E {
+                uid: 42,
+                action: "login",
+            },
+        )
+        .await
+        .unwrap();
         let msgs = bus.inner.read("t1", "g1", "c1", 10, 0).await.unwrap();
         let got: serde_json::Value = serde_json::from_slice(&msgs[0].payload).unwrap();
         assert_eq!(got["uid"], 42);

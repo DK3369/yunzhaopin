@@ -37,11 +37,7 @@ pub struct MessageCreate<'a> {
     pub ref_id: u64,
 }
 
-pub async fn create(
-    pool: &MySqlPool,
-    c: MessageCreate<'_>,
-    now: i64,
-) -> Result<u64, sqlx::Error> {
+pub async fn create(pool: &MySqlPool, c: MessageCreate<'_>, now: i64) -> Result<u64, sqlx::Error> {
     let body = c.body.unwrap_or("");
     let merged: String = if c.title.is_empty() {
         body.to_owned()
@@ -138,11 +134,7 @@ pub async fn delete(pool: &MySqlPool, id: u64, uid: u64) -> Result<u64, sqlx::Er
 
 /// Bulk delete by id list, scoped to a single recipient. Used by the message
 /// centre's batch-delete endpoint.
-pub async fn delete_by_ids(
-    pool: &MySqlPool,
-    ids: &[u64],
-    uid: u64,
-) -> Result<u64, sqlx::Error> {
+pub async fn delete_by_ids(pool: &MySqlPool, ids: &[u64], uid: u64) -> Result<u64, sqlx::Error> {
     if ids.is_empty() {
         return Ok(0);
     }

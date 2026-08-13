@@ -20,9 +20,7 @@ use std::net::SocketAddr;
 /// listener that exposes `/metrics`.
 pub fn install_prometheus(bind: &str) -> anyhow::Result<()> {
     let addr: SocketAddr = bind.parse()?;
-    let (recorder, exporter) = PrometheusBuilder::new()
-        .with_http_listener(addr)
-        .build()?;
+    let (recorder, exporter) = PrometheusBuilder::new().with_http_listener(addr).build()?;
 
     let layered = TracingContextLayer::all().layer(recorder);
     metrics::set_global_recorder(layered)

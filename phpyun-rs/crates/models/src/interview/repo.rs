@@ -143,12 +143,10 @@ pub async fn list_for_company(
 }
 
 pub async fn count_for_company(pool: &MySqlPool, com_id: u64) -> Result<u64, sqlx::Error> {
-    let (n,): (i64,) = sqlx::query_as(
-        "SELECT COUNT(*) FROM phpyun_yqmb WHERE did = ?",
-    )
-    .bind(com_id)
-    .fetch_one(pool)
-    .await?;
+    let (n,): (i64,) = sqlx::query_as("SELECT COUNT(*) FROM phpyun_yqmb WHERE did = ?")
+        .bind(com_id)
+        .fetch_one(pool)
+        .await?;
     Ok(n.max(0) as u64)
 }
 
@@ -174,23 +172,18 @@ pub async fn respond_by_user(
     uid: u64,
     status: i32,
 ) -> Result<u64, sqlx::Error> {
-    let res = sqlx::query(
-        "UPDATE phpyun_yqmb SET status = ? WHERE id = ? AND uid = ? AND status = 0",
-    )
-    .bind(status)
-    .bind(id)
-    .bind(uid)
-    .execute(pool)
-    .await?;
+    let res =
+        sqlx::query("UPDATE phpyun_yqmb SET status = ? WHERE id = ? AND uid = ? AND status = 0")
+            .bind(status)
+            .bind(id)
+            .bind(uid)
+            .execute(pool)
+            .await?;
     Ok(res.rows_affected())
 }
 
 /// Company cancels the interview.
-pub async fn cancel_by_company(
-    pool: &MySqlPool,
-    id: u64,
-    com_id: u64,
-) -> Result<u64, sqlx::Error> {
+pub async fn cancel_by_company(pool: &MySqlPool, id: u64, com_id: u64) -> Result<u64, sqlx::Error> {
     let res = sqlx::query(
         "UPDATE phpyun_yqmb SET status = 3 WHERE id = ? AND did = ? AND status IN (0, 1)",
     )

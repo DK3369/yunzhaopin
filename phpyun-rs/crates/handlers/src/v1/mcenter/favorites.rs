@@ -9,32 +9,16 @@
 //! The legacy `/follows*` routes remain available and keep their historical
 //! `{target_kind, target_uid}` request shape.
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
-};
+use axum::{extract::State, routing::post, Router};
 use phpyun_core::{
-    dto::ExistsResp,
-    json,
-    ApiJson,
-    ApiMsg,
-    ApiMsgData,
-    ApiError,
-    AppResult,
-    AppState,
-    AuthenticatedUser,
-    ClientIp,
-    Paged,
-    Pagination,
-    ValidatedJson,
+    dto::ExistsResp, json, ApiError, ApiResponse, AppResult, AppState, AuthenticatedUser, ClientIp,
+    Paged, Pagination, ValidatedJson,
 };
-use phpyun_services::{atn_service, collect_service, user_service};
 use phpyun_models::atn::entity::{KIND_COMPANY as ATN_KIND_COMPANY, KIND_USER as ATN_KIND_USER};
+use phpyun_services::{atn_service, collect_service, user_service};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
-
 
 const KIND_JOB: i32 = 1;
 const KIND_COMPANY: i32 = 2;
@@ -105,7 +89,7 @@ pub async fn add(
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
     ValidatedJson(f): ValidatedJson<AddFavoriteForm>,
-) -> AppResult<ApiMsgData<ToggleResp>> {
+) -> AppResult<ApiResponse<ToggleResp>> {
     let favorited = match f.kind {
         KIND_JOB => collect_service::toggle(&state, &user, KIND_JOB, f.target_id, &ip).await?,
         KIND_COMPANY => {
@@ -121,14 +105,14 @@ pub async fn add(
         _ => return Err(ApiError::param_invalid("kind")),
     };
 
-    Ok(ApiMsgData {
-        msg_key: if favorited {
+    Ok(ApiResponse::message_data(
+        if favorited {
             "collect_added"
         } else {
             "collect_removed"
         },
-        data: ToggleResp { favorited },
-    })
+        ToggleResp { favorited },
+    ))
 }
 
 #[utoipa::path(
@@ -144,18 +128,14 @@ pub async fn remove(
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
     ValidatedJson(f): ValidatedJson<AddFavoriteForm>,
-) -> AppResult<ApiMsg> {
+) -> AppResult<ApiResponse> {
     match f.kind {
         KIND_JOB => collect_service::remove(&state, &user, KIND_JOB, f.target_id, &ip).await?,
-        KIND_COMPANY => {
-            atn_service::remove(&state, &user, ATN_KIND_COMPANY, f.target_id).await?
-        }
-        KIND_USER => {
-            atn_service::remove(&state, &user, ATN_KIND_USER, f.target_id).await?
-        }
+        KIND_COMPANY => atn_service::remove(&state, &user, ATN_KIND_COMPANY, f.target_id).await?,
+        KIND_USER => atn_service::remove(&state, &user, ATN_KIND_USER, f.target_id).await?,
         _ => return Err(ApiError::param_invalid("kind")),
     }
-    Ok(ApiMsg("collect_removed"))
+    Ok(ApiResponse::message("collect_removed"))
 }
 
 #[utoipa::path(
@@ -171,7 +151,7 @@ pub async fn list(
     user: AuthenticatedUser,
     query_page: Pagination,
     ValidatedJson(f): ValidatedJson<FavoriteListForm>,
-) -> AppResult<ApiJson<Paged<FavoriteListItem>>> {
+) -> AppResult<ApiResponse<Paged<FavoriteListItem>>> {
     let page = resolve_pagination(&f, query_page);
     match f.kind {
         KIND_JOB => list_jobs(&state, &user, page).await,
@@ -193,19 +173,15 @@ pub async fn exists(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(f): ValidatedJson<AddFavoriteForm>,
-) -> AppResult<ApiJson<ExistsResp>> {
+) -> AppResult<ApiResponse<ExistsResp>> {
     user.require_jobseeker()?;
     let exists = match f.kind {
         KIND_JOB => collect_service::exists(&state, &user, KIND_JOB, f.target_id).await?,
-        KIND_COMPANY => {
-            atn_service::exists(&state, &user, ATN_KIND_COMPANY, f.target_id).await?
-        }
-        KIND_USER => {
-            atn_service::exists(&state, &user, ATN_KIND_USER, f.target_id).await?
-        }
+        KIND_COMPANY => atn_service::exists(&state, &user, ATN_KIND_COMPANY, f.target_id).await?,
+        KIND_USER => atn_service::exists(&state, &user, ATN_KIND_USER, f.target_id).await?,
         _ => return Err(ApiError::param_invalid("kind")),
     };
-    Ok(ApiJson(ExistsResp { exists }))
+    Ok(ApiResponse::data(ExistsResp { exists }))
 }
 
 fn resolve_pagination(form: &FavoriteListForm, query: Pagination) -> Pagination {
@@ -227,7 +203,7 @@ async fn list_jobs(
     state: &AppState,
     user: &AuthenticatedUser,
     page: Pagination,
-) -> AppResult<ApiJson<Paged<FavoriteListItem>>> {
+) -> AppResult<ApiResponse<Paged<FavoriteListItem>>> {
     user.require_jobseeker()?;
     let r = collect_service::list(state, user, KIND_JOB, page).await?;
     let ordered_ids: Vec<u64> = r.list.iter().filter_map(|c| c.job_id).collect();
@@ -244,9 +220,8 @@ async fn list_jobs(
         let target_id = favorite.job_id.unwrap_or(0);
         let detail = match by_id.remove(&target_id) {
             Some(job) => {
-                let summary = crate::v1::wap::jobs::job_summary_from_dict_fav(
-                    job, &dicts, now, true,
-                );
+                let summary =
+                    crate::v1::wap::jobs::job_summary_from_dict_fav(job, &dicts, now, true);
                 json::to_value(&summary)?
             }
             None => empty_detail(),
@@ -259,7 +234,12 @@ async fn list_jobs(
         });
     }
 
-    Ok(ApiJson(Paged::new(items, r.total, page.page, page.page_size)))
+    Ok(ApiResponse::data(Paged::new(
+        items,
+        r.total,
+        page.page,
+        page.page_size,
+    )))
 }
 
 async fn list_atn(
@@ -267,10 +247,9 @@ async fn list_atn(
     user: &AuthenticatedUser,
     page: Pagination,
     kind: i32,
-) -> AppResult<ApiJson<Paged<FavoriteListItem>>> {
+) -> AppResult<ApiResponse<Paged<FavoriteListItem>>> {
     user.require_jobseeker()?;
-    let target_kind = atn_kind_for_favorite(kind)
-        .ok_or_else(|| ApiError::param_invalid("kind"))?;
+    let target_kind = atn_kind_for_favorite(kind).ok_or_else(|| ApiError::param_invalid("kind"))?;
     let r = atn_service::list_following(state, user, target_kind, page).await?;
     let dicts = if kind == KIND_COMPANY {
         Some(phpyun_services::dict_service::get(state).await?)
@@ -283,11 +262,8 @@ async fn list_atn(
         let target_id = relation.sc_uid;
         let detail = match kind {
             KIND_COMPANY => {
-                let company = phpyun_models::company::repo::find_by_uid(
-                    state.db.reader(),
-                    target_id,
-                )
-                .await?;
+                let company =
+                    phpyun_models::company::repo::find_by_uid(state.db.reader(), target_id).await?;
                 match (company.filter(|c| c.r_status == 1), dicts.as_ref()) {
                     (Some(company), Some(dicts)) => {
                         let summary =
@@ -313,7 +289,12 @@ async fn list_atn(
         });
     }
 
-    Ok(ApiJson(Paged::new(items, r.total, page.page, page.page_size)))
+    Ok(ApiResponse::data(Paged::new(
+        items,
+        r.total,
+        page.page,
+        page.page_size,
+    )))
 }
 
 fn atn_kind_for_favorite(kind: i32) -> Option<i32> {

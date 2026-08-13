@@ -18,10 +18,7 @@ pub struct TplInput<'a> {
     pub intertime: i64,
 }
 
-pub async fn list(
-    state: &AppState,
-    user: &AuthenticatedUser,
-) -> AppResult<Vec<InterviewTemplate>> {
+pub async fn list(state: &AppState, user: &AuthenticatedUser) -> AppResult<Vec<InterviewTemplate>> {
     Ok(tpl_repo::list_by_uid(state.db.reader(), user.uid).await?)
 }
 
@@ -98,11 +95,7 @@ pub async fn update(
     Ok(())
 }
 
-pub async fn delete(
-    state: &AppState,
-    user: &AuthenticatedUser,
-    id: u64,
-) -> AppResult<()> {
+pub async fn delete(state: &AppState, user: &AuthenticatedUser, id: u64) -> AppResult<()> {
     let affected = tpl_repo::delete(state.db.pool(), id, user.uid).await?;
     if affected == 0 {
         return Err(ApiError::forbidden());

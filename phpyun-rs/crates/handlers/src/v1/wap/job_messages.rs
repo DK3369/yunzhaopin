@@ -6,21 +6,19 @@
 //!   * `POST /v1/wap/jobs/{id}/messages`         — jobseeker leaves a message
 //!   * `POST /v1/wap/jobs/{id}/messages/{mid}/hide` — author hides their own message
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
-};
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::dto::{CreatedId, IdBody, MidBody};
+use phpyun_core::utils::fmt_dt;
 use phpyun_core::{
-    json, verify::{self, VerifyKind},
-    ApiJson, ApiError, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
+    json,
+    verify::{self, VerifyKind},
+    ApiError, ApiResponse, AppResult, AppState, AuthenticatedUser, Paged, Pagination,
+    ValidatedJson,
 };
 use phpyun_services::job_msg_service::{self, CreateInput};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
-use phpyun_core::dto::{CreatedId, IdBody, MidBody};
-use phpyun_core::utils::{fmt_dt};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -28,7 +26,6 @@ pub fn routes() -> Router<AppState> {
         .route("/jobs/messages/post", post(create))
         .route("/jobs/messages/hide", post(hide))
 }
-
 
 /// Public-facing message item (no internal flags exposed).
 #[derive(Debug, Serialize, ToSchema)]
@@ -76,9 +73,11 @@ pub async fn list(
     State(state): State<AppState>,
     page: Pagination,
     ValidatedJson(b): ValidatedJson<IdBody>,
-) -> AppResult<ApiJson<Paged<JobMsgView>>> {
+) -> AppResult<ApiResponse<Paged<JobMsgView>>> {
     let r = job_msg_service::list_public(&state, b.id, page).await?;
-    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
+    Ok(ApiResponse::data(Paged::from_listing(
+        r.list, r.total, page,
+    )))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
@@ -96,7 +95,6 @@ pub struct CreateMessageForm {
     #[validate(length(min = 1, max = 16))]
     pub authcode: String,
 }
-
 
 /// Jobseeker leaves a public message — requires login + image captcha.
 /// Mirrors PHP `wap/ajax::pl_action` (auth check, blacklist check, captcha).
@@ -117,10 +115,17 @@ pub async fn create(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(f): ValidatedJson<CreateMessageForm>,
-) -> AppResult<ApiJson<CreatedId>> {
+) -> AppResult<ApiResponse<CreatedId>> {
     // Captcha — same scheme as register / sms send.
     let code = f.authcode.to_uppercase();
-    if !verify::verify(&state.redis, VerifyKind::ImageCaptcha, &f.captcha_cid, &code).await? {
+    if !verify::verify(
+        &state.redis,
+        VerifyKind::ImageCaptcha,
+        &f.captcha_cid,
+        &code,
+    )
+    .await?
+    {
         return Err(ApiError::captcha());
     }
 
@@ -133,7 +138,7 @@ pub async fn create(
         },
     )
     .await?;
-    Ok(ApiJson(CreatedId { id: mid }))
+    Ok(ApiResponse::data(CreatedId { id: mid }))
 }
 
 /// Author / employer hides one of their messages.
@@ -153,7 +158,7 @@ pub async fn hide(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     ValidatedJson(b): ValidatedJson<MidBody>,
-) -> AppResult<ApiJson<json::Value>> {
+) -> AppResult<ApiResponse<json::Value>> {
     job_msg_service::hide(&state, &user, b.mid).await?;
-    Ok(ApiJson(json::json!({ "ok": true })))
+    Ok(ApiResponse::data(json::json!({ "ok": true })))
 }

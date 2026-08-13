@@ -3,18 +3,16 @@
 //! - `GET /v1/mcenter/resume-downloads/outbox` — company views resumes it has downloaded
 //! - `GET /v1/mcenter/resume-downloads/inbox` — job seeker views who has downloaded their resume
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
-};
+use axum::{extract::State, routing::post, Router};
 use phpyun_core::json;
-use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, Paged, Pagination, ValidatedJson};
+use phpyun_core::utils::fmt_dt;
+use phpyun_core::{
+    ApiResponse, AppResult, AppState, AuthenticatedUser, ClientIp, Paged, Pagination, ValidatedJson,
+};
 use phpyun_services::resume_download_service;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
-use phpyun_core::utils::{fmt_dt};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -43,11 +41,10 @@ pub async fn download(
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
     ValidatedJson(f): ValidatedJson<DownloadForm>,
-) -> AppResult<ApiJson<json::Value>> {
+) -> AppResult<ApiResponse<json::Value>> {
     resume_download_service::download(&state, &user, f.uid, &ip).await?;
-    Ok(ApiJson(json::json!({ "ok": true })))
+    Ok(ApiResponse::data(json::json!({ "ok": true })))
 }
-
 
 #[derive(Debug, Serialize, ToSchema)]
 pub struct DownloadItem {
@@ -84,9 +81,11 @@ pub async fn list_outbox(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-) -> AppResult<ApiJson<Paged<DownloadItem>>> {
+) -> AppResult<ApiResponse<Paged<DownloadItem>>> {
     let r = resume_download_service::list_mine_as_company(&state, &user, page).await?;
-    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
+    Ok(ApiResponse::data(Paged::from_listing(
+        r.list, r.total, page,
+    )))
 }
 
 /// Job seeker view: who has downloaded me
@@ -101,7 +100,9 @@ pub async fn list_inbox(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-) -> AppResult<ApiJson<Paged<DownloadItem>>> {
+) -> AppResult<ApiResponse<Paged<DownloadItem>>> {
     let r = resume_download_service::list_mine_as_user(&state, &user, page).await?;
-    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
+    Ok(ApiResponse::data(Paged::from_listing(
+        r.list, r.total, page,
+    )))
 }

@@ -3,12 +3,10 @@
 //! - `GET  /v1/mcenter/account/logout/status` returns the current user's request status
 //! - `POST /v1/mcenter/account/logout/apply`  submits a deletion request (password required)
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::{
+    json, ApiResponse, AppResult, AppState, AuthenticatedUser, ClientIp, ValidatedJson,
 };
-use phpyun_core::{json, ApiJson, AppResult, AppState, AuthenticatedUser, ClientIp, ValidatedJson};
 use phpyun_services::member_logout_service;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
@@ -37,13 +35,13 @@ pub struct StatusView {
 pub async fn status(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-) -> AppResult<ApiJson<StatusView>> {
+) -> AppResult<ApiResponse<StatusView>> {
     let row = member_logout_service::status(&state, &user).await?;
     let (pending, s, ctime) = match row {
         Some(r) => (r.status == 1, Some(r.status), Some(r.ctime)),
         None => (false, None, None),
     };
-    Ok(ApiJson(StatusView {
+    Ok(ApiResponse::data(StatusView {
         pending,
         status: s,
         ctime,
@@ -72,7 +70,7 @@ pub async fn apply(
     user: AuthenticatedUser,
     ClientIp(ip): ClientIp,
     ValidatedJson(f): ValidatedJson<ApplyForm>,
-) -> AppResult<ApiJson<json::Value>> {
+) -> AppResult<ApiResponse<json::Value>> {
     let id = member_logout_service::apply(&state, &user, &f.password, &ip).await?;
-    Ok(ApiJson(json::json!({ "id": id })))
+    Ok(ApiResponse::data(json::json!({ "id": id })))
 }

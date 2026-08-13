@@ -8,12 +8,11 @@
 //! - After adding, send the jobseeker a system message (`sysmsg`) indicating "company XX has favorited your resume" —
 //!   use the public `message_service` endpoint for this.
 
-use phpyun_core::ApiError;
 use phpyun_core::audit::{self, Actor, AuditEvent};
+use phpyun_core::ApiError;
 use phpyun_core::{clock, AppResult, AppState, AuthenticatedUser, Pagination};
 use phpyun_models::talent_pool::entity::TalentPoolItem;
 use phpyun_models::talent_pool::repo as tp_repo;
-
 
 pub struct TalentPoolPage {
     pub list: Vec<TalentPoolItem>,

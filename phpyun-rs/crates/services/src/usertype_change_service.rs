@@ -88,12 +88,9 @@ pub async fn admin_approve(
         .with_tx(|tx| {
             Box::pin(async move {
                 let _ = chg_repo::set_status_admin(&mut **tx, id, 2).await?;
-                let _ = phpyun_models::user::repo::set_usertype(
-                    &mut **tx,
-                    row.uid,
-                    row.applyusertype,
-                )
-                .await?;
+                let _ =
+                    phpyun_models::user::repo::set_usertype(&mut **tx, row.uid, row.applyusertype)
+                        .await?;
                 Ok(())
             })
         })

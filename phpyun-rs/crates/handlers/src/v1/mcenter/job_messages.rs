@@ -4,19 +4,17 @@
 //! lists are grouped under `/v1/mcenter/job-messages` so they don't collide
 //! with the user-facing `/v1/wap/jobs/{id}/messages` write endpoint.
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
-};
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::dto::IdBody;
 use phpyun_core::json;
-use phpyun_core::{ApiJson, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson};
+use phpyun_core::utils::fmt_dt;
+use phpyun_core::{
+    ApiResponse, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
+};
 use phpyun_services::job_msg_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
-use phpyun_core::dto::{IdBody};
-use phpyun_core::utils::{fmt_dt};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -24,7 +22,6 @@ pub fn routes() -> Router<AppState> {
         .route("/job-messages/reply", post(reply))
         .route("/job-messages/hide", post(hide))
 }
-
 
 #[derive(Debug, Serialize, ToSchema)]
 pub struct EmployerMsgItem {
@@ -87,9 +84,11 @@ pub async fn list(
     user: AuthenticatedUser,
     page: Pagination,
     ValidatedJson(q): ValidatedJson<ListQuery>,
-) -> AppResult<ApiJson<Paged<EmployerMsgItem>>> {
+) -> AppResult<ApiResponse<Paged<EmployerMsgItem>>> {
     let r = job_msg_service::list_for_employer(&state, &user, q.only_unanswered, page).await?;
-    Ok(ApiJson(Paged::from_listing(r.list, r.total, page)))
+    Ok(ApiResponse::data(Paged::from_listing(
+        r.list, r.total, page,
+    )))
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
@@ -113,12 +112,14 @@ pub struct ReplyForm {
         (status = 403, description = "Not an employer"),
     )
 )]
-pub async fn reply(State(state): State<AppState>,
+pub async fn reply(
+    State(state): State<AppState>,
     user: AuthenticatedUser,
-    ValidatedJson(f): ValidatedJson<ReplyForm>) -> AppResult<ApiJson<json::Value>> {
+    ValidatedJson(f): ValidatedJson<ReplyForm>,
+) -> AppResult<ApiResponse<json::Value>> {
     let id = f.id;
     job_msg_service::employer_reply(&state, &user, id, &f.reply).await?;
-    Ok(ApiJson(json::json!({ "ok": true })))
+    Ok(ApiResponse::data(json::json!({ "ok": true })))
 }
 
 /// Employer hides a message they own.
@@ -129,11 +130,12 @@ pub async fn reply(State(state): State<AppState>,
     request_body = IdBody,
     responses((status = 200, description = "ok"))
 )]
-pub async fn hide(State(state): State<AppState>,
+pub async fn hide(
+    State(state): State<AppState>,
     user: AuthenticatedUser,
-    ValidatedJson(b): ValidatedJson<IdBody>) -> AppResult<ApiJson<json::Value>> {
+    ValidatedJson(b): ValidatedJson<IdBody>,
+) -> AppResult<ApiResponse<json::Value>> {
     let id = b.id;
     job_msg_service::hide(&state, &user, id).await?;
-    Ok(ApiJson(json::json!({ "ok": true })))
+    Ok(ApiResponse::data(json::json!({ "ok": true })))
 }
-

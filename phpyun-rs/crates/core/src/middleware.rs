@@ -18,8 +18,7 @@ use axum::{
     http::{header, HeaderName, HeaderValue, Method, StatusCode},
     middleware::Next,
     response::{IntoResponse, Response},
-    Json,
-    Router,
+    Json, Router,
 };
 use serde_json::json;
 use std::{sync::Arc, time::Duration};
@@ -272,7 +271,16 @@ async fn only_get_post(req: Request, next: Next) -> Response {
         };
     }
 
-    // 2) /v1/* business endpoints — POST only (+ HEAD/OPTIONS for preflight).
+    // 2) Dictionary clients historically use GET for this endpoint; keep it
+    // compatible while the rest of the business API remains POST-only.
+    if path == "/v1/wap/dict/industries" {
+        return match *method {
+            Method::GET | Method::POST | Method::HEAD | Method::OPTIONS => next.run(req).await,
+            _ => localized_rejection(StatusCode::METHOD_NOT_ALLOWED, "errors.method_not_allowed"),
+        };
+    }
+
+    // 3) /v1/* business endpoints — POST only (+ HEAD/OPTIONS for preflight).
     if path.starts_with("/v1/") {
         return match *method {
             Method::POST | Method::HEAD | Method::OPTIONS => next.run(req).await,
@@ -280,7 +288,7 @@ async fn only_get_post(req: Request, next: Next) -> Response {
         };
     }
 
-    // 3) All other paths (ops probes, swagger UI, openapi.json) — keep the
+    // 4) All other paths (ops probes, swagger UI, openapi.json) — keep the
     //    permissive GET / POST allowance.
     match *method {
         Method::GET | Method::POST | Method::HEAD | Method::OPTIONS => next.run(req).await,
@@ -296,24 +304,70 @@ async fn only_get_post(req: Request, next: Next) -> Response {
 /// real swarm in.
 const BOT_UA_PATTERNS: &[&str] = &[
     // -- search engines --
-    "googlebot", "bingbot", "slurp", "duckduckbot", "yandexbot",
-    "baiduspider", "sogou web spider", "sogou inst spider", "yisouspider",
-    "360spider", "haosouspider", "sosospider", "exabot", "facebot",
-    "ia_archiver", "petalbot", "yahoo! slurp",
+    "googlebot",
+    "bingbot",
+    "slurp",
+    "duckduckbot",
+    "yandexbot",
+    "baiduspider",
+    "sogou web spider",
+    "sogou inst spider",
+    "yisouspider",
+    "360spider",
+    "haosouspider",
+    "sosospider",
+    "exabot",
+    "facebot",
+    "ia_archiver",
+    "petalbot",
+    "yahoo! slurp",
     // -- SEO / data brokers --
-    "ahrefsbot", "semrushbot", "mj12bot", "dotbot", "seznambot",
-    "blexbot", "megaindex", "linkdexbot", "screaming frog", "sitebulb",
-    "serpstatbot", "barkrowler", "dataforseobot",
+    "ahrefsbot",
+    "semrushbot",
+    "mj12bot",
+    "dotbot",
+    "seznambot",
+    "blexbot",
+    "megaindex",
+    "linkdexbot",
+    "screaming frog",
+    "sitebulb",
+    "serpstatbot",
+    "barkrowler",
+    "dataforseobot",
     // -- AI training scrapers --
-    "gptbot", "chatgpt-user", "oai-searchbot", "claudebot", "claude-web",
-    "anthropic-ai", "ccbot", "perplexitybot", "bytespider",
-    "applebot-extended", "amazonbot", "diffbot", "cohere-ai",
-    "img2dataset", "timpibot", "google-extended",
+    "gptbot",
+    "chatgpt-user",
+    "oai-searchbot",
+    "claudebot",
+    "claude-web",
+    "anthropic-ai",
+    "ccbot",
+    "perplexitybot",
+    "bytespider",
+    "applebot-extended",
+    "amazonbot",
+    "diffbot",
+    "cohere-ai",
+    "img2dataset",
+    "timpibot",
+    "google-extended",
     // -- generic catch-all (substring match) --
-    "spider", "crawler", "scraper",
-    "headlesschrome", "phantomjs", "puppeteer", "playwright",
-    "scrapy", "httrack", "wget", "libwww-perl", "python-urllib",
-    "go-http-client", "java/", "okhttp",
+    "spider",
+    "crawler",
+    "scraper",
+    "headlesschrome",
+    "phantomjs",
+    "puppeteer",
+    "playwright",
+    "scrapy",
+    "httrack",
+    "wget",
+    "libwww-perl",
+    "python-urllib",
+    "go-http-client",
+    "java/",
+    "okhttp",
 ];
 
 /// Block crawler / scraper User-Agents with a flat 403. Empty UA is allowed

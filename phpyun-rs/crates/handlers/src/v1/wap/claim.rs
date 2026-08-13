@@ -1,11 +1,7 @@
 //! Company claim (public: can be submitted without login).
 
-use axum::{
-    extract::State,
-    Router,
-    routing::post,
-};
-use phpyun_core::{dto::OkResp, ApiJson, AppResult, AppState, ClientIp, ValidatedJson};
+use axum::{extract::State, routing::post, Router};
+use phpyun_core::{dto::OkResp, ApiResponse, AppResult, AppState, ClientIp, ValidatedJson};
 use phpyun_services::claim_service::{self, ClaimInput};
 use serde::Deserialize;
 use utoipa::ToSchema;
@@ -39,7 +35,7 @@ pub async fn claim(
     State(state): State<AppState>,
     ClientIp(ip): ClientIp,
     ValidatedJson(f): ValidatedJson<ClaimForm>,
-) -> AppResult<ApiJson<OkResp>> {
+) -> AppResult<ApiResponse<OkResp>> {
     claim_service::claim(
         &state,
         ClaimInput {
@@ -51,5 +47,5 @@ pub async fn claim(
         },
     )
     .await?;
-    Ok(ApiJson(OkResp { ok: true }))
+    Ok(ApiResponse::data(OkResp { ok: true }))
 }
