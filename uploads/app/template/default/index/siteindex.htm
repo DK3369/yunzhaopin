@@ -9,8 +9,8 @@
 		<link href="{yun:}$style{/yun}/style/css.css?v={yun:}$config.cachecode{/yun}" rel="stylesheet" type="text/css" />
 		<link href="{yun:}$config.sy_weburl{/yun}/js/layui/css/layui.css?v={yun:}$config.cachecode{/yun}" rel="stylesheet" type="text/css" /> 
 		{yun:}if $ishtml{/yun}
-			<script src="{yun:}url m=ajax c=wjump{/yun}" language="javascript"></script>
-        {yun:}/if{/yun}
+			
+        
 		
 		<title>{yun:}$title{/yun}</title>
 
@@ -100,9 +100,9 @@
 	<li>
 		<div class="fz_index_jobname"><a href="{yun:}$hot_list.job_url{/yun}">{yun:}$hot_list.name_n{/yun}</a></div>
 		<div class="fz_index_jobinfo"><span class="fz_index_jobinfo_xz">{yun:}if $hot_list.job_salary!='面议'{/yun}￥{yun:}/if{/yun}{yun:}$hot_list.job_salary{/yun}</span>
-		{yun:}if $hot_list.job_exp{/yun}<span class="fz_index_jobinfo_line">|</span>{yun:}$hot_list.job_exp{/yun}{yun:}t key='home.experience_suffix'{/yun}{yun:}/if{/yun}
+		{yun:}if $hot_list.job_exp{/yun}<span class="fz_index_jobinfo_line">|</span>{yun:}$hot_list.job_exp{/yun}{yun:}t key='home.experience_suffix'{/yun}
 		
-		{yun:}if $hot_list.job_edu{/yun}<span class="fz_index_jobinfo_line">|</span>{yun:}$hot_list.job_edu{/yun}{yun:}t key='home.education_suffix'{/yun}{yun:}/if{/yun}
+		{yun:}if $hot_list.job_edu{/yun}<span class="fz_index_jobinfo_line">|</span>{yun:}$hot_list.job_edu{/yun}{yun:}t key='home.education_suffix'{/yun}
 		</div>
 		<div class="">{yun:}$hot_list.com_n{/yun}</div>
 		<span class="fz_index_jobtime">{yun:}if $hot_list.time==$time_yesterday_label||$hot_list.redtime=='1'{/yun} 
@@ -118,9 +118,9 @@
 	<li>
 		<div class="fz_index_jobname"><a href="{yun:}$rec_list.job_url{/yun}">{yun:}$rec_list.name_n{/yun}</a></div>
 		<div class="fz_index_jobinfo"><span class="fz_index_jobinfo_xz">{yun:}if $rec_list.job_salary!='面议'{/yun}￥{yun:}/if{/yun}{yun:}$rec_list.job_salary{/yun}</span>
-		{yun:}if $rec_list.job_exp{/yun}<span class="fz_index_jobinfo_line">|</span>{yun:}$rec_list.job_exp{/yun}{yun:}t key='home.experience_suffix'{/yun}{yun:}/if{/yun}
+		{yun:}if $rec_list.job_exp{/yun}<span class="fz_index_jobinfo_line">|</span>{yun:}$rec_list.job_exp{/yun}{yun:}t key='home.experience_suffix'{/yun}
 		
-		{yun:}if $rec_list.job_edu{/yun}<span class="fz_index_jobinfo_line">|</span>{yun:}$rec_list.job_edu{/yun}{yun:}t key='home.education_suffix'{/yun}{yun:}/if{/yun}
+		{yun:}if $rec_list.job_edu{/yun}<span class="fz_index_jobinfo_line">|</span>{yun:}$rec_list.job_edu{/yun}{yun:}t key='home.education_suffix'{/yun}
 		</div>
 		<div class="">{yun:}$rec_list.com_n{/yun}</div>
 		<span class="fz_index_jobtime">{yun:}if $rec_list.time==$time_yesterday_label||$rec_list.redtime=='1'{/yun} 
@@ -136,9 +136,9 @@
 	<li>
 		<div class="fz_index_jobname"><a href="{yun:}$new_list.job_url{/yun}">{yun:}$new_list.name_n{/yun}</a></div>
 		<div class="fz_index_jobinfo"><span class="fz_index_jobinfo_xz">{yun:}if $new_list.job_salary!='面议'{/yun}￥{yun:}/if{/yun}{yun:}$new_list.job_salary{/yun}</span>
-		{yun:}if $new_list.job_exp{/yun}<span class="fz_index_jobinfo_line">|</span>{yun:}$new_list.job_exp{/yun}{yun:}t key='home.experience_suffix'{/yun}{yun:}/if{/yun}
+		{yun:}if $new_list.job_exp{/yun}<span class="fz_index_jobinfo_line">|</span>{yun:}$new_list.job_exp{/yun}{yun:}t key='home.experience_suffix'{/yun}
 		
-		{yun:}if $new_list.job_edu{/yun}<span class="fz_index_jobinfo_line">|</span>{yun:}$new_list.job_edu{/yun}{yun:}t key='home.education_suffix'{/yun}{yun:}/if{/yun}
+		{yun:}if $new_list.job_edu{/yun}<span class="fz_index_jobinfo_line">|</span>{yun:}$new_list.job_edu{/yun}{yun:}t key='home.education_suffix'{/yun}
 		</div>
 		<div class="">{yun:}$new_list.com_n{/yun}</div>
 		<span class="fz_index_jobtime">{yun:}if $new_list.time==$time_yesterday_label||$new_list.redtime=='1'{/yun} 
@@ -194,7 +194,7 @@
 {yun:}foreach item=rzjob from=$rzcomlist.joblist key=v{/yun}
 	{yun:}if $v<3{/yun}
 	<a href="{yun:}url m=job c=comapply id=$rzjob.id{/yun}" target="_blank" >{yun:}$rzjob.name{/yun}</a>
-	{yun:}/if{/yun}
+	
 {yun:}/foreach{/yun}  
 </div>
 <div class="fz_index_com_jobn">
@@ -217,7 +217,7 @@
 {yun:}foreach item=job from=$newcomlist.joblist key=vv{/yun}
 	{yun:}if $vv<3{/yun}
 		<a href="{yun:}url m=job c=comapply id=$job.id{/yun}" target="_blank" >{yun:}$job.name{/yun}</a>
-	{yun:}/if{/yun}
+	
 {yun:}/foreach{/yun}  
 </div>
 <div class="fz_index_com_jobn">
@@ -355,13 +355,13 @@
                                     <a href="{yun:}url m=login{/yun}" class="tip_bottom_login">{yun:}t key='common.login'{/yun}</a>
                                     <a href="{yun:}url m=register{/yun}" class="tip_bottom_reg">{yun:}t key='default_00144'{/yun}<i class="tip_bottom_reg_icon"></i></a>
                                 </div>
-							{yun:}/if{/yun}
+							
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
-	{yun:}/if{/yun}
+	
 
 	<div id="bg"></div>
 	{yun:}include file="$tplstyle/backtop.htm"{/yun}
@@ -521,7 +521,7 @@
 				})
 			})
 		</script>
-	{yun:}/if{/yun}
+	
 	<!--下面为调用网站主题-->
 	{yun:}webspecial{/yun} 
 	{yun:}include file="$tplstyle/verify/index_verify_js.htm"{/yun} 

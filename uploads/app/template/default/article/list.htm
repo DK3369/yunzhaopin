@@ -7,9 +7,8 @@
 	<meta name="description" content="{yun:}$description{/yun}"/>
 	<link rel="stylesheet" href="{yun:}$style{/yun}/style/css.css?v={yun:}$config.cachecode{/yun}" type="text/css"/>
 	<link rel="stylesheet" href="{yun:}$style{/yun}/style/news.css?v={yun:}$config.cachecode{/yun}" type="text/css"/>
-	{yun:}if $ishtml{/yun}
-	<script src="{yun:}url m=ajax c=wjump url='c,article;nid,`$nid`'{/yun}" language="javascript"></script>
-	{yun:}/if{/yun}
+
+	
 </head>
 
 <body  class="body_bg">
@@ -17,7 +16,7 @@
 	<div class="yun_content">
 		<div class="current_Location  png"> 
 			{yun:}t key='common_01498'{/yun}：<a href="{yun:}$config.sy_weburl{/yun}">{yun:}t key='common.home'{/yun}</a> > <a href="{yun:}url m=article{/yun}">{yun:}t key='home.workplace_news'{/yun}</a> > 
-			{yun:}if $classname{/yun}{yun:}$classname{/yun}{yun:}else{/yun}{yun:}t key='common.search'{/yun}{yun:}/if{/yun}
+			{yun:}if $classname{/yun}{yun:}$classname{/yun}{yun:}else{/yun}{yun:}t key='common.search'{/yun}
 		</div>
 		
 		<div class="n_list_box">
@@ -59,13 +58,13 @@
                     <div class="search_news_no">{yun:}t key='common_01912'{/yun}，没有找到满足条件的职场资讯</div>
 					
 
-				{yun:}/if{/yun}
+				
 			</div>
 
 <div class="news_index_box_right">
 <form method="get" action="{yun:}if !$config.sy_articledir{/yun}index.php{yun:}else{/yun}{yun:}url m=article{/yun}{yun:}/if{/yun}">
     <div class="news_index_box_search">
-    {yun:}if !$config.sy_articledir || $config.sy_seo_rewrite!='1'{/yun}<input name='m' value="article" type="hidden"/>{yun:}/if{/yun}
+    {yun:}if !$config.sy_articledir || $config.sy_seo_rewrite!='1'{/yun}<input name='m' value="article" type="hidden"/>
     <input name='c' value="list" type="hidden"/>
 	<input name='nid' value="{yun:}$smarty.get.nid{/yun}" type="hidden"/>
     <input type="text" id="keyword" name="keyword" value="{yun:}$smarty.get.keyword{/yun}" placeholder="{yun:}t key='default_00107'{/yun}" class="news_index_box_search_text"/>
@@ -114,7 +113,7 @@
               {yun:}article limit=7 type=tj t_len=17 urlstatic=1 item=news_hits{/yun}
 			  {yun:}if $news_hits.id!=$news_jian.id{/yun}
               <li><a href="{yun:}$news_hits.url{/yun}" target="_blank" title="{yun:}$news_hits.title{/yun}">{yun:}$news_hits.title{/yun}</a></li>
-			  {yun:}/if{/yun}
+			  
               {yun:}/article{/yun}
             </ul>
           </div>
@@ -141,7 +140,7 @@
                   {yun:}article limit=7 t_len=16 d_len=24 urlstatic=1   item=indexnews2{/yun}
 				  {yun:}if $indexnews2.id!=$indexnews1.id{/yun}
                    <li><a href="{yun:}$indexnews2.url{/yun}" target="_blank" title="{yun:}$indexnews2.title{/yun}">{yun:}$indexnews2.title{/yun}</a></li>
-				  {yun:}/if{/yun}
+				  
                   {yun:}/article{/yun}
               </ul>
             </div>
