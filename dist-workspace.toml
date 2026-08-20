@@ -19,8 +19,8 @@ unix-archive = ".tar.gz"
 checksum = "sha256"
 # Runtime/deployment inputs that must ship beside the server binary.
 include = [
-    ".env.pro.example",
-    "migrations/sqlx/",
-    "deploy/systemd/",
-    "deploy/INSTALL.md",
+    "phpyun-rs/.env.pro.example",
+    "phpyun-rs/migrations/sqlx/",
+    "phpyun-rs/deploy/systemd/",
+    "phpyun-rs/deploy/INSTALL.md",
 ]

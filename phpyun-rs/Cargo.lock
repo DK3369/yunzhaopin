@@ -2251,7 +2251,7 @@ dependencies = [
 
 [[package]]
 name = "phpyun-auth"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "anyhow",
  "argon2",
@@ -2264,7 +2264,7 @@ dependencies = [
 
 [[package]]
 name = "phpyun-core"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2303,7 +2303,7 @@ dependencies = [
 
 [[package]]
 name = "phpyun-handlers"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "axum",
  "axum-test",
@@ -2329,7 +2329,7 @@ dependencies = [
 
 [[package]]
 name = "phpyun-models"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "chrono",
  "phpyun-core",
@@ -2341,7 +2341,7 @@ dependencies = [
 
 [[package]]
 name = "phpyun-rs"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "anyhow",
  "axum",
@@ -2354,7 +2354,7 @@ dependencies = [
 
 [[package]]
 name = "phpyun-services"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "arc-swap",
  "base64 0.22.1",
