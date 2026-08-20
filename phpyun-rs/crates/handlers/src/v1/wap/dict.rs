@@ -11,10 +11,7 @@
 //! serialization we call `phpyun_core::i18n::t()` to translate using the current request language.
 //! Translation entries are maintained under the `dict.*` namespace of `locales/<lang>.json`.
 
-use axum::{
-    routing::{get, post},
-    Router,
-};
+use axum::{routing::post, Router};
 use phpyun_core::i18n::{current_lang, t, Lang};
 use phpyun_core::ValidatedJson;
 use phpyun_core::{ApiResponse, AppResult, AppState};
@@ -30,7 +27,7 @@ pub fn routes() -> Router<AppState> {
     let r = Router::new()
         .route("/dict/cities", post(cities))
         .route("/dict/cities/by-province", post(cities_of_province));
-    r.route("/dict/industries", get(industries).post(industries))
+    r.route("/dict/industries", post(industries))
         .route("/dict/job-categories", post(job_categories))
         .route("/dict/educations", post(educations))
         .route("/dict/experiences", post(experiences))

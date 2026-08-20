@@ -13,27 +13,28 @@ use sqlx::{MySqlPool, QueryBuilder};
 const SELECT_FIELDS: &str = "id, uid, resume, email, comname, jobname, \
                              recipient AS resumename, datetime AS addtime";
 
-pub async fn create(
-    pool: &MySqlPool,
-    uid: u64,
-    resume: u64,
-    email: &str,
-    comname: &str,
-    jobname: &str,
-    resumename: Option<&str>,
-    now: i64,
-) -> Result<u64, sqlx::Error> {
+pub struct CreateInput<'a> {
+    pub uid: u64,
+    pub resume: u64,
+    pub email: &'a str,
+    pub comname: &'a str,
+    pub jobname: &'a str,
+    pub resumename: Option<&'a str>,
+    pub now: i64,
+}
+
+pub async fn create(pool: &MySqlPool, input: CreateInput<'_>) -> Result<u64, sqlx::Error> {
     let res = sqlx::query(
         "INSERT INTO phpyun_resumeout (uid, resume, email, comname, jobname, recipient, datetime)
          VALUES (?, ?, ?, ?, ?, ?, ?)",
     )
-    .bind(uid)
-    .bind(resume)
-    .bind(email)
-    .bind(comname)
-    .bind(jobname)
-    .bind(resumename.unwrap_or(""))
-    .bind(now)
+    .bind(input.uid)
+    .bind(input.resume)
+    .bind(input.email)
+    .bind(input.comname)
+    .bind(input.jobname)
+    .bind(input.resumename.unwrap_or(""))
+    .bind(input.now)
     .execute(pool)
     .await?;
     Ok(res.last_insert_id())

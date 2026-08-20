@@ -71,7 +71,7 @@ async fn after_child(
 async fn resolve_default_eid(state: &AppState, uid: u64) -> AppResult<u64> {
     expect::find_default_id_by_uid(state.db.reader(), uid)
         .await?
-        .ok_or_else(|| ApiError::business("resume_not_found").into())
+        .ok_or_else(|| ApiError::business("resume_not_found"))
 }
 
 // ==================== Job intentions ====================
@@ -92,8 +92,9 @@ pub mod expect_svc {
     /// "resume copies"), but the H5 wizard only ever wants the "primary"
     /// one. Without idempotence, every wizard re-entry created a fresh
     /// expect → multiple "简历" piling up. We collapse that:
-    ///   - if the user has no expect yet → INSERT a fresh default
-    ///   - if the user has at least one expect → UPDATE the default in place
+    /// - if the user has no expect yet → INSERT a fresh default
+    /// - if the user has at least one expect → UPDATE the default in place
+    ///
     /// Returns the id of the row that was written.
     pub async fn create(
         state: &AppState,
@@ -150,7 +151,7 @@ pub mod expect_svc {
         let affected =
             expect::update(state.db.pool(), id, user.uid, &input, clock::now_ts()).await?;
         if affected == 0 {
-            return Err(ApiError::business("resume_not_found").into());
+            return Err(ApiError::business("resume_not_found"));
         }
         let _ = audit::emit(
             state,
@@ -173,7 +174,7 @@ pub mod expect_svc {
         user.require_jobseeker()?;
         let affected = expect::delete(state.db.pool(), id, user.uid).await?;
         if affected == 0 {
-            return Err(ApiError::business("resume_not_found").into());
+            return Err(ApiError::business("resume_not_found"));
         }
         let _ = audit::emit(
             state,
@@ -250,7 +251,7 @@ pub mod edu_svc {
             .ok_or(ApiError::business("resume_not_found"))?;
         let affected = edu::update(pool, id, user.uid, &input).await?;
         if affected == 0 {
-            return Err(ApiError::business("resume_not_found").into());
+            return Err(ApiError::business("resume_not_found"));
         }
         super::after_child(
             state,
@@ -282,7 +283,7 @@ pub mod edu_svc {
             .ok_or(ApiError::business("resume_not_found"))?;
         let affected = edu::delete(pool, id, user.uid).await?;
         if affected == 0 {
-            return Err(ApiError::business("resume_not_found").into());
+            return Err(ApiError::business("resume_not_found"));
         }
         super::after_child(
             state,
@@ -362,7 +363,7 @@ pub mod work_svc {
             .ok_or(ApiError::business("resume_not_found"))?;
         let affected = work::update(pool, id, user.uid, &input).await?;
         if affected == 0 {
-            return Err(ApiError::business("resume_not_found").into());
+            return Err(ApiError::business("resume_not_found"));
         }
         super::after_child(
             state,
@@ -397,7 +398,7 @@ pub mod work_svc {
             .ok_or(ApiError::business("resume_not_found"))?;
         let affected = work::delete(pool, id, user.uid).await?;
         if affected == 0 {
-            return Err(ApiError::business("resume_not_found").into());
+            return Err(ApiError::business("resume_not_found"));
         }
         super::after_child(
             state,
@@ -476,7 +477,7 @@ pub mod project_svc {
             .ok_or(ApiError::business("resume_not_found"))?;
         let affected = project::update(pool, id, user.uid, &input).await?;
         if affected == 0 {
-            return Err(ApiError::business("resume_not_found").into());
+            return Err(ApiError::business("resume_not_found"));
         }
         super::after_child(
             state,
@@ -511,7 +512,7 @@ pub mod project_svc {
             .ok_or(ApiError::business("resume_not_found"))?;
         let affected = project::delete(pool, id, user.uid).await?;
         if affected == 0 {
-            return Err(ApiError::business("resume_not_found").into());
+            return Err(ApiError::business("resume_not_found"));
         }
         super::after_child(
             state,
@@ -584,7 +585,7 @@ pub mod skill_svc {
             .ok_or(ApiError::business("resume_not_found"))?;
         let affected = skill::update(pool, id, user.uid, &input).await?;
         if affected == 0 {
-            return Err(ApiError::business("resume_not_found").into());
+            return Err(ApiError::business("resume_not_found"));
         }
         super::after_child(
             state,
@@ -610,7 +611,7 @@ pub mod skill_svc {
             .ok_or(ApiError::business("resume_not_found"))?;
         let affected = skill::delete(pool, id, user.uid).await?;
         if affected == 0 {
-            return Err(ApiError::business("resume_not_found").into());
+            return Err(ApiError::business("resume_not_found"));
         }
         super::after_child(
             state,
@@ -658,7 +659,7 @@ pub mod language_svc {
         user.require_jobseeker()?;
         let affected = language::update(state.db.pool(), id, user.uid, &input).await?;
         if affected == 0 {
-            return Err(ApiError::business("resume_not_found").into());
+            return Err(ApiError::business("resume_not_found"));
         }
         Ok(())
     }
@@ -672,7 +673,7 @@ pub mod language_svc {
         user.require_jobseeker()?;
         let affected = language::delete(state.db.pool(), id, user.uid).await?;
         if affected == 0 {
-            return Err(ApiError::business("resume_not_found").into());
+            return Err(ApiError::business("resume_not_found"));
         }
         Ok(())
     }

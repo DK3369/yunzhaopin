@@ -21,7 +21,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ```bash
 cargo run -p phpyun-app                           # debug server (reads .env)
-cargo build --package phpyun-app --bin app        # build only the binary
+cargo build --package phpyun-rs --bin phpyun-rs   # build only the binary
 cargo test --package phpyun-handlers              # all handler integration tests
 cargo test --package phpyun-handlers --test endpoint_smoke -- --nocapture
                                                   # boots AppState, POSTs `{}` to every documented v1 endpoint, fails on any 5xx
@@ -44,7 +44,7 @@ declare `APP_ENV=test`.
 The smoke test boots in-process and uses synthetic `ConnectInfo` to bypass the IP rate limiter — works in CI. To exercise the real network/middleware stack, hit a running server:
 
 ```bash
-nohup ./target/debug/app > /tmp/srv.log 2>&1 &
+nohup ./target/debug/phpyun-rs > /tmp/srv.log 2>&1 &
 
 # Empty-body smoke (catches schema mismatches that 5xx)
 TOKEN=eyJ... python3 scripts/scan_endpoints.py

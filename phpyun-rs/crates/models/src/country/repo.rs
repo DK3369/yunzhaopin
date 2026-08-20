@@ -5,15 +5,15 @@
 //! (verified to match exactly across all 250 countries).
 //!
 //! Field mapping:
-//!   - `id`            ← cc.id (the PHPYun city_class id; matches what every
-//!                       other PHPYun endpoint expects)
-//!   - `code` (ISO α2) ← r.country_code  (LEFT JOIN; '' if region missing)
-//!   - `name_en`       ← cc.e_name
-//!   - `name_zh`       ← cc.name
-//!   - `continent`     ← r.continent
-//!   - `phone_code`    ← cc.code (stored as INT, cast to CHAR)
-//!   - `sort`          ← cc.sort
-//!   - `status`        ← cc.display (1 = visible)
+//! - `id`            ← cc.id (the PHPYun city_class id; matches what every
+//!   other PHPYun endpoint expects)
+//! - `code` (ISO α2) ← r.country_code  (LEFT JOIN; '' if region missing)
+//! - `name_en`       ← cc.e_name
+//! - `name_zh`       ← cc.name
+//! - `continent`     ← r.continent
+//! - `phone_code`    ← cc.code (stored as INT, cast to CHAR)
+//! - `sort`          ← cc.sort
+//! - `status`        ← cc.display (1 = visible)
 //!
 //! Source rows lack `code3`, `numeric_code`, `currency`, `flag`, `created_at`,
 //! `updated_at` — synthesised as empty / 0.

@@ -36,12 +36,12 @@ pub async fn add(
 ) -> AppResult<u64> {
     user.require_employer()?;
     if input.pic.is_empty() {
-        return Err(ApiError::param_invalid("pic").into());
+        return Err(ApiError::param_invalid("pic"));
     }
     if input.max_per_company > 0 {
         let used = banner_repo::count_by_uid(state.db.reader(), user.uid).await?;
         if used >= input.max_per_company {
-            return Err(ApiError::rate_limit().into());
+            return Err(ApiError::rate_limit());
         }
     }
     let id = banner_repo::create(

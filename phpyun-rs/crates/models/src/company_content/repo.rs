@@ -74,16 +74,20 @@ pub async fn find_by_id(
         .await
 }
 
+pub struct CreateInput<'a> {
+    pub uid: u64,
+    pub title: &'a str,
+    pub body: &'a str,
+    pub file: Option<&'a str>,
+    pub usertype: i32,
+    pub did: u32,
+    pub now: i64,
+}
+
 pub async fn create(
     pool: &MySqlPool,
     kind: ContentKind,
-    uid: u64,
-    title: &str,
-    body: &str,
-    file: Option<&str>,
-    usertype: i32,
-    did: u32,
-    now: i64,
+    input: CreateInput<'_>,
 ) -> Result<u64, sqlx::Error> {
     let sql = format!(
         "INSERT INTO {} (uid, title, body, file, status, ctime, did, usertype)
@@ -91,30 +95,34 @@ pub async fn create(
         kind.table()
     );
     let res = sqlx::query(&sql)
-        .bind(uid)
-        .bind(title)
-        .bind(body)
-        .bind(file.unwrap_or(""))
-        .bind(now)
-        .bind(did)
-        .bind(usertype)
+        .bind(input.uid)
+        .bind(input.title)
+        .bind(input.body)
+        .bind(input.file.unwrap_or(""))
+        .bind(input.now)
+        .bind(input.did)
+        .bind(input.usertype)
         .execute(pool)
         .await?;
     Ok(res.last_insert_id())
 }
 
+pub struct UpdateInput<'a> {
+    pub id: u64,
+    pub uid: u64,
+    pub title: &'a str,
+    pub body: &'a str,
+    pub file: Option<&'a str>,
+    pub now: i64,
+}
+
 pub async fn update(
     pool: &MySqlPool,
     kind: ContentKind,
-    id: u64,
-    uid: u64,
-    title: &str,
-    body: &str,
-    file: Option<&str>,
-    now: i64,
+    input: UpdateInput<'_>,
 ) -> Result<u64, sqlx::Error> {
     // After update, reset status = 0 to re-submit for review (matching PHP behavior).
-    let sql = if file.is_some() {
+    let sql = if input.file.is_some() {
         format!(
             "UPDATE {} SET title = ?, body = ?, file = ?, status = 0, ctime = ? WHERE id = ? AND uid = ?",
             kind.table()
@@ -126,9 +134,18 @@ pub async fn update(
         )
     };
 
-    let q = sqlx::query(&sql).bind(title).bind(body);
-    let q = if let Some(f) = file { q.bind(f) } else { q };
-    let res = q.bind(now).bind(id).bind(uid).execute(pool).await?;
+    let q = sqlx::query(&sql).bind(input.title).bind(input.body);
+    let q = if let Some(file) = input.file {
+        q.bind(file)
+    } else {
+        q
+    };
+    let res = q
+        .bind(input.now)
+        .bind(input.id)
+        .bind(input.uid)
+        .execute(pool)
+        .await?;
     Ok(res.rows_affected())
 }
 

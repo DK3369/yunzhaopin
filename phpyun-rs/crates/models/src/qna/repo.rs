@@ -320,6 +320,23 @@ pub async fn mark_answer_accepted(
 // rewriting the CSV in place: parse, add/remove, re-pack.
 // `type=1` = questions (kept consistent with `list_attended_questions`).
 
+pub async fn is_question_attended(
+    pool: &MySqlPool,
+    uid: u64,
+    question_id: u64,
+) -> Result<bool, sqlx::Error> {
+    let row: Option<(Option<String>,)> =
+        sqlx::query_as("SELECT ids FROM phpyun_attention WHERE uid = ? AND type = 1 LIMIT 1")
+            .bind(uid)
+            .fetch_optional(pool)
+            .await?;
+    Ok(row.and_then(|(ids,)| ids).is_some_and(|ids| {
+        ids.split(',')
+            .filter_map(|value| value.trim().parse::<u64>().ok())
+            .any(|id| id == question_id)
+    }))
+}
+
 pub async fn toggle_attention(
     pool: &MySqlPool,
     uid: u64,
@@ -406,8 +423,7 @@ pub async fn list_attended_questions(
     let take_to = (off + lim).min(question_ids.len());
     question_ids = question_ids[off..take_to].to_vec();
 
-    let placeholders = std::iter::repeat("?")
-        .take(question_ids.len())
+    let placeholders = std::iter::repeat_n("?", question_ids.len())
         .collect::<Vec<_>>()
         .join(",");
     let sql = format!(

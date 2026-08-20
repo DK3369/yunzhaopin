@@ -11,6 +11,7 @@
 //!   1. UPDATE phpyun_member_statis SET integral = integral - points WHERE uid = from AND integral >= points
 //!   2. UPDATE phpyun_member_statis SET integral = integral + points WHERE uid = to
 //!   3. INSERT phpyun_company_pay (one row for from = -points, one row for to = +points)
+//!
 //! All three in a single transaction. Failure mid-flight rolls back.
 
 use super::entity::IntegralTransfer;

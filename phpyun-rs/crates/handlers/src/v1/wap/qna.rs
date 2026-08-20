@@ -10,9 +10,6 @@ use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
 
-/// `unix -> Y-m-d H:i` (equivalent to PHP `date('Y-m-d H:i', $ts)`); returns empty string when ts<=0.
-
-/// Convert the relative avatar path in the PHPYun database to a full URL (PHP `checkpic($pic)`).
 pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/questions", post(list_questions))
@@ -365,19 +362,10 @@ pub async fn question_detail(
         if uid == q_uid {
             2
         } else {
-            let row: Option<(String,)> = sqlx::query_as(
-                // TODO(arch): qna::repo models phpyun_attention as a (uid, qid) join table; legacy DB still uses (uid, type, ids CSV)
-                "SELECT COALESCE(ids,'') FROM phpyun_attention \
-                 WHERE uid = ? AND type = 1 LIMIT 1",
-            )
-            .bind(uid as i64)
-            .fetch_optional(state.db.reader())
-            .await
-            .unwrap_or(None);
-            let ids = row.map(|(s,)| s).unwrap_or_default();
-            let id_str = id.to_string();
-            let hit = ids.split(',').any(|s| !s.is_empty() && s.trim() == id_str);
-            if hit {
+            if phpyun_models::qna::repo::is_question_attended(state.db.reader(), uid, id)
+                .await
+                .unwrap_or(false)
+            {
                 1
             } else {
                 0

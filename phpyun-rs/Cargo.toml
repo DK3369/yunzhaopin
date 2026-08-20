@@ -12,9 +12,10 @@ members = [
 [workspace.package]
 version = "0.1.0"
 edition = "2021"
-authors = ["PHPYun-RS Team"]
+authors = ["jobs Team"]
 license = "Proprietary"
-repository = "https://example.com/phpyun-rs"
+repository = "https://github.com/DK3369/yunzhaopin"
+description = "Rust backend service for PHPYun"
 
 [workspace.dependencies]
 # ---- HTTP / Web ----
@@ -110,3 +111,8 @@ phpyun_handlers = { path = "crates/handlers", package = "phpyun-handlers" }
 lto = "thin"
 codegen-units = 1
 strip = true
+
+# The profile that 'dist' will build with
+[profile.dist]
+inherits = "release"
+lto = "thin"

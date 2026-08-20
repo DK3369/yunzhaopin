@@ -32,7 +32,10 @@ pub async fn submit(
         input.target_kind,
         KIND_JOB | KIND_COMPANY | KIND_RESUME | KIND_ARTICLE | KIND_USER
     ) {
-        return Err(ApiError::param_invalid(format!("target_kind={}", input.target_kind)).into());
+        return Err(ApiError::param_invalid(format!(
+            "target_kind={}",
+            input.target_kind
+        )));
     }
 
     let reason = report_repo::resolve_reason(state.db.reader(), input.reason_code)

@@ -107,7 +107,7 @@ async fn audit_underlying_table_counts() {
     ];
 
     println!("\n========== UNDERLYING TABLE-COUNT AUDIT ==========");
-    println!("{:<48} {}", "endpoint", "row counts in source table(s)");
+    println!("{:<48} row counts in source table(s)", "endpoint");
     for (path, tables) in probes {
         let mut summary: Vec<String> = Vec::new();
         for (t, cond) in *tables {

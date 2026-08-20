@@ -47,7 +47,9 @@ pub async fn send_text(state: &AppState, to: &str, subject: &str, body: &str) ->
 
     if !result.status.success() {
         let stderr = String::from_utf8_lossy(&result.stderr).trim().to_string();
-        return Err(ApiError::upstream(format!("mail delivery rejected: {stderr}")).into());
+        return Err(ApiError::upstream(format!(
+            "mail delivery rejected: {stderr}"
+        )));
     }
     Ok(())
 }

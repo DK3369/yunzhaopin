@@ -17,10 +17,10 @@ pub async fn send(
     body: &str,
 ) -> AppResult<u64> {
     if peer_uid == user.uid {
-        return Err(ApiError::param_invalid("cannot_chat_self").into());
+        return Err(ApiError::param_invalid("cannot_chat_self"));
     }
     if body.is_empty() || body.len() > 5000 {
-        return Err(ApiError::param_invalid("body_length").into());
+        return Err(ApiError::param_invalid("body_length"));
     }
 
     rate_limit::check_and_incr(

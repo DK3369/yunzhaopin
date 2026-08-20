@@ -93,6 +93,7 @@ fn collect_registered_paths() -> BTreeSet<String> {
     // Find `paths(` … matching close, allow nested parens.
     let starts: Vec<_> = src.match_indices("paths(").map(|(i, _)| i + 6).collect();
     let mut out = BTreeSet::new();
+    let re_path = regex::Regex::new(r"\b(v\d+(?:::\w+)+)\b").unwrap();
     for start in starts {
         let mut depth = 1;
         let mut i = start;
@@ -119,7 +120,6 @@ fn collect_registered_paths() -> BTreeSet<String> {
             .collect::<Vec<_>>()
             .join("\n");
         // Each token of form vN::a::b::c
-        let re_path = regex::Regex::new(r"\b(v\d+(?:::\w+)+)\b").unwrap();
         for cap in re_path.captures_iter(&cleaned) {
             out.insert(cap[1].to_string());
         }

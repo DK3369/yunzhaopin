@@ -37,7 +37,7 @@ impl Modify for TagCounts {
     fn modify(&self, openapi: &mut utoipa::openapi::OpenApi) {
         use std::collections::BTreeMap;
         let mut counts: BTreeMap<String, usize> = BTreeMap::new();
-        for (_path, item) in openapi.paths.paths.iter() {
+        for item in openapi.paths.paths.values() {
             let mut count_op = |op: Option<&utoipa::openapi::path::Operation>| {
                 if let Some(op) = op {
                     if let Some(tags) = op.tags.as_ref() {
@@ -187,16 +187,20 @@ impl Modify for UniqueOperationId {
         v1::wap::resumes::list_resumes,
         v1::wap::resumes::resume_detail,
         // mcenter: account
+        v1::mcenter::profile::get_profile,
         v1::mcenter::profile::update_profile,
         v1::mcenter::password::change_password,
         v1::mcenter::oauth_bindings::list_bindings,
         v1::mcenter::oauth_bindings::unbind,
         // mcenter: resume (jobseeker)
+        v1::mcenter::resume::get_mine,
         v1::mcenter::resume::update_mine,
         v1::mcenter::resume::update_status,
         // mcenter: company (employer)
+        v1::mcenter::company::get_mine,
         v1::mcenter::company::update_mine,
         // mcenter: jobs (employer CRUD)
+        v1::mcenter::jobs::list_mine,
         v1::mcenter::jobs::create,
         v1::mcenter::jobs::detail,
         v1::mcenter::jobs::update,
@@ -220,12 +224,15 @@ impl Modify for UniqueOperationId {
         v1::mcenter::favorites::remove,
         v1::mcenter::favorites::exists,
         // mcenter: resume children (jobseeker)
+        v1::mcenter::resume_expect::list,
         v1::mcenter::resume_expect::create,
         v1::mcenter::resume_expect::update,
         // v1::mcenter::resume_expect::remove, // removed
+        v1::mcenter::resume_edu::list,
         v1::mcenter::resume_edu::create,
         v1::mcenter::resume_edu::update,
         // v1::mcenter::resume_edu::remove, // removed
+        v1::mcenter::resume_work::list,
         v1::mcenter::resume_work::create,
         v1::mcenter::resume_work::update,
         // v1::mcenter::resume_work::remove, // removed
@@ -249,12 +256,15 @@ impl Modify for UniqueOperationId {
         v1::mcenter::resume_downloads::list_outbox,
         v1::mcenter::resume_downloads::list_inbox,
         // mcenter: resume sub-tables (project / skill / language)
+        v1::mcenter::resume_project::list,
         v1::mcenter::resume_project::create,
         v1::mcenter::resume_project::update,
         // v1::mcenter::resume_project::remove, // removed
+        v1::mcenter::resume_skill::list,
         v1::mcenter::resume_skill::create,
         v1::mcenter::resume_skill::update,
         // v1::mcenter::resume_skill::remove, // removed
+        v1::mcenter::resume_language::list,
         v1::mcenter::resume_language::create,
         v1::mcenter::resume_language::update,
         // v1::mcenter::resume_language::remove, // removed
@@ -271,6 +281,7 @@ impl Modify for UniqueOperationId {
         v1::wap::articles::list_articles,
         v1::wap::articles::article_detail,
         // mcenter: feedback / reports / chat
+        v1::mcenter::feedback::list_mine,
         v1::mcenter::feedback::submit,
         v1::mcenter::reports::submit,
         v1::mcenter::reports::list_mine,
@@ -295,6 +306,7 @@ impl Modify for UniqueOperationId {
         // mcenter: VIP
         v1::mcenter::vip::list_packages,
         v1::mcenter::vip::get_current,
+        v1::mcenter::vip::list_orders,
         v1::mcenter::vip::create_order,
         // wap: hot searches
         v1::wap::hot_searches::list,
@@ -346,6 +358,7 @@ impl Modify for UniqueOperationId {
         // wap: stats
         v1::wap::stats::overview,
         // mcenter: company sub CRUD
+        v1::mcenter::company_sub::list_products,
         v1::mcenter::company_sub::create_product,
         v1::mcenter::company_sub::update_product,
         // delete_product merged into update_product (status:2 soft delete)
@@ -354,6 +367,7 @@ impl Modify for UniqueOperationId {
         v1::mcenter::company_sub::update_news,
         // delete_news merged into update_news (status:2 soft delete)
         // mcenter: interview templates
+        v1::mcenter::interview_tpl::list,
         v1::mcenter::interview_tpl::create,
         v1::mcenter::interview_tpl::update,
         // delete merged into update (status:2 soft delete)
@@ -373,6 +387,7 @@ impl Modify for UniqueOperationId {
         v1::mcenter::eval::submit,
         v1::mcenter::eval::list_logs,
         // mcenter: company cert
+        v1::mcenter::company_cert::get_mine,
         v1::mcenter::company_cert::submit,
         // mcenter: resume completion score
         v1::mcenter::resume_score::completion,
@@ -396,17 +411,21 @@ impl Modify for UniqueOperationId {
         // wap: ads public
         v1::wap::ads::list,
         // mcenter: blacklist
+        v1::mcenter::blacklist::list,
         v1::mcenter::blacklist::add,
         v1::mcenter::blacklist::remove,
         // mcenter: remarks
+        v1::mcenter::remarks::list,
         v1::mcenter::remarks::upsert,
         v1::mcenter::remarks::get_one,
         v1::mcenter::remarks::remove,
         // admin: ads
+        v1::admin::ads::list,
         v1::admin::ads::create,
         v1::admin::ads::update,
         // remove merged into update (status:2 soft delete)
         // admin: warnings + audit-log
+        v1::admin::warnings::list,
         v1::admin::warnings::issue,
         v1::admin::audit_log::list,
         // mcenter: my warnings
@@ -414,6 +433,7 @@ impl Modify for UniqueOperationId {
         v1::mcenter::warnings::unread,
         v1::mcenter::warnings::mark_read,
         // admin: broadcasts
+        v1::admin::broadcasts::list,
         v1::admin::broadcasts::create,
         v1::admin::broadcasts::remove,
         // mcenter: my broadcasts
@@ -421,6 +441,7 @@ impl Modify for UniqueOperationId {
         v1::mcenter::broadcasts::unread,
         v1::mcenter::broadcasts::mark_read,
         // mcenter: entrust (jobseeker ↔ headhunter binding)
+        v1::mcenter::entrust::list,
         v1::mcenter::entrust::bind,
         v1::mcenter::entrust::unbind,
         v1::mcenter::entrust_search::list_for_headhunter,
@@ -428,6 +449,7 @@ impl Modify for UniqueOperationId {
         v1::wap::categories::list,
         v1::wap::categories::children,
         // admin: categories
+        v1::admin::categories::list,
         v1::admin::categories::create,
         v1::admin::categories::update,
         // remove merged into update (status:2 soft delete)
@@ -437,11 +459,13 @@ impl Modify for UniqueOperationId {
         // wap: app version check
         v1::wap::app_version::latest,
         // admin: app versions
+        v1::admin::app_versions::list,
         v1::admin::app_versions::create,
         v1::admin::app_versions::remove,
         // mcenter: my activity log
         v1::mcenter::activity::list,
         // mcenter: saved searches
+        v1::mcenter::saved_searches::list,
         v1::mcenter::saved_searches::create,
         v1::mcenter::saved_searches::set_notify,
         v1::mcenter::saved_searches::remove,
@@ -457,10 +481,12 @@ impl Modify for UniqueOperationId {
         v1::wap::hr_docs::list,
         v1::wap::hr_docs::detail,
         // admin: nav
+        v1::admin::nav::list,
         v1::admin::nav::create,
         v1::admin::nav::update,
         // remove merged into update (status:2 soft delete)
         // mcenter: company HR multi-account
+        v1::mcenter::company_hr::list_codes,
         v1::mcenter::company_hr::create_code,
         v1::mcenter::company_hr::revoke_code,
         v1::mcenter::company_hr::list_hrs,
@@ -479,6 +505,7 @@ impl Modify for UniqueOperationId {
         v1::mcenter::referrals::list,
         v1::mcenter::referrals::summary,
         // mcenter: search history
+        v1::mcenter::search_history::list,
         v1::mcenter::search_history::clear,
         v1::mcenter::search_history::remove,
         // wap: payment callback
@@ -496,6 +523,7 @@ impl Modify for UniqueOperationId {
         v1::mcenter::redeem::list_mine,
         v1::mcenter::redeem::cancel_mine,
         // admin: redeem catalog + orders
+        v1::admin::redeem::list_classes,
         v1::admin::redeem::create_class,
         v1::admin::redeem::delete_class,
         v1::admin::redeem::list_rewards,
@@ -511,6 +539,7 @@ impl Modify for UniqueOperationId {
         v1::wap::descriptions::list,
         v1::wap::descriptions::get_one,
         // admin: descriptions
+        v1::admin::descriptions::list_classes,
         v1::admin::descriptions::create_class,
         v1::admin::descriptions::update_class,
         // delete_class merged into update_class (status:2 soft delete)
@@ -521,6 +550,7 @@ impl Modify for UniqueOperationId {
         v1::wap::site_settings::list,
         v1::wap::site_settings::get_one,
         // admin: site settings manage
+        v1::admin::site_settings::list,
         v1::admin::site_settings::upsert,
         v1::admin::site_settings::remove,
         // admin: company cert review
@@ -641,6 +671,7 @@ impl Modify for UniqueOperationId {
         v1::mcenter::account_logout::status,
         v1::mcenter::applications::set_state,
         v1::mcenter::blacklist::clear,
+        v1::mcenter::company_skin::banner_list,
         v1::mcenter::company_skin::banner_add,
         v1::mcenter::company_skin::banner_delete,
         v1::mcenter::company_skin::banner_update,
@@ -653,10 +684,12 @@ impl Modify for UniqueOperationId {
         v1::mcenter::part::com_delete_parts,
         v1::mcenter::part::com_parts,
         v1::mcenter::part::com_update_apply_status,
+        v1::mcenter::part::my_applies,
         v1::mcenter::part::delete_applies,
         v1::mcenter::part::delete_collects,
         v1::mcenter::part::my_collects,
         v1::mcenter::resume::refresh,
+        v1::mcenter::resume_out::list,
         v1::mcenter::resume_out::delete_many,
         v1::mcenter::resume_out::send,
         v1::mcenter::resume_tpl::apply,
@@ -666,6 +699,7 @@ impl Modify for UniqueOperationId {
         v1::mcenter::sessions::revoke,
         v1::mcenter::sessions::revoke_others,
         v1::mcenter::talent_pool::add,
+        v1::mcenter::talent_pool::list,
         v1::mcenter::talent_pool::delete_many,
         v1::mcenter::talent_pool::update_remark,
         v1::mcenter::transfer::split,
@@ -692,6 +726,7 @@ impl Modify for UniqueOperationId {
         v1::wap::oauth::wechat_authorize_url,
         v1::wap::oauth::wechat_code_login,
         v1::wap::once::create,
+        v1::wap::once::list,
         v1::wap::once::refresh,
         v1::wap::once::show,
         v1::wap::once::soft_delete,
@@ -709,6 +744,7 @@ impl Modify for UniqueOperationId {
         v1::wap::register::check_availability,
         v1::wap::register::config,
         v1::wap::tiny::create,
+        v1::wap::tiny::list,
         v1::wap::tiny::refresh,
         v1::wap::tiny::show,
         v1::wap::tiny::soft_delete,
@@ -1060,7 +1096,7 @@ pub fn v1_openapi() -> utoipa::openapi::OpenApi {
     {
         let mut api = api;
         api.merge(DebugOnlyDoc::openapi());
-        return api;
+        api
     }
     #[cfg(not(debug_assertions))]
     api

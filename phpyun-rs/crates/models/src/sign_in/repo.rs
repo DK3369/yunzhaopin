@@ -6,11 +6,11 @@
 //! `sign:uid:YYYYMMDD` (see `sign_service::sign`).
 //!
 //! Therefore this repo:
-//!   - `get_user_sign`    fetches signday/signdays from `phpyun_member` (`last_date_ymd`
-//!                        does not exist in PHP, returns 0; the service layer fills it via Redis)
-//!   - `try_sign`         no-op, returns 1 (deduplication delegated to Redis at the service layer)
-//!   - `find_today`       always returns None (no day-level persisted record)
-//!   - `upsert_user_sign` UPDATE phpyun_member
+//! - `get_user_sign`    fetches signday/signdays from `phpyun_member` (`last_date_ymd`
+//!   does not exist in PHP, returns 0; the service layer fills it via Redis)
+//! - `try_sign`         no-op, returns 1 (deduplication delegated to Redis at the service layer)
+//! - `find_today`       always returns None (no day-level persisted record)
+//! - `upsert_user_sign` UPDATE phpyun_member
 
 use super::entity::{SignIn, UserSign};
 use sqlx::MySqlPool;

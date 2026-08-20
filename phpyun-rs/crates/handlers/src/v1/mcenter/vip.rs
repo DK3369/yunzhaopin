@@ -258,11 +258,9 @@ pub async fn mock_paid(
     // Defensive check: the order must belong to the currently logged-in user, to avoid marking someone else's order as paid.
     let order = phpyun_models::vip::repo::find_order_by_no(state.db.reader(), &order_no)
         .await?
-        .ok_or_else(|| -> phpyun_core::ApiError {
-            ApiError::param_invalid("order_not_found").into()
-        })?;
+        .ok_or_else(|| -> phpyun_core::ApiError { ApiError::param_invalid("order_not_found") })?;
     if order.uid != user.uid {
-        return Err(ApiError::param_invalid("order_not_owned").into());
+        return Err(ApiError::param_invalid("order_not_owned"));
     }
 
     let fake_tx = format!("MOCK-{}", uuid::Uuid::now_v7().simple());

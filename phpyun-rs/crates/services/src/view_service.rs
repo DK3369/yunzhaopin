@@ -48,7 +48,7 @@ pub struct ViewPage {
 
 fn validate_kind(kind: i32) -> AppResult<()> {
     if !matches!(kind, KIND_JOB | KIND_COMPANY | KIND_RESUME) {
-        return Err(ApiError::param_invalid(format!("kind={kind}")).into());
+        return Err(ApiError::param_invalid(format!("kind={kind}")));
     }
     Ok(())
 }

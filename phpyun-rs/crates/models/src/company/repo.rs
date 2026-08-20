@@ -353,8 +353,7 @@ pub async fn list_cards_by_uids(
     if uids.is_empty() {
         return Ok(Vec::new());
     }
-    let placeholders = std::iter::repeat("?")
-        .take(uids.len())
+    let placeholders = std::iter::repeat_n("?", uids.len())
         .collect::<Vec<_>>()
         .join(",");
     let sql = format!(

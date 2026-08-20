@@ -36,7 +36,7 @@ pub async fn get_public(state: &AppState, user: &AuthenticatedUser, uid: u64) ->
     user.require_employer()?;
     resume_repo::find_public(state.db.reader(), uid)
         .await?
-        .ok_or_else(|| ApiError::business("resume_not_found").into())
+        .ok_or_else(|| ApiError::business("resume_not_found"))
 }
 
 pub struct ResumeUpdateInput<'a> {
@@ -62,7 +62,7 @@ pub async fn get_mine(state: &AppState, user: &AuthenticatedUser) -> AppResult<R
     resume_repo::ensure_row(state.db.pool(), user.uid, user.did, clock::now_ts()).await?;
     resume_repo::find_by_uid(state.db.pool(), user.uid)
         .await?
-        .ok_or_else(|| ApiError::business("resume_not_found").into())
+        .ok_or_else(|| ApiError::business("resume_not_found"))
 }
 
 pub async fn update_mine(
@@ -144,7 +144,7 @@ pub async fn set_status(
 ) -> AppResult<()> {
     user.require_jobseeker()?;
     if !matches!(status, 1..=3) {
-        return Err(ApiError::business("resume_bad_status").into());
+        return Err(ApiError::business("resume_bad_status"));
     }
     resume_repo::update_status(state.db.pool(), user.uid, status).await?;
 

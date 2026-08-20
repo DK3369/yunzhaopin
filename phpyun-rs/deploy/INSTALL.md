@@ -6,15 +6,16 @@ or restart a service.
 ## Install
 
 1. Extract the archive and verify `SHA256SUMS` with `sha256sum -c SHA256SUMS`.
-2. Copy the extracted directory to the chosen installation directory.
-3. Copy `config/.env.pro.example` to the production configuration location as
+2. Copy the extracted directory to the chosen installation directory. The
+   `phpyun-rs` executable is at the archive root.
+3. Copy `.env.pro.example` to the production configuration location as
    `.env.pro`, replace every `CHANGE_ME`, set mode `0640` with ownership
    `root:www`, and rotate any credential that has ever appeared in a repository
    or backup file.
 4. Replace `@@INSTALL_DIR@@` and `@@ENV_FILE@@` in
    `systemd/phpyun-rs.service`, then install the rendered unit under
    `/etc/systemd/system/`.
-5. Review and apply `migrations/sqlx/` through the release pipeline before
+5. Review and apply `sqlx/` through the release pipeline before
    starting the new binary. Production defaults to
    `RUN_MIGRATIONS_ON_BOOT=false`.
 6. Run `systemctl daemon-reload`, start or restart the service, and check

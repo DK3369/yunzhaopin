@@ -1,10 +1,15 @@
 //! Job fair service.
 
 use phpyun_core::{clock, ApiError, AppResult, AppState, AuthenticatedUser, Paged, Pagination};
-use phpyun_models::zph::{
-    entity::{Zph, ZphCompany, ZphReservation},
-    repo as zph_repo,
+use phpyun_models::{
+    job::repo as job_repo,
+    zph::{
+        entity::{Zph, ZphCompany, ZphReservation},
+        repo as zph_repo,
+    },
 };
+
+pub use phpyun_models::job::repo::OwnJobBrief;
 
 pub async fn list(state: &AppState, page: Pagination) -> AppResult<Paged<Zph>> {
     let db = state.db.reader();
@@ -75,12 +80,6 @@ pub async fn my_reservation(
 
 // ==================== Pre-apply status check (PHP `wap/ajax::ajaxComjob`) ====================
 
-#[derive(Debug, Clone, sqlx::FromRow, serde::Serialize, serde::Deserialize)]
-pub struct OwnJobBrief {
-    pub id: u64,
-    pub name: String,
-}
-
 pub enum ComStatusOutcome {
     /// Already applied — `status` echoes `phpyun_zhaopinhui_com.status`
     /// (0 pending review, 1 approved, 2 rejected).
@@ -112,19 +111,7 @@ pub async fn com_status_for_fair(
 
     // Mirror PHP filter: state=1 (active), status=0 (open), r_status<>2 (not rejected company-wide)
     let now = clock::now_ts();
-    let rows: Vec<OwnJobBrief> = sqlx::query_as(
-        // TODO(arch): inline sqlx pending repo lift
-        "SELECT CAST(id AS UNSIGNED) AS id, COALESCE(name, '') AS name \
-         FROM phpyun_company_job \
-         WHERE uid = ? AND state = 1 AND status = 0 AND r_status != 2 \
-           AND (edate IS NULL OR edate > ?) \
-         ORDER BY lastupdate DESC, id DESC \
-         LIMIT 50",
-    )
-    .bind(user.uid)
-    .bind(now)
-    .fetch_all(reader)
-    .await?;
+    let rows = job_repo::list_active_for_job_fair(reader, user.uid, now, 50).await?;
 
     if rows.is_empty() {
         Ok(ComStatusOutcome::NoJobs)

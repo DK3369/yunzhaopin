@@ -52,7 +52,7 @@ pub async fn get_mine(state: &AppState, user: &AuthenticatedUser) -> AppResult<C
     company_repo::ensure_row(state.db.pool(), user.uid, user.did).await?;
     company_repo::find_by_uid(state.db.pool(), user.uid)
         .await?
-        .ok_or_else(|| ApiError::business("company_not_found").into())
+        .ok_or_else(|| ApiError::business("company_not_found"))
 }
 
 /// Public company view (WAP detail page) — accessible to anyone, but the company must have `r_status=1` (passed review).
@@ -70,8 +70,8 @@ pub async fn get_public(state: &AppState, uid: u64) -> AppResult<Company> {
             });
             Ok(c)
         }
-        2 => Err(ApiError::business("company_locked").into()),
-        _ => Err(ApiError::business("company_not_verified").into()),
+        2 => Err(ApiError::business("company_locked")),
+        _ => Err(ApiError::business("company_not_verified")),
     }
 }
 

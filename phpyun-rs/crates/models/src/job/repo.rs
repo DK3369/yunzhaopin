@@ -249,6 +249,35 @@ fn push_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &JobFilter<'a>, n
 
 // ==================== Company-private CRUD ====================
 
+#[derive(Debug, Clone, sqlx::FromRow, serde::Serialize, serde::Deserialize)]
+pub struct OwnJobBrief {
+    pub id: u64,
+    pub name: String,
+}
+
+/// Active jobs owned by a company that can be attached to a job-fair
+/// reservation. This mirrors PHPYun's `wap/ajax::ajaxComjob` filter.
+pub async fn list_active_for_job_fair(
+    pool: &MySqlPool,
+    uid: u64,
+    now: i64,
+    limit: u64,
+) -> Result<Vec<OwnJobBrief>, sqlx::Error> {
+    sqlx::query_as(
+        "SELECT CAST(id AS UNSIGNED) AS id, COALESCE(name, '') AS name \
+         FROM phpyun_company_job \
+         WHERE uid = ? AND state = 1 AND status = 0 AND r_status != 2 \
+           AND (edate IS NULL OR edate > ?) \
+         ORDER BY lastupdate DESC, id DESC \
+         LIMIT ?",
+    )
+    .bind(uid)
+    .bind(now)
+    .bind(limit)
+    .fetch_all(pool)
+    .await
+}
+
 /// Company views the list of jobs it has posted.
 ///
 /// Soft-delete convention: state=2 means delisted/deleted.
@@ -685,6 +714,8 @@ pub struct JobContact {
     pub y: String,
 }
 
+type DefaultContactRow = (String, String, String, String, String, i32, String, String);
+
 pub async fn get_job_contact(
     pool: &MySqlPool,
     job_id: u64,
@@ -702,16 +733,15 @@ pub async fn get_job_contact(
         return Ok(None);
     };
 
-    let default_row: Option<(String, String, String, String, String, i32, String, String)> =
-        sqlx::query_as(
-            "SELECT COALESCE(linkman, ''), COALESCE(linktel, ''), COALESCE(linkphone, ''), \
+    let default_row: Option<DefaultContactRow> = sqlx::query_as(
+        "SELECT COALESCE(linkman, ''), COALESCE(linktel, ''), COALESCE(linkphone, ''), \
                 COALESCE(linkmail, ''), COALESCE(address, ''), COALESCE(cityid, 0), \
                 COALESCE(x, ''), COALESCE(y, '') \
            FROM phpyun_company WHERE uid = ? LIMIT 1",
-        )
-        .bind(com_uid)
-        .fetch_optional(pool)
-        .await?;
+    )
+    .bind(com_uid)
+    .fetch_optional(pool)
+    .await?;
     let default_contact = default_row.map(
         |(linkman, linktel, linkphone, linkmail, address, cityid, x, y)| JobContact {
             linkman,

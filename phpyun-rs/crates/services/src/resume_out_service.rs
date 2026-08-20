@@ -47,13 +47,13 @@ pub async fn send(
 ) -> AppResult<OutResult> {
     user.require_jobseeker()?;
     if limits.daily_max == 0 {
-        return Err(ApiError::param_invalid("feature_disabled").into());
+        return Err(ApiError::param_invalid("feature_disabled"));
     }
     if input.email.is_empty() || !input.email.contains('@') {
-        return Err(ApiError::param_invalid("email").into());
+        return Err(ApiError::param_invalid("email"));
     }
     if input.com_name.is_empty() || input.job_name.is_empty() {
-        return Err(ApiError::param_invalid("com_or_job_name").into());
+        return Err(ApiError::param_invalid("com_or_job_name"));
     }
 
     let now = clock::now_ts();
@@ -65,27 +65,29 @@ pub async fn send(
     // Number of sends today
     let used = ro_repo::count_today_for_uid(state.db.reader(), user.uid, today_begin).await?;
     if used >= limits.daily_max as u64 {
-        return Err(ApiError::rate_limit().into());
+        return Err(ApiError::rate_limit());
     }
 
     // Interval check
     if limits.interval_secs > 0 {
         if let Some(last) = ro_repo::last_send_ts(state.db.reader(), user.uid).await? {
             if now - last < limits.interval_secs {
-                return Err(ApiError::rate_limit().into());
+                return Err(ApiError::rate_limit());
             }
         }
     }
 
     let id = ro_repo::create(
         state.db.pool(),
-        user.uid,
-        input.resume_id,
-        input.email,
-        input.com_name,
-        input.job_name,
-        input.resume_name,
-        now,
+        ro_repo::CreateInput {
+            uid: user.uid,
+            resume: input.resume_id,
+            email: input.email,
+            comname: input.com_name,
+            jobname: input.job_name,
+            resumename: input.resume_name,
+            now,
+        },
     )
     .await?;
     // Record into the recommend table (rec_type=3) for rate-limit accounting

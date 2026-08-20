@@ -109,13 +109,13 @@ pub async fn get_public(state: &AppState, id: u64) -> AppResult<Job> {
         .ok_or(ApiError::business("job_not_found"))?;
     // Status checks
     if j.status == 2 {
-        return Err(ApiError::business("job_offline").into());
+        return Err(ApiError::business("job_offline"));
     }
     if j.state != 1 || j.r_status != 1 {
-        return Err(ApiError::business("job_pending").into());
+        return Err(ApiError::business("job_pending"));
     }
     if j.edate > 0 && j.edate <= clock::now_ts() {
-        return Err(ApiError::business("job_expired").into());
+        return Err(ApiError::business("job_expired"));
     }
     Ok(j)
 }

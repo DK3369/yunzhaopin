@@ -131,11 +131,13 @@ pub struct HrLogYearReport {
     pub lastwork: i64,
 }
 
+type HrLogYearReportRow = (i32, i32, i32, i32, i32, i32, i32, i64);
+
 pub async fn hr_log_year_report(
     pool: &MySqlPool,
     uid: u64,
 ) -> Result<Option<HrLogYearReport>, sqlx::Error> {
-    let row: Option<(i32, i32, i32, i32, i32, i32, i32, i64)> = sqlx::query_as(
+    let row: Option<HrLogYearReportRow> = sqlx::query_as(
         "SELECT \
             CAST(COALESCE(login, 0) AS SIGNED), \
             CAST(COALESCE(job, 0) AS SIGNED), \

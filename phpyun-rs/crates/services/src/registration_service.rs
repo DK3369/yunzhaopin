@@ -65,31 +65,30 @@ pub async fn register(state: &AppState, input: RegisterInput<'_>) -> AppResult<R
     //    `register.model.php::regMoblie` gates on `isset($post['moblie'])`;
     //    `regway=1` username-registration sends an empty mobile and skips
     //    the SMS step entirely.
-    if !input.mobile.is_empty() {
-        if !verify::verify(
+    if !input.mobile.is_empty()
+        && !verify::verify(
             &state.redis,
             VerifyKind::SmsRegister,
             input.mobile,
             input.sms_code,
         )
         .await?
-        {
-            auth_event("register_fail", Some("bad_sms_code"));
-            return Err(ApiError::param_invalid("sms_code").into());
-        }
+    {
+        auth_event("register_fail", Some("bad_sms_code"));
+        return Err(ApiError::param_invalid("sms_code"));
     }
 
     // 3. Uniqueness check (writer guarantees real-time consistency)
     let writer = state.db.pool();
     if user_repo::exists_username(writer, input.username).await? {
-        return Err(ApiError::param_invalid("username_taken").into());
+        return Err(ApiError::param_invalid("username_taken"));
     }
     if !input.mobile.is_empty() && user_repo::exists_mobile(writer, input.mobile).await? {
-        return Err(ApiError::param_invalid("mobile_taken").into());
+        return Err(ApiError::param_invalid("mobile_taken"));
     }
     if let Some(email) = input.email {
         if !email.is_empty() && user_repo::exists_email(writer, email).await? {
-            return Err(ApiError::param_invalid("email_taken").into());
+            return Err(ApiError::param_invalid("email_taken"));
         }
     }
 

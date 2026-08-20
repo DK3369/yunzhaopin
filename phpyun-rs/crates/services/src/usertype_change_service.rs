@@ -26,10 +26,10 @@ pub async fn apply(
 ) -> AppResult<u64> {
     // Basic checks: 1=jobseeker / 2=company; cannot switch to 3 (admin) and cannot switch in place
     if !matches!(apply_usertype, 1 | 2) {
-        return Err(ApiError::param_invalid("apply_usertype").into());
+        return Err(ApiError::param_invalid("apply_usertype"));
     }
     if (user.usertype as i32) == apply_usertype {
-        return Err(ApiError::param_invalid("same_usertype").into());
+        return Err(ApiError::param_invalid("same_usertype"));
     }
 
     // Reuse the existing pending row directly (aligned with PHP behavior: avoid duplicate submissions)
@@ -79,7 +79,7 @@ pub async fn admin_approve(
         .await?
         .ok_or_else(|| ApiError::param_invalid("change_not_found"))?;
     if row.status != 1 {
-        return Err(ApiError::param_invalid("change_not_pending").into());
+        return Err(ApiError::param_invalid("change_not_pending"));
     }
 
     // Transaction: set status 2 + update member.usertype

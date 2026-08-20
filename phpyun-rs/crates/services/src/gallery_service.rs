@@ -50,7 +50,7 @@ pub async fn create(
 ) -> AppResult<u64> {
     check_role(user, kind)?;
     if picurl.trim().is_empty() {
-        return Err(ApiError::param_invalid("picurl").into());
+        return Err(ApiError::param_invalid("picurl"));
     }
     let id = gallery_repo::create(state.db.pool(), kind, user.uid, title, picurl, sort).await?;
     let _ = audit::emit(

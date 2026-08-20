@@ -31,13 +31,13 @@ pub async fn create_order(
     let pkg = vip_repo::find_package_by_code(state.db.reader(), package_code)
         .await?
         .ok_or_else(|| -> ApiError {
-            ApiError::param_invalid(format!("unknown package: {package_code}")).into()
+            ApiError::param_invalid(format!("unknown package: {package_code}"))
         })?;
     if pkg.is_active != 1 {
-        return Err(ApiError::param_invalid("package_inactive").into());
+        return Err(ApiError::param_invalid("package_inactive"));
     }
     if pkg.target_usertype != 0 && pkg.target_usertype != user.usertype as i32 {
-        return Err(ApiError::param_invalid("package_usertype_mismatch").into());
+        return Err(ApiError::param_invalid("package_usertype_mismatch"));
     }
 
     let order_no = format!("ON{}", Uuid::now_v7().simple());
@@ -75,13 +75,14 @@ pub async fn create_order(
 ///   - production: the payment gateway callback handler **must** verify the signature first
 ///     (see `pay_callback.rs`)
 ///   - dev: the `mock_paid` handler **must** first check `order.uid == authenticated_user.uid`
+///
 /// Any new entry point that bypasses the above and calls this function directly is a security hole.
 pub async fn mark_paid(state: &AppState, order_no: &str, pay_tx_id: &str) -> AppResult<()> {
     let order = vip_repo::find_order_by_no(state.db.reader(), order_no)
         .await?
-        .ok_or_else(|| -> ApiError { ApiError::param_invalid("order_not_found").into() })?;
+        .ok_or_else(|| -> ApiError { ApiError::param_invalid("order_not_found") })?;
     if order.status != 0 {
-        return Err(ApiError::param_invalid("order_not_pending").into());
+        return Err(ApiError::param_invalid("order_not_pending"));
     }
 
     let pkg = vip_repo::find_package_by_code(state.db.reader(), &order.package_code)
@@ -92,7 +93,7 @@ pub async fn mark_paid(state: &AppState, order_no: &str, pay_tx_id: &str) -> App
     // 1. Update order status
     let affected = vip_repo::mark_order_paid(state.db.pool(), order_no, pay_tx_id, now).await?;
     if affected == 0 {
-        return Err(ApiError::param_invalid("order_already_processed").into());
+        return Err(ApiError::param_invalid("order_already_processed"));
     }
     // 2. Activate / renew VIP
     vip_repo::upsert_user_vip(
@@ -159,7 +160,7 @@ pub async fn cancel_order(
 ) -> AppResult<()> {
     let affected = vip_repo::cancel_order(state.db.pool(), order_no, user.uid).await?;
     if affected == 0 {
-        return Err(ApiError::param_invalid("order_not_cancellable").into());
+        return Err(ApiError::param_invalid("order_not_cancellable"));
     }
     let _ = audit::emit(
         state,
@@ -272,7 +273,7 @@ pub async fn quote_package_price(
         return Err(phpyun_core::ApiError::param_invalid("kind"));
     };
 
-    let integral_excluded = only_price_csv.iter().any(|s| *s == kind);
+    let integral_excluded = only_price_csv.contains(&kind);
     let integral_path = online_mode == 3 && !integral_excluded && pro > 0.0;
 
     let (price, style) = if !integral_path {

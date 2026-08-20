@@ -35,8 +35,6 @@ pub struct TelClickBodyFull {
     pub com_id: u64,
 }
 
-/// UNIX timestamp -> local time string. `ts<=0` returns an empty string (aligned with PHPYun `date('Y-m-d H:i', $ts)`).
-
 pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/jobs", post(list_jobs))

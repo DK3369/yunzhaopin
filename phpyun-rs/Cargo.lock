@@ -2250,19 +2250,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "phpyun-app"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "axum",
- "phpyun-core",
- "phpyun-handlers",
- "phpyun-services",
- "tokio",
- "tracing",
-]
-
-[[package]]
 name = "phpyun-auth"
 version = "0.1.0"
 dependencies = [
@@ -2350,6 +2337,19 @@ dependencies = [
  "serde_json",
  "sqlx",
  "utoipa",
+]
+
+[[package]]
+name = "phpyun-rs"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "axum",
+ "phpyun-core",
+ "phpyun-handlers",
+ "phpyun-services",
+ "tokio",
+ "tracing",
 ]
 
 [[package]]

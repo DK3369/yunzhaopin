@@ -138,7 +138,7 @@ pub async fn update(
     )
     .await?;
     if affected == 0 {
-        return Err(ApiError::business("job_not_found").into());
+        return Err(ApiError::business("job_not_found"));
     }
     let _ = audit::emit(
         state,
@@ -160,11 +160,11 @@ pub async fn set_status(
 ) -> AppResult<()> {
     user.require_employer()?;
     if !matches!(status, 0 | 2) {
-        return Err(ApiError::business("job_not_found").into()); // coarse error mapping
+        return Err(ApiError::business("job_not_found")); // coarse error mapping
     }
     let affected = job_repo::set_status(state.db.pool(), id, user.uid, status).await?;
     if affected == 0 {
-        return Err(ApiError::business("job_not_found").into());
+        return Err(ApiError::business("job_not_found"));
     }
     let label = if status == 0 { "online" } else { "offline" };
     let _ = audit::emit(
@@ -188,7 +188,7 @@ pub async fn refresh(
     user.require_employer()?;
     let affected = job_repo::refresh(state.db.pool(), id, user.uid, clock::now_ts()).await?;
     if affected == 0 {
-        return Err(ApiError::business("job_not_found").into());
+        return Err(ApiError::business("job_not_found"));
     }
     let _ = audit::emit(
         state,
@@ -210,7 +210,7 @@ pub async fn delete(
     user.require_employer()?;
     let affected = job_repo::delete(state.db.pool(), id, user.uid).await?;
     if affected == 0 {
-        return Err(ApiError::business("job_not_found").into());
+        return Err(ApiError::business("job_not_found"));
     }
     let _ = audit::emit(
         state,

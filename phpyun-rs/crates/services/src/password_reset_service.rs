@@ -69,13 +69,13 @@ pub async fn reset_with_sms(
     // Verification code
     if !verify::verify(&state.redis, VerifyKind::SmsResetPw, mobile, sms_code).await? {
         auth_event("reset_pw_fail", Some("bad_sms_code"));
-        return Err(ApiError::param_invalid("sms_code").into());
+        return Err(ApiError::param_invalid("sms_code"));
     }
 
     // Look up the user
     let user = user_repo::find_by_mobile(state.db.reader(), mobile)
         .await?
-        .ok_or_else(|| -> ApiError { ApiError::param_invalid("mobile_not_registered").into() })?;
+        .ok_or_else(|| -> ApiError { ApiError::param_invalid("mobile_not_registered") })?;
 
     // Hash the new password (note: we do not concat salt for argon2 — PHPYun compatibility lives in the login layer)
     // The new password is stored in argon2 format. Whether to concat salt is up to the login side —
@@ -189,12 +189,12 @@ pub async fn reset_with_email(
 ) -> AppResult<()> {
     if !verify::verify(&state.redis, VerifyKind::EmailReset, email, email_code).await? {
         auth_event("reset_pw_fail", Some("bad_email_code"));
-        return Err(ApiError::param_invalid("email_code").into());
+        return Err(ApiError::param_invalid("email_code"));
     }
 
     let user = user_repo::find_by_email_loose(state.db.reader(), email)
         .await?
-        .ok_or_else(|| -> ApiError { ApiError::param_invalid("email_not_registered").into() })?;
+        .ok_or_else(|| -> ApiError { ApiError::param_invalid("email_not_registered") })?;
 
     let salt = uuid::Uuid::now_v7().simple().to_string()[..16].to_string();
     let salted = format!("{new_password}{salt}");
@@ -270,7 +270,7 @@ pub async fn submit_appeal(
     let now = phpyun_core::clock::now_ts();
     let n = phpyun_models::user::repo::submit_appeal(state.db.pool(), uid, &shensu, now).await?;
     if n == 0 {
-        return Err(ApiError::param_invalid("appeal_persist_failed").into());
+        return Err(ApiError::param_invalid("appeal_persist_failed"));
     }
 
     auth_event("password_appeal_submitted", None);

@@ -26,7 +26,7 @@ pub async fn apply(
     client_ip: &str,
 ) -> AppResult<u64> {
     if password.is_empty() {
-        return Err(ApiError::param_invalid("password").into());
+        return Err(ApiError::param_invalid("password"));
     }
 
     let member = user_repo::find_by_uid(state.db.reader(), user.uid)
@@ -40,7 +40,7 @@ pub async fn apply(
     )
     .await
     {
-        return Err(ApiError::bad_credentials().into());
+        return Err(ApiError::bad_credentials());
     }
 
     // Reuse an existing pending request if present

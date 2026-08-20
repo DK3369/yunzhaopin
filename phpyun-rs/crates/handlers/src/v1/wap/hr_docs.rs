@@ -148,7 +148,7 @@ pub async fn track_download(
     ValidatedJson(b): ValidatedJson<IdBody>,
 ) -> AppResult<ApiResponse<HrDownloadResp>> {
     let id = b.id;
-    let _ = phpyun_models::hr_doc::repo::incr_hit(state.db.pool(), id).await?;
+    phpyun_models::hr_doc::repo::incr_hit(state.db.pool(), id).await?;
     let d = hr_doc_service::get(&state, id).await?;
     let web_base = state.config.web_base_url.as_deref();
     let url_n = state.storage.normalize_legacy_url(&d.url, web_base);

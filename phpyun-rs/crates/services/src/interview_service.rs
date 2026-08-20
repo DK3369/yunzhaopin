@@ -37,7 +37,7 @@ pub async fn create_by_company(
         .await?
         .ok_or(ApiError::business("apply_not_found"))?;
     if apply.com_id != user.uid {
-        return Err(ApiError::business("apply_not_owner").into());
+        return Err(ApiError::business("apply_not_owner"));
     }
 
     let now = clock::now_ts();
@@ -154,11 +154,11 @@ pub async fn respond(
 ) -> AppResult<()> {
     user.require_jobseeker()?;
     if !matches!(status, 1 | 2) {
-        return Err(ApiError::business("job_not_found").into());
+        return Err(ApiError::business("job_not_found"));
     }
     let affected = interview_repo::respond_by_user(state.db.pool(), id, user.uid, status).await?;
     if affected == 0 {
-        return Err(ApiError::business("apply_not_owner").into());
+        return Err(ApiError::business("apply_not_owner"));
     }
 
     // Notify the company
@@ -203,7 +203,7 @@ pub async fn cancel(
     user.require_employer()?;
     let affected = interview_repo::cancel_by_company(state.db.pool(), id, user.uid).await?;
     if affected == 0 {
-        return Err(ApiError::business("apply_not_owner").into());
+        return Err(ApiError::business("apply_not_owner"));
     }
     // Notify the jobseeker
     if let Ok(Some(iv)) = interview_repo::find_by_id(state.db.reader(), id).await {

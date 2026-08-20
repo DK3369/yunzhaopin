@@ -71,7 +71,7 @@ pub struct ReportReasonView {
     pub name: String,
 }
 
-fn localize_reason<'a>(id: u64, database_name: &'a str, lang: Lang) -> &'a str {
+fn localize_reason(id: u64, database_name: &str, lang: Lang) -> &str {
     match lang {
         Lang::ZhCN => database_name,
         Lang::ZhTW => match id {

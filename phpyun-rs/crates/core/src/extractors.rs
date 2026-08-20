@@ -318,7 +318,7 @@ impl<S: Send + Sync> FromRequestParts<S> for Pagination {
 /// once.
 fn first_validation_key(errors: &validator::ValidationErrors) -> String {
     use validator::ValidationErrorsKind::*;
-    for (_field, kind) in errors.errors() {
+    for kind in errors.errors().values() {
         match kind {
             Field(errs) => {
                 if let Some(first) = errs.first() {

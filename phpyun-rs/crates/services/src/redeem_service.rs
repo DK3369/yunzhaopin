@@ -187,12 +187,12 @@ pub async fn set_reward_flags(
     // outside {0, 1} so a misbehaving caller can't shove arbitrary ints into
     // the column.
     if let Some(v) = is_rec {
-        if v < 0 || v > 1 {
+        if !(0..=1).contains(&v) {
             return Err(ApiError::param_invalid("is_rec"));
         }
     }
     if let Some(v) = is_hot {
-        if v < 0 || v > 1 {
+        if !(0..=1).contains(&v) {
             return Err(ApiError::param_invalid("is_hot"));
         }
     }

@@ -553,6 +553,46 @@ fn urlencoding_minimal(s: &str) -> String {
     out
 }
 
+/// Bind a third-party identity to a logged-in account (the client must complete a normal login first,
+/// then call this endpoint).
+pub async fn bind_oauth(
+    state: &AppState,
+    uid: u64,
+    provider: ProviderKind,
+    id_token: &str,
+    client_ip: &str,
+) -> AppResult<()> {
+    let identity = state.oauth.verify(provider, id_token).await?;
+
+    // This sub must not already be bound to a different user
+    if let Some(other) =
+        user_repo::find_by_oauth_id(state.db.reader(), provider.member_column(), &identity.sub)
+            .await?
+    {
+        if other.uid != uid {
+            return Err(ApiError::param_invalid("oauth_sub_bound_elsewhere"));
+        }
+    }
+
+    user_repo::bind_oauth_id(
+        state.db.pool(),
+        uid,
+        provider.member_column(),
+        &identity.sub,
+    )
+    .await?;
+
+    let _ = audit::emit(
+        state,
+        AuditEvent::new("user.oauth_bind", Actor::uid(uid).with_ip(client_ip))
+            .target(format!("uid:{uid}"))
+            .meta(&serde_json::json!({ "provider": provider.as_str() })),
+    )
+    .await;
+
+    Ok(())
+}
+
 #[cfg(test)]
 mod wechat_tests {
     use super::*;
@@ -576,44 +616,4 @@ mod wechat_tests {
         assert!(u.contains("scope=snsapi_base"));
         assert!(u.ends_with("#wechat_redirect"));
     }
-}
-
-/// Bind a third-party identity to a logged-in account (the client must complete a normal login first,
-/// then call this endpoint).
-pub async fn bind_oauth(
-    state: &AppState,
-    uid: u64,
-    provider: ProviderKind,
-    id_token: &str,
-    client_ip: &str,
-) -> AppResult<()> {
-    let identity = state.oauth.verify(provider, id_token).await?;
-
-    // This sub must not already be bound to a different user
-    if let Some(other) =
-        user_repo::find_by_oauth_id(state.db.reader(), provider.member_column(), &identity.sub)
-            .await?
-    {
-        if other.uid != uid {
-            return Err(ApiError::param_invalid("oauth_sub_bound_elsewhere").into());
-        }
-    }
-
-    user_repo::bind_oauth_id(
-        state.db.pool(),
-        uid,
-        provider.member_column(),
-        &identity.sub,
-    )
-    .await?;
-
-    let _ = audit::emit(
-        state,
-        AuditEvent::new("user.oauth_bind", Actor::uid(uid).with_ip(client_ip))
-            .target(format!("uid:{uid}"))
-            .meta(&serde_json::json!({ "provider": provider.as_str() })),
-    )
-    .await;
-
-    Ok(())
 }

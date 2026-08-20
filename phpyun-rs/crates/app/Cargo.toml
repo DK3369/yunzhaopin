@@ -1,10 +1,14 @@
 [package]
-name = "phpyun-app"
+name = "phpyun-rs"
 version.workspace = true
 edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+description.workspace = true
 
 [[bin]]
-name = "app"
+name = "phpyun-rs"
 path = "src/main.rs"
 
 [dependencies]

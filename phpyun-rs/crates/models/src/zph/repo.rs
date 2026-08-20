@@ -3,8 +3,8 @@
 //! - `phpyun_zhaopinhui`      — the job-fair record itself
 //! - `phpyun_zhaopinhui_com`  — participating companies (includes a jobid field; locally acts as the "reservation" concept)
 //! - `phpyun_zhaopinhui_space`— booth/stall definitions (id/name/sort/keyid/pic/content/price); this is **not**
-//!                              the "company reservation" table — on the Rust side, ZphReservation has been
-//!                              repurposed to map to phpyun_zhaopinhui_com.
+//!   the "company reservation" table — on the Rust side, ZphReservation has been
+//!   repurposed to map to phpyun_zhaopinhui_com.
 //!
 //! Zph field mapping (Rust → PHP):
 //!   - body       ↔ body (same name in PHP)

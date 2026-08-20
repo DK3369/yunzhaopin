@@ -127,7 +127,7 @@ pub async fn create_qr_scene(
     expire_seconds: u64,
 ) -> AppResult<QrCodeResult> {
     if scene_str.is_empty() || scene_str.len() > 64 {
-        return Err(ApiError::param_invalid("scene_str").into());
+        return Err(ApiError::param_invalid("scene_str"));
     }
     let token = get_access_token(state).await?;
     let url = format!(
@@ -200,7 +200,7 @@ struct ErrResp {
 /// and on failure we surface errcode as-is to the caller.
 pub async fn send_text(state: &AppState, openid: &str, content: &str) -> AppResult<()> {
     if openid.is_empty() || content.is_empty() {
-        return Err(ApiError::param_invalid("openid_or_content").into());
+        return Err(ApiError::param_invalid("openid_or_content"));
     }
     let token = get_access_token(state).await?;
     let url = format!(

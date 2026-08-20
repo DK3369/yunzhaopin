@@ -5,11 +5,19 @@
 //! - `reg_date / login_date` are int(11) and need CAST(AS SIGNED) for `i64`
 //! - `usertype / status` are int(1)/int(4); using `i32` on the Rust side is safer
 //! - **OAuth columns are not** google_id/fb_id/apple_sub — PHPYun actually has:
-//!     qqid / qqunionid / sinaid / wxid / wxopenid / unionid / wxname / bdopenid
+//!   qqid / qqunionid / sinaid / wxid / wxopenid / unionid / wxname / bdopenid
 //!   So OAuth binding on the Rust side uses an allowlist mapping provider → real PHP column name.
 
 use super::entity::Member;
 use sqlx::MySqlPool;
+
+type OAuthBindingsRow = (
+    Option<String>,
+    Option<String>,
+    Option<String>,
+    Option<String>,
+    Option<String>,
+);
 
 /// Core SELECT columns (including aliases / CASTs). Reused by joins from other tables.
 const FIELDS: &str = "\
@@ -287,13 +295,7 @@ pub async fn list_oauth_bindings(
     pool: &MySqlPool,
     uid: u64,
 ) -> Result<Vec<&'static str>, sqlx::Error> {
-    let row: Option<(
-        Option<String>, // qqid
-        Option<String>, // sinaid
-        Option<String>, // unionid (wechat)
-        Option<String>, // wxopenid (wechat_mp)
-        Option<String>, // bdopenid
-    )> = sqlx::query_as(
+    let row: Option<OAuthBindingsRow> = sqlx::query_as(
         "SELECT qqid, sinaid, unionid, wxopenid, bdopenid FROM phpyun_member WHERE uid = ? LIMIT 1",
     )
     .bind(uid)

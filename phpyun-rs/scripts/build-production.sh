@@ -57,9 +57,9 @@ printf '==> Running workspace library tests\n'
 cargo test --workspace --lib --locked
 
 printf '==> Building %s release binary\n' "${TARGET}"
-cargo build --release --locked --target "${TARGET}" -p phpyun-app --bin app
+cargo build --release --locked --target "${TARGET}" -p phpyun-rs --bin phpyun-rs
 
-BINARY="${TARGET_DIR}/${TARGET}/release/app"
+BINARY="${TARGET_DIR}/${TARGET}/release/phpyun-rs"
 [[ -x "${BINARY}" ]] || fail "release binary not found: ${BINARY}"
 BINARY_INFO="$(file -b "${BINARY}")"
 printf '%s\n' "${BINARY_INFO}" | grep -Eq 'ELF 64-bit.*x86-64' \
@@ -76,12 +76,11 @@ cleanup() {
 trap cleanup EXIT
 
 PACKAGE_DIR="${STAGE_DIR}/${PACKAGE_NAME}"
-install -d "${PACKAGE_DIR}/bin" "${PACKAGE_DIR}/config" \
-    "${PACKAGE_DIR}/migrations" "${PACKAGE_DIR}/systemd"
-install -m 0755 "${BINARY}" "${PACKAGE_DIR}/bin/phpyun-rs"
+install -d "${PACKAGE_DIR}/sqlx" "${PACKAGE_DIR}/systemd"
+install -m 0755 "${BINARY}" "${PACKAGE_DIR}/phpyun-rs"
 install -m 0644 "${ROOT_DIR}/.env.pro.example" \
-    "${PACKAGE_DIR}/config/.env.pro.example"
-cp -a "${ROOT_DIR}/migrations/sqlx" "${PACKAGE_DIR}/migrations/"
+    "${PACKAGE_DIR}/.env.pro.example"
+cp -a "${ROOT_DIR}/migrations/sqlx/." "${PACKAGE_DIR}/sqlx/"
 install -m 0644 "${ROOT_DIR}/deploy/systemd/phpyun-rs.service" \
     "${PACKAGE_DIR}/systemd/phpyun-rs.service"
 install -m 0644 "${ROOT_DIR}/deploy/INSTALL.md" "${PACKAGE_DIR}/INSTALL.md"

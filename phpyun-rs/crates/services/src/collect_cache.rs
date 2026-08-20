@@ -30,7 +30,7 @@
 //! Keys:
 //! - `fav:user:{uid}`        — Redis SET<i64> of favorited job_ids
 //! - `fav:user:warmed:{uid}` — string "1" with same TTL, distinguishes
-//!                             "empty after warming" from "cold uid"
+//!   "empty after warming" from "cold uid"
 //!
 //! TTL: 1 hour. Long enough that hot users stay warm; short enough that a
 //! Redis-vs-DB drift gets corrected automatically.

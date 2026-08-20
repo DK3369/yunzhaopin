@@ -48,13 +48,13 @@ pub struct AddressInput<'a> {
 
 fn validate(input: &AddressInput<'_>) -> AppResult<()> {
     if input.link_man.trim().is_empty() {
-        return Err(ApiError::param_invalid("link_man").into());
+        return Err(ApiError::param_invalid("link_man"));
     }
     if input.link_moblie.trim().is_empty() {
-        return Err(ApiError::param_invalid("link_moblie").into());
+        return Err(ApiError::param_invalid("link_moblie"));
     }
     if input.provinceid == 0 && input.cityid == 0 {
-        return Err(ApiError::param_invalid("city").into());
+        return Err(ApiError::param_invalid("city"));
     }
     Ok(())
 }

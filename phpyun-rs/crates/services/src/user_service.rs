@@ -620,7 +620,7 @@ pub async fn invalidate_profile(state: &AppState, uid: u64) {
 /// Idempotent on satellite rows (UPSERT). Returns `usertype_already_set` on conflict.
 /// when a usertype is already chosen — caller should surface that as 409.
 pub async fn set_usertype(state: &AppState, uid: u64, usertype: u8) -> AppResult<()> {
-    if !matches!(usertype, 1 | 2 | 3) {
+    if !matches!(usertype, 1..=3) {
         return Err(ApiError::param_invalid("usertype"));
     }
     let pool = state.db.pool();

@@ -39,7 +39,7 @@ pub async fn apply(
         .await?
         .ok_or_else(|| ApiError::param_invalid("tpl_not_found"))?;
     if tpl.status != 1 {
-        return Err(ApiError::param_invalid("tpl_disabled").into());
+        return Err(ApiError::param_invalid("tpl_disabled"));
     }
 
     // Check whether already purchased

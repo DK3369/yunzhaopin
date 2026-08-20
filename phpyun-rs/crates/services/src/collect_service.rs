@@ -18,6 +18,7 @@
 //!   1. DELETE from `phpyun_fav_job`
 //!   2. `member_statis.fav_jobnum -= 1`
 //!   3. `member_log` operation row "取消收藏职位 xxx"
+//!
 //!   (No company notification on un-favorite — PHP doesn't either.)
 //!
 //! All side effects are **best-effort**: a failure on the counter / log / sysmsg
@@ -62,14 +63,16 @@ async fn add_member_log(
 ) {
     let _ = phpyun_models::member_log::repo::insert(
         state.db.pool(),
-        uid,
-        MEMBER_LOG_OPERA_FAV,
-        type_,
-        usertype as i32,
-        content,
-        ip,
-        clock::now_ts(),
-        did,
+        phpyun_models::member_log::repo::InsertInput {
+            uid,
+            opera: MEMBER_LOG_OPERA_FAV,
+            type_,
+            usertype: usertype as i32,
+            content,
+            ip,
+            ctime: clock::now_ts(),
+            did,
+        },
     )
     .await;
 }
@@ -81,7 +84,7 @@ pub struct CollectPage {
 
 fn require_job_kind(kind: i32) -> AppResult<()> {
     if kind != KIND_JOB {
-        return Err(ApiError::business("collect_bad_kind").into());
+        return Err(ApiError::business("collect_bad_kind"));
     }
     Ok(())
 }
@@ -150,7 +153,7 @@ pub async fn toggle(
     // Add branch — fetch job snapshot for INSERT.
     let Some(job) = phpyun_models::job::repo::find_by_id(state.db.reader(), target_id).await?
     else {
-        return Err(ApiError::business("collect_target_not_found").into());
+        return Err(ApiError::business("collect_target_not_found"));
     };
 
     collect_repo::insert(

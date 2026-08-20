@@ -393,7 +393,7 @@ async fn block_bots(req: Request, next: Next) -> Response {
 /// (nginx / Cloudflare) so the HTTP→HTTPS redirect still works; adding HSTS at
 /// the application layer would, in direct-to-internal-network scenarios, lock
 /// users out of HTTP access entirely.
-fn security_headers() -> tower::layer::util::Stack<
+type SecurityHeaders = tower::layer::util::Stack<
     SetResponseHeaderLayer<HeaderValue>,
     tower::layer::util::Stack<
         SetResponseHeaderLayer<HeaderValue>,
@@ -402,7 +402,9 @@ fn security_headers() -> tower::layer::util::Stack<
             SetResponseHeaderLayer<HeaderValue>,
         >,
     >,
-> {
+>;
+
+fn security_headers() -> SecurityHeaders {
     use tower::layer::util::Stack;
     let xcto = SetResponseHeaderLayer::overriding(
         header::X_CONTENT_TYPE_OPTIONS,

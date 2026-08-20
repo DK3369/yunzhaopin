@@ -662,14 +662,15 @@ fn no_path_params_in_v1_routes() {
     use std::path::PathBuf;
     let v1 = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("src/v1");
     let mut violations: Vec<String> = Vec::new();
+    let utoipa_path = regex::Regex::new(r#"path\s*=\s*"(/v1/[^"]+)""#).unwrap();
+    let route_path = regex::Regex::new(r#"\.route\(\s*"([^"]+)""#).unwrap();
+    let path_extractor =
+        regex::Regex::new(r"\bPath\s*\(\s*(?:\w+|\([^)]+\))\s*\)\s*:\s*Path<").unwrap();
     walk(&v1, &mut |p, src| {
         let rel = p.to_string_lossy().to_string();
 
         // 1) `path = "..."` strings inside `#[utoipa::path(...)]`
-        for caps in regex::Regex::new(r#"path\s*=\s*"(/v1/[^"]+)""#)
-            .unwrap()
-            .captures_iter(src)
-        {
+        for caps in utoipa_path.captures_iter(src) {
             let url = &caps[1];
             if url.contains('{') {
                 violations.push(format!("{rel}: utoipa path = {url:?}"));
@@ -677,10 +678,7 @@ fn no_path_params_in_v1_routes() {
         }
 
         // 2) `.route("...", ...)` URL strings
-        for caps in regex::Regex::new(r#"\.route\(\s*"([^"]+)""#)
-            .unwrap()
-            .captures_iter(src)
-        {
+        for caps in route_path.captures_iter(src) {
             let url = &caps[1];
             if url.contains('{') {
                 violations.push(format!("{rel}: route = {url:?}"));
@@ -696,10 +694,7 @@ fn no_path_params_in_v1_routes() {
             if trim.starts_with("//") || trim.starts_with("///") {
                 continue;
             }
-            if regex::Regex::new(r"\bPath\s*\(\s*(?:\w+|\([^)]+\))\s*\)\s*:\s*Path<")
-                .unwrap()
-                .is_match(line)
-            {
+            if path_extractor.is_match(line) {
                 violations.push(format!("{rel}:{}: {}", lineno + 1, line.trim()));
             }
         }

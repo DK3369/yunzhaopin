@@ -95,13 +95,13 @@ pub async fn split_account(
 
     // 1. Basic validation
     if validators::username(input.new_username).is_err() {
-        return Err(ApiError::param_invalid("username").into());
+        return Err(ApiError::param_invalid("username"));
     }
     if validators::strong_password(input.new_password).is_err() {
-        return Err(ApiError::param_invalid("password").into());
+        return Err(ApiError::param_invalid("password"));
     }
     if input.old_password.is_empty() {
-        return Err(ApiError::param_invalid("old_password").into());
+        return Err(ApiError::param_invalid("old_password"));
     }
 
     // 2. Load the original account and verify the old password
@@ -116,12 +116,12 @@ pub async fn split_account(
     )
     .await;
     if !pwd_ok {
-        return Err(ApiError::bad_credentials().into());
+        return Err(ApiError::bad_credentials());
     }
 
     // 3. Uniqueness of the new username
     if user_repo::exists_username(state.db.reader(), input.new_username).await? {
-        return Err(ApiError::param_invalid("username_taken").into());
+        return Err(ApiError::param_invalid("username_taken"));
     }
 
     // 4. Generate the argon2 hash for the new password
@@ -250,17 +250,17 @@ pub async fn merge_into_company(
 ) -> AppResult<MergeResult> {
     admin.require_admin()?;
     if user_uid == 0 || company_uid == 0 || user_uid == company_uid {
-        return Err(ApiError::param_invalid("uid").into());
+        return Err(ApiError::param_invalid("uid"));
     }
 
     // Precondition: the personal account must not already have a company identity
     if phpyun_models::company::repo::exists_by_uid(state.db.reader(), user_uid).await? {
-        return Err(ApiError::param_invalid("user_has_company_identity").into());
+        return Err(ApiError::param_invalid("user_has_company_identity"));
     }
 
     // Precondition: the company account must not already have a personal identity
     if phpyun_models::resume::repo::exists_by_uid(state.db.reader(), company_uid).await? {
-        return Err(ApiError::param_invalid("company_has_resume_identity").into());
+        return Err(ApiError::param_invalid("company_has_resume_identity"));
     }
 
     // Transaction: bulk uid update + member deletion

@@ -49,7 +49,7 @@ pub async fn get(
     user.require_employer()?;
     content_repo::find_by_id(state.db.reader(), kind, id, user.uid)
         .await?
-        .ok_or_else(|| ApiError::param_invalid("content_not_found").into())
+        .ok_or_else(|| ApiError::param_invalid("content_not_found"))
 }
 
 pub struct ContentInput<'a> {
@@ -60,10 +60,10 @@ pub struct ContentInput<'a> {
 
 fn validate(input: &ContentInput<'_>) -> AppResult<()> {
     if input.title.trim().is_empty() {
-        return Err(ApiError::param_invalid("title").into());
+        return Err(ApiError::param_invalid("title"));
     }
     if input.body.trim().is_empty() {
-        return Err(ApiError::param_invalid("body").into());
+        return Err(ApiError::param_invalid("body"));
     }
     Ok(())
 }
@@ -80,13 +80,15 @@ pub async fn create(
     let id = content_repo::create(
         state.db.pool(),
         kind,
-        user.uid,
-        input.title,
-        input.body,
-        input.file,
-        user.usertype as i32,
-        user.did,
-        clock::now_ts(),
+        content_repo::CreateInput {
+            uid: user.uid,
+            title: input.title,
+            body: input.body,
+            file: input.file,
+            usertype: user.usertype as i32,
+            did: user.did,
+            now: clock::now_ts(),
+        },
     )
     .await?;
     let _ = audit::emit(
@@ -113,12 +115,14 @@ pub async fn update(
     Ok(content_repo::update(
         state.db.pool(),
         kind,
-        id,
-        user.uid,
-        input.title,
-        input.body,
-        input.file,
-        clock::now_ts(),
+        content_repo::UpdateInput {
+            id,
+            uid: user.uid,
+            title: input.title,
+            body: input.body,
+            file: input.file,
+            now: clock::now_ts(),
+        },
     )
     .await?)
 }

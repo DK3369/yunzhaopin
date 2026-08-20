@@ -30,7 +30,7 @@ pub async fn get_public(state: &AppState, id: u64) -> AppResult<Article> {
         .await?
         .ok_or(ApiError::business("resume_not_found"))?;
     if a.status != 1 {
-        return Err(ApiError::business("resume_not_found").into());
+        return Err(ApiError::business("resume_not_found"));
     }
     // hits +1 written in the background
     let pool = state.db.pool().clone();

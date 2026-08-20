@@ -38,6 +38,7 @@ pub struct MessageListQuery {
 ///   - `title`    → "" (PHP merges title into content at write-time)
 ///   - `ref_kind` → 0 / "none"
 ///   - `ref_id`   → 0
+///
 /// Frontends that ignored these fields keep working; ones that read them
 /// see harmless defaults.
 #[derive(Debug, Serialize, ToSchema)]

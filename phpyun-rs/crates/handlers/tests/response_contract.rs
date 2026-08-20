@@ -68,11 +68,11 @@ async fn err_internal() -> AppResult<ApiResponse<Payload>> {
 }
 
 async fn err_param() -> AppResult<ApiResponse<Payload>> {
-    Err(ApiError::param_invalid("bad email").into())
+    Err(ApiError::param_invalid("bad email"))
 }
 
 async fn err_business() -> AppResult<ApiResponse<Payload>> {
-    Err(ApiError::business("job_not_found").into())
+    Err(ApiError::business("job_not_found"))
 }
 
 fn router() -> Router {

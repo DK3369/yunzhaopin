@@ -29,7 +29,7 @@ pub async fn buy(
         .await?
         .ok_or_else(|| ApiError::param_invalid("tpl_not_found"))?;
     if tpl.status != 1 {
-        return Err(ApiError::param_invalid("tpl_disabled").into());
+        return Err(ApiError::param_invalid("tpl_disabled"));
     }
 
     // Already purchased -> return immediately
@@ -53,7 +53,7 @@ pub async fn buy(
             integral_repo::try_deduct(state.db.pool(), user.uid, tpl.price as u32, clock::now_ts())
                 .await?;
         if n == 0 {
-            return Err(ApiError::param_invalid("integral_insufficient").into());
+            return Err(ApiError::param_invalid("integral_insufficient"));
         }
     }
     tpl_repo::append_purchased_id(state.db.pool(), user.uid, tpl_id).await?;
@@ -94,7 +94,7 @@ pub async fn apply(
             .await?
             .ok_or_else(|| ApiError::param_invalid("tpl_not_found"))?;
         if tpl.price > 0 {
-            return Err(ApiError::param_invalid("tpl_not_owned").into());
+            return Err(ApiError::param_invalid("tpl_not_owned"));
         }
     }
     let n = tpl_repo::set_applied_tpl(state.db.pool(), user.uid, tpl_id).await?;

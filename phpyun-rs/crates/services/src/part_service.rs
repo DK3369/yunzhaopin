@@ -80,14 +80,14 @@ pub async fn get_public(state: &AppState, id: u64) -> AppResult<PartJob> {
 
     // Status checks aligned with PHP
     if job.status == 1 {
-        return Err(ApiError::business("part_offline").into());
+        return Err(ApiError::business("part_offline"));
     }
     if job.state != 1 || job.r_status != 1 {
-        return Err(ApiError::business("part_pending").into());
+        return Err(ApiError::business("part_pending"));
     }
     let now = clock::now_ts();
     if job.edate > 0 && job.edate <= now {
-        return Err(ApiError::business("part_expired").into());
+        return Err(ApiError::business("part_expired"));
     }
 
     // Async hit increment (failures are ignored, matches PHP's upInfo)
@@ -124,13 +124,13 @@ pub async fn apply(
     // Expiry and state
     let now = clock::now_ts();
     if job.edate > 0 && job.edate < now {
-        return Err(ApiError::business("part_expired").into());
+        return Err(ApiError::business("part_expired"));
     }
     if job.status == 1 {
-        return Err(ApiError::business("part_offline").into());
+        return Err(ApiError::business("part_offline"));
     }
     if job.state != 1 {
-        return Err(ApiError::business("part_pending").into());
+        return Err(ApiError::business("part_pending"));
     }
 
     // Deduplicate
@@ -138,7 +138,7 @@ pub async fn apply(
         .await?
         .is_some()
     {
-        return Err(ApiError::business("part_apply_duplicate").into());
+        return Err(ApiError::business("part_apply_duplicate"));
     }
 
     let id = part_repo::create_apply(state.db.pool(), user.uid, job_id, job.uid, now).await?;
@@ -193,7 +193,7 @@ pub async fn collect(
         .await?
         .is_some()
     {
-        return Err(ApiError::business("part_collect_duplicate").into());
+        return Err(ApiError::business("part_collect_duplicate"));
     }
 
     let id =
@@ -322,7 +322,7 @@ pub async fn update_com_apply_status(
     user.require_employer()?;
     // PHPYun semantics: 1 = unread / 2 = read / 3 = contacted
     if !(1..=3).contains(&status) {
-        return Err(ApiError::param_invalid("status").into());
+        return Err(ApiError::param_invalid("status"));
     }
     let n = part_repo::update_apply_status(state.db.pool(), apply_id, user.uid, status).await?;
     Ok(n)

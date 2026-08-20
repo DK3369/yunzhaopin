@@ -158,7 +158,7 @@ mod tests {
         let token = "phpyun";
         let ts = "1700000000";
         let nonce = "zXyAbcD";
-        let mut parts = vec![token, ts, nonce];
+        let mut parts = [token, ts, nonce];
         parts.sort_unstable();
         let expected = format!("{:x}", Sha1::digest(parts.concat().as_bytes()));
         assert!(verify_signature(token, ts, nonce, &expected));

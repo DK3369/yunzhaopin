@@ -33,8 +33,6 @@ fn default_did() -> u32 {
     0
 }
 
-/// `unix → Y-m-d` (used by PHP list rendering)
-
 /// Article list item — aligned with all fields output by PHP `article.model::getList`.
 #[derive(Debug, Serialize, ToSchema)]
 pub struct ArticleSummary {

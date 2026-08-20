@@ -58,20 +58,15 @@ use std::convert::Infallible;
 // crate-root symbols); submodules just use `t!` directly.
 
 /// Supported languages. `Copy` type, so propagation / comparison is zero-cost.
-#[derive(Debug, Clone, Copy, Eq, PartialEq, Hash, Serialize)]
+#[derive(Debug, Default, Clone, Copy, Eq, PartialEq, Hash, Serialize)]
 #[serde(rename_all = "kebab-case")]
 pub enum Lang {
     #[serde(rename = "zh-CN")]
     ZhCN,
     #[serde(rename = "zh-TW")]
     ZhTW,
+    #[default]
     En,
-}
-
-impl Default for Lang {
-    fn default() -> Self {
-        Self::En
-    }
 }
 
 impl Lang {
