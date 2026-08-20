@@ -1,10 +1,7 @@
 # Rust build artifacts
 /target/
 /target-link/
-/.env
-/.env.*
-!/.env.example
-!/.env.*.example
+# Environment configuration is intentionally versioned for this deployment.
 /dist/
 /uploads-dev/
 /sqlx-data.json
