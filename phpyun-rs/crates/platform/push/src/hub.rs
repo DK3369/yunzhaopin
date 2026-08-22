@@ -93,9 +93,9 @@ impl Push {
         self
     }
 
-    /// The JSON a transport should write. Product code puts its own
-    /// discriminator (`cs`, `ctype`, …) in `payload`; this is a clone so a
-    /// transport cannot mutate the queued value.
+    /// The JSON a transport should write. Discriminators (`tp`, `cs`,
+    /// `ctype`, …) live in `payload`; this is a clone so a transport cannot
+    /// mutate the queued value.
     pub fn wire_payload(&self) -> serde_json::Value {
         self.payload.clone()
     }

@@ -24,4 +24,4 @@ pub mod topic;
 pub use hub::{
     publish, Hub, Membership, Push, DEFAULT_MAX_SESSIONS_PER_UID, PUSH_CHANNEL,
 };
-pub use topic::Topic;
+pub use topic::{Topic, Tp};

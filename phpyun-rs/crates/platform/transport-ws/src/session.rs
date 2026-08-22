@@ -199,7 +199,7 @@ mod tests {
             &caller(USERTYPE_JOBSEEKER),
             &mut subs,
         );
-        assert_eq!(reply.key, "subscribed");
+        assert_eq!(reply.key, "ok");
         assert_eq!(reply.data["topic"], "chat");
         assert_eq!(subs.len(), 1);
     }
@@ -227,7 +227,7 @@ mod tests {
             &caller(USERTYPE_ADMIN),
             &mut subs,
         );
-        assert_eq!(reply.key, "subscribed");
+        assert_eq!(reply.key, "ok");
     }
 
     #[test]
@@ -238,7 +238,7 @@ mod tests {
 
         for _ in 0..2 {
             let reply = apply(r#"{"action":"unsubscribe","topic":"chat"}"#, &me, &mut subs);
-            assert_eq!(reply.key, "unsubscribed");
+            assert_eq!(reply.key, "ok");
         }
         assert!(subs.is_empty());
     }
@@ -259,7 +259,7 @@ mod tests {
             &caller(USERTYPE_JOBSEEKER),
             &mut subs,
         );
-        assert_eq!(reply.key, "pong");
+        assert_eq!(reply.key, "ok");
     }
 
     /// The session only forwards what it was asked for; the hub does not know

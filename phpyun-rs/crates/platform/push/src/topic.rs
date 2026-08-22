@@ -12,6 +12,42 @@
 use phpyun_core::ApiError;
 use phpyun_kernel::{Caller, Role};
 
+/// Channel number on the wire (`tp`). Subscribe still uses the catalogue
+/// string (`chat`, `notifications`, …); this is what a push JSON carries
+/// so a client can `switch` without reading SSE `event:` or a string topic.
+///
+/// Numbers only grow at the end; never reorder.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[repr(u8)]
+pub enum Tp {
+    Chat = 0,
+    Notifications = 1,
+    AdminOps = 2,
+}
+
+impl Tp {
+    pub const fn as_u8(self) -> u8 {
+        self as u8
+    }
+
+    pub const fn from_u8(v: u8) -> Option<Self> {
+        match v {
+            0 => Some(Self::Chat),
+            1 => Some(Self::Notifications),
+            2 => Some(Self::AdminOps),
+            _ => None,
+        }
+    }
+
+    pub const fn name(self) -> &'static str {
+        match self {
+            Self::Chat => "chat",
+            Self::Notifications => "notifications",
+            Self::AdminOps => "admin.ops",
+        }
+    }
+}
+
 /// A subscribable channel of the caller's own events.
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct Topic(&'static str);
@@ -31,13 +67,10 @@ impl std::fmt::Display for Topic {
 /// The catalogue. `None` means any authenticated user; a role means only that
 /// role. Adding a channel is one line here — and deliberately not something a
 /// client can do by inventing a topic string.
-const CATALOGUE: &[(&str, Option<Role>)] = &[
-    // Direct messages between a jobseeker and a company.
-    ("chat", None),
-    // Application status changes, VIP activation, system notices.
-    ("notifications", None),
-    // Moderation queue and operational alerts.
-    ("admin.ops", Some(Role::Admin)),
+const CATALOGUE: &[(Tp, Option<Role>)] = &[
+    (Tp::Chat, None),
+    (Tp::Notifications, None),
+    (Tp::AdminOps, Some(Role::Admin)),
 ];
 
 /// Resolve a client-supplied topic name, checking that it exists and that this
@@ -47,14 +80,14 @@ const CATALOGUE: &[(&str, Option<Role>)] = &[
 /// public knowledge, so hiding it buys nothing, while a clear 403 saves a
 /// support ticket.
 pub fn resolve(name: &str, caller: &Caller) -> Result<Topic, ApiError> {
-    let Some((topic, required)) = CATALOGUE.iter().find(|(t, _)| *t == name) else {
+    let Some((tp, required)) = CATALOGUE.iter().find(|(tp, _)| tp.name() == name) else {
         return Err(ApiError::param_invalid(format!("unknown topic {name:?}")));
     };
 
     match required {
-        None => Ok(Topic(topic)),
+        None => Ok(Topic(tp.name())),
         Some(role) => match caller.user() {
-            Some(user) if user.usertype == role.usertype() => Ok(Topic(topic)),
+            Some(user) if user.usertype == role.usertype() => Ok(Topic(tp.name())),
             // A machine client has no `usertype` and so can never hold a human
             // role; same answer either way.
             _ => Err(ApiError::forbidden()),
@@ -66,8 +99,8 @@ pub fn resolve(name: &str, caller: &Caller) -> Result<Topic, ApiError> {
 pub fn available(caller: &Caller) -> Vec<&'static str> {
     CATALOGUE
         .iter()
-        .filter(|(name, _)| resolve(name, caller).is_ok())
-        .map(|(name, _)| *name)
+        .filter(|(tp, _)| resolve(tp.name(), caller).is_ok())
+        .map(|(tp, _)| tp.name())
         .collect()
 }
 
@@ -138,5 +171,14 @@ mod tests {
         let jobseeker = available(&user(USERTYPE_JOBSEEKER));
         assert_eq!(jobseeker, vec!["chat", "notifications"]);
         assert!(available(&user(USERTYPE_ADMIN)).contains(&"admin.ops"));
+    }
+
+    #[test]
+    fn wire_numbers_never_move() {
+        assert_eq!(Tp::Chat.as_u8(), 0);
+        assert_eq!(Tp::Notifications.as_u8(), 1);
+        assert_eq!(Tp::AdminOps.as_u8(), 2);
+        assert_eq!(Tp::from_u8(0).unwrap().name(), "chat");
+        assert_eq!(Tp::from_u8(9), None);
     }
 }

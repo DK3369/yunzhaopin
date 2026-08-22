@@ -165,15 +165,14 @@ over it, never the record.
 const es = new EventSource(`/sse?topics=chat&since=chat:${maxId}`, { withCredentials: true });
 es.addEventListener('chat', e => {
   const d = JSON.parse(e.data);
-  switch (d.cs ?? 0) {
-    case 0: append(d, e.lastEventId); break; // 未读 / 新消息
-    case 1: markRead(d); break;              // 已读 / 已读回执
-    case 2: remove(d); break;                // 已删除
-    default: /* unknown cs: ignore */ break;
+  switch (d.tp) {
+    case 0: /* chat */ break;
+    default: return;
   }
-  switch (d.ctype ?? 0) {
-    case 0: /* 文本 */ break;
-    default: /* unsupported content type */ break;
+  switch (d.cs) {
+    case 0: append(d); break;
+    case 1: markRead(d); break;
+    case 2: remove(d); break;
   }
 });
 es.addEventListener('resync', () => reloadHistoryOverHttp());
@@ -184,23 +183,34 @@ request headers and only sends that header from its *own* first reconnect, so
 without the parameter anything sent between the history read and the stream
 opening is lost. The header wins when both are present.
 
-**Frames.** Metadata rides in SSE's native fields, `data:` carries only the
-payload with one-character keys.
+**Frames.** REST, SSE `data:`, and WS `data` are the same chat object. SSE
+keeps `event:` / `id:` for the browser (`Last-Event-ID`); those lines are not
+JSON. WS uses the HTTP envelope `{code, key, msg, data}` with `key` always
+`"ok"` on success — never `"push"`. There is no `seq`; the row id is `id`.
 
 ```
 id: chat:1234
 event: chat
-data: {"c":"hello","ck":"7-42","ct":1755870000,"f":7}
+data: {"id":1234,"tp":0,"ck":"7-42","f":7,"c":"hello","cs":0,"ctype":0,"ct":1755870000}
 ```
 
 JSON, the event bus, and `phpyun_rs_chat` share the same `u8` / `TINYINT` numbers.
-Zero is omitted on the wire.
+
+**`tp` (channel)**
+
+| 值 | 频道 |
+|---|---|
+| 0 | chat |
+| 1 | notifications |
+| 2 | admin.ops |
+
+Subscribe still uses the string names (`?topics=chat`). `tp` is only on the message body.
 
 **`cs` (`CStatus`)**
 
 | 值 | 含义 |
 |---|---|
-| 0（默认，可省略） | 未读 / 新消息 |
+| 0 | 未读 / 新消息 |
 | 1 | 已读 / 已读回执 |
 | 2 | 已删除 |
 
@@ -208,7 +218,7 @@ Zero is omitted on the wire.
 
 | 值 | 名称 | 本版 |
 |---|---|---|
-| 0（默认，可省略） | 文本 | 写入 |
+| 0 | 文本 | 写入 |
 | 1 | 图片 | 列预留 |
 | 2 | 文件 | 预留 |
 | 3 | 语音 | 预留 |
@@ -221,10 +231,10 @@ Zero is omitted on the wire.
 Unknown numbers must not crash: the client `default`s to an unsupported type.
 This version only writes `ctype=0`.
 
-- `event:` is the topic (`chat`). Plus `ready` on connect and `resync` when the gap is too wide to replay. `:` comment lines every 15s are the keepalive.
-- `id:` is `topic:rowid` and only appears on sequenced frames (messages), because it becomes the client's resume cursor. Read receipts have `"cs":1`, no `c`, and no `id:`.
-- Payload keys: `ck` conversation, `f` from uid, `c` content, `ct` created (unix seconds), `cs`, `ctype`. A receipt also has `u` (who read). REST `ChatItem` uses the same keys, plus `id`.
-- WebSocket clients get the same payload; `seq` is lifted next to it for the resume cursor.
+- `event:` is the topic name (`chat`). Plus `ready` on connect and `resync` when the gap is too wide to replay. `:` comment lines every 15s are the keepalive.
+- `id:` is `topic:rowid` and only appears on sequenced frames (messages). Read receipts have `"cs":1`, no `c`, no `id`, and no SSE `id:`.
+- Chat object keys: `id`, `tp`, `ck`, `f`, `c`, `cs`, `ctype`, `ct`. A receipt also has `u` (who read).
+- WebSocket: `{code:200, key:"ok", msg:"ok", data: {同一对象}}`. Resume from `data.id`.
 
 **Ops.** The route sends `X-Accel-Buffering: no`, which is enough for a default
 nginx. If a proxy still buffers or reaps the connection:

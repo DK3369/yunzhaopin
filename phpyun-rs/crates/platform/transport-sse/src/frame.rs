@@ -15,7 +15,7 @@
 //! ```text
 //! id: chat:1234
 //! event: chat
-//! data: {"c":"hello","ck":"7-42","ct":1755870000,"f":7}
+//! data: {"c":"hello","ck":"7-42","cs":0,"ct":1755870000,"ctype":0,"f":7,"id":1234,"tp":0}
 //! ```
 //!
 //! A delimited body (`42|7|hello`) would save roughly twenty bytes against a
@@ -145,7 +145,7 @@ mod tests {
     }
 
     fn push() -> Push {
-        Push::new(7, "chat", json!({"ck": "7-42", "c": "hi"}))
+        Push::new(7, "chat", json!({"ck": "7-42", "c": "hi", "id": 1234, "tp": 0}))
     }
 
     #[test]
@@ -186,7 +186,7 @@ mod tests {
         assert!(rendered.contains("id: chat:1234"), "{rendered}");
         assert!(rendered.contains("event: chat\n"), "{rendered}");
         assert!(
-            rendered.contains(r#"data: {"c":"hi","ck":"7-42"}"#),
+            rendered.contains(r#"data: {"c":"hi","ck":"7-42","id":1234,"tp":0}"#),
             "{rendered}"
         );
     }
@@ -199,7 +199,7 @@ mod tests {
         let rendered = wire(encode(&Push::new(
             7,
             "chat",
-            json!({"ck": "7-42", "cs": 1, "u": 42}),
+            json!({"ck": "7-42", "cs": 1, "tp": 0, "u": 42}),
         )));
         assert!(!rendered.contains("id: "), "{rendered}");
         assert!(rendered.contains(r#""cs":1"#), "{rendered}");

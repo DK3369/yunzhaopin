@@ -54,31 +54,26 @@ impl ServerFrame {
     /// Sent once the handshake is authenticated, so the client knows which
     /// channels it may ask for instead of probing.
     pub fn welcome(topics: &[&'static str]) -> Self {
-        Self::ok("connected", json!({ "topics": topics }))
+        Self::ok("ok", json!({ "topics": topics }))
     }
 
     pub fn subscribed(topic: &str) -> Self {
-        Self::ok("subscribed", json!({ "topic": topic }))
+        Self::ok("ok", json!({ "topic": topic }))
     }
 
     pub fn unsubscribed(topic: &str) -> Self {
-        Self::ok("unsubscribed", json!({ "topic": topic }))
+        Self::ok("ok", json!({ "topic": topic }))
     }
 
     pub fn pong() -> Self {
-        Self::ok("pong", Value::Null)
+        Self::ok("ok", Value::Null)
     }
 
-    /// A server-initiated push — the reason this transport exists.
-    ///
-    /// `seq` is lifted so a socket client sees the same cursor SSE puts in
-    /// `id:`. Product fields (`cs`, `ctype`, …) live in `payload`.
+    /// A server-initiated push. `data` is the product JSON — the same object
+    /// REST returns — not a second envelope. `key` is `"ok"`, like every
+    /// other success. Channel and kind live in `tp` / `cs` / `ctype`.
     pub fn push(push: &Push) -> Self {
-        let mut data = json!({ "topic": push.topic, "payload": push.wire_payload() });
-        if let Some(seq) = push.seq {
-            data["seq"] = json!(seq);
-        }
-        Self::ok("push", data)
+        Self::ok("ok", push.wire_payload())
     }
 
     /// Mirrors [`ApiError`]'s HTTP rendering: same status, same stable key,
@@ -164,30 +159,24 @@ mod tests {
     }
 
     #[test]
-    fn a_push_names_its_topic_so_the_client_can_route_it() {
-        let frame = ServerFrame::push(&Push::new(7, "chat", json!({"body": "hi"})));
-        assert_eq!(frame.key, "push");
-        assert_eq!(frame.data["topic"], "chat");
-        assert_eq!(frame.data["payload"]["body"], "hi");
-    }
-
-    /// What SSE carries in `event:` and `id:` has to reach a socket client too,
-    /// or the same message means less depending on which door it came through.
-    #[test]
-    fn a_push_carries_sequence_when_it_has_one() {
-        let frame = ServerFrame::push(
-            &Push::new(7, "chat", json!({"c": "hi", "cs": 1})).with_seq(1234),
-        );
-        assert_eq!(frame.data["seq"], 1234);
-        assert_eq!(frame.data["payload"]["cs"], 1);
-        assert!(frame.data.get("type").is_none());
-    }
-
-    /// Absent rather than null, so a client can test for presence.
-    #[test]
-    fn a_push_without_them_does_not_invent_the_fields() {
-        let frame = ServerFrame::push(&Push::new(7, "chat", json!({})));
+    fn a_push_is_the_http_envelope_around_the_product_json() {
+        let frame = ServerFrame::push(&Push::new(7, "chat", json!({"c": "hi", "tp": 0})));
+        assert_eq!(frame.key, "ok");
+        assert_eq!(frame.data["c"], "hi");
+        assert_eq!(frame.data["tp"], 0);
+        assert!(frame.data.get("topic").is_none());
+        assert!(frame.data.get("payload").is_none());
         assert!(frame.data.get("seq").is_none());
-        assert!(frame.data["payload"].as_object().unwrap().is_empty());
+    }
+
+    /// `seq` stays on the internal [`Push`] for SSE `id:`; it must not appear
+    /// in the JSON a socket client sees.
+    #[test]
+    fn a_push_does_not_lift_seq_into_the_body() {
+        let frame = ServerFrame::push(
+            &Push::new(7, "chat", json!({"c": "hi", "id": 1234})).with_seq(1234),
+        );
+        assert_eq!(frame.data["id"], 1234);
+        assert!(frame.data.get("seq").is_none());
     }
 }

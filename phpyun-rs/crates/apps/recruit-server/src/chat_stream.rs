@@ -25,37 +25,22 @@ use phpyun_core::{AppResult, AppState};
 use phpyun_kernel::{Consumer, Ctx, ProductId, RetryPolicy};
 use phpyun_models::chat::entity::Chat;
 use phpyun_models::chat::CStatus;
-use phpyun_push::{publish, Push};
+use phpyun_push::{publish, Push, Tp};
 use phpyun_services::chat_service;
 use phpyun_services::notification_consumers::{ChatRead, ChatSent};
 use phpyun_transport_sse::{Replay, Replayed, REPLAY_LIMIT};
-use serde_json::{json, Value};
+use serde_json::json;
 
 const PRODUCT: ProductId = ProductId::new("recruit");
 
 /// The topic both of these publish on, and the one [`ChatReplay`] resumes.
 const TOPIC: &str = "chat";
 
-/// Stamp `cs` / `ctype` only when they are not the default 0, so an unread
-/// text message stays four keys long.
-fn with_kind(mut payload: Value, cs: u8, ctype: u8) -> Value {
-    if let Some(obj) = payload.as_object_mut() {
-        if cs != 0 {
-            obj.insert("cs".into(), json!(cs));
-        }
-        if ctype != 0 {
-            obj.insert("ctype".into(), json!(ctype));
-        }
-    }
-    payload
-}
-
 /// A new message, addressed to `to`.
 ///
-/// Short keys, matching REST `ChatItem`: `ck` conversation, `f` from,
-/// `c` content, `ct` created. `cs` / `ctype` are omitted when 0 (unread
-/// text). The message id is not in here — it rides in the transport's own
-/// field (SSE `id:`, WebSocket `seq`), where it doubles as the resume cursor.
+/// Same object as REST `ChatItem` and WS `data`: `id`, `tp`, `ck`, `f`, `c`,
+/// `cs`, `ctype`, `ct`. `with_seq` is only for the SSE `id:` line (browser
+/// Last-Event-ID); `id` in the JSON is what a client actually reads.
 ///
 /// An unknown `ctype` is an unsupported message type, not a reason to render
 /// `c` as text.
@@ -72,11 +57,16 @@ fn message_push(
     Push::new(
         to,
         TOPIC,
-        with_kind(
-            json!({ "ck": conv_key, "f": sender, "c": body, "ct": at }),
-            cs,
-            ctype,
-        ),
+        json!({
+            "id": id,
+            "tp": Tp::Chat.as_u8(),
+            "ck": conv_key,
+            "f": sender,
+            "c": body,
+            "cs": cs,
+            "ctype": ctype,
+            "ct": at,
+        }),
     )
     .with_seq(id)
 }
@@ -89,6 +79,7 @@ fn read_receipt_push(peer: u64, conv_key: &str, reader: u64, at: i64) -> Push {
         peer,
         TOPIC,
         json!({
+            "tp": Tp::Chat.as_u8(),
             "ck": conv_key,
             "cs": CStatus::Read.as_u8(),
             "ct": at,
@@ -223,25 +214,26 @@ mod tests {
 
         assert_eq!(push.uid, 42, "addressed to the recipient, not the sender");
         assert_eq!(push.seq, Some(1234));
-        assert!(push.payload.get("cs").is_none());
-        assert!(push.payload.get("ctype").is_none());
+        assert_eq!(push.payload["id"], 1234);
+        assert_eq!(push.payload["tp"], 0);
+        assert_eq!(push.payload["cs"], 0);
+        assert_eq!(push.payload["ctype"], 0);
         assert_eq!(push.payload["f"], 7);
         assert_eq!(push.payload["c"], "hi");
         assert_eq!(push.payload["ck"], "7-42");
         assert_eq!(push.payload["ct"], 99);
     }
 
-    /// The id is carried by the transport, not repeated in the body, and the
-    /// content-kind marker stays out until there is a second content type.
+    /// The JSON is the same object REST returns. SSE `id:` still carries the
+    /// cursor for the browser; it is not a substitute for `id` in the body.
     #[test]
-    fn the_payload_carries_no_field_the_transport_already_has() {
+    fn the_payload_is_the_same_object_rest_returns() {
         let push = message_push(42, 1234, 7, "7-42", "hi", 99, 0, 0);
         let payload = push.payload.as_object().unwrap();
 
-        assert!(payload.get("i").is_none() && payload.get("id").is_none());
-        assert!(payload.get("cs").is_none(), "unread needs no status marker");
-        assert!(payload.get("ctype").is_none(), "text needs no kind marker");
-        assert_eq!(payload.len(), 4, "{payload:?}");
+        assert_eq!(payload["id"], 1234);
+        assert_eq!(payload["tp"], 0);
+        assert_eq!(payload.len(), 8, "{payload:?}");
     }
 
     /// A replayed message must be indistinguishable from the live one, or every
@@ -286,7 +278,7 @@ mod tests {
         assert_eq!(push.uid, 7);
         assert_eq!(push.payload["f"], 7);
         assert_eq!(push.payload["cs"], 1);
-        assert!(push.payload.get("ctype").is_none());
+        assert_eq!(push.payload["ctype"], 0);
     }
 
     #[test]
@@ -297,6 +289,8 @@ mod tests {
         assert_eq!(push.seq, None, "a receipt must not move the resume cursor");
         assert_eq!(push.payload["cs"], 1);
         assert!(push.payload.get("c").is_none());
+        assert!(push.payload.get("id").is_none());
+        assert_eq!(push.payload["tp"], 0);
         assert_eq!(push.payload["ck"], "7-42");
         assert_eq!(push.payload["u"], 42);
     }
@@ -305,6 +299,6 @@ mod tests {
     fn a_future_content_type_is_stamped_on_the_payload() {
         let push = message_push(42, 1, 7, "7-42", "", 99, 0, 6);
         assert_eq!(push.payload["ctype"], 6);
-        assert!(push.payload.get("cs").is_none());
+        assert_eq!(push.payload["cs"], 0);
     }
 }

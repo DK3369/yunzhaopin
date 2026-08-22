@@ -60,24 +60,23 @@ pub async fn send(
 
 /// One chat row as returned by `/chat/with` and `/chat/conversations`.
 ///
-/// Same short keys as the SSE payload: `ck` conversation (`min-max` of the
-/// two uids), `f` from, `c` content, `ct` created. The client already knows
-/// its own uid, so the peer is the other number in `ck`. `cs` / `ctype` are
-/// omitted when 0 (unread text).
+/// Same object as SSE `data:` and WS `data`: `id`, `tp`, `ck`, `f`, `c`,
+/// `cs`, `ctype`, `ct`. `tp` is always 0 here (chat). The client already
+/// knows its own uid, so the peer is the other number in `ck`.
 #[derive(Debug, Serialize, ToSchema)]
 pub struct ChatItem {
     pub id: u64,
+    /// Channel: 0 = chat.
+    pub tp: u8,
     /// Conversation key, `min-max` of the two uids.
     pub ck: String,
     /// Sender uid.
     pub f: u64,
     /// Message text (or caption). `ctype` says what `c` is.
     pub c: String,
-    /// [`phpyun_models::chat::CStatus`]. Omitted when unread.
-    #[serde(skip_serializing_if = "phpyun_models::chat::is_zero")]
+    /// [`phpyun_models::chat::CStatus`].
     pub cs: u8,
-    /// [`phpyun_models::chat::CType`]. Omitted when text.
-    #[serde(skip_serializing_if = "phpyun_models::chat::is_zero")]
+    /// [`phpyun_models::chat::CType`].
     pub ctype: u8,
     /// Created-at, unix seconds.
     pub ct: i64,
@@ -87,6 +86,7 @@ impl From<phpyun_models::chat::entity::Chat> for ChatItem {
     fn from(row: phpyun_models::chat::entity::Chat) -> Self {
         Self {
             id: row.id,
+            tp: 0,
             ck: row.conv_key,
             f: row.sender_uid,
             c: row.body,
@@ -190,14 +190,17 @@ mod tests {
     }
 
     #[test]
-    fn unread_text_omits_the_zero_fields() {
+    fn unread_text_carries_every_field() {
         assert_eq!(
             item(0, 0),
             json!({
                 "id": 1234,
+                "tp": 0,
                 "ck": "7-42",
                 "f": 7,
                 "c": "你好",
+                "cs": 0,
+                "ctype": 0,
                 "ct": 1_755_870_000,
             })
         );
@@ -206,7 +209,7 @@ mod tests {
     #[test]
     fn a_read_row_carries_cs() {
         assert_eq!(item(1, 0)["cs"], 1);
-        assert!(item(1, 0).get("ctype").is_none());
+        assert_eq!(item(1, 0)["ctype"], 0);
     }
 
     #[test]
