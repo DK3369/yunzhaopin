@@ -7,6 +7,78 @@ use std::{
 };
 
 const ENV_FILE_VAR: &str = "PHPYUN_ENV_FILE";
+
+/// Built-in User-Agent denylist, used when `BOT_UA_DENYLIST` is unset. Entries
+/// are lowercased substrings matched against the request UA.
+///
+/// This is a backend API, so indexing / archiving / AI-training crawlers have
+/// no business here. What is **not** listed matters just as much: generic HTTP
+/// client UAs (`okhttp`, `java/`, `go-http-client`, `python-urllib`) identify
+/// our own mobile apps and legitimate server-to-server integrations, not bots.
+const DEFAULT_BOT_UA_DENYLIST: &[&str] = &[
+    // -- search engines --
+    "googlebot",
+    "bingbot",
+    "slurp",
+    "duckduckbot",
+    "yandexbot",
+    "baiduspider",
+    "sogou web spider",
+    "sogou inst spider",
+    "yisouspider",
+    "360spider",
+    "haosouspider",
+    "sosospider",
+    "exabot",
+    "facebot",
+    "ia_archiver",
+    "petalbot",
+    "yahoo! slurp",
+    // -- SEO / data brokers --
+    "ahrefsbot",
+    "semrushbot",
+    "mj12bot",
+    "dotbot",
+    "seznambot",
+    "blexbot",
+    "megaindex",
+    "linkdexbot",
+    "screaming frog",
+    "sitebulb",
+    "serpstatbot",
+    "barkrowler",
+    "dataforseobot",
+    // -- AI training scrapers --
+    "gptbot",
+    "chatgpt-user",
+    "oai-searchbot",
+    "claudebot",
+    "claude-web",
+    "anthropic-ai",
+    "ccbot",
+    "perplexitybot",
+    "bytespider",
+    "applebot-extended",
+    "amazonbot",
+    "diffbot",
+    "cohere-ai",
+    "img2dataset",
+    "timpibot",
+    "google-extended",
+    // -- generic scraping tooling --
+    "spider",
+    "crawler",
+    "scraper",
+    "headlesschrome",
+    "phantomjs",
+    "puppeteer",
+    "playwright",
+    "scrapy",
+    "httrack",
+    "wget",
+    "libwww-perl",
+];
+
 // Keep this list synchronized with `from_env`. Integration tests clear these
 // variables before loading `.env.dev` so a production value inherited from
 // the parent shell can never fill a key omitted from the shared dev/test file.
@@ -42,6 +114,7 @@ const CONFIG_ENV_VARS: &[&str] = &[
     "WEB_BASE_URL",
     "METRICS_BIND",
     "CORS_ALLOWED_ORIGINS",
+    "BOT_UA_DENYLIST",
     "MAX_BODY_MB",
     "RUN_MIGRATIONS_ON_BOOT",
     "STORAGE_KIND",
@@ -178,6 +251,16 @@ pub struct Config {
     // CORS whitelist (comma-separated; "*" means any — only recommended in dev).
     pub cors_allowed_origins: Vec<String>,
 
+    /// Lowercased User-Agent substrings that get a flat 403 before they can
+    /// spend a rate-limit token. Comma-separated; a non-empty `BOT_UA_DENYLIST`
+    /// **replaces** the built-in list, the literal `off` disables UA filtering,
+    /// and unset or blank keeps [`DEFAULT_BOT_UA_DENYLIST`].
+    ///
+    /// Deliberately excluded from the default: generic HTTP library UAs such as
+    /// `okhttp` (the Android standard), `java/`, and `go-http-client`. Blocking
+    /// those locks out our own mobile clients and any server-to-server caller.
+    pub bot_ua_denylist: Vec<String>,
+
     // Request-body size cap (MB).
     pub max_body_mb: usize,
 
@@ -230,6 +313,28 @@ pub struct Config {
     pub weibo_appid: Option<String>,
     pub weibo_appsecret: Option<String>,
     pub weibo_oauth_redirect: Option<String>,
+}
+
+/// Parse `BOT_UA_DENYLIST`.
+///
+/// Unset or blank falls back to [`DEFAULT_BOT_UA_DENYLIST`] rather than
+/// disabling the filter, so a stray `BOT_UA_DENYLIST=` in an env file cannot
+/// silently switch crawler protection off. Disabling is opt-in via the literal
+/// `off`.
+fn parse_bot_ua_denylist(raw: Option<&str>) -> Vec<String> {
+    let Some(raw) = raw.map(str::trim).filter(|s| !s.is_empty()) else {
+        return DEFAULT_BOT_UA_DENYLIST
+            .iter()
+            .map(|s| (*s).to_owned())
+            .collect();
+    };
+    if raw.eq_ignore_ascii_case("off") {
+        return Vec::new();
+    }
+    raw.split(',')
+        .map(|s| s.trim().to_ascii_lowercase())
+        .filter(|s| !s.is_empty())
+        .collect()
 }
 
 fn env_parse<T: std::str::FromStr>(key: &str, default: T) -> T {
@@ -369,6 +474,8 @@ impl Config {
                 .map(|s| s.trim().to_string())
                 .filter(|s| !s.is_empty())
                 .collect(),
+
+            bot_ua_denylist: parse_bot_ua_denylist(env::var("BOT_UA_DENYLIST").ok().as_deref()),
 
             max_body_mb: env_parse("MAX_BODY_MB", 20usize),
             run_migrations_on_boot: env_parse("RUN_MIGRATIONS_ON_BOOT", false),
@@ -526,7 +633,8 @@ fn is_weak_secret(s: &str) -> bool {
 mod tests {
     use super::{
         default_runtime_env_path, default_test_env_path, is_weak_secret, parse_app_environment,
-        test_environment, validate_production_policy, AppEnvironment, CONFIG_ENV_VARS,
+        parse_bot_ua_denylist, test_environment, validate_production_policy, AppEnvironment,
+        CONFIG_ENV_VARS, DEFAULT_BOT_UA_DENYLIST,
     };
     use std::{path::PathBuf, str::FromStr};
 
@@ -651,5 +759,74 @@ mod tests {
         assert!(!is_weak_secret(
             "9f8a2b1c4e7d5f8a3b6c9e2d4f7a8b1c5e9d3f6a2b8c4e7d5f1a8b3c6e9d2f4a"
         ));
+    }
+
+    /// Real User-Agents from clients we must never block. Generic HTTP-library
+    /// UAs identify our own apps and server-to-server integrations, so a
+    /// substring match on them takes the whole mobile platform offline.
+    #[test]
+    fn default_ua_denylist_lets_first_party_clients_through() {
+        for ua in [
+            "okhttp/4.12.0",
+            "Dart/3.5 (dart:io)",
+            "Go-http-client/1.1",
+            "Java/17.0.9",
+            "python-urllib3/2.2.1",
+            "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15",
+            "Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 Chrome/120.0.0.0 Mobile Safari/537.36",
+            "MicroMessenger/8.0.49",
+        ] {
+            let lower = ua.to_ascii_lowercase();
+            let hit = DEFAULT_BOT_UA_DENYLIST
+                .iter()
+                .find(|p| lower.contains(*p));
+            assert!(hit.is_none(), "{ua:?} would be blocked by {hit:?}");
+        }
+    }
+
+    #[test]
+    fn default_ua_denylist_still_blocks_real_crawlers() {
+        for ua in [
+            "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
+            "Mozilla/5.0 (compatible; Baiduspider/2.0; +http://www.baidu.com/search/spider.html)",
+            "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; GPTBot/1.2)",
+            "Scrapy/2.11 (+https://scrapy.org)",
+            "Wget/1.21.4",
+        ] {
+            let lower = ua.to_ascii_lowercase();
+            assert!(
+                DEFAULT_BOT_UA_DENYLIST.iter().any(|p| lower.contains(p)),
+                "{ua:?} should be blocked"
+            );
+        }
+    }
+
+    #[test]
+    fn blank_denylist_falls_back_to_the_default_instead_of_disabling() {
+        let default_len = DEFAULT_BOT_UA_DENYLIST.len();
+        assert_eq!(parse_bot_ua_denylist(None).len(), default_len);
+        assert_eq!(parse_bot_ua_denylist(Some("")).len(), default_len);
+        assert_eq!(parse_bot_ua_denylist(Some("   ")).len(), default_len);
+    }
+
+    #[test]
+    fn denylist_can_be_replaced_or_explicitly_disabled() {
+        assert_eq!(
+            parse_bot_ua_denylist(Some("EvilBot, Other-Bot ")),
+            vec!["evilbot".to_owned(), "other-bot".to_owned()]
+        );
+        assert!(parse_bot_ua_denylist(Some("off")).is_empty());
+        assert!(parse_bot_ua_denylist(Some("OFF")).is_empty());
+    }
+
+    #[test]
+    fn denylist_entries_are_lowercase_so_substring_matching_works() {
+        for pattern in DEFAULT_BOT_UA_DENYLIST {
+            assert_eq!(
+                *pattern,
+                pattern.to_ascii_lowercase(),
+                "{pattern:?} must be lowercase"
+            );
+        }
     }
 }

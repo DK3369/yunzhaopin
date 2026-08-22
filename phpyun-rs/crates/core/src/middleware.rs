@@ -14,7 +14,7 @@
 
 use crate::config::Config;
 use axum::{
-    extract::{MatchedPath, Request},
+    extract::{MatchedPath, Request, State},
     http::{header, HeaderName, HeaderValue, Method, StatusCode},
     middleware::Next,
     response::{IntoResponse, Response},
@@ -94,7 +94,10 @@ where
         // Bot blocker: 403 known crawlers / scrapers / AI bots before they
         // can spend a rate-limit token or reach a DB query. Sits AFTER the
         // method filter so OPTIONS preflights still work for legit browsers.
-        .layer(axum::middleware::from_fn(block_bots))
+        .layer(axum::middleware::from_fn_with_state(
+            BotFilter(Arc::new(cfg.bot_ua_denylist.clone())),
+            block_bots,
+        ))
         // i18n: detect the request language and write it into a task-local for
         // IntoResponse translation. Must sit outside only_get_post so that even
         // 405→404 rejections still go through the translation path.
@@ -252,92 +255,31 @@ async fn only_get_post(req: Request, next: Next) -> Response {
     }
 }
 
-/// User-Agent substrings (lowercased) that get a flat 403. This is a backend
-/// API — there is zero reason for any indexing / archiving / training crawler
-/// to touch us. Block them at the door so they don't even consume a rate-limit
-/// token. False positives are an acceptable cost: if a legit client UA happens
-/// to contain "spider" we'd rather they 403 once and switch UA than let the
-/// real swarm in.
-const BOT_UA_PATTERNS: &[&str] = &[
-    // -- search engines --
-    "googlebot",
-    "bingbot",
-    "slurp",
-    "duckduckbot",
-    "yandexbot",
-    "baiduspider",
-    "sogou web spider",
-    "sogou inst spider",
-    "yisouspider",
-    "360spider",
-    "haosouspider",
-    "sosospider",
-    "exabot",
-    "facebot",
-    "ia_archiver",
-    "petalbot",
-    "yahoo! slurp",
-    // -- SEO / data brokers --
-    "ahrefsbot",
-    "semrushbot",
-    "mj12bot",
-    "dotbot",
-    "seznambot",
-    "blexbot",
-    "megaindex",
-    "linkdexbot",
-    "screaming frog",
-    "sitebulb",
-    "serpstatbot",
-    "barkrowler",
-    "dataforseobot",
-    // -- AI training scrapers --
-    "gptbot",
-    "chatgpt-user",
-    "oai-searchbot",
-    "claudebot",
-    "claude-web",
-    "anthropic-ai",
-    "ccbot",
-    "perplexitybot",
-    "bytespider",
-    "applebot-extended",
-    "amazonbot",
-    "diffbot",
-    "cohere-ai",
-    "img2dataset",
-    "timpibot",
-    "google-extended",
-    // -- generic catch-all (substring match) --
-    "spider",
-    "crawler",
-    "scraper",
-    "headlesschrome",
-    "phantomjs",
-    "puppeteer",
-    "playwright",
-    "scrapy",
-    "httrack",
-    "wget",
-    "libwww-perl",
-    "python-urllib",
-    "go-http-client",
-    "java/",
-    "okhttp",
-];
+/// Immutable, pre-lowercased UA denylist shared by every request. Cloning is
+/// an `Arc` bump, which is what `from_fn_with_state` needs.
+#[derive(Clone)]
+struct BotFilter(Arc<Vec<String>>);
 
-/// Block crawler / scraper User-Agents with a flat 403. Empty UA is allowed
-/// (k8s probes, internal monitoring, our own curl smoke-tests often have none),
-/// but anything matching the blacklist is dropped before rate-limit / DB.
-async fn block_bots(req: Request, next: Next) -> Response {
-    if let Some(ua) = req
-        .headers()
-        .get(header::USER_AGENT)
-        .and_then(|v| v.to_str().ok())
-    {
-        let ua_lower = ua.to_ascii_lowercase();
-        if BOT_UA_PATTERNS.iter().any(|p| ua_lower.contains(p)) {
-            return localized_rejection(StatusCode::FORBIDDEN, "forbidden");
+/// Block crawler / scraper User-Agents with a flat 403 before they can spend a
+/// rate-limit token or reach a DB query. An empty UA is allowed (k8s probes,
+/// internal monitoring, and curl smoke-tests often send none), and an empty
+/// denylist disables the check entirely.
+///
+/// The patterns come from `Config::bot_ua_denylist`, so an operator can widen
+/// or disable the filter without a rebuild. Note that generic HTTP-library UAs
+/// are deliberately absent from the default list — see
+/// `config::DEFAULT_BOT_UA_DENYLIST`.
+async fn block_bots(State(filter): State<BotFilter>, req: Request, next: Next) -> Response {
+    if !filter.0.is_empty() {
+        if let Some(ua) = req
+            .headers()
+            .get(header::USER_AGENT)
+            .and_then(|v| v.to_str().ok())
+        {
+            let ua_lower = ua.to_ascii_lowercase();
+            if filter.0.iter().any(|p| ua_lower.contains(p.as_str())) {
+                return localized_rejection(StatusCode::FORBIDDEN, "forbidden");
+            }
         }
     }
     next.run(req).await
