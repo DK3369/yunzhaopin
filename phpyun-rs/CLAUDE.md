@@ -78,11 +78,19 @@ crates/
                        `use`s redis::*, sqlx::Pool, reqwest::*, moka::*,
                        jsonwebtoken::*.
     auth/              argon2 + legacy md5 password compatibility.
-    kernel/            Protocol-agnostic: Operation, Policy, Ctx, Caller,
-                       dispatch. Names no transport type, by rule.
+    kernel/            Protocol-agnostic: Operation (request/response), Consumer
+                       (queue message), Policy, Ctx, Caller, dispatch. Names no
+                       transport type, by rule.
+    security/          ClientRegistry: which open-platform app_ids exist, their
+                       product line, scopes, and rate tier. File-backed with a
+                       Redis override, because the schema takes no new table.
     transport-http/    axum adapter. `ApiSurface::mount::<O>()` derives the
                        route, policy enforcement, envelope, and OpenAPI entry
                        from one Operation declaration.
+    transport-mq/      Event-bus adapter. `spawn::<C>()` drives a Consumer with
+                       idempotency, retry backoff, and `<topic>.dlq`
+                       dead-lettering. No rate limiting or signatures — the
+                       messages are ours.
 
   products/
     recruit/           the original job-board product line

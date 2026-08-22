@@ -96,6 +96,14 @@ impl Ctx {
         Self::new(state, product, Caller::System, RequestMeta::new(transport))
     }
 
+    /// Attach ambient metadata after construction, for transports that learn
+    /// the request id only once they have the message in hand.
+    #[must_use]
+    pub fn with_meta(mut self, meta: RequestMeta) -> Self {
+        self.meta = meta;
+        self
+    }
+
     pub fn uid(&self) -> Option<u64> {
         self.caller.uid()
     }

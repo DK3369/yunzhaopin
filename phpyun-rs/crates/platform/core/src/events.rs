@@ -221,6 +221,28 @@ impl EventBus {
         self.publish(topic, Bytes::from(s)).await
     }
 
+    /// Read one batch without spawning a worker.
+    ///
+    /// [`Self::consume`] is the way to process a topic continuously. This is for
+    /// the one-shot cases: draining a dead-letter topic from an ops tool, and
+    /// asserting in tests that something was published.
+    pub async fn read_batch(
+        &self,
+        topic: &str,
+        group: &str,
+        consumer: &str,
+        count: usize,
+    ) -> AppResult<Vec<Message>> {
+        self.inner.ensure_group(topic, group).await?;
+        self.inner.read(topic, group, consumer, count, 0).await
+    }
+
+    /// Acknowledge a message read via [`Self::read_batch`]. Workers started by
+    /// [`Self::consume`] ack for themselves.
+    pub async fn ack(&self, topic: &str, group: &str, id: &str) -> AppResult<()> {
+        self.inner.ack(topic, group, id).await
+    }
+
     /// Spawn a worker that handles the given (topic, group).
     ///
     /// ```ignore
@@ -382,6 +404,16 @@ mod tests {
         let got: serde_json::Value = serde_json::from_slice(&msgs[0].payload).unwrap();
         assert_eq!(got["uid"], 42);
         assert_eq!(got["action"], "login");
+    }
+
+    #[tokio::test]
+    async fn read_batch_sees_what_was_published() {
+        let bus = EventBus::new(InMemoryBus::default());
+        bus.publish("t2", Bytes::from_static(b"one")).await.unwrap();
+        let msgs = bus.read_batch("t2", "g1", "c1", 10).await.unwrap();
+        assert_eq!(msgs.len(), 1);
+        assert_eq!(&msgs[0].payload[..], b"one");
+        bus.ack("t2", "g1", &msgs[0].id).await.unwrap();
     }
 
     /// Custom backend that demonstrates pluggability.

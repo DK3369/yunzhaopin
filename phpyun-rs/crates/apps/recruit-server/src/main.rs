@@ -70,6 +70,12 @@ async fn async_main(config: Config, worker_threads: usize) -> anyhow::Result<()>
     // Global region tree (countries / states / cities). Same caching pattern as dict_service.
     phpyun_services::region_service::init_and_spawn_refresher(&state).await;
 
+    // Open-platform client registry (app_id → product line, scopes, rate tier).
+    // Config-driven because the schema is shared with the PHP app and cannot
+    // take a new table; Redis carries overrides so an integration can be cut
+    // off without a deploy.
+    phpyun_security::init_and_spawn_refresher(&state).await;
+
     // Mint a stable long-lived admin token for `/docs` & curl in non-prod so
     // engineers can hit auth-gated endpoints without going through login.
     // No-op in prod.
@@ -148,8 +154,22 @@ async fn async_main(config: Config, worker_threads: usize) -> anyhow::Result<()>
         sch.start();
     }
 
-    // ---- Event-bus consumers (apply.created / vip.activated / chat.sent) ----
-    phpyun_services::notification_consumers::start_all(&state);
+    // ---- Event-bus consumers ----
+    //
+    // Each consumer declares its own topic, group, and payload type; the MQ
+    // transport adds idempotency, retry backoff, and dead-lettering. The
+    // registration list lives here rather than in the services crate so
+    // business code keeps no dependency on a transport.
+    {
+        use phpyun_services::notification_consumers as notif;
+        use phpyun_transport_mq::spawn;
+
+        spawn::<notif::NotifyApplyCreated>(&state);
+        spawn::<notif::NotifyVipActivated>(&state);
+        spawn::<notif::PushChatMessage>(&state);
+        spawn::<notif::SendInviteEmail>(&state);
+        spawn::<notif::SendVerifyEmail>(&state);
+    }
 
     // HTTP service
     //

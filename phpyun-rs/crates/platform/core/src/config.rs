@@ -117,6 +117,9 @@ const CONFIG_ENV_VARS: &[&str] = &[
     "BOT_UA_DENYLIST",
     "MAX_BODY_MB",
     "RUN_MIGRATIONS_ON_BOOT",
+    "CLIENT_REGISTRY_PATH",
+    "CLIENT_REGISTRY_REDIS_KEY",
+    "CLIENT_REGISTRY_REFRESH_SECS",
     "STORAGE_KIND",
     "STORAGE_FS_ROOT",
     "STORAGE_BASE_URL",
@@ -263,6 +266,17 @@ pub struct Config {
 
     // Request-body size cap (MB).
     pub max_body_mb: usize,
+
+    /// Path to the open-platform client registry (app_id → product line,
+    /// scopes, rate tier). Optional: with no file the registry starts empty,
+    /// which means no machine client is recognised.
+    pub client_registry_path: Option<String>,
+    /// Redis key holding a registry document that overrides the file, so a
+    /// misbehaving integration can be throttled or cut off without a deploy.
+    pub client_registry_redis_key: String,
+    /// How often to re-read that key. `0` disables hot reload and leaves the
+    /// file as the only source.
+    pub client_registry_refresh_secs: u64,
 
     // Run migrations automatically on startup (dev: true; prod: false +
     // separate ops process recommended).
@@ -479,6 +493,15 @@ impl Config {
 
             max_body_mb: env_parse("MAX_BODY_MB", 20usize),
             run_migrations_on_boot: env_parse("RUN_MIGRATIONS_ON_BOOT", false),
+
+            client_registry_path: env::var("CLIENT_REGISTRY_PATH")
+                .ok()
+                .filter(|s| !s.is_empty()),
+            client_registry_redis_key: env::var("CLIENT_REGISTRY_REDIS_KEY")
+                .ok()
+                .filter(|s| !s.is_empty())
+                .unwrap_or_else(|| "client_registry:document".into()),
+            client_registry_refresh_secs: env_parse("CLIENT_REGISTRY_REFRESH_SECS", 60u64),
 
             storage_kind: env::var("STORAGE_KIND").ok().filter(|s| !s.is_empty()),
             storage_fs_root: env::var("STORAGE_FS_ROOT").ok().filter(|s| !s.is_empty()),

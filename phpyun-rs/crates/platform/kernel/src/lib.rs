@@ -14,7 +14,8 @@
 //! - **who is calling** ([`Caller`]),
 //! - **what they are allowed to do** ([`Policy`]),
 //! - **the request's ambient facts** ([`RequestMeta`]),
-//! - **the work itself** ([`Operation`]),
+//! - **the work itself** ([`Operation`] for a call that expects an answer,
+//!   [`Consumer`] for a message that does not),
 //! - **the order those are applied in** ([`dispatch`]).
 //!
 //! What does not generalize — CORS, User-Agent filtering, HTTP method rules,
@@ -40,12 +41,14 @@
 //! anyway. There is no flag day.
 
 pub mod caller;
+pub mod consumer;
 pub mod ctx;
 pub mod dispatch;
 pub mod operation;
 pub mod policy;
 
 pub use caller::{Caller, ClientCaller, ProductId, Role, UserCaller};
+pub use consumer::{assert_consumer_is_well_formed, Consumer, RetryPolicy};
 pub use ctx::{Ctx, RequestMeta, Transport};
 pub use dispatch::{dispatch, parse_input};
 pub use operation::{assert_operation_is_well_formed, check_well_formed, Operation};

@@ -19,4 +19,6 @@ tracing.workspace = true
 anyhow.workspace = true
 phpyun_core.workspace = true
 phpyun_handlers.workspace = true
+phpyun_security.workspace = true
 phpyun_services.workspace = true
+phpyun_transport_mq.workspace = true

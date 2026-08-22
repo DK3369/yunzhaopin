@@ -2358,7 +2358,21 @@ dependencies = [
  "axum",
  "phpyun-core",
  "phpyun-handlers",
+ "phpyun-security",
  "phpyun-services",
+ "phpyun-transport-mq",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
+name = "phpyun-security"
+version = "0.1.2"
+dependencies = [
+ "phpyun-core",
+ "phpyun-kernel",
+ "serde",
+ "serde_json",
  "tokio",
  "tracing",
 ]
@@ -2373,6 +2387,7 @@ dependencies = [
  "chrono",
  "phpyun-auth",
  "phpyun-core",
+ "phpyun-kernel",
  "phpyun-models",
  "serde",
  "serde_json",
@@ -2399,6 +2414,18 @@ dependencies = [
  "tracing",
  "utoipa",
  "validator",
+]
+
+[[package]]
+name = "phpyun-transport-mq"
+version = "0.1.2"
+dependencies = [
+ "phpyun-core",
+ "phpyun-kernel",
+ "serde",
+ "serde_json",
+ "tokio",
+ "tracing",
 ]
 
 [[package]]

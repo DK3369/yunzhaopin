@@ -17,6 +17,7 @@ sha1.workspace = true
 sqlx.workspace = true
 phpyun_core.workspace = true
 phpyun_auth.workspace = true
+phpyun_kernel.workspace = true
 phpyun_models.workspace = true
 arc-swap.workspace = true
 chrono.workspace = true
