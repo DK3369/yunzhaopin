@@ -10,7 +10,7 @@ batch of these by hand; this script makes the audit reproducible.
 
 Pipeline:
   1. Parse the PHPyun schema dump ─→ {table → {column → SqlType}}.
-  2. Walk `crates/models/src/**/*.rs` for `#[derive(...FromRow...)] pub
+  2. Walk `crates/products/recruit/models/src/**/*.rs` for `#[derive(...FromRow...)] pub
      struct X`. For each struct, pair it with the table the same module's
      `repo.rs` queries via `FROM phpyun_<table>` (or aliased variants).
   3. Resolve each field name to a column on the paired table. Compare types
@@ -40,7 +40,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 SCHEMA_DUMP = ROOT / "migrations" / "phpyun_2026-04-24_18-37-50_mysql_data_m3KHl.sql"
-MODELS_DIR = ROOT / "crates" / "models" / "src"
+MODELS_DIR = ROOT / "crates" / "products" / "recruit" / "models" / "src"
 
 # =====================================================================
 # 1. Parse the PHPyun schema dump.

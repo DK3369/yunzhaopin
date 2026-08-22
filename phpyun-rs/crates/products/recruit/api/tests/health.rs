@@ -1,7 +1,7 @@
 //! Black-box integration test scaffolding (axum-test).
 //!
 //! Wires up the minimal router only, with no DB/Redis — fast for CI to verify the middleware stack and response shape.
-//! End-to-end tests that need a real backend (login/logout/cache) live in crates/app/tests/ or xtask.
+//! End-to-end tests that need a real backend (login/logout/cache) live in crates/apps/recruit-server/tests/ or xtask.
 //!
 //! Note: test code also routes through the `phpyun_core::json` facade for consistency.
 

@@ -1,6 +1,6 @@
 //! Derive the OpenAPI entry for an operation from its type parameters.
 //!
-//! `crates/handlers/src/openapi.rs` is 1190 lines of hand-maintained
+//! `crates/products/recruit/api/src/openapi.rs` is 1190 lines of hand-maintained
 //! `paths(...)` and `schemas(...)` listings. Every new endpoint needs an entry
 //! there, and nothing enforces that it gets one — the docs drift silently. An
 //! [`Operation`] already carries its path, summary, tag, policy, and input and

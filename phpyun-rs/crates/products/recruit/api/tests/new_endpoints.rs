@@ -6,7 +6,7 @@
 //! forgets to register a handler in `openapi.rs`, this test fails fast.
 //!
 //! End-to-end testing (real DB+Redis) is intentionally out of scope here —
-//! see `crates/app/tests/` (when added) for that.
+//! see `crates/apps/recruit-server/tests/` (when added) for that.
 
 use phpyun_core::json;
 use phpyun_handlers::openapi::v1_openapi;

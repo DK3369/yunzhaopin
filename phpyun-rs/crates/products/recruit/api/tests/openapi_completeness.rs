@@ -30,7 +30,7 @@ fn walk(dir: &Path, out: &mut Vec<PathBuf>) {
 
 /// Collect every `<module_path>::<fn_name>` for handlers decorated with
 /// `#[utoipa::path(...)]`. Module path is derived from the file location:
-/// `crates/handlers/src/v1/wap/jobs.rs::list_jobs` → `v1::wap::jobs::list_jobs`.
+/// `crates/products/recruit/api/src/v1/wap/jobs.rs::list_jobs` → `v1::wap::jobs::list_jobs`.
 fn collect_documented_handlers() -> BTreeSet<String> {
     let mut out = BTreeSet::new();
     let v1_root = crate_root().join("src/v1");

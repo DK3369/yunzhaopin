@@ -2,7 +2,7 @@
 /// know whether the `sqlx::migrate!` macro picked up the files.
 #[test]
 fn list_embedded_migrations() {
-    let m = sqlx::migrate!("../../migrations/sqlx");
+    let m = sqlx::migrate!("../../../migrations/sqlx");
     let count = m.migrations.len();
     println!("Embedded migrations: {}", count);
     for x in m.migrations.iter() {

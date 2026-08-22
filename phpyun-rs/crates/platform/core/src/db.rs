@@ -245,14 +245,14 @@ pub fn ok_default_if_object_missing<T: Default>(
     }
 }
 
-/// Run sqlx migrations. Path is relative to `crates/core/`.
+/// Run sqlx migrations. Path is relative to `crates/platform/core/`.
 ///
 /// Only `migrations/sqlx/` is scanned (performance indexes etc. added by the
 /// Rust port); the PHPYun schema dump at the `migrations/` root is for reference
 /// only and is not executed.
 pub async fn run_migrations(db: &Db) -> AppResult<()> {
     tracing::info!("running sqlx migrations…");
-    sqlx::migrate!("../../migrations/sqlx")
+    sqlx::migrate!("../../../migrations/sqlx")
         .run(db.pool())
         .await
         .map_err(ApiError::internal)?;

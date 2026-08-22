@@ -188,7 +188,7 @@ fn rejection_key(status: StatusCode) -> &'static str {
 }
 
 /// The one and only failure envelope shape. Must stay byte-compatible with
-/// `ApiError::into_response` — `crates/handlers/tests/response_contract.rs`
+/// `ApiError::into_response` — `crates/products/recruit/api/tests/response_contract.rs`
 /// asserts both paths agree.
 fn envelope(status: StatusCode, key: &'static str) -> (StatusCode, Json<serde_json::Value>) {
     let lang = crate::i18n::current_lang();

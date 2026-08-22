@@ -356,7 +356,7 @@ fn default_runtime_env_path(debug_build: bool) -> PathBuf {
 
 fn default_test_env_path() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR"))
-        .join("../..")
+        .join("../../..")
         .join(".env.dev")
 }
 

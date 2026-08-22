@@ -11,7 +11,7 @@
 //! ## Pattern for adding v3
 //!
 //! ```ignore
-//! // crates/handlers/src/v3/mod.rs
+//! // crates/products/recruit/api/src/v3/mod.rs
 //! pub fn router() -> Router<AppState> {
 //!     Router::new().nest("/wap", Router::new()
 //!         .merge(my_new_v3_login::routes())           // version-specific override

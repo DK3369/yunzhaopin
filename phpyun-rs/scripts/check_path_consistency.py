@@ -6,7 +6,7 @@ Background: utoipa's `path` is a free-form string maintained alongside the
 axum router. A typo (or a copy-paste from `list` to `detail`) silently
 desynchronises Swagger UI from the real API — Swagger documents an endpoint
 that nobody serves while the real endpoint is undocumented. This script
-walks `crates/handlers/src/v1/**/*.rs`, extracts both, and reports every
+walks `crates/products/recruit/api/src/v1/**/*.rs`, extracts both, and reports every
 disagreement.
 
 Usage:
@@ -28,7 +28,14 @@ import sys
 from pathlib import Path
 from typing import Iterable
 
-ROOT = Path(__file__).resolve().parent.parent / "crates" / "handlers" / "src"
+ROOT = (
+    Path(__file__).resolve().parent.parent
+    / "crates"
+    / "products"
+    / "recruit"
+    / "api"
+    / "src"
+)
 V1_DIR = ROOT / "v1"
 
 # Match `.route("/path", post(handler))` — `\s` covers newlines, and the
@@ -55,7 +62,7 @@ def prefix_for(rs_path: Path) -> str:
     rel = rs_path.relative_to(V1_DIR)
     parts = list(rel.parts)
     parts[-1] = ""  # drop the file name itself
-    # crates/handlers/src/v1/<area>/<file>.rs → /v1/<area>
+    # crates/products/recruit/api/src/v1/<area>/<file>.rs → /v1/<area>
     return "/v1/" + "/".join(p for p in parts if p)
 
 

@@ -2,8 +2,8 @@
 # check-architecture.sh — third-party isolation guard
 #
 # Enforces the architecture rules documented in:
-#   crates/services/src/lib.rs   (top of file)
-#   crates/handlers/src/lib.rs   (top of file)
+#   crates/products/recruit/services/src/lib.rs   (top of file)
+#   crates/products/recruit/api/src/lib.rs        (top of file)
 #
 # Exits 0 if no NEW violations (i.e. lines tagged `// TODO(arch):` are
 # grandfathered). Exits 1 otherwise.
@@ -23,13 +23,25 @@ cd "$ROOT"
 target="${1:-all}"
 violations=0
 
+# Crate source roots. Named here so the layout move in Phase 2 is a one-line
+# edit rather than a scatter of literals through the rules below.
+PLATFORM="crates/platform"
+PRODUCTS="crates/products"
+CORE="$PLATFORM/core/src"
+AUTH="$PLATFORM/auth/src"
+KERNEL="$PLATFORM/kernel/src"
+MODELS="$PRODUCTS/recruit/models/src"
+SERVICES="$PRODUCTS/recruit/services/src"
+API="$PRODUCTS/recruit/api/src"
+APP="crates/apps/recruit-server/src"
+
 # ----------------------------------------------------------------------------
 # Helpers
 # ----------------------------------------------------------------------------
 
 # Grep that excludes:
-#   - `crates/core/`           (the wrappers themselves live here)
-#   - `crates/auth/`           (a foundational crate, allowed to import primitives)
+#   - `crates/platform/core/`  (the wrappers themselves live here)
+#   - `crates/platform/auth/`  (a foundational crate, allowed to import primitives)
 #   - lines tagged `TODO(arch)` (pre-existing violations being migrated)
 #   - the line `//!` doc comment in lib.rs that mentions forbidden symbols
 #   - test files (`#[cfg(test)]`, `tests/`)
@@ -40,9 +52,9 @@ report() {
 
     local paths=()
     case "$scope" in
-        services) paths=(crates/services/src) ;;
-        handlers) paths=(crates/handlers/src) ;;
-        both)     paths=(crates/services/src crates/handlers/src) ;;
+        services) paths=("$SERVICES") ;;
+        handlers) paths=("$API") ;;
+        both)     paths=("$SERVICES" "$API") ;;
     esac
 
     local hits
@@ -64,15 +76,36 @@ report() {
     fi
 }
 
+# Same filtering as `report`, but over an explicit list of source roots.
+report_in() {
+    local label="$1"
+    local pattern="$2"
+    shift 2
+    local paths=("$@")
+
+    local hits
+    hits=$(grep -rnE "$pattern" "${paths[@]}" --include='*.rs' 2>/dev/null \
+        | grep -v 'TODO(arch)' \
+        | grep -vE ':[[:space:]]*(//|/\*|\*[[:space:]])' \
+        | grep -v 'tests/')
+
+    if [ -n "$hits" ]; then
+        echo "❌ $label"
+        echo "$hits" | sed 's/^/    /'
+        echo ""
+        violations=$((violations + $(echo "$hits" | wc -l)))
+    fi
+}
+
 report_core_contract() {
     local label="$1"
     local pattern="$2"
 
     local paths=()
     case "$target" in
-        services) paths=(crates/services/src) ;;
-        handlers) paths=(crates/handlers/src) ;;
-        all)      paths=(crates/app/src crates/auth/src crates/handlers/src crates/models/src crates/services/src) ;;
+        services) paths=("$SERVICES") ;;
+        handlers) paths=("$API") ;;
+        all)      paths=("$APP" "$AUTH" "$API" "$MODELS" "$SERVICES") ;;
         *)        return ;;
     esac
 
@@ -127,6 +160,24 @@ if [ "$target" = "all" ] || [ "$target" = "handlers" ]; then
         '\bredis::' handlers
     report "handlers may not reference reqwest::* (http out lives in services)" \
         '\breqwest::' handlers
+fi
+
+if [ "$target" = "all" ] || [ "$target" = "layering" ]; then
+    echo "→ Auditing the transport boundary..."
+
+    # The whole point of the kernel is that one handler can be driven by HTTP
+    # today and a queue tomorrow. That only holds while business code names no
+    # transport type. `api/` is exempt: it still holds the 482 legacy axum
+    # handlers, which migrate to `Operation` gradually.
+    report_in "products' models/services must not name a transport type (business code stays protocol-agnostic)" \
+        '\b(axum|tonic|tungstenite|hyper)::' "$MODELS" "$SERVICES"
+    report_in "products must not depend on a transport crate (depend on phpyun_kernel instead)" \
+        '\bphpyun_transport_' "$MODELS" "$SERVICES" "$API"
+
+    # If the kernel ever grows an HTTP dependency, the multi-protocol design is
+    # over — every future transport would inherit axum's request model.
+    report_in "the kernel must not name a transport type (it is protocol-agnostic by definition)" \
+        '\b(axum|tonic|tungstenite|hyper)::' "$KERNEL"
 fi
 
 # ----------------------------------------------------------------------------

@@ -1,11 +1,11 @@
 // At compile time, embed locales/*.json into the binary (rust-i18n's default glob
 // also recognizes yml/yaml/json/toml; we standardize on JSON so the backend, app,
 // and web frontends can share the same translations).
-// Paths are relative to `CARGO_MANIFEST_DIR` (i.e. `crates/core/`), hence `../../`
-// to reach the workspace root.
+// Paths are relative to `CARGO_MANIFEST_DIR` (i.e. `crates/platform/core/`),
+// hence `../../../` to reach the workspace root.
 // The `i18n!` macro must be invoked at the crate root (lib.rs); otherwise the
 // `t!` macro in submodules cannot find the generated static symbols.
-rust_i18n::i18n!("../../locales", fallback = "en");
+rust_i18n::i18n!("../../../locales", fallback = "en");
 
 pub mod admin_guard;
 pub mod audit;

@@ -67,30 +67,58 @@ Other diagnostic scripts:
 
 ## Workspace layout
 
+Three layers; the dependency arrow only ever points down.
+
 ```
 crates/
-  core/      AppState, Db, Kv (Redis), Http, Cache, Storage, EventBus, JWT,
-             scheduler, i18n, error envelope, middleware. Every external
-             dependency is wrapped here so business code never `use`s
-             redis::*, sqlx::Pool, reqwest::*, moka::*, jsonwebtoken::*.
-  auth/      argon2 + legacy md5 password compatibility.
-  models/    One entity + repo per PHP table. Repos own all `sqlx::query*`.
-  services/  Cross-model business logic. Calls repos + AppState facades.
-             Mostly leaf modules — cross-service calls are deliberately rare
-             (see top of crates/services/src/lib.rs for the small graph).
-  handlers/  HTTP adapters. v1/v2 namespaced. v2 only overrides endpoints
-             with breaking shape changes; everything else reuses v1.
-  app/       Binary. Just wires AppState + router + tokio runtime.
+  platform/            shared, product-agnostic
+    core/              AppState, Db, Kv (Redis), Http, Cache, Storage, EventBus,
+                       JWT, scheduler, i18n, error envelope, middleware. Every
+                       external dependency is wrapped here so business code never
+                       `use`s redis::*, sqlx::Pool, reqwest::*, moka::*,
+                       jsonwebtoken::*.
+    auth/              argon2 + legacy md5 password compatibility.
+    kernel/            Protocol-agnostic: Operation, Policy, Ctx, Caller,
+                       dispatch. Names no transport type, by rule.
+    transport-http/    axum adapter. `ApiSurface::mount::<O>()` derives the
+                       route, policy enforcement, envelope, and OpenAPI entry
+                       from one Operation declaration.
+
+  products/
+    recruit/           the original job-board product line
+      models/          One entity + repo per PHP table. Repos own all `sqlx::query*`.
+      services/        Cross-model business logic. Calls repos + AppState facades.
+                       Mostly leaf modules — cross-service calls are deliberately
+                       rare (see the top of that crate's lib.rs for the graph).
+      api/             HTTP adapters. v1/v2 namespaced; v2 only overrides
+                       endpoints with breaking shape changes.
+
+  apps/
+    recruit-server/    Binary. Just wires AppState + router + tokio runtime.
 ```
 
-Architecture rule (enforced by `scripts/check-architecture.sh`): handlers and services may not import third-party DB / Redis / HTTP / JWT crates directly — go through `phpyun_core::{db, kv, http_client, jwt, cache, scheduler}`. Pre-existing violations are tagged `// TODO(arch):` and migrated opportunistically.
+Crate *package* names are unchanged (`phpyun-core`, `phpyun-handlers`, …), so
+every `use phpyun_core::…` still resolves; only directories moved.
+
+Architecture rules, enforced by `scripts/check-architecture.sh`:
+
+- `api/` and `services/` may not import third-party DB / Redis / HTTP / JWT
+  crates directly — go through `phpyun_core::{db, kv, http_client, jwt, cache,
+  scheduler}`.
+- `models/` and `services/` may not name a transport type (`axum::`, `tonic::`,
+  `hyper::`). Business code has to stay drivable from any protocol. `api/` is
+  exempt while the legacy handlers migrate to `Operation`.
+- `kernel/` may not name a transport type either — an HTTP dependency there
+  would end the multi-protocol design.
+
+Pre-existing violations are tagged `// TODO(arch):` and migrated opportunistically.
 
 ## Routing convention
 
 - Every business endpoint is **POST**, even reads. Params travel in JSON body, never in the URL. The `only_get_post` middleware turns other methods into 404; the smoke test only enumerates POSTs.
 - `/v1/wap/*` — public + jobseeker; `/v1/mcenter/*` — authenticated, jobseeker + employer; `/v1/admin/*` — admin (router-level `admin_guard` + per-handler `user.require_admin()`).
 - `/health` and `/ready` bypass rate-limit / concurrency-limit / body-limit (LB probes).
-- Response envelope is `{code, msg, data}` always; `code` equals the HTTP status; `msg` is the **i18n-translated** copy of `errors.<tag>` (the test [response_contract.rs](crates/handlers/tests/response_contract.rs) locks this contract).
+- Response envelope is `{code, key, msg, data}` always. `code` equals the HTTP status; `key` is the stable machine-readable identifier clients branch on (`"ok"` on success); `msg` is the **i18n-translated** copy of `errors.<key>`, for display only. Each `ApiErrorKind` maps to the status that describes it — 400 params, 401 auth, 403 role, 422 business rule, 429 rate limit, 502 upstream, 500 only for genuine backend faults. The tests [response_contract.rs](crates/products/recruit/api/tests/response_contract.rs) and [middleware_contract.rs](crates/products/recruit/api/tests/middleware_contract.rs) lock this.
 
 ## Project-specific rules (don't break)
 
@@ -115,7 +143,7 @@ These are encoded in saved feedback memory and load-bearing for the codebase:
 
 These are well-known schema-vs-code gaps. Don't reintroduce.
 
-- `phpyun_member_statis.integral` is **`varchar(10) NOT NULL DEFAULT ''`** (not int). Reads/updates wrap in `CAST(COALESCE(NULLIF(integral, ''), '0') AS SIGNED)` to survive strict-mode and empty-string defaults. See [crates/models/src/member_statis/repo.rs](crates/models/src/member_statis/repo.rs).
+- `phpyun_member_statis.integral` is **`varchar(10) NOT NULL DEFAULT ''`** (not int). Reads/updates wrap in `CAST(COALESCE(NULLIF(integral, ''), '0') AS SIGNED)` to survive strict-mode and empty-string defaults. See [member_statis/repo.rs](crates/products/recruit/models/src/member_statis/repo.rs).
 - `phpyun_member_statis` has no `usertype` column — the table is keyed by `uid` only. Old `WHERE uid = ? AND usertype = 1` filters were 5xx'ing.
 - `phpyun_yqmb` (interview-invite) uses `addtime / did / status / statusbody` etc. — not `created_at / updated_at / com_id / job_id / apply_id`. The `interview` and `interview_template` repos project real columns to entity fields via aliases.
 - `phpyun_recommend` (not `phpyun_yqmb`) is PHPyun's "invite friend by email" table. The `invite` repo points there now.
@@ -125,8 +153,8 @@ These are well-known schema-vs-code gaps. Don't reintroduce.
 ## OpenAPI / Swagger
 
 - One spec per version: `/api-docs/v1/openapi.json`, `/api-docs/v2/openapi.json`. Both are served at `/docs`.
-- v2 is small — only `/v2/wap/login` is v2-only; `/v2/wap/{logout, me, refresh}` reuse v1 handlers (intentionally documented at the v1 path inside V2Doc to avoid duplicate schema definitions; see [crates/handlers/src/openapi.rs](crates/handlers/src/openapi.rs)).
-- Returning a `Paged<T>`? Leave `body` off the `responses(...)` macro — `Paged<T>` does not derive `ToSchema` (most `T` are model entities without `ToSchema`); the response shape `{list, total, page, page_size}` is implicit from the contract. See `crates/core/src/response.rs`.
+- v2 is small — only `/v2/wap/login` is v2-only; `/v2/wap/{logout, me, refresh}` reuse v1 handlers (intentionally documented at the v1 path inside V2Doc to avoid duplicate schema definitions; see [api/src/openapi.rs](crates/products/recruit/api/src/openapi.rs)).
+- Returning a `Paged<T>`? Leave `body` off the `responses(...)` macro — `Paged<T>` does not derive `ToSchema` (most `T` are model entities without `ToSchema`); the response shape `{list, total, page, page_size}` is implicit from the contract. See `crates/platform/core/src/response.rs`.
 
 ## Internationalization
 
