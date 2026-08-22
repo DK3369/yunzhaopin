@@ -8,7 +8,10 @@ pub struct Chat {
     pub receiver_uid: u64,
     pub conv_key: String,
     pub body: String,
-    pub is_read: i32,
+    /// [`super::CStatus`] as stored. TINYINT / `u8`.
+    pub cs: u8,
+    /// [`super::CType`] as stored. TINYINT / `u8`.
+    pub ctype: u8,
     pub created_at: i64,
 }
 

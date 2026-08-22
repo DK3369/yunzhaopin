@@ -14,8 +14,8 @@
 //!
 //! ```text
 //! id: chat:1234
-//! event: chat.m
-//! data: {"c":"7-42","f":7,"b":"hello","t":1755870000}
+//! event: chat
+//! data: {"c":"hello","ck":"7-42","ct":1755870000,"f":7}
 //! ```
 //!
 //! A delimited body (`42|7|hello`) would save roughly twenty bytes against a
@@ -64,16 +64,13 @@ impl Cursor {
     }
 }
 
-/// Event name for a push: the topic, plus the kind when it has one.
+/// Event name for a push: the topic, nothing else.
 ///
-/// `chat.m` and `chat.r` rather than one `chat` event with a discriminator
-/// inside the body, so a client registers one listener per thing it handles and
-/// never parses a payload it is going to ignore.
+/// Product discriminators (`cs`, `ctype`, …) live in `data`. One
+/// `addEventListener('chat', …)` plus a `switch` is what the clients asked
+/// for; `chat.m` / `chat.r` would have forced a listener per kind.
 pub fn event_name(push: &Push) -> String {
-    match &push.kind {
-        Some(kind) => format!("{}.{}", sanitize(&push.topic), sanitize(kind)),
-        None => sanitize(&push.topic),
-    }
+    sanitize(&push.topic)
 }
 
 /// Drop anything that cannot appear in an SSE field value.
@@ -99,7 +96,7 @@ pub fn encode(push: &Push) -> Event {
 
     event
         .event(&name)
-        .json_data(&push.payload)
+        .json_data(&push.wire_payload())
         // Only reachable if the payload cannot be serialized, which a
         // `serde_json::Value` always can. An empty object keeps the client's
         // parser happy rather than tearing down the stream.
@@ -148,7 +145,7 @@ mod tests {
     }
 
     fn push() -> Push {
-        Push::new(7, "chat", json!({"c": "7-42", "b": "hi"}))
+        Push::new(7, "chat", json!({"ck": "7-42", "c": "hi"}))
     }
 
     #[test]
@@ -177,17 +174,21 @@ mod tests {
     }
 
     #[test]
-    fn the_event_name_is_the_topic_and_kind() {
+    fn the_event_name_is_the_topic() {
         assert_eq!(event_name(&push()), "chat");
-        assert_eq!(event_name(&push().with_kind("m")), "chat.m");
+        assert_eq!(event_name(&push().with_type(0)), "chat");
+        assert_eq!(event_name(&push().with_type(1)), "chat");
     }
 
     #[test]
     fn a_sequenced_push_carries_the_cursor_in_the_id_field() {
-        let rendered = wire(encode(&push().with_kind("m").with_seq(1234)));
+        let rendered = wire(encode(&push().with_type(0).with_seq(1234)));
         assert!(rendered.contains("id: chat:1234"), "{rendered}");
-        assert!(rendered.contains("event: chat.m"), "{rendered}");
-        assert!(rendered.contains(r#"data: {"b":"hi","c":"7-42"}"#), "{rendered}");
+        assert!(rendered.contains("event: chat\n"), "{rendered}");
+        assert!(
+            rendered.contains(r#"data: {"c":"hi","ck":"7-42"}"#),
+            "{rendered}"
+        );
     }
 
     /// A read receipt is not part of an ordered series; giving it an `id:`
@@ -195,8 +196,13 @@ mod tests {
     /// cannot look up.
     #[test]
     fn an_unsequenced_push_has_no_id_line() {
-        let rendered = wire(encode(&push().with_kind("r")));
+        let rendered = wire(encode(&Push::new(
+            7,
+            "chat",
+            json!({"ck": "7-42", "cs": 1, "u": 42}),
+        )));
         assert!(!rendered.contains("id: "), "{rendered}");
+        assert!(rendered.contains(r#""cs":1"#), "{rendered}");
     }
 
     /// A newline in a field value makes `axum` panic, which in a handler means
@@ -204,18 +210,13 @@ mod tests {
     #[test]
     fn a_field_value_with_a_newline_cannot_reach_axum() {
         let hostile = Push::new(7, "chat\nid: chat:99", json!({}))
-            .with_kind("m\nevent: admin.ops")
+            .with_type(0)
             .with_seq(1);
 
         let rendered = wire(encode(&hostile));
 
-        // The separators the injection needed are gone, so both values landed
-        // in the single field they were written to.
         assert!(rendered.contains("id: chatidchat99:1"), "{rendered}");
-        assert!(
-            rendered.contains("event: chatidchat99.meventadmin.ops"),
-            "{rendered}"
-        );
+        assert!(rendered.contains("event: chatidchat99"), "{rendered}");
         assert_eq!(rendered.matches("id: ").count(), 1, "{rendered}");
         assert_eq!(rendered.matches("event: ").count(), 1, "{rendered}");
     }

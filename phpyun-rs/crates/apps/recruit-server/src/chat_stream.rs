@@ -24,43 +24,77 @@ use async_trait::async_trait;
 use phpyun_core::{AppResult, AppState};
 use phpyun_kernel::{Consumer, Ctx, ProductId, RetryPolicy};
 use phpyun_models::chat::entity::Chat;
+use phpyun_models::chat::CStatus;
 use phpyun_push::{publish, Push};
 use phpyun_services::chat_service;
 use phpyun_services::notification_consumers::{ChatRead, ChatSent};
 use phpyun_transport_sse::{Replay, Replayed, REPLAY_LIMIT};
-use serde_json::json;
+use serde_json::{json, Value};
 
 const PRODUCT: ProductId = ProductId::new("recruit");
 
 /// The topic both of these publish on, and the one [`ChatReplay`] resumes.
 const TOPIC: &str = "chat";
 
-/// Event kind for a new message. One character because it goes out on the wire
-/// as part of the SSE event name on every message.
-const KIND_MESSAGE: &str = "m";
-/// Event kind for a read receipt.
-const KIND_READ: &str = "r";
+/// Stamp `cs` / `ctype` only when they are not the default 0, so an unread
+/// text message stays four keys long.
+fn with_kind(mut payload: Value, cs: u8, ctype: u8) -> Value {
+    if let Some(obj) = payload.as_object_mut() {
+        if cs != 0 {
+            obj.insert("cs".into(), json!(cs));
+        }
+        if ctype != 0 {
+            obj.insert("ctype".into(), json!(ctype));
+        }
+    }
+    payload
+}
 
 /// A new message, addressed to `to`.
 ///
-/// Keys are one character each: this is the highest-volume payload in the
-/// system and the envelope should not out-weigh the sentence someone typed.
-/// `c` conversation, `f` from, `b` body, `t` timestamp. The message id is not
-/// in here — it rides in the transport's own field (SSE `id:`, WebSocket
-/// `seq`), where it doubles as the resume cursor.
+/// Short keys, matching REST `ChatItem`: `ck` conversation, `f` from,
+/// `c` content, `ct` created. `cs` / `ctype` are omitted when 0 (unread
+/// text). The message id is not in here — it rides in the transport's own
+/// field (SSE `id:`, WebSocket `seq`), where it doubles as the resume cursor.
 ///
-/// `k` is reserved for the content kind and omitted while everything is text.
-/// An image would add `"k":"i"` plus a `u` for the URL; a client written today
-/// should treat an unknown `k` as "unsupported message type" rather than
-/// rendering `b`.
-fn message_push(to: u64, id: u64, sender: u64, conv_key: &str, body: &str, at: i64) -> Push {
+/// An unknown `ctype` is an unsupported message type, not a reason to render
+/// `c` as text.
+fn message_push(
+    to: u64,
+    id: u64,
+    sender: u64,
+    conv_key: &str,
+    body: &str,
+    at: i64,
+    cs: u8,
+    ctype: u8,
+) -> Push {
     Push::new(
         to,
         TOPIC,
-        json!({ "c": conv_key, "f": sender, "b": body, "t": at }),
+        with_kind(
+            json!({ "ck": conv_key, "f": sender, "c": body, "ct": at }),
+            cs,
+            ctype,
+        ),
     )
-    .with_kind(KIND_MESSAGE)
     .with_seq(id)
+}
+
+fn read_receipt_push(peer: u64, conv_key: &str, reader: u64, at: i64) -> Push {
+    // No sequence: a receipt is not part of the message series, and giving
+    // it one would move the client's resume cursor to an id the replay
+    // source cannot look up.
+    Push::new(
+        peer,
+        TOPIC,
+        json!({
+            "ck": conv_key,
+            "cs": CStatus::Read.as_u8(),
+            "ct": at,
+            "u": reader,
+        }),
+    )
 }
 
 /// Tell the recipient a message just arrived.
@@ -93,6 +127,8 @@ impl Consumer for ChatToStream {
             &input.conv_key,
             &input.body,
             input.created_at,
+            input.cs,
+            input.ctype,
         );
         publish(&ctx.state.redis, &push).await
     }
@@ -114,16 +150,11 @@ impl Consumer for ChatReadToStream {
     };
 
     async fn handle(ctx: &Ctx, input: ChatRead) -> AppResult<()> {
-        // No sequence: a receipt is not part of the message series, and giving
-        // it one would move the client's resume cursor to an id the replay
-        // source cannot look up.
-        let push = Push::new(
-            input.peer,
-            TOPIC,
-            json!({ "c": input.conv_key, "u": input.reader, "t": input.at }),
+        publish(
+            &ctx.state.redis,
+            &read_receipt_push(input.peer, &input.conv_key, input.reader, input.at),
         )
-        .with_kind(KIND_READ);
-        publish(&ctx.state.redis, &push).await
+        .await
     }
 }
 
@@ -161,6 +192,8 @@ fn replayed_push(to: u64, row: &Chat) -> Push {
         &row.conv_key,
         &row.body,
         row.created_at,
+        row.cs,
+        row.ctype,
     )
 }
 
@@ -186,25 +219,28 @@ mod tests {
 
     #[test]
     fn a_message_is_addressed_to_the_recipient_and_sequenced_by_row_id() {
-        let push = message_push(42, 1234, 7, "7-42", "hi", 99);
+        let push = message_push(42, 1234, 7, "7-42", "hi", 99, 0, 0);
 
         assert_eq!(push.uid, 42, "addressed to the recipient, not the sender");
         assert_eq!(push.seq, Some(1234));
-        assert_eq!(push.kind.as_deref(), Some("m"));
+        assert!(push.payload.get("cs").is_none());
+        assert!(push.payload.get("ctype").is_none());
         assert_eq!(push.payload["f"], 7);
-        assert_eq!(push.payload["b"], "hi");
-        assert_eq!(push.payload["c"], "7-42");
+        assert_eq!(push.payload["c"], "hi");
+        assert_eq!(push.payload["ck"], "7-42");
+        assert_eq!(push.payload["ct"], 99);
     }
 
     /// The id is carried by the transport, not repeated in the body, and the
     /// content-kind marker stays out until there is a second content type.
     #[test]
     fn the_payload_carries_no_field_the_transport_already_has() {
-        let push = message_push(42, 1234, 7, "7-42", "hi", 99);
+        let push = message_push(42, 1234, 7, "7-42", "hi", 99, 0, 0);
         let payload = push.payload.as_object().unwrap();
 
         assert!(payload.get("i").is_none() && payload.get("id").is_none());
-        assert!(payload.get("k").is_none(), "text needs no kind marker");
+        assert!(payload.get("cs").is_none(), "unread needs no status marker");
+        assert!(payload.get("ctype").is_none(), "text needs no kind marker");
         assert_eq!(payload.len(), 4, "{payload:?}");
     }
 
@@ -218,15 +254,15 @@ mod tests {
             receiver_uid: 42,
             conv_key: "7-42".into(),
             body: "hi".into(),
-            is_read: 0,
+            cs: 0,
+            ctype: 0,
             created_at: 99,
         };
 
         let replayed = replayed_push(42, &row);
-        let live = message_push(42, 1234, 7, "7-42", "hi", 99);
+        let live = message_push(42, 1234, 7, "7-42", "hi", 99, 0, 0);
 
         assert_eq!(replayed.uid, live.uid);
-        assert_eq!(replayed.kind, live.kind);
         assert_eq!(replayed.seq, live.seq);
         assert_eq!(replayed.payload, live.payload);
     }
@@ -241,33 +277,34 @@ mod tests {
             receiver_uid: 42,
             conv_key: "7-42".into(),
             body: "mine".into(),
-            is_read: 1,
+            cs: 1,
+            ctype: 0,
             created_at: 1,
         };
 
         let push = replayed_push(7, &row);
         assert_eq!(push.uid, 7);
         assert_eq!(push.payload["f"], 7);
+        assert_eq!(push.payload["cs"], 1);
+        assert!(push.payload.get("ctype").is_none());
     }
 
     #[test]
     fn a_read_receipt_goes_to_the_author_and_carries_no_cursor() {
-        // Mirrors `ChatReadToStream::handle` without needing an `AppState`.
-        let input = ChatRead {
-            conv_key: "7-42".into(),
-            reader: 42,
-            peer: 7,
-            at: 99,
-        };
-        let push = Push::new(
-            input.peer,
-            TOPIC,
-            json!({ "c": input.conv_key, "u": input.reader, "t": input.at }),
-        )
-        .with_kind(KIND_READ);
+        let push = read_receipt_push(7, "7-42", 42, 99);
 
         assert_eq!(push.uid, 7, "the author is the one who wants to know");
         assert_eq!(push.seq, None, "a receipt must not move the resume cursor");
+        assert_eq!(push.payload["cs"], 1);
+        assert!(push.payload.get("c").is_none());
+        assert_eq!(push.payload["ck"], "7-42");
         assert_eq!(push.payload["u"], 42);
+    }
+
+    #[test]
+    fn a_future_content_type_is_stamped_on_the_payload() {
+        let push = message_push(42, 1, 7, "7-42", "", 99, 0, 6);
+        assert_eq!(push.payload["ctype"], 6);
+        assert!(push.payload.get("cs").is_none());
     }
 }

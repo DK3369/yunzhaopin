@@ -71,16 +71,10 @@ impl ServerFrame {
 
     /// A server-initiated push — the reason this transport exists.
     ///
-    /// `kind` and `seq` are lifted out of the [`Push`] and named here rather
-    /// than left inside the payload. SSE puts them in the protocol's own
-    /// `event:` and `id:` fields, which a socket has no equivalent for, so
-    /// without this a WebSocket client would be the only one that cannot tell
-    /// what kind of event it got or which message it was.
+    /// `seq` is lifted so a socket client sees the same cursor SSE puts in
+    /// `id:`. Product fields (`cs`, `ctype`, …) live in `payload`.
     pub fn push(push: &Push) -> Self {
-        let mut data = json!({ "topic": push.topic, "payload": push.payload });
-        if let Some(kind) = &push.kind {
-            data["kind"] = json!(kind);
-        }
+        let mut data = json!({ "topic": push.topic, "payload": push.wire_payload() });
         if let Some(seq) = push.seq {
             data["seq"] = json!(seq);
         }
@@ -180,21 +174,20 @@ mod tests {
     /// What SSE carries in `event:` and `id:` has to reach a socket client too,
     /// or the same message means less depending on which door it came through.
     #[test]
-    fn a_push_carries_its_kind_and_sequence_when_it_has_them() {
+    fn a_push_carries_sequence_when_it_has_one() {
         let frame = ServerFrame::push(
-            &Push::new(7, "chat", json!({"b": "hi"}))
-                .with_kind("m")
-                .with_seq(1234),
+            &Push::new(7, "chat", json!({"c": "hi", "cs": 1})).with_seq(1234),
         );
-        assert_eq!(frame.data["kind"], "m");
         assert_eq!(frame.data["seq"], 1234);
+        assert_eq!(frame.data["payload"]["cs"], 1);
+        assert!(frame.data.get("type").is_none());
     }
 
     /// Absent rather than null, so a client can test for presence.
     #[test]
     fn a_push_without_them_does_not_invent_the_fields() {
         let frame = ServerFrame::push(&Push::new(7, "chat", json!({})));
-        assert!(frame.data.get("kind").is_none());
         assert!(frame.data.get("seq").is_none());
+        assert!(frame.data["payload"].as_object().unwrap().is_empty());
     }
 }

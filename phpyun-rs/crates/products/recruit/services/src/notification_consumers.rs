@@ -152,6 +152,12 @@ pub struct ChatSent {
     pub conv_key: String,
     #[serde(default)]
     pub body: String,
+    /// [`phpyun_models::chat::CStatus`]. Default 0 so older bus events still parse.
+    #[serde(default, skip_serializing_if = "phpyun_models::chat::is_zero")]
+    pub cs: u8,
+    /// [`phpyun_models::chat::CType`]. Default 0 so older bus events still parse.
+    #[serde(default, skip_serializing_if = "phpyun_models::chat::is_zero")]
+    pub ctype: u8,
     #[serde(default)]
     pub created_at: i64,
 }
@@ -352,6 +358,7 @@ mod tests {
         assert_eq!((sent.id, sent.sender, sent.receiver), (5, 1, 2));
         assert_eq!((sent.conv_key.as_str(), sent.body.as_str()), ("1-2", "hi"));
         assert_eq!(sent.created_at, 99);
+        assert_eq!((sent.cs, sent.ctype), (0, 0));
     }
 
     /// Events published before the body was added are still in the stream when
@@ -362,6 +369,24 @@ mod tests {
             serde_json::from_str(r#"{"id":5,"sender":1,"receiver":2}"#).expect("old producer");
         assert!(sent.body.is_empty());
         assert!(sent.conv_key.is_empty());
+        assert_eq!((sent.cs, sent.ctype), (0, 0));
+    }
+
+    #[test]
+    fn a_text_unread_chat_event_omits_the_zero_fields() {
+        let sent = ChatSent {
+            id: 5,
+            sender: 1,
+            receiver: 2,
+            conv_key: "1-2".into(),
+            body: "hi".into(),
+            cs: 0,
+            ctype: 0,
+            created_at: 99,
+        };
+        let v = serde_json::to_value(&sent).unwrap();
+        assert!(v.get("cs").is_none());
+        assert!(v.get("ctype").is_none());
     }
 
     #[test]

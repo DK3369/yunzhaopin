@@ -4,7 +4,7 @@ use sqlx::MySqlPool;
 const FIELDS: &str = "CAST(id AS UNSIGNED) AS id, \
     CAST(sender_uid AS UNSIGNED) AS sender_uid, \
     CAST(receiver_uid AS UNSIGNED) AS receiver_uid, \
-    conv_key, body, CAST(is_read AS SIGNED) AS is_read, \
+    conv_key, body, cs, ctype, \
     CAST(created_at AS SIGNED) AS created_at";
 
 pub async fn send(
@@ -17,8 +17,8 @@ pub async fn send(
     let conv_key = conv_key_for(sender_uid, receiver_uid);
     let res = sqlx::query(
         r#"INSERT INTO phpyun_rs_chat
-           (sender_uid, receiver_uid, conv_key, body, is_read, created_at)
-           VALUES (?, ?, ?, ?, 0, ?)"#,
+           (sender_uid, receiver_uid, conv_key, body, cs, ctype, created_at)
+           VALUES (?, ?, ?, ?, 0, 0, ?)"#,
     )
     .bind(sender_uid)
     .bind(receiver_uid)
@@ -120,7 +120,7 @@ pub async fn list_conversations(
             r#"SELECT CAST(c.id AS UNSIGNED) AS id,
                       CAST(c.sender_uid AS UNSIGNED) AS sender_uid,
                       CAST(c.receiver_uid AS UNSIGNED) AS receiver_uid,
-                      c.conv_key, c.body, CAST(c.is_read AS SIGNED) AS is_read,
+                      c.conv_key, c.body, c.cs, c.ctype,
                       CAST(c.created_at AS SIGNED) AS created_at
                FROM phpyun_rs_chat c
                INNER JOIN (
@@ -146,8 +146,8 @@ pub async fn mark_read_from_peer(
 ) -> Result<u64, sqlx::Error> {
     let conv_key = conv_key_for(self_uid, peer_uid);
     let res = sqlx::query(
-        r#"UPDATE phpyun_rs_chat SET is_read = 1
-           WHERE conv_key = ? AND receiver_uid = ? AND is_read = 0"#,
+        r#"UPDATE phpyun_rs_chat SET cs = 1
+           WHERE conv_key = ? AND receiver_uid = ? AND cs = 0"#,
     )
     .bind(conv_key)
     .bind(self_uid)
@@ -158,7 +158,7 @@ pub async fn mark_read_from_peer(
 
 pub async fn count_unread(pool: &MySqlPool, self_uid: u64) -> Result<u64, sqlx::Error> {
     let res: Result<(i64,), _> = sqlx::query_as(
-        "SELECT COUNT(*) FROM phpyun_rs_chat WHERE receiver_uid = ? AND is_read = 0",
+        "SELECT COUNT(*) FROM phpyun_rs_chat WHERE receiver_uid = ? AND cs = 0",
     )
     .bind(self_uid)
     .fetch_one(pool)
@@ -167,5 +167,14 @@ pub async fn count_unread(pool: &MySqlPool, self_uid: u64) -> Result<u64, sqlx::
         Ok((n,)) => Ok(n.max(0) as u64),
         Err(e) if phpyun_core::db::is_missing_table(&e) => Ok(0),
         Err(e) => Err(e),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn selects_use_the_wire_column_names() {
+        assert!(super::FIELDS.contains("cs, ctype"));
+        assert!(!super::FIELDS.contains("is_read"));
     }
 }

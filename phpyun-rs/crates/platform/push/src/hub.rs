@@ -57,11 +57,16 @@ pub struct Push {
     pub uid: u64,
     /// Topic name from the catalogue in [`crate::topic`].
     pub topic: String,
-    /// Which kind of thing happened within the topic — a new chat message
-    /// versus a read receipt, say. Transports use it to let a client route on
-    /// the event name instead of inspecting the payload.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub kind: Option<String>,
+    /// Optional transport-level kind. Product discriminators (`cs`, `ctype`,
+    /// …) live in `payload`; this field is for a producer that wants a
+    /// number on the Redis envelope without touching the JSON the client
+    /// sees. Serialized as `type` — `type` is a keyword in Rust.
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        rename = "type"
+    )]
+    pub kind: Option<u8>,
     /// Position in the topic's ordering, where the topic has one. This is what
     /// makes resumable delivery possible: a client that reports the last `seq`
     /// it saw can be sent exactly what it missed. `None` for events that are
@@ -83,9 +88,16 @@ impl Push {
     }
 
     #[must_use]
-    pub fn with_kind(mut self, kind: impl Into<String>) -> Self {
-        self.kind = Some(kind.into());
+    pub fn with_type(mut self, kind: u8) -> Self {
+        self.kind = Some(kind);
         self
+    }
+
+    /// The JSON a transport should write. Product code puts its own
+    /// discriminator (`cs`, `ctype`, …) in `payload`; this is a clone so a
+    /// transport cannot mutate the queued value.
+    pub fn wire_payload(&self) -> serde_json::Value {
+        self.payload.clone()
     }
 
     #[must_use]
@@ -427,21 +439,22 @@ mod tests {
         let hub = Hub::new();
         let mut me = hub.register(7).unwrap();
 
-        hub.on_channel_message(&json::to_string(&push(7).with_kind("m").with_seq(42)).unwrap());
+        hub.on_channel_message(&json::to_string(&push(7).with_type(0).with_seq(42)).unwrap());
 
         let got = me.rx.try_recv().expect("delivered");
         assert_eq!(got.topic, "chat");
         assert_eq!(got.payload["body"], "hi");
-        assert_eq!(got.kind.as_deref(), Some("m"));
+        assert_eq!(got.kind, Some(0));
         assert_eq!(got.seq, Some(42));
+        assert!(got.wire_payload().get("type").is_none());
     }
 
-    /// `kind` and `seq` are optional on the channel, so a publisher that does
+    /// `type` and `seq` are optional on the channel, so a publisher that does
     /// not set them stays readable.
     #[test]
     fn the_optional_routing_fields_are_omitted_when_unset() {
         let encoded = json::to_string(&push(7)).unwrap();
-        assert!(!encoded.contains("kind"), "{encoded}");
+        assert!(!encoded.contains("\"type\""), "{encoded}");
         assert!(!encoded.contains("seq"), "{encoded}");
 
         let decoded: Push = json::from_str(&encoded).unwrap();

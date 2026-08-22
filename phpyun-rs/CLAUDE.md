@@ -163,8 +163,19 @@ over it, never the record.
 
 ```js
 const es = new EventSource(`/sse?topics=chat&since=chat:${maxId}`, { withCredentials: true });
-es.addEventListener('chat.m', e => append(JSON.parse(e.data), e.lastEventId));
-es.addEventListener('chat.r', e => markRead(JSON.parse(e.data)));
+es.addEventListener('chat', e => {
+  const d = JSON.parse(e.data);
+  switch (d.cs ?? 0) {
+    case 0: append(d, e.lastEventId); break; // 未读 / 新消息
+    case 1: markRead(d); break;              // 已读 / 已读回执
+    case 2: remove(d); break;                // 已删除
+    default: /* unknown cs: ignore */ break;
+  }
+  switch (d.ctype ?? 0) {
+    case 0: /* 文本 */ break;
+    default: /* unsupported content type */ break;
+  }
+});
 es.addEventListener('resync', () => reloadHistoryOverHttp());
 ```
 
@@ -178,23 +189,42 @@ payload with one-character keys.
 
 ```
 id: chat:1234
-event: chat.m
-data: {"c":"7-42","f":7,"b":"hello","t":1755870000}
+event: chat
+data: {"c":"hello","ck":"7-42","ct":1755870000,"f":7}
 ```
 
-- `event:` is `topic.kind` — `chat.m` new message, `chat.r` read receipt
-  (`{"c":conv,"u":reader,"t":at}`), plus `ready` on connect and `resync` when
-  the gap is too wide to replay. `:` comment lines every 15s are the keepalive.
-- `id:` is `topic:rowid` and only appears on frames that are part of an ordered
-  series, because it becomes the client's resume cursor.
-- Payload keys: `c` conv_key, `f` from uid, `b` body, `t` timestamp. **`k` is
-  reserved for the content kind** and omitted while everything is text; images
-  would add `"k":"i"` and a URL. Treat an unknown `k` as an unsupported message
-  type rather than rendering `b`. There is no `kind` column on
-  `phpyun_rs_chat` and no migration to add one, so this reservation is protocol
-  only.
-- WebSocket clients get the same information: `kind` and `seq` are named inside
-  the `push` frame, since a socket has no `event:`/`id:` of its own.
+JSON, the event bus, and `phpyun_rs_chat` share the same `u8` / `TINYINT` numbers.
+Zero is omitted on the wire.
+
+**`cs` (`CStatus`)**
+
+| 值 | 含义 |
+|---|---|
+| 0（默认，可省略） | 未读 / 新消息 |
+| 1 | 已读 / 已读回执 |
+| 2 | 已删除 |
+
+**`ctype` (`CType`)** — numbers only grow at the end; never reorder.
+
+| 值 | 名称 | 本版 |
+|---|---|---|
+| 0（默认，可省略） | 文本 | 写入 |
+| 1 | 图片 | 列预留 |
+| 2 | 文件 | 预留 |
+| 3 | 语音 | 预留 |
+| 4 | 视频 | 预留 |
+| 5 | 红包 | 预留 |
+| 6 | 位置 | 预留 |
+| 7 | 职位/简历卡片 | 预留 |
+| 8+ | 以后再加 | |
+
+Unknown numbers must not crash: the client `default`s to an unsupported type.
+This version only writes `ctype=0`.
+
+- `event:` is the topic (`chat`). Plus `ready` on connect and `resync` when the gap is too wide to replay. `:` comment lines every 15s are the keepalive.
+- `id:` is `topic:rowid` and only appears on sequenced frames (messages), because it becomes the client's resume cursor. Read receipts have `"cs":1`, no `c`, and no `id:`.
+- Payload keys: `ck` conversation, `f` from uid, `c` content, `ct` created (unix seconds), `cs`, `ctype`. A receipt also has `u` (who read). REST `ChatItem` uses the same keys, plus `id`.
+- WebSocket clients get the same payload; `seq` is lifted next to it for the resume cursor.
 
 **Ops.** The route sends `X-Accel-Buffering: no`, which is enough for a default
 nginx. If a proxy still buffers or reaps the connection:
@@ -213,7 +243,9 @@ unaffected.
 
 These are encoded in saved feedback memory and load-bearing for the codebase:
 
-1. **Never add new SQL migrations.** This Rust port shares the live PHPyun database. The schema is defined by the PHP install. If a Rust query 5xx's because a column or table is "missing", **fix the Rust SQL to match the existing PHP schema** — don't add a migration. Earlier batches of "rust-introduced" migrations were deleted by the user. Use the schema dump in `migrations/phpyun_*.sql` as the source of truth.
+1. **Never add new SQL migrations to PHP tables.** This Rust port shares the live PHPyun database. The schema of `phpyun_*` tables is defined by the PHP install. If a Rust query 5xx's because a column or table is "missing", **fix the Rust SQL to match the existing PHP schema** — don't ALTER a PHP table. Earlier batches of "rust-introduced" migrations were deleted by the user. Use the schema dump in `migrations/phpyun_*.sql` as the source of truth.
+
+   **Exception:** `phpyun_rs_*` tables are owned by this port (`phpyun_rs_chat`, `phpyun_rs_audit_log`, `phpyun_rs_user_vip`, `phpyun_rs_broadcast_reads`). ALTER on those is allowed. Already-applied sqlx files must not be rewritten (checksums); add a new migration instead. Example: `cs` / `ctype` on `phpyun_rs_chat` in `migrations/sqlx/20260822000001_chat_cs_ctype.sql`.
 
 2. **Model field types must match PHP column types.** Mismatches cause sqlx panics on NULL or `Truncated incorrect INTEGER value: ''` errors. Rules:
    - `int(N) NOT NULL` → `i32 / i64` (not Option)

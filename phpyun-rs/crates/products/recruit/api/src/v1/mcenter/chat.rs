@@ -3,7 +3,6 @@
 use axum::{extract::State, routing::post, Router};
 use phpyun_core::dto::{CreatedId, PeerBody, UnreadCount};
 use phpyun_core::json;
-use phpyun_core::utils::fmt_dt;
 use phpyun_core::{ApiResponse, AppResult, AppState, AuthenticatedUser, ValidatedJson};
 use phpyun_services::chat_service;
 use serde::{Deserialize, Serialize};
@@ -59,33 +58,41 @@ pub async fn send(
     Ok(ApiResponse::data(CreatedId { id }))
 }
 
-/// Private message item — full 7 columns of phpyun_chat + formatted timestamps + dual-track derived is_read.
+/// One chat row as returned by `/chat/with` and `/chat/conversations`.
+///
+/// Same short keys as the SSE payload: `ck` conversation (`min-max` of the
+/// two uids), `f` from, `c` content, `ct` created. The client already knows
+/// its own uid, so the peer is the other number in `ck`. `cs` / `ctype` are
+/// omitted when 0 (unread text).
 #[derive(Debug, Serialize, ToSchema)]
 pub struct ChatItem {
     pub id: u64,
-    pub sender_uid: u64,
-    pub receiver_uid: u64,
-    /// Symmetric conversation key (min-max form, for easy frontend grouping by conversation)
-    pub conv_key: String,
-    pub body: String,
-    pub is_read_int: i32,
-    pub is_read: bool,
-    pub created_at: i64,
-    pub created_at_n: String,
+    /// Conversation key, `min-max` of the two uids.
+    pub ck: String,
+    /// Sender uid.
+    pub f: u64,
+    /// Message text (or caption). `ctype` says what `c` is.
+    pub c: String,
+    /// [`phpyun_models::chat::CStatus`]. Omitted when unread.
+    #[serde(skip_serializing_if = "phpyun_models::chat::is_zero")]
+    pub cs: u8,
+    /// [`phpyun_models::chat::CType`]. Omitted when text.
+    #[serde(skip_serializing_if = "phpyun_models::chat::is_zero")]
+    pub ctype: u8,
+    /// Created-at, unix seconds.
+    pub ct: i64,
 }
 
 impl From<phpyun_models::chat::entity::Chat> for ChatItem {
-    fn from(c: phpyun_models::chat::entity::Chat) -> Self {
+    fn from(row: phpyun_models::chat::entity::Chat) -> Self {
         Self {
-            id: c.id,
-            sender_uid: c.sender_uid,
-            receiver_uid: c.receiver_uid,
-            conv_key: c.conv_key,
-            body: c.body,
-            is_read: c.is_read == 1,
-            is_read_int: c.is_read,
-            created_at_n: fmt_dt(c.created_at),
-            created_at: c.created_at,
+            id: row.id,
+            ck: row.conv_key,
+            f: row.sender_uid,
+            c: row.body,
+            cs: row.cs,
+            ctype: row.ctype,
+            ct: row.created_at,
         }
     }
 }
@@ -160,4 +167,50 @@ pub async fn unread_count(
 ) -> AppResult<ApiResponse<UnreadCount>> {
     let unread = chat_service::unread_count(&state, &user).await?;
     Ok(ApiResponse::data(UnreadCount { unread }))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use phpyun_models::chat::entity::Chat;
+    use serde_json::{json, Value};
+
+    fn item(cs: u8, ctype: u8) -> Value {
+        serde_json::to_value(ChatItem::from(Chat {
+            id: 1234,
+            sender_uid: 7,
+            receiver_uid: 42,
+            conv_key: "7-42".into(),
+            body: "你好".into(),
+            cs,
+            ctype,
+            created_at: 1_755_870_000,
+        }))
+        .unwrap()
+    }
+
+    #[test]
+    fn unread_text_omits_the_zero_fields() {
+        assert_eq!(
+            item(0, 0),
+            json!({
+                "id": 1234,
+                "ck": "7-42",
+                "f": 7,
+                "c": "你好",
+                "ct": 1_755_870_000,
+            })
+        );
+    }
+
+    #[test]
+    fn a_read_row_carries_cs() {
+        assert_eq!(item(1, 0)["cs"], 1);
+        assert!(item(1, 0).get("ctype").is_none());
+    }
+
+    #[test]
+    fn an_unknown_ctype_passes_through() {
+        assert_eq!(item(0, 99)["ctype"], 99);
+    }
 }

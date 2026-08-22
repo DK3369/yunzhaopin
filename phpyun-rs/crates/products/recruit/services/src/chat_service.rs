@@ -67,6 +67,8 @@ pub async fn send(
                 receiver: peer_uid,
                 conv_key: chat_entity::conv_key_for(user.uid, peer_uid),
                 body: body.to_owned(),
+                cs: 0,
+                ctype: 0,
                 created_at: now,
             },
         )
