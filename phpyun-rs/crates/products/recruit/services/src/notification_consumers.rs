@@ -24,7 +24,7 @@ use phpyun_core::i18n::{t, t_args, Lang};
 use phpyun_core::{clock, ApiError, AppResult};
 use phpyun_kernel::{Consumer, Ctx, ProductId, RetryPolicy};
 use phpyun_models::message::{entity as msg_entity, repo as message_repo};
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 /// Notification copy is rendered in the system default language when persisted.
 /// Once recipient language preferences are stored (e.g. `phpyun_member.lang`),
@@ -131,15 +131,42 @@ impl Consumer for NotifyVipActivated {
 
 // ==================== chat.sent ====================
 
-/// Published by `chat_service::send`. The message body is deliberately not
-/// duplicated onto the bus — a notification says "you have mail", and the
-/// client reads the content over the API.
-#[derive(Debug, Deserialize)]
+/// Published by `chat_service::send`.
+///
+/// The body travels with the event. That is a reversal of the earlier design,
+/// which carried only "you have mail" and made the client fetch the text — the
+/// right call for a mobile push, the wrong one for a live conversation, where
+/// it costs a round trip per message on the one path where latency is the whole
+/// product. The trade is that message text now passes through Redis in the
+/// clear; it is already in MySQL in the clear, and Redis is an internal
+/// component, so this buys the round trip at a price we were already paying.
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct ChatSent {
-    /// Row id in `phpyun_rs_chat`.
+    /// Row id in `phpyun_rs_chat`. Also the resume cursor for the SSE stream.
     pub id: u64,
     pub sender: u64,
     pub receiver: u64,
+    /// Symmetric conversation key, `min-max`. Lets a client route the message
+    /// to a thread without deriving it from the two uids.
+    #[serde(default)]
+    pub conv_key: String,
+    #[serde(default)]
+    pub body: String,
+    #[serde(default)]
+    pub created_at: i64,
+}
+
+/// Published by `chat_service::mark_read_with` — the other side opened the
+/// conversation. Carries no row id: "everything up to now" is the whole fact,
+/// and there is nothing to resume from.
+#[derive(Debug, Clone, Deserialize, Serialize)]
+pub struct ChatRead {
+    pub conv_key: String,
+    /// Who did the reading.
+    pub reader: u64,
+    /// Who wrote the messages that were read, and therefore who wants to know.
+    pub peer: u64,
+    pub at: i64,
 }
 
 pub struct PushChatMessage;
@@ -318,8 +345,30 @@ mod tests {
     /// fails here rather than as a stream of dead letters in production.
     #[test]
     fn the_chat_payload_matches_what_chat_service_publishes() {
-        let sent: ChatSent =
-            serde_json::from_str(r#"{"id":5,"sender":1,"receiver":2}"#).expect("producer shape");
+        let sent: ChatSent = serde_json::from_str(
+            r#"{"id":5,"sender":1,"receiver":2,"conv_key":"1-2","body":"hi","created_at":99}"#,
+        )
+        .expect("producer shape");
         assert_eq!((sent.id, sent.sender, sent.receiver), (5, 1, 2));
+        assert_eq!((sent.conv_key.as_str(), sent.body.as_str()), ("1-2", "hi"));
+        assert_eq!(sent.created_at, 99);
+    }
+
+    /// Events published before the body was added are still in the stream when
+    /// a new binary starts reading it, and must not dead-letter the backlog.
+    #[test]
+    fn a_chat_event_from_the_previous_shape_still_parses() {
+        let sent: ChatSent =
+            serde_json::from_str(r#"{"id":5,"sender":1,"receiver":2}"#).expect("old producer");
+        assert!(sent.body.is_empty());
+        assert!(sent.conv_key.is_empty());
+    }
+
+    #[test]
+    fn a_read_receipt_names_both_sides() {
+        let read: ChatRead =
+            serde_json::from_str(r#"{"conv_key":"1-2","reader":2,"peer":1,"at":99}"#)
+                .expect("producer shape");
+        assert_eq!((read.reader, read.peer), (2, 1));
     }
 }

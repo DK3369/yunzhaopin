@@ -69,6 +69,40 @@ pub async fn list_with_peer(
     phpyun_core::db::ok_default_if_object_missing(q)
 }
 
+/// Messages involving `self_uid` with an id greater than `after_id`, oldest
+/// first.
+///
+/// Ascending on purpose — unlike every other read here, which is newest-first
+/// for a paginated view. This one feeds a resumed stream, so the rows have to
+/// come out in the order the client would have received them live.
+///
+/// Both sides of the conversation are included: a second device of the same
+/// account needs to catch up on what this user sent from the first one, not
+/// only on what arrived.
+pub async fn list_after_id(
+    pool: &MySqlPool,
+    self_uid: u64,
+    after_id: u64,
+    limit: u64,
+) -> Result<Vec<Chat>, sqlx::Error> {
+    let row_limit = limit.clamp(1, 500);
+    let sql = format!(
+        r#"SELECT {FIELDS}
+           FROM phpyun_rs_chat
+           WHERE id > ? AND (receiver_uid = ? OR sender_uid = ?)
+           ORDER BY id ASC LIMIT ?"#
+    );
+    phpyun_core::db::ok_default_if_object_missing(
+        sqlx::query_as::<_, Chat>(&sql)
+            .bind(after_id)
+            .bind(self_uid)
+            .bind(self_uid)
+            .bind(row_limit)
+            .fetch_all(pool)
+            .await,
+    )
+}
+
 /// Latest message of each of my conversations (aggregated by conv_key).
 ///
 /// `phpyun_rs_chat` is a Rust-port-only table. When the host PHP install

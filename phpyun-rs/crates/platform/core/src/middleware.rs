@@ -366,7 +366,13 @@ async fn latency_metrics(req: Request, next: Next) -> Response {
     resp
 }
 
-fn build_cors(cfg: &Config) -> CorsLayer {
+/// The CORS policy for this deployment.
+///
+/// Public because not every route goes through [`install`]. Long-lived streams
+/// are mounted outside the stack — its timeout would sever them — and a
+/// WebSocket does not need CORS at all, but an `EventSource` request does, so
+/// the SSE route re-applies this one layer on its own.
+pub fn build_cors(cfg: &Config) -> CorsLayer {
     // If the only entry is "*", allow any origin; otherwise use the whitelist.
     let origin = if cfg.cors_allowed_origins.len() == 1 && cfg.cors_allowed_origins[0] == "*" {
         AllowOrigin::any()

@@ -7,6 +7,7 @@
 
 use phpyun_core::i18n;
 use phpyun_core::ApiError;
+use phpyun_push::Push;
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 
@@ -69,8 +70,21 @@ impl ServerFrame {
     }
 
     /// A server-initiated push — the reason this transport exists.
-    pub fn push(topic: &str, payload: Value) -> Self {
-        Self::ok("push", json!({ "topic": topic, "payload": payload }))
+    ///
+    /// `kind` and `seq` are lifted out of the [`Push`] and named here rather
+    /// than left inside the payload. SSE puts them in the protocol's own
+    /// `event:` and `id:` fields, which a socket has no equivalent for, so
+    /// without this a WebSocket client would be the only one that cannot tell
+    /// what kind of event it got or which message it was.
+    pub fn push(push: &Push) -> Self {
+        let mut data = json!({ "topic": push.topic, "payload": push.payload });
+        if let Some(kind) = &push.kind {
+            data["kind"] = json!(kind);
+        }
+        if let Some(seq) = push.seq {
+            data["seq"] = json!(seq);
+        }
+        Self::ok("push", data)
     }
 
     /// Mirrors [`ApiError`]'s HTTP rendering: same status, same stable key,
@@ -132,7 +146,7 @@ mod tests {
             ServerFrame::subscribed("chat"),
             ServerFrame::unsubscribed("chat"),
             ServerFrame::pong(),
-            ServerFrame::push("chat", json!({"from": 1})),
+            ServerFrame::push(&Push::new(7, "chat", json!({"from": 1}))),
             ServerFrame::error(&ApiError::forbidden()),
         ];
         for frame in frames {
@@ -157,9 +171,30 @@ mod tests {
 
     #[test]
     fn a_push_names_its_topic_so_the_client_can_route_it() {
-        let frame = ServerFrame::push("chat", json!({"body": "hi"}));
+        let frame = ServerFrame::push(&Push::new(7, "chat", json!({"body": "hi"})));
         assert_eq!(frame.key, "push");
         assert_eq!(frame.data["topic"], "chat");
         assert_eq!(frame.data["payload"]["body"], "hi");
+    }
+
+    /// What SSE carries in `event:` and `id:` has to reach a socket client too,
+    /// or the same message means less depending on which door it came through.
+    #[test]
+    fn a_push_carries_its_kind_and_sequence_when_it_has_them() {
+        let frame = ServerFrame::push(
+            &Push::new(7, "chat", json!({"b": "hi"}))
+                .with_kind("m")
+                .with_seq(1234),
+        );
+        assert_eq!(frame.data["kind"], "m");
+        assert_eq!(frame.data["seq"], 1234);
+    }
+
+    /// Absent rather than null, so a client can test for presence.
+    #[test]
+    fn a_push_without_them_does_not_invent_the_fields() {
+        let frame = ServerFrame::push(&Push::new(7, "chat", json!({})));
+        assert!(frame.data.get("kind").is_none());
+        assert!(frame.data.get("seq").is_none());
     }
 }

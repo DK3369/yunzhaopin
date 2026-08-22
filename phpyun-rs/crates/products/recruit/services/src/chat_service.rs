@@ -5,7 +5,8 @@ use phpyun_core::{clock, rate_limit, ApiError, AppResult, AppState, Authenticate
 
 // Notification copy: translated using the system default language when written to the DB; can be reworked once a recipient preferred-language is introduced.
 const NOTIF_LANG: Lang = Lang::ZhCN;
-use phpyun_models::chat::{entity::Chat, repo as chat_repo};
+use crate::notification_consumers::{ChatRead, ChatSent};
+use phpyun_models::chat::{entity as chat_entity, entity::Chat, repo as chat_repo};
 use phpyun_models::message::{entity as msg_entity, repo as message_repo};
 use std::time::Duration;
 
@@ -53,16 +54,21 @@ pub async fn send(
     )
     .await;
 
-    // Event bus
+    // Event bus. The body rides along so a live recipient can render the
+    // message from the push alone; see `ChatSent` for why that is worth the
+    // text passing through Redis.
     let _ = state
         .events
         .publish_json(
             "chat.sent",
-            &serde_json::json!({
-                "id": id,
-                "sender": user.uid,
-                "receiver": peer_uid,
-            }),
+            &ChatSent {
+                id,
+                sender: user.uid,
+                receiver: peer_uid,
+                conv_key: chat_entity::conv_key_for(user.uid, peer_uid),
+                body: body.to_owned(),
+                created_at: now,
+            },
         )
         .await;
 
@@ -92,7 +98,45 @@ pub async fn mark_read_with(
     user: &AuthenticatedUser,
     peer_uid: u64,
 ) -> AppResult<u64> {
-    Ok(chat_repo::mark_read_from_peer(state.db.pool(), user.uid, peer_uid).await?)
+    let updated = chat_repo::mark_read_from_peer(state.db.pool(), user.uid, peer_uid).await?;
+
+    // Only when something actually changed: re-opening a conversation you have
+    // already read is the common case, and telling the peer about it every time
+    // would be a stream of events that say nothing happened.
+    if updated > 0 {
+        let _ = state
+            .events
+            .publish_json(
+                "chat.read",
+                &ChatRead {
+                    conv_key: chat_entity::conv_key_for(user.uid, peer_uid),
+                    reader: user.uid,
+                    peer: peer_uid,
+                    at: clock::now_ts(),
+                },
+            )
+            .await;
+    }
+
+    Ok(updated)
+}
+
+/// Messages in this user's conversations newer than `after_id`, oldest first.
+///
+/// This is the catch-up query behind SSE resumption: a client reports the last
+/// message id it saw and gets exactly what it missed, across every conversation
+/// at once rather than one thread at a time.
+///
+/// `limit` is a ceiling the caller uses to detect "too far behind" — ask for one
+/// more than you intend to send, and a full result means the gap is wider than
+/// the stream should carry.
+pub async fn list_since_id(
+    state: &AppState,
+    uid: u64,
+    after_id: u64,
+    limit: u64,
+) -> AppResult<Vec<Chat>> {
+    Ok(chat_repo::list_after_id(state.db.reader(), uid, after_id, limit).await?)
 }
 
 pub async fn unread_count(state: &AppState, user: &AuthenticatedUser) -> AppResult<u64> {

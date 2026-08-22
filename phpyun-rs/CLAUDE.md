@@ -91,10 +91,26 @@ crates/
                        idempotency, retry backoff, and `<topic>.dlq`
                        dead-lettering. No rate limiting or signatures — the
                        messages are ours.
-    transport-ws/      WebSocket adapter. Authenticated once at the upgrade with
-                       the same extractor as REST, then subscribe/push. Mounted
-                       at /ws, outside the request middleware (its timeout and
-                       concurrency permit assume short requests).
+    push/              Server-initiated delivery, minus the wire. Hub (this
+                       instance's sessions, addressed by uid), the topic
+                       catalogue, and `publish` (Redis pub/sub `push:v1`, so a
+                       push written on one instance reaches a session on
+                       another). Shared by the two transports below; names no
+                       transport type, by rule.
+    transport-ws/      WebSocket rendering of `push/`. Authenticated once at the
+                       upgrade with the same extractor as REST, then
+                       subscribe/push. Mounted at /ws.
+    transport-sse/     SSE rendering of `push/`, plus resumption: frames carry
+                       an `id:`, and a client that reconnects with a cursor gets
+                       the gap filled from the database via a `Replay` source.
+                       Mounted at /sse.
+
+                       Both are merged outside the request middleware — its
+                       timeout would sever a healthy stream, its concurrency
+                       permit would be held for the connection's whole life, and
+                       compression would buffer frames meant to arrive at once.
+                       SSE additionally re-applies CORS, which a WebSocket
+                       handshake does not need but an `EventSource` does.
 
   products/
     recruit/           the original job-board product line
@@ -121,9 +137,11 @@ Architecture rules, enforced by `scripts/check-architecture.sh`:
   `hyper::`). Business code has to stay drivable from any protocol. `api/` is
   exempt while the legacy handlers migrate to `Operation`.
 - `kernel/` may not name a transport type either — an HTTP dependency there
-  would end the multi-protocol design.
-- `transport-*/` may not depend on a product crate. Code that needs both ends
-  (mapping a recruit event onto a WebSocket push) lives in `apps/`.
+  would end the multi-protocol design. Neither may `push/`, which both stream
+  transports build on.
+- `transport-*/` and `push/` may not depend on a product crate. Code that needs
+  both ends (mapping a recruit chat event onto a push) lives in `apps/` — see
+  [chat_stream.rs](crates/apps/recruit-server/src/chat_stream.rs).
 
 Pre-existing violations are tagged `// TODO(arch):` and migrated opportunistically.
 
@@ -133,6 +151,63 @@ Pre-existing violations are tagged `// TODO(arch):` and migrated opportunistical
 - `/v1/wap/*` — public + jobseeker; `/v1/mcenter/*` — authenticated, jobseeker + employer; `/v1/admin/*` — admin (router-level `admin_guard` + per-handler `user.require_admin()`).
 - `/health` and `/ready` bypass rate-limit / concurrency-limit / body-limit (LB probes).
 - Response envelope is `{code, key, msg, data}` always. `code` equals the HTTP status; `key` is the stable machine-readable identifier clients branch on (`"ok"` on success); `msg` is the **i18n-translated** copy of `errors.<key>`, for display only. Each `ApiErrorKind` maps to the status that describes it — 400 params, 401 auth, 403 role, 422 business rule, 429 rate limit, 502 upstream, 500 only for genuine backend faults. The tests [response_contract.rs](crates/products/recruit/api/tests/response_contract.rs) and [middleware_contract.rs](crates/products/recruit/api/tests/middleware_contract.rs) lock this.
+
+## Realtime chat (SSE)
+
+Sending stays a normal `POST /v1/mcenter/chat/send`. `GET /sse` is receive-only,
+and history is still the REST API's job — the stream is a latency optimisation
+over it, never the record.
+
+**Client sequence.** Read history first (`/v1/mcenter/chat/conversations`, then
+`/v1/mcenter/chat/with`), then open the stream with the newest id you saw:
+
+```js
+const es = new EventSource(`/sse?topics=chat&since=chat:${maxId}`, { withCredentials: true });
+es.addEventListener('chat.m', e => append(JSON.parse(e.data), e.lastEventId));
+es.addEventListener('chat.r', e => markRead(JSON.parse(e.data)));
+es.addEventListener('resync', () => reloadHistoryOverHttp());
+```
+
+`?since=` is not redundant with `Last-Event-ID`: `EventSource` cannot set
+request headers and only sends that header from its *own* first reconnect, so
+without the parameter anything sent between the history read and the stream
+opening is lost. The header wins when both are present.
+
+**Frames.** Metadata rides in SSE's native fields, `data:` carries only the
+payload with one-character keys.
+
+```
+id: chat:1234
+event: chat.m
+data: {"c":"7-42","f":7,"b":"hello","t":1755870000}
+```
+
+- `event:` is `topic.kind` — `chat.m` new message, `chat.r` read receipt
+  (`{"c":conv,"u":reader,"t":at}`), plus `ready` on connect and `resync` when
+  the gap is too wide to replay. `:` comment lines every 15s are the keepalive.
+- `id:` is `topic:rowid` and only appears on frames that are part of an ordered
+  series, because it becomes the client's resume cursor.
+- Payload keys: `c` conv_key, `f` from uid, `b` body, `t` timestamp. **`k` is
+  reserved for the content kind** and omitted while everything is text; images
+  would add `"k":"i"` and a URL. Treat an unknown `k` as an unsupported message
+  type rather than rendering `b`. There is no `kind` column on
+  `phpyun_rs_chat` and no migration to add one, so this reservation is protocol
+  only.
+- WebSocket clients get the same information: `kind` and `seq` are named inside
+  the `push` frame, since a socket has no `event:`/`id:` of its own.
+
+**Ops.** The route sends `X-Accel-Buffering: no`, which is enough for a default
+nginx. If a proxy still buffers or reaps the connection:
+
+```nginx
+location /sse { proxy_buffering off; proxy_read_timeout 3600s; }
+```
+
+Cross-origin browser clients need cookie auth (`EventSource` cannot send a
+bearer header), which needs `Access-Control-Allow-Credentials` and therefore an
+explicit `CORS_ALLOWED_ORIGINS` rather than `*`. Same-origin pages and native
+clients (which can set `Authorization` and `Last-Event-ID` directly) are
+unaffected.
 
 ## Project-specific rules (don't break)
 

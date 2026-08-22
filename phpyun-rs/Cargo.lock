@@ -2360,17 +2360,34 @@ dependencies = [
 ]
 
 [[package]]
+name = "phpyun-push"
+version = "0.1.2"
+dependencies = [
+ "phpyun-core",
+ "phpyun-kernel",
+ "serde",
+ "serde_json",
+ "tokio",
+ "tokio-stream",
+ "tracing",
+]
+
+[[package]]
 name = "phpyun-rs"
 version = "0.1.2"
 dependencies = [
  "anyhow",
+ "async-trait",
  "axum",
  "phpyun-core",
  "phpyun-handlers",
  "phpyun-kernel",
+ "phpyun-models",
+ "phpyun-push",
  "phpyun-security",
  "phpyun-services",
  "phpyun-transport-mq",
+ "phpyun-transport-sse",
  "phpyun-transport-ws",
  "serde_json",
  "tokio",
@@ -2441,16 +2458,33 @@ dependencies = [
 ]
 
 [[package]]
+name = "phpyun-transport-sse"
+version = "0.1.2"
+dependencies = [
+ "async-trait",
+ "axum",
+ "phpyun-core",
+ "phpyun-kernel",
+ "phpyun-push",
+ "serde",
+ "serde_json",
+ "tokio",
+ "tokio-stream",
+ "tower",
+ "tracing",
+]
+
+[[package]]
 name = "phpyun-transport-ws"
 version = "0.1.2"
 dependencies = [
  "axum",
  "phpyun-core",
  "phpyun-kernel",
+ "phpyun-push",
  "serde",
  "serde_json",
  "tokio",
- "tokio-stream",
  "tower",
  "tracing",
 ]

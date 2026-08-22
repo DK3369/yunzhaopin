@@ -39,11 +39,14 @@
 //! instant; a client that was offline, slow, or mid-reconnect misses it and
 //! re-reads its state over HTTP. Anything that must not be lost belongs in the
 //! database, with the push as a nudge to come and look.
+//!
+//! Sessions, uid addressing, the topic catalogue, and the cross-instance
+//! fan-out are not defined here — they are shared with the SSE transport and
+//! live in [`phpyun_push`]. What remains in this crate is the WebSocket half:
+//! the upgrade, the frame protocol, and the socket loop.
 
-pub mod hub;
 pub mod protocol;
 pub mod session;
-pub mod topic;
 
 use axum::{
     extract::{Extension, State, WebSocketUpgrade},
@@ -55,7 +58,7 @@ use phpyun_core::extractors::AuthenticatedUser;
 use phpyun_core::AppState;
 use phpyun_kernel::Caller;
 
-pub use hub::{publish, Hub, Push, PUSH_CHANNEL};
+pub use phpyun_push::{publish, Hub, Push, PUSH_CHANNEL};
 pub use protocol::{ClientFrame, ServerFrame};
 
 /// Where the socket lives. Outside `/v1` because it is not a POST-JSON business

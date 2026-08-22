@@ -17,10 +17,10 @@ use axum::extract::ws::{Message, WebSocket};
 use phpyun_core::shutdown::CancellationToken;
 use phpyun_core::ApiError;
 use phpyun_kernel::Caller;
+use phpyun_push::topic::{self, Topic};
+use phpyun_push::Hub;
 
-use crate::hub::{Hub, Push};
 use crate::protocol::{ClientFrame, ServerFrame};
-use crate::topic::{self, Topic};
 
 /// How often the server sends a WebSocket ping.
 const HEARTBEAT: Duration = Duration::from_secs(30);
@@ -44,7 +44,18 @@ pub async fn run(mut socket: WebSocket, hub: Hub, caller: Caller, shutdown: Canc
         return;
     };
 
-    let mut membership = hub.register(uid);
+    // Refused when the account already holds the maximum number of streams on
+    // this instance. The socket is already upgraded by now, so the ceiling is
+    // reported as an error frame rather than a 429 status.
+    let mut membership = match hub.register(uid) {
+        Ok(membership) => membership,
+        Err(e) => {
+            let _ = socket
+                .send(Message::Text(ServerFrame::error(&e).to_json().into()))
+                .await;
+            return;
+        }
+    };
     let mut subscribed: HashSet<Topic> = HashSet::new();
     let mut last_seen = Instant::now();
     let mut heartbeat = tokio::time::interval(HEARTBEAT);
@@ -72,7 +83,7 @@ pub async fn run(mut socket: WebSocket, hub: Hub, caller: Caller, shutdown: Canc
                 if !subscribed.iter().any(|t| t.as_str() == push.topic) {
                     continue;
                 }
-                if send(&mut socket, frame_for(&push)).await.is_err() {
+                if send(&mut socket, ServerFrame::push(&push)).await.is_err() {
                     break;
                 }
             }
@@ -152,10 +163,6 @@ fn handle_text(text: &str, caller: &Caller, subscribed: &mut HashSet<Topic>) -> 
     }
 }
 
-fn frame_for(push: &Push) -> ServerFrame {
-    ServerFrame::push(&push.topic, push.payload.clone())
-}
-
 async fn send(socket: &mut WebSocket, frame: ServerFrame) -> Result<(), ()> {
     socket
         .send(Message::Text(frame.to_json().into()))
@@ -168,6 +175,7 @@ mod tests {
     use super::*;
     use phpyun_core::extractors::{USERTYPE_ADMIN, USERTYPE_JOBSEEKER};
     use phpyun_kernel::UserCaller;
+    use phpyun_push::Push;
     use serde_json::json;
 
     fn caller(usertype: u8) -> Caller {

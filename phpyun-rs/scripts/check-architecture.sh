@@ -30,8 +30,10 @@ PRODUCTS="crates/products"
 CORE="$PLATFORM/core/src"
 AUTH="$PLATFORM/auth/src"
 KERNEL="$PLATFORM/kernel/src"
+PUSH="$PLATFORM/push/src"
 TRANSPORT_HTTP="$PLATFORM/transport-http/src"
 TRANSPORT_MQ="$PLATFORM/transport-mq/src"
+TRANSPORT_SSE="$PLATFORM/transport-sse/src"
 TRANSPORT_WS="$PLATFORM/transport-ws/src"
 MODELS="$PRODUCTS/recruit/models/src"
 SERVICES="$PRODUCTS/recruit/services/src"
@@ -184,11 +186,17 @@ if [ "$target" = "all" ] || [ "$target" = "layering" ]; then
 
     # The other half of the same boundary: an adapter carries any product's
     # traffic, so it must not know a product's types. Code that needs both ends
-    # — mapping a recruit event onto a WebSocket push, say — belongs in the
-    # binary that wires them together.
+    # — mapping a recruit event onto a push, say — belongs in the binary that
+    # wires them together.
     report_in "transports must not depend on a product crate (wire them together in apps/)" \
         '\bphpyun_(models|services|handlers)\b' \
-        "$TRANSPORT_HTTP" "$TRANSPORT_MQ" "$TRANSPORT_WS"
+        "$TRANSPORT_HTTP" "$TRANSPORT_MQ" "$TRANSPORT_SSE" "$TRANSPORT_WS" "$PUSH"
+
+    # `push/` is shared by the WebSocket and SSE adapters. The moment it names
+    # one of them, it stops being the thing they have in common and the next
+    # transport inherits whichever one it picked.
+    report_in "the push core must not name a transport type (both adapters build on it)" \
+        '\b(axum|tonic|tungstenite|hyper)::' "$PUSH"
 fi
 
 # ----------------------------------------------------------------------------

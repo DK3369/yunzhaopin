@@ -11,7 +11,7 @@ use phpyun_core::{
 use phpyun_handlers::build_router_with_state;
 use std::time::Duration;
 
-mod ws_bridge;
+mod chat_stream;
 
 fn main() -> anyhow::Result<()> {
     let config = Config::load()?;
@@ -171,15 +171,17 @@ async fn async_main(config: Config, worker_threads: usize) -> anyhow::Result<()>
         spawn::<notif::PushChatMessage>(&state);
         spawn::<notif::SendInviteEmail>(&state);
         spawn::<notif::SendVerifyEmail>(&state);
-        spawn::<ws_bridge::ChatToWebSocket>(&state);
+        spawn::<chat_stream::ChatToStream>(&state);
+        spawn::<chat_stream::ChatReadToStream>(&state);
     }
 
-    // ---- WebSocket hub ----
+    // ---- Push hub ----
     //
-    // One Redis pub/sub listener per process feeds every socket this instance
-    // holds. Started before the server so a connection accepted in the first
-    // millisecond still has somewhere for its pushes to come from.
-    let hub = phpyun_transport_ws::Hub::new();
+    // One Redis pub/sub listener per process feeds every stream this instance
+    // holds, WebSocket and SSE alike. Started before the server so a connection
+    // accepted in the first millisecond still has somewhere for its pushes to
+    // come from.
+    let hub = phpyun_push::Hub::new();
     hub.spawn_fanin(&state);
 
     // HTTP service
@@ -195,10 +197,22 @@ async fn async_main(config: Config, worker_threads: usize) -> anyhow::Result<()>
             state.clone(),
             idempotency::layer,
         ))
-        // Merged last, so the socket sits outside the request-oriented layers.
-        // The request timeout would sever a healthy connection, and the
-        // concurrency limiter's permit would be held for its whole lifetime.
-        .merge(phpyun_transport_ws::routes(hub).with_state(state.clone()));
+        // Merged last, so the long-lived connections sit outside the
+        // request-oriented layers. The request timeout would sever a healthy
+        // stream, the concurrency limiter's permit would be held for its whole
+        // lifetime, and response compression would buffer frames whose only
+        // job is to arrive immediately.
+        .merge(phpyun_transport_ws::routes(hub.clone()).with_state(state.clone()))
+        // Unlike the socket, SSE goes through the same-origin policy, so the
+        // one layer it does need is CORS.
+        .merge(
+            phpyun_transport_sse::routes(
+                hub,
+                phpyun_transport_sse::Replays::new().with(chat_stream::ChatReplay),
+            )
+            .layer(phpyun_core::middleware::build_cors(&config))
+            .with_state(state.clone()),
+        );
 
     let listener = tokio::net::TcpListener::bind(&config.bind).await?;
     tracing::info!("listening on {}", config.bind);
