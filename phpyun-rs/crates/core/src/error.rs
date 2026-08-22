@@ -2,14 +2,27 @@
 //!
 //! `ApiError` is the only application-defined error type exposed across the
 //! workspace. It stores a typed [`ApiErrorKind`] and an optional source error;
-//! the public response code and stable key/tag are derived from that kind:
+//! the public response code, stable key, and translated message are all derived
+//! from that kind:
 //!
-//! - success: `{code: 200, msg: "ok", data: ...}`
-//! - unauthenticated / expired session: HTTP 401
-//! - every other error: HTTP 500
+//! ```json
+//! // success
+//! {"code": 200, "key": "ok",             "msg": "ok",          "data": {...}}
+//! // failure
+//! {"code": 403, "key": "role_mismatch",  "msg": "权限不足",     "data": ""}
+//! ```
 //!
-//! The stable `key` and translated `msg` are preserved for clients; no extra
-//! error type field is serialized.
+//! `code` always equals the HTTP status. `key` is the stable machine-readable
+//! identifier clients branch on; `msg` is the localized copy for display and
+//! must never be parsed.
+//!
+//! ## Status mapping
+//!
+//! Each kind maps to the HTTP status that actually describes it, so that
+//! monitoring, gateways, and CDNs can tell a client mistake apart from a
+//! backend outage. Only [`ApiErrorKind::Internal`], [`ApiErrorKind::Db`], and
+//! [`ApiErrorKind::Redis`] are genuine 500s; [`ApiErrorKind::Upstream`] is a
+//! 502 because the fault lies with a third party we called.
 
 use std::borrow::Cow;
 use std::sync::Arc;
@@ -17,8 +30,17 @@ use std::sync::Arc;
 use axum::{http::StatusCode, response::IntoResponse, Json};
 use serde_json::json;
 
+const CODE_PARAM: u16 = 400;
 const CODE_UNAUTH: u16 = 401;
+const CODE_FORBIDDEN: u16 = 403;
+/// Request parsed and authorized fine, but a business rule rejected it. This is
+/// the default for [`ApiErrorKind::Business`]; individual keys stay on 422
+/// rather than being hand-classified into 404/409, because the `key` field
+/// already tells the client exactly which rule fired.
+const CODE_BUSINESS: u16 = 422;
+const CODE_RATE_LIMIT: u16 = 429;
 const CODE_ERROR: u16 = 500;
+const CODE_UPSTREAM: u16 = 502;
 
 /// Stable error kinds exposed by the API layer.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -43,8 +65,25 @@ pub enum ApiErrorKind {
 impl ApiErrorKind {
     fn code(&self) -> u16 {
         match self {
-            Self::Unauth | Self::SessionExpired => CODE_UNAUTH,
-            _ => CODE_ERROR,
+            Self::Unauth | Self::SessionExpired | Self::BadCredentials => CODE_UNAUTH,
+            Self::Forbidden | Self::RoleMismatch | Self::Locked => CODE_FORBIDDEN,
+            Self::Captcha | Self::ParamInvalid(_) | Self::ParamMissing(_) => CODE_PARAM,
+            Self::RateLimit => CODE_RATE_LIMIT,
+            Self::Business(_) => CODE_BUSINESS,
+            Self::Upstream(_) => CODE_UPSTREAM,
+            Self::Internal | Self::Db | Self::Redis => CODE_ERROR,
+        }
+    }
+
+    /// Stable machine-readable key, without any free-text detail. This is what
+    /// clients branch on and what `body.key` carries.
+    fn key(&self) -> Cow<'static, str> {
+        match self {
+            Self::Business(key) => Cow::Owned(key.clone()),
+            Self::Upstream(_) => Cow::Borrowed("upstream"),
+            Self::ParamInvalid(_) => Cow::Borrowed("param_invalid"),
+            Self::ParamMissing(_) => Cow::Borrowed("param_missing"),
+            other => other.tag(),
         }
     }
 
@@ -145,10 +184,16 @@ impl ApiError {
         &self.kind
     }
 
-    /// Public response code: only unauthenticated and expired sessions remain
-    /// 401; all other application errors are 500.
+    /// Public response code, equal to the HTTP status. See the module docs for
+    /// the kind-to-status table.
     pub fn code(&self) -> u16 {
         self.kind.code()
+    }
+
+    /// Stable machine-readable key exposed as `body.key`. Unlike [`Self::tag`]
+    /// it never carries a free-text detail, so clients can match on it.
+    pub fn key(&self) -> Cow<'static, str> {
+        self.kind.key()
     }
 
     pub fn tag(&self) -> Cow<'static, str> {
@@ -291,6 +336,7 @@ impl IntoResponse for ApiError {
             status,
             Json(json!({
                 "code": code,
+                "key": self.key(),
                 "msg": msg,
                 "data": "",
             })),
@@ -304,19 +350,41 @@ mod tests {
     use super::*;
 
     #[test]
-    fn only_authentication_session_errors_are_401() {
+    fn each_kind_maps_to_a_describing_status() {
         assert_eq!(ApiError::unauth().code(), 401);
         assert_eq!(ApiError::session_expired().code(), 401);
-        assert_eq!(ApiError::bad_credentials().code(), 500);
-        assert_eq!(ApiError::business("not_found").code(), 500);
-        assert_eq!(ApiError::param_invalid("email").code(), 500);
-        assert_eq!(ApiError::forbidden().code(), 500);
-        assert_eq!(ApiError::rate_limit().code(), 500);
-        assert_eq!(ApiError::upstream("mail").code(), 500);
+        assert_eq!(ApiError::bad_credentials().code(), 401);
+        assert_eq!(ApiError::forbidden().code(), 403);
+        assert_eq!(ApiError::role_mismatch().code(), 403);
+        assert_eq!(ApiError::locked().code(), 403);
+        assert_eq!(ApiError::captcha().code(), 400);
+        assert_eq!(ApiError::param_invalid("email").code(), 400);
+        assert_eq!(ApiError::param_missing("uid").code(), 400);
+        assert_eq!(ApiError::rate_limit().code(), 429);
+        assert_eq!(ApiError::business("not_found").code(), 422);
+        assert_eq!(ApiError::upstream("mail").code(), 502);
         assert_eq!(
             ApiError::internal(std::io::Error::other("disk")).code(),
             500
         );
+    }
+
+    #[test]
+    fn only_server_side_faults_are_logged() {
+        assert!(!ApiError::param_invalid("email").should_log());
+        assert!(!ApiError::business("not_found").should_log());
+        assert!(!ApiError::rate_limit().should_log());
+        assert!(ApiError::upstream("mail").should_log());
+        assert!(ApiError::internal(std::io::Error::other("disk")).should_log());
+    }
+
+    #[test]
+    fn key_strips_free_text_detail_but_keeps_business_keys() {
+        assert_eq!(ApiError::param_invalid("email_code").key(), "param_invalid");
+        assert_eq!(ApiError::param_missing("uid").key(), "param_missing");
+        assert_eq!(ApiError::upstream("mail unavailable").key(), "upstream");
+        assert_eq!(ApiError::business("job_not_found").key(), "job_not_found");
+        assert_eq!(ApiError::unauth().key(), "unauth");
     }
 
     #[test]
@@ -365,7 +433,7 @@ mod tests {
     fn cache_downgrade_preserves_public_error_metadata() {
         let original = Arc::new(ApiError::business("resume_not_found"));
         let degraded = ApiError::from_arc(original);
-        assert_eq!(degraded.code(), 500);
+        assert_eq!(degraded.code(), 422);
         assert_eq!(degraded.tag(), "resume_not_found");
     }
 }

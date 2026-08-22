@@ -128,31 +128,9 @@ async fn normalize_api_rejections(req: Request, next: Next) -> Response {
         return response;
     }
 
-    let source_status = response.status();
-    let status = public_error_status(source_status);
-    let key = match source_status {
-        StatusCode::UNAUTHORIZED => "errors.unauth",
-        StatusCode::FORBIDDEN => "errors.forbidden",
-        StatusCode::NOT_FOUND => "errors.not_found",
-        StatusCode::METHOD_NOT_ALLOWED => "errors.method_not_allowed",
-        StatusCode::REQUEST_TIMEOUT => "errors.timeout",
-        StatusCode::PAYLOAD_TOO_LARGE => "errors.body_too_large",
-        StatusCode::TOO_MANY_REQUESTS => "errors.rate_limit",
-        StatusCode::SERVICE_UNAVAILABLE => "errors.unavailable",
-        StatusCode::BAD_REQUEST | StatusCode::UNPROCESSABLE_ENTITY => "errors.param_invalid",
-        _ if status.is_server_error() => "errors.internal",
-        _ => "errors.request_failed",
-    };
-    let lang = crate::i18n::current_lang();
-    let msg = crate::i18n::t(key, lang);
-    let mut normalized = Json(json!({
-        "code": status.as_u16(),
-        "key": key,
-        "msg": msg,
-        "data": null,
-    }))
-    .into_response();
-    *normalized.status_mut() = status;
+    let status = response.status();
+    let key = rejection_key(status);
+    let mut normalized = envelope(status, key).into_response();
 
     // Keep operational headers such as Retry-After and request IDs, but let
     // Json set the correct content type and content length.
@@ -164,81 +142,59 @@ async fn normalize_api_rejections(req: Request, next: Next) -> Response {
     normalized
 }
 
-/// Public API error status policy: keep only authentication/session failures
-/// as 401; all other failures are exposed as 500.
-fn public_error_status(status: StatusCode) -> StatusCode {
-    if status == StatusCode::UNAUTHORIZED {
-        StatusCode::UNAUTHORIZED
-    } else {
-        StatusCode::INTERNAL_SERVER_ERROR
+/// Map a framework-generated status onto the same stable `key` vocabulary that
+/// `ApiError` uses, so a client sees one error taxonomy regardless of whether
+/// the rejection came from a handler or from a tower layer.
+fn rejection_key(status: StatusCode) -> &'static str {
+    match status {
+        StatusCode::UNAUTHORIZED => "unauth",
+        StatusCode::FORBIDDEN => "forbidden",
+        StatusCode::NOT_FOUND => "not_found",
+        StatusCode::METHOD_NOT_ALLOWED => "method_not_allowed",
+        StatusCode::REQUEST_TIMEOUT => "timeout",
+        StatusCode::PAYLOAD_TOO_LARGE => "body_too_large",
+        StatusCode::TOO_MANY_REQUESTS => "rate_limit",
+        StatusCode::SERVICE_UNAVAILABLE => "unavailable",
+        StatusCode::BAD_REQUEST | StatusCode::UNPROCESSABLE_ENTITY => "param_invalid",
+        s if s.is_server_error() => "internal",
+        _ => "request_failed",
     }
 }
 
-fn localized_rejection(status: StatusCode, key: &'static str) -> Response {
+/// The one and only failure envelope shape. Must stay byte-compatible with
+/// `ApiError::into_response` — `crates/handlers/tests/response_contract.rs`
+/// asserts both paths agree.
+fn envelope(status: StatusCode, key: &'static str) -> (StatusCode, Json<serde_json::Value>) {
     let lang = crate::i18n::current_lang();
-    let msg = crate::i18n::t(key, lang);
-    let status = public_error_status(status);
     (
         status,
         Json(json!({
             "code": status.as_u16(),
             "key": key,
-            "msg": msg,
-            "data": null,
+            "msg": crate::i18n::t(&format!("errors.{key}"), lang),
+            "data": "",
         })),
     )
-        .into_response()
+}
+
+fn localized_rejection(status: StatusCode, key: &'static str) -> Response {
+    envelope(status, key).into_response()
 }
 
 /// Convert rate-limit middleware rejections into the same JSON/i18n envelope
 /// used by handler errors. The default implementation is plain text, which
 /// breaks clients and the response contract under load.
 fn governor_error_response(error: GovernorError) -> Response {
-    let (source_status, key, msg, headers) = match error {
-        GovernorError::TooManyRequests { headers, .. } => {
-            let lang = crate::i18n::current_lang();
-            (
-                axum::http::StatusCode::TOO_MANY_REQUESTS,
-                "errors.rate_limit",
-                crate::i18n::t("errors.rate_limit", lang),
-                headers,
-            )
-        }
-        GovernorError::UnableToExtractKey => {
-            let lang = crate::i18n::current_lang();
-            (
-                axum::http::StatusCode::INTERNAL_SERVER_ERROR,
-                "errors.internal",
-                crate::i18n::t("errors.internal", lang),
-                None,
-            )
-        }
-        GovernorError::Other { code, headers, .. } => {
-            let lang = crate::i18n::current_lang();
-            let source_status = if code.is_server_error() {
-                axum::http::StatusCode::INTERNAL_SERVER_ERROR
-            } else {
-                code
-            };
-            let key = if source_status == axum::http::StatusCode::TOO_MANY_REQUESTS {
-                "errors.rate_limit"
-            } else {
-                "errors.internal"
-            };
-            (source_status, key, crate::i18n::t(key, lang), headers)
-        }
+    let (status, headers) = match error {
+        GovernorError::TooManyRequests { headers, .. } => (StatusCode::TOO_MANY_REQUESTS, headers),
+        GovernorError::UnableToExtractKey => (StatusCode::INTERNAL_SERVER_ERROR, None),
+        GovernorError::Other { code, headers, .. } => (code, headers),
     };
-    let status = public_error_status(source_status);
 
-    let mut response = Json(json!({
-        "code": status.as_u16(),
-        "key": key,
-        "msg": msg,
-        "data": null,
-    }))
-    .into_response();
-    *response.status_mut() = status;
+    let mut response = envelope(status, rejection_key(status)).into_response();
     if let Some(headers) = headers {
+        // Retry-After and the X-RateLimit-* family must survive; the envelope
+        // owns content-type / content-length.
         response.headers_mut().extend(headers);
     }
     response
@@ -267,7 +223,7 @@ async fn only_get_post(req: Request, next: Next) -> Response {
     if path == "/v1/wap/wechat/callback" {
         return match *method {
             Method::GET | Method::POST | Method::HEAD | Method::OPTIONS => next.run(req).await,
-            _ => localized_rejection(StatusCode::METHOD_NOT_ALLOWED, "errors.method_not_allowed"),
+            _ => localized_rejection(StatusCode::METHOD_NOT_ALLOWED, "method_not_allowed"),
         };
     }
 
@@ -276,7 +232,7 @@ async fn only_get_post(req: Request, next: Next) -> Response {
     if path == "/v1/wap/dict/industries" {
         return match *method {
             Method::GET | Method::POST | Method::HEAD | Method::OPTIONS => next.run(req).await,
-            _ => localized_rejection(StatusCode::METHOD_NOT_ALLOWED, "errors.method_not_allowed"),
+            _ => localized_rejection(StatusCode::METHOD_NOT_ALLOWED, "method_not_allowed"),
         };
     }
 
@@ -284,7 +240,7 @@ async fn only_get_post(req: Request, next: Next) -> Response {
     if path.starts_with("/v1/") {
         return match *method {
             Method::POST | Method::HEAD | Method::OPTIONS => next.run(req).await,
-            _ => localized_rejection(StatusCode::METHOD_NOT_ALLOWED, "errors.method_not_allowed"),
+            _ => localized_rejection(StatusCode::METHOD_NOT_ALLOWED, "method_not_allowed"),
         };
     }
 
@@ -292,7 +248,7 @@ async fn only_get_post(req: Request, next: Next) -> Response {
     //    permissive GET / POST allowance.
     match *method {
         Method::GET | Method::POST | Method::HEAD | Method::OPTIONS => next.run(req).await,
-        _ => localized_rejection(StatusCode::NOT_FOUND, "errors.not_found"),
+        _ => localized_rejection(StatusCode::NOT_FOUND, "not_found"),
     }
 }
 
@@ -381,7 +337,7 @@ async fn block_bots(req: Request, next: Next) -> Response {
     {
         let ua_lower = ua.to_ascii_lowercase();
         if BOT_UA_PATTERNS.iter().any(|p| ua_lower.contains(p)) {
-            return localized_rejection(StatusCode::FORBIDDEN, "errors.forbidden");
+            return localized_rejection(StatusCode::FORBIDDEN, "forbidden");
         }
     }
     next.run(req).await
@@ -482,4 +438,82 @@ fn build_cors(cfg: &Config) -> CorsLayer {
         .allow_methods([Method::GET, Method::POST])
         .allow_headers(tower_http::cors::Any)
         .max_age(Duration::from_secs(600))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// Every status the middleware stack can emit must resolve to a key that
+    /// actually exists in the locale tables, otherwise clients get the raw
+    /// `errors.<key>` string as their user-facing message.
+    #[test]
+    fn every_rejection_key_is_translatable() {
+        let statuses = [
+            StatusCode::BAD_REQUEST,
+            StatusCode::UNAUTHORIZED,
+            StatusCode::FORBIDDEN,
+            StatusCode::NOT_FOUND,
+            StatusCode::METHOD_NOT_ALLOWED,
+            StatusCode::REQUEST_TIMEOUT,
+            StatusCode::PAYLOAD_TOO_LARGE,
+            StatusCode::UNPROCESSABLE_ENTITY,
+            StatusCode::TOO_MANY_REQUESTS,
+            StatusCode::INTERNAL_SERVER_ERROR,
+            StatusCode::BAD_GATEWAY,
+            StatusCode::SERVICE_UNAVAILABLE,
+            StatusCode::CONFLICT,
+        ];
+        for status in statuses {
+            let key = rejection_key(status);
+            let i18n_key = format!("errors.{key}");
+            for lang in [
+                crate::i18n::Lang::ZhCN,
+                crate::i18n::Lang::ZhTW,
+                crate::i18n::Lang::En,
+            ] {
+                let msg = crate::i18n::t(&i18n_key, lang);
+                assert_ne!(
+                    msg, i18n_key,
+                    "{status} -> {i18n_key} has no {lang:?} translation"
+                );
+            }
+        }
+    }
+
+    /// The framework-rejection envelope must carry exactly the same members as
+    /// `ApiError::into_response`, so clients see one shape everywhere.
+    #[test]
+    fn envelope_has_the_canonical_member_set() {
+        let (status, Json(body)) = envelope(StatusCode::NOT_FOUND, "not_found");
+        assert_eq!(status, StatusCode::NOT_FOUND);
+
+        let mut members: Vec<&str> = body
+            .as_object()
+            .expect("envelope is an object")
+            .keys()
+            .map(String::as_str)
+            .collect();
+        members.sort_unstable();
+        assert_eq!(members, ["code", "data", "key", "msg"]);
+
+        assert_eq!(body["code"], 404);
+        assert_eq!(body["key"], "not_found");
+        assert_eq!(body["data"], "");
+    }
+
+    /// Framework rejections must not be re-labelled into a different status the
+    /// way the old `public_error_status` collapse did.
+    #[test]
+    fn envelope_preserves_the_source_status() {
+        for status in [
+            StatusCode::TOO_MANY_REQUESTS,
+            StatusCode::PAYLOAD_TOO_LARGE,
+            StatusCode::REQUEST_TIMEOUT,
+        ] {
+            let (out, Json(body)) = envelope(status, rejection_key(status));
+            assert_eq!(out, status);
+            assert_eq!(body["code"], status.as_u16());
+        }
+    }
 }

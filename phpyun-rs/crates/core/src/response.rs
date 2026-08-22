@@ -2,28 +2,30 @@
 //!
 //! ```json
 //! // Success
-//! { "code": 200, "msg": "ok", "data": { ... } }
+//! { "code": 200, "key": "ok",         "msg": "ok",            "data": { ... } }
 //!
 //! // Failure (see error.rs for stable keys and translation)
-//! { "code": 401, "msg": "Not logged in", "data": "" }
-//! { "code": 429, "msg": "Too many requests, please try again later", "data": "" }
+//! { "code": 401, "key": "unauth",     "msg": "Not logged in", "data": "" }
+//! { "code": 429, "key": "rate_limit", "msg": "Too many requests…", "data": "" }
 //! ```
 //!
 //! ## Design points
 //! - `code` aligns with the HTTP status: frontend, backend, and monitoring all
 //!   read the same number.
-//! - Failure `msg` is already translated for display.
+//! - `key` is the stable machine-readable identifier and is present on every
+//!   response, success or failure. It never contains free-text detail.
+//! - `msg` is already translated, for display only — never parse it.
 //! - `data` is the business payload on success; when there is no payload it is
 //!   serialized as an empty string.
-//! - `BusinessError(s)` can carry a custom phrase in the form `"biz:<phrase>"`.
 //!
 //! ## Frontend decision logic
 //! ```js
 //! if (resp.code === 200) {
 //!   use resp.data
 //! } else {
-//!   // resp.msg is already localized; `resp.key` is for branching/analytics.
-//!   showToast(resp.msg)
+//!   // Branch on resp.key; resp.msg is already localized for display.
+//!   if (resp.key === "session_expired") relogin()
+//!   else showToast(resp.msg)
 //! }
 //! ```
 
@@ -36,9 +38,16 @@ use serde::{Serialize, Serializer};
 /// Success code. Every successful endpoint uses this.
 pub const CODE_OK: u16 = 200;
 
+/// Success key. Present on every successful response so clients can read
+/// `key` unconditionally instead of special-casing the success branch.
+pub const KEY_OK: &str = "ok";
+
 #[derive(Debug, Serialize)]
 pub struct ApiBody<T: Serialize> {
     pub code: u16,
+    /// Stable machine-readable identifier. `"ok"` on success, otherwise the
+    /// `ApiError` key. Clients branch on this; `msg` is display-only.
+    pub key: String,
     pub msg: String,
     #[serde(serialize_with = "serialize_data")]
     pub data: Option<T>,
@@ -58,15 +67,17 @@ impl<T: Serialize> ApiBody<T> {
     pub fn ok(data: T) -> Self {
         Self {
             code: CODE_OK,
+            key: KEY_OK.into(),
             msg: "ok".into(),
             data: Some(data),
         }
     }
 
     /// Failure envelope. `ApiError::into_response()` builds it automatically.
-    pub fn err(code: u16, msg: impl Into<String>) -> Self {
+    pub fn err(code: u16, key: impl Into<String>, msg: impl Into<String>) -> Self {
         Self {
             code,
+            key: key.into(),
             msg: msg.into(),
             data: None,
         }
@@ -113,9 +124,10 @@ impl<T: Serialize> IntoResponse for ApiResponse<T> {
         let msg = self
             .msg_key
             .map(|key| resolve_msg_key(key, lang))
-            .unwrap_or_else(|| "ok".to_owned());
+            .unwrap_or_else(|| KEY_OK.to_owned());
         Json(ApiBody {
             code: CODE_OK,
+            key: self.msg_key.unwrap_or(KEY_OK).to_owned(),
             msg,
             data: self.data,
         })
@@ -192,16 +204,18 @@ mod tests {
         let body = ApiBody::ok(42u32);
         let json = serde_json::to_value(&body).unwrap();
         assert_eq!(json["code"], 200);
+        assert_eq!(json["key"], "ok");
         assert_eq!(json["msg"], "ok");
         assert_eq!(json["data"], 42);
     }
 
     #[test]
     fn err_body_uses_empty_string_data() {
-        let body: ApiBody<()> = ApiBody::err(401, "unauth");
+        let body: ApiBody<()> = ApiBody::err(401, "unauth", "Not logged in");
         let json = serde_json::to_value(&body).unwrap();
         assert_eq!(json["code"], 401);
-        assert_eq!(json["msg"], "unauth");
+        assert_eq!(json["key"], "unauth");
+        assert_eq!(json["msg"], "Not logged in");
         assert_eq!(json["data"], "");
     }
 

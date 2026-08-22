@@ -1,8 +1,13 @@
 //! Lock the API response contract for the unified application error type.
 //!
-//! 1. **Contract**: success `{code: 200, msg: "ok", data}` / failure `{code: <HTTP>, msg: <error>, data: ""}`
-//! 2. **Unified errors**: all application failures are returned as `ApiError`; only
-//!    unauthenticated and expired sessions use 401.
+//! 1. **Contract**: every response carries `{code, key, msg, data}`. Success is
+//!    `{200, "ok", "ok", <payload>}`; failure is `{<HTTP>, <stable key>,
+//!    <localized copy>, ""}`.
+//! 2. **`code` equals the HTTP status**, and each `ApiErrorKind` maps to the
+//!    status that actually describes it — client mistakes are 4xx, only genuine
+//!    backend faults are 5xx.
+//! 3. **`key` is machine-readable and free of detail text**; `msg` is localized
+//!    and display-only.
 
 use axum::{routing::get, Router};
 use axum_test::TestServer;
@@ -90,117 +95,119 @@ fn router() -> Router {
 
 // ==================== Contract tests ====================
 
+/// The envelope has exactly these members — no more, no less. Adding a field
+/// silently is a breaking change for every client, so it has to break here
+/// first.
+fn assert_envelope_shape(body: &Value, at: &str) {
+    let obj = body.as_object().expect("envelope is a JSON object");
+    let mut members: Vec<&str> = obj.keys().map(String::as_str).collect();
+    members.sort_unstable();
+    assert_eq!(members, ["code", "data", "key", "msg"], "at {at}");
+}
+
 #[tokio::test]
 async fn success_is_200_ok_with_data() {
     let server = TestServer::new(router()).unwrap();
     let resp = server.get("/ok").await;
     resp.assert_status_ok();
     let body: Value = resp.json();
+    assert_envelope_shape(&body, "/ok");
     assert_eq!(body["code"], json::json!(200));
+    assert_eq!(body["key"], json::json!("ok"));
     assert_eq!(body["msg"], json::json!("ok"));
     assert_eq!(body["data"]["name"], json::json!("alice"));
     assert_eq!(body["data"]["n"], json::json!(42));
 }
 
 #[tokio::test]
-async fn auth_errors_401_with_specific_tags() {
-    // Contract: `body.msg` is the **i18n-translated** copy of `errors.<tag>`,
+async fn auth_errors_are_401_with_specific_keys() {
+    // Contract: `body.msg` is the **i18n-translated** copy of `errors.<key>`,
     // not the raw English tag. Tests resolve the same key through `i18n::t`
     // so they pass regardless of which language is the default.
     let server = TestServer::new(router()).unwrap();
     let body: Value = server.get("/err/unauth").await.json();
+    assert_envelope_shape(&body, "/err/unauth");
     assert_eq!(body["code"], json::json!(401));
-    assert!(body.get("key").is_none());
+    assert_eq!(body["key"], json::json!("unauth"));
     assert_eq!(body["data"], json::json!(""));
     assert_eq!(body["msg"], json::json!(translated_msg("unauth")));
 
     let body: Value = server.get("/err/session").await.json();
     assert_eq!(body["code"], json::json!(401));
+    assert_eq!(body["key"], json::json!("session_expired"));
     assert_eq!(body["msg"], json::json!(translated_msg("session_expired")));
 }
 
 #[tokio::test]
-async fn non_auth_errors_are_500() {
+async fn client_faults_are_4xx_and_server_faults_are_5xx() {
     let server = TestServer::new(router()).unwrap();
-    for (path, expected_code, tag) in [
-        ("/err/locked", 500, "locked"),
-        ("/err/rate", 500, "rate_limit"),
-        // `upstream` carries a free-text detail; the response uses the
-        // `errors.upstream_with` template when available, otherwise the bare
-        // `errors.upstream`. We only assert that translation happened.
-        ("/err/upstream", 500, "upstream"),
-    ] {
-        let body: Value = server.get(path).await.json();
-        assert_eq!(body["code"], json::json!(expected_code), "at {path}");
-        let msg = body["msg"].as_str().expect("msg is a string");
-        assert!(
-            !msg.is_empty(),
-            "at {path}: msg should be a non-empty translated string"
-        );
-        // Sanity: msg should not still contain the raw `errors.` namespace.
-        assert!(
-            !msg.starts_with("errors."),
-            "at {path}: msg should be translated, got {msg:?}"
-        );
-        if tag == "locked" || tag == "rate_limit" {
-            // Stable single-key lookups should match the i18n table exactly.
-            assert_eq!(msg, translated_msg(tag), "at {path}");
-        }
-    }
-}
-
-#[tokio::test]
-async fn param_invalid_is_500() {
-    // `param_invalid` is raised with a detail (`"bad email"`); the response
-    // uses the `errors.param_invalid_with` template (with `%{detail}`) when
-    // available, otherwise the bare `errors.param_invalid`. Either way the
-    // translated copy should be a non-empty, non-key string and contain the
-    // detail when the template was used.
-    let server = TestServer::new(router()).unwrap();
-    let body: Value = server.get("/err/param").await.json();
-    assert_eq!(body["code"], json::json!(500));
-    let msg = body["msg"].as_str().expect("msg is a string");
-    assert!(
-        !msg.is_empty(),
-        "msg should be a non-empty translated string"
-    );
-    assert!(
-        !msg.starts_with("errors."),
-        "msg should be translated, got {msg:?}"
-    );
-}
-
-#[tokio::test]
-async fn sqlx_auto_converts_to_500_db() {
-    let server = TestServer::new(router()).unwrap();
-    let body: Value = server.get("/err/internal").await.json();
-    assert_eq!(body["code"], json::json!(500));
-    assert_eq!(body["msg"], json::json!(translated_msg("db")));
-}
-
-#[tokio::test]
-async fn body_code_equals_http_status_across_all_variants() {
-    let server = TestServer::new(router()).unwrap();
-    for (path, expected) in [
-        ("/err/unauth", 401u16),
-        ("/err/locked", 500),
-        ("/err/rate", 500),
-        ("/err/upstream", 500),
-        ("/err/internal", 500),
-        ("/err/param", 500),
-        ("/err/business", 500),
+    for (path, expected_code, expected_key) in [
+        ("/err/param", 400u16, "param_invalid"),
+        ("/err/unauth", 401, "unauth"),
+        ("/err/session", 401, "session_expired"),
+        ("/err/locked", 403, "locked"),
+        ("/err/business", 422, "job_not_found"),
+        ("/err/rate", 429, "rate_limit"),
+        ("/err/internal", 500, "db"),
+        ("/err/upstream", 502, "upstream"),
     ] {
         let resp = server.get(path).await;
         assert_eq!(
             resp.status_code().as_u16(),
-            expected,
+            expected_code,
             "HTTP status at {path}"
         );
+
         let body: Value = resp.json();
+        assert_envelope_shape(&body, path);
         assert_eq!(
             body["code"],
-            json::json!(expected),
-            "body.code must match HTTP status at {path}"
+            json::json!(expected_code),
+            "body.code must equal the HTTP status at {path}"
+        );
+        assert_eq!(body["key"], json::json!(expected_key), "body.key at {path}");
+        assert_eq!(body["data"], json::json!(""), "body.data at {path}");
+    }
+}
+
+#[tokio::test]
+async fn msg_is_always_translated_never_a_raw_key() {
+    let server = TestServer::new(router()).unwrap();
+    for path in [
+        "/err/param",
+        "/err/locked",
+        "/err/rate",
+        "/err/upstream",
+        "/err/internal",
+        "/err/business",
+    ] {
+        let body: Value = server.get(path).await.json();
+        let msg = body["msg"].as_str().expect("msg is a string");
+        assert!(!msg.is_empty(), "at {path}: msg must not be empty");
+        assert!(
+            !msg.starts_with("errors."),
+            "at {path}: msg must be translated, got {msg:?}"
         );
     }
+
+    // Detail-free keys resolve to the i18n table verbatim.
+    let body: Value = server.get("/err/locked").await.json();
+    assert_eq!(body["msg"], json::json!(translated_msg("locked")));
+    let body: Value = server.get("/err/rate").await.json();
+    assert_eq!(body["msg"], json::json!(translated_msg("rate_limit")));
+    let body: Value = server.get("/err/internal").await.json();
+    assert_eq!(body["msg"], json::json!(translated_msg("db")));
+}
+
+#[tokio::test]
+async fn detail_bearing_errors_keep_a_detail_free_key() {
+    // `param_invalid("bad email")` and `upstream("sms gateway timeout")` carry
+    // free text. That text may appear in `msg` via the `*_with` template, but
+    // `key` must stay stable so clients can match on it.
+    let server = TestServer::new(router()).unwrap();
+    let body: Value = server.get("/err/param").await.json();
+    assert_eq!(body["key"], json::json!("param_invalid"));
+
+    let body: Value = server.get("/err/upstream").await.json();
+    assert_eq!(body["key"], json::json!("upstream"));
 }
