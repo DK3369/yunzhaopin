@@ -91,6 +91,10 @@ crates/
                        idempotency, retry backoff, and `<topic>.dlq`
                        dead-lettering. No rate limiting or signatures — the
                        messages are ours.
+    transport-ws/      WebSocket adapter. Authenticated once at the upgrade with
+                       the same extractor as REST, then subscribe/push. Mounted
+                       at /ws, outside the request middleware (its timeout and
+                       concurrency permit assume short requests).
 
   products/
     recruit/           the original job-board product line
@@ -118,6 +122,8 @@ Architecture rules, enforced by `scripts/check-architecture.sh`:
   exempt while the legacy handlers migrate to `Operation`.
 - `kernel/` may not name a transport type either — an HTTP dependency there
   would end the multi-protocol design.
+- `transport-*/` may not depend on a product crate. Code that needs both ends
+  (mapping a recruit event onto a WebSocket push) lives in `apps/`.
 
 Pre-existing violations are tagged `// TODO(arch):` and migrated opportunistically.
 

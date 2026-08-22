@@ -30,6 +30,9 @@ PRODUCTS="crates/products"
 CORE="$PLATFORM/core/src"
 AUTH="$PLATFORM/auth/src"
 KERNEL="$PLATFORM/kernel/src"
+TRANSPORT_HTTP="$PLATFORM/transport-http/src"
+TRANSPORT_MQ="$PLATFORM/transport-mq/src"
+TRANSPORT_WS="$PLATFORM/transport-ws/src"
 MODELS="$PRODUCTS/recruit/models/src"
 SERVICES="$PRODUCTS/recruit/services/src"
 API="$PRODUCTS/recruit/api/src"
@@ -178,6 +181,14 @@ if [ "$target" = "all" ] || [ "$target" = "layering" ]; then
     # over — every future transport would inherit axum's request model.
     report_in "the kernel must not name a transport type (it is protocol-agnostic by definition)" \
         '\b(axum|tonic|tungstenite|hyper)::' "$KERNEL"
+
+    # The other half of the same boundary: an adapter carries any product's
+    # traffic, so it must not know a product's types. Code that needs both ends
+    # — mapping a recruit event onto a WebSocket push, say — belongs in the
+    # binary that wires them together.
+    report_in "transports must not depend on a product crate (wire them together in apps/)" \
+        '\bphpyun_(models|services|handlers)\b' \
+        "$TRANSPORT_HTTP" "$TRANSPORT_MQ" "$TRANSPORT_WS"
 fi
 
 # ----------------------------------------------------------------------------

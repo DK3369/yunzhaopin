@@ -16,6 +16,7 @@ members = [
     "crates/platform/security",
     "crates/platform/transport-http",
     "crates/platform/transport-mq",
+    "crates/platform/transport-ws",
     "crates/products/recruit/models",
     "crates/products/recruit/services",
     "crates/products/recruit/api",
@@ -123,6 +124,7 @@ phpyun_kernel = { path = "crates/platform/kernel", package = "phpyun-kernel" }
 phpyun_security = { path = "crates/platform/security", package = "phpyun-security" }
 phpyun_transport_http = { path = "crates/platform/transport-http", package = "phpyun-transport-http" }
 phpyun_transport_mq = { path = "crates/platform/transport-mq", package = "phpyun-transport-mq" }
+phpyun_transport_ws = { path = "crates/platform/transport-ws", package = "phpyun-transport-ws" }
 
 [profile.release]
 lto = "thin"

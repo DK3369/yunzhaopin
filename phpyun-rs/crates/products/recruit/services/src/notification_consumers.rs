@@ -131,12 +131,15 @@ impl Consumer for NotifyVipActivated {
 
 // ==================== chat.sent ====================
 
-/// Only the fields the push hook will need; the chat body itself is not
-/// duplicated into the notification.
+/// Published by `chat_service::send`. The message body is deliberately not
+/// duplicated onto the bus — a notification says "you have mail", and the
+/// client reads the content over the API.
 #[derive(Debug, Deserialize)]
 pub struct ChatSent {
-    #[serde(default)]
-    pub to_uid: u64,
+    /// Row id in `phpyun_rs_chat`.
+    pub id: u64,
+    pub sender: u64,
+    pub receiver: u64,
 }
 
 pub struct PushChatMessage;
@@ -309,5 +312,14 @@ mod tests {
         let verify: EmailVerifyQueued =
             serde_json::from_str(r#"{"email":"a@b.c","code":"1234"}"#).expect("code-only form");
         assert!(verify.token.is_empty());
+    }
+
+    /// The shape `chat_service::send` publishes. If that producer changes, this
+    /// fails here rather than as a stream of dead letters in production.
+    #[test]
+    fn the_chat_payload_matches_what_chat_service_publishes() {
+        let sent: ChatSent =
+            serde_json::from_str(r#"{"id":5,"sender":1,"receiver":2}"#).expect("producer shape");
+        assert_eq!((sent.id, sent.sender, sent.receiver), (5, 1, 2));
     }
 }
