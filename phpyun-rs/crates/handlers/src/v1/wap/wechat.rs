@@ -25,6 +25,16 @@ use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
 
+/// Fully-qualified paths in this module that must accept `GET` despite the
+/// project-wide POST-only rule. WeChat's verification handshake mandates `GET`
+/// with a query string, so the verb is not ours to choose.
+///
+/// Declared here rather than in the middleware so that generic infrastructure
+/// stays free of product-specific URLs. `crate::v1::get_allowed_paths` collects
+/// these into the [`RouteRules`](phpyun_core::route_rules::RouteRules) handed to
+/// `middleware::install`.
+pub const GET_ALLOWED_PATHS: &[&str] = &["/v1/wap/wechat/callback"];
+
 pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/wechat/callback", get(verify).post(receive))

@@ -13,6 +13,7 @@
 //! 10. RequestBodyLimitLayer — request-body size cap
 
 use crate::config::Config;
+use crate::route_rules::RouteRules;
 use axum::{
     extract::{MatchedPath, Request, State},
     http::{header, HeaderName, HeaderValue, Method, StatusCode},
@@ -34,11 +35,18 @@ use tower_http::{
     trace::TraceLayer,
 };
 
-pub fn install<S>(router: Router<S>, cfg: &Config) -> Router<S>
+/// Install the cross-cutting middleware stack.
+///
+/// `rules` carries the per-path policy the stack needs — which prefixes are
+/// business APIs and which exact paths may be reached with `GET`. It is
+/// supplied by the router rather than hardcoded here so this crate stays free
+/// of product-specific URLs.
+pub fn install<S>(router: Router<S>, cfg: &Config, rules: RouteRules) -> Router<S>
 where
     S: Clone + Send + Sync + 'static,
 {
     let cors = build_cors(cfg);
+    let rules = Arc::new(rules);
     let request_id_header = axum::http::HeaderName::from_static("x-request-id");
 
     // Per-IP token bucket.
@@ -88,9 +96,12 @@ where
         .layer(security_headers())
         .layer(PropagateRequestIdLayer::new(request_id_header.clone()))
         .layer(SetRequestIdLayer::new(request_id_header, MakeRequestUuid))
-        // Method whitelist: only allow GET / POST; everything
-        // else (PUT / DELETE / PATCH / OPTIONS / HEAD, etc.) is uniformly turned into 404.
-        .layer(axum::middleware::from_fn(only_get_post))
+        // Method whitelist: business APIs are POST-only, everything else
+        // accepts GET / POST. See `only_get_post`.
+        .layer(axum::middleware::from_fn_with_state(
+            Rules(rules.clone()),
+            only_get_post,
+        ))
         // Bot blocker: 403 known crawlers / scrapers / AI bots before they
         // can spend a rate-limit token or reach a DB query. Sits AFTER the
         // method filter so OPTIONS preflights still work for legit browsers.
@@ -108,17 +119,29 @@ where
         // Normalize framework rejections (method filter, body limit, timeout,
         // unmatched API routes, etc.) into the same JSON/i18n contract as
         // handler errors. This keeps clients from seeing bare text responses.
-        .layer(axum::middleware::from_fn(normalize_api_rejections))
+        .layer(axum::middleware::from_fn_with_state(
+            Rules(rules),
+            normalize_api_rejections,
+        ))
 }
+
+/// `RouteRules` in the shape `from_fn_with_state` wants: cheap to clone, and a
+/// distinct type so two middlewares can each take their own state.
+#[derive(Clone)]
+struct Rules(Arc<RouteRules>);
 
 /// Convert non-JSON failures on business routes into the public response
 /// envelope. Handler-produced JSON is left untouched, including its detailed
 /// validation payloads; only framework-generated text/empty responses are
 /// replaced.
-async fn normalize_api_rejections(req: Request, next: Next) -> Response {
+async fn normalize_api_rejections(
+    State(rules): State<Rules>,
+    req: Request,
+    next: Next,
+) -> Response {
     let path = req.uri().path().to_string();
     let response = next.run(req).await;
-    if !path.starts_with("/v1/") || response.status().as_u16() < 400 {
+    if !rules.0.is_api_path(&path) || response.status().as_u16() < 400 {
         return response;
     }
 
@@ -203,54 +226,38 @@ fn governor_error_response(error: GovernorError) -> Response {
     response
 }
 
-/// Method filter:
+/// Method filter.
 ///
-/// - **`/v1/*` business endpoints**: only POST is allowed (HEAD / OPTIONS pass
-///   through for browser preflights & probes). GET / PUT / PATCH / DELETE all
-///   return 405. This is the project-wide convention — every business param
-///   travels in a JSON body, never in the URL.
-/// - **Everything else** (e.g. `/health`, `/ready`, `/openapi.json`,
-///   `/docs/*` Swagger UI assets, the `/v1/wap/wechat/callback` exception
-///   for the WeChat protocol): GET / POST / HEAD / OPTIONS are all allowed;
-///   anything else returns 404 (preserves the original behaviour).
-///
-/// `/v1/wap/wechat/callback` is the only `/v1/*` route that legitimately
-/// needs GET (WeChat's verification handshake mandates GET + query string —
-/// outside our control). We allow-list it explicitly.
-async fn only_get_post(req: Request, next: Next) -> Response {
+/// - **Business API paths** (the namespaces registered on [`RouteRules`]):
+///   POST only. HEAD and OPTIONS pass through for probes and browser
+///   preflights; GET / PUT / PATCH / DELETE get a 405. This is the
+///   project-wide convention — every business parameter travels in a JSON
+///   body, never in the URL.
+/// - **Paths explicitly exempted via [`RouteRules::allow_get`]**: GET is
+///   allowed too. These are third-party protocol handshakes whose verb we do
+///   not control.
+/// - **Everything else** (`/health`, `/ready`, `/docs/*`, `openapi.json`):
+///   GET / POST / HEAD / OPTIONS, anything else 404.
+async fn only_get_post(State(rules): State<Rules>, req: Request, next: Next) -> Response {
     use axum::http::Method;
     let path = req.uri().path();
     let method = req.method();
 
-    // 1) WeChat callback exception — GET allowed.
-    if path == "/v1/wap/wechat/callback" {
-        return match *method {
-            Method::GET | Method::POST | Method::HEAD | Method::OPTIONS => next.run(req).await,
-            _ => localized_rejection(StatusCode::METHOD_NOT_ALLOWED, "method_not_allowed"),
-        };
-    }
-
-    // 2) Dictionary clients historically use GET for this endpoint; keep it
-    // compatible while the rest of the business API remains POST-only.
-    if path == "/v1/wap/dict/industries" {
-        return match *method {
-            Method::GET | Method::POST | Method::HEAD | Method::OPTIONS => next.run(req).await,
-            _ => localized_rejection(StatusCode::METHOD_NOT_ALLOWED, "method_not_allowed"),
-        };
-    }
-
-    // 3) /v1/* business endpoints — POST only (+ HEAD/OPTIONS for preflight).
-    if path.starts_with("/v1/") {
+    let post_only = rules.0.is_api_path(path) && !rules.0.allows_get(path);
+    if post_only {
         return match *method {
             Method::POST | Method::HEAD | Method::OPTIONS => next.run(req).await,
             _ => localized_rejection(StatusCode::METHOD_NOT_ALLOWED, "method_not_allowed"),
         };
     }
 
-    // 4) All other paths (ops probes, swagger UI, openapi.json) — keep the
-    //    permissive GET / POST allowance.
     match *method {
         Method::GET | Method::POST | Method::HEAD | Method::OPTIONS => next.run(req).await,
+        // Non-API paths keep the historical 404 (rather than 405) so we do not
+        // advertise which ops endpoints exist.
+        _ if rules.0.is_api_path(path) => {
+            localized_rejection(StatusCode::METHOD_NOT_ALLOWED, "method_not_allowed")
+        }
         _ => localized_rejection(StatusCode::NOT_FOUND, "not_found"),
     }
 }

@@ -109,3 +109,10 @@ pub fn router() -> Router<AppState> {
         .merge(once::routes())
         .merge(poster::routes())
 }
+
+/// Paths under `/v1/wap` that are exempt from the POST-only rule, collected
+/// from the modules that own them. Add to the owning module's
+/// `GET_ALLOWED_PATHS`, not to a list in the middleware.
+pub fn get_allowed_paths() -> Vec<&'static str> {
+    wechat::GET_ALLOWED_PATHS.to_vec()
+}

@@ -33,6 +33,7 @@ pub mod oauth;
 pub mod rate_limit;
 pub mod rayon_pool;
 pub mod response;
+pub mod route_rules;
 pub mod scheduler;
 pub mod session_presence;
 pub mod shutdown;

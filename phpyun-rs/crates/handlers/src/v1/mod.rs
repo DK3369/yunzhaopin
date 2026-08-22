@@ -18,3 +18,9 @@ pub fn router() -> Router<AppState> {
         .nest("/mcenter", mcenter::router())
         .nest("/admin", admin::router())
 }
+
+/// Paths in this version that accept `GET` despite the POST-only convention.
+/// Only `wap` has any; `mcenter` and `admin` are POST-only by construction.
+pub fn get_allowed_paths() -> Vec<&'static str> {
+    wap::get_allowed_paths()
+}

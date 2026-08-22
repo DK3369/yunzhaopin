@@ -15,9 +15,21 @@
 //! - **Idempotency middleware** `idempotency::layer` is mounted only on the write-endpoint subtree (e.g. /v1/wap/upload).
 
 use axum::Router;
-use phpyun_core::{middleware as mw, AppEnvironment, AppState};
+use phpyun_core::{middleware as mw, route_rules::RouteRules, AppEnvironment, AppState};
 
 use crate::{common, openapi, v1, v2};
+
+/// Per-path HTTP policy for the middleware stack.
+///
+/// Registering a new API namespace means adding one line here; the middleware
+/// itself knows nothing about our URLs. GET exemptions come from the modules
+/// that own the routes (see `v1::wap::wechat::GET_ALLOWED_PATHS`).
+fn route_rules() -> RouteRules {
+    RouteRules::new()
+        .api_namespace("/v1")
+        .api_namespace("/v2")
+        .allow_get_all(v1::get_allowed_paths())
+}
 
 /// Expose interactive API documentation only outside production. Keeping the
 /// decision in the router means `/docs` and the raw OpenAPI JSON endpoints do
@@ -39,7 +51,7 @@ pub fn build_router(cfg: &phpyun_core::Config) -> Router<AppState> {
         .nest("/v1", v1::router())
         .nest("/v2", v2::router());
     let api = mount_api_docs(api, cfg.env);
-    let api_with_mw = mw::install(api, cfg);
+    let api_with_mw = mw::install(api, cfg, route_rules());
 
     // ---- Ops probes: **bypass rate limit / concurrency limit / body limit** (k8s LB probes hit these frequently) ----
     //
@@ -69,7 +81,7 @@ pub fn build_router_with_state(cfg: &phpyun_core::Config, state: AppState) -> Ro
 
     let api = Router::new().nest("/v1", v1).nest("/v2", v2::router());
     let api = mount_api_docs(api, cfg.env);
-    let api_with_mw = mw::install(api, cfg);
+    let api_with_mw = mw::install(api, cfg, route_rules());
 
     Router::new().merge(common::router()).merge(api_with_mw)
 }
