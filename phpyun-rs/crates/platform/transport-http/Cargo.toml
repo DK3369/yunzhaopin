@@ -1,0 +1,21 @@
+[package]
+name = "phpyun-transport-http"
+version.workspace = true
+edition.workspace = true
+
+# The axum adapter for the kernel. This is the only platform crate allowed to
+# name an HTTP type; the kernel and the product crates must stay transport-free.
+[dependencies]
+phpyun_core.workspace = true
+phpyun_kernel.workspace = true
+axum.workspace = true
+bytes.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+tracing.workspace = true
+utoipa.workspace = true
+validator.workspace = true
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
+tower.workspace = true

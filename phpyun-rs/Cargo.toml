@@ -7,6 +7,9 @@ members = [
     "crates/services",
     "crates/handlers",
     "crates/app",
+    # Platform layer: protocol-agnostic kernel + one thin adapter per transport.
+    "crates/platform/kernel",
+    "crates/platform/transport-http",
 ]
 
 [workspace.package]
@@ -106,6 +109,8 @@ phpyun_auth = { path = "crates/auth", package = "phpyun-auth" }
 phpyun_models = { path = "crates/models", package = "phpyun-models" }
 phpyun_services = { path = "crates/services", package = "phpyun-services" }
 phpyun_handlers = { path = "crates/handlers", package = "phpyun-handlers" }
+phpyun_kernel = { path = "crates/platform/kernel", package = "phpyun-kernel" }
+phpyun_transport_http = { path = "crates/platform/transport-http", package = "phpyun-transport-http" }
 
 [profile.release]
 lto = "thin"

@@ -316,7 +316,10 @@ impl<S: Send + Sync> FromRequestParts<S> for Pagination {
 /// ```
 /// We only return the first, to avoid bombarding the user with N messages at
 /// once.
-fn first_validation_key(errors: &validator::ValidationErrors) -> String {
+///
+/// Public because the kernel dispatcher validates input for non-HTTP
+/// transports and must produce the identical `ApiError`.
+pub fn first_validation_key(errors: &validator::ValidationErrors) -> String {
     use validator::ValidationErrorsKind::*;
     for kind in errors.errors().values() {
         match kind {

@@ -1,0 +1,15 @@
+[package]
+name = "phpyun-kernel"
+version.workspace = true
+edition.workspace = true
+
+# Protocol-agnostic core. Deliberately has no axum / tonic / tungstenite
+# dependency: anything that names an HTTP type belongs in a transport crate.
+# (`phpyun_core` still pulls axum in transitively for `ApiError: IntoResponse`;
+# that goes away when core is split into infra + transport-http.)
+[dependencies]
+phpyun_core.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+validator.workspace = true
+tracing.workspace = true
