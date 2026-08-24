@@ -48,7 +48,7 @@ pub async fn count_products_public(pool: &MySqlPool, com_uid: u64) -> Result<u64
             .bind(com_uid)
             .fetch_one(pool)
             .await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 pub async fn find_product_public(
@@ -92,7 +92,7 @@ pub async fn count_products_own(pool: &MySqlPool, com_uid: u64) -> Result<u64, s
             .bind(com_uid)
             .fetch_one(pool)
             .await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 pub struct ProductCreate<'a> {
@@ -209,7 +209,7 @@ pub async fn count_news_public(pool: &MySqlPool, com_uid: u64) -> Result<u64, sq
             .bind(com_uid)
             .fetch_one(pool)
             .await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 pub async fn find_news_public(
@@ -258,7 +258,7 @@ pub async fn count_news_own(pool: &MySqlPool, com_uid: u64) -> Result<u64, sqlx:
             .bind(com_uid)
             .fetch_one(pool)
             .await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 pub struct NewsCreate<'a> {

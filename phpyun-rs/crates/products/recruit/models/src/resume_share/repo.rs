@@ -49,7 +49,7 @@ pub async fn count_by_uid(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Error
     .bind(uid)
     .fetch_one(pool)
     .await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 pub async fn purge_stale(pool: &MySqlPool, cutoff: i64) -> Result<u64, sqlx::Error> {
     Ok(sqlx::query("DELETE FROM phpyun_rs_resume_share_tokens WHERE expires_at<? OR (revoked_at>0 AND revoked_at<?)")

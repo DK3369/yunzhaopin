@@ -39,7 +39,7 @@ pub struct CodeView {
 
 impl From<phpyun_models::company_hr::entity::InviteCode> for CodeView {
     fn from(c: phpyun_models::company_hr::entity::InviteCode) -> Self {
-        let remaining = (c.max_uses as i64) - (c.used_count as i64);
+        let remaining = i64::from(c.max_uses) - i64::from(c.used_count);
         Self {
             id: c.id,
             company_uid: c.company_uid,

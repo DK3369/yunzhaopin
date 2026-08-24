@@ -28,7 +28,7 @@ pub async fn get_balance(pool: &MySqlPool, uid: u64) -> Result<UserIntegral, sql
     .await?;
     Ok(UserIntegral {
         uid,
-        balance: row.map(|(b,)| b.max(0) as i32).unwrap_or(0),
+        balance: row.map(|(b,)| b.max(0)).unwrap_or(0),
         updated_at: 0,
     })
 }
@@ -57,7 +57,7 @@ pub async fn try_deduct(
 pub async fn add_balance(
     pool: &MySqlPool,
     uid: u64,
-    delta: i32,
+    delta: i64,
     _now: i64,
 ) -> Result<(), sqlx::Error> {
     // `phpyun_member_statis.integral` is `varchar(10) NOT NULL DEFAULT ''`

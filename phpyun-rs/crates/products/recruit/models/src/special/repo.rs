@@ -42,7 +42,7 @@ pub async fn count(pool: &MySqlPool) -> Result<u64, sqlx::Error> {
     let (n,): (i64,) = sqlx::query_as("SELECT COUNT(*) FROM phpyun_special WHERE display = 1")
         .fetch_one(pool)
         .await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 pub async fn find(pool: &MySqlPool, id: u64) -> Result<Option<Special>, sqlx::Error> {
@@ -98,7 +98,7 @@ pub async fn count_companies(pool: &MySqlPool, sid: u64) -> Result<u64, sqlx::Er
             .bind(sid)
             .fetch_one(pool)
             .await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 /// List of company uids in the special event (flattened to Vec<u64>, used for job queries).
@@ -136,7 +136,7 @@ pub async fn count_signups(pool: &MySqlPool, sid: u64) -> Result<u64, sqlx::Erro
         .bind(sid)
         .fetch_one(pool)
         .await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 pub async fn count_active_jobs_by_company(
@@ -152,7 +152,7 @@ pub async fn count_active_jobs_by_company(
     .bind(now)
     .fetch_one(pool)
     .await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 /// Read the company's stored rating tier (1..n) — used to gate `info.rating`.

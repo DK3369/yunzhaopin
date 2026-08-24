@@ -243,7 +243,7 @@ impl std::error::Error for ApiError {
     fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
         self.source
             .as_ref()
-            .map(|source| source.as_ref() as &(dyn std::error::Error + 'static))
+            .map(|source| -> &(dyn std::error::Error + 'static) { source.as_ref() })
     }
 }
 

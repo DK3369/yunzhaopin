@@ -34,10 +34,16 @@ pub async fn recommend_jobs_for_me(
     };
     if let Some(e) = expects.first() {
         if e.job_classid > 0 {
-            filter.job1 = Some(e.job_classid as i32);
+            filter.job1 = Some(phpyun_core::numeric::checked_internal(
+                e.job_classid,
+                "resume_expect.job_classid",
+            )?);
         }
         if e.city_classid > 0 {
-            filter.city_id = Some(e.city_classid as i32);
+            filter.city_id = Some(phpyun_core::numeric::checked_internal(
+                e.city_classid,
+                "resume_expect.city_classid",
+            )?);
         }
         // The jobseeker expects a salary >= e.salary
         if e.salary > 0 {

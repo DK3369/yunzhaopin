@@ -150,7 +150,7 @@ pub async fn count_rewards(
         q = q.bind(t);
     }
     let (n,) = q.fetch_one(pool).await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 pub async fn get_reward(pool: &MySqlPool, id: u64) -> Result<Option<Reward>, sqlx::Error> {
@@ -301,7 +301,7 @@ pub async fn count_user_orders_for_reward(
     .bind(reward_id)
     .fetch_one(pool)
     .await?;
-    Ok(n.max(0) as u32)
+    Ok(phpyun_core::numeric::saturating_count_u32(n))
 }
 
 pub async fn tx_insert_order(
@@ -382,7 +382,7 @@ pub async fn count_orders(
         q = q.bind(s);
     }
     let (n,) = q.fetch_one(pool).await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 pub async fn get_order(pool: &MySqlPool, id: u64) -> Result<Option<RedeemOrder>, sqlx::Error> {

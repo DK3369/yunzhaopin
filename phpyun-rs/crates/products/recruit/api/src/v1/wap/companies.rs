@@ -302,7 +302,8 @@ pub async fn company_detail(
         let (a, b) = tokio::join!(atn_fut, apply_fut);
         (
             a.map(|x| if x { 1 } else { 0 }).unwrap_or(0),
-            b.map(|n| n as i32).unwrap_or(0),
+            b.map(phpyun_core::numeric::saturating_count_i32)
+                .unwrap_or(0),
         )
     } else {
         (0, 0)
@@ -441,7 +442,7 @@ pub async fn hot_companies(
         Some("random") => 2,
         _ => 0,
     };
-    let limit = q.limit.clamp(1, 50) as u64;
+    let limit = u64::from(q.limit.clamp(1, 50));
     let now = phpyun_core::clock::now_ts();
 
     let rows =
@@ -517,7 +518,7 @@ pub async fn autocomplete(
     if keyword.is_empty() {
         return Ok(ApiResponse::data(Vec::new()));
     }
-    let limit = q.limit.clamp(1, 20) as u64;
+    let limit = u64::from(q.limit.clamp(1, 20));
     let rows =
         phpyun_models::company::repo::search_brief(state.db.reader(), keyword, limit).await?;
     let web_base = state.config.web_base_url.as_deref();

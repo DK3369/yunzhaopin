@@ -67,7 +67,7 @@ async fn add_member_log(
             uid,
             opera: MEMBER_LOG_OPERA_FAV,
             type_,
-            usertype: usertype as i32,
+            usertype: i32::from(usertype),
             content,
             ip,
             ctime: clock::now_ts(),

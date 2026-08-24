@@ -272,11 +272,9 @@ async fn load_translations(
     };
     let mut out: HashMap<u64, HashMap<Lang, String>> = HashMap::new();
     for (item_id, lang_str, text) in rows {
-        if item_id < 0 {
-            continue;
-        }
+        let item_id = phpyun_core::numeric::checked_db_u64(item_id, "dict_i18n.item_id")?;
         if let Some(lang) = Lang::parse_tag(&lang_str) {
-            out.entry(item_id as u64).or_default().insert(lang, text);
+            out.entry(item_id).or_default().insert(lang, text);
         }
     }
     Ok(out)

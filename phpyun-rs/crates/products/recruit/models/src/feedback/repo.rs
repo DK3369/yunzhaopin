@@ -107,7 +107,7 @@ pub async fn count_by_status(pool: &MySqlPool, status: Option<i32>) -> Result<u6
                 .await?
         }
     };
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 pub async fn set_status(pool: &MySqlPool, id: u64, status: i32) -> Result<u64, sqlx::Error> {

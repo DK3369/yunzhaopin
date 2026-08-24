@@ -90,32 +90,37 @@ pub async fn jobs_near(
 ) -> AppResult<ApiResponse<Vec<NearJob>>> {
     let list = map_service::jobs_near(&state, q.x, q.y, q.radius_km, q.limit).await?;
     let dicts = phpyun_services::dict_service::get(&state).await?;
-    Ok(ApiResponse::data(
-        list.into_iter()
-            .map(|j| {
-                let salary_avg = (j.minsalary + j.maxsalary) / 2;
-                NearJob {
-                    distance_m: (j.distance * 1000.0).round() as i64,
-                    lastupdate_n: fmt_dt(j.lastupdate),
-                    province_name: dicts.city(j.provinceid).to_string(),
-                    city_name: dicts.city(j.cityid).to_string(),
-                    id: j.id,
-                    uid: j.uid,
-                    name: j.name,
-                    com_name: j.com_name,
-                    province_id: j.provinceid,
-                    city_id: j.cityid,
-                    min_salary: j.minsalary,
-                    max_salary: j.maxsalary,
-                    salary_avg,
-                    x: j.x,
-                    y: j.y,
-                    distance_km: j.distance,
-                    lastupdate: j.lastupdate,
-                }
+    let items = list
+        .into_iter()
+        .map(|j| -> AppResult<NearJob> {
+            let salary_avg = (j.minsalary + j.maxsalary) / 2;
+            let distance_m = phpyun_core::numeric::finite_f64_to_i64(
+                j.distance * 1000.0,
+                phpyun_core::numeric::FloatRounding::Round,
+                "near_job.distance_m",
+            )?;
+            Ok(NearJob {
+                distance_m,
+                lastupdate_n: fmt_dt(j.lastupdate),
+                province_name: dicts.city(j.provinceid).to_string(),
+                city_name: dicts.city(j.cityid).to_string(),
+                id: j.id,
+                uid: j.uid,
+                name: j.name,
+                com_name: j.com_name,
+                province_id: j.provinceid,
+                city_id: j.cityid,
+                min_salary: j.minsalary,
+                max_salary: j.maxsalary,
+                salary_avg,
+                x: j.x,
+                y: j.y,
+                distance_km: j.distance,
+                lastupdate: j.lastupdate,
             })
-            .collect(),
-    ))
+        })
+        .collect::<AppResult<Vec<_>>>()?;
+    Ok(ApiResponse::data(items))
 }
 
 /// Nearby companies
@@ -132,11 +137,17 @@ pub async fn companies_near(
 ) -> AppResult<ApiResponse<Vec<NearCompany>>> {
     let list = map_service::companies_near(&state, q.x, q.y, q.radius_km, q.limit).await?;
     let dicts = phpyun_services::dict_service::get(&state).await?;
-    Ok(ApiResponse::data(
-        list.into_iter()
-            .map(|c| NearCompany {
+    let items = list
+        .into_iter()
+        .map(|c| -> AppResult<NearCompany> {
+            let distance_m = phpyun_core::numeric::finite_f64_to_i64(
+                c.distance * 1000.0,
+                phpyun_core::numeric::FloatRounding::Round,
+                "near_company.distance_m",
+            )?;
+            Ok(NearCompany {
                 logo_n: pic_n(&state, c.logo.as_deref()),
-                distance_m: (c.distance * 1000.0).round() as i64,
+                distance_m,
                 city_name: dicts.city(c.cityid).to_string(),
                 uid: c.uid,
                 name: c.name,
@@ -146,6 +157,7 @@ pub async fn companies_near(
                 y: c.y,
                 distance_km: c.distance,
             })
-            .collect(),
-    ))
+        })
+        .collect::<AppResult<Vec<_>>>()?;
+    Ok(ApiResponse::data(items))
 }

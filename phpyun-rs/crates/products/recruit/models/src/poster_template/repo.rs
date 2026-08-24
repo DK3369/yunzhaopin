@@ -12,7 +12,7 @@ pub async fn list_by_kind(
          WHERE `type` = ? AND isopen = 1 ORDER BY num DESC, sort DESC, id DESC"
     );
     sqlx::query_as::<_, PosterTemplate>(&sql)
-        .bind(kind.as_i8())
+        .bind(kind.code())
         .fetch_all(pool)
         .await
 }
@@ -36,7 +36,7 @@ pub async fn default_for_kind(
          WHERE `type` = ? AND isopen = 1 ORDER BY sort DESC, num DESC, id DESC LIMIT 1"
     );
     sqlx::query_as::<_, PosterTemplate>(&sql)
-        .bind(kind.as_i8())
+        .bind(kind.code())
         .fetch_optional(pool)
         .await
 }

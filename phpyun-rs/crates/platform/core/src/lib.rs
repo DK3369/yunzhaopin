@@ -29,6 +29,7 @@ pub mod jwt_blacklist;
 pub mod kv;
 pub mod metrics;
 pub mod middleware;
+pub mod numeric;
 pub mod oauth;
 pub mod rate_limit;
 pub mod rayon_pool;

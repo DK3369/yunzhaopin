@@ -225,7 +225,7 @@ where
     .bind(salt)
     .bind(mobile.unwrap_or(""))
     .bind(email.unwrap_or(""))
-    .bind(usertype as i32)
+    .bind(i32::from(usertype))
     .bind(did)
     .bind(reg_date)
     .bind(reg_ip)
@@ -351,7 +351,7 @@ pub async fn set_usertype_if_unset(
     usertype: u8,
 ) -> Result<u64, sqlx::Error> {
     let res = sqlx::query("UPDATE phpyun_member SET usertype = ? WHERE uid = ? AND usertype = 0")
-        .bind(usertype as i32)
+        .bind(i32::from(usertype))
         .bind(uid)
         .execute(pool)
         .await?;
@@ -450,7 +450,7 @@ pub async fn admin_count(pool: &MySqlPool, f: &AdminUserFilter<'_>) -> Result<u6
         q = q.bind(s);
     }
     let (n,) = q.fetch_one(pool).await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 pub async fn admin_set_status(pool: &MySqlPool, uid: u64, status: i32) -> Result<u64, sqlx::Error> {

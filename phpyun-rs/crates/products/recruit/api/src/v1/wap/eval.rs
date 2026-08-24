@@ -207,7 +207,7 @@ pub async fn list_messages(
     ValidatedJson(b): ValidatedJson<IdBody>,
 ) -> AppResult<ApiResponse<Paged<PaperMessageItem>>> {
     let id = b.id;
-    let examid = id as u32;
+    let examid = phpyun_core::numeric::checked_param(id, "eval.paper_id")?;
     let pool = state.db.reader();
     let (list, total) = tokio::join!(
         phpyun_models::eval::repo::list_paper_messages(pool, examid, page.offset, page.limit),
@@ -257,8 +257,9 @@ pub async fn list_recent_examinees(
     ValidatedJson(b): ValidatedJson<IdBody>,
 ) -> AppResult<ApiResponse<Vec<ExamineeItem>>> {
     let id = b.id;
+    let examid = phpyun_core::numeric::checked_param(id, "eval.paper_id")?;
     let rows =
-        phpyun_models::eval::repo::list_recent_examinees(state.db.reader(), id as u32, 12).await?;
+        phpyun_models::eval::repo::list_recent_examinees(state.db.reader(), examid, 12).await?;
     Ok(ApiResponse::data(
         rows.into_iter().map(ExamineeItem::from).collect(),
     ))

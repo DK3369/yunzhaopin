@@ -100,7 +100,7 @@ pub async fn apply(
     }
 
     let signups = special_repo::count_signups(pool, sid).await?;
-    if info.max_count > 0 && signups >= info.max_count as u64 {
+    if info.max_count > 0 && signups >= phpyun_core::numeric::nonnegative_count(info.max_count) {
         return Err(ApiError::param_invalid("special_full"));
     }
 
@@ -124,7 +124,7 @@ pub async fn apply(
     }
 
     if info.integral > 0 {
-        let cost = info.integral as i64;
+        let cost = i64::from(info.integral);
         let bal = special_repo::get_company_integral(pool, user.uid).await?;
         if bal < cost {
             return Err(ApiError::param_invalid("insufficient_integral"));

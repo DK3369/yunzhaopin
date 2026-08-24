@@ -408,8 +408,10 @@ pub async fn build_job_detail_value(
         (
             i32::from(f.unwrap_or(false)),
             i32::from(a.unwrap_or(None).is_some()),
-            r.map(|n| n as i32).unwrap_or(0),
-            i.map(|n| n as i32).unwrap_or(0),
+            r.map(phpyun_core::numeric::saturating_count_i32)
+                .unwrap_or(0),
+            i.map(phpyun_core::numeric::saturating_count_i32)
+                .unwrap_or(0),
         )
     } else {
         (0, 0, 0, 0)

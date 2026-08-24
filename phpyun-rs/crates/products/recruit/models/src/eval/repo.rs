@@ -52,7 +52,7 @@ pub async fn count_papers(pool: &MySqlPool) -> Result<u64, sqlx::Error> {
     let (n,): (i64,) = sqlx::query_as("SELECT COUNT(*) FROM phpyun_evaluate_group")
         .fetch_one(pool)
         .await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 pub async fn find_paper(pool: &MySqlPool, id: u64) -> Result<Option<EvalPaper>, sqlx::Error> {
@@ -180,7 +180,7 @@ pub async fn count_logs_by_user(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx:
         .bind(uid)
         .fetch_one(pool)
         .await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 // ==================== Eval paper leave-message ====================
@@ -254,5 +254,5 @@ pub async fn count_paper_messages(pool: &MySqlPool, examid: u32) -> Result<u64, 
             .bind(examid)
             .fetch_one(pool)
             .await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }

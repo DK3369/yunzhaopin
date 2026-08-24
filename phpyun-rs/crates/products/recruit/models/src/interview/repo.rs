@@ -120,7 +120,7 @@ pub async fn count_for_user(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Err
         .bind(uid)
         .fetch_one(pool)
         .await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 /// Company views invitations it has sent.
@@ -147,7 +147,7 @@ pub async fn count_for_company(pool: &MySqlPool, com_id: u64) -> Result<u64, sql
         .bind(com_id)
         .fetch_one(pool)
         .await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 pub async fn count_active_from_company_to_user(
@@ -162,7 +162,7 @@ pub async fn count_active_from_company_to_user(
     .bind(company_uid)
     .fetch_one(pool)
     .await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 /// Job seeker responds to interview -- 1 = accept / 2 = decline.

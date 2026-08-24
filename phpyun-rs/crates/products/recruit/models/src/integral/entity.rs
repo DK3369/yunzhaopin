@@ -26,6 +26,6 @@ pub struct IntegralExchange {
 #[derive(Debug, Clone, FromRow, Serialize, Deserialize)]
 pub struct UserIntegral {
     pub uid: u64,
-    pub balance: i32,
+    pub balance: i64,
     pub updated_at: i64,
 }

@@ -63,7 +63,7 @@ pub async fn list_for_me(
     user: &AuthenticatedUser,
     page: Pagination,
 ) -> AppResult<Paged<Broadcast>> {
-    let usertype = user.usertype as i32;
+    let usertype = i32::from(user.usertype);
     let db = state.db.reader();
     let (list, total) = tokio::join!(
         bc_repo::list_for_user(db, usertype, page.offset, page.limit),
@@ -73,7 +73,7 @@ pub async fn list_for_me(
 }
 
 pub async fn unread_count(state: &AppState, user: &AuthenticatedUser) -> AppResult<u64> {
-    Ok(bc_repo::count_unread(state.db.reader(), user.uid, user.usertype as i32).await?)
+    Ok(bc_repo::count_unread(state.db.reader(), user.uid, i32::from(user.usertype)).await?)
 }
 
 pub async fn mark_read(

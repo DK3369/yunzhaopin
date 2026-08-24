@@ -13,7 +13,14 @@ use phpyun_core::audit::{self, Actor, AuditEvent};
 use phpyun_core::jwt::{issue_pair, JwtIssued};
 use phpyun_core::metrics::auth_event;
 use phpyun_core::{ApiError, AppResult, AppState, ProviderKind};
-use phpyun_models::user::repo as user_repo;
+use phpyun_models::user::{entity::Member, repo as user_repo};
+
+fn auth_identity(user: &Member) -> AppResult<(u8, u32)> {
+    Ok((
+        phpyun_core::numeric::checked_internal(user.usertype, "phpyun_member.usertype")?,
+        phpyun_core::numeric::checked_internal(user.did, "phpyun_member.did")?,
+    ))
+}
 
 pub struct OAuthLoginResult {
     pub uid: u64,
@@ -59,6 +66,7 @@ pub async fn login_with_oauth(
     }
 
     // 3. Issue tokens
+    let (usertype, did) = auth_identity(&user)?;
     let JwtIssued {
         access,
         refresh,
@@ -66,18 +74,13 @@ pub async fn login_with_oauth(
         refresh_exp,
         jti_access,
         jti_refresh,
-    } = issue_pair(
-        &state.config,
-        user.uid,
-        user.usertype as u8,
-        user.did as u32,
-    )?;
+    } = issue_pair(&state.config, user.uid, usertype, did)?;
 
     let _ = crate::user_session_service::record_login(
         state,
         crate::user_session_service::LoginRecord {
             uid: user.uid,
-            usertype: user.usertype as u8,
+            usertype,
             jti_access: &jti_access,
             jti_refresh: &jti_refresh,
             access_exp,
@@ -99,7 +102,7 @@ pub async fn login_with_oauth(
 
     Ok(OAuthLoginResult {
         uid: user.uid,
-        usertype: user.usertype as u8,
+        usertype,
         access,
         refresh,
         access_exp,
@@ -178,6 +181,7 @@ pub async fn login_with_wechat_code(
         return Err(ApiError::locked());
     }
 
+    let (usertype, did) = auth_identity(&user)?;
     let JwtIssued {
         access,
         refresh,
@@ -185,18 +189,13 @@ pub async fn login_with_wechat_code(
         refresh_exp,
         jti_access,
         jti_refresh,
-    } = issue_pair(
-        &state.config,
-        user.uid,
-        user.usertype as u8,
-        user.did as u32,
-    )?;
+    } = issue_pair(&state.config, user.uid, usertype, did)?;
 
     let _ = crate::user_session_service::record_login(
         state,
         crate::user_session_service::LoginRecord {
             uid: user.uid,
-            usertype: user.usertype as u8,
+            usertype,
             jti_access: &jti_access,
             jti_refresh: &jti_refresh,
             access_exp,
@@ -218,7 +217,7 @@ pub async fn login_with_wechat_code(
 
     Ok(OAuthLoginResult {
         uid: user.uid,
-        usertype: user.usertype as u8,
+        usertype,
         access,
         refresh,
         access_exp,
@@ -336,6 +335,7 @@ pub async fn login_with_qq_code(
         return Err(ApiError::locked());
     }
 
+    let (usertype, did) = auth_identity(&user)?;
     let JwtIssued {
         access,
         refresh,
@@ -343,18 +343,13 @@ pub async fn login_with_qq_code(
         refresh_exp,
         jti_access,
         jti_refresh,
-    } = issue_pair(
-        &state.config,
-        user.uid,
-        user.usertype as u8,
-        user.did as u32,
-    )?;
+    } = issue_pair(&state.config, user.uid, usertype, did)?;
 
     let _ = crate::user_session_service::record_login(
         state,
         crate::user_session_service::LoginRecord {
             uid: user.uid,
-            usertype: user.usertype as u8,
+            usertype,
             jti_access: &jti_access,
             jti_refresh: &jti_refresh,
             access_exp,
@@ -375,7 +370,7 @@ pub async fn login_with_qq_code(
 
     Ok(OAuthLoginResult {
         uid: user.uid,
-        usertype: user.usertype as u8,
+        usertype,
         access,
         refresh,
         access_exp,
@@ -476,6 +471,7 @@ pub async fn login_with_weibo_code(
         return Err(ApiError::locked());
     }
 
+    let (usertype, did) = auth_identity(&user)?;
     let JwtIssued {
         access,
         refresh,
@@ -483,18 +479,13 @@ pub async fn login_with_weibo_code(
         refresh_exp,
         jti_access,
         jti_refresh,
-    } = issue_pair(
-        &state.config,
-        user.uid,
-        user.usertype as u8,
-        user.did as u32,
-    )?;
+    } = issue_pair(&state.config, user.uid, usertype, did)?;
 
     let _ = crate::user_session_service::record_login(
         state,
         crate::user_session_service::LoginRecord {
             uid: user.uid,
-            usertype: user.usertype as u8,
+            usertype,
             jti_access: &jti_access,
             jti_refresh: &jti_refresh,
             access_exp,
@@ -515,7 +506,7 @@ pub async fn login_with_weibo_code(
 
     Ok(OAuthLoginResult {
         uid: user.uid,
-        usertype: user.usertype as u8,
+        usertype,
         access,
         refresh,
         access_exp,
@@ -542,7 +533,7 @@ fn urlencoding_minimal(s: &str) -> String {
     for b in s.bytes() {
         match b {
             b'A'..=b'Z' | b'a'..=b'z' | b'0'..=b'9' | b'-' | b'_' | b'.' | b'~' => {
-                out.push(b as char);
+                out.push(char::from(b));
             }
             _ => {
                 out.push('%');

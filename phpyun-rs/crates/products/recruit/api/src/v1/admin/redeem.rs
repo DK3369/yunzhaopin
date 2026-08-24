@@ -163,7 +163,7 @@ pub struct RewardItem {
 
 impl From<phpyun_models::redeem::entity::Reward> for RewardItem {
     fn from(r: phpyun_models::redeem::entity::Reward) -> Self {
-        let remaining = (r.stock as i64) - (r.sold as i64);
+        let remaining = i64::from(r.stock) - i64::from(r.sold);
         Self {
             id: r.id,
             name: r.name,

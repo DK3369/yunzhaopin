@@ -93,7 +93,7 @@ pub async fn count_public(pool: &MySqlPool, f: &ArticleFilter<'_>) -> Result<u64
     push_did_scope(&mut qb, f.did);
     push_filters(&mut qb, f);
     let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 /// PHP convention (`app/controller/wap/article.class.php:29-32`):
@@ -143,7 +143,9 @@ pub async fn get_hits(pool: &MySqlPool, id: u64) -> Result<u64, sqlx::Error> {
     .bind(id)
     .fetch_optional(pool)
     .await?;
-    Ok(row.map(|(n,)| n.max(0) as u64).unwrap_or(0))
+    Ok(row
+        .map(|(n,)| phpyun_core::numeric::nonnegative_count(n))
+        .unwrap_or(0))
 }
 
 /// Atomically increment + return the new hit count.

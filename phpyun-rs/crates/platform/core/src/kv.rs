@@ -320,7 +320,10 @@ impl Kv {
     pub async fn incr_with_expire(&self, key: &str, window_secs: u64) -> Result<i64, ApiError> {
         let mut c = self.inner.clone();
         let script = incr_expire_script().clone();
-        let pexpire_ms = window_secs.saturating_mul(1000) as i64;
+        let pexpire_ms: i64 = crate::numeric::checked_internal(
+            window_secs.saturating_mul(1000),
+            "redis.incr_expire_ms",
+        )?;
         self.run("incr_expire", async move {
             script
                 .key(key)
@@ -343,12 +346,13 @@ impl Kv {
     ) -> Result<bool, ApiError> {
         let mut c = self.inner.clone();
         let script = lock_acquire_script().clone();
+        let ttl_ms: i64 = crate::numeric::checked_internal(ttl_ms, "redis.lock_ttl_ms")?;
         let got: i64 = self
             .run("lock_acquire", async move {
                 script
                     .key(key)
                     .arg(owner)
-                    .arg(ttl_ms as i64)
+                    .arg(ttl_ms)
                     .invoke_async::<i64>(&mut c)
                     .await
             })
@@ -646,9 +650,7 @@ mod tests {
     fn scripts_are_cached_once() {
         // OnceLock guarantees the second call returns the same instance
         // (Script is internally Arc, so the pointers compare equal).
-        let a = incr_expire_script() as *const _;
-        let b = incr_expire_script() as *const _;
-        assert_eq!(a, b);
+        assert!(std::ptr::eq(incr_expire_script(), incr_expire_script()));
     }
 
     #[test]

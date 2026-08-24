@@ -101,7 +101,7 @@ pub struct RewardItem {
 impl RewardItem {
     pub fn from_with_ctx(r: phpyun_models::redeem::entity::Reward, state: &AppState) -> Self {
         let content_excerpt: String = r.content.chars().take(80).collect();
-        let remaining = (r.stock as i64) - (r.sold as i64);
+        let remaining = i64::from(r.stock) - i64::from(r.sold);
         Self {
             pic_n: pic_n(state, &r.pic),
             id: r.id,
@@ -128,7 +128,7 @@ impl RewardItem {
 impl From<phpyun_models::redeem::entity::Reward> for RewardItem {
     fn from(r: phpyun_models::redeem::entity::Reward) -> Self {
         let content_excerpt: String = r.content.chars().take(80).collect();
-        let remaining = (r.stock as i64) - (r.sold as i64);
+        let remaining = i64::from(r.stock) - i64::from(r.sold);
         Self {
             id: r.id,
             name: r.name,
@@ -207,7 +207,7 @@ pub struct RewardDetail {
 
 impl RewardDetail {
     pub fn from_with_ctx(r: phpyun_models::redeem::entity::Reward, state: &AppState) -> Self {
-        let remaining = (r.stock as i64) - (r.sold as i64);
+        let remaining = i64::from(r.stock) - i64::from(r.sold);
         Self {
             pic_n: pic_n(state, &r.pic),
             id: r.id,
@@ -233,7 +233,7 @@ impl RewardDetail {
 
 impl From<phpyun_models::redeem::entity::Reward> for RewardDetail {
     fn from(r: phpyun_models::redeem::entity::Reward) -> Self {
-        let remaining = (r.stock as i64) - (r.sold as i64);
+        let remaining = i64::from(r.stock) - i64::from(r.sold);
         Self {
             id: r.id,
             name: r.name,

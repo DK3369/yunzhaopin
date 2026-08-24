@@ -64,7 +64,7 @@ pub async fn send(
 
     // Number of sends today
     let used = ro_repo::count_today_for_uid(state.db.reader(), user.uid, today_begin).await?;
-    if used >= limits.daily_max as u64 {
+    if used >= u64::from(limits.daily_max) {
         return Err(ApiError::rate_limit());
     }
 

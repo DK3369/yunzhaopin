@@ -63,7 +63,7 @@ pub async fn count_for_company(pool: &MySqlPool, com_id: u64) -> Result<u64, sql
         .bind(com_id)
         .fetch_one(pool)
         .await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 /// Job seeker viewing who has downloaded their resume
@@ -93,5 +93,5 @@ pub async fn count_for_user(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Err
         .bind(uid)
         .fetch_one(pool)
         .await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }

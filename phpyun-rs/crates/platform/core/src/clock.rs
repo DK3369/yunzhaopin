@@ -19,7 +19,7 @@ pub fn now_ms() -> i64 {
 /// (suitable for Redis SETEX).
 #[inline]
 pub fn ttl_until(exp_ts: i64) -> u64 {
-    (exp_ts - now_ts()).max(1) as u64
+    u64::try_from((exp_ts - now_ts()).max(1)).unwrap_or(1)
 }
 
 /// Convert Unix seconds to an RFC3339 string (e.g. `2026-04-23T12:34:56+00:00`).
@@ -34,5 +34,5 @@ pub fn ts_to_rfc3339(ts: i64) -> String {
 /// Current UTC year (4 digits, e.g. 2026). Used for age/birthday calculations etc.
 pub fn now_year() -> u16 {
     use chrono::Datelike;
-    chrono::Utc::now().year() as u16
+    u16::try_from(chrono::Utc::now().year()).unwrap_or_default()
 }

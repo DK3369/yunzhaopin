@@ -16,8 +16,8 @@ fn gen_code() -> String {
     let u = Uuid::now_v7().as_u128();
     let mut buf = String::with_capacity(16);
     for i in 0..16 {
-        let idx = ((u >> (i * 5)) & 0x1F) as usize % CHARS.len();
-        buf.push(CHARS[idx] as char);
+        let idx = usize::try_from((u >> (i * 5)) & 0x1F).unwrap_or_default() % CHARS.len();
+        buf.push(char::from(CHARS[idx]));
     }
     buf
 }

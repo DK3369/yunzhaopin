@@ -107,7 +107,8 @@ fn de_loose_i64<'de, D: serde::Deserializer<'de>>(d: D) -> Result<i64, D::Error>
 }
 
 fn de_loose_i32<'de, D: serde::Deserializer<'de>>(d: D) -> Result<i32, D::Error> {
-    de_loose_i64(d).map(|n| n.clamp(i32::MIN as i64, i32::MAX as i64) as i32)
+    use serde::de::Error;
+    de_loose_i64(d).and_then(|value| i32::try_from(value).map_err(D::Error::custom))
 }
 
 fn de_loose_i32_opt<'de, D: serde::Deserializer<'de>>(d: D) -> Result<Option<i32>, D::Error> {
@@ -127,7 +128,8 @@ fn de_loose_i32_opt<'de, D: serde::Deserializer<'de>>(d: D) -> Result<Option<i32
         }
         _ => return Ok(None),
     };
-    Ok(Some(n.clamp(i32::MIN as i64, i32::MAX as i64) as i32))
+    use serde::de::Error;
+    i32::try_from(n).map(Some).map_err(D::Error::custom)
 }
 
 /// List job expectations
@@ -144,11 +146,11 @@ pub async fn list(
 ) -> AppResult<ApiResponse<Vec<ExpectItem>>> {
     let list = expect_svc::list(&state, &user).await?;
     let dicts = phpyun_services::dict_service::get(&state).await?;
-    Ok(ApiResponse::data(
-        list.into_iter()
-            .map(|e| crate::v1::wap::resumes::resume_expect_item_from_dict(e, &dicts))
-            .collect(),
-    ))
+    let items = list
+        .into_iter()
+        .map(|e| crate::v1::wap::resumes::resume_expect_item_from_dict(e, &dicts))
+        .collect::<AppResult<Vec<_>>>()?;
+    Ok(ApiResponse::data(items))
 }
 
 /// Create a new job expectation
@@ -199,12 +201,12 @@ async fn resolve_classids(state: &AppState, f: &ExpectForm) -> AppResult<(i64, i
         let dicts = phpyun_services::dict_service::get_raw(state).await?;
         if job == 0 {
             if let Some(name) = f.job_classname.as_deref() {
-                job = dicts.job.find_id_by_name(name).unwrap_or(0) as i64;
+                job = i64::from(dicts.job.find_id_by_name(name).unwrap_or(0));
             }
         }
         if city == 0 {
             if let Some(name) = f.city_classname.as_deref() {
-                city = dicts.city.find_id_by_name(name).unwrap_or(0) as i64;
+                city = i64::from(dicts.city.find_id_by_name(name).unwrap_or(0));
             }
         }
     }
@@ -226,7 +228,7 @@ pub async fn update(
     ClientIp(ip): ClientIp,
     ValidatedJson(f): ValidatedJson<ExpectForm>,
 ) -> AppResult<ApiResponse<json::Value>> {
-    let id = f.id as u64;
+    let id = phpyun_core::numeric::checked_param(f.id, "resume_expect.id")?;
     if f.status == Some(2) {
         expect_svc::delete(&state, &user, id, &ip).await?;
         return Ok(ApiResponse::data(

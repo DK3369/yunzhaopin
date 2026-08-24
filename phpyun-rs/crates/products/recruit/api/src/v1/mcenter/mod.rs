@@ -7,7 +7,6 @@ pub mod apply;
 pub mod atn;
 pub mod blacklist;
 pub mod broadcasts;
-pub mod chat;
 pub mod company;
 pub mod company_cert;
 pub mod company_content;
@@ -95,7 +94,6 @@ pub fn router() -> Router<AppState> {
         .merge(resume_downloads::routes())
         .merge(feedback::routes())
         .merge(reports::routes())
-        .merge(chat::routes())
         .merge(vip::routes())
         .merge(zph::routes())
         .merge(qna::routes())

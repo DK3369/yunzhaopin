@@ -49,7 +49,7 @@ pub async fn count_today_by_user(
             .bind(day_start_ts)
             .fetch_one(pool)
             .await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 pub async fn last_addtime_by_user(pool: &MySqlPool, uid: u64) -> Result<Option<i64>, sqlx::Error> {

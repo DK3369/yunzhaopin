@@ -41,7 +41,7 @@ pub async fn count(pool: &MySqlPool, f: &AuditFilter<'_>) -> Result<u64, sqlx::E
     push_filters(&mut qb, f);
     let res: Result<(i64,), _> = qb.build_query_as().fetch_one(pool).await;
     match res {
-        Ok((n,)) => Ok(n.max(0) as u64),
+        Ok((n,)) => Ok(phpyun_core::numeric::nonnegative_count(n)),
         Err(e) if phpyun_core::db::is_missing_table(&e) => Ok(0),
         Err(e) => Err(e),
     }

@@ -97,7 +97,7 @@ impl From<phpyun_models::redeem::entity::RedeemOrder> for OrderItem {
             linkman: o.linkman,
             linktel: o.linktel,
             address: o.address,
-            total_integral: (o.integral as u64) * (o.num as u64),
+            total_integral: u64::from(o.integral).saturating_mul(u64::from(o.num)),
             integral: o.integral,
             num: o.num,
             status_n: order_status_name(o.status).to_string(),

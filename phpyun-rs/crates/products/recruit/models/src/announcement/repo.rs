@@ -44,7 +44,7 @@ pub async fn list_published(
 pub async fn count_published(pool: &MySqlPool) -> Result<u64, sqlx::Error> {
     let sql = format!("SELECT COUNT(*) FROM phpyun_admin_announcement WHERE {PUBLISHED_WHERE}");
     let (n,): (i64,) = sqlx::query_as(&sql).fetch_one(pool).await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 pub async fn find_by_id(pool: &MySqlPool, id: u64) -> Result<Option<Announcement>, sqlx::Error> {

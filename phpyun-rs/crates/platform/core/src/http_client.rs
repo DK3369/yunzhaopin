@@ -323,7 +323,7 @@ fn jitter_ms(base: u64) -> u64 {
     }
     let nanos = std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
-        .map(|d| d.subsec_nanos() as u64)
+        .map(|d| u64::from(d.subsec_nanos()))
         .unwrap_or(0);
     nanos % (base / 2 + 1)
 }

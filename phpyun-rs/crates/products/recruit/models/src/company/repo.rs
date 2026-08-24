@@ -95,7 +95,7 @@ pub async fn count_public(
     qb.push_bind(f.did);
     push_filters(&mut qb, f, now);
     let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 fn push_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &CompanyFilter<'a>, now: i64) {
@@ -270,10 +270,10 @@ pub async fn count_open_jobs(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Er
          WHERE uid = ? AND state = 1 AND status = 0 AND r_status = 1 \
            AND (edate = 0 OR edate > UNIX_TIMESTAMP())",
     )
-    .bind(uid as i64)
+    .bind(phpyun_core::numeric::checked_db_i64(uid, "company.uid")?)
     .fetch_one(pool)
     .await?;
-    Ok(row.0.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(row.0))
 }
 
 /// One row from the `phpyun_company_show` showcase table — used on the
@@ -301,7 +301,7 @@ pub async fn list_show_items(
          WHERE uid = ? AND status = 0 \
          ORDER BY sort ASC, id ASC",
     )
-    .bind(uid as i64)
+    .bind(phpyun_core::numeric::checked_db_i64(uid, "company.uid")?)
     .fetch_all(pool)
     .await
 }
@@ -367,9 +367,14 @@ pub async fn list_cards_by_uids(
             CAST(COALESCE(cityid,0) AS SIGNED) AS cityid \
          FROM phpyun_company WHERE uid IN ({placeholders})"
     );
+    let signed_uids = uids
+        .iter()
+        .copied()
+        .map(|uid| phpyun_core::numeric::checked_db_i64(uid, "company.uid"))
+        .collect::<Result<Vec<i64>, _>>()?;
     let mut q = sqlx::query_as::<_, CompanyCard>(&sql);
-    for u in uids {
-        q = q.bind(*u as i64);
+    for uid in signed_uids {
+        q = q.bind(uid);
     }
     q.fetch_all(pool).await
 }

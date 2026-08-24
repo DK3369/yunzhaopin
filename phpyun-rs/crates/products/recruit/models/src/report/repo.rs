@@ -99,7 +99,7 @@ pub async fn count_by_reporter(pool: &MySqlPool, reporter_uid: u64) -> Result<u6
         .bind(reporter_uid)
         .fetch_one(pool)
         .await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 /// Legacy job-detail context check. PHPYun stores the viewed user/company
@@ -118,7 +118,7 @@ pub async fn count_job_report_context(
     .bind(company_uid)
     .fetch_one(pool)
     .await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 /// Admin: filter by status (`None` means no filter).
@@ -160,7 +160,7 @@ pub async fn count_by_status(pool: &MySqlPool, status: Option<i32>) -> Result<u6
                 .await?
         }
     };
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 pub async fn set_status(pool: &MySqlPool, id: u64, status: i32) -> Result<u64, sqlx::Error> {

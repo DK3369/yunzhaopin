@@ -21,7 +21,7 @@ pub fn routes() -> Router<AppState> {
 
 #[derive(Debug, Serialize, ToSchema)]
 pub struct BalanceView {
-    pub balance: i32,
+    pub balance: i64,
     pub updated_at: i64,
 }
 
@@ -152,8 +152,12 @@ pub struct TransferItem {
     pub created_at: i64,
 }
 
-impl From<phpyun_models::integral_transfer::entity::IntegralTransfer> for TransferItem {
-    fn from(t: phpyun_models::integral_transfer::entity::IntegralTransfer) -> Self {
+impl TryFrom<phpyun_models::integral_transfer::entity::IntegralTransfer> for TransferItem {
+    type Error = phpyun_core::ApiError;
+
+    fn try_from(
+        t: phpyun_models::integral_transfer::entity::IntegralTransfer,
+    ) -> Result<Self, Self::Error> {
         // The new ledger model is "one row per side" (debit + credit), not
         // "one row per transfer". For the API response we collapse: if
         // order_price > 0 this is the credit side (current uid is recipient);
@@ -161,20 +165,23 @@ impl From<phpyun_models::integral_transfer::entity::IntegralTransfer> for Transf
         // uid from PHPYun's `phpyun_company_pay` schema (no `to_uid` column),
         // so set the unknown side to 0 — front-ends should rely on `points`
         // sign + `note` rather than the resolved peer for this view.
-        let points_signed = t.order_price as i64;
-        let (from_uid, to_uid, points) = if points_signed >= 0 {
-            (0, t.com_id, points_signed as u32)
+        let points = phpyun_core::numeric::integral_f64_to_u32(
+            t.order_price.abs(),
+            "integral_transfer.order_price",
+        )?;
+        let (from_uid, to_uid) = if t.order_price >= 0.0 {
+            (0, t.com_id)
         } else {
-            (t.com_id, 0, (-points_signed) as u32)
+            (t.com_id, 0)
         };
-        Self {
+        Ok(Self {
             id: t.id,
             from_uid,
             to_uid,
             points,
             note: t.pay_remark,
             created_at: t.pay_time,
-        }
+        })
     }
 }
 
@@ -229,8 +236,16 @@ pub async fn list_transfers(
     page: Pagination,
 ) -> AppResult<ApiResponse<Paged<TransferItem>>> {
     let r = integral_service::list_transfers(&state, &user, page).await?;
-    Ok(ApiResponse::data(Paged::from_listing(
-        r.list, r.total, page,
+    let list = r
+        .list
+        .into_iter()
+        .map(TransferItem::try_from)
+        .collect::<AppResult<Vec<_>>>()?;
+    Ok(ApiResponse::data(Paged::new(
+        list,
+        r.total,
+        page.page,
+        page.page_size,
     )))
 }
 

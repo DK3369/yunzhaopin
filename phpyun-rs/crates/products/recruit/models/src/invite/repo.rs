@@ -75,7 +75,7 @@ pub async fn count_today_by_user(
             .bind(today_start_ts)
             .fetch_one(pool)
             .await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 pub async fn list_by_user(
@@ -104,5 +104,5 @@ pub async fn count_by_user(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Erro
         .bind(uid)
         .fetch_one(pool)
         .await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }

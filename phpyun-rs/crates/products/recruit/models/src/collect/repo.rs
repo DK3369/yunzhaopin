@@ -127,7 +127,7 @@ pub async fn count_by_user(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Erro
         .bind(uid)
         .fetch_one(pool)
         .await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 /// How many users have collected a given job.
@@ -136,7 +136,7 @@ pub async fn count_collectors_of_job(pool: &MySqlPool, job_id: u64) -> Result<u6
         .bind(job_id)
         .fetch_one(pool)
         .await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 /// "Fans" — distinct users who have favorited any job belonging to this
@@ -169,7 +169,7 @@ pub async fn list_fans_by_com_uid(
     .await?;
     Ok(rows
         .into_iter()
-        .map(|(uid, n, ts)| (uid, n.max(0) as u64, ts))
+        .map(|(uid, n, ts)| (uid, phpyun_core::numeric::nonnegative_count(n), ts))
         .collect())
 }
 
@@ -180,7 +180,7 @@ pub async fn count_fans_by_com_uid(pool: &MySqlPool, com_uid: u64) -> Result<u64
     .bind(com_uid)
     .fetch_one(pool)
     .await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 /// Batch lookup: which of `job_ids` has `uid` favorited.

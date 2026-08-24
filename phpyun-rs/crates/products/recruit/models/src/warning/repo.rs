@@ -74,7 +74,7 @@ pub async fn count_mine(pool: &MySqlPool, target_uid: u64) -> Result<u64, sqlx::
         .bind(target_uid)
         .fetch_one(pool)
         .await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 pub async fn count_unread(pool: &MySqlPool, target_uid: u64) -> Result<u64, sqlx::Error> {
@@ -85,7 +85,7 @@ pub async fn count_unread(pool: &MySqlPool, target_uid: u64) -> Result<u64, sqlx
     .bind(target_uid)
     .fetch_one(pool)
     .await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 pub async fn mark_read(pool: &MySqlPool, id: u64, target_uid: u64) -> Result<u64, sqlx::Error> {
@@ -137,5 +137,5 @@ pub async fn admin_count(pool: &MySqlPool, kind: Option<i32>) -> Result<u64, sql
                 .await?
         }
     };
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }

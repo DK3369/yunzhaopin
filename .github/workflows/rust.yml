@@ -1,0 +1,39 @@
+name: Rust
+
+on:
+  push:
+    paths:
+      - "phpyun-rs/**"
+      - ".github/workflows/rust.yml"
+  pull_request:
+    paths:
+      - "phpyun-rs/**"
+      - ".github/workflows/rust.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: phpyun-rs
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: phpyun-rs
+      - name: Format
+        run: cargo fmt --all -- --check
+      - name: Check
+        run: cargo check --workspace --all-targets
+      - name: Clippy
+        run: cargo clippy --workspace --all-targets
+      - name: Test
+        run: cargo test --workspace

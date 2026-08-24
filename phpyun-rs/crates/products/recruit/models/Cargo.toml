@@ -10,3 +10,6 @@ serde_json.workspace = true
 utoipa.workspace = true
 chrono.workspace = true
 phpyun_core.workspace = true
+
+[lints]
+workspace = true

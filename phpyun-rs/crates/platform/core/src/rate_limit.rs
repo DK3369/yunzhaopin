@@ -24,7 +24,8 @@ pub struct LimitRule {
 /// Check and increment; returns `ApiError::rate_limit()` if the limit is exceeded.
 pub async fn check_and_incr(kv: &Kv, key: &str, rule: LimitRule) -> Result<(), ApiError> {
     let count = kv.incr_with_expire(key, rule.window.as_secs()).await?;
-    if count as u64 > rule.max {
+    let count: u64 = crate::numeric::checked_internal(count, "redis.rate_limit_count")?;
+    if count > rule.max {
         rate_limit_blocked(prefix(key));
         return Err(ApiError::rate_limit());
     }

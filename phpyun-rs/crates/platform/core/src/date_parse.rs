@@ -157,7 +157,7 @@ fn coerce_value_to_i64<E: de::Error>(v: Value) -> Result<i64, E> {
 pub fn de_loose_i32<'de, D: Deserializer<'de>>(d: D) -> Result<i32, D::Error> {
     let v = Value::deserialize(d)?;
     let n = coerce_value_to_i64(v)?;
-    Ok(n.clamp(i32::MIN as i64, i32::MAX as i64) as i32)
+    i32::try_from(n).map_err(de::Error::custom)
 }
 
 /// `i64` field that may arrive as number, numeric string, empty, or null.
@@ -167,25 +167,25 @@ pub fn de_loose_i64<'de, D: Deserializer<'de>>(d: D) -> Result<i64, D::Error> {
 }
 
 /// `u8` field — PHPYun sends `usertype` / `regway` / etc. as strings.
-/// Negative values clamp to 0; > 255 clamps to 255 (caller should range-validate).
+/// Negative and out-of-range values are rejected.
 pub fn de_loose_u8<'de, D: Deserializer<'de>>(d: D) -> Result<u8, D::Error> {
     let v = Value::deserialize(d)?;
     let n = coerce_value_to_i64(v)?;
-    Ok(n.clamp(0, u8::MAX as i64) as u8)
+    u8::try_from(n).map_err(de::Error::custom)
 }
 
 /// `u32` field — same loose semantics as `de_loose_i32`.
 pub fn de_loose_u32<'de, D: Deserializer<'de>>(d: D) -> Result<u32, D::Error> {
     let v = Value::deserialize(d)?;
     let n = coerce_value_to_i64(v)?;
-    Ok(n.clamp(0, u32::MAX as i64) as u32)
+    u32::try_from(n).map_err(de::Error::custom)
 }
 
 /// `u64` field — same loose semantics as `de_loose_i64`.
 pub fn de_loose_u64<'de, D: Deserializer<'de>>(d: D) -> Result<u64, D::Error> {
     let v = Value::deserialize(d)?;
     let n = coerce_value_to_i64(v)?;
-    Ok(n.max(0) as u64)
+    u64::try_from(n).map_err(de::Error::custom)
 }
 
 /// `Option<i32>` — `null` / missing / empty-string become `None`; otherwise
@@ -201,7 +201,7 @@ pub fn de_loose_i32_opt<'de, D: Deserializer<'de>>(d: D) -> Result<Option<i32>, 
         }
     }
     let n = coerce_value_to_i64(v)?;
-    Ok(Some(n.clamp(i32::MIN as i64, i32::MAX as i64) as i32))
+    i32::try_from(n).map(Some).map_err(de::Error::custom)
 }
 
 #[cfg(test)]
@@ -242,6 +242,8 @@ mod tests {
     fn invalid_returns_none() {
         assert_eq!(parse_loose_date("not a date"), None);
         assert_eq!(parse_loose_date("2020-13"), None);
+        assert!(parse_loose_date("2000-02-29").is_some());
+        assert_eq!(parse_loose_date("2100-02-29"), None);
     }
 
     #[test]
@@ -264,5 +266,26 @@ mod tests {
             assert_eq!(got.sdate, want_s, "input: {json}");
             assert_eq!(got.edate, want_e, "input: {json}");
         }
+    }
+
+    #[derive(Deserialize)]
+    struct LooseNumbers {
+        #[serde(deserialize_with = "de_loose_u8")]
+        usertype: u8,
+        #[serde(deserialize_with = "de_loose_u32")]
+        did: u32,
+    }
+
+    #[test]
+    fn loose_unsigned_numbers_reject_negative_and_overflow() {
+        let max: LooseNumbers =
+            serde_json::from_str(r#"{"usertype":"255","did":"4294967295"}"#).unwrap();
+        assert_eq!(max.usertype, u8::MAX);
+        assert_eq!(max.did, u32::MAX);
+        assert!(serde_json::from_str::<LooseNumbers>(r#"{"usertype":"-1","did":"1"}"#).is_err());
+        assert!(
+            serde_json::from_str::<LooseNumbers>(r#"{"usertype":"256","did":"4294967296"}"#)
+                .is_err()
+        );
     }
 }

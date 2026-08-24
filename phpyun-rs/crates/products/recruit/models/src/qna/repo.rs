@@ -112,7 +112,7 @@ pub async fn count_questions(pool: &MySqlPool, f: &QuestionFilter<'_>) -> Result
         q = q.bind(c);
     }
     let (n,) = q.fetch_one(pool).await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 pub async fn find_question(pool: &MySqlPool, id: u64) -> Result<Option<Question>, sqlx::Error> {
@@ -191,7 +191,7 @@ pub async fn count_questions_by_user(pool: &MySqlPool, uid: u64) -> Result<u64, 
         .bind(uid)
         .fetch_one(pool)
         .await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 // ---------- Answers ----------
@@ -251,7 +251,7 @@ pub async fn count_answers(pool: &MySqlPool, question_id: u64) -> Result<u64, sq
         .bind(question_id)
         .fetch_one(pool)
         .await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 pub async fn list_answers_by_user(
@@ -277,7 +277,7 @@ pub async fn count_answers_by_user(pool: &MySqlPool, uid: u64) -> Result<u64, sq
         .bind(uid)
         .fetch_one(pool)
         .await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 /// Cheap getter for an answer's `(qid, status)` pair. Used by the comment
@@ -294,7 +294,7 @@ pub async fn answer_qid_status(
     .bind(answer_id)
     .fetch_optional(pool)
     .await?;
-    Ok(row.map(|(q, s)| (q.max(0) as u64, s)))
+    Ok(row.map(|(q, s)| (phpyun_core::numeric::nonnegative_count(q), s)))
 }
 
 /// PHPYun `phpyun_answer` has no is_accepted column -- this function has
@@ -415,8 +415,8 @@ pub async fn list_attended_questions(
     }
     // Apply offset/limit on the parsed list (PHP does the same — no DB-side
     // pagination available because `ids` is a single CSV).
-    let off = offset as usize;
-    let lim = limit as usize;
+    let off = phpyun_core::numeric::checked_db_usize(offset, "pagination.offset")?;
+    let lim = phpyun_core::numeric::checked_db_usize(limit, "pagination.limit")?;
     if off >= question_ids.len() {
         return Ok(Vec::new());
     }
@@ -453,10 +453,10 @@ pub async fn count_attended_questions(pool: &MySqlPool, uid: u64) -> Result<u64,
         Some(s) if !s.trim().is_empty() => s
             .split(',')
             .filter(|p| p.trim().parse::<u64>().is_ok())
-            .count() as i64,
-        _ => 0,
+            .count(),
+        _ => 0_usize,
     };
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 // ---------- Support (like) ----------
@@ -527,7 +527,10 @@ pub async fn list_reviews_by_answer(
          ORDER BY r.add_time ASC LIMIT ? OFFSET ?"
     );
     sqlx::query_as::<_, AnswerReview>(&sql)
-        .bind(aid as i64)
+        .bind(phpyun_core::numeric::checked_db_i64(
+            aid,
+            "answer_review.aid",
+        )?)
         .bind(limit)
         .bind(offset)
         .fetch_all(pool)
@@ -537,10 +540,13 @@ pub async fn list_reviews_by_answer(
 pub async fn count_reviews_by_answer(pool: &MySqlPool, aid: u64) -> Result<u64, sqlx::Error> {
     let (n,): (i64,) =
         sqlx::query_as("SELECT COUNT(*) FROM phpyun_answer_review WHERE aid = ? AND status = 1")
-            .bind(aid as i64)
+            .bind(phpyun_core::numeric::checked_db_i64(
+                aid,
+                "answer_review.aid",
+            )?)
             .fetch_one(pool)
             .await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 pub struct ReviewCreate<'a> {
@@ -565,9 +571,18 @@ pub async fn create_review(
          (aid, qid, uid, usertype, content, support, status, add_time) \
          VALUES (?, ?, ?, ?, ?, 0, ?, ?)",
     )
-    .bind(c.aid as i64)
-    .bind(c.qid as i64)
-    .bind(c.uid as i64)
+    .bind(phpyun_core::numeric::checked_db_i64(
+        c.aid,
+        "answer_review.aid",
+    )?)
+    .bind(phpyun_core::numeric::checked_db_i64(
+        c.qid,
+        "answer_review.qid",
+    )?)
+    .bind(phpyun_core::numeric::checked_db_i64(
+        c.uid,
+        "answer_review.uid",
+    )?)
     .bind(c.usertype)
     .bind(c.content)
     .bind(c.status)
@@ -577,7 +592,10 @@ pub async fn create_review(
     let new_id = res.last_insert_id();
     if c.status == 1 {
         sqlx::query("UPDATE phpyun_answer SET comment = comment + 1 WHERE id = ?")
-            .bind(c.aid as i64)
+            .bind(phpyun_core::numeric::checked_db_i64(
+                c.aid,
+                "answer_review.aid",
+            )?)
             .execute(&mut *tx)
             .await?;
     }
@@ -589,8 +607,14 @@ pub async fn create_review(
 pub async fn delete_review(pool: &MySqlPool, review_id: u64, uid: u64) -> Result<u64, sqlx::Error> {
     let row: Option<(i64, i32)> =
         sqlx::query_as("SELECT aid, status FROM phpyun_answer_review WHERE id = ? AND uid = ?")
-            .bind(review_id as i64)
-            .bind(uid as i64)
+            .bind(phpyun_core::numeric::checked_db_i64(
+                review_id,
+                "answer_review.id",
+            )?)
+            .bind(phpyun_core::numeric::checked_db_i64(
+                uid,
+                "answer_review.uid",
+            )?)
             .fetch_optional(pool)
             .await?;
     let Some((aid, status)) = row else {
@@ -598,8 +622,14 @@ pub async fn delete_review(pool: &MySqlPool, review_id: u64, uid: u64) -> Result
     };
     let mut tx = pool.begin().await?;
     let res = sqlx::query("DELETE FROM phpyun_answer_review WHERE id = ? AND uid = ?")
-        .bind(review_id as i64)
-        .bind(uid as i64)
+        .bind(phpyun_core::numeric::checked_db_i64(
+            review_id,
+            "answer_review.id",
+        )?)
+        .bind(phpyun_core::numeric::checked_db_i64(
+            uid,
+            "answer_review.uid",
+        )?)
         .execute(&mut *tx)
         .await?;
     if res.rows_affected() > 0 && status == 1 {

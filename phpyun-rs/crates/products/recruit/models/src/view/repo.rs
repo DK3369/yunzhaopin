@@ -58,7 +58,7 @@ pub async fn count_by_viewer(
             .bind(kind)
             .fetch_one(pool)
             .await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 // ==================== "Who viewed me" (target perspective) ====================
@@ -97,7 +97,7 @@ pub async fn count_by_target(
             .bind(target_id)
             .fetch_one(pool)
             .await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 // ==================== Recently viewed (used for dedup / rate limiting) ====================

@@ -274,10 +274,14 @@ pub use phpyun_models::resume::view::{
 pub fn resume_expect_item_from_dict(
     e: phpyun_models::resume::expect::Expect,
     dicts: &phpyun_services::dict_service::LocalizedDicts,
-) -> ResumeExpectItem {
-    ResumeExpectItem {
-        job_class_n: dicts.job(e.job_classid as i32).to_string(),
-        city_class_n: dicts.city(e.city_classid as i32).to_string(),
+) -> AppResult<ResumeExpectItem> {
+    let job_classid =
+        phpyun_core::numeric::checked_db_i32(e.job_classid, "resume_expect.job_classid")?;
+    let city_classid =
+        phpyun_core::numeric::checked_db_i32(e.city_classid, "resume_expect.city_classid")?;
+    Ok(ResumeExpectItem {
+        job_class_n: dicts.job(job_classid).to_string(),
+        city_class_n: dicts.city(city_classid).to_string(),
         salary_n: dicts.comclass(e.salary).to_string(),
         id: e.id,
         uid: e.uid,
@@ -290,7 +294,7 @@ pub fn resume_expect_item_from_dict(
         state: e.state,
         lastupdate_n: fmt_dt(e.lastupdate),
         lastupdate: e.lastupdate,
-    }
+    })
 }
 
 /// Build `ResumeEduItem` with the education dict translation.
@@ -491,7 +495,7 @@ pub async fn resume_detail(
         expects: expects
             .into_iter()
             .map(|e| crate::v1::wap::resumes::resume_expect_item_from_dict(e, &dicts))
-            .collect(),
+            .collect::<AppResult<Vec<_>>>()?,
         edus: edus
             .into_iter()
             .map(|e| crate::v1::wap::resumes::resume_edu_item_from_dict(e, &dicts))

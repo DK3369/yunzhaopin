@@ -10,6 +10,7 @@
 //! `lastupdate`. All queries go through the `reader` read replica (auto-falls back to
 //! the writer when none is configured).
 
+use num_traits::ToPrimitive;
 use phpyun_core::cache::SimpleCache;
 use phpyun_core::{AppResult, AppState};
 use serde::Serialize;
@@ -110,7 +111,7 @@ fn rate(n: i64, total: i64) -> f64 {
     if total <= 0 {
         0.0
     } else {
-        (n as f64) / (total as f64)
+        n.to_f64().unwrap_or_default() / total.to_f64().unwrap_or(1.0)
     }
 }
 
@@ -166,7 +167,7 @@ fn buckets_to_dist(rows: Vec<(i32, i64)>) -> Vec<DistItem> {
     let total: i64 = rows.iter().map(|r| r.1).sum();
     rows.into_iter()
         .map(|(k, n)| DistItem {
-            key: k as i64,
+            key: i64::from(k),
             num: n,
             rate: rate(n, total),
         })
@@ -201,11 +202,11 @@ pub async fn resume_age_distribution(state: &AppState) -> AppResult<Arc<Vec<Dist
                 }
             }
             let total: i64 = buckets.iter().sum();
-            Ok(buckets
-                .iter()
-                .enumerate()
-                .map(|(i, &n)| DistItem {
-                    key: i as i64,
+            Ok([0_i64, 1, 2, 3]
+                .into_iter()
+                .zip(buckets)
+                .map(|(key, n)| DistItem {
+                    key,
                     num: n,
                     rate: rate(n, total),
                 })
@@ -227,10 +228,11 @@ fn compute_age_years(birthday: &str, now_ts: i64) -> Option<i32> {
     // enough for distribution charts.
     // chrono would be more rigorous; we use the approximation here to avoid extra conversion.
     const YEAR_SEC: i64 = 365 * 86400 + 21600; // +6h roughly compensates for leap years
-    let birth_ts_approx =
-        (y as i64 - 1970) * YEAR_SEC + (m as i64 - 1) * 30 * 86400 + (d as i64 - 1) * 86400;
+    let birth_ts_approx = (i64::from(y) - 1970) * YEAR_SEC
+        + (i64::from(m) - 1) * 30 * 86400
+        + (i64::from(d) - 1) * 86400;
     let age_years = (now_ts - birth_ts_approx) / YEAR_SEC;
-    Some(age_years as i32)
+    i32::try_from(age_years).ok()
 }
 
 // ==================== Company distributions ====================
@@ -380,8 +382,8 @@ fn recent_12_months(now_ts: i64) -> Vec<String> {
     // Anchored on today, walk back 12 months. chrono would be more accurate; here we
     // approximate with 30-day months.
     let mut out = Vec::with_capacity(12);
-    for i in (0..12).rev() {
-        let t = now_ts - (i as i64) * 30 * DAY;
+    for i in (0_i64..12).rev() {
+        let t = now_ts - i * 30 * DAY;
         out.push(ts_to_ym(t));
     }
     out
@@ -433,7 +435,7 @@ fn days_to_ymd(days: i64) -> (i32, u32, u32) {
         d -= md;
         m += 1;
     }
-    let day = (d + 1) as u32;
+    let day = u32::try_from(d + 1).unwrap_or(1);
     (y, m, day)
 }
 

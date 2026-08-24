@@ -21,7 +21,7 @@ pub struct DashboardView {
     pub interview_count: u64,
     pub favorite_count: u64,
     pub view_count: u64,
-    pub integral_balance: i32,
+    pub integral_balance: i64,
     pub signday: u32,
 }
 
@@ -60,7 +60,7 @@ pub struct ComDashboardView {
     pub resume_downloads: u64,
     pub unread_chats: u64,
     pub unread_messages: u64,
-    pub integral_balance: i32,
+    pub integral_balance: i64,
 }
 
 /// Company center — first-screen aggregate counts (matching PHPYun `member/com/tongji`).

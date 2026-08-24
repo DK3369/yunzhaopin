@@ -4,7 +4,6 @@
 
 use phpyun_core::{AppResult, AppState, AuthenticatedUser};
 use phpyun_models::apply::repo as apply_repo;
-use phpyun_models::chat::repo as chat_repo;
 use phpyun_models::collect::repo as collect_repo;
 use phpyun_models::integral::repo as integral_repo;
 use phpyun_models::interview::repo as interview_repo;
@@ -21,7 +20,7 @@ pub struct DashboardCounts {
     pub interview_count: u64,
     pub favorite_count: u64,
     pub view_count: u64,
-    pub integral_balance: i32,
+    pub integral_balance: i64,
     pub signday: u32,
 }
 
@@ -41,7 +40,7 @@ pub struct ComDashboardCounts {
     /// Overall unread system notifications
     pub unread_messages: u64,
     /// Current integral balance
-    pub integral_balance: i32,
+    pub integral_balance: i64,
 }
 
 pub async fn counts(state: &AppState, user: &AuthenticatedUser) -> AppResult<DashboardCounts> {
@@ -50,9 +49,8 @@ pub async fn counts(state: &AppState, user: &AuthenticatedUser) -> AppResult<Das
 
     // PHPYun only stores job favorites (`phpyun_fav_job`); company / resume
     // favorites have no backing table, so the dashboard total is just job-fav count.
-    let (messages, chats, applies, interviews, fav_job, views_job, views_res, bal, sign) = tokio::join!(
+    let (messages, applies, interviews, fav_job, views_job, views_res, bal, sign) = tokio::join!(
         message_repo::count(db, uid, None, true),
-        chat_repo::count_unread(db, uid),
         apply_repo::count_by_uid(db, uid, None),
         interview_repo::count_for_user(db, uid),
         collect_repo::count_by_user(db, uid),
@@ -67,7 +65,7 @@ pub async fn counts(state: &AppState, user: &AuthenticatedUser) -> AppResult<Das
 
     Ok(DashboardCounts {
         unread_messages: messages.unwrap_or(0),
-        unread_chats: chats.unwrap_or(0),
+        unread_chats: 0,
         apply_count: applies.unwrap_or(0),
         interview_count: interviews.unwrap_or(0),
         favorite_count: fav_total,
@@ -97,16 +95,14 @@ pub async fn com_counts(
     );
     let interviews_f = interview_repo::count_for_company(db, uid);
     let downloads_f = phpyun_models::resume_download::repo::count_for_company(db, uid);
-    let chats_f = chat_repo::count_unread(db, uid);
     let messages_f = message_repo::count(db, uid, None, true);
     let bal_f = integral_repo::get_balance(db, uid);
 
-    let (applies_total, applies_unread, interviews, downloads, chats, messages, bal) = tokio::join!(
+    let (applies_total, applies_unread, interviews, downloads, messages, bal) = tokio::join!(
         applies_total_f,
         applies_unread_f,
         interviews_f,
         downloads_f,
-        chats_f,
         messages_f,
         bal_f,
     );
@@ -116,7 +112,7 @@ pub async fn com_counts(
         applies_unread: applies_unread.unwrap_or(0),
         interviews_sent: interviews.unwrap_or(0),
         resume_downloads: downloads.unwrap_or(0),
-        unread_chats: chats.unwrap_or(0),
+        unread_chats: 0,
         unread_messages: messages.unwrap_or(0),
         integral_balance: bal.map(|b| b.balance).unwrap_or(0),
     })
@@ -175,13 +171,13 @@ pub async fn year_report(state: &AppState, user: &AuthenticatedUser) -> AppResul
         };
 
     Ok(YearReport {
-        login_days: login.max(0) as u32,
-        job_count: job.max(0) as u32,
-        view_count: lookjob.max(0) as u32,
-        received_resumes: sqjob.max(0) as u32,
-        viewed_resumes: lookresume.max(0) as u32,
-        invited_count: yq.max(0) as u32,
-        night_work_count: nightwork.max(0) as u32,
+        login_days: phpyun_core::numeric::saturating_count_u32(i64::from(login)),
+        job_count: phpyun_core::numeric::saturating_count_u32(i64::from(job)),
+        view_count: phpyun_core::numeric::saturating_count_u32(i64::from(lookjob)),
+        received_resumes: phpyun_core::numeric::saturating_count_u32(i64::from(sqjob)),
+        viewed_resumes: phpyun_core::numeric::saturating_count_u32(i64::from(lookresume)),
+        invited_count: phpyun_core::numeric::saturating_count_u32(i64::from(yq)),
+        night_work_count: phpyun_core::numeric::saturating_count_u32(i64::from(nightwork)),
         last_night_work_at: lastwork,
         company_name,
         linkman,

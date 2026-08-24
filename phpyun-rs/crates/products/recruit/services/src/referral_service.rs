@@ -34,8 +34,13 @@ pub async fn record_on_signup(state: &AppState, inviter_uid: u64, invitee_uid: u
     };
 
     if affected > 0 {
-        if let Err(e) =
-            integral_repo::add_balance(state.db.pool(), inviter_uid, REFERRAL_POINTS, now).await
+        if let Err(e) = integral_repo::add_balance(
+            state.db.pool(),
+            inviter_uid,
+            i64::from(REFERRAL_POINTS),
+            now,
+        )
+        .await
         {
             tracing::warn!(?e, inviter_uid, "referral grant integral failed");
             return;

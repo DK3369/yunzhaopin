@@ -57,7 +57,7 @@ pub async fn toggle(
             atn_repo::InsertAtn {
                 uid: user.uid,
                 sc_uid: target_uid,
-                usertype: user.usertype as i32,
+                usertype: i32::from(user.usertype),
                 sc_usertype: target_kind,
                 time: clock::now_ts(),
             },

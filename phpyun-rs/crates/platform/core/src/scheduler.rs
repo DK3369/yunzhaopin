@@ -205,7 +205,11 @@ async fn tick(job: &Job, kv: &Kv) {
     let owner = uuid::Uuid::now_v7().to_string();
     if job.distributed {
         match kv
-            .acquire_lock(&job.lock_key, &owner, job.lock_ttl.as_millis() as u64)
+            .acquire_lock(
+                &job.lock_key,
+                &owner,
+                crate::numeric::saturating_millis(job.lock_ttl),
+            )
             .await
         {
             Ok(true) => {}

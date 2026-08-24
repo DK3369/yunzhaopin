@@ -16,7 +16,7 @@ use phpyun_models::sign_in::{entity::UserSign, repo as sign_repo};
 const BASE_REWARD: u32 = 5;
 const STREAK_BONUS_DAYS: u32 = 5;
 
-fn ymd_of(ts: i64) -> u32 {
+fn ymd_of(ts: i64) -> AppResult<u32> {
     // UTC calendar (PHPYun uses the server timezone; in production an offset_hours adjustment can be added)
     let secs_per_day = 86_400;
     let days = ts.div_euclid(secs_per_day);
@@ -24,7 +24,7 @@ fn ymd_of(ts: i64) -> u32 {
     days_to_ymd(days)
 }
 
-fn days_to_ymd(days: i64) -> u32 {
+fn days_to_ymd(days: i64) -> AppResult<u32> {
     // Gregorian conversion (Howard Hinnant algorithm)
     let z = days + 719_468;
     let era = if z >= 0 { z } else { z - 146_096 } / 146_097;
@@ -36,7 +36,17 @@ fn days_to_ymd(days: i64) -> u32 {
     let d = doy - (153 * mp + 2) / 5 + 1;
     let m = if mp < 10 { mp + 3 } else { mp - 9 };
     let y = if m <= 2 { y + 1 } else { y };
-    (y as u32) * 10_000 + (m as u32) * 100 + (d as u32)
+    let year = phpyun_core::numeric::checked_internal::<u32, _>(y, "sign.date.year")?;
+    let month = phpyun_core::numeric::checked_internal::<u32, _>(m, "sign.date.month")?;
+    let day = phpyun_core::numeric::checked_internal::<u32, _>(d, "sign.date.day")?;
+    year.checked_mul(10_000)
+        .and_then(|value| {
+            month
+                .checked_mul(100)
+                .and_then(|month| value.checked_add(month))
+        })
+        .and_then(|value| value.checked_add(day))
+        .ok_or_else(|| ApiError::internal(std::io::Error::other("sign date overflow")))
 }
 
 /// Compare two YYYYMMDD values: returns whether `candidate` is the day before `today`.
@@ -45,19 +55,22 @@ fn is_yesterday(today: u32, candidate: u32) -> bool {
         return false;
     }
     // Split YYYYMMDD into year/month/day, convert to days-since-epoch; a difference of 1 means yesterday.
-    fn to_days(v: u32) -> i64 {
-        let y = (v / 10_000) as i32;
-        let m = ((v / 100) % 100) as i32;
-        let d = (v % 100) as i32;
+    fn to_days(v: u32) -> Option<i64> {
+        let y = i32::try_from(v / 10_000).ok()?;
+        let m = i32::try_from((v / 100) % 100).ok()?;
+        let d = i32::try_from(v % 100).ok()?;
+        if !(1..=12).contains(&m) || !(1..=31).contains(&d) {
+            return None;
+        }
         // Hinnant reverse
         let y = if m <= 2 { y - 1 } else { y };
         let era = if y >= 0 { y } else { y - 399 } / 400;
-        let yoe = (y - era * 400) as i64;
-        let doy = (153 * (if m > 2 { m - 3 } else { m + 9 }) as i64 + 2) / 5 + d as i64 - 1;
+        let yoe = i64::from(y - era * 400);
+        let doy = (153 * i64::from(if m > 2 { m - 3 } else { m + 9 }) + 2) / 5 + i64::from(d) - 1;
         let doe = yoe * 365 + yoe / 4 - yoe / 100 + doy;
-        era as i64 * 146_097 + doe - 719_468
+        Some(i64::from(era) * 146_097 + doe - 719_468)
     }
-    to_days(today) - to_days(candidate) == 1
+    matches!((to_days(today), to_days(candidate)), (Some(today), Some(candidate)) if today - candidate == 1)
 }
 
 #[derive(Debug)]
@@ -73,7 +86,7 @@ pub async fn sign(
     client_ip: &str,
 ) -> AppResult<SignResult> {
     let now = clock::now_ts();
-    let today = ymd_of(now);
+    let today = ymd_of(now)?;
     let db = state.db.pool();
 
     // 0) Distributed mutex: hold a 25h slot in Redis keyed by uid + today.
@@ -94,7 +107,9 @@ pub async fn sign(
     // 1) Read the previous sign-in state and compute signday
     let prev = sign_repo::get_user_sign(db, user.uid).await?;
     let signday = if is_yesterday(today, prev.last_date_ymd) {
-        prev.signday + 1
+        prev.signday
+            .checked_add(1)
+            .ok_or_else(|| ApiError::internal(std::io::Error::other("sign streak overflow")))?
     } else {
         1
     };
@@ -114,7 +129,7 @@ pub async fn sign(
 
     // 4) Update user_sign + add points
     sign_repo::upsert_user_sign(db, user.uid, signday, today, now).await?;
-    integral_repo::add_balance(db, user.uid, reward as i32, now).await?;
+    integral_repo::add_balance(db, user.uid, i64::from(reward), now).await?;
 
     // 5) Audit
     let _ = audit::emit(
@@ -125,7 +140,10 @@ pub async fn sign(
     .await;
 
     // Return the latest state
-    let signdays_new = prev.signdays + 1;
+    let signdays_new = prev
+        .signdays
+        .checked_add(1)
+        .ok_or_else(|| ApiError::internal(std::io::Error::other("sign total overflow")))?;
     Ok(SignResult {
         signday,
         signdays: signdays_new,
@@ -134,7 +152,7 @@ pub async fn sign(
 }
 
 pub async fn status(state: &AppState, user: &AuthenticatedUser) -> AppResult<(UserSign, bool)> {
-    let today = ymd_of(clock::now_ts());
+    let today = ymd_of(clock::now_ts())?;
     let us = sign_repo::get_user_sign(state.db.reader(), user.uid).await?;
     let signed_today = sign_repo::find_today(state.db.reader(), user.uid, today)
         .await?
@@ -149,11 +167,11 @@ mod tests {
     #[test]
     fn ymd_round_trip() {
         // 1970-01-01 00:00:00 UTC -> 19700101
-        assert_eq!(ymd_of(0), 19_700_101);
+        assert_eq!(ymd_of(0).unwrap(), 19_700_101);
         // 2000-03-01 00:00:00 UTC = 951868800
-        assert_eq!(ymd_of(951_868_800), 20_000_301);
+        assert_eq!(ymd_of(951_868_800).unwrap(), 20_000_301);
         // 2026-04-23 00:00:00 UTC = 1776931200
-        assert_eq!(ymd_of(1_776_931_200), 20_260_423);
+        assert_eq!(ymd_of(1_776_931_200).unwrap(), 20_260_423);
     }
 
     #[test]

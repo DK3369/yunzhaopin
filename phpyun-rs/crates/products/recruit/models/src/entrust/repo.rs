@@ -57,7 +57,7 @@ pub async fn count_by_uid(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Error
         .bind(uid)
         .fetch_one(pool)
         .await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 /// Headhunter side: paginated list of jobseekers who have entrusted this
@@ -87,7 +87,7 @@ pub async fn count_by_lt_uid(pool: &MySqlPool, lt_uid: u64) -> Result<u64, sqlx:
         .bind(lt_uid)
         .fetch_one(pool)
         .await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 pub async fn insert(

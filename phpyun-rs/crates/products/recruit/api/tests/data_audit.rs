@@ -7,6 +7,7 @@ use phpyun_core::shutdown::CancellationToken;
 use phpyun_core::{AppState, Config};
 
 #[tokio::test(flavor = "multi_thread")]
+#[ignore = "requires a populated PHPYun MySQL database and Redis"]
 async fn audit_underlying_table_counts() {
     let _ = tracing_subscriber::fmt()
         .with_env_filter("warn,sqlx=error")
@@ -92,10 +93,6 @@ async fn audit_underlying_table_counts() {
         (
             "/v1/admin/company-certs",
             &[("phpyun_company_cert", "status = 1")],
-        ),
-        (
-            "/v1/mcenter/chat/conversations",
-            &[("phpyun_rs_chat", "1=1")],
         ),
         (
             "/v1/mcenter/sessions",

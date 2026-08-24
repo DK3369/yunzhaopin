@@ -234,7 +234,7 @@ pub async fn create_order(
     now: i64,
 ) -> Result<u64, sqlx::Error> {
     // PHP `order_price` is DOUBLE in yuan; convert from cents.
-    let price_yuan = (amount_cents as f64) / 100.0;
+    let price_yuan = f64::from(amount_cents) / 100.0;
     // PHP `rating` is the FK to phpyun_company_rating.id; recover from "pkg_<id>" code.
     let rating: i32 = package_code
         .strip_prefix("pkg_")
@@ -335,7 +335,7 @@ pub async fn count_user_orders(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::
         .bind(uid)
         .fetch_one(pool)
         .await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 // ---------- Admin backend ----------
@@ -391,7 +391,7 @@ pub async fn admin_count_orders(pool: &MySqlPool, status: Option<i32>) -> Result
                 .await?
         }
     };
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 pub async fn admin_set_order_status(

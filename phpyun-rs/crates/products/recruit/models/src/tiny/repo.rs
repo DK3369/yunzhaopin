@@ -58,7 +58,7 @@ pub async fn count_public(pool: &MySqlPool, f: &TinyFilter<'_>) -> Result<u64, s
     qb.push_bind(f.did);
     push_filters(&mut qb, f);
     let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 fn push_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &TinyFilter<'a>) {
@@ -104,7 +104,7 @@ pub async fn count_today_by_ip(
             .bind(since_ts)
             .fetch_one(pool)
             .await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 pub async fn count_today_total(pool: &MySqlPool, since_ts: i64) -> Result<u64, sqlx::Error> {
@@ -112,7 +112,7 @@ pub async fn count_today_total(pool: &MySqlPool, since_ts: i64) -> Result<u64, s
         .bind(since_ts)
         .fetch_one(pool)
         .await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 pub struct CreateTiny<'a> {

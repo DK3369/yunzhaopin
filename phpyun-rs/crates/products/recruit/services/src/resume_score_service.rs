@@ -54,7 +54,8 @@ pub async fn compute(state: &AppState, user: &AuthenticatedUser) -> AppResult<Co
         let filled = [name_ok, sex_ok, birthday_ok, tel_ok, email_ok]
             .iter()
             .filter(|b| **b)
-            .count() as u8;
+            .count();
+        let filled = u8::try_from(filled).unwrap_or(u8::MAX);
         score += filled * 4; // 4 points per item
         if filled < 5 {
             missing.push("basic_info");

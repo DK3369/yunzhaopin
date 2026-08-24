@@ -149,7 +149,7 @@ pub async fn count_public(
     qb.push_bind(f.did);
     push_filters(&mut qb, f, now);
     let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 fn push_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &JobFilter<'a>, now: i64) {
@@ -240,7 +240,7 @@ fn push_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &JobFilter<'a>, n
         let threshold = if days == 1 {
             now - now.rem_euclid(86_400)
         } else {
-            now - (days as i64) * 86_400
+            now - i64::from(days) * 86_400
         };
         qb.push(" AND lastupdate > ");
         qb.push_bind(threshold);
@@ -330,7 +330,7 @@ pub async fn count_own(
         }
     }
     let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 pub struct JobCreate<'a> {
@@ -549,7 +549,7 @@ pub async fn admin_count(pool: &MySqlPool, state_filter: Option<i32>) -> Result<
         qb.push_bind(s);
     }
     let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 /// Recommendation: other active jobs from the same company (excluding the current id).
@@ -636,7 +636,7 @@ pub async fn count_by_company_public(
     .bind(now)
     .fetch_one(pool)
     .await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 /// Scheduled: for active jobs with `edate <= now`, set state = 2 (expired).
@@ -685,7 +685,9 @@ pub async fn get_jobhits(pool: &MySqlPool, id: u64) -> Result<u64, sqlx::Error> 
     .bind(id)
     .fetch_optional(pool)
     .await?;
-    Ok(row.map(|(n,)| n.max(0) as u64).unwrap_or(0))
+    Ok(row
+        .map(|(n,)| phpyun_core::numeric::nonnegative_count(n))
+        .unwrap_or(0))
 }
 
 pub async fn bump_and_get_jobhits(pool: &MySqlPool, id: u64) -> Result<u64, sqlx::Error> {

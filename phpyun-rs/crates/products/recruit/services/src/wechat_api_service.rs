@@ -267,7 +267,7 @@ fn urlencoding_minimal(s: &str) -> String {
     for b in s.bytes() {
         match b {
             b'A'..=b'Z' | b'a'..=b'z' | b'0'..=b'9' | b'-' | b'_' | b'.' | b'~' => {
-                out.push(b as char);
+                out.push(char::from(b));
             }
             _ => {
                 out.push('%');

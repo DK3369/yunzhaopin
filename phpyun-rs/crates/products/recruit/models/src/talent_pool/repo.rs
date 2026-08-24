@@ -75,8 +75,14 @@ pub async fn list_by_com(
     );
     sqlx::query_as::<_, TalentPoolItem>(&sql)
         .bind(cuid)
-        .bind(limit as i64)
-        .bind(offset as i64)
+        .bind(phpyun_core::numeric::checked_db_i64(
+            limit,
+            "pagination.limit",
+        )?)
+        .bind(phpyun_core::numeric::checked_db_i64(
+            offset,
+            "pagination.offset",
+        )?)
         .fetch_all(pool)
         .await
 }
@@ -87,7 +93,7 @@ pub async fn count_by_com(pool: &MySqlPool, cuid: u64) -> Result<u64, sqlx::Erro
             .bind(cuid)
             .fetch_one(pool)
             .await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 /// Soft delete: bulk UPDATE status=2; no physical DELETE.

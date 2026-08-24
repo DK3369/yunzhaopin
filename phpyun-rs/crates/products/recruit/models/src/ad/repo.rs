@@ -115,7 +115,7 @@ pub async fn count_all(pool: &MySqlPool, slot: Option<&str>) -> Result<u64, sqlx
                 .await?
         }
     };
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 pub struct AdCreate<'a> {
@@ -221,7 +221,7 @@ pub async fn count_clicks_recent(
     .bind(since)
     .fetch_one(pool)
     .await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 pub async fn insert_click(

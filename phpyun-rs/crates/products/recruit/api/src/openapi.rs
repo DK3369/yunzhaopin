@@ -280,7 +280,7 @@ impl Modify for UniqueOperationId {
         // wap: articles
         v1::wap::articles::list_articles,
         v1::wap::articles::article_detail,
-        // mcenter: feedback / reports / chat
+        // mcenter: feedback / reports
         v1::mcenter::feedback::list_mine,
         v1::mcenter::feedback::submit,
         v1::mcenter::reports::submit,
@@ -298,11 +298,6 @@ impl Modify for UniqueOperationId {
         v1::mcenter::company_content::gallery_create,
         v1::mcenter::company_content::gallery_update,
         v1::mcenter::company_content::gallery_delete,
-        v1::mcenter::chat::send,
-        v1::mcenter::chat::list_with,
-        v1::mcenter::chat::list_conversations,
-        v1::mcenter::chat::mark_read,
-        v1::mcenter::chat::unread_count,
         // mcenter: VIP
         v1::mcenter::vip::list_packages,
         v1::mcenter::vip::get_current,
@@ -844,8 +839,6 @@ impl Modify for UniqueOperationId {
             v1::mcenter::company_content::GalleryDeleteBody,
             v1::mcenter::company_content::GalleryCreate,
             v1::mcenter::company_content::GalleryUpdate,
-            v1::mcenter::chat::SendForm,
-            v1::mcenter::chat::ChatItem,
             phpyun_core::dto::UnreadCount,
             v1::mcenter::vip::PackageItem,
             v1::mcenter::vip::CurrentVip,
@@ -1061,7 +1054,6 @@ impl Modify for UniqueOperationId {
             phpyun_core::dto::EidBody,
             phpyun_core::dto::AidBody,
             phpyun_core::dto::MidBody,
-            phpyun_core::dto::PeerBody,
             phpyun_core::dto::TokenBody,
             phpyun_core::dto::OrderNoBody,
             phpyun_core::dto::ProviderBody,

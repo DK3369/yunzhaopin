@@ -25,7 +25,7 @@ pub async fn list(
 ) -> AppResult<Vec<TimelineEvent>> {
     user.require_jobseeker()?;
     let db = state.db.reader();
-    let per = limit.clamp(5, 100) as u64;
+    let per = phpyun_core::numeric::checked_internal(limit.clamp(5, 100), "timeline.limit")?;
 
     let (views, downloads, interviews) = tokio::join!(
         view_repo::list_by_target(db, KIND_RESUME, user.uid, 0, per),

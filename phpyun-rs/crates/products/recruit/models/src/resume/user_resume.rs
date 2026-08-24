@@ -77,7 +77,7 @@ pub async fn fetch_eid(
         .bind(uid)
         .fetch_optional(pool)
         .await?;
-    Ok(row.map(|(v,)| v.max(0) as u64))
+    Ok(row.map(|(v,)| phpyun_core::numeric::nonnegative_count(v)))
 }
 
 /// Ensure a row exists for `(uid, eid)` then bump the section counter by

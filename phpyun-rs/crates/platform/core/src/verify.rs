@@ -140,7 +140,8 @@ pub fn gen_digit_code(n: usize) -> String {
     let mut buf = String::with_capacity(n);
     for i in 0..n {
         let digit = ((u >> (i * 4)) & 0xF) % 10;
-        buf.push(char::from_digit(digit as u32, 10).unwrap_or('0'));
+        let digit = u32::try_from(digit).unwrap_or_default();
+        buf.push(char::from_digit(digit, 10).unwrap_or('0'));
     }
     buf
 }
@@ -152,9 +153,10 @@ pub fn gen_alnum_code(n: usize) -> String {
     let mut u = uuid::Uuid::now_v7().as_u128();
     let mut buf = String::with_capacity(n);
     for _ in 0..n {
-        let idx = (u % CHARS.len() as u128) as usize;
-        u /= CHARS.len() as u128;
-        buf.push(CHARS[idx] as char);
+        let alphabet_len = u128::try_from(CHARS.len()).unwrap_or(1);
+        let idx = usize::try_from(u % alphabet_len).unwrap_or_default();
+        u /= alphabet_len;
+        buf.push(char::from(CHARS[idx]));
     }
     buf
 }

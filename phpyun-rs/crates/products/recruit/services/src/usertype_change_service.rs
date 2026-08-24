@@ -28,7 +28,7 @@ pub async fn apply(
     if !matches!(apply_usertype, 1 | 2) {
         return Err(ApiError::param_invalid("apply_usertype"));
     }
-    if (user.usertype as i32) == apply_usertype {
+    if i32::from(user.usertype) == apply_usertype {
         return Err(ApiError::param_invalid("same_usertype"));
     }
 
@@ -42,7 +42,7 @@ pub async fn apply(
     let id = chg_repo::create(
         state.db.pool(),
         user.uid,
-        user.usertype as i32,
+        i32::from(user.usertype),
         apply_usertype,
         apply_body,
         clock::now_ts(),

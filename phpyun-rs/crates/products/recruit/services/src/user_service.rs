@@ -27,6 +27,13 @@ use phpyun_models::user::{entity::Member, repo as user_repo};
 
 use crate::user_session_service::{self, LoginRecord};
 
+fn auth_identity(user: &Member) -> AppResult<(u8, u32)> {
+    Ok((
+        phpyun_core::numeric::checked_internal(user.usertype, "phpyun_member.usertype")?,
+        phpyun_core::numeric::checked_internal(user.did, "phpyun_member.did")?,
+    ))
+}
+
 /// Login context — carried alongside credentials so the service can record
 /// device fingerprint + IP into `phpyun_user_session`. Empty strings are OK
 /// (e.g. internal admin tooling).
@@ -117,7 +124,8 @@ pub async fn login(
         });
     }
 
-    // 6. Issue the access + refresh token pair
+    // 6. Validate persisted identity fields before issuing credentials.
+    let (usertype, did) = auth_identity(&user)?;
     let JwtIssued {
         access,
         refresh,
@@ -125,12 +133,7 @@ pub async fn login(
         refresh_exp,
         jti_access,
         jti_refresh,
-    } = issue_pair(
-        &state.config,
-        user.uid,
-        user.usertype as u8,
-        user.did as u32,
-    )?;
+    } = issue_pair(&state.config, user.uid, usertype, did)?;
 
     // Record the login as a session row so the user can list / kick devices.
     // Best-effort: never blocks login on session-table failure.
@@ -138,7 +141,7 @@ pub async fn login(
         state,
         LoginRecord {
             uid: user.uid,
-            usertype: user.usertype as u8,
+            usertype,
             jti_access: &jti_access,
             jti_refresh: &jti_refresh,
             access_exp,
@@ -164,7 +167,7 @@ pub async fn login(
         access,
         refresh,
         uid: user.uid,
-        usertype: user.usertype as u8,
+        usertype,
         access_exp,
         refresh_exp,
     })
@@ -224,7 +227,8 @@ pub async fn login_with_sms_code(
     // 4. Clear the failure counter
     rate_limit::clear_login_fail(&state.redis, mobile).await;
 
-    // 5. Issue the access + refresh token pair
+    // 5. Validate persisted identity fields before issuing credentials.
+    let (usertype, did) = auth_identity(&user)?;
     let JwtIssued {
         access,
         refresh,
@@ -232,18 +236,13 @@ pub async fn login_with_sms_code(
         refresh_exp,
         jti_access,
         jti_refresh,
-    } = issue_pair(
-        &state.config,
-        user.uid,
-        user.usertype as u8,
-        user.did as u32,
-    )?;
+    } = issue_pair(&state.config, user.uid, usertype, did)?;
 
     let _ = user_session_service::record_login(
         state,
         LoginRecord {
             uid: user.uid,
-            usertype: user.usertype as u8,
+            usertype,
             jti_access: &jti_access,
             jti_refresh: &jti_refresh,
             access_exp,
@@ -267,7 +266,7 @@ pub async fn login_with_sms_code(
         access,
         refresh,
         uid: user.uid,
-        usertype: user.usertype as u8,
+        usertype,
         access_exp,
         refresh_exp,
     })
@@ -411,6 +410,7 @@ pub async fn login_or_register_with_email_code(
     if user.status == 2 {
         return Err(ApiError::locked());
     }
+    let (usertype, did) = auth_identity(&user)?;
     rate_limit::clear_login_fail(&state.redis, &email).await;
     let JwtIssued {
         access,
@@ -419,17 +419,12 @@ pub async fn login_or_register_with_email_code(
         refresh_exp,
         jti_access,
         jti_refresh,
-    } = issue_pair(
-        &state.config,
-        user.uid,
-        user.usertype as u8,
-        user.did as u32,
-    )?;
+    } = issue_pair(&state.config, user.uid, usertype, did)?;
     let _ = user_session_service::record_login(
         state,
         LoginRecord {
             uid: user.uid,
-            usertype: user.usertype as u8,
+            usertype,
             jti_access: &jti_access,
             jti_refresh: &jti_refresh,
             access_exp,
@@ -453,7 +448,7 @@ pub async fn login_or_register_with_email_code(
             access,
             refresh,
             uid: user.uid,
-            usertype: user.usertype as u8,
+            usertype,
             access_exp,
             refresh_exp,
         },
@@ -545,16 +540,19 @@ pub struct UserProfile {
     pub did: u32,
 }
 
-impl From<Member> for UserProfile {
-    fn from(m: Member) -> Self {
-        Self {
+impl TryFrom<Member> for UserProfile {
+    type Error = ApiError;
+
+    fn try_from(m: Member) -> Result<Self, Self::Error> {
+        let (usertype, did) = auth_identity(&m)?;
+        Ok(Self {
             uid: m.uid,
             username: m.username,
             email: m.email,
             moblie: m.moblie,
-            usertype: m.usertype as u8,
-            did: m.did as u32,
-        }
+            usertype,
+            did,
+        })
     }
 }
 
@@ -592,7 +590,7 @@ pub async fn get_profile(state: &AppState, uid: u64) -> AppResult<Arc<UserProfil
             let member = user_repo::find_by_uid(&reader, uid)
                 .await?
                 .ok_or(ApiError::business("user_not_found"))?;
-            let profile: UserProfile = member.into();
+            let profile = UserProfile::try_from(member)?;
             // Backfill L2 in the background (with backpressure; lossy writes do not block)
             kv.spawn_set_json_ex(key, &profile, PROFILE_TTL_SECS);
             json::to_value(&profile).map(Arc::new)

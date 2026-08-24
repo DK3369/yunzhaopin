@@ -136,7 +136,7 @@ async fn build_one(
               revoked_at   = 0"#,
     )
     .bind(DEV_UID)
-    .bind(usertype as i32)
+    .bind(i32::from(usertype))
     .bind(&jti_a)
     .bind(&jti_r)
     .bind(now)

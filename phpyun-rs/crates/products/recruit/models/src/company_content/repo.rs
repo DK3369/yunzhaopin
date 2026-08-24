@@ -30,9 +30,15 @@ pub async fn list(
         }
     }
     qb.push(" ORDER BY ctime DESC LIMIT ");
-    qb.push_bind(limit as i64);
+    qb.push_bind(phpyun_core::numeric::checked_db_i64(
+        limit,
+        "pagination.limit",
+    )?);
     qb.push(" OFFSET ");
-    qb.push_bind(offset as i64);
+    qb.push_bind(phpyun_core::numeric::checked_db_i64(
+        offset,
+        "pagination.offset",
+    )?);
     qb.build_query_as::<CompanyContent>().fetch_all(pool).await
 }
 
@@ -54,7 +60,7 @@ pub async fn count(
         }
     }
     let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 pub async fn find_by_id(

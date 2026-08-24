@@ -23,7 +23,8 @@ pub async fn admin_list(
     admin.require_admin()?;
     // best-effort count via admin_list.len (small table)
     let list = ver_repo::admin_list(state.db.reader(), platform, page.offset, page.limit).await?;
-    let total = list.len() as u64 + page.offset;
+    let len = phpyun_core::numeric::checked_internal::<u64, _>(list.len(), "app_versions.len")?;
+    let total = len.saturating_add(page.offset);
     Ok(Paged::new(list, total, page.page, page.page_size))
 }
 

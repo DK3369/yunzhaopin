@@ -85,7 +85,7 @@ pub async fn find_default_id_by_uid(
     .bind(uid)
     .fetch_optional(pool)
     .await?;
-    Ok(row.map(|(id,)| id.max(0) as u64))
+    Ok(row.map(|(id,)| phpyun_core::numeric::nonnegative_count(id)))
 }
 
 pub async fn find_by_id(pool: &MySqlPool, id: u64) -> Result<Option<Expect>, sqlx::Error> {
@@ -227,7 +227,9 @@ pub async fn get_hits(pool: &MySqlPool, id: u64) -> Result<u64, sqlx::Error> {
     .bind(id)
     .fetch_optional(pool)
     .await?;
-    Ok(row.map(|(n,)| n.max(0) as u64).unwrap_or(0))
+    Ok(row
+        .map(|(n,)| phpyun_core::numeric::nonnegative_count(n))
+        .unwrap_or(0))
 }
 
 pub async fn bump_and_get_hits(pool: &MySqlPool, id: u64, delta: u32) -> Result<u64, sqlx::Error> {
@@ -272,8 +274,14 @@ pub async fn recompute_whour(
         0
     };
     sqlx::query("UPDATE phpyun_resume_expect SET whour = ?, avghour = ? WHERE id = ? AND uid = ?")
-        .bind(whour as i32)
-        .bind(avghour as i32)
+        .bind(phpyun_core::numeric::checked_db_i32(
+            whour,
+            "resume_expect.whour",
+        )?)
+        .bind(phpyun_core::numeric::checked_db_i32(
+            avghour,
+            "resume_expect.avghour",
+        )?)
         .bind(eid)
         .bind(uid)
         .execute(pool)

@@ -128,7 +128,7 @@ pub async fn count_public_for_job(
     .bind(MSG_TYPE_PUBLIC_QA)
     .fetch_one(pool)
     .await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 /// Employer-side list: include unanswered messages too.
@@ -173,7 +173,7 @@ pub async fn count_for_employer(
         .bind(MSG_TYPE_PUBLIC_QA)
         .fetch_one(pool)
         .await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 pub async fn employer_reply(

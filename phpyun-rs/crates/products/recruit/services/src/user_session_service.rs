@@ -308,7 +308,7 @@ pub async fn revoke_session(
 pub async fn revoke_other_sessions(state: &AppState, user: &AuthenticatedUser) -> AppResult<u64> {
     let now = clock::now_ts();
     let revoked = session_repo::revoke_others(state.db.pool(), user.uid, &user.jti, now).await?;
-    let n = revoked.len() as u64;
+    let n = phpyun_core::numeric::checked_internal(revoked.len(), "revoked_sessions.len")?;
     for (acc_jti, acc_exp, ref_jti, ref_exp) in revoked {
         let _ = jwt_blacklist::revoke(&state.redis, &acc_jti, acc_exp).await;
         let _ = jwt_blacklist::revoke(&state.redis, &ref_jti, ref_exp).await;

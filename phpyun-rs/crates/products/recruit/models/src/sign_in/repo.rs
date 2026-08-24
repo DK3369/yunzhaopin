@@ -49,8 +49,8 @@ pub async fn get_user_sign(pool: &MySqlPool, uid: u64) -> Result<UserSign, sqlx:
     let (sd, sds) = row.unwrap_or((0, 0));
     Ok(UserSign {
         uid,
-        signday: sd.max(0) as u32,
-        signdays: sds.max(0) as u32,
+        signday: phpyun_core::numeric::saturating_count_u32(sd),
+        signdays: phpyun_core::numeric::saturating_count_u32(sds),
         last_date_ymd: 0,
         updated_at: 0,
     })

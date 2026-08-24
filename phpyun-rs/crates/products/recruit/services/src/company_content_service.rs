@@ -85,7 +85,7 @@ pub async fn create(
             title: input.title,
             body: input.body,
             file: input.file,
-            usertype: user.usertype as i32,
+            usertype: i32::from(user.usertype),
             did: user.did,
             now: clock::now_ts(),
         },

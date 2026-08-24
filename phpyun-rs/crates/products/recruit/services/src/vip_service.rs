@@ -17,7 +17,7 @@ pub async fn list_packages(
     state: &AppState,
     user: &AuthenticatedUser,
 ) -> AppResult<Vec<VipPackage>> {
-    Ok(vip_repo::list_active_packages(state.db.reader(), user.usertype as i32).await?)
+    Ok(vip_repo::list_active_packages(state.db.reader(), i32::from(user.usertype)).await?)
 }
 
 /// Create an order -- returns order_no, the client uses it to call the payment gateway.
@@ -36,7 +36,7 @@ pub async fn create_order(
     if pkg.is_active != 1 {
         return Err(ApiError::param_invalid("package_inactive"));
     }
-    if pkg.target_usertype != 0 && pkg.target_usertype != user.usertype as i32 {
+    if pkg.target_usertype != 0 && pkg.target_usertype != i32::from(user.usertype) {
         return Err(ApiError::param_invalid("package_usertype_mismatch"));
     }
 
@@ -100,7 +100,7 @@ pub async fn mark_paid(state: &AppState, order_no: &str, pay_tx_id: &str) -> App
         state.db.pool(),
         order.uid,
         &order.package_code,
-        pkg.duration_days as i64 * SECS_PER_DAY,
+        i64::from(pkg.duration_days) * SECS_PER_DAY,
         now,
     )
     .await?;
@@ -248,8 +248,9 @@ pub async fn quote_package_price(
     let discount = phpyun_models::vip::repo::read_company_rating_discount(reader, user.uid).await?;
 
     // PHP `service_discount` is a percent (e.g. 80 = 80%); divide by 100.
-    let discount_factor = (discount as f64) / 100.0;
-    let pro = proportion.max(0) as f64; // multiplier between yuan and integral
+    let discount_factor = f64::from(discount) / 100.0;
+    let pro =
+        phpyun_core::numeric::finite_to_f64(proportion.max(0), "site_setting.integral_proportion")?; // multiplier between yuan and integral
 
     let effective_yh = if pkg.yh_price > 0.0 {
         pkg.yh_price
@@ -280,7 +281,11 @@ pub async fn quote_package_price(
         (display_yh, 1)
     } else {
         // When paying with integral, the user pays `display_yh * pro` integral.
-        let integral_needed = (display_yh * pro) as i64;
+        let integral_needed = phpyun_core::numeric::finite_f64_to_i64(
+            display_yh * pro,
+            phpyun_core::numeric::FloatRounding::Truncate,
+            "vip.integral_needed",
+        )?;
         if integral_needed <= user_integral {
             (display_yh * pro, 2)
         } else {

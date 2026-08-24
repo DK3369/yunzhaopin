@@ -84,9 +84,9 @@ pub async fn execute(
             SET integral = CAST(integral AS SIGNED) - ?
           WHERE uid = ? AND CAST(integral AS SIGNED) >= ?",
     )
-    .bind(points as i64)
+    .bind(i64::from(points))
     .bind(from_uid)
-    .bind(points as i64)
+    .bind(i64::from(points))
     .execute(&mut *tx)
     .await?;
     if deduct.rows_affected() == 0 {
@@ -123,7 +123,7 @@ pub async fn execute(
            VALUES (?, ?, ?, 2, ?, ?, 1, ?, ?, 0, 1, 0)",
     )
     .bind(&order_id_debit)
-    .bind(-(points as i64))
+    .bind(-i64::from(points))
     .bind(now)
     .bind(from_uid)
     .bind(&remark)
@@ -139,7 +139,7 @@ pub async fn execute(
            VALUES (?, ?, ?, 2, ?, ?, 1, ?, ?, 0, 1, 0)",
     )
     .bind(&order_id_credit)
-    .bind(points as i64)
+    .bind(i64::from(points))
     .bind(now)
     .bind(to_uid)
     .bind(&remark)
@@ -181,5 +181,5 @@ pub async fn count_by_user(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Erro
             .bind(PAY_TYPE_USER_TRANSFER)
             .fetch_one(pool)
             .await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }

@@ -6,21 +6,21 @@ pub async fn count_active_jobs(pool: &MySqlPool) -> Result<u64, sqlx::Error> {
     )
     .fetch_one(pool)
     .await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 pub async fn count_active_companies(pool: &MySqlPool) -> Result<u64, sqlx::Error> {
     let (n,): (i64,) = sqlx::query_as("SELECT COUNT(*) FROM phpyun_company WHERE r_status = 1")
         .fetch_one(pool)
         .await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 pub async fn count_active_resumes(pool: &MySqlPool) -> Result<u64, sqlx::Error> {
     let (n,): (i64,) = sqlx::query_as("SELECT COUNT(*) FROM phpyun_resume WHERE r_status = 1")
         .fetch_one(pool)
         .await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 pub async fn count_jobs_since(pool: &MySqlPool, ts: i64) -> Result<u64, sqlx::Error> {
@@ -31,7 +31,7 @@ pub async fn count_jobs_since(pool: &MySqlPool, ts: i64) -> Result<u64, sqlx::Er
     .bind(ts)
     .fetch_one(pool)
     .await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 pub async fn count_resumes_since(pool: &MySqlPool, ts: i64) -> Result<u64, sqlx::Error> {
@@ -42,7 +42,7 @@ pub async fn count_resumes_since(pool: &MySqlPool, ts: i64) -> Result<u64, sqlx:
     .bind(ts)
     .fetch_one(pool)
     .await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 // ============================================================================

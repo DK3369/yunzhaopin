@@ -19,6 +19,16 @@ use phpyun_models::redeem::{
     repo as redeem_repo,
 };
 
+fn total_cost(integral: u32, quantity: u32) -> AppResult<u32> {
+    integral
+        .checked_mul(quantity)
+        .ok_or_else(|| ApiError::param_invalid("integral_overflow"))
+}
+
+fn refund_delta(points: u32) -> i64 {
+    i64::from(points)
+}
+
 // ---------- Categories ----------
 
 /// 60s TTL cache: points-mall categories rarely change, and every mall page hits this.
@@ -257,7 +267,7 @@ pub async fn redeem(
             return Err(ApiError::param_invalid("over_per_user_limit"));
         }
     }
-    let total_cost = reward.integral.saturating_mul(f.num);
+    let total_cost = total_cost(reward.integral, f.num)?;
     if total_cost == 0 {
         return Err(ApiError::param_invalid("bad_cost"));
     }
@@ -277,7 +287,7 @@ pub async fn redeem(
     if stock_affected == 0 {
         let _ = tx.rollback().await;
         // Refund points
-        let _ = integral_repo::add_balance(pool, user.uid, total_cost as i32, now).await;
+        let _ = integral_repo::add_balance(pool, user.uid, refund_delta(total_cost), now).await;
         return Err(ApiError::param_invalid("out_of_stock"));
     }
 
@@ -302,7 +312,7 @@ pub async fn redeem(
         Err(e) => {
             let _ = tx.rollback().await;
             // Refund stock + points together
-            let _ = integral_repo::add_balance(pool, user.uid, total_cost as i32, now).await;
+            let _ = integral_repo::add_balance(pool, user.uid, refund_delta(total_cost), now).await;
             // Stock rollback would need a separate UPDATE (the tx is already rolled back,
             // and the deduction is already refunded above; skip here)
             return Err(e.into());
@@ -439,7 +449,7 @@ async fn refund_order(
     tx.commit().await?;
 
     // Refund points (ON DUPLICATE KEY UPDATE add-value on the pool)
-    integral_repo::add_balance(pool, order.uid, order.integral as i32, now).await?;
+    integral_repo::add_balance(pool, order.uid, refund_delta(order.integral), now).await?;
 
     let _ = audit::emit(
         state,
@@ -449,4 +459,24 @@ async fn refund_order(
     )
     .await;
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{refund_delta, total_cost};
+
+    #[test]
+    fn large_integral_costs_fail_instead_of_wrapping() {
+        assert_eq!(total_cost(u32::MAX, 1).unwrap(), u32::MAX);
+        let error = total_cost(u32::MAX, 2).unwrap_err();
+        assert_eq!(error.code(), 400);
+    }
+
+    #[test]
+    fn large_refunds_remain_positive_i64_values() {
+        let refund = refund_delta(u32::MAX);
+        assert_eq!(refund, 4_294_967_295_i64);
+        assert!(refund > 0);
+        assert_eq!(refund.checked_add(refund), Some(8_589_934_590_i64));
+    }
 }

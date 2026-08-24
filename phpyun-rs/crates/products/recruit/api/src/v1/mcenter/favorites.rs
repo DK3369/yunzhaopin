@@ -190,8 +190,8 @@ fn resolve_pagination(form: &FavoriteListForm, query: Pagination) -> Pagination 
     Pagination {
         page,
         page_size,
-        offset: ((page - 1) as u64) * page_size as u64,
-        limit: page_size as u64,
+        offset: u64::from(page - 1).saturating_mul(u64::from(page_size)),
+        limit: u64::from(page_size),
     }
 }
 

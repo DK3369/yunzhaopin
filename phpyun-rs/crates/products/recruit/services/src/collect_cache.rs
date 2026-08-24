@@ -39,7 +39,8 @@ use phpyun_core::{AppResult, AppState};
 use phpyun_models::collect::repo as collect_repo;
 use std::collections::HashSet;
 
-const TTL_SECS: i64 = 3600;
+const TTL_SECS: u64 = 3600;
+const TTL_SECS_SIGNED: i64 = 3600;
 
 fn key_set(uid: u64) -> String {
     format!("fav:user:{uid}")
@@ -61,11 +62,14 @@ async fn ensure_warmed(state: &AppState, uid: u64) -> AppResult<()> {
     let job_ids = collect_repo::all_job_ids_by_user(state.db.reader(), uid).await?;
     let key = key_set(uid);
     if !job_ids.is_empty() {
-        let as_i64: Vec<i64> = job_ids.iter().map(|&v| v as i64).collect();
+        let as_i64: Vec<i64> = job_ids
+            .iter()
+            .map(|&value| phpyun_core::numeric::checked_internal(value, "favorite.job_id"))
+            .collect::<AppResult<_>>()?;
         let _ = state.redis.sadd_i64_many(&key, &as_i64).await;
-        let _ = state.redis.expire(&key, TTL_SECS).await;
+        let _ = state.redis.expire(&key, TTL_SECS_SIGNED).await;
     }
-    let _ = state.redis.set_ex(&warmed_key, "1", TTL_SECS as u64).await;
+    let _ = state.redis.set_ex(&warmed_key, "1", TTL_SECS).await;
     Ok(())
 }
 
@@ -76,11 +80,8 @@ pub async fn is_favorited(state: &AppState, uid: u64, job_id: u64) -> AppResult<
     if ensure_warmed(state, uid).await.is_err() {
         return Ok(collect_repo::exists(state.db.reader(), uid, job_id).await?);
     }
-    match state
-        .redis
-        .sismember_i64(&key_set(uid), job_id as i64)
-        .await
-    {
+    let cache_job_id = phpyun_core::numeric::checked_internal(job_id, "favorite.job_id")?;
+    match state.redis.sismember_i64(&key_set(uid), cache_job_id).await {
         Ok(b) => Ok(b),
         // Redis hiccup AFTER warm — go direct to DB rather than lying with `false`.
         Err(_) => Ok(collect_repo::exists(state.db.reader(), uid, job_id).await?),
@@ -104,7 +105,16 @@ pub async fn favorited_set(state: &AppState, uid: Option<u64>, job_ids: &[u64]) 
             .await
             .unwrap_or_default();
     }
-    let as_i64: Vec<i64> = job_ids.iter().map(|&v| v as i64).collect();
+    let Ok(as_i64) = job_ids
+        .iter()
+        .copied()
+        .map(i64::try_from)
+        .collect::<Result<Vec<_>, _>>()
+    else {
+        return collect_repo::favorited_job_ids_for_user(state.db.reader(), uid, job_ids)
+            .await
+            .unwrap_or_default();
+    };
     let bits = match state.redis.smismember_i64(&key_set(uid), &as_i64).await {
         Ok(v) => v,
         // If SMISMEMBER fails (Redis hiccup), fall back to DB
@@ -123,19 +133,22 @@ pub async fn favorited_set(state: &AppState, uid: Option<u64>, job_ids: &[u64]) 
 
 /// Cache write — call after the DB INSERT succeeds.
 pub async fn record_added(state: &AppState, uid: u64, job_id: u64) {
-    let _ = state.redis.sadd_i64(&key_set(uid), job_id as i64).await;
+    let Ok(job_id) = i64::try_from(job_id) else {
+        return;
+    };
+    let _ = state.redis.sadd_i64(&key_set(uid), job_id).await;
     // Refresh TTL while we're touching the key
-    let _ = state.redis.expire(&key_set(uid), TTL_SECS).await;
-    let _ = state
-        .redis
-        .set_ex(&key_warmed(uid), "1", TTL_SECS as u64)
-        .await;
+    let _ = state.redis.expire(&key_set(uid), TTL_SECS_SIGNED).await;
+    let _ = state.redis.set_ex(&key_warmed(uid), "1", TTL_SECS).await;
 }
 
 /// Cache write — call after the DB DELETE succeeds.
 pub async fn record_removed(state: &AppState, uid: u64, job_id: u64) {
-    let _ = state.redis.srem_i64(&key_set(uid), job_id as i64).await;
-    let _ = state.redis.expire(&key_set(uid), TTL_SECS).await;
+    let Ok(job_id) = i64::try_from(job_id) else {
+        return;
+    };
+    let _ = state.redis.srem_i64(&key_set(uid), job_id).await;
+    let _ = state.redis.expire(&key_set(uid), TTL_SECS_SIGNED).await;
 }
 
 /// Drop the entire cache for one uid. Useful from admin tools / tests.

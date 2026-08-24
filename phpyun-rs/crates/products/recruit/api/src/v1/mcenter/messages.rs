@@ -7,7 +7,7 @@ use phpyun_core::utils::fmt_dt;
 use phpyun_core::{
     ApiResponse, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
 };
-use phpyun_services::{broadcast_service, chat_service, message_service, warning_service};
+use phpyun_services::{broadcast_service, message_service, warning_service};
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
@@ -200,14 +200,13 @@ pub async fn unread_summary(
     State(state): State<AppState>,
     user: AuthenticatedUser,
 ) -> AppResult<ApiResponse<UnreadSummary>> {
-    let (messages, chat, broadcasts, warnings) = tokio::join!(
+    let (messages, broadcasts, warnings) = tokio::join!(
         message_service::unread_count(&state, &user),
-        chat_service::unread_count(&state, &user),
         broadcast_service::unread_count(&state, &user),
         warning_service::unread_count(&state, &user),
     );
     let messages = messages.unwrap_or(0);
-    let chat = chat.unwrap_or(0);
+    let chat = 0;
     let broadcasts = broadcasts.unwrap_or(0);
     let warnings = warnings.unwrap_or(0);
     Ok(ApiResponse::data(UnreadSummary {

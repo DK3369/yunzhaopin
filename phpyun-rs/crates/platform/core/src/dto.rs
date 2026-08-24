@@ -49,13 +49,6 @@ pub struct MidBody {
     pub mid: u64,
 }
 
-/// Body carrying just `{ peer }` (chat peer uid).
-#[derive(Debug, Deserialize, Validate, ToSchema)]
-pub struct PeerBody {
-    #[validate(range(min = 1, max = 99_999_999))]
-    pub peer: u64,
-}
-
 /// Body carrying an opaque token (resume-share, password-reset, etc.).
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct TokenBody {
@@ -155,7 +148,7 @@ pub struct BatchResult {
 }
 
 /// `{ unread }` — unread badge response. Used by every notification channel
-/// (broadcasts / chat / warnings / messages) to drive the bell icon counter.
+/// (broadcasts / warnings / messages) to drive the bell icon counter.
 #[derive(Debug, Serialize, ToSchema)]
 pub struct UnreadCount {
     pub unread: u64,

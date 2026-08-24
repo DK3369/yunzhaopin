@@ -72,7 +72,7 @@ pub async fn exchange(
             Ok(id) => id,
             Err(e) => {
                 // Roll back points + stock
-                let _ = integral_repo::add_balance(pool, user.uid, item.cost as i32, now).await;
+                let _ = integral_repo::add_balance(pool, user.uid, i64::from(item.cost), now).await;
                 let _ = integral_repo::rollback_stock(pool, item_id).await;
                 return Err(e.into());
             }

@@ -53,7 +53,7 @@ pub async fn create(pool: &MySqlPool, c: MessageCreate<'_>, now: i64) -> Result<
            VALUES (?, ?, ?, 1, ?)"#,
     )
     .bind(c.uid)
-    .bind(c.recipient_usertype as i32)
+    .bind(i32::from(c.recipient_usertype))
     .bind(&merged)
     .bind(now)
     .execute(pool)
@@ -96,7 +96,7 @@ pub async fn count(
         qb.push(" AND remind_status = 1");
     }
     let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 /// Mark a single message read. PHP `remind_status` flips 1→0.

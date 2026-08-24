@@ -244,7 +244,7 @@ pub async fn add_review(
     }
     let now = clock::now_ts();
     let usertype: i32 = if user.usertype > 0 {
-        user.usertype as i32
+        i32::from(user.usertype)
     } else {
         1
     };

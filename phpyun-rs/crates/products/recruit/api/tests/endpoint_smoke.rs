@@ -52,6 +52,7 @@ async fn issue_token_with_session(state: &AppState, cfg: &Config, usertype: u8) 
 }
 
 #[tokio::test(flavor = "multi_thread")]
+#[ignore = "requires a populated PHPYun MySQL database and Redis"]
 async fn smoke_every_v1_post_endpoint() {
     // Capture sqlx + handler-layer tracing so 5xx bodies can include the real
     // error rather than just the generic `"db"` envelope. Filter is permissive
@@ -106,8 +107,8 @@ async fn smoke_every_v1_post_endpoint() {
             req = req.header("authorization", format!("Bearer {token}"));
         }
         let mut req = req.body(Body::from("{}")).unwrap();
-        let octet_a = (idx >> 8) as u8;
-        let octet_b = (idx & 0xff) as u8;
+        let octet_a = u8::try_from(idx >> 8).unwrap();
+        let octet_b = u8::try_from(idx & 0xff).unwrap();
         let peer: SocketAddr = format!("10.99.{octet_a}.{octet_b}:65535").parse().unwrap();
         req.extensions_mut().insert(ConnectInfo(peer));
 

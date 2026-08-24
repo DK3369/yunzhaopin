@@ -81,7 +81,7 @@ impl From<phpyun_models::rating::entity::RatingAggregate> for RatingSummary {
             target_kind: a.target_kind,
             count: a.count,
             sum_stars: a.sum_stars,
-            avg: (a.avg_x100 as f32) / 100.0,
+            avg: num_traits::ToPrimitive::to_f32(&a.avg_x100).unwrap_or(f32::MAX) / 100.0,
             avg_x100: a.avg_x100,
             updated_at_n: fmt_dt(a.updated_at),
             updated_at: a.updated_at,

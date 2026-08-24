@@ -322,8 +322,8 @@ pub async fn create_pay_order(state: &AppState, input: PayInput<'_>) -> AppResul
     let _ = once_repo::delete_pending_orders_for_once(pool, input.once_id).await;
 
     let now = clock::now_ts();
-    let suffix1 = uuid::Uuid::new_v4().as_u128() as u32 % 100_000;
-    let suffix2 = uuid::Uuid::new_v4().as_u128() as u32 % 100_000;
+    let suffix1 = uuid_suffix();
+    let suffix2 = uuid_suffix();
     let order_id = format!("{}{:05}", now, suffix1);
     let fast = format!("{}{:05}", now, suffix2);
 
@@ -361,6 +361,12 @@ pub async fn create_pay_order(state: &AppState, input: PayInput<'_>) -> AppResul
         state: state_code,
         fast,
     })
+}
+
+fn uuid_suffix() -> u32 {
+    let uuid = uuid::Uuid::new_v4();
+    let bytes = uuid.as_bytes();
+    u32::from_le_bytes([bytes[0], bytes[1], bytes[2], bytes[3]]) % 100_000
 }
 
 pub struct PendingOrdersPage {

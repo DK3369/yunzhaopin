@@ -64,7 +64,7 @@ pub async fn count(pool: &MySqlPool, tag: Option<&str>) -> Result<u64, sqlx::Err
                 .await?
         }
     };
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 pub async fn find(pool: &MySqlPool, id: u64) -> Result<Option<Gongzhao>, sqlx::Error> {

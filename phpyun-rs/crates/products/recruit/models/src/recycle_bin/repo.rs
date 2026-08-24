@@ -91,7 +91,7 @@ pub async fn count(pool: &MySqlPool, tablename: Option<&str>) -> Result<u64, sql
                 .await?
         }
     };
-    Ok(n.0.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n.0))
 }
 
 pub async fn delete_by_id(pool: &MySqlPool, id: u64) -> Result<u64, sqlx::Error> {

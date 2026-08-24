@@ -220,6 +220,7 @@ pub async fn check_quota(state: &AppState, user: &AuthenticatedUser) -> AppResul
 
     let lang = current_lang();
 
+    let day_cap = phpyun_core::numeric::nonnegative_count(day_cap);
     if day_cap == 0 {
         // PHP returns "推荐功能已关闭！" — the feature itself is disabled.
         return Ok(QuotaStatus {
@@ -232,12 +233,12 @@ pub async fn check_quota(state: &AppState, user: &AuthenticatedUser) -> AppResul
         });
     }
 
-    if used_today >= day_cap as u64 {
+    if used_today >= day_cap {
         return Ok(QuotaStatus {
             status: 1,
             msg: t_args("recommend.day_cap", lang, &[("cap", &day_cap.to_string())]),
             used_today,
-            day_cap: day_cap as u64,
+            day_cap,
             interval_secs,
             seconds_remaining: 0,
         });
@@ -261,7 +262,7 @@ pub async fn check_quota(state: &AppState, user: &AuthenticatedUser) -> AppResul
                         ],
                     ),
                     used_today,
-                    day_cap: day_cap as u64,
+                    day_cap,
                     interval_secs,
                     seconds_remaining: remaining,
                 });
@@ -273,7 +274,7 @@ pub async fn check_quota(state: &AppState, user: &AuthenticatedUser) -> AppResul
         status: 0,
         msg: String::new(),
         used_today,
-        day_cap: day_cap as u64,
+        day_cap,
         interval_secs,
         seconds_remaining: 0,
     })

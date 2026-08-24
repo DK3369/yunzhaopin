@@ -88,7 +88,7 @@ pub async fn count_public(pool: &MySqlPool, f: &ResumeFilter<'_>) -> Result<u64,
     qb.push_bind(f.did);
     push_filters(&mut qb, f);
     let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 fn push_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &ResumeFilter<'a>) {

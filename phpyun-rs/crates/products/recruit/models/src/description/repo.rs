@@ -103,7 +103,7 @@ pub async fn count(
         q = q.bind(c);
     }
     let (n,) = q.fetch_one(pool).await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 pub async fn get(pool: &MySqlPool, id: u64) -> Result<Option<Description>, sqlx::Error> {

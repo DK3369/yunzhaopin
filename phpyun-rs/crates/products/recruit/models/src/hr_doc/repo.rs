@@ -60,7 +60,7 @@ pub async fn count_public(pool: &MySqlPool, cid: Option<u64>) -> Result<u64, sql
                 .await?
         }
     };
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 pub async fn find(pool: &MySqlPool, id: u64) -> Result<Option<HrDoc>, sqlx::Error> {

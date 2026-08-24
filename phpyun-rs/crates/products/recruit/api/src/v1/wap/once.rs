@@ -374,6 +374,7 @@ pub async fn pay(
     ValidatedJson(f): ValidatedJson<PayForm>,
 ) -> AppResult<ApiResponse<PayCreated>> {
     let id = f.id;
+    let did = phpyun_core::numeric::checked_param(f.did, "once.did")?;
     let r = once_service::create_pay_order(
         &state,
         once_service::PayInput {
@@ -381,7 +382,7 @@ pub async fn pay(
             password: &f.password,
             pay_type: &f.paytype,
             gear_id: f.oncepricegear,
-            did: f.did as i32,
+            did,
         },
     )
     .await?;

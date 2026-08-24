@@ -140,13 +140,13 @@ pub async fn post_message(
     ValidatedJson(f): ValidatedJson<PaperMessageForm>,
 ) -> AppResult<ApiResponse<CreatedId>> {
     let id = f.id;
-    let id_u32 = id as u32;
+    let id_u32 = phpyun_core::numeric::checked_param(id, "eval.paper_id")?;
     let now = phpyun_core::clock::now_ts();
     let new_id = phpyun_models::eval::repo::insert_paper_message(
         state.db.pool(),
         id_u32,
         user.uid,
-        user.usertype as i32,
+        i32::from(user.usertype),
         f.message.trim(),
         now,
     )

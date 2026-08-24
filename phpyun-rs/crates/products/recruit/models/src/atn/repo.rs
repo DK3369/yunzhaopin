@@ -145,7 +145,7 @@ pub async fn count_by_follower(
             .bind(sc_usertype)
             .fetch_one(pool)
             .await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 /// Followers of a target.
@@ -181,7 +181,7 @@ pub async fn count_by_followee(
             .bind(sc_usertype)
             .fetch_one(pool)
             .await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 /// Return the set of `sc_uid` values a given user follows (any usertype).
@@ -193,7 +193,10 @@ pub async fn list_followee_uids(pool: &MySqlPool, uid: u64) -> Result<Vec<u64>, 
             .bind(uid)
             .fetch_all(pool)
             .await?;
-    Ok(rows.into_iter().map(|(v,)| v.max(0) as u64).collect())
+    Ok(rows
+        .into_iter()
+        .map(|(v,)| phpyun_core::numeric::nonnegative_count(v))
+        .collect())
 }
 
 /// Best-effort bump of `phpyun_company.ant_num` (note the historical typo —

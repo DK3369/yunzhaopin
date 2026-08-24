@@ -80,7 +80,7 @@ pub async fn admin_count(pool: &MySqlPool) -> Result<u64, sqlx::Error> {
     let (n,): (i64,) = sqlx::query_as("SELECT COUNT(*) FROM phpyun_admin_announcement")
         .fetch_one(pool)
         .await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 /// Fetch active announcements visible during `(startime, endtime)`. The
@@ -118,7 +118,7 @@ pub async fn count_for_user(pool: &MySqlPool, _usertype: i32) -> Result<u64, sql
     .bind(now)
     .fetch_one(pool)
     .await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 /// Count of unread announcements (active − already read).
@@ -143,7 +143,7 @@ pub async fn count_unread(pool: &MySqlPool, uid: u64, _usertype: i32) -> Result<
     .fetch_one(pool)
     .await;
     match res {
-        Ok((n,)) => Ok(n.max(0) as u64),
+        Ok((n,)) => Ok(phpyun_core::numeric::nonnegative_count(n)),
         Err(e) if phpyun_core::db::is_missing_table(&e) => {
             // Fall back to total active count: every visible announcement is
             // considered unread when read receipts can't be tracked.

@@ -127,7 +127,7 @@ pub async fn count_public(
     qb.push_bind(f.did);
     push_filters(&mut qb, f, now);
     let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 fn push_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &PartFilter<'a>, now: i64) {
@@ -198,8 +198,14 @@ pub async fn list_by_com(
     );
     sqlx::query_as::<_, PartJob>(&sql)
         .bind(com_uid)
-        .bind(limit as i64)
-        .bind(offset as i64)
+        .bind(phpyun_core::numeric::checked_db_i64(
+            limit,
+            "pagination.limit",
+        )?)
+        .bind(phpyun_core::numeric::checked_db_i64(
+            offset,
+            "pagination.offset",
+        )?)
         .fetch_all(pool)
         .await
 }
@@ -209,7 +215,7 @@ pub async fn count_by_com(pool: &MySqlPool, com_uid: u64) -> Result<u64, sqlx::E
         .bind(com_uid)
         .fetch_one(pool)
         .await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 /// Delete part-time jobs (a company can only delete its own; admin
@@ -310,8 +316,8 @@ pub async fn list_applies_by_uid(
         &format!("SELECT {APPLY_FIELDS} FROM phpyun_part_apply WHERE uid = ? ORDER BY ctime DESC LIMIT ? OFFSET ?"),
     )
     .bind(uid)
-    .bind(limit as i64)
-    .bind(offset as i64)
+    .bind(phpyun_core::numeric::checked_db_i64(limit, "pagination.limit")?)
+    .bind(phpyun_core::numeric::checked_db_i64(offset, "pagination.offset")?)
     .fetch_all(pool)
     .await
 }
@@ -321,7 +327,7 @@ pub async fn count_applies_by_uid(pool: &MySqlPool, uid: u64) -> Result<u64, sql
         .bind(uid)
         .fetch_one(pool)
         .await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 pub async fn list_applies_by_com(
@@ -334,8 +340,8 @@ pub async fn list_applies_by_com(
         &format!("SELECT {APPLY_FIELDS} FROM phpyun_part_apply WHERE comid = ? ORDER BY ctime DESC LIMIT ? OFFSET ?"),
     )
     .bind(com_uid)
-    .bind(limit as i64)
-    .bind(offset as i64)
+    .bind(phpyun_core::numeric::checked_db_i64(limit, "pagination.limit")?)
+    .bind(phpyun_core::numeric::checked_db_i64(offset, "pagination.offset")?)
     .fetch_all(pool)
     .await
 }
@@ -345,7 +351,7 @@ pub async fn count_applies_by_com(pool: &MySqlPool, com_uid: u64) -> Result<u64,
         .bind(com_uid)
         .fetch_one(pool)
         .await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 pub async fn update_apply_status(
@@ -438,8 +444,14 @@ pub async fn list_collects_by_uid(
          WHERE uid = ? ORDER BY ctime DESC LIMIT ? OFFSET ?"
     ))
     .bind(uid)
-    .bind(limit as i64)
-    .bind(offset as i64)
+    .bind(phpyun_core::numeric::checked_db_i64(
+        limit,
+        "pagination.limit",
+    )?)
+    .bind(phpyun_core::numeric::checked_db_i64(
+        offset,
+        "pagination.offset",
+    )?)
     .fetch_all(pool)
     .await
 }
@@ -449,7 +461,7 @@ pub async fn count_collects_by_uid(pool: &MySqlPool, uid: u64) -> Result<u64, sq
         .bind(uid)
         .fetch_one(pool)
         .await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 pub async fn delete_collects(

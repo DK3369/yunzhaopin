@@ -100,7 +100,7 @@ pub async fn count_by_uid(
         qb.push_bind(s);
     }
     let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 /// Count active (`isdel = 9`) applications by a jobseeker to a specific
@@ -118,7 +118,7 @@ pub async fn count_by_uid_to_company(
     .bind(com_id)
     .fetch_one(pool)
     .await?;
-    Ok(row.0.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(row.0))
 }
 
 /// Company side: transition application to any is_browse enum value
@@ -204,7 +204,7 @@ pub async fn count_by_com(
         qb.push_bind(if inv { 1 } else { 0 });
     }
     let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 /// Company marks as viewed (is_browse: 1 -> 0).

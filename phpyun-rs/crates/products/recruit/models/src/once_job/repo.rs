@@ -89,7 +89,7 @@ pub async fn count_public(pool: &MySqlPool, f: &Filter<'_>, now: i64) -> Result<
     qb.push_bind(f.did);
     push_filters(&mut qb, f);
     let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 fn push_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &Filter<'a>) {
@@ -135,7 +135,7 @@ pub async fn count_today_by_ip(
             .bind(since_ts)
             .fetch_one(pool)
             .await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 pub async fn count_today_total(pool: &MySqlPool, since_ts: i64) -> Result<u64, sqlx::Error> {
@@ -143,7 +143,7 @@ pub async fn count_today_total(pool: &MySqlPool, since_ts: i64) -> Result<u64, s
         .bind(since_ts)
         .fetch_one(pool)
         .await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 pub struct Create<'a> {
@@ -440,7 +440,7 @@ pub async fn count_pending_once_orders(pool: &MySqlPool, uid: u64) -> Result<u64
     .bind(ONCE_ORDER_TYPE)
     .fetch_one(pool)
     .await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 /// Cancel a pending order (mark `order_state=3`, matching PHP `del`).

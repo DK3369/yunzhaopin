@@ -48,7 +48,24 @@ impl PosterKind {
         }
     }
 
-    pub fn as_i8(self) -> i32 {
-        self as i32
+    pub fn code(self) -> i32 {
+        match self {
+            Self::Job => 1,
+            Self::Company => 2,
+            Self::InviteReg => 3,
+            Self::Gongzhao => 4,
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::PosterKind;
+
+    #[test]
+    fn poster_kind_uses_explicit_mapping_and_rejects_unknown_values() {
+        assert_eq!(PosterKind::parse("job").map(PosterKind::code), Some(1));
+        assert_eq!(PosterKind::parse("gongzhao").map(PosterKind::code), Some(4));
+        assert_eq!(PosterKind::parse("unknown"), None);
     }
 }

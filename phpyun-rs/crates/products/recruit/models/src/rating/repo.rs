@@ -82,6 +82,9 @@ pub async fn upsert(
     // Update aggregate.
     let delta_count: i32 = if prev.is_some() { 0 } else { 1 };
     let delta_sum: i32 = stars - prev.unwrap_or(0);
+    let stars_x100 = stars
+        .checked_mul(100)
+        .ok_or_else(|| sqlx::Error::Protocol("rating.stars overflow".to_string()))?;
     sqlx::query(
         r#"INSERT INTO phpyun_rs_rating_aggregate
            (target_uid, target_kind, count, sum_stars, avg_x100, updated_at)
@@ -97,7 +100,7 @@ pub async fn upsert(
     .bind(target_kind)
     .bind(delta_count)
     .bind(delta_sum)
-    .bind(if prev.is_some() { 0 } else { (stars as u32) * 100 })
+    .bind(if prev.is_some() { 0 } else { stars_x100 })
     .bind(now)
     .execute(&mut *tx)
     .await?;
@@ -217,5 +220,5 @@ pub async fn count_for_target(
     .bind(target_kind)
     .fetch_one(pool)
     .await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }

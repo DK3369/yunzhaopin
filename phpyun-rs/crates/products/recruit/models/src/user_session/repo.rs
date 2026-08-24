@@ -27,7 +27,7 @@ pub async fn insert(pool: &MySqlPool, v: InsertSession<'_>) -> Result<u64, sqlx:
            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)"#,
     )
     .bind(v.uid)
-    .bind(v.usertype as i32)
+    .bind(i32::from(v.usertype))
     .bind(v.jti_access)
     .bind(v.jti_refresh)
     .bind(v.device)

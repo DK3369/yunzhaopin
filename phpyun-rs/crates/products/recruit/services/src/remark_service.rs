@@ -50,6 +50,7 @@ pub async fn list(
     let db = state.db.reader();
     // Simplified: derive total from the returned list length
     let list = remark_repo::list_by_user(db, user.uid, kind, page.offset, page.limit).await?;
-    let total = list.len() as u64 + page.offset; // best-effort; an exact count would need a separate SQL
+    let len = phpyun_core::numeric::checked_internal::<u64, _>(list.len(), "remarks.len")?;
+    let total = len.saturating_add(page.offset); // best-effort; an exact count would need a separate SQL
     Ok(Paged::new(list, total, page.page, page.page_size))
 }

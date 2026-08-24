@@ -61,11 +61,16 @@ where
         let started = Instant::now();
         let inner = tokio::spawn(fut);
         let res = inner.await;
-        let elapsed_ms = started.elapsed().as_secs_f64() * 1000.0;
+        let elapsed = started.elapsed();
+        let elapsed_ms = elapsed.as_secs_f64() * 1000.0;
         m::histogram_ms("tasks.duration_ms", elapsed_ms);
         match res {
             Ok(()) => {
-                tracing::debug!(task = name, took_ms = elapsed_ms as u64, "bg done");
+                tracing::debug!(
+                    task = name,
+                    took_ms = crate::numeric::saturating_millis(elapsed),
+                    "bg done"
+                );
             }
             Err(e) if e.is_panic() => {
                 m::counter_with("tasks.panicked", &[("name", name)]);
@@ -109,7 +114,7 @@ where
                     }
                     tracing::debug!(
                         task = name,
-                        took_ms = started.elapsed().as_millis() as u64,
+                        took_ms = crate::numeric::saturating_millis(started.elapsed()),
                         "tick"
                     );
                 }

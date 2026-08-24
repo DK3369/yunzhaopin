@@ -65,7 +65,7 @@ pub async fn count(pool: &MySqlPool) -> Result<u64, sqlx::Error> {
     let (n,): (i64,) = sqlx::query_as("SELECT COUNT(*) FROM phpyun_zhaopinhui WHERE is_open = 1")
         .fetch_one(pool)
         .await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 pub async fn find_by_id(pool: &MySqlPool, id: u64) -> Result<Option<Zph>, sqlx::Error> {
@@ -130,7 +130,7 @@ pub async fn count_companies(pool: &MySqlPool, zid: u64) -> Result<u64, sqlx::Er
             .bind(zid)
             .fetch_one(pool)
             .await?;
-    Ok(n.max(0) as u64)
+    Ok(phpyun_core::numeric::nonnegative_count(n))
 }
 
 // ---------- reservations ----------
@@ -195,7 +195,7 @@ pub async fn upsert_reservation(
         .bind(r.uid)
         .fetch_one(pool)
         .await?;
-        Ok(row.0 as u64)
+        phpyun_core::numeric::checked_db_u64(row.0, "zph_reservation.id")
     }
 }
 

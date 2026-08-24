@@ -69,7 +69,11 @@ pub async fn submit(
         for opt in opts {
             if opt.get("label").and_then(|v| v.as_str()) == Some(user_label.as_str()) {
                 if let Some(s) = opt.get("score").and_then(|v| v.as_i64()) {
-                    score += s as i32;
+                    let value =
+                        phpyun_core::numeric::checked_internal::<i32, _>(s, "eval.option.score")?;
+                    score = score.checked_add(value).ok_or_else(|| {
+                        ApiError::internal(std::io::Error::other("eval score overflow"))
+                    })?;
                 }
                 break;
             }
