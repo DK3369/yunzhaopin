@@ -64,8 +64,8 @@ async fn ensure_warmed(state: &AppState, uid: u64) -> AppResult<()> {
     if !job_ids.is_empty() {
         let as_i64: Vec<i64> = job_ids
             .iter()
-            .map(|&value| phpyun_core::numeric::checked_internal(value, "favorite.job_id"))
-            .collect::<AppResult<_>>()?;
+            .map(|&value| phpyun_core::numeric::checked_db(value, "favorite.job_id"))
+            .collect::<Result<_, _>>()?;
         let _ = state.redis.sadd_i64_many(&key, &as_i64).await;
         let _ = state.redis.expire(&key, TTL_SECS_SIGNED).await;
     }
@@ -80,7 +80,9 @@ pub async fn is_favorited(state: &AppState, uid: u64, job_id: u64) -> AppResult<
     if ensure_warmed(state, uid).await.is_err() {
         return Ok(collect_repo::exists(state.db.reader(), uid, job_id).await?);
     }
-    let cache_job_id = phpyun_core::numeric::checked_internal(job_id, "favorite.job_id")?;
+    let Ok(cache_job_id) = i64::try_from(job_id) else {
+        return Ok(collect_repo::exists(state.db.reader(), uid, job_id).await?);
+    };
     match state.redis.sismember_i64(&key_set(uid), cache_job_id).await {
         Ok(b) => Ok(b),
         // Redis hiccup AFTER warm — go direct to DB rather than lying with `false`.

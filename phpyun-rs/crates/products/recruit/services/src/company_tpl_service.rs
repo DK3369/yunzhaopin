@@ -54,7 +54,7 @@ pub async fn apply(
     let mut newly_purchased = false;
     if !already_purchased && tpl.price > 0 {
         // Atomic deduction: when the balance is insufficient affected=0 -> insufficient-balance error
-        let price = phpyun_core::numeric::checked_internal(tpl.price, "company_template.price")?;
+        let price = phpyun_core::numeric::checked_db(tpl.price, "company_template.price")?;
         let affected =
             integral_repo::try_deduct(state.db.pool(), user.uid, price, clock::now_ts()).await?;
         if affected == 0 {

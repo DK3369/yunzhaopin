@@ -107,6 +107,16 @@ pub async fn list_history(
 
 use phpyun_models::integral_transfer::{entity::IntegralTransfer, repo as transfer_repo};
 
+fn validate_transfer(from_uid: u64, to_uid: u64, points: u32) -> AppResult<()> {
+    if to_uid == from_uid {
+        return Err(ApiError::param_invalid("cannot_transfer_to_self"));
+    }
+    if points == 0 {
+        return Err(ApiError::param_invalid("bad_points"));
+    }
+    Ok(())
+}
+
 pub async fn transfer(
     state: &AppState,
     user: &AuthenticatedUser,
@@ -114,12 +124,7 @@ pub async fn transfer(
     points: u32,
     note: &str,
 ) -> AppResult<u64> {
-    if to_uid == user.uid {
-        return Err(ApiError::param_invalid("cannot_transfer_to_self"));
-    }
-    if points == 0 {
-        return Err(ApiError::param_invalid("bad_points"));
-    }
+    validate_transfer(user.uid, to_uid, points)?;
     let now = clock::now_ts();
     let id = transfer_repo::execute(state.db.pool(), user.uid, to_uid, points, note, now)
         .await?
@@ -145,4 +150,16 @@ pub async fn list_transfers(
         transfer_repo::count_by_user(db, user.uid),
     );
     Ok(Paged::new(list?, total?, page.page, page.page_size))
+}
+
+#[cfg(test)]
+mod transfer_tests {
+    use super::validate_transfer;
+
+    #[test]
+    fn rejects_self_transfer_and_zero_points() {
+        assert_eq!(validate_transfer(7, 7, 1).unwrap_err().code(), 400);
+        assert_eq!(validate_transfer(7, 8, 0).unwrap_err().code(), 400);
+        assert!(validate_transfer(7, 8, 1).is_ok());
+    }
 }

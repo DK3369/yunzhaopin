@@ -9,4 +9,10 @@ fn list_embedded_migrations() {
         println!("  v={} desc={}", x.version, x.description);
     }
     assert!(count > 0, "no migrations were embedded");
+    assert!(
+        m.migrations
+            .iter()
+            .any(|migration| migration.version == 20_260_824_000_001),
+        "integral transaction prerequisites migration was not embedded"
+    );
 }

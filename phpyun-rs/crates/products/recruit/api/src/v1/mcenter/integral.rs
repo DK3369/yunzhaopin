@@ -165,7 +165,7 @@ impl TryFrom<phpyun_models::integral_transfer::entity::IntegralTransfer> for Tra
         // uid from PHPYun's `phpyun_company_pay` schema (no `to_uid` column),
         // so set the unknown side to 0 — front-ends should rely on `points`
         // sign + `note` rather than the resolved peer for this view.
-        let points = phpyun_core::numeric::integral_f64_to_u32(
+        let points = phpyun_core::numeric::integral_f64_to_u32_db(
             t.order_price.abs(),
             "integral_transfer.order_price",
         )?;
@@ -253,4 +253,37 @@ pub async fn list_transfers(
 pub struct ExchangeBody {
     #[validate(range(min = 1, max = 99_999_999))]
     pub item_id: u64,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::TransferItem;
+    use phpyun_models::integral_transfer::entity::IntegralTransfer;
+
+    fn ledger_row(order_price: f64) -> IntegralTransfer {
+        IntegralTransfer {
+            id: 1,
+            order_id: "test".to_owned(),
+            order_price,
+            pay_time: 0,
+            pay_state: 2,
+            com_id: 7,
+            pay_remark: String::new(),
+            kind: 1,
+            pay_type: 99,
+            did: 0,
+            eid: 0,
+            usertype: 1,
+            coupon_id: 0,
+        }
+    }
+
+    #[test]
+    fn malformed_database_ledger_points_become_db_errors() {
+        for value in [1.5, f64::NAN, f64::INFINITY, f64::MAX] {
+            let error = TransferItem::try_from(ledger_row(value)).unwrap_err();
+            assert_eq!(error.tag(), "db");
+            assert!(error.to_string().contains("integral_transfer.order_price"));
+        }
+    }
 }

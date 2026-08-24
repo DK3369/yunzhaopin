@@ -29,8 +29,8 @@ use crate::user_session_service::{self, LoginRecord};
 
 fn auth_identity(user: &Member) -> AppResult<(u8, u32)> {
     Ok((
-        phpyun_core::numeric::checked_internal(user.usertype, "phpyun_member.usertype")?,
-        phpyun_core::numeric::checked_internal(user.did, "phpyun_member.did")?,
+        phpyun_core::numeric::checked_db(user.usertype, "phpyun_member.usertype")?,
+        phpyun_core::numeric::checked_db(user.did, "phpyun_member.did")?,
     ))
 }
 
@@ -530,7 +530,7 @@ pub async fn refresh_access(
 // ==================== /me with L1+L2 caching ====================
 
 /// Public-facing user summary exposed to the frontend (sensitive fields stripped).
-#[derive(serde::Serialize, serde::Deserialize, Clone)]
+#[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 pub struct UserProfile {
     pub uid: u64,
     pub username: String,
@@ -643,5 +643,43 @@ async fn seed_role_rows(state: &AppState, uid: u64, usertype: u8) {
             let _ = phpyun_models::company::repo::ensure_uid_only(pool, uid).await;
         }
         _ => {}
+    }
+}
+
+#[cfg(test)]
+mod conversion_tests {
+    use super::*;
+
+    fn member(usertype: i32, did: u64) -> Member {
+        Member {
+            uid: 1,
+            username: "tester".to_owned(),
+            password: String::new(),
+            salt: String::new(),
+            email: None,
+            moblie: None,
+            usertype,
+            status: 1,
+            did,
+            reg_date: 0,
+            login_date: None,
+        }
+    }
+
+    #[test]
+    fn invalid_database_usertype_becomes_db_500() {
+        let error = UserProfile::try_from(member(-1, 0)).unwrap_err();
+        assert_eq!(error.tag(), "db");
+        assert!(error.to_string().contains("phpyun_member.usertype"));
+        assert_eq!(error.http_status().as_u16(), 500);
+    }
+
+    #[test]
+    fn invalid_database_did_becomes_db_500() {
+        let did = u64::from(u32::MAX) + 1;
+        let error = UserProfile::try_from(member(1, did)).unwrap_err();
+        assert_eq!(error.tag(), "db");
+        assert!(error.to_string().contains("phpyun_member.did"));
+        assert_eq!(error.http_status().as_u16(), 500);
     }
 }

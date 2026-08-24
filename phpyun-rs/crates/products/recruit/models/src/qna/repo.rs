@@ -420,7 +420,7 @@ pub async fn list_attended_questions(
     if off >= question_ids.len() {
         return Ok(Vec::new());
     }
-    let take_to = (off + lim).min(question_ids.len());
+    let take_to = pagination_end(off, lim, question_ids.len());
     question_ids = question_ids[off..take_to].to_vec();
 
     let placeholders = std::iter::repeat_n("?", question_ids.len())
@@ -439,6 +439,10 @@ pub async fn list_attended_questions(
         q = q.bind(*id);
     }
     q.fetch_all(pool).await
+}
+
+fn pagination_end(offset: usize, limit: usize, len: usize) -> usize {
+    offset.saturating_add(limit).min(len)
 }
 
 pub async fn count_attended_questions(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Error> {
@@ -717,4 +721,15 @@ pub async fn list_top_answerers(
     .bind(limit)
     .fetch_all(pool)
     .await
+}
+
+#[cfg(test)]
+mod tests {
+    use super::pagination_end;
+
+    #[test]
+    fn csv_pagination_end_saturates_before_clamping_to_length() {
+        assert_eq!(pagination_end(3, 4, 20), 7);
+        assert_eq!(pagination_end(usize::MAX - 2, 10, usize::MAX), usize::MAX);
+    }
 }

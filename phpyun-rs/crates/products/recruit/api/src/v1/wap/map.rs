@@ -94,7 +94,7 @@ pub async fn jobs_near(
         .into_iter()
         .map(|j| -> AppResult<NearJob> {
             let salary_avg = (j.minsalary + j.maxsalary) / 2;
-            let distance_m = phpyun_core::numeric::finite_f64_to_i64(
+            let distance_m = phpyun_core::numeric::finite_f64_to_i64_db(
                 j.distance * 1000.0,
                 phpyun_core::numeric::FloatRounding::Round,
                 "near_job.distance_m",
@@ -140,7 +140,7 @@ pub async fn companies_near(
     let items = list
         .into_iter()
         .map(|c| -> AppResult<NearCompany> {
-            let distance_m = phpyun_core::numeric::finite_f64_to_i64(
+            let distance_m = phpyun_core::numeric::finite_f64_to_i64_db(
                 c.distance * 1000.0,
                 phpyun_core::numeric::FloatRounding::Round,
                 "near_company.distance_m",

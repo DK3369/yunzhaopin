@@ -49,7 +49,7 @@ pub async fn buy(
     }
 
     if tpl.price > 0 {
-        let price = phpyun_core::numeric::checked_internal(tpl.price, "resume_template.price")?;
+        let price = phpyun_core::numeric::checked_db(tpl.price, "resume_template.price")?;
         let n =
             integral_repo::try_deduct(state.db.pool(), user.uid, price, clock::now_ts()).await?;
         if n == 0 {

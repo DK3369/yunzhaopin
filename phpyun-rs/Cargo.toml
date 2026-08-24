@@ -1,14 +1,7 @@
 [workspace]
 resolver = "2"
-# Three layers, and the dependency arrow only ever points down:
-#
-#   apps/      wiring and binaries
-#   products/  one directory per product line; business code, transport-free
-#   platform/  shared kernel, infrastructure facades, transport adapters
-#
-# `scripts/check-architecture.sh` enforces that a product never reaches for a
-# transport crate, which is what keeps one handler usable from HTTP today and a
-# queue tomorrow.
+# Minimal library workspace restored for conversion checks. Server binaries,
+# chat, push, kernel, and transport crates are intentionally out of scope.
 members = [
     "crates/platform/core",
     "crates/platform/auth",

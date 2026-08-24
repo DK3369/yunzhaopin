@@ -18,17 +18,21 @@ pub async fn ensure_row(pool: &MySqlPool, uid: u64) -> Result<(), sqlx::Error> {
     Ok(())
 }
 
-/// Read the integral balance. Stored as VARCHAR in PHP; CAST forces numeric.
+/// Read the integral balance. Stored as VARCHAR in PHP and validated in Rust.
 /// Returns 0 when the row doesn't exist.
 pub async fn read_integral(pool: &MySqlPool, uid: u64) -> Result<i64, sqlx::Error> {
-    let row: Option<(i64,)> = sqlx::query_as(
-        "SELECT CAST(COALESCE(integral, '0') AS SIGNED) FROM phpyun_company_statis \
+    let row: Option<(String,)> = sqlx::query_as(
+        "SELECT COALESCE(integral, '') FROM phpyun_company_statis \
          WHERE uid = ? LIMIT 1",
     )
     .bind(uid)
     .fetch_optional(pool)
     .await?;
-    Ok(row.map(|(n,)| n).unwrap_or(0))
+    row.map(|(raw,)| {
+        crate::member_statis::repo::parse_stored_balance(&raw, "phpyun_company_statis.integral")
+    })
+    .transpose()
+    .map(|balance| balance.unwrap_or(0))
 }
 
 /// Atomic deduction on the integral column. Returns `1` on success, `0` when
@@ -38,17 +42,41 @@ pub async fn try_deduct_integral(
     uid: u64,
     points: i64,
 ) -> Result<u64, sqlx::Error> {
-    let res = sqlx::query(
-        "UPDATE phpyun_company_statis \
-            SET integral = CAST(integral AS SIGNED) - ? \
-          WHERE uid = ? AND CAST(integral AS SIGNED) >= ?",
+    if points <= 0 {
+        return Err(sqlx::Error::Protocol(format!(
+            "phpyun_company_statis.integral: deduction must be positive, got {points}"
+        )));
+    }
+    let mut tx = pool.begin().await?;
+    let row: Option<(String,)> = sqlx::query_as(
+        "SELECT COALESCE(integral, '') FROM phpyun_company_statis \
+         WHERE uid = ? FOR UPDATE",
     )
-    .bind(points)
     .bind(uid)
-    .bind(points)
-    .execute(pool)
+    .fetch_optional(&mut *tx)
     .await?;
-    Ok(res.rows_affected())
+    let Some((raw,)) = row else {
+        tx.rollback().await?;
+        return Ok(0);
+    };
+    let balance =
+        crate::member_statis::repo::parse_stored_balance(&raw, "phpyun_company_statis.integral")?;
+    if balance < points {
+        tx.rollback().await?;
+        return Ok(0);
+    }
+    let next = balance.checked_sub(points).ok_or_else(|| {
+        sqlx::Error::Protocol(format!(
+            "phpyun_company_statis.integral: subtraction overflow for {balance} - {points}"
+        ))
+    })?;
+    sqlx::query("UPDATE phpyun_company_statis SET integral = ? WHERE uid = ?")
+        .bind(next.to_string())
+        .bind(uid)
+        .execute(&mut *tx)
+        .await?;
+    tx.commit().await?;
+    Ok(1)
 }
 
 /// Read the company's rating tier (1..n). Returns 0 when the row doesn't

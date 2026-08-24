@@ -231,13 +231,13 @@ pub async fn quote_package_price(
     // Read site config (`com_integral_online`, `integral_proportion`) and
     // `sy_only_price` (CSV of kinds that opt out of integral payment).
     let online_mode = read_int_setting(state, "com_integral_online")
-        .await
+        .await?
         .unwrap_or(0);
     let proportion = read_int_setting(state, "integral_proportion")
-        .await
+        .await?
         .unwrap_or(0);
     let only_price = read_str_setting(state, "sy_only_price")
-        .await
+        .await?
         .unwrap_or_default();
     let only_price_csv: Vec<&str> = only_price.split(',').filter(|s| !s.is_empty()).collect();
 
@@ -249,8 +249,10 @@ pub async fn quote_package_price(
 
     // PHP `service_discount` is a percent (e.g. 80 = 80%); divide by 100.
     let discount_factor = f64::from(discount) / 100.0;
-    let pro =
-        phpyun_core::numeric::finite_to_f64(proportion.max(0), "site_setting.integral_proportion")?; // multiplier between yuan and integral
+    let pro = phpyun_core::numeric::finite_to_f64_db(
+        proportion.max(0),
+        "site_setting.integral_proportion",
+    )?; // multiplier between yuan and integral
 
     let effective_yh = if pkg.yh_price > 0.0 {
         pkg.yh_price
@@ -281,7 +283,7 @@ pub async fn quote_package_price(
         (display_yh, 1)
     } else {
         // When paying with integral, the user pays `display_yh * pro` integral.
-        let integral_needed = phpyun_core::numeric::finite_f64_to_i64(
+        let integral_needed = phpyun_core::numeric::finite_f64_to_i64_db(
             display_yh * pro,
             phpyun_core::numeric::FloatRounding::Truncate,
             "vip.integral_needed",
@@ -305,18 +307,24 @@ pub async fn quote_package_price(
     })
 }
 
-async fn read_int_setting(state: &AppState, key: &str) -> Option<i64> {
-    let row = phpyun_models::site_setting::repo::find(state.db.reader(), key)
-        .await
-        .ok()
-        .flatten()?;
-    row.value.parse::<i64>().ok()
+async fn read_int_setting(state: &AppState, key: &'static str) -> Result<Option<i64>, sqlx::Error> {
+    let Some(row) = phpyun_models::site_setting::repo::find(state.db.reader(), key).await? else {
+        return Ok(None);
+    };
+    let value = row.value.trim();
+    if value.is_empty() {
+        return Ok(None);
+    }
+    value
+        .parse::<i64>()
+        .map(Some)
+        .map_err(|error| phpyun_core::numeric::db_conversion_error::<i64>(key, value, error))
 }
 
-async fn read_str_setting(state: &AppState, key: &str) -> Option<String> {
-    let row = phpyun_models::site_setting::repo::find(state.db.reader(), key)
-        .await
-        .ok()
-        .flatten()?;
-    Some(row.value)
+async fn read_str_setting(state: &AppState, key: &str) -> Result<Option<String>, sqlx::Error> {
+    Ok(
+        phpyun_models::site_setting::repo::find(state.db.reader(), key)
+            .await?
+            .map(|row| row.value),
+    )
 }

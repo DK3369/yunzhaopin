@@ -101,14 +101,27 @@ pub async fn find_package_pricing(
     .bind(id)
     .fetch_optional(pool)
     .await?;
-    Ok(row.map(|(id, name, sp, yh, ts, te)| PackagePricing {
+    let Some((id, name, sp, yh, time_start, time_end)) = row else {
+        return Ok(None);
+    };
+    let service_price = parse_finite_price(&sp, "phpyun_company_rating.service_price")?;
+    let yh_price = parse_finite_price(&yh, "phpyun_company_rating.yh_price")?;
+    Ok(Some(PackagePricing {
         id,
         name,
-        service_price: sp.parse::<f64>().unwrap_or(0.0),
-        yh_price: yh.parse::<f64>().unwrap_or(0.0),
-        time_start: ts,
-        time_end: te,
+        service_price,
+        yh_price,
+        time_start,
+        time_end,
     }))
+}
+
+fn parse_finite_price(raw: &str, context: &'static str) -> Result<f64, sqlx::Error> {
+    let value = raw
+        .trim()
+        .parse::<f64>()
+        .map_err(|error| phpyun_core::numeric::db_conversion_error::<f64>(context, raw, error))?;
+    phpyun_core::numeric::finite_to_f64_db(value, context)
 }
 
 /// Read company integral balance from `phpyun_company_statis.integral`.
@@ -405,4 +418,19 @@ pub async fn admin_set_order_status(
         .execute(pool)
         .await?;
     Ok(res.rows_affected())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::parse_finite_price;
+
+    #[test]
+    fn package_prices_reject_invalid_and_non_finite_database_values() {
+        assert_eq!(parse_finite_price("12.5", "price").unwrap(), 12.5);
+        for raw in ["", "not-a-price", "NaN", "inf", "-inf"] {
+            let error = parse_finite_price(raw, "package.price").unwrap_err();
+            assert!(matches!(error, sqlx::Error::Decode(_)));
+            assert!(error.to_string().contains("package.price"));
+        }
+    }
 }

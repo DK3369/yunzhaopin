@@ -107,7 +107,7 @@ pub async fn reset_with_sms(
 //
 // Mirrors PHP `forgetpw/index::sendCode_action` (`sendtype=email` branch) and
 // `checksendcode_action`. The Rust port emits an `email.verify_queued` event
-// — a downstream worker (see `notification_consumers`) renders the message
+// — a downstream notification worker renders the message
 // with the localised template and ships it via SMTP. Same anti-enumeration
 // behaviour as the SMS path: unregistered emails silently no-op.
 

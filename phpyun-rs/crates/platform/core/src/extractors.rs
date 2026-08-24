@@ -317,8 +317,7 @@ impl<S: Send + Sync> FromRequestParts<S> for Pagination {
 /// We only return the first, to avoid bombarding the user with N messages at
 /// once.
 ///
-/// Public because the kernel dispatcher validates input for non-HTTP
-/// transports and must produce the identical `ApiError`.
+/// Public so every request extractor can produce the identical `ApiError`.
 pub fn first_validation_key(errors: &validator::ValidationErrors) -> String {
     use validator::ValidationErrorsKind::*;
     for kind in errors.errors().values() {
@@ -414,6 +413,62 @@ where
             .validate()
             .map_err(|e| ApiError::param_invalid(first_validation_key(&e)))?;
         Ok(ValidatedForm(value))
+    }
+}
+
+#[cfg(test)]
+mod numeric_request_tests {
+    use super::ValidatedJson;
+    use crate::{numeric, AppResult};
+    use axum::{
+        body::{to_bytes, Body},
+        http::{Request, StatusCode},
+        routing::post,
+        Router,
+    };
+    use serde::Deserialize;
+    use tower::ServiceExt;
+    use validator::Validate;
+
+    #[derive(Debug, Deserialize, Validate)]
+    struct RawNumericBody {
+        id: i64,
+        did: i64,
+        usertype: i64,
+    }
+
+    async fn checked_numeric_body(
+        ValidatedJson(body): ValidatedJson<RawNumericBody>,
+    ) -> AppResult<StatusCode> {
+        let _: u64 = numeric::checked_param(body.id, "id")?;
+        let _: u32 = numeric::checked_param(body.did, "did")?;
+        let _: u8 = numeric::checked_param(body.usertype, "usertype")?;
+        Ok(StatusCode::NO_CONTENT)
+    }
+
+    #[tokio::test]
+    async fn invalid_numeric_request_fields_return_http_400() {
+        let app = Router::new().route("/", post(checked_numeric_body));
+        for body in [
+            r#"{"id":-1,"did":0,"usertype":1}"#,
+            r#"{"id":1,"did":4294967296,"usertype":1}"#,
+            r#"{"id":1,"did":0,"usertype":256}"#,
+        ] {
+            let response = app
+                .clone()
+                .oneshot(
+                    Request::post("/")
+                        .header("content-type", "application/json")
+                        .body(Body::from(body))
+                        .unwrap(),
+                )
+                .await
+                .unwrap();
+            assert_eq!(response.status(), StatusCode::BAD_REQUEST);
+            let bytes = to_bytes(response.into_body(), 16 * 1024).await.unwrap();
+            let value: serde_json::Value = serde_json::from_slice(&bytes).unwrap();
+            assert_eq!(value["key"], "param_invalid");
+        }
     }
 }
 

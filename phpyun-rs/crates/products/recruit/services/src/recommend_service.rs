@@ -34,13 +34,13 @@ pub async fn recommend_jobs_for_me(
     };
     if let Some(e) = expects.first() {
         if e.job_classid > 0 {
-            filter.job1 = Some(phpyun_core::numeric::checked_internal(
+            filter.job1 = Some(phpyun_core::numeric::checked_db(
                 e.job_classid,
                 "resume_expect.job_classid",
             )?);
         }
         if e.city_classid > 0 {
-            filter.city_id = Some(phpyun_core::numeric::checked_internal(
+            filter.city_id = Some(phpyun_core::numeric::checked_db(
                 e.city_classid,
                 "resume_expect.city_classid",
             )?);

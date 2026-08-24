@@ -17,11 +17,6 @@
 //!    to repos and other services; raw `sqlx::query*` here means a missing repo
 //!    method — add the method to the repo and call it.
 //!
-//! 3. **CI guard:** `scripts/check-architecture.sh` greps for violations and
-//!    fails the build. Run it locally before committing.
-//!
-//! Pre-existing violations are tagged `// TODO(arch):` and migrated opportunistically.
-//!
 //! ## Inter-service dependency graph
 //!
 //! Services consume repos and AppState; cross-service calls are kept minimal

@@ -24,7 +24,7 @@ use phpyun_models::message::repo as message_repo;
 use crate::user_service;
 
 /// Persisted notification copy uses the system default language until recipient
-/// language preferences are stored (see `notification_consumers::NOTIF_LANG`).
+/// language preferences are stored.
 const NOTIF_LANG: Lang = Lang::ZhCN;
 
 pub struct FollowResult {

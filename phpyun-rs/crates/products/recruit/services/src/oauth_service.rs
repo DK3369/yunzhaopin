@@ -17,8 +17,8 @@ use phpyun_models::user::{entity::Member, repo as user_repo};
 
 fn auth_identity(user: &Member) -> AppResult<(u8, u32)> {
     Ok((
-        phpyun_core::numeric::checked_internal(user.usertype, "phpyun_member.usertype")?,
-        phpyun_core::numeric::checked_internal(user.did, "phpyun_member.did")?,
+        phpyun_core::numeric::checked_db(user.usertype, "phpyun_member.usertype")?,
+        phpyun_core::numeric::checked_db(user.did, "phpyun_member.did")?,
     ))
 }
 

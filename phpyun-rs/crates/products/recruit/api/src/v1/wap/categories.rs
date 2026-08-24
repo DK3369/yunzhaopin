@@ -65,7 +65,7 @@ fn localized_name(
     kind: &str,
     id: u64,
     fallback: &str,
-) -> String {
+) -> AppResult<String> {
     // The legacy database stores Chinese as the default value. For the
     // public English category tree, prefer embedded JSON translations so a
     // missing DB translation cannot silently turn the response Chinese.
@@ -73,11 +73,11 @@ fn localized_name(
         let key = format!("categories.{kind}.{id}");
         let translated = i18n::t(&key, Lang::En);
         if translated != key {
-            return translated;
+            return Ok(translated);
         }
     }
 
-    let id = i32::try_from(id).unwrap_or_default();
+    let id = phpyun_core::numeric::checked_db(id, "category.id")?;
     let name = match kind {
         "job" => dicts.job(id),
         "company" | "industry" | "com" | "comclass" => dicts.comclass(id),
@@ -87,9 +87,9 @@ fn localized_name(
         _ => "",
     };
     if name.is_empty() {
-        fallback.to_owned()
+        Ok(fallback.to_owned())
     } else {
-        name.to_owned()
+        Ok(name.to_owned())
     }
 }
 
@@ -111,11 +111,11 @@ pub async fn list(
     Ok(ApiResponse::data(
         list.iter()
             .cloned()
-            .map(|c| {
-                let name = localized_name(&dicts, &b.kind, c.id, &c.name);
-                CatNode::from_category(c, name)
+            .map(|c| -> AppResult<CatNode> {
+                let name = localized_name(&dicts, &b.kind, c.id, &c.name)?;
+                Ok(CatNode::from_category(c, name))
             })
-            .collect(),
+            .collect::<AppResult<Vec<_>>>()?,
     ))
 }
 
@@ -137,11 +137,11 @@ pub async fn children(
     Ok(ApiResponse::data(
         list.iter()
             .cloned()
-            .map(|c| {
-                let name = localized_name(&dicts, &b.kind, c.id, &c.name);
-                CatNode::from_category(c, name)
+            .map(|c| -> AppResult<CatNode> {
+                let name = localized_name(&dicts, &b.kind, c.id, &c.name)?;
+                Ok(CatNode::from_category(c, name))
             })
-            .collect(),
+            .collect::<AppResult<Vec<_>>>()?,
     ))
 }
 
@@ -169,10 +169,10 @@ pub async fn recommended(
     let dicts = dict_service::get(&state).await?;
     Ok(ApiResponse::data(
         list.into_iter()
-            .map(|c| {
-                let name = localized_name(&dicts, &b.kind, c.id, &c.name);
-                CatNode::from_category(c, name)
+            .map(|c| -> AppResult<CatNode> {
+                let name = localized_name(&dicts, &b.kind, c.id, &c.name)?;
+                Ok(CatNode::from_category(c, name))
             })
-            .collect(),
+            .collect::<AppResult<Vec<_>>>()?,
     ))
 }

@@ -19,9 +19,6 @@
 //!   `phpyun_core::{kv, cache, http_client}` (invoked from services).
 //! - Business logic — eligibility checks, scoring, side effects belong in
 //!   services. Handlers just shuttle bytes.
-//!
-//! `scripts/check-architecture.sh` greps for violations. Pre-existing ones are
-//! tagged `// TODO(arch):` and migrated opportunistically.
 
 pub mod common;
 pub mod openapi;

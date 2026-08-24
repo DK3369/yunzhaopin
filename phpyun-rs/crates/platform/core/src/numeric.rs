@@ -31,6 +31,16 @@ impl NumericConversionError {
     }
 }
 
+pub fn db_conversion_error<T>(
+    context: &'static str,
+    value: impl Display,
+    reason: impl Display,
+) -> sqlx::Error {
+    sqlx::Error::Decode(Box::new(NumericConversionError::new::<T>(
+        context, value, reason,
+    )))
+}
+
 impl Display for NumericConversionError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
@@ -138,13 +148,31 @@ pub fn finite_to_f64<T>(value: T, context: &'static str) -> AppResult<f64>
 where
     T: Copy + Display + ToPrimitive,
 {
-    value.to_f64().ok_or_else(|| {
-        ApiError::internal(NumericConversionError::new::<f64>(
+    finite_to_f64_checked(value, context).map_err(ApiError::internal)
+}
+
+pub fn finite_to_f64_db<T>(value: T, context: &'static str) -> Result<f64, sqlx::Error>
+where
+    T: Copy + Display + ToPrimitive,
+{
+    finite_to_f64_checked(value, context).map_err(|error| sqlx::Error::Decode(Box::new(error)))
+}
+
+fn finite_to_f64_checked<T>(value: T, context: &'static str) -> Result<f64, NumericConversionError>
+where
+    T: Copy + Display + ToPrimitive,
+{
+    let converted = value.to_f64().ok_or_else(|| {
+        NumericConversionError::new::<f64>(context, value, "precision/range conversion failed")
+    })?;
+    if !converted.is_finite() {
+        return Err(NumericConversionError::new::<f64>(
             context,
             value,
-            "precision/range conversion failed",
-        ))
-    })
+            "value is not finite",
+        ));
+    }
+    Ok(converted)
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -158,40 +186,61 @@ pub fn finite_f64_to_i64(
     rounding: FloatRounding,
     context: &'static str,
 ) -> AppResult<i64> {
+    finite_f64_to_i64_checked(value, rounding, context).map_err(ApiError::internal)
+}
+
+pub fn finite_f64_to_i64_db(
+    value: f64,
+    rounding: FloatRounding,
+    context: &'static str,
+) -> Result<i64, sqlx::Error> {
+    finite_f64_to_i64_checked(value, rounding, context)
+        .map_err(|error| sqlx::Error::Decode(Box::new(error)))
+}
+
+fn finite_f64_to_i64_checked(
+    value: f64,
+    rounding: FloatRounding,
+    context: &'static str,
+) -> Result<i64, NumericConversionError> {
     if !value.is_finite() {
-        return Err(ApiError::internal(NumericConversionError::new::<i64>(
+        return Err(NumericConversionError::new::<i64>(
             context,
             value,
             "value is not finite",
-        )));
+        ));
     }
     let normalized = match rounding {
         FloatRounding::Round => value.round(),
         FloatRounding::Truncate => value.trunc(),
     };
     normalized.to_i64().ok_or_else(|| {
-        ApiError::internal(NumericConversionError::new::<i64>(
-            context,
-            value,
-            "value is outside the i64 range",
-        ))
+        NumericConversionError::new::<i64>(context, value, "value is outside the i64 range")
     })
 }
 
 pub fn integral_f64_to_u32(value: f64, context: &'static str) -> AppResult<u32> {
+    integral_f64_to_u32_checked(value, context).map_err(ApiError::internal)
+}
+
+pub fn integral_f64_to_u32_db(value: f64, context: &'static str) -> Result<u32, sqlx::Error> {
+    integral_f64_to_u32_checked(value, context)
+        .map_err(|error| sqlx::Error::Decode(Box::new(error)))
+}
+
+fn integral_f64_to_u32_checked(
+    value: f64,
+    context: &'static str,
+) -> Result<u32, NumericConversionError> {
     if !value.is_finite() || value.fract() != 0.0 {
-        return Err(ApiError::internal(NumericConversionError::new::<u32>(
+        return Err(NumericConversionError::new::<u32>(
             context,
             value,
             "value must be a finite whole number",
-        )));
+        ));
     }
     value.to_u32().ok_or_else(|| {
-        ApiError::internal(NumericConversionError::new::<u32>(
-            context,
-            value,
-            "value is outside the u32 range",
-        ))
+        NumericConversionError::new::<u32>(context, value, "value is outside the u32 range")
     })
 }
 
@@ -231,6 +280,10 @@ mod tests {
         assert!(decode.to_string().contains("member.uid"));
         let api_error = ApiError::from(decode);
         assert_eq!(api_error.code(), 500);
+
+        let decode = checked_db_i32(u64::from(u32::MAX), "category.id").unwrap_err();
+        assert!(matches!(decode, sqlx::Error::Decode(_)));
+        assert!(decode.to_string().contains("category.id"));
     }
 
     #[test]
@@ -266,5 +319,20 @@ mod tests {
     #[test]
     fn duration_millis_saturates_at_u64_max() {
         assert_eq!(saturating_millis(Duration::from_millis(42)), 42);
+        assert_eq!(saturating_millis(Duration::MAX), u64::MAX);
+    }
+
+    #[test]
+    fn database_float_errors_are_decode_errors() {
+        let error = finite_to_f64_db(f64::NAN, "package.price").unwrap_err();
+        assert!(matches!(error, sqlx::Error::Decode(_)));
+        assert!(error.to_string().contains("package.price"));
+
+        let error = finite_f64_to_i64_db(f64::INFINITY, FloatRounding::Round, "distance.meters")
+            .unwrap_err();
+        assert!(matches!(error, sqlx::Error::Decode(_)));
+
+        let error = integral_f64_to_u32_db(1.5, "integral.order_price").unwrap_err();
+        assert!(matches!(error, sqlx::Error::Decode(_)));
     }
 }

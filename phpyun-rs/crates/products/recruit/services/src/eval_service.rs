@@ -12,6 +12,16 @@ use phpyun_models::eval::{
 };
 use std::collections::HashMap;
 
+fn checked_score_add(score: i32, value: i32) -> Result<i32, sqlx::Error> {
+    score.checked_add(value).ok_or_else(|| {
+        phpyun_core::numeric::db_conversion_error::<i32>(
+            "eval.total_score",
+            format!("{score} + {value}"),
+            "score addition overflow",
+        )
+    })
+}
+
 pub async fn list_papers(state: &AppState, page: Pagination) -> AppResult<Paged<EvalPaper>> {
     let db = state.db.reader();
     let (list, total) = tokio::join!(
@@ -69,11 +79,8 @@ pub async fn submit(
         for opt in opts {
             if opt.get("label").and_then(|v| v.as_str()) == Some(user_label.as_str()) {
                 if let Some(s) = opt.get("score").and_then(|v| v.as_i64()) {
-                    let value =
-                        phpyun_core::numeric::checked_internal::<i32, _>(s, "eval.option.score")?;
-                    score = score.checked_add(value).ok_or_else(|| {
-                        ApiError::internal(std::io::Error::other("eval score overflow"))
-                    })?;
+                    let value = phpyun_core::numeric::checked_db::<i32, _>(s, "eval.option.score")?;
+                    score = checked_score_add(score, value)?;
                 }
                 break;
             }
@@ -104,4 +111,17 @@ pub async fn list_my_logs(
         eval_repo::count_logs_by_user(db, user.uid),
     );
     Ok(Paged::new(list?, total?, page.page, page.page_size))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::checked_score_add;
+
+    #[test]
+    fn database_score_overflow_is_a_decode_error() {
+        assert_eq!(checked_score_add(20, 30).unwrap(), 50);
+        let error = checked_score_add(i32::MAX, 1).unwrap_err();
+        assert!(matches!(error, sqlx::Error::Decode(_)));
+        assert!(error.to_string().contains("eval.total_score"));
+    }
 }

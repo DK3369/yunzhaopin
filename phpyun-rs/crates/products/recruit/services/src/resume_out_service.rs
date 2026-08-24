@@ -6,8 +6,8 @@
 //! - At most `sy_resumeout_day_num` sends per day; config <= 0 is treated as "disabled"
 //! - At least `sy_resumeout_interval` seconds between two consecutive sends
 //! - Only jobseekers (usertype=1) can use this
-//! - The actual email is dispatched asynchronously by `notification_consumers`
-//!   subscribing to the `resume.out.sent` event
+//! - The actual email can be dispatched asynchronously by a worker subscribing
+//!   to the `resume.out.sent` event
 
 use phpyun_core::audit::{self, Actor, AuditEvent};
 use phpyun_core::{clock, ApiError, AppResult, AppState, AuthenticatedUser, Pagination};

@@ -44,7 +44,7 @@ const MEMBER_LOG_TYPE_ADD: i32 = 1; // PHP type=1 = add
 const MEMBER_LOG_TYPE_DEL: i32 = 3; // PHP type=3 = delete
 
 /// Persisted log / sysmsg copy uses the system default language until recipient
-/// language preferences are stored (see `notification_consumers::NOTIF_LANG`).
+/// language preferences are stored.
 const NOTIF_LANG: Lang = Lang::ZhCN;
 
 async fn bump_fav_jobnum(state: &AppState, uid: u64, did: u32, delta: i32) {
