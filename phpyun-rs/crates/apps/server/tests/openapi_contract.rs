@@ -1,6 +1,35 @@
 //! Cross-crate OpenAPI contract after splitting `api-admin`.
 
 use std::collections::{BTreeSet, HashSet};
+use std::path::PathBuf;
+
+fn t2_admin_paths() -> Vec<String> {
+    let path = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+        .join("../../../../doc/snapshots/admin_paths.txt");
+    std::fs::read_to_string(&path)
+        .unwrap_or_else(|e| panic!("read {}: {e}", path.display()))
+        .lines()
+        .filter(|l| !l.is_empty())
+        .map(str::to_string)
+        .collect()
+}
+
+#[test]
+fn admin_paths_match_t2_snapshot() {
+    let mut actual: Vec<_> = phpyun_api_admin::openapi()
+        .paths
+        .paths
+        .keys()
+        .cloned()
+        .collect();
+    actual.sort();
+    assert_eq!(
+        actual,
+        t2_admin_paths(),
+        "admin OpenAPI paths drifted from T2 snapshot (doc/snapshots/admin_paths.txt)"
+    );
+    assert_eq!(actual.len(), 72, "admin path count is {}", actual.len());
+}
 
 fn collect_ops(doc: &utoipa::openapi::OpenApi) -> Vec<(String, String, String)> {
     let mut out = Vec::new();

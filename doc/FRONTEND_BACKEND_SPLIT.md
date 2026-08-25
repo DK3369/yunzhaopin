@@ -583,7 +583,7 @@ zzzz.com/
 
 - [ ] T0 修复终端环境
 - [x] T1 建立 Rust binary，让后端能启动（2026-08-25 验收：`cargo build` 与 `cargo clippy --workspace --all-targets -- -D warnings` 通过；`:3000` 被 systemd `test-jobs-phpyun-rs` 占用，本机用 `BIND=127.0.0.1:3001` 验证 `/health` 200、`/docs/` 200、SIGTERM 优雅退出）
-- [ ] T2 跑通冒烟测试，建立基线
+- [x] T2 跑通冒烟测试，建立基线（2026-08-26：v1 POST 405 条 **0 个 5xx**；快照 `doc/snapshots/`；说明见 `doc/SMOKE_BASELINE.md`）
 - [ ] T3 拆出 api-admin crate
 - [ ] T4 接口缺口盘点
 - [ ] T5 为公开读接口增加 GET 别名
