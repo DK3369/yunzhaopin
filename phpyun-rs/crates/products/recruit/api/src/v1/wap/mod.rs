@@ -161,7 +161,7 @@ mod get_alias_tests {
             "/v1/wap/announcements",
             "/v1/wap/wechat/callback",
         ] {
-            assert!(v.iter().any(|x| *x == p), "missing GET alias {p}");
+            assert!(v.contains(&p), "missing GET alias {p}");
         }
         let mut sorted = v.clone();
         sorted.sort_unstable();

@@ -1,7 +1,7 @@
 # 前后端分离改造方案：PHP 全量退役，Rust + Nuxt 4 接管
 
 > 文档版本 v2.0 · 2026-08-25
-> 状态：待执行
+> 状态：执行中（进度以文末「进度追踪」为准，未勾选表示未按验收通过）
 > 分支：`feat/frontend-backend-split`
 >
 > v1.1：前端框架由 Nuxt 3 改为 **Nuxt 4.5.2**（Nuxt 3 已于 2026-07-31 EOL）
@@ -581,18 +581,18 @@ zzzz.com/
 
 ## 9. 进度追踪
 
-- [x] T0 修复终端环境（部分：git 分支已切出；本环境 Shell 仍可能卡住，cargo 需在本机确认）
-- [x] T1 建立 Rust binary，让后端能启动
-- [x] T2 跑通冒烟测试，建立基线（测试与记录文件已落盘，见 `doc/SMOKE_BASELINE.md`；全量 --ignored 需本机 MySQL/Redis）
-- [x] T3 拆出 api-admin crate
-- [x] T4 接口缺口盘点（`doc/API_GAP.md`）
-- [x] T5 为公开读接口增加 GET 别名
-- [x] T6 前端 monorepo 骨架
-- [x] T7 统一 API 客户端与鉴权
-- [x] T8 公开前台页面
-- [x] T9 SEO 配套
-- [x] T10 会员中心
-- [x] T11 管理后台
-- [x] T12 后端补齐 PHP 独占功能（支付回调 / locoy / 小程序登录 / 上传与定时任务已有）
-- [x] T13 重写失真文档
-- [x] T14 下线 PHP（仅准备 Nginx 与操作手册，**未删除 uploads、未停 php-fpm**，见 `ops/T14_RETIRE_PHP.md`）
+- [ ] T0 修复终端环境
+- [x] T1 建立 Rust binary，让后端能启动（2026-08-25 验收：`cargo build` 与 `cargo clippy --workspace --all-targets -- -D warnings` 通过；`:3000` 被 systemd `test-jobs-phpyun-rs` 占用，本机用 `BIND=127.0.0.1:3001` 验证 `/health` 200、`/docs/` 200、SIGTERM 优雅退出）
+- [ ] T2 跑通冒烟测试，建立基线
+- [ ] T3 拆出 api-admin crate
+- [ ] T4 接口缺口盘点
+- [ ] T5 为公开读接口增加 GET 别名
+- [ ] T6 前端 monorepo 骨架
+- [ ] T7 统一 API 客户端与鉴权
+- [ ] T8 公开前台页面
+- [ ] T9 SEO 配套
+- [ ] T10 会员中心
+- [ ] T11 管理后台
+- [ ] T12 后端补齐 PHP 独占功能
+- [ ] T13 重写失真文档
+- [ ] T14 下线 PHP

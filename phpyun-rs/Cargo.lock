@@ -2332,7 +2332,6 @@ dependencies = [
  "phpyun-core",
  "phpyun-models",
  "phpyun-services",
- "redis",
  "regex",
  "serde",
  "serde_json",
