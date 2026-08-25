@@ -1,7 +1,7 @@
 # 前后端分离改造方案：PHP 全量退役，Rust + Nuxt 4 接管
 
-> 文档版本 v2.0 · 2026-08-25
-> 状态：执行中（进度以文末「进度追踪」为准，未勾选表示未按验收通过）
+> 文档版本 v2.0 · 2026-08-25（进度备注更新 2026-08-26）
+> 状态：T1–T13 已按文末备注验收；**T14 仅准备材料，未下线 PHP**
 > 分支：`feat/frontend-backend-split`
 >
 > v1.1：前端框架由 Nuxt 3 改为 **Nuxt 4.5.2**（Nuxt 3 已于 2026-07-31 EOL）
@@ -581,7 +581,7 @@ zzzz.com/
 
 ## 9. 进度追踪
 
-- [ ] T0 修复终端环境
+- [x] T0 修复终端环境（2026-08-26：Cursor 内置 Shell 仍可能卡死；cargo/pnpm 用子代理。Node 用 `/var/tmp/node-dist/node-v22.22.1-linux-arm64` + corepack pnpm 10.14.0。`CARGO_TARGET_DIR` 与 `TMPDIR=/var/tmp/cargo-tmp`）
 - [x] T1 建立 Rust binary，让后端能启动（2026-08-25 验收：`cargo build` 与 `cargo clippy --workspace --all-targets -- -D warnings` 通过；`:3000` 被 systemd `test-jobs-phpyun-rs` 占用，本机用 `BIND=127.0.0.1:3001` 验证 `/health` 200、`/docs/` 200、SIGTERM 优雅退出）
 - [x] T2 跑通冒烟测试，建立基线（2026-08-26：v1 POST 405 条 **0 个 5xx**；快照 `doc/snapshots/`；说明见 `doc/SMOKE_BASELINE.md`）
 - [x] T3 拆出 api-admin crate（2026-08-26：72 条 URL 与 T2 快照一致；v1 spec 无 admin；未登录 `/v1/admin` 为 **401 unauth**，非管理员 **403 role_mismatch**；clippy.toml 禁止 handler 直用 sqlx/redis/moka/reqwest。已知偏离：`api-admin` 仍依赖 `phpyun_handlers` 复用 JobSummary/DTO，尚未做到 2.2 的完全平级）
@@ -592,7 +592,40 @@ zzzz.com/
 - [x] T8 公开前台页面（2026-08-26：优先级页 + Rust 已有 GET 的公开频道 SSR：兼职/招聘会/公招/专题/问答/店铺招聘/普工简历/积分商城/HR/友情链接/静态页/找回密码/地图。禁用 JS 时列表页 HTML 含 h1 与空状态。不是 PHP default 100 + wap 209 模板逐页搬运；校园/猎头/培训/spview 无 Rust 命名空间，Web 不做。验收打本仓库 rust `:3003`：systemd `:3000` 旧二进制对 GET 仍 405）
 - [x] T9 SEO 配套（2026-08-26：`/sitemap.xml` 200，含静态频道与动态 `/jobs/5`、`/companies/90001`；职位页 JobPosting、企业页 Organization 在 HTML 的 ld+json 中。未跑 Google 富媒体测试工具，因其需要公网 URL。空库时动态 URL 不会出现）
 - [x] T10 会员中心（2026-08-26：注册(regway=1)→填简历→投递→投递列表；企业资料→发职位→人才库→收到简历→邀面试。Nuxt 登录 cookie 无 JWT。发职位默认待审，e2e 在测试库把职位 `state=1` 后才公开可投。`phpyun_test` 无 `phpyun_company_rating` 套餐行，mock-paid UI 在但未实购。顺带修：注册 argon2 带 salt 导致无法登录；职位/投递/面试 INSERT 缺 NOT NULL 列）
-- [ ] T11 管理后台
-- [ ] T12 后端补齐 PHP 独占功能
-- [ ] T13 重写失真文档
-- [ ] T14 下线 PHP
+- [x] T11 管理后台（2026-08-26：`apps/admin` 侧栏覆盖现有 **72** 条 `/v1/admin`（仪表盘/用户/职位审核/认证/举报/反馈/订单/资讯只读/单页 CMS/广告/导航/分类/积分商城/广播/警告/审计/回收站/App 版本/账号工具/站点 KV/地区国家字典重载）。**不是** PHP 120 个控制器或 219 个 Vue 2 组件 1:1。未补：RBAC、资讯/公告/问答写接口、兼职/店铺/普工后台审核、微信菜单、邮件短信后台、system 38 分屏。system 按方案可分批补，现用 `site-settings` KV）
+- [x] T12 后端补齐 PHP 独占功能（2026-08-26：`/callback/alipay` `/callback/wechat-pay` `/callback/locoy`、`/v1/wap/oauth/wechat/wxapp-login`、`/v1/wap/upload/*`、server `Scheduler` 均已接线。locoy：新闻/全职/兼职（企业须已存在）可入库；`user` 简历采集仍返回码 `2`（PHP 会建 member+resume 全树，未移植）。**未跑**支付沙箱完整一单、**未测**小程序登录拉职位）
+- [x] T13 重写失真文档（2026-08-26：根 `README.md`、`phpyun-rs/README.md`、`phpyun-rs/docs/CRATE_LAYERING.md` 指向本方案；`PROJECT_PLAN.md` 已废弃横幅）
+- [ ] T14 下线 PHP（**未执行**。材料：`ops/T14_RETIRE_PHP.md`、`ops/nginx/frontend-backend-split.conf`。须用户明确同意后才停 php-fpm / 删 `uploads/` 源码。现网仍是 PHP）
+
+---
+
+## 10. 完整性核对（相对旧 PHP，2026-08-26）
+
+方案目标是「招聘主路径用 Rust + Nuxt 接管」，**不是** 479 个 Smarty 模板 + 219 个后台 Vue 2 组件像素级复刻。对照后仍与 PHP 不同的，列在下面，避免把勾选理解成「已经和以前一模一样」。
+
+### 刻意不做（方案 1 / T8 / T4）
+
+- 校园 / 猎头 / 培训 / 视频面试（`school` `lietou` `train` `spview`）无 Rust 命名空间，Web 不做
+- 旧伪静态 URL 与 301
+- Flutter App 工程（契约冻结，只加法）
+- MySQL `phpyun_` schema
+
+### 主路径已有（相对 PHP 招聘站）
+
+- 公开：职位/企业/简历/文章/公告/搜索/兼职/招聘会/公招/专题/问答/店铺招聘/普工简历/积分/HR/友链/单页/地图/找回密码
+- 会员：求职者简历与投递；企业资料、发职位、人才库、收到简历、邀面试
+- 后台：现有 72 个 admin API 都有 Element Plus 页
+- 第三方入口：支付回调、locoy（新闻/职位/兼职）、小程序登录 URL、上传、cron
+
+### 仍缺或弱于 PHP（不要当成已完成）
+
+| 区域 | 缺口 |
+|---|---|
+| 后台 | 无 RBAC；无资讯/公告/问答/招聘会后台 CRUD；无兼职/once/tiny 审核队列；无企业装修/套餐到期/财务分报表；无微信菜单/邮件短信配置 UI；system 38 个 `set_*` 不是分屏，只有 KV |
+| locoy | `m=user` 仍返回 `2`；兼职/全职不自动开新企业账号（公司名找不到则码 `3`） |
+| 支付 / 小程序 | 回调与登录 handler 在；沙箱密钥与真实小程序未验收 |
+| 会员 | VIP 套餐依赖 `phpyun_company_rating`；企业部分统计/装修仍薄 |
+| 前台 | 测评/认领/极验等低频模块弱覆盖 |
+| 部署 | T14 未切 Nginx、未卸 PHP |
+
+JWT 实际 **30 天 access**，与第 6 节「15 分钟」草稿不一致，以运行代码为准。

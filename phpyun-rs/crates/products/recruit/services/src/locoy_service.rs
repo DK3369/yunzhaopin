@@ -1,8 +1,9 @@
 //! Locoy collector ingest. PHP returned plain numeric codes:
 //! 1 = ok, 2 = bad payload, 3 = duplicate, 4 = disabled, 5 = auth/ip.
 //!
-//! News and jobs are ingested; part-time / resume models stay closed until
-//! their create-repos exist (returns 2, same as missing required fields).
+//! News / full-time jobs / part-time jobs are ingested when the company already
+//! exists. `user` (member + resume + expect) is still closed — PHP creates a
+//! full account tree; returning 2 matches a missing required payload.
 
 use std::collections::HashMap;
 
@@ -10,6 +11,7 @@ use phpyun_core::{clock, AppResult, AppState};
 use phpyun_models::article::repo as article_repo;
 use phpyun_models::company::repo as company_repo;
 use phpyun_models::job::repo as job_repo;
+use phpyun_models::part::repo as part_repo;
 
 use crate::site_setting_service;
 
@@ -79,7 +81,8 @@ pub async fn ingest(
     match model {
         "news" => ingest_news(state, &post).await,
         "job" => ingest_job(state, &post).await,
-        "partjob" | "user" => Ok(CODE_BAD),
+        "partjob" => ingest_partjob(state, &post).await,
+        "user" => Ok(CODE_BAD),
         _ => Ok(CODE_BAD),
     }
 }
@@ -170,4 +173,80 @@ async fn ingest_job(state: &AppState, post: &HashMap<String, String>) -> AppResu
     .await?;
     let _ = id;
     Ok(CODE_OK)
+}
+
+async fn ingest_partjob(state: &AppState, post: &HashMap<String, String>) -> AppResult<&'static str> {
+    let name = field(post, "part_name").trim();
+    let com_name = field(post, "com_name").trim();
+    if name.is_empty() || com_name.is_empty() {
+        return Ok(CODE_BAD);
+    }
+    let Some(uid) = company_repo::find_uid_by_name(state.db.reader(), com_name).await? else {
+        return Ok(CODE_DUP);
+    };
+    if part_repo::find_id_by_uid_name(state.db.reader(), uid, name)
+        .await?
+        .is_some()
+    {
+        return Ok(CODE_DUP);
+    }
+    let now = clock::now_ts();
+    let sdate = parse_ts(post, "sdate").unwrap_or(now);
+    let edate = parse_ts(post, "edate").unwrap_or(0);
+    let content = {
+        let c = field(post, "partcontent");
+        if c.is_empty() {
+            field(post, "content")
+        } else {
+            c
+        }
+    };
+    let salary_type = parse_i32(post, "salary_type");
+    let _ = part_repo::locoy_create(
+        state.db.pool(),
+        &part_repo::LocoyPartCreate {
+            uid,
+            name,
+            com_name,
+            r#type: parse_i32(post, "type"),
+            provinceid: parse_i32(post, "provinceid"),
+            cityid: parse_i32(post, "job_city").max(parse_i32(post, "city")),
+            three_cityid: parse_i32(post, "three_cityid"),
+            address: field(post, "address"),
+            number: parse_i32(post, "number"),
+            sex: parse_i32(post, "sex"),
+            salary: parse_i32(post, "salary"),
+            salary_type: if salary_type > 0 { salary_type } else { 15 },
+            billing_cycle: parse_i32(post, "billing_cycle"),
+            worktime: field(post, "worktime"),
+            sdate,
+            edate,
+            content,
+            linkman: field(post, "linkman"),
+            linktel: {
+                let t = field(post, "linktel");
+                if t.is_empty() {
+                    field(post, "moblie")
+                } else {
+                    t
+                }
+            },
+            state: 0,
+            x: field(post, "x"),
+            y: field(post, "y"),
+            deadline: now + 7 * 86_400,
+            now,
+            did: u32::try_from(parse_i32(post, "did").max(0)).unwrap_or(0),
+        },
+    )
+    .await?;
+    Ok(CODE_OK)
+}
+
+fn parse_ts(post: &HashMap<String, String>, key: &str) -> Option<i64> {
+    let s = field(post, key).trim();
+    if s.is_empty() {
+        return None;
+    }
+    s.parse::<i64>().ok().filter(|t| *t > 0)
 }

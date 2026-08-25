@@ -32,15 +32,26 @@ crates/
 
 Handler 禁止 `sqlx` / `redis` / `moka` / `reqwest` 和业务规则。
 
+## 鉴权（与分离方案第 6 节草稿的差异）
+
+线上 JWT 是 **30 天 access + 滑动 refresh**（无独立 refresh_token）。Web BFF 把 token 放进 HttpOnly cookie `token`，JSON 不回 JWT。不要把 TTL 改成 15 分钟。
+
+公开读接口在 T5 给 POST 加了 **GET 别名**（分页走 Query）。写接口 GET 仍 405。systemd 上旧 `:3000` 二进制可能没有 GET 别名，本仓库 debug binary 才有。
+
 ## 运行
 
 ```
 cd phpyun-rs
-# 确保 .env.dev 里 DATABASE_URL / REDIS_URL / JWT_SECRET 可用
-cargo run -p phpyun-rs
-curl -i http://127.0.0.1:3000/health
-# 开发环境：/docs Swagger；/api-docs/v1/openapi.json 与 /api-docs/admin/openapi.json
+# .env.dev：DATABASE_URL / REDIS_URL / JWT_SECRET
+# 本机若 :3000 已被占用：
+BIND=127.0.0.1:3003 METRICS_BIND=127.0.0.1:9091 \
+  PHPYUN_ENV_FILE=/www/wwwroot/zzzz.com/phpyun-rs/.env.dev \
+  cargo run -p phpyun-rs
+curl -i http://127.0.0.1:3003/health
+# /docs Swagger；/api-docs/v1/openapi.json 与 /api-docs/admin/openapi.json
 ```
 
 Binary 手搓 `tokio::runtime::Builder`，消费 `WORKER_THREADS` / `THREAD_STACK_MB` / `MAX_BLOCKING_THREADS`。
-Ctrl-C 走 `shutdown::wait_for_signal`。
+Ctrl-C 走 `shutdown::wait_for_signal`。定时任务在 server 里挂 `Scheduler`（过期职位、分享 token、审计日志轮转、回收站清理、连接池指标）。
+
+前台 `web/`：`pnpm --filter @phpyun/site dev`（3001），`pnpm --filter @phpyun/admin dev`（3002，`baseURL /admin/`）。`RUST_API_URL` 指向上面的 Rust。

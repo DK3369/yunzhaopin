@@ -17,7 +17,7 @@
 | 会员中心 | `uploads/member/` com + user 约 88 个 model | `/v1/mcenter` 227 条量级 | **主路径可走通**；企业装修/部分统计仍薄 |
 | 管理后台 | **120** 个 model 控制器 | **72** 条 `/v1/admin` | **缺口最大**，见下表，排进 T11 |
 | 支付回调 | alipay / tenpay / wapalipay | `/callback/alipay`、`/callback/wechat-pay` | 入口有；沙箱未测 |
-| 采集 | `uploads/api/locoy/` 4 个 model | `/callback/locoy` | 新闻/职位可入库；兼职/简历返回 PHP 码 `2` |
+| 采集 | `uploads/api/locoy/` 4 个 model | `/callback/locoy` | 新闻/全职/兼职（企业已存在）可入库；`user` 简历仍返回码 `2` |
 | 小程序 | `uploads/api/wxapp/` 31 个类 | `/v1/wap/oauth/wechat/wxapp-login` + 复用 wap/mcenter | 新小程序走 Rust；旧 PHP wxapp URL 不兼容 |
 | 文件上传 | wap/upload | `/v1/wap/upload/*` | 已有 |
 | 定时任务 | `app/controller/cron` | server `Scheduler` | 已接线 |
@@ -131,7 +131,7 @@ PHP `member/user/model` 约 36 个、`member/com/model` 约 51 个。Rust `/v1/m
 | PHP | Rust | 缺口 |
 |---|---|---|
 | `uploads/api/alipay/` `tenpay/` `wapalipay/` | `/callback/alipay` `/callback/wechat-pay` | 沙箱未跑通 |
-| `uploads/api/locoy/` job/news/user/partjob | `/callback/locoy` | user/partjob 返回码 `2` |
+| `uploads/api/locoy/` job/news/user/partjob | `/callback/locoy` | `user` 仍返回码 `2`；partjob 需公司名已存在 |
 | `uploads/api/wxapp/` 31 类 | `wxapp-login` + 复用 mcenter | 旧 wxapp 路径不兼容 |
 
 ---
@@ -141,4 +141,4 @@ PHP `member/user/model` 约 36 个、`member/com/model` 约 51 个。Rust `/v1/m
 - T8 Web 前台：只依赖已有 wap 读接口 + GET 别名
 - T10 会员中心：已有 mcenter；装修/统计后补
 - T11 后台：先 dashboard / users / jobs / reports / site_settings；system 38 个配置类最后
-- T12：支付沙箱、locoy 兼职/简历、旧 wxapp 如需要再加
+- T12：支付沙箱、locoy 简历（`m=user`）、旧 wxapp URL 如需要再加

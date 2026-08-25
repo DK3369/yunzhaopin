@@ -176,6 +176,91 @@ fn push_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &PartFilter<'a>, 
     }
 }
 
+/// Locoy ingest: same title under the same company is a duplicate (PHP `getInfo(uid,name)`).
+pub async fn find_id_by_uid_name(
+    pool: &MySqlPool,
+    uid: u64,
+    name: &str,
+) -> Result<Option<u64>, sqlx::Error> {
+    sqlx::query_scalar::<_, u64>(
+        "SELECT CAST(id AS UNSIGNED) FROM phpyun_partjob WHERE uid = ? AND name = ? LIMIT 1",
+    )
+    .bind(uid)
+    .bind(name)
+    .fetch_optional(pool)
+    .await
+}
+
+pub struct LocoyPartCreate<'a> {
+    pub uid: u64,
+    pub name: &'a str,
+    pub com_name: &'a str,
+    pub r#type: i32,
+    pub provinceid: i32,
+    pub cityid: i32,
+    pub three_cityid: i32,
+    pub address: &'a str,
+    pub number: i32,
+    pub sex: i32,
+    pub salary: i32,
+    pub salary_type: i32,
+    pub billing_cycle: i32,
+    pub worktime: &'a str,
+    pub sdate: i64,
+    pub edate: i64,
+    pub content: &'a str,
+    pub linkman: &'a str,
+    pub linktel: &'a str,
+    pub state: i32,
+    pub x: &'a str,
+    pub y: &'a str,
+    pub deadline: i64,
+    pub now: i64,
+    pub did: u32,
+}
+
+pub async fn locoy_create(pool: &MySqlPool, c: &LocoyPartCreate<'_>) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query(
+        "INSERT INTO phpyun_partjob
+           (uid, name, `type`, sdate, edate, worktime, number, sex, salary, salary_type,
+            billing_cycle, provinceid, cityid, three_cityid, address, x, y, content,
+            deadline, linkman, linktel, addtime, r_status, state, lastupdate, statusbody,
+            hits, com_name, rec_time, did, status, upstatus_count, upstatus_time)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?, '',
+                 0, ?, 0, ?, 0, 0, ?)",
+    )
+    .bind(c.uid)
+    .bind(c.name)
+    .bind(c.r#type)
+    .bind(c.sdate)
+    .bind(c.edate)
+    .bind(c.worktime)
+    .bind(c.number)
+    .bind(c.sex)
+    .bind(c.salary)
+    .bind(c.salary_type)
+    .bind(c.billing_cycle)
+    .bind(c.provinceid)
+    .bind(c.cityid)
+    .bind(c.three_cityid)
+    .bind(c.address)
+    .bind(c.x)
+    .bind(c.y)
+    .bind(c.content)
+    .bind(c.deadline)
+    .bind(c.linkman)
+    .bind(c.linktel)
+    .bind(c.now)
+    .bind(c.state)
+    .bind(c.now)
+    .bind(c.com_name)
+    .bind(c.did)
+    .bind(c.now)
+    .execute(pool)
+    .await?;
+    Ok(res.last_insert_id())
+}
+
 /// Increment hits.
 pub async fn incr_hits(pool: &MySqlPool, id: u64) -> Result<u64, sqlx::Error> {
     let res = sqlx::query("UPDATE phpyun_partjob SET hits = hits + 1 WHERE id = ?")

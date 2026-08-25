@@ -11,7 +11,8 @@ cd phpyun-rs
 # .env.dev 已包含开发库连接；按需改 DATABASE_URL / REDIS_URL / JWT_SECRET
 cargo run -p phpyun-rs
 curl -i http://127.0.0.1:3000/health
-# 开发环境打开 http://127.0.0.1:3000/docs
+# 若 :3000 被占用：BIND=127.0.0.1:3003 METRICS_BIND=127.0.0.1:9091 cargo run -p phpyun-rs
+# 开发环境打开 /docs
 ```
 
 `APP_ENV` 只能是 `dev` / `test` / `prod`。debug 读 `.env.dev`，release 读 `.env.pro`。也可用 `PHPYUN_ENV_FILE` 指定文件。
