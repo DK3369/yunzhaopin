@@ -5,11 +5,11 @@ const err = ref('')
 async function submit() {
   err.value = ''
   try {
-    await $fetch('/api/auth/login', {
+    const me = await $fetch<{ uid: number; usertype: number }>('/api/auth/login', {
       method: 'POST',
       body: { username: username.value, password: password.value },
     })
-    await navigateTo('/user')
+    await navigateTo(me.usertype === 2 ? '/com' : '/user')
   } catch (e: unknown) {
     const ex = e as { data?: { statusMessage?: string }; statusMessage?: string }
     err.value = ex.data?.statusMessage || ex.statusMessage || '登录失败'

@@ -9,7 +9,8 @@ useSeoMeta({ title: () => String(data.value?.title || '公告') })
 
 <template>
   <article>
-    <h1>{{ data?.title }}</h1>
-    <div v-html="data?.content || data?.body" />
+    <h1>{{ data?.title || '公告不存在' }}</h1>
+    <div v-if="data?.content || data?.body" v-html="data?.content || data?.body" />
+    <p v-else class="muted">没有这条公告，或暂时无法加载。</p>
   </article>
 </template>

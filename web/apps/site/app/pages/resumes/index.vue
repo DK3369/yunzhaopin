@@ -12,6 +12,7 @@ useSeoMeta({ title: '简历' })
 <template>
   <section>
     <h1>简历</h1>
+    <p v-if="!(data?.list || []).length" class="muted">暂无公开简历</p>
     <div class="stack">
       <NuxtLink
         v-for="r in data?.list || []"

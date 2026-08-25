@@ -12,6 +12,7 @@ useSeoMeta({ title: '企业列表' })
 <template>
   <section>
     <h1>企业</h1>
+    <p v-if="!(data?.list || []).length" class="muted">暂无企业</p>
     <div class="stack">
       <CompanyCard v-for="c in data?.list || []" :key="c.uid" :company="c" />
     </div>

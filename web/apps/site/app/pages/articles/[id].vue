@@ -10,7 +10,8 @@ useHead({ link: [{ rel: 'canonical', href: `/articles/${id}` }] })
 
 <template>
   <article>
-    <h1>{{ data?.title }}</h1>
-    <div v-html="data?.content || data?.body" />
+    <h1>{{ data?.title || '文章不存在' }}</h1>
+    <div v-if="data?.content || data?.body" v-html="data?.content || data?.body" />
+    <p v-else class="muted">没有这篇文章，或暂时无法加载。</p>
   </article>
 </template>

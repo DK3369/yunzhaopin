@@ -9,6 +9,7 @@ useSeoMeta({ title: '资讯' })
 <template>
   <section>
     <h1>资讯</h1>
+    <p v-if="!(data?.list || []).length" class="muted">暂无资讯</p>
     <div class="stack">
       <NuxtLink v-for="a in data?.list || []" :key="a.id" :to="`/articles/${a.id}`">
         <h3>{{ a.title }}</h3>
