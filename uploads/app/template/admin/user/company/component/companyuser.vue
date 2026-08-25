@@ -212,7 +212,7 @@
                                 {{ scope.row.vip_etime_n }}{{ todayetime >= scope.row.vipetime ? lc('admin_user_company_00155') : '' }}
                             </div>
                             <span class="gsd">
-                                {{ scope.row.crm_uid > '0' ? '{{ lc('admin_user_company_00049') }}：' + scope.row.crm_name : lc('admin_user_company_00153') }}
+                                {{ scope.row.crm_uid > '0' ? (lc('admin_user_company_00049') + '：' + (scope.row.crm_name || '')) : lc('admin_user_company_00153') }}
                                 <el-button type="text" size="mini"
                                     @click="fpgw(1, scope.row.username, scope.row.crm_uid,scope.row.uid)">{{ lc('admin_user_weipin_00048') }}</el-button>
                             </span>
