@@ -6,7 +6,7 @@
     "dev": "nuxt dev --port 3001",
     "build": "nuxt build",
     "preview": "nuxt preview",
-    "gen:types": "openapi-typescript ${RUST_API_URL:-http://127.0.0.1:3000}/api-docs/v1/openapi.json -o app/types/openapi.d.ts"
+    "gen:types": "openapi-typescript ${OPENAPI_SPEC:-../../../doc/snapshots/v1.openapi.json} -o app/types/openapi.d.ts"
   },
   "dependencies": {
     "@nuxtjs/i18n": "^10.0.6",

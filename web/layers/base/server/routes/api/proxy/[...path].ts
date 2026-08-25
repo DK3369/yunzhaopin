@@ -17,7 +17,8 @@ export default defineEventHandler(async (event) => {
     body = await readBody(event).catch(() => ({}))
   }
 
-  const query = method === 'GET' ? getQuery(event) : undefined
+  const query = getQuery(event)
+
 
   const res = await $fetch<Envelope>(`${rustApi}${urlPath}`, {
     method,

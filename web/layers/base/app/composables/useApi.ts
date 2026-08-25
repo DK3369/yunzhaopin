@@ -2,13 +2,22 @@ import { unwrapEnvelope, ApiError, type ApiEnvelope } from '~/utils/envelope'
 
 type Verb = 'GET' | 'POST'
 
+function pagingQuery(payload?: Record<string, unknown>): Record<string, unknown> | undefined {
+  if (!payload) return undefined
+  const query: Record<string, unknown> = {}
+  if (payload.page != null) query.page = payload.page
+  if (payload.page_size != null) query.page_size = payload.page_size
+  return Object.keys(query).length ? query : undefined
+}
+
 export function useApi() {
   const request = async <T>(path: string, method: Verb, payload?: Record<string, unknown>): Promise<T> => {
     const url = `/api/proxy${path}`
+    const query = method === 'GET' ? payload : pagingQuery(payload)
     try {
       const body = await $fetch<ApiEnvelope<T>>(url, {
         method,
-        query: method === 'GET' ? payload : undefined,
+        query,
         body: method === 'POST' ? payload ?? {} : undefined,
         credentials: 'include',
       })
@@ -20,7 +29,7 @@ export function useApi() {
         await $fetch('/api/auth/refresh', { method: 'POST', credentials: 'include' }).catch(() => undefined)
         const retry = await $fetch<ApiEnvelope<T>>(url, {
           method,
-          query: method === 'GET' ? payload : undefined,
+          query,
           body: method === 'POST' ? payload ?? {} : undefined,
           credentials: 'include',
         })

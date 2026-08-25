@@ -11,6 +11,12 @@
     "build:site": "pnpm --filter @phpyun/site build",
     "build:admin": "pnpm --filter @phpyun/admin generate",
     "gen:types:site": "pnpm --filter @phpyun/site gen:types",
-    "gen:types:admin": "pnpm --filter @phpyun/admin gen:types"
+    "gen:types:admin": "pnpm --filter @phpyun/admin gen:types",
+    "lint": "eslint ."
+  },
+  "devDependencies": {
+    "eslint": "^9.33.0",
+    "eslint-plugin-nuxt-layers": "^0.2.0",
+    "typescript-eslint": "^8.40.0"
   }
 }

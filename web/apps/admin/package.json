@@ -7,7 +7,7 @@
     "build": "nuxt build",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "gen:types": "openapi-typescript ${RUST_API_URL:-http://127.0.0.1:3000}/api-docs/admin/openapi.json -o app/types/openapi.d.ts"
+    "gen:types": "openapi-typescript ${OPENAPI_SPEC:-../../../doc/snapshots/admin.openapi.json} -o app/types/openapi.d.ts"
   },
   "dependencies": {
     "@element-plus/nuxt": "^1.1.4",

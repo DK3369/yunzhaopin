@@ -587,8 +587,8 @@ zzzz.com/
 - [x] T3 拆出 api-admin crate（2026-08-26：72 条 URL 与 T2 快照一致；v1 spec 无 admin；未登录 `/v1/admin` 为 **401 unauth**，非管理员 **403 role_mismatch**；clippy.toml 禁止 handler 直用 sqlx/redis/moka/reqwest。已知偏离：`api-admin` 仍依赖 `phpyun_handlers` 复用 JobSummary/DTO，尚未做到 2.2 的完全平级）
 - [x] T4 接口缺口盘点（2026-08-26：按 PHP 120 个 admin 控制器逐组对照，见 `doc/API_GAP.md`；最大缺口在后台 system/内容/运营工具）
 - [x] T5 为公开读接口增加 GET 别名（2026-08-26：职位/企业/首页/搜索/文章/公告 GET 与等价 POST JSON 响应一致；分页走 Query；写接口 GET 仍 405）
-- [ ] T6 前端 monorepo 骨架
-- [ ] T7 统一 API 客户端与鉴权
+- [x] T6 前端 monorepo 骨架（2026-08-26：pnpm 10.14 + Node 22.22；`/hello` 两 app 可用；`HelloMark` 来自 `layers/ui` 无需手写 import；`eslint-plugin-nuxt-layers` 已装且 `pnpm lint` 通过。admin 为 `ssr:false`，curl 到的是 SPA 壳，组件在客户端 bundle）
+- [x] T7 统一 API 客户端与鉴权（2026-08-26：类型从 `doc/snapshots` 生成；登录 cookie `token` HttpOnly+SameSite=Strict，JSON 不含 JWT；me/refresh/logout 走通。未改 App 的 30 天 access TTL）
 - [ ] T8 公开前台页面
 - [ ] T9 SEO 配套
 - [ ] T10 会员中心
