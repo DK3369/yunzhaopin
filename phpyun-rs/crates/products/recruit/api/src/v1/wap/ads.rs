@@ -1,16 +1,25 @@
 //! Ad slot public read (matching PHPYun `ad.model.php`).
 
-use axum::{extract::State, routing::post, Router};
+use axum::{
+    extract::State,
+    routing::{get, post},
+    Router,
+};
 use phpyun_core::dto::IdBody;
-use phpyun_core::{ApiError, ApiResponse, AppResult, AppState, ClientIp, MaybeUser, ValidatedJson};
+use phpyun_core::{
+    ApiError, ApiResponse, AppResult, AppState, ClientIp, MaybeUser, ValidatedJson,
+    ValidatedJsonOrQuery,
+};
 use phpyun_services::ad_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
 
+pub const GET_ALLOWED_PATHS: &[&str] = &["/v1/wap/ads"];
+
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/ads", post(list))
+        .route("/ads", get(list).post(list))
         .route("/ads/click", post(track_click))
 }
 
@@ -59,7 +68,7 @@ pub struct AdView {
 #[utoipa::path(post, path = "/v1/wap/ads", tag = "wap", params(AdQuery), responses((status = 200, description = "ok")))]
 pub async fn list(
     State(state): State<AppState>,
-    ValidatedJson(q): ValidatedJson<AdQuery>,
+    ValidatedJsonOrQuery(q): ValidatedJsonOrQuery<AdQuery>,
 ) -> AppResult<ApiResponse<Vec<AdView>>> {
     let list = ad_service::list_active(&state, &q.slot, q.limit).await?;
     let site_base = state.config.web_base_url.as_deref();

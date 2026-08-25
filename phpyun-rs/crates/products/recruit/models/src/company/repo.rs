@@ -163,6 +163,16 @@ pub async fn find_by_uid(pool: &MySqlPool, uid: u64) -> Result<Option<Company>, 
         .await
 }
 
+pub async fn find_uid_by_name(pool: &MySqlPool, name: &str) -> Result<Option<u64>, sqlx::Error> {
+    let row: Option<(u64,)> = sqlx::query_as(
+        "SELECT CAST(uid AS UNSIGNED) FROM phpyun_company WHERE name = ? LIMIT 1",
+    )
+    .bind(name)
+    .fetch_optional(pool)
+    .await?;
+    Ok(row.map(|r| r.0))
+}
+
 pub async fn ensure_row<'e, E>(exec: E, uid: u64, did: u32) -> Result<(), sqlx::Error>
 where
     E: sqlx::Executor<'e, Database = sqlx::MySql>,

@@ -1,8 +1,10 @@
 //! Public company browsing (mirrors PHPYun `wap/company::index_action` + `show_action`).
 
-use axum::{extract::State, routing::post, Router};
+use axum::{extract::State, routing::get, Router};
 use phpyun_core::dto::UidBody;
-use phpyun_core::{ApiResponse, AppResult, AppState, MaybeUser, Paged, Pagination, ValidatedJson};
+use phpyun_core::{
+    ApiResponse, AppResult, AppState, MaybeUser, Paged, Pagination, ValidatedJsonOrQuery,
+};
 use phpyun_models::company::repo::CompanyFilter;
 use phpyun_services::company_service;
 use phpyun_services::hot_search_service;
@@ -11,12 +13,25 @@ use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
 
+pub const GET_ALLOWED_PATHS: &[&str] = &[
+    "/v1/wap/companies",
+    "/v1/wap/companies/hot",
+    "/v1/wap/companies/autocomplete",
+    "/v1/wap/companies/detail",
+];
+
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/companies", post(list_companies))
-        .route("/companies/hot", post(hot_companies))
-        .route("/companies/autocomplete", post(autocomplete))
-        .route("/companies/detail", post(company_detail))
+        .route("/companies", get(list_companies).post(list_companies))
+        .route("/companies/hot", get(hot_companies).post(hot_companies))
+        .route(
+            "/companies/autocomplete",
+            get(autocomplete).post(autocomplete),
+        )
+        .route(
+            "/companies/detail",
+            get(company_detail).post(company_detail),
+        )
 }
 
 #[derive(Debug, Deserialize, Validate, IntoParams)]
@@ -102,7 +117,7 @@ pub fn company_summary_from_dict(
 pub async fn list_companies(
     State(state): State<AppState>,
     page: Pagination,
-    ValidatedJson(q): ValidatedJson<CompanyListQuery>,
+    ValidatedJsonOrQuery(q): ValidatedJsonOrQuery<CompanyListQuery>,
 ) -> AppResult<ApiResponse<Paged<CompanySummary>>> {
     if let Some(kw) = q.keyword.as_ref().filter(|k| !k.trim().is_empty()) {
         hot_search_service::bump_async(&state, "company", kw.trim().to_string());
@@ -255,7 +270,7 @@ pub struct CompanyShowItem {
 pub async fn company_detail(
     State(state): State<AppState>,
     MaybeUser(user): MaybeUser,
-    ValidatedJson(b): ValidatedJson<UidBody>,
+    ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<UidBody>,
 ) -> AppResult<ApiResponse<CompanyDetail>> {
     let uid = b.uid;
     let c = company_service::get_public(&state, uid).await?;
@@ -435,7 +450,7 @@ pub struct HotCompanyView {
 )]
 pub async fn hot_companies(
     State(state): State<AppState>,
-    ValidatedJson(q): ValidatedJson<HotCompaniesQuery>,
+    ValidatedJsonOrQuery(q): ValidatedJsonOrQuery<HotCompaniesQuery>,
 ) -> AppResult<ApiResponse<Vec<HotCompanyView>>> {
     let sort_mode = match q.order.as_deref() {
         Some("recent") => 1,
@@ -512,7 +527,7 @@ pub struct CompanyAutoItem {
 )]
 pub async fn autocomplete(
     State(state): State<AppState>,
-    ValidatedJson(q): ValidatedJson<CompanyAutoQuery>,
+    ValidatedJsonOrQuery(q): ValidatedJsonOrQuery<CompanyAutoQuery>,
 ) -> AppResult<ApiResponse<Vec<CompanyAutoItem>>> {
     let keyword = q.keyword.trim();
     if keyword.is_empty() {

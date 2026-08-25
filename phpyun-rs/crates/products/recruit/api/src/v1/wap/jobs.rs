@@ -1,11 +1,16 @@
 //! Public job browsing (WAP, aligned with `wap/job::index_action` / detail portion of `wap/job::comapply_action`).
 
-use axum::{extract::State, routing::post, Router};
+use axum::{
+    extract::State,
+    routing::{get, post},
+    Router,
+};
 use phpyun_core::dto::{HitsResp, IdBody, UidBody};
 use phpyun_core::utils::fmt_ts;
 use phpyun_core::{
     i18n::{current_lang, t, t_args},
     json, ApiResponse, AppResult, AppState, ClientIp, MaybeUser, Paged, Pagination, ValidatedJson,
+    ValidatedJsonOrQuery,
 };
 use phpyun_services::hot_search_service;
 use phpyun_services::job_service::{self, JobSearch};
@@ -35,17 +40,30 @@ pub struct TelClickBodyFull {
     pub com_id: u64,
 }
 
+pub const GET_ALLOWED_PATHS: &[&str] = &[
+    "/v1/wap/jobs",
+    "/v1/wap/jobs/detail",
+    "/v1/wap/jobs/similar",
+    "/v1/wap/jobs/same-company",
+    "/v1/wap/companies/jobs",
+    "/v1/wap/jobs/share-text",
+    "/v1/wap/jobs/contact",
+];
+
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/jobs", post(list_jobs))
-        .route("/jobs/detail", post(job_detail))
-        .route("/jobs/similar", post(similar_jobs))
-        .route("/jobs/same-company", post(same_company_jobs))
-        .route("/companies/jobs", post(company_jobs))
+        .route("/jobs", get(list_jobs).post(list_jobs))
+        .route("/jobs/detail", get(job_detail).post(job_detail))
+        .route("/jobs/similar", get(similar_jobs).post(similar_jobs))
+        .route(
+            "/jobs/same-company",
+            get(same_company_jobs).post(same_company_jobs),
+        )
+        .route("/companies/jobs", get(company_jobs).post(company_jobs))
         .route("/jobs/tel-click", post(log_tel_click))
-        .route("/jobs/share-text", post(share_text))
+        .route("/jobs/share-text", get(share_text).post(share_text))
         .route("/jobs/hits", post(bump_jobhits))
-        .route("/jobs/contact", post(job_contact))
+        .route("/jobs/contact", get(job_contact).post(job_contact))
 }
 
 #[derive(Debug, Deserialize, Validate, IntoParams)]
@@ -223,7 +241,7 @@ pub async fn list_jobs(
     State(state): State<AppState>,
     MaybeUser(user): MaybeUser,
     page: Pagination,
-    ValidatedJson(q): ValidatedJson<JobListQuery>,
+    ValidatedJsonOrQuery(q): ValidatedJsonOrQuery<JobListQuery>,
 ) -> AppResult<ApiResponse<json::Value>> {
     // Detail mode: body carried an id → defer to the same logic as
     // `/v1/wap/jobs/detail` so callers get the full job document.
@@ -316,7 +334,7 @@ pub async fn list_jobs(
 pub async fn job_detail(
     State(state): State<AppState>,
     MaybeUser(user): MaybeUser,
-    ValidatedJson(b): ValidatedJson<IdBody>,
+    ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<IdBody>,
 ) -> AppResult<ApiResponse<json::Value>> {
     Ok(ApiResponse::data(
         build_job_detail_value(&state, user.as_ref(), b.id).await?,
@@ -498,7 +516,7 @@ fn default_rec_limit() -> u64 {
 pub async fn similar_jobs(
     State(state): State<AppState>,
     MaybeUser(user): MaybeUser,
-    ValidatedJson(b): ValidatedJson<SimilarBody>,
+    ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<SimilarBody>,
 ) -> AppResult<ApiResponse<Vec<JobSummary>>> {
     let id = b.id;
     let list = job_service::list_similar(&state, id, b.limit.clamp(1, 30)).await?;
@@ -532,7 +550,7 @@ pub async fn similar_jobs(
 pub async fn same_company_jobs(
     State(state): State<AppState>,
     MaybeUser(user): MaybeUser,
-    ValidatedJson(b): ValidatedJson<SimilarBody>,
+    ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<SimilarBody>,
 ) -> AppResult<ApiResponse<Vec<JobSummary>>> {
     let id = b.id;
     let list = job_service::list_same_company(&state, id, b.limit.clamp(1, 30)).await?;
@@ -567,7 +585,7 @@ pub async fn company_jobs(
     State(state): State<AppState>,
     MaybeUser(user): MaybeUser,
     page: Pagination,
-    ValidatedJson(b): ValidatedJson<UidBody>,
+    ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<UidBody>,
 ) -> AppResult<ApiResponse<Paged<JobSummary>>> {
     let r = job_service::list_by_company(&state, b.uid, page).await?;
     let dicts = phpyun_services::dict_service::get(&state).await?;
@@ -660,7 +678,7 @@ pub struct JobShareText {
 )]
 pub async fn share_text(
     State(state): State<AppState>,
-    ValidatedJson(b): ValidatedJson<IdBody>,
+    ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<IdBody>,
 ) -> AppResult<ApiResponse<JobShareText>> {
     let id = b.id;
     let job = phpyun_models::job::repo::find_public_by_id(state.db.reader(), id)
@@ -791,7 +809,7 @@ pub struct JobContactView {
 )]
 pub async fn job_contact(
     State(state): State<AppState>,
-    ValidatedJson(b): ValidatedJson<IdBody>,
+    ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<IdBody>,
 ) -> AppResult<ApiResponse<JobContactView>> {
     let id = b.id;
     let c = phpyun_models::job::repo::get_job_contact(state.db.reader(), id)

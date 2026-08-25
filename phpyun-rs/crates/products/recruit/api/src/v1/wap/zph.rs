@@ -1,17 +1,24 @@
 //! Public browsing of job fairs (mirrors PHPYun `wap/zph`).
 
-use axum::{extract::State, routing::post, Router};
-use phpyun_core::{ApiResponse, AppResult, AppState, Paged, Pagination, ValidatedJson};
+use axum::{extract::State, routing::get, Router};
+use phpyun_core::{ApiResponse, AppResult, AppState, Paged, Pagination, ValidatedJsonOrQuery};
 use phpyun_services::zph_service;
 use serde::Serialize;
 use utoipa::ToSchema;
 
+pub const GET_ALLOWED_PATHS: &[&str] = &[
+    "/v1/wap/zph",
+    "/v1/wap/zph/detail",
+    "/v1/wap/zph/companies",
+    "/v1/wap/zph/jobs",
+];
+
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/zph", post(list))
-        .route("/zph/detail", post(detail))
-        .route("/zph/companies", post(list_companies))
-        .route("/zph/jobs", post(list_jobs))
+        .route("/zph", get(list).post(list))
+        .route("/zph/detail", get(detail).post(detail))
+        .route("/zph/companies", get(list_companies).post(list_companies))
+        .route("/zph/jobs", get(list_jobs).post(list_jobs))
 }
 
 /// Job-fair list item -- mirrors all phpyun_zhaopinhui columns + city name + CDN URL + formatted timestamps.
@@ -325,7 +332,7 @@ pub async fn list(
 )]
 pub async fn detail(
     State(state): State<AppState>,
-    ValidatedJson(b): ValidatedJson<IdBody>,
+    ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<IdBody>,
 ) -> AppResult<ApiResponse<ZphDetail>> {
     let id = b.id;
     let z = zph_service::get_detail(&state, id).await?;
@@ -373,7 +380,7 @@ pub struct ZphCompanyItem {
 pub async fn list_companies(
     State(state): State<AppState>,
     page: Pagination,
-    ValidatedJson(b): ValidatedJson<IdBody>,
+    ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<IdBody>,
 ) -> AppResult<ApiResponse<Paged<ZphCompanyItem>>> {
     let id = b.id;
     let r = zph_service::list_companies(&state, id, page).await?;
@@ -457,7 +464,7 @@ use phpyun_core::utils::{fmt_date, fmt_dt, pic_n_str as pic_n};
 )]
 pub async fn list_jobs(
     State(state): State<AppState>,
-    ValidatedJson(b): ValidatedJson<IdBody>,
+    ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<IdBody>,
 ) -> AppResult<ApiResponse<Vec<JobSummary>>> {
     let id = b.id;
     let csvs = phpyun_models::zph::repo::jobid_csvs_for_zph(state.db.reader(), id).await?;

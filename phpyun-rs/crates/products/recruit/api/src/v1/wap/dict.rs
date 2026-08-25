@@ -11,28 +11,45 @@
 //! serialization we call `phpyun_core::i18n::t()` to translate using the current request language.
 //! Translation entries are maintained under the `dict.*` namespace of `locales/<lang>.json`.
 
-use axum::{routing::post, Router};
+use axum::{routing::get, Router};
 use phpyun_core::i18n::{current_lang, t, Lang};
-use phpyun_core::ValidatedJson;
+use phpyun_core::ValidatedJsonOrQuery;
 use phpyun_core::{ApiResponse, AppResult, AppState};
 use serde::Deserialize;
 use serde::Serialize;
 use utoipa::ToSchema;
 use validator::Validate;
 
+pub const GET_ALLOWED_PATHS: &[&str] = &[
+    "/v1/wap/dict/cities",
+    "/v1/wap/dict/cities/by-province",
+    "/v1/wap/dict/industries",
+    "/v1/wap/dict/job-categories",
+    "/v1/wap/dict/educations",
+    "/v1/wap/dict/experiences",
+    "/v1/wap/dict/salaries",
+    "/v1/wap/dict/job-types",
+];
+
 pub fn routes() -> Router<AppState> {
     // Two cities routes are explicitly deprecated; we still register them so
     // existing clients stay green while they migrate to /v1/wap/regions.
     #[allow(deprecated)]
     let r = Router::new()
-        .route("/dict/cities", post(cities))
-        .route("/dict/cities/by-province", post(cities_of_province));
-    r.route("/dict/industries", post(industries))
-        .route("/dict/job-categories", post(job_categories))
-        .route("/dict/educations", post(educations))
-        .route("/dict/experiences", post(experiences))
-        .route("/dict/salaries", post(salaries))
-        .route("/dict/job-types", post(job_types))
+        .route("/dict/cities", get(cities).post(cities))
+        .route(
+            "/dict/cities/by-province",
+            get(cities_of_province).post(cities_of_province),
+        );
+    r.route("/dict/industries", get(industries).post(industries))
+        .route(
+            "/dict/job-categories",
+            get(job_categories).post(job_categories),
+        )
+        .route("/dict/educations", get(educations).post(educations))
+        .route("/dict/experiences", get(experiences).post(experiences))
+        .route("/dict/salaries", get(salaries).post(salaries))
+        .route("/dict/job-types", get(job_types).post(job_types))
 }
 
 /// Dictionary item as seen by the client. `name` is a string resolved using the current request language.
@@ -103,7 +120,7 @@ pub struct ProvinceBody {
 )]
 #[deprecated(note = "use POST /v1/wap/regions/children instead")]
 pub async fn cities_of_province(
-    ValidatedJson(b): ValidatedJson<ProvinceBody>,
+    ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<ProvinceBody>,
 ) -> AppResult<ApiResponse<Vec<DictItem>>> {
     let pid = b.province_id;
     let lang = current_lang();

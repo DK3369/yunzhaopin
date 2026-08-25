@@ -1,19 +1,25 @@
 //! Public points-mall endpoints (no login required): classes, reward list, reward detail.
 
-use axum::{extract::State, routing::post, Router};
+use axum::{extract::State, routing::get, Router};
 use phpyun_core::dto::IdBody;
 use phpyun_core::utils::{fmt_dt, pic_n_str as pic_n};
-use phpyun_core::{ApiResponse, AppResult, AppState, Paged, Pagination, ValidatedJson};
+use phpyun_core::{ApiResponse, AppResult, AppState, Paged, Pagination, ValidatedJsonOrQuery};
 use phpyun_services::redeem_service::{self, RewardFilter};
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
 
+pub const GET_ALLOWED_PATHS: &[&str] = &[
+    "/v1/wap/redeem/classes",
+    "/v1/wap/redeem/rewards",
+    "/v1/wap/redeem/rewards/detail",
+];
+
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/redeem/classes", post(list_classes))
-        .route("/redeem/rewards", post(list_rewards))
-        .route("/redeem/rewards/detail", post(get_reward))
+        .route("/redeem/classes", get(list_classes).post(list_classes))
+        .route("/redeem/rewards", get(list_rewards).post(list_rewards))
+        .route("/redeem/rewards/detail", get(get_reward).post(get_reward))
 }
 
 #[derive(Debug, Deserialize, Validate, IntoParams)]
@@ -56,7 +62,7 @@ impl From<phpyun_models::redeem::entity::RedeemClass> for ClassItem {
 )]
 pub async fn list_classes(
     State(state): State<AppState>,
-    ValidatedJson(q): ValidatedJson<ClassQuery>,
+    ValidatedJsonOrQuery(q): ValidatedJsonOrQuery<ClassQuery>,
 ) -> AppResult<ApiResponse<Vec<ClassItem>>> {
     let list = redeem_service::list_classes(&state, q.parent_id).await?;
     Ok(ApiResponse::data(
@@ -163,7 +169,7 @@ impl From<phpyun_models::redeem::entity::Reward> for RewardItem {
 pub async fn list_rewards(
     State(state): State<AppState>,
     page: Pagination,
-    ValidatedJson(q): ValidatedJson<RewardListQuery>,
+    ValidatedJsonOrQuery(q): ValidatedJsonOrQuery<RewardListQuery>,
 ) -> AppResult<ApiResponse<Paged<RewardItem>>> {
     let f = RewardFilter {
         only_active: true,
@@ -266,7 +272,7 @@ impl From<phpyun_models::redeem::entity::Reward> for RewardDetail {
 )]
 pub async fn get_reward(
     State(state): State<AppState>,
-    ValidatedJson(b): ValidatedJson<IdBody>,
+    ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<IdBody>,
 ) -> AppResult<ApiResponse<RewardDetail>> {
     let id = b.id;
     let r = redeem_service::get_reward(&state, id).await?;

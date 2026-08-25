@@ -3,22 +3,30 @@
 //! All reads hit the in-process `Arc<RegionTree>` cache (`region_service`),
 //! so they are sub-microsecond and don't touch the DB.
 
-use axum::{extract::State, routing::post, Router};
+use axum::{extract::State, routing::get, Router};
 use phpyun_core::dto::IdBody;
 use phpyun_core::i18n::{current_lang, Lang};
-use phpyun_core::{ApiError, ApiResponse, AppResult, AppState, ValidatedJson};
+use phpyun_core::{ApiError, ApiResponse, AppResult, AppState, ValidatedJsonOrQuery};
 use phpyun_services::region_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
 
+pub const GET_ALLOWED_PATHS: &[&str] = &[
+    "/v1/wap/regions",
+    "/v1/wap/regions/get",
+    "/v1/wap/regions/children",
+    "/v1/wap/regions/by-code",
+    "/v1/wap/regions/city-domain",
+];
+
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/regions", post(list))
-        .route("/regions/get", post(by_id))
-        .route("/regions/children", post(children))
-        .route("/regions/by-code", post(by_code))
-        .route("/regions/city-domain", post(city_domain))
+        .route("/regions", get(list).post(list))
+        .route("/regions/get", get(by_id).post(by_id))
+        .route("/regions/children", get(children).post(children))
+        .route("/regions/by-code", get(by_code).post(by_code))
+        .route("/regions/city-domain", get(city_domain).post(city_domain))
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -80,7 +88,7 @@ pub struct ListQuery {
 )]
 pub async fn list(
     State(state): State<AppState>,
-    ValidatedJson(q): ValidatedJson<ListQuery>,
+    ValidatedJsonOrQuery(q): ValidatedJsonOrQuery<ListQuery>,
 ) -> AppResult<ApiResponse<Vec<RegionView>>> {
     let tree = region_service::get(&state).await?;
     let lang = current_lang();
@@ -118,7 +126,7 @@ pub async fn list(
 )]
 pub async fn by_id(
     State(state): State<AppState>,
-    ValidatedJson(b): ValidatedJson<IdBody>,
+    ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<IdBody>,
 ) -> AppResult<ApiResponse<RegionView>> {
     let id = b.id;
     let tree = region_service::get(&state).await?;
@@ -145,7 +153,7 @@ pub async fn by_id(
 )]
 pub async fn by_code(
     State(state): State<AppState>,
-    ValidatedJson(b): ValidatedJson<ByCodeBody>,
+    ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<ByCodeBody>,
 ) -> AppResult<ApiResponse<RegionView>> {
     let code = b.code;
     phpyun_core::validators::ensure_path_token(&code)?;
@@ -197,7 +205,7 @@ pub struct CityDomainResp {
 )]
 pub async fn city_domain(
     State(_state): State<AppState>,
-    ValidatedJson(_q): ValidatedJson<CityDomainQuery>,
+    ValidatedJsonOrQuery(_q): ValidatedJsonOrQuery<CityDomainQuery>,
 ) -> AppResult<ApiResponse<CityDomainResp>> {
     Ok(ApiResponse::data(CityDomainResp {
         error: 2,
@@ -215,7 +223,7 @@ pub async fn city_domain(
 )]
 pub async fn children(
     State(state): State<AppState>,
-    ValidatedJson(b): ValidatedJson<IdBody>,
+    ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<IdBody>,
 ) -> AppResult<ApiResponse<Vec<RegionView>>> {
     let id = b.id;
     let tree = region_service::get(&state).await?;

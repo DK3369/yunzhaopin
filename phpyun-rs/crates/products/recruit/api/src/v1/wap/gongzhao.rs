@@ -1,18 +1,20 @@
 //! Joint recruitment (aligned with PHPYun `wap/gongzhao`).
 
-use axum::{extract::State, routing::post, Router};
+use axum::{extract::State, routing::get, Router};
 use phpyun_core::dto::IdBody;
 use phpyun_core::utils::{fmt_date, fmt_dt, pic_n_str as pic_n};
-use phpyun_core::{ApiResponse, AppResult, AppState, Paged, Pagination, ValidatedJson};
+use phpyun_core::{ApiResponse, AppResult, AppState, Paged, Pagination, ValidatedJsonOrQuery};
 use phpyun_services::gongzhao_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
 
+pub const GET_ALLOWED_PATHS: &[&str] = &["/v1/wap/gongzhao", "/v1/wap/gongzhao/detail"];
+
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/gongzhao", post(list))
-        .route("/gongzhao/detail", post(detail))
+        .route("/gongzhao", get(list).post(list))
+        .route("/gongzhao/detail", get(detail).post(detail))
 }
 
 #[derive(Debug, Deserialize, Validate, IntoParams)]
@@ -163,7 +165,7 @@ impl GzDetail {
 pub async fn list(
     State(state): State<AppState>,
     page: Pagination,
-    ValidatedJson(q): ValidatedJson<ListQuery>,
+    ValidatedJsonOrQuery(q): ValidatedJsonOrQuery<ListQuery>,
 ) -> AppResult<ApiResponse<Paged<GzSummary>>> {
     let r = gongzhao_service::list(&state, q.tag.as_deref(), page).await?;
     Ok(ApiResponse::data(Paged::new(
@@ -186,7 +188,7 @@ pub async fn list(
 )]
 pub async fn detail(
     State(state): State<AppState>,
-    ValidatedJson(b): ValidatedJson<IdBody>,
+    ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<IdBody>,
 ) -> AppResult<ApiResponse<GzDetail>> {
     let id = b.id;
     let g = gongzhao_service::get(&state, id).await?;

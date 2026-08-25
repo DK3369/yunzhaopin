@@ -584,6 +584,108 @@ pub async fn bind_oauth(
     Ok(())
 }
 
+/// Mini-program login: `wx.login` code → `jscode2session` → openid → JWT.
+/// Additive endpoint; OA `code-login` is unchanged.
+pub async fn login_with_wechat_js_code(
+    state: &AppState,
+    js_code: &str,
+    client_ip: &str,
+    user_agent: &str,
+) -> AppResult<OAuthLoginResult> {
+    let appid = state
+        .config
+        .wechat_mini_appid
+        .as_deref()
+        .or(state.config.wechat_appid.as_deref())
+        .ok_or_else(|| ApiError::param_invalid("wechat_mini_appid_missing"))?;
+    let appsecret = state
+        .config
+        .wechat_mini_secret
+        .as_deref()
+        .or(state.config.wechat_appsecret.as_deref())
+        .ok_or_else(|| ApiError::param_invalid("wechat_mini_secret_missing"))?;
+
+    let url = format!(
+        "https://api.weixin.qq.com/sns/jscode2session?appid={}&secret={}&js_code={}&grant_type=authorization_code",
+        urlencoding_minimal(appid),
+        urlencoding_minimal(appsecret),
+        urlencoding_minimal(js_code),
+    );
+
+    #[derive(serde::Deserialize)]
+    struct JsCodeResp {
+        #[serde(default)]
+        openid: Option<String>,
+        #[serde(default)]
+        errcode: Option<i64>,
+        #[serde(default)]
+        errmsg: Option<String>,
+    }
+
+    let resp: JsCodeResp = state.http.get_json(&url).await?;
+    if let Some(code) = resp.errcode {
+        if code != 0 {
+            let msg = resp.errmsg.unwrap_or_default();
+            return Err(ApiError::upstream(format!(
+                "wechat jscode2session errcode={code} errmsg={msg}"
+            )));
+        }
+    }
+    let Some(openid) = resp.openid else {
+        return Err(ApiError::upstream("wechat jscode2session returned no openid"));
+    };
+
+    let member = user_repo::find_by_oauth_id(state.db.reader(), "wxid", &openid).await?;
+    let Some(user) = member else {
+        auth_event("oauth_not_bound", Some("wechat_mini"));
+        return Err(ApiError::param_invalid(format!(
+            "oauth_not_bound:wechat:{openid}"
+        )));
+    };
+    if user.status == 2 {
+        auth_event("oauth_login_fail", Some("locked"));
+        return Err(ApiError::locked());
+    }
+
+    let (usertype, did) = auth_identity(&user)?;
+    let JwtIssued {
+        access,
+        refresh,
+        access_exp,
+        refresh_exp,
+        jti_access,
+        jti_refresh,
+    } = issue_pair(&state.config, user.uid, usertype, did)?;
+
+    let _ = crate::user_session_service::record_login(
+        state,
+        crate::user_session_service::LoginRecord {
+            uid: user.uid,
+            usertype,
+            jti_access: &jti_access,
+            jti_refresh: &jti_refresh,
+            access_exp,
+            refresh_exp,
+            ip: client_ip,
+            ua: user_agent,
+        },
+    )
+    .await;
+
+    auth_event("oauth_login_ok", Some("wechat_mini"));
+    Ok(OAuthLoginResult {
+        uid: user.uid,
+        usertype,
+        access,
+        refresh,
+        access_exp,
+        refresh_exp,
+        provider_sub: openid,
+        email_from_provider: None,
+        name_from_provider: None,
+    })
+}
+
 #[cfg(test)]
 mod wechat_tests {
     use super::*;

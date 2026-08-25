@@ -142,6 +142,11 @@ const CONFIG_ENV_VARS: &[&str] = &[
     "WEIBO_APPID",
     "WEIBO_APPSECRET",
     "WEIBO_OAUTH_REDIRECT",
+    "LOCOY_KEY",
+    "ALIPAY_MD5_KEY",
+    "WECHAT_PAY_API_KEY",
+    "WECHAT_MINI_APPID",
+    "WECHAT_MINI_SECRET",
 ];
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize)]
@@ -327,6 +332,16 @@ pub struct Config {
     pub weibo_appid: Option<String>,
     pub weibo_appsecret: Option<String>,
     pub weibo_oauth_redirect: Option<String>,
+
+    /// Locoy collector shared key (`?key=`). Empty disables `/callback/locoy`.
+    pub locoy_key: Option<String>,
+    /// Alipay legacy MD5 partner key. Empty falls back to site_setting / token.
+    pub alipay_md5_key: Option<String>,
+    /// WeChat Pay v2 API key for XML notify signatures.
+    pub wechat_pay_api_key: Option<String>,
+    /// Mini-program AppId / secret; falls back to `wechat_appid` when empty.
+    pub wechat_mini_appid: Option<String>,
+    pub wechat_mini_secret: Option<String>,
 }
 
 /// Parse `BOT_UA_DENYLIST`.
@@ -538,6 +553,18 @@ impl Config {
             weibo_appid: env::var("WEIBO_APPID").ok().filter(|s| !s.is_empty()),
             weibo_appsecret: env::var("WEIBO_APPSECRET").ok().filter(|s| !s.is_empty()),
             weibo_oauth_redirect: env::var("WEIBO_OAUTH_REDIRECT")
+                .ok()
+                .filter(|s| !s.is_empty()),
+
+            locoy_key: env::var("LOCOY_KEY").ok().filter(|s| !s.is_empty()),
+            alipay_md5_key: env::var("ALIPAY_MD5_KEY").ok().filter(|s| !s.is_empty()),
+            wechat_pay_api_key: env::var("WECHAT_PAY_API_KEY")
+                .ok()
+                .filter(|s| !s.is_empty()),
+            wechat_mini_appid: env::var("WECHAT_MINI_APPID")
+                .ok()
+                .filter(|s| !s.is_empty()),
+            wechat_mini_secret: env::var("WECHAT_MINI_SECRET")
                 .ok()
                 .filter(|s| !s.is_empty()),
         }

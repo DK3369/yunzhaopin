@@ -11,7 +11,9 @@
 //!
 //! The test boots a real `AppState` (DB + Redis as configured by `.env.dev`),
 //! mints an admin JWT so admin routes don't 403 the smoke probe, then
-//! POSTs `{}` to every path discovered from the OpenAPI spec.
+//! POSTs `{}` to every path discovered from the **v1** OpenAPI spec
+//! (`/v1/wap` + `/v1/mcenter`). Admin lives in `phpyun-api-admin` and is
+//! assembled only by the server binary; this library smoke does not mount it.
 
 use axum::body::Body;
 use axum::extract::ConnectInfo;

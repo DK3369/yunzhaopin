@@ -5,21 +5,27 @@
 //! flag, and bilingual names — designed for forms / dropdowns. All reads
 //! hit the in-process cache (`country_service`), so they're sub-microsecond.
 
-use axum::{extract::State, routing::post, Router};
+use axum::{extract::State, routing::get, Router};
 use phpyun_core::dto::IdBody;
 use phpyun_core::i18n::{current_lang, Lang};
-use phpyun_core::{ApiError, ApiResponse, AppResult, AppState, ValidatedJson};
+use phpyun_core::{ApiError, ApiResponse, AppResult, AppState, ValidatedJsonOrQuery};
 use phpyun_models::country::entity::Country;
 use phpyun_services::country_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
 
+pub const GET_ALLOWED_PATHS: &[&str] = &[
+    "/v1/wap/countries",
+    "/v1/wap/countries/get",
+    "/v1/wap/countries/by-code",
+];
+
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/countries", post(list))
-        .route("/countries/get", post(by_id))
-        .route("/countries/by-code", post(by_code))
+        .route("/countries", get(list).post(list))
+        .route("/countries/get", get(by_id).post(by_id))
+        .route("/countries/by-code", get(by_code).post(by_code))
 }
 
 /// Public-facing country shape. `name` is the localized display name
@@ -85,7 +91,7 @@ pub struct ListQuery {
 )]
 pub async fn list(
     State(state): State<AppState>,
-    ValidatedJson(q): ValidatedJson<ListQuery>,
+    ValidatedJsonOrQuery(q): ValidatedJsonOrQuery<ListQuery>,
 ) -> AppResult<ApiResponse<Vec<CountryView>>> {
     let lang = current_lang();
     let out: Vec<CountryView> = match q.continent.as_deref() {
@@ -115,7 +121,7 @@ pub async fn list(
 )]
 pub async fn by_id(
     State(state): State<AppState>,
-    ValidatedJson(b): ValidatedJson<IdBody>,
+    ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<IdBody>,
 ) -> AppResult<ApiResponse<CountryView>> {
     let id = b.id;
     let lang = current_lang();
@@ -137,7 +143,7 @@ pub async fn by_id(
 )]
 pub async fn by_code(
     State(state): State<AppState>,
-    ValidatedJson(b): ValidatedJson<ByCodeBody>,
+    ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<ByCodeBody>,
 ) -> AppResult<ApiResponse<CountryView>> {
     let code = b.code;
     phpyun_core::validators::ensure_path_token(&code)?;

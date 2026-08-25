@@ -355,7 +355,7 @@ pub async fn set_reward_flags(
 // ---------- orders ----------
 
 // Reuse mcenter's `OrderItem` — same shape and same `From<RedeemOrder>` impl.
-pub type OrderItem = crate::v1::mcenter::redeem::OrderItem;
+pub type OrderItem = phpyun_handlers::v1::mcenter::redeem::OrderItem;
 
 /// Order list
 #[utoipa::path(

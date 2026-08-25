@@ -22,6 +22,7 @@ pub fn routes() -> Router<AppState> {
         // WeChat Official Account snsapi_base
         .route("/oauth/wechat/authorize-url", post(wechat_authorize_url))
         .route("/oauth/wechat/code-login", post(wechat_code_login))
+        .route("/oauth/wechat/wxapp-login", post(wxapp_login))
         // QQ Connect
         .route("/oauth/qq/authorize-url", post(qq_authorize_url))
         .route("/oauth/qq/code-login", post(qq_code_login))
@@ -213,6 +214,44 @@ pub async fn wechat_code_login(
         .unwrap_or("")
         .to_string();
     let r = oauth_service::login_with_wechat_code(&state, &f.code, &ip, &ua).await?;
+    Ok(ApiResponse::data(AuthTokenData {
+        uid: r.uid,
+        usertype: r.usertype,
+        access_token: r.access,
+    }))
+}
+
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct WxappLoginForm {
+    /// `wx.login` js_code
+    #[validate(length(min = 1, max = 256))]
+    pub code: String,
+}
+
+/// Mini-program login. Additive; does not change OA `code-login`.
+#[utoipa::path(
+    post,
+    path = "/v1/wap/oauth/wechat/wxapp-login",
+    tag = "auth",
+    request_body = WxappLoginForm,
+    responses(
+        (status = 200, description = "Login successful", body = AuthTokenData),
+        (status = 400, description = "mini-program not configured / invalid code"),
+        (status = 401, description = "openid not bound"),
+    )
+)]
+pub async fn wxapp_login(
+    State(state): State<AppState>,
+    ClientIp(ip): ClientIp,
+    headers: axum::http::HeaderMap,
+    ValidatedJson(f): ValidatedJson<WxappLoginForm>,
+) -> AppResult<ApiResponse<AuthTokenData>> {
+    let ua = headers
+        .get(axum::http::header::USER_AGENT)
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("")
+        .to_string();
+    let r = oauth_service::login_with_wechat_js_code(&state, &f.code, &ip, &ua).await?;
     Ok(ApiResponse::data(AuthTokenData {
         uid: r.uid,
         usertype: r.usertype,

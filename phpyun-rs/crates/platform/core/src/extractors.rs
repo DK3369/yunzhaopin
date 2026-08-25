@@ -395,6 +395,30 @@ where
     }
 }
 
+/// Accept JSON body on POST and query string on GET, so a single handler can
+/// serve both verbs without duplicating business logic. Used for public-read
+/// SSR aliases: POST stays the App contract, GET is cache/CDN friendly.
+pub struct ValidatedJsonOrQuery<T>(pub T);
+
+impl<S, T> FromRequest<S> for ValidatedJsonOrQuery<T>
+where
+    S: Send + Sync,
+    T: DeserializeOwned + validator::Validate,
+{
+    type Rejection = ApiError;
+
+    async fn from_request(req: Request, state: &S) -> Result<Self, Self::Rejection> {
+        if req.method() == axum::http::Method::GET {
+            let (mut parts, _body) = req.into_parts();
+            let ValidatedQuery(value) =
+                ValidatedQuery::<T>::from_request_parts(&mut parts, state).await?;
+            return Ok(ValidatedJsonOrQuery(value));
+        }
+        let ValidatedJson(value) = ValidatedJson::<T>::from_request(req, state).await?;
+        Ok(ValidatedJsonOrQuery(value))
+    }
+}
+
 /// Same as `ValidatedJson`, but reads `application/x-www-form-urlencoded`.
 pub struct ValidatedForm<T>(pub T);
 

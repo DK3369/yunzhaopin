@@ -16,6 +16,7 @@
 
 use axum::Router;
 use phpyun_core::{middleware as mw, route_rules::RouteRules, AppEnvironment, AppState};
+use utoipa::openapi::OpenApi;
 
 use crate::{common, openapi, v1, v2};
 
@@ -31,59 +32,53 @@ fn route_rules() -> RouteRules {
         .allow_get_all(v1::get_allowed_paths())
 }
 
-/// Expose interactive API documentation only outside production. Keeping the
-/// decision in the router means `/docs` and the raw OpenAPI JSON endpoints do
-/// not exist at all when `APP_ENV=prod`; they are not merely hidden by the UI.
-fn mount_api_docs<S>(router: Router<S>, env: AppEnvironment) -> Router<S>
+/// Extra GET exemptions from sibling API crates (e.g. none today for admin).
+fn route_rules_with(extra_get: impl IntoIterator<Item = &'static str>) -> RouteRules {
+    route_rules().allow_get_all(extra_get)
+}
+
+fn mount_api_docs<S>(
+    router: Router<S>,
+    env: AppEnvironment,
+    extra_docs: Option<(&'static str, OpenApi)>,
+) -> Router<S>
 where
     S: Clone + Send + Sync + 'static,
 {
     if env.is_dev_or_test() {
-        router.merge(openapi::swagger_ui())
+        router.merge(openapi::swagger_ui_with(extra_docs))
     } else {
         router
     }
 }
 
 pub fn build_router(cfg: &phpyun_core::Config) -> Router<AppState> {
-    // ---- Business APIs: full middleware stack (incl. IP rate limit / global concurrency limit / body size limit) ----
+    assemble(cfg, Router::new(), None, [])
+}
+
+/// Production assembly. `extra` is merged at the router root (typically the
+/// admin crate's `/v1/admin` tree). `extra_docs` is an optional extra Swagger
+/// spec (`(url, spec)`).
+pub fn assemble(
+    cfg: &phpyun_core::Config,
+    extra: Router<AppState>,
+    extra_docs: Option<(&'static str, OpenApi)>,
+    extra_get: impl IntoIterator<Item = &'static str>,
+) -> Router<AppState> {
     let api = Router::new()
         .nest("/v1", v1::router())
-        .nest("/v2", v2::router());
-    let api = mount_api_docs(api, cfg.env);
-    let api_with_mw = mw::install(api, cfg, route_rules());
-
-    // ---- Ops probes: **bypass rate limit / concurrency limit / body limit** (k8s LB probes hit these frequently) ----
-    //
-    // /health and /ready must respond reliably; if they get rate-limited even once, the LB will mark
-    // the instance unhealthy and pull the entire process out of the load balancer — so these two
-    // endpoints **must** run outside the middleware stack. This also avoids the
-    // ConcurrencyLimitLayer making health checks queue up and time out under traffic spikes.
+        .nest("/v2", v2::router())
+        .nest("/callback", crate::callback::router())
+        .merge(extra);
+    let api = mount_api_docs(api, cfg.env, extra_docs);
+    let api_with_mw = mw::install(api, cfg, route_rules_with(extra_get));
     Router::new().merge(common::router()).merge(api_with_mw)
 }
 
-/// State-aware variant — wires a router-level admin guard onto `/v1/admin/*`
-/// in addition to everything `build_router` does. Production callers should
-/// prefer this entry-point so an unguarded admin handler can never escape
-/// the role check; per-handler `user.require_admin()` calls remain as a
-/// defense-in-depth audit signal.
-pub fn build_router_with_state(cfg: &phpyun_core::Config, state: AppState) -> Router<AppState> {
-    let v1 = Router::new()
-        .nest("/wap", v1::wap::router())
-        .nest("/mcenter", v1::mcenter::router())
-        .nest(
-            "/admin",
-            v1::admin::router().layer(axum::middleware::from_fn_with_state(
-                state,
-                phpyun_core::admin_guard::layer,
-            )),
-        );
-
-    let api = Router::new().nest("/v1", v1).nest("/v2", v2::router());
-    let api = mount_api_docs(api, cfg.env);
-    let api_with_mw = mw::install(api, cfg, route_rules());
-
-    Router::new().merge(common::router()).merge(api_with_mw)
+/// State-aware variant kept for tests and in-process smoke probes that do not
+/// mount the sibling admin crate.
+pub fn build_router_with_state(cfg: &phpyun_core::Config, _state: AppState) -> Router<AppState> {
+    assemble(cfg, Router::new(), None, [])
 }
 
 #[cfg(test)]
@@ -96,7 +91,7 @@ mod tests {
     use tower::ServiceExt;
 
     async fn status_for(env: AppEnvironment, path: &str) -> StatusCode {
-        mount_api_docs(Router::new(), env)
+        mount_api_docs(Router::new(), env, None)
             .oneshot(Request::builder().uri(path).body(Body::empty()).unwrap())
             .await
             .unwrap()

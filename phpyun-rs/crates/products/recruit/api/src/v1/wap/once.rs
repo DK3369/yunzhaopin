@@ -1,21 +1,28 @@
 //! One-off shop recruitment (`once`) front-end. Aligned with PHPYun `once/index::{index,show,add,ajax}_action`.
 
-use axum::{extract::State, routing::post, Router};
+use axum::{
+    extract::State,
+    routing::{get, post},
+    Router,
+};
 use phpyun_core::dto::{IdBody, IdPasswordBody, UpsertCreated};
 use phpyun_core::utils::{mask_name_short as mask_name, mask_tel};
 use phpyun_core::{
     json, ApiResponse, AppResult, AppState, ClientIp, Paged, Pagination, ValidatedJson,
+    ValidatedJsonOrQuery,
 };
 use phpyun_services::once_service::{self, ManageOp, OnceSearch, UpsertInput};
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
 
+pub const GET_ALLOWED_PATHS: &[&str] = &["/v1/wap/once-jobs/list", "/v1/wap/once-jobs/show"];
+
 pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/once-jobs", post(create))
-        .route("/once-jobs/list", post(list))
-        .route("/once-jobs/show", post(show))
+        .route("/once-jobs/list", get(list).post(list))
+        .route("/once-jobs/show", get(show).post(show))
         .route("/once-jobs/update", post(update))
         .route("/once-jobs/delete", post(soft_delete))
         .route("/once-jobs/verify", post(verify))
@@ -82,7 +89,7 @@ impl From<phpyun_models::once_job::entity::OnceJob> for OnceListItem {
 pub async fn list(
     State(state): State<AppState>,
     page: Pagination,
-    ValidatedJson(q): ValidatedJson<ListQuery>,
+    ValidatedJsonOrQuery(q): ValidatedJsonOrQuery<ListQuery>,
 ) -> AppResult<ApiResponse<Paged<OnceListItem>>> {
     let search = OnceSearch {
         keyword: q.keyword,
@@ -126,7 +133,7 @@ pub struct OnceDetail {
     responses((status = 200, description = "ok", body = OnceDetail)))]
 pub async fn show(
     State(state): State<AppState>,
-    ValidatedJson(b): ValidatedJson<IdBody>,
+    ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<IdBody>,
 ) -> AppResult<ApiResponse<OnceDetail>> {
     let id = b.id;
     let j = once_service::show(&state, id).await?;

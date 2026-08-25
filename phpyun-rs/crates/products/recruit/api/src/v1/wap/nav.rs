@@ -1,14 +1,16 @@
 //! Navigation menu public read.
 
-use axum::{extract::State, routing::post, Router};
+use axum::{extract::State, routing::get, Router};
 use phpyun_core::utils::{fmt_dt, pic_n_str as icon_n};
-use phpyun_core::{ApiResponse, AppResult, AppState, ValidatedJson};
+use phpyun_core::{ApiResponse, AppResult, AppState, ValidatedJsonOrQuery};
 use phpyun_services::nav_menu_service;
 use serde::Serialize;
 use utoipa::ToSchema;
 
+pub const GET_ALLOWED_PATHS: &[&str] = &["/v1/wap/nav"];
+
 pub fn routes() -> Router<AppState> {
-    Router::new().route("/nav", post(list))
+    Router::new().route("/nav", get(list).post(list))
 }
 
 /// Navigation item — all 9 columns of phpyun_navigation + CDN URL + formatted timestamp.
@@ -72,7 +74,7 @@ impl From<phpyun_models::nav_menu::entity::NavMenu> for NavItem {
 )]
 pub async fn list(
     State(state): State<AppState>,
-    ValidatedJson(b): ValidatedJson<ListBody>,
+    ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<ListBody>,
 ) -> AppResult<ApiResponse<Vec<NavItem>>> {
     let position = b.position;
     phpyun_core::validators::ensure_path_token(&position)?;

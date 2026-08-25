@@ -1,11 +1,16 @@
 //! Public resume search (company view, usertype=2 required).
 
-use axum::{extract::State, routing::post, Router};
+use axum::{
+    extract::State,
+    routing::{get, post},
+    Router,
+};
 use phpyun_core::dto::{EidBody, UidBody};
 use phpyun_core::i18n::{current_lang, t};
 use phpyun_core::utils::{fmt_date, fmt_dt, mask_name_resume as mask_name, pic_n as pic_n_local};
 use phpyun_core::{
     clock, ApiResponse, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
+    ValidatedJsonOrQuery,
 };
 use phpyun_models::resume::repo::ResumeFilter;
 use phpyun_services::hot_search_service;
@@ -15,12 +20,21 @@ use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
 
+pub const GET_ALLOWED_PATHS: &[&str] = &[
+    "/v1/wap/resumes",
+    "/v1/wap/resumes/detail",
+    "/v1/wap/resumes/default-expect",
+];
+
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/resumes", post(list_resumes))
-        .route("/resumes/detail", post(resume_detail))
+        .route("/resumes", get(list_resumes).post(list_resumes))
+        .route("/resumes/detail", get(resume_detail).post(resume_detail))
         .route("/resumes/expects/hits", post(bump_expect_hits))
-        .route("/resumes/default-expect", post(default_expect_by_uid))
+        .route(
+            "/resumes/default-expect",
+            get(default_expect_by_uid).post(default_expect_by_uid),
+        )
 }
 
 #[derive(Debug, Deserialize, Validate, IntoParams)]
@@ -237,7 +251,7 @@ pub async fn list_resumes(
     State(state): State<AppState>,
     user: AuthenticatedUser,
     page: Pagination,
-    ValidatedJson(q): ValidatedJson<ResumeListQuery>,
+    ValidatedJsonOrQuery(q): ValidatedJsonOrQuery<ResumeListQuery>,
 ) -> AppResult<ApiResponse<Paged<ResumeSummary>>> {
     if let Some(kw) = q.keyword.as_ref().filter(|k| !k.trim().is_empty()) {
         hot_search_service::bump_async(&state, "resume", kw.trim().to_string());
@@ -428,7 +442,7 @@ pub struct ResumeDetail {
 pub async fn resume_detail(
     State(state): State<AppState>,
     user: AuthenticatedUser,
-    ValidatedJson(b): ValidatedJson<UidBody>,
+    ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<UidBody>,
 ) -> AppResult<ApiResponse<ResumeDetail>> {
     let uid = b.uid;
     let r = resume_service::get_public(&state, &user, uid).await?;
@@ -573,7 +587,7 @@ pub struct DefaultExpectResp {
 )]
 pub async fn default_expect_by_uid(
     State(state): State<AppState>,
-    ValidatedJson(b): ValidatedJson<UidBody>,
+    ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<UidBody>,
 ) -> AppResult<ApiResponse<DefaultExpectResp>> {
     let default_eid = phpyun_models::resume::repo::default_eid(state.db.reader(), b.uid).await?;
     Ok(ApiResponse::data(DefaultExpectResp {

@@ -1,24 +1,48 @@
 //! Public Q&A browsing (aligned with the index/list/content parts of PHPYun `wap/ask`).
 
-use axum::{extract::State, routing::post, Router};
+use axum::{extract::State, routing::get, Router};
 use phpyun_core::dto::IdBody;
 use phpyun_core::utils::{fmt_dt, pic_n};
-use phpyun_core::{ApiResponse, AppResult, AppState, MaybeUser, Paged, Pagination, ValidatedJson};
+use phpyun_core::{
+    ApiResponse, AppResult, AppState, MaybeUser, Paged, Pagination, ValidatedJsonOrQuery,
+};
 use phpyun_models::qna::repo::QuestionOrder;
 use phpyun_services::qna_service::{self, QuestionListFilter};
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
 
+pub const GET_ALLOWED_PATHS: &[&str] = &[
+    "/v1/wap/questions",
+    "/v1/wap/questions/detail",
+    "/v1/wap/questions/answers",
+    "/v1/wap/qna/categories",
+    "/v1/wap/qna/hotweek",
+    "/v1/wap/qna/top-answerers",
+    "/v1/wap/answers/comments/list",
+];
+
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/questions", post(list_questions))
-        .route("/questions/detail", post(question_detail))
-        .route("/questions/answers", post(list_answers))
-        .route("/qna/categories", post(list_categories))
-        .route("/qna/hotweek", post(list_hotweek))
-        .route("/qna/top-answerers", post(list_top_answerers))
-        .route("/answers/comments/list", post(list_comments))
+        .route("/questions", get(list_questions).post(list_questions))
+        .route(
+            "/questions/detail",
+            get(question_detail).post(question_detail),
+        )
+        .route("/questions/answers", get(list_answers).post(list_answers))
+        .route(
+            "/qna/categories",
+            get(list_categories).post(list_categories),
+        )
+        .route("/qna/hotweek", get(list_hotweek).post(list_hotweek))
+        .route(
+            "/qna/top-answerers",
+            get(list_top_answerers).post(list_top_answerers),
+        )
+        .route(
+            "/answers/comments/list",
+            get(list_comments).post(list_comments),
+        )
 }
 
 #[derive(Debug, Deserialize, Validate, IntoParams)]
@@ -294,7 +318,7 @@ fn parse_order(s: &str) -> QuestionOrder {
 pub async fn list_questions(
     State(state): State<AppState>,
     page: Pagination,
-    ValidatedJson(q): ValidatedJson<QListQuery>,
+    ValidatedJsonOrQuery(q): ValidatedJsonOrQuery<QListQuery>,
 ) -> AppResult<ApiResponse<Paged<QuestionSummary>>> {
     let f = QuestionListFilter {
         keyword: q.keyword.as_deref(),
@@ -324,7 +348,7 @@ pub async fn list_questions(
 pub async fn question_detail(
     State(state): State<AppState>,
     MaybeUser(user): MaybeUser,
-    ValidatedJson(b): ValidatedJson<IdBody>,
+    ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<IdBody>,
 ) -> AppResult<ApiResponse<QuestionDetail>> {
     let id = b.id;
     let q = qna_service::get_question(&state, id).await?;
@@ -449,7 +473,7 @@ pub async fn list_answers(
     State(state): State<AppState>,
     MaybeUser(user): MaybeUser,
     page: Pagination,
-    ValidatedJson(b): ValidatedJson<IdBody>,
+    ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<IdBody>,
 ) -> AppResult<ApiResponse<Paged<AnswerItem>>> {
     let id = b.id;
     let r = qna_service::list_answers(&state, id, page).await?;
@@ -525,7 +549,7 @@ fn default_hot_limit() -> u64 {
 #[utoipa::path(post, path = "/v1/wap/qna/hotweek", tag = "wap", params(HotweekQuery), responses((status = 200, description = "ok")))]
 pub async fn list_hotweek(
     State(state): State<AppState>,
-    ValidatedJson(q): ValidatedJson<HotweekQuery>,
+    ValidatedJsonOrQuery(q): ValidatedJsonOrQuery<HotweekQuery>,
 ) -> AppResult<ApiResponse<Vec<QuestionSummary>>> {
     let list = qna_service::list_hotweek(&state, q.limit).await?;
     Ok(ApiResponse::data(
@@ -575,7 +599,7 @@ impl From<phpyun_models::qna::entity::AnswerReview> for CommentItem {
 pub async fn list_comments(
     State(state): State<AppState>,
     page: Pagination,
-    ValidatedJson(b): ValidatedJson<ListCommentsBody>,
+    ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<ListCommentsBody>,
 ) -> AppResult<ApiResponse<Paged<CommentItem>>> {
     let aid = b.aid;
     let r = qna_service::list_reviews(&state, aid, page).await?;
@@ -636,7 +660,7 @@ impl From<phpyun_services::qna_service::AnswererBrief> for TopAnswererItem {
 )]
 pub async fn list_top_answerers(
     State(state): State<AppState>,
-    ValidatedJson(q): ValidatedJson<TopAnswerersQuery>,
+    ValidatedJsonOrQuery(q): ValidatedJsonOrQuery<TopAnswerersQuery>,
 ) -> AppResult<ApiResponse<Vec<TopAnswererItem>>> {
     let rows = qna_service::list_top_answerers(&state, q.days, q.limit).await?;
     Ok(ApiResponse::data(

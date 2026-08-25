@@ -1,17 +1,19 @@
 //! Home page aggregation (aligned with PHPYun `wap/index::index`).
 
-use axum::{extract::State, routing::post, Router};
+use axum::{extract::State, routing::get, Router};
 use phpyun_core::utils::fmt_date;
-use phpyun_core::{ApiResponse, AppResult, AppState, ValidatedJson};
+use phpyun_core::{ApiResponse, AppResult, AppState, ValidatedJsonOrQuery};
 use phpyun_services::home_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
 
+pub const GET_ALLOWED_PATHS: &[&str] = &["/v1/wap/home", "/v1/wap/home/aggregate"];
+
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/home", post(home))
-        .route("/home/aggregate", post(aggregate))
+        .route("/home", get(home).post(home))
+        .route("/home/aggregate", get(aggregate).post(aggregate))
 }
 
 #[derive(Debug, Deserialize, Validate, IntoParams)]
@@ -69,7 +71,7 @@ pub struct HomeData {
 #[utoipa::path(post, path = "/v1/wap/home", tag = "wap", params(HomeQuery), responses((status = 200, description = "ok", body = HomeData)))]
 pub async fn home(
     State(state): State<AppState>,
-    ValidatedJson(q): ValidatedJson<HomeQuery>,
+    ValidatedJsonOrQuery(q): ValidatedJsonOrQuery<HomeQuery>,
 ) -> AppResult<ApiResponse<HomeData>> {
     let p = home_service::home(&state, q.did).await?;
     let dicts = phpyun_services::dict_service::get(&state).await?;
@@ -215,7 +217,7 @@ pub struct AggregateData {
 )]
 pub async fn aggregate(
     State(state): State<AppState>,
-    ValidatedJson(q): ValidatedJson<AggregateQuery>,
+    ValidatedJsonOrQuery(q): ValidatedJsonOrQuery<AggregateQuery>,
 ) -> AppResult<ApiResponse<AggregateData>> {
     let db = state.db.reader();
     let now = phpyun_core::clock::now_ts();

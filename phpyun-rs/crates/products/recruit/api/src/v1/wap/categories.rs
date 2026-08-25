@@ -1,17 +1,26 @@
 //! Dynamic category tree (public).
 
-use axum::{extract::State, routing::post, Router};
-use phpyun_core::{i18n, ApiResponse, AppResult, AppState, Lang, ValidatedJson};
+use axum::{extract::State, routing::get, Router};
+use phpyun_core::{i18n, ApiResponse, AppResult, AppState, Lang, ValidatedJsonOrQuery};
 use phpyun_services::{category_service, dict_service};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
 
+pub const GET_ALLOWED_PATHS: &[&str] = &[
+    "/v1/wap/categories",
+    "/v1/wap/categories/children",
+    "/v1/wap/categories/recommended",
+];
+
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/categories", post(list))
-        .route("/categories/children", post(children))
-        .route("/categories/recommended", post(recommended))
+        .route("/categories", get(list).post(list))
+        .route("/categories/children", get(children).post(children))
+        .route(
+            "/categories/recommended",
+            get(recommended).post(recommended),
+        )
 }
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
@@ -103,7 +112,7 @@ fn localized_name(
 )]
 pub async fn list(
     State(state): State<AppState>,
-    ValidatedJson(b): ValidatedJson<KindBody>,
+    ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<KindBody>,
 ) -> AppResult<ApiResponse<Vec<CatNode>>> {
     phpyun_core::validators::ensure_path_token(&b.kind)?;
     let list = category_service::list(&state, &b.kind).await?;
@@ -129,7 +138,7 @@ pub async fn list(
 )]
 pub async fn children(
     State(state): State<AppState>,
-    ValidatedJson(b): ValidatedJson<ChildrenBody>,
+    ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<ChildrenBody>,
 ) -> AppResult<ApiResponse<Vec<CatNode>>> {
     phpyun_core::validators::ensure_path_token(&b.kind)?;
     let list = category_service::list_children(&state, &b.kind, b.parent_id).await?;
@@ -160,7 +169,7 @@ pub async fn children(
 )]
 pub async fn recommended(
     State(state): State<AppState>,
-    ValidatedJson(b): ValidatedJson<RecommendedBody>,
+    ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<RecommendedBody>,
 ) -> AppResult<ApiResponse<Vec<CatNode>>> {
     phpyun_core::validators::ensure_path_token(&b.kind)?;
     let limit = b.limit.clamp(1, 100);

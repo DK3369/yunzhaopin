@@ -1,2 +1,7 @@
 uploads/data/templates_c/
 /target/
+web/**/node_modules/
+web/**/.nuxt/
+web/**/.output/
+web/**/dist/
+**/.DS_Store

@@ -1,18 +1,26 @@
 //! HR toolbox public read.
 
-use axum::{extract::State, routing::post, Router};
+use axum::{
+    extract::State,
+    routing::{get, post},
+    Router,
+};
 use phpyun_core::dto::IdBody;
 use phpyun_core::utils::fmt_dt;
-use phpyun_core::{ApiResponse, AppResult, AppState, Paged, Pagination, ValidatedJson};
+use phpyun_core::{
+    ApiResponse, AppResult, AppState, Paged, Pagination, ValidatedJson, ValidatedJsonOrQuery,
+};
 use phpyun_services::hr_doc_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
 
+pub const GET_ALLOWED_PATHS: &[&str] = &["/v1/wap/hr-docs", "/v1/wap/hr-docs/detail"];
+
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/hr-docs", post(list))
-        .route("/hr-docs/detail", post(detail))
+        .route("/hr-docs", get(list).post(list))
+        .route("/hr-docs/detail", get(detail).post(detail))
         .route("/hr-docs/download", post(track_download))
 }
 
@@ -97,7 +105,7 @@ impl From<phpyun_models::hr_doc::entity::HrDoc> for HrDetail {
 pub async fn list(
     State(state): State<AppState>,
     page: Pagination,
-    ValidatedJson(q): ValidatedJson<HrQuery>,
+    ValidatedJsonOrQuery(q): ValidatedJsonOrQuery<HrQuery>,
 ) -> AppResult<ApiResponse<Paged<HrSummary>>> {
     let r = hr_doc_service::list(&state, q.cid, page).await?;
     Ok(ApiResponse::data(Paged::from_listing(
@@ -114,7 +122,7 @@ pub async fn list(
 )]
 pub async fn detail(
     State(state): State<AppState>,
-    ValidatedJson(b): ValidatedJson<IdBody>,
+    ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<IdBody>,
 ) -> AppResult<ApiResponse<HrDetail>> {
     let id = b.id;
     let d = hr_doc_service::get(&state, id).await?;

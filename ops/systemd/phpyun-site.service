@@ -1,0 +1,17 @@
+[Unit]
+Description=PHPYun Nuxt site (SSR)
+After=network-online.target phpyun-rs.service
+
+[Service]
+Type=simple
+User=www
+Group=www
+WorkingDirectory=@@SITE_DIR@@
+Environment=NODE_ENV=production
+Environment=RUST_API_URL=http://127.0.0.1:3000
+ExecStart=/usr/bin/node @@SITE_DIR@@/.output/server/index.mjs
+Restart=on-failure
+RestartSec=5s
+
+[Install]
+WantedBy=multi-user.target

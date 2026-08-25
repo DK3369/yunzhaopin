@@ -1,19 +1,29 @@
 //! Site static pages (about / privacy / protocol / contact / appDown) +
 //! multi-site domain switcher endpoints.
 
-use axum::{extract::State, routing::post, Router};
-use phpyun_core::{ApiError, ApiResponse, AppResult, AppState, ValidatedJson};
+use axum::{extract::State, routing::get, Router};
+use phpyun_core::{ApiError, ApiResponse, AppResult, AppState, ValidatedJsonOrQuery};
 use phpyun_services::site_page_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
 
+pub const GET_ALLOWED_PATHS: &[&str] = &[
+    "/v1/wap/site/pages",
+    "/v1/wap/site/sub-sites",
+    "/v1/wap/site/sub-sites/match",
+    "/v1/wap/site/map-config",
+];
+
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/site/pages", post(get_page))
-        .route("/site/sub-sites", post(list_sub_sites))
-        .route("/site/sub-sites/match", post(match_sub_site))
-        .route("/site/map-config", post(map_config))
+        .route("/site/pages", get(get_page).post(get_page))
+        .route("/site/sub-sites", get(list_sub_sites).post(list_sub_sites))
+        .route(
+            "/site/sub-sites/match",
+            get(match_sub_site).post(match_sub_site),
+        )
+        .route("/site/map-config", get(map_config).post(map_config))
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -33,7 +43,7 @@ pub struct SitePageView {
 )]
 pub async fn get_page(
     State(state): State<AppState>,
-    ValidatedJson(b): ValidatedJson<GetPageBody>,
+    ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<GetPageBody>,
 ) -> AppResult<ApiResponse<SitePageView>> {
     let code = b.code;
     phpyun_core::validators::ensure_path_token(&code)?;
@@ -116,7 +126,7 @@ pub struct SubSitesQuery {
 )]
 pub async fn list_sub_sites(
     State(state): State<AppState>,
-    ValidatedJson(q): ValidatedJson<SubSitesQuery>,
+    ValidatedJsonOrQuery(q): ValidatedJsonOrQuery<SubSitesQuery>,
 ) -> AppResult<ApiResponse<Vec<SubSiteView>>> {
     use phpyun_models::domain::repo as domain_repo;
     let rows = match q.fz_type {
@@ -155,7 +165,7 @@ pub struct MatchSubSiteQuery {
 )]
 pub async fn match_sub_site(
     State(state): State<AppState>,
-    ValidatedJson(q): ValidatedJson<MatchSubSiteQuery>,
+    ValidatedJsonOrQuery(q): ValidatedJsonOrQuery<MatchSubSiteQuery>,
 ) -> AppResult<ApiResponse<Option<SubSiteView>>> {
     let p = q.province_id.unwrap_or(0);
     let c = q.city_id.unwrap_or(0);

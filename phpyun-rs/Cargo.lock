@@ -2250,6 +2250,24 @@ dependencies = [
 ]
 
 [[package]]
+name = "phpyun-api-admin"
+version = "0.1.2"
+dependencies = [
+ "axum",
+ "chrono",
+ "phpyun-core",
+ "phpyun-handlers",
+ "phpyun-models",
+ "phpyun-services",
+ "serde",
+ "serde_json",
+ "tracing",
+ "utoipa",
+ "utoipa-swagger-ui",
+ "validator",
+]
+
+[[package]]
 name = "phpyun-auth"
 version = "0.1.2"
 dependencies = [
@@ -2342,6 +2360,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "phpyun-rs"
+version = "0.1.2"
+dependencies = [
+ "anyhow",
+ "axum",
+ "phpyun-api-admin",
+ "phpyun-core",
+ "phpyun-handlers",
+ "phpyun-services",
+ "serde_json",
+ "tokio",
+ "tracing",
+ "utoipa",
+]
+
+[[package]]
 name = "phpyun-services"
 version = "0.1.2"
 dependencies = [
@@ -2349,6 +2383,7 @@ dependencies = [
  "base64 0.22.1",
  "captcha",
  "chrono",
+ "md-5",
  "num-traits",
  "phpyun-auth",
  "phpyun-core",

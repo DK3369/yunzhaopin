@@ -153,3 +153,62 @@ pub async fn bump_and_get_hits(pool: &MySqlPool, id: u64) -> Result<u64, sqlx::E
     incr_hits(pool, id).await?;
     get_hits(pool, id).await
 }
+
+pub struct ArticleIngest<'a> {
+    pub title: &'a str,
+    pub nid: i32,
+    pub did: i32,
+    pub author: &'a str,
+    pub description: &'a str,
+    pub source: &'a str,
+    pub datetime: i64,
+    pub hits: i32,
+    pub sort: i32,
+    pub newsphoto: &'a str,
+    pub s_thumb: &'a str,
+    pub keyword: &'a str,
+    pub content: &'a str,
+}
+
+/// Locoy news ingest. Returns `Ok(None)` when the same title+nid already exists.
+pub async fn ingest(pool: &MySqlPool, a: ArticleIngest<'_>) -> Result<Option<u64>, sqlx::Error> {
+    let exists: Option<(i64,)> = sqlx::query_as(
+        "SELECT 1 FROM phpyun_news_base WHERE title = ? AND nid = ? LIMIT 1",
+    )
+    .bind(a.title)
+    .bind(a.nid)
+    .fetch_optional(pool)
+    .await?;
+    if exists.is_some() {
+        return Ok(None);
+    }
+    let res = sqlx::query(
+        r#"INSERT INTO phpyun_news_base
+           (title, nid, did, author, description, source, datetime, starttime,
+            hits, sort, newsphoto, s_thumb, keyword, lastupdate)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"#,
+    )
+    .bind(a.title)
+    .bind(a.nid)
+    .bind(a.did)
+    .bind(a.author)
+    .bind(a.description)
+    .bind(a.source)
+    .bind(a.datetime)
+    .bind(a.datetime)
+    .bind(a.hits)
+    .bind(a.sort)
+    .bind(a.newsphoto)
+    .bind(a.s_thumb)
+    .bind(a.keyword)
+    .bind(a.datetime)
+    .execute(pool)
+    .await?;
+    let id = res.last_insert_id();
+    sqlx::query("INSERT INTO phpyun_news_content (nbid, content) VALUES (?, ?)")
+        .bind(id)
+        .bind(a.content)
+        .execute(pool)
+        .await?;
+    Ok(Some(id))
+}

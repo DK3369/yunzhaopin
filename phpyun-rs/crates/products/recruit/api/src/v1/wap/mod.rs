@@ -114,5 +114,58 @@ pub fn router() -> Router<AppState> {
 /// from the modules that own them. Add to the owning module's
 /// `GET_ALLOWED_PATHS`, not to a list in the middleware.
 pub fn get_allowed_paths() -> Vec<&'static str> {
-    wechat::GET_ALLOWED_PATHS.to_vec()
+    let mut v = wechat::GET_ALLOWED_PATHS.to_vec();
+    v.extend_from_slice(jobs::GET_ALLOWED_PATHS);
+    v.extend_from_slice(companies::GET_ALLOWED_PATHS);
+    v.extend_from_slice(home::GET_ALLOWED_PATHS);
+    v.extend_from_slice(articles::GET_ALLOWED_PATHS);
+    v.extend_from_slice(announcements::GET_ALLOWED_PATHS);
+    v.extend_from_slice(search::GET_ALLOWED_PATHS);
+    v.extend_from_slice(dict::GET_ALLOWED_PATHS);
+    v.extend_from_slice(regions::GET_ALLOWED_PATHS);
+    v.extend_from_slice(resumes::GET_ALLOWED_PATHS);
+    v.extend_from_slice(zph::GET_ALLOWED_PATHS);
+    v.extend_from_slice(part::GET_ALLOWED_PATHS);
+    v.extend_from_slice(once::GET_ALLOWED_PATHS);
+    v.extend_from_slice(tiny::GET_ALLOWED_PATHS);
+    v.extend_from_slice(ads::GET_ALLOWED_PATHS);
+    v.extend_from_slice(nav::GET_ALLOWED_PATHS);
+    v.extend_from_slice(links::GET_ALLOWED_PATHS);
+    v.extend_from_slice(site::GET_ALLOWED_PATHS);
+    v.extend_from_slice(specials::GET_ALLOWED_PATHS);
+    v.extend_from_slice(gongzhao::GET_ALLOWED_PATHS);
+    v.extend_from_slice(qna::GET_ALLOWED_PATHS);
+    v.extend_from_slice(redeem::GET_ALLOWED_PATHS);
+    v.extend_from_slice(hr_docs::GET_ALLOWED_PATHS);
+    v.extend_from_slice(map::GET_ALLOWED_PATHS);
+    v.extend_from_slice(categories::GET_ALLOWED_PATHS);
+    v.extend_from_slice(countries::GET_ALLOWED_PATHS);
+    v.extend_from_slice(hot_searches::GET_ALLOWED_PATHS);
+    v
+}
+
+#[cfg(test)]
+mod get_alias_tests {
+    use super::get_allowed_paths;
+
+    #[test]
+    fn public_read_get_aliases_are_registered() {
+        let v = get_allowed_paths();
+        for p in [
+            "/v1/wap/jobs",
+            "/v1/wap/jobs/detail",
+            "/v1/wap/home",
+            "/v1/wap/companies",
+            "/v1/wap/search",
+            "/v1/wap/articles",
+            "/v1/wap/announcements",
+            "/v1/wap/wechat/callback",
+        ] {
+            assert!(v.iter().any(|x| *x == p), "missing GET alias {p}");
+        }
+        let mut sorted = v.clone();
+        sorted.sort_unstable();
+        sorted.dedup();
+        assert_eq!(sorted.len(), v.len(), "duplicate GET_ALLOWED_PATHS");
+    }
 }

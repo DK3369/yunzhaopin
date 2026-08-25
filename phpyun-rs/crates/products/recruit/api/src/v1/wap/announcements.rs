@@ -1,17 +1,21 @@
 //! Site announcements (aligned with PHPYun `wap/announcement`).
 
-use axum::{extract::State, routing::post, Router};
+use axum::{extract::State, routing::get, Router};
 use phpyun_core::dto::IdBody;
 use phpyun_core::utils::{fmt_date, fmt_dt};
-use phpyun_core::{ApiError, ApiResponse, AppResult, AppState, Paged, Pagination, ValidatedJson};
+use phpyun_core::{
+    ApiError, ApiResponse, AppResult, AppState, Paged, Pagination, ValidatedJsonOrQuery,
+};
 use phpyun_services::announcement_service;
 use serde::Serialize;
 use utoipa::ToSchema;
 
+pub const GET_ALLOWED_PATHS: &[&str] = &["/v1/wap/announcements", "/v1/wap/announcements/detail"];
+
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/announcements", post(list))
-        .route("/announcements/detail", post(detail))
+        .route("/announcements", get(list).post(list))
+        .route("/announcements/detail", get(detail).post(detail))
 }
 
 /// Announcement list item — aligned with all fields of phpyun_announcement.
@@ -122,7 +126,7 @@ pub async fn list(
 )]
 pub async fn detail(
     State(state): State<AppState>,
-    ValidatedJson(b): ValidatedJson<IdBody>,
+    ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<IdBody>,
 ) -> AppResult<ApiResponse<AnnouncementDetail>> {
     let id = b.id;
     let row = announcement_service::get_detail(&state, id)

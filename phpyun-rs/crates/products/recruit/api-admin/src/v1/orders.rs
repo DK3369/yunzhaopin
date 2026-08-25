@@ -17,7 +17,7 @@ pub fn routes() -> Router<AppState> {
 }
 
 // Reuse mcenter's `vip::OrderItem` — same shape and `From<PayOrder>` impl.
-pub type OrderItem = crate::v1::mcenter::vip::OrderItem;
+pub type OrderItem = phpyun_handlers::v1::mcenter::vip::OrderItem;
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct SetStatusForm {

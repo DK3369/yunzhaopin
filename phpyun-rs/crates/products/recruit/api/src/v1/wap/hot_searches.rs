@@ -1,15 +1,17 @@
 //! Hot search keywords (public endpoint).
 
-use axum::{extract::State, routing::post, Router};
+use axum::{extract::State, routing::get, Router};
 use phpyun_core::utils::fmt_dt;
-use phpyun_core::{ApiResponse, AppResult, AppState, ValidatedJson};
+use phpyun_core::{ApiResponse, AppResult, AppState, ValidatedJsonOrQuery};
 use phpyun_services::hot_search_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
 
+pub const GET_ALLOWED_PATHS: &[&str] = &["/v1/wap/hot-searches"];
+
 pub fn routes() -> Router<AppState> {
-    Router::new().route("/hot-searches", post(list))
+    Router::new().route("/hot-searches", get(list).post(list))
 }
 
 #[derive(Debug, Deserialize, Validate, IntoParams)]
@@ -63,7 +65,7 @@ impl From<phpyun_models::hot_search::entity::HotSearch> for HotItem {
 )]
 pub async fn list(
     State(state): State<AppState>,
-    ValidatedJson(q): ValidatedJson<HotQuery>,
+    ValidatedJsonOrQuery(q): ValidatedJsonOrQuery<HotQuery>,
 ) -> AppResult<ApiResponse<Vec<HotItem>>> {
     let list = hot_search_service::top(&state, &q.scope, q.limit).await?;
     Ok(ApiResponse::data(

@@ -57,7 +57,7 @@ pub use error::{ApiError, AppResult};
 pub use events::{EventBus, EventBusBackend};
 pub use extractors::{
     AuthenticatedUser, ClientIp, MaybeUser, Pagination, ValidatedForm, ValidatedJson,
-    ValidatedQuery,
+    ValidatedJsonOrQuery, ValidatedQuery,
 };
 pub use i18n::{t, t_args, Lang};
 pub use kv::Kv;
@@ -78,6 +78,7 @@ pub mod prelude {
     pub use crate::dto::*;
     pub use crate::{
         ApiBody, ApiError, ApiResponse, AppResult, AppState, AuthenticatedUser, ClientIp, Lang,
-        MaybeUser, Paged, Pagination, ValidatedForm, ValidatedJson, ValidatedQuery,
+        MaybeUser, Paged, Pagination, ValidatedForm, ValidatedJson, ValidatedJsonOrQuery,
+        ValidatedQuery,
     };
 }

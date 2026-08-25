@@ -1,22 +1,34 @@
 //! Special recruitment events (aligned with PHPYun `wap/special`).
 
-use axum::{extract::State, routing::post, Router};
+use axum::{
+    extract::State,
+    routing::{get, post},
+    Router,
+};
 use phpyun_core::dto::IdBody;
 use phpyun_core::utils::{fmt_date, pic_n_str as pic_n};
 use phpyun_core::{
     ApiResponse, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
+    ValidatedJsonOrQuery,
 };
 use phpyun_services::special_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
 
+pub const GET_ALLOWED_PATHS: &[&str] = &[
+    "/v1/wap/specials",
+    "/v1/wap/specials/detail",
+    "/v1/wap/specials/companies",
+    "/v1/wap/specials/jobs",
+];
+
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/specials", post(list))
-        .route("/specials/detail", post(detail))
-        .route("/specials/companies", post(companies))
-        .route("/specials/jobs", post(jobs))
+        .route("/specials", get(list).post(list))
+        .route("/specials/detail", get(detail).post(detail))
+        .route("/specials/companies", get(companies).post(companies))
+        .route("/specials/jobs", get(jobs).post(jobs))
         .route("/specials/apply", post(apply))
 }
 
@@ -189,7 +201,7 @@ pub async fn list(
 )]
 pub async fn detail(
     State(state): State<AppState>,
-    ValidatedJson(b): ValidatedJson<IdBody>,
+    ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<IdBody>,
 ) -> AppResult<ApiResponse<SpecialDetail>> {
     let id = b.id;
     let s = special_service::get(&state, id).await?;
@@ -206,7 +218,7 @@ pub async fn detail(
 pub async fn companies(
     State(state): State<AppState>,
     page: Pagination,
-    ValidatedJson(b): ValidatedJson<IdBody>,
+    ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<IdBody>,
 ) -> AppResult<ApiResponse<Paged<SpecialCompanyItem>>> {
     let id = b.id;
     let r = special_service::list_companies(&state, id, page).await?;
@@ -323,7 +335,7 @@ pub async fn apply(
 )]
 pub async fn jobs(
     State(state): State<AppState>,
-    ValidatedJson(q): ValidatedJson<JobQuery>,
+    ValidatedJsonOrQuery(q): ValidatedJsonOrQuery<JobQuery>,
 ) -> AppResult<ApiResponse<Vec<SpecialJob>>> {
     let id = q.id;
     let list = special_service::list_jobs(&state, id, q.limit.clamp(1, 200)).await?;

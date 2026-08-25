@@ -1,0 +1,57 @@
+//! App-contract OpenAPI snapshot: `/v1/wap` + `/v1/mcenter` must never contain admin.
+
+use phpyun_handlers::v1_openapi;
+
+#[test]
+fn v1_openapi_has_no_admin_paths() {
+    let api = v1_openapi();
+    let mut admin = Vec::new();
+    for path in api.paths.paths.keys() {
+        if path.starts_with("/v1/admin") {
+            admin.push(path.clone());
+        }
+    }
+    assert!(
+        admin.is_empty(),
+        "v1 spec leaked admin paths: {admin:?}"
+    );
+}
+
+#[test]
+fn v1_openapi_covers_wap_and_mcenter() {
+    let api = v1_openapi();
+    assert!(api.paths.paths.contains_key("/v1/wap/jobs"));
+    assert!(api.paths.paths.contains_key("/v1/wap/login"));
+    assert!(api.paths.paths.contains_key("/v1/mcenter/apply"));
+    assert!(
+        api.paths.paths.len() >= 350,
+        "v1 path count unexpectedly low: {}",
+        api.paths.paths.len()
+    );
+}
+
+#[test]
+fn v1_operation_ids_are_unique() {
+    let api = v1_openapi();
+    let mut ids = Vec::new();
+    for item in api.paths.paths.values() {
+        for op in [
+            item.get.as_ref(),
+            item.post.as_ref(),
+            item.put.as_ref(),
+            item.delete.as_ref(),
+            item.patch.as_ref(),
+        ]
+        .into_iter()
+        .flatten()
+        {
+            if let Some(id) = op.operation_id.as_ref() {
+                ids.push(id.clone());
+            }
+        }
+    }
+    let mut sorted = ids.clone();
+    sorted.sort();
+    sorted.dedup();
+    assert_eq!(sorted.len(), ids.len(), "duplicate operationId in v1 spec");
+}

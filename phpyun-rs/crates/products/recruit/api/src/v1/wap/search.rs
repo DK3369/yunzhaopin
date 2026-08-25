@@ -3,15 +3,17 @@
 //! Reuses the rich Summary types from each domain: JobSummary (34) / CompanySummary (18) / ArticleSummary (29) / QuestionSummary (19),
 //! so the search page and list pages keep the same field shapes.
 
-use axum::{extract::State, routing::post, Router};
-use phpyun_core::{ApiResponse, AppResult, AppState, ValidatedJson};
+use axum::{extract::State, routing::get, Router};
+use phpyun_core::{ApiResponse, AppResult, AppState, ValidatedJsonOrQuery};
 use phpyun_services::search_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
 
+pub const GET_ALLOWED_PATHS: &[&str] = &["/v1/wap/search"];
+
 pub fn routes() -> Router<AppState> {
-    Router::new().route("/search", post(search))
+    Router::new().route("/search", get(search).post(search))
 }
 
 #[derive(Debug, Deserialize, Validate, IntoParams)]
@@ -52,7 +54,7 @@ pub struct SearchData {
 pub async fn search(
     State(state): State<AppState>,
     phpyun_core::MaybeUser(user): phpyun_core::MaybeUser,
-    ValidatedJson(q): ValidatedJson<SearchQuery>,
+    ValidatedJsonOrQuery(q): ValidatedJsonOrQuery<SearchQuery>,
 ) -> AppResult<ApiResponse<SearchData>> {
     let r = search_service::global_search(&state, &q.kw, &q.scope, q.did).await?;
     let dicts = phpyun_services::dict_service::get(&state).await?;

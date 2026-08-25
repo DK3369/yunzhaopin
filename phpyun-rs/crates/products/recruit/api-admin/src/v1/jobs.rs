@@ -24,11 +24,6 @@ pub struct JobListQuery {
     pub state: Option<i32>,
 }
 
-/// Admin job review item — **reuses** `wap::jobs::JobSummary` (34 fields, all dict translations + promo derivations + time formatting).
-///
-/// Single field convention: review admin, public list / home / global search / employer self-admin all use the same Summary.
-pub type AdminJobItem = crate::v1::wap::jobs::JobSummary;
-
 /// Job review queue
 #[utoipa::path(
     post,
@@ -43,7 +38,7 @@ pub async fn list(
     user: AuthenticatedUser,
     page: Pagination,
     ValidatedJson(q): ValidatedJson<JobListQuery>,
-) -> AppResult<ApiResponse<Paged<AdminJobItem>>> {
+) -> AppResult<ApiResponse<Paged<phpyun_models::job::view::JobSummary>>> {
     user.require_admin()?;
     let r = admin_service::list_jobs(&state, q.state, page).await?;
     let dicts = phpyun_services::dict_service::get(&state).await?;
@@ -51,7 +46,7 @@ pub async fn list(
     Ok(ApiResponse::data(Paged::new(
         r.list
             .into_iter()
-            .map(|j| crate::v1::wap::jobs::job_summary_from_dict(j, &dicts, now))
+            .map(|j| phpyun_handlers::v1::wap::jobs::job_summary_from_dict(j, &dicts, now))
             .collect(),
         r.total,
         page.page,

@@ -9,22 +9,29 @@
 //! - POST   `/v1/wap/tiny-resumes/{id}/refresh` refresh lastupdate
 //! - DELETE `/v1/wap/tiny-resumes/{id}`       delete (requires password)
 
-use axum::{extract::State, routing::post, Router};
+use axum::{
+    extract::State,
+    routing::{get, post},
+    Router,
+};
 use phpyun_core::dto::{IdBody, IdPasswordBody, UpsertCreated};
 use phpyun_core::utils::mask_tel as mask_mobile;
 use phpyun_core::{
     json, ApiResponse, AppResult, AppState, ClientIp, Paged, Pagination, ValidatedJson,
+    ValidatedJsonOrQuery,
 };
 use phpyun_services::tiny_service::{self, ManageOp, TinySearch, UpsertInput};
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
 
+pub const GET_ALLOWED_PATHS: &[&str] = &["/v1/wap/tiny-resumes/list", "/v1/wap/tiny-resumes/show"];
+
 pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/tiny-resumes", post(create))
-        .route("/tiny-resumes/list", post(list))
-        .route("/tiny-resumes/show", post(show))
+        .route("/tiny-resumes/list", get(list).post(list))
+        .route("/tiny-resumes/show", get(show).post(show))
         .route("/tiny-resumes/update", post(update))
         .route("/tiny-resumes/delete", post(soft_delete))
         .route("/tiny-resumes/verify", post(verify))
@@ -94,7 +101,7 @@ impl From<phpyun_models::tiny::entity::TinyResume> for TinyListItem {
 pub async fn list(
     State(state): State<AppState>,
     page: Pagination,
-    ValidatedJson(q): ValidatedJson<ListQuery>,
+    ValidatedJsonOrQuery(q): ValidatedJsonOrQuery<ListQuery>,
 ) -> AppResult<ApiResponse<Paged<TinyListItem>>> {
     let search = TinySearch {
         keyword: q.keyword,
@@ -143,7 +150,7 @@ pub struct TinyDetail {
 )]
 pub async fn show(
     State(state): State<AppState>,
-    ValidatedJson(b): ValidatedJson<IdBody>,
+    ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<IdBody>,
 ) -> AppResult<ApiResponse<TinyDetail>> {
     let id = b.id;
     let t = tiny_service::show(&state, id).await?;

@@ -1,0 +1,28 @@
+[package]
+name = "phpyun-rs"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "PHPYun Rust HTTP server binary"
+
+[[bin]]
+name = "phpyun-rs"
+path = "src/main.rs"
+
+[dependencies]
+anyhow.workspace = true
+axum.workspace = true
+tokio.workspace = true
+tracing.workspace = true
+phpyun_core.workspace = true
+phpyun_handlers.workspace = true
+phpyun_services.workspace = true
+phpyun_api_admin.workspace = true
+
+[dev-dependencies]
+utoipa.workspace = true
+serde_json.workspace = true
+
+[lints]
+workspace = true

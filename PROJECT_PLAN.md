@@ -1,5 +1,11 @@
 # PHPYun → Rust 重写项目计划书
 
+> **已废弃（2026-08-25）**。本文假设「保留 PHP 后台 + 支付回调仍走 PHP + 渐进灰度」，与现行决策冲突。
+>
+> **请改读** [doc/FRONTEND_BACKEND_SPLIT.md](doc/FRONTEND_BACKEND_SPLIT.md)（PHP 全量退役，Rust + Nuxt 4）和 [phpyun-rs/docs/CRATE_LAYERING.md](phpyun-rs/docs/CRATE_LAYERING.md)。
+>
+> 下文仅作历史材料保留，不要按这里的里程碑排期。
+
 > **目标**：用 Rust + axum 实现 [WAP_API_SPEC.md](WAP_API_SPEC.md) 列出的全部接口，替换现有 PHP 后端。  
 > **覆盖范围**：32 个 WAP 前台控制器（216 actions）+ 个人会员中心（45）+ 企业会员中心（53）≈ **314 个 HTTP endpoints**。  
 > **策略**：**渐进式替换**，不做 Big-Bang 切换；Rust 与 PHP 共用 MySQL，逐 endpoint 迁移。  

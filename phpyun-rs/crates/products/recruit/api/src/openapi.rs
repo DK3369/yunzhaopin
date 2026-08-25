@@ -414,23 +414,11 @@ impl Modify for UniqueOperationId {
         v1::mcenter::remarks::upsert,
         v1::mcenter::remarks::get_one,
         v1::mcenter::remarks::remove,
-        // admin: ads
-        v1::admin::ads::list,
-        v1::admin::ads::create,
-        v1::admin::ads::update,
         // remove merged into update (status:2 soft delete)
-        // admin: warnings + audit-log
-        v1::admin::warnings::list,
-        v1::admin::warnings::issue,
-        v1::admin::audit_log::list,
         // mcenter: my warnings
         v1::mcenter::warnings::list,
         v1::mcenter::warnings::unread,
         v1::mcenter::warnings::mark_read,
-        // admin: broadcasts
-        v1::admin::broadcasts::list,
-        v1::admin::broadcasts::create,
-        v1::admin::broadcasts::remove,
         // mcenter: my broadcasts
         v1::mcenter::broadcasts::list,
         v1::mcenter::broadcasts::unread,
@@ -443,20 +431,12 @@ impl Modify for UniqueOperationId {
         // wap: categories
         v1::wap::categories::list,
         v1::wap::categories::children,
-        // admin: categories
-        v1::admin::categories::list,
-        v1::admin::categories::create,
-        v1::admin::categories::update,
         // remove merged into update (status:2 soft delete)
         // mcenter: recommendations
         v1::mcenter::recommend::jobs,
         v1::mcenter::recommend::resumes,
         // wap: app version check
         v1::wap::app_version::latest,
-        // admin: app versions
-        v1::admin::app_versions::list,
-        v1::admin::app_versions::create,
-        v1::admin::app_versions::remove,
         // mcenter: my activity log
         v1::mcenter::activity::list,
         // mcenter: saved searches
@@ -475,10 +455,6 @@ impl Modify for UniqueOperationId {
         v1::wap::nav::list,
         v1::wap::hr_docs::list,
         v1::wap::hr_docs::detail,
-        // admin: nav
-        v1::admin::nav::list,
-        v1::admin::nav::create,
-        v1::admin::nav::update,
         // remove merged into update (status:2 soft delete)
         // mcenter: company HR multi-account
         v1::mcenter::company_hr::list_codes,
@@ -490,12 +466,6 @@ impl Modify for UniqueOperationId {
         v1::mcenter::company_hr::my_companies,
         // mcenter: resume timeline
         v1::mcenter::resume_timeline::list,
-        // admin: dashboard
-        v1::admin::dashboard::overview,
-        v1::admin::dashboard::recent_signups,
-        // admin: orders
-        v1::admin::orders::list,
-        v1::admin::orders::set_status,
         // mcenter: referrals
         v1::mcenter::referrals::list,
         v1::mcenter::referrals::summary,
@@ -505,10 +475,6 @@ impl Modify for UniqueOperationId {
         v1::mcenter::search_history::remove,
         // wap: payment callback
         v1::wap::pay_callback::callback,
-        // admin: recycle bin
-        v1::admin::recycle::list,
-        v1::admin::recycle::detail,
-        v1::admin::recycle::purge,
         // wap: redeem mall (public)
         v1::wap::redeem::list_classes,
         v1::wap::redeem::list_rewards,
@@ -517,40 +483,14 @@ impl Modify for UniqueOperationId {
         v1::mcenter::redeem::redeem,
         v1::mcenter::redeem::list_mine,
         v1::mcenter::redeem::cancel_mine,
-        // admin: redeem catalog + orders
-        v1::admin::redeem::list_classes,
-        v1::admin::redeem::create_class,
-        v1::admin::redeem::delete_class,
-        v1::admin::redeem::list_rewards,
-        v1::admin::redeem::create_reward,
-        v1::admin::redeem::delete_reward,
-        v1::admin::redeem::set_reward_status,
-        v1::admin::redeem::set_reward_flags,
-        v1::admin::redeem::list_orders,
-        v1::admin::redeem::approve_order,
-        v1::admin::redeem::reject_order,
         // wap: descriptions (public cms pages)
         v1::wap::descriptions::list_classes,
         v1::wap::descriptions::list,
         v1::wap::descriptions::get_one,
-        // admin: descriptions
-        v1::admin::descriptions::list_classes,
-        v1::admin::descriptions::create_class,
-        v1::admin::descriptions::update_class,
         // delete_class merged into update_class (status:2 soft delete)
-        v1::admin::descriptions::list,
-        v1::admin::descriptions::upsert,
-        v1::admin::descriptions::delete_one,
         // wap: site settings (public)
         v1::wap::site_settings::list,
         v1::wap::site_settings::get_one,
-        // admin: site settings manage
-        v1::admin::site_settings::list,
-        v1::admin::site_settings::upsert,
-        v1::admin::site_settings::remove,
-        // admin: company cert review
-        v1::admin::company_cert::list_pending,
-        v1::admin::company_cert::review,
         // mcenter: resume share tokens
         v1::mcenter::resume_share::create,
         v1::mcenter::resume_share::list_mine,
@@ -568,18 +508,6 @@ impl Modify for UniqueOperationId {
         v1::mcenter::qna::attended,
         v1::mcenter::qna::post_comment,
         v1::mcenter::qna::remove_comment,
-        // admin
-        v1::admin::users::list,
-        v1::admin::users::set_status,
-        v1::admin::reports::list,
-        v1::admin::reports::set_status,
-        v1::admin::feedback::list,
-        v1::admin::feedback::set_status,
-        v1::admin::jobs::list,
-        v1::admin::jobs::set_state,
-        v1::admin::jobs::batch_set_state,
-        v1::admin::reports::batch_set_status,
-        v1::admin::feedback::batch_set_status,
         // New endpoints (post-audit additions)
         v1::wap::auth::select_usertype,
         v1::wap::regions::city_domain,
@@ -648,20 +576,6 @@ impl Modify for UniqueOperationId {
         // Round 15: zph jobs (PHP app/zph/index::getJobList_action)
         v1::wap::zph::list_jobs,
             // ==== Auto-added by openapi_completeness sync ====
-        v1::admin::account_logout::approve,
-        v1::admin::account_logout::reject,
-        v1::admin::countries::create,
-        v1::admin::countries::delete,
-        v1::admin::countries::patch,
-        v1::admin::countries::reload,
-        v1::admin::dict_i18n::reload,
-        v1::admin::merge::merge,
-        v1::admin::regions::create,
-        v1::admin::regions::delete,
-        v1::admin::regions::patch,
-        v1::admin::regions::reload,
-        v1::admin::usertype_change::approve,
-        v1::admin::usertype_change::reject,
         v1::mcenter::account_logout::apply,
         v1::mcenter::account_logout::status,
         v1::mcenter::applications::set_state,
@@ -720,6 +634,7 @@ impl Modify for UniqueOperationId {
         v1::wap::jobs::log_tel_click,
         v1::wap::oauth::wechat_authorize_url,
         v1::wap::oauth::wechat_code_login,
+        v1::wap::oauth::wxapp_login,
         v1::wap::once::create,
         v1::wap::once::list,
         v1::wap::once::refresh,
@@ -914,13 +829,9 @@ impl Modify for UniqueOperationId {
             v1::mcenter::eval::LogItem,
             v1::mcenter::company_cert::CertView,
             v1::mcenter::company_cert::SubmitForm,
-            v1::admin::company_cert::CertItem,
-            v1::admin::company_cert::ReviewForm,
             v1::mcenter::resume_score::Completion,
             v1::wap::site_settings::SettingView,
             v1::wap::site_settings::ReportReasonView,
-            v1::admin::site_settings::SettingItem,
-            v1::admin::site_settings::UpsertForm,
             v1::mcenter::contact_cert::MobileSendForm,
             v1::mcenter::contact_cert::MobileVerifyForm,
             v1::mcenter::contact_cert::EmailSendForm,
@@ -938,15 +849,7 @@ impl Modify for UniqueOperationId {
             v1::mcenter::blacklist::AddForm,
             v1::mcenter::remarks::RemarkView,
             v1::mcenter::remarks::UpsertForm,
-            v1::admin::ads::AdItem,
-            v1::admin::ads::AdForm,
-            v1::admin::ads::AdPatchForm,
-            v1::admin::warnings::WarningItem,
-            v1::admin::warnings::WarnForm,
-            v1::admin::audit_log::AuditItem,
             v1::mcenter::warnings::MyWarning,
-            v1::admin::broadcasts::BroadcastItem,
-            v1::admin::broadcasts::CreateForm,
             v1::mcenter::broadcasts::BcItem,
             v1::mcenter::entrust::EntrustItem,
             v1::mcenter::entrust::BindForm,
@@ -954,14 +857,9 @@ impl Modify for UniqueOperationId {
             v1::mcenter::entrust::UnbindForm,
             v1::mcenter::entrust_search::EntrustedSeekerItem,
             v1::wap::categories::CatNode,
-            v1::admin::categories::CatItem,
-            v1::admin::categories::CatForm,
-            v1::admin::categories::CatPatchForm,
             v1::mcenter::recommend::RecJob,
             v1::mcenter::recommend::RecResume,
             v1::wap::app_version::VersionView,
-            v1::admin::app_versions::VersionItem,
-            v1::admin::app_versions::CreateForm,
             v1::mcenter::activity::ActivityItem,
             v1::mcenter::saved_searches::SavedItem,
             v1::mcenter::saved_searches::CreateForm,
@@ -979,32 +877,14 @@ impl Modify for UniqueOperationId {
             v1::wap::nav::NavItem,
             v1::wap::hr_docs::HrSummary,
             v1::wap::hr_docs::HrDetail,
-            v1::admin::nav::NavItem,
-            v1::admin::nav::NavForm,
-            v1::admin::nav::NavPatchForm,
             v1::mcenter::resume_timeline::TimelineItem,
-            v1::admin::dashboard::OverviewView,
-            v1::admin::dashboard::RecentUser,
             v1::mcenter::referrals::ReferralItem,
             v1::mcenter::referrals::SummaryView,
-            v1::admin::orders::OrderItem,
-            v1::admin::orders::SetStatusForm,
             v1::mcenter::search_history::HistoryItem,
             phpyun_core::dto::ClearResult,
             v1::wap::pay_callback::CallbackForm,
             v1::mcenter::resume_share::CreateForm,
             v1::mcenter::resume_share::ShareTokenView,
-            v1::admin::users::AdminUserItem,
-            v1::admin::users::SetStatusForm,
-            v1::admin::reports::AdminReportItem,
-            v1::admin::reports::SetReportStatusForm,
-            v1::admin::feedback::AdminFeedbackItem,
-            v1::admin::feedback::SetFeedbackStatusForm,
-            v1::admin::jobs::AdminJobItem,
-            v1::admin::jobs::SetJobStateForm,
-            v1::admin::jobs::BatchStateForm,
-            v1::admin::reports::BatchStatusForm,
-            v1::admin::feedback::BatchStatusForm,
             // New endpoint schemas (post-audit additions)
             v1::wap::auth::SelectUsertypeForm,
             v1::wap::auth::SelectUsertypeData,
@@ -1024,6 +904,7 @@ impl Modify for UniqueOperationId {
             v1::mcenter::job_messages::EmployerMsgItem,
             v1::mcenter::job_messages::ReplyForm,
             v1::wap::oauth::CodeLoginForm,
+            v1::wap::oauth::WxappLoginForm,
             v1::wap::forgetpw::SendEmailForm,
             v1::wap::forgetpw::ResetByEmailForm,
             v1::wap::forgetpw::AppealForm,
@@ -1070,7 +951,6 @@ impl Modify for UniqueOperationId {
         (name = "upload", description = "File upload"),
         (name = "mcenter", description = "Member center"),
         (name = "wap", description = "Public browsing endpoints"),
-        (name = "admin", description = "Admin"),
     )
 )]
 pub struct V1Doc;
@@ -1137,6 +1017,11 @@ pub struct V2Doc;
 /// it once, clicks **Authorize**, pastes — and `persist_authorization(true)`
 /// keeps it in browser localStorage across reloads.
 pub fn swagger_ui() -> SwaggerUi {
+    swagger_ui_with(None)
+}
+
+/// Same as [`swagger_ui`], plus an optional extra spec (admin crate).
+pub fn swagger_ui_with(extra: Option<(&'static str, utoipa::openapi::OpenApi)>) -> SwaggerUi {
     let mut v1 = v1_openapi();
     let mut v2 = V2Doc::openapi();
     if let Some(t) = phpyun_core::dev_token::tokens() {
@@ -1161,10 +1046,14 @@ pub fn swagger_ui() -> SwaggerUi {
         inject(&mut v1.info);
         inject(&mut v2.info);
     }
-    SwaggerUi::new("/docs")
+    let mut ui = SwaggerUi::new("/docs")
         .url("/api-docs/v1/openapi.json", v1)
         .url("/api-docs/v2/openapi.json", v2)
-        .config(utoipa_swagger_ui::Config::default().persist_authorization(true))
+        .config(utoipa_swagger_ui::Config::default().persist_authorization(true));
+    if let Some((url, spec)) = extra {
+        ui = ui.url(url, spec);
+    }
+    ui
 }
 
 #[cfg(test)]

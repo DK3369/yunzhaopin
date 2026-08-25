@@ -1,12 +1,16 @@
 //! Public part-time browsing (aligned with `wap/part::index_action` / `wap/part::show_action` /
 //! `wap/part::collect_action` / `wap/part::apply_action`).
 
-use axum::{extract::State, routing::post, Router};
+use axum::{
+    extract::State,
+    routing::{get, post},
+    Router,
+};
 use phpyun_core::dto::{CreatedId, IdBody};
 use phpyun_core::utils::{fmt_date, fmt_dt};
 use phpyun_core::{
     ApiResponse, AppResult, AppState, AuthenticatedUser, ClientIp, MaybeUser, Paged, Pagination,
-    ValidatedJson,
+    ValidatedJson, ValidatedJsonOrQuery,
 };
 use phpyun_services::hot_search_service;
 use phpyun_services::part_service::{self, PartSearch};
@@ -14,10 +18,12 @@ use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
 
+pub const GET_ALLOWED_PATHS: &[&str] = &["/v1/wap/parts", "/v1/wap/parts/detail"];
+
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/parts", post(list_parts))
-        .route("/parts/detail", post(part_detail))
+        .route("/parts", get(list_parts).post(list_parts))
+        .route("/parts/detail", get(part_detail).post(part_detail))
         .route("/parts/collect", post(collect))
         .route("/parts/apply", post(apply))
 }
@@ -136,7 +142,7 @@ pub async fn list_parts(
     State(state): State<AppState>,
     MaybeUser(user): MaybeUser,
     page: Pagination,
-    ValidatedJson(q): ValidatedJson<PartListQuery>,
+    ValidatedJsonOrQuery(q): ValidatedJsonOrQuery<PartListQuery>,
 ) -> AppResult<ApiResponse<Paged<PartSummary>>> {
     if let Some(kw) = q.keyword.as_ref().filter(|k| !k.trim().is_empty()) {
         hot_search_service::bump_async(&state, "part", kw.trim().to_string());
@@ -276,7 +282,7 @@ fn compute_edate_state(edate: i64, now: i64) -> i32 {
 )]
 pub async fn part_detail(
     State(state): State<AppState>,
-    ValidatedJson(b): ValidatedJson<IdBody>,
+    ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<IdBody>,
 ) -> AppResult<ApiResponse<PartDetail>> {
     let id = b.id;
     let j = part_service::get_public(&state, id).await?;

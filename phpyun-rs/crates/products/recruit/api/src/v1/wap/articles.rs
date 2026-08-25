@@ -1,19 +1,27 @@
 //! Public article / news browsing. Aligned with PHPYun `wap/article`.
 
-use axum::{extract::State, routing::post, Router};
+use axum::{
+    extract::State,
+    routing::{get, post},
+    Router,
+};
 use phpyun_core::dto::{HitsResp, IdBody};
 use phpyun_core::utils::{fmt_date, pic_n_str as pic_n};
-use phpyun_core::{ApiResponse, AppResult, AppState, Paged, Pagination, ValidatedJson};
+use phpyun_core::{
+    ApiResponse, AppResult, AppState, Paged, Pagination, ValidatedJson, ValidatedJsonOrQuery,
+};
 use phpyun_models::article::repo::ArticleFilter;
 use phpyun_services::article_service;
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
 
+pub const GET_ALLOWED_PATHS: &[&str] = &["/v1/wap/articles", "/v1/wap/articles/detail"];
+
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/articles", post(list_articles))
-        .route("/articles/detail", post(article_detail))
+        .route("/articles", get(list_articles).post(list_articles))
+        .route("/articles/detail", get(article_detail).post(article_detail))
         .route("/articles/hits", post(bump_hits))
 }
 
@@ -219,7 +227,7 @@ impl ArticleDetail {
 pub async fn list_articles(
     State(state): State<AppState>,
     page: Pagination,
-    ValidatedJson(q): ValidatedJson<ArticleListQuery>,
+    ValidatedJsonOrQuery(q): ValidatedJsonOrQuery<ArticleListQuery>,
 ) -> AppResult<ApiResponse<Paged<ArticleSummary>>> {
     let filter = ArticleFilter {
         category: q.category.as_deref(),
@@ -251,7 +259,7 @@ pub async fn list_articles(
 )]
 pub async fn article_detail(
     State(state): State<AppState>,
-    ValidatedJson(b): ValidatedJson<IdBody>,
+    ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<IdBody>,
 ) -> AppResult<ApiResponse<ArticleDetail>> {
     let id = b.id;
     let a = article_service::get_public(&state, id).await?;

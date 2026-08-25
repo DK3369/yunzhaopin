@@ -1,0 +1,23 @@
+{
+  "name": "@phpyun/site",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "nuxt dev --port 3001",
+    "build": "nuxt build",
+    "preview": "nuxt preview",
+    "gen:types": "openapi-typescript ${RUST_API_URL:-http://127.0.0.1:3000}/api-docs/v1/openapi.json -o app/types/openapi.d.ts"
+  },
+  "dependencies": {
+    "@nuxtjs/i18n": "^10.0.6",
+    "@nuxtjs/sitemap": "^7.4.3",
+    "@pinia/nuxt": "^0.11.2",
+    "nuxt": "4.5.2",
+    "pinia": "^3.0.3",
+    "vue": "^3.5.18"
+  },
+  "devDependencies": {
+    "openapi-typescript": "^7.9.1",
+    "typescript": "^5.9.2"
+  }
+}

@@ -23,7 +23,7 @@ pub struct ListQuery {
 
 // Reuse wap's `NavItem` (identical shape and `From<NavMenu>`); admin needs no
 // extra fields here, just a different list filter on the service layer.
-pub type NavItem = crate::v1::wap::nav::NavItem;
+pub type NavItem = phpyun_handlers::v1::wap::nav::NavItem;
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct NavForm {
