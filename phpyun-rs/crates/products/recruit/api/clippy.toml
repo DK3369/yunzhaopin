@@ -1,0 +1,8 @@
+# Handlers must not import third-party I/O crates. Use services + phpyun_core.
+disallowed-types = [
+    "sqlx::MySqlPool",
+    "sqlx::Pool",
+    "redis::Client",
+    "moka::future::Cache",
+    "reqwest::Client",
+]

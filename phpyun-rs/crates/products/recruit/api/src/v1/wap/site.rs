@@ -205,23 +205,22 @@ pub struct MapConfigView {
     responses((status = 200, description = "ok", body = MapConfigView))
 )]
 pub async fn map_config(State(state): State<AppState>) -> AppResult<ApiResponse<MapConfigView>> {
-    let pool = state.db.reader();
-    async fn read(pool: &sqlx::MySqlPool, key: &str) -> Option<String> {
-        phpyun_models::site_setting::repo::find(pool, key)
+    async fn read(state: &AppState, key: &str) -> Option<String> {
+        phpyun_services::site_setting_service::get(state, key)
             .await
             .ok()
             .flatten()
             .map(|s| s.value)
     }
     Ok(ApiResponse::data(MapConfigView {
-        map_x: read(pool, "map_x").await,
-        map_y: read(pool, "map_y").await,
-        map_rating: read(pool, "map_rating").await,
-        map_control: read(pool, "map_control").await,
-        map_control_anchor: read(pool, "map_control_anchor").await,
-        map_control_type: read(pool, "map_control_type").await,
-        map_control_xb: read(pool, "map_control_xb").await,
-        map_control_scale: read(pool, "map_control_scale").await,
+        map_x: read(&state, "map_x").await,
+        map_y: read(&state, "map_y").await,
+        map_rating: read(&state, "map_rating").await,
+        map_control: read(&state, "map_control").await,
+        map_control_anchor: read(&state, "map_control_anchor").await,
+        map_control_type: read(&state, "map_control_type").await,
+        map_control_xb: read(&state, "map_control_xb").await,
+        map_control_scale: read(&state, "map_control_scale").await,
     }))
 }
 

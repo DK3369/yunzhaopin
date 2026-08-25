@@ -52,6 +52,8 @@ async fn serve(config: Config) -> anyhow::Result<()> {
         .await
         .context("build AppState (MySQL / Redis / storage)")?;
 
+    phpyun_core::dev_token::init(&config, state.db.pool(), &state.redis).await;
+
     if config.run_migrations_on_boot {
         run_migrations(&state.db)
             .await

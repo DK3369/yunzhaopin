@@ -584,9 +584,9 @@ zzzz.com/
 - [ ] T0 修复终端环境
 - [x] T1 建立 Rust binary，让后端能启动（2026-08-25 验收：`cargo build` 与 `cargo clippy --workspace --all-targets -- -D warnings` 通过；`:3000` 被 systemd `test-jobs-phpyun-rs` 占用，本机用 `BIND=127.0.0.1:3001` 验证 `/health` 200、`/docs/` 200、SIGTERM 优雅退出）
 - [x] T2 跑通冒烟测试，建立基线（2026-08-26：v1 POST 405 条 **0 个 5xx**；快照 `doc/snapshots/`；说明见 `doc/SMOKE_BASELINE.md`）
-- [ ] T3 拆出 api-admin crate
-- [ ] T4 接口缺口盘点
-- [ ] T5 为公开读接口增加 GET 别名
+- [x] T3 拆出 api-admin crate（2026-08-26：72 条 URL 与 T2 快照一致；v1 spec 无 admin；未登录 `/v1/admin` 为 **401 unauth**，非管理员 **403 role_mismatch**；clippy.toml 禁止 handler 直用 sqlx/redis/moka/reqwest。已知偏离：`api-admin` 仍依赖 `phpyun_handlers` 复用 JobSummary/DTO，尚未做到 2.2 的完全平级）
+- [x] T4 接口缺口盘点（2026-08-26：按 PHP 120 个 admin 控制器逐组对照，见 `doc/API_GAP.md`；最大缺口在后台 system/内容/运营工具）
+- [x] T5 为公开读接口增加 GET 别名（2026-08-26：职位/企业/首页/搜索/文章/公告 GET 与等价 POST JSON 响应一致；分页走 Query；写接口 GET 仍 405）
 - [ ] T6 前端 monorepo 骨架
 - [ ] T7 统一 API 客户端与鉴权
 - [ ] T8 公开前台页面

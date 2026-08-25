@@ -1,0 +1,8 @@
+# Same architecture rules as phpyun-handlers.
+disallowed-types = [
+    "sqlx::MySqlPool",
+    "sqlx::Pool",
+    "redis::Client",
+    "moka::future::Cache",
+    "reqwest::Client",
+]
