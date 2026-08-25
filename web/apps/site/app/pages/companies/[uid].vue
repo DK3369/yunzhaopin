@@ -8,21 +8,26 @@ const { data } = await useAsyncData(`company-${uid}`, () =>
 const company = computed(() => (data.value || {}) as Record<string, unknown>)
 useSeoMeta({
   title: () => String(company.value.name || '企业详情'),
-  description: () => String(company.value.content || company.value.hy_n || ''),
+  description: () => stripHtml(company.value.content || company.value.hy_n || company.value.name),
 })
 useHead({
   link: [{ rel: 'canonical', href: `/companies/${uid}` }],
-  script: [
-    {
-      type: 'application/ld+json',
-      innerHTML: JSON.stringify({
-        '@context': 'https://schema.org',
-        '@type': 'Organization',
-        name: company.value.name,
-        identifier: uid,
-      }),
-    },
-  ],
+  script: company.value.name
+    ? [
+        {
+          type: 'application/ld+json',
+          innerHTML: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'Organization',
+            name: company.value.name,
+            description: stripHtml(company.value.content),
+            identifier: String(uid),
+            url: `/companies/${uid}`,
+            logo: company.value.logo_n || company.value.logo || undefined,
+          }),
+        },
+      ]
+    : [],
 })
 </script>
 

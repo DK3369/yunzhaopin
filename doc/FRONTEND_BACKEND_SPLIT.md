@@ -589,8 +589,8 @@ zzzz.com/
 - [x] T5 为公开读接口增加 GET 别名（2026-08-26：职位/企业/首页/搜索/文章/公告 GET 与等价 POST JSON 响应一致；分页走 Query；写接口 GET 仍 405）
 - [x] T6 前端 monorepo 骨架（2026-08-26：pnpm 10.14 + Node 22.22；`/hello` 两 app 可用；`HelloMark` 来自 `layers/ui` 无需手写 import；`eslint-plugin-nuxt-layers` 已装且 `pnpm lint` 通过。admin 为 `ssr:false`，curl 到的是 SPA 壳，组件在客户端 bundle）
 - [x] T7 统一 API 客户端与鉴权（2026-08-26：类型从 `doc/snapshots` 生成；登录 cookie `token` HttpOnly+SameSite=Strict，JSON 不含 JWT；me/refresh/logout 走通。未改 App 的 30 天 access TTL）
-- [ ] T8 公开前台页面
-- [ ] T9 SEO 配套
+- [x] T8 公开前台页面（2026-08-26：优先级页 + Rust 已有 GET 的公开频道 SSR：兼职/招聘会/公招/专题/问答/店铺招聘/普工简历/积分商城/HR/友情链接/静态页/找回密码/地图。禁用 JS 时列表页 HTML 含 h1 与空状态。不是 PHP default 100 + wap 209 模板逐页搬运；校园/猎头/培训/spview 无 Rust 命名空间，Web 不做。验收打本仓库 rust `:3003`：systemd `:3000` 旧二进制对 GET 仍 405）
+- [x] T9 SEO 配套（2026-08-26：`/sitemap.xml` 200，含静态频道与动态 `/jobs/5`、`/companies/90001`；职位页 JobPosting、企业页 Organization 在 HTML 的 ld+json 中。未跑 Google 富媒体测试工具，因其需要公网 URL。空库时动态 URL 不会出现）
 - [ ] T10 会员中心
 - [ ] T11 管理后台
 - [ ] T12 后端补齐 PHP 独占功能

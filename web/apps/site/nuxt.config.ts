@@ -13,6 +13,11 @@ export default defineNuxtConfig({
     langDir: 'locales',
     strategy: 'no_prefix',
   },
+  runtimeConfig: {
+    public: {
+      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'http://127.0.0.1:3001',
+    },
+  },
   site: {
     url: process.env.NUXT_PUBLIC_SITE_URL || 'http://127.0.0.1:3001',
   },

@@ -15,9 +15,20 @@ async function apply() {
     applyMsg.value = e instanceof Error ? e.message : '投递失败'
   }
 }
+const description = computed(() =>
+  stripHtml(job.value.description || job.value.content || job.value.name || job.value.com_name),
+)
+const datePosted = computed(() => unixToIso(job.value.lastupdate || job.value.sdate))
+const employmentType = computed(() => {
+  const t = Number(job.value.type)
+  if (t === 58) return 'PART_TIME'
+  if (t === 59) return 'INTERN'
+  if (t === 60) return 'TEMPORARY'
+  return 'FULL_TIME'
+})
 useSeoMeta({
   title: () => String(job.value.name || '职位详情'),
-  description: () => String(job.value.description || job.value.com_name || ''),
+  description: () => description.value,
 })
 useHead({
   link: [{ rel: 'canonical', href: `/jobs/${id}` }],
@@ -29,11 +40,25 @@ useHead({
             '@context': 'https://schema.org',
             '@type': 'JobPosting',
             title: job.value.name,
+            description: description.value || String(job.value.name),
+            datePosted: datePosted.value,
             hiringOrganization: {
               '@type': 'Organization',
-              name: job.value.com_name,
+              name: job.value.com_name || job.value.name,
             },
-            identifier: id,
+            jobLocation: dict.value.city_two
+              ? {
+                  '@type': 'Place',
+                  address: {
+                    '@type': 'PostalAddress',
+                    addressLocality: dict.value.city_two,
+                    addressRegion: dict.value.city_one,
+                    addressCountry: 'CN',
+                  },
+                }
+              : undefined,
+            employmentType: employmentType.value,
+            identifier: String(id),
           }),
         },
       ]

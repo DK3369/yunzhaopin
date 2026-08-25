@@ -27,6 +27,7 @@ useSeoMeta({ title: '登录' })
       <button type="submit">登录</button>
       <p v-if="err" class="muted">{{ err }}</p>
       <NuxtLink to="/register">没有账号？注册</NuxtLink>
+      <NuxtLink to="/forgetpw">找回密码</NuxtLink>
     </form>
   </section>
 </template>

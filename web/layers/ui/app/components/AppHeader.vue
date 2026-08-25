@@ -5,6 +5,9 @@
       <NuxtLink to="/jobs">职位</NuxtLink>
       <NuxtLink to="/companies">企业</NuxtLink>
       <NuxtLink to="/resumes">简历</NuxtLink>
+      <NuxtLink to="/parts">兼职</NuxtLink>
+      <NuxtLink to="/fairs">招聘会</NuxtLink>
+      <NuxtLink to="/questions">问答</NuxtLink>
       <NuxtLink to="/search">搜索</NuxtLink>
       <NuxtLink to="/articles">资讯</NuxtLink>
       <NuxtLink to="/login">登录</NuxtLink>

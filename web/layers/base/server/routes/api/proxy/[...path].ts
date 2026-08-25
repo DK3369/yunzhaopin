@@ -25,6 +25,7 @@ export default defineEventHandler(async (event) => {
     headers,
     body: body as Record<string, unknown> | undefined,
     query,
+    ignoreResponseError: true,
   })
 
   if (res.key === 'session_expired') {
@@ -54,6 +55,7 @@ export default defineEventHandler(async (event) => {
             headers,
             body: body as Record<string, unknown> | undefined,
             query,
+            ignoreResponseError: true,
           })
         }
       }
