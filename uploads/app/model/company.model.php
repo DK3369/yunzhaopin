@@ -659,15 +659,22 @@ class company_model extends model{
      */
     private function getDataList($List) {
 
+        $uids   =   array();
+        $cids   =   array();
+        $guids  =   array();
+        $today  =   strtotime('today');
+
         foreach ($List as $v){
 
             $uids[$v['uid']]   =   $v['uid'];
 
-            if ($v['crm_uid']) {
+            if (!empty($v['crm_uid'])) {
 
                 $cids[$v['uid']]   =   $v['crm_uid'];
             }
-            if ((isset($v['rating']) && $v['rating'] == 0) || $v['vip_etime'] <= strtotime('today')){
+            // company 表字段是 vipetime；vipetime=0 表示永久会员，不能当过期
+            $vipEtime = isset($v['vipetime']) ? intval($v['vipetime']) : (isset($v['vip_etime']) ? intval($v['vip_etime']) : 0);
+            if ((isset($v['rating']) && intval($v['rating']) == 0) || ($vipEtime > 0 && $vipEtime <= $today)){
                 // 取得过期会员的uid
                 $guids[] = $v['uid'];
             }
@@ -692,36 +699,47 @@ class company_model extends model{
 
         $cList              =   $this -> getCertList($cWhere, $cData);
 
-        //  查询company_job
+        // 只取职位计数所需字段，避免走 getJobList 全量包装（后台企业列表会因此打出大量无效警告）
         $jWhere['uid']      =   array('in', pylode(',', $uids));
-        $jData['field']     =   '`uid`,`status`,`state`';
-
-        $jList              =   $this -> getJobList($jWhere, $jData);
+        $jobList            =   $this -> select_all('company_job', $jWhere, '`uid`,`status`,`state`');
         // 查询用户最新一次会员套餐购买成功记录，来确定过期用户，过期前的会员套餐
         if (!empty($guids)){
 
             $viporder =  $this->select_all('company_order', array('uid'=>array('in', pylode(',', $guids)),'order_state'=>2,'groupby'=>'uid'), 'MAX(`id`) AS `id`');
             $viplist  =  $this->select_all('company_rating',array('category'=>1),'`id`,`name`');
             $comrat   =  array();
-            foreach ($viplist as $v){
-                $comrat[$v['id']]  =  $v['name'];
+            $ordreid  =  array();
+            if (!empty($viplist)) {
+                foreach ($viplist as $v){
+                    $comrat[$v['id']]  =  $v['name'];
+                }
             }
-            foreach ($viporder as $v){
-                $ordreid[]  =  $v['id'];
+            if (!empty($viporder)) {
+                foreach ($viporder as $v){
+                    $ordreid[]  =  $v['id'];
+                }
             }
-            // 通过最新订单记录id来查询订单
-            $orders   =  $this->select_all('company_order', array('id'=>array('in', pylode(',', $ordreid)),'orderby'=>'id'), '`uid`,`rating`');
-            foreach ($List as $k=>$v){
-                foreach ($orders as $val){
-                    if ($v['uid'] == $val['uid'] && isset($comrat[$val['rating']])){
-                        $List[$k]['oldrating_name'] = $comrat[$val['rating']];
+            $orders = array();
+            if (!empty($ordreid)) {
+                // 通过最新订单记录id来查询订单
+                $orders   =  $this->select_all('company_order', array('id'=>array('in', pylode(',', $ordreid)),'orderby'=>'id'), '`uid`,`rating`');
+            }
+            if (!empty($orders)) {
+                foreach ($List as $k=>$v){
+                    foreach ($orders as $val){
+                        if ($v['uid'] == $val['uid'] && isset($comrat[$val['rating']])){
+                            $List[$k]['oldrating_name'] = $comrat[$val['rating']];
+                        }
                     }
                 }
             }
         }
         
         //  查询admin_user 业务员信息
-        $crmList            =   $this -> select_all('admin_user', array('uid' => array('in', pylode(',', $cids))), '`uid`,`name`');
+        $crmList = array();
+        if (!empty($cids)) {
+            $crmList            =   $this -> select_all('admin_user', array('uid' => array('in', pylode(',', $cids))), '`uid`,`name`');
+        }
 
         foreach ($List  as  $k  =>  $v){
             $List[$k]['jobnum'] = $List[$k]['zz_jobnum'] = 0;// 初始化职位数及在招职位数
@@ -802,9 +820,7 @@ class company_model extends model{
             }
 
             //  提取job查询数据，统计职位总数
-            if (!empty($jList['list'])) {
-
-                $jobList    =   $jList['list'];
+            if (!empty($jobList)) {
 
                 foreach ($jobList as  $jv){
                     if($v['uid']  ==  $jv['uid']){

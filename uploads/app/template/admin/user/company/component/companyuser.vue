@@ -4086,8 +4086,8 @@ module.exports = {
             that.emptytext = lc('admin_user_weipin_00026');
             httpPost('m=user&c=company&a=index', params, { hideloading: true }).then(function (result) {
                 var res = result.data
-                if (res.error == 0) {
-                    that.tableData = res.data.list;
+                if (res && res.error == 0) {
+                    that.tableData = (res.data && res.data.list) ? res.data.list : [];
                     if (that.tableData.length === 0) {
                         that.emptytext = lc('wap_js_00113');
                     }
@@ -4096,13 +4096,24 @@ module.exports = {
                     that.total = parseInt(res.data.total)
                     if(that.prevPage != that.currentPage){
                         that.prevPage = that.currentPage;
-                        that.$refs.multipleTable.bodyWrapper.scrollTop = 0;
+                        if (that.$refs.multipleTable && that.$refs.multipleTable.bodyWrapper) {
+                            that.$refs.multipleTable.bodyWrapper.scrollTop = 0;
+                        }
                         scrollToTop()
                     }
-                    that.loading = false;
+                } else {
+                    that.tableData = [];
+                    that.emptytext = lc('wap_js_00113');
+                    if (res && res.msg) {
+                        message.error(res.msg);
+                    }
                 }
+                that.loading = false;
             }).catch(function (e) {
                 console.log(e)
+                that.tableData = [];
+                that.emptytext = lc('wap_js_00113');
+                that.loading = false;
             })
         },
 

@@ -95,7 +95,20 @@ function yun_json_encode($value, $options = 0)
     if (defined('JSON_UNESCAPED_UNICODE')) {
         $options = $options | JSON_UNESCAPED_UNICODE;
     }
-    return json_encode($value, $options);
+    // PHP 8: invalid UTF-8 (common in company content/html) makes json_encode
+    // return false with no warning; the admin Vue table then stays empty.
+    if (defined('JSON_INVALID_UTF8_SUBSTITUTE')) {
+        $options = $options | JSON_INVALID_UTF8_SUBSTITUTE;
+    }
+    if (defined('JSON_PARTIAL_OUTPUT_ON_ERROR')) {
+        $options = $options | JSON_PARTIAL_OUTPUT_ON_ERROR;
+    }
+    $json = json_encode($value, $options);
+    if ($json === false) {
+        error_log('yun_json_encode failed: ' . json_last_error_msg());
+        return '{"error":1,"msg":"json encode failed","data":[]}';
+    }
+    return $json;
 }
 
 function yun_i18n_js_keys(array $keys)
