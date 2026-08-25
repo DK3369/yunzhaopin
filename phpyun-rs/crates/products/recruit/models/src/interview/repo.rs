@@ -81,7 +81,7 @@ pub async fn create(
     .bind(c.address)
     .bind(c.linkman)
     .bind(c.linktel)
-    .bind(c.remark)
+    .bind(c.remark.unwrap_or(""))
     .bind(now)
     .execute(pool)
     .await?;

@@ -3,11 +3,10 @@ const api = useApi()
 const form = reactive({
   username: '',
   password: '',
-  moblie: '',
-  email: '',
   captcha_cid: '',
   checkcode: '',
   usertype: 1,
+  regway: 1,
 })
 const captcha = ref<{ cid: string; image: string } | null>(null)
 async function loadCaptcha() {
@@ -35,7 +34,6 @@ useSeoMeta({ title: '注册' })
     <form class="form" @submit.prevent="submit">
       <input v-model="form.username" placeholder="用户名" />
       <input v-model="form.password" type="password" placeholder="密码" />
-      <input v-model="form.moblie" placeholder="手机" />
       <select v-model.number="form.usertype">
         <option :value="1">求职者</option>
         <option :value="2">企业</option>

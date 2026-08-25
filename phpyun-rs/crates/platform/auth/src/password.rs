@@ -43,12 +43,22 @@ pub fn argon2_hash(password: &str) -> anyhow::Result<String> {
 pub fn verify_password(password: &str, stored_hash: &str, salt: &str) -> bool {
     if stored_hash.starts_with("$argon2") {
         match PasswordHash::new(stored_hash) {
-            // verify_password parses the original params from PasswordHash, so using the default
-            // instance is fine; it's independent of the params used at generation time, and old
-            // hashes still verify correctly.
-            Ok(parsed) => Argon2::default()
-                .verify_password(password.as_bytes(), &parsed)
-                .is_ok(),
+            Ok(parsed) => {
+                let argon = Argon2::default();
+                if argon
+                    .verify_password(password.as_bytes(), &parsed)
+                    .is_ok()
+                {
+                    return true;
+                }
+                if !salt.is_empty() {
+                    let salted = format!("{password}{salt}");
+                    return argon
+                        .verify_password(salted.as_bytes(), &parsed)
+                        .is_ok();
+                }
+                false
+            }
             Err(_) => false,
         }
     } else {
@@ -114,10 +124,11 @@ mod tests {
     }
 
     #[test]
-    fn argon2_roundtrip() {
-        let h = argon2_hash("s3cr3t").unwrap();
-        assert!(verify_password("s3cr3t", &h, "ignored_for_argon2"));
-        assert!(!verify_password("nope", &h, ""));
+    fn argon2_salted_register_compat() {
+        let salt = "abcd1234abcd1234";
+        let h = argon2_hash(&format!("s3cr3t{salt}")).unwrap();
+        assert!(verify_password("s3cr3t", &h, salt));
+        assert!(!verify_password("nope", &h, salt));
     }
 
     #[test]

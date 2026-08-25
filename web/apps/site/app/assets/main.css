@@ -11,3 +11,11 @@ input, button, select, textarea {
 button { cursor: pointer; }
 h1 { margin-top: 0; }
 .muted { color: #6b7280; }
+.job-card {
+  display: block;
+  padding: 1rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  text-decoration: none;
+  color: inherit;
+}

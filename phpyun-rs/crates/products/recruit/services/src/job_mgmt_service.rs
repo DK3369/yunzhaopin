@@ -39,11 +39,19 @@ pub async fn create(
 ) -> AppResult<u64> {
     user.require_employer()?;
     let now = clock::now_ts();
+    let looked_up = phpyun_models::company::repo::find_by_uid(state.db.reader(), user.uid)
+        .await?
+        .and_then(|c| c.name)
+        .unwrap_or_default();
+    let resolved_name = match com_name {
+        Some(s) if !s.is_empty() => s,
+        _ => looked_up.as_str(),
+    };
     let id = job_repo::create(
         state.db.pool(),
         job_repo::JobCreate {
             uid: user.uid,
-            com_name,
+            com_name: Some(resolved_name),
             name: input.name,
             job1: input.job1,
             job1_son: input.job1_son,

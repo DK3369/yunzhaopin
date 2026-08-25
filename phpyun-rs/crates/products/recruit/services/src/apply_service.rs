@@ -53,13 +53,18 @@ pub async fn apply_to_job(
     }
 
     // 4. Persist (PHPYun's eid equals the jobseeker uid, denoting the default resume)
+    let com_name = job.com_name.clone().unwrap_or_default();
     let id = apply_repo::create(
         state.db.pool(),
-        user.uid,
-        job_id,
-        job.uid,  // com_id
-        user.uid, // eid = uid
-        clock::now_ts(),
+        apply_repo::ApplyCreate {
+            uid: user.uid,
+            job_id,
+            job_name: &job.name,
+            com_id: job.uid,
+            com_name: &com_name,
+            eid: user.uid,
+            now: clock::now_ts(),
+        },
     )
     .await?;
 

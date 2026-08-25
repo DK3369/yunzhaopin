@@ -10,7 +10,12 @@ use sqlx::{MySqlPool, QueryBuilder};
 
 // PHP `phpyun_userid_job.invited / invite_time` are nullable int; entity
 // uses plain i32/i64. COALESCE so a NULL row can't trip sqlx.
-const FIELDS: &str = "id, uid, job_id, com_id, eid, datetime, is_browse, \
+const FIELDS: &str = "CAST(id AS UNSIGNED) AS id, \
+     CAST(uid AS UNSIGNED) AS uid, \
+     CAST(job_id AS UNSIGNED) AS job_id, \
+     CAST(com_id AS UNSIGNED) AS com_id, \
+     CAST(eid AS UNSIGNED) AS eid, \
+     CAST(datetime AS SIGNED) AS datetime, is_browse, \
      COALESCE(invited, 0) AS invited, \
      COALESCE(invite_time, 0) AS invite_time, \
      isdel, quxiao";
@@ -38,24 +43,29 @@ pub async fn find_by_uid_job(
         .await
 }
 
-pub async fn create(
-    pool: &MySqlPool,
-    uid: u64,
-    job_id: u64,
-    com_id: u64,
-    eid: u64,
-    now: i64,
-) -> Result<u64, sqlx::Error> {
+pub struct ApplyCreate<'a> {
+    pub uid: u64,
+    pub job_id: u64,
+    pub job_name: &'a str,
+    pub com_id: u64,
+    pub com_name: &'a str,
+    pub eid: u64,
+    pub now: i64,
+}
+
+pub async fn create(pool: &MySqlPool, c: ApplyCreate<'_>) -> Result<u64, sqlx::Error> {
     let res = sqlx::query(
         r#"INSERT INTO phpyun_userid_job
-           (uid, job_id, com_id, eid, datetime, is_browse, invited, invite_time, isdel, quxiao)
-           VALUES (?, ?, ?, ?, ?, 1, 0, 0, 9, 0)"#,
+           (uid, job_id, job_name, com_id, com_name, eid, datetime, is_browse, invited, invite_time, isdel, quxiao)
+           VALUES (?, ?, ?, ?, ?, ?, ?, 1, 0, 0, 9, 0)"#,
     )
-    .bind(uid)
-    .bind(job_id)
-    .bind(com_id)
-    .bind(eid)
-    .bind(now)
+    .bind(c.uid)
+    .bind(c.job_id)
+    .bind(c.job_name)
+    .bind(c.com_id)
+    .bind(c.com_name)
+    .bind(c.eid)
+    .bind(c.now)
     .execute(pool)
     .await?;
     Ok(res.last_insert_id())

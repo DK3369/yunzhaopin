@@ -20,8 +20,8 @@ useSeoMeta({ title: '简历' })
         :to="`/resumes/${r.uid}`"
         class="job-card"
       >
-        <h3>{{ r.name || r.uname }}</h3>
-        <p class="muted">{{ r.job_classid_n || r.expect }}</p>
+        <h3>{{ r.display_name || r.name || r.uname }}</h3>
+        <p class="muted">{{ r.education_n || r.job_classid_n || r.expect }}</p>
       </NuxtLink>
     </div>
   </section>

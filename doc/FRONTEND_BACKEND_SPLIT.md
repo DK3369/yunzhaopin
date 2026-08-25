@@ -591,7 +591,7 @@ zzzz.com/
 - [x] T7 统一 API 客户端与鉴权（2026-08-26：类型从 `doc/snapshots` 生成；登录 cookie `token` HttpOnly+SameSite=Strict，JSON 不含 JWT；me/refresh/logout 走通。未改 App 的 30 天 access TTL）
 - [x] T8 公开前台页面（2026-08-26：优先级页 + Rust 已有 GET 的公开频道 SSR：兼职/招聘会/公招/专题/问答/店铺招聘/普工简历/积分商城/HR/友情链接/静态页/找回密码/地图。禁用 JS 时列表页 HTML 含 h1 与空状态。不是 PHP default 100 + wap 209 模板逐页搬运；校园/猎头/培训/spview 无 Rust 命名空间，Web 不做。验收打本仓库 rust `:3003`：systemd `:3000` 旧二进制对 GET 仍 405）
 - [x] T9 SEO 配套（2026-08-26：`/sitemap.xml` 200，含静态频道与动态 `/jobs/5`、`/companies/90001`；职位页 JobPosting、企业页 Organization 在 HTML 的 ld+json 中。未跑 Google 富媒体测试工具，因其需要公网 URL。空库时动态 URL 不会出现）
-- [ ] T10 会员中心
+- [x] T10 会员中心（2026-08-26：注册(regway=1)→填简历→投递→投递列表；企业资料→发职位→人才库→收到简历→邀面试。Nuxt 登录 cookie 无 JWT。发职位默认待审，e2e 在测试库把职位 `state=1` 后才公开可投。`phpyun_test` 无 `phpyun_company_rating` 套餐行，mock-paid UI 在但未实购。顺带修：注册 argon2 带 salt 导致无法登录；职位/投递/面试 INSERT 缺 NOT NULL 列）
 - [ ] T11 管理后台
 - [ ] T12 后端补齐 PHP 独占功能
 - [ ] T13 重写失真文档

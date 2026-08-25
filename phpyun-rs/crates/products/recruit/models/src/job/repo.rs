@@ -364,13 +364,15 @@ pub async fn create(pool: &MySqlPool, c: JobCreate<'_>, now: i64) -> Result<u64,
            (uid, com_name, name, job1, job1_son, job_post,
             provinceid, cityid, three_cityid,
             minsalary, maxsalary, `type`, number, exp, edu,
-            description, welfare, state, status, r_status, rec, urgent,
+            description, welfare, report, sex, marriage, lang,
+            state, status, r_status, rec, urgent,
             rec_time, sdate, edate, lastupdate, did)
            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
+                   0, 0, 0, '',
                    0, 0, 1, 0, 0, 0, ?, ?, ?, ?)"#,
     )
     .bind(c.uid)
-    .bind(c.com_name)
+    .bind(c.com_name.unwrap_or(""))
     .bind(c.name)
     .bind(c.job1)
     .bind(c.job1_son)
@@ -384,8 +386,8 @@ pub async fn create(pool: &MySqlPool, c: JobCreate<'_>, now: i64) -> Result<u64,
     .bind(c.number)
     .bind(c.exp)
     .bind(c.edu)
-    .bind(c.description)
-    .bind(c.welfare)
+    .bind(c.description.unwrap_or(""))
+    .bind(c.welfare.unwrap_or(""))
     .bind(c.sdate)
     .bind(c.edate)
     .bind(now)
