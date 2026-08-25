@@ -71,7 +71,7 @@ $newKeys = [
     'wap_01326' => ['zh' => '您可以详细描述你的问题', 'en' => 'Describe your question in detail'],
     'wap_01327' => ['zh' => '请输入验证码', 'en' => 'Enter verification code'],
     'wap_01328' => ['zh' => '请填写标题！', 'en' => 'Please enter a title!'],
-    'wap_01329' => ['zh' => '请选择类别！', 'en' => 'Please select a category!'],
+    'wap_01329' => ['zh' => '请选择类别！', 'en' => 'Select a category!'],
     'wap_01330' => ['zh' => '请填写内容！', 'en' => 'Please enter content!'],
     'wap_01331' => ['zh' => '请填写验证码！', 'en' => 'Please enter verification code!'],
     'wap_01332' => ['zh' => '请选择问题种类', 'en' => 'Select question category'],

@@ -56,7 +56,7 @@ function translateEn($zhText, $zhPack, $enPack, $zhByValue)
     $patterns = array(
         '/^请填写(.+)$/u' => 'Please enter $1',
         '/^请输入(.+)$/u' => 'Please enter $1',
-        '/^请选择(.+)$/u' => 'Please select $1',
+        '/^请选择(.+)$/u' => 'Select $1',
         '/^(.+)成功！$/u' => '$1 successful!',
         '/^(.+)成功$/u' => '$1 successful',
         '/^(.+)失败！$/u' => '$1 failed!',

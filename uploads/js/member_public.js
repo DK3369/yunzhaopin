@@ -118,7 +118,7 @@ function ckaddblack(){
 	});
 	layer.closeAll();
 	if(chk_value.length==0){
-		layer.msg(memberPublicT('member_js_00007', null, 'Please select a company to block!'),2,8,function(){addblack()});return false;
+		layer.msg(memberPublicT('member_js_00007', null, 'Select a company to block!'),2,8,function(){addblack()});return false;
 	}
 	layer.load(memberPublicT('member_js_00001', null, 'Processing, please wait...'),0);
 }
@@ -128,7 +128,7 @@ function buyad(){
 		layer.msg(memberPublicT('member_js_00008', null, 'Please enter the ad name!'), 2, 8);return false;
 	}
 	if($("input[name=file]").val()==''){
-		layer.msg(memberPublicT('member_js_00009', null, 'Please select an ad image!'), 2,8);return false;
+		layer.msg(memberPublicT('member_js_00009', null, 'Select an ad image!'), 2,8);return false;
 	}
 	if($.trim($('#pic_src').val())==''){
 		layer.msg(memberPublicT('member_js_00010', null, 'Please enter the ad link!'), 2,8);return false;
@@ -219,11 +219,11 @@ $(document).ready(function(){
 		var lid=$(this).attr("lid");
 		if(province==""){
 			$("#"+lid+" option").remove()
-			$("<option value='0'>"+memberPublicT('member_js_00020', null, 'Please select a city')+"</option>").appendTo("#"+lid);
+			$("<option value='0'>"+memberPublicT('member_js_00020', null, 'Select a city')+"</option>").appendTo("#"+lid);
 			lid2=$("#"+lid).attr("lid");
 			if(lid2){
 				$("#"+lid2+" option").remove();
-				$("<option value='0'>"+memberPublicT('member_js_00020', null, 'Please select a city')+"</option>").appendTo("#"+lid2);
+				$("<option value='0'>"+memberPublicT('member_js_00020', null, 'Select a city')+"</option>").appendTo("#"+lid2);
 				$("#"+lid2).hide();
 			}
 		}
@@ -350,7 +350,7 @@ function city_type(id){
 					$('#'+lid).show();
 				}else{
 					$('#'+lid+' option').remove();
-					$("<option value='0'>"+memberPublicT('member_js_00020', null, 'Please select a city')+"</option").appendTo("#"+lid);
+					$("<option value='0'>"+memberPublicT('member_js_00020', null, 'Select a city')+"</option").appendTo("#"+lid);
 					$('#'+lid).hide();
 				}
 			}
@@ -593,7 +593,7 @@ function really(name){
 		chk_value.push($(this).val());
 	});
 	if(chk_value.length==0){
-		layer.msg(memberPublicT('member_js_00024', null, 'Please select data to delete!'),2,8);return false;
+		layer.msg(memberPublicT('member_js_00024', null, 'Select data to delete!'),2,8);return false;
 	}else{
 		var delcf = layer.confirm(memberPublicT('member_js_00025', null, 'Are you sure you want to delete?'),function(){
 			layer.close(delcf);
@@ -617,12 +617,12 @@ function CheckForm(){
 		chk_value.push($(this).val());
 	});
 	if(chk_value.length==0){
-		layer.msg(memberPublicT('member_js_00026', null, 'Please select a purchase type!'),2,8);return false;
+		layer.msg(memberPublicT('member_js_00026', null, 'Select a purchase type!'),2,8);return false;
 	}
 }
 function pay_form(name){
 	if($("#comvip").length!=0&&$("#comvip").val()==''){
-		layer.msg(memberPublicT('member_js_00026', null, 'Please select a purchase type!'),2,8);return false;
+		layer.msg(memberPublicT('member_js_00026', null, 'Select a purchase type!'),2,8);return false;
 	}
 	if($("#price_int").length!=0&&$("#price_int").val()<1){
 		layer.msg(name,2,8);return false;
@@ -938,7 +938,7 @@ function selectjobone(id,type,name,gettype){
 	$("#"+type).val(id);
 	$("#"+type+"_name").val(name);
 	$("#jobtwo").val("");
-	$("#jobtwo_name").val(memberPublicT('member_js_00041', null, 'Please select'));
+	$("#jobtwo_name").val(memberPublicT('member_js_00041', null, 'Select'));
 	$.post(weburl+"/member/index.php?m=ajax&c=ajax_ltjobone&"+timestamp, {"str":id},function(data) {
 		if(data!=""){
 			$('#job_type2').find("ul").html(data);
@@ -988,7 +988,7 @@ function job_edit(){
 }
 
 /**
- * @desc Batch mark system messages as read.
+ * @desc Batch mark Messages as read.
  * @param name
  * @returns
  */
@@ -998,7 +998,7 @@ function isReaded(name){
 		chk_value.push($(this).val());
 	});
 	if(chk_value.length==0){
-		layer.msg(memberPublicT('member_js_00048', null, 'Please select data to mark as read!'),2,8);return false;
+		layer.msg(memberPublicT('member_js_00048', null, 'Select data to mark as read!'),2,8);return false;
 	}else{
 		layer.confirm(memberPublicT('member_js_00049', null, 'Mark as read?'),function(){
 			$.post("index.php?m=ajax&c=ajaxReadsys",{ids:chk_value},function(data){
@@ -1013,7 +1013,7 @@ function isReaded(name){
 }
 
 /**
- * @desc Mark all system messages as read.
+ * @desc Mark all Messages as read.
  * @returns
  */
 function readAll(){
@@ -1041,7 +1041,7 @@ function really_rebates(name){
 		chk_value.push($(this).val());
 	});
 	if(chk_value.length==0){
-		layer.msg(memberPublicT('member_js_00048', null, 'Please select data to mark as read!'),2,8);return false;
+		layer.msg(memberPublicT('member_js_00048', null, 'Select data to mark as read!'),2,8);return false;
 	}else{
 		layer.confirm(memberPublicT('member_js_00049', null, 'Mark as read?'),function(){
 			$.post("index.php?c=rebates&act=hrset",{ids:chk_value,ajax:1},function(data){
@@ -1061,7 +1061,7 @@ function really_quxiao(name){
 		chk_value.push($(this).val());
 	});
 	if(chk_value.length==0){
-		layer.msg(memberPublicT('member_js_00055', null, 'Please select data to cancel!'),2,8);return false;
+		layer.msg(memberPublicT('member_js_00055', null, 'Select data to cancel!'),2,8);return false;
 	}else{
 		layer.confirm(memberPublicT('member_js_00056', null, 'Confirm cancellation?'),function(){
 			$.post("index.php?c=job&act=is_browse",{ids:chk_value},function(data){
@@ -1321,7 +1321,7 @@ function check_out(){
 	var comname=$.trim($("#comname").val());
 	var jobname=$.trim($("#jobname").val());
 	if(resume==""){
-		layer.msg(memberPublicT('member_js_00073', null, 'Please select a resume!'),2,8);return false;
+		layer.msg(memberPublicT('member_js_00073', null, 'Select a resume!'),2,8);return false;
 	}
 	if(email==""){
 		layer.msg(memberPublicT('member_js_00074', null, 'Please enter an email!'),2,8);return false;

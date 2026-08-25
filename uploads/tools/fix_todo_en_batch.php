@@ -31,7 +31,7 @@ foreach ($en as $key => $enVal) {
         '投诉简历' => 'Reported resume', '删除成功' => 'deleted successfully', '删除失败' => 'delete failed',
         '数据已全部生成' => 'All data generated', '数据生成中' => 'Generating data', '还剩余' => 'remaining',
         '条' => ' items', '年' => ' years', '待遇' => 'Benefits', '请填写' => 'Please enter ',
-        '请输入' => 'Please enter ', '请选择' => 'Please select ', '成功' => 'successful', '失败' => 'failed',
+        '请输入' => 'Please enter ', '请选择' => 'Select ', '成功' => 'successful', '失败' => 'failed',
         '参数错误' => 'Invalid parameter', '操作' => 'operation', '用户' => 'user', '企业' => 'company',
         '职位' => 'job', '简历' => 'resume', '会员' => 'member', '订单' => 'order', '充值' => 'recharge',
         '权限' => 'permission', '非法操作' => 'Invalid operation', '暂无' => 'none', '审核' => 'review',

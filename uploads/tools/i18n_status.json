@@ -1,6 +1,6 @@
 {
-    "generated": "2026-07-29T18:21:02+08:00",
-    "wap_actionable": 327,
+    "generated": "2026-08-25T20:55:39+08:00",
+    "wap_actionable": 312,
     "hardcoded_php": {
         "total": 9,
         "hardcoded": 5,
@@ -21,12 +21,12 @@
     },
     "template_missing_pack": 13,
     "lang_pack": {
-        "zh_keys": 16511,
-        "en_keys": 16511,
+        "zh_keys": 16518,
+        "en_keys": 16518,
         "only_zh": 0,
         "only_en": 0,
-        "en_same_or_empty": 14,
-        "en_same_zh_need_fix": 0,
+        "en_same_or_empty": 18,
+        "en_same_zh_need_fix": 4,
         "en_contains_chinese": 0
     }
 }

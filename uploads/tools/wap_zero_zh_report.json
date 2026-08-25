@@ -1,13 +1,14 @@
 {
-    "generated": "2026-07-29T18:21:04+08:00",
+    "generated": "2026-08-25T20:55:38+08:00",
     "summary": {
+        "comment": 462,
         "enum_hub": 25,
-        "comment": 463,
-        "ui": 326,
+        "ui": 311,
         "enum": 1,
         "i18n_wrapped": 19
     },
     "files": {
+        "app\/template\/wap\/member\/user\/info.htm": 1,
         "app\/template\/wap\/publichtm\/wap_api_enum.htm": 25,
         "api\/wxapp\/member\/user\/atn.class.php": 3,
         "api\/wxapp\/member\/user\/finance.class.php": 31,
@@ -37,8 +38,7 @@
         "api\/wxapp\/model\/register.class.php": 17,
         "api\/wxapp\/model\/resume.class.php": 44,
         "api\/wxapp\/model\/tiny.class.php": 22,
-        "api\/wxapp\/index.php": 2,
-        "api\/wxapp\/wxapp.controller.php": 70,
+        "api\/wxapp\/wxapp.controller.php": 55,
         "app\/controller\/wap\/ajax.class.php": 10,
         "app\/controller\/wap\/ask.class.php": 1,
         "app\/controller\/wap\/company.class.php": 3,
@@ -48,6 +48,12 @@
         "app\/controller\/wap\/wxconnect.class.php": 3
     },
     "hits": [
+        {
+            "file": "app\/template\/wap\/member\/user\/info.htm",
+            "line": 9,
+            "category": "comment",
+            "text": "\/* 个人信息：左标签 \/ 右内容右对齐，适配英文长文案 *\/"
+        },
         {
             "file": "app\/template\/wap\/publichtm\/wap_api_enum.htm",
             "line": 2,
@@ -1286,55 +1292,55 @@
         },
         {
             "file": "api\/wxapp\/member\/user\/resume.class.php",
-            "line": 781,
+            "line": 782,
             "category": "comment",
             "text": "\t\/\/个人评价看看别人怎么写"
         },
         {
             "file": "api\/wxapp\/member\/user\/resume.class.php",
-            "line": 818,
+            "line": 819,
             "category": "ui",
             "text": "\t\t\t$data['content']\t=\t'暂无示例';"
         },
         {
             "file": "api\/wxapp\/member\/user\/resume.class.php",
-            "line": 825,
+            "line": 826,
             "category": "comment",
             "text": "\t\/\/简历发布成功"
         },
         {
             "file": "api\/wxapp\/member\/user\/resume.class.php",
-            "line": 850,
+            "line": 851,
             "category": "comment",
             "text": "    \/\/保存个人作品"
         },
         {
             "file": "api\/wxapp\/member\/user\/resume.class.php",
-            "line": 876,
+            "line": 877,
             "category": "ui",
             "text": "                $this->render_json(2, '请上传图片');"
         },
         {
             "file": "api\/wxapp\/member\/user\/resume.class.php",
-            "line": 901,
+            "line": 902,
             "category": "ui",
             "text": "                $this->render_json(2, '请上传图片');"
         },
         {
             "file": "api\/wxapp\/member\/user\/resume.class.php",
-            "line": 920,
+            "line": 921,
             "category": "ui",
             "text": "\t\t$nid?$data['msg']\t=\t'保存成功！':$data['msg']='保存失败！';"
         },
         {
             "file": "api\/wxapp\/member\/user\/resume.class.php",
-            "line": 925,
+            "line": 926,
             "category": "comment",
             "text": "     * 处理单个图片上传"
         },
         {
             "file": "api\/wxapp\/member\/user\/resume.class.php",
-            "line": 926,
+            "line": 927,
             "category": "comment",
             "text": "     * @param file\/需上传文件; dir\/上传目录; type\/上传图片类型; base\/需上传base64; preview\/pc预览即上传"
         },
@@ -4483,18 +4489,6 @@
             "text": "\t\t\t\t\t$rdata['msg']\t=\t'修改失败！';"
         },
         {
-            "file": "api\/wxapp\/index.php",
-            "line": 5,
-            "category": "comment",
-            "text": "\/\/ 处理跨域（CORS）"
-        },
-        {
-            "file": "api\/wxapp\/index.php",
-            "line": 16,
-            "category": "comment",
-            "text": "\/\/ 处理 OPTIONS 预检请求"
-        },
-        {
             "file": "api\/wxapp\/wxapp.controller.php",
             "line": 19,
             "category": "comment",
@@ -4556,12 +4550,6 @@
         },
         {
             "file": "api\/wxapp\/wxapp.controller.php",
-            "line": 84,
-            "category": "ui",
-            "text": "            $this -> render_json(1002, '请先登录');"
-        },
-        {
-            "file": "api\/wxapp\/wxapp.controller.php",
             "line": 87,
             "category": "comment",
             "text": "    \/\/ 登录信息验证"
@@ -4574,39 +4562,15 @@
         },
         {
             "file": "api\/wxapp\/wxapp.controller.php",
-            "line": 122,
-            "category": "ui",
-            "text": "                    $this -> render_json(1002, '您的账号已注销');"
-        },
-        {
-            "file": "api\/wxapp\/wxapp.controller.php",
-            "line": 124,
-            "category": "ui",
-            "text": "                    $this -> render_json(1002, '您的账号已被锁定，请联系网站客服');"
-        },
-        {
-            "file": "api\/wxapp\/wxapp.controller.php",
             "line": 127,
             "category": "comment",
             "text": "            \/\/ 移动端验证token。没传token的就是wap，登录信息在common中验证"
         },
         {
             "file": "api\/wxapp\/wxapp.controller.php",
-            "line": 132,
-            "category": "ui",
-            "text": "                    $this -> render_json(1002, '登录信息有误，请重新登录');"
-        },
-        {
-            "file": "api\/wxapp\/wxapp.controller.php",
             "line": 135,
             "category": "comment",
             "text": "            \/\/ 会员中心的请求链接，需要额外信息和判断"
-        },
-        {
-            "file": "api\/wxapp\/wxapp.controller.php",
-            "line": 169,
-            "category": "ui",
-            "text": "                    $this -> render_json(1003, '登录身份不符，请重新登录');"
         },
         {
             "file": "api\/wxapp\/wxapp.controller.php",
@@ -4622,12 +4586,6 @@
         },
         {
             "file": "api\/wxapp\/wxapp.controller.php",
-            "line": 195,
-            "category": "ui",
-            "text": "                        'content'  => 'wap端口延续登录'"
-        },
-        {
-            "file": "api\/wxapp\/wxapp.controller.php",
             "line": 208,
             "category": "comment",
             "text": "                    \/\/ 同步个人、企业基本信息表登录信息"
@@ -4637,36 +4595,6 @@
             "line": 213,
             "category": "comment",
             "text": "                        \/\/登录自动简历刷新，根据后台配置判断"
-        },
-        {
-            "file": "api\/wxapp\/wxapp.controller.php",
-            "line": 231,
-            "category": "ui",
-            "text": "            $this -> render_json(1002, '用户信息错误，请重新登录');"
-        },
-        {
-            "file": "api\/wxapp\/wxapp.controller.php",
-            "line": 248,
-            "category": "ui",
-            "text": "            $this->render_json(1005, '不支持curl');"
-        },
-        {
-            "file": "api\/wxapp\/wxapp.controller.php",
-            "line": 256,
-            "category": "ui",
-            "text": "\t        'goumai' => '购买',"
-        },
-        {
-            "file": "api\/wxapp\/wxapp.controller.php",
-            "line": 258,
-            "category": "ui",
-            "text": "\t        'fkjg'   => '价格',"
-        },
-        {
-            "file": "api\/wxapp\/wxapp.controller.php",
-            "line": 264,
-            "category": "ui",
-            "text": "\t        $fktype['fkal']  =  '支付宝';"
         },
         {
             "file": "api\/wxapp\/wxapp.controller.php",
@@ -4744,19 +4672,13 @@
             "file": "api\/wxapp\/wxapp.controller.php",
             "line": 462,
             "category": "comment",
-            "text": "\t            $citytwo[0][]      =  array('value'=>0,'label'=>'全部');\/\/第二列 全部"
+            "text": "\t            $citytwo[0][]      =  array('value'=>0,'label'=>yun_at('wap_js_00075'));\/\/第二列 全部"
         },
         {
             "file": "api\/wxapp\/wxapp.controller.php",
             "line": 463,
             "category": "comment",
             "text": "\t            $citythreetwoArr[$provinceid][]\t=  array(array());\/\/用做 一级-全部-''"
-        },
-        {
-            "file": "api\/wxapp\/wxapp.controller.php",
-            "line": 469,
-            "category": "ui",
-            "text": "\t                    $citythreeArr[] =  array('value'=>0,'label'=>'全部');"
         },
         {
             "file": "api\/wxapp\/wxapp.controller.php",
@@ -4774,7 +4696,7 @@
             "file": "api\/wxapp\/wxapp.controller.php",
             "line": 487,
             "category": "comment",
-            "text": "\t                $citythree[0][0][]  =  array('value'=>0,'label'=>'全部');\/\/第三列 全部"
+            "text": "\t                $citythree[0][0][]  =  array('value'=>0,'label'=>yun_at('wap_js_00075'));\/\/第三列 全部"
         },
         {
             "file": "api\/wxapp\/wxapp.controller.php",
@@ -4784,27 +4706,9 @@
         },
         {
             "file": "api\/wxapp\/wxapp.controller.php",
-            "line": 513,
-            "category": "ui",
-            "text": "\t        $this->render_json(-1, '缺少手机号');"
-        },
-        {
-            "file": "api\/wxapp\/wxapp.controller.php",
-            "line": 517,
-            "category": "ui",
-            "text": "\t        $this -> render_json(-1, '手机号异常');"
-        },
-        {
-            "file": "api\/wxapp\/wxapp.controller.php",
             "line": 521,
             "category": "comment",
             "text": "\t            \/\/ 按客户端时区计算，获取当前时间"
-        },
-        {
-            "file": "api\/wxapp\/wxapp.controller.php",
-            "line": 542,
-            "category": "ui",
-            "text": "\t            $this -> render_json(-1, '手机号验证异常');"
         },
         {
             "file": "api\/wxapp\/wxapp.controller.php",

@@ -21,7 +21,7 @@ function cityPublicT(key, params, fallback) {
 }
 
 function cityPublicDefaultOption() {
-    return "<option value=''>" + cityPublicT('city_js_00001', null, 'Please select') + "</option>";
+    return "<option value=''>" + cityPublicT('city_js_00001', null, 'Select') + "</option>";
 }
 
 layui.use(['form'], function () {

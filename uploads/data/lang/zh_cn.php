@@ -164,7 +164,7 @@ return array (
     'admin_yesterday_count' => '昨天 {0}',
     'admin_free_downloads_today' => '今日免费下载数：{0}',
     'admin_percent_value' => '占比：{0}%',
-    'admin_phpyun_version' => 'PHPYun程序版本：{0}',
+    'admin_phpyun_version' => 'OV6程序版本：{0}',
     'admin_available_space' => '可用空间(磁盘区)：{0} M',
     'admin_php_version' => 'PHP 版本：{0}',
     'admin_server_software' => '服务器软件：{0}',

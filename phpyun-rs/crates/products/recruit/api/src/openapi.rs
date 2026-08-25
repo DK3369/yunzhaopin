@@ -1099,9 +1099,9 @@ pub fn v1_openapi() -> utoipa::openapi::OpenApi {
 #[derive(OpenApi)]
 #[openapi(
     info(
-        title = "PHPYun API v2",
+        title = "OV6 API v2",
         version = "2.0.0",
-        description = "PHPYun WAP API v2: login response time uses RFC3339; other endpoints match v1"
+        description = "OV6 WAP API v2: login response time uses RFC3339; other endpoints match v1"
     ),
     servers(
         (url = "/yapi", description = "Nginx proxy (dev.test/yapi → 127.0.0.1:3000)"),

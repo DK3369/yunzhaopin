@@ -277,7 +277,7 @@ function confirm_selected_jobclass_items() {
         jobclass_names += ',' + $(jobclass_items[i]).attr('codename');
     } 
     if(jobclass_names.length<=0){
-        layer.msg(classPublicT('class_js_00005', null, 'Please select a specific category!'), 2, 8);return false;
+        layer.msg(classPublicT('class_js_00005', null, 'Select a specific category!'), 2, 8);return false;
     }else{
         // Write selected IDs and names to target elements.
       if (window.target_jobclassin_names_tagname == 'INPUT') {
@@ -1233,7 +1233,7 @@ function confirm_selected_industry_items() {
         industry_names += ',' + $(industry_items[i]).attr('codename');
     }
 	 if(industry_names.length<=0){
-        layer.msg(classPublicT('class_js_00005', null, 'Please select a specific category!'), 2, 8);return false;
+        layer.msg(classPublicT('class_js_00005', null, 'Select a specific category!'), 2, 8);return false;
     }else{
     // Write selected IDs and names to target elements.
     if (window.target_industryin_names_tagname == 'INPUT') {
