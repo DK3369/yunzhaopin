@@ -18,15 +18,19 @@ class style
 
         $path   =   TPL_PATH;
         $handle =   @opendir($path);
+        $list   =   array();
 
-        while ($file = @readdir($handle)) {
+        if ($handle) {
+            while (($file = @readdir($handle)) !== false) {
 
-            if ($file == '.' || $file == '..' || $file == '.svn' || $file == 'admin' || $file == 'ask' || $file == 'chat' || $file == 'company' || $file == 'lietou' || $file == 'member' || $file == 'promoter' || $file == 'resume' || $file == 'school' || $file == 'shop' || $file == 'siteadmin' || $file == 'train' || $file == 'im' || $file == 'wap' || $file == 'wapadmin') continue;
+                if ($file == '.' || $file == '..' || $file == '.svn' || $file == 'admin' || $file == 'ask' || $file == 'chat' || $file == 'company' || $file == 'lietou' || $file == 'member' || $file == 'promoter' || $file == 'resume' || $file == 'school' || $file == 'shop' || $file == 'siteadmin' || $file == 'train' || $file == 'im' || $file == 'wap' || $file == 'wapadmin') continue;
 
-            if (is_dir($path . $file)) {
+                if (is_dir($path . $file)) {
 
-                $list[] = $file;
+                    $list[] = $file;
+                }
             }
+            closedir($handle);
         }
         $lists = array();
         if (isset($list) && is_array($list)) {
@@ -36,28 +40,21 @@ class style
                 $filepath   =   $path.$value.'/info.txt';
 
                 if (!file_exists($filepath)) {
-
-                    $fopen  =   @fopen($filepath, 'w+');
-                    fclose($fopen);
+                    @file_put_contents($filepath, '');
                 }
 
-                $size       =   @filesize($filepath);
-                $fp         =   @fopen($filepath, 'r+');
-
-                $text       =   @fread($fp, $size);
+                $text       =   is_file($filepath) ? (string)@file_get_contents($filepath) : '';
                 if ($text == '') {
 
-                    $text   =   'admin_system_00019' . $value . '||' . '../app/template/' . $value . '/images/preview.jpg';
-                    @fwrite($fp, $text);
+                    $text   =   $value . '||PHPYUN||' . $value . '||../app/template/' . $value . '/images/preview.jpg';
+                    @file_put_contents($filepath, $text);
                 }
-                @fclose($fp);
 
                 $content    =   @explode('||', $text);
-                $text       =   '';
-                $lists[$key]['name']    =   $content[0];
-                $lists[$key]['author']  =   $content[1];
-                $lists[$key]['dir']     =   $content[2];
-                $lists[$key]['img']     =   checkpic($content[3]);
+                $lists[$key]['name']    =   isset($content[0]) ? $content[0] : $value;
+                $lists[$key]['author']  =   isset($content[1]) ? $content[1] : '';
+                $lists[$key]['dir']     =   !empty($content[2]) ? $content[2] : $value;
+                $lists[$key]['img']     =   checkpic(isset($content[3]) ? $content[3] : '');
             }
         }
         return $lists;
@@ -71,9 +68,7 @@ class style
     function model_modify_action($dir)
     {
         $path       =   TPL_PATH.$dir.'/info.txt';
-        $fp         =   @fopen($path, r);
-        $text       =   @fread($fp, filesize($path));
-        @fclose($fp);
+        $text       =   is_file($path) ? (string)@file_get_contents($path) : '';
         $content    =   @explode('||', $text);
 
         return array('name' => $content[0], 'author' => $content[1], 'dir' => $content[2], 'img' => $content[3],);
@@ -88,9 +83,7 @@ class style
 
         $path   =   TPL_PATH.$arr['dir'].'/info.txt';
         $text   =   $arr['name'] . '||' . $arr['author'] . '||' . $arr['dir'] . '||../app/template/' . $arr['dir'] . '/images/preview.jpg';
-        $fp     =   @fopen($path, w);
-        @fwrite($fp, $text);
-        @fclose($fp);
+        @file_put_contents($path, $text);
 
     }
 

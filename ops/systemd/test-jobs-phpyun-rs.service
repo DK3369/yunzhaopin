@@ -1,0 +1,21 @@
+[Unit]
+Description=PHPYun Rust API for test-jobs.ov6.com
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+User=aa
+Group=aa
+WorkingDirectory=/www/wwwroot/zzzz.com/phpyun-rs
+Environment=PHPYUN_ENV_FILE=.env
+ExecStart=/opt/phpyun-rs/phpyun-rs
+Restart=on-failure
+RestartSec=5s
+TimeoutStopSec=30s
+KillSignal=SIGTERM
+LimitNOFILE=65535
+UMask=0027
+
+[Install]
+WantedBy=multi-user.target

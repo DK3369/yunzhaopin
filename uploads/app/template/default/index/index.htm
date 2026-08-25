@@ -60,7 +60,7 @@
     <span id="yhq_tip_close" class="tcbanner_gb">{yun:}t key="common.close"{/yun}</span>
     <div id="yhq_tip_bg" class="yhq_tip_bg" style="display: block;"></div>
 </div>
-
+{yun:}/if{/yun}
 <!-- 首页弹出广告 end-->
 <div class="index_zs_banner index_zs_banner2 none" id="js_ads_banner_top">
     {yun:}adlist classid=73 limit=1 item=adlist_73{/yun} {yun:}$adlist_73.html{/yun} {yun:}/adlist{/yun}
@@ -104,7 +104,7 @@
                                     </div>
                                 </div>
                             </li>
-                            
+                            {yun:}/if{/yun}
                             {yun:}/foreach{/yun}
                         </ul>
                     </div>
@@ -212,7 +212,7 @@
                                                 {yun:}$hotjoblist.hotjob{/yun}
                                             {yun:}else{/yun}
                                                 <div class="index_mq_box_cont_showjobmore"><a>{yun:}t key="home.no_recruiting_jobs"{/yun}</a></div>
-                                            
+                                            {yun:}/if{/yun}
                                         </div>
                                     </div>
                                 </div>
@@ -242,10 +242,10 @@
                         {yun:}$job_list.job_city_two{/yun}
                         {yun:}if $job_list.job_exp{/yun}
                             <i class="index_newjob_info_line">|</i>{yun:}$job_list.job_exp{/yun}{yun:}t key="home.experience_suffix"{/yun}
-                        
+                        {yun:}/if{/yun}
                         {yun:}if $job_list.job_edu{/yun}
                             <i class="index_newjob_info_line">|</i> {yun:}$job_list.job_edu{/yun}{yun:}t key="home.education_suffix"{/yun}
-                        
+                        {yun:}/if{/yun}
                     </div>
                     <div class="index_newjob_com nowrap">
                         <img src='{yun:}$style{/yun}/images/lay-loding.png' lay-src="{yun:}$job_list.logo{/yun}" class="index_newjob_com_tx"/>
@@ -253,10 +253,10 @@
                             <a href="{yun:}$job_list.com_url{/yun}" title="{yun:}$job_list.com_n{/yun}">{yun:}$job_list.com_n{/yun}</a>
                             {yun:}if $job_list.ratlogo{/yun}
                             <img src="{yun:}$job_list.ratlogo{/yun}" alt="{yun:}$job_list.ratname{/yun}" width="14" height="14"/>
-                            
+                            {yun:}/if{/yun}
                             {yun:}if $job_list.yyzz_status==1{/yun}
                             <img src="{yun:}$style{/yun}/images/disc_icon10.png" alt="{yun:}t key='common_02412'{/yun}" width="14" height="14"/>
-                            
+                            {yun:}/if{/yun}
                         </div>
                         <div class="index_newjob_cominfo">{yun:}$job_list.hy_n{/yun}<i class="index_newjob_info_line">|</i> {yun:}$job_list.mun_n{/yun}</div>
                     </div>
@@ -280,20 +280,20 @@
                         {yun:}$job_list.job_city_two{/yun}
                         {yun:}if $job_list.job_exp{/yun}
                             <i class="index_newjob_info_line">|</i>{yun:}$job_list.job_exp{/yun}{yun:}t key="home.experience_suffix"{/yun}
-                        
+                        {yun:}/if{/yun}
                         {yun:}if $job_list.job_edu{/yun}
                             <i class="index_newjob_info_line">|</i> {yun:}$job_list.job_edu{/yun}{yun:}t key="home.education_suffix"{/yun}
-                        
+                        {yun:}/if{/yun}
                     </div>
                     <div class="index_newjob_com nowrap">
                         <img src='{yun:}$style{/yun}/images/lay-loding.png' lay-src="{yun:}$job_list.logo{/yun}" class="index_newjob_com_tx"/>
                         <div class="index_newjob_comname"><a href="{yun:}$job_list.com_url{/yun}" title="{yun:}$job_list.com_n{/yun}">{yun:}$job_list.com_n{/yun}</a>
                             {yun:}if $job_list.ratlogo{/yun}
                             <img src="{yun:}$job_list.ratlogo{/yun}" alt="{yun:}$job_list.ratname{/yun}" width="14" height="14"/>
-                            
+                            {yun:}/if{/yun}
                             {yun:}if $job_list.yyzz_status==1{/yun}
                             <img src="{yun:}$style{/yun}/images/disc_icon10.png" alt="{yun:}t key='common_02412'{/yun}" width="14" height="14"/>
-                            
+                            {yun:}/if{/yun}
                         </div>
                         <div class="index_newjob_cominfo">{yun:}$job_list.hy_n{/yun}<i class="index_newjob_info_line">|</i> {yun:}$job_list.mun_n{/yun}</div>
                     </div>
@@ -324,7 +324,7 @@
                     <div class="tjuser_photo"><img src='{yun:}$style{/yun}/images/lay-loding.png' lay-src="{yun:}$ulist_rec.photo{/yun}" width="80" height="80"></div>
                     <div class="tjuser_name">
                         <a {yun:}if $config.com_search==1 && !$uid{/yun} href="{yun:}url m=login{/yun}" {yun:}else if $usertype==1{/yun}{yun:}if $config.sy_user_change==1{/yun}onclick="layer.msg('{yun:}t key='auth.apply_company_first'{/yun}', 2, 8)" {yun:}else{/yun}onclick="layer.msg('{yun:}t key='auth.company_only_view'{/yun}', 2, 8)"{yun:}/if{/yun} {yun:}else{/yun}href="{yun:}$ulist_rec.user_url{/yun}" target="_blank" {yun:}/if{/yun}>
-                        {yun:}if is_array($eid) && in_array($ulist_rec.id,$eid){/yun} {yun:}$ulist_rec.uname{/yun} {yun:}else{/yun} {yun:}$ulist_rec.username_n|mb_substr:0:10:"utf-8"{/yun} 
+                        {yun:}if is_array($eid) && in_array($ulist_rec.id,$eid){/yun} {yun:}$ulist_rec.uname{/yun} {yun:}else{/yun} {yun:}$ulist_rec.username_n|mb_substr:0:10:"utf-8"{/yun} {yun:}/if{/yun}
                         </a>
                     </div>
                     <div class="index_tjresume_user"></div>
@@ -347,7 +347,7 @@
                     <div class="index_resume_user">
                         <a {yun:}if $config.com_search==1 && !$uid{/yun} href="{yun:}url m=login{/yun}" {yun:}else if $usertype==1{/yun}{yun:}if $config.sy_user_change==1{/yun}onclick="layer.msg('{yun:}t key='auth.apply_company_first'{/yun}', 2, 8)" {yun:}else{/yun}onclick="layer.msg('{yun:}t key='auth.company_only_view'{/yun}', 2, 8)"{yun:}/if{/yun} {yun:}else{/yun}href="{yun:}$ulist.user_url{/yun}" target="_blank" {yun:}/if{/yun} class="index_resume_username">
                         <img src='{yun:}$style{/yun}/images/lay-loding.png' lay-src="{yun:}$ulist.photo{/yun}" width="30" height="30">
-                        {yun:}if is_array($eid) && in_array($ulist.id,$eid){/yun} {yun:}$ulist.uname{/yun} {yun:}else{/yun} {yun:}$ulist.username_n|mb_substr:0:10:"utf-8"{/yun} 
+                        {yun:}if is_array($eid) && in_array($ulist.id,$eid){/yun} {yun:}$ulist.uname{/yun} {yun:}else{/yun} {yun:}$ulist.username_n|mb_substr:0:10:"utf-8"{/yun} {yun:}/if{/yun}
                         </a>
                     </div>
                     <div class="index_resume_userinfo">
@@ -413,7 +413,7 @@
         <div class="index_link_box fl">
             <div class="new_index_tit">
                 <span class="new_index_tit_list new_index_tit_cur">{yun:}t key='default_00256'{/yun}<i class="new_index_tit_line"></i></span>
-                {yun:}if $config.sy_linksq==1{/yun} <span class="new_index_tit_list" data-no="1"><a href="{yun:}url m=link{/yun}" target="_blank" class=" "> {yun:}t key='default_00140'{/yun}</a></span> 
+                {yun:}if $config.sy_linksq==1{/yun} <span class="new_index_tit_list" data-no="1"><a href="{yun:}url m=link{/yun}" target="_blank" class=" "> {yun:}t key='default_00140'{/yun}</a></span> {yun:}/if{/yun}
                 <a href="{yun:}url m=link{/yun}" target="_blank" class="new_index_tit_more">{yun:}t key="common.view_more"{/yun}</a>
             </div>
             <div class=" ">
@@ -460,13 +460,13 @@
                         <a href="{yun:}url m=login{/yun}" class="tip_bottom_login">{yun:}t key='common.login'{/yun}</a>
                         <a href="{yun:}url m=register{/yun}" class="tip_bottom_reg">{yun:}t key='default_00144'{/yun}<i class="tip_bottom_reg_icon"></i></a>
                     </div>
-                    
+                    {yun:}/if{/yun}
                 </div>
             </div>
         </div>
     </div>
 </div>
-
+{yun:}/if{/yun}
 
 <div id="bg"></div>
 {yun:}include file="$tplstyle/backtop.htm"{/yun}

@@ -203,52 +203,57 @@ function regPassWordComplex($name)
  * @param $obj
  * @param bool $withKey
  * @param bool $two
- * @return array|string
+ * @return string
  */
 function ArrayToString($obj, $withKey = true, $two = false)
 {
-    if (empty($obj)) return array();
-
-    $objType    =   gettype($obj);
-
-    if ($objType == 'array') {
-
-        $objString  =   "array(";
-        foreach ($obj as $objkey => $objv) {
-
-            $objkey = setSecFilter($objkey);
-            if ($withKey) $objString .= "\"$objkey\"=>";
-
-            $vtype  =   gettype($objv);
-            
-            if(!in_array($vtype,array('array','object'))){
-                
-                $objv = setSecFilter($objv);
-            }
-            if ($vtype == 'integer') {
-
-                $objString  .=  "$objv,";
-            } else if ($vtype == 'double') {
-
-                $objString  .=  "$objv,";
-            } else if ($vtype == 'string') {
-
-                $objv       =   str_replace('"', "\\\"", $objv);
-                $objString  .=  "\"" . $objv . "\",";
-            } else if ($vtype == 'array') {
-
-                $objString  .=  "" . ArrayToString($objv, $withKey, $two) . ",";
-            } else if ($vtype == 'object') {
-
-                $objString  .=  "" . ArrayToString($objv, $withKey, $two) . ",";
-            } else {
-
-                $objString  .=  "\"" . $objv . "\",";
-            }
-        }
-        $objString  =   substr($objString, 0, -1) . "";
-        return $objString . ")\n";
+    if (!is_array($obj) && !is_object($obj)) {
+        return 'array()';
     }
+    $obj = (array) $obj;
+    if ($obj === array()) {
+        return "array()";
+    }
+
+    $objString  =   "array(";
+    foreach ($obj as $objkey => $objv) {
+
+        $objkey = setSecFilter($objkey);
+        if ($withKey) $objString .= "\"$objkey\"=>";
+
+        $vtype  =   gettype($objv);
+
+        if(!in_array($vtype,array('array','object'))){
+
+            $objv = setSecFilter($objv);
+        }
+        if ($vtype == 'integer') {
+
+            $objString  .=  "$objv,";
+        } else if ($vtype == 'double') {
+
+            $objString  .=  "$objv,";
+        } else if ($vtype == 'string') {
+
+            $objv       =   str_replace('"', "\\\"", $objv);
+            $objString  .=  "\"" . $objv . "\",";
+        } else if ($vtype == 'array' || $vtype == 'object') {
+
+            $nested     =   ArrayToString($objv, $withKey, $two);
+            $objString  .=  (is_string($nested) ? $nested : 'array()') . ",";
+        } else if ($vtype == 'boolean') {
+
+            $objString  .=  ($objv ? '1' : '0') . ",";
+        } else if ($vtype == 'NULL') {
+
+            $objString  .=  "\"\",";
+        } else {
+
+            $objString  .=  "\"" . str_replace('"', "\\\"", (string)$objv) . "\",";
+        }
+    }
+    $objString  =   substr($objString, 0, -1) . "";
+    return $objString . ")\n";
 }
 
 /**
@@ -501,12 +506,14 @@ function get_domain($host)
 }
 
 function setSecFilter($arr=''){
-    
+    if (is_array($arr) || is_object($arr)) {
+        return $arr;
+    }
     $SecOne=array("'","(",")","`","$");
     
     $SecTwo=array("“","（","）","“","￥");
     
-    $arr = str_replace($SecOne,$SecTwo,$arr);
+    $arr = str_replace($SecOne,$SecTwo,(string)$arr);
     
     return $arr;
 }
@@ -516,16 +523,44 @@ function setSecFilter($arr=''){
  * @param $array
  * @param $config
  */
+function yun_write_php_file($dir, $content)
+{
+    $folder = dirname($dir);
+    if (!is_dir($folder) && !@mkdir($folder, 0775, true) && !is_dir($folder)) {
+        error_log('yun_write_php_file failed to create directory: ' . $folder);
+        return false;
+    }
+    if (!is_writable($folder) || (is_file($dir) && !is_writable($dir))) {
+        error_log('yun_write_php_file target is not writable: ' . $dir);
+        return false;
+    }
+    $ok = @file_put_contents($dir, $content, LOCK_EX);
+    if ($ok === false) {
+        $err = error_get_last();
+        error_log('yun_write_php_file failed: ' . $dir . ' ' . (isset($err['message']) ? $err['message'] : ''));
+        return false;
+    }
+    return true;
+}
+
 function made_web($dir, $array, $config)
 {
+    if (!is_string($array)) {
+        $array = (is_array($array) || is_object($array)) ? ArrayToString($array) : 'array()';
+        if (!is_string($array)) {
+            $array = 'array()';
+        }
+    }
+    $config = preg_replace('/[^A-Za-z0-9_]/', '', (string)$config);
+    if ($config === '') {
+        $config = 'config';
+    }
 
     $content    =   "<?php \n";
     $content    .=  "\$$config=" . $array . ";";
     $content    .=  " \n";
     $content    .=  "?>";
-    $fpIndex    =   @fopen($dir, "w+");
-    @fwrite($fpIndex, $content);
-    @fclose($fpIndex);
+    return yun_write_php_file($dir, $content);
 }
 
 /**
@@ -558,10 +593,7 @@ function made_web_array($dir, $array)
     }
     $content    .=  "?>";
 
-    $fpIndex    =   @fopen($dir, "w+");
-    $fw         =   @fwrite($fpIndex, $content);
-    @fclose($fpIndex);
-    return $fw;
+    return yun_write_php_file($dir, $content);
 }
 
 /**
@@ -1319,6 +1351,7 @@ function pcJump($config)
 {
     
     $Loaction   =   '';
+	$jumpGet   =   array();
     // 电脑点访问WAP,不需跳转的链接
     $c = isset($_GET['c']) ? $_GET['c'] : '';
     $a = isset($_GET['a']) ? $_GET['a'] : '';
@@ -1333,23 +1366,23 @@ function pcJump($config)
 
             include(PLUS_PATH . "jump.cache.php");
 			
-			if ($_GET['c']) {
-                 $_GET['m']  =   $_GET['c'];
-				 unset($_GET['c']);
-            }
-            if ($_GET['a']) {
-                 $_GET['c']  =   $_GET['a'];
-				 unset($_GET['a']);
-            }
-            if ($_GET['m']) {
-                $modName   =   $_GET['m'];
-                unset($_GET['m']);
-            }else{
-				$modName = 'index';
-			}
-            if ($_GET['c']) {
-                $jumpGet['c']   =   $_GET['c'];
-                unset($_GET['c']);
+			if ($c !== '') {
+	                 $_GET['m']  =   $_GET['c'];
+					 unset($_GET['c']);
+	            }
+			if ($a !== '') {
+	                 $_GET['c']  =   $_GET['a'];
+					 unset($_GET['a']);
+	            }
+	            if (!empty($_GET['m'])) {
+	                $modName   =   $_GET['m'];
+	                unset($_GET['m']);
+	            }else{
+					$modName = 'index';
+				}
+	            if (!empty($_GET['c'])) {
+	                $jumpGet['c']   =   $_GET['c'];
+	                unset($_GET['c']);
             }
 			
             if (!empty($_GET)) {
@@ -1363,8 +1396,12 @@ function pcJump($config)
                 }
             }
 			
-			$Loaction   =   Url($modName, $jumpGet);
-    }
+				if (in_array($modName, array('index', 'wap')) && empty($jumpGet)) {
+					$Loaction = rtrim($config['sy_weburl'], '/') . '/';
+				} else {
+					$Loaction = Url($modName, $jumpGet);
+				}
+	    }
 	
     return $Loaction;
 }

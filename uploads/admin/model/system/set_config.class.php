@@ -124,7 +124,9 @@ class set_config_controller extends adminCommon{
         if (!$_POST['waterconfig']) {
             $this->render_json(1,yun_at('common_01237'));
         }
-        $this->web_config();
+        if ($this->web_config() === false) {
+            $this->render_json(1, yun_at('upgrade_00001'));
+        }
         $this->render_json(0,yun_at('wap_user_00264'));
     }
 
@@ -208,7 +210,11 @@ class set_config_controller extends adminCommon{
                 @include(DATA_PATH.'api/alipay/alipay_data.php');
                 if (!empty($alipaydata)){
                     $alipaydata['sy_weburl']  =  $weburl;
-                    made_web(DATA_PATH.'api/alipay/alipay_data.php',ArrayToString($alipaydata),'alipaydata');
+                    try {
+                        made_web(DATA_PATH.'api/alipay/alipay_data.php',ArrayToString($alipaydata),'alipaydata');
+                    } catch (Throwable $e) {
+                        error_log('set_config alipay made_web: '.$e->getMessage());
+                    }
                 }
             }
         }
@@ -216,14 +222,20 @@ class set_config_controller extends adminCommon{
         if (isset($_POST['code_kind']) && $_POST['code_kind'] == 6) {// Tencent Cloud captcha.
             PHP_VERSION < 7 && $this->layer_msg(yun_t('admin_model_00073'), 8, 1, '');
         }
-        $configM -> setConfig($_POST);
-        // Validate captcha character length.
-        if ($_POST['code_strlength'] < 5) {
-            $this->web_config();
-            $this->render_json('0', yun_t('admin_model_00074'));
-        } else {
+        if (isset($_POST['code_strlength']) && intval($_POST['code_strlength']) >= 5) {
             $this->render_json('1',yun_at('admin_system_00039'));
         }
+        $configM -> setConfig($_POST);
+        try {
+            $wrote = $this->web_config();
+        } catch (Throwable $e) {
+            error_log('set_config save_action: '.$e->getMessage().' @ '.$e->getFile().':'.$e->getLine());
+            $this->render_json('1', yun_at('upgrade_00001'));
+        }
+        if ($wrote === false) {
+            $this->render_json('1', yun_at('upgrade_00001'));
+        }
+        $this->render_json('0', yun_t('admin_model_00074'));
     }
 
     // Load template cache.

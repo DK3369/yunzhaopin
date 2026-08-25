@@ -492,6 +492,7 @@ class common{
 		$List		=	$configM->getList(array('name'=>array('<>','')));
 		
 		$config		=	$List['list'];
+		$configarr	=	array();
 		
 		if(is_array($config)){
 			foreach($config as $v){
@@ -503,8 +504,18 @@ class common{
 				
 			}
 		}
+		$ok = true;
 		if(!empty($configarr)){
-			made_web(PLUS_PATH.'config.php',ArrayToString($configarr),'config');
+			try {
+				$payload = ArrayToString($configarr);
+				if (!is_string($payload)) {
+					$payload = 'array()';
+				}
+				$ok = made_web(PLUS_PATH.'config.php', $payload, 'config');
+			} catch (Throwable $e) {
+				error_log('web_config: '.$e->getMessage().' @ '.$e->getFile().':'.$e->getLine());
+				$ok = false;
+			}
 		}
 		if(!file_exists(PLUS_PATH.'pimg_cache.php')){
 			global $config;
@@ -517,6 +528,7 @@ class common{
 			$cacheclass= new cache(PLUS_PATH,$this->obj);
 			$cacheclass->database_cache("dbstruct.cache.php");
 		}
+		return $ok;
 	}
 
     function header_desc($title = "", $keyword = "", $description = "")

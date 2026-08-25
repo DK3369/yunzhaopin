@@ -715,12 +715,14 @@ class Smarty extends Smarty_Internal_TemplateBase
 	}
 	//网站关闭判断
 	 function get_web(){
-		global $config;
-		if($config["sy_web_online"]==2){
-			if($_GET[m]!="ajax" && $_GET[c]!="mapconfig" && $_GET[m]!="geetest"){
-				echo $config["sy_webclose"];
-				die;
-			}
+			global $config;
+			if($config["sy_web_online"]==2){
+				$module = isset($_GET['m']) ? $_GET['m'] : '';
+				$action = isset($_GET['c']) ? $_GET['c'] : '';
+				if($module!="ajax" && $action!="mapconfig" && $module!="geetest"){
+					echo $config["sy_webclose"];
+					die;
+				}
 		}
 	}
 	/* 安装访问操作判断 */

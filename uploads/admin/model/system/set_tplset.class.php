@@ -46,7 +46,9 @@ class set_tplset_controller extends adminCommon
             $data['style']  =   $_POST['dir'];
             $configM        =   $this->MODEL('config');
             $configM->setConfig($data);
-            $this->web_config();
+            if ($this->web_config() === false) {
+                $this->admin_json(1,'upgrade_00001');
+            }
             $this->admin_json(0,'admin_system_00056');
         } else {
             $this->admin_json(1,'admin_system_00057');
