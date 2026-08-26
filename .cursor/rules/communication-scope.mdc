@@ -24,5 +24,5 @@ alwaysApply: true
 
 ## 提交习惯（与 git-safety 一致）
 
-- 有实质代码/规则改动 → 收尾时 **git commit**，message **中文**写清改了什么。  
-- 不擅自 `git push`。
+- 有实质代码/规则改动 → 收尾时 **git commit + git push**（所有任务默认如此）。  
+- message **中文**写清改了什么；不提交 `.env` / 凭证；不 force push。

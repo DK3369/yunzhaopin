@@ -1,5 +1,5 @@
 ---
-description: Git 回滚禁令与每次改动后必须提交（中文说明）
+description: Git 回滚禁令；每次实质改动后必须 commit 并 push（对所有任务适用）
 alwaysApply: true
 ---
 
@@ -17,12 +17,12 @@ alwaysApply: true
      - 应先 `git status` / `git diff`，必要时先 `git add` + `git commit` 或 `git stash`，再操作。
    - **严禁**在未备份、未提交的情况下批量回滚整个目录（如 `uploads/`）。
 
-## 每次写完必须提交
+## 每次写完必须提交并推送
 
-完成一批有实质内容的修改后（同一任务收尾时），**必须**创建 git 提交：
+对**所有任务**适用：完成一批有实质内容的修改后（同一任务收尾时），**必须** `git commit`，并立刻 `git push` 到当前分支的 `origin`。用户不必每次再说「提交/推送」。
 
-1. 先执行 `git status`、`git diff`，确认只提交本次相关文件。
-2. 用中文写清 commit message：改了什么、为什么改（1～2 句即可）。
+1. 先 `git status`、`git diff`，只暂存本次相关文件。
+2. commit message **中文**，写清改了什么、为什么改（1～2 句）。
 3. 示例：
 
 ```
@@ -31,8 +31,14 @@ alwaysApply: true
 将 showConfirm 外层改为双引号，避免与 {yun:}t key='...' 嵌套冲突。
 ```
 
-4. 不得提交明显含密钥的文件（`.env`、凭证等）。
-5. 用户未明确要求时，**不要** `git push`。
+4. 不得提交明显含密钥的文件（`.env`、`.env.dev`、凭证等）。
+5. 推送：
+
+```
+GIT_SSH_COMMAND='ssh -i /home/aa/.ssh/id_ed25519_xiuxiaowei -o IdentitiesOnly=yes' git push -u origin HEAD
+```
+
+6. **禁止** `git push --force` / `--force-with-lease`，除非用户当次明确要求。
 
 ## 与 i18n / 批量脚本
 
