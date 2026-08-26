@@ -67,3 +67,10 @@ pub struct Article {
     #[sqlx(default)]
     pub status: i32,
 }
+
+/// `phpyun_news_group` — news category (PHP `nid`).
+#[derive(Debug, Clone, FromRow, Serialize, Deserialize)]
+pub struct NewsGroup {
+    pub id: u64,
+    pub name: String,
+}

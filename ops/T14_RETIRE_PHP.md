@@ -1,32 +1,40 @@
 # T14 下线 PHP 操作手册
 
-**禁止在用户当次明确同意之前执行删除或停 php-fpm。** 现网页面仍由 PHP 提供。本仓库只准备切换材料。
+现网页面切走后：**不删** `uploads/`；php-fpm 可留着，只是这个 vhost 不再 `fastcgi`。
 
-开发验收端口（不要动 systemd `:3000` 上的旧二进制）：Rust `:3003`，site `:3001`，admin `:3002`。生产模板里 Rust 默认 `:3000`。
+开发验收端口：Rust `:3003`，site `:3001`，admin `:3002`。切站当天才替换 systemd `:3000` 二进制。
 
 ## 已准备的材料
 
 | 文件 | 用途 |
 |---|---|
-| `ops/nginx/frontend-backend-split.conf` | 去掉 `fastcgi_pass` 后的反代：`/v1` `/v2` `/callback` `/health` → Rust；`/` `/api` → Nuxt SSR；`/admin/` → `nuxt generate` 静态目录 |
-| `phpyun-rs/deploy/systemd/phpyun-rs.service` | Rust binary systemd |
+| `ops/nginx/frontend-backend-split.conf` | location 片段 |
+| `ops/nginx/test-jobs-nuxt.conf` | 草稿完整 server（缺 yapi / well-known，admin 写成 generate 目录） |
+| `ops/nginx/zzzz.com.nuxt-cutover.conf` | **实际切站用**：改现有宝塔 vhost，保留 yapi / well-known / extension；`/`→`:3001`，`/admin/`→`:3002` |
+| `ops/systemd/phpyun-site.service` | Nuxt site 模板（`@@SITE_DIR@@`） |
+| `ops/systemd/test-jobs-phpyun-site.service` | 现网 site：沿用已常驻的 `nuxt dev :3001` |
+| `ops/systemd/test-jobs-phpyun-rs.service` | 现网 Rust `:3000`（`/opt/phpyun-rs/phpyun-rs`） |
 
 ## 切换前必须绿
 
 1. 备份数据库
-2. 备份 `uploads/data/upload/`（用户图片/附件，**必须保留**，切走后挂到 `STORAGE_FS_ROOT`）
-3. `curl -i`：`/health`、site `/`、admin `/admin/` 均为 200
-4. Flutter App 回归 `/v1/wap` + `/v1/mcenter`（契约只允许加法）
-5. 支付沙箱走通 `/callback/alipay` 或 `/callback/wechat-pay`（本仓库未跑真实沙箱）
-6. 确认没有业务仍依赖 PHP 伪静态、校园/猎头/培训/spview（Web 未做这些频道）
+2. **保留** `uploads/data/upload/`（用户图片/附件），切走后可 alias 到该目录或 `STORAGE_FS_ROOT`
+3. `cargo test -p phpyun-rs --test openapi_contract`；支付签名单测 `payment_notify_service`
+4. `curl -i`：`:3003/health`、site `/`、admin `/admin/` 均为 200
+5. Flutter `/v1/wap` + `/v1/mcenter` 抽查（契约只加法）
+6. 支付：无沙箱密钥则不假勾；本仓库有 MD5 签名单测
+7. 校园/猎头/培训/spview **本盘无源码**，切站后这些 PHP 频道也不会出现在 Nuxt
 
-## 切换（需书面同意后）
+## 切换步骤
 
-1. Nginx 改为 `ops/nginx/frontend-backend-split.conf`，把 `@@ADMIN_DIST@@` 换成 `web/apps/admin/.output/public`（或 generate 产物目录）
-2. 将用户上传目录挂到 Rust `STORAGE_FS_ROOT`
-3. `systemctl disable --now php-fpm`（发行版服务名可能不同）
-4. 删除 `uploads/` 中除用户上传外的 PHP 源码；**不要** `git checkout -- uploads/` 整目录回滚
+1. `CARGO_TARGET_DIR=/www/wwwroot/zzzz.com/phpyun-rs/target TMPDIR=/var/tmp/cargo-tmp CARGO_BUILD_JOBS=1 cargo build --release -p phpyun-rs`（链接 OOM 时可用已验收的 `target/debug/phpyun-rs`）
+2. 备份 `/opt/phpyun-rs/phpyun-rs`，替换后 `systemctl restart test-jobs-phpyun-rs`（现网 `/v1` 才有新 admin 路径）。**不要**先杀 `:3000` 再手动起，走 systemd。
+3. site/admin 已常驻 `nuxt dev` `:3001` / `:3002`；无 `.output` 时 **不要**把 `/admin/` alias 到 generate 目录，改反代 `:3002`
+4. 备份宝塔 vhost，换成 `ops/nginx/zzzz.com.nuxt-cutover.conf`（保留 `/yapi/` 与 well-known；注释 PHP rewrite；`/data/upload/` alias 到 `uploads/data/upload/`）
+5. `nginx -t && reload`。失败立刻还原 bak
+6. **不删** `uploads/`；不要 `git checkout -- uploads/`；php-fpm 可留着
+7. 回归：首页/职位/登录/投递/后台审核；Flutter `/v1/wap` 抽查；失败则还原宝塔 conf + 旧二进制
 
 ## 回退
 
-保留 `feat/frontend-backend-split` 合入前的 `dev` 分支与 PHP Nginx 配置，重新启用 php-fpm。
+还原宝塔 conf 与 `/opt/phpyun-rs/phpyun-rs` 旧文件，reload nginx、重启 `:3000`。php-fpm 若未停则 PHP 站点可立即回来。

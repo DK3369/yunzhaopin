@@ -2,7 +2,9 @@
 
 pub mod account_logout;
 pub mod ads;
+pub mod announcements;
 pub mod app_versions;
+pub mod articles;
 pub mod audit_log;
 pub mod broadcasts;
 pub mod categories;
@@ -12,15 +14,21 @@ pub mod dashboard;
 pub mod descriptions;
 pub mod dict_i18n;
 pub mod feedback;
+pub mod friend_links;
 pub mod jobs;
 pub mod merge;
 pub mod nav;
+pub mod once_jobs;
+pub mod ops;
 pub mod orders;
+pub mod parts;
+pub mod questions;
 pub mod recycle;
 pub mod redeem;
 pub mod regions;
 pub mod reports;
 pub mod site_settings;
+pub mod tiny;
 pub mod users;
 pub mod usertype_change;
 pub mod warnings;
@@ -54,4 +62,12 @@ pub fn router() -> Router<AppState> {
         .merge(account_logout::routes())
         .merge(usertype_change::routes())
         .merge(dict_i18n::routes())
+        .merge(articles::routes())
+        .merge(announcements::routes())
+        .merge(questions::routes())
+        .merge(parts::routes())
+        .merge(once_jobs::routes())
+        .merge(tiny::routes())
+        .merge(friend_links::routes())
+        .merge(ops::routes())
 }

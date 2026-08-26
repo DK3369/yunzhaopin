@@ -28,7 +28,7 @@ fn admin_paths_match_t2_snapshot() {
         t2_admin_paths(),
         "admin OpenAPI paths drifted from T2 snapshot (doc/snapshots/admin_paths.txt)"
     );
-    assert_eq!(actual.len(), 72, "admin path count is {}", actual.len());
+    assert_eq!(actual.len(), 102, "admin path count is {}", actual.len());
 }
 
 fn collect_ops(doc: &utoipa::openapi::OpenApi) -> Vec<(String, String, String)> {

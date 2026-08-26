@@ -571,3 +571,72 @@ pub async fn delete_collects(
     let res = qb.build().execute(pool).await?;
     Ok(res.rows_affected())
 }
+
+pub async fn admin_list(
+    pool: &MySqlPool,
+    state: Option<i32>,
+    keyword: Option<&str>,
+    offset: u64,
+    limit: u64,
+) -> Result<Vec<PartJob>, sqlx::Error> {
+    let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new("SELECT ");
+    qb.push(FIELDS);
+    qb.push(" FROM phpyun_partjob WHERE 1=1");
+    if let Some(s) = state {
+        qb.push(" AND state = ");
+        qb.push_bind(s);
+    }
+    if let Some(kw) = keyword {
+        if !kw.is_empty() {
+            qb.push(" AND (name LIKE ");
+            qb.push_bind(format!("%{kw}%"));
+            qb.push(" OR com_name LIKE ");
+            qb.push_bind(format!("%{kw}%"));
+            qb.push(")");
+        }
+    }
+    qb.push(" ORDER BY lastupdate DESC, id DESC LIMIT ");
+    qb.push_bind(limit);
+    qb.push(" OFFSET ");
+    qb.push_bind(offset);
+    qb.build_query_as::<PartJob>().fetch_all(pool).await
+}
+
+pub async fn admin_count(
+    pool: &MySqlPool,
+    state: Option<i32>,
+    keyword: Option<&str>,
+) -> Result<u64, sqlx::Error> {
+    let mut qb: QueryBuilder<sqlx::MySql> =
+        QueryBuilder::new("SELECT COUNT(*) FROM phpyun_partjob WHERE 1=1");
+    if let Some(s) = state {
+        qb.push(" AND state = ");
+        qb.push_bind(s);
+    }
+    if let Some(kw) = keyword {
+        if !kw.is_empty() {
+            qb.push(" AND (name LIKE ");
+            qb.push_bind(format!("%{kw}%"));
+            qb.push(" OR com_name LIKE ");
+            qb.push_bind(format!("%{kw}%"));
+            qb.push(")");
+        }
+    }
+    let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+pub async fn admin_set_state(
+    pool: &MySqlPool,
+    id: u64,
+    state: i32,
+    statusbody: &str,
+) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query("UPDATE phpyun_partjob SET state = ?, statusbody = ? WHERE id = ?")
+        .bind(state)
+        .bind(statusbody)
+        .bind(id)
+        .execute(pool)
+        .await?;
+    Ok(res.rows_affected())
+}

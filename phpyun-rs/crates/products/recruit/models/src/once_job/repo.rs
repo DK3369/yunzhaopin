@@ -293,6 +293,46 @@ pub async fn delete_with_password(
     Ok(res.rows_affected())
 }
 
+pub async fn admin_list(
+    pool: &MySqlPool,
+    status: Option<i32>,
+    offset: u64,
+    limit: u64,
+) -> Result<Vec<OnceJob>, sqlx::Error> {
+    let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new("SELECT ");
+    qb.push(FIELDS);
+    qb.push(" FROM phpyun_once_job WHERE 1=1");
+    if let Some(s) = status {
+        qb.push(" AND status = ");
+        qb.push_bind(s);
+    }
+    qb.push(" ORDER BY ctime DESC, id DESC LIMIT ");
+    qb.push_bind(limit);
+    qb.push(" OFFSET ");
+    qb.push_bind(offset);
+    qb.build_query_as::<OnceJob>().fetch_all(pool).await
+}
+
+pub async fn admin_count(pool: &MySqlPool, status: Option<i32>) -> Result<u64, sqlx::Error> {
+    let mut qb: QueryBuilder<sqlx::MySql> =
+        QueryBuilder::new("SELECT COUNT(*) FROM phpyun_once_job WHERE 1=1");
+    if let Some(s) = status {
+        qb.push(" AND status = ");
+        qb.push_bind(s);
+    }
+    let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+pub async fn admin_set_status(pool: &MySqlPool, id: u64, status: i32) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query("UPDATE phpyun_once_job SET status = ? WHERE id = ?")
+        .bind(status)
+        .bind(id)
+        .execute(pool)
+        .await?;
+    Ok(res.rows_affected())
+}
+
 pub async fn incr_hits(pool: &MySqlPool, id: u64) -> Result<u64, sqlx::Error> {
     let res = sqlx::query("UPDATE phpyun_once_job SET hits = hits + 1 WHERE id = ?")
         .bind(id)

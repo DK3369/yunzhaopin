@@ -212,3 +212,124 @@ pub async fn ingest(pool: &MySqlPool, a: ArticleIngest<'_>) -> Result<Option<u64
         .await?;
     Ok(Some(id))
 }
+
+pub async fn list_groups(pool: &MySqlPool) -> Result<Vec<super::entity::NewsGroup>, sqlx::Error> {
+    sqlx::query_as::<_, super::entity::NewsGroup>(
+        "SELECT CAST(id AS UNSIGNED) AS id, COALESCE(name, '') AS name \
+         FROM phpyun_news_group ORDER BY id ASC",
+    )
+    .fetch_all(pool)
+    .await
+}
+
+pub async fn list_admin(
+    pool: &MySqlPool,
+    f: &ArticleFilter<'_>,
+    offset: u64,
+    limit: u64,
+) -> Result<Vec<Article>, sqlx::Error> {
+    let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new(format!(
+        "SELECT {FIELDS}, NULL AS content {FROM_LIST} WHERE 1=1"
+    ));
+    push_filters(&mut qb, f);
+    qb.push(" ORDER BY n.sort DESC, n.datetime DESC LIMIT ");
+    qb.push_bind(limit);
+    qb.push(" OFFSET ");
+    qb.push_bind(offset);
+    qb.build_query_as::<Article>().fetch_all(pool).await
+}
+
+pub async fn count_admin(pool: &MySqlPool, f: &ArticleFilter<'_>) -> Result<u64, sqlx::Error> {
+    let mut qb: QueryBuilder<sqlx::MySql> =
+        QueryBuilder::new("SELECT COUNT(*) FROM phpyun_news_base n WHERE 1=1");
+    push_filters(&mut qb, f);
+    let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+pub struct ArticleUpsert<'a> {
+    pub id: Option<u64>,
+    pub title: &'a str,
+    pub nid: i32,
+    pub content: &'a str,
+    pub author: &'a str,
+    pub description: &'a str,
+    pub keyword: &'a str,
+    pub source: &'a str,
+    pub newsphoto: &'a str,
+    pub did: i32,
+    pub now: i64,
+}
+
+pub async fn upsert(pool: &MySqlPool, a: ArticleUpsert<'_>) -> Result<u64, sqlx::Error> {
+    if let Some(id) = a.id.filter(|i| *i > 0) {
+        sqlx::query(
+            r#"UPDATE phpyun_news_base
+               SET title = ?, nid = ?, author = ?, description = ?, keyword = ?,
+                   source = ?, newsphoto = ?, lastupdate = ?
+               WHERE id = ?"#,
+        )
+        .bind(a.title)
+        .bind(a.nid)
+        .bind(a.author)
+        .bind(a.description)
+        .bind(a.keyword)
+        .bind(a.source)
+        .bind(a.newsphoto)
+        .bind(a.now)
+        .bind(id)
+        .execute(pool)
+        .await?;
+        let updated = sqlx::query("UPDATE phpyun_news_content SET content = ? WHERE nbid = ?")
+            .bind(a.content)
+            .bind(id)
+            .execute(pool)
+            .await?;
+        if updated.rows_affected() == 0 {
+            sqlx::query("INSERT INTO phpyun_news_content (nbid, content) VALUES (?, ?)")
+                .bind(id)
+                .bind(a.content)
+                .execute(pool)
+                .await?;
+        }
+        return Ok(id);
+    }
+    let res = sqlx::query(
+        r#"INSERT INTO phpyun_news_base
+           (title, nid, did, author, description, source, datetime, starttime,
+            hits, sort, newsphoto, s_thumb, keyword, lastupdate)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, 0, ?, '', ?, ?)"#,
+    )
+    .bind(a.title)
+    .bind(a.nid)
+    .bind(a.did)
+    .bind(a.author)
+    .bind(a.description)
+    .bind(a.source)
+    .bind(a.now)
+    .bind(a.now)
+    .bind(a.newsphoto)
+    .bind(a.keyword)
+    .bind(a.now)
+    .execute(pool)
+    .await?;
+    let id = res.last_insert_id();
+    sqlx::query("INSERT INTO phpyun_news_content (nbid, content) VALUES (?, ?)")
+        .bind(id)
+        .bind(a.content)
+        .execute(pool)
+        .await?;
+    Ok(id)
+}
+
+pub async fn delete(pool: &MySqlPool, id: u64) -> Result<u64, sqlx::Error> {
+    sqlx::query("DELETE FROM phpyun_news_content WHERE nbid = ?")
+        .bind(id)
+        .execute(pool)
+        .await?;
+    let res = sqlx::query("DELETE FROM phpyun_news_base WHERE id = ?")
+        .bind(id)
+        .execute(pool)
+        .await?;
+    Ok(res.rows_affected())
+}

@@ -463,3 +463,180 @@ pub async fn list_hot(
         .fetch_all(pool)
         .await
 }
+
+#[derive(Debug, Clone, sqlx::FromRow, serde::Serialize, serde::Deserialize)]
+pub struct HotJobRow {
+    pub id: u64,
+    pub uid: u64,
+    pub username: String,
+    pub hot_pic: String,
+    pub time_start: i64,
+    pub time_end: i64,
+    pub sort: i32,
+    pub beizhu: String,
+    pub rating_id: i32,
+}
+
+pub async fn hotjob_list(
+    pool: &MySqlPool,
+    offset: u64,
+    limit: u64,
+) -> Result<Vec<HotJobRow>, sqlx::Error> {
+    sqlx::query_as::<_, HotJobRow>(
+        r#"SELECT CAST(id AS UNSIGNED) AS id,
+                  CAST(COALESCE(uid, 0) AS UNSIGNED) AS uid,
+                  COALESCE(username, '') AS username,
+                  COALESCE(hot_pic, '') AS hot_pic,
+                  CAST(COALESCE(time_start, 0) AS SIGNED) AS time_start,
+                  CAST(COALESCE(time_end, 0) AS SIGNED) AS time_end,
+                  CAST(COALESCE(sort, 0) AS SIGNED) AS sort,
+                  COALESCE(beizhu, '') AS beizhu,
+                  CAST(COALESCE(rating_id, 0) AS SIGNED) AS rating_id
+           FROM phpyun_hotjob
+           ORDER BY sort DESC, id DESC
+           LIMIT ? OFFSET ?"#,
+    )
+    .bind(limit)
+    .bind(offset)
+    .fetch_all(pool)
+    .await
+}
+
+pub async fn hotjob_count(pool: &MySqlPool) -> Result<u64, sqlx::Error> {
+    let (n,): (i64,) = sqlx::query_as("SELECT COUNT(*) FROM phpyun_hotjob")
+        .fetch_one(pool)
+        .await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+pub struct HotJobUpsert<'a> {
+    pub id: Option<u64>,
+    pub uid: u64,
+    pub username: &'a str,
+    pub hot_pic: &'a str,
+    pub time_start: i64,
+    pub time_end: i64,
+    pub sort: i32,
+    pub beizhu: &'a str,
+    pub rating_id: i32,
+    pub now: i64,
+}
+
+pub async fn hotjob_upsert(pool: &MySqlPool, a: HotJobUpsert<'_>) -> Result<u64, sqlx::Error> {
+    if let Some(id) = a.id.filter(|i| *i > 0) {
+        sqlx::query(
+            r#"UPDATE phpyun_hotjob
+               SET uid = ?, username = ?, hot_pic = ?, time_start = ?, time_end = ?,
+                   sort = ?, beizhu = ?, rating_id = ?, lastupdate = ?
+               WHERE id = ?"#,
+        )
+        .bind(a.uid)
+        .bind(a.username)
+        .bind(a.hot_pic)
+        .bind(a.time_start)
+        .bind(a.time_end)
+        .bind(a.sort)
+        .bind(a.beizhu)
+        .bind(a.rating_id)
+        .bind(a.now)
+        .bind(id)
+        .execute(pool)
+        .await?;
+        return Ok(id);
+    }
+    let res = sqlx::query(
+        r#"INSERT INTO phpyun_hotjob
+           (uid, username, hot_pic, time_start, time_end, sort, beizhu, rating_id, lastupdate)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"#,
+    )
+    .bind(a.uid)
+    .bind(a.username)
+    .bind(a.hot_pic)
+    .bind(a.time_start)
+    .bind(a.time_end)
+    .bind(a.sort)
+    .bind(a.beizhu)
+    .bind(a.rating_id)
+    .bind(a.now)
+    .execute(pool)
+    .await?;
+    Ok(res.last_insert_id())
+}
+
+pub async fn hotjob_delete(pool: &MySqlPool, id: u64) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query("DELETE FROM phpyun_hotjob WHERE id = ?")
+        .bind(id)
+        .execute(pool)
+        .await?;
+    Ok(res.rows_affected())
+}
+
+#[derive(Debug, Clone, sqlx::FromRow, serde::Serialize, serde::Deserialize)]
+pub struct CompanyExpireRow {
+    pub uid: u64,
+    pub name: String,
+    pub rating: i32,
+    pub rating_name: String,
+    pub vip_stime: i64,
+    pub vip_etime: i64,
+}
+
+pub async fn list_expire(
+    pool: &MySqlPool,
+    expired_only: bool,
+    now: i64,
+    offset: u64,
+    limit: u64,
+) -> Result<Vec<CompanyExpireRow>, sqlx::Error> {
+    let sql = if expired_only {
+        r#"SELECT CAST(c.uid AS UNSIGNED) AS uid,
+                  COALESCE(c.name, '') AS name,
+                  CAST(COALESCE(s.rating, 0) AS SIGNED) AS rating,
+                  COALESCE(s.rating_name, '') AS rating_name,
+                  CAST(COALESCE(s.vip_stime, 0) AS SIGNED) AS vip_stime,
+                  CAST(COALESCE(s.vip_etime, 0) AS SIGNED) AS vip_etime
+           FROM phpyun_company c
+           INNER JOIN phpyun_company_statis s ON s.uid = c.uid
+           WHERE s.vip_etime > 0 AND s.vip_etime < ?
+           ORDER BY s.vip_etime ASC
+           LIMIT ? OFFSET ?"#
+    } else {
+        r#"SELECT CAST(c.uid AS UNSIGNED) AS uid,
+                  COALESCE(c.name, '') AS name,
+                  CAST(COALESCE(s.rating, 0) AS SIGNED) AS rating,
+                  COALESCE(s.rating_name, '') AS rating_name,
+                  CAST(COALESCE(s.vip_stime, 0) AS SIGNED) AS vip_stime,
+                  CAST(COALESCE(s.vip_etime, 0) AS SIGNED) AS vip_etime
+           FROM phpyun_company c
+           INNER JOIN phpyun_company_statis s ON s.uid = c.uid
+           WHERE s.vip_etime > 0
+           ORDER BY s.vip_etime ASC
+           LIMIT ? OFFSET ?"#
+    };
+    let q = sqlx::query_as::<_, CompanyExpireRow>(sql);
+    if expired_only {
+        q.bind(now).bind(limit).bind(offset).fetch_all(pool).await
+    } else {
+        q.bind(limit).bind(offset).fetch_all(pool).await
+    }
+}
+
+pub async fn count_expire(
+    pool: &MySqlPool,
+    expired_only: bool,
+    now: i64,
+) -> Result<u64, sqlx::Error> {
+    let (n,): (i64,) = if expired_only {
+        sqlx::query_as(
+            "SELECT COUNT(*) FROM phpyun_company_statis s WHERE s.vip_etime > 0 AND s.vip_etime < ?",
+        )
+        .bind(now)
+        .fetch_one(pool)
+        .await?
+    } else {
+        sqlx::query_as("SELECT COUNT(*) FROM phpyun_company_statis s WHERE s.vip_etime > 0")
+            .fetch_one(pool)
+            .await?
+    };
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}

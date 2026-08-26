@@ -3,11 +3,13 @@
 对照：PHP 控制器文件 vs Rust OpenAPI（2026-08-26，`api-admin` 拆分后）。
 
 - Rust v1：`doc/snapshots/v1_paths.txt` **405** 条（`/v1/wap` + `/v1/mcenter`）
-- Rust admin：`doc/snapshots/admin_paths.txt` **72** 条
+- Rust admin：`doc/snapshots/admin_paths.txt`（以快照为准；本轮补资讯/公告/问答/审核队列/友链/办会后会超过 72）
 - PHP 后台：`uploads/admin/model/` **120** 个控制器（system 38 + user 32 + tool 19 + yunying 18 + neirong 10 + common 2 + `index.class.php` 1）
 - 影响端标注：Web 前台 / 会员中心 / 后台 / 第三方
 
-一个 PHP 控制器通常对应多页/多 action，不能和 72 条 URL 1:1。下表「Rust」列是**能否用现有接口做出同等运营能力**。
+一个 PHP 控制器通常对应多页/多 action，不能和 admin URL 1:1。下表「Rust」列是**能否用现有接口做出同等运营能力**。
+
+**本盘未安装、无法 1:1 的四条扩展线**（无 controller、无业务表，仅残留 URL/配置 stub）：校园 `school`、猎头 `lietou`、培训 `train`、视频面试 `spview`。下文「全站」= 已装招聘站。
 
 ## 总览
 
@@ -15,9 +17,9 @@
 |---|---|---|---|
 | 公开前台 | default + wap 约 80 个控制器 | `/v1/wap` 覆盖职位/企业/简历/文章/公告/搜索/招聘会/兼职/问答/兑换/地图等 | **可做 P2 页面**；校园/猎头/视频面试/培训无独立命名空间 |
 | 会员中心 | `uploads/member/` com + user 约 88 个 model | `/v1/mcenter` 227 条量级 | **主路径可走通**；企业装修/部分统计仍薄 |
-| 管理后台 | **120** 个 model 控制器 | **72** 条 `/v1/admin` | **缺口最大**，见下表，排进 T11 |
+| 管理后台 | **120** 个 model 控制器 | **102** 条 `/v1/admin`（见快照） | 内容写/审核队列/友链/办会已补；system 分屏 KV + RBAC 后置 |
 | 支付回调 | alipay / tenpay / wapalipay | `/callback/alipay`、`/callback/wechat-pay` | 入口有；沙箱未测 |
-| 采集 | `uploads/api/locoy/` 4 个 model | `/callback/locoy` | 新闻/全职/兼职（企业已存在）可入库；`user` 简历仍返回码 `2` |
+| 采集 | `uploads/api/locoy/` 4 个 model | `/callback/locoy` | 新闻/全职/兼职（企业已存在）可入库；`m=user` 按 PHP 建 member+resume+expect |
 | 小程序 | `uploads/api/wxapp/` 31 个类 | `/v1/wap/oauth/wechat/wxapp-login` + 复用 wap/mcenter | 新小程序走 Rust；旧 PHP wxapp URL 不兼容 |
 | 文件上传 | wap/upload | `/v1/wap/upload/*` | 已有 |
 | 定时任务 | `app/controller/cron` | server `Scheduler` | 已接线 |
@@ -131,7 +133,7 @@ PHP `member/user/model` 约 36 个、`member/com/model` 约 51 个。Rust `/v1/m
 | PHP | Rust | 缺口 |
 |---|---|---|
 | `uploads/api/alipay/` `tenpay/` `wapalipay/` | `/callback/alipay` `/callback/wechat-pay` | 沙箱未跑通 |
-| `uploads/api/locoy/` job/news/user/partjob | `/callback/locoy` | `user` 仍返回码 `2`；partjob 需公司名已存在 |
+| `uploads/api/locoy/` job/news/user/partjob | `/callback/locoy` | news/job/partjob 可入库；`m=user` 建 member+resume+expect |
 | `uploads/api/wxapp/` 31 类 | `wxapp-login` + 复用 mcenter | 旧 wxapp 路径不兼容 |
 
 ---
@@ -142,3 +144,66 @@ PHP `member/user/model` 约 36 个、`member/com/model` 约 51 个。Rust `/v1/m
 - T10 会员中心：已有 mcenter；装修/统计后补
 - T11 后台：先 dashboard / users / jobs / reports / site_settings；system 38 个配置类最后
 - T12：支付沙箱、locoy 简历（`m=user`）、旧 wxapp URL 如需要再加
+
+---
+
+## 附录：PHP action → Rust 路径（本盘已装招聘站）
+
+字段名对齐 PHP 表单（`nid` / `state` / `r_status` / `startime` / `pid` 等）。Flutter `/v1/wap` `/v1/mcenter` 只加法。
+
+### 本盘无源码（不做）
+
+| PHP 产品线 | 本盘现状 | Rust |
+|---|---|---|
+| 校园 `school` | 无 controller、无业务表 | **不实现** |
+| 猎头 `lietou` | 同上 | **不实现** |
+| 培训 `train` | 同上 | **不实现** |
+| 视频面试 `spview` | 同上 | **不实现** |
+
+### 公开频道（default + wap）
+
+| PHP 控制器 | Rust 路径 | 状态 |
+|---|---|---|
+| job / company / resume | `/v1/wap/jobs*` `/companies*` `/resumes*` | 已有 |
+| article / announcement | `/v1/wap/articles*` `/announcements*` | 已有读 |
+| zph / part / once / tiny | `/v1/wap/fairs*` `/parts*` `/once*` `/tiny*` | 已有读 |
+| ask / special / gongzhao | `/v1/wap/questions*` `/specials*` `/gongzhao*` | 已有读 |
+| redeem / map / search / login | 对应 wap | 已有 |
+| evaluate / claim | 弱覆盖 | 低频后置 |
+| school / lietou / train / spview | — | **无源码** |
+
+### 会员中心
+
+| PHP | Rust | 状态 |
+|---|---|---|
+| 简历 / 投递 / 发职位 / 人才库 / 面试 / VIP | `/v1/mcenter/*` | 已有 |
+| `comtpl` `banner` | `/v1/mcenter/company-tpls*` `company-banners*` | 已有；Nuxt `/com` 接上 |
+| `product` `news` | `/v1/mcenter/company/products*` `company/news*` | 已有；Nuxt `/com` 接上 |
+| `tongji` `zpdata` | 无独立聚合 | 不阻塞主路径 |
+
+### 后台 neirong / 审核 / 运营（本轮补写）
+
+| PHP 文件 / action | Rust | 字段（PHP） |
+|---|---|---|
+| `neirong/news` `addnews` / `del` | `/v1/admin/articles` `list` `delete` `groups` | `title` `nid` `content` `author` `description` `keyword` |
+| `neirong/announcement` | `/v1/admin/announcements*` | `title` `keyword` `description` `content` `startime` `endtime` `did` |
+| `neirong/question` `status` | `/v1/admin/questions` `state` `delete` | `status`→列 `state`；`is_recom` |
+| `user/partjob` `status` | `/v1/admin/parts` `state` | `pid`/`id`；`status`→`state`；`statusbody` |
+| `user/weipin_once` `status` | `/v1/admin/once-jobs` `status` | `id` `status`（1 通过 / 0 待审 / 2 过期） |
+| `user/weipin_tiny` `status` | `/v1/admin/tiny` `status` | `id` `status`（1 通过 / 0 待审） |
+| `neirong/zhaopinhui` | `/v1/admin/fairs` `open` | `is_open` |
+| `neirong/gongzhao` | `/v1/admin/gongzhao*` | `title` `content` `startime` `endtime` `pic` |
+| `yunying/special_special` | `/v1/admin/specials` `display` | `display` |
+| `system/set_friendlink` | `/v1/admin/friend-links*` | `link_name` `link_url` `link_type` `link_state` `link_sorting` |
+| `user/hotjob` | `/v1/admin/hotjobs*` | `uid` `username` `hot_pic` `time_start` `time_end` |
+| `user/company_expire` | `/v1/admin/company-expire` | `vip_etime`（`phpyun_company_statis`） |
+| `system/set_config` 等 | `/v1/admin/site-settings*` + 后台分屏表单 | `sy_*` 键名保持 PHP |
+| `role_user` / `role_ugroup` | 仍 `usertype=3`；页「管理员」滤 users | 后置完整 RBAC，不改 JWT 字段 |
+
+### 采集 / 支付
+
+| PHP | Rust | 说明 |
+|---|---|---|
+| locoy `m=news` `job` `partjob` | `/callback/locoy` | 已入库 |
+| locoy `m=user` | `/callback/locoy` | `info_name` 空→`2`；建 member+resume+expect，返回 `1`/`2`/`3`；**不用 tiny** |
+| alipay / wechat notify | `/callback/alipay` `/callback/wechat-pay` | 签名单测有；无沙箱密钥则不假勾 |

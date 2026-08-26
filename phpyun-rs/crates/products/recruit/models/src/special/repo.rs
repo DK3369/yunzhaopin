@@ -62,6 +62,37 @@ pub async fn incr_view(pool: &MySqlPool, id: u64) -> Result<(), sqlx::Error> {
     Ok(())
 }
 
+pub async fn list_admin(
+    pool: &MySqlPool,
+    offset: u64,
+    limit: u64,
+) -> Result<Vec<Special>, sqlx::Error> {
+    let sql = format!(
+        "SELECT {FIELDS} FROM phpyun_special ORDER BY sort DESC, ctime DESC, id DESC LIMIT ? OFFSET ?"
+    );
+    sqlx::query_as::<_, Special>(&sql)
+        .bind(limit)
+        .bind(offset)
+        .fetch_all(pool)
+        .await
+}
+
+pub async fn count_admin(pool: &MySqlPool) -> Result<u64, sqlx::Error> {
+    let (n,): (i64,) = sqlx::query_as("SELECT COUNT(*) FROM phpyun_special")
+        .fetch_one(pool)
+        .await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+pub async fn set_display(pool: &MySqlPool, id: u64, display: i32) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query("UPDATE phpyun_special SET display = ? WHERE id = ?")
+        .bind(display)
+        .bind(id)
+        .execute(pool)
+        .await?;
+    Ok(res.rows_affected())
+}
+
 // ---------- companies ----------
 
 pub async fn list_company_uids(

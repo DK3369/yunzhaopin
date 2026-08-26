@@ -79,3 +79,63 @@ pub async fn incr_view(_pool: &MySqlPool, _id: u64) -> Result<(), sqlx::Error> {
     // PHPYun phpyun_gongzhao has no view-count column; this op is a no-op.
     Ok(())
 }
+
+pub struct GongzhaoUpsert<'a> {
+    pub id: Option<u64>,
+    pub title: &'a str,
+    pub keyword: &'a str,
+    pub description: &'a str,
+    pub content: &'a str,
+    pub pic: &'a str,
+    pub startime: i64,
+    pub endtime: i64,
+    pub did: i32,
+    pub now: i64,
+}
+
+pub async fn upsert(pool: &MySqlPool, a: GongzhaoUpsert<'_>) -> Result<u64, sqlx::Error> {
+    if let Some(id) = a.id.filter(|i| *i > 0) {
+        sqlx::query(
+            r#"UPDATE phpyun_gongzhao
+               SET title = ?, keyword = ?, description = ?, content = ?, pic = ?,
+                   startime = ?, endtime = ?
+               WHERE id = ?"#,
+        )
+        .bind(a.title)
+        .bind(a.keyword)
+        .bind(a.description)
+        .bind(a.content)
+        .bind(a.pic)
+        .bind(a.startime)
+        .bind(a.endtime)
+        .bind(id)
+        .execute(pool)
+        .await?;
+        return Ok(id);
+    }
+    let res = sqlx::query(
+        r#"INSERT INTO phpyun_gongzhao
+           (title, keyword, description, content, datetime, did, startime, endtime, pic, rec)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 0)"#,
+    )
+    .bind(a.title)
+    .bind(a.keyword)
+    .bind(a.description)
+    .bind(a.content)
+    .bind(a.now)
+    .bind(a.did)
+    .bind(a.startime)
+    .bind(a.endtime)
+    .bind(a.pic)
+    .execute(pool)
+    .await?;
+    Ok(res.last_insert_id())
+}
+
+pub async fn delete(pool: &MySqlPool, id: u64) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query("DELETE FROM phpyun_gongzhao WHERE id = ?")
+        .bind(id)
+        .execute(pool)
+        .await?;
+    Ok(res.rows_affected())
+}

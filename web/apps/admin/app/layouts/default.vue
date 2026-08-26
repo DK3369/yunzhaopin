@@ -15,6 +15,9 @@ async function logout() {
           <template #title>审核运营</template>
           <el-menu-item index="/users">用户</el-menu-item>
           <el-menu-item index="/jobs">职位审核</el-menu-item>
+          <el-menu-item index="/jobs/parts">兼职审核</el-menu-item>
+          <el-menu-item index="/jobs/once">店铺招聘</el-menu-item>
+          <el-menu-item index="/jobs/tiny">普工简历</el-menu-item>
           <el-menu-item index="/certs">企业认证</el-menu-item>
           <el-menu-item index="/reports">举报</el-menu-item>
           <el-menu-item index="/feedback">反馈</el-menu-item>
@@ -22,8 +25,14 @@ async function logout() {
         </el-sub-menu>
         <el-sub-menu index="content">
           <template #title>内容</template>
-          <el-menu-item index="/content/articles">资讯（只读）</el-menu-item>
+          <el-menu-item index="/content/articles">资讯</el-menu-item>
+          <el-menu-item index="/content/announcements">公告</el-menu-item>
+          <el-menu-item index="/content/questions">问答</el-menu-item>
           <el-menu-item index="/content/pages">单页 CMS</el-menu-item>
+          <el-menu-item index="/content/fairs">招聘会</el-menu-item>
+          <el-menu-item index="/content/gongzhao">公招</el-menu-item>
+          <el-menu-item index="/content/specials">专题</el-menu-item>
+          <el-menu-item index="/content/links">友链</el-menu-item>
           <el-menu-item index="/ads">广告</el-menu-item>
           <el-menu-item index="/nav">导航</el-menu-item>
           <el-menu-item index="/categories">分类</el-menu-item>
@@ -42,11 +51,14 @@ async function logout() {
           <el-menu-item index="/ops/recycle">回收站</el-menu-item>
           <el-menu-item index="/ops/app-versions">App 版本</el-menu-item>
           <el-menu-item index="/ops/accounts">账号工具</el-menu-item>
+          <el-menu-item index="/ops/hotjobs">热招</el-menu-item>
+          <el-menu-item index="/ops/expire">套餐到期</el-menu-item>
         </el-sub-menu>
         <el-sub-menu index="sys">
           <template #title>系统</template>
           <el-menu-item index="/system/settings">站点配置</el-menu-item>
           <el-menu-item index="/system/geo">地区/国家</el-menu-item>
+          <el-menu-item index="/system/admins">管理员</el-menu-item>
         </el-sub-menu>
       </el-menu>
       <div style="padding: 1rem">

@@ -76,6 +76,38 @@ pub async fn find_by_id(pool: &MySqlPool, id: u64) -> Result<Option<Zph>, sqlx::
         .await
 }
 
+pub async fn list_admin(
+    pool: &MySqlPool,
+    offset: u64,
+    limit: u64,
+) -> Result<Vec<Zph>, sqlx::Error> {
+    let sql = format!(
+        "SELECT {ZPH_FIELDS} FROM phpyun_zhaopinhui \
+         ORDER BY UNIX_TIMESTAMP(starttime) DESC, id DESC LIMIT ? OFFSET ?"
+    );
+    sqlx::query_as::<_, Zph>(&sql)
+        .bind(limit)
+        .bind(offset)
+        .fetch_all(pool)
+        .await
+}
+
+pub async fn count_admin(pool: &MySqlPool) -> Result<u64, sqlx::Error> {
+    let (n,): (i64,) = sqlx::query_as("SELECT COUNT(*) FROM phpyun_zhaopinhui")
+        .fetch_one(pool)
+        .await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+pub async fn set_open(pool: &MySqlPool, id: u64, is_open: i32) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query("UPDATE phpyun_zhaopinhui SET is_open = ? WHERE id = ?")
+        .bind(is_open)
+        .bind(id)
+        .execute(pool)
+        .await?;
+    Ok(res.rows_affected())
+}
+
 // ---------- companies ----------
 
 const ZC_FIELDS: &str = "\

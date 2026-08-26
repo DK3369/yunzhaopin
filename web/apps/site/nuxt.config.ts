@@ -1,6 +1,11 @@
 export default defineNuxtConfig({
   extends: ['../../layers/base', '../../layers/ui'],
   compatibilityDate: '2026-08-25',
+  vite: {
+    server: {
+      allowedHosts: true,
+    },
+  },
   css: ['~/assets/main.css'],
   modules: ['@pinia/nuxt', '@nuxtjs/i18n', '@nuxtjs/sitemap'],
   i18n: {

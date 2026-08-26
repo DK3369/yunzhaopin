@@ -1,0 +1,19 @@
+[Unit]
+Description=PHPYun Nuxt admin for test-jobs.ov6.com
+After=network-online.target test-jobs-phpyun-rs.service
+
+[Service]
+Type=simple
+User=aa
+Group=aa
+WorkingDirectory=/www/wwwroot/zzzz.com/web/apps/admin
+Environment=PATH=/var/tmp/node-dist/node-v22.22.1-linux-arm64/bin:/usr/bin
+Environment=TMPDIR=/var/tmp/npm-tmp
+Environment=RUST_API_URL=http://127.0.0.1:3000
+Environment=__VITE_ADDITIONAL_SERVER_ALLOWED_HOSTS=test-jobs.ov6.com
+ExecStart=/var/tmp/node-dist/node-v22.22.1-linux-arm64/bin/node /www/wwwroot/zzzz.com/web/apps/admin/node_modules/nuxt/bin/nuxt.mjs dev --port 3002 --host 127.0.0.1
+Restart=on-failure
+RestartSec=5s
+
+[Install]
+WantedBy=multi-user.target

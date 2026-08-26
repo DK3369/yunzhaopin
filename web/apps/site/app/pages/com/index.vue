@@ -21,6 +21,10 @@ async function logout() {
         <NuxtLink to="/com/applications">收到的简历</NuxtLink>
         <NuxtLink to="/com/talent">人才库</NuxtLink>
         <NuxtLink to="/com/orders">套餐订单</NuxtLink>
+        <NuxtLink to="/com/banners">Banner</NuxtLink>
+        <NuxtLink to="/com/tpls">企业模板</NuxtLink>
+        <NuxtLink to="/com/products">产品</NuxtLink>
+        <NuxtLink to="/com/news">新闻</NuxtLink>
       </nav>
       <button type="button" @click="logout">退出</button>
     </template>

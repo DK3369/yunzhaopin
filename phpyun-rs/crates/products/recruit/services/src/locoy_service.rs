@@ -1,9 +1,7 @@
 //! Locoy collector ingest. PHP returned plain numeric codes:
 //! 1 = ok, 2 = bad payload, 3 = duplicate, 4 = disabled, 5 = auth/ip.
 //!
-//! News / full-time jobs / part-time jobs are ingested when the company already
-//! exists. `user` (member + resume + expect) is still closed — PHP creates a
-//! full account tree; returning 2 matches a missing required payload.
+//! News / full-time jobs / part-time jobs / user (member + resume + expect).
 
 use std::collections::HashMap;
 
@@ -12,6 +10,9 @@ use phpyun_models::article::repo as article_repo;
 use phpyun_models::company::repo as company_repo;
 use phpyun_models::job::repo as job_repo;
 use phpyun_models::part::repo as part_repo;
+use phpyun_models::resume::expect::{self as expect_repo, ExpectInput};
+use phpyun_models::resume::repo as resume_repo;
+use phpyun_models::user::repo as user_repo;
 
 use crate::site_setting_service;
 
@@ -82,7 +83,7 @@ pub async fn ingest(
         "news" => ingest_news(state, &post).await,
         "job" => ingest_job(state, &post).await,
         "partjob" => ingest_partjob(state, &post).await,
-        "user" => Ok(CODE_BAD),
+        "user" => ingest_user(state, &post).await,
         _ => Ok(CODE_BAD),
     }
 }
@@ -249,4 +250,173 @@ fn parse_ts(post: &HashMap<String, String>, key: &str) -> Option<i64> {
         return None;
     }
     s.parse::<i64>().ok().filter(|t| *t > 0)
+}
+
+fn locoy_sex(post: &HashMap<String, String>) -> i32 {
+    match field(post, "info_sex").trim() {
+        "男" | "1" => 1,
+        "女" | "2" => 2,
+        _ => 0,
+    }
+}
+
+fn random_locoy_username(prefix: &str, length: usize) -> String {
+    const CHARS: &[u8] = b"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    let u = uuid::Uuid::now_v7();
+    let bytes = u.as_bytes();
+    let extra: String = (0..length)
+        .map(|i| {
+            let idx = usize::from(bytes[i % bytes.len()]) % CHARS.len();
+            char::from(CHARS[idx])
+        })
+        .collect();
+    format!("{prefix}{extra}")
+}
+
+async fn locoy_setting(state: &AppState, key: &str) -> String {
+    site_setting_service::get(state, key)
+        .await
+        .ok()
+        .flatten()
+        .map(|r| r.value)
+        .unwrap_or_default()
+}
+
+async fn ingest_user(state: &AppState, post: &HashMap<String, String>) -> AppResult<&'static str> {
+    let info_name = field(post, "info_name").trim();
+    if info_name.is_empty() {
+        return Ok(CODE_BAD);
+    }
+    let now = clock::now_ts();
+    let mobile = field(post, "info_telphone").trim();
+    let email = field(post, "info_email").trim();
+    let uid = if let Some(uid) = resume_repo::find_uid_by_name(state.db.reader(), info_name).await? {
+        uid
+    } else {
+        let prefix = {
+            let p = locoy_setting(state, "locoy_name").await;
+            if p.is_empty() {
+                "locoy".to_string()
+            } else {
+                p
+            }
+        };
+        let length = locoy_setting(state, "locoy_length")
+            .await
+            .parse::<usize>()
+            .ok()
+            .filter(|n| (4..=32).contains(n))
+            .unwrap_or(8);
+        let pwd = {
+            let p = locoy_setting(state, "locoy_pwd").await;
+            if p.is_empty() {
+                "123456".to_string()
+            } else {
+                p
+            }
+        };
+        let salt = uuid::Uuid::now_v7()
+            .simple()
+            .to_string()
+            .chars()
+            .take(16)
+            .collect::<String>();
+        let hash = phpyun_auth::argon2_hash_async(format!("{pwd}{salt}")).await?;
+        let mut created: Option<u64> = None;
+        for _ in 0..5 {
+            let username = random_locoy_username(&prefix, length);
+            if user_repo::exists_username(state.db.pool(), &username).await? {
+                continue;
+            }
+            match user_repo::create_member(
+                state.db.pool(),
+                &username,
+                &hash,
+                &salt,
+                if mobile.is_empty() { None } else { Some(mobile) },
+                if email.is_empty() { None } else { Some(email) },
+                1,
+                0,
+                "",
+                now,
+            )
+            .await
+            {
+                Ok(uid) => {
+                    created = Some(uid);
+                    break;
+                }
+                Err(e) => {
+                    tracing::warn!(error = %e, "locoy user member insert");
+                    return Err(e.into());
+                }
+            }
+        }
+        let Some(uid) = created else {
+            return Ok(CODE_DUP);
+        };
+        resume_repo::ensure_row(state.db.pool(), uid, 0, now).await?;
+        let _ = phpyun_models::member_statis::repo::bump_fav_jobnum(state.db.pool(), uid, 0).await;
+        let sex = locoy_sex(post);
+        resume_repo::update(
+            state.db.pool(),
+            uid,
+            resume_repo::ResumeUpdate {
+                name: Some(info_name),
+                nametype: None,
+                sex: if sex > 0 { Some(sex) } else { None },
+                birthday: {
+                    let b = field(post, "info_birthday").trim();
+                    if b.is_empty() {
+                        None
+                    } else {
+                        Some(b)
+                    }
+                },
+                marriage: None,
+                education: None,
+                telphone: if mobile.is_empty() { None } else { Some(mobile) },
+                email: if email.is_empty() { None } else { Some(email) },
+                photo: {
+                    let p = field(post, "info_photo").trim();
+                    if p.is_empty() {
+                        None
+                    } else {
+                        Some(p)
+                    }
+                },
+            },
+            now,
+        )
+        .await?;
+        uid
+    };
+
+    let class_name = field(post, "info_classid").trim();
+    let expect_name = if class_name.is_empty() {
+        info_name
+    } else {
+        class_name
+    };
+    let minsalary = parse_i32(post, "minsalary").max(0);
+    let maxsalary = parse_i32(post, "maxsalary");
+    expect_repo::create(
+        state.db.pool(),
+        uid,
+        &ExpectInput {
+            name: Some(expect_name),
+            job_classid: 0,
+            city_classid: 0,
+            salary: 0,
+            minsalary,
+            maxsalary: if maxsalary > 0 { Some(maxsalary) } else { None },
+            r#type: 0,
+            report: 0,
+            jobstatus: 45,
+            hy: 0,
+        },
+        now,
+    )
+    .await?;
+    Ok(CODE_OK)
 }

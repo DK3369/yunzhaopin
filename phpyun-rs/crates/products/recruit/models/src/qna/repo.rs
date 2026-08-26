@@ -160,6 +160,83 @@ pub async fn delete_question(pool: &MySqlPool, id: u64, uid: u64) -> Result<u64,
     Ok(res.rows_affected())
 }
 
+pub async fn admin_delete_question(pool: &MySqlPool, id: u64) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query("DELETE FROM phpyun_question WHERE id = ?")
+        .bind(id)
+        .execute(pool)
+        .await?;
+    Ok(res.rows_affected())
+}
+
+pub async fn set_question_state(pool: &MySqlPool, id: u64, state: i32) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query("UPDATE phpyun_question SET state = ? WHERE id = ?")
+        .bind(state)
+        .bind(id)
+        .execute(pool)
+        .await?;
+    Ok(res.rows_affected())
+}
+
+pub struct AdminQuestionFilter<'a> {
+    pub keyword: Option<&'a str>,
+    /// PHP POST `status` maps to column `state`.
+    pub status: Option<i32>,
+    pub is_recom: Option<i32>,
+}
+
+pub async fn admin_list_questions(
+    pool: &MySqlPool,
+    f: &AdminQuestionFilter<'_>,
+    offset: u64,
+    limit: u64,
+) -> Result<Vec<Question>, sqlx::Error> {
+    let mut qb: sqlx::QueryBuilder<sqlx::MySql> =
+        sqlx::QueryBuilder::new(format!("SELECT {Q_FIELDS} FROM phpyun_question WHERE 1=1"));
+    if let Some(s) = f.status {
+        qb.push(" AND state = ");
+        qb.push_bind(s);
+    }
+    if let Some(r) = f.is_recom {
+        qb.push(" AND is_recom = ");
+        qb.push_bind(r);
+    }
+    if let Some(kw) = f.keyword {
+        if !kw.is_empty() {
+            qb.push(" AND title LIKE ");
+            qb.push_bind(format!("%{kw}%"));
+        }
+    }
+    qb.push(" ORDER BY add_time DESC LIMIT ");
+    qb.push_bind(limit);
+    qb.push(" OFFSET ");
+    qb.push_bind(offset);
+    qb.build_query_as::<Question>().fetch_all(pool).await
+}
+
+pub async fn admin_count_questions(
+    pool: &MySqlPool,
+    f: &AdminQuestionFilter<'_>,
+) -> Result<u64, sqlx::Error> {
+    let mut qb: sqlx::QueryBuilder<sqlx::MySql> =
+        sqlx::QueryBuilder::new("SELECT COUNT(*) FROM phpyun_question WHERE 1=1");
+    if let Some(s) = f.status {
+        qb.push(" AND state = ");
+        qb.push_bind(s);
+    }
+    if let Some(r) = f.is_recom {
+        qb.push(" AND is_recom = ");
+        qb.push_bind(r);
+    }
+    if let Some(kw) = f.keyword {
+        if !kw.is_empty() {
+            qb.push(" AND title LIKE ");
+            qb.push_bind(format!("%{kw}%"));
+        }
+    }
+    let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
 pub async fn incr_question_hit(pool: &MySqlPool, id: u64) -> Result<(), sqlx::Error> {
     sqlx::query("UPDATE phpyun_question SET visit = visit + 1 WHERE id = ?")
         .bind(id)
