@@ -6,6 +6,9 @@
       <NuxtLink to="/companies">企业</NuxtLink>
       <NuxtLink to="/resumes">简历</NuxtLink>
       <NuxtLink to="/parts">兼职</NuxtLink>
+      <NuxtLink to="/eval">测评</NuxtLink>
+      <NuxtLink to="/map">地图</NuxtLink>
+      <NuxtLink to="/advice">建议</NuxtLink>
       <NuxtLink to="/fairs">招聘会</NuxtLink>
       <NuxtLink to="/questions">问答</NuxtLink>
       <NuxtLink to="/search">搜索</NuxtLink>

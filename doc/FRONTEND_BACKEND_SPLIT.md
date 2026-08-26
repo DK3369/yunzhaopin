@@ -1,7 +1,7 @@
 # 前后端分离改造方案：PHP 全量退役，Rust + Nuxt 4 接管
 
-> 文档版本 v2.0 · 2026-08-25（进度备注更新 2026-08-26）
-> 状态：T1–T13 已按文末备注验收；**T14 仅准备材料，未下线 PHP**
+> 文档版本 v2.0 · 2026-08-25（进度备注更新 2026-08-26 晚）
+> 状态：T1–T13 已按文末备注验收；**T14 现网页面已切 Nuxt+Rust**（本 vhost 不再 fastcgi；**未**停 php-fpm、**未**删 `uploads/`，见 `ops/T14_RETIRE_PHP.md`）
 > 分支：`feat/frontend-backend-split`
 >
 > v1.1：前端框架由 Nuxt 3 改为 **Nuxt 4.5.2**（Nuxt 3 已于 2026-07-31 EOL）
@@ -520,20 +520,29 @@ zzzz.com/
 
 ### T14 下线 PHP
 
-**目标**：彻底消除 PHP 攻击面。这是整个改造的最终目的之一。
+**目标**：这个 vhost 的页面不再走 PHP；最终目的仍是消除 PHP 攻击面。
 
 **前置**：T8 到 T12 全部完成并验收
 
-**步骤**：
+**现网（2026-08-26，以 `ops/T14_RETIRE_PHP.md` 与活 vhost 为准）**：
+
+- Nginx：`/`、`/api/` → Nuxt site `:3001`；`/admin/` → Nuxt admin `:3002`；`/v1` `/v2` `/health` → Rust `:3000`
+- **不删** `uploads/`；`/data/upload/` alias 到 `uploads/data/upload/`
+- php-fpm **未停、未卸载**；本 vhost **不再** `enable-php` / rewrite 到 PHP
+- 验收栈仍可用：Rust `:3003` + site `:3001` + admin `:3002`
+
+下文「删除 uploads / 卸载 php-fpm」是方案原稿，**尚未执行、也不作为当前切站步骤**。
+
+**步骤（原稿，未全做）**：
 1. 备份 `uploads/data/upload/`（用户上传的图片和附件，**必须保留**）
 2. 备份数据库
-3. 删除 `uploads/` 其余部分
-4. Nginx 移除所有 PHP 相关配置和伪静态规则，改为反代 Nuxt 与 Rust
-5. 服务器卸载 php-fpm
+3. 删除 `uploads/` 其余部分（**未做**）
+4. Nginx 移除 PHP rewrite，改为反代 Nuxt 与 Rust（**已做**，见 `ops/nginx/zzzz.com.nuxt-cutover.conf`）
+5. 服务器卸载 php-fpm（**未做**）
 
-**验收**：服务器上没有任何 PHP 进程和 `.php` 文件可被访问；全站功能正常；**Flutter App 回归测试通过**。
+**验收（当前档）**：打开 http://test-jobs.ov6.com 首页/职位/登录与 `/admin/` 为 Nuxt；`/v1/wap/home` 仍走 Rust；Flutter `/v1/wap` + `/v1/mcenter` 契约只加法。
 
-**提交**：`下线 PHP，删除 uploads 目录`
+**提交**：切站材料见 `ops/T14_RETIRE_PHP.md`；不要把「删 uploads」写进已执行。
 
 ---
 
@@ -592,10 +601,10 @@ zzzz.com/
 - [x] T8 公开前台页面（2026-08-26：优先级页 + Rust 已有 GET 的公开频道 SSR：兼职/招聘会/公招/专题/问答/店铺招聘/普工简历/积分商城/HR/友情链接/静态页/找回密码/地图。禁用 JS 时列表页 HTML 含 h1 与空状态。不是 PHP default 100 + wap 209 模板逐页搬运；校园/猎头/培训/spview 无 Rust 命名空间，Web 不做。验收打本仓库 rust `:3003`：systemd `:3000` 旧二进制对 GET 仍 405）
 - [x] T9 SEO 配套（2026-08-26：`/sitemap.xml` 200，含静态频道与动态 `/jobs/5`、`/companies/90001`；职位页 JobPosting、企业页 Organization 在 HTML 的 ld+json 中。未跑 Google 富媒体测试工具，因其需要公网 URL。空库时动态 URL 不会出现）
 - [x] T10 会员中心（2026-08-26：注册(regway=1)→填简历→投递→投递列表；企业资料→发职位→人才库→收到简历→邀面试。Nuxt 登录 cookie 无 JWT。发职位默认待审，e2e 在测试库把职位 `state=1` 后才公开可投。`phpyun_test` 无 `phpyun_company_rating` 套餐行，mock-paid UI 在但未实购。顺带修：注册 argon2 带 salt 导致无法登录；职位/投递/面试 INSERT 缺 NOT NULL 列）
-- [x] T11 管理后台（2026-08-26：`apps/admin` 侧栏覆盖现有 **72** 条 `/v1/admin`（仪表盘/用户/职位审核/认证/举报/反馈/订单/资讯只读/单页 CMS/广告/导航/分类/积分商城/广播/警告/审计/回收站/App 版本/账号工具/站点 KV/地区国家字典重载）。**不是** PHP 120 个控制器或 219 个 Vue 2 组件 1:1。未补：RBAC、资讯/公告/问答写接口、兼职/店铺/普工后台审核、微信菜单、邮件短信后台、system 38 分屏。system 按方案可分批补，现用 `site-settings` KV）
-- [x] T12 后端补齐 PHP 独占功能（2026-08-26：`/callback/alipay` `/callback/wechat-pay` `/callback/locoy`、`/v1/wap/oauth/wechat/wxapp-login`、`/v1/wap/upload/*`、server `Scheduler` 均已接线。locoy：新闻/全职/兼职（企业须已存在）可入库；`user` 简历采集仍返回码 `2`（PHP 会建 member+resume 全树，未移植）。**未跑**支付沙箱完整一单、**未测**小程序登录拉职位）
+- [x] T11 管理后台（2026-08-26 晚：`apps/admin` 覆盖现有 **115** 条 `/v1/admin`（含资讯/公告/问答写、兼职/once/tiny、友链、招聘会开关、公招、专题、热招、到期、企业档案/`r_status`/CSV、简历 `r_status`/CSV/经历树只读、财务充值、SEO/邮件/短信/微信 KV 分屏、RBAC 表只读）。**不是** PHP 120 个控制器 1:1。未补：模拟登录、微信自定义菜单表、system 其余分屏。JWT 仍 `usertype=3`，不解析 `group_power`）
+- [x] T12 后端补齐 PHP 独占功能（2026-08-26：`/callback/alipay` `/callback/wechat-pay` `/callback/locoy`、`/v1/wap/oauth/wechat/wxapp-login`、`/v1/wap/upload/*`、server `Scheduler` 均已接线。locoy：新闻/全职/兼职（企业须已存在）可入库；`m=user` 空 `info_name`→码 `2`，否则建 member+resume+expect。**未跑**支付沙箱完整一单、**未测**小程序登录拉职位）
 - [x] T13 重写失真文档（2026-08-26：根 `README.md`、`phpyun-rs/README.md`、`phpyun-rs/docs/CRATE_LAYERING.md` 指向本方案；`PROJECT_PLAN.md` 已废弃横幅）
-- [ ] T14 下线 PHP（**未执行**。材料：`ops/T14_RETIRE_PHP.md`、`ops/nginx/frontend-backend-split.conf`。须用户明确同意后才停 php-fpm / 删 `uploads/` 源码。现网仍是 PHP）
+- [x] T14 现网切走 PHP 页面（2026-08-26：vhost 反代 Nuxt+Rust，见 `ops/T14_RETIRE_PHP.md`。**未**停 php-fpm、**未**删 `uploads/`。完整「卸载 PHP」仍未做）
 
 ---
 
@@ -603,29 +612,33 @@ zzzz.com/
 
 方案目标是「招聘主路径用 Rust + Nuxt 接管」，**不是** 479 个 Smarty 模板 + 219 个后台 Vue 2 组件像素级复刻。对照后仍与 PHP 不同的，列在下面，避免把勾选理解成「已经和以前一模一样」。
 
-### 刻意不做（方案 1 / T8 / T4）
+### 刻意不做（方案 1 / T8 / T4；详见 `doc/API_GAP.md`「建议不做」）
 
-- 校园 / 猎头 / 培训 / 视频面试（`school` `lietou` `train` `spview`）无 Rust 命名空间，Web 不做
+- 校园 / 猎头 / 培训 / 视频面试（`school` `lietou` `train` `spview`）无源码、无业务表
 - 旧伪静态 URL 与 301
 - Flutter App 工程（契约冻结，只加法）
 - MySQL `phpyun_` schema
+- `generate_page` / `generate_xml`（已改 Nuxt SSR）
+- `admin_uc` / `pw_api` / UC 论坛互通
+- `database` 在线备份（改运维 `mysqldump`）
+- 极验 `geetest`（已有 `/v1/wap/captcha`）
 
 ### 主路径已有（相对 PHP 招聘站）
 
-- 公开：职位/企业/简历/文章/公告/搜索/兼职/招聘会/公招/专题/问答/店铺招聘/普工简历/积分/HR/友链/单页/地图/找回密码
-- 会员：求职者简历与投递；企业资料、发职位、人才库、收到简历、邀面试
-- 后台：现有 72 个 admin API 都有 Element Plus 页
-- 第三方入口：支付回调、locoy（新闻/职位/兼职）、小程序登录 URL、上传、cron
+- 公开：职位/企业/简历/文章/公告/搜索/兼职/招聘会/公招/专题/问答/店铺招聘/普工简历/积分/HR/友链/单页/地图/找回密码/测评/建议/认领
+- 会员：求职者简历/投递/收藏/积分/套餐支付/隐私/绑定/谁看过我/外发/搜索器/兼职申请；企业资料、发职位、人才库、收到简历、邀面试、统计、套餐订单、面试模板、兼职、地图标注
+- 后台：现有 **115** 条 `/v1/admin` 多数有 Element Plus 页（含企业档案、简历 `r_status`+经历树、财务充值、SEO/邮件/短信/微信 KV、RBAC 表）
+- 第三方入口：支付回调、locoy（新闻/职位/兼职/`m=user` 建档）、小程序登录 URL、上传、cron
 
 ### 仍缺或弱于 PHP（不要当成已完成）
 
 | 区域 | 缺口 |
 |---|---|
-| 后台 | 无 RBAC；无资讯/公告/问答/招聘会后台 CRUD；无兼职/once/tiny 审核队列；无企业装修/套餐到期/财务分报表；无微信菜单/邮件短信配置 UI；system 38 个 `set_*` 不是分屏，只有 KV |
-| locoy | `m=user` 仍返回 `2`；兼职/全职不自动开新企业账号（公司名找不到则码 `3`） |
+| 后台 | 无模拟登录；经历树只读；微信自定义菜单表未迁；system 其余 `set_*` 仍是 KV；RBAC 不解析 `group_power`；导出是 CSV 不是 OLE xls |
+| locoy | 兼职/全职不自动开新企业账号（公司名找不到则码 `3`） |
 | 支付 / 小程序 | 回调与登录 handler 在；沙箱密钥与真实小程序未验收 |
-| 会员 | VIP 套餐依赖 `phpyun_company_rating`；企业部分统计/装修仍薄 |
-| 前台 | 测评/认领/极验等低频模块弱覆盖 |
-| 部署 | T14 未切 Nginx、未卸 PHP |
+| 会员 | VIP 套餐依赖 `phpyun_company_rating` |
+| 前台 | 呼叫中心等低频模块仍弱 |
+| 部署 | 现网已切 Nuxt Nitro；php-fpm 未卸、`uploads/` 未删；本项目 API 只绑 `:3003`，原栈 `:3000` 不动 |
 
 JWT 实际 **30 天 access**，与第 6 节「15 分钟」草稿不一致，以运行代码为准。

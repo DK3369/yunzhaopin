@@ -44,6 +44,7 @@
 pub mod ad_service;
 pub mod admin_cms_service;
 pub mod admin_dashboard_service;
+pub mod admin_longtail_service;
 pub mod admin_service;
 pub mod announcement_service;
 pub mod app_version_service;

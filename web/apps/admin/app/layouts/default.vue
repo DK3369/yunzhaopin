@@ -14,6 +14,9 @@ async function logout() {
         <el-sub-menu index="review">
           <template #title>审核运营</template>
           <el-menu-item index="/users">用户</el-menu-item>
+          <el-menu-item index="/companies">企业档案</el-menu-item>
+          <el-menu-item index="/resumes">简历审核</el-menu-item>
+          <el-menu-item index="/resumes/tree">简历经历树</el-menu-item>
           <el-menu-item index="/jobs">职位审核</el-menu-item>
           <el-menu-item index="/jobs/parts">兼职审核</el-menu-item>
           <el-menu-item index="/jobs/once">店铺招聘</el-menu-item>
@@ -22,6 +25,7 @@ async function logout() {
           <el-menu-item index="/reports">举报</el-menu-item>
           <el-menu-item index="/feedback">反馈</el-menu-item>
           <el-menu-item index="/orders">VIP 订单</el-menu-item>
+          <el-menu-item index="/finance/recharge">财务充值</el-menu-item>
         </el-sub-menu>
         <el-sub-menu index="content">
           <template #title>内容</template>
@@ -57,8 +61,13 @@ async function logout() {
         <el-sub-menu index="sys">
           <template #title>系统</template>
           <el-menu-item index="/system/settings">站点配置</el-menu-item>
+          <el-menu-item index="/system/seo">SEO</el-menu-item>
+          <el-menu-item index="/system/email">邮件</el-menu-item>
+          <el-menu-item index="/system/sms">短信</el-menu-item>
+          <el-menu-item index="/system/weixin">微信</el-menu-item>
           <el-menu-item index="/system/geo">地区/国家</el-menu-item>
           <el-menu-item index="/system/admins">管理员</el-menu-item>
+          <el-menu-item index="/system/rbac">角色表</el-menu-item>
         </el-sub-menu>
       </el-menu>
       <div style="padding: 1rem">

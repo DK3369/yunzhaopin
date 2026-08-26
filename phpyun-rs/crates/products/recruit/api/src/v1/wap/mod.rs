@@ -138,6 +138,7 @@ pub fn get_allowed_paths() -> Vec<&'static str> {
     v.extend_from_slice(redeem::GET_ALLOWED_PATHS);
     v.extend_from_slice(hr_docs::GET_ALLOWED_PATHS);
     v.extend_from_slice(map::GET_ALLOWED_PATHS);
+    v.extend_from_slice(eval::GET_ALLOWED_PATHS);
     v.extend_from_slice(categories::GET_ALLOWED_PATHS);
     v.extend_from_slice(countries::GET_ALLOWED_PATHS);
     v.extend_from_slice(hot_searches::GET_ALLOWED_PATHS);
@@ -160,6 +161,7 @@ mod get_alias_tests {
             "/v1/wap/articles",
             "/v1/wap/announcements",
             "/v1/wap/wechat/callback",
+            "/v1/wap/eval-papers",
         ] {
             assert!(v.contains(&p), "missing GET alias {p}");
         }

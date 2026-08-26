@@ -11,12 +11,12 @@ cd phpyun-rs
 cargo test -p phpyun-handlers --test endpoint_smoke -- --ignored --nocapture
 ```
 
-该冒烟扫的是 **v1 OpenAPI 的 POST**（`/v1/wap` + `/v1/mcenter`，405 条）。`/v1/admin` 在 `api-admin`，由 `apps/server` 装配，不在这份 library 冒烟里。Admin 路由表见 `doc/snapshots/admin_paths.txt`（102 条）。
+该冒烟扫的是 **v1 OpenAPI 的 POST**（`/v1/wap` + `/v1/mcenter`，405 条）。`/v1/admin` 在 `api-admin`，由 `apps/server` 装配，不在这份 library 冒烟里。Admin 路由表见 `doc/snapshots/admin_paths.txt`（115 条）。
 
 OpenAPI / 路由快照（供 T3 逐条比对）：
 
 - `doc/snapshots/v1.openapi.json` / `v1_paths.txt`（405 paths）
-- `doc/snapshots/admin.openapi.json` / `admin_paths.txt`（72 paths）
+- `doc/snapshots/admin.openapi.json` / `admin_paths.txt`（115 paths）
 
 ```bash
 cargo test -p phpyun-handlers --test openapi_snapshot

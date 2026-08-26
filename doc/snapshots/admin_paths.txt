@@ -21,6 +21,9 @@
 /v1/admin/categories
 /v1/admin/categories/list
 /v1/admin/categories/update
+/v1/admin/companies
+/v1/admin/companies/export
+/v1/admin/companies/status
 /v1/admin/company-certs
 /v1/admin/company-certs/review
 /v1/admin/company-expire
@@ -42,6 +45,7 @@
 /v1/admin/feedback
 /v1/admin/feedback/batch/status
 /v1/admin/feedback/status
+/v1/admin/finance/recharge
 /v1/admin/friend-links
 /v1/admin/friend-links/delete
 /v1/admin/friend-links/list
@@ -66,6 +70,9 @@
 /v1/admin/questions
 /v1/admin/questions/delete
 /v1/admin/questions/state
+/v1/admin/rbac/groups
+/v1/admin/rbac/users
+/v1/admin/rbac/users/status
 /v1/admin/recycle-bin
 /v1/admin/recycle-bin/detail
 /v1/admin/recycle-bin/purge
@@ -82,6 +89,12 @@
 /v1/admin/reports
 /v1/admin/reports/batch/status
 /v1/admin/reports/status
+/v1/admin/resumes
+/v1/admin/resumes/edus
+/v1/admin/resumes/export
+/v1/admin/resumes/status
+/v1/admin/resumes/trainings
+/v1/admin/resumes/works
 /v1/admin/rewards
 /v1/admin/rewards/delete
 /v1/admin/rewards/flags

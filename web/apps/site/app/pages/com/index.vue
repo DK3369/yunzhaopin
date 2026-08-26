@@ -21,6 +21,12 @@ async function logout() {
         <NuxtLink to="/com/applications">收到的简历</NuxtLink>
         <NuxtLink to="/com/talent">人才库</NuxtLink>
         <NuxtLink to="/com/orders">套餐订单</NuxtLink>
+        <NuxtLink to="/com/pay">套餐支付</NuxtLink>
+        <NuxtLink to="/com/stats">企业统计</NuxtLink>
+        <NuxtLink to="/com/interview-tpls">面试模板</NuxtLink>
+        <NuxtLink to="/com/parts">企业兼职</NuxtLink>
+        <NuxtLink to="/com/addresses">地图标注</NuxtLink>
+        <NuxtLink to="/com/views">谁看过企业</NuxtLink>
         <NuxtLink to="/com/banners">Banner</NuxtLink>
         <NuxtLink to="/com/tpls">企业模板</NuxtLink>
         <NuxtLink to="/com/products">产品</NuxtLink>

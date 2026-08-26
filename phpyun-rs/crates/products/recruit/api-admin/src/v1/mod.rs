@@ -8,12 +8,14 @@ pub mod articles;
 pub mod audit_log;
 pub mod broadcasts;
 pub mod categories;
+pub mod companies;
 pub mod company_cert;
 pub mod countries;
 pub mod dashboard;
 pub mod descriptions;
 pub mod dict_i18n;
 pub mod feedback;
+pub mod finance;
 pub mod friend_links;
 pub mod jobs;
 pub mod merge;
@@ -23,10 +25,12 @@ pub mod ops;
 pub mod orders;
 pub mod parts;
 pub mod questions;
+pub mod rbac;
 pub mod recycle;
 pub mod redeem;
 pub mod regions;
 pub mod reports;
+pub mod resumes;
 pub mod site_settings;
 pub mod tiny;
 pub mod users;
@@ -70,4 +74,8 @@ pub fn router() -> Router<AppState> {
         .merge(tiny::routes())
         .merge(friend_links::routes())
         .merge(ops::routes())
+        .merge(companies::routes())
+        .merge(resumes::routes())
+        .merge(finance::routes())
+        .merge(rbac::routes())
 }

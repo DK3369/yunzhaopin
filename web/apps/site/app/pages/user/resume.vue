@@ -6,6 +6,12 @@ const { data, error, refresh } = await useAsyncData('my-resume', () =>
 const { data: expects } = await useAsyncData('my-expects', () =>
   api.post('/v1/mcenter/resume/expects/list', {}).catch(() => []),
 )
+const { data: works } = await useAsyncData('my-works', () =>
+  api.post('/v1/mcenter/resume/works/list', {}).catch(() => []),
+)
+const { data: edus } = await useAsyncData('my-edus', () =>
+  api.post('/v1/mcenter/resume/edus/list', {}).catch(() => []),
+)
 const form = reactive({
   name: '',
   sex: 1,
@@ -26,6 +32,8 @@ watch(
   { immediate: true },
 )
 const expectForm = reactive({ name: '', salary: 8000, type: 57 })
+const workForm = reactive({ name: '', sdate_n: '', edate_n: '', department: '', title: '' })
+const eduForm = reactive({ name: '', sdate_n: '', edate_n: '', specialty: '', education: 65 })
 const msg = ref('')
 async function saveResume() {
   msg.value = ''
@@ -42,6 +50,24 @@ async function saveExpect() {
   try {
     await api.post('/v1/mcenter/resume/expects', { ...expectForm })
     msg.value = '求职意向已添加'
+  } catch (e: unknown) {
+    msg.value = e instanceof Error ? e.message : '添加失败'
+  }
+}
+async function saveWork() {
+  msg.value = ''
+  try {
+    await api.post('/v1/mcenter/resume/works', { ...workForm })
+    msg.value = '工作经历已添加'
+  } catch (e: unknown) {
+    msg.value = e instanceof Error ? e.message : '添加失败'
+  }
+}
+async function saveEdu() {
+  msg.value = ''
+  try {
+    await api.post('/v1/mcenter/resume/edus', { ...eduForm })
+    msg.value = '教育经历已添加'
   } catch (e: unknown) {
     msg.value = e instanceof Error ? e.message : '添加失败'
   }
@@ -73,6 +99,31 @@ useSeoMeta({ title: '我的简历' })
       <input v-model="expectForm.name" placeholder="意向职位名称" />
       <input v-model.number="expectForm.salary" type="number" placeholder="期望月薪" />
       <button type="submit">添加意向</button>
+    </form>
+    <h2>工作经历</h2>
+    <p v-if="!(Array.isArray(works) ? works : []).length" class="muted">暂无工作经历</p>
+    <ul>
+      <li v-for="row in Array.isArray(works) ? works : []" :key="row.id">{{ row.name }} {{ row.title }}</li>
+    </ul>
+    <form class="form" @submit.prevent="saveWork">
+      <input v-model="workForm.name" placeholder="公司 name" />
+      <input v-model="workForm.title" placeholder="title" />
+      <input v-model="workForm.department" placeholder="department" />
+      <input v-model="workForm.sdate_n" placeholder="sdate YYYY-MM" />
+      <input v-model="workForm.edate_n" placeholder="edate YYYY-MM" />
+      <button type="submit">添加工作经历</button>
+    </form>
+    <h2>教育经历</h2>
+    <p v-if="!(Array.isArray(edus) ? edus : []).length" class="muted">暂无教育经历</p>
+    <ul>
+      <li v-for="row in Array.isArray(edus) ? edus : []" :key="row.id">{{ row.name }} {{ row.specialty }}</li>
+    </ul>
+    <form class="form" @submit.prevent="saveEdu">
+      <input v-model="eduForm.name" placeholder="学校 name" />
+      <input v-model="eduForm.specialty" placeholder="specialty" />
+      <input v-model="eduForm.sdate_n" placeholder="sdate YYYY-MM" />
+      <input v-model="eduForm.edate_n" placeholder="edate YYYY-MM" />
+      <button type="submit">添加教育经历</button>
     </form>
     <p v-if="msg">{{ msg }}</p>
   </section>

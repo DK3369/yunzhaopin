@@ -263,6 +263,77 @@ pub async fn update_status(pool: &MySqlPool, uid: u64, status: i32) -> Result<()
     Ok(())
 }
 
+/// PHP `users_resume` 审核列 `r_status`：0 待审 / 1 通过 / 2 未通过。
+pub async fn update_r_status(pool: &MySqlPool, uid: u64, r_status: i32) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query("UPDATE phpyun_resume SET r_status = ? WHERE uid = ?")
+        .bind(r_status)
+        .bind(uid)
+        .execute(pool)
+        .await?;
+    Ok(res.rows_affected())
+}
+
+#[derive(Debug, Clone, sqlx::FromRow, serde::Serialize)]
+pub struct AdminResumeRow {
+    pub uid: u64,
+    pub name: String,
+    pub r_status: i32,
+    pub status: i32,
+    pub lastupdate: i64,
+}
+
+pub async fn list_admin(
+    pool: &MySqlPool,
+    r_status: Option<i32>,
+    keyword: Option<&str>,
+    offset: u64,
+    limit: u64,
+) -> Result<Vec<AdminResumeRow>, sqlx::Error> {
+    let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new(
+        r#"SELECT CAST(uid AS UNSIGNED) AS uid,
+                  COALESCE(name, '') AS name,
+                  CAST(COALESCE(r_status, 0) AS SIGNED) AS r_status,
+                  CAST(COALESCE(status, 0) AS SIGNED) AS status,
+                  CAST(COALESCE(lastupdate, 0) AS SIGNED) AS lastupdate
+           FROM phpyun_resume WHERE 1=1"#,
+    );
+    push_admin_resume_filters(&mut qb, r_status, keyword);
+    qb.push(" ORDER BY lastupdate DESC LIMIT ");
+    qb.push_bind(limit);
+    qb.push(" OFFSET ");
+    qb.push_bind(offset);
+    qb.build_query_as::<AdminResumeRow>().fetch_all(pool).await
+}
+
+pub async fn count_admin(
+    pool: &MySqlPool,
+    r_status: Option<i32>,
+    keyword: Option<&str>,
+) -> Result<u64, sqlx::Error> {
+    let mut qb: QueryBuilder<sqlx::MySql> =
+        QueryBuilder::new("SELECT COUNT(*) FROM phpyun_resume WHERE 1=1");
+    push_admin_resume_filters(&mut qb, r_status, keyword);
+    let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+fn push_admin_resume_filters<'a>(
+    qb: &mut QueryBuilder<'a, sqlx::MySql>,
+    r_status: Option<i32>,
+    keyword: Option<&'a str>,
+) {
+    if let Some(st) = r_status {
+        qb.push(" AND r_status = ");
+        qb.push_bind(st);
+    }
+    if let Some(kw) = keyword {
+        if !kw.is_empty() {
+            qb.push(" AND name LIKE ");
+            qb.push_bind(format!("%{kw}%"));
+        }
+    }
+}
+
 /// Cheap getter for the avatar/photo column only — used by features that
 /// render a user card (asker/answerer/viewer) and don't need the full Resume
 /// entity.

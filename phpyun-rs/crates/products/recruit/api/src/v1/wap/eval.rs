@@ -1,6 +1,6 @@
 //! Public browsing of career assessments (aligned with PHPYun `wap/evaluate`).
 
-use axum::{extract::State, routing::post, Router};
+use axum::{extract::State, routing::{get, post}, Router};
 use phpyun_core::dto::IdBody;
 use phpyun_core::json;
 use phpyun_core::utils::{fmt_dt, pic_n_str as pic_n};
@@ -9,9 +9,12 @@ use phpyun_services::eval_service;
 use serde::Serialize;
 use utoipa::ToSchema;
 
+/// Public list is GET-aliasable so Nuxt SSR can `api.get` like `/v1/wap/jobs`.
+pub const GET_ALLOWED_PATHS: &[&str] = &["/v1/wap/eval-papers"];
+
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/eval-papers", post(list_papers))
+        .route("/eval-papers", get(list_papers).post(list_papers))
         .route("/eval-papers/detail", post(paper_detail))
         .route("/eval-papers/messages/list", post(list_messages))
         .route("/eval-papers/recent-examinees", post(list_recent_examinees))

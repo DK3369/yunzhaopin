@@ -640,3 +640,75 @@ pub async fn count_expire(
     };
     Ok(phpyun_core::numeric::nonnegative_count(n))
 }
+
+#[derive(Debug, Clone, sqlx::FromRow, serde::Serialize)]
+pub struct AdminCompanyRow {
+    pub uid: u64,
+    pub name: String,
+    pub r_status: i32,
+    pub hy: i32,
+    pub cityid: i32,
+    pub hits: i32,
+}
+
+pub async fn list_admin(
+    pool: &MySqlPool,
+    r_status: Option<i32>,
+    keyword: Option<&str>,
+    offset: u64,
+    limit: u64,
+) -> Result<Vec<AdminCompanyRow>, sqlx::Error> {
+    let mut qb: QueryBuilder<sqlx::MySql> = QueryBuilder::new(
+        r#"SELECT CAST(uid AS UNSIGNED) AS uid,
+                  COALESCE(name, '') AS name,
+                  CAST(COALESCE(r_status, 0) AS SIGNED) AS r_status,
+                  CAST(COALESCE(hy, 0) AS SIGNED) AS hy,
+                  CAST(COALESCE(cityid, 0) AS SIGNED) AS cityid,
+                  CAST(COALESCE(hits, 0) AS SIGNED) AS hits
+           FROM phpyun_company WHERE 1=1"#,
+    );
+    push_admin_company_filters(&mut qb, r_status, keyword);
+    qb.push(" ORDER BY uid DESC LIMIT ");
+    qb.push_bind(limit);
+    qb.push(" OFFSET ");
+    qb.push_bind(offset);
+    qb.build_query_as::<AdminCompanyRow>().fetch_all(pool).await
+}
+
+pub async fn count_admin(
+    pool: &MySqlPool,
+    r_status: Option<i32>,
+    keyword: Option<&str>,
+) -> Result<u64, sqlx::Error> {
+    let mut qb: QueryBuilder<sqlx::MySql> =
+        QueryBuilder::new("SELECT COUNT(*) FROM phpyun_company WHERE 1=1");
+    push_admin_company_filters(&mut qb, r_status, keyword);
+    let (n,): (i64,) = qb.build_query_as().fetch_one(pool).await?;
+    Ok(phpyun_core::numeric::nonnegative_count(n))
+}
+
+fn push_admin_company_filters<'a>(
+    qb: &mut QueryBuilder<'a, sqlx::MySql>,
+    r_status: Option<i32>,
+    keyword: Option<&'a str>,
+) {
+    if let Some(st) = r_status {
+        qb.push(" AND r_status = ");
+        qb.push_bind(st);
+    }
+    if let Some(kw) = keyword {
+        if !kw.is_empty() {
+            qb.push(" AND name LIKE ");
+            qb.push_bind(format!("%{kw}%"));
+        }
+    }
+}
+
+pub async fn set_r_status(pool: &MySqlPool, uid: u64, r_status: i32) -> Result<u64, sqlx::Error> {
+    let res = sqlx::query("UPDATE phpyun_company SET r_status = ? WHERE uid = ?")
+        .bind(r_status)
+        .bind(uid)
+        .execute(pool)
+        .await?;
+    Ok(res.rows_affected())
+}
