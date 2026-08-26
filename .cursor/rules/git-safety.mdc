@@ -31,7 +31,7 @@ alwaysApply: true
 将 showConfirm 外层改为双引号，避免与 {yun:}t key='...' 嵌套冲突。
 ```
 
-4. 不得提交明显含密钥的文件（`.env`、`.env.dev`、凭证等）。
+4. 本仓库是**私有 GitHub**：`.env`、`.env.dev`、`.env.pro` **要提交**，改了就进同一批 commit。不要 `assume-unchanged` / `skip-worktree` 把它们藏起来。
 5. 推送：
 
 ```
