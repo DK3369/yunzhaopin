@@ -27,23 +27,23 @@ async function setStatus(row: { id: number }, status: number) {
 
 <template>
   <div>
-    <h1>导航</h1>
+    <h1>{{ $t('ui.nav') }}</h1>
     <el-form inline>
       <el-form-item><el-input v-model="form.position" placeholder="position" /></el-form-item>
-      <el-form-item><el-input v-model="form.label" placeholder="文案" /></el-form-item>
+      <el-form-item><el-input v-model="form.label" :placeholder="$t('ui.label_text')" /></el-form-item>
       <el-form-item><el-input v-model="form.url" placeholder="URL" /></el-form-item>
-      <el-button type="primary" @click="create">新增</el-button>
+      <el-button type="primary" @click="create">{{ $t('ui.add') }}</el-button>
     </el-form>
     <el-table :data="Array.isArray(data) ? data : []">
       <el-table-column prop="id" label="ID" width="80" />
-      <el-table-column prop="position" label="位置" />
-      <el-table-column prop="label" label="文案" />
+      <el-table-column prop="position" :label="$t('ui.position')" />
+      <el-table-column prop="label" :label="$t('ui.label_text')" />
       <el-table-column prop="url" label="URL" />
-      <el-table-column label="操作" width="200">
+      <el-table-column :label="$t('ui.action')" width="200">
         <template #default="{ row }">
-          <el-button size="small" @click="setStatus(row, 1)">上线</el-button>
-          <el-button size="small" @click="setStatus(row, 0)">下线</el-button>
-          <el-button size="small" type="danger" @click="setStatus(row, 2)">删除</el-button>
+          <el-button size="small" @click="setStatus(row, 1)">{{ $t('ui.online') }}</el-button>
+          <el-button size="small" @click="setStatus(row, 0)">{{ $t('ui.offline') }}</el-button>
+          <el-button size="small" type="danger" @click="setStatus(row, 2)">{{ $t('common.delete') }}</el-button>
         </template>
       </el-table-column>
     </el-table>

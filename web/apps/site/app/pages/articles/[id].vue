@@ -1,12 +1,13 @@
 <script setup lang="ts">
 const id = Number(useRoute().params.id)
+const { t } = useI18n()
 const api = useApi()
 const { data } = await useAsyncData(`article-${id}`, () =>
   api.get('/v1/wap/articles/detail', { id }),
 )
 const article = computed(() => (data.value || {}) as Record<string, unknown>)
 useSeoMeta({
-  title: () => String(article.value.title || '文章'),
+  title: () => String(article.value.title || t('common.article')),
   description: () =>
     stripHtml(article.value.description || article.value.content || article.value.body || article.value.title),
 })
@@ -31,8 +32,8 @@ useHead({
 
 <template>
   <article>
-    <h1>{{ article.title || '文章不存在' }}</h1>
+    <h1>{{ article.title || $t('ui.article_missing') }}</h1>
     <div v-if="article.content || article.body" v-html="String(article.content || article.body)" />
-    <p v-else class="muted">没有这篇文章，或暂时无法加载。</p>
+    <p v-else class="muted">{{ $t('home.no_job_data') }}</p>
   </article>
 </template>

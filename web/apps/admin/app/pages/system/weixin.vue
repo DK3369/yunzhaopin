@@ -3,6 +3,9 @@ const api = useApi()
 const { data, refresh } = await useAsyncData('admin-weixin', () =>
   api.post<Array<Record<string, unknown>>>('/v1/admin/site-settings/list', {}),
 )
+const { data: menus } = await useAsyncData('admin-wx-navs', () =>
+  api.post<Array<Record<string, unknown>>>('/v1/admin/wx-navs', {}).catch(() => []),
+)
 const form = reactive({ key: 'wx_appid', value: '', description: '', is_public: false })
 const rows = computed(() => {
   const all = Array.isArray(data.value) ? data.value : []
@@ -25,21 +28,30 @@ function fill(row: Record<string, unknown>) {
 
 <template>
   <div>
-    <h1>微信配置</h1>
-    <p>PHP <code>weixinmenu</code> 公众号参数在 config KV（<code>wx_*</code> / <code>sy_wx*</code>）。自定义菜单表本页不解析。</p>
+    <h1>{{ $t('ui.weixin') }}</h1>
     <el-form inline>
       <el-form-item><el-input v-model="form.key" placeholder="wx_*" /></el-form-item>
       <el-form-item><el-input v-model="form.value" placeholder="value" /></el-form-item>
-      <el-button type="primary" @click="upsert">保存</el-button>
+      <el-button type="primary" @click="upsert">{{ $t('common.save') }}</el-button>
     </el-form>
     <el-table :data="rows">
       <el-table-column prop="key" label="key" />
       <el-table-column prop="value" label="value" />
-      <el-table-column label="操作" width="120">
+      <el-table-column :label="$t('ui.action')" width="120">
         <template #default="{ row }">
-          <el-button size="small" @click="fill(row)">填入</el-button>
+          <el-button size="small" @click="fill(row)">{{ $t('ui.fill') }}</el-button>
         </template>
       </el-table-column>
+    </el-table>
+    <h2 style="margin-top: 24px">{{ $t('ui.wx_menu') }}</h2>
+    <el-table :data="menus || []">
+      <el-table-column prop="id" label="id" width="80" />
+      <el-table-column prop="name" :label="$t('ui.name')" />
+      <el-table-column prop="keyid" label="keyid" width="90" />
+      <el-table-column prop="key" label="key" />
+      <el-table-column prop="type" :label="$t('ui.type')" width="100" />
+      <el-table-column prop="url" label="url" />
+      <el-table-column prop="sort" label="sort" width="80" />
     </el-table>
   </div>
 </template>

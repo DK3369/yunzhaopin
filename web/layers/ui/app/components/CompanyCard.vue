@@ -1,30 +1,35 @@
 <template>
-  <NuxtLink :to="`/companies/${company.uid}`" class="com-card">
-    <h3>{{ company.name }}</h3>
-    <p>{{ company.hy_n }} · {{ company.city_two }}</p>
+  <li class="site-pc">
+    <div class="index_mq_box_pic">
+      <NuxtLink :to="`/companies/${company.uid}`" class="tlogo_p_a" :title="title">
+        <img class="on" :src="logo" :alt="title" />
+      </NuxtLink>
+    </div>
+    <div class="index_mq_box_name nowrap">{{ title }}</div>
+    <div class="index_mq_box_info">
+      {{ company.mun_n }}
+      <i v-if="company.mun_n && company.hy_n" class="index_newjob_info_line">|</i>
+      {{ company.hy_n }}
+    </div>
+    <div class="index_mq_box_hot">
+      <span class="index_mq_box_hot_n">{{ company.city_two || company.city_one || '' }}</span>
+    </div>
+  </li>
+  <NuxtLink class="site-h5 mqnewlist" :to="`/companies/${company.uid}`">
+    <div class="mqnew">
+      <div class="mqnewimg">
+        <img :src="logo" alt="" style="width: 100%" />
+      </div>
+      <div class="mqnew_comname">{{ title }}</div>
+      <div class="mqnew_comjob">{{ company.hy_n || company.city_two || '' }}</div>
+    </div>
   </NuxtLink>
 </template>
 
 <script setup lang="ts">
-defineProps<{
-  company: {
-    uid: number
-    name: string
-    hy_n?: string
-    city_two?: string
-  }
-}>()
-</script>
+import { companyName, mediaUrl, PLACEHOLDER_LOGO, type CompanyLike } from '../utils/site'
 
-<style scoped>
-.com-card {
-  display: block;
-  padding: 1rem;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  text-decoration: none;
-  color: inherit;
-}
-.com-card:hover { border-color: #2563eb; }
-p { margin: 0.25rem 0 0; color: #6b7280; }
-</style>
+const props = defineProps<{ company: CompanyLike }>()
+const title = computed(() => companyName(props.company))
+const logo = computed(() => mediaUrl(props.company.logo_n || props.company.logo, PLACEHOLDER_LOGO))
+</script>

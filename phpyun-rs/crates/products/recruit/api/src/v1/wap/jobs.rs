@@ -123,6 +123,9 @@ pub struct JobListQuery {
     /// `rec=true` keeps only sticky/promoted postings (`rec_time >= now`).
     #[serde(default)]
     pub rec: bool,
+    /// Company uid — company profile “open jobs” list.
+    #[validate(range(min = 1, max = 99_999_999))]
+    pub uid: Option<u64>,
     #[serde(default = "default_did")]
     #[validate(range(max = 9_999_999))]
     pub did: u32,
@@ -282,6 +285,7 @@ pub async fn list_jobs(
         uptime: q.uptime,
         urgent: q.urgent,
         rec: q.rec,
+        uid: q.uid,
         did: q.did,
     };
     let r = job_service::list_public(&state, &search, page).await?;

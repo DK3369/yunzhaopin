@@ -1,18 +1,19 @@
 <script setup lang="ts">
 const route = useRoute()
 const page = computed(() => Number(route.query.page || 1))
+const { t } = useI18n()
 const api = useApi()
 const { data } = await useAsyncData(
   () => `fairs-${page.value}`,
   () => api.get('/v1/wap/zph', { page: page.value, page_size: 20 }),
 )
-useSeoMeta({ title: '招聘会' })
+useSeoMeta({ title: t('wap_00223') })
 </script>
 
 <template>
   <section>
-    <h1>招聘会</h1>
-    <p v-if="!(data?.list || []).length" class="muted">暂无招聘会</p>
+    <h1>{{ $t('wap_00223') }}</h1>
+    <p v-if="!(data?.list || []).length" class="muted">{{ $t('home.no_job_data') }}</p>
     <div class="stack">
       <SimpleCard
         v-for="row in data?.list || []"

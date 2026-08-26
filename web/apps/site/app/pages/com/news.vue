@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const api = useApi()
+const { t } = useI18n()
 const { data, error, refresh } = await useAsyncData('com-news', () =>
   api.post('/v1/mcenter/company/news/list', { page: 1, page_size: 20 }),
 )
@@ -14,20 +15,20 @@ async function add() {
     form.body = ''
     await refresh()
   } catch (e: unknown) {
-    msg.value = e instanceof Error ? e.message : '失败'
+    msg.value = e instanceof Error ? e.message : t('ui.failed')
   }
 }
-useSeoMeta({ title: '企业新闻' })
+useSeoMeta({ title: t('ui.com_news') })
 </script>
 
 <template>
   <section>
-    <h1>企业新闻</h1>
-    <p v-if="error" class="muted">请先登录企业账号。</p>
+    <h1>{{ $t('ui.com_news') }}</h1>
+    <p v-if="error" class="muted">{{ $t('ui.please_login_com') }}</p>
     <form v-else class="form" @submit.prevent="add">
-      <input v-model="form.title" placeholder="title" />
-      <textarea v-model="form.body" placeholder="body" rows="4" />
-      <button type="submit">发布</button>
+      <input v-model="form.title" :placeholder="$t('ui.title')" />
+      <textarea v-model="form.body" :placeholder="$t('ui.body')" rows="4" />
+      <button type="submit">{{ $t('common.publish') }}</button>
       <p v-if="msg">{{ msg }}</p>
     </form>
     <div class="stack">
@@ -36,6 +37,6 @@ useSeoMeta({ title: '企业新闻' })
         <p class="muted">status {{ row.status }}</p>
       </article>
     </div>
-    <p><NuxtLink to="/com">返回企业中心</NuxtLink></p>
+    <p><NuxtLink to="/com">{{ $t('ui.back_com') }}</NuxtLink></p>
   </section>
 </template>

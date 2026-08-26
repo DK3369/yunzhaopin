@@ -14,16 +14,13 @@ async function setOpen(row: { id: number }, is_open: number) {
 
 <template>
   <div>
-    <h1>招聘会</h1>
-    <p>对齐 PHP is_open（上架开关）</p>
-    <el-table :data="data?.list || []">
-      <el-table-column prop="id" label="ID" width="80" />
-      <el-table-column prop="title" label="标题" />
+    <h1>{{ $t('ui.fairs') }}</h1>
+      <el-table-column prop="title" :label="$t('ui.title')" />
       <el-table-column prop="is_open" label="is_open" width="90" />
-      <el-table-column label="操作" width="180">
+      <el-table-column :label="$t('ui.action')" width="180">
         <template #default="{ row }">
-          <el-button size="small" type="primary" @click="setOpen(row, 1)">开放</el-button>
-          <el-button size="small" @click="setOpen(row, 0)">关闭</el-button>
+          <el-button size="small" type="primary" @click="setOpen(row, 1)">{{ $t('ui.open_on') }}</el-button>
+          <el-button size="small" @click="setOpen(row, 0)">{{ $t('common.close') }}</el-button>
         </template>
       </el-table-column>
     </el-table>

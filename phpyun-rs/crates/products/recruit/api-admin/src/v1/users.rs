@@ -3,7 +3,7 @@
 use axum::{extract::State, routing::post, Router};
 use phpyun_core::utils::fmt_dt;
 use phpyun_core::{
-    ApiResponse, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
+    ApiResponse, AppResult, AppState, AuthenticatedUser, ClientIp, Paged, Pagination, ValidatedJson,
 };
 use phpyun_services::admin_service::{self, UserFilter};
 use serde::{Deserialize, Serialize};
@@ -14,6 +14,7 @@ pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/users", post(list))
         .route("/users/status", post(set_status))
+        .route("/users/impersonate", post(impersonate))
 }
 
 #[derive(Debug, Deserialize, Validate, IntoParams)]
@@ -136,4 +137,53 @@ pub async fn set_status(
     user.require_admin()?;
     admin_service::set_user_status(&state, &user, uid, f.status).await?;
     Ok(ApiResponse::message("ok"))
+}
+
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct ImpersonateForm {
+    #[validate(range(min = 1, max = 99_999_999))]
+    pub uid: u64,
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct ImpersonateData {
+    pub uid: u64,
+    pub usertype: u8,
+    pub access_token: String,
+}
+
+/// Simulate login as a member (PHP 模拟登录). Returns a member access token; does not switch the admin session.
+#[utoipa::path(
+    post,
+    path = "/v1/admin/users/impersonate",
+    tag = "admin",
+    security(("bearer" = [])),
+    request_body = ImpersonateForm,
+    responses((status = 200, description = "ok", body = ImpersonateData), (status = 403, description = "forbidden"))
+)]
+pub async fn impersonate(
+    State(state): State<AppState>,
+    user: AuthenticatedUser,
+    ClientIp(ip): ClientIp,
+    headers: axum::http::HeaderMap,
+    ValidatedJson(f): ValidatedJson<ImpersonateForm>,
+) -> AppResult<ApiResponse<ImpersonateData>> {
+    user.require_admin()?;
+    let ua = headers
+        .get(axum::http::header::USER_AGENT)
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("")
+        .to_string();
+    let r = phpyun_services::user_service::impersonate(
+        &state,
+        user.uid,
+        f.uid,
+        phpyun_services::user_service::LoginContext { ip: &ip, ua: &ua },
+    )
+    .await?;
+    Ok(ApiResponse::data(ImpersonateData {
+        uid: r.uid,
+        usertype: r.usertype,
+        access_token: r.access,
+    }))
 }

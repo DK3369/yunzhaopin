@@ -42,44 +42,44 @@ async function remove(row: { id: number }) {
 
 <template>
   <div>
-    <h1>单页 CMS</h1>
-    <h2>分类</h2>
+    <h1>{{ $t('ui.pages') }}</h1>
+    <h2>{{ $t('ui.category') }}</h2>
     <el-form inline>
-      <el-form-item><el-input v-model="className" placeholder="分类名" /></el-form-item>
-      <el-button @click="addClass">新增分类</el-button>
+      <el-form-item><el-input v-model="className" :placeholder="$t('ui.class_name')" /></el-form-item>
+      <el-button @click="addClass">{{ $t('ui.add_class') }}</el-button>
     </el-form>
     <el-table :data="Array.isArray(classes) ? classes : []" style="margin-bottom: 24px">
       <el-table-column prop="id" label="ID" width="80" />
-      <el-table-column prop="name" label="名称" />
-      <el-table-column label="操作" width="120">
+      <el-table-column prop="name" :label="$t('ui.name')" />
+      <el-table-column :label="$t('ui.action')" width="120">
         <template #default="{ row }">
-          <el-button size="small" type="danger" @click="deleteClass(row)">删除</el-button>
+          <el-button size="small" type="danger" @click="deleteClass(row)">{{ $t('common.delete') }}</el-button>
         </template>
       </el-table-column>
     </el-table>
-    <h2>页面</h2>
+    <h2>{{ $t('ui.pages_list') }}</h2>
     <el-form label-width="80px" style="max-width: 720px">
-      <el-form-item label="分类ID"><el-input-number v-model="form.class_id" :min="1" /></el-form-item>
-      <el-form-item label="标题"><el-input v-model="form.title" /></el-form-item>
-      <el-form-item label="类型">
+      <el-form-item :label="$t('ui.class_id')"><el-input-number v-model="form.class_id" :min="1" /></el-form-item>
+      <el-form-item :label="$t('ui.title')"><el-input v-model="form.title" /></el-form-item>
+      <el-form-item :label="$t('ui.type')">
         <el-select v-model="form.is_type">
-          <el-option :value="1" label="自定义页" />
-          <el-option :value="2" label="站内链接" />
-          <el-option :value="3" label="外链" />
+          <el-option :value="1" :label="$t('ui.custom_page')" />
+          <el-option :value="2" :label="$t('ui.internal_link')" />
+          <el-option :value="3" :label="$t('ui.external_link')" />
         </el-select>
       </el-form-item>
-      <el-form-item label="链接"><el-input v-model="form.link_url" /></el-form-item>
-      <el-form-item label="内容"><el-input v-model="form.content" type="textarea" :rows="6" /></el-form-item>
-      <el-button type="primary" @click="upsert">保存</el-button>
+      <el-form-item :label="$t('ui.link')"><el-input v-model="form.link_url" /></el-form-item>
+      <el-form-item :label="$t('ui.content')"><el-input v-model="form.content" type="textarea" :rows="6" /></el-form-item>
+      <el-button type="primary" @click="upsert">{{ $t('common.save') }}</el-button>
     </el-form>
     <el-table :data="data?.list || []" style="margin-top: 16px">
       <el-table-column prop="id" label="ID" width="80" />
-      <el-table-column prop="title" label="标题" />
-      <el-table-column prop="class_id" label="分类" width="90" />
-      <el-table-column prop="status" label="状态" width="80" />
-      <el-table-column label="操作" width="100">
+      <el-table-column prop="title" :label="$t('ui.title')" />
+      <el-table-column prop="class_id" :label="$t('ui.category')" width="90" />
+      <el-table-column prop="status" :label="$t('ui.status')" width="80" />
+      <el-table-column :label="$t('ui.action')" width="100">
         <template #default="{ row }">
-          <el-button size="small" type="danger" @click="remove(row)">删除</el-button>
+          <el-button size="small" type="danger" @click="remove(row)">{{ $t('common.delete') }}</el-button>
         </template>
       </el-table-column>
     </el-table>

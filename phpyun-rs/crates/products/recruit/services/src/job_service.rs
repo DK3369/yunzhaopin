@@ -37,6 +37,7 @@ pub struct JobSearch {
     pub uptime: Option<i32>,
     pub urgent: bool,
     pub rec: bool,
+    pub uid: Option<u64>,
     pub did: u32,
 }
 
@@ -88,6 +89,7 @@ pub async fn list_public(
         uptime: search.uptime,
         urgent: search.urgent,
         rec: search.rec,
+        uid: search.uid,
         did: search.did,
     };
 

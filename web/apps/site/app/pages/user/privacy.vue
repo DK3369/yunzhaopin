@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const api = useApi()
+const { t } = useI18n()
 const { data, error, refresh } = await useAsyncData('privacy-resume', () =>
   api.post<{ status?: number; nametype?: number }>('/v1/mcenter/resume/list', {}),
 )
@@ -17,27 +18,27 @@ async function save() {
   msg.value = ''
   try {
     await api.post('/v1/mcenter/resume/status', { status: status.value })
-    msg.value = '隐私设置已保存'
+    msg.value = t('ui.saved')
     await refresh()
   } catch (e: unknown) {
-    msg.value = e instanceof Error ? e.message : '保存失败'
+    msg.value = e instanceof Error ? e.message : t('ui.failed')
   }
 }
-useSeoMeta({ title: '简历隐私' })
+useSeoMeta({ title: t('ui.privacy') })
 </script>
 
 <template>
   <section>
-    <h1>简历隐私</h1>
-    <p v-if="error" class="muted">请先登录。</p>
+    <h1>{{ $t('ui.privacy') }}</h1>
+    <p v-if="error" class="muted">{{ $t('wap_00376') }}</p>
     <form v-else class="form" @submit.prevent="save">
-      <p class="muted">对应 PHP 简历公开状态 <code>status</code>：1 公开 / 2 隐藏 / 3 仅投递企业可见。</p>
+      <p class="muted">{{ $t('ui.privacy_hint') }}</p>
       <select v-model.number="status">
-        <option :value="1">公开</option>
-        <option :value="2">隐藏</option>
-        <option :value="3">仅投递企业可见</option>
+        <option :value="1">{{ $t('ui.open') }}</option>
+        <option :value="2">{{ $t('ui.hidden') }}</option>
+        <option :value="3">{{ $t('ui.company_only_visible') }}</option>
       </select>
-      <button type="submit">保存</button>
+      <button type="submit">{{ $t('common.save') }}</button>
     </form>
     <p v-if="msg">{{ msg }}</p>
   </section>

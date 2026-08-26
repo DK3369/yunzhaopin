@@ -12,18 +12,18 @@ const { data, refresh } = await useAsyncData('admin-audit', () =>
 
 <template>
   <div>
-    <h1>审计日志</h1>
+    <h1>{{ $t('ui.audit') }}</h1>
     <el-form inline>
-      <el-form-item><el-input v-model="actionPrefix" placeholder="action 前缀，如 admin." /></el-form-item>
-      <el-button @click="refresh()">查询</el-button>
+      <el-form-item><el-input v-model="actionPrefix" :placeholder="$t('ui.action_prefix')" /></el-form-item>
+      <el-button @click="refresh()">{{ $t('ui.query') }}</el-button>
     </el-form>
     <el-table :data="data?.list || []">
       <el-table-column prop="id" label="ID" width="80" />
-      <el-table-column prop="actor_uid" label="操作人" width="90" />
-      <el-table-column prop="action" label="动作" />
-      <el-table-column prop="target" label="对象" />
-      <el-table-column prop="success" label="成功" width="80" />
-      <el-table-column prop="created_at_n" label="时间" />
+      <el-table-column prop="actor_uid" :label="$t('ui.actor')" width="90" />
+      <el-table-column prop="action" :label="$t('ui.action')" />
+      <el-table-column prop="target" :label="$t('ui.target')" />
+      <el-table-column prop="success" :label="$t('ui.success')" width="80" />
+      <el-table-column prop="created_at_n" :label="$t('ui.time')" />
     </el-table>
   </div>
 </template>

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const api = useApi()
+const { t } = useI18n()
 const { data, error, refresh } = await useAsyncData('saved-searches', () =>
   api.post('/v1/mcenter/saved-searches/list', { page: 1, page_size: 20 }),
 )
@@ -14,37 +15,37 @@ async function create() {
       params: JSON.parse(form.params || '{}'),
       notify: form.notify,
     })
-    msg.value = '已保存'
+    msg.value = t('ui.saved')
     await refresh()
   } catch (e: unknown) {
-    msg.value = e instanceof Error ? e.message : '保存失败'
+    msg.value = e instanceof Error ? e.message : t('ui.failed')
   }
 }
 async function remove(id: number) {
   await api.post('/v1/mcenter/saved-searches/delete', { id })
   refresh()
 }
-useSeoMeta({ title: '搜索器' })
+useSeoMeta({ title: t('ui.searcher') })
 </script>
 
 <template>
   <section>
-    <h1>搜索器</h1>
-    <p v-if="error" class="muted">请先登录。</p>
+    <h1>{{ $t('ui.searcher') }}</h1>
+    <p v-if="error" class="muted">{{ $t('wap_00376') }}</p>
     <form class="form" @submit.prevent="create">
-      <input v-model="form.name" placeholder="名称" />
+      <input v-model="form.name" :placeholder="$t('ui.name')" />
       <input v-model="form.kind" placeholder="kind" />
-      <textarea v-model="form.params" rows="3" placeholder='params JSON，如 {"keyword":"java"}' />
-      <label><input v-model="form.notify" type="checkbox" /> 通知 notify</label>
-      <button type="submit">添加</button>
+      <textarea v-model="form.params" rows="3" placeholder='{"keyword":""}' />
+      <label><input v-model="form.notify" type="checkbox" /> {{ $t('ui.notify') }}</label>
+      <button type="submit">{{ $t('ui.add') }}</button>
     </form>
     <p v-if="msg">{{ msg }}</p>
-    <p v-if="!(data?.list || []).length" class="muted">暂无搜索器</p>
+    <p v-if="!(data?.list || []).length" class="muted">{{ $t('ui.no_searcher') }}</p>
     <div class="stack">
       <article v-for="row in data?.list || []" :key="row.id" class="job-card">
         <h3>{{ row.name }}</h3>
         <p class="muted">kind {{ row.kind }} · notify {{ row.notify }}</p>
-        <button type="button" @click="remove(row.id)">删除</button>
+        <button type="button" @click="remove(row.id)">{{ $t('common.delete') }}</button>
       </article>
     </div>
   </section>

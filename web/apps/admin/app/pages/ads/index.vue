@@ -21,24 +21,24 @@ async function setStatus(row: { id: number }, status: number) {
 
 <template>
   <div>
-    <h1>广告位</h1>
+    <h1>{{ $t('ui.ads') }}</h1>
     <el-form inline>
       <el-form-item><el-input v-model="form.slot" placeholder="slot" /></el-form-item>
-      <el-form-item><el-input v-model="form.title" placeholder="标题" /></el-form-item>
-      <el-form-item><el-input v-model="form.image" placeholder="图片 URL" /></el-form-item>
-      <el-form-item><el-input v-model="form.link" placeholder="链接" /></el-form-item>
-      <el-button type="primary" @click="create">新增</el-button>
+      <el-form-item><el-input v-model="form.title" :placeholder="$t('ui.title')" /></el-form-item>
+      <el-form-item><el-input v-model="form.image" :placeholder="$t('ui.image_url')" /></el-form-item>
+      <el-form-item><el-input v-model="form.link" :placeholder="$t('ui.link')" /></el-form-item>
+      <el-button type="primary" @click="create">{{ $t('ui.add') }}</el-button>
     </el-form>
     <el-table :data="data?.list || []">
       <el-table-column prop="id" label="ID" width="80" />
-      <el-table-column prop="slot" label="槽位" />
-      <el-table-column prop="title" label="标题" />
-      <el-table-column prop="status" label="状态" width="80" />
-      <el-table-column label="操作" width="200">
+      <el-table-column prop="slot" :label="$t('ui.slot')" />
+      <el-table-column prop="title" :label="$t('ui.title')" />
+      <el-table-column prop="status" :label="$t('ui.status')" width="80" />
+      <el-table-column :label="$t('ui.action')" width="200">
         <template #default="{ row }">
-          <el-button size="small" @click="setStatus(row, 1)">上线</el-button>
-          <el-button size="small" @click="setStatus(row, 0)">下线</el-button>
-          <el-button size="small" type="danger" @click="setStatus(row, 2)">删除</el-button>
+          <el-button size="small" @click="setStatus(row, 1)">{{ $t('ui.online') }}</el-button>
+          <el-button size="small" @click="setStatus(row, 0)">{{ $t('ui.offline') }}</el-button>
+          <el-button size="small" type="danger" @click="setStatus(row, 2)">{{ $t('common.delete') }}</el-button>
         </template>
       </el-table-column>
     </el-table>

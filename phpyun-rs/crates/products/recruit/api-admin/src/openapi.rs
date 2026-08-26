@@ -65,6 +65,7 @@ use crate::v1;
         v1::company_cert::review,
         v1::users::list,
         v1::users::set_status,
+        v1::users::impersonate,
         v1::reports::list,
         v1::reports::set_status,
         v1::feedback::list,
@@ -131,6 +132,10 @@ use crate::v1;
         v1::rbac::list_users,
         v1::rbac::list_groups,
         v1::rbac::set_status,
+        v1::cron::list,
+        v1::wx_nav::list,
+        v1::msg_logs::list_email,
+        v1::msg_logs::list_sms,
     ),
     components(
         schemas(
@@ -160,6 +165,8 @@ use crate::v1;
             v1::orders::SetStatusForm,
             v1::users::AdminUserItem,
             v1::users::SetStatusForm,
+            v1::users::ImpersonateForm,
+            v1::users::ImpersonateData,
             v1::reports::AdminReportItem,
             v1::reports::SetReportStatusForm,
             v1::feedback::AdminFeedbackItem,

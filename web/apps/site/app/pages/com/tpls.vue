@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const api = useApi()
+const { t } = useI18n()
 const { data, error, refresh } = await useAsyncData('com-tpls', () =>
   api.post<Array<Record<string, unknown>>>('/v1/mcenter/company-tpls', {}),
 )
@@ -8,27 +9,27 @@ async function apply(row: { id: number }) {
   msg.value = ''
   try {
     await api.post('/v1/mcenter/company-tpls/apply', { id: row.id })
-    msg.value = '已应用'
+    msg.value = t('ui.apply_tpl')
     await refresh()
   } catch (e: unknown) {
-    msg.value = e instanceof Error ? e.message : '失败'
+    msg.value = e instanceof Error ? e.message : t('ui.failed')
   }
 }
-useSeoMeta({ title: '企业模板' })
+useSeoMeta({ title: t('ui.com_tpl') })
 </script>
 
 <template>
   <section>
-    <h1>企业模板</h1>
-    <p v-if="error" class="muted">请先登录企业账号。</p>
+    <h1>{{ $t('ui.com_tpl') }}</h1>
+    <p v-if="error" class="muted">{{ $t('ui.please_login_com') }}</p>
     <p v-if="msg">{{ msg }}</p>
     <div class="stack">
       <article v-for="row in data || []" :key="row.id">
         <h3>{{ row.name }}</h3>
         <p class="muted">kind {{ row.kind }} status {{ row.status }}</p>
-        <button type="button" @click="apply(row)">应用</button>
+        <button type="button" @click="apply(row)">{{ $t('ui.apply_tpl') }}</button>
       </article>
     </div>
-    <p><NuxtLink to="/com">返回企业中心</NuxtLink></p>
+    <p><NuxtLink to="/com">{{ $t('ui.back_com') }}</NuxtLink></p>
   </section>
 </template>

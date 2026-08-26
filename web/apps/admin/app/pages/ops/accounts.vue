@@ -26,26 +26,26 @@ async function merge() {
 
 <template>
   <div>
-    <h1>账号工具</h1>
-    <p>注销申请、身份切换、个人账号并入企业。无列表接口，按 ID 操作。</p>
+    <h1>{{ $t('ui.accounts') }}</h1>
+    <p>{{ $t('ui.accounts_hint') }}</p>
     <el-card style="margin-bottom: 16px">
-      <h2>注销申请</h2>
+      <h2>{{ $t('ui.logout_apply') }}</h2>
       <el-input-number v-model="logoutId" :min="1" />
-      <el-button @click="approveLogout">通过</el-button>
-      <el-button type="danger" @click="rejectLogout">拒绝</el-button>
+      <el-button @click="approveLogout">{{ $t('ui.approved') }}</el-button>
+      <el-button type="danger" @click="rejectLogout">{{ $t('ui.reject') }}</el-button>
     </el-card>
     <el-card style="margin-bottom: 16px">
-      <h2>身份切换申请</h2>
+      <h2>{{ $t('ui.type_switch') }}</h2>
       <el-input-number v-model="usertypeId" :min="1" />
-      <el-button @click="approveType">通过</el-button>
-      <el-button type="danger" @click="rejectType">拒绝</el-button>
+      <el-button @click="approveType">{{ $t('ui.approved') }}</el-button>
+      <el-button type="danger" @click="rejectType">{{ $t('ui.reject') }}</el-button>
     </el-card>
     <el-card>
-      <h2>账号合并</h2>
+      <h2>{{ $t('ui.merge_acc') }}</h2>
       <el-form inline>
-        <el-form-item label="个人 UID"><el-input-number v-model="userUid" :min="1" /></el-form-item>
-        <el-form-item label="企业 UID"><el-input-number v-model="companyUid" :min="1" /></el-form-item>
-        <el-button type="primary" @click="merge">合并</el-button>
+        <el-form-item :label="$t('ui.user_uid')"><el-input-number v-model="userUid" :min="1" /></el-form-item>
+        <el-form-item :label="$t('ui.com_uid')"><el-input-number v-model="companyUid" :min="1" /></el-form-item>
+        <el-button type="primary" @click="merge">{{ $t('ui.merge') }}</el-button>
       </el-form>
     </el-card>
     <pre v-if="msg">{{ msg }}</pre>

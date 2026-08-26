@@ -31,20 +31,20 @@ async function remove(row: { id: number }) {
 
 <template>
   <div>
-    <h1>公招</h1>
+    <h1>{{ $t('ui.gongzhao') }}</h1>
     <el-form label-width="90px" style="max-width: 720px">
-      <el-form-item label="标题"><el-input v-model="form.title" /></el-form-item>
+      <el-form-item :label="$t('ui.title')"><el-input v-model="form.title" /></el-form-item>
       <el-form-item label="startime"><el-input-number v-model="form.startime" :min="0" /></el-form-item>
       <el-form-item label="endtime"><el-input-number v-model="form.endtime" :min="0" /></el-form-item>
-      <el-form-item label="内容"><el-input v-model="form.content" type="textarea" :rows="4" /></el-form-item>
-      <el-button type="primary" @click="save">保存</el-button>
+      <el-form-item :label="$t('ui.content')"><el-input v-model="form.content" type="textarea" :rows="4" /></el-form-item>
+      <el-button type="primary" @click="save">{{ $t('common.save') }}</el-button>
     </el-form>
     <el-table :data="data?.list || []" style="margin-top: 16px">
       <el-table-column prop="id" label="ID" width="80" />
-      <el-table-column prop="title" label="标题" />
-      <el-table-column label="操作" width="100">
+      <el-table-column prop="title" :label="$t('ui.title')" />
+      <el-table-column :label="$t('ui.action')" width="100">
         <template #default="{ row }">
-          <el-button size="small" type="danger" @click="remove(row)">删除</el-button>
+          <el-button size="small" type="danger" @click="remove(row)">{{ $t('common.delete') }}</el-button>
         </template>
       </el-table-column>
     </el-table>

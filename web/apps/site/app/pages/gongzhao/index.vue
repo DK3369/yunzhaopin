@@ -1,18 +1,19 @@
 <script setup lang="ts">
 const route = useRoute()
 const page = computed(() => Number(route.query.page || 1))
+const { t } = useI18n()
 const api = useApi()
 const { data } = await useAsyncData(
   () => `gz-${page.value}`,
   () => api.get('/v1/wap/gongzhao', { page: page.value, page_size: 20 }),
 )
-useSeoMeta({ title: '公招' })
+useSeoMeta({ title: t('ui.gongzhao') })
 </script>
 
 <template>
   <section>
-    <h1>公招</h1>
-    <p v-if="!(data?.list || []).length" class="muted">暂无公招</p>
+    <h1>{{ $t('ui.gongzhao') }}</h1>
+    <p v-if="!(data?.list || []).length" class="muted">{{ $t('home.no_job_data') }}</p>
     <div class="stack">
       <SimpleCard
         v-for="row in data?.list || []"

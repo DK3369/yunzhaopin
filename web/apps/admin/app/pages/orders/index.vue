@@ -11,16 +11,16 @@ async function setStatus(row: { order_no: string }, status: number) {
 
 <template>
   <div>
-    <h1>VIP 订单</h1>
+    <h1>{{ $t('ui.orders') }}</h1>
     <el-table :data="data?.list || []">
-      <el-table-column prop="order_no" label="订单号" />
+      <el-table-column prop="order_no" :label="$t('ui.order_no')" />
       <el-table-column prop="uid" label="UID" width="90" />
-      <el-table-column prop="price" label="金额" width="100" />
-      <el-table-column prop="status" label="状态" width="90" />
-      <el-table-column label="操作" width="200">
+      <el-table-column prop="price" :label="$t('ui.amount')" width="100" />
+      <el-table-column prop="status" :label="$t('ui.status')" width="90" />
+      <el-table-column :label="$t('ui.action')" width="200">
         <template #default="{ row }">
-          <el-button size="small" @click="setStatus(row, 2)">退款</el-button>
-          <el-button size="small" type="danger" @click="setStatus(row, 3)">取消</el-button>
+          <el-button size="small" @click="setStatus(row, 2)">{{ $t('ui.refund') }}</el-button>
+          <el-button size="small" type="danger" @click="setStatus(row, 3)">{{ $t('common.cancel') }}</el-button>
         </template>
       </el-table-column>
     </el-table>

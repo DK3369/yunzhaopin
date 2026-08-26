@@ -1,26 +1,106 @@
 <script setup lang="ts">
+import type { DictItem } from '~/utils/query'
+
 const route = useRoute()
+const { t, locale } = useI18n()
 const page = computed(() => Number(route.query.page || 1))
+const keyword = computed(() => String(route.query.keyword || ''))
+const rec = computed(() => route.query.rec === '1')
+const hy = computed(() => numQuery(route.query.hy))
+const provinceId = computed(() => numQuery(route.query.province_id))
 const api = useApi()
 const { data } = await useAsyncData(
-  () => `companies-${page.value}`,
-  () => api.get('/v1/wap/companies', { page: page.value, page_size: 20 }),
+  () => `companies-${locale.value}-${page.value}-${keyword.value}-${rec.value}-${hy.value}-${provinceId.value}`,
+  () =>
+    api.get('/v1/wap/companies', {
+      page: page.value,
+      page_size: 20,
+      keyword: keyword.value || undefined,
+      rec: rec.value || undefined,
+      hy: hy.value,
+      province_id: provinceId.value,
+    }),
 )
-useSeoMeta({ title: '企业列表' })
+const { data: industries } = await useAsyncData(
+  () => `dict-hy-${locale.value}`,
+  () => api.get<DictItem[]>('/v1/wap/dict/industries').catch(() => [] as DictItem[]),
+)
+const { data: provinces } = await useAsyncData(
+  () => `regions-cn-1-${locale.value}`,
+  () => api.get<DictItem[]>('/v1/wap/regions', { country: 'CN', level: 1 }).catch(() => [] as DictItem[]),
+)
+useSeoMeta({ title: t('home.famous_companies') })
 </script>
 
 <template>
-  <section>
-    <h1>企业</h1>
-    <p v-if="!(data?.list || []).length" class="muted">暂无企业</p>
-    <div class="stack">
+  <div class="site-pc">
+    <div class="yun_content" style="padding: 16px 0 40px">
+      <form action="/companies" method="get" class="jobsearch_newbox" style="margin-bottom: 12px">
+        <input class="Search_jobs_text" name="keyword" :value="keyword" :placeholder="$t('common.search')" />
+        <input class="Search_jobs_submit" type="submit" :value="$t('common.search')" />
+      </form>
+      <p>
+        <NuxtLink :to="{ path: '/companies', query: mergeQuery(route.query, { rec: undefined }) }" :class="{ Search_jobs_sub_cur: !rec }">{{
+          $t('common.all')
+        }}</NuxtLink>
+        ·
+        <NuxtLink :to="{ path: '/companies', query: mergeQuery(route.query, { rec: '1' }) }" :class="{ Search_jobs_sub_cur: rec }">{{
+          $t('home.famous_companies')
+        }}</NuxtLink>
+      </p>
+      <FilterRow
+        :label="$t('common.company')"
+        param="hy"
+        :items="industries || []"
+        :current="hy"
+        path="/companies"
+        :all-label="$t('common.all')"
+      />
+      <FilterRow
+        :label="$t('member_com_00378')"
+        param="province_id"
+        :items="provinces || []"
+        :current="provinceId"
+        path="/companies"
+        :all-label="$t('common.all')"
+      />
+      <h1 style="font-size: 22px; margin: 12px 0">{{ $t('home.famous_companies') }}</h1>
+      <div class="index_mq_box">
+        <div class="index_mq_box_cont">
+          <ul>
+            <CompanyCard v-for="c in data?.list || []" :key="c.uid" :company="c" />
+          </ul>
+        </div>
+      </div>
+      <p v-if="!(data?.list || []).length" class="muted">{{ $t('home.no_job_data') }}</p>
+      <Pager
+        :page="page"
+        :page-size="20"
+        :total="data?.total || 0"
+        @update:page="(p) => navigateTo({ query: { ...route.query, page: p } })"
+      />
+    </div>
+  </div>
+  <div class="site-h5">
+    <form action="/companies" method="get" style="padding: 0.2rem 0.32rem">
+      <input class="searchnew" name="keyword" :value="keyword" :placeholder="$t('common.search')" />
+    </form>
+    <H5FilterBar
+      :all-label="$t('common.all')"
+      :tabs="[
+        { key: 'hy', label: $t('common.company'), items: industries || [] },
+        { key: 'province_id', label: $t('common_02110'), items: provinces || [] },
+      ]"
+    />
+    <div class="new_mq" style="margin: 0.2rem">
       <CompanyCard v-for="c in data?.list || []" :key="c.uid" :company="c" />
+      <p v-if="!(data?.list || []).length" class="muted" style="padding: 0.4rem">{{ $t('home.no_job_data') }}</p>
     </div>
     <Pager
       :page="page"
       :page-size="20"
       :total="data?.total || 0"
-      @update:page="(p) => navigateTo({ query: { page: p } })"
+      @update:page="(p) => navigateTo({ query: { ...route.query, page: p } })"
     />
-  </section>
+  </div>
 </template>

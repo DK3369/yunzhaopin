@@ -18,19 +18,19 @@ async function remove(row: { id: number }) {
 
 <template>
   <div>
-    <h1>积分商城分类</h1>
+    <h1>{{ $t('ui.redeem_classes') }}</h1>
     <el-form inline>
-      <el-form-item><el-input v-model="form.name" placeholder="名称" /></el-form-item>
+      <el-form-item><el-input v-model="form.name" :placeholder="$t('ui.name')" /></el-form-item>
       <el-form-item><el-input-number v-model="form.parent_id" :min="0" /></el-form-item>
-      <el-button type="primary" @click="create">新增</el-button>
+      <el-button type="primary" @click="create">{{ $t('ui.add') }}</el-button>
     </el-form>
     <el-table :data="Array.isArray(data) ? data : []">
       <el-table-column prop="id" label="ID" width="80" />
-      <el-table-column prop="parent_id" label="父级" width="80" />
-      <el-table-column prop="name" label="名称" />
-      <el-table-column label="操作" width="100">
+      <el-table-column prop="parent_id" :label="$t('ui.parent')" width="80" />
+      <el-table-column prop="name" :label="$t('ui.name')" />
+      <el-table-column :label="$t('ui.action')" width="100">
         <template #default="{ row }">
-          <el-button size="small" type="danger" @click="remove(row)">删除</el-button>
+          <el-button size="small" type="danger" @click="remove(row)">{{ $t('common.delete') }}</el-button>
         </template>
       </el-table-column>
     </el-table>

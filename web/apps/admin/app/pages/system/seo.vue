@@ -25,19 +25,19 @@ function fill(row: Record<string, unknown>) {
 
 <template>
   <div>
-    <h1>SEO 分屏</h1>
-    <p>PHP <code>set_seo</code> 没有独立表，键仍在 <code>phpyun_admin_config</code>，走 site-settings。</p>
+    <h1>{{ $t('ui.seo') }}</h1>
+    <p>{{ $t('ui.seo_hint') }}</p>
     <el-form inline>
       <el-form-item><el-input v-model="form.key" placeholder="sy_seo_*" /></el-form-item>
       <el-form-item><el-input v-model="form.value" placeholder="value" /></el-form-item>
-      <el-button type="primary" @click="upsert">保存</el-button>
+      <el-button type="primary" @click="upsert">{{ $t('common.save') }}</el-button>
     </el-form>
     <el-table :data="rows">
       <el-table-column prop="key" label="key" />
       <el-table-column prop="value" label="value" />
-      <el-table-column label="操作" width="120">
+      <el-table-column :label="$t('ui.action')" width="120">
         <template #default="{ row }">
-          <el-button size="small" @click="fill(row)">填入</el-button>
+          <el-button size="small" @click="fill(row)">{{ $t('ui.fill') }}</el-button>
         </template>
       </el-table-column>
     </el-table>

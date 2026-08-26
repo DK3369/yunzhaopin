@@ -30,22 +30,22 @@ async function remove(row: { id: number }) {
 
 <template>
   <div>
-    <h1>友情链接</h1>
+    <h1>{{ $t('ui.links') }}</h1>
     <el-form inline>
       <el-form-item><el-input v-model="form.link_name" placeholder="link_name" /></el-form-item>
       <el-form-item><el-input v-model="form.link_url" placeholder="link_url" /></el-form-item>
       <el-form-item><el-input v-model="form.link_type" placeholder="link_type" /></el-form-item>
       <el-form-item><el-input-number v-model="form.link_state" :min="0" :max="1" /></el-form-item>
-      <el-button type="primary" @click="save">保存</el-button>
+      <el-button type="primary" @click="save">{{ $t('common.save') }}</el-button>
     </el-form>
     <el-table :data="data?.list || []">
       <el-table-column prop="id" label="ID" width="80" />
-      <el-table-column prop="name" label="名称" />
+      <el-table-column prop="name" :label="$t('ui.name')" />
       <el-table-column prop="url" label="URL" />
       <el-table-column prop="status" label="link_state" width="100" />
-      <el-table-column label="操作" width="100">
+      <el-table-column :label="$t('ui.action')" width="100">
         <template #default="{ row }">
-          <el-button size="small" type="danger" @click="remove(row)">删除</el-button>
+          <el-button size="small" type="danger" @click="remove(row)">{{ $t('common.delete') }}</el-button>
         </template>
       </el-table-column>
     </el-table>

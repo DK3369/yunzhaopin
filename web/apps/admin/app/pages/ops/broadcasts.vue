@@ -16,27 +16,27 @@ async function remove(row: { id: number }) {
 
 <template>
   <div>
-    <h1>系统广播</h1>
+    <h1>{{ $t('ui.broadcasts') }}</h1>
     <el-form inline>
-      <el-form-item><el-input v-model="form.title" placeholder="标题" /></el-form-item>
-      <el-form-item><el-input v-model="form.body" placeholder="正文" /></el-form-item>
+      <el-form-item><el-input v-model="form.title" :placeholder="$t('ui.title')" /></el-form-item>
+      <el-form-item><el-input v-model="form.body" :placeholder="$t('ui.body')" /></el-form-item>
       <el-form-item>
         <el-select v-model="form.target_usertype" style="width: 140px">
-          <el-option :value="0" label="全部" />
-          <el-option :value="1" label="求职者" />
-          <el-option :value="2" label="企业" />
+          <el-option :value="0" :label="$t('common.all')" />
+          <el-option :value="1" :label="$t('ui.jobseeker')" />
+          <el-option :value="2" :label="$t('common.company')" />
         </el-select>
       </el-form-item>
-      <el-button type="primary" @click="create">发送</el-button>
+      <el-button type="primary" @click="create">{{ $t('ui.send') }}</el-button>
     </el-form>
     <el-table :data="data?.list || []">
       <el-table-column prop="id" label="ID" width="80" />
-      <el-table-column prop="title" label="标题" />
-      <el-table-column prop="target_usertype_n" label="对象" width="110" />
-      <el-table-column prop="created_at_n" label="时间" />
-      <el-table-column label="操作" width="100">
+      <el-table-column prop="title" :label="$t('ui.title')" />
+      <el-table-column prop="target_usertype_n" :label="$t('ui.target')" width="110" />
+      <el-table-column prop="created_at_n" :label="$t('ui.time')" />
+      <el-table-column :label="$t('ui.action')" width="100">
         <template #default="{ row }">
-          <el-button size="small" type="danger" @click="remove(row)">删除</el-button>
+          <el-button size="small" type="danger" @click="remove(row)">{{ $t('common.delete') }}</el-button>
         </template>
       </el-table-column>
     </el-table>

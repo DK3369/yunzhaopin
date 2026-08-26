@@ -3,6 +3,11 @@ const api = useApi()
 const { data, refresh } = await useAsyncData('admin-sms', () =>
   api.post<Array<Record<string, unknown>>>('/v1/admin/site-settings/list', {}),
 )
+const { data: logs } = await useAsyncData('admin-sms-logs', () =>
+  api
+    .post<{ list: Array<Record<string, unknown>>; total: number }>('/v1/admin/sms-logs', { page: 1, page_size: 20 })
+    .catch(() => ({ list: [], total: 0 })),
+)
 const form = reactive({ key: 'sy_msg_appkey', value: '', description: '', is_public: false })
 const rows = computed(() => {
   const all = Array.isArray(data.value) ? data.value : []
@@ -25,21 +30,28 @@ function fill(row: Record<string, unknown>) {
 
 <template>
   <div>
-    <h1>短信配置</h1>
-    <p>PHP <code>messageset</code> 键 <code>sy_msg_*</code> / <code>sy_kh_*</code>，走 site-settings，不是新表。</p>
+    <h1>{{ $t('ui.sms') }}</h1>
     <el-form inline>
       <el-form-item><el-input v-model="form.key" placeholder="sy_msg_*" /></el-form-item>
       <el-form-item><el-input v-model="form.value" placeholder="value" /></el-form-item>
-      <el-button type="primary" @click="upsert">保存</el-button>
+      <el-button type="primary" @click="upsert">{{ $t('common.save') }}</el-button>
     </el-form>
     <el-table :data="rows">
       <el-table-column prop="key" label="key" />
       <el-table-column prop="value" label="value" />
-      <el-table-column label="操作" width="120">
+      <el-table-column :label="$t('ui.action')" width="120">
         <template #default="{ row }">
-          <el-button size="small" @click="fill(row)">填入</el-button>
+          <el-button size="small" @click="fill(row)">{{ $t('ui.fill') }}</el-button>
         </template>
       </el-table-column>
+    </el-table>
+    <h2 style="margin-top: 24px">{{ $t('ui.sms_log') }}</h2>
+    <el-table :data="logs?.list || []">
+      <el-table-column prop="id" label="id" width="80" />
+      <el-table-column prop="moblie" :label="$t('ui.mobile')" />
+      <el-table-column prop="content" :label="$t('ui.content')" />
+      <el-table-column prop="state" :label="$t('ui.status')" width="90" />
+      <el-table-column prop="ctime" label="ctime" width="120" />
     </el-table>
   </div>
 </template>

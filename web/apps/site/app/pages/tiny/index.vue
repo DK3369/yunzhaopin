@@ -1,18 +1,19 @@
 <script setup lang="ts">
 const route = useRoute()
 const page = computed(() => Number(route.query.page || 1))
+const { t } = useI18n()
 const api = useApi()
 const { data } = await useAsyncData(
   () => `tiny-${page.value}`,
   () => api.get('/v1/wap/tiny-resumes/list', { page: page.value, page_size: 20 }),
 )
-useSeoMeta({ title: '普工简历' })
+useSeoMeta({ title: t('ui.tiny') })
 </script>
 
 <template>
   <section>
-    <h1>普工简历</h1>
-    <p v-if="!(data?.list || []).length" class="muted">暂无普工简历</p>
+    <h1>{{ $t('ui.tiny') }}</h1>
+    <p v-if="!(data?.list || []).length" class="muted">{{ $t('home.no_job_data') }}</p>
     <div class="stack">
       <SimpleCard
         v-for="row in data?.list || []"

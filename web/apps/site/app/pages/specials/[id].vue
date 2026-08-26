@@ -1,16 +1,17 @@
 <script setup lang="ts">
 const id = Number(useRoute().params.id)
+const { t } = useI18n()
 const api = useApi()
 const { data } = await useAsyncData(`special-${id}`, () => api.get('/v1/wap/specials/detail', { id }))
-useSeoMeta({ title: () => String(data.value?.title || '专题详情') })
+useSeoMeta({ title: () => String(data.value?.title || t('ui.specials')) })
 useHead({ link: [{ rel: 'canonical', href: `/specials/${id}` }] })
 </script>
 
 <template>
   <article>
-    <h1>{{ data?.title || '专题不存在' }}</h1>
+    <h1>{{ data?.title || $t('home.no_job_data') }}</h1>
     <p v-if="data?.intro" class="muted">{{ data.intro }}</p>
     <div v-if="data?.body" v-html="data.body" />
-    <p v-else-if="!data?.title" class="muted">没有这个专题，或暂时无法加载。</p>
+    <p v-else-if="!data?.title" class="muted">{{ $t('home.no_job_data') }}</p>
   </article>
 </template>

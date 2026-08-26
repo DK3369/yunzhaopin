@@ -21,21 +21,21 @@ async function batch(status: number) {
 
 <template>
   <div>
-    <h1>举报</h1>
+    <h1>{{ $t('ui.reports') }}</h1>
     <div style="margin-bottom: 12px">
-      <el-button size="small" @click="batch(1)">批量处理</el-button>
-      <el-button size="small" type="danger" @click="batch(2)">批量驳回</el-button>
+      <el-button size="small" @click="batch(1)">{{ $t('ui.batch_handle') }}</el-button>
+      <el-button size="small" type="danger" @click="batch(2)">{{ $t('ui.batch_dismiss') }}</el-button>
     </div>
     <el-table :data="data?.list || []" @selection-change="onSelect">
       <el-table-column type="selection" width="48" />
       <el-table-column prop="id" label="ID" width="80" />
-      <el-table-column prop="target_kind_n" label="类型" />
-      <el-table-column prop="reason_code" label="原因" />
-      <el-table-column prop="status_n" label="状态" />
-      <el-table-column label="操作" width="200">
+      <el-table-column prop="target_kind_n" :label="$t('ui.type')" />
+      <el-table-column prop="reason_code" :label="$t('ui.reason')" />
+      <el-table-column prop="status_n" :label="$t('ui.status')" />
+      <el-table-column :label="$t('ui.action')" width="200">
         <template #default="{ row }">
-          <el-button size="small" @click="setStatus(row, 1)">处理</el-button>
-          <el-button size="small" type="danger" @click="setStatus(row, 2)">驳回</el-button>
+          <el-button size="small" @click="setStatus(row, 1)">{{ $t('ui.handle') }}</el-button>
+          <el-button size="small" type="danger" @click="setStatus(row, 2)">{{ $t('ui.dismiss') }}</el-button>
         </template>
       </el-table-column>
     </el-table>

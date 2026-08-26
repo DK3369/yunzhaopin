@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const api = useApi()
+const { t } = useI18n()
 const { data, error, refresh } = await useAsyncData('com-apps', () =>
   api.post('/v1/mcenter/applications', { page: 1, page_size: 20 }),
 )
@@ -20,36 +21,36 @@ async function sendInvite() {
   msg.value = ''
   try {
     await api.post('/v1/mcenter/company/interviews/create', { ...invite })
-    msg.value = '已发出面试邀请'
+    msg.value = t('ui.send_invite')
     await refresh()
   } catch (e: unknown) {
-    msg.value = e instanceof Error ? e.message : '邀请失败'
+    msg.value = e instanceof Error ? e.message : t('ui.failed')
   }
 }
-useSeoMeta({ title: '收到的简历' })
+useSeoMeta({ title: t('ui.received_resumes') })
 </script>
 
 <template>
   <section>
-    <h1>收到的简历</h1>
-    <p v-if="error" class="muted">请先登录企业账号。</p>
-    <p v-else-if="!list.length" class="muted">暂无投递</p>
+    <h1>{{ $t('ui.received_resumes') }}</h1>
+    <p v-if="error" class="muted">{{ $t('ui.please_login_com') }}</p>
+    <p v-else-if="!list.length" class="muted">{{ $t('ui.no_applies') }}</p>
     <div class="stack">
       <article v-for="row in list" :key="row.id" class="job-card">
-        <h3>投递 #{{ row.id }} · 求职者 {{ row.uid }}</h3>
-        <p class="muted">职位 {{ row.job_id }} · {{ row.datetime_n }}</p>
-        <button type="button" @click="pick(row.id)">邀面试</button>
+        <h3>{{ $t('ui.apply_id') }} #{{ row.id }} · {{ $t('ui.seeker') }} {{ row.uid }}</h3>
+        <p class="muted">{{ $t('common.job') }} {{ row.job_id }} · {{ row.datetime_n }}</p>
+        <button type="button" @click="pick(row.id)">{{ $t('ui.invite_interview') }}</button>
       </article>
     </div>
-    <h2>发出面试邀请</h2>
+    <h2>{{ $t('ui.send_invite') }}</h2>
     <form class="form" @submit.prevent="sendInvite">
-      <input v-model.number="invite.apply_id" type="number" placeholder="投递 id" />
-      <input v-model.number="invite.inter_time" type="number" placeholder="面试时间 unix" />
-      <input v-model="invite.address" placeholder="面试地点" />
-      <input v-model="invite.linkman" placeholder="联系人" />
-      <input v-model="invite.linktel" placeholder="联系电话" />
-      <input v-model="invite.remark" placeholder="备注" />
-      <button type="submit">发送邀请</button>
+      <input v-model.number="invite.apply_id" type="number" :placeholder="$t('ui.apply_id')" />
+      <input v-model.number="invite.inter_time" type="number" :placeholder="$t('ui.interview_unix')" />
+      <input v-model="invite.address" :placeholder="$t('ui.interview_place')" />
+      <input v-model="invite.linkman" :placeholder="$t('ui.linkman')" />
+      <input v-model="invite.linktel" :placeholder="$t('ui.linkphone')" />
+      <input v-model="invite.remark" :placeholder="$t('ui.remark')" />
+      <button type="submit">{{ $t('ui.send_invite') }}</button>
       <p v-if="msg">{{ msg }}</p>
     </form>
   </section>

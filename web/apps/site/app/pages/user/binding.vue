@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const api = useApi()
+const { t } = useI18n()
 const { data, error, refresh } = await useAsyncData('oauth-bindings', () =>
   api.post<{ providers?: string[] }>('/v1/mcenter/oauth-bindings', {}),
 )
@@ -10,21 +11,21 @@ async function unbind(provider: string) {
     await api.post('/v1/mcenter/oauth-bindings/unbind', { provider })
     await refresh()
   } catch (e: unknown) {
-    msg.value = e instanceof Error ? e.message : '解绑失败'
+    msg.value = e instanceof Error ? e.message : t('ui.failed')
   }
 }
-useSeoMeta({ title: '账号绑定' })
+useSeoMeta({ title: t('ui.binding') })
 </script>
 
 <template>
   <section>
-    <h1>账号绑定</h1>
-    <p v-if="error" class="muted">请先登录。</p>
-    <p v-else-if="!(data?.providers || []).length" class="muted">暂无第三方绑定</p>
+    <h1>{{ $t('ui.binding') }}</h1>
+    <p v-if="error" class="muted">{{ $t('wap_00376') }}</p>
+    <p v-else-if="!(data?.providers || []).length" class="muted">{{ $t('ui.no_binding') }}</p>
     <ul v-else class="stack">
       <li v-for="p in data?.providers || []" :key="p">
         {{ p }}
-        <button type="button" @click="unbind(p)">解绑</button>
+        <button type="button" @click="unbind(p)">{{ $t('ui.unbind') }}</button>
       </li>
     </ul>
     <p v-if="msg">{{ msg }}</p>

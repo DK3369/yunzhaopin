@@ -24,23 +24,23 @@ async function remove(row: { id: number }) {
 
 <template>
   <div>
-    <h1>App 版本</h1>
+    <h1>{{ $t('ui.app_versions') }}</h1>
     <el-form inline>
       <el-form-item><el-input v-model="form.platform" placeholder="platform" /></el-form-item>
       <el-form-item><el-input v-model="form.version" placeholder="version" /></el-form-item>
       <el-form-item><el-input-number v-model="form.version_code" :min="0" /></el-form-item>
-      <el-form-item><el-input v-model="form.download_url" placeholder="下载地址" /></el-form-item>
-      <el-button type="primary" @click="create">发布</el-button>
+      <el-form-item><el-input v-model="form.download_url" :placeholder="$t('ui.download_url')" /></el-form-item>
+      <el-button type="primary" @click="create">{{ $t('common.publish') }}</el-button>
     </el-form>
     <el-table :data="data?.list || []">
       <el-table-column prop="id" label="ID" width="80" />
-      <el-table-column prop="platform" label="平台" />
-      <el-table-column prop="version" label="版本" />
+      <el-table-column prop="platform" :label="$t('ui.platform')" />
+      <el-table-column prop="version" :label="$t('ui.version')" />
       <el-table-column prop="version_code" label="code" width="90" />
-      <el-table-column prop="is_force" label="强制" width="80" />
-      <el-table-column label="操作" width="100">
+      <el-table-column prop="is_force" :label="$t('ui.force')" width="80" />
+      <el-table-column :label="$t('ui.action')" width="100">
         <template #default="{ row }">
-          <el-button size="small" type="danger" @click="remove(row)">删除</el-button>
+          <el-button size="small" type="danger" @click="remove(row)">{{ $t('common.delete') }}</el-button>
         </template>
       </el-table-column>
     </el-table>

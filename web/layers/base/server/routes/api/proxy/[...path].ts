@@ -1,4 +1,5 @@
 import { ACCESS_COOKIE } from '../../../utils/auth-cookie'
+import { rustLangHeaders } from '../../../utils/lang'
 
 type Envelope = { code: number; key: string; msg: string; data: unknown }
 
@@ -8,7 +9,10 @@ export default defineEventHandler(async (event) => {
   const urlPath = path.startsWith('v1/') || path.startsWith('v2/') ? `/${path}` : `/${path}`
   const method = event.method === 'GET' ? 'GET' : 'POST'
   const token = getCookie(event, ACCESS_COOKIE)
-  const headers: Record<string, string> = { accept: 'application/json' }
+  const headers: Record<string, string> = {
+    accept: 'application/json',
+    ...rustLangHeaders(event),
+  }
   if (token) headers.authorization = `Bearer ${token}`
 
   let body: unknown
@@ -35,6 +39,7 @@ export default defineEventHandler(async (event) => {
         headers: {
           accept: 'application/json',
           'content-type': 'application/json',
+          ...rustLangHeaders(event),
           authorization: token ? `Bearer ${token}` : '',
         },
         body: {},

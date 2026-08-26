@@ -1,8 +1,8 @@
 <template>
   <nav class="pager" v-if="totalPages > 1">
-    <button :disabled="page <= 1" @click="$emit('update:page', page - 1)">上一页</button>
+    <button :disabled="page <= 1" @click="$emit('update:page', page - 1)">{{ $t('common.back') }}</button>
     <span>{{ page }} / {{ totalPages }}</span>
-    <button :disabled="page >= totalPages" @click="$emit('update:page', page + 1)">下一页</button>
+    <button :disabled="page >= totalPages" @click="$emit('update:page', page + 1)">{{ $t('common.more') }}</button>
   </nav>
 </template>
 

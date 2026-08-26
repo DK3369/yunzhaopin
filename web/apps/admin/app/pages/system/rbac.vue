@@ -17,27 +17,24 @@ async function setStatus(row: { uid: number }, status: number) {
 
 <template>
   <div>
-    <h1>后台角色</h1>
-    <p>
-      读 PHP <code>phpyun_admin_user</code> / <code>phpyun_admin_user_group</code>。
-      进后台仍靠 JWT <code>usertype=3</code>，不解析 <code>group_power</code>。
-    </p>
-    <h2>用户组</h2>
+    <h1>{{ $t('ui.rbac') }}</h1>
+    <p>{{ $t('ui.rbac_hint') }}</p>
+    <h2>{{ $t('ui.users') }}</h2>
     <el-table :data="Array.isArray(groups) ? groups : []" size="small" style="max-width: 480px">
       <el-table-column prop="id" label="id" width="80" />
       <el-table-column prop="group_name" label="group_name" />
     </el-table>
-    <h2 style="margin-top: 20px">管理员账号</h2>
+    <h2 style="margin-top: 20px">{{ $t('ui.admins') }}</h2>
     <el-table :data="data?.list || []">
       <el-table-column prop="uid" label="uid" width="80" />
       <el-table-column prop="username" label="username" />
       <el-table-column prop="name" label="name" />
-      <el-table-column prop="group_name" label="组" />
+      <el-table-column prop="group_name" :label="$t('ui.category')" />
       <el-table-column prop="status" label="status" width="80" />
-      <el-table-column label="操作" width="200">
+      <el-table-column :label="$t('ui.action')" width="200">
         <template #default="{ row }">
-          <el-button size="small" @click="setStatus(row, 1)">启用</el-button>
-          <el-button size="small" type="danger" @click="setStatus(row, 0)">停用</el-button>
+          <el-button size="small" @click="setStatus(row, 1)">{{ $t('ui.enable') }}</el-button>
+          <el-button size="small" type="danger" @click="setStatus(row, 0)">{{ $t('ui.disable') }}</el-button>
         </template>
       </el-table-column>
     </el-table>

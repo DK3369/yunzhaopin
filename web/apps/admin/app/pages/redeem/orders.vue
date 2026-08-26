@@ -15,15 +15,15 @@ async function reject(row: { id: number }) {
 
 <template>
   <div>
-    <h1>兑换订单</h1>
+    <h1>{{ $t('ui.redeem_orders') }}</h1>
     <el-table :data="data?.list || []">
       <el-table-column prop="id" label="ID" width="80" />
       <el-table-column prop="uid" label="UID" width="90" />
-      <el-table-column prop="status" label="状态" width="90" />
-      <el-table-column label="操作" width="200">
+      <el-table-column prop="status" :label="$t('ui.status')" width="90" />
+      <el-table-column :label="$t('ui.action')" width="200">
         <template #default="{ row }">
-          <el-button size="small" type="primary" @click="approve(row)">通过</el-button>
-          <el-button size="small" type="danger" @click="reject(row)">拒绝</el-button>
+          <el-button size="small" type="primary" @click="approve(row)">{{ $t('ui.approved') }}</el-button>
+          <el-button size="small" type="danger" @click="reject(row)">{{ $t('ui.reject') }}</el-button>
         </template>
       </el-table-column>
     </el-table>

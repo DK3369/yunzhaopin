@@ -14,16 +14,13 @@ async function setDisplay(row: { id: number }, display: number) {
 
 <template>
   <div>
-    <h1>专题招聘</h1>
-    <p>PHP 列 display</p>
-    <el-table :data="data?.list || []">
-      <el-table-column prop="id" label="ID" width="80" />
-      <el-table-column prop="title" label="标题" />
+    <h1>{{ $t('ui.specials') }}</h1>
+      <el-table-column prop="title" :label="$t('ui.title')" />
       <el-table-column prop="status" label="display" width="90" />
-      <el-table-column label="操作" width="180">
+      <el-table-column :label="$t('ui.action')" width="180">
         <template #default="{ row }">
-          <el-button size="small" type="primary" @click="setDisplay(row, 1)">展示</el-button>
-          <el-button size="small" @click="setDisplay(row, 0)">隐藏</el-button>
+          <el-button size="small" type="primary" @click="setDisplay(row, 1)">{{ $t('ui.display') }}</el-button>
+          <el-button size="small" @click="setDisplay(row, 0)">{{ $t('ui.hidden') }}</el-button>
         </template>
       </el-table-column>
     </el-table>

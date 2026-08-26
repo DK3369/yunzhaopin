@@ -55,32 +55,32 @@ function edit(row: Record<string, unknown>) {
 
 <template>
   <div>
-    <h1>资讯</h1>
+    <h1>{{ $t('ui.articles') }}</h1>
     <el-form label-width="80px" style="max-width: 720px">
-      <el-form-item label="分类 nid">
+      <el-form-item :label="$t('ui.nid')">
         <el-input-number v-model="form.nid" :min="1" />
         <span class="muted" style="margin-left: 8px">
           {{ (Array.isArray(groups) ? groups : []).find((g) => g.id === form.nid)?.name }}
         </span>
       </el-form-item>
-      <el-form-item label="标题"><el-input v-model="form.title" /></el-form-item>
-      <el-form-item label="作者"><el-input v-model="form.author" /></el-form-item>
-      <el-form-item label="摘要"><el-input v-model="form.description" /></el-form-item>
-      <el-form-item label="正文"><el-input v-model="form.content" type="textarea" :rows="6" /></el-form-item>
-      <el-button type="primary" @click="save">保存</el-button>
+      <el-form-item :label="$t('ui.title')"><el-input v-model="form.title" /></el-form-item>
+      <el-form-item :label="$t('ui.author')"><el-input v-model="form.author" /></el-form-item>
+      <el-form-item :label="$t('ui.summary')"><el-input v-model="form.description" /></el-form-item>
+      <el-form-item :label="$t('ui.body')"><el-input v-model="form.content" type="textarea" :rows="6" /></el-form-item>
+      <el-button type="primary" @click="save">{{ $t('common.save') }}</el-button>
     </el-form>
     <el-form inline style="margin-top: 16px">
-      <el-form-item><el-input v-model="keyword" placeholder="标题" /></el-form-item>
-      <el-button @click="refresh">筛选</el-button>
+      <el-form-item><el-input v-model="keyword" :placeholder="$t('ui.title')" /></el-form-item>
+      <el-button @click="refresh">{{ $t('ui.filter') }}</el-button>
     </el-form>
     <el-table :data="data?.list || []">
       <el-table-column prop="id" label="ID" width="80" />
       <el-table-column prop="nid" label="nid" width="80" />
-      <el-table-column prop="title" label="标题" />
-      <el-table-column label="操作" width="180">
+      <el-table-column prop="title" :label="$t('ui.title')" />
+      <el-table-column :label="$t('ui.action')" width="180">
         <template #default="{ row }">
-          <el-button size="small" @click="edit(row)">编辑</el-button>
-          <el-button size="small" type="danger" @click="remove(row)">删除</el-button>
+          <el-button size="small" @click="edit(row)">{{ $t('common.edit') }}</el-button>
+          <el-button size="small" type="danger" @click="remove(row)">{{ $t('common.delete') }}</el-button>
         </template>
       </el-table-column>
     </el-table>

@@ -173,6 +173,65 @@ pub async fn login(
     })
 }
 
+/// Admin simulate-login: issue a member JWT without password (PHP 模拟登录).
+pub async fn impersonate(
+    state: &AppState,
+    actor_uid: u64,
+    target_uid: u64,
+    ctx: LoginContext<'_>,
+) -> AppResult<LoginResult> {
+    if target_uid == actor_uid {
+        return Err(ApiError::param_invalid("cannot_impersonate_self"));
+    }
+    let user: Member = user_repo::find_by_uid(state.db.reader(), target_uid)
+        .await?
+        .ok_or_else(|| ApiError::param_invalid("user_not_found"))?;
+    if user.usertype == 3 {
+        return Err(ApiError::forbidden());
+    }
+    if user.status == 2 {
+        return Err(ApiError::locked());
+    }
+    let (usertype, did) = auth_identity(&user)?;
+    let JwtIssued {
+        access,
+        refresh,
+        access_exp,
+        refresh_exp,
+        jti_access,
+        jti_refresh,
+    } = issue_pair(&state.config, user.uid, usertype, did)?;
+    let _ = user_session_service::record_login(
+        state,
+        LoginRecord {
+            uid: user.uid,
+            usertype,
+            jti_access: &jti_access,
+            jti_refresh: &jti_refresh,
+            access_exp,
+            refresh_exp,
+            ip: ctx.ip,
+            ua: ctx.ua,
+        },
+    )
+    .await;
+    let _ = audit::emit(
+        state,
+        AuditEvent::new("admin.user.impersonate", Actor::uid(actor_uid))
+            .target(format!("uid:{target_uid}"))
+            .success(true),
+    )
+    .await;
+    Ok(LoginResult {
+        access,
+        refresh,
+        uid: user.uid,
+        usertype,
+        access_exp,
+        refresh_exp,
+    })
+}
+
 // ==================== SMS one-time code login ====================
 //
 // Aligned with the `act_login=1` branch of PHPYun's `mlogin_action`. Password-less,

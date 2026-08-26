@@ -43,26 +43,26 @@ async function remove(row: { id: number }) {
 
 <template>
   <div>
-    <h1>积分商品</h1>
+    <h1>{{ $t('ui.redeem_rewards') }}</h1>
     <el-form inline>
-      <el-form-item><el-input v-model="form.name" placeholder="名称" /></el-form-item>
+      <el-form-item><el-input v-model="form.name" :placeholder="$t('ui.name')" /></el-form-item>
       <el-form-item><el-input-number v-model="form.integral" :min="1" /></el-form-item>
-      <el-form-item><el-input v-model="form.content" placeholder="说明" /></el-form-item>
-      <el-button type="primary" @click="create">新增</el-button>
+      <el-form-item><el-input v-model="form.content" :placeholder="$t('ui.desc')" /></el-form-item>
+      <el-button type="primary" @click="create">{{ $t('ui.add') }}</el-button>
     </el-form>
     <el-table :data="data?.list || []">
       <el-table-column prop="id" label="ID" width="80" />
-      <el-table-column prop="name" label="名称" />
-      <el-table-column prop="integral" label="积分" width="90" />
-      <el-table-column prop="stock" label="库存" width="80" />
-      <el-table-column prop="status" label="状态" width="80" />
-      <el-table-column label="操作" width="320">
+      <el-table-column prop="name" :label="$t('ui.name')" />
+      <el-table-column prop="integral" :label="$t('ui.integral')" width="90" />
+      <el-table-column prop="stock" :label="$t('ui.stock')" width="80" />
+      <el-table-column prop="status" :label="$t('ui.status')" width="80" />
+      <el-table-column :label="$t('ui.action')" width="320">
         <template #default="{ row }">
-          <el-button size="small" @click="setStatus(row, 1)">上架</el-button>
-          <el-button size="small" @click="setStatus(row, 0)">下架</el-button>
-          <el-button size="small" @click="setFlags(row, 1, 0)">推荐</el-button>
-          <el-button size="small" @click="setFlags(row, 0, 1)">热门</el-button>
-          <el-button size="small" type="danger" @click="remove(row)">删除</el-button>
+          <el-button size="small" @click="setStatus(row, 1)">{{ $t('ui.online') }}</el-button>
+          <el-button size="small" @click="setStatus(row, 0)">{{ $t('ui.offline') }}</el-button>
+          <el-button size="small" @click="setFlags(row, 1, 0)">{{ $t('common.recommended') }}</el-button>
+          <el-button size="small" @click="setFlags(row, 0, 1)">{{ $t('common.hot') }}</el-button>
+          <el-button size="small" type="danger" @click="remove(row)">{{ $t('common.delete') }}</el-button>
         </template>
       </el-table-column>
     </el-table>

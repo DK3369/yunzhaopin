@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const api = useApi()
+const { t } = useI18n()
 const form = reactive({
   moblie: '',
   captcha_cid: '',
@@ -22,9 +23,9 @@ async function sendSms() {
       captcha_cid: form.captcha_cid,
       authcode: form.authcode,
     })
-    msg.value = '验证码已发送'
+    msg.value = t('ui.sms_sent')
   } catch (e: unknown) {
-    msg.value = e instanceof Error ? e.message : '发送失败'
+    msg.value = e instanceof Error ? e.message : t('ui.send_failed')
     loadCaptcha()
   }
 }
@@ -36,28 +37,28 @@ async function resetPw() {
       moblie_code: form.moblie_code,
       password: form.password,
     })
-    msg.value = '密码已重置，请登录'
+    msg.value = t('ui.password_reset_ok')
     await navigateTo('/login')
   } catch (e: unknown) {
-    msg.value = e instanceof Error ? e.message : '重置失败'
+    msg.value = e instanceof Error ? e.message : t('ui.reset_failed')
   }
 }
-useSeoMeta({ title: '找回密码' })
+useSeoMeta({ title: t('wap_js_00123') })
 </script>
 
 <template>
-  <section>
-    <h1>找回密码</h1>
+  <section class="site-inner">
+    <h1>{{ $t('wap_js_00123') }}</h1>
     <form class="form" @submit.prevent="resetPw">
-      <input v-model="form.moblie" placeholder="手机号" autocomplete="tel" />
+      <input v-model="form.moblie" :placeholder="$t('wap_01619')" autocomplete="tel" />
       <img v-if="captcha?.image" :src="captcha.image" alt="captcha" @click="loadCaptcha" />
-      <input v-model="form.authcode" placeholder="图形验证码" />
-      <button type="button" @click="sendSms">发送短信验证码</button>
-      <input v-model="form.moblie_code" placeholder="短信验证码" />
-      <input v-model="form.password" type="password" placeholder="新密码" autocomplete="new-password" />
-      <button type="submit">重置密码</button>
+      <input v-model="form.authcode" :placeholder="$t('ui.image_captcha')" />
+      <button type="button" @click="sendSms">{{ $t('admin_user_00166') }}</button>
+      <input v-model="form.moblie_code" :placeholder="$t('wap_01371')" />
+      <input v-model="form.password" type="password" :placeholder="$t('wap_user_00305')" autocomplete="new-password" />
+      <button type="submit">{{ $t('admin_user_00137') }}</button>
       <p v-if="msg" class="muted">{{ msg }}</p>
-      <NuxtLink to="/login">返回登录</NuxtLink>
+      <NuxtLink to="/login">{{ $t('common.login') }}</NuxtLink>
     </form>
   </section>
 </template>

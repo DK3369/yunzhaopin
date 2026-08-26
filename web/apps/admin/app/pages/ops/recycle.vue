@@ -20,20 +20,20 @@ async function purge(row: { id: number }) {
 
 <template>
   <div>
-    <h1>回收站</h1>
+    <h1>{{ $t('ui.recycle') }}</h1>
     <el-form inline>
-      <el-form-item><el-input v-model="tablename" placeholder="表名" /></el-form-item>
-      <el-button @click="refresh()">查询</el-button>
+      <el-form-item><el-input v-model="tablename" :placeholder="$t('ui.tablename')" /></el-form-item>
+      <el-button @click="refresh()">{{ $t('ui.query') }}</el-button>
     </el-form>
     <el-table :data="data?.list || []">
       <el-table-column prop="id" label="ID" width="80" />
-      <el-table-column prop="tablename" label="表" />
-      <el-table-column prop="row_id" label="行 ID" width="90" />
-      <el-table-column prop="note" label="备注" />
-      <el-table-column label="操作" width="180">
+      <el-table-column prop="tablename" :label="$t('ui.table')" />
+      <el-table-column prop="row_id" :label="$t('ui.row_id')" width="90" />
+      <el-table-column prop="note" :label="$t('ui.note')" />
+      <el-table-column :label="$t('ui.action')" width="180">
         <template #default="{ row }">
-          <el-button size="small" @click="show(row)">详情</el-button>
-          <el-button size="small" type="danger" @click="purge(row)">彻底删除</el-button>
+          <el-button size="small" @click="show(row)">{{ $t('ui.detail') }}</el-button>
+          <el-button size="small" type="danger" @click="purge(row)">{{ $t('ui.purge') }}</el-button>
         </template>
       </el-table-column>
     </el-table>

@@ -46,6 +46,8 @@ pub struct JobFilter<'a> {
     pub urgent: bool,
     /// `rec=true` → only sticky/promoted listings (`rec_time >= now`).
     pub rec: bool,
+    /// Company uid (`phpyun_company_job.uid`). Additive filter for company pages.
+    pub uid: Option<u64>,
     pub did: u32,
 }
 
@@ -232,6 +234,10 @@ fn push_filters<'a>(qb: &mut QueryBuilder<'a, sqlx::MySql>, f: &JobFilter<'a>, n
     if f.rec {
         qb.push(" AND rec_time >= ");
         qb.push_bind(now);
+    }
+    if let Some(uid) = f.uid {
+        qb.push(" AND uid = ");
+        qb.push_bind(uid);
     }
     if let Some(days) = f.uptime {
         // 1 = today (since start-of-day in caller's timezone — we use UTC

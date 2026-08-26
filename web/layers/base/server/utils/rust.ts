@@ -1,4 +1,5 @@
 import { ACCESS_COOKIE } from './auth-cookie'
+import { rustLangHeaders } from './lang'
 
 type Envelope = { code: number; key: string; msg: string; data: unknown }
 
@@ -12,6 +13,7 @@ export async function rustFetch<T>(
   const method = (opts.method || 'POST') as 'GET' | 'POST'
   const headers: Record<string, string> = {
     accept: 'application/json',
+    ...rustLangHeaders(event),
   }
   if (method === 'POST') {
     headers['content-type'] = 'application/json'

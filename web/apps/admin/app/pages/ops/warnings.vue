@@ -18,26 +18,26 @@ async function issue() {
 
 <template>
   <div>
-    <h1>警告</h1>
+    <h1>{{ $t('ui.warnings') }}</h1>
     <el-form inline>
       <el-form-item><el-input-number v-model="form.target_uid" :min="1" /></el-form-item>
       <el-form-item>
         <el-select v-model="form.target_kind" style="width: 120px">
-          <el-option :value="1" label="用户" />
-          <el-option :value="2" label="企业" />
-          <el-option :value="3" label="职位" />
-          <el-option :value="4" label="简历" />
+          <el-option :value="1" :label="$t('ui.user_kind')" />
+          <el-option :value="2" :label="$t('common.company')" />
+          <el-option :value="3" :label="$t('common.job')" />
+          <el-option :value="4" :label="$t('common.resume')" />
         </el-select>
       </el-form-item>
-      <el-form-item><el-input v-model="form.reason" placeholder="原因" /></el-form-item>
-      <el-button type="primary" @click="issue">下发</el-button>
+      <el-form-item><el-input v-model="form.reason" :placeholder="$t('ui.reason')" /></el-form-item>
+      <el-button type="primary" @click="issue">{{ $t('ui.issue') }}</el-button>
     </el-form>
     <el-table :data="data?.list || []">
       <el-table-column prop="id" label="ID" width="80" />
-      <el-table-column prop="target_uid" label="对象UID" />
-      <el-table-column prop="target_kind_n" label="类型" />
-      <el-table-column prop="reason" label="原因" />
-      <el-table-column prop="created_at_n" label="时间" />
+      <el-table-column prop="target_uid" :label="$t('ui.target')" />
+      <el-table-column prop="target_kind_n" :label="$t('ui.type')" />
+      <el-table-column prop="reason" :label="$t('ui.reason')" />
+      <el-table-column prop="created_at_n" :label="$t('ui.time')" />
     </el-table>
   </div>
 </template>

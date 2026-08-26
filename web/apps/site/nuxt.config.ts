@@ -1,3 +1,9 @@
+import { dirname, resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
+
+const here = dirname(fileURLToPath(import.meta.url))
+const repoRoot = resolve(here, '../../..')
+
 export default defineNuxtConfig({
   extends: ['../../layers/base', '../../layers/ui'],
   compatibilityDate: '2026-08-25',
@@ -17,6 +23,15 @@ export default defineNuxtConfig({
     lazy: true,
     langDir: 'locales',
     strategy: 'no_prefix',
+    detectBrowserLanguage: {
+      useCookie: true,
+      cookieKey: 'lang',
+      fallbackLocale: 'zh',
+      redirectOn: 'no prefix',
+    },
+    compilation: {
+      strictMessage: false,
+    },
   },
   runtimeConfig: {
     public: {
@@ -33,7 +48,79 @@ export default defineNuxtConfig({
     '/user/**': { ssr: false },
     '/com/**': { ssr: false },
   },
+  app: {
+    head: {
+      meta: [
+        {
+          name: 'viewport',
+          content: 'width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no',
+        },
+      ],
+      link: [
+        { rel: 'stylesheet', href: '/legacy/pc/style/index.css', media: 'screen and (min-width: 1200px)' },
+        { rel: 'stylesheet', href: '/legacy/pc/style/css.css', media: 'screen and (min-width: 1200px)' },
+        { rel: 'stylesheet', href: '/legacy/pc/style/yun_seach.css', media: 'screen and (min-width: 1200px)' },
+        { rel: 'stylesheet', href: '/legacy/pc/style/comapply.css', media: 'screen and (min-width: 1200px)' },
+        { rel: 'stylesheet', href: '/legacy/pc/style/login.css', media: 'screen and (min-width: 1200px)' },
+        { rel: 'stylesheet', href: '/legacy/pc/style/news.css', media: 'screen and (min-width: 1200px)' },
+        { rel: 'stylesheet', href: '/legacy/pc/style/job.css', media: 'screen and (min-width: 1200px)' },
+        { rel: 'stylesheet', href: '/legacy/pc/style/class.public.css', media: 'screen and (min-width: 1200px)' },
+        { rel: 'stylesheet', href: '/legacy/pc/style/yun_job_fairs.css', media: 'screen and (min-width: 1200px)' },
+        { rel: 'stylesheet', href: '/legacy/pc/style/part.css', media: 'screen and (min-width: 1200px)' },
+        { rel: 'stylesheet', href: '/legacy/pc/style/map.css', media: 'screen and (min-width: 1200px)' },
+        { rel: 'stylesheet', href: '/legacy/pc/style/evaluate.css', media: 'screen and (min-width: 1200px)' },
+        { rel: 'stylesheet', href: '/legacy/pc/style/integral.css', media: 'screen and (min-width: 1200px)' },
+        { rel: 'stylesheet', href: '/legacy/member/user/m_css.css', media: 'screen and (min-width: 1200px)' },
+        { rel: 'stylesheet', href: '/legacy/member/com/m_style.css', media: 'screen and (min-width: 1200px)' },
+        { rel: 'stylesheet', href: '/legacy/h5/css/base.css', media: 'screen and (max-width: 1199px)' },
+        { rel: 'stylesheet', href: '/legacy/h5/css/yunwap.css', media: 'screen and (max-width: 1199px)' },
+        { rel: 'stylesheet', href: '/legacy/h5/css/css.css', media: 'screen and (max-width: 1199px)' },
+      ],
+    },
+  },
   nitro: {
     prerender: { crawlLinks: false, routes: [] },
+    publicAssets: [
+      {
+        baseURL: 'legacy/pc/style',
+        dir: resolve(repoRoot, 'uploads/app/template/default/style'),
+        maxAge: 60 * 60 * 24 * 7,
+      },
+      {
+        baseURL: 'legacy/pc/images',
+        dir: resolve(repoRoot, 'uploads/app/template/default/images'),
+        maxAge: 60 * 60 * 24 * 7,
+      },
+      {
+        baseURL: 'legacy/h5/css',
+        dir: resolve(repoRoot, 'uploads/app/template/wap/css'),
+        maxAge: 60 * 60 * 24 * 7,
+      },
+      {
+        baseURL: 'legacy/h5/images',
+        dir: resolve(repoRoot, 'uploads/app/template/wap/images'),
+        maxAge: 60 * 60 * 24 * 7,
+      },
+      {
+        baseURL: 'data/logo',
+        dir: resolve(repoRoot, 'uploads/data/logo'),
+        maxAge: 60 * 60 * 24 * 7,
+      },
+      {
+        baseURL: 'data/upload',
+        dir: resolve(repoRoot, 'uploads/data/upload'),
+        maxAge: 60 * 60 * 24 * 7,
+      },
+      {
+        baseURL: 'legacy/member/user',
+        dir: resolve(repoRoot, 'uploads/app/template/member/user/images'),
+        maxAge: 60 * 60 * 24 * 7,
+      },
+      {
+        baseURL: 'legacy/member/com',
+        dir: resolve(repoRoot, 'uploads/app/template/member/com/images'),
+        maxAge: 60 * 60 * 24 * 7,
+      },
+    ],
   },
 })

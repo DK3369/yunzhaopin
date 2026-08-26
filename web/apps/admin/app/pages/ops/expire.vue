@@ -15,13 +15,13 @@ watch(expiredOnly, () => refresh())
 
 <template>
   <div>
-    <h1>套餐到期</h1>
-    <p>读 phpyun_company_statis.vip_etime，不改 JWT</p>
-    <el-checkbox v-model="expiredOnly" style="margin-bottom: 12px">仅已过期</el-checkbox>
+    <h1>{{ $t('ui.expire') }}</h1>
+    <p>{{ $t('ui.expire_hint') }}</p>
+    <el-checkbox v-model="expiredOnly" style="margin-bottom: 12px">{{ $t('ui.expired_only') }}</el-checkbox>
     <el-table :data="data?.list || []">
       <el-table-column prop="uid" label="uid" width="90" />
-      <el-table-column prop="name" label="企业" />
-      <el-table-column prop="rating_name" label="套餐" />
+      <el-table-column prop="name" :label="$t('common.company')" />
+      <el-table-column prop="rating_name" :label="$t('ui.package')" />
       <el-table-column prop="vip_etime" label="vip_etime" width="120" />
     </el-table>
   </div>

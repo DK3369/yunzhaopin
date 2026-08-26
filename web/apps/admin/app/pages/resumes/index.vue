@@ -29,33 +29,33 @@ async function exportCsv() {
 
 <template>
   <div>
-    <h1>简历审核</h1>
-    <p>PHP <code>users_resume</code>：列 <code>r_status</code>。不是工作/教育经历逐条编辑树。</p>
+    <h1>{{ $t('ui.resume_audit') }}</h1>
+    <p>{{ $t('ui.resume_php_hint') }}</p>
     <el-form inline>
       <el-form-item>
-        <el-input v-model="keyword" placeholder="姓名" clearable />
+        <el-input v-model="keyword" :placeholder="$t('ui.fullname')" clearable />
       </el-form-item>
       <el-form-item>
         <el-select v-model="rStatus" placeholder="r_status" clearable style="width: 140px">
-          <el-option :value="0" label="待审" />
-          <el-option :value="1" label="通过" />
-          <el-option :value="2" label="未通过" />
+          <el-option :value="0" :label="$t('ui.waiting')" />
+          <el-option :value="1" :label="$t('ui.approved')" />
+          <el-option :value="2" :label="$t('ui.reject')" />
         </el-select>
       </el-form-item>
-      <el-button type="primary" @click="refresh">查询</el-button>
-      <el-button @click="exportCsv">导出 CSV</el-button>
+      <el-button type="primary" @click="refresh">{{ $t('ui.query') }}</el-button>
+      <el-button @click="exportCsv">{{ $t('ui.export_csv') }}</el-button>
     </el-form>
     <el-table :data="data?.list || []">
       <el-table-column prop="uid" label="uid" width="90" />
-      <el-table-column prop="name" label="姓名" />
+      <el-table-column prop="name" :label="$t('ui.fullname')" />
       <el-table-column prop="r_status" label="r_status" width="90" />
-      <el-table-column prop="status" label="公开 status" width="110" />
+      <el-table-column prop="status" :label="$t('ui.open')" width="110" />
       <el-table-column prop="lastupdate" label="lastupdate" width="120" />
-      <el-table-column label="操作" width="220">
+      <el-table-column :label="$t('ui.action')" width="220">
         <template #default="{ row }">
-          <el-button size="small" @click="setStatus(row, 1)">通过</el-button>
-          <el-button size="small" type="danger" @click="setStatus(row, 2)">拒绝</el-button>
-          <el-button size="small" @click="navigateTo(`/resumes/tree?uid=${row.uid}`)">经历树</el-button>
+          <el-button size="small" @click="setStatus(row, 1)">{{ $t('ui.approved') }}</el-button>
+          <el-button size="small" type="danger" @click="setStatus(row, 2)">{{ $t('ui.reject') }}</el-button>
+          <el-button size="small" @click="navigateTo(`/resumes/tree?uid=${row.uid}`)">{{ $t('ui.tree') }}</el-button>
         </template>
       </el-table-column>
     </el-table>

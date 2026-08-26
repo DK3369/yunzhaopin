@@ -19,22 +19,21 @@ async function review(row: { id: number }, next: number) {
 
 <template>
   <div>
-    <h1>店铺招聘审核</h1>
-    <p>PHP status：1 通过 / 0 待审 / 2 过期</p>
+    <h1>{{ $t('ui.once_audit') }}</h1>
     <el-radio-group v-model="status" style="margin-bottom: 12px">
-      <el-radio-button :value="0">待审</el-radio-button>
-      <el-radio-button :value="1">已通过</el-radio-button>
-      <el-radio-button :value="2">过期</el-radio-button>
+      <el-radio-button :value="0">{{ $t('ui.waiting') }}</el-radio-button>
+      <el-radio-button :value="1">{{ $t('ui.passed') }}</el-radio-button>
+      <el-radio-button :value="2">{{ $t('ui.expire') }}</el-radio-button>
     </el-radio-group>
     <el-table :data="data?.list || []">
       <el-table-column prop="id" label="ID" width="80" />
-      <el-table-column prop="companyname" label="企业" />
-      <el-table-column prop="linkman" label="联系人" />
+      <el-table-column prop="companyname" :label="$t('common.company')" />
+      <el-table-column prop="linkman" :label="$t('ui.linkman')" />
       <el-table-column prop="status" label="status" width="80" />
-      <el-table-column label="操作" width="200">
+      <el-table-column :label="$t('ui.action')" width="200">
         <template #default="{ row }">
-          <el-button size="small" type="primary" @click="review(row, 1)">通过</el-button>
-          <el-button size="small" @click="review(row, 0)">待审</el-button>
+          <el-button size="small" type="primary" @click="review(row, 1)">{{ $t('ui.approved') }}</el-button>
+          <el-button size="small" @click="review(row, 0)">{{ $t('ui.waiting') }}</el-button>
         </template>
       </el-table-column>
     </el-table>

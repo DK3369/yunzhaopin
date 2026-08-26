@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const api = useApi()
+const { t } = useI18n()
 const { data: packs } = await useAsyncData('vip-packs', () => api.post('/v1/mcenter/vip/packages', {}))
 const { data: orders, error, refresh } = await useAsyncData('vip-orders', () =>
   api.post('/v1/mcenter/vip/orders/list', { page: 1, page_size: 20 }),
@@ -13,37 +14,37 @@ async function buy(code: string) {
     const orderNo = created?.order_no
     if (orderNo) {
       await api.post('/v1/mcenter/vip/orders/mock-paid', { order_no: orderNo })
-      msg.value = `订单 ${orderNo} 已模拟支付`
+      msg.value = `${orderNo} ${t('ui.mock_paid')}`
     } else {
-      msg.value = '已下单'
+      msg.value = t('ui.submitted')
     }
     await refresh()
   } catch (e: unknown) {
-    msg.value = e instanceof Error ? e.message : '下单失败'
+    msg.value = e instanceof Error ? e.message : t('ui.failed')
   }
 }
-useSeoMeta({ title: '套餐订单' })
+useSeoMeta({ title: t('ui.orders') })
 </script>
 
 <template>
   <section>
-    <h1>套餐订单</h1>
-    <p v-if="error" class="muted">请先登录企业账号。</p>
-    <h2>可购套餐</h2>
-    <p v-if="!packages.length" class="muted">暂无套餐</p>
+    <h1>{{ $t('ui.orders') }}</h1>
+    <p v-if="error" class="muted">{{ $t('ui.please_login_com') }}</p>
+    <h2>{{ $t('ui.buyable') }}</h2>
+    <p v-if="!packages.length" class="muted">{{ $t('ui.no_packages') }}</p>
     <div class="stack">
       <article v-for="p in packages" :key="p.code" class="job-card">
         <h3>{{ p.name }}</h3>
-        <p class="muted">{{ p.price_yuan }} 元 / {{ p.duration_days }} 天</p>
-        <button type="button" @click="buy(p.code)">购买并模拟支付</button>
+        <p class="muted">{{ p.price_yuan }} {{ $t('ui.yuan') }} / {{ p.duration_days }} {{ $t('ui.days') }}</p>
+        <button type="button" @click="buy(p.code)">{{ $t('ui.buy_mock') }}</button>
       </article>
     </div>
-    <h2>我的订单</h2>
-    <p v-if="!(orders?.list || []).length" class="muted">暂无订单</p>
+    <h2>{{ $t('ui.my_orders') }}</h2>
+    <p v-if="!(orders?.list || []).length" class="muted">{{ $t('ui.no_orders') }}</p>
     <div class="stack">
       <article v-for="o in orders?.list || []" :key="o.order_no" class="job-card">
         <h3>{{ o.order_no }}</h3>
-        <p class="muted">{{ o.package_code }} · {{ o.status_n }} · {{ o.amount_yuan }} 元</p>
+        <p class="muted">{{ o.package_code }} · {{ o.status_n }} · {{ o.amount_yuan }} {{ $t('ui.yuan') }}</p>
       </article>
     </div>
     <p v-if="msg">{{ msg }}</p>

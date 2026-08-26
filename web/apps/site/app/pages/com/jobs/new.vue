@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const api = useApi()
+const { t } = useI18n()
 const form = reactive({
   name: '',
   job1: 0,
@@ -24,33 +25,33 @@ async function submit() {
   msg.value = ''
   try {
     await api.post('/v1/mcenter/jobs', { ...form })
-    msg.value = '已提交审核'
+    msg.value = t('ui.submit_audit')
     await navigateTo('/com/jobs')
   } catch (e: unknown) {
-    msg.value = e instanceof Error ? e.message : '发布失败'
+    msg.value = e instanceof Error ? e.message : t('ui.failed')
   }
 }
-useSeoMeta({ title: '发布职位' })
+useSeoMeta({ title: t('ui.publish_job') })
 </script>
 
 <template>
   <section>
-    <h1>发布职位</h1>
+    <h1>{{ $t('ui.publish_job') }}</h1>
     <form class="form" @submit.prevent="submit">
-      <input v-model="form.name" placeholder="职位名称" required />
-      <input v-model.number="form.provinceid" type="number" placeholder="省份 id" />
-      <input v-model.number="form.cityid" type="number" placeholder="城市 id" />
-      <input v-model.number="form.minsalary" type="number" placeholder="最低薪" />
-      <input v-model.number="form.maxsalary" type="number" placeholder="最高薪" />
+      <input v-model="form.name" :placeholder="$t('ui.job_name')" required />
+      <input v-model.number="form.provinceid" type="number" :placeholder="$t('ui.province_id')" />
+      <input v-model.number="form.cityid" type="number" :placeholder="$t('ui.city_id')" />
+      <input v-model.number="form.minsalary" type="number" :placeholder="$t('ui.min_salary')" />
+      <input v-model.number="form.maxsalary" type="number" :placeholder="$t('ui.max_salary')" />
       <select v-model.number="form.type">
-        <option :value="57">全职</option>
-        <option :value="58">兼职</option>
-        <option :value="59">实习</option>
-        <option :value="60">临时</option>
+        <option :value="57">{{ $t('ui.fulltime') }}</option>
+        <option :value="58">{{ $t('ui.parttime') }}</option>
+        <option :value="59">{{ $t('ui.intern') }}</option>
+        <option :value="60">{{ $t('ui.temporary') }}</option>
       </select>
-      <input v-model.number="form.number" type="number" placeholder="招聘人数" />
-      <textarea v-model="form.content" placeholder="职位描述" rows="8" />
-      <button type="submit">提交审核</button>
+      <input v-model.number="form.number" type="number" :placeholder="$t('ui.headcount')" />
+      <textarea v-model="form.content" :placeholder="$t('ui.job_desc')" rows="8" />
+      <button type="submit">{{ $t('ui.submit_audit') }}</button>
       <p v-if="msg">{{ msg }}</p>
     </form>
   </section>

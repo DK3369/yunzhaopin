@@ -29,31 +29,30 @@ async function exportCsv() {
 
 <template>
   <div>
-    <h1>企业档案</h1>
-    <p>PHP <code>user/company</code>：<code>r_status</code> 0 待审 / 1 通过 / 2 锁定。导出为 CSV（Excel 可开）。</p>
+    <h1>{{ $t('ui.companies') }}</h1>
     <el-form inline>
       <el-form-item>
-        <el-input v-model="keyword" placeholder="企业名" clearable />
+        <el-input v-model="keyword" :placeholder="$t('ui.company_name')" clearable />
       </el-form-item>
       <el-form-item>
         <el-select v-model="rStatus" placeholder="r_status" clearable style="width: 140px">
-          <el-option :value="0" label="待审" />
-          <el-option :value="1" label="通过" />
-          <el-option :value="2" label="锁定" />
+          <el-option :value="0" :label="$t('ui.waiting')" />
+          <el-option :value="1" :label="$t('ui.approved')" />
+          <el-option :value="2" :label="$t('ui.freeze')" />
         </el-select>
       </el-form-item>
-      <el-button type="primary" @click="refresh">查询</el-button>
-      <el-button @click="exportCsv">导出 CSV</el-button>
+      <el-button type="primary" @click="refresh">{{ $t('ui.query') }}</el-button>
+      <el-button @click="exportCsv">{{ $t('ui.export_csv') }}</el-button>
     </el-form>
     <el-table :data="data?.list || []">
       <el-table-column prop="uid" label="uid" width="90" />
-      <el-table-column prop="name" label="名称" />
+      <el-table-column prop="name" :label="$t('ui.name')" />
       <el-table-column prop="r_status" label="r_status" width="90" />
       <el-table-column prop="cityid" label="cityid" width="90" />
-      <el-table-column label="操作" width="220">
+      <el-table-column :label="$t('ui.action')" width="220">
         <template #default="{ row }">
-          <el-button size="small" @click="setStatus(row, 1)">通过</el-button>
-          <el-button size="small" type="danger" @click="setStatus(row, 2)">锁定</el-button>
+          <el-button size="small" @click="setStatus(row, 1)">{{ $t('ui.approved') }}</el-button>
+          <el-button size="small" type="danger" @click="setStatus(row, 2)">{{ $t('ui.freeze') }}</el-button>
         </template>
       </el-table-column>
     </el-table>

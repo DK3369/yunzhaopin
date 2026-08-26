@@ -19,22 +19,22 @@ async function review(row: { id: number }, next: number) {
 
 <template>
   <div>
-    <h1>兼职审核</h1>
-    <p>对齐 PHP partjob：pid + status → 列 state</p>
+    <h1>{{ $t('ui.parts_audit') }}</h1>
+    <p>{{ $t('ui.parts_php_hint') }}</p>
     <el-radio-group v-model="state" style="margin-bottom: 12px">
-      <el-radio-button :value="0">待审</el-radio-button>
-      <el-radio-button :value="1">已通过</el-radio-button>
-      <el-radio-button :value="2">已拒绝</el-radio-button>
+      <el-radio-button :value="0">{{ $t('ui.waiting') }}</el-radio-button>
+      <el-radio-button :value="1">{{ $t('ui.passed') }}</el-radio-button>
+      <el-radio-button :value="2">{{ $t('ui.rejected') }}</el-radio-button>
     </el-radio-group>
     <el-table :data="data?.list || []">
       <el-table-column prop="id" label="ID" width="80" />
-      <el-table-column prop="name" label="职位" />
-      <el-table-column prop="com_name" label="企业" />
+      <el-table-column prop="name" :label="$t('common.job')" />
+      <el-table-column prop="com_name" :label="$t('common.company')" />
       <el-table-column prop="state" label="state" width="80" />
-      <el-table-column label="操作" width="200">
+      <el-table-column :label="$t('ui.action')" width="200">
         <template #default="{ row }">
-          <el-button size="small" type="primary" @click="review(row, 1)">通过</el-button>
-          <el-button size="small" type="danger" @click="review(row, 2)">拒绝</el-button>
+          <el-button size="small" type="primary" @click="review(row, 1)">{{ $t('ui.approved') }}</el-button>
+          <el-button size="small" type="danger" @click="review(row, 2)">{{ $t('ui.reject') }}</el-button>
         </template>
       </el-table-column>
     </el-table>

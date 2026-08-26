@@ -1,38 +1,84 @@
 <script setup lang="ts">
 const api = useApi()
+const { t } = useI18n()
+const { comItems } = useMemberNav()
 const { data, error } = await useAsyncData('me-com', () => api.post('/v1/wap/me', {}))
-useSeoMeta({ title: '企业中心' })
+useSeoMeta({ title: t('member_com_00290') })
 async function logout() {
   await $fetch('/api/auth/logout', { method: 'POST' })
   await navigateTo('/login')
 }
+
+const links = [
+  { to: '/com/profile', icon: '/legacy/h5/images/company.png' },
+  { to: '/com/jobs', icon: '/legacy/h5/images/manage_full-time.png' },
+  { to: '/com/jobs/new', icon: '/legacy/h5/images/job_add.png' },
+  { to: '/com/applications', icon: '/legacy/h5/images/Please_resume.png' },
+  { to: '/com/talent', icon: '/legacy/h5/images/Please_resume.png' },
+  { to: '/com/cert', icon: '/legacy/h5/images/company.png' },
+  { to: '/com/messages', icon: '/legacy/h5/images/icon_communication.png' },
+  { to: '/com/downloads', icon: '/legacy/h5/images/Please_resume.png' },
+  { to: '/com/interviews', icon: '/legacy/h5/images/icon_communication.png' },
+  { to: '/com/follows', icon: '/legacy/h5/images/icon_communication.png' },
+  { to: '/com/fairs', icon: '/legacy/h5/images/diy_tit4_zph.png' },
+  { to: '/com/orders', icon: '/legacy/h5/images/financial_management.png' },
+  { to: '/com/pay', icon: '/legacy/h5/images/financial_management.png' },
+  { to: '/com/stats', icon: '/legacy/h5/images/sz.png' },
+  { to: '/com/password', icon: '/legacy/h5/images/sz.png' },
+  { to: '/advice', icon: '/legacy/h5/images/fk.png' },
+]
+function labelOf(to: string) {
+  return comItems.value.find((i) => i.to === to)?.label || t('common.more')
+}
 </script>
 
 <template>
-  <section>
-    <h1>企业中心</h1>
-    <p v-if="error" class="muted">请先登录后再使用企业功能。</p>
-    <template v-else>
-      <p class="muted">uid {{ data?.uid }}</p>
-      <nav class="stack">
-        <NuxtLink to="/com/profile">企业资料</NuxtLink>
-        <NuxtLink to="/com/jobs">职位管理</NuxtLink>
-        <NuxtLink to="/com/jobs/new">发布职位</NuxtLink>
-        <NuxtLink to="/com/applications">收到的简历</NuxtLink>
-        <NuxtLink to="/com/talent">人才库</NuxtLink>
-        <NuxtLink to="/com/orders">套餐订单</NuxtLink>
-        <NuxtLink to="/com/pay">套餐支付</NuxtLink>
-        <NuxtLink to="/com/stats">企业统计</NuxtLink>
-        <NuxtLink to="/com/interview-tpls">面试模板</NuxtLink>
-        <NuxtLink to="/com/parts">企业兼职</NuxtLink>
-        <NuxtLink to="/com/addresses">地图标注</NuxtLink>
-        <NuxtLink to="/com/views">谁看过企业</NuxtLink>
-        <NuxtLink to="/com/banners">Banner</NuxtLink>
-        <NuxtLink to="/com/tpls">企业模板</NuxtLink>
-        <NuxtLink to="/com/products">产品</NuxtLink>
-        <NuxtLink to="/com/news">新闻</NuxtLink>
-      </nav>
-      <button type="button" @click="logout">退出</button>
-    </template>
+  <section v-if="error" class="site-inner">
+    <h1>{{ $t('member_com_00290') }}</h1>
+    <p class="muted">{{ $t('wap_00376') }}</p>
+    <NuxtLink to="/login">{{ $t('ui.go_login') }}</NuxtLink>
   </section>
+  <div v-else>
+    <div class="site-pc site-inner">
+      <h1>{{ $t('member_com_00290') }}</h1>
+      <p class="muted">{{ data?.username || ('uid ' + data?.uid) }}</p>
+      <button type="button" @click="logout">{{ $t('wap_user_00342') }}</button>
+    </div>
+    <div class="site-h5">
+      <div class="userheader">
+        <div class="userheader_datum userheaderToubuds">
+          <div class="userheader_datum_left">
+            <div class="userheader_datum_job_name">
+              <i>{{ data?.username || data?.uid }}</i>
+            </div>
+            <div class="userheader_datum_job_state">
+              <div class="userheader_datum_job_data">{{ $t('common.company') }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <NuxtLink v-for="item in links" :key="item.to" :to="item.to">
+          <div class="taskbar_enterprise">
+            <div class="taskbar_datum">
+              <div class="taskbar_datum_img">
+                <img :src="item.icon" alt="" width="100%" height="100%" />
+              </div>
+              <div class="taskbar_datum_word">{{ labelOf(item.to) }}</div>
+            </div>
+            <div class="taskbar_nav">
+              <div class="taskbar_nav_img">
+                <img src="/legacy/h5/images/my_more.png" alt="" width="100%" height="100%" />
+              </div>
+            </div>
+          </div>
+        </NuxtLink>
+        <div class="taskbar_enterprise_last" @click="logout">
+          <div class="taskbar_datum">
+            <div class="taskbar_datum_word">{{ $t('wap_user_00342') }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>

@@ -11,6 +11,7 @@ pub mod categories;
 pub mod companies;
 pub mod company_cert;
 pub mod countries;
+pub mod cron;
 pub mod dashboard;
 pub mod descriptions;
 pub mod dict_i18n;
@@ -19,6 +20,7 @@ pub mod finance;
 pub mod friend_links;
 pub mod jobs;
 pub mod merge;
+pub mod msg_logs;
 pub mod nav;
 pub mod once_jobs;
 pub mod ops;
@@ -36,6 +38,7 @@ pub mod tiny;
 pub mod users;
 pub mod usertype_change;
 pub mod warnings;
+pub mod wx_nav;
 
 use axum::Router;
 use phpyun_core::AppState;
@@ -78,4 +81,7 @@ pub fn router() -> Router<AppState> {
         .merge(resumes::routes())
         .merge(finance::routes())
         .merge(rbac::routes())
+        .merge(cron::routes())
+        .merge(wx_nav::routes())
+        .merge(msg_logs::routes())
 }

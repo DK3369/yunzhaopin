@@ -1,6 +1,7 @@
 import { unwrapEnvelope, ApiError, type ApiEnvelope } from '~/utils/envelope'
 
 type Verb = 'GET' | 'POST'
+type Loc = 'zh' | 'en'
 
 function pagingQuery(payload?: Record<string, unknown>): Record<string, unknown> | undefined {
   if (!payload) return undefined
@@ -10,14 +11,38 @@ function pagingQuery(payload?: Record<string, unknown>): Record<string, unknown>
   return Object.keys(query).length ? query : undefined
 }
 
+function locFromRaw(raw: unknown): Loc | null {
+  const s = String(raw || '')
+    .trim()
+    .toLowerCase()
+    .replace(/_/g, '-')
+  if (!s) return null
+  if (s.startsWith('en')) return 'en'
+  if (s.startsWith('zh') || s === 'cn') return 'zh'
+  return null
+}
+
 export function useApi() {
+  const i18n = useI18n()
+  const route = useRoute()
+
+  function currentLoc(): Loc {
+    return locFromRaw(route.query.lang) || (i18n.locale.value === 'en' ? 'en' : 'zh')
+  }
+
   const request = async <T>(path: string, method: Verb, payload?: Record<string, unknown>): Promise<T> => {
     const url = `/api/proxy${path}`
-    const query = method === 'GET' ? payload : pagingQuery(payload)
+    const loc = currentLoc()
+    const query = {
+      ...(method === 'GET' ? payload : pagingQuery(payload)),
+      lang: loc,
+    }
+    const headers = { 'accept-language': loc === 'en' ? 'en' : 'zh-CN' }
     try {
       const body = await $fetch<ApiEnvelope<T>>(url, {
         method,
         query,
+        headers,
         body: method === 'POST' ? payload ?? {} : undefined,
         credentials: 'include',
       })
@@ -30,6 +55,7 @@ export function useApi() {
         const retry = await $fetch<ApiEnvelope<T>>(url, {
           method,
           query,
+          headers,
           body: method === 'POST' ? payload ?? {} : undefined,
           credentials: 'include',
         })
