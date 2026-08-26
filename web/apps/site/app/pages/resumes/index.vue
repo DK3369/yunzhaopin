@@ -28,33 +28,53 @@ const list = computed(() => data.value?.list || [])
 </script>
 
 <template>
-  <section>
-    <h1>{{ $t('common.resume') }}</h1>
+  <div class="site-pc">
+    <div class="yun_jobbody">
+      <div class="yun_content">
+        <div class="current_Location com_current_Location png">
+          <div class="fl">
+            {{ $t('common_01498') }}：
+            <NuxtLink to="/">{{ $t('common.home') }}</NuxtLink> >
+            <span>{{ $t('common.resume') }}</span>
+          </div>
+        </div>
+        <form action="/resumes" method="get" class="jobsearch_newbox">
+          <div class="yun_job_search">
+            <div class="yun_job_search_cont searchContButton">
+              <div class="yun_job_search_textcont">
+                <input class="Search_jobs_text" name="keyword" :value="keyword" :placeholder="$t('common.search')" />
+              </div>
+              <input class="Search_jobs_submit yun_bg_color jobsSubmit" type="submit" :value="$t('common.search')" />
+            </div>
+          </div>
+        </form>
+        <FilterRow
+          :label="$t('home.education_suffix')"
+          param="education"
+          :items="edus || []"
+          :current="education"
+          path="/resumes"
+          :all-label="$t('common.all')"
+        />
+      </div>
+    </div>
+  </div>
+  <section class="site-h5">
     <form action="/resumes" method="get" class="jobsearch_newbox">
       <input class="Search_jobs_text" name="keyword" :value="keyword" :placeholder="$t('common.search')" />
       <input class="Search_jobs_submit" type="submit" :value="$t('common.search')" />
     </form>
-    <FilterRow
-      :label="$t('home.education_suffix')"
-      param="education"
-      :items="edus || []"
-      :current="education"
-      path="/resumes"
-      :all-label="$t('common.all')"
-    />
-    <p v-if="error" class="muted">{{ failMsg }}</p>
-    <template v-else>
-      <p v-if="!list.length" class="muted">{{ $t('ui.no_data') }}</p>
-      <div class="site-h5">
-        <H5FilterBar :all-label="$t('common.all')" :tabs="[{ key: 'education', label: $t('wap_00238'), items: edus || [] }]" />
-      </div>
-      <ResumeCard v-for="r in list" :key="String(r.uid)" :row="r" />
-    </template>
-    <Pager
-      :page="page"
-      :page-size="20"
-      :total="data?.total || 0"
-      @update:page="(p) => navigateTo({ query: { ...route.query, page: p } })"
-    />
+    <H5FilterBar :all-label="$t('common.all')" :tabs="[{ key: 'education', label: $t('wap_00238'), items: edus || [] }]" />
   </section>
+  <p v-if="error" class="muted">{{ failMsg }}</p>
+  <template v-else>
+    <ResumeCard v-for="r in list" :key="String(r.uid)" :row="r" />
+    <p v-if="!list.length" class="muted">{{ $t('ui.no_data') }}</p>
+  </template>
+  <Pager
+    :page="page"
+    :page-size="20"
+    :total="data?.total || 0"
+    @update:page="(p) => navigateTo({ query: { ...route.query, page: p } })"
+  />
 </template>

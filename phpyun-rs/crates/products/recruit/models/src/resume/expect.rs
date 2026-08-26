@@ -96,6 +96,20 @@ pub async fn find_by_id(pool: &MySqlPool, id: u64) -> Result<Option<Expect>, sql
         .await
 }
 
+/// Batch fetch expects by id (resume list cards need `name` / city).
+pub async fn list_by_ids(pool: &MySqlPool, ids: &[u64]) -> Result<Vec<Expect>, sqlx::Error> {
+    if ids.is_empty() {
+        return Ok(Vec::new());
+    }
+    let placeholders = vec!["?"; ids.len()].join(",");
+    let sql = format!("SELECT {FIELDS} FROM phpyun_resume_expect WHERE id IN ({placeholders})");
+    let mut q = sqlx::query_as::<_, Expect>(&sql);
+    for id in ids {
+        q = q.bind(*id);
+    }
+    q.fetch_all(pool).await
+}
+
 pub struct ExpectInput<'a> {
     pub name: Option<&'a str>,
     pub job_classid: i64,

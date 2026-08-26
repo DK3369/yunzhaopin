@@ -13,15 +13,21 @@ const { data: home, error } = await useAsyncData('home', async () => {
     hot_keywords?: unknown[]
     new_articles?: unknown[]
   }
-  if (!(h.hot_jobs || []).length) {
-    const j = await api.get<{ list: JobLike[] }>('/v1/wap/jobs', { page_size: 32 })
-    h.hot_jobs = j.list || []
-  }
+  const [rec, latest, urgent] = await Promise.all([
+    api.get<{ list: JobLike[] }>('/v1/wap/jobs', { rec: true, page_size: 8 }).catch(() => ({ list: [] as JobLike[] })),
+    api.get<{ list: JobLike[] }>('/v1/wap/jobs', { page_size: 8 }).catch(() => ({ list: [] as JobLike[] })),
+    api.get<{ list: JobLike[] }>('/v1/wap/jobs', { urgent: true, page_size: 8 }).catch(() => ({ list: [] as JobLike[] })),
+  ])
   if (!(h.rec_companies || []).length) {
     const c = await api.get<{ list: Array<Record<string, unknown>> }>('/v1/wap/companies', { page_size: 12 })
     h.rec_companies = c.list || []
   }
-  return h
+  return {
+    ...h,
+    rec_jobs: rec.list || [],
+    latest_jobs: latest.list || [],
+    urgent_jobs: urgent.list || [],
+  }
 })
 const { data: cats } = await useAsyncData('job-cats', () =>
   api.get<CatNode[]>('/v1/wap/categories', { kind: 'job' }).catch(() => [] as CatNode[]),
@@ -33,18 +39,23 @@ const { data: adsH5 } = await useAsyncData('ads-50', () =>
   api.get<Array<{ image_n?: string; image?: string; link?: string; title?: string }>>('/v1/wap/ads', { slot: '50', limit: 5 }).catch(() => []),
 )
 const { data: resumes, error: resumeError } = await useAsyncData('home-resumes', () =>
-  api.get<{ list: Array<Record<string, unknown>> }>('/v1/wap/resumes', { page_size: 8 }).catch((e: unknown) => {
-    const status = Number((e as { statusCode?: number; code?: number }).statusCode || (e as { code?: number }).code)
-    if (status === 401) return { list: [] as Array<Record<string, unknown>> }
-    throw e
-  }),
+  api.get<{ list: Array<Record<string, unknown>> }>('/v1/wap/resumes', { page_size: 8 }),
 )
 
 const jobCats = computed(() => catTree(cats.value || [], 11))
 const hotJobs = computed(() => (home.value?.hot_jobs || []) as JobLike[])
-const recJobList = computed(() => hotJobs.value)
-const latestJobList = computed(() => hotJobs.value)
-const urgentList = computed(() => hotJobs.value.slice(0, 8))
+const recJobList = computed(() => {
+  const extra = (home.value as { rec_jobs?: JobLike[] } | null)?.rec_jobs || []
+  return extra.length ? extra : hotJobs.value
+})
+const latestJobList = computed(() => {
+  const extra = (home.value as { latest_jobs?: JobLike[] } | null)?.latest_jobs || []
+  return extra.length ? extra : hotJobs.value
+})
+const urgentList = computed(() => {
+  const extra = (home.value as { urgent_jobs?: JobLike[] } | null)?.urgent_jobs || []
+  return extra.length ? extra : hotJobs.value.slice(0, 8)
+})
 const companies = computed(() => home.value?.rec_companies || [])
 const announcements = computed(() => home.value?.announcements || [])
 const keywords = computed(() => home.value?.hot_keywords || [])
@@ -248,7 +259,7 @@ useHead({
                 {{ r.exp_n }}<i v-if="r.exp_n && r.edu_n" class="index_resume_userinfo_line">|</i>{{ r.edu_n }}
               </div>
               <div class="tjuser_yx">
-                {{ $t('home.intention') }}<span class="index_resume_useryx_n">{{ r.job_classid_n || r.expect || r.job_post_n || '' }}</span>
+                {{ $t('home.intention') }}<span class="index_resume_useryx_n">{{ r.expect_name || r.job_classid_n || r.expect || r.job_post_n || '' }}</span>
               </div>
             </li>
           </ul>

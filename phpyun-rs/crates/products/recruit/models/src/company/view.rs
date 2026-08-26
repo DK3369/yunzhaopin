@@ -35,4 +35,8 @@ pub struct CompanySummary {
     pub hits: i32,
     pub rating: i32,
     pub rating_name: Option<String>,
+    /// Open jobs (`state=1 AND status=0 AND r_status=1`). Additive; 0 when unknown.
+    pub job_num: u64,
+    /// Business-license verified (`yyzz_status=1`). Additive.
+    pub yyzz_status: i32,
 }

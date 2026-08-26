@@ -13,14 +13,13 @@ pub struct ResumePage {
     pub total: u64,
 }
 
-/// Public resume search (company-side; only usertype=2 may call).
+/// Public resume search (aligned with PHP `wap/resume`: guests may list;
+/// contact fields are masked in the handler for non-employers).
 pub async fn list_public(
     state: &AppState,
-    user: &AuthenticatedUser,
     filter: &ResumeFilter<'_>,
     page: Pagination,
 ) -> AppResult<ResumePage> {
-    user.require_employer()?;
     let (total, list) = tokio::join!(
         resume_repo::count_public(state.db.reader(), filter),
         resume_repo::list_public(state.db.reader(), filter, page.offset, page.limit),
@@ -32,8 +31,7 @@ pub async fn list_public(
 }
 
 /// Public resume detail — visible only when `status=1` and `r_status=1`.
-pub async fn get_public(state: &AppState, user: &AuthenticatedUser, uid: u64) -> AppResult<Resume> {
-    user.require_employer()?;
+pub async fn get_public(state: &AppState, uid: u64) -> AppResult<Resume> {
     resume_repo::find_public(state.db.reader(), uid)
         .await?
         .ok_or_else(|| ApiError::business("resume_not_found"))

@@ -286,6 +286,37 @@ pub async fn count_open_jobs(pool: &MySqlPool, uid: u64) -> Result<u64, sqlx::Er
     Ok(phpyun_core::numeric::nonnegative_count(row.0))
 }
 
+/// Open-job counts for a batch of company uids (one round-trip).
+pub async fn count_open_jobs_by_uids(
+    pool: &MySqlPool,
+    uids: &[u64],
+) -> Result<Vec<(u64, u64)>, sqlx::Error> {
+    if uids.is_empty() {
+        return Ok(Vec::new());
+    }
+    let placeholders = vec!["?"; uids.len()].join(",");
+    let sql = format!(
+        "SELECT CAST(uid AS SIGNED), CAST(COUNT(*) AS SIGNED) FROM phpyun_company_job \
+         WHERE uid IN ({placeholders}) AND state = 1 AND status = 0 AND r_status = 1 \
+           AND (edate = 0 OR edate > UNIX_TIMESTAMP()) \
+         GROUP BY uid"
+    );
+    let mut q = sqlx::query_as::<_, (i64, i64)>(&sql);
+    for uid in uids {
+        q = q.bind(phpyun_core::numeric::checked_db_i64(*uid, "company.uid")?);
+    }
+    let rows = q.fetch_all(pool).await?;
+    Ok(rows
+        .into_iter()
+        .map(|(uid, n)| {
+            (
+                phpyun_core::numeric::nonnegative_count(uid),
+                phpyun_core::numeric::nonnegative_count(n),
+            )
+        })
+        .collect())
+}
+
 /// One row from the `phpyun_company_show` showcase table — used on the
 /// company detail page to render the "公司风采" carousel.
 #[derive(Debug, Clone, sqlx::FromRow)]

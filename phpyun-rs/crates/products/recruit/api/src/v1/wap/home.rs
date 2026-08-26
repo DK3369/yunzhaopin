@@ -102,11 +102,15 @@ pub async fn home(
             .into_iter()
             .map(|j| crate::v1::wap::jobs::job_summary_from_dict(j, &dicts, now))
             .collect(),
-        rec_companies: p
-            .rec_companies
-            .into_iter()
-            .map(|c| super::companies::company_summary_from_dict(c, &dicts))
-            .collect(),
+        rec_companies: {
+            let mut list: Vec<super::companies::CompanySummary> = p
+                .rec_companies
+                .into_iter()
+                .map(|c| super::companies::company_summary_from_dict(c, &dicts))
+                .collect();
+            super::companies::fill_job_nums(&state, &mut list).await;
+            list
+        },
         new_articles: p
             .new_articles
             .into_iter()

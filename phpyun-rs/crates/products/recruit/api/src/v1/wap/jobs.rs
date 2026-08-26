@@ -471,6 +471,8 @@ pub async fn build_job_detail_value(
             "langname": langname,
             "city_one": city_one,
             "city_two": city_two,
+            "edu_n": dicts.comclass(d.job.edu).to_string(),
+            "exp_n": dicts.comclass(d.job.exp).to_string(),
         },
 
         // Currently logged-in user context (all 0 when not logged in)

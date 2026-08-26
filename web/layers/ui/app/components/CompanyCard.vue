@@ -12,7 +12,7 @@
       {{ company.hy_n }}
     </div>
     <div class="index_mq_box_hot">
-      <span class="index_mq_box_hot_n">{{ company.city_two || company.city_one || '' }}</span>
+      <span class="index_mq_box_hot_n">{{ hotLabel }}</span>
     </div>
   </li>
   <NuxtLink v-if="variant === 'home'" class="site-h5 mqnewlist" :to="`/companies/${company.uid}`">
@@ -46,6 +46,21 @@
           </span>
           <span v-if="company.hy_n" class="firm_qy_list_s">{{ company.hy_n }}</span>
           <span v-if="company.mun_n" class="firm_qy_list_s">{{ company.mun_n }}</span>
+          <span v-if="company.pr_n" class="firm_qy_list_s">{{ company.pr_n }}</span>
+          <img
+            v-if="Number(company.yyzz_status) === 1"
+            src="/legacy/pc/images/disc_icon10.png"
+            alt=""
+            class="png"
+            width="16"
+          />
+        </div>
+        <div v-if="typeof company.job_num === 'number'" class="firm_qy_job_list">
+          <div class="firm_qy_job_list_name">{{ $t('wap_00185') }}：</div>
+          <div class="firm_qy_job_list_r">
+            <span v-if="company.job_num" class="firm_qy_job_tag">{{ company.job_num }}</span>
+            <div v-else class="firm_qy_job_no">{{ $t('home.no_recruiting_jobs') }}</div>
+          </div>
         </div>
       </div>
     </div>
@@ -60,4 +75,10 @@ const props = withDefaults(defineProps<{ company: CompanyLike; variant?: 'home' 
 })
 const title = computed(() => companyName(props.company))
 const logo = computed(() => mediaUrl(props.company.logo_n || props.company.logo, PLACEHOLDER_LOGO))
+const hotLabel = computed(() => {
+  if (typeof props.company.job_num === 'number' && props.company.job_num > 0) {
+    return String(props.company.job_num)
+  }
+  return String(props.company.city_two || props.company.city_one || '')
+})
 </script>

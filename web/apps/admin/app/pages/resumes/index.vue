@@ -4,7 +4,7 @@ const rStatus = ref<number | undefined>()
 const keyword = ref('')
 const page = ref(1)
 const { data, error, refresh } = await useAsyncData(
-  () => `admin-resumes-${page.value}`,
+  () => `admin-resumes-${page.value}-${rStatus.value ?? 'all'}-${keyword.value}`,
   () =>
     api.post<{ list: Array<Record<string, unknown>>; total: number }>('/v1/admin/resumes', {
       page: page.value,
@@ -13,6 +13,10 @@ const { data, error, refresh } = await useAsyncData(
       keyword: keyword.value || undefined,
     }),
 )
+watch([rStatus, keyword], () => {
+  page.value = 1
+  refresh()
+})
 async function setStatus(row: { uid: number }, r_status: number) {
   await api.post('/v1/admin/resumes/status', { uid: row.uid, r_status })
   refresh()

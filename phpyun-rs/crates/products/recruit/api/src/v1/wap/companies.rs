@@ -103,6 +103,22 @@ pub fn company_summary_from_dict(
         hits: c.hits,
         rating: c.rating,
         rating_name: c.rating_name,
+        job_num: 0,
+        yyzz_status: c.yyzz_status,
+    }
+}
+
+/// Fill `job_num` on list cards (one grouped COUNT). Best-effort: leave 0 on error.
+pub async fn fill_job_nums(state: &AppState, list: &mut [CompanySummary]) {
+    let uids: Vec<u64> = list.iter().map(|c| c.uid).collect();
+    let Ok(rows) =
+        phpyun_models::company::repo::count_open_jobs_by_uids(state.db.reader(), &uids).await
+    else {
+        return;
+    };
+    let map: std::collections::HashMap<u64, u64> = rows.into_iter().collect();
+    for row in list {
+        row.job_num = map.get(&row.uid).copied().unwrap_or(0);
     }
 }
 
@@ -136,11 +152,14 @@ pub async fn list_companies(
     };
     let r = company_service::list_public(&state, &filter, page).await?;
     let dicts = phpyun_services::dict_service::get(&state).await?;
+    let mut list: Vec<CompanySummary> = r
+        .list
+        .into_iter()
+        .map(|c| crate::v1::wap::companies::company_summary_from_dict(c, &dicts))
+        .collect();
+    fill_job_nums(&state, &mut list).await;
     Ok(ApiResponse::data(Paged::new(
-        r.list
-            .into_iter()
-            .map(|c| crate::v1::wap::companies::company_summary_from_dict(c, &dicts))
-            .collect(),
+        list,
         r.total,
         page.page,
         page.page_size,

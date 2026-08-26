@@ -46,6 +46,8 @@ async function batch(next: number) {
       <el-table-column prop="id" label="ID" width="80" />
       <el-table-column prop="name" :label="$t('common.job')" />
       <el-table-column prop="com_name" :label="$t('common.company')" />
+      <el-table-column prop="edu_n" :label="$t('home.education_suffix')" width="110" />
+      <el-table-column prop="lastupdate" :label="$t('ui.time')" width="120" />
       <el-table-column :label="$t('ui.action')" width="200">
         <template #default="{ row }">
           <el-button size="small" type="primary" @click="review(row, 1)">{{ $t('ui.approved') }}</el-button>

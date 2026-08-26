@@ -3,6 +3,18 @@ const api = useApi()
 const { t } = useI18n()
 const { comItems } = useMemberNav()
 const { data, error } = await useAsyncData('me-com', () => api.post('/v1/wap/me', {}))
+const { data: dash } = await useAsyncData('com-dash', () =>
+  api
+    .post<{
+      applies_received: number
+      applies_unread: number
+      resume_downloads: number
+    }>('/v1/mcenter/com-dashboard', {})
+    .catch(() => null),
+)
+const { data: jobCounts } = await useAsyncData('com-job-counts', () =>
+  api.post<{ total: number; online: number }>('/v1/mcenter/jobs/counts', {}).catch(() => ({ total: 0, online: 0 })),
+)
 useSeoMeta({ title: t('member_com_00290') })
 async function logout() {
   await $fetch('/api/auth/logout', { method: 'POST' })
@@ -47,6 +59,12 @@ function labelOf(to: string) {
               <div class="membRiTopInfo">
                 <span>{{ $t('wap_com_00105') }}</span>
               </div>
+              <div class="membRiTopNum">
+                <span>{{ dash?.applies_received ?? 0 }}</span>
+              </div>
+              <div v-if="dash?.applies_unread" class="membRiTopInx">
+                <span>{{ dash.applies_unread }}</span>
+              </div>
             </NuxtLink>
           </li>
           <li class="membRighTops_mr">
@@ -54,12 +72,18 @@ function labelOf(to: string) {
               <div class="membRiTopInfo">
                 <span>{{ $t('wap_com_00106') }}</span>
               </div>
+              <div class="membRiTopNum">
+                <span>{{ jobCounts?.online ?? jobCounts?.total ?? 0 }}</span>
+              </div>
             </NuxtLink>
           </li>
           <li class="membRighTops_mr">
             <NuxtLink to="/com/talent" class="membRiTopText">
               <div class="membRiTopInfo">
                 <span>{{ $t('wap_00576') }}</span>
+              </div>
+              <div class="membRiTopNum">
+                <span>{{ dash?.resume_downloads ?? 0 }}</span>
               </div>
             </NuxtLink>
           </li>

@@ -19,6 +19,29 @@ const company = computed(
   () =>
     ((data.value as { company?: Record<string, unknown> } | null)?.company || {}) as Record<string, unknown>,
 )
+const userContext = computed(
+  () =>
+    ((data.value as { user_context?: Record<string, unknown> } | null)?.user_context || {}) as Record<
+      string,
+      unknown
+    >,
+)
+const formatted = computed(
+  () =>
+    ((data.value as { formatted?: Record<string, unknown> } | null)?.formatted || {}) as Record<
+      string,
+      unknown
+    >,
+)
+const msgList = computed(
+  () =>
+    ((data.value as { msg_list?: Array<Record<string, unknown>> } | null)?.msg_list || []) as Array<
+      Record<string, unknown>
+    >,
+)
+const alreadyApplied = computed(() => Boolean(userContext.value.is_applied))
+const eduLabel = computed(() => String(dict.value.edu_n || dict.value.job_edu || job.value.edu_n || ''))
+const expLabel = computed(() => String(dict.value.exp_n || dict.value.job_exp || job.value.exp_n || ''))
 const { data: similar } = await useAsyncData(
   () => `job-similar-${locale.value}-${id}`,
   () => api.get<JobLike[]>('/v1/wap/jobs/similar', { id, limit: 8 }).catch(() => [] as JobLike[]),
@@ -152,7 +175,9 @@ useHead({
                 fav ? $t('wap_00378') : $t('wap_00379')
               }}</a>
               <a href="javascript:;" class="job_ceil_jobsc" @click.prevent="report">{{ $t('common.submit') }}</a>
-              <a href="javascript:;" class="job_ceil_jobtd" @click.prevent="apply">{{ $t('wap_com_00235') }}</a>
+              <a href="javascript:;" class="job_ceil_jobtd" @click.prevent="apply">{{
+                alreadyApplied ? $t('ui.already_applied') : $t('wap_com_00235')
+              }}</a>
             </div>
           </div>
         </div>
@@ -168,7 +193,10 @@ useHead({
               <h1 class="job_details_name">{{ job.name }}</h1>
               <span class="job_details_salary_n">{{ salary }}</span>
               <p class="muted" style="margin-top: 12px">
-                {{ dict.city_two || job.city_two }} · {{ dict.job_edu || dict.edu_n }} · {{ dict.job_exp || dict.exp_n }}
+                {{ dict.city_two || job.city_two }}
+                <template v-if="eduLabel"> · {{ eduLabel }}</template>
+                <template v-if="expLabel"> · {{ expLabel }}</template>
+                <template v-if="formatted.lastupdate_n"> · {{ formatted.lastupdate_n }}</template>
               </p>
               <div v-if="welfare.length" class="job_details_welfare">
                 <span v-for="w in welfare" :key="w" class="job_details_welfare_n">{{ w }}</span>
@@ -203,6 +231,14 @@ useHead({
             </div>
             <h2>{{ $t('common.job') }}</h2>
             <div v-html="String(job.description || job.content || '')" />
+            <div v-if="msgList.length" class="job_details_left_box" style="margin-top: 16px">
+              <h2>{{ $t('common.message') }}</h2>
+              <p v-for="m in msgList" :key="String(m.id)" class="muted">
+                <strong>{{ m.username }}</strong>
+                {{ m.content }}
+                <template v-if="m.reply"><br />{{ m.reply }}</template>
+              </p>
+            </div>
             <h2 v-if="similar?.length">{{ $t('home.recommended_jobs') }}</h2>
             <div v-if="similar?.length">
               <JobCard v-for="row in similar" :key="row.id" :job="row" variant="search" />
@@ -247,14 +283,14 @@ useHead({
               <div class="job_describe_top_require_left">
                 <i>{{ dict.city_two || job.city_two || dict.city_one }}</i>
               </div>
-              <div v-if="dict.job_edu || dict.edu_n" class="job_describe_top_require_center">
+              <div v-if="eduLabel" class="job_describe_top_require_center">
                 <div class="job_describe_top_require_left">
-                  <i>{{ dict.job_edu || dict.edu_n }}</i>
+                  <i>{{ eduLabel }}</i>
                 </div>
               </div>
-              <div v-if="dict.job_exp || dict.exp_n" class="job_describe_top_require_right">
+              <div v-if="expLabel" class="job_describe_top_require_right">
                 <div class="job_describe_top_require_left">
-                  <i>{{ dict.job_exp || dict.exp_n }}</i>
+                  <i>{{ expLabel }}</i>
                 </div>
               </div>
             </div>
@@ -300,7 +336,9 @@ useHead({
               </a>
             </div>
             <a href="javascript:;" class="yun_czfoot_s" @click.prevent="apply">
-              <div class="yun_czfoot_s_p yun_czfoot_jlicon">{{ applyMsg || $t('wap_com_00235') }}</div>
+              <div class="yun_czfoot_s_p yun_czfoot_jlicon">{{
+                applyMsg || (alreadyApplied ? $t('ui.already_applied') : $t('wap_com_00235'))
+              }}</div>
             </a>
             <a href="javascript:;" class="yun_czfoot_s" @click.prevent="showTel">
               <div class="yun_czfoot_s_p">{{ $t('common.phone') }}</div>

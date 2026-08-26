@@ -18,6 +18,11 @@ async function review(row: { uid: number }, approve: boolean) {
     <el-table v-if="!error && (data?.list || []).length" :data="data?.list || []">
       <el-table-column prop="uid" label="UID" width="90" />
       <el-table-column prop="status_n" :label="$t('ui.status')" width="110" />
+      <el-table-column :label="$t('ui.image')" width="90">
+        <template #default="{ row }">
+          <img v-if="row.license_photo_n" :src="String(row.license_photo_n)" alt="" width="48" />
+        </template>
+      </el-table-column>
       <el-table-column prop="note" :label="$t('ui.note')" />
       <el-table-column prop="submitted_at_n" :label="$t('ui.time')" />
       <el-table-column :label="$t('ui.action')" width="200">

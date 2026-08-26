@@ -51,6 +51,8 @@
       <div class="yunjoblist_newname">
         <NuxtLink :to="`/jobs/${job.id}`" class="yunjoblist_newname_a" :title="job.name">{{ job.name }}</NuxtLink>
         <i v-if="job.newtime" class="job_newicon">new</i>
+        <img v-if="job.is_urgent" src="/legacy/pc/images/jobjp.png" alt="" class="co_zzjp png" />
+        <img v-if="job.is_rec" src="/legacy/pc/images/jobtj.png" alt="" class="co_zzjp png" />
       </div>
       <div class="yunjoblist_newcomename">
         <NuxtLink v-if="job.uid" :to="`/companies/${job.uid}`" class="search_job_com_name">{{ job.com_name }}</NuxtLink>
@@ -67,6 +69,12 @@
           <span v-if="job.exp_n" class="search_job_list_box_s">{{ job.exp_n }}</span>
           <span v-if="job.edu_n" class="search_job_list_box_line">|</span>
           <span v-if="job.edu_n" class="search_job_list_box_s">{{ job.edu_n }}</span>
+        </div>
+      </div>
+      <div class="company_det_c_name">
+        <div class="company_det_hy">
+          <img :src="logo" width="40" height="40" alt="" style="vertical-align: middle; margin-right: 8px" />
+          <template v-if="job.job_hy || job.hy_n">{{ job.job_hy || job.hy_n }}</template>
         </div>
       </div>
     </div>

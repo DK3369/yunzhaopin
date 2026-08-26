@@ -3,6 +3,19 @@ const api = useApi()
 const { t } = useI18n()
 const { userItems } = useMemberNav()
 const { data, error } = await useAsyncData('me-user', () => api.post('/v1/wap/me', {}))
+const { data: dash } = await useAsyncData('user-dash', () =>
+  api
+    .post<{
+      interview_count: number
+      apply_count: number
+      favorite_count: number
+      unread_messages: number
+    }>('/v1/mcenter/dashboard', {})
+    .catch(() => null),
+)
+const { data: follows } = await useAsyncData('user-follow-n', () =>
+  api.post<{ total: number }>('/v1/mcenter/follows/list', { kind: 2, page: 1, page_size: 1 }).catch(() => ({ total: 0 })),
+)
 useSeoMeta({ title: t('member_user_00183') })
 async function logout() {
   await $fetch('/api/auth/logout', { method: 'POST' })
@@ -44,25 +57,32 @@ function labelOf(to: string) {
           <div class="yun_m_index_date_list">
             <NuxtLink to="/user/interviews">
               <i class="yun_m_index_date_icon1" />
+              <span v-if="dash?.unread_messages" class="yun_m_n">{{ dash.unread_messages }}</span>
               <div class="yun_m_index_datename">{{ $t('wap_user_00216') }}</div>
+              <div class="yun_m_index_date_n">
+                <span class="yun_m_index_d_c">{{ dash?.interview_count ?? 0 }}</span>
+              </div>
             </NuxtLink>
           </div>
           <div class="yun_m_index_date_list">
             <NuxtLink to="/user/applications">
               <i class="yun_m_index_date_icon2" />
               <div class="yun_m_index_datename">{{ $t('wap_user_00270') }}</div>
+              <div class="yun_m_index_date_n">{{ dash?.apply_count ?? 0 }}</div>
             </NuxtLink>
           </div>
           <div class="yun_m_index_date_list">
             <NuxtLink to="/user/favorites">
               <i class="yun_m_index_date_icon3" />
               <div class="yun_m_index_datename">{{ $t('member_user_00103') }}</div>
+              <div class="yun_m_index_date_n">{{ dash?.favorite_count ?? 0 }}</div>
             </NuxtLink>
           </div>
           <div class="yun_m_index_date_list yun_m_index_date_list_end">
             <NuxtLink to="/user/follows">
               <i class="yun_m_index_date_icon4" />
               <div class="yun_m_index_datename">{{ $t('wap_00385') }}</div>
+              <div class="yun_m_index_date_n">{{ follows?.total ?? 0 }}</div>
             </NuxtLink>
           </div>
         </div>

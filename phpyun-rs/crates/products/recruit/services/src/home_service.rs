@@ -39,9 +39,10 @@ fn home_cache() -> &'static SimpleCache<u32, HomePayload> {
 
 /// Manual invalidation hook — call after a writer publishes an announcement / article
 /// or wants to force-refresh the home page early.
+///
+/// `did=0` is a real sub-site id (same as `/v1/wap/jobs`), not an alias for `1`.
 pub async fn invalidate(did: u32) {
-    let key = if did == 0 { 1 } else { did };
-    home_cache().invalidate(&key).await;
+    home_cache().invalidate(&did).await;
 }
 
 pub async fn invalidate_all() {
@@ -49,7 +50,6 @@ pub async fn invalidate_all() {
 }
 
 pub async fn home(state: &AppState, did: u32) -> AppResult<Arc<HomePayload>> {
-    let did = if did == 0 { 1 } else { did };
     let cache = home_cache();
     let st = state.clone();
     cache

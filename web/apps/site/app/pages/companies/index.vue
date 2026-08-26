@@ -7,17 +7,19 @@ const { t, locale } = useI18n()
 const page = computed(() => Number(route.query.page || 1))
 const keyword = computed(() => String(route.query.keyword || ''))
 const rec = computed(() => route.query.rec === '1')
+const cert = computed(() => route.query.cert === '1')
 const hy = computed(() => numQuery(route.query.hy))
 const provinceId = computed(() => numQuery(route.query.province_id))
 const api = useApi()
 const { data, error } = await useAsyncData(
-  () => `companies-${locale.value}-${page.value}-${keyword.value}-${rec.value}-${hy.value}-${provinceId.value}`,
+  () => `companies-${locale.value}-${page.value}-${keyword.value}-${rec.value}-${cert.value}-${hy.value}-${provinceId.value}`,
   () =>
     api.get<{ list: CompanyLike[]; total: number }>('/v1/wap/companies', {
       page: page.value,
       page_size: 20,
       keyword: keyword.value || undefined,
       rec: rec.value || undefined,
+      cert: cert.value || undefined,
       hy: hy.value,
       province_id: provinceId.value,
     }),
@@ -55,6 +57,12 @@ const list = computed(() => data.value?.list || [])
               $t('home.famous_companies')
             }}</NuxtLink>
             <i class="firmsearch_h1_box_list_icon firmsearch_h1_box_list_icon_jj png" />
+          </li>
+          <li :class="{ firmsearch_h1_box_cur: cert }">
+            <NuxtLink :to="{ path: '/companies', query: mergeQuery(route.query, { cert: '1' }) }">{{
+              $t('ui.verified_license')
+            }}</NuxtLink>
+            <i class="firmsearch_h1_box_list_icon" />
           </li>
         </ul>
         <div class="firmsearch_h1_box_line yun_bg_color" />

@@ -46,12 +46,17 @@ export type CompanyLike = {
   name?: string | null
   shortname?: string | null
   hy_n?: string
+  pr_n?: string
   mun_n?: string
   city_one?: string
   city_two?: string
   logo?: string | null
   logo_n?: string | null
   hits?: number
+  job_num?: number
+  yyzz_status?: number
+  rating?: number
+  rating_name?: string | null
 }
 
 const MODULE_PATH: Record<string, string> = {

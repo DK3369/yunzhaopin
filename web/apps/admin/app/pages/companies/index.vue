@@ -4,7 +4,7 @@ const rStatus = ref<number | undefined>()
 const keyword = ref('')
 const page = ref(1)
 const { data, error, refresh } = await useAsyncData(
-  () => `admin-companies-${page.value}`,
+  () => `admin-companies-${page.value}-${rStatus.value ?? 'all'}-${keyword.value}`,
   () =>
     api.post<{ list: Array<Record<string, unknown>>; total: number }>('/v1/admin/companies', {
       page: page.value,
@@ -13,6 +13,10 @@ const { data, error, refresh } = await useAsyncData(
       keyword: keyword.value || undefined,
     }),
 )
+watch([rStatus, keyword], () => {
+  page.value = 1
+  refresh()
+})
 async function setStatus(row: { uid: number }, r_status: number) {
   await api.post('/v1/admin/companies/status', { uid: row.uid, r_status })
   refresh()
@@ -51,7 +55,17 @@ async function exportCsv() {
     <el-table v-if="!error && (data?.list || []).length" :data="data?.list || []">
       <el-table-column prop="uid" label="uid" width="90" />
       <el-table-column prop="name" :label="$t('ui.name')" />
-      <el-table-column prop="r_status" label="r_status" width="90" />
+      <el-table-column :label="$t('ui.status')" width="110">
+        <template #default="{ row }">
+          {{
+            Number(row.r_status) === 1
+              ? $t('ui.approved')
+              : Number(row.r_status) === 2
+                ? $t('ui.freeze')
+                : $t('ui.waiting')
+          }}
+        </template>
+      </el-table-column>
       <el-table-column prop="cityid" label="cityid" width="90" />
       <el-table-column :label="$t('ui.action')" width="220">
         <template #default="{ row }">

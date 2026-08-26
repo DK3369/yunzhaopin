@@ -57,12 +57,28 @@ useHead({
               <div class="com_details_logo">
                 <img :src="mediaUrl(String(company.logo_n || company.logo || ''), PLACEHOLDER_LOGO)" width="140" height="140" alt="" />
               </div>
-              <h1 class="com_details_name">{{ company.name }}</h1>
+              <h1 class="com_details_name">
+                {{ company.name }}
+                <img
+                  v-if="Number(company.yyzz_status) === 1"
+                  src="/legacy/pc/images/disc_icon10.png"
+                  alt=""
+                  class="png"
+                  width="16"
+                />
+              </h1>
               <div class="com_details_info">
                 {{ company.city_one }} <span v-if="company.city_two">- {{ company.city_two }}</span>
                 <span v-if="company.hy_n" class="com_details_line">|</span>{{ company.hy_n }}
+                <span v-if="company.pr_n" class="com_details_line">|</span>{{ company.pr_n }}
                 <span v-if="company.mun_n" class="com_details_line">|</span>{{ company.mun_n }}
               </div>
+              <p v-if="company.address" class="muted">{{ company.address }}</p>
+              <p class="muted">
+                <template v-if="company.sdate">{{ company.sdate }} · </template>
+                <template v-if="company.zp_num != null">{{ $t('wap_00185') }} {{ company.zp_num }}</template>
+                <template v-if="Number(company.isatn) === 1"> · {{ $t('wap_00378') }}</template>
+              </p>
             </div>
             <p>
               <NuxtLink :to="{ query: { tab: 'jobs' } }" :class="{ Search_jobs_sub_cur: tab !== 'about' }">{{
@@ -83,14 +99,28 @@ useHead({
       </div>
     </div>
     <div class="site-h5">
-      <div style="background: #fff; padding: 0.32rem; display: flex; gap: 0.24rem">
-        <img :src="mediaUrl(String(company.logo_n || company.logo || ''), PLACEHOLDER_LOGO)" style="width: 1.2rem; height: 1.2rem" alt="" />
-        <div>
-          <h1 style="font-size: 0.42rem">{{ company.name }}</h1>
-          <p class="muted">{{ company.hy_n }} · {{ company.city_two }}</p>
+      <div class="top_card">
+        <div class="top_card_top">
+          <div class="top_card_top_logo">
+            <img :src="mediaUrl(String(company.logo_n || company.logo || ''), PLACEHOLDER_LOGO)" alt="" width="100%" />
+          </div>
+          <div class="top_card_top_word">
+            <div class="top_card_top_word_name">
+              <div class="top_card_top_word_name_left">
+                <div class="top_card_top_word_name_left_1">{{ company.name }}</div>
+              </div>
+            </div>
+            <div class="newcom_info">
+              <span v-if="company.mun_n">{{ company.mun_n }} ·</span>
+              <span v-if="company.pr_n">{{ company.pr_n }} ·</span>
+              <span>{{ company.hy_n }}</span>
+            </div>
+            <p v-if="company.zp_num != null" class="muted">{{ $t('wap_00185') }} {{ company.zp_num }}</p>
+            <p v-if="company.address" class="muted">{{ company.address }}</p>
+          </div>
         </div>
       </div>
-      <div class="job_header_nav_left category" style="background: #fff">
+      <div class="job_header_nav_left category">
         <ul>
           <li :class="{ active: tab !== 'about' }">
             <NuxtLink :to="{ query: { tab: 'jobs' } }">{{ $t('home.latest_jobs') }}</NuxtLink>
@@ -100,10 +130,10 @@ useHead({
           </li>
         </ul>
       </div>
-      <div v-if="tab === 'about'" style="background: #fff; margin-top: 0.2rem; padding: 0.32rem" v-html="String(company.content || '')" />
-      <div v-else style="margin-top: 0.2rem">
+      <div v-if="tab === 'about'" class="job_describe_box" v-html="String(company.content || '')" />
+      <div v-else>
         <JobCard v-for="job in jobs?.list || []" :key="job.id" :job="job" variant="search" />
-        <p v-if="!(jobs?.list || []).length" class="muted" style="padding: 0.4rem">{{ $t('home.no_recruiting_jobs') }}</p>
+        <p v-if="!(jobs?.list || []).length" class="muted">{{ $t('home.no_recruiting_jobs') }}</p>
       </div>
     </div>
   </article>

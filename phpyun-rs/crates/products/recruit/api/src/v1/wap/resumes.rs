@@ -1,4 +1,4 @@
-//! Public resume search (company view, usertype=2 required).
+//! Public resume search (aligned with PHP `wap/resume`; guests may browse).
 
 use axum::{
     extract::State,
@@ -8,9 +8,9 @@ use axum::{
 use phpyun_core::dto::{EidBody, UidBody};
 use phpyun_core::i18n::{current_lang, t};
 use phpyun_core::utils::{fmt_date, fmt_dt, mask_name_resume as mask_name, pic_n as pic_n_local};
+use phpyun_core::extractors::{MaybeUser, USERTYPE_EMPLOYER};
 use phpyun_core::{
-    clock, ApiResponse, AppResult, AppState, AuthenticatedUser, Paged, Pagination, ValidatedJson,
-    ValidatedJsonOrQuery,
+    clock, ApiResponse, AppResult, AppState, Paged, Pagination, ValidatedJson, ValidatedJsonOrQuery,
 };
 use phpyun_models::resume::repo::ResumeFilter;
 use phpyun_services::hot_search_service;
@@ -111,6 +111,10 @@ pub struct ResumeSummary {
     pub status: i32,
     pub r_status: i32,
     pub def_job: i32,
+    /// Default expect job title (PHP list `$user.name`). Additive.
+    pub expect_name: String,
+    /// Default expect city display name. Additive.
+    pub expect_city_n: String,
 
     pub lastupdate: i64,
     pub lastupdate_n: String,
@@ -172,6 +176,8 @@ impl ResumeSummary {
             status: r.status,
             r_status: r.r_status,
             def_job: r.def_job,
+            expect_name: String::new(),
+            expect_city_n: String::new(),
             lastupdate_n: fmt_dt(r.lastupdate),
             lastupdate: r.lastupdate,
             resumetime: r.resumetime,
@@ -225,6 +231,8 @@ impl From<phpyun_models::resume::entity::Resume> for ResumeSummary {
             status: r.status,
             r_status: r.r_status,
             def_job: r.def_job,
+            expect_name: String::new(),
+            expect_city_n: String::new(),
             lastupdate_n: fmt_dt(r.lastupdate),
             lastupdate: r.lastupdate,
             resumetime: r.resumetime,
@@ -235,21 +243,18 @@ impl From<phpyun_models::resume::entity::Resume> for ResumeSummary {
     }
 }
 
-/// Public resume list — **searchable by companies only**
+/// Public resume list — guests may browse (PHP `wap/resume`); contacts stay off this payload.
 #[utoipa::path(
     post,
     path = "/v1/wap/resumes",
     tag = "wap",
-    security(("bearer" = [])),
     params(ResumeListQuery),
     responses(
         (status = 200, description = "ok"),
-        (status = 403, description = "Not a company account"),
     )
 )]
 pub async fn list_resumes(
     State(state): State<AppState>,
-    user: AuthenticatedUser,
     page: Pagination,
     ValidatedJsonOrQuery(q): ValidatedJsonOrQuery<ResumeListQuery>,
 ) -> AppResult<ApiResponse<Paged<ResumeSummary>>> {
@@ -263,17 +268,52 @@ pub async fn list_resumes(
         marriage: q.marriage,
         did: q.did,
     };
-    let r = resume_service::list_public(&state, &user, &filter, page).await?;
+    let r = resume_service::list_public(&state, &filter, page).await?;
     let dicts = phpyun_services::dict_service::get(&state).await?;
+    let mut list: Vec<ResumeSummary> = r
+        .list
+        .into_iter()
+        .map(|x| ResumeSummary::from_with_dict(x, &state, &dicts))
+        .collect();
+    attach_expect_fields(&state, &dicts, &mut list).await;
     Ok(ApiResponse::data(Paged::new(
-        r.list
-            .into_iter()
-            .map(|x| ResumeSummary::from_with_dict(x, &state, &dicts))
-            .collect(),
+        list,
         r.total,
         page.page,
         page.page_size,
     )))
+}
+
+async fn attach_expect_fields(
+    state: &AppState,
+    dicts: &phpyun_services::dict_service::LocalizedDicts,
+    list: &mut [ResumeSummary],
+) {
+    let ids: Vec<u64> = list
+        .iter()
+        .filter_map(|row| {
+            if row.def_job > 0 {
+                u64::try_from(row.def_job).ok()
+            } else {
+                None
+            }
+        })
+        .collect();
+    let Ok(rows) = phpyun_models::resume::expect::list_by_ids(state.db.reader(), &ids).await else {
+        return;
+    };
+    let map: std::collections::HashMap<u64, phpyun_models::resume::expect::Expect> =
+        rows.into_iter().map(|e| (e.id, e)).collect();
+    for row in list {
+        let Some(id) = u64::try_from(row.def_job).ok().filter(|v| *v > 0) else {
+            continue;
+        };
+        if let Some(e) = map.get(&id) {
+            row.expect_name = e.name.clone().unwrap_or_default();
+            let city_id = i32::try_from(e.city_classid).unwrap_or(0);
+            row.expect_city_n = dicts.city(city_id).to_string();
+        }
+    }
 }
 
 // View structs for resume + child tables now live in `phpyun_models::resume::view`.
@@ -364,8 +404,10 @@ pub struct ResumeDetail {
     pub birthday: Option<String>,
     pub marriage: i32,
     pub education: i32,
+    pub education_n: String,
     /// Total work experience dictionary id
     pub exp: i32,
+    pub exp_n: String,
     pub nationality: Option<String>,
 
     // ==== Physical metrics ====
@@ -410,6 +452,7 @@ pub struct ResumeDetail {
 
     // ==== Timestamps ====
     pub lastupdate: i64,
+    pub lastupdate_n: String,
     pub resumetime: i64,
     pub login_date: i64,
 
@@ -424,30 +467,33 @@ pub struct ResumeDetail {
     pub others: Vec<ResumeOtherItem>,
 }
 
-/// Public resume detail — companies must have downloaded/applied to unlock contact info; the current version returns everything.
-///
-/// TODO: hook into the phpyun_down_resume table to verify download permissions
+/// Public resume detail — guests may read the body; contact fields are
+/// returned only for employer accounts. Download / talent-pool stay on mcenter.
 #[utoipa::path(
     post,
     path = "/v1/wap/resumes/detail",
     tag = "wap",
-    security(("bearer" = [])),
     request_body = UidBody,
     responses(
         (status = 200, description = "ok"),
-        (status = 403, description = "Not a company account / resume is hidden"),
         (status = 404, description = "Not found"),
     )
 )]
 pub async fn resume_detail(
     State(state): State<AppState>,
-    user: AuthenticatedUser,
+    MaybeUser(user): MaybeUser,
     ValidatedJsonOrQuery(b): ValidatedJsonOrQuery<UidBody>,
 ) -> AppResult<ApiResponse<ResumeDetail>> {
     let uid = b.uid;
-    let r = resume_service::get_public(&state, &user, uid).await?;
-    // Recording footprints when a company views a resume (source for "who viewed me")
-    view_service::record_async(&state, user.uid, KIND_RESUME, uid);
+    let r = resume_service::get_public(&state, uid).await?;
+    let employer = user
+        .as_ref()
+        .is_some_and(|u| u.usertype == USERTYPE_EMPLOYER);
+    if employer {
+        if let Some(u) = user.as_ref() {
+            view_service::record_async(&state, u.uid, KIND_RESUME, uid);
+        }
+    }
     // Fetch 8 child tables + dictionaries in parallel
     let (bundle_res, dicts) = tokio::join!(
         resume_children_service::get_full_bundle(&state, uid),
@@ -469,7 +515,9 @@ pub async fn resume_detail(
         birthday: r.birthday,
         marriage: r.marriage,
         education: r.education,
+        education_n: dicts.comclass(r.education).to_string(),
         exp: r.exp,
+        exp_n: dicts.comclass(r.exp).to_string(),
         nationality: r.nationality,
 
         height: r.height,
@@ -483,12 +531,12 @@ pub async fn resume_detail(
         tag: r.tag,
         label: r.label,
 
-        telphone: r.telphone,
-        telhome: r.telhome,
-        email: r.email,
+        telphone: if employer { r.telphone } else { None },
+        telhome: if employer { r.telhome } else { None },
+        email: if employer { r.email } else { None },
         homepage: r.homepage,
-        qq: r.qq,
-        wxewm: r.wxewm,
+        qq: if employer { r.qq } else { None },
+        wxewm: if employer { r.wxewm } else { None },
 
         photo: r.photo,
         resume_photo: r.resume_photo,
@@ -503,6 +551,7 @@ pub async fn resume_detail(
         def_job: r.def_job,
 
         lastupdate: r.lastupdate,
+        lastupdate_n: fmt_dt(r.lastupdate),
         resumetime: r.resumetime,
         login_date: r.login_date,
 
